@@ -878,7 +878,12 @@ function stepperRun(rt: ArduinoRt, s: Stepper): boolean {
 const AccelStepperClass: LibClass = {
   headers: ['AccelStepper.h'],
   statics: { FUNCTION: 0, DRIVER: 1, FULL2WIRE: 2, FULL3WIRE: 3, FULL4WIRE: 4, HALF3WIRE: 6, HALF4WIRE: 8 },
-  create: (_rt, [type = 4, a = 2, b = 3, c = 4, d = 5]) => ({ type, pins: type === 1 ? [a, b] : [a, b, c, d], pos: 0, target: 0, speed: 0, maxSpeed: 1, accel: 1, lastStepUs: 0, phase: 0 }) as Stepper,
+  create: (rt, [type = 4, a = 2, b = 3, c = 4, d = 5]) => {
+    const s: Stepper = { type, pins: type === 1 ? [a, b] : [a, b, c, d], pos: 0, target: 0, speed: 0, maxSpeed: 1, accel: 1, lastStepUs: 0, phase: 0 };
+    // The real constructor calls enableOutputs(): every motor pin becomes an OUTPUT.
+    s.pins.forEach((p) => rt.world.setMode(p, 'output'));
+    return s;
+  },
   methods: {
     setMaxSpeed: { ret: 'void', fn: (_rt, s, [v]) => void (s.maxSpeed = Math.abs(v)) },
     setAcceleration: { ret: 'void', fn: (_rt, s, [v]) => void (s.accel = Math.max(0.0001, Math.abs(v))) },
@@ -1288,7 +1293,7 @@ const WiFiClass: LibClass = {
   boards: (p) => p.hasWifi,
   create: () => ({ scan: [] as { ssid: string; rssi: number }[] }),
   methods: {
-    begin: { ret: 'int', fn: (rt, _s, [ssid, pass]) => { rt.world.wifiConnect(String(ssid), pass === undefined ? null : String(pass)); return wifiStatusCode(rt.world.wifi.status); } },
+    begin: { ret: 'int', fn: (rt, _s, [ssid, pass]) => { rt.world.wifiConnect(Array.isArray(ssid) ? charsToString(ssid) : String(ssid), pass === undefined ? null : Array.isArray(pass) ? charsToString(pass) : String(pass)); return wifiStatusCode(rt.world.wifi.status); } },
     status: { ret: 'int', pure: true, fn: (rt) => wifiStatusCode(rt.world.wifi.status) },
     isConnected: { ret: 'bool', pure: true, fn: (rt) => (rt.world.wifi.status === 'connected' ? 1 : 0) },
     localIP: { ret: () => ({ k: 'obj', cls: 'IPAddress' }), pure: true, fn: (rt) => ({ ip: rt.world.wifi.ip, toString: () => rt.world.wifi.ip }) },

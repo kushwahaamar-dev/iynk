@@ -471,19 +471,22 @@ export class World {
 
   /** The host (or a test) sends an HTTP request to the board's web server. */
   request(method: string, path: string, body = ''): Promise<{ status: number; type: string; body: string }> {
-    return new Promise((resolve) => {
-      if (this.wifi.status !== 'connected' || !this.httpServerPort) {
-        resolve({ status: 0, type: 'text/plain', body: 'connection refused' });
-        return;
-      }
-      const [p, qs = ''] = path.split('?');
-      const query: Record<string, string> = {};
-      for (const kv of qs.split('&').filter(Boolean)) {
-        const [k, v = ''] = kv.split('=');
-        query[decodeURIComponent(k)] = decodeURIComponent(v);
-      }
-      this.httpQueue.push({ method: method.toUpperCase(), path: p || '/', query, body, resolve });
-    });
+    return new Promise((resolve) => this.requestNow(method, path, body, resolve));
+  }
+
+  /** Same as request(), but the answer arrives through a callback in the same tick the sketch serves it. */
+  requestNow(method: string, path: string, body: string, done: (res: { status: number; type: string; body: string }) => void): void {
+    if (this.wifi.status !== 'connected' || !this.httpServerPort) {
+      done({ status: 0, type: 'text/plain', body: 'connection refused' });
+      return;
+    }
+    const [p, qs = ''] = path.split('?');
+    const query: Record<string, string> = {};
+    for (const kv of qs.split('&').filter(Boolean)) {
+      const [k, v = ''] = kv.split('=');
+      query[decodeURIComponent(k)] = decodeURIComponent(v);
+    }
+    this.httpQueue.push({ method: method.toUpperCase(), path: p || '/', query, body, resolve: done });
   }
 
   pinName(n: number): string {

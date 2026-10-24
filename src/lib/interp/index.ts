@@ -17,3 +17,7 @@ export { PROFILES, BOARD_IDS, getProfile, resolvePin, hasPwm, type BoardId, type
 export { World, type Snapshot, type PinView, type PinMode, type WorldOptions, type WifiNetwork, type OledText } from './world';
 export { Mpu6050, Pca9685, Ssd1306, Lcd1602, HcSr04, GenericI2C, litSegments, type I2CDevice } from './devices';
 export type { RosMessage } from './python/modules';
+export { runHeadless, INTERP_LANGUAGE, LIMIT_MESSAGE, type HeadlessOptions } from './headless';
+export { evaluateChecks, evaluateCheck, servoDegrees, sampleAt, risingEdges, stateMatches, codeOnly, type CheckResult, type CheckContext } from './checks';
+export { pinNet, netResolver, pinoutNets } from './pins';
+export { WorldBinding, drivesFor, runOptionsFor, qtrDarkness, type PinDrive, type HttpExchange, type WorldBindingOptions } from './lesson-world';

@@ -7,6 +7,12 @@ docs/DECISIONS.md.
 
 ## 0. Change log (newest first; after 14:00 CDT Oct 24 schema and id changes are additive only)
 
+- v1.2 16:55 CDT Oct 24 (P1-checks): additive. `DeviceModel` network gets an optional `password` (the Wi-Fi
+  password the simulated network wants; omitted = open, or the default bench network's password). `RunTrace` gets an
+  optional `http` list (requests the world's network inputs sent and the sketch's answers). One check path:
+  `src/lib/interp` exports `runHeadless` + `evaluateChecks`; Board Lab, Robotics and the content tests use only these.
+  Rule changes in that one evaluator: `pin-toggles.periodMs` is the full period, rising edge to rising edge (what
+  every lesson and task was written against); a `pwm` check accepts a pin driven fully low/high as duty 0/1.
 - v1.1 14:15 CDT Oct 24 (orchestrator, who owns the architect's files now): `StateCond` is
   `Partial<Record<string, string | number | boolean | null>>` (additive). With `satisfies XContent`, an array of
   steps whose `done` objects name different paths widens to optional-undefined fields. The old Record rejected

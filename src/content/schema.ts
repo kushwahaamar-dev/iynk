@@ -312,7 +312,7 @@ export type DeviceModel =
   | { kind: 'qtr-rc'; sensors: number }
   | { kind: 'onboard'; sensor: 'accelerometer' | 'compass' | 'temperature' | 'light' | 'microphone' | 'touch' }
   /** Wi-Fi/BLE peer: the value picks requests[value] (e.g. "GET /led/on"), sent at the event's time. */
-  | { kind: 'network'; ssid: string; ip: string; requests: string[] };
+  | { kind: 'network'; ssid: string; ip: string; requests: string[]; password?: string | null };
 
 export type WorldQuantity =
   | 'button' | 'switch' | 'level' | 'distance-cm' | 'light-lux' | 'temperature-c' | 'force-n' | 'angle-deg'
@@ -362,6 +362,8 @@ export interface RunTrace {
   /** `set` patches sent to the figure, in order. */
   figure: { t: number; state: Record<string, unknown> }[];
   inputs: WorldEvent[];
+  /** HTTP requests the world's network inputs sent to the sketch's web server, with the answers. */
+  http?: { t: number; method: string; path: string; status: number; body: string }[];
 }
 
 /** A completion check, evaluated on a RunTrace (src/lib/interp/checks.ts). */

@@ -247,7 +247,7 @@ const tasks: PracticeTask[] = [
     language: 'arduino-cpp',
     circuit: null,
     world: noInputs,
-    runMs: 5000,
+    runMs: 5500,
     title: 'tasks.pulse.title',
     brief: 'tasks.pulse.brief',
     hints: ['tasks.pulse.hints.1', 'tasks.pulse.hints.2', 'tasks.pulse.hints.3'],
