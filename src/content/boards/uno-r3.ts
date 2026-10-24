@@ -2,7 +2,7 @@
 // ATmega328P datasheet, ArduinoCore-avr 1.8.8); parts on the breadboard: docs/facts/la-components.md. The 16 lessons
 // follow Learn Arduino's sequence with its defects fixed (docs/research/learn-arduino.md §9.2); the assembly follows
 // Robotics Bench Fig. 01. Lesson circuits live in figures/boards/uno-r3.js (key = lesson id).
-import type { BoardContent, Lesson } from '@/content/schema';
+import type { BoardContent, BuildStep, Lesson } from '@/content/schema';
 
 const lessons = [
   {
@@ -273,11 +273,11 @@ void loop() {
         label: 'lessons.button.params.color.label',
         default: 'red',
         options: [
-          { value: 'red', code: 'red', figureValue: 'red', label: 'lessons.blink.params.color.red' },
-          { value: 'yellow', code: 'yellow', figureValue: 'yellow', label: 'lessons.blink.params.color.yellow' },
-          { value: 'green', code: 'green', figureValue: 'green', label: 'lessons.blink.params.color.green' },
-          { value: 'blue', code: 'blue', figureValue: 'blue', label: 'lessons.blink.params.color.blue' },
-          { value: 'white', code: 'white', figureValue: 'white', label: 'lessons.blink.params.color.white' },
+          { value: 'red', code: 'red', figureValue: 'red', label: 'lessons.button.params.color.red' },
+          { value: 'yellow', code: 'yellow', figureValue: 'yellow', label: 'lessons.button.params.color.yellow' },
+          { value: 'green', code: 'green', figureValue: 'green', label: 'lessons.button.params.color.green' },
+          { value: 'blue', code: 'blue', figureValue: 'blue', label: 'lessons.button.params.color.blue' },
+          { value: 'white', code: 'white', figureValue: 'white', label: 'lessons.button.params.color.white' },
         ],
         figure: { part: 'LED1', key: 'color' },
       },
@@ -395,11 +395,11 @@ void loop() {
         label: 'lessons.knob.params.color.label',
         default: 'red',
         options: [
-          { value: 'red', code: 'red', figureValue: 'red', label: 'lessons.blink.params.color.red' },
-          { value: 'yellow', code: 'yellow', figureValue: 'yellow', label: 'lessons.blink.params.color.yellow' },
-          { value: 'green', code: 'green', figureValue: 'green', label: 'lessons.blink.params.color.green' },
-          { value: 'blue', code: 'blue', figureValue: 'blue', label: 'lessons.blink.params.color.blue' },
-          { value: 'white', code: 'white', figureValue: 'white', label: 'lessons.blink.params.color.white' },
+          { value: 'red', code: 'red', figureValue: 'red', label: 'lessons.knob.params.color.red' },
+          { value: 'yellow', code: 'yellow', figureValue: 'yellow', label: 'lessons.knob.params.color.yellow' },
+          { value: 'green', code: 'green', figureValue: 'green', label: 'lessons.knob.params.color.green' },
+          { value: 'blue', code: 'blue', figureValue: 'blue', label: 'lessons.knob.params.color.blue' },
+          { value: 'white', code: 'white', figureValue: 'white', label: 'lessons.knob.params.color.white' },
         ],
         figure: { part: 'LED1', key: 'color' },
       },
@@ -610,11 +610,11 @@ void loop() {
         label: 'lessons.light.params.color.label',
         default: 'yellow',
         options: [
-          { value: 'red', code: 'red', figureValue: 'red', label: 'lessons.blink.params.color.red' },
-          { value: 'yellow', code: 'yellow', figureValue: 'yellow', label: 'lessons.blink.params.color.yellow' },
-          { value: 'green', code: 'green', figureValue: 'green', label: 'lessons.blink.params.color.green' },
-          { value: 'blue', code: 'blue', figureValue: 'blue', label: 'lessons.blink.params.color.blue' },
-          { value: 'white', code: 'white', figureValue: 'white', label: 'lessons.blink.params.color.white' },
+          { value: 'red', code: 'red', figureValue: 'red', label: 'lessons.light.params.color.red' },
+          { value: 'yellow', code: 'yellow', figureValue: 'yellow', label: 'lessons.light.params.color.yellow' },
+          { value: 'green', code: 'green', figureValue: 'green', label: 'lessons.light.params.color.green' },
+          { value: 'blue', code: 'blue', figureValue: 'blue', label: 'lessons.light.params.color.blue' },
+          { value: 'white', code: 'white', figureValue: 'white', label: 'lessons.light.params.color.white' },
         ],
         figure: { part: 'LED1', key: 'color' },
       },
@@ -1844,13 +1844,13 @@ void loop() {
       {
         id: 'obstacle',
         kind: 'choice',
-        label: 'lessons.distance.params.obstacle.label',
+        label: 'lessons.parking.params.obstacle.label',
         default: 'car',
         options: [
-          { value: 'car', code: 'car', figureValue: 'car', label: 'lessons.distance.params.obstacle.car', note: 'lessons.distance.params.obstacle.car-note' },
-          { value: 'box', code: 'box', figureValue: 'box', label: 'lessons.distance.params.obstacle.box', note: 'lessons.distance.params.obstacle.box-note' },
-          { value: 'ball', code: 'ball', figureValue: 'ball', label: 'lessons.distance.params.obstacle.ball', note: 'lessons.distance.params.obstacle.ball-note' },
-          { value: 'wall', code: 'wall', figureValue: 'wall', label: 'lessons.distance.params.obstacle.wall', note: 'lessons.distance.params.obstacle.wall-note' },
+          { value: 'car', code: 'car', figureValue: 'car', label: 'lessons.parking.params.obstacle.car', note: 'lessons.parking.params.obstacle.car-note' },
+          { value: 'box', code: 'box', figureValue: 'box', label: 'lessons.parking.params.obstacle.box', note: 'lessons.parking.params.obstacle.box-note' },
+          { value: 'ball', code: 'ball', figureValue: 'ball', label: 'lessons.parking.params.obstacle.ball', note: 'lessons.parking.params.obstacle.ball-note' },
+          { value: 'wall', code: 'wall', figureValue: 'wall', label: 'lessons.parking.params.obstacle.wall', note: 'lessons.parking.params.obstacle.wall-note' },
         ],
         figure: { part: 'OBST', key: 'kind' },
       },
@@ -1939,6 +1939,15 @@ void loop() {
     },
   },
 ] satisfies Lesson[];
+
+// one through-hole part into the board; `missing` is how many parts are still off it afterwards
+const placeStep = (id: string, group: 'low' | 'tall', missing: number): BuildStep => {
+  const key = 'place-' + id.toLowerCase();
+  return {
+    id: key, kind: 'build', action: { type: 'press', id: 'place', choice: id.toLowerCase() }, done: { 'missing.length': missing }, major: false,
+    title: `assembly.${key}.title`, body: `assembly.${key}.body`, refusal: `assembly.place-${group}.refusal`,
+  };
+};
 
 const board: BoardContent = {
   lab: 'board',
@@ -2153,9 +2162,9 @@ const board: BoardContent = {
     {
       id: 'undervoltage',
       kind: 'wrong-voltage',
-      trigger: { by: 'power-input', input: 'jack', volts: 4.9 },
-      figure: { type: 'set', state: { power: 'jack', fault: 'wrong-voltage:jack:4.9' } },
-      effect: { power: 'on', halts: false },
+      trigger: { by: 'power-input', input: 'jack', volts: 4.4 },
+      figure: { type: 'set', state: { power: 'jack', fault: 'wrong-voltage:jack:4.4' } },
+      effect: { power: 'resetting', halts: true },
       title: 'failures.undervoltage.title',
       symptom: 'failures.undervoltage.symptom',
       explanation: 'failures.undervoltage.explanation',
@@ -2187,7 +2196,7 @@ const board: BoardContent = {
       id: 'missing-resonator',
       kind: 'missing-part',
       trigger: { by: 'remove-part', part: 'Y2' },
-      figure: { type: 'set', state: { power: null, remove: 'Y2' } },
+      figure: { type: 'set', state: { power: 'usb', fault: 'missing:Y2' } },
       effect: { power: 'on', halts: true },
       title: 'failures.missing-resonator.title',
       symptom: 'failures.missing-resonator.symptom',
@@ -2198,7 +2207,7 @@ const board: BoardContent = {
       id: 'missing-autoreset',
       kind: 'missing-part',
       trigger: { by: 'remove-part', part: 'C5' },
-      figure: { type: 'set', state: { power: null, remove: 'C5' } },
+      figure: { type: 'set', state: { power: 'usb', fault: 'missing:C5' } },
       effect: { power: 'on', halts: false },
       title: 'failures.missing-autoreset.title',
       symptom: 'failures.missing-autoreset.symptom',
@@ -2262,18 +2271,26 @@ const board: BoardContent = {
     },
   ],
   assembly: [
+    { id: 'unplug', kind: 'build', action: { type: 'set', state: { power: null } }, done: { power: null }, major: false, title: 'assembly.unplug.title', body: 'assembly.unplug.body' },
     { id: 'strip', kind: 'build', action: { type: 'press', id: 'strip' }, done: { build: 'bare' }, major: false, title: 'assembly.strip.title', body: 'assembly.strip.body', refusal: 'assembly.strip.refusal' },
     { id: 'pick-place', kind: 'build', action: { type: 'press', id: 'pnp' }, done: { build: 'reflowed' }, major: false, title: 'assembly.pick-place.title', body: 'assembly.pick-place.body', refusal: 'assembly.pick-place.refusal' },
-    { id: 'through-hole', kind: 'build', action: null, done: { build: 'tht' }, major: false, title: 'assembly.through-hole.title', body: 'assembly.through-hole.body', refusal: 'assembly.through-hole.refusal' },
+    // after reflow 11 parts are off the board: 4 low, 6 tall, then the chip
+    ...(['SK1', 'Y1', 'ICSP', 'ICSP1'] as const).map((id, i) => placeStep(id, 'low', 10 - i)),
+    ...(['X2', 'X1', 'POWER', 'AD', 'IOH', 'IOL'] as const).map((id, i) => placeStep(id, 'tall', 6 - i)),
     { id: 'solder', kind: 'build', action: { type: 'press', id: 'solder' }, done: { build: 'soldered' }, major: false, title: 'assembly.solder.title', body: 'assembly.solder.body', refusal: 'assembly.solder.refusal' },
     { id: 'chip', kind: 'build', action: { type: 'press', id: 'place', choice: 'zu4' }, done: { build: 'assembled' }, major: false, title: 'assembly.chip.title', body: 'assembly.chip.body', refusal: 'assembly.chip.refusal' },
     { id: 'plug', kind: 'build', action: { type: 'set', state: { power: 'usb' } }, done: { power: 'usb', status: 'running' }, major: false, title: 'assembly.plug.title', body: 'assembly.plug.body', refusal: 'assembly.plug.refusal' },
     { id: 'upload', kind: 'build', action: { type: 'press', id: 'upload', choice: 'hello' }, done: { mode: 'hello', status: 'running' }, major: false, title: 'assembly.upload.title', body: 'assembly.upload.body', refusal: 'assembly.upload.refusal' },
     { id: 'power-check', kind: 'test', action: null, done: { status: 'running', 'leds.ON': 1, 'rails.3V3': 3.3 }, major: false, title: 'assembly.power-check.title', body: 'assembly.power-check.body' },
-    { id: 'break-chip', kind: 'break', action: { type: 'set', state: { power: 'usb', fault: 'reversed:ZU4' } }, done: { status: 'fault' }, fault: 'chip-backwards', major: false, title: 'assembly.break-chip.title', body: 'assembly.break-chip.body' },
-    { id: 'break-resonator', kind: 'break', action: { type: 'set', state: { power: null, remove: 'Y2' } }, done: { status: 'powered' }, fault: 'missing-resonator', major: false, title: 'assembly.break-resonator.title', body: 'assembly.break-resonator.body' },
+    // each break: make the change unplugged (the figure unplugs for it), plug in to see it, then rebuild
+    { id: 'break-chip', kind: 'break', action: { type: 'set', state: { fault: 'reversed:ZU4' } }, done: { power: null }, fault: 'chip-backwards', major: false, title: 'assembly.break-chip.title', body: 'assembly.break-chip.body' },
+    { id: 'power-chip', kind: 'test', action: { type: 'set', state: { power: 'usb' } }, done: { status: 'fault', 'fault.id': 'reversed:ZU4' }, fault: 'chip-backwards', major: false, title: 'assembly.power-chip.title', body: 'assembly.power-chip.body' },
+    { id: 'fix-chip', kind: 'build', action: { type: 'set', state: { power: null, build: 'assembled' } }, done: { power: null, build: 'assembled' }, major: false, title: 'assembly.fix-chip.title', body: 'assembly.fix-chip.body' },
+    { id: 'break-resonator', kind: 'break', action: { type: 'set', state: { fault: 'missing:Y2' } }, done: { 'missing.length': 1 }, fault: 'missing-resonator', major: false, title: 'assembly.break-resonator.title', body: 'assembly.break-resonator.body' },
+    { id: 'power-resonator', kind: 'test', action: { type: 'set', state: { power: 'usb' } }, done: { status: 'powered' }, fault: 'missing-resonator', major: false, title: 'assembly.power-resonator.title', body: 'assembly.power-resonator.body' },
+    { id: 'fix-resonator', kind: 'build', action: { type: 'set', state: { power: null, build: 'assembled' } }, done: { power: null, 'missing.length': 0 }, major: false, title: 'assembly.fix-resonator.title', body: 'assembly.fix-resonator.body' },
     { id: 'break-brownout', kind: 'break', action: { type: 'set', state: { power: 'usb', fault: 'brownout' } }, done: { status: 'brownout' }, fault: 'brownout', major: false, title: 'assembly.break-brownout.title', body: 'assembly.break-brownout.body' },
-    { id: 'exploded', kind: 'build', action: { type: 'set', state: { power: null, exploded: true } }, done: { exploded: true }, major: false, title: 'assembly.exploded.title', body: 'assembly.exploded.body', refusal: 'assembly.exploded.refusal' },
+    { id: 'exploded', kind: 'build', action: { type: 'set', state: { power: null, fault: null, exploded: true } }, done: { exploded: true }, major: false, title: 'assembly.exploded.title', body: 'assembly.exploded.body', refusal: 'assembly.exploded.refusal' },
   ],
   lessons,
   serial: { baud: 9600, sample: ['Uno ready', 'hello from the Uno #0', 'hello from the Uno #1'] },

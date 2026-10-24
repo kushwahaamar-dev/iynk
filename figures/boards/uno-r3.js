@@ -1,5 +1,22 @@
 // @cf title Arduino Uno R3
 // @cf use engine/bench.list
+// @cf use parts/push-button.js
+// @cf use parts/potentiometer.js
+// @cf use parts/rgb-led.js
+// @cf use parts/ldr.js
+// @cf use parts/piezo-buzzer.js
+// @cf use parts/tip120.js
+// @cf use parts/diode-1n4007.js
+// @cf use parts/dc-motor.js
+// @cf use parts/fan.js
+// @cf use parts/tmp36.js
+// @cf use parts/servo-sg90.js
+// @cf use parts/stepper-28byj48.js
+// @cf use parts/fsr402.js
+// @cf use parts/hc-sr04.js
+// @cf use parts/ssd1306.js
+// @cf use parts/traffic-light.js
+// @cf use parts/soil-moisture.js
 /* Arduino Uno R3 (A000066, the through-hole "UNO-TH Rev3e" layout). Every position below is the part's centre from
    Arduino's own Eagle board file (UNO-TH_Rev3e.brd, board origin bottom-left, y up), 68.58 x 53.34 mm.
    How it works: USB-B (X2) brings 5 V through the 500 mA polyfuse F1 to USBVCC; the P-MOSFET T1 passes it to the
@@ -42,7 +59,7 @@ B.board({
       label: 'ATMEGA328P-PU|ATMEL', polar: { fault: 'hot', opts: ['notch right, as printed', 'notch left (backwards)'] } },
     { id: 'SK1', kind: 'socket', name: 'DIP-28 socket', short: 'SOCKET', at: [46.355, 16.383], rot: 180, n: 14, h: 3 },
     { id: 'U3', kind: 'qfn', name: 'ATmega16U2 USB-to-serial bridge', short: 'USB-SERIAL', at: [19.939, 34.671], size: [5, 5], n: 8, label: 'ATMEGA|16U2' },
-    { id: 'Y1', kind: 'xtal-smd', name: '16 MHz crystal for the 16U2', short: '16 MHz CRYSTAL', at: [18.923, 26.162], size: [11.4, 4.6], h: 3.6, label: '16.000' },
+    { id: 'Y1', kind: 'xtal', name: '16 MHz crystal for the 16U2 (HC-49/S, through-hole)', short: '16 MHz CRYSTAL', at: [18.923, 26.162], size: [11.4, 4.6], h: 3.6, label: '16.000' },
     { id: 'Y2', kind: 'resonator', name: '16 MHz ceramic resonator for the 328P', short: 'RESONATOR', at: [41.275, 24.892], size: [3.2, 1.3] },
     { id: 'U1', kind: 'sot223', name: 'NCP1117 5 V regulator', short: '5V REG', at: [7.747, 17.399], rot: 90, label: '1117' },
     { id: 'U2', kind: 'sot23', name: 'LP2985 3.3 V regulator', short: '3V3 REG', at: [21.971, 15.24], rot: 90, n: 5, label: 'L33' },
@@ -120,7 +137,7 @@ B.board({
     fade13: { title: 'analogWrite on pin 13 (no PWM there)', bytes: 1132, out: (st, t) => ({ D13: Math.floor((t % 2.56) / 2.56 * 256) >= 128 ? 1 : 0 }) },
     hello: { title: 'Serial hello', bytes: 1490, banner: 'Uno ready', out: () => ({}), serial: k => 'hello from the Uno #' + k },
   },
-  faults: ['short:5V:GND'],
+  faults: ['short:5V:GND', 'short:3V3:GND'],
   xr: {
     flow: [
       ['USBVCC', [[9.9, 38.1], [4.06, 31], [4.06, 26.5], [8.1, 26.5]]],
@@ -131,17 +148,233 @@ B.board({
     notes: [['ZU4', 'SILICON DIE'], ['U3', 'USB BRIDGE'], ['Y1', 'QUARTZ'], ['U1', '5V REGULATOR'], ['F1', 'POLYFUSE']],
   },
   tags: [['ZU4', 40, 34], ['U3', -46, -16], ['X2', -44, 12], ['X1', -40, 22], ['RESET', -30, -26], ['L', 34, -30], ['ON', 36, -18], ['U1', -40, 34], ['Y1', -34, 40]],
+  /* One circuit per lesson (key = lesson id in src/content/boards/uno-r3.ts). Circuit part ids never reuse a board
+     designator (the board has its own R1, D1, L...), so selecting RES1 cannot light up the board's R1. Nets with more
+     than one header pin are named by pin id so the wire leaves the header the lesson shows: IOH.4 = GND beside D13,
+     IOH.5 = D13, IOH.7 = D11, POWER.4 = 3V3, POWER.5 = 5V, POWER.6 / POWER.7 = GND. The ULN2003 driver has no
+     breadboard part yet, so the stepper circuit leaves its four signal wires out. */
   circuit: 'blink',
   circuits: {
     blink: {
       title: 'Blink an LED', breadboard: 'half',
       parts: [
-        { id: 'R1', part: 'resistor', ohms: 220, holes: ['b10', 'b14'] },
+        { id: 'RES1', part: 'resistor', ohms: 220, holes: ['b10', 'b14'] },
         { id: 'LED1', part: 'led', color: 'red', holes: ['c14', 'c15'] },
       ],
       wires: [
-        { from: 'D13', to: 'a10', color: 'orange' },
-        { from: 'GND', to: 'a15', color: 'black' },
+        { from: 'IOH.5', to: 'a10', color: 'orange' },
+        { from: 'IOH.4', to: 'a15', color: 'black' },
+      ],
+    },
+    button: {
+      title: 'Push a button', breadboard: 'half',
+      parts: [
+        { id: 'BTN1', part: 'push-button', holes: ['e8', 'f8', 'e10', 'f10'] },
+        { id: 'RES1', part: 'resistor', ohms: 10000, holes: ['b10', 'b14'] },
+        { id: 'RES2', part: 'resistor', ohms: 220, holes: ['b15', 'b19'] },
+        { id: 'LED1', part: 'led', color: 'red', holes: ['c19', 'c20'] },
+      ],
+      wires: [
+        { from: 'POWER.5', to: 'a8', color: 'red' },
+        { from: 'D2', to: 'a10', color: 'blue' },
+        { from: 'IOH.4', to: 'a14', color: 'black' },
+        { from: 'IOH.5', to: 'a15', color: 'orange' },
+        { from: 'e14', to: 'e20', color: 'black' },
+      ],
+    },
+    knob: {
+      title: 'Turn a knob', breadboard: 'half',
+      parts: [
+        { id: 'POT1', part: 'potentiometer', ohms: 10000, holes: ['e9', 'e10', 'e11'] },
+        { id: 'RES1', part: 'resistor', ohms: 220, holes: ['b15', 'b19'] },
+        { id: 'LED1', part: 'led', color: 'red', holes: ['c19', 'c20'] },
+      ],
+      wires: [
+        { from: 'POWER.6', to: 'a9', color: 'black' },
+        { from: 'A0', to: 'a10', color: 'green' },
+        { from: 'POWER.5', to: 'a11', color: 'red' },
+        { from: 'D9', to: 'a15', color: 'orange' },
+        { from: 'b9', to: 'e20', color: 'black' },
+      ],
+    },
+    rgb: {
+      title: 'Mix colours', breadboard: 'half',
+      parts: [
+        { id: 'LED1', part: 'rgb-led', holes: ['d15', 'd16', 'd17', 'd18'] },
+        { id: 'RES1', part: 'resistor', ohms: 220, holes: ['b11', 'b15'] },
+        { id: 'RES2', part: 'resistor', ohms: 220, holes: ['b17', 'b21'] },
+        { id: 'RES3', part: 'resistor', ohms: 220, holes: ['c18', 'c22'] },
+      ],
+      wires: [
+        { from: 'D9', to: 'a11', color: 'orange' },
+        { from: 'D10', to: 'a21', color: 'green' },
+        { from: 'IOH.7', to: 'a22', color: 'blue' },
+        { from: 'IOH.4', to: 'a16', color: 'black' },
+      ],
+    },
+    light: {
+      title: 'Sense light', breadboard: 'half',
+      parts: [
+        { id: 'RES1', part: 'resistor', ohms: 220, holes: ['b8', 'b12'] },
+        { id: 'LED1', part: 'led', color: 'yellow', holes: ['c12', 'c13'] },
+        { id: 'LDR1', part: 'ldr', holes: ['c20', 'c21'] },
+        { id: 'RES2', part: 'resistor', ohms: 10000, holes: ['b17', 'b21'] },
+      ],
+      wires: [
+        { from: 'D9', to: 'a8', color: 'orange' },
+        { from: 'IOH.4', to: 'a13', color: 'black' },
+        { from: 'POWER.5', to: 'a20', color: 'red' },
+        { from: 'A0', to: 'a21', color: 'green' },
+        { from: 'POWER.6', to: 'a17', color: 'black' },
+      ],
+    },
+    distance: {
+      title: 'Read a sensor', breadboard: 'half',
+      parts: [
+        { id: 'US1', part: 'hc-sr04', holes: ['a10', 'a11', 'a12', 'a13'] },
+      ],
+      wires: [
+        { from: 'POWER.5', to: 'e10', color: 'red' },
+        { from: 'D9', to: 'e11', color: 'yellow' },
+        { from: 'D10', to: 'e12', color: 'green' },
+        { from: 'POWER.6', to: 'e13', color: 'black' },
+      ],
+    },
+    sound: {
+      title: 'Make a sound', breadboard: 'half',
+      parts: [
+        { id: 'BUZ1', part: 'piezo-buzzer', holes: ['e11', 'e14'] },
+      ],
+      wires: [
+        { from: 'D8', to: 'a11', color: 'orange' },
+        { from: 'IOH.4', to: 'a14', color: 'black' },
+      ],
+    },
+    piano: {
+      title: 'Mini piano', breadboard: 'half',
+      parts: [
+        // key k sits on columns c..c+2 across the trench; D(k+1) reaches column c+2, column c goes to the GND rail
+        ...Array.from({ length: 8 }, (_, i) => {
+          const c = 28 - 3 * i;
+          return { id: 'KEY' + (i + 1), part: 'push-button', holes: ['e' + c, 'f' + c, 'e' + (c + 2), 'f' + (c + 2)] };
+        }),
+        { id: 'BUZ1', part: 'piezo-buzzer', holes: ['d2', 'd5'] },
+      ],
+      wires: [
+        ...['red', 'orange', 'yellow', 'green', 'white', 'blue', 'purple', 'grey'].flatMap((color, i) => {
+          const c = 28 - 3 * i;
+          return [{ from: 'D' + (i + 2), to: 'a' + (c + 2), color }, { from: 'a' + c, to: 'T-' + c, color: 'black' }];
+        }),
+        { from: 'D10', to: 'a2', color: 'brown' },
+        { from: 'a5', to: 'T-5', color: 'black' },
+        { from: 'IOH.4', to: 'T-1', color: 'black' },
+      ],
+    },
+    motor: {
+      title: 'Control a motor', breadboard: 'half',
+      parts: [
+        { id: 'RES1', part: 'resistor', ohms: 1000, holes: ['b9', 'b13'] },
+        { id: 'Q1', part: 'tip120', holes: ['c13', 'c14', 'c15'] },
+        { id: 'DIO1', part: 'diode-1n4007', holes: ['d14', 'd20'] },
+        { id: 'MOT1', part: 'dc-motor', at: [150, 12], drive: 'D6', holes: ['a20', 'a14'] },
+      ],
+      wires: [
+        { from: 'D6', to: 'a9', color: 'orange' },
+        { from: 'IOH.4', to: 'a15', color: 'black' },
+        { from: 'POWER.5', to: 'e20', color: 'red' },
+      ],
+    },
+    heat: {
+      title: 'Sense heat', breadboard: 'half',
+      parts: [
+        { id: 'RES1', part: 'resistor', ohms: 1000, holes: ['b9', 'b13'] },
+        { id: 'Q1', part: 'tip120', holes: ['c13', 'c14', 'c15'] },
+        { id: 'TMP1', part: 'tmp36', holes: ['c19', 'c20', 'c21'] },
+        { id: 'DIO1', part: 'diode-1n4007', holes: ['d14', 'd19'] },
+        { id: 'FAN1', part: 'fan', at: [150, 12], drive: 'D6', holes: ['e19', 'e14'] },
+      ],
+      wires: [
+        { from: 'D6', to: 'a9', color: 'orange' },
+        { from: 'IOH.4', to: 'a15', color: 'black' },
+        { from: 'POWER.5', to: 'a19', color: 'red' },
+        { from: 'A0', to: 'a20', color: 'green' },
+        { from: 'POWER.6', to: 'a21', color: 'black' },
+      ],
+    },
+    servo: {
+      title: 'Sweep a servo', breadboard: 'half',
+      parts: [
+        { id: 'SRV1', part: 'servo-sg90', at: [140, 14], holes: ['e10', 'e11', 'e12'] },
+      ],
+      wires: [
+        { from: 'POWER.7', to: 'a10', color: 'brown' },
+        { from: 'POWER.5', to: 'a11', color: 'red' },
+        { from: 'D9', to: 'a12', color: 'orange' },
+      ],
+    },
+    stepper: {
+      title: 'Spin the wheel', breadboard: 'half',
+      parts: [
+        { id: 'BTN1', part: 'push-button', holes: ['e8', 'f8', 'e10', 'f10'] },
+        { id: 'RES1', part: 'resistor', ohms: 10000, holes: ['b10', 'b14'] },
+        { id: 'STP1', part: 'stepper-28byj48', at: [145, 14], wheel: 'wheel', plug: [126, 14] },
+      ],
+      wires: [
+        { from: 'POWER.5', to: 'a8', color: 'red' },
+        { from: 'D2', to: 'a10', color: 'blue' },
+        { from: 'IOH.4', to: 'a14', color: 'black' },
+      ],
+    },
+    plant: {
+      title: 'Smart plant', breadboard: 'half',
+      parts: [
+        { id: 'OLED1', part: 'ssd1306', holes: ['g4', 'g5', 'g6', 'g7'] },
+        { id: 'SOIL1', part: 'soil-moisture', at: [152, 12], holes: ['a20', 'a21', 'a22'] },
+      ],
+      wires: [
+        { from: 'IOH.4', to: 'j4', color: 'black' },
+        { from: 'POWER.4', to: 'j5', color: 'orange' },
+        { from: 'SCL', to: 'j6', color: 'blue' },
+        { from: 'SDA', to: 'j7', color: 'purple' },
+        { from: 'A0', to: 'e20', color: 'yellow' },
+        { from: 'POWER.5', to: 'e21', color: 'red' },
+        { from: 'POWER.6', to: 'e22', color: 'black' },
+      ],
+    },
+    force: {
+      title: 'Feel the force', breadboard: 'half',
+      parts: [
+        { id: 'FSR1', part: 'fsr402', holes: ['a13', 'a14'] },
+        { id: 'RES1', part: 'resistor', ohms: 10000, holes: ['c10', 'c14'] },
+        { id: 'BUZ1', part: 'piezo-buzzer', holes: ['e1', 'e4'] },
+        { id: 'SRV1', part: 'servo-sg90', at: [150, 10], holes: ['h20', 'h21', 'h22'] },
+      ],
+      wires: [
+        { from: 'POWER.5', to: 'd13', color: 'red' },
+        { from: 'A0', to: 'd14', color: 'green' },
+        { from: 'POWER.6', to: 'd10', color: 'black' },
+        { from: 'D8', to: 'a1', color: 'purple' },
+        { from: 'IOH.4', to: 'a4', color: 'black' },
+        { from: 'e10', to: 'j20', color: 'brown' },
+        { from: 'e13', to: 'j21', color: 'red' },
+        { from: 'D9', to: 'j22', color: 'orange' },
+      ],
+    },
+    parking: {
+      title: 'Parking sensor', breadboard: 'half',
+      parts: [
+        { id: 'US1', part: 'hc-sr04', holes: ['a8', 'a9', 'a10', 'a11'] },
+        { id: 'TL1', part: 'traffic-light', holes: ['b20', 'b21', 'b22', 'b23'] },
+      ],
+      wires: [
+        { from: 'POWER.5', to: 'e8', color: 'red' },
+        { from: 'D9', to: 'e9', color: 'blue' },
+        { from: 'D10', to: 'e10', color: 'purple' },
+        { from: 'POWER.6', to: 'e11', color: 'black' },
+        { from: 'd11', to: 'd20', color: 'black' },
+        { from: 'D4', to: 'e21', color: 'orange' },
+        { from: 'D3', to: 'e22', color: 'yellow' },
+        { from: 'D2', to: 'e23', color: 'green' },
       ],
     },
   },
