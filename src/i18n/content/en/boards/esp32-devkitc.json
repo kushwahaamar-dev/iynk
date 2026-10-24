@@ -319,7 +319,9 @@
         "2": { "label": "Debounce", "value": "30 ms after the last change" }
       },
       "pins": {
-        "GPIO0": { "to": "Boot button (on the board)", "role": "Input with the internal pull-up" }
+        "GPIO0": { "to": "Boot button (on the board)", "role": "Input with the internal pull-up" },
+        "GPIO23": { "to": "220 Ω resistor, then the LED's anode", "role": "Output that switches the LED" },
+        "GND": { "to": "LED cathode", "role": "Return path" }
       },
       "callouts": {
         "SW1": "Boot button: press it while the sketch runs.",
@@ -364,7 +366,9 @@
         "2": { "label": "Readings here", "value": "about 72 untouched, 12 touched; real values depend on the wire" }
       },
       "pins": {
-        "GPIO4": { "to": "Bare jumper wire (the touch pad)", "role": "Capacitive touch input" }
+        "GPIO4": { "to": "Bare jumper wire (the touch pad)", "role": "Capacitive touch input" },
+        "GPIO23": { "to": "220 Ω resistor, then the LED's anode", "role": "Output that switches the LED" },
+        "GND": { "to": "LED cathode", "role": "Return path" }
       },
       "callouts": {
         "LED1": "Lights while the wire is touched."
@@ -408,7 +412,8 @@
         "3": { "label": "Ramp", "value": "51 steps of 20 ms each way" }
       },
       "pins": {
-        "GPIO23": { "role": "PWM output from the LEDC peripheral" }
+        "GPIO23": { "to": "220 Ω resistor, then the LED's anode", "role": "PWM output from the LEDC peripheral" },
+        "GND": { "to": "LED cathode", "role": "Return path" }
       },
       "callouts": {
         "LED1": "Brightness follows the duty cycle."
@@ -462,7 +467,8 @@
         "3": { "label": "Analog with Wi-Fi on", "value": "ADC1 only; ADC2 reads fail" }
       },
       "pins": {
-        "GPIO23": { "role": "Output switched by the web server" }
+        "GPIO23": { "to": "220 Ω resistor, then the LED's anode", "role": "Output switched by the web server" },
+        "GND": { "to": "LED cathode", "role": "Return path" }
       },
       "callouts": {
         "U3": "The module's printed antenna overhangs the board: keep metal and hands away from it.",

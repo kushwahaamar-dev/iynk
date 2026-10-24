@@ -405,8 +405,8 @@ const board = {
       variants: [],
       pins: [
         { pin: 'GPIO0', to: 'lessons.boot-button.pins.GPIO0.to', role: 'lessons.boot-button.pins.GPIO0.role', color: 'yellow' },
-        { pin: 'GPIO23', to: 'lessons.blink.pins.GPIO23.to', role: 'lessons.blink.pins.GPIO23.role', color: 'orange' },
-        { pin: 'GND', to: 'lessons.blink.pins.GND.to', role: 'lessons.blink.pins.GND.role', color: 'black' },
+        { pin: 'GPIO23', to: 'lessons.boot-button.pins.GPIO23.to', role: 'lessons.boot-button.pins.GPIO23.role', color: 'orange' },
+        { pin: 'GND', to: 'lessons.boot-button.pins.GND.to', role: 'lessons.boot-button.pins.GND.role', color: 'black' },
       ],
       callouts: [{ part: 'SW1', text: 'lessons.boot-button.callouts.SW1' }, { part: 'LED1', text: 'lessons.boot-button.callouts.LED1' }],
       specs: [
@@ -470,8 +470,8 @@ const board = {
       variants: [],
       pins: [
         { pin: 'GPIO4', to: 'lessons.touch.pins.GPIO4.to', role: 'lessons.touch.pins.GPIO4.role', color: 'blue' },
-        { pin: 'GPIO23', to: 'lessons.blink.pins.GPIO23.to', role: 'lessons.blink.pins.GPIO23.role', color: 'orange' },
-        { pin: 'GND', to: 'lessons.blink.pins.GND.to', role: 'lessons.blink.pins.GND.role', color: 'black' },
+        { pin: 'GPIO23', to: 'lessons.touch.pins.GPIO23.to', role: 'lessons.touch.pins.GPIO23.role', color: 'orange' },
+        { pin: 'GND', to: 'lessons.touch.pins.GND.to', role: 'lessons.touch.pins.GND.role', color: 'black' },
       ],
       callouts: [{ part: 'LED1', text: 'lessons.touch.callouts.LED1' }],
       specs: [
@@ -547,8 +547,8 @@ const board = {
       ],
       variants: [],
       pins: [
-        { pin: 'GPIO23', to: 'lessons.blink.pins.GPIO23.to', role: 'lessons.fade.pins.GPIO23.role', color: 'orange' },
-        { pin: 'GND', to: 'lessons.blink.pins.GND.to', role: 'lessons.blink.pins.GND.role', color: 'black' },
+        { pin: 'GPIO23', to: 'lessons.fade.pins.GPIO23.to', role: 'lessons.fade.pins.GPIO23.role', color: 'orange' },
+        { pin: 'GND', to: 'lessons.fade.pins.GND.to', role: 'lessons.fade.pins.GND.role', color: 'black' },
       ],
       callouts: [{ part: 'LED1', text: 'lessons.fade.callouts.LED1' }],
       specs: [
@@ -645,8 +645,8 @@ const board = {
       ],
       variants: [],
       pins: [
-        { pin: 'GPIO23', to: 'lessons.blink.pins.GPIO23.to', role: 'lessons.web-switch.pins.GPIO23.role', color: 'orange' },
-        { pin: 'GND', to: 'lessons.blink.pins.GND.to', role: 'lessons.blink.pins.GND.role', color: 'black' },
+        { pin: 'GPIO23', to: 'lessons.web-switch.pins.GPIO23.to', role: 'lessons.web-switch.pins.GPIO23.role', color: 'orange' },
+        { pin: 'GND', to: 'lessons.web-switch.pins.GND.to', role: 'lessons.web-switch.pins.GND.role', color: 'black' },
       ],
       callouts: [{ part: 'U3', text: 'lessons.web-switch.callouts.U3' }, { part: 'LED1', text: 'lessons.web-switch.callouts.LED1' }],
       specs: [

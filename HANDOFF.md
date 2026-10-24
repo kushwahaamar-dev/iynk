@@ -83,7 +83,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 18:01 CDT (machine clock).
+- **Updated:** 2026-10-24 18:05 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 16:57 CDT.
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Fast-forwarded to
   `94d3caa`. Do not build in `/Users/amar/Codes/sim`.
@@ -104,11 +104,10 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   `.env.local` on Jagrati's Mac is `.env.example` with empty values. Vultr, Vercel env upload and Tiger are not
   approved yet, so gate 1 runs without live Meta/SerpApi and rooms use the one-browser fallback until keys arrive.
   D3 (devnet SOL) is asked only when phase 4 starts.
-- **Next step:** point the ESP32 DevKitC boot-button, touch, fade, and web-switch pin rows at their own lesson
-  prose. They still read `lessons.blink.pins.*`, which is why `/en/boards/esp32-devkitc/touch` dies in `next build`.
-  The Uno color-string request is already fixed in `24e19bb`. After the build passes, rerun only the local
-  `next start` smoke in `docs/hacktx/DEPLOY.md`. Do not link Vercel. Do not relaunch P1-uno or P1-engine. Then
-  gate 1 (BUILD-PLAN §6). Live keys, Vultr, and the preview deploy still wait for the user's OK.
+- **Next step:** rerun only the local `next start` smoke in `docs/hacktx/DEPLOY.md` and write the results into
+  that table. `next build` with typecheck on now finishes. 645 of 645 pages were generated at 18:04, including
+  `/en/boards/esp32-devkitc/touch`. Do not link Vercel. Then gate 1 (BUILD-PLAN §6). Live keys, Vultr, and the
+  preview deploy still wait for the user's OK.
 - **Agents:** P1-checks `1e6f87c4-b1ea-4a31-9425-b1de6de9a88f` done (`39cca43`, `c168147`). P1-health
   `d393e1cb-35bc-4db4-bc0b-37c02c1b8e14` done (`28d8564`). P1-voice `b337455f-1b6d-45d5-93d8-51efb828d421` done
   (`b1e5308`). P1-engine `1a0582c2-ec24-42ab-8b3c-e2ac162b8e48` done (`f104e10`, `a45ec96`, `03eaab0`, `9d49d45`,
@@ -129,6 +128,12 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 18:05 CDT (Amar): ESP32 DevKitC pin rows for boot-button, touch, fade, and web-switch now point at
+  that lesson's own prose. `npx vitest run src/content/boards/esp32-devkitc.test.ts` passed 10 of 10.
+  `NEXT_DIST_DIR=.next-pin npx next build` exited 0 and generated 645 of 645 pages. One warning remains.
+  `src/i18n/figure-strings.ts` cannot resolve `src/i18n/figures/<locale>.json`. `.next-pin` was deleted and its
+  lines were removed from `tsconfig.json`. Next is the local smoke. Vercel stays unlinked.
 
 - 2026-10-24 18:01 CDT (Amar): P1-uno done for its done line. `eae2b0c`, `24e19bb`, and `0415fcc` are `origin/main`.
   `src/i18n/content/en/boards/uno-r3.json` is in that history. Button, knob, and light use their own

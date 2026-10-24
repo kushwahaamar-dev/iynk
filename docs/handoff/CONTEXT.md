@@ -137,6 +137,8 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   string stays with P1-uno, who is still editing that board.
 - **10-24 18:01, Amar (driver decision).** P1-uno meets its done line. Do not relaunch it. Do not relaunch
   P1-engine for the four powered-fault drawings. The color-string request is already fixed in the Uno content.
+- **10-24 18:05, Amar (driver decision).** Fix the DevKitC pin strings now that every phase-1 label has stopped.
+  The production build is green. The local smoke is the next step. Vercel stays unlinked.
 
 ## 6. Lessons learned (apply them)
 
