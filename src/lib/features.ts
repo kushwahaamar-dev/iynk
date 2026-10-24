@@ -1,9 +1,9 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import type { Features } from "@/lib/server/env";
+import type { Features as ServerFeatures } from "@/lib/server/env";
 
-export type { Features };
+export type Features = ServerFeatures & { hw: boolean };
 
 /**
  * Which hackathon features this deployment has (GET /api/status, HX-CONTRACT H2).
@@ -14,7 +14,7 @@ export type { Features };
  */
 export type FeatureState = { status: "loading" | "ready" | "error"; features: Features };
 
-const FEATURE_KEYS = ["ai", "image", "voice", "search", "solana", "db", "realtime", "gemini"] as const satisfies readonly (keyof Features)[];
+const FEATURE_KEYS = ["ai", "image", "voice", "search", "solana", "db", "realtime", "gemini", "hw"] as const satisfies readonly (keyof Features)[];
 
 export const NO_FEATURES: Features = Object.freeze({
   ai: false,
@@ -25,6 +25,7 @@ export const NO_FEATURES: Features = Object.freeze({
   db: false,
   realtime: false,
   gemini: false,
+  hw: false,
 });
 
 const LOADING: FeatureState = Object.freeze({ status: "loading", features: NO_FEATURES });
