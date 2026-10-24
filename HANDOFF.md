@@ -83,10 +83,12 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 16:44 CDT (machine clock).
-- **Driver:** Jagrati Kumari, Mac RVW-F0096FW3J2M, since 2026-10-24 16:09 CDT.
-- **Phase:** 1 running ("autonomous mode" at 16:23). Seven agents from `scripts/workflows/phase1.md`: P1-health,
-  P1-checks, P1-uno, P1-engine, P1-dock, P1-voice, P1-deploy. State per label in the checkpoint log.
+- **Updated:** 2026-10-24 16:57 CDT (machine clock).
+- **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 16:57 CDT.
+- **Phase:** 1, not running. Jagrati's seven agents stopped at the usage limit (16:56). No label is reported done.
+  Partial commits are on `main` (see the checkpoint). Uncommitted leftovers stayed on Jagrati's Mac and are not in
+  this clone. This session relaunches all seven labels from `scripts/workflows/phase1.md`. Jagrati's session should
+  not resume those agents.
 - **Plan:** `docs/hacktx/BUILD-PLAN.md`, written from the six audits in `docs/audit/` (boards, robotics, drones,
   platform, sponsor-layer, history). Phases 1–3 build for Best Overall, SerpApi, Most Entertaining and Meta.
   Solana and Best Hardware Hack are phase 4, only if time is left after gate 3 (Amar, 16:15). Don't start them
@@ -98,9 +100,9 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   `.env.local` on Jagrati's Mac is `.env.example` with empty values. Vultr, Vercel env upload and Tiger are not
   approved yet, so gate 1 runs without live Meta/SerpApi and rooms use the one-browser fallback until keys arrive.
   D3 (devnet SOL) is asked only when phase 4 starts.
-- **Next step:** wait for the seven relaunched phase-1 agents; any label not reported done in the checkpoint log is
-  relaunched with its section of `scripts/workflows/phase1.md`. Then gate 1 (BUILD-PLAN §6; live keys and the
-  preview deploy wait for the user's OK).
+- **Next step:** relaunch all seven phase-1 labels from `scripts/workflows/phase1.md` on this machine. They
+  continue from committed `main` (`e568153`). Then gate 1 (BUILD-PLAN §6). Live keys, Vultr, and the preview
+  deploy still wait for the user's OK.
 
 ### Claims (only when both people work at the same time)
 
@@ -109,6 +111,10 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 16:57 CDT (Amar): Amar takes over on Amars-MacBook-Pro.local. Git identity is Amar Kushwaha. The clone is
+  clean at `e568153`. No phase-1 label is reported done. P1-checks, P1-voice, P1-dock and P1-deploy landed partial
+  commits. P1-health, P1-uno and P1-engine have no code commits from the relaunch. Next is to relaunch all seven.
 
 - 2026-10-24 16:56 CDT (Jagrati): WIP: usage limit hit (resets 18:40 CDT). P1-engine failed on it; the other six
   will stop too. Commits since the relaunch: b34de47 Tell P1-uno how to use the shared check path; e6fe88b One check path: runHeadless and evaluateChecks in src/lib/interp; 78865ae Fix solana route and verify tests: mock next/server connection, whoop now has a smoke stopper in its content; ff8b788 Add Together to the site nav, Passport and Verify behind features.solana, and the LabDock strings; 4da5459 Register the search, solana, together and hw namespaces so message parity covers them; b08fd2d Fix PassportPanel tests: render in async act so suspended loads resolve; Confetti skips when animate or matchMedia is missing; 732a030 Fix RealBuildPanel tests: typed offers, repeated names, prop pack size; 0cc0a7e Pin Node 24 and add a root-anchored .vercelignore. Uncommitted agent work stays in the tree on Jagrati's Mac.

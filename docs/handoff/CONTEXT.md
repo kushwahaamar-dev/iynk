@@ -106,6 +106,14 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   whether to relaunch fresh ones.
 - **10-24 16:46, Jagrati.** "do what's best" → relaunch all seven phase-1 agents fresh (P1-deploy included: it only
   touches local config and never deploys); each first reviews its own leftover uncommitted files.
+- **10-24 16:57, Amar.** Cloned `https://github.com/kushwahaamar-dev/sim.git`, opened it, and asked the agent to
+  follow HANDOFF.md exactly. Take over as driver under Amar's git identity. Continue from "Current status → Next
+  step". Commit and push after every step. Add his instructions and decisions to this section as they happen. Ask
+  before anything HANDOFF.md says needs a user's OK. When he says he is stopping, hand over. Checkpoint the step,
+  set Driver to "none, free to take", write a clear Next step, commit "Hand over" and push.
+  Decision: do not wait until 18:40 for Jagrati's session. That session is on another Mac, its agents already
+  stopped, and its uncommitted files are not in this clone. Amar is the driver, so this machine relaunches all
+  seven labels from committed `main`.
 
 ## 6. Lessons learned (apply them)
 
