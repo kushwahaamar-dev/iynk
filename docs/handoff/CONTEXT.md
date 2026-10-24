@@ -147,6 +147,10 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   Spanish board page 404s, which is BUILD-PLAN §3.2 item 5 (no phase-1 row owned it). Do not fix it inside the
   smoke step. Raise it at gate 1. The dashboard title suffix is a phase-3 polish note. Vercel stays unlinked until
   Amar says yes.
+- **10-24 18:31, Amar.** Answers before gate 1. Vercel: "Not yet, gate 1 locally", so no link and no preview
+  deploy. Keys: "Not yet, keep placeholders". Vultr: "Not yet", so rooms keep the one-browser fallback. Spanish
+  404: "Yes, fix it first", so BUILD-PLAN §3.2 item 5 (English prose with a "not yet translated" notice) is built
+  before gate 1. Gate 1 then runs the local half of §6 against a local production build.
 
 ## 6. Lessons learned (apply them)
 

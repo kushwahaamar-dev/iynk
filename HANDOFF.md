@@ -83,7 +83,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 18:28 CDT (machine clock).
+- **Updated:** 2026-10-24 18:31 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Fast-forwarded to
   `94d3caa`. Do not build in `/Users/amar/Codes/sim`.
@@ -107,13 +107,12 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   `.env.local` on Jagrati's Mac is `.env.example` with empty values. Vultr, Vercel env upload and Tiger are not
   approved yet, so gate 1 runs without live Meta/SerpApi and rooms use the one-browser fallback until keys arrive.
   D3 (devnet SOL) is asked only when phase 4 starts.
-- **Next step:** gate 1 (BUILD-PLAN §5 phase 1 and §6). Gate 1 as written needs a preview URL with live Meta and
-  SerpApi. The Vercel link, preview deploy, env upload, keys and Vultr all wait for the user's OK (D4: keys are
-  placeholders, rooms use the one-browser fallback). Ask the user about those first. Without them, run the local
-  half of §6 against a local production build: 1 static (plus `npm run content:check`), 2 full vitest, 3 the
-  app-path table in `docs/verify/`, 4 figure probe, 5 route crawl over 6 locales, 6 e2e incl. 390×844. Item 5 will
-  list every non-English item page as 404 until §3.2 item 5 (English fallback with a notice) is built. That fix
-  needs an owner. Raise it at the gate.
+- **Next step:** build BUILD-PLAN §3.2 item 5 (Amar, 18:31: "Yes, fix it first"). Board, bench and craft pages in
+  a language with no prose show the English prose with a translated "not yet translated" notice instead of a 404.
+  A build-time check fails when English prose is missing. Then gate 1, locally only (Amar, 18:31: no Vercel link,
+  no preview, keys stay placeholders, no Vultr). Run the local half of BUILD-PLAN §6 against a local production
+  build: 1 static (plus `npm run content:check`), 2 full vitest, 3 the app-path table in `docs/verify/`, 4 figure
+  probe, 5 route crawl over 6 locales, 6 e2e incl. 390×844.
 - **Agents:** P1-checks `1e6f87c4-b1ea-4a31-9425-b1de6de9a88f` done (`39cca43`, `c168147`). P1-health
   `d393e1cb-35bc-4db4-bc0b-37c02c1b8e14` done (`28d8564`). P1-voice `b337455f-1b6d-45d5-93d8-51efb828d421` done
   (`b1e5308`). P1-engine `1a0582c2-ec24-42ab-8b3c-e2ac162b8e48` done (`f104e10`, `a45ec96`, `03eaab0`, `9d49d45`,
@@ -135,6 +134,9 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 18:31 CDT (Amar): Amar answered the gate-1 questions. Gate 1 runs locally with placeholder keys. No
+  Vercel link, preview deploy or Vultr VM yet. The English prose fallback (§3.2 item 5) is built first.
 
 - 2026-10-24 18:28 CDT (Amar): local `next start` smoke done and written into `docs/hacktx/DEPLOY.md` (`b62ebc0`).
   Build exit 0 with typecheck on, 645 of 645 pages. Every English demo route is 200. `/` redirects to `/en`.
