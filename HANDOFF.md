@@ -120,7 +120,8 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   `af98853`, `a45e9c7`, `8ac4249`). P1-dock `b44c4546-65c6-4e1b-a979-d542a595b6e2` done (`0878815`). P1-uno
   `ba4b1927-c019-44ae-9e2a-ed6bc9d344fa` done (`eae2b0c`, `24e19bb`, `0415fcc`). Four powered-fault drawings still
   need an engine change (`docs/requests/P1-uno-to-P1-engine-assembly.md`). P1-deploy
-  `99124c0b-fd27-4276-b13f-a2038f8c3767` files done (`544e92f`). The smoke did not run. No phase-1 label is running.
+  `99124c0b-fd27-4276-b13f-a2038f8c3767` files done (`544e92f`). The driver ran the smoke at 18:24 (`b62ebc0`). No
+  phase-1 label is running.
 - **Stopped (17:12):** an earlier wave in `/Users/amar/Codes/sim` was told to stop and not push. P1-checks
   `69f24d0b-22ca-48fe-9759-b3b2f8a29256` had already stood down. Also stopped: P1-checks
   `97b4fdff-0cfe-4a33-9392-efba74f27b24`, P1-uno `7bff6780-5777-4fc4-88ee-63de088785f4`, P1-health
