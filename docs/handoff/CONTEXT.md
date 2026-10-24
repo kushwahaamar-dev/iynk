@@ -122,6 +122,9 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   does not have. Typecheck on simlab is 24 errors in four files (see HANDOFF.md).
 - **10-24 17:06, Amar (driver decision).** Relaunch all seven unfinished labels in the simlab tree. No user message
   at this minute. The next step in HANDOFF.md was the relaunch, and none of the labels were reported done.
+- **10-24 17:12, Amar (driver decision).** One P1-checks per tree. Keep `1e6f87c4` in simlab. The copy in
+  `/Users/amar/Codes/sim` (`69f24d0b`) stood down on its own. The earlier wave in that clone was told to stop
+  and not push. Its uncommitted files and unpushed note `c3c61a7` stay there.
 
 ## 6. Lessons learned (apply them)
 
