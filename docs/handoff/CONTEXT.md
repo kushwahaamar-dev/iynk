@@ -135,6 +135,8 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   figure source to P1-uno.
 - **10-24 17:50, Amar (driver decision).** P1-dock meets its done line. Do not relaunch it. The Uno button-lesson
   string stays with P1-uno, who is still editing that board.
+- **10-24 18:01, Amar (driver decision).** P1-uno meets its done line. Do not relaunch it. Do not relaunch
+  P1-engine for the four powered-fault drawings. The color-string request is already fixed in the Uno content.
 
 ## 6. Lessons learned (apply them)
 
