@@ -83,8 +83,8 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 16:15 CDT.
-- **Driver:** none, free to take. (Amar paused at 16:05.)
+- **Updated:** 2026-10-24 16:09 CDT (machine clock).
+- **Driver:** Jagrati Kumari, Mac RVW-F0096FW3J2M, since 2026-10-24 16:09 CDT.
 - **Phase:** 0 is done: the audit and the plan. Nothing is being built yet.
 - **Plan:** `docs/hacktx/BUILD-PLAN.md`, written from the six audits in `docs/audit/` (boards, robotics, drones,
   platform, sponsor-layer, history). Phases 1–3 build for Best Overall, SerpApi, Most Entertaining and Meta.
@@ -106,6 +106,9 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 16:09 CDT (Jagrati): Jagrati takes over as driver on RVW-F0096FW3J2M. Next: confirm D2 and collect
+  D4 with Jagrati. (Machine clock reads earlier than Amar's 16:15 entry; times are as each machine shows them.)
 
 - 2026-10-24 16:15 CDT (Amar): Solana and Hardware moved to BUILD-PLAN.md phase 4 (only if time is left); the rest
   of the plan approved in principle. Driver still free.

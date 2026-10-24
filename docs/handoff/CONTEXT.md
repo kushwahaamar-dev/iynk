@@ -90,6 +90,10 @@ Short entries: who, when, what was asked or decided, in the user's words where i
 - **10-24 16:15, Amar.** Solana and Hardware moved to the end (phase 4, only if time is left); "Everything else looks
   fine." Asked for the hand-off prompt (with the GitHub link) for his teammate's agent and his own. D2 and D4 still
   open; build not started.
+- **10-24 16:09, Jagrati (teammate), new session.** Cloned the repo and asked the agent to follow HANDOFF.md exactly:
+  take over as driver under Jagrati's own git identity (Jagrati Kumari), continue from "Next step", commit and push
+  after every step, log instructions and decisions here, ask before anything HANDOFF.md says needs a user's OK, and
+  on "I'm stopping" hand over (checkpoint, Driver "none, free to take", clear Next step, commit "Hand over", push).
 
 ## 6. Lessons learned (apply them)
 
