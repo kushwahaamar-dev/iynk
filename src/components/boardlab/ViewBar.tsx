@@ -88,10 +88,11 @@ export function ViewBar({ store, board, figure, views, xr, onXr, yaw, onYaw }: P
         </Button>
       </span>
       {board.power.length > 0 && (
-        <label className="flex items-center gap-2 text-sm">
-          <span>{t("view.supply.label")}</span>
+        <label className="flex min-w-0 max-w-full items-center gap-2 text-sm">
+          <span className="shrink-0">{t("view.supply.label")}</span>
+          {/* Longer translations ("Alimentación", "Cable USB-B (5,5 V)") must not widen a phone page. */}
           <select
-            className="ink-field h-11 py-0 text-sm"
+            className="ink-field h-11 min-w-0 py-0 text-sm"
             value={power ?? ""}
             onChange={(e) => store.dispatch({ type: "power/set", source: e.target.value || null })}
           >

@@ -48,7 +48,8 @@ export function WireInPanel({ wireables }: { wireables: Wireable[] }) {
             <div className="flex flex-wrap items-center gap-2">
               <span className="me-auto font-semibold">{partName(w.part)}</span>
               <span className="text-sm text-muted">{t("wire.supply", { volts: w.supplyVolts })}</span>
-              <Button size="sm" variant="secondary" onClick={() => setInspect(w.part)}>
+              {/* Wraps: "Examinar Sensor capacitivo de humedad del suelo" is wider than a phone. "!" beats Button's nowrap. */}
+              <Button size="sm" variant="secondary" className="max-w-full !whitespace-normal" onClick={() => setInspect(w.part)}>
                 {t("wire.inspect", { part: partName(w.part) })}
               </Button>
             </div>
