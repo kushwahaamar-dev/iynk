@@ -43,6 +43,8 @@ SimLab is a hardware lab in the browser (Boards, Robotics, Drones, flight sim) e
 | 10-24 15:40 | Optimise for the five tracks above, nothing missing, plan first | Amar's request (§5) |
 | 10-24 15:50 | Plan written; D1–D4 open | BUILD-PLAN.md §0 and §9 |
 | 10-24 16:15 | Solana and Hardware go last (phase 4), built only if time is left after gate 3; their UI stays hidden until then. Rest of the plan fine | Amar: put Solana and Hardware "as the last end of it. We will do that after only when we have time left. Don't put that into build phase yet. Everything else looks fine." |
+| 10-24 ~16:20 | **D2 confirmed:** translate all UI and figure text, plus judge-path prose (Uno R3, quad5, esp32-s3 bench); English prose with a "not yet translated" notice elsewhere; the rest overnight | Jagrati: "for D2 confirm the default" |
+| 10-24 ~16:20 | **D4: API keys stay placeholders for now.** No Meta, SerpApi, Gemini, Tiger or Vultr keys yet; Jagrati's `.env.local` is a copy of `.env.example` with empty values, so sponsor panels show "not set up" and the core lab works. Vultr VM, Vercel link/env upload and Tiger are **not** approved: still ask before creating or uploading anything | Jagrati: "leave the api keys as place holder" |
 | 10-24 ~16:00 | Raw session transcripts are **not** committed; this file summarises them instead | The tool permission check blocked exporting them, and they can contain secrets and file dumps |
 
 ## 4. Things that live on one machine only
@@ -94,6 +96,8 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   take over as driver under Jagrati's own git identity (Jagrati Kumari), continue from "Next step", commit and push
   after every step, log instructions and decisions here, ask before anything HANDOFF.md says needs a user's OK, and
   on "I'm stopping" hand over (checkpoint, Driver "none, free to take", clear Next step, commit "Hand over", push).
+- **10-24 ~16:20, Jagrati.** "leave the api keys as place holder and for D2 confirm the default." → D2 confirmed,
+  D4 keys left as placeholders (§3). Build not started: waiting for "autonomous mode".
 
 ## 6. Lessons learned (apply them)
 
