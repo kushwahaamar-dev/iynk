@@ -83,13 +83,12 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 17:04 CDT (machine clock).
+- **Updated:** 2026-10-24 17:06 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 16:57 CDT.
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Fast-forwarded to
   `94d3caa`. Do not build in `/Users/amar/Codes/sim`.
-- **Phase:** 1, relaunching. Jagrati's seven agents stopped at the usage limit (16:56). No label is reported done.
-  Partial commits are on `main`. Uncommitted leftovers stayed on Jagrati's Mac. This session relaunches all seven
-  labels from `scripts/workflows/phase1.md` in the simlab tree. Jagrati's session should not resume those agents.
+- **Phase:** 1 running in `/Users/amar/Codes/ak/simlab` since 17:06. Seven local agents, one per label, from
+  `scripts/workflows/phase1.md`. None were done at launch. Jagrati's session should not resume its own copies.
 - **Plan:** `docs/hacktx/BUILD-PLAN.md`, written from the six audits in `docs/audit/` (boards, robotics, drones,
   platform, sponsor-layer, history). Phases 1–3 build for Best Overall, SerpApi, Most Entertaining and Meta.
   Solana and Best Hardware Hack are phase 4, only if time is left after gate 3 (Amar, 16:15). Don't start them
@@ -104,9 +103,13 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   `.env.local` on Jagrati's Mac is `.env.example` with empty values. Vultr, Vercel env upload and Tiger are not
   approved yet, so gate 1 runs without live Meta/SerpApi and rooms use the one-browser fallback until keys arrive.
   D3 (devnet SOL) is asked only when phase 4 starts.
-- **Next step:** relaunch all seven phase-1 labels from `scripts/workflows/phase1.md` in
-  `/Users/amar/Codes/ak/simlab`, continuing from `94d3caa`. Then gate 1 (BUILD-PLAN §6). Live keys, Vultr, and the
-  preview deploy still wait for the user's OK.
+- **Next step:** wait for the seven agents below. Any label that stops without its "Done when" line is relaunched
+  from `scripts/workflows/phase1.md`. Then gate 1 (BUILD-PLAN §6). Live keys, Vultr, and the preview deploy still
+  wait for the user's OK.
+- **Agents (17:06, all running):** P1-health `d393e1cb-35bc-4db4-bc0b-37c02c1b8e14`, P1-checks
+  `1e6f87c4-b1ea-4a31-9425-b1de6de9a88f`, P1-uno `ba4b1927-c019-44ae-9e2a-ed6bc9d344fa`, P1-engine
+  `1a0582c2-ec24-42ab-8b3c-e2ac162b8e48`, P1-dock `b44c4546-65c6-4e1b-a979-d542a595b6e2`, P1-voice
+  `b337455f-1b6d-45d5-93d8-51efb828d421`, P1-deploy `99124c0b-fd27-4276-b13f-a2038f8c3767`.
 
 ### Claims (only when both people work at the same time)
 
@@ -115,6 +118,10 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 17:06 CDT (Amar): relaunched all seven phase-1 labels in `/Users/amar/Codes/ak/simlab` from `2892524`.
+  P1-health d393e1cb, P1-checks 1e6f87c4, P1-uno ba4b1927, P1-engine 1a0582c2, P1-dock b44c4546, P1-voice b337455f,
+  P1-deploy 99124c0b. All running. Each commits only its own files.
 
 - 2026-10-24 17:04 CDT (Amar): Amar pointed at the existing checkout `/Users/amar/Codes/ak/simlab` ("we already have
   the local setup here"). Fast-forwarded it from `1313ec8` to `94d3caa`. Discarded a whitespace-only edit in

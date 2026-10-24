@@ -120,6 +120,8 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   `docs/hacktx/STRATEGY.md` was discarded. The extra clone at `/Users/amar/Codes/sim` is not the working tree.
   Decision: do not run `npm ci` here. A fresh install on the other clone reported `PageProps` errors this tree
   does not have. Typecheck on simlab is 24 errors in four files (see HANDOFF.md).
+- **10-24 17:06, Amar (driver decision).** Relaunch all seven unfinished labels in the simlab tree. No user message
+  at this minute. The next step in HANDOFF.md was the relaunch, and none of the labels were reported done.
 
 ## 6. Lessons learned (apply them)
 
