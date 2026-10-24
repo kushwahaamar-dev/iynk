@@ -184,7 +184,7 @@ describe("verifyRun", () => {
     expect(await verifyRun("board-lesson", "uno-r3", "blink", run)).toMatchObject({ ok: false, code: "unsupported" });
   });
 
-  test("the whoop has no smoke stopper by default", async () => {
-    expect(await droneTestsFor("whoop")).toMatchObject({ smoke: false, motors: true, calibrate: true });
+  test("a craft's safety tests come from its published bench tests", async () => {
+    expect(await droneTestsFor("whoop")).toMatchObject({ smoke: true, motors: true, calibrate: true });
   });
 });

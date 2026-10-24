@@ -7,6 +7,8 @@ import { DISCRIMINATORS, credentialAddress, u64le } from "@/lib/solana/passport"
 import type { BenchEvent } from "@/lib/verify/drone-safety";
 import { replayHash, sha256, toHex } from "@/lib/verify/hash";
 
+vi.mock("next/server", () => ({ connection: async () => {} }));
+
 const context = vi.hoisted(() => ({ current: null as IssuerContext | null }));
 vi.mock("@/lib/server/solana/context", () => ({
   issuerContext: () => context.current,
