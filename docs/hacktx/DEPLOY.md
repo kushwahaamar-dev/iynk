@@ -1,6 +1,6 @@
 # Deploying SimLab
 
-P1-deploy, 2026-10-24 17:23 CDT. The app is a Next.js 16.4.3 App Router project. Vercel is not linked, nothing has been deployed, and no environment variables have been uploaded. Those three wait for a yes (BUILD-PLAN §9, D4).
+P1-deploy, 2026-10-24 17:23 CDT. The local smoke was rerun by the driver at 18:24 CDT. The app is a Next.js 16.4.3 App Router project. Vercel is not linked, nothing has been deployed, and no environment variables have been uploaded. Those three wait for a yes (BUILD-PLAN §9, D4).
 
 ## What is already set
 
@@ -41,7 +41,7 @@ Every other key in `.env.example` is optional. A missing key is "not set up on t
 
 ## When there is a yes
 
-1. The production build below has to be green first. It is not, today.
+1. The production build below has to be green first. It was green at 18:23 (see the smoke).
 2. Link the Vercel project from this repo (`/Users/amar/Codes/ak/simlab`, not the parent `ak` repo). Framework: Next.js. Root directory: the repo root. No install override; leave Vercel on its own install. Do not run `npm ci` from this runbook.
 3. Set Node only if a dashboard value is fighting `engines`. `24.x` in `package.json` already wins.
 4. Set `NEXT_PUBLIC_SITE_URL` to the public https origin, then the sponsor keys you actually have (`META_API_KEY`, `SERPAPI_KEY`, and the rest of `.env.example`). Set them in the dashboard. Do not put them in git.
@@ -61,64 +61,45 @@ NEXT_DIST_DIR=.next-deploy npx next start -H 127.0.0.1 -p <free-port>
 
 `SIMLAB_BUILD_SKIP_TYPECHECK=1` skips typecheck only when `VERCEL` is unset (`next.config.ts`). A deploy build always typechecks. These runs did not set the skip.
 
-## Smoke, 2026-10-24 17:23 CDT
+## Smoke, 2026-10-24 18:24 CDT
 
-`next start` did not run. Both builds exited 1, so there is no server and no HTTP status. Node v24.8.0, Next.js 16.4.3, `NEXT_DIST_DIR=.next-deploy`. Content index: 7 boards, 4 robotics, 5 drones, unchanged. `.next-deploy` was deleted after. `tsconfig.json` had picked up `.next-deploy` include lines; a later edit (P1-health's `.next-health` lines) replaced them, and the file no longer mentions `.next-deploy`. Those lines were not committed.
+Rerun by the driver after the build went green. Node v24.8.0, Next.js 16.4.3, `NEXT_DIST_DIR=.next-deploy`, typecheck on. `.env.local` was loaded; its keys are still placeholders (D4). Content index: 7 boards, 4 robotics, 5 drones, unchanged. The server listened on `127.0.0.1:3417` and was stopped after the smoke. `.next-deploy` was deleted, and the two `.next-deploy` include lines the build added to `tsconfig.json` were reverted. Nothing from the build was committed.
 
 | When (CDT) | Command | Result |
 |---|---|---|
-| 17:21 | `env -u SIMLAB_BUILD_SKIP_TYPECHECK NEXT_DIST_DIR=.next-deploy npm run build` | Exit 1. Compiled in 3.1s. Typecheck failed. |
-| 17:23 | same command, after the stale route types were gone | Exit 1. Compiled in 2.5s. Typecheck finished in 4.3s. Prerender failed at 483/645 pages. |
+| 18:23 | `env -u SIMLAB_BUILD_SKIP_TYPECHECK NEXT_DIST_DIR=.next-deploy npm run build` | Exit 0 in 13 s. Compiled in 6.1s. TypeScript finished in 4.5s. 645 of 645 static pages. |
+| 18:24 | `NEXT_DIST_DIR=.next-deploy npx next start -H 127.0.0.1 -p 3417` | Ready in 65ms. No errors in the server log. |
 
-**17:21 typecheck.** `.next/types/validator.ts` still imported `src/app/[lang]/robotics/fixture-preview/page.js`. That page is deleted in the working tree (`git status` shows `D` on `src/app/[lang]/robotics/fixture-preview/page.tsx`). P1-health owns removing the route. The follow-on error was `__InvalidParamMatchingKeys` in the same generated file. The validator was regenerated before the retry and no longer names that page. This failure did not recur.
+The build still prints one warning and goes on past it: `src/i18n/figure-strings.ts` cannot resolve `src/i18n/figures/<locale>.json`. No phase-1 row owns figure strings (platform audit M4). Phase 3 adds `src/i18n/figures/`.
 
-**17:23 prerender.** This is the failure that stops a deploy.
-
-```
-Error occurred prerendering page "/en/boards/esp32-devkitc/touch"
-Error: SimLab i18n: no string "lessons.blink.pins.GPIO23.to" in en/boards.
-  src/i18n/translate.ts:67
-  src/components/boardlab/LessonInfo.tsx:118
-Export encountered an error on /[lang]/boards/[board]/[lesson]/page: /en/boards/esp32-devkitc/touch
-```
-
-The touch lesson's pin table points at the blink lesson's prose (`src/content/boards/esp32-devkitc.ts`, the `GPIO23` and `GND` rows). The string exists under `lessons.blink` in `src/i18n/content/en/boards/esp32-devkitc.json`. The lesson page passes `lessonText()`, which keeps only the open lesson's body (`src/app/[lang]/boards/_lib/load.ts`), and `src/components/boardlab/text.tsx` builds `tc` from that stripped tree with scope `en/boards`. The blink keys are gone, and a missing key throws. The same borrow shows up on the boot-button, fade and web-switch lessons in that file. No phase-1 row owns `esp32-devkitc`. P1-health's prerender row is `lessons.dimmer.*` on the esp32-s3 bench, a different page. P1-checks owns a lesson's own code disagreeing with its own text, not this cross-lesson pin label.
-
-Both builds also printed one warning, and the build continued past it: `src/i18n/figure-strings.ts` cannot resolve `src/i18n/figures/<locale>.json`. No phase-1 row owns figure strings (platform audit M4).
+The two failures from 17:21 and 17:23 are gone. The fixture-preview route was deleted in `28d8564` (P1-health). The DevKitC pin rows point at their own lesson's prose since `70d019d`.
 
 ### Demo-path routes
 
-Not requested. The server never started.
+`curl` against the local server at 18:24. Every 200 page has its own `<title>`, and none has a `NEXT_HTTP_ERROR_FALLBACK` (not-found) or `SimLab i18n` marker in its HTML. These are status codes only. No browser ran, so console errors and the figures at runtime were not checked here. Gate 1 does that.
 
 | Route | Demo step | HTTP |
 |---|---|---|
-| `/` | entry redirect | not requested |
-| `/en` | dashboard | not requested |
-| `/en/boards/uno-r3` | 1, open the board | not requested |
-| `/en/boards/uno-r3/blink` | 1, Blink | not requested |
-| `/es/boards/uno-r3` | 2, friend in Spanish | not requested |
-| `/en/drones/quad5` | 3, Build it for real | not requested |
-| `/en/drones/quad5/fly` | 4, Fly | not requested |
-| `/en/together` | 2 and 5, room and Build Night | not requested |
-| `/api/mcp` | 5, Muse connector | not requested |
-| `/figures/boards/uno-r3.html` | 1, the inked board | not requested |
+| `/` | entry redirect | 307 to `/en` |
+| `/en` | dashboard | 200 |
+| `/en/boards/uno-r3` | 1, open the board | 200 |
+| `/en/boards/uno-r3/blink` | 1, Blink | 200 |
+| `/es/boards/uno-r3` | 2, friend in Spanish | **404** |
+| `/en/drones/quad5` | 3, Build it for real | 200 |
+| `/en/drones/quad5/fly` | 4, Fly | 200 |
+| `/en/together` | 2 and 5, room and Build Night | 200 |
+| `/api/mcp` | 5, Muse connector | GET 405, by design (`{"error":{"code":"method_not_allowed"}}`, JSON-RPC goes over POST). POST `initialize` 200. POST `tools/list` 200 with 7 tools: `search_catalog`, `get_item`, `drone_calc`, `price_parts`, `plan_build_night`, `create_room`, `get_passport`. |
+| `/figures/boards/uno-r3.html` | 1, the inked board | 200 |
 
-### 404s this build did not measure
+**`/es/boards/uno-r3` is a 404.** Only `src/i18n/content/en/` exists, and `loadBoardPage` in `src/app/[lang]/boards/_lib/load.ts` returns null when the language's prose is missing, so the page calls `notFound()`. Every item page outside English 404s the same way. The fix is BUILD-PLAN §3.2 item 5 (English prose with a "not yet translated" notice), which no phase-1 row owned. Demo step 2 needs that fallback, or Spanish judge-path prose (phase 3).
 
-Read from the loaders, not from a response. `loadBoardPage` returns null when `src/i18n/content/<lang>/boards/<id>.json` is missing, and the page calls `notFound()`.
+The MCP `initialize` answer reports `websiteUrl` as `http://localhost:3000`, because `NEXT_PUBLIC_SITE_URL` is unset. That is expected locally. Set it before a public build.
 
-| Path | Why | Phase-1 row |
-|---|---|---|
-| `/en/boards/uno-r3` | `src/content/boards/uno-r3.ts` is in the registry. There is no `src/i18n/content/en/boards/uno-r3.json`, and no other language's file either. | P1-uno |
-| `/en/boards/uno-r3/blink` | Same missing prose. The lesson id `blink` is lesson 2 in `uno-r3.ts`. `generateStaticParams` still lists the pair, and the page 404s. | P1-uno |
-| `/es/boards/uno-r3` | The loader 404s when that language's prose is missing. An English fallback is BUILD-PLAN §3.2 item 5, and no phase-1 row owns it. Judge-path translation is phase 3. | none |
-| `/en/robotics/fixture-preview` | Not on the demo path. The page file is deleted in the working tree. P1-health owns that deletion. The old page also called `notFound()` when `NODE_ENV` was `production`. | P1-health |
-
-`src/i18n/content/en/drones/quad5.json` is present, so the quad5 loader is not missing English prose. That was not confirmed over HTTP.
+Also seen: the `/en` tab title is "Dashboard", with no "· SimLab". The `%s · SimLab` template lives in `src/app/[lang]/layout.tsx`, and Next applies a layout's `title.template` only to child segments, not to the page in the same segment (`node_modules/next/dist/docs/01-app/03-api-reference/04-functions/generate-metadata.md`). Every other page in the table gets the suffix.
 
 ## Not done
 
 - Vercel project is not linked.
 - No preview or production deploy.
 - No environment variables uploaded, including `NEXT_PUBLIC_SITE_URL` on a public host.
-- Local `next start` smoke did not run, because the production build exits 1 on `/en/boards/esp32-devkitc/touch`.
+- No browser pass over these routes (console errors, the figure bridge, the 390×844 viewport). That is gate 1.
