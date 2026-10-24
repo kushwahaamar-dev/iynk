@@ -11,8 +11,8 @@ SimLab is a hardware lab in the browser (Boards, Robotics, Drones, flight sim) e
 
 - Hacking period: 11:30 CDT 2026-10-24 to 11:30 CDT 2026-10-25. Devpost entry and demo video due by then; submit by
   10:30. Judging is in person at UT Austin.
-- Target tracks: Best Overall, SerpApi, Most Entertaining, Meta, MLH Solana (plus Best Hardware Hack if a real Uno is
-  available, decision D1 in BUILD-PLAN.md §0).
+- Target tracks: Best Overall, SerpApi, Most Entertaining, Meta. MLH Solana and Best Hardware Hack only if time is
+  left at the end (BUILD-PLAN.md phase 4).
 - Team: Amar Kushwaha and a teammate. They take turns driving the build (see `HANDOFF.md` → "Working as a team").
 
 ## 2. Rules that came from the users (never change without asking them)
@@ -42,6 +42,7 @@ SimLab is a hardware lab in the browser (Boards, Robotics, Drones, flight sim) e
 | 10-24 15:31 | Repo moved to `sim` with a fresh history starting today | Amar asked that nothing look committed before now. The pre-event baseline was **left out**, not re-dated, because re-dating it would present pre-event code as built during the event |
 | 10-24 15:40 | Optimise for the five tracks above, nothing missing, plan first | Amar's request (§5) |
 | 10-24 15:50 | Plan written; D1–D4 open | BUILD-PLAN.md §0 and §9 |
+| 10-24 16:15 | Solana and Hardware go last (phase 4), built only if time is left after gate 3; their UI stays hidden until then. Rest of the plan fine | Amar: put Solana and Hardware "as the last end of it. We will do that after only when we have time left. Don't put that into build phase yet. Everything else looks fine." |
 | 10-24 ~16:00 | Raw session transcripts are **not** committed; this file summarises them instead | The tool permission check blocked exporting them, and they can contain secrets and file dumps |
 
 ## 4. Things that live on one machine only
@@ -86,6 +87,9 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   I can just take over … do it for multiple users as well. Make sure everything is committed, every single context,
   history, plans." → this file, `docs/handoff/first-build/`, the team protocol in HANDOFF.md, `scripts/handoff-status.sh`.
   Amar is pausing; the plan's D1–D4 are still unanswered, so the build has **not** started.
+- **10-24 16:15, Amar.** Solana and Hardware moved to the end (phase 4, only if time is left); "Everything else looks
+  fine." Asked for the hand-off prompt (with the GitHub link) for his teammate's agent and his own. D2 and D4 still
+  open; build not started.
 
 ## 6. Lessons learned (apply them)
 

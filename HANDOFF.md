@@ -83,18 +83,21 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 16:05 CDT.
+- **Updated:** 2026-10-24 16:15 CDT.
 - **Driver:** none, free to take. (Amar paused at 16:05.)
 - **Phase:** 0 is done: the audit and the plan. Nothing is being built yet.
 - **Plan:** `docs/hacktx/BUILD-PLAN.md`, written from the six audits in `docs/audit/` (boards, robotics, drones,
-  platform, sponsor-layer, history). It covers Best Overall, SerpApi, Most Entertaining, Meta and Solana.
+  platform, sponsor-layer, history). Phases 1–3 build for Best Overall, SerpApi, Most Entertaining and Meta.
+  Solana and Best Hardware Hack are phase 4, only if time is left after gate 3 (Amar, 16:15). Don't start them
+  earlier.
 - **Checks at the last code commit:** typecheck 34 errors; eslint clean; vitest 15 failed of 1243; `next build`
   fails prerendering `/en/boards/esp32-s3-devkitc-1`.
-- **Waiting on a user:** approve the plan; decisions D1 (tracks: five rows pasted, "four" written; Hardware?),
-  D2 (prose translation tiers), D3 (Amar's OK to send 3 devnet SOL from his CLI wallet), D4 (keys and accounts).
-  BUILD-PLAN.md §0 and §9 explain each.
-- **Next step:** whoever drives next: take over, put D1–D4 to your user, record the answers in CONTEXT.md §3, then
-  on their go start BUILD-PLAN.md §5 phase 1 (seven agents, table in §5). Don't start the build without the go.
+- **Decided:** D1 (tracks, above). Amar: "Everything else looks fine."
+- **Still open:** D2 (prose translation tiers; the plan's default is English with a notice), D4 (keys and accounts,
+  BUILD-PLAN.md §9). D3 (devnet SOL) is asked only when phase 4 starts.
+- **Next step:** whoever drives next: take over, confirm D2 and collect D4 from your user, record the answers in
+  CONTEXT.md §3, then on their go ("autonomous mode") start BUILD-PLAN.md §5 phase 1 (seven agents, table in §5).
+  Don't start the build without the go.
 
 ### Claims (only when both people work at the same time)
 
@@ -103,6 +106,9 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 16:15 CDT (Amar): Solana and Hardware moved to BUILD-PLAN.md phase 4 (only if time is left); the rest
+  of the plan approved in principle. Driver still free.
 
 - 2026-10-24 16:05 CDT (Amar): team handoff set up: driver and claims protocol in this file,
   `docs/handoff/CONTEXT.md` (requests, decisions, lessons, conversation log), the first build's RESUME.md,

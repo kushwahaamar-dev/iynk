@@ -28,14 +28,14 @@ everything working, built in about six hours, with a 90% chance of winning.
 
 ### Things that need your decision before go (§9 has the full list)
 
-- **D1 Tracks.** You wrote "these four tracks" and pasted five rows. The plan covers all five; if you meant four,
-  Solana is the one to drop (it costs ~2 h). **Best Hardware Hack** (RTX 5080 each) wasn't in your list. The Uno
-  hardware twin is already built and only needs a rehearsal with a real Uno, so I'd enter it if you can get one.
+- **D1 Tracks (decided 16:15).** Phases 1–3 build for Best Overall, SerpApi, Most Entertaining and Meta. **Solana
+  and Best Hardware Hack come last, in phase 4, only if time is left after gate 3.** Until then their panels stay
+  hidden behind feature flags, so nothing half-done shows.
 - **D2 Prose translation.** Full lesson prose in 5 more languages is ~850k words. The plan translates all UI text,
   all figure text, and the prose of the judge path (Uno R3, quad5, the esp32-s3 bench), and shows English prose with
   a visible "not yet translated" notice elsewhere, instead of a 404. Everything else is translated overnight.
-- **D3 Devnet SOL.** Deploying the Solana program needs ~2.1 SOL; your CLI wallet `Cxt17a9c…bW1S` holds 4.998
-  devnet SOL. I need your OK to send 3 SOL from it to the deployer and issuer.
+- **D3 Devnet SOL (phase 4 only).** Deploying the Solana program needs ~2.1 SOL; your CLI wallet `Cxt17a9c…bW1S`
+  holds 4.998 devnet SOL. The OK to send 3 SOL from it to the deployer and issuer is asked only when phase 4 starts.
 - **D4 Keys and accounts:** META_API_KEY (US account), SERPAPI_KEY, Tiger Cloud DATABASE_URL, Vultr access, a .tech
   domain, Vercel env upload. Each is a "yes" from you; the list and the order are in §9.
 
@@ -49,8 +49,8 @@ Every track's story runs through **one product** and one 4-minute demo, so no tr
 | **SerpApi** | "SerpApi plays a meaningful role in what your project does" | **Build it for real** on every board, bench and drone: live prices from Google Shopping/Amazon/eBay drive a **budget optimiser that changes the design** (cells, motors, props) and the calculator re-runs; datasheet answers cite Google + Extract; makerspaces, shops and flying fields nearby (Maps); maker events; tutorial videos. | `RealBuildPanel` in the dock; partner tool `search_datasheet` |
 | **Most Entertaining** | "something we won't want to put down", "keep people coming back" | **Break it and watch it fail** (magic smoke, a drone that flips because the FC is backwards, slow-mo replay, "here's why", one click to fix); **race your friends' ghosts** live in a room and your own best lap; bronze/silver/gold par times; a **daily challenge** with a leaderboard; 10+ flyable crafts with missions; sound. | fly page, Break-it panels, leaderboard |
 | **Meta** | strengthens human connection; AI essential; originality; working demo; Muse Spark/Image/Voice/Muse connector | **SimLab Together**: live build rooms across languages (Muse Spark translates chat and voice); a lab partner that **sends you to a person first** ("Maya fixed this an hour ago, ask her") and credits helpers; Build Night planner that turns a group chat into a plan; Build Stories with a Muse Image cover; buddy matching by shared builds; Muse calling SimLab as a connector over MCP. | dock tabs Partner/Together, `/together`, `/api/mcp` |
-| **Solana** | "instant, high-frequency transactions", identity, payments | **Proof of Build**: the server **re-runs your deterministic lab run** before issuing a non-transferable credential PDA; sponsor bounties in escrow pay out in the same transaction; **micro-tips per helpful answer** in rooms (the high-frequency part); one-click devnet wallet; public `/verify`. Every lab kind is verifiable, not only drone safety. | dock tab Passport, `/passport`, `/verify` |
-| *(Hardware, if D1)* | "push beyond the screen" | Code run in the sim drives a real Uno over Web Serial + Firmata; the real board's button moves the figure. | dock tab Hardware |
+| **Solana** *(phase 4, if time is left)* | "instant, high-frequency transactions", identity, payments | **Proof of Build**: the server **re-runs your deterministic lab run** before issuing a non-transferable credential PDA; sponsor bounties in escrow pay out in the same transaction; **micro-tips per helpful answer** in rooms (the high-frequency part); one-click devnet wallet; public `/verify`. Every lab kind is verifiable, not only drone safety. | dock tab Passport, `/passport`, `/verify` |
+| *(Best Hardware Hack, phase 4, if time is left)* | "push beyond the screen" | Code run in the sim drives a real Uno over Web Serial + Firmata; the real board's button moves the figure. | dock tab Hardware |
 
 ### The demo path (rehearsed until it can't break)
 
@@ -61,9 +61,11 @@ Every track's story runs through **one product** and one 4-minute demo, so no tr
 3. Drone Lab → quad5 → Build it for real: "under $150" → the optimiser swaps the cells and motors, the calculator
    numbers change, the parts list prices are live. *(SerpApi)*
 4. Fly: the room races; the friend's ghost flies beside you; a crash replay. Leaderboard updates. *(Entertaining)*
-5. Pass the safety checks → Passport: the server re-runs the check, mints the credential, the bounty pays,
-   the friend tips 0.001 SOL for the help. Explorer link, `/verify`. *(Solana)*
-6. Build Story with the Muse Image cover; Muse (the agent) asks SimLab "what did we build tonight?" over MCP. *(Meta)*
+5. Build Story with the Muse Image cover; Muse (the agent) asks SimLab "what did we build tonight?" over MCP. *(Meta)*
+
+Added only if phase 4 lands: after step 4, pass the safety checks → Passport: the server re-runs the check, mints the
+credential, the bounty pays, the friend tips 0.001 SOL for the help, Explorer link, `/verify` *(Solana)*; and the
+sim's Blink code driving a real Uno on the table *(Hardware)*.
 
 ## 2. Where we are (from the audits)
 
@@ -181,12 +183,12 @@ Goal: a deployed URL where the whole demo path works, before any breadth.
 | P1-checks | §3.2 items 1–4 (one check path, world plumbing, worker, variants), AccelStepper OUTPUT | all 46 existing lessons pass through `runHeadless` |
 | P1-uno | uno-r3 en JSON (~1000 keys), circuit merge (R1→RES1, leg names, `@cf use`), assembly unplug step, the 3 no-effect failures, rebuild | `/en/boards/uno-r3` + all 16 lessons render and pass; probe green |
 | P1-engine | §3.2 item 6 (B2, B3, model hook, CF_NOTE, assembly, palette, embed pause/resume) | esp32-s3-build bench completes end to end; engine unit tests |
-| P1-dock | LabDock with 5 tabs + phone sheet, nav entries, RoomProvider on the 5 workspaces, namespaces registered | all tabs open on every lab page; e2e |
-| P1-voice-solana | WAV upload on both voice paths; features gated on Config; fix 7 hx tests; deploy the program (after D3); setup + smoke | live devnet credential minted from the app |
+| P1-dock | LabDock with Partner, Together and Real tabs + phone sheet (Passport and Hardware tabs exist but stay hidden by feature flag until phase 4), nav entries, RoomProvider on the 5 workspaces, namespaces registered | all tabs open on every lab page; e2e |
+| P1-voice | WAV upload on both voice paths; `features.solana` false until the program's Config account exists; add a `hw` flag to `src/lib/features.ts` (additive, off until phase 4); fix the 7 failing hx tests | a translated voice note works end to end; no Solana or Hardware UI visible |
 | P1-deploy | `.vercelignore`, Node 24 pin, NEXT_PUBLIC_SITE_URL, Vercel project link, preview deploy (env upload after D4) | preview URL serves the demo path |
 
 The relay goes up in parallel as soon as Vultr is approved (Docker + Caddy, `rooms.<domain>.tech`).
-**Gate 1** at 17:45: the demo path (§1) runs on the preview URL with live Meta, SerpApi and Solana.
+**Gate 1** at 17:45: the demo path (§1) runs on the preview URL with live Meta and SerpApi.
 
 ### Phase 2: every item functional (17:45–20:45)
 
@@ -203,9 +205,6 @@ Three waves on disjoint files; all reuse phase 1's shared code.
   `content.flight.params`, deleting the duplicate `crafts/<id>.ts`), a course + par times + mission per craft.
 - **Fun and social (2 agents):** ghosts (§3.2 item 8), Break-it slow-mo replay with "here's why" and one-click fix,
   daily challenge + leaderboard; sound module and settings toggle; telemetry calls; store sync/hydrate + baton.
-- **Solana depth (1 agent):** verifyRun for all 4 kinds; TipButton in rooms (micro-tips per helpful answer);
-  bounty demo seeded.
-
 **Gate 2** at 20:45: the machine checks in §6 pass for all 38 items in English.
 
 ### Phase 3: translation, polish, release (20:45–22:15)
@@ -219,6 +218,21 @@ Three waves on disjoint files; all reuse phase 1's shared code.
 - Production deploy (after D4's OK), production smoke on the real domain, phone run of the demo path.
 
 **Gate 3** at 22:15: production passes §6 on the live URL. **This is the "six hours" finish line.**
+
+### Phase 4: Solana and Hardware, only if time is left (after gate 3)
+
+Starts only when gate 3 is green, and must pass its own gate by 06:00 so the video isn't at risk; otherwise it's
+dropped and the flags stay off (the write-up then doesn't mention either track).
+
+- **Solana (1–2 agents, ~2 h):** ask the user for D3; fund the deployer and issuer; `npm run deploy:devnet`,
+  `npm run setup:devnet -- --smoke`; turn `features.solana` on once the Config account exists; `verifyRun` for
+  `board-lesson`, `bench-task`, `drone-safety`, `flight-lap` (§3.2 item 10); TipButton in rooms (micro-tips per
+  helpful answer); seed a bounty for the demo; Passport tab; passport e2e.
+- **Hardware (1 agent, ~1 h, needs an Uno + USB cable with StandardFirmata):** turn the `hw` flag on, show the
+  Hardware tab, rehearse Blink and a button on a real board, update `docs/hacktx/HARDWARE.md` §10.
+
+**Gate 4:** live devnet credential minted from production, `/verify` shows it, a tip lands; the Uno blinks from
+the sim. Then the write-up and video add the Solana and Hardware beats.
 
 ### Overnight (22:15 → 10:30 submission)
 
@@ -239,10 +253,10 @@ Every gate runs all of these; nothing is called done on a unit test alone.
 5. **Route crawl:** every route × 6 locales on a production build: HTTP 200, no error overlay, no missing-string
    markers, no console errors. Expected: 0 × 404.
 6. **e2e:** shell, boardlab, robotics, dronelab, plus new specs for the demo path, room with two browser contexts,
-   ghosts, passport, phone viewport (390×844) and dark mode; axe on one page per lab.
+   ghosts, phone viewport (390×844) and dark mode; axe on one page per lab (passport e2e in phase 4).
 7. **Live smokes** (with keys): `smoke-ai.mjs` (chat, translate, transcribe WAV, image), `smoke-search.mjs`
-   (offers, nearby, extract), `setup:devnet -- --smoke` (credential + bounty + tip), relay load test, Tiger
-   migrations and a leaderboard read, Muse calling `/api/mcp` on the public URL.
+   (offers, nearby, extract), relay load test, Tiger
+   migrations and a leaderboard read, Muse calling `/api/mcp` on the public URL; in phase 4, `setup:devnet -- --smoke` (credential + bounty + tip).
 8. **Fresh-eyes pass:** an agent with no context walks the demo path on production as a new user and files friction.
 
 ## 7. Files and ownership
@@ -259,7 +273,7 @@ allows (CLAUDE.md's 5–8 per agent).
 | Usage limit again mid-wave | Waves end at gates; HANDOFF.md updated after each agent; phase 1 lands a deployable demo first |
 | Meta key late or Muse params differ from docs | Gemini text fallback keeps the partner and translation working; voice/image say "needs Meta key" |
 | SerpApi free quota (~36 searches per cold drone kit) | 6 h cache, pre-warm the demo kits once, budget guard |
-| Devnet faucet / RPC throttling | deploy from your funded wallet (D3); a free Helius devnet RPC |
+| Devnet faucet / RPC throttling (phase 4) | deploy from your funded wallet (D3); a free Helius devnet RPC |
 | Vultr not approved | rooms fall back to BroadcastChannel (two tabs on one machine); the two-device demo needs the relay |
 | A new board or bench can't hit §4 by gate 2 | it still ships with its figure, prose and the lessons that pass; the gap goes in DECISIONS.md and the Q&A, never hidden |
 | Half-written content breaks the Vercel build | content freeze 1 h before each deploy; `npm run check` in the gate |
@@ -269,12 +283,12 @@ allows (CLAUDE.md's 5–8 per agent).
 
 | When | What | Why |
 |---|---|---|
-| Before go | Approve this plan; answer D1 (tracks) and D2 (translation) | scope |
-| Before go | OK to send 3 devnet SOL from `Cxt17a9c…bW1S` to the deployer and issuer (D3) | Solana deploy |
+| Before go | Approve this plan (D1 decided); answer D2 (translation) | scope |
 | By 17:00 | META_API_KEY (US developer account) and SERPAPI_KEY into `.env.local` (I never print them) | gate 1 live demo |
 | By 17:00 | Vultr: OK to create one small VM; a .tech domain | relay for the two-device demo |
 | By 17:30 | OK to link Vercel and upload env vars; Tiger Cloud DATABASE_URL | deploy, leaderboards |
-| Tonight | An Uno + USB cable with StandardFirmata (only if D1 adds Hardware) | hardware twin rehearsal |
+| Phase 4 only | OK to send 3 devnet SOL from `Cxt17a9c…bW1S` to the deployer and issuer (D3) | Solana deploy |
+| Phase 4 only | An Uno + USB cable with StandardFirmata | hardware twin rehearsal |
 | Tonight | Ask organisers: pre-event research notes OK? how many tracks per project? | eligibility |
 | 08:30–10:30 | Record the video (I write the shot list); click submit on Devpost | your account |
 
