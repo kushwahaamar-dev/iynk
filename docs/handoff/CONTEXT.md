@@ -101,6 +101,9 @@ Short entries: who, when, what was asked or decided, in the user's words where i
 - **10-24 16:23, Jagrati.** "autonomous mode" → phase 1 started with keys as placeholders. Machine set up (Node 24 via
   nvm, `npm ci`, Playwright chromium). Baseline re-measured: tsc 34 errors, eslint clean, vitest 11 failed of 1243.
   Seven agents launched from `scripts/workflows/phase1.md` (Agent tool in the shared tree, not a Workflow run).
+- **10-24 ~16:40, Jagrati.** The session was interrupted and all seven phase-1 agents stopped; P1-deploy had been
+  stopped by the user just before. Jagrati said "resume"; the stopped agents can't be resumed, so the agent asked
+  whether to relaunch fresh ones.
 
 ## 6. Lessons learned (apply them)
 

@@ -83,7 +83,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 16:23 CDT (machine clock).
+- **Updated:** 2026-10-24 16:44 CDT (machine clock).
 - **Driver:** Jagrati Kumari, Mac RVW-F0096FW3J2M, since 2026-10-24 16:09 CDT.
 - **Phase:** 1 running ("autonomous mode" at 16:23). Seven agents from `scripts/workflows/phase1.md`: P1-health,
   P1-checks, P1-uno, P1-engine, P1-dock, P1-voice, P1-deploy. State per label in the checkpoint log.
@@ -98,9 +98,9 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   `.env.local` on Jagrati's Mac is `.env.example` with empty values. Vultr, Vercel env upload and Tiger are not
   approved yet, so gate 1 runs without live Meta/SerpApi and rooms use the one-browser fallback until keys arrive.
   D3 (devnet SOL) is asked only when phase 4 starts.
-- **Next step:** wait for the seven phase-1 agents; any label not reported done in the checkpoint log is
-  relaunched with its section of `scripts/workflows/phase1.md`. Then run gate 1 (BUILD-PLAN §6; live keys and the
-  preview deploy wait for the user's OK).
+- **Next step:** relaunch the phase-1 agents (all seven were stopped, see the 16:44 checkpoint) with their sections of
+  `scripts/workflows/phase1.md`, telling each to first review and keep or redo its own uncommitted files. Then gate 1
+  (BUILD-PLAN §6; live keys and the preview deploy wait for the user's OK).
 
 ### Claims (only when both people work at the same time)
 
@@ -109,6 +109,13 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 16:44 CDT (Jagrati): all seven phase-1 agents were stopped (the session was interrupted at ~16:40)
+  and can't be resumed. Landed: P1-voice's `hw` flag (79ddcea). Uncommitted partial work left in the tree on
+  Jagrati's Mac, not reviewed yet: P1-health (de/es/fr/hi/zh boardlab, dronelab, together JSON; tsconfig.json;
+  fixture-preview page deleted), P1-engine (`src/content/robotics/esp32-s3-build.ts`), P1-voice
+  (`src/lib/server/solana/live.ts`), P1-deploy (`package.json`, `.nvmrc`, `.vercelignore`). Nothing from P1-checks,
+  P1-uno or P1-dock. Waiting for Jagrati to say whether to relaunch.
 
 - 2026-10-24 16:23 CDT (Jagrati): "autonomous mode". Phase 1 launched: P1-health, P1-checks, P1-uno, P1-engine,
   P1-dock, P1-voice, P1-deploy all running (brief: `scripts/workflows/phase1.md`).
