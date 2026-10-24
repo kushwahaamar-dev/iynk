@@ -156,6 +156,10 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   half-translated text can't slip through quietly. The Spanish Uno page overflowed a 390 px phone once it
   rendered. Fixed inside this step because demo step 2 is a friend on a phone in Spanish. `content:check` is red
   for uno-r4 and four drones (no English prose). That belongs to phase 2, so it is reported at gate 1, not fixed now.
+- **10-24 18:58, Amar (driver decision).** Gate 1 is red, so phase 2 does not start yet. The driver fixes the
+  e2e failures and the phone overflow first. `content:check` stays with phase 2. A crawl problem that a later phase
+  owns (figure strings, unbuilt bench figures) is counted as known, not failed, and listed in the report. The crawl
+  runs at 3 workers, because at 6 the app's per-IP rate limit answers 429.
 
 ## 6. Lessons learned (apply them)
 

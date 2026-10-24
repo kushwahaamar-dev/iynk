@@ -83,12 +83,12 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 18:48 CDT (machine clock).
+- **Updated:** 2026-10-24 18:58 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Fast-forwarded to
   `94d3caa`. Do not build in `/Users/amar/Codes/sim`.
-- **Phase:** 1. All seven labels from `scripts/workflows/phase1.md` are done and none is running. Gate 1 has not
-  run. Jagrati's session should not resume its own copies.
+- **Phase:** 1. All seven labels from `scripts/workflows/phase1.md` are done and none is running. Gate 1 ran
+  locally at 18:57 and is red (below). Jagrati's session should not resume its own copies.
 - **Plan:** `docs/hacktx/BUILD-PLAN.md`, written from the six audits in `docs/audit/` (boards, robotics, drones,
   platform, sponsor-layer, history). Phases 1–3 build for Best Overall, SerpApi, Most Entertaining and Meta.
   Solana and Best Hardware Hack are phase 4, only if time is left after gate 3 (Amar, 16:15). Don't start them
@@ -110,15 +110,17 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   `.env.local` on Jagrati's Mac is `.env.example` with empty values. Vultr, Vercel env upload and Tiger are not
   approved yet, so gate 1 runs without live Meta/SerpApi and rooms use the one-browser fallback until keys arrive.
   D3 (devnet SOL) is asked only when phase 4 starts.
-- **Next step:** gate 1, locally only (Amar, 18:31: no Vercel link, no preview, keys stay placeholders, no
-  Vultr). Run the local half of BUILD-PLAN §6 against one local production build (`NEXT_DIST_DIR=.next-gate1`)
-  and write the results to `docs/verify/gate1.md`: 1 static (typecheck, eslint, `npm run content:check`, build), 2
-  full vitest, 3 the app-path table in `docs/verify/` (rerun the content tests), 4 figure probe
-  (`figures/engine/probe.mjs`), 5 route crawl: every route × 6 locales, HTTP status, no `NEXT_HTTP_ERROR_FALLBACK`
-  on a 200, no console errors, no sideways scroll at 390 px (there is no crawl script yet; write one under
-  `scripts/`), 6 the e2e suite (`npx playwright test`, desktop and phone). Expected reds to report, not hide:
-  `content:check` (uno-r4 and four drones lack English prose) and their 404s. Then tell Amar what is red and what
-  phase 2 must own.
+- **Gate 1 (18:57, local, `docs/verify/gate1.md`): red.** Green: typecheck, eslint, build, vitest 1347/0, app-path
+  59/59, bench probe 17/17, cfshoot uno-r3 and quad5, every demo-path page in the crawl. Red: (1) e2e 53/57:
+  axe on the Uno workspace and lesson pages (`.bg-good-bg` contrast, a scroll box without focus, a stray list item),
+  quad5's KV warning rendered twice, robotics quiz test reading `bench.quizzes` of a bench without quizzes; (2) 99
+  pages scroll sideways at 390 px (Pico, NodeMCU, ESP32-S3, ESP32-DevKitC lessons, Nano fade in es, `/fr/together`);
+  (3) `content:check`: uno-r4, whoop, cinewhoop, longrange, wing have no English prose (phase 2).
+- **Next step:** fix gate-1 reds (1) and (2), one commit each, rerunning the failing e2e tests and
+  `scripts/crawl-routes.mjs` (3 workers) on a fresh `.next-gate1` build after each. Use
+  `superpowers:systematic-debugging`: read the error, find the root cause, then fix. (3) is phase 2's. Then rerun
+  gate 1 and, if only phase-2/3 items are left, plan the phase-2 wave (BUILD-PLAN §5). Before launching a wave of
+  agents, tell Amar how many and for how long (the 14:19 usage-limit stop).
 - **Agents:** P1-checks `1e6f87c4-b1ea-4a31-9425-b1de6de9a88f` done (`39cca43`, `c168147`). P1-health
   `d393e1cb-35bc-4db4-bc0b-37c02c1b8e14` done (`28d8564`). P1-voice `b337455f-1b6d-45d5-93d8-51efb828d421` done
   (`b1e5308`). P1-engine `1a0582c2-ec24-42ab-8b3c-e2ac162b8e48` done (`f104e10`, `a45ec96`, `03eaab0`, `9d49d45`,
@@ -140,6 +142,11 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 18:58 CDT (Amar): gate 1 ran locally on `.next-gate1` (`fcfb537`). Red on 4 e2e tests, 99 pages
+  with sideways scroll at 390 px, and `content:check`. Everything else is green, including the demo-path pages.
+  New `scripts/crawl-routes.mjs` (route crawl, BUILD-PLAN §6 item 5). Report: `docs/verify/gate1.md`, routes:
+  `docs/verify/gate1-routes.md`. Build dir deleted, `tsconfig.json` reverted. Next: fix reds (1) and (2).
 
 - 2026-10-24 18:48 CDT (Amar): BUILD-PLAN §3.2 item 5 done. `3defc3d` adds `getContentProse` (English prose when
   a language's file is missing) to the board, bench and craft loaders. `c08bc68` adds the translated
