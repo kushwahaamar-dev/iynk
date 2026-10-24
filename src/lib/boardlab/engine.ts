@@ -1,9 +1,22 @@
-// The Board Lab's one door into src/lib/interp (its createRun API). The run
-// loop, the headless check run and the tests use only `compile()` and the
-// Session it returns, so interpreter details stay in one place.
+// The Board Lab's live run on src/lib/interp (its createRun API). The run loop
+// uses only `compile()` and the Session it returns; the completion checks go
+// through src/lib/interp's own check path (startChecks), not through here.
 
-import type { InterpTarget, Language } from '@/content/schema';
-import { createRun, getProfile, resolvePin, type BoardId as InterpBoardId, type BoardProfile, type Language as InterpLanguage, type PinView, type Run } from '@/lib/interp';
+import type { InterpTarget, Language, WorldInput, WorldModel } from '@/content/schema';
+import {
+  INTERP_LANGUAGE,
+  WorldBinding,
+  createRun,
+  getProfile,
+  netResolver,
+  pinNet,
+  runOptionsFor,
+  type BoardId as InterpBoardId,
+  type BoardProfile,
+  type HttpExchange,
+  type PinView,
+  type Run,
+} from '@/lib/interp';
 
 /** Where and why code could not run. Lines are 1-based; 0 means "no line". */
 export interface RunError {
@@ -35,7 +48,13 @@ export interface CompileOptions {
   nets?: Record<number, string>;
   /** Verilog: top-level port -> board nets, bit 0 first (Lesson.code.ports). */
   ports?: Record<string, string[]>;
+  /** The lesson's world: its I²C devices, sonar, Wi-Fi networks and HTTP peers are set up before power-on. */
+  world?: WorldModel;
+  /** The board's I/O level, which is also a pot's or divider's supply. */
+  logicV?: number;
 }
+
+const NO_WORLD: WorldModel = { inputs: [], script: [] };
 
 export interface Session {
   /** Virtual time in milliseconds since the program started. */
@@ -54,10 +73,12 @@ export interface Session {
   takeSerial(): { t: number; text: string }[];
   /** Whatever is still buffered, newline or not. */
   flushSerial(): { t: number; text: string }[];
-  /** Drive an input pin from the world: a digital level, or null to let it float. */
+  /** Drive an input pin from the figure: a digital level, or null to let it float. */
   drive(net: string, level: 0 | 1 | null): void;
-  /** Put a voltage on an analog pin. */
-  applyVolts(net: string, volts: number | null): void;
+  /** Set a world input (button, pot, sonar distance, tilt, line position, phone request) to a value now. */
+  setInput(input: WorldInput, value: number): void;
+  /** HTTP exchanges the world's network inputs finished since the last call. */
+  takeHttp(): HttpExchange[];
   /** Text typed into the serial monitor, for Serial.read() / input(). */
   feedSerial(text: string): void;
   /** A cold solder joint on a pin: the connection drops out. */
@@ -67,38 +88,6 @@ export interface Session {
 }
 
 export type CompileResult = { ok: true; session: Session } | { ok: false; error: RunError };
-
-const INTERP_LANGUAGE: Record<Language, InterpLanguage> = {
-  'arduino-cpp': 'arduino',
-  micropython: 'python',
-  python: 'python',
-  verilog: 'verilog',
-};
-
-/**
- * Net names for pin numbers: first the board's pinout (passed in as `nets`),
- * then the interpreter's own aliases (A0, GP25...), then the board family's
- * plain naming (D13 on Arduino headers, GPIO2 on ESP boards).
- */
-export function pinNet(profile: BoardProfile, n: number, nets?: Record<number, string>): string {
-  const fromPinout = nets?.[n];
-  if (fromPinout) return fromPinout;
-  for (const [name, pin] of Object.entries(profile.aliases)) {
-    if (pin === n && /^(A\d+|GP\d+|P\d+|GPIO\d+|P[A-H]\d+)$/.test(name)) return name;
-  }
-  switch (profile.id) {
-    case 'uno-r3':
-    case 'nano':
-    case 'uno-r4':
-      return `D${n}`;
-    case 'pico':
-      return `GP${n}`;
-    case 'microbit-v2':
-      return `P${n}`;
-    default:
-      return `GPIO${n}`;
-  }
-}
 
 /** The baud rate Serial.begin() opens at, read from the code (MicroPython prints over USB: 0). */
 export function sketchBaud(language: Language, source: string): number {
@@ -112,11 +101,13 @@ class InterpSession implements Session {
   private readonly profile: BoardProfile;
   private readonly nets?: Record<number, string>;
   private readonly ports?: Record<string, string[]>;
-  private readonly netToPin = new Map<string, number>();
+  private readonly resolve: (net: string) => number | string | undefined;
+  private readonly binding: WorldBinding;
   private buffer = '';
   private bufferT = 0;
   private lines: { t: number; text: string }[] = [];
   private warnings: string[] = [];
+  private http: HttpExchange[] = [];
   readonly baud: number;
   error: RunError | null = null;
 
@@ -126,7 +117,12 @@ class InterpSession implements Session {
     this.nets = opts.nets;
     this.ports = opts.ports;
     this.baud = sketchBaud(opts.language, opts.source);
-    for (const [pin, net] of Object.entries(opts.nets ?? {})) this.netToPin.set(net, Number(pin));
+    this.resolve = netResolver(this.profile, { nets: opts.nets, ports: opts.ports });
+    this.binding = new WorldBinding(run, opts.world ?? NO_WORLD, {
+      logicV: opts.logicV ?? this.profile.logicV,
+      resolve: this.resolve,
+      onHttp: (x) => this.http.push(x),
+    });
     run.on('serial', (text) => this.onSerial(text));
     run.on('warn', (message) => this.warnings.push(message));
     run.on('error', (e) => {
@@ -199,30 +195,19 @@ class InterpSession implements Session {
     return this.takeSerial();
   }
 
-  /** A board net as the interpreter names it: a pin number, or an FPGA port bit like "sw[3]". */
-  private resolve(net: string): number | string | undefined {
-    if (this.ports) {
-      for (const [port, nets] of Object.entries(this.ports)) {
-        const bit = nets.indexOf(net);
-        if (bit >= 0) return nets.length === 1 ? port : `${port}[${bit}]`;
-      }
-    }
-    const known = this.netToPin.get(net);
-    if (known !== undefined) return known;
-    const alias = resolvePin(this.profile, net);
-    if (alias !== undefined) return alias;
-    const m = /^(?:D|GP|GPIO|P|IO)(\d+)$/.exec(net);
-    return m ? Number(m[1]) : undefined;
-  }
-
   drive(net: string, level: 0 | 1 | null): void {
     const pin = this.resolve(net);
     if (pin !== undefined) this.run.input(pin, level);
   }
 
-  applyVolts(net: string, volts: number | null): void {
-    const pin = this.resolve(net);
-    if (typeof pin === 'number') this.run.analog(pin, volts);
+  setInput(input: WorldInput, value: number): void {
+    this.binding.apply(input, value);
+  }
+
+  takeHttp(): HttpExchange[] {
+    const http = this.http;
+    this.http = [];
+    return http;
   }
 
   feedSerial(text: string): void {
@@ -258,9 +243,10 @@ export function compile(opts: CompileOptions): CompileResult {
   if (!language || !profile.languages.includes(language)) {
     return { ok: false, error: { kind: 'unsupported', line: 0, col: 0, message: `language:${opts.language}` } };
   }
+  const { devices, world } = runOptionsFor(opts.world ?? NO_WORLD);
   let run: Run;
   try {
-    run = createRun({ board: profile.id, variant: opts.variant ?? undefined, language, source: opts.source });
+    run = createRun({ board: profile.id, variant: opts.variant ?? undefined, language, source: opts.source, devices, world });
   } catch (e) {
     return { ok: false, error: { kind: 'compile', line: 0, col: 0, message: e instanceof Error ? e.message : String(e) } };
   }

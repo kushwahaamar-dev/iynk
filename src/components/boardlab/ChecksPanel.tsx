@@ -28,6 +28,9 @@ export function ChecksPanel({ store, checks, onCheck, done }: { store: BoardLabS
         </Button>
       </div>
       <p className="mt-1 text-sm text-muted">{t("checks.lede")}</p>
+      {result.status === "running" && (
+        <progress className="mt-3 h-2 w-full accent-[var(--color-mustard-m)]" max={1} value={result.progress ?? 0} aria-label={t("checks.running")} />
+      )}
       <ol className="mt-3 flex flex-col gap-2">
         {checks.map((c, i) => {
           const r = result.results[i];
@@ -52,7 +55,17 @@ export function ChecksPanel({ store, checks, onCheck, done }: { store: BoardLabS
         })}
       </ol>
       <p role="status" className={cx("mt-3 text-sm font-semibold", result.passed || done ? "text-good" : "text-muted")}>
-        {result.passed ? t("checks.allPass") : result.status === "done" ? t("checks.summary", { passed: passedCount, total: checks.length }) : result.status === "running" ? t("checks.running") : done ? t("lesson.completed") : t("checks.pending")}
+        {result.passed
+          ? t("checks.allPass")
+          : result.status === "done"
+            ? result.limit
+              ? t("checks.limit")
+              : t("checks.summary", { passed: passedCount, total: checks.length })
+            : result.status === "running"
+              ? t("checks.running")
+              : done
+                ? t("lesson.completed")
+                : t("checks.pending")}
       </p>
     </section>
   );

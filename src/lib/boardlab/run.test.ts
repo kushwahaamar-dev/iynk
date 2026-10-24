@@ -1,8 +1,7 @@
-import { describe, expect, it } from 'vitest';
-import type { Check, WorldModel } from '@/content/schema';
+import { describe, expect, it, vi } from 'vitest';
+import type { WorldModel } from '@/content/schema';
 import type { FigureHandle } from '@/components/figure/protocol';
-import { evaluateChecks } from './checks';
-import { LessonRunner, runHeadless, type Scheduler } from './run';
+import { LessonRunner, type Scheduler } from './run';
 import { createBoardLabStore, initialState } from './store';
 
 const BLINK = `void setup() {
@@ -74,60 +73,6 @@ function fakeFigure() {
   return { handle, sent };
 }
 
-describe('runHeadless', () => {
-  it('toggles D13 every 1000 ms of virtual time and prints its lines', () => {
-    const trace = runHeadless({ language: 'arduino-cpp', source: BLINK, board: 'uno-r3', world: NO_WORLD, runMs: 5000, logicV: 5 });
-    expect(trace.error).toBeNull();
-    const d13 = trace.pins.D13.filter((e) => e.mode === 'out');
-    const highs = d13.filter((e) => e.v === 1).map((e) => e.t);
-    const lows = d13.filter((e) => e.v === 0).map((e) => e.t);
-    expect(highs.slice(0, 3)).toEqual([0, 2000, 4000]);
-    expect(lows.slice(0, 2)).toEqual([1000, 3000]);
-    expect(trace.serial.map((l) => l.text).slice(0, 4)).toEqual(['Blink ready', 'on', 'off', 'on']);
-    expect(trace.serial[2].t).toBe(1000);
-  });
-
-  it('passes the Blink checks and fails them for a sketch that never toggles', () => {
-    const checks: Check[] = [
-      { kind: 'runs', minMs: 4000, label: 'checks.1' },
-      { kind: 'pin-toggles', pin: 'D13', periodMs: [900, 1100], minCycles: 2, label: 'checks.2' },
-      { kind: 'pin-level', pin: 'D13', level: 0, atMs: 1500, label: 'checks.3' },
-      { kind: 'serial', match: '^o(n|ff)$', regex: true, minCount: 4, label: 'checks.4' },
-      { kind: 'code', must: ['digitalWrite', 'delay('], mustNot: ['analogWrite'], label: 'checks.5' },
-    ];
-    const good = runHeadless({ language: 'arduino-cpp', source: BLINK, board: 'uno-r3', world: NO_WORLD, runMs: 5000, logicV: 5 });
-    expect(evaluateChecks(checks, good, { source: BLINK }).map((r) => r.ok)).toEqual([true, true, true, true, true]);
-
-    const stuck = BLINK.replace('digitalWrite(LED_BUILTIN, LOW);', '');
-    const bad = runHeadless({ language: 'arduino-cpp', source: stuck, board: 'uno-r3', world: NO_WORLD, runMs: 5000, logicV: 5 });
-    expect(evaluateChecks(checks, bad, { source: stuck })[1].ok).toBe(false);
-  });
-
-  it('reports a compile error with its line instead of running', () => {
-    const broken = BLINK.replace('pinMode(LED_BUILTIN, OUTPUT);', 'pinMode(LED_BUILTIN, OUTPUT)');
-    const trace = runHeadless({ language: 'arduino-cpp', source: broken, board: 'uno-r3', world: NO_WORLD, runMs: 1000, logicV: 5 });
-    expect(trace.error).not.toBeNull();
-    expect(trace.error!.line).toBeGreaterThan(0);
-    expect(trace.ms).toBe(0);
-  });
-
-  it('feeds a scripted button press into digitalRead', () => {
-    const source = `void setup() { pinMode(2, INPUT); pinMode(13, OUTPUT); }
-void loop() { digitalWrite(13, digitalRead(2)); }`;
-    const world: WorldModel = {
-      inputs: [{ id: 'btn', quantity: 'button', device: { kind: 'button', pull: 'external-down', bounceMs: 0 }, pins: ['D2'], part: 'SW1', min: 0, max: 1, step: 1, default: 0, gesture: 'press', label: 'world.btn' }],
-      script: [{ t: 500, input: 'btn', value: 1 }, { t: 900, input: 'btn', value: 0 }],
-    };
-    const trace = runHeadless({ language: 'arduino-cpp', source, board: 'uno-r3', world, runMs: 1200, logicV: 5 });
-    const check: Check = { kind: 'responds', after: { t: 500, input: 'btn', value: 1 }, pin: 'D13', withinMs: 20, mode: 'out', v: [1, 1], label: 'x' };
-    expect(evaluateChecks([check], trace, { source })[0].ok).toBe(true);
-    const at = (t: number) => [...trace.pins.D13].reverse().find((e) => e.t <= t)?.v;
-    expect(at(400)).toBe(0);
-    expect(at(600)).toBe(1);
-    expect(at(1100)).toBe(0);
-  });
-});
-
 describe('LessonRunner', () => {
   function setup(reduceMotion = false) {
     const store = createBoardLabStore(initialState({ board: 'uno-r3', lesson: 'blink', language: 'arduino-cpp', template: BLINK }));
@@ -137,7 +82,7 @@ describe('LessonRunner', () => {
     const runner = new LessonRunner({
       store,
       board: { id: 'uno-r3', name: 'Arduino Uno', logicV: 5 },
-      lesson: { inputs: [], world: NO_WORLD, runMs: 4500, checks: [{ kind: 'pin-toggles', pin: 'D13', periodMs: [900, 1100], minCycles: 2, label: 'c' }] },
+      lesson: { world: NO_WORLD, runMs: 4500, checks: [{ kind: 'pin-toggles', pin: 'D13', periodMs: [1900, 2100], minCycles: 1, label: 'c' }] },
       resetControls: ['RESET'],
       figure: () => figure.handle,
       reduceMotion: () => reduceMotion,
@@ -148,7 +93,7 @@ describe('LessonRunner', () => {
     return { store, sched, figure, detach, passed: () => passed };
   }
 
-  it('compiles, uploads, then drives the figure and the serial monitor', () => {
+  it('compiles, uploads, then drives the figure and the serial monitor', async () => {
     const { store, sched, figure, passed } = setup();
     store.dispatch({ type: 'run/start' });
     expect(store.getState().run.status).toBe('compiling');
@@ -157,9 +102,10 @@ describe('LessonRunner', () => {
     sched.advance(620);
     expect(store.getState().run.status).toBe('running');
     expect(store.getState().serial.lines.filter((l) => l.kind === 'sys').map((l) => l.text)).toEqual(['upload.compiling', 'upload.uploading', 'upload.done']);
-    // The check run happens right after the upload.
+    // The check run starts right after the upload and reports when its run is done.
     sched.advance(20);
-    expect(store.getState().checks.passed).toBe(true);
+    await vi.waitFor(() => expect(store.getState().checks.passed).toBe(true));
+    expect(store.getState().checks.progress).toBe(1);
     expect(passed()).toBe(1);
 
     sched.advance(500);

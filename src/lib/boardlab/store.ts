@@ -62,7 +62,8 @@ export interface BoardLabState {
   fault: string | null;
   /** The figure's last `state` report. */
   figure: Record<string, unknown>;
-  checks: { status: 'idle' | 'running' | 'done'; results: CheckResult[]; passed: boolean };
+  /** `progress` is the share of the run's virtual time done (0..1); `limit` = the run hit its 20 s budget. */
+  checks: { status: 'idle' | 'running' | 'done'; results: CheckResult[]; passed: boolean; progress?: number; limit?: boolean };
   /** Assembly steps done, in order (a step stays done once its condition held). */
   assembly: string[];
 }
@@ -82,6 +83,8 @@ export type BoardLabAction =
   | { type: 'serial/baud'; baud: number }
   | { type: 'serial/sketch-baud'; baud: number }
   | { type: 'input/set'; id: string; value: number }
+  /** A phone on the Wi-Fi sends the network input's requests[value] now. */
+  | { type: 'input/request'; id: string; value: number }
   | { type: 'view/set'; view: BoardView }
   | { type: 'exploded/set'; on: boolean }
   | { type: 'part/select'; id: string | null }
@@ -91,14 +94,15 @@ export type BoardLabAction =
   | { type: 'variant/set'; id: string }
   | { type: 'figure/state'; state: Record<string, unknown> }
   | { type: 'checks/start' }
-  | { type: 'checks/result'; results: CheckResult[] }
+  | { type: 'checks/progress'; fraction: number }
+  | { type: 'checks/result'; results: CheckResult[]; limit?: boolean }
   | { type: 'assembly/done'; id: string }
   | { type: 'assembly/reset' };
 
 /** Actions that change what everyone in a room sees (the rest are local or derived by each client). */
 export const SHARED_ACTIONS: readonly BoardLabAction['type'][] = [
   'code/replace', 'code/reset', 'param/set', 'run/start', 'run/stop', 'serial/send', 'serial/clear', 'serial/baud',
-  'input/set', 'view/set', 'exploded/set', 'part/select', 'power/set', 'fault/trigger', 'fault/clear', 'variant/set',
+  'input/set', 'input/request', 'view/set', 'exploded/set', 'part/select', 'power/set', 'fault/trigger', 'fault/clear', 'variant/set',
   'assembly/reset',
 ];
 
@@ -144,7 +148,7 @@ export function initialState(o: InitOptions): BoardLabState {
     power: o.power === undefined ? 'usb' : o.power,
     fault: null,
     figure: {},
-    checks: { status: 'idle', results: [], passed: false },
+    checks: { status: 'idle', results: [], passed: false, progress: 0, limit: false },
     assembly: [],
   };
 }
@@ -195,7 +199,7 @@ export function reducer(s: BoardLabState, a: BoardLabAction): BoardLabState {
         run: { status: 'compiling', id: s.run.id + 1, error: null, vt: 0 },
         serial: { ...s.serial, lines: [], sketchBaud: 0 },
         pins: {},
-        checks: { status: 'idle', results: [], passed: false },
+        checks: { status: 'idle', results: [], passed: false, progress: 0, limit: false },
       };
     }
     case 'run/stop': {
@@ -228,6 +232,9 @@ export function reducer(s: BoardLabState, a: BoardLabAction): BoardLabState {
       return a.baud === s.serial.sketchBaud ? s : { ...s, serial: { ...s.serial, sketchBaud: a.baud } };
     case 'input/set':
       return s.inputs[a.id] === a.value ? s : { ...s, inputs: { ...s.inputs, [a.id]: a.value } };
+    case 'input/request':
+      // Every press is a new request, even the same one twice.
+      return { ...s, inputs: { ...s.inputs, [a.id]: a.value } };
     case 'view/set':
       return a.view === s.view ? s : { ...s, view: a.view };
     case 'exploded/set':
@@ -247,9 +254,13 @@ export function reducer(s: BoardLabState, a: BoardLabAction): BoardLabState {
       return { ...s, figure: a.state, selected };
     }
     case 'checks/start':
-      return { ...s, checks: { status: 'running', results: [], passed: false } };
+      return { ...s, checks: { status: 'running', results: [], passed: false, progress: 0, limit: false } };
+    case 'checks/progress': {
+      const progress = Math.min(1, Math.max(0, Math.round(a.fraction * 100) / 100));
+      return s.checks.status !== 'running' || progress === s.checks.progress ? s : { ...s, checks: { ...s.checks, progress } };
+    }
     case 'checks/result':
-      return { ...s, checks: { status: 'done', results: a.results, passed: a.results.length > 0 && a.results.every((r) => r.ok) } };
+      return { ...s, checks: { status: 'done', results: a.results, passed: a.results.length > 0 && a.results.every((r) => r.ok), progress: 1, limit: !!a.limit } };
     case 'assembly/done':
       return s.assembly.includes(a.id) ? s : { ...s, assembly: [...s.assembly, a.id] };
     case 'assembly/reset':

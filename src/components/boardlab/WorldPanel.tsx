@@ -1,9 +1,11 @@
 "use client";
 
 import { useId, type KeyboardEvent } from "react";
+import { Button } from "@/components/ui/Button";
 import { cx } from "@/components/ui/cx";
 import { Toggle } from "@/components/ui/Toggle";
 import type { WorldInput } from "@/content/schema";
+import { controlFor } from "@/lib/boardlab/inputs";
 import type { BoardLabStore } from "@/lib/boardlab/store";
 import { useText } from "./text";
 import { useLab } from "./useLab";
@@ -68,12 +70,29 @@ function Slider({ input, store }: { input: WorldInput; store: BoardLabStore }) {
   );
 }
 
-/** The world around the board: buttons to hold, switches to flip, sensors to slide. */
+function Requests({ input, requests, store }: { input: WorldInput; requests: { value: number; label: string }[]; store: BoardLabStore }) {
+  const { tc } = useText();
+  return (
+    <fieldset className="flex flex-col gap-1">
+      <legend className="text-sm font-semibold">{tc(input.label)}</legend>
+      <div className="flex flex-wrap gap-2">
+        {requests.map((r) => (
+          <Button key={r.value} size="sm" variant="secondary" className="font-mono" onClick={() => store.dispatch({ type: "input/request", id: input.id, value: r.value })}>
+            {r.label}
+          </Button>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+/** The world around the board: buttons to hold, switches to flip, sensors to slide, a phone to send requests. */
 export function WorldPanel({ store, inputs }: { store: BoardLabStore; inputs: WorldInput[] }) {
   const { t, tc } = useText();
   const id = useId();
   const values = useLab(store, (s) => s.inputs);
-  if (inputs.length === 0) return null;
+  const controls = inputs.map((input) => ({ input, control: controlFor(input) })).filter((c) => c.control.kind !== "none");
+  if (controls.length === 0) return null;
   return (
     <section aria-labelledby={`${id}-title`} className="ink-card p-3 sm:p-4" data-testid="world-panel">
       <h3 id={`${id}-title`} className="text-lg">
@@ -81,11 +100,13 @@ export function WorldPanel({ store, inputs }: { store: BoardLabStore; inputs: Wo
       </h3>
       <p className="mt-1 text-sm text-muted">{t("world.lede")}</p>
       <ul className="mt-3 flex flex-col gap-3">
-        {inputs.map((input) => (
+        {controls.map(({ input, control }) => (
           <li key={input.id}>
-            {input.quantity === "button" || input.gesture === "press" ? (
+            {control.kind === "hold" ? (
               <HoldButton input={input} store={store} />
-            ) : input.quantity === "switch" ? (
+            ) : control.kind === "requests" ? (
+              <Requests input={input} requests={control.requests} store={store} />
+            ) : control.kind === "switch" ? (
               <Toggle
                 checked={(values[input.id] ?? input.default) >= 0.5}
                 onChange={(on) => store.dispatch({ type: "input/set", id: input.id, value: on ? input.max : input.min })}

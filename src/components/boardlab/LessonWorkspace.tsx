@@ -9,7 +9,9 @@ import type { FigureEvent, FigureHandle } from "@/components/figure/protocol";
 import { ButtonLink } from "@/components/ui/Button";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/icons";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import type { Locale } from "@/i18n/config";
+import { controlFor } from "@/lib/boardlab/inputs";
 import { LessonRunner } from "@/lib/boardlab/run";
 import { createBoardLabStore, figureState, initialState, type BoardLabState, type BoardLabStore } from "@/lib/boardlab/store";
 import { markDone, progressKey, useDone } from "@/lib/progress";
@@ -60,12 +62,17 @@ function Workspace({ lang, model }: { lang: Locale; model: LessonModel }) {
   const doneKey = progressKey.boardLesson(board.id, lesson.id);
   const done = useDone(doneKey);
 
+  // A lesson that needs a variant (Pico W, Uno R4 WiFi) offers only those; otherwise every variant.
+  const variants = useMemo(
+    () => (lesson.variants.length ? board.variants.filter((v) => lesson.variants.includes(v.id)) : board.variants),
+    [board.variants, lesson.variants],
+  );
   const [store] = useState<BoardLabStore>(() =>
     createBoardLabStore(
       initialState({
         board: board.id,
         lesson: lesson.id,
-        variant: board.variants[0]?.figureVariant ?? null,
+        variant: variants[0]?.figureVariant ?? null,
         language: lesson.language,
         template,
         params: lesson.params,
@@ -115,20 +122,23 @@ function Workspace({ lang, model }: { lang: Locale; model: LessonModel }) {
   }, [store, board.id, lesson.id]);
 
   // The run loop: interpreter -> figure pins and serial monitor; figure events -> interpreter inputs.
+  const runnerRef = useRef<LessonRunner | null>(null);
   useEffect(() => {
     const runner = new LessonRunner({
       store,
       board: { id: board.id, name: board.name, logicV: board.logicV, nets: board.nets },
-      lesson: { inputs: lesson.world.inputs, world: lesson.world, runMs: lesson.runMs, checks: lesson.checks, ports: lesson.code.ports },
+      lesson: { world: lesson.world, runMs: lesson.runMs, checks: lesson.checks, ports: lesson.code.ports },
       failures: board.failures,
       resetControls: board.resetControls,
       figure: getFigure,
       reduceMotion: () => reduceRef.current || prefersReducedMotion(),
       onPassed: () => markDone(doneKey),
     });
+    runnerRef.current = runner;
     const detach = runner.attach();
     return () => {
       detach();
+      runnerRef.current = null;
       if (store.getState().run.status !== "stopped") store.dispatch({ type: "run/stop" });
     };
   }, [store, board, lesson, doneKey, getFigure]);
@@ -165,7 +175,7 @@ function Workspace({ lang, model }: { lang: Locale; model: LessonModel }) {
       } else if (e.type === "state") {
         store.dispatch({ type: "figure/state", state: e.state });
       } else if (e.type === "part" && e.act === "part" && e.id) {
-        const input = lesson.world.inputs.find((i) => i.part === e.id && (i.gesture === "press" || i.gesture === "tap"));
+        const input = lesson.world.inputs.find((i) => i.part === e.id && controlFor(i).kind === "hold");
         if (input) {
           store.dispatch({ type: "input/set", id: input.id, value: input.max });
           window.setTimeout(() => store.dispatch({ type: "input/set", id: input.id, value: input.min }), 250);
@@ -191,19 +201,8 @@ function Workspace({ lang, model }: { lang: Locale; model: LessonModel }) {
     [store, chipParts],
   );
 
-  const runChecks = useCallback(() => {
-    // Re-run the deterministic check run on the current code without a new upload.
-    const runner = new LessonRunner({
-      store,
-      board: { id: board.id, name: board.name, logicV: board.logicV, nets: board.nets },
-      lesson: { inputs: lesson.world.inputs, world: lesson.world, runMs: lesson.runMs, checks: lesson.checks, ports: lesson.code.ports },
-      resetControls: board.resetControls,
-      figure: getFigure,
-      reduceMotion: () => true,
-      onPassed: () => markDone(doneKey),
-    });
-    runner.checkSource(store.getState().code);
-  }, [store, board, lesson, doneKey, getFigure]);
+  // Re-run the deterministic check run on the current code without a new upload.
+  const runChecks = useCallback(() => void runnerRef.current?.checkSource(store.getState().code), [store]);
 
   const views = lesson.circuit ? VIEWS : VIEWS.filter((v) => v !== "breadboard" && v !== "schematic");
 
@@ -295,6 +294,15 @@ function Workspace({ lang, model }: { lang: Locale; model: LessonModel }) {
       </header>
 
       <LessonStrip lang={lang} board={board.id} lessons={lessons} current={lesson.id} />
+
+      {variants.length > 1 && (
+        <SegmentedControl
+          label={t("board.variant")}
+          value={variant ?? variants[0].figureVariant}
+          onChange={(v) => store.dispatch({ type: "variant/set", id: v })}
+          options={variants.map((v) => ({ value: v.figureVariant, label: v.name }))}
+        />
+      )}
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
         <div className="flex min-w-0 flex-col gap-4">

@@ -318,7 +318,8 @@
     "fail": "Todavía no",
     "allPass": "Todas las comprobaciones superadas. Lección hecha.",
     "again": "Comprobar otra vez",
-    "summary": "{passed} de {total} comprobaciones superadas"
+    "summary": "{passed} de {total} comprobaciones superadas",
+    "limit": "La comprobación tardó más de 20 segundos y se detuvo. Busca un bucle que nunca espera."
   },
   "view": {
     "label": "Vista de la figura",

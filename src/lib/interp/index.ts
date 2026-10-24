@@ -21,3 +21,5 @@ export { runHeadless, INTERP_LANGUAGE, LIMIT_MESSAGE, type HeadlessOptions } fro
 export { evaluateChecks, evaluateCheck, servoDegrees, sampleAt, risingEdges, stateMatches, codeOnly, type CheckResult, type CheckContext } from './checks';
 export { pinNet, netResolver, pinoutNets } from './pins';
 export { WorldBinding, drivesFor, runOptionsFor, qtrDarkness, type PinDrive, type HttpExchange, type WorldBindingOptions } from './lesson-world';
+export { runChecks, lessonJob, taskJob, lessonVariant, boardNets, CHECK_BUDGET_MS, type CheckJob, type CheckOutcome, type CheckRunOptions } from './check-job';
+export { startChecks, type CheckHandle } from './check-client';

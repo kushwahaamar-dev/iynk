@@ -1,14 +1,14 @@
 // The lesson run loop. Run: compile (600 ms) → upload (600 ms) → running on a
 // virtual clock that advances with real time; pin levels go to the figure as
 // `set {pins}` at most 30 times a second and serial lines go to the monitor.
-// The completion checks re-run the same source headless on the lesson's world
-// script, so they are a pure function of (source, board, script, runMs).
+// The completion checks re-run the same source on the lesson's world script
+// through src/lib/interp's one check path, in a Web Worker, so they are a pure
+// function of (source, board, variant, script, runMs) and never freeze the tab.
 
 import type { FigureHandle } from '@/components/figure/protocol';
-import type { Check, FailureMode, PinMode, RunTrace, WorldInput, WorldModel } from '@/content/schema';
-import { evaluateChecks, servoDegrees } from './checks';
-import { compile, type CompileOptions, type PinSample, type RunError, type Session } from './engine';
-import { drivesFor } from './inputs';
+import type { Check, FailureMode, WorldModel } from '@/content/schema';
+import { LIMIT_MESSAGE, startChecks, type CheckHandle } from '@/lib/interp';
+import { compile, type PinSample, type RunError, type Session } from './engine';
 import type { BoardLabAction, BoardLabState, BoardLabStore, SerialLine } from './store';
 
 export const COMPILE_MS = 600;
@@ -18,83 +18,6 @@ export const FAST_MS = 30;
 const FRAME_CAP_MS = 64;
 const FIGURE_HZ = 30;
 const UI_TICK_MS = 66;
-
-export function traceMode(s: PinSample): PinMode {
-  if (s.hz) return 'tone';
-  if (s.servoUs) return 'servo';
-  if (s.pwm) return 'pwm';
-  if (s.mode === 'output' || s.mode === 'open_drain') return 'out';
-  if (s.volts !== undefined && s.volts !== null) return 'analog';
-  return s.mode === 'input_pullup' ? 'pullup' : 'in';
-}
-
-export function traceValue(s: PinSample, mode: PinMode): number {
-  switch (mode) {
-    case 'tone':
-      return s.hz ?? 0;
-    case 'servo':
-      return servoDegrees(s.servoUs ?? 0);
-    case 'analog':
-      return s.volts ?? 0;
-    default:
-      return s.value;
-  }
-}
-
-function applyDrives(session: Session, input: WorldInput, value: number, logicV: number): void {
-  for (const d of drivesFor(input, value, logicV)) {
-    if ('volts' in d) session.applyVolts(d.net, d.volts);
-    else session.drive(d.net, d.level);
-  }
-}
-
-export interface HeadlessOptions extends CompileOptions {
-  world: WorldModel;
-  runMs: number;
-  logicV: number;
-}
-
-/** The deterministic run the checks read (D14c). Samples every pin each virtual millisecond. */
-export function runHeadless(o: HeadlessOptions): RunTrace {
-  const trace: RunTrace = { ms: 0, error: null, serial: [], pins: {}, figure: [], inputs: [] };
-  const c = compile(o);
-  if (!c.ok) {
-    trace.error = { line: c.error.line, message: c.error.message };
-    return trace;
-  }
-  const s = c.session;
-  const byId = new Map(o.world.inputs.map((i) => [i.id, i]));
-  for (const input of o.world.inputs) applyDrives(s, input, input.default, o.logicV);
-  const events = [...o.world.script].sort((a, b) => a.t - b.t);
-  const last = new Map<string, string>();
-  let next = 0;
-  // Each step runs the millisecond [t, t + 1) and stamps what changed in it with t.
-  for (let t = 0; t < o.runMs; t++) {
-    while (next < events.length && events[next].t <= t) {
-      const e = events[next++];
-      const input = byId.get(e.input);
-      if (input) applyDrives(s, input, e.value, o.logicV);
-      trace.inputs.push(e);
-    }
-    s.advanceTo(t + 1);
-    for (const line of s.takeSerial()) trace.serial.push({ t: Math.floor(line.t), text: line.text });
-    for (const [net, sample] of Object.entries(s.pins())) {
-      const mode = traceMode(sample);
-      const v = traceValue(sample, mode);
-      const key = `${mode}:${v}`;
-      if (last.get(net) === key) continue;
-      last.set(net, key);
-      (trace.pins[net] ??= []).push({ t, v, mode });
-    }
-    trace.ms = t + 1;
-    if (s.error) {
-      trace.error = { line: s.error.line, message: s.error.message };
-      break;
-    }
-  }
-  for (const line of s.flushSerial()) trace.serial.push({ t: Math.floor(line.t), text: line.text });
-  return trace;
-}
 
 /** Timers the runner uses; tests pass a fake clock. */
 export interface Scheduler {
@@ -117,7 +40,7 @@ export interface RunnerEnv {
   store: BoardLabStore;
   /** Board facts for compiling and for the upload message. */
   board: { id: string; name: string; logicV: number; nets?: Record<number, string> };
-  lesson: { inputs: WorldInput[]; world: WorldModel; runMs: number; checks: Check[]; ports?: Record<string, string[]> };
+  lesson: { world: WorldModel; runMs: number; checks: Check[]; ports?: Record<string, string[]> };
   /** The board's failure modes; cold joints on a pin also reach the interpreter. */
   failures?: FailureMode[];
   /** Control ids that hold the MCU in reset while pressed (the figure's RESET buttons). */
@@ -155,6 +78,7 @@ export class LessonRunner {
   private lastControls = '';
   /** The source that was uploaded; RESET reruns it even if the editor changed since. */
   private source = '';
+  private checking: CheckHandle | null = null;
 
   constructor(env: RunnerEnv) {
     this.env = env;
@@ -167,6 +91,8 @@ export class LessonRunner {
     return () => {
       off();
       this.halt();
+      this.checking?.cancel();
+      this.checking = null;
     };
   }
 
@@ -191,9 +117,10 @@ export class LessonRunner {
         this.end(true);
         break;
       case 'input/set':
+      case 'input/request':
         if (this.session) {
-          const input = this.env.lesson.inputs.find((i) => i.id === action.id);
-          if (input) applyDrives(this.session, input, action.value, this.env.board.logicV);
+          const input = this.env.lesson.world.inputs.find((i) => i.id === action.id);
+          if (input) this.session.setInput(input, action.value);
         }
         break;
       case 'serial/send':
@@ -202,6 +129,10 @@ export class LessonRunner {
       case 'param/set':
         // A chip changed while running: load the new code at once, without the upload wait.
         if (state.run.status === 'running') this.restart(true);
+        break;
+      case 'variant/set':
+        // Another board variant is another chip: start the same program on it.
+        if (state.run.status === 'running') this.restart(false, true);
         break;
       case 'figure/state':
         this.onFigure(action.state);
@@ -236,7 +167,8 @@ export class LessonRunner {
 
   private compileNow(source: string): Session | null {
     const s = this.state;
-    const result = compile({ language: s.language, source, board: this.env.board.id, variant: s.variant, nets: this.env.board.nets, ports: this.env.lesson.ports });
+    const { world, ports } = this.env.lesson;
+    const result = compile({ language: s.language, source, board: this.env.board.id, variant: s.variant, nets: this.env.board.nets, ports, world, logicV: this.env.board.logicV });
     if (!result.ok) {
       this.dispatch({ type: 'run/error', id: this.runId, error: result.error });
       if (result.error.kind === 'unsupported') this.sys('error.unsupported', undefined, 'err');
@@ -244,8 +176,9 @@ export class LessonRunner {
       if (result.error.hint) this.sys(result.error.hint, undefined, 'note');
       return null;
     }
-    for (const input of this.env.lesson.inputs) applyDrives(result.session, input, this.state.inputs[input.id] ?? input.default, this.env.board.logicV);
     const session = result.session;
+    // Network inputs are one-shot requests: only a press sends one.
+    for (const input of world.inputs) if (input.device.kind !== 'network') session.setInput(input, this.state.inputs[input.id] ?? input.default);
     for (const f of this.env.failures ?? []) if (f.trigger.by === 'cold-joint' && f.trigger.pin && f.id === s.fault) session.coldJoint(f.trigger.pin, true);
     return session;
   }
@@ -310,6 +243,8 @@ export class LessonRunner {
     }
     const warnings = session.takeWarnings();
     if (warnings.length) this.dispatch({ type: 'serial/append', lines: warnings.map((w) => ({ kind: 'note' as const, text: w, t: Math.round(session.nowMs) })) });
+    const http = session.takeHttp();
+    if (http.length) this.dispatch({ type: 'serial/append', lines: http.map((x) => ({ kind: 'note' as const, text: `${x.method} ${x.path} → ${x.status}`, t: Math.round(x.t) })) });
     if (session.baud !== this.state.serial.sketchBaud) this.dispatch({ type: 'serial/sketch-baud', baud: session.baud });
     const pins = this.held ? {} : session.pins();
     if (now - this.lastFigure >= 1000 / FIGURE_HZ) {
@@ -373,8 +308,8 @@ export class LessonRunner {
     if (this.held && runs && !inReset) this.restart(false);
   }
 
-  /** Start the same program again at t = 0 (RESET released, power back, or a chip changed). */
-  private restart(newCode: boolean): void {
+  /** Start the same program again at t = 0 (RESET released, power back, a chip or the variant changed). */
+  private restart(newCode: boolean, recheck = newCode): void {
     if (newCode) this.source = this.state.code;
     const session = this.compileNow(this.source);
     if (!session) {
@@ -386,24 +321,37 @@ export class LessonRunner {
     this.held = false;
     this.sys('upload.reset');
     this.dispatch({ type: 'serial/sketch-baud', baud: 0 });
-    if (newCode) this.later(() => this.check(this.runId), 0);
+    if (recheck) this.later(() => this.check(this.runId), 0);
   }
 
   /** The deterministic check run for the uploaded program. */
   check(id: number): void {
-    if (id === this.runId) this.checkSource(this.source);
+    if (id === this.runId) void this.checkSource(this.source);
   }
 
-  /** Check any source on the lesson's world script; marks the lesson done when every check passes. */
-  checkSource(source: string): void {
-    const { checks, world, runMs } = this.env.lesson;
-    if (!checks.length) return;
+  /**
+   * Check any source on the lesson's world script, in a worker; marks the lesson done when every
+   * check passes. A newer check run replaces one still going. Resolves when the verdicts are in.
+   */
+  checkSource(source: string): Promise<void> {
+    const { checks, world, runMs, ports } = this.env.lesson;
+    if (!checks.length) return Promise.resolve();
+    this.checking?.cancel();
     this.dispatch({ type: 'checks/start' });
     const s = this.state;
-    const trace = runHeadless({ language: s.language, source, board: this.env.board.id, variant: s.variant, nets: this.env.board.nets, ports: this.env.lesson.ports, world, runMs, logicV: this.env.board.logicV });
-    const results = evaluateChecks(checks, trace, { source, figure: s.figure });
-    this.dispatch({ type: 'checks/result', results });
-    if (results.every((r) => r.ok)) this.env.onPassed?.();
+    const { id, logicV, nets } = this.env.board;
+    const handle = startChecks(
+      { board: id, variant: s.variant, language: s.language, source, world, runMs, logicV, nets, ports, checks, figure: s.figure },
+      (fraction) => this.checking === handle && this.dispatch({ type: 'checks/progress', fraction }),
+    );
+    this.checking = handle;
+    return handle.result.then(({ trace, results }) => {
+      if (this.checking !== handle) return;
+      this.checking = null;
+      const limit = trace.error?.message === LIMIT_MESSAGE;
+      this.dispatch({ type: 'checks/result', results, limit });
+      if (results.length > 0 && results.every((r) => r.ok)) this.env.onPassed?.();
+    });
   }
 
   private halt(): void {

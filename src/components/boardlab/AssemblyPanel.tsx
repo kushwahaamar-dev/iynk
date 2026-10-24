@@ -7,7 +7,7 @@ import { Callout } from "@/components/ui/Callout";
 import { cx } from "@/components/ui/cx";
 import { Icon } from "@/components/ui/icons";
 import type { BridgeCommand, BuildStep } from "@/content/schema";
-import { stateMatches } from "@/lib/boardlab/checks";
+import { stateMatches } from "@/lib/interp";
 import type { BoardLabStore } from "@/lib/boardlab/store";
 import { markDone, progressKey } from "@/lib/progress";
 import { useText } from "./text";

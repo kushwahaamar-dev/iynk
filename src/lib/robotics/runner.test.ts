@@ -1,37 +1,18 @@
 // @vitest-environment node
 import { describe, expect, test } from "vitest";
 import type { Check, WorldModel } from "@/content/schema";
-import { getProfile } from "@/lib/interp";
-import { evaluateChecks } from "./checks";
-import { pinNumber, runHeadless } from "./headless";
-import { interpRunner } from "./runner";
+import { allPass, interpRunner } from "./runner";
 
 const blink = `void setup() { pinMode(9, OUTPUT); }
 void loop() { digitalWrite(9, HIGH); delay(500); digitalWrite(9, LOW); delay(500); }`;
 const noWorld: WorldModel = { inputs: [], script: [] };
 const toggles: Check = { kind: "pin-toggles", pin: "D9", periodMs: [900, 1100], minCycles: 2, label: "x" };
 
-describe("headless runs", () => {
-  test("resolves board pin names", () => {
-    const nano = getProfile("nano");
-    expect(pinNumber(nano, "D9")).toBe(9);
-    expect(pinNumber(nano, "A0")).toBe(14);
-    expect(pinNumber(getProfile("esp32-s3-devkitc-1"), "GPIO38")).toBe(38);
-  });
-
-  test("a blink sketch toggles its pin once a second", () => {
-    const trace = runHeadless({ board: "nano", language: "arduino-cpp", source: blink, world: noWorld, runMs: 3200 });
-    expect(trace.error).toBeNull();
-    expect(trace.ms).toBe(3200);
-    expect(trace.pins["9"].filter((e) => e.v === 1).length).toBeGreaterThanOrEqual(3);
-    const resolve = (pin: string) => String(pinNumber(getProfile("nano"), pin));
-    expect(evaluateChecks([toggles], trace, blink, resolve)).toEqual([{ pass: true, detail: "3/2" }]);
-  });
-
-  test("the same input gives the same trace", () => {
-    const a = runHeadless({ board: "nano", language: "arduino-cpp", source: blink, world: noWorld, runMs: 2000 });
-    const b = runHeadless({ board: "nano", language: "arduino-cpp", source: blink, world: noWorld, runMs: 2000 });
-    expect(a).toEqual(b);
+describe("task runs through the shared check path", () => {
+  test("a blink sketch toggles its pin once a second", async () => {
+    const result = await interpRunner({ board: "nano", language: "arduino-cpp", source: blink, world: noWorld, runMs: 3200 }, [toggles]);
+    expect(result).toMatchObject({ status: "ok", ms: 3200, checks: [{ pass: true, detail: "3/2" }] });
+    expect(allPass(result)).toBe(true);
   });
 
   test("compile errors come back with a line", async () => {
@@ -41,6 +22,7 @@ describe("headless runs", () => {
     );
     expect(result.status).toBe("error");
     if (result.status === "error") expect(result.line).toBe(2);
+    expect(allPass(result)).toBe(false);
   });
 
   test("serial lines and a button with contact bounce", async () => {

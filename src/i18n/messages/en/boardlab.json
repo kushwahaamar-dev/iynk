@@ -318,7 +318,8 @@
     "fail": "Not yet",
     "allPass": "All checks pass. Lesson done.",
     "again": "Check again",
-    "summary": "{passed} of {total} checks pass"
+    "summary": "{passed} of {total} checks pass",
+    "limit": "The check run took longer than 20 seconds and was stopped. Look for a loop that never waits."
   },
   "view": {
     "label": "Figure view",
