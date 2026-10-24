@@ -133,6 +133,8 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   now. Rerun only the local smoke after the touch page prerenders. Do not link Vercel.
 - **10-24 17:32, Amar (driver decision).** P1-engine meets its done line. Do not relaunch it. Leave the uno-r3
   figure source to P1-uno.
+- **10-24 17:50, Amar (driver decision).** P1-dock meets its done line. Do not relaunch it. The Uno button-lesson
+  string stays with P1-uno, who is still editing that board.
 
 ## 6. Lessons learned (apply them)
 
