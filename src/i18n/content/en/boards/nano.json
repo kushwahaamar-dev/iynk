@@ -1,0 +1,639 @@
+{
+  "title": "Arduino Nano",
+  "tagline": "The Uno's brain on a board the size of a stick of gum, made to plug into a breadboard.",
+  "overview": "The Nano (A000005, revision 3.3) has the same ATmega328P at 16 MHz and 5 V logic as the Uno, on a 43.18 × 17.78 mm board with two rows of 15 pins 0.6 in apart, so it straddles the middle of a breadboard. USB comes in on a Mini-B socket and goes through an FTDI FT232RNL USB-to-serial chip, which also resets the 328P for uploads. You get 14 digital pins (6 with PWM), 8 analog inputs (A6 and A7 are analog only), 32 KB of flash of which 30 720 bytes are free for your sketch, 2 KB of RAM and 1 KB of EEPROM. There is no barrel jack: power it from USB, from 7-12 V on VIN, or from a regulated 5 V on the 5V pin.",
+  "mcu": {
+    "ft232rnl": "USB-to-serial bridge (FTDI FT232RNL, a drop-in successor of the FT232RL): it shows up as \"FT232R USB UART\" (VID:PID 0403:6001), drives the TX and RX LEDs, makes the 3.3 V on the 3.3V pin, and its DTR line resets the 328P through a 100 nF capacitor so uploads start by themselves."
+  },
+  "power": {
+    "usb": {
+      "protection": "A 500 mA polyfuse (F1, trips at 1 A) and then a Schottky diode (D1). The diode stops a VIN-powered Nano from feeding your computer, and it costs about 0.35 V, so the 5V rail sits near 4.65 V on USB. The Mini-B plug is keyed, so it cannot go in backwards."
+    },
+    "vin": {
+      "protection": "Nothing but the regulator: there is no reverse-polarity diode on VIN. The 5 V regulator (an LD1117 on boards made today) limits current and shuts down when hot, but 7-12 V is the range to use and 15 V destroys it. Every volt above 5 turns into heat: at 12 V, each 100 mA of load costs 0.7 W in a tiny SOT-223."
+    },
+    "pin5": {
+      "protection": "None. The 5V pin is the 5 V rail itself: feed it a clean regulated 4.75-5.25 V and you skip the regulator and the diode. Above 6 V the ATmega328P is past its absolute maximum, and a reversed supply goes straight into the chips. Don't feed it while VIN is also powered."
+    },
+    "rails": {
+      "vusb": "USB 5 V after the polyfuse. It reaches the 5V rail only through the Schottky diode D1.",
+      "5v": "The board's main rail: the MCU, the FT232 and the ON LED run from it. It is 5.0 V from the regulator when VIN is powered, about 4.65 V from USB, or whatever you feed the 5V pin. The higher source wins, because the diode turns off when the regulator's output is above USB minus its drop.",
+      "3v3": "3.3 V from the FT232's own small regulator, 50 mA at most. It is an output: enough for a sensor, not for an ESP8266 or an nRF24L01 radio."
+    },
+    "io": "Each pin can give or take 20 mA safely and 40 mA at the absolute maximum; all pins together 200 mA through the chip's supply pins. A HIGH output is 5 V, so it can damage 3.3 V parts without a divider or level shifter. A 3.3 V signal into the Nano reads as HIGH, with little margin (HIGH starts at 3.0 V). The board draws about 27 mA on its own: about 9 mA for the 328P at 16 MHz, 15 mA for the FT232 and 3 mA for the ON LED."
+  },
+  "pins": {
+    "j1": {
+      "1": "Serial TX. It also goes to the FT232 through a 1 kΩ resistor, so the Serial Monitor sees everything sent here.",
+      "2": "Serial RX, driven by the FT232 through 1 kΩ. Anything wired here (a Bluetooth or GPS module) can block uploads.",
+      "3": "RESET, active low, with a 1 kΩ pull-up to 5 V. Same net as the other RST pin and the RESET button.",
+      "6": "PWM from Timer2. tone() uses Timer2 too, so it stops PWM on D3 and D11.",
+      "8": "PWM from Timer0 at 977 Hz. Timer0 also counts millis(), so leave its settings alone.",
+      "9": "PWM from Timer0 at 977 Hz.",
+      "12": "PWM from Timer1 at 490 Hz. The Servo library takes Timer1, which stops PWM on D9 and D10.",
+      "13": "PWM from Timer1. As SPI SS it must stay an output while the Nano is the SPI controller.",
+      "14": "PWM from Timer2, and SPI MOSI (COPI). Also on ICSP pad 4."
+    },
+    "j2": {
+      "1": "Input for the 5 V regulator: 7-12 V, 15 V absolute maximum. No reverse-polarity protection.",
+      "3": "The same RESET net as J1 pin 3.",
+      "4": "The 5 V rail: an output on USB (about 4.65 V) or VIN (5.0 V), or a regulated 5 V input.",
+      "5": "Analog input only (ADC7): no digital I/O and no pull-up, so digitalRead(A7) does not work.",
+      "6": "Analog input only (ADC6): no digital I/O and no pull-up, so digitalRead(A6) does not work.",
+      "7": "I2C SCL for the Wire library. There are no I2C pull-ups on the board; most modules bring their own.",
+      "8": "I2C SDA for the Wire library.",
+      "13": "ADC reference, decoupled by 100 nF on the board. Never feed a voltage here while analogReference(DEFAULT) is active.",
+      "14": "3.3 V out from the FT232, 50 mA at most. Never feed 5 V into it.",
+      "15": "Drives the L LED through 1 kΩ (about 3 mA), with no buffer. Because of that load, INPUT_PULLUP on D13 does not read HIGH reliably. Also SPI SCK, so L flickers during SPI transfers."
+    },
+    "j4": {
+      "icsp": "ICSP pad. The six pads are left bare on the Nano: press a programmer's pogo pins or a header onto them to burn the bootloader."
+    }
+  },
+  "leds": {
+    "L": "Yellow, on D13 through 1 kΩ: lights when D13 is HIGH. The bootloader flashes it after a reset.",
+    "TX": "Green, driven by the FT232: flashes when the Nano sends serial data to the computer.",
+    "RX": "Red, driven by the FT232: flashes when the computer sends data to the Nano, including during uploads.",
+    "PWR": "Green, printed ON: lit whenever the 5 V rail is up."
+  },
+  "controls": {
+    "SW1": "Pulls RESET low while held. On release the 328P restarts: the bootloader flashes L and listens for about a second, then your sketch runs from setup() again and prints its banner."
+  },
+  "parts": {
+    "IC3": {
+      "name": "ATmega328P microcontroller",
+      "what": "The brain: an 8-bit AVR at 16 MHz with 32 KB flash, 2 KB RAM, 1 KB EEPROM, a 10-bit ADC, three timers, UART, SPI and I2C. On the genuine revision 3.3 board it is the 5 × 5 mm QFN package (ATmega328P-MU), turned 45° so it sits as a diamond; older Nanos and most clones use the larger TQFP."
+    },
+    "Y1": {
+      "name": "16 MHz ceramic resonator",
+      "what": "Sets the 16 MHz clock. It is a ceramic resonator with its load capacitors built in, not a quartz crystal, so it is only about 0.5 % accurate: millis() drifts by seconds per hour. Without it the 328P does not run at all."
+    },
+    "SW1": {
+      "name": "RESET button",
+      "what": "A tiny SMD push-button between RESET and GND. Press it to restart the sketch; the bootloader waits about a second for an upload first."
+    },
+    "TX": {
+      "name": "TX LED",
+      "what": "Flashes when the Nano sends serial data over USB. It shows the FT232's traffic, so it stays dark when D1 talks to another device without the computer."
+    },
+    "RX": {
+      "name": "RX LED",
+      "what": "Flashes when the computer sends data, for example during an upload."
+    },
+    "PWR": {
+      "name": "ON LED",
+      "what": "Green power LED on the 5 V rail through 1 kΩ. If it is dark, the board has no 5 V."
+    },
+    "L": {
+      "name": "L LED (pin 13)",
+      "what": "The built-in LED, LED_BUILTIN = 13. D13 drives it directly through 1 kΩ, without the op-amp buffer the Uno R3 has."
+    },
+    "J3": {
+      "name": "USB Mini-B socket",
+      "what": "Power and data from the computer. It is Mini-B, not Micro-B: the plug is the same width but about 3 mm thick. The socket is held mainly by its solder joints, so don't lever the cable sideways."
+    },
+    "J4": {
+      "name": "ICSP pads",
+      "what": "Six bare pads for an in-circuit programmer (MISO, 5V, SCK, MOSI, RESET, GND). Use them to burn the bootloader and the fuses."
+    },
+    "J1": {
+      "name": "Header J1",
+      "what": "Fifteen pins along the top edge: TX1, RX0, RST, GND and D2-D12. The plastic sits under the board and the pins point down into the breadboard."
+    },
+    "J2": {
+      "name": "Header J2",
+      "what": "Fifteen pins along the bottom edge: D13, 3.3V, REF, A0-A7, 5V, RST, GND and VIN. Pin 1 (VIN) has the square pad."
+    },
+    "IC1": {
+      "name": "FT232RNL USB-to-serial chip",
+      "what": "On the underside. It turns USB into the 328P's serial port, makes the 3.3 V output, drives the TX and RX LEDs and pulses DTR for the auto-reset. It needs no crystal: its 12 MHz clock is inside."
+    },
+    "IC2": {
+      "name": "5 V regulator",
+      "what": "On the underside: an LD1117 low-dropout regulator in SOT-223 that makes 5.0 V from VIN. It needs about 1.1 V of headroom, so VIN below about 6.5 V sags, and its tab is both the output and the heat sink."
+    },
+    "D1": {
+      "name": "Schottky diode",
+      "what": "An SS1P3L (1 A, 30 V) from USB to the 5 V rail. It keeps a VIN supply out of your computer and drops about 0.35 V."
+    },
+    "F1": {
+      "name": "USB polyfuse",
+      "what": "A resettable fuse: it holds 500 mA and trips at 1 A, then cools and resets after you unplug."
+    },
+    "C2": {
+      "name": "4.7 µF tantalum capacitor (USB)",
+      "what": "Bulk capacitor on the USB supply. Tantalum is polarised: the band marks the + end."
+    },
+    "C5": {
+      "name": "4.7 µF tantalum capacitor (5 V)",
+      "what": "Bulk capacitor on the 5 V rail. Reversed, a tantalum capacitor can short, crack or smoke."
+    },
+    "C1": {
+      "name": "100 nF capacitor on AREF",
+      "what": "Smooths the ADC reference."
+    },
+    "C3": {
+      "name": "1 µF decoupling capacitor",
+      "what": "Next to the 328P's supply pins: it covers the current spikes of the chip's switching."
+    },
+    "C4": {
+      "name": "100 nF auto-reset capacitor",
+      "what": "Couples the FT232's DTR pulse into RESET, so the 328P restarts into the bootloader when an upload begins. Without it every upload fails unless you press RESET at the right moment."
+    },
+    "C6": {
+      "name": "100 nF capacitor on the 3.3 V output",
+      "what": "Keeps the FT232's internal 3.3 V regulator stable."
+    },
+    "C7": {
+      "name": "1 µF capacitor on the regulator output",
+      "what": "The 5 V regulator needs a capacitor on its output to stay stable."
+    },
+    "C8": {
+      "name": "1 µF capacitor on 5 V",
+      "what": "More decoupling on the 5 V rail."
+    },
+    "C9": {
+      "name": "100 nF capacitor on VUSB",
+      "what": "Decouples the USB supply after the polyfuse."
+    },
+    "RP1": {
+      "name": "1 kΩ resistor array RP1",
+      "what": "Four 1 kΩ resistors in one part: D0 and D1 to the FT232, the ON LED, and the RESET pull-up. The resistors on D0 and D1 let a module you wire there overpower the FT232, which is why it can block uploads."
+    },
+    "RP2": {
+      "name": "1 kΩ resistor array RP2",
+      "what": "The series resistors of the L, TX and RX LEDs (the fourth one is unused)."
+    }
+  },
+  "wireables": {
+    "led": {
+      "note": "A 5 mm LED from a PWM pin through a 220 Ω resistor: about 12 mA on USB, bright and safe.",
+      "caution": "Never without the resistor: an LED straight on a pin pulls far more than the 40 mA maximum and kills the pin or the LED."
+    },
+    "push-button": {
+      "note": "Between D2 and GND with pinMode(2, INPUT_PULLUP): pressed reads LOW, no resistor needed. D2 is also interrupt INT0."
+    },
+    "potentiometer": {
+      "note": "A 10 kΩ knob as a voltage divider: ends to GND and 5V, wiper to A0. analogRead gives 0-1023."
+    },
+    "ldr": {
+      "note": "A light-dependent resistor from 5V to A0 plus a 10 kΩ resistor from A0 to GND: more light, higher reading."
+    },
+    "tmp36": {
+      "note": "Analog temperature sensor: 0.5 V at 0 °C plus 10 mV per °C. Read it on A1 and keep the leads short."
+    },
+    "piezo-buzzer": {
+      "note": "A passive buzzer on D8 plays tone(8, 440).",
+      "caution": "tone() takes Timer2, so PWM on D3 and D11 stops while a tone plays."
+    },
+    "servo-sg90": {
+      "note": "Signal on D9 with the Servo library (it takes Timer1, so PWM on D10 stops too).",
+      "caution": "Feed the red wire from a separate 5 V supply whose GND joins the Nano's GND. A stalling servo pulls about 1 A, which browns out the Nano on USB and trips the polyfuse."
+    },
+    "hc-sr04": {
+      "note": "Ultrasonic distance sensor, 5 V: Trig on D9, Echo on D10, distance = echo µs / 58 cm. A 5 V board needs no level shifting for its echo."
+    },
+    "mpu6050": {
+      "note": "GY-521 breakout with an MPU-6050 at I2C address 0x68 (0x69 with AD0 high). Its own regulator lets it run from 5V; SDA goes to A4 and SCL to A5.",
+      "caution": "The chip itself is 3.3 V. The breakout pulls SDA and SCL up to its 3.3 V, and Wire.begin() also turns on the 328P's weak pull-ups to 5 V, so the bus idles a little above 3.3 V. It works in practice; a level shifter is the clean fix."
+    },
+    "ssd1306": {
+      "note": "0.96 in 128 × 64 OLED at I2C address 0x3C, on A4 (SDA) and A5 (SCL).",
+      "caution": "Read the pin order on the silk: some modules are GND VCC, others VCC GND, and swapping them kills the display. Its 1 KB frame buffer takes half the Nano's RAM, so keep text in flash with F(\"...\")."
+    }
+  },
+  "failures": {
+    "reverse-vin": {
+      "title": "Reverse polarity on VIN",
+      "symptom": "Nothing lights, the regulator under the board gets hot fast and smells of hot epoxy.",
+      "explanation": "The Nano has no reverse-polarity diode on VIN. A reversed supply drives current backwards through the 5 V regulator, which usually fails; some fail short and later pass VIN straight onto the 5 V rail, which then kills the 328P and the FT232.",
+      "fix": "Unplug at once and swap the leads. Check the regulator before trusting the board again, and add a series diode on your own supply."
+    },
+    "reverse-5v": {
+      "title": "Reverse polarity on the 5V pin",
+      "symptom": "Chips get hot, the C5 tantalum can crack or smoke, and if USB is plugged in too the computer reports a USB power surge.",
+      "explanation": "The 5V pin is the rail itself, with nothing in front of it. A reversed 5 V forces current through the protection diodes inside the ATmega328P and the FT232 and reverse-biases C5. With USB attached, D1 conducts and the polyfuse trips.",
+      "fix": "Unplug, swap the leads, and replace the 328P and C5 if they got hot."
+    },
+    "brownout": {
+      "title": "Brown-out: a servo on the 5V pin",
+      "symptom": "The board keeps restarting: L flashes, the banner prints again and again, and the servo twitches.",
+      "explanation": "On USB the 5 V rail is only about 4.65 V behind a 500 mA polyfuse. A servo starting up or stalling pulls about 1 A, the rail dips below the 328P's 2.7 V brown-out level and the chip resets; held long enough, the polyfuse trips too.",
+      "fix": "Power motors and servos from their own supply and join only the grounds."
+    },
+    "vin-overvoltage": {
+      "title": "19 V on VIN",
+      "symptom": "The regulator burns out: the ON LED goes dark, or worse, VIN reaches the 5 V rail and kills the chips.",
+      "explanation": "The LD1117 fitted to Nanos made today is rated 15 V at most. A 19 V laptop charger on VIN is past that, and even 12 V makes it hot under load.",
+      "fix": "Use 7-12 V on VIN, or a regulated 5 V on the 5V pin."
+    },
+    "vin-too-low": {
+      "title": "3.5 V on VIN",
+      "symptom": "The ON LED is dim and the board resets over and over.",
+      "explanation": "The regulator needs about 1.1 V more than its 5 V output. From 3.5 V it gives about 2.4 V, below the 328P's 2.7 V brown-out level, so the chip is held in reset. Between about 2.7 V and 4.5 V it runs, but out of spec at 16 MHz.",
+      "fix": "Give VIN at least 7 V, or feed a regulated 5 V into the 5V pin."
+    },
+    "5v-overvoltage": {
+      "title": "A 9-10 V supply on the 5V pin",
+      "symptom": "The ON LED flashes bright and the board dies; the 328P and the FT232 get warm and stop answering.",
+      "explanation": "The 5V pin bypasses the regulator. The ATmega328P's absolute maximum supply is 6.0 V and there is no clamp, so 10 V destroys it and the FT232 on the same rail. D1 at least keeps it out of the computer.",
+      "fix": "Battery packs and wall adapters above 5.5 V go to VIN, never to the 5V pin."
+    },
+    "3v3-backfeed": {
+      "title": "5 V into the 3.3V pin",
+      "symptom": "The FT232 gets warm and the USB port can stop working.",
+      "explanation": "The 3.3V pin is the output of the FT232's internal regulator. Pushing 5 V into it back-drives that regulator. It is the Nano's version of the classic mistake of putting 5 V on a 3.3 V pin.",
+      "fix": "Use the 3.3V pin only as an output for small 3.3 V parts (50 mA at most), and never tie it to 5 V."
+    },
+    "short-5v": {
+      "title": "Short between 5V and GND",
+      "symptom": "The ON LED goes out, the Nano disappears from the port list and the computer may complain about the USB port.",
+      "explanation": "On USB the polyfuse F1 trips within milliseconds and protects the computer. On VIN the regulator current-limits at about 1.2 A, then gets very hot and cycles in thermal shutdown.",
+      "fix": "Find and clear the short (a stray jumper on the rails, a solder bridge), then wait a minute for the polyfuse to cool."
+    },
+    "cold-usb": {
+      "title": "Cold joint on the USB socket",
+      "symptom": "The Nano drops off the USB port when the cable moves: \"USB device not recognized\", the ON LED flickers.",
+      "explanation": "The Mini-B socket is held mainly by its solder joints. A cold or cracked joint on its pins or shell tabs connects only now and then.",
+      "fix": "Reflow the socket's pins and all four shell tabs, and support the cable so it cannot lever the socket."
+    },
+    "cold-resonator": {
+      "title": "Cold joint on the resonator",
+      "symptom": "The ON LED is lit, but the sketch stops and starts, and uploads fail with \"not in sync\".",
+      "explanation": "Without a steady 16 MHz clock the 328P stops whenever the resonator's joint opens.",
+      "fix": "Reflow the three resonator pads."
+    },
+    "cold-d9": {
+      "title": "Cold joint on header pin D9",
+      "symptom": "The fading LED flickers or drops out, and works when you press on the board.",
+      "explanation": "The pin's joint to its pad is high resistance or open: the sketch is fine, the signal just doesn't reach the breadboard every time.",
+      "fix": "Reflow that header pin until the solder wets both the pin and the pad in a small cone."
+    },
+    "missing-resonator": {
+      "title": "Resonator missing",
+      "symptom": "The ON LED is lit but nothing runs: no blink, no serial, uploads time out.",
+      "explanation": "The fuses tell the 328P to run from an external 16 MHz resonator. Without Y1 there is no clock, so the chip sits still.",
+      "fix": "Fit the 16 MHz resonator Y1."
+    },
+    "missing-c4": {
+      "title": "Auto-reset capacitor missing",
+      "symptom": "The sketch keeps running, but every upload fails with \"programmer is not responding\".",
+      "explanation": "C4 is one tiny 100 nF SMD capacitor. It turns the FT232's DTR pulse into a reset, so the bootloader is listening when avrdude starts. Without it the 328P never hears the upload.",
+      "fix": "Refit C4. Until then, press RESET just as the upload starts."
+    },
+    "missing-d1": {
+      "title": "USB diode missing",
+      "symptom": "On USB nothing lights. On VIN the board works normally.",
+      "explanation": "USB power reaches the 5 V rail only through the Schottky diode D1. Without it, USB brings nothing to the rail, while the regulator still feeds it from VIN.",
+      "fix": "Fit D1 with its band (the cathode) towards the 5 V side."
+    },
+    "reversed-c5": {
+      "title": "Tantalum capacitor in backwards",
+      "symptom": "At power-up C5 shorts, heats and can crack or smoke; the 5 V rail collapses.",
+      "explanation": "Tantalum capacitors are polarised. Reversed, the thin oxide layer breaks down and the capacitor becomes a near short across the rail.",
+      "fix": "Unplug and fit a new capacitor with its band (the + end) the right way round."
+    }
+  },
+  "assembly": {
+    "unplug": {
+      "title": "Unplug the Nano",
+      "body": "Never work on a live board. Pull the USB cable and anything on VIN or 5V before you touch a part."
+    },
+    "strip": {
+      "title": "Strip to the bare PCB",
+      "body": "Take every part off. What is left is the two-layer teal PCB with the bare ICSP pads.",
+      "refusal": "Unplug the power first: never work on a live board."
+    },
+    "reflow": {
+      "title": "Pick and place, then reflow",
+      "body": "Every part except the headers is surface-mount, on both sides: the 328P, resonator, button, LEDs and USB socket on top, the FT232, regulator, diode, polyfuse, capacitors and resistor arrays underneath. A machine places them on solder paste and the board goes through the reflow oven.",
+      "refusal": "Strip the board first, with the power off."
+    },
+    "header-j1": {
+      "title": "Fit header J1",
+      "body": "Push the 15-pin header in from underneath: plastic below, pins pointing down, so the Nano will plug into a breadboard.",
+      "refusal": "SMD parts first: run pick and place and reflow. The oven would melt the header's plastic."
+    },
+    "header-j2": {
+      "title": "Fit header J2",
+      "body": "The second 15-pin header goes the same way, along the edge with VIN and D13. The rows end up 15.24 mm (0.6 in) apart.",
+      "refusal": "SMD parts first: run pick and place and reflow."
+    },
+    "solder": {
+      "title": "Solder the 30 header joints",
+      "body": "Solder each pin from the top: heat the pad and the pin together and feed solder until it flows into a small shiny cone. A dull ball is a cold joint.",
+      "refusal": "Nothing to solder yet: fit the headers first."
+    },
+    "power-up": {
+      "title": "Power up on USB",
+      "body": "Plug in the Mini-B cable. The ON LED lights at once and the FT232 shows up as \"FT232R USB UART\". Measure: the 5V pin reads about 4.65 V (USB minus the diode) and the 3.3V pin 3.3 V."
+    },
+    "factory-blink": {
+      "title": "Check the factory Blink",
+      "body": "Nanos ship with Blink: after power-up L blinks once a second. TX and RX stay dark until there is serial traffic."
+    },
+    "upload-hello": {
+      "title": "Upload a serial sketch",
+      "body": "Upload \"Serial hello\". DTR resets the 328P, RX flickers while the bytes go in at 115 200 baud, then the sketch prints \"Nano ready\" and TX blinks once a second with each line.",
+      "refusal": "Plug in USB first: uploads go over the cable."
+    }
+  },
+  "lessons": {
+    "blink": {
+      "title": "Blink",
+      "lede": "Your first output: D13 switches the yellow L LED on the board and an LED on the breadboard on and off, with a pause after each change.",
+      "steps": {
+        "1": "pinMode() makes D13 an output.",
+        "2": "digitalWrite() drives it to 5 V (HIGH) or 0 V (LOW); both LEDs follow.",
+        "3": "The two delay() values set how long it stays on and off. Change them and press Run."
+      },
+      "hints": {
+        "1": "LED_BUILTIN is just the number 13 on the Nano.",
+        "2": "Try a 10 kΩ resistor: the breadboard LED gets very dim, the L LED doesn't change."
+      },
+      "specs": {
+        "1": { "label": "LED current", "value": "(4.65 V − 2.0 V) ÷ 220 Ω ≈ 12 mA on USB" },
+        "2": { "label": "Pin limit", "value": "20 mA safe, 40 mA absolute maximum" },
+        "3": { "label": "Resistor", "value": "220 Ω: red, red, brown, gold" },
+        "4": { "label": "L LED", "value": "D13 → 1 kΩ → LED, about 3 mA" }
+      },
+      "pins": {
+        "D13": { "to": "Resistor → LED anode (+)", "role": "The sketch switches it HIGH and LOW; L follows it on the board." },
+        "GND": { "to": "LED cathode (−)", "role": "The current returns here." }
+      },
+      "callouts": {
+        "L": "L mirrors D13 on the board.",
+        "R1": "Keeps the LED current near 12 mA.",
+        "LED1": "The long leg is the anode (+)."
+      },
+      "features": {
+        "1": "Digital output with digitalWrite()",
+        "2": "Swap the resistor and watch the brightness",
+        "3": "Change the timing in the code and run it"
+      },
+      "params": {
+        "on": { "label": "On for" },
+        "off": { "label": "Off for" },
+        "resistor": {
+          "label": "Resistor",
+          "220": "220 Ω",
+          "220-note": "About 12 mA: bright and safe.",
+          "1k": "1 kΩ",
+          "1k-note": "About 2.6 mA: noticeably dimmer.",
+          "10k": "10 kΩ",
+          "10k-note": "About 0.3 mA: barely glowing."
+        }
+      },
+      "checks": {
+        "1": "The sketch runs for 6 seconds without an error",
+        "2": "D13 blinks (one cycle between 0.1 and 4 s)",
+        "3": "It uses pinMode, digitalWrite and delay"
+      },
+      "code": {
+        "intro": "Blink: switch D13 on and off.",
+        "resistor": "LED resistor on the breadboard:",
+        "pin": "LED on the board, plus the breadboard LED"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Why does the breadboard LED need a resistor?",
+          "options": {
+            "1": "To make it blink faster",
+            "2": "To limit the current to a safe value",
+            "3": "To turn 5 V into 3.3 V"
+          },
+          "why": "An LED drops about 2 V and then conducts almost freely; the resistor sets the current, (4.65 − 2.0) ÷ 220 ≈ 12 mA."
+        },
+        "q2": {
+          "q": "Which pin is LED_BUILTIN on the Nano?",
+          "options": {
+            "1": "D13",
+            "2": "D2",
+            "3": "A0"
+          },
+          "why": "The L LED hangs on D13 through 1 kΩ, so LED_BUILTIN is 13, the same as on the Uno."
+        }
+      }
+    },
+    "button-sensor": {
+      "title": "A button and a knob",
+      "lede": "Inputs let the Nano sense the world: a button on D2 that reads LOW when pressed, and a knob on A0 that reads 0 to 1023. The L LED shows the button and the Serial Monitor shows both.",
+      "steps": {
+        "1": "INPUT_PULLUP turns on the 328P's internal pull-up, so D2 reads HIGH until the button ties it to GND.",
+        "2": "analogRead(A0) turns the knob's 0-5 V into a number from 0 to 1023.",
+        "3": "Press the button and turn the knob while it runs, and watch the Serial Monitor at 9600 baud."
+      },
+      "hints": {
+        "1": "Pressed reads LOW: that is why the code compares with LOW.",
+        "2": "On USB the 5V rail is about 4.65 V, so the printed volts read a little high; the raw number is what the knob really does.",
+        "3": "Don't use A6 or A7 for the button: they are analog inputs only."
+      },
+      "specs": {
+        "1": { "label": "Pull-up", "value": "Internal, 20-50 kΩ to 5 V" },
+        "2": { "label": "Logic levels", "value": "LOW below 1.5 V, HIGH above 3.0 V" },
+        "3": { "label": "ADC", "value": "10 bits: 0-1023, about 112 µs per reading" },
+        "4": { "label": "Bounce", "value": "The contacts chatter for up to 5 ms" }
+      },
+      "pins": {
+        "D2": { "to": "Button", "role": "Reads LOW while the button is pressed." },
+        "A0": { "to": "Knob wiper", "role": "Reads the knob's voltage as 0-1023." },
+        "5V": { "to": "One end of the knob", "role": "The top of the divider." },
+        "GND": { "to": "Button and the other end of the knob", "role": "The bottom of the divider and the button's return." }
+      },
+      "callouts": {
+        "SW2": "Pressing joins D2 to GND.",
+        "RV1": "Its wiper slides between 0 V and 5 V.",
+        "L": "Lights while the button is down."
+      },
+      "features": {
+        "1": "Press the button and turn the knob while the code runs",
+        "2": "digitalRead() and analogRead() side by side",
+        "3": "Live readings in the Serial Monitor"
+      },
+      "params": {
+        "period": { "label": "Print every" }
+      },
+      "world": {
+        "button": "Button on D2",
+        "knob": "Knob on A0"
+      },
+      "checks": {
+        "1": "The sketch runs for 4 seconds without an error",
+        "2": "It prints A0 and D2 readings",
+        "3": "L lights within a second of pressing the button",
+        "4": "The Serial Monitor shows D2=LOW while the button is down",
+        "5": "Turned all the way, the knob reads above 1000"
+      },
+      "code": {
+        "intro": "Read a button and a knob, and print both.",
+        "button": "Button to GND, no resistor needed",
+        "sensor": "Knob wiper",
+        "low": "INPUT_PULLUP: pressed reads LOW"
+      },
+      "quiz": {
+        "q1": {
+          "q": "With INPUT_PULLUP, what does D2 read while the button is pressed?",
+          "options": {
+            "1": "HIGH",
+            "2": "It changes at random",
+            "3": "LOW"
+          },
+          "why": "The pull-up holds the pin at 5 V; the pressed button connects it straight to GND, so it reads LOW."
+        },
+        "q2": {
+          "q": "Which Nano pins can't be used for a button?",
+          "options": {
+            "1": "D2 and D3",
+            "2": "A6 and A7",
+            "3": "A4 and A5"
+          },
+          "why": "A6 and A7 are analog-only inputs with no digital buffer and no pull-up."
+        }
+      }
+    },
+    "fade": {
+      "title": "Fade with a knob",
+      "lede": "PWM fakes an analog output: D9 switches on and off 490 times a second, and the share of time it is on sets the LED's brightness. The knob on A0 chooses that share.",
+      "steps": {
+        "1": "analogRead(A0) gives 0-1023 from the knob.",
+        "2": "map() scales it to 0-255, the range analogWrite() takes.",
+        "3": "analogWrite(9, duty) sets the PWM duty cycle: 0 is off, 255 is fully on."
+      },
+      "hints": {
+        "1": "Only D3, D5, D6, D9, D10 and D11 have PWM (marked * on the board).",
+        "2": "On any other pin analogWrite only gives LOW below 128 and HIGH from 128 up."
+      },
+      "specs": {
+        "1": { "label": "PWM on D9", "value": "Timer1, 490 Hz, 8 bits (0-255)" },
+        "2": { "label": "Duty at 63", "value": "63 ÷ 255 ≈ 25 % of the time on" },
+        "3": { "label": "Average current", "value": "About 12 mA × duty" }
+      },
+      "pins": {
+        "D9": { "to": "Resistor → LED anode (+)", "role": "Carries the PWM signal." },
+        "A0": { "to": "Knob wiper", "role": "Sets the brightness." },
+        "5V": { "to": "One end of the knob", "role": "The top of the divider." },
+        "GND": { "to": "LED cathode and the knob", "role": "The common return." }
+      },
+      "callouts": {
+        "LED1": "Its brightness follows the duty cycle.",
+        "RV1": "Turn it to fade the LED.",
+        "R1": "220 Ω, as in Blink."
+      },
+      "features": {
+        "1": "analogWrite() on a PWM pin",
+        "2": "map() from 0-1023 to 0-255",
+        "3": "Why some pins can't fade"
+      },
+      "params": {
+        "period": { "label": "Update every" }
+      },
+      "world": {
+        "knob": "Knob on A0"
+      },
+      "checks": {
+        "1": "The sketch runs for 4.5 seconds without an error",
+        "2": "A quarter turn gives about 25 % duty on D9",
+        "3": "Turned all the way, D9 is fully on",
+        "4": "Turned back to 0, the LED is off"
+      },
+      "code": {
+        "intro": "Fade an LED on D9 with a knob on A0.",
+        "pin": "D9 has PWM (Timer1)",
+        "map": "0..1023 becomes 0..255"
+      },
+      "quiz": {
+        "q1": {
+          "q": "What does analogWrite(9, 128) do on a Nano?",
+          "options": {
+            "1": "D9 is HIGH about half of each 2 ms cycle",
+            "2": "D9 outputs a steady 2.5 V",
+            "3": "D9 reads the voltage on pin 128"
+          },
+          "why": "The 328P has no DAC: analogWrite is PWM, so 128/255 means on for about 50 % of each 490 Hz cycle."
+        },
+        "q2": {
+          "q": "You attach a servo with the Servo library. Which pins lose PWM?",
+          "options": {
+            "1": "D3 and D11",
+            "2": "D5 and D6",
+            "3": "D9 and D10"
+          },
+          "why": "The Servo library takes Timer1, which makes the PWM on D9 and D10."
+        }
+      }
+    },
+    "i2c": {
+      "title": "Talk I2C to an MPU-6050",
+      "lede": "I2C is a two-wire bus: SDA on A4 carries data, SCL on A5 the clock, and every device has an address. Scan the bus, find the MPU-6050 at 0x68, then ask it who it is.",
+      "steps": {
+        "1": "Wire.begin() makes the Nano the bus controller on A4 and A5.",
+        "2": "The scan calls every address from 1 to 126; endTransmission() returns 0 when a device answers.",
+        "3": "Writing register 0x75 and reading one byte back gets WHO_AM_I, which is 0x68 on an MPU-6050."
+      },
+      "hints": {
+        "1": "No device found? Check SDA to A4 and SCL to A5; swapped wires are the usual reason.",
+        "2": "Tie the module's AD0 pin high and it answers at 0x69 instead.",
+        "3": "There are no I2C pull-ups on the Nano; the GY-521 breakout brings its own."
+      },
+      "specs": {
+        "1": { "label": "Address", "value": "0x68 (0x69 with AD0 high)" },
+        "2": { "label": "Bus speed", "value": "100 kHz by default (Wire)" },
+        "3": { "label": "Pins", "value": "SDA = A4, SCL = A5" },
+        "4": { "label": "Module supply", "value": "5 V into the GY-521's own 3.3 V regulator" }
+      },
+      "pins": {
+        "A4": { "to": "SDA", "role": "I2C data." },
+        "A5": { "to": "SCL", "role": "I2C clock." },
+        "5V": { "to": "VCC", "role": "Powers the breakout." },
+        "GND": { "to": "GND", "role": "Common ground." }
+      },
+      "callouts": {
+        "M1": "Answers at address 0x68.",
+        "IC3": "The 328P's TWI unit drives the bus."
+      },
+      "features": {
+        "1": "Scan the I2C bus",
+        "2": "Read a register with a repeated start",
+        "3": "Print bytes in HEX"
+      },
+      "params": {
+        "blink": { "label": "Heartbeat" }
+      },
+      "world": {
+        "imu": "Tilt of the MPU-6050"
+      },
+      "checks": {
+        "1": "The sketch runs for 3 seconds without an error",
+        "2": "The scan finds a device at 0x68",
+        "3": "WHO_AM_I reads 0x68",
+        "4": "It uses Wire.begin, beginTransmission and endTransmission"
+      },
+      "code": {
+        "intro": "Scan the I2C bus, then read the MPU-6050's WHO_AM_I register.",
+        "addr": "AD0 low: 0x68",
+        "restart": "keep the bus: repeated start",
+        "alive": "heartbeat on L"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Which Nano pins carry I2C?",
+          "options": {
+            "1": "D0 and D1",
+            "2": "A4 (SDA) and A5 (SCL)",
+            "3": "D11 and D13"
+          },
+          "why": "The 328P's TWI unit is on PC4 and PC5, which the Nano labels A4 and A5."
+        },
+        "q2": {
+          "q": "What does Wire.endTransmission() return when a device answers?",
+          "options": {
+            "1": "0",
+            "2": "The device's address",
+            "3": "1"
+          },
+          "why": "0 means the device acknowledged; 2 means no answer at that address."
+        }
+      }
+    }
+  }
+}

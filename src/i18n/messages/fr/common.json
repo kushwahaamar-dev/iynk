@@ -1,0 +1,33 @@
+{
+  "site": {
+    "name": "SimLab",
+    "tagline": "Explorer · Comprendre · Construire",
+    "description": "Un labo d’électronique pratique dans le navigateur : assemblez, câblez, programmez, cassez et faites voler cartes, robots et drones."
+  },
+  "a11y": {
+    "skipToContent": "Aller au contenu principal"
+  },
+  "notFound": {
+    "metaTitle": "Page introuvable",
+    "title": "Cette page n’est pas sur l’établi",
+    "body": "L’adresse est peut-être mal saisie, ou la page a été déplacée. Choisissez un labo pour continuer.",
+    "home": "Retour au tableau de bord",
+    "boards": "Labo des cartes",
+    "robotics": "Labo de robotique",
+    "drones": "Labo des drones"
+  },
+  "progress": {
+    "count": "{done}/{total}",
+    "label": "{done} sur {total} terminés"
+  },
+  "client": {
+    "figure": {
+      "loading": "Chargement de la figure…",
+      "failed": "La figure ne s’est pas chargée. Rechargez la page pour réessayer.",
+      "controls": "Commandes de la figure",
+      "controlsHint": "Tout ce que vous pouvez actionner dans la figure, sous forme de boutons.",
+      "buttons": "Boutons",
+      "parts": "Pièces"
+    }
+  }
+}

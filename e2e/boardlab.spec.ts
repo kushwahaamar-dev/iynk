@@ -1,0 +1,156 @@
+import AxeBuilder from "@axe-core/playwright";
+import { expect, test, type Page } from "@playwright/test";
+import boardlab from "../src/i18n/messages/en/boardlab.json";
+
+// Board Lab, Uno R3: the board index, the board workspace, and the Blink lesson
+// running the learner's own code (Run → upload → the figure's LED and the serial
+// monitor follow the interpreter), by mouse and by keyboard only, with axe.
+
+function watchErrors(page: Page) {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  page.on("console", (message) => {
+    if (message.type() === "error" && /hydrat|did not match|Minified React error/i.test(message.text())) errors.push(message.text());
+  });
+  return errors;
+}
+
+async function expectNoAxeViolations(page: Page) {
+  const results = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+    // The figure page is checked by its own figure tests (cfshoot); this checks the host page.
+    .exclude("iframe")
+    .analyze();
+  expect(results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`)).toEqual([]);
+}
+
+const main = (page: Page) => page.locator("main#main-en");
+const serialStatus = (page: Page) => main(page).getByTestId("serial-status");
+const serialLines = (page: Page) => main(page).getByTestId("serial-lines");
+
+async function openBlink(page: Page) {
+  await page.goto("/en/boards/uno-r3/blink");
+  await expect(main(page).getByTestId("lesson-workspace")).toBeVisible();
+  // CodeMirror has mounted once the editor's content is editable.
+  await expect(main(page).locator(".cm-content")).toBeVisible({ timeout: 20_000 });
+}
+
+test.describe("Board Lab", () => {
+  test("the index lists the boards with lesson progress as done/total", async ({ page }) => {
+    const errors = watchErrors(page);
+    await page.goto("/en/boards");
+    await expect(main(page).getByRole("heading", { level: 1, name: boardlab.index.title })).toBeVisible();
+    const uno = main(page).locator('[data-board="uno-r3"]');
+    await expect(uno).toBeVisible();
+    await expect(uno.getByTestId("progress-uno-r3")).toContainText(/0\/16/);
+    await expectNoAxeViolations(page);
+    expect(errors).toEqual([]);
+  });
+
+  test("the Uno R3 workspace has the figure, pinout, assembly and 16 lessons", async ({ page }) => {
+    const errors = watchErrors(page);
+    await page.goto("/en/boards/uno-r3");
+    await expect(main(page).getByTestId("board-workspace")).toBeVisible();
+    await expect(main(page).locator("iframe")).toHaveCount(1);
+    await expect(main(page).getByTestId("pinout").locator("tbody tr").first()).toBeVisible();
+    await expect(main(page).getByTestId("assembly-panel")).toBeVisible();
+    await expect(main(page).getByTestId("board-lessons").locator("li")).toHaveCount(16);
+    await expectNoAxeViolations(page);
+    expect(errors).toEqual([]);
+  });
+
+  test("Blink: Run uploads, the LED follows D13 and the serial monitor shows the run", async ({ page }) => {
+    const errors = watchErrors(page);
+    await openBlink(page);
+    await expect(serialStatus(page)).toHaveText(boardlab.serial.status.stopped);
+    await main(page).getByTestId("run-button").click();
+    await expect(serialStatus(page)).toHaveText(boardlab.serial.status.running, { timeout: 10_000 });
+    await expect(serialLines(page)).toContainText(boardlab.serial.upload.compiling);
+    await expect(serialLines(page)).toContainText(boardlab.serial.upload.uploading.replace("{board}", "Arduino Uno R3"));
+    await expect(serialLines(page)).toContainText(boardlab.serial.upload.done);
+
+    // The interpreter drives D13; the readout shows it as text and it changes over time.
+    const d13 = main(page).locator('[data-testid="pin-readout"] [data-pin="D13"]');
+    await expect(d13).toBeVisible({ timeout: 5_000 });
+    const first = await d13.getAttribute("data-level");
+    await expect(d13).not.toHaveAttribute("data-level", first ?? "", { timeout: 5_000 });
+
+    // The figure itself reports its LED (the L LED on D13, or the breadboard LED) switching.
+    const readout = main(page).getByTestId("figure-readout");
+    await expect(readout).toBeVisible({ timeout: 15_000 });
+    const lit = readout.locator('[data-on="1"], [data-state="ok"]');
+    const dark = readout.locator('[data-on="0"], [data-state="off"]');
+    await expect(lit.first()).toBeVisible({ timeout: 5_000 });
+    await expect(dark.first()).toBeVisible({ timeout: 5_000 });
+
+    await main(page).getByTestId("run-button").click();
+    await expect(serialStatus(page)).toHaveText(boardlab.serial.status.stopped);
+    await expect(serialLines(page)).toContainText(boardlab.serial.upload.stopped);
+    expect(errors).toEqual([]);
+  });
+
+  test("edited code really runs: a new Serial.println appears in the monitor", async ({ page }) => {
+    await openBlink(page);
+    const editor = main(page).locator(".cm-content");
+    await editor.click();
+    await page.keyboard.press("ControlOrMeta+a");
+    await page.keyboard.insertText('void setup() {\n  Serial.begin(9600);\n  Serial.println("edited and running");\n}\n\nvoid loop() {}\n');
+    await page.keyboard.press("Escape");
+    await main(page).getByTestId("run-button").click();
+    await expect(serialLines(page)).toContainText("edited and running", { timeout: 10_000 });
+  });
+
+  test("a compile error is reported with its line and nothing runs", async ({ page }) => {
+    await openBlink(page);
+    const editor = main(page).locator(".cm-content");
+    await editor.click();
+    await page.keyboard.press("ControlOrMeta+a");
+    await page.keyboard.insertText("void setup() {\n  pinMode(13, OUTPUT)\n}\nvoid loop() {}\n");
+    await page.keyboard.press("Escape");
+    await main(page).getByTestId("run-button").click();
+    await expect(main(page).getByTestId("code-error")).toBeVisible({ timeout: 5_000 });
+    await expect(serialStatus(page)).toHaveText(boardlab.serial.status.stopped);
+  });
+
+  test("keyboard only: Space runs and stops, ? opens the shortcuts", async ({ page }) => {
+    await openBlink(page);
+    // Nothing focused: the page's global shortcuts apply.
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+    await page.keyboard.press("Space");
+    await expect(serialStatus(page)).toHaveText(boardlab.serial.status.running, { timeout: 10_000 });
+    await page.keyboard.press("Space");
+    await expect(serialStatus(page)).toHaveText(boardlab.serial.status.stopped);
+
+    // Tab reaches the Run button and Enter presses it.
+    const run = main(page).getByTestId("run-button");
+    await run.focus();
+    await page.keyboard.press("Enter");
+    await expect(serialStatus(page)).toHaveText(boardlab.serial.status.running, { timeout: 10_000 });
+    await page.keyboard.press("Enter");
+    await expect(serialStatus(page)).toHaveText(boardlab.serial.status.stopped);
+
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+    await page.keyboard.press("?");
+    const dialog = page.getByRole("dialog", { name: boardlab.keys.title });
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByTestId("shortcuts")).toContainText(boardlab.keys.run);
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+
+    // ] opens the next lesson.
+    await page.keyboard.press("]");
+    await expect(page).toHaveURL(/\/en\/boards\/uno-r3\/button$/);
+  });
+
+  test("the lesson page passes axe", async ({ page }) => {
+    await openBlink(page);
+    await expectNoAxeViolations(page);
+  });
+
+  test("an unknown board or lesson is a 404", async ({ page }) => {
+    const board = await page.goto("/en/boards/not-a-board");
+    expect(board?.status()).toBe(404);
+    const lesson = await page.goto("/en/boards/uno-r3/not-a-lesson");
+    expect(lesson?.status()).toBe(404);
+  });
+});

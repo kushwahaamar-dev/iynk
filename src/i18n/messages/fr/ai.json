@@ -1,0 +1,136 @@
+{
+  "panel": {
+    "title": "Partenaire de labo",
+    "byline": "Muse Spark · d’abord des indices, d’abord les amis",
+    "intro": "Pose une question sur ton câblage, ton code ou une panne. Je donne des indices avant les réponses et, si quelqu’un de ton salon a déjà fait cette leçon, je lui demande d’abord.",
+    "inputLabel": "Pose une question à ton partenaire de labo",
+    "placeholder": "Une question sur le banc…",
+    "send": "Envoyer",
+    "stop": "Arrêter",
+    "newChat": "Nouvelle discussion",
+    "thinking": "Réflexion…",
+    "you": "Toi",
+    "partner": "Partenaire",
+    "stopped": "Arrêté.",
+    "retry": "Réessayer",
+    "sources": "Sources",
+    "suggestions": "Essaie de demander",
+    "accepted": "Tu as accepté la modification ({kind}).",
+    "rejected": "Tu as refusé la modification ({kind}).",
+    "kinds": {
+      "code": "code",
+      "wire": "câblage",
+      "part": "pièces"
+    },
+    "code": "Code",
+    "chat": "Discussion",
+    "transcript": "Discussion avec ton partenaire de labo"
+  },
+  "hint": {
+    "label": "Bloqué ?",
+    "hint": "Donne-moi un indice",
+    "another": "Un autre indice",
+    "show": "Montre-moi",
+    "askHint": "Donne-moi un indice, pas la réponse.",
+    "askAnother": "Un autre indice, s’il te plaît.",
+    "askShow": "Montre-moi la solution."
+  },
+  "suggest": {
+    "fault": "Pourquoi ça arrive : {fault} ?",
+    "error": "Que veut dire cette erreur de compilation ?",
+    "failed": "Pourquoi « {test} » a-t-il échoué ?",
+    "start": "Que devrais-je essayer d’abord ?",
+    "code": "Que fait ce code ?",
+    "wiring": "Mon câblage est-il correct ?",
+    "drone": "Ce drone va-t-il bien voler ?",
+    "safety": "À quoi dois-je faire attention ?"
+  },
+  "tools": {
+    "highlight": "Regarde {part}",
+    "highlightOff": "La figure 3D n’est pas encore chargée, cette pièce n’est donc pas mise en évidence.",
+    "showAgain": "Montre-la encore",
+    "change": {
+      "code": "Modification du code proposée",
+      "wire": "Modification du câblage proposée",
+      "part": "Modification des pièces proposée"
+    },
+    "accept": "Accepter",
+    "reject": "Refuser",
+    "accepted": "Acceptée",
+    "rejected": "Refusée",
+    "manual": "Ce banc ne peut pas l’appliquer pour toi. Copie-la et fais la modification toi-même.",
+    "copy": "Copier",
+    "copied": "Copié",
+    "unchanged": {
+      "one": "{count} ligne inchangée",
+      "other": "{count} lignes inchangées"
+    },
+    "diffLabel": "Modifications : les lignes qui commencent par + sont ajoutées, celles qui commencent par − sont supprimées.",
+    "askPeer": "J’ai demandé à {name} d’expliquer",
+    "askPeerNoRoom": "Un ami qui a déjà fait ça pourrait te l’expliquer. Invite quelqu’un à construire avec toi.",
+    "invite": "Inviter un ami",
+    "opened": "{tab} ouvert",
+    "tabs": {
+      "partner": "Partenaire",
+      "together": "Ensemble",
+      "real": "Construis-le pour de vrai",
+      "passport": "Passeport",
+      "hardware": "Matériel"
+    },
+    "question": "« {question} »"
+  },
+  "errors": {
+    "not_configured": "Le partenaire de labo n’est pas configuré sur ce déploiement.",
+    "rate_limited": "Beaucoup de questions en ce moment. Attends quelques secondes, puis réessaie.",
+    "bad_input": "Impossible d’envoyer ce message. Essaie une question plus courte.",
+    "upstream": "Le partenaire n’a pas répondu cette fois. Réessaie.",
+    "offline": "Tu es hors ligne. Le labo fonctionne toujours ; le partenaire a besoin d’une connexion.",
+    "aborted": "Arrêté."
+  },
+  "status": {
+    "loading": "Réveil de ton partenaire de labo…",
+    "unavailable": "Le partenaire de labo n’est pas configuré sur ce déploiement",
+    "unavailableBody": "Tout le reste du labo fonctionne sans lui. Le partenaire a besoin d’une clé de l’API de modèles de Meta sur le serveur.",
+    "unreachable": "Impossible de joindre le serveur pour vérifier le partenaire.",
+    "check": "Vérifier à nouveau"
+  },
+  "voice": {
+    "hold": "Maintiens pour parler (ou appuie sur M)",
+    "stopRecording": "Arrêter et envoyer (ou appuie sur M)",
+    "recording": "J’écoute… relâche pour envoyer.",
+    "transcribing": "Transcription de ta voix…",
+    "denied": "L’accès au micro est bloqué. Autorise-le dans ton navigateur pour parler.",
+    "unsupported": "La saisie vocale n’est pas disponible dans ce navigateur.",
+    "unavailable": "La voix n’est pas configurée sur ce déploiement.",
+    "empty": "Je n’ai rien entendu. Réessaie, un peu plus près du micro.",
+    "failed": "Ta voix n’a pas pu être transcrite. Réessaie ou écris."
+  },
+  "story": {
+    "title": "Récit de construction",
+    "intro": "Transforme cette session en un court récit avec une couverture : qui a construit quoi, ce qui a cassé et qui a aidé.",
+    "make": "Écrire notre récit",
+    "remake": "Le réécrire",
+    "writing": "Écriture de ton récit…",
+    "drawing": "Dessin de la couverture…",
+    "empty": "Rien à raconter pour l’instant. Branche quelque chose, lance du code ou pose une question au partenaire, puis reviens.",
+    "moments": {
+      "one": "{count} moment pour l’instant",
+      "other": "{count} moments pour l’instant"
+    },
+    "coverAlt": "Illustration de couverture pour « {title} »",
+    "builtBy": "Construit par",
+    "helped": "{helper} a aidé {learner}",
+    "highlights": "Temps forts",
+    "download": "Télécharger le PNG",
+    "share": "Partager",
+    "copyLink": "Copier le lien",
+    "copied": "Lien copié",
+    "facebook": "Partager sur Facebook",
+    "shareText": "{title}, un récit de construction SimLab",
+    "unavailable": "Les récits de construction ne sont pas configurés sur ce déploiement.",
+    "failed": "Le récit n’a pas pu être écrit. Réessaie.",
+    "noCover": "La couverture n’a pas pu être dessinée cette fois, le récit n’en a donc pas.",
+    "footer": "Fait ensemble dans SimLab",
+    "me": "Moi"
+  }
+}

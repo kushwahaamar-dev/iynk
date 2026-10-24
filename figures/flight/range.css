@@ -1,0 +1,67 @@
+:root { --paper: #f2efe7; --ink: #231e16; --muted: #857d6e; --rule: #ddd6c8; color-scheme: light; }
+html.cf-dark { --paper: #e4ddcf; --rule: #cbc2b1; --muted: #6a6357; }
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body {
+  background-color: var(--paper);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .42  0 0 0 0 .39  0 0 0 0 .33  .16 0 0 0 0'/></filter><rect width='100%' height='100%' filter='url(%23p)'/></svg>");
+  color: var(--ink);
+  font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+#stage { position: absolute; inset: 0; touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab; outline: none; }
+#stage:focus-visible { box-shadow: inset 0 0 0 2px var(--ink); }
+#stage.fpv { cursor: default; }
+#iso, #overlay, #fpv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+#overlay { pointer-events: none; }
+#fpv { display: none; background: #cfe2ea; }
+#stage.fpv #fpv { display: block; }
+#stage.fpv #iso, #stage.fpv #overlay { display: none; }
+#iso path { stroke: var(--ink); stroke-width: 1.15; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+#iso .grid { fill: none; stroke: rgba(35, 30, 22, .13); stroke-width: .8; }
+#iso .cast path { fill: #41538f; stroke: none; opacity: .18; }
+#iso .solid { transition: opacity .25s; }
+#iso .solid.cut { opacity: .26; }
+#iso .gate.next path { fill: #f4b829; stroke-width: 2.2; }
+#iso .cpi { fill: none; stroke-width: 6.5; }
+#iso .cp { fill: none; stroke: #ece6d6; stroke-width: 3.5; }
+#iso .cp.next { stroke: #ef6a4c; }
+#iso circle.cp { fill: rgba(244, 241, 230, .35); stroke: var(--ink); stroke-width: 1.4; vector-effect: non-scaling-stroke; }
+#iso circle.cp.next { fill: rgba(239, 106, 76, .3); }
+#iso .decal { font: 700 12px ui-monospace, SFMono-Regular, Menlo, monospace; text-anchor: middle; fill: rgba(35, 30, 22, .55); }
+#iso .arm { stroke: #3d3935; stroke-width: 3.2; stroke-linecap: round; }
+#iso .blade { stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; }
+#iso .blur { stroke-width: .8; }
+#iso .duct { fill: none; stroke-width: 2.4; }
+#iso .ghost { fill: none; stroke-dasharray: 3 3; stroke-width: 1.3; opacity: .8; }
+#iso .ghost.arm { stroke: var(--ink); stroke-width: 1.3; }
+#iso .cshadow { fill: #41538f; opacity: .34; }
+#iso .hline { stroke-dasharray: 2 3; stroke-width: 1; fill: none; }
+#iso .gdot { fill: none; stroke: var(--ink); stroke-width: 1.2; vector-effect: non-scaling-stroke; }
+#iso .spray { fill: rgba(118, 160, 226, .28); stroke: none; }
+#overlay .pill { fill: var(--paper); stroke: var(--ink); stroke-width: 1.5; }
+#overlay .pill.home { fill: #93d3b0; }
+#overlay .ptext { font: 700 12px ui-monospace, SFMono-Regular, Menlo, monospace; text-anchor: middle; fill: var(--ink); }
+#overlay .parrow { fill: var(--ink); }
+#overlay .wind circle { fill: rgba(242, 239, 231, .92); stroke: var(--ink); stroke-width: 1.5; }
+#overlay .wind path { stroke: var(--ink); stroke-width: 2.2; fill: none; stroke-linecap: round; }
+#overlay .wind .head { fill: var(--ink); stroke: none; }
+#overlay .wind text { font: 700 11px ui-monospace, SFMono-Regular, Menlo, monospace; text-anchor: middle; fill: var(--ink); paint-order: stroke; stroke: var(--paper); stroke-width: 3px; }
+#fpv .fi { stroke: #231e16; stroke-width: 1.1; stroke-linejoin: round; }
+#fpv .fgrid { fill: none; stroke: rgba(35, 30, 22, .14); stroke-width: .8; }
+#fpv .ring { stroke-linejoin: round; }
+#fpv circle.ring { stroke: #231e16; stroke-width: 1.2; }
+#fpv .osd text { font: 800 30px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #fff; stroke: #1b1712; stroke-width: 3.2px; paint-order: stroke; letter-spacing: .02em; }
+#fpv .osd .sm { font-size: 22px; }
+#fpv .osd .red { fill: #ff6b5b; }
+#fpv .osd .green { fill: #8af0ae; }
+#fpv .osd .yellow { fill: #ffd25e; }
+#fpv .ahi, #fpv .cross { stroke: #fff; stroke-width: 3; fill: none; stroke-linecap: round; }
+#fpv .ahi-o { stroke: #1b1712; stroke-width: 6.4; fill: none; stroke-linecap: round; }
+#fpv .arrow { fill: #fff; stroke: #1b1712; stroke-width: 2.5; paint-order: stroke; stroke-linejoin: round; }
+#toast { position: absolute; left: 12px; bottom: 12px; max-width: min(320px, 80%); font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; background: var(--paper); border: 1.5px solid var(--ink); border-radius: 8px; padding: 4px 9px; box-shadow: 2px 2px 0 var(--ink); opacity: 0; transition: opacity .2s; pointer-events: none; }
+#toast.on { opacity: 1; }
+#stage.fpv #toast { display: none; }
+@media (max-width: 560px) {
+  #fpv .osd text { font-size: 40px; stroke-width: 4px; }
+  #fpv .osd .sm { font-size: 30px; }
+}
+@media (prefers-reduced-motion: reduce) { #iso .solid { transition: none; } #toast { transition: none; } }

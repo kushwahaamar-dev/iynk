@@ -1,0 +1,548 @@
+{
+  "title": "NodeMCU (ESP8266)",
+  "tagline": "A cheap Wi-Fi board: the ESP8266 on a breadboard-friendly carrier with USB",
+  "overview": "The NodeMCU DevKit v1.0 (sold as \"Amica\", often called V2) puts an Ai-Thinker ESP-12E module on a 25.4 x 48.3 mm board with a CP2102 USB-serial chip, a 3.3 V regulator and two buttons. The ESP8266EX inside runs at 80 MHz with 4 MB of flash and 2.4 GHz Wi-Fi. Everything is 3.3 V. The silkscreen names D0-D8 are not the GPIO numbers (D4 is GPIO2), both blue LEDs light when their pin is LOW, and three pins decide at reset whether the sketch runs at all. The wider LoLin \"NodeMCU V3\" clone (CH340G) has the same pin map but covers a whole breadboard.",
+  "mcu": {
+    "cp2102": "USB-to-serial bridge. It carries Serial and the uploads, and its DTR and RTS lines drive the two transistors that reset the ESP8266 into its bootloader.",
+    "spi-flash": "Holds your program and the file system. The ESP8266 has no flash of its own and runs code from this chip through a cache, which is why the six SD/CMD/CLK pins are off limits."
+  },
+  "power": {
+    "usb": {
+      "protection": "The SS14 Schottky diode D1 passes USB 5 V to Vin and blocks a supply on Vin from flowing back into the computer. There is no fuse: a short on Vin is limited only by the USB port."
+    },
+    "vin": {
+      "protection": "No protection. The regulator is rated 15 V absolute maximum (AMS1117; the NCP1117 in the original parts list takes 20 V), but above about 9 V it overheats under Wi-Fi load. A reversed supply here burns the board."
+    },
+    "pin3v3": {
+      "protection": "Goes straight to the ESP8266 and the CP2102, past the regulator. Only a clean 3.0-3.6 V is safe; 5 V here destroys the chip."
+    },
+    "rails": {
+      "vin": "Vin: the USB 5 V after D1 (about 4.65 V), or your own 5-9 V supply on the Vin pin.",
+      "3v3": "3.3 V from U4 (1117-3.3, up to about 1 A, 1.1-1.2 V dropout). Keep your own load under 500 mA."
+    },
+    "io": "Each GPIO sources or sinks at most 12 mA (ESP8266EX datasheet). There is no published total, so keep the sum low and drive LEDs through a resistor. The board draws about 80 mA when idle with Wi-Fi on, and Wi-Fi transmit bursts reach 170 mA."
+  },
+  "pins": {
+    "j1": {
+      "1": "The only analog input. The board's 220 kΩ / 100 kΩ divider scales 0-3.2 V down to the chip's 0-1.0 V, so analogRead(A0) returns 0-1023 for 0-3.2 V. 5 V here just reads 1023 and is out of spec.",
+      "2": "Wired straight to the chip's TOUT pin, past the divider: 0-1.0 V only. Leave it free and use A0. The bottom silkscreen prints NC here, but the copper is connected.",
+      "3": "Not connected on this board. On the wider LoLin V3 clone this position is VU, the USB 5 V before the diode.",
+      "4": "GPIO10, the flash chip's /WP line. Part of the SPI flash bus: do not use.",
+      "5": "GPIO9, the flash chip's /HOLD line. Driving it low freezes the flash and crashes the chip: do not use.",
+      "6": "GPIO8, flash data in. SPI flash bus: do not use.",
+      "7": "GPIO11, flash chip select. SPI flash bus: do not use.",
+      "8": "GPIO7, flash data out. SPI flash bus: do not use.",
+      "9": "GPIO6, flash clock. SPI flash bus: do not use.",
+      "10": "Ground (square pad).",
+      "11": "3.3 V from the regulator. The ESP8266 and the CP2102 already take 100-250 mA of it.",
+      "12": "Chip enable (CH_PD), held high by R3. Pull it low and the ESP8266 switches off.",
+      "13": "Reset, held high by R4 and pulled low by the RST button. For deep sleep, wire D0 to this pin so the wake pulse can reset the chip.",
+      "14": "Ground (square pad).",
+      "15": "Regulator input. On USB it sits at about 4.65 V (5 V minus the SS14 drop); you can feed 5-9 V here instead. The silkscreen says 5-12 V, but at 12 V the regulator overheats under Wi-Fi load. Not protected against reverse polarity."
+    },
+    "j2": {
+      "1": "GPIO16 and the board's blue LED (LED1, lit when LOW). No PWM, no interrupts and no pull-up (only INPUT_PULLDOWN_16). It is also the deep-sleep wake output.",
+      "2": "GPIO5, the default I2C SCL for Wire. Quiet at boot, so a good first choice for outputs.",
+      "3": "GPIO4, the default I2C SDA for Wire. Quiet at boot.",
+      "4": "GPIO0 and the FLASH button, pulled up by R1. It must be high at reset or the chip starts the ROM bootloader instead of your sketch. After boot it works as a button input.",
+      "5": "GPIO2: the module's blue LED (LED_BUILTIN, lit when LOW) and UART1 TX. It must be high at reset (R2 pulls it up) and it flickers while the ROM prints its boot log.",
+      "6": "3.3 V output.",
+      "7": "Ground (square pad).",
+      "8": "GPIO14, hardware SPI clock (SCK). Quiet at boot.",
+      "9": "GPIO12, hardware SPI MISO. Quiet at boot.",
+      "10": "GPIO13, hardware SPI MOSI; Serial.swap() moves UART0 RX here. Quiet at boot.",
+      "11": "GPIO15, SPI chip select, pulled down by R5. It must be low at reset: a module or pull-up that holds it high stops the board from booting.",
+      "12": "GPIO3, UART0 RX, fed by the CP2102 through a 470 Ω resistor. Using it as a GPIO breaks Serial and uploads.",
+      "13": "GPIO1, UART0 TX to the CP2102. It carries the boot log, so it toggles at power-up.",
+      "14": "Ground (square pad).",
+      "15": "3.3 V output."
+    }
+  },
+  "leds": {
+    "LED_MOD": "Blue LED on the ESP-12E module, wired from 3.3 V to GPIO2: LOW turns it on. It flickers at boot and during uploads because GPIO2 also carries the ROM log.",
+    "LED1": "Blue LED on the board, anode through R9 (470 Ω) to 3.3 V, cathode to GPIO16: LOW turns it on. There is no power LED, so a board with both LEDs dark may still be running."
+  },
+  "controls": {
+    "S1": "RST: pulls the reset line low through R11. On release the chip restarts and your sketch runs from the top.",
+    "S2": "FLASH: pulls GPIO0 (D3) low through R12. Held while RST is released, it starts the ROM's UART download mode. Once the sketch runs it is an ordinary button on D3, LOW when pressed."
+  },
+  "parts": {
+    "U1": { "name": "ESP-12E Wi-Fi module", "what": "Ai-Thinker module with the ESP8266EX, a 26 MHz crystal and 4 MB of SPI flash under the metal can, and a printed antenna at the top end." },
+    "LED_MOD": { "name": "Blue LED on the module (D4)", "what": "The LED_BUILTIN LED. It sits on the module itself, between the can and the antenna, and lights when GPIO2 is LOW." },
+    "U2": { "name": "CP2102 USB-to-serial bridge", "what": "Silicon Labs USB-UART chip in a 5 x 5 mm QFN. The computer sees it as a serial port (VID:PID 10C4:EA60); it runs from the board's 3.3 V." },
+    "U3": { "name": "Micro-USB socket", "what": "Power and data. A charge-only cable powers the board but no serial port appears." },
+    "U4": { "name": "AMS1117-3.3 regulator", "what": "Linear regulator, Vin to 3.3 V, about 1 A, with current limit and thermal shutdown. The large tab is the 3.3 V output and its heat sink." },
+    "D1": { "name": "SS14 Schottky diode D1", "what": "Passes USB 5 V to Vin with about 0.35 V drop and stops an external Vin supply from feeding back into the computer." },
+    "C2": { "name": "Tantalum capacitor C2 (100 µF)", "what": "Bulk capacitor on 3.3 V that covers the ESP8266's Wi-Fi current bursts. Polarised: the band marks +." },
+    "C7": { "name": "10 µF capacitor on Vin", "what": "Input capacitor of the regulator (25 V ceramic)." },
+    "C8": { "name": "10 µF capacitor on 3.3 V", "what": "Output capacitor of the regulator." },
+    "C1": { "name": "100 nF reset filter", "what": "With R4 it slows the reset line, so the chip starts cleanly about a millisecond after power-up." },
+    "C3": { "name": "10 µF CP2102 decoupling", "what": "Supply capacitor for the USB bridge." },
+    "C4": { "name": "100 nF CP2102 decoupling", "what": "High-frequency supply capacitor for the USB bridge." },
+    "C5": { "name": "10 µF USB VBUS capacitor", "what": "Smooths the 5 V coming in on the USB cable." },
+    "C6": { "name": "100 nF USB VBUS capacitor", "what": "High-frequency filter on the USB 5 V." },
+    "R1": { "name": "GPIO0 pull-up R1 (12 kΩ)", "what": "Holds D3 high so the chip boots your sketch; the FLASH button overrides it." },
+    "R2": { "name": "GPIO2 pull-up R2 (12 kΩ)", "what": "Holds D4 high at reset, as the boot ROM requires." },
+    "R5": { "name": "GPIO15 pull-down R5 (12 kΩ)", "what": "Holds D8 low at reset. Without it GPIO15 floats and the chip can pick the wrong boot mode." },
+    "R13": { "name": "220 kΩ A0 divider, top", "what": "With R14 it turns 0-3.2 V on A0 into the 0-1.0 V the ADC accepts." },
+    "R14": { "name": "100 kΩ A0 divider, bottom", "what": "Lower half of the A0 divider (100 / 320 = 0.3125)." },
+    "R3": { "name": "EN pull-up R3 (12 kΩ)", "what": "Holds the chip-enable pin high. Without it the ESP8266 never switches on." },
+    "R4": { "name": "RST pull-up R4 (12 kΩ)", "what": "Holds the reset line high between presses." },
+    "R11": { "name": "470 Ω RST button resistor", "what": "In series with the RST button." },
+    "R10": { "name": "R10 pads, not fitted (D0 to RST link)", "what": "Empty pads for a 0 Ω link from GPIO16 to RST. Fitting it (or a wire from D0 to RST) lets deep sleep wake the chip." },
+    "R9": { "name": "470 Ω LED1 resistor", "what": "Limits the current of the board LED on D0." },
+    "R6": { "name": "470 Ω serial resistor", "what": "Between the CP2102's TXD and the ESP's RX pin, so an adapter on the RX header pin can override the bridge." },
+    "R8": { "name": "12 kΩ VT2 base resistor", "what": "Feeds the RTS signal to the transistor that pulls GPIO0 low." },
+    "R12": { "name": "470 Ω FLASH button resistor", "what": "In series with the FLASH button." },
+    "R7": { "name": "12 kΩ VT1 base resistor", "what": "Feeds the DTR signal to the transistor that pulls RST low." },
+    "VT1": { "name": "S8050 auto-reset transistor", "what": "Pulls RST low when DTR and RTS differ one way. With VT2 it lets esptool enter the bootloader without you touching the buttons." },
+    "VT2": { "name": "S8050 auto-program transistor", "what": "Pulls GPIO0 low when DTR and RTS differ the other way. Both lines asserted together pull nothing low, so a terminal does not reset the board by accident." },
+    "LED1": { "name": "Blue LED on the board (D0)", "what": "LED_BUILTIN_AUX, on GPIO16. Lights when D0 is LOW." },
+    "S1": { "name": "RST button", "what": "Resets the ESP8266; your sketch starts again from setup()." },
+    "S2": { "name": "FLASH button (GPIO0, D3)", "what": "Selects download mode at reset, and is a user button on D3 afterwards." },
+    "J1": { "name": "Left header", "what": "15 pins at 2.54 mm: A0, the two RSV pins, the six flash-bus pins, GND, 3V3, EN, RST, GND and Vin. Pins point down for a breadboard." },
+    "J2": { "name": "Right header", "what": "15 pins at 2.54 mm: D0-D8, RX, TX, 3V3 and GND. The rows are 22.86 mm apart, leaving one free hole on each side of a standard breadboard." }
+  },
+  "wireables": {
+    "led": {
+      "note": "A 220 Ω resistor gives a red LED about 6 mA from a 3.3 V pin: (3.3 V - 2.0 V) / 220 Ω.",
+      "caution": "Never connect an LED without a resistor: the pin is rated 12 mA. Blue and white LEDs need about 3 V and stay dim on 3.3 V."
+    },
+    "push-button": {
+      "note": "Use pinMode(D5, INPUT_PULLUP); the pin reads LOW while the button is pressed.",
+      "caution": "Not on D3, D4 or D8: a pressed button or an external pull resistor there changes the boot mode. D0 has no pull-up."
+    },
+    "potentiometer": {
+      "note": "Ends to 3V3 and GND, wiper to A0. The top 0.1 V of travel reads 1023 because A0's full scale is 3.2 V."
+    },
+    "ldr": {
+      "note": "LDR from 3V3 to A0 and 10 kΩ from A0 to GND: more light gives a higher reading."
+    },
+    "tmp36": {
+      "note": "Runs from 3.3 V (2.7-5.5 V). 0.5 V means 0 °C and each 10 mV is 1 °C: °C = (raw x 3.2 / 1023 - 0.5) x 100."
+    },
+    "piezo-buzzer": {
+      "note": "tone(D6, 440) works on any GPIO except D0; the ESP8266 makes the square wave in software."
+    },
+    "servo-sg90": {
+      "note": "Servo library, signal on D5. The 3.3 V signal is enough for an SG90.",
+      "caution": "Power it from Vin (about 4.65 V on USB), never from 3V3. Its stall current (several hundred mA) drags the supply down and resets the board, so give it its own 5 V supply with a shared GND for real work."
+    },
+    "hc-sr04": {
+      "note": "Trig on D5, Echo on D6, pulseIn() measures the echo. It needs 5 V, so take VCC from Vin.",
+      "caution": "Echo is a 5 V signal and the ESP8266 is not 5 V tolerant: put a 1 kΩ / 2 kΩ divider (or a level shifter) between Echo and D6."
+    },
+    "ssd1306": {
+      "note": "I2C OLED at address 0x3C: Wire.begin() uses SDA on D2 and SCL on D1."
+    },
+    "mpu6050": {
+      "note": "I2C at 0x68 on D2 (SDA) and D1 (SCL).",
+      "caution": "GY-521 boards have their own 3.3 V regulator; fed with 3.3 V the sensor gets a little less, which it tolerates (2.375-3.46 V)."
+    },
+    "soil-moisture": {
+      "note": "AO to A0, powered from 3V3 so the output never exceeds the 3.2 V range. Power it only while measuring to slow corrosion."
+    },
+    "uln2003": {
+      "note": "Drives a 28BYJ-48 stepper from four GPIOs; the motor takes its current from Vin.",
+      "caution": "The ULN2003 inputs work from 3.3 V logic, but the motor supply must not come from 3V3. Use pins that stay quiet at boot (D1, D2, D5, D6) so the motor does not twitch at power-up."
+    }
+  },
+  "failures": {
+    "reverse-vin": {
+      "title": "Reverse polarity on Vin",
+      "symptom": "Nothing starts, the regulator and the module get hot within seconds, and the board stays dead afterwards.",
+      "explanation": "Vin has no protection diode. A reversed supply drives current backwards through the regulator and the chips' protection diodes. A dead 1117 often fails shorted, which then puts Vin straight on the 3.3 V rail at the next correct power-up.",
+      "fix": "Unplug at once, check the polarity with a meter before connecting, and put a series diode or a reverse-protection MOSFET in your own supply lead."
+    },
+    "vin-overvoltage": {
+      "title": "20 V on Vin",
+      "symptom": "The regulator burns out and the board goes dark.",
+      "explanation": "The AMS1117 on production boards is rated 15 V absolute maximum. Even 12 V is too much in practice: (12 - 3.3) V x 0.25 A is about 2.2 W in a SOT-223, so it reaches thermal shutdown and the board resets.",
+      "fix": "Feed 5-9 V to Vin, or 5 V through USB. For higher voltages use a buck converter first."
+    },
+    "five-volts-on-3v3": {
+      "title": "5 V into a 3.3 V pin",
+      "symptom": "The ESP-12E heats up and the board is dead.",
+      "explanation": "A 3V3 pin connects straight to the ESP8266 and the CP2102, past the regulator. Both are rated 3.6 V maximum, so 5 V destroys them. The same goes for a 5 V signal on a GPIO: the inputs are 3.3 V only.",
+      "fix": "Put 5 V supplies on Vin, not on 3V3, and use a level shifter or a divider for 5 V signals."
+    },
+    "brownout": {
+      "title": "Brown-out under load",
+      "symptom": "The sketch restarts over and over, the serial monitor repeats its start-up line, and Wi-Fi never connects.",
+      "explanation": "A servo or LED strip on the 3.3 V rail, plus the ESP8266's 170 mA Wi-Fi bursts, pulls the rail below about 2.5 V. The ESP8266 has no adjustable brown-out detector: flash reads and RF calibration fail and the watchdog resets the chip.",
+      "fix": "Power motors and strips from their own supply with a shared GND, use a short, thick USB cable, and add 470-1000 µF on 3V3."
+    },
+    "vin-too-low": {
+      "title": "3.5 V on Vin",
+      "symptom": "The board keeps resetting and the LEDs flicker.",
+      "explanation": "The 1117 needs about 1.1-1.3 V more at its input than it puts out. From 3.5 V it can only make about 2.4 V, below what the ESP8266 needs.",
+      "fix": "Give Vin at least 5 V, or feed a regulated 3.3 V into a 3V3 pin instead."
+    },
+    "cold-usb": {
+      "title": "Cold joint on the USB socket",
+      "symptom": "The board resets or the serial port vanishes when the cable is touched.",
+      "explanation": "The Micro-USB socket's shell tabs and pins carry the whole board current. A dull, grainy joint makes contact only some of the time.",
+      "fix": "Reflow the socket's pins and shell tabs with fresh flux until the solder flows smooth and shiny."
+    },
+    "cold-d1": {
+      "title": "Cold joint on header pin D1",
+      "symptom": "The LED on D1 flickers or stays dark although the code is right.",
+      "explanation": "The header pin is soldered badly, so the D1 signal reaches the breadboard only in bursts. The chip itself is fine: the on-board LEDs still work.",
+      "fix": "Reheat the D1 joint and feed a little solder until it forms a clean cone around the pin."
+    },
+    "missing-r3": {
+      "title": "R3 left off (one 0402 resistor)",
+      "symptom": "USB is plugged in and 3.3 V is there, but nothing runs and no serial port output appears.",
+      "explanation": "R3 is the 12 kΩ pull-up on EN (chip enable). Without it EN floats low and the ESP8266 stays switched off, although the rails look perfect on a meter.",
+      "fix": "Fit a 12 kΩ 0402 resistor at R3, or tie EN to 3V3 with any 10-12 kΩ resistor."
+    },
+    "strap-gpio15": {
+      "title": "Boot strap: GPIO15 not held low",
+      "symptom": "The board powers up, but the sketch never starts.",
+      "explanation": "The boot ROM reads GPIO15 (D8), GPIO0 (D3) and GPIO2 (D4) at reset. GPIO15 must be low; with R5 missing it floats, and when it reads high the ROM picks SDIO boot, which this board does not have. A module on D8 that pulls it high does the same.",
+      "fix": "Put R5 (12 kΩ to GND) back, and keep anything that pulls D8 high off that pin."
+    },
+    "strap-flash-held": {
+      "title": "Boot strap: FLASH held during reset",
+      "symptom": "After RST the sketch does not run; at 74880 baud the ROM prints boot mode:(1,x) and waits.",
+      "explanation": "GPIO0 low at reset selects the ROM's UART download mode, which esptool uses for uploads. A button, a sensor or a relay module that pulls D3 low at power-up traps the board in the same mode.",
+      "fix": "Release FLASH and press RST once. Keep D3 free of anything that pulls it low at boot."
+    },
+    "short-3v3": {
+      "title": "3V3 shorted to GND",
+      "symptom": "Everything goes dark and the regulator gets hot.",
+      "explanation": "A solder bridge or a stray wire between 3V3 and GND makes the 1117 hit its current limit (about 1 A) and then its thermal shutdown. It usually survives once the short is gone.",
+      "fix": "Unplug, find the bridge with a meter in continuity mode, and clear it."
+    },
+    "reversed-c2": {
+      "title": "Tantalum capacitor C2 in backwards",
+      "symptom": "At power-up the 3.3 V rail collapses and C2 overheats.",
+      "explanation": "Tantalum capacitors only work one way round. Reversed, the oxide layer breaks down and the capacitor becomes a near short, which can burn.",
+      "fix": "Unplug and fit a new capacitor with its band (+) toward the top of the board, as printed."
+    },
+    "led-no-resistor": {
+      "title": "LED on D1 with no resistor",
+      "symptom": "The LED flashes brightly, then stays dark; D1 may stop driving anything.",
+      "explanation": "Without a resistor only the pin's own resistance limits the current, far above the 12 mA a GPIO is rated for. The LED or the pin's output stage is damaged.",
+      "fix": "Always put 150-1000 Ω in series with an LED on a 3.3 V pin; 220 Ω gives about 6 mA."
+    }
+  },
+  "assembly": {
+    "strip": {
+      "title": "Start from the bare PCB",
+      "body": "Take every part off. What is left is the two-layer board: black mask, white silkscreen, the pads of 38 parts and the two rows of header holes.",
+      "refusal": "Unplug the power first: never work on a live board."
+    },
+    "pick-place": {
+      "title": "Pick and place the SMD parts, then reflow",
+      "body": "The machine sets every surface-mount part on its solder-paste pads: the ESP-12E module (its castellated edges solder like a large chip), the CP2102, the regulator, the diode, the transistors, the LED, the buttons, the Micro-USB socket and 27 tiny 0402/0805 parts. Then the reflow oven melts the paste.",
+      "refusal": "Unplug the power and close the exploded view first."
+    },
+    "header-j1": {
+      "title": "Insert the left header",
+      "body": "Push the 15-pin header through from the top, plastic spacer underneath, so the long pins point down into the breadboard later.",
+      "refusal": "SMD parts first: run pick and place and reflow. The oven would melt the header plastic."
+    },
+    "header-j2": {
+      "title": "Insert the right header",
+      "body": "The second 15-pin header goes in the same way. Keep both square to the board, or the NodeMCU will not fit a breadboard.",
+      "refusal": "SMD parts first: run pick and place and reflow. The oven would melt the header plastic."
+    },
+    "solder": {
+      "title": "Solder the header pins",
+      "body": "30 through-hole joints. Each should be a small shiny cone; a dull, grainy blob is a cold joint that will make a pin work only sometimes.",
+      "refusal": "Nothing to solder yet: place the headers first."
+    },
+    "plug-usb": {
+      "title": "Plug in USB and measure",
+      "body": "Vin should read about 4.65 V (5 V minus the Schottky drop) and 3V3 3.3 V. No LED lights: this board has no power LED. The computer finds the CP2102 as a serial port.",
+      "refusal": "Close the exploded view first."
+    },
+    "upload-blink": {
+      "title": "Upload Blink",
+      "body": "esptool toggles DTR and RTS: VT1 resets the chip while VT2 holds GPIO0 low, so the ROM starts in download mode, takes the sketch and restarts. Then the blue LED on the module blinks: on when GPIO2 is LOW.",
+      "refusal": "Plug in USB first: uploads go over the cable."
+    },
+    "download-mode": {
+      "title": "Break it: hold FLASH and tap RST",
+      "body": "With GPIO0 held low at reset, the boot ROM reports boot mode (1,x) at 74880 baud and waits for esptool instead of running your sketch. Release FLASH and press RST once to run again."
+    },
+    "power-up": {
+      "title": "Power-up check",
+      "body": "Upload the serial hello and open the monitor at 115200 baud. The first characters after a reset are the ROM's 74880-baud log and look like garbage; then \"NodeMCU ready\" appears and a hello line every second.",
+      "refusal": "Plug in USB first: uploads go over the cable."
+    }
+  },
+  "lessons": {
+    "blink": {
+      "title": "Blink two LEDs, one of them backwards",
+      "lede": "Drive an LED on D1 and the module's blue LED on D4. The first lights on HIGH, the second on LOW.",
+      "steps": {
+        "1": "Wire D1 through the 220 Ω resistor to the LED's long leg, and the short leg to GND.",
+        "2": "Run the sketch: the red LED and the blue LED on the module blink together.",
+        "3": "Look at the code: HIGH lights the red LED, but LOW lights the blue one, because it hangs between 3.3 V and GPIO2.",
+        "4": "Change the wait time, then try 1 kΩ: the LED gets dimmer as the current falls."
+      },
+      "hints": {
+        "1": "LED_BUILTIN is GPIO2, which the board prints as D4. digitalWrite(4, …) would drive D2 instead.",
+        "2": "If the red LED stays dark, check that its long leg (anode) is in the resistor's column.",
+        "3": "The current is (3.3 V - 2.0 V) / R: 220 Ω gives about 6 mA, well under the 12 mA pin limit."
+      },
+      "specs": {
+        "1": { "label": "LED current", "value": "about 6 mA with 220 Ω" },
+        "2": { "label": "Pin limit", "value": "12 mA per GPIO" },
+        "3": { "label": "LED_BUILTIN", "value": "GPIO2 = D4, active LOW" }
+      },
+      "pins": {
+        "D1": { "to": "220 Ω resistor, then the red LED", "role": "output, HIGH = on" },
+        "D4": { "to": "blue LED on the ESP-12E (built in)", "role": "output, LOW = on" },
+        "GND": { "to": "LED cathode (short leg)", "role": "ground" }
+      },
+      "callouts": {
+        "LED_MOD": "Built-in LED: between 3.3 V and GPIO2, so LOW lights it.",
+        "R101": "Current limiter: (3.3 V - 2.0 V) / 220 Ω ≈ 6 mA.",
+        "LED101": "Long leg (anode) toward the resistor."
+      },
+      "features": {
+        "1": "Two LEDs, two logic senses",
+        "2": "D-names versus GPIO numbers",
+        "3": "Current through a 3.3 V pin"
+      },
+      "params": {
+        "wait": { "label": "Wait (ms)" },
+        "ohms": { "label": "Resistor", "220": "220 Ω (about 6 mA)", "330": "330 Ω (about 4 mA)", "1000": "1 kΩ (about 1.3 mA)" }
+      },
+      "checks": {
+        "1": "The sketch runs for 3 seconds",
+        "2": "D1 blinks with a period of about 1 s",
+        "3": "The blue LED is on (D4 LOW) while the red one is on",
+        "4": "The blue LED is off (D4 HIGH) in the other half"
+      },
+      "code": {
+        "intro": "Blink an LED on D1 and the blue LED on the module",
+        "resistor": "the LED current is (3.3 V - 2.0 V) / R101",
+        "ledpin": "D1 is GPIO5, quiet at boot",
+        "builtin": "LED_BUILTIN is GPIO2 (D4), the blue LED on the ESP-12E",
+        "on": "HIGH lights the external LED",
+        "activelow": "LOW lights the blue LED: it is active low"
+      },
+      "quiz": {
+        "activelow": {
+          "q": "Which line turns the NodeMCU's built-in LED on?",
+          "options": {
+            "1": "digitalWrite(LED_BUILTIN, HIGH);",
+            "2": "digitalWrite(LED_BUILTIN, LOW);",
+            "3": "analogWrite(LED_BUILTIN, 1023);"
+          },
+          "why": "The LED sits between 3.3 V and GPIO2, so current flows only when the pin is pulled LOW."
+        },
+        "dnames": {
+          "q": "digitalWrite(4, HIGH) on a NodeMCU drives which header pin?",
+          "options": {
+            "1": "D4",
+            "2": "D3",
+            "3": "D2"
+          },
+          "why": "Plain numbers are GPIO numbers. GPIO4 is printed D2; D4 is GPIO2. Write D4 or LED_BUILTIN to be safe."
+        }
+      }
+    },
+    "button": {
+      "title": "The FLASH button and a light sensor",
+      "lede": "Use the FLASH button on D3 as an input and take a light reading on A0 each time it is pressed.",
+      "steps": {
+        "1": "Build the light sensor: the LDR from 3V3 to A0, and 10 kΩ from A0 to GND.",
+        "2": "Run the sketch and press FLASH: the blue LED lights while you hold it and one reading is printed per press.",
+        "3": "Cover the LDR and press again: the reading drops.",
+        "4": "Hold FLASH and press RST: the board stays in download mode, because D3 is a boot pin. Release it and press RST to run again."
+      },
+      "hints": {
+        "1": "The board already has a 12 kΩ pull-up on D3, so pinMode(BUTTON, INPUT) is enough; the pin reads LOW when pressed.",
+        "2": "wasPressed makes the sketch print once per press instead of 50 times a second.",
+        "3": "A0 is scaled by the board divider: raw x 3.2 / 1023 gives the volts on the A0 pin."
+      },
+      "specs": {
+        "1": { "label": "Button", "value": "FLASH = GPIO0 = D3, LOW when pressed" },
+        "2": { "label": "A0 range", "value": "0-3.2 V reads 0-1023" },
+        "3": { "label": "Serial", "value": "115200 baud" }
+      },
+      "pins": {
+        "D3": { "to": "FLASH button on the board", "role": "input, 12 kΩ pull-up on the board" },
+        "D4": { "to": "blue LED on the ESP-12E", "role": "output, LOW = on" },
+        "A0": { "to": "LDR and 10 kΩ divider", "role": "analog input, 0-3.2 V" },
+        "3V3": { "to": "top of the LDR", "role": "3.3 V supply" },
+        "GND": { "to": "bottom of the 10 kΩ resistor", "role": "ground" }
+      },
+      "callouts": {
+        "S2": "FLASH button: pulls GPIO0 low; a boot pin at reset, a button afterwards.",
+        "R1": "12 kΩ pull-up on GPIO0, already on the board.",
+        "LDR101": "Light-dependent resistor: more light, lower resistance, higher A0 voltage.",
+        "R13": "220 kΩ / 100 kΩ divider: scales A0 down to the chip's 0-1 V."
+      },
+      "features": {
+        "1": "An on-board button as input",
+        "2": "A light sensor on the only ADC pin",
+        "3": "One reading per press, not per loop"
+      },
+      "params": {
+        "debounce": { "label": "Loop delay (ms)" }
+      },
+      "world": {
+        "flash": "FLASH button",
+        "light": "Light on the LDR"
+      },
+      "checks": {
+        "1": "The sketch prints its ready line",
+        "2": "Pressing FLASH lights the blue LED within 100 ms",
+        "3": "Releasing FLASH turns it off again",
+        "4": "Two presses print two A0 readings"
+      },
+      "code": {
+        "intro": "Press FLASH (D3) to read the light level on A0",
+        "button": "FLASH button: GPIO0, LOW while pressed",
+        "light": "LDR divider on the only analog pin",
+        "pullup": "R1 on the board is the pull-up",
+        "off": "HIGH switches the blue LED off",
+        "divider": "the board's divider makes 3.2 V read as 1023",
+        "debounce": "a short pause also rides over contact bounce"
+      }
+    },
+    "dimmer": {
+      "title": "A knob that dims an LED",
+      "lede": "Read a potentiometer on A0 and set the LED brightness on D5 with PWM, scaled with map().",
+      "steps": {
+        "1": "Wire the potentiometer: ends to 3V3 and GND, wiper to A0.",
+        "2": "Wire D5 through 220 Ω to a green LED and on to GND.",
+        "3": "Run the sketch and turn the knob: the LED follows and the monitor shows the reading and the duty.",
+        "4": "Turn it fully up: the reading stops at 1023 a little before the end, because A0's full scale is 3.2 V."
+      },
+      "hints": {
+        "1": "analogRead() is 10-bit (0-1023) and analogWrite() uses 0-255 in core 3.x, so map() converts one to the other.",
+        "2": "Old tutorials use analogWrite(pin, 1023): that was the 2.x range. With 255 as the range, 1023 just means fully on.",
+        "3": "D0 cannot do PWM. Every other D pin can, at 1 kHz by default (analogWriteFreq() changes it)."
+      },
+      "specs": {
+        "1": { "label": "ADC", "value": "10-bit, 0-3.2 V on A0" },
+        "2": { "label": "PWM", "value": "software, 1 kHz, range 255" },
+        "3": { "label": "LED current", "value": "about 6 mA at full duty" }
+      },
+      "pins": {
+        "A0": { "to": "potentiometer wiper", "role": "analog input" },
+        "D5": { "to": "220 Ω resistor and the green LED", "role": "PWM output" },
+        "3V3": { "to": "one end of the potentiometer", "role": "3.3 V supply" },
+        "GND": { "to": "other end of the potentiometer and the LED", "role": "ground" }
+      },
+      "callouts": {
+        "POT101": "10 kΩ potentiometer: the wiper gives 0-3.3 V.",
+        "R14": "Bottom of the A0 divider: the ADC itself only takes 0-1 V.",
+        "LED101": "PWM switches it on and off 1000 times a second; the duty sets the brightness."
+      },
+      "features": {
+        "1": "Analog in, PWM out",
+        "2": "Scaling with map()",
+        "3": "The A0 divider in practice"
+      },
+      "params": {
+        "every": { "label": "Print every (ms)" }
+      },
+      "world": {
+        "knob": "Knob position"
+      },
+      "checks": {
+        "1": "At half turn the duty is about 50 %",
+        "2": "Fully up the LED is fully on",
+        "3": "The monitor shows the reading and the duty",
+        "4": "Fully down the duty is 0"
+      },
+      "code": {
+        "intro": "Read a knob on A0 and dim an LED on D5",
+        "knob": "potentiometer wiper, 0-3.3 V",
+        "led": "D5 is GPIO14: PWM-capable and quiet at boot",
+        "range": "0-255 is already the default in core 3.x",
+        "read": "0-1023 for 0-3.2 V on the A0 pin",
+        "map": "scale 10-bit input to 8-bit duty"
+      }
+    },
+    "webserver": {
+      "title": "Switch an LED over Wi-Fi",
+      "lede": "Join a Wi-Fi network, start a web server on port 80 and switch the LEDs from a phone with /on and /off.",
+      "steps": {
+        "1": "Keep the LED on D1 from lesson 1.",
+        "2": "Run the sketch: the monitor prints dots while the board connects, then its IP address.",
+        "3": "Send /on and /off from the phone: the LED on D1 and the blue LED follow.",
+        "4": "Pick the 5 GHz network and run again: the ESP8266 only has a 2.4 GHz radio, so it never connects."
+      },
+      "hints": {
+        "1": "server.handleClient() must run all the time in loop(); a long delay() there makes the page time out.",
+        "2": "The ESP8266 only sees 2.4 GHz networks (802.11 b/g/n).",
+        "3": "Wi-Fi transmit peaks reach 170 mA: a weak USB cable can brown out the board right when it connects."
+      },
+      "specs": {
+        "1": { "label": "Radio", "value": "2.4 GHz 802.11 b/g/n" },
+        "2": { "label": "Server", "value": "ESP8266WebServer, port 80" },
+        "3": { "label": "Peak current", "value": "about 170 mA while transmitting" }
+      },
+      "pins": {
+        "D1": { "to": "220 Ω resistor and the yellow LED", "role": "output, HIGH = on" },
+        "D4": { "to": "blue LED on the ESP-12E", "role": "output, LOW = on" },
+        "GND": { "to": "LED cathode", "role": "ground" }
+      },
+      "callouts": {
+        "U1": "The printed antenna at the top end: keep metal and wires away from it.",
+        "U4": "Wi-Fi bursts load the 3.3 V regulator hardest.",
+        "LED101": "Switched by the /on and /off pages."
+      },
+      "features": {
+        "1": "Joining a Wi-Fi network",
+        "2": "A web server with three pages",
+        "3": "Why the supply matters for Wi-Fi"
+      },
+      "params": {
+        "ssid": {
+          "label": "Network",
+          "simlab-guest": "simlab-guest (2.4 GHz, open)",
+          "simlab-5g": "simlab-5G (5 GHz)",
+          "note5g": "The ESP8266 cannot see 5 GHz networks: it keeps printing dots."
+        }
+      },
+      "world": {
+        "phone": "Phone browser request"
+      },
+      "checks": {
+        "1": "The board joins the network and prints its IP address",
+        "2": "The web server starts",
+        "3": "/on lights the LED on D1",
+        "4": "/off switches the blue LED off (D4 HIGH)",
+        "5": "loop() keeps calling server.handleClient()"
+      },
+      "code": {
+        "intro": "A web server that switches the LEDs from a browser",
+        "open": "this network has no password",
+        "activelow": "LOW lights the blue LED",
+        "sta": "station mode: join a network as a client",
+        "wait": "connecting takes about a second",
+        "loop": "answer browser requests all the time"
+      },
+      "quiz": {
+        "band": {
+          "q": "Your router offers \"Home\" (2.4 GHz) and \"Home-5G\" (5 GHz). Which can the NodeMCU join?",
+          "options": {
+            "1": "Only Home",
+            "2": "Only Home-5G",
+            "3": "Both"
+          },
+          "why": "The ESP8266 has a 2.4 GHz 802.11 b/g/n radio only; 5 GHz networks are invisible to it."
+        },
+        "power": {
+          "q": "The board resets every time it tries to connect to Wi-Fi. What is the most likely cause?",
+          "options": {
+            "1": "The SSID is wrong",
+            "2": "The supply sags during the 170 mA transmit bursts",
+            "3": "The web server port is in use"
+          },
+          "why": "A wrong SSID just never connects. Resets right at connection time are a brown-out: use a better cable or add a large capacitor on 3V3."
+        }
+      }
+    }
+  }
+}

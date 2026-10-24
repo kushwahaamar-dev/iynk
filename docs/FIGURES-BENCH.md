@@ -1,0 +1,644 @@
+# Board Bench figures: the data format
+
+Owner: engine:bench. Board, module, part and robotics-bench agents write their figure data in exactly this format and
+nothing else. The engine (`figures/engine/bench*.js`, `figures/engine/sheets*.js`) renders it. The Uno R3
+(`figures/boards/uno-r3.js`) is the worked example: copy its shape.
+
+## Changelog
+
+Changes after the first publication are additive only. Every change is logged here, newest first.
+
+- v5 (14:15): part files may name their pickers with `paramNames: { tempC: 'Temperature' }` (§8; default: the
+  param key with a capital). The standalone page now has keyboard access to every drawn part: an off-screen group
+  of buttons, one per part, where focus selects the part and Enter or Space holds a control (§14); inside the host
+  the host's own part list does this.
+- v4 (14:09): part pages also take the one-part shape `show: { breadboard, holes, params }`; with no `show` the
+  part sits in row e from column 5 (§8). Param specs: a two-number array is a range `[min, max]`, anything else a
+  list (§8); the host's `set {params}` now accepts any number inside a range (v3 only took the end values).
+  Part-page pickers for ranges: the common resistor values for `ohms`, both ends for on/off names (`pressed`,
+  `on`, `closed`, `down`), decades for wide ranges (`lux: [0, 100000]`), else five even steps.
+- v3 (14:03): part pages (§8: `fig`, `show`, `example`; `public/figures/parts/<id>.html` shows the part on a
+  breadboard with a picker per param), circuit parts on the mat with `at` and module legs as wire ends
+  (`M1.VCC`, part `pinZ`) (§9), benches merge with their board and report `tasks` (§11, with what is built so far),
+  `view` aliases `iso`, `see-through`, `exploded` (§13). Correction: `meas` states are
+  `ok | off | burnt | reverse | open` (§13; v1 said `dark`). The verification checklist (§14) and the Uno worked
+  example (§15) are written.
+- v2 (13:58): the engine and the Uno R3 exist (`figures/engine/bench*.js`, `figures/engine/sheets.js`,
+  `figures/boards/uno-r3.js`). Corrections to v1, all binding: dependencies are the platform's directives
+  `// @cf title …` and `// @cf use engine/bench.list` (not `// needs:`, §1); a page mounts its own item synchronously
+  (§1 Start); the world mapping is `worldX = mat.back + (pcb.h − y)` (§2). Added: header option `mirror` (§4.2),
+  `led.via` (§4.1), board `bootloader` and `logic` (§3), message templates with `{name}` placeholders (§6.2), URL
+  test parameters (§13.1), sound through `CF_BRIDGE.send('sfx')` (§13), breadboard-part `draw` context (§8),
+  modules on a breadboard as parts (§11), circuit parts on the mat (`at`, §9), the verification checklist (§14) and
+  the Uno worked example (§15).
+- v1 (13:36 CDT Oct 24): first publication.
+
+## 0. Rules in one screen
+
+- One file per item: `figures/boards/<id>.js`, `figures/modules/<id>.js`, `figures/parts/<id>.js`,
+  `figures/robotics/<id>.js`. Each file is an IIFE that calls exactly one registration function (section 1) and
+  defines no globals. Never declare a top-level name; never shadow a core helper (`P`, `on`, `tag`, `box`, `S`, `C`,
+  `f`, `L`…) inside a function that also calls it (guide §1.14).
+- Units are millimetres, angles are degrees. Coordinates are **board coordinates** (section 2): origin at the
+  board's bottom-left corner in its datasheet top view, `x` right, `y` up (away from the viewer's front edge), `z` up
+  out of the component side.
+- Ids: part ids are the real silkscreen designators where the board prints one (`U1`, `C4`, `J1`), otherwise a short
+  upper-case id (`LED_L`, `ANT`). Pin ids are `<partId>.<n>` (1-based). Net names are the names the host and the
+  interpreters use (`D13`, `A0`, `GPIO2`, `GP25`, `P0`, `LED0`, `SW0`, `5V`, `3V3`, `GND`, `VIN`).
+- Every English string you write (names, short labels, titles, messages) is a `CF_T` key: plain English, sentence
+  case, no HTML. Escape nothing: the engine escapes at the edge.
+- Every part you list must be drawn, selectable, removable (unless `fixed`), and named. No placeholders, no
+  "TODO", no invented positions: take positions from the fact sheet (`docs/facts/<id>.md`) or the maker's drawing.
+
+## 1. Files, registration, build
+
+```
+figures/engine/bench.js        SL.bench core: registry, state, build flow, power, faults, scene, bridge
+figures/engine/bench-kinds.js  on-board part drawings (section 5)
+figures/engine/bench-bb.js     breadboard scene, lesson circuits, circuit solver (section 9)
+figures/engine/sheets.js       flat hand-inked sheets: schematic and power tree (section 10)
+figures/parts/<id>.js          breadboard parts: breadboard, led, resistor, wire, button, pot… (section 8)
+figures/boards/<id>.js         one board          → SL.bench.board(def)
+figures/modules/<id>.js        one module         → SL.bench.module(def)   (same shape as a board)
+figures/robotics/<id>.js       one bench          → SL.bench.bench(def)
+```
+
+Registration calls (all take one plain object; the engine validates it and writes problems to
+`<html data-errors>`, prefixed `bench:`):
+
+| Call | For | Notes |
+|---|---|---|
+| `SL.bench.board(def)` | a board | `def.id` is the D3 board id (`uno-r3`) |
+| `SL.bench.module(def)` | a robotics module (TB6612, L298N, A4988, HC-SR04 breakout…) | same fields as a board; may be placed into a bench or a lesson circuit |
+| `SL.bench.bench(def)` | a robotics bench (Fig 01-13) | section 11 |
+| `SL.bench.part(name, def)` | a breadboard part | section 8 |
+| `SL.bench.kind(name, def)` | an on-board drawing the library lacks | section 5.3; register it in your own item file before your `board()` call |
+
+**Dependencies** (docs/FIGURES.md "Writing a figure"). The leading comment lines of every item file are the
+platform's build directives:
+
+```js
+// @cf title Arduino Uno R3
+// @cf use engine/bench.list
+```
+
+`figures/engine/bench.list` lists the engine files and the shared breadboard parts in load order (bench.js,
+bench-kinds.js, bench-bb.js, sheets.js, parts/breadboard.js, led.js, resistor.js, wire.js). A bench that shows a
+board or modules adds one `// @cf use boards/uno-r3.js` or `// @cf use modules/tb6612.js` line per file after the
+list. A part file of your own that a circuit needs (`parts/button.js`) is added the same way. Build:
+`python3 -I figures/tools/cfbuild.py boards/<id>`.
+
+**Start.** Item files only register; never call `mountFigure` yourself. The engine mounts, synchronously and inside
+the registration call, the item whose kind and id match the page file (`public/figures/boards/uno-r3.html` →
+board `uno-r3`; `modules/<id>.html` → module, `robotics/<id>.html` → bench, `parts/<id>.html` → part) or the
+`?id=` parameter. Registered dependencies (the board inside a bench page) do not mount. A page built elsewhere
+(`cfbuild --out`) mounts the last registered item at `DOMContentLoaded`.
+
+**Output.** `public/figures/boards/<id>.html`, `public/figures/modules/<id>.html`, `public/figures/parts/<id>.html`,
+`public/figures/robotics/<id>.html`. Write the figure's Colorfigures prompt to `figures/prompts/<id>.md`.
+
+## 2. Coordinates
+
+```
+            y (mm)                      board coordinates, top view, component side up,
+            ▲   back edge               silkscreen upright, as in the maker's mechanical drawing
+            │ ┌──────────────────┐
+            │ │                  │      z = 0 is the top copper; the PCB fills -thick..0
+            │ │      board       │      side:'bottom' parts sit at z < -thick (drawn under it)
+  left edge │ │                  │ right edge
+            │ └──────────────────┘
+            └──────────────────────▶ x (mm)
+   origin (0,0) = bottom-left corner     front edge (y = 0) faces the viewer-right at the default camera
+```
+
+- If your source is KiCad or an image with `y` down, convert: `y = boardHeight − y_kicad`.
+- Board outline: `pcb.w` (x size) by `pcb.h` (y size), optional `pcb.outline` polygon `[[x,y],…]` (convex or not;
+  the engine extrudes it) for notches (the Uno's corner cut, the micro:bit's edge).
+- The engine places the board on a cutting mat. World mapping (internal, for custom kinds use `ctx.P`):
+  `worldX = mat.back + (pcb.h − y)`, `worldY = mat.right + (pcb.w − x)`, `worldZ = top + z` (`top` = mat 3 mm +
+  `pcb.standoff` + `pcb.thick`), so the front edge faces viewer-right and the left edge viewer-left at the default
+  yaw of 45°. The mapping is a reflection; the core's projection is one too, so the board reads the right way round.
+  Helpers: `SL.bench.BP(x, y, z)` → world point, `SL.bench.BPs(x, y, z)` → screen point.
+
+## 3. Board definition (`SL.bench.board(def)`)
+
+| Field | Type | Required | Meaning |
+|---|---|---|---|
+| `id` | string | yes | D3 id |
+| `name` | string | yes | "Arduino Uno R3" |
+| `sub` | string | yes | one line: "ATmega328P at 16 MHz, 5 V logic" |
+| `fig` | string | no | figure number for the header, e.g. `'01'` |
+| `pcb` | object | yes | `{ w, h, thick:1.6, r:corner radius, color:'#rrggbb' solder-mask colour, silk:'#rrggbb', outline?, standoff:4 }` |
+| `mat` | object | no | `{ front:8, back:8, left:14, right:8 }` mm of cutting mat round the board (room for cables) |
+| `holes` | `[[x,y,d]]` | yes | mounting holes, centre and drill diameter (3.2 for M3) |
+| `silk` | `[[x,y,text,size,rot?]]` | no | silkscreen text, `size` = cap height mm, `rot` deg CCW |
+| `traces` | `[[[x,y],…]]` | no | decorative copper traces (drawn under the mask, slightly darker) |
+| `parts` | `Part[]` | yes | section 4 |
+| `power` | object | yes | section 6 |
+| `modes` | object | yes | section 7: built-in demo programs; `mode` names the factory one |
+| `mode` | string | yes | default mode key |
+| `faults` | `string[]` | no | extra fault ids this board offers in its picker (section 6.4); the generic ones are always on |
+| `circuits` | object | no | lesson circuits on the breadboard (section 9) |
+| `circuit` | string | no | default circuit key |
+| `xr` | object | no | see-through: `{ flow:[[netOrRail, [[x,y],…]]], notes:[[partId, 'Text']] }` (section 12) |
+| `tags` | `[[partId, dx, dy]]` | no | which parts get surface labels, with the pill's screen offset (px at 585 wide) |
+| `variants` | object | no | `{ key:{ name, patch(def) → def } }` for a variant switch (R4 Minima/WiFi, Pico/Pico W/Pico 2, Pi 4/Pi 5) |
+| `variant` | string | no | default variant key |
+| `height` | number | no | headroom above the PCB for framing, default 14 |
+| `pal` | string | no | Colorfigures palette key for accents, default `'cobalt'` |
+| `logic` | number | no | I/O voltage for the circuit solver, default 5 (3.3 for ESP32, Pico, Nucleo, micro:bit, Pi, FPGA boards) |
+| `bootloader` | object | no | what a reset does before the program restarts: `{ led:'L', flashes:3, hz:8, wait:1 }` (Optiboot flashes L three times and listens ~1 s); omit for boards that start at once |
+
+## 4. Parts
+
+### 4.1 Part fields
+
+| Field | Type | Meaning |
+|---|---|---|
+| `id` | string | designator, unique on the board |
+| `kind` | string | a registered kind (section 5) |
+| `name` | string | English full name: "ATmega328P microcontroller" |
+| `short` | string | label pill text, upper case for Latin: "MCU" |
+| `at` | `[x,y]` | centre of the body in board mm |
+| `size` | `[l,w]` | body length along the part's own x axis and width along its y axis, before `rot` |
+| `h` | number | body height mm above its base |
+| `rot` | number | degrees CCW seen from above, default 0 (any angle; the Uno's 16U2 is 45) |
+| `side` | `'top'\|'bottom'` | default `'top'` |
+| `z` | number | base height above the PCB (a chip in a socket: the socket height) |
+| `group` | `'smd'\|'low'\|'tall'\|'last'` | build group; default from the kind (section 5) |
+| `polar` | `{ fault:'pop'\|'hot'\|'dark', opts?:['notch left','notch right'] }` | the part can be placed reversed; orient 0 = as on the real board; `opts` are the two chip labels |
+| `fixed` | true | part of the PCB itself (antenna trace, edge fingers, touch logo): cannot be removed |
+| `inSocket` | partId | goes into that socket (group `'last'`) |
+| `led` | object | for LED kinds: `{ color:'#rrggbb', net?:'D13', rail?:'5V', serial?:'rx'\|'tx', invert?:true, via?:['U5','RN2'] }` what lights it; `via` = parts that must be in and soldered for it to light (driver, resistor) |
+| `control` | object | for on-board controls: `{ type:'button'\|'slide'\|'touch', action:'reset'\|'boot'\|'bootsel'\|'input', net?:'BTN_A', positions?:['ON','OFF'], active?:0\|1 }` |
+| `pins` | `string[]` | for headers and pin rows: net name per pin, pin 1 first (section 4.2); `null` = no pin fitted, `''` = pin with no net |
+| `labels` | `string[]` | silkscreen text per pin when it differs from the net (`'~11'`, `'TX→1'`) |
+| `nets` | `{ pin: net }` | for ICs: which pins carry which nets (for the schematic and see-through current flow) |
+| `label` | string | text printed on the body (`'ATMEGA328P'`, `'16.000'`); `\|` breaks lines |
+| (kind params) | | per kind, section 5 |
+
+### 4.2 Headers and pins
+
+Header pins are numbered from pin 1 along the header's own x axis; two-row headers number 1, 2 across, then 3, 4…
+(the usual IDC order) unless `order:'rows'` (all of row 1, then row 2). `mirror: true` runs the columns the other
+way (pin 1 at the +x end), for headers whose pin 1 sits top-right (the Uno's ICSP headers). Pin `n`'s board
+position is derived:
+
+```
+row header, rot 0:  pin n at  at.x − (cols−1)·pitch/2 + (n−1)·pitch,  at.y
+two rows (idc):     col = floor((n−1)/2), row = (n−1) % 2;  y = at.y + pitch/2 − row·pitch
+```
+
+`rot` turns the whole header, pins included. Every header pin becomes a board pin `H1.5` with `net`, `label`, `at`.
+The engine also indexes pins by net name: `D13` resolves to the only pin on net D13; for nets with several pins
+(`GND`, `5V`) a circuit wire may name the pin id (`H3.6`) or just the net (the engine picks the pin nearest the
+breadboard).
+
+### 4.3 Groups and the build order
+
+| Group | What | When it can go on |
+|---|---|---|
+| `smd` | every surface-mount part | by "Pick & place SMD", all at once (0.22 s apart), then reflow 1.3 s |
+| `low` | low through-hole parts: sockets, tact switches, small headers, crystals in HC-49 | after reflow |
+| `tall` | tall through-hole parts: connectors, female headers, electrolytics, barrel jack | after every placed `low` part is in |
+| `last` | goes on after soldering: a chip into its socket, a jumper cap, a plug-in module | after "Solder joints" |
+
+## 5. Kinds (on-board drawings)
+
+### 5.1 Library (in `bench-kinds.js`)
+
+Default group in brackets. `label` and `color` are optional on all; `color` is a `#rrggbb` body colour.
+
+| Kind | Draws | Params |
+|---|---|---|
+| `qfp` [smd] | quad flat pack, gull-wing leads on 4 sides, pin-1 dot | `n` leads per side (8), `label` |
+| `qfn` [smd] | leadless quad, pads on 4 sides | `n` pads per side (8), `label` |
+| `bga` [smd] | big ball-grid package (FPGA, SoC), optional lid | `label`, `lid:true` (metal lid) |
+| `soic` [smd] | 2-sided small outline (SOIC/TSSOP/SOT-23-6) | `n` leads per side (4), `label` |
+| `sot23` [smd] | 3-lead small transistor/regulator | `label` |
+| `sot223` [smd] | regulator with tab | `label` |
+| `sod` [smd] | small diode (SOD-123/SMA); cathode band at −x end | `label` |
+| `chip` [smd] | one 0402/0603/0805/1206 resistor or capacitor | `cap:true` tan ceramic, else black resistor; `label` ('103') |
+| `passives` [smd] | a scatter of tiny chips (one selectable part) | `spots:[[x,y,'r'\|'c',rot?]]` in board mm |
+| `fuse` [smd] | 1206/1812 polyfuse | |
+| `inductor` [smd] | shielded power inductor / ferrite bead | `label` |
+| `xtal` [low] | HC-49/S metal can crystal | `label` ('16.000') |
+| `xtal-smd` [smd] | 3225/5032 metal-lid crystal | `label` |
+| `resonator` [smd] | 3-pad ceramic resonator | `label` |
+| `ecap` [tall] | standing electrolytic; minus stripe toward −y at orient 0 | `sleeve:'#rrggbb'` |
+| `ecap-smd` [smd] | SMD electrolytic (can on a square base) | |
+| `tant` [smd] | tantalum, + band at +x end | |
+| `led` [smd] | 0603/0805 SMD LED, lens lights with `led` | |
+| `rgb` [smd] | 5050/2020 addressable RGB LED; colour from the run | |
+| `dip` [last or low] | DIP chip, notch at −x end at orient 0 | `n` pins per side, `label` |
+| `socket` [low] | DIP socket | `n` pins per side |
+| `tact` [low] | 6x6 mm through-hole tactile switch; pressable when it has `control` | |
+| `button-smd` [smd] | small SMD push button (3x4, 4x4, side-push) | `side:true` |
+| `slide` [low] | slide switch, knob position from the control state | `positions` in `control` |
+| `male` [low] | pin header, `rows` x `cols` | `rows` 1, `cols` from `pins.length/rows`, `pitch` 2.54, `pinH` 6 (above the plastic), `angle:'right'` for right-angle |
+| `female` [tall] | socket header | as `male` |
+| `castellated` [fixed] | half-hole edge pads along one edge, numbered | `pitch` 2.54; `pins` |
+| `edge` [fixed] | gold edge-connector fingers along the front edge | `fingers:[[x0,x1,net]]` |
+| `pads` [fixed] | exposed round test pads / through-hole pad row | `pins`, `pitch`, `d` |
+| `usb-b`, `usb-mini`, `usb-micro`, `usb-c`, `usb-a` [tall/smd] | USB receptacles; the opening faces the part's −x end at rot 0 | `plug:true` marks the one the cable goes in |
+| `barrel` [tall] | 2.1 mm barrel jack, opening at −x | |
+| `module` [smd] | castellated RF module (WROOM): substrate, shield can, PCB antenna at +x end | `label`, `ant` length mm (6) |
+| `can` [smd] | plain shield can | `label` |
+| `antenna` [fixed] | PCB meander or chip antenna area | `chip:true` for a chip antenna |
+| `matrix` [smd] | LED matrix (R4 WiFi 12x8, micro:bit 5x5) lit from the run | `rows`, `cols`, `pitch`, `net:'MATRIX'` |
+| `seg7` [tall] | 7-segment display, `digits` wide | `digits` 4, `color` |
+| `box` [tall] | generic labelled block: HDMI, RJ45, VGA, audio, JST, FFC, heat sink | `color`, `label`, `face:'-x'\|'+x'\|'-y'\|'+y'` opening side |
+| `pad` [fixed] | touch pad / logo (micro:bit) | `shape:'logo'\|'round'`, control for touch |
+| `hole` [fixed] | a plated hole ring with a label (micro:bit rings 0/1/2/3V/GND) | `d` |
+
+### 5.2 How the engine uses a kind
+
+```js
+SL.bench.kind('qfp', {
+  group: 'smd',                  // default build group
+  draw(ctx) { … ctx.put(box, svg) … },   // required: the iso drawing
+  xr(ctx)  { … },                // optional: see-through internals (die, bond wires, quartz blank)
+  pins(part) { return [[x,y], …] },      // optional: pin positions in board mm (headers do this)
+});
+```
+
+`ctx` (all in board mm unless noted): `p` the part record, `L(a,b,z)` → board `[x,y]` of a point given in the
+part's local frame (centre origin, its own x along `size[0]`, rotation applied), `P(x,y,z)` → screen point,
+`B(a0,b0,z0,a1,b1,z1)` → a world box for sorting from local extents, `put(box, svg)` adds one depth-sorted item,
+`z0` base z, `st`, `lit` 0..1 (LED brightness), `hot`, `pop`, `rev` (placed reversed), `sel` (selected), `k`
+(see-through ease 0..1), `T` = `CF_T`, plus drawing helpers `ctx.slab(a0,b0,a1,b1,z0,z1,mat)` (a rotated box),
+`ctx.text(a,b,z,str,size)` (text on top, reading along the part's x), `ctx.dot(a,b,z,r,fill)`.
+
+### 5.3 Adding a kind
+
+Only if the library lacks it. Register it at the top of your item file, name it `<board>-<thing>` (`pico-bootsel`),
+and draw with `ctx` only. Tell engine:bench in `docs/requests/<label>.md` if it should move into the library.
+
+## 6. Power, run, upload, faults
+
+### 6.1 Sources and rails
+
+```js
+power: {
+  sources: {                                   // ways to feed the board; the host offers them by key
+    usb:  { label: 'USB cable', part: 'J1', plug: 'usb-b', v: 5.0, ilim: 0.5 },
+    jack: { label: 'Barrel jack', part: 'J2', plug: 'barrel', v: 9, range: [7, 12], max: 20 },
+    vin:  { label: 'VIN pin', pin: 'VIN', v: 9, range: [7, 12], max: 20 },
+    pin5: { label: '5V pin', pin: '5V', v: 5, range: [4.75, 5.25], max: 6 },
+  },
+  default: 'usb',
+  rails: {                                     // evaluated in order; a rail = the best of its feeds
+    USBVCC: { from: [{ src: 'usb', via: ['J1', 'F1'] }] },
+    VIN:    { from: [{ src: 'jack', via: ['J2', 'D1'], drop: 0.7, protect: 'D1' }, { src: 'vin' }] },
+    '5V':   { from: [{ rail: 'VIN', via: ['U2'], reg: 5.0, dropout: 1.1, max: 20 },
+                     { rail: 'USBVCC', via: ['T1'], drop: 0.05, offIf: ['VIN', '>', 6.6] },
+                     { src: 'pin5' }], max: 6 },
+    '3V3':  { from: [{ rail: '5V', via: ['U4'], reg: 3.3, dropout: 0.3 }], max: 3.6 },
+  },
+  mcu:    { part: 'U1', rail: '5V', min: 4.3, needs: ['U1', 'Y2'] },   // runs when rail ≥ min and needs are in
+  upload: { source: 'usb', needs: ['U3', 'Y1', 'U1'], tool: 'avrdude' }, // 'avrdude' | 'esptool' | 'uf2' | 'stlink' | 'daplink' | 'vivado' | 'quartus' | 'none'
+}
+```
+
+A feed is alive when its source is connected (or its upstream rail is alive) and every `via` part is in, soldered,
+not reversed and not cold (cold = alive in bursts). Feed voltage: `src.v − drop`, or for a regulator
+`min(reg, in − dropout)`. `offIf: [rail, '>', volts]` switches a feed off (the Uno's comparator). A rail takes the
+highest live feed. Above a rail's `max` the parts on it are damaged (fault `wrong-voltage`). Below `mcu.min` the MCU
+resets (fault `brownout`). LEDs with `led.rail` light when that rail is alive; with `led.net` when the pin is high
+(or `invert`: low).
+
+### 6.2 What the user can do (state machine)
+
+```
+BARE ─Pick & place SMD─▶ SMD placed ─(reflow 1.3 s)─▶ SMD soldered ─Place low…─▶ ─Place tall…─▶ ─Solder joints─▶
+THT soldered ─Place last (chip into socket)─▶ ASSEMBLED ─Plug power─▶ evaluate:
+   supply part out or unsoldered          → "No power: <part> is missing"  (nothing lights)
+   reversed polar part                     → FAULT pop | hot | dark (stops; unplug to recover)
+   rail above its max                      → FAULT wrong-voltage
+   mcu rail below min                      → BROWN-OUT (resets every 0.6 s, ON LED dims)
+   an mcu.needs part missing               → POWERED, nothing runs (ON lit, no blink)
+   otherwise                               → RUNNING the current mode
+Upload ▸ mode → UPLOADING 2.2 s (RX/TX flicker per upload tool) → RUNNING the new mode (instant modes switch at once)
+Exploded view: unplugs nothing, refuses while powered; lifts smd 4 / low 9 / tall 14 / last 19 mm.
+Remove a part (Remove ▸ id) and Leave out (Pick & place skips it): any part not `fixed`, power off.
+```
+
+Refusals (exact English, `CF_T` keys):
+
+| When | Message |
+|---|---|
+| any build action while powered | "Unplug the power first: never work on a live board" |
+| any build action in the exploded view | "Close the exploded view first" |
+| placing a through-hole part before reflow | "SMD parts first: run pick and place + reflow. The oven would melt plastic parts" |
+| a tall part while a low part is still out | "Low parts first: with tall parts on, the board rocks and loose parts fall out when you flip it to solder" |
+| a `last` part before soldering | "Solder everything first: this part goes on last" |
+| a socketed chip before soldering | "Solder everything first. Never heat a chip sitting in its socket" |
+| solder with nothing placed | "Nothing to solder yet: place a part first" |
+| upload while unplugged | "Plug in USB first: uploads go over the cable" |
+| upload while uploading | "Uploading: wait for it" (the refused pick changes nothing) |
+| upload while faulted | "Fix the fault first: unplug, then repair" |
+| upload with an `upload.needs` part missing | "Upload failed: <part name> is missing" |
+| remove a `fixed` part | "<name> is part of the board itself" |
+
+### 6.3 On-board controls
+
+A part with `control` is pressable in the figure (pointer, keyboard via the bridge `press`/`act`, and the fallback
+list) and reports its state:
+
+| `action` | Behaviour |
+|---|---|
+| `reset` | while held the MCU is in reset (outputs low, LEDs off); on release the mode restarts at t = 0 and the serial banner repeats |
+| `boot` | ESP32 BOOT: held while `reset` is released → "download mode" (`st.boot = 'download'`) |
+| `bootsel` | Pico BOOTSEL: held while USB is plugged in → mass-storage mode (`st.boot = 'uf2'`) |
+| `input` | a user input (buttons A/B, Basys 3 switches): its `net` level goes to the host as `inputs.<net>` |
+
+### 6.4 Faults
+
+Fault ids (strings; the host sets them with `set {fault}`; the figure's "Break it ▾" picker lists them):
+
+| Id | Effect | Message (English) and fix |
+|---|---|---|
+| `reversed:<part>` | place a polar part the wrong way round; on power-up its `polar.fault`: `pop` (electrolytic vents), `hot` (IC/regulator burns), `dark` (LED stays off) | "<name> is in backwards" · "Unplug, then turn it round" |
+| `missing:<part>` | leave the part out | effects follow from the power tree, `mcu.needs`, `upload.needs`, LEDs |
+| `cold:<part>` or `cold:<pin>` | cold solder joint: the part (or one header pin) works in bursts, deterministic | "Cold joint on <name>: it works, then it doesn't" · "Reflow the joint" |
+| `reverse-polarity:<source>` | the supply is connected backwards; a `protect` part blocks it, else the regulator burns | "Reverse polarity: <protect> blocks it, nothing powers up" or "Reverse polarity: <part> burned" · "Swap the leads" |
+| `wrong-voltage:<source>:<volts>` | sets that source's voltage (e.g. `wrong-voltage:pin5:12`) | "<volts> V on <label>: <part> is damaged" or "<volts> V is too low: brown-out" · "Use <range> V" |
+| `brownout` | a motor on the 5 V pin: the rail sags under load and the MCU resets in a loop | "Brown-out: the motor drags 5 V down and the board resets" · "Power motors separately" |
+| `short:<netA>:<netB>` | solder bridge; on a power rail the polyfuse or USB port trips | "Short between <netA> and <netB>" · "Clear the bridge" |
+
+## 7. Modes (built-in demo programs)
+
+```js
+modes: {
+  blink: { title: 'Blink', bytes: 924, out: (st, t) => ({ D13: t % 2 < 1 ? 1 : 0 }) },
+  hello: { title: 'Serial hello', bytes: 1490, out: () => ({}), serial: (k) => 'hello #' + k, banner: 'ready' },
+},
+mode: 'blink',
+```
+
+`out(st, t)` returns pin levels by net (`0`/`1`, or `0..1` for PWM duty), `t` in seconds since the program started
+(virtual, deterministic). `serial(k, st)` is called once per whole second `k` and returns a line or null. `banner`
+is printed at every (re)start. When the host drives pins (`set {pins}`) built-in modes pause until it sends
+`set {mode}`.
+
+## 8. Breadboard parts (`SL.bench.part(name, def)`)
+
+```js
+SL.bench.part('led', {
+  name: 'LED',
+  legs: ['A', 'K'],                    // leg names, in the order circuits list holes
+  span: [1, 1],                        // min, max hole distance between first and last leg (columns)
+  params: { color: ['red', 'yellow', 'green', 'blue', 'white'] },
+  elec: (p) => ({ type: 'led', vf: { red: 2.0, yellow: 2.1, green: 2.2, blue: 3.0, white: 3.1 }[p.color], imax: 0.02 }),
+  draw(ctx) { … },                     // ctx: legs (world points of the holes), p, lit, i (current A), st, P, put
+  show: { … },                         // optional: how the part page shows it alone
+});
+```
+
+`elec` types the solver understands: `led {vf, imax}`, `res {ohms}`, `wire {}`, `button {pressed}`,
+`pot {ohms, pos}`, `cap {farads}` (open in DC), `diode {vf}`, `buzzer {}` (a load), `module` (see section 11).
+
+Built so far (v3): the series-path solver handles `led`, `res` and `wire`; any other `elec` type is drawn and
+clickable but carries no current yet (an open circuit), so a lesson that needs it says so in its own figure.
+
+`draw(ctx)` gets `{ p, st, legs, holes, origin, pl, m, lit, i, … }`: `p` the circuit entry (its params), `legs` the
+world points of its holes (top of the breadboard), `holes` the parsed holes, `origin` the world point of `p.at`
+(mat mm in board coordinates, for things that sit on the mat, not in holes) or the first leg, `pl` the placement
+(`pl.at(x, y, z)` breadboard mm → world, `pl.zTop`), `m` the solver result for this part (`{i_mA, state}`).
+
+Part pages (`public/figures/parts/<id>.html`, built from `figures/parts/<id>.js`): `fig: 'P2'` is the figure number
+in the title; `show: { breadboard, parts, wires }` is the circuit the page shows, or `show: { breadboard, holes,
+params }` for one part (default: one part with `example` params in row e from column 5 on a mini breadboard).
+Every param becomes a picker: a list (`color: [...]`, `turned: [false, true]`) offers its values, a numeric range
+(`ohms: [1, 1e7]`) the common values inside it (100 Ω to 100 kΩ), a range named `pressed`, `on`, `closed` or `down`
+its two ends, a wide range (`lux: [0, 100000]`) decades, any other range five even steps. A pick changes the
+selected part, or the first one. `paramNames: { key: 'Button name' }` names a picker (default: the key with a capital).
+Module parts (a sensor or driver board that plugs into the breadboard) list `legs` in header order and set `pinZ`
+(mm from the breadboard top to the pin tips) so wires can end on `M1.<leg>`.
+
+## 9. Lesson circuits
+
+```js
+circuits: {
+  blink: {
+    title: 'Blink an LED',
+    breadboard: 'half',                        // 'half' 30 columns + rails | 'full' 63 | 'mini' 17, no rails | null
+    parts: [
+      { id: 'R1', part: 'resistor', ohms: 220, holes: ['b10', 'b14'] },
+      { id: 'LED1', part: 'led', color: 'red', holes: ['c14', 'c15'] },     // [anode, cathode]
+    ],
+    wires: [
+      { from: 'D13', to: 'a10', color: 'orange' },
+      { from: 'GND', to: 'a15', color: 'black' },
+    ],
+  },
+},
+circuit: 'blink',
+```
+
+- Holes: terminal strips `a1`..`j30` (rows a-e and f-j, columns 1..N; a-e of one column are one net, so are f-j);
+  power rails `T+12`, `T-12` (top pair), `B+12`, `B-12` (bottom pair), the number is the nearest column.
+- Wire ends: a board pin (`D13`, `H3.6`), a hole, or a module pin (`M1.VCC`). Colours: `red`, `black`, `orange`,
+  `yellow`, `green`, `blue`, `white`, `purple`, `brown`, `grey`.
+- Part params can be changed by the host: `set {params: {R1: {ohms: 1000}, LED1: {color: 'green'}}}`.
+- The engine solves each LED's series path (pin → resistors → LED → GND) from the strips, so a missing resistor, a
+  reversed LED or a wire in the wrong strip shows the real result (`dark`, `burnt`, `no current`) and is reported.
+- The board sits left of the breadboard (`board: 'left'`, default) or behind it (`board: 'back'`).
+- A part without holes (a motor, a battery box) gives `at: [x, y]` in board mm (negative x is left of the board,
+  above `pcb.w` is right of it) and draws from `ctx.origin`.
+- Wire ends may also be a module leg: `M1.VCC` is the hole under leg `VCC` of circuit part `M1`.
+
+## 10. Views and sheets
+
+`st.view`: `'board'` (the iso PCB), `'breadboard'` (iso breadboard scene with the circuit), `'schematic'` (flat,
+hand-inked sheet of the circuit: the board as a block with the used pins, symbols, wires), `'power'` (flat sheet of
+the power tree from `power.rails`). See-through (`xr`) and exploded (`exploded`) apply to the iso views. Sheets are
+drawn in the same ink, wobble and paper as the figure, every symbol is clickable and selects the same part id as in
+3D, and live pin values and LED states are shown on both.
+
+## 11. Robotics benches (`SL.bench.bench(def)`) and modules
+
+```js
+SL.bench.bench({
+  id: 'motor-driver',                  // the id in src/content/ids.ts
+  name: 'TB6612FNG motor driver', sub: '…',
+  board: 'uno-r3',                     // a registered board (include its file in "needs"), shown on the mat
+  modules: [{ id: 'M1', module: 'tb6612', holes: 'e10' }],   // a module on the breadboard from hole e10 along the row
+  periph: [{ id: 'MOT1', kind: 'tt-motor', at: [120, 40] }],  // things on the mat, mat mm
+  circuit: { breadboard: 'half', parts: [...], wires: [...] },
+  modes: { … }, mode: '…',
+  tasks: [{ id: 'fwd50', title: 'Run motor A forward at 50 %', check: (st) => st.out.PWMA === 0.5 && … }],
+});
+```
+
+A module is defined like a board (`SL.bench.module`) with `pins` on a `male` header (`pins:['GND','VCC',…]`); in a
+bench it inherits its pins as `M1.<net>`.
+
+What the engine does with a bench today (v3): `board` names a registered board or module (its file goes in a
+`// @cf use boards/uno-r3.js` line); the bench's own fields override the board's, its `circuit` object becomes the
+breadboard circuit, its `modes` (or the board's) run, its `faults` add to the board's, and the page opens on the
+breadboard view. `tasks[].check(st, o)` runs on every report (`o` = the outputs: `o.pins`, `o.leds`) and the state
+report carries `tasks: {id: true|false}`. A bench without a board is a breadboard on the mat. Not built yet:
+`modules:` and `periph:` placement (put a module on the breadboard as a module part, §8, and things on the mat as
+parts with `at`, §9, until the engine places them).
+
+## 12. See-through, exploded, labels
+
+- See-through (`xr` switch): the PCB ghosts, every IC shows its die and bond wires, crystals their quartz blank,
+  regulators their pass element, and `xr.flow` paths animate dots along copper while the rail or pin is live
+  (`[['5V', [[x,y],…]], ['D13', […]]]`). `xr.notes` adds callouts.
+- Exploded: groups lift 4 / 9 / 14 / 19 mm, the PCB stays.
+- Labels: `tags` parts get pills; the host can draw them from the `labels` event.
+
+## 13. Bridge: what the figure accepts and reports
+
+Host → figure `set {state: patch}`; the engine applies only these keys, each validated:
+
+| Key | Type | Effect |
+|---|---|---|
+| `pins` | `{net: 0..1}` | pin levels or PWM duty from the interpreter (≤ 30 Hz); pauses built-in modes |
+| `mode` | mode key | run a built-in demo program |
+| `power` | source key or `null` | connect a supply / unplug |
+| `fault` | fault id or `null` | add one fault (section 6.4) / clear all |
+| `view` | `'board'\|'breadboard'\|'schematic'\|'power'`, also `'iso'` (= board), `'see-through'`, `'exploded'` (board view with that on) | switch sheet |
+| `exploded` | boolean | exploded view |
+| `circuit` | circuit key or `null` | which lesson circuit the breadboard shows |
+| `params` | `{partId: {…}}` | circuit part params |
+| `select` | part id or `null` | select (same as a click) |
+| `build` | `'bare'\|'assembled'` | jump the build state |
+| `remove`, `restore` | part id | take a part off / put it back |
+| `press` | `{id, down}` | press or release an on-board control |
+| `serial` | string | the host printed a line: TX LED blips |
+| `inputs` | `{net: 0\|1}` | host-side inputs mirrored on the drawing (switch positions) |
+
+Figure → host `state` (discrete values only):
+
+```
+{ id, view, exploded, build: 'bare'|'smd'|'reflowed'|'tht'|'soldered'|'assembled', power: null|source,
+  status: 'off'|'no-power'|'powered'|'running'|'uploading'|'brownout'|'fault', mode, ext: bool,
+  rails: {name: volts (0.1 V)}, fault: null|{id, kind, part, msg, fix}, faults: [...ids], missing: [...ids],
+  selected, controls: {partId: 0|1|position}, boot, leds: {partId: 0|1}, circuit,
+  meas: {partId: {i_mA, state:'ok'|'off'|'burnt'|'reverse'|'open', r, net}}, serial: {n, line},
+  why: null|string, sfx: null|name, tasks: {taskId: bool} }
+```
+
+Part presses arrive as bridge `part` events: `act: 'part'` with `id` = part id, or `act: 'ctl'` for controls,
+`act: 'hole'` with `id` = hole on the breadboard, `act: 'pin'` with `id` = pin id.
+
+## 14. Verification checklist (per figure)
+
+Run these from `/Users/amar/Codes/ak/simlab`, look at every picture yourself, and fix what is wrong before you
+report. A figure is done when every line holds.
+
+**Facts and data**
+
+- [ ] Every position comes from a source you can name in a comment at the top of the file (the maker's CAD files,
+  a dimensioned drawing, the fact sheet). No part is placed by eye.
+- [ ] Every part on the real board is in `parts`, with a `name` a beginner understands ("16 MHz crystal for the USB
+  chip", not "Y1"), and nothing is drawn that the board does not have.
+- [ ] Header `pins` nets and `labels` match the silkscreen of the real board pin for pin.
+- [ ] `power` reproduces the real tree: every source, every regulator with its real output and dropout, every
+  protection part, the brown-out level of the MCU, and what the upload path needs.
+- [ ] `faults` and `polar` parts give the real consequence (what a reversed tantalum or a 12 V supply on 5 V does).
+
+**Build and errors**
+
+- [ ] `python3 -I figures/tools/cfbuild.py boards/<id>` prints `built …` and no warning.
+- [ ] `document.body.dataset.errors` is empty in every view (cfshoot fails when it is not).
+
+**Pictures** (`python3 -I figures/tools/cfshoot.py boards/<id> --press "…" --at 1200,4200 --out <scratch>`)
+
+- [ ] `angle-*`: the board reads the right way round from every side (silk text not mirrored, USB and jack where
+  they are on the real board), nothing floats or sinks into the PCB, no part pokes through another.
+- [ ] `xr-*`: see-through shows the dies, the quartz, the flow dots on live copper only, and the callouts stay
+  inside the frame.
+- [ ] `exploded-*`: the groups lift in build order, every part stays above its own footprint.
+- [ ] `press-*`: every run you pass ends in the state you expect (status, rails and LEDs in the stats column).
+- [ ] `phone-xr` and `zoom-xr`: the figure fits a phone, buttons wrap, labels become the list.
+- [ ] `embed`: the bridge reports `ready`, `state`, `labels` and your button events.
+- [ ] The other views by URL: `?view=breadboard`, `?view=schematic`, `?view=power`, `?build=bare`,
+  `?fault=<id>`, `?power=<source>`, `?mode=<key>`; the sheets sit beside the page's buttons, not under them.
+
+**Behaviour** (click it yourself, or `#wait=` shots with the parameters above)
+
+- [ ] Every button and every on-board control does what its label says; a refused step says why and how to fix it.
+- [ ] Every part can be selected by a click, by Tab + Enter, and from the host (`select`), and the same id lights
+  in 3D and on both sheets.
+- [ ] Every part can be removed and put back, and removing it has its real effect (no regulator, no 5 V).
+- [ ] Every fault in `faultChoices` is reachable from Break it and from `?fault=`, and Fix it clears it.
+- [ ] The lesson circuit gives the textbook result (Blink: 220 Ω, red LED, about 12 mA on 5 V).
+
+**Words**
+
+- [ ] Every string the figure shows is written in English inside `T()` or a `name`/`label`/`title` field, so
+  `CF_T` can translate it (D5: `src/i18n/figures/<lang>.json`, keyed by the English text).
+
+## 15. Worked example: the Arduino Uno R3
+
+`figures/boards/uno-r3.js` (about 150 lines) is the pattern to copy. Its parts are placed at the part centres of
+Arduino's own Eagle board file (`UNO-TH_Rev3e.brd`, CC BY-SA), converted to board mm with the origin at the
+bottom-left corner of the PCB.
+
+```js
+// @cf title Arduino Uno R3
+// @cf use engine/bench.list
+SL.bench.board({
+  id: 'uno-r3', fig: '01', name: 'Arduino Uno R3', sub: 'ATmega328P at 16 MHz, 5 V logic, USB through an ATmega16U2',
+  pcb: { w: 68.58, h: 53.34, thick: 1.6, color: '#2f9aa0', silk: '#f4f6ef', standoff: 4, outline: [ … ] },
+  mat: { front: 9, back: 9, left: 30, right: 8 },             // room on the mat for the USB plug and cable
+  holes: [[13.97, 2.54, 3.2], [15.24, 50.8, 3.2], [66.04, 7.62, 3.2], [66.04, 35.56, 3.2]],
+  bootloader: { led: 'L', flashes: 3, hz: 8, wait: 1 },       // Optiboot: three flashes, then ~1 s listening
+  parts: [ … ],
+  power: { … }, mode: 'blink', modes: { … }, faults: ['short:5V:GND'], xr: { … }, tags: [ … ],
+  circuit: 'blink', circuits: { blink: { … } },
+});
+```
+
+Parts, one of each shape:
+
+```js
+{ id: 'ZU4', kind: 'dip', name: 'ATmega328P microcontroller', short: 'MCU', at: [46.355, 16.383], rot: 180, n: 14,
+  h: 3.4, z: 3, inSocket: 'SK1', … },                          // sits 3 mm up, in its socket; text upside down as printed
+{ id: 'PC1', kind: 'ecap-smd', name: '47 µF capacitor on VIN', at: [25.527, 9.144], rot: 180, label: '47',
+  polar: { fault: 'pop', opts: [ … ] } },                      // placing it backwards is a choice; powered, it pops
+{ id: 'L', kind: 'led', name: 'L LED (pin 13)', at: [27.94, 42.164],
+  led: { color: '#f2b12e', net: 'D13', via: ['U5', 'RN2'] } }, // the op-amp buffers D13; RN2 is its resistor
+{ id: 'RESET', kind: 'tact', name: 'RESET button', at: [6.35, 49.403], size: [6, 6], h: 3.5, group: 'smd',
+  control: { type: 'button', action: 'reset' } },             // press it on the board or with Press RESET
+{ id: 'IOL', kind: 'female', name: 'Digital header D0-D7', at: [54.61, 50.8], h: 8.5,
+  pins: ['D7', 'D6', 'D5', 'D4', 'D3', 'D2', 'D1', 'D0'], labels: ['7', '~6', '~5', '4', '~3', '2', 'TX→1', 'RX←0'] },
+```
+
+The power tree is the real one: USB through the polyfuse; the barrel jack through the M7 diode (which also blocks
+reverse polarity) to VIN; VIN through the NCP1117 to 5 V; USB onto 5 V through the FDN340P switch, which the
+LMV358 comparator opens when VIN is above 6.6 V; 5 V through the LP2985 to 3.3 V.
+
+```js
+rails: {
+  USBVCC: { from: [{ src: 'usb', via: ['X2', 'F1'] }] },
+  VIN: { from: [{ src: 'jack', via: ['X1', 'D1'], drop: .7, protect: 'D1' }, { src: 'vin' }] },
+  '5V': { from: [{ rail: 'VIN', via: ['U1'], reg: 5, dropout: 1.1, max: 20 },
+                 { rail: 'USBVCC', via: ['T1', 'U5'], drop: .05, offIf: ['VIN', '>', 6.6] }, { src: 'pin5' }], max: 6 },
+  '3V3': { from: [{ rail: '5V', via: ['U2'], reg: 3.3, dropout: .3 }], max: 3.6 },
+},
+mcu: { part: 'ZU4', rail: '5V', min: 2.7, needs: ['ZU4', 'SK1', 'Y2', 'RN1'] },  // BOD 2.7 V; resonator; reset pull-up
+upload: { source: 'usb', needs: ['U3', 'Y1', 'RN3', 'C5', 'ZU4'], tool: 'avrdude' },
+```
+
+Modes are tiny pure functions of the virtual clock; `fade13` shows why `analogWrite` on pin 13 only gives on/off:
+
+```js
+blink: { title: 'Blink', bytes: 924, out: (st, t) => ({ D13: blink(t, 1, 1) }) },
+fade13: { title: 'analogWrite on pin 13 (no PWM there)', bytes: 1132,
+          out: (st, t) => ({ D13: Math.floor((t % 2.56) / 2.56 * 256) >= 128 ? 1 : 0 }) },
+```
+
+The Blink lesson circuit: D13 → orange wire → a10; 220 Ω from b10 to b14; red LED anode c14, cathode c15; black
+wire from a15 to GND. The solver gives (5 V − 2.0 V) / (220 Ω + 25 Ω) ≈ 12.2 mA, which the LED tag and the
+schematic show.
+
+Checks run on it (v3): `cfbuild` clean; `cfshoot` 29 shots and the embed check pass with the presses
+`Press RESET@400` and `Upload sketch>Serial hello@900`; by URL: board, breadboard (LED1 12.2 mA), schematic,
+power tree on USB and on the jack (VIN 8.30 V, USBVCC off), `?fault=reversed:PC1` (fault, 47 µF pops),
+`?fault=reverse-polarity:jack&power=jack` (M7 blocks it, nothing powers up), `?exploded=1&power=0`,
+`?xr=1&labels=1`; every view with an empty error list.

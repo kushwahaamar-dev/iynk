@@ -1,0 +1,49 @@
+{
+  "leaderboard": {
+    "title": "Leaderboard",
+    "caption": "Best lap per pilot on {course}",
+    "rank": "Rank",
+    "pilot": "Pilot",
+    "best": "Best lap",
+    "laps": "Laps",
+    "you": "You",
+    "anonymous": "Anonymous pilot",
+    "pilots": {
+      "one": "{count} pilot on the board",
+      "other": "{count} pilots on the board"
+    },
+    "yourRank": "Your rank: #{rank}",
+    "notOnBoard": "Fly a lap to get on the board.",
+    "empty": "No laps yet. Fly the course and take first place.",
+    "loading": "Loading the leaderboard…",
+    "error": "The leaderboard didn't load.",
+    "retry": "Try again",
+    "refresh": "Refresh",
+    "offTitle": "Leaderboards aren't set up here",
+    "offBody": "This deployment has no database, so your laps stay on your device."
+  },
+  "live": {
+    "title": "Right now at HackTX",
+    "window": "Last 60 minutes",
+    "live": "Live",
+    "builders": {
+      "one": "builder",
+      "other": "builders"
+    },
+    "leds": {
+      "one": "LED blinked",
+      "other": "LEDs blinked"
+    },
+    "drones": {
+      "one": "drone flown",
+      "other": "drones flown"
+    },
+    "chart": "Events per minute over the last hour",
+    "quiet": "Quiet right now. Open a lab and be this hour's first builder.",
+    "loading": "Counting builders…",
+    "error": "The live counters didn't load.",
+    "retry": "Try again",
+    "offTitle": "Live counters aren't set up here",
+    "offBody": "This deployment has no database to count builders with."
+  }
+}

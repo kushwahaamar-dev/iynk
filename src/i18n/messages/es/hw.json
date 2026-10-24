@@ -1,0 +1,86 @@
+{
+  "title": "Gemelo de hardware",
+  "intro": "Ejecuta esta lección en un Arduino real: tu sketch conmuta los pines reales, y los botones y potenciómetros de la placa real mueven la simulación.",
+  "support": {
+    "unsupportedTitle": "Este navegador no llega a placas USB",
+    "unsupported": "El gemelo habla con la placa mediante Web Serial, que este navegador no ofrece. Abre SimLab en una versión reciente de Chrome, Edge u Opera en un ordenador para conectar una placa. Todo lo demás de SimLab funciona aquí.",
+    "insecureTitle": "Necesita una página segura",
+    "insecure": "Web Serial solo funciona en páginas https y en localhost. Abre SimLab por https para conectar una placa."
+  },
+  "lab": {
+    "unsupportedTitle": "Aquí no hay nada que reflejar",
+    "unsupported": "El gemelo refleja lecciones de Board Lab para Arduino Uno R3, Nano y Uno R4. Abre una de esas lecciones para controlar una placa real."
+  },
+  "setup": {
+    "title": "Antes de conectar",
+    "flash": "Sube StandardFirmata: en el IDE de Arduino elige Archivo › Ejemplos › Firmata › StandardFirmata y pulsa Subir.",
+    "monitor": "Cierra el Monitor Serie del IDE. Solo un programa puede ocupar el puerto.",
+    "wiring": "Montaje de la demo: un LED con una resistencia de 220 Ω en el pin 13 (o mira el LED L) y un potenciómetro en A0 (patas de los extremos a 5V y GND, la central a A0)."
+  },
+  "connect": "Conectar una placa",
+  "reconnect": "Conectar {name}",
+  "chooseOther": "Elegir otra placa",
+  "connecting": "Conectando. La placa se reinicia y hace parpadear su LED L; tarda unos tres segundos.",
+  "disconnect": "Desconectar",
+  "board": {
+    "title": "Placa conectada",
+    "usb": "USB",
+    "firmware": "Firmware",
+    "digital": "Pines",
+    "analog": "Entradas analógicas",
+    "adapter": "Adaptador USB-serie ({chip})",
+    "unknown": "Dispositivo serie USB",
+    "note": "La placa dice: {text}"
+  },
+  "toggles": {
+    "drive": "Controlar la placa real",
+    "driveHint": "Las salidas del sketch conmutan los pines reales.",
+    "sense": "Sensores reales en la simulación",
+    "senseHint": "Los botones y potenciómetros reales mueven las entradas de la lección."
+  },
+  "run": {
+    "running": "El sketch se está ejecutando y la placa lo sigue.",
+    "stopped": "Ejecuta el sketch en el laboratorio para controlar la placa real."
+  },
+  "safety": {
+    "title": "Cuidado con la corriente",
+    "current": "Un pin da como máximo {ma} mA. Pon siempre una resistencia de 220 Ω a 1 kΩ en serie con un LED y nunca alimentes un motor, un servo o un relé desde un pin.",
+    "inputs": "Los pines que la lección conecta a un botón o a un sensor solo se leen, nunca se activan."
+  },
+  "pins": {
+    "title": "Pines en vivo",
+    "caption": "Lo que hace el sketch en cada pin y lo que está haciendo la placa real",
+    "pin": "Pin",
+    "sim": "Sim.",
+    "real": "Real",
+    "status": "Estado",
+    "empty": "Esta lección aún no usa ningún pin.",
+    "high": "HIGH",
+    "low": "LOW",
+    "none": "–",
+    "pwm": "PWM {duty}",
+    "servo": "servo {us} µs",
+    "tone": "tono {hz} Hz",
+    "input": "entrada",
+    "volts": "{volts} V"
+  },
+  "status": {
+    "mirrored": "reflejado",
+    "paused": "en pausa",
+    "sensing": "sensor a la sim.",
+    "notRead": "sin leer",
+    "serial": "enlace USB",
+    "lesson-input": "solo entrada",
+    "unsupported": "no está en esta placa",
+    "tone": "el tono queda en la sim.",
+    "virtual-only": "solo en la sim."
+  },
+  "errors": {
+    "title": "No se pudo conectar",
+    "busy": "El puerto está ocupado. Cierra el Monitor Serie del IDE de Arduino, u otra pestaña que use la placa, y vuelve a conectar.",
+    "no-firmata": "La placa no respondió en Firmata. Sube StandardFirmata (Archivo › Ejemplos › Firmata › StandardFirmata) y vuelve a conectar.",
+    "disconnected": "Se desconectó la placa. Vuelve a enchufarla y conecta de nuevo.",
+    "failed": "No se pudo abrir el puerto serie. Desenchufa la placa, vuelve a enchufarla e inténtalo otra vez.",
+    "denied": "Esta página no tiene permiso para usar puertos serie. Revisa los permisos del sitio en tu navegador."
+  }
+}

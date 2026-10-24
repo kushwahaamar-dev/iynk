@@ -1,0 +1,16 @@
+# TLS in front of the relay. REALTIME_DOMAIN is a real name (rt.example.tech) or <ip-with-dashes>.sslip.io;
+# Caddy gets and renews the certificate itself (HTTP-01 on port 80) and proxies WebSocket upgrades as is.
+{$REALTIME_DOMAIN} {
+	@relay path /ws /healthz /metrics
+	handle @relay {
+		reverse_proxy relay:8787
+	}
+	handle {
+		respond "Not found" 404
+	}
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		-Server
+	}
+}

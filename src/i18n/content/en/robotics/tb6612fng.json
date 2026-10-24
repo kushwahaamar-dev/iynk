@@ -1,0 +1,405 @@
+{
+  "title": "TB6612FNG driver",
+  "sub": "H-bridge, PWM",
+  "hint": "power the bench, then send drive commands",
+  "overview": "A Nano pin gives about 20 mA at 5 V. A TT gear motor wants 150 mA just to turn and about an amp when it starts or stalls, at 6 to 7 V. The TB6612FNG sits in between: two H-bridges, each four switches that connect the motor one way, the other way, or short its leads together to brake. IN1 and IN2 pick the direction and PWM sets the speed by switching the bridge on and off almost a thousand times a second (977 Hz on pins 5 and 6). Motor power (VM, 2.5 to 13.5 V, here a 2S LiPo) and logic power (VCC, 2.7 to 5.5 V, here the Nano's 5 V) are separate supplies with one common ground, and STBY must be HIGH or the whole chip sleeps. Its MOSFET switches lose about 0.5 V at 1 A and only about 0.15 V at 0.3 A, against about 2 V for the L298N's bipolar switches, so this is the driver to use. Build the breakout, power it, then try brake and coast back to back: brake stops the wheel hard, coast lets it spin down.",
+  "parts": {
+    "U1": {
+      "name": "TB6612FNG dual H-bridge driver",
+      "what": "Toshiba's driver in an SSOP24: two H-bridges of four low-resistance MOSFETs each, the logic that decodes IN1, IN2 and PWM, a standby switch, an undervoltage lockout on VCC (off below 1.9 V, back above 2.2 V) and thermal shutdown at 175 °C. Each channel carries 1.2 A on average (1 A in normal use) and 3.2 A in a 10 ms pulse. There is no current limit: only the thermal shutdown protects it."
+    },
+    "C1": {
+      "name": "0.1 µF capacitor on VM",
+      "what": "A small ceramic right at the motor supply pins. It soaks up the fast edges every time the bridge switches, so the spikes stay on the board instead of running back up the battery leads."
+    },
+    "C2": {
+      "name": "0.1 µF capacitor on VCC",
+      "what": "Decouples the logic supply at the chip, so motor noise does not reach the inputs that read IN1, IN2, PWM and STBY."
+    },
+    "C3": {
+      "name": "10 µF tantalum capacitor on VM",
+      "what": "The bulk tank for the motor supply: it hands the bridge the burst of current each PWM cycle asks for. It is a tantalum chip, polarised: the band marks +, and it sits toward VM on the left. Fitted backwards, a tantalum fails short and can burn."
+    },
+    "JP1": {
+      "name": "Power and motor header",
+      "what": "VM (motor battery, 2.5 to 13.5 V, 15 V absolute), VCC (logic, 2.7 to 5.5 V), GND, then the motor outputs A01, A02, B02, B01 and a second GND. Two supplies on purpose: the motors can run from a battery while the logic follows the controller. Note the silkscreen's A01 with a zero; Toshiba calls it AO1."
+    },
+    "JP2": {
+      "name": "Control header",
+      "what": "PWMA and PWMB set the speed of each channel, AIN1/AIN2 and BIN1/BIN2 pick the direction, and STBY must be HIGH or every output turns off. Every input has a 200 kΩ pull-down inside the chip, so a pin left unconnected reads LOW."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "The controller, on USB (Mini-B). D5 drives PWMA, D7 AIN1, D8 AIN2, D9 STBY, D6 PWMB, D10 BIN1 and D11 BIN2; its 5V pin feeds VCC and its GND is joined to the battery's GND. The motors never draw from it."
+    },
+    "MOTA": {
+      "name": "Motor A (TT gear motor)",
+      "what": "A 1:48 yellow gear motor on A01 and A02. About 150 mA turning freely at 6 to 7 V, about an amp at start or stall. The yellow hub shows its own speed and direction."
+    },
+    "MOTB": {
+      "name": "Motor B (TT gear motor)",
+      "what": "The second gear motor, on B01 and B02, with its own speed and direction (red hub). On this board B02 sits above B01 on the header."
+    },
+    "BATT": {
+      "name": "2S LiPo battery, 7.4 V",
+      "what": "Two lithium-polymer cells in series: 8.4 V full, 7.4 V nominal, about 6.4 V when it is time to recharge. Red goes to VM, black to GND. It feeds only the motors."
+    }
+  },
+  "power": {
+    "label": "Power the bench",
+    "ok": "Nano on USB, LiPo on VM: the driver is awake (STBY high)"
+  },
+  "modes": {
+    "fwd50": { "title": "Forward 50%" },
+    "fwd100": { "title": "Forward 100%" },
+    "rev": { "title": "Reverse" },
+    "brake": { "title": "Brake" },
+    "coast": { "title": "Coast" },
+    "standby": { "title": "Standby (STBY low)" },
+    "code": {
+      "title": "TB6612FNG: IN1 and IN2 pick the direction, PWM sets the speed",
+      "stby": "LOW, or left unconnected, puts the whole chip to sleep",
+      "sleep": "STBY LOW: every output is off, whatever the other pins say",
+      "fwd": "forward",
+      "rev": "reverse",
+      "brk": "short brake",
+      "cst": "coast",
+      "fwd50": "forward, half speed",
+      "fwd100": "forward, full speed",
+      "rev160": "reverse, 63% duty",
+      "brake": "short brake: both motor leads tied to GND, it stops hard",
+      "coast": "coast: outputs off (PWM held HIGH), the wheel spins down on its own",
+      "ignored": "ignored while STBY is LOW"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Strip to the bare PCB",
+      "body": "Take every part off. The red 20 mm square holds only four parts and two headers: you will put them back in the order a factory would.",
+      "refusal": "Unplug the power first: never work on a live board"
+    },
+    "smd": {
+      "title": "Pick and place the SMD parts, then reflow",
+      "body": "Paste, then U1, C1, C2 and C3 go on in one pass, and the oven melts the paste under every pad at about 245 °C. Mind U1's pin 1 dot (top left) and C3's band (+, toward VM).",
+      "refusal": "The SMD parts go on first, on a bare board"
+    },
+    "jp1": {
+      "title": "Fit JP1, the power and motor header",
+      "body": "A 1x8 header down the left edge: VM, VCC, GND, A01, A02, B02, B01, GND.",
+      "refusal": "SMD parts first: run pick and place + reflow. The oven would melt plastic parts"
+    },
+    "jp2": {
+      "title": "Fit JP2, the control header",
+      "body": "A 1x8 header down the right edge: PWMA, AIN2, AIN1, STBY, BIN1, BIN2, PWMB, GND. The two rows are 0.6 in apart, so the board can also straddle a breadboard like a wide chip.",
+      "refusal": "SMD parts first: run pick and place + reflow. The oven would melt plastic parts"
+    },
+    "solder": {
+      "title": "Solder the header joints",
+      "body": "Sixteen through-hole joints. A good one is shiny and concave, wetting both the pin and the pad.",
+      "refusal": "Nothing to solder yet: place a part first"
+    },
+    "plug": {
+      "title": "Power the bench",
+      "body": "USB into the Nano, the LiPo onto VM and GND. The Nano's 5 V feeds VCC; the grounds are joined. The Nano starts with Forward 50%.",
+      "refusal": "Finish the build first: every part on and every joint soldered"
+    },
+    "fwd50": {
+      "title": "Send Forward 50%",
+      "body": "AIN1 HIGH, AIN2 LOW, PWMA 128: both wheels turn forward at about half speed, about 3.7 V on average.",
+      "refusal": "Power the bench first"
+    },
+    "brake": {
+      "title": "Send Brake",
+      "body": "AIN1 and AIN2 both HIGH: both low-side switches tie the motor leads to GND, the motor's own back-EMF fights it, and it stops hard.",
+      "refusal": "Power the bench first"
+    },
+    "coast": {
+      "title": "Send Coast",
+      "body": "AIN1 and AIN2 both LOW with PWMA HIGH: every switch is off, nothing holds the motor, and the wheel spins down on its own. Compare it with Brake.",
+      "refusal": "Power the bench first"
+    },
+    "rev": {
+      "title": "Send Reverse",
+      "body": "AIN1 LOW, AIN2 HIGH, PWMA 160: the other diagonal of the bridge conducts, so current flows the other way and the wheels turn backwards at 63% duty.",
+      "refusal": "Power the bench first"
+    },
+    "fwd100": {
+      "title": "Send Forward 100%",
+      "body": "PWMA 255 holds the bridge on all the time: the motor sees the battery minus the switch drop, about 7.3 V at 150 mA.",
+      "refusal": "Power the bench first"
+    },
+    "standby": {
+      "title": "Pull STBY low",
+      "body": "The sketch drives STBY LOW: every output turns off and the chip draws under 1 µA, though IN1, IN2 and PWM still say forward. A STBY wire that falls out does the same, because of the 200 kΩ pull-down.",
+      "refusal": "Power the bench first"
+    },
+    "c3-backwards": {
+      "title": "Break it: C3 in backwards",
+      "body": "C3 goes back on with its band toward GND. Power up and watch it fail, then unplug, turn it round and power up again."
+    },
+    "lipo-backwards": {
+      "title": "Break it: LiPo plugged in backwards",
+      "body": "Red on GND, black on VM. This board has no reverse protection. Watch what burns, then repair it and power it the right way round."
+    },
+    "four-cells": {
+      "title": "Break it: a 4S pack on VM",
+      "body": "A fully charged 4S LiPo gives 16.8 V, above the 15 V absolute maximum. See the driver fail, then go back to the 2S pack."
+    },
+    "motors-on-5v": {
+      "title": "Break it: motors on the Nano's 5 V",
+      "body": "VM moves from the battery to the Nano's 5V pin. Every motor start drags the rail down and the Nano resets in a loop. Repair it: VM back on the LiPo."
+    },
+    "cold-stby": {
+      "title": "Break it: cold joints on the control header",
+      "body": "The control header's joints are dull and grainy. When STBY's joint opens, the pull-down sends the chip to sleep and the motors stutter. Reflow the joints."
+    },
+    "no-driver": {
+      "title": "Leave U1 out",
+      "body": "Remove the driver chip and power up: the supplies are there but nothing drives the motors. Put U1 back before the next step.",
+      "refusal": "Unplug the power first: never work on a live board"
+    },
+    "exploded": {
+      "title": "Exploded view",
+      "body": "Unplug and lift the parts by build group: the SMD parts, then the headers.",
+      "refusal": "Unplug the power first: never work on a live board"
+    }
+  },
+  "faults": {
+    "c3-reversed": {
+      "title": "C3 fitted backwards",
+      "symptom": "Pop: C3 cracks and smokes as soon as the battery is on, and the battery current jumps.",
+      "explanation": "A tantalum capacitor is polarised. Reverse voltage breaks down its oxide layer, it turns into a near short across VM, and the battery pushes amps through it until it burns.",
+      "fix": "Unplug, desolder C3, and fit a new one with the band (+) toward VM on the left."
+    },
+    "reverse-polarity": {
+      "title": "LiPo connected backwards",
+      "symptom": "U1 and C3 get hot within seconds, there is a burnt smell, and nothing turns.",
+      "explanation": "The SparkFun board has no reverse protection. Current flows from GND through the lower switches' body diodes, out through the upper ones to VM: two diode drops across the battery, a near short through the chip. C3 is reverse-biased at the same time.",
+      "fix": "Unplug at once and swap the leads: red to VM, black to GND. On a real board U1 and C3 are usually dead; Pololu's carrier adds a reverse-protection MOSFET on VM."
+    },
+    "over-voltage": {
+      "title": "16.8 V on VM",
+      "symptom": "The driver fails at once: VM shorts to GND and the battery leads get warm.",
+      "explanation": "VM works up to 13.5 V and survives 15 V. A full 4S pack (16.8 V) is above both, and every braking spike adds more on top.",
+      "fix": "Use a 2S pack (8.4 V full) or at most a 3S (12.6 V full, little margin for braking spikes)."
+    },
+    "brownout": {
+      "title": "Motors on the Nano's 5 V",
+      "symptom": "The Nano resets every time the motors start: the sketch restarts, the serial line repeats, the wheels jerk.",
+      "explanation": "Two TT motors take about 1.6 A for a moment when they start. The Nano's USB supply is fused at 500 mA and sits behind a diode, so its 5 V rail sags below the ATmega328P's 2.7 V brown-out level and the chip resets.",
+      "fix": "Feed VM from the battery, keep VCC on the Nano's 5 V, and join the grounds."
+    },
+    "cold-header": {
+      "title": "Cold joints on the control header",
+      "symptom": "The motors stutter, worse when the board is tapped or vibrates.",
+      "explanation": "A cold joint is dull, grainy and cone-shaped: it touches the pin only now and then. When the STBY joint opens, the 200 kΩ pull-down drags STBY LOW and the chip sleeps until the contact comes back.",
+      "fix": "Reheat each joint with fresh flux and a little solder until it flows into a shiny, concave fillet."
+    },
+    "stby-low": {
+      "title": "STBY low or unconnected",
+      "symptom": "Powered, the sketch runs, IN1, IN2 and PWM look right, and nothing turns.",
+      "explanation": "STBY LOW turns every output off. An unconnected STBY reads LOW because of the internal 200 kΩ pull-down, the commonest first-day trap with this chip.",
+      "fix": "Wire STBY to a pin and drive it HIGH in setup(), or tie it to VCC."
+    },
+    "no-driver": {
+      "title": "U1 left off",
+      "symptom": "Both supplies are on, but nothing turns and nothing gets warm.",
+      "explanation": "Without U1 there is nothing between the battery and the motors: the board is only headers, three capacitors and copper.",
+      "fix": "Unplug, place U1 with pin 1 top left, and solder it."
+    }
+  },
+  "status": {
+    "status": "Status",
+    "powered": "Bench power",
+    "mode": "Command",
+    "stby": "STBY",
+    "ain1": "AIN1",
+    "ain2": "AIN2",
+    "pwma": "PWMA duty",
+    "vm": "VM (motor supply)",
+    "vcc": "VCC (logic)",
+    "motors": "Battery current",
+    "usb": "USB current"
+  },
+  "current": {
+    "usb": "Nano USB (500 mA polyfuse)",
+    "lipo": "2S LiPo on VM (driver limit 2 x 1 A)",
+    "nano": "Nano running",
+    "logic": "TB6612FNG logic, STBY high",
+    "motors": "Two TT motors",
+    "motors5v": "Two TT motors starting from the 5 V pin",
+    "c3short": "C3 shorted by reverse voltage",
+    "reverse": "Reversed battery through the body diodes"
+  },
+  "tasks": {
+    "five-speeds": {
+      "title": "Five speeds, both ways",
+      "brief": "Drive motor A forward at five PWM steps (51, 102, 153, 204, 255), one second each, brake for half a second, then do the same in reverse and brake again. Keep STBY HIGH the whole time.",
+      "hints": {
+        "1": "Direction is AIN1 and AIN2, speed is analogWrite(PWMA, …): set the direction once, then step the PWM.",
+        "2": "51 × i for i = 1 to 5 gives the five steps; delay(1000) after each one.",
+        "3": "Brake is AIN1 = AIN2 = HIGH. Write both pins every time; never rely on the pull-down."
+      },
+      "checks": {
+        "1": "Runs for the whole 11 s",
+        "2": "STBY (D9) is HIGH",
+        "3": "Forward: AIN1 (D7) is HIGH",
+        "4": "Forward: AIN2 (D8) is LOW",
+        "5": "First step: PWMA at 20%",
+        "6": "Third step: PWMA at 60%",
+        "7": "Fifth step: PWMA at 100%",
+        "8": "Reverse: AIN1 (D7) is LOW",
+        "9": "Reverse: AIN2 (D8) is HIGH",
+        "10": "Reverse, first step: PWMA at 20%",
+        "11": "Reverse, fifth step: PWMA at 100%"
+      },
+      "code": {
+        "goal": "Step motor A through five speeds forward, brake, then the same in reverse",
+        "start": "this drives forward at the first step only: add the other four, the brake and the reverse sweep"
+      }
+    },
+    "one-turn": {
+      "title": "Exactly one turn",
+      "brief": "A 20-slot encoder disc on motor A's shaft gives one rising edge on D2 per slot. Count the edges in an interrupt and brake motor A after exactly 20 slots, one wheel turn, then print the count once. Because you stop on the count and not on a timer, it turns once whether the battery is full or nearly flat: your first closed loop.",
+      "hints": {
+        "1": "The interrupt only counts: count++ in tick(), nothing else. Do the deciding in loop().",
+        "2": "count is a 32-bit long on an 8-bit chip: read it between noInterrupts() and interrupts() so it cannot change halfway through the read.",
+        "3": "AIN1 is already HIGH, so setting AIN2 HIGH gives the short brake. Use a flag so you brake and print only once."
+      },
+      "checks": {
+        "1": "Counts the encoder with an interrupt and a volatile counter",
+        "2": "Drives motor A at PWM 150",
+        "3": "Still driving after 19 slots",
+        "4": "Brakes (AIN2 HIGH) right after slot 20",
+        "5": "Stays braked",
+        "6": "Prints \"one turn: 20 slots\""
+      },
+      "code": {
+        "goal": "Turn motor A exactly one revolution: 20 encoder slots",
+        "slots": "slots on the encoder disc: one turn",
+        "todo": "read count safely, and brake once it reaches SLOTS"
+      },
+      "world": {
+        "enc": "Encoder on D2"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "reflow-first": {
+        "q": "Why do the headers go on after the reflow, not before?",
+        "options": {
+          "1": "The oven's 245 °C would melt their plastic",
+          "2": "Headers would pull heat away from U1",
+          "3": "Reflow only works on square pads"
+        },
+        "why": "The whole board goes through the oven. Through-hole parts with plastic bodies go on afterwards and are soldered by hand, joint by joint."
+      },
+      "c3-way": {
+        "q": "Which way round does C3 go?",
+        "options": {
+          "1": "Band (+) toward VM, on the left",
+          "2": "Either way: it is a ceramic",
+          "3": "Band toward GND, on the right"
+        },
+        "why": "C3 is a tantalum, and tantalums are polarised: the band marks the + end. Backwards, it breaks down and fails short, often with smoke."
+      },
+      "c3-job": {
+        "q": "What is C3 for?",
+        "options": {
+          "1": "It sets the PWM frequency",
+          "2": "It holds charge on VM for the current bursts of every PWM cycle",
+          "3": "It powers the logic when USB is unplugged"
+        },
+        "why": "Every time the bridge switches on, the motor wants current faster than the battery leads can deliver it. The 10 µF tank next to the chip supplies the burst and keeps VM steady."
+      }
+    },
+    "drive": {
+      "both-high": {
+        "q": "AIN1 = HIGH and AIN2 = HIGH. What does motor A do?",
+        "options": {
+          "1": "Spins forward",
+          "2": "Short brake: stops hard",
+          "3": "Coasts to a stop"
+        },
+        "why": "Both inputs HIGH turn on both low-side switches, tying the motor leads together at GND. The spinning motor's back-EMF drives a current that fights its own motion, so it stops hard."
+      },
+      "half-duty": {
+        "q": "PWM at 50% duty from a 7.4 V pack. What does the motor see on average?",
+        "options": {
+          "1": "7.4 V",
+          "2": "About 3.7 V",
+          "3": "0 V, PWM is digital"
+        },
+        "why": "Average = duty × (supply − bridge drop). At 150 mA the drop is only 0.15 A × 0.5 Ω ≈ 0.08 V, so 0.5 × 7.3 V ≈ 3.7 V."
+      },
+      "pwm-low": {
+        "q": "AIN1 = HIGH, AIN2 = LOW. What happens during the LOW part of each PWM cycle?",
+        "options": {
+          "1": "The outputs open and the motor coasts",
+          "2": "Both low-side switches conduct: a short brake",
+          "3": "The chip goes to standby"
+        },
+        "why": "The datasheet's table: PWM LOW with IN1 or IN2 HIGH is short brake. Each cycle alternates drive and brake, which is why the speed follows the duty so closely."
+      }
+    },
+    "faults": {
+      "resets": {
+        "q": "The Nano resets every time the motors start. First suspect?",
+        "options": {
+          "1": "A bug in setup()",
+          "2": "The USB cable is too long",
+          "3": "The motors pull the 5 V rail below the brown-out level"
+        },
+        "why": "Motor start current is several times the running current. On a 500 mA USB supply it drags 5 V below the ATmega328P's 2.7 V brown-out level. Motors belong on their own supply, VM."
+      },
+      "backwards": {
+        "q": "On this board, what happens if the LiPo goes on backwards?",
+        "options": {
+          "1": "Nothing: the board blocks it",
+          "2": "Current flows through the bridge's body diodes and U1 and C3 overheat",
+          "3": "The motors run backwards"
+        },
+        "why": "There is no protection diode or MOSFET on the SparkFun board. The body diodes conduct across the reversed battery, a near short, and the tantalum is reverse-biased too."
+      },
+      "cells": {
+        "q": "Which fully charged pack is too much for VM?",
+        "options": {
+          "1": "2S LiPo, 8.4 V",
+          "2": "3S LiPo, 12.6 V",
+          "3": "4S LiPo, 16.8 V"
+        },
+        "why": "VM works up to 13.5 V and its absolute maximum is 15 V. 3S fits with little margin; 4S is over the limit."
+      }
+    },
+    "end": {
+      "vs-l298n": {
+        "q": "Why use the TB6612FNG instead of the L298N?",
+        "options": {
+          "1": "Its MOSFETs drop about 0.5 V at 1 A (0.15 V at 0.3 A) instead of about 2 V, so less heat and more speed",
+          "2": "It has more pins",
+          "3": "It needs no PWM"
+        },
+        "why": "The TB6612FNG's switches behave like 0.5 Ω resistors, so the loss shrinks with the current. The L298N's bipolar switches lose about 2 V whatever the current, and that becomes heat and lost speed."
+      },
+      "stby-open": {
+        "q": "STBY is not connected to anything. What do the motors do?",
+        "options": {
+          "1": "Run at full speed",
+          "2": "Nothing: the internal pull-down holds STBY LOW, so the chip sleeps",
+          "3": "Run at half speed"
+        },
+        "why": "Every TB6612FNG input has a 200 kΩ pull-down. A floating STBY reads LOW, which turns every output off."
+      },
+      "stutter": {
+        "q": "The motors stutter when you tap the board, and the header joints look dull and grainy. What fixes it?",
+        "options": {
+          "1": "Reflow the joints until they are shiny and concave",
+          "2": "A bigger capacitor on VM",
+          "3": "A lower PWM frequency"
+        },
+        "why": "Those are cold joints: they make contact only now and then. Reheat them with flux and a little solder."
+      }
+    }
+  }
+}

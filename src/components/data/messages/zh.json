@@ -1,0 +1,45 @@
+{
+  "leaderboard": {
+    "title": "排行榜",
+    "caption": "{course}：每位飞手的最佳单圈",
+    "rank": "名次",
+    "pilot": "飞手",
+    "best": "最佳单圈",
+    "laps": "圈数",
+    "you": "你",
+    "anonymous": "匿名飞手",
+    "pilots": {
+      "other": "榜上共 {count} 位飞手"
+    },
+    "yourRank": "你的名次：第 {rank} 名",
+    "notOnBoard": "飞完一圈即可上榜。",
+    "empty": "还没有人完成单圈。去飞一圈，拿下第一名吧。",
+    "loading": "正在加载排行榜…",
+    "error": "排行榜加载失败。",
+    "retry": "重试",
+    "refresh": "刷新",
+    "offTitle": "此部署未设置排行榜",
+    "offBody": "此部署没有数据库，你的圈速只保存在本机上。"
+  },
+  "live": {
+    "title": "HackTX 此刻",
+    "window": "过去 60 分钟",
+    "live": "实时",
+    "builders": {
+      "other": "人正在动手搭建"
+    },
+    "leds": {
+      "other": "次 LED 闪烁"
+    },
+    "drones": {
+      "other": "次无人机飞行"
+    },
+    "chart": "过去一小时每分钟的事件数",
+    "quiet": "现在很安静。打开一个实验室，成为这一小时的第一位搭建者。",
+    "loading": "正在统计搭建者…",
+    "error": "实时计数加载失败。",
+    "retry": "重试",
+    "offTitle": "此部署未设置实时计数",
+    "offBody": "此部署没有用于统计搭建者的数据库。"
+  }
+}

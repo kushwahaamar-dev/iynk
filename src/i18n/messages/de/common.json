@@ -1,0 +1,33 @@
+{
+  "site": {
+    "name": "SimLab",
+    "tagline": "Entdecken · Verstehen · Bauen",
+    "description": "Ein praktisches Hardware-Labor im Browser: Boards, Roboter und Drohnen bauen, verdrahten, programmieren, kaputt machen und fliegen."
+  },
+  "a11y": {
+    "skipToContent": "Zum Hauptinhalt springen"
+  },
+  "notFound": {
+    "metaTitle": "Seite nicht gefunden",
+    "title": "Diese Seite liegt nicht auf der Werkbank",
+    "body": "Vielleicht ist die Adresse falsch geschrieben, oder die Seite ist umgezogen. Wähle ein Labor, um weiterzumachen.",
+    "home": "Zurück zur Übersicht",
+    "boards": "Board-Labor",
+    "robotics": "Robotik-Labor",
+    "drones": "Drohnen-Labor"
+  },
+  "progress": {
+    "count": "{done}/{total}",
+    "label": "{done} von {total} erledigt"
+  },
+  "client": {
+    "figure": {
+      "loading": "Die Abbildung wird geladen …",
+      "failed": "Die Abbildung wurde nicht geladen. Lade die Seite neu, um es noch einmal zu versuchen.",
+      "controls": "Steuerung der Abbildung",
+      "controlsHint": "Alles, was du in der Abbildung drücken kannst, als Schaltflächen.",
+      "buttons": "Schaltflächen",
+      "parts": "Bauteile"
+    }
+  }
+}

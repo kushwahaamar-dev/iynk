@@ -1,0 +1,233 @@
+{
+  "panel": {
+    "title": "Together",
+    "intro": "Build this with friends. Everyone sees the same bench, and the chat is translated into each person's language.",
+    "start": "Start a room",
+    "joinLabel": "Room code or invite link",
+    "joinPlaceholder": "e.g. k7m2qx",
+    "join": "Join",
+    "badCode": "That isn't a room code. Codes have 6 letters and numbers.",
+    "unavailable": "This browser can't open rooms. Try a current version of Chrome, Firefox, Safari or Edge.",
+    "localOnly": "This deployment has no relay server, so rooms work between tabs of this browser only.",
+    "connecting": "Joining room {code}…",
+    "syncing": "Getting the bench from the host…",
+    "reconnecting": "Connection lost. Reconnecting… Your changes will sync when you're back.",
+    "ended": {
+      "left": "You left the room.",
+      "removed": "The host removed you from the room.",
+      "full": "That room is full. Rooms hold 8 people.",
+      "wrong-item": "That room is building something else. Open its invite link to join it.",
+      "error": "The room closed."
+    },
+    "again": "Start a new room"
+  },
+  "identity": {
+    "title": "Who are you?",
+    "hint": "People in the room see this name. It stays on this device.",
+    "name": "Your name",
+    "color": "Your colour",
+    "save": "Join the room",
+    "saveOnly": "Save",
+    "rename": "Change name",
+    "cancel": "Cancel",
+    "colors": {
+      "tomato": "Tomato",
+      "mustard": "Mustard",
+      "mint": "Mint",
+      "cobalt": "Cobalt",
+      "blush": "Blush"
+    }
+  },
+  "bar": {
+    "label": "Room {code}",
+    "invite": "Invite",
+    "inviteTitle": "Invite people to room {code}",
+    "inviteHint": "Anyone with this link or QR code can join. No account needed.",
+    "copy": "Copy link",
+    "copied": "Link copied",
+    "copyFailed": "Couldn't copy. Select the link and copy it yourself.",
+    "share": "Share",
+    "shareText": "Build with me in SimLab, room {code}",
+    "qr": "QR code for the invite link to room {code}",
+    "qrError": "Couldn't draw the QR code. Copy the link instead.",
+    "close": "Close",
+    "people": {
+      "one": "{count} person here",
+      "other": "{count} people here"
+    },
+    "you": "you",
+    "host": "host",
+    "role": "Your role",
+    "roles": {
+      "none": "No role",
+      "wirer": "Wirer",
+      "coder": "Coder",
+      "pilot": "Pilot",
+      "watcher": "Watcher"
+    },
+    "keyboardYou": "You have the keyboard",
+    "keyboardOther": "{name} has the keyboard",
+    "passTo": "Pass the keyboard to",
+    "pass": "Pass",
+    "ask": "Ask for the keyboard",
+    "take": "Take the keyboard",
+    "asked": "{name} wants the keyboard",
+    "denied": "{name} has the keyboard. Ask for it to edit the code.",
+    "leave": "Leave room",
+    "remove": "Remove {name}",
+    "removeConfirm": "Remove {name} from the room?",
+    "removeYes": "Remove",
+    "status": {
+      "ws": "Live",
+      "broadcast": "This browser only",
+      "connecting": "Connecting",
+      "syncing": "Syncing",
+      "reconnecting": "Reconnecting",
+      "ended": "Closed"
+    },
+    "peerLanguage": "Speaks {lang}"
+  },
+  "chat": {
+    "title": "Room chat",
+    "empty": "No messages yet. Say hi, or ask for help with a part.",
+    "label": "Message",
+    "placeholder": "Write a message",
+    "send": "Send",
+    "count": "{count}/{max}",
+    "translatedFrom": "Translated from {lang}",
+    "showOriginal": "Show original",
+    "showTranslation": "Show translation",
+    "translating": "Translating…",
+    "translateOff": "Translation isn't set up on this deployment, so messages show as written.",
+    "translateFailed": "Couldn't translate this message.",
+    "sending": "Sending…",
+    "kind": {
+      "voice": "Voice",
+      "ai": "Lab partner"
+    },
+    "voice": {
+      "start": "Record a voice message",
+      "stop": "Stop and send",
+      "recording": "Recording… {seconds} s",
+      "transcribing": "Turning your voice into text…",
+      "off": "Voice messages aren't set up on this deployment.",
+      "denied": "SimLab can't use the microphone. Allow it in the browser to send voice messages.",
+      "failed": "Couldn't transcribe that. Try again, or type it.",
+      "unsupported": "This browser can't record audio.",
+      "tooLong": "Voice messages stop after 60 seconds."
+    },
+    "system": {
+      "join": "{name} joined",
+      "leave": "{name} left",
+      "host": "{name} is now the host",
+      "removed": "{name} was removed by the host",
+      "baton": "{by} passed the keyboard to {name}",
+      "batonRequest": "{name} asked for the keyboard"
+    },
+    "someone": "Someone"
+  },
+  "cursors": {
+    "label": "Where the others are pointing",
+    "point": "Point",
+    "stop": "Stop pointing",
+    "surface": "Pointing surface. Move over the figure to show the others where you point. Arrow keys move, Esc stops."
+  },
+  "languages": {
+    "en": "English",
+    "es": "Spanish",
+    "fr": "French",
+    "de": "German",
+    "zh": "Chinese",
+    "hi": "Hindi"
+  },
+  "labs": {
+    "board": "Boards",
+    "robotics": "Robotics",
+    "drone": "Drones"
+  },
+  "lobby": {
+    "metaTitle": "Build together",
+    "metaDescription": "Open a live build room on any board, robot or drone, find a build buddy and plan a build night with Muse Spark.",
+    "eyebrow": "SimLab Together",
+    "title": "Nobody has to build alone",
+    "lede": "Open a room on any board, robot or drone and send the link. Everyone sees the same bench, one person types at a time, and the chat shows each message in your own language.",
+    "notSetUp": "Not set up on this deployment",
+    "retry": "Try again",
+    "create": {
+      "title": "Start a room",
+      "hint": "You get an invite link and a QR code to share.",
+      "lab": "Lab",
+      "item": "What to build",
+      "go": "Open the room",
+      "empty": "No lab items are ready yet."
+    },
+    "join": {
+      "title": "Join a room",
+      "hint": "Type the 6-character code from the invite, or paste the link.",
+      "go": "Join",
+      "looking": "Looking for room {code}…",
+      "empty": "Nobody is in room {code} right now. Rooms close 30 minutes after the last person leaves.",
+      "full": "Room {code} is full.",
+      "timeout": "Couldn't reach room {code}. Check the code and your connection.",
+      "unknown": "Room {code} is open, but it didn't say what it's building. Ask for the invite link.",
+      "unavailable": "This browser can't open rooms.",
+      "found": "Found it. Opening the room…"
+    },
+    "buddies": {
+      "title": "Build Buddies",
+      "lede": "Say what you've built and what you want to make next. Muse Spark suggests people whose skills fit with yours, and says why.",
+      "privacy": "Your profile holds no contact details and is deleted after 24 hours. You connect by room invite.",
+      "name": "Your name",
+      "interests": "Interests",
+      "interestsHint": "Separate them with commas, e.g. drones, LEDs, line followers",
+      "builtNote": {
+        "one": "Your profile also lists the {count} lesson or test you've finished in SimLab.",
+        "other": "Your profile also lists the {count} lessons and tests you've finished in SimLab."
+      },
+      "wants": "What you want to build next",
+      "submit": "Find my buddies",
+      "finding": "Looking for buddies…",
+      "matches": "Your matches",
+      "none": "No good matches yet. More people join through the day, so check back soon.",
+      "alone": "You're the first one on the list. Invite a friend, or check back later.",
+      "score": "{score}% match",
+      "shared": "You both like {interest}",
+      "project": "Build together: {item}",
+      "invite": "Invite to a room",
+      "inviteTitle": "Build {item} with {name}",
+      "inviteHint": "Show {name} this QR code or send the link. The room opens on {item}.",
+      "notSetUp": "Buddy matching needs the database and the AI service, and this deployment doesn't have both.",
+      "failed": "Couldn't find buddies just now.",
+      "missing": "Add your name and what you want to build next."
+    },
+    "plan": {
+      "title": "Build Night planner",
+      "lede": "Everyone says what they'd like to make. Muse Spark picks one project you'll all enjoy and gives each person a role and a first task.",
+      "people": "Who's building",
+      "person": "Person {n}",
+      "name": "Name",
+      "lang": "Language",
+      "level": "Experience",
+      "levels": {
+        "new": "New to this",
+        "some": "Some",
+        "lots": "Lots"
+      },
+      "wants": "What they'd like to make or learn",
+      "add": "Add a person",
+      "remove": "Remove {name}",
+      "submit": "Plan our build night",
+      "planning": "Planning…",
+      "roles": "Roles",
+      "firstTask": "First task",
+      "steps": "The plan",
+      "parts": "Parts",
+      "start": "Start this build",
+      "again": "Plan again",
+      "notSetUp": "The planner needs the AI service, which isn't set up on this deployment.",
+      "failed": "Couldn't make a plan just now.",
+      "missing": "Give everyone a name and say what they'd like to make.",
+      "unknownItem": "The plan picked something SimLab doesn't have yet. Plan again."
+    }
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "brand": {
+    "home": "SimLab, aller au tableau de bord"
+  },
+  "nav": {
+    "label": "Labos",
+    "dashboard": "Tableau de bord",
+    "boards": "Labo des cartes",
+    "robotics": "Labo de robotique",
+    "drones": "Labo des drones",
+    "about": "À propos",
+    "menu": "Menu",
+    "closeMenu": "Fermer le menu"
+  },
+  "language": {
+    "label": "Langue"
+  },
+  "theme": {
+    "label": "Thème",
+    "system": "Comme le système",
+    "light": "Clair",
+    "dark": "Sombre"
+  },
+  "footer": {
+    "summary": "Un labo pratique pour les cartes, les robots et les drones. Tout tourne dans votre navigateur.",
+    "privacy": "Ni compte ni pistage : votre progression est enregistrée uniquement dans ce navigateur.",
+    "figures": "Figures dessinées avec Colorfigures, d’April Zhu (licence MIT).",
+    "about": "Crédits et licences",
+    "pages": "Pages du site"
+  },
+  "ui": {
+    "close": "Fermer",
+    "copy": "Copier",
+    "copied": "Copié",
+    "copyCode": "Copier le code",
+    "done": "Terminé",
+    "current": "Étape en cours",
+    "stepOf": "Étape {n} sur {total}",
+    "progress": "{done}/{total}",
+    "progressLabel": "{label} : {done} sur {total} terminés"
+  },
+  "dashboard": {
+    "metaTitle": "Tableau de bord",
+    "metaDescription": "Assembler, câbler, programmer, casser et voler : {boards} cartes, {benches} bancs de robotique et {drones} drones, dessinés à l’encre et entièrement interactifs.",
+    "kicker": "Explorer · Comprendre · Construire",
+    "title": "Apprendre l’électronique en la construisant",
+    "lede": "{boards} cartes de développement, {benches} bancs de robotique et {drones} drones, chacun une figure 3D encrée à la main. Faites-la tourner, regardez à l’intérieur, câblez-la, lancez du vrai code, cassez-la exprès et comprenez pourquoi.",
+    "start": "Commencer avec l’Arduino Uno R3",
+    "browse": "Parcourir les cartes",
+    "heroAlt": "Un dessin à l’encre d’une carte à microcontrôleur et d’un pilote de moteurs sur l’établi, avec un quadricoptère en vol stationnaire au-dessus.",
+    "labsTitle": "Les trois labos",
+    "open": "Ouvrir le {lab}",
+    "board": {
+      "text": "De l’Arduino Uno R3 à deux cartes FPGA : des leçons, un éditeur de code en direct, des vues schéma et platine d’essai, un moniteur série et des pannes qui se produisent vraiment.",
+      "count": "{count} cartes",
+      "progress": "Leçons et assemblages"
+    },
+    "robotics": {
+      "text": "Pilotes de moteurs, capteurs et étages d’alimentation, montés pièce par pièce sur le banc, avec des exercices pratiques, un quiz après chaque étape, l’état en direct et le courant consommé.",
+      "count": "{count} bancs",
+      "progress": "Étapes, exercices et quiz"
+    },
+    "drones": {
+      "text": "Du Tiny Whoop à l’octocoptère : un montage pièce par pièce, le poids et la poussée calculés en direct, des tests de sécurité, de vrais réglages Betaflight et ArduPilot, et un terrain de vol.",
+      "count": "{count} drones",
+      "progress": "Montages, tests et parcours"
+    },
+    "continue": {
+      "title": "Reprendre là où vous en étiez",
+      "empty": "Rien de terminé pour l’instant. L’Uno R3 est le meilleur point de départ : seize leçons courtes, des éléments de la carte jusqu’à un radar de recul.",
+      "last": "Dernière chose terminée",
+      "resume": "Continuer",
+      "begin": "Commencer la première leçon",
+      "entry": "{kind} : {name}",
+      "kinds": {
+        "lesson": "Leçon",
+        "assembly": "Assemblage",
+        "step": "Étape de montage",
+        "task": "Exercice pratique",
+        "quiz": "Quiz",
+        "build": "Montage",
+        "test": "Test de sécurité",
+        "course": "Parcours de vol"
+      }
+    },
+    "overall": "Progression globale",
+    "features": {
+      "title": "Dans chaque labo",
+      "see": {
+        "title": "Voir à travers",
+        "text": "Faites tourner n’importe quelle figure sur elle-même, activez la vue transparente et regardez les pièces internes fonctionner, avec des étiquettes qui s’allument."
+      },
+      "code": {
+        "title": "Lancer du vrai code",
+        "text": "Modifiez du C++ Arduino, du MicroPython ou du Verilog et appuyez sur Exécuter : le simulateur anime la figure, les broches et le moniteur série."
+      },
+      "break": {
+        "title": "Casser exprès",
+        "text": "Inversez la polarité, faites chuter l’alimentation, oubliez une pièce ou ratez une soudure, et voyez ce qui tombe vraiment en panne."
+      },
+      "fly": {
+        "title": "Armer et voler",
+        "text": "Montez un drone, vérifiez ses chiffres, passez le smoke stopper et les tests moteurs, puis franchissez des portes en mode angle ou acro."
+      }
+    }
+  },
+  "about": {
+    "metaTitle": "À propos et crédits",
+    "metaDescription": "Ce qu’est SimLab, comment il fonctionne, et les crédits et licences qui l’accompagnent.",
+    "kicker": "À propos",
+    "title": "À propos de SimLab",
+    "lede": "SimLab est un labo d’électronique qui s’ouvre dans un navigateur. Chaque carte, module et drone est une figure 3D encrée à la main que vous pouvez faire tourner, ouvrir et manipuler, reliée à des leçons, à du code qui s’exécute vraiment et à des pannes que vous pouvez provoquer exprès.",
+    "howTitle": "Comment ça marche",
+    "how": {
+      "figures": "Chaque figure est une page autonome dessinée avec le moteur Colorfigures : de vrais volumes 3D en aplats clairs, moyens et sombres, cernés à l’encre. La page dialogue avec la figure par un petit pont de messages : appuyer sur un bouton dans la leçon fait bouger la pièce dans la figure, et inversement.",
+      "code": "Les programmes tournent dans un simulateur, dans votre navigateur, sur une horloge virtuelle : un sous-ensemble du C++ Arduino avec la bonne taille d’entier pour chaque puce, un sous-ensemble de MicroPython et un sous-ensemble de Verilog pour les deux cartes FPGA.",
+      "privacy": "La progression et les réglages sont enregistrés dans le stockage local de ce navigateur, et nulle part ailleurs. Pas de compte, pas de statistiques, pas de pistage."
+    },
+    "originalsTitle": "Les trois originaux",
+    "originalsLede": "SimLab est né de la refonte de trois sites pédagogiques et veut faire tout ce qu’ils font, et davantage. Il reprend leurs faits, formules, durées et leçons, écrit tout son propre code et corrige les erreurs qu’il y a trouvées.",
+    "originals": {
+      "arduino": {
+        "name": "Learn Arduino",
+        "text": "Seize leçons par composant sur l’Arduino Uno, avec un panneau de code en direct, un moniteur série et une vue schéma."
+      },
+      "robotics": {
+        "name": "Robotics Engineer",
+        "text": "Treize bancs interactifs : cartes, pilotes de moteurs, capteurs et étages d’alimentation, avec un déroulé de montage, des pannes et des quiz."
+      },
+      "drones": {
+        "name": "Drone Engineer",
+        "text": "Treize drones avec un montage pièce par pièce, des calculs en direct, des tests de sécurité et un terrain de vol."
+      }
+    },
+    "visit": "Visiter {name}",
+    "licenceTitle": "Licences",
+    "licenceText": "Les figures sont dessinées avec Colorfigures, d’April Zhu, le moteur avec lequel sont aussi dessinés les sites Robotics Engineer et Drone Engineer. Colorfigures s’appuie sur ISO-GLOW, d’April Zhu, et sur iso-figure, de Tolga Cohce, et il est publié sous la licence MIT ci-dessous.",
+    "licenceNote": "La licence est reproduite dans sa version originale en anglais.",
+    "builtWithTitle": "Réalisé avec",
+    "builtWith": "Next.js, React et Tailwind CSS (tous sous licence MIT), plus le moteur Colorfigures pour chaque figure.",
+    "colorfigures": "Page de la skill Colorfigures"
+  }
+}

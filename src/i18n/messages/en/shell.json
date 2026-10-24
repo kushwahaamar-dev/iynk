@@ -1,0 +1,143 @@
+{
+  "brand": {
+    "home": "SimLab, go to the dashboard"
+  },
+  "nav": {
+    "label": "Labs",
+    "dashboard": "Dashboard",
+    "boards": "Board Lab",
+    "robotics": "Robotics Lab",
+    "drones": "Drone Lab",
+    "about": "About",
+    "menu": "Menu",
+    "closeMenu": "Close menu"
+  },
+  "language": {
+    "label": "Language"
+  },
+  "theme": {
+    "label": "Theme",
+    "system": "Match system",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "footer": {
+    "summary": "A hands-on lab for boards, robots and drones. Everything runs in your browser.",
+    "privacy": "No accounts and no tracking: your progress is saved only in this browser.",
+    "figures": "Figures drawn with Colorfigures by April Zhu (MIT licence).",
+    "about": "Credits and licences",
+    "pages": "Site pages"
+  },
+  "ui": {
+    "close": "Close",
+    "copy": "Copy",
+    "copied": "Copied",
+    "copyCode": "Copy code",
+    "done": "Done",
+    "current": "Current step",
+    "stepOf": "Step {n} of {total}",
+    "progress": "{done}/{total}",
+    "progressLabel": "{label}: {done} of {total} done"
+  },
+  "dashboard": {
+    "metaTitle": "Dashboard",
+    "metaDescription": "Build, wire, code, break and fly: {boards} boards, {benches} robotics benches and {drones} drones, drawn in ink and fully interactive.",
+    "kicker": "Explore · Understand · Build",
+    "title": "Learn hardware by building it",
+    "lede": "{boards} dev boards, {benches} robotics benches and {drones} drones, each one a hand-inked 3D figure. Turn it round, look inside, wire it up, run real code, break it on purpose and find out why.",
+    "start": "Start with the Arduino Uno R3",
+    "browse": "Browse the boards",
+    "heroAlt": "An ink drawing of a microcontroller board and a motor driver on the bench, with a quadcopter hovering above them.",
+    "labsTitle": "The three labs",
+    "open": "Open the {lab}",
+    "board": {
+      "text": "From the Arduino Uno R3 to two FPGA boards: lessons, a live code editor, schematic and breadboard views, a serial monitor and failures that really trigger.",
+      "count": "{count} boards",
+      "progress": "Lessons and assemblies"
+    },
+    "robotics": {
+      "text": "Motor drivers, sensors and power stages, built part by part on the bench, with practice tasks, quizzes after each step, live status and current draw.",
+      "count": "{count} benches",
+      "progress": "Steps, tasks and quizzes"
+    },
+    "drones": {
+      "text": "From a Tiny Whoop to an octocopter: a part-by-part build, live weight and thrust maths, safety tests, real Betaflight and ArduPilot settings, and a flying range.",
+      "count": "{count} drones",
+      "progress": "Builds, tests and courses"
+    },
+    "continue": {
+      "title": "Continue where you left off",
+      "empty": "Nothing finished yet. The Uno R3 is the best place to begin: sixteen short lessons, from the parts of the board to a parking sensor.",
+      "last": "Last finished",
+      "resume": "Carry on",
+      "begin": "Begin the first lesson",
+      "entry": "{kind}: {name}",
+      "kinds": {
+        "lesson": "Lesson",
+        "assembly": "Assembly",
+        "step": "Build step",
+        "task": "Practice task",
+        "quiz": "Quiz",
+        "build": "Build",
+        "test": "Safety test",
+        "course": "Flight course"
+      }
+    },
+    "overall": "Overall progress",
+    "features": {
+      "title": "In every lab",
+      "see": {
+        "title": "See through it",
+        "text": "Drag to turn any figure all the way round, switch on See-through and watch the parts inside work, with labels that light up."
+      },
+      "code": {
+        "title": "Run real code",
+        "text": "Edit Arduino C++, MicroPython or Verilog and press Run: the simulator drives the figure, the pins and the serial monitor."
+      },
+      "break": {
+        "title": "Break it on purpose",
+        "text": "Reverse the polarity, brown out the supply, leave out a part or make a cold joint, and see what really goes wrong."
+      },
+      "fly": {
+        "title": "Arm and fly",
+        "text": "Build a drone, check its numbers, run the smoke stopper and motor tests, then fly gates in angle or acro mode."
+      }
+    }
+  },
+  "about": {
+    "metaTitle": "About and credits",
+    "metaDescription": "What SimLab is, how it works, and the credits and licences behind it.",
+    "kicker": "About",
+    "title": "About SimLab",
+    "lede": "SimLab is a hardware lab you open in a browser. Every board, module and drone is a hand-inked 3D figure you can turn, open up and operate, wired to lessons, code that really runs, and failures you can trigger on purpose.",
+    "howTitle": "How it works",
+    "how": {
+      "figures": "Each figure is a self-contained page drawn with the Colorfigures engine: real 3D bodies in flat light, mid and dark bands with ink outlines. The page talks to the figure through a small message bridge, so pressing a button in the lesson moves the part in the figure and the other way round.",
+      "code": "Sketches run in a simulator in your browser on a virtual clock: an Arduino C++ subset with the right integer widths for each chip, a MicroPython subset, and a Verilog subset for the two FPGA boards.",
+      "privacy": "Progress and settings are saved in this browser's local storage and nowhere else. There are no accounts, no analytics and no tracking."
+    },
+    "originalsTitle": "The three originals",
+    "originalsLede": "SimLab started as a rebuild of three teaching sites and aims to do everything they do, and more. It reuses their facts, formulas, timings and lessons, writes all of its own code, and fixes the mistakes it found in them.",
+    "originals": {
+      "arduino": {
+        "name": "Learn Arduino",
+        "text": "Sixteen component lessons on the Arduino Uno, with a live code panel, a serial monitor and a schematic view."
+      },
+      "robotics": {
+        "name": "Robotics Engineer",
+        "text": "Thirteen interactive benches: boards, motor drivers, sensors and power stages, with a build flow, faults and quizzes."
+      },
+      "drones": {
+        "name": "Drone Engineer",
+        "text": "Thirteen drones with part-by-part builds, live calculations, safety tests and a flying range."
+      }
+    },
+    "visit": "Visit {name}",
+    "licenceTitle": "Licences",
+    "licenceText": "The figures are drawn with Colorfigures by April Zhu, the engine the Robotics Engineer and Drone Engineer sites are drawn with too. Colorfigures builds on ISO-GLOW by April Zhu and iso-figure by Tolga Cohce, and is released under the MIT licence below.",
+    "licenceNote": "The licence is reproduced in its original English.",
+    "builtWithTitle": "Built with",
+    "builtWith": "Next.js, React and Tailwind CSS (all MIT licensed), plus the Colorfigures engine for every figure.",
+    "colorfigures": "Colorfigures skill page"
+  }
+}

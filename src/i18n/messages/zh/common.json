@@ -1,0 +1,33 @@
+{
+  "site": {
+    "name": "SimLab",
+    "tagline": "探索 · 理解 · 动手做",
+    "description": "在浏览器里动手的硬件实验室：搭建、接线、编程、故障排查，还能让开发板、机器人和无人机动起来、飞起来。"
+  },
+  "a11y": {
+    "skipToContent": "跳到主要内容"
+  },
+  "notFound": {
+    "metaTitle": "找不到页面",
+    "title": "工作台上没有这个页面",
+    "body": "网址可能输错了，或者页面已经移动。选择一个实验室继续吧。",
+    "home": "返回总览",
+    "boards": "开发板实验室",
+    "robotics": "机器人实验室",
+    "drones": "无人机实验室"
+  },
+  "progress": {
+    "count": "{done}/{total}",
+    "label": "已完成 {done}/{total}"
+  },
+  "client": {
+    "figure": {
+      "loading": "正在加载图示…",
+      "failed": "图示没有加载出来。请刷新页面重试。",
+      "controls": "图示控件",
+      "controlsHint": "图示中所有可以按下的部分，都以按钮形式列在这里。",
+      "buttons": "按钮",
+      "parts": "部件"
+    }
+  }
+}

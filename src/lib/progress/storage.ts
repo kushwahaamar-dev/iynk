@@ -1,0 +1,175 @@
+// The one saved document (D7): localStorage["simlab:v1"] holds progress and
+// settings together. Reads are cached by the raw string, so React's
+// useSyncExternalStore gets the same object until something is written.
+
+export const STORAGE_KEY = "simlab:v1";
+export const STORAGE_VERSION = 1;
+
+export type ThemeSetting = "system" | "light" | "dark";
+
+export type Settings = {
+  theme: ThemeSetting;
+  sound: boolean;
+  lofi: boolean;
+  labels: boolean;
+  reduceMotion: boolean;
+};
+
+export type QuizResult = { score: number; total: number };
+
+export type Saved = {
+  v: typeof STORAGE_VERSION;
+  done: Record<string, true>;
+  quiz: Record<string, QuizResult>;
+  best: Record<string, number>;
+  settings: Settings;
+};
+
+export const DEFAULT_SETTINGS: Readonly<Settings> = Object.freeze({
+  theme: "system",
+  sound: true,
+  lofi: false,
+  labels: true,
+  reduceMotion: false,
+});
+
+/** What the server renders and what a first visit starts from: nothing saved. */
+export const EMPTY_SAVED: Readonly<Saved> = Object.freeze({
+  v: STORAGE_VERSION,
+  done: Object.freeze({}) as Record<string, true>,
+  quiz: Object.freeze({}) as Record<string, QuizResult>,
+  best: Object.freeze({}) as Record<string, number>,
+  settings: DEFAULT_SETTINGS,
+});
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+/**
+ * Upgrades older documents one version at a time: MIGRATIONS[n] turns a
+ * version-n document into version n + 1. Version 1 is the first, so the table
+ * is empty; a future v2 adds MIGRATIONS[1] and bumps STORAGE_VERSION.
+ */
+const MIGRATIONS: Record<number, (old: Record<string, unknown>) => Record<string, unknown>> = {};
+
+export function migrate(value: unknown): Saved {
+  if (!isRecord(value)) return EMPTY_SAVED;
+  let doc = value;
+  let version = typeof doc.v === "number" ? doc.v : STORAGE_VERSION;
+  while (version < STORAGE_VERSION) {
+    const step = MIGRATIONS[version];
+    if (!step) return EMPTY_SAVED;
+    doc = step(doc);
+    version += 1;
+  }
+  // A document from a newer build: keep what still parses rather than wiping it.
+  return normalize(doc);
+}
+
+function normalize(doc: Record<string, unknown>): Saved {
+  const done: Record<string, true> = {};
+  if (isRecord(doc.done)) {
+    for (const [key, value] of Object.entries(doc.done)) if (value === true) done[key] = true;
+  }
+
+  const quiz: Record<string, QuizResult> = {};
+  if (isRecord(doc.quiz)) {
+    for (const [key, value] of Object.entries(doc.quiz)) {
+      if (!isRecord(value)) continue;
+      const { score, total } = value;
+      if (typeof score === "number" && typeof total === "number" && total > 0 && score >= 0 && score <= total) {
+        quiz[key] = { score, total };
+      }
+    }
+  }
+
+  const best: Record<string, number> = {};
+  if (isRecord(doc.best)) {
+    for (const [key, value] of Object.entries(doc.best)) {
+      if (typeof value === "number" && Number.isFinite(value)) best[key] = value;
+    }
+  }
+
+  const raw = isRecord(doc.settings) ? doc.settings : {};
+  const settings: Settings = {
+    theme: raw.theme === "light" || raw.theme === "dark" || raw.theme === "system" ? raw.theme : DEFAULT_SETTINGS.theme,
+    sound: typeof raw.sound === "boolean" ? raw.sound : DEFAULT_SETTINGS.sound,
+    lofi: typeof raw.lofi === "boolean" ? raw.lofi : DEFAULT_SETTINGS.lofi,
+    labels: typeof raw.labels === "boolean" ? raw.labels : DEFAULT_SETTINGS.labels,
+    reduceMotion: typeof raw.reduceMotion === "boolean" ? raw.reduceMotion : DEFAULT_SETTINGS.reduceMotion,
+  };
+
+  return { v: STORAGE_VERSION, done, quiz, best, settings };
+}
+
+function readRaw(): string | null {
+  try {
+    return window.localStorage.getItem(STORAGE_KEY);
+  } catch {
+    // Storage blocked (privacy mode, sandbox): behave as a first visit.
+    return null;
+  }
+}
+
+let cachedRaw: string | null = null;
+let cached: Saved = EMPTY_SAVED;
+// Used when storage cannot be written, so the session still remembers.
+let memoryOnly: Saved | null = null;
+
+export function getSaved(): Saved {
+  if (memoryOnly) return memoryOnly;
+  const raw = readRaw();
+  if (raw !== cachedRaw) {
+    cachedRaw = raw;
+    try {
+      cached = raw ? migrate(JSON.parse(raw)) : EMPTY_SAVED;
+    } catch {
+      cached = EMPTY_SAVED;
+    }
+  }
+  return cached;
+}
+
+export function getServerSaved(): Saved {
+  return EMPTY_SAVED;
+}
+
+const listeners = new Set<() => void>();
+
+function notify() {
+  for (const listener of [...listeners]) listener();
+}
+
+/** Applies `change` to the latest saved document and writes it back. */
+export function updateSaved(change: (current: Saved) => Saved): Saved {
+  if (typeof window === "undefined") {
+    throw new Error("SimLab progress: saved progress and settings can only change in the browser.");
+  }
+  const current = getSaved();
+  const next = change(current);
+  if (next === current) return current;
+  const raw = JSON.stringify(next);
+  try {
+    window.localStorage.setItem(STORAGE_KEY, raw);
+    memoryOnly = null;
+    cachedRaw = raw;
+    cached = next;
+  } catch {
+    memoryOnly = next;
+  }
+  notify();
+  return next;
+}
+
+/** Same-tab writes notify directly; other tabs arrive as storage events. */
+export function subscribeSaved(listener: () => void): () => void {
+  listeners.add(listener);
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === STORAGE_KEY || event.key === null) listener();
+  };
+  window.addEventListener("storage", onStorage);
+  return () => {
+    listeners.delete(listener);
+    window.removeEventListener("storage", onStorage);
+  };
+}

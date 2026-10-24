@@ -1,0 +1,95 @@
+{
+  "search_information": {
+    "organic_results_state": "Results for exact spelling",
+    "total_results": 1100000,
+    "query_displayed": "Coffee"
+  },
+  "categories": [
+    {
+      "name": "All",
+      "link": "https://www.ebay.com/sch/i.html?_nkw=Coffee&_oac=1"
+    }
+  ],
+  "organic_results": [
+    {
+      "sponsored": true,
+      "title": "2 lb 5 lb 10 lb Colombia Supremo Fresh Roasted Colombian Coffee Beans - Arabica",
+      "subtitle": "Available in Whole Bean Or Ground - Buy More and Save !",
+      "link": "https://www.ebay.com/itm/15301970?_skw=Coffee&var=45314819&itmmeta=01M0ZKK1TGJ0MPCMS2DR635HR8&has...",
+      "serpapi_link": "https://serpapi.com/search.json?ebay_domain=ebay.com&engine=ebay_product&product_id=15301970",
+      "product_id": "15301970",
+      "condition": "Brand New",
+      "price": {
+        "from": {
+          "raw": "$24.60",
+          "extracted": 24.6
+        },
+        "to": {
+          "raw": "$91.01",
+          "extracted": 91.01
+        }
+      },
+      "shipping": "Free delivery",
+      "location": "Located in United States",
+      "buying_format": "buy_it_now",
+      "buying_format_text": "Buy It Now",
+      "thumbnail": "https://i.ebayimg.com/images/g/o5sAAOSwi4pa9xkT/s-l500.webp",
+      "seller": {
+        "username": "vilarimports",
+        "reviews": 37100,
+        "positive_feedback_in_percentage": 99.6
+      }
+    }
+  ],
+  "inline_results": [
+    {
+      "title": "Picked For YouTop selling items from trusted sellers | Sponso⁧red",
+      "subtitle": "Top selling items from trusted sellers | Sponso⁧red",
+      "items": [
+        {
+          "title": "2 lb 5 lb 10 lb Colombia Supremo Fresh Roasted Colombian Coffee Beans - Arabica",
+          "link": "https://www.ebay.com/itm/15301970?_skw=Coffee&var=45314819&itmmeta=01M0ZKK1W7J394QJPZHVKWEVDJ&has...",
+          "serpapi_link": "https://serpapi.com/search.json?ebay_domain=ebay.com&engine=ebay_product&product_id=15301970",
+          "product_id": "15301970",
+          "price": {
+            "raw": "$89.78",
+            "extracted": 89.78
+          },
+          "seller": {
+            "username": "vilarimports",
+            "reviews": 37194,
+            "positive_feedback_in_percentage": 99.6
+          },
+          "thumbnail": "https://i.ebayimg.com/images/g/o5sAAOSwi4pa9xkT/s-l500.webp"
+        }
+      ]
+    }
+  ],
+  "related_searches": [
+    {
+      "query": "ground coffee",
+      "link": "https://www.ebay.com/sch/i.html?_nkw=ground+coffee&_sop=12"
+    }
+  ],
+  "pagination": {
+    "current": 1,
+    "next": "https://www.ebay.com/sch/i.html?_nkw=Coffee&_pgn=2",
+    "other_pages": {
+      "1": "https://www.ebay.com/sch/i.html?_nkw=Coffee&_pgn=1",
+      "2": "https://www.ebay.com/sch/i.html?_nkw=Coffee&_pgn=2",
+      "3": "https://www.ebay.com/sch/i.html?_nkw=Coffee&_pgn=3",
+      "...": "..."
+    }
+  },
+  "serpapi_pagination": {
+    "current": 1,
+    "next_link": "https://serpapi.com/search.json?_nkw=Coffee&_pgn=2&ebay_domain=ebay.com&engine=ebay",
+    "next": "https://serpapi.com/search.json?_nkw=Coffee&_pgn=2&ebay_domain=ebay.com&engine=ebay",
+    "other_pages": {
+      "1": "https://serpapi.com/search.json?_nkw=Coffee&_pgn=1&ebay_domain=ebay.com&engine=ebay",
+      "2": "https://serpapi.com/search.json?_nkw=Coffee&_pgn=2&ebay_domain=ebay.com&engine=ebay",
+      "3": "https://serpapi.com/search.json?_nkw=Coffee&_pgn=3&ebay_domain=ebay.com&engine=ebay",
+      "...": "..."
+    }
+  }
+}

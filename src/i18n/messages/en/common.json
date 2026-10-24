@@ -1,0 +1,33 @@
+{
+  "site": {
+    "name": "SimLab",
+    "tagline": "Explore · Understand · Build",
+    "description": "A hands-on hardware lab in the browser: build, wire, code, break and fly boards, robots and drones."
+  },
+  "a11y": {
+    "skipToContent": "Skip to main content"
+  },
+  "notFound": {
+    "metaTitle": "Page not found",
+    "title": "This page is not on the bench",
+    "body": "The address may be mistyped, or the page has moved. Pick a lab to carry on.",
+    "home": "Back to the dashboard",
+    "boards": "Board Lab",
+    "robotics": "Robotics Lab",
+    "drones": "Drone Lab"
+  },
+  "progress": {
+    "count": "{done}/{total}",
+    "label": "{done} of {total} done"
+  },
+  "client": {
+    "figure": {
+      "loading": "Loading the figure…",
+      "failed": "The figure did not load. Reload the page to try again.",
+      "controls": "Figure controls",
+      "controlsHint": "Everything you can press in the figure, as buttons.",
+      "buttons": "Buttons",
+      "parts": "Parts"
+    }
+  }
+}

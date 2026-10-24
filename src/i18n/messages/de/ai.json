@@ -1,0 +1,136 @@
+{
+  "panel": {
+    "title": "Laborpartner",
+    "byline": "Muse Spark · erst Tipps, erst Freunde",
+    "intro": "Frag nach deiner Verkabelung, deinem Code oder einem Fehler. Ich gebe Tipps vor Antworten, und wenn jemand in deinem Raum diese Lektion schon gemacht hat, frage ich zuerst diese Person.",
+    "inputLabel": "Frag deinen Laborpartner",
+    "placeholder": "Frag etwas zum Aufbau…",
+    "send": "Senden",
+    "stop": "Stopp",
+    "newChat": "Neuer Chat",
+    "thinking": "Denke nach…",
+    "you": "Du",
+    "partner": "Partner",
+    "stopped": "Gestoppt.",
+    "retry": "Nochmal versuchen",
+    "sources": "Quellen",
+    "suggestions": "Frag zum Beispiel",
+    "accepted": "Du hast die Änderung ({kind}) angenommen.",
+    "rejected": "Du hast die Änderung ({kind}) abgelehnt.",
+    "kinds": {
+      "code": "Code",
+      "wire": "Verkabelung",
+      "part": "Bauteile"
+    },
+    "code": "Code",
+    "chat": "Chat",
+    "transcript": "Unterhaltung mit deinem Laborpartner"
+  },
+  "hint": {
+    "label": "Hängst du fest?",
+    "hint": "Gib mir einen Tipp",
+    "another": "Noch ein Tipp",
+    "show": "Zeig es mir",
+    "askHint": "Gib mir einen Tipp, nicht die Lösung.",
+    "askAnother": "Noch einen Tipp, bitte.",
+    "askShow": "Zeig mir die Lösung."
+  },
+  "suggest": {
+    "fault": "Warum passiert das: {fault}?",
+    "error": "Was bedeutet dieser Kompilierfehler?",
+    "failed": "Warum ist „{test}“ fehlgeschlagen?",
+    "start": "Was sollte ich zuerst ausprobieren?",
+    "code": "Was macht dieser Code?",
+    "wiring": "Ist meine Verkabelung richtig?",
+    "drone": "Fliegt diese Drohne gut?",
+    "safety": "Worauf muss ich aufpassen?"
+  },
+  "tools": {
+    "highlight": "Schau dir {part} an",
+    "highlightOff": "Die 3D-Figur ist noch nicht geladen, deshalb ist dieses Bauteil nicht hervorgehoben.",
+    "showAgain": "Nochmal zeigen",
+    "change": {
+      "code": "Vorgeschlagene Code-Änderung",
+      "wire": "Vorgeschlagene Verkabelungsänderung",
+      "part": "Vorgeschlagene Bauteiländerung"
+    },
+    "accept": "Annehmen",
+    "reject": "Ablehnen",
+    "accepted": "Angenommen",
+    "rejected": "Abgelehnt",
+    "manual": "Dieser Aufbau kann die Änderung nicht für dich übernehmen. Kopiere sie und ändere es selbst.",
+    "copy": "Kopieren",
+    "copied": "Kopiert",
+    "unchanged": {
+      "one": "{count} unveränderte Zeile",
+      "other": "{count} unveränderte Zeilen"
+    },
+    "diffLabel": "Änderungen: Zeilen mit + werden hinzugefügt, Zeilen mit − werden entfernt.",
+    "askPeer": "{name} gebeten, es zu erklären",
+    "askPeerNoRoom": "Jemand, der das schon gemacht hat, könnte es dir erklären. Lade jemanden ein, mit dir zu bauen.",
+    "invite": "Freund einladen",
+    "opened": "{tab} geöffnet",
+    "tabs": {
+      "partner": "Partner",
+      "together": "Gemeinsam",
+      "real": "In echt bauen",
+      "passport": "Pass",
+      "hardware": "Hardware"
+    },
+    "question": "„{question}“"
+  },
+  "errors": {
+    "not_configured": "Der Laborpartner ist in dieser Installation nicht eingerichtet.",
+    "rate_limited": "Gerade kommen viele Fragen. Warte ein paar Sekunden und versuche es dann erneut.",
+    "bad_input": "Das konnte nicht gesendet werden. Versuche eine kürzere Frage.",
+    "upstream": "Der Partner hat diesmal nicht geantwortet. Versuche es erneut.",
+    "offline": "Du bist offline. Das Labor funktioniert weiter; der Partner braucht eine Verbindung.",
+    "aborted": "Gestoppt."
+  },
+  "status": {
+    "loading": "Dein Laborpartner wird geweckt…",
+    "unavailable": "Der Laborpartner ist in dieser Installation nicht eingerichtet",
+    "unavailableBody": "Alles andere im Labor funktioniert auch ohne ihn. Der Partner braucht auf dem Server einen Schlüssel für die Meta-Modell-API.",
+    "unreachable": "Der Server ist nicht erreichbar, um den Partner zu prüfen.",
+    "check": "Erneut prüfen"
+  },
+  "voice": {
+    "hold": "Gedrückt halten zum Sprechen (oder M drücken)",
+    "stopRecording": "Stoppen und senden (oder M drücken)",
+    "recording": "Ich höre zu… loslassen zum Senden.",
+    "transcribing": "Deine Stimme wird in Text umgewandelt…",
+    "denied": "Der Mikrofonzugriff ist blockiert. Erlaube ihn im Browser, um zu sprechen.",
+    "unsupported": "Spracheingabe ist in diesem Browser nicht verfügbar.",
+    "unavailable": "Sprache ist in dieser Installation nicht eingerichtet.",
+    "empty": "Ich habe nichts verstanden. Versuch es nochmal, etwas näher am Mikrofon.",
+    "failed": "Deine Stimme konnte nicht in Text umgewandelt werden. Versuch es nochmal oder tippe."
+  },
+  "story": {
+    "title": "Bau-Geschichte",
+    "intro": "Mach aus dieser Sitzung eine kurze Geschichte mit Titelbild: wer was gebaut hat, was kaputtging und wer geholfen hat.",
+    "make": "Unsere Bau-Geschichte schreiben",
+    "remake": "Neu schreiben",
+    "writing": "Deine Geschichte wird geschrieben…",
+    "drawing": "Das Titelbild wird gezeichnet…",
+    "empty": "Noch gibt es nichts zu erzählen. Verkabele etwas, starte Code oder frag den Partner und komm dann zurück.",
+    "moments": {
+      "one": "{count} Moment bisher",
+      "other": "{count} Momente bisher"
+    },
+    "coverAlt": "Titelbild zu „{title}“",
+    "builtBy": "Gebaut von",
+    "helped": "{helper} hat {learner} geholfen",
+    "highlights": "Höhepunkte",
+    "download": "PNG herunterladen",
+    "share": "Teilen",
+    "copyLink": "Link kopieren",
+    "copied": "Link kopiert",
+    "facebook": "Auf Facebook teilen",
+    "shareText": "{title}, eine Bau-Geschichte aus SimLab",
+    "unavailable": "Bau-Geschichten sind in dieser Installation nicht eingerichtet.",
+    "failed": "Die Geschichte konnte nicht geschrieben werden. Versuche es erneut.",
+    "noCover": "Das Titelbild konnte diesmal nicht gezeichnet werden, deshalb hat die Geschichte keins.",
+    "footer": "Gemeinsam gebaut in SimLab",
+    "me": "Ich"
+  }
+}

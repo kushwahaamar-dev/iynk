@@ -1,0 +1,33 @@
+{
+  "site": {
+    "name": "SimLab",
+    "tagline": "Explora · Comprende · Construye",
+    "description": "Un laboratorio de hardware práctico en el navegador: monta, cablea, programa, rompe y haz volar placas, robots y drones."
+  },
+  "a11y": {
+    "skipToContent": "Saltar al contenido principal"
+  },
+  "notFound": {
+    "metaTitle": "Página no encontrada",
+    "title": "Esta página no está en el banco de trabajo",
+    "body": "Puede que la dirección esté mal escrita o que la página se haya movido. Elige un laboratorio para continuar.",
+    "home": "Volver al panel",
+    "boards": "Laboratorio de placas",
+    "robotics": "Laboratorio de robótica",
+    "drones": "Laboratorio de drones"
+  },
+  "progress": {
+    "count": "{done}/{total}",
+    "label": "{done} de {total} completados"
+  },
+  "client": {
+    "figure": {
+      "loading": "Cargando la figura…",
+      "failed": "La figura no se cargó. Recarga la página para volver a intentarlo.",
+      "controls": "Controles de la figura",
+      "controlsHint": "Todo lo que puedes pulsar en la figura, como botones.",
+      "buttons": "Botones",
+      "parts": "Piezas"
+    }
+  }
+}

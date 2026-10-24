@@ -1,0 +1,303 @@
+{
+  "meta": {
+    "indexTitle": "Robotics Lab",
+    "indexDescription": "Thirteen benches on a six-month robotics roadmap: build each board part by part, power it up, break it on purpose and fix it, from Ohm's law to a ROS 2 robot brain.",
+    "benchDescription": "{name}: {teaches}"
+  },
+  "index": {
+    "kicker": "Robotics Lab",
+    "title": "Build it, power it, break it, fix it",
+    "lede": "Thirteen hand-inked benches in the order of a six-month robotics roadmap. Each one walks you through the build, lets you cause the failures that catch real builders, and ends with practice tasks you check by running code and a short quiz.",
+    "fig": "Fig. {n}",
+    "progress": "{done}/{total}",
+    "progressLabel": "{done} of {total} steps, tasks and quizzes done",
+    "onMat": "On the mat: {board}",
+    "ownSupply": "No controller: the bench runs from its own supply",
+    "open": "Open the {name} bench",
+    "months": {
+      "m0": "Start here",
+      "m1": "Month 1 · electronics",
+      "m2": "Month 2 · microcontrollers",
+      "m3": "Month 3 · motors and drivers",
+      "m4": "Month 4 · sensors",
+      "m5": "Month 5 · power and the ROS 2 brain"
+    },
+    "tagsLabel": "Topics",
+    "progressName": "Progress"
+  },
+  "benches": {
+    "uno-r3-build": {
+      "name": "Arduino Uno R3",
+      "teaches": "Meet the board: build it from a bare PCB, reflow the SMD parts, solder the through-hole parts, upload a sketch and break it on purpose."
+    },
+    "led-resistor": {
+      "name": "LED + resistor",
+      "teaches": "Ohm's law with a meter: pick a resistor, predict the current, measure it, and see what a bypassed resistor or a backwards LED does."
+    },
+    "transistor-switch": {
+      "name": "Transistor switch",
+      "teaches": "Logic drives power: one Nano pin switches a motor through a TIP120, and a flyback diode keeps the turn-off spike away from the transistor."
+    },
+    "esp32-s3-build": {
+      "name": "ESP32-S3 DevKitC-1",
+      "teaches": "Wi-Fi and two cores: build the dev board, light the RGB LED on GPIO38 and serve a web page from the chip."
+    },
+    "tb6612fng": {
+      "name": "TB6612FNG driver",
+      "teaches": "A MOSFET H-bridge: direction, PWM speed, brake and standby for two DC motors from one Nano."
+    },
+    "l298n": {
+      "name": "L298N driver",
+      "teaches": "The classic module and why to avoid it: its bipolar switches drop around 2 V and turn it into heat, and the enable jumpers matter."
+    },
+    "a4988": {
+      "name": "A4988 stepper driver",
+      "teaches": "Microstepping a NEMA 17: set the current limit with Vref before the motor runs, then step, direction and 1/16 steps."
+    },
+    "pca9685": {
+      "name": "PCA9685 servo board",
+      "teaches": "Sixteen PWM channels over I2C: 50 Hz servo pulses, and a separate supply for the servos' stall current."
+    },
+    "mpu6050": {
+      "name": "MPU-6050 IMU",
+      "teaches": "A gyro and an accelerometer over I2C: watch the gyro angle drift, then fuse both with a complementary filter."
+    },
+    "hc-sr04": {
+      "name": "HC-SR04 ultrasonic",
+      "teaches": "Time of flight: a 10 µs trigger, an echo pulse, and distance = echo time × 343 m/s ÷ 2."
+    },
+    "qtr-8rc": {
+      "name": "QTR-8RC line sensor",
+      "teaches": "Eight reflectance sensors read by RC timing, a weighted line position and a line follower with tunable Kp and Kd."
+    },
+    "lm2596": {
+      "name": "LM2596 buck module",
+      "teaches": "Power and brown-outs: turn the trimpot to set the output from a LiPo, then watch a stalled motor drag a shared rail down."
+    },
+    "pi5-ros2": {
+      "name": "Raspberry Pi 5",
+      "teaches": "The ROS 2 brain: the official 27 W USB-C supply (5.1 V, 5 A), the under-voltage flags, and nodes that talk over topics."
+    }
+  },
+  "tags": {
+    "build": "build",
+    "smd": "SMD",
+    "tht": "through-hole",
+    "ohms-law": "Ohm's law",
+    "meter": "multimeter",
+    "transistor": "transistor",
+    "motor": "motor",
+    "wifi": "Wi-Fi",
+    "rgb-led": "RGB LED",
+    "motor-driver": "motor driver",
+    "pwm": "PWM",
+    "heat": "heat",
+    "stepper": "stepper",
+    "microstepping": "microstepping",
+    "i2c": "I2C",
+    "servo": "servo",
+    "imu": "IMU",
+    "filters": "filters",
+    "ultrasonic": "ultrasonic",
+    "timing": "timing",
+    "line-sensor": "line sensor",
+    "rc-timing": "RC timing",
+    "power": "power",
+    "buck": "buck converter",
+    "brownout": "brown-out",
+    "linux": "Linux",
+    "ros2": "ROS 2"
+  },
+  "bench": {
+    "kicker": "Fig. {n} · Robotics Lab",
+    "back": "All benches",
+    "progress": "{done}/{total}",
+    "progressLabel": "{done} of {total} steps, tasks and quizzes done on this bench",
+    "figureTitle": "{name}: interactive bench",
+    "figureHint": "Click parts in the figure, or use the part buttons under it. Press Escape inside the figure to come back here.",
+    "overview": "Meet the bench",
+    "boardLink": "Open the {board} board page",
+    "nextBench": "Next bench: {name}",
+    "prevBench": "Previous bench: {name}",
+    "sources": "Sources",
+    "progressName": "Progress",
+    "figureHeading": "The bench",
+    "focusFigure": "Go into the figure",
+    "selected": "Selected part",
+    "nothingSelected": "Nothing selected. Click a part in the figure or in the part buttons under it.",
+    "walk": "More benches"
+  },
+  "steps": {
+    "heading": "Build and break",
+    "count": "{done}/{total} steps",
+    "doIt": "Do it",
+    "redo": "Do it again",
+    "byHand": "Do this in the figure",
+    "done": "Done",
+    "current": "Next up",
+    "kinds": {
+      "build": "Build",
+      "break": "Break it",
+      "test": "Test"
+    },
+    "faultSeen": "Fault seen. Now fix it: {fix}",
+    "outOfOrder": "Finish the step before this one first: {step}",
+    "quizAfter": "A quiz follows this step",
+    "sent": "Sent to the bench: {step}",
+    "allDone": "Every step is done. Try the practice tasks next.",
+    "byHandNotice": "Do this in the figure: {step}",
+    "stepDone": "Done: {step}"
+  },
+  "faults": {
+    "heading": "Break it on purpose",
+    "intro": "Each fault is one that catches real builders. Trigger it, read the symptom on the bench, then fix it.",
+    "trigger": "Trigger",
+    "clear": "Clear every fault",
+    "active": "Active",
+    "symptom": "Symptom",
+    "why": "Why it happens",
+    "fix": "Fix",
+    "kinds": {
+      "reverse-polarity": "reverse polarity",
+      "brownout": "brown-out",
+      "wrong-voltage": "wrong voltage",
+      "cold-solder": "cold solder joint",
+      "short": "short circuit",
+      "missing-part": "missing part",
+      "reversed-part": "part in backwards",
+      "overcurrent": "overcurrent",
+      "level-mismatch": "logic level mismatch",
+      "boot-strap": "strapping pin",
+      "floating-input": "floating input",
+      "thermal": "overheating",
+      "config": "wrong setting"
+    }
+  },
+  "status": {
+    "heading": "Live status",
+    "figure": "Bench",
+    "states": {
+      "off": "Off",
+      "no-power": "No power",
+      "powered": "Powered",
+      "running": "Running",
+      "uploading": "Uploading",
+      "brownout": "Brown-out",
+      "fault": "Fault"
+    },
+    "on": "On",
+    "off": "Off",
+    "high": "HIGH",
+    "low": "LOW",
+    "running": "Running",
+    "stopped": "Stopped",
+    "none": "No reading yet",
+    "units": {
+      "ma": "{v} mA",
+      "volts": "{v} V",
+      "percent": "{v} %",
+      "rpm": "{v} rpm",
+      "deg": "{v}°",
+      "cm": "{v} cm",
+      "hz": "{v} Hz"
+    },
+    "fault": "Fault: {msg}",
+    "faultFix": "Fix: {fix}"
+  },
+  "current": {
+    "heading": "Current draw",
+    "of": "{ma} of {limit} mA",
+    "supply": "{label} · {volts} V",
+    "headroom": "{ma} mA to spare",
+    "over": "Over the limit by {ma} mA: the supply sags and the board browns out",
+    "loads": "What draws it",
+    "idle": "Nothing draws current from this supply right now",
+    "load": "{ma} mA"
+  },
+  "serial": {
+    "heading": "Serial monitor",
+    "notes": "Bench notes",
+    "terminal": "Terminal (SSH)",
+    "empty": "Nothing printed yet. Power the bench and its output appears here.",
+    "clear": "Clear"
+  },
+  "modes": {
+    "heading": "On the bench",
+    "pick": "Program",
+    "upload": "Upload",
+    "switch": "Switch",
+    "running": "Running now",
+    "selected": "Selected",
+    "bytes": "Sketch uses {bytes} bytes of program storage",
+    "instant": "Instant: switches at once, no upload",
+    "code": "Code: {title}",
+    "copy": "Copy code",
+    "copied": "Copied"
+  },
+  "tasks": {
+    "heading": "Practice tasks",
+    "count": "{done}/{total} tasks",
+    "intro": "Write the code, then run the checks. The run uses a virtual clock and a scripted world, so the same code always gives the same result.",
+    "editor": "Code for {title}",
+    "run": "Run checks",
+    "runningNow": "Running…",
+    "resetCode": "Back to the starter code",
+    "solution": "Load the reference solution",
+    "hints": "Hints",
+    "checks": "Checks",
+    "passed": "All {total} checks pass. Task done.",
+    "partial": "{passed} of {total} checks pass",
+    "notRun": "Not run yet",
+    "pass": "Pass",
+    "fail": "Fail",
+    "error": "Line {line}: {message}",
+    "runtime": "The run stopped: {message}",
+    "serialOut": "Serial output of the run",
+    "noSerial": "The run printed nothing",
+    "done": "Done",
+    "language": {
+      "arduino-cpp": "Arduino C++",
+      "micropython": "MicroPython",
+      "python": "Python",
+      "verilog": "Verilog"
+    },
+    "passedNotice": "Task done: {title}"
+  },
+  "quiz": {
+    "heading": "Check yourself",
+    "after": "After: {step}",
+    "final": "End of bench quiz",
+    "open": "Take the quiz",
+    "retake": "Take it again",
+    "question": "Question {n} of {total}",
+    "check": "Check answer",
+    "next": "Next question",
+    "finish": "See my score",
+    "close": "Close",
+    "right": "Right.",
+    "wrong": "Not quite. The answer is: {answer}",
+    "score": "{score}/{total} correct",
+    "best": "Best: {score}/{total}",
+    "notTaken": "Not taken yet",
+    "unlocks": "Unlocks after: {step}",
+    "ready": "A quiz is ready: {title}",
+    "choose": "Pick one answer",
+    "unlocksAll": "Unlocks when every step is done"
+  },
+  "keys": {
+    "open": "Keyboard shortcuts",
+    "heading": "Keyboard shortcuts",
+    "intro": "These work anywhere on the page except while you type in a code editor.",
+    "close": "Close",
+    "list": {
+      "help": "Show this list",
+      "next": "Do the next build step",
+      "figure": "Move focus into the figure",
+      "escape": "Leave the figure, or close a dialog",
+      "quiz": "Open the quiz that is ready",
+      "serial": "Jump to the serial output",
+      "tasks": "Jump to the practice tasks",
+      "run": "Run the checks while editing a task"
+    }
+  }
+}

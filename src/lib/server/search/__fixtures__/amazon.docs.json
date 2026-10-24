@@ -1,0 +1,495 @@
+{
+  "search_information": {
+    "total_results": 144502,
+    "query_displayed": "Coffee",
+    "store": "gateway",
+    "page": 1
+  },
+  "product_ads": {
+    "image": "https://m.media-amazon.com/images/I/61dSjp-nZvL._AC_SR180,120_CB1169409_QL70_.jpg",
+    "headline": "Discover The Art Of Coffee With Lavazza",
+    "link": "https://aax-us-east-retail-direct.amazon.com/x/c/JKpXZLWWkeKQNPJc0coiN8oAAAGbs4pXFwEAAAH2AQBvbm9f...",
+    "store_page": "Shop the Lavazza Coffee Company Store on Amazon",
+    "store_page_link": "https://aax-us-east-retail-direct.amazon.com/x/c/JKpXZLWWkeKQNPJc0coiN8oAAAGbs4pXFwEAAAH2AQBvbm9f...",
+    "products": [
+      {
+        "position": 1,
+        "asin": "B000SDKDM4",
+        "sponsored": true,
+        "title": "Whole Bean",
+        "link": "https://aax-us-east-retail-direct.amazon.com/x/c/JKpXZLWWkeKQNPJc0coiN8oAAAGbs4pXFwEAAAH2AQBvbm9f...",
+        "link_clean": "https://www.amazon.com/dp/B000SDKDM4/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&asin=B000SDKDM4&device=desktop&engine=am...",
+        "thumbnail": "https://m.media-amazon.com/images/I/61dSjp-nZvL._AC_SR180,120_CB1169409_QL70_.jpg"
+      }
+    ],
+    "logo": "https://m.media-amazon.com/images/S/al-na-9d5791cf-3faf/f0456ffb-137e-4b6e-98c5-e3be05db._CR0,0,1..."
+  },
+  "organic_results": [
+    {
+      "position": 1,
+      "asin": "B073CVZ9GZ",
+      "sponsored": true,
+      "amazon_brand": true,
+      "tags": [
+        "Ground"
+      ],
+      "options": "4 sizes, 5 flavors",
+      "options_link": "https://www.amazon.com/sspa/click?ie=UTF8&spc=MToyNzA5NTYzMDgyNjQ2MTQ3OjE3NjgyNDM3NDY6c3BfYXRmOjI...",
+      "title": "Amazon Fresh Colombia Ground Coffee, Medium Roast, 12 Ounce",
+      "link": "https://www.amazon.com/sspa/click?ie=UTF8&spc=MToyNzA5NTYzMDgyNjQ2MTQ3OjE3NjgyNDM3NDY6c3BfYXRmOjI...",
+      "link_clean": "https://www.amazon.com/dp/B073CVZ9GZ/",
+      "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&asin=B073CVZ9GZ&device=desktop&engine=am...",
+      "thumbnail": "https://m.media-amazon.com/images/I/71IWJhOG57L._AC_UL320_.jpg",
+      "rating": 4.4,
+      "reviews": 22200,
+      "bought_last_month": "10K+ bought in past month",
+      "price": "$6.91",
+      "extracted_price": 6.91,
+      "price_unit": "$0.58/ounce",
+      "extracted_price_unit": 0.58,
+      "save_with_coupon": "Extra 15% off when you subscribe",
+      "offers": [
+        "SNAP EBT eligible"
+      ],
+      "snap_ebt_eligible": true,
+      "delivery": [
+        "FREE delivery Sat, Jan 17 on $35 of items shipped by Amazon"
+      ],
+      "climate_pledge_friendly": true,
+      "sustainability_features": [
+        {
+          "position": 1,
+          "name": "Farming practices",
+          "snippet": "Made with materials harvested from responsibly managed farms.",
+          "thumbnail": "https://m.media-amazon.com/images/I/512wYW170mL._SS200_.png",
+          "certified_by": "Rainforest Alliance",
+          "certified_info": "Rainforest Alliance certified products help farmers follow more sustainable, climate-smart farmin..."
+        }
+      ]
+    }
+  ],
+  "featured_products": [
+    {
+      "title": "Customers frequently viewed",
+      "products": [
+        {
+          "position": 1,
+          "asin": "B00HSRNHHG",
+          "sponsored": true,
+          "tags": [
+            "Whole Bean"
+          ],
+          "badges": [
+            "Limited time deal"
+          ],
+          "title": "Mayorga Organic Coffee 2lb Cafe Cubano Roast - Dark Roast Whole Bean Specialty Grade Coffee, 100%...",
+          "link": "https://www.amazon.com/sspa/click?ie=UTF8&spc=MTozODU4NjQ0OTgzMzUyNTgxOjE3NjgyNDM3NDY6c3Bfc2VhcmN...",
+          "link_clean": "https://www.amazon.com/dp/B00HSRNHHG/",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&asin=B00HSRNHHG&device=desktop&engine=am...",
+          "thumbnail": "https://m.media-amazon.com/images/I/61hiCHhNU1L._AC_UL320_.jpg",
+          "rating": 4.5,
+          "reviews": 12000,
+          "bought_last_month": "5K+ bought in past month",
+          "price": "$26.77",
+          "extracted_price": 26.77,
+          "price_unit": "$0.84/ounce",
+          "extracted_price_unit": 0.84,
+          "old_price": "$31.49",
+          "extracted_old_price": 31.49,
+          "prime": true,
+          "small_business": true
+        }
+      ]
+    }
+  ],
+  "video_results": [
+    {
+      "block_position": "top",
+      "video_thumbnail": "https://m.media-amazon.com/images/S/al-na-9d5791cf-3faf/f22030cc-33e4-40c2-9299-a267a4a7.mp4/r/TH...",
+      "video_src": "https://m.media-amazon.com/images/S/al-na-9d5791cf-3faf/f22030cc-33e4-40c2-9299-a267a4a7.mp4/prod...",
+      "video_link": "https://aax-us-east-retail-direct.amazon.com/x/c/JCtZRFRrgkp-p8UIuB-PM3AAAAGbs4pXIAEAAAH2AQBvbm9f...",
+      "products": [
+        {
+          "position": 1,
+          "asin": "B01MDJX8QY",
+          "sponsored": true,
+          "title": "Low Acid Organic Coffee – Whole Bean, Mold-Free & Stomach Friendly by Java Planet, Guatemalan Sin...",
+          "link": "https://aax-us-east-retail-direct.amazon.com/x/c/JCtZRFRrgkp-p8UIuB-PM3AAAAGbs4pXIAEAAAH2AQBvbm9f...",
+          "link_clean": "https://www.amazon.com/dp/B01MDJX8QY/",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&asin=B01MDJX8QY&device=desktop&engine=am...",
+          "thumbnail": "https://m.media-amazon.com/images/I/611G2JKGJDL._AC_UL640_QL65_.jpg",
+          "rating": 4.4,
+          "reviews": 7000,
+          "bought_last_month": "1K+ bought in past month",
+          "price": "$24.99",
+          "extracted_price": 24.99,
+          "price_unit": "$1.56/ounce",
+          "extracted_price_unit": 1.56,
+          "delivery": [
+            "FREE delivery Sat, Jan 17 on $35 of items shipped by Amazon"
+          ]
+        }
+      ]
+    }
+  ],
+  "related_searches": [
+    {
+      "position": 1,
+      "query": "coffee makers",
+      "link": "https://www.amazon.com/s?k=coffee+makers&ref=rsl_sug_0_0&pd_rd_w=naTqm&content-id=amzn1.sym.3be64..."
+    }
+  ],
+  "sponsored_brands": {
+    "title": "Brands related to your search",
+    "brands": [
+      {
+        "position": 1,
+        "image": "https://m.media-amazon.com/images/S/al-na-9d5791cf-3faf/29b0e182-ae71-403a-affa-e746be4b._CR0,637...",
+        "name": "Death Wish Coffee",
+        "headline": "Life Is Too Short To Drink Bad Coffee",
+        "link": "https://aax-us-east-retail-direct.amazon.com/x/c/JO4AwexqVR8yfnDt5W8qSZMAAAGbs4pX_gEAAAH2AQBvbm9f...",
+        "logo": "https://m.media-amazon.com/images/S/al-na-9d5791cf-3faf/b838b6f7-7a88-4fb0-a0fa-32b502cf._CR0,0,7..."
+      }
+    ]
+  },
+  "categories": [
+    {
+      "position": 1,
+      "name": "Books",
+      "link": "https://www.amazon.com/books-used-books-textbooks/b/?ie=UTF8&node=283155&ref_=nav_cs_books",
+      "node": "283155",
+      "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&node=283155"
+    }
+  ],
+  "filters": {
+    "popular_shopping_ideas": [
+      {
+        "position": 1,
+        "name": "Dark Roast",
+        "link": "https://www.amazon.com/s?k=dark+roast+coffee&ref=sr_nr_p_rag_integrated_qb_0",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=dark+roas..."
+      }
+    ],
+    "eligible_for_free_shipping": [
+      {
+        "position": 1,
+        "name": "Free Shipping by Amazon",
+        "description": "Get FREE Shipping on eligible orders shipped by Amazon",
+        "rh": "p_76:1249146011",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_76%3A1249146011&dc&qid=1768243746&rnid=1249144011&ref=sr_n...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "delivery_day": [
+      {
+        "position": 1,
+        "name": "Get It Today",
+        "rh": "p_90:8308920011",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_90%3A8308920011&dc&qid=1768243746&rnid=8308919011&ref=sr_n...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "roast_level": [
+      {
+        "position": 1,
+        "name": "Unroasted",
+        "rh": "p_n_g-10031758:11965326",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10031758%3A11965326&dc&qid=1768243746&rnid=23738863011...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "customer_reviews": [
+      {
+        "position": 1,
+        "name": "& Up",
+        "rh": "p_72:1248897011",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_72%3A1248897011&dc&qid=1768243746&rnid=1248895011&ref=sr_n...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "brands": [
+      {
+        "position": 1,
+        "name": "Starbucks",
+        "rh": "p_123:660401",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_123%3A660401&dc&qid=1768243746&rnid=85457740011&ref=sr_nr_...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "from_our_brands": [
+      {
+        "position": 1,
+        "name": "Amazon Brands",
+        "rh": "p_n_g-10013215:24677333011",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10013215%3A24677333011&dc&qid=1768243746&rnid=21180941...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "snap_ebt": [
+      {
+        "position": 1,
+        "name": "SNAP EBT Eligible",
+        "rh": "p_n_program_participation:17428820011",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_program_participation%3A17428820011&dc&qid=1768243746&rn...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "price": [
+      {
+        "position": 1,
+        "name": "All Discounts",
+        "rh": "p_n_deal_type:23566065011",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_deal_type%3A23566065011&dc&qid=1768243746&rnid=235660630...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "top_brands": [
+      {
+        "position": 1,
+        "name": "Top Brands",
+        "rh": "p_n_g-10101497:11965328",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10101497%3A11965328&dc&qid=1768243746&rnid=11965328&re...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "caffeine_content": [
+      {
+        "position": 1,
+        "name": "Caffeinated",
+        "rh": "p_n_g-10101481:11814923",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10101481%3A11814923&dc&qid=1768243746&rnid=11814923&re...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "specialty": [
+      {
+        "position": 1,
+        "name": "High-Fructose Corn Syrup-Free",
+        "rh": "p_n_g-10041796:5712562011",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10041796%3A5712562011&dc&qid=1768243746&rnid=114319011...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "local_stores": [
+      {
+        "position": 1,
+        "name": "Amazon Fresh",
+        "rh": "p_n_alm_brand_id:18075438011",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_alm_brand_id%3A18075438011&dc&qid=1768243746&rnid=180754...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "subscribe_save": [
+      {
+        "position": 1,
+        "name": "Subscribe & Save Eligible",
+        "rh": "p_n_is_sns_available:2617006011",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_is_sns_available%3A2617006011&dc&qid=1768243746&rnid=261...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "seller": [
+      {
+        "position": 1,
+        "name": "ZooScape",
+        "rh": "p_6:A1S6A272YRWZGD",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_6%3AA1S6A272YRWZGD&dc&qid=1768243746&rnid=698480011&ref=sr...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "beer_segment_feature_four_browse_bin": [
+      {
+        "position": 1,
+        "name": "Craft",
+        "rh": "p_n_g-10041970:15158435011",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10041970%3A15158435011&dc&qid=1768243746&rnid=15158434...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "number_of_items": [
+      {
+        "position": 1,
+        "name": "1",
+        "rh": "p_n_g-10035574:53795927011",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10035574%3A53795927011&dc&qid=1768243746&rnid=53795922...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "diet_type": [
+      {
+        "position": 1,
+        "name": "Vegetarian",
+        "rh": "p_n_g-10032529:23898985011",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10032529%3A23898985011&dc&qid=1768243746&rnid=23898972...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "coffee_region": [
+      {
+        "position": 1,
+        "name": "South America",
+        "rh": "p_n_g-10041792:5711000011",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10041792%3A5711000011&dc&qid=1768243746&rnid=571099401...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "gift_arrangement": [
+      {
+        "position": 1,
+        "name": "Basket",
+        "rh": "p_n_g-10041793:2257372011",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10041793%3A2257372011&dc&qid=1768243746&rnid=225734601...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "premium_brands": [
+      {
+        "position": 1,
+        "name": "Premium Brands",
+        "rh": "p_n_feature_keywords_browse-bin:20437601",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_feature_keywords_browse-bin%3A20437601&dc&qid=1768243746...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "nutrition_facts": [
+      {
+        "position": 1,
+        "name": "Fat Free (<0.5g)",
+        "rh": "p_n_g-10019073:2288328011",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10019073%3A2288328011&dc&qid=1768243746&rnid=228832501...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "sustainability_features": [
+      {
+        "position": 1,
+        "name": "Any Feature",
+        "rh": "p_n_cpf_labels:12113663",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_cpf_labels%3A12113663&dc&qid=1768243746&rnid=11684568&re...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "caffeine_content_per_serving": [
+      {
+        "position": 1,
+        "name": "Up to 64",
+        "rh": "p_n_g-10101552:12233934",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10101552%3A12233934&dc&qid=1768243746&rnid=12233823&re...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "product_shelf_life": [
+      {
+        "position": 1,
+        "name": "Up to 179 Days",
+        "rh": "p_n_g-10101553:12233935",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10101553%3A12233935&dc&qid=1768243746&rnid=12233823&re...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "calories_per_serving": [
+      {
+        "position": 1,
+        "name": "0 Calories",
+        "rh": "p_n_g-10019075:10434594011",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10019075%3A10434594011&dc&qid=1768243746&rnid=10434593...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "certificate_type": [
+      {
+        "position": 1,
+        "name": "Fair Trade International",
+        "rh": "p_n_g-10101552:12233942",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10101552%3A12233942&dc&qid=1768243746&rnid=12233824&re...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "coffee_type": [
+      {
+        "position": 1,
+        "name": "Coffee Bean",
+        "rh": "p_n_g-10101552:12234609",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10101552%3A12234609&dc&qid=1768243746&rnid=12234580&re...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "pack_size": [
+      {
+        "position": 1,
+        "name": "4-pack",
+        "rh": "p_n_g-10042320:17295629011",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10042320%3A17295629011&dc&qid=1768243746&rnid=17295628...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "variety": [
+      {
+        "position": 1,
+        "name": "Cappuccino",
+        "rh": "p_n_g-10101567:20510034",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10101567%3A20510034&dc&qid=1768243746&rnid=20510034&re...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "form": [
+      {
+        "position": 1,
+        "name": "Capsule",
+        "rh": "p_n_g-10033452:21332614",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10033452%3A21332614&dc&qid=1768243746&rnid=23974188011...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "weight": [
+      {
+        "position": 1,
+        "name": "Up to 1 lb",
+        "rh": "p_n_g-10101553:12233935",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10101553%3A12233935&dc&qid=1768243746&rnid=12233823&re...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "cuisine": [
+      {
+        "position": 1,
+        "name": "Chinese",
+        "rh": "p_n_g-10041792:383473011",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10041792%3A383473011&dc&qid=1768243746&rnid=370165011&...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "occasion": [
+      {
+        "position": 1,
+        "name": "Birthday",
+        "rh": "p_n_g-10041795:2257349011",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10041795%3A2257349011&dc&qid=1768243746&rnid=225734501...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "fsa_or_hsa_eligible": [
+      {
+        "position": 1,
+        "name": "FSA or HSA Eligible",
+        "rh": "p_n_hba_program:17904039011",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_hba_program%3A17904039011&dc&qid=1768243746&rnid=1790403...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ],
+    "special_ingredients": [
+      {
+        "position": 1,
+        "name": "Ginger",
+        "rh": "p_n_g-10031976:23745774011",
+        "link": "https://www.amazon.com/s?k=Coffee&rh=p_n_g-10031976%3A23745774011&dc&qid=1768243746&rnid=23745762...",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&rh..."
+      }
+    ]
+  },
+  "serpapi_pagination": {
+    "current": 1,
+    "next": "https://serpapi.com/search.json?amazon_domain=amazon.com&device=desktop&engine=amazon&k=Coffee&pa..."
+  }
+}

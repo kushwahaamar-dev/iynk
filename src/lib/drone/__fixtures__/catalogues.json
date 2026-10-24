@@ -1,0 +1,1736 @@
+{
+ "quad5": {
+  "batteries": {
+   "6s1100": {
+    "name": "6S 1100 mAh",
+    "cells": 6,
+    "mah": 1100,
+    "g": 178,
+    "price": 38
+   },
+   "6s1800": {
+    "name": "6S 1800 mAh",
+    "cells": 6,
+    "mah": 1800,
+    "g": 282,
+    "price": 54
+   },
+   "4s1500": {
+    "name": "4S 1500 mAh",
+    "cells": 4,
+    "mah": 1500,
+    "g": 182,
+    "price": 30
+   }
+  },
+  "motors": {
+   "2306-1750": {
+    "name": "2306 1750KV",
+    "kv": 1750,
+    "g": 32,
+    "price": 22,
+    "forCells": 6
+   },
+   "2207-1950": {
+    "name": "2207 1950KV",
+    "kv": 1950,
+    "g": 34,
+    "price": 24,
+    "forCells": 6
+   },
+   "2306-2450": {
+    "name": "2306 2450KV",
+    "kv": 2450,
+    "g": 31,
+    "price": 20,
+    "forCells": 4
+   }
+  },
+  "props": {
+   "5x4.3x3": {
+    "name": "5x4.3x3 tri-blade",
+    "pf": 1.0,
+    "eff": 1.0,
+    "g": 4.4,
+    "price": 4
+   },
+   "5.1x2.5x3": {
+    "name": "5.1x2.5x3 (efficient)",
+    "pf": 0.84,
+    "eff": 1.18,
+    "g": 4.0,
+    "price": 4
+   },
+   "5x5x3": {
+    "name": "5x5x3 (aggressive)",
+    "pf": 1.1,
+    "eff": 0.88,
+    "g": 4.8,
+    "price": 4
+   }
+  },
+  "fixed": [
+   {
+    "id": "FRAME",
+    "g": 118,
+    "price": 39,
+    "category": "Mechanical"
+   },
+   {
+    "id": "ESC",
+    "g": 8,
+    "price": 45,
+    "category": "Electrical"
+   },
+   {
+    "id": "FC",
+    "g": 7,
+    "price": 39,
+    "category": "Electrical"
+   },
+   {
+    "id": "CAM",
+    "g": 7,
+    "price": 25,
+    "category": "Electrical"
+   },
+   {
+    "id": "VTX",
+    "g": 9,
+    "price": 30,
+    "category": "Electrical"
+   },
+   {
+    "id": "RX",
+    "g": 2,
+    "price": 18,
+    "category": "Electrical"
+   },
+   {
+    "id": "XT60",
+    "g": 12,
+    "price": 4,
+    "category": "Electrical"
+   },
+   {
+    "id": "TOP",
+    "g": 22,
+    "price": 8,
+    "category": "Mechanical"
+   },
+   {
+    "id": "STRAP",
+    "g": 5,
+    "price": 4,
+    "category": "Mechanical"
+   }
+  ]
+ },
+ "whoop": {
+  "batteries": {
+   "1s300": {
+    "name": "1S 300 mAh (BT2.0)",
+    "cells": 1,
+    "mah": 300,
+    "g": 7.5,
+    "price": 6
+   },
+   "1s450": {
+    "name": "1S 450 mAh HV (BT2.0)",
+    "cells": 1,
+    "mah": 450,
+    "g": 11,
+    "price": 7
+   },
+   "2s300": {
+    "name": "2S 300 mAh (XT30)",
+    "cells": 2,
+    "mah": 300,
+    "g": 16,
+    "price": 9
+   }
+  },
+  "motors": {
+   "0702-25000": {
+    "name": "0702 25000KV",
+    "kv": 25000,
+    "g": 1.9,
+    "price": 9,
+    "forCells": 1
+   },
+   "0702-23000": {
+    "name": "0702 23000KV",
+    "kv": 23000,
+    "g": 1.9,
+    "price": 9,
+    "forCells": 1
+   },
+   "0702-27000": {
+    "name": "0702 27000KV",
+    "kv": 27000,
+    "g": 1.9,
+    "price": 10,
+    "forCells": 1
+   }
+  },
+  "props": {
+   "31mm-4": {
+    "name": "31 mm 4-blade",
+    "pf": 1.0,
+    "eff": 1.0,
+    "g": 0.25,
+    "price": 1.5
+   },
+   "31mm-3": {
+    "name": "31 mm 3-blade",
+    "pf": 0.9,
+    "eff": 1.08,
+    "g": 0.22,
+    "price": 1.5
+   },
+   "31mm-2": {
+    "name": "31 mm 2-blade (efficient)",
+    "pf": 0.78,
+    "eff": 1.2,
+    "g": 0.18,
+    "price": 1.5
+   }
+  },
+  "fixed": [
+   {
+    "id": "FRAME",
+    "g": 3.6,
+    "price": 6,
+    "category": "Mechanical"
+   },
+   {
+    "id": "FC",
+    "g": 2.6,
+    "price": 40,
+    "category": "Electrical"
+   },
+   {
+    "id": "CAM",
+    "g": 1.6,
+    "price": 15,
+    "category": "Electrical"
+   },
+   {
+    "id": "VTX",
+    "g": 0.4,
+    "price": 3,
+    "category": "Electrical"
+   },
+   {
+    "id": "RX",
+    "g": 0.2,
+    "price": 2,
+    "category": "Electrical"
+   },
+   {
+    "id": "TOP",
+    "g": 1.2,
+    "price": 4,
+    "category": "Mechanical"
+   },
+   {
+    "id": "SCREWS",
+    "g": 0.6,
+    "price": 2,
+    "category": "Mechanical"
+   }
+  ]
+ },
+ "cinewhoop": {
+  "batteries": {
+   "4s1100": {
+    "name": "4S 1100 mAh",
+    "cells": 4,
+    "mah": 1100,
+    "g": 128,
+    "price": 26,
+    "len": 66,
+    "w": 34,
+    "h": 28
+   },
+   "4s850": {
+    "name": "4S 850 mAh",
+    "cells": 4,
+    "mah": 850,
+    "g": 98,
+    "price": 22,
+    "len": 56,
+    "w": 30,
+    "h": 24
+   },
+   "6s850": {
+    "name": "6S 850 mAh",
+    "cells": 6,
+    "mah": 850,
+    "g": 140,
+    "price": 34,
+    "len": 66,
+    "w": 34,
+    "h": 30
+   }
+  },
+  "motors": {
+   "2004-3000": {
+    "name": "2004 3000KV",
+    "kv": 3000,
+    "g": 19,
+    "price": 21,
+    "maxCells": 4,
+    "sz": 1.0
+   },
+   "2004-1950": {
+    "name": "2004 1950KV",
+    "kv": 1950,
+    "g": 19,
+    "price": 22,
+    "maxCells": 6,
+    "sz": 1.0
+   },
+   "1404-4600": {
+    "name": "1404 4600KV",
+    "kv": 4600,
+    "g": 10,
+    "price": 16,
+    "maxCells": 4,
+    "sz": 0.32
+   }
+  },
+  "props": {
+   "3x3x3": {
+    "name": "3x3x3 ducted tri-blade",
+    "pf": 1.0,
+    "eff": 1.0,
+    "g": 2.6,
+    "price": 4
+   },
+   "3x2x5": {
+    "name": "3x2x5 five-blade (quiet)",
+    "pf": 0.92,
+    "eff": 0.94,
+    "g": 3.1,
+    "price": 5
+   },
+   "3x3.5x3": {
+    "name": "3x3.5x3 (punchy)",
+    "pf": 1.08,
+    "eff": 0.92,
+    "g": 2.8,
+    "price": 4
+   }
+  },
+  "fixed": [
+   {
+    "id": "FRAME",
+    "g": 62,
+    "price": 55,
+    "category": "Mechanical"
+   },
+   {
+    "id": "DUCTS",
+    "g": 52,
+    "price": 0,
+    "category": "Mechanical"
+   },
+   {
+    "id": "ESC",
+    "g": 7,
+    "price": 40,
+    "category": "Electrical"
+   },
+   {
+    "id": "FC",
+    "g": 6,
+    "price": 40,
+    "category": "Electrical"
+   },
+   {
+    "id": "VTX",
+    "g": 36,
+    "price": 229,
+    "category": "Electrical"
+   },
+   {
+    "id": "RX",
+    "g": 2,
+    "price": 18,
+    "category": "Electrical"
+   },
+   {
+    "id": "XT60",
+    "g": 10,
+    "price": 4,
+    "category": "Electrical"
+   },
+   {
+    "id": "TOP",
+    "g": 12,
+    "price": 6,
+    "category": "Mechanical"
+   },
+   {
+    "id": "STRAP",
+    "g": 4,
+    "price": 3,
+    "category": "Mechanical"
+   },
+   {
+    "id": "GOPRO",
+    "g": 36,
+    "price": 199,
+    "category": "Electrical"
+   }
+  ]
+ },
+ "longrange": {
+  "batteries": {
+   "6s1p4000": {
+    "name": "6S1P Li-ion 4000 mAh",
+    "cells": 6,
+    "mah": 4000,
+    "g": 440,
+    "price": 62,
+    "liion": true
+   },
+   "6s1p5000": {
+    "name": "6S1P Li-ion 5000 mAh (P50B)",
+    "cells": 6,
+    "mah": 5000,
+    "g": 468,
+    "price": 78,
+    "liion": true
+   },
+   "6s1800": {
+    "name": "6S LiPo 1800 mAh",
+    "cells": 6,
+    "mah": 1800,
+    "g": 292,
+    "price": 54
+   }
+  },
+  "motors": {
+   "2807-1300": {
+    "name": "2807 1300KV",
+    "kv": 1300,
+    "g": 48,
+    "price": 28,
+    "forCells": 6
+   },
+   "3008-1100": {
+    "name": "3008 1100KV (efficient)",
+    "kv": 1100,
+    "g": 56,
+    "price": 32,
+    "forCells": 6
+   },
+   "2807-1700": {
+    "name": "2807 1700KV (4S motor)",
+    "kv": 1700,
+    "g": 47,
+    "price": 26,
+    "forCells": 4
+   }
+  },
+  "props": {
+   "7x3.5x2": {
+    "name": "7x3.5 bi-blade",
+    "pf": 1.0,
+    "eff": 1.0,
+    "g": 8,
+    "price": 5,
+    "blades": 2,
+    "r": 89
+   },
+   "7.5x3.7x2": {
+    "name": "7.5x3.7 bi-blade (longer)",
+    "pf": 1.1,
+    "eff": 1.06,
+    "g": 9,
+    "price": 6,
+    "blades": 2,
+    "r": 95
+   },
+   "7x4x3": {
+    "name": "7x4 tri-blade (punchy)",
+    "pf": 1.18,
+    "eff": 0.86,
+    "g": 10.5,
+    "price": 6,
+    "blades": 3,
+    "r": 89
+   }
+  },
+  "fixed": [
+   {
+    "id": "FRAME",
+    "g": 162,
+    "price": 55,
+    "category": "Mechanical"
+   },
+   {
+    "id": "ESC",
+    "g": 10,
+    "price": 52,
+    "category": "Electrical"
+   },
+   {
+    "id": "FC",
+    "g": 8,
+    "price": 45,
+    "category": "Electrical"
+   },
+   {
+    "id": "CAM",
+    "g": 7,
+    "price": 25,
+    "category": "Electrical"
+   },
+   {
+    "id": "VTX",
+    "g": 10,
+    "price": 38,
+    "category": "Electrical"
+   },
+   {
+    "id": "RX",
+    "g": 4,
+    "price": 32,
+    "category": "Electrical"
+   },
+   {
+    "id": "GPS",
+    "g": 12,
+    "price": 24,
+    "category": "Electrical"
+   },
+   {
+    "id": "XT60",
+    "g": 12,
+    "price": 4,
+    "category": "Electrical"
+   },
+   {
+    "id": "TOP",
+    "g": 30,
+    "price": 12,
+    "category": "Mechanical"
+   },
+   {
+    "id": "STRAP",
+    "g": 6,
+    "price": 4,
+    "category": "Mechanical"
+   }
+  ]
+ },
+ "racer": {
+  "batteries": {
+   "4s1300": {
+    "name": "4S 1300 mAh (race)",
+    "cells": 4,
+    "mah": 1300,
+    "g": 152,
+    "price": 28
+   },
+   "4s1500": {
+    "name": "4S 1500 mAh",
+    "cells": 4,
+    "mah": 1500,
+    "g": 178,
+    "price": 30
+   },
+   "6s1000": {
+    "name": "6S 1000 mAh",
+    "cells": 6,
+    "mah": 1000,
+    "g": 164,
+    "price": 36
+   }
+  },
+  "motors": {
+   "2207-2500": {
+    "name": "2207 2500KV (4S)",
+    "kv": 2500,
+    "g": 31,
+    "price": 21,
+    "forCells": 4
+   },
+   "2306-2700": {
+    "name": "2306 2700KV (4S)",
+    "kv": 2700,
+    "g": 30,
+    "price": 20,
+    "forCells": 4
+   },
+   "2207-1950": {
+    "name": "2207 1950KV (6S)",
+    "kv": 1950,
+    "g": 32,
+    "price": 22,
+    "forCells": 6
+   }
+  },
+  "props": {
+   "5x4.8x3": {
+    "name": "5x4.8x3 race tri-blade",
+    "pf": 1.05,
+    "eff": 0.95,
+    "g": 3.8,
+    "price": 4
+   },
+   "5.1x3.6x3": {
+    "name": "5.1x3.6x3 (smooth)",
+    "pf": 0.95,
+    "eff": 1.05,
+    "g": 3.9,
+    "price": 4
+   },
+   "5x5.2x3": {
+    "name": "5x5.2x3 (top speed)",
+    "pf": 1.12,
+    "eff": 0.88,
+    "g": 4.2,
+    "price": 4
+   }
+  },
+  "fixed": [
+   {
+    "id": "FRAME",
+    "g": 95,
+    "price": 45,
+    "category": "Mechanical"
+   },
+   {
+    "id": "ESC",
+    "g": 7,
+    "price": 45,
+    "category": "Electrical"
+   },
+   {
+    "id": "FC",
+    "g": 6,
+    "price": 39,
+    "category": "Electrical"
+   },
+   {
+    "id": "CAM",
+    "g": 5,
+    "price": 25,
+    "category": "Electrical"
+   },
+   {
+    "id": "VTX",
+    "g": 5,
+    "price": 28,
+    "category": "Electrical"
+   },
+   {
+    "id": "RX",
+    "g": 2,
+    "price": 18,
+    "category": "Electrical"
+   },
+   {
+    "id": "LED",
+    "g": 4,
+    "price": 8,
+    "category": "Electrical"
+   },
+   {
+    "id": "XT60",
+    "g": 10,
+    "price": 4,
+    "category": "Electrical"
+   },
+   {
+    "id": "TOP",
+    "g": 14,
+    "price": 6,
+    "category": "Mechanical"
+   },
+   {
+    "id": "STRAP",
+    "g": 4,
+    "price": 4,
+    "category": "Mechanical"
+   }
+  ]
+ },
+ "gpscam": {
+  "batteries": {
+   "4s5000": {
+    "name": "4S 5000 mAh",
+    "cells": 4,
+    "mah": 5000,
+    "g": 500,
+    "price": 55
+   },
+   "4s3300": {
+    "name": "4S 3300 mAh",
+    "cells": 4,
+    "mah": 3300,
+    "g": 340,
+    "price": 38
+   },
+   "3s5000": {
+    "name": "3S 5000 mAh",
+    "cells": 3,
+    "mah": 5000,
+    "g": 410,
+    "price": 40
+   }
+  },
+  "motors": {
+   "2212-920": {
+    "name": "2212 920KV",
+    "kv": 920,
+    "g": 58,
+    "price": 18,
+    "forCells": 4
+   },
+   "2216-880": {
+    "name": "2216 880KV",
+    "kv": 880,
+    "g": 72,
+    "price": 24,
+    "forCells": 4
+   },
+   "2212-1400": {
+    "name": "2212 1400KV",
+    "kv": 1400,
+    "g": 56,
+    "price": 16,
+    "forCells": 3
+   }
+  },
+  "props": {
+   "1045": {
+    "name": "10x4.5 two-blade",
+    "pf": 1.0,
+    "eff": 1.0,
+    "g": 13,
+    "price": 8
+   },
+   "1147": {
+    "name": "11x4.7 two-blade",
+    "pf": 1.18,
+    "eff": 1.08,
+    "g": 16,
+    "price": 10
+   },
+   "9450": {
+    "name": "9.4x5.0 two-blade",
+    "pf": 0.82,
+    "eff": 0.94,
+    "g": 11,
+    "price": 7
+   }
+  },
+  "fixed": [
+   {
+    "id": "FRAME",
+    "g": 270,
+    "price": 35,
+    "category": "Mechanical"
+   },
+   {
+    "id": "GEAR",
+    "g": 60,
+    "price": 12,
+    "category": "Mechanical"
+   },
+   {
+    "id": "ESC",
+    "g": 112,
+    "price": 48,
+    "category": "Electrical"
+   },
+   {
+    "id": "XT60",
+    "g": 22,
+    "price": 18,
+    "category": "Electrical"
+   },
+   {
+    "id": "FC",
+    "g": 40,
+    "price": 165,
+    "category": "Electrical"
+   },
+   {
+    "id": "GPS",
+    "g": 52,
+    "price": 45,
+    "category": "Electrical"
+   },
+   {
+    "id": "TELEM",
+    "g": 24,
+    "price": 40,
+    "category": "Electrical"
+   },
+   {
+    "id": "RX",
+    "g": 4,
+    "price": 18,
+    "category": "Electrical"
+   },
+   {
+    "id": "GIMBAL",
+    "g": 190,
+    "price": 120,
+    "category": "Electrical"
+   },
+   {
+    "id": "TOP",
+    "g": 30,
+    "price": 8,
+    "category": "Mechanical"
+   },
+   {
+    "id": "STRAP",
+    "g": 12,
+    "price": 5,
+    "category": "Mechanical"
+   }
+  ]
+ },
+ "delivery": {
+  "batteries": {
+   "6s10000": {
+    "name": "6S 10000 mAh",
+    "cells": 6,
+    "mah": 10000,
+    "g": 1350,
+    "price": 160
+   },
+   "6s16000": {
+    "name": "6S 16000 mAh",
+    "cells": 6,
+    "mah": 16000,
+    "g": 2050,
+    "price": 245
+   },
+   "4s10000": {
+    "name": "4S 10000 mAh",
+    "cells": 4,
+    "mah": 10000,
+    "g": 880,
+    "price": 110
+   }
+  },
+  "motors": {
+   "4114-400": {
+    "name": "4114 400KV",
+    "kv": 400,
+    "g": 140,
+    "price": 58,
+    "forCells": 6
+   },
+   "5010-360": {
+    "name": "5010 360KV",
+    "kv": 360,
+    "g": 118,
+    "price": 46,
+    "forCells": 6
+   },
+   "2814-700": {
+    "name": "2814 700KV",
+    "kv": 700,
+    "g": 105,
+    "price": 32,
+    "forCells": 4
+   }
+  },
+  "props": {
+   "15x5.5": {
+    "name": "15x5.5 carbon 2-blade",
+    "pf": 1.0,
+    "eff": 1.0,
+    "g": 28,
+    "price": 32
+   },
+   "14x4.8": {
+    "name": "14x4.8 (lighter load)",
+    "pf": 0.82,
+    "eff": 1.06,
+    "g": 24,
+    "price": 26
+   },
+   "16x5.4": {
+    "name": "16x5.4 (heavy lift)",
+    "pf": 1.18,
+    "eff": 0.95,
+    "g": 34,
+    "price": 38
+   }
+  },
+  "fixed": [
+   {
+    "id": "FRAME",
+    "g": 1100,
+    "price": 189,
+    "category": "Mechanical"
+   },
+   {
+    "id": "ESC",
+    "g": 180,
+    "price": 120,
+    "category": "Electrical"
+   },
+   {
+    "id": "FC",
+    "g": 60,
+    "price": 245,
+    "category": "Electrical"
+   },
+   {
+    "id": "COMP",
+    "g": 55,
+    "price": 95,
+    "category": "Electrical"
+   },
+   {
+    "id": "DEPTH",
+    "g": 75,
+    "price": 289,
+    "category": "Electrical"
+   },
+   {
+    "id": "GPS",
+    "g": 60,
+    "price": 59,
+    "category": "Electrical"
+   },
+   {
+    "id": "LTE",
+    "g": 35,
+    "price": 69,
+    "category": "Electrical"
+   },
+   {
+    "id": "RX",
+    "g": 5,
+    "price": 22,
+    "category": "Electrical"
+   },
+   {
+    "id": "TEL",
+    "g": 25,
+    "price": 49,
+    "category": "Electrical"
+   },
+   {
+    "id": "XT60",
+    "g": 70,
+    "price": 35,
+    "category": "Electrical"
+   },
+   {
+    "id": "TOP",
+    "g": 160,
+    "price": 25,
+    "category": "Mechanical"
+   },
+   {
+    "id": "CARGO",
+    "g": 330,
+    "price": 89,
+    "category": "Mechanical"
+   },
+   {
+    "id": "PARCEL",
+    "g": 1000,
+    "price": 0,
+    "category": "Mechanical"
+   }
+  ]
+ },
+ "agrihex": {
+  "batteries": {
+   "12s22": {
+    "name": "12S 22000 mAh smart pack",
+    "cells": 12,
+    "mah": 22000,
+    "g": 5600,
+    "price": 620
+   },
+   "12s16": {
+    "name": "12S 16000 mAh (2 x 6S)",
+    "cells": 12,
+    "mah": 16000,
+    "g": 4300,
+    "price": 480
+   },
+   "14s30": {
+    "name": "14S 30000 mAh smart pack",
+    "cells": 14,
+    "mah": 30000,
+    "g": 9800,
+    "price": 1150
+   }
+  },
+  "motors": {
+   "8120-100": {
+    "name": "8120 100KV (sealed)",
+    "kv": 100,
+    "g": 760,
+    "price": 180,
+    "forCells": 12
+   },
+   "10025-80": {
+    "name": "10025 80KV (14S)",
+    "kv": 80,
+    "g": 980,
+    "price": 260,
+    "forCells": 14
+   },
+   "6215-180": {
+    "name": "6215 180KV",
+    "kv": 180,
+    "g": 520,
+    "price": 120,
+    "forCells": 6
+   }
+  },
+  "props": {
+   "30x9.9": {
+    "name": "30x9.9 folding carbon",
+    "pf": 1.0,
+    "eff": 1.0,
+    "g": 160,
+    "price": 70
+   },
+   "28x9.2": {
+    "name": "28x9.2 folding (efficient)",
+    "pf": 0.86,
+    "eff": 1.08,
+    "g": 140,
+    "price": 60
+   },
+   "32x11": {
+    "name": "32x11 folding (heavy lift)",
+    "pf": 1.14,
+    "eff": 0.93,
+    "g": 190,
+    "price": 85
+   }
+  },
+  "fixed": [
+   {
+    "id": "FRAME",
+    "g": 5200,
+    "price": 650,
+    "category": "Mechanical"
+   },
+   {
+    "id": "SKIDS",
+    "g": 1100,
+    "price": 110,
+    "category": "Mechanical"
+   },
+   {
+    "id": "ESC",
+    "g": 1800,
+    "price": 480,
+    "category": "Electrical"
+   },
+   {
+    "id": "FC",
+    "g": 75,
+    "price": 400,
+    "category": "Electrical"
+   },
+   {
+    "id": "RTK",
+    "g": 350,
+    "price": 700,
+    "category": "Electrical"
+   },
+   {
+    "id": "RADAR",
+    "g": 250,
+    "price": 300,
+    "category": "Electrical"
+   },
+   {
+    "id": "RX",
+    "g": 120,
+    "price": 250,
+    "category": "Electrical"
+   },
+   {
+    "id": "XT60",
+    "g": 150,
+    "price": 40,
+    "category": "Electrical"
+   },
+   {
+    "id": "TANK",
+    "g": 1300,
+    "price": 90,
+    "category": "Mechanical"
+   },
+   {
+    "id": "PUMP",
+    "g": 900,
+    "price": 180,
+    "category": "Electrical"
+   },
+   {
+    "id": "BOOM",
+    "g": 900,
+    "price": 120,
+    "category": "Mechanical"
+   }
+  ]
+ },
+ "wing": {
+  "batteries": {
+   "4s2200": {
+    "name": "4S LiPo 2200 mAh",
+    "cells": 4,
+    "mah": 2200,
+    "g": 235,
+    "price": 34,
+    "cg": "ok"
+   },
+   "4s3000li": {
+    "name": "4S Li-ion 3000 mAh",
+    "cells": 4,
+    "mah": 3000,
+    "g": 270,
+    "price": 45,
+    "cg": "nose"
+   },
+   "3s1300": {
+    "name": "3S LiPo 1300 mAh",
+    "cells": 3,
+    "mah": 1300,
+    "g": 115,
+    "price": 20,
+    "cg": "tail"
+   }
+  },
+  "motors": {
+   "2212-1400": {
+    "name": "2212 1400KV",
+    "kv": 1400,
+    "g": 55,
+    "price": 18
+   },
+   "2810-1100": {
+    "name": "2810 1100KV",
+    "kv": 1100,
+    "g": 80,
+    "price": 28
+   },
+   "2306-2400": {
+    "name": "2306 2400KV (quad motor)",
+    "kv": 2400,
+    "g": 33,
+    "price": 20
+   }
+  },
+  "props": {
+   "8x6": {
+    "name": "8x6 pusher",
+    "pf": 1.0,
+    "eff": 1.0,
+    "g": 12,
+    "price": 3
+   },
+   "7x5": {
+    "name": "7x5 pusher",
+    "pf": 0.75,
+    "eff": 1.05,
+    "g": 9,
+    "price": 3
+   },
+   "9x6": {
+    "name": "9x6 pusher",
+    "pf": 1.25,
+    "eff": 0.95,
+    "g": 15,
+    "price": 4
+   }
+  },
+  "fixed": [
+   {
+    "id": "FRAME",
+    "g": 380,
+    "price": 55,
+    "category": "Mechanical"
+   },
+   {
+    "id": "ESC",
+    "g": 30,
+    "price": 22,
+    "category": "Electrical"
+   },
+   {
+    "id": "FC",
+    "g": 10,
+    "price": 45,
+    "category": "Electrical"
+   },
+   {
+    "id": "GPS",
+    "g": 15,
+    "price": 22,
+    "category": "Electrical"
+   },
+   {
+    "id": "CAM",
+    "g": 12,
+    "price": 22,
+    "category": "Electrical"
+   },
+   {
+    "id": "VTX",
+    "g": 10,
+    "price": 25,
+    "category": "Electrical"
+   },
+   {
+    "id": "RX",
+    "g": 3,
+    "price": 18,
+    "category": "Electrical"
+   },
+   {
+    "id": "SERVOS",
+    "g": 20,
+    "price": 16,
+    "category": "Electrical"
+   },
+   {
+    "id": "XT60",
+    "g": 12,
+    "price": 4,
+    "category": "Electrical"
+   },
+   {
+    "id": "TOP",
+    "g": 25,
+    "price": 8,
+    "category": "Mechanical"
+   },
+   {
+    "id": "WIRES",
+    "g": 6,
+    "price": 3,
+    "category": "Electrical"
+   }
+  ]
+ },
+ "vtol": {
+  "batteries": {
+   "4s2p-li": {
+    "name": "4S2P Li-ion 8000 mAh",
+    "cells": 4,
+    "mah": 8000,
+    "g": 560,
+    "price": 70
+   },
+   "4s-5000": {
+    "name": "4S LiPo 5000 mAh",
+    "cells": 4,
+    "mah": 5000,
+    "g": 520,
+    "price": 55
+   },
+   "6s-4000": {
+    "name": "6S LiPo 4000 mAh",
+    "cells": 6,
+    "mah": 4000,
+    "g": 600,
+    "price": 75
+   }
+  },
+  "motors": {
+   "2810-1000": {
+    "name": "2810 1000KV",
+    "kv": 1000,
+    "g": 72,
+    "price": 30,
+    "forCells": 4
+   },
+   "2814-700": {
+    "name": "2814 700KV",
+    "kv": 700,
+    "g": 96,
+    "price": 38,
+    "forCells": 6
+   },
+   "2306-2400": {
+    "name": "2306 2400KV (racing)",
+    "kv": 2400,
+    "g": 33,
+    "price": 20,
+    "forCells": 4
+   }
+  },
+  "props": {
+   "9x5": {
+    "name": "9x5 two-blade",
+    "pf": 1.0,
+    "eff": 1.0,
+    "g": 12,
+    "price": 8
+   },
+   "10x5": {
+    "name": "10x5 two-blade",
+    "pf": 1.2,
+    "eff": 1.08,
+    "g": 14,
+    "price": 9
+   },
+   "7x4": {
+    "name": "7x4 two-blade",
+    "pf": 0.6,
+    "eff": 0.85,
+    "g": 8,
+    "price": 6
+   }
+  },
+  "fixed": [
+   {
+    "id": "FRAME",
+    "g": 330,
+    "price": 90,
+    "category": "Mechanical"
+   },
+   {
+    "id": "WING",
+    "g": 190,
+    "price": 40,
+    "category": "Mechanical"
+   },
+   {
+    "id": "TAIL",
+    "g": 40,
+    "price": 24,
+    "category": "Mechanical"
+   },
+   {
+    "id": "TILT",
+    "g": 70,
+    "price": 46,
+    "category": "Mechanical"
+   },
+   {
+    "id": "ESC",
+    "g": 45,
+    "price": 60,
+    "category": "Electrical"
+   },
+   {
+    "id": "FC",
+    "g": 30,
+    "price": 95,
+    "category": "Electrical"
+   },
+   {
+    "id": "GPS",
+    "g": 18,
+    "price": 28,
+    "category": "Electrical"
+   },
+   {
+    "id": "ARSPD",
+    "g": 8,
+    "price": 35,
+    "category": "Electrical"
+   },
+   {
+    "id": "CAM",
+    "g": 22,
+    "price": 55,
+    "category": "Electrical"
+   },
+   {
+    "id": "XT60",
+    "g": 20,
+    "price": 12,
+    "category": "Electrical"
+   }
+  ]
+ },
+ "swarm": {
+  "batteries": {
+   "1s250": {
+    "name": "1S 250 mAh (stock)",
+    "cells": 1,
+    "mah": 250,
+    "g": 7.1,
+    "price": 8
+   },
+   "1s350": {
+    "name": "1S 350 mAh",
+    "cells": 1,
+    "mah": 350,
+    "g": 9.6,
+    "price": 10
+   },
+   "1s450": {
+    "name": "1S 450 mAh (heavy)",
+    "cells": 1,
+    "mah": 450,
+    "g": 12.5,
+    "price": 11
+   }
+  },
+  "motors": {
+   "7x16": {
+    "name": "7x16 coreless (stock)",
+    "kv": 14000,
+    "g": 1.6,
+    "price": 4
+   },
+   "7x16hp": {
+    "name": "7x16 thrust upgrade",
+    "kv": 15500,
+    "g": 1.7,
+    "price": 6
+   },
+   "8x20": {
+    "name": "8x20 coreless",
+    "kv": 12500,
+    "g": 3.4,
+    "price": 6,
+    "big": true
+   }
+  },
+  "props": {
+   "45mm": {
+    "name": "45 mm 2-blade (stock)",
+    "pf": 1.0,
+    "eff": 1.0,
+    "g": 0.3,
+    "price": 2
+   },
+   "47mm": {
+    "name": "47 mm thrust props",
+    "pf": 1.12,
+    "eff": 0.93,
+    "g": 0.35,
+    "price": 3
+   }
+  },
+  "fixed": [
+   {
+    "id": "FRAME",
+    "g": 9.5,
+    "price": 195,
+    "category": "Electrical"
+   },
+   {
+    "id": "FLOW",
+    "g": 1.6,
+    "price": 50,
+    "category": "Electrical"
+   },
+   {
+    "id": "DECKL",
+    "g": 1.8,
+    "price": 75,
+    "category": "Electrical"
+   },
+   {
+    "id": "HDR",
+    "g": 0.6,
+    "price": 4,
+    "category": "Mechanical"
+   },
+   {
+    "id": "RADIO",
+    "g": 0,
+    "price": 35,
+    "category": "Electrical"
+   },
+   {
+    "id": "STRAP",
+    "g": 0.2,
+    "price": 1,
+    "category": "Mechanical"
+   }
+  ]
+ },
+ "tricopter": {
+  "batteries": {
+   "4s2200": {
+    "name": "4S 2200 mAh",
+    "cells": 4,
+    "mah": 2200,
+    "g": 250,
+    "price": 34
+   },
+   "4s1800": {
+    "name": "4S 1800 mAh",
+    "cells": 4,
+    "mah": 1800,
+    "g": 210,
+    "price": 30
+   },
+   "4s1500": {
+    "name": "4S 1500 mAh",
+    "cells": 4,
+    "mah": 1500,
+    "g": 182,
+    "price": 28
+   }
+  },
+  "motors": {
+   "2306-2450": {
+    "name": "2306 2450KV",
+    "kv": 2450,
+    "g": 32,
+    "price": 20,
+    "forCells": 4
+   },
+   "2207-2150": {
+    "name": "2207 2150KV",
+    "kv": 2150,
+    "g": 34,
+    "price": 22,
+    "forCells": 4
+   },
+   "2205-2300": {
+    "name": "2205 2300KV",
+    "kv": 2300,
+    "g": 28,
+    "price": 16,
+    "forCells": 4
+   }
+  },
+  "props": {
+   "5x4.3x3": {
+    "name": "5x4.3x3 tri-blade",
+    "pf": 1.0,
+    "eff": 1.0,
+    "g": 4.4,
+    "price": 4,
+    "r": 63
+   },
+   "6x4x2": {
+    "name": "6x4x2 bi-blade (efficient)",
+    "pf": 1.08,
+    "eff": 1.15,
+    "g": 5.0,
+    "price": 4,
+    "r": 76
+   },
+   "5x5x3": {
+    "name": "5x5x3 (aggressive)",
+    "pf": 1.1,
+    "eff": 0.88,
+    "g": 4.8,
+    "price": 4,
+    "r": 63
+   }
+  },
+  "fixed": [
+   {
+    "id": "FRAME",
+    "g": 190,
+    "price": 45,
+    "category": "Mechanical"
+   },
+   {
+    "id": "ESC",
+    "g": 21,
+    "price": 36,
+    "category": "Electrical"
+   },
+   {
+    "id": "FC",
+    "g": 8,
+    "price": 35,
+    "category": "Electrical"
+   },
+   {
+    "id": "TAILSERVO",
+    "g": 22,
+    "price": 14,
+    "category": "Mechanical"
+   },
+   {
+    "id": "CAM",
+    "g": 7,
+    "price": 25,
+    "category": "Electrical"
+   },
+   {
+    "id": "VTX",
+    "g": 9,
+    "price": 30,
+    "category": "Electrical"
+   },
+   {
+    "id": "RX",
+    "g": 2,
+    "price": 18,
+    "category": "Electrical"
+   },
+   {
+    "id": "XT60",
+    "g": 12,
+    "price": 4,
+    "category": "Electrical"
+   },
+   {
+    "id": "TOP",
+    "g": 20,
+    "price": 7,
+    "category": "Mechanical"
+   },
+   {
+    "id": "STRAP",
+    "g": 5,
+    "price": 4,
+    "category": "Mechanical"
+   }
+  ]
+ },
+ "octo": {
+  "batteries": {
+   "12s16000": {
+    "name": "2 x 6S 16000 mAh in series (12S)",
+    "cells": 12,
+    "mah": 16000,
+    "g": 3900,
+    "price": 580
+   },
+   "12s22000": {
+    "name": "2 x 6S 22000 mAh in series (12S)",
+    "cells": 12,
+    "mah": 22000,
+    "g": 5400,
+    "price": 760
+   },
+   "6s16000": {
+    "name": "1 x 6S 16000 mAh (6S only)",
+    "cells": 6,
+    "mah": 16000,
+    "g": 1950,
+    "price": 290
+   }
+  },
+  "motors": {
+   "6010-170": {
+    "name": "6010 170KV",
+    "kv": 170,
+    "g": 285,
+    "price": 120,
+    "forCells": 12
+   },
+   "6010-130": {
+    "name": "6010 130KV (efficient)",
+    "kv": 130,
+    "g": 285,
+    "price": 120,
+    "forCells": 12
+   },
+   "6215-230": {
+    "name": "6215 230KV",
+    "kv": 230,
+    "g": 360,
+    "price": 160,
+    "forCells": 6
+   }
+  },
+  "props": {
+   "2055": {
+    "name": "20 x 5.5 carbon folding",
+    "pf": 1.0,
+    "eff": 1.0,
+    "g": 62,
+    "price": 85,
+    "r": 254
+   },
+   "1855": {
+    "name": "18 x 5.5 carbon folding",
+    "pf": 0.78,
+    "eff": 0.94,
+    "g": 52,
+    "price": 70,
+    "r": 229
+   },
+   "2255": {
+    "name": "22 x 5.5 carbon folding",
+    "pf": 1.22,
+    "eff": 1.06,
+    "g": 74,
+    "price": 100,
+    "r": 279
+   }
+  },
+  "fixed": [
+   {
+    "id": "FRAME",
+    "g": 3200,
+    "price": 900,
+    "category": "Mechanical"
+   },
+   {
+    "id": "ESC",
+    "g": 640,
+    "price": 480,
+    "category": "Electrical"
+   },
+   {
+    "id": "FC",
+    "g": 60,
+    "price": 380,
+    "category": "Electrical"
+   },
+   {
+    "id": "GPS",
+    "g": 70,
+    "price": 120,
+    "category": "Electrical"
+   },
+   {
+    "id": "XT60",
+    "g": 180,
+    "price": 90,
+    "category": "Electrical"
+   },
+   {
+    "id": "RX",
+    "g": 60,
+    "price": 150,
+    "category": "Electrical"
+   },
+   {
+    "id": "GEAR",
+    "g": 600,
+    "price": 350,
+    "category": "Mechanical"
+   },
+   {
+    "id": "GIMBAL",
+    "g": 1400,
+    "price": 1800,
+    "category": "Electrical"
+   },
+   {
+    "id": "CAM",
+    "g": 2300,
+    "price": 0,
+    "category": "Electrical"
+   },
+   {
+    "id": "TOP",
+    "g": 300,
+    "price": 60,
+    "category": "Mechanical"
+   }
+  ]
+ }
+}

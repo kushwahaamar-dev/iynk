@@ -1,0 +1,233 @@
+{
+  "panel": {
+    "title": "Juntos",
+    "intro": "Constrúyelo con amigos. Todos ven el mismo banco de trabajo y el chat se traduce al idioma de cada persona.",
+    "start": "Abrir una sala",
+    "joinLabel": "Código de sala o enlace de invitación",
+    "joinPlaceholder": "p. ej. k7m2qx",
+    "join": "Unirse",
+    "badCode": "Eso no es un código de sala. Los códigos tienen 6 letras y números.",
+    "unavailable": "Este navegador no puede abrir salas. Prueba una versión actual de Chrome, Firefox, Safari o Edge.",
+    "localOnly": "Esta instalación no tiene servidor de retransmisión, así que las salas solo funcionan entre pestañas de este navegador.",
+    "connecting": "Entrando en la sala {code}…",
+    "syncing": "Recibiendo el banco de trabajo del anfitrión…",
+    "reconnecting": "Se perdió la conexión. Reconectando… Tus cambios se sincronizarán cuando vuelvas.",
+    "ended": {
+      "left": "Saliste de la sala.",
+      "removed": "El anfitrión te sacó de la sala.",
+      "full": "Esa sala está llena. Caben 8 personas.",
+      "wrong-item": "Esa sala está construyendo otra cosa. Abre su enlace de invitación para unirte.",
+      "error": "La sala se cerró."
+    },
+    "again": "Abrir una sala nueva"
+  },
+  "identity": {
+    "title": "¿Quién eres?",
+    "hint": "Las personas de la sala ven este nombre. Se queda en este dispositivo.",
+    "name": "Tu nombre",
+    "color": "Tu color",
+    "save": "Entrar en la sala",
+    "saveOnly": "Guardar",
+    "rename": "Cambiar nombre",
+    "cancel": "Cancelar",
+    "colors": {
+      "tomato": "Tomate",
+      "mustard": "Mostaza",
+      "mint": "Menta",
+      "cobalt": "Cobalto",
+      "blush": "Rosa"
+    }
+  },
+  "bar": {
+    "label": "Sala {code}",
+    "invite": "Invitar",
+    "inviteTitle": "Invita a gente a la sala {code}",
+    "inviteHint": "Cualquiera con este enlace o código QR puede entrar. No hace falta cuenta.",
+    "copy": "Copiar enlace",
+    "copied": "Enlace copiado",
+    "copyFailed": "No se pudo copiar. Selecciona el enlace y cópialo tú.",
+    "share": "Compartir",
+    "shareText": "Construye conmigo en SimLab, sala {code}",
+    "qr": "Código QR del enlace de invitación a la sala {code}",
+    "qrError": "No se pudo dibujar el código QR. Copia el enlace.",
+    "close": "Cerrar",
+    "people": {
+      "one": "{count} persona aquí",
+      "other": "{count} personas aquí"
+    },
+    "you": "tú",
+    "host": "anfitrión",
+    "role": "Tu papel",
+    "roles": {
+      "none": "Sin papel",
+      "wirer": "Cableado",
+      "coder": "Programación",
+      "pilot": "Piloto",
+      "watcher": "Observador"
+    },
+    "keyboardYou": "Tienes el teclado",
+    "keyboardOther": "{name} tiene el teclado",
+    "passTo": "Pasar el teclado a",
+    "pass": "Pasar",
+    "ask": "Pedir el teclado",
+    "take": "Tomar el teclado",
+    "asked": "{name} quiere el teclado",
+    "denied": "{name} tiene el teclado. Pídeselo para editar el código.",
+    "leave": "Salir de la sala",
+    "remove": "Sacar a {name}",
+    "removeConfirm": "¿Sacar a {name} de la sala?",
+    "removeYes": "Sacar",
+    "status": {
+      "ws": "En vivo",
+      "broadcast": "Solo este navegador",
+      "connecting": "Conectando",
+      "syncing": "Sincronizando",
+      "reconnecting": "Reconectando",
+      "ended": "Cerrada"
+    },
+    "peerLanguage": "Habla {lang}"
+  },
+  "chat": {
+    "title": "Chat de la sala",
+    "empty": "Aún no hay mensajes. Saluda o pide ayuda con una pieza.",
+    "label": "Mensaje",
+    "placeholder": "Escribe un mensaje",
+    "send": "Enviar",
+    "count": "{count}/{max}",
+    "translatedFrom": "Traducido del {lang}",
+    "showOriginal": "Ver original",
+    "showTranslation": "Ver traducción",
+    "translating": "Traduciendo…",
+    "translateOff": "La traducción no está configurada en esta instalación, así que los mensajes se ven tal como se escribieron.",
+    "translateFailed": "No se pudo traducir este mensaje.",
+    "sending": "Enviando…",
+    "kind": {
+      "voice": "Voz",
+      "ai": "Compañero de laboratorio"
+    },
+    "voice": {
+      "start": "Grabar un mensaje de voz",
+      "stop": "Parar y enviar",
+      "recording": "Grabando… {seconds} s",
+      "transcribing": "Pasando tu voz a texto…",
+      "off": "Los mensajes de voz no están configurados en esta instalación.",
+      "denied": "SimLab no puede usar el micrófono. Permítelo en el navegador para enviar mensajes de voz.",
+      "failed": "No se pudo transcribir. Inténtalo de nuevo o escríbelo.",
+      "unsupported": "Este navegador no puede grabar audio.",
+      "tooLong": "Los mensajes de voz se detienen a los 60 segundos."
+    },
+    "system": {
+      "join": "{name} entró",
+      "leave": "{name} salió",
+      "host": "{name} es ahora el anfitrión",
+      "removed": "El anfitrión sacó a {name}",
+      "baton": "{by} pasó el teclado a {name}",
+      "batonRequest": "{name} pidió el teclado"
+    },
+    "someone": "Alguien"
+  },
+  "cursors": {
+    "label": "Dónde están señalando los demás",
+    "point": "Señalar",
+    "stop": "Dejar de señalar",
+    "surface": "Superficie para señalar. Muévete sobre la figura para mostrar a los demás dónde señalas. Las flechas mueven el puntero y Esc termina."
+  },
+  "languages": {
+    "en": "inglés",
+    "es": "español",
+    "fr": "francés",
+    "de": "alemán",
+    "zh": "chino",
+    "hi": "hindi"
+  },
+  "labs": {
+    "board": "Placas",
+    "robotics": "Robótica",
+    "drone": "Drones"
+  },
+  "lobby": {
+    "metaTitle": "Construir juntos",
+    "metaDescription": "Abre una sala de construcción en vivo para cualquier placa, robot o dron, encuentra un compañero de construcción y planea una noche de construcción con Muse Spark.",
+    "eyebrow": "SimLab Juntos",
+    "title": "Nadie tiene que construir solo",
+    "lede": "Abre una sala para cualquier placa, robot o dron y envía el enlace. Todos ven el mismo banco de trabajo, una persona escribe a la vez y el chat muestra cada mensaje en tu propio idioma.",
+    "notSetUp": "No está configurado en esta instalación",
+    "retry": "Reintentar",
+    "create": {
+      "title": "Abrir una sala",
+      "hint": "Recibes un enlace de invitación y un código QR para compartir.",
+      "lab": "Laboratorio",
+      "item": "Qué construir",
+      "go": "Abrir la sala",
+      "empty": "Todavía no hay elementos de laboratorio listos."
+    },
+    "join": {
+      "title": "Unirse a una sala",
+      "hint": "Escribe el código de 6 caracteres de la invitación o pega el enlace.",
+      "go": "Unirse",
+      "looking": "Buscando la sala {code}…",
+      "empty": "Ahora no hay nadie en la sala {code}. Las salas se cierran 30 minutos después de que sale la última persona.",
+      "full": "La sala {code} está llena.",
+      "timeout": "No se pudo llegar a la sala {code}. Revisa el código y tu conexión.",
+      "unknown": "La sala {code} está abierta, pero no dijo qué está construyendo. Pide el enlace de invitación.",
+      "unavailable": "Este navegador no puede abrir salas.",
+      "found": "La encontramos. Abriendo la sala…"
+    },
+    "buddies": {
+      "title": "Compañeros de construcción",
+      "lede": "Cuenta qué has construido y qué quieres hacer después. Muse Spark te sugiere personas cuyas habilidades encajan con las tuyas y te explica por qué.",
+      "privacy": "Tu perfil no guarda datos de contacto y se borra a las 24 horas. Os conectáis con una invitación a una sala.",
+      "name": "Tu nombre",
+      "interests": "Intereses",
+      "interestsHint": "Sepáralos con comas, p. ej. drones, LED, seguidores de línea",
+      "builtNote": {
+        "one": "Tu perfil también incluye la {count} lección o prueba que terminaste en SimLab.",
+        "other": "Tu perfil también incluye las {count} lecciones y pruebas que terminaste en SimLab."
+      },
+      "wants": "Qué quieres construir después",
+      "submit": "Buscar compañeros",
+      "finding": "Buscando compañeros…",
+      "matches": "Tus coincidencias",
+      "none": "Aún no hay buenas coincidencias. Se une más gente a lo largo del día; vuelve pronto.",
+      "alone": "Eres la primera persona de la lista. Invita a alguien o vuelve más tarde.",
+      "score": "{score} % de afinidad",
+      "shared": "A los dos os gusta {interest}",
+      "project": "Construid juntos: {item}",
+      "invite": "Invitar a una sala",
+      "inviteTitle": "Construye {item} con {name}",
+      "inviteHint": "Enséñale a {name} este código QR o envíale el enlace. La sala se abre en {item}.",
+      "notSetUp": "Buscar compañeros necesita la base de datos y el servicio de IA, y esta instalación no tiene ambos.",
+      "failed": "Ahora mismo no se pudieron buscar compañeros.",
+      "missing": "Añade tu nombre y lo que quieres construir después."
+    },
+    "plan": {
+      "title": "Planificador de noche de construcción",
+      "lede": "Cada persona dice qué le gustaría hacer. Muse Spark elige un proyecto que os guste a todos y da a cada uno un papel y una primera tarea.",
+      "people": "Quién construye",
+      "person": "Persona {n}",
+      "name": "Nombre",
+      "lang": "Idioma",
+      "level": "Experiencia",
+      "levels": {
+        "new": "Principiante",
+        "some": "Algo",
+        "lots": "Mucha"
+      },
+      "wants": "Qué le gustaría hacer o aprender",
+      "add": "Añadir persona",
+      "remove": "Quitar a {name}",
+      "submit": "Planear nuestra noche",
+      "planning": "Planeando…",
+      "roles": "Papeles",
+      "firstTask": "Primera tarea",
+      "steps": "El plan",
+      "parts": "Piezas",
+      "start": "Empezar esta construcción",
+      "again": "Planear de nuevo",
+      "notSetUp": "El planificador necesita el servicio de IA, que no está configurado en esta instalación.",
+      "failed": "Ahora mismo no se pudo hacer un plan.",
+      "missing": "Pon un nombre a cada persona y di qué le gustaría hacer.",
+      "unknownItem": "El plan eligió algo que SimLab todavía no tiene. Planea de nuevo."
+    }
+  }
+}

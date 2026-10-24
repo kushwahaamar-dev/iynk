@@ -1,0 +1,550 @@
+{
+  "title": "Transistor motor switch",
+  "sub": "logic drives power",
+  "hint": "a 20 mA pin switches a 160 mA motor",
+  "overview": "A Nano pin can give about 20 mA (40 mA is the absolute limit). A TT gear motor wants about 160 mA just to turn its wheel, and over 1 A for the instant it starts or when you hold the wheel. Wire it to a pin and the pin dies. Here pin 9 feeds about 3.4 mA through a 1 kΩ resistor into the base of a TIP120 Darlington, and that small current switches the motor's own supply: four AA cells, 6 V. The motor sits between the battery's plus and the TIP120's collector (a low-side switch), the emitter goes to ground, and the battery's minus shares that ground with the Nano. A 1N4007 diode across the motor gives the coil's current somewhere to go when the transistor switches off; without it the coil kicks the collector up past the TIP120's 60 V rating. A green LED on pin 9 shows what the pin is doing, half bright in PWM because your eye averages it, like the motor does.",
+  "parts": {
+    "R1": {
+      "name": "1 kΩ base resistor (brown, black, red, gold)",
+      "what": "Sets the base current: (4.7 V − 1.3 V) / 1000 Ω ≈ 3.4 mA. The TIP120 is a Darlington, two transistors in one, so its base needs about 1.3 V instead of 0.7 V. Without this resistor the pin pushes straight into the base junction and tries to deliver well over 100 mA, which kills the pin."
+    },
+    "Q1": {
+      "name": "TIP120 NPN Darlington transistor",
+      "what": "With the printed face toward you and the legs down: base, collector, emitter; the metal tab is the collector too. Its gain is at least 1000, so 3.4 mA into the base could pass several amps; with only 160 mA asked of it, it is fully on (saturated) and drops about 0.8 V from collector to emitter. Rated 60 V, 5 A, and 2 W without a heatsink."
+    },
+    "D1": {
+      "name": "1N4007 flyback diode",
+      "what": "Sits across the motor, band (cathode) toward battery plus, plain end toward the collector. While the motor runs it does nothing. When the TIP120 switches off, the coil keeps its current flowing and the diode lets it circle round through the motor, so the collector stays one diode drop above the battery instead of jumping to 60 V and more."
+    },
+    "R2": {
+      "name": "1 kΩ LED resistor",
+      "what": "Limits the indicator LED to (4.7 V − 2.1 V) / 1000 Ω ≈ 2.6 mA, enough to see and nothing the pin notices."
+    },
+    "LED1": {
+      "name": "Green indicator LED on pin 9",
+      "what": "Lights while pin 9 is HIGH. In PWM it looks half bright: it is really flashing 490 times a second and your eye averages the flashes. It has its own ground wire to the Nano, so it still tells you what the pin does when the motor side is wired wrong."
+    },
+    "M1": {
+      "name": "TT gear motor with a yellow wheel (3-6 V, 1:48 gearbox)",
+      "what": "A small brushed DC motor behind a 1:48 plastic gearbox. With the wheel in the air it draws about 160 mA and turns the wheel at about 220 rpm on this battery. Held still (stalled) it draws over 1 A, and at the instant it starts it draws nearly that much too: that inrush is what resets a board that powers motors from its own 5 V."
+    },
+    "BT1": {
+      "name": "4 x AA battery holder (6 V)",
+      "what": "Four alkaline cells in series: about 6.4 V fresh, 6 V nominal, and each cell has 0.15-0.3 Ω inside, so the pack sags under heavy current. It feeds only the motor side. Its minus lead must be joined to the Nano's ground, or the base current has no way home."
+    }
+  },
+  "power": {
+    "label": "Plug in the Nano's USB",
+    "ok": "Powered: the Nano runs the sketch you uploaded, and the batteries feed the motor"
+  },
+  "modes": {
+    "high": "Input HIGH",
+    "pwm": "PWM 50%",
+    "low": "Input LOW",
+    "ramp": "Soft start ramp",
+    "code": {
+      "high": {
+        "c1": "Input HIGH: pin 9 holds the TIP120 fully on",
+        "c2": "to R1 (1 kΩ), then the TIP120's base",
+        "c3": "about 3.4 mA into the base...",
+        "c4": "...lets the battery's 160 mA flow through the motor",
+        "c5": "a pin gives 20 mA at most: never wire a motor to it"
+      },
+      "pwm": {
+        "c1": "PWM 50%: pin 9 switches the TIP120 on and off 490 times a second",
+        "c2": "a ~ pin: hardware PWM from Timer1",
+        "c3": "128 of 255 = 50% duty at 490 Hz",
+        "c4": "the motor averages it out: a bit under half speed, and a whine",
+        "c5": "in every off-time D1 carries the coil's current round the motor"
+      },
+      "low": {
+        "c1": "Input LOW: pin 9 holds the TIP120 off",
+        "c2": "no base current: the TIP120 is off",
+        "c3": "the coil's energy dumps through D1 and the motor coasts to a stop"
+      },
+      "ramp": {
+        "c1": "Soft start: raise the duty one step every 8 ms, no delay()",
+        "c2": "255 steps of 8 ms is about 2 s from stop to full speed",
+        "c3": "report the duty once a second"
+      }
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Strip the Nano to its bare PCB",
+      "body": "Start from the bare board so you see every part go on. The Nano is the controller here; the motor circuit lives on the breadboard.",
+      "refusal": "Unplug the power first: never work on a live board"
+    },
+    "pnp": {
+      "title": "Pick and place the SMD parts, then reflow",
+      "body": "The machine drops every surface-mount part onto its solder paste, then the oven melts the paste into joints. The ATmega328P, the FT232 USB bridge, the regulator, the resonator and the passives all go on now.",
+      "refusal": "Unplug the power first: never work on a live board"
+    },
+    "headers": {
+      "title": "Place the two 15-pin headers",
+      "body": "The headers are the Nano's only through-hole parts: they go on after reflow, because the oven would melt their plastic. The Nano has no tall parts and no chip socket, so the low, tall and last groups are all just these two headers.",
+      "refusal": "SMD parts first: run pick and place + reflow. The oven would melt plastic parts"
+    },
+    "solder": {
+      "title": "Solder the header pins",
+      "body": "Thirty joints. Each one should be a shiny little cone that wets both the pin and the pad; a dull ball that sits on top is a cold joint and will work only sometimes.",
+      "refusal": "Nothing to solder yet: place a part first"
+    },
+    "bb-drive": {
+      "title": "Seat the TIP120 and its base resistor",
+      "body": "Push the TIP120 into three columns with its printed face toward you: base, collector, emitter from left to right. Bridge pin 9's column to the base column with the 1 kΩ resistor, and run the emitter to the ground rail. Add the LED and its 1 kΩ on pin 9 so you can see the pin.",
+      "refusal": "Build the Nano first: strip, place, solder"
+    },
+    "bb-motor": {
+      "title": "Fit the motor and the flyback diode",
+      "body": "The motor's minus lead goes to the collector's column, its plus lead to a column that will carry battery plus. The 1N4007 bridges those same two columns, band toward plus. Diode across motor, band to plus: say it while you fit it.",
+      "refusal": "Seat the TIP120 and its base resistor first"
+    },
+    "bb-power": {
+      "title": "Connect the battery and the common ground",
+      "body": "Battery red to the plus rail, black to the ground rail, and one more wire from the Nano's GND to that same rail. That last wire is the one people forget: without it the base current has no path back to the Nano and the TIP120 never turns on.",
+      "refusal": "Fit the motor and the flyback diode first"
+    },
+    "plug": {
+      "title": "Plug in USB",
+      "body": "The Nano starts the sketch it holds: Input HIGH. Pin 9 goes high, the LED lights, about 3.4 mA flows into the base and the wheel spins. Watch the base and motor currents in the status panel.",
+      "refusal": "Close the exploded view first"
+    },
+    "upload-pwm": {
+      "title": "Upload PWM 50%",
+      "body": "analogWrite(9, 128) switches the TIP120 on and off 490 times a second. The motor averages the pulses and turns a bit under half speed (its own resistance eats part of the voltage), the LED looks half bright, and you can hear the 490 Hz whine.",
+      "refusal": "Plug in USB first: uploads go over the cable"
+    },
+    "measure": {
+      "title": "Measure the gain",
+      "body": "Upload Input HIGH again and read the status panel: base current about 3.4 mA, motor current about 160 mA. Their ratio, about 47, is the gain you are using. The TIP120 could give 1000 times: it is saturated, working as a switch, which is what keeps it cool."
+    },
+    "exploded": {
+      "title": "Unplug and open the exploded view",
+      "body": "The layers lift apart: SMD parts, then the headers. The exploded view refuses while the board is powered.",
+      "refusal": "Unplug the power first: never work on a live board"
+    },
+    "break-flyback": {
+      "title": "Break it: leave out the flyback diode",
+      "body": "Pull D1, run PWM 50% and watch the collector peak in the status panel. Then put it back and watch the peak drop to one diode above the battery."
+    },
+    "break-diode": {
+      "title": "Break it: fit the diode backwards",
+      "body": "Turn D1 so its band faces the collector, then switch the motor on."
+    },
+    "break-tip120": {
+      "title": "Break it: put the TIP120 in backwards",
+      "body": "Turn the TIP120 round so its tab faces you. The LED still says pin 9 is HIGH. Does the wheel turn?"
+    },
+    "break-ground": {
+      "title": "Break it: forget the common ground",
+      "body": "Remove the wire from the Nano's GND to the battery's minus rail."
+    },
+    "break-base": {
+      "title": "Break it: leave out the base resistor",
+      "body": "Replace R1 with a plain jumper wire and switch pin 9 on."
+    },
+    "break-pin": {
+      "title": "Break it: wire the motor straight to pin 9",
+      "body": "Take the TIP120 out of the picture: motor plus on pin 9, motor minus on ground."
+    },
+    "break-brownout": {
+      "title": "Break it: run the motor from the Nano's 5 V",
+      "body": "Unplug the battery and feed the plus rail from the Nano's 5V pin instead."
+    },
+    "break-polarity": {
+      "title": "Break it: put the battery leads on backwards",
+      "body": "Swap the battery's red and black leads on the rails."
+    },
+    "break-voltage": {
+      "title": "Break it: load the holder with Li-ion cells",
+      "body": "Fill the holder with four 14500 cells. They are the size of AA cells but each one gives 3.7-4.2 V."
+    },
+    "break-cold": {
+      "title": "Break it: a cold joint on the motor tab",
+      "body": "The motor's red lead is soldered to its tab with a dull, grainy blob that only touches the tab."
+    },
+    "break-stall": {
+      "title": "Break it: hold the wheel",
+      "body": "Stop the wheel with your fingers while pin 9 is HIGH and watch the motor current."
+    }
+  },
+  "faults": {
+    "no-flyback": {
+      "title": "No flyback diode",
+      "symptom": "The motor runs, but the collector peak reads 60 V or more at every switch-off. In PWM that is 490 kicks a second: after a few seconds the TIP120 fails short and the motor runs flat out whatever pin 9 says.",
+      "explanation": "A motor is a coil. When the TIP120 switches off, the coil keeps its current flowing for a moment and drives the collector up until something gives: here, the transistor breaks down at its 60 V limit and soaks up the energy. One switch-off it survives; hundreds a second wear it out, and a dead transistor usually fails short. With D1 in place the current circles round through the diode and the collector stops one diode drop above the battery.",
+      "fix": "Unplug, fit a new TIP120 and put D1 across the motor, band toward battery plus."
+    },
+    "flyback-reversed": {
+      "title": "Flyback diode in backwards",
+      "symptom": "As soon as pin 9 goes HIGH the diode gets hot, the battery voltage collapses and the motor slows. With pin 9 LOW nothing happens.",
+      "explanation": "Turned round, D1 points from battery plus to the collector. When the TIP120 switches on it pulls the collector to ground, and the diode then conducts straight from battery plus to ground: a dead short through D1 and the transistor, limited only by the cells. Several amps through a 1 A diode cook it.",
+      "fix": "Unplug the battery and turn D1 round: band toward battery plus."
+    },
+    "tip120-reversed": {
+      "title": "TIP120 in backwards",
+      "symptom": "The LED lights, pin 9 is HIGH, but the wheel never turns and nothing gets warm.",
+      "explanation": "Turning a TO-220 round swaps its outer legs: the resistor now reaches the emitter and the base sits on ground. The base-emitter junction is reverse biased, so no base current flows and the transistor stays off. Collector and emitter do not swap on this package, the base and emitter do.",
+      "fix": "Unplug and turn the TIP120 round: printed face toward you, base on the left."
+    },
+    "no-ground": {
+      "title": "No common ground",
+      "symptom": "The LED lights, pin 9 is HIGH, but the motor does not run.",
+      "explanation": "Base current leaves pin 9, goes through R1, the base and the emitter into the ground rail, and has to get back to the Nano's GND to complete the loop. The battery's minus is not the Nano's ground unless a wire joins them, so no current flows and the TIP120 stays off. The LED has its own wire to the Nano's GND, which is why it still lights.",
+      "fix": "Run a wire from the Nano's GND to the battery's minus rail."
+    },
+    "no-base-resistor": {
+      "title": "No base resistor",
+      "symptom": "The motor jumps on, then pin 9 stops working: the LED goes dark and the motor stops. The Nano gets warm near the chip.",
+      "explanation": "With nothing but a wire, pin 9 drives the base junction directly. The junction holds the base near 1.3 V, so the only thing limiting the current is the pin's own output transistor: it tries to deliver well over 100 mA. The ATmega328P allows 40 mA per pin as an absolute maximum, and its output stage burns out.",
+      "fix": "Unplug and fit the 1 kΩ base resistor again. The Nano's pin 9 is damaged: use another PWM pin (3, 5, 6, 10 or 11) or a new Nano."
+    },
+    "motor-on-pin": {
+      "title": "Motor straight on pin 9",
+      "symptom": "The wheel twitches or does nothing, and after a moment pin 9 is dead.",
+      "explanation": "The motor needs about 160 mA to run and over 1 A to start. Pin 9 can give 20 mA comfortably and 40 mA at the absolute maximum. As it tries, the pin's voltage collapses to well under a volt, too little to start the motor, while the overloaded output stage overheats and fails.",
+      "fix": "Unplug, put the TIP120 back between the motor and ground, and use another pin: pin 9 is damaged."
+    },
+    "brownout": {
+      "title": "Brown-out: motor on the Nano's 5 V",
+      "symptom": "Every time the motor starts, the Nano resets: the LED blinks off, the serial banner repeats, the wheel jerks and stops.",
+      "explanation": "Powered from USB, the Nano's 5 V comes through a 500 mA polyfuse and a Schottky diode. A starting motor gulps over 1 A, the 5 V rail sags below the ATmega328P's 2.7 V brown-out level, and the chip resets. Pin 9 goes low, the motor stops drawing, the rail recovers, the sketch starts again and switches the motor on: round and round.",
+      "fix": "Power the motor from its own battery and share only the ground."
+    },
+    "battery-reversed": {
+      "title": "Reverse polarity on the battery",
+      "symptom": "D1 gets hot at once, whatever pin 9 does, and the cells warm up. The motor does not run.",
+      "explanation": "With the leads swapped, the battery's plus is on the ground rail. Current now flows forward through the TIP120's built-in emitter-collector diode and then forward through D1: two diode drops straight across the battery, a dead short limited only by the cells' own resistance.",
+      "fix": "Unplug the battery and swap its leads: red to the plus rail, black to the ground rail."
+    },
+    "li-ion-cells": {
+      "title": "Wrong voltage: Li-ion cells in an AA holder",
+      "symptom": "The battery reads about 16 V, the wheel screams round at three times its speed, and after a while the motor smells hot and stops.",
+      "explanation": "A 14500 Li-ion cell has the size of an AA but gives 3.7 V nominal and 4.2 V when full, so four of them make about 16.8 V instead of 6 V. The 3-6 V motor runs far over speed, its brushes arc and its windings overheat. The TIP120 (60 V) and D1 (1000 V) do not mind; the motor does.",
+      "fix": "Use four 1.5 V alkaline (or 1.2 V NiMH) AA cells: 4.8-6.4 V."
+    },
+    "cold-motor": {
+      "title": "Cold solder joint on the motor",
+      "symptom": "The wheel stutters: it runs, stops, runs again, though pin 9 stays HIGH.",
+      "explanation": "The solder never wetted the motor's tab, so the joint is only resting on it. Vibration makes and breaks the contact, and each break is also a little switch-off that the flyback diode has to catch.",
+      "fix": "Reheat the joint until the solder flows onto the tab and forms a shiny fillet."
+    },
+    "stall": {
+      "title": "Stalled motor",
+      "symptom": "The wheel stops, the motor current jumps past 1 A, the battery voltage drops and the TIP120 gets hot.",
+      "explanation": "A turning motor generates a back voltage that holds its current down. Stopped, only the winding's few ohms limit it: about 1.5 A at 6 V. The TIP120 then drops about 1 V and dissipates over a watt, close to its 2 W limit without a heatsink, and the cells sag under the load.",
+      "fix": "Let go of the wheel. In a robot, detect a stall (the current or a missing encoder pulse) and cut the power."
+    }
+  },
+  "status": {
+    "program": "Program",
+    "powered": "Powered",
+    "pin9": "Pin 9 (duty)",
+    "base": "Base current (average)",
+    "motor": "Motor current (average)",
+    "battery-current": "Battery current (average)",
+    "vce": "TIP120 drop, collector to emitter",
+    "peak": "Collector peak at switch-off",
+    "rpm": "Wheel speed",
+    "battery": "Battery voltage",
+    "q1-temp": "TIP120 temperature (°C)",
+    "usb-current": "USB current"
+  },
+  "current": {
+    "usb": "USB through the Nano's 500 mA polyfuse",
+    "batt": "4 x AA alkaline, 6 V (datasheet curves go to 1 A)",
+    "nano": "The Nano itself (MCU, USB bridge, ON LED)",
+    "base": "Base current through R1",
+    "led": "Indicator LED",
+    "motor-batt": "Motor, from the batteries",
+    "motor-usb": "Motor, from the Nano's 5 V"
+  },
+  "tasks": {
+    "pulse": {
+      "title": "Pulse the motor without delay()",
+      "brief": "Switch the motor on for 1 s and off for 1 s, forever, using millis() instead of delay(), so the sketch could still read buttons or sensors in between.",
+      "hints": {
+        "1": "Remember when you last switched: unsigned long last = 0;",
+        "2": "In loop(), when millis() - last >= 1000, add 1000 to last and flip the pin.",
+        "3": "digitalWrite(MOTOR, on ? HIGH : LOW) writes a bool flag to the pin."
+      },
+      "checks": {
+        "1": "Pin 9 toggles with a 2 s period",
+        "2": "The motor is on at 1.5 s",
+        "3": "The motor is off at 2.5 s",
+        "4": "Uses millis(), no delay()"
+      },
+      "code": {
+        "c1": "Rewrite this without delay(): the sketch is deaf while it waits",
+        "c2": "blocks the whole sketch for a second"
+      }
+    },
+    "soft-start": {
+      "title": "Soft start",
+      "brief": "Starting at full power makes the motor gulp over 1 A for an instant. Ramp pin 9 from 0 to 255 over 2 s with analogWrite() and millis(), then hold full speed.",
+      "hints": {
+        "1": "t = millis() - start tells you how far into the ramp you are.",
+        "2": "The duty is t * 255 / RAMP_MS while t < RAMP_MS: with unsigned long it cannot overflow here.",
+        "3": "After the ramp, analogWrite(MOTOR, 255) holds the pin fully on."
+      },
+      "checks": {
+        "1": "About 25% duty at 0.5 s",
+        "2": "About 50% duty at 1 s",
+        "3": "About 75% duty at 1.5 s",
+        "4": "Full on at 2.5 s",
+        "5": "Uses millis() and analogWrite(), no delay()"
+      },
+      "code": {
+        "c1": "Ramp the motor up over RAMP_MS instead of slamming it on",
+        "c2": "full power at once: the inrush you want to avoid"
+      }
+    },
+    "speed-knob": {
+      "title": "Speed knob",
+      "brief": "A 10 kΩ potentiometer on A0 sets the motor speed. Map its 0-1023 reading onto 0-255 for analogWrite(), and switch the motor fully off below a duty of 40, where the TT motor only hums and heats instead of turning.",
+      "hints": {
+        "1": "map(raw, 0, 1023, 0, 255) scales the reading.",
+        "2": "if (duty < 40) duty = 0; gives the dead band.",
+        "3": "analogWrite(9, 0) and analogWrite(9, 255) give a steady LOW and HIGH."
+      },
+      "checks": {
+        "1": "Knob at zero: motor off",
+        "2": "Knob at half: about 50% duty",
+        "3": "Knob at full: motor fully on",
+        "4": "Knob nearly at zero: motor off, not humming",
+        "5": "Reads A0 and writes pin 9 with analogWrite()"
+      },
+      "code": {
+        "c1": "Set the motor speed from the knob on A0",
+        "c2": "0 to 1023",
+        "c3": "scale raw to a duty, add a dead band, then analogWrite() it"
+      },
+      "world": {
+        "pot": "Speed knob"
+      }
+    },
+    "toggle-button": {
+      "title": "Toggle button with debounce",
+      "brief": "A push button from D2 to ground (INPUT_PULLUP) toggles the motor: press once for on, again for off. The contacts bounce for a few milliseconds, and the starter sketch counts every bounce as a press. Debounce it with millis().",
+      "hints": {
+        "1": "Note the time whenever the raw reading changes.",
+        "2": "Accept a new state only after the reading has stayed the same for 30 ms.",
+        "3": "Toggle on the change to LOW only: that is the press, not the release."
+      },
+      "checks": {
+        "1": "The first press switches the motor on within 60 ms",
+        "2": "It stays on after the bounces",
+        "3": "The second press switches it off within 60 ms",
+        "4": "It stays off",
+        "5": "Uses millis() and INPUT_PULLUP, no delay()"
+      },
+      "code": {
+        "c1": "Each press should toggle the motor once. Bouncing contacts break this.",
+        "c2": "pressed = LOW",
+        "c3": "a bounce looks exactly like another press"
+      },
+      "world": {
+        "btn": "Button on D2"
+      }
+    }
+  },
+  "quizzes": {
+    "q-smd": {
+      "why-first": {
+        "q": "Why do the SMD parts go on before the headers?",
+        "options": {
+          "1": "SMD parts are more expensive",
+          "2": "The reflow oven would melt the headers' plastic",
+          "3": "Headers need the SMD solder to stick"
+        },
+        "why": "The whole board goes through the reflow oven at about 240 °C. Through-hole parts with plastic bodies go on afterwards and are soldered by hand or by wave."
+      },
+      "reflow": {
+        "q": "What does the reflow oven do?",
+        "options": {
+          "1": "It dries the flux before soldering",
+          "2": "It glues the parts down so they cannot move",
+          "3": "It melts the solder paste under every SMD part at once"
+        },
+        "why": "Pick and place sets each part on its paste; the oven melts all the paste in one pass, and surface tension pulls the parts square onto their pads."
+      }
+    },
+    "q-solder": {
+      "cold": {
+        "q": "What does a cold solder joint do?",
+        "options": {
+          "1": "It works, then it doesn't: the contact comes and goes",
+          "2": "It shorts the pin to ground",
+          "3": "Nothing, as long as it looks big enough"
+        },
+        "why": "A cold joint never wetted the pad or the pin, so it only rests on them. Vibration and heat make and break the contact."
+      },
+      "headers": {
+        "q": "Why does the Nano come with pins on its underside?",
+        "options": {
+          "1": "To keep the USB connector off the desk",
+          "2": "To cool the ATmega328P",
+          "3": "So it plugs straight into a breadboard, straddling the centre gap"
+        },
+        "why": "Its two rows of 15 pins are 0.6 inch apart, like a wide DIP chip, so each pin lands in its own breadboard column."
+      }
+    },
+    "q-ground": {
+      "shared": {
+        "q": "The battery's GND is not connected to the Nano's GND. What happens?",
+        "options": {
+          "1": "Nothing, they are separate circuits",
+          "2": "The base current has no return path: the TIP120 never turns on",
+          "3": "The motor runs backwards"
+        },
+        "why": "Base current must flow out of pin 9 and back into the Nano's GND. The emitter goes to the battery's minus, so that minus has to be joined to the Nano's ground."
+      },
+      "low-side": {
+        "q": "Why is this called a low-side switch?",
+        "options": {
+          "1": "The transistor sits between the motor and ground",
+          "2": "It only works at low speed",
+          "3": "The battery voltage is low"
+        },
+        "why": "The motor connects to battery plus all the time; the TIP120 opens and closes its path to ground. An NPN transistor works best there, with its emitter on ground."
+      }
+    },
+    "q-pwm": {
+      "freq": {
+        "q": "At what frequency does analogWrite() switch pin 9 of the Nano?",
+        "options": {
+          "1": "50 Hz, like a servo",
+          "2": "16 MHz, the clock speed",
+          "3": "About 490 Hz"
+        },
+        "why": "Pins 9 and 10 run from Timer1 at about 490 Hz; pins 5 and 6 run from Timer0 at about 980 Hz."
+      },
+      "half": {
+        "q": "With 50% duty, why does the wheel turn a bit slower than half its full speed?",
+        "options": {
+          "1": "The PWM is not really 50%",
+          "2": "The motor's own resistance takes a fixed share of the average voltage",
+          "3": "The flyback diode slows the motor down"
+        },
+        "why": "Speed follows the voltage left after the winding resistance has taken its share. Half the voltage minus the same resistance drop gives a little less than half the speed."
+      },
+      "led": {
+        "q": "Why does the LED look half bright in PWM?",
+        "options": {
+          "1": "It flashes 490 times a second and your eye averages it",
+          "2": "PWM halves the voltage on the pin",
+          "3": "The LED resistor gets warmer"
+        },
+        "why": "The pin is always either fully HIGH or fully LOW. Your eye cannot follow 490 Hz and sees the average, the same way the motor does."
+      }
+    },
+    "q-flyback": {
+      "protects": {
+        "q": "What is D1 protecting?",
+        "options": {
+          "1": "The battery from overcharge",
+          "2": "The TIP120 from the voltage spike when the coil switches off",
+          "3": "The LED from reverse voltage"
+        },
+        "why": "When the TIP120 switches off, the coil's current has to go somewhere. D1 lets it circle round through the motor instead of driving the collector past 60 V."
+      },
+      "band": {
+        "q": "Which way round does the flyback diode go?",
+        "options": {
+          "1": "Band toward battery plus, across the motor",
+          "2": "Band toward the collector",
+          "3": "In series with the motor"
+        },
+        "why": "Backwards it shorts the battery whenever the transistor switches on; in series it would block the motor. Across the motor with the band to plus, it only conducts the coil's kick."
+      }
+    },
+    "q-pin": {
+      "why-not": {
+        "q": "Why not wire the motor straight to pin 9?",
+        "options": {
+          "1": "The pin gives about 20 mA; the motor wants 160 mA running and over 1 A to start",
+          "2": "Pins only output 3.3 V",
+          "3": "The motor needs AC"
+        },
+        "why": "The ATmega328P allows 40 mA per pin at the absolute maximum. The motor would pull the pin's voltage down and burn its output stage."
+      },
+      "base-r": {
+        "q": "What does the 1 kΩ base resistor do?",
+        "options": {
+          "1": "It slows the motor down",
+          "2": "It protects the motor from the battery",
+          "3": "It limits the base current to a few mA that the pin can give"
+        },
+        "why": "The base-emitter junctions hold the base at about 1.3 V. The resistor takes the rest of the pin's voltage: (4.7 − 1.3) / 1000 ≈ 3.4 mA."
+      }
+    },
+    "q-brownout": {
+      "reset": {
+        "q": "The Nano resets every time the motor starts. What is the most likely cause?",
+        "options": {
+          "1": "The sketch has a bug in setup()",
+          "2": "The motor runs from the board's 5 V and its starting current drags the rail down",
+          "3": "The flyback diode is too big"
+        },
+        "why": "A starting motor draws over 1 A. Through USB's polyfuse and diode the 5 V rail sags below the 2.7 V brown-out level and the chip resets."
+      },
+      "cure": {
+        "q": "What cures it?",
+        "options": {
+          "1": "A longer delay() in setup()",
+          "2": "A bigger base resistor",
+          "3": "A separate motor supply that shares only the ground"
+        },
+        "why": "The motor's current then never flows through the Nano's 5 V rail. A soft start and a bulk capacitor help too, but the separate supply is the real fix."
+      }
+    },
+    "q-end": {
+      "drop": {
+        "q": "The battery gives 6 V. About how much reaches the motor through a fully-on TIP120?",
+        "options": {
+          "1": "6 V: a switch has no drop",
+          "2": "3 V: half is lost in the transistor",
+          "3": "About 5.2 V: a Darlington drops about 0.8 V even when saturated"
+        },
+        "why": "A Darlington's output transistor cannot saturate below the driver's base-emitter voltage, so it drops 0.7-1 V at these currents. A logic-level MOSFET drops far less."
+      },
+      "gain": {
+        "q": "Base current 3.4 mA, motor current 160 mA. What gain are you using?",
+        "options": {
+          "1": "About 47, far below the TIP120's 1000: it is saturated, a switch",
+          "2": "About 1000, the datasheet gain",
+          "3": "About 160"
+        },
+        "why": "160 / 3.4 ≈ 47. Asking for much less than the gain could give drives the transistor hard on, which keeps its drop and its heat low."
+      },
+      "pinout": {
+        "q": "Printed face toward you, legs down: what are the TIP120's legs from left to right?",
+        "options": {
+          "1": "Emitter, base, collector",
+          "2": "Base, collector, emitter (the tab is the collector)",
+          "3": "Collector, emitter, base"
+        },
+        "why": "B, C, E, with the tab joined to the collector. Turned round, the base and emitter swap and the transistor never turns on."
+      },
+      "stall": {
+        "q": "What limits the current of a stalled motor?",
+        "options": {
+          "1": "The gearbox",
+          "2": "The flyback diode",
+          "3": "Only the winding's resistance: there is no back voltage when it is not turning"
+        },
+        "why": "A spinning motor generates a back voltage that opposes the supply. Stopped, only a few ohms of copper and the battery's own resistance limit the current."
+      },
+      "mosfet": {
+        "q": "What would you use instead of the TIP120 in a new design?",
+        "options": {
+          "1": "A logic-level N-channel MOSFET, which drops a fraction of a volt",
+          "2": "A relay for the PWM",
+          "3": "A second Arduino pin in parallel"
+        },
+        "why": "A logic-level MOSFET (IRLZ44N, IRLB8721) turns fully on from a 5 V pin with almost no gate current and drops a fraction of a volt, so the motor gets more of the battery."
+      }
+    }
+  }
+}

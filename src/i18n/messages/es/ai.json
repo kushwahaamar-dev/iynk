@@ -1,0 +1,136 @@
+{
+  "panel": {
+    "title": "Compañero de laboratorio",
+    "byline": "Muse Spark · primero pistas, primero amigos",
+    "intro": "Pregunta por tu cableado, tu código o una falla. Te doy pistas antes que respuestas y, si alguien de tu sala ya hizo esta lección, se lo pregunto primero.",
+    "inputLabel": "Pregunta a tu compañero de laboratorio",
+    "placeholder": "Pregunta sobre el banco…",
+    "send": "Enviar",
+    "stop": "Detener",
+    "newChat": "Nueva conversación",
+    "thinking": "Pensando…",
+    "you": "Tú",
+    "partner": "Compañero",
+    "stopped": "Detenido.",
+    "retry": "Reintentar",
+    "sources": "Fuentes",
+    "suggestions": "Prueba a preguntar",
+    "accepted": "Aceptaste el cambio de {kind}.",
+    "rejected": "Rechazaste el cambio de {kind}.",
+    "kinds": {
+      "code": "código",
+      "wire": "cableado",
+      "part": "piezas"
+    },
+    "code": "Código",
+    "chat": "Chat",
+    "transcript": "Conversación con tu compañero de laboratorio"
+  },
+  "hint": {
+    "label": "¿Atascado?",
+    "hint": "Dame una pista",
+    "another": "Otra pista",
+    "show": "Muéstramelo",
+    "askHint": "Dame una pista, no la respuesta.",
+    "askAnother": "Otra pista, por favor.",
+    "askShow": "Muéstrame la solución."
+  },
+  "suggest": {
+    "fault": "¿Por qué pasa esto: {fault}?",
+    "error": "¿Qué significa este error de compilación?",
+    "failed": "¿Por qué falló «{test}»?",
+    "start": "¿Qué debería probar primero?",
+    "code": "¿Qué hace este código?",
+    "wiring": "¿Está bien mi cableado?",
+    "drone": "¿Este dron volará bien?",
+    "safety": "¿Con qué debo tener cuidado?"
+  },
+  "tools": {
+    "highlight": "Mira {part}",
+    "highlightOff": "La figura 3D aún no se ha cargado, así que esta pieza no está resaltada.",
+    "showAgain": "Muéstramelo otra vez",
+    "change": {
+      "code": "Cambio de código propuesto",
+      "wire": "Cambio de cableado propuesto",
+      "part": "Cambio de piezas propuesto"
+    },
+    "accept": "Aceptar",
+    "reject": "Rechazar",
+    "accepted": "Aceptado",
+    "rejected": "Rechazado",
+    "manual": "Este banco no puede aplicarlo por ti. Cópialo y haz el cambio tú mismo.",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "unchanged": {
+      "one": "{count} línea sin cambios",
+      "other": "{count} líneas sin cambios"
+    },
+    "diffLabel": "Cambios: las líneas que empiezan con + se añaden y las que empiezan con − se eliminan.",
+    "askPeer": "Le pedí a {name} que lo explique",
+    "askPeerNoRoom": "Un amigo que ya hizo esto podría explicártelo. Invita a alguien a construir contigo.",
+    "invite": "Invitar a un amigo",
+    "opened": "Se abrió {tab}",
+    "tabs": {
+      "partner": "Compañero",
+      "together": "Juntos",
+      "real": "Constrúyelo de verdad",
+      "passport": "Pasaporte",
+      "hardware": "Hardware"
+    },
+    "question": "«{question}»"
+  },
+  "errors": {
+    "not_configured": "El compañero de laboratorio no está configurado en este despliegue.",
+    "rate_limited": "Hay muchas preguntas ahora mismo. Espera unos segundos y vuelve a intentarlo.",
+    "bad_input": "No se pudo enviar. Prueba con una pregunta más corta.",
+    "upstream": "Esta vez el compañero no respondió. Inténtalo de nuevo.",
+    "offline": "Estás sin conexión. El laboratorio sigue funcionando; el compañero necesita conexión.",
+    "aborted": "Detenido."
+  },
+  "status": {
+    "loading": "Despertando a tu compañero de laboratorio…",
+    "unavailable": "El compañero de laboratorio no está configurado en este despliegue",
+    "unavailableBody": "Todo lo demás del laboratorio funciona sin él. El compañero necesita una clave de la API de modelos de Meta en el servidor.",
+    "unreachable": "No se pudo contactar con el servidor para comprobar el compañero.",
+    "check": "Volver a comprobar"
+  },
+  "voice": {
+    "hold": "Mantén pulsado para hablar (o pulsa M)",
+    "stopRecording": "Detener y enviar (o pulsa M)",
+    "recording": "Escuchando… suelta para enviar.",
+    "transcribing": "Convirtiendo tu voz en texto…",
+    "denied": "El acceso al micrófono está bloqueado. Permítelo en tu navegador para hablar.",
+    "unsupported": "La entrada de voz no está disponible en este navegador.",
+    "unavailable": "La voz no está configurada en este despliegue.",
+    "empty": "No te he entendido. Inténtalo de nuevo, un poco más cerca del micrófono.",
+    "failed": "No se pudo convertir tu voz en texto. Inténtalo de nuevo o escribe."
+  },
+  "story": {
+    "title": "Historia de construcción",
+    "intro": "Convierte esta sesión en una historia corta con portada: quién construyó qué, qué se rompió y quién ayudó.",
+    "make": "Escribir nuestra historia",
+    "remake": "Escribirla de nuevo",
+    "writing": "Escribiendo tu historia…",
+    "drawing": "Dibujando la portada…",
+    "empty": "Aún no hay nada que contar. Conecta algo, ejecuta código o pregunta al compañero y vuelve.",
+    "moments": {
+      "one": "{count} momento hasta ahora",
+      "other": "{count} momentos hasta ahora"
+    },
+    "coverAlt": "Ilustración de portada de «{title}»",
+    "builtBy": "Construido por",
+    "helped": "{helper} ayudó a {learner}",
+    "highlights": "Momentos destacados",
+    "download": "Descargar PNG",
+    "share": "Compartir",
+    "copyLink": "Copiar enlace",
+    "copied": "Enlace copiado",
+    "facebook": "Compartir en Facebook",
+    "shareText": "{title}, una historia de construcción de SimLab",
+    "unavailable": "Las historias de construcción no están configuradas en este despliegue.",
+    "failed": "No se pudo escribir la historia. Inténtalo de nuevo.",
+    "noCover": "Esta vez no se pudo dibujar la portada, así que la historia no tiene.",
+    "footer": "Hecho en equipo en SimLab",
+    "me": "Yo"
+  }
+}

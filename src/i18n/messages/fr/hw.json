@@ -1,0 +1,86 @@
+{
+  "title": "Jumeau matériel",
+  "intro": "Exécutez cette leçon sur un vrai Arduino : votre sketch commute les vraies broches, et les boutons et potentiomètres de la vraie carte font bouger la simulation.",
+  "support": {
+    "unsupportedTitle": "Ce navigateur n'accède pas aux cartes USB",
+    "unsupported": "Le jumeau parle à la carte via Web Serial, que ce navigateur ne propose pas. Ouvrez SimLab dans une version récente de Chrome, Edge ou Opera sur ordinateur pour connecter une carte. Tout le reste de SimLab fonctionne ici.",
+    "insecureTitle": "Page sécurisée requise",
+    "insecure": "Web Serial ne fonctionne que sur les pages https et sur localhost. Ouvrez SimLab en https pour connecter une carte."
+  },
+  "lab": {
+    "unsupportedTitle": "Rien à refléter ici",
+    "unsupported": "Le jumeau reflète les leçons Board Lab pour l'Arduino Uno R3, le Nano et l'Uno R4. Ouvrez l'une de ces leçons pour piloter une vraie carte."
+  },
+  "setup": {
+    "title": "Avant de vous connecter",
+    "flash": "Téléversez StandardFirmata : dans l'IDE Arduino, choisissez Fichier › Exemples › Firmata › StandardFirmata, puis Téléverser.",
+    "monitor": "Fermez le moniteur série de l'IDE. Un seul programme peut occuper le port.",
+    "wiring": "Câblage de la démo : une LED avec une résistance de 220 Ω sur la broche 13 (ou regardez la LED L), et un potentiomètre sur A0 (pattes extérieures sur 5V et GND, patte du milieu sur A0)."
+  },
+  "connect": "Connecter une carte",
+  "reconnect": "Connecter {name}",
+  "chooseOther": "Choisir une autre carte",
+  "connecting": "Connexion en cours. La carte redémarre et fait clignoter sa LED L, ce qui prend environ trois secondes.",
+  "disconnect": "Déconnecter",
+  "board": {
+    "title": "Carte connectée",
+    "usb": "USB",
+    "firmware": "Firmware",
+    "digital": "Broches",
+    "analog": "Entrées analogiques",
+    "adapter": "Adaptateur USB-série ({chip})",
+    "unknown": "Périphérique série USB",
+    "note": "La carte indique : {text}"
+  },
+  "toggles": {
+    "drive": "Piloter la vraie carte",
+    "driveHint": "Les sorties du sketch commutent les vraies broches.",
+    "sense": "Vrais capteurs dans la simulation",
+    "senseHint": "Les vrais boutons et potentiomètres font bouger les entrées de la leçon."
+  },
+  "run": {
+    "running": "Le sketch tourne et la carte le suit.",
+    "stopped": "Lancez le sketch dans le labo pour piloter la vraie carte."
+  },
+  "safety": {
+    "title": "Attention au courant",
+    "current": "Une broche fournit {ma} mA au grand maximum. Mettez toujours une résistance de 220 Ω à 1 kΩ en série avec une LED, et n'alimentez jamais un moteur, un servo ou un relais depuis une broche.",
+    "inputs": "Les broches que la leçon relie à un bouton ou à un capteur sont seulement lues, jamais pilotées."
+  },
+  "pins": {
+    "title": "Broches en direct",
+    "caption": "Ce que fait le sketch sur chaque broche, et ce que fait la vraie carte",
+    "pin": "Broche",
+    "sim": "Sim.",
+    "real": "Réel",
+    "status": "État",
+    "empty": "Cette leçon n'utilise encore aucune broche.",
+    "high": "HIGH",
+    "low": "LOW",
+    "none": "–",
+    "pwm": "PWM {duty}",
+    "servo": "servo {us} µs",
+    "tone": "son {hz} Hz",
+    "input": "entrée",
+    "volts": "{volts} V"
+  },
+  "status": {
+    "mirrored": "reflété",
+    "paused": "en pause",
+    "sensing": "capteur vers sim.",
+    "notRead": "non lu",
+    "serial": "liaison USB",
+    "lesson-input": "entrée seule",
+    "unsupported": "absente de cette carte",
+    "tone": "le son reste dans la sim.",
+    "virtual-only": "sim. seulement"
+  },
+  "errors": {
+    "title": "Connexion impossible",
+    "busy": "Le port est occupé. Fermez le moniteur série de l'IDE Arduino, ou un autre onglet qui utilise la carte, puis reconnectez-vous.",
+    "no-firmata": "La carte n'a pas répondu en Firmata. Téléversez StandardFirmata (Fichier › Exemples › Firmata › StandardFirmata) puis reconnectez-vous.",
+    "disconnected": "La carte a été débranchée. Rebranchez-la et reconnectez-vous.",
+    "failed": "Impossible d'ouvrir le port série. Débranchez la carte, rebranchez-la et réessayez.",
+    "denied": "Cette page n'a pas le droit d'utiliser les ports série. Vérifiez les autorisations du site dans votre navigateur."
+  }
+}

@@ -1,0 +1,233 @@
+{
+  "panel": {
+    "title": "Ensemble",
+    "intro": "Construisez-le entre amis. Tout le monde voit le même établi, et le chat est traduit dans la langue de chacun.",
+    "start": "Ouvrir un salon",
+    "joinLabel": "Code du salon ou lien d'invitation",
+    "joinPlaceholder": "p. ex. k7m2qx",
+    "join": "Rejoindre",
+    "badCode": "Ce n'est pas un code de salon. Les codes comptent 6 lettres et chiffres.",
+    "unavailable": "Ce navigateur ne peut pas ouvrir de salon. Essayez une version récente de Chrome, Firefox, Safari ou Edge.",
+    "localOnly": "Ce déploiement n'a pas de serveur relais : les salons ne fonctionnent qu'entre les onglets de ce navigateur.",
+    "connecting": "Connexion au salon {code}…",
+    "syncing": "Réception de l'établi de l'hôte…",
+    "reconnecting": "Connexion perdue. Reconnexion… Vos modifications seront synchronisées à votre retour.",
+    "ended": {
+      "left": "Vous avez quitté le salon.",
+      "removed": "L'hôte vous a retiré du salon.",
+      "full": "Ce salon est complet. Un salon accueille 8 personnes.",
+      "wrong-item": "Ce salon construit autre chose. Ouvrez son lien d'invitation pour le rejoindre.",
+      "error": "Le salon s'est fermé."
+    },
+    "again": "Ouvrir un nouveau salon"
+  },
+  "identity": {
+    "title": "Qui êtes-vous ?",
+    "hint": "Les personnes du salon voient ce nom. Il reste sur cet appareil.",
+    "name": "Votre nom",
+    "color": "Votre couleur",
+    "save": "Entrer dans le salon",
+    "saveOnly": "Enregistrer",
+    "rename": "Changer de nom",
+    "cancel": "Annuler",
+    "colors": {
+      "tomato": "Tomate",
+      "mustard": "Moutarde",
+      "mint": "Menthe",
+      "cobalt": "Cobalt",
+      "blush": "Rose poudré"
+    }
+  },
+  "bar": {
+    "label": "Salon {code}",
+    "invite": "Inviter",
+    "inviteTitle": "Inviter des personnes dans le salon {code}",
+    "inviteHint": "Toute personne qui a ce lien ou ce QR code peut entrer. Aucun compte n'est nécessaire.",
+    "copy": "Copier le lien",
+    "copied": "Lien copié",
+    "copyFailed": "Copie impossible. Sélectionnez le lien et copiez-le vous-même.",
+    "share": "Partager",
+    "shareText": "Construis avec moi sur SimLab, salon {code}",
+    "qr": "QR code du lien d'invitation au salon {code}",
+    "qrError": "Impossible de dessiner le QR code. Copiez plutôt le lien.",
+    "close": "Fermer",
+    "people": {
+      "one": "{count} personne ici",
+      "other": "{count} personnes ici"
+    },
+    "you": "vous",
+    "host": "hôte",
+    "role": "Votre rôle",
+    "roles": {
+      "none": "Aucun rôle",
+      "wirer": "Câblage",
+      "coder": "Code",
+      "pilot": "Pilote",
+      "watcher": "Observateur"
+    },
+    "keyboardYou": "Vous avez le clavier",
+    "keyboardOther": "{name} a le clavier",
+    "passTo": "Passer le clavier à",
+    "pass": "Passer",
+    "ask": "Demander le clavier",
+    "take": "Prendre le clavier",
+    "asked": "{name} veut le clavier",
+    "denied": "{name} a le clavier. Demandez-le pour modifier le code.",
+    "leave": "Quitter le salon",
+    "remove": "Retirer {name}",
+    "removeConfirm": "Retirer {name} du salon ?",
+    "removeYes": "Retirer",
+    "status": {
+      "ws": "En direct",
+      "broadcast": "Ce navigateur seulement",
+      "connecting": "Connexion",
+      "syncing": "Synchronisation",
+      "reconnecting": "Reconnexion",
+      "ended": "Fermé"
+    },
+    "peerLanguage": "Parle {lang}"
+  },
+  "chat": {
+    "title": "Chat du salon",
+    "empty": "Pas encore de message. Dites bonjour ou demandez de l'aide pour une pièce.",
+    "label": "Message",
+    "placeholder": "Écrire un message",
+    "send": "Envoyer",
+    "count": "{count}/{max}",
+    "translatedFrom": "Traduit depuis : {lang}",
+    "showOriginal": "Voir l'original",
+    "showTranslation": "Voir la traduction",
+    "translating": "Traduction…",
+    "translateOff": "La traduction n'est pas configurée sur ce déploiement : les messages s'affichent tels qu'ils ont été écrits.",
+    "translateFailed": "Impossible de traduire ce message.",
+    "sending": "Envoi…",
+    "kind": {
+      "voice": "Voix",
+      "ai": "Partenaire de labo"
+    },
+    "voice": {
+      "start": "Enregistrer un message vocal",
+      "stop": "Arrêter et envoyer",
+      "recording": "Enregistrement… {seconds} s",
+      "transcribing": "Transcription de votre voix…",
+      "off": "Les messages vocaux ne sont pas configurés sur ce déploiement.",
+      "denied": "SimLab ne peut pas utiliser le micro. Autorisez-le dans le navigateur pour envoyer des messages vocaux.",
+      "failed": "Transcription impossible. Réessayez ou écrivez-le.",
+      "unsupported": "Ce navigateur ne peut pas enregistrer de son.",
+      "tooLong": "Les messages vocaux s'arrêtent après 60 secondes."
+    },
+    "system": {
+      "join": "{name} est arrivé",
+      "leave": "{name} est parti",
+      "host": "{name} est maintenant l'hôte",
+      "removed": "{name} a été retiré par l'hôte",
+      "baton": "{by} a passé le clavier à {name}",
+      "batonRequest": "{name} a demandé le clavier"
+    },
+    "someone": "Quelqu'un"
+  },
+  "cursors": {
+    "label": "Ce que montrent les autres",
+    "point": "Montrer",
+    "stop": "Arrêter de montrer",
+    "surface": "Zone de pointage. Déplacez-vous sur la figure pour montrer aux autres ce que vous désignez. Les flèches déplacent le pointeur, Échap arrête."
+  },
+  "languages": {
+    "en": "anglais",
+    "es": "espagnol",
+    "fr": "français",
+    "de": "allemand",
+    "zh": "chinois",
+    "hi": "hindi"
+  },
+  "labs": {
+    "board": "Cartes",
+    "robotics": "Robotique",
+    "drone": "Drones"
+  },
+  "lobby": {
+    "metaTitle": "Construire ensemble",
+    "metaDescription": "Ouvrez un salon de construction en direct sur n'importe quelle carte, robot ou drone, trouvez un partenaire et planifiez une soirée de construction avec Muse Spark.",
+    "eyebrow": "SimLab Ensemble",
+    "title": "Personne ne construit seul",
+    "lede": "Ouvrez un salon sur n'importe quelle carte, robot ou drone et envoyez le lien. Tout le monde voit le même établi, une seule personne tape à la fois, et le chat affiche chaque message dans votre langue.",
+    "notSetUp": "Non configuré sur ce déploiement",
+    "retry": "Réessayer",
+    "create": {
+      "title": "Ouvrir un salon",
+      "hint": "Vous recevez un lien d'invitation et un QR code à partager.",
+      "lab": "Labo",
+      "item": "Quoi construire",
+      "go": "Ouvrir le salon",
+      "empty": "Aucun élément de labo n'est encore prêt."
+    },
+    "join": {
+      "title": "Rejoindre un salon",
+      "hint": "Tapez le code de 6 caractères de l'invitation, ou collez le lien.",
+      "go": "Rejoindre",
+      "looking": "Recherche du salon {code}…",
+      "empty": "Personne n'est dans le salon {code} pour l'instant. Les salons ferment 30 minutes après le départ de la dernière personne.",
+      "full": "Le salon {code} est complet.",
+      "timeout": "Impossible de joindre le salon {code}. Vérifiez le code et votre connexion.",
+      "unknown": "Le salon {code} est ouvert, mais il n'a pas dit ce qu'il construit. Demandez le lien d'invitation.",
+      "unavailable": "Ce navigateur ne peut pas ouvrir de salon.",
+      "found": "Trouvé. Ouverture du salon…"
+    },
+    "buddies": {
+      "title": "Partenaires de construction",
+      "lede": "Dites ce que vous avez construit et ce que vous voulez faire ensuite. Muse Spark propose des personnes dont les compétences complètent les vôtres, et explique pourquoi.",
+      "privacy": "Votre profil ne contient aucune coordonnée et il est supprimé au bout de 24 heures. Vous vous retrouvez par invitation à un salon.",
+      "name": "Votre nom",
+      "interests": "Centres d'intérêt",
+      "interestsHint": "Séparez-les par des virgules, p. ex. drones, LED, suiveurs de ligne",
+      "builtNote": {
+        "one": "Votre profil liste aussi la {count} leçon ou le test que vous avez terminé dans SimLab.",
+        "other": "Votre profil liste aussi les {count} leçons et tests que vous avez terminés dans SimLab."
+      },
+      "wants": "Ce que vous voulez construire ensuite",
+      "submit": "Trouver mes partenaires",
+      "finding": "Recherche de partenaires…",
+      "matches": "Vos correspondances",
+      "none": "Pas encore de bonne correspondance. D'autres personnes arrivent au fil de la journée : revenez bientôt.",
+      "alone": "Vous êtes la première personne de la liste. Invitez quelqu'un ou revenez plus tard.",
+      "score": "{score} % d'affinité",
+      "shared": "Vous aimez tous les deux : {interest}",
+      "project": "À construire ensemble : {item}",
+      "invite": "Inviter dans un salon",
+      "inviteTitle": "Construire {item} avec {name}",
+      "inviteHint": "Montrez ce QR code à {name} ou envoyez le lien. Le salon s'ouvre sur {item}.",
+      "notSetUp": "La recherche de partenaires a besoin de la base de données et du service d'IA, et ce déploiement n'a pas les deux.",
+      "failed": "Impossible de trouver des partenaires pour le moment.",
+      "missing": "Ajoutez votre nom et ce que vous voulez construire ensuite."
+    },
+    "plan": {
+      "title": "Planificateur de soirée de construction",
+      "lede": "Chacun dit ce qu'il aimerait faire. Muse Spark choisit un projet qui plaira à tout le monde et donne à chacun un rôle et une première tâche.",
+      "people": "Qui construit",
+      "person": "Personne {n}",
+      "name": "Nom",
+      "lang": "Langue",
+      "level": "Expérience",
+      "levels": {
+        "new": "Débutant",
+        "some": "Un peu",
+        "lots": "Beaucoup"
+      },
+      "wants": "Ce que cette personne aimerait faire ou apprendre",
+      "add": "Ajouter une personne",
+      "remove": "Retirer {name}",
+      "submit": "Planifier notre soirée",
+      "planning": "Planification…",
+      "roles": "Rôles",
+      "firstTask": "Première tâche",
+      "steps": "Le plan",
+      "parts": "Pièces",
+      "start": "Lancer cette construction",
+      "again": "Replanifier",
+      "notSetUp": "Le planificateur a besoin du service d'IA, qui n'est pas configuré sur ce déploiement.",
+      "failed": "Impossible de faire un plan pour le moment.",
+      "missing": "Donnez un nom à chaque personne et dites ce qu'elle aimerait faire.",
+      "unknownItem": "Le plan a choisi quelque chose que SimLab n'a pas encore. Replanifiez."
+    }
+  }
+}

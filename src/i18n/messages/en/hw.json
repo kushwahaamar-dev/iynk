@@ -1,0 +1,86 @@
+{
+  "title": "Hardware twin",
+  "intro": "Run this lesson on a real Arduino: your sketch switches the real pins, and the real board's buttons and knobs move the sim.",
+  "support": {
+    "unsupportedTitle": "This browser can't reach USB boards",
+    "unsupported": "The twin talks to the board over Web Serial, which this browser doesn't offer. Open SimLab in a recent Chrome, Edge or Opera on a computer to connect a board. Everything else in SimLab works here.",
+    "insecureTitle": "Needs a secure page",
+    "insecure": "Web Serial only works on https pages and on localhost. Open SimLab over https to connect a board."
+  },
+  "lab": {
+    "unsupportedTitle": "Nothing to mirror here",
+    "unsupported": "The twin mirrors Board Lab lessons for the Arduino Uno R3, Nano and Uno R4. Open one of those lessons to drive a real board."
+  },
+  "setup": {
+    "title": "Before you connect",
+    "flash": "Upload StandardFirmata: in the Arduino IDE choose File › Examples › Firmata › StandardFirmata, then Upload.",
+    "monitor": "Close the IDE's Serial Monitor. Only one program can hold the port.",
+    "wiring": "Demo wiring: an LED with a 220 Ω resistor on pin 13 (or watch the L LED), and a potentiometer on A0 (outer legs to 5V and GND, middle leg to A0)."
+  },
+  "connect": "Connect a board",
+  "reconnect": "Connect {name}",
+  "chooseOther": "Choose another board",
+  "connecting": "Connecting. The board restarts and blinks its L LED, which takes about three seconds.",
+  "disconnect": "Disconnect",
+  "board": {
+    "title": "Connected board",
+    "usb": "USB",
+    "firmware": "Firmware",
+    "digital": "Pins",
+    "analog": "Analog inputs",
+    "adapter": "USB serial adapter ({chip})",
+    "unknown": "USB serial device",
+    "note": "The board says: {text}"
+  },
+  "toggles": {
+    "drive": "Drive the real board",
+    "driveHint": "The sketch's outputs switch the real pins.",
+    "sense": "Real sensors into the sim",
+    "senseHint": "Real buttons and knobs move the lesson's inputs."
+  },
+  "run": {
+    "running": "The sketch is running and the board follows it.",
+    "stopped": "Run the sketch in the lab to drive the real board."
+  },
+  "safety": {
+    "title": "Mind the current",
+    "current": "A pin gives {ma} mA at the very most. Always put a 220 Ω to 1 kΩ resistor in series with an LED, and never power a motor, servo or relay from a pin.",
+    "inputs": "Pins the lesson wires to a button or sensor are only ever read, never driven."
+  },
+  "pins": {
+    "title": "Live pins",
+    "caption": "What the sketch does on each pin, and what the real board is doing",
+    "pin": "Pin",
+    "sim": "Sim",
+    "real": "Real",
+    "status": "Status",
+    "empty": "This lesson doesn't use any pins yet.",
+    "high": "HIGH",
+    "low": "LOW",
+    "none": "–",
+    "pwm": "PWM {duty}",
+    "servo": "servo {us} µs",
+    "tone": "tone {hz} Hz",
+    "input": "input",
+    "volts": "{volts} V"
+  },
+  "status": {
+    "mirrored": "mirrored",
+    "paused": "paused",
+    "sensing": "sensor to sim",
+    "notRead": "not read",
+    "serial": "USB link",
+    "lesson-input": "input only",
+    "unsupported": "not on this board",
+    "tone": "tone stays in the sim",
+    "virtual-only": "sim only"
+  },
+  "errors": {
+    "title": "Couldn't connect",
+    "busy": "The port is busy. Close the Arduino IDE's Serial Monitor, or another tab using the board, and connect again.",
+    "no-firmata": "The board didn't answer in Firmata. Upload StandardFirmata (File › Examples › Firmata › StandardFirmata) and connect again.",
+    "disconnected": "The board was unplugged. Plug it back in and connect again.",
+    "failed": "Couldn't open the serial port. Unplug the board, plug it back in and try again.",
+    "denied": "This page isn't allowed to use serial ports. Check the site's permissions in your browser."
+  }
+}

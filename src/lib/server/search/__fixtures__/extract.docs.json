@@ -1,0 +1,151 @@
+{
+  "search_information": {
+    "organic_results_state": "Results for exact URL"
+  },
+  "page_information": {
+    "title": "Coffee - Wikipedia",
+    "url": "https://en.wikipedia.org/wiki/Coffee",
+    "final_url": "https://en.wikipedia.org/wiki/Coffee",
+    "canonical": "https://en.wikipedia.org/wiki/Coffee",
+    "language": "en",
+    "charset": "UTF-8",
+    "favicon": "https://en.wikipedia.org/static/favicon/wikipedia.ico"
+  },
+  "meta_tags": {
+    "generator": "MediaWiki 1.47.0-wmf.21",
+    "referrer": "origin-when-cross-origin",
+    "robots": "max-image-preview:standard",
+    "viewport": "width=1120"
+  },
+  "open_graph": {
+    "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/Latte_and_dark_coffee.jpg/1280px-Latte_a...",
+    "image_width": "1200",
+    "image_height": "750",
+    "title": "Coffee - Wikipedia",
+    "type": "website"
+  },
+  "json_ld": [
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "name": "Coffee",
+      "url": "https://en.wikipedia.org/wiki/Coffee",
+      "sameAs": "http://www.wikidata.org/entity/Q8486",
+      "mainEntity": "http://www.wikidata.org/entity/Q8486",
+      "author": {
+        "@type": "Organization",
+        "name": "Contributors to Wikimedia projects"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Wikimedia Foundation, Inc.",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://www.wikimedia.org/static/images/wmf-hor-googpub.png"
+        }
+      },
+      "datePublished": "2004-04-18T21:41:42Z",
+      "dateModified": "2026-08-28T14:28:49Z",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/e/e4/Latte_and_dark_coffee.jpg?utm_source=en.wikip...",
+      "headline": "brewed beverage made from seeds of Coffea genus"
+    }
+  ],
+  "headings": [
+    {
+      "position": 1,
+      "level": 2,
+      "title": "Contents"
+    }
+  ],
+  "inline_links": [
+    {
+      "position": 1,
+      "title": "Jump to content",
+      "link": "https://en.wikipedia.org/wiki/Coffee#bodyContent",
+      "displayed_link": "en.wikipedia.org",
+      "internal": true,
+      "serpapi_extract_link": "https://serpapi.com/search.json?device=desktop&engine=extract&url=https%3A%2F%2Fen.wikipedia.org%..."
+    }
+  ],
+  "inline_images": [
+    {
+      "position": 1,
+      "source": "https://en.wikipedia.org/static/images/icons/enwiki-25.svg",
+      "width": 50,
+      "height": 50
+    }
+  ],
+  "scripts": [
+    {
+      "position": 1,
+      "source": "https://en.wikipedia.org/w/load.php?lang=en&modules=startup&only=scripts&raw=1&skin=vector-2022",
+      "async": true
+    }
+  ],
+  "stylesheets": [
+    {
+      "position": 1,
+      "source": "https://en.wikipedia.org/w/load.php?lang=en&modules=ext.cite.parsoid.styles%7Cext.cite.styles%7Ce..."
+    }
+  ],
+  "feeds": [
+    {
+      "position": 1,
+      "title": "Wikipedia Atom feed",
+      "source": "https://en.wikipedia.org/w/index.php?title=Special:RecentChanges&feed=atom",
+      "type": "application/atom+xml"
+    }
+  ],
+  "lists": [
+    {
+      "position": 1,
+      "type": "ul",
+      "context": "nav",
+      "items": [
+        "Main page"
+      ]
+    }
+  ],
+  "tables": [
+    {
+      "position": 1,
+      "caption": "Coffee",
+      "rows": [
+        [
+          "Latte and black filtered coffee"
+        ]
+      ]
+    }
+  ],
+  "forms": [
+    {
+      "position": 1,
+      "action": "https://en.wikipedia.org/w/index.php",
+      "method": "get",
+      "id": "searchform",
+      "fields": [
+        {
+          "name": "search",
+          "type": "search",
+          "placeholder": "Search Wikipedia",
+          "label": "Search Wikipedia"
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "position": 1,
+      "tag": "header",
+      "word_count": 48,
+      "text": "Main menu Main menu move to sidebar hide Navigation Main page Contents Current events Random arti..."
+    }
+  ],
+  "text_content": {
+    "snippet": "Jump to content Main menu Main menu move to sidebar hide Navigation Main page Contents Current ev...",
+    "excerpt": "Jump to content Main menu Main menu move to sidebar hide Navigation Main page Contents Current ev...",
+    "full": "Jump to content Main menu Main menu move to sidebar hide Navigation Main page Contents Current ev...",
+    "character_count": 110015,
+    "word_count": 17017
+  }
+}

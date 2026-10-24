@@ -1,0 +1,43 @@
+{
+  "search_information": {
+    "query_displayed": "iPhone",
+    "shopping_results_state": "Results for exact spelling"
+  },
+  "shopping_results": [
+    {
+      "position": 1,
+      "title": "Apple iPhone 17",
+      "product_id": "19637827",
+      "product_link": "https://www.google.com/search?ibp=oshop&q=iPhone&prds=catalogid:19637827,headlineOfferDocid:17123...",
+      "immersive_product_page_token": "...",
+      "serpapi_immersive_product_api": "https://serpapi.com/search.json?engine=google_immersive_product&page_token=eyJlaSI6IlRpaFphZktGQj...",
+      "source": "Apple",
+      "source_icon": "https://serpapi.com/searches/69592848/images/eca3a6b3.png",
+      "multiple_sources": true,
+      "price": "$829.00",
+      "extracted_price": 829.0,
+      "rating": 4.7,
+      "reviews": 5300,
+      "snippet": "Quality camera (190 user reviews)",
+      "extensions": [
+        "Nearby, 13 mi"
+      ],
+      "thumbnail": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRSIAUbCDy2xtkPW8ctQDNgiTf194pAZbI7ai1L8YM...",
+      "serpapi_thumbnail": "https://serpapi.com/images/url/xMJOrnicDcnbEkJAGADgJ1oGhZppmpUmOtDBYXLH0mLD4p-m9VS9Tm9T3-33_ZQAfF...",
+      "delivery": "Free next-day delivery"
+    }
+  ],
+  "filters": [
+    {
+      "type": "Refine results",
+      "input_type": "link",
+      "options": [
+        {
+          "text": "On sale",
+          "shoprs": "...",
+          "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=us&google_domain=google...."
+        }
+      ]
+    }
+  ]
+}

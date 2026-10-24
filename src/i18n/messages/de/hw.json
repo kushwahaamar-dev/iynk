@@ -1,0 +1,86 @@
+{
+  "title": "Hardware-Zwilling",
+  "intro": "Lass diese Lektion auf einem echten Arduino laufen: Dein Sketch schaltet die echten Pins, und die Taster und Drehregler der echten Platine bewegen die Simulation.",
+  "support": {
+    "unsupportedTitle": "Dieser Browser erreicht keine USB-Platinen",
+    "unsupported": "Der Zwilling spricht über Web Serial mit der Platine, und das bietet dieser Browser nicht an. Öffne SimLab in einem aktuellen Chrome, Edge oder Opera auf dem Computer, um eine Platine zu verbinden. Alles andere in SimLab funktioniert hier.",
+    "insecureTitle": "Braucht eine sichere Seite",
+    "insecure": "Web Serial funktioniert nur auf https-Seiten und auf localhost. Öffne SimLab über https, um eine Platine zu verbinden."
+  },
+  "lab": {
+    "unsupportedTitle": "Hier gibt es nichts zu spiegeln",
+    "unsupported": "Der Zwilling spiegelt Board-Lab-Lektionen für Arduino Uno R3, Nano und Uno R4. Öffne eine dieser Lektionen, um eine echte Platine zu steuern."
+  },
+  "setup": {
+    "title": "Vor dem Verbinden",
+    "flash": "Lade StandardFirmata hoch: Wähle in der Arduino IDE Datei › Beispiele › Firmata › StandardFirmata und dann Hochladen.",
+    "monitor": "Schließe den seriellen Monitor der IDE. Nur ein Programm kann den Port belegen.",
+    "wiring": "Demo-Verdrahtung: eine LED mit 220-Ω-Widerstand an Pin 13 (oder achte auf die L-LED) und ein Potentiometer an A0 (äußere Beinchen an 5V und GND, mittleres an A0)."
+  },
+  "connect": "Platine verbinden",
+  "reconnect": "{name} verbinden",
+  "chooseOther": "Andere Platine wählen",
+  "connecting": "Verbinde. Die Platine startet neu und lässt ihre L-LED blinken, das dauert etwa drei Sekunden.",
+  "disconnect": "Trennen",
+  "board": {
+    "title": "Verbundene Platine",
+    "usb": "USB",
+    "firmware": "Firmware",
+    "digital": "Pins",
+    "analog": "Analoge Eingänge",
+    "adapter": "USB-Seriell-Adapter ({chip})",
+    "unknown": "Serielles USB-Gerät",
+    "note": "Die Platine meldet: {text}"
+  },
+  "toggles": {
+    "drive": "Echte Platine steuern",
+    "driveHint": "Die Ausgänge des Sketches schalten die echten Pins.",
+    "sense": "Echte Sensoren in die Simulation",
+    "senseHint": "Echte Taster und Drehregler bewegen die Eingänge der Lektion."
+  },
+  "run": {
+    "running": "Der Sketch läuft und die Platine folgt ihm.",
+    "stopped": "Starte den Sketch im Labor, um die echte Platine zu steuern."
+  },
+  "safety": {
+    "title": "Achte auf den Strom",
+    "current": "Ein Pin liefert höchstens {ma} mA. Schalte immer einen Widerstand von 220 Ω bis 1 kΩ in Reihe mit einer LED, und versorge nie einen Motor, Servo oder ein Relais direkt aus einem Pin.",
+    "inputs": "Pins, die die Lektion mit einem Taster oder Sensor verbindet, werden nur gelesen und nie angesteuert."
+  },
+  "pins": {
+    "title": "Pins live",
+    "caption": "Was der Sketch an jedem Pin macht und was die echte Platine gerade tut",
+    "pin": "Pin",
+    "sim": "Sim.",
+    "real": "Echt",
+    "status": "Status",
+    "empty": "Diese Lektion nutzt noch keine Pins.",
+    "high": "HIGH",
+    "low": "LOW",
+    "none": "–",
+    "pwm": "PWM {duty}",
+    "servo": "Servo {us} µs",
+    "tone": "Ton {hz} Hz",
+    "input": "Eingang",
+    "volts": "{volts} V"
+  },
+  "status": {
+    "mirrored": "gespiegelt",
+    "paused": "pausiert",
+    "sensing": "Sensor zur Sim.",
+    "notRead": "nicht gelesen",
+    "serial": "USB-Verbindung",
+    "lesson-input": "nur Eingang",
+    "unsupported": "nicht auf dieser Platine",
+    "tone": "Ton bleibt in der Sim.",
+    "virtual-only": "nur Sim."
+  },
+  "errors": {
+    "title": "Verbindung fehlgeschlagen",
+    "busy": "Der Port ist belegt. Schließe den seriellen Monitor der Arduino IDE oder einen anderen Tab, der die Platine nutzt, und verbinde erneut.",
+    "no-firmata": "Die Platine hat nicht in Firmata geantwortet. Lade StandardFirmata hoch (Datei › Beispiele › Firmata › StandardFirmata) und verbinde erneut.",
+    "disconnected": "Die Platine wurde abgezogen. Steck sie wieder ein und verbinde erneut.",
+    "failed": "Der serielle Port ließ sich nicht öffnen. Zieh die Platine ab, steck sie wieder ein und versuch es noch einmal.",
+    "denied": "Diese Seite darf keine seriellen Ports verwenden. Prüfe die Website-Berechtigungen in deinem Browser."
+  }
+}

@@ -1,0 +1,242 @@
+{
+  "title": "Build an Arduino Uno R3",
+  "sub": "From the bare PCB to Blink",
+  "hint": "Strip it, place and reflow the SMD parts, fit the through-hole parts low to tall, solder, chip in, plug in, upload, then break it",
+  "overview": "The Uno is a microcontroller board built around the ATmega328P, and it is where robotics starts: digitalWrite(), PWM, interrupts and serial debugging all show up here first. Build it the way a factory does: a machine places the surface-mount parts and the reflow oven solders them all at once, then the through-hole parts go in from the lowest to the tallest and get soldered, and the chip goes into its socket last, cold. Plug in, upload a sketch, then break the board on purpose: a chip in backwards, a missing fuse, a reversed supply, a motor on the 5V pin, a cold joint. Each fault shows what it really does, and how to fix it.",
+  "leds": {
+    "L": "L LED",
+    "ON": "ON LED"
+  },
+  "power": {
+    "label": "Plug in USB",
+    "ok": "Powered: the ON LED is lit"
+  },
+  "parts": {
+    "ZU4": { "name": "ATmega328P microcontroller", "what": "The brain: an 8-bit AVR at 16 MHz with 32 KB of flash (512 bytes hold the Optiboot bootloader), 2 KB of RAM and 1 KB of EEPROM. It runs your sketch: setup() once, loop() for ever. It sits in a socket, notch toward the ICSP header, with pin 1 by the notch." },
+    "SK1": { "name": "DIP-28 socket", "what": "Holds the ATmega328P without solder, so the iron never heats the chip and a dead chip swaps out in seconds. It is soldered with the other low through-hole parts." },
+    "U3": { "name": "ATmega16U2 USB-to-serial bridge", "what": "A second AVR running USB firmware. It turns your laptop's USB into the 328P's serial port, so uploads and Serial.print() work, and it pulses the 328P's RESET through C5 when the port opens, which is how an upload starts." },
+    "Y1": { "name": "16 MHz crystal for the 16U2", "what": "Quartz clock for the USB chip. Full-speed USB needs about ±0.25 % timing, which only a quartz crystal gives." },
+    "Y2": { "name": "16 MHz ceramic resonator for the 328P", "what": "Clock for the ATmega328P, with its two load capacitors built in (three pads; the middle one is ground). About ±0.5 %: fine for a sketch and the serial port, not for USB. The 328P's fuses expect it: without it nothing runs." },
+    "U1": { "name": "NCP1117 5 V regulator", "what": "Linear regulator that turns the barrel-jack voltage into 5 V. It needs about 1.1 V of headroom and burns the difference as heat, (VIN − 5 V) × current: 12 V at 300 mA is 2.1 W, enough to send it into thermal shutdown. Hence 7-12 V on the jack." },
+    "U2": { "name": "LP2985 3.3 V regulator", "what": "Makes the 3.3V pin from 5 V, 150 mA at most: enough for a sensor, not for a Wi-Fi module or a servo." },
+    "U5": { "name": "LMV358 op-amp: USB/VIN switch and L buffer", "what": "Two op-amps in one package. One compares VIN/2 with 3.3 V and switches the USB supply off once VIN is above 6.6 V. The other buffers pin 13 for the L LED, so the LED never loads the pin." },
+    "T1": { "name": "FDN340P MOSFET: USB power switch", "what": "P-channel MOSFET between the USB 5 V and the board's 5 V rail. The op-amp turns it off when a jack supply above 6.6 V takes over." },
+    "F1": { "name": "500 mA resettable polyfuse", "what": "PTC fuse in the USB 5 V line: it holds 0.5 A and trips at about 1 A. Short 5 V to GND and it heats up, its resistance jumps and your laptop's port survives; it resets once it cools." },
+    "D1": { "name": "M7 diode: reverse-polarity protection", "what": "A 1 A, 1000 V diode in series with the barrel jack. A supply plugged in the wrong way round finds it reverse-biased and nothing flows. The price is about 0.7-1 V of drop." },
+    "D2": { "name": "Reset clamp diode (328P)", "what": "Clamps the 328P's RESET line to 5 V, so the auto-reset pulse through C5 cannot push RESET above the supply." },
+    "D3": { "name": "Reset clamp diode (16U2)", "what": "The same clamp for the 16U2's reset line." },
+    "PC1": { "name": "47 µF capacitor on VIN", "what": "Electrolytic bulk capacitor on VIN, ahead of the 5 V regulator. Polarised: the dark band marks minus. In backwards on a live rail it leaks, heats and vents." },
+    "PC2": { "name": "47 µF capacitor on 5 V", "what": "Bulk capacitor on the 5 V rail: it covers the dips when a load switches on. Polarised like PC1." },
+    "L2": { "name": "10 µH inductor: AVCC filter", "what": "Filters 5 V into AVCC, the supply of the 328P's ADC, so digital noise stays out of analogRead()." },
+    "L1": { "name": "Ferrite bead on the USB shield", "what": "Joins the USB cable's shield to the USB ground through a ferrite bead, which soaks up high-frequency noise." },
+    "C1": { "name": "100 nF capacitor (3.3 V regulator in)", "what": "Decouples the 5 V rail right at the LP2985's input." },
+    "C2": { "name": "100 nF capacitor (USB power)", "what": "Decouples the 5 V rail where the USB supply comes in." },
+    "C3": { "name": "1 µF capacitor (3.3 V out)", "what": "The output capacitor the LP2985 needs to stay stable." },
+    "C4": { "name": "100 nF capacitor on AREF", "what": "Filters AREF, the reference pin of the ADC." },
+    "C5": { "name": "100 nF auto-reset capacitor (DTR to RESET)", "what": "Turns the DTR edge from the 16U2 into a short low pulse on the 328P's RESET when the serial port opens: the board resets, Optiboot listens, the upload starts. Without it you would press RESET by hand at just the right moment." },
+    "C6": { "name": "100 nF decoupling capacitor (328P)", "what": "A tiny local energy store at the 328P's supply pins: it absorbs the current spikes when the logic switches." },
+    "C7": { "name": "100 nF decoupling capacitor (16U2)", "what": "Local decoupling at the 16U2's supply pins." },
+    "C8": { "name": "1 µF capacitor (16U2 UCAP)", "what": "Steadies the 16U2's internal 3.3 V USB regulator on its UCAP pin." },
+    "C9": { "name": "22 pF crystal capacitor", "what": "Load capacitor for the crystal Y1: with C11 it sets the frequency the quartz runs at." },
+    "C10": { "name": "100 nF capacitor (AVCC)", "what": "Decouples AVCC after the L2 filter." },
+    "C11": { "name": "22 pF crystal capacitor", "what": "The second load capacitor for the crystal Y1." },
+    "R1": { "name": "1 MΩ resistor across the crystal", "what": "Biases the 16U2's oscillator so the crystal starts." },
+    "R2": { "name": "1 MΩ resistor across the resonator", "what": "Biases the 328P's oscillator so the resonator starts." },
+    "RN1": { "name": "10 kΩ resistor array (reset pull-ups)", "what": "Four 10 kΩ resistors in one chip: the pull-ups that hold both RESET lines high, and the divider that gives the comparator VIN/2. Without the pull-up RESET floats and the 328P never leaves reset." },
+    "RN2": { "name": "1 kΩ resistor array (L, TX, RX LEDs)", "what": "Current-limiting resistors for the L, TX and RX LEDs, about 3 mA each. Lift it off and those three LEDs go dark while the sketch keeps running." },
+    "RN3": { "name": "22 Ω resistor array (USB data lines)", "what": "Series resistors on USB D+ and D−, as the USB specification asks. Without them the computer cannot talk to the 16U2." },
+    "RN4": { "name": "1 kΩ resistor array (ON LED)", "what": "Two of its resistors in parallel feed the ON LED (about 6 mA); the other two sit in series with D0 and D1, so a shield can drive those pins without fighting the 16U2." },
+    "Z1": { "name": "Varistor: ESD guard on USB D+", "what": "Clamps static discharge on the USB D+ line to the shield before it reaches the 16U2." },
+    "Z2": { "name": "Varistor: ESD guard on USB D−", "what": "Clamps static discharge on the USB D− line to the shield before it reaches the 16U2." },
+    "L": { "name": "L LED (pin 13)", "what": "LED_BUILTIN: pin 13 drives it through the op-amp buffer and a 1 kΩ resistor, and HIGH lights it. The first output every robotics engineer drives." },
+    "TX": { "name": "TX LED", "what": "The 16U2 lights it while bytes go from the board to the computer: Serial.print() and the end of an upload." },
+    "RX": { "name": "RX LED", "what": "The 16U2 lights it while bytes come from the computer to the board, which is most of an upload." },
+    "ON": { "name": "ON LED (5 V)", "what": "On whenever the 5 V rail is up. Dim or flickering: suspect the supply before the code." },
+    "RESET": { "name": "RESET button", "what": "Pulls RESET low. Let go and Optiboot flashes L three times, listens for an upload for about a second, then your sketch restarts from setup(). It erases nothing." },
+    "JP2": { "name": "16U2 spare pins PB4-PB7 (no header fitted)", "what": "Four plated holes for the 16U2's spare port pins. No header is fitted at the factory." },
+    "RESET-EN": { "name": "RESET-EN solder jumper (cut it to stop auto-reset)", "what": "A thin trace in the DTR-to-RESET path. Cut it and opening the serial port no longer resets the board; uploads then need a RESET press at the right moment." },
+    "ICSP1": { "name": "ICSP header for the 16U2", "what": "Programming header for the USB chip: used at the factory, and to rescue a 16U2 whose firmware is broken." },
+    "ICSP": { "name": "ICSP header for the 328P", "what": "SPI programming header for the 328P: burn the bootloader with an external programmer, no USB needed. It also carries D11-D13 for shields." },
+    "X2": { "name": "USB-B socket", "what": "Power (5 V, up to 500 mA through F1) and data for uploads and the serial monitor." },
+    "X1": { "name": "2.1 mm barrel jack, centre positive, 7-12 V", "what": "Feeds VIN through D1 into the 5 V regulator. The datasheet allows 6-20 V; 7-12 V keeps U1 in regulation and cool enough." },
+    "IOH": { "name": "Digital header D8-D13, GND, AREF, SDA, SCL", "what": "D8-D13 plus GND, AREF and a second copy of SDA and SCL (the same pins as A4 and A5). D13 is the L LED; ~9, ~10 and ~11 do PWM." },
+    "IOL": { "name": "Digital header D0-D7", "what": "D0-D7: ~3, ~5 and ~6 do PWM, D2 and D3 take interrupts. D0 and D1 are the serial port shared with USB: keep them free while uploading." },
+    "POWER": { "name": "Power header", "what": "IOREF, RESET, 3.3V, 5V, GND, GND and VIN. Fine for sensors, never for motors: a stalling motor drags 5 V down and the chip resets (brown-out)." },
+    "AD": { "name": "Analog header A0-A5", "what": "A0-A5 into the 10-bit ADC: analogRead() gives 0-1023 for 0-5 V. A4 and A5 are also I2C SDA and SCL." },
+    "R3": { "name": "220 Ω resistor", "what": "Sets the LED current: (5 V − 2 V) / 220 Ω ≈ 14 mA." },
+    "LED1": { "name": "Red LED", "what": "Lights when its pin goes HIGH. The long leg (anode) faces the resistor, the short leg goes to GND." },
+    "SW1": { "name": "Push button", "what": "Joins D2 to GND while pressed. With INPUT_PULLUP the pin reads HIGH at rest and LOW while pressed; the contacts bounce for a few milliseconds." }
+  },
+  "modes": {
+    "blink": {
+      "title": "Blink",
+      "code": {
+        "what": "Blink: the L LED on for 1 s, off for 1 s",
+        "pin": "pin 13 = the L LED",
+        "blocks": "blocks: nothing else runs for 1 s"
+      }
+    },
+    "fast": {
+      "title": "Blink without delay()",
+      "code": {
+        "what": "Blink without delay(): toggle every 200 ms by the clock",
+        "check": "non-blocking: are 200 ms up yet?",
+        "free": "loop() stays free to read sensors, buttons and serial"
+      }
+    },
+    "fade13": {
+      "title": "analogWrite on pin 13 (no PWM there)",
+      "code": {
+        "what": "A fade on pin 13, which has no PWM",
+        "nopwm": "pin 13 has no PWM timer:",
+        "half": "0-127 writes LOW, 128-255 writes HIGH",
+        "fix": "fade on a ~ pin: 3, 5, 6, 9, 10 or 11"
+      }
+    },
+    "hello": {
+      "title": "Serial hello",
+      "code": {
+        "what": "Serial hello: one line a second over USB",
+        "int": "int is 16 bits on the Uno: after 32767 comes -32768",
+        "baud": "the serial monitor must use 9600 baud too"
+      }
+    }
+  },
+  "steps": {
+    "unplug": { "title": "Unplug the USB cable", "body": "The bench starts like a new board: plugged in and running the factory Blink. Never work on a live board, so unplug first." },
+    "strip": { "title": "Strip it to the bare PCB", "body": "Take every part off. What is left is the bare board: copper, solder mask and silkscreen. The ATmega328P sits in a socket, so it lifts out cold and keeps its program.", "refusal": "Unplug the power first: never work on a live board" },
+    "pick-place": { "title": "Pick and place the SMD parts", "body": "A machine puts every surface-mount part on its solder-paste pads: the 16U2, the regulators, the op-amp, the MOSFET, the diodes, the resistor arrays, the capacitors, the LEDs, the polyfuse, the resonator and the reset button. They sit in wet paste, not yet soldered.", "refusal": "Unplug the power first: never work on a live board" },
+    "reflow": { "title": "Reflow the SMD joints", "body": "The board rides through the reflow oven. The paste melts and every SMD joint forms at once, and surface tension pulls slightly crooked parts straight. This is why SMD parts go first: the oven would melt the plastic of the through-hole parts. The oven starts by itself after pick and place." },
+    "low-tht": { "title": "Place the low through-hole parts", "body": "Through-hole parts go in from the lowest to the tallest. First the low ones: the DIP-28 socket SK1 and the two 2x3 ICSP headers. Low parts first, so the board lies flat when you flip it to solder. Use Place a part for each of them.", "refusal": "SMD parts first: run pick and place + reflow. The oven would melt plastic parts" },
+    "tall-tht": { "title": "Place the tall through-hole parts", "body": "Now the tall ones: the USB-B socket X2, the barrel jack X1 and the four female headers (D8-D13, D0-D7, POWER and A0-A5).", "refusal": "Low parts first: with tall parts on, the board rocks and loose parts fall out when you flip it to solder" },
+    "solder": { "title": "Solder the through-hole joints", "body": "Flip the board and solder every through-hole pin: heat the pad and the pin together for 2-3 s, feed in solder, and look for a shiny cone. A dull, grainy blob is a cold joint.", "refusal": "Nothing to solder yet: place a part first" },
+    "chip": { "title": "Press the ATmega328P into its socket", "body": "Last group: the chip goes into the soldered socket, notch toward the ICSP header, pin 1 by the notch. The iron never touched it.", "refusal": "Solder everything first. Never heat a chip sitting in its socket" },
+    "plug": { "title": "Plug in USB", "body": "The ON LED lights at once. The chip kept its program in flash through the strip, so Blink starts again: L on for a second, off for a second." },
+    "upload": { "title": "Upload Serial hello", "body": "Upload a new sketch. The 16U2 toggles DTR, C5 turns that into a reset pulse, Optiboot flashes L and takes the upload at 115200 baud while RX and TX flicker. Then the sketch prints a line a second: watch TX blink and read the serial monitor at 9600 baud.", "refusal": "Plug in USB first: uploads go over the cable" },
+    "exploded": { "title": "Open the exploded view", "body": "Unplug, then lift the layers apart: the SMD parts, the low and the tall through-hole parts, and the chip on top, in the order they went on.", "refusal": "Unplug the power first: never work on a live board" },
+    "chip-backwards": { "title": "Break it: the chip in backwards", "body": "Do it closes the exploded view and turns the ATmega328P round in its socket. Plug in USB and watch the status, then fix it." },
+    "cap-backwards": { "title": "Break it: a capacitor in backwards", "body": "Do it solders PC2, the 47 µF capacitor on 5 V, the wrong way round. Plug in USB and watch it, then fix it." },
+    "chip-missing": { "title": "Break it: no chip in the socket", "body": "Do it pulls the ATmega328P out. Plug in USB, look at the LEDs and try an upload, then put the chip back." },
+    "resonator-missing": { "title": "Break it: leave off the resonator", "body": "Do it takes Y2, the 16 MHz resonator, off the board: one tiny SMD part. Plug in USB and see what still works." },
+    "fuse-missing": { "title": "Break it: leave off the polyfuse", "body": "Do it takes F1 off the board. Plug in USB and watch the LEDs." },
+    "bridge-missing": { "title": "Break it: leave off the USB bridge", "body": "Do it takes the ATmega16U2 off the board. Plug in USB, see what still runs, and try an upload." },
+    "reverse-jack": { "title": "Break it: a reversed jack supply", "body": "Do it plugs a 9 V adapter into the barrel jack with its polarity swapped. Watch what happens, and what does not." },
+    "reverse-vin": { "title": "Break it: a reversed supply on VIN", "body": "Do it wires a 9 V battery to the VIN pin the wrong way round. Compare it with the barrel jack." },
+    "jack-too-high": { "title": "Break it: 24 V on the barrel jack", "body": "Do it plugs a 24 V adapter into the jack, double the top of the 7-12 V range." },
+    "jack-too-low": { "title": "Break it: 4 V on the barrel jack", "body": "Do it plugs a 4 V supply into the jack, well under the 7 V minimum." },
+    "motor-brownout": { "title": "Break it: a motor on the 5V pin", "body": "Do it runs a small DC motor straight from the Uno's 5V and GND pins, on USB power. Watch the ON LED, the status and the serial monitor." },
+    "cold-usb": { "title": "Break it: a cold joint on the USB socket", "body": "Do it leaves the USB socket's 5 V pin with a cold solder joint. Watch the ON LED and the status for a while." },
+    "solder-bridge": { "title": "Break it: a solder bridge from 5V to GND", "body": "Do it drops a blob of solder across the neighbouring 5V and GND pins of the power header. Watch what the polyfuse does." },
+    "blink": { "title": "Finish with Blink", "body": "Every fault is fixed. Upload Blink: the board you built blinks L once a second, the way it left the factory.", "refusal": "Plug in USB first: uploads go over the cable" }
+  },
+  "faults": {
+    "chip-backwards": { "title": "ATmega328P in backwards", "symptom": "FAULT: the chip heats up, the polyfuse warms and nothing runs.", "explanation": "Turned round, the socket's 5 V pin (7) meets the chip's ground pin (22), and the socket's ground meets the chip's VCC: the supply runs backwards through the chip's protection diodes. A few seconds usually survive; left powered, the die cooks.", "fix": "Unplug at once, pull the chip, turn it so its notch faces the ICSP header and press it back in." },
+    "cap-backwards": { "title": "47 µF capacitor in backwards", "symptom": "Pop: PC2 on the 5 V rail vents and smokes.", "explanation": "An aluminium electrolytic works only one way round. Reversed, its oxide layer breaks down, current flows, the electrolyte boils and the can vents.", "fix": "Unplug, take PC2 off with hot air and fit a new one with its minus band where the silkscreen shows it: a vented capacitor is ruined." },
+    "chip-missing": { "title": "No ATmega328P in the socket", "symptom": "ON lights, but L stays dark and nothing runs. An upload fails.", "explanation": "Power reaches every rail, but there is no processor to run a sketch. avrdude gets no answer and stops with stk500_getsync(): not in sync.", "fix": "Unplug, press the chip into its socket with the notch toward the ICSP header, and plug in again." },
+    "resonator-missing": { "title": "16 MHz resonator left off", "symptom": "ON lights, L stays dark, nothing runs.", "explanation": "The 328P's fuses tell it to run from an external 16 MHz clock. With Y2 off there is no clock, so the processor never runs an instruction, not even the bootloader, and uploads fail too.", "fix": "Unplug and solder Y2 back on with hot air: it is a three-pad SMD part." },
+    "fuse-missing": { "title": "Polyfuse F1 left off", "symptom": "USB is plugged in, but nothing lights: no ON LED, no blink.", "explanation": "F1 sits in series between the USB 5 V and the board. Without it the path is open, so no current reaches the board from USB. A barrel-jack supply would still work.", "fix": "Unplug and solder F1 back on with hot air." },
+    "bridge-missing": { "title": "ATmega16U2 left off", "symptom": "The board powers up and the stored sketch runs, but the computer sees no board and every upload fails.", "explanation": "USB power goes through F1 and T1, not through the 16U2, so the board still runs. The 16U2 is what turns USB into serial: without it there is no port to upload to and no Serial.print() on the computer.", "fix": "Unplug and solder the 16U2 back on (its firmware goes in over ICSP1 at the factory), then upload again." },
+    "reverse-jack": { "title": "Barrel-jack supply in backwards", "symptom": "Nothing lights and nothing gets warm.", "explanation": "D1 sits in series with the jack. A reversed supply puts it in reverse bias, so no current flows and VIN stays at 0 V: the protection doing its job.", "fix": "Use a centre-positive 7-12 V adapter (or swap the leads) and plug in again." },
+    "reverse-vin": { "title": "Reversed supply on the VIN pin", "symptom": "FAULT: the 5 V regulator gets hot and the board is damaged.", "explanation": "The VIN header pin joins the board after D1, so nothing blocks a reversed supply there: it hits PC1 and the NCP1117 regulator directly.", "fix": "Unplug and replace the damaged regulator and PC1. Wire the plus lead to VIN and the minus lead to GND, or better, use the barrel jack, which has D1." },
+    "jack-too-high": { "title": "24 V on the barrel jack", "symptom": "FAULT: the 5 V regulator is damaged.", "explanation": "The NCP1117 takes 20 V at most. At 24 V it fails, and a regulator that fails short puts the full input on the 5 V rail and kills both AVRs.", "fix": "Unplug, replace U1 and use a 7-12 V supply." },
+    "jack-too-low": { "title": "4 V on the barrel jack", "symptom": "ON glows dimly, the board keeps resetting and nothing runs.", "explanation": "D1 drops about 0.7 V and the NCP1117 needs about 1.1 V of headroom, so 4 V in leaves about 2.2 V on the 5 V rail. That is under the 328P's 2.7 V brown-out level, so it is held in reset.", "fix": "Use a 7-12 V supply on the jack, or power the board from USB." },
+    "motor-brownout": { "title": "Motor on the 5V pin: brown-out", "symptom": "The board resets over and over: L restarts and the serial banner repeats.", "explanation": "A small DC motor draws about 1 A when it starts or stalls, far more than USB and the 500 mA polyfuse can give. The 5 V rail sags under the 2.7 V brown-out level, the 328P resets, the rail recovers, the sketch starts the motor again: a reset loop.", "fix": "Power motors from their own supply through a driver (Fig. 03, 05 and 06) and join only the grounds." },
+    "cold-usb": { "title": "Cold joint on the USB socket", "symptom": "The ON LED flickers and the board resets at random, worse when the cable moves.", "explanation": "A cold joint is a dull, grainy blob that never wetted the pad. Its contact comes and goes, so the USB 5 V reaches the board in bursts.", "fix": "Reflow the joint: heat pad and pin together, add a little fresh solder with flux, and check for a shiny cone." },
+    "solder-bridge": { "title": "Solder bridge from 5V to GND", "symptom": "Plugged in, everything stays dark and the polyfuse gets warm.", "explanation": "On the power header the 5V and GND pins sit side by side, 2.54 mm apart. A blob of solder across them shorts the supply; F1 trips at about 1 A and protects the laptop's port.", "fix": "Unplug, lift the bridge with solder wick, check with a meter that 5V and GND are no longer joined, and plug in again: F1 resets once it cools." }
+  },
+  "status": {
+    "status": "Status",
+    "powered": "Powered (ON LED)",
+    "pin13": "Pin 13 (L LED)",
+    "rail-5v": "5 V rail",
+    "rail-3v3": "3.3 V rail",
+    "rail-vin": "VIN",
+    "current": "Current draw"
+  },
+  "current": {
+    "usb": "USB, 5 V: 500 mA through the polyfuse",
+    "jack": "Barrel jack, 9 V: about 300 mA before the 5 V regulator overheats",
+    "vin": "VIN pin, 9 V: about 300 mA before the 5 V regulator overheats",
+    "board": "16U2, regulators, op-amp and the ON LED",
+    "mcu": "ATmega328P running at 16 MHz",
+    "led-l": "L LED",
+    "led-ext": "LED on the breadboard"
+  },
+  "tasks": {
+    "reaction-timer": {
+      "title": "Reaction timer",
+      "brief": "Build a reaction-timer game on the board you just built. The LED on pin 13 lights after a random 1 to 3 s; the player presses the button on D2 (wired to GND) as fast as they can, and the time from the LED to the press prints as, for example, Reaction: 312 ms. A press before the LED prints Too soon!. After every press the LED goes out and a new round starts. Catch the press with an interrupt on D2, debounce it, and time everything with millis(), never delay().",
+      "hints": {
+        "1": "attachInterrupt(digitalPinToInterrupt(2), onFall, FALLING) runs onFall the moment D2 falls. Keep the interrupt routine short: note millis() in a volatile variable and set a flag.",
+        "2": "Contacts bounce for a few milliseconds when pressed and again when released. Count an edge only if the pin still reads LOW 20 ms later.",
+        "3": "No delay(): store when the LED should light, millis() + random(1000, 3001), and compare in loop() with (long)(millis() - goAt) >= 0, which survives the millis() roll-over.",
+        "4": "Copy what the interrupt writes with interrupts off (noInterrupts() … interrupts()): an unsigned long is 4 bytes, and the AVR reads it one byte at a time."
+      },
+      "checks": {
+        "1": "Uses attachInterrupt, INPUT_PULLUP and millis(), and never delay()",
+        "2": "The LED stays dark at first",
+        "3": "The LED lights within 3 s",
+        "4": "A press puts the LED out at once and starts a new round",
+        "5": "Prints the reaction time, for example Reaction: 312 ms",
+        "6": "A press before the LED prints Too soon!"
+      },
+      "code": {
+        "starter": "This works, but it is blind: delay() and a polling loop miss presses",
+        "blocks": "blocks: a press now goes unseen",
+        "poll": "polling: it waits here, no interrupt",
+        "pins": "pin 13: the L LED and the LED on the breadboard; D2: button to GND",
+        "isr": "keep an interrupt short: note the time and set a flag",
+        "bounce": "debounce: count the edge only if the button is still down 20 ms later",
+        "seed": "A0 floats, so every game is different"
+      },
+      "world": {
+        "button": "Button on D2"
+      }
+    },
+    "fade-pwm": {
+      "title": "Make the fade real",
+      "brief": "Pin 13 has no PWM timer, so the fade sketch only blinks it. Move the LED to the ~9 pin (the breadboard circuit already has it there) and fade it for real: count the duty up from 0 to 255 and back down to 0, one step every 4 ms, so one full breath takes about 2 s.",
+      "hints": {
+        "1": "analogWrite(9, v) sets the duty: 0 is off and 255 is fully on. Pin 9 switches at about 490 Hz, too fast to see.",
+        "2": "Two for loops: v from 0 up to 255 with delay(4) after each step, then from 255 down to 0.",
+        "3": "analogWrite() makes the pin an output by itself, but pinMode(9, OUTPUT) in setup() says what you mean."
+      },
+      "checks": {
+        "1": "Uses analogWrite() and leaves pin 13 alone",
+        "2": "About half brightness after half a second",
+        "3": "Nearly full brightness at 1 s",
+        "4": "Nearly dark again at 2 s"
+      },
+      "code": {
+        "starter": "The fade from pin 13: move it to a ~ pin so it really fades",
+        "up": "up: 256 steps of 4 ms",
+        "down": "and back down"
+      }
+    }
+  },
+  "quizzes": {
+    "reflow": {
+      "smd-first": { "q": "Why do the SMD parts go on before any through-hole part?", "options": { "1": "The reflow oven would melt the plastic of the sockets, headers and jacks", "2": "SMD parts are the most important ones", "3": "Through-hole parts need the solder paste to dry first" }, "why": "Reflow heats the whole board past the solder's melting point, to about 240 °C. Sockets, headers and the USB jack are plastic, so they go on afterwards, soldered pin by pin." },
+      "self-align": { "q": "In the oven a resistor sits slightly crooked on its pads. What happens?", "options": { "1": "It stays crooked and has to be redone", "2": "The molten solder's surface tension pulls it straight", "3": "It falls off the board" }, "why": "Melting paste wets both pads and its surface tension centres the part. This self-alignment is one reason reflow works so well." }
+    },
+    "socket": {
+      "socket-first": { "q": "Why solder the DIP socket before the ATmega328P goes in?", "options": { "1": "The chip only programs after soldering", "2": "The iron never heats the chip", "3": "Hot sockets grip the chip better" }, "why": "The socket takes the heat. The chip goes in cold afterwards and stays swappable: a dead one is replaced in seconds." },
+      "notch": { "q": "Which way round does the ATmega328P go?", "options": { "1": "Either way: the pins are symmetrical", "2": "Notch toward the USB socket", "3": "Notch toward the ICSP header, pin 1 by the notch" }, "why": "Pin 1 is next to the notch, and the board shows the notch toward the ICSP header. Turned round, 5 V lands on the chip's ground pin." }
+    },
+    "usb": {
+      "bridge": { "q": "Which chip turns USB into serial for uploads?", "options": { "1": "ATmega16U2", "2": "NCP1117", "3": "LMV358" }, "why": "The 16U2 runs USB firmware and talks UART to the 328P. The NCP1117 is the 5 V regulator and the LMV358 is the op-amp." },
+      "auto-reset": { "q": "How does an upload start without anyone pressing RESET?", "options": { "1": "The 328P watches the USB lines", "2": "The 16U2 toggles DTR, and C5 turns that edge into a reset pulse", "3": "avrdude erases the chip first" }, "why": "Opening the port toggles DTR. Through C5 the 328P's RESET dips low, Optiboot starts, flashes L and listens for about a second." },
+      "d0d1": { "q": "Uploads fail with \"not in sync\" while a module is wired to D0 and D1. Why?", "options": { "1": "D0 and D1 are the serial lines the upload uses, and the module fights them", "2": "The module draws too much current", "3": "D0 and D1 have no pull-up resistors" }, "why": "The 16U2 reaches the 328P through D0 and D1, with 1 kΩ in series. Anything driving those pins garbles the upload: unplug it while uploading." }
+    },
+    "brownout": {
+      "motor": { "q": "The Uno resets every time a motor starts. First suspect?", "options": { "1": "A bug in setup()", "2": "The USB cable is too long", "3": "The motor current sags the 5 V rail (brown-out)" }, "why": "Motor inrush pulls 5 V below the brown-out level and the chip resets. Power motors from their own supply through a driver." },
+      "bod": { "q": "At what voltage does the Uno's ATmega328P hold itself in reset?", "options": { "1": "Below about 2.7 V", "2": "Below 4.5 V", "3": "Never: it has no brown-out detector" }, "why": "The Uno's fuses set the brown-out detector to 2.7 V (extended fuse 0xFD). Below that the chip stays in reset; when the supply recovers, the sketch starts again from setup()." }
+    },
+    "end": {
+      "pwm13": { "q": "You analogWrite() a fade to pin 13 and the L LED just snaps on and off. Why?", "options": { "1": "Pin 13 has no PWM hardware", "2": "The LED is burnt out", "3": "delay(8) is too short" }, "why": "Only 3, 5, 6, 9, 10 and 11 have PWM timers. On any other pin analogWrite() writes LOW below 128 and HIGH from 128 up, so the fade becomes a square wave." },
+      "jack-reverse": { "q": "A 9 V adapter goes into the barrel jack with its polarity swapped. What happens?", "options": { "1": "Nothing: D1 blocks it and the board stays dark", "2": "The 5 V regulator burns", "3": "The board runs, just backwards" }, "why": "D1 sits in series with the jack. Reverse-biased, it passes no current, so nothing is damaged. The VIN pin has no such diode." },
+      "two-clocks": { "q": "Why does the Uno have a quartz crystal and a ceramic resonator?", "options": { "1": "One is a spare for the other", "2": "USB needs the crystal's accuracy; the 328P is fine with the cheaper resonator", "3": "The resonator clocks the 3.3 V regulator" }, "why": "Full-speed USB needs about ±0.25 % timing, so the 16U2 gets the crystal Y1. The resonator Y2 (about ±0.5 %) is good enough for the 328P." },
+      "int16": { "q": "On the Uno, int n = 32767; n++; leaves n at what?", "options": { "1": "32768", "2": "-32768", "3": "0" }, "why": "On the 8-bit AVR an int is 16 bits, so 32767 is the largest value and one more wraps to -32768. Use long, or unsigned long for millis()." }
+    }
+  }
+}

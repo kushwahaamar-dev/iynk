@@ -1,0 +1,371 @@
+{
+  "title": "5-inch freestyle quad",
+  "tagline": "The classic first FPV build: design it, build it, smoke-test it, fly it.",
+  "sub": "Betaflight + FPV",
+  "hint": "Design it, build it, smoke-test it, then fly it",
+  "noun": "freestyle quad",
+  "overview": "A 5-inch freestyle quad is the standard first real FPV build. Four brushless motors sit on a carbon True-X frame; a 4-in-1 ESC and a Betaflight flight controller share a 30.5 mm stack in the middle; an analog camera and a 5.8 GHz video transmitter send the picture to your goggles, and an ExpressLRS receiver carries your radio's sticks. The flight controller's PID loop is the same idea as the line follower in the Robotics Lab, run on three axes thousands of times a second. Pick the battery, motors and props here and watch the numbers change, build it part by part, smoke-test the first plug, check the motors with the props off, then fly it in altitude hold, angle and acro.",
+  "practice": "Fly five laps of the gate race in angle mode, then one in acro. Then the bando run: through the gap, through the bando, up to the tower top, down the dive and a soft landing on the pad. On a real build: put a smoke stopper on the first plug, check every motor's direction with the props off, run the failsafe test, and compare your real flight time with the calculator's. Expect less than it says: 3 to 5 minutes of freestyle on a 6S 1100 mAh pack.",
+  "design": {
+    "fixed": {
+      "FRAME": "5-inch carbon frame",
+      "ESC": "45 A 4-in-1 ESC",
+      "FC": "F405 flight controller",
+      "CAM": "Analog FPV camera",
+      "VTX": "5.8 GHz VTX and antenna",
+      "RX": "ExpressLRS 2.4 GHz receiver",
+      "XT60": "XT60 lead and low-ESR capacitor",
+      "TOP": "Top plate, standoffs and screws",
+      "STRAP": "Battery strap and pad"
+    },
+    "verdict": {
+      "over": "{kv} KV on {cells}S spins the props far past what the motors and ESC can take: expect hot motors and a desync.",
+      "weak": "Thrust to weight {tw}:1 is too low for this kind of flying.",
+      "ok": "Parts match. Good all-round build.",
+      "punch": "Parts match. Plenty of punch."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Carbon frame: bottom plate and arms",
+      "what": "A True-X frame: four 5 mm carbon arms on a bottom plate, 225 mm from motor to motor, with a 30.5 x 30.5 mm M3 stack in the middle. Carbon fibre is stiff and light, and it conducts electricity: a bare battery lead or a chafed wire touching it is a short."
+    },
+    "MOTORS": {
+      "name": "4 brushless motors (2306)",
+      "what": "The bell, lined with 14 magnets, spins around fixed copper windings (the stator: 23 mm across and 6 mm tall on a 2306). KV is rpm per volt with no load, so KV times the pack voltage is the top speed: 1750 KV on 6S (22.2 V) is about 38,900 rpm. Each motor bolts down with four M3 screws on a 16 x 16 mm pattern; a screw that is too long reaches the windings and shorts the motor."
+    },
+    "ESC": {
+      "name": "45 A 4-in-1 ESC (AM32)",
+      "what": "Four electronic speed controllers on one 30.5 mm board. Each channel switches a bridge of MOSFETs to turn the pack's DC into three-phase drive for its motor, following the DShot600 commands from the flight controller. It runs AM32 or Bluejay firmware (BLHeli_32 ended in 2024) and, with bidirectional DShot, reports every motor's rpm back on the same wire for the RPM filter."
+    },
+    "WIRES": {
+      "name": "Motor phase wires, soldered to the ESC pads",
+      "what": "Three phase wires per motor, soldered to the A, B and C pads of its ESC channel in any order. Swapping any two of them reverses the motor, but nobody re-solders for that: the direction is set later in the ESC firmware. Cut them short and keep them clear of the props and the carbon edges."
+    },
+    "FC": {
+      "name": "F405 flight controller (Betaflight)",
+      "what": "An STM32F405 (168 MHz) reads its ICM-42688-P gyro thousands of times a second and runs Betaflight's PID loop, which turns your stick commands into four motor commands. The arrow printed on the board must point at the nose: if it points backwards, every correction goes the wrong way and the quad flips the moment it lifts. Turn the board round, or tell Betaflight with set align_board_yaw = 180."
+    },
+    "XT60": {
+      "name": "XT60 pigtail and 1000 µF 35 V low-ESR capacitor",
+      "what": "A male XT60 on 12 AWG red and black leads (the battery carries the female one), and a 1000 µF 35 V low-ESR capacitor across the ESC's battery pads. The capacitor soaks up the voltage spikes from the ESC's switching. It is polarised: the white stripe marks the minus leg, and fitted backwards it vents on the first plug."
+    },
+    "CAM": {
+      "name": "19 mm analog FPV camera, 30° uptilt",
+      "what": "A 19 mm micro camera between the side plates, tilted up 30 degrees: in fast forward flight the quad pitches its nose down, and the uptilt keeps the horizon in view. Its video goes to the flight controller's CAM pad, where the OSD chip writes the battery voltage, the timer and the warnings on top."
+    },
+    "RX": {
+      "name": "ExpressLRS 2.4 GHz receiver (CRSF)",
+      "what": "Links your radio to the flight controller over a full UART: receiver TX to RX2, receiver RX to TX2, plus 5 V and ground, speaking CRSF. Mount its antenna away from the carbon and from the VTX antenna; with two antennas, set them at 90 degrees to each other."
+    },
+    "VTX": {
+      "name": "5.8 GHz analog VTX and antenna",
+      "what": "Sends the camera picture with the OSD to your goggles. It runs from the flight controller's 9 V supply, and Betaflight sets its band, channel and power over SmartAudio on TX1. Never power it without an antenna: it overheats and burns its output stage. How much power you may transmit depends on your country's rules."
+    },
+    "TOP": {
+      "name": "Top plate and 27.5 mm standoffs",
+      "what": "A 2 mm carbon plate on four 27.5 mm aluminium standoffs that closes the stack, protects the electronics and carries the battery pad and strap. Standoffs that are too short crush the stack; in a crash the plate takes the hit, not the flight controller."
+    },
+    "BATT": {
+      "name": "LiPo battery, strap and grip pad",
+      "what": "The heaviest part, strapped on the top plate over the middle so the quad balances. A LiPo cell is 4.2 V full and 3.7 V nominal: land at about 3.5 V per cell, never go below 3.0 V, store at 3.8 V, charge only on a balance charger you are watching, and retire a pack that puffs up."
+    },
+    "PROPS": {
+      "name": "5-inch tri-blade props, 2 CW + 2 CCW",
+      "what": "Five-inch props on M5 shafts. Two spin clockwise and two counter-clockwise (props in: the front edges sweep in towards the camera), so the motor torques cancel and yaw comes from speeding up one diagonal pair. The design picker offers the 5x4.3x3 tri-blade all-rounder, a low-pitch 5.1x2.5x3 for longer flights and a 5x5x3 for more punch. They go on last, after the smoke stopper and the motor direction check, and come off whenever motors spin on the bench."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Lay out the frame",
+      "body": "Bolt the arms to the bottom plate with the stack screws in place, and check every arm is tight: a loose arm shakes the gyro and the quad oscillates."
+    },
+    "motors": {
+      "title": "Mount the four motors",
+      "body": "Four M3 screws each, on the 16 x 16 mm pattern, with the wires pointing to the middle. Use screws that bite 3 to 4 mm: longer ones touch the windings.",
+      "refusal": "The motors bolt to the arms: lay out the frame first."
+    },
+    "esc": {
+      "title": "Fit the 4-in-1 ESC",
+      "body": "On rubber grommets at the bottom of the stack, with the battery pads at the back where the XT60 lead will come in.",
+      "refusal": "The ESC sits on the frame's stack screws: lay out the frame first."
+    },
+    "wires": {
+      "title": "Solder the motor wires",
+      "body": "Cut each motor's three wires to length, tin them and solder them to its channel's pads in any order. Expect at least one motor to spin the wrong way: the motor direction check finds it.",
+      "refusal": "The wires run from the motors to the ESC: fit both first."
+    },
+    "fc": {
+      "title": "Mount the flight controller, arrow forward",
+      "body": "On the stack above the ESC, joined by the 8-pin harness (battery voltage, ground, current, telemetry and the four motor signals). Point the printed arrow at the nose.",
+      "refusal": "The flight controller stacks on the ESC: fit the ESC first."
+    },
+    "xt60": {
+      "title": "Solder the XT60 lead and the capacitor",
+      "body": "Red to BAT+, black to BAT-, then the capacitor across the same pads with its stripe on the minus side. Check with a meter that plus and minus are not shorted before a battery comes near it.",
+      "refusal": "The battery lead solders to the ESC's pads: fit the ESC first."
+    },
+    "cam": {
+      "title": "Fit the camera",
+      "body": "Between the side plates, tilted up 30 degrees, with its video, 5 V and ground wires to the flight controller's CAM pads.",
+      "refusal": "The camera mounts on the frame: lay out the frame first."
+    },
+    "rx": {
+      "title": "Wire the receiver",
+      "body": "Receiver TX to RX2, RX to TX2, 5 V and ground. Bind it to your radio and run the antenna out at the back.",
+      "refusal": "The receiver wires to a flight controller UART: mount the flight controller first."
+    },
+    "vtx": {
+      "title": "Fit the video transmitter",
+      "body": "Video from the flight controller's VTX pad, 9 V and ground, SmartAudio to TX1. Screw the antenna on before it ever gets power.",
+      "refusal": "The VTX takes its video and power from the flight controller: mount it first."
+    },
+    "top": {
+      "title": "Close the stack with the top plate",
+      "body": "Screw the top plate onto the standoffs. Check that nothing is pinched and that no wire hangs where a prop can reach it.",
+      "refusal": "Fit the flight controller, camera, receiver and VTX first: the top plate closes over them."
+    },
+    "batt": {
+      "title": "Strap on the battery",
+      "body": "Centre it on the pad so the quad balances on its middle, strap it tight and keep the lead clear of the props. Do not plug it in yet.",
+      "refusal": "Fit the top plate and the XT60 lead first: the pack sits on one and plugs into the other."
+    },
+    "props": {
+      "title": "Props on, last",
+      "body": "Only after the smoke stopper test and the motor direction check, with the battery unplugged. Clockwise props on the clockwise motors (M1 and M4), counter-clockwise ones on M2 and M3, nuts tight.",
+      "refusal": "Props go on last: run the smoke stopper test and the motor direction check first."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "The pack's female XT60 meets the quad's male one. A 6S pack is 25.2 V full and can push well over 100 A, so this is the one joint that must never short.",
+    "XT60-ESC": "12 AWG leads to the ESC's BAT+ and BAT- pads, with the 1000 µF 35 V low-ESR capacitor across the same pads, stripe to minus.",
+    "ESC-MOTORS": "Three phase wires per motor on its channel's A, B and C pads. Any order spins the motor; two swapped wires reverse it.",
+    "FC-ESC": "One 8-pin harness joins the stack: the four DShot600 motor signals (M1 to M4) go down to the ESC, and battery voltage, ground, the current sensor and ESC telemetry come up to the flight controller, whose 5 V and 9 V regulators run from it. With bidirectional DShot each ESC channel answers on its signal line with the motor's rpm.",
+    "RX-FC": "UART2: receiver TX to RX2, receiver RX to TX2, plus 5 V and ground. Betaflight runs Serial RX on UART2 with the CRSF provider.",
+    "CAM-FC": "Camera video into the CAM pad, with the camera powered from the 5 V supply.",
+    "FC-VTX": "Video with the OSD out of the VTX pad, 9 V power, and SmartAudio on TX1 so Betaflight can set the band, channel and power."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke stopper test",
+      "pass": "The lamp only blinked: no short between plus and minus. Safe to plug the battery in directly.",
+      "fail": "The lamp lit up solid: something is shorted. Here the capacitor is in backwards. Turn it round (stripe to minus) and run the test again before you plug in."
+    },
+    "motors": {
+      "title": "Motor direction check (props off)",
+      "pass": "Every motor spins the way the mixer expects: M1 and M4 clockwise, M2 and M3 counter-clockwise (props in). Now the props can go on.",
+      "fail": "One motor spun the wrong way (its arrow turns red). The check reverses it in the ESC firmware, the way you would in ESC Configurator, instead of re-soldering; with the props on, that motor would have flipped the quad on take-off."
+    },
+    "calibrate": {
+      "title": "Accelerometer calibration",
+      "pass": "Level calibrated on a flat surface: angle mode, altitude hold and the OSD horizon now know where level is, and Betaflight's NO_ACC_CAL arming block is gone.",
+      "fail": "Mount the flight controller and set the quad on a flat surface first. If the arrow points backwards, calibrating will not fix it: turn the board round or set align_board_yaw = 180."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "First setup after flashing",
+      "explain": "Sets the mixer, the board alignment, the motor protocol and the two UARTs. DShot600 is the digital motor protocol; dshot_bidir lets the ESCs report rpm. The serial lines take the port name and a function bitmask (64 = serial receiver, 2048 = SmartAudio). yaw_motors_reversed only tells the mixer which way the props spin; it never changes the motors themselves."
+    },
+    "switches": {
+      "title": "Switches: arm, angle, altitude hold, beeper, turtle",
+      "explain": "aux takes the mode's number, not its name: 0 ARM, 1 ANGLE, 3 ALTHOLD, 13 BEEPER, 35 turtle mode (flip over after crash). The channel counts from 0 = AUX1, and the range is in microseconds. There is no ACRO mode to switch on: acro is what the quad flies when the self-levelling modes are off."
+    },
+    "rpm": {
+      "title": "RPM filter on bidirectional DShot",
+      "explain": "With rpm from every motor, Betaflight places notch filters that follow the motor noise exactly. It needs ESC firmware with bidirectional DShot (AM32, Bluejay); if an ESC does not answer, arming is blocked with DSHOT_TELEM."
+    },
+    "vtx": {
+      "title": "VTX table, band and channel",
+      "explain": "The table lists the frequencies and the SmartAudio power values the transmitter accepts; band 5 channel 1 is Raceband R1 at 5658 MHz. vtx_low_power_disarm keeps the power lowest while you are on the bench."
+    },
+    "failsafe": {
+      "title": "Failsafe: drop",
+      "explain": "When the radio link is lost, stage 1 uses the fallback values (sticks centred, throttle low) for failsafe_delay (15 = 1.5 s), so a short glitch passes. If the link does not come back, stage 2 DROP stops the motors: a falling 5-inch is safer than one flying away. GPS-RESCUE needs a GPS, which this quad does not have."
+    },
+    "alt": {
+      "title": "Altitude hold",
+      "explain": "Since 2025.12 Betaflight can hold height with the barometer. The throttle stick then asks for a climb rate: alt_hold_climb_rate = 22 is the 2.2 m/s the range flies at full stick, and the dead band around the middle holds the height."
+    },
+    "angle": {
+      "title": "Angle mode",
+      "explain": "The flight controller levels the quad when you let go and never tilts it past angle_limit (38 degrees here, the range's number). angle_p_gain is the self-level strength. Older Betaflight called these level_limit and angle_level_strength (p_level before 4.0); those names no longer exist."
+    },
+    "acro": {
+      "title": "Acro rates",
+      "explain": "With ACTUAL rates, rc_rate is the centre sensitivity divided by 10 and srate the full-stick rate divided by 10: 200 degrees a second around the centre and 670 at full stick, the numbers the range flies. Expo softens the middle of the stick for fine control."
+    },
+    "race": {
+      "title": "Lap timer on the OSD",
+      "explain": "osd_tim1 packs the timer source, its precision and an alarm into one number: 2 (last armed) plus 1 x 16 (hundredths) is 18. The _pos value places it: 2048 shows it in OSD profile 1, plus the column, plus 32 per row."
+    },
+    "raceAcro": {
+      "title": "Gate race in acro",
+      "explain": "Racers fly acro with air mode on (Betaflight enables the AIRMODE feature by default), so the PID loop keeps full authority at zero throttle and the quad stays under control when you chop the throttle into a gate. Keep the ANGLE switch low."
+    },
+    "range": {
+      "title": "Range run: altitude hold and the height on the OSD",
+      "explain": "Altitude hold makes the long climb to the tower top easy; the OSD's altitude element (osd_altitude_pos) shows the barometer height so you know when you are above the 10 m slab."
+    }
+  },
+  "flight": {
+    "modes": {
+      "alt": {
+        "title": "Altitude hold (easy)",
+        "hint": "W and S climb and descend, and the quad holds its height when you let go. The arrows tilt it and it levels again; A and D yaw. Space arms."
+      },
+      "angle": {
+        "title": "Angle mode",
+        "hint": "Self-levelling up to 38 degrees. W and S move the throttle and it stays where you leave it; the arrows tilt, A and D yaw."
+      },
+      "acro": {
+        "title": "Acro (rate) mode",
+        "hint": "What freestyle pilots fly: the sticks set how fast it rotates (up to 670 degrees a second) and nothing levels it. Let go and it keeps its angle."
+      },
+      "race": {
+        "title": "Gate race (angle)",
+        "hint": "Five gates in order. The clock starts at gate 1, and every lap after the first is a flying lap."
+      },
+      "raceAcro": {
+        "title": "Gate race (acro)",
+        "hint": "The same five gates in acro, the way racers fly them. Throttle stays where you leave it."
+      },
+      "range": {
+        "title": "Range: Freestyle bando",
+        "hint": "Thread the gap, fly through the bando, top the tower, dive it and land on the pad. Altitude hold does the climb for you."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Radio link lost: for 1.5 s the sticks go to their fallback values (centred, throttle low), then DROP stops the motors and the quad falls.",
+      "low-battery": "Below 3.5 V per cell the OSD flashes LOW BATTERY: land now.",
+      "battery-empty": "Below 3.2 V per cell under load the pack collapses and the ESCs cut out, wherever the quad is."
+    },
+    "controls": "Keyboard: Space arms and disarms, W and S throttle, the arrows pitch and roll, A and D yaw, V switches to FPV, R puts the quad back on the pad. On a phone the left stick is throttle and yaw and the right stick is pitch and roll. A gamepad works in Mode 2."
+  },
+  "courses": {
+    "race": {
+      "title": "Gate race",
+      "brief": "Five gates on a loop through the open ground: the south lawn, the old road, round behind the gap and back down the west side. Fly them in order; the clock starts at gate 1."
+    },
+    "bando": {
+      "title": "Freestyle bando",
+      "brief": "Thread the gap between the two walls, fly through the bando's ground floor, climb to the top of the tower, dive down its face and land softly on the pad.",
+      "goals": {
+        "1": "THE GAP",
+        "2": "BANDO",
+        "3": "TOWER TOP",
+        "4": "DIVE",
+        "5": "LAND"
+      }
+    }
+  },
+  "quizzes": {
+    "power": {
+      "cap": {
+        "q": "What does the big capacitor on the XT60 lead do?",
+        "options": {
+          "1": "Stores energy for longer flights",
+          "2": "Soaks up the voltage spikes from the ESC's switching",
+          "3": "Filters noise out of the video only"
+        },
+        "why": "The ESC switches tens of amps on and off thousands of times a second, and the long battery leads turn that into voltage spikes. A low-ESR capacitor right at the ESC pads absorbs them before they kill a MOSFET or reset the electronics. 1000 µF holds far too little energy to matter for flight time."
+      },
+      "xt60": {
+        "q": "Which XT60 goes on the quad's lead?",
+        "options": {
+          "1": "The male one, with exposed pins: the battery has the female",
+          "2": "The female one, so the quad's side is covered",
+          "3": "Either: they are the same"
+        },
+        "why": "The battery always carries the female XT60 with its recessed sockets, so a loose pack in your bag cannot short across its pins. The quad and the charger leads carry the male."
+      },
+      "smoke": {
+        "q": "Why use a smoke stopper on the first plug?",
+        "options": {
+          "1": "It charges the battery gently",
+          "2": "It limits the current, so a short lights its lamp instead of burning the ESC",
+          "3": "It tests the motors' direction"
+        },
+        "why": "A smoke stopper puts a lamp or a fuse in series with the battery. With a solder bridge or a reversed part the lamp lights and the current stays at an amp or two; plugged straight in, the same short has the whole pack behind it."
+      }
+    },
+    "stack": {
+      "arrow": {
+        "q": "The arrow on the flight controller points backwards. What happens on take-off?",
+        "options": {
+          "1": "Nothing: the gyro does not care",
+          "2": "Every correction goes the wrong way and it flips at once",
+          "3": "It just flies slower"
+        },
+        "why": "Betaflight assumes the arrow points at the nose. Mounted backwards, a tilt to the left reads as a tilt to the right, so the PID loop pushes the wrong way and the quad flips the moment it lifts. Turn the board round, or set align_board_yaw = 180."
+      },
+      "dshot": {
+        "q": "What does the flight controller send down each motor signal wire?",
+        "options": {
+          "1": "Three-phase power for the motor",
+          "2": "A digital DShot600 throttle command; with bidirectional DShot the motor's rpm comes back",
+          "3": "The battery voltage"
+        },
+        "why": "The flight controller sends a digital throttle value per motor (DShot600 runs at 600 kbit/s); the ESC makes the three-phase drive itself. With dshot_bidir = ON the ESC answers on the same wire with the rpm, which feeds Betaflight's RPM filter."
+      }
+    },
+    "props": {
+      "last": {
+        "q": "Why do the props go on last?",
+        "options": {
+          "1": "They are fragile",
+          "2": "A motor test or a short with props on can throw the quad at you",
+          "3": "They block the camera"
+        },
+        "why": "A 5-inch prop at full speed cuts deep. Every bench test that spins the motors, and every first plug that might find a fault, is done props off; they go on only when the smoke stopper and motor direction checks have passed."
+      },
+      "torque": {
+        "q": "Why do two props spin clockwise and two counter-clockwise?",
+        "options": {
+          "1": "So the motor torques cancel, and yaw comes from speeding up one diagonal pair",
+          "2": "To make the quad quieter",
+          "3": "So all four push air the same way"
+        },
+        "why": "Each spinning prop twists the frame the other way. With the diagonal pairs turning in opposite directions the twists cancel in a hover; to yaw, Betaflight speeds up one pair and slows the other."
+      }
+    },
+    "flight": {
+      "acro": {
+        "q": "You let go of the sticks in acro mode. The quad...",
+        "options": {
+          "1": "levels itself",
+          "2": "keeps whatever angle it had",
+          "3": "lands"
+        },
+        "why": "In acro the sticks command a rotation rate, and centred sticks mean 'stop rotating', so the quad holds its last attitude. Angle mode is the one that levels when you let go, up to angle_limit (38 degrees here)."
+      },
+      "failsafe": {
+        "q": "The radio link drops in the air and failsafe_procedure is DROP. What does the quad do?",
+        "options": {
+          "1": "Hovers in place until the link comes back",
+          "2": "Centres the sticks and cuts the throttle for failsafe_delay (1.5 s), then stops the motors",
+          "3": "Flies home"
+        },
+        "why": "Stage 1 bridges a short glitch: for failsafe_delay (15 = 1.5 s) Betaflight uses the fallback values, sticks centred and throttle low. If the link is still gone, stage 2 DROP disarms and the quad falls, which is safer than one that flies away. Flying home needs a GPS and GPS-RESCUE."
+      },
+      "lipo": {
+        "q": "At what battery voltage do you land?",
+        "options": {
+          "1": "When the OSD shows about 3.5 V per cell",
+          "2": "When it reaches 3.0 V per cell",
+          "3": "When the quad starts to feel slow"
+        },
+        "why": "Every minute below about 3.5 V per cell under load ages the pack, and below 3.0 V per cell a LiPo is damaged. Betaflight warns at 3.5 V per cell by default (vbat_warning_cell_voltage = 350)."
+      },
+      "angle": {
+        "q": "Which CLI line caps angle mode at 38 degrees of tilt?",
+        "options": {
+          "1": "set angle_limit = 38",
+          "2": "set level_limit = 38",
+          "3": "set p_level = 38"
+        },
+        "why": "angle_limit (10 to 80 degrees, default 60) is the current name. level_limit was its name up to Betaflight 4.4, and p_level was the self-level strength in 3.x (today angle_p_gain); neither exists any more."
+      }
+    }
+  }
+}

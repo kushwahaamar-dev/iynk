@@ -1,0 +1,9 @@
+# Board Bench engine: every board, module, part and robotics page uses this list (// @cf use engine/bench.list)
+engine/bench.js
+engine/bench-kinds.js
+engine/bench-bb.js
+engine/sheets.js
+parts/breadboard.js
+parts/led.js
+parts/resistor.js
+parts/wire.js

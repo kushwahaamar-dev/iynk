@@ -1,0 +1,178 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+const flags = vi.hoisted(() => ({ search: true }));
+
+vi.mock("@/lib/server/env", () => ({
+  env: { SERPAPI_KEY: "route-test-key", SERPAPI_MONTHLY_BUDGET: 500 },
+  features: flags,
+}));
+// connection() needs a request scope that a unit test doesn't have.
+vi.mock("next/server", () => ({ connection: async () => {} }));
+
+import * as eventsRoute from "./events/route";
+import * as nearbyRoute from "./nearby/route";
+import * as offersRoute from "./offers/route";
+import * as videosRoute from "./videos/route";
+import * as webRoute from "./web/route";
+
+let counter = 0;
+// A fresh IP per request keeps the per-IP rate limiter out of the way, except where a test wants it.
+const get = (path: string, ip = `10.0.0.${++counter % 250}`) => new Request(`http://localhost${path}`, { headers: { "x-real-ip": ip } });
+const post = (path: string, body: unknown, headers: Record<string, string> = {}) =>
+  new Request(`http://localhost${path}`, {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-real-ip": `10.1.0.${++counter % 250}`, ...headers },
+    body: JSON.stringify(body),
+  });
+
+const fetchMock = vi.fn<typeof fetch>();
+
+beforeEach(() => {
+  flags.search = true;
+  fetchMock.mockReset();
+  vi.stubGlobal("fetch", fetchMock);
+});
+afterEach(() => vi.unstubAllGlobals());
+
+const engineOf = (input: string | URL | Request) => new URL(String(input)).searchParams;
+
+describe("/api/search/offers", () => {
+  it("prices every part across the stores", async () => {
+    fetchMock.mockImplementation(async (input) => {
+      const p = engineOf(input);
+      if (p.get("engine") === "google_shopping") {
+        return Response.json({
+          shopping_results: [{ title: "SG90 9g micro servo", extracted_price: 3.2, price: "$3.20", product_link: "https://g.example/1", source: "RobotShop" }],
+        });
+      }
+      if (p.get("engine") === "amazon") {
+        return Response.json({ organic_results: [{ title: "SG90 servo 4pcs", extracted_price: 9.99, price: "$9.99", link_clean: "https://www.amazon.com/dp/X/" }] });
+      }
+      return Response.json({ organic_results: [] });
+    });
+    const res = await offersRoute.POST(post("/api/search/offers", { parts: [{ key: "servo", query: "SG90 servo", qty: 4 }] }));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.fetchedAt).toMatch(/^\d{4}-\d\d-\d\dT/);
+    expect(body.partial).toBeUndefined();
+    expect(body.parts).toHaveLength(1);
+    const [part] = body.parts;
+    expect(part.key).toBe("servo");
+    // Four singles at $3.20 = $12.80 lose to one 4-pack at $9.99.
+    expect(part.offers[part.best]).toMatchObject({ source: "amazon", price: 9.99, pack: 4 });
+    expect(new Set(fetchMock.mock.calls.map(([u]) => engineOf(u).get("engine")))).toEqual(new Set(["google_shopping", "amazon", "ebay"]));
+  });
+
+  it("accepts the one-part GET form", async () => {
+    fetchMock.mockResolvedValue(Response.json({ shopping_results: [] }));
+    const res = await offersRoute.GET(get("/api/search/offers?q=XT60+connector&qty=2&sources=google_shopping"));
+    expect(res.status).toBe(200);
+    expect((await res.json()).parts).toEqual([{ key: "q", offers: [] }]);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("rejects bad input with 400 and never calls SerpApi", async () => {
+    const cases = [
+      {},
+      { parts: [] },
+      { parts: [{ key: "a", query: "x", qty: 1 }] },
+      { parts: [{ key: "a b", query: "servo", qty: 1 }] },
+      { parts: [{ key: "a", query: "servo", qty: 0 }] },
+      { parts: [{ key: "a", query: "servo", qty: 1, sources: ["bing"] }] },
+      { parts: [{ key: "a", query: "servo", qty: 1 }, { key: "a", query: "led", qty: 1 }] },
+      { parts: Array.from({ length: 26 }, (_, i) => ({ key: `p${i}`, query: "servo", qty: 1 })) },
+      { parts: [{ key: "a", query: "servo", qty: 1 }], country: "uk" },
+    ];
+    for (const body of cases) {
+      const res = await offersRoute.POST(post("/api/search/offers", body));
+      expect(res.status, JSON.stringify(body).slice(0, 60)).toBe(400);
+      expect((await res.json()).error.code).toBe("bad_request");
+    }
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("answers 503 not_configured when search is off", async () => {
+    flags.search = false;
+    const res = await offersRoute.POST(post("/api/search/offers", { parts: [{ key: "a", query: "servo", qty: 1 }] }));
+    expect(res.status).toBe(503);
+    expect((await res.json()).error.code).toBe("not_configured");
+  });
+
+  it("refuses other origins", async () => {
+    const res = await offersRoute.POST(post("/api/search/offers", { parts: [] }, { origin: "https://evil.example" }));
+    expect(res.status).toBe(403);
+  });
+
+  it("maps upstream failure to 502 without leaking SerpApi's answer", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    fetchMock.mockImplementation(async () => Response.json({ error: "Invalid API key route-test-key" }, { status: 401 }));
+    const res = await offersRoute.POST(post("/api/search/offers", { parts: [{ key: "a", query: "unique 502 part", qty: 1 }] }));
+    expect(res.status).toBe(502);
+    const text = await res.text();
+    expect(text).toContain("upstream_failed");
+    expect(text).not.toContain("route-test-key");
+  });
+});
+
+describe("/api/search/nearby", () => {
+  it("finds places around a point", async () => {
+    fetchMock.mockResolvedValue(Response.json({ local_results: [{ title: "ATX Hackerspace", address: "9701 Dessau Rd", rating: 4.8, reviews: 120 }] }));
+    const res = await nearbyRoute.GET(get("/api/search/nearby?kind=makerspace&ll=%4030.2672,-97.7431,13z&hl=es"));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.places[0]).toMatchObject({ title: "ATX Hackerspace", rating: 4.8, mapsUrl: expect.stringContaining("google.com/maps") });
+    expect(engineOf(fetchMock.mock.calls[0][0]).get("hl")).toBe("es");
+  });
+
+  it("needs a kind and a place or a point", async () => {
+    for (const q of ["?near=Austin", "?kind=makerspace", "?kind=bakery&near=Austin", "?kind=hobby&ll=@200,0,13z"]) {
+      expect((await nearbyRoute.GET(get(`/api/search/nearby${q}`))).status, q).toBe(400);
+    }
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("takes POST bodies too", async () => {
+    fetchMock.mockResolvedValue(Response.json({ local_results: [] }));
+    const res = await nearbyRoute.POST(post("/api/search/nearby", { kind: "electronics", near: "Round Rock, TX" }));
+    expect(await res.json()).toEqual({ places: [] });
+  });
+});
+
+describe("/api/search/events, videos, web", () => {
+  it("lists events near a place", async () => {
+    fetchMock.mockResolvedValue(
+      Response.json({ events_results: [{ title: "Drone race night", date: { when: "Sat, Oct 31, 7 PM" }, venue: { name: "Hall" }, link: "https://e.example/1" }] }),
+    );
+    const res = await eventsRoute.GET(get("/api/search/events?near=Austin,+TX&q=drone+racing"));
+    expect((await res.json()).events[0]).toMatchObject({ title: "Drone race night", venue: "Hall" });
+    expect(engineOf(fetchMock.mock.calls[0][0]).get("q")).toBe("drone racing events in Austin, TX");
+  });
+
+  it("finds videos", async () => {
+    fetchMock.mockResolvedValue(
+      Response.json({ video_results: [{ title: "Build a 5 inch quad", link: "https://www.youtube.com/watch?v=1", channel: { name: "Maker" }, thumbnail: { static: "https://i.ytimg.com/1.jpg" } }] }),
+    );
+    const res = await videosRoute.GET(get("/api/search/videos?q=build+5+inch+quad"));
+    expect((await res.json()).videos).toHaveLength(1);
+  });
+
+  it("searches the web and reads pages on request", async () => {
+    fetchMock.mockImplementation(async (input) => {
+      const p = engineOf(input);
+      if (p.get("engine") === "google") return Response.json({ organic_results: [{ title: "L298N datasheet", link: "https://st.example/l298.pdf", snippet: "Dual full bridge" }] });
+      return Response.json({ page_information: { title: "L298" }, text_content: { full: "Supply voltage up to 46 V" } });
+    });
+    const res = await webRoute.GET(get("/api/search/web?q=L298N+datasheet&extract=1"));
+    const body = await res.json();
+    expect(body.results[0].title).toBe("L298N datasheet");
+    expect(body.extracts[0].text).toContain("46 V");
+    expect((await webRoute.GET(get("/api/search/web?q=L298N&extract=maybe"))).status).toBe(400);
+  });
+
+  it("rate-limits one caller", async () => {
+    fetchMock.mockResolvedValue(Response.json({ video_results: [] }));
+    let last = 0;
+    for (let i = 0; i < 31; i++) last = (await videosRoute.GET(get("/api/search/videos?q=solder+tips", "10.9.9.9"))).status;
+    expect(last).toBe(429);
+  });
+});
