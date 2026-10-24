@@ -83,7 +83,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 ~16:20 CDT (machine clock).
+- **Updated:** 2026-10-24 16:13 CDT (machine clock).
 - **Driver:** Jagrati Kumari, Mac RVW-F0096FW3J2M, since 2026-10-24 16:09 CDT.
 - **Phase:** 0 is done: the audit and the plan. Nothing is being built yet.
 - **Plan:** `docs/hacktx/BUILD-PLAN.md`, written from the six audits in `docs/audit/` (boards, robotics, drones,
@@ -93,7 +93,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 - **Checks at the last code commit:** typecheck 34 errors; eslint clean; vitest 15 failed of 1243; `next build`
   fails prerendering `/en/boards/esp32-s3-devkitc-1`.
 - **Decided:** D1 (tracks, above). Amar: "Everything else looks fine."
-- **Decided by Jagrati (~16:20):** D2 confirmed (the plan's default). D4: API keys stay placeholders for now;
+- **Decided by Jagrati (16:13):** D2 confirmed (the plan's default). D4: API keys stay placeholders for now;
   `.env.local` on Jagrati's Mac is `.env.example` with empty values. Vultr, Vercel env upload and Tiger are not
   approved yet, so gate 1 runs without live Meta/SerpApi and rooms use the one-browser fallback until keys arrive.
   D3 (devnet SOL) is asked only when phase 4 starts.
@@ -108,7 +108,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Checkpoint log (newest first)
 
-- 2026-10-24 ~16:20 CDT (Jagrati): D2 confirmed; D4 keys left as placeholders (CONTEXT.md §3). Waiting for
+- 2026-10-24 16:13 CDT (Jagrati): D2 confirmed; D4 keys left as placeholders (CONTEXT.md §3). Waiting for
   "autonomous mode" to start phase 1.
 
 - 2026-10-24 16:09 CDT (Jagrati): Jagrati takes over as driver on RVW-F0096FW3J2M. Next: confirm D2 and collect
