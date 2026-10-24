@@ -1076,17 +1076,38 @@ function installRos(rt: PyRt, onRos: (m: RosMessage) => void): void {
       return null;
     },
   });
+  // The bench prints with RCUTILS_CONSOLE_OUTPUT_FORMAT="[{severity}] [{name}]: {message}" (no timestamp).
   const Logger = nclass('RcutilsLogger', Object.fromEntries(['info', 'warn', 'warning', 'error', 'debug', 'fatal'].map((lvl) => [lvl, (self: PyInstance, [msg]: PyValue[]) => {
-    const sec = (w.now / 1e6 + 1_793_000_000).toFixed(9);
-    w.print(`[${lvl === 'warning' ? 'WARN' : lvl.toUpperCase()}] [${sec}] [${self.native.name}]: ${rt.str(msg)}\n`);
+    w.print(`[${lvl === 'warning' ? 'WARN' : lvl.toUpperCase()}] [${self.native.name}]: ${rt.str(msg)}\n`);
     return null;
   }])));
+  const Parameter = nclass('Parameter', {}, {
+    name: new PyProp((self) => self.native.name),
+    value: new PyProp((self) => self.native.value),
+  });
+  const parameter = (name: string, value: PyValue) => {
+    const p = new PyInstance(Parameter);
+    p.native = { name, value };
+    return p;
+  };
   const Node = nclass('Node', {
     __init__: (self, [name]) => {
       if (!inited) throw pyErr('RuntimeError', 'rclpy.init() must be called before creating a Node');
-      self.native = { name: String(name) };
+      self.native = { name: String(name), params: new Map<string, PyValue>() };
       return null;
     },
+    declare_parameter: (self, [name, value]) => {
+      const key = rt.str(name);
+      if (self.native.params.has(key)) throw pyErr('RuntimeError', `parameter '${key}' has already been declared`);
+      self.native.params.set(key, value ?? null);
+      return parameter(key, value ?? null);
+    },
+    get_parameter: (self, [name]) => {
+      const key = rt.str(name);
+      if (!self.native.params.has(key)) throw pyErr('RuntimeError', `parameter '${key}' is not declared: call declare_parameter first`);
+      return parameter(key, self.native.params.get(key) ?? null);
+    },
+    has_parameter: (self, [name]) => self.native.params.has(rt.str(name)),
     create_publisher: (_self, [type, topic]) => {
       const p = new PyInstance(Publisher);
       p.native = { topic: String(topic).startsWith('/') ? String(topic) : '/' + String(topic), type: type instanceof PyClass ? String(type.dict.get('_type') ?? type.name) : 'msg' };
@@ -1130,14 +1151,29 @@ function installRos(rt: PyRt, onRos: (m: RosMessage) => void): void {
       if (w.now >= deadline) return null;
     }
   };
+  const timeoutOf = (v: PyValue | undefined) => (v === undefined || v === null ? Infinity : toNum(v) * 1e6);
+  // One process, one callback queue: every executor runs the same timers and subscriptions in order.
+  const executor = (name: string) => {
+    const cls = nclass(name, {
+      __init__: () => null,
+      add_node: () => null,
+      remove_node: () => null,
+      shutdown: () => { timers.forEach((t) => (t.live = false)); return null; },
+    });
+    cls.dict.set('spin', natGen('spin', () => spinGen(false, Infinity)));
+    cls.dict.set('spin_once', natGen('spin_once', (a, kw) => spinGen(true, timeoutOf(kw.timeout_sec ?? a[1]))));
+    return cls;
+  };
   rt.modules.set('rclpy', () => mod('rclpy', {
     init: nat('init', () => { inited = true; return null; }),
     ok: nat('ok', () => inited),
     shutdown: nat('shutdown', () => { inited = false; return null; }),
+    try_shutdown: nat('try_shutdown', () => { inited = false; return null; }),
     spin: natGen('spin', () => spinGen(false, Infinity)),
-    spin_once: natGen('spin_once', (_a, kw) => spinGen(true, kw.timeout_sec === undefined ? Infinity : toNum(kw.timeout_sec) * 1e6)),
+    spin_once: natGen('spin_once', (_a, kw) => spinGen(true, timeoutOf(kw.timeout_sec))),
   }));
   rt.modules.set('rclpy.node', () => mod('rclpy.node', { Node }));
+  rt.modules.set('rclpy.executors', () => mod('rclpy.executors', { SingleThreadedExecutor: executor('SingleThreadedExecutor'), MultiThreadedExecutor: executor('MultiThreadedExecutor') }));
   rt.modules.set('geometry_msgs', () => mod('geometry_msgs', {}));
   rt.modules.set('geometry_msgs.msg', () => mod('geometry_msgs.msg', { Twist, Vector3 }));
   rt.modules.set('std_msgs', () => mod('std_msgs', {}));

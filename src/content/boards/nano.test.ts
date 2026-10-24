@@ -1,13 +1,14 @@
 // @vitest-environment node
-// The Nano's content against its figure (figures/boards/nano.js) and the interpreter: shared ids must match, and
-// every lesson's starter code must compile and pass its own checks on the scripted run.
+// The Nano's content against its figure (figures/boards/nano.js) and the app's one check path: shared ids must
+// match, and every lesson's code must pass its own checks on the scripted run (runHeadless + evaluateChecks).
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import nano from './nano';
 import en from '@/i18n/content/en/boards/nano.json';
-import { createRun, getProfile, resolvePin } from '@/lib/interp';
-import type { Check, Lesson, RunTrace } from '@/content/schema';
+import type { Lesson } from '@/content/schema';
+import { defaultParams, renderTemplate, resolveText } from '@/lib/boardlab/template';
+import { lessonJob, runChecks } from '@/lib/interp';
 
 const figure = readFileSync(join(process.cwd(), 'figures/boards/nano.js'), 'utf8');
 const figureParts = new Set([...figure.matchAll(/\{ id: '([A-Z0-9]+)', kind: '/g)].map((m) => m[1]));
@@ -24,117 +25,8 @@ const text = (key: string): string => {
   return v;
 };
 
-/** The starter code as the editor shows it: default chips, English comments. */
-function render(lesson: Lesson): string {
-  return lesson.code.source
-    .replace(/\{\{p:([^}]+)\}\}/g, (_, id: string) => {
-      const p = lesson.params.find((q) => q.id === id);
-      if (!p) throw new Error(`${lesson.id}: no param ${id}`);
-      if (p.kind === 'number') return String(p.default);
-      if (p.kind === 'toggle') return p.default ? p.code.on : p.code.off;
-      const o = p.options.find((q) => q.value === p.default);
-      if (!o) throw new Error(`${lesson.id}: param ${id} has no default option`);
-      return o.code;
-    })
-    .replace(/\{\{t:([^}]+)\}\}/g, (_, key: string) => text(key));
-}
-
-const profile = getProfile('nano');
-const pinNo = (net: string): number => {
-  const d = /^D(\d+)$/.exec(net);
-  const n = d ? Number(d[1]) : resolvePin(profile, net);
-  if (n === undefined) throw new Error(`unknown pin ${net}`);
-  return n;
-};
-
-/** A headless run of the starter code with the lesson's world script, recorded as a RunTrace. */
-function runLesson(lesson: Lesson): { trace: RunTrace; source: string } {
-  const source = render(lesson);
-  const devices = lesson.world.inputs.flatMap((i) => (i.device.kind === 'mpu6050' ? (['mpu6050'] as const) : []));
-  const run = createRun({ board: 'nano', source, devices: [...devices] });
-  const trace: RunTrace = { ms: 0, error: null, serial: [], pins: {}, figure: [], inputs: [] };
-  let line = '';
-  run.on('serial', (chunk) => {
-    for (const ch of chunk) {
-      if (ch === '\n') { trace.serial.push({ t: run.status.t, text: line.replace(/\r$/, '') }); line = ''; } else line += ch;
-    }
-  });
-  run.on('error', (e) => { trace.error ??= { line: e.line, message: e.message }; });
-  run.on('pins', (snap) => {
-    for (const [n, v] of Object.entries(snap.pins)) {
-      const list = (trace.pins[n] ??= []);
-      const val = v.duty !== undefined ? v.duty : v.level;
-      const mode = v.duty !== undefined ? 'pwm' : 'out';
-      const last = list[list.length - 1];
-      if (!last || last.v !== val || last.mode !== mode) list.push({ t: snap.t, v: val, mode });
-    }
-  });
-  const apply = (input: string, value: number) => {
-    const w = lesson.world.inputs.find((i) => i.id === input);
-    if (!w) throw new Error(`${lesson.id}: no world input ${input}`);
-    const pin = pinNo(w.pins[0]);
-    if (w.device.kind === 'button') {
-      const up = w.device.pull === 'internal-up' || w.device.pull === 'external-up';
-      run.input(pin, value ? (up ? 0 : 1) : up ? null : 0);
-    } else if (w.device.kind === 'pot') run.analog(pin, (5 * (value - w.min)) / (w.max - w.min));
-  };
-  for (const w of lesson.world.inputs) if (w.device.kind !== 'mpu6050') apply(w.id, w.default);
-  const script = [...lesson.world.script].sort((a, b) => a.t - b.t);
-  run.start();
-  for (let t = 0; t < lesson.runMs && !trace.error; t += 10) {
-    while (script.length && script[0].t <= t) {
-      const ev = script.shift()!;
-      apply(ev.input, ev.value);
-      trace.inputs.push(ev);
-    }
-    run.step(10);
-  }
-  for (const d of run.diagnostics) if (d.kind !== 'runtime') trace.error ??= { line: d.line, message: d.message };
-  trace.ms = run.status.t;
-  // exact digital edges from the world's edge trace, in ms
-  for (const [us, n, level] of run.world.trace) {
-    const list = (trace.pins['e' + n] ??= []);
-    list.push({ t: us / 1000, v: level, mode: 'out' });
-  }
-  return { trace, source };
-}
-
-const levelAt = (edges: { t: number; v: number }[], t: number) => {
-  let v = 0;
-  for (const e of edges) { if (e.t > t) break; v = e.v; }
-  return v;
-};
-
-/** The subset of src/lib/interp/checks.ts the Nano lessons use, evaluated on the recorded trace. */
-function passes(c: Check, trace: RunTrace, source: string): boolean {
-  switch (c.kind) {
-    case 'runs': return !trace.error && trace.ms >= c.minMs;
-    case 'code': return c.must.every((m) => source.includes(m)) && c.mustNot.every((m) => !source.includes(m));
-    case 'serial': {
-      const re = c.regex ? new RegExp(c.match) : null;
-      return trace.serial.filter((l) => (c.byMs === undefined || l.t <= c.byMs) && (re ? re.test(l.text) : l.text.includes(c.match))).length >= c.minCount;
-    }
-    case 'pin-toggles': {
-      const edges = trace.pins['e' + pinNo(c.pin)] ?? [];
-      const rises = edges.filter((e, i) => e.v === 1 && (i === 0 || edges[i - 1].v === 0)).map((e) => e.t);
-      let cycles = 0;
-      for (let i = 1; i < rises.length; i++) { const p = rises[i] - rises[i - 1]; if (p >= c.periodMs[0] && p <= c.periodMs[1]) cycles++; }
-      return cycles >= c.minCycles;
-    }
-    case 'pwm': {
-      const list = (trace.pins[String(pinNo(c.pin))] ?? []).filter((e) => e.t <= c.atMs);
-      const last = list[list.length - 1];
-      // analogWrite(pin, 0) and (pin, 255) drive the pin LOW or HIGH instead of PWM, as the AVR core does
-      return !!last && last.v >= c.duty[0] && last.v <= c.duty[1];
-    }
-    case 'responds': {
-      const edges = trace.pins['e' + pinNo(c.pin)] ?? [];
-      for (let t = c.after.t; t <= c.after.t + c.withinMs; t += 1) { const v = levelAt(edges, t); if (v >= c.v[0] && v <= c.v[1]) return true; }
-      return false;
-    }
-    default: throw new Error(`check kind ${c.kind} is not used by the Nano lessons`);
-  }
-}
+/** The lesson code as the editor shows it: default chips, English comments. */
+const reference = (lesson: Lesson): string => resolveText(renderTemplate(lesson.code.source, lesson.params, defaultParams(lesson.params)).code, text);
 
 describe('nano content', () => {
   it('names only parts the figure draws', () => {
@@ -180,10 +72,11 @@ describe('nano content', () => {
   });
 
   for (const lesson of nano.lessons) {
-    it(`lesson ${lesson.n} (${lesson.id}): starter code compiles and passes its checks`, () => {
-      const { trace, source } = runLesson(lesson);
+    it(`lesson ${lesson.n} (${lesson.id}): the code passes its checks through the app check path`, () => {
+      const { trace, results } = runChecks(lessonJob(nano, lesson, reference(lesson)));
       expect(trace.error).toBeNull();
-      for (const c of lesson.checks) expect(passes(c, trace, source), `${lesson.id}: ${text(c.label)}\n${trace.serial.slice(0, 8).map((l) => l.text).join('\n')}`).toBe(true);
+      const failed = lesson.checks.filter((_, i) => !results[i].ok).map((c) => text(c.label));
+      expect(failed, trace.serial.slice(0, 8).map((l) => l.text).join('\n')).toEqual([]);
       for (const sample of lesson.serial.sample) expect(trace.serial.map((l) => l.text), `${lesson.id} sample`).toContain(sample);
     });
   }

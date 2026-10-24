@@ -7,6 +7,11 @@ docs/DECISIONS.md.
 
 ## 0. Change log (newest first; after 14:00 CDT Oct 24 schema and id changes are additive only)
 
+- v1.3 Oct 24 (P1-checks): additive, no schema.ts change. Checks run as a `CheckJob` (`lessonJob`, `taskJob`) through
+  `runChecks`; the UI calls `startChecks`, which runs that in a Web Worker (in-thread where `Worker` is missing) with
+  progress and a 20 s budget (`CHECK_BUDGET_MS`), then reports "limit". Board Lab store: `checks.progress`/`checks.limit`
+  (optional) and an `input/request` action (re-sends a network request). The Pico W LED net is `WL_GPIO0`. Python
+  rclpy adds parameters, `rclpy.executors` and `try_shutdown`; its logger prints `[LEVEL] [name]: msg` (no timestamp).
 - v1.2 16:55 CDT Oct 24 (P1-checks): additive. `DeviceModel` network gets an optional `password` (the Wi-Fi
   password the simulated network wants; omitted = open, or the default bench network's password). `RunTrace` gets an
   optional `http` list (requests the world's network inputs sent and the sketch's answers). One check path:

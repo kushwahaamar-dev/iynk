@@ -213,7 +213,7 @@ if __name__ == '__main__':
     expect(ros[0].data).toEqual({ linear: { x: 0.2, y: 0, z: 0 }, angular: { x: 0, y: 0, z: 0.5 } });
     expect(Math.round(ros[0].t)).toBe(100);
     // ROS 2 stamps log lines with epoch seconds and nanoseconds.
-    expect(out()).toMatch(/^\[INFO\] \[\d{10}\.\d{9}\] \[drive\]: sent 10 commands\n$/);
+    expect(out()).toBe('[INFO] [drive]: sent 10 commands\n');
   });
 
   it('RPi.GPIO is refused on a Pi 5 with a pointer to gpiozero', () => {

@@ -4,13 +4,14 @@ import { resolvePin, type BoardProfile } from './profiles';
 
 /**
  * Net name for a pin number: first the board's pinout (`nets`), then the interpreter's own aliases
- * (A0, GP25...), then the board family's plain naming (D13 on Arduino headers, GPIO2 on ESP boards).
+ * (A0, GP25, WL_GPIO0 for the Pico W's radio-driven LED...), then the board family's plain naming
+ * (D13 on Arduino headers, GPIO2 on ESP boards).
  */
 export function pinNet(profile: BoardProfile, n: number, nets?: Record<number, string>): string {
   const fromPinout = nets?.[n];
   if (fromPinout) return fromPinout;
   for (const [name, pin] of Object.entries(profile.aliases)) {
-    if (pin === n && /^(A\d+|GP\d+|P\d+|GPIO\d+|P[A-H]\d+)$/.test(name)) return name;
+    if (pin === n && /^(A\d+|GP\d+|P\d+|GPIO\d+|P[A-H]\d+|WL_GPIO\d+)$/.test(name)) return name;
   }
   switch (profile.id) {
     case 'uno-r3':

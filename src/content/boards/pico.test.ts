@@ -1,11 +1,12 @@
-// The Pico content against its figure file and the interpreters: ids that must match, and every lesson's starter
-// code compiled and run headless on its scripted world, with its checks evaluated on the result.
+// The Pico content against its figure file and the app's one check path: ids that must match, and every lesson's
+// code run on its scripted world through runHeadless + evaluateChecks, on the lesson's own variant.
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import vm from 'node:vm';
 import { describe, expect, it } from 'vitest';
-import { check as compile, createRun } from '@/lib/interp';
-import type { Check, Lesson, ParamChip } from '@/content/schema';
+import type { Lesson } from '@/content/schema';
+import { defaultParams, renderTemplate, resolveText } from '@/lib/boardlab/template';
+import { lessonJob, runChecks } from '@/lib/interp';
 import en from '@/i18n/content/en/boards/pico.json';
 import pico from './pico';
 
@@ -31,86 +32,7 @@ const text = (key: string): string => {
   if (typeof v !== 'string') throw new Error(`missing text ${key}`);
   return v;
 };
-const chipCode = (p: ParamChip): string =>
-  p.kind === 'number' ? String(p.default) : p.kind === 'toggle' ? (p.default ? p.code.on : p.code.off) : p.options.find((o) => o.value === p.default)!.code;
-const render = (l: Lesson): string =>
-  l.code.source
-    .replace(/\{\{p:([\w-]+)\}\}/g, (_, id: string) => chipCode(l.params.find((p) => p.id === id)!))
-    .replace(/\{\{t:([^}]+)\}\}/g, (_, key: string) => text(key));
-
-const PIN_NUM = (net: string): number => (net === 'WL_GPIO0' ? 64 : Number(net.replace(/^GP/, '')));
-const language = (l: Lesson) => (l.language === 'arduino-cpp' ? 'arduino' : 'python') as 'arduino' | 'python';
-const variantFor = (l: Lesson) => l.variants[0] ?? 'pico';
-
-interface Result {
-  serial: { t: number; text: string }[];
-  edges: [number, number, 0 | 1][];
-  duty: (pin: number, ms: number) => number;
-  level: (pin: number, ms: number) => number;
-  error: string | null;
-  ms: number;
-}
-
-// One deterministic headless run: world script applied at its times, snapshots every 10 ms.
-function runLesson(l: Lesson, variant = variantFor(l)): Result {
-  const source = render(l);
-  const devices = l.code.libraries.includes('mpu6050') ? (['mpu6050'] as const) : [];
-  const run = createRun({ board: 'pico', variant, language: language(l), source, devices: [...devices] });
-  const serial: { t: number; text: string }[] = [];
-  let line = '';
-  run.on('serial', (s) => {
-    for (const ch of s) {
-      if (ch === '\n') { serial.push({ t: run.status.t, text: line.replace(/\r$/, '') }); line = ''; } else line += ch;
-    }
-  });
-  let error: string | null = null;
-  run.on('error', (e) => (error = e.message));
-  const snaps: { t: number; pins: Record<number, { level: number; duty?: number }> }[] = [];
-  const script = [...l.world.script].sort((a, b) => a.t - b.t);
-  run.start();
-  for (let t = 0; t < l.runMs; t += 10) {
-    for (const ev of script.filter((e) => e.t >= t && e.t < t + 10)) {
-      const input = l.world.inputs.find((i) => i.id === ev.input)!;
-      const pin = PIN_NUM(input.pins[0]);
-      if (input.device.kind === 'button') run.input(pin, input.device.pull.endsWith('up') ? (ev.value ? 0 : 1) : ev.value);
-      else run.analog(pin, ev.value);
-    }
-    run.step(10);
-    snaps.push({ t: t + 10, pins: run.snapshot().pins as Record<number, { level: number; duty?: number }> });
-  }
-  const at = (ms: number) => snaps.find((s) => s.t >= ms) ?? snaps[snaps.length - 1];
-  return {
-    serial, edges: run.world.trace.slice(), error, ms: run.status.t,
-    duty: (pin, ms) => { const p = at(ms).pins[pin]; return p?.duty ?? (p?.level ?? 0); },
-    level: (pin, ms) => at(ms).pins[pin]?.level ?? 0,
-  };
-}
-
-// A local reading of the Check kinds this board uses (src/lib/interp has no checks.ts yet).
-function passes(c: Check, r: Result, source: string): boolean {
-  switch (c.kind) {
-    case 'runs': return !r.error && r.ms >= c.minMs;
-    case 'serial': {
-      const hits = r.serial.filter((s) => (c.regex ? new RegExp(c.match).test(s.text) : s.text.includes(c.match)) && (c.byMs == null || s.t <= c.byMs));
-      return hits.length >= c.minCount;
-    }
-    case 'pin-toggles': {
-      const pin = PIN_NUM(c.pin);
-      const rises = r.edges.filter((e) => e[1] === pin && e[2] === 1).map((e) => e[0] / 1000);
-      const periods = rises.slice(1).map((t, i) => t - rises[i]);
-      return periods.length >= c.minCycles && periods.every((p) => p >= c.periodMs[0] && p <= c.periodMs[1]);
-    }
-    case 'pin-level': return r.level(PIN_NUM(c.pin), c.atMs) === c.level;
-    case 'pwm': { const d = r.duty(PIN_NUM(c.pin), c.atMs); return d >= c.duty[0] && d <= c.duty[1]; }
-    case 'responds': {
-      const pin = PIN_NUM(c.pin);
-      const hit = r.edges.find((e) => e[1] === pin && e[0] / 1000 >= c.after.t && e[0] / 1000 <= c.after.t + c.withinMs && e[2] >= c.v[0] && e[2] <= c.v[1]);
-      return !!hit;
-    }
-    case 'code': return c.must.every((m) => source.includes(m)) && c.mustNot.every((m) => !source.includes(m));
-    default: throw new Error(`check kind ${c.kind} is not used by the Pico`);
-  }
-}
+const reference = (l: Lesson): string => resolveText(renderTemplate(l.code.source, l.params, defaultParams(l.params)).code, text);
 
 describe('pico content vs figure', () => {
   const defs = figureDefs();
@@ -167,7 +89,7 @@ describe('pico content vs figure', () => {
   });
 });
 
-describe('pico lessons run on the interpreter', () => {
+describe('pico lessons pass their checks', () => {
   it('has at least four progressive lessons for every variant', () => {
     for (const v of pico.variants) {
       const ls = pico.lessons.filter((l) => !l.variants.length || l.variants.includes(v.id));
@@ -178,22 +100,19 @@ describe('pico lessons run on the interpreter', () => {
   });
 
   for (const l of pico.lessons) {
-    it(`${l.id}: compiles and passes its checks`, () => {
-      const source = render(l);
-      const diags = compile({ board: 'pico', variant: variantFor(l), language: language(l), source });
-      expect(diags.map((d) => `${d.line}: ${d.message}`)).toEqual([]);
-      const r = runLesson(l);
-      expect(r.error).toBeNull();
-      const failed = l.checks.filter((c) => !passes(c, r, source)).map((c) => c.label);
-      expect(failed, `serial: ${r.serial.slice(0, 6).map((s) => s.text).join(' | ')}`).toEqual([]);
+    it(`${l.id}: the code passes its checks through the app check path`, () => {
+      const { trace, results } = runChecks(lessonJob(pico, l, reference(l)));
+      expect(trace.error).toBeNull();
+      const failed = l.checks.filter((_, i) => !results[i].ok).map((c) => c.label);
+      expect(failed, `serial: ${trace.serial.slice(0, 6).map((s) => s.text).join(' | ')}`).toEqual([]);
     });
   }
 
   it('blinks the right LED on each variant', () => {
     const blink = pico.lessons.find((l) => l.id === 'blink')!;
-    for (const [variant, pin] of [['pico', 25], ['pico-w', 64], ['pico2', 25], ['pico2-w', 64]] as const) {
-      const r = runLesson(blink, variant);
-      expect(r.edges.filter((e) => e[1] === pin && e[2] === 1).length, variant).toBeGreaterThanOrEqual(2);
+    for (const [variant, net] of [['pico', 'GP25'], ['pico-w', 'WL_GPIO0'], ['pico2', 'GP25'], ['pico2-w', 'WL_GPIO0']] as const) {
+      const { trace } = runChecks(lessonJob(pico, blink, reference(blink), variant));
+      expect((trace.pins[net] ?? []).filter((e) => e.v === 1).length, variant).toBeGreaterThanOrEqual(2);
     }
   });
 });
