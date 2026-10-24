@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { BoardWorkspace } from "@/components/boardlab/BoardWorkspace";
+import { LabRoom } from "@/components/dock/LabRoom";
 import { BOARD_IDS } from "@/content/ids";
 import { AVAILABLE } from "@/content/index.generated";
 import { isLocale } from "@/i18n/config";
@@ -46,11 +47,13 @@ async function Board({ params }: Pick<Props, "params">) {
     Object.entries((page.text.lessons ?? {}) as Record<string, { title?: string }>).map(([k, v]) => [k, { title: v?.title }]),
   );
   return (
-    <BoardWorkspace
-      lang={lang}
-      messages={messages}
-      text={{ ...page.text, lessons: lessonsText }}
-      data={{ model: boardModel(page), board: withoutLessons(page.board), lessons: lessonLinks(page), progressText: { count: common.progress.count, value: common.progress.label } }}
-    />
+    <LabRoom lab="board" itemId={id}>
+      <BoardWorkspace
+        lang={lang}
+        messages={messages}
+        text={{ ...page.text, lessons: lessonsText }}
+        data={{ model: boardModel(page), board: withoutLessons(page.board), lessons: lessonLinks(page), progressText: { count: common.progress.count, value: common.progress.label } }}
+      />
+    </LabRoom>
   );
 }

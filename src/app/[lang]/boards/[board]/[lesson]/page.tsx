@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { LessonWorkspace } from "@/components/boardlab/LessonWorkspace";
+import { LabRoom } from "@/components/dock/LabRoom";
 import { isLocale } from "@/i18n/config";
 import { alternatesFor } from "@/i18n/seo";
 import { getT } from "@/i18n/server";
@@ -46,5 +47,9 @@ async function Lesson({ params }: Pick<Props, "params">) {
   const model = page && lessonModel(page, lesson);
   if (!page || !model) notFound();
   const messages = await boardLabMessages(lang);
-  return <LessonWorkspace key={`${board}/${lesson}`} lang={lang} model={model} messages={messages} text={lessonText(page.text, lesson)} />;
+  return (
+    <LabRoom lab="board" itemId={board}>
+      <LessonWorkspace key={`${board}/${lesson}`} lang={lang} model={model} messages={messages} text={lessonText(page.text, lesson)} />
+    </LabRoom>
+  );
 }

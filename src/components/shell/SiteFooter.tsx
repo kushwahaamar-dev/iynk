@@ -1,11 +1,12 @@
-import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import { getT } from "@/i18n/server";
+import { FooterNav } from "./FooterNav";
 import { Logo } from "./Logo";
-import { NAV } from "./nav";
+import { NAV, type NavId } from "./nav";
 
 export async function SiteFooter({ lang }: { lang: Locale }) {
   const [t, common] = await Promise.all([getT(lang, "shell"), getT(lang, "common")]);
+  const labels = Object.fromEntries(NAV.map((entry) => [entry.id, t(`nav.${entry.id}`)])) as Record<NavId, string>;
   return (
     <footer className="mt-16 border-t-2 border-line">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1.4fr_1fr]">
@@ -27,15 +28,7 @@ export async function SiteFooter({ lang }: { lang: Locale }) {
           <h2 id={`footer-pages-${lang}`} className="ink-kicker mb-2">
             {t("footer.pages")}
           </h2>
-          <ul className="grid grid-cols-2 gap-x-4 text-sm">
-            {NAV.map((entry) => (
-              <li key={entry.id}>
-                <Link href={`/${lang}${entry.href}`} className="inline-flex min-h-11 items-center">
-                  {entry.id === "about" ? t("footer.about") : t(`nav.${entry.id}`)}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <FooterNav lang={lang} labels={labels} aboutLabel={t("footer.about")} />
         </nav>
       </div>
     </footer>

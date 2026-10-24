@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { LabRoom } from "@/components/dock/LabRoom";
 import { BenchProgress } from "@/components/robotics/BenchProgress";
 import { BenchWorkspace } from "@/components/robotics/BenchWorkspace";
 import type { BenchMessages } from "@/components/robotics/messages";
@@ -108,7 +109,9 @@ async function Bench({ params }: Pick<Props, "params">) {
       </section>
 
       <div className="mt-8">
-        <BenchWorkspace setup={{ bench, texts, starters: loaded.starters, solutions: loaded.solutions }} messages={messages} />
+        <LabRoom lab="robotics" itemId={id}>
+          <BenchWorkspace setup={{ bench, texts, starters: loaded.starters, solutions: loaded.solutions }} messages={messages} />
+        </LabRoom>
       </div>
 
       {bench.sources.length > 0 ? (

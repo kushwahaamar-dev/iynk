@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { LabRoom } from "@/components/dock/LabRoom";
 import { loadCraft } from "@/components/dronelab/data";
 import { DroneWorkspace } from "@/components/dronelab/DroneWorkspace";
 import { DRONE_IDS } from "@/content/ids";
@@ -43,5 +44,9 @@ async function Drone({ params }: Pick<Props, "params">) {
   if (!isLocale(lang)) notFound();
   const [craft, messages] = await Promise.all([loadCraft(lang, drone), getMessages(lang, "dronelab")]);
   if (!craft) notFound();
-  return <DroneWorkspace lang={lang} content={craft.content} text={craft.text} messages={messages} />;
+  return (
+    <LabRoom lab="drone" itemId={drone}>
+      <DroneWorkspace lang={lang} content={craft.content} text={craft.text} messages={messages} />
+    </LabRoom>
+  );
 }

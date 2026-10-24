@@ -24,6 +24,13 @@ export const NAV: readonly NavEntry[] = [
   { id: "about", href: "/about", bar: true },
 ];
 
+/** Bar is the desktop header. Sheet and footer list every entry the feature flags allow. */
+export function showNavEntry(entry: NavEntry, features: { solana: boolean }, where: "bar" | "sheet" | "footer"): boolean {
+  if (entry.feature && !features[entry.feature]) return false;
+  if (where === "bar") return entry.bar;
+  return true;
+}
+
 /** Whether `pathname` is inside the entry (the dashboard only matches itself). */
 export function isActive(entry: NavEntry, lang: string, pathname: string): boolean {
   const target = `/${lang}${entry.href}`;
