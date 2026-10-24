@@ -83,22 +83,24 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 16:13 CDT (machine clock).
+- **Updated:** 2026-10-24 16:23 CDT (machine clock).
 - **Driver:** Jagrati Kumari, Mac RVW-F0096FW3J2M, since 2026-10-24 16:09 CDT.
-- **Phase:** 0 is done: the audit and the plan. Nothing is being built yet.
+- **Phase:** 1 running ("autonomous mode" at 16:23). Seven agents from `scripts/workflows/phase1.md`: P1-health,
+  P1-checks, P1-uno, P1-engine, P1-dock, P1-voice, P1-deploy. State per label in the checkpoint log.
 - **Plan:** `docs/hacktx/BUILD-PLAN.md`, written from the six audits in `docs/audit/` (boards, robotics, drones,
   platform, sponsor-layer, history). Phases 1–3 build for Best Overall, SerpApi, Most Entertaining and Meta.
   Solana and Best Hardware Hack are phase 4, only if time is left after gate 3 (Amar, 16:15). Don't start them
   earlier.
-- **Checks at the last code commit:** typecheck 34 errors; eslint clean; vitest 15 failed of 1243; `next build`
+- **Checks at the last code commit:** typecheck 34 errors; eslint clean; vitest 11 failed of 1243 (re-measured on Node 24); `next build`
   fails prerendering `/en/boards/esp32-s3-devkitc-1`.
 - **Decided:** D1 (tracks, above). Amar: "Everything else looks fine."
 - **Decided by Jagrati (16:13):** D2 confirmed (the plan's default). D4: API keys stay placeholders for now;
   `.env.local` on Jagrati's Mac is `.env.example` with empty values. Vultr, Vercel env upload and Tiger are not
   approved yet, so gate 1 runs without live Meta/SerpApi and rooms use the one-browser fallback until keys arrive.
   D3 (devnet SOL) is asked only when phase 4 starts.
-- **Next step:** on the user's go ("autonomous mode"), start BUILD-PLAN.md §5 phase 1 (seven agents, table in §5),
-  with keys as placeholders. Don't start the build without the go.
+- **Next step:** wait for the seven phase-1 agents; any label not reported done in the checkpoint log is
+  relaunched with its section of `scripts/workflows/phase1.md`. Then run gate 1 (BUILD-PLAN §6; live keys and the
+  preview deploy wait for the user's OK).
 
 ### Claims (only when both people work at the same time)
 
@@ -107,6 +109,9 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 16:23 CDT (Jagrati): "autonomous mode". Phase 1 launched: P1-health, P1-checks, P1-uno, P1-engine,
+  P1-dock, P1-voice, P1-deploy all running (brief: `scripts/workflows/phase1.md`).
 
 - 2026-10-24 16:13 CDT (Jagrati): D2 confirmed; D4 keys left as placeholders (CONTEXT.md §3). Waiting for
   "autonomous mode" to start phase 1.

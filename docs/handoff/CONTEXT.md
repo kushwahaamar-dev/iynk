@@ -98,6 +98,9 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   on "I'm stopping" hand over (checkpoint, Driver "none, free to take", clear Next step, commit "Hand over", push).
 - **10-24 16:13, Jagrati.** "leave the api keys as place holder and for D2 confirm the default." → D2 confirmed,
   D4 keys left as placeholders (§3). Build not started: waiting for "autonomous mode".
+- **10-24 16:23, Jagrati.** "autonomous mode" → phase 1 started with keys as placeholders. Machine set up (Node 24 via
+  nvm, `npm ci`, Playwright chromium). Baseline re-measured: tsc 34 errors, eslint clean, vitest 11 failed of 1243.
+  Seven agents launched from `scripts/workflows/phase1.md` (Agent tool in the shared tree, not a Workflow run).
 
 ## 6. Lessons learned (apply them)
 
