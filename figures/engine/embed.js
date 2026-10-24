@@ -106,8 +106,18 @@
   };
   const num = (v, lo, hi, dflt) => { const x = +v; return v != null && Number.isFinite(x) ? Math.min(hi, Math.max(lo, x)) : dflt; };
 
+  // pause: the host hid the figure (or the tab is hidden). Every animation step is held instead of run, so the figure's
+  // clock stops where it is; resume hands the held steps back to the core's frame driver
+  let hostPaused = false, held = new Set(), animate0 = null;
+  const paused = () => hostPaused || document.hidden;
+  const wake = () => { if (paused() || !animate0) return; const steps = [...held]; held = new Set(); for (const s of steps) animate0(s); };
+  const holdable = step => function held1(dt){ if (paused()){ held.add(held1); return false; } return step(dt); };
+  document.addEventListener('visibilitychange', wake);
+
   const H = {
     hello: () => sendReady(),
+    pause: () => { hostPaused = true; },
+    resume: () => { hostPaused = false; wake(); },
     press: m => press(m.id, m.choice),
     act: m => runAct(m.name, m.data),
     set: m => setState(m.state),
@@ -158,6 +168,7 @@
     addEventListener('blur', () => send('focus', { on: false }));
     const f0 = ui.flash; ui.flash = (text, ms) => { f0(text, ms); send('flash', { text: CF_T(text), en: String(text) }); };
     const r0 = ui.render; ui.render = () => { r0(); schedule(); };
+    animate0 = ui.animate; ui.animate = step => animate0(holdable(step));
     const go = () => { if (live) return; live = true; sendReady(); flush();
       for (const m of queue.splice(0)) if (m.type !== 'hello') handle(m); };
     if (document.readyState === 'loading') addEventListener('DOMContentLoaded', go, { once: true }); else queueMicrotask(go);
