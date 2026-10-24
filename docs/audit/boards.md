@@ -10,8 +10,8 @@ step). Interpreter suites: arduino 19, python 14, verilog 8, all pass.
 7 of 12 boards exist (uno-r3, uno-r4, nano, esp32-devkitc, esp32-s3-devkitc-1, nodemcu, pico); microbit-v2,
 nucleo-f401re, pi4-pi5, basys3 and de10-lite have only interpreter profiles and fact sheets. **The Uno R3 and R4 pages
 404** (no en JSON; `loadBoardPage`, `src/app/[lang]/boards/_lib/load.ts:31-37`, returns null), so the flagship board
-and the Learn Arduino baseline can't be seen. Every board 404s outside English. **The app completes only 29 of 50
-lessons**; content tests pass because each has its own private runner and evaluator (false greens). Assembly refuses
+and the Learn Arduino baseline can't be seen. Every board 404s outside English. **The app completes only 27 of the 46
+lessons** (the per-board rows; the auditor's summary line said 21 of 50 fail); content tests pass because each has its own private runner and evaluator (false greens). Assembly refuses
 step 1 on 6 of 7 boards.
 
 ## Per board

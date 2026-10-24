@@ -49,25 +49,20 @@ Anything the next agent needs must end up in the repo. Machine-local state is on
 ## Current status
 
 - **Updated:** 2026-10-24 15:50 CDT.
-- **Phase:** 0, the audit and the plan. Nothing is being built. The user asked for a full audit, an architecture
-  and a phased build plan for five tracks (Best Overall, SerpApi, Most Entertaining, Meta, Solana), and will say when
-  to start building ("autonomous mode").
-- **Done in phase 0:**
-  - The first build stopped at 14:19 (usage limit). Its state is recorded in `~/simlab-scratch-backup/RESUME.md`.
-  - Today's work committed and pushed to github.com/kushwahaamar-dev/sim.
-  - Checks at that commit:
-    - `npm run typecheck`: 34 errors in 5 files.
-    - ESLint: clean.
-    - Vitest: 15 failed of 1243.
-    - `next build`: fails while prerendering `/en/boards/esp32-s3-devkitc-1` (missing string
-      `lessons.dimmer.title`).
-    - Live crawl of 45 pages on a dev server: `/en/boards/uno-r3` has no figure, the esp32-devkitc lessons after
-      blink throw, and only 7/12 boards, 4/13 benches and 5/13 drones have content.
-  - Six area audits (boards, robotics, drones, platform, sponsor layer, history) are running.
-- **Next step:** finish the audits, copy their reports into `docs/audit/`, write `docs/hacktx/BUILD-PLAN.md`
-  (architecture and phases), and present it to the user for approval. Don't start phase 1 without the user's go.
+- **Phase:** 0 is done: the audit and the plan. Nothing is being built yet.
+- **Plan:** `docs/hacktx/BUILD-PLAN.md`, written from the six audits in `docs/audit/` (boards, robotics, drones,
+  platform, sponsor-layer, history). It covers Best Overall, SerpApi, Most Entertaining, Meta and Solana.
+- **Checks at the last code commit:** typecheck 34 errors; eslint clean; vitest 15 failed of 1243; `next build`
+  fails prerendering `/en/boards/esp32-s3-devkitc-1`.
+- **Waiting on the user:** approve the plan; decisions D1 (tracks: five rows pasted, "four" written; Hardware?),
+  D2 (prose translation tiers), D3 (OK to send 3 devnet SOL from the user's CLI wallet), D4 (keys and accounts).
+- **Next step:** when the user says go, start BUILD-PLAN.md §5 phase 1 (seven agents, table in §5). Don't start
+  without the go.
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 15:50 CDT: all six audits saved in `docs/audit/`; `docs/hacktx/BUILD-PLAN.md` written and waiting
+  for approval.
 
 - 2026-10-24 15:31 CDT: the repo moved to github.com/kushwahaamar-dev/sim at the user's request, with a fresh history
   that starts now: today's three commits were rebuilt from their identical trees. The pre-event baseline `245763f` is
