@@ -104,8 +104,7 @@
     "lessons": "Lessons",
     "lessonsLede": "Each lesson runs your own code on the board. Finish its checks to tick it off.",
     "openLesson": "Lesson {n}: {title}",
-    "sources": "Checked against",
-    "views": "Views"
+    "sources": "Checked against"
   },
   "pinout": {
     "title": "Pinout",
@@ -153,8 +152,6 @@
     "lede": "Build the board in the right order, then power it up and check it, as on the bench.",
     "doIt": "Do it",
     "doneStep": "Done",
-    "next": "Next step",
-    "todo": "To do",
     "build": "Build",
     "break": "Break",
     "test": "Test",
@@ -200,7 +197,6 @@
     "inspect": "Inspect {part}",
     "inspectTitle": "{part} up close",
     "close": "Close",
-    "usedIn": "Used in lesson {n}",
     "wire": "Wire colour {color}",
     "colors": {
       "red": "red",
@@ -283,7 +279,6 @@
     "resize": "Resize the serial monitor",
     "mismatch": "The sketch opened Serial at {sketch} baud but the monitor listens at {monitor}: the bytes arrive garbled. Pick {sketch}.",
     "close": "Stop sketch",
-    "time": "{ms} ms",
     "lines": "Serial output",
     "upload": {
       "compiling": "Compiling sketch…",
@@ -312,8 +307,7 @@
     "title": "Inputs",
     "lede": "Play the world: press, slide and turn the parts while the code runs.",
     "hold": "Hold to press",
-    "pressed": "Pressed",
-    "released": "Released"
+    "pressed": "Pressed"
   },
   "checks": {
     "title": "Checks",
@@ -335,15 +329,12 @@
     "power": "Power tree",
     "exploded": "Exploded view",
     "seeThrough": "See-through",
-    "labels": "Labels",
     "turnLeft": "Turn left (Q)",
     "turnRight": "Turn right (E)",
     "resetView": "Reset view (R)",
-    "focusFigure": "Go to the figure",
     "supply": {
       "label": "Power",
-      "unplugged": "Unplugged",
-      "unplug": "Unplug"
+      "unplugged": "Unplugged"
     },
     "status": {
       "off": "Off",
@@ -358,9 +349,7 @@
     "pinLive": "{pin}: {value}",
     "high": "HIGH",
     "low": "LOW",
-    "pwm": "PWM {pct}%",
-    "selected": "Selected: {part}",
-    "deselect": "Deselect"
+    "pwm": "PWM {pct}%"
   },
   "keys": {
     "title": "Keyboard shortcuts",
@@ -380,9 +369,6 @@
     "figure": "Move focus to the figure",
     "escape": "Deselect the part",
     "help": "Show this list"
-  },
-  "dock": {
-    "title": "Lab tools"
   },
   "connector": {
     "usb-b": "USB-B cable ({volts} V)",
@@ -436,9 +422,10 @@
     "ledOff": "{led} LED off",
     "part": {
       "ok": "{part}: lit, {ma} mA",
-      "dark": "{part}: dark, no current",
+      "off": "{part}: off",
       "burnt": "{part}: burnt out ({ma} mA was too much)",
-      "off": "{part}: off"
+      "reverse": "{part}: verkehrt herum, dunkel",
+      "open": "{part}: nicht verbunden"
     }
   }
 }

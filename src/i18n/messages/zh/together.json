@@ -180,8 +180,10 @@
       "name": "Your name",
       "interests": "Interests",
       "interestsHint": "Separate them with commas, e.g. drones, LEDs, line followers",
-      "built": "What you've built",
-      "builtHint": "Separate them with commas, e.g. Blink on an Uno, a 5-inch quad",
+      "builtNote": {
+        "one": "你的资料里还会列出你在 SimLab 完成的 {count} 节课或测试。",
+        "other": "你的资料里还会列出你在 SimLab 完成的 {count} 节课和测试。"
+      },
       "wants": "What you want to build next",
       "submit": "Find my buddies",
       "finding": "Looking for buddies…",

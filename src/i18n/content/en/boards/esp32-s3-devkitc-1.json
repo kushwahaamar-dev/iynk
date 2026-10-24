@@ -382,53 +382,60 @@
         }
       }
     },
-    "fade": {
-      "title": "Fade with PWM",
-      "lede": "The ESP32-S3 has no DAC. Its LEDC peripheral makes PWM on any output pin: fade the LED on GPIO4 and slide the RGB LED from blue to red with it.",
+    "dimmer": {
+      "title": "Dim the LED with a knob",
+      "lede": "A potentiometer on GPIO1 sets the brightness of the LED on GPIO4. The ESP32-S3 reads the wiper with a 12-bit ADC and drives the LED with LEDC PWM.",
       "steps": {
-        "1": "Keep the LED on GPIO4.",
-        "2": "Run the sketch: the LED fades up and down every two seconds and the RGB LED shifts between blue and red.",
-        "3": "Change the PWM frequency chip: the fade looks the same, because the eye averages anything above about 100 Hz."
+        "1": "Wire the 10 kΩ potentiometer: one end to 3V3, the wiper to GPIO1, the other end to G. Keep the LED on GPIO4 through 330 Ω.",
+        "2": "Run the sketch and turn the knob. The LED brightens, the RGB LED shifts from blue toward red, and the monitor prints the raw count, the millivolts and the duty.",
+        "3": "Change the PWM frequency chip. The brightness stays put, because the eye averages anything above about 100 Hz."
       },
       "hints": {
-        "1": "Arduino-ESP32 3.x attaches PWM by pin: ledcAttach(pin, freq, bits), then ledcWrite(pin, duty). ledcSetup() and ledcAttachPin() were the 2.x API.",
-        "2": "With 8 bits the duty runs from 0 to 255.",
-        "3": "analogWrite(pin, value) also works on the S3; it uses LEDC underneath."
+        "1": "analogRead() returns 0 to 4095 after analogReadResolution(12). Dividing by 16 maps that onto an 8-bit duty, 0 to 255.",
+        "2": "Arduino-ESP32 3.x attaches PWM by pin: ledcAttach(pin, freq, bits), then ledcWrite(pin, duty). ledcSetup() and ledcAttachPin() were the 2.x API.",
+        "3": "analogReadMilliVolts() reports the same pin in millivolts, using the chip's calibration. A wiper at 3.3 V reads about 3300."
       },
       "specs": {
-        "1": { "label": "LEDC channels", "value": "8, on any output pin" },
-        "2": { "label": "Resolution", "value": "up to 14 bits" },
-        "3": { "label": "DAC", "value": "none on the ESP32-S3" }
+        "1": { "label": "ADC", "value": "12-bit, about 0–3.3 V on GPIO1" },
+        "2": { "label": "PWM", "value": "8-bit LEDC, 5 kHz by default" },
+        "3": { "label": "Scale", "value": "duty = raw / 16" }
       },
       "pins": {
+        "GPIO1": { "to": "Potentiometer wiper", "role": "Analog input" },
         "GPIO4": { "to": "330 Ω, then the LED", "role": "PWM output" },
-        "GPIO38": { "to": "RGB LED D6", "role": "WS2812 data" }
+        "3V3": { "to": "One end of the potentiometer", "role": "3.3 V reference" }
       },
       "callouts": {
-        "LED1": "Brightness follows the duty cycle",
-        "D6": "Red up, blue down"
+        "POT1": "Turn it: the duty follows the wiper",
+        "LED1": "Brightness follows the duty"
       },
       "features": {
-        "1": "Hardware PWM on any pin",
-        "2": "The 3.x LEDC API",
-        "3": "Why there is no analog output"
+        "1": "A 12-bit reading turned into an 8-bit duty",
+        "2": "The 3.x LEDC API, attached by pin",
+        "3": "The wiper voltage, printed in millivolts"
       },
       "params": {
         "pwmHz": { "label": "PWM frequency" }
       },
+      "world": {
+        "knob": "Knob angle"
+      },
       "checks": {
-        "1": "The sketch runs for 4 seconds",
-        "2": "GPIO4 is near a quarter duty at 0.27 s",
-        "3": "GPIO4 is near three quarters on the way down at 1.31 s",
-        "4": "It prints fade done after each cycle",
-        "5": "It uses ledcAttach() and ledcWrite(), not the 2.x API"
+        "1": "The sketch runs for 3 seconds",
+        "2": "At a quarter turn, GPIO4 is near a quarter duty",
+        "3": "At three quarters, GPIO4 is near three quarters duty",
+        "4": "Fully clockwise, GPIO4 is fully on",
+        "5": "It prints the raw count, the millivolts and the duty",
+        "6": "It uses analogRead(), ledcAttach() and ledcWrite(), not the 2.x API"
       },
       "code": {
-        "header": "Fade the LED on GPIO4 with LEDC PWM",
-        "rgb": "the RGB LED shifts colour with the fade",
-        "bits": "8 bits: duty 0-255",
-        "attach": "3.x API: attach by pin",
-        "write": "duty for this step"
+        "header": "Dim an LED from a potentiometer",
+        "pot": "wiper of the 10 kΩ pot, GPIO1",
+        "bits": "8 bits: duty 0 to 255",
+        "adc": "12-bit ADC: raw 0 to 4095",
+        "attach": "3.x API: attach PWM by pin",
+        "raw": "0 at one end of the knob, 4095 at the other",
+        "scale": "4095 / 16 = 255, full duty"
       }
     },
     "web-server": {

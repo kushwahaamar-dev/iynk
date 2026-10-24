@@ -180,8 +180,10 @@
       "name": "Your name",
       "interests": "Interests",
       "interestsHint": "Separate them with commas, e.g. drones, LEDs, line followers",
-      "built": "What you've built",
-      "builtHint": "Separate them with commas, e.g. Blink on an Uno, a 5-inch quad",
+      "builtNote": {
+        "one": "आपकी प्रोफ़ाइल में SimLab में पूरा किया गया {count} पाठ या परीक्षण भी है।",
+        "other": "आपकी प्रोफ़ाइल में SimLab में पूरे किए गए {count} पाठ और परीक्षण भी हैं।"
+      },
       "wants": "What you want to build next",
       "submit": "Find my buddies",
       "finding": "Looking for buddies…",

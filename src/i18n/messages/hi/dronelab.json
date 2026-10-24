@@ -12,7 +12,6 @@
     "lede": "Hand-inked drones you design, build and then fly.",
     "how": "Design it, wire it, build it, smoke-test it, then fly it in the simulator.",
     "fig": "Fig. {n}",
-    "open": "Open the {title} workshop",
     "progress": "Progress",
     "progressValue": "{done}/{total}",
     "progressLabel": "{done} of {total} done",
@@ -174,8 +173,7 @@
       "mechanical": "Mechanical",
       "total": "Total (approx.)",
       "money": "${value}"
-    },
-    "sent": "The figure now shows this battery, motor and prop."
+    }
   },
   "build": {
     "title": "Build it",
@@ -230,6 +228,7 @@
     "running": "Running…",
     "passed": "Passed",
     "notRun": "Not run yet",
+    "failed": "पास नहीं",
     "procedure": "How it is done",
     "count": "Tests {done}/{total}",
     "kinds": {
@@ -263,7 +262,6 @@
     "try": "Run in the console",
     "copy": "Copy",
     "copied": "Copied",
-    "effects": "Saved: the change reached the craft.",
     "unsaved": { "one": "{count} unsaved change", "other": "{count} unsaved changes" },
     "output": "Console output"
   },
@@ -308,8 +306,6 @@
     "best": "Best: {s} s",
     "par": "Par {s} s",
     "noBest": "Not flown yet",
-    "keys": "Flight keys",
-    "loading": "Loading the flying range…",
     "missing": "The flying range for this craft is still being built."
   },
   "keys": {
