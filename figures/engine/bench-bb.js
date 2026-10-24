@@ -53,7 +53,9 @@ function solve(st){
   const parts = (c.parts || []).map(p => Object.assign({}, p, (st.cparams || {})[p.id] || {}));
   const res = [], leds = [];
   for (const p of parts){
-    const def = B.parts[p.part]; if (!def || !def.elec) continue;
+    const def = B.parts[p.part];
+    if (!def){ unknownPart(p); continue; }
+    if (!def.elec) continue;
     const e = def.elec(p), ns = (p.holes || []).map(h => { const n = node(h); if (n) par[n] = par[n] || n; return n; });
     if (e.type === 'res' && ns[0] && ns[1]) res.push({ id: p.id, a: ns[0], b: ns[1], r: e.ohms });
     if (e.type === 'wire' && ns[0] && ns[1]) uni(ns[0], ns[1]);
@@ -161,7 +163,8 @@ B.viewDef('breadboard', {
       if (bbDef) bbDef.draw(Object.assign({ p: { id: 'BB', kind: pl.geo.kind } }, ctx));
       const meas = st.meas || {};
       for (const q of pl.c.parts || []){
-        const p = Object.assign({}, q, (st.cparams || {})[q.id] || {}), def = B.parts[p.part]; if (!def) continue;
+        const p = Object.assign({}, q, (st.cparams || {})[q.id] || {}), def = B.parts[p.part];
+        if (!def){ unknownPart(p); continue; }
         const holes = (p.holes || []).map(h => B.hole(pl.geo, h)).filter(Boolean);
         if (holes.length !== (p.holes || []).length){ B.note(`circuit part ${p.id}: bad hole in ${p.holes}`); continue; }
         const legs = holes.map(h => pl.at(h.x, h.y));
@@ -197,6 +200,10 @@ B.viewDef('breadboard', {
   },
 });
 const VIEWB = () => null;
+// a circuit part whose drawing is not on the page is reported once (the figure probe fails on it), not skipped silently
+const noted = new Set();
+const unknownPart = p => { const key = p.id + ':' + p.part; if (noted.has(key)) return; noted.add(key);
+  B.note(`circuit part ${p.id}: unknown part "${p.part}" (add // @cf use parts/${String(p.part).replace(/[^\w-]/g, '')}.js)`); };
 
 /* ---------- part pages: public/figures/parts/<id>.html shows the part on a breadboard ---------- */
 const SHOW = {
