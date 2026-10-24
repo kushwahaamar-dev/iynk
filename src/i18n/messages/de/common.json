@@ -20,6 +20,10 @@
     "count": "{done}/{total}",
     "label": "{done} von {total} erledigt"
   },
+  "untranslated": {
+    "title": "Noch nicht übersetzt",
+    "body": "Der Text dieser Seite ist noch nicht ins Deutsche übersetzt und wird deshalb auf Englisch angezeigt."
+  },
   "client": {
     "figure": {
       "loading": "Die Abbildung wird geladen …",

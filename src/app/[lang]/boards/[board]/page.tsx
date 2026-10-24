@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { BoardWorkspace } from "@/components/boardlab/BoardWorkspace";
 import { LabRoom } from "@/components/dock/LabRoom";
+import { UntranslatedNotice } from "@/components/shell";
 import { BOARD_IDS } from "@/content/ids";
 import { AVAILABLE } from "@/content/index.generated";
 import { isLocale } from "@/i18n/config";
@@ -47,13 +48,16 @@ async function Board({ params }: Pick<Props, "params">) {
     Object.entries((page.text.lessons ?? {}) as Record<string, { title?: string }>).map(([k, v]) => [k, { title: v?.title }]),
   );
   return (
-    <LabRoom lab="board" itemId={id}>
-      <BoardWorkspace
-        lang={lang}
-        messages={messages}
-        text={{ ...page.text, lessons: lessonsText }}
-        data={{ model: boardModel(page), board: withoutLessons(page.board), lessons: lessonLinks(page), progressText: { count: common.progress.count, value: common.progress.label } }}
-      />
-    </LabRoom>
+    <>
+      <UntranslatedNotice lang={lang} textLang={page.textLang} />
+      <LabRoom lab="board" itemId={id}>
+        <BoardWorkspace
+          lang={lang}
+          messages={messages}
+          text={{ ...page.text, lessons: lessonsText }}
+          data={{ model: boardModel(page), board: withoutLessons(page.board), lessons: lessonLinks(page), progressText: { count: common.progress.count, value: common.progress.label } }}
+        />
+      </LabRoom>
+    </>
   );
 }

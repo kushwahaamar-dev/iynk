@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { LessonWorkspace } from "@/components/boardlab/LessonWorkspace";
 import { LabRoom } from "@/components/dock/LabRoom";
+import { UntranslatedNotice } from "@/components/shell";
 import { isLocale } from "@/i18n/config";
 import { alternatesFor } from "@/i18n/seo";
 import { getT } from "@/i18n/server";
@@ -48,8 +49,11 @@ async function Lesson({ params }: Pick<Props, "params">) {
   if (!page || !model) notFound();
   const messages = await boardLabMessages(lang);
   return (
-    <LabRoom lab="board" itemId={board}>
-      <LessonWorkspace key={`${board}/${lesson}`} lang={lang} model={model} messages={messages} text={lessonText(page.text, lesson)} />
-    </LabRoom>
+    <>
+      <UntranslatedNotice lang={lang} textLang={page.textLang} />
+      <LabRoom lab="board" itemId={board}>
+        <LessonWorkspace key={`${board}/${lesson}`} lang={lang} model={model} messages={messages} text={lessonText(page.text, lesson)} />
+      </LabRoom>
+    </>
   );
 }

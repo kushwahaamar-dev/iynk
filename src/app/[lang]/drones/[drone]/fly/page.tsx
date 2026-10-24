@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { LabRoom } from "@/components/dock/LabRoom";
+import { UntranslatedNotice } from "@/components/shell";
 import { loadCraft } from "@/components/dronelab/data";
 import { FlyWorkspace } from "@/components/dronelab/FlyWorkspace";
 import { DRONE_IDS } from "@/content/ids";
@@ -47,8 +48,11 @@ async function Fly({ params }: Pick<Props, "params">) {
   ]);
   if (!craft) notFound();
   return (
-    <LabRoom lab="drone" itemId={drone}>
-      <FlyWorkspace lang={lang} content={craft.content} text={craft.text} messages={messages} flight={flight} />
-    </LabRoom>
+    <>
+      <UntranslatedNotice lang={lang} textLang={craft.textLang} />
+      <LabRoom lab="drone" itemId={drone}>
+        <FlyWorkspace lang={lang} content={craft.content} text={craft.text} messages={messages} flight={flight} />
+      </LabRoom>
+    </>
   );
 }

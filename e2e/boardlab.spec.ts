@@ -1,6 +1,10 @@
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
+import { LOCALES, htmlLang } from "../src/i18n/config";
 import boardlab from "../src/i18n/messages/en/boardlab.json";
+import common from "../src/i18n/messages/en/common.json";
 
 // Board Lab, Uno R3: the board index, the board workspace, and the Blink lesson
 // running the learner's own code (Run → upload → the figure's LED and the serial
@@ -23,6 +27,15 @@ async function expectNoAxeViolations(page: Page) {
     .analyze();
   expect(results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`)).toEqual([]);
 }
+
+// A board whose prose is still English only in some language (none once every translation lands).
+const i18n = join(process.cwd(), "src/i18n");
+const untranslated = LOCALES.filter((lang) => lang !== "en")
+  .flatMap((lang) => readdirSync(join(i18n, "content/en/boards")).map((file) => ({ lang, id: file.replace(/\.json$/, "") })))
+  .find(({ lang, id }) => !existsSync(join(i18n, "content", lang, "boards", `${id}.json`)));
+type Notice = { untranslated: { title: string } };
+type Prose = { title: string };
+const readJson = <T,>(path: string): T => JSON.parse(readFileSync(join(i18n, path), "utf8")) as T;
 
 const main = (page: Page) => page.locator("main#main-en");
 const serialStatus = (page: Page) => main(page).getByTestId("serial-status");
@@ -152,5 +165,27 @@ test.describe("Board Lab", () => {
     expect(board?.status()).toBe(404);
     const lesson = await page.goto("/en/boards/uno-r3/not-a-lesson");
     expect(lesson?.status()).toBe(404);
+  });
+
+  test.describe("a board whose prose is not translated yet", () => {
+    test.skip(!untranslated, "every board's prose exists in every language");
+
+    test("shows the English prose under a notice instead of a 404", async ({ page }) => {
+      const { lang, id } = untranslated!;
+      const errors = watchErrors(page);
+      const response = await page.goto(`/${lang}/boards/${id}`);
+      expect(response?.status()).toBe(200);
+      await expect(page.locator("html")).toHaveAttribute("lang", htmlLang(lang));
+      await expect(page.getByRole("note").filter({ hasText: readJson<Notice>(`messages/${lang}/common.json`).untranslated.title })).toBeVisible();
+      await expect(page.locator(`main#main-${lang} h1`).first()).toHaveText(readJson<Prose>(`content/en/boards/${id}.json`).title);
+      expect(errors).toEqual([]);
+    });
+
+    test("the English page has no notice", async ({ page }) => {
+      const { id } = untranslated!;
+      await page.goto(`/en/boards/${id}`);
+      await expect(main(page).locator("h1").first()).toHaveText(readJson<Prose>(`content/en/boards/${id}.json`).title);
+      await expect(page.getByRole("note").filter({ hasText: common.untranslated.title })).toHaveCount(0);
+    });
   });
 });
