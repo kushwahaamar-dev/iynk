@@ -98,9 +98,9 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   `.env.local` on Jagrati's Mac is `.env.example` with empty values. Vultr, Vercel env upload and Tiger are not
   approved yet, so gate 1 runs without live Meta/SerpApi and rooms use the one-browser fallback until keys arrive.
   D3 (devnet SOL) is asked only when phase 4 starts.
-- **Next step:** relaunch the phase-1 agents (all seven were stopped, see the 16:44 checkpoint) with their sections of
-  `scripts/workflows/phase1.md`, telling each to first review and keep or redo its own uncommitted files. Then gate 1
-  (BUILD-PLAN §6; live keys and the preview deploy wait for the user's OK).
+- **Next step:** wait for the seven relaunched phase-1 agents; any label not reported done in the checkpoint log is
+  relaunched with its section of `scripts/workflows/phase1.md`. Then gate 1 (BUILD-PLAN §6; live keys and the
+  preview deploy wait for the user's OK).
 
 ### Claims (only when both people work at the same time)
 
@@ -109,6 +109,8 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 16:46 CDT (Jagrati): phase 1 relaunched, all seven labels, fresh agents (same brief).
 
 - 2026-10-24 16:44 CDT (Jagrati): all seven phase-1 agents were stopped (the session was interrupted at ~16:40)
   and can't be resumed. Landed: P1-voice's `hw` flag (79ddcea). Uncommitted partial work left in the tree on

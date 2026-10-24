@@ -104,6 +104,8 @@ Short entries: who, when, what was asked or decided, in the user's words where i
 - **10-24 ~16:40, Jagrati.** The session was interrupted and all seven phase-1 agents stopped; P1-deploy had been
   stopped by the user just before. Jagrati said "resume"; the stopped agents can't be resumed, so the agent asked
   whether to relaunch fresh ones.
+- **10-24 16:46, Jagrati.** "do what's best" → relaunch all seven phase-1 agents fresh (P1-deploy included: it only
+  touches local config and never deploys); each first reviews its own leftover uncommitted files.
 
 ## 6. Lessons learned (apply them)
 
