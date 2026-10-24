@@ -4,7 +4,7 @@ import type { LabStore } from "@/components/dock/types";
 import type { DesignPick, DroneContent, DroneDesign } from "@/content/schema";
 import common from "@/i18n/messages/en/common.json";
 import { I18nProvider } from "@/i18n/client";
-import type { PartOffers } from "@/lib/search/types";
+import type { Offer, PartOffers } from "@/lib/search/types";
 
 const design: DroneDesign = {
   model: {
@@ -36,7 +36,7 @@ vi.mock("@/content/index.generated", () => ({
 
 import { RealBuildPanel } from "./RealBuildPanel";
 
-const offer = (title: string, price: number, extra: object = {}) => ({
+const offer = (title: string, price: number, extra: Partial<Offer> = {}): Offer => ({
   source: "google_shopping",
   title,
   price,
@@ -98,7 +98,7 @@ describe("RealBuildPanel", () => {
     renderPanel({ lab: "robotics", itemId: "l298n", store, figure: null });
 
     expect(await screen.findByRole("heading", { name: "Build it for real" })).toBeTruthy();
-    await screen.findByText("Arduino Nano");
+    await screen.findAllByText("Arduino Nano");
     await waitFor(() => expect(screen.getByText(/Prices checked at/)).toBeTruthy());
     // Nano 24.90 + L298N 7.00 + TT motor 3.00; the other parts have no listing and no price.
     expect(screen.getByText("$34.90")).toBeTruthy();
@@ -111,7 +111,7 @@ describe("RealBuildPanel", () => {
     expect(toggle.getAttribute("aria-expanded")).toBe("true");
     const list = screen.getByRole("list", { name: "Offers for L298N motor driver" });
     expect(within(list).getAllByRole("listitem")).toHaveLength(2);
-    expect(screen.getByRole("link", { name: /View at Google Shopping/ })).toBeTruthy();
+    expect(screen.getAllByRole("link", { name: /View at Google Shopping/ })).toHaveLength(3);
   });
 
   it("runs the optimiser on a drone and applies the pick to the lab", async () => {
@@ -123,7 +123,7 @@ describe("RealBuildPanel", () => {
         "batt:4s1500": [offer("4S 1500mAh LiPo", 25)],
         "motor:2306-1750": [offer("2306 1750KV 4pcs", 90, { pack: 4 })],
         "motor:2306-2450": [offer("2306 2450KV 4pcs", 60, { pack: 4 })],
-        "prop:5x4.3x3": [offer("5x4.3x3 props", 5)],
+        "prop:5x4.3x3": [offer("5x4.3x3 props 4pcs", 5, { pack: 4 })],
       }),
     );
     const { store, dispatch } = storeOf(design.default);
