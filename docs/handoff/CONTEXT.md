@@ -114,6 +114,12 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   Decision: do not wait until 18:40 for Jagrati's session. That session is on another Mac, its agents already
   stopped, and its uncommitted files are not in this clone. Amar is the driver, so this machine relaunches all
   seven labels from committed `main`.
+- **10-24 17:04, Amar.** "the thing is we already have the local setup here" and pointed at
+  `/Users/amar/Codes/ak/simlab`. Continue from that checkout. It was 16 commits behind `origin/main`, with
+  `node_modules` and `.env.local` already in place. Fast-forwarded to `94d3caa`. A whitespace-only change in
+  `docs/hacktx/STRATEGY.md` was discarded. The extra clone at `/Users/amar/Codes/sim` is not the working tree.
+  Decision: do not run `npm ci` here. A fresh install on the other clone reported `PageProps` errors this tree
+  does not have. Typecheck on simlab is 24 errors in four files (see HANDOFF.md).
 
 ## 6. Lessons learned (apply them)
 

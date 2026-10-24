@@ -83,26 +83,30 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 16:57 CDT (machine clock).
+- **Updated:** 2026-10-24 17:04 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 16:57 CDT.
-- **Phase:** 1, not running. Jagrati's seven agents stopped at the usage limit (16:56). No label is reported done.
-  Partial commits are on `main` (see the checkpoint). Uncommitted leftovers stayed on Jagrati's Mac and are not in
-  this clone. This session relaunches all seven labels from `scripts/workflows/phase1.md`. Jagrati's session should
-  not resume those agents.
+- **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Fast-forwarded to
+  `94d3caa`. Do not build in `/Users/amar/Codes/sim`.
+- **Phase:** 1, relaunching. Jagrati's seven agents stopped at the usage limit (16:56). No label is reported done.
+  Partial commits are on `main`. Uncommitted leftovers stayed on Jagrati's Mac. This session relaunches all seven
+  labels from `scripts/workflows/phase1.md` in the simlab tree. Jagrati's session should not resume those agents.
 - **Plan:** `docs/hacktx/BUILD-PLAN.md`, written from the six audits in `docs/audit/` (boards, robotics, drones,
   platform, sponsor-layer, history). Phases 1–3 build for Best Overall, SerpApi, Most Entertaining and Meta.
   Solana and Best Hardware Hack are phase 4, only if time is left after gate 3 (Amar, 16:15). Don't start them
   earlier.
-- **Checks at the last code commit:** typecheck 34 errors; eslint clean; vitest 11 failed of 1243 (re-measured on Node 24); `next build`
-  fails prerendering `/en/boards/esp32-s3-devkitc-1`.
+- **Checks on this tree (17:04, `npx tsc --noEmit`):** 24 errors in four files. `esp32-s3-build.ts` 16 (P1-engine),
+  `src/components/realtime/messages.ts` 3 and `src/app/[lang]/together/strings.ts` 3 (P1-health),
+  `src/content/boards/nodemcu.test.ts` 2 (P1-checks). The 16:23 figure of 34 errors is stale. A fresh `npm ci` in
+  `/Users/amar/Codes/sim` reported 39, including `PageProps` errors this install does not have. Do not reinstall here.
+  Eslint and vitest were not re-run at 17:04. `next build` was last reported failing on `/en/boards/esp32-s3-devkitc-1`.
 - **Decided:** D1 (tracks, above). Amar: "Everything else looks fine."
 - **Decided by Jagrati (16:13):** D2 confirmed (the plan's default). D4: API keys stay placeholders for now;
   `.env.local` on Jagrati's Mac is `.env.example` with empty values. Vultr, Vercel env upload and Tiger are not
   approved yet, so gate 1 runs without live Meta/SerpApi and rooms use the one-browser fallback until keys arrive.
   D3 (devnet SOL) is asked only when phase 4 starts.
-- **Next step:** relaunch all seven phase-1 labels from `scripts/workflows/phase1.md` on this machine. They
-  continue from committed `main` (`e568153`). Then gate 1 (BUILD-PLAN §6). Live keys, Vultr, and the preview
-  deploy still wait for the user's OK.
+- **Next step:** relaunch all seven phase-1 labels from `scripts/workflows/phase1.md` in
+  `/Users/amar/Codes/ak/simlab`, continuing from `94d3caa`. Then gate 1 (BUILD-PLAN §6). Live keys, Vultr, and the
+  preview deploy still wait for the user's OK.
 
 ### Claims (only when both people work at the same time)
 
@@ -111,6 +115,11 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 17:04 CDT (Amar): Amar pointed at the existing checkout `/Users/amar/Codes/ak/simlab` ("we already have
+  the local setup here"). Fast-forwarded it from `1313ec8` to `94d3caa`. Discarded a whitespace-only edit in
+  `docs/hacktx/STRATEGY.md`. `.env.local` is present and was not printed or committed. Typecheck on this tree is
+  24 errors, not the stale 34. Next is still the seven-label relaunch.
 
 - 2026-10-24 16:57 CDT (Amar): Amar takes over on Amars-MacBook-Pro.local. Git identity is Amar Kushwaha. The clone is
   clean at `e568153`. No phase-1 label is reported done. P1-checks, P1-voice, P1-dock and P1-deploy landed partial
