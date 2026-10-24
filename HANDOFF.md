@@ -83,7 +83,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 17:31 CDT (machine clock).
+- **Updated:** 2026-10-24 17:32 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 16:57 CDT.
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Fast-forwarded to
   `94d3caa`. Do not build in `/Users/amar/Codes/sim`.
@@ -104,16 +104,17 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   `.env.local` on Jagrati's Mac is `.env.example` with empty values. Vultr, Vercel env upload and Tiger are not
   approved yet, so gate 1 runs without live Meta/SerpApi and rooms use the one-browser fallback until keys arrive.
   D3 (devnet SOL) is asked only when phase 4 starts.
-- **Next step:** wait for P1-uno, P1-engine, and P1-dock. Then fix the prerender of
-  `/en/boards/esp32-devkitc/touch` from `docs/requests/P1-health-to-P1-checks-esp32-devkitc-pin-text.md`. After that
-  build passes, rerun only the local `next start` smoke in `docs/hacktx/DEPLOY.md`. Do not link Vercel. Do not
-  relaunch P1-voice, P1-health, or all of P1-checks. Then gate 1 (BUILD-PLAN §6). Live keys, Vultr, and the preview
-  deploy still wait for the user's OK.
+- **Next step:** wait for P1-uno and P1-dock. Then fix the prerender of `/en/boards/esp32-devkitc/touch` from
+  `docs/requests/P1-health-to-P1-checks-esp32-devkitc-pin-text.md`. After that build passes, rerun only the local
+  `next start` smoke in `docs/hacktx/DEPLOY.md`. Do not link Vercel. Do not relaunch P1-engine, P1-voice,
+  P1-health, or all of P1-checks. Then gate 1 (BUILD-PLAN §6). Live keys, Vultr, and the preview deploy still
+  wait for the user's OK.
 - **Agents:** P1-checks `1e6f87c4-b1ea-4a31-9425-b1de6de9a88f` done (`39cca43`, `c168147`). P1-health
   `d393e1cb-35bc-4db4-bc0b-37c02c1b8e14` done (`28d8564`). P1-voice `b337455f-1b6d-45d5-93d8-51efb828d421` done
-  (`b1e5308`). P1-deploy `99124c0b-fd27-4276-b13f-a2038f8c3767` files done (`544e92f`). The smoke did not run.
-  Still running: P1-uno `ba4b1927-c019-44ae-9e2a-ed6bc9d344fa`, P1-engine `1a0582c2-ec24-42ab-8b3c-e2ac162b8e48`,
-  P1-dock `b44c4546-65c6-4e1b-a979-d542a595b6e2`.
+  (`b1e5308`). P1-engine `1a0582c2-ec24-42ab-8b3c-e2ac162b8e48` done (`f104e10`, `a45ec96`, `03eaab0`, `9d49d45`,
+  `af98853`, `a45e9c7`, `8ac4249`). P1-deploy `99124c0b-fd27-4276-b13f-a2038f8c3767` files done (`544e92f`). The
+  smoke did not run. Still running: P1-uno `ba4b1927-c019-44ae-9e2a-ed6bc9d344fa`, P1-dock
+  `b44c4546-65c6-4e1b-a979-d542a595b6e2`.
 - **Stopped (17:12):** an earlier wave in `/Users/amar/Codes/sim` was told to stop and not push. P1-checks
   `69f24d0b-22ca-48fe-9759-b3b2f8a29256` had already stood down. Also stopped: P1-checks
   `97b4fdff-0cfe-4a33-9392-efba74f27b24`, P1-uno `7bff6780-5777-4fc4-88ee-63de088785f4`, P1-health
@@ -127,6 +128,11 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 17:32 CDT (Amar): P1-engine done. Those seven commits are on `origin/main`, and
+  `figures/engine/probe.mjs` is in the history. They report 19 of 19 engine tests and 17 of 17 bench steps in the
+  Chromium probe. The uno-r3 figure was left unrebuild because `figures/boards/uno-r3.js` is still P1-uno's
+  uncommitted edit. Note to P1-uno is `docs/requests/P1-engine-to-P1-uno-assembly.md`. Not relaunched.
 
 - 2026-10-24 17:31 CDT (Amar): P1-voice done. `b1e5308` is on `origin/main`, and `src/lib/ai/voice-wav.ts` is in that
   history. They report 71 tests passed, Solana and hardware flags left off, and no SOL moved. P1-deploy's runbook
