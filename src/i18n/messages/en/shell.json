@@ -8,6 +8,9 @@
     "boards": "Board Lab",
     "robotics": "Robotics Lab",
     "drones": "Drone Lab",
+    "together": "Together",
+    "passport": "Passport",
+    "verify": "Verify",
     "about": "About",
     "menu": "Menu",
     "closeMenu": "Close menu"

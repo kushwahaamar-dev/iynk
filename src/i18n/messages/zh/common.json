@@ -28,6 +28,19 @@
       "controlsHint": "图示中所有可以按下的部分，都以按钮形式列在这里。",
       "buttons": "按钮",
       "parts": "部件"
+    },
+    "dock": {
+      "label": "实验室工具",
+      "hint": "本实验室的搭档、好友和真实零件",
+      "open": "打开实验室工具",
+      "close": "关闭实验室工具",
+      "tabs": {
+        "partner": "搭档",
+        "together": "一起",
+        "real": "动手做真的",
+        "passport": "护照",
+        "hardware": "硬件"
+      }
     }
   }
 }

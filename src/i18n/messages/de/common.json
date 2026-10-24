@@ -28,6 +28,19 @@
       "controlsHint": "Alles, was du in der Abbildung drücken kannst, als Schaltflächen.",
       "buttons": "Schaltflächen",
       "parts": "Bauteile"
+    },
+    "dock": {
+      "label": "Labor-Werkzeuge",
+      "hint": "Partner, Freunde und echte Bauteile für dieses Labor",
+      "open": "Werkzeuge öffnen",
+      "close": "Werkzeuge schließen",
+      "tabs": {
+        "partner": "Partner",
+        "together": "Gemeinsam",
+        "real": "In echt bauen",
+        "passport": "Pass",
+        "hardware": "Hardware"
+      }
     }
   }
 }

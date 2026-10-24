@@ -28,6 +28,19 @@
       "controlsHint": "Everything you can press in the figure, as buttons.",
       "buttons": "Buttons",
       "parts": "Parts"
+    },
+    "dock": {
+      "label": "Lab tools",
+      "hint": "Partner, friends and real parts for this lab",
+      "open": "Open lab tools",
+      "close": "Close lab tools",
+      "tabs": {
+        "partner": "Partner",
+        "together": "Together",
+        "real": "Build it for real",
+        "passport": "Passport",
+        "hardware": "Hardware"
+      }
     }
   }
 }

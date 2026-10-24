@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cx } from "@/components/ui/cx";
+import { useFeatures } from "@/lib/features";
 import { NAV, isActive, type NavId } from "./nav";
 
 type NavLinksProps = {
@@ -15,7 +16,8 @@ type NavLinksProps = {
 
 export function NavLinks({ lang, labels, layout, onNavigate }: NavLinksProps) {
   const pathname = usePathname() ?? "";
-  const entries = layout === "bar" ? NAV.filter((entry) => entry.bar) : NAV;
+  const { features } = useFeatures();
+  const entries = NAV.filter((entry) => (layout === "sheet" || entry.bar) && (!entry.feature || features[entry.feature]));
   return (
     <ul className={layout === "bar" ? "flex items-center gap-1" : "flex flex-col gap-2"}>
       {entries.map((entry) => {

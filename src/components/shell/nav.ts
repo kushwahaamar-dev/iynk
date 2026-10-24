@@ -2,7 +2,7 @@
 // array, so a new page (the hackathon layer's /together, /passport, /verify)
 // is one entry here plus a "nav.<id>" string in every locale's shell.json.
 
-export type NavId = "dashboard" | "boards" | "robotics" | "drones" | "about";
+export type NavId = "dashboard" | "boards" | "robotics" | "drones" | "together" | "passport" | "verify" | "about";
 
 export type NavEntry = {
   id: NavId;
@@ -10,6 +10,7 @@ export type NavEntry = {
   href: string;
   /** Show in the desktop bar too (the logo already links to the dashboard). */
   bar: boolean;
+  feature?: "solana";
 };
 
 export const NAV: readonly NavEntry[] = [
@@ -17,6 +18,9 @@ export const NAV: readonly NavEntry[] = [
   { id: "boards", href: "/boards", bar: true },
   { id: "robotics", href: "/robotics", bar: true },
   { id: "drones", href: "/drones", bar: true },
+  { id: "together", href: "/together", bar: true },
+  { id: "passport", href: "/passport", bar: false, feature: "solana" },
+  { id: "verify", href: "/verify", bar: false, feature: "solana" },
   { id: "about", href: "/about", bar: true },
 ];
 

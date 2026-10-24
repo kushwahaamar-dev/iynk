@@ -8,6 +8,9 @@
     "boards": "Board-Labor",
     "robotics": "Robotik-Labor",
     "drones": "Drohnen-Labor",
+    "together": "Gemeinsam",
+    "passport": "Pass",
+    "verify": "Prüfen",
     "about": "Über SimLab",
     "menu": "Menü",
     "closeMenu": "Menü schließen"

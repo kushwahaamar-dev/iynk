@@ -28,6 +28,19 @@
       "controlsHint": "Todo lo que puedes pulsar en la figura, como botones.",
       "buttons": "Botones",
       "parts": "Piezas"
+    },
+    "dock": {
+      "label": "Herramientas del laboratorio",
+      "hint": "Compañero, amigos y piezas reales para este laboratorio",
+      "open": "Abrir herramientas",
+      "close": "Cerrar herramientas",
+      "tabs": {
+        "partner": "Compañero",
+        "together": "Juntos",
+        "real": "Constrúyelo de verdad",
+        "passport": "Pasaporte",
+        "hardware": "Hardware"
+      }
     }
   }
 }
