@@ -83,7 +83,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 17:12 CDT (machine clock).
+- **Updated:** 2026-10-24 17:22 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 16:57 CDT.
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Fast-forwarded to
   `94d3caa`. Do not build in `/Users/amar/Codes/sim`.
@@ -103,11 +103,11 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   `.env.local` on Jagrati's Mac is `.env.example` with empty values. Vultr, Vercel env upload and Tiger are not
   approved yet, so gate 1 runs without live Meta/SerpApi and rooms use the one-browser fallback until keys arrive.
   D3 (devnet SOL) is asked only when phase 4 starts.
-- **Next step:** wait for the seven agents below. Any label that stops without its "Done when" line is relaunched
-  from `scripts/workflows/phase1.md`. Then gate 1 (BUILD-PLAN §6). Live keys, Vultr, and the preview deploy still
-  wait for the user's OK.
-- **Agents (17:06, simlab, still the only writers):** P1-health `d393e1cb-35bc-4db4-bc0b-37c02c1b8e14`, P1-checks
-  `1e6f87c4-b1ea-4a31-9425-b1de6de9a88f`, P1-uno `ba4b1927-c019-44ae-9e2a-ed6bc9d344fa`, P1-engine
+- **Next step:** wait for the six labels still running. Any label that stops without its "Done when" line is
+  relaunched from `scripts/workflows/phase1.md`. P1-checks is done. Then gate 1 (BUILD-PLAN §6). Live keys, Vultr,
+  and the preview deploy still wait for the user's OK.
+- **Agents:** P1-checks `1e6f87c4-b1ea-4a31-9425-b1de6de9a88f` done (`39cca43`, `c168147`). Still running: P1-health
+  `d393e1cb-35bc-4db4-bc0b-37c02c1b8e14`, P1-uno `ba4b1927-c019-44ae-9e2a-ed6bc9d344fa`, P1-engine
   `1a0582c2-ec24-42ab-8b3c-e2ac162b8e48`, P1-dock `b44c4546-65c6-4e1b-a979-d542a595b6e2`, P1-voice
   `b337455f-1b6d-45d5-93d8-51efb828d421`, P1-deploy `99124c0b-fd27-4276-b13f-a2038f8c3767`.
 - **Stopped (17:12):** an earlier wave in `/Users/amar/Codes/sim` was told to stop and not push. P1-checks
@@ -123,6 +123,12 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 17:22 CDT (Amar): P1-checks done and on `origin/main`. `39cca43` puts Board Lab and Robotics on
+  `runHeadless` and `evaluateChecks` in a Web Worker. `c168147` points the content tests at that path and writes
+  `docs/verify/phase1-lessons.md`. The table in that commit says 59/59 references pass and 59/59 starters fail.
+  Left open: the worker was not clicked through in a browser, and the S3 dimmer test still depends on uncommitted
+  prose in `src/i18n/content/en/boards/esp32-s3-devkitc-1.json` (P1-health owns that file). Not relaunched.
 
 - 2026-10-24 17:12 CDT (Amar): a second P1-checks in `/Users/amar/Codes/sim` stood down (`69f24d0b`, local note
   `c3c61a7`, not pushed). It reported 56 of 59 lessons passing on that clone at `94d3caa`. The 3 failures were

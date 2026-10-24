@@ -125,6 +125,8 @@ Short entries: who, when, what was asked or decided, in the user's words where i
 - **10-24 17:12, Amar (driver decision).** One P1-checks per tree. Keep `1e6f87c4` in simlab. The copy in
   `/Users/amar/Codes/sim` (`69f24d0b`) stood down on its own. The earlier wave in that clone was told to stop
   and not push. Its uncommitted files and unpushed note `c3c61a7` stay there.
+- **10-24 17:22, Amar (driver decision).** P1-checks meets its done line. Do not relaunch it. The S3 dimmer prose
+  stays with P1-health, which already has that JSON file open. The Web Worker browser pass waits for gate 1.
 
 ## 6. Lessons learned (apply them)
 
