@@ -842,8 +842,18 @@ function mountKeypad(spec){
   };
   const num = (v, lo, hi, dflt) => { const x = +v; return v != null && Number.isFinite(x) ? Math.min(hi, Math.max(lo, x)) : dflt; };
 
+  // pause: the host hid the figure (or the tab is hidden). Every animation step is held instead of run, so the figure's
+  // clock stops where it is; resume hands the held steps back to the core's frame driver
+  let hostPaused = false, held = new Set(), animate0 = null;
+  const paused = () => hostPaused || document.hidden;
+  const wake = () => { if (paused() || !animate0) return; const steps = [...held]; held = new Set(); for (const s of steps) animate0(s); };
+  const holdable = step => function held1(dt){ if (paused()){ held.add(held1); return false; } return step(dt); };
+  document.addEventListener('visibilitychange', wake);
+
   const H = {
     hello: () => sendReady(),
+    pause: () => { hostPaused = true; },
+    resume: () => { hostPaused = false; wake(); },
     press: m => press(m.id, m.choice),
     act: m => runAct(m.name, m.data),
     set: m => setState(m.state),
@@ -894,6 +904,7 @@ function mountKeypad(spec){
     addEventListener('blur', () => send('focus', { on: false }));
     const f0 = ui.flash; ui.flash = (text, ms) => { f0(text, ms); send('flash', { text: CF_T(text), en: String(text) }); };
     const r0 = ui.render; ui.render = () => { r0(); schedule(); };
+    animate0 = ui.animate; ui.animate = step => animate0(holdable(step));
     const go = () => { if (live) return; live = true; sendReady(); flush();
       for (const m of queue.splice(0)) if (m.type !== 'hello') handle(m); };
     if (document.readyState === 'loading') addEventListener('DOMContentLoaded', go, { once: true }); else queueMicrotask(go);
@@ -1048,10 +1059,17 @@ window.SL = window.SL || {};
 
   function wrongIndex(st){ const n = motorsList().length; return n ? (2 + 3 * st.wireJobs) % n : null; }
 
+  // the craft's own bench tests: api.pass(id) and craft.report(st) both come back as state.extra; a test only counts
+  // for the build it ran on, so taking the craft apart, rebuilding it or re-seating a part clears the passes and
+  // tells the craft (craft.reset(st, why), why = 'strip', 'build' or the part id)
+  function resetCraft(st, why){
+    st.passes = {};
+    if (typeof craft.reset === 'function') try { craft.reset(st, why); } catch (e) { note('reset: ' + e.message); }
+  }
   function place(st, id, o, auto){
     st.placed[id] = { t: 0, orient: o, leave: false, delay: 0 };
     st.sel = id;
-    if (!auto) sfx(st, 'whoosh');
+    if (!auto) { sfx(st, 'whoosh'); resetCraft(st, id); }
     if (id === 'XT60'){ if (st.fault) { st.fault = null; st.smoke = []; log(st, LOG.capNew); } if (!auto) st.smokeOk = false; }
     if (id === 'WIRES'){ if (!auto) { st.motorOk = false; st.wrong = wrongIndex(st); } st.wireJobs++; }
     if (id === 'FC' && !auto) st.accOk = false;
@@ -1071,6 +1089,7 @@ window.SL = window.SL || {};
         p.orient = o; p.t = 0; st.sel = id; sfx(st, 'whoosh');
         if (id === 'XT60'){ st.smokeOk = false; if (st.fault) { st.fault = null; st.smoke = []; log(st, LOG.capNew); } }
         if (id === 'FC') st.accOk = false;
+        resetCraft(st, id);
         return kick();
       }
       const miss = (part.after || []).find(a => !inPl(st, a));
@@ -1094,6 +1113,7 @@ window.SL = window.SL || {};
       if (id === 'XT60') { st.smokeOk = false; st.fault = null; st.smoke = []; }
       if (id === 'WIRES') st.motorOk = false;
       if (id === 'FC') st.accOk = false;
+      resetCraft(st, id);
       sfx(st, 'whoosh');
       say(st, MSG.off, { short: shortOf(id) }, 1400);
       kick();
@@ -1111,6 +1131,7 @@ window.SL = window.SL || {};
       if (!missing.length && !changed && checks) return say(st, MSG.built, null, 1600, 'tick');
       st.queue = missing; st.queueT = 0;
       st.smokeOk = true; st.motorOk = true; st.accOk = true; st.wrong = null;
+      resetCraft(st, 'build');
       log(st, LOG.auto);
       sfx(st, 'whoosh');
       if (!missing.length) say(st, MSG.buildDone, null, 2600, 'ding');
@@ -1123,6 +1144,7 @@ window.SL = window.SL || {};
       A.unplug(st, true); st.exT = 0; st.queue = []; st.sel = null; st.fault = null; st.smoke = [];
       fitted.sort((a, b) => (b.z || 0) - (a.z || 0)).forEach((p, i) => { const pl = st.placed[p.id]; pl.leave = true; pl.t = Math.min(1, pl.t); pl.delay = i * 0.05; });
       st.smokeOk = st.motorOk = st.accOk = false;
+      resetCraft(st, 'strip');
       sfx(st, 'whoosh');
       kick();
     },
@@ -1309,8 +1331,19 @@ window.SL = window.SL || {};
         propsSwapped: placed.PROPS === 1, motorChecked, accCal, capFault: st.fault === 'XT60', smokeTested, mistakes },
       log: { n: st.log.n, lines: st.log.lines.slice() },
       sfx: st.sfx ? { n: st.sfx.n, name: st.sfx.name } : { n: 0, name: null },
+      extra: extraOf(st),
     };
   }
+  function extraOf(st){
+    let own = {};
+    if (typeof craft.report === 'function'){
+      try { const r = craft.report(st); if (r && typeof r === 'object' && !Array.isArray(r)) own = r; }
+      catch (e) { if (!reportErr){ reportErr = true; note('report: ' + e.message); } }
+    }
+    return Object.assign({}, st.passes, own);
+  }
+  let reportErr = false;
+  SD.report = () => ui ? report(ui.st) : null;
 
   function accept(st, patch){
     if (!patch || typeof patch !== 'object' || Array.isArray(patch)) return 'patch must be an object';
@@ -1396,6 +1429,8 @@ window.SL = window.SL || {};
   }
 
   function scene(st){
+    // 'pal' pieces follow the palette the viewer picked (the core keeps its key in st.pal), else the craft's own
+    SD.G.pal = st.pal || craft.palette;
     if (st.sheet && SD.sheet) return SD.sheet(st);
     const M = craft.mat, MT = 4, G = SD.G, k = ease(st.xr || 0);
     G.ox = M / 2; G.oy = M / 2; G.oz = MT; G.dz = 0;
@@ -1415,11 +1450,13 @@ window.SL = window.SL || {};
       let op = pl.leave ? Math.max(0, pl.t) : 1;
       if (part.cover && k > 0) op *= 1 - 0.72 * k;
       const lbl = CF_ESC(T(part.name || part.short));
-      for (const it of its){
-        let svg = act('part', it.svg, `data-id="${part.id}" data-label="${lbl}"`);
+      its.forEach((it, j) => {
+        // one tab stop per part, on its first item; Enter or Space presses it (see define)
+        const a11y = j === 0 ? ` tabindex="0" role="button" aria-label="${lbl}" aria-pressed="${st.sel === part.id}"` : '';
+        let svg = act('part', it.svg, `data-id="${part.id}" data-label="${lbl}"${a11y}`);
         if (op < 0.999) svg = `<g opacity="${op.toFixed(3)}">${svg}</g>`;
         items.push({ box: it.box, at: it.at, svg });
-      }
+      });
       if (pl.t >= 1 && !pl.leave){
         const anchor = part.tag && part.tag.at ? SD.W(...part.tag.at) : its.length ? topOf(its[0].box) : null;
         if (anchor) ctx.tags.push({ id: part.id, at: anchor, dx: part.tag ? part.tag.dx || 0 : 0, dy: part.tag ? part.tag.dy || -26 : -26, text: part.short });
@@ -1491,6 +1528,8 @@ window.SL = window.SL || {};
     orient: id => ui ? orient(ui.st, id) : 0,
     get st(){ return ui ? ui.st : null; },
     render: () => ui && ui.render(),
+    // a craft button's test passed: state.extra.<id> is true until the craft is taken apart, rebuilt or re-seated
+    pass: id => { if (!ui || typeof id !== 'string' || !id) return; ui.st.passes = Object.assign({}, ui.st.passes, { [id]: true }); ui.render(); },
   };
 
   /* ---------- define + mount ---------- */
@@ -1512,12 +1551,13 @@ window.SL = window.SL || {};
       plugged: false, fault: null, popT: 0, smoke: [], wireJobs: 0, wrong: null, wrongMotor: null,
       test: null, queue: [], queueT: 0, later: [], t: 0, sheet: null, calc: {},
       spin: craft.motors.map((m, i) => i * 0.7), rpm: craft.motors.map(() => 0),
-      log: { n: 0, lines: [] }, sfx: { n: 0, name: null }, msg: '',
+      log: { n: 0, lines: [] }, sfx: { n: 0, name: null }, msg: '', passes: {},
     };
     for (const p of craft.parts) st.placed[p.id] = { t: 1, orient: 0, leave: false, delay: 0 };
     log(st, LOG.head, { log: craft.log });
     const style = document.createElement('style');
-    style.textContent = 'html.nolabels #fig .tag.dsel{display:inline}';
+    style.textContent = 'html.nolabels #fig .tag.dsel{display:inline} #fig [data-act=part]:focus{outline:none}'
+      + ' #fig [data-act=part]:focus-visible{outline:2px dashed var(--accent,#f4b829);outline-offset:2px}';
     document.head.appendChild(style);
     ui = mountFigure({
       fig: craft.fig, title: craft.title, turn: 'full', palette: craft.palette,
@@ -1546,11 +1586,26 @@ window.SL = window.SL || {};
         if (q.get('exploded') === '1') { s.ex = s.exT = 1; s.exploded = true; }
         if (q.get('sheet') === 'wiring') s.sheet = 'wiring';
         if (byId(q.get('sel'))) s.sel = q.get('sel');
-        if (q.get('plug') === '1' && s.placed.BATT && s.placed.XT60) s.plugged = true;
+        if (q.get('plug') === '1' && s.placed.BATT && s.placed.XT60){
+          s.plugged = true;
+          if (s.placed.XT60.orient === 1 && !s.smokeOk) s.fault = 'XT60';
+        }
       },
       embed: { accept: (s, patch) => accept(s, patch), report: s => report(s) },
     });
-    xrMount(() => ui, () => T('See-through: the top plate and battery fade so the stack, the power path and the signals show.'));
+    xrMount(() => ui, () => T(craft.xrCaption || 'See-through: the covers fade so the insides, the power path and the signals show.'));
+    const fig = document.getElementById('fig');
+    if (fig) fig.addEventListener('keydown', e => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const el = e.target.closest && e.target.closest('[data-act="part"][tabindex]');
+      if (!el) return;
+      e.preventDefault();
+      // the same path as a click, so the bridge reports the part too
+      const id = el.dataset.id;
+      el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0, pointerType: 'keyboard' }));
+      const again = fig.querySelector(`[data-act="part"][tabindex][data-id="${id}"]`);
+      if (again) again.focus();
+    });
     kick();
     return ui;
   };
@@ -2154,13 +2209,13 @@ window.SL = window.SL || {};
     G.dz = 0;
     if (t && t.kind === 'motors' && t.cur >= 0){
       const mo = c.motors[t.cur], wrong = t.wrong === t.cur, dirShown = wrong ? (mo.dir === 'CW' ? 'CCW' : 'CW') : mo.dir;
-      const z = frameTop(c) + motorH(ctx.design) + (c.arrowZ || 14), R = 22 * c.mat / 280, sgn = dirShown === 'CW' ? -1 : 1;
-      const a0 = (st.spin[t.cur] || 0) * .15, pts = Array.from({ length: 33 }, (_, i) => { const a = a0 + sgn * i / 32 * (288 / 360) * Math.PI * 2; return W(mo.x + R * Math.cos(a), mo.y + R * Math.sin(a), z); });
+      const Mf = motorFrame(mo, frameTop(c)), hz = motorH(ctx.design) + (c.arrowZ || 14), R = 22 * c.mat / 280, sgn = dirShown === 'CW' ? -1 : 1;
+      const a0 = (st.spin[t.cur] || 0) * .15, pts = Array.from({ length: 33 }, (_, i) => { const a = a0 + sgn * i / 32 * (288 / 360) * Math.PI * 2; return W(...Mf(R * Math.cos(a), R * Math.sin(a), hz)); });
       const col = wrong ? '#e2483d' : '#2f7d4f';
       s += `<path d="${pd(pts, false)}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linecap="round"/>`;
       const e = P(...pts[32]), e2 = P(...pts[29]), ang = Math.atan2(e[1] - e2[1], e[0] - e2[0]), hs = 6 * INK_K;
       s += `<path d="M${f(e[0] + Math.cos(ang) * hs)} ${f(e[1] + Math.sin(ang) * hs)}L${f(e[0] + Math.cos(ang + 2.4) * hs)} ${f(e[1] + Math.sin(ang + 2.4) * hs)}L${f(e[0] + Math.cos(ang - 2.4) * hs)} ${f(e[1] + Math.sin(ang - 2.4) * hs)}Z" fill="${col}" stroke="${INK}" stroke-width=".6"/>`;
-      const [X, Y] = P(...W(mo.x, mo.y, z + 10));
+      const [X, Y] = P(...W(...Mf(0, 0, hz + 10)));
       s += pill(X, Y - 14 * INK_K, `${mo.id} ${dirShown}${wrong ? ' ' + CF_T('WRONG') : ''}`, wrong ? '#e2483d' : '#fff4d6', wrong ? '#ffffff' : INK);
     }
     if (t && t.kind === 'calibrate' && ctx.fcAt){
@@ -2283,7 +2338,8 @@ window.SL = window.SL || {};
       if (!fitted) b += `<text x="${X(x + BW - 8)}" y="${Y(y + 13)}" font-size="${fs(8)}" text-anchor="end" font-family="ui-monospace,Menlo,monospace" fill="#857d6e">${CF_ESC(CF_T('not fitted'))}</text>`;
       if (fitted && on && nd.led) b += `<circle cx="${X(x + BW - 12)}" cy="${Y(y + 12)}" r="${fs(4)}" fill="${SD.colOf(nd.led)}" stroke="${INK}" stroke-width="${sw(.8)}"/>`;
       const part = c.byId[id];
-      s += act('part', `<g opacity="${fitted ? 1 : .6}">${b}</g>`, `data-id="${id}" data-label="${CF_ESC(CF_T(part.name || part.short))}"`);
+      const lbl = CF_ESC(CF_T(part.name || part.short));
+      s += act('part', `<g opacity="${fitted ? 1 : .6}">${b}</g>`, `data-id="${id}" data-label="${lbl}" tabindex="0" role="button" aria-label="${lbl}" aria-pressed="${sel}"`);
     }
     const legend = Wr.legend || ['power', 'signal', 'video', 'phase', ...['rf', 'ground'].filter(k => used.has(k))];
     legend.forEach((k, i) => {

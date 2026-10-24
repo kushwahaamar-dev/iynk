@@ -842,8 +842,18 @@ function mountKeypad(spec){
   };
   const num = (v, lo, hi, dflt) => { const x = +v; return v != null && Number.isFinite(x) ? Math.min(hi, Math.max(lo, x)) : dflt; };
 
+  // pause: the host hid the figure (or the tab is hidden). Every animation step is held instead of run, so the figure's
+  // clock stops where it is; resume hands the held steps back to the core's frame driver
+  let hostPaused = false, held = new Set(), animate0 = null;
+  const paused = () => hostPaused || document.hidden;
+  const wake = () => { if (paused() || !animate0) return; const steps = [...held]; held = new Set(); for (const s of steps) animate0(s); };
+  const holdable = step => function held1(dt){ if (paused()){ held.add(held1); return false; } return step(dt); };
+  document.addEventListener('visibilitychange', wake);
+
   const H = {
     hello: () => sendReady(),
+    pause: () => { hostPaused = true; },
+    resume: () => { hostPaused = false; wake(); },
     press: m => press(m.id, m.choice),
     act: m => runAct(m.name, m.data),
     set: m => setState(m.state),
@@ -894,6 +904,7 @@ function mountKeypad(spec){
     addEventListener('blur', () => send('focus', { on: false }));
     const f0 = ui.flash; ui.flash = (text, ms) => { f0(text, ms); send('flash', { text: CF_T(text), en: String(text) }); };
     const r0 = ui.render; ui.render = () => { r0(); schedule(); };
+    animate0 = ui.animate; ui.animate = step => animate0(holdable(step));
     const go = () => { if (live) return; live = true; sendReady(); flush();
       for (const m of queue.splice(0)) if (m.type !== 'hello') handle(m); };
     if (document.readyState === 'loading') addEventListener('DOMContentLoaded', go, { once: true }); else queueMicrotask(go);
@@ -1059,11 +1070,50 @@ const isIn = id => !!(st.placed[id]);
 const isSet = id => { const q = st.placed[id]; return !!(q && q.sold); };
 const isRev = id => { const q = st.placed[id]; return !!(q && q.orient === 1); };
 B.isIn = id => isIn(id); B.isSet = id => isSet(id);
-const nameOf = id => { const p = MD.byId[id]; return p ? T(p.name) : id; };
+const nameOf = id => { const p = MD.byId[id] || MAT.byId[id]; return p ? T(p.name) : id; };
 const partsIn = g => MD.parts.filter(p => p.group === g);
 const coldHit = (seed, t) => { const k = Math.floor(t * 3.3), x = Math.sin((k + 1) * 12.9898 + seed * 78.233) * 43758.5453; return x - Math.floor(x) < .42; };
 const hashS = s => { let h = 7; for (const ch of String(s)) h = (h * 31 + ch.charCodeAt(0)) % 9973; return h; };
 const coldOff = id => st.faults.includes('cold:' + id) && coldHit(hashS(id), st.t);
+
+/* ---------- the mat: boards and parts beside the base with fixed, pre-routed wires, set out one step at a time ----------
+   def.periph   [{ id, board | part, at: [x, y], size?, legs?, params?, step? }]: at is the item's lower-left corner in
+                base board mm; a board is drawn assembled, a part with its breadboard drawing (legs at `legs` or spread
+                along its front edge)
+   def.wires    [{ from, to, color, step? }]: ends are base pins ('J1.4' or a net), a periph board's pin ('NANO.D5')
+                or a periph part's leg ('MOTA.+')
+   def.matSteps [{ id, label }] in order; the 'mat' button and set {matStep} reveal items up to that step, items
+                without a step are always there. The wires carry no current: the bench's model() says what they do. */
+let MAT = { items: [], byId: {}, steps: [], wires: [] };
+function prepMat(def){
+  const items = [], byId = {};
+  for (const q of def.periph || []){
+    if (!q || typeof q.id !== 'string' || !Array.isArray(q.at)){ note('periph without an id or "at"'); continue; }
+    if (byId[q.id] || MD.byId[q.id]){ note(`periph ${q.id}: the id is already used`); continue; }
+    let it;
+    if (q.board){
+      const reg = B.defs.board[q.board] || B.defs.module[q.board];
+      if (!reg){ note(`periph ${q.id}: board "${q.board}" is not on the page (add // @cf use boards/${q.board}.js)`); continue; }
+      const pmd = prep(withVariant(reg, q.variant || reg.variant), 'board');
+      it = { kind: 'board', md: pmd, w: pmd.pcb.w, h: pmd.pcb.h, name: q.name || pmd.name };
+    } else if (q.part){
+      const partDef = B.parts[q.part];
+      if (!partDef){ note(`periph ${q.id}: unknown part "${q.part}"`); continue; }
+      const [w, h] = q.size || partDef.matSize || [20, 12];
+      it = { kind: 'part', def: partDef, w, h, name: q.name || partDef.name || q.part };
+    } else { note(`periph ${q.id}: give it a board or a part`); continue; }
+    Object.assign(it, { id: q.id, q, at: q.at, step: q.step || null });
+    items.push(it); byId[q.id] = it;
+  }
+  const steps = (def.matSteps || []).map(s => typeof s === 'string' ? { id: s, label: s } : s).filter(s => s && typeof s.id === 'string');
+  for (const s of steps) if (CF_SLUG(s.id) !== s.id) note(`mat step "${s.id}": use a lower-case slug id`);
+  const wires = (def.wires || []).filter(w => w && typeof w.from === 'string' && typeof w.to === 'string');
+  for (const x of [...items, ...wires]) if (x.step && !steps.some(s => s.id === x.step)) note(`mat: step "${x.step}" is not in matSteps`);
+  MAT = { items, byId, steps, wires };
+}
+const stepOn = sid => !sid || MAT.steps.findIndex(s => s.id === sid) <= st.matStep;
+const periphOn = id => { const it = MAT.byId[id]; return !!it && stepOn(it.step); };
+B.matSetup = () => MAT;
 
 /* ---------- messages ---------- */
 const MSG = {
@@ -1087,14 +1137,21 @@ function evaluate(){
   const pw = MD.power, ev = { rails: {}, status: 'off', fault: null, why: '', load: 0 };
   const src = st.power ? (pw.sources || {})[st.power] : null;
   if (!src){ return ev; }
-  const sv = st.supply[st.power] != null ? st.supply[st.power] : src.v;
+  // one source can feed several rails at once (a bench supply: feeds { VM: 7.4, VCC: 5 }); a wrong voltage scales them all
+  const feeds = src.feeds || {}, v0 = src.v != null ? src.v : Math.max(0, ...Object.values(feeds).map(Number));
+  const sv = st.supply[st.power] != null ? st.supply[st.power] : v0, scale = v0 ? sv / v0 : 1;
   const rev = st.faults.includes('reverse-polarity:' + st.power);
   const ok = id => !id || (isSet(id) && !isRev(id) && !coldOff(id));
-  if (src.part && !isSet(src.part)){ ev.status = 'no-power'; ev.why = T('No power: {name} is missing', { name: nameOf(src.part) }); return ev; }
-  const rails = pw.rails || {};
+  const gone = [src.part, ...(src.parts || [])].find(id => id && (MAT.byId[id] ? !periphOn(id) : !isSet(id)));
+  if (gone){ ev.status = 'no-power'; ev.why = T('No power: {name} is missing', { name: nameOf(gone) }); return ev; }
+  const rails = Object.assign(Object.fromEntries(Object.keys(feeds).map(r => [r, { from: [] }])), pw.rails || {});
   let burned = null;
   for (const [rid, rail] of Object.entries(rails)){
     let best = 0;
+    if (own(feeds, rid)){
+      if (rev) burned = burned || { part: rail.burns || (pw.mcu && pw.mcu.part), kind: 'reverse' };
+      else best = +feeds[rid] * scale;
+    }
     for (const fd of rail.from || []){
       let vin = 0;
       if (fd.src){ if (fd.src !== st.power) continue; vin = rev ? -sv : sv; }
@@ -1181,7 +1238,8 @@ const A = B.actions = {};
 const guard = () => { if (st.power){ say(MSG.live); return false; } if (st.exploded){ say(MSG.exploded); return false; } return true; };
 const reflowed = () => partsIn('smd').every(p => !isIn(p.id) || isSet(p.id)) && partsIn('smd').some(p => isIn(p.id));
 const smdDone = () => partsIn('smd').length === 0 || (st.reflowT == null && partsIn('smd').every(p => st.left[p.id] || isSet(p.id)));
-A.strip = () => { if (!guard()) return; st.placed = {}; for (const p of MD.parts) if (p.fixed) st.placed[p.id] = { orient: 0, sold: true }; st.reflowT = null; st.solderT = null; sfx('pop'); say('Stripped to the bare PCB: build it back part by part'); refresh(); };
+const dropMissing = () => { st.faults = st.faults.filter(f => !f.startsWith('missing:')); };
+A.strip = () => { if (!guard()) return; st.placed = {}; dropMissing(); st.matStep = -1; for (const p of MD.parts) if (p.fixed) st.placed[p.id] = { orient: 0, sold: true }; st.reflowT = null; st.solderT = null; sfx('pop'); say('Stripped to the bare PCB: build it back part by part'); refresh(); };
 A.pnp = () => {
   if (!guard()) return;
   const todo = partsIn('smd').filter(p => !isIn(p.id) && !st.left[p.id] && !p.fixed);
@@ -1191,11 +1249,12 @@ A.pnp = () => {
   say('Pick and place: {n} parts, then into the reflow oven', { n: todo.length });
   kick();
 };
-A.place = (id, orient = 0) => {
+A.place = (id, orient = 0, quiet = false) => {
   const p = MD.byId[id]; if (!p) return say('No part {name} on this board', { name: id });
   if (!guard()) return;
   if (isIn(id)){ return say('{name} is already on the board', { name: nameOf(id) }); }
-  if (p.group === 'smd'){ st.drop[id] = 0; st.placed[id] = { orient, sold: true }; delete st.left[id]; say('{name} soldered on with hot air', { name: nameOf(id) }); refresh(); return; }
+  if (p.group === 'smd'){ st.drop[id] = 0; st.placed[id] = { orient, sold: true }; delete st.left[id]; backOn(id); if (quiet) return true;
+    say('{name} soldered on with hot air', { name: nameOf(id) }); refresh(); return true; }
   if (!smdDone()) return say(MSG.smdFirst);
   if (p.group === 'tall' && partsIn('low').some(q => !isIn(q.id) && !st.left[q.id] && !q.fixed)) return say(MSG.lowFirst);
   if (p.group === 'last'){
@@ -1203,8 +1262,18 @@ A.place = (id, orient = 0) => {
     const missingLow = MD.parts.some(q => (q.group === 'low' || q.group === 'tall') && !isIn(q.id) && !st.left[q.id] && !q.fixed);
     if (unsold || missingLow || (p.inSocket && !isSet(p.inSocket))) return say(p.inSocket ? MSG.socketAfter : MSG.lastAfter);
   }
-  st.placed[id] = { orient, sold: p.group === 'last' }; st.drop[id] = 0; delete st.left[id];
+  st.placed[id] = { orient, sold: p.group === 'last' }; st.drop[id] = 0; delete st.left[id]; backOn(id);
+  if (quiet) return true;
   sfx('place'); say(orient ? '{name} placed the wrong way round' : '{name} placed', { name: nameOf(id) }); refresh();
+  return true;
+};
+// every missing part of one group, in board order; stops at the first refusal (which it says)
+A.placeGroup = g => {
+  const todo = MD.parts.filter(p => p.group === g && !p.fixed && !isIn(p.id));
+  if (!todo.length) return say('Every part is on the board');
+  let n = 0;
+  for (const p of todo){ if (A.place(p.id, 0, true) !== true) break; n++; }
+  if (n){ sfx('place'); say('{n} parts placed', { n }); refresh(); }
 };
 A.solder = () => {
   if (!guard()) return;
@@ -1222,10 +1291,11 @@ A.remove = id => {
   delete st.placed[id]; st.left[id] = true; sfx('pop');
   say(p.group === 'smd' ? '{name} removed with hot air' : '{name} removed', { name: nameOf(id) }); refresh();
 };
-A.restore = id => { const p = MD.byId[id]; if (!p || isIn(id)) return; if (!guard()) return; st.placed[id] = { orient: 0, sold: true }; delete st.left[id]; refresh(); };
+A.restore = id => { const p = MD.byId[id]; if (!p || isIn(id)) return; if (!guard()) return; st.placed[id] = { orient: 0, sold: true }; delete st.left[id]; backOn(id); refresh(); };
 A.build = what => {
   if (st.power) return say(MSG.live);
-  st.placed = {}; st.left = {}; st.reflowT = null; st.solderQ = null;
+  st.placed = {}; st.left = {}; st.reflowT = null; st.solderQ = null; dropMissing();
+  st.matStep = what === 'assembled' ? MAT.steps.length - 1 : -1;
   if (what === 'assembled') for (const p of MD.parts) st.placed[p.id] = { orient: 0, sold: true };
   else for (const p of MD.parts) if (p.fixed) st.placed[p.id] = { orient: 0, sold: true };
   refresh();
@@ -1258,18 +1328,30 @@ A.press = (id, down) => {
   const c = p.control, was = st.ctl[id] || 0;
   if (c.type === 'slide'){ if (down) st.ctl[id] = (was + 1) % ((c.positions || [0, 1]).length); }
   else st.ctl[id] = down ? 1 : 0;
-  if (c.action === 'reset' && was && !down){ st.t = MD.def.bootloader ? -(MD.def.bootloader.wait || 1) : 0; st.serialN = -1; if (st.ctlBoot) st.boot = 'download'; }
+  if (c.action === 'reset' && was && !down){ st.t = MD.def.bootloader ? -(MD.def.bootloader.wait || 1) : 0; st.serialN = -1;
+    if (st.ctlBoot) st.boot = 'download'; else if (st.boot === 'download') st.boot = null; }
   if (c.action === 'boot') st.ctlBoot = !!down;
   if (c.action === 'bootsel' && down && !st.power) st.boot = 'uf2';
   if (down) sfx('click');
   refresh(true);
 };
+// a part left out by a fault stays in st.faults as missing:<id> until it is back on the board
+const backOn = id => { st.faults = st.faults.filter(f => f !== 'missing:' + id); };
 A.fault = id => {
-  if (id == null){ st.faults = []; st.supply = {}; refresh(true); return; }
+  if (id == null){
+    for (const f of st.faults) if (f.startsWith('missing:')){ const pid = f.slice(8); if (MD.byId[pid] && !isIn(pid)){ st.placed[pid] = { orient: 0, sold: true }; delete st.left[pid]; } }
+    st.faults = []; st.supply = {}; refresh(true); return;
+  }
   if (typeof id !== 'string') return;
   const [kind, a, b] = id.split(':');
   if (kind === 'reversed'){ const p = MD.byId[a]; if (!p || !p.polar) return say('{name} has no wrong way round', { name: a }); if (st.power) A.power(null); st.placed[a] = { orient: 1, sold: true }; refresh(); return; }
-  if (kind === 'missing'){ if (st.power) A.power(null); A.remove(a); return; }
+  if (kind === 'missing'){
+    const p = MD.byId[a]; if (!p || p.fixed) return say('No part {name} on this board', { name: a });
+    if (st.power) A.power(null);
+    if (isIn(a)) A.remove(a);
+    if (!isIn(a) && !st.faults.includes(id)) st.faults.push(id);
+    refresh(); return;
+  }
   if (kind === 'wrong-voltage'){ const v = +b; if (!(MD.power.sources || {})[a] || !Number.isFinite(v)) return say('Unknown supply {name}', { name: a }); st.supply[a] = v; }
   if (kind === 'reverse-polarity' && !(MD.power.sources || {})[a]) return say('Unknown supply {name}', { name: a });
   if (!st.faults.includes(id)) st.faults.push(id);
@@ -1283,7 +1365,17 @@ A.view = v => {
   st.view = v; refresh(); return true;
 };
 A.explode = on => { const want = on == null ? !st.exploded : !!on; if (want && st.power) return say(MSG.live); st.exploded = want; kick(); };
-A.select = id => { st.sel = id && (MD.byId[id] || (B.bbPart && B.bbPart(id))) ? id : null; refresh(); };
+A.select = id => { st.sel = id && (MD.byId[id] || MAT.byId[id] || (B.bbPart && B.bbPart(id))) ? id : null; refresh(); };
+// set the mat out up to step sid (null: clear it); one step forward at a time, never on a live bench
+A.matStep = sid => {
+  const i = sid == null ? -1 : MAT.steps.findIndex(s => s.id === sid);
+  if (sid != null && i < 0) return say('No mat step {name}', { name: sid });
+  if (i > st.matStep + 1) return say('One step at a time: {name} first', { name: T(MAT.steps[st.matStep + 1].label) });
+  if (i === st.matStep) return true;
+  if (!guard()) return;
+  st.matStep = i; sfx(i >= 0 ? 'place' : 'pop'); if (i >= 0) say(MAT.steps[i].label);
+  refresh(); return true;
+};
 A.setPins = pins => { st.ext = true; for (const [k, v] of Object.entries(pins)){ const x = +v; if (typeof k === 'string' && k.length < 24 && Number.isFinite(x)) st.pins[k] = clamp(x, 0, 1); } refresh(); };
 
 /* ---------- sound: figures emit sfx events; the host plays them (S10) ---------- */
@@ -1321,16 +1413,35 @@ function step(dt){
   if (st.txT > 0) st.txT = Math.max(0, st.txT - dt);
   st.o = outputs();
   if (B.bbStep) B.bbStep(st, dt);
+  runModel(dt);
   const more = busy();
   if (!more) looping = false;
   return more;
 }
+// tests and the figure probe run the clock without waiting for frames
+B.advance = (seconds, dt = 1 / 30) => { for (let t = 0; t < seconds - 1e-9; t += dt) step(Math.min(dt, seconds - t)); ui && ui.render(); };
 const emit = line => { st.serial = { n: (st.serial ? st.serial.n : 0) + 1, line }; st.txT = .09; };
+
+/* a bench's electrical behaviour in its own words: def.model(st, dt) -> { readings: {…}, status: 'text' } runs after the
+   outputs every frame (dt 0 on a state change); st.o.pins, st.ev.rails, st.t, st.mode and st.matStep are its inputs.
+   readings go out as state.readings (numbers rounded), status as state.benchStatus and on the stats panel */
+const modelErrs = new Set();
+function runModel(dt){
+  const fn = MD.def.model;
+  if (typeof fn !== 'function') return;
+  let r = null;
+  try { r = fn(st, dt); } catch (e) { if (!modelErrs.has(e.message)){ modelErrs.add(e.message); note('model: ' + e.message); } }
+  st.readings = r && r.readings && typeof r.readings === 'object' ? r.readings : {};
+  st.benchStatus = r && typeof r.status === 'string' ? r.status : null;
+}
+const roundDeep = v => typeof v === 'number' ? (Number.isFinite(v) ? Math.round(v * 1000) / 1000 : null)
+  : Array.isArray(v) ? v.map(roundDeep) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, roundDeep(x)])) : v;
 function refresh(newPower){
   if (!st) return;
   const prev = st.ev ? st.ev.status : 'off';
   st.ev = evaluate(); st.o = outputs();
   if (B.bbStep) B.bbStep(st, 0);
+  runModel(0);
   if (newPower && st.power){
     const ev = st.ev;
     if (ev.status === 'fault' && prev !== 'fault'){ const fk = ev.fault.kind; sfx(fk === 'pop' ? 'pop' : 'sizzle'); say(ev.fault.msg, null, 3200); }
@@ -1504,19 +1615,99 @@ function xrNotes(k){
   return xrCallouts(items, [Math.min(pc[0][0], pc[1][0]), Math.max(pc[0][0], pc[1][0]), Math.min(pc[0][1], pc[1][1]), Math.max(pc[0][1], pc[1][1]), G.top, G.top + 10]);
 }
 
+/* things on the mat: a periph board is drawn in its own frame (G and B.md swapped while it draws) */
+function inFrame(it, fn){
+  const s = { ox: G.ox, oy: G.oy, pw: G.pw, ph: G.ph, z0: G.z0, top: G.top }, md0 = B.md, pc = it.md.pcb;
+  G.ox = s.ox + s.ph - it.at[1] - pc.h; G.oy = s.oy + s.pw - it.at[0] - pc.w; G.pw = pc.w; G.ph = pc.h;
+  G.z0 = G.matH + pc.standoff; G.top = G.z0 + pc.thick; B.md = it.md;
+  try { return fn(); } finally { Object.assign(G, s); B.md = md0; }
+}
+const matErrs = new Set();
+const matNote = m => { if (!matErrs.has(m)){ matErrs.add(m); note(m); } };
+const periphData = it => `data-id="${CF_ESC(it.id)}" data-label="${CF_ESC(it.name)}"`;
+function periphBoard(it, k, live){
+  return inFrame(it, () => {
+    const pc = it.md.pcb, items = [], data = periphData(it), sel = st.sel === it.id;
+    const wrap = svg => act('periph', sel ? `<g class="bsel">${svg}</g>` : svg, data);
+    items.push({ box: aabb([BP(0, 0, -pc.thick), BP(pc.w, pc.h, 0)]), svg: wrap(slabW(BP, 0, 0, pc.w, pc.h, -pc.thick, 0, matOf(pc.color))) });
+    for (const [x, y] of [[1.5, 1.5], [pc.w - 1.5, 1.5], [1.5, pc.h - 1.5], [pc.w - 1.5, pc.h - 1.5]]){
+      const w = BP(x, y, 0); items.push({ box: [[w[0] - 1, w[1] - 1, G.matH], [w[0] + 1, w[1] + 1, G.z0]], svg: cyl(w[0], w[1], G.matH, G.z0, 1.1, M.gold, toneI, .6, 10) });
+    }
+    const o = { pins: {}, leds: {}, ev: st.ev };
+    for (const p of it.md.parts){
+      const kd = B.kinds[p.kind], lit = p.led && p.led.rail && live ? 1 : 0;
+      const { ctx, items: its } = partCtx(p, st, { k, lit, sold: true, o });
+      try { kd.draw(ctx); } catch (e) { matNote(`periph ${it.id} ${p.id}: ${e.message}`); }
+      for (const x of its) items.push({ box: x.box, svg: wrap(x.svg) });
+    }
+    return items;
+  });
+}
+const legsOf = it => {
+  const n = (it.def.legs || []).length, z = G.matH - G.top;
+  const pts = it.q.legs || Array.from({ length: n }, (_, i) => [it.at[0] + it.w * (i + 1) / (n + 1), it.at[1]]);
+  return pts.map(([x, y]) => BP(x, y, z));
+};
+function periphPart(it, k, live){
+  const z = G.matH - G.top, items = [], sel = st.sel === it.id, legs = legsOf(it);
+  const p = Object.assign({ id: it.id, part: it.q.part }, it.def.example || {}, it.q.params || {});
+  const pl = { at: (x, y, zz = z) => BP(it.at[0] + x, it.at[1] + y, zz), zTop: z, geo: null };
+  const put = (bx, svg) => { if (svg) items.push({ box: bx, svg: act('periph', sel ? `<g class="bsel">${svg}</g>` : svg, periphData(it)) }); };
+  try { it.def.draw({ p, st, legs, holes: [], origin: BP(it.at[0] + it.w / 2, it.at[1] + it.h / 2, z), pl, m: (st.readings || {})[it.id] || {}, lit: live ? 1 : 0, sel, k, put }); }
+  catch (e) { matNote(`periph ${it.id} (${it.q.part}): ${e.message}`); }
+  return items;
+}
+// a wire end in world coordinates, and the base net it sits on (for the live colour)
+function matEnd(ref){
+  const m = /^([A-Za-z_][\w-]*)\.(.+)$/.exec(ref), it = m && MAT.byId[m[1]];
+  if (it && it.kind === 'board'){
+    const pmd = it.md, pin = pmd.pins[m[2]] || (pmd.netPins[m[2]] || []).map(id => pmd.pins[id])[0] || Object.values(pmd.pins).find(q => q.label === m[2]);
+    if (!pin) return null;
+    const part = pmd.byId[pin.part];
+    return { pt: inFrame(it, () => BP(pin.at[0], pin.at[1], part && part.side === 'bottom' ? .5 : (part ? part.h + (part.z || 0) - 2 : 1))), net: null };
+  }
+  if (it){ const i = (it.def.legs || []).indexOf(m[2]); return i < 0 ? null : { pt: legsOf(it)[i], net: null }; }
+  const pin = MD.pins[ref] || (MD.netPins[ref] ? MD.pins[MD.netPins[ref][0]] : null);
+  if (!pin) return null;
+  const part = MD.byId[pin.part];
+  return { pt: BP(pin.at[0], pin.at[1], part && part.side === 'bottom' ? -MD.pcb.thick : (part ? part.h + (part.z || 0) - 2 : 1)), net: pin.net, pin };
+}
+function matItems(k){
+  if (!MAT.items.length && !MAT.wires.length) return [];
+  const items = [], live = !!st.power && Object.values(st.ev.rails).some(v => v > .5);
+  for (const it of MAT.items) if (stepOn(it.step)) items.push(...(it.kind === 'board' ? periphBoard(it, k, live) : periphPart(it, k, live)));
+  const wire = B.parts.wire;
+  if (wire) for (const w of MAT.wires){
+    if (!stepOn(w.step)) continue;
+    const a = matEnd(w.from), b = matEnd(w.to);
+    if (!a || !b){ matNote(`wire ${w.from}-${w.to}: unknown end`); continue; }
+    const net = a.net || b.net, on = !!net && ((st.o.pins[net] || 0) > .5 || (st.ev.rails[net] || 0) > .5);
+    const pin = a.pin || b.pin;
+    wire.draw({ a: a.pt, b: b.pt, color: w.color || 'green', live: on, k, put: (bx, svg) => items.push({ box: bx, svg: act('pin', svg,
+      `data-id="${CF_ESC(pin ? pin.id : w.from)}" data-part="${CF_ESC(pin ? pin.part : '')}" data-label="${CF_ESC(T('Wire from {a} to {b}', { a: w.from, b: w.to }))}"`) }) });
+  }
+  return items;
+}
+// the mat's extent in base board mm: the board's margins, grown to hold every periph (set out or not, so the frame never jumps)
+const matBox = () => {
+  const m = MD.mat, box = [-m.left, -m.front, MD.pcb.w + m.right, MD.pcb.h + m.back];
+  for (const it of MAT.items){ box[0] = Math.min(box[0], it.at[0] - 6); box[1] = Math.min(box[1], it.at[1] - 6); box[2] = Math.max(box[2], it.at[0] + it.w + 6); box[3] = Math.max(box[3], it.at[1] + it.h + 6); }
+  return box;
+};
+
 /* the board view (also the base of the breadboard view) */
 B.boardItems = (o, k) => [...drawParts(o, k), ...drawSupply()];
 B.drawBoardBase = k => drawPCB(k);
 function sceneBoard(k){
   if (MD.def.noBoard) return VIEWS.breadboard ? VIEWS.breadboard.scene(k) : '';
-  const m = MD.mat, mat = drawMat(-m.left, -m.front, MD.pcb.w + m.right, MD.pcb.h + m.back);
+  const mat = drawMat(...matBox());
   const pcb = drawPCB(k);
   let s = mat.svg;
   // standoffs, then the PCB's shadow on the mat
   for (const [x, y] of MD.def.holes || []){ const w = BP(x, y, 0); s += cyl(w[0], w[1], G.matH, G.z0, 2.3, M.gold, toneI, .8, 12); }
   s += castShadow([...pcb.top, ...pcb.bot], G.matH, mat.top);
   s += pcb.svg;
-  const items = B.boardItems(st.o, k);
+  const items = [...B.boardItems(st.o, k), ...matItems(k)];
   s += byDepth(items);
   s += xrLayer(k) + drawTags(k) + xrNotes(k);
   return s;
@@ -1540,7 +1731,7 @@ function viewFit(name, corners){
 B.boxCorners = ([x0, y0, z0, x1, y1, z1]) => { const c = []; for (const x of [x0, x1]) for (const y of [y0, y1]) for (const z of [z0, z1]) c.push([x, y, z]); return c; };
 const strokeDiv = (svg, s) => s === 1 ? svg : svg.replace(/stroke-width="([\d.]+)"/g, (m, w) => `stroke-width="${(+w / s).toFixed(3)}"`).replace(/r="([\d.]+)"/g, (m, r) => m);
 B.viewDef('board', {
-  bounds: () => { const m = MD.mat, a = BP(-m.left, -m.front, -G.top), b = BP(MD.pcb.w + m.right, MD.pcb.h + m.back, MD.height); return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), 0, Math.max(a[0], b[0]), Math.max(a[1], b[1]), G.top + MD.height]; },
+  bounds: () => { const [x0, y0, x1, y1] = matBox(), a = BP(x0, y0, -G.top), b = BP(x1, y1, MD.height); return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), 0, Math.max(a[0], b[0]), Math.max(a[1], b[1]), G.top + MD.height]; },
   scene: k => sceneBoard(k),
 });
 
@@ -1565,6 +1756,7 @@ const statusText = () => {
   if (st.up) return T('UPLOADING');
   return T({ off: 'OFF', 'no-power': 'NO POWER', powered: 'POWERED', running: 'RUNNING', brownout: 'BROWN-OUT', fault: 'FAULT', reset: 'IN RESET' }[s] || s);
 };
+const GROUP_NAMES = { low: 'All low parts', tall: 'All tall parts', last: 'All last parts' };
 const PRESET_OHMS = [100, 220, 330, 1000, 4700, 10000, 100000];
 const PARAM_NAMES = { color: 'Colour', ohms: 'Value', pos: 'Knob position', lux: 'Light level', turned: 'Turned round', pressed: 'Pressed' };
 // picker values for a numeric range: the usual resistor values, two states for an on/off number, decades for wide ranges
@@ -1582,7 +1774,7 @@ function partButtons(){
     const vals = B.paramRange(spec) ? rangeSteps(k, spec) : spec;
     const onoff = typeof spec[0] === 'boolean' || /^(pressed|on|closed|down)$/.test(k);
     const show = v => onoff ? T(v ? 'yes' : 'no') : k === 'ohms' ? B.ohmsText(v) : k === 'lux' ? v + ' lx' : k === 'pos' ? Math.round(v * 100) + ' %' : T(String(v));
-    bt.push({ id: k, label: PARAM_NAMES[k] || k[0].toUpperCase() + k.slice(1), choices: () => vals.map(v => ({ id: CF_SLUG(String(v)), label: show(v),
+    bt.push({ id: k, label: (def.paramNames && def.paramNames[k]) || PARAM_NAMES[k] || k[0].toUpperCase() + k.slice(1), choices: () => vals.map(v => ({ id: CF_SLUG(String(v)), label: show(v),
       onClick: () => { const q = target(); if (!q) return; B.bbParams(st, { [q.id]: { [k]: v } }); say('{part} is now {value}', { part: q.id, value: show(v) }); } })) });
   }
   return bt;
@@ -1601,8 +1793,14 @@ function buttons(){
     onClick: () => { A.press(p.id, true); if (p.control.type !== 'slide') setTimeout(() => A.press(p.id, false), 260); } });
   bt.push({ id: 'strip', label: 'Strip to bare PCB', onClick: () => A.strip() });
   if (partsIn('smd').length) bt.push({ id: 'pnp', label: 'Pick & place SMD', onClick: () => A.pnp() });
+  if (MAT.steps.length) bt.push({ id: 'mat', label: 'Set up the mat', choices: () => MAT.steps.map((s, i) => ({ id: s.id, label: s.label, current: st.matStep >= i, onClick: () => A.matStep(s.id) })) });
   bt.push({ id: 'place', label: 'Place a part', choices: () => {
     const out = [];
+    for (const g of ['low', 'tall', 'last']){
+      const all = MD.parts.filter(p => p.group === g && !p.fixed);
+      if (all.length > 1){ const left = all.filter(p => !isIn(p.id)).length;
+        out.push({ id: 'group-' + g, label: T(GROUP_NAMES[g]), disabled: !left, why: left ? undefined : T('Every part is on the board'), onClick: () => A.placeGroup(g) }); }
+    }
     for (const p of MD.parts){
       if (isIn(p.id) || p.fixed) continue;
       const nm = p.id + ' · ' + T(p.name);
@@ -1611,11 +1809,11 @@ function buttons(){
         out.push({ id: p.id.toLowerCase() + '-rev', label: nm + ' · ' + T(op[1]), onClick: () => A.place(p.id, 1) }); }
       else out.push({ id: p.id.toLowerCase(), label: nm, onClick: () => A.place(p.id, 0) });
     }
-    return out.length ? out : [{ id: 'none', label: 'Every part is on', disabled: true, why: 'Every part is on the board' }];
+    return out.some(c => !c.disabled) ? out : [{ id: 'none', label: 'Every part is on', disabled: true, why: 'Every part is on the board' }];
   } });
   bt.push({ id: 'solder', label: 'Solder joints', onClick: () => A.solder() });
   bt.push({ id: 'remove', label: 'Remove a part', choices: () => MD.parts.filter(p => isIn(p.id) && !p.fixed).map(p => ({ id: p.id.toLowerCase(), label: p.id + ' · ' + T(p.name), onClick: () => A.remove(p.id) })) });
-  bt.push({ id: 'break', label: 'Break it', choices: () => faultChoices().map(([id, label]) => ({ id: CF_SLUG(id), label, current: st.faults.includes(id), onClick: () => A.fault(id) })) });
+  bt.push({ id: 'break', label: 'Break it', choices: () => faultChoices().map(([id, label]) => ({ id: id ? CF_SLUG(id) : 'repair', label, current: st.faults.includes(id), onClick: () => A.fault(id) })) });
   bt.push({ id: 'view', label: 'View', choices: () => [
     { id: 'board', label: 'Board', current: st.view === 'board' && !st.exploded, onClick: () => { A.explode(false); A.view('board'); } },
     ...(Object.keys(MD.circuits).length && VIEWS.breadboard ? [{ id: 'breadboard', label: 'Breadboard', current: st.view === 'breadboard', onClick: () => A.view('breadboard') }] : []),
@@ -1647,6 +1845,7 @@ function stats(){
   const mcu = MD.power.mcu;
   if (mcu && st.power) out.push({ label: mcu.rail, value: (st.ev.rails[mcu.rail] || 0).toFixed(1) + ' V', small: true });
   if (st.ev.status === 'running' && MD.modes[st.mode]) out.push({ label: 'Program', value: st.ext ? T('your sketch') : T(MD.modes[st.mode].title), small: true });
+  if (st.benchStatus) out.push({ label: 'Bench', value: T(st.benchStatus), small: true });
   return out;
 }
 
@@ -1663,8 +1862,12 @@ const report = () => {
   return { id: MD.id, view: st.view, exploded: st.exploded, build, power: st.power, status: st.up ? 'uploading' : ev.status,
     mode: st.mode, ext: st.ext, rails: r, fault: ev.fault, faults: st.faults.slice(), missing: MD.parts.filter(p => !isIn(p.id)).map(p => p.id),
     selected: st.sel, controls: Object.assign({}, st.ctl), boot: st.boot, leds, circuit: st.circuit, meas: st.meas || {}, serial: st.serial, sfx: st.sfx,
-    why: ev.why || null, tasks: taskState() };
+    why: ev.why || null, tasks: taskState(),
+    ...(MAT.steps.length ? { matStep: st.matStep >= 0 ? MAT.steps[st.matStep].id : null } : {}),
+    ...(typeof MD.def.model === 'function' ? { readings: roundDeep(st.readings || {}), benchStatus: st.benchStatus || null } : {}) };
 };
+B.report = () => report();
+B.accept = p => accept(st, p);
 const accept = (s, p) => {
   let ok = true;
   const bad = m => { ok = m; };
@@ -1682,13 +1885,26 @@ const accept = (s, p) => {
   if (own(p, 'restore') && typeof p.restore === 'string') A.restore(p.restore);
   if (own(p, 'press') && p.press && typeof p.press.id === 'string') A.press(p.press.id, !!p.press.down);
   if (own(p, 'serial') && typeof p.serial === 'string'){ st.txT = .09; kick(); }
+  if (own(p, 'matStep')){ if (p.matStep === null || MAT.steps.some(s => s.id === p.matStep)){ if (A.matStep(p.matStep) !== true) bad('mat step refused'); } else bad('unknown mat step'); }
   if (own(p, 'inputs') && p.inputs && typeof p.inputs === 'object') for (const [k, v] of Object.entries(p.inputs)) if (MD.byId[k] && MD.byId[k].control) st.ctl[k] = +v || 0;
   return ok;
 };
 
+/* ---------- variants: a patch on a copy of the board (functions kept), applied before a bench merges over it ---------- */
+const copyDef = v => Array.isArray(v) ? v.map(copyDef) : v && typeof v === 'object' && Object.getPrototypeOf(v) === Object.prototype
+  ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, copyDef(x)])) : v;
+const withVariant = (def, vk) => {
+  const v = def && def.variants && vk ? def.variants[vk] : null;
+  if (vk && def && def.variants && !v) note(`${def.id}: no variant "${vk}"`);
+  if (!v || typeof v.patch !== 'function') return def;
+  return v.patch(copyDef(def)) || def;
+};
+B.withVariant = withVariant;
+
 /* ---------- robotics benches: a board (or none) plus a circuit, programs and practice tasks ---------- */
 B.benchToBoard = def => {
-  const base = def.board ? (B.defs.board[def.board] || B.defs.module[def.board]) : null;
+  const reg = def.board ? (B.defs.board[def.board] || B.defs.module[def.board]) : null;
+  const base = reg ? withVariant(reg, CF_Q.get('variant') || def.variant || reg.variant) : null;
   if (def.board && !base) note(`bench ${def.id}: board "${def.board}" is not on the page (add // @cf use boards/${def.board}.js)`);
   const out = Object.assign({}, base || {}, def);
   if (def.circuit && typeof def.circuit === 'object'){ out.circuits = Object.assign({}, (base && base.circuits) || {}, { bench: def.circuit }); out.circuit = 'bench'; }
@@ -1702,6 +1918,29 @@ const taskState = () => { const out = {};
   for (const t of MD.def.tasks || []){ let ok = false; try { ok = !!(t.check && t.check(st, st.o)); } catch (e) { note(`task ${t.id}: ${e.message}`); } out[t.id] = ok; }
   return out; };
 
+/* ---------- choice ids: every id a picker can ever offer (content steps press them), checked once at mount ---------- */
+function choiceIds(){
+  const out = {}, loose = MD.parts.filter(p => !p.fixed);
+  for (const b of buttons()){
+    if (!b.choices) out[b.id] = null;
+    else if (b.id === 'place') out.place = [
+      ...['low', 'tall', 'last'].filter(g => loose.filter(p => p.group === g).length > 1).map(g => 'group-' + g),
+      ...loose.flatMap(p => p.polar ? [p.id.toLowerCase(), p.id.toLowerCase() + '-rev'] : [p.id.toLowerCase()])];
+    else if (b.id === 'remove') out.remove = loose.map(p => p.id.toLowerCase());
+    else out[b.id] = b.choices().map(c => c.id);
+  }
+  return out;
+}
+B.choices = () => choiceIds();
+function checkChoices(){
+  const ids = new Set();
+  for (const b of buttons()){ if (ids.has(b.id)) note(`two buttons have the id "${b.id}"`); ids.add(b.id); }
+  for (const [id, list] of Object.entries(choiceIds())){
+    const seen = new Set();
+    for (const c of list || []){ if (seen.has(c)) note(`button ${id}: two choices have the id "${c}"`); seen.add(c); }
+  }
+}
+
 /* ---------- mount ---------- */
 function mountNow(pick){ try { start(pick); } catch (e) { note('start: ' + e.message); throw e; } }
 function start(pick){
@@ -1710,20 +1949,21 @@ function start(pick){
   if (!pick){ note('nothing registered'); return; }
   if (pick[0] === 'part'){ B.started = false; if (B.mountPart) B.mountPart(pick[1]); else note('no part page support'); return; }
   let def = B.defs[pick[0]][pick[1]];
-  if (pick[0] === 'bench' && B.benchToBoard) def = B.benchToBoard(def);
-  if (def.variants){ const vk = CF_Q.get('variant') || def.variant; if (vk && def.variants[vk] && def.variants[vk].patch) def = def.variants[vk].patch(JSON.parse(JSON.stringify(def, (k, v) => typeof v === 'function' ? undefined : v))) || def; }
-  MD = B.md = prep(def, pick[0]); layoutFor(MD);
+  def = pick[0] === 'bench' ? B.benchToBoard(def) : withVariant(def, CF_Q.get('variant') || def.variant);
+  MD = B.md = prep(def, pick[0]); layoutFor(MD); prepMat(def);
   st = B.st = {
     view: 'board', exploded: false, exK: 0, placed: {}, left: {}, drop: {}, reflowT: null, solderQ: null, solderT: 0,
     power: null, supply: {}, faults: [], mode: def.mode || Object.keys(MD.modes)[0] || null, ext: false, pins: {}, t: 0, serialN: -1,
     up: null, upT: 0, upDur: 2.2, ctl: {}, boot: null, sel: null, serial: null, txT: 0, circuit: def.circuit || null, meas: {}, sfx: null,
+    matStep: MAT.steps.length - 1, readings: {}, benchStatus: null,
   };
   for (const p of MD.parts) st.placed[p.id] = { orient: 0, sold: true };
   for (const p of MD.parts) if (p.control && p.control.type === 'slide') st.ctl[p.id] = 0;
   st.ev = evaluate(); st.o = outputs();
   const q = CF_Q;
   if (q.get('bare') === '1' && q.get('build') === 'bare') A.build('bare');
-  if (q.get('build') === 'bare') { st.placed = {}; for (const p of MD.parts) if (p.fixed) st.placed[p.id] = { orient: 0, sold: true }; }
+  if (q.get('build') === 'bare') { st.placed = {}; st.matStep = -1; for (const p of MD.parts) if (p.fixed) st.placed[p.id] = { orient: 0, sold: true }; }
+  if (q.get('mat') != null){ const i = MAT.steps.findIndex(s => s.id === q.get('mat')); if (i >= 0 || q.get('mat') === '') st.matStep = i; }
   if (def.view && VIEWS[def.view]) st.view = def.view;
   if (q.get('view') && VIEWS[q.get('view')]) st.view = q.get('view');
   B.mountView = VIEWS[st.view] && !VIEWS[st.view].flat ? st.view : 'board';
@@ -1731,10 +1971,11 @@ function start(pick){
   if (q.get('exploded') === '1' || q.get('ex') === '1'){ st.exploded = true; st.exK = 1; }
   if (q.get('mode') && MD.modes[q.get('mode')]) st.mode = q.get('mode');
   if (q.get('sel')) st.sel = q.get('sel');
-  for (const fid of (q.get('fault') || '').split(',').filter(Boolean)) { const [kind, a] = fid.split(':'); if (kind === 'reversed' && MD.byId[a]) st.placed[a] = { orient: 1, sold: true }; else if (kind === 'missing' && MD.byId[a]) { delete st.placed[a]; st.left[a] = true; } else st.faults.push(fid); }
+  for (const fid of (q.get('fault') || '').split(',').filter(Boolean)) { const [kind, a] = fid.split(':'); if (kind === 'reversed' && MD.byId[a]) st.placed[a] = { orient: 1, sold: true }; else if (kind === 'missing' && MD.byId[a]) { delete st.placed[a]; st.left[a] = true; st.faults.push(fid); } else st.faults.push(fid); }
   if (q.get('power') && own(MD.power.sources, q.get('power'))) { st.power = q.get('power'); }
   else if (q.get('power') !== '0' && q.get('build') !== 'bare' && MD.power.default && !q.get('fault')) st.power = MD.power.default;
   else if (q.get('fault') && q.get('power') !== '0' && MD.power.default) st.power = MD.power.default;
+  checkChoices();
   // the core frames the box [0,W] x [0,D] x [0,H]: shift the world so the mount view's bounds start at 0
   let vb = VIEWS[B.mountView].bounds(); G.ox -= vb[0]; G.oy -= vb[1]; vb = VIEWS[B.mountView].bounds();
   ui = mountFigure({
@@ -1746,6 +1987,7 @@ function start(pick){
       pin: (s, el) => { A.select(el.dataset.part || null); },
       hole: () => {},
       bb: (s, el) => { A.select(st.sel === el.dataset.id ? null : el.dataset.id); },
+      periph: (s, el) => { A.select(st.sel === el.dataset.id ? null : el.dataset.id); },
     },
     readout: () => st.msg || '',
     embed: { report: () => report(), accept: (s, p) => accept(s, p) },
@@ -2229,7 +2471,9 @@ function solve(st){
   const parts = (c.parts || []).map(p => Object.assign({}, p, (st.cparams || {})[p.id] || {}));
   const res = [], leds = [];
   for (const p of parts){
-    const def = B.parts[p.part]; if (!def || !def.elec) continue;
+    const def = B.parts[p.part];
+    if (!def){ unknownPart(p); continue; }
+    if (!def.elec) continue;
     const e = def.elec(p), ns = (p.holes || []).map(h => { const n = node(h); if (n) par[n] = par[n] || n; return n; });
     if (e.type === 'res' && ns[0] && ns[1]) res.push({ id: p.id, a: ns[0], b: ns[1], r: e.ohms });
     if (e.type === 'wire' && ns[0] && ns[1]) uni(ns[0], ns[1]);
@@ -2337,7 +2581,8 @@ B.viewDef('breadboard', {
       if (bbDef) bbDef.draw(Object.assign({ p: { id: 'BB', kind: pl.geo.kind } }, ctx));
       const meas = st.meas || {};
       for (const q of pl.c.parts || []){
-        const p = Object.assign({}, q, (st.cparams || {})[q.id] || {}), def = B.parts[p.part]; if (!def) continue;
+        const p = Object.assign({}, q, (st.cparams || {})[q.id] || {}), def = B.parts[p.part];
+        if (!def){ unknownPart(p); continue; }
         const holes = (p.holes || []).map(h => B.hole(pl.geo, h)).filter(Boolean);
         if (holes.length !== (p.holes || []).length){ B.note(`circuit part ${p.id}: bad hole in ${p.holes}`); continue; }
         const legs = holes.map(h => pl.at(h.x, h.y));
@@ -2373,6 +2618,10 @@ B.viewDef('breadboard', {
   },
 });
 const VIEWB = () => null;
+// a circuit part whose drawing is not on the page is reported once (the figure probe fails on it), not skipped silently
+const noted = new Set();
+const unknownPart = p => { const key = p.id + ':' + p.part; if (noted.has(key)) return; noted.add(key);
+  B.note(`circuit part ${p.id}: unknown part "${p.part}" (add // @cf use parts/${String(p.part).replace(/[^\w-]/g, '')}.js)`); };
 
 /* ---------- part pages: public/figures/parts/<id>.html shows the part on a breadboard ---------- */
 const SHOW = {
@@ -2680,7 +2929,10 @@ B.part('wire', {
 (() => {
 const B = SL.bench, T = B.T;
 const CAP = { black: '#34302c', red: '#e2483d', yellow: '#f2c230', green: '#43b05c', blue: '#3e86d9', white: '#ece6d6' };
-const DEF = { pressed: 0, color: 'black' };
+const DEF = { pressed: 0, color: 'black', fault: 'none' };
+// faults the page can set; in a circuit the solver's verdict (m.state) is used unless one is set here
+const FAULTS = { none: null, 'contacts burnt': 'burnt' };
+const stateOf = (p, m) => FAULTS[p.fault] || (m && m.state) || null;
 const DOME = { l: '#f4f6f6', m: '#c9d0d2', d: '#8e979a' };
 const LIVE = '#f4b829';
 
@@ -2704,27 +2956,27 @@ B.part('push-button', {
   name: 'Push button',
   legs: ['1', '2', '3', '4'],
   span: [0, 3],
-  params: { pressed: [0, 1], color: Object.keys(CAP) },
-  paramNames: { color: 'Plunger colour' },
+  params: { pressed: [0, 1], color: Object.keys(CAP), fault: Object.keys(FAULTS) },
+  paramNames: { color: 'Plunger colour', fault: 'Break it' },
   defaults: DEF,
   // 1-2 and 3-4 always joined; pressed joins the two pairs
   elec: p => ({ type: 'button', pressed: +p.pressed > 0, pairs: [[0, 1], [2, 3]], imax: .05, vmax: 24, bounce: .005 }),
   press: (p, down) => ({ pressed: down ? 1 : 0 }),
-  tag: (p, m) => m && m.state === 'shorted' ? T('{id} · always closed: turn it 90°', { id: p.id })
-    : m && m.state === 'burnt' ? T('{id} · contacts burnt', { id: p.id })
+  tag: (p, m) => stateOf(p, m) === 'shorted' ? T('{id} · always closed: turn it 90°', { id: p.id })
+    : stateOf(p, m) === 'burnt' ? T('{id} · contacts burnt', { id: p.id })
     : +p.pressed > 0 ? T('{id} · pressed', { id: p.id }) : T('{id} · released', { id: p.id }),
   draw(ctx){
     const p = Object.assign({}, DEF, ctx.p), legs = ctx.legs, k = xrK(ctx), down = +p.pressed > 0, m = ctx.m || {};
     const F = frame(legs, 0, 2), sg = v => v < 0 ? -1 : 1;
     const zl = .9, zb = 3.4, zt = 3.65, plH = down ? 1.1 : 1.35;
-    const burnt = m.state === 'burnt', flowing = down && (m.i_mA || 0) > .05;
+    const sf = stateOf(p, m), burnt = sf === 'burnt', flowing = down && !burnt && (m.i_mA || 0) > .05;
     let s = '';
     // legs: out of the two sides that face across the trench, then bent down into the holes
     for (const L of legs){ const [a, b] = F.loc(L), a0 = sg(a) * 2.25, b0 = sg(b) * 3;
       s += rod(F.W(a0, b0, zl), F.W(a, b, zl), .26, B.M.tin, toneI, .4) + rod(F.W(a, b, zl), F.W(a, b, -.3), .26, B.M.tin, toneI, .4); }
     // see-through: outer ring contact (legs 1-2, at a < 0), centre contact (legs 3-4, at a > 0), the snap dome
     if (k > .02){
-      const cu = flowing ? matOf(LIVE) : B.M.copper;
+      const cu = flowing ? matOf(LIVE) : burnt ? matOf('#4a3b30') : B.M.copper;
       let x = F.slab(-2.6, -3, -2.0, 3, .6, .9, cu, .35) + F.slab(2.0, -3, 2.6, 3, .6, .9, cu, .35) + F.slab(.4, -.35, 2.3, .35, .6, .9, cu, .3);
       x += fill(pd(ring(F, 0, 0, .95, 2.45)), flowing ? LIVE : B.M.copper.m) + fill(pd(ring(F, 0, 0, .97, 1.85)), '#2a2623') + fill(pd(ring(F, 0, 0, 1.0, .85)), flowing ? LIVE : B.M.copper.l);
       const domeTop = down ? 1.15 : 1.75;
