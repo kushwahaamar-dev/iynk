@@ -127,6 +127,8 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   and not push. Its uncommitted files and unpushed note `c3c61a7` stay there.
 - **10-24 17:22, Amar (driver decision).** P1-checks meets its done line. Do not relaunch it. The S3 dimmer prose
   stays with P1-health, which already has that JSON file open. The Web Worker browser pass waits for gate 1.
+- **10-24 17:30, Amar (driver decision).** P1-health meets its done line. Do not relaunch it. The touch-page
+  prerender is a follow-up of its own, after the labels still running, using the request they filed.
 
 ## 6. Lessons learned (apply them)
 
