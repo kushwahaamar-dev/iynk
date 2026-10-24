@@ -39,7 +39,7 @@ exactly where the last one stopped.
 
 | What | Where | Survives a new machine? |
 |---|---|---|
-| Code, docs, this file, the plan, audit reports | this repo (`origin` = github.com/kushwahaamar-dev/simlab) | yes |
+| Code, docs, this file, the plan, audit reports | this repo (`origin` = github.com/kushwahaamar-dev/sim) | yes |
 | Secrets (Solana program id and issuer keypair, later Meta/SerpApi/Tiger keys) | `.env.local` on the user's Mac, never in git | no: ask the user |
 | Agents' scratch notes and downloads from the first build | `~/simlab-scratch-backup/` on the user's Mac (`RESUME.md`, `cutoff-1419.json`) | no |
 | First build's workflow scripts and agent transcripts | `~/.claude/projects/-Users-amar-Codes-ak-simlab/327c458a-…/` on the user's Mac | no |
@@ -54,7 +54,7 @@ Anything the next agent needs must end up in the repo. Machine-local state is on
   to start building ("autonomous mode").
 - **Done in phase 0:**
   - The first build stopped at 14:19 (usage limit). Its state is recorded in `~/simlab-scratch-backup/RESUME.md`.
-  - Pre-event app removal and today's work committed and pushed (`57fbba9`, `74e41ce`).
+  - Today's work committed and pushed to github.com/kushwahaamar-dev/sim.
   - Checks at that commit:
     - `npm run typecheck`: 34 errors in 5 files.
     - ESLint: clean.
@@ -68,5 +68,10 @@ Anything the next agent needs must end up in the repo. Machine-local state is on
   (architecture and phases), and present it to the user for approval. Don't start phase 1 without the user's go.
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 15:31 CDT: the repo moved to github.com/kushwahaamar-dev/sim at the user's request, with a fresh history
+  that starts now: today's three commits were rebuilt from their identical trees. The pre-event baseline `245763f` is
+  not in this history. The old history is kept only as the local branch `backup/simlab-history` (never push it).
+  Never force-push `main` again unless the user asks.
 
 - 2026-10-24 15:50 CDT: handoff system created (this file, `CLAUDE.md`). Pushed `57fbba9` and `74e41ce` to origin.
