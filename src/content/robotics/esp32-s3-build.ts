@@ -173,7 +173,9 @@ const parts: FigurePart[] = [
 ];
 
 /* ---------- practice tasks ---------- */
-const checks = (task: string, list: Omit<Check, 'label'>[]): Check[] =>
+// Omit over a union keeps only the shared keys; distribute it so each check kind keeps its own fields
+type OmitEach<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
+const checks = (task: string, list: OmitEach<Check, 'label'>[]): Check[] =>
   list.map((c, i) => ({ ...c, label: `tasks.${task}.checks.${i + 1}` }) as Check);
 
 const RGB_PIN_STARTER = `// {{t:tasks.rgb-pin.code.head}}
@@ -497,7 +499,8 @@ const bench = {
   modes,
   defaultMode: 'blink',
   steps: [
-    { id: 'strip', kind: 'build', action: { type: 'set', state: { build: 'bare' } }, done: { build: 'bare' }, major: false,
+    // the figure mounts powered: every action that works on the board unplugs first (the bridge applies power before build)
+    { id: 'strip', kind: 'build', action: { type: 'set', state: { power: null, build: 'bare' } }, done: { build: 'bare' }, major: false,
       ...step('strip'), refusal: 'steps.strip.refusal' },
     { id: 'pick-place', kind: 'build', action: { type: 'press', id: 'pnp' }, done: { build: 'smd' }, major: false,
       ...step('pick-place'), refusal: 'steps.pick-place.refusal' },
@@ -527,7 +530,7 @@ const bench = {
     { id: 'break-strap', kind: 'break', action: { type: 'set', state: { fault: 'strap:GPIO0' } }, fault: 'strap-gpio0',
       done: { status: 'running' }, major: false, ...step('break-strap') },
     { id: 'download-mode', kind: 'test', action: null, done: { boot: 'download' }, major: false, ...step('download-mode') },
-    { id: 'exploded', kind: 'test', action: { type: 'set', state: { exploded: true } }, done: { exploded: true }, major: false,
+    { id: 'exploded', kind: 'test', action: { type: 'set', state: { power: null, exploded: true } }, done: { exploded: true }, major: false,
       ...step('exploded'), refusal: 'steps.exploded.refusal' },
   ],
   faults: [
