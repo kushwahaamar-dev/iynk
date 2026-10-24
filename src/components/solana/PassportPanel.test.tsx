@@ -52,7 +52,9 @@ afterEach(() => {
 
 test("says so when Proof of Build is not set up", async () => {
   features.solana = false;
-  render(<PassportPanel lab="drone" itemId="quad5" store={store} figure={null} />);
+  await act(async () => {
+    render(<PassportPanel lab="drone" itemId="quad5" store={store} figure={null} />);
+  });
   expect(await screen.findByText("Proof of Build is not set up on this deployment")).toBeTruthy();
 });
 
@@ -76,9 +78,11 @@ test("follows the bench live, then mints through the server", async () => {
   });
   vi.stubGlobal("fetch", fetchMock);
   const { figure, report } = fakeFigure();
-  render(<PassportPanel lab="drone" itemId="quad5" store={store} figure={figure} />);
+  await act(async () => {
+    render(<PassportPanel lab="drone" itemId="quad5" store={store} figure={figure} />);
+  });
 
-  expect(await screen.findByText(/Waiting for the figure/, {}, { timeout: 8000 })).toBeTruthy();
+  expect(await screen.findByText(/Waiting for the figure/)).toBeTruthy();
   const mint = () => screen.getByRole("button", { name: "Mint my credential" }) as HTMLButtonElement;
   expect(mint().disabled).toBe(true);
 

@@ -11,7 +11,7 @@ export function Confetti() {
 
   useEffect(() => {
     const host = box.current;
-    if (!host || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!host || typeof host.animate !== "function" || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
     const animations: Animation[] = [];
     for (let i = 0; i < PIECES; i++) {
       const piece = document.createElement("span");
