@@ -5,7 +5,7 @@ import { BOARD_IDS, DRONE_IDS, ROBOTICS_IDS } from "@/content/ids";
 import { AVAILABLE, loadBoard, loadDrone, loadRobotics } from "@/content/index.generated";
 import type { Locale } from "@/i18n/config";
 import type { ContentLab } from "@/i18n/namespaces";
-import { getContentText } from "@/i18n/server";
+import { getContentProse } from "@/i18n/server";
 import { progressKey, type ProgressLab } from "@/lib/progress/keys";
 
 export type EntryKind = "lesson" | "assembly" | "step" | "task" | "quiz" | "build" | "test" | "course";
@@ -25,11 +25,11 @@ function textAt(tree: unknown, path: string): string | undefined {
   return typeof node === "string" ? node : undefined;
 }
 
-// An item whose prose is not in this language yet is left out rather than
-// shown in another language.
+// An item whose prose is not in this language yet shows its English title (its
+// page says so); one with no English prose either is left out.
 async function prose(lang: Locale, lab: ContentLab, id: string): Promise<unknown> {
   try {
-    return await getContentText(lang, lab, id);
+    return (await getContentProse(lang, lab, id)).text;
   } catch {
     return null;
   }

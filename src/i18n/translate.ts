@@ -45,8 +45,9 @@ export function messageAt(messages: unknown, key: string): unknown {
 
 /**
  * Builds t() for one message tree. `scope` only names the tree in errors
- * ("es/common"). A missing key or parameter throws: SimLab never shows a
- * fallback language or a raw key.
+ * ("es/common"). A missing key or parameter throws: t() never fills a gap
+ * from another language or shows a raw key. (A whole item's prose can fall
+ * back to English, with a notice: getContentProse.)
  */
 export function createTranslator<T extends object>(locale: Locale, messages: T, scope: string = locale): Translate<T> {
   const tag = htmlLang(locale);

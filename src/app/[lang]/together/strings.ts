@@ -4,7 +4,7 @@ import type { LabKind } from "@/components/dock/types";
 import type { TogetherMessages } from "@/components/realtime/messages";
 import { AVAILABLE } from "@/content/index.generated";
 import type { Locale } from "@/i18n/config";
-import { getContentText } from "@/i18n/server";
+import { getContentProse } from "@/i18n/server";
 
 const LOADERS: Record<Locale, () => Promise<{ default: TogetherMessages }>> = {
   en: () => import("@/i18n/messages/en/together.json"),
@@ -23,7 +23,7 @@ export type LobbyItem = { lab: LabKind; id: string; title: string };
 
 const CONTENT_LAB = { board: "boards", robotics: "robotics", drone: "drones" } as const;
 
-/** Every lab item that has content and a title in this language, in catalogue order. */
+/** Every lab item that has content and a title (English while untranslated), in catalogue order. */
 export async function getLobbyItems(locale: Locale): Promise<LobbyItem[]> {
   const labs = Object.keys(CONTENT_LAB) as LabKind[];
   const lists = await Promise.all(
@@ -32,10 +32,10 @@ export async function getLobbyItems(locale: Locale): Promise<LobbyItem[]> {
       const items = await Promise.all(
         ids.map(async (id) => {
           try {
-            const text = await getContentText<{ title?: unknown }>(locale, CONTENT_LAB[lab], id);
+            const { text } = await getContentProse<{ title?: unknown }>(locale, CONTENT_LAB[lab], id);
             return typeof text.title === "string" && text.title ? { lab, id, title: text.title } : null;
           } catch {
-            // Its prose isn't written in this language yet: leave it out rather than show an id.
+            // Not even its English prose is written yet: leave it out rather than show an id.
             return null;
           }
         }),

@@ -7,6 +7,14 @@ docs/DECISIONS.md.
 
 ## 0. Change log (newest first; after 14:00 CDT Oct 24 schema and id changes are additive only)
 
+- v1.4 18:50 CDT Oct 24 (driver, BUILD-PLAN §3.2 item 5): additive, no schema.ts change. When
+  `src/i18n/content/<lang>/<lab>/<id>.json` is missing, the item shows its English prose instead of a 404:
+  `getContentProse` (src/i18n/server.ts) returns `{ text, lang }`, the board, bench and craft loaders expose it as
+  `textLang`, and the page puts `UntranslatedNotice` (`common.untranslated`) above it. The fallback is per file,
+  never per key: a missing key still throws, a bench with incomplete prose is still hidden, and an item with no
+  English prose still 404s and fails `npm run content:check`. The dashboard and the Together lobby list such items
+  under their English titles.
+
 - v1.3 Oct 24 (P1-checks): additive, no schema.ts change. Checks run as a `CheckJob` (`lessonJob`, `taskJob`) through
   `runChecks`; the UI calls `startChecks`, which runs that in a Web Worker (in-thread where `Worker` is missing) with
   progress and a 20 s budget (`CHECK_BUDGET_MS`), then reports "limit". Board Lab store: `checks.progress`/`checks.limit`
@@ -145,7 +153,8 @@ their item. Figure part ids are the silkscreen designators (FIGURES-BENCH §0); 
 ## 5. Content JSON key scheme
 
 File: `src/i18n/content/<lang>/<lab>/<id>.json` with `<lab>` = boards | robotics | drones. Nested objects; a
-TextKey is the dot path to a string leaf (the shared `t()` walks dot paths). Same keys in every locale. A string
+TextKey is the dot path to a string leaf (the shared `t()` walks dot paths). Same keys in every locale; a locale
+with no file for an item shows the English file under a notice (v1.4). A string
 in item data is treated as a text key when it is one of the top keys or starts with a section prefix below; any
 other string is a literal (pin names, part numbers, code, units).
 
