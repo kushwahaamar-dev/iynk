@@ -83,31 +83,37 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 18:22 CDT (machine clock).
+- **Updated:** 2026-10-24 18:28 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Fast-forwarded to
   `94d3caa`. Do not build in `/Users/amar/Codes/sim`.
-- **Phase:** 1 running in `/Users/amar/Codes/ak/simlab` since 17:06. Seven local agents, one per label, from
-  `scripts/workflows/phase1.md`. None were done at launch. Jagrati's session should not resume its own copies.
+- **Phase:** 1. All seven labels from `scripts/workflows/phase1.md` are done and none is running. Gate 1 has not
+  run. Jagrati's session should not resume its own copies.
 - **Plan:** `docs/hacktx/BUILD-PLAN.md`, written from the six audits in `docs/audit/` (boards, robotics, drones,
   platform, sponsor-layer, history). Phases 1–3 build for Best Overall, SerpApi, Most Entertaining and Meta.
   Solana and Best Hardware Hack are phase 4, only if time is left after gate 3 (Amar, 16:15). Don't start them
   earlier.
-- **Checks on this tree (17:04, `npx tsc --noEmit`):** 24 errors in four files. `esp32-s3-build.ts` 16 (P1-engine),
-  `src/components/realtime/messages.ts` 3 and `src/app/[lang]/together/strings.ts` 3 (P1-health),
-  `src/content/boards/nodemcu.test.ts` 2 (P1-checks). The 16:23 figure of 34 errors is stale. A fresh `npm ci` in
-  `/Users/amar/Codes/sim` reported 39, including `PageProps` errors this install does not have. Do not reinstall here.
-  Eslint and vitest were not re-run at 17:04. At 17:30 the ESP32-S3 prerender block is gone. `next build` still
-  fails on `/en/boards/esp32-devkitc/touch` (see the request below).
+- **Checks on this tree (18:25, `b62ebc0`):** `npm run typecheck` exit 0. `npx eslint . --quiet` exit 0.
+  `next build` with typecheck on exits 0, 645 of 645 pages, one warning (`src/i18n/figures/<locale>.json` missing).
+  Full vitest was not re-run this session. Do not run `npm ci` here (a fresh install in `/Users/amar/Codes/sim`
+  showed `PageProps` errors this install does not have).
+- **Local smoke (18:24, `docs/hacktx/DEPLOY.md`):** `/` 307 to `/en`. `/en`, `/en/boards/uno-r3`,
+  `/en/boards/uno-r3/blink`, `/en/drones/quad5`, `/en/drones/quad5/fly`, `/en/together` and
+  `/figures/boards/uno-r3.html` are 200. `/api/mcp` POST `initialize` and `tools/list` 200 (7 tools). **`/es/boards/uno-r3`
+  is 404**: only English prose exists and `loadBoardPage` has no English fallback (BUILD-PLAN §3.2 item 5, owned
+  by no phase-1 row). Demo step 2 needs that fallback. Status codes only. No browser has opened these pages yet.
 - **Decided:** D1 (tracks, above). Amar: "Everything else looks fine."
 - **Decided by Jagrati (16:13):** D2 confirmed (the plan's default). D4: API keys stay placeholders for now;
   `.env.local` on Jagrati's Mac is `.env.example` with empty values. Vultr, Vercel env upload and Tiger are not
   approved yet, so gate 1 runs without live Meta/SerpApi and rooms use the one-browser fallback until keys arrive.
   D3 (devnet SOL) is asked only when phase 4 starts.
-- **Next step:** rerun only the local `next start` smoke in `docs/hacktx/DEPLOY.md` and write the results into
-  that table. `next build` with typecheck on now finishes. 645 of 645 pages were generated at 18:04, including
-  `/en/boards/esp32-devkitc/touch`. Do not link Vercel. Then gate 1 (BUILD-PLAN §6). Live keys, Vultr, and the
-  preview deploy still wait for the user's OK.
+- **Next step:** gate 1 (BUILD-PLAN §5 phase 1 and §6). Gate 1 as written needs a preview URL with live Meta and
+  SerpApi. The Vercel link, preview deploy, env upload, keys and Vultr all wait for the user's OK (D4: keys are
+  placeholders, rooms use the one-browser fallback). Ask the user about those first. Without them, run the local
+  half of §6 against a local production build: 1 static (plus `npm run content:check`), 2 full vitest, 3 the
+  app-path table in `docs/verify/`, 4 figure probe, 5 route crawl over 6 locales, 6 e2e incl. 390×844. Item 5 will
+  list every non-English item page as 404 until §3.2 item 5 (English fallback with a notice) is built. That fix
+  needs an owner. Raise it at the gate.
 - **Agents:** P1-checks `1e6f87c4-b1ea-4a31-9425-b1de6de9a88f` done (`39cca43`, `c168147`). P1-health
   `d393e1cb-35bc-4db4-bc0b-37c02c1b8e14` done (`28d8564`). P1-voice `b337455f-1b6d-45d5-93d8-51efb828d421` done
   (`b1e5308`). P1-engine `1a0582c2-ec24-42ab-8b3c-e2ac162b8e48` done (`f104e10`, `a45ec96`, `03eaab0`, `9d49d45`,
@@ -128,6 +134,13 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 18:28 CDT (Amar): local `next start` smoke done and written into `docs/hacktx/DEPLOY.md` (`b62ebc0`).
+  Build exit 0 with typecheck on, 645 of 645 pages. Every English demo route is 200. `/` redirects to `/en`.
+  `/api/mcp` answers `initialize` and `tools/list` over POST (GET is 405 by design). `/es/boards/uno-r3` is 404
+  because there is no Spanish prose and no English fallback. Also noted: the `/en` title lacks "· SimLab" (a
+  layout's title template skips its own page). `npm run typecheck` and eslint exit 0. `.next-deploy` deleted and
+  `tsconfig.json` reverted. Vercel stays unlinked. Next is gate 1, with the user's OK asked first.
 
 - 2026-10-24 18:22 CDT (Amar): Amar takes over in a new session on Amars-MacBook-Pro.local. Git identity is Amar
   Kushwaha. The tree is clean at `70d019d` with nothing unpushed. Next is still the local `next start` smoke.

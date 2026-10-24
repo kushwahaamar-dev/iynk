@@ -143,6 +143,10 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   run `scripts/handoff-status.sh`, follow HANDOFF.md exactly, take over as driver under his own git identity and
   continue from "Next step". Commit and push after every step and log his instructions and decisions here. Ask
   before anything HANDOFF.md says needs a user's OK. On "I'm stopping", hand over.
+- **10-24 18:28, Amar (driver decision).** The local smoke is done and passes for every English demo route. The
+  Spanish board page 404s, which is BUILD-PLAN §3.2 item 5 (no phase-1 row owned it). Do not fix it inside the
+  smoke step. Raise it at gate 1. The dashboard title suffix is a phase-3 polish note. Vercel stays unlinked until
+  Amar says yes.
 
 ## 6. Lessons learned (apply them)
 
