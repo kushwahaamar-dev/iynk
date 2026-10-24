@@ -139,6 +139,10 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   P1-engine for the four powered-fault drawings. The color-string request is already fixed in the Uno content.
 - **10-24 18:05, Amar (driver decision).** Fix the DevKitC pin strings now that every phase-1 label has stopped.
   The production build is green. The local smoke is the next step. Vercel stays unlinked.
+- **10-24 18:22, Amar, new session.** Same instructions as 16:57: open `/Users/amar/Codes/ak/simlab`, read CLAUDE.md,
+  run `scripts/handoff-status.sh`, follow HANDOFF.md exactly, take over as driver under his own git identity and
+  continue from "Next step". Commit and push after every step and log his instructions and decisions here. Ask
+  before anything HANDOFF.md says needs a user's OK. On "I'm stopping", hand over.
 
 ## 6. Lessons learned (apply them)
 

@@ -83,8 +83,8 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 18:05 CDT (machine clock).
-- **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 16:57 CDT.
+- **Updated:** 2026-10-24 18:22 CDT (machine clock).
+- **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Fast-forwarded to
   `94d3caa`. Do not build in `/Users/amar/Codes/sim`.
 - **Phase:** 1 running in `/Users/amar/Codes/ak/simlab` since 17:06. Seven local agents, one per label, from
@@ -128,6 +128,9 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 18:22 CDT (Amar): Amar takes over in a new session on Amars-MacBook-Pro.local. Git identity is Amar
+  Kushwaha. The tree is clean at `70d019d` with nothing unpushed. Next is still the local `next start` smoke.
 
 - 2026-10-24 18:05 CDT (Amar): ESP32 DevKitC pin rows for boot-button, touch, fade, and web-switch now point at
   that lesson's own prose. `npx vitest run src/content/boards/esp32-devkitc.test.ts` passed 10 of 10.
