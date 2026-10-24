@@ -142,10 +142,17 @@ window.SL = window.SL || {};
 
   function wrongIndex(st){ const n = motorsList().length; return n ? (2 + 3 * st.wireJobs) % n : null; }
 
+  // the craft's own bench tests: api.pass(id) and craft.report(st) both come back as state.extra; a test only counts
+  // for the build it ran on, so taking the craft apart, rebuilding it or re-seating a part clears the passes and
+  // tells the craft (craft.reset(st, why), why = 'strip', 'build' or the part id)
+  function resetCraft(st, why){
+    st.passes = {};
+    if (typeof craft.reset === 'function') try { craft.reset(st, why); } catch (e) { note('reset: ' + e.message); }
+  }
   function place(st, id, o, auto){
     st.placed[id] = { t: 0, orient: o, leave: false, delay: 0 };
     st.sel = id;
-    if (!auto) sfx(st, 'whoosh');
+    if (!auto) { sfx(st, 'whoosh'); resetCraft(st, id); }
     if (id === 'XT60'){ if (st.fault) { st.fault = null; st.smoke = []; log(st, LOG.capNew); } if (!auto) st.smokeOk = false; }
     if (id === 'WIRES'){ if (!auto) { st.motorOk = false; st.wrong = wrongIndex(st); } st.wireJobs++; }
     if (id === 'FC' && !auto) st.accOk = false;
@@ -165,6 +172,7 @@ window.SL = window.SL || {};
         p.orient = o; p.t = 0; st.sel = id; sfx(st, 'whoosh');
         if (id === 'XT60'){ st.smokeOk = false; if (st.fault) { st.fault = null; st.smoke = []; log(st, LOG.capNew); } }
         if (id === 'FC') st.accOk = false;
+        resetCraft(st, id);
         return kick();
       }
       const miss = (part.after || []).find(a => !inPl(st, a));
@@ -188,6 +196,7 @@ window.SL = window.SL || {};
       if (id === 'XT60') { st.smokeOk = false; st.fault = null; st.smoke = []; }
       if (id === 'WIRES') st.motorOk = false;
       if (id === 'FC') st.accOk = false;
+      resetCraft(st, id);
       sfx(st, 'whoosh');
       say(st, MSG.off, { short: shortOf(id) }, 1400);
       kick();
@@ -205,6 +214,7 @@ window.SL = window.SL || {};
       if (!missing.length && !changed && checks) return say(st, MSG.built, null, 1600, 'tick');
       st.queue = missing; st.queueT = 0;
       st.smokeOk = true; st.motorOk = true; st.accOk = true; st.wrong = null;
+      resetCraft(st, 'build');
       log(st, LOG.auto);
       sfx(st, 'whoosh');
       if (!missing.length) say(st, MSG.buildDone, null, 2600, 'ding');
@@ -217,6 +227,7 @@ window.SL = window.SL || {};
       A.unplug(st, true); st.exT = 0; st.queue = []; st.sel = null; st.fault = null; st.smoke = [];
       fitted.sort((a, b) => (b.z || 0) - (a.z || 0)).forEach((p, i) => { const pl = st.placed[p.id]; pl.leave = true; pl.t = Math.min(1, pl.t); pl.delay = i * 0.05; });
       st.smokeOk = st.motorOk = st.accOk = false;
+      resetCraft(st, 'strip');
       sfx(st, 'whoosh');
       kick();
     },
@@ -403,8 +414,19 @@ window.SL = window.SL || {};
         propsSwapped: placed.PROPS === 1, motorChecked, accCal, capFault: st.fault === 'XT60', smokeTested, mistakes },
       log: { n: st.log.n, lines: st.log.lines.slice() },
       sfx: st.sfx ? { n: st.sfx.n, name: st.sfx.name } : { n: 0, name: null },
+      extra: extraOf(st),
     };
   }
+  function extraOf(st){
+    let own = {};
+    if (typeof craft.report === 'function'){
+      try { const r = craft.report(st); if (r && typeof r === 'object' && !Array.isArray(r)) own = r; }
+      catch (e) { if (!reportErr){ reportErr = true; note('report: ' + e.message); } }
+    }
+    return Object.assign({}, st.passes, own);
+  }
+  let reportErr = false;
+  SD.report = () => ui ? report(ui.st) : null;
 
   function accept(st, patch){
     if (!patch || typeof patch !== 'object' || Array.isArray(patch)) return 'patch must be an object';
@@ -490,6 +512,8 @@ window.SL = window.SL || {};
   }
 
   function scene(st){
+    // 'pal' pieces follow the palette the viewer picked (the core keeps its key in st.pal), else the craft's own
+    SD.G.pal = st.pal || craft.palette;
     if (st.sheet && SD.sheet) return SD.sheet(st);
     const M = craft.mat, MT = 4, G = SD.G, k = ease(st.xr || 0);
     G.ox = M / 2; G.oy = M / 2; G.oz = MT; G.dz = 0;
@@ -587,6 +611,8 @@ window.SL = window.SL || {};
     orient: id => ui ? orient(ui.st, id) : 0,
     get st(){ return ui ? ui.st : null; },
     render: () => ui && ui.render(),
+    // a craft button's test passed: state.extra.<id> is true until the craft is taken apart, rebuilt or re-seated
+    pass: id => { if (!ui || typeof id !== 'string' || !id) return; ui.st.passes = Object.assign({}, ui.st.passes, { [id]: true }); ui.render(); },
   };
 
   /* ---------- define + mount ---------- */
@@ -608,7 +634,7 @@ window.SL = window.SL || {};
       plugged: false, fault: null, popT: 0, smoke: [], wireJobs: 0, wrong: null, wrongMotor: null,
       test: null, queue: [], queueT: 0, later: [], t: 0, sheet: null, calc: {},
       spin: craft.motors.map((m, i) => i * 0.7), rpm: craft.motors.map(() => 0),
-      log: { n: 0, lines: [] }, sfx: { n: 0, name: null }, msg: '',
+      log: { n: 0, lines: [] }, sfx: { n: 0, name: null }, msg: '', passes: {},
     };
     for (const p of craft.parts) st.placed[p.id] = { t: 1, orient: 0, leave: false, delay: 0 };
     log(st, LOG.head, { log: craft.log });
