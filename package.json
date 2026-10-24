@@ -2,6 +2,9 @@
   "name": "simlab",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "content": "node -e \"const f='scripts/gen-content-index.mjs';if(require('fs').existsSync(f))require('child_process').execFileSync(process.execPath,[f],{stdio:'inherit'});else console.log('skipped: '+f+' is not written yet')\"",
     "content:check": "node scripts/gen-content-index.mjs --check",
