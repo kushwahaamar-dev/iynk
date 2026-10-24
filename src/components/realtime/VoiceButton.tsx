@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { cx } from "@/components/ui";
 import { isLocale, type Locale } from "@/i18n/config";
+import { transcribe } from "@/lib/ai/client";
 import type { TogetherT } from "./messages";
 
 const MAX_SECONDS = 60;
@@ -55,15 +56,9 @@ export function VoiceButton({
     if (blob.size === 0) return setState({ kind: "idle" });
     if (blob.size > MAX_BYTES) return setState({ kind: "error", message: "tooLong" });
     setState({ kind: "transcribing" });
-    const form = new FormData();
-    const ext = blob.type.includes("mp4") ? "m4a" : blob.type.includes("ogg") ? "ogg" : "webm";
-    form.append("audio", blob, `voice.${ext}`);
-    form.append("lang", lang);
     try {
-      const res = await fetch("/api/ai/transcribe", { method: "POST", body: form });
-      if (!res.ok) throw new Error(String(res.status));
-      const body = (await res.json()) as { text?: unknown; lang?: unknown };
-      const text = typeof body.text === "string" ? body.text.trim() : "";
+      const body = await transcribe(blob, lang);
+      const text = body.text.trim();
       if (!text) throw new Error("empty");
       onText(text, isLocale(body.lang) ? body.lang : lang);
       setState({ kind: "idle" });

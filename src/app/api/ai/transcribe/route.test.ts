@@ -81,9 +81,12 @@ describe("POST /api/ai/transcribe", () => {
     expect((await POST(post(speech(121, 8000)))).status).toBe(400);
   });
 
-  it("needs the voice feature", async () => {
-    const POST = await load({ GEMINI_API_KEY: "g" });
-    const res = await POST(post(speech(1)));
+  it("says voice is not set up when the Meta key is absent", async () => {
+    const POST = await load({ META_API_KEY: "", GEMINI_API_KEY: "g" });
+    const res = await POST(post(speech(1), "en"));
     expect(res.status).toBe(503);
+    const body = (await res.json()) as { error: { code: string; message: string } };
+    expect(body.error.code).toBe("not_configured");
+    expect(body.error.message).toMatch(/not set up/);
   });
 });

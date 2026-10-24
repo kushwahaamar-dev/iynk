@@ -12,6 +12,7 @@ import type {
   StoryResponse,
   TranscribeResponse,
 } from "./protocol";
+import { blobToVoiceWav, VoiceWavError } from "./voice-wav";
 
 export type AiErrorCode = "not_configured" | "rate_limited" | "bad_input" | "upstream" | "offline" | "aborted";
 
@@ -263,10 +264,17 @@ export const MAX_AUDIO_BYTES = 4 * 1024 * 1024;
 
 export async function transcribe(audio: Blob, lang: Locale, options: CallOptions = {}): Promise<TranscribeResponse> {
   if (audio.size > MAX_AUDIO_BYTES) throw new AiError("bad_input");
+  let wav: Blob;
+  try {
+    wav = await blobToVoiceWav(audio);
+  } catch (error) {
+    if (error instanceof VoiceWavError) throw new AiError("bad_input");
+    throw error;
+  }
+  if (wav.size > MAX_AUDIO_BYTES) throw new AiError("bad_input");
   const doFetch = options.fetch ?? fetch;
   const form = new FormData();
-  const ext = audio.type.includes("wav") ? "wav" : audio.type.includes("mp4") ? "m4a" : "webm";
-  form.append("audio", audio, `voice.${ext}`);
+  form.append("audio", wav, "voice.wav");
   form.append("lang", lang);
   const signal = options.signal
     ? AbortSignal.any([options.signal, AbortSignal.timeout(30_000)])

@@ -4,6 +4,7 @@ import { PublicKey } from "@solana/web3.js";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useId, useState, type FormEvent, type ReactNode } from "react";
 import { Button, Callout, Card, Icon } from "@/components/ui";
+import { reloadFeatures, useFeatures } from "@/lib/features";
 import { PROGRAM_ID, explorerUrl, isAddress, shortAddress } from "@/lib/solana/config";
 import { SolanaProvider } from "@/lib/solana/provider";
 import { CredentialCard } from "./CredentialCard";
@@ -54,6 +55,7 @@ function Results({ learner, credential }: { learner: string | null; credential: 
 
 function Verify() {
   const t = useSolanaT();
+  const { status, features } = useFeatures();
   const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -62,6 +64,23 @@ function Verify() {
   const credential = valid(params.get("credential"));
   const [query, setQuery] = useState(credential ?? learner ?? "");
   const [invalid, setInvalid] = useState(false);
+
+  if (status === "loading") return <div className="h-40 animate-pulse rounded-ink bg-sunken" aria-busy="true" />;
+  if (status === "error")
+    return (
+      <Callout tone="warn">
+        <p>{t("statusError")}</p>
+        <Button size="sm" variant="secondary" className="mt-2" onClick={reloadFeatures}>
+          {t("retry")}
+        </Button>
+      </Callout>
+    );
+  if (!features.solana || !PROGRAM_ID)
+    return (
+      <Callout tone="note" title={t("notSetUp.title")}>
+        {t("notSetUp.body")}
+      </Callout>
+    );
 
   function submit(event: FormEvent) {
     event.preventDefault();
@@ -76,16 +95,7 @@ function Verify() {
     router.replace(`${pathname}?${key}=${value}`, { scroll: false });
   }
 
-  let results: ReactNode;
-  if (!PROGRAM_ID) {
-    results = (
-      <Callout tone="note" title={t("notSetUp.title")}>
-        {t("notSetUp.body")}
-      </Callout>
-    );
-  } else {
-    results = <Results learner={learner} credential={credential} />;
-  }
+  const results: ReactNode = <Results learner={learner} credential={credential} />;
 
   return (
     <div className="grid gap-8">

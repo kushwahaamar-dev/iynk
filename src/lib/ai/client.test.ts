@@ -137,14 +137,35 @@ describe("streamChat", () => {
 
 describe("transcribe and drawCover", () => {
   test("transcribe sends multipart audio and the language", async () => {
-    const fetch = vi.fn(async () => Response.json({ text: "the led is off", lang: "en" }));
-    const audio = new Blob([new Uint8Array(32)], { type: "audio/webm" });
-    expect(await transcribe(audio, "es", { fetch })).toEqual({ text: "the led is off", lang: "en" });
-    const [url, init] = fetch.mock.calls[0] as unknown as [string, RequestInit];
-    expect(url).toBe("/api/ai/transcribe");
-    const form = init.body as FormData;
-    expect(form.get("lang")).toBe("es");
-    expect((form.get("audio") as File).name).toBe("voice.webm");
+    class FakeAudioContext {
+      decodeAudioData() {
+        const samples = new Float32Array([0.2, -0.2, 0.2, -0.2]);
+        return Promise.resolve({
+          length: samples.length,
+          numberOfChannels: 1,
+          sampleRate: 16000,
+          getChannelData: () => samples,
+        });
+      }
+      close() {
+        return Promise.resolve();
+      }
+    }
+    vi.stubGlobal("AudioContext", FakeAudioContext);
+    try {
+      const fetch = vi.fn(async () => Response.json({ text: "the led is off", lang: "en" }));
+      const audio = new Blob([new Uint8Array(32)], { type: "audio/webm" });
+      expect(await transcribe(audio, "es", { fetch })).toEqual({ text: "the led is off", lang: "en" });
+      const [url, init] = fetch.mock.calls[0] as unknown as [string, RequestInit];
+      expect(url).toBe("/api/ai/transcribe");
+      const form = init.body as FormData;
+      expect(form.get("lang")).toBe("es");
+      const file = form.get("audio") as File;
+      expect(file.name).toBe("voice.wav");
+      expect(file.type).toBe("audio/wav");
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 
   test("transcribe refuses audio over 4 MB without calling the server", async () => {

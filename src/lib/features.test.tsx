@@ -1,12 +1,19 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+const configReady = vi.hoisted(() => vi.fn(async () => false));
+vi.mock("@/lib/solana/config-ready", () => ({ configAccountReady: configReady }));
+
 async function load() {
   vi.resetModules();
   return import("./features");
 }
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.unstubAllGlobals();
+  configReady.mockReset();
+  configReady.mockResolvedValue(false);
+});
 
 describe("useFeatures", () => {
   it("starts loading with every feature off, then shares one fetched answer", async () => {
@@ -67,6 +74,27 @@ describe("getFeatures", () => {
     await waitFor(() => expect(result.current.status).toBe("ready"));
     expect(await getFeatures()).toEqual({ ...NO_FEATURES, db: true });
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps Proof of Build off until the Config account exists, and hardware off", async () => {
+    configReady.mockResolvedValue(false);
+    vi.stubGlobal("fetch", vi.fn(async () => Response.json({ features: { ai: true, solana: true, hw: true } })));
+    const { useFeatures } = await load();
+    const { result } = renderHook(() => useFeatures());
+    await waitFor(() => expect(result.current.status).toBe("ready"));
+    expect(result.current.features.solana).toBe(false);
+    expect(result.current.features.hw).toBe(false);
+    expect(result.current.features.ai).toBe(true);
+    expect(configReady).toHaveBeenCalled();
+  });
+
+  it("turns Proof of Build on once the Config account exists", async () => {
+    configReady.mockResolvedValue(true);
+    vi.stubGlobal("fetch", vi.fn(async () => Response.json({ features: { solana: true, hw: true } })));
+    const { useFeatures, NO_FEATURES } = await load();
+    const { result } = renderHook(() => useFeatures());
+    await waitFor(() => expect(result.current.status).toBe("ready"));
+    expect(result.current.features).toEqual({ ...NO_FEATURES, solana: true });
   });
 
   it("resolves to every feature off when the server can't be reached", async () => {

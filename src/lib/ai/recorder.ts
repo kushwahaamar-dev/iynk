@@ -1,5 +1,6 @@
-// Push-to-talk recording: MediaRecorder in a format /api/ai/transcribe takes
-// (webm/opus first, wav where that is all the browser has), capped in length.
+// Push-to-talk recording. The browser records whatever container it can
+// (webm/opus first). transcribe() decodes that clip to 16 kHz mono WAV
+// before upload: /api/ai/transcribe rejects webm, ogg and mp4 with 415.
 
 export const MAX_RECORD_MS = 60_000;
 

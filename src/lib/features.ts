@@ -43,6 +43,8 @@ function normalize(raw: unknown): Features {
   const source = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
   const out = { ...NO_FEATURES };
   for (const key of FEATURE_KEYS) out[key] = source[key] === true;
+  // Hardware stays off until phase 4, even if a status payload says otherwise.
+  out.hw = false;
   return out;
 }
 
@@ -51,9 +53,29 @@ async function fetchFeatures(): Promise<void> {
     const res = await fetch("/api/status", { headers: { accept: "application/json" } });
     if (!res.ok) throw new Error(`status ${res.status}`);
     const body = (await res.json()) as { features?: unknown };
-    publish({ status: "ready", features: normalize(body.features) });
+    const features = normalize(body.features);
+    // Issuer key and program id can be set before the program is deployed.
+    // Passport and Verify stay hidden until the Config account exists.
+    // A slow or failed read counts as "not there" so the rest of the lab is not stuck loading.
+    if (features.solana) features.solana = await confirmSolana();
+    publish({ status: "ready", features });
   } catch {
     publish({ status: "error", features: NO_FEATURES });
+  }
+}
+
+async function confirmSolana(): Promise<boolean> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    const { configAccountReady } = await import("@/lib/solana/config-ready");
+    const timedOut = new Promise<boolean>((resolve) => {
+      timer = setTimeout(() => resolve(false), 2000);
+    });
+    return await Promise.race([configAccountReady(), timedOut]);
+  } catch {
+    return false;
+  } finally {
+    clearTimeout(timer);
   }
 }
 
