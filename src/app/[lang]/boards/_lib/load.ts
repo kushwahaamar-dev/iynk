@@ -4,7 +4,7 @@ import { BOARDS, isBoardId, type BoardId, type BoardMeta } from "@/content/ids";
 import { AVAILABLE, loadBoard } from "@/content/index.generated";
 import type { BoardContent, Lesson } from "@/content/schema";
 import type { Locale } from "@/i18n/config";
-import { getContentText, getMessages } from "@/i18n/server";
+import { getContentProse, getMessages, type ContentProse } from "@/i18n/server";
 import { createTranslator } from "@/i18n/translate";
 import type { BoardModel, LessonLink, LessonModel } from "@/components/boardlab/model";
 import { resolveText } from "@/lib/boardlab/template";
@@ -16,26 +16,28 @@ export type BoardPage = {
   id: BoardId;
   board: BoardContent;
   meta: BoardMeta;
-  /** The board's prose in this language (src/i18n/content/<lang>/boards/<id>.json). */
+  /** The board's prose (src/i18n/content/<textLang>/boards/<id>.json). */
   text: ContentText;
-  /** t() over that prose; a missing key throws, so nothing untranslated reaches the page. */
+  /** The page's language, or English while that translation is not written (the page says so). */
+  textLang: Locale;
+  /** t() over that prose; a missing key throws, so no raw key reaches the page. */
   tc: (key: string, params?: Record<string, string | number>) => string;
 };
 
-/** A board whose data and prose in this language both exist, or null (the page then 404s). */
+/** A board whose data and English prose both exist, or null (the page then 404s). */
 export async function loadBoardPage(lang: Locale, id: string): Promise<BoardPage | null> {
   if (!isBoardId(id) || !AVAILABLE.board.includes(id)) return null;
   const board = await loadBoard(id);
   if (!board) return null;
-  let text: ContentText;
+  let prose: ContentProse<ContentText>;
   try {
-    text = await getContentText<ContentText>(lang, "boards", id);
+    prose = await getContentProse<ContentText>(lang, "boards", id);
   } catch {
-    // This language's prose is not written yet: the board is left out rather than shown in another language.
+    // Not even the English prose is written yet (npm run content:check reports it).
     return null;
   }
-  const tc = createTranslator(lang, text, `${lang}/boards/${id}`) as unknown as BoardPage["tc"];
-  return { id, board, meta: BOARDS[id], text, tc };
+  const tc = createTranslator(prose.lang, prose.text, `${prose.lang}/boards/${id}`) as unknown as BoardPage["tc"];
+  return { id, board, meta: BOARDS[id], text: prose.text, textLang: prose.lang, tc };
 }
 
 /** Every board that has a data module today, in figure order. */

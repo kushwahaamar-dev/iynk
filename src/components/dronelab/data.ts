@@ -4,21 +4,22 @@ import type { DroneContent } from "@/content/schema";
 import { DRONE_IDS, DRONES, isDroneId, type DroneId } from "@/content/ids";
 import { loadDrone } from "@/content/index.generated";
 import type { Locale } from "@/i18n/config";
-import { getContentText } from "@/i18n/server";
+import { getContentProse } from "@/i18n/server";
 import { calc } from "@/lib/drone/calc";
 import { designInput } from "@/lib/drone/design";
 import { droneProgressKeys } from "@/lib/dronelab/bench";
 
-export type Craft = { content: DroneContent; text: Record<string, unknown> };
+/** `textLang` is the page's language, or English while that translation is not written. */
+export type Craft = { content: DroneContent; text: Record<string, unknown>; textLang: Locale };
 
-/** A craft's data module and its prose in one language, or null while either is still being written. */
+/** A craft's data module and its prose, or null while either is still being written in English. */
 export async function loadCraft(lang: Locale, id: string): Promise<Craft | null> {
   if (!isDroneId(id)) return null;
   const content = await loadDrone(id);
   if (!content) return null;
   try {
-    const text = await getContentText<Record<string, unknown>>(lang, "drones", id);
-    return { content, text };
+    const prose = await getContentProse<Record<string, unknown>>(lang, "drones", id);
+    return { content, text: prose.text, textLang: prose.lang };
   } catch {
     return null;
   }

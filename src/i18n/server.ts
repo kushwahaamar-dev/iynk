@@ -1,7 +1,7 @@
 import "server-only";
 
 import { cache } from "react";
-import type { Locale } from "./config";
+import { DEFAULT_LOCALE, type Locale } from "./config";
 import { NAMESPACES, type ContentLab, type Messages, type Namespace } from "./namespaces";
 import { createTranslator, type Translate } from "./translate";
 
@@ -60,4 +60,25 @@ export async function getContentText<T = Record<string, unknown>>(
   id: string,
 ): Promise<T> {
   return (await loadContent(locale, lab, id)) as T;
+}
+
+/** An item's prose and the language it is written in. */
+export type ContentProse<T> = { text: T; lang: Locale };
+
+/**
+ * The item's prose in this language, or its English prose while that
+ * translation is not written. The page shows a notice when `lang` differs
+ * from its own. Throws only when the English file is missing too.
+ */
+export async function getContentProse<T = Record<string, unknown>>(
+  locale: Locale,
+  lab: ContentLab,
+  id: string,
+): Promise<ContentProse<T>> {
+  try {
+    return { text: await getContentText<T>(locale, lab, id), lang: locale };
+  } catch (error) {
+    if (locale === DEFAULT_LOCALE) throw error;
+    return { text: await getContentText<T>(DEFAULT_LOCALE, lab, id), lang: DEFAULT_LOCALE };
+  }
 }
