@@ -1,0 +1,102 @@
+# Shared context
+
+Everything a new agent or a new person needs that isn't in the code: what the users asked for, in their words where
+it matters, what was decided and why, and what lives only on one machine. `HANDOFF.md` holds the live state; this
+file holds the background. Whoever drives appends to the conversation log (§5) after every step.
+
+## 1. The project
+
+SimLab is a hardware lab in the browser (Boards, Robotics, Drones, flight sim) entered at HackTX 2026. The brief is
+`docs/SPEC.md`. The plan being built is `docs/hacktx/BUILD-PLAN.md`; the audits it rests on are in `docs/audit/`.
+
+- Hacking period: 11:30 CDT 2026-10-24 to 11:30 CDT 2026-10-25. Devpost entry and demo video due by then; submit by
+  10:30. Judging is in person at UT Austin.
+- Target tracks: Best Overall, SerpApi, Most Entertaining, Meta, MLH Solana (plus Best Hardware Hack if a real Uno is
+  available, decision D1 in BUILD-PLAN.md §0).
+- Team: Amar Kushwaha and a teammate. They take turns driving the build (see `HANDOFF.md` → "Working as a team").
+
+## 2. Rules that came from the users (never change without asking them)
+
+- **Hackathon rule.** No code from before 11:30 on 2026-10-24: not the old app (git baseline `245763f`, kept only on
+  Amar's local branch `backup/simlab-history`, never pushed), not the morning's prototypes, not code blocks in
+  `docs/research/`. Those are knowledge only. Pre-event research is disclosed in the Devpost write-up.
+- **Commit after every step and push**, so nothing is lost if a session dies or the other person takes over.
+- **Commit authorship.** Amar asked that the author be him only, with no agent attribution. With two people, each
+  commit is authored by the person driving (their own git identity), and no `Co-Authored-By` or agent lines are ever
+  added. Confirm with Amar if he wants something else.
+- **Plan before build.** When asked for a plan, write only the plan. The build starts when a user says go
+  ("autonomous mode"). Phase gates in BUILD-PLAN.md §6 replace per-phase approval once autonomous mode is on.
+- **Ask first** before: creating cloud resources (Vultr), spending money, uploading Vercel env vars, moving devnet
+  SOL from a personal wallet, submitting on Devpost, force-pushing. Normal `git push` to `origin main` is approved.
+- **Don't cut corners.** Every item functional to the bar in BUILD-PLAN.md §4; report real check results, failures
+  included; never claim "done" without the gate checks.
+- Leave the old repo `github.com/kushwahaamar-dev/simlab` as it is. The working repo is
+  `github.com/kushwahaamar-dev/sim`.
+
+## 3. Decisions on record, and why
+
+| When (CDT) | Decision | Why |
+|---|---|---|
+| 10-24 13:02 | Meta, SerpApi and Solana are the core sponsor tracks; keep everything else integrated | Amar: "focus on meta, serpapi, solana as core while still keeping anything possible integrated … not losing any of the functionality" |
+| 10-24 13:45 | 6 locales (en, es, fr, de, zh, hi), not the 13 first promised | BASE_ARCHITECTURE D1; it was never told to the user at the time, which the history audit flags |
+| 10-24 15:31 | Repo moved to `sim` with a fresh history starting today | Amar asked that nothing look committed before now. The pre-event baseline was **left out**, not re-dated, because re-dating it would present pre-event code as built during the event |
+| 10-24 15:40 | Optimise for the five tracks above, nothing missing, plan first | Amar's request (§5) |
+| 10-24 15:50 | Plan written; D1–D4 open | BUILD-PLAN.md §0 and §9 |
+| 10-24 ~16:00 | Raw session transcripts are **not** committed; this file summarises them instead | The tool permission check blocked exporting them, and they can contain secrets and file dumps |
+
+## 4. Things that live on one machine only
+
+| What | Where | How the other person gets it |
+|---|---|---|
+| `.env.local` (Solana program id, issuer keypair, cluster; later Meta, SerpApi, Tiger, relay URL) | Amar's Mac | send it privately (not chat logs, not git); never print a value |
+| Devnet wallet with ~5 SOL, `Cxt17a9c…bW1S` | Amar's `~/.config/solana/devnet.json` | stays with Amar; only he approves moving SOL |
+| Program deploy keypair for `BYFLDTLNi946Z8jT4JnxgE8Cpzkr9ud7tSrnThFTv31w` | Amar's Mac (git-ignored) | the deploy runs on Amar's machine, or he shares it privately |
+| First build's scratch (4 GB of downloads and probes) | `~/simlab-scratch-backup/` | not needed; its `RESUME.md` and `cutoff-1419.json` are copied into `docs/handoff/first-build/` |
+| First build's workflow scripts | `~/.claude/projects/…/327c458a…/workflows/scripts/` | copied into `docs/handoff/first-build/workflow-scripts/` |
+| Session transcripts | `~/.claude/projects/-Users-amar-Codes-ak-simlab/*.jsonl` | not in git (see §3); `docs/audit/history.md` and §5 summarise them |
+| Claude memory notes | Amar's `~/.claude/projects/…/memory/` | their content is in this file (§2, §6) |
+
+Machine setup for a new driver: Node 24 (at least 22.18; not pinned in the repo yet, BUILD-PLAN phase 1 adds it),
+`npm ci`, `npx playwright install chromium`,
+Python 3 (figures build: `python3 -I figures/tools/cfbuild.py`), and for Solana work Solana CLI 4.2+ and Anchor 0.31.1.
+
+## 5. Conversation log (newest last; append after every step)
+
+Short entries: who, when, what was asked or decided, in the user's words where it matters.
+
+- **10-23 21:48 → 10-24 14:19, Amar, first build session.** Brief pasted at 01:27 ("A lot of things are wrong
+  here … Make sure it is what I want"). Research, design, facts and build waves. 12:41 "god mode, we need it ready by
+  6pm". 13:02 HackTX: Meta, SerpApi, Solana core. 14:17 SendMessage to workflow agents spawned duplicates (see §6).
+  14:19 usage limit stopped every workflow with 56 agents in flight. Full timeline: `docs/audit/history.md`.
+- **10-24 15:00, Amar.** Back up the scratch, stop the leftover dev server on port 45488, record the cut-off state in
+  RESUME.md, leave caffeinate running. Done. Then "Not yet. Leave everything paused for now."
+- **10-24 ~15:15, Amar.** Asked for a brutal track analysis. Answer: Hardware Hack + Overall + SerpApi fit best;
+  Meta "shrink", Solana "cut from the demo".
+- **10-24 ~15:20, Amar.** "Commit the previous things as well … The author should only be me … design the session such
+  a way that I can take off through another agent and continue from exactly where you left off." → HANDOFF.md and
+  CLAUDE.md created.
+- **10-24 15:31, Amar.** Move to `github.com/kushwahaamar-dev/sim` with every commit dated now. Done with a fresh
+  history (§3). "Leave the old simlab repo as it is."
+- **10-24 15:40, Amar.** Optimise for Best Overall, SerpApi, Most Entertaining, Meta, Solana: "Don't cut any corners
+  … We want the entire thing functional. Nothing's to be missing … create a bulletproof plan … Do thorough dynamic
+  check on every single end … a proper, detailed architecture … tell me how the build phases will go. Then after I say
+  [go] you can go on autonomous mode to build … in six hours now." → six audits, then BUILD-PLAN.md (15:50).
+  Flagged: "four tracks" vs five rows; Hardware omitted; 90% can't be promised; ~190 agent-hours of work.
+- **10-24 ~16:00, Amar.** Two people will take turns; "after every single step, the agent commits … when she's done,
+  I can just take over … do it for multiple users as well. Make sure everything is committed, every single context,
+  history, plans." → this file, `docs/handoff/first-build/`, the team protocol in HANDOFF.md, `scripts/handoff-status.sh`.
+  Amar is pausing; the plan's D1–D4 are still unanswered, so the build has **not** started.
+
+## 6. Lessons learned (apply them)
+
+- **Never SendMessage a running Workflow agent by its id.** It starts a duplicate copy working on the same files
+  instead of reaching the live agent. Talk to running agents through files they re-read, or through their follow-up
+  agent's prompt.
+- **A usage limit can stop everything at once.** End waves at gates, commit after each agent, keep HANDOFF.md current.
+- **Workflow runs can't be resumed from another session or machine.** Relaunch the script with only the unfinished
+  labels; the first build's scripts pass `prev` only to core2's checklist-a, so a relaunch needs a script edit.
+- **Private test runners hide failures.** Only the app's own path (`runHeadless` + `evaluateChecks`, figure probes,
+  route crawl) counts as proof.
+- **Missing prose silently 404s a page.** Check `node scripts/gen-content-index.mjs --check` before every deploy.
+- Install npm packages in small groups: one combined Solana install hung npm's resolver.
+- `next build` adds `.next-<label>` lines to `tsconfig.json`; remove them before committing.

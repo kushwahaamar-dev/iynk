@@ -1,72 +1,120 @@
 # SimLab handoff
 
-This file is the single place where the build's live state is kept. Whoever is working on SimLab (a Claude session, a
-cloud agent, a human) updates it after every step, commits it and pushes it, so the next one can carry on from
-exactly where the last one stopped.
+This file is the single place where the build's live state is kept. Two people (Amar and his teammate) take turns
+driving the build, each with their own Claude sessions, and any session can die mid-step (context or usage limit).
+So whoever is working updates this file after every step, commits and pushes, and the next person or agent carries
+on from exactly where the last one stopped. Background, the users' own words and every decision so far are in
+`docs/handoff/CONTEXT.md`.
 
-## How to resume
+## How to resume (every agent, every time)
 
-1. Read this whole file, then `docs/hacktx/BUILD-PLAN.md` (the approved plan), then the files it names for your step.
-2. Sync and check: `git pull --ff-only`, `git log --oneline -15`, `git status`. The newest "Checkpoint log" entry
-   below must match the newest commit. If the tree has uncommitted changes, someone stopped mid-step: read
-   `git diff`, decide whether that work is usable, and say what you found before you touch it.
-3. Find **Current status → Next step**. Do that step, and only that step, the way BUILD-PLAN.md describes it.
-4. Verify before you call it done: the step's own checks plus `npm run typecheck`, `npx eslint . --quiet` and the
+1. Run `bash scripts/handoff-status.sh`. It pulls, then shows the driver, the claims, the last checkpoint, the newest
+   commits and any uncommitted work.
+2. Read this whole file, then `docs/handoff/CONTEXT.md`, then `docs/hacktx/BUILD-PLAN.md`, then the files the plan
+   names for your step.
+3. **Take over as driver** (below) before you change anything.
+4. If the tree has uncommitted changes, someone stopped mid-step on this machine: read `git diff`, decide whether
+   that work is usable, and tell your user what you found before you touch it. If the last checkpoint says a step was
+   left half-done, finish that step first.
+5. Find **Current status → Next step**. Do that step, and only that step, the way BUILD-PLAN.md describes it.
+6. Verify before you call it done: the step's own checks plus `npm run typecheck`, `npx eslint . --quiet` and the
    tests for the paths you touched. Report real results, failures included.
-5. Commit (rules below), update **Current status** and add a **Checkpoint log** line, commit that, then push.
-6. If you are about to run out of context or usage, stop at a clean point and do step 5 first. A half-step is
-   fine as long as the log says exactly what is done and what isn't.
+7. **After every step:** commit the work, update **Current status**, add a **Checkpoint log** line, append the user's
+   instructions and decisions from this step to `docs/handoff/CONTEXT.md` §5, commit that, push. A step is never
+   "done" while it exists only on one machine.
+8. If you are about to run out of context or usage, stop at a clean point and do step 7 first. A half-step is fine as
+   long as the checkpoint says exactly what is done and what isn't (`WIP:` at the start of the commit message).
+9. When your user stops for the session, **hand over** (below).
+
+## Working as a team
+
+- **One driver at a time.** The driver is named in **Current status → Driver**. Only the driver's sessions write to
+  the repo; anyone else reads.
+- **Take over:** `git pull --ff-only`; set **Driver** to your name, machine and the time; add a checkpoint line
+  ("<name> takes over"); commit as "Take over as driver" and push. If the push is rejected, someone else committed
+  first: pull, read what changed, and talk to them before going on.
+- **Hand over:** finish or checkpoint the current step (step 7), set **Driver** to "none, free to take", write
+  **Next step** so someone with no context can start it, commit as "Hand over", push. Tell the other person.
+- **Working at the same time** (only if you both agree): claim whole rows of BUILD-PLAN.md §5 in the **Claims** table,
+  commit and push the claim first, and touch only the files those rows own. Pull and rebase (`git pull --rebase`)
+  before every push. Never edit a file the other person's row owns; file a request in `docs/requests/` instead.
+- **Secrets travel privately.** `.env.local` and keypairs are never committed. If the other driver needs them, the
+  person who has them sends them directly. See CONTEXT.md §4 for what lives on one machine only.
+- **Workflow waves.** Commit the workflow script to `scripts/workflows/` before running it, and record the run id,
+  the labels and their state in the checkpoint log. A run can't be resumed from another machine or session: the next
+  driver relaunches the committed script with only the unfinished labels. Every workflow agent's last step is to
+  commit **only its own files** (`git commit -m "…" -- <its paths>`; retry if `.git/index.lock` is busy) and push
+  (`git pull --rebase` and retry if rejected), so a dead session loses at most one agent's work.
 
 ## Rules that never change
 
 - **Hackathon rule.** HackTX 2026 requires every line of project code to be written during the hacking period,
   11:30 CDT on 2026-10-24 to 11:30 CDT on 2026-10-25. Never copy code from before then: the old app in git
   baseline `245763f`, the pre-event prototypes, or code blocks in `docs/research/`. Use those only as knowledge.
-- **Commits.** The author is Amar Kushwaha only (the repo's git config already says so). Add no `Co-Authored-By`
-  or other attribution lines. Commit in small, honest steps with messages that say what changed and why.
+- **Commits.** Authored by the person driving, with their own git identity (check `git config user.name` before the
+  first commit). Add no `Co-Authored-By`, "Generated with" or other agent attribution lines. Commit in small, honest
+  steps with messages that say what changed and why.
 - **Never commit secrets.** `.env.local`, keypairs and `.next*/` are ignored; keep it that way and check
-  `git status` before every commit. Never print a key's value.
+  `git status` before every commit. Never print a key's value. Session transcripts stay out of git (they hold file
+  dumps and can hold secrets); summarise them in CONTEXT.md §5 instead.
 - **Ask the user first** before creating cloud resources (Vultr), spending money, uploading env vars to Vercel,
-  submitting on Devpost, or force-pushing. Normal `git push` to `origin main` is approved.
+  moving devnet SOL from a personal wallet, submitting on Devpost, or force-pushing. Normal `git push` to
+  `origin main` is approved. Never push the local branch `backup/simlab-history`.
 - **Workflow agents.** Never SendMessage a running Workflow agent by its id: it starts a duplicate copy instead.
   Talk to running agents through files they re-read, or through their follow-up agent.
 - **Next.js 16.4 differs from what models know.** Read `AGENTS.md` and the guide in `node_modules/next/dist/docs/`
-  before using a Next API. Builds that share the tree use `NEXT_DIST_DIR=.next-<label>`; delete that folder after.
+  before using a Next API. Builds that share the tree use `NEXT_DIST_DIR=.next-<label>`; delete that folder after,
+  and remove the `.next-<label>` lines `next build` adds to `tsconfig.json`.
 - Ownership and contracts: `docs/ARCHITECTURE.md` (§2 owners, §3–9 contracts), `docs/hacktx/HX-CONTRACT.md`
   (sponsor layer, H12 owners). Change schemas additively and log it at the top of ARCHITECTURE.md.
 
 ## Where state lives
 
-| What | Where | Survives a new machine? |
+| What | Where | In git? |
 |---|---|---|
-| Code, docs, this file, the plan, audit reports | this repo (`origin` = github.com/kushwahaamar-dev/sim) | yes |
-| Secrets (Solana program id and issuer keypair, later Meta/SerpApi/Tiger keys) | `.env.local` on the user's Mac, never in git | no: ask the user |
-| Agents' scratch notes and downloads from the first build | `~/simlab-scratch-backup/` on the user's Mac (`RESUME.md`, `cutoff-1419.json`) | no |
-| First build's workflow scripts and agent transcripts | `~/.claude/projects/-Users-amar-Codes-ak-simlab/327c458a-…/` on the user's Mac | no |
+| Code, docs, this file, the plan, audits | this repo (`origin` = github.com/kushwahaamar-dev/sim) | yes |
+| The users' requests, decisions, lessons, conversation log | `docs/handoff/CONTEXT.md` | yes |
+| First build's resume notes, cut-off state, workflow scripts | `docs/handoff/first-build/` | yes |
+| Secrets (`.env.local`: Solana program id and issuer keypair, later Meta/SerpApi/Tiger keys) | Amar's Mac | no: sent privately |
+| Devnet wallet `Cxt17a9c…bW1S`, program deploy keypair | Amar's Mac | no |
+| Session transcripts, first build's 4 GB scratch | Amar's Mac (`~/.claude/projects/…`, `~/simlab-scratch-backup/`) | no: summarised in CONTEXT.md |
 
-Anything the next agent needs must end up in the repo. Machine-local state is only a convenience.
+Anything the next driver needs must end up in the repo. Machine-local state is only a convenience.
 
 ## Current status
 
-- **Updated:** 2026-10-24 15:50 CDT.
+- **Updated:** 2026-10-24 16:05 CDT.
+- **Driver:** none, free to take. (Amar paused at 16:05.)
 - **Phase:** 0 is done: the audit and the plan. Nothing is being built yet.
 - **Plan:** `docs/hacktx/BUILD-PLAN.md`, written from the six audits in `docs/audit/` (boards, robotics, drones,
   platform, sponsor-layer, history). It covers Best Overall, SerpApi, Most Entertaining, Meta and Solana.
 - **Checks at the last code commit:** typecheck 34 errors; eslint clean; vitest 15 failed of 1243; `next build`
   fails prerendering `/en/boards/esp32-s3-devkitc-1`.
-- **Waiting on the user:** approve the plan; decisions D1 (tracks: five rows pasted, "four" written; Hardware?),
-  D2 (prose translation tiers), D3 (OK to send 3 devnet SOL from the user's CLI wallet), D4 (keys and accounts).
-- **Next step:** when the user says go, start BUILD-PLAN.md §5 phase 1 (seven agents, table in §5). Don't start
-  without the go.
+- **Waiting on a user:** approve the plan; decisions D1 (tracks: five rows pasted, "four" written; Hardware?),
+  D2 (prose translation tiers), D3 (Amar's OK to send 3 devnet SOL from his CLI wallet), D4 (keys and accounts).
+  BUILD-PLAN.md §0 and §9 explain each.
+- **Next step:** whoever drives next: take over, put D1–D4 to your user, record the answers in CONTEXT.md §3, then
+  on their go start BUILD-PLAN.md §5 phase 1 (seven agents, table in §5). Don't start the build without the go.
+
+### Claims (only when both people work at the same time)
+
+| BUILD-PLAN row | Who | Since | State |
+|---|---|---|---|
+| – | – | – | – |
 
 ## Checkpoint log (newest first)
 
-- 2026-10-24 15:50 CDT: all six audits saved in `docs/audit/`; `docs/hacktx/BUILD-PLAN.md` written and waiting
-  for approval.
+- 2026-10-24 16:05 CDT (Amar): team handoff set up: driver and claims protocol in this file,
+  `docs/handoff/CONTEXT.md` (requests, decisions, lessons, conversation log), the first build's RESUME.md,
+  cut-off state and workflow scripts in `docs/handoff/first-build/`, `scripts/handoff-status.sh`. Amar paused;
+  driver free.
 
-- 2026-10-24 15:31 CDT: the repo moved to github.com/kushwahaamar-dev/sim at the user's request, with a fresh history
-  that starts now: today's three commits were rebuilt from their identical trees. The pre-event baseline `245763f` is
-  not in this history. The old history is kept only as the local branch `backup/simlab-history` (never push it).
-  Never force-push `main` again unless the user asks.
+- 2026-10-24 15:50 CDT (Amar): all six audits saved in `docs/audit/`; `docs/hacktx/BUILD-PLAN.md` written and
+  waiting for approval.
 
-- 2026-10-24 15:50 CDT: handoff system created (this file, `CLAUDE.md`). Pushed `57fbba9` and `74e41ce` to origin.
+- 2026-10-24 15:31 CDT (Amar): the repo moved to github.com/kushwahaamar-dev/sim at Amar's request, with a fresh
+  history that starts now: today's three commits were rebuilt from their identical trees. The pre-event baseline
+  `245763f` is not in this history. The old history is kept only as Amar's local branch `backup/simlab-history`
+  (never push it). Never force-push `main` again unless a user asks.
+
+- 2026-10-24 15:20 CDT (Amar): handoff system created (this file, `CLAUDE.md`).

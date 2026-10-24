@@ -38,9 +38,7 @@
     ".next-hx-mcp/types/**/*.ts",
     ".next-hx-mcp/dev/types/**/*.ts",
     ".next-shell-2/types/**/*.ts",
-    ".next-shell-2/dev/types/**/*.ts",
-    ".next-audit/types/**/*.ts",
-    ".next-audit/dev/types/**/*.ts"
+    ".next-shell-2/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

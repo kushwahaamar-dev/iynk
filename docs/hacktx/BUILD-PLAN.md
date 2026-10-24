@@ -280,5 +280,6 @@ allows (CLAUDE.md's 5–8 per agent).
 
 ## 10. Handoff
 
-After every agent finishes, `HANDOFF.md` gets the status and a checkpoint line, then commit and push (author: you
-only). If this session runs out, a new one runs the resume prompt and picks up at the next unfinished row of §5.
+After every agent finishes, `HANDOFF.md` gets the status and a checkpoint line, then commit and push (author: the
+person driving, no agent attribution). If a session runs out, or the other teammate takes over, the next session
+follows HANDOFF.md ("How to resume", "Working as a team") and picks up at the next unfinished row of §5.
