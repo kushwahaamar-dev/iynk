@@ -151,6 +151,11 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   deploy. Keys: "Not yet, keep placeholders". Vultr: "Not yet", so rooms keep the one-browser fallback. Spanish
   404: "Yes, fix it first", so BUILD-PLAN §3.2 item 5 (English prose with a "not yet translated" notice) is built
   before gate 1. Gate 1 then runs the local half of §6 against a local production build.
+- **10-24 18:48, Amar (driver decision).** The English prose fallback is per file, never per key. A missing key
+  still throws, a bench with incomplete prose stays hidden, and an item with no English prose still 404s. That way
+  half-translated text can't slip through quietly. The Spanish Uno page overflowed a 390 px phone once it
+  rendered. Fixed inside this step because demo step 2 is a friend on a phone in Spanish. `content:check` is red
+  for uno-r4 and four drones (no English prose). That belongs to phase 2, so it is reported at gate 1, not fixed now.
 
 ## 6. Lessons learned (apply them)
 

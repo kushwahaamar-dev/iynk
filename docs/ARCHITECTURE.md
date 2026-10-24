@@ -7,7 +7,7 @@ docs/DECISIONS.md.
 
 ## 0. Change log (newest first; after 14:00 CDT Oct 24 schema and id changes are additive only)
 
-- v1.4 18:50 CDT Oct 24 (driver, BUILD-PLAN §3.2 item 5): additive, no schema.ts change. When
+- v1.4 18:46 CDT Oct 24 (driver, BUILD-PLAN §3.2 item 5): additive, no schema.ts change. When
   `src/i18n/content/<lang>/<lab>/<id>.json` is missing, the item shows its English prose instead of a 404:
   `getContentProse` (src/i18n/server.ts) returns `{ text, lang }`, the board, bench and craft loaders expose it as
   `textLang`, and the page puts `UntranslatedNotice` (`common.untranslated`) above it. The fallback is per file,

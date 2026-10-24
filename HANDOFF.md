@@ -83,7 +83,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 18:31 CDT (machine clock).
+- **Updated:** 2026-10-24 18:48 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Fast-forwarded to
   `94d3caa`. Do not build in `/Users/amar/Codes/sim`.
@@ -93,26 +93,32 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   platform, sponsor-layer, history). Phases 1–3 build for Best Overall, SerpApi, Most Entertaining and Meta.
   Solana and Best Hardware Hack are phase 4, only if time is left after gate 3 (Amar, 16:15). Don't start them
   earlier.
-- **Checks on this tree (18:25, `b62ebc0`):** `npm run typecheck` exit 0. `npx eslint . --quiet` exit 0.
-  `next build` with typecheck on exits 0, 645 of 645 pages, one warning (`src/i18n/figures/<locale>.json` missing).
-  Full vitest was not re-run this session. Do not run `npm ci` here (a fresh install in `/Users/amar/Codes/sim`
-  showed `PageProps` errors this install does not have).
+- **Checks on this tree (18:45, `6da9aac`):** `npm run typecheck` exit 0. `npx eslint . --quiet` exit 0. Full
+  vitest: 1347 passed, 4 skipped (TimescaleDB integration, no database), 8 todo, 0 failed. `next build` with
+  typecheck on exits 0, 645 of 645 pages, one warning (`src/i18n/figures/<locale>.json` missing).
+  **`npm run content:check` exits 1:** `uno-r4` and drones `whoop`, `cinewhoop`, `longrange`, `wing` have data
+  modules but no English prose, so they 404 in every language (phase-2 rows). Do not run `npm ci` here (a fresh
+  install in `/Users/amar/Codes/sim` showed `PageProps` errors this install does not have).
 - **Local smoke (18:24, `docs/hacktx/DEPLOY.md`):** `/` 307 to `/en`. `/en`, `/en/boards/uno-r3`,
   `/en/boards/uno-r3/blink`, `/en/drones/quad5`, `/en/drones/quad5/fly`, `/en/together` and
-  `/figures/boards/uno-r3.html` are 200. `/api/mcp` POST `initialize` and `tools/list` 200 (7 tools). **`/es/boards/uno-r3`
-  is 404**: only English prose exists and `loadBoardPage` has no English fallback (BUILD-PLAN §3.2 item 5, owned
-  by no phase-1 row). Demo step 2 needs that fallback. Status codes only. No browser has opened these pages yet.
+  `/figures/boards/uno-r3.html` are 200. `/api/mcp` POST `initialize` and `tools/list` 200 (7 tools).
+  `/es/boards/uno-r3` was 404 then; since `3defc3d`–`6da9aac` it is 200 with the English prose under a "Aún sin
+  traducir" note (BUILD-PLAN §3.2 item 5, ARCHITECTURE.md v1.4). The Uno board and Blink pages fit a 390 px
+  screen in all six languages (`6f51a80`). Other pages were not measured at 390 px yet.
 - **Decided:** D1 (tracks, above). Amar: "Everything else looks fine."
 - **Decided by Jagrati (16:13):** D2 confirmed (the plan's default). D4: API keys stay placeholders for now;
   `.env.local` on Jagrati's Mac is `.env.example` with empty values. Vultr, Vercel env upload and Tiger are not
   approved yet, so gate 1 runs without live Meta/SerpApi and rooms use the one-browser fallback until keys arrive.
   D3 (devnet SOL) is asked only when phase 4 starts.
-- **Next step:** build BUILD-PLAN §3.2 item 5 (Amar, 18:31: "Yes, fix it first"). Board, bench and craft pages in
-  a language with no prose show the English prose with a translated "not yet translated" notice instead of a 404.
-  A build-time check fails when English prose is missing. Then gate 1, locally only (Amar, 18:31: no Vercel link,
-  no preview, keys stay placeholders, no Vultr). Run the local half of BUILD-PLAN §6 against a local production
-  build: 1 static (plus `npm run content:check`), 2 full vitest, 3 the app-path table in `docs/verify/`, 4 figure
-  probe, 5 route crawl over 6 locales, 6 e2e incl. 390×844.
+- **Next step:** gate 1, locally only (Amar, 18:31: no Vercel link, no preview, keys stay placeholders, no
+  Vultr). Run the local half of BUILD-PLAN §6 against one local production build (`NEXT_DIST_DIR=.next-gate1`)
+  and write the results to `docs/verify/gate1.md`: 1 static (typecheck, eslint, `npm run content:check`, build), 2
+  full vitest, 3 the app-path table in `docs/verify/` (rerun the content tests), 4 figure probe
+  (`figures/engine/probe.mjs`), 5 route crawl: every route × 6 locales, HTTP status, no `NEXT_HTTP_ERROR_FALLBACK`
+  on a 200, no console errors, no sideways scroll at 390 px (there is no crawl script yet; write one under
+  `scripts/`), 6 the e2e suite (`npx playwright test`, desktop and phone). Expected reds to report, not hide:
+  `content:check` (uno-r4 and four drones lack English prose) and their 404s. Then tell Amar what is red and what
+  phase 2 must own.
 - **Agents:** P1-checks `1e6f87c4-b1ea-4a31-9425-b1de6de9a88f` done (`39cca43`, `c168147`). P1-health
   `d393e1cb-35bc-4db4-bc0b-37c02c1b8e14` done (`28d8564`). P1-voice `b337455f-1b6d-45d5-93d8-51efb828d421` done
   (`b1e5308`). P1-engine `1a0582c2-ec24-42ab-8b3c-e2ac162b8e48` done (`f104e10`, `a45ec96`, `03eaab0`, `9d49d45`,
@@ -134,6 +140,14 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 18:48 CDT (Amar): BUILD-PLAN §3.2 item 5 done. `3defc3d` adds `getContentProse` (English prose when
+  a language's file is missing) to the board, bench and craft loaders. `c08bc68` adds the translated
+  `common.untranslated` note above those pages and an e2e test. `6f51a80` fixes two Spanish phone overflows on the
+  Uno page (power picker, wrapping inspect button). `6da9aac` puts untranslated items in the dashboard and Together
+  lobby lists and logs ARCHITECTURE.md v1.4. Typecheck and eslint exit 0. Full vitest is 1347 passed, 0 failed.
+  3 boardlab e2e tests pass. Spanish, French and Hindi item pages return 200 with their note. `content:check` was
+  already red (uno-r4 and four drones lack English prose). Next is gate 1, locally.
 
 - 2026-10-24 18:31 CDT (Amar): Amar answered the gate-1 questions. Gate 1 runs locally with placeholder keys. No
   Vercel link, preview deploy or Vultr VM yet. The English prose fallback (§3.2 item 5) is built first.
