@@ -192,3 +192,20 @@ endmodule
     expect(s.pins().LD3?.value).toBe(0);
   });
 });
+
+// The micro:bit's 5 x 5 matrix in the live run: each lit LED goes to the figure as MX<i>, row by row from the top left.
+describe('the micro:bit LED matrix in the live run', () => {
+  it('sends each lit LED as a net at its brightness, and leaves dark ones out', () => {
+    const source = 'from microbit import *\ndisplay.set_pixel(2, 2, 9)\ndisplay.set_pixel(4, 0, 3)\nwhile True:\n    sleep(100)\n';
+    const result = compile({ language: 'micropython', source, board: 'microbit-v2', world: { inputs: [], script: [] }, logicV: 3.3 });
+    if (!result.ok) throw new Error(result.error.message);
+    const s = result.session;
+    s.advanceTo(200);
+    expect(s.error).toBeNull();
+    const pins = s.pins();
+    expect(pins.MX12).toEqual({ mode: 'output', value: 1, pwm: false });
+    expect(pins.MX4?.value).toBeCloseTo(3 / 9);
+    expect(pins.MX4?.pwm).toBe(true);
+    expect(pins.MX0).toBeUndefined();
+  });
+});

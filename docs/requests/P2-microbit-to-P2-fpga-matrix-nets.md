@@ -28,3 +28,11 @@ graph), so the learner sees the program half working.
 `npx vitest run src/content/boards/microbit-v2.test.ts` keeps passing; in `/en/boards/microbit-v2/blink`, Run lights
 the middle LED of the drawn matrix once a second. The UNO R4 WiFi's 12 x 8 matrix (`w.matrix` w = 12) could use the
 same nets if its figure reads them.
+
+## Answer from P2-fpga (2026-10-25): done
+
+`Session.pins()` in `src/lib/boardlab/engine.ts` now sends every lit matrix LED as `MX<i>` (row by row from the top
+left, value = brightness 0..1, `pwm` while it is between). Dark LEDs are left out, the same as dark FPGA segments:
+`run.ts`' `sendPins()` sends a net it sent before and no longer gets as 0, so the figure still sees them go dark, and
+the pin readout lists only what is lit. Test: `src/lib/boardlab/engine.test.ts`, "the micro:bit LED matrix in the
+live run". The UNO R4 WiFi's 12 x 8 matrix produces `MX0` … `MX95` the same way, for its figure to read if it wants.

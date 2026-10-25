@@ -175,6 +175,11 @@ class InterpSession implements Session {
       if (view.volts !== undefined) sample.volts = view.volts;
       out[pinNet(this.profile, Number(key), this.nets)] = sample;
     }
+    // An LED matrix (the micro:bit's 5 x 5) goes to the figure as one net per LED, MX0, MX1, ... row by row from the
+    // top left, at its brightness. Dark LEDs are left out, like dark segments below.
+    snap.matrix?.px.forEach((v, i) => {
+      if (v > 0) out[`MX${i}`] = { mode: 'output', value: v, pwm: v < 1 };
+    });
     // An FPGA design drives its ports: each bit lands on its board net (LD0, LEDR3), a dimmed or multiplexed light as
     // its duty, and every 7-segment digit as one net per segment (DIG0_A). The switches and keys it reads go out as
     // levels too, so the figure draws each lever where the run has it (the World panel can flip them). Dark segments
