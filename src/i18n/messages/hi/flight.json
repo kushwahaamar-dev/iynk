@@ -27,7 +27,7 @@
     "figure8": "आठ के आकार का रास्ता",
     "yaw": "टेल सर्वो से यॉ का प्रदर्शन",
     "motorfail": "मोटर फ़ेल होने की जाँच",
-    "demo": "Demo: the autopilot flies it"
+    "demo": "डेमो: ऑटोपायलट उड़ाता है"
   },
   "buttons": {
     "arm": "आर्म करें",
@@ -60,7 +60,7 @@
     "gate": "गेट {n}/{total}",
     "checkpoint": "{label} ({n}/{total})",
     "home": "घर",
-    "par": "Medal times",
+    "par": "पदक के समय",
     "parValue": "{gold} / {silver} / {bronze}"
   },
   "osd": {
@@ -113,14 +113,14 @@
     "windOff": "हवा बंद",
     "fpvOn": "FPV चश्मा लगाया",
     "fpvOff": "पीछा करने वाला दृश्य",
-    "armBlockedAcc": "आर्मिंग रुकी: एक्सेलेरोमीटर कैलिब्रेट नहीं है। बेंच पर एक्सेलेरोमीटर कैलिब्रेट करें चलाएँ",
-    "hintDemo": "The autopilot is flying the course: switch mode to take over",
-    "demoTime": "Demo done in {time} s: the autopilot's time does not count",
-    "missionTime": "Mission complete: {time} s",
-    "missionBest": "Mission complete: {time} s (best!)",
-    "medal": "{line}. {medal} medal!",
-    "noMedal": "{line}. Bronze is {s} s",
-    "drop": "Parcel released: {kg} kg off, so it flies home on less throttle"
+    "armBlockedAcc": "आर्मिंग रुकी: एक्सेलेरोमीटर कैलिब्रेट नहीं है। बेंच पर ‘एक्सेलेरोमीटर कैलिब्रेट करें’ चलाएँ",
+    "hintDemo": "ऑटोपायलट कोर्स उड़ा रहा है: नियंत्रण लेने के लिए मोड बदलें",
+    "demoTime": "डेमो {time} s में पूरा: ऑटोपायलट का समय नहीं गिना जाता",
+    "missionTime": "मिशन पूरा: {time} s",
+    "missionBest": "मिशन पूरा: {time} s (सबसे तेज़!)",
+    "medal": "{line}। {medal} पदक!",
+    "noMedal": "{line}। कांस्य के लिए {s} s चाहिए",
+    "drop": "पार्सल छोड़ा गया: {kg} kg कम हुआ, इसलिए यह कम थ्रॉटल पर घर लौटता है"
   },
   "dirs": [
     "पूर्व",
@@ -205,124 +205,124 @@
     "flipMotor": "टेक-ऑफ़ पर पलट गया: मोटर की दिशा कभी जाँची ही नहीं गई (बेंच: मोटर की दिशा जाँचें)",
     "flipServo": "टेक-ऑफ़ पर बेकाबू घूम गया: टेल सर्वो उल्टा है"
   },
-  "demoHint": "The autopilot flies this course's line with the same physics you fly. Watch it, then beat it: its times never count.",
+  "demoHint": "ऑटोपायलट इस कोर्स की लाइन उसी भौतिकी से उड़ाता है जिससे आप उड़ाते हैं। उसे देखें, फिर उसे हराएँ: उसके समय कभी नहीं गिने जाते।",
   "medals": {
-    "gold": "Gold",
-    "silver": "Silver",
-    "bronze": "Bronze"
+    "gold": "स्वर्ण",
+    "silver": "रजत",
+    "bronze": "कांस्य"
   },
   "ghosts": {
-    "title": "Ghosts",
-    "best": "Your best lap ({time} s)",
-    "bestNone": "Your best lap (fly one to race it)",
-    "pace": "The autopilot's line ({time} s)",
-    "labelBest": "BEST {time} s",
-    "labelPace": "AUTOPILOT"
+    "title": "घोस्ट",
+    "best": "आपका सबसे अच्छा चक्कर ({time} s)",
+    "bestNone": "आपका सबसे अच्छा चक्कर (उससे रेस करने के लिए एक चक्कर उड़ाएँ)",
+    "pace": "ऑटोपायलट की लाइन ({time} s)",
+    "labelBest": "सबसे अच्छा {time} s",
+    "labelPace": "ऑटोपायलट"
   },
   "why": {
-    "title": "Here's why",
-    "badge": "REPLAY ×⅓",
-    "replay": "Watch the slow-motion replay",
-    "replaying": "Replaying in slow motion…",
-    "flipFc": "The flight controller was mounted backwards. It read every tilt the wrong way round, so each correction pushed the craft further over until it flipped. On a real build, turn the board so its arrow points forward, or set align_board_yaw = 180 in the CLI.",
-    "flipProps": "The props were on the wrong motors. A prop on a motor that spins the other way blows air up, so that corner pushed down instead of lifting and the craft rolled over on take-off. Each prop goes on the motor whose spin matches its direction.",
-    "flipMotor": "One motor spun the wrong way, because nobody checked the motor direction with the props off. Its torque fought the others and the craft flipped as soon as it lifted. On the bench, run Check motor direction and reverse the odd one out.",
-    "flipServo": "The tail servo was reversed. Every yaw correction turned the tail the wrong way, so the spin grew instead of stopping until the tricopter pirouetted out of control and tipped over. On a real build, turn the servo round or reverse it in the CLI (smix reverse 5 2 r), and check its direction by hand before every flight.",
-    "desync": "The motors ran past their rating: this pack's voltage times the motors' KV spins them faster than the ESCs can follow. An ESC lost sync, the motor stuttered and the craft fell. Pick motors or a pack within the rating.",
-    "battery": "The pack hit its cut-off voltage and the ESCs stopped the motors, so it fell. Land when LOW BATTERY shows, and never run a LiPo flat.",
-    "servos": "The elevons moved the wrong way: a command to lift the nose pushed it down, and the wing dived into the ground. Reverse the servos in the flight controller and check them by hand before every launch.",
-    "tailHeavy": "The centre of gravity was behind the mark, so the nose kept pitching up until the wing stalled and dropped. Move the pack forward until the wing balances on its CG mark.",
-    "propBackwards": "The pusher prop was on backwards. It gives less than half its thrust, so the wing never reached flying speed and sank into the grass. The printed side of the prop faces forward.",
-    "hardLanding": "It hit the ground at {speed} m/s, and the frame and props take about 3 m/s. With a manual throttle you catch the fall yourself: ease the throttle up before the ground, not after.",
-    "wingLanding": "It touched down too fast, too steep or banked. A wing lands level, slow and into the wind: let return-to-home bring it round, or line up long and flare just above the grass.",
-    "hit": "It flew into {what} at {kmh} km/h. Distance is hard to judge in the chase view: the FPV goggles (V) show what is ahead, and the autopilot's ghost flies a line that clears everything.",
+    "title": "ऐसा क्यों हुआ",
+    "badge": "रीप्ले ×⅓",
+    "replay": "धीमी गति का रीप्ले देखें",
+    "replaying": "धीमी गति में रीप्ले हो रहा है…",
+    "flipFc": "फ़्लाइट कंट्रोलर उल्टा लगा था। उसने हर झुकाव उल्टा पढ़ा, इसलिए हर सुधार ड्रोन को और ज़्यादा झुकाता गया, जब तक वह पलट नहीं गया। असली बिल्ड में बोर्ड को घुमाएँ ताकि उसका तीर आगे की ओर हो, या CLI में align_board_yaw = 180 सेट करें।",
+    "flipProps": "प्रॉप गलत मोटरों पर लगे थे। उल्टी दिशा में घूमने वाली मोटर पर लगा प्रॉप हवा को ऊपर फेंकता है, इसलिए वह कोना उठने के बजाय नीचे दबा और टेक-ऑफ़ पर ड्रोन पलट गया। हर प्रॉप उसी मोटर पर लगता है जिसका घूमना उसकी दिशा से मेल खाता है।",
+    "flipMotor": "एक मोटर उल्टी दिशा में घूमी, क्योंकि किसी ने प्रॉप उतारकर मोटर की दिशा नहीं जाँची। उसका टॉर्क बाकी मोटरों से लड़ा और उठते ही ड्रोन पलट गया। बेंच पर ‘मोटर की दिशा जाँचें’ चलाएँ और अलग वाली को उलटें।",
+    "flipServo": "टेल सर्वो उल्टा था। यॉ का हर सुधार पूँछ को गलत दिशा में मोड़ता था, इसलिए घूमना रुकने के बजाय बढ़ता गया, जब तक ट्राइकॉप्टर बेकाबू होकर लट्टू की तरह घूमा और पलट गया। असली बिल्ड में सर्वो को घुमाकर लगाएँ या CLI में उलटें (smix reverse 5 2 r), और हर उड़ान से पहले उसकी दिशा हाथ से जाँचें।",
+    "desync": "मोटरें अपनी रेटिंग से आगे चलीं: इस पैक का वोल्टेज गुणा मोटरों का KV उन्हें इतना तेज़ घुमाता है कि ESC साथ नहीं दे पाते। एक ESC का सिंक छूटा, मोटर अटकी और ड्रोन गिर गया। रेटिंग के अंदर वाली मोटरें या पैक चुनें।",
+    "battery": "पैक अपने कट-ऑफ़ वोल्टेज तक पहुँच गया और ESC ने मोटरें रोक दीं, इसलिए ड्रोन गिर गया। ‘बैटरी कम’ दिखते ही उतारें, और LiPo को कभी पूरा खाली न करें।",
+    "servos": "एलेवॉन गलत दिशा में हिले: नाक उठाने के आदेश ने उसे नीचे धकेला, और विंग ज़मीन में जा घुसी। फ़्लाइट कंट्रोलर में सर्वो उलटें और हर लॉन्च से पहले उन्हें हाथ से जाँचें।",
+    "tailHeavy": "गुरुत्व केंद्र निशान से पीछे था, इसलिए नाक ऊपर उठती रही, जब तक विंग स्टॉल होकर गिर नहीं गई। पैक को तब तक आगे खिसकाएँ जब तक विंग अपने CG निशान पर संतुलित न हो जाए।",
+    "propBackwards": "पुशर प्रॉप उल्टा लगा था। वह अपने थ्रस्ट का आधे से भी कम देता है, इसलिए विंग कभी उड़ने की गति तक नहीं पहुँची और घास में बैठ गई। प्रॉप की छपी हुई तरफ़ आगे की ओर रहती है।",
+    "hardLanding": "यह {speed} m/s पर ज़मीन से टकराया, जबकि फ़्रेम और प्रॉप लगभग 3 m/s ही झेलते हैं। मैनुअल थ्रॉटल में गिरावट आपको ख़ुद सँभालनी होती है: ज़मीन आने से पहले थ्रॉटल धीरे से बढ़ाएँ, बाद में नहीं।",
+    "wingLanding": "यह बहुत तेज़, बहुत खड़ी ढलान पर या झुककर उतरा। विंग समतल, धीमी और हवा के सामने उतरती है: घर वापसी को उसे घुमाकर लाने दें, या दूर से सीध बाँधें और घास के ठीक ऊपर नाक हल्की उठाएँ।",
+    "hit": "यह {kmh} km/h पर {what} से टकराया। पीछा करने वाले दृश्य में दूरी का अंदाज़ा लगाना मुश्किल है: FPV चश्मा (V) आगे का नज़ारा दिखाता है, और ऑटोपायलट का घोस्ट ऐसी लाइन उड़ता है जो हर चीज़ से बचकर निकलती है।",
     "what": {
-      "tree": "a tree",
-      "roof": "a roof",
-      "wall": "a wall",
-      "pole": "a power pole",
-      "gate": "a gate post",
-      "building": "a building",
-      "pillar": "a pillar",
-      "tower": "the tower",
-      "barrel": "a barrel",
-      "obstacle": "an obstacle"
+      "tree": "एक पेड़",
+      "roof": "एक छत",
+      "wall": "एक दीवार",
+      "pole": "बिजली का एक खंभा",
+      "gate": "गेट का एक खंभा",
+      "building": "एक इमारत",
+      "pillar": "एक स्तंभ",
+      "tower": "टावर",
+      "barrel": "एक ड्रम",
+      "obstacle": "एक रुकावट"
     },
     "fix": {
-      "fcReversed": "Turn the flight controller round",
-      "propsSwapped": "Put the props on the right motors",
-      "motorDirUnchecked": "Check the motor direction",
-      "accUncalibrated": "Calibrate the accelerometer",
-      "overKv": "Fit motors and a pack within their rating",
-      "servosReversed": "Reverse the servos",
-      "tailHeavy": "Move the pack forward to the CG mark",
-      "propBackwards": "Turn the prop round",
-      "mode": "Switch to {mode} and go again",
-      "pace": "Show the autopilot's line and go again",
-      "reset": "Fresh pack, back on the pad"
+      "fcReversed": "फ़्लाइट कंट्रोलर घुमाकर लगाएँ",
+      "propsSwapped": "प्रॉप सही मोटरों पर लगाएँ",
+      "motorDirUnchecked": "मोटर की दिशा जाँचें",
+      "accUncalibrated": "एक्सेलेरोमीटर कैलिब्रेट करें",
+      "overKv": "रेटिंग के अंदर वाली मोटरें और पैक लगाएँ",
+      "servosReversed": "सर्वो उलटें",
+      "tailHeavy": "पैक को CG निशान तक आगे खिसकाएँ",
+      "propBackwards": "प्रॉप घुमाकर लगाएँ",
+      "mode": "{mode} पर जाएँ और फिर से उड़ाएँ",
+      "pace": "ऑटोपायलट की लाइन दिखाएँ और फिर से उड़ाएँ",
+      "reset": "भरा हुआ पैक, वापस पैड पर"
     },
-    "fixed": "Fixed: {fix}. Arm and fly again"
+    "fixed": "ठीक हुआ: {fix}। आर्म करें और फिर से उड़ाएँ"
   },
   "breakIt": {
-    "title": "Break it",
-    "lede": "Put a real build mistake in, even mid-flight, and watch what it does. A crash replays in slow motion and says why.",
-    "reset": "Undo my changes",
-    "noBoard": "Laps flown with something broken don't go on the leaderboards.",
+    "title": "खराबी डालें",
+    "lede": "असली बिल्ड की कोई गलती डालें, उड़ान के बीच में भी, और देखें कि वह क्या करती है। क्रैश धीमी गति में दोबारा चलता है और बताता है क्यों।",
+    "reset": "मेरे बदलाव वापस लें",
+    "noBoard": "किसी खराबी के साथ उड़ाए गए चक्कर लीडरबोर्ड पर नहीं जाते।",
     "items": {
       "fcReversed": {
-        "label": "Mount the flight controller backwards",
-        "what": "Its arrow points at the tail, so it reads every tilt the wrong way round."
+        "label": "फ़्लाइट कंट्रोलर उल्टा लगाएँ",
+        "what": "उसका तीर पूँछ की ओर है, इसलिए वह हर झुकाव उल्टा पढ़ता है।"
       },
       "propsSwapped": {
-        "label": "Swap the props round",
-        "what": "Each prop sits on a motor that spins it the wrong way: that corner pushes down."
+        "label": "प्रॉप आपस में बदलें",
+        "what": "हर प्रॉप ऐसी मोटर पर है जो उसे गलत दिशा में घुमाती है: वह कोना नीचे दबता है।"
       },
       "motorDirUnchecked": {
-        "label": "Skip the motor direction check",
-        "what": "One motor spins the wrong way, and nobody looked with the props off."
+        "label": "मोटर दिशा की जाँच छोड़ दें",
+        "what": "एक मोटर उल्टी दिशा में घूमती है, और किसी ने प्रॉप उतारकर नहीं देखा।"
       },
       "accUncalibrated": {
-        "label": "Skip the accelerometer calibration",
-        "what": "The flight controller doesn't know which way is level, so it won't arm."
+        "label": "एक्सेलेरोमीटर कैलिब्रेशन छोड़ दें",
+        "what": "फ़्लाइट कंट्रोलर नहीं जानता कि समतल किधर है, इसलिए वह आर्म नहीं होगा।"
       },
       "overKv": {
-        "label": "Run the motors over their rating",
-        "what": "Too many volts for these motors' KV: the ESCs lose sync at full throttle."
+        "label": "मोटरों को उनकी रेटिंग से ज़्यादा चलाएँ",
+        "what": "इन मोटरों के KV के लिए बहुत ज़्यादा वोल्ट: पूरे थ्रॉटल पर ESC का सिंक छूट जाता है।"
       },
       "servosReversed": {
-        "label": "Reverse the servos",
-        "what": "The servos move the wrong way: every correction makes it worse."
+        "label": "सर्वो उलटें",
+        "what": "सर्वो गलत दिशा में हिलते हैं: हर सुधार हालत और बिगाड़ता है।"
       },
       "tailHeavy": {
-        "label": "Put the pack too far back",
-        "what": "The centre of gravity sits behind the mark, so the nose keeps pitching up."
+        "label": "पैक बहुत पीछे रखें",
+        "what": "गुरुत्व केंद्र निशान से पीछे है, इसलिए नाक ऊपर उठती रहती है।"
       },
       "propBackwards": {
-        "label": "Fit the prop backwards",
-        "what": "The pusher prop gives less than half its thrust."
+        "label": "प्रॉप उल्टा लगाएँ",
+        "what": "पुशर प्रॉप अपने थ्रस्ट का आधे से भी कम देता है।"
       }
     }
   },
   "challenge": {
-    "title": "Daily challenge",
-    "day": "{date}, the same for everyone (UTC)",
-    "what": "{craft} on {course}, with the {pack} pack",
-    "windOn": "Wind on",
-    "windOff": "No wind",
-    "fly": "Fly the challenge",
-    "flyThere": "Fly it with the {craft}",
-    "flying": "You're flying the challenge: the factory build, this pack and this wind, like everyone else today.",
-    "stop": "Back to free flight",
-    "best": "Your best: {time} s",
-    "none": "No time yet: a finished lap or run counts.",
-    "beat": "{by} flew it in {time} s. Beat that.",
-    "beatAnon": "A friend flew it in {time} s. Beat that.",
-    "share": "Share the challenge",
-    "copied": "Link copied",
-    "copyFailed": "Couldn't copy: here is the link",
-    "link": "Challenge link",
-    "shareText": "SimLab daily drone challenge: {craft} on {course}.",
-    "shareBeat": "SimLab daily drone challenge: {craft} on {course}. Can you beat {time} s?",
-    "board": "{course}, challenge of {date}"
+    "title": "आज की चुनौती",
+    "day": "{date}, सबके लिए एक जैसी (UTC)",
+    "what": "{course} पर {craft}, {pack} पैक के साथ",
+    "windOn": "हवा चालू",
+    "windOff": "हवा नहीं",
+    "fly": "चुनौती उड़ाएँ",
+    "flyThere": "{craft} के साथ उड़ाएँ",
+    "flying": "आप चुनौती उड़ा रहे हैं: फ़ैक्टरी बिल्ड, यही पैक और यही हवा, आज बाकी सबकी तरह।",
+    "stop": "खुली उड़ान पर वापस",
+    "best": "आपका सबसे अच्छा: {time} s",
+    "none": "अभी कोई समय नहीं: पूरा हुआ चक्कर या रन गिना जाता है।",
+    "beat": "{by} ने इसे {time} s में उड़ाया। इसे हराकर दिखाएँ।",
+    "beatAnon": "एक दोस्त ने इसे {time} s में उड़ाया। इसे हराकर दिखाएँ।",
+    "share": "चुनौती शेयर करें",
+    "copied": "लिंक कॉपी हो गया",
+    "copyFailed": "कॉपी नहीं हो सका: यह रहा लिंक",
+    "link": "चुनौती का लिंक",
+    "shareText": "SimLab की आज की ड्रोन चुनौती: {course} पर {craft}।",
+    "shareBeat": "SimLab की आज की ड्रोन चुनौती: {course} पर {craft}। क्या आप {time} s को हरा सकते हैं?",
+    "board": "{course}, {date} की चुनौती"
   }
 }
