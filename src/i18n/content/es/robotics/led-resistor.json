@@ -1,0 +1,432 @@
+{
+  "title": "LED + resistencia",
+  "sub": "La ley de Ohm con un multímetro",
+  "hint": "Monta la placa de prácticas, mueve el jumper, predice la corriente y lee el multímetro, y luego avéríala a propósito",
+  "overview": "El primer circuito del curso no lleva ningún chip: 5 V, un interruptor, una resistencia y un LED rojo, con un multímetro en el circuito para leer la corriente. Un jumper elige la resistencia: 220 Ω, 1 kΩ, 10 kΩ o un hilo sin más. Calcula primero cada corriente en papel, I = (V − V_F) / R con unos 2 V en el LED, y luego mueve el jumper y comprueba el multímetro: 13,6, 3,0 y 0,30 mA. Después avéríala a propósito: sin resistencia, el LED o el condensador al revés, sin el pull-down de USB-C, una soldadura fría, los cables de la fuente cambiados, 12 V en lugar de 5 V, una fuente que se queda sin corriente. Todos los LED, pull-ups y divisores de sensores de un robot funcionan con esta misma fórmula.",
+  "power": {
+    "label": "Conecta el cargador USB-C",
+    "ok": "Con alimentación: el LED está encendido y el multímetro lee su corriente"
+  },
+  "parts": {
+    "J1": {
+      "name": "Conector de alimentación USB-C",
+      "what": "Un conector USB-C solo de alimentación: VBUS, GND y los dos pines CC, sin datos. Por aquí entran los 5 V del cargador."
+    },
+    "J2": {
+      "name": "Borna de tornillo para una fuente de laboratorio",
+      "what": "Borna de tornillo de dos vías de 5,08 mm: el cable rojo al + y el negro al −. Nada en la placa impide conectarlos al revés, a propósito."
+    },
+    "R4": {
+      "name": "Pull-down de 5,1 kΩ en CC1",
+      "what": "Un cargador USB-C mantiene apagados sus 5 V hasta que ve 5,1 kΩ entre un pin CC y tierra: así sabe que hay un dispositivo conectado y no el extremo suelto de un cable. R4 va en CC1."
+    },
+    "R5": {
+      "name": "Pull-down de 5,1 kΩ en CC2",
+      "what": "Los mismos 5,1 kΩ en CC2. Un conector USB-C entra en las dos posiciones y solo se conecta un pin CC cada vez, así que cada uno necesita el suyo."
+    },
+    "SW1": {
+      "name": "Interruptor deslizante",
+      "what": "Corta la línea de 5 V justo después de la alimentación, donde va el interruptor de encendido de un robot. Deslízalo a ON."
+    },
+    "C1": {
+      "name": "Condensador electrolítico de 100 µF 16 V",
+      "what": "Suaviza el momento en que lo conectas. Tiene polaridad: la franja de la funda marca la pata −, que va hacia GND. Polarizado al revés, un electrolítico tiene fugas, se calienta y abre la válvula."
+    },
+    "R1": {
+      "name": "Resistencia de 220 Ω",
+      "what": "Rojo, rojo, marrón, dorado: 22 × 10 = 220 Ω, ±5 %. (5 V − 2 V) / 220 Ω = 13,6 mA, brillante y muy por debajo de los 30 mA del LED."
+    },
+    "R2": {
+      "name": "Resistencia de 1 kΩ",
+      "what": "Marrón, negro, rojo, dorado: 10 × 100 = 1 kΩ. 3 V / 1000 Ω = 3,0 mA: se ve bien encendido, una corriente normal para un indicador."
+    },
+    "R3": {
+      "name": "Resistencia de 10 kΩ",
+      "what": "Marrón, negro, naranja, dorado: 10 × 1000 = 10 kΩ. 0,30 mA: tenue pero visible. 10 kΩ también es el valor clásico de un pull-up."
+    },
+    "JL1": {
+      "name": "Puente de hilo (sin resistencia)",
+      "what": "Un hilo sin más, 0 Ω: la fila NONE. Aquí solo limitan la corriente el propio LED y la fuente. Pruébalo una vez, a propósito."
+    },
+    "JP1": {
+      "name": "Tira de pines de 2 × 4 para el jumper",
+      "what": "Cada fila une una resistencia con el ánodo del LED mientras el jumper está puesto en ella. Dos jumpers a la vez ponen dos resistencias en paralelo."
+    },
+    "SHUNT": {
+      "name": "Jumper",
+      "what": "Une los dos pines de una fila de JP1. Moviéndolo es como cambias la resistencia."
+    },
+    "D1": {
+      "name": "LED rojo de 5 mm",
+      "what": "Un LED rojo de 5 mm (de la clase WP7113ID): unos 2 V en sus extremos cuando está encendido (1,9 V típicos a 10 mA), 30 mA en continua como máximo. La corriente solo circula en un sentido, de la pata larga (ánodo) a la pata del lado plano del borde (cátodo)."
+    },
+    "TP1": {
+      "name": "Punto de prueba (+)",
+      "what": "Aquí se engancha la punta roja del multímetro. La corriente va de la fuente a TP1, pasa por el multímetro y vuelve por TP2."
+    },
+    "TP2": {
+      "name": "Punto de prueba (COM)",
+      "what": "La punta negra del multímetro (COM). Desde aquí la corriente sigue por la resistencia que elige el jumper y por el LED, hasta tierra."
+    },
+    "MM1": {
+      "name": "Multímetro de bolsillo, escala de 200 mA",
+      "what": "En su escala de 200 mA en continua, con la punta roja en la entrada mA. Va en serie, así que toda la corriente del LED pasa por él: lee la corriente del circuito. Por encima de 200 mA muestra OL."
+    }
+  },
+  "math": {
+    "supply": "voltios del cargador USB-C",
+    "vf": "un LED rojo tiene una caída de unos 2 V cuando está encendido",
+    "watts": "calor en la resistencia (una pieza de 1/4 W)",
+    "led": "calor en el LED (75 mW como máximo)"
+  },
+  "modes": {
+    "r220": {
+      "title": "220 Ω",
+      "code": {
+        "what": "Jumper en 220 Ω: la ley de Ohm para el LED, I = (V - V_F) / R",
+        "bands": "rojo rojo marrón dorado",
+        "verdict": "13.6 mA: brillante y seguro. Usa un LED rojo de 5 mm a 5-20 mA, nunca por encima de 30 mA"
+      }
+    },
+    "r1k": {
+      "title": "1 kΩ",
+      "code": {
+        "what": "Jumper en 1 kΩ",
+        "bands": "marrón negro rojo dorado",
+        "verdict": "3.0 mA: se ve bien encendido, la corriente de un indicador"
+      }
+    },
+    "r10k": {
+      "title": "10 kΩ",
+      "code": {
+        "what": "Jumper en 10 kΩ",
+        "bands": "marrón negro naranja dorado",
+        "verdict": "0.30 mA: tenue pero visible"
+      }
+    },
+    "bypass": {
+      "title": "Sin resistencia",
+      "code": {
+        "what": "Jumper en NONE: el puente de hilo",
+        "bands": "el puente de hilo: ninguna resistencia",
+        "nothing": "no hay respuesta, nada en la fórmula limita la corriente",
+        "real": "el límite real son los pocos ohmios del propio LED y el cargador: cientos de mA",
+        "verdict": "diez veces los 30 mA máximos del LED: se quema"
+      }
+    }
+  },
+  "steps": {
+    "unplug": {
+      "title": "Desconéctala",
+      "body": "La placa de prácticas viene conectada, con el LED encendido a 220 Ω. Desconecta el cable USB-C antes de tocar ninguna pieza: nunca trabajes en una placa con tensión."
+    },
+    "strip": {
+      "title": "Déjala en la PCB desnuda",
+      "body": "Quita todas las piezas, también el jumper y el multímetro. Lo que queda es la placa: el cobre, la máscara de soldadura y la serigrafía que dice dónde va cada pieza.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    },
+    "low": {
+      "title": "Coloca las piezas bajas",
+      "body": "Las piezas de agujero pasante se colocan de la más baja a la más alta, para que cada una quede plana mientras la sueldas: las tres resistencias y el puente de hilo, los dos pull-downs de CC, el interruptor deslizante, los dos puntos de prueba y la tira de pines del jumper.",
+      "refusal": "Primero deja la placa desnuda, sin alimentación"
+    },
+    "tall": {
+      "title": "Coloca las piezas altas",
+      "body": "Ahora el conector USB-C, la borna de tornillo, C1 y el LED. Dos de ellas solo entran en un sentido: la pata larga de D1 (ánodo) va en el agujero +, y la pata con franja de C1 (−) va hacia GND, como indica la serigrafía.",
+      "refusal": "Primero las piezas bajas: una pieza alta en medio impide que las bajas queden planas"
+    },
+    "solder": {
+      "title": "Suelda todas las uniones",
+      "body": "Calienta el pad y la pata a la vez, y luego aporta el estaño: una buena soldadura es un pequeño cono brillante. Una bola mate y granulada es una soldadura fría, y solo hace contacto a ratos.",
+      "refusal": "Primero coloca las piezas"
+    },
+    "jumper-meter": {
+      "title": "Jumper y multímetro",
+      "body": "Pon el jumper en la fila 220, y luego engancha la punta roja del multímetro a TP1 y la negra a TP2. El multímetro cierra el circuito: sin él no circula ninguna corriente.",
+      "refusal": "Primero suéldalo todo: el jumper y el multímetro van los últimos"
+    },
+    "plug": {
+      "title": "Predice y luego conecta",
+      "body": "Calcúlalo antes de conectar: el LED se queda con unos 2 V, así que a la resistencia le llegan 3 V, y 3 V / 220 Ω = 13,6 mA. Conecta el cargador: el LED se enciende y el multímetro marca 13,6."
+    },
+    "row-1k": {
+      "title": "Mueve el jumper a 1 kΩ",
+      "body": "Unas cinco veces la resistencia, más o menos una quinta parte de la corriente: 3 V / 1000 Ω = 3,0 mA, y el LED brilla claramente menos. Con esta corriente, un LED rojo real tiene una caída más cercana a 1,8 V, así que un multímetro real marca de 3,0 a 3,2 mA."
+    },
+    "row-10k": {
+      "title": "Muévelo a 10 kΩ",
+      "body": "Otra vez diez veces más: 0,30 mA. El LED es tenue pero todavía se ve, y la resistencia se calienta menos de un milivatio."
+    },
+    "row-220": {
+      "title": "De vuelta a 220 Ω",
+      "body": "Otra vez 13,6 mA. Todas las lecturas han coincidido con el cálculo: eso es la ley de Ohm, I = V / R, donde V son los 3 V que le llegan a la resistencia después de que el LED se quede con sus 2 V."
+    },
+    "no-resistor": {
+      "title": "Avéríala: sin resistencia",
+      "body": "Mueve el jumper a NONE, para que entre la fuente y el LED solo quede el puente de hilo. Mira el LED y el multímetro. Luego repárala: desconéctala, vuelve a poner el jumper en 220 Ω y coloca un LED nuevo."
+    },
+    "led-backwards": {
+      "title": "Avéríala: el LED al revés",
+      "body": "Coloca D1 al revés y dale alimentación. Luego dale la vuelta y vuelve a alimentarla."
+    },
+    "cap-backwards": {
+      "title": "Avéríala: C1 al revés",
+      "body": "Coloca C1 con la franja hacia + y dale alimentación. Luego coloca uno nuevo en el sentido correcto."
+    },
+    "cc-missing": {
+      "title": "Avéríala: quita R4",
+      "body": "Monta la placa sin uno de los dos pull-downs de CC de 5,1 kΩ y conecta el cargador. Luego coloca R4 y vuelve a conectar."
+    },
+    "cold-led": {
+      "title": "Avéríala: una soldadura fría en el LED",
+      "body": "Una de las soldaduras de D1 está mate y granulada. Mira el LED y el multímetro, y luego vuelve a calentar la soldadura."
+    },
+    "reverse-supply": {
+      "title": "Avéríala: cambia los cables de la fuente de laboratorio",
+      "body": "Alimenta la placa desde la fuente de laboratorio en J2 con el rojo y el negro cambiados. Luego ponlos bien y coloca un C1 nuevo."
+    },
+    "over-voltage": {
+      "title": "Avéríala: 12 V en la entrada de 5 V",
+      "body": "Sube la fuente de laboratorio a 12 V. Lee el multímetro y luego espera unos segundos. Repárala con la fuente otra vez a 5 V y un LED nuevo."
+    },
+    "current-limit": {
+      "title": "Avéríala: un límite de corriente de 10 mA",
+      "body": "Pon el límite de corriente de la fuente de laboratorio en 10 mA, menos de lo que quiere el LED. Lee el multímetro y la tensión de la fuente, y luego vuelve a subir el límite."
+    },
+    "usb-again": {
+      "title": "Otra vez con USB",
+      "body": "Vuelve a conectar el cargador. El multímetro marca 13,6 mA: la placa de prácticas vuelve a estar entera."
+    }
+  },
+  "faults": {
+    "no-resistor": {
+      "title": "Sin resistencia (jumper en NONE)",
+      "symptom": "Un destello brillante y OL en el multímetro, y luego el LED se queda apagado para siempre y el multímetro marca 0.",
+      "explanation": "Con 0 Ω en la fila, nada en I = (V − V_F) / R limita la corriente. Solo la frenan los pocos ohmios del propio LED y el límite del cargador: cientos de miliamperios frente a los 30 mA máximos del LED. El chip y su hilo de conexión se sobrecalientan en un instante y el LED queda abierto.",
+      "fix": "Desconéctala, vuelve a poner el jumper en 220 Ω y coloca un LED nuevo: un LED quemado no vuelve nunca."
+    },
+    "led-backwards": {
+      "title": "LED al revés",
+      "symptom": "El LED se queda apagado y el multímetro marca 0,00.",
+      "explanation": "Un LED solo conduce del ánodo al cátodo. Dado la vuelta queda polarizado en inversa, y a 5 V (su tensión inversa máxima) solo pasan unos pocos microamperios de fuga. Sobrevive; simplemente se queda apagado.",
+      "fix": "Desconéctala y dale la vuelta a D1: la pata larga (ánodo) en el agujero +, el lado plano hacia −."
+    },
+    "cap-backwards": {
+      "title": "C1 al revés",
+      "symptom": "C1 sisea y se abre su válvula. El LED sigue funcionando.",
+      "explanation": "Un electrolítico de aluminio solo bloquea la corriente en un sentido. Polarizado al revés tiene cada vez más fugas, se calienta, genera gas y se abre la válvula ranurada de arriba. El LED no necesita C1, así que sigue encendido, pero el condensador queda inservible.",
+      "fix": "Desconéctala y coloca un C1 nuevo con la franja (−) hacia GND."
+    },
+    "cc-missing": {
+      "title": "Falta R4 (un pull-down de USB-C)",
+      "symptom": "Nada de nada: el LED está apagado y el multímetro marca 0, como si el cargador estuviera muerto.",
+      "explanation": "Un cargador USB-C mantiene apagados sus 5 V hasta que ve un pull-down de 5,1 kΩ en el pin CC, para que el extremo suelto de un cable nunca tenga tensión. R4 y R5 son esos pull-downs, uno para cada posición del conector, y sin R4 esta posición no recibe alimentación. Un cable de USB-A a C siempre da 5 V, lo que oculta el error hasta que alguien usa un cable de C a C.",
+      "fix": "Desconéctala, coloca R4 (5,1 kΩ) y suéldala."
+    },
+    "cold-led": {
+      "title": "Soldadura fría en D1",
+      "symptom": "El LED parpadea y el multímetro salta entre 13,6 y 0.",
+      "explanation": "Una soldadura fría es estaño que nunca llegó a mojar bien el pad: mate, granulado, a veces agrietado. Hace contacto y luego deja de hacerlo, así que el circuito se abre y se cierra. En un robot, esta es la avería que aparece y desaparece cuando se mueve.",
+      "fix": "Desconéctala y vuelve a calentar la soldadura con un poco de estaño nuevo hasta que fluya y forme un cono brillante."
+    },
+    "reverse-supply": {
+      "title": "Cables de la fuente de laboratorio cambiados",
+      "symptom": "El LED se queda apagado y luego se abre la válvula de C1.",
+      "explanation": "J2 no tiene diodo contra la polaridad inversa, a propósito: se comería 0,7 V de los 3 V de los que trata esta lección. Con los cables cambiados, la línea de 5 V queda a −5 V. El LED queda polarizado en inversa y simplemente bloquea, pero C1, justo entre los extremos de la alimentación, también queda polarizado al revés, y se abre su válvula.",
+      "fix": "Desconéctala, cambia los cables (el rojo al +) y coloca un C1 nuevo."
+    },
+    "over-voltage": {
+      "title": "12 V en la entrada de 5 V",
+      "symptom": "El LED deslumbra y el multímetro marca 45,5 mA. Unos segundos después destella y se apaga.",
+      "explanation": "(12 V − 2 V) / 220 Ω = 45 mA, la mitad más que los 30 mA máximos del LED, y 0,45 W en una resistencia de 1/4 W. El simulador quema el LED tras unos 3 s; uno real puede durar más, y se va apagando a medida que muere. En cualquier caso, la resistencia se calculó para 5 V, no para 12.",
+      "fix": "Desconéctala, vuelve a poner la fuente a 5 V (o calcula una resistencia mayor para 12 V) y coloca un LED nuevo."
+    },
+    "current-limit": {
+      "title": "Límite de corriente de la fuente en 10 mA",
+      "symptom": "El LED brilla un poco menos, el multímetro marca 10,0 y la fuente cae a 4,2 V.",
+      "explanation": "Una fuente de laboratorio solo mantiene su tensión hasta que la carga quiere más que su límite de corriente. Entonces baja la tensión para mantener la corriente en el límite: aquí 10 mA, lo que deja 2 V + 10 mA × 220 Ω = 4,2 V. Eso es una caída de tensión: no se rompe nada, pero el circuito ya no recibe lo que has fijado.",
+      "fix": "Sube el límite de corriente por encima de lo que necesita el circuito (aquí 20 mA es de sobra), o usa una resistencia mayor."
+    }
+  },
+  "status": {
+    "status": "Estado",
+    "meter": "Lectura del multímetro (mA)",
+    "resistor": "Resistencia (Ω)",
+    "heat": "Calor en la resistencia (mW)",
+    "rail": "Alimentación después de SW1",
+    "current": "Consumo de corriente"
+  },
+  "current": {
+    "usb": "Cargador USB-C, 5 V: 500 mA",
+    "bench": "Fuente de laboratorio, 5 V: 1 A",
+    "led": "El circuito del LED, según lo lee el multímetro"
+  },
+  "tasks": {
+    "ohms-law": {
+      "title": "La ley de Ohm en un sketch",
+      "brief": "Haz que una Uno haga las cuentas del papel e imprima la corriente de cada fila del jumper (220, 1000 y 10000 ohmios) con una alimentación de 5 V y un LED de 2 V, con el formato \"220 ohm: 13.64 mA\". El código inicial imprime 0 mA en las tres filas: averigua por qué. Luego añade una línea con la resistencia más pequeña que mantiene el LED a 20 mA: \"20 mA needs 150 ohm\".",
+      "hints": {
+        "1": "En C++, un int dividido entre un int da un int: 3 / 220 es 0, y 0 × 1000 sigue siendo 0.",
+        "2": "Haz que los números sean float (5.0, 2.0, 1000.0) y la división conserva los decimales.",
+        "3": "R = (V − V_F) / I, con I en amperios: 3,0 / 0,020 = 150. Serial.print(x, 0) imprime un float sin decimales."
+      },
+      "checks": {
+        "1": "220 ohm: 13.6 mA",
+        "2": "1000 ohm: 3.0 mA",
+        "3": "10000 ohm: 0.30 mA",
+        "4": "Imprime 20 mA needs 150 ohm"
+      },
+      "code": {
+        "starter": "La ley de Ohm en una Uno: la corriente de cada fila del jumper",
+        "volts": "voltios",
+        "law": "I = (V - V_F) / R, por 1000 para pasar a mA",
+        "floats": "float conserva los decimales: 3.0 / 220 = 0.0136",
+        "smallest": "la resistencia más pequeña para 20 mA: R = (V - V_F) / I"
+      }
+    },
+    "pwm-current": {
+      "title": "Fija la corriente media con PWM",
+      "brief": "Conecta la resistencia de 220 Ω y el LED de la placa de prácticas al pin 9 de una Uno: el pin 9, luego la resistencia, luego el LED y luego GND. Encendido del todo, el pin 9 está a unos 5 V, así que el LED consume 13,6 mA. El PWM enciende y apaga del todo el pin unas 490 veces por segundo, así que la corriente media es el ciclo de trabajo por 13,6 mA, y esa media es lo que muestra el multímetro. Haz que el LED pase por 13,6, 6,8 y 3,4 mA de media, un segundo cada uno, e imprime cada paso.",
+      "hints": {
+        "1": "digitalWrite() solo conoce HIGH y LOW: los 13,6 mA completos o nada.",
+        "2": "analogWrite(9, duty), con duty de 0 a 255, fija la parte de cada ciclo en que el pin está encendido: 128 es más o menos la mitad.",
+        "3": "duty = objetivo / 13,6 × 255, redondeado: 255, 128 y 64."
+      },
+      "checks": {
+        "1": "Usa analogWrite()",
+        "2": "Los 13,6 mA completos en el primer segundo",
+        "3": "Más o menos la mitad, 6,8 mA, en el segundo",
+        "4": "Más o menos una cuarta parte, 3,4 mA, en el tercero",
+        "5": "Imprime el paso de 6,8 mA"
+      },
+      "code": {
+        "starter": "Tres corrientes con digitalWrite(): solo sabe todo o nada",
+        "pin": "pin 9 -> 220 ohmios -> LED -> GND",
+        "full": "13.6 mA: (5 - 2) / 220",
+        "half": "¿la mitad de la corriente? digitalWrite solo tiene HIGH y LOW",
+        "peak": "la corriente mientras el pin está encendido: (5 - 2) / 220 A",
+        "duty": "la parte de cada ciclo en que el pin está encendido, 0-255"
+      }
+    }
+  },
+  "quizzes": {
+    "solder": {
+      "led-legs": {
+        "q": "¿En qué sentido va D1?",
+        "options": {
+          "1": "El lado plano del borde en el agujero +",
+          "2": "La pata larga (ánodo) en el agujero +",
+          "3": "En cualquiera: un LED funciona como una resistencia"
+        },
+        "why": "La corriente solo circula del ánodo al cátodo. El ánodo es la pata más larga; el cátodo es la del lado plano del borde. Al revés, el LED simplemente se queda apagado."
+      },
+      "cap-stripe": {
+        "q": "¿Qué marca la franja de la funda de C1?",
+        "options": {
+          "1": "La pata −, que va hacia GND",
+          "2": "La pata +",
+          "3": "Su tensión máxima"
+        },
+        "why": "Los electrolíticos se marcan en el lado negativo. Polarizados al revés tienen fugas, se calientan y abren la válvula, así que la franja va hacia GND."
+      }
+    },
+    "plug": {
+      "predict": {
+        "q": "Una alimentación de 5 V, un LED rojo con una caída de unos 2 V y 220 Ω. ¿Qué marcará el multímetro?",
+        "options": {
+          "1": "22,7 mA",
+          "2": "13,6 mA",
+          "3": "2,3 mA"
+        },
+        "why": "A la resistencia solo le llega lo que deja el LED: 5 V − 2 V = 3 V, y 3 V / 220 Ω = 13,6 mA. 5 V / 220 Ω = 22,7 mA se olvida de la caída del LED."
+      },
+      "series": {
+        "q": "¿Por qué va el multímetro entre TP1 y TP2, dentro del circuito?",
+        "options": {
+          "1": "Para que pueda medir la tensión de la alimentación",
+          "2": "En su escala de mA, un multímetro puede ir en cualquier sitio",
+          "3": "Un medidor de corriente tiene que llevar la corriente que mide, así que va en serie"
+        },
+        "why": "En su escala de mA, un multímetro es casi un cortocircuito: un shunt de más o menos un ohmio. En serie lee la corriente del circuito; puesto entre los extremos de la alimentación la cortocircuitaría y fundiría su fusible."
+      }
+    },
+    "row-10k": {
+      "heat": {
+        "q": "Con 10 kΩ el multímetro marca 0,30 mA. ¿Cuánto calor hay en la resistencia?",
+        "options": {
+          "1": "0,9 mW",
+          "2": "3 mW",
+          "3": "30 mW"
+        },
+        "why": "P = I² × R = 0,0003² × 10000 = 0,0009 W, menos de un milivatio. Incluso la fila de 220 Ω solo genera 40,9 mW, una sexta parte de su potencia nominal de 1/4 W."
+      },
+      "pull-up": {
+        "q": "¿Dónde más te vas a encontrar una resistencia de 10 kΩ?",
+        "options": {
+          "1": "Fijando la corriente de un LED brillante",
+          "2": "Como fusible en una línea de alimentación",
+          "3": "Como pull-up o pull-down en la entrada de un botón"
+        },
+        "why": "10 kΩ deja pasar tan poco (0,5 mA a 5 V) que puede mantener una entrada en un nivel sin malgastar energía. Eso la convierte en el pull-up clásico."
+      }
+    },
+    "no-resistor": {
+      "why": {
+        "q": "¿Por qué se murió el LED en la fila NONE?",
+        "options": {
+          "1": "El jumper cortocircuitó los 5 V directamente con GND",
+          "2": "Nada limitaba la corriente: cientos de mA frente a un máximo de 30 mA",
+          "3": "5 V es una tensión demasiado alta para cualquier LED"
+        },
+        "why": "El LED seguía en el circuito, así que no era un cortocircuito directo, pero con 0 Ω solo frenaban la corriente sus propios pocos ohmios y el cargador. 5 V está bien para un LED con resistencia: la resistencia es la que fija la corriente."
+      },
+      "ol": {
+        "q": "El multímetro mostró OL un instante. ¿Qué significaba?",
+        "options": {
+          "1": "La corriente superaba su escala de 200 mA",
+          "2": "La pila del multímetro está gastada",
+          "3": "Las puntas están cambiadas"
+        },
+        "why": "OL significa fuera de límite (over limit): más de lo que puede mostrar la escala. Con las puntas cambiadas sale un signo menos. En un multímetro barato, un pico así también puede fundir el fusible de mA."
+      }
+    },
+    "end": {
+      "r330": {
+        "q": "En su lugar colocas una resistencia de 330 Ω (naranja, naranja, marrón). ¿Qué corriente circula?",
+        "options": {
+          "1": "15,2 mA",
+          "2": "3,3 mA",
+          "3": "9,1 mA"
+        },
+        "why": "(5 − 2) V / 330 Ω = 9,1 mA: un poco más tenue que con 220 Ω, pero todavía bien encendido."
+      },
+      "smallest": {
+        "q": "¿Cuál es la resistencia segura más pequeña para este LED con USB? Ten en cuenta un USB a 5,25 V, una V_F de solo 1,8 V y el máximo de 30 mA.",
+        "options": {
+          "1": "120 Ω",
+          "2": "100 Ω",
+          "3": "220 Ω"
+        },
+        "why": "(5,25 − 1,8) V / 0,030 A = 115 Ω, y el siguiente valor normalizado (E12) por encima es 120 Ω. Con 100 Ω pasarían 34,5 mA. 220 Ω es seguro, pero no es el más pequeño."
+      },
+      "cc": {
+        "q": "¿Por qué van R4 y R5 (5,1 kΩ) en los pines CC del conector USB-C?",
+        "options": {
+          "1": "Fijan la corriente del LED",
+          "2": "Un cargador USB-C solo enciende sus 5 V cuando las ve",
+          "3": "Protegen contra la polaridad inversa"
+        },
+        "why": "Los pull-downs le dicen al cargador que hay un dispositivo conectado. Sin ellos, un cable de C a C no da ninguna alimentación."
+      },
+      "two-caps": {
+        "q": "Dos jumpers a la vez, en las filas de 220 Ω y de 1 kΩ. ¿Qué marca el multímetro?",
+        "options": {
+          "1": "2,5 mA: 220 + 1000 = 1220 Ω",
+          "2": "16,6 mA: las dos en paralelo dan 180 Ω",
+          "3": "13,6 mA: solo cuenta el primer jumper"
+        },
+        "why": "Las dos filas unen los mismos dos puntos, así que las resistencias están en paralelo: 220 × 1000 / 1220 = 180 Ω, y 3 V / 180 Ω = 16,6 mA."
+      }
+    }
+  }
+}
