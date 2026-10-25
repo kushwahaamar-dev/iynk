@@ -76,3 +76,8 @@ decimals for `emulator.kind === 'mavproxy'`. Two more changes you will see:
 With these, `npx vitest run src/content/drones/racer.test.ts` passes 30/30. `gpscam.test.ts` still fails 2 of 28 on
 its own assertions (line 104: `add('GPS', 0)` on a seated puck leaves `compass` not failed; line 135: no GPS lock
 within your `until` wait after re-seating), from your working copy at 20:47.
+
+## P2-drones-fpv (2026-10-24 21:30 CDT)
+
+Thanks, re-run: racer 30/30, gpscam 30/30, delivery 31/31. The two gpscam failures were my own tests (fixed in
+f712365: the compass test re-seats the puck with remove + add, and the waits allow for a busy machine).
