@@ -604,6 +604,8 @@ const PERSIST_S = 0.016;
 export interface VerilogSim {
   /** The rate the design is clocked at: the board's oscillator, or SIM_CLOCK_HZ for a design with CLK_HZ. */
   readonly clockHz: number;
+  /** The design reads the board clock; a pure-logic design costs nothing per cycle, so its runs need no cycle budget. */
+  readonly clocked: boolean;
   readonly cycles: number;
   /** Run `n` clock cycles. */
   run(n: number): void;
@@ -1118,13 +1120,18 @@ export function compileVerilog(source: string, profile: BoardProfile, overrides:
 
   const sim: VerilogSim = {
     clockHz,
+    clocked: clockIdx !== undefined,
     get cycles() {
       return cycles;
     },
     onPrint: () => {},
     run(n: number) {
       onPrint = sim.onPrint;
-      for (let k = 0; k < n; k++) {
+      // Without a clock nothing moves between input changes: after the first cycle (which notes what an input just
+      // changed) the rest only lengthen the runs, so a pure-logic design costs the same at any board clock.
+      const stepped = clockIdx === undefined ? Math.min(n, 1) : n;
+      const idle = n - stepped;
+      for (let k = 0; k < stepped; k++) {
         if (clockIdx !== undefined) {
           s[clockIdx] = 1;
           propagate();
@@ -1148,6 +1155,11 @@ export function compileVerilog(source: string, profile: BoardProfile, overrides:
           }
           runLen++;
         }
+      }
+      if (idle > 0) {
+        cycles += idle;
+        for (const p of tracked) p.run += idle;
+        if (muxed) runLen += idle;
       }
     },
     setInput(name: string, value: number) {

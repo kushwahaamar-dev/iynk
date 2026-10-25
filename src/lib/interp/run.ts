@@ -290,7 +290,7 @@ class RunImpl implements Run {
   private stepFpga(ms: number): void {
     const sim = this.fpga!;
     const want = Math.round((ms / 1000) * sim.clockHz);
-    const cycles = Math.min(want, this.budget);
+    const cycles = sim.clocked ? Math.min(want, this.budget) : want;
     this.throttled = cycles < want;
     try {
       sim.run(cycles);

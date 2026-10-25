@@ -207,6 +207,18 @@ endmodule
     expect(run.status.cycles).toBe(60_000);
   });
 
+  it('a design without a clock runs a second of board time in one step, and still answers its inputs', () => {
+    const run = createRun({ board: 'basys3', source: 'module top(input [15:0] sw, output [15:0] led);\n  assign led = ~sw;\nendmodule\n' });
+    run.start();
+    const t0 = performance.now();
+    run.step(1000);
+    expect(performance.now() - t0).toBeLessThan(250);
+    expect(run.status.cycles).toBe(100_000_000); // the board's 100 MHz, no cycle budget
+    run.input('sw[5]', 1);
+    run.step(1);
+    expect(run.snapshot().ports?.led).toBe(0xffff & ~(1 << 5));
+  });
+
   it('a host CLK_HZ override sets the clock too, and designs without it run at the board clock', () => {
     expect(compileVerilog(BLINK, getProfile('basys3'), { CLK_HZ: 1000 }).clockHz).toBe(1000);
     expect(compileVerilog(CHASER, getProfile('basys3'), { DIV: 10 }).clockHz).toBe(100_000_000);
