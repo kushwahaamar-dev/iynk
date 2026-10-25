@@ -145,6 +145,7 @@ class RunImpl implements Run {
 
   private boot(keepRtc: boolean): void {
     const prev = this.arduino;
+    const before = this.world as World | undefined;
     this.world = new World(this.profile, this.opts.world);
     const w = this.world;
     w.serialOut = (t) => this.emit('serial', t);
@@ -186,6 +187,7 @@ class RunImpl implements Run {
     // Replay what the host is driving.
     for (const [pin, level] of this.inputs) this.applyInput(pin, level);
     for (const [pin, v] of this.volts) w.applyVolts(pin, v);
+    for (const [sensor, v] of before?.onboard ?? []) w.onboard.set(sensor, v);
   }
 
   start(): void {

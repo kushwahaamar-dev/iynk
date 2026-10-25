@@ -1,7 +1,8 @@
 // A lesson's world spec (src/content/schema.ts WorldModel) wired into a Run: buttons, pots and
 // dividers drive pins, an HC-SR04 answers on its trig/echo pins, an MPU-6050 sits on the I²C bus,
-// a QTR-RC array sees the line and a phone on the Wi-Fi sends HTTP requests. Board Lab's live run,
-// the headless check run and the Robotics task runner all go through here.
+// a QTR-RC array sees the line, the board's own sensors read what their input says and a phone on
+// the Wi-Fi sends HTTP requests. Board Lab's live run, the headless check run and the Robotics task
+// runner all go through here.
 
 import type { DeviceModel, WorldInput, WorldModel } from '@/content/schema';
 import type { HcSr04, Mpu6050 } from './devices';
@@ -170,6 +171,10 @@ export class WorldBinding {
         this.run.world.requestNow(req.method, req.path, '', (res) => this.opts.onHttp?.({ t, method: req.method, path: req.path, status: res.status, body: res.body }));
         return;
       }
+      case 'onboard':
+        this.run.world.onboard.set(d.sensor, value);
+        this.run.world.touch();
+        return;
       default:
         for (const drive of drivesFor(input, value, this.opts.logicV)) {
           const pin = this.opts.resolve(drive.net);

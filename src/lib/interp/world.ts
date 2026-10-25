@@ -1,6 +1,9 @@
+import type { DeviceModel } from '@/content/schema';
 import { VirtualClock } from './clock';
 import { type BoardProfile, hasPwm } from './profiles';
 import type { I2CDevice } from './devices';
+
+type OnboardSensor = Extract<DeviceModel, { kind: 'onboard' }>['sensor'];
 
 export type PinMode = 'unset' | 'input' | 'input_pullup' | 'input_pulldown' | 'output' | 'open_drain';
 export type Edge = 'rising' | 'falling' | 'change' | 'low' | 'high';
@@ -155,6 +158,12 @@ export class World {
   readonly warned = new Set<string>();
   /** Pins with a cold solder joint: the connection drops out. */
   readonly coldJoints = new Set<number>();
+  /**
+   * The board's own sensors, as world inputs ({ kind: 'onboard' }) set them: temperature in °C, compass heading in
+   * degrees, microphone and light level 0-255, touch 1 = touched. A sensor nothing set reads its runtime's default.
+   * An accelerometer is an I²C device instead (the micro:bit's answers at 0x19, an `mpu6050` input moves it).
+   */
+  readonly onboard = new Map<OnboardSensor, number>();
   powered = true;
   supplyV: number;
   // Displays and peripherals the libraries write into.

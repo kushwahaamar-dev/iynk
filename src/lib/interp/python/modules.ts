@@ -342,16 +342,17 @@ export function installModules(rt: PyRt, onRos: (m: RosMessage) => void): void {
         return null;
       },
       read_u16: (self) => {
-        if (self.native.pin === 104) {
-          // Internal sensor: 27 °C reads 0.706 V, -1.721 mV/°C.
-          const v = 0.706 - (24 - 27) * 0.001721;
-          return BigInt(Math.round((v / 3.3) * 4095) << 4);
-        }
-        const raw = w.analogRead(self.native.pin, 12);
+        const raw = adcRaw(self.native.pin);
         return BigInt((raw << 4) | (raw >> 8));
       },
-      read_uv: (self) => BigInt(Math.round((w.analogRead(self.native.pin, 12) / 4095) * 3.3e6)),
+      read_uv: (self) => BigInt(Math.round((adcRaw(self.native.pin) / 4095) * 3.3e6)),
     });
+    /** 12-bit reading. ADC(4) is the die's own sensor (24 °C unless a world input sets it): 0.706 V at 27 °C, -1.721 mV/°C. */
+    const adcRaw = (pin: number): number => {
+      if (pin !== 104) return w.analogRead(pin, 12);
+      const v = 0.706 - ((w.onboard.get('temperature') ?? 24) - 27) * 0.001721;
+      return Math.max(0, Math.min(4095, Math.round((v / 3.3) * 4095)));
+    };
     const I2C = nclass('I2C', {
       __init__: (self) => { self.native = {}; return null; },
       scan: () => new PyList([...w.i2c.keys()].sort((a, b) => a - b).map((a) => BigInt(a))),

@@ -568,7 +568,8 @@ export const BUILTINS: Record<string, Builtin> = {
   rgbLedWrite: { ret: 'void', min: 4, max: 4, boards: isEsp32, fn: (rt, [pin, r, g, b]) => setPixels(rt, pin, [[r, g, b]]) },
   neopixelWrite: { ret: 'void', min: 4, max: 4, boards: isEsp32, fn: (rt, [pin, r, g, b]) => setPixels(rt, pin, [[r, g, b]]) },
   touchRead: { ret: 'uint16_t', min: 1, max: 1, pure: true, boards: isEsp32, fn: (rt, [pin]) => (rt.world.level(pin) ? 12 : 72) },
-  temperatureRead: { ret: 'float', min: 0, max: 0, pure: true, boards: isEsp32, fn: () => 41.5 },
+  // The die's own sensor, which runs warm: 41.5 °C unless a world input sets it.
+  temperatureRead: { ret: 'float', min: 0, max: 0, pure: true, boards: isEsp32, fn: (rt) => rt.world.onboard.get('temperature') ?? 41.5 },
   esp_sleep_enable_timer_wakeup: { ret: 'int', min: 1, max: 1, boards: isEsp32, fn: (rt, [us]) => { rt.wakeAfter = us; return 0; } },
   esp_deep_sleep_start: {
     ret: 'void', min: 0, max: 0, boards: isEsp32,

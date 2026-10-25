@@ -7,6 +7,8 @@ import type { Gen } from '../exec';
 import { mod, nat, natGen, nclass, sleepGen } from './native';
 import { I, PyBytes, PyInstance, PyList, PyModule, PyRt, PyTuple, pyErr, toBig, toNum, truthy, type PyValue } from './runtime';
 
+const clamp = (x: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, x));
+
 // micro:bit images: 5 rows of brightness digits 0-9.
 const IMAGES: Record<string, string> = {
   HEART: '09090:99999:99999:09990:00900', HEART_SMALL: '00000:09090:09990:00900:00000', HAPPY: '00000:09090:00000:90009:09990',
@@ -84,7 +86,7 @@ export function installMicrobit(rt: PyRt): void {
     on: () => null,
     off: () => null,
     is_on: () => true,
-    read_light_level: () => BigInt(Math.round(((w.pin(200).volts ?? 1.5) / 3.3) * 255)),
+    read_light_level: () => BigInt(Math.round(clamp(w.onboard.get('light') ?? ((w.pin(200).volts ?? 1.5) / 3.3) * 255, 0, 255))),
   }));
   // show/scroll block for the animation time unless wait=False.
   display.cls.dict.set('show', natGen('show', function* ([, v, delay], kw) {
@@ -225,19 +227,19 @@ export function installMicrobit(rt: PyRt): void {
     },
   }));
 
-  // The LSM303AGR's magnetometer. The simulated board lies flat with its top edge pointing at magnetic north, in a
-  // field like the Earth's at mid-northern latitudes (48 µT, dipping 60°).
+  // The LSM303AGR's magnetometer. The simulated board lies flat, its top edge pointing at magnetic north unless a
+  // world input turns it, in a field like the Earth's at mid-northern latitudes (48 µT, dipping 60°).
   let calibrated = false;
   const compass = new PyInstance(nclass('MicroBitCompass', {
     calibrate: () => { calibrated = true; return null; },
     is_calibrated: () => calibrated,
     clear_calibration: () => { calibrated = false; return null; },
-    heading: () => { calibrated = true; return 0n; },
+    heading: () => { calibrated = true; return BigInt(((Math.round(w.onboard.get('compass') ?? 0) % 360) + 360) % 360); },
     get_field_strength: () => 48_000n,
   }));
 
   // The microphone takes its power from RUN_MIC (nRF P0.20, here pin 202), which also lights the red D70 beside it.
-  // The simulated room is quiet: no sound reaches the program yet.
+  // The room is quiet unless a world input sets the level; LOUD and QUIET events are not simulated yet.
   const RUN_MIC = 202;
   const micOn = () => {
     w.setMode(RUN_MIC, 'output');
@@ -254,7 +256,7 @@ export function installMicrobit(rt: PyRt): void {
   SoundEvent.dict.set('LOUD', LOUD);
   SoundEvent.dict.set('QUIET', QUIET);
   const microphone = new PyInstance(nclass('MicroBitMicrophone', {
-    sound_level: () => { micOn(); return 0n; },
+    sound_level: () => { micOn(); return BigInt(Math.round(clamp(w.onboard.get('microphone') ?? 0, 0, 255))); },
     current_event: () => { micOn(); return null; },
     was_event: () => { micOn(); return false; },
     is_event: () => { micOn(); return false; },
@@ -283,11 +285,16 @@ export function installMicrobit(rt: PyRt): void {
   const exports = {
     display, Image, music, i2c, compass, microphone, speaker, SoundEvent,
     button_a: button(5, 'A'), button_b: button(11, 'B'),
-    pin_logo: new PyInstance(nclass('MicroBitTouchPin', { is_touched: () => w.level(201) === 0 })),
+    pin_logo: new PyInstance(nclass('MicroBitTouchPin', {
+      is_touched: () => {
+        const touch = w.onboard.get('touch');
+        return touch === undefined ? w.level(201) === 0 : touch >= 0.5;
+      },
+    })),
     accelerometer,
     sleep: natGen('sleep', ([v]) => sleepGen(rt, toNum(v) * 1000)),
     running_time: nat('running_time', () => BigInt(Math.floor(w.now / 1000))),
-    temperature: nat('temperature', () => 24n),
+    temperature: nat('temperature', () => BigInt(Math.round(w.onboard.get('temperature') ?? 24))),
     panic: nat('panic', ([code]) => { throw pyErr('RuntimeError', `panic(${code ?? ''})`); }),
     reset: nat('reset', () => { throw pyErr('SystemExit', 'reset()'); }),
     ...pins,
