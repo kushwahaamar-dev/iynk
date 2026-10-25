@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { buildFigure, loadFigure, swapItem } from './testkit.mjs';
 
@@ -567,5 +569,29 @@ describe('circuit params from the host', () => {
     B.accept({ params: { LED1: { color: 'green' } } });
     B.advance(1.5);
     expect(B.st.meas.LED1.state).toBe('ok');
+  });
+});
+
+describe('the generic brown-out break', () => {
+  const UNO = 'boards/uno-r3';
+  const unoSrc = () => readFileSync(resolve(import.meta.dirname, '..', 'boards', 'uno-r3.js'), 'utf8');
+  const unoWith = (power) => loadFigure(swapItem(buildFigure(UNO), UNO, unoSrc().replace('\n  power: {', `\n  power: { brownout: ${JSON.stringify(power)},`)), { path: '/figures/boards/uno-r3.html' });
+  const labels = (B) => B.faultChoices().filter(([id]) => id === 'brownout').map(([, l]) => l);
+
+  it('is offered with power.mcu, renamed by power.brownout, and left out with brownout: false', async () => {
+    page = await loadFigure(buildFigure(UNO), { path: '/figures/boards/uno-r3.html' });
+    expect(labels(page.bench)).toEqual(['Motor on the 5 V pin (brown-out)']);
+    page.close();
+    page = await unoWith('Sag the input');
+    expect(labels(page.bench)).toEqual(['Sag the input']);
+    page.close();
+    page = await unoWith(false);
+    const B = page.bench;
+    expect(labels(B)).toEqual([]);
+    B.accept({ power: 'usb', fault: 'brownout' });
+    B.advance(1);
+    expect(B.report().faults).toEqual([]);
+    expect(B.report().status).toBe('running');
+    expect(page.notes()).toEqual([]);
   });
 });

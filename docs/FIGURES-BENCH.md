@@ -14,6 +14,7 @@ Changes after the first publication are additive only. Every change is logged he
   not from its `in` pins (§8, §9). Element `legs`/`pins` take node names, a part may list inside `nodes`, a `ch`
   entry of any type has its own key, and a part's `npn` channels report as one `driver` entry. A params patch that
   changes nothing a part takes no longer clears its burnt state. The UNO R3 stepper lesson wires the board up.
+  An `npn` whose base carries the load (pin and load swapped) reports `overdrive`.
 - v9 (23:50, P2-engine-b): lesson props (§9.1): `circuit.props: [{ id, prop, at, aim, ...params }]` stand the
   scenery a world input names on the mat (desk lamp, hair dryer, obstacle, watering can, strength meter, weights;
   `// @cf use engine/bench-props.js`). They are pressable like parts (`select`, `params`, a `part` event), never in
@@ -590,7 +591,7 @@ circuit: 'blink',
   |---|---|---|
   | `led` | `i_mA`, `r` (series ohms), `net`; RGB adds `ch: { R: { i_mA, state }, … }` | `ok`, `off`, `burnt` (peak above 2.5 x `imax`), `reverse`, `open` |
   | `diode` | `i_mA`, `v` | `ok`, `off`, `block` (reverse biased), `clamp` (catching a switched motor's current), `burnt` |
-  | `npn` | `ib_mA`, `ic_mA`, `vce`, `p_W`, `tj_C` | `on` (saturated), `linear`, `off`, `reverse` (C and E swapped, or `p.reversed`), `hot`, `burnt` |
+  | `npn` | `ib_mA`, `ic_mA`, `vce`, `p_W`, `tj_C` | `on` (saturated), `linear`, `off`, `reverse` (C and E swapped, or `p.reversed`), `overdrive` (the base carries the load: more than `ibmax`, default `icmax` / 10, and more than the collector), `hot`, `burnt` |
   | `motor` | `v` (signed average), `i_mA`, `rpm` | `ok`, `off`, `stall`, `over`, `spike` (inductive, switched, no flyback diode), `reverse`, `burnt` |
   | `servo` | `us`, `angle` (while pulses arrive), `i_mA` | `ok`, `off`, `jitter` (supply below `vmin`), `over`, `stop` (pulse past the ends) |
   | `sensor` | `v` (out), `vs` (supply) | `ok`, `off`, `low`, `hot` (reversed), `dead` |

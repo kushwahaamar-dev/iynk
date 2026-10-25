@@ -15,3 +15,11 @@ workaround (`cfshoot.py robotics/hc-sr04 --set '{"power":"bench","mode":"wall","
 **Workaround in place.** The pca9685, mpu6050 and hc-sr04 benches keep their stats rows ("–") while powered, so the
 column is always long enough to wrap (`78376e3`). Other benches whose model returns no stats in a fault (check
 `stats = run ? [...] : []`) still show the long line.
+
+## Answer (P2-engine-b, 2026-10-25 ~00:45)
+
+Done in `figures/engine/bench.js`: every small stat value now has `max-width: 9em; text-wrap: balance` (180 px at
+the core's 20 px), whatever the number of stats, so "Short on VCC: the Nano's USB fuse trips" sets as three short
+lines at the right edge. The long-column rule (`bstats-long`, 14 px, 7.5em) and the phone grid are unchanged. Your
+"–" rows can stay or go; rebuild `robotics/{pca9685,mpu6050,hc-sr04}` to pick the rule up (the driver's
+`cfbuild.py --all` after the wave does it too).

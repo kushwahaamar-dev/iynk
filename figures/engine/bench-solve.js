@@ -331,7 +331,10 @@ B.solveCircuit = (st, pl, dt = 0) => {
       const pW = timeAvg(r => ri(r).ic * Math.abs(ri(r).vce) + ri(r).ib * el.vbe), tj = el.def.model && typeof el.def.model.tj === 'function' ? el.def.model.tj(pW) : 25 + (+e.theta || 200) * pW;
       if (!el.dead && (tj > (+e.tjmax || 150) || icp > (+e.icmax || 1) * 1.5)) burn(el.key, '{name} overheated and failed', { name: q.id });
       const hotW = +e.photW || (+e.pmax || .6) * .75, anyInv = res.some(r => ri(r).inv && ri(r).ic > 1e-4);
-      const state = el.dead ? 'burnt' : q.reversed || anyInv ? 'reverse' : pW > hotW ? 'hot' : res.some(r => ri(r).sat && ri(r).ic > 1e-4) ? 'on' : ic > 1e-5 ? 'linear' : 'off';
+      // overdrive: the base carries the load (pin and load swapped): more base current than the part takes, and more
+      // than flows in its collector
+      const over = ib > (+e.ibmax || (+e.icmax || 1) / 10) && ib > ic;
+      const state = el.dead ? 'burnt' : q.reversed || anyInv ? 'reverse' : over ? 'overdrive' : pW > hotW ? 'hot' : res.some(r => ri(r).sat && ri(r).ic > 1e-4) ? 'on' : ic > 1e-5 ? 'linear' : 'off';
       const one = { kind: 'npn', state, ib_mA: rnd(ib * 1000, 100), ic_mA: rnd(ic * 1000), vce: rnd(vce, 100), p_W: rnd(pW, 100), tj_C: Math.round(tj) };
       if (e.ch != null){ delete one.kind; (chans[q.id] = chans[q.id] || {})[e.ch] = one; continue; }
       out.meas[q.id] = one;

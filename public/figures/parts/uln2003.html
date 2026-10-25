@@ -1191,7 +1191,7 @@ function evaluate(){
   // overloads and shorts sag a rail
   // (the circuit on the breadboard can do it too: more current than the source gives, st.sag from bench-bb.js)
   const sag = !!(st.sag && st.sag.until > st.t);
-  if (st.faults.includes('brownout') && pw.mcu){ const r = pw.mcu.rail; if (ev.rails[r]) ev.rails[r] = coldHit(5, st.t * 1.4) ? ev.rails[r] * .42 : ev.rails[r] * .9; }
+  if (st.faults.includes('brownout') && brownout()){ const r = pw.mcu.rail; if (ev.rails[r]) ev.rails[r] = coldHit(5, st.t * 1.4) ? ev.rails[r] * .42 : ev.rails[r] * .9; }
   else if (sag && pw.mcu){ const r = pw.mcu.rail; if (ev.rails[r]) ev.rails[r] *= .42; }
   // a short on a rail fed through a current-limited regulator (feed ilim, amps) folds that regulator back: the rail and
   // the rails it feeds fall to 0 V and the rest keeps running; any other short trips the supply
@@ -1414,6 +1414,7 @@ A.fault = id => {
   }
   if (kind === 'wrong-voltage'){ const v = +b; if (!(MD.power.sources || {})[a] || !Number.isFinite(v)) return say('Unknown supply {name}', { name: a }); st.supply[a] = v; }
   if (kind === 'reverse-polarity' && !(MD.power.sources || {})[a]) return say('Unknown supply {name}', { name: a });
+  if (kind === 'brownout' && !brownout()) return say('No 5 V pin to put a motor on here');
   if (!st.faults.includes(id)) st.faults.push(id);
   if (st.power && (MD.def.straps || []).some(x => x && x.fault === id)){ st.t = 0; st.serialN = -1; sampleStraps(); }
   refresh(true);
@@ -1944,6 +1945,8 @@ function buttons(){
     { id: 'exploded', label: 'Exploded view', current: st.exploded, onClick: () => { A.view('board'); A.explode(); } }] });
   return bt;
 }
+// the generic brown-out break (a motor on the MCU's supply pin): on with power.mcu, unless power.brownout is false
+function brownout(){ return !!(MD.power.mcu && MD.power.brownout !== false); }
 function faultChoices(){
   const out = [['', '']]; out.length = 0;
   const srcs = MD.power.sources || {};
@@ -1952,7 +1955,7 @@ function faultChoices(){
     if (s.range){ out.push([`wrong-voltage:${key}:${s.max != null ? s.max + 4 : s.range[1] * 2}`, T('Too high a voltage on {src}', { src: T(s.label || key) })]);
       out.push([`wrong-voltage:${key}:${Math.max(1, +(s.range[0] * .7).toFixed(1))}`, T('Too low a voltage on {src}', { src: T(s.label || key) })]); }
   }
-  if (MD.power.mcu) out.push(['brownout', T('Motor on the 5 V pin (brown-out)')]);
+  if (brownout()) out.push(['brownout', T(typeof MD.power.brownout === 'string' ? MD.power.brownout : 'Motor on the 5 V pin (brown-out)')]);
   for (const p of MD.parts) if (p.polar && !p.fixed) out.push(['reversed:' + p.id, T('{name} in backwards', { name: p.id })]);
   for (const fd of MD.def.faults || []){
     const [id, label] = Array.isArray(fd) ? fd : [fd, null];
@@ -2176,6 +2179,7 @@ function start(pick){
   // a bench's long stats column (battery, motors, heat…) is set smaller and wraps a value at its spaces, so it stays a
   // narrow strip at the right edge instead of running over the drawing
   css.textContent = '#fig .bsel > *{filter:drop-shadow(0 0 1.6px var(--accent,#f4b829)) drop-shadow(0 0 1.6px var(--accent,#f4b829))}#fig [data-act]{cursor:pointer}'
+    + '.stat.small .v{max-width:9em;text-wrap:balance}'
     + 'html.bstats-long .stats{gap:5px}html.bstats-long .stat .k{font-size:9.5px}html.bstats-long .stat .v{font-size:24px}'
     + 'html.bstats-long .stat.small .v{font-size:14px;line-height:1.15;max-width:7.5em;text-wrap:balance}'
     // on a phone the core sets the stats in one row, which runs off the left edge with this many: a three-column grid
@@ -3274,7 +3278,10 @@ B.solveCircuit = (st, pl, dt = 0) => {
       const pW = timeAvg(r => ri(r).ic * Math.abs(ri(r).vce) + ri(r).ib * el.vbe), tj = el.def.model && typeof el.def.model.tj === 'function' ? el.def.model.tj(pW) : 25 + (+e.theta || 200) * pW;
       if (!el.dead && (tj > (+e.tjmax || 150) || icp > (+e.icmax || 1) * 1.5)) burn(el.key, '{name} overheated and failed', { name: q.id });
       const hotW = +e.photW || (+e.pmax || .6) * .75, anyInv = res.some(r => ri(r).inv && ri(r).ic > 1e-4);
-      const state = el.dead ? 'burnt' : q.reversed || anyInv ? 'reverse' : pW > hotW ? 'hot' : res.some(r => ri(r).sat && ri(r).ic > 1e-4) ? 'on' : ic > 1e-5 ? 'linear' : 'off';
+      // overdrive: the base carries the load (pin and load swapped): more base current than the part takes, and more
+      // than flows in its collector
+      const over = ib > (+e.ibmax || (+e.icmax || 1) / 10) && ib > ic;
+      const state = el.dead ? 'burnt' : q.reversed || anyInv ? 'reverse' : over ? 'overdrive' : pW > hotW ? 'hot' : res.some(r => ri(r).sat && ri(r).ic > 1e-4) ? 'on' : ic > 1e-5 ? 'linear' : 'off';
       const one = { kind: 'npn', state, ib_mA: rnd(ib * 1000, 100), ic_mA: rnd(ic * 1000), vce: rnd(vce, 100), p_W: rnd(pW, 100), tj_C: Math.round(tj) };
       if (e.ch != null){ delete one.kind; (chans[q.id] = chans[q.id] || {})[e.ch] = one; continue; }
       out.meas[q.id] = one;

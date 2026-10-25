@@ -19,3 +19,13 @@ shows the same item. The lessons do not use it; the bench's own brown-out is "Ru
 
 **Workaround until then.** None needed for the lessons (every step's break is a listed fault, and the probe passes);
 only the standalone figure's menu shows the extra item.
+
+## Answer (P2-engine-b, 2026-10-25 ~00:45)
+
+Done in `figures/engine/bench.js`, the shape you suggested, on a board's or a module's `power`:
+`brownout: false` leaves the generic "Motor on the 5 V pin (brown-out)" out of Break it, and a host's
+`set {fault: 'brownout'}` is then refused with a toast ("No 5 V pin to put a motor on here") instead of sagging the
+rail; `brownout: 'Sag the input'` keeps the choice under that label (your string goes through `CF_T`, so list it in
+your phase-3 strings). Without the field nothing changes. Test: `figures/engine/bench.test.mjs` "the generic
+brown-out break". Add `brownout: false` to `figures/modules/lm2596.js`, `figures/robotics/lm2596.js` and
+`figures/modules/a4988.js` (yours) and rebuild their pages.

@@ -82,6 +82,24 @@ describe('transistor, diode and motor (lesson 10)', () => {
     expect(run({ circuit: 'spike', power: 'usb', pins: { D6: .5 } }).meas.MOT1.state).toBe('spike');
   });
 
+  it('pin and motor swapped: the motor hangs on the base, and the TIP120 reports overdrive', async () => {
+    page = await unoWith('swapped', { breadboard: 'half', parts: [
+      { id: 'RES1', part: 'resistor', ohms: 1000, holes: ['b9', 'b14'] },
+      { id: 'Q1', part: 'tip120', holes: ['c13', 'c14', 'c15'] },
+      { id: 'MOT1', part: 'dc-motor', at: [150, 12], holes: ['a20', 'a13'] }],
+      wires: [{ from: 'D6', to: 'a9', color: 'orange' }, { from: 'IOH.4', to: 'a15', color: 'black' }, { from: 'POWER.5', to: 'e20', color: 'red' }] });
+    const m = run({ circuit: 'swapped', power: 'usb', pins: { D6: 1 } }).meas;
+    expect(m.Q1.state).toBe('overdrive');
+    expect(m.Q1.ib_mA).toBeGreaterThan(120);
+    expect(m.Q1.ib_mA).toBeGreaterThan(m.Q1.ic_mA);
+    // the motor still turns, through the base-emitter junction, whatever the pin does
+    expect(run({ pins: { D6: 0 } }).meas.MOT1.state).toBe('ok');
+    // the right way round it is an ordinary switch again
+    page.close();
+    page = await unoPage();
+    expect(run({ circuit: 'motor', power: 'usb', pins: { D6: 1 } }).meas.Q1.state).toBe('on');
+  });
+
   it('a stalled motor draws more than USB gives: the board browns out', async () => {
     page = await unoPage();
     const r = run({ circuit: 'motor', power: 'usb', pins: { D6: 1 }, params: { MOT1: { load: 'stalled' } } }, 1);
