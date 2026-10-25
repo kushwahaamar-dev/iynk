@@ -18,8 +18,8 @@ export function homeYaw(figure: FigureHandle | null): number {
   return typeof info?.view?.yaw === "number" ? info.view.yaw : 45;
 }
 
-// The figure's own buttons the host draws itself (the power select, the views, Break it).
-const HOST_DRAWN = ["power", "view", "break"];
+// The figure's own controls the host draws itself (the power select, the views, Break it, See-through).
+const HOST_DRAWN = ["power", "view", "break", "xr"];
 // A lesson's Run is the upload, and building the board is the board page's Assembly: these stay off a lesson's figure.
 const BUILD = ["strip", "pnp", "mat", "place", "solder", "remove"];
 export const LESSON_HIDDEN = [...HOST_DRAWN, "upload", ...BUILD];
@@ -27,8 +27,12 @@ export const LESSON_HIDDEN = [...HOST_DRAWN, "upload", ...BUILD];
 export const boardHidden = (): readonly string[] => (window.matchMedia("(max-width: 1023px)").matches ? [...HOST_DRAWN, ...BUILD] : HOST_DRAWN);
 
 /** After every `ready`: hide the figure's copies of controls this page already has, so each shows once. */
-export function hideHostDrawn(figure: FigureHandle | null, buttons: { id: string }[] | undefined, ids: readonly string[] = HOST_DRAWN): void {
-  const hide = (buttons ?? []).map((b) => b.id).filter((id) => ids.includes(id));
+export function hideHostDrawn(
+  figure: FigureHandle | null,
+  ready: { buttons?: { id: string }[]; switches?: { id: string }[] },
+  ids: readonly string[] = HOST_DRAWN,
+): void {
+  const hide = [...(ready.buttons ?? []), ...(ready.switches ?? [])].map((b) => b.id).filter((id) => ids.includes(id));
   if (figure && hide.length) figure.sendCustom("chrome", { hide });
 }
 

@@ -49,12 +49,41 @@ describe('chrome: the host hides the figure buttons it draws itself', () => {
 
   it('refuses ids it has no button for, and anything that is not a list of ids', async () => {
     page = await uno();
-    page.post({ type: 'chrome', hide: ['power', 'xr', 'nope'] });
+    page.post({ type: 'chrome', hide: ['power', 'xr', 'nope', 'zoom'] });
     expect(shown('power')).toBe(false);
-    expect(last('error').message).toMatch(/chrome: no button "xr", "nope"/);
+    expect(last('error').message).toMatch(/chrome: no button "nope", "zoom"/);
     page.post({ type: 'chrome', hide: 'power' });
     expect(last('error').message).toMatch(/chrome: hide must be a list of button ids/);
     expect(shown('power')).toBe(false);
+  });
+});
+
+describe('chrome: See-through, Labels and the HUD', () => {
+  const visible = (el) => page.win.getComputedStyle(el).display !== 'none';
+  const doc = () => page.win.document;
+
+  it('hides the See-through switch and the stats a host draws itself, and the host still drives See-through', async () => {
+    page = await uno();
+    await tick();
+    expect(last('ready').switches.map((s) => s.id)).toEqual(['xr', 'labels']);
+    page.post({ type: 'chrome', hide: ['power', 'xr', 'stats'] });
+    expect(visible(doc().getElementById('xrb'))).toBe(false);
+    expect(visible(doc().getElementById('lblb'))).toBe(true);
+    expect(visible(doc().getElementById('stats'))).toBe(false);
+    expect(shown('power')).toBe(false);
+    page.post({ type: 'xr', on: true });
+    await tick(900);
+    expect(doc().getElementById('xrb').getAttribute('aria-pressed')).toBe('true');
+    page.post({ type: 'hello' });
+    await tick();
+    expect(last('ready').switches).toEqual([
+      expect.objectContaining({ id: 'xr', hidden: true }),
+      expect.not.objectContaining({ hidden: true }),
+    ]);
+    page.post({ type: 'chrome', hide: [] });
+    expect(visible(doc().getElementById('xrb'))).toBe(true);
+    expect(visible(doc().getElementById('stats'))).toBe(true);
+    expect(page.sent.filter((m) => m.type === 'error')).toEqual([]);
   });
 });
 

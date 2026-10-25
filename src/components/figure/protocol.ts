@@ -39,9 +39,9 @@ export type HostMessages = {
 
 export type HostMessageType = keyof HostMessages;
 
-/** `hidden`: the host hid it with `chrome` (it still answers `press`). */
+/** `hidden`: the host hid it with `chrome` (a button still answers `press`, a switch still follows `xr` and `labels`). */
 export type FigureButton = { id: string; label: string; en?: string; picker: boolean; hidden?: boolean };
-export type FigureSwitch = { id: string; label: string; on: boolean };
+export type FigureSwitch = { id: string; label: string; on: boolean; hidden?: boolean };
 /** A pressable part of the drawing, driven with `act`. */
 export type FigurePart = { act: string; id: string | null; label: string; en?: string };
 export type FigureLabel = { n: number | string; text: string; en?: string; on: boolean };
@@ -172,7 +172,9 @@ const parseButtons = (value: unknown) =>
 
 const parseSwitches = (value: unknown) =>
   list<FigureSwitch>(value, (item) =>
-    isString(item.id) && item.id ? { id: item.id, label: isString(item.label) ? item.label : item.id, on: item.on === true } : null,
+    isString(item.id) && item.id
+      ? { id: item.id, label: isString(item.label) ? item.label : item.id, on: item.on === true, ...(item.hidden === true ? { hidden: true } : {}) }
+      : null,
   );
 
 export const parseParts = (value: unknown) =>

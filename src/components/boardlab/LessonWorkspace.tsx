@@ -188,7 +188,7 @@ function Workspace({ lang, model, notice }: { lang: Locale; model: LessonModel; 
       figureSound(e);
       if (e.type === "ready") {
         setYaw(homeYaw(figureRef.current));
-        hideHostDrawn(figureRef.current, e.buttons, LESSON_HIDDEN);
+        hideHostDrawn(figureRef.current, e, LESSON_HIDDEN);
         runnerRef.current?.figureReady();
         const state = (e as { state?: unknown }).state;
         if (state && typeof state === "object") store.dispatch({ type: "figure/state", state: state as Record<string, unknown> });

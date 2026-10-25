@@ -286,7 +286,7 @@ function Overview({ lang, data, notice }: { lang: Locale; data: BoardOverview; n
       figureSound(e);
       if (e.type === "ready") {
         setYaw(homeYaw(figureRef.current));
-        hideHostDrawn(figureRef.current, e.buttons, boardHidden());
+        hideHostDrawn(figureRef.current, e, boardHidden());
         const state = (e as { state?: unknown }).state;
         if (state && typeof state === "object") store.dispatch({ type: "figure/state", state: state as Record<string, unknown> });
       } else if (e.type === "state") store.dispatch({ type: "figure/state", state: e.state });

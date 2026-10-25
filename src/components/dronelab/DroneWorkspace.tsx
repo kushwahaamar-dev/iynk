@@ -54,7 +54,8 @@ type Props = {
   notice?: ReactNode;
 };
 
-const BENCH_CHROME = ["build", "strip", "explode", "plug", "wiring"];
+// The toolbar and tabs draw these; the status strip shows parts, battery and fault, the Tests tab the checks (stats).
+const BENCH_CHROME = ["build", "strip", "explode", "plug", "wiring", "stats"];
 
 export function DroneWorkspace({ lang, content, text, messages, notice }: Props) {
   const room = useRoom();
@@ -255,19 +256,19 @@ export function DroneWorkspace({ lang, content, text, messages, notice }: Props)
         />
         <dl
           aria-label={t("workspace.status.title")}
-          // the figure's own HUD shows parts and the battery too: on a phone the row keeps to the view switches
-          className="ms-auto flex shrink-0 items-center gap-x-4 whitespace-nowrap ps-2 max-sm:sr-only"
+          // the figure's HUD is hidden (stats), so this is the one readout: its own row on a phone
+          className="flex shrink-0 items-center gap-x-4 whitespace-nowrap max-sm:w-full max-sm:justify-between sm:ms-auto sm:ps-2"
           data-testid="bench-status"
         >
           <div className="flex items-baseline gap-1.5">
             <dt className="ink-label">{t("workspace.status.parts")}</dt>
             <dd className="tabular font-ui text-sm font-semibold">{ready ? `${bench.fitted}/${bench.total}` : "…"}</dd>
           </div>
-          <div className="flex items-baseline gap-1.5 max-sm:hidden">
+          <div className="flex items-baseline gap-1.5">
             <dt className="ink-label">{t("workspace.status.plugged")}</dt>
             <dd className="font-ui text-sm font-semibold">{bench.plugged ? t("workspace.status.pluggedOn") : t("workspace.status.pluggedOff")}</dd>
           </div>
-          <div className="flex items-baseline gap-1.5 max-sm:hidden">
+          <div className="flex items-baseline gap-1.5">
             <dt className="ink-label">{t("workspace.status.fault")}</dt>
             <dd className={`font-ui text-sm font-semibold ${bench.fault ? "text-bad" : ""}`}>
               {bench.fault ? t("workspace.status.faultCap") : t("workspace.status.faultNone")}

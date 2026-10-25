@@ -48,8 +48,8 @@ export type FigureFrameProps = {
   /** Show the list of the figure's pressable parts under it (default true). */
   controls?: boolean;
   /**
-   * Ids of the figure's own buttons to hide because the host draws the same
-   * control (See-through, Labels, zoom and the HUD can't be hidden). Sent as
+   * What to hide on the figure because the host draws the same control: its
+   * buttons' ids, its switches (`xr`, `labels`) and `stats` (the HUD). Sent as
    * `chrome` after every `ready` and whenever the list changes.
    */
   hideChrome?: readonly string[];

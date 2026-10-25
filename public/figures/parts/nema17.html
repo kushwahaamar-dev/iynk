@@ -811,21 +811,26 @@ function mountKeypad(spec){
     for (const g of document.querySelectorAll('#fig .tag[data-t]')){ const n = +g.dataset.n;
       if (!m.has(n)) m.set(n, { n, text: g.dataset.t, en: g.dataset.en ?? g.dataset.t, on: g.classList.contains('on') }); }
     return [...m.values()].sort((a, b) => a.n - b.n); };
-  // the figure's own buttons the host hides because it draws them itself (chrome); press still reaches them
+  // what the host hides because it draws it itself (chrome): the figure's buttons, its See-through and Labels switches,
+  // and 'stats', the big numbers top right. A hidden button is still pressed by id and a hidden switch still follows
+  // the host's xr and labels messages
   let hidden = new Set();
+  const mark = id => hidden.has(id) ? { hidden: true } : {};
   const buttons = () => [...document.querySelectorAll('#btns .act[data-id]')]
-    .map(b => ({ id: b.dataset.id, label: labelOf(b), en: enOf(b), picker: !!b.querySelector('.car'), ...(hidden.has(b.dataset.id) ? { hidden: true } : {}) }));
+    .map(b => ({ id: b.dataset.id, label: labelOf(b), en: enOf(b), picker: !!b.querySelector('.car'), ...mark(b.dataset.id) }));
   const chrome = hide => {
     if (!Array.isArray(hide) || hide.some(id => typeof id !== 'string')) return err('chrome: hide must be a list of button ids');
-    const all = [...document.querySelectorAll('#btns .act[data-id]')], ids = new Set(all.map(b => b.dataset.id));
+    const all = [...document.querySelectorAll('#btns .act[data-id], .vset .act[data-id]')], stats = document.getElementById('stats');
+    const ids = new Set([...all.map(b => b.dataset.id), ...(stats ? ['stats'] : [])]);
     hidden = new Set(hide.filter(id => ids.has(id)));
     for (const b of all) (b.closest('.stepwrap') || b).toggleAttribute('data-cf-hidden', hidden.has(b.dataset.id));
+    if (stats) stats.toggleAttribute('data-cf-hidden', hidden.has('stats'));
     ui.render();
     const unknown = hide.filter(id => !ids.has(id));
     if (unknown.length) err(`chrome: no button "${unknown.join('", "')}"`);
   };
   const switches = () => [...document.querySelectorAll('.vset .act[data-id]')]
-    .map(b => ({ id: b.dataset.id, label: labelOf(b), on: b.getAttribute('aria-pressed') === 'true' }));
+    .map(b => ({ id: b.dataset.id, label: labelOf(b), on: b.getAttribute('aria-pressed') === 'true', ...mark(b.dataset.id) }));
 
   const sendReady = () => plain ? send('ready', { ...plain(), lang: CF_LANG, embedded: true }) : send('ready', {
     fig: cfg.fig ?? null, title: CF_T(cfg.title), en: cfg.title, lang: CF_LANG,
@@ -924,7 +929,7 @@ function mountKeypad(spec){
     const fig = document.getElementById('fig');
     fig.setAttribute('tabindex', '0');
     const css = document.createElement('style');
-    css.textContent = '#btns .stepwrap[data-cf-hidden]{display:none!important}';
+    css.textContent = '[data-cf-hidden]{display:none!important}';
     document.head.appendChild(css);
     // parts: report the press before the figure acts on it, so 'part' arrives ahead of the 'state' it causes
     fig.addEventListener('pointerdown', e => { if (e.button) return; const a = e.target.closest && e.target.closest('[data-act]');

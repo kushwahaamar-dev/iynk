@@ -12,7 +12,7 @@
   `ready` event in `onEvent`. A wrong id comes back as an `error` event; the others are still hidden.
 - Hidden buttons still answer `send("press", { id })`, and they drop out of the "Figure controls (n)" list, since your
   own control is the keyboard path.
-- See-through, Labels, zoom and the HUD can't be hidden (the engine keeps them).
+- The figure's switches hide by id too (`xr` See-through, `labels`), and `stats` hides the HUD (since the driver's chrome change); zoom can't be hidden.
 
 Use it for buttons your bar or toolbar already draws (Exploded view, Break it, Wiring sheet, Upload, Press RESET …):
 POLISH-SPEC §3 FE U5 and DR B1 call the duplicates out.
