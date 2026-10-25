@@ -176,6 +176,7 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   this safely." The driver stopped wave A (no agent had finished), left the agents' uncommitted work in the tree
   untouched with a backup outside the repo, and made the script relaunch each label with a note to continue from its
   own work. Resume only when Amar says so.
+- **10-24 20:17, Amar.** "resume". Wave A relaunched with all 9 labels, each continuing from its own work.
 
 ## 6. Lessons learned (apply them)
 
