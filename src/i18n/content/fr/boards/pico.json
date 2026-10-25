@@ -1,0 +1,733 @@
+{
+  "title": "Raspberry Pi Pico",
+  "tagline": "RP2040 ou RP2350 sur une barrette de 21 x 51 mm : MicroPython, PIO et, sur les cartes W, Wi-Fi",
+  "overview": "Les cartes microcontrôleur de Raspberry Pi elle-même. La Pico porte un RP2040 (deux cœurs Arm Cortex-M0+ jusqu'à 133 MHz, 264 KB de SRAM) avec 2 MB de flash QSPI ; la Pico 2 porte un RP2350 (deux cœurs Cortex-M33 ou deux cœurs RISC-V Hazard3 à 150 MHz, 520 KB de SRAM) avec 4 MB. Les versions W ajoutent une radio Wi-Fi et Bluetooth Infineon CYW43439 sous un capot métallique, avec une antenne imprimée à l'autre bout. Les quatre partagent le même format de 21 x 51 mm avec 40 broches crénelées au pas de 2,54 mm, une prise micro-USB câblée directement sur la puce (il n'y a pas de pont USB-série), un bouton BOOTSEL et une seule LED verte. Un régulateur buck-boost produit 3,3 V à partir de n'importe quelle tension entre 1,8 et 5,5 V sur VSYS. Tous les GPIO fonctionnent en 3,3 V ; seules les broches numériques du RP2350 tolèrent le 5 V, et seulement quand la carte est alimentée. Il n'y a ni bouton reset ni LED d'alimentation : une carte à la flash vierge n'allume rien et apparaît comme une clé USB.",
+  "variants": {
+    "pico": "Raspberry Pi Pico (Rev3) : RP2040, flash W25Q16JV de 2 MB, buck-boost RT6150B. La LED est sur GP25 : Pin(25) et Pin(\"LED\") fonctionnent toutes les deux. Les pastilles de débogage SWD sont sur le bord inférieur.",
+    "pico-w": "Raspberry Pi Pico W : le même RP2040 plus une radio CYW43439 (Wi-Fi 4 2,4 GHz et Bluetooth 5.2). La LED est reliée au WL_GPIO0 de la radio : Pin(25) ne fait donc rien, utilisez Pin(\"LED\") en MicroPython ou LED_BUILTIN en Arduino. GP23, GP24, GP25 et GP29 forment le bus SPI de la radio et ne sont pas libres. Le capot RF et l'antenne occupent la moitié basse, et les trous de débogage remontent au milieu de la carte.",
+    "pico2": "Raspberry Pi Pico 2 : RP2350 (double Cortex-M33 ou RISC-V Hazard3 à 150 MHz, 520 KB de SRAM), 4 MB de flash, la LED de retour sur GP25. GP0 à GP22 tolèrent le 5 V tant que la carte est alimentée ; les broches CAN GP26 à GP28, non. Les premières cartes avec le stepping A2 ont l'erratum E9 : une broche avec seulement le pull-down interne peut flotter à l'état haut, câblez donc les boutons vers GND avec Pin.PULL_UP.",
+    "pico2-w": "Raspberry Pi Pico 2 W : le RP2350 de la Pico 2 avec la radio CYW43439 de la Pico W. La LED est à nouveau sur WL_GPIO0, GP23, GP24, GP25 et GP29 appartiennent à la radio, et la tolérance au 5 V de GP0 à GP22 ne vaut que tant que la carte est alimentée."
+  },
+  "mcu": {
+    "w25q16jv": "Flash NOR QSPI Winbond, 2 MB (16 Mbit). La puce exécute votre programme directement depuis elle (exécution sur place à travers un cache de 16 KB). BOOTSEL fonctionne en mettant à l'état bas la ligne de sélection de cette puce.",
+    "w25q32rv": "Flash NOR QSPI Winbond, 4 MB (32 Mbit), sur les cartes RP2350. Les programmes s'y exécutent sur place à travers le cache de 16 KB.",
+    "rt6150b": "Régulateur buck-boost Richtek : il garde le rail 3,3 V stable pour toute tension VSYS de 1,8 à 5,5 V, si bien qu'une cellule Li-ion ou deux à trois piles AA peuvent alimenter la carte directement.",
+    "rt6154a": "Régulateur buck-boost Richtek des cartes W : il fait le même travail que le RT6150, avec plus de courant de sortie pour la radio.",
+    "cyw43439": "Radio Wi-Fi 4 (802.11b/g/n 2,4 GHz) et Bluetooth 5.2 Infineon, reliée au microcontrôleur par un SPI trois fils sur GP23 (WL_ON), GP24 (données), GP25 (chip select) et GP29 (horloge). Elle possède aussi trois GPIO : WL_GPIO0 pilote la LED utilisateur, WL_GPIO1 la broche d'économie d'énergie du régulateur, WL_GPIO2 détecte VBUS."
+  },
+  "power": {
+    "usb": {
+      "protection": "La prise micro-USB amène le 5 V de l'hôte sans fusible ni réseau de protection ESD. La Schottky D1 le transmet à VSYS (environ 0,3 V plus bas) et empêche une batterie sur VSYS de renvoyer du courant dans l'ordinateur. La limite du port de l'hôte (500 mA en USB 2.0) est la seule limitation de courant."
+    },
+    "vbus": {
+      "protection": "La broche 40 est le même net VBUS que la prise USB. Un 5 V injecté ici atteint VSYS à travers D1 : une alimentation câblée à l'envers est bloquée par D1 et le régulateur ne voit jamais la tension négative."
+    },
+    "vsys": {
+      "protection": "La broche 39 alimente directement le buck-boost : 1,8 à 5,5 V. Rien ne la protège. Câblée à l'envers, les diodes de protection du régulateur et de la puce conduisent et brûlent ; au-dessus d'environ 6 V, le régulateur lâche, souvent en court-circuit, et laisse passer VSYS directement sur le rail 3,3 V. Pour fonctionner sur l'USB et une batterie à la fois, ajoutez une Schottky ou une diode idéale à MOSFET P sur VSYS."
+    },
+    "rails": {
+      "vbus": "Le 5 V de l'USB venant de la prise, aussi sur la broche 40. Il lit 0 V quand la carte tourne uniquement sur VSYS.",
+      "vsys": "Entrée principale du régulateur : VBUS moins la chute de D1 (environ 4,7 V sur l'USB), ou la batterie qui alimente la broche 39. La puce peut la mesurer sous la forme VSYS / 3 sur ADC3 (GPIO29).",
+      "3v3": "Le rail sur lequel tournent la puce et chaque GPIO, produit par le buck-boost. La broche 36 peut alimenter des capteurs ; gardez la charge sous 300 mA. Mettre 3V3_EN (broche 37) à GND le coupe, et la puce avec."
+    },
+    "io": "Les GPIO sont en 3,3 V. La force de sortie se programme à 2, 4, 8 ou 12 mA (4 mA par défaut) ; au-delà, la tension de sortie s'affaisse. Sur le RP2040, toutes les broches ensemble peuvent fournir ou absorber au plus 50 mA. Les broches du RP2040 ne tolèrent pas du tout le 5 V ; GPIO0 à GPIO22 du RP2350 tolèrent 5,5 V seulement tant que la carte est alimentée, et les broches CAN jamais."
+  },
+  "pins": {
+    "edge": {
+      "gp0": "TX de l'UART0 par défaut : UART(0) de MicroPython et la stdio du SDK C utilisent GP0 et GP1.",
+      "gp1": "RX de l'UART0 par défaut.",
+      "gp4": "SDA de l'I2C0 sur les broches par défaut du SDK ; la leçon sur l'I2C l'utilise.",
+      "gp5": "SCL de l'I2C0 sur les broches par défaut du SDK.",
+      "gp14": "Le bouton des leçons : câblé vers GND avec le pull-up interne, un appui se lit 0.",
+      "gp15": "La LED externe des leçons, à travers 330 Ω vers GND. N'importe quel GPIO peut produire du PWM ; celui-ci est la tranche PWM 7, canal B.",
+      "gp26": "ADC0. Les broches d'entrée analogique ont une diode vers le 3,3 V et doivent rester sous environ 3,6 V sur toutes les cartes, y compris celles à RP2350.",
+      "gp27": "ADC1. 12 bits, lu de 0 à 65535 avec read_u16() en MicroPython.",
+      "gp28": "ADC2.",
+      "run": "Activation de la puce avec un pull-up interne d'environ 50 kΩ. Reliez-la à GND pour réinitialiser la puce : la carte n'a pas de bouton reset, câblez donc un bouton-poussoir de RUN vers GND.",
+      "agnd": "Masse analogique des broches CAN : ramenez-y un potentiomètre ou un capteur pour des lectures plus propres.",
+      "adc-vref": "Référence du CAN : le rail 3,3 V à travers un filtre de 200 Ω et 2,2 µF. Elle est bruitée ; une référence externe de 3,0 V peut être montée ici.",
+      "3v3": "Sortie 3,3 V du buck-boost pour les capteurs et les modules, sous 300 mA. N'y injectez jamais 5 V.",
+      "3v3-en": "Activation du régulateur 3,3 V, tirée vers VSYS à travers 100 kΩ. Reliez-la à GND et toute la carte s'éteint.",
+      "vsys": "Entrée de 1,8 à 5,5 V (une batterie), ou sortie d'environ 4,7 V quand la carte tourne sur l'USB. Pas protégée contre l'inversion.",
+      "vbus": "Sortie 5 V de l'USB quand le câble est branché, 0 V sinon. Une alimentation 5 V câblée ici alimente la carte à travers D1."
+    },
+    "debug": {
+      "swclk": "Pastilles Serial Wire Debug (SWCLK, GND, SWDIO) : une Raspberry Pi Debug Probe ou une seconde Pico qui fait tourner debugprobe s'y branche pour poser des points d'arrêt. Ce sont des broches dédiées au débogage, pas des GPIO."
+    }
+  },
+  "leds": {
+    "D2": "La seule LED de la carte, verte, sur GP25 à travers 470 Ω, active à l'état haut. Rien ne s'allume à la mise sous tension : la Pico n'a pas de LED d'alimentation.",
+    "D2-w": "La seule LED, verte, pilotée par le WL_GPIO0 de la radio CYW43439, pas par le microcontrôleur. Pin(\"LED\") et LED_BUILTIN l'atteignent via le pilote de la radio ; Pin(25), lui, bascule le chip-select de la radio."
+  },
+  "controls": {
+    "SW1": "Met la ligne de sélection de la puce flash à l'état bas. Maintenu pendant qu'on branche l'USB (ou pendant que RUN reçoit une impulsion à l'état bas), la ROM de démarrage saute votre programme et affiche le lecteur RPI-RP2 (RP2350 sur la Pico 2) pour un fichier .uf2. Pendant qu'un programme tourne, rp2.bootsel_button() en MicroPython ou BOOTSEL en Arduino le lit comme une entrée."
+  },
+  "parts": {
+    "U1": {
+      "name": "Microcontrôleur RP2040 ou RP2350",
+      "what": "La puce elle-même : deux cœurs, la SRAM, l'USB, le CAN, le PWM et les machines à états PIO, qui savent émuler presque n'importe quel protocole. Elle démarre depuis sa ROM masquée et exécute votre programme depuis la flash externe."
+    },
+    "U3": {
+      "name": "Flash QSPI",
+      "what": "Contient votre programme et le système de fichiers de MicroPython : 2 MB sur les cartes RP2040, 4 MB sur les cartes RP2350. Sans elle, la puce ne peut afficher que son lecteur de démarrage USB."
+    },
+    "X1": {
+      "name": "Quartz 12 MHz",
+      "what": "L'horloge que les PLL de la puce multiplient jusqu'à l'horloge système et aux 48 MHz dont l'USB a besoin. Retirez-le et la carte s'allume, mais rien ne tourne."
+    },
+    "U2": {
+      "name": "Régulateur buck-boost",
+      "what": "Produit 3,3 V à partir de 1,8 à 5,5 V sur VSYS, en abaissant depuis l'USB et en élevant depuis une batterie faible. RT6150B sur la Pico et la Pico 2, RT6154A sur les cartes W."
+    },
+    "L1": {
+      "name": "Inductance 2,2 µH",
+      "what": "La réserve d'énergie du régulateur : elle se charge et se décharge environ un million de fois par seconde pour monter ou descendre la tension."
+    },
+    "C1": {
+      "name": "Condensateur d'entrée 47 µF",
+      "what": "Lisse VSYS à l'entrée du régulateur."
+    },
+    "C2": {
+      "name": "Condensateur de sortie 47 µF",
+      "what": "Lisse le rail 3,3 V. Sans lui, la sortie du régulateur oscille et la puce redémarre."
+    },
+    "C3": {
+      "name": "Condensateur 47 µF (cartes W)",
+      "what": "Une capacité de réserve en plus sur le rail 3,3 V des Pico W et Pico 2 W, pour les rafales de courant de la radio."
+    },
+    "D1": {
+      "name": "Diode Schottky MBR120",
+      "what": "Relie VBUS à VSYS : l'USB peut alimenter la carte, une batterie sur VSYS ne peut pas renvoyer de courant dans l'ordinateur, et une alimentation inversée sur VBUS est bloquée."
+    },
+    "Q1": {
+      "name": "MOSFET DMG1012T",
+      "what": "Déconnecte le pont diviseur VSYS / 3 de GPIO29 quand la carte est éteinte, pour que la diode de protection de la broche ADC3 ne puisse pas laisser fuir du courant vers le rail 3,3 V."
+    },
+    "J1": {
+      "name": "Prise micro-USB",
+      "what": "L'alimentation et les données USB en un seul connecteur. Les lignes de données passent par des résistances de 27 Ω directement jusqu'à la puce : l'USB série, le REPL et le lecteur BOOTSEL sont tous l'USB propre de la puce."
+    },
+    "SW1": {
+      "name": "Bouton BOOTSEL",
+      "what": "Maintenez-le en branchant pour obtenir le lecteur USB qui accueille un nouveau fichier .uf2. Appuyé plus tard, ce n'est qu'une entrée que votre programme peut lire."
+    },
+    "D2": {
+      "name": "LED utilisateur",
+      "what": "LED CMS verte sur GP25 (Pico, Pico 2) ou sur le WL_GPIO0 de la radio (cartes W)."
+    },
+    "PINS1": {
+      "name": "Broches crénelées 1-20",
+      "what": "Des trous métallisés coupés en deux sur le bord gauche : GP0 à GP15 avec une masse toutes les cinq broches. Soudez-y un connecteur, ou soudez la carte entière à plat sur une carte porteuse."
+    },
+    "PINS2": {
+      "name": "Broches crénelées 21-40",
+      "what": "Le bord droit : GP16 à GP22, RUN, les trois broches CAN avec AGND et ADC_VREF, puis 3V3, 3V3_EN, VSYS et VBUS du côté de l'USB."
+    },
+    "H1": {
+      "name": "Connecteur 20 broches (broches 1-20)",
+      "what": "Le connecteur que vous soudez dessous pour que la Pico s'enfiche dans une platine d'essai. Les noms des broches ne sont imprimés que sur la face inférieure."
+    },
+    "H2": {
+      "name": "Connecteur 20 broches (broches 21-40)",
+      "what": "Le second connecteur. Soudez-les tous les deux avec la carte posée dans une platine d'essai, pour qu'ils restent droits."
+    },
+    "J2": {
+      "name": "Connexion de débogage SWD",
+      "what": "SWCLK, GND et SWDIO pour une sonde de débogage : des pastilles crénelées sur le bord inférieur de la Pico et de la Pico 2, trois trous au milieu des cartes W."
+    },
+    "TP1": {
+      "name": "Pastille de test TP1",
+      "what": "Pastille de test de masse sur la face inférieure, utilisée pour les tests en production."
+    },
+    "TP2": {
+      "name": "Pastilles de test TP2 et TP3",
+      "what": "D- et D+ de l'USB sur la face inférieure, pour qu'une carte porteuse puisse atteindre l'USB sans la prise."
+    },
+    "TP4": {
+      "name": "Pastilles de test TP4 à TP6",
+      "what": "Des pastilles sur la face inférieure pour GPIO23 (économie d'énergie du régulateur), GPIO25 (LED) et BOOTSEL, pour qu'une carte porteuse puisse appuyer sur BOOTSEL."
+    },
+    "SH1": {
+      "name": "Radio CYW43439 sous son blindage RF",
+      "what": "La puce Wi-Fi et Bluetooth, son quartz et son réseau d'adaptation, recouverts d'un capot en acier soudé (cartes W seulement)."
+    },
+    "ANT": {
+      "name": "Antenne imprimée",
+      "what": "Une antenne en piste de cuivre à l'extrémité opposée à l'USB (cartes W seulement). Gardez le métal, les plans de masse et les doigts loin d'elle."
+    }
+  },
+  "wireables": {
+    "led": {
+      "note": "Une LED de 5 mm depuis GP15 à travers une résistance de 330 Ω vers GND : (3,3 - 2,0) / 330 ≈ 4 mA pour une LED rouge, dans la limite des 4 mA par défaut de la broche.",
+      "caution": "N'oubliez jamais la résistance : la broche essaierait de fournir bien plus de 12 mA."
+    },
+    "push-button": {
+      "note": "Un bouton de 6 x 6 mm de GP14 vers GND avec Pin.PULL_UP : il lit 0 tant qu'on appuie. Placez-le à cheval sur la tranchée centrale de la platine d'essai.",
+      "caution": "Sur les premières Pico 2 (RP2350 A2), ne comptez pas sur le pull-down interne : l'erratum E9 laisse la broche flotter à l'état haut."
+    },
+    "potentiometer": {
+      "note": "Un potentiomètre de 10 kΩ : une extrémité sur 3V3 (broche 36), l'autre sur AGND (broche 33), le curseur sur GP26 / ADC0.",
+      "caution": "Ne mettez jamais 5 V sur les extrémités : les broches CAN acceptent 3,3 V au plus sur toutes les Pico."
+    },
+    "ldr": {
+      "note": "Une photorésistance du 3V3 vers GP27, avec une résistance de 10 kΩ de GP27 vers GND : plus de lumière, lecture plus haute."
+    },
+    "tmp36": {
+      "note": "Le TMP36 fonctionne dès 2,7 V, le 3V3 convient donc : Vout sur GP28 lit 0,75 V à 25 °C, 10 mV par degré."
+    },
+    "piezo-buzzer": {
+      "note": "Un piézo passif sur GP18 et GND, piloté en PWM : pwm.freq(440) joue un la."
+    },
+    "servo-sg90": {
+      "note": "Signal du SG90 sur GP16 avec du PWM à 50 Hz (une impulsion de 0,5 à 2,4 ms), alimentation par VBUS (le 5 V de l'USB) et une masse commune.",
+      "caution": "N'alimentez jamais un servo par le 3V3 : son courant de blocage fait chuter le rail 3,3 V et la Pico redémarre. Utilisez VBUS sur l'USB ou une alimentation 5 V séparée avec une masse commune."
+    },
+    "mpu6050": {
+      "note": "Un module GY-521 MPU-6050 sur l'I2C0 : SDA sur GP4, SCL sur GP5, VCC sur 3V3. Son adresse est 0x68 (0x69 avec AD0 à l'état haut)."
+    },
+    "ssd1306": {
+      "note": "Un OLED SSD1306 de 0,96 pouce sur l'I2C0 (GP4 et GP5) à l'adresse 0x3C, alimenté par le 3V3. MicroPython a besoin du pilote ssd1306 de micropython-lib (mip.install(\"ssd1306\")).",
+      "caution": "Lisez la sérigraphie du connecteur : certains modules sont GND VCC SCL SDA, d'autres VCC GND SCL SDA."
+    },
+    "hc-sr04": {
+      "note": "Le HC-SR04 a besoin de 5 V : VCC sur VBUS, TRIG sur GP16 (3,3 V suffisent pour le déclencher), ECHO sur GP17 à travers un pont diviseur (1 kΩ en série, 2 kΩ vers GND) pour que l'écho 5 V arrive en 3,3 V.",
+      "caution": "ECHO est une sortie 5 V. Branchée directement sur une broche du RP2040, elle fait passer du courant à travers la diode de protection de la broche vers le rail 3,3 V et abîme la puce. Les GPIO du RP2350 le tolèrent tant qu'ils sont alimentés, mais gardez le pont diviseur."
+    }
+  },
+  "failures": {
+    "reverse-vsys": {
+      "title": "Batterie à l'envers sur VSYS",
+      "symptom": "Rien ne s'allume, la carte chauffe en quelques secondes et peut sentir le brûlé.",
+      "explanation": "VSYS va directement dans le buck-boost, sans protection. Inversée, les diodes internes du régulateur et de la puce conduisent un fort courant et brûlent.",
+      "fix": "Débranchez immédiatement et inversez les fils. Le rouge va sur VSYS (broche 39), le noir sur GND (broche 38). Une carte qui a chauffé est en général à remplacer."
+    },
+    "reverse-vbus": {
+      "title": "Alimentation 5 V à l'envers sur VBUS",
+      "symptom": "Il ne se passe rien du tout.",
+      "explanation": "La broche 40 n'atteint VSYS qu'à travers la Schottky D1. Inversée, D1 bloque : le régulateur et la puce ne voient jamais la tension négative.",
+      "fix": "Inversez les fils : +5 V sur VBUS (broche 40), 0 V sur GND."
+    },
+    "overvolt-vsys": {
+      "title": "9 V sur VSYS",
+      "symptom": "Un claquement ou un régulateur brûlant, puis plus rien, ou une carte morte pour de bon.",
+      "explanation": "Le buck-boost est prévu pour 5,5 V en entrée et lâche juste au-dessus de 6 V, souvent en court-circuit, ce qui fait passer VSYS directement sur le rail 3,3 V et tue la puce.",
+      "fix": "N'alimentez VSYS qu'entre 1,8 et 5,5 V : une cellule Li-ion, trois piles AA, ou 5 V. Utilisez un régulateur abaisseur pour toute tension plus haute."
+    },
+    "flat-battery": {
+      "title": "Batterie vide sur VSYS",
+      "symptom": "La carte disparaît de l'USB et redémarre encore et encore, ou reste éteinte.",
+      "explanation": "Sous environ 1,8 V, le buck-boost ne peut plus tenir 3,3 V : la puce perd son alimentation, revient et redémarre chaque fois que la batterie récupère un peu.",
+      "fix": "Chargez ou remplacez la batterie, ou alimentez la carte par l'USB."
+    },
+    "brownout-servo": {
+      "title": "Servo sur la broche 3V3",
+      "symptom": "La Pico redémarre à chaque mouvement du servo et le port série se déconnecte.",
+      "explanation": "Un servo tire plusieurs centaines de milliampères au démarrage. Sur la broche 3V3, c'est plus que le budget de 300 mA : le rail s'affaisse et la puce subit un brown-out.",
+      "fix": "Alimentez le servo par VBUS (5 V sur l'USB) ou par sa propre alimentation, et reliez les masses."
+    },
+    "cold-header": {
+      "title": "Soudure froide sur la broche 20 (GP15)",
+      "symptom": "La LED externe vacille ou s'arrête quand vous touchez la carte.",
+      "explanation": "Une soudure terne en boule qui n'a jamais mouillé le crénelage ne fait contact que de temps en temps : GP15 n'atteint la platine d'essai que par à-coups.",
+      "fix": "Réchauffez la soudure avec du flux neuf et un peu d'étain jusqu'à ce qu'il coule autour de la broche et dans le demi-trou."
+    },
+    "no-crystal": {
+      "title": "Quartz 12 MHz absent",
+      "symptom": "La carte reçoit du courant, mais aucun programme ne tourne et aucun périphérique USB n'apparaît.",
+      "explanation": "La puce démarre sur son oscillateur en anneau interne, mais le code de démarrage et l'USB ont besoin du quartz pour les PLL : sans lui, l'horloge ne devient jamais stable.",
+      "fix": "Posez le quartz 12 MHz X1."
+    },
+    "no-output-cap": {
+      "title": "Condensateur de sortie 3,3 V absent",
+      "symptom": "La carte redémarre au hasard ou ne démarre jamais.",
+      "explanation": "Le buck-boost a besoin de son condensateur de sortie de 47 µF pour rester stable. Sans lui, le rail 3,3 V oscille et plonge, et la puce redémarre sans cesse.",
+      "fix": "Posez C2, le condensateur de 47 µF côté 3,3 V du régulateur."
+    },
+    "diode-backwards": {
+      "title": "D1 montée à l'envers",
+      "symptom": "Pas d'alimentation par l'USB, alors qu'une batterie sur VSYS fonctionne toujours.",
+      "explanation": "D1 doit pointer de VBUS vers VSYS. À l'envers, elle bloque complètement l'alimentation USB.",
+      "fix": "Retournez D1 : la bande de la cathode est du côté de VSYS."
+    },
+    "bootsel-held": {
+      "title": "BOOTSEL maintenu à la mise sous tension",
+      "symptom": "Votre programme ne démarre pas : un lecteur nommé RPI-RP2 (RP2350 sur la Pico 2) apparaît et la LED reste éteinte.",
+      "explanation": "La ROM de démarrage lit BOOTSEL au reset. Maintenu enfoncé, elle saute la flash et lance le bootloader USB, qui attend un fichier .uf2.",
+      "fix": "Relâchez BOOTSEL et débranchez puis rebranchez l'USB (ou envoyez une impulsion de RUN vers GND). Copiez un fichier .uf2 sur le lecteur si vous vouliez mettre à jour le firmware."
+    },
+    "short-3v3": {
+      "title": "3V3 en court-circuit avec GND",
+      "symptom": "Rien ne tourne, le régulateur tiédit et l'ordinateur peut signaler un périphérique USB qui consomme trop.",
+      "explanation": "Un pont de soudure ou un fil égaré de la broche 36 vers GND fait atteindre au buck-boost sa limite de courant. La carte n'a pas de fusible.",
+      "fix": "Débranchez, trouvez et supprimez le pont, puis vérifiez la broche 3V3 au multimètre avant de remettre sous tension."
+    },
+    "five-volt-echo": {
+      "title": "5 V sur une broche 3,3 V",
+      "symptom": "Sur une Pico ou une Pico W, la puce tiédit, le rail 3,3 V lit plus de 4 V et la carte peut ne plus jamais fonctionner.",
+      "explanation": "La sortie écho d'un HC-SR04 fait 5 V. Les broches du RP2040 ont une diode de protection vers le 3,3 V : le courant y passe et tire tout le rail 3,3 V au-delà de la limite de 3,63 V de la puce. GPIO0 à GPIO22 du RP2350 tolèrent le 5 V tant qu'ils sont alimentés, une Pico 2 survit donc, mais pas ses broches CAN.",
+      "fix": "Mettez un pont diviseur sur ECHO (1 kΩ en série, 2 kΩ vers GND) ou utilisez un convertisseur de niveau."
+    }
+  },
+  "assembly": {
+    "strip": {
+      "title": "Partez d'une carte nue",
+      "body": "Une Pico est une carte simple face : tous les composants sont sur le dessus et soudés par refusion à l'usine. Démontez-la jusqu'au circuit nu pour voir le cuivre, le bord crénelé et les empreintes.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension."
+    },
+    "pick-place": {
+      "title": "Placement automatique, puis refusion",
+      "body": "La machine pose sur la pâte à braser le RP2040, la flash, le quartz, le régulateur avec son inductance et ses condensateurs, la diode, la LED, BOOTSEL et la prise micro-USB, puis le four fait fondre la pâte en une seule passe.",
+      "refusal": "La carte n'est pas nue : démontez-la d'abord, ou ne placez que les composants qui manquent."
+    },
+    "headers": {
+      "title": "Posez les deux connecteurs",
+      "body": "Placez les deux connecteurs 20 broches (H1 et H2 dans « Placer un composant ») dessous, broches longues vers le bas. Enfoncez-les d'abord dans une platine d'essai et posez la Pico dessus : la platine les tient droits pendant que vous soudez.",
+      "refusal": "Les composants CMS d'abord : lancez le placement puis la refusion avant tout composant traversant."
+    },
+    "solder": {
+      "title": "Soudez les 40 broches",
+      "body": "Soudez chaque broche par le dessus pour que la soudure remplisse le demi-trou : brillante et concave, jamais une boule terne. Deux broches voisines reliées par de l'étain court-circuitent deux signaux.",
+      "refusal": "Rien à souder pour l'instant : posez d'abord les connecteurs."
+    },
+    "plug-blank": {
+      "title": "Branchez l'USB avec une flash vierge",
+      "body": "Une Pico neuve n'a rien dans sa flash. Branchez l'USB : rien ne s'allume, puisqu'il n'y a pas de LED d'alimentation, et l'ordinateur affiche un lecteur nommé RPI-RP2 (RP2350 sur une Pico 2) contenant INFO_UF2.TXT et INDEX.HTM."
+    },
+    "rails": {
+      "title": "Mesurez les rails",
+      "body": "Ouvrez la vue de l'alimentation, ou posez un multimètre sur les broches 39 et 36 : VSYS lit environ 4,7 V (l'USB moins la chute de D1) et 3V3 lit 3,3 V."
+    },
+    "flash-blink": {
+      "title": "Installez MicroPython et lancez Blink",
+      "body": "Copiez sur le lecteur le .uf2 MicroPython de votre carte exacte (RPI_PICO, RPI_PICO_W, RPI_PICO2 ou RPI_PICO2_W). Le lecteur disparaît, la carte redémarre avec MicroPython, et le main.py de Blink démarre.",
+      "refusal": "Branchez d'abord l'USB : le fichier .uf2 passe par le câble."
+    },
+    "led": {
+      "title": "Regardez la LED",
+      "body": "La LED verte près de la prise USB clignote maintenant une fois par seconde. Sur une Pico W ou une Pico 2 W, elle est pilotée à travers la radio : elle ne fonctionne donc qu'avec la version W de MicroPython."
+    },
+    "serial": {
+      "title": "Ouvrez le moniteur série",
+      "body": "Lancez le programme de température : la carte affiche la température interne de la puce chaque seconde par l'USB série. Le REPL et print() utilisent l'USB propre de la puce : le réglage du débit en bauds n'a donc pas d'importance."
+    },
+    "exploded": {
+      "title": "Regardez à l'intérieur : vue éclatée",
+      "body": "Débranchez et ouvrez la vue éclatée : les composants CMS se soulèvent de la carte, les connecteurs descendent en dessous, et la vue transparente montre la puce nue dans le RP2040, le quartz dans son boîtier et le courant qui va de l'USB à la LED.",
+      "refusal": "Coupez d'abord l'alimentation : la vue éclatée démonte la carte."
+    }
+  },
+  "lessons": {
+    "blink": {
+      "title": "Faire clignoter la LED",
+      "lede": "Pin(\"LED\") trouve la LED de la carte sur les quatre modèles, et une seconde LED sur GP15 clignote avec elle sur la platine d'essai.",
+      "steps": {
+        "1": "Reliez GP15 (broche 20) à travers une résistance de 330 Ω à la patte longue d'une LED rouge, et sa patte courte à GND.",
+        "2": "Lancez le programme : les deux LED basculent toutes les demi-secondes.",
+        "3": "Changez la pastille du délai et relancez : des délais plus courts clignotent plus vite.",
+        "4": "Passez sur le modèle Pico W : Pin(\"LED\") fonctionne toujours, alors que Pin(25) ne marcherait pas."
+      },
+      "hints": {
+        "1": "Rien sur la platine d'essai ? Vérifiez que la patte longue de la LED (anode) est du côté de la résistance.",
+        "2": "led.toggle() inverse la broche ; led.value(1) et led.value(0) la règlent.",
+        "3": "Sur les cartes W, GP25 est le chip select de la radio : voilà pourquoi le code utilise le nom \"LED\"."
+      },
+      "specs": {
+        "1": {
+          "label": "Courant de la LED",
+          "value": "(3,3 V - 2,0 V) / 330 Ω ≈ 4 mA"
+        },
+        "2": {
+          "label": "Période de clignotement",
+          "value": "2 x le délai : 1 s à 500 ms"
+        },
+        "3": {
+          "label": "LED de la carte",
+          "value": "GP25, ou WL_GPIO0 sur les cartes W"
+        }
+      },
+      "features": {
+        "1": "LED de la carte et LED externe ensemble",
+        "2": "Le même code sur les quatre cartes",
+        "3": "Un délai modifiable en direct"
+      },
+      "checks": {
+        "1": "Le programme tourne pendant 3 secondes",
+        "2": "GP15 bascule une fois par seconde",
+        "3": "Utilise Pin(\"LED\"), pas Pin(25)"
+      },
+      "params": {
+        "ms": {
+          "label": "Délai"
+        }
+      },
+      "pins": {
+        "GP15": {
+          "to": "Résistance de 330 Ω, puis anode de la LED",
+          "role": "Sortie numérique"
+        },
+        "GND": {
+          "to": "Cathode de la LED",
+          "role": "Retour"
+        }
+      },
+      "callouts": {
+        "D2": "La LED de la carte",
+        "R1": "330 Ω fixent environ 4 mA"
+      },
+      "code": {
+        "top": "Faire clignoter la LED de la carte et une LED sur GP15",
+        "led": "la LED de la carte, sur toute Pico",
+        "ext": "la LED de la platine d'essai"
+      }
+    },
+    "button": {
+      "title": "Bouton et température",
+      "lede": "Lisez un bouton avec le pull-up interne et le capteur de température propre au RP2040, et affichez les deux chaque seconde.",
+      "steps": {
+        "1": "Placez un bouton à cheval sur la tranchée centrale de la platine d'essai, un côté vers GP14 (broche 19), l'autre vers GND.",
+        "2": "Gardez la LED sur GP15 de la leçon Blink.",
+        "3": "Lancez et appuyez sur le bouton : la LED s'allume tant que vous le maintenez.",
+        "4": "Regardez le moniteur série : chaque seconde, il affiche l'état du bouton et la température de la puce."
+      },
+      "hints": {
+        "1": "Avec Pin.PULL_UP, la broche lit 1 au repos et 0 quand on appuie.",
+        "2": "ADC(4) est le capteur interne : 0,706 V à 27 °C, en baisse de 1,721 mV par degré.",
+        "3": "Le capteur mesure la puce, qui chauffe un peu plus que la pièce."
+      },
+      "specs": {
+        "1": {
+          "label": "Pull-up",
+          "value": "interne, environ 50 kΩ vers le 3,3 V"
+        },
+        "2": {
+          "label": "Formule de température",
+          "value": "T = 27 - (V - 0.706) / 0.001721"
+        },
+        "3": {
+          "label": "Rebonds du bouton",
+          "value": "jusqu'à 5 ms"
+        }
+      },
+      "features": {
+        "1": "Pull-up interne, sans résistance",
+        "2": "Le thermomètre propre à la puce",
+        "3": "Affichages cadencés avec ticks_ms()"
+      },
+      "checks": {
+        "1": "La LED s'allume moins de 50 ms après l'appui",
+        "2": "La LED est à nouveau éteinte après le relâchement",
+        "3": "Affiche la température au moins trois fois",
+        "4": "Utilise Pin.PULL_UP et ADC(4)"
+      },
+      "params": {
+        "every": {
+          "label": "Afficher toutes les"
+        }
+      },
+      "world": {
+        "btn": "Bouton sur GP14",
+        "chip": "Température de la puce"
+      },
+      "pins": {
+        "GP14": {
+          "to": "Bouton, l'autre côté vers GND",
+          "role": "Entrée numérique avec pull-up"
+        },
+        "GP15": {
+          "to": "Résistance de 330 Ω et LED",
+          "role": "Sortie numérique"
+        },
+        "GND": {
+          "to": "Bouton et cathode de la LED",
+          "role": "Retour"
+        }
+      },
+      "callouts": {
+        "BTN1": "Un appui relie GP14 à GND",
+        "U1": "Le capteur de température est dans la puce"
+      },
+      "code": {
+        "top": "Un bouton allume la LED ; la température de la puce chaque seconde",
+        "pullup": "relâché = 1, appuyé = 0",
+        "sensor": "canal 4 du CAN : le capteur de la puce",
+        "pressed": "à l'état bas, c'est appuyé"
+      }
+    },
+    "fade": {
+      "title": "Potentiomètre et PWM",
+      "lede": "Tournez un potentiomètre et la LED suit : la lecture 12 bits du CAN passe directement dans un rapport cyclique PWM 16 bits.",
+      "steps": {
+        "1": "Câblez le potentiomètre : une extrémité sur 3V3 (broche 36), l'autre sur AGND (broche 33), le curseur sur GP26 (broche 31).",
+        "2": "Gardez la LED sur GP15.",
+        "3": "Lancez et tournez le bouton : la LED baisse et monte, et le moniteur série affiche la lecture et la tension.",
+        "4": "Essayez la pastille de fréquence PWM : à 100 Hz, une LED en mouvement scintille, à 20 kHz, personne ne le voit."
+      },
+      "hints": {
+        "1": "read_u16() renvoie toujours de 0 à 65535, même si le CAN lui-même a 12 bits.",
+        "2": "duty_u16() prend la même plage de 0 à 65535 : la lecture y entre telle quelle.",
+        "3": "Ramenez le potentiomètre sur AGND, pas sur une masse numérique bruitée, pour des lectures plus stables."
+      },
+      "specs": {
+        "1": {
+          "label": "CAN",
+          "value": "12 bits, 0 à 3,3 V, 500 ksps"
+        },
+        "2": {
+          "label": "PWM",
+          "value": "n'importe quel GPIO, rapport cyclique 16 bits"
+        },
+        "3": {
+          "label": "GP15",
+          "value": "tranche PWM 7, canal B"
+        }
+      },
+      "features": {
+        "1": "Un vrai pont diviseur",
+        "2": "Du PWM sur n'importe quelle broche",
+        "3": "Les lectures dans le moniteur série"
+      },
+      "checks": {
+        "1": "Demi-tour : rapport cyclique d'environ 50 %",
+        "2": "Tour complet : rapport cyclique proche de 100 %",
+        "3": "Affiche la lecture au moins quatre fois"
+      },
+      "params": {
+        "freq": {
+          "100": "100 Hz",
+          "1000": "1 kHz",
+          "20000": "20 kHz",
+          "label": "Fréquence PWM"
+        }
+      },
+      "world": {
+        "pot": "Curseur du potentiomètre"
+      },
+      "pins": {
+        "GP26": {
+          "to": "Curseur du potentiomètre",
+          "role": "Entrée ADC0"
+        },
+        "3V3": {
+          "to": "Extrémité du potentiomètre",
+          "role": "Alimentation 3,3 V"
+        },
+        "AGND": {
+          "to": "Extrémité du potentiomètre",
+          "role": "Masse analogique"
+        },
+        "GP15": {
+          "to": "Résistance de 330 Ω et LED",
+          "role": "Sortie PWM"
+        }
+      },
+      "callouts": {
+        "POT1": "Le curseur fixe une tension entre 0 et 3,3 V",
+        "LED1": "La luminosité suit le rapport cyclique"
+      },
+      "code": {
+        "top": "Le potentiomètre règle la luminosité de la LED",
+        "pot": "ADC0 sur GP26",
+        "freq": "fréquence PWM en Hz",
+        "raw": "0 à 65535"
+      }
+    },
+    "i2c-mpu6050": {
+      "title": "I2C : parler à un MPU-6050",
+      "lede": "Scannez le bus I2C, réveillez le MPU-6050 et lisez son accéléromètre registre par registre : pas de bibliothèque, seulement le protocole.",
+      "steps": {
+        "1": "Câblez le module MPU-6050 : VCC sur 3V3, GND sur GND, SDA sur GP4 (broche 6), SCL sur GP5 (broche 7).",
+        "2": "Lancez : i2c.scan() liste les adresses qui répondent, 104 (0x68) pour le MPU-6050.",
+        "3": "Le capteur démarre endormi : écrire 0 dans le registre 0x6B le réveille, et le registre 0x75 répond 0x68.",
+        "4": "Inclinez le capteur et regardez l'accélération Z changer à partir de 1 g à plat."
+      },
+      "hints": {
+        "1": "Une liste vide renvoyée par scan() signale un problème de câblage : vérifiez que SDA et SCL ne sont pas inversés.",
+        "2": "GP4 et GP5 forment une paire I2C0 valide ; une paire du mauvais contrôleur lève ValueError: bad SDA pin.",
+        "3": "La valeur brute est un nombre signé de 16 bits : 16384 représente 1 g dans la plage par défaut de ±2 g."
+      },
+      "specs": {
+        "1": {
+          "label": "Adresse",
+          "value": "0x68 (0x69 avec AD0 à l'état haut)"
+        },
+        "2": {
+          "label": "Vitesse du bus",
+          "value": "100 ou 400 kHz"
+        },
+        "3": {
+          "label": "Échelle",
+          "value": "16384 points par g à ±2 g"
+        }
+      },
+      "features": {
+        "1": "Un vrai scan du bus",
+        "2": "Des registres lus à la main",
+        "3": "Calculs en 16 bits signés"
+      },
+      "checks": {
+        "1": "Le scan trouve le capteur en 104 (0x68)",
+        "2": "WHO_AM_I répond 0x68",
+        "3": "Lit environ 1 g sur Z au moins deux fois"
+      },
+      "params": {
+        "freq": {
+          "100000": "100 kHz",
+          "400000": "400 kHz",
+          "label": "Horloge I2C"
+        }
+      },
+      "world": {
+        "tilt": "Inclinaison du capteur"
+      },
+      "pins": {
+        "GP4": {
+          "to": "SDA du MPU-6050",
+          "role": "Données I2C0"
+        },
+        "GP5": {
+          "to": "SCL du MPU-6050",
+          "role": "Horloge I2C0"
+        },
+        "3V3": {
+          "to": "VCC du MPU-6050",
+          "role": "Alimentation 3,3 V"
+        },
+        "GND": {
+          "to": "GND du MPU-6050",
+          "role": "Retour"
+        }
+      },
+      "callouts": {
+        "IMU1": "MPU-6050 à l'adresse 0x68"
+      },
+      "code": {
+        "top": "Scanner le bus et lire le MPU-6050 à la main",
+        "scan": "adresses qui répondent",
+        "wake": "effacer le bit de sommeil dans PWR_MGMT_1",
+        "read": "ACCEL_ZOUT_H et ACCEL_ZOUT_L"
+      }
+    },
+    "wifi": {
+      "title": "Wi-Fi : se connecter et récupérer une page",
+      "lede": "Sur une Pico W ou une Pico 2 W, rejoignez un réseau, faites clignoter la LED pendant la connexion, puis récupérez une page en HTTP.",
+      "steps": {
+        "1": "Choisissez le modèle Pico W ou Pico 2 W : les cartes simples n'ont pas de radio.",
+        "2": "Lancez : la LED clignote vite pendant que la carte rejoint le réseau HackTX.",
+        "3": "Une fois connectée, la LED reste allumée et le moniteur série affiche l'adresse IP de la carte.",
+        "4": "La carte récupère ensuite l'heure auprès d'une API web et affiche la réponse."
+      },
+      "hints": {
+        "1": "wlan.active(True) met la radio sous tension avant connect().",
+        "2": "La LED est le WL_GPIO0 de la radio : voilà pourquoi elle a besoin de Pin(\"LED\").",
+        "3": "Gardez l'extrémité de l'antenne loin du métal et de vos doigts pour un meilleur signal."
+      },
+      "specs": {
+        "1": {
+          "label": "Radio",
+          "value": "CYW43439, 802.11n 2,4 GHz"
+        },
+        "2": {
+          "label": "Réseau",
+          "value": "HackTX (WPA2), DHCP"
+        },
+        "3": {
+          "label": "Liaison avec le microcontrôleur",
+          "value": "SPI sur GP23, GP24, GP25, GP29"
+        }
+      },
+      "features": {
+        "1": "Rejoindre un réseau Wi-Fi",
+        "2": "Un GET HTTP",
+        "3": "L'état sur la LED, à travers la radio"
+      },
+      "checks": {
+        "1": "Affiche l'adresse IP après la connexion",
+        "2": "Affiche la réponse du web",
+        "3": "Utilise Pin(\"LED\") et network.WLAN"
+      },
+      "world": {
+        "net": "Réseau Wi-Fi HackTX"
+      },
+      "pins": {
+        "WL_GPIO0": {
+          "to": "LED de la carte",
+          "role": "GPIO de la radio"
+        }
+      },
+      "callouts": {
+        "SH1": "La radio sous son blindage",
+        "ANT": "L'antenne imprimée",
+        "D2": "Pilotée par la radio"
+      },
+      "code": {
+        "top": "Rejoindre le Wi-Fi et récupérer une page (Pico W, Pico 2 W)",
+        "led": "la LED est reliée à la radio",
+        "wait": "clignoter pendant la connexion",
+        "get": "un simple GET HTTP"
+      }
+    },
+    "blink-cpp": {
+      "title": "Arduino C++ : clignoter sans delay",
+      "lede": "La même carte en Arduino C++ avec le core arduino-pico : le chronométrage par millis(), LED_BUILTIN et Serial sur l'USB propre de la puce.",
+      "steps": {
+        "1": "Gardez la LED sur GP15 de la première leçon.",
+        "2": "Lancez : les deux LED basculent toutes les 500 ms et le moniteur série affiche le temps écoulé depuis le démarrage.",
+        "3": "Changez la pastille de l'intervalle : le chronométrage par millis() laisse loop() libre pour d'autres tâches.",
+        "4": "Remarquez qu'un int fait 32 bits sur le RP2040 : il contient donc des valeurs de millis() qui déborderaient un int 16 bits d'Arduino Uno."
+      },
+      "hints": {
+        "1": "LED_BUILTIN est GP25 sur la Pico et la Pico 2 ; sur les cartes W, le core le renvoie vers la LED de la radio.",
+        "2": "now - last reste juste même quand millis() repart à zéro après environ 49 jours, parce que les deux sont des unsigned long.",
+        "3": "Serial est l'USB de la puce : le débit en bauds de Serial.begin() est donc ignoré."
+      },
+      "specs": {
+        "1": {
+          "label": "Core",
+          "value": "arduino-pico (Earle Philhower)"
+        },
+        "2": {
+          "label": "Taille d'un int",
+          "value": "32 bits"
+        },
+        "3": {
+          "label": "Téléversement",
+          "value": "UF2 par l'USB"
+        }
+      },
+      "features": {
+        "1": "Un chronométrage non bloquant",
+        "2": "LED_BUILTIN sur tous les modèles",
+        "3": "Série par l'USB"
+      },
+      "checks": {
+        "1": "GP15 bascule une fois par seconde",
+        "2": "Affiche le temps écoulé au moins quatre fois",
+        "3": "Utilise millis() et aucun delay()"
+      },
+      "params": {
+        "ms": {
+          "label": "Intervalle"
+        }
+      },
+      "pins": {
+        "GP15": {
+          "to": "Résistance de 330 Ω, puis anode de la LED",
+          "role": "Sortie numérique"
+        },
+        "GND": {
+          "to": "Cathode de la LED",
+          "role": "Retour"
+        }
+      },
+      "callouts": {
+        "D2": "LED_BUILTIN"
+      },
+      "code": {
+        "top": "Clignoter sans delay sur la Raspberry Pi Pico (core arduino-pico)",
+        "builtin": "GP25, ou la LED de la radio sur les cartes W",
+        "serial": "série par l'USB : le débit en bauds est ignoré",
+        "nodelay": "temps écoulé, sans attendre"
+      }
+    }
+  }
+}
