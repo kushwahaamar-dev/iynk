@@ -54,6 +54,12 @@ describe('micro:bit content vs figure', () => {
     expect(byId.get('SW2')?.control).toMatchObject({ action: 'input', net: 'P5' });
     expect(byId.get('SW3')?.control).toMatchObject({ action: 'input', net: 'P11' });
     expect(byId.get('SW1')?.control?.action).toBe('reset');
+    // Figure presses and the World panel drive the same nets as the lessons' world inputs.
+    for (const input of microbit.lessons.flatMap((l) => l.world.inputs)) {
+      const net = byId.get(input.part)?.control?.net;
+      if (net) expect(input.pins, input.id).toEqual([net]);
+    }
+    expect(byId.get('LOGO')?.control?.net).toBe('P201');
     for (const c of microbit.controls) expect(byId.get(c.id)?.control, c.id).toBeDefined();
     for (const l of microbit.leds) expect(byId.get(l.id)?.led, l.id).toBeDefined();
     expect(byId.get('D70')?.led?.net).toBe('RUN_MIC');

@@ -69,7 +69,8 @@ B.kind('microbit-edge', { group: 'smd', size: () => [51.6, 5.6], h: .05, pins: (
     ctx.put(ctx.B(-25.8, -2.8, 0, 25.8, 2.8, .06), s); },
 });
 
-// the touch logo: a gold stadium outline with two round eyes (the micro:bit face), capacitive touch on P1.04
+// the touch logo: a gold stadium outline with two round eyes (the micro:bit face), capacitive touch on P1.04; its net
+// is P201, the pin the MicroPython runtime reads for pin_logo (the lessons' world input uses the same net)
 B.kind('microbit-logo', { group: 'smd', size: () => [8.68, 4.88], h: .05,
   draw(ctx){
     const [l, w] = ctx.p.size, col = ctx.on ? '#ffe6a3' : B.M.gold.l, rr = w / 2;
@@ -177,7 +178,7 @@ const parts = [
   { id: 'LEDS', kind: 'microbit-matrix', name: '5 x 5 red LED matrix (D2-D50), rows and columns driven by the nRF52833', short: '5 x 5 LEDS', at: [25.8, 20] },
   { id: 'SW2', kind: 'tact', name: 'Button A (P5, reads LOW when pressed)', short: 'A', at: [5.86, 20.96], size: [6, 6.5], h: 4.55, group: 'smd', control: { type: 'button', action: 'input', net: 'P5', active: 0 } },
   { id: 'SW3', kind: 'tact', name: 'Button B (P11, reads LOW when pressed)', short: 'B', at: [45.74, 20.96], size: [6, 6.5], h: 4.55, group: 'smd', control: { type: 'button', action: 'input', net: 'P11', active: 0 } },
-  { id: 'LOGO', kind: 'microbit-logo', name: 'Touch logo (capacitive, pin_logo)', short: 'LOGO', at: [25.8, 34.02], fixed: true, control: { type: 'touch', action: 'input', net: 'LOGO' } },
+  { id: 'LOGO', kind: 'microbit-logo', name: 'Touch logo (capacitive, pin_logo)', short: 'LOGO', at: [25.8, 34.02], fixed: true, control: { type: 'touch', action: 'input', net: 'P201', active: 0 } },
   { id: 'RING0', kind: 'microbit-ring', name: 'Ring 0 (P0: analog, touch; music plays here too)', short: '0', at: [RING_X[0], 6.86], fixed: true, pins: ['P0'], labels: ['0'] },
   { id: 'RING1', kind: 'microbit-ring', name: 'Ring 1 (P1: analog, touch, PWM)', short: '1', at: [RING_X[1], 6.86], fixed: true, pins: ['P1'], labels: ['1'] },
   { id: 'RING2', kind: 'microbit-ring', name: 'Ring 2 (P2: analog, touch, PWM)', short: '2', at: [RING_X[2], 6.86], fixed: true, pins: ['P2'], labels: ['2'] },
