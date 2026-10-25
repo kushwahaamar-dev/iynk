@@ -1,0 +1,371 @@
+{
+  "title": "Quad freestyle 5 pouces",
+  "tagline": "Le grand classique pour un premier montage FPV : concevez-le, montez-le, testez-le au smoke stopper, faites-le voler.",
+  "sub": "Betaflight + FPV",
+  "hint": "Concevez-le, montez-le, testez-le au smoke stopper, puis faites-le voler",
+  "noun": "quad freestyle",
+  "overview": "Un quad freestyle 5 pouces est le premier vrai montage FPV classique. Quatre moteurs brushless sont fixés sur un châssis carbone True-X ; un ESC 4-en-1 et un contrôleur de vol Betaflight partagent une stack de 30,5 mm au centre ; une caméra analogique et un émetteur vidéo 5,8 GHz envoient l'image à votre masque FPV, et un récepteur ExpressLRS transmet les manches de votre radiocommande. La boucle PID du contrôleur de vol, c'est la même idée que le suiveur de ligne du Robotics Lab, appliquée sur trois axes des milliers de fois par seconde. Choisissez ici la batterie, les moteurs et les hélices et regardez les chiffres changer, montez-le pièce par pièce, faites le test au smoke stopper au premier branchement, vérifiez les moteurs sans les hélices, puis faites-le voler en maintien d'altitude, en mode angle et en acro.",
+  "practice": "Faites cinq tours de la course de portes en mode angle, puis un en acro. Ensuite, le parcours du bando : par la brèche, à travers le bando, jusqu'au sommet de la tour, la descente en piqué et un atterrissage en douceur sur la plateforme. Sur un vrai montage : mettez un smoke stopper au premier branchement, vérifiez le sens de chaque moteur sans les hélices, faites le test de failsafe et comparez votre vrai temps de vol à celui du calculateur. Attendez-vous à moins que ce qu'il annonce : 3 à 5 minutes de freestyle avec une batterie 6S 1100 mAh.",
+  "design": {
+    "fixed": {
+      "FRAME": "Châssis carbone 5 pouces",
+      "ESC": "ESC 4-en-1 45 A",
+      "FC": "Contrôleur de vol F405",
+      "CAM": "Caméra FPV analogique",
+      "VTX": "VTX 5,8 GHz et antenne",
+      "RX": "Récepteur ExpressLRS 2,4 GHz",
+      "XT60": "Câble XT60 et condensateur low-ESR",
+      "TOP": "Plaque supérieure, entretoises et vis",
+      "STRAP": "Strap et tapis de batterie"
+    },
+    "verdict": {
+      "over": "{kv} KV en {cells}S fait tourner les hélices bien au-delà de ce que les moteurs et l'ESC supportent : attendez-vous à des moteurs brûlants et à une désynchronisation.",
+      "weak": "Un rapport poussée/poids de {tw}:1 est trop faible pour ce type de vol.",
+      "ok": "Les pièces s'accordent. Un bon montage polyvalent.",
+      "punch": "Les pièces s'accordent. Beaucoup de punch."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Châssis carbone : plaque inférieure et bras",
+      "what": "Un châssis True-X : quatre bras en carbone de 5 mm sur une plaque inférieure, 225 mm de moteur à moteur, avec une stack M3 de 30,5 x 30,5 mm au centre. La fibre de carbone est rigide et légère, et elle conduit l'électricité : un fil de batterie dénudé ou un câble usé qui la touche, c'est un court-circuit."
+    },
+    "MOTORS": {
+      "name": "4 moteurs brushless (2306)",
+      "what": "La cloche, garnie de 14 aimants, tourne autour d'enroulements de cuivre fixes (le stator : 23 mm de diamètre et 6 mm de haut sur un 2306). Le KV, ce sont les rpm par volt à vide : KV fois la tension de la batterie donne la vitesse maximale. 1750 KV en 6S (22,2 V), c'est environ 38 900 rpm. Chaque moteur se fixe avec quatre vis M3 sur un entraxe de 16 x 16 mm ; une vis trop longue atteint les enroulements et met le moteur en court-circuit."
+    },
+    "ESC": {
+      "name": "ESC 4-en-1 45 A (AM32)",
+      "what": "Quatre contrôleurs électroniques de vitesse sur une seule carte de 30,5 mm. Chaque canal commute un pont de MOSFET pour transformer le courant continu de la batterie en signal triphasé pour son moteur, selon les commandes DShot600 du contrôleur de vol. Il tourne sous AM32 ou Bluejay (BLHeli_32 s'est arrêté en 2024) et, en DShot bidirectionnel, renvoie les rpm de chaque moteur sur le même fil pour le filtre RPM."
+    },
+    "WIRES": {
+      "name": "Fils de phase des moteurs, soudés aux pastilles de l'ESC",
+      "what": "Trois fils de phase par moteur, soudés dans n'importe quel ordre aux pastilles A, B et C de son canal d'ESC. Inverser deux d'entre eux inverse le moteur, mais personne ne ressoude pour ça : le sens se règle plus tard dans le firmware de l'ESC. Coupez-les court et éloignez-les des hélices et des bords en carbone."
+    },
+    "FC": {
+      "name": "Contrôleur de vol F405 (Betaflight)",
+      "what": "Un STM32F405 (168 MHz) lit son gyroscope ICM-42688-P des milliers de fois par seconde et exécute la boucle PID de Betaflight, qui transforme vos commandes aux manches en quatre commandes moteur. La flèche imprimée sur la carte doit pointer vers l'avant : si elle pointe vers l'arrière, chaque correction part dans le mauvais sens et le quad se retourne dès qu'il décolle. Tournez la carte, ou indiquez-le à Betaflight avec set align_board_yaw = 180."
+    },
+    "XT60": {
+      "name": "Câble XT60 et condensateur low-ESR 1000 µF 35 V",
+      "what": "Une XT60 mâle sur des fils rouge et noir en 12 AWG (la batterie porte la femelle), et un condensateur low-ESR de 1000 µF 35 V aux bornes des pastilles batterie de l'ESC. Le condensateur absorbe les pointes de tension dues aux commutations de l'ESC. Il est polarisé : la bande blanche marque la patte moins, et monté à l'envers, il dégaze au premier branchement."
+    },
+    "CAM": {
+      "name": "Caméra FPV analogique 19 mm, uptilt de 30°",
+      "what": "Une micro-caméra de 19 mm entre les plaques latérales, inclinée de 30 degrés vers le haut : en vol rapide vers l'avant, le quad pique du nez, et l'uptilt garde l'horizon dans le champ. Sa vidéo va sur la pastille CAM du contrôleur de vol, où la puce OSD incruste par-dessus la tension de la batterie, le chrono et les alertes."
+    },
+    "RX": {
+      "name": "Récepteur ExpressLRS 2,4 GHz (CRSF)",
+      "what": "Relie votre radiocommande au contrôleur de vol par un UART complet : TX du récepteur sur RX2, RX du récepteur sur TX2, plus le 5 V et la masse, en protocole CRSF. Placez son antenne loin du carbone et de l'antenne du VTX ; avec deux antennes, mettez-les à 90 degrés l'une de l'autre."
+    },
+    "VTX": {
+      "name": "VTX analogique 5,8 GHz et antenne",
+      "what": "Envoie l'image de la caméra, avec l'OSD, à votre masque. Il est alimenté par le 9 V du contrôleur de vol, et Betaflight règle sa bande, son canal et sa puissance en SmartAudio sur TX1. Ne l'alimentez jamais sans antenne : il surchauffe et grille son étage de sortie. La puissance d'émission autorisée dépend de la réglementation de votre pays."
+    },
+    "TOP": {
+      "name": "Plaque supérieure et entretoises de 27,5 mm",
+      "what": "Une plaque carbone de 2 mm sur quatre entretoises en aluminium de 27,5 mm, qui ferme la stack, protège l'électronique et porte le tapis et le strap de la batterie. Des entretoises trop courtes écrasent la stack ; en cas de crash, c'est la plaque qui encaisse, pas le contrôleur de vol."
+    },
+    "BATT": {
+      "name": "Batterie LiPo, strap et tapis antidérapant",
+      "what": "La pièce la plus lourde, sanglée sur la plaque supérieure, au centre, pour que le quad soit équilibré. Une cellule LiPo fait 4,2 V chargée et 3,7 V en nominal : atterrissez vers 3,5 V par cellule, ne descendez jamais sous 3,0 V, stockez à 3,8 V, chargez uniquement sur un chargeur à équilibrage que vous surveillez, et mettez au rebut une batterie qui gonfle."
+    },
+    "PROPS": {
+      "name": "Hélices tripales 5 pouces, 2 CW + 2 CCW",
+      "what": "Des hélices de cinq pouces sur des axes M5. Deux tournent dans le sens horaire et deux dans le sens antihoraire (props in : les bords d'attaque balaient vers la caméra), pour que les couples des moteurs s'annulent ; le lacet vient de l'accélération d'une paire diagonale. Le sélecteur de conception propose la tripale polyvalente 5x4.3x3, une 5.1x2.5x3 à faible pas pour des vols plus longs et une 5x5x3 pour plus de punch. Elles se montent en dernier, après le smoke stopper et la vérification du sens des moteurs, et s'enlèvent dès que les moteurs tournent sur l'établi."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Assemblez le châssis",
+      "body": "Vissez les bras sur la plaque inférieure avec les vis de la stack en place, et vérifiez que chaque bras est bien serré : un bras desserré fait vibrer le gyroscope et le quad oscille."
+    },
+    "motors": {
+      "title": "Montez les quatre moteurs",
+      "body": "Quatre vis M3 chacun, sur l'entraxe de 16 x 16 mm, fils tournés vers le centre. Prenez des vis qui mordent de 3 à 4 mm : plus longues, elles touchent les enroulements.",
+      "refusal": "Les moteurs se vissent sur les bras : assemblez d'abord le châssis."
+    },
+    "esc": {
+      "title": "Installez l'ESC 4-en-1",
+      "body": "Sur des silentblocs en caoutchouc en bas de la stack, pastilles batterie à l'arrière, là où arrivera le câble XT60.",
+      "refusal": "L'ESC se pose sur les vis de stack du châssis : assemblez d'abord le châssis."
+    },
+    "wires": {
+      "title": "Soudez les fils des moteurs",
+      "body": "Coupez les trois fils de chaque moteur à la bonne longueur, étamez-les et soudez-les dans n'importe quel ordre aux pastilles de son canal. Attendez-vous à ce qu'au moins un moteur tourne dans le mauvais sens : la vérification du sens des moteurs le repérera.",
+      "refusal": "Les fils vont des moteurs à l'ESC : installez d'abord les deux."
+    },
+    "fc": {
+      "title": "Montez le contrôleur de vol, flèche vers l'avant",
+      "body": "Sur la stack, au-dessus de l'ESC, relié par le faisceau 8 broches (tension batterie, masse, courant, télémétrie et les quatre signaux moteur). Pointez la flèche imprimée vers l'avant.",
+      "refusal": "Le contrôleur de vol s'empile sur l'ESC : installez d'abord l'ESC."
+    },
+    "xt60": {
+      "title": "Soudez le câble XT60 et le condensateur",
+      "body": "Rouge sur BAT+, noir sur BAT-, puis le condensateur sur les mêmes pastilles, bande côté moins. Vérifiez au multimètre que le plus et le moins ne sont pas en court-circuit avant d'approcher une batterie.",
+      "refusal": "Le câble batterie se soude sur les pastilles de l'ESC : installez d'abord l'ESC."
+    },
+    "cam": {
+      "title": "Installez la caméra",
+      "body": "Entre les plaques latérales, inclinée de 30 degrés vers le haut, avec ses fils vidéo, 5 V et masse vers les pastilles CAM du contrôleur de vol.",
+      "refusal": "La caméra se monte sur le châssis : assemblez d'abord le châssis."
+    },
+    "rx": {
+      "title": "Câblez le récepteur",
+      "body": "TX du récepteur sur RX2, RX sur TX2, 5 V et masse. Appairez-le avec votre radiocommande et faites sortir l'antenne à l'arrière.",
+      "refusal": "Le récepteur se câble sur un UART du contrôleur de vol : montez d'abord le contrôleur de vol."
+    },
+    "vtx": {
+      "title": "Installez l'émetteur vidéo",
+      "body": "Vidéo depuis la pastille VTX du contrôleur de vol, 9 V et masse, SmartAudio sur TX1. Vissez l'antenne avant toute mise sous tension.",
+      "refusal": "Le VTX prend sa vidéo et son alimentation sur le contrôleur de vol : montez-le d'abord."
+    },
+    "top": {
+      "title": "Fermez la stack avec la plaque supérieure",
+      "body": "Vissez la plaque supérieure sur les entretoises. Vérifiez que rien n'est pincé et qu'aucun fil ne pend à portée d'une hélice.",
+      "refusal": "Installez d'abord le contrôleur de vol, la caméra, le récepteur et le VTX : la plaque supérieure se ferme par-dessus."
+    },
+    "batt": {
+      "title": "Sanglez la batterie",
+      "body": "Centrez-la sur le tapis pour que le quad soit équilibré en son milieu, serrez bien le strap et éloignez le câble des hélices. Ne la branchez pas encore.",
+      "refusal": "Installez d'abord la plaque supérieure et le câble XT60 : la batterie se pose sur l'une et se branche sur l'autre."
+    },
+    "props": {
+      "title": "Les hélices, en dernier",
+      "body": "Seulement après le test au smoke stopper et la vérification du sens des moteurs, batterie débranchée. Hélices horaires sur les moteurs horaires (M1 et M4), antihoraires sur M2 et M3, écrous serrés.",
+      "refusal": "Les hélices se montent en dernier : faites d'abord le test au smoke stopper et la vérification du sens des moteurs."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "La XT60 femelle de la batterie rejoint la mâle du quad. Une batterie 6S fait 25,2 V chargée et peut débiter bien plus de 100 A : c'est la seule connexion qui ne doit jamais faire de court-circuit.",
+    "XT60-ESC": "Des fils 12 AWG vers les pastilles BAT+ et BAT- de l'ESC, avec le condensateur low-ESR de 1000 µF 35 V sur les mêmes pastilles, bande côté moins.",
+    "ESC-MOTORS": "Trois fils de phase par moteur sur les pastilles A, B et C de son canal. N'importe quel ordre fait tourner le moteur ; deux fils inversés changent son sens.",
+    "FC-ESC": "Un seul faisceau 8 broches relie la stack : les quatre signaux moteur DShot600 (M1 à M4) descendent vers l'ESC, et la tension batterie, la masse, le capteur de courant et la télémétrie ESC remontent vers le contrôleur de vol, dont les régulateurs 5 V et 9 V sont alimentés par là. En DShot bidirectionnel, chaque canal d'ESC répond sur sa ligne de signal avec les rpm du moteur.",
+    "RX-FC": "UART2 : TX du récepteur sur RX2, RX du récepteur sur TX2, plus le 5 V et la masse. Betaflight active Serial RX sur l'UART2 avec le protocole CRSF.",
+    "CAM-FC": "La vidéo de la caméra entre sur la pastille CAM, et la caméra est alimentée par le 5 V.",
+    "FC-VTX": "La vidéo avec l'OSD sort par la pastille VTX, avec l'alimentation 9 V et le SmartAudio sur TX1 pour que Betaflight règle la bande, le canal et la puissance."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Test au smoke stopper",
+      "pass": "La lampe n'a fait que clignoter : pas de court-circuit entre le plus et le moins. Vous pouvez brancher la batterie directement.",
+      "fail": "La lampe est restée allumée : quelque chose est en court-circuit. Ici, le condensateur est monté à l'envers. Retournez-le (bande côté moins) et refaites le test avant de brancher."
+    },
+    "motors": {
+      "title": "Vérification du sens des moteurs (sans hélices)",
+      "pass": "Chaque moteur tourne dans le sens qu'attend le mixeur : M1 et M4 en horaire, M2 et M3 en antihoraire (props in). Les hélices peuvent maintenant être montées.",
+      "fail": "Un moteur a tourné dans le mauvais sens (sa flèche passe au rouge). La vérification l'inverse dans le firmware de l'ESC, comme vous le feriez dans ESC Configurator, au lieu de ressouder ; avec les hélices montées, ce moteur aurait retourné le quad au décollage."
+    },
+    "calibrate": {
+      "title": "Calibrage de l'accéléromètre",
+      "pass": "Calibré à plat sur une surface plane : le mode angle, le maintien d'altitude et l'horizon de l'OSD savent maintenant où est l'horizontale, et le blocage d'armement NO_ACC_CAL de Betaflight a disparu.",
+      "fail": "Montez d'abord le contrôleur de vol et posez le quad sur une surface plane. Si la flèche pointe vers l'arrière, le calibrage n'y changera rien : tournez la carte ou faites set align_board_yaw = 180."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Premier réglage après le flashage",
+      "explain": "Règle le mixeur, l'orientation de la carte, le protocole moteur et les deux UART. DShot600 est le protocole moteur numérique ; dshot_bidir permet aux ESC de renvoyer les rpm. Les lignes serial prennent le nom du port et un masque de fonctions (64 = récepteur série, 2048 = SmartAudio). yaw_motors_reversed indique seulement au mixeur dans quel sens tournent les hélices ; il ne change jamais les moteurs eux-mêmes."
+    },
+    "switches": {
+      "title": "Interrupteurs : armement, angle, maintien d'altitude, beeper, turtle",
+      "explain": "aux prend le numéro du mode, pas son nom : 0 ARM, 1 ANGLE, 3 ALTHOLD, 13 BEEPER, 35 mode turtle (flip over after crash). Le canal se compte à partir de 0 = AUX1, et la plage est en microsecondes. Il n'y a pas de mode ACRO à activer : l'acro, c'est ce que le quad vole quand les modes d'auto-stabilisation sont coupés."
+    },
+    "rpm": {
+      "title": "Filtre RPM en DShot bidirectionnel",
+      "explain": "Avec les rpm de chaque moteur, Betaflight place des filtres notch qui suivent exactement le bruit des moteurs. Il faut un firmware d'ESC compatible DShot bidirectionnel (AM32, Bluejay) ; si un ESC ne répond pas, l'armement est bloqué par DSHOT_TELEM."
+    },
+    "vtx": {
+      "title": "Table VTX, bande et canal",
+      "explain": "La table liste les fréquences et les valeurs de puissance SmartAudio qu'accepte l'émetteur ; bande 5 canal 1, c'est Raceband R1 à 5658 MHz. vtx_low_power_disarm garde la puissance au minimum tant que vous êtes sur l'établi."
+    },
+    "failsafe": {
+      "title": "Failsafe : drop",
+      "explain": "Quand la liaison radio est perdue, l'étape 1 applique les valeurs de repli (manches au centre, gaz bas) pendant failsafe_delay (15 = 1,5 s), pour qu'une courte coupure passe inaperçue. Si la liaison ne revient pas, l'étape 2 DROP coupe les moteurs : un 5 pouces qui tombe est moins dangereux qu'un 5 pouces qui s'envole. GPS-RESCUE demande un GPS, que ce quad n'a pas."
+    },
+    "alt": {
+      "title": "Maintien d'altitude",
+      "explain": "Depuis la 2025.12, Betaflight sait tenir l'altitude avec le baromètre. Le manche des gaz demande alors une vitesse de montée : alt_hold_climb_rate = 22 correspond aux 2,2 m/s que le terrain vole manche à fond, et la zone morte autour du centre tient l'altitude."
+    },
+    "angle": {
+      "title": "Mode angle",
+      "explain": "Le contrôleur de vol remet le quad à plat quand vous lâchez les manches et ne l'incline jamais au-delà d'angle_limit (38 degrés ici, la valeur du terrain). angle_p_gain est la force de l'auto-stabilisation. Les anciennes versions de Betaflight les appelaient level_limit et angle_level_strength (p_level avant la 4.0) ; ces noms n'existent plus."
+    },
+    "acro": {
+      "title": "Rates acro",
+      "explain": "Avec les rates ACTUAL, rc_rate est la sensibilité au centre divisée par 10 et srate la vitesse manche à fond divisée par 10 : 200 degrés par seconde autour du centre et 670 manche à fond, les valeurs que vole le terrain. L'expo adoucit le centre du manche pour un contrôle fin."
+    },
+    "race": {
+      "title": "Chrono au tour sur l'OSD",
+      "explain": "osd_tim1 regroupe la source du chrono, sa précision et une alarme en un seul nombre : 2 (depuis le dernier armement) plus 1 x 16 (centièmes) donne 18. La valeur _pos le place : 2048 l'affiche dans le profil OSD 1, plus la colonne, plus 32 par ligne."
+    },
+    "raceAcro": {
+      "title": "Course de portes en acro",
+      "explain": "Les pilotes de course volent en acro avec l'air mode activé (Betaflight active la fonction AIRMODE par défaut) : la boucle PID garde toute son autorité à gaz zéro, et le quad reste contrôlable quand vous coupez les gaz pour passer une porte. Laissez l'interrupteur ANGLE en bas."
+    },
+    "range": {
+      "title": "Parcours du terrain : maintien d'altitude et hauteur sur l'OSD",
+      "explain": "Le maintien d'altitude facilite la longue montée jusqu'au sommet de la tour ; l'élément d'altitude de l'OSD (osd_altitude_pos) affiche la hauteur du baromètre pour que vous sachiez quand vous êtes au-dessus de la dalle de 10 m."
+    }
+  },
+  "flight": {
+    "modes": {
+      "alt": {
+        "title": "Maintien d'altitude (facile)",
+        "hint": "W et S font monter et descendre, et le quad tient sa hauteur quand vous lâchez. Les flèches l'inclinent et il se remet à plat ; A et D le font pivoter en lacet. Espace arme le quad."
+      },
+      "angle": {
+        "title": "Mode angle",
+        "hint": "Auto-stabilisé jusqu'à 38 degrés. W et S règlent les gaz, qui restent là où vous les laissez ; les flèches inclinent, A et D pivotent en lacet."
+      },
+      "acro": {
+        "title": "Mode acro (rate)",
+        "hint": "Ce que volent les pilotes freestyle : les manches règlent la vitesse de rotation (jusqu'à 670 degrés par seconde) et rien ne le remet à plat. Lâchez et il garde son angle."
+      },
+      "race": {
+        "title": "Course de portes (angle)",
+        "hint": "Cinq portes dans l'ordre. Le chrono démarre à la porte 1, et chaque tour après le premier est un tour lancé."
+      },
+      "raceAcro": {
+        "title": "Course de portes (acro)",
+        "hint": "Les mêmes cinq portes en acro, comme les volent les pilotes de course. Les gaz restent là où vous les laissez."
+      },
+      "range": {
+        "title": "Terrain : bando freestyle",
+        "hint": "Passez la brèche, traversez le bando, montez au sommet de la tour, plongez le long de sa façade et posez-vous sur la plateforme. Le maintien d'altitude fait la montée pour vous."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Liaison radio perdue : pendant 1,5 s, les manches passent à leurs valeurs de repli (au centre, gaz bas), puis DROP coupe les moteurs et le quad tombe.",
+      "low-battery": "Sous 3,5 V par cellule, l'OSD fait clignoter LOW BATTERY : posez-vous maintenant.",
+      "battery-empty": "Sous 3,2 V par cellule en charge, la batterie s'effondre et les ESC coupent, où que soit le quad."
+    },
+    "controls": "Clavier : Espace arme et désarme, W et S pour les gaz, les flèches pour le tangage et le roulis, A et D pour le lacet, V passe en vue FPV, R replace le quad sur la plateforme. Sur téléphone, le manche gauche gère les gaz et le lacet, le manche droit le tangage et le roulis. Une manette fonctionne en Mode 2."
+  },
+  "courses": {
+    "race": {
+      "title": "Course de portes",
+      "brief": "Cinq portes sur une boucle en terrain dégagé : la pelouse sud, la vieille route, le tour derrière la brèche et le retour par le côté ouest. Passez-les dans l'ordre ; le chrono démarre à la porte 1."
+    },
+    "bando": {
+      "title": "Bando freestyle",
+      "brief": "Passez la brèche entre les deux murs, traversez le rez-de-chaussée du bando, montez au sommet de la tour, plongez le long de sa façade et posez-vous en douceur sur la plateforme.",
+      "goals": {
+        "1": "LA BRÈCHE",
+        "2": "BANDO",
+        "3": "SOMMET DE LA TOUR",
+        "4": "PIQUÉ",
+        "5": "ATTERRISSAGE"
+      }
+    }
+  },
+  "quizzes": {
+    "power": {
+      "cap": {
+        "q": "À quoi sert le gros condensateur sur le câble XT60 ?",
+        "options": {
+          "1": "Il stocke de l'énergie pour voler plus longtemps",
+          "2": "Il absorbe les pointes de tension dues aux commutations de l'ESC",
+          "3": "Il filtre seulement le bruit de la vidéo"
+        },
+        "why": "L'ESC commute des dizaines d'ampères des milliers de fois par seconde, et les longs fils de batterie transforment cela en pointes de tension. Un condensateur low-ESR placé directement sur les pastilles de l'ESC les absorbe avant qu'elles ne tuent un MOSFET ou ne réinitialisent l'électronique. 1000 µF stockent bien trop peu d'énergie pour changer quoi que ce soit au temps de vol."
+      },
+      "xt60": {
+        "q": "Quelle XT60 va sur le câble du quad ?",
+        "options": {
+          "1": "La mâle, aux broches apparentes : la batterie a la femelle",
+          "2": "La femelle, pour que le côté du quad soit couvert",
+          "3": "N'importe laquelle : elles sont identiques"
+        },
+        "why": "La batterie porte toujours la XT60 femelle, aux contacts en retrait, pour qu'une batterie qui traîne dans votre sac ne puisse pas faire de court-circuit entre ses broches. Le quad et les câbles du chargeur portent la mâle."
+      },
+      "smoke": {
+        "q": "Pourquoi utiliser un smoke stopper au premier branchement ?",
+        "options": {
+          "1": "Il charge la batterie en douceur",
+          "2": "Il limite le courant : un court-circuit allume sa lampe au lieu de griller l'ESC",
+          "3": "Il teste le sens des moteurs"
+        },
+        "why": "Un smoke stopper place une lampe ou un fusible en série avec la batterie. Avec un pont de soudure ou une pièce inversée, la lampe s'allume et le courant reste à un ou deux ampères ; branché directement, le même court-circuit a toute la batterie derrière lui."
+      }
+    },
+    "stack": {
+      "arrow": {
+        "q": "La flèche du contrôleur de vol pointe vers l'arrière. Que se passe-t-il au décollage ?",
+        "options": {
+          "1": "Rien : le gyroscope s'en moque",
+          "2": "Chaque correction part dans le mauvais sens et il se retourne aussitôt",
+          "3": "Il vole simplement moins vite"
+        },
+        "why": "Betaflight suppose que la flèche pointe vers l'avant. Monté à l'envers, une inclinaison à gauche se lit comme une inclinaison à droite : la boucle PID pousse dans le mauvais sens et le quad se retourne dès qu'il décolle. Tournez la carte, ou faites set align_board_yaw = 180."
+      },
+      "dshot": {
+        "q": "Qu'envoie le contrôleur de vol sur chaque fil de signal moteur ?",
+        "options": {
+          "1": "L'alimentation triphasée du moteur",
+          "2": "Une commande de gaz numérique DShot600 ; en DShot bidirectionnel, les rpm du moteur reviennent",
+          "3": "La tension de la batterie"
+        },
+        "why": "Le contrôleur de vol envoie une valeur de gaz numérique par moteur (le DShot600 tourne à 600 kbit/s) ; c'est l'ESC qui produit lui-même le signal triphasé. Avec dshot_bidir = ON, l'ESC répond sur le même fil avec les rpm, qui alimentent le filtre RPM de Betaflight."
+      }
+    },
+    "props": {
+      "last": {
+        "q": "Pourquoi les hélices se montent-elles en dernier ?",
+        "options": {
+          "1": "Elles sont fragiles",
+          "2": "Un test moteur ou un court-circuit avec les hélices montées peut projeter le quad sur vous",
+          "3": "Elles masquent la caméra"
+        },
+        "why": "Une hélice 5 pouces à pleine vitesse coupe profondément. Chaque test sur l'établi qui fait tourner les moteurs, et chaque premier branchement qui pourrait révéler un défaut, se fait sans hélices ; elles ne se montent qu'une fois le smoke stopper et la vérification du sens des moteurs réussis."
+      },
+      "torque": {
+        "q": "Pourquoi deux hélices tournent-elles en horaire et deux en antihoraire ?",
+        "options": {
+          "1": "Pour que les couples des moteurs s'annulent, le lacet venant de l'accélération d'une paire diagonale",
+          "2": "Pour rendre le quad plus silencieux",
+          "3": "Pour que les quatre poussent l'air dans le même sens"
+        },
+        "why": "Chaque hélice qui tourne fait pivoter le châssis dans l'autre sens. Avec les paires diagonales qui tournent en sens opposés, ces couples s'annulent en vol stationnaire ; pour le lacet, Betaflight accélère une paire et ralentit l'autre."
+      }
+    },
+    "flight": {
+      "acro": {
+        "q": "Vous lâchez les manches en mode acro. Le quad…",
+        "options": {
+          "1": "se remet à plat",
+          "2": "garde l'angle qu'il avait",
+          "3": "atterrit"
+        },
+        "why": "En acro, les manches commandent une vitesse de rotation, et des manches au centre veulent dire « arrête de tourner » : le quad garde sa dernière attitude. C'est le mode angle qui remet à plat quand vous lâchez, jusqu'à angle_limit (38 degrés ici)."
+      },
+      "failsafe": {
+        "q": "La liaison radio coupe en vol et failsafe_procedure vaut DROP. Que fait le quad ?",
+        "options": {
+          "1": "Il reste en vol stationnaire jusqu'au retour de la liaison",
+          "2": "Il centre les manches et coupe les gaz pendant failsafe_delay (1,5 s), puis arrête les moteurs",
+          "3": "Il rentre à la maison"
+        },
+        "why": "L'étape 1 couvre une courte coupure : pendant failsafe_delay (15 = 1,5 s), Betaflight applique les valeurs de repli, manches au centre et gaz bas. Si la liaison n'est toujours pas revenue, l'étape 2 DROP désarme et le quad tombe, ce qui est moins dangereux qu'un quad qui s'envole. Rentrer à la maison demande un GPS et GPS-RESCUE."
+      },
+      "lipo": {
+        "q": "À quelle tension de batterie faut-il se poser ?",
+        "options": {
+          "1": "Quand l'OSD affiche environ 3,5 V par cellule",
+          "2": "Quand elle atteint 3,0 V par cellule",
+          "3": "Quand le quad commence à sembler mou"
+        },
+        "why": "Chaque minute passée sous environ 3,5 V par cellule en charge vieillit la batterie, et sous 3,0 V par cellule une LiPo est abîmée. Betaflight avertit à 3,5 V par cellule par défaut (vbat_warning_cell_voltage = 350)."
+      },
+      "angle": {
+        "q": "Quelle ligne de CLI limite le mode angle à 38 degrés d'inclinaison ?",
+        "options": {
+          "1": "set angle_limit = 38",
+          "2": "set level_limit = 38",
+          "3": "set p_level = 38"
+        },
+        "why": "angle_limit (de 10 à 80 degrés, 60 par défaut) est le nom actuel. level_limit était son nom jusqu'à Betaflight 4.4, et p_level était la force d'auto-stabilisation en 3.x (aujourd'hui angle_p_gain) ; aucun des deux n'existe plus."
+      }
+    }
+  }
+}
