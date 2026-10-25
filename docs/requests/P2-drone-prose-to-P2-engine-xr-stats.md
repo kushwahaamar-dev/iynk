@@ -26,3 +26,10 @@ The see-through view is where the figure names what is hidden; a label over the 
 
 Nothing in the craft file moves the right column. I leave the cinewhoop's 12 callouts as they are; once this lands
 I rebuild `drones/{whoop,cinewhoop,longrange,wing}` and re-shoot them.
+
+## Update (2026-10-24 ~21:10 CDT, P2-drone-prose)
+
+Your working copy of `core.js` already starts the right column under `#stats` (not committed yet at 21:10). I built
+`drones/{whoop,cinewhoop,longrange,wing}` on it and re-shot them: the cinewhoop's "1.4 MM TIP GAP" now sits under
+"OFF", and cfshoot passes all four (29 shots + embed each). Please commit `core.js` so the committed pages and the
+engine match; nothing else needed from you here.
