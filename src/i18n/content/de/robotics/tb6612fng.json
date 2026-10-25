@@ -1,0 +1,432 @@
+{
+  "title": "Treiber TB6612FNG",
+  "sub": "H-Brücke, PWM",
+  "hint": "Versorg den Prüfstand und schick dann Fahrbefehle",
+  "overview": "Ein Pin des Nano liefert etwa 20 mA bei 5 V. Ein TT-Getriebemotor will 150 mA, nur um sich zu drehen, und etwa ein Ampere beim Anlaufen oder Blockieren, bei 6 bis 7 V. Der TB6612FNG sitzt dazwischen: zwei H-Brücken, jede aus vier Schaltern, die den Motor in die eine Richtung, in die andere Richtung anschließen oder seine Kabel zum Bremsen kurzschließen. IN1 und IN2 wählen die Richtung, und PWM legt die Drehzahl fest, indem es die Brücke fast tausendmal pro Sekunde ein- und ausschaltet (977 Hz an den Pins 5 und 6). Motorstrom (VM, 2,5 bis 13,5 V, hier ein 2S-LiPo) und Logikstrom (VCC, 2,7 bis 5,5 V, hier die 5 V des Nano) sind getrennte Versorgungen mit einer gemeinsamen Masse, und STBY muss HIGH sein, sonst schläft der ganze Chip. Seine MOSFET-Schalter verlieren bei 1 A etwa 0,5 V und bei 0,3 A nur etwa 0,15 V, gegenüber etwa 2 V bei den bipolaren Schaltern des L298N, also ist das der Treiber der Wahl. Bau das Breakout, versorg es mit Strom und probier dann Bremsen und Auslaufen direkt nacheinander: Bremsen stoppt das Rad hart, Auslaufen lässt es ausdrehen.",
+  "parts": {
+    "U1": {
+      "name": "Doppel-H-Brücken-Treiber TB6612FNG",
+      "what": "Der Treiber von Toshiba im SSOP24-Gehäuse: zwei H-Brücken aus je vier niederohmigen MOSFETs, die Logik, die IN1, IN2 und PWM auswertet, ein Standby-Schalter, eine Unterspannungsabschaltung an VCC (aus unter 1,9 V, wieder an über 2,2 V) und eine Übertemperaturabschaltung bei 175 °C. Jeder Kanal führt im Mittel 1,2 A (1 A im normalen Betrieb) und 3,2 A in einem 10-ms-Puls. Es gibt keine Strombegrenzung: Nur die Übertemperaturabschaltung schützt ihn."
+    },
+    "C1": {
+      "name": "0,1-µF-Kondensator an VM",
+      "what": "Ein kleiner Keramikkondensator direkt an den Pins der Motorversorgung. Er schluckt die schnellen Flanken bei jedem Schalten der Brücke, damit die Spitzen auf der Platine bleiben, statt die Batteriekabel hinaufzulaufen."
+    },
+    "C2": {
+      "name": "0,1-µF-Kondensator an VCC",
+      "what": "Entkoppelt die Logikversorgung am Chip, damit Motorstörungen nicht an die Eingänge gelangen, die IN1, IN2, PWM und STBY lesen."
+    },
+    "C3": {
+      "name": "10-µF-Tantalkondensator an VM",
+      "what": "Der Pufferspeicher für die Motorversorgung: Er liefert der Brücke den Stromstoß, den jeder PWM-Zyklus verlangt. Er ist ein Tantal-Chip, gepolt: Der Streifen markiert +, und er sitzt links Richtung VM. Verkehrt herum eingesetzt fällt ein Tantal als Kurzschluss aus und kann brennen."
+    },
+    "JP1": {
+      "name": "Stiftleiste für Strom und Motoren",
+      "what": "VM (Motorbatterie, 2,5 bis 13,5 V, 15 V absolut), VCC (Logik, 2,7 bis 5,5 V), GND, dann die Motorausgänge A01, A02, B02, B01 und ein zweites GND. Zwei Versorgungen mit Absicht: Die Motoren können aus einer Batterie laufen, während die Logik dem Controller folgt. Beachte das A01 mit einer Null im Bestückungsdruck; Toshiba nennt es AO1."
+    },
+    "JP2": {
+      "name": "Steuer-Stiftleiste",
+      "what": "PWMA und PWMB legen die Drehzahl jedes Kanals fest, AIN1/AIN2 und BIN1/BIN2 wählen die Richtung, und STBY muss HIGH sein, sonst schaltet jeder Ausgang ab. Jeder Eingang hat im Chip einen 200-kΩ-Pull-down, also liest ein unverbundener Pin LOW."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "Der Controller, an USB (Mini-B). D5 treibt PWMA, D7 AIN1, D8 AIN2, D9 STBY, D6 PWMB, D10 BIN1 und D11 BIN2; sein 5V-Pin speist VCC, und sein GND ist mit dem GND der Batterie verbunden. Die Motoren ziehen nie Strom aus ihm."
+    },
+    "MOTA": {
+      "name": "Motor A (TT-Getriebemotor)",
+      "what": "Ein gelber Getriebemotor 1:48 an A01 und A02. Etwa 150 mA im freien Lauf bei 6 bis 7 V, etwa ein Ampere beim Anlaufen oder Blockieren. Die gelbe Nabe zeigt seine eigene Drehzahl und Richtung."
+    },
+    "MOTB": {
+      "name": "Motor B (TT-Getriebemotor)",
+      "what": "Der zweite Getriebemotor, an B01 und B02, mit eigener Drehzahl und Richtung (rote Nabe). Auf dieser Platine sitzt B02 auf der Stiftleiste über B01."
+    },
+    "BATT": {
+      "name": "2S-LiPo-Akku, 7,4 V",
+      "what": "Zwei Lithium-Polymer-Zellen in Reihe: voll 8,4 V, nominal 7,4 V, etwa 6,4 V, wenn es Zeit zum Laden ist. Rot geht an VM, Schwarz an GND. Er speist nur die Motoren."
+    }
+  },
+  "power": {
+    "label": "Den Prüfstand mit Strom versorgen",
+    "ok": "Nano an USB, LiPo an VM: Der Treiber ist wach (STBY HIGH)"
+  },
+  "modes": {
+    "fwd50": {
+      "title": "Vorwärts 50 %"
+    },
+    "fwd100": {
+      "title": "Vorwärts 100 %"
+    },
+    "rev": {
+      "title": "Rückwärts"
+    },
+    "brake": {
+      "title": "Bremsen"
+    },
+    "coast": {
+      "title": "Auslaufen"
+    },
+    "standby": {
+      "title": "Standby (STBY LOW)"
+    },
+    "code": {
+      "title": "TB6612FNG: IN1 und IN2 wählen die Richtung, PWM legt die Drehzahl fest",
+      "stby": "LOW oder unverbunden schickt den ganzen Chip schlafen",
+      "sleep": "STBY LOW: Jeder Ausgang ist aus, egal, was die anderen Pins sagen",
+      "fwd": "vorwärts",
+      "rev": "rückwärts",
+      "brk": "Kurzschlussbremse",
+      "cst": "Auslaufen",
+      "fwd50": "vorwärts, halbe Drehzahl",
+      "fwd100": "vorwärts, volle Drehzahl",
+      "rev160": "rückwärts, 63 % Tastverhältnis",
+      "brake": "Kurzschlussbremse: beide Motorkabel an GND, er stoppt hart",
+      "coast": "Auslaufen: Ausgänge aus (PWM auf HIGH gehalten), das Rad dreht von selbst aus",
+      "ignored": "wird ignoriert, solange STBY LOW ist"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Bis auf die nackte Platine zerlegen",
+      "body": "Nimm jedes Bauteil ab. Das rote 20-mm-Quadrat trägt nur vier Bauteile und zwei Stiftleisten: Du setzt sie in der Reihenfolge wieder ein, die eine Fabrik nehmen würde.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einer Platine unter Spannung"
+    },
+    "smd": {
+      "title": "Die SMD-Bauteile bestücken, dann reflowlöten",
+      "body": "Paste, dann kommen U1, C1, C2 und C3 in einem Durchgang drauf, und der Ofen schmilzt die Paste unter jedem Pad bei etwa 245 °C. Achte auf den Pin-1-Punkt von U1 (oben links) und den Streifen von C3 (+, Richtung VM).",
+      "refusal": "Die SMD-Bauteile kommen zuerst drauf, auf eine nackte Platine"
+    },
+    "jp1": {
+      "title": "JP1 einsetzen, die Stiftleiste für Strom und Motoren",
+      "body": "Eine 1x8-Stiftleiste am linken Rand: VM, VCC, GND, A01, A02, B02, B01, GND.",
+      "refusal": "Zuerst die SMD-Bauteile: Bestücken + Reflow-Löten ausführen. Der Ofen würde Kunststoffteile schmelzen"
+    },
+    "jp2": {
+      "title": "JP2 einsetzen, die Steuer-Stiftleiste",
+      "body": "Eine 1x8-Stiftleiste am rechten Rand: PWMA, AIN2, AIN1, STBY, BIN1, BIN2, PWMB, GND. Die beiden Reihen liegen 0,6 Zoll auseinander, also kann die Platine auch wie ein breiter Chip über einem Steckbrett sitzen.",
+      "refusal": "Zuerst die SMD-Bauteile: Bestücken + Reflow-Löten ausführen. Der Ofen würde Kunststoffteile schmelzen"
+    },
+    "solder": {
+      "title": "Die Lötstellen der Stiftleisten löten",
+      "body": "Sechzehn bedrahtete Lötstellen. Eine gute ist glänzend und nach innen gewölbt und benetzt Pin und Pad.",
+      "refusal": "Noch nichts zu löten: Setz zuerst ein Bauteil ein"
+    },
+    "wire-nano": {
+      "title": "Den Nano mit JP2 und VCC verdrahten",
+      "body": "Leg den Nano auf die Matte und führ acht Steckbrücken von JP2: PWMA an D5, AIN2 an D8, AIN1 an D7, STBY an D9, BIN1 an D10, BIN2 an D11, PWMB an D6 und GND an GND. Noch eine von VCC an den 5V des Nano: Die Logik des Treibers folgt dem Controller. D5, D6, D9, D10 und D11 sind PWM-Pins; PWMA und PWMB brauchen zwei davon.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einer Platine unter Spannung"
+    },
+    "wire-motors": {
+      "title": "Die beiden Motoren verdrahten",
+      "body": "Motor A an A01 und A02, Motor B an B01 und B02. Welches Kabel wohin kommt, legt nur fest, in welche Richtung sich das Rad dreht: Läuft ein Rad bei Vorwärts rückwärts, tausch seine beiden Kabel.",
+      "refusal": "Zieh zuerst den Strom ab und verdrahte den Nano vor den Motoren"
+    },
+    "wire-battery": {
+      "title": "Den LiPo an VM und GND anschließen",
+      "body": "Rot an VM, Schwarz an das GND daneben. Diese Platine hat keinen Verpolungsschutz: Prüf zweimal, bevor der Stecker hineinkommt. Der LiPo speist nur die Motoren; der Nano behält seinen eigenen USB-Strom.",
+      "refusal": "Zieh zuerst den Strom ab und verdrahte die Motoren vor dem LiPo"
+    },
+    "plug": {
+      "title": "Den Prüfstand mit Strom versorgen",
+      "body": "USB in den Nano, den LiPo an VM und GND. Die 5 V des Nano speisen VCC; die Massen sind verbunden. Der Nano startet mit Vorwärts 50 %.",
+      "refusal": "Schließ zuerst den Aufbau ab: Jedes Bauteil drauf und jede Lötstelle gelötet"
+    },
+    "fwd50": {
+      "title": "Vorwärts 50 % senden",
+      "body": "AIN1 HIGH, AIN2 LOW, PWMA 128: Beide Räder drehen vorwärts mit etwa halber Drehzahl, im Mittel etwa 3,7 V.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "brake": {
+      "title": "Bremsen senden",
+      "body": "AIN1 und AIN2 beide HIGH: Beide Low-Side-Schalter legen die Motorkabel an GND, die eigene Gegen-EMK des Motors arbeitet gegen ihn, und er stoppt hart.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "coast": {
+      "title": "Auslaufen senden",
+      "body": "AIN1 und AIN2 beide LOW mit PWMA HIGH: Jeder Schalter ist aus, nichts hält den Motor, und das Rad dreht von selbst aus. Vergleich es mit Bremsen.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "rev": {
+      "title": "Rückwärts senden",
+      "body": "AIN1 LOW, AIN2 HIGH, PWMA 160: Die andere Diagonale der Brücke leitet, also fließt der Strom andersherum, und die Räder drehen mit 63 % Tastverhältnis rückwärts.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "fwd100": {
+      "title": "Vorwärts 100 % senden",
+      "body": "PWMA 255 hält die Brücke die ganze Zeit an: Der Motor sieht die Batterie minus den Spannungsabfall der Schalter, etwa 7,3 V bei 150 mA.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "standby": {
+      "title": "STBY auf LOW ziehen",
+      "body": "Der Sketch legt STBY auf LOW: Jeder Ausgang schaltet ab, und der Chip zieht unter 1 µA, obwohl IN1, IN2 und PWM immer noch vorwärts sagen. Ein herausgefallener STBY-Draht bewirkt dasselbe, wegen des 200-kΩ-Pull-downs.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "c3-backwards": {
+      "title": "Kaputt machen: C3 verkehrt herum",
+      "body": "C3 kommt mit dem Streifen Richtung GND wieder drauf. Schalte ein und sieh zu, wie er ausfällt, dann zieh den Strom ab, dreh ihn um und schalte wieder ein."
+    },
+    "lipo-backwards": {
+      "title": "Kaputt machen: LiPo verkehrt herum eingesteckt",
+      "body": "Rot an GND, Schwarz an VM. Diese Platine hat keinen Verpolungsschutz. Sieh zu, was verbrennt, dann reparier sie und versorg sie richtig herum."
+    },
+    "four-cells": {
+      "title": "Kaputt machen: ein 4S-Akku an VM",
+      "body": "Ein voll geladener 4S-LiPo liefert 16,8 V, über dem absoluten Maximum von 15 V. Sieh zu, wie der Treiber ausfällt, und geh dann zurück zum 2S-Akku."
+    },
+    "motors-on-5v": {
+      "title": "Kaputt machen: Motoren an den 5 V des Nano",
+      "body": "VM wandert von der Batterie an den 5V-Pin des Nano. Jeder Motorstart zieht die Schiene herunter, und der Nano setzt sich in einer Schleife zurück. Reparier es: VM zurück an den LiPo."
+    },
+    "cold-stby": {
+      "title": "Kaputt machen: kalte Lötstellen an der Steuer-Stiftleiste",
+      "body": "Die Lötstellen der Steuer-Stiftleiste sind matt und körnig. Öffnet sich die Lötstelle von STBY, schickt der Pull-down den Chip schlafen, und die Motoren stottern. Löte die Stellen nach."
+    },
+    "no-driver": {
+      "title": "U1 weglassen",
+      "body": "Entfern den Treiberchip und schalte ein: Die Versorgungen sind da, aber nichts treibt die Motoren. Setz U1 vor dem nächsten Schritt wieder ein.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einer Platine unter Spannung"
+    },
+    "exploded": {
+      "title": "Explosionsansicht",
+      "body": "Zieh den Strom ab und heb die Bauteile nach Baugruppen ab: die SMD-Bauteile, dann die Stiftleisten.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einer Platine unter Spannung"
+    }
+  },
+  "faults": {
+    "c3-reversed": {
+      "title": "C3 verkehrt herum eingesetzt",
+      "symptom": "Plopp: C3 platzt und raucht, sobald die Batterie dran ist, und der Batteriestrom springt hoch.",
+      "explanation": "Ein Tantalkondensator ist gepolt. Sperrspannung zerstört seine Oxidschicht, er wird zu einem nahezu kurzgeschlossenen Bauteil über VM, und die Batterie drückt Ampere hindurch, bis er brennt.",
+      "fix": "Strom abziehen, C3 auslöten und einen neuen mit dem Streifen (+) links Richtung VM einsetzen."
+    },
+    "reverse-polarity": {
+      "title": "LiPo verkehrt herum angeschlossen",
+      "symptom": "U1 und C3 werden innerhalb von Sekunden heiß, es riecht verbrannt, und nichts dreht sich.",
+      "explanation": "Die SparkFun-Platine hat keinen Verpolungsschutz. Strom fließt von GND durch die Bodydioden der unteren Schalter und durch die oberen hinaus zu VM: zwei Diodenspannungen über der Batterie, ein nahezu satter Kurzschluss durch den Chip. Gleichzeitig ist C3 verkehrt gepolt.",
+      "fix": "Sofort Strom abziehen und die Kabel tauschen: Rot an VM, Schwarz an GND. Auf einer echten Platine sind U1 und C3 meist tot; die Trägerplatine von Pololu ergänzt einen Verpolungsschutz-MOSFET an VM."
+    },
+    "over-voltage": {
+      "title": "16,8 V an VM",
+      "symptom": "Der Treiber fällt sofort aus: VM schließt sich mit GND kurz, und die Batteriekabel werden warm.",
+      "explanation": "VM arbeitet bis 13,5 V und übersteht 15 V. Ein voller 4S-Akku (16,8 V) liegt über beidem, und jede Bremsspitze setzt noch etwas obendrauf.",
+      "fix": "Nimm einen 2S-Akku (voll 8,4 V) oder höchstens einen 3S (voll 12,6 V, wenig Reserve für Bremsspitzen)."
+    },
+    "brownout": {
+      "title": "Motoren an den 5 V des Nano",
+      "symptom": "Der Nano setzt sich jedes Mal zurück, wenn die Motoren anlaufen: Der Sketch startet neu, die serielle Zeile wiederholt sich, die Räder rucken.",
+      "explanation": "Zwei TT-Motoren ziehen beim Anlaufen kurz etwa 1,6 A. Die USB-Versorgung des Nano ist mit 500 mA abgesichert und sitzt hinter einer Diode, also sackt seine 5-V-Schiene unter die Brown-out-Schwelle des ATmega328P von 2,7 V, und der Chip setzt sich zurück.",
+      "fix": "Speis VM aus der Batterie, lass VCC an den 5 V des Nano und verbinde die Massen."
+    },
+    "cold-header": {
+      "title": "Kalte Lötstellen an der Steuer-Stiftleiste",
+      "symptom": "Die Motoren stottern, schlimmer, wenn man gegen die Platine klopft oder sie vibriert.",
+      "explanation": "Eine kalte Lötstelle ist matt, körnig und kegelförmig: Sie berührt den Pin nur ab und zu. Öffnet sich die Lötstelle von STBY, zieht der 200-kΩ-Pull-down STBY auf LOW, und der Chip schläft, bis der Kontakt zurückkommt.",
+      "fix": "Erhitz jede Lötstelle mit frischem Flussmittel und etwas Lötzinn neu, bis es zu einer glänzenden, nach innen gewölbten Hohlkehle verläuft."
+    },
+    "stby-low": {
+      "title": "STBY auf LOW oder unverbunden",
+      "symptom": "Strom ist da, der Sketch läuft, IN1, IN2 und PWM sehen richtig aus, und nichts dreht sich.",
+      "explanation": "STBY LOW schaltet jeden Ausgang ab. Ein unverbundenes STBY liest wegen des internen 200-kΩ-Pull-downs LOW, die häufigste Falle am ersten Tag mit diesem Chip.",
+      "fix": "Verbinde STBY mit einem Pin und setz ihn in setup() auf HIGH, oder leg ihn fest an VCC."
+    },
+    "no-driver": {
+      "title": "U1 weggelassen",
+      "symptom": "Beide Versorgungen sind an, aber nichts dreht sich, und nichts wird warm.",
+      "explanation": "Ohne U1 ist nichts zwischen Batterie und Motoren: Die Platine besteht nur aus Stiftleisten, drei Kondensatoren und Kupfer.",
+      "fix": "Strom abziehen, U1 mit Pin 1 oben links aufsetzen und anlöten."
+    }
+  },
+  "status": {
+    "status": "Status",
+    "powered": "Strom am Prüfstand",
+    "mode": "Befehl",
+    "stby": "STBY",
+    "ain1": "AIN1",
+    "ain2": "AIN2",
+    "pwma": "Tastverhältnis PWMA",
+    "vm": "VM (Motorversorgung)",
+    "vcc": "VCC (Logik)",
+    "motors": "Batteriestrom",
+    "usb": "USB-Strom"
+  },
+  "current": {
+    "usb": "USB des Nano (500-mA-Polyfuse)",
+    "lipo": "2S-LiPo an VM (Grenze des Treibers 2 x 1 A)",
+    "nano": "Nano im Betrieb",
+    "logic": "Logik des TB6612FNG, STBY HIGH",
+    "motors": "Zwei TT-Motoren",
+    "motors5v": "Zwei TT-Motoren beim Anlaufen aus dem 5-V-Pin",
+    "c3short": "C3 durch Sperrspannung kurzgeschlossen",
+    "reverse": "Verpolte Batterie über die Bodydioden"
+  },
+  "tasks": {
+    "five-speeds": {
+      "title": "Fünf Drehzahlen, in beide Richtungen",
+      "brief": "Fahr Motor A vorwärts durch fünf PWM-Stufen (51, 102, 153, 204, 255), je eine Sekunde, brems eine halbe Sekunde, dann dasselbe rückwärts und wieder bremsen. Halt STBY die ganze Zeit auf HIGH.",
+      "hints": {
+        "1": "Die Richtung sind AIN1 und AIN2, die Drehzahl ist analogWrite(PWMA, …): Setz die Richtung einmal und schalte dann die PWM weiter.",
+        "2": "51 × i für i = 1 bis 5 ergibt die fünf Stufen; delay(1000) nach jeder.",
+        "3": "Bremsen ist AIN1 = AIN2 = HIGH. Schreib jedes Mal beide Pins; verlass dich nie auf den Pull-down."
+      },
+      "checks": {
+        "1": "Läuft die ganzen 11 s",
+        "2": "STBY (D9) ist HIGH",
+        "3": "Vorwärts: AIN1 (D7) ist HIGH",
+        "4": "Vorwärts: AIN2 (D8) ist LOW",
+        "5": "Erste Stufe: PWMA bei 20 %",
+        "6": "Dritte Stufe: PWMA bei 60 %",
+        "7": "Fünfte Stufe: PWMA bei 100 %",
+        "8": "Rückwärts: AIN1 (D7) ist LOW",
+        "9": "Rückwärts: AIN2 (D8) ist HIGH",
+        "10": "Rückwärts, erste Stufe: PWMA bei 20 %",
+        "11": "Rückwärts, fünfte Stufe: PWMA bei 100 %"
+      },
+      "code": {
+        "goal": "Motor A durch fünf Drehzahlen vorwärts schalten, bremsen, dann dasselbe rückwärts",
+        "start": "das fährt nur mit der ersten Stufe vorwärts: Ergänz die anderen vier, das Bremsen und den Durchlauf rückwärts"
+      }
+    },
+    "one-turn": {
+      "title": "Genau eine Umdrehung",
+      "brief": "Eine Encoderscheibe mit 20 Schlitzen auf der Welle von Motor A liefert pro Schlitz eine steigende Flanke an D2. Zähl die Flanken in einem Interrupt und brems Motor A nach genau 20 Schlitzen, einer Radumdrehung, und gib dann einmal die Zahl aus. Weil du nach der Zählung stoppst und nicht nach einem Timer, dreht er sich einmal, egal, ob die Batterie voll oder fast leer ist: dein erster geschlossener Regelkreis.",
+      "hints": {
+        "1": "Der Interrupt zählt nur: count++ in tick(), sonst nichts. Entscheide in loop().",
+        "2": "count ist auf einem 8-Bit-Chip ein 32-Bit-long: Lies es zwischen noInterrupts() und interrupts(), damit es sich nicht mitten im Lesen ändern kann.",
+        "3": "AIN1 ist schon HIGH, also ergibt AIN2 auf HIGH die Kurzschlussbremse. Nimm ein Flag, damit du nur einmal bremst und ausgibst."
+      },
+      "checks": {
+        "1": "Zählt den Encoder mit einem Interrupt und einem volatile-Zähler",
+        "2": "Treibt Motor A mit PWM 150",
+        "3": "Fährt nach 19 Schlitzen noch",
+        "4": "Bremst (AIN2 HIGH) direkt nach Schlitz 20",
+        "5": "Bleibt gebremst",
+        "6": "Gibt \"one turn: 20 slots\" aus"
+      },
+      "code": {
+        "goal": "Motor A genau eine Umdrehung drehen: 20 Encoder-Schlitze",
+        "slots": "Schlitze auf der Encoderscheibe: eine Umdrehung",
+        "todo": "count sicher lesen und bremsen, sobald es SLOTS erreicht"
+      },
+      "world": {
+        "enc": "Encoder an D2"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "reflow-first": {
+        "q": "Warum kommen die Stiftleisten nach dem Reflow-Löten drauf und nicht davor?",
+        "options": {
+          "1": "Die 245 °C des Ofens würden ihren Kunststoff schmelzen",
+          "2": "Stiftleisten würden U1 Wärme entziehen",
+          "3": "Reflow-Löten funktioniert nur bei quadratischen Pads"
+        },
+        "why": "Die ganze Platine läuft durch den Ofen. Bedrahtete Bauteile mit Kunststoffkörper kommen danach drauf und werden von Hand gelötet, Lötstelle für Lötstelle."
+      },
+      "c3-way": {
+        "q": "In welcher Richtung kommt C3 hinein?",
+        "options": {
+          "1": "Streifen (+) Richtung VM, links",
+          "2": "Egal: Es ist ein Keramikkondensator",
+          "3": "Streifen Richtung GND, rechts"
+        },
+        "why": "C3 ist ein Tantal, und Tantals sind gepolt: Der Streifen markiert das +-Ende. Verkehrt herum bricht er durch und fällt als Kurzschluss aus, oft mit Rauch."
+      },
+      "c3-job": {
+        "q": "Wofür ist C3 da?",
+        "options": {
+          "1": "Er legt die PWM-Frequenz fest",
+          "2": "Er hält Ladung an VM für die Stromstöße jedes PWM-Zyklus bereit",
+          "3": "Er versorgt die Logik, wenn USB abgesteckt ist"
+        },
+        "why": "Jedes Mal, wenn die Brücke durchschaltet, will der Motor schneller Strom, als die Batteriekabel ihn liefern können. Der 10-µF-Speicher neben dem Chip liefert den Stoß und hält VM stabil."
+      }
+    },
+    "drive": {
+      "both-high": {
+        "q": "AIN1 = HIGH und AIN2 = HIGH. Was macht Motor A?",
+        "options": {
+          "1": "Dreht vorwärts",
+          "2": "Kurzschlussbremse: stoppt hart",
+          "3": "Läuft bis zum Stillstand aus"
+        },
+        "why": "Beide Eingänge auf HIGH schalten beide Low-Side-Schalter ein und verbinden die Motorkabel an GND miteinander. Die Gegen-EMK des drehenden Motors treibt einen Strom, der gegen seine eigene Bewegung arbeitet, also stoppt er hart."
+      },
+      "half-duty": {
+        "q": "PWM mit 50 % Tastverhältnis aus einem 7,4-V-Akku. Was sieht der Motor im Mittel?",
+        "options": {
+          "1": "7,4 V",
+          "2": "Etwa 3,7 V",
+          "3": "0 V, PWM ist digital"
+        },
+        "why": "Mittelwert = Tastverhältnis × (Versorgung − Spannungsabfall der Brücke). Bei 150 mA beträgt der Abfall nur 0,15 A × 0,5 Ω ≈ 0,08 V, also 0,5 × 7,3 V ≈ 3,7 V."
+      },
+      "pwm-low": {
+        "q": "AIN1 = HIGH, AIN2 = LOW. Was passiert im LOW-Teil jedes PWM-Zyklus?",
+        "options": {
+          "1": "Die Ausgänge öffnen, und der Motor läuft aus",
+          "2": "Beide Low-Side-Schalter leiten: eine Kurzschlussbremse",
+          "3": "Der Chip geht in Standby"
+        },
+        "why": "Die Tabelle im Datenblatt: PWM LOW mit IN1 oder IN2 auf HIGH ist Kurzschlussbremse. Jeder Zyklus wechselt zwischen Antreiben und Bremsen, und deshalb folgt die Drehzahl dem Tastverhältnis so genau."
+      }
+    },
+    "faults": {
+      "resets": {
+        "q": "Der Nano setzt sich jedes Mal zurück, wenn die Motoren anlaufen. Erster Verdacht?",
+        "options": {
+          "1": "Ein Fehler in setup()",
+          "2": "Das USB-Kabel ist zu lang",
+          "3": "Die Motoren ziehen die 5-V-Schiene unter die Brown-out-Schwelle"
+        },
+        "why": "Der Anlaufstrom eines Motors ist ein Mehrfaches des Laufstroms. An einer 500-mA-USB-Versorgung zieht er die 5 V unter die Brown-out-Schwelle des ATmega328P von 2,7 V. Motoren gehören an ihre eigene Versorgung, VM."
+      },
+      "backwards": {
+        "q": "Was passiert auf dieser Platine, wenn der LiPo verkehrt herum angeschlossen wird?",
+        "options": {
+          "1": "Nichts: Die Platine blockiert es",
+          "2": "Strom fließt durch die Bodydioden der Brücke, und U1 und C3 überhitzen",
+          "3": "Die Motoren laufen rückwärts"
+        },
+        "why": "Auf der SparkFun-Platine gibt es keine Schutzdiode und keinen Schutz-MOSFET. Die Bodydioden leiten über der verpolten Batterie, ein nahezu satter Kurzschluss, und der Tantal ist ebenfalls verkehrt gepolt."
+      },
+      "cells": {
+        "q": "Welcher voll geladene Akku ist zu viel für VM?",
+        "options": {
+          "1": "2S-LiPo, 8,4 V",
+          "2": "3S-LiPo, 12,6 V",
+          "3": "4S-LiPo, 16,8 V"
+        },
+        "why": "VM arbeitet bis 13,5 V, und sein absolutes Maximum ist 15 V. 3S passt mit wenig Reserve; 4S liegt über der Grenze."
+      }
+    },
+    "end": {
+      "vs-l298n": {
+        "q": "Warum den TB6612FNG statt des L298N nehmen?",
+        "options": {
+          "1": "Seine MOSFETs lassen bei 1 A etwa 0,5 V abfallen (0,15 V bei 0,3 A) statt etwa 2 V, also weniger Wärme und mehr Drehzahl",
+          "2": "Er hat mehr Pins",
+          "3": "Er braucht keine PWM"
+        },
+        "why": "Die Schalter des TB6612FNG verhalten sich wie Widerstände von 0,5 Ω, also schrumpft der Verlust mit dem Strom. Die bipolaren Schalter des L298N verlieren unabhängig vom Strom etwa 2 V, und das wird zu Wärme und verlorener Drehzahl."
+      },
+      "stby-open": {
+        "q": "STBY ist mit nichts verbunden. Was machen die Motoren?",
+        "options": {
+          "1": "Laufen mit voller Drehzahl",
+          "2": "Nichts: Der interne Pull-down hält STBY auf LOW, also schläft der Chip",
+          "3": "Laufen mit halber Drehzahl"
+        },
+        "why": "Jeder Eingang des TB6612FNG hat einen 200-kΩ-Pull-down. Ein offenes STBY liest LOW, und das schaltet jeden Ausgang ab."
+      },
+      "stutter": {
+        "q": "Die Motoren stottern, wenn du gegen die Platine klopfst, und die Lötstellen der Stiftleiste sehen matt und körnig aus. Was behebt es?",
+        "options": {
+          "1": "Die Lötstellen nachlöten, bis sie glänzend und nach innen gewölbt sind",
+          "2": "Ein größerer Kondensator an VM",
+          "3": "Eine niedrigere PWM-Frequenz"
+        },
+        "why": "Das sind kalte Lötstellen: Sie haben nur ab und zu Kontakt. Erhitz sie mit Flussmittel und etwas Lötzinn neu."
+      }
+    }
+  }
+}
