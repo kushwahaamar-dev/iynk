@@ -431,7 +431,7 @@
     "part": {
       "ok": "{part}: lit, {ma} mA",
       "off": "{part}: dark",
-      "burnt": "{part}: burnt out ({ma} mA was too much)",
+      "burnt": "{part}: burnt out",
       "reverse": "{part}: in backwards, dark",
       "open": "{part}: not connected"
     }

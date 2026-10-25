@@ -431,7 +431,7 @@
     "part": {
       "ok": "{part}: leuchtet, {ma} mA",
       "off": "{part}: dunkel",
-      "burnt": "{part}: durchgebrannt ({ma} mA waren zu viel)",
+      "burnt": "{part}: durchgebrannt",
       "reverse": "{part}: verkehrt herum, dunkel",
       "open": "{part}: nicht verbunden"
     }

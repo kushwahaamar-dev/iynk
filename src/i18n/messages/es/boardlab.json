@@ -431,7 +431,7 @@
     "part": {
       "ok": "{part}: encendido, {ma} mA",
       "off": "{part}: apagado",
-      "burnt": "{part}: fundido ({ma} mA era demasiado)",
+      "burnt": "{part}: fundido",
       "reverse": "{part}: al revés, apagado",
       "open": "{part}: sin conectar"
     }

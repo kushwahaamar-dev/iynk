@@ -431,7 +431,7 @@
     "part": {
       "ok": "{part}：亮，{ma} mA",
       "off": "{part}：不亮",
-      "burnt": "{part}：烧坏了（{ma} mA 太大了）",
+      "burnt": "{part}：烧坏了",
       "reverse": "{part}：装反了，不亮",
       "open": "{part}：未连接"
     }
