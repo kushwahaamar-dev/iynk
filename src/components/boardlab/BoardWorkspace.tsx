@@ -426,7 +426,8 @@ function Overview({ lang, data, notice }: { lang: Locale; data: BoardOverview; n
       }
       below={
         <div className="flex flex-col gap-8">
-          <p className="ink-prose text-lg">{tc(board.overview)}</p>
+          {/* Wide screens set the overview in two columns at a reading measure, rather than one column and a blank half. */}
+          <p className="ink-prose text-lg xl:max-w-[128ch] xl:columns-2 xl:gap-12">{tc(board.overview)}</p>
           <Tabs label={t("board.reference")} tabs={belowTabs} defaultValue="pinout" phoneGrid />
         </div>
       }

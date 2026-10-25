@@ -71,7 +71,7 @@ export function WireInPanel({ wireables, all }: Props) {
                 <span className="min-w-0 flex-1 font-semibold">{partName(w.part)}</span>
                 <span className="tabular shrink-0 text-sm text-muted">{t("wire.supply", { volts: w.supplyVolts })}</span>
               </summary>
-              <div className="flex flex-col gap-3 pb-4 ps-7">
+              <div className="flex max-w-[68ch] flex-col gap-3 pb-4 ps-7">
                 <p className="text-sm">{tc(w.note)}</p>
                 <table className="w-full max-w-md text-sm">
                   <thead>
