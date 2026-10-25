@@ -5,8 +5,15 @@
   "-- bench notes --": [
     "figures/robotics/led-resistor.js"
   ],
+  "{cm} cm, when the Echo joint makes contact": [
+    "figures/robotics/hc-sr04.js"
+  ],
   "{hz} Hz frame, ch0 {us} µs": [
+    "figures/modules/pca9685.js",
     "modules/pca9685"
+  ],
+  "{hz} Hz frame: the servos twitch": [
+    "figures/robotics/pca9685.js"
   ],
   "{id} · {c} °C · {v} V": [
     "figures/parts/tmp36.js",
@@ -349,6 +356,12 @@
     "robotics/led-resistor",
     "robotics/tb6612fng"
   ],
+  "{n} turns": [
+    "figures/modules/lm2596.js",
+    "figures/robotics/lm2596.js",
+    "modules/lm2596",
+    "robotics/lm2596"
+  ],
   "{name} burned out: about {n} mA with no resistor": [
     "figures/modules/traffic-light.js"
   ],
@@ -580,6 +593,10 @@
     "drones/wing",
     "figures/engine/drone.js"
   ],
+  "{us} µs · {n} ticks": [
+    "figures/modules/pca9685.js",
+    "modules/pca9685"
+  ],
   "{v} V connected": [
     "figures/engine/sheets.js"
   ],
@@ -605,6 +622,12 @@
   ],
   "{v} V on {src}: D1 gets {ma} mA through {r} Ω": [
     "figures/robotics/led-resistor.js"
+  ],
+  "{v} V on V+: the servos burnt out": [
+    "figures/robotics/pca9685.js"
+  ],
+  "{v} V on V+: the servos buzz hot": [
+    "figures/robotics/pca9685.js"
   ],
   "{v} V reg.": [
     "boards/basys3",
@@ -951,6 +974,9 @@
   ],
   "1/1.7\" SENSOR": [
     "figures/drones/cinewhoop.js"
+  ],
+  "1/16 step, 1/4 turn/s": [
+    "figures/robotics/a4988.js"
   ],
   "1/16 step, a quarter turn a second": [
     "figures/robotics/a4988.js",
@@ -1356,9 +1382,6 @@
     "drones/delivery",
     "figures/drones/delivery.js"
   ],
-  "1500 µs · 307 ticks": [
-    "modules/pca9685"
-  ],
   "155°, 15° up": [
     "drones/cinewhoop",
     "figures/drones/cinewhoop.js"
@@ -1635,10 +1658,6 @@
   "25-200 mW race VTX (SmartAudio)": [
     "drones/racer",
     "figures/drones/racer.js"
-  ],
-  "25.0 turns": [
-    "modules/lm2596",
-    "robotics/lm2596"
   ],
   "2596-SDC: LM2596S-ADJ, 4.5-40 V in, 1.25 V up to the input out, 2 A without a heatsink, with a 3-digit voltmeter": [
     "figures/modules/lm2596.js"
@@ -2746,6 +2765,9 @@
   "A real fade: LED on the ~9 PWM pin": [
     "figures/robotics/uno-r3-build.js"
   ],
+  "A4988 killed by the coil spike": [
+    "figures/robotics/a4988.js"
+  ],
   "A4988 stepper driver": [
     "figures/robotics/a4988.js",
     "robotics/a4988"
@@ -2834,6 +2856,7 @@
     "modules/ssd1306"
   ],
   "Address": [
+    "figures/robotics/mpu6050.js",
     "robotics/mpu6050"
   ],
   "Address jumper A0 (open = 0, bridged = 1)": [
@@ -3149,9 +3172,11 @@
     "figures/boards/uno-r4.js"
   ],
   "Arm": [
+    "figures/robotics/pca9685.js",
     "robotics/pca9685"
   ],
   "Arm clock": [
+    "figures/robotics/pi5-ros2.js",
     "robotics/pi5-ros2"
   ],
   "ARM|STM32F401|RET6U": [
@@ -3251,6 +3276,12 @@
     "drones/agrihex",
     "figures/drones/agrihex.js"
   ],
+  "Asleep: every output LOW": [
+    "figures/modules/pca9685.js"
+  ],
+  "Asleep: every reading is 0": [
+    "figures/robotics/mpu6050.js"
+  ],
   "ASPD-4525 + pitot": [
     "drones/vtol",
     "figures/drones/vtol.js"
@@ -3343,6 +3374,7 @@
     "figures/drones/delivery.js"
   ],
   "az": [
+    "figures/robotics/mpu6050.js",
     "robotics/mpu6050"
   ],
   "B1 · B1 USER button (blue, PC13, reads LOW when pressed)": [
@@ -3396,7 +3428,11 @@
     "figures/boards/microbit-v2.js"
   ],
   "Base": [
+    "figures/robotics/transistor-switch.js",
     "robotics/transistor-switch"
+  ],
+  "Base at {deg}°": [
+    "figures/robotics/pca9685.js"
   ],
   "BAT": [
     "figures/boards/pi4-pi5.js"
@@ -3463,6 +3499,10 @@
     "drones/whoop",
     "drones/wing",
     "figures/engine/drone.js",
+    "figures/robotics/a4988.js",
+    "figures/robotics/l298n.js",
+    "figures/robotics/tb6612fng.js",
+    "figures/robotics/transistor-switch.js",
     "robotics/a4988",
     "robotics/l298n",
     "robotics/tb6612fng",
@@ -3502,6 +3542,9 @@
   "Battery and common ground: the whole switch": [
     "figures/robotics/transistor-switch.js",
     "robotics/transistor-switch"
+  ],
+  "Battery backwards": [
+    "figures/robotics/transistor-switch.js"
   ],
   "Battery leads swapped": [
     "robotics/transistor-switch"
@@ -3822,12 +3865,18 @@
     "modules/l298n"
   ],
   "Both forward": [
+    "figures/robotics/l298n.js",
+    "figures/robotics/tb6612fng.js",
     "robotics/l298n",
     "robotics/tb6612fng"
   ],
   "Both LEDs": [
     "boards/nodemcu",
     "figures/boards/nodemcu.js"
+  ],
+  "Both reverse": [
+    "figures/robotics/l298n.js",
+    "figures/robotics/tb6612fng.js"
   ],
   "Bound: sticks move roll, pitch, yaw and throttle; AUX1 arms, AUX2 picks Angle, AUX3 turtle": [
     "figures/drones/whoop.js"
@@ -3965,6 +4014,8 @@
     "figures/engine/bench.js"
   ],
   "Brown-out loop": [
+    "figures/robotics/tb6612fng.js",
+    "figures/robotics/transistor-switch.js",
     "robotics/transistor-switch"
   ],
   "Brown-out: {rail} is at {v} V, the chip keeps resetting": [
@@ -3972,6 +4023,9 @@
   ],
   "Brown-out: the circuit draws {n} mA, more than {src} gives ({max} mA), so the chip keeps resetting": [
     "figures/engine/bench.js"
+  ],
+  "Brown-out: the Nano keeps resetting": [
+    "figures/robotics/qtr-8rc.js"
   ],
   "Brown-out: the supply hits its {ma} mA limit and sags to {v} V": [
     "figures/robotics/led-resistor.js"
@@ -4080,6 +4134,9 @@
   ],
   "Build the carrier, set its current limit with a meter, then step a NEMA 17 in full, half and 1/16 steps and break it": [
     "figures/robotics/a4988.js"
+  ],
+  "Build the circuit": [
+    "figures/robotics/transistor-switch.js"
   ],
   "Build the driver, wire a Nano, two TT motors and a 2S LiPo, then drive, brake, coast and break it": [
     "figures/robotics/tb6612fng.js"
@@ -4850,6 +4907,7 @@
     "figures/drones/wing.js"
   ],
   "Ch 0": [
+    "figures/modules/pca9685.js",
     "modules/pca9685"
   ],
   "CH 0-3": [
@@ -4915,6 +4973,7 @@
     "figures/engine/drone.js"
   ],
   "Chip": [
+    "figures/robotics/a4988.js",
     "robotics/a4988"
   ],
   "CINEMA 6K": [
@@ -5122,6 +5181,7 @@
   ],
   "Coast": [
     "figures/modules/tb6612fng.js",
+    "figures/robotics/tb6612fng.js",
     "modules/tb6612fng",
     "robotics/tb6612fng"
   ],
@@ -5137,6 +5197,9 @@
   ],
   "coils mixed": [
     "parts/nema17"
+  ],
+  "Coils mixed: buzzing": [
+    "figures/robotics/a4988.js"
   ],
   "Cold joint on {name}": [
     "boards/basys3",
@@ -5333,6 +5396,7 @@
     "robotics/tb6612fng"
   ],
   "Cool": [
+    "figures/robotics/pi5-ros2.js",
     "robotics/pi5-ros2"
   ],
   "COOLER": [
@@ -5436,6 +5500,7 @@
     "drones/agrihex"
   ],
   "Current": [
+    "figures/robotics/led-resistor.js",
     "robotics/led-resistor"
   ],
   "Current-limit trimpot (its rotor is VREF)": [
@@ -5446,6 +5511,12 @@
   "Cushion at 40 cm (soft)": [
     "figures/modules/hc-sr04.js",
     "modules/hc-sr04"
+  ],
+  "Cushion: an echo from the wall behind, {cm} cm": [
+    "figures/robotics/hc-sr04.js"
+  ],
+  "Cushion: the sound soaks in, no echo": [
+    "figures/robotics/hc-sr04.js"
   ],
   "CV · VCOMH capacitor": [
     "modules/ssd1306"
@@ -5519,6 +5590,9 @@
   ],
   "D1 lit and the meter reading": [
     "figures/robotics/led-resistor.js"
+  ],
+  "D1 shorts the battery": [
+    "figures/robotics/transistor-switch.js"
   ],
   "D10 · ESD protection diode on D+ (GPIO20)": [
     "boards/esp32-s3-devkitc-1",
@@ -5829,6 +5903,7 @@
     "robotics/lm2596"
   ],
   "Distance": [
+    "figures/robotics/hc-sr04.js",
     "robotics/hc-sr04"
   ],
   "DJI O3 air unit (HD video transmitter)": [
@@ -5937,6 +6012,7 @@
     "figures/drones/cinewhoop.js"
   ],
   "Duty": [
+    "figures/robotics/lm2596.js",
     "robotics/lm2596"
   ],
   "E-stop button on GPIO27, status LED on GPIO17": [
@@ -5947,13 +6023,18 @@
     "figures/boards/nucleo-f401re.js"
   ],
   "Each coil": [
+    "figures/robotics/a4988.js",
     "robotics/a4988"
   ],
   "EBC": [
     "parts/npn-2n2222"
   ],
   "Echo": [
+    "figures/robotics/hc-sr04.js",
     "robotics/hc-sr04"
+  ],
+  "Echo lost at the cold joint": [
+    "figures/robotics/hc-sr04.js"
   ],
   "EDGE": [
     "figures/boards/microbit-v2.js"
@@ -5963,6 +6044,7 @@
     "figures/boards/microbit-v2.js"
   ],
   "Efficiency": [
+    "figures/robotics/lm2596.js",
     "robotics/lm2596"
   ],
   "Eight IR reflectance sensors read by timing: about 120 µs over white, past 2.5 ms over black tape": [
@@ -6367,6 +6449,9 @@
   "Every pre-arm check passed and it armed, the eight motors idling. Disarmed. Read every PreArm message: never skip one with ARMING_SKIPCHK": [
     "figures/drones/octo.js"
   ],
+  "Every sensor sees black": [
+    "figures/robotics/qtr-8rc.js"
+  ],
   "Every SMD part is on already": [
     "figures/engine/bench.js"
   ],
@@ -6595,6 +6680,9 @@
     "boards/pi4-pi5",
     "robotics/pi5-ros2"
   ],
+  "Fan on": [
+    "figures/robotics/pi5-ros2.js"
+  ],
   "FAN1": [
     "parts/fan"
   ],
@@ -6605,10 +6693,25 @@
     "figures/engine/bench.js",
     "figures/engine/drone.js"
   ],
+  "Fault: unplug and repair": [
+    "figures/modules/pca9685.js",
+    "figures/modules/qtr-8rc.js",
+    "figures/robotics/a4988.js",
+    "figures/robotics/hc-sr04.js",
+    "figures/robotics/l298n.js",
+    "figures/robotics/lm2596.js",
+    "figures/robotics/mpu6050.js",
+    "figures/robotics/pca9685.js",
+    "figures/robotics/qtr-8rc.js",
+    "figures/robotics/tb6612fng.js"
+  ],
   "FDN340P MOSFET: USB power switch": [
     "boards/uno-r3",
     "figures/boards/uno-r3.js",
     "robotics/uno-r3-build"
+  ],
+  "Feedback open: OUT follows IN": [
+    "figures/robotics/lm2596.js"
   ],
   "Feedback-network capacitor": [
     "figures/modules/lm2596.js",
@@ -6948,6 +7051,8 @@
     "figures/drones/wing.js"
   ],
   "Frame": [
+    "figures/modules/pca9685.js",
+    "figures/robotics/pca9685.js",
     "modules/pca9685",
     "robotics/pca9685"
   ],
@@ -7117,6 +7222,9 @@
   "Full step, 1 turn a second": [
     "figures/robotics/a4988.js",
     "robotics/a4988"
+  ],
+  "Full step, 1 turn/s": [
+    "figures/robotics/a4988.js"
   ],
   "Full step, slowed down": [
     "figures/modules/uln2003.js",
@@ -7399,10 +7507,14 @@
   "Gripper closed all the way on the cube": [
     "robotics/pca9685"
   ],
+  "Gripper stalled on the cube: {ma} mA": [
+    "figures/robotics/pca9685.js"
+  ],
   "ground": [
     "figures/engine/drone-sheet.js"
   ],
   "gx": [
+    "figures/robotics/mpu6050.js",
     "robotics/mpu6050"
   ],
   "GYRO + BARO": [
@@ -7416,6 +7528,7 @@
     "figures/drones/quad5.js"
   ],
   "Gyro noise: no CPOUT capacitor": [
+    "figures/robotics/mpu6050.js",
     "robotics/mpu6050"
   ],
   "H1 · 20-pin header, pins 1-20 (you solder it)": [
@@ -7468,9 +7581,21 @@
     "figures/robotics/a4988.js",
     "robotics/a4988"
   ],
+  "Half step, 1/2 turn/s": [
+    "figures/robotics/a4988.js"
+  ],
   "Half step, slowed down": [
     "figures/modules/uln2003.js",
     "modules/uln2003"
+  ],
+  "Hand at {cm} cm: beep every {ms} ms": [
+    "figures/robotics/hc-sr04.js"
+  ],
+  "Hand at {cm} cm: quiet": [
+    "figures/robotics/hc-sr04.js"
+  ],
+  "Hand at {cm} cm: STOP": [
+    "figures/robotics/hc-sr04.js"
   ],
   "Hand coming closer": [
     "figures/modules/hc-sr04.js",
@@ -7630,6 +7755,7 @@
     "figures/boards/esp32-devkitc.js"
   ],
   "Heatsink": [
+    "figures/robotics/l298n.js",
     "robotics/l298n"
   ],
   "Heavy-lift cinema octocopter": [
@@ -7686,7 +7812,11 @@
   "holding": [
     "parts/nema17"
   ],
+  "Holding between turns": [
+    "figures/robotics/a4988.js"
+  ],
   "Holding, limit 1.0 A": [
+    "figures/robotics/a4988.js",
     "robotics/a4988"
   ],
   "HOOK OPENS ON A SLACK LINE": [
@@ -7718,6 +7848,9 @@
   "I2C PULL-UPS": [
     "figures/modules/pca9685.js"
   ],
+  "I2C read failed: every byte reads -1": [
+    "figures/robotics/mpu6050.js"
+  ],
   "I2C scan": [
     "figures/modules/mpu6050.js",
     "figures/modules/pca9685.js",
@@ -7727,6 +7860,15 @@
     "modules/pca9685",
     "robotics/mpu6050",
     "robotics/pca9685"
+  ],
+  "I2C scan: 0x{addr} and 0x70 answer": [
+    "figures/robotics/pca9685.js"
+  ],
+  "I2C scan: 0x{addr} answers": [
+    "figures/robotics/mpu6050.js"
+  ],
+  "I2C scan: nothing answered this time": [
+    "figures/robotics/mpu6050.js"
   ],
   "I²C scanner": [
     "figures/modules/ssd1306.js",
@@ -7813,6 +7955,7 @@
   ],
   "IN": [
     "figures/modules/lm2596.js",
+    "figures/robotics/lm2596.js",
     "modules/lm2596",
     "robotics/lm2596"
   ],
@@ -7877,6 +8020,10 @@
     "figures/modules/lm2596.js",
     "modules/lm2596",
     "robotics/lm2596"
+  ],
+  "Input too low": [
+    "figures/modules/lm2596.js",
+    "figures/robotics/lm2596.js"
   ],
   "Intel MAX 10 10M50 FPGA, 50 MHz clocks, 3.3 V I/O, USB-Blaster built in": [
     "figures/boards/de10-lite.js"
@@ -8760,6 +8907,9 @@
   "LED MATRIX": [
     "figures/boards/uno-r4.js"
   ],
+  "LED only, no motor yet": [
+    "figures/robotics/transistor-switch.js"
+  ],
   "LED pad + 5 V": [
     "drones/racer",
     "figures/drones/racer.js"
@@ -8955,6 +9105,7 @@
     "figures/boards/uno-r4.js"
   ],
   "Level: az {az} g, gx {gx} °/s": [
+    "figures/robotics/mpu6050.js",
     "robotics/mpu6050"
   ],
   "li-ion": [
@@ -8999,14 +9150,24 @@
     "figures/drones/whoop.js"
   ],
   "Limit": [
+    "figures/robotics/a4988.js",
     "robotics/a4988"
   ],
   "Line at {pos}": [
+    "figures/modules/qtr-8rc.js",
+    "figures/robotics/qtr-8rc.js",
     "modules/qtr-8rc",
     "robotics/qtr-8rc"
   ],
   "Line lost": [
+    "figures/modules/qtr-8rc.js",
     "modules/qtr-8rc"
+  ],
+  "Line on the left: turning left": [
+    "figures/robotics/qtr-8rc.js"
+  ],
+  "Line on the right: turning right": [
+    "figures/robotics/qtr-8rc.js"
   ],
   "Line position": [
     "figures/robotics/qtr-8rc.js",
@@ -9045,6 +9206,7 @@
   ],
   "LM2596": [
     "figures/modules/lm2596.js",
+    "figures/robotics/lm2596.js",
     "modules/lm2596",
     "robotics/lm2596"
   ],
@@ -9089,6 +9251,9 @@
     "modules/tb6612fng",
     "robotics/tb6612fng"
   ],
+  "Logic supply too low": [
+    "figures/robotics/l298n.js"
+  ],
   "LOGO": [
     "boards/microbit-v2",
     "figures/boards/microbit-v2.js"
@@ -9107,7 +9272,14 @@
     "boards/microbit-v2"
   ],
   "Lost": [
+    "figures/robotics/l298n.js",
     "robotics/l298n"
+  ],
+  "Lost the line": [
+    "figures/robotics/qtr-8rc.js"
+  ],
+  "Lost the line: it steers away": [
+    "figures/robotics/qtr-8rc.js"
   ],
   "LOVE test point on the bottom (an Arduino joke)": [
     "boards/uno-r4",
@@ -9605,6 +9777,7 @@
     "figures/drones/wing.js"
   ],
   "Motor": [
+    "figures/robotics/transistor-switch.js",
     "robotics/transistor-switch"
   ],
   "MOTOR": [
@@ -9660,18 +9833,32 @@
     "drones/wing",
     "figures/drones/wing.js"
   ],
+  "Motor burned out": [
+    "figures/robotics/transistor-switch.js"
+  ],
   "MOTOR CABLE": [
     "figures/modules/uln2003.js"
+  ],
+  "Motor held: the rail holds": [
+    "figures/robotics/lm2596.js"
   ],
   "Motor L (left wheel)": [
     "figures/robotics/qtr-8rc.js",
     "robotics/qtr-8rc"
   ],
   "Motor off": [
+    "figures/robotics/transistor-switch.js",
     "robotics/transistor-switch"
   ],
   "Motor on": [
+    "figures/robotics/transistor-switch.js",
     "robotics/transistor-switch"
+  ],
+  "Motor on pin 9": [
+    "figures/robotics/transistor-switch.js"
+  ],
+  "Motor on PWM": [
+    "figures/robotics/transistor-switch.js"
   ],
   "Motor on the 5 V pin (brown-out)": [
     "boards/basys3",
@@ -9714,6 +9901,9 @@
   "MOTOR OUT: THE MIXER SPREADS ITS LIFT OVER THE OTHER SEVEN": [
     "drones/octo",
     "figures/drones/octo.js"
+  ],
+  "Motor over-voltage": [
+    "figures/robotics/transistor-switch.js"
   ],
   "Motor phase wires": [
     "drones/longrange",
@@ -9768,6 +9958,9 @@
   ],
   "Motor straight on pin 9": [
     "robotics/transistor-switch"
+  ],
+  "Motor stutters": [
+    "figures/robotics/transistor-switch.js"
   ],
   "MOTOR WIRES": [
     "drones/cinewhoop",
@@ -9838,6 +10031,9 @@
   "MOTORS ×8": [
     "drones/octo",
     "figures/drones/octo.js"
+  ],
+  "Motors off": [
+    "figures/robotics/l298n.js"
   ],
   "MOTORS X3": [
     "drones/tricopter",
@@ -10067,10 +10263,18 @@
   "No 5 V pin to put a motor on here": [
     "figures/engine/bench.js"
   ],
+  "No 5 V: logic off": [
+    "figures/robotics/l298n.js"
+  ],
   "No Active Cooler": [
     "robotics/pi5-ros2"
   ],
+  "No answer at 0x40: the board is at 0x41": [
+    "figures/modules/pca9685.js",
+    "figures/robotics/pca9685.js"
+  ],
   "No answer at 0x68: AD0 floats, the chip is at 0x69": [
+    "figures/robotics/mpu6050.js",
     "robotics/mpu6050"
   ],
   "No arming flags, yet the FC arrow points backwards: a reversed board passes every check and flips on take-off": [
@@ -10081,6 +10285,9 @@
   ],
   "No base resistor": [
     "robotics/transistor-switch"
+  ],
+  "No battery yet": [
+    "figures/robotics/transistor-switch.js"
   ],
   "No circuit on the breadboard": [
     "figures/engine/sheets.js",
@@ -10109,11 +10316,18 @@
     "robotics/tb6612fng"
   ],
   "No common ground": [
+    "figures/robotics/transistor-switch.js",
     "robotics/l298n",
     "robotics/transistor-switch"
   ],
+  "No common ground: twitching": [
+    "figures/robotics/l298n.js"
+  ],
   "No control {name}": [
     "figures/engine/bench.js"
+  ],
+  "no echo": [
+    "figures/robotics/hc-sr04.js"
   ],
   "No flash: the design has nowhere to load from": [
     "boards/basys3"
@@ -10121,7 +10335,12 @@
   "No flyback diode: the collector kicks to 60 V at every switch-off": [
     "figures/robotics/transistor-switch.js"
   ],
+  "No IR: every sensor reads black": [
+    "figures/modules/qtr-8rc.js",
+    "figures/robotics/qtr-8rc.js"
+  ],
   "No line under the array": [
+    "figures/robotics/qtr-8rc.js",
     "robotics/qtr-8rc"
   ],
   "No mat step {name}": [
@@ -10159,8 +10378,25 @@
   "No power: nothing reaches the board": [
     "figures/engine/bench.js"
   ],
+  "No power: set out the Nano": [
+    "figures/robotics/hc-sr04.js",
+    "figures/robotics/mpu6050.js"
+  ],
+  "No power: set out the Nano and the LiPo": [
+    "figures/robotics/qtr-8rc.js"
+  ],
+  "No power: set out the Nano and the pack": [
+    "figures/robotics/pca9685.js"
+  ],
+  "No power: the supply is off": [
+    "figures/robotics/l298n.js",
+    "figures/robotics/tb6612fng.js"
+  ],
   "No program {name}": [
     "figures/engine/bench.js"
+  ],
+  "No receiver: the burst goes out, nothing hears it": [
+    "figures/robotics/hc-sr04.js"
   ],
   "No resistor": [
     "figures/robotics/led-resistor.js",
@@ -10168,6 +10404,9 @@
   ],
   "no resistors": [
     "parts/rgb-led"
+  ],
+  "No servo power: set out the pack": [
+    "figures/robotics/pca9685.js"
   ],
   "No short: the lamp only blinked. Safe to plug in": [
     "figures/engine/drone.js"
@@ -10180,6 +10419,9 @@
   ],
   "No supply {name} on this board": [
     "figures/engine/bench.js"
+  ],
+  "No timeout: the board's own 38 ms reads as 655 cm": [
+    "figures/robotics/hc-sr04.js"
   ],
   "NodeMCU ESP8266 (DevKit v1.0)": [
     "boards/nodemcu",
@@ -10243,6 +10485,12 @@
     "modules/hc-sr04",
     "robotics/hc-sr04"
   ],
+  "Nothing in range: every ping times out": [
+    "figures/robotics/hc-sr04.js"
+  ],
+  "Nothing in range: quiet": [
+    "figures/robotics/hc-sr04.js"
+  ],
   "Nothing is fitted": [
     "drones/agrihex",
     "drones/cinewhoop",
@@ -10292,6 +10540,9 @@
   ],
   "Nothing to spin on this craft": [
     "figures/engine/drone.js"
+  ],
+  "Nothing under the array: all black": [
+    "figures/robotics/qtr-8rc.js"
   ],
   "NOZZLES AT ±300 AND ±720 MM": [
     "drones/agrihex",
@@ -10573,6 +10824,9 @@
     "drones/octo",
     "figures/drones/octo.js"
   ],
+  "On the line": [
+    "figures/robotics/qtr-8rc.js"
+  ],
   "On the shaft": [
     "figures/parts/stepper-28byj48.js",
     "parts/stepper-28byj48"
@@ -10622,6 +10876,7 @@
   ],
   "OUT": [
     "figures/modules/lm2596.js",
+    "figures/robotics/lm2596.js",
     "modules/lm2596",
     "robotics/lm2596"
   ],
@@ -10633,6 +10888,9 @@
   "Output hold capacitor": [
     "figures/modules/soil-moisture.js",
     "modules/soil-moisture"
+  ],
+  "Output shorted: current limit": [
+    "figures/robotics/lm2596.js"
   ],
   "Output terminal (OUT-, OUT+)": [
     "figures/modules/lm2596.js",
@@ -10699,6 +10957,9 @@
   ],
   "P1 · 5 N · 1.72 kΩ": [
     "parts/fsr402"
+  ],
+  "Pack reversed: Q1 blocks it, the servos are limp": [
+    "figures/robotics/pca9685.js"
   ],
   "Pads for the 100 Ω resistor, fitted only after snapping the board": [
     "figures/modules/qtr-8rc.js",
@@ -10838,6 +11099,7 @@
     "drones/agrihex"
   ],
   "Peak": [
+    "figures/robotics/transistor-switch.js",
     "robotics/transistor-switch"
   ],
   "Peak-detector diode": [
@@ -10971,7 +11233,11 @@
     "parts/piezo-buzzer"
   ],
   "Pin 9": [
+    "figures/robotics/transistor-switch.js",
     "robotics/transistor-switch"
+  ],
+  "Pin 9 is dead": [
+    "figures/robotics/transistor-switch.js"
   ],
   "Pin 9 tries to give {n} mA: the motor needs over 1 A to start": [
     "figures/robotics/transistor-switch.js"
@@ -11023,6 +11289,9 @@
   "Pitot tube + ASPD-4525 sensor": [
     "drones/vtol",
     "figures/drones/vtol.js"
+  ],
+  "Pivoting": [
+    "figures/robotics/l298n.js"
   ],
   "Pixel test": [
     "figures/modules/ssd1306.js",
@@ -11369,6 +11638,7 @@
     "figures/drones/octo.js"
   ],
   "Position": [
+    "figures/robotics/qtr-8rc.js",
     "robotics/qtr-8rc"
   ],
   "Potentiometer": [
@@ -11701,6 +11971,9 @@
   "POWERED": [
     "figures/engine/bench.js"
   ],
+  "Powered, bridges idle": [
+    "figures/robotics/l298n.js"
+  ],
   "Powered, but {name} is missing: no current flows": [
     "figures/robotics/led-resistor.js"
   ],
@@ -11715,6 +11988,24 @@
   ],
   "Powered, but the meter is not in the loop: nothing joins TP1 to TP2, so no current flows": [
     "figures/robotics/led-resistor.js"
+  ],
+  "Powered, chip asleep": [
+    "figures/modules/pca9685.js"
+  ],
+  "Powered, driver idle": [
+    "figures/robotics/a4988.js"
+  ],
+  "Powered, motors idle": [
+    "figures/robotics/tb6612fng.js"
+  ],
+  "Powered, nothing reading it": [
+    "figures/modules/qtr-8rc.js"
+  ],
+  "Powered, nothing running": [
+    "figures/robotics/hc-sr04.js",
+    "figures/robotics/mpu6050.js",
+    "figures/robotics/pca9685.js",
+    "figures/robotics/qtr-8rc.js"
   ],
   "Powered: {name} starts": [
     "figures/engine/bench.js"
@@ -13005,6 +13296,10 @@
   "REG2 · LTC3025 regulator REG2: 1.8 V": [
     "boards/de10-lite"
   ],
+  "Regulating": [
+    "figures/modules/lm2596.js",
+    "figures/robotics/lm2596.js"
+  ],
   "Regulator for the voltmeter circuit (SOT-89)": [
     "figures/modules/lm2596.js",
     "modules/lm2596",
@@ -13299,6 +13594,7 @@
     "boards/uno-r4",
     "figures/engine/sheets.js",
     "figures/parts/resistor.js",
+    "figures/robotics/led-resistor.js",
     "parts/resistor",
     "robotics/led-resistor",
     "robotics/transistor-switch",
@@ -13509,6 +13805,7 @@
     "modules/mpu6050"
   ],
   "Roll": [
+    "figures/robotics/mpu6050.js",
     "robotics/mpu6050"
   ],
   "roll, pitch, yaw 1000-1500-2000 us, throttle 1000 us at low stick": [
@@ -13591,6 +13888,9 @@
   "RST button": [
     "boards/nodemcu",
     "figures/boards/nodemcu.js"
+  ],
+  "RST floating: held in reset": [
+    "figures/robotics/a4988.js"
   ],
   "RST-SLP": [
     "figures/modules/a4988.js"
@@ -14016,6 +14316,8 @@
     "figures/boards/uno-r3.js"
   ],
   "Sensor 1": [
+    "figures/modules/qtr-8rc.js",
+    "figures/robotics/qtr-8rc.js",
     "modules/qtr-8rc",
     "robotics/qtr-8rc"
   ],
@@ -14096,6 +14398,7 @@
     "figures/drones/octo.js"
   ],
   "Servos": [
+    "figures/robotics/pca9685.js",
     "robotics/pca9685"
   ],
   "SERVOS": [
@@ -14103,11 +14406,15 @@
     "figures/drones/wing.js"
   ],
   "Servos centred: 1500 µs": [
+    "figures/robotics/pca9685.js",
     "robotics/pca9685"
   ],
   "servos checked": [
     "drones/vtol",
     "figures/drones/vtol.js"
+  ],
+  "Servos on the Nano's 5 V: it browns out and resets": [
+    "figures/robotics/pca9685.js"
   ],
   "servos reversed": [
     "drones/vtol",
@@ -14156,6 +14463,7 @@
     "robotics/esp32-s3-build"
   ],
   "Shaft": [
+    "figures/robotics/a4988.js",
     "robotics/a4988"
   ],
   "Short between {a} and {b}: {name} limits its current, so {rail} falls to 0 V and the rest runs": [
@@ -14163,6 +14471,9 @@
   ],
   "Short between {a} and {b}: the supply trips": [
     "figures/engine/bench.js"
+  ],
+  "Short brake": [
+    "figures/robotics/tb6612fng.js"
   ],
   "Short from {a} to {b}": [
     "boards/esp32-devkitc",
@@ -14184,6 +14495,9 @@
     "robotics/pca9685",
     "robotics/transistor-switch",
     "robotics/uno-r3-build"
+  ],
+  "Short on VCC: the Nano's USB fuse trips": [
+    "figures/robotics/hc-sr04.js"
   ],
   "Short OUT+ to OUT-": [
     "robotics/lm2596"
@@ -14615,6 +14929,9 @@
     "modules/lm2596",
     "robotics/lm2596"
   ],
+  "SS34 burned: no output": [
+    "figures/robotics/lm2596.js"
+  ],
   "SS34 Schottky catch diode": [
     "figures/modules/lm2596.js",
     "modules/lm2596",
@@ -14650,6 +14967,9 @@
     "figures/modules/tb6612fng.js",
     "modules/tb6612fng",
     "robotics/tb6612fng"
+  ],
+  "Standby: outputs off": [
+    "figures/robotics/tb6612fng.js"
   ],
   "STATOR 12N14P": [
     "figures/drones/cinewhoop.js",
@@ -14716,6 +15036,7 @@
   ],
   "Stepping": [
     "figures/parts/stepper-28byj48.js",
+    "figures/robotics/a4988.js",
     "parts/stepper-28byj48"
   ],
   "Stereo depth camera (RealSense D435i class), forward-facing": [
@@ -15490,6 +15811,12 @@
   "The TIP120, its base resistor and the pin 9 LED": [
     "figures/robotics/transistor-switch.js"
   ],
+  "Thermal shutdown": [
+    "figures/robotics/lm2596.js"
+  ],
+  "Thermal shutdown (165 °C)": [
+    "figures/robotics/a4988.js"
+  ],
   "Thin top plate + 20 mm standoffs": [
     "drones/racer",
     "figures/drones/racer.js"
@@ -15503,6 +15830,9 @@
   ],
   "Three-servo desk arm (3 x SG90)": [
     "figures/robotics/pca9685.js"
+  ],
+  "Throttling": [
+    "figures/robotics/pi5-ros2.js"
   ],
   "Tilt alarm": [
     "figures/robotics/mpu6050.js",
@@ -15539,6 +15869,12 @@
   "Tiny Whoop 65 mm": [
     "drones/whoop",
     "figures/drones/whoop.js"
+  ],
+  "TIP120 backwards": [
+    "figures/robotics/transistor-switch.js"
+  ],
+  "TIP120 failed short": [
+    "figures/robotics/transistor-switch.js"
   ],
   "TIP120 transistor": [
     "figures/parts/tip120.js",
@@ -15607,6 +15943,9 @@
     "robotics/tb6612fng",
     "robotics/transistor-switch",
     "robotics/uno-r3-build"
+  ],
+  "Too hot: outputs cut": [
+    "figures/robotics/l298n.js"
   ],
   "Too low a voltage on {src}": [
     "boards/basys3",
@@ -15756,6 +16095,7 @@
   ],
   "Trimmer": [
     "figures/modules/lm2596.js",
+    "figures/robotics/lm2596.js",
     "modules/lm2596",
     "robotics/lm2596"
   ],
@@ -15818,7 +16158,11 @@
     "parts/stepper-28byj48"
   ],
   "Turning the pot": [
+    "figures/robotics/a4988.js",
     "robotics/a4988"
+  ],
+  "Turning the trimmer": [
+    "figures/robotics/lm2596.js"
   ],
   "Turntable": [
     "boards/basys3",
@@ -16324,6 +16668,12 @@
   "Ultrasonic distance sensor (HC-SR04) P1": [
     "parts/hc-sr04"
   ],
+  "Under 8 V: steps lost": [
+    "figures/robotics/a4988.js"
+  ],
+  "Under-voltage": [
+    "figures/robotics/pi5-ros2.js"
+  ],
   "Unknown supply {name}": [
     "figures/engine/bench.js"
   ],
@@ -16415,6 +16765,17 @@
     "figures/engine/bench.js"
   ],
   "Unpowered": [
+    "figures/modules/lm2596.js",
+    "figures/modules/pca9685.js",
+    "figures/modules/qtr-8rc.js",
+    "figures/robotics/a4988.js",
+    "figures/robotics/hc-sr04.js",
+    "figures/robotics/l298n.js",
+    "figures/robotics/lm2596.js",
+    "figures/robotics/mpu6050.js",
+    "figures/robotics/pca9685.js",
+    "figures/robotics/qtr-8rc.js",
+    "figures/robotics/tb6612fng.js",
     "modules/lm2596",
     "modules/pca9685",
     "modules/qtr-8rc",
@@ -16758,6 +17119,7 @@
     "figures/boards/pico.js"
   ],
   "VCC": [
+    "figures/modules/qtr-8rc.js",
     "modules/pca9685",
     "modules/qtr-8rc",
     "robotics/pca9685"
@@ -16767,6 +17129,7 @@
     "modules/pca9685"
   ],
   "VCC at {v} V: the burst is too weak, no echo": [
+    "figures/robotics/hc-sr04.js",
     "robotics/hc-sr04"
   ],
   "Vcc on the Nano's 3V3 pin": [
@@ -16965,6 +17328,7 @@
     "figures/parts/multimeter.js"
   ],
   "Vref": [
+    "figures/robotics/a4988.js",
     "robotics/a4988"
   ],
   "VREF": [
@@ -16976,6 +17340,8 @@
     "robotics/a4988"
   ],
   "Vset > Vin: 100 % duty": [
+    "figures/modules/lm2596.js",
+    "figures/robotics/lm2596.js",
     "modules/lm2596",
     "robotics/lm2596"
   ],
@@ -17052,11 +17418,15 @@
     "figures/engine/drone.js"
   ],
   "Wall at {cm} cm": [
+    "figures/robotics/hc-sr04.js",
     "robotics/hc-sr04"
   ],
   "Wall at 30 cm": [
     "figures/modules/hc-sr04.js",
     "modules/hc-sr04"
+  ],
+  "Wall: no echo this time": [
+    "figures/robotics/hc-sr04.js"
   ],
   "Watering can": [
     "figures/engine/bench-props.js"
@@ -17083,6 +17453,15 @@
   ],
   "wheel": [
     "parts/stepper-28byj48"
+  ],
+  "Wheel held: stalled": [
+    "figures/robotics/transistor-switch.js"
+  ],
+  "Wheels": [
+    "figures/robotics/qtr-8rc.js"
+  ],
+  "Wheels held: heating": [
+    "figures/robotics/l298n.js"
   ],
   "white": [
     "parts/led",
