@@ -9,6 +9,15 @@
 
 import type { BuildStep, FailureMode, RoboticsContent } from '@/content/schema';
 
+/**
+ * A servo check's degree range for a pulse width range. The check trace records a PCA9685 channel as `PCA40.<ch>` and
+ * reads its pulse on the Servo library's 544-2400 µs = 0-180° scale, not the arm's 600-2400 µs, so 1500 µs is 93° there.
+ */
+const pulseDeg = (loUs: number, hiUs: number): [number, number] => {
+  const deg = (us: number) => Math.round(((us - 544) / 1856) * 180);
+  return [deg(loUs), deg(hiUs)];
+};
+
 const HEAD = `#include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 
@@ -407,9 +416,11 @@ const pca9685 = {
       checks: [
         { kind: 'runs', minMs: 3900, label: 'tasks.knob.checks.1' },
         { kind: 'code', must: ['analogRead(A0)'], mustNot: [], label: 'tasks.knob.checks.2' },
-        { kind: 'serial', match: '^base (8[5-9]|9[0-5]) deg = 1[45]\\d\\d us$', regex: true, minCount: 1, byMs: 1400, label: 'tasks.knob.checks.3' },
-        { kind: 'serial', match: '^base 0 deg = 600 us$', regex: true, minCount: 1, label: 'tasks.knob.checks.4' },
-        { kind: 'serial', match: '^base 180 deg = 2400 us$', regex: true, minCount: 1, label: 'tasks.knob.checks.5' },
+        // the base servo's own pulse on channel 0, so a sketch that prints the right angles but sends them in the
+        // wrong frame (no setPWMFreq(50)) or to the wrong channel fails
+        { kind: 'servo', pin: 'PCA40.0', deg: pulseDeg(1450, 1550), atMs: 1200, label: 'tasks.knob.checks.3' },
+        { kind: 'servo', pin: 'PCA40.0', deg: pulseDeg(580, 620), atMs: 2800, label: 'tasks.knob.checks.4' },
+        { kind: 'servo', pin: 'PCA40.0', deg: pulseDeg(2380, 2420), atMs: 3900, label: 'tasks.knob.checks.5' },
       ],
       title: 'tasks.knob.title',
       brief: 'tasks.knob.brief',

@@ -136,4 +136,32 @@ describe('pca9685 code through the app check path', () => {
       expect(results.some((r) => !r.ok)).toBe(true);
     });
   }
+
+  describe('knob: the checks read the base servo on channel 0', () => {
+    const knob = bench.tasks.find((t) => t.id === 'knob')!;
+    const servo = knob.checks.flatMap((c, i) => (c.kind === 'servo' ? [i] : []));
+    const servoResults = (source: string) => {
+      const { trace, results } = runChecks(taskJob(knob, source));
+      return { trace, ok: servo.map((i) => results[i].ok) };
+    };
+
+    it('the half-way, down and up checks are servo checks on PCA40.0', () => {
+      expect(servo.map((i) => knob.checks[i].label)).toEqual(['tasks.knob.checks.3', 'tasks.knob.checks.4', 'tasks.knob.checks.5']);
+      expect(servo.map((i) => knob.checks[i]).every((c) => c.kind === 'servo' && c.pin === 'PCA40.0')).toBe(true);
+    });
+
+    it('the starter holds the base at 90°, so only the half-way check passes; the solution follows the knob', () => {
+      expect(servoResults(render(knob.starter)).ok).toEqual([true, false, false]);
+      expect(servoResults(knob.solution).ok).toEqual([true, true, true]);
+    });
+
+    it('a sketch that prints the right angles but never sets the 50 Hz frame fails every pulse check', () => {
+      const noFreq = knob.solution.replace('pwm.setPWMFreq(50);', '');
+      expect(noFreq).not.toBe(knob.solution);
+      const solved = servoResults(knob.solution);
+      const forgot = servoResults(noFreq);
+      expect(forgot.trace.serial.map((l) => l.text)).toEqual(solved.trace.serial.map((l) => l.text));
+      expect(forgot.ok).toEqual([false, false, false]);
+    });
+  });
 });
