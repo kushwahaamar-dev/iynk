@@ -819,7 +819,7 @@ void loop() {
           ],
         },
       ],
-      circuit: null,
+      circuit: 'i2c-scan',
       world: {
         inputs: [
           {
@@ -853,7 +853,10 @@ void loop() {
         { pin: '5V', to: 'lessons.i2c-scan.pins.5V.to', role: 'lessons.i2c-scan.pins.5V.role', color: 'red' },
         { pin: 'GND', to: 'lessons.i2c-scan.pins.GND.to', role: 'lessons.i2c-scan.pins.GND.role', color: 'black' },
       ],
-      callouts: [{ part: 'JDIGITAL_H', text: 'lessons.i2c-scan.callouts.JDIGITAL_H' }],
+      callouts: [
+        { part: 'MPU1', text: 'lessons.i2c-scan.callouts.MPU1' },
+        { part: 'JDIGITAL_H', text: 'lessons.i2c-scan.callouts.JDIGITAL_H' },
+      ],
       specs: [
         { label: 'lessons.i2c-scan.specs.1.label', value: 'lessons.i2c-scan.specs.1.value' },
         { label: 'lessons.i2c-scan.specs.2.label', value: 'lessons.i2c-scan.specs.2.value' },
