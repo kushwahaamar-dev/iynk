@@ -1,0 +1,340 @@
+{
+  "title": "Trikopter",
+  "tagline": "Drei Motoren in Y-Form und ein Servo, der den Heckmotor zum Lenken kippt: Gieren per Schubvektor, mit Betaflight.",
+  "sub": "Betaflight-TRI-Mixer + Heckservo",
+  "hint": "Bau einen Y-Rahmen mit kippbarem Heck, teste den Servo und flieg dann durch den Stadtpark",
+  "noun": "Trikopter",
+  "overview": "Ein Trikopter hat drei Motoren in Y-Form: zwei vorne und einen an einem Heckausleger. Drei Propeller können ihr Drehmoment nicht so gegenseitig aufheben, wie es vier können, also sitzt der Heckmotor auf einem Scharnier, und ein Servo kippt ihn ein paar Grad nach links oder rechts. Dieser seitliche Schub schwenkt das Heck herum und dreht die Nase: Gieren per Schubvektor, durch das sich ein Tri wie ein kleines Flugzeug in die Kurven legt. Dieser hier ist ein 5-Zoll-Aufbau an 4S: drei 2306-Motoren an Einzel-ESCs, ein F405-Flugcontroller mit eigenem Stromverteiler, ein Heckservo mit Metallgetriebe und analoges FPV, etwa 655 g mit einem 2200-mAh-Akku und einem Schub-Gewichts-Verhältnis von 5:1. Der Servo ist das Teil, das einen Tri zum Tri macht, und das Teil, das kaputtgeht: Teste ihn, bevor die Propeller drankommen. Wähl hier die Teile und behalt die Zahlen im Blick, bau ihn, führ die Sicherheitstests durch und flieg dann durch den Stadtpark.",
+  "practice": "Schwebe zuerst in Höhe halten und beobachte das Heck: Es hält ein paar Grad Neigung, selbst wenn du den Gierknüppel nicht berührst, und hebt damit das Drehmoment des Heckpropellers auf. Dann schlängel dich im Stadtpark um die Laternen und umkreise den Brunnen; enges Gieren ist der Punkt, an dem sich ein Tri anders anfühlt als ein Quad. Flieg die Parkrunden im Angle-Modus, sobald das leicht geht, und probier Acro zuletzt. Bei einem echten Aufbau: Smoke Stopper beim ersten Einstecken, der Servotest ohne Propeller (Gieren nach rechts muss den Heckschub nach links kippen), die Prüfung der Motordrehrichtung und der Failsafe bei ausgeschalteter Funke. Mach den ersten Schwebeflug niedrig und trimm die Servomitte, wenn sich der Tri langsam herumdreht. Lande bei etwa 3,5 V pro Zelle.",
+  "design": {
+    "fixed": {
+      "FRAME": "Y-Rahmen: Mittelplatte, zwei vordere Arme, Heckausleger",
+      "ESC": "3 Einzel-ESCs (Bluejay), einer pro Arm",
+      "FC": "F405-Flugcontroller mit Stromverteiler, 30,5 mm",
+      "TAILSERVO": "Digitaler Heckservo mit Metallgetriebe und Kippmechanik",
+      "CAM": "Analoge Micro-FPV-Kamera",
+      "VTX": "5,8-GHz-VTX (SmartAudio) und Antenne",
+      "RX": "ExpressLRS-Empfänger 2,4 GHz",
+      "XT60": "XT60-Kabel und 1000-µF-Kondensator für 35 V mit niedrigem ESR",
+      "TOP": "Deckplatte, 30-mm-Abstandshalter und Schrauben",
+      "STRAP": "Akkugurt und Antirutschpad"
+    },
+    "verdict": {
+      "ok": "Ein guter Allround-Tri: Schub-Gewichts-Verhältnis {tw}:1. Meldet sich die ESC-Prüfung unten, liegt der Vollgasstrom eines Motors über dem Nennwert seines ESC: Ein sanfterer Propeller oder größere ESCs beheben das."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Y-Rahmen mit Heckausleger und Kipphalterung",
+      "what": "Eine 3-mm-Mittelplatte aus Carbon mit zwei vorderen Armen auf den 60°-Diagonalen (die vorderen Motoren 208 mm auseinander) und einem Heckausleger zum Heckmotor 150 mm hinter der Mitte. Am Ende des Auslegers trägt ein Scharnierblock die Motorplatte von 30 x 30 mm, die um die Achse des Auslegers kippt."
+    },
+    "MOTORS": {
+      "name": "Drei bürstenlose Motoren 2306",
+      "what": "Von oben gesehen dreht M1 am Heck gegen den Uhrzeigersinn, M2 vorne rechts im Uhrzeigersinn und M3 vorne links gegen den Uhrzeigersinn. Der TRI-Mixer von Betaflight nutzt die Motordrehzahl nie zum Gieren, aber die beiden vorderen Propeller müssen gegenläufig drehen, damit sich ihre Drehmomente aufheben."
+    },
+    "ESC": {
+      "name": "Drei Einzel-ESCs",
+      "what": "Ein kleiner ESC auf jedem Arm, mit Bluejay für bidirektionales DShot. Eine 4-in-1-Platine passt schlecht zu einem Tri: Ein Kanal läge brach, und die Drähte des Heckmotors liefen ohnehin am Ausleger zurück. Jeder ESC trägt den Strom eines Motors, und der Rechner vergleicht ihn mit dem Nennwert des ESC."
+    },
+    "TAILSERVO": {
+      "name": "Heckservo",
+      "what": "Ein digitaler Micro-Servo mit Metallgetriebe am Ausleger, der die Motorplatte über einen Servohebel und eine kurze Schubstange bewegt. Er muss digital sein, weil er Pulse mit 333 Hz bekommt; ein analoger Servo überhitzt bei dieser Rate. Falsch herum eingebaut kippt er das Heck in die falsche Richtung, und der Tri dreht sich ab dem Start wie ein Kreisel."
+    },
+    "WIRES": {
+      "name": "Motordrähte",
+      "what": "Drei Phasendrähte von jedem Motor zu seinem ESC, kurz geschnitten und angelötet. Vertauscht man zwei beliebige, dreht der Motor andersherum, auch wenn es einfacher ist, ihn in der ESC-Firmware umzukehren."
+    },
+    "FC": {
+      "name": "F405-Flugcontroller mit Stromverteiler",
+      "what": "Eine 30,5-mm-Platine mit F405 und eigenem Stromverteiler: Akkupads, drei ESC-Padpaare und Regler für 5 V und 9 V. Ihr Ausgang SERVO 1 (das Pad S9 auf einem SpeedyBee F405 V4) liegt auf einem Timer, den kein Motor nutzt, weil der Servo PWM mit 333 Hz will, während die Motoren DShot bekommen. Der Pfeil zeigt zur Nase."
+    },
+    "XT60": {
+      "name": "XT60-Kabel und Kondensator",
+      "what": "Der Akkustecker und ein 1000-µF-Kondensator für 35 V mit niedrigem ESR über den Akkupads, der die Spannungsspitzen schluckt, die drei schaltende ESCs erzeugen. Sein Streifen markiert Minus."
+    },
+    "CAM": {
+      "name": "Micro-FPV-Kamera",
+      "what": "Eine analoge Kamera zwischen den Nasenplatten mit 20° Neigung nach oben. Ein Tri fliegt in Bewegung leicht mit der Nase nach unten, und die Neigung hält den Horizont im Bild."
+    },
+    "RX": {
+      "name": "ExpressLRS-Empfänger",
+      "what": "Ein ELRS-Empfänger für 2,4 GHz an UART2 mit dem Protokoll CRSF. Seine Antenne zeigt nach hinten oben, weg vom Carbon."
+    },
+    "VTX": {
+      "name": "5,8-GHz-Videosender",
+      "what": "Ein analoger VTX mit SmartAudio an UART1, damit das OSD Kanal und Leistung ändern kann. 25 mW: In den meisten Ländern ist das alles, was du ohne Amateurfunklizenz nutzen darfst."
+    },
+    "TOP": {
+      "name": "Deckplatte",
+      "what": "Eine Carbonplatte von 94 x 56 mm auf vier 30-mm-Abstandshaltern. Sie schützt den Stack und trägt den Akku."
+    },
+    "BATT": {
+      "name": "4S-LiPo-Akku",
+      "what": "Er sitzt unter einem Gurt auf der Deckplatte. Schieb ihn, bis der Tri freihändig waagerecht schwebt: Der Schwerpunkt eines Tri gehört etwa 10 mm hinter die Rahmenmitte, wo sich der Schub der drei Motoren ausgleicht."
+    },
+    "PROPS": {
+      "name": "Propeller",
+      "what": "Zwei CCW-Propeller (Heck und vorne links) und ein CW-Propeller (vorne rechts). Sie kommen zuletzt drauf, nach Smoke Stopper, Motorprüfung und Servotest."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Den Y-Rahmen auslegen",
+      "body": "Schraub die beiden vorderen Arme und den Heckausleger an die Mittelplatte und setz den Scharnierblock und die Motorplatte ans Ende des Auslegers. Die Platte sollte frei und ohne Spiel um den Ausleger kippen."
+    },
+    "motors": {
+      "title": "Die drei Motoren montieren",
+      "body": "Der Motor vorne links und der Heckmotor drehen gegen den Uhrzeigersinn, der vorne rechts im Uhrzeigersinn. Nimm kurze Schrauben: Eine, die bis in die Wicklungen reicht, schließt den Motor kurz.",
+      "refusal": "Die Motoren werden an die Arme geschraubt: Leg zuerst den Rahmen aus."
+    },
+    "esc": {
+      "title": "Die drei ESCs einsetzen",
+      "body": "Ein Einzel-ESC auf jedem Arm, nah an seinem Motor, mit einem Kabelbinder über dem Schrumpfschlauch befestigt. Ihre Stromkabel laufen entlang der Arme nach innen zu den ESC-Pads auf dem Stromverteiler.",
+      "refusal": "Die ESCs sitzen auf den Armen: Leg zuerst den Rahmen aus."
+    },
+    "servo": {
+      "title": "Den Heckservo einsetzen",
+      "body": "Schraub den Servo seitlich an den Ausleger, den Servohebel zum Heck, und verbinde den Hebel über die Schubstange mit der Motorplatte. Zentrier den Servo, bevor du den Hebel aufsetzt, damit die Platte bei 1500 µs waagerecht steht. Der braune Draht ist Masse, Rot ist 5 V und Orange das Signal.",
+      "refusal": "Der Servo wird am Heckausleger montiert: Leg zuerst den Rahmen aus."
+    },
+    "wires": {
+      "title": "Die Motordrähte anlöten",
+      "body": "Kürz die drei Drähte jedes Motors auf Länge und löte sie an seinen ESC. Halt sie kurz und von den Propellern fern.",
+      "refusal": "Setz die Motoren und die ESCs ein, bevor die Drähte kommen, die sie verbinden."
+    },
+    "fc": {
+      "title": "Den Flugcontroller montieren",
+      "body": "Auf weichen Gummitüllen auf dem 30,5-mm-Stack, Pfeil zur Nase. Steck die drei ESC-Signaldrähte ein (M1 Heck, M2 vorne rechts, M3 vorne links) und das Servokabel in den Servoausgang.",
+      "refusal": "Der Flugcontroller kommt auf den Rahmen: Leg zuerst den Rahmen aus."
+    },
+    "xt60": {
+      "title": "Das XT60 und den Kondensator anlöten",
+      "body": "Das Akkukabel kommt an die Akkupads des Stromverteilers, Rot an Plus. Der Kondensator kommt an dieselben Pads, mit dem Streifen zu Minus. Ein verkehrt herum eingesetzter Kondensator bläst ab, sobald er zum ersten Mal den Akku sieht.",
+      "refusal": "Das Akkukabel wird an den Stromverteiler des Flugcontrollers gelötet: Montier den zuerst."
+    },
+    "cam": {
+      "title": "Die Kamera montieren",
+      "body": "Zwischen die Nasenplatten mit 20° Neigung nach oben, ihr Videokabel an das CAM-Pad des Flugcontrollers.",
+      "refusal": "Die Kamera wird zwischen den Nasenplatten des Rahmens montiert: Leg zuerst den Rahmen aus."
+    },
+    "rx": {
+      "title": "Den Empfänger einsetzen",
+      "body": "Der ELRS-Empfänger kommt an UART2 (sein TX an RX der Platine, RX an TX, dazu 5 V und Masse), mit der Antenne hinten heraus, weg vom Carbon.",
+      "refusal": "Der Empfänger wird mit dem Flugcontroller verdrahtet: Montier den zuerst."
+    },
+    "vtx": {
+      "title": "Den VTX einsetzen",
+      "body": "Video hinein vom Flugcontroller, der das OSD hinzufügt; SmartAudio an UART1 TX; Antenne hinten heraus. Versorg einen VTX nie ohne seine Antenne.",
+      "refusal": "Der VTX wird mit dem Flugcontroller verdrahtet: Montier den zuerst."
+    },
+    "top": {
+      "title": "Die Deckplatte schließen",
+      "body": "Vier 30-mm-Abstandshalter und die Deckplatte über dem Stack. Nichts darf die Heckmechanik berühren.",
+      "refusal": "Die Deckplatte schließt sich über Flugcontroller, Kamera, Empfänger und VTX: Setz die zuerst ein."
+    },
+    "batt": {
+      "title": "Den Akku festschnallen",
+      "body": "Auf die Deckplatte, mit Antirutschpad und Gurt. Schieb ihn so, dass der Tri etwa 10 mm hinter der Rahmenmitte im Gleichgewicht ist.",
+      "refusal": "Der Akku wird auf die Deckplatte geschnallt und ins XT60 gesteckt: Setz zuerst beides ein."
+    },
+    "props": {
+      "title": "Propeller drauf, zuletzt",
+      "body": "Zwei CCW-Propeller auf den Heckmotor und den Motor vorne links, der CW-Propeller vorne rechts. Erst nach Smoke Stopper, Motorprüfung und Test des Heckservos, mit ausgestecktem Akku.",
+      "refusal": "Die Propeller kommen auf die Motoren, über der Deckplatte und nach dem Einbau des Heckservos: Setz die zuerst ein und führ dann Smoke Stopper und Motorprüfung durch."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "Das XT60 des Akkus passt in das des Fluggeräts. Es ist verdrehsicher, also geht es nur in einer Richtung hinein.",
+    "XT60-ESC": "Der Stromverteiler speist den Akku über seine Pads an alle drei ESCs. Der Kondensator sitzt an denselben Pads, Streifen zu Minus.",
+    "ESC-MOTORS": "Drei Phasendrähte pro Motor. Ihre Reihenfolge ist keine Frage der Sicherheit: Vertauscht man zwei beliebige, dreht der Motor andersherum.",
+    "FC-ESC": "DShot600-Signale für M1 (Heck), M2 (vorne rechts) und M3 (vorne links). M4 bleibt ungenutzt.",
+    "FC-TAILSERVO": "Der eigene Ausgang des Servos, auf einem Timer, den kein Motor nutzt: Der Servo will PWM mit 333 Hz, die Motoren DShot. Rot sind 5 V vom Regler der Platine, der Strom übrig haben muss, falls der Servo blockiert.",
+    "RX-FC": "ELRS an UART2 mit dem Protokoll CRSF, versorgt aus 5 V.",
+    "CAM-FC": "Analoges Video in den Flugcontroller, der das OSD darüberlegt.",
+    "FC-VTX": "Video mit OSD hinaus zum VTX, 9 V Versorgung und SmartAudio an UART1 TX, damit das OSD Kanal und Leistung ändern kann."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke-Stopper-Test",
+      "pass": "Die Lampe hat nur kurz geblinkt: kein Kurzschluss zwischen Plus und Minus. Der Akku kann direkt eingesteckt werden.",
+      "fail": "Die Lampe blieb an: Irgendetwas ist kurzgeschlossen. Hier steckt der Kondensator verkehrt herum; dreh ihn um (Streifen zu Minus) und teste noch einmal, bevor du einsteckst."
+    },
+    "motors": {
+      "title": "Prüfung der Motordrehrichtung (ohne Propeller)",
+      "pass": "M1 am Heck und M3 vorne links drehen gegen den Uhrzeigersinn, M2 vorne rechts im Uhrzeigersinn. Das vordere Paar hebt sein Drehmoment gegenseitig auf; das des Hecks trimmt der Servo weg.",
+      "fail": "Ein Motor hat falsch herum gedreht. Kehr ihn in der ESC-Firmware um (ESC Configurator). Zwei vordere Propeller, die in dieselbe Richtung drehen, verdrehen den Rahmen stärker, als der Servo wegtrimmen kann."
+    },
+    "calibrate": {
+      "title": "Kalibrierung des Beschleunigungssensors",
+      "pass": "Waagerecht kalibriert, mit flach liegendem Rahmen (der Rahmen, nicht das gekippte Heck): Angle-Modus und Höhe halten wissen jetzt, wo waagerecht ist.",
+      "fail": "Setz zuerst den Flugcontroller ein und leg den Rahmen flach. Wenn der Pfeil nach hinten zeigt, dreh die Platine um oder setz align_board_yaw = 180."
+    },
+    "servo": {
+      "title": "Test des Heckservos (ohne Propeller)",
+      "pass": "Gieren nach rechts hat den Schub des Heckmotors nach links gekippt: Das Heck schwenkt nach links und die Nase nach rechts. Dreh den Rahmen von Hand mit der Nase nach rechts, und das Heck kippt in die andere Richtung und arbeitet gegen die Drehung.",
+      "fail": "Setz den Heckservo und den Flugcontroller ein, nimm die Propeller ab und steck zuerst ein. Wenn Gieren nach rechts das Heck in die falsche Richtung kippt, ist der Servo umgekehrt, und der Tri würde sich ab dem Start immer schneller drehen: Bau ihn richtig herum ein oder kehr ihn mit smix reverse 5 2 r um."
+    },
+    "failsafe": {
+      "title": "Failsafe-Test (ohne Propeller, Funke aus)",
+      "pass": "Funke aus: Nach 1,5 s haben die Motoren angehalten, und der Tri hat disarmt (DROP). Der Heckservo bewegt sich auch disarmt noch; das ist tri_unarmed_servo und harmlos.",
+      "fail": "Setz den Empfänger und den Flugcontroller ein, nimm die Propeller ab und steck zuerst den Akku ein. Ein Tri, der beim Abriss der Verbindung sein letztes Gas hält, fliegt davon."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Erste Einrichtung",
+      "explain": "Betaflight fliegt weiterhin Trikopter, aber die Servo-Unterstützung ist eine Build-Option, die im Standard-Cloud-Build aus ist: Hak beim Flashen Servos an, sonst hat der TRI-Mixer überhaupt kein Gieren. Dann der TRI-Mixer, der Pfeil der Platine nach vorne, DShot600 mit Telemetrie für den RPM-Filter und die beiden seriellen Ports: ELRS an UART2 und SmartAudio an UART1."
+    },
+    "servo": {
+      "title": "Der Heckservo",
+      "explain": "333 Hz passen zu einem digitalen Servo; ein analoger bleibt bei 50 Hz, sonst brennt er durch. Mit tri_unarmed_servo an folgt das Heck auch disarmt dem Gierknüppel, also kannst du es ohne Propeller testen. Mitte und Weg stellst du mit dem Befehl servo oder im Tab Servos ein. Prüf dann die Richtung mit dem Test des Heckservos: Gieren nach rechts muss den Heckschub nach links kippen. Kippt er ihn nach rechts, tipp smix reverse 5 2 r und speicher, oder dreh den Servo um."
+    },
+    "failsafe": {
+      "title": "Failsafe: Drop",
+      "explain": "Wenn die Funkverbindung 1,5 s lang abreißt, stopp die Motoren. Ohne GPS hat ein Tri keinen Weg nach Hause, und in den Park zu fallen ist besser, als davonzufliegen."
+    },
+    "althold": {
+      "title": "Höhe halten",
+      "explain": "ALTHOLD (Modus-ID 3) auf AUX3, zusätzlich zu ANGLE auf AUX2. Mit dem Gasknüppel in den mittleren 15 % hält der Tri seine Höhe über das Barometer; drück ihn nach oben oder unten, um zu steigen oder zu sinken. Der einfachste Weg, um zu lernen, wie sich das Heck anfühlt."
+    },
+    "angle": {
+      "title": "Angle-Modus",
+      "explain": "Selbstnivellierend mit einer Neigung von höchstens 60°: Lass den rechten Knüppel los, und er richtet sich auf. Die Höhe fliegst du mit dem Gas."
+    },
+    "acro": {
+      "title": "Acro-Rates",
+      "explain": "Mit ANGLE und ALTHOLD beide aus legen die Knüppel Drehraten fest: 540°/s Rollen und Nicken bei vollem Knüppel und 400°/s Gieren, weil der Servo das Heck schwenken muss. Mehr P und I beim Gieren als die Standardwerte eines Quads helfen dem Heck, seine Richtung zu halten, wenn sich das Drehmoment des Heckmotors mit dem Gas ändert."
+    },
+    "race": {
+      "title": "Rennrunden",
+      "explain": "Angle-Modus für die Gates und der Renntimer im OSD: osd_tim1 = 18 zählt ab dem letzten Armen in Hundertsteln, und 2103 setzt ihn im OSD-Profil 1 nahe an die obere rechte Ecke des Bildschirms."
+    },
+    "park": {
+      "title": "Parklauf",
+      "explain": "Der Parklauf in Höhe halten, mit demselben Timer wie beim Rennen. Der Knüppel steigt und sinkt und hält in der Mitte die Höhe, also kann deine Aufmerksamkeit beim Gieren um die Laternen bleiben."
+    }
+  },
+  "flight": {
+    "modes": {
+      "althold": {
+        "title": "Höhe halten",
+        "hint": "Selbstnivellierend und höhenhaltend: Stell das Gas in die Mitte, und er bleibt, wo er ist. Fang hier an."
+      },
+      "angle": {
+        "title": "Angle",
+        "hint": "Selbstnivellierend, Neigung höchstens 60°. Die Höhe fliegst du mit dem Gas."
+      },
+      "acro": {
+        "title": "Acro",
+        "hint": "Keine Selbstnivellierung: Die Knüppel legen Drehraten fest, 540°/s Rollen und Nicken und 400°/s Gieren. Achte darauf, wie das Heck einem schnellen Gieren hinterherhinkt."
+      },
+      "race": {
+        "title": "Rennen (Angle)",
+        "hint": "Die sechs Gates im Park der Reihe nach, Runde für Runde gestoppt."
+      },
+      "park": {
+        "title": "Parklauf (Höhe halten)",
+        "hint": "Die Laternen, der Brunnen und der Pavillon der Reihe nach, dann auf dem Landeplatz landen. Die Uhr hält an, wenn du aufsetzt."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Funkverbindung 1,5 s lang verloren: Die Motoren halten an, und der Tri fällt.",
+      "low-battery": "Unter 3,5 V pro Zelle: Das OSD warnt. Flieg zurück und lande.",
+      "battery-empty": "Unter 3,2 V pro Zelle: Der Akku bricht so weit ein, dass die ESCs abschalten, und der Tri fällt."
+    },
+    "controls": "Tastatur: Leertaste armt und disarmt, W und S geben Gas, die Pfeiltasten nicken und rollen, A und D gieren (der Heckservo dreht ihn, also hinkt er etwas nach), V schaltet auf FPV, R setzt den Tri zurück auf den Landeplatz. Auf dem Handy ist der linke Knüppel Gas und Gieren, der rechte Nicken und Rollen. Ein Gamepad funktioniert in Mode 2."
+  },
+  "courses": {
+    "park": {
+      "title": "Stadtpark",
+      "brief": "Schlängel dich um die vier Laternen am Weg, abwechselnd links und rechts vorbei, umkreise den Brunnen gegen den Uhrzeigersinn, flieg von Osten durch den Pavillon und lande dann auf dem Landeplatz. Höhe halten hält deine Höhe, während du lenkst.",
+      "goals": {
+        "1": "Laterne 1, Südseite",
+        "2": "Laterne 2, Nordseite",
+        "3": "Laterne 3, Südseite",
+        "4": "Laterne 4, Nordseite",
+        "5": "Brunnen, Süden",
+        "6": "Brunnen, Osten",
+        "7": "Brunnen, Norden",
+        "8": "Brunnen, Westen",
+        "9": "Durch den Pavillon, Richtung Westen",
+        "10": "Auf dem Landeplatz landen"
+      }
+    },
+    "laps": {
+      "title": "Parkrunden",
+      "brief": "Sechs Gates von 1,6 m rund um den Rand des Parks, im Uhrzeigersinn ab dem Gate vor dem Landeplatz geflogen: die Westseite hinauf am Teich vorbei, am Nordzaun entlang, die Ostseite hinunter am Brunnen vorbei und zurück über den Südweg. Flieg die Gates der Reihe nach; die Rundenuhr startet am ersten."
+    }
+  },
+  "quizzes": {
+    "tail": {
+      "yaw": {
+        "q": "Wie dreht ein Trikopter seine Nase (Gieren)?",
+        "options": {
+          "1": "Er beschleunigt die Motoren, die in eine Richtung drehen, wie ein Quad",
+          "2": "Ein Servo kippt den Heckmotor, sodass ein Teil seines Schubs das Heck seitlich drückt",
+          "3": "Ein Ruder sitzt im Abwind des Heckpropellers"
+        },
+        "why": "Der TRI-Mixer von Betaflight gibt den Motoren überhaupt kein Gieren; das Gieren kommt vom Servo. Gieren nach rechts kippt den Schub des Heckmotors nach links, also schwenkt das Heck nach links und die Nase nach rechts."
+      },
+      "front": {
+        "q": "Warum drehen die beiden vorderen Propeller gegenläufig?",
+        "options": {
+          "1": "Damit die Kamera nie einen Propeller sieht",
+          "2": "Bei einem Tri macht das keinen Unterschied",
+          "3": "Damit sich ihre Drehmomente aufheben und nur das Drehmoment des Heckmotors bleibt, das der Servo wegtrimmt"
+        },
+        "why": "Betaflight ist egal, wie herum sie drehen, aber dem Rahmen nicht: Zwei vordere Propeller, die in dieselbe Richtung drehen, verdrehen ihn ständig. Das eigene Drehmoment des Heckpropellers bleibt übrig, und der Servo hält ein paar Grad Neigung, um es aufzuheben."
+      }
+    },
+    "power": {
+      "esc": {
+        "q": "Was bestimmt den Strom, den ein ESC an diesem Tri tragen muss?",
+        "options": {
+          "1": "Sein eigener Motor bei Vollgas: etwa ein Drittel des Akkustroms",
+          "2": "Der ganze Akkustrom, weil sich alle drei einen Akku teilen",
+          "3": "Nur der Schwebestrom"
+        },
+        "why": "Jeder Einzel-ESC treibt einen Motor, also trägt er dessen Anteil. Die ESC-Prüfung des Rechners vergleicht den Vollgasstrom eines Motors mit dem Nennwert des ESC, und ein bissiger Propeller kann ihn darüber treiben."
+      },
+      "bec": {
+        "q": "Woher bekommt der Heckservo seinen Strom?",
+        "options": {
+          "1": "Direkt vom 4S-Akku",
+          "2": "Von einem 5-V-Regler mit Stromreserve, über den roten Draht seines Kabels",
+          "3": "Vom Empfänger"
+        },
+        "why": "Ein Servo ist ein Bauteil für 5 oder 6 V, und 16,8 V vom Akku würden ihn zerstören. Wenn er blockiert, zieht er Ampere, also braucht der Regler Reserve: Ein Servo, der die 5-V-Schiene nach unten zieht, kann den Flugcontroller in der Luft neu starten."
+      }
+    },
+    "fly": {
+      "pirouette": {
+        "q": "Direkt nach dem Start beginnt der Tri sich zu drehen, immer schneller. Was ist die wahrscheinliche Ursache?",
+        "options": {
+          "1": "Der Heckservo ist umgekehrt, also drückt jede Gierkorrektur in die falsche Richtung",
+          "2": "Der Akku ist zu klein",
+          "3": "Die Kameraneigung stimmt nicht"
+        },
+        "why": "Ein umgekehrter Servo macht aus der Gierregelung eine Mitkopplung: Je mehr er sich dreht, desto stärker treibt ihn das Heck an. Betaflight hat dafür keine Pre-Arm-Prüfung, und deshalb kommt der Servotest ohne Propeller zuerst."
+      },
+      "motorout": {
+        "q": "Ein vorderer Motor fällt in der Luft aus. Was passiert?",
+        "options": {
+          "1": "Er fliegt mit zwei Motoren weiter",
+          "2": "Der Heckservo gleicht es aus",
+          "3": "Er rollt zu dieser Seite und stürzt ab: Ein Trikopter hat keinen Ersatzmotor"
+        },
+        "why": "Mit drei Motoren wird jeder für Auftrieb und Gleichgewicht gebraucht. Fällt der Heckmotor aus, sackt das Heck ab, und er überschlägt sich nach hinten. Ein Oktokopter kann einen Motor verlieren; ein Tri kommt, wie ein Quad, herunter."
+      },
+      "servos": {
+        "q": "Du hast den Standard-Cloud-Build von Betaflight geflasht, und das Heck bewegt sich nicht. Warum?",
+        "options": {
+          "1": "Trikopter brauchen INAV",
+          "2": "Die Servo-Unterstützung ist im Standard-Cloud-Build aus: Hak Servos an und flash noch einmal",
+          "3": "Der Servo braucht eine Rate von 50 Hz"
+        },
+        "why": "Betaflight 2026.6.2 fliegt weiterhin Trikopter, aber die Servo-Unterstützung (USE_SERVOS) ist eine Build-Option, die standardmäßig aus ist. Ohne sie gibt es keinen Servoausgang, und der TRI-Mixer hat überhaupt kein Gieren: Flieg so nicht."
+      }
+    }
+  }
+}
