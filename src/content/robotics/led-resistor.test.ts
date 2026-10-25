@@ -100,22 +100,19 @@ describe('led-resistor content', () => {
   });
 });
 
-// a task's virtual run takes well under a second alone, but several seconds while the whole suite shares the CPU
-const RUN_BUDGET_MS = 30_000;
-
 describe('led-resistor tasks through the app check path', () => {
   for (const task of bench.tasks) {
     it(`${task.id}: the reference solution passes every check`, () => {
       const { trace, results } = runChecks(taskJob(task, render(task.solution)));
       expect(trace.error).toBeNull();
       expect(task.checks.filter((_, i) => !results[i].ok).map((c) => String(leaf(c.label)))).toEqual([]);
-    }, RUN_BUDGET_MS);
+    });
 
     it(`${task.id}: the starter runs and does not already pass`, () => {
       const { trace, results } = runChecks(taskJob(task, render(task.starter)));
       expect(trace.error).toBeNull();
       expect(results.some((r) => !r.ok)).toBe(true);
-    }, RUN_BUDGET_MS);
+    });
   }
 
   it("ohms-law: the starter's whole-number maths prints 0 mA", () => {
