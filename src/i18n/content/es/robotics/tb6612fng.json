@@ -1,0 +1,432 @@
+{
+  "title": "Driver TB6612FNG",
+  "sub": "puente H, PWM",
+  "hint": "alimenta el banco y luego envía órdenes de movimiento",
+  "overview": "Un pin de la Nano da unos 20 mA a 5 V. Un motorreductor TT quiere 150 mA solo para girar y alrededor de un amperio cuando arranca o se bloquea, a 6 o 7 V. El TB6612FNG va entre los dos: dos puentes H, cada uno con cuatro interruptores que conectan el motor en un sentido, en el otro, o cortocircuitan sus cables entre sí para frenar. IN1 e IN2 eligen el sentido y el PWM fija la velocidad encendiendo y apagando el puente casi mil veces por segundo (977 Hz en los pines 5 y 6). La alimentación de los motores (VM, de 2,5 a 13,5 V, aquí una LiPo 2S) y la de la lógica (VCC, de 2,7 a 5,5 V, aquí los 5 V de la Nano) son alimentaciones separadas con una tierra común, y STBY tiene que estar en HIGH o todo el chip se duerme. Sus interruptores MOSFET pierden unos 0,5 V a 1 A y solo unos 0,15 V a 0,3 A, frente a unos 2 V de los interruptores bipolares del L298N, así que este es el driver que conviene usar. Monta la placa, dale alimentación y luego prueba el freno y la rueda libre seguidos: el freno para la rueda en seco y la rueda libre la deja frenarse sola.",
+  "parts": {
+    "U1": {
+      "name": "Driver de doble puente H TB6612FNG",
+      "what": "El driver de Toshiba en un SSOP24: dos puentes H de cuatro MOSFET de baja resistencia cada uno, la lógica que interpreta IN1, IN2 y PWM, un interruptor de reposo, un bloqueo por subtensión en VCC (se apaga por debajo de 1,9 V y vuelve por encima de 2,2 V) y apagado térmico a 175 °C. Cada canal lleva 1,2 A de media (1 A en uso normal) y 3,2 A en un pulso de 10 ms. No tiene límite de corriente: solo lo protege el apagado térmico."
+    },
+    "C1": {
+      "name": "Condensador de 0,1 µF en VM",
+      "what": "Un pequeño cerámico justo en los pines de alimentación de los motores. Absorbe los flancos rápidos cada vez que el puente conmuta, así que los picos se quedan en la placa en lugar de volver por los cables de la batería."
+    },
+    "C2": {
+      "name": "Condensador de 0,1 µF en VCC",
+      "what": "Desacopla la alimentación de la lógica junto al chip, para que el ruido de los motores no llegue a las entradas que leen IN1, IN2, PWM y STBY."
+    },
+    "C3": {
+      "name": "Condensador de tántalo de 10 µF en VM",
+      "what": "El depósito principal de la alimentación de los motores: da al puente el golpe de corriente que pide cada ciclo de PWM. Es un chip de tántalo con polaridad: la banda marca el +, y va hacia VM, a la izquierda. Colocado al revés, un tántalo falla en cortocircuito y puede arder."
+    },
+    "JP1": {
+      "name": "Conector de alimentación y motores",
+      "what": "VM (batería de los motores, de 2,5 a 13,5 V, 15 V como máximo absoluto), VCC (lógica, de 2,7 a 5,5 V), GND, luego las salidas de motor A01, A02, B02, B01 y un segundo GND. Dos alimentaciones a propósito: los motores pueden funcionar con una batería mientras la lógica sigue a la controladora. Fíjate en que la serigrafía pone A01 con un cero; Toshiba lo llama AO1."
+    },
+    "JP2": {
+      "name": "Conector de control",
+      "what": "PWMA y PWMB fijan la velocidad de cada canal, AIN1/AIN2 y BIN1/BIN2 eligen el sentido, y STBY tiene que estar en HIGH o todas las salidas se apagan. Cada entrada tiene un pull-down de 200 kΩ dentro del chip, así que un pin sin conectar se lee como LOW."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "La controladora, por USB (Mini-B). D5 controla PWMA, D7 AIN1, D8 AIN2, D9 STBY, D6 PWMB, D10 BIN1 y D11 BIN2; su pin 5V alimenta VCC y su GND está unido al GND de la batería. Los motores nunca consumen de ella."
+    },
+    "MOTA": {
+      "name": "Motor A (motorreductor TT)",
+      "what": "Un motorreductor amarillo 1:48 en A01 y A02. Unos 150 mA girando libre a 6 o 7 V, alrededor de un amperio al arrancar o bloqueado. El buje amarillo muestra su velocidad y su sentido."
+    },
+    "MOTB": {
+      "name": "Motor B (motorreductor TT)",
+      "what": "El segundo motorreductor, en B01 y B02, con su propia velocidad y su propio sentido (buje rojo). En esta placa, B02 está por encima de B01 en el conector."
+    },
+    "BATT": {
+      "name": "Batería LiPo 2S, 7,4 V",
+      "what": "Dos celdas de polímero de litio en serie: 8,4 V cargada, 7,4 V nominales, unos 6,4 V cuando toca recargarla. El rojo va a VM y el negro a GND. Solo alimenta los motores."
+    }
+  },
+  "power": {
+    "label": "Alimenta el banco",
+    "ok": "La Nano por USB, la LiPo en VM: el driver está despierto (STBY en HIGH)"
+  },
+  "modes": {
+    "fwd50": {
+      "title": "Adelante 50 %"
+    },
+    "fwd100": {
+      "title": "Adelante 100 %"
+    },
+    "rev": {
+      "title": "Atrás"
+    },
+    "brake": {
+      "title": "Freno"
+    },
+    "coast": {
+      "title": "Rueda libre"
+    },
+    "standby": {
+      "title": "Reposo (STBY en LOW)"
+    },
+    "code": {
+      "title": "TB6612FNG: IN1 e IN2 eligen el sentido, el PWM fija la velocidad",
+      "stby": "LOW, o sin conectar, duerme todo el chip",
+      "sleep": "STBY en LOW: todas las salidas apagadas, digan lo que digan los demás pines",
+      "fwd": "adelante",
+      "rev": "atrás",
+      "brk": "freno en cortocircuito",
+      "cst": "rueda libre",
+      "fwd50": "adelante, a media velocidad",
+      "fwd100": "adelante, a velocidad máxima",
+      "rev160": "atrás, 63 % de ciclo de trabajo",
+      "brake": "freno en cortocircuito: los dos cables del motor unidos a GND, se para en seco",
+      "coast": "rueda libre: salidas apagadas (PWM en HIGH), la rueda se frena sola",
+      "ignored": "se ignora mientras STBY está en LOW"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Déjala en la PCB desnuda",
+      "body": "Quita todas las piezas. El cuadrado rojo de 20 mm solo lleva cuatro piezas y dos tiras de pines: las volverás a poner en el orden en que lo haría una fábrica.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    },
+    "smd": {
+      "title": "Colocación automática de las piezas SMD, y luego reflujo",
+      "body": "Pasta, y luego U1, C1, C2 y C3 se colocan de una pasada, y el horno funde la pasta de debajo de cada pad a unos 245 °C. Cuidado con el punto del pin 1 de U1 (arriba a la izquierda) y la banda de C3 (+, hacia VM).",
+      "refusal": "Las piezas SMD se colocan primero, sobre una placa desnuda"
+    },
+    "jp1": {
+      "title": "Coloca JP1, el conector de alimentación y motores",
+      "body": "Una tira de 1x8 a lo largo del borde izquierdo: VM, VCC, GND, A01, A02, B02, B01, GND.",
+      "refusal": "Primero las piezas SMD: haz la colocación automática + reflujo. El horno fundiría las piezas de plástico"
+    },
+    "jp2": {
+      "title": "Coloca JP2, el conector de control",
+      "body": "Una tira de 1x8 a lo largo del borde derecho: PWMA, AIN2, AIN1, STBY, BIN1, BIN2, PWMB, GND. Las dos filas están a 0,6 pulgadas, así que la placa también puede montarse a caballo sobre una protoboard como un chip ancho.",
+      "refusal": "Primero las piezas SMD: haz la colocación automática + reflujo. El horno fundiría las piezas de plástico"
+    },
+    "solder": {
+      "title": "Suelda las tiras de pines",
+      "body": "Dieciséis soldaduras de agujero pasante. Una buena es brillante y cóncava, y moja tanto el pin como el pad.",
+      "refusal": "Todavía no hay nada que soldar: primero coloca una pieza"
+    },
+    "wire-nano": {
+      "title": "Conecta la Nano a JP2 y a VCC",
+      "body": "Pon la Nano sobre la alfombrilla y lleva ocho cables desde JP2: PWMA a D5, AIN2 a D8, AIN1 a D7, STBY a D9, BIN1 a D10, BIN2 a D11, PWMB a D6 y GND a GND. Uno más de VCC al 5V de la Nano: la lógica del driver sigue a la controladora. D5, D6, D9, D10 y D11 son pines PWM; PWMA y PWMB necesitan dos de ellos.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    },
+    "wire-motors": {
+      "title": "Conecta los dos motores",
+      "body": "El motor A en A01 y A02, el motor B en B01 y B02. Qué cable va dónde solo fija hacia qué lado gira la rueda: si una rueda gira al revés con Adelante, intercambia sus dos cables.",
+      "refusal": "Primero desconecta la alimentación, y conecta la Nano antes que los motores"
+    },
+    "wire-battery": {
+      "title": "Conecta la LiPo a VM y GND",
+      "body": "El rojo a VM y el negro al GND de al lado. Esta placa no tiene protección contra la polaridad inversa: compruébalo dos veces antes de conectar. La LiPo solo alimenta los motores; la Nano sigue con su propia alimentación por USB.",
+      "refusal": "Primero desconecta la alimentación, y conecta los motores antes que la LiPo"
+    },
+    "plug": {
+      "title": "Alimenta el banco",
+      "body": "El USB a la Nano y la LiPo a VM y GND. Los 5 V de la Nano alimentan VCC; las tierras están unidas. La Nano arranca con Adelante 50 %.",
+      "refusal": "Primero termina el montaje: todas las piezas puestas y todas las uniones soldadas"
+    },
+    "fwd50": {
+      "title": "Envía Adelante 50 %",
+      "body": "AIN1 en HIGH, AIN2 en LOW, PWMA a 128: las dos ruedas giran hacia delante a más o menos media velocidad, unos 3,7 V de media.",
+      "refusal": "Primero alimenta el banco"
+    },
+    "brake": {
+      "title": "Envía Freno",
+      "body": "AIN1 y AIN2 los dos en HIGH: los dos interruptores del lado bajo unen los cables del motor a GND, la propia fuerza contraelectromotriz del motor lucha contra el giro, y se para en seco.",
+      "refusal": "Primero alimenta el banco"
+    },
+    "coast": {
+      "title": "Envía Rueda libre",
+      "body": "AIN1 y AIN2 los dos en LOW con PWMA en HIGH: todos los interruptores están apagados, nada sujeta el motor y la rueda se frena sola. Compáralo con Freno.",
+      "refusal": "Primero alimenta el banco"
+    },
+    "rev": {
+      "title": "Envía Atrás",
+      "body": "AIN1 en LOW, AIN2 en HIGH, PWMA a 160: conduce la otra diagonal del puente, así que la corriente circula al revés y las ruedas giran hacia atrás con un 63 % de ciclo de trabajo.",
+      "refusal": "Primero alimenta el banco"
+    },
+    "fwd100": {
+      "title": "Envía Adelante 100 %",
+      "body": "PWMA a 255 mantiene el puente encendido todo el tiempo: el motor ve la batería menos la caída de los interruptores, unos 7,3 V a 150 mA.",
+      "refusal": "Primero alimenta el banco"
+    },
+    "standby": {
+      "title": "Pon STBY en LOW",
+      "body": "El sketch pone STBY en LOW: todas las salidas se apagan y el chip consume menos de 1 µA, aunque IN1, IN2 y PWM sigan diciendo adelante. Un cable de STBY que se suelta hace lo mismo, por el pull-down de 200 kΩ.",
+      "refusal": "Primero alimenta el banco"
+    },
+    "c3-backwards": {
+      "title": "Avéríala: C3 al revés",
+      "body": "C3 vuelve a su sitio con la banda hacia GND. Dale alimentación y mira cómo falla, y luego desconecta, dale la vuelta y vuelve a alimentarla."
+    },
+    "lipo-backwards": {
+      "title": "Avéríala: la LiPo conectada al revés",
+      "body": "El rojo en GND y el negro en VM. Esta placa no tiene protección contra la polaridad inversa. Mira qué se quema, y luego repárala y aliméntala en el sentido correcto."
+    },
+    "four-cells": {
+      "title": "Avéríala: una batería 4S en VM",
+      "body": "Una LiPo 4S cargada del todo da 16,8 V, por encima de los 15 V del máximo absoluto. Mira cómo falla el driver, y luego vuelve a la batería 2S."
+    },
+    "motors-on-5v": {
+      "title": "Avéríala: los motores en los 5 V de la Nano",
+      "body": "VM pasa de la batería al pin 5V de la Nano. Cada arranque de los motores hunde la línea y la Nano se reinicia en bucle. Repárala: VM otra vez en la LiPo."
+    },
+    "cold-stby": {
+      "title": "Avéríala: soldaduras frías en el conector de control",
+      "body": "Las soldaduras del conector de control están mates y granuladas. Cuando se abre la soldadura de STBY, el pull-down duerme el chip y los motores van a trompicones. Vuelve a fundir las soldaduras."
+    },
+    "no-driver": {
+      "title": "Deja U1 fuera",
+      "body": "Quita el chip del driver y dale alimentación: las alimentaciones están, pero nada mueve los motores. Vuelve a poner U1 antes del siguiente paso.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    },
+    "exploded": {
+      "title": "Vista despiezada",
+      "body": "Desconéctala y levanta las piezas por grupos de montaje: las piezas SMD y luego las tiras de pines.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    }
+  },
+  "faults": {
+    "c3-reversed": {
+      "title": "C3 colocado al revés",
+      "symptom": "¡Pum!: C3 se agrieta y echa humo en cuanto se conecta la batería, y la corriente de la batería se dispara.",
+      "explanation": "Un condensador de tántalo tiene polaridad. La tensión inversa rompe su capa de óxido, se convierte en casi un cortocircuito entre VM y tierra, y la batería mete amperios por él hasta que arde.",
+      "fix": "Desconecta, desuelda C3 y coloca uno nuevo con la banda (+) hacia VM, a la izquierda."
+    },
+    "reverse-polarity": {
+      "title": "LiPo conectada al revés",
+      "symptom": "U1 y C3 se calientan en segundos, huele a quemado y no gira nada.",
+      "explanation": "La placa de SparkFun no tiene protección contra la polaridad inversa. La corriente va desde GND por los diodos intrínsecos de los interruptores de abajo y sale por los de arriba hacia VM: dos caídas de diodo entre los extremos de la batería, casi un cortocircuito a través del chip. Al mismo tiempo, C3 queda polarizado al revés.",
+      "fix": "Desconecta enseguida e intercambia los cables: el rojo a VM y el negro a GND. En una placa real, U1 y C3 suelen quedar muertos; la placa portadora de Pololu añade un MOSFET de protección contra la polaridad inversa en VM."
+    },
+    "over-voltage": {
+      "title": "16,8 V en VM",
+      "symptom": "El driver falla al momento: VM queda en cortocircuito con GND y los cables de la batería se calientan.",
+      "explanation": "VM funciona hasta 13,5 V y aguanta 15 V. Una batería 4S cargada (16,8 V) supera los dos valores, y cada pico de frenado suma todavía más.",
+      "fix": "Usa una batería 2S (8,4 V cargada) o como mucho una 3S (12,6 V cargada, poco margen para los picos de frenado)."
+    },
+    "brownout": {
+      "title": "Los motores en los 5 V de la Nano",
+      "symptom": "La Nano se reinicia cada vez que arrancan los motores: el sketch vuelve a empezar, la línea del monitor serie se repite y las ruedas dan tirones.",
+      "explanation": "Dos motores TT consumen unos 1,6 A durante un momento al arrancar. La alimentación USB de la Nano tiene un fusible de 500 mA y va detrás de un diodo, así que su línea de 5 V cae por debajo del nivel de caída de tensión de 2,7 V del ATmega328P y el chip se reinicia.",
+      "fix": "Alimenta VM desde la batería, deja VCC en los 5 V de la Nano y une las tierras."
+    },
+    "cold-header": {
+      "title": "Soldaduras frías en el conector de control",
+      "symptom": "Los motores van a trompicones, peor cuando se golpea la placa o vibra.",
+      "explanation": "Una soldadura fría es mate, granulada y en forma de cono: solo toca el pin de vez en cuando. Cuando se abre la soldadura de STBY, el pull-down de 200 kΩ lleva STBY a LOW y el chip se duerme hasta que vuelve el contacto.",
+      "fix": "Vuelve a calentar cada soldadura con flux nuevo y un poco de estaño hasta que fluya y forme un filete brillante y cóncavo."
+    },
+    "stby-low": {
+      "title": "STBY en LOW o sin conectar",
+      "symptom": "Con alimentación, el sketch funciona, IN1, IN2 y PWM parecen correctos, y no gira nada.",
+      "explanation": "STBY en LOW apaga todas las salidas. Un STBY sin conectar se lee como LOW por el pull-down interno de 200 kΩ, la trampa más habitual del primer día con este chip.",
+      "fix": "Conecta STBY a un pin y ponlo en HIGH en setup(), o únelo a VCC."
+    },
+    "no-driver": {
+      "title": "Falta U1",
+      "symptom": "Las dos alimentaciones están encendidas, pero no gira nada y nada se calienta.",
+      "explanation": "Sin U1 no hay nada entre la batería y los motores: la placa es solo tiras de pines, tres condensadores y cobre.",
+      "fix": "Desconecta, coloca U1 con el pin 1 arriba a la izquierda y suéldalo."
+    }
+  },
+  "status": {
+    "status": "Estado",
+    "powered": "Alimentación del banco",
+    "mode": "Orden",
+    "stby": "STBY",
+    "ain1": "AIN1",
+    "ain2": "AIN2",
+    "pwma": "Ciclo de trabajo de PWMA",
+    "vm": "VM (alimentación de los motores)",
+    "vcc": "VCC (lógica)",
+    "motors": "Corriente de la batería",
+    "usb": "Corriente USB"
+  },
+  "current": {
+    "usb": "USB de la Nano (polifusible de 500 mA)",
+    "lipo": "LiPo 2S en VM (límite del driver 2 x 1 A)",
+    "nano": "Nano en marcha",
+    "logic": "Lógica del TB6612FNG, STBY en HIGH",
+    "motors": "Dos motores TT",
+    "motors5v": "Dos motores TT arrancando desde el pin de 5 V",
+    "c3short": "C3 en cortocircuito por la tensión inversa",
+    "reverse": "Batería invertida a través de los diodos intrínsecos"
+  },
+  "tasks": {
+    "five-speeds": {
+      "title": "Cinco velocidades, en los dos sentidos",
+      "brief": "Mueve el motor A hacia delante en cinco pasos de PWM (51, 102, 153, 204, 255), un segundo cada uno, frena medio segundo, y luego haz lo mismo hacia atrás y vuelve a frenar. Mantén STBY en HIGH todo el tiempo.",
+      "hints": {
+        "1": "El sentido es AIN1 y AIN2, la velocidad es analogWrite(PWMA, …): fija el sentido una vez y luego ve subiendo el PWM.",
+        "2": "51 × i para i = 1 a 5 da los cinco pasos; delay(1000) después de cada uno.",
+        "3": "El freno es AIN1 = AIN2 = HIGH. Escribe los dos pines cada vez; no confíes nunca en el pull-down."
+      },
+      "checks": {
+        "1": "Funciona durante los 11 s completos",
+        "2": "STBY (D9) está en HIGH",
+        "3": "Adelante: AIN1 (D7) está en HIGH",
+        "4": "Adelante: AIN2 (D8) está en LOW",
+        "5": "Primer paso: PWMA al 20 %",
+        "6": "Tercer paso: PWMA al 60 %",
+        "7": "Quinto paso: PWMA al 100 %",
+        "8": "Atrás: AIN1 (D7) está en LOW",
+        "9": "Atrás: AIN2 (D8) está en HIGH",
+        "10": "Atrás, primer paso: PWMA al 20 %",
+        "11": "Atrás, quinto paso: PWMA al 100 %"
+      },
+      "code": {
+        "goal": "Pasa el motor A por cinco velocidades hacia delante, frena, y luego lo mismo hacia atrás",
+        "start": "esto solo va hacia delante en el primer paso: añade los otros cuatro, el freno y el barrido hacia atrás"
+      }
+    },
+    "one-turn": {
+      "title": "Exactamente una vuelta",
+      "brief": "Un disco de encoder de 20 ranuras en el eje del motor A da un flanco de subida en D2 por ranura. Cuenta los flancos en una interrupción y frena el motor A después de exactamente 20 ranuras, una vuelta de la rueda, y luego imprime la cuenta una vez. Como paras por la cuenta y no por un temporizador, da una vuelta tanto si la batería está llena como casi vacía: tu primer lazo cerrado.",
+      "hints": {
+        "1": "La interrupción solo cuenta: count++ en tick(), nada más. Las decisiones, en loop().",
+        "2": "count es un long de 32 bits en un chip de 8 bits: léelo entre noInterrupts() e interrupts() para que no pueda cambiar a mitad de la lectura.",
+        "3": "AIN1 ya está en HIGH, así que poner AIN2 en HIGH da el freno en cortocircuito. Usa un indicador para frenar e imprimir solo una vez."
+      },
+      "checks": {
+        "1": "Cuenta el encoder con una interrupción y un contador volatile",
+        "2": "Mueve el motor A con PWM a 150",
+        "3": "Sigue en marcha después de 19 ranuras",
+        "4": "Frena (AIN2 en HIGH) justo después de la ranura 20",
+        "5": "Se queda frenado",
+        "6": "Imprime \"one turn: 20 slots\""
+      },
+      "code": {
+        "goal": "Haz girar el motor A exactamente una vuelta: 20 ranuras del encoder",
+        "slots": "ranuras del disco del encoder: una vuelta",
+        "todo": "lee count de forma segura, y frena cuando llegue a SLOTS"
+      },
+      "world": {
+        "enc": "Encoder en D2"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "reflow-first": {
+        "q": "¿Por qué se ponen las tiras de pines después del reflujo y no antes?",
+        "options": {
+          "1": "Los 245 °C del horno fundirían su plástico",
+          "2": "Las tiras le quitarían calor a U1",
+          "3": "El reflujo solo funciona con pads cuadrados"
+        },
+        "why": "Toda la placa pasa por el horno. Las piezas de agujero pasante con cuerpo de plástico se ponen después y se sueldan a mano, una a una."
+      },
+      "c3-way": {
+        "q": "¿En qué sentido va C3?",
+        "options": {
+          "1": "Con la banda (+) hacia VM, a la izquierda",
+          "2": "En cualquiera: es un cerámico",
+          "3": "Con la banda hacia GND, a la derecha"
+        },
+        "why": "C3 es un tántalo, y los tántalos tienen polaridad: la banda marca el extremo +. Al revés, se rompe y falla en cortocircuito, muchas veces con humo."
+      },
+      "c3-job": {
+        "q": "¿Para qué sirve C3?",
+        "options": {
+          "1": "Fija la frecuencia del PWM",
+          "2": "Guarda carga en VM para los golpes de corriente de cada ciclo de PWM",
+          "3": "Alimenta la lógica cuando se desconecta el USB"
+        },
+        "why": "Cada vez que el puente se enciende, el motor quiere la corriente más rápido de lo que pueden darla los cables de la batería. El depósito de 10 µF junto al chip da ese golpe y mantiene VM estable."
+      }
+    },
+    "drive": {
+      "both-high": {
+        "q": "AIN1 = HIGH y AIN2 = HIGH. ¿Qué hace el motor A?",
+        "options": {
+          "1": "Gira hacia delante",
+          "2": "Freno en cortocircuito: se para en seco",
+          "3": "Se para en rueda libre"
+        },
+        "why": "Las dos entradas en HIGH encienden los dos interruptores del lado bajo, que unen los cables del motor en GND. La fuerza contraelectromotriz del motor que gira genera una corriente que lucha contra su propio movimiento, así que se para en seco."
+      },
+      "half-duty": {
+        "q": "PWM al 50 % de ciclo de trabajo con una batería de 7,4 V. ¿Qué ve el motor de media?",
+        "options": {
+          "1": "7,4 V",
+          "2": "Unos 3,7 V",
+          "3": "0 V, el PWM es digital"
+        },
+        "why": "Media = ciclo de trabajo × (alimentación − caída del puente). A 150 mA la caída es solo de 0,15 A × 0,5 Ω ≈ 0,08 V, así que 0,5 × 7,3 V ≈ 3,7 V."
+      },
+      "pwm-low": {
+        "q": "AIN1 = HIGH, AIN2 = LOW. ¿Qué pasa durante la parte en LOW de cada ciclo de PWM?",
+        "options": {
+          "1": "Las salidas se abren y el motor va en rueda libre",
+          "2": "Conducen los dos interruptores del lado bajo: un freno en cortocircuito",
+          "3": "El chip pasa a reposo"
+        },
+        "why": "La tabla de la hoja de datos: PWM en LOW con IN1 o IN2 en HIGH es freno en cortocircuito. Cada ciclo alterna tracción y freno, y por eso la velocidad sigue tan de cerca al ciclo de trabajo."
+      }
+    },
+    "faults": {
+      "resets": {
+        "q": "La Nano se reinicia cada vez que arrancan los motores. ¿Primer sospechoso?",
+        "options": {
+          "1": "Un error en setup()",
+          "2": "El cable USB es demasiado largo",
+          "3": "Los motores hunden la línea de 5 V por debajo del nivel de caída de tensión"
+        },
+        "why": "La corriente de arranque de un motor es varias veces la corriente en marcha. Con una alimentación USB de 500 mA, hunde los 5 V por debajo del nivel de caída de tensión de 2,7 V del ATmega328P. Los motores van en su propia alimentación, VM."
+      },
+      "backwards": {
+        "q": "En esta placa, ¿qué pasa si la LiPo se conecta al revés?",
+        "options": {
+          "1": "Nada: la placa lo bloquea",
+          "2": "La corriente pasa por los diodos intrínsecos del puente y U1 y C3 se sobrecalientan",
+          "3": "Los motores giran al revés"
+        },
+        "why": "La placa de SparkFun no tiene diodo ni MOSFET de protección. Los diodos intrínsecos conducen con la batería invertida, casi un cortocircuito, y el tántalo también queda polarizado al revés."
+      },
+      "cells": {
+        "q": "¿Qué batería cargada del todo es demasiado para VM?",
+        "options": {
+          "1": "LiPo 2S, 8,4 V",
+          "2": "LiPo 3S, 12,6 V",
+          "3": "LiPo 4S, 16,8 V"
+        },
+        "why": "VM funciona hasta 13,5 V y su máximo absoluto es 15 V. Una 3S cabe con poco margen; una 4S supera el límite."
+      }
+    },
+    "end": {
+      "vs-l298n": {
+        "q": "¿Por qué usar el TB6612FNG en lugar del L298N?",
+        "options": {
+          "1": "Sus MOSFET tienen una caída de unos 0,5 V a 1 A (0,15 V a 0,3 A) en lugar de unos 2 V, así que menos calor y más velocidad",
+          "2": "Tiene más pines",
+          "3": "No necesita PWM"
+        },
+        "why": "Los interruptores del TB6612FNG se comportan como resistencias de 0,5 Ω, así que la pérdida se reduce con la corriente. Los interruptores bipolares del L298N pierden unos 2 V sea cual sea la corriente, y eso se convierte en calor y velocidad perdida."
+      },
+      "stby-open": {
+        "q": "STBY no está conectado a nada. ¿Qué hacen los motores?",
+        "options": {
+          "1": "Giran a velocidad máxima",
+          "2": "Nada: el pull-down interno mantiene STBY en LOW, así que el chip duerme",
+          "3": "Giran a media velocidad"
+        },
+        "why": "Cada entrada del TB6612FNG tiene un pull-down de 200 kΩ. Un STBY al aire se lee como LOW, y eso apaga todas las salidas."
+      },
+      "stutter": {
+        "q": "Los motores van a trompicones cuando golpeas la placa, y las soldaduras del conector se ven mates y granuladas. ¿Qué lo arregla?",
+        "options": {
+          "1": "Volver a fundir las soldaduras hasta que queden brillantes y cóncavas",
+          "2": "Un condensador mayor en VM",
+          "3": "Una frecuencia de PWM más baja"
+        },
+        "why": "Son soldaduras frías: solo hacen contacto de vez en cuando. Vuelve a calentarlas con flux y un poco de estaño."
+      }
+    }
+  }
+}
