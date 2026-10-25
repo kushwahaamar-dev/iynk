@@ -1,0 +1,374 @@
+{
+  "title": "Heavy-lift octocopter",
+  "tagline": "A 15 kg cinema octocopter on ArduPilot: eight motors carry a gimbal and a film camera, and it keeps flying when one of them stops.",
+  "sub": "ArduCopter + Pixhawk 6X + 12S",
+  "hint": "Build a camera octocopter, test its retracts and both GPS, then fly the backlot and stop a motor in the air",
+  "noun": "octocopter",
+  "overview": "An octocopter has eight motors where a quad has four. That buys two things: lift for a heavy payload, and redundancy. This one carries a 3-axis gimbal and a cinema camera, 3.7 kg of the 15.5 kg it weighs with two 6S packs in series. With eight motors, losing one costs an eighth of the thrust and nothing else: the mixer drives the other seven a little harder and the shot goes on, where a quad with a dead motor falls. The frame is 1360 mm motor to motor on folding 32 mm carbon arms, flown by a Pixhawk 6X on ArduCopter 4.7.2 with two GPS, a 900 MHz telemetry radio and an ELRS receiver. Its legs fold up after take-off so the camera can pan all the way round. Film crews fly craft like it with two people: a pilot, and a camera operator on a second radio who only aims the gimbal. Pick the parts and watch the numbers, build it, run the bench checks, then fly the backlot.",
+  "practice": "Start in Loiter: take off, hold a hover, fly down the street and land on the pad. Then fly the chase run by hand, and let AUTO fly the orbit shot round the water tower. When you trust it, climb to 15 m over open ground and pick Motor out: one motor stops, and it keeps flying on seven, turning slowly because yaw is what runs short. On a real build: a current-limited first plug-in rated for 12S, the motor test A to H with the props off, accelerometer and compass calibration, the landing gear on the bench, both GPS locked, every pre-arm message read, and every arm pulled to check its clamp before each flight.",
+  "design": {
+    "fixed": {
+      "FRAME": "Folding carbon octo frame, 1360 mm",
+      "ESC": "Eight 80 A 12S ESCs (PWM)",
+      "FC": "Pixhawk 6X flight controller",
+      "GPS": "Two GPS + compass modules on masts",
+      "XT60": "12S power board, XT90-S, 63 V capacitor, PM02D HV",
+      "RX": "ELRS receiver and 900 MHz telemetry radio",
+      "GEAR": "Retractable landing gear and its servos",
+      "GIMBAL": "3-axis brushless gimbal",
+      "CAM": "Cinema camera and lens (the payload, not priced)",
+      "TOP": "Battery tray, posts and straps"
+    },
+    "verdict": {
+      "ok": "Parts match: {tw}:1 thrust to weight. A motor out costs an eighth of the thrust, so the other seven can still hold the hover and land. Heavy lift wants about 2:1: much less leaves nothing for wind or a motor out, much more is weight that only shortens the flight.",
+      "weak": "Thrust to weight {tw}:1: it can't lift this weight with any margin, and it could never lose a motor. Heavy lift needs about 2:1, which the 170 KV motors on 12S with 20-inch props give.",
+      "over": "{kv} KV on {cells}S spins props this size far too fast: the motors and their ESCs overheat and one desyncs in the air. 6010 motors for 20-inch props are 130-170 KV on 12S."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Octo frame",
+      "what": "Two octagonal carbon plates 60 mm apart with eight 32 mm carbon tubes clamped between them, each folding at a hinge about 250 mm out for transport. Motor to motor across the frame is 1360 mm, so neighbouring motors sit 520 mm apart: the widest prop that fits is just under 20.5 inches."
+    },
+    "GEAR": {
+      "name": "Retractable landing gear",
+      "what": "Two legs a side on hinges under the bottom plate, joined by skid tubes, each side on a retract servo. Down, they hold the camera clear of the ground; up, they fold out of the picture so the gimbal can pan all the way round. The servos run on AUX OUT 1 (SERVO9, LandingGear) from a channel 7 switch."
+    },
+    "MOTORS": {
+      "name": "Eight 6010 170 KV motors",
+      "what": "60 mm stators, 170 KV on 12S. ArduPilot's octa X numbers them out of order: M1 front right, then clockwise M3, M8, M4, M2, M6, M7, M5, alternating clockwise and counter-clockwise. Motors opposite each other spin the same way."
+    },
+    "ESC": {
+      "name": "Eight 80 A ESCs",
+      "what": "One on top of each arm, under its prop, where the wash cools it, close to the motor so the phase wires stay short. They take plain PWM from MAIN OUT 1-8 and must be rated for 12S. The motor peaks near 30 A, so 80 A is generous."
+    },
+    "WIRES": {
+      "name": "Arm wiring",
+      "what": "Per arm a 12 AWG red and black pair from the power board and the ESC's signal lead out along the tube, with a slack loop over the fold joint so the arm can fold without pulling a wire. Three phase wires from each ESC to its motor; swap any two to reverse it."
+    },
+    "XT60": {
+      "name": "Power board",
+      "what": "A 160 mm power board between the plates: the packs come in through an XT90-S anti-spark plug at the back, and a 1000 µF 63 V low-ESR capacitor sits across the bus, stripe to minus. 12S is 50.4 V full, so the 35 V capacitor a 6S quad uses would fail. A PM02D HV module takes 5.2 V and the pack voltage to the Pixhawk's POWER1."
+    },
+    "FC": {
+      "name": "Pixhawk 6X",
+      "what": "An STM32H753 flight controller with three IMUs and two barometers, on vibration dampers on the top plate, arrow to the nose. MAIN OUT 1-8 drive the eight ESCs (SERVO1-8), AUX OUT 1 the landing gear (SERVO9). It runs ArduCopter 4.7.2."
+    },
+    "RX": {
+      "name": "Receiver and telemetry radio",
+      "what": "An ELRS receiver on UART4 (SERIAL6, CRSF) for the pilot's sticks, and a 900 MHz radio on TELEM1 for the ground station's MAVLink link. Both hang under the bottom plate with their antennas pointing down, clear of the carbon."
+    },
+    "GPS": {
+      "name": "Two GPS on masts",
+      "what": "Two GPS + compass modules on GPS1 and GPS2, each on a mast behind the battery tray, arrows forward, as far as the frame allows from the 12S wiring. ArduPilot flies on the better of the two and warns when they disagree."
+    },
+    "TOP": {
+      "name": "Battery tray",
+      "what": "A carbon tray on four posts over the Pixhawk, with straps for the two packs. It puts the packs' weight over the centre of the frame, where the centre of gravity has to be."
+    },
+    "GIMBAL": {
+      "name": "3-axis gimbal",
+      "what": "A brushless gimbal hung under the front of the frame on rubber dampers: yaw, roll and tilt motors and its own IMU keep the camera steady while the octocopter leans. It talks MAVLink on TELEM2, but the camera operator usually aims it from a second radio."
+    },
+    "CAM": {
+      "name": "Cinema camera",
+      "what": "The payload: a cinema camera with a lens, about 2.3 kg. It records to its own media and sends a video feed down to the camera operator. Balance it on all three axes with the gimbal off before the first power-up."
+    },
+    "BATT": {
+      "name": "Two 6S packs in series",
+      "what": "Two 6S 16000 mAh packs side by side on the tray, wired in series: 44.4 V nominal, 50.4 V full, still 16000 mAh. In series the volts add and the capacity stays; in parallel it would be the other way round."
+    },
+    "PROPS": {
+      "name": "Folding props",
+      "what": "Eight 20 x 5.5 inch folding carbon props, clockwise and counter-clockwise to match each motor. They leave 12 mm between neighbouring tips, which is tight; 22-inch props would overlap and strike each other on spool-up."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Assemble the frame",
+      "body": "Clamp the eight arms between the two plates, unfold them and lock every fold joint. Pull each arm: an unlocked clamp folds in flight. Without its legs the frame sits on a padded stand."
+    },
+    "gear": {
+      "title": "Fit the landing gear",
+      "body": "The legs hinge under the bottom plate, two a side, with the skid tubes along the bottom. Plug the retract servos into AUX OUT 1 later, once the Pixhawk is on.",
+      "refusal": "The legs hinge under the bottom plate: assemble the frame first."
+    },
+    "motors": {
+      "title": "Mount the eight motors",
+      "body": "On the clamps at the arm ends, by ArduPilot number: M1 front right, then clockwise M3, M8, M4, M2, M6, M7, M5. Motors opposite each other spin the same way.",
+      "refusal": "The motors bolt to the arm ends: assemble the frame first."
+    },
+    "esc": {
+      "title": "Fit the eight ESCs",
+      "body": "One on top of each arm, under the prop, with its signal lead running inboard.",
+      "refusal": "The ESCs ride on the arms: assemble the frame first."
+    },
+    "wires": {
+      "title": "Wire the arms",
+      "body": "Power pair and signal lead out along each tube, with a slack loop over the fold joint; three phase wires from each ESC to its motor.",
+      "refusal": "Fit the motors and the ESCs before the wires that join them."
+    },
+    "power": {
+      "title": "Fit the power board",
+      "body": "Between the plates, the XT90-S lead out the back, the 63 V capacitor across the bus with its stripe to minus, and the PM02D HV module for the Pixhawk.",
+      "refusal": "The power board feeds the ESCs' leads: fit the ESCs first."
+    },
+    "fc": {
+      "title": "Mount the Pixhawk 6X",
+      "body": "On its dampers in the middle of the top plate, arrow to the nose. ESC signal leads to MAIN OUT 1-8 in motor order, the gear servos to AUX OUT 1, the PM02D to POWER1.",
+      "refusal": "The Pixhawk is powered from the power board: fit that first."
+    },
+    "rx": {
+      "title": "Fit the receiver and the telemetry radio",
+      "body": "Under the bottom plate, antennas down: the ELRS receiver to UART4, the 900 MHz radio to TELEM1.",
+      "refusal": "The radios plug into the Pixhawk: mount it first."
+    },
+    "gps": {
+      "title": "Raise the GPS masts",
+      "body": "Two masts behind where the tray goes, the modules arrow forward, leads to GPS1 and GPS2.",
+      "refusal": "The GPS modules plug into the Pixhawk: mount it first."
+    },
+    "tray": {
+      "title": "Fit the battery tray",
+      "body": "On four posts over the Pixhawk, centred on the frame.",
+      "refusal": "The tray goes over the Pixhawk: mount it first."
+    },
+    "gimbal": {
+      "title": "Hang the gimbal",
+      "body": "On its damper plate under the front of the frame, its lead to TELEM2.",
+      "refusal": "The gimbal hangs under the frame, and the legs must be on to hold it off the bench: fit the landing gear first."
+    },
+    "cam": {
+      "title": "Mount and balance the camera",
+      "body": "Slide the camera into the gimbal and balance it on all three axes with the gimbal switched off, so its motors only hold it and never fight its weight.",
+      "refusal": "The camera goes in the gimbal: hang that first."
+    },
+    "batt": {
+      "title": "Strap the packs on",
+      "body": "Both packs on the tray, side by side under the straps, the series link joining them, the lead to the XT90-S. Plug in last, with the props still off.",
+      "refusal": "The packs sit on the tray and plug into the power board: fit both first."
+    },
+    "props": {
+      "title": "Props on, last",
+      "body": "Each prop to match its motor: clockwise props on M1, M2, M7 and M8, counter-clockwise on M3, M4, M5 and M6.",
+      "refusal": "Props go on after the motors and the packs, once every bench check has passed: fit those first."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "The two packs in series end in one XT90-S plug. Its anti-spark contact mates first through a resistor and charges the capacitor gently, so 50 V does not arc across the pins.",
+    "XT60-ESC": "The power board's pads feed a 12 AWG red and black pair out along each arm, eight in all.",
+    "ESC-MOTORS": "Three phase wires per motor, short because the ESC sits on the arm right under it. Their order sets the spin: swap any two to reverse a motor.",
+    "XT60-FC": "The PM02D HV takes 5.2 V to the Pixhawk's POWER1 and reports the pack voltage over I2C (BATT_MONITOR 21). Its own leads carry only the Pixhawk's current, not the motors' 190 A.",
+    "FC-ESC": "MAIN OUT 1-8 (SERVO1-8, functions 33-40) to the ESCs in motor number order, as plain PWM. Each ESC's signal lead must go to its own motor's output: Motor Test A to H shows a swapped pair.",
+    "FC-GEAR": "AUX OUT 1 (SERVO9 = 29, LandingGear) to the retract servos; they take their power from a BEC of their own, not the Pixhawk.",
+    "GPS-FC": "One GPS on GPS1 (SERIAL3) and one on GPS2 (SERIAL4), each with its compass on the same cable.",
+    "RX-FC": "The ELRS receiver on UART4 (SERIAL6 = 23, CRSF) and the 900 MHz radio on TELEM1 (SERIAL1, MAVLink2 at 57600).",
+    "FC-GIMBAL": "TELEM2 (SERIAL2, MAVLink2 at 115200) to the gimbal, set up as MNT1_TYPE 6. The flight controller can point it at a mission's region of interest; otherwise the camera operator aims it."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke stopper test",
+      "pass": "The lamp only blinked: no short between plus and minus on the 12S bus. Smoke stoppers sold for 6S quads are not rated for 50 V, so a craft like this has its first plug-in on a current-limited supply or a limiter rated for 12S.",
+      "fail": "The lamp stayed lit: something is shorted. Here the capacitor is in backwards; turn it round, stripe to minus, and test again."
+    },
+    "motors": {
+      "title": "Motor test (props off)",
+      "pass": "Mission Planner's Motor Test spun them A to H, clockwise from the front right: M1, M3, M8, M4, M2, M6, M7, M5, alternating clockwise and counter-clockwise. The props can go on.",
+      "fail": "A motor spun the wrong way, or the wrong arm moved. Swap two of that motor's phase wires, and check the signal leads' order on MAIN OUT 1-8: with the props on it would yaw hard or flip on take-off."
+    },
+    "calibrate": {
+      "title": "Accelerometer calibration",
+      "pass": "Calibrated in six positions (level, both sides, nose down, nose up, on its back), then Calibrate Level on its legs. A craft this size is turned over on the bench before the arms are unfolded, or with a helper.",
+      "fail": "Fit the Pixhawk first. If its arrow points backwards, turn it round or set AHRS_ORIENTATION to 4 (Yaw180), reboot and calibrate again."
+    },
+    "gear": {
+      "title": "Landing gear test",
+      "pass": "On the stand, disarmed: the gear switch high folded the legs up clear of the camera's view, low brought them down again. In flight they fold up by themselves climbing through 4 m and come down descending through 3 m.",
+      "fail": "Fit the landing gear, the Pixhawk and the receiver and plug in first. If the legs move the wrong way for the switch, set SERVO9_REVERSED 1."
+    },
+    "gps": {
+      "title": "GPS check (both receivers)",
+      "pass": "Both GPS have a 3D fix with plenty of satellites, their positions agree within a metre and the compasses agree. Loiter can now hold a position.",
+      "fail": "Fit both GPS masts and the Pixhawk and plug in, outside under open sky, then wait for both to lock. Indoors or next to a building they never get a fix."
+    },
+    "prearm": {
+      "title": "Pre-arm checks (props off)",
+      "pass": "Every check passed and it armed on the bench, the motors idling at MOT_SPIN_ARM, then disarmed. With ARMING_SKIPCHK 0 nothing is skipped.",
+      "fail": "Fit the Pixhawk, the GPS masts and the receiver, props off, packs in. Then read the PreArm message: \"3D Accel calibration needed\" means calibrate, \"GPS 1: Bad fix\" means run the GPS check and wait for a lock."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Frame, outputs and power",
+      "explain": "FRAME_CLASS 3 and FRAME_TYPE 1 make it an octa X, and the eight SERVOn_FUNCTIONs put Motor1 to Motor8 on MAIN OUT 1-8. Plain PWM is the simple choice here, since the 6X's MAIN outputs only do DShot with an extra board setting. MOT_BAT_VOLT_MAX and _MIN let ArduPilot keep the thrust the same as the packs sag. The harmonic notch follows the throttle to filter the motors' vibration from the gyros. The 6X reads its power module digitally (BATT_MONITOR 21). Several of these need a reboot."
+    },
+    "links": {
+      "title": "Telemetry, GPS, receiver and gimbal",
+      "explain": "Each port gets its protocol: MAVLink2 to the telemetry radio and to the gimbal, GPS on both GPS ports, the receiver's CRSF on UART4. MNT1_TYPE 6 is a MAVLink gimbal; after a reboot the MNT1 lines below it appear, and the yaw limits of ±180° let it turn all the way round."
+    },
+    "gear": {
+      "title": "Landing gear",
+      "explain": "SERVO9_FUNCTION 29 puts the gear on AUX OUT 1 and RC7_OPTION 29 puts it on a switch. The heights are in metres: the original sheet said LGR_DEPLOY_ALT 300 as if it were centimetres, which ArduCopter reads as 300 m, and it only retracts by height when LGR_RETRACT_ALT is at least LGR_DEPLOY_ALT. With 4 and 3 the legs fold after take-off and come down for every landing."
+    },
+    "failsafe": {
+      "title": "Failsafes and pre-arm",
+      "explain": "A lost radio link means RTL. A low pack (42 V, 3.5 V a cell) also means RTL; a critical one (40.8 V) lands where it is. A bad position estimate lands rather than fly on blind, and a crash disarms. ARMING_SKIPCHK 0 runs every pre-arm check."
+    },
+    "loiter": {
+      "title": "Loiter",
+      "explain": "GPS position hold: the sticks ask for a speed up to LOIT_SPEED_MS and it brakes and holds the spot when you let go. Gentle acceleration and braking make for smooth camera moves. This is the mode for filming."
+    },
+    "althold": {
+      "title": "AltHold",
+      "explain": "The barometer holds the height, but nothing holds the position, so it drifts with the wind. The pilot's fallback when the GPS is gone, and good practice for flying it by hand."
+    },
+    "stabilize": {
+      "title": "Stabilize",
+      "explain": "Self-levelling with a 30° lean limit; the throttle is yours. ATC_ANGLE_MAX limits the lean in every mode. A 15 kg craft answers slowly, so make small, early inputs."
+    },
+    "rtl": {
+      "title": "RTL",
+      "explain": "Return to launch: climbs to RTL_ALT_M (25 m clears the water tower), flies home, waits 5 s and lands; the legs come down at 3 m. Set RTL_ALT_M above anything on the way home, or it flies into it."
+    },
+    "auto": {
+      "title": "AUTO: the orbit shot",
+      "explain": "AUTO flies the uploaded mission: take off, a still from each side of the water tower with the gimbal kept on it by DO_SET_ROI, then home to land. It is armed in Loiter, since AUTO cannot arm by itself."
+    },
+    "motorout": {
+      "title": "Motor out",
+      "explain": "There is no mode for a motor failure: the mixer simply drives the other seven harder. The dead motor's two neighbours speed up and the motor opposite it, which spins the same way, slows down, so the craft stays level, but yaw runs short and it turns slowly. ArduCopter says nothing unless something saturates: then \"Yaw Imbalance\" or \"Potential Thrust Loss\" appears. The range's Motor out mode stops one motor so you can feel it."
+    }
+  },
+  "flight": {
+    "modes": {
+      "loiter": {
+        "title": "Loiter",
+        "hint": "GPS position hold: the sticks set a speed up to 8 m/s and it stops when you let go. The filming mode."
+      },
+      "althold": {
+        "title": "AltHold",
+        "hint": "Holds the height, not the position: it drifts with the wind."
+      },
+      "stabilize": {
+        "title": "Stabilize",
+        "hint": "Self-levelling with a 30° lean limit; the throttle is yours. Heavy and slow to answer: small inputs."
+      },
+      "rtl": {
+        "title": "RTL",
+        "hint": "Climbs to 25 m, over the water tower, flies home and lands on the pad."
+      },
+      "auto": {
+        "title": "AUTO orbit",
+        "hint": "Flies the orbit shot on its own: a still from each side of the water tower, then home to land."
+      },
+      "motorout": {
+        "title": "Motor out",
+        "hint": "Loiter with one motor stopped the moment you pick it in the air. It keeps flying on seven and turns slowly. Pick it high, over open ground."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Pilot's radio lost: RTL, up to 25 m and home.",
+      "low-battery": "Below 42 V (3.5 V per cell): RTL.",
+      "battery-critical": "Below 40.8 V: it lands where it is rather than risk the flight home.",
+      "ekf": "The estimator stops trusting its position: it lands, because it no longer knows where it is.",
+      "crash": "A crash detected (leaning hard with no control): the motors stop."
+    },
+    "controls": "Keyboard: Space arms and disarms, W and S climb and descend, the arrows fly forward, back and sideways, A and D yaw, V switches to the gimbal camera, R puts the drone back on the pad. In Loiter it stops when you let go. On a phone the left stick is throttle and yaw and the right stick is pitch and roll. A gamepad works in Mode 2."
+  },
+  "courses": {
+    "chase": {
+      "title": "Chase run",
+      "brief": "The car chase down the backlot: from the pad up to the west end of main street, down the street between the false fronts at 4 m, over the picture car at the east end, then climb over the water tower's roof and come home to land on the pad.",
+      "goals": {
+        "1": "Main street, west end",
+        "2": "Past the saloon, 4 m up",
+        "3": "Over the picture car",
+        "4": "Over the water tower",
+        "5": "Land on the pad"
+      }
+    },
+    "orbit": {
+      "title": "Orbit shot (AUTO)",
+      "brief": "The shot this craft is built for, as a mission: take off to 10 m, then a 2 s still from the west, north, east and south of the water tower, 12 m out and 18 m up, and home to land on the pad.",
+      "goals": {
+        "1": "Take off to 10 m",
+        "2": "Still: from the west",
+        "3": "Still: from the north",
+        "4": "Still: from the east",
+        "5": "Still: from the south",
+        "6": "Land on the pad"
+      }
+    }
+  },
+  "quizzes": {
+    "power": {
+      "series": {
+        "q": "Two 6S 16000 mAh packs (22.2 V each) are wired in series. What does the octocopter get?",
+        "options": {
+          "1": "44.4 V and 16000 mAh",
+          "2": "22.2 V and 32000 mAh",
+          "3": "44.4 V and 32000 mAh"
+        },
+        "why": "In series the voltages add and the same current flows through both packs, so the capacity stays 16000 mAh. In parallel it would be 22.2 V and 32000 mAh. Either way the energy doubles."
+      },
+      "cap": {
+        "q": "Why does this power board need a 63 V capacitor, not the 35 V one a 6S quad uses?",
+        "options": {
+          "1": "A bigger capacitor holds more charge for the gimbal",
+          "2": "Two 6S packs are 50.4 V full, and the spikes go higher: a 35 V capacitor would fail",
+          "3": "63 V capacitors are lower in resistance"
+        },
+        "why": "A capacitor's voltage rating must sit well above the highest voltage it sees. 12S is 50.4 V when full, plus the spikes the ESCs throw back; a 35 V or 50 V capacitor overheats and can vent. Its stripe still goes to minus."
+      }
+    },
+    "gear": {
+      "why": {
+        "q": "Why fold the legs up in flight?",
+        "options": {
+          "1": "To cut the drag",
+          "2": "So the gimbal can pan all the way round without the legs in the shot",
+          "3": "To lower the centre of gravity"
+        },
+        "why": "With the legs down, any pan past the sides puts them in the picture. Folded up, the camera sees all round. They come down again by height (LGR_DEPLOY_ALT) or by the switch before landing."
+      },
+      "metres": {
+        "q": "An old setup sheet says LGR_DEPLOY_ALT 300, meaning 3 m. What does ArduCopter 4.7.2 do with it?",
+        "options": {
+          "1": "It deploys the legs at 3 m",
+          "2": "It reads 300 m: the legs never come down by height, and retracting by height stops too",
+          "3": "It refuses the value"
+        },
+        "why": "The LGR heights are in metres. 300 is a legal value, so nothing warns you. And because the gear only retracts by height when LGR_RETRACT_ALT is at least LGR_DEPLOY_ALT, the legs stay in the shot, or, raised by the switch, never come down for the landing."
+      }
+    },
+    "fly": {
+      "motorout": {
+        "q": "One of the eight motors stops in a hover. What does ArduCopter do?",
+        "options": {
+          "1": "Nothing special: the mixer drives the other seven harder and it keeps flying",
+          "2": "It switches to LAND at once",
+          "3": "It stops the opposite motor too, to stay balanced"
+        },
+        "why": "With 2:1 thrust to weight, seven motors carry 15.5 kg at about half their full thrust each. There is no motor-failure mode: the attitude controller holds it level, and you bring it home. Only if a motor saturates does it warn: \"Yaw Imbalance\" or \"Potential Thrust Loss\"."
+      },
+      "which": {
+        "q": "M1, front right and clockwise, stops. Which motors change most?",
+        "options": {
+          "1": "All seven speed up the same",
+          "2": "Its two neighbours (counter-clockwise) speed up, and M2 opposite it (clockwise) slows down",
+          "3": "Only M2, opposite it"
+        },
+        "why": "The neighbours take over the lost lift on that side, and M2 slows to keep it level. Now the counter-clockwise motors work harder than the clockwise ones, and the extra torque turns the craft: that is why it yaws slowly with a motor out."
+      },
+      "props": {
+        "q": "The 22-inch props make more thrust. Why not fit them?",
+        "options": {
+          "1": "They are too heavy for the motors",
+          "2": "The ESCs can't drive them",
+          "3": "The motors are 520 mm apart and the props 558 mm wide: neighbours would hit"
+        },
+        "why": "On an octo the space between neighbouring motors, not the frame size, limits the prop. 2 × 680 mm × sin 22.5° is 520 mm, so 20-inch props (508 mm) clear by 12 mm and 22-inch ones overlap and shatter on spool-up."
+      }
+    }
+  }
+}
