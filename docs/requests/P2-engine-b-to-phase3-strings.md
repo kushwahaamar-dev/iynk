@@ -50,3 +50,9 @@ Added ~01:45: the L298N and TB6612FNG benches' status line while a short has tri
 | English |
 |---|
 | No power: the supply is off |
+
+Added ~02:30: Break it's label for a 5 V-into-a-GPIO fault (`gpio5v:<pin>`, the ESP32-S3 DevKitC).
+
+| English |
+|---|
+| 5 V into {name} (a 3.3 V pin) |

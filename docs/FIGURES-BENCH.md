@@ -8,6 +8,11 @@ nothing else. The engine (`figures/engine/bench*.js`, `figures/engine/sheets*.js
 
 Changes after the first publication are additive only. Every change is logged here, newest first.
 
+- v13 (02:30 Oct 25, P2-engine-b): `upload.also` (§6.1); Break it labels a `gpio5v:<pin>` fault ("5 V into GPIO4
+  (a 3.3 V pin)"). When the supply drops out under a running chip (brown-out, a cold joint on the connector, a
+  short) and comes back, the program starts again from t = 0 with its banner, after the board's `brownoutLine` for
+  a brown-out. Cold-joint and brown-out patterns run on `st.on` (time since the supply went in), not the program
+  clock. A mode's banner goes out on its own frame, so `state.serial` no longer drops it behind line 0.
 - v12 (02:10 Oct 25, P2-engine-b): the obstacle prop stays on the mat and off the breadboard over 2-450 cm (prop
   `travel`, `ctx.breadboard`, §9.1).
 - v11 (01:30 Oct 25, P2-engine-b, for the FPGA boards): a feed takes `onlyIf: ['ctl:SW16', '==', 1]` (a condition on
@@ -361,6 +366,9 @@ power: {
 }
 ```
 
+`upload.source` is the supply whose cable carries uploads; `upload.also: ['usb']` lists more (the ESP32-S3 DevKitC
+uploads over its UART port or its native USB port). On any other supply Upload answers "Plug in USB first".
+
 Feed options beyond the example: `burns: 'U1'` names the part a reversed supply on that feed destroys (default the
 feed's last `via` part, else the MCU); `ilim: 0.15` marks a current-limited regulator (amps), so a `short:` on that
 rail zeroes the rail and the rails fed from it while the rest keeps running (the Uno's LP2985 on 3V3). A source may
@@ -379,7 +387,9 @@ burnt is the rail's `victim`, else the MCU). `victim: { part: 'C27', fails: 'sho
 rail and every rail fed from it fall to 0 V, so the board goes dark. `mcu.bootNeeds: ['IC8']` lists parts only the
 power-up start reads (an FPGA's configuration flash): without one the board is powered but nothing runs ("nothing
 loads at power-up"), until an upload loads a program; the next power cycle needs them again. Below `mcu.min` the MCU
-resets (fault `brownout`). LEDs with `led.rail` light when that rail is alive; with `led.net` when the pin is high
+resets (fault `brownout`). When the MCU's supply comes back after a brown-out or a drop to no power, the program
+restarts from t = 0 and prints its banner again; a board's `brownoutLine` (the ESP32's "Brownout detector was
+triggered") goes out first after a brown-out. LEDs with `led.rail` light when that rail is alive; with `led.net` when the pin is high
 (or `invert`: low).
 
 ### 6.2 What the user can do (state machine)

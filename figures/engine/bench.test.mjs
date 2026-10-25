@@ -521,7 +521,7 @@ describe('a cold joint on a header pin', () => {
     page = await loadFigure(buildFigure('boards/nucleo-f401re'), { path: '/figures/boards/nucleo-f401re.html' });
     const B = page.bench;
     B.accept({ power: 'usb' });
-    const sample = () => Array.from({ length: 40 }, (_, i) => { B.st.t = i * 0.11; const o = B.outputs(); return [o.leds.LD2, o.pins.D13 || 0]; });
+    const sample = () => Array.from({ length: 40 }, (_, i) => { B.st.t = B.st.on = i * 0.11; const o = B.outputs(); return [o.leds.LD2, o.pins.D13 || 0]; });
     const clean = sample();
     expect(clean.some(([led]) => led > 0.5)).toBe(true);
     B.accept({ fault: 'cold:CN5.6' });
@@ -697,5 +697,71 @@ describe('board power and controls (P2-fpga)', () => {
     const cold = page.bench.faultChoices().map(([id]) => id).filter((id) => id && id.startsWith('cold:')).map((id) => page.bench.md.byId[id.slice(5)]);
     expect(cold.some((p) => p && p.control)).toBe(true);
     expect(cold.some((p) => p && p.led)).toBe(true);
+  });
+});
+
+describe('uploads and fault labels (sweep)', () => {
+  it('upload.also: an upload goes over a second port', async () => {
+    page = await loadFigure(buildFigure('boards/esp32-s3-devkitc-1'), { path: '/figures/boards/esp32-s3-devkitc-1.html' });
+    const B = page.bench, other = Object.keys(B.md.modes).find((k) => k !== B.st.mode && !B.md.modes[k].instant);
+    expect(B.md.power.upload.also).toEqual(['usb']);
+    B.accept({ power: 'usb' }); B.advance(2);
+    B.actions.upload(other);
+    expect(B.st.up).toBe(other);
+    B.advance((B.st.upDur || 3) + .5);
+    expect(B.st.mode).toBe(other);
+    B.accept({ power: 'pin5' }); B.advance(2);
+    B.actions.upload(B.st.mode === other ? Object.keys(B.md.modes)[0] : other);
+    expect(B.st.up).toBeNull();
+  });
+
+  it('labels a gpio5v fault in Break it', async () => {
+    page = await loadFigure(buildFigure('boards/esp32-s3-devkitc-1'), { path: '/figures/boards/esp32-s3-devkitc-1.html' });
+    const label = page.bench.faultChoices().find(([id]) => id === 'gpio5v:GPIO4')[1];
+    expect(label).toBe('5 V into GPIO4 (a 3.3 V pin)');
+  });
+});
+
+describe('a supply that drops out restarts the program (sweep)', () => {
+  const lines = (B, seconds) => {
+    const out = [];
+    let n = B.st.serial ? B.st.serial.n : 0;
+    for (let i = 0; i < seconds * 30; i++) {
+      B.advance(1 / 30);
+      if (B.st.serial && B.st.serial.n !== n) { n = B.st.serial.n; out.push(B.st.serial.line); }
+    }
+    return out;
+  };
+
+  it('a brown-out resets the ESP32-S3: its brown-out line, the ROM banner, the sketch from the start', async () => {
+    page = await loadFigure(buildFigure('robotics/esp32-s3-build'), { path: '/figures/robotics/esp32-s3-build.html' });
+    const B = page.bench;
+    B.accept({ power: 'uart' }); B.advance(3);
+    expect(B.st.t).toBeGreaterThan(2);
+    B.accept({ fault: 'brownout' });
+    const seen = lines(B, 6);
+    const i = seen.indexOf('Brownout detector was triggered');
+    expect(i).toBeGreaterThanOrEqual(0);
+    expect(seen[i + 1]).toMatch(/^ESP-ROM/);
+    expect(seen).toContain('blink #0');
+    expect(page.notes()).toEqual([]);
+  });
+
+  it('a cold joint on the supply connector restarts the sketch each time it comes back', async () => {
+    page = await loadFigure(buildFigure('robotics/esp32-s3-build'), { path: '/figures/robotics/esp32-s3-build.html' });
+    const B = page.bench;
+    B.accept({ power: 'uart', fault: 'cold:J2' });
+    const seen = lines(B, 8);
+    expect(seen.filter((l) => l === 'blink #0').length).toBeGreaterThan(1);
+    expect(B.st.on).toBeGreaterThan(7);
+  });
+
+  it('the bench drives the RGB LED on the variant\'s data line', async () => {
+    page = await loadFigure(buildFigure('robotics/esp32-s3-build'), { path: '/figures/robotics/esp32-s3-build.html', query: 'variant=v1.0' });
+    const B = page.bench;
+    B.accept({ power: 'uart' }); B.advance(.3);
+    expect(B.md.byId.D6.led.net).toBe('GPIO48');
+    expect(B.st.o.pins.GPIO48).toBeGreaterThan(0);
+    expect(B.st.o.pins.GPIO38).toBeUndefined();
   });
 });

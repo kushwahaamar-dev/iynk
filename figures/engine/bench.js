@@ -157,7 +157,8 @@ const nameOf = id => { const p = MD.byId[id] || MAT.byId[id]; return p ? T(p.nam
 const partsIn = g => MD.parts.filter(p => p.group === g);
 const coldHit = (seed, t) => { const k = Math.floor(t * 3.3), x = Math.sin((k + 1) * 12.9898 + seed * 78.233) * 43758.5453; return x - Math.floor(x) < .42; };
 const hashS = s => { let h = 7; for (const ch of String(s)) h = (h * 31 + ch.charCodeAt(0)) % 9973; return h; };
-const coldOff = id => st.faults.includes('cold:' + id) && coldHit(hashS(id), st.t);
+// fault patterns run on st.on, the time since the supply went in, so a program restart doesn't replay them
+const coldOff = id => st.faults.includes('cold:' + id) && coldHit(hashS(id), st.on);
 
 /* ---------- the mat: boards and parts beside the base with fixed, pre-routed wires, set out one step at a time ----------
    def.periph   [{ id, board | part, at: [x, y], size?, legs?, params?, step? }]: at is the item's lower-left corner in
@@ -264,8 +265,8 @@ function evaluate(){
   }
   // overloads and shorts sag a rail
   // (the circuit on the breadboard can do it too: more current than the source gives, st.sag from bench-bb.js)
-  const sag = !!(st.sag && st.sag.until > st.t);
-  if (st.faults.includes('brownout') && brownout()){ const r = pw.mcu.rail; if (ev.rails[r]) ev.rails[r] = coldHit(5, st.t * 1.4) ? ev.rails[r] * .42 : ev.rails[r] * .9; }
+  const sag = !!(st.sag && st.sag.until > st.on);
+  if (st.faults.includes('brownout') && brownout()){ const r = pw.mcu.rail; if (ev.rails[r]) ev.rails[r] = coldHit(5, st.on * 1.4) ? ev.rails[r] * .42 : ev.rails[r] * .9; }
   else if (sag && pw.mcu){ const r = pw.mcu.rail; if (ev.rails[r]) ev.rails[r] *= .42; }
   // a short on a rail fed through a current-limited regulator (feed ilim, amps) folds that regulator back: the rail and
   // the rails it feeds fall to 0 V and the rest keeps running; any other short trips the supply
@@ -343,12 +344,12 @@ function outputs(){
   // a cold joint on a header pin breaks the pin, not the trace: what plugs into it (o.pins feeds the breadboard and the
   // wire glow) cuts out in bursts, while an on-board LED on the same net (Nucleo LD2 on D13) keeps the MCU's level
   const mcu = Object.assign({}, o.pins);
-  for (const fid of st.faults) if (fid.startsWith('cold:')){ const pin = MD.pins[fid.slice(5)]; if (pin && coldHit(hashS(pin.id), st.t)) o.pins[pin.net] = 0; }
+  for (const fid of st.faults) if (fid.startsWith('cold:')){ const pin = MD.pins[fid.slice(5)]; if (pin && coldHit(hashS(pin.id), st.on)) o.pins[pin.net] = 0; }
   for (const p of MD.parts){
     if (!p.led || !isSet(p.id)) continue;
     let v = 0;
     const L0 = p.led;
-    if (L0.rail) v = (ev.rails[L0.rail] || 0) > 2 ? ((ev.status === 'brownout') ? (coldHit(9, st.t * 2) ? .25 : .7) : 1) : 0;
+    if (L0.rail) v = (ev.rails[L0.rail] || 0) > 2 ? ((ev.status === 'brownout') ? (coldHit(9, st.on * 2) ? .25 : .7) : 1) : 0;
     else if (L0.net){ const lv = mcu[L0.net]; v = running ? (L0.invert ? 1 - (+lv || 0) : (+lv || 0)) : 0; }
     else if (L0.serial){ v = st.up ? (L0.serial === 'rx' ? (Math.sin(st.upT * 60) > -.2 ? 1 : 0) : (st.upT > st.upDur - .45 && Math.sin(st.upT * 70) > 0 ? 1 : 0)) : (st.txT > 0 && L0.serial === 'tx' ? 1 : 0); }
     if (bl && bl.led === p.id && ev.status === 'running' && !st.up && st.t < 0){ const u = st.t + (bl.wait || 1); v = u < (bl.flashes || 3) / (bl.hz || 8) && Math.floor(u * (bl.hz || 8) * 2) % 2 === 0 ? 1 : 0; }
@@ -436,7 +437,7 @@ A.power = key => {
   const src = (MD.power.sources || {})[key]; if (!src) return say('No supply {name} on this board', { name: key });
   if (st.exploded) return say(MSG.exploded);
   // plugging in the cable that is already in changes nothing (the sketch keeps its clock)
-  if (st.power !== key){ st.power = key; st.t = 0; st.serialN = -1; st.sag = null; st.loaded = false; sfx('plug'); sampleStraps(); }
+  if (st.power !== key){ st.power = key; st.t = 0; st.on = 0; st.down = null; st.serialN = -1; st.sag = null; st.loaded = false; sfx('plug'); sampleStraps(); }
   refresh(true);
 };
 A.upload = key => {
@@ -444,7 +445,8 @@ A.upload = key => {
   if (st.up) return say(MSG.busy);
   const ups = MD.power.upload || {};
   if (md.instant){ st.mode = key; st.ext = false; st.t = 0; st.serialN = -1; say('{name} running', { name: T(md.title) }); refresh(); return; }
-  if (!st.power || (ups.source && st.power !== ups.source)) return say(MSG.plugFirst);
+  // upload.source is the port uploads go over; upload.also lists more (the ESP32-S3 DevKitC's native USB port)
+  if (!st.power || (ups.source && st.power !== ups.source && !(ups.also || []).includes(st.power))) return say(MSG.plugFirst);
   if (strapBlocks('upload')) return say(st.strap.msg || 'Upload failed');
   if (st.ev.status === 'fault') return say(MSG.faulted);
   // the bootloader runs on the MCU: with its clock or socket out, avrdude never gets in sync
@@ -542,18 +544,29 @@ function step(dt){
   const ex = st.exploded ? 1 : 0; st.exK += clamp(ex - st.exK, -dt / .6, dt / .6);
   // the program clock
   if (st.power){
-    st.t += dt;
+    st.t += dt; st.on += dt;
     if (st.up){ st.upT += dt; if (st.upT >= st.upDur){ const key = st.up; st.up = null; st.mode = key; st.t = 0; st.serialN = -1; st.loaded = true; sampleStraps();
         say('Done uploading: {name} is running', { name: T(MD.modes[key].title) }); sfx('ding'); } }
     st.ev = evaluate();
-    if (st.ev.status === 'brownout' && Math.floor(st.t / .6) !== st.boN){ st.boN = Math.floor(st.t / .6); st.serialN = -1; }
+    // the supply dropping out under the chip (a brown-out, a cold joint on the connector, a short cleared) resets it:
+    // when it comes back the program starts again, after the board's brownoutLine for a brown-out
+    const status = st.ev.status;
+    if (st.down && status === 'running'){
+      st.t = 0; st.serialN = -1; sampleStraps();
+      // state.serial carries one line per report: the banner waits 0.1 s behind the brown-out line
+      if (st.down === 'brownout' && MD.def.brownoutLine && !st.up && !st.ext){ emit(String(MD.def.brownoutLine)); st.t = -.1; }
+    }
+    st.down = status === 'brownout' || status === 'no-power' ? status : status === 'running' ? null : st.down;
     const md = MD.modes[st.mode];
     if (st.ev.status === 'running' && !st.up && !st.ext && md && !strapBlocks('serial')){
       const k = Math.floor(st.t);
       if (st.t >= 0 && k !== st.serialN){
-        if (st.serialN < 0 && md.banner){ emit(String(md.banner)); }
-        st.serialN = k;
-        if (md.serial){ let line = null; try { line = md.serial(k, st); } catch (e) { note('serial: ' + e.message); } if (line != null) emit(String(line)); }
+        // state.serial carries one line per report: the banner goes out on its own frame (serialN -2), then line k
+        if (st.serialN === -1 && md.banner){ emit(String(md.banner)); st.serialN = -2; }
+        else {
+          st.serialN = k;
+          if (md.serial){ let line = null; try { line = md.serial(k, st); } catch (e) { note('serial: ' + e.message); } if (line != null) emit(String(line)); }
+        }
       }
     }
   }
@@ -1076,6 +1089,7 @@ function faultLabel(id){
   if (kind === 'reversed' && a) return T('{name} in backwards', { name: a });
   if (kind === 'cold' && a) return T('Cold joint on {name}', { name: a });
   if (kind === 'strap' && a) return T('Wrong level on {name} at reset', { name: a });
+  if (kind === 'gpio5v' && a) return T('5 V into {name} (a 3.3 V pin)', { name: a });
   if (kind === 'wrong-voltage' && a && b){ const s = (MD.power.sources || {})[a]; return T('{v} V on {src}', { v: b, src: T((s && s.label) || a) }); }
   if (kind === 'reverse-polarity' && a){ const s = (MD.power.sources || {})[a]; return T('Reverse polarity on {src}', { src: T((s && s.label) || a) }); }
   return T(id);
@@ -1226,7 +1240,7 @@ function start(pick){
   MD = B.md = prep(def, pick[0]); layoutFor(MD); prepMat(def);
   st = B.st = {
     view: 'board', exploded: false, exK: 0, placed: {}, left: {}, drop: {}, reflowT: null, solderQ: null, solderT: 0,
-    power: null, supply: {}, faults: [], mode: def.mode || Object.keys(MD.modes)[0] || null, ext: false, pins: {}, t: 0, serialN: -1,
+    power: null, supply: {}, faults: [], mode: def.mode || Object.keys(MD.modes)[0] || null, ext: false, pins: {}, t: 0, on: 0, down: null, serialN: -1,
     up: null, upT: 0, upDur: 2.2, ctl: {}, boot: null, sel: null, serial: null, txT: 0, circuit: def.circuit || null, meas: {}, sfx: null, tones: {}, strap: null,
     matStep: MAT.steps.length - 1, readings: {}, benchStatus: null, volts: {}, sound: null, sag: null,
   };

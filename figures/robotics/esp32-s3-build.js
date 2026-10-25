@@ -14,7 +14,6 @@
    State flags for the host's status panel and current model come back in state.tasks: awake, joining, wifi, asleep. */
 (() => {
 const B = SL.bench;
-const NET = 'GPIO38';
 const ROM = 'ESP-ROM:esp32s3-20210327';
 const IP = '192.168.4.42';
 
@@ -24,7 +23,9 @@ const wheel = hue => {
   const up = (hue % 60) / 60 * 255, down = 255 - up;
   return [[255, up, 0], [down, 255, 0], [0, 255, up], [0, down, 255], [up, 0, 255], [255, 0, down]][Math.floor(hue / 60) % 6];
 };
-const rgb = col => col ? { [NET]: .6, [NET + '.rgb']: col } : { [NET]: 0 };
+// the RGB LED's data line comes from the board's variant (v1.1 GPIO38, v1.0 GPIO48)
+const ledNet = () => { const d6 = B.md && B.md.byId.D6; return (d6 && d6.led && d6.led.net) || 'GPIO38'; };
+const rgb = col => { const net = ledNet(); return col ? { [net]: .6, [net + '.rgb']: col } : { [net]: 0 }; };
 const download = st => st.boot === 'download' || st.faults.includes('strap:GPIO0');
 // in download mode the ROM reports the boot mode and waits; the sketch never starts
 const romLine = k => k === 0 ? 'rst:0x1 (POWERON),boot:0x0 (DOWNLOAD(USB/UART0))' : k === 1 ? 'waiting for download' : null;

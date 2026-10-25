@@ -225,6 +225,8 @@ function build(variant){
       'v1.0': { name: 'v1.0: RGB LED on GPIO48', patch: () => build('v1.0') },
     },
     variant: variant,
+    // the ESP-IDF brown-out detector's line before the ROM banner, when the rail sags and the chip resets
+    brownoutLine: 'Brownout detector was triggered',
   };
 }
 

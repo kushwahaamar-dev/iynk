@@ -113,7 +113,7 @@ B.bbStep = (st, dt) => {
   st.meas = r.meas; st.volts = r.volts; st.circuitLoad = r.load;
   // more current than the supply gives (a stalled motor, servos on USB): the board browns out for a while
   const src = st.power && (B.md.power.sources || {})[st.power];
-  if (dt > 0 && src && src.ilim && r.load > src.ilim) st.sag = { until: st.t + .6, mA: Math.round(r.load * 1000), max: Math.round(src.ilim * 1000) };
+  if (dt > 0 && src && src.ilim && r.load > src.ilim) st.sag = { until: (st.on || 0) + .6, mA: Math.round(r.load * 1000), max: Math.round(src.ilim * 1000) };
   const parts = (pl.c.parts || []).map(q => Object.assign({}, q, (st.cparams || {})[q.id] || {}));
   if (dt > 0) for (const q of parts){ const def = B.parts[q.part];
     if (def && typeof def.step === 'function') try { def.step({ p: q, st, m: st.meas[q.id] || {} }, dt); } catch (e) { B.note(`${q.id} step: ${e.message}`); } }
