@@ -25,7 +25,8 @@ export function boardMoments(prev: BoardLabState, next: BoardLabState): Moment[]
   const key = next.lesson ? progressKey.boardLesson(next.board, next.lesson) : null;
   if (key && next.checks.status !== prev.checks.status) {
     if (next.checks.status === "running") out.push({ kind: "attempt", key });
-    else if (next.checks.status === "done" && next.checks.results.length > 0) out.push({ kind: next.checks.passed ? "pass" : "fail", key });
+    // with a Break it fault still on, passing code doesn't finish the lesson (the Checks panel says so)
+    else if (next.checks.status === "done" && next.checks.results.length > 0) out.push({ kind: next.checks.passed && !next.fault ? "pass" : "fail", key });
   }
   if (next.assembly.length > prev.assembly.length) out.push({ kind: "step", key: null });
   if (next.fault && next.fault !== prev.fault) out.push({ kind: "fault", code: next.fault });

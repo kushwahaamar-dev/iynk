@@ -33,6 +33,15 @@ describe("board moments", () => {
     ]);
   });
 
+  test("passing code on a board broken from Break it is a fail: the lesson isn't done until it is repaired", () => {
+    const key = "board:uno-r3:lesson:blink";
+    const broken = boardReducer(lesson(), { type: "fault/trigger", id: "led-no-resistor" });
+    expect(walk(broken, { type: "checks/start" }, { type: "checks/result", results: [{ ok: true }, { ok: true }] })).toEqual([
+      { kind: "attempt", key },
+      { kind: "fail", key },
+    ]);
+  });
+
   test("an assembly step and a fault count; clearing a fault or changing the view doesn't", () => {
     const overview = boardInitial({ board: "uno-r3", lesson: null, language: "arduino-cpp", view: "board" });
     expect(
