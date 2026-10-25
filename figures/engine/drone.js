@@ -21,7 +21,8 @@ window.SL = window.SL || {};
     off: '{short} is off',
     built: 'Already built',
     box: 'Already a box of parts',
-    buildDone: 'Built: every part on, smoke test, motor check and calibration done',
+    // the build sets the checks as passed but runs no test: the host counts only the tests the learner runs
+    buildDone: 'Built: every part on the right way round, the checks marked passed (not run)',
     plugNeeds: 'Mount the battery and its power lead first',
     pop: 'POP: the capacitor was in backwards and vented. A smoke stopper would have caught it. Unplug, replace it',
     powered: 'Beep beep beep: ESCs armed-ready, FC and VTX on',
@@ -53,7 +54,7 @@ window.SL = window.SL || {};
     reversed: '{m} direction reversed in ESC config',
     calBack: 'acc calibrated (but board_align is wrong!)',
     calOk: '$ calibrate accelerometer: done, level = 0.0 / 0.0',
-    auto: '$ build it for me: smoke stopper, motor check and calibration done',
+    auto: '$ build it for me: every part on, checks marked passed (not run)',
     capNew: 'new capacitor fitted',
   };
   const ENGINE_IDS = ['FRAME', 'MOTORS', 'ESC', 'WIRES', 'FC', 'XT60', 'CAM', 'RX', 'VTX', 'TOP', 'BATT', 'PROPS'];

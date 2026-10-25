@@ -177,3 +177,21 @@ describe('the wiring sheet fits its plate (DR U6)', () => {
     expect(page.notes()).toEqual([]);
   });
 });
+
+describe('Build it for me says what it did (DR U10)', () => {
+  it('puts the parts on and marks the checks passed, and never claims the tests ran', async () => {
+    page = await quad();
+    const SD = page.drone, st = SD.api.st, n = SD.craft().parts.length;
+    SD.actions.step(st, n - 1);
+    await SD.settle();
+    SD.actions.build(st);
+    await SD.settle();
+    const r = SD.report();
+    expect(r.built).toBe(true);
+    expect(r.test).toBeNull();
+    expect(st.msg).toMatch(/^Built: /);
+    expect(st.msg).toMatch(/not run/);
+    expect(st.msg).not.toMatch(/smoke test|motor check|calibration done/);
+    expect(st.log.lines.at(-1)).not.toMatch(/calibration done/);
+  });
+});
