@@ -6,8 +6,9 @@ Sunday, upload by 10:00, submit the Devpost entry by 10:30.
 The video tells the same story as the live pitch (`docs/hacktx/PITCH.md`: Maya, a burnt-out LED, Lucía answering in
 Spanish) over the demo path in `docs/hacktx/BUILD-PLAN.md` §1, with the exact clicks. It is written to be recorded on
 a local production build with the keys in `.env.local` and the relay running on the same laptop, so nothing depends on
-the venue or on the deploy. Every click was checked against the repo on 2026-10-25 at 02:00 CDT (commit `33602e7`);
-values in [BRACKETS] and the lines that need a key are listed in "Confirm before recording".
+the venue or on the deploy. Every click was checked against the pages at 1920×1080 at gate 3, on 2026-10-25 at 06:00
+CDT (`docs/verify/gate3.md`); values in [BRACKETS] and the lines that need a key are listed in "Confirm before
+recording".
 
 No Solana and no hardware twin: both were skipped, and their tabs stay hidden.
 
@@ -28,17 +29,19 @@ No Solana and no hardware twin: both were skipped, and their tabs stay hidden.
      progress shows Blink done.
 
    One profile can't play both: two tabs of one profile share one saved name and one progress.
-7. Sound on in Maya's window (the Sound switch in the workspace header), so the pop and the flight are heard.
+7. Sound on in Maya's window (the speaker button beside Lab tools, top right of each lab page), so the pop and the
+   flight are heard.
 
 Optional: once the deployed site and the relay are up, film Lucía's half on a real phone over HTTPS instead. A phone on
 a plain `http://` LAN address can't use the microphone.
 
 ## Before each take
 
-- Rooms: on Maya's Blink lesson, dock tab Together, "Start a room"; note the code as [ROOM_A]. Open the same lesson in
+- Rooms: on Maya's Blink lesson, Lab tools, Together, "Start a room"; note the code as [ROOM_A]. Open the same lesson in
   Lucía's window with `?room=[ROOM_A]` (Spanish). Do the same on `/en/drones/quad5/fly` for [ROOM_B].
 - Break it all off on both pages (the board's Repair button; the fly page's "Undo my changes").
-- quad5 back on its default design (Battery 6S 1100 mAh, Motors 2306 1750KV, Props 5x4.3x3).
+- quad5 back on its default design (Battery 6S 1100 mAh, Motors 2306 1750KV, Props 5x4.3x3). Just before shot 7,
+  press "Build it for me" on `/en/drones/quad5` so the quad stands on the bench: a reload empties it again.
 - `/api/status` as in step 5. If a feature is off, drop its shot and its line. Don't fake it in editing.
 
 ## Shot list
@@ -63,13 +66,14 @@ Each shot has what's on screen, the clicks, and the voice-over line (VO). Times 
 ### 3 · 0:18–0:28 · Blink
 
 - Screen: `/en/boards/uno-r3/blink?room=[ROOM_A]`, code panel beside the figure, serial monitor visible.
-- Clicks: Run (or Space). The LED blinks, the monitor says Running, and Checks turns to "All checks pass. Lesson done."
+- Clicks: Run (or Space). The LED blinks and the Serial tab says Running; then the Checks tab, under the code, reads
+  "All checks pass. Lesson done."
 - VO: "She wires her first LED and runs Blink. That's Arduino code, on a virtual clock in her browser, and the figure
   follows every pin."
 
 ### 4 · 0:28–0:38 · Break it
 
-- Screen: the same, scrolled so Break it and the figure are both in frame.
+- Screen: the same, with the Break it tab open under the code.
 - Clicks: "LED with no resistor", Trigger. One bright flash, then dark; the figure's note says how many milliamps did it
   ("LED1 burned out: 113 mA …", a few seconds) and the readout under the figure says "LED1: burnt out". Hold two
   seconds on the "What you see / Why / Fix" text.
@@ -78,7 +82,7 @@ Each shot has what's on screen, the clicks, and the voice-over line (VO). Times 
 
 ### 5 · 0:38–0:52 · The partner asks a person
 
-- Screen: the dock, Partner tab, beside the figure.
+- Screen: Lab tools open on the Partner tab, beside the figure and the code.
 - Clicks: type "My LED flashed once and died" and send. The LED is pointed out in the figure. "Asked Lucía to explain"
   appears, and the question shows in the room chat.
 - VO: "She asks the lab partner, built on Meta's Muse Spark. It reads her circuit, her code and the fault, and points
@@ -97,7 +101,7 @@ Each shot has what's on screen, the clicks, and the voice-over line (VO). Times 
 
 ### 7 · 1:08–1:17 · The drone
 
-- Screen: `/en/drones/quad5`, the Design tab and the figure.
+- Screen: `/en/drones/quad5`, the Design tab, and the quad built on the bench (see "Before each take").
 - Clicks: Battery to "6S 1800 mAh LiPo". The tiles update: All-up weight, Thrust : weight, Hover throttle, Hard-flying
   time.
 - VO: "Now the drone. A 5-inch freestyle quad, with the numbers live: weight, thrust to weight, hover throttle, flight
@@ -105,7 +109,7 @@ Each shot has what's on screen, the clicks, and the voice-over line (VO). Times 
 
 ### 8 · 1:17–1:35 · Build it for real
 
-- Screen: the dock, tab "Build it for real".
+- Screen: Lab tools, tab "Build it for real".
 - Clicks: Battery back to 6S 1100 first. The parts list loads with each offer's store and the Cheapest total. Drag
   Budget to [BUDGET]; "Best build within [BUDGET]" lists the swaps. Press "Use this build in the lab"; the Design tiles
   change.
@@ -146,7 +150,7 @@ Each shot has what's on screen, the clicks, and the voice-over line (VO). Times 
 
 ### 13 · 2:27–2:38 · The story
 
-- Screen: back on the Blink lesson, the Partner tab.
+- Screen: back on the Blink lesson, Lab tools, the Partner tab.
 - Clicks: Build Story, then "Write our Build Story". "Writing your story…", then "Drawing the cover…", then the story
   with its cover and "Lucía helped Maya". Hover Share; press Download PNG.
 - VO: "At the end, Muse Spark writes the session up as a story, what broke and who helped, and Muse Image draws the
@@ -276,7 +280,7 @@ beats.
 - Shot 6: the voice message transcribes and arrives translated in Maya's window.
 - Shot 10: Lucía's ghost and its name tag show in Maya's window.
 - Shot 13: the story names Lucía as the helper, and the cover is drawn.
-- Shot 14: the Hindi and Chinese figure labels. At 02:00, 1391 newer figure strings were still English outside English
-  (`docs/hacktx/JUDGE-QA.md`, question 22); pick a figure whose labels are translated once the delta lands.
+- Shot 14: the Hindi and Chinese figure labels. At gate 3 all 4087 figure strings were translated in each language
+  (`docs/hacktx/JUDGE-QA.md`, question 22), so any figure works; names, units and code stay as they are.
 - The counts in shot 14 (12 boards, 13 robotics benches, 13 drones, 6 languages) match what shipped.
-- Any label renamed by the morning's UI polish pass: re-read each click against the page.
+- Any label changed after gate 3: re-read each click against the page.

@@ -2,7 +2,7 @@
 
 Paste each section into the matching Devpost field; each paragraph is one line so it pastes cleanly. Values in [BRACKETS], and every sentence that depends on the morning's keys and deploy, are listed in "Confirm before submitting" at the end. Submit by 10:30, not 11:29.
 
-Checked against the repo on 2026-10-25 at 02:00 CDT (commit `33602e7`). Solana and the hardware twin are not claimed: both were planned for last and skipped, and their tabs stay hidden.
+Checked against the repo at gate 3, on 2026-10-25 at 05:53 CDT (commit `569b205`). Solana and the hardware twin are not claimed: both were planned for last and skipped, and their tabs stay hidden.
 
 ## Project name
 
@@ -39,7 +39,7 @@ There are 12 boards: Arduino Uno R3, Uno R4, Nano, ESP32 DevKitC, ESP32-S3, Node
 
 You write code in an editor: an Arduino C++ subset, MicroPython or Python (with gpiozero and rclpy on the Pi), or a Verilog subset on the FPGA boards. It runs on a deterministic virtual clock and drives the figure and a serial monitor. There are 71 board lessons (16 on the Uno R3, at least 4 on every board), each with checks that tell you when it works. Break it lets you trigger any of 143 board failures, such as reverse polarity, a motor browning out the 5 V rail, 24 V on the barrel jack, a cold solder joint, a backwards capacitor that pops, or 5 V into a 3.3 V pin, and each one says what you'd see, why it happened and how to fix it. Robotics benches walk you through building and breaking a circuit step by step (272 steps and 106 faults across the 13), with 31 practice tasks. Drones have live numbers (weight, thrust to weight, hover throttle, current, flight time), a build in steps, a clickable wiring diagram, 77 bench tests such as the smoke stopper and the motor direction check, Betaflight, INAV and ArduPilot CLI snippets, and a flight sim with 22 courses, medal times, an FPV view, a daily challenge, and keyboard, gamepad or touch sticks.
 
-Every lesson, step, quiz and screen is written in six languages: English, Spanish, French, German, Chinese and Hindi.
+Every lesson, step, quiz and screen is written in six languages, down to the labels inside the figures: English, Spanish, French, German, Chinese and Hindi.
 
 ### Build together
 
@@ -94,7 +94,7 @@ SimLab is a Next.js 16 app (React 19, TypeScript, Tailwind) on Vercel, with all 
 ## Accomplishments that we're proud of
 
 - An AI partner whose first move, when someone in the room has passed the lesson, is to ask that person.
-- 143 board failures you can trigger on purpose, each with what you'd see, why and the fix, decided by the figure's own power model.
+- 144 board failures you can trigger on purpose, each with what you'd see, why and the fix, decided by the figure's own power model.
 - One visual system across every board, bench and drone, including the schematic and breadboard views, with every lesson in six languages.
 - A drone calculator that reproduces [342] reference builds from the Drone Engineer tables, and every lesson's reference solution passing its own checks.
 - The core lab works with every key missing, so a sponsor outage takes out one panel, not the app.
@@ -180,9 +180,9 @@ The idea for SimLab and our hardware research predate HackTX. Before 11:30 a.m. 
 - Meta model ids: `.env.example` has `muse-spark-1.1`, `muse-image-1.0` and `muse-voice-transcribe-1.0`; check them against `docs/hacktx/AI.md`. Fill in the Muse connector bracket (a custom connector in Muse, or an MCP client only): at 02:00 it had not been tried from Muse (`docs/hacktx/MUSE-CONNECTOR.md`). Confirm Facebook's share dialog opens from a story.
 - The partner calling `ask_peer` with a real key, voice transcription, chat translation and the story cover, each tried once on the deployed site.
 - SerpApi engines that actually ship. Keep Google Lens in "What's next" only.
-- Content counts as of 02:00: 12 boards, 13 benches, 13 drones, 71 board lessons (16 on the Uno R3), 143 board failures, 272 bench steps, 106 bench faults, 31 bench tasks, 77 drone bench tests, 22 courses, 80 figure pages, six languages. If anything changed at gate 3, change the numbers here and in PITCH.md, VIDEO.md and JUDGE-QA.md.
-- "Every lesson, step, quiz and screen is written in six languages": true for prose and the UI. Labels inside the figures: at 02:00, 1391 newer figure strings were still English outside English (`node scripts/figure-strings.mjs --static`); say nothing about figure labels in six languages until that is 0.
-- [342] reference builds: re-run `npx vitest run src/lib/drone` (442 tests passed at 01:58). 102 of 102: re-run the lesson table at gate 3.
+- Content counts at gate 3 (05:53): 12 boards, 13 benches, 13 drones, 71 board lessons (16 on the Uno R3), 144 board failures, 272 bench steps, 106 bench faults, 31 bench tasks, 78 drone bench tests, 22 courses, 80 figure pages, six languages. If anything changes after that, change the numbers here and in PITCH.md, VIDEO.md and JUDGE-QA.md.
+- "Every lesson, step, quiz and screen is written in six languages, down to the labels inside the figures": true at gate 3 for prose, the UI and all 4087 figure strings (`npx vitest run src/i18n/figure-strings.test.ts`). Names, units, code, serial output and CLI commands stay as they are on a real board.
+- [342] reference builds: `npx vitest run src/lib/drone` passed 445 of 445 at 05:53, and the fixtures hold 342 rows. 102 of 102: the lesson table at gate 3 (`docs/verify/gate3-lessons.md`).
 - [AGENTS]: the final count of agent runs. About 60 were labelled by 02:00, plus 56 in the first build that the usage limit stopped at 14:19.
 - Vultr region, and whether the relay runs in Docker behind Caddy there.
 - The organizers' answers: are pre-event research notes allowed, and how many prize tracks can one project enter.

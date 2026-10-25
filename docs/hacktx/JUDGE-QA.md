@@ -3,9 +3,9 @@
 The 25 questions judges are most likely to ask, each with a short answer and the page or file that shows it. Read it
 once before judging, and open the file a question names if a judge wants to see the code.
 
-Checked against the repo on 2026-10-25 at 02:00 CDT (commit `33602e7`). Numbers come from the content modules and
-from commands run then: `npx vitest run src/i18n/figure-strings.test.ts` and `node scripts/figure-strings.mjs
---static` for figure text, the app-path lesson table, and `npx vitest run src/lib/drone`. Anything that depends on the
+Checked against the repo at gate 3, on 2026-10-25 at 05:53 CDT (commit `569b205`, `docs/verify/gate3.md`). Numbers
+come from the content modules and from commands run then: `npx vitest run src/i18n/figure-strings.test.ts` for figure
+text, the app-path lesson table, and `npx vitest run src/lib/drone`. Anything that depends on the
 morning's keys and deploy is marked, and "Recheck before judging" at the end lists it.
 
 ## The product
@@ -19,8 +19,8 @@ Uno R3".
 
 ### 2. How much is really in it?
 
-38 items, all with content and English prose: 71 board lessons (16 on the Uno R3, at least 4 on every board), 143
-board failures, 13 benches with 272 build steps, 106 faults and 31 practice tasks, and 13 drones with 77 bench tests,
+38 items, all with content and English prose: 71 board lessons (16 on the Uno R3, at least 4 on every board), 144
+board failures, 13 benches with 272 build steps, 106 faults and 31 practice tasks, and 13 drones with 78 bench tests,
 131 CLI snippets and 22 flying courses (21 with medal times). The lists live in `src/content/ids.ts`, the items in
 `src/content/{boards,robotics,drones}/`, and every item's prose in `src/i18n/content/<lang>/`.
 
@@ -76,14 +76,14 @@ copied.
 
 The page and the tests use the same check path: `runHeadless` plus `evaluateChecks` (`src/lib/interp/headless.ts`,
 `checks.ts`), run in a Web Worker with a 20-second budget. The table from `src/lib/interp/lessons.test.ts` runs every
-lesson and bench task: at 02:00, 102 of 102 references passed and all 102 starters failed
-(`docs/verify/gate2-lessons.md`).
+lesson and bench task: at 05:53, 102 of 102 references passed and all 102 starters failed
+(`docs/verify/gate3-lessons.md`).
 
 ### 10. How accurate is the drone calculator?
 
 It follows the Drone Engineer site formula for formula and reproduces its 342 reference builds across 13 crafts at
 their printed precision (`src/lib/drone/calc.ts`, fixtures in `src/lib/drone/__fixtures__/`). `npx vitest run
-src/lib/drone` passed 442 of 442 tests at 01:58.
+src/lib/drone` passed 445 of 445 tests at 05:53.
 
 ### 11. How does the flight sim work, and what does Break it do there?
 
@@ -175,9 +175,9 @@ show as written and the chat says so.
 ### 22. How much is really in six languages?
 
 All 38 items' prose is in English, Spanish, French, German, Chinese and Hindi (228 files in `src/i18n/content/`), and
-so is the UI, apart from names, units and code. Inside the figures, 1866 strings are translated in each language;
-at 02:00 the newest figures and the drone message tables added 1391 more that still show in English until their
-dictionaries land (`src/i18n/figures/<lang>.json`). Serial output the checks match, firmware messages and CLI commands
+so is the UI, apart from names, units and code. Inside the figures, all 4087 strings are translated in each
+language, and a test fails if a figure gains one that isn't (`src/i18n/figures/<lang>.json`,
+`src/i18n/figure-strings.test.ts`). Serial output the checks match, firmware messages and CLI commands
 stay English on purpose, as they do on a real board.
 
 ### 23. What do you store about people?
@@ -202,8 +202,7 @@ lint, unit tests, the lesson table, figure probes, a route crawl and end-to-end 
 
 Proof of Build on Solana and the real-Uno hardware twin were planned last and skipped for time: their code is in the
 repo, their tabs stay hidden behind feature flags, and we don't enter those tracks. The live "Right now at HackTX"
-counter is built but not placed on a page, the newest figure labels are still English outside English (question 22),
-and the Verilog and micro:bit limits are in question 5. The partner, translation, voice, live prices, cross-device
+counter is built but not placed on a page, and the Verilog and micro:bit limits are in question 5. The partner, translation, voice, live prices, cross-device
 rooms and the leaderboard need their keys or the relay, which go in on the morning of the 25th.
 
 ## Recheck before judging

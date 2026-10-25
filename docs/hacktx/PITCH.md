@@ -4,9 +4,9 @@ Three versions of one story, plus stage notes. The 3-minute version is for the s
 Bard's Tale" audience vote. The 60-second version is for judges who stop at the table. The 20-second line is for
 hallways and queues. The live demo follows the demo path in `docs/hacktx/BUILD-PLAN.md` §1.
 
-Every line was checked against the repo on 2026-10-25 at 02:00 CDT (commit `33602e7`). Values in [BRACKETS] are
-filled in after the last rehearsal on the deployed build; "Confirm before pitching" at the end lists them, with every
-line that depends on a key.
+Every line was checked against the pages at gate 3, on 2026-10-25 at 06:00 CDT (`docs/verify/gate3.md`). Values in
+[BRACKETS] are filled in after the last rehearsal on the deployed build; "Confirm before pitching" at the end lists
+them, with every line that depends on a key.
 
 ## What each beat needs
 
@@ -68,21 +68,21 @@ Do: drag it round slowly (or press E a few times). Then See-through. Then Explod
 ### 0:15 Blink, then break it
 
 Screen: tab 2, the Blink lesson in room A.
-Do: Run. The LED blinks, the serial monitor says Running, and Checks reads "All checks pass. Lesson done."
+Do: Run. The LED blinks, the Serial tab says Running, and the Checks tab reads "All checks pass. Lesson done."
 
 > She wires her first LED and runs Blink.
 > That's Arduino code, running in her browser on a virtual clock.
 
-Do: in Break it, find "LED with no resistor" and press Trigger. One bright flash, then dark. The figure's note says
-how many milliamps did it ("LED1 burned out: 113 mA is far above its 20 mA", for a few seconds), and the readout
-under the figure says "LED1: burnt out".
+Do: in the Break it tab under the code, find "LED with no resistor" and press Trigger. One bright flash, then dark.
+The figure's note says how many milliamps did it ("LED1 burned out: 113 mA is far above its 20 mA", for a few
+seconds), and the readout under the figure says "LED1: burnt out".
 
 > Then she does what everyone does once. No resistor.
 > One bright flash, and the LED is gone. SimLab solved the circuit and knows exactly how much current killed it.
 
 ### 0:35 The partner asks a person (Meta)
 
-Do: in the Partner tab, type "My LED flashed once and died" and send.
+Do: in Lab tools, the Partner tab, type "My LED flashed once and died" and send.
 
 > So she asks the lab partner. That's Muse Spark, Meta's model.
 > It reads her circuit, her code and the fault.
@@ -102,13 +102,13 @@ Do: Repair. Run. It blinks.
 
 ### 1:10 What it really costs (SerpApi)
 
-Screen: tab 3, quad5, the Design tab.
+Screen: tab 3, quad5, the Design tab, the quad built on the bench.
 Do: change the battery. The tiles move.
 
 > Maya's real dream is the drone. Here's a 5-inch freestyle quad.
 > Swap the battery and the numbers move: weight, thrust to weight, flight time.
 
-Do: open Build it for real. The offers and the cheapest total load.
+Do: Lab tools, Build it for real. The offers and the cheapest total load.
 
 > Now, build it for real. Live prices for every part from Google Shopping, Amazon and eBay, through SerpApi.
 > Today the whole build is [TOTAL].
@@ -237,9 +237,10 @@ If they're already walking away: "It's the hardware lab everyone can afford, and
 ### Laptop tabs, left to right
 
 1. `[SITE]/en/boards/uno-r3`: the Uno figure at rest.
-2. `[SITE]/en/boards/uno-r3/blink?room=[ROOM_A]`: Blink loaded and not run yet, the dock on the Partner tab, Lucía in
-   the room, sound on (the Sound switch in the workspace header).
-3. `[SITE]/en/drones/quad5`: the Design tab showing. Build it for real already opened once, so the prices are cached.
+2. `[SITE]/en/boards/uno-r3/blink?room=[ROOM_A]`: Blink loaded and not run yet, Lab tools open on the Partner tab,
+   Lucía in the room, sound on (the speaker button beside Lab tools).
+3. `[SITE]/en/drones/quad5`: the Design tab showing, and "Build it for me" pressed so the quad stands on the bench
+   (a reload empties it, so do this last). Build it for real already opened once, so the prices are cached.
 4. `[SITE]/en/drones/quad5/fly?room=[ROOM_B]`: the Gate race course, not armed, Break it all off.
 5. The closing slide: [SITE] in large type and a QR code to it.
 
@@ -309,7 +310,5 @@ Say one sentence and keep going. Never debug in front of judges.
   share a room).
 - The Build Story names Lucía as the helper. It's written from tab 2's room only.
 - Facebook's share dialog and the Web Share sheet open from the story card on the deployed URL.
-- The counts in the close (12 boards, 13 robotics benches, 13 drones, 6 languages) still match what shipped. Inside
-  the figures, some newer labels are still English outside English until their dictionaries land
-  (`docs/hacktx/JUDGE-QA.md`, question 22).
+- The counts in the close (12 boards, 13 robotics benches, 13 drones, 6 languages) still match what shipped.
 - Real names instead of Maya and Lucía, if you tell a true story.
