@@ -1,0 +1,381 @@
+{
+  "title": "Sensor de aparcamiento HC-SR04",
+  "sub": "la distancia a partir de un eco que puedes cronometrar",
+  "hint": "monta la placa del sonar, haz un ping y luego haz que un zumbador pite más rápido a medida que se acerca una mano",
+  "overview": "Un robot que se choca con las paredes necesita saber a qué distancia están. El HC-SR04 lanza una ráfaga de sonido de 40 kHz desde una cápsula y escucha el eco con la otra; su pin Echo se queda en HIGH durante la ida y la vuelta. El sonido recorre un centímetro de ida y vuelta en 58 µs, así que un pulso de 1740 µs significa una pared a 30 cm. Monta la placa, haz pings desde una Nano y luego haz que un zumbador pite más rápido a medida que se acerca una mano, como el sensor de aparcamiento de un coche. Después avérialo: aliméntalo al revés o con 3,3 V, quita el receptor, deja una soldadura fría en Echo, olvida el timeout de pulseIn() y cortocircuita su alimentación.",
+  "parts": {
+    "T": {
+      "name": "Emisor T: un piezo de 40 kHz en una cápsula de 16 mm",
+      "what": "Un disco piezoeléctrico sobre un pequeño cono, afinado a 40 kHz, por encima de todo lo que puedes oír. El MAX3232 lo excita por los dos extremos durante ocho ciclos: un ping."
+    },
+    "R": {
+      "name": "Receptor R: el mismo transductor, escuchando",
+      "what": "El eco hace vibrar su disco y da unos pocos milivoltios. El LM324 que tiene detrás los amplifica, los filtra y los compara hasta que el MCU puede verlos."
+    },
+    "U1": {
+      "name": "Microcontrolador EM78P153S (por detrás)",
+      "what": "Espera un HIGH de al menos 10 µs en Trig, envía la ráfaga, sube Echo y lo baja cuando el receptor oye el eco, o al cabo de unos 38 ms si no vuelve nada."
+    },
+    "U2": {
+      "name": "Driver de transmisión MAX3232 (por detrás)",
+      "what": "Un chip RS-232 que se usa por su bomba de carga: genera unos ±10 V a partir de 5 V y excita T por los dos extremos, así que la cápsula recibe oscilaciones de unos 20 V. Eso es lo que hace que el ping suene lo bastante fuerte."
+    },
+    "U3": {
+      "name": "Amplificador operacional cuádruple LM324 (por detrás)",
+      "what": "Tres etapas de ganancia y filtrado y un comparador convierten los milivoltios del receptor en un flanco limpio para el MCU."
+    },
+    "Y1": {
+      "name": "Cristal de 4 MHz",
+      "what": "El reloj del MCU: marca el tiempo de la ráfaga de 40 kHz y del eco. Sin él, nada de la placa funciona."
+    },
+    "J1": {
+      "name": "Tira de 4 pines en ángulo recto: Vcc, Trig, Echo, Gnd",
+      "what": "Su cuerpo queda por detrás y los pines salen por el borde de abajo, así que la placa se queda de pie en una protoboard, mirando hacia delante."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "Envía el pulso de 10 µs por D9, cronometra Echo en D10 con pulseIn() y divide entre 58. Su pin de 5V alimenta el sensor; el zumbador está en D8."
+    },
+    "BUZ": {
+      "name": "Zumbador piezoeléctrico en D8",
+      "what": "Un piezo pasivo: tone(8, 2000) lo hace sonar a 2 kHz. Unos pocos mA, así que va directamente a un pin."
+    }
+  },
+  "power": {
+    "label": "Alimenta el banco",
+    "ok": "La Nano por USB: Vcc a 5 V, directamente a todos los chips de la placa"
+  },
+  "modes": {
+    "wall": {
+      "title": "Ping e imprime"
+    },
+    "approach": {
+      "title": "Pitido de aparcamiento"
+    },
+    "cushion": {
+      "title": "Ping a un cojín"
+    },
+    "open": {
+      "title": "Nada al alcance"
+    },
+    "code": {
+      "wall": "Ping e imprime: una pared 30 cm por delante",
+      "cushion": "Ping e imprime, apuntando a un cojín a 40 cm",
+      "open": "Ping e imprime, apuntando a una sala vacía",
+      "park": "Sensor de aparcamiento: pita más rápido a medida que se acerca una mano",
+      "trig": "un HIGH de al menos 10 µs lanza un ping",
+      "timeout": "rendirse a los 30 ms (unos 5 m): 0 significa que no hay eco",
+      "cm": "58 µs de ida y vuelta por cm",
+      "noEcho": "0 no es \"muy cerca\": no ha vuelto nada",
+      "gap": "al menos 60 ms entre pings, para que el último eco se haya apagado",
+      "stop": "por debajo de 10 cm: un tono largo",
+      "rate": "un pitido de 50 ms cada cm x 10 ms: más rápido cuanto más cerca"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Déjala en la PCB desnuda",
+      "body": "Quita todas las piezas de la placa azul. Las volverás a poner tal como se fabrica: primero los chips de detrás, luego el cristal y la tira de pines, y luego las dos cápsulas.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    },
+    "smd": {
+      "title": "Coloca las piezas SMD y haz el reflujo",
+      "body": "Todos los chips están por detrás: el EM78P153S, el MAX3232, el LM324, dos transistores y una treintena de resistencias y condensadores. Por delante solo quedan las cápsulas, el cristal y las soldaduras de la tira.",
+      "refusal": "Las piezas SMD van primero, en una placa desnuda"
+    },
+    "low": {
+      "title": "Pon el cristal y la tira de pines",
+      "body": "Primero las piezas bajas: el cristal de 4 MHz entre las huellas de las cápsulas, y la tira en ángulo recto con su cuerpo por detrás.",
+      "refusal": "Primero las piezas SMD: haz la colocación automática y el reflujo"
+    },
+    "cans": {
+      "title": "Pon las dos cápsulas",
+      "body": "T a la izquierda, R a la derecha. Parecen iguales, y en la mayoría de las placas lo son; la letra de la serigrafía dice cuál es cuál.",
+      "refusal": "Primero las piezas bajas: con las cápsulas puestas, la placa se balancea cuando le das la vuelta para soldar"
+    },
+    "solder": {
+      "title": "Suelda las piezas de inserción",
+      "body": "Por detrás: dos patas por cápsula, dos para el cristal, cuatro para la tira. Con una soldadura fría en una pata de una cápsula, la placa se queda sorda; en Echo, las lecturas van y vienen.",
+      "refusal": "Todavía no hay nada que soldar: primero coloca las piezas"
+    },
+    "wire-nano": {
+      "title": "Conecta la Nano",
+      "body": "Vcc a 5V, Trig a D9, Echo a D10, Gnd a GND. Echo es una salida de 5 V: bien para una Nano, demasiado para una placa de 3,3 V sin un divisor.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    },
+    "wire-buzzer": {
+      "title": "Conecta el zumbador",
+      "body": "+ a D8, - a GND. Es la voz del sensor de aparcamiento.",
+      "refusal": "Primero desconecta la alimentación, y conecta antes la Nano"
+    },
+    "plug": {
+      "title": "Alimenta el banco",
+      "body": "El USB a la Nano. En el HC-SR04 no se enciende nada: no tiene LED de alimentación. Espera un pulso en Trig.",
+      "refusal": "Primero termina el montaje: todas las piezas puestas y soldadas, y la Nano y el zumbador conectados"
+    },
+    "wall": {
+      "title": "Carga Ping e imprime",
+      "body": "Una vez por segundo: un pulso de 10 µs en Trig, y luego pulseIn() cronometra Echo. Una pared a 30 cm da unos 1740 µs, 30 cm. Mira cómo los anillos salen de T y vuelven hasta R.",
+      "refusal": "Primero alimenta el banco"
+    },
+    "approach": {
+      "title": "Carga Pitido de aparcamiento",
+      "body": "Una mano se acerca de 1 m a 5 cm. El sketch hace un ping cada 60 ms y pita una vez cada distancia x 10 ms: cada segundo a 1 m, cada 300 ms a 30 cm y un tono largo por debajo de 10 cm.",
+      "refusal": "Primero alimenta el banco"
+    },
+    "cushion": {
+      "title": "Carga Ping a un cojín",
+      "body": "El mismo sketch, apuntando a un cojín a 40 cm. La tela blanda absorbe el sonido: la mayoría de los pings salen sin eco, y de vez en cuando responde la pared de detrás, a 183 cm.",
+      "refusal": "Primero alimenta el banco"
+    },
+    "open": {
+      "title": "Carga Nada al alcance",
+      "body": "Apuntando a una sala vacía. La placa espera unos 38 ms, baja Echo y todos los pings salen sin eco: pulseIn() se ha rendido a los 30 ms y ha devuelto 0.",
+      "refusal": "Primero alimenta el banco"
+    },
+    "reverse-vcc": {
+      "title": "Conecta Vcc y Gnd al revés",
+      "body": "5 V en Gnd y GND en Vcc. La placa no tiene diodo, ni fusible, ni regulador."
+    },
+    "vcc-on-3v3": {
+      "title": "Alimenta Vcc desde el pin 3V3 de la Nano",
+      "body": "El cable un pin más allá, en 3V3. Los chips siguen funcionando. Mira los anillos y las lecturas."
+    },
+    "no-receiver": {
+      "title": "Quita el receptor",
+      "body": "Quita R de la placa y haz un ping a la pared."
+    },
+    "cold-echo": {
+      "title": "Deja una soldadura fría en Echo",
+      "body": "Una soldadura mate y agrietada en el pin Echo de la tira. Haz un ping a la pared."
+    },
+    "no-timeout": {
+      "title": "Olvida el timeout de pulseIn()",
+      "body": "pulseIn(ECHO, HIGH) sin tercer argumento y sin comprobar si hay \"no echo\", apuntando a la sala vacía."
+    },
+    "short-vcc": {
+      "title": "Cortocircuita Vcc con Gnd",
+      "body": "Un cable suelto entre los pines de los extremos de la tira."
+    },
+    "exploded": {
+      "title": "Vista despiezada",
+      "body": "Desconecta y levanta las piezas por grupos de montaje: los chips de detrás, el cristal y la tira, y luego las cápsulas.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    }
+  },
+  "faults": {
+    "reverse-vcc": {
+      "title": "Vcc invertida",
+      "symptom": "Los chips se calientan en pocos segundos y el USB de la Nano puede desconectarse. Después, la placa muchas veces no lee nada.",
+      "explanation": "Nada en el HC-SR04 bloquea una alimentación invertida: la corriente pasa hacia atrás por los diodos de protección de dentro de cada chip. El MAX3232 y el MCU suelen morir.",
+      "fix": "Desconecta enseguida y conecta Vcc a 5V y Gnd a GND. Conecta Gnd primero, como dicen las hojas de datos."
+    },
+    "vcc-on-3v3": {
+      "title": "Solo 3,3 V en Vcc",
+      "symptom": "Todos los pings salen sin eco. Los anillos de la ráfaga salen débiles y no vuelve nada.",
+      "explanation": "El MCU funciona con 3,3 V, pero la excitación del MAX3232 y la ganancia del LM324 necesitan 4,5-5,5 V. La ráfaga es demasiado débil y el receptor está demasiado sordo para oírla volver.",
+      "fix": "Alimenta Vcc desde 5V. En una placa de 3,3 V usa el HC-SR04P, que funciona a partir de 3,0 V."
+    },
+    "no-receiver": {
+      "title": "Sin receptor",
+      "symptom": "Todos los pings salen sin eco, aunque la ráfaga sale.",
+      "explanation": "Sin R, nada oye el eco, así que el MCU espera sus 38 ms y baja Echo. Una soldadura fría en una pata de una cápsula hace lo mismo.",
+      "fix": "Pon R y suelda sus dos patas."
+    },
+    "cold-echo": {
+      "title": "Soldadura fría en Echo",
+      "symptom": "Las lecturas van y vienen: una distancia correcta, luego sin eco, y luego otra correcta. Al tocar la placa, cambia.",
+      "explanation": "A través de una soldadura que hace y deshace contacto, a veces el pulso de Echo nunca llega a la Nano, y pulseIn() agota su timeout.",
+      "fix": "Vuelve a calentar la soldadura con estaño nuevo hasta que fluya y forme un cono brillante."
+    },
+    "no-timeout": {
+      "title": "pulseIn() sin timeout",
+      "symptom": "Una sala vacía marca 655 cm, más allá de los 4 m del sensor, y cada ping tarda más.",
+      "explanation": "Sin nada que haga eco, la placa mantiene Echo en HIGH durante su propio timeout, unos 38 ms, y lo baja. pulseIn() sin timeout espera hasta un segundo, mide ese pulso de 38 ms y el sketch lo imprime como 38000 / 58 = 655 cm.",
+      "fix": "Pasa un timeout, pulseIn(ECHO, HIGH, 30000UL), y trata el 0 como \"no echo\", no como una distancia."
+    },
+    "short-vcc": {
+      "title": "Vcc cortocircuitada con Gnd",
+      "symptom": "Todo se apaga: la Nano se reinicia o su USB se desconecta, y su polifusible se calienta.",
+      "explanation": "La placa no tiene fusible propio. El cortocircuito hunde los 5 V de la Nano hasta que el polifusible de su USB limita la corriente.",
+      "fix": "Desconecta, quita el cable suelto y revisa si hay un puente de soldadura entre los pines de la tira."
+    }
+  },
+  "status": {
+    "status": "Estado",
+    "powered": "Alimentación del banco",
+    "mode": "Sketch",
+    "distance": "Distancia",
+    "echo": "Pulso de Echo (µs)",
+    "beep": "Pitando",
+    "vcc": "Vcc",
+    "usb": "Corriente del USB"
+  },
+  "current": {
+    "usb": "USB de la Nano (polifusible de 500 mA)",
+    "nano": "Nano en marcha",
+    "board": "HC-SR04 midiendo",
+    "buzzer": "Zumbador sonando"
+  },
+  "tasks": {
+    "sonar": "Distancia a lo que hay delante del sensor",
+    "brake": {
+      "title": "No frenes en una sala vacía",
+      "brief": "El sketch del parachoques de este robot enciende el freno (D13) cuando algo está a menos de 20 cm. Funciona contra una pared, pero en una sala despejada también frena: cuando nada hace eco, pulseIn() devuelve 0, y 0 cm es \"a menos de 20\". Frena solo cuando de verdad ha habido un eco por debajo de 20 cm. La pared está a 80 cm, a 15 cm a los 1,5 s, desaparece a los 3 s y está a 8 cm a los 4,5 s.",
+      "hints": {
+        "1": "ping() devuelve 0 cuando no ha vuelto nada. 0 no es una distancia.",
+        "2": "Las dos cosas tienen que cumplirse: ha habido eco, y estaba cerca.",
+        "3": "bool brake = cm > 0 && cm < 20;"
+      },
+      "checks": {
+        "1": "Se ejecuta",
+        "2": "Pared a 80 cm: no frena",
+        "3": "Pared a 15 cm: frena",
+        "4": "Sala vacía: no frena",
+        "5": "Pared a 8 cm: frena"
+      },
+      "code": {
+        "goal": "Frena por debajo de 20 cm, pero no cuando nada hace eco",
+        "todo": "0 significa que no hay eco: esto también frena en una sala vacía",
+        "zero": "0 cuando no ha vuelto nada en 30 ms"
+      }
+    },
+    "speed": {
+      "title": "¿A qué velocidad se acerca?",
+      "brief": "Un robot no solo necesita saber a qué distancia está algo, sino también a qué velocidad se mueve. El sketch hace un ping cada 500 ms. Calcula la velocidad de acercamiento a partir de esta distancia, la anterior y el tiempo entre las dos, y añade \", approaching at N cm/s\", \", moving away at N cm/s\" o \", holding\" (si está dentro de 2 cm/s) a cada línea. Una mano se acerca de 1 m a 30 cm a 20 cm/s, se queda quieta y luego se aleja.",
+      "hints": {
+        "1": "speed = (last - cm) / segundos entre los pings: positiva cuando se acerca.",
+        "2": "Guarda last y lastAt del ping anterior; sáltate la velocidad cuando cualquiera de las dos lecturas no tenga eco.",
+        "3": "Serial.print(speed, 0) la imprime sin decimales."
+      },
+      "checks": {
+        "1": "Se ejecuta",
+        "2": "Dice que se acerca a unos 20 cm/s",
+        "3": "Dice holding cuando la mano se para a 30 cm",
+        "4": "Dice que se aleja a unos 20 cm/s"
+      },
+      "code": {
+        "goal": "Imprime la velocidad de acercamiento después de cada distancia",
+        "todo": "compara con la lectura anterior: approaching at N cm/s, moving away at N cm/s o holding"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "crystal": {
+        "q": "¿Qué hace el cristal de 4 MHz?",
+        "options": {
+          "1": "Da el reloj al MCU que genera la ráfaga y cronometra el eco",
+          "2": "Amplifica el eco",
+          "3": "Regula los 5 V"
+        },
+        "why": "El EM78P153S cuenta la ráfaga de 40 kHz y el eco a partir de su reloj. Quita el cristal y nada funciona."
+      },
+      "cans": {
+        "q": "T y R son el mismo tipo de cápsula. ¿Qué hace que una sea el emisor?",
+        "options": {
+          "1": "T es más grande",
+          "2": "A qué está conectada: T al MAX3232 que la excita, R al LM324 que escucha",
+          "3": "R no tiene piezo"
+        },
+        "why": "Un piezo convierte la tensión en movimiento y el movimiento en tensión. Excitado con fuerza, emite; conectado a un amplificador, escucha."
+      },
+      "protection": {
+        "q": "¿Qué protege al HC-SR04 de una alimentación equivocada?",
+        "options": {
+          "1": "Un regulador",
+          "2": "Un diodo contra la polaridad inversa",
+          "3": "Nada: Vcc va directamente a todos los chips"
+        },
+        "why": "La placa clásica no tiene regulador, ni diodo, ni fusible. Comprueba bien Vcc antes de conectar."
+      }
+    },
+    "ping": {
+      "formula": {
+        "q": "Echo está en HIGH durante 1740 µs. ¿A qué distancia está la pared?",
+        "options": {
+          "1": "17,4 cm",
+          "2": "30 cm",
+          "3": "58 cm"
+        },
+        "why": "1740 / 58 = 30. El pulso es la ida y la vuelta, y 58 µs es un centímetro de ida y vuelta."
+      },
+      "why58": {
+        "q": "¿Por qué 58 µs por cm?",
+        "options": {
+          "1": "El sonido recorre un centímetro en 29 µs a 343 m/s, y tiene que ir y volver",
+          "2": "El cristal divide entre 58",
+          "3": "Lo eligió la hoja de datos del sensor"
+        },
+        "why": "1 cm / 34 300 cm/s = 29 µs de ida, 58 µs de ida y vuelta. Cambia un poco con la temperatura."
+      },
+      "zero": {
+        "q": "pulseIn(ECHO, HIGH, 30000UL) devuelve 0. ¿Qué significa?",
+        "options": {
+          "1": "Algo está tocando el sensor",
+          "2": "El sensor está roto",
+          "3": "No ha empezado ningún eco en 30 ms"
+        },
+        "why": "El 0 es la forma que tiene pulseIn() de decir que se ha rendido. No es una distancia."
+      }
+    },
+    "faults": {
+      "low-vcc": {
+        "q": "Con 3,3 V la placa funciona, pero no detecta ningún eco. ¿Por qué?",
+        "options": {
+          "1": "El MCU se para",
+          "2": "La excitación del emisor y la ganancia del receptor necesitan 4,5-5,5 V",
+          "3": "Echo sube demasiado"
+        },
+        "why": "El MAX3232 genera sus ±10 V a partir de Vcc, y la ganancia del LM324 baja con ella. La ráfaga sale débil y no se oye nada."
+      },
+      "soft": {
+        "q": "¿Por qué un cojín sale sin eco?",
+        "options": {
+          "1": "Está demasiado cerca",
+          "2": "Está demasiado caliente",
+          "3": "La tela blanda absorbe el sonido en lugar de devolverlo"
+        },
+        "why": "Los objetivos duros y planos son los que mejor hacen eco. La tela, la espuma y el pelo se tragan casi toda la ráfaga; las superficies inclinadas la desvían."
+      },
+      "timeout": {
+        "q": "Sin timeout, ¿por qué una sala vacía marca 655 cm?",
+        "options": {
+          "1": "pulseIn() mide el pulso del propio timeout de 38 ms de la placa, y 38000 / 58 = 655",
+          "2": "La sala mide 6,5 m de largo",
+          "3": "El reloj de la Nano va mal"
+        },
+        "why": "Sin nada que haga eco, la placa sube Echo igualmente y lo baja al cabo de unos 38 ms. Sin un timeout más corto, el sketch lo toma por una distancia."
+      }
+    },
+    "end": {
+      "cone": {
+        "q": "El sensor oye en un cono de unos 15°. ¿Qué significa eso para un robot?",
+        "options": {
+          "1": "Puede pasar por alto la pata fina de una silla que esté a un lado",
+          "2": "Ve detrás de sí",
+          "3": "Ve a través de las paredes"
+        },
+        "why": "Todo lo que quede fuera del cono, o sea demasiado fino para hacer eco, es invisible. Los robots a menudo giran el sensor con un servo, o usan dos."
+      },
+      "two": {
+        "q": "Dos robots hacen pings muy cerca el uno del otro. ¿Qué falla?",
+        "options": {
+          "1": "Nada",
+          "2": "Cada uno puede oír la ráfaga del otro y leer una distancia falsa",
+          "3": "Los dos leen más lejos"
+        },
+        "why": "Todos los HC-SR04 usan 40 kHz. Haz que se turnen, o ignora las lecturas que pegan saltos."
+      },
+      "gap": {
+        "q": "¿Por qué esperar al menos 60 ms entre pings?",
+        "options": {
+          "1": "El chip se sobrecalienta",
+          "2": "Serial necesita ese tiempo",
+          "3": "Para que los ecos del último ping se hayan apagado antes de la siguiente ráfaga"
+        },
+        "why": "El sonido del último ping que sigue rebotando por la sala se puede oír como el eco del siguiente."
+      }
+    }
+  }
+}
