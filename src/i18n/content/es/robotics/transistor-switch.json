@@ -125,47 +125,47 @@
       "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
     },
     "break-flyback": {
-      "title": "Avéríalo: quita el diodo de protección",
+      "title": "Averíalo: quita el diodo de protección",
       "body": "Quita D1, ejecuta PWM 50 % y mira el pico del colector en el panel de estado. Luego vuelve a ponerlo y mira cómo el pico baja a un diodo por encima de la batería."
     },
     "break-diode": {
-      "title": "Avéríalo: coloca el diodo al revés",
+      "title": "Averíalo: coloca el diodo al revés",
       "body": "Gira D1 para que su banda mire hacia el colector, y luego enciende el motor."
     },
     "break-tip120": {
-      "title": "Avéríalo: pon el TIP120 al revés",
+      "title": "Averíalo: pon el TIP120 al revés",
       "body": "Dale la vuelta al TIP120 para que su pestaña mire hacia ti. El LED sigue diciendo que el pin 9 está en HIGH. ¿Gira la rueda?"
     },
     "break-ground": {
-      "title": "Avéríalo: olvida la tierra común",
+      "title": "Averíalo: olvida la tierra común",
       "body": "Quita el cable que va del GND de la Nano a la línea del negativo de la batería."
     },
     "break-base": {
-      "title": "Avéríalo: quita la resistencia de base",
+      "title": "Averíalo: quita la resistencia de base",
       "body": "Sustituye R1 por un simple cable puente y enciende el pin 9."
     },
     "break-pin": {
-      "title": "Avéríalo: conecta el motor directamente al pin 9",
+      "title": "Averíalo: conecta el motor directamente al pin 9",
       "body": "Saca el TIP120 de la ecuación: el positivo del motor al pin 9 y el negativo del motor a tierra."
     },
     "break-brownout": {
-      "title": "Avéríalo: alimenta el motor con los 5 V de la Nano",
+      "title": "Averíalo: alimenta el motor con los 5 V de la Nano",
       "body": "Desconecta la batería y alimenta la línea positiva desde el pin 5V de la Nano."
     },
     "break-polarity": {
-      "title": "Avéríalo: conecta los cables de la batería al revés",
+      "title": "Averíalo: conecta los cables de la batería al revés",
       "body": "Intercambia los cables rojo y negro de la batería en las líneas."
     },
     "break-voltage": {
-      "title": "Avéríalo: llena el portapilas con celdas de iones de litio",
+      "title": "Averíalo: llena el portapilas con celdas de iones de litio",
       "body": "Llena el portapilas con cuatro celdas 14500. Tienen el tamaño de una pila AA, pero cada una da 3,7-4,2 V."
     },
     "break-cold": {
-      "title": "Avéríalo: una soldadura fría en el terminal del motor",
+      "title": "Averíalo: una soldadura fría en el terminal del motor",
       "body": "El cable rojo del motor está soldado a su terminal con una bola mate y granulada que solo toca el terminal."
     },
     "break-stall": {
-      "title": "Avéríalo: sujeta la rueda",
+      "title": "Averíalo: sujeta la rueda",
       "body": "Para la rueda con los dedos mientras el pin 9 está en HIGH y mira la corriente del motor."
     }
   },

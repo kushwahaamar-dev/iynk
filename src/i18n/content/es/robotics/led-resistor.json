@@ -1,8 +1,8 @@
 {
   "title": "LED + resistencia",
   "sub": "La ley de Ohm con un multímetro",
-  "hint": "Monta la placa de prácticas, mueve el jumper, predice la corriente y lee el multímetro, y luego avéríala a propósito",
-  "overview": "El primer circuito del curso no lleva ningún chip: 5 V, un interruptor, una resistencia y un LED rojo, con un multímetro en el circuito para leer la corriente. Un jumper elige la resistencia: 220 Ω, 1 kΩ, 10 kΩ o un hilo sin más. Calcula primero cada corriente en papel, I = (V − V_F) / R con unos 2 V en el LED, y luego mueve el jumper y comprueba el multímetro: 13,6, 3,0 y 0,30 mA. Después avéríala a propósito: sin resistencia, el LED o el condensador al revés, sin el pull-down de USB-C, una soldadura fría, los cables de la fuente cambiados, 12 V en lugar de 5 V, una fuente que se queda sin corriente. Todos los LED, pull-ups y divisores de sensores de un robot funcionan con esta misma fórmula.",
+  "hint": "Monta la placa de prácticas, mueve el jumper, predice la corriente y lee el multímetro, y luego averíala a propósito",
+  "overview": "El primer circuito del curso no lleva ningún chip: 5 V, un interruptor, una resistencia y un LED rojo, con un multímetro en el circuito para leer la corriente. Un jumper elige la resistencia: 220 Ω, 1 kΩ, 10 kΩ o un hilo sin más. Calcula primero cada corriente en papel, I = (V − V_F) / R con unos 2 V en el LED, y luego mueve el jumper y comprueba el multímetro: 13,6, 3,0 y 0,30 mA. Después averíala a propósito: sin resistencia, el LED o el condensador al revés, sin el pull-down de USB-C, una soldadura fría, los cables de la fuente cambiados, 12 V en lugar de 5 V, una fuente que se queda sin corriente. Todos los LED, pull-ups y divisores de sensores de un robot funcionan con esta misma fórmula.",
   "power": {
     "label": "Conecta el cargador USB-C",
     "ok": "Con alimentación: el LED está encendido y el multímetro lee su corriente"
@@ -162,35 +162,35 @@
       "body": "Otra vez 13,6 mA. Todas las lecturas han coincidido con el cálculo: eso es la ley de Ohm, I = V / R, donde V son los 3 V que le llegan a la resistencia después de que el LED se quede con sus 2 V."
     },
     "no-resistor": {
-      "title": "Avéríala: sin resistencia",
+      "title": "Averíala: sin resistencia",
       "body": "Mueve el jumper a NONE, para que entre la fuente y el LED solo quede el puente de hilo. Mira el LED y el multímetro. Luego repárala: desconéctala, vuelve a poner el jumper en 220 Ω y coloca un LED nuevo."
     },
     "led-backwards": {
-      "title": "Avéríala: el LED al revés",
+      "title": "Averíala: el LED al revés",
       "body": "Coloca D1 al revés y dale alimentación. Luego dale la vuelta y vuelve a alimentarla."
     },
     "cap-backwards": {
-      "title": "Avéríala: C1 al revés",
+      "title": "Averíala: C1 al revés",
       "body": "Coloca C1 con la franja hacia + y dale alimentación. Luego coloca uno nuevo en el sentido correcto."
     },
     "cc-missing": {
-      "title": "Avéríala: quita R4",
+      "title": "Averíala: quita R4",
       "body": "Monta la placa sin uno de los dos pull-downs de CC de 5,1 kΩ y conecta el cargador. Luego coloca R4 y vuelve a conectar."
     },
     "cold-led": {
-      "title": "Avéríala: una soldadura fría en el LED",
+      "title": "Averíala: una soldadura fría en el LED",
       "body": "Una de las soldaduras de D1 está mate y granulada. Mira el LED y el multímetro, y luego vuelve a calentar la soldadura."
     },
     "reverse-supply": {
-      "title": "Avéríala: cambia los cables de la fuente de laboratorio",
+      "title": "Averíala: cambia los cables de la fuente de laboratorio",
       "body": "Alimenta la placa desde la fuente de laboratorio en J2 con el rojo y el negro cambiados. Luego ponlos bien y coloca un C1 nuevo."
     },
     "over-voltage": {
-      "title": "Avéríala: 12 V en la entrada de 5 V",
+      "title": "Averíala: 12 V en la entrada de 5 V",
       "body": "Sube la fuente de laboratorio a 12 V. Lee el multímetro y luego espera unos segundos. Repárala con la fuente otra vez a 5 V y un LED nuevo."
     },
     "current-limit": {
-      "title": "Avéríala: un límite de corriente de 10 mA",
+      "title": "Averíala: un límite de corriente de 10 mA",
       "body": "Pon el límite de corriente de la fuente de laboratorio en 10 mA, menos de lo que quiere el LED. Lee el multímetro y la tensión de la fuente, y luego vuelve a subir el límite."
     },
     "usb-again": {

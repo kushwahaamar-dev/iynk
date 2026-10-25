@@ -1,12 +1,12 @@
 {
   "meta": {
     "indexTitle": "Laboratorio de robótica",
-    "indexDescription": "Trece bancos en una hoja de ruta de robótica de seis meses: monta cada placa pieza a pieza, dale corriente, avériala a propósito y arréglala, desde la ley de Ohm hasta un cerebro de robot con ROS 2.",
+    "indexDescription": "Trece bancos en una hoja de ruta de robótica de seis meses: monta cada placa pieza a pieza, dale corriente, averíala a propósito y arréglala, desde la ley de Ohm hasta un cerebro de robot con ROS 2.",
     "benchDescription": "{name}: {teaches}"
   },
   "index": {
     "kicker": "Laboratorio de robótica",
-    "title": "Móntalo, dale corriente, avérialo, arréglalo",
+    "title": "Móntalo, dale corriente, averíalo, arréglalo",
     "lede": "Trece bancos entintados a mano, en el orden de una hoja de ruta de robótica de seis meses. Cada uno te guía por el montaje, te deja provocar los fallos que pillan a los que montan de verdad y termina con tareas prácticas que compruebas ejecutando código y con un cuestionario corto.",
     "fig": "Fig. {n}",
     "progress": "{done}/{total}",
@@ -28,7 +28,7 @@
   "benches": {
     "uno-r3-build": {
       "name": "Arduino Uno R3",
-      "teaches": "Conoce la placa: móntala desde la PCB desnuda, suelda por reflujo las piezas SMD, suelda las de inserción, carga un sketch y avériala a propósito."
+      "teaches": "Conoce la placa: móntala desde la PCB desnuda, suelda por reflujo las piezas SMD, suelda las de inserción, carga un sketch y averíala a propósito."
     },
     "led-resistor": {
       "name": "LED + resistencia",
@@ -137,7 +137,7 @@
     "current": "Siguiente",
     "kinds": {
       "build": "Montaje",
-      "break": "Avériala",
+      "break": "Averíala",
       "test": "Prueba"
     },
     "faultSeen": "Avería vista. Ahora arréglala: {fix}",
@@ -149,7 +149,7 @@
     "stepDone": "Hecho: {step}"
   },
   "faults": {
-    "heading": "Avériala a propósito",
+    "heading": "Averíala a propósito",
     "intro": "Cada avería es de las que pillan a quien monta de verdad. Provócala, lee el síntoma en el banco y luego arréglala.",
     "trigger": "Provocar",
     "clear": "Reparar todas las averías",

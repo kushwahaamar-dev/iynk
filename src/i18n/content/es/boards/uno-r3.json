@@ -506,7 +506,7 @@
       "body": "ON está encendido, el pin 5V marca 5,0 V y el pin 3V3, 3,3 V. El monitor serie a 9600 baudios imprime \"hello from the Uno\" una vez por segundo."
     },
     "break-chip": {
-      "title": "Avériala: el chip al revés",
+      "title": "Averíala: el chip al revés",
       "body": "Desconecta y luego gira el 328P en su zócalo."
     },
     "power-chip": {
@@ -518,7 +518,7 @@
       "body": "Desconecta y gira el chip, con la muesca hacia el conector ICSP."
     },
     "break-resonator": {
-      "title": "Avériala: quita el resonador",
+      "title": "Averíala: quita el resonador",
       "body": "Desconecta y luego retira Y2 con aire caliente."
     },
     "power-resonator": {
@@ -530,7 +530,7 @@
       "body": "Desconecta y vuelve a colocar Y2."
     },
     "break-brownout": {
-      "title": "Avériala: un motor en 5V",
+      "title": "Averíala: un motor en 5V",
       "body": "Un motor en el pin 5V hunde la línea cada vez que arranca. Mira cómo el estado pasa a caída de tensión y el sketch se reinicia."
     },
     "exploded": {
@@ -762,7 +762,7 @@
       "features": {
         "1": "Ejecútalo y mira cómo parpadean los dos LED",
         "2": "Cambia la resistencia y mira cómo cambia el brillo",
-        "3": "Avériala: quita la resistencia en Avériala"
+        "3": "Averíala: quita la resistencia en Averíala"
       },
       "steps": {
         "1": "Sigue el cable desde D13 hasta la protoboard: llega a la resistencia y luego a la pata larga del LED.",

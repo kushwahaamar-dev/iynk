@@ -2,7 +2,7 @@
   "title": "Alarma de inclinación MPU-6050",
   "sub": "un giroscopio y un acelerómetro en dos cables",
   "hint": "monta la GY-521, despiértala y luego haz que avise cuando el robot se incline",
-  "overview": "Un robot necesita saber dónde está el suelo. El MPU-6050 de esta pequeña placa azul GY-521 mide la aceleración en tres ejes, gravedad incluida, y la velocidad de giro en otros tres, y lo entrega todo por I2C en la dirección 0x68. Tumbado en plano marca 1 g en Z; inclinado, parte de ese 1 g pasa a Y, y atan2(ay, az) da el ángulo. Monta la placa, léela desde una Nano con llamadas simples a Wire y luego haz que suene un zumbador cuando el robot se incline más de 20°. Después avérialo: aliméntalo al revés o desde una LiPo, deja sin poner el condensador que necesita el giroscopio, pierde el pull-down de la dirección, deja una soldadura fría en SDA y pon el tántalo al revés.",
+  "overview": "Un robot necesita saber dónde está el suelo. El MPU-6050 de esta pequeña placa azul GY-521 mide la aceleración en tres ejes, gravedad incluida, y la velocidad de giro en otros tres, y lo entrega todo por I2C en la dirección 0x68. Tumbado en plano marca 1 g en Z; inclinado, parte de ese 1 g pasa a Y, y atan2(ay, az) da el ángulo. Monta la placa, léela desde una Nano con llamadas simples a Wire y luego haz que suene un zumbador cuando el robot se incline más de 20°. Después averíalo: aliméntalo al revés o desde una LiPo, deja sin poner el condensador que necesita el giroscopio, pierde el pull-down de la dirección, deja una soldadura fría en SDA y pon el tántalo al revés.",
   "parts": {
     "IC1": {
       "name": "Sensor de movimiento de 6 ejes MPU-6050",

@@ -1,7 +1,7 @@
 {
   "title": "Monta una Arduino Uno R3",
   "sub": "De la PCB desnuda al Blink",
-  "hint": "Desmóntala, coloca y refluye las piezas SMD, pon las piezas de inserción de la más baja a la más alta, suelda, mete el chip, conecta, carga un sketch y luego avériala",
+  "hint": "Desmóntala, coloca y refluye las piezas SMD, pon las piezas de inserción de la más baja a la más alta, suelda, mete el chip, conecta, carga un sketch y luego averíala",
   "overview": "La Uno es una placa con microcontrolador construida alrededor del ATmega328P, y es donde empieza la robótica: digitalWrite(), el PWM, las interrupciones y la depuración por serie aparecen aquí por primera vez. Móntala como lo hace una fábrica: una máquina coloca las piezas de montaje superficial y el horno de reflujo las suelda todas a la vez, luego las piezas de inserción entran de la más baja a la más alta y se sueldan, y el chip va a su zócalo el último, en frío. Conéctala, carga un sketch y luego avería la placa a propósito: un chip al revés, un fusible que falta, una alimentación invertida, un motor en el pin 5V, una soldadura fría. Cada avería muestra lo que hace de verdad y cómo arreglarla.",
   "power": {
     "label": "Conecta el USB",
@@ -314,55 +314,55 @@
       "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
     },
     "chip-backwards": {
-      "title": "Avérialo: el chip al revés",
+      "title": "Averíalo: el chip al revés",
       "body": "Hacerlo cierra la vista despiezada, gira el ATmega328P en su zócalo y conecta el USB. Mira el estado y luego arréglalo."
     },
     "cap-backwards": {
-      "title": "Avérialo: un condensador al revés",
+      "title": "Averíalo: un condensador al revés",
       "body": "Hacerlo desconecta la placa, suelda al revés PC2, el condensador de 47 µF de 5 V, y vuelve a conectar el USB. Obsérvalo y luego arréglalo."
     },
     "chip-missing": {
-      "title": "Avérialo: sin chip en el zócalo",
+      "title": "Averíalo: sin chip en el zócalo",
       "body": "Hacerlo desconecta la placa, saca el ATmega328P y vuelve a conectar el USB. Mira los LED e intenta una carga, y luego vuelve a poner el chip."
     },
     "resonator-missing": {
-      "title": "Avérialo: sin el resonador",
+      "title": "Averíalo: sin el resonador",
       "body": "Hacerlo desconecta la placa, quita Y2, el resonador de 16 MHz (una diminuta pieza SMD), y vuelve a conectar el USB. Mira qué sigue funcionando."
     },
     "fuse-missing": {
-      "title": "Avérialo: sin el polifusible",
+      "title": "Averíalo: sin el polifusible",
       "body": "Hacerlo desconecta la placa, quita F1 y vuelve a conectar el USB. Mira los LED."
     },
     "bridge-missing": {
-      "title": "Avérialo: sin el puente USB",
+      "title": "Averíalo: sin el puente USB",
       "body": "Hacerlo desconecta la placa, quita el ATmega16U2 y vuelve a conectar el USB. Mira qué sigue funcionando e intenta una carga."
     },
     "reverse-jack": {
-      "title": "Avérialo: alimentación invertida en el conector",
+      "title": "Averíalo: alimentación invertida en el conector",
       "body": "Hacerlo conecta al conector de barril un adaptador de 9 V con la polaridad cambiada. Mira lo que pasa y lo que no pasa."
     },
     "reverse-vin": {
-      "title": "Avérialo: alimentación invertida en VIN",
+      "title": "Averíalo: alimentación invertida en VIN",
       "body": "Hacerlo conecta al revés una pila de 9 V al pin VIN. Compáralo con el conector de barril."
     },
     "jack-too-high": {
-      "title": "Avérialo: 24 V en el conector de barril",
+      "title": "Averíalo: 24 V en el conector de barril",
       "body": "Hacerlo conecta al conector un adaptador de 24 V, el doble del máximo del rango de 7-12 V."
     },
     "jack-too-low": {
-      "title": "Avérialo: 4 V en el conector de barril",
+      "title": "Averíalo: 4 V en el conector de barril",
       "body": "Hacerlo conecta al conector una alimentación de 4 V, muy por debajo del mínimo de 7 V."
     },
     "motor-brownout": {
-      "title": "Avérialo: un motor en el pin 5V",
+      "title": "Averíalo: un motor en el pin 5V",
       "body": "Hacerlo alimenta un pequeño motor de CC directamente desde los pines 5V y GND de la Uno, con alimentación USB. Mira el LED ON, el estado y el monitor serie."
     },
     "cold-usb": {
-      "title": "Avérialo: una soldadura fría en el conector USB",
+      "title": "Averíalo: una soldadura fría en el conector USB",
       "body": "Hacerlo deja el pin de 5 V del conector USB con una soldadura fría. Mira un rato el LED ON y el estado."
     },
     "solder-bridge": {
-      "title": "Avérialo: un puente de soldadura de 5V a GND",
+      "title": "Averíalo: un puente de soldadura de 5V a GND",
       "body": "Hacerlo deja caer una gota de estaño entre los pines vecinos 5V y GND del conector de alimentación. Mira lo que hace el polifusible."
     },
     "blink": {

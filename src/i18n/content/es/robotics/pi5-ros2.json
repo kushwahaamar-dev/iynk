@@ -198,27 +198,27 @@
       "body": "vcgencmd get_throttled guarda el historial de la alimentación y de la temperatura en un solo número. 0x0 significa que desde este arranque la alimentación nunca ha caído y el reloj nunca se ha reducido."
     },
     "charger": {
-      "title": "Avériala: aliméntala con un cargador de móvil de 5 V y 2 A",
+      "title": "Averíala: aliméntala con un cargador de móvil de 5 V y 2 A",
       "body": "Con carga, el cargador y su cable fino caen a 4,6 V, por debajo del límite de 4,63 V. Mira la alimentación, el reloj y los indicadores de throttled, y luego vuelve a la fuente de 27 W."
     },
     "no-cooler": {
-      "title": "Avériala: hazla funcionar sin el Active Cooler",
+      "title": "Averíala: hazla funcionar sin el Active Cooler",
       "body": "Se quita el disipador y el nodo de conducción funciona con el SoC al aire. La temperatura sube unos grados por segundo, el reloj baja al pasar de 80 °C y el nodo avisa. Luego repárala: el disipador vuelve a su sitio y la placa se enfría."
     },
     "cold-fan": {
-      "title": "Avériala: una soldadura fría en el conector del ventilador",
+      "title": "Averíala: una soldadura fría en el conector del ventilador",
       "body": "Un pin del conector del ventilador apenas toca su pad, así que el ventilador va a trompicones y el SoC se calienta más. Vuelve a fundir la soldadura (Repáralo todo) para arreglarlo."
     },
     "motors": {
-      "title": "Avériala: motores de tracción en los 5 V de la Pi",
+      "title": "Averíala: motores de tracción en los 5 V de la Pi",
       "body": "Alimenta la Pi desde el convertidor buck de 3 A del robot por los pines 2 y 4 del GPIO, con dos motores TT de tracción en la misma línea. Su corriente de arranque hunde la línea y la Pi se reinicia. Repara, y luego dale a la Pi su propia fuente de 27 W."
     },
     "reverse": {
-      "title": "Avériala: los 5 V del robot conectados al revés",
+      "title": "Averíala: los 5 V del robot conectados al revés",
       "body": "Intercambia los cables de los pines 2 y 6 del GPIO. Nada en la línea de 5 V del conector bloquea una alimentación invertida. Repara, y luego vuelve a alimentarla por USB-C."
     },
     "overvolt": {
-      "title": "Avériala: 12 V en los pines de 5 V",
+      "title": "Averíala: 12 V en los pines de 5 V",
       "body": "Conecta una batería 3S directamente al pin 2 en lugar de a través de un convertidor buck de 5 V. Repara, y luego vuelve a alimentarla por USB-C."
     },
     "exploded": {

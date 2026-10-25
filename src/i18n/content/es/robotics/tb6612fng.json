@@ -161,23 +161,23 @@
       "refusal": "Primero alimenta el banco"
     },
     "c3-backwards": {
-      "title": "Avéríala: C3 al revés",
+      "title": "Averíala: C3 al revés",
       "body": "C3 vuelve a su sitio con la banda hacia GND. Dale alimentación y mira cómo falla, y luego desconecta, dale la vuelta y vuelve a alimentarla."
     },
     "lipo-backwards": {
-      "title": "Avéríala: la LiPo conectada al revés",
+      "title": "Averíala: la LiPo conectada al revés",
       "body": "El rojo en GND y el negro en VM. Esta placa no tiene protección contra la polaridad inversa. Mira qué se quema, y luego repárala y aliméntala en el sentido correcto."
     },
     "four-cells": {
-      "title": "Avéríala: una batería 4S en VM",
+      "title": "Averíala: una batería 4S en VM",
       "body": "Una LiPo 4S cargada del todo da 16,8 V, por encima de los 15 V del máximo absoluto. Mira cómo falla el driver, y luego vuelve a la batería 2S."
     },
     "motors-on-5v": {
-      "title": "Avéríala: los motores en los 5 V de la Nano",
+      "title": "Averíala: los motores en los 5 V de la Nano",
       "body": "VM pasa de la batería al pin 5V de la Nano. Cada arranque de los motores hunde la línea y la Nano se reinicia en bucle. Repárala: VM otra vez en la LiPo."
     },
     "cold-stby": {
-      "title": "Avéríala: soldaduras frías en el conector de control",
+      "title": "Averíala: soldaduras frías en el conector de control",
       "body": "Las soldaduras del conector de control están mates y granuladas. Cuando se abre la soldadura de STBY, el pull-down duerme el chip y los motores van a trompicones. Vuelve a fundir las soldaduras."
     },
     "no-driver": {

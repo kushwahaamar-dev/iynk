@@ -1,7 +1,7 @@
 {
   "title": "Convertidor reductor LM2596",
   "sub": "ajusta la tensión antes de ponerle carga",
-  "hint": "móntalo, ajusta 5 V con un multímetro, mueve un motor, avérialo",
+  "hint": "móntalo, ajusta 5 V con un multímetro, mueve un motor, averíalo",
   "overview": "Las baterías vienen con la tensión equivocada. Una LiPo 2S da 8,4 V cargada y 6,6 V casi descargada; un motor TT, el pin 5V de una Nano o un servo quieren 5 V. Un convertidor reductor (buck) baja la tensión sin quemar la diferencia en calor: el LM2596 conecta y desconecta la entrada 150 000 veces por segundo, una bobina de 33 µH y un condensador suavizan la tensión troceada, y un diodo Schottky lleva la corriente de la bobina mientras el interruptor está abierto. Un trimmer de 25 vueltas fija la salida según la fórmula Vout = 1,23 x (1 + R2 / 330). Aquí montas el módulo azul, ajustas 5 V con un multímetro antes de poner nada en la salida, le conectas un motor, le pides 12 V para ver que un reductor solo baja la tensión, y luego lo averías de siete maneras. No tiene protección contra la inversión, ni fusible, ni corte por batería baja, y todo eso se nota.",
   "power": {
     "label": "Alimenta el banco",
@@ -203,37 +203,37 @@
       "refusal": "Primero mueve el motor a 3,3 V"
     },
     "lipo-backwards": {
-      "title": "Avériala: batería al revés",
+      "title": "Averíala: batería al revés",
       "body": "Intercambia los cables de la batería en la entrada. Nada en el módulo lo impide. Luego repara y vuelve a ajustar 5 V."
     },
     "cap-backwards": {
-      "title": "Avériala: C1 al revés",
+      "title": "Averíala: C1 al revés",
       "body": "Coloca el condensador de entrada con la franja en el sentido equivocado y enciende. Luego repáralo."
     },
     "wiper-open": {
-      "title": "Avériala: soldadura fría en el trimmer",
+      "title": "Averíala: soldadura fría en el trimmer",
       "body": "Una soldadura mate y agrietada en el pin del cursor del trimmer. Enciende con el motor puesto y mira el multímetro."
     },
     "flat-pack": {
-      "title": "Avériala: descarga la batería hasta 5,5 V",
+      "title": "Averíala: descarga la batería hasta 5,5 V",
       "body": "Deja que la batería caiga hasta 5,5 V, muy por debajo de su mínimo de 6,0 V, y mira la salida y el display."
     },
     "stall": {
-      "title": "Avériala: sujeta la rueda",
+      "title": "Averíala: sujeta la rueda",
       "body": "Agarra la rueda del motor para que no pueda girar, y mira el multímetro, la corriente de la batería y la temperatura del chip."
     },
     "short-out": {
-      "title": "Avériala: cortocircuito entre OUT+ y OUT-",
+      "title": "Averíala: cortocircuito entre OUT+ y OUT-",
       "body": "Un hilo suelto a través de la borna de salida. Mira el multímetro, el display y el diodo."
     },
     "ten-s-pack": {
-      "title": "Avériala: una entrada de 44 V",
+      "title": "Averíala: una entrada de 44 V",
       "body": "Una batería 10S, 42 V cargada, o una fuente de laboratorio de 44 V en la entrada: dentro de los 45 V que admite el LM2596, fuera de lo que admite el diodo."
     },
     "exploded": {
       "title": "Vista despiezada",
       "body": "Las capas por separado: la placa, los componentes SMD de potencia, el trimmer y el display, los condensadores y las bornas.",
-      "refusal": "Primero avériala y repárala de todas las maneras"
+      "refusal": "Primero averíala y repárala de todas las maneras"
     }
   },
   "faults": {

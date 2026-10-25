@@ -369,7 +369,7 @@
       "refusal": "Primero conecta el USB: las cargas van por el cable."
     },
     "download-mode": {
-      "title": "Avériala: mantén FLASH y toca RST",
+      "title": "Averíala: mantén FLASH y toca RST",
       "body": "Con GPIO0 a nivel bajo en el reinicio, la ROM de arranque indica boot mode (1,x) a 74880 baudios y espera a esptool en lugar de ejecutar tu sketch. Suelta FLASH y pulsa RST una vez para que vuelva a funcionar."
     },
     "power-up": {

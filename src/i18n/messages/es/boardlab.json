@@ -7,7 +7,7 @@
   "index": {
     "kicker": "Módulo 1",
     "title": "Laboratorio de placas",
-    "lede": "Doce placas reales. Monta cada una, dale corriente, escribe código que se ejecuta de verdad, conecta sensores y avériala a propósito para ver qué falla y por qué.",
+    "lede": "Doce placas reales. Monta cada una, dale corriente, escribe código que se ejecuta de verdad, conecta sensores y averíala a propósito para ver qué falla y por qué.",
     "count": "{count} placas",
     "open": "Abrir {board}",
     "lessons": "Lecciones",
@@ -162,7 +162,7 @@
     "reset": "Empezar de nuevo"
   },
   "failures": {
-    "title": "Avériala",
+    "title": "Averíala",
     "lede": "Cada avería ocurre de verdad en la simulación. Provoca una, mira la figura y luego lee por qué.",
     "trigger": "Provocar",
     "active": "Ocurriendo ahora",

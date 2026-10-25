@@ -2,7 +2,7 @@
   "title": "Sensor de aparcamiento HC-SR04",
   "sub": "la distancia a partir de un eco que puedes cronometrar",
   "hint": "monta la placa del sonar, haz un ping y luego haz que un zumbador pite más rápido a medida que se acerca una mano",
-  "overview": "Un robot que se choca con las paredes necesita saber a qué distancia están. El HC-SR04 lanza una ráfaga de sonido de 40 kHz desde una cápsula y escucha el eco con la otra; su pin Echo se queda en HIGH durante la ida y la vuelta. El sonido recorre un centímetro de ida y vuelta en 58 µs, así que un pulso de 1740 µs significa una pared a 30 cm. Monta la placa, haz pings desde una Nano y luego haz que un zumbador pite más rápido a medida que se acerca una mano, como el sensor de aparcamiento de un coche. Después avérialo: aliméntalo al revés o con 3,3 V, quita el receptor, deja una soldadura fría en Echo, olvida el timeout de pulseIn() y cortocircuita su alimentación.",
+  "overview": "Un robot que se choca con las paredes necesita saber a qué distancia están. El HC-SR04 lanza una ráfaga de sonido de 40 kHz desde una cápsula y escucha el eco con la otra; su pin Echo se queda en HIGH durante la ida y la vuelta. El sonido recorre un centímetro de ida y vuelta en 58 µs, así que un pulso de 1740 µs significa una pared a 30 cm. Monta la placa, haz pings desde una Nano y luego haz que un zumbador pite más rápido a medida que se acerca una mano, como el sensor de aparcamiento de un coche. Después averíalo: aliméntalo al revés o con 3,3 V, quita el receptor, deja una soldadura fría en Echo, olvida el timeout de pulseIn() y cortocircuita su alimentación.",
   "parts": {
     "T": {
       "name": "Emisor T: un piezo de 40 kHz en una cápsula de 16 mm",

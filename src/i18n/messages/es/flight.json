@@ -264,7 +264,7 @@
     "fixed": "Arreglado: {fix}. Arma y vuelve a volar"
   },
   "breakIt": {
-    "title": "Avérialo",
+    "title": "Averíalo",
     "lede": "Mete un error de montaje real, incluso en pleno vuelo, y mira qué hace. Un choque se repite a cámara lenta y te dice por qué.",
     "reset": "Deshacer mis cambios",
     "noBoard": "Las vueltas que vuelas con algo averiado no entran en las clasificaciones.",

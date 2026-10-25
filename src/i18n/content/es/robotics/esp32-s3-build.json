@@ -92,19 +92,19 @@
       "refusal": "Primero conecta el USB: las cargas van por el cable"
     },
     "break-r17": {
-      "title": "Avérialo: quita R17",
+      "title": "Averíalo: quita R17",
       "body": "Quita el puente de 0 Ω R17 entre GPIO38 y el LED RGB, vuelve a conectar y observa: el sketch sigue funcionando e imprimiendo, pero el LED sigue apagado. Vuelve a poner R17 para arreglarlo."
     },
     "break-cold": {
-      "title": "Avérialo: una soldadura fría en el puerto UART",
+      "title": "Averíalo: una soldadura fría en el puerto UART",
       "body": "Una soldadura del conector micro-USB J2 está fría. La alimentación va y viene, así que la placa no para de reiniciarse y el ordenador pierde el puerto una y otra vez. Vuelve a fundir la soldadura para arreglarlo."
     },
     "break-reverse": {
-      "title": "Avérialo: polaridad invertida en el pin 5V",
+      "title": "Averíalo: polaridad invertida en el pin 5V",
       "body": "Alimenta el pin 5V desde una fuente de laboratorio con los cables cambiados. Ese pin está después de los diodos de protección, así que nada frena la alimentación invertida. Repara la placa y luego vuelve a conectar el puerto UART."
     },
     "break-3v3": {
-      "title": "Avérialo: 5 V en el pin 3V3",
+      "title": "Averíalo: 5 V en el pin 3V3",
       "body": "Mete 5 V en un pin 3V3, el error clásico con la ESP32. El máximo absoluto del módulo es 3,6 V. Repárala y luego vuelve a conectar el puerto UART."
     },
     "upload-wifi": {
@@ -113,7 +113,7 @@
       "refusal": "Primero conecta el USB: las cargas van por el cable"
     },
     "break-brownout": {
-      "title": "Avérialo: caída de tensión en un puerto USB débil",
+      "title": "Averíalo: caída de tensión en un puerto USB débil",
       "body": "Alimenta la placa con un cable largo y fino o con un hub sin alimentación. Las ráfagas de transmisión Wi-Fi de unos 355 mA hunden la línea de 3,3 V y el detector de caída de tensión reinicia el chip una y otra vez. Quita la avería para arreglarlo."
     },
     "upload-sleep": {
@@ -122,7 +122,7 @@
       "refusal": "Primero conecta el USB: las cargas van por el cable"
     },
     "break-strap": {
-      "title": "Avérialo: GPIO0 a nivel bajo en el reinicio",
+      "title": "Averíalo: GPIO0 a nivel bajo en el reinicio",
       "body": "Un botón o un sensor en GPIO0 mantiene el pin de arranque a nivel bajo mientras el chip se reinicia, así que la ROM espera una descarga y tu sketch nunca arranca. Quita la avería y pulsa RESET."
     },
     "download-mode": {
