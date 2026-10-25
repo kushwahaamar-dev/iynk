@@ -11,6 +11,10 @@ import { DevnetWalletAdapter } from "./devnet-adapter";
 
 const Mounted = createContext(false);
 
+// One object for the whole app: ConnectionProvider memoizes its Connection on [endpoint, config], so an inline
+// object made a new Connection on every render and re-ran every balance and bounty read (hundreds of devnet calls).
+const CONNECTION_CONFIG = { commitment: "confirmed" } as const;
+
 // Connect errors surface in the wallet bar; the provider reports them here.
 let lastError: WalletError | null = null;
 const errorListeners = new Set<() => void>();
@@ -45,7 +49,7 @@ export function useWalletError(): WalletError | null {
 function Provider({ children }: { children: ReactNode }) {
   const wallets = useMemo(() => [new DevnetWalletAdapter()], []);
   return (
-    <ConnectionProvider endpoint={RPC_URL} config={{ commitment: "confirmed" }}>
+    <ConnectionProvider endpoint={RPC_URL} config={CONNECTION_CONFIG}>
       <WalletProvider wallets={wallets} autoConnect localStorageKey="iynk:wallet-choice:v1" onError={reportWalletError}>
         <Mounted.Provider value>{children}</Mounted.Provider>
       </WalletProvider>
