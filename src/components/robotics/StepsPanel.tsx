@@ -98,10 +98,9 @@ export function StepsPanel({ bench, session, savedDone, t, tx, dispatch, onFocus
                   <p className="mt-2 text-sm font-semibold">{t("steps.faultSeen", { fix: tx(fault.fix) })}</p>
                 ) : null}
                 {step.major ? <p className="mt-1 text-xs text-muted">{t("steps.quizAfter")}</p> : null}
-                <Button size="sm" variant="primary" className="mt-3" onClick={run}>
+                <Button size="sm" variant="primary" className="mt-3" aria-label={`${label}: ${title}`} onClick={run}>
                   {byHand ? <Icon name="target" size={16} /> : <Icon name="play" size={16} />}
                   {label}
-                  <span className="sr-only">: {title}</span>
                 </Button>
               </li>
             );

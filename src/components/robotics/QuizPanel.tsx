@@ -63,10 +63,10 @@ export function QuizPanel({ bench, session, unlocked, best, t, tx, dispatch, hea
                   size="sm"
                   variant={result ? "secondary" : "primary"}
                   className="shrink-0 whitespace-nowrap"
+                  aria-label={`${result ? t("quiz.retake") : t("quiz.open")}: ${title}`}
                   onClick={() => dispatch({ type: "quiz/open", quiz: quiz.id })}
                 >
                   {result ? t("quiz.retake") : t("quiz.open")}
-                  <span className="sr-only">: {title}</span>
                 </Button>
               ) : null}
             </li>

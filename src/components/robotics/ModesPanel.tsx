@@ -52,9 +52,14 @@ export function ModesPanel({ bench, selected, running, texts, t, tx, dispatch, h
         ))}
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-3">
-        <Button size="sm" variant="primary" onClick={() => dispatch({ type: "mode/run", mode: mode.id })} disabled={isRunning}>
+        <Button
+          size="sm"
+          variant="primary"
+          aria-label={`${mode.instant ? t("modes.switch") : t("modes.upload")}: ${title}`}
+          onClick={() => dispatch({ type: "mode/run", mode: mode.id })}
+          disabled={isRunning}
+        >
           {mode.instant ? t("modes.switch") : t("modes.upload")}
-          <span className="sr-only">: {title}</span>
         </Button>
         <span className="text-xs font-semibold text-muted" aria-live="polite">
           {isRunning ? t("modes.running") : t("modes.selected")}

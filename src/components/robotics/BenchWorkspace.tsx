@@ -158,6 +158,10 @@ function useEffects(store: BenchStore, figure: FigureHandle | null, setup: Bench
 // a ready quiz stays until it is taken or dismissed.
 const NOTICE_MS = 7000;
 
+// The rail's Break it tab triggers and repairs the same faults, with the why and the fix, so the figure's own
+// Break it picker goes.
+const HIDE_BREAK = ["break"] as const;
+
 export function BenchWorkspace({ setup, messages, notice: untranslated, walk }: Props) {
   const { bench } = setup;
   const locale = useLocale();
@@ -360,7 +364,14 @@ export function BenchWorkspace({ setup, messages, notice: untranslated, walk }: 
       </h2>
       <p className="sr-only">{t("bench.figureHint")}</p>
       <div className="relative flex min-h-0 flex-1 flex-col">
-        <FigureFrame ref={setFigure} fill src={bench.figure.page} title={t("bench.figureTitle", { name: tx(bench.title) })} onEvent={onEvent} />
+        <FigureFrame
+          ref={setFigure}
+          fill
+          src={bench.figure.page}
+          title={t("bench.figureTitle", { name: tx(bench.title) })}
+          onEvent={onEvent}
+          hideChrome={bench.faults.length > 0 ? HIDE_BREAK : undefined}
+        />
 
         <div
           data-selected-part

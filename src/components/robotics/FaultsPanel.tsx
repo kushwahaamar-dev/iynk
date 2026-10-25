@@ -57,10 +57,10 @@ export function FaultsPanel({ bench, active, t, tx, dispatch, headingId }: Props
                   size="sm"
                   variant={on ? "danger" : "secondary"}
                   className="shrink-0 whitespace-nowrap"
+                  aria-label={`${on ? t("faults.repair") : t("faults.trigger")}: ${title}`}
                   onClick={() => dispatch(on ? { type: "fault/clear" } : { type: "fault/trigger", fault: fault.id })}
                 >
                   {on ? t("faults.repair") : t("faults.trigger")}
-                  <span className="sr-only">: {title}</span>
                 </Button>
               </div>
               <Fold summary={t("faults.why")} open={on} className="mt-1.5 text-sm">
