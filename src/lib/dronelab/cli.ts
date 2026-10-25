@@ -48,7 +48,9 @@ const BF_HELP: Record<string, string> = {
   mixer: "configure mixer",
   save: "save and reboot",
   serial: "configure serial ports",
+  servo: "configure servos",
   set: "change setting",
+  smix: "servo mixer",
   status: "show status",
   version: "show version",
 };
@@ -148,6 +150,41 @@ const VTX_SUBS = ["bands", "channels", "band", "powerlevels", "powervalues", "po
 // Betaflight's arming-disable flags in bit order (docs/facts/quad5.md 5.13); the console reports the ones the
 // bench can cause.
 const BF_FLAGS = ["RXLOSS", "CLI", "NO_ACC_CAL"] as const;
+
+// Servo limits at 2026.6.2 (src/main/drivers/servo_impl.h, src/main/flight/servos.h): 8 servos, pulses the CLI
+// takes, 18 RC channels to forward from, 14 mixer inputs. TRI mixes stabilised yaw (input 2) into servo 5, the tail.
+const SERVOS = 8;
+const SERVO_PULSE = { min: 500, max: 2500 };
+const SERVO_DEFAULT = "1000 2000 1500 100 -1";
+const RC_CHANNELS = 18;
+const SERVO_INPUTS = 14;
+const TAIL = { servo: 5, input: 2 };
+
+const servoLine = (extra: string[], i: number) => extra.find((l) => l.startsWith(`servo ${i} `)) ?? `servo ${i} ${SERVO_DEFAULT}`;
+
+/** The stored `smix reverse <servo> <input> r` lines, in the order the firmware prints them. */
+function reversals(extra: string[]): string[] {
+  const key = (l: string) => l.split(" ").slice(2, 4).map(Number);
+  return extra
+    .filter((l) => l.startsWith("smix reverse "))
+    .sort((a, b) => key(a)[0] - key(b)[0] || key(a)[1] - key(b)[1]);
+}
+
+/** Whether the tail servo answers yaw backwards: reversed in the mixer, or a negative rate (both cancel out). */
+function tailReversed(extra: string[]): boolean {
+  const mixer = extra.includes(`smix reverse ${TAIL.servo} ${TAIL.input} r`);
+  const rate = Number(servoLine(extra, TAIL.servo).split(" ")[5]);
+  return mixer !== rate < 0;
+}
+
+/** The flight patch for a stored tail reversal that changed: fly.ts turns `tailReverse` into the servo fault. */
+function tailEffects(before: string[], after: string[]): CliPatch[] {
+  const now = tailReversed(after);
+  return now === tailReversed(before) ? [] : [{ tailReverse: now }];
+}
+
+/** C's atoi, which the firmware's smix parser uses: leading digits, 0 for anything else. */
+const atoi = (text: string) => Number.parseInt(text, 10) || 0;
 
 export function createCliSession(emu: CliEmulator): CliSession {
   return { values: { ...emu.settings }, saved: { ...emu.settings }, extra: [], savedExtra: [], open: true, mode: null };
@@ -353,6 +390,44 @@ function betaflight(emu: CliEmulator, ctx: CliContext, start: CliSession, line: 
       const extra = [...s.extra.filter((l) => !l.startsWith(`serial ${name} `)), text];
       return { session: { ...s, extra }, out: [...lines, ok(text)], effects: [] };
     }
+    case "servo": {
+      if (!args) {
+        const rows = Array.from({ length: SERVOS }, (_, i) => servoLine(s.extra, i));
+        return { session: s, out: [...lines, ...[...rows, ...reversals(s.extra)].map(out)], effects: [] };
+      }
+      // whole numbers only, possibly negative: servo <index> <min> <max> <middle> <rate> <forward>
+      if (!rest.every((t) => /^-?\d+$/.test(t))) return { session: s, out: [...lines, error("servo", "PARSING FAILED")], effects: [] };
+      const [i, min, max, middle, rate, forward] = rest.map(Number);
+      if (rest.length !== 6 || i < 0 || i >= SERVOS)
+        return { session: s, out: [...lines, error("servo", "INVALID ARGUMENT COUNT")], effects: [] };
+      const pulse = (n: number) => n >= SERVO_PULSE.min && n <= SERVO_PULSE.max;
+      if (!pulse(min) || !pulse(max) || middle < min || middle > max || Math.abs(rate) > 100 || forward >= RC_CHANNELS)
+        return { session: s, out: [...lines, error("servo", "ARGUMENT OUT OF RANGE")], effects: [] };
+      const text = `servo ${i} ${min} ${max} ${middle} ${rate} ${forward}`;
+      const extra = [...s.extra.filter((l) => !l.startsWith(`servo ${i} `)), text];
+      return { session: { ...s, extra }, out: [...lines, ok(text)], effects: [] };
+    }
+    case "smix": {
+      const [sub = "", ...params] = rest;
+      const reversed = (extra: string[]) => reversals(extra).map(out);
+      // no custom servo rules here: TRI's built-in one, so a bare smix lists nothing
+      if (!args) return { session: s, out: lines, effects: [] };
+      if (sub.toLowerCase() === "reset") {
+        return { session: { ...s, extra: s.extra.filter((l) => !l.startsWith("smix reverse ")) }, out: lines, effects: [] };
+      }
+      if (sub.toLowerCase() !== "reverse") return { session: s, out: [...lines, error("smix", "PARSING FAILED")], effects: [] };
+      // The firmware prints an 8 x 14 table of r and n; the reversed sources alone, as diff shows them, fit a phone.
+      if (params.length === 0) return { session: s, out: [...lines, ...reversed(s.extra)], effects: [] };
+      if (params.length < 3) return { session: s, out: [...lines, error("smix", "INVALID ARGUMENT COUNT")], effects: [] };
+      const [servo, input] = params.slice(0, 2).map(atoi);
+      const flag = params[2][0];
+      if (servo < 0 || servo >= SERVOS || input < 0 || input >= SERVO_INPUTS || (flag !== "r" && flag !== "n")) {
+        return { session: s, out: [...lines, error("smix", `servo NOT BETWEEN 0 AND ${SERVOS}`)], effects: [] };
+      }
+      const text = `smix reverse ${servo} ${input} r`;
+      const extra = [...s.extra.filter((l) => l !== text), ...(flag === "r" ? [text] : [])];
+      return { session: { ...s, extra }, out: [...lines, ...reversed(extra)], effects: [] };
+    }
     case "feature":
     case "beeper": {
       const names = command === "feature" ? FEATURES : BEEPERS;
@@ -415,7 +490,7 @@ function betaflight(emu: CliEmulator, ctx: CliContext, start: CliSession, line: 
     }
     case "save": {
       const changed = (n: string) => !same(s.values[n], s.saved[n]);
-      const effects = effectsFor(emu, s.values, changed);
+      const effects = [...effectsFor(emu, s.values, changed), ...tailEffects(s.savedExtra, s.extra)];
       const session = { ...s, saved: { ...s.values }, savedExtra: [...s.extra], open: false };
       return { session, out: [...lines, out(inav ? "Saving" : "# saving"), out("Rebooting")], effects };
     }
@@ -425,7 +500,7 @@ function betaflight(emu: CliEmulator, ctx: CliContext, start: CliSession, line: 
     }
     case "defaults": {
       const changed = (n: string) => !same(emu.settings[n], s.saved[n]);
-      const effects = effectsFor(emu, emu.settings, changed);
+      const effects = [...effectsFor(emu, emu.settings, changed), ...tailEffects(s.savedExtra, [])];
       const session = { ...createCliSession(emu), open: false };
       const result = reboot(session, inav ? "Resetting to defaults" : "# resetting to defaults");
       return { ...result, effects };
@@ -555,6 +630,8 @@ function cflib(emu: CliEmulator, s: CliSession, line: string, echo: CliLine): Cl
     const typed = set[2];
     const name = settingName(emu, typed);
     if (!name) return { session: s, out: [...lines, err(`KeyError: '${typed} not in param TOC'`)], effects: [] };
+    if (emu.readOnly?.includes(name))
+      return { session: s, out: [...lines, err(`AttributeError: ${name} is read-only!`)], effects: [] };
     const raw = set[4] ?? set[5] ?? "";
     const parsed = parseValue(emu, name, raw);
     if (!parsed.ok) {

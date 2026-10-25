@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import type { DesignPick, DroneContent, DroneTest, FigureState } from '@/content/schema';
+import { runnableLines } from '@/components/dronelab/CliConsole';
 import { calc, type CalcResult } from '@/lib/drone/calc';
 import { designInput } from '@/lib/drone/design';
 import { isEngineTest, testStatus } from '@/lib/dronelab/bench';
@@ -69,6 +70,8 @@ export type CraftOptions = {
   punchAbove?: number;
   /** Every snippet's `set` lines, not only the build ones, start the CLI emulator (it shows the finished craft). */
   allSnippetsInEmulator?: boolean;
+  /** The figure has `smoke: false` (a factory-built craft): the engine's tests are the motor check and calibration. */
+  noSmoke?: boolean;
 };
 
 /** The key of the verdict line the original printed first for a build. */
@@ -80,12 +83,22 @@ export function verdictKey(content: DroneContent, pick: DesignPick, r: CalcResul
   return opts.punchAbove !== undefined && r.tw > opts.punchAbove ? 'design.verdict.punch' : 'design.verdict.ok';
 }
 
-// A settings line: Betaflight and INAV `set name = value`, MAVProxy (ArduPilot) `param set NAME value`.
-const setLine = /^(?:set (\w+) = (\S+)|param set (\w+) (\S+))$/;
-const isSet = (line: string) => line.startsWith('set ') || line.startsWith('param set ');
-function setOf(line: string): [name: string, value: string] | null {
-  const m = setLine.exec(line);
-  return m ? [m[1] ?? m[3], m[2] ?? m[4]] : null;
+// A settings line: Betaflight and INAV `set name = value`, MAVProxy (ArduPilot) `param set NAME value`, cflib
+// `cf.param.set_value('group.name', value)`. The cflib call can sit anywhere in a line of a Python script, and a
+// script may pass a variable (`led.bitmask` from a loop): then only the name can be checked.
+const SET_CLI = /^(?:set (\w+) = (\S+)|param set (\w+) (\S+))$/;
+const SET_PY = /cf\.param\.set_value\('([\w.]+)', ([^)]+)\)/;
+const isSet = (line: string) => line.startsWith('set ') || line.startsWith('param set ') || line.includes('cf.param.set_value(');
+
+function setOf(line: string): { name: string; value: string | null } | null {
+  const cli = SET_CLI.exec(line);
+  if (cli) return { name: cli[1] ?? cli[3], value: cli[2] ?? cli[4] };
+  const py = SET_PY.exec(line);
+  if (!py) return null;
+  const raw = py[2].trim();
+  // a number the way the table holds it (Python's 3.0 is the table's 3), a quoted string without its quotes
+  if (/^-?\d+(\.\d+)?$/.test(raw)) return { name: py[1], value: String(Number(raw)) };
+  return { name: py[1], value: /^(['"])(.*)\1$/.exec(raw)?.[2] ?? null };
 }
 
 function snippetLines(content: DroneContent) {
@@ -162,11 +175,13 @@ export function checkCraft(content: DroneContent, en: Prose, opts: CraftOptions 
       for (const w of content.wiring) expect(w.note).toBe(`wiring.${w.from}-${w.to}`);
     });
 
-    it('runs the engine’s three safety tests and at least one of the craft’s own, on buttons the figure has', () => {
+    it('runs the engine’s safety tests and at least one of the craft’s own, on buttons the figure has', () => {
       const engine = block(src, 'tests: {', '},');
       const buttons = [...src.matchAll(/\{ id: '(\w+)', label: '/g)].map((m) => m[1]);
       const own = content.tests.filter((t) => !isEngineTest(t));
-      expect(content.tests.filter(isEngineTest).map((t) => t.button)).toEqual(['smoke', 'motors', 'calibrate']);
+      const want = opts.noSmoke ? ['motors', 'calibrate'] : ['smoke', 'motors', 'calibrate'];
+      expect(content.tests.filter(isEngineTest).map((t) => t.button)).toEqual(want);
+      if (opts.noSmoke) expect(engine).toMatch(/\bsmoke: false\b/);
       expect(own.length).toBeGreaterThan(0);
       for (const t of content.tests.filter(isEngineTest)) {
         expect(engine, t.button).toMatch(new RegExp(`\\b${t.button}: \\{ needs`));
@@ -206,9 +221,9 @@ export function checkCraft(content: DroneContent, en: Prose, opts: CraftOptions 
       const lim = emulator.limits[name];
       if (!lim) return true;
       if (lim.values) return lim.values.includes(String(value));
-      // Betaflight and INAV settings are whole numbers; ArduPilot parameters are floats
+      // Betaflight and INAV settings are whole numbers; ArduPilot parameters and cflib's float ones are not
       const n = Number(value);
-      const whole = emulator.kind === 'mavproxy' || Number.isInteger(n);
+      const whole = emulator.kind === 'mavproxy' || emulator.kind === 'cflib-python' || Number.isInteger(n);
       return Number.isFinite(n) && whole && (lim.min === undefined || n >= lim.min) && (lim.max === undefined || n <= lim.max);
     };
 
@@ -218,27 +233,46 @@ export function checkCraft(content: DroneContent, en: Prose, opts: CraftOptions 
       for (const m of modes) expect(snippets.some((s) => s.mode === m), m).toBe(true);
     });
 
-    it('only sets settings the emulator knows, within their ranges', () => {
+    it('only sets settings the emulator knows, within their ranges, and none it keeps read-only', () => {
+      const readOnly = emulator.readOnly ?? [];
       for (const [name, value] of Object.entries(emulator.settings)) expect(valid(name, value), name).toBe(true);
+      for (const name of readOnly) expect(Object.keys(emulator.settings), name).toContain(name);
       for (const { id: sid, line } of lines.filter((l) => isSet(l.line))) {
         const set = setOf(line);
         expect(set, `${sid}: ${line}`).not.toBeNull();
-        const [name, value] = set!;
+        const { name, value } = set!;
         expect(Object.keys(emulator.settings), `${sid}: ${name}`).toContain(name);
-        expect(valid(name, value), `${sid}: ${line}`).toBe(true);
+        expect(readOnly, `${sid}: ${line}`).not.toContain(name);
+        if (value !== null) expect(valid(name, value), `${sid}: ${line}`).toBe(true);
       }
     });
 
-    it('starts the CLI emulator with the values the snippets set', () => {
-      const from = lines.filter((l) => isSet(l.line) && (opts.allSnippetsInEmulator || l.mode === 'build'));
-      expect(from.length).toBeGreaterThan(0);
-      for (const { id: sid, line } of from) {
-        const [name, value] = setOf(line)!;
-        expect(String(emulator.settings[name]), `${sid}: ${line}`).toBe(value);
+    // A snippet may set a value and later put it back (a motor spun up, then stopped): its last value counts.
+    it('starts the CLI emulator with the last value each snippet sets', () => {
+      const from = snippets.filter((s) => opts.allSnippetsInEmulator || s.mode === 'build');
+      let count = 0;
+      for (const s of from) {
+        const last = new Map<string, string>();
+        for (const { line } of lines.filter((l) => l.id === s.id && isSet(l.line))) {
+          const { name, value } = setOf(line)!;
+          if (value !== null) last.set(name, value);
+        }
+        for (const [name, value] of last) expect(String(emulator.settings[name]), `${s.id}: ${name}`).toBe(value);
+        count += last.size;
       }
+      expect(count).toBeGreaterThan(0);
     });
 
     it('only uses commands the emulator offers', () => {
+      if (emulator.kind === 'cflib-python') {
+        // the mode snippets are whole Python scripts the console shows as code; a build snippet runs line by line
+        for (const s of snippets.filter((x) => x.mode === 'build')) {
+          const run = runnableLines(s, content);
+          expect(run, s.id).not.toBeNull();
+          for (const line of run!) expect(emulator.commands, `${s.id}: ${line}`).toContain(/^(?:print\()?([\w.]+)\(/.exec(line)?.[1]);
+        }
+        return;
+      }
       for (const { id: sid, line } of lines.filter((l) => l.line && !l.line.startsWith('#'))) {
         expect(emulator.commands, `${sid}: ${line}`).toContain(line.split(' ')[0]);
       }

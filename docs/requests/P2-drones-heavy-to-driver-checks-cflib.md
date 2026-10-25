@@ -51,3 +51,22 @@ Why: `deck.bcFlow2` and `deck.bcLighthouse4` are read-only in the firmware, and 
 raises `AttributeError('{} is read-only!')` for them. Today `swarm.ts` limits both to `values: ['1']`, so the console
 refuses `0` with a ValueError but accepts `1`. Once this lands, `swarm.ts` adds
 `readOnly: ['deck.bcFlow2', 'deck.bcLighthouse4']` and can drop those two limits.
+
+## Answer
+
+2026-10-25 00:29 CDT, P2-req-drone (wave B tail). Both done.
+
+1. `_checks.ts`: `CraftOptions.noSmoke` (the engine tests are `motors` and `calibrate`, and the figure's tests block
+   must say `smoke: false`). Settings lines now include cflib's `cf.param.set_value('group.name', value)` anywhere in a
+   line; a script that passes a variable (`led.bitmask` from the show loop) has its name checked and its value
+   skipped, and a Python number is compared the way the table holds it (`3.0` is `3`). "Starts the CLI emulator"
+   compares the last value each snippet sets, for every craft (a snippet may spin a motor up and put it back).
+   For a cflib craft, "only uses commands" requires every build snippet to be runnable by the console
+   (`runnableLines()`) and checks those lines; the mode snippets are scripts and are skipped. The integer rule
+   treats cflib like MAVProxy. `swarm.test.ts` now calls `checkCraft(swarm, en, { noSmoke: true })` and keeps only
+   what is the Crazyflie's own (the engine tests' `needs`, the test kinds, the 1.887 thrust to weight, the labels).
+2. `CliEmulator.readOnly?: string[]` in the schema (`7af326b`, additive; the ARCHITECTURE §0 line is the driver's),
+   `cflib()` raises `AttributeError: <name> is read-only!` before the value check, and `swarm.ts` has
+   `readOnly: ['deck.bcFlow2', 'deck.bcLighthouse4']` without the two `values: ['1']` limits. `checkCraft` also
+   checks that every read-only name is a setting and that no snippet sets one. Tests: `cli.test.ts` (any value is
+   refused, get_value still reads it) and `swarm.test.ts` (0 and 1 both raise the AttributeError).

@@ -9,125 +9,31 @@ import { flightCalc } from '@/lib/dronelab/fly';
 import { flightOf } from '@/lib/flight/registry';
 import { createSim, dispatch, drainEvents, stepSim } from '@/lib/flight/sim';
 import type { FlightEvent } from '@/lib/flight/types';
-import { figureSource, openFigure, text, textKeys, verdictKey } from './_checks';
+import { checkCraft, figureSource, openFigure } from './_checks';
 import swarm from './swarm';
 
-// _checks.ts checkCraft() assumes the engine's smoke stopper and `set` / `param set` CLI lines; a Crazyflie has
-// neither (docs/requests/P2-drones-heavy-to-driver-checks-cflib.md), so this file runs the same checks its own way.
+// A Crazyflie has no smoke stopper: it is factory-built, with nothing hand-soldered in its power path.
+checkCraft(swarm, en, { noSmoke: true });
 
 const src = figureSource('swarm');
-const leaves = (node: unknown, prefix = ''): string[] =>
-  node && typeof node === 'object'
-    ? Object.entries(node).flatMap(([k, v]) => leaves(v, prefix ? `${prefix}.${k}` : k))
-    : [prefix];
-/** The figure's define() block from `start` up to the next line at the same indent that starts with `end`. */
-const block = (start: string, end: string) => {
-  const from = src.indexOf(`\n    ${start}`);
-  const to = src.indexOf(`\n    ${end}`, from + 1);
-  return src.slice(from, to < 0 ? undefined : to);
-};
-const figureParts = () => {
-  const parts = block('parts: [', 'tests: {');
-  const rows = [...parts.matchAll(/\{ id: '([A-Z0-9]+)', short: '([^']+)'/g)];
-  return rows.map((m, i) => {
-    const body = parts.slice(m.index, rows[i + 1]?.index);
-    const after = /after: \[([^\]]*)\]/.exec(body)?.[1] ?? '';
-    return { id: m[1], short: m[2], after: [...after.matchAll(/'([A-Z0-9]+)'/g)].map((a) => a[1]) };
-  });
-};
 
-/** Every cf.param.set_value line in the snippets, in order, with the code it sits in. */
-const SET = /cf\.param\.set_value\('([\w.]+)', (-?\d+(?:\.\d+)?)\)/;
-const setLines = swarm.firmware.snippets.flatMap((s) =>
-  s.code
-    .split('\n')
-    .map((line) => line.replace(/\s+#.*$/, '').trim())
-    .filter((line) => SET.test(line))
-    .map((line) => {
-      const [, name, value] = SET.exec(line)!;
-      return { id: s.id, mode: s.mode, line, name, value: Number(value) };
-    }),
-);
-
-describe('swarm texts and quizzes', () => {
-  it('has English text for every key the item uses, and none it never shows', () => {
-    const used = new Set([...textKeys(swarm), 'tagline']);
-    for (const key of used) expect(() => text(en, key), key).not.toThrow();
-    expect(leaves(en).filter((k) => !used.has(k) && !k.startsWith('design.verdict.'))).toEqual([]);
-    expect(() => text(en, 'design.verdict.ok')).not.toThrow();
-  });
-
-  it('asks each quiz after a real build step, with the answer among the options', () => {
-    const steps = new Set(swarm.build.map((s) => s.id));
-    for (const quiz of swarm.quizzes) {
-      if (quiz.afterStep !== null) expect(steps.has(quiz.afterStep), quiz.id).toBe(true);
-      for (const q of quiz.questions) {
-        expect(q.answer).toBeLessThan(q.options.length);
-        q.options.forEach((o, i) => expect(o).toBe(`quizzes.${quiz.id}.${q.id}.options.${i + 1}`));
-      }
-    }
-    expect(swarm.quizzes.some((q) => q.afterStep === null)).toBe(true);
-  });
-});
-
-describe('swarm figure file', () => {
-  const parts = figureParts();
-
-  it('uses the figure’s part ids, shorts and build order, each part after the ones it needs', () => {
-    const rows = parts.map((p) => [p.id, p.short]);
-    expect(swarm.figure.page).toBe('/figures/drones/swarm.html');
-    expect(swarm.parts.map((p) => [p.id, p.short])).toEqual(rows);
-    expect(swarm.figure.parts.map((p) => [p.id, p.short])).toEqual(rows);
-    const order = swarm.build.map((s) => s.part);
-    expect(order).toEqual(parts.map((p) => p.id));
-    for (const p of parts) {
-      const step = swarm.build.find((s) => s.part === p.id)!;
-      expect(step.done).toEqual({ [`placed.${p.id}`]: 0 });
-      for (const need of p.after) expect(order.indexOf(need), `${p.id} after ${need}`).toBeLessThan(order.indexOf(p.id));
-      if (p.after.length) expect(step.refusal, p.id).toBe(`build.${step.id}.refusal`);
-    }
-  });
-
-  it('lists the same design keys, wiring edges and craft buttons as the figure', () => {
-    const d = swarm.design;
-    for (const key of [...Object.keys(d.batts), ...Object.keys(d.motors), ...Object.keys(d.props)]) expect(src).toContain(`'${key}': {`);
-    expect(src).toContain(`default: { batt: '${d.default.batt}', motor: '${d.default.motor}', prop: '${d.default.prop}' }`);
-    const edges = [...block('wiring: {', '});').matchAll(/\{ from: '(\w+)', to: '(\w+)', kind: '(\w+)'/g)].map((m) => `${m[1]}>${m[2]}:${m[3]}`);
-    expect(swarm.wiring.map((w) => `${w.from}>${w.to}:${w.kind}`)).toEqual(edges);
-    for (const w of swarm.wiring) expect(w.note).toBe(`wiring.${w.from}-${w.to}`);
-    const buttons = [...src.matchAll(/\{ id: '(\w+)', label: '/g)].map((m) => m[1]);
-    for (const t of swarm.tests.filter((x) => !isEngineTest(x))) {
-      expect(buttons, t.id).toContain(t.button);
-      expect(Object.keys(t.done), t.id).toEqual([`extra.${t.id}Ok`]);
-    }
-  });
-
-  it('runs the motor check and the calibration but no smoke stopper: nothing in its power path is hand-soldered', () => {
-    const engine = block('tests: {', 'buttons, report,');
-    expect(engine).toMatch(/smoke: false/);
-    expect(engine).toMatch(/motors: \{ needs: \['WIRES', 'FC'\] \}/);
-    expect(engine).toMatch(/calibrate: \{ needs: \['FC'\] \}/);
+describe('swarm safety tests', () => {
+  it('runs the motor check and the calibration on the parts they need, then its own link and positioning checks', () => {
+    expect(src).toMatch(/motors: \{ needs: \['WIRES', 'FC'\] \}/);
+    expect(src).toMatch(/calibrate: \{ needs: \['FC'\] \}/);
     expect(swarm.tests.filter(isEngineTest).map((t) => [t.button, t.done])).toEqual([
       ['motors', { motorOk: true }],
       ['calibrate', { accOk: true }],
     ]);
     // three safety checks (motors, calibration, link loss) and two of the craft's own (link, positioning)
     expect(swarm.tests.map((t) => t.kind)).toEqual(['motor-direction', 'accel-calibration', 'radio-link', 'arming-checks', 'failsafe']);
+    for (const t of swarm.tests.filter((x) => !isEngineTest(x))) expect(Object.keys(t.done), t.id).toEqual([`extra.${t.id}Ok`]);
   });
 });
 
 describe('swarm design calculator', () => {
-  it('keeps spot golden rows whose verdict key matches the result', () => {
-    for (const row of swarm.design.golden) {
-      const r = calc(designInput(swarm.design, row.pick));
-      expect(verdictKey(swarm, row.pick, r), JSON.stringify(row.pick)).toBe(row.verdict);
-    }
-    const r = calc(designInput(swarm.design, swarm.design.default));
-    expect({ over: r.over, weak: r.weak }).toEqual({ over: false, weak: false });
-    expect(r.tw).toBeCloseTo(1.887, 3);
-  });
-
-  it('says where the original’s options differ from the real parts', () => {
+  it('flies the default at 1.9:1, and says where the original’s options differ from the real parts', () => {
+    expect(calc(designInput(swarm.design, swarm.design.default)).tw).toBeCloseTo(1.887, 3);
     expect(swarm.design.motors['7x16hp'].label).toMatch(/7 x 20/);
     expect(swarm.design.motors['8x20'].label).toMatch(/7 mm mounts/);
     expect(swarm.design.props['47mm'].label).toMatch(/47-17/);
@@ -153,30 +59,6 @@ describe('swarm frame', () => {
 describe('swarm firmware', () => {
   const emu = swarm.firmware.emulator;
 
-  it('has a snippet for the build and for every flight mode', () => {
-    const modes = swarm.flight.modes.map((m) => m.id);
-    for (const s of swarm.firmware.snippets) expect(['build', ...modes], s.id).toContain(s.mode);
-    for (const m of modes) expect(swarm.firmware.snippets.some((s) => s.mode === m), m).toBe(true);
-  });
-
-  it('only sets parameters the emulator knows, within their limits, and starts it with the last value set', () => {
-    expect(setLines.length).toBeGreaterThan(0);
-    const last = new Map<string, number>();
-    for (const { id, mode, line, name, value } of setLines) {
-      expect(Object.keys(emu.settings), `${id}: ${line}`).toContain(name);
-      const lim = emu.limits[name];
-      if (lim?.values) expect(lim.values, `${id}: ${line}`).toContain(String(value));
-      if (lim?.min !== undefined) expect(value, `${id}: ${line}`).toBeGreaterThanOrEqual(lim.min);
-      if (lim?.max !== undefined) expect(value, `${id}: ${line}`).toBeLessThanOrEqual(lim.max);
-      if (mode === 'build') last.set(name, value);
-    }
-    for (const [name, value] of last) expect(Number(emu.settings[name]), name).toBe(value);
-    for (const [name, value] of Object.entries(emu.settings)) {
-      const lim = emu.limits[name];
-      if (lim?.values) expect(lim.values, name).toContain(String(value));
-    }
-  });
-
   it('runs every build snippet line by line in the cflib console without an error, and reads back what it set', () => {
     const ctx: CliContext = { version: swarm.firmware.version, plugged: true, cells: 1, accCal: true, built: true };
     const run = (session: ReturnType<typeof createCliSession>, line: string) => runCli(emu, ctx, session, line);
@@ -194,7 +76,10 @@ describe('swarm firmware', () => {
     expect(set.effects).toEqual([{ angleLimit: 30 }]);
     expect(run(set.session, "print(cf.param.get_value('posCtlPid.rLimit'))").out.at(-1)).toEqual({ kind: 'out', text: '30' });
     expect(run(set.session, "cf.param.set_value('posCtlPid.rLimitt', 3)").out.at(-1)!.text).toMatch(/not in param TOC/);
-    expect(run(set.session, "cf.param.set_value('deck.bcFlow2', 0)").out.at(-1)!.kind).toBe('err');
+    for (const value of [0, 1]) {
+      const deck = run(set.session, `cf.param.set_value('deck.bcFlow2', ${value})`);
+      expect(deck.out.at(-1)).toEqual({ kind: 'err', text: 'AttributeError: deck.bcFlow2 is read-only!' });
+    }
   });
 
   it('shows the mode scripts as Python, with real cflib 0.1.34 calls', () => {

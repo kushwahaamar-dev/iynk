@@ -165,6 +165,90 @@ describe("Betaflight CLI", () => {
   });
 });
 
+describe("Betaflight servo and smix (a tricopter's tail)", () => {
+  const tri: CliEmulator = { ...bf, commands: [...bf.commands, "servo", "smix"] };
+
+  test("are offered only to a craft that lists them, and help describes them", () => {
+    expect(run(["servo"]).out).toContain("Unknown command, try 'help'");
+    expect(run(["smix reverse 5 2 r"]).out).toContain("Unknown command, try 'help'");
+    const help = run(["help"], tri).out;
+    expect(help).toContain("servo - configure servos");
+    expect(help).toContain("smix - servo mixer");
+  });
+
+  test("servo lists all eight servos, at the firmware's defaults until one is set", () => {
+    const out = run(["servo"], tri).out.slice(1);
+    expect(out).toHaveLength(8);
+    expect(out[0]).toBe("servo 0 1000 2000 1500 100 -1");
+    expect(out[5]).toBe("servo 5 1000 2000 1500 100 -1");
+  });
+
+  test("servo stores six whole numbers within the limits, the last line for a servo winning", () => {
+    const r = run(["servo 5 1000 2000 1520 100 -1", "servo 5 1100 1950 1520 100 -1", "servo"], tri);
+    expect(r.out).toContain("servo 5 1100 1950 1520 100 -1");
+    expect(r.session.extra).toEqual(["servo 5 1100 1950 1520 100 -1"]);
+    expect(r.out.filter((l) => l.startsWith("servo 5 "))).toEqual([
+      "servo 5 1000 2000 1520 100 -1",
+      "servo 5 1100 1950 1520 100 -1",
+      "servo 5 1100 1950 1520 100 -1",
+    ]);
+  });
+
+  test("servo refuses bad lines with the firmware's own errors and keeps what it had", () => {
+    const refused = (line: string) => {
+      const r = run([line], tri);
+      expect(r.session.extra, line).toEqual([]);
+      return r.out.at(-1);
+    };
+    expect(refused("servo 5 1000 2000 1500 100")).toBe("###ERROR IN servo: INVALID ARGUMENT COUNT###");
+    expect(refused("servo 5 1000 2000 1500 100 -1 0")).toBe("###ERROR IN servo: INVALID ARGUMENT COUNT###");
+    expect(refused("servo 8 1000 2000 1500 100 -1")).toBe("###ERROR IN servo: INVALID ARGUMENT COUNT###");
+    expect(refused("servo 5 1000 2000 mid 100 -1")).toBe("###ERROR IN servo: PARSING FAILED###");
+    for (const line of [
+      "servo 5 400 2000 1500 100 -1",
+      "servo 5 1000 2600 1500 100 -1",
+      "servo 5 1000 2000 2100 100 -1",
+      "servo 5 1600 1400 1500 100 -1",
+      "servo 5 1000 2000 1500 101 -1",
+      "servo 5 1000 2000 1500 100 18",
+    ]) {
+      expect(refused(line)).toBe("###ERROR IN servo: ARGUMENT OUT OF RANGE###");
+    }
+  });
+
+  test("smix reverse sets and clears a source's reversal and lists the reversed ones", () => {
+    const on = run(["smix reverse 5 2 r", "smix reverse 0 0 r", "smix reverse"], tri);
+    expect(on.session.extra).toEqual(["smix reverse 5 2 r", "smix reverse 0 0 r"]);
+    expect(on.out.slice(-2)).toEqual(["smix reverse 0 0 r", "smix reverse 5 2 r"]);
+    expect(run(["smix reverse 5 2 r", "smix reverse 5 2 n"], tri).session.extra).toEqual([]);
+    expect(run(["smix reverse 5 2 r", "smix reset"], tri).session.extra).toEqual([]);
+    expect(run(["smix reverse 5 2 r", "servo"], tri).out.at(-1)).toBe("smix reverse 5 2 r");
+  });
+
+  test("smix refuses what the firmware refuses", () => {
+    expect(run(["smix reverse 5 2"], tri).out.at(-1)).toBe("###ERROR IN smix: INVALID ARGUMENT COUNT###");
+    expect(run(["smix reverse 8 2 r"], tri).out.at(-1)).toBe("###ERROR IN smix: servo NOT BETWEEN 0 AND 8###");
+    expect(run(["smix reverse 5 14 r"], tri).out.at(-1)).toBe("###ERROR IN smix: servo NOT BETWEEN 0 AND 8###");
+    expect(run(["smix reverse 5 2 x"], tri).out.at(-1)).toBe("###ERROR IN smix: servo NOT BETWEEN 0 AND 8###");
+    expect(run(["smix load TRI"], tri).out.at(-1)).toBe("###ERROR IN smix: PARSING FAILED###");
+  });
+
+  test("saving a reversed tail tells the range; a negative rate reverses too, and the two cancel", () => {
+    expect(run(["smix reverse 5 2 r", "save"], tri).effects).toEqual([{ tailReverse: true }]);
+    expect(run(["servo 5 1000 2000 1500 -100 -1", "save"], tri).effects).toEqual([{ tailReverse: true }]);
+    expect(run(["smix reverse 5 2 r", "servo 5 1000 2000 1500 -100 -1", "save"], tri).effects).toEqual([]);
+    // another servo, or the tail's other inputs, leave the tail as it is
+    expect(run(["smix reverse 4 2 r", "smix reverse 5 1 r", "save"], tri).effects).toEqual([]);
+    expect(run(["smix reverse 5 2 r", "save", "smix reverse 5 2 n", "save"], tri).effects).toEqual([
+      { tailReverse: true },
+      { tailReverse: false },
+    ]);
+    expect(run(["smix reverse 5 2 r", "save", "defaults"], tri).effects).toEqual([{ tailReverse: true }, { tailReverse: false }]);
+    // unsaved, it changes nothing
+    expect(run(["smix reverse 5 2 r", "exit"], tri).effects).toEqual([]);
+  });
+});
+
 describe("INAV CLI", () => {
   const inav: CliEmulator = { ...bf, kind: "inav-cli" };
   test("uses INAV's error wording", () => {
@@ -215,6 +299,16 @@ describe("cflib", () => {
     const r = run(["cf.param.set_value('stabilizer.estimator', '1')", "cf.param.get_value('stabilizer.estimator')"], py);
     expect(r.out).toContain("'1'");
     expect(r.effects).toEqual([{ estimator: "complementary" }]);
+  });
+
+  test("a read-only parameter raises AttributeError for any value, and get_value still reads it", () => {
+    const ro: CliEmulator = { ...py, settings: { ...py.settings, "deck.bcFlow2": 1 }, readOnly: ["deck.bcFlow2"] };
+    for (const value of ["0", "1"]) {
+      const r = run([`cf.param.set_value('deck.bcFlow2', ${value})`], ro);
+      expect(r.out).toContain("AttributeError: deck.bcFlow2 is read-only!");
+      expect(r.session.values["deck.bcFlow2"]).toBe(1);
+    }
+    expect(run(["print(cf.param.get_value('deck.bcFlow2'))"], ro).out).toContain("1");
   });
 
   test("a name outside the TOC raises KeyError", () => {

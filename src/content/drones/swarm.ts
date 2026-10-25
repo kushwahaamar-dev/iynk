@@ -436,8 +436,6 @@ const swarm: DroneContent = {
         'supervisor.tmblChckEn': { values: ['0', '1'] },
         'pm.lowVoltage': { min: 3, max: 3.7 },
         'pm.criticalLowVoltage': { min: 2.8, max: 3.5 },
-        'deck.bcFlow2': { values: ['1'] },
-        'deck.bcLighthouse4': { values: ['1'] },
         'motorPowerSet.enable': { values: ['0', '1', '2', '3'] },
         'motorPowerSet.m1': { min: 0, max: 65535 },
         'motorPowerSet.m2': { min: 0, max: 65535 },
@@ -446,6 +444,8 @@ const swarm: DroneContent = {
         'health.startPropTest': { values: ['0', '1'] },
         'led.bitmask': { min: 0, max: 255 },
       },
+      // 1 when the deck was found at power-on; set_value raises AttributeError for them, as cflib 0.1.34 does
+      readOnly: ['deck.bcFlow2', 'deck.bcLighthouse4'],
       commands: ['cf.param.get_value', 'cf.param.set_value', 'help'],
       // Parameters that change how the range flies the drone (src/lib/flight/types.ts FlightCraft names).
       effects: [
