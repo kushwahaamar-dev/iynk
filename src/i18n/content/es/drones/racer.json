@@ -1,0 +1,346 @@
+{
+  "title": "Quad de carreras de 5 pulgadas",
+  "tagline": "Un racer de puertas en X alargada a 4S: ligero, rápido, volado en acro en Raceband a 25 mW.",
+  "sub": "Betaflight + VTX de carreras",
+  "hint": "Monta un racer de puertas, ponle su canal y luego corre en el circuito del club",
+  "noun": "quad de carreras",
+  "overview": "Un quad de carreras es un quad FPV de 5 pulgadas reducido a una sola tarea: dar la vuelta a un circuito de puertas más rápido que nadie en la manga. Pesa unos 440 g con una batería 4S de 1300 mAh y tiene una relación empuje/peso cercana a 14:1, así que pasa casi toda la vuelta muy inclinado hacia delante y con el acelerador a tope. El chasis es una X alargada, más larga que ancha, para que las hélices traseras muerdan aire limpio a velocidad. El piloto vuela en acro con gafas analógicas, porque el vídeo analógico tiene el menor retardo y todos los pilotos comparten Raceband. El VTX va a 25 mW en el canal que reparte la dirección de carrera, para que puedan volar juntos de cuatro a ocho quads. Las tiras LED del color del piloto permiten a los observadores y cronometradores distinguir los quads. Elige aquí las piezas y mira los números, móntalo, haz las pruebas de seguridad y luego corre en el circuito del club.",
+  "practice": "Apréndete el circuito del club en modo carrera (ángulo) hasta pasar limpio las seis puertas, y luego cambia a carrera en acro y busca tres vueltas seguidas por debajo del par, como las cuenta una clasificatoria de MultiGP. En un montaje real: pon un smoke stopper en la primera conexión, comprueba el sentido de los motores sin hélices, prueba el receptor y el failsafe (sin hélices y con la emisora apagada: los motores tienen que pararse) y pon tu VTX en el canal que te han asignado a 25 mW antes de conectar en boxes. Aterriza hacia los 3,5 V por celda; una batería de carreras dura de dos a tres minutos a ritmo de carrera.",
+  "design": {
+    "fixed": {
+      "FRAME": "Chasis de carreras en X alargada, brazos de 4 mm",
+      "ESC": "ESC 4 en 1 de 55 A (AM32)",
+      "FC": "Controladora de vuelo F7, 20 x 20 mm",
+      "CAM": "Cámara nano de baja latencia",
+      "VTX": "VTX de carreras de 25-200 mW",
+      "RX": "Receptor ExpressLRS de 2,4 GHz",
+      "LED": "Tiras LED WS2812B",
+      "XT60": "Cable XT60 y condensador de baja ESR",
+      "TOP": "Placa superior, separadores y tornillos",
+      "STRAP": "Correa y almohadilla antideslizante de la batería"
+    },
+    "verdict": {
+      "over": "{kv} KV en {cells}S hace girar las hélices muy por encima de lo que aguantan los motores y el ESC. Corre en 4S con unos 2500 KV, o en 6S con unos 1950 KV.",
+      "weak": "Una relación empuje/peso de {tw}:1 es demasiado blanda para carreras (apunta a 12:1 o más). Un motor de 6S en 4S se siente como volar en almíbar.",
+      "ok": "Listo para competir: {tw}:1 de empuje/peso. Si la comprobación del ESC de abajo da un aviso, es el margen a todo gas: una hélice más suave o un ESC más grande lo arreglan."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Chasis de carreras de carbono en X alargada",
+      "what": "Cuatro brazos de carbono de 4 mm sobre una placa central estrecha, con los motores en un rectángulo de 172 mm de largo y 140 mm de ancho (221,8 mm de motor a motor). Alargar la X pone las hélices traseras más por detrás de las delanteras, así que con una inclinación fuerte hacia delante se tragan menos estela de las delanteras y el quad va recto a velocidad. El carbono conduce: mantén los cables pelados lejos de él."
+    },
+    "MOTORS": {
+      "name": "4 motores de carreras (2207, 2500 KV)",
+      "what": "Motores brushless de rotor exterior con un estátor de 22 mm de ancho y 7 mm de alto y 14 imanes en la campana. 2500 KV con una batería 4S (14,8 V nominales) dan unas 37 000 rpm sin carga, que es lo que tira de una hélice de 5 pulgadas con fuerza suficiente para un empuje/peso de 14:1. El mismo motor en 6S haría girar las hélices muy por encima de lo que aguantan ellas y el ESC."
+    },
+    "ESC": {
+      "name": "ESC 4 en 1 de 55 A (AM32), 20 x 20 mm",
+      "what": "Cuatro variadores en una sola placa pequeña; cada uno conmuta sus MOSFET para convertir la corriente continua de la batería en la señal trifásica de su motor, siguiendo las órdenes DShot600 de la controladora de vuelo. Lleva firmware AM32 y, con DShot bidireccional, devuelve por el mismo cable las rpm de cada motor para el filtro RPM. Un ESC de carreras se dimensiona para los acelerones: la calculadora compara la corriente a todo gas de cada motor con los 55 A del ESC."
+    },
+    "WIRES": {
+      "name": "Cables de los motores, cortos y soldados",
+      "what": "Tres cables de fase por motor, cortados a medida a lo largo del brazo y soldados a los pads de ese motor en el ESC. Los cables cortos ahorran peso y se enganchan menos en un choque. En cualquier orden de los tres el motor gira; intercambiar dos lo invierte."
+    },
+    "XT60": {
+      "name": "Cable XT60 + condensador de 1000 µF 35 V de baja ESR",
+      "what": "El cable de la batería (14 AWG, XT60 macho en el quad) y un condensador electrolítico de baja ESR entre los pads de batería del ESC. El condensador absorbe los picos de tensión de los acelerones y frenadas fuertes, que si no matarían los MOSFET y meterían ruido en el giroscopio y el vídeo. Su franja blanca marca la pata negativa: al revés, revienta o estalla en la primera conexión."
+    },
+    "FC": {
+      "name": "Controladora de vuelo F7, 20 x 20 mm",
+      "what": "Un STM32F722 con giroscopio, chip de OSD analógico y reguladores de 5 V y 9 V, con Betaflight. Lee las palancas del receptor, ejecuta el bucle PID miles de veces por segundo y envía DShot600 al ESC. La flecha impresa tiene que apuntar al morro, o el ajuste de orientación de la placa tiene que indicar otra cosa; un quad de carreras no lleva GPS ni barómetro, así que no tiene mantener altitud."
+    },
+    "VTX": {
+      "name": "VTX de carreras de 25-200 mW (SmartAudio)",
+      "what": "El transmisor de vídeo analógico de 5,8 GHz en lo alto del stack. Envía a tus gafas la imagen de la cámara con el OSD encima. La controladora fija su banda, su canal y su potencia por SmartAudio, así que la dirección de carrera puede poner a cada piloto en un canal distinto de Raceband a 25 mW. El pit mode lo baja casi a nada mientras conectas en boxes."
+    },
+    "CAM": {
+      "name": "Cámara nano de baja latencia, inclinada 40°",
+      "what": "Una cámara analógica de 14 mm entre dos placas laterales en el morro, inclinada 40° hacia arriba. Un quad de carreras vuela con el morro hacia abajo a velocidad, así que la cámara tiene que mirar hacia arriba para ver la siguiente puerta; cuanta más velocidad, más inclinación. El vídeo analógico llega de la lente a las gafas con unos pocos milisegundos de retardo, y eso importa más que la calidad de imagen a 100 km/h."
+    },
+    "RX": {
+      "name": "Receptor ELRS de 2,4 GHz (CRSF)",
+      "what": "Un receptor ExpressLRS en el UART2, que habla CRSF con la controladora. Su antena en T va en el brazo trasero derecho, lejos del carbono y del VTX. Los pilotos de carreras lo usan con una tasa de paquetes alta (500 Hz o F1000) para que las palancas lleguen al quad con tan poco retardo como el vídeo sale de él."
+    },
+    "LED": {
+      "name": "Tiras LED en los brazos traseros",
+      "what": "Ocho LED direccionables WS2812B, cuatro en cada brazo trasero, en una sola cadena desde el pad LED de la controladora. El perfil RACE de Betaflight los enciende todos en un color de carrera, el del piloto en la manga, para que los observadores y cronometradores distingan los quads; si pones el color en BLACK, sigue al canal del VTX."
+    },
+    "TOP": {
+      "name": "Placa superior fina + separadores de 20 mm",
+      "what": "Una placa de carbono de 2 mm sobre cuatro separadores de aluminio que cierra el stack y lleva la batería. Fina y ligera, porque en un quad de carreras cada gramo cuesta aceleración."
+    },
+    "BATT": {
+      "name": "LiPo de carreras + correa y almohadilla antideslizante",
+      "what": "Una batería 4S de 1300 mAh y alta descarga (unos 150 g, 72 x 38 x 25 mm) sobre una almohadilla antideslizante, sujeta con una correa. Puede dar más de 200 A durante un segundo. Deslízala hacia delante o hacia atrás para dejar el centro de gravedad entre los motores."
+    },
+    "PROPS": {
+      "name": "Hélices de carreras, 2 CW + 2 CCW",
+      "what": "Tripalas rígidas de 5 pulgadas. Un paso mayor (de 4,8 a 5,2 pulgadas) tira más a velocidad y consume más corriente; una hélice de paso bajo es más suave y eficiente, pero más lenta. Props in: M1 y M4 giran en sentido horario, M2 y M3 en antihorario, con el borde elevado de cada pala por delante."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Prepara el chasis en X alargada",
+      "body": "Atornilla los cuatro brazos entre las placas inferiores y revisa que no tengan grietas. El lado largo apunta hacia delante: el morro es donde van las placas de la cámara."
+    },
+    "motors": {
+      "title": "Monta los cuatro motores de carreras",
+      "body": "Cuatro tornillos M3 cortos cada uno, con los cables hacia el centro. Un tornillo demasiado largo toca los bobinados y quema el motor.",
+      "refusal": "Los motores se atornillan a los brazos: primero prepara el chasis."
+    },
+    "esc": {
+      "title": "Coloca el ESC 4 en 1 en el stack de 20 x 20",
+      "body": "Sobre gomas antivibración en la parte de abajo del stack, con los pads de batería atrás, por donde entra el cable XT60.",
+      "refusal": "El ESC va sobre los tornillos del stack del chasis: primero prepara el chasis."
+    },
+    "wires": {
+      "title": "Corta y suelda los cables de los motores",
+      "body": "Pasa los tres cables de cada motor a lo largo de su brazo, córtalos a medida y suéldalos a los pads de ese motor. Cortos y ordenados, sin cobre al aire cerca del carbono.",
+      "refusal": "Los cables unen los motores con el ESC: primero coloca las dos cosas."
+    },
+    "xt60": {
+      "title": "Suelda el cable XT60 y el condensador",
+      "body": "Rojo de 14 AWG a BAT+, negro a BAT-, y el condensador de 1000 µF entre los mismos pads con su franja en el lado negativo. Esta es la unión que comprueba un smoke stopper.",
+      "refusal": "El cable de la batería va en los pads del ESC: primero coloca el ESC."
+    },
+    "fc": {
+      "title": "Apila la controladora de vuelo, con la flecha hacia delante",
+      "body": "Sobre gomas, encima del ESC, unida por el arnés de 8 pines (tensión de la batería, tierra, corriente, telemetría y las cuatro señales de los motores). Apunta la flecha impresa hacia el morro.",
+      "refusal": "La controladora va encima del ESC: primero coloca el ESC."
+    },
+    "vtx": {
+      "title": "Coloca el VTX de carreras en lo alto del stack",
+      "body": "Vídeo y OSD desde el pad VTX de la controladora, 9 V de su regulador y el cable de SmartAudio en el TX del UART1. Enrosca la antena antes de que reciba alimentación por primera vez: un VTX sin antena se sobrecalienta.",
+      "refusal": "El VTX va encima de la controladora: primero coloca la controladora."
+    },
+    "cam": {
+      "title": "Monta la cámara nano inclinada 40°",
+      "body": "Entre las placas laterales del morro, inclinada 40° hacia arriba. Su vídeo, sus 5 V y su tierra vuelven a los pads CAM de la controladora.",
+      "refusal": "Las placas de la cámara se atornillan al chasis: primero prepara el chasis."
+    },
+    "rx": {
+      "title": "Conecta el receptor ELRS al UART2",
+      "body": "5 V, tierra, y TX a RX, RX a TX en el UART2. Sujeta la antena con bridas a lo largo del brazo trasero derecho, lejos de las hélices y del carbono.",
+      "refusal": "El receptor se conecta a la controladora: primero coloca la controladora."
+    },
+    "led": {
+      "title": "Pega las tiras LED",
+      "body": "Cuatro LED en cada brazo trasero, con la entrada de datos desde el pad LED de la controladora en el extremo trasero izquierdo y encadenada hasta la tira trasera derecha. Los 5 V y la tierra salen de la controladora.",
+      "refusal": "Las tiras LED salen del pad LED de la controladora: primero coloca la controladora."
+    },
+    "top": {
+      "title": "Cierra el stack con la placa superior",
+      "body": "Cuatro separadores y la placa fina de carbono. Comprueba que no queda ningún cable pellizcado entre las placas antes de apretar los tornillos.",
+      "refusal": "La placa superior se cierra sobre el stack: primero coloca la controladora, el VTX, la cámara y el receptor."
+    },
+    "batt": {
+      "title": "Sujeta la batería de carreras",
+      "body": "Almohadilla, batería y correa, con el cable saliendo por detrás hacia el XT60. Equilibra el quad sobre dos dedos bajo los brazos y desliza la batería hasta que quede nivelado.",
+      "refusal": "La batería va sobre la placa superior y se conecta al XT60: primero coloca las dos cosas."
+    },
+    "props": {
+      "title": "Las hélices, las últimas, props in",
+      "body": "Solo después de la prueba de humo y de la comprobación de los motores. Hélices horarias en M1 y M4, antihorarias en M2 y M3, con el borde elevado por delante y las tuercas apretadas.",
+      "refusal": "Las hélices van las últimas: coloca los motores y la placa superior, y luego haz la prueba del smoke stopper y la comprobación del sentido de los motores."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "El XT60 hembra de la batería se une al macho del quad. Una batería 4S de carreras da 16,8 V cargada y puede entregar más de 200 A en un acelerón, así que esta unión nunca puede hacer cortocircuito.",
+    "XT60-ESC": "Cables de 14 AWG a los pads BAT+ y BAT- del ESC, con el condensador de 1000 µF 35 V de baja ESR entre los mismos pads, franja al negativo.",
+    "ESC-MOTORS": "Tres cables de fase por motor en los pads de su canal. En cualquier orden el motor gira; intercambiar dos lo invierte, algo que también puede hacer por ti el firmware del ESC.",
+    "FC-ESC": "Un arnés de 8 pines une el stack: las cuatro señales de motor DShot600 bajan al ESC, y la tensión de la batería, la tierra, el sensor de corriente y la telemetría del ESC suben. Con DShot bidireccional, cada canal del ESC responde por el mismo cable con las rpm de su motor.",
+    "CAM-FC": "El vídeo analógico de la cámara, 5 V y tierra a los pads CAM. El chip de OSD de la controladora dibuja la batería, el temporizador y los avisos sobre la imagen.",
+    "FC-VTX": "El vídeo con el OSD encima y 9 V, desde los pads VTX; el cable de SmartAudio en el TX del UART1 permite a Betaflight fijar la banda, el canal, la potencia y el pit mode.",
+    "RX-FC": "El receptor ELRS en el UART2 a 5 V: su TX al RX de la controladora y su RX al TX de la controladora, con CRSF en los dos sentidos para que la calidad del enlace aparezca en el OSD.",
+    "FC-LED": "Los datos WS2812 salen del pad LED de la controladora (con 5 V y tierra) hacia el primer LED; cada LED pasa los datos al siguiente, ocho en una sola cadena."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Prueba del smoke stopper",
+      "pass": "La lámpara solo ha parpadeado: no hay cortocircuito entre positivo y negativo. Ya puedes conectar la batería directamente.",
+      "fail": "La lámpara se ha quedado encendida: hay algo en cortocircuito. Aquí el condensador está al revés; dale la vuelta (franja al negativo) y repite la prueba antes de conectar."
+    },
+    "motors": {
+      "title": "Comprobación del sentido de los motores (sin hélices)",
+      "pass": "Todos los motores giran como espera el mezclador: M1 y M4 en sentido horario, M2 y M3 en antihorario (props in). Ya pueden ir las hélices.",
+      "fail": "Un motor ha girado al revés. Inviértelo en el firmware del ESC (ESC Configurator) en lugar de volver a soldar; con las hélices puestas, volcaría el quad en la línea de salida."
+    },
+    "calibrate": {
+      "title": "Calibración del acelerómetro",
+      "pass": "Nivel calibrado sobre una superficie plana: el modo ángulo y el límite de inclinación del launch control ya saben dónde está la horizontal, y ha desaparecido el bloqueo de armado NO_ACC_CAL.",
+      "fail": "Primero coloca la controladora y pon el quad sobre una superficie plana. Si la flecha apunta hacia atrás, gira la placa o pon align_board_yaw = 180."
+    },
+    "rx": {
+      "title": "Prueba del receptor",
+      "pass": "Emparejado: en la pestaña Receiver cada canal se mueve en el sentido correcto entre 1000 y 2000 µs, el acelerador se queda en 1000 µs con la palanca abajo y el interruptor de armado está en AUX1.",
+      "fail": "Primero coloca el receptor y la controladora. En un quad real, un canal que se mueve al revés o el interruptor de armado en el AUX equivocado se ven aquí, no en la línea de salida."
+    },
+    "failsafe": {
+      "title": "Prueba de failsafe (sin hélices, emisora apagada)",
+      "pass": "Emisora apagada: a los 1,5 s los motores se han parado y el quad se ha desarmado (DROP). Dentro de un circuito con redes, eso es lo que quiere la dirección de carrera.",
+      "fail": "Primero coloca el receptor y la controladora, quita las hélices y conecta la batería. Un quad que mantiene su último acelerador cuando se corta el enlace se va volando hacia el público."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Primera configuración",
+      "explain": "Mezclador QUAD X, la flecha de la placa hacia delante, DShot600 con telemetría bidireccional para el filtro RPM, props in, y los dos puertos serie: el receptor ELRS en el UART2 y el SmartAudio del VTX en el UART1."
+    },
+    "switches": {
+      "title": "Interruptores de carrera",
+      "explain": "Armado en AUX1, ángulo en AUX2, pit mode del VTX en AUX3, y launch control y el beeper de quad perdido en los dos extremos de AUX4. aux recibe los identificadores numéricos de modo de Betaflight: 0 armado, 1 ángulo, 39 pit mode, 49 launch control, 13 beeper."
+    },
+    "vtx": {
+      "title": "Raceband, tu canal, 25 mW",
+      "explain": "La tabla VTX le dice a Betaflight qué bandas y niveles de potencia tiene el transmisor (primero los canales, o las líneas de banda fallan). La banda 5 es Raceband; el canal 4 son 5769 MHz. El índice de potencia 1 es el nivel real más bajo, 25 mW, la potencia para correr junto a otros pilotos. La potencia baja mientras está desarmado y una frecuencia de pit mode fuera de la banda de carreras evitan que le borres el vídeo a alguien en boxes."
+    },
+    "leds": {
+      "title": "LED del color de carrera",
+      "explain": "La disposición es una línea led por LED: posición en la cuadrícula, sin direcciones, función C (color fijo) y color 6 (GREEN); la pestaña LED Strip del Configurator escribe las mismas líneas. El CLI de este laboratorio no acepta líneas led, así que aparecen como comentarios. Las dos líneas set eligen el perfil RACE, que enciende toda la tira en ledstrip_race_color: un nombre de color, no un número."
+    },
+    "failsafe": {
+      "title": "Failsafe: caída",
+      "explain": "Si el enlace de radio se pierde durante 1,5 s, para los motores. En un circuito de carreras con redes, caer es más seguro que cualquier intento de volver a casa, y un quad de carreras no tiene GPS con el que volver."
+    },
+    "angle": {
+      "title": "Modo ángulo para aprender el circuito",
+      "explain": "Autonivelado con la inclinación limitada a 45°: suelta la palanca y se nivela. Va bien para aprender el orden de las puertas; demasiado lento para competir, porque el límite también frena cuánto puede inclinarse hacia delante."
+    },
+    "acro": {
+      "title": "Rates de carrera",
+      "explain": "Acro es como vuela el quad sin ningún modo de autonivelado activado. Con los rates ACTUAL, el centro es suave (70°/s) para pequeñas correcciones de trazada y la palanca a tope gira a 670°/s para los giros bruscos alrededor de una puerta; la guiñada llega como mucho a 450°/s."
+    },
+    "race": {
+      "title": "Cronómetro de carrera y launch control",
+      "explain": "El temporizador del OSD cuenta en centésimas desde el último armado, así que el piloto ve el tiempo de la manga en las gafas; los tiempos por vuelta los da el cronómetro de carrera, que escucha a cada VTX. El launch control mantiene el quad en la parrilla hasta que el acelerador pasa del 20 %, para una salida limpia con la señal."
+    },
+    "raceAcro": {
+      "title": "Correr en acro",
+      "explain": "Ángulo desactivado, air mode activado para que el quad siga obedeciendo con el acelerador a cero al coronar un picado, launch control para la salida y el cronómetro de carrera en el OSD."
+    }
+  },
+  "flight": {
+    "modes": {
+      "angle": {
+        "title": "Ángulo",
+        "hint": "Autonivelado, inclinación limitada a 45°: vuela el circuito libremente y apréndete las trazadas."
+      },
+      "acro": {
+        "title": "Acro",
+        "hint": "Sin autonivelado: las palancas fijan las velocidades de giro, hasta 670°/s. El quad mantiene el ángulo en el que lo dejes."
+      },
+      "race": {
+        "title": "Carrera (ángulo)",
+        "hint": "Las seis puertas en orden, cronometradas vuelta a vuelta, con la red de seguridad del modo ángulo."
+      },
+      "raceAcro": {
+        "title": "Carrera (acro)",
+        "hint": "Las seis puertas en acro, como las vuelan los pilotos de carreras. Tres vueltas limpias seguidas es lo que cuenta una clasificatoria."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Enlace de radio perdido durante 1,5 s: los motores se paran y el quad cae dentro de las redes.",
+      "low-battery": "Por debajo de 3,5 V por celda, el OSD avisa. Termina la vuelta y aterriza.",
+      "battery-empty": "Por debajo de 3,2 V por celda, la batería cae tanto que los ESC cortan y el quad se desploma."
+    },
+    "controls": "Teclado: Espacio arma y desarma, W y S acelerador, las flechas cabeceo y alabeo, A y D guiñada, V cambia a FPV, R vuelve a poner el quad en la plataforma. En un móvil, la palanca izquierda es acelerador y guiñada, y la derecha es cabeceo y alabeo. Un mando funciona en Modo 2."
+  },
+  "courses": {
+    "track": {
+      "title": "Circuito del club",
+      "brief": "Seis puertas de 1,6 m, voladas en sentido antihorario desde la puerta de salida/meta delante de la plataforma, con una valla en la recta de atrás y la torre de cronometraje en el interior. Una puerta que te saltas hay que volver a volarla. Tu tiempo de vuelta empieza en la puerta de salida/meta; bate el par en tres vueltas seguidas."
+    }
+  },
+  "quizzes": {
+    "frame": {
+      "stretch": {
+        "q": "¿Por qué un chasis de carreras es alargado (más largo que ancho)?",
+        "options": {
+          "1": "Para que quepa una batería más grande",
+          "2": "Para que las hélices traseras reciban aire más limpio cuando el quad vuela rápido y con el morro abajo",
+          "3": "Para que la cámara pueda inclinarse más hacia arriba"
+        },
+        "why": "Con una inclinación fuerte hacia delante, las hélices traseras vuelan dentro de la estela de las delanteras. Al llevarlas más atrás muerden aire más limpio, así que el quad va recto a velocidad."
+      },
+      "kv": {
+        "q": "El racer usa motores de 2500 KV en 4S. ¿Qué pasa con los mismos motores y una batería 6S?",
+        "options": {
+          "1": "Vuela igual, solo que más tiempo",
+          "2": "Va más lento porque la batería pesa más",
+          "3": "Las hélices giran mucho más rápido de lo que aguantan los motores y el ESC"
+        },
+        "why": "KV son rpm por voltio: 2500 KV a 25 V piden más de 60 000 rpm. La corriente sube con ellas, los motores se sobrecalientan y el ESC se desincroniza. Los racers de 6S usan unos 1950 KV."
+      }
+    },
+    "power": {
+      "cap": {
+        "q": "¿Qué hace el condensador entre los pads de batería del ESC?",
+        "options": {
+          "1": "Absorbe los picos de tensión de los acelerones y frenadas fuertes",
+          "2": "Guarda energía para una vuelta más",
+          "3": "Filtra la señal de vídeo"
+        },
+        "why": "Cada cambio brusco de acelerador devuelve un pico de tensión a los cables de la batería. El condensador de baja ESR lo absorbe antes de que mate los MOSFET o aparezca como ruido en el giroscopio y el vídeo."
+      },
+      "esc": {
+        "q": "La calculadora dice que un motor consume a todo gas más corriente de la que admite el ESC. ¿Cuál es el arreglo sensato?",
+        "options": {
+          "1": "Ignorarlo: en una carrera nunca se va a todo gas",
+          "2": "Poner una hélice de paso más bajo o un ESC de más amperios",
+          "3": "Usar una batería más grande"
+        },
+        "why": "Una carrera es casi todo a todo gas, así que el ESC ve esa corriente en cada recta. Una hélice más suave, de paso más bajo, consume menos, o un ESC de más amperios da el margen; una batería más grande solo añade peso."
+      }
+    },
+    "video": {
+      "power": {
+        "q": "¿Por qué un VTX de carreras va a 25 mW?",
+        "options": {
+          "1": "Para que todos los pilotos de la manga puedan volar a la vez sin taparse el vídeo unos a otros",
+          "2": "Porque la batería es demasiado pequeña para más",
+          "3": "Porque 25 mW llegan más lejos"
+        },
+        "why": "Hasta ocho quads vuelan una manga en canales de Raceband distintos, a unas decenas de metros unos de otros. Con mucha potencia, un VTX se mete en los canales de sus vecinos y les rompe el vídeo."
+      },
+      "analog": {
+        "q": "¿Por qué la mayoría de los pilotos de carreras siguen volando con vídeo analógico?",
+        "options": {
+          "1": "Tiene la imagen más nítida",
+          "2": "Consume menos",
+          "3": "Tiene el menor retardo y todos los pilotos comparten Raceband"
+        },
+        "why": "A 100 km/h, unos milisegundos más de retardo son medio metro. El analógico lleva la imagen a las gafas más rápido, y los cronómetros de carrera escuchan el VTX analógico de cada piloto."
+      }
+    },
+    "race": {
+      "acro": {
+        "q": "¿Por qué los pilotos de carreras vuelan en acro en lugar de en modo ángulo?",
+        "options": {
+          "1": "El acro gasta menos batería",
+          "2": "El modo ángulo limita la inclinación, y para competir hacen falta cambios de ángulo fuertes y rápidos",
+          "3": "El acro tiene posición GPS"
+        },
+        "why": "El modo ángulo limita cuánto puede inclinarse el quad hacia delante, lo que limita su velocidad, y se nivela solo cuando preferirías que no lo hiciera. El acro mantiene cualquier ángulo que pongas y gira tan rápido como permitan tus rates."
+      },
+      "failsafe": {
+        "q": "En un circuito de carreras con redes, ¿qué debería hacer el quad cuando pierde el enlace de radio?",
+        "options": {
+          "1": "Parar los motores y caer",
+          "2": "Volver a casa por GPS",
+          "3": "Mantener las últimas posiciones de las palancas"
+        },
+        "why": "Un quad de carreras no tiene GPS, y mantener el último acelerador es como se escapan los quads. Caer dentro de las redes es la opción segura, que es el procedimiento DROP por defecto de Betaflight."
+      },
+      "laps": {
+        "q": "¿Cómo ordena a los pilotos una clasificatoria de MultiGP?",
+        "options": {
+          "1": "Por su vuelta más rápida",
+          "2": "Por el número total de vueltas en dos minutos",
+          "3": "Por sus tres vueltas seguidas más rápidas"
+        },
+        "why": "Una vuelta con suerte no cuenta: la clasificatoria global toma tus tres mejores vueltas seguidas dentro de una ronda fija de dos minutos, así que gana la regularidad."
+      }
+    }
+  }
+}
