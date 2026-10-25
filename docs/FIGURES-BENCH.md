@@ -8,6 +8,19 @@ nothing else. The engine (`figures/engine/bench*.js`, `figures/engine/sheets*.js
 
 Changes after the first publication are additive only. Every change is logged here, newest first.
 
+- v6 (19:40, P2-engine): one `set` patch is applied as one moment: unplug (`power: null`) first, then `exploded`,
+  `build`, `remove`, `restore`, `fault`, `matStep`, `circuit`, `params`, `tones`, `inputs`, `press`, then plug in
+  (`power: <source>`), then `view`, `select`, `serial`, so `{ power: 'usb', fault: 'missing:Y2' }` shows the powered
+  board without Y2 (§13). A host `fault` replaces the fault before it (repair, then apply); `fault: null` also turns
+  reversed parts back round. Plugging in the source that is already in keeps the sketch clock. `state.faults` carries
+  `reversed:<id>` for every polar part sitting backwards (§6.4). Feeds take `burns: '<part>'` (what a reversed supply
+  on that feed destroys) and `ilim` (amps: a current-limited regulator, so a short on its rail zeroes that rail and the
+  rails it feeds, and the rest runs) (§6.1). `polar.rail`: a backwards part only faults while that rail is live (§4.1).
+  Uploads also need every `mcu.needs` part. The serial `banner` is printed as written (program output, never
+  translated). Pick and place takes at most about 3 s. `faults` entries may be `[id, label]`; listed faults without a
+  label get one from their kind ("Short from 5V to GND", "Leave out C5") (§6.4). The model hook returns `stats`,
+  `meas`, `report`, `flow` and `accent` as well (§11). `cfshoot.py --set '<json>'` sends a patch through the bridge and
+  records the state (§14).
 - v5 (14:15): part files may name their pickers with `paramNames: { tempC: 'Temperature' }` (§8; default: the
   param key with a capital). The standalone page now has keyboard access to every drawn part: an off-screen group
   of buttons, one per part, where focus selects the part and Enter or Space holds a control (§14); inside the host
@@ -166,7 +179,7 @@ board `uno-r3`; `modules/<id>.html` → module, `robotics/<id>.html` → bench, 
 | `side` | `'top'\|'bottom'` | default `'top'` |
 | `z` | number | base height above the PCB (a chip in a socket: the socket height) |
 | `group` | `'smd'\|'low'\|'tall'\|'last'` | build group; default from the kind (section 5) |
-| `polar` | `{ fault:'pop'\|'hot'\|'dark', opts?:['notch left','notch right'] }` | the part can be placed reversed; orient 0 = as on the real board; `opts` are the two chip labels |
+| `polar` | `{ fault:'pop'\|'hot'\|'dark', rail?:'VIN', opts?:['notch left','notch right'] }` | the part can be placed reversed; orient 0 = as on the real board; `opts` are the two chip labels; `rail`: it only faults while that rail is live (a cap on VIN stays quiet on USB power) |
 | `fixed` | true | part of the PCB itself (antenna trace, edge fingers, touch logo): cannot be removed |
 | `inSocket` | partId | goes into that socket (group `'last'`) |
 | `led` | object | for LED kinds: `{ color:'#rrggbb', net?:'D13', rail?:'5V', serial?:'rx'\|'tx', invert?:true, via?:['U5','RN2'] }` what lights it; `via` = parts that must be in and soldered for it to light (driver, resistor) |
@@ -300,6 +313,12 @@ power: {
 }
 ```
 
+Feed options beyond the example: `burns: 'U1'` names the part a reversed supply on that feed destroys (default the
+feed's last `via` part, else the MCU); `ilim: 0.15` marks a current-limited regulator (amps), so a `short:` on that
+rail zeroes the rail and the rails fed from it while the rest keeps running (the Uno's LP2985 on 3V3). A source may
+also feed several rails at once: `{ label, parts: ['NANO', 'BATT'], feeds: { VM: 7.4, VCC: 5 } }` (a bench supply;
+`wrong-voltage` scales every feed).
+
 A feed is alive when its source is connected (or its upstream rail is alive) and every `via` part is in, soldered,
 not reversed and not cold (cold = alive in bursts). Feed voltage: `src.v − drop`, or for a regulator
 `min(reg, in − dropout)`. `offIf: [rail, '>', volts]` switches a feed off (the Uno's comparator). A rail takes the
@@ -364,7 +383,13 @@ Fault ids (strings; the host sets them with `set {fault}`; the figure's "Break i
 | `reverse-polarity:<source>` | the supply is connected backwards; a `protect` part blocks it, else the regulator burns | "Reverse polarity: <protect> blocks it, nothing powers up" or "Reverse polarity: <part> burned" · "Swap the leads" |
 | `wrong-voltage:<source>:<volts>` | sets that source's voltage (e.g. `wrong-voltage:pin5:12`) | "<volts> V on <label>: <part> is damaged" or "<volts> V is too low: brown-out" · "Use <range> V" |
 | `brownout` | a motor on the 5 V pin: the rail sags under load and the MCU resets in a loop | "Brown-out: the motor drags 5 V down and the board resets" · "Power motors separately" |
-| `short:<netA>:<netB>` | solder bridge; on a power rail the polyfuse or USB port trips | "Short between <netA> and <netB>" · "Clear the bridge" |
+| `short:<netA>:<netB>` | solder bridge; on a power rail the polyfuse or USB port trips; on a rail fed through an `ilim` regulator only that rail (and its children) drops | "Short between <netA> and <netB>" · "Clear the bridge" |
+
+`state.faults` lists every fault in force: the ids set, `missing:<id>` while that part is out, and `reversed:<id>`
+while a polar part sits backwards. A board's or bench's own `faults` list may give labels for Break it:
+`faults: [['short:5V:GND', 'Solder bridge from 5V to GND'], 'short:3V3:GND']`; an id without one is labelled from its
+kind ("Short from 3V3 to GND", "Leave out C5", "9 V on Barrel jack").
+
 
 ## 7. Modes (built-in demo programs)
 
@@ -474,6 +499,24 @@ SL.bench.bench({
 A module is defined like a board (`SL.bench.module`) with `pins` on a `male` header (`pins:['GND','VCC',…]`); in a
 bench it inherits its pins as `M1.<net>`.
 
+**The model hook.** A bench says what its circuit does in its own words, instead of a general solver:
+
+```js
+model: (st, dt) => ({                      // every frame after the outputs (dt 0 on a state change)
+  readings: { M1: { rpm: 120, v: 6.1 } },  // state.readings (numbers rounded); a mat part `MOTA` draws from readings.MOTA
+  status: 'motor A forward',               // state.benchStatus and the stats panel
+  stats: [['Motor A', '6.1 V'], ['I', 0.42]],   // more lines on the stats panel while powered
+  meas: { Q1: { state: 'on', ic_mA: 180 } },    // merged over the breadboard solver's state.meas
+  report: { levels: { AIN1: 1, AIN2: 0 } },     // extra top-level state keys (never the engine's own keys)
+  flow: { VM: true },                      // lights xr.flow paths and mat wires on these nets
+  accent: ['MOTA'],                        // rings these parts or mat items
+})
+```
+
+Inputs: `st.o.pins` (the program's pin levels or the host's `set {pins}`), `st.ev.rails`, `st.meas`, `st.t`,
+`st.mode`, `st.matStep`, `st.power`. Things on the mat: `periph: [{ id, board | part, at, step? }]`, `wires: [{ from,
+to, color, step? }]` and `matSteps` (set out one step at a time with the `mat` button or `set {matStep}`).
+
 What the engine does with a bench today (v3): `board` names a registered board or module (its file goes in a
 `// @cf use boards/uno-r3.js` line); the bench's own fields override the board's, its `circuit` object becomes the
 breadboard circuit, its `modes` (or the board's) run, its `faults` add to the board's, and the page opens on the
@@ -492,14 +535,18 @@ parts with `at`, §9, until the engine places them).
 
 ## 13. Bridge: what the figure accepts and reports
 
-Host → figure `set {state: patch}`; the engine applies only these keys, each validated:
+Host → figure `set {state: patch}`; the engine applies only these keys, each validated. One patch is one moment:
+`power: null` first, then the board changes (`exploded`, `build`, `remove`, `restore`, `fault`, `matStep`, `circuit`,
+`params`, `tones`, `inputs`, `press`), then `power: <source>`, then `view`, `select`, `serial`. So
+`{ power: 'usb', fault: 'missing:Y2' }` unplugs to take Y2 out and plugs back in, and `{ power: null, build: 'bare' }`
+unplugs before it strips. Send `power` with every `fault` whose consequence needs the board powered:
 
 | Key | Type | Effect |
 |---|---|---|
 | `pins` | `{net: 0..1}` | pin levels or PWM duty from the interpreter (≤ 30 Hz); pauses built-in modes |
 | `mode` | mode key | run a built-in demo program |
 | `power` | source key or `null` | connect a supply / unplug |
-| `fault` | fault id or `null` | add one fault (section 6.4) / clear all |
+| `fault` | fault id or `null` | replace the fault in force with this one (section 6.4) / clear all, parts back in and turned right |
 | `view` | `'board'\|'breadboard'\|'schematic'\|'power'`, also `'iso'` (= board), `'see-through'`, `'exploded'` (board view with that on) | switch sheet |
 | `exploded` | boolean | exploded view |
 | `circuit` | circuit key or `null` | which lesson circuit the breadboard shows |

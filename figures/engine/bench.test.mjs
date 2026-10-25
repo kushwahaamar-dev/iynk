@@ -215,3 +215,162 @@ describe('breadboard circuits', () => {
     expect(hits).toEqual(['bench: circuit part X1: unknown part "flux-capacitor" (add // @cf use parts/flux-capacitor.js)']);
   });
 });
+
+const UNO = 'boards/uno-r3';
+const unoPage = (query = '') => loadFigure(buildFigure(UNO), { path: '/figures/boards/uno-r3.html', query });
+
+describe('one set patch: unplug, change the board, then plug in', () => {
+  it('shows a missing part on a powered board', async () => {
+    page = await unoPage();
+    const B = page.bench;
+    expect(B.accept({ power: 'usb', fault: 'missing:Y2' })).toBe(true);
+    const r = B.report();
+    expect(r).toMatchObject({ power: 'usb', status: 'powered', faults: ['missing:Y2'] });
+    expect(r.missing).toEqual(['Y2']);
+    expect(r.why).toMatch(/nothing runs/);
+  });
+
+  it('runs without the auto-reset cap, but refuses the upload', async () => {
+    page = await unoPage();
+    const B = page.bench;
+    B.accept({ power: 'usb', fault: 'missing:C5' });
+    expect(B.report().status).toBe('running');
+    B.actions.upload('hello');
+    expect(B.report().status).toBe('running');
+    expect(B.st.msg).toMatch(/Upload failed/);
+  });
+
+  it('reports a backwards chip as reversed:<id> and burns it once powered', async () => {
+    page = await unoPage();
+    const B = page.bench;
+    B.accept({ power: 'usb', fault: 'reversed:ZU4' });
+    const r = B.report();
+    expect(r.power).toBe('usb');
+    expect(r.status).toBe('fault');
+    expect(r.fault).toMatchObject({ id: 'reversed:ZU4', part: 'ZU4', kind: 'hot' });
+    expect(r.faults).toEqual(['reversed:ZU4']);
+  });
+
+  it('pops a backwards cap only while its rail is live', async () => {
+    page = await unoPage();
+    const B = page.bench;
+    B.accept({ power: 'usb', fault: 'reversed:PC2' });
+    expect(B.report()).toMatchObject({ status: 'fault', fault: { id: 'reversed:PC2', kind: 'pop' } });
+    B.accept({ power: 'usb', fault: 'reversed:PC1' });
+    let r = B.report();
+    expect(r.status).toBe('running');
+    expect(r.faults).toEqual(['reversed:PC1']);
+    B.accept({ power: 'jack' });
+    r = B.report();
+    expect(r).toMatchObject({ status: 'fault', fault: { id: 'reversed:PC1' } });
+  });
+
+  it('replaces the fault before, and fault: null turns parts back round', async () => {
+    page = await unoPage();
+    const B = page.bench;
+    B.accept({ power: 'usb', fault: 'reversed:ZU4' });
+    B.accept({ power: 'usb', fault: 'missing:Y2' });
+    let r = B.report();
+    expect(r.faults).toEqual(['missing:Y2']);
+    expect(r.status).toBe('powered');
+    B.accept({ fault: 'reversed:ZU4' });
+    expect(B.report().power).toBe(null);
+    B.accept({ fault: null, power: 'usb' });
+    r = B.report();
+    expect(r).toMatchObject({ faults: [], missing: [], status: 'running' });
+  });
+
+  it('unplugs before a rebuild', async () => {
+    page = await unoPage();
+    const B = page.bench;
+    expect(B.accept({ power: null, build: 'bare' })).toBe(true);
+    expect(B.report()).toMatchObject({ power: null, build: 'bare' });
+  });
+
+  it('keeps the sketch clock when the same cable is plugged in again', async () => {
+    page = await unoPage();
+    const B = page.bench;
+    B.advance(1.5);
+    const t = B.st.t;
+    B.accept({ power: 'usb' });
+    expect(B.st.t).toBeCloseTo(t, 5);
+  });
+});
+
+describe('uno-r3 power tree', () => {
+  it('folds back only the 3V3 regulator on a 3V3 short', async () => {
+    page = await unoPage();
+    const B = page.bench;
+    B.accept({ power: 'usb', fault: 'short:3V3:GND' });
+    const r = B.report();
+    expect(r.rails['3V3']).toBe(0);
+    expect(r.rails['5V']).toBeGreaterThan(4.5);
+    expect(r.status).toBe('running');
+    expect(r.why).toMatch(/LP2985/);
+    expect(r.leds.ON).toBe(1);
+  });
+
+  it('trips everything on a 5V short', async () => {
+    page = await unoPage();
+    const B = page.bench;
+    B.accept({ power: 'usb', fault: 'short:5V:GND' });
+    const r = B.report();
+    expect(Object.values(r.rails).every((v) => v === 0)).toBe(true);
+    expect(r.status).toBe('no-power');
+  });
+
+  it('burns the regulator, not the chip, on a reversed VIN pin', async () => {
+    page = await unoPage();
+    const B = page.bench;
+    B.accept({ power: 'vin', fault: 'reverse-polarity:vin' });
+    expect(B.report()).toMatchObject({ status: 'fault', fault: { part: 'U1' } });
+    B.accept({ power: 'jack', fault: 'reverse-polarity:jack' });
+    const r = B.report();
+    expect(r.status).toBe('no-power');
+    expect(r.why).toMatch(/blocks it/);
+  });
+
+  it('refuses an upload while the 328P cannot run', async () => {
+    page = await unoPage();
+    const B = page.bench;
+    B.accept({ power: 'usb', fault: 'missing:Y2' });
+    B.actions.upload('hello');
+    expect(B.st.up).toBe(null);
+    expect(B.st.msg).toMatch(/Upload failed: .*resonator/);
+  });
+
+  it('labels its listed faults in Break it', async () => {
+    page = await unoPage();
+    const labels = Object.fromEntries(page.bench.faultChoices());
+    expect(labels['short:5V:GND']).toBe('Short from 5V to GND');
+    expect(labels['short:3V3:GND']).toBe('Short from 3V3 to GND');
+  });
+
+  it('places every SMD part and reflows in about 3 s', async () => {
+    page = await unoPage();
+    const B = page.bench, A = B.actions;
+    B.accept({ power: null, build: 'bare' });
+    A.pnp();
+    expect(B.st.reflowT).toBeGreaterThan(-3.2);
+    B.advance(4.5);
+    expect(B.report().build).toBe('reflowed');
+  });
+});
+
+describe('model hook outputs', () => {
+  it('feeds stats, meas, report keys, flow and accent', async () => {
+    page = await fixture('fixture-mat', MAT.replace(
+      "return { readings: { motor: { volts: vm, turns: st.spin } }, status: vm > 7 ? 'motor running' : 'motor stopped' };",
+      "return { readings: { motor: { volts: vm } }, status: 'ok', stats: [['Motor', vm], ['Dir', 'forward']], meas: { MOTA: { state: 'ok', i_mA: 120 } },"
+        + " report: { levels: { AIN1: 1, AIN2: 0 }, faults: ['nope'] }, flow: { VM: true }, accent: ['LAMP'] };"));
+    const B = page.bench;
+    const r = B.report();
+    expect(r.meas.MOTA).toEqual({ state: 'ok', i_mA: 120 });
+    expect(r.levels).toEqual({ AIN1: 1, AIN2: 0 });
+    expect(r.faults).toEqual([]);
+    expect(page.notes().join(' ')).toMatch(/report key "faults" is the engine's own/);
+    expect(B.st.flow).toEqual({ VM: true });
+    expect(B.st.accent).toEqual(['LAMP']);
+    expect(B.st.modelStats).toEqual([['Motor', 7.4], ['Dir', 'forward']]);
+  });
+});

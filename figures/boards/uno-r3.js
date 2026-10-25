@@ -69,8 +69,8 @@ B.board({
     { id: 'D1', kind: 'sod', name: 'M7 diode: reverse-polarity protection', short: 'DIODE', at: [21.59, 2.794], size: [4.4, 3.6], h: 2.2, label: 'M7' },
     { id: 'D2', kind: 'sod', name: 'Reset clamp diode (328P)', at: [59.436, 27.94], size: [3.5, 1.4], rot: 90, melf: true },
     { id: 'D3', kind: 'sod', name: 'Reset clamp diode (16U2)', at: [13.081, 46.228], size: [3.5, 1.4], rot: 90, melf: true },
-    { id: 'PC1', kind: 'ecap-smd', name: '47 µF capacitor on VIN', short: '47 µF', at: [25.527, 9.144], rot: 180, label: '47', polar: { fault: 'pop', opts: ['black band to the top, as printed', 'black band to the bottom (backwards)'] } },
-    { id: 'PC2', kind: 'ecap-smd', name: '47 µF capacitor on 5 V', short: '47 µF', at: [18.415, 9.144], rot: 180, label: '47', polar: { fault: 'pop', opts: ['black band to the top, as printed', 'black band to the bottom (backwards)'] } },
+    { id: 'PC1', kind: 'ecap-smd', name: '47 µF capacitor on VIN', short: '47 µF', at: [25.527, 9.144], rot: 180, label: '47', polar: { fault: 'pop', rail: 'VIN', opts: ['black band to the top, as printed', 'black band to the bottom (backwards)'] } },
+    { id: 'PC2', kind: 'ecap-smd', name: '47 µF capacitor on 5 V', short: '47 µF', at: [18.415, 9.144], rot: 180, label: '47', polar: { fault: 'pop', rail: '5V', opts: ['black band to the top, as printed', 'black band to the bottom (backwards)'] } },
     { id: 'L2', kind: 'chip', name: '10 µH inductor: AVCC filter', at: [39.116, 8.128], size: [2, 1.25], h: .8, ferrite: true },
     { id: 'L1', kind: 'chip', name: 'Ferrite bead on the USB shield', at: [7.62, 45.085], size: [2, 1.25], h: .8, ferrite: true },
     { id: 'C1', kind: 'chip', name: '100 nF capacitor (3.3 V regulator in)', at: [18.415, 15.367], rot: 90, cap: true },
@@ -123,9 +123,11 @@ B.board({
     default: 'usb',
     rails: {
       USBVCC: { from: [{ src: 'usb', via: ['X2', 'F1'] }] },
-      VIN: { from: [{ src: 'jack', via: ['X1', 'D1'], drop: .7, protect: 'D1' }, { src: 'vin' }] },
+      // VIN fed backwards on its pin skips D1 and takes out the NCP1117 (facts §6)
+      VIN: { from: [{ src: 'jack', via: ['X1', 'D1'], drop: .7, protect: 'D1' }, { src: 'vin', burns: 'U1' }] },
       '5V': { from: [{ rail: 'VIN', via: ['U1'], reg: 5, dropout: 1.1, max: 20 }, { rail: 'USBVCC', via: ['T1', 'U5'], drop: .05, offIf: ['VIN', '>', 6.6] }, { src: 'pin5' }], max: 6 },
-      '3V3': { from: [{ rail: '5V', via: ['U2'], reg: 3.3, dropout: .3 }], max: 3.6 },
+      // the LP2985 is rated 150 mA with its own current limit: a 3V3 short folds it back, 5 V keeps running (facts §3.2)
+      '3V3': { from: [{ rail: '5V', via: ['U2'], reg: 3.3, dropout: .3, ilim: .15 }], max: 3.6 },
     },
     mcu: { part: 'ZU4', rail: '5V', min: 2.7, needs: ['ZU4', 'SK1', 'Y2', 'RN1'] },
     upload: { source: 'usb', needs: ['U3', 'Y1', 'RN3', 'C5', 'ZU4'], tool: 'avrdude' },

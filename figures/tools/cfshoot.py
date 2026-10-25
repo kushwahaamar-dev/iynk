@@ -10,6 +10,8 @@ It shoots, each in a fresh browser context with a paused fake clock (nothing mov
   press-*.png     ?press= runs at each --at time: front, from behind (--behind), see-through
   phone-xr.png    390 x 844 touch phone, full page    zoom-xr.png     4x close-up of part of the figure (--zoom)
   embed.png       the page inside an iframe host, driven through the bridge (hello, press by id, query)
+  set-<n>.png     with --set '<json>' (repeatable): a fresh host sends that state patch through the bridge, waits, and
+                  records the figure's state (status, power, faults, fault, why) in report.json under "sets"
 plus contact.png (every shot on one sheet) and report.json: data-errors, NaN/Infinity/undefined inside #art, console
 and page errors, label pills that overlap or leave the frame, horizontal scroll, the toast, a state snapshot, and the
 bridge messages. Exit code 1 when anything is wrong.
@@ -146,6 +148,35 @@ class Shooter:
         self.report['embed'] = {'checks': checks, 'ready': ready, 'messages': log[:80]}
         print('embed.png' + (' PROBLEMS: ' + '; '.join(checks['problems']) if checks.get('problems') else ''), '- bridge:', ', '.join(checks['types']))
 
+    async def set_shot(self, n, patch):
+        """One bridge `set` on a fresh host, the way the lab's failure panel sends it."""
+        host = os.path.join(self.out, '_host.html')
+        with open(host, 'w', encoding='utf-8') as fh:
+            fh.write(HOST.replace('SRC', self.base + '?lang=en'))
+        ctx = await self.browser.new_context(viewport={'width': 800, 'height': 620}, device_scale_factor=1.5)
+        page = await ctx.new_page()
+        errors = []
+        page.on('pageerror', lambda e: errors.append(str(e)))
+        await page.goto('file://' + host)
+        await page.wait_for_function('window.LOG.some(m => m.type === "ready")', timeout=8000)
+        await page.evaluate('s => cmd({ type: "set", state: s })', patch)
+        await page.wait_for_timeout(self.a.set_wait)
+        n0 = await page.evaluate('window.LOG.length')
+        await page.evaluate('cmd({ type: "query" })')
+        await page.wait_for_function('n => window.LOG.slice(n).some(m => m.type === "state")', arg=n0, timeout=4000)
+        await page.screenshot(path=os.path.join(self.out, f'set-{n}.png'))
+        log = await page.evaluate('window.LOG')
+        await ctx.close()
+        st = next((m.get('state') or {} for m in reversed(log) if m['type'] == 'state'), {})
+        keep = {k: st.get(k) for k in ('status', 'power', 'faults', 'fault', 'why', 'missing', 'rails') if k in st}
+        problems = errors + [m['message'] for m in log if m['type'] == 'error']
+        if problems:
+            self.failed = True
+        self.report.setdefault('sets', []).append({'set': patch, 'state': keep, 'problems': problems})
+        fault = (keep.get('fault') or {}).get('id') if isinstance(keep.get('fault'), dict) else keep.get('fault')
+        print(f'set-{n}.png {json.dumps(patch)} -> status {keep.get("status")}, power {keep.get("power")}, '
+              f'faults {keep.get("faults")}, fault {fault}' + (' PROBLEMS: ' + '; '.join(problems) if problems else ''))
+
     async def contact(self):
         names = [n for n in sorted(os.listdir(self.out)) if n.endswith('.png') and n != 'contact.png']
         cells = ''.join(f'<figure><img src="{urllib.parse.quote(n)}"><figcaption>{n}'
@@ -204,6 +235,8 @@ async def run(args):
             s.failed = True
             s.report['embed'] = {'problems': [f'bridge check failed: {e}']}
             print('embed: PROBLEMS:', str(e).splitlines()[0])
+        for i, raw in enumerate(args.set or []):
+            await s.set_shot(i + 1, json.loads(raw))
         await s.contact()
         await browser.close()
     s.report['ok'] = not s.failed
@@ -227,6 +260,8 @@ def main():
     ap.add_argument('--zoom', default='0.3,0.25,0.4,0.45', help='close-up crop of the figure box: x,y,w,h as fractions')
     ap.add_argument('--query', default='', help='extra URL parameters for every shot, e.g. "mode=blink"')
     ap.add_argument('--no-exploded', action='store_true', help='skip the exploded set')
+    ap.add_argument('--set', action='append', help='a state patch (JSON) to send through the bridge; repeatable')
+    ap.add_argument('--set-wait', type=int, default=1200, help='ms to wait after each --set before reading the state')
     sys.exit(asyncio.run(run(ap.parse_args())))
 
 
