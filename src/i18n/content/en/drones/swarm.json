@@ -1,0 +1,297 @@
+{
+  "title": "Crazyflie swarm drone",
+  "tagline": "A 29 g Crazyflie you program in Python: Lighthouse and Flow decks, one Crazyradio, and three more like it flying a light-show star.",
+  "sub": "Crazyflie 2.1+ + cflib + Lighthouse",
+  "hint": "Build a Crazyflie, check its decks and its radio link, then fly a four-drone light show",
+  "noun": "Crazyflie",
+  "overview": "A Crazyflie is a 29 g quadcopter you program rather than fly. Its 92 mm circuit board is the frame and the flight controller in one, with four coreless motors switched straight from the board and two pin headers for expansion decks. A Flow deck underneath watches the floor and measures the height; a Lighthouse deck on top times the laser sweeps of two base stations and knows where the drone is in the room to a few centimetres. A Python script on a laptop talks to it through a Crazyradio with cflib, and the same radio talks to a whole swarm, each drone on its own address. This one leads four drones through a light show: a five-point star at 0.8 m/s, each drone in its own corner of a 0.6 m square, its LEDs changing colour at every point. Pick the parts, build it, check the motors, the radio link, the decks and the link-loss failsafe, then fly the show by hand or let the high-level commander fly it.",
+  "practice": "Fly in Hover first: take off to 1 m over the pad, then fly the star point to point by hand, slowly. The sticks ask for 1 m/s and 20° of lean at most. Watch the other three keep their slots beside and behind you, then land on the pad. Then switch to Show and let the high-level commander fly it. On a real swarm: give each drone its own address, keep them still and level while they power up, check that both decks read 1, run the motor check and the link-loss test with the props off and the propeller test with them on, and fly the first show low, over a net, with a land command ready in your script.",
+  "design": {
+    "fixed": {
+      "FRAME": "Crazyflie 2.1+ board and motor mounts (the frame)",
+      "FLOW": "Flow deck v2",
+      "DECKL": "Lighthouse positioning deck",
+      "HDR": "Long pin headers",
+      "RADIO": "Crazyradio 2.0 (on the laptop, so it weighs nothing here)",
+      "STRAP": "Foam battery pad (the original's \"strap\": a Crazyflie has none)"
+    },
+    "verdict": {
+      "ok": "Parts match: {tw}:1, enough margin to hold a tight formation indoors. The calculator keeps the original's part masses; the real drone with both decks weighs about 34 g, so its margin is a little smaller.",
+      "over": "8.5 x 20 mm motors don't fit the Crazyflie's 7 mm motor mounts, and their weight eats the thrust they add: {tw}:1. Stay with 7 mm motors; Bitcraze's own thrust upgrade is a 7 x 20 mm motor.",
+      "weak": "Thrust to weight {tw}:1: too heavy for four 7 x 16 motors. It hovers near full throttle with little left to correct a drift, so it can't hold its slot in the formation. Fit a lighter cell or the 47-17 props."
+    }
+  },
+  "parts": {
+    "MOTORS": {
+      "name": "4 × 7 x 16 mm coreless motors in their mounts",
+      "what": "Brushed DC motors 7 mm across and 16 mm long, 14000 rpm per volt, pressed into plastic mounts that clip over the arm tips and are the legs too. A coreless rotor has no iron in it, so the motor is tiny and spins up fast, but the brushes wear: a tired motor shows as a slow drift towards its corner. All four are the same part."
+    },
+    "FC": {
+      "name": "Crazyflie 2.1+ board",
+      "what": "The whole airframe is this 92 mm X-shaped circuit board. An STM32F405 runs the estimator and the controllers, an nRF51822 looks after the radio and the power, a BMI088 measures rotation and acceleration and a BMP388 the air pressure. The antenna bump marks the front and the blue LEDs are at the back. There is no compass, no ESC and no board alignment to set."
+    },
+    "WIRES": {
+      "name": "Motor plugs (Molex PicoBlade)",
+      "what": "Each motor has two short leads ending in a 2-pin PicoBlade plug, which goes into a socket on its arm. The plug is keyed, and each socket's polarity sets which way its motor turns."
+    },
+    "HDR": {
+      "name": "Long pin headers",
+      "what": "Two strips of ten pins at 2 mm pitch: 19 mm above a 2 mm plastic spacer and 4 mm below it, so one deck can sit on top and one underneath. They carry 3.0 V, ground, the battery voltage, I²C, SPI, two UARTs and the 1-wire line each deck's ID chip answers on."
+    },
+    "FLOW": {
+      "name": "Flow deck v2",
+      "what": "A PMW3901 optical-flow sensor watches the floor slide past and a VL53L1x time-of-flight sensor measures the height. Together they hold the position with nothing in the room, from 0.2 to about 3 m over a textured, matt floor. Firmware name bcFlow2."
+    },
+    "BATT": {
+      "name": "1S 250 mAh LiPo",
+      "what": "One cell, 3.7 V, 7.1 g, on a Molex 51005 plug and with its own protection board. It sits on a foam pad between the header rows, under the top deck, and charges through the board's USB socket. About 7 minutes of hover on a bare drone, less with two decks."
+    },
+    "DECKL": {
+      "name": "Lighthouse positioning deck",
+      "what": "Four TS4231 infrared receivers time the laser sweeps from the Lighthouse V2 base stations, and an ICE40 FPGA turns the timings into angles for the Kalman filter. Better than 10 cm absolute in a 5 x 5 m room, and under a millimetre from one moment to the next. Each drone works out its own position, so any number can share the same stations. Firmware name bcLighthouse4."
+    },
+    "RADIO": {
+      "name": "Crazyradio 2.0",
+      "what": "A USB dongle on the laptop with an nRF52840, a 20 dBm amplifier and a 2 dBi antenna on an RP-SMA socket. One radio serves the whole swarm: every drone sits on the same channel at its own address."
+    },
+    "PROPS": {
+      "name": "Two-blade props, 2 CW and 2 CCW",
+      "what": "On 0.8 mm shafts. The 2.1+ comes with 47-17 props (47 mm, 17 mm pitch): 47-17 turns counter-clockwise and 47-17R clockwise. The older 45 mm props are marked B (counter-clockwise) and A (clockwise). The convex face goes up. A prop on the wrong motor flips the drone as it lifts, and the tumble check cuts the motors."
+    }
+  },
+  "build": {
+    "motors": {
+      "title": "Motors into their mounts",
+      "body": "Press each motor into a plastic mount with its leads out of the slot. All four 7 x 16 motors are the same part: the board decides which way each one turns, so it doesn't matter which goes where."
+    },
+    "board": {
+      "title": "Clip the board onto the mounts",
+      "body": "Lay the board on the four mounts with the antenna bump at the front and push each arm tip into its mount's clip until it sits flat. The board is the frame: there is nothing to bolt.",
+      "refusal": "The board's arm tips clip into the motor mounts: fit the motors first."
+    },
+    "plugs": {
+      "title": "Plug in the motors",
+      "body": "Push each motor's PicoBlade plug into the socket on its arm and lay the leads along the arm, clear of the prop.",
+      "refusal": "The plugs go into the board's sockets: fit the motors and the board first."
+    },
+    "pins": {
+      "title": "Fit the long pins",
+      "body": "Push the two long pin strips through the header holes from the top, the plastic spacer flat on the board: 19 mm stands up for the Lighthouse deck and 4 mm comes out underneath for the Flow deck.",
+      "refusal": "The pins go through the board's header holes: fit the board first."
+    },
+    "flow": {
+      "title": "Fit the Flow deck underneath",
+      "body": "Press the Flow deck onto the pins under the board, its camera and range sensor facing the floor and its print the right way round.",
+      "refusal": "The Flow deck hangs on the long pins: fit them first."
+    },
+    "batt": {
+      "title": "Lay in the battery",
+      "body": "Put a foam pad on the board between the header rows and lay the cell on it, its lead to the back. Leave it unplugged until the decks are on.",
+      "refusal": "The cell sits on the board between the header rows: fit the board first."
+    },
+    "lighthouse": {
+      "title": "Fit the Lighthouse deck on top",
+      "body": "Push the Lighthouse deck down the long pins over the battery, the right way round: turned round, its ID chip meets the wrong pins and the firmware never sees it. Its four receivers need a clear view of the base stations.",
+      "refusal": "The deck sits on the long pins: fit them first."
+    },
+    "radio": {
+      "title": "Set up the Crazyradio",
+      "body": "Screw the antenna onto the Crazyradio 2.0 and plug it into the laptop. In cfclient (Connect, Configure 2.x) give each drone its own address on the same channel: E7E7E7E701 to E7E7E7E704 on channel 80.",
+      "refusal": "The Crazyradio talks to the board: fit the board first."
+    },
+    "props": {
+      "title": "Fit the props (last)",
+      "body": "Only after the motor check and the calibration. 47-17 (counter-clockwise) on M1 and M3, 47-17R (clockwise) on M2 and M4; on the old 45 mm props B goes on M1 and M3 and A on M2 and M4. Convex face up, pushed fully down the shaft.",
+      "refusal": "Props go on last, with the motors and the board on: fit those first."
+    }
+  },
+  "wiring": {
+    "BATT-FC": "The 1S cell plugs into the board's Molex 51005 socket. The nRF51 switches the power and charges the cell from USB, and regulators make the 3.0 V the electronics run on.",
+    "FC-WIRES": "Four MOSFETs on the board switch the motors with an 8-bit PWM from the STM32's timers, about 328,000 times a second. There is no ESC and nothing to configure: a brushed motor only needs its average voltage changed.",
+    "WIRES-MOTORS": "Two wires per motor. Each socket's polarity sets the spin: M1 and M3 counter-clockwise, M2 and M4 clockwise, seen from above.",
+    "DECKL-FC": "Through the long pins: the FPGA sends its sweep timings over a UART, and the deck's ID chip tells the firmware it is there.",
+    "FLOW-FC": "Through the bottom ends of the pins: the flow sensor on SPI, the range sensor on I²C.",
+    "RADIO-FC": "Nordic's 2 Mbit/s radio protocol on 2.4 GHz, channel 80. Setpoints, parameters and logs all go over it; with streamed setpoints, a 0.5 s gap levels the drone and a 2 s gap stops its motors."
+  },
+  "tests": {
+    "motors": {
+      "title": "Motor check (props off)",
+      "pass": "Each motor ran on its own through motorPowerSet with the props off: M1 (front right) and M3 turned counter-clockwise seen from above, M2 and M4 clockwise. All four motors are the same part and the sockets set the direction, so this check finds a dead motor, a loose plug or a badly crimped one. The self-test at power-up ticks each motor too.",
+      "fail": "A motor spun the wrong way or not at all: its plug isn't home, or its leads are crimped the wrong way round. Reseat the plug or fit a good motor. Nothing in the firmware reverses a brushed motor."
+    },
+    "calibrate": {
+      "title": "Sensor calibration (keep it still)",
+      "pass": "The firmware calibrated the gyro by itself while the drone sat still and level at power-up, and LED1 went from a slow blink to two red blinks a second. There's no compass to calibrate and no board alignment to set: the IMU is soldered to the frame.",
+      "fail": "Fit the board first. If LED1 keeps blinking slowly, something is moving it: put it on a still, level surface and power it up again."
+    },
+    "link": {
+      "title": "Crazyradio link",
+      "pass": "Connected on radio://0/80/2M/E7E7E7E701 at 100 % link quality. Each drone in the swarm has its own address (E7E7E7E701 to 04), all on channel 80, so one Crazyradio talks to all four.",
+      "fail": "Fit the board and the Crazyradio and plug the battery in. With its antenna left off the Crazyradio drops packets (the bench reads 23 %): screw it on before trusting a swarm to it."
+    },
+    "position": {
+      "title": "Decks and positioning",
+      "pass": "deck.bcFlow2 and deck.bcLighthouse4 both read 1, the Kalman filter took in the Lighthouse sweeps and settled, and swarm.reset_estimators() returned. Every drone now knows where it is in the same frame.",
+      "fail": "A deck reads 0 (the Lighthouse deck turned round, the long pins not seated, the Flow deck missing) or the sensors aren't calibrated yet. Without a shared position the swarm can't hold a formation, and reset_estimators() never returns."
+    },
+    "failsafe": {
+      "title": "Link-loss test (props off)",
+      "pass": "With setpoints streaming and the Crazyradio pulled out, it levelled and held its thrust after 0.5 s and stopped its motors after 2 s. A go_to from the high-level commander would have flown on to its end: plan the show so a drone that loses its link is somewhere safe to hover.",
+      "fail": "Fit the motors, their plugs, the board and the Crazyradio, connect first, and take the props off."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Estimator, controller, Lighthouse and limits",
+      "explain": "A Crazyflie's parameters are set from Python over the radio: cflib's cf.param.set_value('group.name', value), or the Parameters tab in cfclient. Either deck forces the Kalman filter and PID is the default controller; the base stations here are Lighthouse V2. The posCtlPid limits cap what the position controller may ask for, 20° of lean and 1 m/s, and those are the numbers the range flies."
+    },
+    "decks": {
+      "title": "Are the decks there?",
+      "explain": "Each deck announces itself at power-up through its 1-wire ID chip, and the firmware sets a read-only parameter for every deck it finds. get_value returns the value as text, so a script compares it with '1'."
+    },
+    "motortest": {
+      "title": "Motor check, one at a time",
+      "explain": "With the props off, motorPowerSet hands a value from 0 to 65535 straight to each motor's PWM. Run them one at a time and look at the spin from above. The override only acts while the supervisor lets the motors run, and a 2.1+ arms itself; set enable back to 0 when you're done."
+    },
+    "health": {
+      "title": "Propeller test",
+      "explain": "health.startPropTest spins each motor in turn while the accelerometer measures the shaking. A chipped prop or a tired motor shakes more than the other three. Run it with the props on, on a flat floor."
+    },
+    "lights": {
+      "title": "The LEDs for the show",
+      "explain": "Bit 7 of led.bitmask takes the four LEDs away from the firmware's status blinks, and the other bits pick which ones light: 138 is both greens, 148 both reds, 129 the left blue. In the show each drone sets its own value at each point of the star. 0 hands the LEDs back. While the bitmask is on, LED1 can't warn you of a low battery."
+    },
+    "hover": {
+      "title": "Hover: MotionCommander",
+      "explain": "MotionCommander turns distances into velocity setpoints and streams them every 0.2 s: forward(0.6, velocity=0.4) flies 0.6 m at 0.4 m/s, measured by the Flow deck. Entering the with block takes off to default_height and leaving it lands. The script checks for the Flow deck first, because without it nothing would hold the position."
+    },
+    "althold": {
+      "title": "Height hold: zdistance setpoints",
+      "explain": "send_zdistance_setpoint takes roll and pitch in degrees, a yaw rate and a height in metres: the Flow deck's range sensor holds the height while you set the lean. Keep sending at 10 Hz or faster, and end with send_notify_setpoint_stop so the high-level commander can take over."
+    },
+    "stabilize": {
+      "title": "Angles and raw thrust",
+      "explain": "send_setpoint is roll, pitch, yaw rate and raw thrust, 60000 at most. The firmware ignores the thrust until it has seen a setpoint with thrust 0, so a script starts with one. Nothing holds the height: the thrust you send is all it gets."
+    },
+    "show": {
+      "title": "The light show for four",
+      "explain": "Swarm opens a link to each drone, reset_estimators() waits until every Kalman filter has settled, and parallel_safe runs show() on all four at once, each with its own slot offset. The high-level commander plans each go_to on the drone itself, so a drone that loses its link finishes the leg and holds there instead of dropping. Each leg sets led.bitmask: green, red, green, red, green, then blue to close the star."
+    }
+  },
+  "flight": {
+    "modes": {
+      "hover": {
+        "title": "Hover",
+        "hint": "Position hold on the Flow deck and Lighthouse, like MotionCommander: the sticks ask for up to 1 m/s and it stops when you let go. The other three keep their slots around you."
+      },
+      "althold": {
+        "title": "Height hold",
+        "hint": "Zdistance setpoints: you set the lean and the range sensor holds the height. Nothing holds the position, so every lean turns into a drift."
+      },
+      "stabilize": {
+        "title": "Angle",
+        "hint": "Plain setpoints: angles and raw thrust. Nothing holds the height or the position, so make small inputs and stay low."
+      },
+      "show": {
+        "title": "Show",
+        "hint": "The light show: the high-level commander flies the star point to point at 0.8 m/s with the other three in formation, then lands on the pad."
+      }
+    },
+    "failsafes": {
+      "setpoint-500": "No streamed setpoint (MotionCommander, send_setpoint) for 0.5 s: the supervisor levels it and holds the thrust.",
+      "setpoint-2000": "No setpoint for 2 s: motors off, and it drops from where it was. That's why indoor swarms fly low or over a net.",
+      "high-level": "A take-off, go_to or land from the high-level commander runs on the drone: with the link gone it finishes that command and holds the last setpoint. It does not land by itself.",
+      "tumble": "Upside down or crashed (supervisor.tmblChckEn 1): motors off, and it won't arm again until it gets a crash-recovery request.",
+      "low-battery": "Below 3.2 V for 5 s (pm.lowVoltage): LED1 goes solid red. Nothing lands it for you, so land the swarm from your script."
+    },
+    "controls": "Keyboard: Space arms and disarms, W and S climb and descend, the arrows fly forward, back and sideways, A and D yaw, V switches to the view from the drone (a Crazyflie has no camera unless you add one on a deck), R puts it back on the pad. In Hover it stops when you let go and the other three keep their slots. On a phone the left stick is throttle and yaw and the right stick is pitch and roll. A gamepad works in Mode 2."
+  },
+  "courses": {
+    "show": {
+      "title": "Light show: a star for four",
+      "brief": "Four Crazyflies stand on the pad in a 0.6 m square, with two Lighthouse base stations high in the corners. Take off to 1 m and fly a five-point star 1.5 m out from the middle of the arena, its points at 1.5 m and 1.2 m, holding a second at the top when you start it and when you close it. Then come back over the pad and land. The other three fly the same star from their slots.",
+      "goals": {
+        "1": "TAKE OFF: 1 m over the pad",
+        "2": "STAR TOP: 1.5 m, hold a second (green)",
+        "3": "LOWER LEFT POINT: 1.2 m (red)",
+        "4": "RIGHT POINT: 1.5 m (green)",
+        "5": "LEFT POINT: 1.5 m (red)",
+        "6": "LOWER RIGHT POINT: 1.2 m (green)",
+        "7": "STAR TOP: close the star and hold (blue)",
+        "8": "BACK over the pad at 1 m",
+        "9": "LAND on the pad"
+      }
+    }
+  },
+  "quizzes": {
+    "plugs": {
+      "esc": {
+        "q": "Where is the Crazyflie's ESC?",
+        "options": {
+          "1": "Under each motor",
+          "2": "On a 4-in-1 board under the flight controller",
+          "3": "There isn't one: MOSFETs on the board switch the brushed motors"
+        },
+        "why": "A brushed motor only needs its voltage varied, so one MOSFET per motor and a fast PWM (about 328 kHz) do the job. No ESC firmware, no DShot and no motor-direction setting."
+      },
+      "spin": {
+        "q": "In the motor check M2 turns counter-clockwise. What do you do?",
+        "options": {
+          "1": "Fit a good motor: the socket sets the direction, so this one's leads are crimped the wrong way round",
+          "2": "Reverse M2 in the firmware",
+          "3": "Swap its prop for the other kind"
+        },
+        "why": "Every 7 x 16 motor is the same part and the board's sockets set the spin. The firmware can't reverse a brushed motor, and with the other prop on it three props turn the same way: it lifts, but spins on the spot."
+      }
+    },
+    "lighthouse": {
+      "how": {
+        "q": "How does the Lighthouse deck know where the drone is?",
+        "options": {
+          "1": "A camera on the wall watches it",
+          "2": "Its receivers time the base stations' sweeping laser planes, and the timings are angles to each station",
+          "3": "From GPS"
+        },
+        "why": "Each base station sweeps the room with infrared planes. The deck's four receivers time when a sweep hits them; those times are angles, and the Kalman filter turns angles from stations it knows into a position. The drone works it out on board, so any number of drones can use the same stations."
+      },
+      "flow": {
+        "q": "With the Lighthouse deck on, what does the Flow deck still add?",
+        "options": {
+          "1": "A direct height above the floor and fast motion measurements between sweeps",
+          "2": "Nothing: it's only needed to arm",
+          "3": "A second radio"
+        },
+        "why": "Both decks feed the same Kalman filter: Lighthouse gives the position in the room, and the flow camera and range sensor add quick local measurements. A show drone often carries the Lighthouse deck alone, which saves about 2 g; the Flow deck lets a single drone hover with no base stations at all."
+      }
+    },
+    "fly": {
+      "linkloss": {
+        "q": "Mid-show, one drone loses its link halfway through a go_to. What does it do?",
+        "options": {
+          "1": "Lands at once",
+          "2": "Finishes the go_to on board and hovers at its end",
+          "3": "Stops its motors after 2 s"
+        },
+        "why": "The high-level commander runs on the drone and keeps refreshing its own setpoint, so the watchdog never trips: it flies to the end of the leg and holds there. Streamed setpoints are different: 0.5 s without one and it levels, 2 s and the motors stop."
+      },
+      "slots": {
+        "q": "Why does each drone fly the star from its own corner of a 0.6 m square?",
+        "options": {
+          "1": "So the radio can tell them apart",
+          "2": "So the star looks bigger",
+          "3": "So none flies in another one's downwash, or into it"
+        },
+        "why": "A drone under another gets pushed down by its prop wash and wobbles. Each one flies the same star shifted by its slot, so they never share a column of air and the shape stays the same."
+      },
+      "heavy": {
+        "q": "Why is the 450 mAh cell a poor choice for a show drone?",
+        "options": {
+          "1": "Thrust to weight drops to about 1.6:1, so it hovers near full throttle with little left to hold its slot",
+          "2": "It doesn't fit the Molex socket",
+          "3": "The radio range drops"
+        },
+        "why": "The cell adds 5.4 g over the 250 mAh one and the motors make no more thrust. Below about 1.65:1 the controller runs out of room to correct, and drones drift out of formation. Bitcraze doesn't make a 450 mAh pack, and a generic one barely fits between the headers."
+      }
+    }
+  }
+}
