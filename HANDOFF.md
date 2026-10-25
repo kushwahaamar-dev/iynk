@@ -83,7 +83,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-25 03:55 CDT (machine clock).
+- **Updated:** 2026-10-25 04:33 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session). Amar is asleep
   since 22:20 and gave full autonomy for every remaining build phase except Solana and hardware (CONTEXT.md §5) The Mac is kept awake by `caffeinate -dimsu -t 54000` (pid 28721, from 23:08, until about 14:08).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Do not build in
@@ -166,9 +166,11 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
     the production server `.next-final` at http://127.0.0.1:3430 (started by the driver; stop it and delete the
     folder after phase 2), then F-direction writes `docs/design/POLISH-SPEC.md`, F-build-shell, then F-build-boards,
     -robotics, -drones, -panels (dev servers 3441-3445), then F-review. Gate 3 runs after it, on the final UI.
-  - Second figure-string delta, run `wf_f8a79fd5-c38` (`phase3-wave.js`, `P3-figs-delta2-<lang>`), since 03:55, due
-    04:45: the 241 keys each dictionary lacks against `figure-keys.json` at `e6d5edf` (3951 keys), the 7 gone ones
-    dropped, and ON/OFF/POWER translated now that silkscreen never goes through `CF_T`.
+  - Third figure-string delta, run `wf_4259a342-6a9` (`phase3-wave.js`, `P3-figs-delta3-<lang>`), since 04:33, due
+    05:15: the 71 keys the collector now finds once it waits for See-through to finish fading (`5e2f2c9`, 4022 keys:
+    board and module notes, part see-through labels, 'ON LED', 'PLUGGED IN', 'UNPLUGGED'), and 'ON' dropped. The
+    second delta (`wf_f8a79fd5-c38`, 04:22) translated the 241 before it; the driver then gave the ON LED its own key
+    and the HUD its own battery words (`ff67740`) and matched the figure's status words to the UI's (`d6993c8`).
   - Figure sweep, run `wf_7513ba0c-9cb` (`phase3-wave.js`, brief `sweep.md`), 03:06-03:37, **done**: S-engine
     (`9cc83eb` chrome message, `1475355` sheet fit, `bd87219` honest build toast, `b339c53` axe, `520557c` templated
     button labels, `78498dd`, `b6d3efa`), S-figures (`ce835c2`, `8cd13bd`: strings the collector couldn't key). The
