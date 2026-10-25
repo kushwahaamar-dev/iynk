@@ -57,3 +57,12 @@ describe('chrome: the host hides the figure buttons it draws itself', () => {
     expect(shown('power')).toBe(false);
   });
 });
+
+describe('ready', () => {
+  it('gives a button labelled from a template its English label filled in', async () => {
+    page = await uno();
+    await tick();
+    const reset = last('ready').buttons.find((b) => b.id === 'ctl-reset');
+    expect(reset).toMatchObject({ en: 'Press RESET', label: 'Press RESET' });
+  });
+});
