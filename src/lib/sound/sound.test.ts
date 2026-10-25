@@ -84,6 +84,16 @@ describe("the engine", () => {
     expect(ctx.started[0].stopped).toBe(true);
   });
 
+  test("a held tone plays as loud as the figure hears it", () => {
+    const engine = new SoundEngine(fakeContext);
+    engine.tone("part:BZ1", 4000);
+    const gain = latest().gains.at(-1)!;
+    const full = gain.value;
+    engine.tone("part:BZ1", 4000, 0.25);
+    expect(gain.value).toBeCloseTo(full / 4);
+    expect(latest().started).toHaveLength(1);
+  });
+
   test("unlock resumes a suspended context; without Web Audio nothing throws", () => {
     const engine = new SoundEngine(fakeContext);
     engine.unlock();

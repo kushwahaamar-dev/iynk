@@ -8,7 +8,7 @@ import { isHydrating } from "@/lib/realtime";
 import { useSettings } from "@/lib/settings/hooks";
 import { setTelemetryContext, track } from "@/lib/telemetry";
 import { playSound, setTone, silence } from "./index";
-import type { Moment } from "./moments";
+import { heldTones, type HeldTone, type Moment } from "./moments";
 import type { CueSound } from "./sounds";
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -79,24 +79,19 @@ export function useLabMoments<S>(store: LabStore<S>, derive: (prev: S, next: S) 
   }, [store, derive]);
 }
 
-/** Pins a running sketch drives with tone(), as the buzzer pitch to hold. */
-function sketchTones(s: BoardLabState): Map<string, number> {
-  const out = new Map<string, number>();
-  if (s.run.status !== "running") return out;
-  for (const [net, pin] of Object.entries(s.pins)) if (pin.hz && pin.hz > 0) out.set(`pin:${net}`, pin.hz);
-  return out;
-}
-
-/** Plays what a lesson's sketch plays: every tone() pitch, for as long as the pin holds it. */
+/** Plays what a lesson's buzzer plays while the sketch runs (see `heldTones`). */
 export function useSketchTones(store: LabStore<BoardLabState>): void {
   const { sound } = useSettings();
   useEffect(() => {
     if (!sound) return;
-    let playing = new Map<string, number>();
+    let playing = new Map<string, HeldTone>();
     const sync = () => {
-      const next = sketchTones(store.getState());
+      const next = heldTones(store.getState());
       for (const id of playing.keys()) if (!next.has(id)) setTone(id, null);
-      for (const [id, hz] of next) if (playing.get(id) !== hz) setTone(id, hz);
+      for (const [id, tone] of next) {
+        const was = playing.get(id);
+        if (was?.hz !== tone.hz || was.loud !== tone.loud) setTone(id, tone.hz, tone.loud);
+      }
       playing = next;
     };
     sync();

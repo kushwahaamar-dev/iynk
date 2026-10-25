@@ -26,11 +26,11 @@ export function playSound(name: string): void {
   shared()?.play(name as SoundName);
 }
 
-/** Holds a pitch under `id` (a buzzer pin), retunes it, or stops it with null. */
-export function setTone(id: string, hz: number | null): void {
+/** Holds a pitch under `id` (a buzzer), retunes it, or stops it with null; `loud` is 0 to 1. */
+export function setTone(id: string, hz: number | null, loud = 1): void {
   if (hz !== null && !soundOn()) hz = null;
   if (hz === null && !engine) return;
-  shared()?.tone(id, hz);
+  shared()?.tone(id, hz, loud);
 }
 
 /** From the click that turns sound on: lets the browser start audio, then says it's on. */

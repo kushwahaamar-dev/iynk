@@ -6,7 +6,7 @@ import { initialState as droneInitial, reduce as droneReduce, type DroneLabState
 import { fixtureBench as bench } from "@/lib/robotics/__fixtures__/bench";
 import { createBenchStore, type BenchState } from "@/lib/robotics/store";
 import { benchMoments } from "./bench-moments";
-import { boardMoments, droneMoments, type Moment } from "./moments";
+import { boardMoments, droneMoments, heldTones, type Moment } from "./moments";
 
 describe("board moments", () => {
   const lesson = () =>
@@ -38,6 +38,27 @@ describe("board moments", () => {
     expect(
       walk(overview, { type: "assembly/done", id: "usb" }, { type: "fault/trigger", id: "short-5v" }, { type: "fault/clear" }, { type: "view/set", view: "power" }),
     ).toEqual([{ kind: "step", key: null }, { kind: "fault", code: "short-5v" }]);
+  });
+});
+
+describe("held tones", () => {
+  const running = () => {
+    let s = boardInitial({ board: "uno-r3", lesson: "sound", language: "arduino-cpp", template: "void loop() {}\n", params: [], inputs: {}, view: "breadboard" });
+    s = boardReducer(s, { type: "run/start" });
+    s = boardReducer(s, { type: "run/phase", id: s.run.id, status: "running" });
+    return boardReducer(s, { type: "run/tick", id: s.run.id, vt: 5, pins: { D8: { mode: "output", value: 1, pwm: false, hz: 262 } } });
+  };
+  const figure = (s: BoardLabState, state: Record<string, unknown>) => boardReducer(s, { type: "figure/state", state });
+
+  test("a figure that solves its circuit is what sounds, at its loudness", () => {
+    expect([...heldTones(figure(running(), { sound: { part: "BZ1", hz: 262, loud: 0.4, how: "tone" } }))]).toEqual([["part:BZ1", { hz: 262, loud: 0.4 }]]);
+    // The buzzer is on another pin, or in backwards: the figure hears nothing, so nothing plays.
+    expect(heldTones(figure(running(), { sound: null })).size).toBe(0);
+  });
+
+  test("a figure without the solver gets every tone() pitch; a stopped sketch holds none", () => {
+    expect([...heldTones(figure(running(), { status: "running" }))]).toEqual([["pin:D8", { hz: 262, loud: 1 }]]);
+    expect(heldTones(boardReducer(running(), { type: "run/stop" })).size).toBe(0);
   });
 });
 

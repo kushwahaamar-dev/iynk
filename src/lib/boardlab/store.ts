@@ -338,6 +338,13 @@ export function createBoardLabStore(init: BoardLabState): BoardLabStore {
   };
 }
 
+/** The pitches a running sketch's tone() calls hold, by net. */
+export function sketchTones(pins: Record<string, PinSample>): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const [net, pin] of Object.entries(pins)) if (pin.hz && pin.hz > 0) out[net] = pin.hz;
+  return out;
+}
+
 /** The figure state the store implies, sent as FigureFrame's `initial` after every `ready`. */
 export function figureState(s: BoardLabState, opts: { circuit: string | null; failures: FailureMode[] }): Record<string, unknown> {
   const out: Record<string, unknown> = {
@@ -356,6 +363,8 @@ export function figureState(s: BoardLabState, opts: { circuit: string | null; fa
     (params[chip.figure.part] ??= {})[chip.figure.key] = figValue;
   }
   if (Object.keys(params).length) out.params = params;
+  // The figure solves a buzzer from these; {} once the last one stops.
+  out.tones = sketchTones(s.pins);
   const failure = s.fault ? opts.failures.find((f) => f.id === s.fault) : undefined;
   if (failure && failure.figure.type === 'set') Object.assign(out, failure.figure.state);
   else out.fault = null;

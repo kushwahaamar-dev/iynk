@@ -5,7 +5,7 @@
 // robotics runner, which brings the interpreter, and only the bench page has it.
 
 import type { DroneContent } from "@/content/schema";
-import type { BoardLabState } from "@/lib/boardlab/store";
+import { sketchTones, type BoardLabState } from "@/lib/boardlab/store";
 import { buildComplete, testStatus, type TestStatus } from "@/lib/dronelab/bench";
 import { readBench } from "@/lib/dronelab/figure";
 import type { DroneLabState } from "@/lib/dronelab/store";
@@ -29,6 +29,27 @@ export function boardMoments(prev: BoardLabState, next: BoardLabState): Moment[]
   }
   if (next.assembly.length > prev.assembly.length) out.push({ kind: "step", key: null });
   if (next.fault && next.fault !== prev.fault) out.push({ kind: "fault", code: next.fault });
+  return out;
+}
+
+export type HeldTone = { hz: number; loud: number };
+
+/**
+ * The pitches a lesson holds while its sketch runs. A figure that solves its circuit reports
+ * `sound` (null when nothing sounds), and only that plays: a buzzer on the wrong pin, fitted
+ * backwards or missing stays quiet. A figure built before it did gets every tone() pitch.
+ */
+export function heldTones(s: BoardLabState): Map<string, HeldTone> {
+  const out = new Map<string, HeldTone>();
+  if (s.run.status !== "running") return out;
+  if ("sound" in s.figure) {
+    const sound = s.figure.sound as { part?: unknown; hz?: unknown; loud?: unknown } | null;
+    if (sound && typeof sound.hz === "number" && sound.hz > 0) {
+      out.set(`part:${String(sound.part)}`, { hz: sound.hz, loud: typeof sound.loud === "number" ? sound.loud : 1 });
+    }
+    return out;
+  }
+  for (const [net, hz] of Object.entries(sketchTones(s.pins))) out.set(`pin:${net}`, { hz, loud: 1 });
   return out;
 }
 

@@ -31,6 +31,8 @@ export class FakeAudioContext {
   sampleRate = 8000;
   destination = new Node();
   started: Started[] = [];
+  /** Every gain made, in order: the master first, then one per sound or tone. */
+  gains: Param[] = [];
 
   constructor() {
     FakeAudioContext.made.push(this);
@@ -42,7 +44,9 @@ export class FakeAudioContext {
   }
 
   createGain() {
-    return Object.assign(new Node(), { gain: new Param() });
+    const gain = new Param();
+    this.gains.push(gain);
+    return Object.assign(new Node(), { gain });
   }
 
   createBiquadFilter() {

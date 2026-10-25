@@ -1,6 +1,6 @@
 import { makeNoise, schedule, type SoundName } from "./sounds";
 
-type Tone = { osc: OscillatorNode; gain: GainNode; hz: number };
+type Tone = { osc: OscillatorNode; gain: GainNode; hz: number; level: number };
 
 /** The same sound again within this many ms is one sound (a figure can name one twice in a frame). */
 const REPEAT_MS = 40;
@@ -56,8 +56,11 @@ export class SoundEngine {
     return true;
   }
 
-  /** A held pitch, like a buzzer driven by tone(): `hz` starts or retunes it, null stops it. */
-  tone(id: string, hz: number | null): void {
+  /**
+   * A held pitch, like a buzzer driven by tone(): `hz` starts or retunes it, null stops it.
+   * `loud` (0 to 1) scales it, for a buzzer the figure hears quieter off its resonance.
+   */
+  tone(id: string, hz: number | null, loud = 1): void {
     const current = this.tones.get(id);
     if (hz === null || !(hz > 0)) {
       if (current) this.release(id, current);
@@ -66,9 +69,12 @@ export class SoundEngine {
     const ctx = this.context();
     if (!ctx || !this.master) return;
     const pitch = Math.min(Math.max(hz, 20), 20_000);
+    const level = TONE_LEVEL * Math.min(Math.max(loud, 0.05), 1);
     if (current) {
       if (current.hz !== pitch) current.osc.frequency.setValueAtTime(pitch, ctx.currentTime);
+      if (current.level !== level) current.gain.gain.setTargetAtTime(level, ctx.currentTime, 0.01);
       current.hz = pitch;
+      current.level = level;
       return;
     }
     const osc = ctx.createOscillator();
@@ -76,10 +82,10 @@ export class SoundEngine {
     osc.type = "square";
     osc.frequency.value = pitch;
     gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(TONE_LEVEL, ctx.currentTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(level, ctx.currentTime + 0.01);
     osc.connect(gain).connect(this.master);
     osc.start();
-    this.tones.set(id, { osc, gain, hz: pitch });
+    this.tones.set(id, { osc, gain, hz: pitch, level });
   }
 
   private release(id: string, tone: Tone) {

@@ -4,14 +4,18 @@ import common from "../src/i18n/messages/en/common.json";
 import dronelab from "../src/i18n/messages/en/dronelab.json";
 
 // Sound (BUILD-PLAN §3.1): off by default and silent, on from the Sound button, and then the
-// lab's cue, the drone figure's build sounds and a sketch's tone() pitch all reach Web Audio.
+// lab's cue, the drone figure's build sounds and a lesson's buzzer all reach Web Audio.
 
-type Probe = { contexts: number; states: string[]; started: { type: string; hz: number | null }[] };
+type Probe = { contexts: number; started: { type: string; hz: number | null }[]; heard: number[] };
 
-/** Counts what the page asks of Web Audio: contexts made and every source started. */
+/** Counts what the page asks of Web Audio (contexts made, every source started) and what pitch the figure hears. */
 function probeAudio() {
   const w = window as unknown as { __audio: Probe; __ctx?: AudioContext };
-  w.__audio = { contexts: 0, states: [], started: [] };
+  w.__audio = { contexts: 0, started: [], heard: [] };
+  window.addEventListener("message", (e: MessageEvent) => {
+    const sound = e.data?.type === "state" ? e.data.state?.sound : undefined;
+    if (sound && typeof sound.hz === "number") w.__audio.heard.push(sound.hz);
+  });
   const Real = window.AudioContext;
   window.AudioContext = class extends Real {
     constructor(options?: AudioContextOptions) {
@@ -91,7 +95,9 @@ test("a lesson's tone() melody plays its pitches once sound is on", async ({ pag
 
   await main(page).getByTestId("run-button").click();
   await expect(main(page).getByTestId("serial-status")).toHaveText(boardlab.serial.status.running, { timeout: 15_000 });
-  // The scale starts on C4 (262 Hz) and climbs: the buzzer's square wave holds each note.
+  // The page sends the sketch's tones; the figure solves its buzzer from them and hears C4 first.
+  await expect.poll(async () => (await audio(page)).heard, { timeout: 15_000 }).toContain(262);
+  // What the figure hears is what plays: the buzzer's square wave holds each note.
   await expect
     .poll(async () => (await audio(page)).started.filter((s) => s.type === "square").map((s) => Math.round(s.hz ?? 0)), { timeout: 15_000 })
     .toEqual(expect.arrayContaining([262]));

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { ParamChip } from '@/content/schema';
-import { figurePatch, initialState, reducer, type BoardLabState } from './store';
+import { figurePatch, figureState, initialState, reducer, type BoardLabState } from './store';
 
 const PARAMS: ParamChip[] = [
   { id: 'ms', kind: 'number', label: 'p.ms', default: 1000, min: 50, max: 5000, step: 50, unit: 'ms' },
@@ -53,6 +53,17 @@ describe('figurePatch', () => {
   it('sends only what changed', () => {
     expect(figurePatch({ view: 'board', power: 'usb', fault: null }, { view: 'schematic', power: 'usb', fault: null })).toEqual({ view: 'schematic' });
     expect(figurePatch({ params: { R1: { ohms: 220 } } }, { params: { R1: { ohms: 220 } } })).toEqual({});
+  });
+
+  it("sends the sketch's tone() pitches by net, and {} once they stop", () => {
+    const opts = { circuit: 'sound', failures: [] };
+    let s = reducer(fresh(), { type: 'run/start' });
+    s = reducer(s, { type: 'run/phase', id: s.run.id, status: 'running' });
+    const quiet = figureState(s, opts);
+    s = reducer(s, { type: 'run/tick', id: s.run.id, vt: 10, pins: { D8: { mode: 'output', value: 1, pwm: false, hz: 262 }, D13: { mode: 'output', value: 1, pwm: false } } });
+    const playing = figureState(s, opts);
+    expect(figurePatch(quiet, playing)).toEqual({ tones: { D8: 262 } });
+    expect(figurePatch(playing, figureState(reducer(s, { type: 'run/stop' }), opts))).toEqual({ tones: {} });
   });
 
   it('sends a fault with the power it needs, even when the power did not change', () => {
