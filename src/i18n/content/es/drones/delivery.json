@@ -1,0 +1,410 @@
+{
+  "title": "Quad de reparto autónomo",
+  "tagline": "Un quad de carga pesada de 690 mm con dos ordenadores: ArduPilot lo vuela, una Raspberry Pi planifica la entrega y un cabrestante baja el paquete con una cuerda.",
+  "sub": "ArduCopter + Pixhawk 6C + Raspberry Pi 5",
+  "hint": "Monta un dron de reparto, prueba su cabrestante y sus failsafes, y luego lleva un paquete a un jardín trasero",
+  "noun": "dron de reparto",
+  "overview": "Dos ordenadores comparten este aparato. El Pixhawk 6C ejecuta ArduCopter: el lazo de actitud, el estimador EKF3, la navegación por GPS, la misión y todos los failsafes. La Raspberry Pi 5 se encarga de pensar despacio: la lógica de la entrega (un script de MAVSDK), convertir la imagen de la cámara de profundidad en distancias a obstáculos para el Pixhawk y un enlace 4G con la estación de tierra. Hablan MAVLink2 por un solo cable serie a 921600 baudios. En una entrega despega del almacén, sube por encima de los tejados y del tendido eléctrico, vuela hasta la dirección, baja hasta quedarse en estacionario a 3,5 m de altura, baja el paquete hasta el suelo con el cabrestante y lo suelta, recoge la cuerda y vuelve a casa. Bajarlo con una cuerda mantiene las hélices de 15 pulgadas, que cortan hasta el hueso, lejos de las personas, las mascotas y las vallas; Wing, Flytrex y Manna reparten de la misma forma. Elige las piezas y mira los números, móntalo, haz las comprobaciones en el banco y luego vuela la entrega a mano o deja que la vuele AUTO.",
+  "practice": "Vuela primero la entrega en Loiter: sube a 12 m sobre la plataforma, vuela hasta el jardín, baja despacio hasta 3,5 m sobre el disco rojo de entrega, vuelve a subir y tráelo a casa a aterrizar. Pesa mucho: sube a 1,5 m/s y no se inclina más de 30°, así que planifica con antelación. Prueba AltHold para notar cómo el viento empuja un dron de 5 kg, y luego deja que AUTO vuele la misión entera y mira cómo se mantiene sobre el jardín mientras baja el paquete. En un montaje real: smoke stopper en la primera conexión, prueba de motores sin hélices (A delante a la derecha, y luego en sentido horario), calibración del acelerómetro y de la brújula, fix del GPS al aire libre, la prueba del cabrestante, las dos pruebas de failsafe sin hélices, y lee todos los mensajes PreArm antes del primer vuelo.",
+  "design": {
+    "fixed": {
+      "FRAME": "Chasis plegable de carbono de 690 mm y patines de aterrizaje",
+      "ESC": "4 ESC de 40 A (DShot)",
+      "FC": "Controladora de vuelo Pixhawk 6C",
+      "COMP": "Raspberry Pi 5 de 8 GB con ventilador activo",
+      "DEPTH": "Cámara de profundidad estéreo (de la clase RealSense D435i)",
+      "GPS": "GPS M10 + brújula en un mástil",
+      "LTE": "Módem USB 4G/LTE y antenas",
+      "RX": "Receptor ExpressLRS de respaldo",
+      "TEL": "Radio de telemetría SiK",
+      "XT60": "Placa de alimentación: XT90-S, módulo de alimentación, condensador y BEC",
+      "TOP": "Placa superior, separadores y correas de la batería",
+      "CARGO": "Cabrestante de servo, gancho de liberación y jaula de carga",
+      "PARCEL": "El paquete (1 kg)"
+    },
+    "verdict": {
+      "over": "{kv} KV en {cells}S hace girar las hélices de 15 pulgadas demasiado rápido: los motores se recalientan y los ESC pierden la sincronización. Las hélices grandes quieren bajo KV, de 300 a 450 KV en 6S.",
+      "weak": "Empuje/peso de {tw}:1 con el paquete de 1 kg. Por debajo de unos 1,6:1, un dron de carga pesada no puede salir de una ráfaga ni aguantar una batería que cae, y por debajo de 1:1 no despega del suelo.",
+      "ok": "Las piezas encajan: {tw}:1 con el paquete a bordo, suficiente para salir de una ráfaga y aterrizar con una batería cansada. El gas de estacionario de la calculadora es pesimista para hélices grandes: en este montaje ArduPilot aprende un estacionario cerca del 50 % (MOT_THST_HOVER), y la corriente real a tope está más cerca de 75 A que de la cifra de la calculadora."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Chasis plegable de carbono de 690 mm",
+      "what": "Un núcleo de carbono con cuatro brazos de tubo de carbono de 25 mm que se pliegan hacia atrás para transportarlo, y dos patines de aterrizaje que mantienen el núcleo a 21 cm del suelo para que la jaula de carga quepa debajo. Cada brazo se bloquea con un cierre en su bisagra: un brazo que no ha encajado del todo se pliega con el empuje al despegar y el dron vuelca."
+    },
+    "MOTORS": {
+      "name": "4 motores 4114 de 400 KV",
+      "what": "Motores de rotor exterior grandes y de bajo KV: 400 rpm por voltio, así que unas 8900 rpm sin carga con una batería 6S de 22,2 V, la velocidad adecuada para hélices de 15 pulgadas. Con hélices de carbono de 15 pulgadas, cada uno da unos 2,6 kg a tope y unos 1,3 kg a medio gas con 6 A, y por eso aguanta 20 minutos en estacionario con un paquete."
+    },
+    "ESC": {
+      "name": "4 ESC de 40 A en los brazos",
+      "what": "Un ESC por motor, a media altura de cada brazo, donde el aire de la hélice lo refrigera y los cables del motor quedan cortos. Cada uno toma la batería directamente de la placa de alimentación y una señal DShot600 del Pixhawk. A tope un motor consume unos 19 A, así que 40 A dejan mucho margen."
+    },
+    "WIRES": {
+      "name": "Cables de fase de los motores y cables de alimentación de los ESC",
+      "what": "Tres cables de fase de cada ESC a su motor (intercambia dos cualesquiera y el motor gira al revés), y un cable rojo y otro negro desde los pads de la placa de alimentación a lo largo del brazo hasta cada ESC. En un dron 6S de este tamaño, los cables principales son de 10 a 12 AWG."
+    },
+    "XT60": {
+      "name": "Placa de alimentación, módulo de alimentación y condensador",
+      "what": "El cable de batería (con un conector antichispa XT90-S: una batería 6S de 10 Ah es demasiado para un XT60), un módulo de alimentación que mide la tensión y la corriente para el Pixhawk en POWER1, un condensador de baja ESR de 1000 µF sobre los pads de batería (franja hacia el negativo) para absorber los picos de tensión, y dos BEC: 5 V 5 A para la Pi y 6 V para el servo del cabrestante."
+    },
+    "FC": {
+      "name": "Controladora de vuelo Pixhawk 6C",
+      "what": "Un STM32H743 que ejecuta ArduCopter, con dos IMU (un ICM-42688-P y un BMI055 o BMI088), un barómetro y 16 salidas. Va sobre una placa antivibración en el centro del núcleo, con la flecha hacia el morro. Vuela el dron por su cuenta: la Pi solo le pide cosas."
+    },
+    "RX": {
+      "name": "Receptor ExpressLRS de respaldo",
+      "what": "Una persona siempre tiene que poder tomar el control. El receptor ELRS en el TELEM3 trae la emisora del piloto de seguridad: cambia a Loiter y las palancas lo vuelan, hiciera lo que hiciera la misión. Si se cae el enlace de radio, el failsafe de RC hace RTL."
+    },
+    "TEL": {
+      "name": "Radio de telemetría SiK",
+      "what": "Una pareja de radios serie de largo alcance: una en el TELEM1 y otra en el USB de la estación de tierra, MAVLink2 a 57600 baudios a lo largo de unos pocos kilómetros. Elige la banda de tu país: 915 MHz en EE. UU., 433 MHz en Europa."
+    },
+    "DEPTH": {
+      "name": "Cámara de profundidad estéreo",
+      "what": "Una cámara de la clase RealSense D435i en el morro: dos cámaras infrarrojas miden a qué distancia está todo lo que hay delante, en unos 87°. La Pi convierte cada imagen de profundidad en hasta 72 distancias a obstáculos y las envía al Pixhawk diez veces por segundo. Solo mira hacia delante: no ve nada de lo que hay al lado, detrás o debajo del dron."
+    },
+    "TOP": {
+      "name": "Placa superior y correas de la batería",
+      "what": "Una placa de carbono sobre separadores de 40 mm por encima del Pixhawk. Lleva la Pi, el módem LTE, el mástil del GPS y la batería, y protege de la intemperie el cableado de potencia y la controladora de vuelo."
+    },
+    "COMP": {
+      "name": "Ordenador de a bordo Raspberry Pi 5",
+      "what": "El segundo ordenador: ejecuta el script de la entrega (MAVSDK), el procesado de la cámara de profundidad y mavlink-router, que reparte su único enlace MAVLink con el Pixhawk entre los programas locales y la estación de tierra por 4G. Tres cables al TELEM2 (TX, RX y tierra; los dos lados son de 3,3 V). Se alimenta con su propio BEC de 5 V 5 A, nunca desde el puerto TELEM del Pixhawk."
+    },
+    "LTE": {
+      "name": "Módem 4G/LTE",
+      "what": "Un módem USB en la Pi con dos antenas. Lleva MAVLink hasta una estación de tierra en cualquier sitio con cobertura móvil, por una VPN porque las redes móviles no aceptan conexiones entrantes. Volar con él más allá de la línea de vista necesita permiso de la autoridad de aviación."
+    },
+    "GPS": {
+      "name": "GPS M10 + brújula en un mástil",
+      "what": "Un receptor u-blox M10 con su brújula, a 13 cm sobre la placa superior en un mástil de carbono, lo más lejos que puede estar de los 20 a 75 A de los cables de potencia, que falsearían la lectura de la brújula. Su flecha apunta al morro. Su LED parpadea en azul sin fix y en verde con un fix 3D."
+    },
+    "CARGO": {
+      "name": "Cabrestante, gancho de liberación y jaula de carga",
+      "what": "Un servo de rotación continua hace girar un tambor bajo el núcleo: su PWM fija lo rápido que sale o entra la cuerda. El paquete de 1 kg va en una jaula con el fondo abierto, cuelga de un gancho que se abre cuando la cuerda se afloja en el suelo, y baja con la cuerda mientras el dron se mantiene en estacionario a 3,5 m de altura. El cabrestante no tiene encoder: ArduPilot estima la longitud de la cuerda a partir de la velocidad que ha pedido."
+    },
+    "BATT": {
+      "name": "LiPo 6S de 10000 mAh",
+      "what": "22,2 V nominales, 25,2 V cargada, unos 1,35 kg, sujeta con correas a la placa superior sobre el centro de gravedad. Da unos 20 minutos de estacionario con el paquete y de 15 a 17 minutos de vuelo de reparto, y los failsafes guardan un 30 % para el viaje de vuelta."
+    },
+    "PROPS": {
+      "name": "Hélices de carbono de 15 pulgadas",
+      "what": "Hélices bipala de carbono de 15 × 5,5 pulgadas: antihorarias en M1 y M2, horarias en M3 y M4. El carbono es rígido, eficiente y afilado: una hélice de 15 pulgadas a 6000 rpm corta hasta el hueso, y por eso el paquete baja con una cuerda en lugar de aterrizar el dron en un jardín."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Despliega el chasis",
+      "body": "Pon el chasis de pie sobre sus patines y despliega los cuatro brazos hasta que encaje cada cierre. Revisa todos los cierres: un brazo que no está bloqueado se pliega con el empuje."
+    },
+    "motors": {
+      "title": "Monta los cuatro motores",
+      "body": "Un motor 4114 en el extremo de cada brazo, con cuatro tornillos en el soporte de 52 mm. ArduPilot los numera M1 delante a la derecha, M2 detrás a la izquierda, M3 delante a la izquierda y M4 detrás a la derecha.",
+      "refusal": "Los motores se atornillan a los extremos de los brazos: primero despliega el chasis."
+    },
+    "esc": {
+      "title": "Coloca los ESC en los brazos",
+      "body": "Sujeta con una brida un ESC de 40 A a media altura de cada brazo, debajo de la hélice, para que el aire de la hélice lo refrigere.",
+      "refusal": "Los ESC van en los brazos: primero despliega el chasis."
+    },
+    "wires": {
+      "title": "Conecta los motores y la alimentación de los ESC",
+      "body": "Suelda los tres cables de fase de cada motor a su ESC, y lleva los cables rojo y negro de los ESC a lo largo de los brazos hasta el núcleo.",
+      "refusal": "Este cableado une los motores con los ESC: primero coloca las dos cosas."
+    },
+    "power": {
+      "title": "Coloca la placa de alimentación",
+      "body": "Monta la placa de alimentación en el núcleo: el cable de batería con su XT90-S saliendo por detrás, el módulo de alimentación, los dos BEC y el condensador de 1000 µF sobre los pads de batería con la franja hacia el negativo.",
+      "refusal": "Los cables de los ESC terminan en la placa de alimentación: primero coloca los ESC."
+    },
+    "fc": {
+      "title": "Monta el Pixhawk 6C",
+      "body": "Pega el Pixhawk sobre su placa antivibración en el centro del núcleo, con la flecha hacia el morro. Conecta el módulo de alimentación al POWER1 y los cuatro cables de señal de los ESC a AUX 1 a 4.",
+      "refusal": "El Pixhawk se alimenta de la placa de alimentación: primero coloca la placa de alimentación."
+    },
+    "rx": {
+      "title": "Coloca el receptor de respaldo",
+      "body": "Monta el receptor ELRS a la derecha del núcleo, con la antena saliendo más allá del brazo, y conéctalo al TELEM3.",
+      "refusal": "El receptor se conecta al Pixhawk: primero coloca el Pixhawk."
+    },
+    "tel": {
+      "title": "Coloca la radio de telemetría",
+      "body": "Monta la radio SiK a la izquierda del núcleo, con la antena inclinada hacia arriba y hacia fuera, y conéctala al TELEM1.",
+      "refusal": "La radio de telemetría se conecta al Pixhawk: primero coloca el Pixhawk."
+    },
+    "depth": {
+      "title": "Monta la cámara de profundidad",
+      "body": "Atornilla la cámara de profundidad al morro del núcleo, nivelada y mirando recto hacia delante: el soporte de cámaras de profundidad de ArduPilot espera que mire hacia delante.",
+      "refusal": "La cámara de profundidad se atornilla al núcleo: primero despliega el chasis."
+    },
+    "top": {
+      "title": "Cierra con la placa superior",
+      "body": "Atornilla la placa superior a sus cuatro separadores de 40 mm sobre el Pixhawk, el receptor y la radio, con las correas de la batería ya pasadas.",
+      "refusal": "La placa superior tapa el Pixhawk, el receptor y la radio de telemetría: primero coloca los tres."
+    },
+    "comp": {
+      "title": "Coloca la Raspberry Pi 5",
+      "body": "Monta la Pi en la placa superior. Conecta su UART al TELEM2: TX de la Pi a RX del Pixhawk, RX de la Pi a TX del Pixhawk, tierra con tierra, y deja sin conectar el pin de 5 V del TELEM. Aliméntala desde el BEC de 5 V 5 A y conecta la cámara de profundidad a un puerto USB 3 azul.",
+      "refusal": "La Pi va en la placa superior: primero coloca la placa superior."
+    },
+    "lte": {
+      "title": "Añade el módem LTE",
+      "body": "Conecta el módem 4G a uno de los puertos USB de la Pi y pon sus dos antenas de pie, lejos del mástil del GPS.",
+      "refusal": "El módem se conecta a la Pi: primero coloca la Pi."
+    },
+    "gps": {
+      "title": "Levanta el mástil del GPS",
+      "body": "Despliega el mástil del GPS en la parte trasera de la placa superior, con la flecha del disco hacia el morro, y conecta su cable de 10 pines al GPS1.",
+      "refusal": "El mástil del GPS va en la placa superior: primero coloca la placa superior."
+    },
+    "cargo": {
+      "title": "Cuelga el cabrestante y la jaula de carga",
+      "body": "Atornilla el cabrestante y su jaula bajo el núcleo, conecta el servo del cabrestante a AUX 5, pasa la cuerda y engancha el paquete en el gancho de liberación.",
+      "refusal": "El cabrestante cuelga del núcleo: primero despliega el chasis."
+    },
+    "batt": {
+      "title": "Sujeta la batería",
+      "body": "Sujeta la batería 6S con las correas a lo largo de la placa superior, sobre el centro del dron. Déjala desconectada hasta las comprobaciones en el banco.",
+      "refusal": "La batería se sujeta a la placa superior y se conecta a la placa de alimentación: primero coloca las dos cosas."
+    },
+    "props": {
+      "title": "Coloca las hélices, lo último de todo",
+      "body": "Hélices antihorarias en M1 y M2, hélices horarias en M3 y M4. Hazlo solo después de la prueba de motores, con la batería desconectada.",
+      "refusal": "Las hélices van en los motores, y solo cuando ya está puesta la placa superior: primero coloca las dos cosas."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "El conector XT90-S de la batería 6S se conecta al cable de la placa de alimentación. El conector antichispa evita que el pico de corriente de arranque del condensador grande pique los contactos.",
+    "XT60-ESC": "La tensión de la batería va de los pads de la placa de alimentación a cada ESC, con un cable rojo y otro negro a lo largo de cada brazo.",
+    "ESC-MOTORS": "Tres cables de fase por motor. El orden de los tres fija el sentido de giro.",
+    "XT60-FC": "El cable de 6 pines del módulo de alimentación al POWER1: una alimentación limpia de 5 V para el Pixhawk, más las lecturas de tensión y corriente que necesitan los failsafes de batería.",
+    "XT60-COMP": "5 V de un BEC de 5 A a la tira de pines de la Pi (pin 2 o 4, y tierra en el pin 6). La Pi 5, con una cámara de profundidad y un módem en sus USB, los necesita; el puerto TELEM del Pixhawk no puede darlos.",
+    "COMP-FC": "MAVLink2 a 921600 baudios en el TELEM2: tres cables, TX a RX, RX a TX y tierra. Los dos lados son de 3,3 V, así que no hace falta adaptador de niveles, y el pin de 5 V se queda sin conectar.",
+    "TEL-FC": "La radio SiK en el TELEM1: MAVLink2 a 57600 baudios con la estación de tierra.",
+    "RX-FC": "El receptor ELRS en el TELEM3: CRSF necesita un UART completo, así que va en un puerto TELEM, no en el pin RCIN.",
+    "GPS-FC": "Un solo cable de 10 pines al GPS1: los datos serie del GPS, la brújula por I²C, las líneas del LED, del zumbador y del interruptor de seguridad, y 5 V.",
+    "FC-ESC": "DShot600 en AUX 1 a 4 (SERVO9 a 12 configurados como Motor1 a Motor4). Las salidas FMU propias del Pixhawk hacen DShot sin ningún ajuste extra.",
+    "FC-CARGO": "El servo del cabrestante en AUX 5 (SERVO13, Winch), alimentado desde el BEC de 6 V en la línea de servos: un servo grande en los 5 V propios del Pixhawk podría provocarle una caída de tensión.",
+    "DEPTH-COMP": "La cámara de profundidad en un puerto USB 3 de la Pi: las imágenes de profundidad que el procesado de evitación convierte en distancias a obstáculos.",
+    "LTE-COMP": "El módem 4G en un puerto USB de la Pi, que lleva MAVLink hasta la estación de tierra."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Prueba del smoke stopper",
+      "pass": "La lámpara solo ha parpadeado: no hay cortocircuito entre positivo y negativo. En un dron 6S usa un smoke stopper preparado para 6S, y quítalo antes de armar: los motores no pueden tirar de la corriente de vuelo a través de él.",
+      "fail": "La lámpara se ha quedado encendida: hay algo en cortocircuito. Aquí el condensador está al revés; dale la vuelta (franja hacia el negativo) y repite la prueba."
+    },
+    "motors": {
+      "title": "Prueba de motores (sin hélices)",
+      "pass": "La prueba de motores de Mission Planner los ha hecho girar de A a D, desde delante a la derecha y en sentido horario: A es M1, B es M4, C es M2 y D es M3. M1 y M2 en antihorario, M3 y M4 en horario. Ya puedes poner las hélices.",
+      "fail": "Un motor ha girado al revés o en la esquina equivocada. Intercambia dos de sus cables de fase (o inviértelo en el ESC) y comprueba el orden de los cables AUX: con las hélices puestas volcaría al despegar."
+    },
+    "calibrate": {
+      "title": "Calibración del acelerómetro",
+      "pass": "Calibrado en las seis posiciones (nivelado, sobre cada lado, morro abajo, morro arriba, boca abajo), y luego Calibrate Level sobre los patines. Ha desaparecido el bloqueo previo al armado \"3D Accel calibration needed\".",
+      "fail": "Primero coloca el Pixhawk. Si su flecha apunta hacia atrás, dale la vuelta o pon AHRS_ORIENTATION a 4 (Yaw180), reinicia y vuelve a calibrar."
+    },
+    "compass": {
+      "title": "Calibración de la brújula",
+      "pass": "La calibración a bordo ha tomado muestras de todos los lados, ha guardado los offsets y ha pedido un reinicio. Con la flecha del disco hacia delante, la brújula y el GPS coinciden y Loiter se queda quieto en lugar de dar vueltas.",
+      "fail": "Coloca el Pixhawk y el mástil del GPS, y quita las hélices: vas a girar el dron en tus manos (en un dron tan grande, Large Vehicle MagCal lo hace en su lugar a partir de un rumbo conocido). Si vuelves a colocar el disco, hay que calibrar otra vez."
+    },
+    "gps": {
+      "title": "Fix del GPS",
+      "pass": "Fix 3D con 18 satélites y HDOP 0,7: EKF3 está usando el GPS, el LED parpadea en verde y se permiten Loiter, RTL y AUTO.",
+      "fail": "Coloca el Pixhawk y el mástil del GPS, y conecta la batería: el GPS necesita alimentación y cielo despejado. Sin un fix 3D, el chequeo previo al armado dice \"GPS 1: Bad fix\" y AUTO no arranca."
+    },
+    "winch": {
+      "title": "Prueba del cabrestante",
+      "pass": "Un DO_WINCH desde la estación de tierra ha soltado 3 cm, ha esperado y lo ha recogido, en el sentido correcto. La longitud es solo una estimación a partir de la velocidad pedida, así que vuelve a ponerla a cero cada vez que la cuerda esté recogida del todo.",
+      "fail": "Coloca el Pixhawk y el cabrestante, y conecta la batería: el servo del cabrestante funciona con el BEC de 6 V de la línea de servos. Un cabrestante que recoge al revés enrollaría el gancho dentro del tambor."
+    },
+    "failsafe": {
+      "title": "Failsafe de radio (sin hélices)",
+      "pass": "Armado en el banco y con la emisora apagada: en el suelo desarma al momento. En el aire, FS_THR_ENABLE 1 haría RTL, y FS_GCS_ENABLE 1 hace lo mismo si la telemetría y el 4G se quedan los dos en silencio durante 5 s.",
+      "fail": "Quita las hélices, coloca el Pixhawk, el receptor y la radio de telemetría, y conecta la batería. Un dron sin failsafe sigue haciendo lo último que le dijeron, lo lleve adonde lo lleve."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Chasis, salidas de los motores y alimentación",
+      "explain": "En ArduCopter 4.7.2 se fijan parámetros, no comandos: en MAVProxy cada param set se guarda al momento. Chasis Quad X, los cuatro motores en AUX 1 a 4 con DShot600 (AUX 5 y 6 son otro grupo de temporizadores, así que el cabrestante en AUX 5 puede seguir en PWM), linealización del empuje para hélices de 15 pulgadas, las tensiones de la batería 6S cargada y vacía, un filtro del giroscopio más bajo para hélices grandes y lentas, y el módulo de alimentación como monitor de batería analógico."
+    },
+    "links": {
+      "title": "Puertos de la radio, del ordenador de a bordo y del GPS",
+      "explain": "Cada puerto serie recibe un protocolo. El TELEM1 es MAVLink2 con la radio SiK a 57600, el TELEM2 es MAVLink2 con la Pi a 921600 (el enlace rápido que necesitan los datos de profundidad), el TELEM3 (SERIAL5) es RCIN para el receptor ELRS a 420 kbaudios, y el GPS1 es el GPS."
+    },
+    "winch": {
+      "title": "El cabrestante en AUX 5",
+      "explain": "Un cabrestante PWM es un servo de rotación continua: el ancho del pulso fija la velocidad de la cuerda. ArduPilot lo mueve hasta WINCH_RATE_MAX y calcula la longitud de la cuerda sumando la velocidad que ha pedido, así que la longitud se desvía. El DO_WINCH de la misión pide una longitud; RC8_OPTION 45 pone el cabrestante en un mando para el piloto de seguridad."
+    },
+    "avoid": {
+      "title": "Evitación de obstáculos con la cámara de profundidad",
+      "explain": "La Pi envía las distancias a obstáculos de la cámara de profundidad como un sensor de proximidad MAVLink (PRX1_TYPE 2). En Loiter, la evitación simple se para a 1,5 m de cualquier cosa que haya delante (AVOID_*); en AUTO, BendyRuler (OA_TYPE 1) desvía la ruta alrededor de los obstáculos que ha visto. La cámara solo mira hacia delante, así que no puede ver un cable al lado ni un árbol detrás."
+    },
+    "failsafe": {
+      "title": "Failsafes y geovalla",
+      "explain": "Radio perdida: RTL. Estación de tierra perdida durante 5 s (tanto la SiK como el enlace 4G): RTL. Batería baja (3,5 V por celda o quedan 3000 mAh, una reserva del 30 %): RTL. Crítica (3,3 V por celda): aterriza donde esté. Una batería por debajo de 23,4 V no arma. La geovalla lo limita a 30 m de altura y 300 m de casa. ARMING_SKIPCHK 0 hace todos los chequeos previos al armado: la 4.7 sustituyó ARMING_CHECK, que listaba los chequeos que hacer, por una lista de chequeos que saltarse."
+    },
+    "stabilize": {
+      "title": "Stabilize",
+      "explain": "El dron se nivela solo y la palanca del gas mueve los motores directamente, así que el piloto mantiene la altura. No necesita GPS ni barómetro, y eso lo convierte en el último recurso del piloto de seguridad. ATC_ANGLE_MAX limita la inclinación en todos los modos, en grados desde la 4.7."
+    },
+    "althold": {
+      "title": "AltHold",
+      "explain": "El barómetro mantiene la altura; la palanca del gas pide subir o bajar, hasta PILOT_SPD_UP. Con 5 kg a bordo, 1,5 m/s es de sobra. Nada mantiene la posición, así que el viento lo arrastra."
+    },
+    "loiter": {
+      "title": "Loiter",
+      "explain": "El GPS y la brújula mantienen también la posición: si sueltas, frena y se para. LOIT_SPEED_MS limita la velocidad y LOIT_ACC_MAX_M la aceleración, baja para que un paquete colgado de la cuerda no empiece a balancearse. La 4.7 pasó estos parámetros a unidades del SI: LOIT_SPEED 500 (cm/s) ahora es LOIT_SPEED_MS 5."
+    },
+    "rtl": {
+      "title": "Vuelta al punto de despegue",
+      "explain": "Sube hasta RTL_ALT_M (o se queda más alto), vuelve a casa a RTL_SPEED_MS, se queda en estacionario sobre casa durante RTL_LOIT_TIME y aterriza a LAND_SPD_MS. Aquí 12 m pasan por encima de los tejados de 7 m y del tendido eléctrico de 9 m. RTL funciona desde cualquier modo una vez que tiene posición y casa, pero no es un modo en el que se pueda armar: arma en Loiter, despega y luego cambia."
+    },
+    "auto": {
+      "title": "AUTO: la entrega",
+      "explain": "La Pi carga la misión: despega hasta 12 m, vuela hasta el jardín, baja a 3,5 m, DO_WINCH suelta 3,4 m de cuerda mientras un loiter de 4 s mantiene quieto el dron, el gancho se abre en el suelo, DO_WINCH recoge la cuerda durante un segundo loiter, y luego RTL. Los comandos DO no mantienen el dron en su sitio, así que son los loiters los que lo sujetan mientras se mueve la cuerda. Arma en Loiter y luego cambia a AUTO."
+    }
+  },
+  "flight": {
+    "modes": {
+      "loiter": {
+        "title": "Loiter",
+        "hint": "Mantener posición por GPS: las palancas fijan una velocidad de hasta 5 m/s, y el dron se para cuando sueltas."
+      },
+      "althold": {
+        "title": "AltHold",
+        "hint": "El barómetro mantiene la altura, pero nada mantiene la posición: un dron de 5 kg también se deja llevar por el viento."
+      },
+      "stabilize": {
+        "title": "Stabilize",
+        "hint": "Autonivelado con un límite de inclinación de 30°; el gas es cosa tuya, así que la altura la mantienes tú."
+      },
+      "rtl": {
+        "title": "RTL",
+        "hint": "Sube a 12 m, vuelve a casa y aterriza solo en la plataforma."
+      },
+      "auto": {
+        "title": "Entrega en AUTO",
+        "hint": "Vuela la entrega por su cuenta: hasta el jardín a 12 m, baja a 3,5 m, 8 s con el cabrestante, y luego vuelve a casa a aterrizar."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Radio del piloto de seguridad perdida: RTL, subiendo a 12 m para volver a casa.",
+      "gcs-loss": "Ningún latido de la estación de tierra durante 5 s, ni por la SiK ni por 4G: RTL.",
+      "low-battery": "Por debajo de 21,0 V o con 3000 mAh restantes: RTL, con una reserva del 30 % para el viaje de vuelta.",
+      "battery-critical": "Por debajo de 19,8 V o de 1500 mAh: aterriza donde está en lugar de arriesgarse a volver a casa.",
+      "ekf": "El estimador deja de fiarse de su posición (un fallo del GPS entre casas, una brújula perturbada): aterriza.",
+      "fence": "Por encima de 30 m o a más de 300 m de casa: RTL."
+    },
+    "controls": "Teclado: Espacio arma y desarma, W y S suben y bajan, las flechas lo mueven hacia delante, hacia atrás y hacia los lados, A y D guiñada, V cambia a la vista de la cámara de profundidad, R vuelve a poner el dron en la plataforma. En Loiter se para cuando sueltas. En un móvil, la palanca izquierda es acelerador y guiñada, y la derecha es cabeceo y alabeo. Un mando funciona en Modo 2."
+  },
+  "courses": {
+    "delivery": {
+      "title": "Entrega en el jardín trasero",
+      "brief": "Despega del almacén, sube a 12 m por encima de los tejados y del tendido eléctrico, vuela hasta el jardín trasero, baja a 3,5 m sobre el disco rojo para el paquete, vuelve a subir y aterriza otra vez en la plataforma. Vuélalo tú en Loiter contra los tiempos par, o cambia a AUTO y mira cómo vuela la misión.",
+      "goals": {
+        "1": "DESPEGUE: sube a 12 m sobre la plataforma",
+        "2": "CRUCERO: hasta el jardín a 12 m",
+        "3": "ENTREGA: estacionario a 3,5 m sobre el disco rojo",
+        "4": "SUBIDA: vuelve a 12 m",
+        "5": "CASA: sobre el almacén a 12 m",
+        "6": "ATERRIZAJE: en la plataforma"
+      }
+    }
+  },
+  "quizzes": {
+    "power": {
+      "module": {
+        "q": "¿Por qué necesita este dron un módulo de alimentación en POWER1?",
+        "options": {
+          "1": "Para cargar la batería entre entregas",
+          "2": "Para que el Pixhawk sepa la tensión y la corriente consumida, que necesitan los failsafes de batería",
+          "3": "Para mover el cabrestante"
+        },
+        "why": "Sin él, ArduPilot no puede saber cuánta carga queda, así que el RTL por batería baja nunca salta. El módulo de alimentación también da al Pixhawk su propia alimentación limpia de 5 V."
+      },
+      "bec": {
+        "q": "¿De dónde saca la alimentación la Raspberry Pi 5?",
+        "options": {
+          "1": "Del puerto TELEM2 del Pixhawk",
+          "2": "De una batería externa USB",
+          "3": "De su propio BEC de 5 V 5 A en la placa de alimentación"
+        },
+        "why": "Una Pi 5 con una cámara de profundidad y un módem en sus USB consume mucho más de lo que debería dar el pin de 5 V de un puerto TELEM, y una alimentación que cae la reiniciaría en mitad de una entrega. Tiene su propio BEC; el cable TELEM solo lleva TX, RX y tierra."
+      }
+    },
+    "comp": {
+      "split": {
+        "q": "¿Qué ordenador mantiene el dron en el aire?",
+        "options": {
+          "1": "El Pixhawk: ejecuta el lazo de actitud, el estimador y los failsafes, haga lo que haga la Pi",
+          "2": "La Raspberry Pi: es el ordenador más rápido",
+          "3": "Los dos se reparten el trabajo a partes iguales"
+        },
+        "why": "El Pixhawk hace el vuelo en tiempo real. La Pi solo pide cosas por MAVLink (una misión, una velocidad, una lista de obstáculos); si se cuelga, el Pixhawk sigue y el failsafe de la estación de tierra trae el dron a casa."
+      },
+      "uart": {
+        "q": "¿Cómo se conecta el puerto serie de la Pi al TELEM2?",
+        "options": {
+          "1": "TX a TX y RX a RX, con 5 V",
+          "2": "A través de un adaptador de niveles de 5 V",
+          "3": "TX de la Pi a RX del Pixhawk, RX de la Pi a TX del Pixhawk, y tierra"
+        },
+        "why": "Un enlace serie se cruza: lo que envía un lado, lo recibe el otro. Las dos placas usan lógica de 3,3 V, así que no hace falta adaptador de niveles, y el pin de 5 V del TELEM se deja sin conectar."
+      }
+    },
+    "cargo": {
+      "line": {
+        "q": "¿Por qué bajar el paquete con una cuerda en lugar de aterrizar en el jardín?",
+        "options": {
+          "1": "El cabrestante es más rápido que aterrizar",
+          "2": "Mantiene las hélices de 15 pulgadas muy por encima de las personas, las mascotas y las vallas",
+          "3": "Aterrizar gastaría demasiada batería"
+        },
+        "why": "Unas hélices de carbono de este tamaño girando cortan hasta el hueso. Mantenerse en estacionario a 3,5 m mientras el paquete baja con una cuerda las deja fuera del alcance de nadie, y así funcionan los drones de reparto comerciales."
+      },
+      "length": {
+        "q": "¿Cómo sabe ArduPilot cuánta cuerda ha soltado un cabrestante PWM?",
+        "options": {
+          "1": "La estima sumando la velocidad que ha pedido, así que la longitud se desvía",
+          "2": "Un encoder en el tambor cuenta las vueltas",
+          "3": "La mide la cámara de profundidad"
+        },
+        "why": "Un cabrestante PWM no tiene sensor: el ancho del pulso solo fija una velocidad, y ArduPilot integra esa velocidad para obtener una longitud. Vuelve a ponerla a cero cada vez que la cuerda esté recogida del todo."
+      }
+    },
+    "fly": {
+      "rtl": {
+        "q": "Has armado en Loiter y estás volando. Cambias el interruptor a RTL. ¿Qué pasa?",
+        "options": {
+          "1": "Nada: RTL solo funciona si armaste en RTL",
+          "2": "Aterriza donde está",
+          "3": "Sube hasta RTL_ALT_M, vuelve a casa y aterriza"
+        },
+        "why": "RTL se activa desde cualquier modo una vez que el dron tiene posición y casa. Lo que no puedes hacer es armar en RTL: no es un modo armable."
+      },
+      "gcs": {
+        "q": "En AUTO la Pi se cuelga y el enlace 4G se queda en silencio. ¿Qué hace FS_GCS_ENABLE 1?",
+        "options": {
+          "1": "Tras FS_GCS_TIMEOUT (5 s) sin latido de la estación de tierra, hace RTL",
+          "2": "Primero termina la misión",
+          "3": "Para los motores"
+        },
+        "why": "Con el FS_OPTIONS por defecto, perder la estación de tierra en AUTO significa RTL. Activar el bit 1 de FS_OPTIONS le dejaría terminar la misión en su lugar."
+      },
+      "fourS": {
+        "q": "¿Por qué una batería 4S de 10000 mAh no puede hacer volar este dron con los motores de 400 KV?",
+        "options": {
+          "1": "Las baterías 4S pesan demasiado",
+          "2": "A 14,8 V los motores giran demasiado despacio: la relación empuje/peso baja de 1, así que nunca despega del suelo",
+          "3": "El Pixhawk no puede funcionar con 4S"
+        },
+        "why": "El empuje crece con el cuadrado de las rpm, y las rpm son el KV por los voltios. Pasar de 6S a 4S reduce el empuje a menos de la mitad: 0,95:1 con el paquete, así que ni a tope puede levantarlo."
+      }
+    }
+  }
+}
