@@ -1,0 +1,432 @@
+{
+  "title": "LED + Widerstand",
+  "sub": "Ohmsches Gesetz mit einem Messgerät",
+  "hint": "Bau den Trainer, steck den Jumper um, sag den Strom voraus und lies das Messgerät ab, dann mach es absichtlich kaputt",
+  "overview": "Die erste Schaltung des Kurses hat gar keinen Chip: 5 V, ein Schalter, ein Widerstand und eine rote LED, mit einem Multimeter im Stromkreis, das den Strom misst. Ein Jumper wählt den Widerstand: 220 Ω, 1 kΩ, 10 kΩ oder eine blanke Drahtbrücke. Rechne jeden Strom zuerst auf Papier aus, I = (V − V_F) / R mit etwa 2 V über der LED, dann steck den Jumper um und prüf das Messgerät: 13,6, 3,0 und 0,30 mA. Dann mach es absichtlich kaputt: kein Widerstand, die LED oder der Kondensator verkehrt herum, ein fehlender USB-C-Pull-down, eine kalte Lötstelle, vertauschte Versorgungskabel, 12 V statt 5 V, eine Versorgung, der der Strom ausgeht. Jede LED, jeder Pull-up und jeder Sensorteiler an einem Roboter läuft mit dieser einen Formel.",
+  "power": {
+    "label": "Das USB-C-Ladegerät einstecken",
+    "ok": "Mit Strom versorgt: Die LED leuchtet, und das Messgerät zeigt ihren Strom"
+  },
+  "parts": {
+    "J1": {
+      "name": "USB-C-Strombuchse",
+      "what": "Eine USB-C-Buchse nur für Strom: VBUS, GND und die beiden CC-Pins, keine Daten. Die 5 V des Ladegeräts kommen hier herein."
+    },
+    "J2": {
+      "name": "Schraubklemme für ein Labornetzteil",
+      "what": "Zweipolige Schraubklemme mit 5,08 mm Raster: rotes Kabel an +, schwarzes an −. Nichts auf der Platine verhindert ein vertauschtes Paar, mit Absicht."
+    },
+    "R4": {
+      "name": "5,1-kΩ-Pull-down an CC1",
+      "what": "Ein USB-C-Ladegerät hält seine 5 V zurück, bis es 5,1 kΩ von einem CC-Pin nach Masse sieht: So weiß es, dass ein Gerät eingesteckt ist und kein loses Kabelende. R4 sitzt an CC1."
+    },
+    "R5": {
+      "name": "5,1-kΩ-Pull-down an CC2",
+      "what": "Dieselben 5,1 kΩ an CC2. Ein USB-C-Stecker passt in beiden Richtungen, und es ist immer nur ein CC-Pin verbunden, also braucht jeder seinen eigenen."
+    },
+    "SW1": {
+      "name": "Schiebeschalter",
+      "what": "Unterbricht die 5-V-Leitung direkt nach der Versorgung, dort, wo der Hauptschalter eines Roboters sitzt. Schieb ihn auf ON."
+    },
+    "C1": {
+      "name": "Elektrolytkondensator 100 µF 16 V",
+      "what": "Glättet den Moment des Einsteckens. Er ist gepolt: Der Streifen auf der Hülle markiert das −-Bein, das Richtung GND geht. Verkehrt herum gepolt wird ein Elko undicht, heiß und bläst ab."
+    },
+    "R1": {
+      "name": "220-Ω-Widerstand",
+      "what": "Rot, rot, braun, gold: 22 × 10 = 220 Ω, ±5 %. (5 V − 2 V) / 220 Ω = 13,6 mA, hell und weit unter den 30 mA der LED."
+    },
+    "R2": {
+      "name": "1-kΩ-Widerstand",
+      "what": "Braun, schwarz, rot, gold: 10 × 100 = 1 kΩ. 3 V / 1000 Ω = 3,0 mA: deutlich leuchtend, ein üblicher Strom für eine Anzeige-LED."
+    },
+    "R3": {
+      "name": "10-kΩ-Widerstand",
+      "what": "Braun, schwarz, orange, gold: 10 × 1000 = 10 kΩ. 0,30 mA: schwach, aber sichtbar. 10 kΩ ist auch der klassische Pull-up-Wert."
+    },
+    "JL1": {
+      "name": "Drahtbrücke (kein Widerstand)",
+      "what": "Ein blanker Draht, 0 Ω: die Reihe NONE. Hier begrenzen nur die LED selbst und die Versorgung den Strom. Probier es einmal, mit Absicht."
+    },
+    "JP1": {
+      "name": "2 × 4 Jumper-Stiftleiste",
+      "what": "Jede Reihe verbindet einen Widerstand mit der Anode der LED, solange die Jumper-Kappe darauf sitzt. Zwei Kappen gleichzeitig schalten zwei Widerstände parallel."
+    },
+    "SHUNT": {
+      "name": "Jumper-Kappe",
+      "what": "Verbindet die beiden Pins einer Reihe von JP1. Durch Umstecken wechselst du den Widerstand."
+    },
+    "D1": {
+      "name": "Rote 5-mm-LED",
+      "what": "Eine rote 5-mm-LED (Klasse WP7113ID): etwa 2 V über ihr, wenn sie leuchtet (typisch 1,9 V bei 10 mA), höchstens 30 mA Gleichstrom. Strom fließt nur in eine Richtung, vom langen Bein (Anode) zum Bein an der Abflachung des Rands (Kathode)."
+    },
+    "TP1": {
+      "name": "Testpunkt (+)",
+      "what": "Hier wird das rote Kabel des Messgeräts angeklemmt. Der Strom kommt von der Versorgung zu TP1, geht durch das Messgerät und kommt an TP2 zurück."
+    },
+    "TP2": {
+      "name": "Testpunkt (COM)",
+      "what": "Das schwarze Kabel des Messgeräts (COM). Von hier fließt der Strom weiter durch den Widerstand, den der Jumper wählt, und durch die LED nach Masse."
+    },
+    "MM1": {
+      "name": "Taschenmultimeter, Bereich 200 mA",
+      "what": "Im Bereich 200 mA DC, mit dem roten Kabel in der mA-Buchse. Es liegt in Reihe, also fließt der gesamte Strom der LED hindurch: Es misst den Strom im Kreis. Über 200 mA zeigt es OL."
+    }
+  },
+  "math": {
+    "supply": "Volt vom USB-C-Ladegerät",
+    "vf": "eine rote LED lässt im Betrieb etwa 2 V abfallen",
+    "watts": "Wärme im Widerstand (ein 1/4-W-Bauteil)",
+    "led": "Wärme in der LED (höchstens 75 mW)"
+  },
+  "modes": {
+    "r220": {
+      "title": "220 Ω",
+      "code": {
+        "what": "Jumper auf 220 Ω: ohmsches Gesetz für die LED, I = (V - V_F) / R",
+        "bands": "rot rot braun gold",
+        "verdict": "13,6 mA: hell und sicher. Betreib eine rote 5-mm-LED mit 5-20 mA, nie über 30 mA"
+      }
+    },
+    "r1k": {
+      "title": "1 kΩ",
+      "code": {
+        "what": "Jumper auf 1 kΩ",
+        "bands": "braun schwarz rot gold",
+        "verdict": "3,0 mA: deutlich leuchtend, der Strom einer Anzeige-LED"
+      }
+    },
+    "r10k": {
+      "title": "10 kΩ",
+      "code": {
+        "what": "Jumper auf 10 kΩ",
+        "bands": "braun schwarz orange gold",
+        "verdict": "0,30 mA: schwach, aber sichtbar"
+      }
+    },
+    "bypass": {
+      "title": "Kein Widerstand",
+      "code": {
+        "what": "Jumper auf NONE: die blanke Drahtbrücke",
+        "bands": "die Drahtbrücke: überhaupt kein Widerstand",
+        "nothing": "keine Antwort, nichts in der Formel begrenzt den Strom",
+        "real": "die echte Grenze sind die paar Ohm der LED selbst und das Ladegerät: Hunderte mA",
+        "verdict": "das Zehnfache der maximalen 30 mA der LED: Sie brennt durch"
+      }
+    }
+  },
+  "steps": {
+    "unplug": {
+      "title": "Den Strom abziehen",
+      "body": "Der Trainer kommt eingesteckt, seine LED leuchtet mit 220 Ω. Zieh das USB-C-Kabel ab, bevor du ein Bauteil anfasst: Arbeite nie an einer Platine unter Spannung."
+    },
+    "strip": {
+      "title": "Bis auf die nackte Platine zerlegen",
+      "body": "Nimm jedes Bauteil ab, auch die Jumper-Kappe und das Messgerät. Übrig bleibt die Platine: Kupfer, Lötstopplack und der Bestückungsdruck, der sagt, wohin jedes Bauteil gehört.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einer Platine unter Spannung"
+    },
+    "low": {
+      "title": "Die niedrigen Bauteile bestücken",
+      "body": "Bedrahtete Bauteile kommen vom niedrigsten zum höchsten hinein, damit jedes flach liegt, während du es lötest: die drei Widerstände und die Drahtbrücke, die beiden CC-Pull-downs, der Schiebeschalter, die beiden Testpunkte und die Jumper-Stiftleiste.",
+      "refusal": "Zerleg zuerst die Platine, mit abgezogenem Strom"
+    },
+    "tall": {
+      "title": "Die hohen Bauteile bestücken",
+      "body": "Jetzt die USB-C-Buchse, die Schraubklemme, C1 und die LED. Zwei davon passen nur in einer Richtung: Das lange Bein von D1 (Anode) kommt ins +-Loch, und das gestreifte Bein von C1 (−) geht Richtung GND, wie der Bestückungsdruck zeigt.",
+      "refusal": "Zuerst die niedrigen Bauteile: Ein hohes Bauteil im Weg verhindert, dass die niedrigen flach liegen"
+    },
+    "solder": {
+      "title": "Jede Lötstelle löten",
+      "body": "Erhitz Pad und Bein zusammen und führ dann das Lötzinn zu: Eine gute Lötstelle ist ein glänzender kleiner Kegel. Ein matter, körniger Klecks ist eine kalte Lötstelle, und die hat nur manchmal Kontakt.",
+      "refusal": "Bestück zuerst die Bauteile"
+    },
+    "jumper-meter": {
+      "title": "Jumper-Kappe und Messgerät",
+      "body": "Steck die Jumper-Kappe auf die Reihe 220 und klemm dann das rote Kabel des Messgeräts an TP1 und das schwarze an TP2. Das Messgerät schließt den Kreis: Ohne es fließt überhaupt kein Strom.",
+      "refusal": "Löte zuerst alles: Kappe und Messgerät kommen zuletzt"
+    },
+    "plug": {
+      "title": "Vorhersagen, dann einstecken",
+      "body": "Rechne es aus, bevor du einsteckst: Die LED nimmt etwa 2 V, also bekommt der Widerstand 3 V, und 3 V / 220 Ω = 13,6 mA. Steck das Ladegerät ein: Die LED leuchtet, und das Messgerät zeigt 13.6."
+    },
+    "row-1k": {
+      "title": "Den Jumper auf 1 kΩ stecken",
+      "body": "Etwa der fünffache Widerstand, etwa ein Fünftel des Stroms: 3 V / 1000 Ω = 3,0 mA, und die LED ist deutlich dunkler. Bei diesem Strom lässt eine echte rote LED eher 1,8 V abfallen, also zeigt ein echtes Messgerät 3,0 bis 3,2 mA."
+    },
+    "row-10k": {
+      "title": "Auf 10 kΩ stecken",
+      "body": "Noch einmal zehnmal mehr: 0,30 mA. Die LED ist schwach, aber noch sichtbar, und der Widerstand erwärmt sich um weniger als ein Milliwatt."
+    },
+    "row-220": {
+      "title": "Zurück auf 220 Ω",
+      "body": "Wieder 13,6 mA. Jede Messung hat zur Rechnung gepasst: Das ist das ohmsche Gesetz, I = V / R, wobei V die 3 V sind, die der Widerstand bekommt, nachdem die LED ihre 2 V genommen hat."
+    },
+    "no-resistor": {
+      "title": "Kaputt machen: kein Widerstand",
+      "body": "Steck den Jumper auf NONE, sodass nur die blanke Drahtbrücke zwischen Versorgung und LED liegt. Beobachte LED und Messgerät. Dann reparier es: Strom abziehen, Jumper zurück auf 220 Ω und eine neue LED einsetzen."
+    },
+    "led-backwards": {
+      "title": "Kaputt machen: die LED verkehrt herum",
+      "body": "Setz D1 falsch herum ein und schalte ein. Dann dreh sie um und schalte wieder ein."
+    },
+    "cap-backwards": {
+      "title": "Kaputt machen: C1 verkehrt herum",
+      "body": "Setz C1 mit dem Streifen Richtung + ein und schalte ein. Dann setz einen neuen richtig herum ein."
+    },
+    "cc-missing": {
+      "title": "Kaputt machen: R4 weglassen",
+      "body": "Bau die Platine ohne einen der beiden 5,1-kΩ-CC-Pull-downs und steck das Ladegerät ein. Dann setz R4 ein und steck wieder ein."
+    },
+    "cold-led": {
+      "title": "Kaputt machen: eine kalte Lötstelle an der LED",
+      "body": "Eine der Lötstellen von D1 ist matt und körnig. Beobachte LED und Messgerät und erhitz dann die Lötstelle neu."
+    },
+    "reverse-supply": {
+      "title": "Kaputt machen: die Kabel des Labornetzteils vertauschen",
+      "body": "Versorg die Platine über das Labornetzteil an J2 mit vertauschtem Rot und Schwarz. Dann tausch sie zurück und setz einen neuen C1 ein."
+    },
+    "over-voltage": {
+      "title": "Kaputt machen: 12 V am 5-V-Eingang",
+      "body": "Dreh das Labornetzteil auf 12 V hoch. Lies das Messgerät ab und warte dann ein paar Sekunden. Reparier es mit dem Netzteil zurück auf 5 V und einer neuen LED."
+    },
+    "current-limit": {
+      "title": "Kaputt machen: eine Strombegrenzung von 10 mA",
+      "body": "Stell die Strombegrenzung des Labornetzteils auf 10 mA, weniger, als die LED will. Lies Messgerät und Versorgungsspannung ab und heb die Grenze dann wieder an."
+    },
+    "usb-again": {
+      "title": "Zurück an USB",
+      "body": "Steck das Ladegerät wieder ein. Das Messgerät zeigt 13,6 mA: Der Trainer ist wieder ganz."
+    }
+  },
+  "faults": {
+    "no-resistor": {
+      "title": "Kein Widerstand (Jumper auf NONE)",
+      "symptom": "Ein heller Blitz und OL auf dem Messgerät, dann bleibt die LED für immer dunkel, und das Messgerät zeigt 0.",
+      "explanation": "Mit 0 Ω in der Reihe begrenzt nichts in I = (V − V_F) / R den Strom. Nur die paar Ohm der LED selbst und die Grenze des Ladegeräts halten ihn zurück: Hunderte Milliampere gegen die maximalen 30 mA der LED. Der Chip und sein Bonddraht überhitzen im Nu, und die LED ist offen.",
+      "fix": "Strom abziehen, den Jumper zurück auf 220 Ω stecken und eine neue LED einsetzen: Eine durchgebrannte LED kommt nie zurück."
+    },
+    "led-backwards": {
+      "title": "LED verkehrt herum",
+      "symptom": "Die LED bleibt dunkel, und das Messgerät zeigt 0.00.",
+      "explanation": "Eine LED leitet nur von der Anode zur Kathode. Umgedreht ist sie in Sperrrichtung gepolt, und bei 5 V (ihrer Sperrspannung) fließen nur ein paar Mikroampere Leckstrom. Sie überlebt; sie bleibt nur dunkel.",
+      "fix": "Strom abziehen und D1 umdrehen: das lange Bein (Anode) ins +-Loch, die abgeflachte Seite Richtung −."
+    },
+    "cap-backwards": {
+      "title": "C1 verkehrt herum",
+      "symptom": "C1 zischt, und sein Sicherheitsventil öffnet sich. Die LED funktioniert weiter.",
+      "explanation": "Ein Aluminium-Elko sperrt Strom nur in einer Richtung. Verkehrt herum gepolt leckt er immer mehr, wird heiß, bildet Gas, und die eingeritzte Sollbruchstelle oben öffnet sich. Die LED braucht C1 nicht, also leuchtet sie weiter, aber der Kondensator ist hinüber.",
+      "fix": "Strom abziehen und einen neuen C1 mit dem Streifen (−) Richtung GND einsetzen."
+    },
+    "cc-missing": {
+      "title": "R4 weggelassen (ein USB-C-Pull-down)",
+      "symptom": "Gar nichts: Die LED ist dunkel, und das Messgerät zeigt 0, als wäre das Ladegerät tot.",
+      "explanation": "Ein USB-C-Ladegerät hält seine 5 V zurück, bis es einen 5,1-kΩ-Pull-down am CC-Pin sieht, damit ein loses Kabelende nie unter Spannung steht. R4 und R5 sind diese Pull-downs, einer für jede Steckrichtung, und ohne R4 bekommt diese Richtung keinen Strom. Ein Kabel von USB-A auf C liefert immer 5 V, und das verbirgt den Fehler, bis jemand ein Kabel von C auf C benutzt.",
+      "fix": "Strom abziehen, R4 (5,1 kΩ) einsetzen und anlöten."
+    },
+    "cold-led": {
+      "title": "Kalte Lötstelle an D1",
+      "symptom": "Die LED flackert, und das Messgerät springt zwischen 13.6 und 0.",
+      "explanation": "Eine kalte Lötstelle ist Lötzinn, das das Pad nie richtig benetzt hat: matt, körnig, manchmal gerissen. Sie berührt, dann wieder nicht, also öffnet und schließt sich der Kreis. An einem Roboter ist das der Fehler, der kommt und geht, wenn er sich bewegt.",
+      "fix": "Strom abziehen und die Lötstelle mit etwas frischem Lötzinn neu erhitzen, bis es zu einem glänzenden Kegel verläuft."
+    },
+    "reverse-supply": {
+      "title": "Kabel des Labornetzteils vertauscht",
+      "symptom": "Die LED bleibt dunkel, dann bläst C1 ab.",
+      "explanation": "J2 hat mit Absicht keine Verpolungsschutzdiode: Eine würde 0,7 V von den 3 V schlucken, um die es in dieser Lektion geht. Mit vertauschten Kabeln liegt die 5-V-Leitung auf −5 V. Die LED ist in Sperrrichtung gepolt und sperrt einfach, aber C1, direkt über der Versorgung, ist ebenfalls verkehrt gepolt und bläst ab.",
+      "fix": "Strom abziehen, die Kabel tauschen (Rot an +) und dann einen neuen C1 einsetzen."
+    },
+    "over-voltage": {
+      "title": "12 V am 5-V-Eingang",
+      "symptom": "Die LED strahlt grell, und das Messgerät zeigt 45,5 mA. Ein paar Sekunden später blitzt sie auf und wird dunkel.",
+      "explanation": "(12 V − 2 V) / 220 Ω = 45 mA, anderthalbmal so viel wie die maximalen 30 mA der LED, und 0,45 W in einem 1/4-W-Widerstand. Der Simulator lässt die LED nach etwa 3 s durchbrennen; eine echte hält vielleicht länger und wird beim Sterben dunkler. So oder so war der Widerstand für 5 V bemessen, nicht für 12.",
+      "fix": "Strom abziehen, die Versorgung zurück auf 5 V stellen (oder einen größeren Widerstand für 12 V ausrechnen) und eine neue LED einsetzen."
+    },
+    "current-limit": {
+      "title": "Strombegrenzung des Netzteils auf 10 mA",
+      "symptom": "Die LED ist etwas dunkler, das Messgerät zeigt 10.0, und die Versorgung bricht auf 4,2 V ein.",
+      "explanation": "Ein Labornetzteil hält seine Spannung nur, bis die Last mehr will als seine Strombegrenzung. Dann senkt es die Spannung, um den Strom auf der Grenze zu halten: hier 10 mA, was 2 V + 10 mA × 220 Ω = 4,2 V übrig lässt. Das ist ein Brown-out: Nichts geht kaputt, aber die Schaltung bekommt nicht mehr, was du eingestellt hast.",
+      "fix": "Heb die Strombegrenzung über das, was die Schaltung braucht (20 mA sind hier reichlich), oder nimm einen größeren Widerstand."
+    }
+  },
+  "status": {
+    "status": "Status",
+    "meter": "Messgerät zeigt (mA)",
+    "resistor": "Widerstand (Ω)",
+    "heat": "Wärme im Widerstand (mW)",
+    "rail": "Versorgung nach SW1",
+    "current": "Stromaufnahme"
+  },
+  "current": {
+    "usb": "USB-C-Ladegerät, 5 V: 500 mA",
+    "bench": "Labornetzteil, 5 V: 1 A",
+    "led": "Der LED-Kreis, wie das Messgerät ihn misst"
+  },
+  "tasks": {
+    "ohms-law": {
+      "title": "Ohmsches Gesetz in einem Sketch",
+      "brief": "Lass einen Uno die Rechnung auf Papier erledigen und den Strom für jede Jumper-Reihe (220, 1000 und 10000 Ohm) bei einer 5-V-Versorgung und einer 2-V-LED ausgeben, in der Form \"220 ohm: 13.64 mA\". Der Starter gibt für alle drei Reihen 0 mA aus: Finde heraus, warum. Ergänz dann eine Zeile mit dem kleinsten Widerstand, der die LED bei 20 mA hält: \"20 mA needs 150 ohm\".",
+      "hints": {
+        "1": "In C++ ist ein int geteilt durch einen int wieder ein int: 3 / 220 ist 0, und 0 × 1000 bleibt 0.",
+        "2": "Mach die Zahlen zu float (5.0, 2.0, 1000.0), dann behält die Division ihre Nachkommastellen.",
+        "3": "R = (V − V_F) / I, mit I in Ampere: 3.0 / 0.020 = 150. Serial.print(x, 0) gibt einen float ohne Nachkommastellen aus."
+      },
+      "checks": {
+        "1": "220 ohm: 13.6 mA",
+        "2": "1000 ohm: 3.0 mA",
+        "3": "10000 ohm: 0.30 mA",
+        "4": "Gibt 20 mA needs 150 ohm aus"
+      },
+      "code": {
+        "starter": "Ohmsches Gesetz auf einem Uno: der Strom für jede Jumper-Reihe",
+        "volts": "Volt",
+        "law": "I = (V - V_F) / R, mal 1000 für mA",
+        "floats": "float behält die Nachkommastellen: 3.0 / 220 = 0.0136",
+        "smallest": "der kleinste Widerstand für 20 mA: R = (V - V_F) / I"
+      }
+    },
+    "pwm-current": {
+      "title": "Den mittleren Strom mit PWM einstellen",
+      "brief": "Schließ den 220 Ω und die LED des Trainers an Pin 9 eines Uno an: Pin 9, dann der Widerstand, dann die LED, dann GND. Voll eingeschaltet liegt Pin 9 bei etwa 5 V, also zieht die LED 13,6 mA. PWM schaltet den Pin etwa 490-mal pro Sekunde voll ein und voll aus, also ist der mittlere Strom das Tastverhältnis mal 13,6 mA, und dieser Mittelwert ist das, was das Messgerät zeigt. Führ die LED im Mittel durch 13,6, 6,8 und 3,4 mA, je eine Sekunde, und gib jeden Schritt aus.",
+      "hints": {
+        "1": "digitalWrite() kennt nur HIGH und LOW: die vollen 13,6 mA oder nichts.",
+        "2": "analogWrite(9, duty), mit duty von 0 bis 255, legt den Anteil jedes Zyklus fest, in dem der Pin an ist: 128 ist etwa die Hälfte.",
+        "3": "duty = Ziel / 13.6 × 255, gerundet: 255, 128 und 64."
+      },
+      "checks": {
+        "1": "Nutzt analogWrite()",
+        "2": "Die vollen 13,6 mA in der ersten Sekunde",
+        "3": "Etwa die Hälfte, 6,8 mA, in der zweiten",
+        "4": "Etwa ein Viertel, 3,4 mA, in der dritten",
+        "5": "Gibt den Schritt mit 6.8 mA aus"
+      },
+      "code": {
+        "starter": "Drei Ströme mit digitalWrite(): Es kann nur ganz oder gar nicht",
+        "pin": "Pin 9 -> 220 Ohm -> LED -> GND",
+        "full": "13,6 mA: (5 - 2) / 220",
+        "half": "der halbe Strom? digitalWrite hat nur HIGH und LOW",
+        "peak": "der Strom, solange der Pin an ist: (5 - 2) / 220 A",
+        "duty": "der Anteil jedes Zyklus, in dem der Pin an ist, 0-255"
+      }
+    }
+  },
+  "quizzes": {
+    "solder": {
+      "led-legs": {
+        "q": "In welcher Richtung kommt D1 hinein?",
+        "options": {
+          "1": "Die abgeflachte Seite des Rands ins +-Loch",
+          "2": "Das lange Bein (Anode) ins +-Loch",
+          "3": "Egal: Eine LED funktioniert wie ein Widerstand"
+        },
+        "why": "Strom fließt nur von der Anode zur Kathode. Die Anode ist das längere Bein; die Kathode ist das an der Abflachung des Rands. Verkehrt herum bleibt die LED einfach dunkel."
+      },
+      "cap-stripe": {
+        "q": "Was markiert der Streifen auf der Hülle von C1?",
+        "options": {
+          "1": "Das −-Bein, das Richtung GND geht",
+          "2": "Das +-Bein",
+          "3": "Seine Nennspannung"
+        },
+        "why": "Elkos sind auf der negativen Seite markiert. Verkehrt gepolt lecken sie, werden heiß und blasen ab, also geht der Streifen Richtung GND."
+      }
+    },
+    "plug": {
+      "predict": {
+        "q": "Eine 5-V-Versorgung, eine rote LED, die etwa 2 V abfallen lässt, und 220 Ω. Was wird das Messgerät zeigen?",
+        "options": {
+          "1": "22,7 mA",
+          "2": "13,6 mA",
+          "3": "2,3 mA"
+        },
+        "why": "Der Widerstand bekommt nur, was die LED übrig lässt: 5 V − 2 V = 3 V, und 3 V / 220 Ω = 13,6 mA. 5 V / 220 Ω = 22,7 mA vergisst den Spannungsabfall der LED."
+      },
+      "series": {
+        "q": "Warum sitzt das Messgerät zwischen TP1 und TP2, innerhalb des Kreises?",
+        "options": {
+          "1": "Damit es die Versorgungsspannung messen kann",
+          "2": "Im mA-Bereich kann ein Messgerät überall hin",
+          "3": "Ein Strommesser muss den Strom führen, den er misst, also kommt er in Reihe"
+        },
+        "why": "Im mA-Bereich ist ein Messgerät fast ein Kurzschluss: ein Shunt von etwa einem Ohm. In Reihe misst es den Strom im Kreis; über die Versorgung gelegt würde es sie kurzschließen und seine Sicherung auslösen."
+      }
+    },
+    "row-10k": {
+      "heat": {
+        "q": "Bei 10 kΩ zeigt das Messgerät 0,30 mA. Wie viel Wärme entsteht im Widerstand?",
+        "options": {
+          "1": "0,9 mW",
+          "2": "3 mW",
+          "3": "30 mW"
+        },
+        "why": "P = I² × R = 0,0003² × 10000 = 0,0009 W, unter einem Milliwatt. Selbst die Reihe mit 220 Ω erzeugt nur 40,9 mW, ein Sechstel ihrer Belastbarkeit von 1/4 W."
+      },
+      "pull-up": {
+        "q": "Wo wirst du einem 10-kΩ-Widerstand noch begegnen?",
+        "options": {
+          "1": "Beim Einstellen des Stroms einer hellen LED",
+          "2": "Als Sicherung in einer Stromleitung",
+          "3": "Als Pull-up oder Pull-down an einem Tastereingang"
+        },
+        "why": "10 kΩ lassen so wenig durch (0,5 mA bei 5 V), dass sie einen Eingang auf einem Pegel halten können, ohne Strom zu verschwenden. Das macht sie zum klassischen Pull-up."
+      }
+    },
+    "no-resistor": {
+      "why": {
+        "q": "Warum ist die LED in der Reihe NONE gestorben?",
+        "options": {
+          "1": "Der Jumper hat 5 V direkt mit GND kurzgeschlossen",
+          "2": "Nichts hat den Strom begrenzt: Hunderte mA gegen ein Maximum von 30 mA",
+          "3": "5 V sind für jede LED eine zu hohe Spannung"
+        },
+        "why": "Die LED war noch im Kreis, also war es kein satter Kurzschluss, aber mit 0 Ω hielten nur ihre eigenen paar Ohm und das Ladegerät den Strom zurück. 5 V sind für eine LED mit Widerstand kein Problem: Der Widerstand legt den Strom fest."
+      },
+      "ol": {
+        "q": "Das Messgerät hat OL gezeigt. Was bedeutete das?",
+        "options": {
+          "1": "Der Strom lag über seinem 200-mA-Bereich",
+          "2": "Die Batterie des Messgeräts ist leer",
+          "3": "Die Kabel sind vertauscht"
+        },
+        "why": "OL heißt over limit: mehr, als der Bereich anzeigen kann. Vertauschte Kabel zeigen stattdessen ein Minuszeichen. Bei einem billigen Messgerät kann ein solcher Stromstoß auch die mA-Sicherung auslösen."
+      }
+    },
+    "end": {
+      "r330": {
+        "q": "Du setzt stattdessen einen 330-Ω-Widerstand ein (orange, orange, braun). Welcher Strom fließt?",
+        "options": {
+          "1": "15,2 mA",
+          "2": "3,3 mA",
+          "3": "9,1 mA"
+        },
+        "why": "(5 − 2) V / 330 Ω = 9,1 mA: etwas dunkler als mit 220 Ω, aber noch gut leuchtend."
+      },
+      "smallest": {
+        "q": "Was ist der kleinste sichere Widerstand für diese LED an USB? Rechne mit USB bei 5,25 V, einem V_F von nur 1,8 V und dem Maximum von 30 mA.",
+        "options": {
+          "1": "120 Ω",
+          "2": "100 Ω",
+          "3": "220 Ω"
+        },
+        "why": "(5,25 − 1,8) V / 0,030 A = 115 Ω, und der nächsthöhere Normwert (E12) ist 120 Ω. 100 Ω würden 34,5 mA erlauben. 220 Ω sind sicher, aber nicht der kleinste."
+      },
+      "cc": {
+        "q": "Warum sitzen R4 und R5 (5,1 kΩ) an den CC-Pins der USB-C-Buchse?",
+        "options": {
+          "1": "Sie legen den Strom der LED fest",
+          "2": "Ein USB-C-Ladegerät schaltet seine 5 V erst ein, wenn es sie sieht",
+          "3": "Sie schützen vor Verpolung"
+        },
+        "why": "Die Pull-downs sagen dem Ladegerät, dass ein Gerät angeschlossen ist. Ohne sie liefert ein Kabel von C auf C überhaupt keinen Strom."
+      },
+      "two-caps": {
+        "q": "Zwei Jumper-Kappen gleichzeitig, auf den Reihen 220 Ω und 1 kΩ. Was zeigt das Messgerät?",
+        "options": {
+          "1": "2,5 mA: 220 + 1000 = 1220 Ω",
+          "2": "16,6 mA: Die beiden parallel ergeben 180 Ω",
+          "3": "13,6 mA: Nur die erste Kappe zählt"
+        },
+        "why": "Beide Reihen verbinden dieselben zwei Punkte, also liegen die Widerstände parallel: 220 × 1000 / 1220 = 180 Ω, und 3 V / 180 Ω = 16,6 mA."
+      }
+    }
+  }
+}
