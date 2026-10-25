@@ -1,18 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { LabDock } from "@/components/dock";
 import { FigureFrame } from "@/components/figure";
-import { SoundToggle, UsageToggle } from "@/components/settings";
+import { SoundToggle } from "@/components/settings";
 import type { FigureEvent, FigureHandle } from "@/components/figure/protocol";
-import { Button } from "@/components/ui/Button";
+import { WorkspaceBar, WorkspaceFrame } from "@/components/shell/workspace";
+import { Button, ButtonLink } from "@/components/ui/Button";
+import { cx } from "@/components/ui/cx";
 import { Icon } from "@/components/ui/icons";
-import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { Panel } from "@/components/ui/Panel";
+import { Tabs } from "@/components/ui/Tabs";
 import type { BoardContent, PinRow } from "@/content/schema";
 import type { Locale } from "@/i18n/config";
 import { createBoardLabStore, figurePatch, figureState, initialState, type BoardLabStore } from "@/lib/boardlab/store";
-import { progressKey, useDone } from "@/lib/progress";
+import { progressKey, useDone, useSaved } from "@/lib/progress";
 import { boardMoments } from "@/lib/sound/moments";
 import { useFigureSound, useLabMoments } from "@/lib/sound/react";
 import { AssemblyPanel } from "./AssemblyPanel";
@@ -23,7 +26,7 @@ import type { BoardModel, LessonLink } from "./model";
 import { PinoutTable } from "./PinoutTable";
 import { BoardLabText, useText, type BoardLabMessages } from "./text";
 import { useLab } from "./useLab";
-import { ViewBar, homeYaw } from "./ViewBar";
+import { ViewBar, hideHostDrawn, homeYaw } from "./ViewBar";
 import { WireInPanel } from "./WireInPanel";
 
 export type BoardOverview = {
@@ -33,34 +36,44 @@ export type BoardOverview = {
   progressText: { count: string; value: string };
 };
 
-type Props = { lang: Locale; data: BoardOverview; messages: BoardLabMessages; text: Record<string, unknown> };
+type Props = {
+  lang: Locale;
+  data: BoardOverview;
+  messages: BoardLabMessages;
+  text: Record<string, unknown>;
+  /** The untranslated chip, rendered on the server. */
+  notice?: ReactNode;
+};
 
-export function BoardWorkspace({ lang, data, messages, text }: Props) {
+export function BoardWorkspace({ lang, data, messages, text, notice }: Props) {
   return (
     <BoardLabText locale={lang} messages={messages} text={text}>
-      <Overview lang={lang} data={data} />
+      <Overview lang={lang} data={data} notice={notice} />
     </BoardLabText>
   );
 }
 
-function LessonCard({ lang, board, lesson }: { lang: string; board: string; lesson: LessonLink }) {
+function LessonRow({ lang, board, lesson }: { lang: string; board: string; lesson: LessonLink }) {
   const { t } = useText();
   const done = useDone(progressKey.boardLesson(board, lesson.id));
   return (
     <li>
       <Link
         href={`/${lang}/boards/${board}/${lesson.id}`}
-        className="flex min-h-11 items-center gap-3 rounded-md border-2 border-line bg-surface px-3 py-2 no-underline shadow-ink-sm hover:-translate-y-0.5"
+        className="-mx-2 flex min-h-11 items-center gap-3 rounded-ink-sm px-2 py-1.5 text-sm text-ink no-underline hover:bg-sunken"
         aria-label={`${t("board.openLesson", { n: lesson.n, title: lesson.title })}${done ? ` · ${t("lesson.done")}` : ""}`}
       >
-        <span aria-hidden="true" className={`inline-flex size-8 shrink-0 items-center justify-center rounded-full border-2 font-bold ${done ? "border-good bg-good text-paper" : "border-line"}`}>
-          {done ? <Icon name="check" size={14} /> : lesson.n}
+        <span
+          aria-hidden="true"
+          className={cx(
+            "tabular inline-flex size-6 shrink-0 items-center justify-center rounded-full border-[1.5px] font-ui text-xs font-bold",
+            done ? "border-good bg-good text-paper" : "border-rule text-muted",
+          )}
+        >
+          {done ? <Icon name="check" size={12} /> : lesson.n}
         </span>
-        <span className="flex flex-col">
-          <span className="font-semibold">{lesson.title}</span>
-          <span className="text-xs uppercase tracking-wide text-muted">{t(`level.${lesson.level}`)}</span>
-        </span>
-        <Icon name="chevron-right" size={18} className="ms-auto" aria-hidden="true" />
+        <span className="min-w-0 flex-1 font-semibold leading-snug">{lesson.title}</span>
+        <span className="shrink-0 text-xs text-muted">{t(`level.${lesson.level}`)}</span>
       </Link>
     </li>
   );
@@ -85,17 +98,17 @@ function Facts({ board }: { board: BoardOverview["board"] }) {
     [t("board.toolchain"), mcu.fpga?.toolchain ?? null],
   ];
   return (
-    <section aria-labelledby={titleId} className="ink-card p-3 sm:p-4">
-      <h2 id={titleId} className="text-xl">
+    <section aria-labelledby={titleId}>
+      <h3 id={titleId} className="sr-only">
         {t("board.facts")}
-      </h2>
-      <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
+      </h3>
+      <dl className="grid grid-cols-2 gap-x-4 text-sm">
         {rows
           .filter(([, v]) => v !== null)
           .map(([k, v]) => (
-            <div key={k} className="rounded-md bg-sunken p-2">
-              <dt className="text-xs uppercase tracking-wide text-muted">{k}</dt>
-              <dd className="font-medium">{v}</dd>
+            <div key={k} className="min-w-0 border-b-[1.5px] border-rule py-2">
+              <dt className="ink-label">{k}</dt>
+              <dd className="font-semibold break-words">{v}</dd>
             </div>
           ))}
       </dl>
@@ -120,14 +133,14 @@ function Power({ board }: { board: BoardOverview["board"] }) {
   const p = board.power;
   const titleId = useId();
   return (
-    <section aria-labelledby={titleId} className="ink-card p-3 sm:p-4">
-      <h2 id={titleId} className="text-xl">
+    <section aria-labelledby={titleId} className="max-w-[72ch]">
+      <h2 id={titleId} className="sr-only">
         {t("board.power")}
       </h2>
-      <h3 className="mt-3 text-base">{t("board.inputs")}</h3>
-      <ul className="mt-1 flex flex-col gap-2 text-sm">
+      <h3 className="text-base">{t("board.inputs")}</h3>
+      <ul className="mt-1 divide-y-[1.5px] divide-rule border-y-[1.5px] border-rule text-sm">
         {p.inputs.map((i) => (
-          <li key={i.id} className="rounded-md border-2 border-line p-2">
+          <li key={i.id} className="py-2">
             <span className="font-semibold">{t(`connector.${i.connector}` as Parameters<typeof t>[0], { volts: i.volts.recommended?.[0] ?? i.volts.max })}</span>
             <span className="ms-2 tabular">{t("board.range", { min: i.volts.min, max: i.volts.max })}</span>
             {i.volts.recommended && <span className="ms-2 text-muted">{t("board.recommended", { min: i.volts.recommended[0], max: i.volts.recommended[1] })}</span>}
@@ -137,7 +150,7 @@ function Power({ board }: { board: BoardOverview["board"] }) {
           </li>
         ))}
       </ul>
-      <h3 className="mt-3 text-base">{t("board.rails")}</h3>
+      <h3 className="mt-6 text-base">{t("board.rails")}</h3>
       <ul className="mt-1 flex flex-col gap-1 text-sm">
         {p.rails.map((r) => (
           <li key={r.name}>
@@ -147,7 +160,7 @@ function Power({ board }: { board: BoardOverview["board"] }) {
           </li>
         ))}
       </ul>
-      <h3 className="mt-3 text-base">{t("board.io")}</h3>
+      <h3 className="mt-6 text-base">{t("board.io")}</h3>
       <ul className="mt-1 flex flex-col gap-1 text-sm">
         <li>{t("board.perPin", { n: p.io.perPinMa })}</li>
         {p.io.absMaxPerPinMa ? <li>{t("board.absMax", { n: p.io.absMaxPerPinMa })}</li> : null}
@@ -166,13 +179,13 @@ function OnBoard({ board, figure }: { board: BoardOverview["board"]; figure: () 
   const press = (id: string, down: boolean) => figure()?.send("set", { state: { press: { id, down } } });
   if (!board.leds.length && !board.controls.length && !board.displays.length) return null;
   return (
-    <section aria-labelledby={titleId} className="ink-card p-3 sm:p-4">
-      <h2 id={titleId} className="sr-only">
+    <section aria-labelledby={titleId} className="mt-6">
+      <h3 id={titleId} className="sr-only">
         {t("board.controls")}
-      </h2>
+      </h3>
       {board.controls.length > 0 && (
         <>
-          <h3 className="text-base">{t("board.controls")}</h3>
+          <h4 className="text-base">{t("board.controls")}</h4>
           <ul className="mt-1 flex flex-col gap-2 text-sm">
             {board.controls.map((c) => (
               <li key={c.id} className="flex flex-wrap items-center gap-2">
@@ -187,8 +200,10 @@ function OnBoard({ board, figure }: { board: BoardOverview["board"]; figure: () 
                 >
                   {t("board.press", { label: c.label })}
                 </Button>
-                {c.pin ? <span className="font-mono text-muted">{c.pin}</span> : null}
-                <span>{tc(c.effect)}</span>
+                <span className="min-w-0 flex-1">
+                  {c.pin ? <span className="me-1.5 font-mono text-muted">{c.pin}</span> : null}
+                  {tc(c.effect)}
+                </span>
               </li>
             ))}
           </ul>
@@ -196,7 +211,7 @@ function OnBoard({ board, figure }: { board: BoardOverview["board"]; figure: () 
       )}
       {board.leds.length > 0 && (
         <>
-          <h3 className="mt-3 text-base">{t("board.leds")}</h3>
+          <h4 className="mt-4 text-base">{t("board.leds")}</h4>
           <ul className="mt-1 flex flex-col gap-1 text-sm">
             {board.leds.map((l) => (
               <li key={l.id}>
@@ -210,7 +225,7 @@ function OnBoard({ board, figure }: { board: BoardOverview["board"]; figure: () 
       )}
       {board.displays.length > 0 && (
         <>
-          <h3 className="mt-3 text-base">{t("board.displays")}</h3>
+          <h4 className="mt-4 text-base">{t("board.displays")}</h4>
           <ul className="mt-1 flex flex-col gap-1 text-sm">
             {board.displays.map((d) => (
               <li key={d.id}>
@@ -225,10 +240,11 @@ function OnBoard({ board, figure }: { board: BoardOverview["board"]; figure: () 
   );
 }
 
-function Overview({ lang, data }: { lang: Locale; data: BoardOverview }) {
+function Overview({ lang, data, notice }: { lang: Locale; data: BoardOverview; notice?: ReactNode }) {
   const { t, tc } = useText();
   const { model, board, lessons } = data;
   const uid = useId();
+  const saved = useSaved();
   const [store] = useState<BoardLabStore>(() =>
     createBoardLabStore(initialState({ board: model.id, lesson: null, variant: model.variants[0]?.figureVariant ?? null, language: model.languages[0] ?? "arduino-cpp", view: "board" })),
   );
@@ -261,6 +277,7 @@ function Overview({ lang, data }: { lang: Locale; data: BoardOverview }) {
   const power = useLab(store, (s) => s.power);
   const fault = useLab(store, (s) => s.fault);
   const variant = useLab(store, (s) => s.variant);
+  const assemblyDone = useLab(store, (s) => s.assembly.length);
   const initial = useMemo(() => figureState({ ...store.getState(), view, exploded, power, fault, variant }, figureOpts), [store, view, exploded, power, fault, variant, figureOpts]);
 
   const onEvent = useCallback(
@@ -268,6 +285,7 @@ function Overview({ lang, data }: { lang: Locale; data: BoardOverview }) {
       figureSound(e);
       if (e.type === "ready") {
         setYaw(homeYaw(figureRef.current));
+        hideHostDrawn(figureRef.current, e.buttons);
         const state = (e as { state?: unknown }).state;
         if (state && typeof state === "object") store.dispatch({ type: "figure/state", state: state as Record<string, unknown> });
       } else if (e.type === "state") store.dispatch({ type: "figure/state", state: e.state });
@@ -281,96 +299,136 @@ function Overview({ lang, data }: { lang: Locale; data: BoardOverview }) {
     return board.pinout.map((r) => patch.find((p) => p.header === r.header && p.pin === r.pin) ?? r);
   }, [board.pinout, variantDef]);
 
-  return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 pb-16 pt-6 sm:px-6" data-testid="board-workspace" data-board={model.id}>
-      <header className="flex flex-col gap-2">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <Link href={`/${lang}/boards`} className="inline-flex min-h-11 items-center gap-1 text-sm">
-            <Icon name="chevron-right" size={16} className="rotate-180" aria-hidden="true" />
-            {t("board.back")}
-          </Link>
-          <SoundToggle />
-        </div>
-        <p className="ink-kicker">
-          {t("index.fig", { n: model.fig })} · {board.maker}
-        </p>
-        <h1 className="text-3xl sm:text-5xl">{model.name}</h1>
-        <p className="max-w-3xl text-lg leading-relaxed">{tc(board.tagline)}</p>
-        <div className="max-w-md">
-          <BoardProgress
-            board={model.id}
-            total={lessons.length}
-            hasAssembly={board.assembly.length > 0}
-            labels={{ lessons: t("index.lessons"), count: data.progressText.count, value: data.progressText.value, assembly: t("index.assembly"), assemblyDone: t("index.assemblyDone") }}
-          />
-        </div>
-      </header>
+  // The one next step: the first lesson not done yet ("Start" before any is done).
+  const anyDone = lessons.some((l) => saved.done[progressKey.boardLesson(model.id, l.id)]);
+  const nextLesson = lessons.find((l) => !saved.done[progressKey.boardLesson(model.id, l.id)]) ?? null;
 
-      {board.variants.length > 1 && (
-        <SegmentedControl
-          label={t("board.variant")}
-          value={variant ?? board.variants[0].figureVariant}
-          onChange={(v) => store.dispatch({ type: "variant/set", id: v })}
-          options={board.variants.map((v) => ({ value: v.figureVariant, label: v.name }))}
-        />
-      )}
-
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
-        <div className="flex min-w-0 flex-col gap-4">
-          <ViewBar store={store} board={model} figure={getFigure} views={["board", "power"]} xr={xr} onXr={setXr} yaw={yaw} onYaw={setYaw} />
-          <FigureFrame ref={attachFigure} src={model.figurePage} title={model.name} initial={initial} onEvent={onEvent} />
-          <FigureReadout store={store} leds={model.leds} />
-          <p className="ink-prose max-w-none">{tc(board.overview)}</p>
-        </div>
-        <div className="flex min-w-0 flex-col gap-4">
-          <Facts board={board} />
-          <Power board={board} />
-        </div>
-      </div>
-
-      <section aria-labelledby={`${uid}-lessons`} className="ink-card p-3 sm:p-4" data-testid="board-lessons">
-        <h2 id={`${uid}-lessons`} className="text-xl">
-          {t("board.lessons")}
-        </h2>
-        <p className="mt-1 text-sm text-muted">{t("board.lessonsLede")}</p>
-        <ol className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {lessons.map((l) => (
-            <LessonCard key={l.id} lang={lang} board={model.id} lesson={l} />
-          ))}
-        </ol>
-      </section>
-
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        <AssemblyPanel store={store} board={model.id} steps={board.assembly} figure={getFigure} />
-        <div className="flex flex-col gap-5">
-          <OnBoard board={board} figure={getFigure} />
-          <FailurePanel store={store} failures={model.failures} figure={getFigure} />
-        </div>
-      </div>
-
-      <PinoutTable board={model.name} rows={pinout} />
-      <WireInPanel wireables={model.wireables} />
-
-      {board.sources.length > 0 && (
-        <section aria-labelledby={`${uid}-sources`} className="text-sm">
-          <h2 id={`${uid}-sources`} className="text-base">
-            {t("board.sources")}
-          </h2>
-          <ul className="mt-1 flex flex-col gap-1">
-            {board.sources.map((s) => (
-              <li key={s.url}>
-                <a href={s.url} rel="noopener noreferrer" target="_blank">
-                  {s.title}
-                </a>
-              </li>
+  const railTabs = [
+    {
+      id: "lessons",
+      label: t("board.lessons"),
+      content: (
+        <div data-testid="board-lessons">
+          <h3 className="sr-only">{t("board.lessons")}</h3>
+          <p className="mb-2 text-sm text-muted">{t("board.lessonsLede")}</p>
+          <ol>
+            {lessons.map((l) => (
+              <LessonRow key={l.id} lang={lang} board={model.id} lesson={l} />
             ))}
-          </ul>
-        </section>
-      )}
+          </ol>
+        </div>
+      ),
+    },
+    ...(board.assembly.length
+      ? [
+          {
+            id: "assembly",
+            label: t("index.assembly"),
+            badge: assemblyDone ? `${assemblyDone}/${board.assembly.length}` : null,
+            content: <AssemblyPanel store={store} board={model.id} steps={board.assembly} figure={getFigure} />,
+          },
+        ]
+      : []),
+    ...(model.failures.length ? [{ id: "failures", label: t("failures.title"), content: <FailurePanel store={store} failures={model.failures} figure={getFigure} /> }] : []),
+    {
+      id: "facts",
+      label: t("board.facts"),
+      content: (
+        <>
+          <Facts board={board} />
+          <OnBoard board={board} figure={getFigure} />
+        </>
+      ),
+    },
+  ];
 
-      <LabDock lab="board" itemId={model.id} store={store} figure={figure} />
+  const belowTabs = [
+    { id: "pinout", label: t("pinout.title"), content: <PinoutTable board={model.name} rows={pinout} /> },
+    ...(model.wireables.length ? [{ id: "wire", label: t("wire.title"), content: <WireInPanel wireables={model.wireables} /> }] : []),
+    { id: "power", label: t("board.power"), content: <Power board={board} /> },
+    ...(board.sources.length
+      ? [
+          {
+            id: "sources",
+            label: t("board.sources"),
+            content: (
+              <section aria-labelledby={`${uid}-sources`} className="max-w-[72ch] text-sm">
+                <h2 id={`${uid}-sources`} className="sr-only">
+                  {t("board.sources")}
+                </h2>
+                <ul className="flex flex-col gap-2">
+                  {board.sources.map((s) => (
+                    <li key={s.url}>
+                      <a href={s.url} rel="noopener noreferrer" target="_blank">
+                        {s.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ),
+          },
+        ]
+      : []),
+  ];
 
-      <UsageToggle />
-    </div>
+  return (
+    <WorkspaceFrame
+      data-testid="board-workspace"
+      data-board={model.id}
+      bar={
+        <WorkspaceBar
+          back={{ href: `/${lang}/boards`, label: t("board.back") }}
+          tone="cobalt"
+          kicker={`${t("index.fig", { n: model.fig })} · ${board.maker}`}
+          title={model.name}
+          status={notice}
+          actions={
+            <>
+              <SoundToggle compact />
+              <LabDock lab="board" itemId={model.id} store={store} figure={figure} />
+            </>
+          }
+        />
+      }
+      stage={
+        <>
+          <ViewBar store={store} board={model} figure={getFigure} views={["board", "power"]} variants={model.variants} xr={xr} onXr={setXr} yaw={yaw} onYaw={setYaw} />
+          <FigureFrame fill ref={attachFigure} src={model.figurePage} title={model.name} initial={initial} onEvent={onEvent} />
+          <div className="flex min-h-8 shrink-0 flex-nowrap items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <FigureReadout store={store} leds={model.leds} />
+          </div>
+        </>
+      }
+      rail={
+        <Panel>
+          <div className="flex shrink-0 flex-col gap-3 border-b-[1.5px] border-rule p-4">
+            <p className="line-clamp-3 text-sm leading-relaxed">{tc(board.tagline)}</p>
+            <BoardProgress
+              board={model.id}
+              total={lessons.length}
+              hasAssembly={board.assembly.length > 0}
+              labels={{ lessons: t("index.lessons"), count: data.progressText.count, value: data.progressText.value, assembly: t("index.assemblyTodo"), assemblyDone: t("index.assemblyDone") }}
+              size="sm"
+            />
+            {nextLesson && (
+              <ButtonLink href={`/${lang}/boards/${model.id}/${nextLesson.id}`} variant="primary" className="self-start">
+                {t(anyDone ? "board.continue" : "board.start", { title: nextLesson.title })}
+                <Icon name="chevron-right" size={16} aria-hidden="true" />
+              </ButtonLink>
+            )}
+          </div>
+          <div className="flex min-h-0 flex-1 flex-col">
+            <Tabs fill phoneGrid label={model.name} tabs={railTabs} defaultValue="lessons" listClassName="ws-sticky-tabs" />
+          </div>
+        </Panel>
+      }
+      below={
+        <div className="flex flex-col gap-8">
+          <p className="ink-prose text-lg">{tc(board.overview)}</p>
+          <Tabs label={t("board.reference")} tabs={belowTabs} defaultValue="pinout" phoneGrid />
+        </div>
+      }
+    />
   );
 }

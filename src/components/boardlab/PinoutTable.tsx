@@ -15,14 +15,14 @@ export function PinoutTable({ board, rows }: { board: string; rows: PinRow[] }) 
   const shown = cap === "all" ? rows : rows.filter((r) => r.caps.includes(cap));
 
   return (
-    <section aria-labelledby={`${id}-title`} className="ink-card p-3 sm:p-4" data-testid="pinout">
+    <section aria-labelledby={`${id}-title`} data-testid="pinout">
       <div className="flex flex-wrap items-center gap-3">
-        <h2 id={`${id}-title`} className="me-auto text-xl">
+        <h2 id={`${id}-title`} className="sr-only">
           {t("pinout.title")}
         </h2>
-        <label className="flex items-center gap-2 text-sm">
-          <span>{t("pinout.filter")}</span>
-          <select className="ink-field h-11 py-0 text-sm" value={cap} onChange={(e) => setCap(e.target.value as PinCap | "all")}>
+        <label className="flex items-center gap-2">
+          <span className="ink-label">{t("pinout.filter")}</span>
+          <select className="ink-field py-0" value={cap} onChange={(e) => setCap(e.target.value as PinCap | "all")}>
             <option value="all">{t("pinout.all")}</option>
             {present.map((c) => (
               <option key={c} value={c}>
@@ -33,10 +33,10 @@ export function PinoutTable({ board, rows }: { board: string; rows: PinRow[] }) 
         </label>
       </div>
       {/* Scrolls both ways, so it takes focus (keyboard scrolling) and is named by the section heading. */}
-      <div role="region" aria-labelledby={`${id}-title`} tabIndex={0} className="mt-3 max-h-[560px] overflow-auto rounded-md border-2 border-line">
+      <div role="region" aria-labelledby={`${id}-title`} tabIndex={0} className="mt-3 max-h-[min(36rem,75svh)] overflow-auto rounded-ink-sm border-[1.5px] border-rule">
         <table className="w-full min-w-[640px] text-sm">
           <caption className="sr-only">{t("pinout.caption", { board })}</caption>
-          <thead className="sticky top-0 bg-surface">
+          <thead className="sticky top-0 bg-sunken">
             <tr className="text-start">
               <th scope="col" className="px-2 py-2 text-start">{t("pinout.header")}</th>
               <th scope="col" className="px-2 py-2 text-start">{t("pinout.pin")}</th>

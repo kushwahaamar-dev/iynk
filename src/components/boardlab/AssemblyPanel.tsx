@@ -67,62 +67,70 @@ export function AssemblyPanel({ store, board, steps, figure }: { store: BoardLab
   const complete = steps.every((s) => done.includes(s.id));
 
   return (
-    <section aria-labelledby={`${id}-title`} className="ink-card p-3 sm:p-4" data-testid="assembly-panel">
-      <div className="flex flex-wrap items-center gap-2">
-        <h2 id={`${id}-title`} className="me-auto text-xl">
-          {t("assembly.title")}
-        </h2>
-        <span className="font-mono text-sm font-bold tabular">{t("assembly.progress", { done: done.length, total: steps.length })}</span>
+    <section aria-labelledby={`${id}-title`} className="flex flex-col gap-2" data-testid="assembly-panel">
+      <h3 id={`${id}-title`} className="sr-only">
+        {t("assembly.title")}
+      </h3>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <p className="me-auto text-sm text-muted">{t("assembly.lede")}</p>
+        <span className="tabular shrink-0 font-ui text-xs font-bold">{t("assembly.progress", { done: done.length, total: steps.length })}</span>
         {done.length > 0 && (
-          <Button size="sm" variant="ghost" onClick={() => store.dispatch({ type: "assembly/reset" })}>
+          <Button size="sm" variant="ghost" className="shrink-0" onClick={() => store.dispatch({ type: "assembly/reset" })}>
             {t("assembly.reset")}
           </Button>
         )}
       </div>
-      <p className="mt-1 text-sm text-muted">{t("assembly.lede")}</p>
       {refusal && (
-        <Callout tone="warn" title={t("assembly.refused")} live className="mt-3">
+        <Callout tone="warn" title={t("assembly.refused")} live>
           <p>{refusal}</p>
         </Callout>
       )}
-      <ol className="mt-3 flex flex-col gap-2">
+      {complete && (
+        <p role="status" className="text-sm font-semibold text-good">
+          {t("assembly.complete")}
+        </p>
+      )}
+      <ol className="divide-y-[1.5px] divide-rule">
         {steps.map((step, i) => {
           const isDone = done.includes(step.id);
           const isCurrent = current?.id === step.id;
           return (
             <li
               key={step.id}
-              className={cx("rounded-md border-2 p-3", isCurrent ? "border-ink" : "border-line", isDone && "on-fill bg-good-bg")}
+              className={cx("py-2.5", isCurrent && "-mx-4 border-s-4 border-ink bg-sunken px-3")}
               aria-current={isCurrent ? "step" : undefined}
               data-step={step.id}
               data-done={isDone ? 1 : 0}
             >
-              <div className="flex flex-wrap items-center gap-2">
-                <span aria-hidden="true" className={cx("inline-flex size-7 items-center justify-center rounded-full border-2 text-sm font-bold", isDone ? "border-good bg-good text-paper" : "border-line")}>
-                  {isDone ? <Icon name="check" size={14} /> : i + 1}
+              <div className="flex items-center gap-3">
+                <span
+                  aria-hidden="true"
+                  className={cx(
+                    "tabular inline-flex size-6 shrink-0 items-center justify-center rounded-full border-[1.5px] font-ui text-xs font-bold",
+                    isDone ? "border-good bg-good text-paper" : isCurrent ? "border-ink" : "border-rule text-muted",
+                  )}
+                >
+                  {isDone ? <Icon name="check" size={12} /> : i + 1}
                 </span>
-                <span className="text-xs font-semibold uppercase tracking-wide text-muted">{t(`assembly.${step.kind}`)}</span>
-                <span className="me-auto font-semibold">{tc(step.title)}</span>
+                <span className="min-w-0 flex-1">
+                  <span className={cx("block text-sm leading-snug", isDone ? "text-muted" : "font-semibold")}>{tc(step.title)}</span>
+                  <span className="block text-xs text-muted">{t(`assembly.${step.kind}`)}</span>
+                </span>
                 {isDone ? (
-                  <span className="text-sm font-semibold">{t("assembly.doneStep")}</span>
+                  <span className="shrink-0 text-xs font-semibold text-good">{t("assembly.doneStep")}</span>
                 ) : step.action ? (
-                  <Button size="sm" variant={isCurrent ? "primary" : "secondary"} onClick={() => doStep(step)}>
+                  <Button size="sm" variant={isCurrent ? "primary" : "secondary"} className="shrink-0 whitespace-nowrap" onClick={() => doStep(step)}>
                     {t("assembly.doIt")}
                   </Button>
                 ) : (
-                  <span className="text-sm text-muted">{t("assembly.byHand")}</span>
+                  <span className="max-w-[9rem] shrink-0 text-end text-xs text-muted">{t("assembly.byHand")}</span>
                 )}
               </div>
-              {(isCurrent || isDone) && <p className="mt-2 text-sm">{tc(step.body)}</p>}
+              {isCurrent && <p className="mt-2 ps-9 text-sm">{tc(step.body)}</p>}
             </li>
           );
         })}
       </ol>
-      {complete && (
-        <p role="status" className="mt-3 font-semibold text-good">
-          {t("assembly.complete")}
-        </p>
-      )}
     </section>
   );
 }

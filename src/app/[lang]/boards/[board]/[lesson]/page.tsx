@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function LessonPage({ params }: Props) {
   return (
-    <Suspense fallback={<div className="mx-auto min-h-[80vh] max-w-7xl px-4 sm:px-6" aria-busy="true" />}>
+    <Suspense fallback={<div className="min-h-[calc(100dvh-var(--header-h))]" aria-busy="true" />}>
       <Lesson params={params} />
     </Suspense>
   );
@@ -49,11 +49,15 @@ async function Lesson({ params }: Pick<Props, "params">) {
   if (!page || !model) notFound();
   const messages = await boardLabMessages(lang);
   return (
-    <>
-      <UntranslatedNotice lang={lang} textLang={page.textLang} />
-      <LabRoom lab="board" itemId={board}>
-        <LessonWorkspace key={`${board}/${lesson}`} lang={lang} model={model} messages={messages} text={lessonText(page.text, lesson)} />
-      </LabRoom>
-    </>
+    <LabRoom lab="board" itemId={board}>
+      <LessonWorkspace
+        key={`${board}/${lesson}`}
+        lang={lang}
+        model={model}
+        messages={messages}
+        text={lessonText(page.text, lesson)}
+        notice={<UntranslatedNotice lang={lang} textLang={page.textLang} variant="chip" />}
+      />
+    </LabRoom>
   );
 }

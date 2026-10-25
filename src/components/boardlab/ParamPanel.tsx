@@ -20,12 +20,12 @@ export function ParamPanel({ store, pulse }: { store: BoardLabStore; pulse: stri
   const set = (pid: string, value: number | string | boolean) => store.dispatch({ type: "param/set", id: pid, value });
 
   return (
-    <section aria-labelledby={`${id}-title`} className="ink-card p-3 sm:p-4" data-testid="param-panel">
-      <h3 id={`${id}-title`} className="text-lg">
+    <section aria-labelledby={`${id}-title`} className="flex flex-col gap-3" data-testid="param-panel">
+      <h3 id={`${id}-title`} className="sr-only">
         {t("params.title")}
       </h3>
-      <p className="mt-1 text-sm text-muted">{t("params.lede")}</p>
-      <ul className="mt-3 flex flex-col gap-4">
+      <p className="text-sm text-muted">{t("params.lede")}</p>
+      <ul className="flex flex-col gap-4">
         {params.map((p: ParamChip) => {
           const value = values[p.id] ?? p.default;
           return (
@@ -41,7 +41,7 @@ export function ParamPanel({ store, pulse }: { store: BoardLabStore; pulse: stri
                   </span>
                   <input
                     type="range"
-                    className="h-11 w-full accent-[var(--color-cobalt-m)]"
+                    className="h-11 w-full"
                     min={p.min}
                     max={p.max}
                     step={p.step}

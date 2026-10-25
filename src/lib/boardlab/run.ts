@@ -54,6 +54,8 @@ export interface RunnerEnv {
 
 /** Figure statuses in which the MCU runs code. A figure that has not reported yet counts as running. */
 const RUNS = new Set(['running', 'uploading']);
+// Figure states in which the chip has no power or is broken: the program is gone, as on the bench.
+const LOST = new Set(['off', 'no-power', 'brownout', 'fault']);
 
 function formatError(e: RunError): string {
   const where = e.line ? `${e.line}:${e.col} ` : '';
@@ -304,6 +306,12 @@ export class LessonRunner {
       for (const [net, v] of Object.entries(inputs)) if (v === 0 || v === 1) this.session.drive(net, v);
     }
     if (!this.session || this.state.run.status !== 'running') return;
+    if (statusChanged && LOST.has(String(status))) {
+      // Unplugged, shorted, reversed or browned out: the run stops and says why; Run again once it's fixed.
+      this.end(false);
+      this.sys('lostPower', undefined, 'err');
+      return;
+    }
     const inReset = this.env.resetControls.some((id) => Number(controls[id] ?? 0) === 1);
     const runs = status === undefined || RUNS.has(String(status));
     if ((statusChanged || controlsChanged) && (inReset || !runs)) {

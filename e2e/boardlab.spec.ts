@@ -65,9 +65,12 @@ test.describe("Board Lab", () => {
     await page.goto("/en/boards/uno-r3");
     await expect(main(page).getByTestId("board-workspace")).toBeVisible();
     await expect(main(page).locator("iframe")).toHaveCount(1);
-    await expect(main(page).getByTestId("pinout").locator("tbody tr").first()).toBeVisible();
-    await expect(main(page).getByTestId("assembly-panel")).toBeVisible();
     await expect(main(page).getByTestId("board-lessons").locator("li")).toHaveCount(16);
+    // Assembly sits in the rail beside the figure, the pinout in the reference tabs under it.
+    await main(page).getByRole("tab", { name: boardlab.index.assembly }).click();
+    await expect(main(page).getByTestId("assembly-panel")).toBeVisible();
+    await main(page).getByRole("tab", { name: boardlab.pinout.title }).click();
+    await expect(main(page).getByTestId("pinout").locator("tbody tr").first()).toBeVisible();
     await expectNoAxeViolations(page);
     expect(errors).toEqual([]);
   });

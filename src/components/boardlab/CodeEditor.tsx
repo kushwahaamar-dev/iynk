@@ -5,7 +5,7 @@ import { cpp } from "@codemirror/lang-cpp";
 import { python } from "@codemirror/lang-python";
 import { HighlightStyle, StreamLanguage, bracketMatching, indentOnInput, syntaxHighlighting } from "@codemirror/language";
 import { verilog } from "@codemirror/legacy-modes/mode/verilog";
-import { Annotation, EditorState, RangeSetBuilder, StateEffect, StateField, type Extension } from "@codemirror/state";
+import { Annotation, Compartment, EditorState, RangeSetBuilder, StateEffect, StateField, type Extension } from "@codemirror/state";
 import { Decoration, EditorView, drawSelection, highlightActiveLine, keymap, lineNumbers, type DecorationSet } from "@codemirror/view";
 import { tags } from "@lezer/highlight";
 import { useEffect, useRef } from "react";
@@ -17,6 +17,10 @@ const external = Annotation.define<boolean>();
 
 type Marks = { chips: ChipRange[]; errorLine: number | null; selected: string[] };
 const setMarks = StateEffect.define<Marks>();
+
+// Code wraps only on a phone; from 640 px a long line scrolls sideways so the line numbers stay true.
+const PHONE = "(max-width: 639px)";
+const wrapFor = (phone: boolean): Extension => (phone ? EditorView.lineWrapping : []);
 
 function buildMarks(state: EditorState, m: Marks, chipTitle: (id: string) => string): DecorationSet {
   const b = new RangeSetBuilder<Decoration>();
@@ -107,6 +111,8 @@ export function CodeEditor({ code, language, chips, errorLine, selectedChips, la
       },
       provide: (f) => EditorView.decorations.from(f),
     });
+    const wrap = new Compartment();
+    const phone = window.matchMedia(PHONE);
     const v = new EditorView({
       parent: el,
       state: EditorState.create({
@@ -122,7 +128,7 @@ export function CodeEditor({ code, language, chips, errorLine, selectedChips, la
           syntaxHighlighting(ink),
           theme,
           marks,
-          EditorView.lineWrapping,
+          wrap.of(wrapFor(phone.matches)),
           EditorView.contentAttributes.of({ "aria-label": label, "aria-multiline": "true" }),
           keymap.of([
             { key: "Mod-Enter", run: () => (handlers.current.onRun(), true) },
@@ -146,7 +152,10 @@ export function CodeEditor({ code, language, chips, errorLine, selectedChips, la
       }),
     });
     view.current = v;
+    const onWidth = () => v.dispatch({ effects: wrap.reconfigure(wrapFor(phone.matches)) });
+    phone.addEventListener("change", onWidth);
     return () => {
+      phone.removeEventListener("change", onWidth);
       v.destroy();
       view.current = null;
     };

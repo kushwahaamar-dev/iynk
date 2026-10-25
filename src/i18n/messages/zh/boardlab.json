@@ -16,7 +16,8 @@
     "logic": "{volts} V 逻辑电平",
     "clock": "{mhz} MHz",
     "languages": "编程语言",
-    "fig": "图 {n}"
+    "fig": "图 {n}",
+    "assemblyTodo": "尚未组装"
   },
   "lang": {
     "arduino-cpp": "Arduino C++",
@@ -104,7 +105,10 @@
     "lessons": "课程",
     "lessonsLede": "每节课都在开发板上运行你自己的代码。通过这节课的检查，就能把它打勾完成。",
     "openLesson": "第 {n} 课：{title}",
-    "sources": "核对来源"
+    "sources": "核对来源",
+    "start": "开始：{title}",
+    "continue": "继续：{title}",
+    "reference": "参考资料"
   },
   "pinout": {
     "title": "引脚图",
@@ -185,7 +189,8 @@
       "floating-input": "输入悬空",
       "thermal": "过热",
       "config": "配置错误"
-    }
+    },
+    "more": "这块板的其他故障"
   },
   "wire": {
     "title": "接上外设",
@@ -209,15 +214,13 @@
       "purple": "紫色",
       "brown": "棕色",
       "grey": "灰色"
-    }
+    },
+    "allParts": "{board} 页面上的全部 {n} 个元件"
   },
   "lesson": {
     "back": "回到 {board}",
     "of": "第 {n} 课，共 {total} 课",
     "strip": "课程",
-    "earlier": "之前的课程",
-    "more": "更多课程",
-    "card": "第 {n} 课：{title}",
     "done": "已完成",
     "prev": "上一课",
     "next": "下一课",
@@ -295,7 +298,10 @@
     },
     "error": {
       "unsupported": "这段代码在这个版本里无法运行。"
-    }
+    },
+    "tab": "串口",
+    "notRunning": "你的代码还没有运行",
+    "lostPower": "开发板断电了，代码已停止。"
   },
   "params": {
     "title": "参数",
@@ -319,7 +325,8 @@
     "allPass": "所有检查都通过了。课程完成。",
     "again": "再检查一次",
     "summary": "{passed}/{total} 项检查通过",
-    "limit": "检查运行超过 20 秒，已停止。请查找从不等待的循环。"
+    "limit": "检查运行超过 20 秒，已停止。请查找从不等待的循环。",
+    "run": "运行检查"
   },
   "view": {
     "label": "图示视图",

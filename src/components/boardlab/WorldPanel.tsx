@@ -59,7 +59,7 @@ function Slider({ input, store }: { input: WorldInput; store: BoardLabStore }) {
       </span>
       <input
         type="range"
-        className="h-11 w-full accent-[var(--color-mustard-m)]"
+        className="h-11 w-full"
         min={input.min}
         max={input.max}
         step={input.step}
@@ -94,12 +94,12 @@ export function WorldPanel({ store, inputs }: { store: BoardLabStore; inputs: Wo
   const controls = inputs.map((input) => ({ input, control: controlFor(input) })).filter((c) => c.control.kind !== "none");
   if (controls.length === 0) return null;
   return (
-    <section aria-labelledby={`${id}-title`} className="ink-card p-3 sm:p-4" data-testid="world-panel">
-      <h3 id={`${id}-title`} className="text-lg">
+    <section aria-labelledby={`${id}-title`} className="flex flex-col gap-3" data-testid="world-panel">
+      <h3 id={`${id}-title`} className="sr-only">
         {t("world.title")}
       </h3>
-      <p className="mt-1 text-sm text-muted">{t("world.lede")}</p>
-      <ul className="mt-3 flex flex-col gap-3">
+      <p className="text-sm text-muted">{t("world.lede")}</p>
+      <ul className="flex flex-col gap-3">
         {controls.map(({ input, control }) => (
           <li key={input.id}>
             {control.kind === "hold" ? (

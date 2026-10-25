@@ -16,7 +16,8 @@
     "logic": "{volts} V logic",
     "clock": "{mhz} MHz",
     "languages": "Code in",
-    "fig": "Fig. {n}"
+    "fig": "Fig. {n}",
+    "assemblyTodo": "Assembly not done"
   },
   "lang": {
     "arduino-cpp": "Arduino C++",
@@ -104,7 +105,10 @@
     "lessons": "Lessons",
     "lessonsLede": "Each lesson runs your own code on the board. Finish its checks to tick it off.",
     "openLesson": "Lesson {n}: {title}",
-    "sources": "Checked against"
+    "sources": "Checked against",
+    "start": "Start: {title}",
+    "continue": "Continue: {title}",
+    "reference": "Reference"
   },
   "pinout": {
     "title": "Pinout",
@@ -185,7 +189,8 @@
       "floating-input": "Floating input",
       "thermal": "Overheating",
       "config": "Configuration"
-    }
+    },
+    "more": "More faults on this board"
   },
   "wire": {
     "title": "Wire it in",
@@ -209,15 +214,13 @@
       "purple": "purple",
       "brown": "brown",
       "grey": "grey"
-    }
+    },
+    "allParts": "All {n} parts on the {board} page"
   },
   "lesson": {
     "back": "Back to the {board}",
     "of": "Lesson {n} of {total}",
     "strip": "Lessons",
-    "earlier": "Earlier lessons",
-    "more": "More lessons",
-    "card": "Lesson {n}: {title}",
     "done": "Done",
     "prev": "Previous lesson",
     "next": "Next lesson",
@@ -295,7 +298,10 @@
     },
     "error": {
       "unsupported": "This code cannot run in this build."
-    }
+    },
+    "tab": "Serial",
+    "notRunning": "Your code isn't running yet",
+    "lostPower": "Board lost power. The code stopped."
   },
   "params": {
     "title": "Parameters",
@@ -319,7 +325,8 @@
     "allPass": "All checks pass. Lesson done.",
     "again": "Check again",
     "summary": "{passed} of {total} checks pass",
-    "limit": "The check run took longer than 20 seconds and was stopped. Look for a loop that never waits."
+    "limit": "The check run took longer than 20 seconds and was stopped. Look for a loop that never waits.",
+    "run": "Run checks"
   },
   "view": {
     "label": "Figure view",

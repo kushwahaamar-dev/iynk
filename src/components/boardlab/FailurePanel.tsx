@@ -13,9 +13,57 @@ import { useLab } from "./useLab";
 
 type FigureFault = { id?: string; msg?: string; fix?: string } | null | undefined;
 
-/** "Break it": every failure the board has, triggered for real in the figure, with why and how to fix it. */
-export function FailurePanel({ store, failures, figure }: { store: BoardLabStore; failures: FailureMode[]; figure: () => FigureHandle | null }) {
+/** The circuit a fault builds in the figure, if it is one of a lesson's circuit faults. */
+function faultCircuit(f: FailureMode): string | null {
+  const state = f.figure.type === "set" ? (f.figure.state as Record<string, unknown>) : null;
+  return typeof state?.circuit === "string" ? state.circuit : null;
+}
+
+function FaultRow({ f, on, onTrigger, onRepair }: { f: FailureMode; on: boolean; onTrigger: () => void; onRepair: () => void }) {
   const { t, tc } = useText();
+  return (
+    <li className={cx("py-2.5", on && "-mx-4 border-s-4 border-bad bg-sunken px-3")} data-failure={f.id}>
+      <div className="flex items-center gap-3">
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-semibold leading-snug">{tc(f.title)}</span>
+          <span className="block text-xs text-muted">{on ? <strong className="font-semibold text-ink">{t("failures.active")}</strong> : t(`failures.kind.${f.kind}`)}</span>
+        </span>
+        {on ? (
+          <Button size="sm" variant="danger" className="shrink-0 whitespace-nowrap" onClick={onRepair}>
+            {t("failures.clear")}
+          </Button>
+        ) : (
+          <Button size="sm" variant="secondary" className="shrink-0 whitespace-nowrap" onClick={onTrigger}>
+            {t("failures.trigger")}
+          </Button>
+        )}
+      </div>
+      {on && (
+        <dl className="mt-2 grid gap-2 text-sm">
+          <div>
+            <dt className="font-semibold">{t("failures.symptom")}</dt>
+            <dd>{tc(f.symptom)}</dd>
+          </div>
+          <div>
+            <dt className="font-semibold">{t("failures.why")}</dt>
+            <dd>{tc(f.explanation)}</dd>
+          </div>
+          <div>
+            <dt className="font-semibold">{t("failures.fix")}</dt>
+            <dd>{tc(f.fix)}</dd>
+          </div>
+        </dl>
+      )}
+    </li>
+  );
+}
+
+/**
+ * "Break it": every failure the board has, triggered for real in the figure, with why and how to fix it.
+ * On a lesson the faults of its own circuit come first.
+ */
+export function FailurePanel({ store, failures, figure, circuit = null }: { store: BoardLabStore; failures: FailureMode[]; figure: () => FigureHandle | null; circuit?: string | null }) {
+  const { t } = useText();
   const id = useId();
   const active = useLab(store, (s) => s.fault);
   const reported = useLab(store, (s) => s.figure.fault) as FigureFault;
@@ -26,61 +74,29 @@ export function FailurePanel({ store, failures, figure }: { store: BoardLabStore
     // A `set` fault reaches the figure through the store's figure state; presses and acts are one-shot.
     if (f.figure.type !== "set") sendCommand(figure(), f.figure);
   };
+  const repair = () => store.dispatch({ type: "fault/clear" });
+  const mine = circuit ? failures.filter((f) => faultCircuit(f) === circuit) : [];
+  const rest = failures.filter((f) => !mine.includes(f));
+  const rows = (list: FailureMode[]) => list.map((f) => <FaultRow key={f.id} f={f} on={active === f.id} onTrigger={() => trigger(f)} onRepair={repair} />);
 
   return (
-    <section aria-labelledby={`${id}-title`} className="ink-card p-3 sm:p-4" data-testid="failure-panel">
-      <div className="flex flex-wrap items-center gap-2">
-        <h3 id={`${id}-title`} className="me-auto text-lg">
-          {t("failures.title")}
-        </h3>
-        {active && (
-          <Button size="sm" variant="secondary" onClick={() => store.dispatch({ type: "fault/clear" })}>
-            {t("failures.clear")}
-          </Button>
-        )}
-      </div>
-      <p className="mt-1 text-sm text-muted">{t("failures.lede")}</p>
+    <section aria-labelledby={`${id}-title`} className="flex flex-col gap-2" data-testid="failure-panel">
+      <h3 id={`${id}-title`} className="sr-only">
+        {t("failures.title")}
+      </h3>
+      <p className="text-sm text-muted">{t("failures.lede")}</p>
       {reported?.msg && (
-        <Callout tone="danger" title={t("failures.figureFault", { msg: reported.msg })} live className="mt-3">
+        <Callout tone="danger" title={t("failures.figureFault", { msg: reported.msg })} live>
           {reported.fix ? <p>{reported.fix}</p> : null}
         </Callout>
       )}
-      <ul className="mt-3 flex flex-col gap-2">
-        {failures.map((f) => {
-          const on = active === f.id;
-          return (
-            <li key={f.id} className={cx("rounded-md border-2 p-3", on ? "on-fill border-bad bg-bad-bg" : "border-line")} data-failure={f.id}>
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-semibold uppercase tracking-wide text-muted">{t(`failures.kind.${f.kind}`)}</span>
-                <span className="me-auto font-semibold">{tc(f.title)}</span>
-                {on ? (
-                  <span className="text-sm font-semibold">{t("failures.active")}</span>
-                ) : (
-                  <Button size="sm" variant="danger" onClick={() => trigger(f)}>
-                    {t("failures.trigger")}
-                  </Button>
-                )}
-              </div>
-              {on && (
-                <dl className="mt-2 grid gap-2 text-sm">
-                  <div>
-                    <dt className="font-semibold">{t("failures.symptom")}</dt>
-                    <dd>{tc(f.symptom)}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-semibold">{t("failures.why")}</dt>
-                    <dd>{tc(f.explanation)}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-semibold">{t("failures.fix")}</dt>
-                    <dd>{tc(f.fix)}</dd>
-                  </div>
-                </dl>
-              )}
-            </li>
-          );
-        })}
-      </ul>
+      <ul className="divide-y-[1.5px] divide-rule">{rows(mine.length ? mine : rest)}</ul>
+      {mine.length > 0 && rest.length > 0 && (
+        <>
+          <p className="ink-kicker mt-3">{t("failures.more")}</p>
+          <ul className="divide-y-[1.5px] divide-rule">{rows(rest)}</ul>
+        </>
+      )}
     </section>
   );
 }

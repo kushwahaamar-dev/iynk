@@ -16,7 +16,8 @@
     "logic": "{volts}-V-Logik",
     "clock": "{mhz} MHz",
     "languages": "Programmiert in",
-    "fig": "Abb. {n}"
+    "fig": "Abb. {n}",
+    "assemblyTodo": "Zusammenbau offen"
   },
   "lang": {
     "arduino-cpp": "Arduino C++",
@@ -104,7 +105,10 @@
     "lessons": "Lektionen",
     "lessonsLede": "Jede Lektion führt deinen eigenen Code auf dem Board aus. Besteh ihre Prüfungen, um sie abzuhaken.",
     "openLesson": "Lektion {n}: {title}",
-    "sources": "Geprüft anhand von"
+    "sources": "Geprüft anhand von",
+    "start": "Starten: {title}",
+    "continue": "Weiter: {title}",
+    "reference": "Nachschlagen"
   },
   "pinout": {
     "title": "Pinbelegung",
@@ -185,7 +189,8 @@
       "floating-input": "Offener Eingang",
       "thermal": "Überhitzung",
       "config": "Konfiguration"
-    }
+    },
+    "more": "Weitere Fehler dieses Boards"
   },
   "wire": {
     "title": "Anschließen",
@@ -209,15 +214,13 @@
       "purple": "lila",
       "brown": "braun",
       "grey": "grau"
-    }
+    },
+    "allParts": "Alle {n} Bauteile auf der Seite {board}"
   },
   "lesson": {
     "back": "Zurück zum {board}",
     "of": "Lektion {n} von {total}",
     "strip": "Lektionen",
-    "earlier": "Frühere Lektionen",
-    "more": "Weitere Lektionen",
-    "card": "Lektion {n}: {title}",
     "done": "Erledigt",
     "prev": "Vorige Lektion",
     "next": "Nächste Lektion",
@@ -295,7 +298,10 @@
     },
     "error": {
       "unsupported": "Dieser Code kann in diesem Build nicht laufen."
-    }
+    },
+    "tab": "Seriell",
+    "notRunning": "Dein Code läuft noch nicht",
+    "lostPower": "Das Board hat keinen Strom mehr. Der Code wurde gestoppt."
   },
   "params": {
     "title": "Parameter",
@@ -319,7 +325,8 @@
     "allPass": "Alle Prüfungen bestanden. Lektion erledigt.",
     "again": "Erneut prüfen",
     "summary": "{passed} von {total} Prüfungen bestanden",
-    "limit": "Die Prüfung dauerte länger als 20 Sekunden und wurde gestoppt. Suche eine Schleife, die nie wartet."
+    "limit": "Die Prüfung dauerte länger als 20 Sekunden und wurde gestoppt. Suche eine Schleife, die nie wartet.",
+    "run": "Prüfen"
   },
   "view": {
     "label": "Ansicht der Abbildung",

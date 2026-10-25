@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function BoardPage({ params }: Props) {
   return (
-    <Suspense fallback={<div className="mx-auto min-h-[80vh] max-w-7xl px-4 sm:px-6" aria-busy="true" />}>
+    <Suspense fallback={<div className="min-h-[calc(100dvh-var(--header-h))]" aria-busy="true" />}>
       <Board params={params} />
     </Suspense>
   );
@@ -48,16 +48,14 @@ async function Board({ params }: Pick<Props, "params">) {
     Object.entries((page.text.lessons ?? {}) as Record<string, { title?: string }>).map(([k, v]) => [k, { title: v?.title }]),
   );
   return (
-    <>
-      <UntranslatedNotice lang={lang} textLang={page.textLang} />
-      <LabRoom lab="board" itemId={id}>
-        <BoardWorkspace
-          lang={lang}
-          messages={messages}
-          text={{ ...page.text, lessons: lessonsText }}
-          data={{ model: boardModel(page), board: withoutLessons(page.board), lessons: lessonLinks(page), progressText: { count: common.progress.count, value: common.progress.label } }}
-        />
-      </LabRoom>
-    </>
+    <LabRoom lab="board" itemId={id}>
+      <BoardWorkspace
+        lang={lang}
+        messages={messages}
+        text={{ ...page.text, lessons: lessonsText }}
+        data={{ model: boardModel(page), board: withoutLessons(page.board), lessons: lessonLinks(page), progressText: { count: common.progress.count, value: common.progress.label } }}
+        notice={<UntranslatedNotice lang={lang} textLang={page.textLang} variant="chip" />}
+      />
+    </LabRoom>
   );
 }

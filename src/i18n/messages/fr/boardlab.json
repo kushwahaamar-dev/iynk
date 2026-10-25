@@ -16,7 +16,8 @@
     "logic": "logique {volts} V",
     "clock": "{mhz} MHz",
     "languages": "Langages",
-    "fig": "Fig. {n}"
+    "fig": "Fig. {n}",
+    "assemblyTodo": "Montage à faire"
   },
   "lang": {
     "arduino-cpp": "Arduino C++",
@@ -104,7 +105,10 @@
     "lessons": "Leçons",
     "lessonsLede": "Chaque leçon fait tourner votre propre code sur la carte. Réussissez ses vérifications pour la valider.",
     "openLesson": "Leçon {n} : {title}",
-    "sources": "Sources vérifiées"
+    "sources": "Sources vérifiées",
+    "start": "Commencer : {title}",
+    "continue": "Continuer : {title}",
+    "reference": "Référence"
   },
   "pinout": {
     "title": "Brochage",
@@ -185,7 +189,8 @@
       "floating-input": "Entrée flottante",
       "thermal": "Surchauffe",
       "config": "Configuration"
-    }
+    },
+    "more": "Autres pannes de cette carte"
   },
   "wire": {
     "title": "Câblage",
@@ -209,15 +214,13 @@
       "purple": "violet",
       "brown": "marron",
       "grey": "gris"
-    }
+    },
+    "allParts": "Les {n} composants sur la page {board}"
   },
   "lesson": {
     "back": "Retour à la carte {board}",
     "of": "Leçon {n} sur {total}",
     "strip": "Leçons",
-    "earlier": "Leçons précédentes",
-    "more": "Autres leçons",
-    "card": "Leçon {n} : {title}",
     "done": "Terminée",
     "prev": "Leçon précédente",
     "next": "Leçon suivante",
@@ -295,7 +298,10 @@
     },
     "error": {
       "unsupported": "Ce code ne peut pas tourner dans cette version."
-    }
+    },
+    "tab": "Série",
+    "notRunning": "Votre code ne tourne pas encore",
+    "lostPower": "La carte n'est plus alimentée. Le code s'est arrêté."
   },
   "params": {
     "title": "Paramètres",
@@ -319,7 +325,8 @@
     "allPass": "Toutes les vérifications passent. Leçon terminée.",
     "again": "Vérifier à nouveau",
     "summary": "{passed} vérifications réussies sur {total}",
-    "limit": "La vérification a duré plus de 20 secondes et a été arrêtée. Cherchez une boucle qui n'attend jamais."
+    "limit": "La vérification a duré plus de 20 secondes et a été arrêtée. Cherchez une boucle qui n'attend jamais.",
+    "run": "Lancer les vérifications"
   },
   "view": {
     "label": "Vue de la figure",

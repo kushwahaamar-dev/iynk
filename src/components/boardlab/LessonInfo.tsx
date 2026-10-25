@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
+import { cx } from "@/components/ui/cx";
 import { Tabs } from "@/components/ui/Tabs";
 import type { Lesson } from "@/content/schema";
 import { WireDot } from "./WireInPanel";
@@ -31,40 +32,66 @@ function Hints({ hints }: { hints: string[] }) {
   );
 }
 
-function Quiz({ quiz }: { quiz: NonNullable<Lesson["quiz"]> }) {
+/** The lesson's quick quiz: each answer a full-width row, and a reason with every answer once checked. */
+export function Quiz({ quiz }: { quiz: NonNullable<Lesson["quiz"]> }) {
   const { t, tc } = useText();
   const [picks, setPicks] = useState<Record<string, number>>({});
   const [checked, setChecked] = useState(false);
   const score = quiz.questions.filter((q) => picks[q.id] === q.answer).length;
   return (
-    <div className="flex flex-col gap-4">
-      {quiz.questions.map((q) => (
-        <fieldset key={q.id} className="flex flex-col gap-2">
-          <legend className="font-semibold">{tc(q.q)}</legend>
-          {q.options.map((o, i) => (
-            <label key={o} className="flex min-h-11 items-center gap-2">
-              <input type="radio" name={`${quiz.id}-${q.id}`} checked={picks[q.id] === i} onChange={() => setPicks({ ...picks, [q.id]: i })} />
-              <span>{tc(o)}</span>
-            </label>
-          ))}
-          {checked && (
-            <p className={picks[q.id] === q.answer ? "text-good" : "text-bad"}>
-              {picks[q.id] === q.answer ? t("lesson.quizRight") : t("lesson.quizWrong")} {tc(q.why)}
-            </p>
-          )}
-        </fieldset>
-      ))}
+    <div className="flex flex-col gap-5" data-testid="lesson-quiz">
+      {quiz.questions.map((q) => {
+        const right = picks[q.id] === q.answer;
+        return (
+          <fieldset key={q.id} className="flex flex-col gap-1">
+            <legend className="mb-1 text-base font-semibold leading-snug">{tc(q.q)}</legend>
+            {q.options.map((o, i) => {
+              const picked = picks[q.id] === i;
+              return (
+                <label
+                  key={o}
+                  className={cx(
+                    "flex min-h-11 cursor-pointer items-center gap-3 rounded-ink-sm border-[1.5px] px-3 py-2 text-sm leading-snug",
+                    checked && picked ? (right ? "on-fill border-good bg-good-bg" : "on-fill border-bad bg-bad-bg") : picked ? "border-ink" : "border-rule hover:bg-sunken",
+                  )}
+                >
+                  <input
+                    type="radio"
+                    className="size-4 shrink-0"
+                    name={`${quiz.id}-${q.id}`}
+                    checked={picked}
+                    onChange={() => {
+                      setPicks({ ...picks, [q.id]: i });
+                      setChecked(false);
+                    }}
+                  />
+                  <span>{tc(o)}</span>
+                </label>
+              );
+            })}
+            {checked && (
+              <p className={cx("mt-1 text-sm", right ? "text-good" : "text-bad")}>
+                <strong className="font-semibold">{right ? t("lesson.quizRight") : t("lesson.quizWrong")}</strong> {tc(q.why)}
+              </p>
+            )}
+          </fieldset>
+        );
+      })}
       <div className="flex items-center gap-3">
-        <Button size="sm" onClick={() => setChecked(true)} disabled={Object.keys(picks).length < quiz.questions.length}>
+        <Button size="sm" variant="secondary" onClick={() => setChecked(true)} disabled={Object.keys(picks).length < quiz.questions.length}>
           {t("lesson.quizCheck")}
         </Button>
-        {checked && <span role="status">{t("lesson.quizScore", { score, total: quiz.questions.length })}</span>}
+        {checked && (
+          <span role="status" className="text-sm font-semibold">
+            {t("lesson.quizScore", { score, total: quiz.questions.length })}
+          </span>
+        )}
       </div>
     </div>
   );
 }
 
-/** The lesson's info card: overview, pins, how the code works, specifications, hints and its quiz. */
+/** The lesson's reading: overview, pins, how the code works, specifications and hints (the quiz lives in the rail). */
 export function LessonInfo({ lesson }: { lesson: Lesson }) {
   const { t, tc } = useText();
   const tabs = [
@@ -146,10 +173,10 @@ export function LessonInfo({ lesson }: { lesson: Lesson }) {
             id: "specs",
             label: t("lesson.specs"),
             content: (
-              <dl className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <dl className="grid grid-cols-1 gap-x-6 sm:grid-cols-2">
                 {lesson.specs.map((s) => (
-                  <div key={s.label} className="rounded-md bg-sunken p-2">
-                    <dt className="text-xs font-semibold uppercase tracking-wide text-muted">{tc(s.label)}</dt>
+                  <div key={s.label} className="border-t-[1.5px] border-rule py-2">
+                    <dt className="ink-label">{tc(s.label)}</dt>
                     <dd className="font-medium">{tc(s.value)}</dd>
                   </div>
                 ))}
@@ -159,11 +186,10 @@ export function LessonInfo({ lesson }: { lesson: Lesson }) {
         ]
       : []),
     ...(lesson.hints.length > 0 ? [{ id: "hints", label: t("lesson.hints"), content: <Hints hints={lesson.hints} /> }] : []),
-    ...(lesson.quiz ? [{ id: "quiz", label: t("lesson.quiz"), content: <Quiz quiz={lesson.quiz} /> }] : []),
   ];
   return (
-    <section className="ink-card p-3 sm:p-4" data-testid="lesson-info">
-      <Tabs label={tc(lesson.title)} tabs={tabs} defaultValue="overview" />
+    <section data-testid="lesson-info">
+      <Tabs label={tc(lesson.title)} tabs={tabs} defaultValue="overview" phoneGrid />
     </section>
   );
 }

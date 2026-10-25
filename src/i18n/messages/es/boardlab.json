@@ -16,7 +16,8 @@
     "logic": "Lógica de {volts} V",
     "clock": "{mhz} MHz",
     "languages": "Se programa en",
-    "fig": "Fig. {n}"
+    "fig": "Fig. {n}",
+    "assemblyTodo": "Montaje pendiente"
   },
   "lang": {
     "arduino-cpp": "Arduino C++",
@@ -104,7 +105,10 @@
     "lessons": "Lecciones",
     "lessonsLede": "Cada lección ejecuta tu propio código en la placa. Supera sus comprobaciones para marcarla.",
     "openLesson": "Lección {n}: {title}",
-    "sources": "Contrastado con"
+    "sources": "Contrastado con",
+    "start": "Empezar: {title}",
+    "continue": "Continuar: {title}",
+    "reference": "Referencia"
   },
   "pinout": {
     "title": "Patillaje",
@@ -185,7 +189,8 @@
       "floating-input": "Entrada flotante",
       "thermal": "Sobrecalentamiento",
       "config": "Configuración"
-    }
+    },
+    "more": "Más fallos de esta placa"
   },
   "wire": {
     "title": "Conéctalo",
@@ -209,15 +214,13 @@
       "purple": "morado",
       "brown": "marrón",
       "grey": "gris"
-    }
+    },
+    "allParts": "Las {n} piezas en la página de {board}"
   },
   "lesson": {
     "back": "Volver a la {board}",
     "of": "Lección {n} de {total}",
     "strip": "Lecciones",
-    "earlier": "Lecciones anteriores",
-    "more": "Más lecciones",
-    "card": "Lección {n}: {title}",
     "done": "Hecha",
     "prev": "Lección anterior",
     "next": "Lección siguiente",
@@ -295,7 +298,10 @@
     },
     "error": {
       "unsupported": "Este código no se puede ejecutar en esta versión."
-    }
+    },
+    "tab": "Serie",
+    "notRunning": "Tu código aún no se está ejecutando",
+    "lostPower": "La placa se quedó sin alimentación. El código se detuvo."
   },
   "params": {
     "title": "Parámetros",
@@ -319,7 +325,8 @@
     "allPass": "Todas las comprobaciones superadas. Lección hecha.",
     "again": "Comprobar otra vez",
     "summary": "{passed} de {total} comprobaciones superadas",
-    "limit": "La comprobación tardó más de 20 segundos y se detuvo. Busca un bucle que nunca espera."
+    "limit": "La comprobación tardó más de 20 segundos y se detuvo. Busca un bucle que nunca espera.",
+    "run": "Comprobar"
   },
   "view": {
     "label": "Vista de la figura",

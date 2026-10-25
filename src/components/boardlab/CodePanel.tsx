@@ -4,6 +4,7 @@ import { useId, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { cx } from "@/components/ui/cx";
 import { Icon } from "@/components/ui/icons";
+import { IconButton } from "@/components/ui/IconButton";
 import type { ParamChip } from "@/content/schema";
 import { canRun } from "@/lib/boardlab/engine";
 import type { BoardLabStore } from "@/lib/boardlab/store";
@@ -18,6 +19,10 @@ type Props = {
   chipParts: Record<string, string>;
   onChip: (id: string) => void;
   onRunToggle: () => void;
+  /** Expanded code takes more of the screen (the workspace widens its rail). */
+  expanded: boolean;
+  onExpand: (expanded: boolean) => void;
+  className?: string;
 };
 
 async function copyToClipboard(text: string): Promise<boolean> {
@@ -44,8 +49,11 @@ async function copyToClipboard(text: string): Promise<boolean> {
   }
 }
 
-/** "Try it yourself": the editable code, Run/Stop, Reset and Copy, and the compile error. */
-export function CodePanel({ store, chipParts, onChip, onRunToggle }: Props) {
+/**
+ * "Try it yourself": the editable code with one toolbar (Run, then Reset, Copy
+ * and Expand as icons, always in the same place) and the compile error under it.
+ */
+export function CodePanel({ store, chipParts, onChip, onRunToggle, expanded, onExpand, className }: Props) {
   const { t, tc } = useText();
   const titleId = useId();
   const code = useLab(store, (s) => s.code);
@@ -58,7 +66,6 @@ export function CodePanel({ store, chipParts, onChip, onRunToggle }: Props) {
   const edited = useLab(store, (s) => s.edited);
   const selected = useLab(store, (s) => s.selected);
   const [copied, setCopied] = useState(false);
-  const [expanded, setExpanded] = useState(false);
 
   const running = status === "running";
   const busy = status === "compiling" || status === "uploading";
@@ -72,40 +79,22 @@ export function CodePanel({ store, chipParts, onChip, onRunToggle }: Props) {
   const errorText = error && error.kind !== "unsupported" ? (error.line ? t("code.error", { line: error.line, message: error.message }) : t("code.errorNoLine", { message: error.message })) : null;
 
   return (
-    <section aria-labelledby={titleId} className={cx("ink-card flex flex-col gap-3 p-3 sm:p-4", expanded && "lg:col-span-2")} data-testid="code-panel">
-      <div className="flex flex-wrap items-center gap-2">
-        <h2 id={titleId} className="me-auto text-xl">
-          {t("code.title")}
-          {edited && <span className="ms-2 align-middle text-xs font-semibold uppercase tracking-wide text-muted">{t("code.edited")}</span>}
+    <section aria-labelledby={titleId} className={cx("flex min-h-0 flex-col", className)} data-testid="code-panel">
+      <div className="flex min-h-13 shrink-0 items-center gap-1.5 border-b-[1.5px] border-rule py-1.5 pe-2 ps-4">
+        <h2 id={titleId} className="me-auto flex min-w-0 items-baseline gap-2 font-head text-lg max-sm:sr-only">
+          <span className="truncate">{t("code.title")}</span>
+          {edited && <span className="ink-kicker shrink-0">{t("code.edited")}</span>}
         </h2>
-        <Button size="sm" variant="ghost" onClick={() => setExpanded(!expanded)} aria-pressed={expanded}>
-          {expanded ? t("code.collapse") : t("code.expand")}
-        </Button>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={async () => {
-            if (await copyToClipboard(copyText(store.getState().code))) {
-              setCopied(true);
-              window.setTimeout(() => setCopied(false), 1600);
-            }
-          }}
-        >
-          <Icon name={copied ? "check" : "copy"} size={16} aria-hidden="true" />
-          <span>{copied ? t("code.copied") : t("code.copy")}</span>
-        </Button>
-        <Button size="sm" variant="secondary" disabled={!edited || busy} onClick={() => store.dispatch({ type: "code/reset" })} title={t("code.resetTitle")}>
-          {t("code.reset")}
-        </Button>
         <Button
           size="md"
           variant={running ? "danger" : "primary"}
           onClick={onRunToggle}
           disabled={!runnable}
           aria-busy={busy || undefined}
+          aria-keyshortcuts="Space"
           title={running ? t("code.stopTitle") : t("code.runTitle")}
           data-testid="run-button"
-          className={cx(busy && "animate-pulse motion-reduce:animate-none")}
+          className={cx("shrink-0 whitespace-nowrap", busy && "animate-pulse motion-reduce:animate-none")}
         >
           {running || busy ? (
             <span aria-hidden="true" className="inline-block size-3 rounded-[2px] bg-current" />
@@ -114,13 +103,26 @@ export function CodePanel({ store, chipParts, onChip, onRunToggle }: Props) {
           )}
           <span>{running ? t("code.stop") : busy ? t("code.busy") : t("code.run")}</span>
         </Button>
+        <IconButton icon="undo" size="sm" label={t("code.reset")} title={t("code.resetTitle")} disabled={!edited || busy} onClick={() => store.dispatch({ type: "code/reset" })} />
+        <IconButton
+          icon={copied ? "check" : "copy"}
+          size="sm"
+          label={copied ? t("code.copied") : t("code.copy")}
+          onClick={async () => {
+            if (await copyToClipboard(copyText(store.getState().code))) {
+              setCopied(true);
+              window.setTimeout(() => setCopied(false), 1600);
+            }
+          }}
+        />
+        <IconButton icon="expand" size="sm" label={expanded ? t("code.collapse") : t("code.expand")} aria-pressed={expanded} onClick={() => onExpand(!expanded)} />
       </div>
       {!runnable && (
-        <p className="rounded-md bg-warn-bg px-3 py-2 text-sm" role="note">
+        <p className="on-fill shrink-0 bg-warn-bg px-4 py-2 text-sm" role="note">
           {t("code.cantRun", { language: t(`lang.${language}`) })}
         </p>
       )}
-      <div className={cx("overflow-auto rounded-md border-2 border-line bg-code-bg", expanded ? "max-h-[80vh]" : "max-h-[440px]")}>
+      <div className={cx("min-h-0 flex-1 overflow-auto bg-code-bg", expanded ? "max-lg:max-h-[80svh]" : "max-lg:max-h-[min(28rem,60svh)]")}>
         <CodeEditor
           code={code}
           language={language}
@@ -135,9 +137,9 @@ export function CodePanel({ store, chipParts, onChip, onRunToggle }: Props) {
         />
       </div>
       {errorText && (
-        <p role="alert" className="on-fill rounded-md bg-bad-bg px-3 py-2 font-mono text-sm" data-testid="code-error">
+        <p role="alert" className="on-fill shrink-0 border-t-[1.5px] border-bad bg-bad-bg px-4 py-2 font-mono text-sm" data-testid="code-error">
           {errorText}
-          {error?.hint ? <span className="mt-1 block font-sans">{error.hint}</span> : null}
+          {error?.hint ? <span className="mt-1 block font-body">{error.hint}</span> : null}
         </p>
       )}
     </section>
