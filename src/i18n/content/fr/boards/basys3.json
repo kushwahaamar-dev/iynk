@@ -1,0 +1,832 @@
+{
+  "title": "Digilent Basys 3",
+  "tagline": "Une carte FPGA d'enseignement : vous ne programmez pas un processeur, vous décrivez un circuit et la puce le devient.",
+  "overview": "La Basys 3 porte un AMD Artix-7 XC7A35T, un FPGA de 33 280 cellules logiques sans processeur à lui. Un design Verilog devient du câblage à l'intérieur de la puce : un `assign` devient une porte, un `always @(posedge clk)` devient des bascules cadencées par l'oscillateur à 100 MHz. Autour du FPGA se trouvent les composants classiques des Basys, tous câblés directement sur ses broches : 16 interrupteurs à glissière (haut = 1), 16 LED vertes (1 = allumée), cinq boutons en croix (appuyé = 1) et un afficheur à 4 chiffres dont les segments et les chiffres sont tous actifs à l'état bas : les chiffres s'allument donc à tour de rôle. Quatre ports Pmod (JA, JB, JC et le JXADC analogique) sortent 32 broches de plus à travers des résistances de 200 Ω. Un seul câble micro-USB l'alimente, la programme en JTAG et vous donne un UART. Le FPGA oublie son design à la mise hors tension et le recharge depuis la flash Quad-SPI en moins d'une seconde : c'est alors que la LED verte DONE s'allume. Tout est en 3,3 V : aucune broche n'accepte le 5 V.",
+  "mcu": {
+    "ft2232hq": "Double pont USB FTDI : un canal est le programmateur JTAG, l'autre un USB-UART vers le FPGA (RsRx B18, RsTx A18).",
+    "pic24": "Hôte USB pour un clavier ou une souris sur J2 (transmis au FPGA en PS/2) ; il peut aussi charger un bitstream depuis une clé USB.",
+    "flash": "Flash Quad-SPI de 32 Mbit (IC8) : elle contient le design que le FPGA charge à la mise sous tension quand JP1 est sur QSPI."
+  },
+  "power": {
+    "usb": {
+      "protection": "La prise micro-USB a un détrompeur : elle ne peut pas se brancher à l'envers. Un port USB 2.0 donne 500 mA, assez pour la plupart des designs ; un gros design avec VGA et Pmods peut demander plus."
+    },
+    "ext": {
+      "protection": "Aucune. J6 (sérigraphie « 5V Only! ») n'a ni diode anti-inversion ni fusible : donnez-lui 4,5-5,5 V dans le bon sens, avec JP2 déplacé sur EXT. VU le transmet sans régulation aux régulateurs et au port USB-A, et son condensateur d'entrée C27 est un modèle 10 V."
+    },
+    "rails": {
+      "vu": "Le 5 V brut de l'USB ou d'EXT, choisi par le cavalier JP2. Il alimente les régulateurs et, sans régulation, le port USB-A.",
+      "1v0": "Le cœur du FPGA (VCCINT, VCCBRAM), produit par le premier canal du LTC3633. Il monte en premier.",
+      "1v8": "L'alimentation auxiliaire du FPGA (VCCAUX) et le XADC, produits par le LTC3621. Il démarre quand le 1,0 V est bon.",
+      "3v3": "Chaque banc d'E/S, les interrupteurs, les LED, l'afficheur et les broches 3V3 des Pmod (1 A au total), produits par le second canal du LTC3633. Il démarre en dernier ; LD20 s'allume quand il est bon."
+    },
+    "io": "Chaque broche utilisateur est en LVCMOS33 avec un courant de sortie de 12 mA par défaut (4, 8, 12 ou 16 mA dans les contraintes). Rien ne tolère le 5 V : le maximum absolu est d'environ 3,85 V. Les broches Pmod passent par 200 Ω, ce qui limite un court-circuit vers GND à environ 16 mA."
+  },
+  "pins": {
+    "clk": "L'oscillateur MEMS à 100 MHz IC9. Dans Vivado : create_clock -period 10.00 sur le port clk.",
+    "sw": "Interrupteur à glissière : en haut, il relie la broche à 3,3 V ; en bas, à GND, à travers 10 kΩ. Sans anti-rebond.",
+    "led": "LED verte à travers 330 Ω vers GND : 1 l'allume, environ 4 mA.",
+    "btn": "Bouton-poussoir vers 3,3 V avec un pull-down de 10 kΩ : lit 1 tant qu'on appuie. Il rebondit pendant quelques millisecondes.",
+    "seg": "Cathode de segment, partagée par les quatre chiffres, à travers 100 Ω : 0 allume le segment.",
+    "an": "Anode de chiffre, à travers un transistor PNP : 0 allume le chiffre. an[0] est le chiffre le plus à droite.",
+    "pmod": "Signal Pmod, relié directement à une broche du FPGA à travers 200 Ω sur la carte. 3,3 V uniquement.",
+    "pmod3v3": "Le rail 3,3 V, partagé par tous les Pmod : jusqu'à 1 A au total.",
+    "jxadc": "E/S numérique à travers 100 Ω, ou paire d'entrée analogique pour le XADC (0-1 V).",
+    "uart": "L'USB-UART à travers le FT2232HQ. Les noms sont vus du côté du PC : RsRx est l'entrée du FPGA.",
+    "vga": "CNA à résistances de 4 bits par couleur vers les 75 Ω du moniteur ; Hsync et Vsync à travers 100 Ω.",
+    "ps2": "Clavier ou souris venant de la puce hôte USB, en PS/2. Demande PULLUP true dans les contraintes.",
+    "ext": "Entrée externe 4,5-5,5 V. Sans diode anti-inversion ni fusible ; JP2 doit être sur EXT pour l'utiliser."
+  },
+  "leds": {
+    "user": "Câblée directement sur une broche du FPGA ; c'est votre design qui décide quand elle s'allume.",
+    "LD16": "L'activité de la puce hôte USB : pulsation lente en attendant une clé USB, clignotement rapide en cas d'erreur.",
+    "LD17": "Clignote quand le PC envoie sur l'USB-UART.",
+    "LD18": "Clignote quand le FPGA envoie sur l'USB-UART.",
+    "LD19": "DONE : s'allume quand le FPGA a chargé son design. PROG l'efface.",
+    "LD20": "S'allume quand tous les rails sont bons (le power-good du régulateur 3,3 V)."
+  },
+  "controls": {
+    "sw": "Bascule l'interrupteur : en haut, c'est 1 sur sa broche.",
+    "btn": "Lit 1 tant qu'il est maintenu enfoncé.",
+    "PROG": "Efface le design du FPGA ; il se recharge ensuite depuis la flash et DONE se rallume."
+  },
+  "displays": {
+    "DISP1": "Quatre chiffres rouges à anode commune qui partagent un seul jeu de fils de segments (CA-CG, DP). Allumez un chiffre à la fois et balayez les quatre toutes les 1 à 16 ms ; les deux-points ne sont pas câblés."
+  },
+  "parts": {
+    "IC7": {
+      "name": "FPGA Artix-7 XC7A35T",
+      "what": "33 280 cellules logiques, 1 800 Kbit de RAM en blocs et 90 tranches DSP sur un BGA de 10 × 10 mm à 236 billes. Il ne contient aucun programme : votre design configure ses tables de correspondance et son câblage."
+    },
+    "C45": {
+      "name": "Condensateurs de découplage du FPGA",
+      "what": "Des dizaines de petits condensateurs céramiques (C45-C103) autour du FPGA. Ils fournissent les pics de courant soudains quand des milliers de bascules commutent sur le même front d'horloge."
+    },
+    "IC1": {
+      "name": "Pont USB FT2232HQ",
+      "what": "Deux canaux USB dans une seule puce : le programmateur JTAG de Digilent et un USB-UART. Le Hardware Manager de Vivado dialogue avec lui."
+    },
+    "IC2": {
+      "name": "Hôte USB PIC24",
+      "what": "Un petit microcontrôleur qui lit un clavier ou une souris USB et le transmet au FPGA en PS/2, ou charge un design depuis une clé USB."
+    },
+    "DISP1": {
+      "name": "Afficheur 7 segments à 4 chiffres",
+      "what": "Quatre chiffres à anode commune dont les segments partagent les mêmes fils. Votre design doit multiplexer : un chiffre allumé à la fois, les quatre rafraîchis toutes les quelques millisecondes."
+    },
+    "Q1": {
+      "name": "Pilote de chiffres Q1",
+      "what": "Double transistor PNP sous la carte. Chaque moitié commute le 3,3 V sur l'anode commune d'un chiffre quand sa broche an passe à l'état bas."
+    },
+    "Q2": {
+      "name": "Pilote de chiffres Q2",
+      "what": "Le second double transistor PNP, pour les deux autres chiffres."
+    },
+    "sw": {
+      "name": "Interrupteur à glissière",
+      "what": "Haut = 1. Il relie sa broche du FPGA à 3,3 V ou à GND à travers 10 kΩ, sans anti-rebond."
+    },
+    "ld": {
+      "name": "LED utilisateur verte",
+      "what": "Câblée depuis une broche du FPGA à travers 330 Ω : 1 l'allume à environ 4 mA."
+    },
+    "btn": {
+      "name": "Bouton-poussoir",
+      "what": "L'un des cinq disposés en croix. Actif à l'état haut : un pull-down de 10 kΩ tient la broche à 0 jusqu'à ce que vous appuyiez."
+    },
+    "PROG": {
+      "name": "Bouton PROG",
+      "what": "Met PROGRAM_B à l'état bas : le FPGA efface son design et le recharge depuis la flash."
+    },
+    "J4": {
+      "name": "Prise micro-USB",
+      "what": "L'alimentation, la programmation JTAG et l'USB-UART, tout sur un seul câble."
+    },
+    "J6": {
+      "name": "Connecteur d'alimentation externe",
+      "what": "Entrée 4,5-5,5 V, pour une alimentation ou un bloc de piles. Sans diode anti-inversion ni fusible."
+    },
+    "C27": {
+      "name": "Condensateur d'entrée C27",
+      "what": "10 µF sur VU, prévu pour 10 V : le premier composant à lâcher si l'entrée EXT voit 12 V."
+    },
+    "JP2": {
+      "name": "Cavalier de source d'alimentation",
+      "what": "Le cavalier relie VU à l'USB ou à EXT. Pas de cavalier, pas d'alimentation."
+    },
+    "SW16": {
+      "name": "Interrupteur d'alimentation",
+      "what": "Active les régulateurs. Il ne déconnecte pas VU."
+    },
+    "LD20": {
+      "name": "LED d'alimentation",
+      "what": "Rouge : s'allume quand le dernier régulateur signale un power-good."
+    },
+    "testpoint": {
+      "name": "Point de test",
+      "what": "Une pastille où poser une pointe de multimètre : W1 est à 3,3 V, W2 à 1,8 V, W3 à 1,0 V."
+    },
+    "IC10": {
+      "name": "Double régulateur buck LTC3633",
+      "what": "Produit le cœur 1,0 V et le rail d'E/S 3,3 V à partir de VU, jusqu'à 2 A chacun, sous la carte."
+    },
+    "inductor": {
+      "name": "Inductance de buck",
+      "what": "Stocke l'énergie entre les impulsions de commutation du régulateur ; L1 pour le 1,0 V, L2 pour le 3,3 V, L3 pour le 1,8 V."
+    },
+    "IC11": {
+      "name": "Régulateur buck LTC3621",
+      "what": "Produit le rail auxiliaire 1,8 V (300 mA). Il démarre dès que le 1,0 V est bon."
+    },
+    "LD17": {
+      "name": "LED RX de l'UART",
+      "what": "Clignote pendant que le PC envoie vers le FPGA."
+    },
+    "LD18": {
+      "name": "LED TX de l'UART",
+      "what": "Clignote pendant que le FPGA envoie vers le PC."
+    },
+    "JP1": {
+      "name": "Cavalier de mode",
+      "what": "D'où le FPGA tire son design à la mise sous tension : la flash QSPI (réglage d'usine), le JTAG seul, ou une clé USB."
+    },
+    "LD19": {
+      "name": "LED DONE",
+      "what": "Verte : le FPGA est configuré et fait tourner un design."
+    },
+    "LD16": {
+      "name": "LED BUSY",
+      "what": "Montre ce que fait la puce hôte USB."
+    },
+    "IC8": {
+      "name": "Flash Quad-SPI",
+      "what": "32 Mbit de flash sous la carte. Le design (environ 2,2 MB) y vit et se charge en moins d'une seconde."
+    },
+    "IC9": {
+      "name": "Oscillateur à 100 MHz",
+      "what": "Un résonateur MEMS en silicium, pas un quartz. Son horloge atteint le FPGA sur la broche W5."
+    },
+    "J1": {
+      "name": "Prise VGA",
+      "what": "Couleur 12 bits (4 bits chacun pour le rouge, le vert et le bleu) à partir d'échelles de résistances, plus Hsync et Vsync."
+    },
+    "J2": {
+      "name": "Prise hôte USB-A",
+      "what": "Un clavier ou une souris (pas de hub), ou une clé FAT32 avec un fichier .bit."
+    },
+    "pmod": {
+      "name": "Port Pmod",
+      "what": "12 broches : 8 signaux du FPGA à travers 200 Ω, deux GND et deux 3,3 V. Les modules Pmod s'y branchent directement."
+    },
+    "JXADC": {
+      "name": "Pmod analogique JXADC",
+      "what": "Comme les autres Pmod, mais ses broches atteignent aussi le XADC du FPGA sous forme de quatre paires d'entrées analogiques 0-1 V."
+    }
+  },
+  "wireables": {
+    "led": {
+      "note": "Anode vers la broche 1 de JB à travers 220 Ω, cathode vers une broche GND d'un Pmod. Pilotez-la depuis votre design comme n'importe quelle LED.",
+      "caution": "La carte ajoute déjà 200 Ω en série : la LED reste faible mais sans danger même sans votre résistance ; n'alimentez jamais une broche Pmod en 5 V."
+    },
+    "push-button": {
+      "note": "Entre la broche 2 de JB et GND. Ajoutez PULLUP true pour cette broche dans les contraintes pour qu'elle lise 1 jusqu'à l'appui, et filtrez les rebonds dans votre design."
+    },
+    "piezo-buzzer": {
+      "note": "+ vers la broche 3 de JB. Basculez la broche à une fréquence audible (comptez CLK_HZ / (2 × f) cycles par demi-période) pour jouer une note."
+    },
+    "mpu6050": {
+      "note": "3,3 V et GND depuis un Pmod, SCL vers la broche 1 de JC, SDA vers la broche 2 de JC.",
+      "caution": "Il n'y a pas de périphérique I2C : votre design a besoin d'un maître I2C (sorties à drain ouvert et pull-ups dans les contraintes)."
+    },
+    "ssd1306": {
+      "note": "3,3 V et GND depuis un Pmod, SCL vers la broche 1 de JC, SDA vers la broche 2 de JC.",
+      "caution": "Votre design doit envoyer lui-même les commandes d'initialisation I2C de l'afficheur et les données des pixels ; c'est un gros projet, pas un premier projet."
+    }
+  },
+  "failures": {
+    "reverse-ext": {
+      "title": "Connecteur EXT câblé à l'envers",
+      "symptom": "LD20 reste éteinte, l'alimentation de labo reste en limitation de courant et les régulateurs sous la carte chauffent.",
+      "explanation": "J6 n'a ni diode anti-inversion ni fusible. Une alimentation inversée force le courant à l'envers à travers les diodes de structure du LTC3633 et du LTC3621 et de tout le reste sur VU ; seule la limite de courant de votre alimentation l'arrête, et le régulateur IC10 est le premier à lâcher.",
+      "fix": "Coupez tout de suite et inversez les fils. Avant de refaire confiance à la carte, vérifiez W3 (1,0 V) et W1 (3,3 V). Utilisez une fiche à détrompeur, ou une diode en série, sur votre alimentation."
+    },
+    "ext-12v": {
+      "title": "12 V sur le connecteur EXT",
+      "symptom": "La carte s'éteint, et le condensateur d'entrée C27 est détruit.",
+      "explanation": "EXT est une entrée 4,5-5,5 V, et VU la transmet sans régulation. Les bucks s'en sortiraient, mais le condensateur d'entrée C27 est un modèle 10 V : il lâche en court-circuit et fait chuter VU, si bien que les régulateurs décrochent. Un clavier sur le port USB-A recevrait aussi du 12 V.",
+      "fix": "Utilisez une alimentation 5 V régulée sur J6. Pour fonctionner depuis un adaptateur 7-12 V, placez un régulateur 5 V devant la carte."
+    },
+    "ext-3v": {
+      "title": "3 V sur le connecteur EXT",
+      "symptom": "LD20 et DONE vacillent : le FPGA perd sans cesse son design.",
+      "explanation": "Les régulateurs ont besoin de marge : à partir de 3 V, le rail 3,3 V s'affaisse à environ 2,7 V. Le reset de mise sous tension du FPGA efface sa configuration chaque fois que le rail chute.",
+      "fix": "Alimentez J6 en 4,5-5,5 V. Une seule cellule Li-ion est trop basse ; un bloc de quatre piles AA ou une batterie externe USB fonctionne."
+    },
+    "brownout": {
+      "title": "Brown-out sur une alimentation faible",
+      "symptom": "DONE s'éteint et revient, et le design redémarre sans arrêt.",
+      "explanation": "Un design chargé (VGA, beaucoup de LED, des modules Pmod) peut tirer plus que ce que donne un port USB. Quand le 3,3 V s'affaisse, le FPGA se réinitialise et perd sa configuration ; quand le rail revient, il la recharge depuis la flash.",
+      "fix": "Utilisez un hub USB alimenté, ou une alimentation 5 V 2 A sur J6 avec JP2 sur EXT."
+    },
+    "short-3v3": {
+      "title": "3V3 d'un Pmod en court-circuit avec GND",
+      "symptom": "LD20 s'éteint et la carte se réinitialise ; le régulateur tiédit.",
+      "explanation": "Les broches 6 et 12 de chaque Pmod sont le rail 3,3 V, juste à côté de GND sur les broches 5 et 11. Un fil de liaison qui glisse fait atteindre au LTC3633 sa limite de courant, son power-good tombe et le FPGA perd son design.",
+      "fix": "Débranchez, trouvez le pont (un fil égaré ou un Pmod décalé d'une rangée), puis remettez sous tension."
+    },
+    "short-vu": {
+      "title": "Pont de soudure entre VU et GND",
+      "symptom": "Tout s'éteint d'un coup ; le PC peut couper son port USB.",
+      "explanation": "VU est le 5 V brut. En court-circuit, il fait chuter l'alimentation USB jusqu'à ce que la protection du port du PC se déclenche (sur EXT, c'est la limite de l'alimentation elle-même).",
+      "fix": "Débranchez, retirez le pont, rebranchez. Il faudra peut-être réactiver le port sur le PC."
+    },
+    "missing-jp2": {
+      "title": "Cavalier JP2 perdu",
+      "symptom": "Complètement mort : pas de LD20, rien sur aucun rail.",
+      "explanation": "Le cavalier JP2 relie VU à l'USB ou à EXT. Sans lui, aucune des deux entrées n'atteint les régulateurs.",
+      "fix": "Posez un cavalier sur JP2 : broches du milieu et USB pour l'alimentation USB, milieu et EXT pour J6."
+    },
+    "missing-flash": {
+      "title": "Pas de flash de configuration",
+      "symptom": "LD20 est allumée, mais DONE reste éteinte et rien ne se passe.",
+      "explanation": "L'Artix-7 oublie son design à la mise hors tension. Avec JP1 sur QSPI, il le lit dans IC8 à la mise sous tension ; sans flash, il attend un programmateur.",
+      "fix": "Programmez le design en JTAG depuis Vivado (il tient jusqu'à la mise hors tension), ou remplacez la flash et écrivez-y le .bin."
+    },
+    "cold-sw0": {
+      "title": "Soudure froide sur SW0",
+      "symptom": "LD0 vacille toute seule et change quand vous touchez l'interrupteur.",
+      "explanation": "SW0 alimente sa broche à travers 10 kΩ et rien d'autre ne tient la broche. Avec une soudure fissurée, la broche flotte et lit le bruit qu'elle capte.",
+      "fix": "Réchauffez la soudure avec du flux neuf jusqu'à ce que l'étain coule autour de la broche. Dans vos propres circuits, donnez un niveau défini à chaque entrée."
+    }
+  },
+  "assembly": {
+    "unplug": {
+      "title": "Débrancher la carte",
+      "body": "Retirez le câble micro-USB et tout ce qui est sur J6. Ne travaillez jamais sur une carte sous tension."
+    },
+    "strip": {
+      "title": "Dépouiller jusqu'au circuit imprimé nu",
+      "body": "Retirez tous les composants. Il reste le circuit imprimé bleu avec ses points de test W1-W3.",
+      "refusal": "Débranchez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension."
+    },
+    "reflow": {
+      "title": "Placement et refusion",
+      "body": "La machine pose les composants montés en surface (le FPGA en BGA, les puces USB, les régulateurs, les LED et les boutons) sur la pâte à souder, et le four la fait fondre : les 236 billes sous le FPGA se soudent toutes d'un coup.",
+      "refusal": "Dépouillez d'abord la carte jusqu'au circuit imprimé nu."
+    },
+    "place-low": {
+      "title": "Placer les composants bas",
+      "body": "Les 17 interrupteurs à glissière, les deux connecteurs de cavaliers et le connecteur EXT J6 se posent en premier, tant que la carte peut encore reposer à plat sur eux.",
+      "refusal": "Refondez d'abord les composants montés en surface."
+    },
+    "place-tall": {
+      "title": "Placer les composants hauts",
+      "body": "Puis l'afficheur, les quatre prises Pmod et les prises VGA et USB-A.",
+      "refusal": "Placez d'abord les composants bas, pour que la carte repose à plat pendant que vous soudez."
+    },
+    "solder": {
+      "title": "Souder les joints traversants",
+      "body": "Chaque patte d'interrupteur, chaque broche de prise et de connecteur reçoit sa soudure sur la face inférieure.",
+      "refusal": "Placez d'abord les composants traversants."
+    },
+    "power-up": {
+      "title": "Mettre sous tension",
+      "body": "Branchez l'USB avec SW16 sur ON. Le 1,0 V monte, puis le 1,8 V, puis le 3,3 V, et LD20 s'allume. Le FPGA lit son design dans la flash et DONE (LD19) s'allume."
+    },
+    "factory-test": {
+      "title": "Tester un interrupteur",
+      "body": "Le design d'usine recopie chaque interrupteur sur la LED au-dessus, compte sur l'afficheur et écrit sur l'UART quand vous appuyez sur un bouton. Basculez SW0 : LD0 s'allume."
+    },
+    "program": {
+      "title": "Programmer un nouveau design",
+      "body": "Envoyez un design par l'USB : le FPGA s'efface, DONE s'éteint, le bitstream se charge en quelques secondes et DONE se rallume. Celui-ci est un chenillard de LED.",
+      "refusal": "Branchez d'abord l'USB : le programmateur est du côté USB."
+    }
+  },
+  "lessons": {
+    "gates": {
+      "title": "Des portes logiques à partir d'interrupteurs",
+      "lede": "Votre premier design FPGA est de la logique pure : quatre LED affichent le ET, le OU, le OU exclusif et le NON des deux interrupteurs de droite, et les douze autres LED recopient leurs interrupteurs.",
+      "steps": {
+        "1": "assign relie une sortie à une expression. Ce n'est pas une étape qui s'exécute : la synthèse en fait une porte qui est toujours là.",
+        "2": "La table des ports est le fichier XDC que vous écrivez dans Vivado : sw[0] est l'interrupteur SW0 sur la broche V17, led[0] est LD0 sur la broche U16.",
+        "3": "Appuyez sur Run, puis basculez SW0 et SW1 sur la carte et comparez LD0-LD3 à la table de vérité de chaque porte."
+      },
+      "hints": {
+        "1": "Haut, c'est 1 : chaque interrupteur relie sa broche à 3,3 V à travers 10 kΩ.",
+        "2": "Essayez assign led[0] = ~(sw[0] & sw[1]); pour transformer le ET en NON-ET."
+      },
+      "specs": {
+        "1": {
+          "label": "Niveau logique",
+          "value": "3,3 V (LVCMOS33) : interrupteur en haut = 1"
+        },
+        "2": {
+          "label": "Courant des LED",
+          "value": "Broche → 330 Ω → LED, environ 4 mA"
+        },
+        "3": {
+          "label": "Vitesse",
+          "value": "Quelques nanosecondes à travers la matrice ; aucune horloge en jeu"
+        }
+      },
+      "features": {
+        "1": "De la logique combinatoire avec assign",
+        "2": "La table des ports est votre fichier XDC",
+        "3": "Basculez les interrupteurs sur la carte pendant qu'elle tourne"
+      },
+      "pins": {
+        "SW0": {
+          "to": "Broche V17 du FPGA (sw[0])",
+          "role": "Entrée A de chaque porte"
+        },
+        "SW1": {
+          "to": "Broche V16 du FPGA (sw[1])",
+          "role": "Entrée B"
+        },
+        "LD0": {
+          "to": "Broche U16 du FPGA (led[0])",
+          "role": "Affiche A ET B"
+        }
+      },
+      "callouts": {
+        "SW0": "Haut = 1, bas = 0.",
+        "LD0": "Allumée seulement quand SW0 et SW1 sont tous les deux en haut.",
+        "IC7": "Aucun programme ne tourne ici : les portes sont des tables de correspondance câblées entre les broches."
+      },
+      "checks": {
+        "1": "Le design tourne 2,5 s sans erreur",
+        "2": "NON : LD3 est allumée tant que SW0 est en bas",
+        "3": "OU : LD1 s'allume avec SW0 seul en haut",
+        "4": "ET : LD0 reste éteinte avec SW0 seul en haut",
+        "5": "ET : LD0 s'allume avec les deux interrupteurs en haut",
+        "6": "OU exclusif : LD2 s'éteint avec les deux interrupteurs en haut",
+        "7": "OU exclusif : LD2 s'allume avec SW1 seul en haut"
+      },
+      "code": {
+        "intro": "Portes logiques : quatre LED montrent ce que donnent deux interrupteurs.",
+        "xdc": "La table des ports (le fichier XDC de Vivado) place sw sur les 16 interrupteurs et led sur les 16 LED.",
+        "sw": "les 16 interrupteurs à glissière, haut = 1",
+        "led": "les 16 LED vertes, 1 = allumée",
+        "and": "allumée quand les deux sont en haut",
+        "or": "allumée quand l'un ou l'autre est en haut",
+        "xor": "allumée quand un seul exactement est en haut",
+        "not": "allumée tant que SW0 est en bas",
+        "rest": "LD4-LD15 suivent simplement leurs interrupteurs."
+      },
+      "world": {
+        "sw0": "SW0 (entrée A)",
+        "sw1": "SW1 (entrée B)"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Que devient assign led[0] = sw[0] & sw[1]; sur le FPGA ?",
+          "options": {
+            "1": "Une boucle qui lit les interrupteurs plusieurs fois par seconde",
+            "2": "Un programme stocké dans la flash",
+            "3": "Une porte ET, construite à partir d'une table de correspondance, qui fonctionne en permanence"
+          },
+          "why": "Il n'y a pas de processeur ici. La synthèse transforme l'expression en une table de correspondance câblée entre les broches : LD0 suit donc les interrupteurs en quelques nanosecondes."
+        },
+        "q2": {
+          "q": "LD2 affiche sw[0] ^ sw[1]. Quand est-elle allumée ?",
+          "options": {
+            "1": "Quand un seul exactement des deux interrupteurs est en haut",
+            "2": "Quand les deux sont en haut",
+            "3": "Quand les deux sont en bas"
+          },
+          "why": "Le OU exclusif vaut 1 quand ses entrées diffèrent."
+        },
+        "q3": {
+          "q": "Le XDC place sw[0] sur la broche V17. Que se passe-t-il si vous le changez en V16 ?",
+          "options": {
+            "1": "Rien : un nom de port fonctionne quelle que soit sa broche",
+            "2": "sw[0] lit maintenant l'interrupteur SW1, parce que ce sont les contraintes qui décident à quelle bille de la puce correspond chaque port",
+            "3": "Vivado refuse, parce que V16 est prise par une LED"
+          },
+          "why": "Le Verilog ne fait que nommer des ports. Le XDC attache chaque port à une broche physique, et V16 est câblée à SW1."
+        }
+      }
+    },
+    "blink": {
+      "title": "Clignoter avec un compteur",
+      "lede": "Un FPGA n'a pas de delay(). Pour faire clignoter LD0, on compte des cycles d'horloge : 100 millions d'entre eux font une seconde.",
+      "steps": {
+        "1": "L'oscillateur à 100 MHz pilote clk. À chaque front montant, le bloc always ajoute un à count.",
+        "2": "Quand count atteint HALF, il repart de zéro et LD0 change d'état : deux changements font un clignotement.",
+        "3": "LD15-LD12 comptent les clignotements en binaire. Changez la fréquence de clignotement et relancez."
+      },
+      "hints": {
+        "1": "CLK_HZ est l'horloge de la carte. Le simulateur fait tourner le design sur une horloge plus lente et ajuste CLK_HZ en conséquence : une seconde reste donc une seconde.",
+        "2": "count fait 32 bits : 2^32 cycles font 43 secondes à 100 MHz, plus que n'en demande n'importe quel HALF ici."
+      },
+      "specs": {
+        "1": {
+          "label": "Horloge",
+          "value": "100 MHz sur la broche W5 : 10 ns par cycle"
+        },
+        "2": {
+          "label": "HALF à 2 Hz",
+          "value": "100 000 000 ÷ 4 = 25 000 000 cycles"
+        },
+        "3": {
+          "label": "Matériel",
+          "value": "32 bascules, un additionneur et un comparateur"
+        }
+      },
+      "features": {
+        "1": "De la logique séquentielle avec always @(posedge clk)",
+        "2": "Le temps en comptant, pas en attendant",
+        "3": "Réglez la fréquence de clignotement avec une pastille"
+      },
+      "params": {
+        "hz": {
+          "label": "Fréquence de clignotement"
+        }
+      },
+      "pins": {
+        "CLK100MHZ": {
+          "to": "Oscillateur 100 MHz IC9 → broche W5",
+          "role": "Chaque front montant met à jour les registres"
+        },
+        "LD0": {
+          "to": "Broche U16 du FPGA (led[0])",
+          "role": "Change d'état tous les HALF cycles"
+        },
+        "LD12": {
+          "to": "Broche P3 du FPGA (led[12])",
+          "role": "Bit de poids faible du nombre de clignotements"
+        }
+      },
+      "callouts": {
+        "IC9": "L'oscillateur à 100 MHz : le battement que tout compte.",
+        "LD0": "Clignote à la fréquence que vous réglez.",
+        "LD12": "Bit 0 du nombre de clignotements : deux fois moins vite que LD0."
+      },
+      "checks": {
+        "1": "Le design tourne 4 s sans erreur",
+        "2": "LD0 clignote (un cycle entre 0,15 et 1,1 s)",
+        "3": "LD12 compte les clignotements (un cycle entre 0,3 et 2,2 s)",
+        "4": "Il compte sur posedge clk et mesure le temps avec CLK_HZ"
+      },
+      "code": {
+        "intro": "Clignotement : compter les cycles d'horloge et inverser LD0 à chaque demi-période.",
+        "clk": "l'horloge de la carte : cycles par seconde",
+        "half": "Cycles d'horloge dans un demi-clignotement.",
+        "toggle": "inverser LD0",
+        "count": "LD0 va s'éteindre : un clignotement de plus"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Pourquoi un design FPGA ne peut-il pas simplement attendre 500 ms ?",
+          "options": {
+            "1": "Attendre est trop lent pour un FPGA",
+            "2": "Aucun processeur n'exécute d'étapes l'une après l'autre : le circuit ne fait que réagir à des signaux, et le temps vient donc du comptage des fronts d'horloge",
+            "3": "Le Verilog n'a pas de nombres aussi grands"
+          },
+          "why": "Un design est un circuit. Sa seule notion du temps est l'horloge : 50 millions de fronts d'une horloge à 100 MHz font une demi-seconde."
+        },
+        "q2": {
+          "q": "Avec CLK_HZ = 100 000 000 et BLINK_HZ = 2, que vaut HALF ?",
+          "options": {
+            "1": "50 000 000",
+            "2": "200 000 000",
+            "3": "25 000 000"
+          },
+          "why": "HALF = 100 000 000 ÷ (2 × 2) = 25 000 000 cycles, un quart de seconde. Deux moitiés font un clignotement de 0,5 s."
+        },
+        "q3": {
+          "q": "LD0 clignote à 2 Hz. À quelle fréquence clignote LD12, le bit de poids faible du compte ?",
+          "options": {
+            "1": "1 Hz : elle change une fois par clignotement de LD0, si bien qu'un cycle allumé-éteint complet prend deux clignotements",
+            "2": "4 Hz",
+            "3": "2 Hz, au même rythme que LD0"
+          },
+          "why": "Le compte augmente d'un à chaque clignotement de LD0, et le bit 0 d'un compteur change d'état à chaque pas : deux fois moins vite que LD0."
+        }
+      }
+    },
+    "counter": {
+      "title": "Compter les appuis sur un bouton",
+      "lede": "Chaque appui sur BTNC ajoute un à un nombre binaire affiché sur les LED, et BTNU le remet à zéro. Les vrais boutons rebondissent : le design nettoie donc d'abord le signal.",
+      "steps": {
+        "1": "Deux bascules recopient btnC sur l'horloge avant que quoi que ce soit d'autre ne le lise : c'est un synchroniseur.",
+        "2": "L'anti-rebond ne croit à un nouveau niveau qu'une fois qu'il a tenu pendant SETTLE cycles d'horloge, 10 ms par défaut.",
+        "3": "Comparer le niveau propre à sa valeur un cycle plus tôt donne une impulsion d'un cycle d'horloge quand le bouton s'enfonce.",
+        "4": "Chaque impulsion ajoute un à count, affiché en binaire sur LD15-LD0. Appuyez quelques fois sur BTNC sur la carte."
+      },
+      "hints": {
+        "1": "Les appuis scriptés rebondissent pendant 5 ms, mais chaque rebond ne dure que 1,25 ms : même un temps de stabilisation de 2 ms compte juste. Retirez l'anti-rebond et chaque appui compte plusieurs fois.",
+        "2": "Les boutons sont actifs à l'état haut : un pull-down de 10 kΩ tient la broche à 0 jusqu'à l'appui.",
+        "3": "Ne cadencez jamais des bascules avec un bouton : chaque rebond serait un front d'horloge de plus."
+      },
+      "specs": {
+        "1": {
+          "label": "Temps de stabilisation",
+          "value": "10 ms = 1 000 000 cycles à 100 MHz"
+        },
+        "2": {
+          "label": "Circuit du bouton",
+          "value": "3,3 V → bouton → 10 kΩ → broche, pull-down de 10 kΩ"
+        },
+        "3": {
+          "label": "Compteur",
+          "value": "16 bits : jusqu'à 65 535 appuis"
+        }
+      },
+      "features": {
+        "1": "Synchroniser, filtrer les rebonds, détecter le front",
+        "2": "Voir pourquoi un contact qui rebondit compte deux fois",
+        "3": "Changer le temps de stabilisation"
+      },
+      "params": {
+        "settle": {
+          "label": "Temps de stabilisation"
+        }
+      },
+      "pins": {
+        "BTNC": {
+          "to": "Broche U18 du FPGA (btnC)",
+          "role": "Chaque appui ajoute un"
+        },
+        "BTNU": {
+          "to": "Broche T18 du FPGA (btnU)",
+          "role": "Remet le compte à zéro"
+        },
+        "LD0": {
+          "to": "Broche U16 du FPGA (led[0])",
+          "role": "Bit 0 du compte"
+        }
+      },
+      "callouts": {
+        "BTNC": "Appuyez pour compter. Lit 1 tant qu'il est enfoncé.",
+        "BTNU": "Remet le compte à zéro.",
+        "LD0": "Le bit de poids faible : il change à chaque appui."
+      },
+      "checks": {
+        "1": "Le design tourne 3,6 s sans erreur",
+        "2": "Le premier appui apparaît sur LD0 en moins de 0,1 s",
+        "3": "Après trois appuis, LD0 est allumée (3 s'écrit 0011)",
+        "4": "Après trois appuis, LD1 est allumée",
+        "5": "LD2 est éteinte : chaque appui qui rebondit a compté une seule fois",
+        "6": "BTNU remet le compte à zéro"
+      },
+      "code": {
+        "intro": "Compter les appuis sur BTNC sur les LED ; BTNU remet le compte à zéro.",
+        "btnC": "compter : 1 tant qu'il est enfoncé",
+        "btnU": "remise à zéro",
+        "settle": "Cycles d'horloge pendant lesquels un nouveau niveau du bouton doit tenir avant qu'on y croie.",
+        "sync": "Synchroniser : deux bascules amènent btnC sur notre horloge.",
+        "debounce": "Anti-rebond : ne suivre le bouton qu'une fois qu'il est resté stable SETTLE cycles.",
+        "edge": "Front : une impulsion d'un cycle d'horloge quand le niveau propre passe de 0 à 1.",
+        "count": "Compter les impulsions ; BTNU a la priorité."
+      },
+      "world": {
+        "btnc": "BTNC (compter)",
+        "btnu": "BTNU (remise à zéro)"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Sans l'anti-rebond, un appui ajoute 5. Pourquoi ?",
+          "options": {
+            "1": "L'horloge est trop rapide",
+            "2": "Les contacts rebondissent : la broche fait 1-0-1-0-1 pendant quelques millisecondes et chaque front montant compte",
+            "3": "Le bouton est actif à l'état bas"
+          },
+          "why": "Un contact métallique rebondit avant de se stabiliser, et les bascules sont assez rapides pour voir chaque rebond comme un appui."
+        },
+        "q2": {
+          "q": "Que vous donne wire press = clean & ~was; ?",
+          "options": {
+            "1": "Une impulsion d'un cycle d'horloge, au moment où le bouton s'enfonce",
+            "2": "1 tant que le bouton est maintenu",
+            "3": "1 tant que le bouton est relâché"
+          },
+          "why": "was est clean un cycle d'horloge plus tôt. Ce n'est qu'au premier cycle après un appui que clean vaut 1 alors que was vaut encore 0."
+        },
+        "q3": {
+          "q": "Pourquoi btnC passe-t-il par deux bascules avant que l'anti-rebond ne le lise ?",
+          "options": {
+            "1": "Pour le retarder afin que les LED suivent",
+            "2": "Les deux bascules sont l'anti-rebond",
+            "3": "Le bouton change à n'importe quel moment, pas sur un front d'horloge ; la paire laisse un cycle d'horloge à un niveau intermédiaire pour se stabiliser avant que la logique ne le voie"
+          },
+          "why": "Une bascule qui échantillonne un signal au moment précis où il change peut rester suspendue entre 0 et 1. La seconde bascule ne lit la première qu'après un cycle d'horloge entier : à ce moment-là, elle s'est stabilisée."
+        }
+      }
+    },
+    "pwm": {
+      "title": "Faire varier une LED en PWM",
+      "lede": "Une broche ne peut être qu'à 0 ou à 3,3 V. Basculer vite entre les deux, à l'état haut pendant SW7-SW0 cycles sur 256, fait varier ensemble une LED sur le Pmod JB et LD0.",
+      "steps": {
+        "1": "ramp compte de 0 à 255 en boucle, un pas par cycle d'horloge.",
+        "2": "bright vaut 1 tant que ramp est inférieur à sw[7:0] : la broche est donc à l'état haut pendant sw[7:0] cycles sur 256.",
+        "3": "Câblez la LED sur la broche 1 de JB à travers 220 Ω, lancez le design et basculez SW7 et SW6 pour 50 % et 75 %."
+      },
+      "hints": {
+        "1": "sw[7:0] est un nombre binaire : SW7 seul vaut 128 (la moitié), SW7 et SW6 font 192 (les trois quarts).",
+        "2": "Le battement de cœur sur LD15 est calé sur CLK_HZ : il bat donc une fois par seconde quelle que soit l'horloge."
+      },
+      "specs": {
+        "1": {
+          "label": "Fréquence PWM",
+          "value": "100 MHz ÷ 256 ≈ 390 kHz"
+        },
+        "2": {
+          "label": "Résolution",
+          "value": "8 bits : 256 pas"
+        },
+        "3": {
+          "label": "Broche Pmod",
+          "value": "Broche 1 de JB = A14, à travers 200 Ω sur la carte"
+        }
+      },
+      "features": {
+        "1": "Un compteur et un comparateur font du PWM",
+        "2": "N'importe quelle broche du FPGA peut faire du PWM",
+        "3": "Les interrupteurs règlent le rapport cyclique en binaire"
+      },
+      "pins": {
+        "JB1": {
+          "to": "R1 220 Ω → anode de la LED",
+          "role": "La sortie PWM, JB[0]"
+        },
+        "GND": {
+          "to": "Cathode de la LED (broche 5 de JB)",
+          "role": "Le chemin de retour"
+        },
+        "SW7": {
+          "to": "Broche W13 du FPGA (sw[7])",
+          "role": "Vaut 128 sur 256 : mi-luminosité"
+        }
+      },
+      "callouts": {
+        "JB": "Les broches 1-4 et 7-10 sont des signaux ; 5 et 11 sont GND, 6 et 12 sont à 3,3 V.",
+        "R1": "Avec les 200 Ω de la carte en série, environ 3 mA à plein rapport cyclique.",
+        "LED1": "Patte longue (anode) du côté de R1."
+      },
+      "checks": {
+        "1": "Le design tourne 3,5 s sans erreur",
+        "2": "Avec SW7 en haut, JB1 est à l'état haut environ la moitié du temps",
+        "3": "Avec SW7 et SW6 en haut, environ les trois quarts",
+        "4": "Avec SW6 seul en haut, environ un quart",
+        "5": "LD15 bat une fois par seconde"
+      },
+      "code": {
+        "intro": "PWM : les interrupteurs règlent la luminosité d'une LED sur le Pmod JB.",
+        "sw": "SW7-SW0 règlent la luminosité, 0-255",
+        "jb": "Pmod JB : JB[0] est la broche 1",
+        "ramp": "Un compteur 8 bits libre : 0, 1, ... 255, 0, ...",
+        "compare": "À l'état haut tant que la rampe est sous la valeur des interrupteurs.",
+        "beat": "Un battement de cœur d'une seconde sur LD15, calé sur CLK_HZ.",
+        "pin": "seule la broche 1 de JB est utilisée ; les autres restent à l'état bas"
+      },
+      "world": {
+        "sw7": "SW7 (128)",
+        "sw6": "SW6 (64)"
+      },
+      "quiz": {
+        "q1": {
+          "q": "sw[7:0] vaut 64. Pendant quelle part du temps JB1 est-elle à l'état haut ?",
+          "options": {
+            "1": "Un quart : 64 cycles sur 256",
+            "2": "Deux tiers",
+            "3": "Tout le temps, parce que 64 n'est pas zéro"
+          },
+          "why": "bright vaut 1 pour ramp = 0 à 63 : 64 valeurs sur 256, 25 %."
+        },
+        "q2": {
+          "q": "Pourquoi la LED paraît-elle faible au lieu de scintiller ?",
+          "options": {
+            "1": "Le FPGA baisse la tension",
+            "2": "La résistance lisse le courant",
+            "3": "Elle commute environ 390 000 fois par seconde et votre œil voit la moyenne"
+          },
+          "why": "Au-delà d'environ 100 Hz, l'œil ne voit que la lumière moyenne. La broche est toujours soit à 0, soit à 3,3 V."
+        },
+        "q3": {
+          "q": "Quels interrupteurs donnent les trois quarts de la luminosité ?",
+          "options": {
+            "1": "SW7 et SW5",
+            "2": "SW7 et SW6 : 128 + 64 = 192 sur 256",
+            "3": "SW6 seul"
+          },
+          "why": "192 ÷ 256 = 0,75. SW7 et SW5 font 160, environ 63 % ; SW6 seul vaut 64, un quart."
+        }
+      }
+    },
+    "display": {
+      "title": "Quatre chiffres hexadécimaux sur l'afficheur",
+      "lede": "Afficher les 16 interrupteurs sous forme de quatre chiffres hexadécimaux. Les chiffres partagent leurs fils de segments : le design les allume donc un à la fois, assez vite pour que vous voyiez les quatre.",
+      "steps": {
+        "1": "digit compte 0, 1, 2, 3, 0, ... ; chaque chiffre reçoit TURN cycles d'horloge.",
+        "2": "Pour le chiffre en cours, an ne met à l'état bas que son anode, et nibble choisit les quatre interrupteurs qu'il affiche.",
+        "3": "La table transforme une valeur de 4 bits en segments à allumer ; seg l'inverse, parce que les cathodes sont actives à l'état bas.",
+        "4": "Lancez-le et basculez des interrupteurs : SW3-SW0 forment le chiffre de droite, SW15-SW12 celui de gauche."
+      },
+      "hints": {
+        "1": "Baissez la fréquence de rafraîchissement : sous environ 60 Hz, un vrai afficheur scintille, parce que chaque chiffre est éteint les trois quarts du temps.",
+        "2": "Mettez les quatre anodes à l'état bas en même temps et vous obtenez quatre fois le même chiffre.",
+        "3": "dp est lui aussi actif à l'état bas : 1 garde les points décimaux éteints."
+      },
+      "specs": {
+        "1": {
+          "label": "Rafraîchissement",
+          "value": "250 Hz : chaque chiffre 1 ms, les quatre toutes les 4 ms"
+        },
+        "2": {
+          "label": "Niveaux actifs",
+          "value": "an[3:0] et seg[6:0] : 0 = allumé"
+        },
+        "3": {
+          "label": "Luminosité",
+          "value": "Chaque chiffre est allumé un quart du temps"
+        }
+      },
+      "features": {
+        "1": "Le multiplexage temporel",
+        "2": "Des sorties actives à l'état bas",
+        "3": "Une table de correspondance dans une instruction case"
+      },
+      "params": {
+        "refresh": {
+          "label": "Fréquence de rafraîchissement"
+        }
+      },
+      "pins": {
+        "CA": {
+          "to": "Broche W7 du FPGA → 100 Ω → segment a de chaque chiffre",
+          "role": "0 allume le segment a"
+        },
+        "AN0": {
+          "to": "Broche U2 du FPGA → PNP → anode du chiffre de droite",
+          "role": "0 allume le chiffre le plus à droite"
+        },
+        "SW0": {
+          "to": "Broche V17 du FPGA (sw[0])",
+          "role": "Bit 0 du chiffre de droite"
+        }
+      },
+      "callouts": {
+        "DISP1": "Quatre chiffres sur un seul jeu de fils de segments : un seul chiffre est allumé à la fois.",
+        "Q2": "Un transistor PNP par chiffre commute son anode commune.",
+        "SW0": "SW3-SW0 forment le chiffre le plus à droite."
+      },
+      "checks": {
+        "1": "Le design tourne 3 s sans erreur",
+        "2": "Tous les interrupteurs en bas : le chiffre de droite affiche 0 (segment a allumé)",
+        "3": "... sans barre du milieu (segment g éteint)",
+        "4": "SW1 et SW0 en haut : il affiche 3 (g allumé)",
+        "5": "SW3 en haut aussi : il affiche b (a éteint)",
+        "6": "SW15 en haut : le chiffre de gauche affiche 8 (g allumé)",
+        "7": "Le troisième chiffre affiche toujours 0 (g éteint)"
+      },
+      "code": {
+        "intro": "Afficher sw[15:0] sous forme de quatre chiffres hexadécimaux, en allumant un chiffre à la fois.",
+        "refresh": "balayages des quatre chiffres par seconde",
+        "seg": "segments a-g : 0 = allumé",
+        "an": "anodes des chiffres : 0 = allumé, an[0] est le plus à droite",
+        "turn": "Cycles d'horloge pendant lesquels chaque chiffre reste allumé.",
+        "pick": "Allumer un chiffre et choisir les quatre interrupteurs qu'il affiche.",
+        "table": "Segments à allumer pour chaque valeur hexadécimale, sous la forme {g,f,e,d,c,b,a} avec 1 = allumé.",
+        "invert": "les cathodes s'allument sur 0",
+        "dp": "points décimaux éteints"
+      },
+      "world": {
+        "sw0": "SW0",
+        "sw1": "SW1",
+        "sw3": "SW3",
+        "sw15": "SW15"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Pourquoi le design allume-t-il un chiffre à la fois ?",
+          "options": {
+            "1": "Pour économiser de l'énergie",
+            "2": "Le FPGA manque de broches",
+            "3": "Les quatre chiffres partagent les fils de segments ; seule l'anode décide quel chiffre les affiche"
+          },
+          "why": "CA-CG et DP vont à chaque chiffre. Avec deux anodes actives, les deux chiffres affichent le même motif."
+        },
+        "q2": {
+          "q": "Pour allumer le segment a du chiffre le plus à droite, que pilotez-vous ?",
+          "options": {
+            "1": "seg[0] = 1 et an[0] = 1",
+            "2": "seg[0] = 0 et an[0] = 0",
+            "3": "seg[0] = 0 et an[3] = 0"
+          },
+          "why": "Les cathodes et les anodes sont toutes actives à l'état bas, et an[0] est le chiffre le plus à droite."
+        },
+        "q3": {
+          "q": "À 250 Hz, combien de temps chaque chiffre est-il allumé pendant un balayage ?",
+          "options": {
+            "1": "1 ms : un balayage dure 4 ms et chaque chiffre en reçoit un quart",
+            "2": "4 ms",
+            "3": "250 µs"
+          },
+          "why": "250 balayages par seconde, c'est 4 ms par balayage, partagés entre quatre chiffres : TURN = 100 000 000 ÷ (4 × 250) = 100 000 cycles, 1 ms."
+        }
+      }
+    }
+  }
+}
