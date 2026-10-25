@@ -83,7 +83,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-25 04:47 CDT (machine clock).
+- **Updated:** 2026-10-25 05:07 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session). Amar is asleep
   since 22:20 and gave full autonomy for every remaining build phase except Solana and hardware (CONTEXT.md §5) The Mac is kept awake by `caffeinate -dimsu -t 54000` (pid 28721, from 23:08, until about 14:08).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Do not build in
@@ -172,6 +172,12 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
     F-fix-shell (U4, U7, N1, N13, N14, N12). The final pass (`wf_c95e5cdf-cda`) finished at 04:45 with F-review's
     `docs/verify/ui-review.md`. The driver keeps N11 (Solana RPC on ordinary pages), N15 (crawl `--out`), the
     figure-string collector's variants, and the chrome change (`87315a4`).
+  - Fourth figure-string delta, run `wf_0e7f6757-d55` (`P3-figs-delta4-<lang>`), 05:02-05:06, **done**: the 65 keys
+    the collector finds now that it also opens each figure's variants (`266610e`, 4087 keys); `2226b14` es, `085983f`
+    fr, `919c6f6` de, `997c1ff` zh, `a94ac1c` hi. `src/i18n` 441 of 441. Driver since 04:47: server-side Config
+    account check (`4ed0e42`, N11), crawl `--out` (`1f60ea9`, N15), breadboard labels clear of each other and the R4's
+    dead matrix note dropped (`32eb174`, 13 of 13 probes, cfshoot OK), `FigureFrame` `poster` (`87c6077`) for a live
+    figure on the landing page once F-fix-shell is done with `page.tsx`.
   - Third figure-string delta, run `wf_4259a342-6a9` (`phase3-wave.js`, `P3-figs-delta3-<lang>`), since 04:33, due
     05:15: the 71 keys the collector now finds once it waits for See-through to finish fading (`5e2f2c9`, 4022 keys:
     board and module notes, part see-through labels, 'ON LED', 'PLUGGED IN', 'UNPLUGGED'), and 'ON' dropped. The
