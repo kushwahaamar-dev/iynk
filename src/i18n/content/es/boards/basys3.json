@@ -1,0 +1,832 @@
+{
+  "title": "Digilent Basys 3",
+  "tagline": "Una placa FPGA para aprender: no programas un procesador, describes un circuito y el chip se convierte en él.",
+  "overview": "La Basys 3 lleva una AMD Artix-7 XC7A35T, una FPGA con 33 280 celdas lógicas y sin procesador propio. Un diseño en Verilog se convierte en cableado dentro del chip: un `assign` pasa a ser una puerta, un `always @(posedge clk)` pasa a ser flip-flops sincronizados por el oscilador de 100 MHz. Alrededor de la FPGA están las piezas clásicas de las Basys, todas conectadas directamente a sus pines: 16 interruptores deslizantes (arriba = 1), 16 LED verdes (1 = encendido), cinco pulsadores en cruz (pulsado = 1) y un display de 4 dígitos cuyos segmentos y dígitos son activos a nivel bajo, así que los dígitos se turnan. Cuatro puertos Pmod (JA, JB, JC y el analógico JXADC) sacan 32 pines más a través de resistencias de 200 Ω. Un solo cable micro-USB la alimenta, la programa por JTAG y te da un UART. La FPGA olvida su diseño al apagarse y lo vuelve a cargar desde la flash Quad-SPI en menos de un segundo, que es cuando se enciende el LED verde DONE. Todo es de 3,3 V: ningún pin admite 5 V.",
+  "mcu": {
+    "ft2232hq": "Puente USB doble de FTDI: un canal es el programador JTAG y el otro un USB-UART hacia la FPGA (RsRx B18, RsTx A18).",
+    "pic24": "Host USB para un teclado o un ratón en J2 (que pasa a la FPGA como PS/2), y puede cargar un bitstream desde una memoria USB.",
+    "flash": "Flash Quad-SPI de 32 Mbit (IC8): guarda el diseño que la FPGA carga al encenderse cuando JP1 está en QSPI."
+  },
+  "power": {
+    "usb": {
+      "protection": "La clavija micro-USB tiene forma única, así que no entra al revés. Un puerto USB 2.0 da 500 mA, suficiente para la mayoría de los diseños; un diseño grande con VGA y Pmod puede necesitar más."
+    },
+    "ext": {
+      "protection": "Ninguna. J6 (serigrafía \"5V Only!\") no tiene diodo contra la inversión ni fusible: dale 4,5-5,5 V con la polaridad correcta, con JP2 pasado a EXT. VU lo lleva sin regular a los reguladores y al puerto USB-A, y su condensador de entrada C27 es de 10 V."
+    },
+    "rails": {
+      "vu": "Los 5 V en bruto del USB o de EXT, elegidos con el puente JP2. Alimenta los reguladores y, sin regular, el puerto USB-A.",
+      "1v0": "El núcleo de la FPGA (VCCINT, VCCBRAM), del primer canal del LTC3633. Es la primera en subir.",
+      "1v8": "La alimentación auxiliar de la FPGA (VCCAUX) y el XADC, del LTC3621. Arranca cuando la de 1,0 V está bien.",
+      "3v3": "Todos los bancos de E/S, los interruptores, los LED, el display y los pines 3V3 de los Pmod (1 A en total), del segundo canal del LTC3633. Arranca la última; LD20 se enciende cuando está bien."
+    },
+    "io": "Todos los pines de usuario son LVCMOS33 con una corriente de salida de 12 mA por defecto (4, 8, 12 o 16 mA en las restricciones). Nada tolera 5 V: el máximo absoluto es de unos 3,85 V. Los pines de los Pmod pasan por 200 Ω, lo que limita un cortocircuito a GND a unos 16 mA."
+  },
+  "pins": {
+    "clk": "El oscilador MEMS de 100 MHz IC9. En Vivado: create_clock -period 10.00 en el puerto clk.",
+    "sw": "Interruptor deslizante: arriba conecta el pin a 3,3 V y abajo a GND, a través de 10 kΩ. Sin antirrebote.",
+    "led": "LED verde a través de 330 Ω a GND: un 1 lo enciende, con unos 4 mA.",
+    "btn": "Pulsador a 3,3 V con una pull-down de 10 kΩ: lee 1 mientras está pulsado. Rebota durante unos milisegundos.",
+    "seg": "Cátodo de segmento, compartido por los cuatro dígitos, a través de 100 Ω: un 0 enciende el segmento.",
+    "an": "Ánodo de dígito, a través de un transistor PNP: un 0 enciende el dígito. an[0] es el dígito de más a la derecha.",
+    "pmod": "Señal Pmod, directa a un pin de la FPGA a través de 200 Ω en la placa. Solo 3,3 V.",
+    "pmod3v3": "La línea de 3,3 V, compartida por todos los Pmod: hasta 1 A en total.",
+    "jxadc": "E/S digital a través de 100 Ω, o un par de entrada analógica para el XADC (0-1 V).",
+    "uart": "El USB-UART a través del FT2232HQ. Los nombres son desde el lado del PC: RsRx es la entrada de la FPGA.",
+    "vga": "DAC de resistencias de 4 bits por color hacia los 75 Ω del monitor; Hsync y Vsync a través de 100 Ω.",
+    "ps2": "Teclado o ratón desde el chip host USB, como PS/2. Necesita PULLUP true en las restricciones.",
+    "ext": "Entrada externa de 4,5-5,5 V. Sin diodo contra la inversión ni fusible; JP2 tiene que estar en EXT para usarla."
+  },
+  "leds": {
+    "user": "Conectado directamente a un pin de la FPGA; tu diseño decide cuándo se enciende.",
+    "LD16": "Actividad del chip host USB: pulso lento mientras espera una memoria USB, parpadeo rápido si hay un error.",
+    "LD17": "Destella cuando el PC envía por el USB-UART.",
+    "LD18": "Destella cuando la FPGA envía por el USB-UART.",
+    "LD19": "DONE: se enciende cuando la FPGA ha cargado su diseño. PROG lo borra.",
+    "LD20": "Se enciende cuando todas las líneas están bien (el power-good del regulador de 3,3 V)."
+  },
+  "controls": {
+    "sw": "Mueve el interruptor: arriba es un 1 en su pin.",
+    "btn": "Lee 1 mientras lo mantienes pulsado.",
+    "PROG": "Borra el diseño de la FPGA; luego se vuelve a cargar desde la flash y DONE se enciende otra vez."
+  },
+  "displays": {
+    "DISP1": "Cuatro dígitos rojos de ánodo común que comparten un mismo juego de cables de segmento (CA-CG, DP). Enciende un dígito cada vez y recorre los cuatro cada 1-16 ms; los dos puntos no están conectados."
+  },
+  "parts": {
+    "IC7": {
+      "name": "FPGA Artix-7 XC7A35T",
+      "what": "33 280 celdas lógicas, 1800 Kbit de block RAM y 90 bloques DSP en un BGA de 10 × 10 mm con 236 bolas. No guarda ningún programa: tu diseño configura sus tablas de búsqueda y su cableado."
+    },
+    "C45": {
+      "name": "Condensadores de desacoplo de la FPGA",
+      "what": "Decenas de pequeños condensadores cerámicos (C45-C103) alrededor de la FPGA. Dan los picos repentinos de corriente cuando miles de flip-flops conmutan en el mismo flanco de reloj."
+    },
+    "IC1": {
+      "name": "Puente USB FT2232HQ",
+      "what": "Dos canales USB en un solo chip: el programador JTAG de Digilent y un USB-UART. El Hardware Manager de Vivado habla con él."
+    },
+    "IC2": {
+      "name": "Host USB PIC24",
+      "what": "Un pequeño microcontrolador que lee un teclado o un ratón USB y se lo pasa a la FPGA como PS/2, o carga un diseño desde una memoria USB."
+    },
+    "DISP1": {
+      "name": "Display de 7 segmentos y 4 dígitos",
+      "what": "Cuatro dígitos de ánodo común cuyos segmentos comparten cables. Tu diseño tiene que multiplexar: un dígito encendido cada vez, y los cuatro refrescados cada pocos milisegundos."
+    },
+    "Q1": {
+      "name": "Driver de dígitos Q1",
+      "what": "Transistor PNP doble bajo la placa. Cada mitad conecta 3,3 V al ánodo común de un dígito cuando su pin an se pone a nivel bajo."
+    },
+    "Q2": {
+      "name": "Driver de dígitos Q2",
+      "what": "El segundo transistor PNP doble, para los otros dos dígitos."
+    },
+    "sw": {
+      "name": "Interruptor deslizante",
+      "what": "Arriba = 1. Conecta su pin de la FPGA a 3,3 V o a GND a través de 10 kΩ, sin antirrebote."
+    },
+    "ld": {
+      "name": "LED verde de usuario",
+      "what": "Conectado desde un pin de la FPGA a través de 330 Ω: un 1 lo enciende con unos 4 mA."
+    },
+    "btn": {
+      "name": "Pulsador",
+      "what": "Uno de los cinco en forma de cruz. Activo a nivel alto: una pull-down de 10 kΩ mantiene el pin a 0 hasta que pulsas."
+    },
+    "PROG": {
+      "name": "Botón PROG",
+      "what": "Pone PROGRAM_B a nivel bajo: la FPGA borra su diseño y lo vuelve a cargar desde la flash."
+    },
+    "J4": {
+      "name": "Conector micro-USB",
+      "what": "Alimentación, programación por JTAG y el USB-UART, todo en un solo cable."
+    },
+    "J6": {
+      "name": "Conector de alimentación externa",
+      "what": "Entrada de 4,5-5,5 V, para una fuente o un portapilas. Sin diodo contra la inversión ni fusible."
+    },
+    "C27": {
+      "name": "Condensador de entrada C27",
+      "what": "10 µF en VU, de 10 V: la primera pieza que falla si la entrada EXT recibe 12 V."
+    },
+    "JP2": {
+      "name": "Jumper de la fuente de alimentación",
+      "what": "El puente conecta VU al USB o a EXT. Sin puente, no hay alimentación."
+    },
+    "SW16": {
+      "name": "Interruptor de encendido",
+      "what": "Activa los reguladores. No desconecta VU."
+    },
+    "LD20": {
+      "name": "LED de alimentación",
+      "what": "Rojo: se enciende cuando el último regulador indica power-good."
+    },
+    "testpoint": {
+      "name": "Punto de prueba",
+      "what": "Un pad donde apoyar la punta del multímetro: W1 es 3,3 V, W2 1,8 V, W3 1,0 V."
+    },
+    "IC10": {
+      "name": "Regulador reductor doble LTC3633",
+      "what": "Genera el núcleo de 1,0 V y la línea de E/S de 3,3 V a partir de VU, hasta 2 A cada una, bajo la placa."
+    },
+    "inductor": {
+      "name": "Bobina del reductor",
+      "what": "Almacena energía entre los pulsos de conmutación del regulador; L1 para 1,0 V, L2 para 3,3 V, L3 para 1,8 V."
+    },
+    "IC11": {
+      "name": "Regulador reductor LTC3621",
+      "what": "Genera la línea auxiliar de 1,8 V (300 mA). Arranca cuando la de 1,0 V está bien."
+    },
+    "LD17": {
+      "name": "LED RX del UART",
+      "what": "Destella mientras el PC envía a la FPGA."
+    },
+    "LD18": {
+      "name": "LED TX del UART",
+      "what": "Destella mientras la FPGA envía al PC."
+    },
+    "JP1": {
+      "name": "Jumper de modo",
+      "what": "De dónde saca la FPGA su diseño al encenderse: la flash QSPI (como viene de fábrica), solo JTAG o una memoria USB."
+    },
+    "LD19": {
+      "name": "LED DONE",
+      "what": "Verde: la FPGA está configurada y ejecutando un diseño."
+    },
+    "LD16": {
+      "name": "LED BUSY",
+      "what": "Muestra lo que está haciendo el chip host USB."
+    },
+    "IC8": {
+      "name": "Flash Quad-SPI",
+      "what": "32 Mbit de flash bajo la placa. El diseño (unos 2,2 MB) vive aquí y se carga en menos de un segundo."
+    },
+    "IC9": {
+      "name": "Oscilador de 100 MHz",
+      "what": "Un resonador MEMS de silicio, no un cristal de cuarzo. Su reloj llega a la FPGA por el pin W5."
+    },
+    "J1": {
+      "name": "Conector VGA",
+      "what": "Color de 12 bits (4 bits para el rojo, el verde y el azul cada uno) desde escaleras de resistencias, más Hsync y Vsync."
+    },
+    "J2": {
+      "name": "Conector host USB-A",
+      "what": "Un teclado o un ratón (sin hubs), o una memoria FAT32 con un archivo .bit."
+    },
+    "pmod": {
+      "name": "Puerto Pmod",
+      "what": "12 pines: 8 señales de la FPGA a través de 200 Ω, dos GND y dos de 3,3 V. Los módulos Pmod se conectan directamente."
+    },
+    "JXADC": {
+      "name": "Pmod analógico JXADC",
+      "what": "Como los demás Pmod, pero sus pines también llegan al XADC de la FPGA como cuatro pares de entrada analógica de 0-1 V."
+    }
+  },
+  "wireables": {
+    "led": {
+      "note": "Ánodo al pin 1 de JB a través de 220 Ω, cátodo a un pin GND del Pmod. Contrólalo desde tu diseño como cualquier LED.",
+      "caution": "La placa ya añade 200 Ω en serie, así que el LED se queda tenue pero a salvo incluso sin tu resistencia; nunca alimentes un pin Pmod desde 5 V."
+    },
+    "push-button": {
+      "note": "Entre el pin 2 de JB y GND. Añade PULLUP true para ese pin en las restricciones para que lea 1 hasta que pulses, y elimina los rebotes en tu diseño."
+    },
+    "piezo-buzzer": {
+      "note": "+ al pin 3 de JB. Conmuta el pin a una frecuencia audible (cuenta CLK_HZ / (2 × f) ciclos por semiperiodo) para tocar una nota."
+    },
+    "mpu6050": {
+      "note": "3,3 V y GND de un Pmod, SCL al pin 1 de JC, SDA al pin 2 de JC.",
+      "caution": "No hay periférico I2C: tu diseño necesita un maestro I2C (salidas de drenador abierto y pull-ups en las restricciones)."
+    },
+    "ssd1306": {
+      "note": "3,3 V y GND de un Pmod, SCL al pin 1 de JC, SDA al pin 2 de JC.",
+      "caution": "Tu diseño tiene que enviar por sí mismo los comandos I2C de configuración de la pantalla y los datos de los píxeles; es un proyecto grande, no uno para empezar."
+    }
+  },
+  "failures": {
+    "reverse-ext": {
+      "title": "Conector EXT cableado al revés",
+      "symptom": "LD20 se queda apagado, la fuente de laboratorio se queda en su límite de corriente y los reguladores de debajo de la placa se calientan.",
+      "explanation": "J6 no tiene diodo contra la inversión ni fusible. Una fuente invertida fuerza la corriente al revés por los diodos internos del LTC3633 y el LTC3621 y por todo lo demás que cuelga de VU; solo la frena el límite de corriente de tu fuente, y el regulador IC10 es el primero en fallar.",
+      "fix": "Apaga enseguida e intercambia los cables. Antes de volver a fiarte de la placa, comprueba W3 (1,0 V) y W1 (3,3 V). Usa una clavija con forma única, o un diodo en serie, en tu fuente."
+    },
+    "ext-12v": {
+      "title": "12 V en el conector EXT",
+      "symptom": "La placa se apaga y el condensador de entrada C27 queda destrozado.",
+      "explanation": "EXT es una entrada de 4,5-5,5 V, y VU la pasa sin regular. Los reductores lo aguantarían, pero el condensador de entrada C27 es de 10 V: falla en cortocircuito y hunde VU, así que los reguladores se caen. Un teclado en el puerto USB-A también recibiría 12 V.",
+      "fix": "Usa una fuente regulada de 5 V en J6. Para alimentarla con un adaptador de 7-12 V, pon un regulador de 5 V delante de la placa."
+    },
+    "ext-3v": {
+      "title": "3 V en el conector EXT",
+      "symptom": "LD20 y DONE parpadean: la FPGA pierde su diseño una y otra vez.",
+      "explanation": "Los reguladores necesitan margen: con 3 V, la línea de 3,3 V cae a unos 2,7 V. El reset de encendido de la FPGA borra su configuración cada vez que la línea cae.",
+      "fix": "Dale a J6 4,5-5,5 V. Una sola celda de iones de litio se queda corta; un portapilas de cuatro AA o una batería externa USB funcionan."
+    },
+    "brownout": {
+      "title": "Caída de tensión con una fuente débil",
+      "symptom": "DONE se apaga y vuelve, y el diseño empieza de nuevo una y otra vez.",
+      "explanation": "Un diseño exigente (VGA, muchos LED, módulos Pmod) puede consumir más de lo que da un puerto USB. Cuando los 3,3 V caen, la FPGA se reinicia y pierde su configuración; cuando la línea se recupera, la vuelve a cargar desde la flash.",
+      "fix": "Usa un hub USB con alimentación, o una fuente de 5 V y 2 A en J6 con JP2 en EXT."
+    },
+    "short-3v3": {
+      "title": "3V3 del Pmod en cortocircuito con GND",
+      "symptom": "LD20 se apaga y la placa se reinicia; el regulador se calienta.",
+      "explanation": "Los pines 6 y 12 de cada Pmod son la línea de 3,3 V, justo al lado de GND en el 5 y el 11. Un cable de puente que se escurre hace que el LTC3633 llegue a su límite de corriente, su power-good cae y la FPGA pierde su diseño.",
+      "fix": "Desconecta, busca el puente (un cable suelto o un Pmod desplazado una fila) y vuelve a dar alimentación."
+    },
+    "short-vu": {
+      "title": "Puente de soldadura de VU a GND",
+      "symptom": "Todo se apaga de golpe; el PC puede desactivar su puerto USB.",
+      "explanation": "VU son los 5 V en bruto. En cortocircuito, hunde la alimentación USB hasta que salta la protección del puerto del PC (en EXT, el límite propio de la fuente).",
+      "fix": "Desconecta, quita el puente y vuelve a conectar. Puede que haya que volver a activar el puerto en el PC."
+    },
+    "missing-jp2": {
+      "title": "Se ha perdido el puente de JP2",
+      "symptom": "Completamente muerta: ni LD20 ni nada en ninguna línea.",
+      "explanation": "El puente de JP2 conecta VU al USB o a EXT. Sin él, ninguna de las dos entradas llega a los reguladores.",
+      "fix": "Pon un puente en JP2: pines central y USB para alimentar por USB, central y EXT para J6."
+    },
+    "missing-flash": {
+      "title": "Sin flash de configuración",
+      "symptom": "LD20 está encendido, pero DONE sigue apagado y no pasa nada.",
+      "explanation": "La Artix-7 olvida su diseño al apagarse. Con JP1 en QSPI lo lee de IC8 al encenderse; sin flash, espera a un programador.",
+      "fix": "Programa el diseño por JTAG desde Vivado (dura hasta que se apague), o sustituye la flash y graba en ella el .bin."
+    },
+    "cold-sw0": {
+      "title": "Soldadura fría en SW0",
+      "symptom": "LD0 parpadea solo y cambia cuando tocas el interruptor.",
+      "explanation": "SW0 alimenta su pin a través de 10 kΩ y nada más fija el pin. Con una soldadura agrietada, el pin queda al aire y lee el ruido que capte.",
+      "fix": "Vuelve a calentar la soldadura con flux nuevo hasta que el estaño fluya alrededor del pin. En tus propios circuitos, dale a cada entrada un nivel definido."
+    }
+  },
+  "assembly": {
+    "unplug": {
+      "title": "Desconecta la placa",
+      "body": "Quita el cable micro-USB y lo que haya en J6. Nunca trabajes en una placa con tensión."
+    },
+    "strip": {
+      "title": "Deja la PCB desnuda",
+      "body": "Quita todas las piezas. Lo que queda es la PCB azul con sus puntos de prueba W1-W3.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión."
+    },
+    "reflow": {
+      "title": "Colocación automática y reflujo",
+      "body": "La máquina coloca los componentes de montaje superficial (la FPGA BGA, los chips USB, los reguladores, los LED y los botones) sobre la pasta de soldar, y el horno la funde: las 236 bolas de debajo de la FPGA se sueldan a la vez.",
+      "refusal": "Primero deja la placa en la PCB desnuda."
+    },
+    "place-low": {
+      "title": "Coloca las piezas bajas",
+      "body": "Primero van los 17 interruptores deslizantes, las dos tiras de jumpers y el conector EXT J6, mientras la placa todavía puede apoyarse plana sobre ellos.",
+      "refusal": "Primero haz el reflujo de los componentes de montaje superficial."
+    },
+    "place-tall": {
+      "title": "Coloca las piezas altas",
+      "body": "Luego el display, los cuatro zócalos Pmod y los conectores VGA y USB-A.",
+      "refusal": "Primero coloca las piezas bajas, para que la placa quede plana mientras sueldas."
+    },
+    "solder": {
+      "title": "Suelda las uniones de inserción",
+      "body": "Cada pata de interruptor, cada pin de zócalo y cada pin de tira lleva su soldadura por la cara inferior.",
+      "refusal": "Primero coloca los componentes de inserción."
+    },
+    "power-up": {
+      "title": "Enciende",
+      "body": "Conecta el USB con SW16 en ON. Sube 1,0 V, luego 1,8 V, luego 3,3 V, y LD20 se enciende. La FPGA lee su diseño de la flash y DONE (LD19) se enciende."
+    },
+    "factory-test": {
+      "title": "Prueba un interruptor",
+      "body": "El diseño de fábrica copia cada interruptor en el LED que tiene encima, cuenta en el display e imprime por el UART cuando pulsas un botón. Mueve SW0: LD0 se enciende."
+    },
+    "program": {
+      "title": "Programa un diseño nuevo",
+      "body": "Envía un diseño por USB: la FPGA se borra, DONE se apaga, el bitstream se carga en unos segundos y DONE se vuelve a encender. Este es un juego de luces que recorre los LED.",
+      "refusal": "Primero conecta el USB: el programador está en el lado del USB."
+    }
+  },
+  "lessons": {
+    "gates": {
+      "title": "Puertas lógicas con interruptores",
+      "lede": "Tu primer diseño en una FPGA es lógica pura: cuatro LED muestran AND, OR, XOR y NOT de los dos interruptores de la derecha, y los otros doce LED copian sus interruptores.",
+      "steps": {
+        "1": "assign conecta una salida a una expresión. No es un paso que se ejecuta: la síntesis lo construye como una puerta que siempre está ahí.",
+        "2": "El mapa de puertos es el archivo XDC que escribes en Vivado: sw[0] es el interruptor SW0 en el pin V17, led[0] es LD0 en el pin U16.",
+        "3": "Pulsa Ejecutar, mueve SW0 y SW1 en la placa y comprueba LD0-LD3 con la tabla de verdad de cada puerta."
+      },
+      "hints": {
+        "1": "Arriba es 1: cada interruptor une su pin a 3,3 V a través de 10 kΩ.",
+        "2": "Prueba assign led[0] = ~(sw[0] & sw[1]); para convertir la AND en una NAND."
+      },
+      "specs": {
+        "1": {
+          "label": "Nivel lógico",
+          "value": "3,3 V (LVCMOS33): interruptor arriba = 1"
+        },
+        "2": {
+          "label": "Salida al LED",
+          "value": "Pin → 330 Ω → LED, unos 4 mA"
+        },
+        "3": {
+          "label": "Velocidad",
+          "value": "Unos pocos nanosegundos a través de la lógica; sin reloj de por medio"
+        }
+      },
+      "features": {
+        "1": "Lógica combinacional con assign",
+        "2": "El mapa de puertos es tu archivo XDC",
+        "3": "Mueve los interruptores de la placa mientras funciona"
+      },
+      "pins": {
+        "SW0": {
+          "to": "Pin V17 de la FPGA (sw[0])",
+          "role": "Entrada A de todas las puertas"
+        },
+        "SW1": {
+          "to": "Pin V16 de la FPGA (sw[1])",
+          "role": "Entrada B"
+        },
+        "LD0": {
+          "to": "Pin U16 de la FPGA (led[0])",
+          "role": "Muestra A AND B"
+        }
+      },
+      "callouts": {
+        "SW0": "Arriba = 1, abajo = 0.",
+        "LD0": "Encendido solo mientras SW0 y SW1 están los dos arriba.",
+        "IC7": "Aquí no se ejecuta ningún programa: las puertas son tablas de búsqueda cableadas entre los pines."
+      },
+      "checks": {
+        "1": "El diseño funciona 2,5 s sin errores",
+        "2": "NOT: LD3 está encendido mientras SW0 está abajo",
+        "3": "OR: LD1 se enciende solo con SW0 arriba",
+        "4": "AND: LD0 sigue apagado solo con SW0 arriba",
+        "5": "AND: LD0 se enciende con los dos interruptores arriba",
+        "6": "XOR: LD2 se apaga con los dos interruptores arriba",
+        "7": "XOR: LD2 se enciende solo con SW1 arriba"
+      },
+      "code": {
+        "intro": "Puertas lógicas: cuatro LED muestran lo que dan dos interruptores.",
+        "xdc": "El mapa de puertos (el archivo XDC de Vivado) pone sw en los 16 interruptores y led en los 16 LED.",
+        "sw": "los 16 interruptores deslizantes, arriba = 1",
+        "led": "los 16 LED verdes, 1 = encendido",
+        "and": "encendido cuando los dos están arriba",
+        "or": "encendido cuando cualquiera está arriba",
+        "xor": "encendido cuando exactamente uno está arriba",
+        "not": "encendido mientras SW0 está abajo",
+        "rest": "LD4-LD15 simplemente siguen a sus interruptores."
+      },
+      "world": {
+        "sw0": "SW0 (entrada A)",
+        "sw1": "SW1 (entrada B)"
+      },
+      "quiz": {
+        "q1": {
+          "q": "¿En qué se convierte assign led[0] = sw[0] & sw[1]; en la FPGA?",
+          "options": {
+            "1": "En un bucle que lee los interruptores muchas veces por segundo",
+            "2": "En un programa guardado en la flash",
+            "3": "En una puerta AND, hecha con una tabla de búsqueda, que funciona siempre"
+          },
+          "why": "Aquí no hay procesador. La síntesis convierte la expresión en una tabla de búsqueda cableada entre los pines, así que LD0 sigue a los interruptores en nanosegundos."
+        },
+        "q2": {
+          "q": "LD2 muestra sw[0] ^ sw[1]. ¿Cuándo está encendido?",
+          "options": {
+            "1": "Cuando exactamente uno de los dos interruptores está arriba",
+            "2": "Cuando los dos están arriba",
+            "3": "Cuando los dos están abajo"
+          },
+          "why": "XOR vale 1 cuando sus entradas son distintas."
+        },
+        "q3": {
+          "q": "El XDC pone sw[0] en el pin V17. ¿Qué pasa si lo cambias a V16?",
+          "options": {
+            "1": "Nada: el nombre de un puerto funciona esté en el pin que esté",
+            "2": "sw[0] lee ahora el interruptor SW1, porque las restricciones deciden qué bola del chip es cada puerto",
+            "3": "Vivado se niega, porque V16 lo ocupa un LED"
+          },
+          "why": "El Verilog solo nombra puertos. El XDC une cada puerto a un pin físico, y V16 está conectado a SW1."
+        }
+      }
+    },
+    "blink": {
+      "title": "Parpadeo con un contador",
+      "lede": "Una FPGA no tiene delay(). Para hacer parpadear LD0 cuentas ciclos de reloj: 100 millones hacen un segundo.",
+      "steps": {
+        "1": "El oscilador de 100 MHz controla clk. En cada flanco de subida, el bloque always le suma uno a count.",
+        "2": "Cuando count llega a HALF vuelve a empezar y LD0 cambia de estado: dos cambios hacen un parpadeo.",
+        "3": "LD15-LD12 cuentan los parpadeos en binario. Cambia la frecuencia de parpadeo y vuelve a ejecutarlo."
+      },
+      "hints": {
+        "1": "CLK_HZ es el reloj de la placa. El simulador ejecuta el diseño con un reloj más lento y ajusta CLK_HZ en consecuencia, así que un segundo sigue siendo un segundo.",
+        "2": "count tiene 32 bits: 2^32 ciclos son 43 segundos a 100 MHz, más de lo que necesita cualquier HALF de aquí."
+      },
+      "specs": {
+        "1": {
+          "label": "Reloj",
+          "value": "100 MHz en el pin W5: 10 ns por ciclo"
+        },
+        "2": {
+          "label": "HALF a 2 Hz",
+          "value": "100 000 000 ÷ 4 = 25 000 000 ciclos"
+        },
+        "3": {
+          "label": "Hardware",
+          "value": "32 flip-flops, un sumador y un comparador"
+        }
+      },
+      "features": {
+        "1": "Lógica secuencial con always @(posedge clk)",
+        "2": "El tiempo sale de contar, no de esperar",
+        "3": "Elige la frecuencia de parpadeo con un selector"
+      },
+      "params": {
+        "hz": {
+          "label": "Frecuencia de parpadeo"
+        }
+      },
+      "pins": {
+        "CLK100MHZ": {
+          "to": "Oscilador de 100 MHz IC9 → pin W5",
+          "role": "Cada flanco de subida actualiza los registros"
+        },
+        "LD0": {
+          "to": "Pin U16 de la FPGA (led[0])",
+          "role": "Cambia de estado cada HALF ciclos"
+        },
+        "LD12": {
+          "to": "Pin P3 de la FPGA (led[12])",
+          "role": "Bit más bajo de la cuenta de parpadeos"
+        }
+      },
+      "callouts": {
+        "IC9": "El oscilador de 100 MHz: el latido con el que se cuenta todo.",
+        "LD0": "Parpadea a la frecuencia que elijas.",
+        "LD12": "El bit 0 de la cuenta de parpadeos: la mitad de rápido que LD0."
+      },
+      "checks": {
+        "1": "El diseño funciona 4 s sin errores",
+        "2": "LD0 parpadea (un ciclo de entre 0,15 y 1,1 s)",
+        "3": "LD12 cuenta los parpadeos (un ciclo de entre 0,3 y 2,2 s)",
+        "4": "Cuenta en posedge clk y mide el tiempo con CLK_HZ"
+      },
+      "code": {
+        "intro": "Parpadeo: cuenta ciclos de reloj y cambia LD0 cada medio periodo.",
+        "clk": "el reloj de la placa: ciclos por segundo",
+        "half": "Ciclos de reloj en medio parpadeo.",
+        "toggle": "cambia LD0",
+        "count": "LD0 está a punto de apagarse: un parpadeo más"
+      },
+      "quiz": {
+        "q1": {
+          "q": "¿Por qué un diseño de FPGA no puede simplemente esperar 500 ms?",
+          "options": {
+            "1": "Esperar es demasiado lento para una FPGA",
+            "2": "Ningún procesador ejecuta pasos uno tras otro: el circuito solo reacciona a señales, así que el tiempo sale de contar flancos de reloj",
+            "3": "Verilog no tiene números tan grandes"
+          },
+          "why": "Un diseño es un circuito. Su único sentido del tiempo es el reloj: 50 millones de flancos de un reloj de 100 MHz son medio segundo."
+        },
+        "q2": {
+          "q": "Con CLK_HZ = 100 000 000 y BLINK_HZ = 2, ¿cuánto vale HALF?",
+          "options": {
+            "1": "50 000 000",
+            "2": "200 000 000",
+            "3": "25 000 000"
+          },
+          "why": "HALF = 100 000 000 ÷ (2 × 2) = 25 000 000 ciclos, un cuarto de segundo. Dos mitades hacen un parpadeo de 0,5 s."
+        },
+        "q3": {
+          "q": "LD0 parpadea a 2 Hz. ¿A qué frecuencia parpadea LD12, el bit más bajo de la cuenta?",
+          "options": {
+            "1": "A 1 Hz: cambia una vez por cada parpadeo de LD0, así que un encendido y apagado completo dura dos parpadeos",
+            "2": "A 4 Hz",
+            "3": "A 2 Hz, al compás de LD0"
+          },
+          "why": "La cuenta sube una vez por cada parpadeo de LD0, y el bit 0 de un contador cambia de estado en cada paso: la mitad de la frecuencia de LD0."
+        }
+      }
+    },
+    "counter": {
+      "title": "Cuenta las pulsaciones de un botón",
+      "lede": "Cada pulsación de BTNC le suma uno a un número binario en los LED y BTNU lo pone a cero. Los botones de verdad rebotan, así que el diseño limpia antes la señal.",
+      "steps": {
+        "1": "Dos flip-flops copian btnC al dominio del reloj antes de que nada más lo lea: un sincronizador.",
+        "2": "El antirrebote solo se cree un nivel nuevo cuando se ha mantenido durante SETTLE ciclos de reloj, 10 ms por defecto.",
+        "3": "Comparar el nivel limpio con su valor de un ciclo de reloj antes da un pulso de un ciclo de reloj cuando se pulsa el botón.",
+        "4": "Cada pulso le suma uno a count, que se muestra en binario en LD15-LD0. Pulsa BTNC en la placa unas cuantas veces."
+      },
+      "hints": {
+        "1": "Las pulsaciones del guion rebotan durante 5 ms, pero cada rebote dura solo 1,25 ms, así que incluso un tiempo de asentamiento de 2 ms cuenta bien. Quita el antirrebote y cada pulsación cuenta varias veces.",
+        "2": "Los botones son activos a nivel alto: una pull-down de 10 kΩ mantiene el pin a 0 hasta que pulsas.",
+        "3": "Nunca uses un botón como reloj de los flip-flops: cada rebote sería otro flanco de reloj."
+      },
+      "specs": {
+        "1": {
+          "label": "Tiempo de asentamiento",
+          "value": "10 ms = 1 000 000 de ciclos a 100 MHz"
+        },
+        "2": {
+          "label": "Circuito del botón",
+          "value": "3,3 V → botón → 10 kΩ → pin, pull-down de 10 kΩ"
+        },
+        "3": {
+          "label": "Contador",
+          "value": "16 bits: hasta 65 535 pulsaciones"
+        }
+      },
+      "features": {
+        "1": "Sincroniza, elimina los rebotes, detecta el flanco",
+        "2": "Mira por qué un contacto que rebota cuenta dos veces",
+        "3": "Cambia el tiempo de asentamiento"
+      },
+      "params": {
+        "settle": {
+          "label": "Tiempo de asentamiento"
+        }
+      },
+      "pins": {
+        "BTNC": {
+          "to": "Pin U18 de la FPGA (btnC)",
+          "role": "Cada pulsación suma uno"
+        },
+        "BTNU": {
+          "to": "Pin T18 de la FPGA (btnU)",
+          "role": "Pone la cuenta a cero"
+        },
+        "LD0": {
+          "to": "Pin U16 de la FPGA (led[0])",
+          "role": "Bit 0 de la cuenta"
+        }
+      },
+      "callouts": {
+        "BTNC": "Púlsalo para contar. Lee 1 mientras lo mantienes.",
+        "BTNU": "Pone la cuenta a cero.",
+        "LD0": "El bit más bajo: cambia con cada pulsación."
+      },
+      "checks": {
+        "1": "El diseño funciona 3,6 s sin errores",
+        "2": "La primera pulsación aparece en LD0 antes de 0,1 s",
+        "3": "Tras tres pulsaciones, LD0 está encendido (3 es 0011)",
+        "4": "Tras tres pulsaciones, LD1 está encendido",
+        "5": "LD2 está apagado: cada pulsación con rebotes contó una vez",
+        "6": "BTNU pone la cuenta a cero"
+      },
+      "code": {
+        "intro": "Cuenta las pulsaciones de BTNC en los LED; BTNU pone la cuenta a cero.",
+        "btnC": "contar: 1 mientras está pulsado",
+        "btnU": "poner a cero",
+        "settle": "Ciclos de reloj que un nuevo nivel del botón debe mantenerse antes de que nos lo creamos.",
+        "sync": "Sincronizar: dos flip-flops llevan btnC a nuestro reloj.",
+        "debounce": "Antirrebote: sigue al botón solo cuando lleva SETTLE ciclos estable.",
+        "edge": "Flanco: un pulso de un ciclo de reloj cuando el nivel limpio pasa de 0 a 1.",
+        "count": "Cuenta los pulsos; BTNU tiene prioridad."
+      },
+      "world": {
+        "btnc": "BTNC (contar)",
+        "btnu": "BTNU (poner a cero)"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Sin el antirrebote, una pulsación suma 5. ¿Por qué?",
+          "options": {
+            "1": "El reloj es demasiado rápido",
+            "2": "Los contactos rebotan: el pin hace 1-0-1-0-1 durante unos milisegundos y cada flanco de subida cuenta",
+            "3": "El botón es activo a nivel bajo"
+          },
+          "why": "Un contacto metálico rebota antes de asentarse, y los flip-flops son lo bastante rápidos como para ver cada rebote como una pulsación."
+        },
+        "q2": {
+          "q": "¿Qué te da wire press = clean & ~was;?",
+          "options": {
+            "1": "Un pulso de un ciclo de reloj, justo cuando se pulsa el botón",
+            "2": "Un 1 mientras se mantiene pulsado el botón",
+            "3": "Un 1 mientras el botón está suelto"
+          },
+          "why": "was es clean un ciclo de reloj antes. Solo en el primer ciclo después de una pulsación clean vale 1 mientras was sigue a 0."
+        },
+        "q3": {
+          "q": "¿Por qué btnC pasa por dos flip-flops antes de que lo lea el antirrebote?",
+          "options": {
+            "1": "Para retrasarlo y que los LED puedan seguirlo",
+            "2": "Los dos flip-flops son el antirrebote",
+            "3": "El botón cambia en cualquier momento, no en un flanco de reloj; la pareja le da a un nivel intermedio un ciclo de reloj para asentarse antes de que lo vea la lógica"
+          },
+          "why": "Un flip-flop que muestrea una señal justo cuando cambia puede quedarse colgado entre 0 y 1. El segundo flip-flop solo lee el primero tras un ciclo de reloj entero, y para entonces ya se ha asentado."
+        }
+      }
+    },
+    "pwm": {
+      "title": "Regula el brillo de un LED con PWM",
+      "lede": "Un pin solo puede estar a 0 o a 3,3 V. Conmutar deprisa entre los dos, en alto durante SW7-SW0 de cada 256 ciclos de reloj, atenúa a la vez un LED en el Pmod JB y LD0.",
+      "steps": {
+        "1": "ramp cuenta de 0 a 255 una y otra vez, un paso por ciclo de reloj.",
+        "2": "bright vale 1 mientras ramp está por debajo de sw[7:0], así que el pin está en alto sw[7:0] de cada 256 ciclos.",
+        "3": "Conecta el LED al pin 1 de JB a través de 220 Ω, ejecuta el diseño y sube SW7 y SW6 para tener el 50 % y el 75 %."
+      },
+      "hints": {
+        "1": "sw[7:0] es un número binario: SW7 solo es 128 (la mitad), SW7 y SW6 hacen 192 (tres cuartos).",
+        "2": "El latido de LD15 se mide con CLK_HZ, así que late una vez por segundo con cualquier reloj."
+      },
+      "specs": {
+        "1": {
+          "label": "Frecuencia del PWM",
+          "value": "100 MHz ÷ 256 ≈ 390 kHz"
+        },
+        "2": {
+          "label": "Resolución",
+          "value": "8 bits: 256 pasos"
+        },
+        "3": {
+          "label": "Pin del Pmod",
+          "value": "Pin 1 de JB = A14, a través de 200 Ω en la placa"
+        }
+      },
+      "features": {
+        "1": "Un contador y un comparador hacen PWM",
+        "2": "Cualquier pin de la FPGA puede hacer PWM",
+        "3": "Los interruptores fijan el ciclo de trabajo en binario"
+      },
+      "pins": {
+        "JB1": {
+          "to": "R1 220 Ω → ánodo del LED",
+          "role": "La salida PWM, JB[0]"
+        },
+        "GND": {
+          "to": "Cátodo del LED (pin 5 de JB)",
+          "role": "El camino de retorno"
+        },
+        "SW7": {
+          "to": "Pin W13 de la FPGA (sw[7])",
+          "role": "Vale 128 de 256: medio brillo"
+        }
+      },
+      "callouts": {
+        "JB": "Los pines 1-4 y 7-10 son señales; el 5 y el 11 son GND, el 6 y el 12 son 3,3 V.",
+        "R1": "Con los 200 Ω de la placa en serie, unos 3 mA con el ciclo de trabajo al máximo.",
+        "LED1": "La pata larga (ánodo) hacia R1."
+      },
+      "checks": {
+        "1": "El diseño funciona 3,5 s sin errores",
+        "2": "Con SW7 arriba, JB1 está en alto más o menos la mitad del tiempo",
+        "3": "Con SW7 y SW6 arriba, unos tres cuartos",
+        "4": "Con solo SW6 arriba, más o menos un cuarto",
+        "5": "LD15 late una vez por segundo"
+      },
+      "code": {
+        "intro": "PWM: los interruptores fijan el brillo de un LED en el Pmod JB.",
+        "sw": "SW7-SW0 fijan el brillo, 0-255",
+        "jb": "Pmod JB: JB[0] es el pin 1",
+        "ramp": "Un contador libre de 8 bits: 0, 1, ... 255, 0, ...",
+        "compare": "En alto mientras la rampa está por debajo del valor de los interruptores.",
+        "beat": "Un latido de un segundo en LD15, medido con CLK_HZ.",
+        "pin": "solo se usa el pin 1 de JB; el resto se queda en bajo"
+      },
+      "world": {
+        "sw7": "SW7 (128)",
+        "sw6": "SW6 (64)"
+      },
+      "quiz": {
+        "q1": {
+          "q": "sw[7:0] vale 64. ¿Cuánto tiempo está JB1 en alto?",
+          "options": {
+            "1": "Un cuarto: 64 de cada 256 ciclos de reloj",
+            "2": "Dos tercios",
+            "3": "Todo el tiempo, porque 64 no es cero"
+          },
+          "why": "bright vale 1 para ramp = 0 a 63: 64 de 256 valores, el 25 %."
+        },
+        "q2": {
+          "q": "¿Por qué el LED se ve tenue en lugar de parpadear?",
+          "options": {
+            "1": "La FPGA baja la tensión",
+            "2": "La resistencia suaviza la corriente",
+            "3": "Conmuta unas 390 000 veces por segundo y tu ojo ve la media"
+          },
+          "why": "Por encima de unos 100 Hz, el ojo solo ve la luz media. El pin sigue estando a 0 o a 3,3 V."
+        },
+        "q3": {
+          "q": "¿Qué interruptores dan tres cuartos de brillo?",
+          "options": {
+            "1": "SW7 y SW5",
+            "2": "SW7 y SW6: 128 + 64 = 192 de 256",
+            "3": "SW6 solo"
+          },
+          "why": "192 ÷ 256 = 0,75. SW7 y SW5 hacen 160, un 63 %; SW6 solo es 64, un cuarto."
+        }
+      }
+    },
+    "display": {
+      "title": "Cuatro dígitos hexadecimales en el display",
+      "lede": "Muestra los 16 interruptores como cuatro dígitos hexadecimales. Los dígitos comparten sus cables de segmento, así que el diseño los enciende de uno en uno, lo bastante rápido como para que veas los cuatro.",
+      "steps": {
+        "1": "digit cuenta 0, 1, 2, 3, 0, ...; cada dígito recibe TURN ciclos de reloj.",
+        "2": "Para el dígito actual, an pone a nivel bajo solo su ánodo y nibble elige los cuatro interruptores que muestra.",
+        "3": "La tabla convierte un valor de 4 bits en los segmentos que hay que encender; seg lo invierte, porque los cátodos son activos a nivel bajo.",
+        "4": "Ejecútalo y mueve interruptores: SW3-SW0 forman el dígito de la derecha y SW15-SW12 el de la izquierda."
+      },
+      "hints": {
+        "1": "Baja la frecuencia de refresco: por debajo de unos 60 Hz un display de verdad parpadea, porque cada dígito está apagado tres cuartas partes del tiempo.",
+        "2": "Pon los cuatro ánodos a nivel bajo a la vez y verás el mismo dígito cuatro veces.",
+        "3": "dp también es activo a nivel bajo: un 1 mantiene apagados los puntos decimales."
+      },
+      "specs": {
+        "1": {
+          "label": "Refresco",
+          "value": "250 Hz: cada dígito 1 ms, los cuatro cada 4 ms"
+        },
+        "2": {
+          "label": "Niveles activos",
+          "value": "an[3:0] y seg[6:0]: 0 = encendido"
+        },
+        "3": {
+          "label": "Brillo",
+          "value": "Cada dígito está encendido un cuarto del tiempo"
+        }
+      },
+      "features": {
+        "1": "Multiplexado en el tiempo",
+        "2": "Salidas activas a nivel bajo",
+        "3": "Una tabla de búsqueda en una sentencia case"
+      },
+      "params": {
+        "refresh": {
+          "label": "Frecuencia de refresco"
+        }
+      },
+      "pins": {
+        "CA": {
+          "to": "Pin W7 de la FPGA → 100 Ω → segmento a de todos los dígitos",
+          "role": "Un 0 enciende el segmento a"
+        },
+        "AN0": {
+          "to": "Pin U2 de la FPGA → PNP → ánodo del dígito de la derecha",
+          "role": "Un 0 enciende el dígito de más a la derecha"
+        },
+        "SW0": {
+          "to": "Pin V17 de la FPGA (sw[0])",
+          "role": "Bit 0 del dígito de la derecha"
+        }
+      },
+      "callouts": {
+        "DISP1": "Cuatro dígitos en un solo juego de cables de segmento: solo hay un dígito encendido cada vez.",
+        "Q2": "Un transistor PNP por dígito conmuta su ánodo común.",
+        "SW0": "SW3-SW0 forman el dígito de más a la derecha."
+      },
+      "checks": {
+        "1": "El diseño funciona 3 s sin errores",
+        "2": "Todos los interruptores abajo: el dígito de la derecha muestra 0 (segmento a encendido)",
+        "3": "... sin barra central (segmento g apagado)",
+        "4": "SW1 y SW0 arriba: muestra 3 (g encendido)",
+        "5": "SW3 arriba también: muestra b (a apagado)",
+        "6": "SW15 arriba: el dígito de la izquierda muestra 8 (g encendido)",
+        "7": "El tercer dígito sigue mostrando 0 (g apagado)"
+      },
+      "code": {
+        "intro": "Muestra sw[15:0] como cuatro dígitos hexadecimales, encendiendo un dígito cada vez.",
+        "refresh": "barridos de los cuatro dígitos por segundo",
+        "seg": "segmentos a-g: 0 = encendido",
+        "an": "ánodos de los dígitos: 0 = encendido, an[0] es el de más a la derecha",
+        "turn": "Ciclos de reloj que cada dígito se queda encendido.",
+        "pick": "Enciende un dígito y elige los cuatro interruptores que muestra.",
+        "table": "Segmentos que hay que encender para cada valor hexadecimal, como {g,f,e,d,c,b,a} con 1 = encendido.",
+        "invert": "los cátodos encienden con un 0",
+        "dp": "puntos decimales apagados"
+      },
+      "world": {
+        "sw0": "SW0",
+        "sw1": "SW1",
+        "sw3": "SW3",
+        "sw15": "SW15"
+      },
+      "quiz": {
+        "q1": {
+          "q": "¿Por qué el diseño enciende los dígitos de uno en uno?",
+          "options": {
+            "1": "Para ahorrar energía",
+            "2": "La FPGA se queda sin pines",
+            "3": "Los cuatro dígitos comparten los cables de segmento; solo el ánodo decide qué dígito los muestra"
+          },
+          "why": "CA-CG y DP van a todos los dígitos. Con dos ánodos encendidos, los dos dígitos muestran el mismo dibujo."
+        },
+        "q2": {
+          "q": "Para encender el segmento a del dígito de más a la derecha, ¿qué pones?",
+          "options": {
+            "1": "seg[0] = 1 y an[0] = 1",
+            "2": "seg[0] = 0 y an[0] = 0",
+            "3": "seg[0] = 0 y an[3] = 0"
+          },
+          "why": "Los cátodos y los ánodos son activos a nivel bajo, y an[0] es el dígito de más a la derecha."
+        },
+        "q3": {
+          "q": "A 250 Hz, ¿cuánto tiempo está encendido cada dígito en un barrido?",
+          "options": {
+            "1": "1 ms: un barrido dura 4 ms y cada dígito recibe un cuarto",
+            "2": "4 ms",
+            "3": "250 µs"
+          },
+          "why": "250 barridos por segundo son 4 ms por barrido, repartidos entre cuatro dígitos: TURN = 100 000 000 ÷ (4 × 250) = 100 000 ciclos, 1 ms."
+        }
+      }
+    }
+  }
+}
