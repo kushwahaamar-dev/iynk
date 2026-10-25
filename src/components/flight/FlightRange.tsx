@@ -452,7 +452,7 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
           />
         )}
       </div>
-      <p role="status" aria-live="polite" className="mt-2 min-h-[1.5em] text-sm font-bold">
+      <p role="status" aria-live="polite" className="mt-2 min-h-[1.5em] text-sm font-bold" data-testid="flight-message">
         {message}
       </p>
       <dl className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
