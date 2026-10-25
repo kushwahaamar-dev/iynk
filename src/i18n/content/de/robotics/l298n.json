@@ -1,0 +1,462 @@
+{
+  "title": "Treiber L298N",
+  "sub": "warum man ihn nicht nimmt",
+  "hint": "Versorg ihn, wähl eine Richtung, spür die Wärme",
+  "overview": "Der L298N ist der Motortreiber in fast jedem Starterset: eine rote, 43 mm große quadratische Platine mit einem schwarzen Kühlkörper, zwei blauen Motorklemmen und einem 2S-LiPo an ihrer Stromklemme. Im Chip stecken zwei H-Brücken aus Bipolartransistoren, ein Design aus den 1990ern. IN1 und IN2 wählen die Richtung von Motor A, IN3 und IN4 die von Motor B, und ENA und ENB schalten jede Brücke ein; im Auslieferungszustand verbinden zwei Jumper-Kappen beide Enables mit +5V, also laufen die Motoren mit voller Drehzahl. Ein Spannungsregler 78M05 hinter der Kappe 5V-EN erzeugt aus der Batterie die 5-V-Logikversorgung des Chips. Der Haken ist der Spannungsabfall: Zwei bipolare Schalter liegen mit jedem Motor in Reihe und verlieren zusammen 1,4 + 1,15 x I Volt, etwa 1,6 V mit einem frei laufenden TT-Motor und 2,7 V mit festgehaltenem Rad, und alles davon wird zu Wärme. Bau das Modul, verdrahte Nano, Motoren und Akku, fahr in jede Richtung, dann halt die Räder fest und sieh zu, wie der Kühlkörper heißer wird, bis der Chip abschaltet. Der TB6612FNG vom Prüfstand davor erledigt dieselbe Arbeit und verliert etwa 0,1 V.",
+  "parts": {
+    "U1": {
+      "name": "Doppel-H-Brücke L298N auf ihrem Kühlkörper",
+      "what": "Der L298N von ST im 15-poligen Multiwatt-Gehäuse, an einen Rippenkühlkörper geschraubt. Zwei Brücken aus je vier bipolaren Schaltern, 2 A pro Kanal, Motorversorgung bis 46 V, Logikschwellen von 1,5 V und 2,3 V, sodass 3,3-V-Controller ihn ansteuern können. Die beiden leitenden Schalter verlieren etwa 1,6 V bei 0,16 A und 2,5 V bei 1 A, und es gibt keine Strombegrenzung: Nur eine Übertemperaturabschaltung schützt ihn."
+    },
+    "U2": {
+      "name": "5-V-Spannungsregler 78M05",
+      "what": "Erzeugt aus der Batterie die 5-V-Logikversorgung des L298N, solange die Kappe 5V-EN steckt, und führt sie an der dritten Schraube der Stromklemme heraus. Er braucht etwa 2 V Reserve: Ein 2S-Akku (7,4 V) passt, ein 6-V-Pack nicht. Über 12 V läuft er heiß, und deshalb sagen Händler, man solle die Kappe ziehen und die 5 V selbst einspeisen."
+    },
+    "D1": {
+      "name": "Freilaufdioden D1-D8",
+      "what": "Acht kleine Gleichrichter, zwei pro Motorkabel: eine nach +12V und eine von GND. Wenn eine Brücke abschaltet, drückt die Wicklung des Motors weiter Strom; die Dioden geben ihm einen Weg zurück zur Versorgung, statt die Spannung hochschnellen zu lassen. Der L298N hat innen keine, also braucht das Modul diese."
+    },
+    "C1": {
+      "name": "220-µF-Kondensator an +12V",
+      "what": "Der Pufferkondensator an der Motorversorgung, für 35 V ausgelegt. Er liefert den Brücken die Stromstöße, die sie schalten, und schluckt die Spitzen. Gepolt: Der Streifen markiert Minus und zeigt zur Vorderkante. Verkehrt herum eingesetzt wird er heiß, bläht sich auf und kann abblasen."
+    },
+    "C2": {
+      "name": "220-µF-Kondensator an +5V",
+      "what": "Glättet die 5-V-Logikschiene hinter dem 78M05. Gepolt wie C1."
+    },
+    "J1": {
+      "name": "Stromklemme: +12V, GND, +5V",
+      "what": "Drei Schraubklemmen. +12V nimmt die Motorversorgung (hier der 2S-LiPo; eigentlich 7 bis 35 V mit gesteckter Kappe 5V-EN), GND ist die gemeinsame Masse, die der Nano teilen muss, und +5V ist der Ausgang des Reglers oder ein Eingang, wenn die Kappe 5V-EN gezogen ist. Keine Sicherung und kein Verpolungsschutz."
+    },
+    "J2": {
+      "name": "Klemme für Motor A (OUT1, OUT2)",
+      "what": "Zwei Schraubklemmen am linken Rand für Motor A. Das Tauschen seiner beiden Kabel kehrt den Motor um, genau wie das Tauschen von IN1 und IN2 im Sketch."
+    },
+    "J3": {
+      "name": "Klemme für Motor B (OUT3, OUT4)",
+      "what": "Zwei Schraubklemmen am rechten Rand für Motor B, angesteuert von IN3 und IN4."
+    },
+    "J4": {
+      "name": "Steuer-Stiftleiste IN1-IN4",
+      "what": "Vier Pins für die Richtungseingänge: IN1 und IN2 für Motor A, IN3 und IN4 für Motor B. HIGH und LOW fährt in die eine Richtung, LOW und HIGH in die andere, zwei gleiche Pegel bremsen. Es gibt keine Pull-Widerstände: Ein unverbundener Eingang floatet."
+    },
+    "JPA": {
+      "name": "Jumper-Kappe ENA",
+      "what": "Verbindet ENA mit +5V, also ist Brücke A immer freigegeben und läuft mit voller Drehzahl. Für Drehzahlregelung zieh sie und steuer ENA von einem PWM-Pin an. Steuer ENA nie mit noch gesteckter Kappe an: Die Kappe schließt den Pin mit 5 V kurz."
+    },
+    "JPB": {
+      "name": "Jumper-Kappe ENB",
+      "what": "Dasselbe für Brücke B: gesteckt ist Motor B immer mit voller Drehzahl freigegeben."
+    },
+    "JP5": {
+      "name": "Jumper-Kappe 5V-EN",
+      "what": "Verbindet +12V mit dem Eingang des 78M05. Gesteckt erzeugt das Modul seine eigene 5-V-Logikversorgung; gezogen hat der L298N keine Logikversorgung, solange du keine 5 V in die +5V-Schraube einspeist, und nichts läuft."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "Der Controller, an USB. D8 treibt IN1, D7 IN2, D5 IN3 und D4 IN4, und sein GND ist mit dem GND des Moduls verdrahtet, damit beide sich einig sind, was LOW bedeutet. Seine Sketche schreiben auch D9 und D3 für ENA und ENB, aber die bleiben unverdrahtet, solange die Kappen stecken."
+    },
+    "MOTA": {
+      "name": "Motor A (TT-Getriebemotor)",
+      "what": "Ein gelber Getriebemotor 1:48 an OUT1 und OUT2, sein Rad dreht sich in der Luft. Etwa 160 mA im freien Lauf; festgehalten nimmt er über ein Ampere. Über den L298N bekommt er etwa 5,8 V von den 7,4 V des Akkus."
+    },
+    "MOTB": {
+      "name": "Motor B (TT-Getriebemotor)",
+      "what": "Der zweite Getriebemotor, an OUT3 und OUT4."
+    },
+    "BATT": {
+      "name": "2S-LiPo-Akku, 7,4 V",
+      "what": "Zwei Lithium-Polymer-Zellen in Reihe: voll 8,4 V, nominal 7,4 V, etwa 6,4 V, wenn er geladen werden muss. Rot an +12V, Schwarz an GND. Verkehrt herum eingesteckt wird er über die Freilaufdioden kurzgeschlossen."
+    }
+  },
+  "power": {
+    "label": "Den Prüfstand mit Strom versorgen",
+    "ok": "Nano an USB, LiPo an +12V: Die Power-LED leuchtet, und die Brücken laufen"
+  },
+  "modes": {
+    "fwd": {
+      "title": "Vorwärts"
+    },
+    "rev": {
+      "title": "Rückwärts"
+    },
+    "spin": {
+      "title": "Auf der Stelle drehen"
+    },
+    "brake": {
+      "title": "Bremsen"
+    },
+    "half": {
+      "title": "Halbe Drehzahl (Kappen gesteckt)"
+    },
+    "code": {
+      "title": "L298N: IN1 und IN2 wählen die Richtung von Motor A, IN3 und IN4 die von Motor B",
+      "motorA": "Motor A: Enable und die beiden Richtungseingänge",
+      "motorB": "Motor B",
+      "full": "volle Drehzahl (die Kappe hält ENA ohnehin auf 5 V)",
+      "half": "halbes Tastverhältnis: wird ignoriert, solange die Kappe ENA an 5 V legt",
+      "fwd": "beide vorwärts",
+      "rev": "beide rückwärts",
+      "spin": "A vorwärts, B rückwärts: Der Roboter dreht sich auf der Stelle",
+      "brake": "gleiche Eingänge: beide Motorkabel an derselben Schiene, ein schneller Stopp"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Bis auf die nackte Platine zerlegen",
+      "body": "Nimm jedes Bauteil von der roten Platine. Du setzt sie so wieder zusammen, wie es eine Fabrik tun würde: zuerst die SMD-Bauteile, dann die niedrigen bedrahteten Bauteile, die hohen, die Lötstellen und die Jumper-Kappen zuletzt.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einer Platine unter Spannung"
+    },
+    "smd": {
+      "title": "Die SMD-Bauteile bestücken, dann reflowlöten",
+      "body": "Der 78M05, die acht Freilaufdioden, die Power-LED mit ihrem Widerstand und die kleinen Kondensatoren kommen in einem Durchgang drauf, und der Ofen schmilzt die Paste unter jedem Pad.",
+      "refusal": "Die SMD-Bauteile kommen zuerst drauf, auf eine nackte Platine"
+    },
+    "low": {
+      "title": "Die niedrigen bedrahteten Bauteile einsetzen",
+      "body": "Die beiden 220-µF-Kondensatoren (Streifen nach vorn) und die Stiftleisten: IN1-IN4, ENA, ENB und 5V-EN.",
+      "refusal": "Zuerst die SMD-Bauteile: Bestücken und Reflow-Löten ausführen. Der Ofen würde Kunststoffteile schmelzen"
+    },
+    "tall": {
+      "title": "Die hohen Bauteile einsetzen",
+      "body": "Den L298N auf seinem Kühlkörper, seine 15 Beine in zwei versetzten Reihen, und die drei blauen Schraubklemmen.",
+      "refusal": "Zuerst die niedrigen Bauteile, damit die hohen nicht im Weg sind"
+    },
+    "solder": {
+      "title": "Die bedrahteten Lötstellen löten",
+      "body": "Jedes Bein des L298N und der Klemmen führt Motorstrom, also muss jede Lötstelle glänzend und nach innen gewölbt sein und Bein und Pad benetzen.",
+      "refusal": "Noch nichts zu löten: Setz zuerst ein Bauteil ein"
+    },
+    "caps": {
+      "title": "Die Jumper-Kappen aufstecken",
+      "body": "5V-EN schaltet den Regler ein; ENA und ENB legen beide Enables an +5V. So wird das Modul ausgeliefert: beide Brücken immer freigegeben, volle Drehzahl.",
+      "refusal": "Löte zuerst die Lötstellen: Die Kappen kommen zuletzt drauf"
+    },
+    "wire-nano": {
+      "title": "Den Nano mit IN1-IN4 und GND verdrahten",
+      "body": "Leg den Nano auf die Matte und führ vier Steckbrücken: D8 an IN1, D7 an IN2, D5 an IN3, D4 an IN4. Dann noch eine vom GND des Nano an die GND-Schraube der Stromklemme. Ohne diesen Draht haben die Eingänge keinen gemeinsamen Bezug.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einer Platine unter Spannung"
+    },
+    "wire-motors": {
+      "title": "Die beiden Motoren verdrahten",
+      "body": "Motor A links in OUT1 und OUT2, Motor B rechts in OUT3 und OUT4. Welches Kabel wohin kommt, legt nur fest, in welche Richtung sich das Rad dreht.",
+      "refusal": "Zieh zuerst den Strom ab und verdrahte den Nano vor den Motoren"
+    },
+    "wire-battery": {
+      "title": "Den LiPo an +12V und GND anschließen",
+      "body": "Rot an +12V, Schwarz an GND. Diese Platine hat keinen Verpolungsschutz: Prüf zweimal, bevor der Stecker hineinkommt. Der Nano behält seinen eigenen USB-Strom.",
+      "refusal": "Zieh zuerst den Strom ab und verdrahte die Motoren vor dem LiPo"
+    },
+    "plug": {
+      "title": "Den Prüfstand mit Strom versorgen",
+      "body": "USB in den Nano, den LiPo ans Modul. Die Power-LED leuchtet, der Nano startet mit Vorwärts, und beide Räder drehen sich.",
+      "refusal": "Schließ zuerst den Aufbau ab: Jedes Bauteil drauf, jede Lötstelle gelötet und alles auf der Matte verdrahtet"
+    },
+    "fwd": {
+      "title": "Vorwärts hochladen",
+      "body": "IN1 HIGH, IN2 LOW, IN3 HIGH, IN4 LOW: Beide Räder drehen vorwärts. Der Akku liefert 7,4 V, und jeder Motor bekommt etwa 5,8 V: Die anderen 1,6 V gehen in der Brücke verloren.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "rev": {
+      "title": "Rückwärts hochladen",
+      "body": "Tausch jedes Paar: IN1 LOW, IN2 HIGH und dasselbe für B. Dieselben 1,6 V gehen in umgekehrter Richtung verloren.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "spin": {
+      "title": "Auf der Stelle drehen hochladen",
+      "body": "Motor A vorwärts, Motor B rückwärts. An einem Roboter dreht ihn das auf der Stelle.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "brake": {
+      "title": "Bremsen hochladen",
+      "body": "IN1 = IN2 und IN3 = IN4 mit den Enables auf HIGH: Beide Kabel jedes Motors liegen an derselben Schiene, also treibt die eigene Spannung des Motors einen Strom, der ihn hart stoppt. Aus der Batterie kommt nichts.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "half": {
+      "title": "Halbe Drehzahl hochladen",
+      "body": "Der Sketch schreibt 128 auf ENA und ENB, aber nichts ändert sich: Die Kappen halten beide Enables auf 5 V, und D9 und D3 sind nicht einmal verdrahtet. Drehzahlregelung braucht die gezogene Kappe und ENA an einem PWM-Pin; die Aufgabe zum Sanftanlauf macht das.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "lipo-backwards": {
+      "title": "Den LiPo verkehrt herum anschließen",
+      "body": "Schwarz an +12V, Rot an GND. Die Freilaufdioden zeigen jetzt in Durchlassrichtung über den Akku und schließen ihn über zwei Diodenspannungen kurz. Reparier es und schalte wieder ein."
+    },
+    "c1-backwards": {
+      "title": "C1 verkehrt herum einsetzen",
+      "body": "Der 220-µF-Kondensator der Motorversorgung mit dem Streifen nach hinten. Sperrspannung zerstört seine Oxidschicht: Er leckt, wird heiß und bläst ab. Reparier es und schalte wieder ein."
+    },
+    "four-aa": {
+      "title": "Aus 4 x AA versorgen",
+      "body": "Ein 6-V-Pack statt des LiPo. Der 78M05 braucht etwa 2 V Reserve, also sinkt seine 5-V-Schiene auf etwa 4 V, unter das Minimum des L298N von 4,5 V. Reparier es und schalte wieder ein."
+    },
+    "thirty-six-volts": {
+      "title": "Aus 36 V versorgen",
+      "body": "Ein 36-V-Netzteil an +12V mit gesteckter Kappe 5V-EN. Der L298N würde 46 V vertragen, aber der 78M05 und die 35-V-Kondensatoren nicht. Reparier es und schalte wieder ein."
+    },
+    "cold-motor-a": {
+      "title": "Eine kalte Lötstelle an der Klemme von Motor A lassen",
+      "body": "Eine matte, gerissene Lötstelle an J2. Motor A setzt aus und kommt wieder, während die Lötstelle Kontakt schließt und öffnet. Reparier es und schalte wieder ein."
+    },
+    "no-5v-jumper": {
+      "title": "Die Kappe 5V-EN weglassen",
+      "body": "Der Eingang des Reglers ist getrennt, also bekommt der L298N keine Logikversorgung: Die Power-LED bleibt dunkel, und die Eingänge tun nichts, obwohl der Akku dran ist. Steck die Kappe wieder auf und schalte wieder ein."
+    },
+    "no-ground": {
+      "title": "Den GND-Draht weglassen",
+      "body": "Nano und Modul teilen keine Masse. Sein HIGH und LOW haben am L298N keinen gemeinsamen Bezug, also wandern die Eingänge, und die Motoren zucken zufällig. Setz den Draht wieder ein und schalte wieder ein."
+    },
+    "hold-wheels": {
+      "title": "Beide Räder festhalten",
+      "body": "Halt bei angetriebenen Motoren die Räder mit der Hand an. Jeder zieht etwa 1,1 A, und die Brücke verliert daran etwa 2,7 V: rund 6 W Wärme. Der Kühlkörper steigt über 100 °C, der Chip schaltet an seiner Grenze ab, kühlt ab und versucht es erneut, und die Motoren stottern. Lass los, reparier es und schalte wieder ein."
+    },
+    "exploded": {
+      "title": "Explosionsansicht",
+      "body": "Zieh den Strom ab und heb die Bauteile nach Baugruppen ab: die SMD-Bauteile, die niedrigen Bauteile, die hohen Bauteile und die Kappen.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einer Platine unter Spannung"
+    }
+  },
+  "faults": {
+    "reverse-polarity": {
+      "title": "LiPo verkehrt herum",
+      "symptom": "Die Power-LED bleibt dunkel, nichts dreht sich, die Dioden und C1 werden innerhalb von Sekunden heiß, und die Batteriekabel werden warm.",
+      "explanation": "Es gibt keine Schutzdiode und keine Sicherung. Verpolt leiten die acht Freilaufdioden von GND über die Ausgänge nach +12V und legen zwei Diodenspannungen, etwa 2 V, direkt über den Akku. Mehrere Ampere fließen durch 1-A-Dioden, und C1 sieht Sperrspannung.",
+      "fix": "Sofort Strom abziehen, die Dioden und C1 auf Schäden prüfen und Rot an +12V legen. Ein Stecker, der nur in einer Richtung passt, verhindert das."
+    },
+    "c1-reversed": {
+      "title": "C1 verkehrt herum",
+      "symptom": "Ein Zischen und ein Knall, wenn der Akku drankommt, ein aufgeblähter Becher, ein fischiger Geruch.",
+      "explanation": "Ein Aluminium-Elko hält Spannung nur in einer Richtung. Verkehrt herum bricht seine Oxidschicht durch, er leitet, wird heiß, und der Elektrolyt kocht, bis sich das Ventil öffnet.",
+      "fix": "Ersetz C1 mit dem Streifen (Minus) zur Vorderkante, wie aufgedruckt."
+    },
+    "four-aa": {
+      "title": "6 V sind mit gesteckter 5V-EN zu wenig",
+      "symptom": "Die Power-LED glimmt schwach, die Motoren zucken oder tun nichts, und die Logik fällt immer wieder aus.",
+      "explanation": "Der 78M05 braucht an seinem Eingang etwa 2 V mehr, als er ausgibt. Aus 6 V schafft er etwa 4 V, unter den 4,5 V, die die Logik des L298N braucht. Und die Motoren würden nach dem Spannungsabfall der Brücke ohnehin nur etwa 4,4 V sehen.",
+      "fix": "Nimm einen 2S-LiPo (7,4 V) oder mehr. Zieh bei einem 6-V-Pack die Kappe 5V-EN und speis die +5V-Schraube aus den 5 V des Nano."
+    },
+    "over-voltage": {
+      "title": "36 V an +12V",
+      "symptom": "Ein Knall vom Regler oder von C1, die Power-LED erlischt, und an der 5-V-Schraube liegt möglicherweise die volle Versorgung.",
+      "explanation": "Der L298N ist bis 46 V ausgelegt, aber die 220-µF-Kondensatoren des Moduls sind 35-V-Bauteile, und der 78M05 verträgt höchstens 35 V. Fällt ein Regler aus, dann oft als Kurzschluss, und er gibt die volle Versorgung an alles an +5V weiter.",
+      "fix": "Bleib mit gesteckter Kappe 5V-EN bei 12 V oder weniger. Darüber zieh die Kappe, speis die 5 V selbst ein und bleib auf dieser Platine unter 35 V."
+    },
+    "cold-motor-a": {
+      "title": "Kalte Lötstelle an der Klemme von Motor A",
+      "symptom": "Motor A stottert, setzt bei Stößen aus oder läuft nur in eine Richtung; der Klemmenpin wird warm.",
+      "explanation": "Die Klemmenpins führen den vollen Motorstrom. Eine matte, körnige Lötstelle hat nur einen Teil der Zeit Kontakt, und ihr Widerstand macht Strom zu Wärme.",
+      "fix": "Erhitz die Lötstelle mit frischem Lötzinn neu, bis es zu einem glänzenden Kegel um den Pin verläuft."
+    },
+    "no-5v-jumper": {
+      "title": "Kappe 5V-EN fehlt",
+      "symptom": "Der Akku ist angeschlossen, aber die Power-LED ist dunkel, und kein Befehl bewirkt etwas.",
+      "explanation": "Die Kappe verbindet +12V mit dem 78M05. Ohne sie ist der Regler aus, die +5V-Schiene ist tot, und die Logik des L298N hat keine Versorgung, also schalten seine Schalter nie ein.",
+      "fix": "Steck die Kappe wieder auf oder speis bei Versorgungen über 12 V 5 V vom Controller in die +5V-Schraube."
+    },
+    "no-ground": {
+      "title": "Keine gemeinsame Masse",
+      "symptom": "Die Motoren zucken, laufen falsch herum oder ignorieren den Sketch, und das Berühren eines Drahts ändert, was sie tun.",
+      "explanation": "Ein Logikpegel ist eine Spannung zwischen zwei Punkten. Ohne Draht zwischen dem GND des Nano und dem GND des Moduls misst der L298N die Pins des Nano gegen nichts: Die Eingänge floaten und driften mit jedem bisschen Störung.",
+      "fix": "Leg einen Draht vom GND des Nano zur GND-Schraube der Stromklemme."
+    },
+    "stall": {
+      "title": "Beide Räder blockiert",
+      "symptom": "Der Kühlkörper wird zu heiß zum Anfassen, dann stottern die Motoren: Sie bleiben stehen, laufen ein paar Sekunden später wieder an und bleiben wieder stehen.",
+      "explanation": "Ein festgehaltener TT-Motor zieht aus 7,4 V etwa 1,1 A. Die beiden leitenden Schalter verlieren bei diesem Strom etwa 2,7 V, etwa 3 W pro Brücke, 6 W für beide. Der L298N hat keine Strombegrenzung; nur seine Übertemperaturabschaltung stoppt ihn, und er startet neu, sobald er etwas abgekühlt ist.",
+      "fix": "Gib die Räder frei und schalte im Sketch den Strom zu einem blockierten Motor ab. Besser: ein MOSFET-Treiber wie der TB6612FNG, der ein Zehntel der Leistung verliert."
+    }
+  },
+  "status": {
+    "status": "Status",
+    "powered": "Strom am Prüfstand",
+    "mode": "Sketch",
+    "in1": "IN1",
+    "in2": "IN2",
+    "ena": "ENA",
+    "vs": "+12V (Motorversorgung)",
+    "logic": "+5V (Logik)",
+    "motor": "Spannung an Motor A",
+    "rpm": "Drehzahl von Motor A",
+    "drop": "In der Brücke verloren",
+    "heatsink": "Kühlkörper (°C)",
+    "battery": "Batteriestrom",
+    "usb": "USB-Strom"
+  },
+  "current": {
+    "usb": "USB des Nano (500-mA-Polyfuse)",
+    "lipo": "2S-LiPo an +12V (2 A pro Brücke)",
+    "nano": "Nano im Betrieb",
+    "logic": "Ruhestrom des L298N, 78M05 und Power-LED",
+    "motors": "Zwei frei laufende TT-Motoren",
+    "stall": "Beide Räder festgehalten (blockiert)",
+    "c1short": "C1 leitet in Sperrrichtung",
+    "reverse": "Verpolter Akku über die Freilaufdioden"
+  },
+  "tasks": {
+    "soft-start": {
+      "title": "Sanftanlauf an ENA",
+      "brief": "Zieh die Kappe ENA und verdrahte ENA mit D9. Fahr Motor A vorwärts (IN1 an D8 HIGH, IN2 an D7 LOW) und fahr ENA von 0 auf 255 hoch, ein Schritt alle 10 ms, sodass er in etwa 2,5 s die volle Drehzahl erreicht. Halt 2 s lang die volle Drehzahl, brems dann, indem du IN2 auf HIGH legst, und gib \"stopped\" aus.",
+      "hints": {
+        "1": "Setz die Richtung einmal, vor der Rampe: digitalWrite(IN1, HIGH); digitalWrite(IN2, LOW);",
+        "2": "Eine for-Schleife von 0 bis 255 mit analogWrite(ENA, duty) und delay(10) darin ergibt die Rampe.",
+        "3": "Bremsen ist IN1 = IN2 bei freigegebener Brücke: IN1 ist schon HIGH, also setz auch IN2 auf HIGH."
+      },
+      "checks": {
+        "1": "Läuft 5,5 s lang",
+        "2": "IN1 (D8) ist HIGH",
+        "3": "IN2 (D7) ist während der Fahrt LOW",
+        "4": "Bei 0,25 s ist ENA (D9) bei etwa 10 %",
+        "5": "Bei 1 s ist ENA bei etwa 40 %",
+        "6": "Bei 3,5 s ist ENA auf vollem Tastverhältnis",
+        "7": "Bei 5 s ist IN2 HIGH: Bremsen",
+        "8": "Gibt \"stopped\" aus"
+      },
+      "code": {
+        "goal": "Motor A in etwa 2,5 s vom Stillstand auf volle Drehzahl hochfahren, 2 s laufen lassen, dann bremsen",
+        "jump": "volle Drehzahl auf einmal: Ersetz das durch eine Rampe und ergänz dann das Bremsen"
+      }
+    },
+    "square": {
+      "title": "Ein Quadrat fahren",
+      "brief": "Lass einen Roboter mit zwei Rädern ein Quadrat fahren: viermal beide Motoren 1 s vorwärts, dann 0,5 s auf der Stelle drehen (Motor A vorwärts, Motor B rückwärts) und \"corner\" mit der Zahl ausgeben. Nach der vierten Ecke beide Motoren bremsen. IN1 ist D8, IN2 D7, IN3 D5, IN4 D4; die Enable-Kappen bleiben gesteckt.",
+      "hints": {
+        "1": "Eine Hilfsfunktion drive(in1, in2, in3, in4), die alle vier Eingänge schreibt, hält jede Bewegung bei einer Zeile.",
+        "2": "for (int side = 1; side <= 4; side++) { ... } in setup() fährt das Quadrat einmal; loop() kann leer bleiben.",
+        "3": "Beide bremsen: drive(HIGH, HIGH, HIGH, HIGH)."
+      },
+      "checks": {
+        "1": "Läuft 6,5 s lang",
+        "2": "Erste Seite: IN3 (D5) ist HIGH",
+        "3": "Erste Seite: IN4 (D4) ist LOW",
+        "4": "Erste Ecke: IN3 ist LOW",
+        "5": "Erste Ecke: IN4 ist HIGH, Motor B läuft rückwärts",
+        "6": "Erste Ecke: IN1 (D8) bleibt HIGH, Motor A vorwärts",
+        "7": "Zweite Seite: IN3 ist wieder HIGH",
+        "8": "Gibt bis 6,2 s \"corner 4\" aus",
+        "9": "Am Ende ist IN2 (D7) HIGH: Motor A bremst",
+        "10": "Am Ende ist IN3 HIGH: Motor B bremst"
+      },
+      "code": {
+        "goal": "Ein Quadrat fahren: 1 s vorwärts, 0,5 s drehen, viermal, dann bremsen",
+        "start": "das fährt nur die erste Seite: Ergänz die Drehungen, die anderen drei Seiten und das Bremsen"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "reflow-first": {
+        "q": "Warum kommen die SMD-Dioden und der 78M05 vor den Klemmen und dem L298N drauf?",
+        "options": {
+          "1": "Der Reflow-Ofen würde die Kunststoffklemmen und Stiftleisten schmelzen",
+          "2": "Der L298N muss zuletzt drauf, weil er empfindlich gegen statische Aufladung ist",
+          "3": "SMD-Bauteile sind billiger, also kommen sie zuerst"
+        },
+        "why": "Beim Reflow-Löten wird die ganze Platine auf etwa 245 °C erhitzt. Bedrahtete Kunststoffteile würden das nicht überleben, also kommen sie danach drauf und werden Lötstelle für Lötstelle gelötet."
+      },
+      "caps-job": {
+        "q": "Was machen die Kappen ENA und ENB im Auslieferungszustand des Moduls?",
+        "options": {
+          "1": "Sie legen jedes Enable an +5V, also laufen beide Brücken immer mit voller Drehzahl",
+          "2": "Sie wählen vorwärts oder rückwärts",
+          "3": "Sie verbinden die Motorversorgung mit dem Regler"
+        },
+        "why": "Ein Enable schaltet seine ganze Brücke ein oder aus. Von der Kappe an 5 V gelegt ist es immer an; für Drehzahlregelung ziehst du die Kappe und steuerst es mit PWM an."
+      },
+      "jp5": {
+        "q": "Was verbindet die Kappe 5V-EN?",
+        "options": {
+          "1": "Den 5-V-Ausgang der Platine mit den Motoren",
+          "2": "Den Eingang +12V mit dem 78M05, der dann die 5 V für die Logik erzeugt",
+          "3": "Die beiden Motorkanäle parallel"
+        },
+        "why": "Gesteckt erzeugt das Modul seine eigene Logikversorgung aus der Batterie. Über 12 V raten Händler, sie zu ziehen, weil der 78M05 zu viel verheizen müsste."
+      }
+    },
+    "drive": {
+      "brake": {
+        "q": "IN1 und IN2 sind beide HIGH, ENA ist HIGH. Was macht Motor A?",
+        "options": {
+          "1": "Läuft mit halber Drehzahl",
+          "2": "Stoppt schnell: Beide Kabel liegen an derselben Schiene",
+          "3": "Dreht frei aus"
+        },
+        "why": "Beide oberen Schalter sind an, also ist der Motor über sie kurzgeschlossen. Seine eigene Gegen-EMK treibt einen Strom, der ihn bremst. Freies Ausdrehen (Auslaufen) ist ENA LOW."
+      },
+      "swap": {
+        "q": "Motor A dreht bei Vorwärts falsch herum. Die schnellste Lösung?",
+        "options": {
+          "1": "Seine beiden Kabel in der Klemme tauschen oder IN1 und IN2 im Sketch tauschen",
+          "2": "Die Batterie umdrehen",
+          "3": "Die Kappe ENA ziehen"
+        },
+        "why": "Die Richtung hängt nur davon ab, welches Kabel positiv ist. Kabel tauschen und Eingänge tauschen bewirken dasselbe. Die Batterie umzudrehen schließt sie über die Dioden kurz."
+      },
+      "drop": {
+        "q": "Der Akku liefert 7,4 V. Wie viel kommt über den L298N etwa an einem frei laufenden TT-Motor an?",
+        "options": {
+          "1": "7,4 V",
+          "2": "Etwa 5,8 V: Etwa 1,6 V gehen in zwei bipolaren Schaltern verloren",
+          "3": "3,3 V"
+        },
+        "why": "Jedes leitende Paar lässt etwa 1,4 V plus 1,15 V pro Ampere abfallen: 1,6 V bei 0,16 A, 2,5 V bei 1 A. Eine MOSFET-Brücke wie der TB6612FNG verliert bei diesem Strom etwa 0,1 V."
+      }
+    },
+    "faults": {
+      "backwards": {
+        "q": "Der LiPo kommt verkehrt herum an +12V und GND. Was passiert?",
+        "options": {
+          "1": "Nichts: Das Modul hat eine Schutzdiode",
+          "2": "Die Freilaufdioden leiten und schließen den Akku kurz: Sie und C1 werden schnell heiß",
+          "3": "Die Motoren laufen rückwärts"
+        },
+        "why": "Es gibt überhaupt keinen Schutz. Verpolt bilden die Freilaufdioden einen Weg direkt über die Batterie, und mehrere Ampere fließen durch 1-A-Bauteile."
+      },
+      "four-aa": {
+        "q": "Warum bleibt der L298N mit einem 6-V-Pack (4 x AA) und gesteckter Kappe 5V-EN tot?",
+        "options": {
+          "1": "Der 78M05 braucht etwa 2 V Reserve: 6 V hinein ergeben etwa 4 V heraus, unter den 4,5 V, die die Logik braucht",
+          "2": "AA-Zellen können nicht genug Strom für die Logik liefern",
+          "3": "Der L298N braucht an +12V mindestens 12 V"
+        },
+        "why": "Ein Linearregler kann Spannung nur senken, und der 78M05 braucht etwa 2 V über sich, um zu regeln. Aus 6 V sackt die Logikschiene auf etwa 4 V."
+      },
+      "stall-heat": {
+        "q": "Beide Räder werden festgehalten. Wohin geht die Leistung?",
+        "options": {
+          "1": "Nur in die Motoren",
+          "2": "Etwa 2,7 V x 1,1 A pro Brücke werden im L298N zu Wärme, bis seine Abschaltung auslöst",
+          "3": "Zurück in die Batterie"
+        },
+        "why": "Ein festgehaltener Motor setzt nichts in Bewegung um: Sein Strom heizt nur seine Wicklung und die Brücke. Der L298N hat keine Strombegrenzung, nur eine Übertemperaturabschaltung."
+      }
+    },
+    "end": {
+      "vs-tb6612": {
+        "q": "Gleicher Akku, gleiche Motoren: Warum lässt der TB6612FNG sie schneller und kühler laufen?",
+        "options": {
+          "1": "Seine MOSFET-Schalter lassen bei diesem Strom etwa 0,1 V abfallen statt etwa 1,6 V",
+          "2": "Er hat einen größeren Kühlkörper",
+          "3": "Er betreibt die Motoren an 12 V"
+        },
+        "why": "Ein eingeschalteter MOSFET verhält sich wie ein kleiner Widerstand, 0,5 Ω bei einer Brücke des TB6612FNG: 0,08 V bei 0,16 A. Bipolare Schalter fallen zusammen nie unter etwa 1,4 V."
+      },
+      "ground": {
+        "q": "Nano und Modul teilen keinen GND-Draht. Was machen die Motoren?",
+        "options": {
+          "1": "Laufen normal: Die Signale sind nur 5 V",
+          "2": "Zucken oder ignorieren den Sketch: IN1-IN4 haben keinen gemeinsamen Bezug",
+          "3": "Laufen rückwärts"
+        },
+        "why": "Ein HIGH sind 5 V über dem GND des Nano. Ist das GND des Moduls nicht derselbe Punkt, floaten und driften die Eingänge."
+      },
+      "half": {
+        "q": "Der Sketch für halbe Drehzahl schreibt 128 auf ENA, aber die Motoren laufen immer noch mit voller Kraft. Warum?",
+        "options": {
+          "1": "Die Kappe legt ENA an +5V: Zieh sie und verdrahte ENA mit D9",
+          "2": "analogWrite funktioniert an Pin 9 nicht",
+          "3": "Der L298N ignoriert PWM über 490 Hz"
+        },
+        "why": "Mit gesteckter Kappe ist ENA immer 5 V, egal, was D9 tut. Und verdrahte D9 nie mit ENA bei gesteckter Kappe: Jedes LOW würde den Pin mit 5 V kurzschließen."
+      }
+    }
+  }
+}
