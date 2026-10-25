@@ -1,0 +1,381 @@
+{
+  "title": "Radar de recul HC-SR04",
+  "sub": "une distance tirée d'un écho que l'on chronomètre",
+  "hint": "montez la carte du sonar, envoyez un ping, puis faites biper un buzzer de plus en plus vite quand une main s'approche",
+  "overview": "Un robot qui fonce dans les murs a besoin de savoir à quelle distance ils se trouvent. Le HC-SR04 émet une salve de son à 40 kHz par une capsule et écoute l'écho avec l'autre ; sa broche Echo reste à HIGH pendant l'aller-retour. Le son parcourt un centimètre aller et retour en 58 µs : une impulsion de 1740 µs signifie donc un mur à 30 cm. Montez la carte, envoyez des pings depuis un Nano, puis faites biper un buzzer de plus en plus vite quand une main s'approche, comme le radar de recul d'une voiture. Ensuite, cassez-le : alimentez-le à l'envers ou en 3,3 V, retirez le récepteur, laissez une soudure froide sur Echo, oubliez le délai d'attente de pulseIn() et court-circuitez son alimentation.",
+  "parts": {
+    "T": {
+      "name": "Émetteur T : un piézo de 40 kHz dans une capsule de 16 mm",
+      "what": "Un disque piézo sur un petit cône, accordé à 40 kHz, au-dessus de tout ce que vous pouvez entendre. Le MAX3232 le pilote par ses deux bornes pendant huit cycles : un ping."
+    },
+    "R": {
+      "name": "Récepteur R : le même transducteur, à l'écoute",
+      "what": "L'écho fait vibrer son disque et donne quelques millivolts. Le LM324 qui le suit amplifie, filtre et compare ce signal jusqu'à ce que le MCU puisse le voir."
+    },
+    "U1": {
+      "name": "Microcontrôleur EM78P153S (au dos)",
+      "what": "Attend un HIGH d'au moins 10 µs sur Trig, envoie la salve, met Echo à l'état haut et le rabaisse quand le récepteur entend l'écho, ou au bout d'environ 38 ms quand rien ne revient."
+    },
+    "U2": {
+      "name": "Driver d'émission MAX3232 (au dos)",
+      "what": "Une puce RS-232 utilisée pour sa pompe de charge : elle produit environ ±10 V à partir de 5 V et pilote T par ses deux bornes, si bien que la capsule voit des oscillations d'environ 20 V. C'est ce qui rend le ping assez fort."
+    },
+    "U3": {
+      "name": "Quadruple ampli-op LM324 (au dos)",
+      "what": "Trois étages de gain et de filtrage et un comparateur transforment les millivolts du récepteur en un front propre pour le MCU."
+    },
+    "Y1": {
+      "name": "Quartz 4 MHz",
+      "what": "L'horloge du MCU : elle cadence la salve à 40 kHz et la mesure de l'écho. Sans lui, rien ne tourne sur la carte."
+    },
+    "J1": {
+      "name": "Connecteur coudé 4 broches : Vcc, Trig, Echo, Gnd",
+      "what": "Son corps est au dos et les broches dépassent du bord inférieur : la carte tient debout dans une platine d'essai, face vers l'avant."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "Envoie l'impulsion de 10 µs sur D9, mesure Echo sur D10 avec pulseIn() et divise par 58. Sa broche 5V alimente le capteur ; le buzzer est sur D8."
+    },
+    "BUZ": {
+      "name": "Buzzer piézo sur D8",
+      "what": "Un piézo passif : tone(8, 2000) le fait sonner à 2 kHz. Quelques mA : il se branche donc directement sur une broche."
+    }
+  },
+  "power": {
+    "label": "Mettez le banc sous tension",
+    "ok": "Nano sur l'USB : Vcc à 5 V, directement sur chaque puce de la carte"
+  },
+  "modes": {
+    "wall": {
+      "title": "Ping et affichage"
+    },
+    "approach": {
+      "title": "Bip de recul"
+    },
+    "cushion": {
+      "title": "Ping sur un coussin"
+    },
+    "open": {
+      "title": "Rien à portée"
+    },
+    "code": {
+      "wall": "Ping et affichage : un mur à 30 cm devant",
+      "cushion": "Ping et affichage, pointé vers un coussin à 40 cm",
+      "open": "Ping et affichage, pointé vers une pièce vide",
+      "park": "Radar de recul : bipe de plus en plus vite quand une main s'approche",
+      "trig": "un HIGH d'au moins 10 µs lance un ping",
+      "timeout": "abandonner au bout de 30 ms (environ 5 m) : 0 signifie pas d'écho",
+      "cm": "58 µs d'aller-retour par cm",
+      "noEcho": "0 ne veut pas dire « très proche » : rien n'est revenu",
+      "gap": "au moins 60 ms entre deux pings, pour que le dernier écho se soit éteint",
+      "stop": "sous 10 cm : une longue tonalité",
+      "rate": "un bip de 50 ms toutes les cm x 10 ms : de plus en plus vite à mesure qu'il s'approche"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Démontez jusqu'au circuit nu",
+      "body": "Retirez tous les composants de la carte bleue. Vous allez la remonter comme elle est fabriquée : les puces au dos d'abord, puis le quartz et le connecteur, puis les deux capsules.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    },
+    "smd": {
+      "title": "Placement automatique des composants CMS, puis refusion",
+      "body": "Toutes les puces sont au dos : l'EM78P153S, le MAX3232, le LM324, deux transistors et une trentaine de résistances et de condensateurs. La face avant ne garde que les capsules, le quartz et les soudures du connecteur.",
+      "refusal": "Les composants CMS se posent en premier, sur une carte nue"
+    },
+    "low": {
+      "title": "Posez le quartz et le connecteur",
+      "body": "Les composants bas d'abord : le quartz 4 MHz entre les emplacements des capsules, et le connecteur coudé, son corps au dos.",
+      "refusal": "Les composants CMS d'abord : lancez le placement automatique et la refusion"
+    },
+    "cans": {
+      "title": "Posez les deux capsules",
+      "body": "T à gauche, R à droite. Elles se ressemblent, et sur la plupart des cartes elles sont identiques ; la lettre de la sérigraphie dit laquelle est laquelle.",
+      "refusal": "Les composants bas d'abord : avec les capsules en place, la carte bascule quand vous la retournez pour souder"
+    },
+    "solder": {
+      "title": "Soudez les composants traversants",
+      "body": "Par le dos : deux pattes par capsule, deux pour le quartz, quatre pour le connecteur. Une soudure froide sur une patte de capsule et la carte devient sourde ; sur Echo, les mesures vont et viennent.",
+      "refusal": "Rien à souder pour l'instant : posez d'abord les composants"
+    },
+    "wire-nano": {
+      "title": "Câblez le Nano",
+      "body": "Vcc sur 5V, Trig sur D9, Echo sur D10, Gnd sur GND. Echo est une sortie 5 V : pas de problème sur un Nano, trop pour une carte 3,3 V sans pont diviseur.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    },
+    "wire-buzzer": {
+      "title": "Câblez le buzzer",
+      "body": "+ sur D8, - sur GND. C'est la voix du radar de recul.",
+      "refusal": "Coupez d'abord l'alimentation, et câblez d'abord le Nano"
+    },
+    "plug": {
+      "title": "Mettez le banc sous tension",
+      "body": "L'USB dans le Nano. Rien ne s'allume sur le HC-SR04 : il n'a pas de LED d'alimentation. Il attend une impulsion sur Trig.",
+      "refusal": "Terminez d'abord le montage : chaque composant posé et soudé, le Nano et le buzzer câblés"
+    },
+    "wall": {
+      "title": "Téléversez « Ping et affichage »",
+      "body": "Une fois par seconde : une impulsion de 10 µs sur Trig, puis pulseIn() mesure Echo. Un mur à 30 cm donne environ 1740 µs, soit 30 cm. Regardez les ondes partir de T et revenir sur R.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "approach": {
+      "title": "Téléversez « Bip de recul »",
+      "body": "Une main approche de 1 m à 5 cm. Le sketch envoie un ping toutes les 60 ms et bipe une fois toutes les distance x 10 ms : chaque seconde à 1 m, toutes les 300 ms à 30 cm, une longue tonalité sous 10 cm.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "cushion": {
+      "title": "Téléversez « Ping sur un coussin »",
+      "body": "Le même sketch, pointé vers un coussin à 40 cm. Le tissu mou absorbe le son : la plupart des pings ne lisent aucun écho, et de temps en temps le mur derrière répond à 183 cm.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "open": {
+      "title": "Téléversez « Rien à portée »",
+      "body": "Pointé vers une pièce vide. La carte attend environ 38 ms, rabaisse Echo, et chaque ping ne lit aucun écho : pulseIn() a abandonné au bout de 30 ms et a renvoyé 0.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "reverse-vcc": {
+      "title": "Câblez Vcc et Gnd à l'envers",
+      "body": "Le 5 V sur Gnd et GND sur Vcc. La carte n'a ni diode, ni fusible, ni régulateur."
+    },
+    "vcc-on-3v3": {
+      "title": "Alimentez Vcc depuis la broche 3V3 du Nano",
+      "body": "Le fil décalé d'une broche, sur 3V3. Les puces tournent encore. Regardez les ondes et les mesures."
+    },
+    "no-receiver": {
+      "title": "Retirez le récepteur",
+      "body": "Enlevez R de la carte et envoyez un ping vers le mur."
+    },
+    "cold-echo": {
+      "title": "Laissez une soudure froide sur Echo",
+      "body": "Une soudure terne et fissurée sur la broche Echo du connecteur. Envoyez un ping vers le mur."
+    },
+    "no-timeout": {
+      "title": "Oubliez le délai d'attente de pulseIn()",
+      "body": "pulseIn(ECHO, HIGH) sans troisième argument et sans test de « pas d'écho », pointé vers la pièce vide."
+    },
+    "short-vcc": {
+      "title": "Court-circuitez Vcc avec Gnd",
+      "body": "Un fil égaré en travers des broches extérieures du connecteur."
+    },
+    "exploded": {
+      "title": "Vue éclatée",
+      "body": "Débranchez et soulevez les pièces par groupe de montage : les puces au dos, le quartz et le connecteur, puis les capsules.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    }
+  },
+  "faults": {
+    "reverse-vcc": {
+      "title": "Vcc inversé",
+      "symptom": "Les puces chauffent en quelques secondes et l'USB du Nano peut décrocher. Ensuite, la carte ne lit souvent plus rien.",
+      "explanation": "Rien sur le HC-SR04 ne bloque une alimentation inversée : le courant traverse à l'envers les diodes de protection internes de chaque puce. Le MAX3232 et le MCU y passent en général.",
+      "fix": "Débranchez immédiatement, câblez Vcc sur 5V et Gnd sur GND. Branchez Gnd en premier, comme le disent les datasheets."
+    },
+    "vcc-on-3v3": {
+      "title": "Seulement 3,3 V sur Vcc",
+      "symptom": "Chaque ping ne lit aucun écho. Les ondes de la salve partent faibles et rien ne revient.",
+      "explanation": "Le MCU tourne en 3,3 V, mais l'émission du MAX3232 et le gain du LM324 ont besoin de 4,5-5,5 V. La salve est trop faible et le récepteur trop sourd pour l'entendre revenir.",
+      "fix": "Alimentez Vcc depuis 5V. Sur une carte 3,3 V, utilisez le HC-SR04P, qui fonctionne dès 3,0 V."
+    },
+    "no-receiver": {
+      "title": "Pas de récepteur",
+      "symptom": "Chaque ping ne lit aucun écho, alors que la salve part bien.",
+      "explanation": "Sans R, rien n'entend l'écho : le MCU attend donc ses 38 ms et rabaisse Echo. Une soudure froide sur une patte de capsule fait la même chose.",
+      "fix": "Posez R et soudez ses deux pattes."
+    },
+    "cold-echo": {
+      "title": "Soudure froide sur Echo",
+      "symptom": "Les mesures vont et viennent : une bonne distance, puis pas d'écho, puis à nouveau une bonne. Toucher la carte change les choses.",
+      "explanation": "À travers une soudure qui fait et défait le contact, l'impulsion d'Echo n'atteint parfois jamais le Nano, et pulseIn() atteint son délai d'attente.",
+      "fix": "Réchauffez la soudure avec de la soudure neuve jusqu'à ce qu'elle coule en un cône brillant."
+    },
+    "no-timeout": {
+      "title": "pulseIn() sans délai d'attente",
+      "symptom": "Une pièce vide lit 655 cm, au-delà des 4 m du capteur, et chaque ping prend plus longtemps.",
+      "explanation": "Sans rien pour renvoyer d'écho, la carte maintient Echo à HIGH pendant son propre délai, environ 38 ms, puis le rabaisse. pulseIn() sans délai d'attente patiente jusqu'à une seconde, mesure cette impulsion de 38 ms, et le sketch l'affiche comme 38000 / 58 = 655 cm.",
+      "fix": "Passez un délai d'attente, pulseIn(ECHO, HIGH, 30000UL), et traitez 0 comme « pas d'écho », pas comme une distance."
+    },
+    "short-vcc": {
+      "title": "Vcc en court-circuit avec Gnd",
+      "symptom": "Tout s'éteint : le Nano se réinitialise ou son USB décroche, et son polyfusible chauffe.",
+      "explanation": "La carte n'a pas de fusible à elle. Le court-circuit fait chuter le 5 V du Nano jusqu'à ce que son polyfusible USB limite le courant.",
+      "fix": "Débranchez, retirez le fil égaré et vérifiez qu'aucun pont de soudure ne relie les broches du connecteur."
+    }
+  },
+  "status": {
+    "status": "État",
+    "powered": "Alimentation du banc",
+    "mode": "Sketch",
+    "distance": "Distance",
+    "echo": "Impulsion d'écho (µs)",
+    "beep": "Bip",
+    "vcc": "Vcc",
+    "usb": "Courant USB"
+  },
+  "current": {
+    "usb": "USB du Nano (polyfusible de 500 mA)",
+    "nano": "Nano en fonctionnement",
+    "board": "HC-SR04 en mesure",
+    "buzzer": "Buzzer qui sonne"
+  },
+  "tasks": {
+    "sonar": "Distance de ce qui se trouve devant le capteur",
+    "brake": {
+      "title": "Ne pas freiner dans une pièce vide",
+      "brief": "Le sketch de pare-chocs de ce robot allume le frein (D13) quand quelque chose est à moins de 20 cm. Il fonctionne face à un mur, mais dans une pièce dégagée il freine aussi : quand rien ne renvoie d'écho, pulseIn() renvoie 0, et 0 cm, c'est « moins de 20 ». Ne freinez que s'il y a vraiment eu un écho sous 20 cm. Le mur est à 80 cm, à 15 cm à 1,5 s, disparu à 3 s et à 8 cm à 4,5 s.",
+      "hints": {
+        "1": "ping() renvoie 0 quand rien n'est revenu. 0 n'est pas une distance.",
+        "2": "Les deux doivent être vrais : il y a eu un écho, et il était proche.",
+        "3": "bool brake = cm > 0 && cm < 20;"
+      },
+      "checks": {
+        "1": "Tourne",
+        "2": "Mur à 80 cm : pas de frein",
+        "3": "Mur à 15 cm : frein",
+        "4": "Pièce vide : pas de frein",
+        "5": "Mur à 8 cm : frein"
+      },
+      "code": {
+        "goal": "Freiner sous 20 cm, mais pas quand rien ne renvoie d'écho",
+        "todo": "0 signifie pas d'écho : ceci freine aussi dans une pièce vide",
+        "zero": "0 quand rien n'est revenu en moins de 30 ms"
+      }
+    },
+    "speed": {
+      "title": "À quelle vitesse approche-t-il ?",
+      "brief": "Un robot doit savoir non seulement à quelle distance, mais à quelle vitesse. Le sketch envoie un ping toutes les 500 ms. Calculez la vitesse d'approche à partir de cette distance, de la précédente et du temps qui les sépare, et ajoutez \", approaching at N cm/s\", \", moving away at N cm/s\" ou \", holding\" (à 2 cm/s près) à chaque ligne. Une main approche de 1 m à 30 cm à 20 cm/s, s'arrête, puis recule.",
+      "hints": {
+        "1": "vitesse = (last - cm) / secondes entre les pings : positive quand il se rapproche.",
+        "2": "Gardez last et lastAt du ping précédent ; sautez la vitesse quand l'une des mesures est sans écho.",
+        "3": "Serial.print(speed, 0) l'affiche sans décimales."
+      },
+      "checks": {
+        "1": "Tourne",
+        "2": "Indique qu'il approche à environ 20 cm/s",
+        "3": "Indique holding quand la main s'arrête à 30 cm",
+        "4": "Indique qu'il s'éloigne à environ 20 cm/s"
+      },
+      "code": {
+        "goal": "Afficher la vitesse d'approche après chaque distance",
+        "todo": "comparer avec la mesure précédente : approaching at N cm/s, moving away at N cm/s ou holding"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "crystal": {
+        "q": "À quoi sert le quartz de 4 MHz ?",
+        "options": {
+          "1": "Il cadence le MCU qui produit la salve et mesure l'écho",
+          "2": "Il amplifie l'écho",
+          "3": "Il régule le 5 V"
+        },
+        "why": "L'EM78P153S compte la salve à 40 kHz et l'écho à partir de son horloge. Retirez le quartz et plus rien ne tourne."
+      },
+      "cans": {
+        "q": "T et R sont le même type de capsule. Qu'est-ce qui fait de l'une l'émetteur ?",
+        "options": {
+          "1": "T est plus grosse",
+          "2": "Ce à quoi elle est câblée : T au MAX3232 qui la pilote, R au LM324 qui écoute",
+          "3": "R n'a pas de piézo"
+        },
+        "why": "Un piézo transforme une tension en mouvement et un mouvement en tension. Pilotée fort, la capsule émet ; reliée à un amplificateur, elle écoute."
+      },
+      "protection": {
+        "q": "Qu'est-ce qui protège le HC-SR04 d'une mauvaise alimentation ?",
+        "options": {
+          "1": "Un régulateur",
+          "2": "Une diode contre l'inversion de polarité",
+          "3": "Rien : Vcc va directement à chaque puce"
+        },
+        "why": "La carte classique n'a ni régulateur, ni diode, ni fusible. Vérifiez Vcc avant de brancher."
+      }
+    },
+    "ping": {
+      "formula": {
+        "q": "Echo reste à HIGH pendant 1740 µs. À quelle distance est le mur ?",
+        "options": {
+          "1": "17,4 cm",
+          "2": "30 cm",
+          "3": "58 cm"
+        },
+        "why": "1740 / 58 = 30. L'impulsion correspond à l'aller-retour, et 58 µs, c'est un centimètre aller et retour."
+      },
+      "why58": {
+        "q": "Pourquoi 58 µs par cm ?",
+        "options": {
+          "1": "Le son parcourt un centimètre en 29 µs à 343 m/s, et il doit faire l'aller et le retour",
+          "2": "Le quartz divise par 58",
+          "3": "La datasheet du capteur l'a choisi"
+        },
+        "why": "1 cm / 34 300 cm/s = 29 µs à l'aller, 58 µs pour l'aller-retour. Cela varie un peu avec la température."
+      },
+      "zero": {
+        "q": "pulseIn(ECHO, HIGH, 30000UL) renvoie 0. Qu'est-ce que cela signifie ?",
+        "options": {
+          "1": "Quelque chose touche le capteur",
+          "2": "Le capteur est cassé",
+          "3": "Aucun écho n'a commencé en moins de 30 ms"
+        },
+        "why": "0, c'est la façon dont pulseIn() dit qu'il a abandonné. Ce n'est pas une distance."
+      }
+    },
+    "faults": {
+      "low-vcc": {
+        "q": "En 3,3 V, la carte tourne mais ne lit aucun écho. Pourquoi ?",
+        "options": {
+          "1": "Le MCU s'arrête",
+          "2": "L'émission et le gain du récepteur ont besoin de 4,5-5,5 V",
+          "3": "Echo monte trop haut"
+        },
+        "why": "Le MAX3232 produit ses ±10 V à partir de Vcc et le gain du LM324 baisse avec lui. La salve part faible et rien n'est entendu."
+      },
+      "soft": {
+        "q": "Pourquoi un coussin ne renvoie-t-il aucun écho ?",
+        "options": {
+          "1": "Il est trop près",
+          "2": "Il est trop chaud",
+          "3": "Le tissu mou absorbe le son au lieu de le renvoyer"
+        },
+        "why": "Les cibles dures et planes renvoient le mieux l'écho. Le tissu, la mousse et la fourrure avalent la plus grande partie de la salve ; les surfaces inclinées la renvoient ailleurs."
+      },
+      "timeout": {
+        "q": "Sans délai d'attente, pourquoi une pièce vide lit-elle 655 cm ?",
+        "options": {
+          "1": "pulseIn() mesure l'impulsion de délai de 38 ms de la carte elle-même, et 38000 / 58 = 655",
+          "2": "La pièce fait 6,5 m de long",
+          "3": "L'horloge du Nano est fausse"
+        },
+        "why": "Sans rien pour renvoyer d'écho, la carte met quand même Echo à l'état haut et le rabaisse au bout d'environ 38 ms. Sans délai d'attente plus court, le sketch prend cela pour une distance."
+      }
+    },
+    "end": {
+      "cone": {
+        "q": "Le capteur entend dans un cône d'environ 15°. Qu'est-ce que cela signifie pour un robot ?",
+        "options": {
+          "1": "Un pied de chaise fin sur le côté peut passer inaperçu",
+          "2": "Il voit derrière lui",
+          "3": "Il voit à travers les murs"
+        },
+        "why": "Tout ce qui est hors du cône, ou trop fin pour renvoyer un écho, est invisible. Les robots font souvent pivoter le capteur sur un servo, ou en utilisent deux."
+      },
+      "two": {
+        "q": "Deux robots envoient des pings près l'un de l'autre. Qu'est-ce qui ne va pas ?",
+        "options": {
+          "1": "Rien",
+          "2": "Chacun peut entendre la salve de l'autre et lire une fausse distance",
+          "3": "Ils lisent tous les deux plus loin"
+        },
+        "why": "Chaque HC-SR04 utilise 40 kHz. Envoyez les pings à tour de rôle, ou ignorez les mesures qui sautent."
+      },
+      "gap": {
+        "q": "Pourquoi attendre au moins 60 ms entre deux pings ?",
+        "options": {
+          "1": "La puce surchauffe",
+          "2": "Le Serial a besoin de ce temps",
+          "3": "Pour que les échos du dernier ping se soient éteints avant la salve suivante"
+        },
+        "why": "Le son qui rebondit encore dans la pièce depuis le dernier ping peut être pris pour l'écho du suivant."
+      }
+    }
+  }
+}
