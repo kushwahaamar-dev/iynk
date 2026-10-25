@@ -46,7 +46,7 @@ describe('tb6612fng content', () => {
   it('keeps build steps in the original order with refusals, and every break step names a fault', () => {
     const ids = bench.steps.map((s) => s.id);
     expect(new Set(ids).size).toBe(ids.length);
-    expect(ids.slice(0, 6)).toEqual(['strip', 'smd', 'jp1', 'jp2', 'solder', 'plug']);
+    expect(ids.slice(0, 9)).toEqual(['strip', 'smd', 'jp1', 'jp2', 'solder', 'wire-nano', 'wire-motors', 'wire-battery', 'plug']);
     expect(ids.at(-1)).toBe('exploded');
     const faults = new Set(bench.faults.map((f) => f.id));
     for (const s of bench.steps) {

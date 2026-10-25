@@ -98,6 +98,21 @@
       "body": "Sixteen through-hole joints. A good one is shiny and concave, wetting both the pin and the pad.",
       "refusal": "Nothing to solder yet: place a part first"
     },
+    "wire-nano": {
+      "title": "Wire the Nano to JP2 and VCC",
+      "body": "Set the Nano on the mat and run eight jumpers from JP2: PWMA to D5, AIN2 to D8, AIN1 to D7, STBY to D9, BIN1 to D10, BIN2 to D11, PWMB to D6 and GND to GND. One more from VCC to the Nano's 5V: the driver's logic follows the controller. D5, D6, D9, D10 and D11 are PWM pins; PWMA and PWMB need two of them.",
+      "refusal": "Unplug the power first: never work on a live board"
+    },
+    "wire-motors": {
+      "title": "Wire the two motors",
+      "body": "Motor A on A01 and A02, motor B on B01 and B02. Which lead goes where only sets which way the wheel turns: if one wheel runs backwards on Forward, swap its two leads.",
+      "refusal": "Unplug the power first, and wire the Nano before the motors"
+    },
+    "wire-battery": {
+      "title": "Wire the LiPo to VM and GND",
+      "body": "Red to VM, black to the GND beside it. There is no reverse-polarity protection on this board: check twice before the plug goes in. The LiPo only feeds the motors; the Nano keeps its own USB power.",
+      "refusal": "Unplug the power first, and wire the motors before the LiPo"
+    },
     "plug": {
       "title": "Power the bench",
       "body": "USB into the Nano, the LiPo onto VM and GND. The Nano's 5 V feeds VCC; the grounds are joined. The Nano starts with Forward 50%.",
