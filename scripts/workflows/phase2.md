@@ -276,7 +276,7 @@ Also owns this wave `e2e/fly.spec.ts`, `src/lib/telemetry/**`, `src/lib/sound/**
 Done when: e2e: a ghost flies a lap beside you, a crash replays, a challenge link opens the right course; every craft
 with content passes `e2e/fly.spec.ts`; unticking usage sharing stops every telemetry send (a unit test).
 
-## Wave B tail: the driver's requests (launched 2026-10-25 00:20 CDT)
+## Wave B tail: the driver's requests (launched 2026-10-25 00:18 CDT)
 
 Requests wave A and B filed to the driver, for files no running label owns. Each agent owns the files its section
 names; the request file says exactly what to change and how to check it. Append an `## Answer` to each request you
