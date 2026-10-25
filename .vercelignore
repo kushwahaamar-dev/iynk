@@ -54,6 +54,9 @@ node_modules
 **/*.test.tsx
 **/*.test.js
 **/*.test.mjs
+# Test helpers that aren't *.test.* files; _checks.ts imports figures/engine/testkit.mjs, which isn't uploaded
+/src/content/drones/_checks.ts
+/src/lib/server/ai/__test__
 /playwright.config.ts
 /vitest.config.mts
 /vitest.setup.ts

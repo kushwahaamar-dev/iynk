@@ -131,10 +131,17 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   02:20 (`docs/verify/gate2.md`), gate 3 06:11. No agent or workflow is running.
 - **Next step (Amar):**
   1. Done 07:32: keys in `.env.local` (Meta, Gemini, SerpApi, relay URL). No `DATABASE_URL`, so no leaderboard.
-  2. His OK for: the Vercel env upload and deploy (the CLI is logged in as `kushwahaamar2ak5-7403`), a relay host
-     (Vultr) or the laptop relay, the Tiger database. Asked at 07:52.
-  3. Done locally 07:51 (see "Keys smoke"). After a deploy, rerun on the real URL, then JUDGE-QA's "Recheck before
-     judging" and PITCH's "Confirm before pitching".
+  2. Answered 08:10: Vercel yes, relay on Vultr, no Tiger, app frozen (CONTEXT.md §3). Vercel project
+     `simlab-hacktx` (scope `kushwahaamar2ak5-7403s-projects`, linked 08:12, GitHub repo connected, so every push to
+     `main` builds production) has 10 production variables: the five `META_*`, `GEMINI_API_KEY`, `GEMINI_MODEL`,
+     `SERPAPI_KEY`, `SERPAPI_MONTHLY_BUDGET`, `NEXT_PUBLIC_SITE_URL=https://simlab-hacktx.vercel.app`. Upload script
+     trims whitespace (two keys have a space after `=` in `.env.local`). Vultr waits for `VULTR_API_KEY` in
+     `.env.local` (asked 08:13); then `scripts/realtime-vultr-create.sh`, `REALTIME_ALLOWED_ORIGINS=https://simlab-hacktx.vercel.app
+     VULTR_HOST=<ip> scripts/realtime-deploy.sh`, set `NEXT_PUBLIC_REALTIME_URL=wss://<ip-with-dashes>.sslip.io/ws`
+     on Vercel and redeploy.
+  3. Done locally 07:51 (see "Keys smoke") and on **https://simlab-hacktx.vercel.app** at 08:20 (deployed 08:20;
+     `docs/hacktx/DEPLOY.md` "Production on Vercel"): everything on but realtime, db and solana. Still to do before
+     judging: JUDGE-QA's "Recheck before judging" and PITCH's "Confirm before pitching".
   4. Video 08:30-10:00 from `docs/hacktx/VIDEO.md` (setup, shot list, clicks checked at gate 3). Devpost by 10:30
      from `docs/hacktx/DEVPOST-WRITEUP.md`, filling its [BRACKETS]; Amar submits.
   Optional, small, if someone has time: the robotics HUD verdict is English only (`benchStatus` fills English), the fr
@@ -150,6 +157,10 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-25 08:20 CDT (Amar): production live at https://simlab-hacktx.vercel.app (10 env vars; `.vercelignore`
+  now leaves out two test helpers that broke the typecheck). Smokes green there. Next: the Vultr relay once
+  `VULTR_API_KEY` is in `.env.local`, then `NEXT_PUBLIC_REALTIME_URL` on Vercel and a redeploy.
 
 - 2026-10-25 07:51 CDT (Amar): keys smoke green locally (Meta 7/7, SerpApi 5/5, in-app partner, relay rooms across
   two profiles). The keys build serves on port 3000 with the relay, both from this session. Next: Amar's deploy OKs.

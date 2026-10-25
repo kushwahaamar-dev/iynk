@@ -1,6 +1,6 @@
 # Deploying SimLab
 
-P1-deploy, 2026-10-24 17:23 CDT. The local smoke was rerun by the driver at 18:24 CDT. The app is a Next.js 16.4.3 App Router project. Vercel is not linked, nothing has been deployed, and no environment variables have been uploaded. Those three wait for a yes (BUILD-PLAN §9, D4).
+P1-deploy, 2026-10-24 17:23 CDT. The local smoke was rerun by the driver at 18:24 CDT. The app is a Next.js 16.4.3 App Router project. Since 2026-10-25 08:20 it is deployed on Vercel at https://simlab-hacktx.vercel.app ("Production on Vercel" below); the older sections are kept as history.
 
 ## Where it stands (2026-10-25 02:45 CDT)
 
@@ -19,6 +19,37 @@ curl -s https://<the site>/api/status                    # which features the de
 
 Both scripts read the keys from the environment or `.env.local`, never print them, and say SKIP without one.
 `smoke-search.mjs` spends at most one SerpApi search per route (web up to three); a cached answer spends none.
+
+## Production on Vercel, 2026-10-25 08:20 CDT
+
+Amar said yes at 08:10. Project `simlab-hacktx` in scope `kushwahaamar2ak5-7403s-projects`, linked from this repo at
+08:12 (the CLI also connected github.com/kushwahaamar-dev/sim, so a push to `main` builds production). Live at
+**https://simlab-hacktx.vercel.app**, deployed with `vercel deploy --prod --yes` from `f86c159` plus the
+`.vercelignore` fix below.
+
+Production variables (encrypted, uploaded from `.env.local` through stdin, values trimmed): `META_API_KEY`,
+`META_API_BASE`, `META_MODEL`, `META_IMAGE_MODEL`, `META_TRANSCRIBE_MODEL`, `GEMINI_API_KEY`, `GEMINI_MODEL`,
+`SERPAPI_KEY`, `SERPAPI_MONTHLY_BUDGET`, `NEXT_PUBLIC_SITE_URL=https://simlab-hacktx.vercel.app`. Not uploaded: the
+Solana values (phase 4 skipped), `DATABASE_URL` (no Tiger), `NEXT_PUBLIC_REALTIME_URL` (waits for the Vultr relay;
+the laptop's `ws://127.0.0.1` address can't work from an https page).
+
+Two failures on the way: the first upload got an HTML error page from `api.vercel.com/v2/files` (transient; the retry
+uploaded), then the build failed its typecheck because `src/content/drones/_checks.ts`, a test helper without
+`.test` in its name, imports `figures/engine/testkit.mjs`, which `.vercelignore` leaves out. `.vercelignore` now also
+leaves out that helper and `src/lib/server/ai/__test__/`, the only two test helpers outside the `*.test.*` names
+(only tests import them).
+
+| Check on https://simlab-hacktx.vercel.app | Result |
+|---|---|
+| `/api/status` | `ai`, `image`, `voice`, `search`, `gemini` true; `realtime`, `db`, `solana` false |
+| `node scripts/smoke-search.mjs --base …` | 5 of 5 (offers best USD 28.09, web, nearby, events, videos) |
+| `POST /api/ai/chat` (board, uno-r3, en) | streamed answer from Meta |
+| `POST /api/mcp` `initialize` | 200, `websiteUrl` is the public origin |
+| `/`, `/en`, Uno R3, en and es Blink, robotics, quad5, fly, together, `/figures/boards/uno-r3.html`, `/api/openapi.json` | 307 to `/en`, the rest 200 |
+| Chromium on the 8 demo pages | no page errors, console errors or failed requests; each lab page has its figure frame |
+
+The first visit to a page after a deploy is slow (quad5 took 24 s to go quiet once, then 1.9 s), so open the demo
+pages once before judging.
 
 ## Local smoke with keys, 2026-10-25 07:51 CDT
 
