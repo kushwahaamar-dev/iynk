@@ -12,6 +12,7 @@
 // @cf use parts/tmp36.js
 // @cf use parts/servo-sg90.js
 // @cf use parts/stepper-28byj48.js
+// @cf use parts/uln2003.js
 // @cf use parts/fsr402.js
 // @cf use parts/hc-sr04.js
 // @cf use parts/ssd1306.js
@@ -323,12 +324,19 @@ B.board({
       parts: [
         { id: 'BTN1', part: 'push-button', holes: ['e8', 'f8', 'e10', 'f10'] },
         { id: 'RES1', part: 'resistor', ohms: 10000, holes: ['b10', 'b14'] },
-        { id: 'STP1', part: 'stepper-28byj48', at: [145, 14], wheel: 'wheel', plug: [126, 14] },
+        { id: 'DRV1', part: 'uln2003', at: [62, 84], rot: 90 },
+        { id: 'STP1', part: 'stepper-28byj48', at: [118, 88], wheel: 'wheel', plug: 'DRV1' },
       ],
       wires: [
         { from: 'POWER.5', to: 'a8', color: 'red' },
         { from: 'D2', to: 'a10', color: 'blue' },
         { from: 'IOH.4', to: 'a14', color: 'black' },
+        { from: 'D8', to: 'DRV1.IN1', color: 'orange' },
+        { from: 'D9', to: 'DRV1.IN2', color: 'yellow' },
+        { from: 'D10', to: 'DRV1.IN3', color: 'green' },
+        { from: 'D11', to: 'DRV1.IN4', color: 'purple' },
+        { from: 'c14', to: 'DRV1.GND', color: 'black' },
+        { from: 'c8', to: 'DRV1.VCC', color: 'red' },
       ],
     },
     plant: {

@@ -186,6 +186,14 @@ const matLeg = (c, ref) => {
   const p = Object.assign({}, q, (B.st.cparams || {})[q.id] || {});
   try { return def.legAt(p, B.BP(q.at[0], q.at[1], B.G.matH - B.G.top), i); } catch (e) { B.note(`${q.id} legAt: ${e.message}`); return null; }
 };
+// where a plug pushed into circuit part `id` sits (a stepper's into its driver board): that part's
+// def.socketAt(p, origin), one world point per socket pin; null when it lies nowhere or has no socket
+B.socketOf = id => {
+  const c = circuitNow(), q = c && (c.parts || []).find(x => x.id === id), def = q && B.parts[q.part];
+  if (!def || typeof def.socketAt !== 'function' || !Array.isArray(q.at)) return null;
+  const p = Object.assign({}, q, (B.st.cparams || {})[q.id] || {});
+  try { return def.socketAt(p, B.BP(q.at[0], q.at[1], B.G.matH - B.G.top)); } catch (e) { B.note(`${q.id} socketAt: ${e.message}`); return null; }
+};
 // one circuit part's drawing: its items (world box + svg) and its labeller; null when it can't be drawn
 const drawCircuitPart = (pl, q, k) => {
   const md = B.md, st = B.st, p = Object.assign({}, q, (st.cparams || {})[q.id] || {}), def = B.parts[p.part];

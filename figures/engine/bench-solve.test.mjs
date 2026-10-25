@@ -91,6 +91,30 @@ describe('transistor, diode and motor (lesson 10)', () => {
   });
 });
 
+describe('stepper on a ULN2003 board (lesson 13)', () => {
+  it('a HIGH input sinks its output, and the coil on it carries about 80 mA', async () => {
+    page = await unoPage();
+    const m = run({ circuit: 'stepper', power: 'usb', pins: { D8: 1, D9: 1, D10: 0, D11: 0 } }).meas;
+    expect(m.DRV1).toMatchObject({ kind: 'driver', state: 'on' });
+    expect(m.DRV1.ch[1]).toMatchObject({ state: 'on', vce: 1 });
+    expect(m.DRV1.ch[1].ib_mA).toBeCloseTo(1.3, 1);
+    expect(m.DRV1.ch[1].ic_mA).toBeGreaterThan(70);
+    expect(m.DRV1.ch[1].ic_mA).toBeLessThan(85);
+    expect(m.DRV1.ch[3].state).toBe('off');
+    expect(m.STP1).toMatchObject({ kind: 'stepper', state: 'ok', coils: { B: true, P: true, Y: false, O: false } });
+    expect(m.STP1.i_mA).toBeCloseTo(m.DRV1.i_mA, -1);
+    expect(page.notes()).toEqual([]);
+  });
+
+  it('the coils follow the pins, and with the driver gone the stepper reports nothing', async () => {
+    page = await unoPage();
+    expect(run({ circuit: 'stepper', power: 'usb', pins: { D8: 0, D9: 0, D10: 1, D11: 1 } }).meas.STP1.coils).toEqual({ B: false, P: false, Y: true, O: true });
+    expect(run({ pins: { D8: 0, D9: 0, D10: 0, D11: 0 } }).meas.STP1).toMatchObject({ state: 'off', i_mA: 0 });
+    expect(run({ fault: 'missing:DRV1', power: 'usb' }).meas.STP1).toBeUndefined();
+    expect(page.notes()).toEqual([]);
+  });
+});
+
 describe('inputs and sensors', () => {
   it('a potentiometer divides 5 V and A0 reads the wiper', async () => {
     page = await unoPage();

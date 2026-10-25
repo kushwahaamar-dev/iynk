@@ -4,8 +4,9 @@
    prize wheel, `wheel`) on the shaft. Can 28 mm across and 19 mm deep; the flange on top has two ears on 35 mm
    centres; the 5 mm shaft (flats 3 mm across) sits 8 mm off the can's centre on a small boss; the blue cover on
    the side lets out the 5-wire lead (1 blue, 2 pink, 3 yellow, 4 orange, 5 red = common +5 V) to a white 5-pin
-   JST-XH plug. Legs [B, P, Y, O, R]: the plug's pins, in holes if given, else the plug lies at `plug` (board mm,
-   where the ULN2003 board's socket is) or beside the motor.
+   JST-XH plug. Legs [B, P, Y, O, R]: the plug's pins, in holes if given; else `plug: '<id>'` pushes the plug into
+   that driver board's socket (uln2003: OUT1-OUT4 and +), `plug: [x, y]` lays it on the mat there (board mm), or it
+   lies beside the motor.
    Facts (Kiatronics datasheet and teardown counts, la-components.md §15): coils 50 Ohm (5 V / 50 Ohm = 100 mA per
    energised phase; through a ULN2003 that drops about 0.9 V, 82 mA); 32 full steps per rotor turn (11.25°; the
    sheet's 5.625° is the half step); gearbox 9→32, 11→22, 9→26, 10→31 = 63.68395:1, so 2037.8864 full steps or
@@ -16,8 +17,9 @@
    Half-step sequence (wires pulled low): O, O+Y, Y, Y+P, P, P+B, B, B+O: O and P are the two ends of one
    centre-tapped winding, Y and B of the other.
 
-   Inputs, in order: the solver's m.coils = {B, P, Y, O} (energised = true); else the host's params `steps` (full
-   steps sent so far), `rate` (steps/s), `seq` ('full' | 'half' | 'wave') and `order`; else, while the board runs,
+   Inputs, in order: the solver's m.coils = {B, P, Y, O} (energised = true: a coil carrying a fifth of its rated
+   current, once the plug is in a driver board that is wired up); else the host's params `steps` (full steps sent
+   so far), `rate` (steps/s), `seq` ('full' | 'half' | 'wave') and `order`; else, while the board runs,
    the pins in `in` (default ['D8', 'D9', 'D10', 'D11'] = IN1..IN4 → blue, pink, yellow, orange) through the
    ULN2003 (input high = coil on). Reports m-like state 'ok' | 'off' | 'stall' | 'jitter'. */
 (() => {
@@ -134,9 +136,10 @@ B.part('stepper-28byj48', {
     if (state === 'stall'){ const [X, Y] = P(...W(sx, 0, hz + 3)); top += `<path d="M${f(X - 8)} ${f(Y - 3)}q-2 -2 0 -4q2 -2 0 -4M${f(X + 8)} ${f(Y - 3)}q2 -2 0 -4q-2 -2 0 -4" fill="none" stroke="#e2483d" stroke-width=".8"/>`; }
     items.push({ box: B.aabb([W(sx - 26, -26, zt), W(sx + 26, 26, hz + 2)]), svg: top });
     // the lead: five wires from the cover to the JST plug
-    const pl0 = legs.length === 5 ? legs : (Array.isArray(p.plug) ? [0, 1, 2, 3, 4].map(i => B.BP(p.plug[0] + (i - 2) * 2.5, p.plug[1], B.G.matH - B.G.top)) : [0, 1, 2, 3, 4].map(i => W(-8 + (i - 2) * 2.5, -36, 0)));
+    const sock = typeof p.plug === 'string' && B.socketOf ? B.socketOf(p.plug) : null;
+    const pl0 = legs.length === 5 ? legs : sock && sock.length === 5 ? sock : (Array.isArray(p.plug) ? [0, 1, 2, 3, 4].map(i => B.BP(p.plug[0] + (i - 2) * 2.5, p.plug[1], B.G.matH - B.G.top)) : [0, 1, 2, 3, 4].map(i => W(-8 + (i - 2) * 2.5, -36, 0)));
     ['B', 'P', 'Y', 'O', 'R'].forEach((w, i) => {
-      const s0 = W(-19, (i - 2) * 1.2, zb + 4), e = pl0[i], e2 = [e[0], e[1], e[2] + 6], pts = [];
+      const s0 = W(-19, (i - 2) * 1.2, zb + 4), e = pl0[i], e2 = [e[0], e[1], e[2] + 6.8], pts = [];      // into the plug's top
       for (let j = 0; j <= 10; j++){ const t = j / 10, sn = Math.sin(t * Math.PI); pts.push([s0[0] + (e2[0] - s0[0]) * t, s0[1] + (e2[1] - s0[1]) * t, s0[2] + (e2[2] - s0[2]) * t + sn * 3]); }
       for (let j = 0; j < pts.length - 1; j++) items.push({ box: B.aabb([pts[j], pts[j + 1]]).map((v, h) => v.map(c => c + (h ? .45 : -.45))), svg: rod(pts[j], pts[j + 1], .42, matOf(COLS[w]), toneI, .35) });
     });

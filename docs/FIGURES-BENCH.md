@@ -8,6 +8,12 @@ nothing else. The engine (`figures/engine/bench*.js`, `figures/engine/sheets*.js
 
 Changes after the first publication are additive only. Every change is logged here, newest first.
 
+- v10 (00:40 Oct 25, P2-engine-b): a breadboard ULN2003 driver board (`figures/parts/uln2003.js`, legs IN1-IN4,
+  GND, VCC on its header, lying on the mat) and the solver's `stepper` type: the 28BYJ-48 with `plug: 'DRV1'` sits
+  in the board's socket and reports `coils` from the current in each coil, so the stepper turns from the circuit,
+  not from its `in` pins (§8, §9). Element `legs`/`pins` take node names, a part may list inside `nodes`, a `ch`
+  entry of any type has its own key, and a part's `npn` channels report as one `driver` entry. A params patch that
+  changes nothing a part takes no longer clears its burnt state. The UNO R3 stepper lesson wires the board up.
 - v9 (23:50, P2-engine-b): lesson props (§9.1): `circuit.props: [{ id, prop, at, aim, ...params }]` stand the
   scenery a world input names on the mat (desk lamp, hair dryer, obstacle, watering can, strength meter, weights;
   `// @cf use engine/bench-props.js`). They are pressable like parts (`select`, `params`, a `part` event), never in
@@ -485,7 +491,10 @@ SL.bench.part('led', {
 ```
 
 `elec` types the solver understands (§9 has what each reports); `elec` may also be an array of them (an RGB LED is
-three `led` entries with `ch` and `legs`):
+three `led` entries with `ch` and `legs`; a ULN2003 board is four channels of `res`, `npn` and `diode`). `legs` (on
+`led`, `res`, `wire`, `diode`) and `npn` `pins` take leg indices or node names: a leg's name, or an inside node the
+part lists in `nodes: ['OUT1', 'B1', …]` (numbered after its legs; a wire can't end on one). Any other entry with
+`ch` gets its own key, so one channel burns alone, and its `npn` reports inside the part's `driver` entry (§9):
 
 | Type | Fields (defaults) |
 |---|---|
@@ -501,9 +510,15 @@ three `led` entries with `ch` and `legs`):
 | `sensor` | `model: 'tmp36'`, `supply: [vs, gnd]`, `out`, `vout` (volts it drives), `vmin` (2.7), `vabs` (7), `polar` |
 | `buzzer` | `kind: 'passive'` (open at DC) or `'active'` (`imax` .03, `vmin` 3, a polar load) |
 | `cap` | open at DC |
+| `stepper` | `coils: ['B', 'P', 'Y', 'O']`, `common: 'R'` (leg names), `ohms` (50), `vrated` (5): one coil from the common lead to each coil lead; a coil carrying a fifth of `vrated / ohms` is energised |
 
-Built so far (v7): all of these carry current. A part whose type the solver doesn't know (and the stepper, until a
-breadboard ULN2003 exists) is drawn and clickable, carries no current, and falls back to its params.
+All of these carry current. A part whose type the solver doesn't know is drawn and clickable, carries no current,
+and falls back to its params; so does a stepper whose plug reaches no driver (it then follows its `in` pins).
+
+A plug into another part: a circuit part with `plug: '<part id>'` joins its legs, in order, to that part's
+`socket: [node names]` (the 28BYJ-48's [B, P, Y, O, R] into the ULN2003's [OUT1, OUT2, OUT3, OUT4, VCC]), and draws
+its plug at the points that part's `socketAt(p, origin)` gives (`SL.bench.socketOf(id)`). With the socket's part left
+out by a fault the plug hangs free.
 
 Optional hooks on a part file:
 
@@ -514,7 +529,8 @@ Optional hooks on a part file:
   `st.drv[id]`).
 - `sound(p, m)` returns `{ hz, loud, how }` (`hz: 0` = silent): see `sound` in §13.
 - `legAt(p, origin, i)`: the world point of leg `i` for a part that lies on the mat, so a wire can end on `SRV1.SIG`
-  without a hole.
+  without a hole (the ULN2003 board's `DRV1.IN1`: the top of its header pin).
+- `nodes`, `socket`, `socketAt(p, origin)`: inside nodes and the socket another part plugs into (above).
 - `foot: [w, d, h]` (mm) or `height`: the mat and headroom grow to fit the part.
 
 `draw(ctx)` gets `{ p, st, legs, holes, origin, pl, m, lit, i, … }`: `p` the circuit entry (its params), `legs` the
@@ -581,6 +597,8 @@ circuit: 'blink',
   | `pot` | `v` (wiper) | `ok`, `hot`, `burnt` (2 s hot) |
   | `buzzer` | `v`, `f` (Hz on its pin), `i_mA` (active) | `ok`, `off`, `reverse` |
   | `button` | `closed` | `ok`, `shorted` (a switched pair already joined by the strips) |
+  | `driver` | `ch: { 1: { state, ib_mA, ic_mA, vce, p_W, tj_C }, … }` (each channel as an `npn`), `i_mA` (all outputs) | the worst channel: `burnt`, `hot`, `reverse`, `on`, `linear`, `off` |
+  | `stepper` | `coils: { B, P, Y, O }` (true = energised), `i_mA` | `ok` (a coil on), `off` |
 
 - The circuit's total current counts against the source: above the source's `ilim` (USB 0.5 A) the board browns out
   for 0.6 s after the overload stops, `why` "Brown-out: the circuit draws {n} mA, more than {src} gives ({max} mA)".

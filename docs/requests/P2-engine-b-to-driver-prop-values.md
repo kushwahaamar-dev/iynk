@@ -29,3 +29,10 @@ for (const input of opts.inputs ?? []) {
 - `figurePatch` already sends only what changed, so a slider drag sends `{ params: { LAMP: { value: n } } }` per step.
 
 Done when the light lesson's slider lights the lamp in the breadboard view, and the distance slider moves the box.
+
+## Also in the UNO R3 content: the stepper lesson's `WHEEL` callout
+
+`src/content/boards/uno-r3.ts` (stepper lesson) has a callout on part `WHEEL`. The prize wheel is not a part of its
+own: it is the stepper's `wheel: 'wheel'` param, drawn on STP1's shaft, so `select: 'WHEEL'` selects nothing. Point
+that callout at `STP1` (and fold its text into STP1's), or drop it. `DRV1` (the ULN2003 board) is drawn and wired
+since the commit that added `figures/parts/uln2003.js`, so its callout now lights the board.

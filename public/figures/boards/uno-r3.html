@@ -2788,6 +2788,14 @@ const matLeg = (c, ref) => {
   const p = Object.assign({}, q, (B.st.cparams || {})[q.id] || {});
   try { return def.legAt(p, B.BP(q.at[0], q.at[1], B.G.matH - B.G.top), i); } catch (e) { B.note(`${q.id} legAt: ${e.message}`); return null; }
 };
+// where a plug pushed into circuit part `id` sits (a stepper's into its driver board): that part's
+// def.socketAt(p, origin), one world point per socket pin; null when it lies nowhere or has no socket
+B.socketOf = id => {
+  const c = circuitNow(), q = c && (c.parts || []).find(x => x.id === id), def = q && B.parts[q.part];
+  if (!def || typeof def.socketAt !== 'function' || !Array.isArray(q.at)) return null;
+  const p = Object.assign({}, q, (B.st.cparams || {})[q.id] || {});
+  try { return def.socketAt(p, B.BP(q.at[0], q.at[1], B.G.matH - B.G.top)); } catch (e) { B.note(`${q.id} socketAt: ${e.message}`); return null; }
+};
 // one circuit part's drawing: its items (world box + svg) and its labeller; null when it can't be drawn
 const drawCircuitPart = (pl, q, k) => {
   const md = B.md, st = B.st, p = Object.assign({}, q, (st.cparams || {})[q.id] || {}), def = B.parts[p.part];
@@ -2985,7 +2993,18 @@ function netlist(st, pl){
     if (q){ const d = B.parts[q.part], i = d && d.legs ? d.legs.indexOf(m[2]) : -1; return i >= 0 ? legNode(q, i) : null; }
     const pin = B.pinOf(ref); return pin ? add('N:' + pin.net) : null;
   };
+  // a node of a part by leg index or name: its legs, then its inside nodes (def.nodes, numbered after the legs)
+  const nodeIx = (def, nm) => { if (typeof nm === 'number') return nm; const legs = def.legs || [], i = legs.indexOf(nm);
+    if (i >= 0) return i; const j = (def.nodes || []).indexOf(nm); return j >= 0 ? legs.length + j : -1; };
   for (const w of c.wires || []) uni(end(w.from), end(w.to));
+  // a plug pushed into another part's socket (`plug: 'DRV1'`): its legs join that part's def.socket nodes, in order
+  for (const q of parts){
+    if (typeof q.plug !== 'string') continue;
+    const d = B.parts[q.part], r = byId[q.plug], rd = r && B.parts[r.part], sock = rd && rd.socket;
+    if (!r) continue;                                   // the driver is left out (a fault): the plug hangs free
+    if (!d || !Array.isArray(sock)){ B.note(`${q.id}: plug ${q.plug} has no socket`); continue; }
+    (d.legs || []).forEach((_, i) => { const j = i < sock.length ? nodeIx(rd, sock[i]) : -1; if (j >= 0) uni(legNode(q, i), legNode(r, j)); });
+  }
   const els = [], buttons = [], burnt = st.burnt || {};
   for (const q of parts){
     const def = B.parts[q.part];
@@ -2993,11 +3012,21 @@ function netlist(st, pl){
     let es = null;
     try { es = def.elec(q); } catch (e) { B.note(`${q.id} elec: ${e.message}`); continue; }
     const legs = def.legs || [], N = i => legNode(q, i), named = (nm, i) => N(legs.includes(nm) ? legs.indexOf(nm) : i);
+    // an element's own ends (`legs: [a, b]`, indexes or node names), else the part's first two legs
+    const ab = e => { const lg = Array.isArray(e.legs) ? e.legs.map(x => nodeIx(def, x)) : [0, 1]; return lg.every(i => i >= 0) ? lg.map(N) : null; };
     for (const e of [].concat(es || [])){
       if (!e || typeof e !== 'object') continue;
-      const base = { id: q.id, key: q.id, q, def, e, dead: !!burnt[q.id] };
-      if (e.type === 'wire') uni(N(0), N(1));
-      else if (e.type === 'res'){ if (!e.open) els.push({ ...base, k: 'R', a: N(0), b: N(1), g: 1 / Math.max(+e.ohms || 0, 1e-3) }); }
+      // one of several channels of a part (a driver chip's four Darlingtons): its own key, so it burns alone
+      const key = e.ch != null && e.type !== 'led' ? q.id + ':' + e.ch : q.id;
+      const base = { id: q.id, key, q, def, e, dead: !!burnt[key] };
+      if (Array.isArray(e.legs) && e.type !== 'led' && !ab(e)){ B.note(`${q.id} elec: unknown node in ${e.legs.join(', ')}`); continue; }
+      if (e.type === 'wire'){ const [a, b] = ab(e); uni(a, b); }
+      else if (e.type === 'res'){ if (!e.open){ const [a, b] = ab(e); els.push({ ...base, k: 'R', a, b, g: 1 / Math.max(+e.ohms || 0, 1e-3) }); } }
+      else if (e.type === 'stepper'){
+        // a unipolar stepper: one coil from the common lead to each coil lead; energised while its far end is pulled low
+        const com = nodeIx(def, e.common), g = 1 / Math.max(+e.ohms || 50, 1);
+        for (const w of e.coils || []){ const j = nodeIx(def, w); if (com >= 0 && j >= 0) els.push({ ...base, k: 'R', coil: w, a: N(com), b: N(j), g }); }
+      }
       else if (e.type === 'pot'){
         const R = Math.max(+e.ohms || 1e4, 1), x = Math.max(0, Math.min(1, +e.pos || 0));
         els.push({ ...base, k: 'POT', a: N(0), w: N(1), b: N(2), g1: 1 / Math.max(R * x, .5), g2: 1 / Math.max(R * (1 - x), .5), pmax: +e.pmax || .05 });
@@ -3007,10 +3036,11 @@ function netlist(st, pl){
         const lg = e.legs || [0, 1], key = e.ch ? q.id + ':' + e.ch : q.id;
         els.push({ ...base, k: 'D', led: true, key, ch: e.ch || null, dead: !!burnt[key], a: N(lg[0]), b: N(lg[1]), vf: +e.vf || 2, rd: .5, imax: +e.imax || .02 });
       }
-      else if (e.type === 'diode') els.push({ ...base, k: 'D', a: N(0), b: N(1), vf: .7, rd: .2, imax: +e.imax || 1, isurge: +e.isurge || 30 });
+      else if (e.type === 'diode'){ const [a, b] = ab(e); els.push({ ...base, k: 'D', a, b, vf: .7, rd: .2, imax: +e.imax || 1, isurge: +e.isurge || 30 }); }
       else if (e.type === 'npn'){
-        const pn = e.pins || { B: 0, C: 1, E: 2 };
-        els.push({ ...base, k: 'Q', nb: N(pn.B), nc: N(pn.C), ne: N(pn.E), hfe: +e.hfe || 100, hfr: +e.hfr || 5, vbe: +e.vbe || .7, vcesat: +e.vcesat || .2 });
+        const pn = e.pins || { B: 0, C: 1, E: 2 }, ix = { B: nodeIx(def, pn.B), C: nodeIx(def, pn.C), E: nodeIx(def, pn.E) };
+        if (Object.values(ix).some(i => i < 0)){ B.note(`${q.id} elec: unknown npn pin`); continue; }
+        els.push({ ...base, k: 'Q', nb: N(ix.B), nc: N(ix.C), ne: N(ix.E), hfe: +e.hfe || 100, hfr: +e.hfr || 5, vbe: +e.vbe || .7, vcesat: +e.vcesat || .2 });
       }
       else if (e.type === 'motor') els.push({ ...base, k: 'M', a: N(0), b: N(1) });
       else if (e.type === 'servo') els.push({ ...base, k: 'SV', gnd: named('GND', 0), vp: named('V+', 1), sig: named('SIG', 2) });
@@ -3125,6 +3155,7 @@ function solveSlice(nl, high, S, logic){
   for (const el of els){
     const s = S[el.n], r = {};
     if (el.k === 'D' || el.k === 'BZ'){ r.vd = V(el.a) - V(el.b); r.i = !el.dead && s.on ? (r.vd - el.vf) / el.rd : 0; }
+    else if (el.k === 'R' && el.coil) r.i = (V(el.a) - V(el.b)) * el.g;
     else if (el.k === 'M'){ r.v = V(el.a) - V(el.b); r.i = el.dead ? 0 : r.v * el.gm; }
     else if (el.k === 'SV'){ r.vs = V(el.vp) - V(el.gnd); r.sig = V(el.sig) > logic / 2; }
     else if (el.k === 'TS'){ r.vs = V(el.sp) - V(el.sn); r.vo = V(el.out) - V(el.sn); r.on = !!s.on; }
@@ -3207,9 +3238,14 @@ B.solveCircuit = (st, pl, dt = 0) => {
     || els.some(q => q.k === 'Q' && (q.nc === el.b || q.nc === el.a));
   const flyback = m => els.some(d => d.k === 'D' && !d.led && !d.dead && d.a === m.b && d.b === m.a);
   const burn = (key, msg, vars) => { const b2 = st.burnt || (st.burnt = {}); if (b2[key]) return; b2[key] = true; B.sfx('pop'); B.say(msg, vars, 3000); };
-  const leds = {};
+  const leds = {}, chans = {}, coils = {};
   for (const el of els){
     const q = el.q, m = M[el.key] || (M[el.key] = {}), e = el.e, ri = r => r.el[el.n];
+    if (el.k === 'R' && el.coil){
+      if (!live(el)) continue;
+      (coils[q.id] = coils[q.id] || { e, i: {} }).i[el.coil] = timeAvg(r => ri(r).i);
+      continue;
+    }
     if (el.k === 'D' && el.led){
       const i = timeAvg(r => ri(r).i), ip = peak(r => ri(r).i), rev = timeAvg(r => -ri(r).vd);
       if (!el.dead && ip > el.imax * 2.5) burn(el.key, '{name} burned out: {n} mA is far above its 20 mA', { name: q.id, n: Math.round(ip * 1000) });
@@ -3228,6 +3264,7 @@ B.solveCircuit = (st, pl, dt = 0) => {
       const clamp = across && !across.dead && switched(across) && timeAvg(r => Math.abs(r.el[across.n].i)) > 1e-3 && duties.length > 0;
       const vfx = el.def.model && typeof el.def.model.vf === 'function' ? el.def.model.vf : null;
       const state = el.dead ? 'burnt' : clamp ? 'clamp' : i > 1e-5 ? 'ok' : rev > .5 ? 'block' : 'off';
+      if (e.ch != null) continue;
       out.meas[q.id] = { kind: 'diode', state, i_mA: rnd((clamp ? timeAvg(r => Math.abs(r.el[across.n].i)) : Math.max(0, i)) * 1000),
         v: rnd(i > 1e-5 ? (vfx ? vfx(i) : el.vf) : -rev, 100) };
     } else if (el.k === 'Q'){
@@ -3238,7 +3275,9 @@ B.solveCircuit = (st, pl, dt = 0) => {
       if (!el.dead && (tj > (+e.tjmax || 150) || icp > (+e.icmax || 1) * 1.5)) burn(el.key, '{name} overheated and failed', { name: q.id });
       const hotW = +e.photW || (+e.pmax || .6) * .75, anyInv = res.some(r => ri(r).inv && ri(r).ic > 1e-4);
       const state = el.dead ? 'burnt' : q.reversed || anyInv ? 'reverse' : pW > hotW ? 'hot' : res.some(r => ri(r).sat && ri(r).ic > 1e-4) ? 'on' : ic > 1e-5 ? 'linear' : 'off';
-      out.meas[q.id] = { kind: 'npn', state, ib_mA: rnd(ib * 1000, 100), ic_mA: rnd(ic * 1000), vce: rnd(vce, 100), p_W: rnd(pW, 100), tj_C: Math.round(tj) };
+      const one = { kind: 'npn', state, ib_mA: rnd(ib * 1000, 100), ic_mA: rnd(ic * 1000), vce: rnd(vce, 100), p_W: rnd(pW, 100), tj_C: Math.round(tj) };
+      if (e.ch != null){ delete one.kind; (chans[q.id] = chans[q.id] || {})[e.ch] = one; continue; }
+      out.meas[q.id] = one;
     } else if (el.k === 'M'){
       if (!live(el)) continue;
       const v = timeAvg(r => ri(r).v), mdl = el.def.model || {}, load = q.load || 'prop';
@@ -3283,6 +3322,19 @@ B.solveCircuit = (st, pl, dt = 0) => {
     const all = Object.values(ch), has = s => all.some(x2 => x2.state === s);
     out.meas[id] = { kind: 'led', i_mA: rnd(all.reduce((a, x2) => a + x2.i_mA, 0)), ch,
       state: has('ok') ? 'ok' : has('burnt') ? 'burnt' : has('reverse') ? 'reverse' : all.every(x2 => x2.state === 'open') ? 'open' : 'off' };
+  }
+  // a driver's channels, worst first; a stepper's coils, energised above a fifth of the rated current
+  const WORST = ['burnt', 'hot', 'reverse', 'on', 'linear', 'off'];
+  for (const [id, ch] of Object.entries(chans)){
+    const all = Object.values(ch);
+    out.meas[id] = { kind: 'driver', state: WORST.find(s => all.some(x2 => x2.state === s)) || 'off', ch,
+      i_mA: Math.round(all.reduce((a, x2) => a + x2.ic_mA, 0)) };
+  }
+  for (const [id, { e, i: cs }] of Object.entries(coils)){
+    const irated = (+e.vrated || 5) / Math.max(+e.ohms || 50, 1), on = {};
+    for (const [w, i] of Object.entries(cs)) on[w] = i > irated / 5;
+    out.meas[id] = { kind: 'stepper', state: Object.values(on).some(Boolean) ? 'ok' : 'off', coils: on,
+      i_mA: Math.round(Object.values(cs).reduce((a, i) => a + Math.max(0, i), 0) * 1000) };
   }
   for (const bt of nl.buttons) out.meas[bt.id] = { kind: 'button', state: bt.shorted ? 'shorted' : 'ok', closed: !!(bt.shorted || bt.e.pressed) };
   // what a pin reads: the average volts on every board net the circuit uses (analogRead, digitalRead)
@@ -4883,8 +4935,9 @@ B.part('servo-sg90', {
    prize wheel, `wheel`) on the shaft. Can 28 mm across and 19 mm deep; the flange on top has two ears on 35 mm
    centres; the 5 mm shaft (flats 3 mm across) sits 8 mm off the can's centre on a small boss; the blue cover on
    the side lets out the 5-wire lead (1 blue, 2 pink, 3 yellow, 4 orange, 5 red = common +5 V) to a white 5-pin
-   JST-XH plug. Legs [B, P, Y, O, R]: the plug's pins, in holes if given, else the plug lies at `plug` (board mm,
-   where the ULN2003 board's socket is) or beside the motor.
+   JST-XH plug. Legs [B, P, Y, O, R]: the plug's pins, in holes if given; else `plug: '<id>'` pushes the plug into
+   that driver board's socket (uln2003: OUT1-OUT4 and +), `plug: [x, y]` lays it on the mat there (board mm), or it
+   lies beside the motor.
    Facts (Kiatronics datasheet and teardown counts, la-components.md §15): coils 50 Ohm (5 V / 50 Ohm = 100 mA per
    energised phase; through a ULN2003 that drops about 0.9 V, 82 mA); 32 full steps per rotor turn (11.25°; the
    sheet's 5.625° is the half step); gearbox 9→32, 11→22, 9→26, 10→31 = 63.68395:1, so 2037.8864 full steps or
@@ -4895,8 +4948,9 @@ B.part('servo-sg90', {
    Half-step sequence (wires pulled low): O, O+Y, Y, Y+P, P, P+B, B, B+O: O and P are the two ends of one
    centre-tapped winding, Y and B of the other.
 
-   Inputs, in order: the solver's m.coils = {B, P, Y, O} (energised = true); else the host's params `steps` (full
-   steps sent so far), `rate` (steps/s), `seq` ('full' | 'half' | 'wave') and `order`; else, while the board runs,
+   Inputs, in order: the solver's m.coils = {B, P, Y, O} (energised = true: a coil carrying a fifth of its rated
+   current, once the plug is in a driver board that is wired up); else the host's params `steps` (full steps sent
+   so far), `rate` (steps/s), `seq` ('full' | 'half' | 'wave') and `order`; else, while the board runs,
    the pins in `in` (default ['D8', 'D9', 'D10', 'D11'] = IN1..IN4 → blue, pink, yellow, orange) through the
    ULN2003 (input high = coil on). Reports m-like state 'ok' | 'off' | 'stall' | 'jitter'. */
 (() => {
@@ -5013,9 +5067,10 @@ B.part('stepper-28byj48', {
     if (state === 'stall'){ const [X, Y] = P(...W(sx, 0, hz + 3)); top += `<path d="M${f(X - 8)} ${f(Y - 3)}q-2 -2 0 -4q2 -2 0 -4M${f(X + 8)} ${f(Y - 3)}q2 -2 0 -4q-2 -2 0 -4" fill="none" stroke="#e2483d" stroke-width=".8"/>`; }
     items.push({ box: B.aabb([W(sx - 26, -26, zt), W(sx + 26, 26, hz + 2)]), svg: top });
     // the lead: five wires from the cover to the JST plug
-    const pl0 = legs.length === 5 ? legs : (Array.isArray(p.plug) ? [0, 1, 2, 3, 4].map(i => B.BP(p.plug[0] + (i - 2) * 2.5, p.plug[1], B.G.matH - B.G.top)) : [0, 1, 2, 3, 4].map(i => W(-8 + (i - 2) * 2.5, -36, 0)));
+    const sock = typeof p.plug === 'string' && B.socketOf ? B.socketOf(p.plug) : null;
+    const pl0 = legs.length === 5 ? legs : sock && sock.length === 5 ? sock : (Array.isArray(p.plug) ? [0, 1, 2, 3, 4].map(i => B.BP(p.plug[0] + (i - 2) * 2.5, p.plug[1], B.G.matH - B.G.top)) : [0, 1, 2, 3, 4].map(i => W(-8 + (i - 2) * 2.5, -36, 0)));
     ['B', 'P', 'Y', 'O', 'R'].forEach((w, i) => {
-      const s0 = W(-19, (i - 2) * 1.2, zb + 4), e = pl0[i], e2 = [e[0], e[1], e[2] + 6], pts = [];
+      const s0 = W(-19, (i - 2) * 1.2, zb + 4), e = pl0[i], e2 = [e[0], e[1], e[2] + 6.8], pts = [];      // into the plug's top
       for (let j = 0; j <= 10; j++){ const t = j / 10, sn = Math.sin(t * Math.PI); pts.push([s0[0] + (e2[0] - s0[0]) * t, s0[1] + (e2[1] - s0[1]) * t, s0[2] + (e2[2] - s0[2]) * t + sn * 3]); }
       for (let j = 0; j < pts.length - 1; j++) items.push({ box: B.aabb([pts[j], pts[j + 1]]).map((v, h) => v.map(c => c + (h ? .45 : -.45))), svg: rod(pts[j], pts[j + 1], .42, matOf(COLS[w]), toneI, .35) });
     });
@@ -5025,6 +5080,136 @@ B.part('stepper-28byj48', {
     for (const it of items) ctx.put(it.box, it.svg);
     st.drv[p.id].state = state;
     s.out = { state, deg: Math.round(deg * 10) / 10 };
+  },
+});
+})();
+
+</script>
+<script>/* figures/parts/uln2003.js */
+// @cf title ULN2003 stepper driver board
+// @cf use engine/bench.list
+/* The common ULN2003 stepper driver board that comes with the 28BYJ-48: a green 35 x 32 mm board lying on the mat,
+   the ULN2003APG (DIP-16, seven Darlington pairs, four used) in the middle, the white 5-pin JST-XH motor socket on
+   the back edge, four red LEDs A-D (one per output, lit while that coil is on), and on the front edge the IN1-IN4
+   header, the - + power pins (5-12 V) and the ON/OFF jumper. Legs ['IN1','IN2','IN3','IN4','GND','VCC']: the
+   header pins a jumper wire pushes onto. The motor plugs in with `plug: '<this id>'` on the stepper; the socket
+   is [OUT1, OUT2, OUT3, OUT4, +] = blue, pink, yellow, orange, red.
+   Facts as in figures/modules/uln2003.js (the module page of the same board): each input is 2.7 kOhm into a
+   Darlington, hFE about 1000; VCE(sat) about 1 V at 100 mA, 500 mA a channel at most; a clamp diode from every output
+   to COM, which the board ties to + through the jumper. An input HIGH pulls its output LOW, so the coil between +
+   and that output is on (about 80 mA from 5 V), and its LED lights. */
+(() => {
+const B = SL.bench, T = B.T;
+const PCB = { l: '#4fa86a', m: '#2f8a4e', d: '#1d5c33' }, XH = B.M.white, LED_OFF = matOf('#c46a5e'), LED_ON = matOf('#ff5a3c');
+const HL = 17.5, HD = 16, Z0 = 1.4, ZT = Z0 + 1.6;               // half length, half depth, board bottom and top
+const HP = 2.54, HY = -13.4, PLASTIC = 2.5, PIN = 6;          // front header row, plastic and pin heights
+const IN_X = [-14, -11.46, -8.92, -6.38], PWR_X = [3.4, 5.94], JMP_X = [11.6, 14.14];
+const SOCK = { x: -3, y: 12.4, w: 12.4, d: 5.8, h: 6 }, LEDS = [8.2, 3.8, -.6, -5];      // socket; LED y at x = 12.6
+const DEMO = { stepping: 'stepping', idle: 'idle' };
+const callouts = ctx => typeof ctx.label === 'function' && (!!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage));
+const frame = (p, origin) => {
+  const r = (+p.rot || 0) * Math.PI / 180, ax = [Math.cos(r), Math.sin(r), 0], ay = [-ax[1], ax[0], 0], o = origin;
+  return { ax, ay, W: (x, y, z) => [o[0] + ax[0] * x + ay[0] * y, o[1] + ax[1] * x + ay[1] * y, o[2] + z] };
+};
+const legX = i => i < 4 ? IN_X[i] : PWR_X[i - 4];
+
+B.part('uln2003', {
+  name: 'ULN2003 driver board', fig: 'P25', legs: ['IN1', 'IN2', 'IN3', 'IN4', 'GND', 'VCC'],
+  // inside: the four outputs and the four Darlington bases behind their 2.7 kOhm resistors
+  nodes: ['OUT1', 'OUT2', 'OUT3', 'OUT4', 'B1', 'B2', 'B3', 'B4'],
+  socket: ['OUT1', 'OUT2', 'OUT3', 'OUT4', 'VCC'],
+  params: { demo: Object.keys(DEMO) },
+  paramNames: { demo: 'Show' },
+  example: { demo: 'stepping' },
+  show: { breadboard: 'mini', parts: [{ id: 'U1', part: 'uln2003', at: [-30, 10], rot: 90, demo: 'stepping' }], wires: [] },
+  foot: [35, 32, 12],
+  elec: () => [1, 2, 3, 4].flatMap(n => [
+    { type: 'res', ohms: 2700, legs: ['IN' + n, 'B' + n], ch: n },
+    { type: 'npn', darlington: true, ch: n, pins: { B: 'B' + n, C: 'OUT' + n, E: 'GND' }, hfe: 1000, vbe: 1.4, vcesat: 1, icmax: .5, pmax: .4, theta: 70, tjmax: 150 },
+    { type: 'diode', ch: n, legs: ['OUT' + n, 'VCC'], imax: .5 },
+  ]),
+  tag: (p, m) => {
+    const ch = m && m.ch; if (!ch) return p.id;
+    const lit = [1, 2, 3, 4].filter(n => ch[n] && ch[n].state === 'on').map(n => 'ABCD'[n - 1]);
+    return lit.length ? T('{id} · coils {w} on', { id: p.id, w: lit.join('+') }) : p.id;
+  },
+  // a jumper wire's housing sits over the pin, a little above the header's plastic
+  legAt: (p, origin, i) => frame(p, origin).W(legX(i), HY, ZT + PLASTIC + 1.5),
+  // the stepper's plug, pushed into the socket from above: one point per socket pin
+  socketAt: (p, origin) => { const { W } = frame(p, origin); return [0, 1, 2, 3, 4].map(i => W(SOCK.x + (i - 2) * 2.5, SOCK.y, ZT + SOCK.h - 2.5)); },
+  draw(ctx){
+    const p = ctx.p, st = ctx.st || {}, k = ctx.k != null ? ctx.k : st.xr || 0, o = ctx.origin || [0, 0, 0];
+    const { ax, ay, W } = frame(p, o), items = [], put = (pts, svg) => items.push({ box: B.aabb(pts), svg });
+    // which outputs are on: the solver's channels, else the demo walking the full-step sequence
+    const ch = ctx.m && ctx.m.ch, burnt = n => !!(ch && ch[n] && ch[n].state === 'burnt');
+    let lit;
+    if (ch) lit = [1, 2, 3, 4].map(n => !!(ch[n] && (ch[n].state === 'on' || ch[n].state === 'linear')));
+    else if (p.demo === 'stepping' || !p.demo){ const ph = Math.floor((st.t || 0) * 4) % 4; lit = [0, 1, 2, 3].map(i => i === ph || i === (ph + 1) % 4); }
+    else lit = [false, false, false, false];
+    put([W(-HL - 1, -HD - 1, 0), W(HL + 1, HD + 1, .05)], castShadow([W(-HL, -HD, 0), W(HL, -HD, 0), W(HL, HD, 0), W(-HL, HD, 0), W(-HL, -HD, ZT + 7), W(HL, HD, ZT + 7)], o[2]));
+    // the board on its solder stubs, four mounting holes
+    let pcb = B.slabW(W, -HL, -HD, HL, HD, Z0, ZT, PCB, toneI, 1.1);
+    for (const [x, y] of [[-14.6, 13.2], [14.6, 13.2], [-14.6, -9], [14.6, -9]]) pcb += shape(B.circ(x, y, 1.5, 14).map(([a, b]) => W(a, b, ZT + .02)), '#2b2825', .4);
+    if (k < .5 && vis([0, 0, 1])){
+      IN_X.forEach((x, i) => { pcb += B.flatText(W(x, HY + 3.4, ZT + .03), -ax[1], -ax[0], 'IN' + (i + 1), 1.5, B.M.silk, 700); });
+      pcb += B.flatText(W(PWR_X[0], HY + 3.4, ZT + .03), -ax[1], -ax[0], '−', 2.2, B.M.silk, 800) + B.flatText(W(PWR_X[1], HY + 3.4, ZT + .03), -ax[1], -ax[0], '+', 2.2, B.M.silk, 800)
+        + B.flatText(W(4.7, HY + 5.6, ZT + .03), -ax[1], -ax[0], '5-12V', 1.5, B.M.silk, 700)
+        + B.flatText(W(12.9, HY + 3.4, ZT + .03), -ax[1], -ax[0], 'ON/OFF', 1.3, B.M.silk, 700);
+      LEDS.forEach((y, i) => { pcb += B.flatText(W(9.6, y - .5, ZT + .03), -ax[1], -ax[0], 'ABCD'[i], 1.8, B.M.silk, 800); });
+    }
+    put([W(-HL, -HD, Z0), W(HL, HD, ZT)], pcb);
+    // see-through: the copper from each input to the chip, and from the chip's output to its LED and the socket
+    if (k > .02){
+      let cu = '';
+      [0, 1, 2, 3].forEach(i => {
+        const col = lit[i] ? '#e2483d' : B.M.copper.m, w = lit[i] ? 1.4 : .9;
+        cu += `<path d="${pd([W(IN_X[i], HY + 1, ZT + .04), W(IN_X[i], -6, ZT + .04), W(-13 + i * 2.54, -4.2, ZT + .04)], false)}" stroke="${col}" stroke-width="${f(w)}" fill="none" opacity="${f(k)}"/>`;
+        cu += `<path d="${pd([W(-13 + i * 2.54, 2.6, ZT + .04), W(-8 + i * 2.5, 9, ZT + .04), W(SOCK.x + (i - 2) * 2.5, SOCK.y - 2, ZT + .04)], false)}" stroke="${col}" stroke-width="${f(w)}" fill="none" opacity="${f(k)}"/>`;
+      });
+      put([W(-HL, -HD, ZT), W(HL, HD, ZT + .1)], cu);
+    }
+    // the ULN2003APG: 19.3 x 6.4 mm, its long side along x, eight legs a side bent down to the board
+    const cx = -4.4, cy = -.8, chipZ = ZT + .5;
+    let chip = '';
+    for (let i = 0; i < 8; i++) for (const sd of [-1, 1]){ const x = cx - 8.9 + i * HP, y = cy + sd * 3.2;
+      chip += B.slabW(W, x - .3, y - (sd < 0 ? 1.2 : 0), x + .3, y + (sd > 0 ? 1.2 : 0), ZT, chipZ + 1.2, B.M.tin, toneI, .3); }
+    let body = B.slabW(W, cx - 9.65, cy - 3.2, cx + 9.65, cy + 3.2, chipZ, chipZ + 3.3, B.M.black, toneI, 1);
+    if (vis([0, 0, 1])) body += shape(B.circ(cx - 8.2, cy, .8, 12).map(([a, b]) => W(a, b, chipZ + 3.32)), '#2b2825', .3)
+      + (k < .5 ? B.flatText(W(cx, cy - .5, chipZ + 3.33), -ax[1], -ax[0], 'ULN2003APG', 1.6, '#bdb8ae', 700) : '');
+    if (k > .02){
+      // inside: the die and four lit channels
+      let die = shape([W(cx - 2.5, cy - 1.8, chipZ + 1.6), W(cx + 2.5, cy - 1.8, chipZ + 1.6), W(cx + 2.5, cy + 1.8, chipZ + 1.6), W(cx - 2.5, cy + 1.8, chipZ + 1.6)], '#9aa4ad', .5);
+      for (let i = 0; i < 4; i++) die += shape([W(cx - 2.2 + i * 1.2, cy - 1.4, chipZ + 1.62), W(cx - 1.4 + i * 1.2, cy - 1.4, chipZ + 1.62), W(cx - 1.4 + i * 1.2, cy + 1.4, chipZ + 1.62), W(cx - 2.2 + i * 1.2, cy + 1.4, chipZ + 1.62)], lit[i] ? '#ffb36b' : '#6e7880', .3);
+      body = `<g opacity="${f(1 - .7 * k)}">${body}</g><g opacity="${f(k)}">${die}</g>`;
+    }
+    put([W(cx - 10.2, cy - 4.4, ZT), W(cx + 10.2, cy + 4.4, chipZ + 3.4)], chip + body);
+    // LEDs A-D: 3 mm red domes, lit with their coil
+    LEDS.forEach((y, i) => {
+      const glow = lit[i] && !burnt(i + 1), m = glow ? LED_ON : LED_OFF, [lx, ly] = W(12.6, y, 0);
+      let s = cyl(lx, ly, o[2] + ZT, o[2] + ZT + 3.2, 1.5, m, toneI, .6, 14) + cyl(lx, ly, o[2] + ZT + 3.2, o[2] + ZT + 4.2, 1.1, m, toneI, .5, 12);
+      if (glow){ const [X, Y] = P(...W(12.6, y, ZT + 4)); s = `<circle cx="${f(X)}" cy="${f(Y)}" r="5" fill="#ff7a4d" opacity=".35"/>` + s; }
+      put([W(11, y - 1.6, ZT), W(14.2, y + 1.6, ZT + 4.3)], s);
+    });
+    // the front header: IN1-IN4, then - +, then the jumper with its black cap
+    const header = (xs, cap) => {
+      const x0 = xs[0] - 1.27, x1 = xs[xs.length - 1] + 1.27;
+      let s = B.slabW(W, x0, HY - 1.27, x1, HY + 1.27, ZT, ZT + PLASTIC, B.M.black, toneI, .7);
+      for (const x of xs) s += B.slabW(W, x - .32, HY - .32, x + .32, HY + .32, ZT + PLASTIC, ZT + PLASTIC + PIN, B.M.gold, toneI, .35);
+      if (cap) s += B.slabW(W, x0, HY - 1.3, x1, HY + 1.3, ZT + PLASTIC + 1, ZT + PLASTIC + 6.5, B.M.blackPl, toneI, .8);
+      put([W(x0, HY - 1.3, ZT), W(x1, HY + 1.3, ZT + PLASTIC + PIN)], s);
+    };
+    header(IN_X); header(PWR_X); header(JMP_X, true);
+    // the motor socket: a white 5-pin JST-XH, open on top
+    let sk = B.slabW(W, SOCK.x - SOCK.w / 2, SOCK.y - SOCK.d / 2, SOCK.x + SOCK.w / 2, SOCK.y + SOCK.d / 2, ZT, ZT + SOCK.h, XH, toneI, .9);
+    if (vis([0, 0, 1])) for (let i = 0; i < 5; i++) sk += shape([[-.9, -1.4], [.9, -1.4], [.9, 1.4], [-.9, 1.4]].map(([a, b]) => W(SOCK.x + (i - 2) * 2.5 + a, SOCK.y + b, ZT + SOCK.h + .02)), '#3a3633', .3);
+    put([W(SOCK.x - SOCK.w / 2, SOCK.y - SOCK.d / 2, ZT), W(SOCK.x + SOCK.w / 2, SOCK.y + SOCK.d / 2, ZT + SOCK.h)], sk);
+    if (k > .5 && callouts(ctx)){
+      ctx.label(W(cx, cy, chipZ + 3.3), 'ULN2003: Darlington switches', lit.some(Boolean));
+      ctx.label(W(IN_X[1], HY, ZT + PLASTIC), 'IN1-IN4 from the board');
+      ctx.label(W(12.6, LEDS[1], ZT + 4), 'LED on = coil on', lit.some(Boolean));
+      ctx.label(W(SOCK.x, SOCK.y, ZT + SOCK.h), 'Motor socket, red = +');
+    }
+    for (const it of items) ctx.put(it.box, it.svg);
   },
 });
 })();
@@ -5629,6 +5814,7 @@ B.prop('weights', {
 // @cf use parts/tmp36.js
 // @cf use parts/servo-sg90.js
 // @cf use parts/stepper-28byj48.js
+// @cf use parts/uln2003.js
 // @cf use parts/fsr402.js
 // @cf use parts/hc-sr04.js
 // @cf use parts/ssd1306.js
@@ -5940,12 +6126,19 @@ B.board({
       parts: [
         { id: 'BTN1', part: 'push-button', holes: ['e8', 'f8', 'e10', 'f10'] },
         { id: 'RES1', part: 'resistor', ohms: 10000, holes: ['b10', 'b14'] },
-        { id: 'STP1', part: 'stepper-28byj48', at: [145, 14], wheel: 'wheel', plug: [126, 14] },
+        { id: 'DRV1', part: 'uln2003', at: [62, 84], rot: 90 },
+        { id: 'STP1', part: 'stepper-28byj48', at: [118, 88], wheel: 'wheel', plug: 'DRV1' },
       ],
       wires: [
         { from: 'POWER.5', to: 'a8', color: 'red' },
         { from: 'D2', to: 'a10', color: 'blue' },
         { from: 'IOH.4', to: 'a14', color: 'black' },
+        { from: 'D8', to: 'DRV1.IN1', color: 'orange' },
+        { from: 'D9', to: 'DRV1.IN2', color: 'yellow' },
+        { from: 'D10', to: 'DRV1.IN3', color: 'green' },
+        { from: 'D11', to: 'DRV1.IN4', color: 'purple' },
+        { from: 'c14', to: 'DRV1.GND', color: 'black' },
+        { from: 'c8', to: 'DRV1.VCC', color: 'red' },
       ],
     },
     plant: {
