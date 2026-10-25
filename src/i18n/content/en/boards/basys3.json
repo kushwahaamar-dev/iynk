@@ -1,0 +1,832 @@
+{
+  "title": "Digilent Basys 3",
+  "tagline": "An FPGA teaching board: you don't program a processor, you describe a circuit and the chip becomes it.",
+  "overview": "The Basys 3 carries an AMD Artix-7 XC7A35T, an FPGA with 33,280 logic cells and no processor of its own. A Verilog design is turned into wiring inside the chip: an `assign` becomes a gate, an `always @(posedge clk)` becomes flip-flops clocked by the 100 MHz oscillator. Around the FPGA sit the classic Basys parts, all wired straight to its pins: 16 slide switches (up = 1), 16 green LEDs (1 = on), five buttons in a plus (pressed = 1) and a 4-digit display whose segments and digits are both active low, so the digits take turns. Four Pmod ports (JA, JB, JC and the analog JXADC) bring 32 more pins out through 200 Ω resistors. One micro-USB cable powers it, programs it over JTAG and gives you a UART. The FPGA forgets its design at power-off and reloads it from the Quad-SPI flash in under a second, which is when the green DONE LED lights. Everything is 3.3 V: no pin takes 5 V.",
+  "mcu": {
+    "ft2232hq": "FTDI dual USB bridge: one channel is the JTAG programmer, the other a USB-UART to the FPGA (RsRx B18, RsTx A18).",
+    "pic24": "USB host for one keyboard or mouse on J2 (handed to the FPGA as PS/2), and it can load a bitstream from a USB stick.",
+    "flash": "32 Mbit Quad-SPI flash (IC8): holds the design the FPGA loads at power-up when JP1 is on QSPI."
+  },
+  "power": {
+    "usb": {
+      "protection": "The micro-USB plug is keyed, so it cannot go in backwards. A USB 2.0 port gives 500 mA, enough for most designs; a big design with VGA and Pmods may need more."
+    },
+    "ext": {
+      "protection": "None. J6 (silkscreen \"5V Only!\") has no reverse diode and no fuse: give it 4.5-5.5 V the right way round, with JP2 moved to EXT. VU passes it unregulated to the regulators and to the USB-A port, and its input capacitor C27 is a 10 V part."
+    },
+    "rails": {
+      "vu": "The raw 5 V from USB or EXT, picked by the JP2 shunt. It feeds the regulators and, unregulated, the USB-A port.",
+      "1v0": "The FPGA core (VCCINT, VCCBRAM), from the first channel of the LTC3633. It comes up first.",
+      "1v8": "The FPGA's auxiliary supply (VCCAUX) and the XADC, from the LTC3621. It starts when 1.0 V is good.",
+      "3v3": "Every I/O bank, the switches, LEDs, display and the Pmod 3V3 pins (1 A total), from the second LTC3633 channel. It starts last; LD20 lights when it is good."
+    },
+    "io": "Every user pin is LVCMOS33 with a 12 mA default drive (4, 8, 12 or 16 mA in the constraints). Nothing is 5 V tolerant: the absolute maximum is about 3.85 V. The Pmod pins pass through 200 Ω, which limits a short to GND to about 16 mA."
+  },
+  "pins": {
+    "clk": "The 100 MHz MEMS oscillator IC9. In Vivado: create_clock -period 10.00 on port clk.",
+    "sw": "Slide switch: up connects the pin to 3.3 V, down to GND, through 10 kΩ. Not debounced.",
+    "led": "Green LED through 330 Ω to GND: 1 lights it, about 4 mA.",
+    "btn": "Push button to 3.3 V with a 10 kΩ pull-down: reads 1 while pressed. It bounces for a few milliseconds.",
+    "seg": "Segment cathode, shared by all four digits, through 100 Ω: 0 lights the segment.",
+    "an": "Digit anode, through a PNP transistor: 0 turns the digit on. an[0] is the rightmost digit.",
+    "pmod": "Pmod signal, straight to an FPGA pin through 200 Ω on the board. 3.3 V only.",
+    "pmod3v3": "The 3.3 V rail, shared by all Pmods: up to 1 A in total.",
+    "jxadc": "Digital I/O through 100 Ω, or an analog input pair for the XADC (0-1 V).",
+    "uart": "The USB-UART through the FT2232HQ. Names are from the PC's side: RsRx is the FPGA's input.",
+    "vga": "4-bit resistor DAC per colour into the monitor's 75 Ω; Hsync and Vsync through 100 Ω.",
+    "ps2": "Keyboard or mouse from the USB host chip, as PS/2. Needs PULLUP true in the constraints.",
+    "ext": "External 4.5-5.5 V input. No reverse diode, no fuse; JP2 must be on EXT to use it."
+  },
+  "leds": {
+    "user": "Wired straight to an FPGA pin; your design decides when it lights.",
+    "LD16": "The USB-host chip's activity: slow pulse while waiting for a USB stick, fast blinking on an error.",
+    "LD17": "Flashes when the PC sends on the USB-UART.",
+    "LD18": "Flashes when the FPGA sends on the USB-UART.",
+    "LD19": "DONE: lights when the FPGA has loaded its design. PROG clears it.",
+    "LD20": "Lights when every rail is good (the 3.3 V regulator's power-good)."
+  },
+  "controls": {
+    "sw": "Flips the switch: up is 1 on its pin.",
+    "btn": "Reads 1 while held down.",
+    "PROG": "Clears the FPGA's design; it then reloads from the flash and DONE lights again."
+  },
+  "displays": {
+    "DISP1": "Four red common-anode digits sharing one set of segment wires (CA-CG, DP). Light one digit at a time and sweep all four every 1-16 ms; the colon is not wired."
+  },
+  "parts": {
+    "IC7": {
+      "name": "Artix-7 FPGA XC7A35T",
+      "what": "33,280 logic cells, 1,800 Kbit of block RAM and 90 DSP slices on a 10 × 10 mm BGA with 236 balls. It holds no program: your design configures its lookup tables and wiring."
+    },
+    "C45": {
+      "name": "FPGA decoupling capacitors",
+      "what": "Dozens of small ceramic capacitors (C45-C103) round the FPGA. They supply the sudden current spikes when thousands of flip-flops switch on the same clock edge."
+    },
+    "IC1": {
+      "name": "FT2232HQ USB bridge",
+      "what": "Two USB channels in one chip: Digilent's JTAG programmer and a USB-UART. Vivado's Hardware Manager talks to it."
+    },
+    "IC2": {
+      "name": "PIC24 USB host",
+      "what": "A small microcontroller that reads a USB keyboard or mouse and passes it to the FPGA as PS/2, or loads a design from a USB stick."
+    },
+    "DISP1": {
+      "name": "4-digit 7-segment display",
+      "what": "Four common-anode digits whose segments share wires. Your design must multiplex: one digit on at a time, all four refreshed every few milliseconds."
+    },
+    "Q1": {
+      "name": "Digit driver Q1",
+      "what": "Dual PNP transistor under the board. Each half switches 3.3 V onto one digit's common anode when its an pin goes low."
+    },
+    "Q2": {
+      "name": "Digit driver Q2",
+      "what": "The second dual PNP transistor, for the other two digits."
+    },
+    "sw": {
+      "name": "Slide switch",
+      "what": "Up = 1. It connects its FPGA pin to 3.3 V or GND through 10 kΩ, with no debouncing."
+    },
+    "ld": {
+      "name": "Green user LED",
+      "what": "Wired from an FPGA pin through 330 Ω: 1 lights it at about 4 mA."
+    },
+    "btn": {
+      "name": "Push button",
+      "what": "One of five in a plus shape. Active high: a 10 kΩ pull-down holds the pin at 0 until you press."
+    },
+    "PROG": {
+      "name": "PROG button",
+      "what": "Pulls PROGRAM_B low: the FPGA clears its design and loads it again from the flash."
+    },
+    "J4": {
+      "name": "Micro-USB socket",
+      "what": "Power, JTAG programming and the USB-UART, all on one cable."
+    },
+    "J6": {
+      "name": "External power header",
+      "what": "4.5-5.5 V in, for a supply or a battery pack. No reverse diode and no fuse."
+    },
+    "C27": {
+      "name": "Input capacitor C27",
+      "what": "10 µF on VU, rated 10 V: the first part to fail if the EXT input sees 12 V."
+    },
+    "JP2": {
+      "name": "Power-source jumper",
+      "what": "The shunt connects VU to USB or to EXT. No shunt, no power."
+    },
+    "SW16": {
+      "name": "Power switch",
+      "what": "Enables the regulators. It does not disconnect VU."
+    },
+    "LD20": {
+      "name": "Power LED",
+      "what": "Red: lights when the last regulator reports power good."
+    },
+    "testpoint": {
+      "name": "Test point",
+      "what": "A pad to put a meter probe on: W1 is 3.3 V, W2 1.8 V, W3 1.0 V."
+    },
+    "IC10": {
+      "name": "LTC3633 dual buck regulator",
+      "what": "Makes the 1.0 V core and the 3.3 V I/O rail from VU, up to 2 A each, under the board."
+    },
+    "inductor": {
+      "name": "Buck inductor",
+      "what": "Stores energy between the regulator's switching pulses; L1 for 1.0 V, L2 for 3.3 V, L3 for 1.8 V."
+    },
+    "IC11": {
+      "name": "LTC3621 buck regulator",
+      "what": "Makes the 1.8 V auxiliary rail (300 mA). It starts once 1.0 V is good."
+    },
+    "LD17": {
+      "name": "UART RX LED",
+      "what": "Flashes while the PC sends to the FPGA."
+    },
+    "LD18": {
+      "name": "UART TX LED",
+      "what": "Flashes while the FPGA sends to the PC."
+    },
+    "JP1": {
+      "name": "Mode jumper",
+      "what": "Where the FPGA gets its design at power-up: QSPI flash (as shipped), JTAG only, or a USB stick."
+    },
+    "LD19": {
+      "name": "DONE LED",
+      "what": "Green: the FPGA is configured and running a design."
+    },
+    "LD16": {
+      "name": "BUSY LED",
+      "what": "Shows what the USB-host chip is doing."
+    },
+    "IC8": {
+      "name": "Quad-SPI flash",
+      "what": "32 Mbit of flash under the board. The design (about 2.2 MB) lives here and loads in under a second."
+    },
+    "IC9": {
+      "name": "100 MHz oscillator",
+      "what": "A MEMS silicon resonator, not a quartz crystal. Its clock reaches the FPGA on pin W5."
+    },
+    "J1": {
+      "name": "VGA socket",
+      "what": "12-bit colour (4 bits each for red, green and blue) from resistor ladders, plus Hsync and Vsync."
+    },
+    "J2": {
+      "name": "USB-A host socket",
+      "what": "One keyboard or mouse (no hubs), or a FAT32 stick with a .bit file."
+    },
+    "pmod": {
+      "name": "Pmod port",
+      "what": "12 pins: 8 FPGA signals through 200 Ω, two GND and two 3.3 V. Pmod modules plug straight in."
+    },
+    "JXADC": {
+      "name": "Analog Pmod JXADC",
+      "what": "Like the other Pmods, but its pins also reach the FPGA's XADC as four 0-1 V analog input pairs."
+    }
+  },
+  "wireables": {
+    "led": {
+      "note": "Anode to JB pin 1 through 220 Ω, cathode to a Pmod GND pin. Drive it from your design like any LED.",
+      "caution": "The board already adds 200 Ω in series, so the LED stays dim but safe even without your resistor; never feed a Pmod pin from 5 V."
+    },
+    "push-button": {
+      "note": "Between JB pin 2 and GND. Add PULLUP true for that pin in the constraints so it reads 1 until pressed, and debounce it in your design."
+    },
+    "piezo-buzzer": {
+      "note": "+ to JB pin 3. Toggle the pin at an audible rate (count CLK_HZ / (2 × f) cycles per half period) to play a note."
+    },
+    "mpu6050": {
+      "note": "3.3 V and GND from a Pmod, SCL to JC pin 1, SDA to JC pin 2.",
+      "caution": "There is no I2C peripheral: your design needs an I2C master (open-drain outputs and pull-ups in the constraints)."
+    },
+    "ssd1306": {
+      "note": "3.3 V and GND from a Pmod, SCL to JC pin 1, SDA to JC pin 2.",
+      "caution": "Your design must send the display's I2C setup commands and pixel data itself; that is a big project, not a first one."
+    }
+  },
+  "failures": {
+    "reverse-ext": {
+      "title": "EXT header wired backwards",
+      "symptom": "LD20 stays dark, the bench supply sits in current limit and the regulators under the board get hot.",
+      "explanation": "J6 has no reverse diode and no fuse. A reversed supply forces current backwards through the body diodes of the LTC3633 and LTC3621 and everything else on VU; only your supply's current limit stops it, and the regulator IC10 is the first to fail.",
+      "fix": "Switch off at once and swap the leads. Before trusting the board again, check W3 (1.0 V) and W1 (3.3 V). Use a keyed plug, or a series diode, on your supply."
+    },
+    "ext-12v": {
+      "title": "12 V on the EXT header",
+      "symptom": "The board goes dark, and the input capacitor C27 is ruined.",
+      "explanation": "EXT is a 4.5-5.5 V input. VU passes it on unregulated: the bucks would cope, but the 10 V input capacitor C27 does not, and a keyboard on the USB-A port would get 12 V too.",
+      "fix": "Use a regulated 5 V supply on J6. To run from a 7-12 V adapter, put a 5 V regulator in front of the board."
+    },
+    "ext-3v": {
+      "title": "3 V on the EXT header",
+      "symptom": "LD20 and DONE flicker: the FPGA keeps losing its design.",
+      "explanation": "The regulators need headroom: from 3 V the 3.3 V rail sags to about 2.7 V. The FPGA's power-on reset clears its configuration every time the rail drops.",
+      "fix": "Feed J6 4.5-5.5 V. A single Li-ion cell is too low; a four-cell AA pack or a USB power bank works."
+    },
+    "brownout": {
+      "title": "Brown-out on a weak supply",
+      "symptom": "DONE goes out and comes back, and the design starts over and over.",
+      "explanation": "A busy design (VGA, many LEDs, Pmod modules) can draw more than a USB port gives. When 3.3 V sags, the FPGA resets and loses its configuration; when the rail recovers, it reloads from flash.",
+      "fix": "Use a powered USB hub, or a 5 V, 2 A supply on J6 with JP2 on EXT."
+    },
+    "short-3v3": {
+      "title": "Pmod 3V3 shorted to GND",
+      "symptom": "LD20 goes out and the board resets; the regulator gets warm.",
+      "explanation": "Pins 6 and 12 of every Pmod are the 3.3 V rail, right beside GND on 5 and 11. A slipped jumper wire makes the LTC3633 hit its current limit, its power-good drops, and the FPGA loses its design.",
+      "fix": "Unplug, find the bridge (a stray wire or a Pmod one row off), then power up again."
+    },
+    "short-vu": {
+      "title": "Solder bridge from VU to GND",
+      "symptom": "Everything goes dark at once; the PC may switch off its USB port.",
+      "explanation": "VU is the raw 5 V. Shorted, it drags the USB supply down until the PC's port protection trips (on EXT, the supply's own limit).",
+      "fix": "Unplug, remove the bridge, plug in again. The PC may need the port re-enabled."
+    },
+    "missing-jp2": {
+      "title": "JP2 shunt lost",
+      "symptom": "Completely dead: no LD20, nothing on any rail.",
+      "explanation": "The JP2 shunt connects VU to USB or to EXT. Without it, neither input reaches the regulators.",
+      "fix": "Fit a shunt on JP2: middle and USB pins for USB power, middle and EXT for J6."
+    },
+    "missing-flash": {
+      "title": "No configuration flash",
+      "symptom": "LD20 is on, but DONE stays dark and nothing happens.",
+      "explanation": "The Artix-7 forgets its design at power-off. With JP1 on QSPI it reads it from IC8 at power-up; with no flash it waits for a programmer.",
+      "fix": "Program the design over JTAG from Vivado (it lasts until power-off), or replace the flash and write the .bin to it."
+    },
+    "cold-sw0": {
+      "title": "Cold solder joint on SW0",
+      "symptom": "LD0 flickers by itself and changes when you touch the switch.",
+      "explanation": "SW0 feeds its pin through 10 kΩ and nothing else holds the pin. With a cracked joint the pin floats and reads whatever noise it picks up.",
+      "fix": "Reheat the joint with fresh flux until the solder flows round the pin. In your own circuits, give every input a defined level."
+    }
+  },
+  "assembly": {
+    "unplug": {
+      "title": "Unplug the board",
+      "body": "Pull the micro-USB cable and anything on J6. Never work on a live board."
+    },
+    "strip": {
+      "title": "Strip to the bare PCB",
+      "body": "Take every part off. What is left is the blue PCB with its test points W1-W3.",
+      "refusal": "Unplug the power first: never work on a live board."
+    },
+    "reflow": {
+      "title": "Pick, place and reflow",
+      "body": "The machine places the surface-mount parts (the BGA FPGA, the USB chips, the regulators, LEDs and buttons) on solder paste, and the oven melts it: all 236 balls under the FPGA solder at once.",
+      "refusal": "Strip the board to the bare PCB first."
+    },
+    "place-low": {
+      "title": "Place the low parts",
+      "body": "The 17 slide switches, the two jumper headers and the EXT header J6 go in first, while the board can still lie flat on them.",
+      "refusal": "Reflow the surface-mount parts first."
+    },
+    "place-tall": {
+      "title": "Place the tall parts",
+      "body": "Then the display, the four Pmod sockets and the VGA and USB-A sockets.",
+      "refusal": "Place the low parts first, so the board lies flat while you solder."
+    },
+    "solder": {
+      "title": "Solder the through-hole joints",
+      "body": "Every switch leg, socket pin and header pin gets its joint on the underside.",
+      "refusal": "Place the through-hole parts first."
+    },
+    "power-up": {
+      "title": "Power up",
+      "body": "Plug in USB with SW16 on ON. 1.0 V comes up, then 1.8 V, then 3.3 V, and LD20 lights. The FPGA reads its design from the flash and DONE (LD19) lights."
+    },
+    "factory-test": {
+      "title": "Test a switch",
+      "body": "The factory design copies each switch onto the LED above it, counts on the display and prints on the UART when you press a button. Flip SW0: LD0 lights."
+    },
+    "program": {
+      "title": "Program a new design",
+      "body": "Send a design over USB: the FPGA clears, DONE goes out, the bitstream loads in a few seconds and DONE lights again. This one is an LED chaser.",
+      "refusal": "Plug in USB first: the programmer is on the USB side."
+    }
+  },
+  "lessons": {
+    "gates": {
+      "title": "Logic gates from switches",
+      "lede": "Your first FPGA design is pure logic: four LEDs show AND, OR, XOR and NOT of the two right-hand switches, and the other twelve LEDs copy their switches.",
+      "steps": {
+        "1": "assign connects an output to an expression. It is not a step that runs: synthesis builds it as a gate that is always there.",
+        "2": "The port map is the XDC file you write in Vivado: sw[0] is switch SW0 on pin V17, led[0] is LD0 on pin U16.",
+        "3": "Press Run, then flip SW0 and SW1 on the board and check LD0-LD3 against each gate's truth table."
+      },
+      "hints": {
+        "1": "Up is 1: each switch ties its pin to 3.3 V through 10 kΩ.",
+        "2": "Try assign led[0] = ~(sw[0] & sw[1]); to turn the AND into a NAND."
+      },
+      "specs": {
+        "1": {
+          "label": "Logic level",
+          "value": "3.3 V (LVCMOS33): switch up = 1"
+        },
+        "2": {
+          "label": "LED drive",
+          "value": "Pin → 330 Ω → LED, about 4 mA"
+        },
+        "3": {
+          "label": "Speed",
+          "value": "A few nanoseconds through the fabric; no clock involved"
+        }
+      },
+      "features": {
+        "1": "Combinational logic with assign",
+        "2": "The port map is your XDC file",
+        "3": "Flip the switches on the board while it runs"
+      },
+      "pins": {
+        "SW0": {
+          "to": "FPGA pin V17 (sw[0])",
+          "role": "Input A of every gate"
+        },
+        "SW1": {
+          "to": "FPGA pin V16 (sw[1])",
+          "role": "Input B"
+        },
+        "LD0": {
+          "to": "FPGA pin U16 (led[0])",
+          "role": "Shows A AND B"
+        }
+      },
+      "callouts": {
+        "SW0": "Up = 1, down = 0.",
+        "LD0": "Lit only while SW0 and SW1 are both up.",
+        "IC7": "No program runs here: the gates are lookup tables wired between the pins."
+      },
+      "checks": {
+        "1": "The design runs for 2.5 s without an error",
+        "2": "NOT: LD3 is lit while SW0 is down",
+        "3": "OR: LD1 lights with only SW0 up",
+        "4": "AND: LD0 stays dark with only SW0 up",
+        "5": "AND: LD0 lights with both switches up",
+        "6": "XOR: LD2 goes dark with both switches up",
+        "7": "XOR: LD2 lights with only SW1 up"
+      },
+      "code": {
+        "intro": "Logic gates: four LEDs show what two switches make.",
+        "xdc": "The port map (Vivado's XDC file) puts sw on the 16 switches and led on the 16 LEDs.",
+        "sw": "the 16 slide switches, up = 1",
+        "led": "the 16 green LEDs, 1 = on",
+        "and": "lit when both are up",
+        "or": "lit when either is up",
+        "xor": "lit when exactly one is up",
+        "not": "lit while SW0 is down",
+        "rest": "LD4-LD15 simply follow their switches."
+      },
+      "world": {
+        "sw0": "SW0 (input A)",
+        "sw1": "SW1 (input B)"
+      },
+      "quiz": {
+        "q1": {
+          "q": "What does assign led[0] = sw[0] & sw[1]; become on the FPGA?",
+          "options": {
+            "1": "A loop that reads the switches many times a second",
+            "2": "A program stored in the flash",
+            "3": "An AND gate, built from a lookup table, that is always working"
+          },
+          "why": "There is no processor here. Synthesis turns the expression into a lookup table wired between the pins, so LD0 follows the switches within nanoseconds."
+        },
+        "q2": {
+          "q": "LD2 shows sw[0] ^ sw[1]. When is it lit?",
+          "options": {
+            "1": "When exactly one of the two switches is up",
+            "2": "When both are up",
+            "3": "When both are down"
+          },
+          "why": "XOR is 1 when its inputs differ."
+        },
+        "q3": {
+          "q": "The XDC puts sw[0] on pin V17. What happens if you change it to V16?",
+          "options": {
+            "1": "Nothing: a port name works whatever pin it is on",
+            "2": "sw[0] now reads switch SW1, because the constraints decide which ball of the chip each port is",
+            "3": "Vivado refuses, because V16 is taken by an LED"
+          },
+          "why": "The Verilog only names ports. The XDC ties each port to a physical pin, and V16 is wired to SW1."
+        }
+      }
+    },
+    "blink": {
+      "title": "Blink with a counter",
+      "lede": "An FPGA has no delay(). To blink LD0 you count clock cycles: 100 million of them make a second.",
+      "steps": {
+        "1": "The 100 MHz oscillator drives clk. On every rising edge the always block adds one to count.",
+        "2": "When count reaches HALF it starts again and LD0 changes state: two changes make one blink.",
+        "3": "LD15-LD12 count the blinks in binary. Change the blink rate and run it again."
+      },
+      "hints": {
+        "1": "CLK_HZ is the board clock. The simulator runs the design on a slower clock and sets CLK_HZ to match, so a second is still a second.",
+        "2": "count is 32 bits: 2^32 cycles is 43 seconds at 100 MHz, more than any HALF here needs."
+      },
+      "specs": {
+        "1": {
+          "label": "Clock",
+          "value": "100 MHz on pin W5: 10 ns per cycle"
+        },
+        "2": {
+          "label": "HALF at 2 Hz",
+          "value": "100,000,000 ÷ 4 = 25,000,000 cycles"
+        },
+        "3": {
+          "label": "Hardware",
+          "value": "32 flip-flops, an adder and a comparator"
+        }
+      },
+      "features": {
+        "1": "Sequential logic with always @(posedge clk)",
+        "2": "Time from counting, not waiting",
+        "3": "Set the blink rate with a chip"
+      },
+      "params": {
+        "hz": {
+          "label": "Blink rate"
+        }
+      },
+      "pins": {
+        "CLK100MHZ": {
+          "to": "100 MHz oscillator IC9 → pin W5",
+          "role": "Every rising edge updates the registers"
+        },
+        "LD0": {
+          "to": "FPGA pin U16 (led[0])",
+          "role": "Changes state every HALF cycles"
+        },
+        "LD12": {
+          "to": "FPGA pin P3 (led[12])",
+          "role": "Lowest bit of the blink count"
+        }
+      },
+      "callouts": {
+        "IC9": "The 100 MHz oscillator: the beat everything counts.",
+        "LD0": "Blinks at the rate you set.",
+        "LD12": "Bit 0 of the blink count: half as fast as LD0."
+      },
+      "checks": {
+        "1": "The design runs for 4 s without an error",
+        "2": "LD0 blinks (one cycle between 0.15 and 1.1 s)",
+        "3": "LD12 counts the blinks (one cycle between 0.3 and 2.2 s)",
+        "4": "It counts on posedge clk and times with CLK_HZ"
+      },
+      "code": {
+        "intro": "Blink: count clock cycles and flip LD0 every half period.",
+        "clk": "the board clock: cycles per second",
+        "half": "Clock cycles in half a blink.",
+        "toggle": "flip LD0",
+        "count": "LD0 is about to go off: one more blink"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Why can't an FPGA design just wait 500 ms?",
+          "options": {
+            "1": "Waiting is too slow for an FPGA",
+            "2": "No processor runs steps one after another: the circuit only reacts to signals, so time comes from counting clock edges",
+            "3": "Verilog has no numbers that big"
+          },
+          "why": "A design is a circuit. Its only sense of time is the clock: 50 million edges of a 100 MHz clock is half a second."
+        },
+        "q2": {
+          "q": "With CLK_HZ = 100,000,000 and BLINK_HZ = 2, what is HALF?",
+          "options": {
+            "1": "50,000,000",
+            "2": "200,000,000",
+            "3": "25,000,000"
+          },
+          "why": "HALF = 100,000,000 ÷ (2 × 2) = 25,000,000 cycles, a quarter of a second. Two halves make one 0.5 s blink."
+        },
+        "q3": {
+          "q": "LD0 blinks at 2 Hz. How fast does LD12, the lowest bit of the count, blink?",
+          "options": {
+            "1": "1 Hz: it changes once per blink of LD0, so a full on-off takes two blinks",
+            "2": "4 Hz",
+            "3": "2 Hz, in step with LD0"
+          },
+          "why": "The count goes up once per LD0 blink, and bit 0 of a counter changes state on every step: half the rate of LD0."
+        }
+      }
+    },
+    "counter": {
+      "title": "Count button presses",
+      "lede": "Each press of BTNC adds one to a binary number on the LEDs and BTNU clears it. Real buttons bounce, so the design cleans the signal up first.",
+      "steps": {
+        "1": "Two flip-flops copy btnC onto the clock before anything else reads it: a synchroniser.",
+        "2": "The debouncer only believes a new level once it has held for SETTLE clock cycles, 10 ms by default.",
+        "3": "Comparing the clean level with its value one clock earlier gives a pulse one clock long when the button goes down.",
+        "4": "Every pulse adds one to count, shown in binary on LD15-LD0. Press BTNC on the board a few times."
+      },
+      "hints": {
+        "1": "The scripted presses bounce for 5 ms, but each bounce lasts only 1.25 ms, so even a 2 ms settle time counts right. Take the debouncer out and every press counts several times.",
+        "2": "The buttons are active high: a 10 kΩ pull-down holds the pin at 0 until you press.",
+        "3": "Never clock flip-flops from a button: every bounce would be another clock edge."
+      },
+      "specs": {
+        "1": {
+          "label": "Settle time",
+          "value": "10 ms = 1,000,000 cycles at 100 MHz"
+        },
+        "2": {
+          "label": "Button circuit",
+          "value": "3.3 V → button → 10 kΩ → pin, 10 kΩ pull-down"
+        },
+        "3": {
+          "label": "Counter",
+          "value": "16 bits: up to 65,535 presses"
+        }
+      },
+      "features": {
+        "1": "Synchronise, debounce, find the edge",
+        "2": "See why a bouncing contact counts twice",
+        "3": "Change the settle time"
+      },
+      "params": {
+        "settle": {
+          "label": "Settle time"
+        }
+      },
+      "pins": {
+        "BTNC": {
+          "to": "FPGA pin U18 (btnC)",
+          "role": "Each press adds one"
+        },
+        "BTNU": {
+          "to": "FPGA pin T18 (btnU)",
+          "role": "Clears the count"
+        },
+        "LD0": {
+          "to": "FPGA pin U16 (led[0])",
+          "role": "Bit 0 of the count"
+        }
+      },
+      "callouts": {
+        "BTNC": "Press to count. Reads 1 while held.",
+        "BTNU": "Clears the count to zero.",
+        "LD0": "The lowest bit: it changes with every press."
+      },
+      "checks": {
+        "1": "The design runs for 3.6 s without an error",
+        "2": "The first press shows on LD0 within 0.1 s",
+        "3": "After three presses LD0 is lit (3 is 0011)",
+        "4": "After three presses LD1 is lit",
+        "5": "LD2 is dark: each bouncing press counted once",
+        "6": "BTNU clears the count"
+      },
+      "code": {
+        "intro": "Count BTNC presses on the LEDs; BTNU clears the count.",
+        "btnC": "count: 1 while pressed",
+        "btnU": "clear",
+        "settle": "Clock cycles a new button level must hold before we believe it.",
+        "sync": "Synchronise: two flip-flops bring btnC onto our clock.",
+        "debounce": "Debounce: follow the button only once it has been steady for SETTLE cycles.",
+        "edge": "Edge: a pulse one clock long when the clean level goes from 0 to 1.",
+        "count": "Count the pulses; BTNU wins."
+      },
+      "world": {
+        "btnc": "BTNC (count)",
+        "btnu": "BTNU (clear)"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Without the debouncer one press adds 5. Why?",
+          "options": {
+            "1": "The clock is too fast",
+            "2": "The contacts bounce: the pin goes 1-0-1-0-1 for a few milliseconds and every rising edge counts",
+            "3": "The button is active low"
+          },
+          "why": "A metal contact bounces before it settles, and the flip-flops are fast enough to see every bounce as a press."
+        },
+        "q2": {
+          "q": "What does wire press = clean & ~was; give you?",
+          "options": {
+            "1": "A pulse one clock long, the moment the button goes down",
+            "2": "1 for as long as the button is held",
+            "3": "1 while the button is up"
+          },
+          "why": "was is clean one clock ago. Only on the first clock after a press is clean 1 while was is still 0."
+        },
+        "q3": {
+          "q": "Why does btnC pass through two flip-flops before the debouncer reads it?",
+          "options": {
+            "1": "To delay it so the LEDs can keep up",
+            "2": "Two flip-flops are the debouncer",
+            "3": "The button changes at any moment, not on a clock edge; the pair gives an in-between level a clock cycle to settle before the logic sees it"
+          },
+          "why": "A flip-flop sampling a signal right as it changes can hang between 0 and 1. The second flip-flop only reads the first after a whole clock cycle, by which time it has settled."
+        }
+      }
+    },
+    "pwm": {
+      "title": "Dim an LED with PWM",
+      "lede": "A pin can only be 0 or 3.3 V. Switching fast between them, high for SW7-SW0 out of every 256 clocks, dims an LED on Pmod JB and LD0 together.",
+      "steps": {
+        "1": "ramp counts 0 to 255 over and over, one step per clock.",
+        "2": "bright is 1 while ramp is below sw[7:0], so the pin is high for sw[7:0] of every 256 clocks.",
+        "3": "Wire the LED to JB pin 1 through 220 Ω, run the design and flip SW7 and SW6 for 50 % and 75 %."
+      },
+      "hints": {
+        "1": "sw[7:0] is a binary number: SW7 alone is 128 (half), SW7 and SW6 make 192 (three quarters).",
+        "2": "The heartbeat on LD15 is timed from CLK_HZ, so it beats once a second at any clock."
+      },
+      "specs": {
+        "1": {
+          "label": "PWM frequency",
+          "value": "100 MHz ÷ 256 ≈ 390 kHz"
+        },
+        "2": {
+          "label": "Resolution",
+          "value": "8 bits: 256 steps"
+        },
+        "3": {
+          "label": "Pmod pin",
+          "value": "JB pin 1 = A14, through 200 Ω on the board"
+        }
+      },
+      "features": {
+        "1": "A counter and a comparator make PWM",
+        "2": "Any FPGA pin can do PWM",
+        "3": "The switches set the duty in binary"
+      },
+      "pins": {
+        "JB1": {
+          "to": "R1 220 Ω → LED anode",
+          "role": "The PWM output, JB[0]"
+        },
+        "GND": {
+          "to": "LED cathode (JB pin 5)",
+          "role": "The return path"
+        },
+        "SW7": {
+          "to": "FPGA pin W13 (sw[7])",
+          "role": "Worth 128 of 256: half brightness"
+        }
+      },
+      "callouts": {
+        "JB": "Pins 1-4 and 7-10 are signals; 5 and 11 are GND, 6 and 12 are 3.3 V.",
+        "R1": "With the board's 200 Ω in series, about 3 mA at full duty.",
+        "LED1": "Long leg (anode) toward R1."
+      },
+      "checks": {
+        "1": "The design runs for 3.5 s without an error",
+        "2": "With SW7 up, JB1 is high about half the time",
+        "3": "With SW7 and SW6 up, about three quarters",
+        "4": "With only SW6 up, about a quarter",
+        "5": "LD15 beats once a second"
+      },
+      "code": {
+        "intro": "PWM: the switches set the brightness of an LED on Pmod JB.",
+        "sw": "SW7-SW0 set the brightness, 0-255",
+        "jb": "Pmod JB: JB[0] is pin 1",
+        "ramp": "A free-running 8-bit counter: 0, 1, ... 255, 0, ...",
+        "compare": "High while the ramp is below the switch value.",
+        "beat": "A one-second heartbeat on LD15, timed from CLK_HZ.",
+        "pin": "only JB pin 1 is used; the rest stay low"
+      },
+      "world": {
+        "sw7": "SW7 (128)",
+        "sw6": "SW6 (64)"
+      },
+      "quiz": {
+        "q1": {
+          "q": "sw[7:0] is 64. How much of the time is JB1 high?",
+          "options": {
+            "1": "A quarter: 64 of every 256 clocks",
+            "2": "Two thirds",
+            "3": "All the time, because 64 is not zero"
+          },
+          "why": "bright is 1 for ramp = 0 to 63: 64 of 256 values, 25 %."
+        },
+        "q2": {
+          "q": "Why does the LED look dim instead of flickering?",
+          "options": {
+            "1": "The FPGA lowers the voltage",
+            "2": "The resistor smooths the current",
+            "3": "It switches about 390,000 times a second and your eye sees the average"
+          },
+          "why": "Above roughly 100 Hz the eye only sees the average light. The pin is still either 0 or 3.3 V."
+        },
+        "q3": {
+          "q": "Which switches give three-quarter brightness?",
+          "options": {
+            "1": "SW7 and SW5",
+            "2": "SW7 and SW6: 128 + 64 = 192 of 256",
+            "3": "SW6 alone"
+          },
+          "why": "192 ÷ 256 = 0.75. SW7 and SW5 make 160, about 63 %; SW6 alone is 64, a quarter."
+        }
+      }
+    },
+    "display": {
+      "title": "Four hex digits on the display",
+      "lede": "Show the 16 switches as four hex digits. The digits share their segment wires, so the design lights them one at a time, fast enough that you see all four.",
+      "steps": {
+        "1": "digit counts 0, 1, 2, 3, 0, ...; each digit gets TURN clock cycles.",
+        "2": "For the current digit, an drives only its anode low and nibble picks the four switches it shows.",
+        "3": "The table turns a 4-bit value into the segments to light; seg inverts it, because the cathodes are active low.",
+        "4": "Run it and flip switches: SW3-SW0 make the right-hand digit, SW15-SW12 the left."
+      },
+      "hints": {
+        "1": "Turn the refresh rate down: below about 60 Hz a real display flickers, because each digit is dark three quarters of the time.",
+        "2": "Drive all four anodes low at once and you get the same digit four times.",
+        "3": "dp is active low too: 1 keeps the decimal points dark."
+      },
+      "specs": {
+        "1": {
+          "label": "Refresh",
+          "value": "250 Hz: each digit 1 ms, all four every 4 ms"
+        },
+        "2": {
+          "label": "Active levels",
+          "value": "an[3:0] and seg[6:0]: 0 = on"
+        },
+        "3": {
+          "label": "Brightness",
+          "value": "Each digit is lit a quarter of the time"
+        }
+      },
+      "features": {
+        "1": "Time multiplexing",
+        "2": "Active-low outputs",
+        "3": "A lookup table in a case statement"
+      },
+      "params": {
+        "refresh": {
+          "label": "Refresh rate"
+        }
+      },
+      "pins": {
+        "CA": {
+          "to": "FPGA pin W7 → 100 Ω → segment a of every digit",
+          "role": "0 lights segment a"
+        },
+        "AN0": {
+          "to": "FPGA pin U2 → PNP → the right digit's anode",
+          "role": "0 turns on the rightmost digit"
+        },
+        "SW0": {
+          "to": "FPGA pin V17 (sw[0])",
+          "role": "Bit 0 of the right digit"
+        }
+      },
+      "callouts": {
+        "DISP1": "Four digits on one set of segment wires: only one digit is on at a time.",
+        "Q2": "A PNP transistor per digit switches its common anode.",
+        "SW0": "SW3-SW0 make the rightmost digit."
+      },
+      "checks": {
+        "1": "The design runs for 3 s without an error",
+        "2": "All switches down: the right digit shows 0 (segment a lit)",
+        "3": "... with no middle bar (segment g dark)",
+        "4": "SW1 and SW0 up: it shows 3 (g lit)",
+        "5": "SW3 up as well: it shows b (a dark)",
+        "6": "SW15 up: the left digit shows 8 (g lit)",
+        "7": "The third digit still shows 0 (g dark)"
+      },
+      "code": {
+        "intro": "Show sw[15:0] as four hex digits, lighting one digit at a time.",
+        "refresh": "sweeps of all four digits per second",
+        "seg": "segments a-g: 0 = lit",
+        "an": "digit anodes: 0 = on, an[0] is the rightmost",
+        "turn": "Clock cycles each digit stays on.",
+        "pick": "Turn on one digit and choose the four switches it shows.",
+        "table": "Segments to light for each hex value, as {g,f,e,d,c,b,a} with 1 = lit.",
+        "invert": "the cathodes light on 0",
+        "dp": "decimal points off"
+      },
+      "world": {
+        "sw0": "SW0",
+        "sw1": "SW1",
+        "sw3": "SW3",
+        "sw15": "SW15"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Why does the design light one digit at a time?",
+          "options": {
+            "1": "To save power",
+            "2": "The FPGA runs out of pins",
+            "3": "All four digits share the segment wires; only the anode decides which digit shows them"
+          },
+          "why": "CA-CG and DP go to every digit. With two anodes on, both digits show the same pattern."
+        },
+        "q2": {
+          "q": "To light segment a of the rightmost digit, what do you drive?",
+          "options": {
+            "1": "seg[0] = 1 and an[0] = 1",
+            "2": "seg[0] = 0 and an[0] = 0",
+            "3": "seg[0] = 0 and an[3] = 0"
+          },
+          "why": "Cathodes and anodes are both active low, and an[0] is the rightmost digit."
+        },
+        "q3": {
+          "q": "At 250 Hz, how long is each digit on during one sweep?",
+          "options": {
+            "1": "1 ms: a sweep takes 4 ms and each digit gets a quarter",
+            "2": "4 ms",
+            "3": "250 µs"
+          },
+          "why": "250 sweeps a second is 4 ms per sweep, shared by four digits: TURN = 100,000,000 ÷ (4 × 250) = 100,000 cycles, 1 ms."
+        }
+      }
+    }
+  }
+}

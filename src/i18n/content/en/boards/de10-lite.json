@@ -1,0 +1,831 @@
+{
+  "title": "Terasic DE10-Lite",
+  "tagline": "An Intel MAX 10 FPGA board with six hex displays, an Arduino header and a USB-Blaster built in.",
+  "overview": "The DE10-Lite carries an Intel MAX 10 10M50, an FPGA with 50,000 logic elements and no processor: a Verilog design becomes the wiring inside the chip. Unlike most FPGAs the MAX 10 keeps its design in its own flash, so it starts in milliseconds with no configuration chip beside it. Around it sit 10 slide switches (up = 1), 10 red LEDs (1 = on), two push buttons that the board debounces for you (pressed = 0) and six 7-segment digits, each with its own eight pins, lit on 0. A 2 × 20 GPIO header and an Arduino Uno header bring out more pins, all at 3.3 V; only the analog pins A0-A5 take 0-5 V, into the chip's own 12-bit ADC. There is 64 MB of SDRAM, an accelerometer and a VGA port too. One USB-B cable powers the board and programs it through the built-in USB-Blaster, from Intel's free Quartus Prime Lite.",
+  "mcu": {
+    "ft245bl": "FTDI USB chip of the built-in USB-Blaster: Quartus lists it as \"USB-Blaster [USB-0]\".",
+    "epm240": "MAX II CPLD, the other half of the USB-Blaster: it shifts JTAG into the FPGA at 2.5 V.",
+    "cdce937": "Clock generator: from the 24 MHz crystal Y1 it makes the two 50 MHz user clocks, the 10 MHz ADC clock and 24 MHz for the Blaster.",
+    "adxl345": "3-axis accelerometer on SPI or I2C; the factory design uses it as a spirit level."
+  },
+  "power": {
+    "usb": {
+      "protection": "The USB-B plug is keyed and the Schottky diode D6 sits in series. A computer port gives 500 mA. There is no fuse on the board, so a short leans on the port's own current limit."
+    },
+    "ext": {
+      "protection": "JP6 (silkscreen \"DC 5V\") feeds the board through the Schottky diode D7, which blocks a reversed supply, and the over-voltage cut-off Q2, which opens VCC5 above about 5.5 V. No fuse."
+    },
+    "rails": {
+      "5v": "VCC5: USB or JP6 through their diodes, then the over-voltage cut-off. It feeds both bucks and the 5 V header pins.",
+      "3v3": "From the LTC3612 buck U7 (3 A): every I/O bank, the SDRAM, the LEDs, switches and the 3.3 V header pins.",
+      "1v2": "The FPGA core, from the second LTC3612 (U6). It starts only once 3.3 V reports power good, and POWER GOOD (D4) lights with it.",
+      "2v5": "The FPGA's analog supply and its JTAG bank, from the LTC3025 regulator REG1.",
+      "1v8": "From the second LTC3025 regulator, REG2."
+    },
+    "io": "Every user pin is 3.3 V LVTTL with 4 or 8 mA of drive. Nothing is 5 V tolerant: the MAX 10's absolute maximum input is 4.12 V, and ±25 mA per pin. Only A0-A5 take 0-5 V."
+  },
+  "pins": {
+    "clk": "50 MHz user clock from the CDCE937 (U3). Terasic asks you not to change the clock generator's settings.",
+    "adcclk": "10 MHz clock for the ADC; it reaches the ADC through PLL1 or PLL3.",
+    "sw": "Slide switch, straight to the pin: up = 1. Not debounced.",
+    "ledr": "Red LED through 330 Ω: 1 lights it, about 4 mA.",
+    "key": "Push button with a 10 kΩ pull-up, an RC filter and the Schmitt buffer U14: 0 while pressed, with clean edges.",
+    "hex": "One segment of one display, common anode: 0 lights it. Bit 7 is the decimal point.",
+    "arduino": "Arduino-header pin, straight to an FPGA pin. 3.3 V only.",
+    "ardreset": "The Arduino header's reset line: a plain FPGA input with a Schmitt trigger that your design can read. It does not reset the FPGA.",
+    "ioref": "Tells a shield that the logic level is 3.3 V.",
+    "analog": "0-5 V input, halved by an MCP6244 op-amp to the ADC's 0-2.5 V. Code to volts: code ÷ 4095 × 5.0.",
+    "aref": "Terasic doesn't say what AREF connects to; the ADC measures against its own 2.5 V reference, U12.",
+    "vin": "Terasic doesn't document VIN. Power the board from USB or JP6, not from here.",
+    "jp6": "5 V input, through the series Schottky D7 and the over-voltage cut-off.",
+    "gpio": "FPGA pin on the GPIO header. 3.3 V only, 8 mA at most.",
+    "gpio5v": "5 V from VCC5. The 5 V and 3.3 V header pins share 5 W between them.",
+    "gpio3v3": "3.3 V from the buck U7. On USB power the port's 500 mA is the real limit for the whole board."
+  },
+  "leds": {
+    "user": "Wired straight to an FPGA pin; your design decides when it lights.",
+    "D1": "LOAD: lit while the USB-Blaster is powered and working.",
+    "D2": "CONF: lit when the FPGA has loaded its design.",
+    "D4": "POWER GOOD: lit when the 1.2 V core rail, the last in the chain, is up."
+  },
+  "controls": {
+    "sw": "Flips the switch: up is 1 on its pin.",
+    "key": "Reads 0 while held down."
+  },
+  "displays": {
+    "HEX10": "Two common-anode digits, HEX1 (left) and HEX0 (right). Each has its own eight FPGA pins, so nothing is multiplexed.",
+    "HEX32": "HEX3 and HEX2, wired the same way.",
+    "HEX54": "HEX5 and HEX4, the leftmost pair."
+  },
+  "parts": {
+    "U5": {
+      "name": "MAX 10 FPGA 10M50DA",
+      "what": "50,000 logic elements, 1,638 Kbit of block RAM, 144 multipliers, two 12-bit ADCs and its own configuration flash, on a 23 × 23 mm BGA with 484 balls. It loads its design from that flash at power-up."
+    },
+    "U4": {
+      "name": "64 MB SDRAM",
+      "what": "32M × 16 bits of memory. A design reaches it through the SDRAM Controller IP in Platform Designer."
+    },
+    "U10": {
+      "name": "USB-Blaster CPLD (MAX II EPM240)",
+      "what": "A small programmable chip that turns USB data into the JTAG signals that program the FPGA."
+    },
+    "U2": {
+      "name": "FT245BL USB chip",
+      "what": "The USB side of the USB-Blaster. Quartus Programmer talks to it."
+    },
+    "U11": {
+      "name": "USB ESD protection",
+      "what": "Clamps static discharge on the USB data lines before it reaches U2."
+    },
+    "U3": {
+      "name": "CDCE937 clock generator",
+      "what": "Makes the 50 MHz, 10 MHz and 24 MHz clocks from the crystal Y1."
+    },
+    "Y1": {
+      "name": "24 MHz crystal",
+      "what": "The reference for the clock generator. Without it the board has no clocks at all."
+    },
+    "U13": {
+      "name": "ADXL345 accelerometer",
+      "what": "Measures tilt and motion on three axes; the FPGA reads it over SPI or I2C."
+    },
+    "opamp": {
+      "name": "MCP6244 quad op-amp",
+      "what": "Buffers and halves A0-A5, so 0-5 V at the header becomes 0-2.5 V at the ADC."
+    },
+    "U12": {
+      "name": "REF3125 voltage reference",
+      "what": "A steady 2.5 V for the ADC to measure against."
+    },
+    "hex": {
+      "name": "Pair of 7-segment digits",
+      "what": "Two common-anode digits. Every segment has its own FPGA pin and lights on 0."
+    },
+    "ledr": {
+      "name": "Red user LED",
+      "what": "Wired from an FPGA pin through 330 Ω: 1 lights it at about 4 mA."
+    },
+    "sw": {
+      "name": "Slide switch",
+      "what": "Up = 1. Straight to its FPGA pin, with no debouncing."
+    },
+    "key": {
+      "name": "Push button",
+      "what": "Pulled up and cleaned by U14: reads 0 while pressed, with no bounce."
+    },
+    "U14": {
+      "name": "SN74AUC17 Schmitt-trigger buffer",
+      "what": "Turns the keys' slow, bouncy RC signal into clean edges."
+    },
+    "J3": {
+      "name": "USB-B socket",
+      "what": "Power and the USB-Blaster on one cable."
+    },
+    "diode": {
+      "name": "Schottky diode",
+      "what": "Lets current into VCC5 one way only: D6 from USB, D7 from JP6. A reversed supply on JP6 stops here."
+    },
+    "JP6": {
+      "name": "5 V input header",
+      "what": "Two pins, silkscreen \"DC 5V\", for a bench supply when USB is not enough."
+    },
+    "Q2": {
+      "name": "Over-voltage cut-off",
+      "what": "A P-MOSFET switched by a 5.1 V zener: it opens VCC5 above about 5.5 V, so 12 V never reaches the regulators."
+    },
+    "U7": {
+      "name": "LTC3612 buck regulator: 3.3 V",
+      "what": "Up to 3 A for the I/O, memory, LEDs and headers."
+    },
+    "inductor": {
+      "name": "Buck inductor",
+      "what": "Stores energy between the regulator's switching pulses: L6 for 3.3 V, L5 for 1.2 V."
+    },
+    "U6": {
+      "name": "LTC3612 buck regulator: 1.2 V",
+      "what": "Up to 3 A for the FPGA core. It starts once 3.3 V is good."
+    },
+    "bulk": {
+      "name": "Bulk capacitor",
+      "what": "C18 (330 µF on 1.2 V) and C145 (100 µF on 3.3 V) hold the rails steady through sudden load steps."
+    },
+    "ldo": {
+      "name": "LTC3025 linear regulator",
+      "what": "REG1 makes 2.5 V and REG2 1.8 V, both from 3.3 V."
+    },
+    "D4": {
+      "name": "POWER GOOD LED",
+      "what": "Green: the power chain is up, down to the 1.2 V core."
+    },
+    "testpoint": {
+      "name": "Test point",
+      "what": "A pad to put a meter probe on."
+    },
+    "D1": {
+      "name": "LOAD LED",
+      "what": "Green: the USB-Blaster is working."
+    },
+    "D2": {
+      "name": "CONF LED",
+      "what": "Green: the FPGA has loaded its design."
+    },
+    "J1": {
+      "name": "JTAG header (not fitted)",
+      "what": "Pads for an external JTAG cable at 2.5 V. The built-in USB-Blaster makes it unnecessary."
+    },
+    "VGA": {
+      "name": "VGA socket",
+      "what": "4 bits each of red, green and blue from resistor ladders, plus HS and VS."
+    },
+    "JP1": {
+      "name": "2 × 20 GPIO header",
+      "what": "36 FPGA pins plus 5 V, 3.3 V and GND, for ribbon cables and expansion boards."
+    },
+    "arduino": {
+      "name": "Arduino digital header",
+      "what": "D0-D15 (with SDA and SCL), wired straight to FPGA pins at 3.3 V."
+    },
+    "JP7": {
+      "name": "Arduino power header",
+      "what": "IOREF (3.3 V), RESET, 3.3 V, 5 V, GND and VIN for shields."
+    },
+    "JP8": {
+      "name": "Arduino analog header",
+      "what": "A0-A5, 0-5 V, into the MAX 10's ADC through the op-amps."
+    }
+  },
+  "wireables": {
+    "led": {
+      "note": "Anode to D3 through 220 Ω, cathode to GND. Drive it from your design like any LEDR.",
+      "caution": "A pin gives 8 mA at most: always fit the resistor."
+    },
+    "push-button": {
+      "note": "Between D2 and GND. Turn on the weak pull-up for that pin in Quartus and debounce it in your design: only KEY0 and KEY1 are cleaned on the board."
+    },
+    "piezo-buzzer": {
+      "note": "+ to D5. Toggle the pin at an audible rate (CLK_HZ / (2 × f) cycles per half period) to play a note."
+    },
+    "potentiometer": {
+      "note": "Ends to 5 V and GND, wiper to A0. The op-amp halves it for the ADC, which a design reads through the Modular ADC IP with the 10 MHz ADC clock.",
+      "caution": "A0-A5 are the only pins that take 5 V. Never wire 5 V to a digital pin."
+    },
+    "servo-sg90": {
+      "note": "Signal to D9, power from 5 V. The design makes a pulse 1-2 ms long, 50 times a second.",
+      "caution": "The servo's current peaks come from USB too: if the board resets when it moves, power it from JP6 and a bench supply."
+    },
+    "hc-sr04": {
+      "note": "VCC to 5 V, Trig to D7, Echo to D8. Time the echo pulse in clock cycles.",
+      "caution": "Echo is a 5 V output: put a divider (1 kΩ over 2 kΩ) between it and D8, or the pin sees more than its 4.12 V limit."
+    },
+    "mpu6050": {
+      "note": "3.3 V, GND, and SCL and SDA on the Arduino header's I2C pins.",
+      "caution": "There is no I2C peripheral: your design needs an I2C master of its own, or a Nios V soft processor."
+    }
+  },
+  "failures": {
+    "reverse-ext": {
+      "title": "5 V header wired backwards",
+      "symptom": "Nothing lights, not even POWER GOOD, and nothing gets hot.",
+      "explanation": "D7, a Schottky diode in series with JP6, only conducts one way. Reversed, the supply sees an open circuit and the board simply stays off.",
+      "fix": "Swap the leads: 5 V to the pin marked 5V. No harm done."
+    },
+    "ext-12v": {
+      "title": "12 V on the 5 V header",
+      "symptom": "Dead: POWER GOOD (D4) stays dark.",
+      "explanation": "The over-voltage cut-off (Q2, a P-MOSFET switched by a 5.1 V zener) opens VCC5 above about 5.5 V, so the regulators never see 12 V. Far beyond its rating the MOSFET itself could fail.",
+      "fix": "Use a regulated 5 V supply. To run from a 9-12 V adapter, put a 5 V regulator in front of the board."
+    },
+    "ext-3v5": {
+      "title": "3.5 V on the 5 V header",
+      "symptom": "POWER GOOD flickers and the design keeps restarting.",
+      "explanation": "D7 drops about 0.3 V and the 3.3 V buck needs headroom above its output, so the rail sags to about 2.9 V. Below 3 V the FPGA resets, and the 1.2 V core loses the power-good that enables it.",
+      "fix": "Feed JP6 4.75-5.25 V. A single Li-ion cell is too low; a USB power bank on the USB socket works."
+    },
+    "brownout": {
+      "title": "Brown-out under a heavy load",
+      "symptom": "The LEDs and displays blank, CONF goes out and the design starts over.",
+      "explanation": "Motors, LED strips or shields on the headers can pull more than the USB port's 500 mA or the regulator's 3 A. When 3.3 V sags the MAX 10 resets, and once the rail recovers it reloads its design from its own flash.",
+      "fix": "Power heavy loads from their own supply with a shared GND, or feed JP6 from a 5 V, 2 A supply."
+    },
+    "short-3v3": {
+      "title": "Header 3.3 V pin shorted to GND",
+      "symptom": "Everything goes dark at once; the regulator gets warm.",
+      "explanation": "Pin 29 of the GPIO header is 3.3 V and pin 30 is GND, side by side. Shorted, the LTC3612 hits its current limit, 3.3 V collapses, the 1.2 V core loses its enable and the FPGA stops.",
+      "fix": "Unplug, find the bridge (often a jumper wire one pin off), then plug in again."
+    },
+    "short-5v": {
+      "title": "Header 5 V pin shorted to GND",
+      "symptom": "The board dies and the computer may report a USB over-current.",
+      "explanation": "There is no fuse on the board: shorting VCC5 drags the USB port down until the computer's own port protection switches it off.",
+      "fix": "Unplug, remove the short and plug in again. The computer may need the port re-enabled."
+    },
+    "missing-y1": {
+      "title": "24 MHz crystal missing",
+      "symptom": "POWER GOOD is on, but nothing runs and the USB-Blaster cannot program the board.",
+      "explanation": "The CDCE937 makes every clock on the board from Y1: the two 50 MHz user clocks and the 24 MHz the USB-Blaster runs on. Without it no flip-flop ever sees an edge.",
+      "fix": "Fit a 24.000 MHz crystal at Y1."
+    },
+    "cold-sw0": {
+      "title": "Cold solder joint on SW0",
+      "symptom": "The factory design jumps between blinking and the spirit level by itself.",
+      "explanation": "SW0 is wired straight to its pin with nothing else to hold the level. With a cracked joint the pin floats and reads noise, and in the factory design SW0 is what turns the spirit level on.",
+      "fix": "Reheat the joint with fresh flux until the solder flows round the pin. In your own designs, give every input a defined level."
+    }
+  },
+  "assembly": {
+    "unplug": {
+      "title": "Unplug the board",
+      "body": "Pull the USB cable and anything on JP6. Never work on a live board."
+    },
+    "strip": {
+      "title": "Strip to the bare PCB",
+      "body": "Take every part off. What is left is the blue PCB.",
+      "refusal": "Unplug the power first: never work on a live board."
+    },
+    "reflow": {
+      "title": "Pick, place and reflow",
+      "body": "The machine places the surface-mount parts on solder paste (the 484-ball FPGA, the SDRAM, the Blaster chips, the regulators and the LEDs) and the oven solders them all at once.",
+      "refusal": "Strip the board to the bare PCB first."
+    },
+    "place-low": {
+      "title": "Place the low parts",
+      "body": "The ten slide switches, the two keys and the 5 V header go in first, while the board can still lie flat on them.",
+      "refusal": "Reflow the surface-mount parts first."
+    },
+    "place-tall": {
+      "title": "Place the tall parts",
+      "body": "Then the six displays, the USB-B and VGA sockets, the GPIO box header and the four Arduino headers.",
+      "refusal": "Place the low parts first, so the board lies flat while you solder."
+    },
+    "solder": {
+      "title": "Solder the through-hole joints",
+      "body": "Every switch leg, socket pin and header pin gets its joint on the underside.",
+      "refusal": "Place the through-hole parts first."
+    },
+    "power-up": {
+      "title": "Power up",
+      "body": "Plug in USB. 3.3 V comes up, then the 1.2 V core, and POWER GOOD (D4) lights. The MAX 10 loads its design from its own flash and CONF (D2) lights."
+    },
+    "factory-test": {
+      "title": "Test the spirit level",
+      "body": "The factory design blinks the LEDs and walks hex digits across the displays. Flip SW0 up: the LEDs become a spirit level, and flat on the bench the middle two, LEDR4 and LEDR5, light."
+    },
+    "program": {
+      "title": "Program a new design",
+      "body": "Quartus Programmer sends a design over the USB-Blaster: the FPGA clears, CONF goes out, then lights again with the new design running. This one blinks LEDR0.",
+      "refusal": "Plug in USB first: the USB-Blaster is the programmer."
+    }
+  },
+  "lessons": {
+    "switches": {
+      "title": "Switches, XOR and an active-low key",
+      "lede": "SW7-SW0 light the LEDs above them, LEDR8 shows SW8 XOR SW9, and LEDR9 lights while you hold KEY0. A key reads 0 when pressed, so the design inverts it.",
+      "steps": {
+        "1": "SW, KEY and LEDR are the port names in Terasic's System Builder .qsf, which ties each bit to its FPGA pin: SW[0] is PIN_C10, LEDR[0] is PIN_A8.",
+        "2": "Each assign is a wire or a gate that is always there: LEDR[7:0] is SW[7:0] wired straight across, LEDR[8] an XOR gate.",
+        "3": "Press Run, flip SW8 and SW9, then hold KEY0: LEDR9 lights only while the key is down."
+      },
+      "hints": {
+        "1": "Write assign LEDR[9] = KEY[0]; and LEDR9 lights while the key is up instead: the keys are active low.",
+        "2": "Swap ^ for & and LEDR8 lights only with both switches up."
+      },
+      "specs": {
+        "1": {
+          "label": "Logic level",
+          "value": "3.3 V LVTTL: switch up = 1"
+        },
+        "2": {
+          "label": "Keys",
+          "value": "Pulled up: released = 1, pressed = 0"
+        },
+        "3": {
+          "label": "LED drive",
+          "value": "Pin → 330 Ω → LED, about 4 mA"
+        }
+      },
+      "features": {
+        "1": "Wires and gates with assign",
+        "2": "Active-low inputs: invert KEY",
+        "3": "Flip switches and press KEY0 while it runs"
+      },
+      "pins": {
+        "SW8": {
+          "to": "FPGA pin B14 (SW[8])",
+          "role": "Input A of the XOR"
+        },
+        "KEY0": {
+          "to": "U14 Schmitt buffer → FPGA pin B8 (KEY[0])",
+          "role": "0 while pressed"
+        },
+        "LEDR9": {
+          "to": "FPGA pin B11 (LEDR[9])",
+          "role": "Lit while KEY0 is held"
+        }
+      },
+      "callouts": {
+        "SW8": "Up = 1. With SW9 it drives the XOR on LEDR8.",
+        "KEY0": "Reads 0 while pressed.",
+        "U14": "A Schmitt-trigger buffer: the keys reach the FPGA clean, without bounce."
+      },
+      "checks": {
+        "1": "The design runs for 2.5 s without an error",
+        "2": "XOR: LEDR8 lights with only SW8 up",
+        "3": "XOR: LEDR8 goes dark with SW8 and SW9 both up",
+        "4": "LEDR9 stays dark while KEY0 is released",
+        "5": "LEDR9 lights while KEY0 is held",
+        "6": "LEDR9 goes dark again when KEY0 is let go"
+      },
+      "code": {
+        "intro": "Switches to LEDs, one XOR gate and an active-low key.",
+        "qsf": "Port names from Terasic's System Builder .qsf, which gives each bit its FPGA pin.",
+        "sw": "10 slide switches, up = 1",
+        "key": "2 push buttons, 0 while pressed",
+        "copy": "SW7-SW0 straight to the LEDs above them",
+        "xor": "lit when exactly one of SW8 and SW9 is up",
+        "invert": "a key reads 0 when pressed, so invert it"
+      },
+      "world": {
+        "sw8": "SW8",
+        "sw9": "SW9",
+        "key0": "KEY0 (reads 0 while pressed)"
+      },
+      "quiz": {
+        "q1": {
+          "q": "With assign LEDR[9] = KEY[0]; when does LEDR9 light?",
+          "options": {
+            "1": "While KEY0 is held",
+            "2": "While KEY0 is released: the key reads 1 when it is up",
+            "3": "Never"
+          },
+          "why": "The key is pulled up to 3.3 V and pressing it pulls the pin to 0. To light the LED while pressed, invert it: ~KEY[0]."
+        },
+        "q2": {
+          "q": "Which switch positions light LEDR8?",
+          "options": {
+            "1": "Both up",
+            "2": "Both down",
+            "3": "One up and one down"
+          },
+          "why": "XOR is 1 when its inputs differ."
+        },
+        "q3": {
+          "q": "What decides that SW[0] is the switch on pin C10?",
+          "options": {
+            "1": "The pin assignments in the .qsf file",
+            "2": "The order the ports are declared in",
+            "3": "Quartus guesses from the name"
+          },
+          "why": "The Verilog only names ports. The .qsf ties each one to a ball of the FPGA, and Terasic's System Builder writes it with these names."
+        }
+      }
+    },
+    "blink": {
+      "title": "Blink from the 50 MHz clock",
+      "lede": "There is no delay(): LEDR0 blinks because the design counts 50 million clock cycles a second, and LEDR9-LEDR6 count the blinks.",
+      "steps": {
+        "1": "MAX10_CLK1_50 is a 50 MHz clock from the CDCE937 clock generator. On every rising edge the always block adds one to count.",
+        "2": "When count reaches HALF it starts again and LEDR0 changes state: two changes make one blink.",
+        "3": "LEDR9-LEDR6 count the blinks in binary. Change the blink rate and run it again."
+      },
+      "hints": {
+        "1": "CLK_HZ is the board clock. The simulator runs the design on a slower clock and sets CLK_HZ to match, so a second is still a second.",
+        "2": "count is 32 bits wide: at 50 MHz it would take 86 seconds to overflow."
+      },
+      "specs": {
+        "1": {
+          "label": "Clock",
+          "value": "50 MHz on PIN_P11: 20 ns per cycle"
+        },
+        "2": {
+          "label": "HALF at 2 Hz",
+          "value": "50,000,000 ÷ 4 = 12,500,000 cycles"
+        },
+        "3": {
+          "label": "Hardware",
+          "value": "32 flip-flops, an adder and a comparator"
+        }
+      },
+      "features": {
+        "1": "Sequential logic with always @(posedge clk)",
+        "2": "Time from counting, not waiting",
+        "3": "Set the blink rate with a chip"
+      },
+      "params": {
+        "hz": {
+          "label": "Blink rate"
+        }
+      },
+      "pins": {
+        "MAX10_CLK1_50": {
+          "to": "CDCE937 (U3) → PIN_P11",
+          "role": "Every rising edge updates the registers"
+        },
+        "LEDR0": {
+          "to": "FPGA pin A8 (LEDR[0])",
+          "role": "Changes state every HALF cycles"
+        },
+        "LEDR6": {
+          "to": "FPGA pin E14 (LEDR[6])",
+          "role": "Lowest bit of the blink count"
+        }
+      },
+      "callouts": {
+        "U3": "The clock generator: two 50 MHz clocks from a 24 MHz crystal.",
+        "LEDR0": "Blinks at the rate you set.",
+        "LEDR6": "Bit 0 of the blink count: half as fast as LEDR0."
+      },
+      "checks": {
+        "1": "The design runs for 4 s without an error",
+        "2": "LEDR0 blinks (one cycle between 0.15 and 1.1 s)",
+        "3": "LEDR6 counts the blinks (one cycle between 0.3 and 2.2 s)",
+        "4": "It counts on posedge MAX10_CLK1_50 and times with CLK_HZ"
+      },
+      "code": {
+        "intro": "Blink: count clock cycles and flip LEDR0 every half period.",
+        "clk": "the board clock: cycles per second",
+        "half": "Clock cycles in half a blink.",
+        "toggle": "flip LEDR0",
+        "count": "LEDR0 is about to go off: one more blink"
+      },
+      "quiz": {
+        "q1": {
+          "q": "At 50 MHz with BLINK_HZ = 2, what is HALF?",
+          "options": {
+            "1": "12,500,000",
+            "2": "25,000,000",
+            "3": "100,000,000"
+          },
+          "why": "HALF = 50,000,000 ÷ (2 × 2) = 12,500,000 cycles, a quarter of a second. Two halves make one 0.5 s blink."
+        },
+        "q2": {
+          "q": "Why does the design count clock cycles instead of waiting?",
+          "options": {
+            "1": "Counting uses less power",
+            "2": "Verilog has no way to write a number that big",
+            "3": "No processor runs steps one after another: the circuit's only sense of time is its clock edges"
+          },
+          "why": "A design is hardware. On the chip, half a second is 25 million edges of a 50 MHz clock."
+        },
+        "q3": {
+          "q": "You clock the design from MAX10_CLK2_50 instead. What changes?",
+          "options": {
+            "1": "Nothing: it is also 50 MHz, so CLK_HZ stays the same",
+            "2": "It blinks twice as fast",
+            "3": "It stops"
+          },
+          "why": "Both user clocks come from the same CDCE937 at 50 MHz. Only a clock of another rate needs a new CLK_HZ."
+        }
+      }
+    },
+    "counter": {
+      "title": "Count key presses, hold to clear",
+      "lede": "Each press of KEY0 adds one to a binary number on the LEDs. A tap on KEY1 does nothing; holding it for a second clears the count.",
+      "steps": {
+        "1": "Two flip-flops per key bring KEY onto the 50 MHz clock: a synchroniser.",
+        "2": "press is 1 for exactly one clock when KEY0 goes from 1 to 0, the moment it is pressed.",
+        "3": "held counts clock cycles while KEY1 is down and starts over when it is let go; a second's worth, CLK_HZ cycles, makes clear.",
+        "4": "Press Run: KEY0 is pressed three times, KEY1 is tapped, then held."
+      },
+      "hints": {
+        "1": "No debouncer here: an RC filter and the Schmitt buffer U14 already clean the keys on the board. The slide switches get no such help, so never count them like this.",
+        "2": "The keys are active low, so a press is a falling edge: the old value 1, the new one 0.",
+        "3": "Set HOLD to CLK_HZ / 2 and half a second is enough to clear."
+      },
+      "specs": {
+        "1": {
+          "label": "Hold to clear",
+          "value": "CLK_HZ = 50,000,000 cycles: 1 s"
+        },
+        "2": {
+          "label": "Key circuit",
+          "value": "10 kΩ to 3.3 V, RC filter, Schmitt buffer U14"
+        },
+        "3": {
+          "label": "Counter",
+          "value": "10 bits: up to 1,023 presses"
+        }
+      },
+      "features": {
+        "1": "Synchronise and find the falling edge",
+        "2": "Tell a tap from a hold by counting cycles",
+        "3": "Keys debounced on the board"
+      },
+      "pins": {
+        "KEY0": {
+          "to": "U14 → PIN_B8 (KEY[0])",
+          "role": "Each press adds one"
+        },
+        "KEY1": {
+          "to": "U14 → PIN_A7 (KEY[1])",
+          "role": "Hold for a second to clear"
+        },
+        "LEDR0": {
+          "to": "PIN_A8 (LEDR[0])",
+          "role": "Bit 0 of the count"
+        }
+      },
+      "callouts": {
+        "KEY0": "Press to count: reads 0 while held.",
+        "KEY1": "Hold for a second to clear.",
+        "U14": "Debounces both keys in hardware."
+      },
+      "checks": {
+        "1": "The design runs for 3.5 s without an error",
+        "2": "The first press shows on LEDR0 within 50 ms",
+        "3": "After three presses LEDR0 is lit (3 is 0000000011)",
+        "4": "After three presses LEDR1 is lit",
+        "5": "A short tap on KEY1 leaves the count alone",
+        "6": "Holding KEY1 for a second clears it"
+      },
+      "code": {
+        "intro": "Count KEY0 presses on the LEDs; hold KEY1 for a second to clear.",
+        "key": "0 while pressed, debounced on the board",
+        "sync": "Synchronise: two flip-flops bring each key onto our clock.",
+        "edge": "Edge: a pulse one clock long when KEY0 goes from 1 to 0.",
+        "hold": "Hold: count cycles while KEY1 is down; a full second clears.",
+        "count": "Count the presses; a clear wins."
+      },
+      "world": {
+        "key0": "KEY0 (count)",
+        "key1": "KEY1 (hold to clear)"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Why does this counter need no debouncer, when the Basys 3 one does?",
+          "options": {
+            "1": "The MAX 10 ignores bounces",
+            "2": "50 MHz is too slow to see them",
+            "3": "The board debounces the keys, with an RC filter and the Schmitt-trigger buffer U14"
+          },
+          "why": "U14 turns the bouncing contact into one clean edge. The slide switches have no such circuit."
+        },
+        "q2": {
+          "q": "What does wire press = k0[1] & ~k0[0]; detect?",
+          "options": {
+            "1": "The moment KEY0 goes down: it was 1 and is now 0",
+            "2": "KEY0 being held",
+            "3": "KEY0 being let go"
+          },
+          "why": "k0[1] is the key one clock earlier. Only on the first clock after a press is the old value 1 and the new one 0."
+        },
+        "q3": {
+          "q": "You tap KEY1 for 0.2 s. What happens to the count?",
+          "options": {
+            "1": "It clears",
+            "2": "Nothing: held reaches only 10 million of the 50 million cycles it needs, then starts over",
+            "3": "It goes up by one"
+          },
+          "why": "held goes back to 0 the moment KEY1 is released, so only a hold of a full second reaches HOLD."
+        }
+      }
+    },
+    "pwm": {
+      "title": "Dim an LED on the Arduino header",
+      "lede": "SW7-SW0 set the brightness of an LED on Arduino pin D3, 0 to 255 out of 256. Flip SW9 and it breathes by itself, fading up and down every two seconds.",
+      "steps": {
+        "1": "ramp counts 0 to 255 over and over; bright is 1 while ramp is below duty, so D3 is high for duty clocks out of every 256.",
+        "2": "level climbs one step every STEP clocks, 256 steps a second, and turns round at 255 and 0: a triangle wave.",
+        "3": "SW9 picks where duty comes from: SW7-SW0, or level. Wire the LED to D3 through 220 Ω and run it."
+      },
+      "hints": {
+        "1": "SW7 alone is 128 (half); SW7 and SW6 make 192 (three quarters).",
+        "2": "The Arduino pins are 3.3 V and go straight to the FPGA: a 5 V shield output can damage it."
+      },
+      "specs": {
+        "1": {
+          "label": "PWM frequency",
+          "value": "50 MHz ÷ 256 ≈ 195 kHz"
+        },
+        "2": {
+          "label": "Breathing",
+          "value": "256 steps up, 256 down: 2 s"
+        },
+        "3": {
+          "label": "D3",
+          "value": "ARDUINO_IO[3] = PIN_AB8, 8 mA at most"
+        }
+      },
+      "features": {
+        "1": "A counter and a comparator make PWM",
+        "2": "A second counter makes it breathe",
+        "3": "Any FPGA pin can do PWM"
+      },
+      "pins": {
+        "D3": {
+          "to": "R1 220 Ω → LED anode",
+          "role": "The PWM output, ARDUINO_IO[3]"
+        },
+        "GND": {
+          "to": "LED cathode (GND on JP2)",
+          "role": "The return path"
+        },
+        "SW9": {
+          "to": "PIN_F15 (SW[9])",
+          "role": "Up: breathe; down: SW7-SW0 set the level"
+        }
+      },
+      "callouts": {
+        "JP3": "Arduino pins D7-D0: 3.3 V only, straight to FPGA pins.",
+        "R1": "220 Ω: about 5 mA at full duty, under the pin's 8 mA.",
+        "LED1": "Long leg (anode) toward R1."
+      },
+      "checks": {
+        "1": "The design runs for 3.2 s without an error",
+        "2": "With SW7 up, D3 is high about half the time",
+        "3": "With SW7 and SW6 up, about three quarters",
+        "4": "SW9 up: the LED breathes, about half bright on the way up",
+        "5": "... and almost full half a second later"
+      },
+      "code": {
+        "intro": "PWM on Arduino pin D3: the switches set the brightness, or SW9 makes it breathe.",
+        "sw": "SW7-SW0: brightness 0-255; SW9: breathe",
+        "io": "the Arduino header, D0-D15 (D3 is bit 3)",
+        "breath": "Breathing: level climbs to 255 and back, one step every STEP clocks.",
+        "pick": "SW9 up: follow the breath; down: the switches.",
+        "ramp": "PWM: high while a free-running 8-bit ramp is below duty.",
+        "d3": "only D3 is driven; the rest stay low"
+      },
+      "world": {
+        "sw7": "SW7 (128)",
+        "sw6": "SW6 (64)",
+        "sw9": "SW9 (breathe)"
+      },
+      "quiz": {
+        "q1": {
+          "q": "duty is 64. How much of the time is D3 high?",
+          "options": {
+            "1": "Two thirds",
+            "2": "A quarter: 64 of every 256 clocks",
+            "3": "All the time"
+          },
+          "why": "bright is 1 for ramp = 0 to 63: 64 of 256 values, 25 %."
+        },
+        "q2": {
+          "q": "How long does one breath, up and back down, take?",
+          "options": {
+            "1": "About 2 s: 256 steps up and 256 down, at 256 steps a second",
+            "2": "About 1 ms",
+            "3": "256 s"
+          },
+          "why": "STEP = CLK_HZ / 256, so level moves 256 steps a second: one second up, one second down."
+        },
+        "q3": {
+          "q": "Why must a 5 V Arduino shield never drive D3?",
+          "options": {
+            "1": "D3 is an analog pin",
+            "2": "The LED would be too bright",
+            "3": "The Arduino pins go straight to the FPGA, which takes about 4.1 V at most"
+          },
+          "why": "The MAX 10's absolute maximum input is 4.12 V. Only A0-A5 accept 0-5 V, through the op-amp front end."
+        }
+      }
+    },
+    "hex": {
+      "title": "Hex digits on HEX2-HEX0",
+      "lede": "Show the ten switches as a three-digit hex number. Each of the six displays has its own eight pins, so one small module, used three times, drives them all at once.",
+      "steps": {
+        "1": "hex7 turns a 4-bit value into the seven segments to light, with the decimal point as bit 7.",
+        "2": "The displays are common anode: a segment lights on 0, so hex7 inverts the pattern, and a 1 in bit 7 keeps the point dark.",
+        "3": "top makes three copies of it: digit0 shows SW3-SW0, digit1 SW7-SW4 and digit2 SW9-SW8.",
+        "4": "HEX5-HEX3 get 8'hFF, every segment off. Press Run: SW0, SW1, SW3 and SW9 go up in turn."
+      },
+      "hints": {
+        "1": "Unlike the Basys 3 nothing is multiplexed: every digit is lit all the time.",
+        "2": "Leave a HEX output undriven and Quartus ties it to 0, which lights every segment of that digit. Drive unused digits with 8'hFF.",
+        "3": "SW9 alone makes HEX2 show 2, because SW9 is bit 1 of that digit."
+      },
+      "specs": {
+        "1": {
+          "label": "Displays",
+          "value": "Six common-anode digits, 8 pins each (a-g, DP)"
+        },
+        "2": {
+          "label": "Active level",
+          "value": "0 = lit; HEX0[0] is segment a"
+        },
+        "3": {
+          "label": "Hardware",
+          "value": "Three copies of one lookup table, no clock"
+        }
+      },
+      "features": {
+        "1": "One module, used three times",
+        "2": "Active-low outputs",
+        "3": "Unused displays must be driven off"
+      },
+      "pins": {
+        "HEX0": {
+          "to": "8 FPGA pins → the right digit's segments",
+          "role": "Bit 0 is segment a; 0 lights it"
+        },
+        "HEX2": {
+          "to": "8 FPGA pins → the third digit from the right",
+          "role": "Shows SW9-SW8"
+        },
+        "SW0": {
+          "to": "PIN_C10 (SW[0])",
+          "role": "Bit 0 of the right digit"
+        }
+      },
+      "callouts": {
+        "HEX10": "HEX1 and HEX0: each digit has its own eight pins.",
+        "HEX32": "HEX2 shows SW9-SW8; HEX3 stays dark.",
+        "SW0": "SW3-SW0 make the rightmost digit."
+      },
+      "checks": {
+        "1": "The design runs for 2 s without an error",
+        "2": "All switches down: HEX0 shows 0 (segment a lit)",
+        "3": "... with no middle bar (segment g dark)",
+        "4": "SW1 and SW0 up: it shows 3 (g lit)",
+        "5": "SW3 up as well: it shows b (a dark)",
+        "6": "SW9 up: HEX2 shows 2 (segment c dark)",
+        "7": "HEX5 stays dark"
+      },
+      "code": {
+        "intro": "Show SW[9:0] as three hex digits on HEX2-HEX0.",
+        "module": "hex7: one digit's decoder, used three times below.",
+        "bits": "segments a-g in bits 0-6, the decimal point in bit 7; 0 = lit",
+        "table": "Segments to light for each hex value, as {g,f,e,d,c,b,a} with 1 = lit.",
+        "invert": "light on 0, decimal point off",
+        "copies": "Three copies of hex7, one per digit.",
+        "blank": "HEX5-HEX3 off: all eight bits 1."
+      },
+      "world": {
+        "sw0": "SW0",
+        "sw1": "SW1",
+        "sw3": "SW3",
+        "sw9": "SW9"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Why does this design need no multiplexing, when the Basys 3 one does?",
+          "options": {
+            "1": "Each display has its own eight FPGA pins",
+            "2": "The MAX 10 is faster",
+            "3": "The digits share their segment wires"
+          },
+          "why": "The DE10-Lite spends 48 FPGA pins on its six digits, so all of them can be lit at once."
+        },
+        "q2": {
+          "q": "hex7 drives hex = {1'b1, ~lit}. Why the 1'b1?",
+          "options": {
+            "1": "It lights the decimal point",
+            "2": "It keeps the decimal point dark: like the segments, it lights on 0",
+            "3": "It is a parity bit"
+          },
+          "why": "Bit 7 is the decimal point, active low like the rest; a 1 keeps it off."
+        },
+        "q3": {
+          "q": "What does hex7 digit1 (.value(SW[7:4]), .hex(HEX1)); make?",
+          "options": {
+            "1": "A function call that runs once",
+            "2": "A wire between two modules",
+            "3": "A second copy of the decoder circuit, wired to SW7-SW4 and HEX1"
+          },
+          "why": "An instance is more hardware: three instances are three decoders working side by side."
+        }
+      }
+    }
+  }
+}
