@@ -55,3 +55,12 @@ content under the mode picker (FlightRange `courseText.hints`), so the whoop's `
 4. **Done** (`9d49d45`): `G.pal` follows `st.pal`.
 5. **Done** (`9d49d45`) as `api.pass(id)`, reported in `state.extra.<id>` (not `checks`) and cleared by `strip`,
    `build`, re-seating a part and now any `step` that moves a part (`P2-drone-prose-to-P2-engine-step-reset.md`).
+
+## Addendum from P2-engine-b (2026-10-25 ~01:50 CDT)
+
+1. **Done as opt-in fields** (`figures/engine/drone-pieces.js`, FIGURES-DRONE v4): a catalogue motor may give
+   `shaft: [d, l]` and `base: h`, a prop `hub: [d, h, nutD]` (nut 0 for press-fit). The spokes then run from just
+   outside the shaft to 0.8 of the bell radius and the cap scales with the shaft. Without the fields every craft
+   draws exactly as before (checked: quad5, racer, cinewhoop, vtol, tricopter and wing render the same SVG). The
+   whoop keeps its `custom` motor and prop pieces: they also draw its flange screws, the press-fit hub in the prop's
+   colour and blades tuned to 31 mm, which the shared pieces don't.

@@ -76,6 +76,25 @@ describe('drone craft hooks', () => {
   });
 });
 
+describe('motor and prop sizes', () => {
+  it('a catalogue motor and prop may give their shaft, base and hub; without them the 5-inch sizes stay', async () => {
+    page = await quad();
+    const SD = page.drone, d = SD.craft().design, st = SD.api.st, art = () => page.win.document.getElementById('art').innerHTML;
+    const mt = d.motors[st.design.motor], pr = d.props[st.design.prop];
+    SD.api.render();
+    const plain = art();
+    Object.assign(mt, { shaft: [1, 3.4], base: 1.2 });
+    pr.hub = [4, 2];
+    SD.api.render();
+    const small = art();
+    expect(small).not.toBe(plain);
+    delete mt.shaft; delete mt.base; delete pr.hub;
+    SD.api.render();
+    expect(art()).toBe(plain);
+    expect(page.notes()).toEqual([]);
+  });
+});
+
 describe('motor pose', () => {
   const near = (a, b) => a.forEach((v, i) => expect(v).toBeCloseTo(b[i], 6));
 

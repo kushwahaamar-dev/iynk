@@ -9,6 +9,11 @@ format cannot say, write it to `docs/requests/<your-label>.md` and use a `custom
 
 Additive changes only after v1. Newest first.
 
+- v4 (01:50 CDT, Oct 25, P2-engine-b): a catalogue motor may give `shaft: [d, l]` and `base: h`, a prop
+  `hub: [d, h, nutD]` (§5); the `motors` and `props` pieces then draw the shaft, base flange, spokes, cap, hub and nut
+  to those sizes, for whoop-scale crafts. Without them every craft draws as before (5 x 7 mm shaft, 3 mm base, a
+  12 x 5.5 mm hub with an 8.4 mm nut).
+
 - v3 (23:20 CDT, Oct 24): motors can move while the figure runs.
   - motor `bank` (deg about the craft's x axis, after `tilt`) and a per-frame pose from `craft.motorPose(st, i, mo)`
     (§3, §4); `ctx.pose[i]` and `SL.drone.motorFrame(mo, z0)` for a craft's own pieces (§7.1);
@@ -237,10 +242,13 @@ design: {
 | | `chem` | `'lipo'` (default), `'lihv'`, `'liion'` | full-charge volts 4.2, 4.35, 4.2 per cell |
 | `motors` | `stator` | mm `[d, h]` | from the size code: "2306" = 23 mm × 6 mm |
 | | `bell` | mm `[d, h]` | outer bell diameter and height (bell height excludes the base) |
+| | `shaft?` | mm `[d, l]` | shaft diameter and the length that shows with the props off (default `[5, 7]`); given, the spokes run from just outside it to 0.8 of the bell radius |
+| | `base?` | mm | base flange height under the bell (default 3) |
 | | `kv`, `label` | | shown on the wiring sheet |
 | `props` | `d`, `pitch` | inches | "5x4.3x3" = 5 in diameter, 4.3 in pitch, 3 blades |
 | | `blades` | - | 2, 3 or 4 |
 | | `color` | | blade colour |
+| | `hub?` | mm `[d, h, nutD]` | hub diameter and height and the prop nut's diameter, 0 or left out for a press-fit prop (default `[12, 5.5, 8.4]`) |
 
 Every key in the host catalogue must exist here and the other way round (checked in §12).
 
