@@ -154,6 +154,7 @@
     "eyebrow": "SimLab Ensemble",
     "title": "Personne ne construit seul",
     "lede": "Ouvrez un salon sur n'importe quelle carte, robot ou drone et envoyez le lien. Tout le monde voit le même établi, une seule personne tape à la fois, et le chat affiche chaque message dans votre langue.",
+    "ledePlain": "Ouvrez un salon sur n'importe quelle carte, robot ou drone et envoyez le lien. Tout le monde voit le même établi, et une seule personne tape à la fois.",
     "notSetUp": "Non configuré sur ce déploiement",
     "aiOff": "Partenaires de construction et le Planificateur de soirée de construction ont besoin du service d'IA, qui n'est pas configuré sur ce déploiement.",
     "retry": "Réessayer",

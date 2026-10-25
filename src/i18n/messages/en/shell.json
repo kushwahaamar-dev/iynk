@@ -111,7 +111,6 @@
   "about": {
     "metaTitle": "About and credits",
     "metaDescription": "What SimLab is, how it works, and the credits and licences behind it.",
-    "kicker": "About",
     "title": "About SimLab",
     "lede": "SimLab is a hardware lab you open in a browser. Every board, module and drone is a hand-inked 3D figure you can turn, open up and operate, wired to lessons, code that really runs, and failures you can trigger on purpose.",
     "howTitle": "How it works",

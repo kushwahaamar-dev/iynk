@@ -43,8 +43,7 @@ async function About({ params }: Pick<Props, "params">) {
   return (
     <div className="frame pt-8 sm:pt-12">
       <header className="max-w-[68ch]">
-        <p className="ink-kicker">{t("about.kicker")}</p>
-        <h1 className="mt-3">{t("about.title")}</h1>
+        <h1>{t("about.title")}</h1>
         <p className="mt-5 text-lg leading-relaxed">{t("about.lede")}</p>
       </header>
 

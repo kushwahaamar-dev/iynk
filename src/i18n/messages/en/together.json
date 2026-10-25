@@ -154,6 +154,7 @@
     "eyebrow": "SimLab Together",
     "title": "Nobody has to build alone",
     "lede": "Open a room on any board, robot or drone and send the link. Everyone sees the same bench, one person types at a time, and the chat shows each message in your own language.",
+    "ledePlain": "Open a room on any board, robot or drone and send the link. Everyone sees the same bench, and one person types at a time.",
     "notSetUp": "Not set up on this deployment",
     "aiOff": "Build Buddies and the Build Night planner need the AI service, which isn't set up on this deployment.",
     "retry": "Try again",

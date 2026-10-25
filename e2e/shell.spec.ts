@@ -5,6 +5,7 @@ import common from "../src/i18n/messages/en/common.json";
 import commonFr from "../src/i18n/messages/fr/common.json";
 import commonZh from "../src/i18n/messages/zh/common.json";
 import shell from "../src/i18n/messages/en/shell.json";
+import together from "../src/i18n/messages/en/together.json";
 
 // Uncaught errors and React hydration problems; other console noise (a figure
 // still being built, say) belongs to the tests of the page that owns it.
@@ -23,11 +24,11 @@ function watchErrors(page: Page) {
 const visibleHeader = (page: Page) => page.locator("header:visible").first();
 
 // Theme, language, sound, motion and usage counts sit in the header's Settings popover.
-async function openSettings(page: Page) {
-  const button = visibleHeader(page).getByRole("button", { name: shell.settings.label });
+async function openSettings(page: Page, label = shell.settings.label) {
+  const button = visibleHeader(page).getByRole("button", { name: label });
   await button.click();
   await expect(button).toHaveAttribute("aria-expanded", "true");
-  const panel = visibleHeader(page).getByRole("dialog", { name: shell.settings.label });
+  const panel = visibleHeader(page).getByRole("dialog", { name: label });
   await expect(panel).toBeVisible();
   return panel;
 }
@@ -153,8 +154,9 @@ test("an unknown URL is a real 404 inside the localized layout", async ({ page }
 
 for (const locale of LOCALES) {
   test(`the ${locale} theme options read in full in the Settings popover`, async ({ page }) => {
+    const { default: messages } = await import(`../src/i18n/messages/${locale}/shell.json`, { with: { type: "json" } });
     await page.goto(`/${locale}`);
-    await openSettings(page);
+    await openSettings(page, messages.settings.label);
     expect(await cutThemeOptions(page)).toEqual([]);
   });
 }
@@ -202,4 +204,19 @@ test("the dashboard and the 404 page pass axe", async ({ page }) => {
   await expectNoAxeViolations(page);
   await page.goto("/hi/no-such-page");
   await expectNoAxeViolations(page);
+});
+
+test("About opens with its title, not a kicker that repeats it", async ({ page }) => {
+  await page.goto("/en/about");
+  const header = page.locator("main:visible header").first();
+  await expect(header.getByRole("heading", { level: 1, name: shell.about.title })).toBeVisible();
+  await expect(header.locator(".ink-kicker")).toHaveCount(0);
+});
+
+test("without the AI service, the Together lede doesn't promise translated chat", async ({ page }) => {
+  // The test server has no AI key, so the lobby says the AI tools aren't set up.
+  await page.goto("/en/together");
+  await expect(page.getByText(together.lobby.aiOff)).toBeVisible();
+  await expect(page.getByText(together.lobby.ledePlain)).toBeVisible();
+  await expect(page.getByText(together.lobby.lede)).toHaveCount(0);
 });

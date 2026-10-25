@@ -111,7 +111,6 @@
   "about": {
     "metaTitle": "À propos et crédits",
     "metaDescription": "Ce qu’est SimLab, comment il fonctionne, et les crédits et licences qui l’accompagnent.",
-    "kicker": "À propos",
     "title": "À propos de SimLab",
     "lede": "SimLab est un labo d’électronique qui s’ouvre dans un navigateur. Chaque carte, module et drone est une figure 3D encrée à la main que vous pouvez faire tourner, ouvrir et manipuler, reliée à des leçons, à du code qui s’exécute vraiment et à des pannes que vous pouvez provoquer exprès.",
     "howTitle": "Comment ça marche",

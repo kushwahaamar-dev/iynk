@@ -111,7 +111,6 @@
   "about": {
     "metaTitle": "Über SimLab und Credits",
     "metaDescription": "Was SimLab ist, wie es funktioniert und die Credits und Lizenzen dahinter.",
-    "kicker": "Über SimLab",
     "title": "Über SimLab",
     "lede": "SimLab ist ein Hardware-Labor, das du im Browser öffnest. Jedes Board, Modul und jede Drohne ist eine von Hand getuschte 3D-Figur, die du drehen, öffnen und bedienen kannst, verbunden mit Lektionen, Code, der wirklich läuft, und Fehlern, die du absichtlich auslösen kannst.",
     "howTitle": "So funktioniert es",

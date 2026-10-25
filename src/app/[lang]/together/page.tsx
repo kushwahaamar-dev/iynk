@@ -5,7 +5,7 @@ import { TogetherStrings } from "@/components/realtime/messages";
 import { createTranslator } from "@/i18n/translate";
 import { isLocale } from "@/i18n/config";
 import { alternatesFor } from "@/i18n/seo";
-import { Lobby } from "./Lobby";
+import { Lobby, LobbyLede } from "./Lobby";
 import { getLobbyItems, getTogetherMessages } from "./strings";
 
 type Props = { params: Promise<{ lang: string }> };
@@ -33,12 +33,12 @@ async function TogetherLobby({ params }: Props) {
 
   return (
     <div className="frame pt-10 pb-16 lg:pt-14">
-      <header className="max-w-[68ch]">
-        <p className="ink-kicker">{t("lobby.eyebrow")}</p>
-        <h1 className="mt-3">{t("lobby.title")}</h1>
-        <p className="mt-4 text-lg leading-relaxed">{t("lobby.lede")}</p>
-      </header>
       <TogetherStrings locale={lang} messages={messages}>
+        <header className="max-w-[68ch]">
+          <p className="ink-kicker">{t("lobby.eyebrow")}</p>
+          <h1 className="mt-3">{t("lobby.title")}</h1>
+          <LobbyLede className="mt-4 text-lg leading-relaxed" />
+        </header>
         <Lobby items={items} />
       </TogetherStrings>
     </div>

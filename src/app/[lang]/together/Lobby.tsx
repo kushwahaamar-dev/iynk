@@ -125,13 +125,24 @@ function JoinRoom({ t }: { t: TogetherT }) {
   );
 }
 
+// Known only once /api/status answers; until then the page reads as if the AI service is there.
+function useAiOff() {
+  const { status, features } = useFeatures();
+  return status === "ready" && !features.ai;
+}
+
+/** The lobby's lede: chat translation runs on the AI service, so without it the lede doesn't promise it. */
+export function LobbyLede({ className }: { className?: string }) {
+  const t = useTogetherT()!;
+  return <p className={className}>{t(useAiOff() ? "lobby.ledePlain" : "lobby.lede")}</p>;
+}
+
 /** The /together lobby: start or join a room, Build Buddies and the Build Night planner. */
 export function Lobby({ items }: { items: LobbyItem[] }) {
   const t = useTogetherT()!;
-  const { status, features } = useFeatures();
   const titles = useMemo(() => new Map(items.map((item) => [`${item.lab}:${item.id}`, item.title])), [items]);
   // Both tools below need the AI service: without it they are one line, not two cards that say "not set up".
-  const aiOff = status === "ready" && !features.ai;
+  const aiOff = useAiOff();
 
   return (
     <div className="mt-10 flex flex-col gap-10 lg:mt-12 lg:gap-12">

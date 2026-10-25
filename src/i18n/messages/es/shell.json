@@ -111,7 +111,6 @@
   "about": {
     "metaTitle": "Acerca de y créditos",
     "metaDescription": "Qué es SimLab, cómo funciona y los créditos y licencias que hay detrás.",
-    "kicker": "Acerca de",
     "title": "Acerca de SimLab",
     "lede": "SimLab es un laboratorio de hardware que se abre en el navegador. Cada placa, módulo y dron es una figura 3D entintada a mano que puedes girar, abrir y manejar, conectada a lecciones, a código que se ejecuta de verdad y a fallos que puedes provocar a propósito.",
     "howTitle": "Cómo funciona",
