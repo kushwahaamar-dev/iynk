@@ -11,3 +11,7 @@ other owners' content:
   `swarmCount swarmSpacing`) and the sim flies those classes, but no content module of those kinds exists yet, so
   the demo-route and mission tests have not run on a real VTOL, tricopter or swarm course. Wave B's content tests
   run them automatically (see `P2-flight-to-drone-content-flying.md`).
+
+P2-fun, wave B (2026-10-24): `wing` and `delivery` now have content and prose, and both pass `e2e/fly.spec.ts`
+(demo arms, takes off and passes the first checkpoint), as do whoop, cinewhoop, longrange, racer, gpscam, agrihex and
+tricopter. swarm, vtol and octo stay skipped until their content modules land.
