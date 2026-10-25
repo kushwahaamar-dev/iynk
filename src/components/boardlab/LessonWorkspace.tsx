@@ -145,7 +145,10 @@ function Workspace({ lang, model, notice }: { lang: Locale; model: LessonModel; 
       resetControls: board.resetControls,
       figure: getFigure,
       reduceMotion: () => reduceRef.current || prefersReducedMotion(),
-      onPassed: () => markDone(doneKey),
+      // Passing code on a board broken from Break it doesn't finish the lesson (the Checks panel says so).
+      onPassed: () => {
+        if (store.getState().fault === null) markDone(doneKey);
+      },
     });
     runnerRef.current = runner;
     const detach = runner.attach();

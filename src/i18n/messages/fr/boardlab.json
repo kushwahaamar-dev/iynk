@@ -324,6 +324,7 @@
     "pass": "Réussi",
     "fail": "Pas encore",
     "allPass": "Toutes les vérifications passent. Leçon terminée.",
+    "faultOn": "Votre code passe, mais une panne de Casser est toujours active. Appuyez sur Réparer, puis sur Lancer, pour terminer la leçon.",
     "again": "Vérifier à nouveau",
     "summary": "{passed} vérifications réussies sur {total}",
     "limit": "La vérification a duré plus de 20 secondes et a été arrêtée. Cherchez une boucle qui n'attend jamais.",

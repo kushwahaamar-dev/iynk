@@ -16,14 +16,19 @@ export function useChecksBadge(store: BoardLabStore, total: number): string | nu
   return `${result.results.filter((r) => r.ok).length}/${total}`;
 }
 
-/** The lesson's completion checks, ticked off from the deterministic run. */
+/**
+ * The lesson's completion checks, ticked off from the deterministic run. The checks read the code; a lesson passes
+ * on a working board, so while a Break it fault is on (a burnt LED blinks no more) passing code doesn't finish it.
+ */
 export function ChecksPanel({ store, checks, onCheck, done }: { store: BoardLabStore; checks: Check[]; onCheck: () => void; done: boolean }) {
   const { t, tc } = useText();
   const id = useId();
   const result = useLab(store, (s) => s.checks);
+  const faultOn = useLab(store, (s) => s.fault !== null);
   if (checks.length === 0) return null;
   const passedCount = result.results.filter((r) => r.ok).length;
   const hasResult = result.results.length > 0 || result.status === "done";
+  const passed = result.passed && !faultOn;
 
   return (
     <section aria-labelledby={`${id}-title`} className="flex flex-col gap-3" data-testid="checks-panel">
@@ -31,18 +36,20 @@ export function ChecksPanel({ store, checks, onCheck, done }: { store: BoardLabS
         {t("checks.title")}
       </h3>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-        <p role="status" className={cx("me-auto text-sm font-semibold", result.passed || done ? "text-good" : "text-muted")}>
-          {result.passed
+        <p role="status" className={cx("me-auto text-sm font-semibold", passed ? "text-good" : result.passed ? "text-bad" : done ? "text-good" : "text-muted")}>
+          {passed
             ? t("checks.allPass")
-            : result.status === "done"
-              ? result.limit
-                ? t("checks.limit")
-                : t("checks.summary", { passed: passedCount, total: checks.length })
-              : result.status === "running"
-                ? t("checks.running")
-                : done
-                  ? t("lesson.completed")
-                  : t("checks.pending")}
+            : result.passed
+              ? t("checks.faultOn")
+              : result.status === "done"
+                ? result.limit
+                  ? t("checks.limit")
+                  : t("checks.summary", { passed: passedCount, total: checks.length })
+                : result.status === "running"
+                  ? t("checks.running")
+                  : done
+                    ? t("lesson.completed")
+                    : t("checks.pending")}
         </p>
         <Button size="sm" variant="secondary" className="shrink-0 whitespace-nowrap" onClick={onCheck} disabled={result.status === "running"}>
           {hasResult ? t("checks.again") : t("checks.run")}

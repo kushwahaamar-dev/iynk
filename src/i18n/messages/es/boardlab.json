@@ -324,6 +324,7 @@
     "pass": "Superada",
     "fail": "Todavía no",
     "allPass": "Todas las comprobaciones superadas. Lección hecha.",
+    "faultOn": "Tu código pasa, pero sigue activa una avería de Averíala. Pulsa Reparar y luego Ejecutar para terminar la lección.",
     "again": "Comprobar otra vez",
     "summary": "{passed} de {total} comprobaciones superadas",
     "limit": "La comprobación tardó más de 20 segundos y se detuvo. Busca un bucle que nunca espera.",

@@ -324,6 +324,7 @@
     "pass": "Bestanden",
     "fail": "Noch nicht",
     "allPass": "Alle Prüfungen bestanden. Lektion erledigt.",
+    "faultOn": "Dein Code besteht, aber ein Fehler aus „Kaputt machen“ ist noch aktiv. Drück auf „Reparieren“ und dann auf „Ausführen“, um die Lektion abzuschließen.",
     "again": "Erneut prüfen",
     "summary": "{passed} von {total} Prüfungen bestanden",
     "limit": "Die Prüfung dauerte länger als 20 Sekunden und wurde gestoppt. Suche eine Schleife, die nie wartet.",
