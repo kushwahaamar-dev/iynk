@@ -1,0 +1,377 @@
+{
+  "title": "MPU-6050 tilt alarm",
+  "sub": "a gyro and an accelerometer on two wires",
+  "hint": "build the GY-521, wake it, then make it warn when the robot tips",
+  "overview": "A robot needs to know which way is down. The MPU-6050 on this small blue GY-521 board measures acceleration on three axes, gravity included, and rotation rate on three more, and hands all of it over I2C at address 0x68. Lying flat it reads 1 g on Z; tipped, part of that 1 g moves to Y, and atan2(ay, az) gives the angle. Build the board, read it from a Nano with plain Wire calls, then make a buzzer sound when the robot tips past 20°. Then break it: power it backwards or from a LiPo, leave out the capacitor the gyro needs, lose the address pull-down, leave a cold SDA joint and fit the tantalum backwards.",
+  "parts": {
+    "IC1": {
+      "name": "MPU-6050 6-axis motion sensor",
+      "what": "A 4 x 4 mm QFN holding two dies: a MEMS die with tiny moving masses and a CMOS die that measures them. At the default ranges the accelerometer gives 16384 counts per g (±2 g) and the gyro 131 counts per °/s (±250 °/s). It powers up asleep: every reading is 0 until the host writes 0 to PWR_MGMT_1 (0x6B)."
+    },
+    "U2": {
+      "name": "662K 3.3 V regulator (XC6206)",
+      "what": "Turns VCC (3.5-5.5 V; 5 V is best) into the 3.3 V the chip, the LED and the pull-ups run on. 6 V is the most it takes: a 2S LiPo or the Nano's VIN burns it."
+    },
+    "C10": {
+      "name": "10 µF tantalum on 3.3 V",
+      "what": "Smooths the regulator's output. Tantalum capacitors are polarised and fail hot when reversed: the stripe marks +."
+    },
+    "C14": {
+      "name": "2.2 nF on CPOUT",
+      "what": "The gyro drives its sensing masses from a charge pump, and this capacitor is the pump's. Without it the gyro reads noise."
+    },
+    "R4": {
+      "name": "4.7 kΩ I2C pull-ups (R4 SDA, R5 SCL)",
+      "what": "Pull SDA and SCL up to the board's 3.3 V, so the bus idles at 3.3 V even on a 5 V Nano. The Nano reads 3.3 V as HIGH."
+    },
+    "R6": {
+      "name": "4.7 kΩ AD0 pull-down",
+      "what": "Holds AD0 low, which makes the address 0x68. Pulled high (or left floating) the chip answers at 0x69, so two can share a bus."
+    },
+    "D1": {
+      "name": "Power LED",
+      "what": "Lit from 3.3 V through 1 kΩ: about 1.3 mA. It says the regulator works, not that the chip is awake."
+    },
+    "H1": {
+      "name": "8-pin header: VCC GND SCL SDA XDA XCL AD0 INT",
+      "what": "Soldered by you, pins down so the board can stand in a breadboard. Only four are needed here: VCC, GND, SCL and SDA."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "Reads the sensor over I2C on A4 (SDA) and A5 (SCL), works out the tilt and drives the buzzer on D8 and its own LED on D13. Its 5V pin powers the GY-521."
+    },
+    "BUZ": {
+      "name": "Piezo buzzer on D8",
+      "what": "A passive piezo: tone(8, 2000) makes it sound at 2 kHz. A few mA, so it goes straight on a pin."
+    }
+  },
+  "power": {
+    "label": "Power the bench",
+    "ok": "Nano on USB: VCC 5 V, the regulator makes 3.3 V, the chip is ready"
+  },
+  "modes": {
+    "flat": { "title": "Raw readings" },
+    "tilt": { "title": "Tilt alarm" },
+    "asleep": { "title": "Never woken" },
+    "scan": { "title": "I2C scan" },
+    "code": {
+      "title": "MPU-6050: raw I2C reads, no library",
+      "address": "AD0 low: address 0x68",
+      "pwr": "PWR_MGMT_1: write 0 to wake the chip (it powers up asleep)",
+      "from": "ACCEL_XOUT_H: 14 bytes from here are accel X, Y, Z, temperature, gyro X, Y, Z",
+      "temp": "the temperature: skipped",
+      "g": "16384 counts = 1 g at ±2 g",
+      "dps": "131 counts = 1 °/s at ±250 °/s",
+      "noWake": "no wake(): the chip stays asleep and every register reads 0",
+      "roll": "roll about X: how much of gravity has moved from Z to Y",
+      "beep": "a 2 kHz tone on the buzzer while tipped too far",
+      "scanTitle": "I2C scanner: who answers on the bus?",
+      "ack": "0 = a device acknowledged its address"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Strip to the bare PCB",
+      "body": "Take every part off the blue board. You will put it back the way it is made: the chip, the regulator and the small parts first, then the header.",
+      "refusal": "Unplug the power first: never work on a live board"
+    },
+    "smd": {
+      "title": "Pick and place the SMD parts, then reflow",
+      "body": "The MPU-6050, the 662K regulator, the tantalum, the resistors, the capacitors and the LED in one pass. The board ships like this; the header comes loose in the bag.",
+      "refusal": "The SMD parts go on first, on a bare board"
+    },
+    "header": {
+      "title": "Fit the 8-pin header",
+      "body": "Pins down, from the underside, so the board can stand on them. VCC, GND, SCL, SDA, XDA, XCL, AD0, INT.",
+      "refusal": "SMD parts first: run pick and place and reflow. The oven would melt the plastic header"
+    },
+    "solder": {
+      "title": "Solder the header",
+      "body": "Eight joints. A dull one on SDA or SCL makes the bus come and go: the commonest reason a GY-521 \"sometimes\" works.",
+      "refusal": "Nothing to solder yet: place the header first"
+    },
+    "wire-nano": {
+      "title": "Wire the Nano",
+      "body": "VCC to 5V, GND to GND, SCL to A5, SDA to A4. On a Nano the I2C pins are fixed: A4 and A5.",
+      "refusal": "Unplug the power first: never work on a live board"
+    },
+    "wire-buzzer": {
+      "title": "Wire the buzzer",
+      "body": "+ to D8, - to GND. It is the robot's warning when it tips.",
+      "refusal": "Unplug the power first, and wire the Nano first"
+    },
+    "plug": {
+      "title": "Power the bench",
+      "body": "USB into the Nano. The red LED lights: the regulator works. The chip is still asleep.",
+      "refusal": "Finish the build first: every part on, the header soldered, the Nano and the buzzer wired"
+    },
+    "flat": {
+      "title": "Upload Raw readings",
+      "body": "wake() writes 0 to PWR_MGMT_1, then every second the sketch reads 14 bytes from 0x3B. Lying flat: about 1.00 g on Z, 0 on X and Y, and a gyro that reads a few °/s although nothing turns. That is its zero-rate offset.",
+      "refusal": "Power the bench first"
+    },
+    "tilt": {
+      "title": "Upload Tilt alarm",
+      "body": "Rock the board about X. roll = atan2(ay, az) turns the split of gravity between Y and Z into an angle; past 20° either way the buzzer sounds and D13 lights. Watch the arrow over the chip: that is gravity as the accelerometer sees it.",
+      "refusal": "Power the bench first"
+    },
+    "asleep": {
+      "title": "Upload Never woken",
+      "body": "The same reads without wake(). The chip answers the bus but every reading is 0: it powered up asleep and nobody woke it.",
+      "refusal": "Power the bench first"
+    },
+    "scan": {
+      "title": "Upload I2C scan",
+      "body": "The scanner calls every address and lists the ones that answer: 0x68.",
+      "refusal": "Power the bench first"
+    },
+    "reverse-vcc": {
+      "title": "Wire VCC and GND the wrong way round",
+      "body": "5 V on GND and GND on VCC. The board has no diode and no fuse."
+    },
+    "lipo-on-vcc": {
+      "title": "Power VCC from a 2S LiPo",
+      "body": "7.4 V on VCC, as if from the robot's battery. The 662K takes 6 V at most."
+    },
+    "no-c14": {
+      "title": "Leave out C14",
+      "body": "The 2.2 nF capacitor on CPOUT. Watch gx."
+    },
+    "no-r6": {
+      "title": "Leave out R6",
+      "body": "The AD0 pull-down. AD0 floats, and on this board it floats high. Run the tilt alarm with the robot standing still."
+    },
+    "cold-sda": {
+      "title": "Leave a cold joint on SDA",
+      "body": "A dull, cracked joint on the header's SDA pin. Run the tilt alarm."
+    },
+    "c10-backwards": {
+      "title": "Fit C10 backwards",
+      "body": "The tantalum's stripe away from +, then power up."
+    },
+    "exploded": {
+      "title": "Exploded view",
+      "body": "Unplug and lift the parts by build group: the SMD parts first, then the header.",
+      "refusal": "Unplug the power first: never work on a live board"
+    }
+  },
+  "faults": {
+    "reverse-vcc": {
+      "title": "VCC reversed",
+      "symptom": "The LED stays dark and the regulator gets hot; afterwards the board may read nothing.",
+      "explanation": "Nothing on the GY-521 blocks a reversed supply. Current flows backwards through the regulator's and the chip's protection diodes, limited only by the Nano's USB. A few seconds can kill the 662K and sometimes the MPU-6050.",
+      "fix": "Unplug at once, wire VCC to 5V and GND to GND, and replace the regulator if it got hot."
+    },
+    "lipo-on-vcc": {
+      "title": "7.4 V on VCC",
+      "symptom": "The regulator burns: smell, a discoloured package. Then nothing answers on the bus.",
+      "explanation": "The 662K (XC6206) is rated for 6 V in. A 2S LiPo gives 7.4-8.4 V. If the regulator fails short, the battery voltage reaches the MPU-6050 too, which takes 3.46 V.",
+      "fix": "Power VCC from the Nano's 5V, never from the robot's battery or VIN."
+    },
+    "no-c14": {
+      "title": "No CPOUT capacitor",
+      "symptom": "gx jumps by tens of °/s while the board lies still. The accelerometer is fine.",
+      "explanation": "The gyro's charge pump needs its capacitor to make the voltage that drives the sensing masses. Without it the gyro's output is noise. The Arduino Playground warns about this: a wrong capacitor gives a high noise level.",
+      "fix": "Fit C14 (2.2 nF) and reflow it."
+    },
+    "no-r6": {
+      "title": "No AD0 pull-down",
+      "symptom": "The buzzer sounds on a robot standing still: the sketch prints roll -135° and ALARM.",
+      "explanation": "With AD0 floating high the chip answers at 0x69. The sketch asks 0x68, nobody answers, and Wire.read() returns -1 for every byte. Every value reads -1 count, and atan2(-1, -1) is -135°.",
+      "fix": "Fit R6, or set MPU to 0x69 in the sketch. Better: check that requestFrom() got its 14 bytes before using them."
+    },
+    "cold-sda": {
+      "title": "Cold joint on SDA",
+      "symptom": "Short false alarms: now and then one read comes back as roll -135°.",
+      "explanation": "Through a joint that makes and breaks, some reads get no answer and come back as -1 everywhere. An alarm that trusts a single read beeps on every one.",
+      "fix": "Reheat the joint with fresh solder until it flows into a shiny cone. In the sketch, ignore a read that failed."
+    },
+    "c10-reversed": {
+      "title": "C10 in backwards",
+      "symptom": "The tantalum gets hot the moment the board is powered, and may crack or smoke.",
+      "explanation": "A tantalum capacitor's oxide layer only blocks current one way. Reversed, it conducts, heats up and can fail short.",
+      "fix": "Unplug, fit a new one with the stripe (+) on the 3.3 V side, as printed."
+    }
+  },
+  "status": {
+    "status": "Status",
+    "powered": "Bench power",
+    "mode": "Sketch",
+    "roll": "Roll",
+    "az": "Z acceleration (g)",
+    "gx": "X rotation (°/s)",
+    "address": "I2C address",
+    "alarm": "Alarm",
+    "vcc": "VCC",
+    "v33": "3.3 V rail",
+    "usb": "USB current"
+  },
+  "current": {
+    "usb": "Nano USB (500 mA polyfuse)",
+    "nano": "Nano running",
+    "board": "GY-521: chip, regulator and LED",
+    "buzzer": "Buzzer sounding"
+  },
+  "tasks": {
+    "imu": "Tilt of the board about X",
+    "alarm": {
+      "title": "Sound the alarm past 20°",
+      "brief": "The starter reads the tilt and prints it, but nothing warns anyone. When the roll is past 20° either way, set D13 HIGH and play a 2 kHz tone on the buzzer (D8); otherwise D13 LOW and noTone(). The board is level at first, tipped 35° at 2 s, back to -10° at 3.5 s and tipped -40° at 5 s.",
+      "hints": {
+        "1": "abs(roll) > 20 catches both directions.",
+        "2": "tone(BUZZER, 2000) keeps playing until noTone(BUZZER).",
+        "3": "digitalWrite(13, alarm ? HIGH : LOW); sets the LED in one line."
+      },
+      "checks": {
+        "1": "Runs",
+        "2": "Level: D13 LOW",
+        "3": "Tipped 35°: D13 HIGH",
+        "4": "Tipped 35°: the buzzer sounds at about 2 kHz",
+        "5": "Back to -10°: D13 LOW again",
+        "6": "Tipped -40°: D13 HIGH",
+        "7": "Tipped -40°: the buzzer sounds"
+      },
+      "code": {
+        "goal": "Warn with D13 and the buzzer when the robot tips past 20°",
+        "todo": "past 20° either way: D13 HIGH and a 2 kHz tone; otherwise D13 LOW and noTone()"
+      }
+    },
+    "calibrate": {
+      "title": "Calibrate the gyro",
+      "brief": "The board lies still, yet gx reads about 0.6 °/s: the gyro's zero-rate offset, up to ±20 °/s on this chip. Integrate that and the angle drifts away. In setup(), read gx 200 times, average the counts into offset and print it as \"calibrated: offset N counts\". loop() already subtracts it.",
+      "hints": {
+        "1": "long sum = 0; for (int i = 0; i < 200; i++) { sum += readGx(); delay(2); }",
+        "2": "offset = sum / 200; keeps it in counts, like the reads.",
+        "3": "Keep the board still while it calibrates: any turn becomes part of the offset."
+      },
+      "checks": {
+        "1": "Runs",
+        "2": "Prints the offset it measured, about 79 counts",
+        "3": "After calibrating, gx reads 0.00 °/s at rest"
+      },
+      "code": {
+        "goal": "Measure the gyro's offset at rest and take it off every read",
+        "todo": "average 200 reads of gx into offset and print \"calibrated: offset N counts\"",
+        "gyro": "GYRO_XOUT_H: 2 bytes of X rotation"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "regulator": {
+        "q": "Why can a 3.3 V chip sit on a 5 V Nano without harm?",
+        "options": {
+          "1": "The MPU-6050 takes 5 V",
+          "2": "The board's 662K regulator makes 3.3 V, and the I2C pull-ups go to 3.3 V",
+          "3": "The Nano switches to 3.3 V on its own"
+        },
+        "why": "VCC only feeds the regulator. The chip, the LED and the pull-ups all run on its 3.3 V, so SDA and SCL never go above 3.3 V."
+      },
+      "pullups": {
+        "q": "What do R4 and R5 do?",
+        "options": {
+          "1": "Pull SDA and SCL up: I2C devices only ever pull the lines low",
+          "2": "Limit the LED current",
+          "3": "Set the address"
+        },
+        "why": "I2C is open-drain. The resistors bring each line back up when nobody holds it low."
+      },
+      "address": {
+        "q": "What sets the address to 0x68?",
+        "options": {
+          "1": "The Nano's sketch",
+          "2": "The regulator",
+          "3": "AD0 held low by R6"
+        },
+        "why": "The address is 0b110100 plus AD0. Low: 0x68; high: 0x69."
+      }
+    },
+    "read": {
+      "asleep": {
+        "q": "Every reading is 0 but the scanner finds 0x68. What is wrong?",
+        "options": {
+          "1": "The chip is broken",
+          "2": "The pull-ups are missing",
+          "3": "Nobody woke it: PWR_MGMT_1 still holds 0x40, sleep"
+        },
+        "why": "The MPU-6050 powers up asleep. It answers on the bus but measures nothing until 0 is written to 0x6B."
+      },
+      "counts": {
+        "q": "az reads 16384 counts. How much is that?",
+        "options": {
+          "1": "1 g: the board is lying flat",
+          "2": "16 g",
+          "3": "16384 °/s"
+        },
+        "why": "At ±2 g one g is 16384 counts. Lying flat, all of gravity is on Z."
+      },
+      "roll": {
+        "q": "ay = 0.5 g and az = 0.87 g. How far is the board tipped?",
+        "options": {
+          "1": "50°",
+          "2": "About 30°",
+          "3": "87°"
+        },
+        "why": "atan2(0.5, 0.87) is 30°: sin 30° = 0.5 and cos 30° = 0.87."
+      }
+    },
+    "faults": {
+      "minus-one": {
+        "q": "With R6 missing, why does the sketch print exactly -135°?",
+        "options": {
+          "1": "The chip is upside down",
+          "2": "Nobody answers at 0x68, every byte reads -1, and atan2(-1, -1) is -135°",
+          "3": "The regulator is off"
+        },
+        "why": "Wire.read() returns -1 when there is nothing to read. Two bytes of -1 make the count -1 on every axis."
+      },
+      "lipo": {
+        "q": "Why must VCC not come from a 2S LiPo?",
+        "options": {
+          "1": "The 662K regulator is rated for 6 V in, and 7.4-8.4 V burns it",
+          "2": "LiPos give AC",
+          "3": "The chip runs too fast"
+        },
+        "why": "The regulator is the only thing between VCC and the chip. Over 6 V it fails, and if it fails short the chip gets the battery voltage."
+      },
+      "noise": {
+        "q": "The gyro reads noise but the accelerometer is fine. Which part do you check first?",
+        "options": {
+          "1": "The pull-ups",
+          "2": "The LED resistor",
+          "3": "C14, the charge-pump capacitor on CPOUT"
+        },
+        "why": "Only the gyro uses the charge pump. Without its capacitor the gyro has no drive and outputs noise."
+      }
+    },
+    "end": {
+      "rate": {
+        "q": "What does the gyro measure?",
+        "options": {
+          "1": "How fast the board turns, in °/s, not its angle",
+          "2": "The angle directly",
+          "3": "Gravity"
+        },
+        "why": "A gyro gives rate. To get an angle you add up rate x time, which also adds up any offset."
+      },
+      "drift": {
+        "q": "Why does an angle from the gyro alone drift even when the robot is still?",
+        "options": {
+          "1": "The accelerometer pulls it",
+          "2": "Gravity changes",
+          "3": "The zero-rate offset (up to ±20 °/s) gets integrated with everything else"
+        },
+        "why": "0.6 °/s of offset becomes 36° in a minute. Calibrate the offset away, and correct with the accelerometer's slow but drift-free angle."
+      },
+      "vibration": {
+        "q": "On a robot with motors the accelerometer's angle jitters. Why?",
+        "options": {
+          "1": "The motors change gravity",
+          "2": "It cannot tell vibration from tilt: any acceleration adds to gravity",
+          "3": "The gyro interferes"
+        },
+        "why": "An accelerometer measures all acceleration. Filter it (the chip's low-pass, a complementary filter with the gyro) and soft-mount the board."
+      }
+    }
+  }
+}
