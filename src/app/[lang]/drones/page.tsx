@@ -71,7 +71,7 @@ async function DronesIndex({ params }: Pick<Props, "params">) {
 
       <ul aria-labelledby={headingId} className="mt-10 grid grid-cols-[repeat(auto-fill,minmax(min(17.5rem,100%),1fr))] gap-4 lg:gap-6">
         {cards.map((card) => (
-          <li key={card.id}>
+          <li key={card.id} className="row-span-4 grid grid-rows-subgrid gap-y-0">
             <CraftCardView card={card} lang={lang} t={t} messages={messages} />
           </li>
         ))}
@@ -98,62 +98,68 @@ function CraftCardView({
     <Card
       as="article"
       padding="none"
-      className="group relative flex h-full flex-col overflow-hidden focus-within:outline-[2.5px] focus-within:outline-offset-2 focus-within:outline-(--focus)"
+      // a subgrid of the list's rows: band, title, chips and numbers line up across every card of a row
+      className="group relative row-span-4 grid grid-rows-subgrid gap-y-0 overflow-hidden focus-within:outline-[2.5px] focus-within:outline-offset-2 focus-within:outline-(--focus)"
       aria-labelledby={titleId}
     >
       <div className={`flex items-center justify-between gap-3 border-b-2 border-line px-4 py-1.5 text-on-color sm:py-2 ${BAND[card.palette]}`}>
         <span className="font-ui text-xs font-bold uppercase tracking-wider">{t("index.fig", { n: fig })}</span>
         <span className="font-ui text-xs font-bold uppercase tracking-wider">{t(`firmware.${card.firmware}`)}</span>
       </div>
-      <div className="flex flex-1 flex-col gap-2 p-3 pb-4 sm:gap-3 sm:p-4 sm:pb-5">
-        {craft ? (
-          <>
-            <div>
-              <h2 id={titleId} className="font-head text-xl leading-tight">
-                <Link href={`/${lang}/drones/${card.id}`} className="no-underline after:absolute after:inset-0 group-hover:underline focus-visible:outline-none">
-                  {craft.title}
-                </Link>
-              </h2>
-              <p className="mt-1 text-sm text-muted max-sm:hidden">{craft.sub}</p>
-            </div>
-            <div className="flex flex-wrap gap-1.5 max-sm:hidden">
-              <Chip tone={TONE[card.palette]}>{t(`classes.${craft.class}`)}</Chip>
-              <Chip>{t("index.motors", { count: card.motors })}</Chip>
-              <Chip>{t("index.size", { mm: craft.sizeMm })}</Chip>
-            </div>
-            <dl className="mt-auto grid grid-cols-3 gap-2 border-t-[1.5px] border-rule pt-2 sm:pt-3">
-              <div className="min-w-0">
-                <dt className="ink-label truncate">{t("index.statAuw")}</dt>
-                <dd className="tabular font-ui text-sm font-semibold">{t("design.units.g", { value: formatNumber(lang, craft.auw, 0) })}</dd>
-              </div>
-              <div className="min-w-0">
-                <dt className="ink-label truncate">{t("index.statTw")}</dt>
-                <dd className="tabular font-ui text-sm font-semibold">{t("design.units.tw", { value: formatNumber(lang, craft.tw, 1) })}</dd>
-              </div>
-              <div className="min-w-0">
-                <dt className="ink-label truncate">{craft.wing ? t("index.statCruise") : t("index.statTime")}</dt>
-                <dd className="tabular font-ui text-sm font-semibold">
-                  {t("design.units.min", { value: formatNumber(lang, craft.wing ? craft.hoverMin : craft.flyMin, 1) })}
-                </dd>
-              </div>
-            </dl>
-            <CraftProgress
-              keys={craft.keys}
-              label={t("index.progress")}
-              countTemplate={messages.index.progressValue}
-              valueTemplate={messages.index.progressLabel}
-              line
-            />
-          </>
-        ) : (
-          <>
-            <h2 id={titleId} className="font-head text-xl">
-              {t("index.fig", { n: fig })}
+      {craft ? (
+        <>
+          <div className="px-3 pt-3 sm:px-4 sm:pt-4">
+            <h2 id={titleId} className="font-head text-xl leading-tight">
+              <Link href={`/${lang}/drones/${card.id}`} className="no-underline after:absolute after:inset-0 group-hover:underline focus-visible:outline-none">
+                {craft.title}
+              </Link>
             </h2>
-            <p className="text-sm text-muted">{t("index.notReady")}</p>
-          </>
-        )}
-      </div>
+            <p className="mt-1 text-sm text-muted max-sm:hidden">{craft.sub}</p>
+          </div>
+          <ul className="flex flex-wrap content-start gap-1.5 px-3 pt-2 max-sm:hidden sm:px-4 sm:pt-3">
+            <li>
+              <Chip tone={TONE[card.palette]}>{t(`classes.${craft.class}`)}</Chip>
+            </li>
+            <li>
+              <Chip>{t("index.motors", { count: card.motors })}</Chip>
+            </li>
+            <li>
+              <Chip>{t("index.size", { mm: craft.sizeMm })}</Chip>
+            </li>
+          </ul>
+          <dl className="mx-3 mb-4 mt-2 grid grid-cols-3 gap-2 border-t-[1.5px] border-rule pt-2 sm:mx-4 sm:mb-5 sm:mt-3 sm:pt-3">
+            <div className="min-w-0">
+              <dt className="ink-label truncate">{t("index.statAuw")}</dt>
+              <dd className="tabular font-ui text-sm font-semibold">{t("design.units.g", { value: formatNumber(lang, craft.auw, 0) })}</dd>
+            </div>
+            <div className="min-w-0">
+              <dt className="ink-label truncate">{t("index.statTw")}</dt>
+              <dd className="tabular font-ui text-sm font-semibold">{t("design.units.tw", { value: formatNumber(lang, craft.tw, 1) })}</dd>
+            </div>
+            <div className="min-w-0">
+              <dt className="ink-label truncate">{craft.wing ? t("index.statCruise") : t("index.statTime")}</dt>
+              <dd className="tabular font-ui text-sm font-semibold">
+                {t("design.units.min", { value: formatNumber(lang, craft.wing ? craft.hoverMin : craft.flyMin, 1) })}
+              </dd>
+            </div>
+          </dl>
+          {/* a line along the card's bottom edge, outside the rows */}
+          <CraftProgress
+            keys={craft.keys}
+            label={t("index.progress")}
+            countTemplate={messages.index.progressValue}
+            valueTemplate={messages.index.progressLabel}
+            line
+          />
+        </>
+      ) : (
+        <div className="row-span-3 px-3 pb-4 pt-3 sm:px-4 sm:pb-5 sm:pt-4">
+          <h2 id={titleId} className="font-head text-xl">
+            {t("index.fig", { n: fig })}
+          </h2>
+          <p className="mt-2 text-sm text-muted">{t("index.notReady")}</p>
+        </div>
+      )}
     </Card>
   );
 }

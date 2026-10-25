@@ -11,7 +11,6 @@ import { IconButton } from "@/components/ui/IconButton";
 import { Panel } from "@/components/ui/Panel";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { Tabs } from "@/components/ui/Tabs";
-import { Toggle } from "@/components/ui/Toggle";
 import type { Locale } from "@/i18n/config";
 import { isDesignPick } from "@/lib/drone/design";
 import { buildComplete, droneProgressKeys, isEngineTest, testStatus } from "@/lib/dronelab/bench";
@@ -235,7 +234,9 @@ export function DroneWorkspace({ lang, content, text, messages, notice }: Props)
 
   const stage = (
     <>
-      <div className="flex shrink-0 flex-wrap items-center gap-x-2 gap-y-1 sm:flex-nowrap sm:overflow-x-auto sm:[scrollbar-width:none]">
+      {/* the readouts are the bench's one status line (the figure's HUD is hidden): where the stage is narrow (a phone,
+          or Lab tools open beside it) they wrap to a line of their own rather than being cut */}
+      <div className="flex shrink-0 flex-wrap items-center gap-x-2 gap-y-1">
         <SegmentedControl
           label={t("workspace.view")}
           value={state.sheet === "wiring" ? "wiring" : "bench"}
@@ -246,45 +247,49 @@ export function DroneWorkspace({ lang, content, text, messages, notice }: Props)
           onChange={(v) => dispatch({ type: "sheet", sheet: v === "wiring" ? "wiring" : null })}
           size="sm"
         />
-        <Toggle
-          checked={state.exploded}
-          onChange={(on) => dispatch({ type: "exploded", on })}
-          label={t("workspace.exploded")}
+        <Button
+          size="sm"
+          variant="secondary"
+          aria-pressed={state.exploded}
+          onClick={() => dispatch({ type: "exploded", on: !state.exploded })}
           // the wiring sheet covers the craft: exploding it then shows nothing
           disabled={!ready || state.sheet === "wiring"}
-          className="shrink-0 !gap-2 whitespace-nowrap"
-        />
-        <dl
-          aria-label={t("workspace.status.title")}
-          // the figure's HUD is hidden (stats), so this is the one readout: its own row on a phone
-          className="flex shrink-0 items-center gap-x-4 whitespace-nowrap max-sm:w-full max-sm:justify-between sm:ms-auto sm:ps-2"
-          data-testid="bench-status"
+          className="shrink-0 whitespace-nowrap"
         >
-          <div className="flex items-baseline gap-1.5">
-            <dt className="ink-label">{t("workspace.status.parts")}</dt>
-            <dd className="tabular font-ui text-sm font-semibold">{ready ? `${bench.fitted}/${bench.total}` : "…"}</dd>
-          </div>
-          <div className="flex items-baseline gap-1.5">
-            <dt className="ink-label">{t("workspace.status.plugged")}</dt>
-            <dd className="font-ui text-sm font-semibold">{bench.plugged ? t("workspace.status.pluggedOn") : t("workspace.status.pluggedOff")}</dd>
-          </div>
-          <div className="flex items-baseline gap-1.5">
-            <dt className="ink-label">{t("workspace.status.fault")}</dt>
-            <dd className={`font-ui text-sm font-semibold ${bench.fault ? "text-bad" : ""}`}>
-              {bench.fault ? t("workspace.status.faultCap") : t("workspace.status.faultNone")}
-            </dd>
-          </div>
-        </dl>
-        <IconButton
-          ref={enterFigure}
-          icon="target"
-          size="sm"
-          label={t("workspace.figureFocus")}
-          shortcut="F"
-          onClick={() => figure?.focus()}
-          aria-keyshortcuts="F"
-          className="[@media(pointer:coarse)]:hidden"
-        />
+          {t("workspace.exploded")}
+        </Button>
+        <div className="flex shrink-0 items-center gap-x-2 max-sm:w-full sm:ms-auto">
+          <dl
+            aria-label={t("workspace.status.title")}
+            className="flex items-center gap-x-4 whitespace-nowrap max-sm:w-full max-sm:justify-between"
+            data-testid="bench-status"
+          >
+            <div className="flex items-baseline gap-1.5">
+              <dt className="ink-label">{t("workspace.status.parts")}</dt>
+              <dd className="tabular font-ui text-sm font-semibold">{ready ? `${bench.fitted}/${bench.total}` : "…"}</dd>
+            </div>
+            <div className="flex items-baseline gap-1.5">
+              <dt className="ink-label">{t("workspace.status.plugged")}</dt>
+              <dd className="font-ui text-sm font-semibold">{bench.plugged ? t("workspace.status.pluggedOn") : t("workspace.status.pluggedOff")}</dd>
+            </div>
+            <div className="flex items-baseline gap-1.5">
+              <dt className="ink-label">{t("workspace.status.fault")}</dt>
+              <dd className={`font-ui text-sm font-semibold ${bench.fault ? "text-bad" : ""}`}>
+                {bench.fault ? t("workspace.status.faultCap") : t("workspace.status.faultNone")}
+              </dd>
+            </div>
+          </dl>
+          <IconButton
+            ref={enterFigure}
+            icon="target"
+            size="sm"
+            label={t("workspace.figureFocus")}
+            shortcut="F"
+            onClick={() => figure?.focus()}
+            aria-keyshortcuts="F"
+            className="[@media(pointer:coarse)]:hidden"
+          />
+        </div>
       </div>
       <div className="relative min-h-0 flex-1">
         <FigureFrame
@@ -297,8 +302,8 @@ export function DroneWorkspace({ lang, content, text, messages, notice }: Props)
           fill
         />
         {empty ? (
-          // on a phone the card sits low, between the figure's HUD and its See-through and zoom row
-          <div className="pointer-events-none absolute inset-0 grid place-items-end justify-items-center p-3 pb-14 sm:place-items-center sm:p-4">
+          // centred between the figure's part pickers (two rows in German on a phone) and its zoom and See-through rows
+          <div className="pointer-events-none absolute inset-0 grid place-items-center px-3 py-20 sm:p-4">
             <div className="pointer-events-auto w-full max-w-sm rounded-ink border-2 border-line bg-surface p-3 text-center shadow-ink animate-ink-fade sm:p-4">
               <p className="font-head text-base sm:text-lg">{t("workspace.empty")}</p>
               <div className="mt-2 flex flex-wrap justify-center gap-2 sm:mt-3">

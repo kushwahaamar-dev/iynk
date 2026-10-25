@@ -147,3 +147,79 @@ test.describe("quad5 workshop", () => {
     expect(errors).toEqual([]);
   });
 });
+
+test("the index cards line up row by row", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/en/drones");
+  const cards = main(page).locator("ul > li > article");
+  await expect(cards).toHaveCount(13);
+  // the chips and the numbers start at the same height on every card of a row, so a two-line title (Agrihex) moves
+  // its whole row down instead of leaving a gap under the other cards' chips
+  const rows = await cards.evaluateAll((list) => {
+    const byRow = new Map<number, string[]>();
+    for (const card of list) {
+      const top = Math.round(card.getBoundingClientRect().top);
+      const at = (sel: string) => Math.round(card.querySelector(sel)!.getBoundingClientRect().top);
+      byRow.set(top, [...(byRow.get(top) ?? []), `${at("ul")}:${at("dl")}`]);
+    }
+    return [...byRow.values()].map((tops) => new Set(tops).size);
+  });
+  expect(rows).toEqual(rows.map(() => 1));
+});
+
+test("Exploded view is a pressed button, as on the board page", async ({ page }) => {
+  await openWorkshop(page);
+  const exploded = main(page).getByRole("button", { name: dronelab.workspace.exploded, exact: true });
+  await expect(exploded).toHaveAttribute("aria-pressed", "false");
+  await exploded.click();
+  await expect(exploded).toHaveAttribute("aria-pressed", "true");
+});
+
+// German labels are the longest: there the readouts take a line of their own rather than being cut
+for (const { lang, open, fault } of [
+  { lang: "en", open: /lab tools/i, fault: dronelab.workspace.status.fault },
+  { lang: "de", open: /werkzeuge/i, fault: "Fehler" },
+]) {
+  test(`with Lab tools open the toolbar's readouts are whole (${lang})`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(`/${lang}/drones/quad5`);
+    const status = page.locator(`main#main-${lang}`).getByTestId("bench-status");
+    await expect(status).toContainText(/\d+\/\d+/, { timeout: 20_000 });
+    await page.locator(`main#main-${lang}`).getByRole("button", { name: open }).first().click();
+    await expect(page.getByRole("tablist").last()).toBeVisible();
+    await expect(status).toContainText(fault);
+    const cut = await status.locator("dt, dd").evaluateAll((cells) =>
+      cells
+        .filter((c) => {
+          const r = c.getBoundingClientRect();
+          const stage = c.closest("[data-testid=bench-status]")!.parentElement!.parentElement!.getBoundingClientRect();
+          return r.width === 0 || c.scrollWidth > c.clientWidth + 1 || r.right > stage.right + 1;
+        })
+        .map((c) => c.textContent),
+    );
+    expect(cut).toEqual([]);
+  });
+}
+
+test.describe("on a phone", () => {
+  test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+
+  test("the empty-mat card leaves the figure's own buttons clear", async ({ page }) => {
+    await openWorkshop(page);
+    const card = main(page).getByTestId("empty-build").locator("xpath=ancestor::div[contains(@class,'pointer-events-auto')][1]");
+    await expect(card).toBeVisible();
+    const box = await card.boundingBox();
+    const frame = page.frames().find((f) => f.url().includes("/figures/drones/quad5.html"))!;
+    const iframe = (await main(page).locator('iframe[src*="/figures/drones/quad5.html"]').boundingBox())!;
+    const buttons = await frame.evaluate(() =>
+      [...document.querySelectorAll("button")]
+        .filter((b) => b.getClientRects().length > 0 && getComputedStyle(b).visibility !== "hidden")
+        .map((b) => ({ name: b.textContent?.trim(), ...b.getBoundingClientRect().toJSON() })),
+    );
+    expect(buttons.length).toBeGreaterThan(0);
+    const under = buttons.filter(
+      (b) => b.top + iframe.y < box!.y + box!.height && b.bottom + iframe.y > box!.y && b.left + iframe.x < box!.x + box!.width && b.right + iframe.x > box!.x,
+    );
+    expect(under.map((b) => b.name)).toEqual([]);
+  });
+});
