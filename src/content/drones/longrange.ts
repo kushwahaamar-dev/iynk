@@ -74,32 +74,32 @@ const longrange: DroneContent = {
       '7x4x3': { pf: 1.18, eff: 0.86, g: 10.5, price: 6, r: 89, label: '7x4 tri-blade (punchy)' },
     },
     default: { batt: '6s1p4000', motor: '2807-1300', prop: '7x3.5x2' },
-    // Spot rows from drone-lab-a Appendix A at its printed precision (the full 27 are in longrange.test.ts).
+    // Spot rows from drone-lab-a Appendix A at its printed precision (src/lib/drone/content.test.ts checks all 27).
     golden: [
       {
         pick: { batt: '6s1p4000', motor: '2807-1300', prop: '7x3.5x2' },
         expect: { auw: 925.0, thrust: 1332.6, tw: 5.76, hoverThr: 0.42, maxA: 120, hoverMin: 36.9, flyMin: 15.5, over: false, weak: false, cost: { electrical: 394, mechanical: 81, total: 475 } },
-        verdict: 'ok',
+        verdict: 'design.verdict.ok',
       },
       {
         pick: { batt: '6s1p5000', motor: '2807-1300', prop: '7x3.5x2' },
         expect: { auw: 953.0, tw: 5.59, hoverThr: 0.42, maxA: 120, hoverMin: 44.7, flyMin: 18.8, over: false, weak: false, cost: { electrical: 410, mechanical: 81, total: 491 } },
-        verdict: 'ok',
+        verdict: 'design.verdict.ok',
       },
       {
         pick: { batt: '6s1800', motor: '2807-1300', prop: '7x3.5x2' },
         expect: { auw: 777.0, tw: 6.86, hoverThr: 0.38, maxA: 120, hoverMin: 19.8, flyMin: 8.3, over: false, weak: false, cost: { electrical: 386, mechanical: 81, total: 467 } },
-        verdict: 'ok',
+        verdict: 'design.verdict.ok',
       },
       {
         pick: { batt: '6s1p4000', motor: '3008-1100', prop: '7x3.5x2' },
         expect: { auw: 957.0, thrust: 954.1, tw: 3.99, hoverThr: 0.50, maxA: 86, hoverMin: 35.6, flyMin: 15.0, over: false, weak: false },
-        verdict: 'ok',
+        verdict: 'design.verdict.ok',
       },
       {
         pick: { batt: '6s1p4000', motor: '2807-1700', prop: '7x4x3' },
         expect: { auw: 931.0, thrust: 2689.1, tw: 11.55, hoverThr: 0.29, maxA: 282, hoverMin: 31.5, flyMin: 13.2, over: true, weak: false, cost: { electrical: 386, mechanical: 83, total: 469 } },
-        verdict: 'over',
+        verdict: 'design.verdict.over',
       },
     ],
   },
@@ -755,7 +755,7 @@ const longrange: DroneContent = {
     { title: 'Molicel INR-21700-P50B datasheet', url: 'https://www.fsaeonline.com/content/Molicel-TDS--INR-21700-P50B-80122.pdf' },
     { title: 'iFlight Chimera7 Pro V2 frame (327 mm, 6 mm arms)', url: 'https://shop.iflight.com/Chimera7-Pro-V2-Frame-Kit-Pro1890' },
     { title: 'BrotherHobby SE 2807 1300 KV thrust data on 6S', url: 'https://www.rotorama.com/product/brotherhobby-se-2807-1300kv' },
-    { title: 'The end of BLHeli_32 (support ended 30 June 2024)', url: 'https://oscarliang.com/end-of-blheli_32' },
+    { title: 'The end of BLHeli_32 (June 2024)', url: 'https://oscarliang.com/end-of-blheli_32' },
     { title: 'ESC Configurator (AM32, Bluejay, BLHeli_S)', url: 'https://esc-configurator.com' },
     { title: 'ExpressLRS receiver setup (CRSF on a full UART)', url: 'https://www.expresslrs.org/quick-start/receivers/configuring-fc/' },
   ],

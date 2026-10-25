@@ -1,0 +1,414 @@
+{
+  "title": "7-inch long-range quad",
+  "tagline": "The 7-inch cruiser: GPS, a 900 MHz link and a Li-ion pack, kilometres out and a rescue home.",
+  "sub": "GPS Rescue long-range cruiser",
+  "hint": "Build it, lock the GPS and test the rescue with the props off, then fly the valley",
+  "noun": "long-range quad",
+  "overview": "A 7-inch long-range quad trades a 5-inch's punch for efficiency: big, low-pitch props turned slowly by 1300 KV motors, and a 6S1P pack of 21700 Li-ion cells that holds about twice the energy per gram of a LiPo. A GPS and compass on a mast tell Betaflight where home is, and an ExpressLRS 900 MHz link reaches several kilometres. If the link is lost, GPS Rescue climbs, turns for home, flies back and lands. This one has a 315 mm True-X carbon frame, a 30.5 mm F7 stack and a 1 W analog video transmitter. Pick the pack, motors and props and watch the flight time change, build it part by part, run the compass, GPS and failsafe checks with the props off, then fly the valley.",
+  "practice": "Fly the farmhouse gates to get the feel of a heavy 7-inch, then the valley run with an eye on the home arrow, then watch GPS Rescue bring it home. On a real long-range quad: calibrate the compass and check its heading against a phone, wait for 8 or more satellites before you arm, and test the rescue close in (50 to 100 m out, switch GPS RESCUE on and watch it come back) before you trust it far out. Turn for home at 3.1 V a cell, and know the rules where you fly: most countries want the quad within sight, or a spotter next to you.",
+  "design": {
+    "fixed": {
+      "FRAME": "7-inch carbon True-X frame",
+      "ESC": "50 A 4-in-1 ESC (AM32)",
+      "FC": "F7 flight controller with barometer",
+      "CAM": "Analog FPV camera",
+      "VTX": "5.8 GHz 1 W VTX and stubby antenna",
+      "RX": "ELRS 900 MHz diversity receiver and T-antenna",
+      "GPS": "M10 GPS + QMC5883L compass",
+      "XT60": "XT60 pigtail and low-ESR capacitor",
+      "TOP": "Top plate, standoffs and GPS mast",
+      "STRAP": "Battery strap and grip pad"
+    },
+    "verdict": {
+      "ok": "Parts match. Efficient and calm: a long-range cruiser.",
+      "over": "{kv} KV on {cells}S spins a 7-inch prop far faster than these motors are made for: huge current, hot motors and desyncs. 6S 7-inch builds use about 1300 KV; 1700 KV motors are for 4S."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "7-inch carbon True-X frame",
+      "what": "6 mm carbon arms in a square True-X, 315 mm motor to motor across the diagonal (111.4 mm forward or back and to each side of the centre), on a 132 x 52 mm body plate with the 30.5 mm stack holes in the middle. 7-inch props leave about 45 mm between neighbouring tips. Thick arms keep the big props from flexing the frame. About 162 g."
+    },
+    "MOTORS": {
+      "name": "Four 2807 low-KV motors",
+      "what": "Outrunners with a 28 mm stator 7 mm tall and 12N14P windings (motor_poles 14), about 48 g each. 1300 KV on 6S is the classic 7-inch motor: it turns the big props slowly and efficiently at cruise and still has 5 times its weight in thrust. The 3008 1100 KV option is bigger and calmer; the 1700 KV option is a 4S motor and over-spins a 7-inch prop on 6S."
+    },
+    "ESC": {
+      "name": "50 A 4-in-1 ESC (AM32)",
+      "what": "Four 50 A motor drivers with 12 MOSFETs on one 30.5 mm board at the bottom of the stack, battery pads at the rear. It runs AM32 firmware (BLHeli_32 ended in 2024), takes DShot600 from the flight controller and, being bidirectional, reports each motor's rpm back for the RPM filter."
+    },
+    "WIRES": {
+      "name": "Motor phase wires",
+      "what": "Three wires per motor, run along the long arms and soldered to that corner's pads on the ESC. Any order spins the motor; swapping two, or reversing it in the ESC firmware, turns it the other way. Tie them down: a loose wire on a 7-inch arm ends up in a prop."
+    },
+    "XT60": {
+      "name": "XT60 lead and 1000 µF 35 V capacitor",
+      "what": "A 12 AWG pigtail with the yellow XT60 plug, soldered to the ESC's battery pads, and a 1000 µF low-ESR capacitor across the same pads, stripe on the minus leg. A 7-inch's long battery leads ring with voltage spikes every time the ESCs switch and brake; the capacitor soaks them up before they reach the gyro and the video. 35 V is the minimum for 6S (25.2 V full); 50 V gives margin."
+    },
+    "FC": {
+      "name": "F7 flight controller with barometer",
+      "what": "An F722 flight controller on the 30.5 mm stack, with a gyro, a barometer for altitude and an analog OSD chip. It runs Betaflight 2026.6.2. The receiver is on UART2, the GPS on UART3, the compass on the I2C pads and the VTX's SmartAudio on UART1. GPS Rescue needs the accelerometer, the GPS on a full UART and, for height, the barometer. The arrow must point at the nose."
+    },
+    "VTX": {
+      "name": "5.8 GHz 1 W VTX and stubby antenna",
+      "what": "An analog video transmitter that goes up to 1 W (30 dBm), on top of the stack with a stubby antenna out of the back. Betaflight sets its band, channel and power over SmartAudio. Far out, the 5.8 GHz video fades before the 900 MHz control link does. Never power it without the antenna, and keep it at 25 mW on the bench: 1 W gets hot fast."
+    },
+    "CAM": {
+      "name": "Analog FPV camera, 20° uptilt",
+      "what": "A 19 mm analog camera between the side plates at the nose, tilted up 20 degrees so the picture is level when the quad leans forward to cruise. Its video goes into the flight controller's CAM pad, where the OSD writes the link quality, satellites, home arrow and battery on top."
+    },
+    "RX": {
+      "name": "ELRS 900 MHz diversity receiver and T-antenna",
+      "what": "An ExpressLRS receiver on 868 or 915 MHz with two antennas (diversity) on a T-shaped mount at the rear. Lower frequency reaches further and gets round trees and hills better than 2.4 GHz. It talks CRSF to Betaflight on UART2 and sends link quality (LQ) and signal strength (RSSI dBm) back for the OSD: watch both on a long flight."
+    },
+    "TOP": {
+      "name": "Top plate, standoffs and GPS mast",
+      "what": "A 2 mm carbon top plate on four 30 mm standoffs, and a printed TPU mast at the rear that leans back 22 degrees and ends in a level platform. The mast puts the GPS and compass far from the VTX, the ESC and the battery leads, whose currents would disturb the compass."
+    },
+    "GPS": {
+      "name": "M10 GPS + QMC5883L compass",
+      "what": "A 20 x 20 mm module of about 8 g on the mast: a u-blox M10 receiver (GPS, Galileo, BeiDou, GLONASS) on UART3 and a QMC5883L compass on I2C, in one 6-pin lead. It must sit flat, with its arrow to the nose. The green LED is solid while it searches and blinks once a second with a 3D fix. Betaflight needs 8 satellites before it will arm, so it has a home point."
+    },
+    "BATT": {
+      "name": "6S1P 21700 Li-ion pack",
+      "what": "Six 21700 cells in series (6S, one in parallel: 1P), bundled 3 x 2 in a 71 x 65 x 44 mm block of about 440 g, strapped on the top plate. A Li-ion cell is 4.2 V full and 3.6 V nominal and runs usefully down to about 3.0 V, carrying about twice a LiPo's energy per gram. But a 4000 mAh cell is rated about 45 A: a 120 A punch-out sags it hard and heats it. The P50B option holds 5000 mAh at 60 A; the 6S 1800 LiPo is lighter and punchier with less than half the energy."
+    },
+    "PROPS": {
+      "name": "7-inch bi-blade props, 2 CW + 2 CCW",
+      "what": "Four 7 x 3.5 two-blade props, the efficient long-range choice. The picker also offers a longer 7.5 x 3.7 two-blade and a punchier 7 x 4 three-blade that grips better but costs flight time. Two turn clockwise and two counter-clockwise (props in). They go on last."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Start with the frame",
+      "body": "Bolt the arms between the plates and check every screw: a 7-inch shakes loose what a 5-inch never does. File any sharp carbon edge near where wires will run."
+    },
+    "motors": {
+      "title": "Screw on the four motors",
+      "body": "Four M3 screws each on the 16 x 16 mm holes at the arm tips, wires pointing in along the arm. Check that the screws do not touch the windings.",
+      "refusal": "The motors screw to the frame's arms: fit the frame first."
+    },
+    "esc": {
+      "title": "Mount the 4-in-1 ESC",
+      "body": "On the 30.5 mm stack holes with the battery pads at the rear. Nothing on its underside may touch the carbon.",
+      "refusal": "The ESC sits on the frame's stack holes: fit the frame first."
+    },
+    "wires": {
+      "title": "Solder the motor wires",
+      "body": "Run each motor's three wires along its arm, cut them to length and solder them to the pads in its corner. Tie them down with a sleeve or tape so nothing can reach a prop.",
+      "refusal": "The wires run from the motors to the ESC: fit both first."
+    },
+    "xt60": {
+      "title": "Solder the XT60 and the capacitor",
+      "body": "The 12 AWG pigtail red to + and black to - on the ESC's battery pads, and the 1000 µF capacitor across the same pads with its stripe to minus. Check + and - for a short with a meter.",
+      "refusal": "The XT60 and its capacitor solder to the ESC's battery pads: fit the ESC first."
+    },
+    "fc": {
+      "title": "Stack the flight controller, arrow forward",
+      "body": "On grommets above the ESC with the 8-pin harness plugged in and the printed arrow to the nose. If it has to sit another way round, set align_board_yaw to match.",
+      "refusal": "The flight controller stacks on top of the ESC: fit the ESC first."
+    },
+    "vtx": {
+      "title": "Fit the VTX and its antenna",
+      "body": "On top of the stack, with video and 9 V from the flight controller and SmartAudio on TX1. Screw the stubby antenna on before it ever gets power.",
+      "refusal": "The VTX is wired to the flight controller: fit the flight controller first."
+    },
+    "cam": {
+      "title": "Fit the camera",
+      "body": "Between the side plates at the nose, tilted up 20 degrees, with its video, 5 V and ground to the flight controller's CAM pads.",
+      "refusal": "The camera is wired to the flight controller's CAM pads: fit the flight controller first."
+    },
+    "rx": {
+      "title": "Fit the 900 MHz receiver",
+      "body": "At the rear, its TX to RX2 and RX to TX2, plus 5 V and ground. Mount the T-antenna with its two elements at 90 degrees to each other, clear of the carbon and the props.",
+      "refusal": "The receiver is wired to the flight controller's UART2: fit the flight controller first."
+    },
+    "top": {
+      "title": "Fit the top plate and the GPS mast",
+      "body": "On its four standoffs over the stack, with the mast at the rear. Nothing under it may be pinched.",
+      "refusal": "The top plate closes over the stack: fit the flight controller, the VTX, the camera and the receiver first."
+    },
+    "gps": {
+      "title": "Mount the GPS on the mast",
+      "body": "Flat on the mast's platform with its arrow to the nose, and its lead to UART3, I2C, 5 V and ground. Tilted or turned, the compass reads wrong.",
+      "refusal": "The GPS sits on the mast: fit the top plate first."
+    },
+    "batt": {
+      "title": "Strap on the Li-ion pack",
+      "body": "On the grip pad with the strap through the frame, centred so the quad balances between the four motors. Do not plug it in yet.",
+      "refusal": "The pack rides on the top plate and plugs into the XT60: fit both first."
+    },
+    "props": {
+      "title": "Fit the props, last",
+      "body": "Only after the smoke stopper test and the motor direction check, with the pack unplugged. Clockwise props on M1 and M4, counter-clockwise on M2 and M3, nuts tight.",
+      "refusal": "Props go on last: run the smoke stopper test and the motor direction check first."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "The pack plugs into the XT60. 6S is 25.2 V full and 22.2 V nominal (21.6 V for Li-ion's 3.6 V cells). A punch-out pulls up to 120 A, far above what a 45 A Li-ion pack likes.",
+    "XT60-ESC": "12 AWG leads to the ESC's battery pads, with the 1000 µF 35 V low-ESR capacitor across them.",
+    "ESC-MOTORS": "Three phase wires per motor. Any order spins it; swapping two, or reversing it in the ESC firmware, turns it the other way.",
+    "FC-ESC": "The 8-pin harness: four DShot600 motor signals (bidirectional, so each ESC reports rpm), battery voltage, ground and the current sensor.",
+    "RX-FC": "ELRS on UART2 with CRSF: receiver TX to RX2 and RX to TX2, plus 5 V and ground. Both wires matter: telemetry (LQ, RSSI, battery) goes back to the radio.",
+    "GPS-FC": "One 6-pin lead: GPS TX to RX3 and RX to TX3 (u-blox UBX at 57600 baud once Betaflight has configured it), the compass's SDA and SCL to the I2C pads, 5 V and ground.",
+    "CAM-FC": "Camera video into the CAM pad, with 5 V and ground. The flight controller's analog OSD writes the GPS, link and battery data over it.",
+    "FC-VTX": "Video with the OSD out of the VTX pad, 9 V from the flight controller's BEC, and SmartAudio from TX1 so Betaflight sets the band, channel and power."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke stopper test",
+      "pass": "The lamp only blinked: nothing is shorted and the capacitor is the right way round. Safe to plug the pack in directly.",
+      "fail": "The lamp lit up solid: something is shorted, here a capacitor fitted stripe to plus. Re-fit it stripe to minus and run the test again before you plug in for real."
+    },
+    "motors": {
+      "title": "Motor direction check (props off)",
+      "pass": "All four spin the way the mixer expects: M1 and M4 clockwise, M2 and M3 counter-clockwise (props in). Now the props can go on.",
+      "fail": "One motor spun the wrong way (its arrow turns red). The check reverses it in the ESC settings, the way you would in ESC Configurator, instead of re-soldering. With the props on, it would have flipped the quad on take-off."
+    },
+    "accel": {
+      "title": "Accelerometer calibration",
+      "pass": "Calibrated on a level surface: angle mode, altitude hold and GPS Rescue now know where level is. With GPS Rescue as the failsafe, an uncalibrated accelerometer blocks arming (NO_ACC_CAL).",
+      "fail": "Fit the flight controller and set the quad on a level surface first. If the arrow points backwards, calibrating will not fix it: turn the board round or set align_board_yaw = 180."
+    },
+    "compass": {
+      "title": "Compass calibration and heading check",
+      "pass": "Calibrated (turned through every axis for 30 s), and the heading agrees with a phone compass within 10 degrees with the nose north, east, south and west. Now trust_mag = ON is safe.",
+      "fail": "Fit the GPS + compass module first: the compass is inside it. If the heading reads 180 degrees off, the module's arrow points backwards: turn it round and calibrate again before you trust it."
+    },
+    "gps": {
+      "title": "GPS lock (outdoors)",
+      "pass": "3D fix with 14 satellites, 8 needed to arm. The LED blinks once a second, Betaflight beeps when the GPS is ready, and home is set where you arm.",
+      "fail": "Fit the GPS + compass module and take the quad outdoors under a clear sky. Without a 3D fix and 8 satellites, Betaflight blocks arming (flag GPS): no home point, no rescue."
+    },
+    "failsafe": {
+      "title": "Failsafe and rescue test (props off)",
+      "pass": "Radio off: RXLOSS, 1.5 s of stage 1, then GPS RESCUE on the OSD, the motors spool up and the beeper sounds SOS. Radio back on and the sticks moved: control is yours again.",
+      "fail": "Take the props off, fit the receiver and the GPS, plug in, calibrate the accelerometer and get a GPS lock first: it has to arm. If the OSD home arrow points away from home, the compass is reversed: turn the GPS module round."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "First setup after flashing",
+      "explain": "Sets the mixer, the board alignment and DShot600 with bidirectional telemetry for the RPM filter; motor_poles is 14 for these 12N14P motors. Each serial line gives a port its job: 64 is the ELRS receiver on UART2, 2 is the GPS on UART3 at 57600 baud, and 2048 is SmartAudio on UART1, which only needs the TX wire. resource prints the pin map so you can check the motor, UART and I2C pins against the board."
+    },
+    "gps": {
+      "title": "GPS and compass",
+      "explain": "feature GPS turns the GPS on and gps_auto_config lets Betaflight set up the u-blox module itself (rate, constellations, Galileo). The compass is found on I2C; align_mag tells Betaflight how it sits: CW270FLIP is right for a Matek M10Q-5883 with its arrow to the nose, other modules differ, so check the heading. Since 2026.6 the compass is ignored for heading unless trust_mag is ON: switch it on only after calibrating and checking it."
+    },
+    "rescue": {
+      "title": "GPS Rescue as the failsafe",
+      "explain": "When the link is gone for failsafe_delay (1.5 s), GPS Rescue climbs, turns for home, flies back at 7.5 m/s and starts down 20 m out. return_alt only counts with FIXED_ALT; the default MAX_ALT returns at the highest height since arming plus 10 m, which can be below a ridge if you flew low along a valley. With fewer than 8 satellites Betaflight will not arm (flag GPS). FS_ONLY means a failed check in a real failsafe (no home, GPS lost, not closing on home for 20 s) ends in a descent where it is. ap_hover_throttle tells the autopilot this quad's real hover, 1420 µs. The aux line puts GPS RESCUE (mode 46) on a switch for testing."
+    },
+    "stage1": {
+      "title": "Stage 1: hold the throttle",
+      "explain": "For 0.3 s after the link drops every channel holds its last value; then each takes its rxfail value until failsafe_delay ends. By default the throttle goes low, so a cruising 7-inch drops for over a second before the rescue starts. rxfail 3 h makes the throttle (channel 3: roll, pitch, yaw, throttle count from 0) hold its last value instead. The four flight channels only take a (auto) or h (hold)."
+    },
+    "liion": {
+      "title": "Li-ion voltage alarms",
+      "explain": "Betaflight's defaults are LiPo numbers: a warning at 3.5 V a cell and the minimum at 3.3 V. A Li-ion cell still has about half its energy at 3.5 V and is used down to about 3.0 V under load (the cells are rated to 2.5 V), so the warning goes to 3.1 V and the minimum to 2.9 V. bat_capacity lets the OSD warn on mAh used too; set it to your pack."
+    },
+    "osd": {
+      "title": "The long-range OSD",
+      "explain": "Each _pos value is 2048 (OSD profile 1) plus the column plus 32 per row. Top left are the link quality and the RSSI in dBm, the two numbers that warn you the link is getting thin; along the top, the home arrow, the distance home and the satellite count; speed and altitude at mid height; the warnings in the middle, where RESCUE N/A, RESCUE FAIL and HEADING N/A show; the flight mode, volts per cell, amps and mAh along the bottom."
+    },
+    "vtx": {
+      "title": "1 W VTX power table",
+      "explain": "A SmartAudio 2.1 VTX takes its power in dBm: 14, 20, 26 and 30 dBm are 25, 100, 400 and 1000 mW. vtx_power picks a level from this table, 1 being the lowest. Keep 25 mW on the bench and low power until armed (vtx_low_power_disarm), and raise it only when you fly far: 1 W runs hot."
+    },
+    "switches": {
+      "title": "Switches: arm, angle, altitude hold, rescue, beeper",
+      "explain": "aux takes the mode's number: 0 ARM, 1 ANGLE, 3 ALTHOLD, 46 GPS RESCUE, 13 BEEPER. The channel counts from 0 = AUX1, and the range is in microseconds. The GPS RESCUE switch lets you test the rescue close in, and take it on purpose when the video breaks up; the beeper helps you find the quad in long grass."
+    },
+    "alt": {
+      "title": "Altitude hold",
+      "explain": "ALTHOLD holds the height with the barometer and the GPS. Centred throttle holds; the deadband is the 20 % of stick round the centre that counts as centred, and full stick climbs or sinks at 3 m/s (30 tenths)."
+    },
+    "angle": {
+      "title": "Angle mode",
+      "explain": "The flight controller levels the quad when you let go and never tilts it past angle_limit: 45 degrees here, plenty to cruise and gentler than the default 60."
+    },
+    "acro": {
+      "title": "Soft acro rates",
+      "explain": "Acro is what flies with angle and altitude hold off: the sticks set the rotation rate and nothing levels it. Under ACTUAL rates 7 and 50 give 70 degrees a second round the centre and 500 at full stick, soft for a heavy 7-inch. Yaw stops at 200."
+    },
+    "race": {
+      "title": "Gate timer",
+      "explain": "osd_tim1 packs the timer source and precision into one number: 2 (since the last arm) plus 1 x 16 (hundredths) is 18. Its position, 2135, is 2048 plus column 23 plus row 2 x 32."
+    },
+    "range": {
+      "title": "The valley run",
+      "explain": "Fly it in altitude hold, so the height looks after itself while you follow the river. The home arrow and the distance stay on the OSD: when the battery says turn for home, they show the way back."
+    }
+  },
+  "flight": {
+    "modes": {
+      "alt": {
+        "title": "Altitude hold (easy)",
+        "hint": "Angle mode plus altitude hold (barometer and GPS): W and S climb and sink at up to 3 m/s, and it holds its height when you let go. The arrows tilt it up to 45 degrees, A and D yaw, Space arms."
+      },
+      "angle": {
+        "title": "Angle mode",
+        "hint": "Self-levelling up to 45 degrees, the way most long-range flights cruise. The throttle stays where you leave it, so hold the height with W and S."
+      },
+      "acro": {
+        "title": "Acro (rate) mode",
+        "hint": "The sticks set how fast it rotates, up to 500 degrees a second, and nothing levels it. Let go and it keeps its angle."
+      },
+      "race": {
+        "title": "Farmhouse gates (angle)",
+        "hint": "Five gates in a ring round the pad, in order. The clock starts at gate 1; par is 25 seconds."
+      },
+      "rescue": {
+        "title": "GPS Rescue",
+        "hint": "Watch the rescue bring it home: when the link drops it climbs to 45 m, turns for home, flies back at 7.5 m/s and lands on the pad. Move the sticks to take over."
+      },
+      "range": {
+        "title": "Range: Mountain valley",
+        "hint": "Along the river, over the lake, through the saddle between the hills, to the top of the radio tower and home. Par is 150 seconds."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Link lost for 1.5 s: GPS Rescue climbs to 45 m, turns for home, flies back at 7.5 m/s and lands. When the link is back, move the sticks to take over.",
+      "rescue-fail": "If the quad is not getting closer to home for 20 s (a reversed compass, a headwind it cannot beat), the rescue gives up: RESCUE FAIL, and it descends where it is.",
+      "no-fix": "Fewer than 8 satellites: arming is blocked (flag GPS), because there would be no home point to come back to.",
+      "low-battery": "Below 3.1 V a cell the OSD warns: turn for home now.",
+      "battery-critical": "Below 2.9 V a cell: land now. The cells are nearly empty and sag further on every climb."
+    },
+    "controls": "Keyboard: Space arms and disarms, W and S throttle, the arrows pitch and roll, A and D yaw, V switches to FPV, R puts the quad back on the pad. On a phone the left stick is throttle and yaw and the right stick is pitch and roll. A gamepad works in Mode 2."
+  },
+  "courses": {
+    "valley": {
+      "title": "Mountain valley",
+      "brief": "A long run from the farmhouse pad: along the river to the lake, back through the saddle between the hills, up to the top of the radio tower on the far side, and home. Keep an eye on the home arrow and the distance on the OSD.",
+      "goals": {
+        "1": "ALONG THE RIVER",
+        "2": "OVER THE LAKE",
+        "3": "THROUGH THE SADDLE",
+        "4": "TOWER TOP",
+        "5": "HOME"
+      }
+    },
+    "gates": {
+      "title": "Farmhouse gates",
+      "brief": "Five 1.6 m gates in a tight ring round the pad by the farmhouse: a warm-up in angle mode, against the clock. The clock starts at gate 1."
+    },
+    "rescue": {
+      "title": "GPS Rescue test",
+      "brief": "The test real pilots do close in before they trust a rescue far out: out to a point about 65 m from the pad and 20 m up, where the link is cut. After 1.5 s GPS Rescue climbs to 45 m, turns for home, flies back at 7.5 m/s and lands on the pad.",
+      "goals": {
+        "1": "OUT 65 M, 20 M UP",
+        "2": "RESCUE CLIMB TO 45 M",
+        "3": "LAND AT HOME"
+      }
+    }
+  },
+  "quizzes": {
+    "power": {
+      "cap": {
+        "q": "Why does a 7-inch need a 1000 µF capacitor at the ESC?",
+        "options": {
+          "1": "To store energy for GPS Rescue",
+          "2": "To raise the voltage for the 1 W VTX",
+          "3": "Its long battery leads ring with voltage spikes when the ESCs switch and brake, and the capacitor soaks them up"
+        },
+        "why": "Long leads have inductance, and every time the ESCs switch or brake the motors the voltage at the pads spikes. A low-ESR capacitor right at the pads absorbs it. Without one you get noisy video, gyro noise and, over time, dead ESC MOSFETs."
+      },
+      "smoke": {
+        "q": "What does a smoke stopper do on the first plug-in?",
+        "options": {
+          "1": "It tests the motor direction",
+          "2": "It limits the current, so a short lights its lamp or trips it instead of burning the ESC",
+          "3": "It balances the cells"
+        },
+        "why": "A 6S pack can push hundreds of amps into a solder bridge or a reversed capacitor. The smoke stopper puts a lamp or a resettable fuse in series for the first power-up, so a fault shows up as a lit lamp, not smoke."
+      }
+    },
+    "gps": {
+      "sats": {
+        "q": "The OSD shows 6 satellites and the quad will not arm. Why?",
+        "options": {
+          "1": "The battery is low",
+          "2": "GPS Rescue needs a home point: below gps_rescue_min_sats (8), Betaflight blocks arming with the GPS flag",
+          "3": "The compass needs calibrating"
+        },
+        "why": "Home is set where you arm. With too few satellites the position is poor and the rescue would fly to the wrong place, so Betaflight refuses to arm until it has a 3D fix with 8 or more."
+      },
+      "arrow": {
+        "q": "The GPS module's arrow points backwards and trust_mag is ON. What happens in a rescue?",
+        "options": {
+          "1": "Nothing: a GPS does not care which way it points",
+          "2": "The compass heading is 180 degrees off, so the rescue heads away from home until the flyaway check stops it",
+          "3": "It lands where it is at once"
+        },
+        "why": "The compass is in the module, so the module's arrow sets the heading Betaflight trusts. Backwards, \"towards home\" is away from home. After 20 s of not getting closer, the flyaway check declares RESCUE FAIL and it descends where it is, far from you. Check the heading against a phone before you fly."
+      },
+      "mast": {
+        "q": "Why is the GPS on a mast at the back, and kept level?",
+        "options": {
+          "1": "To keep the compass away from the VTX, the ESC and the battery leads, whose currents disturb it; tilted, it reads wrong",
+          "2": "So the camera can see it",
+          "3": "To balance the quad"
+        },
+        "why": "A compass measures the Earth's weak magnetic field, and the tens of amps in the battery leads and the ESC make fields of their own. Distance helps, and so does keeping it flat: the module maker strongly discourages tilting the magnetometer."
+      }
+    },
+    "battery": {
+      "liion": {
+        "q": "Why a 6S1P 21700 Li-ion pack instead of a LiPo?",
+        "options": {
+          "1": "It gives more current for punch-outs",
+          "2": "More energy per gram: about twice the flight time, for cruising, not punching",
+          "3": "It never sags"
+        },
+        "why": "Six 21700 cells hold about 90 to 100 Wh in about 440 g; a 6S 1800 LiPo holds 40 Wh in 300 g. But a P42A-class cell is rated about 45 A, against 120 A for a full punch-out on this build: Li-ion is for cruising."
+      },
+      "alarm": {
+        "q": "Why change the voltage alarms for Li-ion?",
+        "options": {
+          "1": "Li-ion cells are 3 V when full",
+          "2": "To make the motors faster",
+          "3": "The LiPo alarms (warning at 3.5 V) would sound with half the Li-ion's energy left; Li-ion runs usefully down to about 3.0 V a cell"
+        },
+        "why": "A LiPo's voltage stays flat and then drops off, so 3.5 V means nearly empty. A Li-ion cell's voltage falls steadily through the flight, so the warning goes to 3.1 V and the minimum to 2.9 V a cell."
+      }
+    },
+    "rescue": {
+      "trigger": {
+        "q": "When does GPS Rescue start on its own?",
+        "options": {
+          "1": "As soon as the video breaks up",
+          "2": "When the control link has been lost for failsafe_delay (1.5 s) and failsafe_procedure is GPS-RESCUE",
+          "3": "When the battery is low"
+        },
+        "why": "Rescue is stage 2 of a failsafe: Betaflight has to stop hearing the receiver for 1.5 s. A low battery only warns, and lost video is not a failsafe at all."
+      },
+      "altitude": {
+        "q": "Why set gps_rescue_alt_mode = FIXED_ALT with return_alt = 45?",
+        "options": {
+          "1": "So it climbs to 45 m, above the highest ridge, before it flies home; without FIXED_ALT, return_alt is ignored",
+          "2": "So it flies home faster",
+          "3": "To save battery"
+        },
+        "why": "The default MAX_ALT returns at the highest height since arming plus 10 m. Fly low along a valley and that can be below the ridge between you and home. FIXED_ALT makes the return height the number you chose."
+      },
+      "video": {
+        "q": "Far out, the goggles go black but the quad still answers the sticks. What now?",
+        "options": {
+          "1": "Wait: GPS Rescue starts by itself",
+          "2": "Switch the radio off",
+          "3": "Lost video is not a failsafe: flip the GPS RESCUE switch yourself and let it bring the quad home"
+        },
+        "why": "The 5.8 GHz video usually fades before the 900 MHz control link. As long as Betaflight hears the radio there is no failsafe, so nothing happens on its own. The GPS RESCUE switch (AUX4 here) starts the rescue on demand."
+      },
+      "flyaway": {
+        "q": "During a rescue the quad gets no closer to home for 20 s. What does Betaflight do?",
+        "options": {
+          "1": "It flies on until the battery is empty",
+          "2": "It declares RESCUE FAIL and descends where it is",
+          "3": "It turns round and tries the other way"
+        },
+        "why": "The flyaway sanity check watches the closing speed. If it stays under 20 % of the target for 20 s (a reversed compass, a headwind it cannot beat), the rescue gives up, and in a real failsafe with RESCUE_SANITY_FS_ONLY it comes straight down where it is."
+      }
+    }
+  }
+}
