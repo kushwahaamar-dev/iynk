@@ -9,7 +9,7 @@ import type { BuildStep, Check, FailureMode, FigurePart, PracticeTask, Quiz, Rob
 // Facts: docs/facts/trainers.md (Fig. 02).
 
 /* ---------- jumper rows: the "math" panel for each one ---------- */
-const MATH = (id: string, ohms: string, result: string) => `# {{t:modes.${id}.code.what}}
+const mathPanel = (id: string, ohms: string, result: string) => `# {{t:modes.${id}.code.what}}
 V_supply = 5.0     # {{t:math.supply}}
 V_F = 2.0          # {{t:math.vf}}
 R = ${ohms.padEnd(14)} # {{t:modes.${id}.code.bands}}
@@ -17,20 +17,20 @@ R = ${ohms.padEnd(14)} # {{t:modes.${id}.code.bands}}
 ${result}
 `;
 
-const R220 = MATH('r220', '220', `I = (V_supply - V_F) / R      # 3.0 / 220 = 0.0136 A = 13.6 mA
+const R220 = mathPanel('r220', '220', `I = (V_supply - V_F) / R      # 3.0 / 220 = 0.0136 A = 13.6 mA
 P_R = I * I * R                # 0.0409 W = 40.9 mW: {{t:math.watts}}
 P_LED = V_F * I                # 0.027 W = 27 mW: {{t:math.led}}
 # {{t:modes.r220.code.verdict}}`);
 
-const R1K = MATH('r1k', '1000', `I = (V_supply - V_F) / R      # 3.0 / 1000 = 0.003 A = 3.0 mA
+const R1K = mathPanel('r1k', '1000', `I = (V_supply - V_F) / R      # 3.0 / 1000 = 0.003 A = 3.0 mA
 P_R = I * I * R                # 0.009 W = 9.0 mW
 # {{t:modes.r1k.code.verdict}}`);
 
-const R10K = MATH('r10k', '10000', `I = (V_supply - V_F) / R      # 3.0 / 10000 = 0.0003 A = 0.30 mA
+const R10K = mathPanel('r10k', '10000', `I = (V_supply - V_F) / R      # 3.0 / 10000 = 0.0003 A = 0.30 mA
 P_R = I * I * R                # 0.0009 W = 0.9 mW
 # {{t:modes.r10k.code.verdict}}`);
 
-const NONE = MATH('bypass', '0', `# I = (V_supply - V_F) / 0: {{t:modes.bypass.code.nothing}}
+const NONE = mathPanel('bypass', '0', `# I = (V_supply - V_F) / 0: {{t:modes.bypass.code.nothing}}
 # {{t:modes.bypass.code.real}}
 # {{t:modes.bypass.code.verdict}}`);
 
@@ -106,7 +106,9 @@ const steps: BuildStep[] = [
   { id: 'solder', kind: 'build', action: { type: 'press', id: 'solder' }, done: { 'tasks.soldered': true }, major: true, ...text('solder', true) },
   { id: 'jumper-meter', kind: 'build', action: { type: 'press', id: 'place', choice: 'group-last' }, done: { 'tasks.last-in': true }, major: false,
     ...text('jumper-meter', true) },
-  { id: 'plug', kind: 'test', action: { type: 'set', state: { power: 'usb' } }, done: { power: 'usb', ...reads('r220', '13.6') }, major: true, ...text('plug') },
+  // plug and usb-again also set the jumper to 220 Ω: their done conditions read the 220 row
+  { id: 'plug', kind: 'test', action: { type: 'set', state: { mode: 'r220', power: 'usb' } }, done: { power: 'usb', ...reads('r220', '13.6') }, major: true,
+    ...text('plug') },
   { id: 'row-1k', kind: 'test', action: { type: 'set', state: { mode: 'r1k' } }, done: reads('r1k', '3.0'), major: false, ...text('row-1k') },
   { id: 'row-10k', kind: 'test', action: { type: 'set', state: { mode: 'r10k' } }, done: reads('r10k', '0.30'), major: true, ...text('row-10k') },
   { id: 'row-220', kind: 'test', action: { type: 'set', state: { mode: 'r220' } }, done: reads('r220', '13.6'), major: false, ...text('row-220') },
@@ -118,7 +120,7 @@ const steps: BuildStep[] = [
   breakStep('reverse-supply'),
   breakStep('over-voltage'),
   breakStep('current-limit'),
-  { id: 'usb-again', kind: 'test', action: { type: 'set', state: { power: 'usb' } }, done: { power: 'usb', ...reads('r220', '13.6') }, major: false,
+  { id: 'usb-again', kind: 'test', action: { type: 'set', state: { mode: 'r220', power: 'usb' } }, done: { power: 'usb', ...reads('r220', '13.6') }, major: false,
     ...text('usb-again') },
 ];
 
