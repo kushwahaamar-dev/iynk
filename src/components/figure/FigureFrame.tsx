@@ -8,6 +8,7 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  type ReactNode,
   type Ref,
 } from "react";
 import { cx } from "@/components/ui/cx";
@@ -62,6 +63,11 @@ export type FigureFrameProps = {
    * focus enters it, and opens over the bottom of the plate.
    */
   fill?: boolean;
+  /**
+   * Drawn in place of the name plate while the figure loads, then faded out; kept if the figure never gets ready
+   * (a landing page's drawing, which should never turn into an error).
+   */
+  poster?: ReactNode;
 };
 
 // How long after the iframe's load event a figure may take to say `ready`.
@@ -92,6 +98,7 @@ export function FigureFrame({
   className,
   frameClassName,
   fill = false,
+  poster,
 }: FigureFrameProps) {
   const locale = useLocale();
   const t = useCommonT();
@@ -355,7 +362,20 @@ export function FigureFrame({
             frameClassName,
           )}
         />
-        {info && !failed ? (
+        {poster ? (
+          <>
+            <div
+              aria-hidden="true"
+              data-shown={!info || failed}
+              className="ink-plate pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden shadow-none transition-opacity duration-500 data-[shown=false]:opacity-0 motion-reduce:transition-none"
+            >
+              {poster}
+            </div>
+            <p role="status" className="sr-only">
+              {failed ? t("figure.failed") : info ? "" : t("figure.loading")}
+            </p>
+          </>
+        ) : info && !failed ? (
           <p role="status" className="sr-only" />
         ) : (
           // The plate while the figure loads (or after it failed): its name and one quiet line, no spinner.

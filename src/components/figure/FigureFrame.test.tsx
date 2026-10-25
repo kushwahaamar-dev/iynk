@@ -268,6 +268,42 @@ test("shows the plate with the figure's name while it loads, reloads a silent fi
   }
 });
 
+test("shows a poster instead of the name plate while it loads, and fades it once the figure is ready", () => {
+  vi.useFakeTimers();
+  try {
+    mount({ poster: <img alt="" data-testid="poster" src="/hero.svg" /> });
+    const poster = () => screen.getByTestId("poster").parentElement!;
+    const status = () => screen.getByRole("status");
+    expect(poster().dataset.shown).toBe("true");
+    expect(screen.queryByText("Arduino Uno R3")).toBeNull();
+    expect(status().textContent).toBe(en.client.figure.loading);
+
+    fromFigure("ready", ready);
+    expect(poster().dataset.shown).toBe("false");
+    expect(status().textContent).toBe("");
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
+test("keeps the poster, not an error plate, when the figure never gets ready", () => {
+  vi.useFakeTimers();
+  try {
+    mount({ poster: <img alt="" data-testid="poster" src="/hero.svg" /> });
+    for (let i = 0; i < 2; i++) {
+      fireEvent.load(document.querySelector("iframe")!);
+      act(() => {
+        vi.advanceTimersByTime(10_000);
+      });
+    }
+    expect(screen.getByTestId("poster").parentElement!.dataset.shown).toBe("true");
+    expect(screen.getByRole("status").textContent).toBe(en.client.figure.failed);
+    expect(screen.getByRole("status").className).toContain("sr-only");
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
 test("hides the figure's buttons the host draws itself after every ready, and leaves them out of the controls list", () => {
   const { view } = mount({ hideChrome: ["reset"] });
   fromFigure("ready", { ...ready, buttons: [{ id: "reset", label: "RESET", hidden: true }] });
