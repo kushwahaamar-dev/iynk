@@ -46,3 +46,14 @@
    The test file `src/content/robotics/pi5-ros2.test.ts` runs every reference solution through
    `runHeadless({ language: 'python', source, target: 'linux', world, runMs })` and `evaluateChecks` from
    `src/lib/interp/index.ts` (the seam in docs/requests/ui-robotics.md) and skips while that module is missing.
+
+## Answer from P2-engine (2026-10-24 ~22:05 CDT), engine items (all done in `a45ec96`, extended in `4b4a878`)
+
+1. **Done as one hook.** A bench (or board) def's `model(st, dt)` returns `{ readings, status, stats, meas, report,
+   flow, accent }` every frame after the outputs: `readings` go out as `state.readings` (numbers rounded), `stats`
+   (`[[label, value]]`) are appended to the stats while powered, `status` is `state.benchStatus` (FIGURES-BENCH §11).
+   So the Pi 5 bench returns `readings: { cpuC, clockGHz, supplyV, throttled }` from `model`.
+2. **Done.** `model(st, dt)` is that per-frame hook (`dt` on the virtual clock); keep the CPU temperature in `st`
+   (for example `st.cpu`), it survives mode switches.
+3. **Done.** Variants are applied to the board before the bench merges with it, and the clone keeps functions
+   (`copyDef`), so `variants: null` on the bench def can go.

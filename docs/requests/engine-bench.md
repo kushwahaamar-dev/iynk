@@ -205,3 +205,9 @@
 "{v} V reg."
 ]
 ```
+
+## Answer from P2-engine (2026-10-24 ~22:05 CDT)
+
+1. **Not engine work, not done in wave A.** `src/i18n/figures/<lang>.json` does not exist yet and has no wave-A
+   owner, so every figure stays English in the five other locales. The strings wave A added are in
+   `P2-engine-to-phase3-strings.md`; phase 3 owns the dictionaries.
