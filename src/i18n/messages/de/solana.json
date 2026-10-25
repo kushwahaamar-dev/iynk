@@ -63,17 +63,20 @@
     "title": "Proof of Build",
     "lede": "Bestehe hier die Tests, und der Server spielt deinen Durchlauf erneut ab, bevor er einen Nachweis ins Solana-Devnet schreibt. Du zahlst nichts.",
     "earnTitle": "Was du hier verdienen kannst",
-    "droneSkill": "Nachweis: Sicherheit am Prüfstand",
-    "waitingFigure": "Warte auf die Figur. Die Aufzeichnung beginnt, sobald sie den Prüfstand meldet.",
+    "droneSkill": "Nachweis: Sicherheit auf der Werkbank",
+    "waitingFigure": "Warte auf die Abbildung. Die Aufzeichnung beginnt, sobald sie die Werkbank meldet.",
     "recording": "Dieser Durchlauf wird von der Figur aufgezeichnet.",
     "restart": "Neu beginnen",
-    "stepsLabel": "Sicherheitstests am Prüfstand",
-    "stepStatus": { "done": "bestanden", "current": "als Nächstes" },
+    "stepsLabel": "Sicherheitstests auf der Werkbank",
+    "stepStatus": {
+      "done": "bestanden",
+      "current": "als Nächstes"
+    },
     "steps": {
-      "smoke": "Test mit dem Smoke Stopper",
+      "smoke": "Smoke-Stopper-Test",
       "smokeHint": "Finde einen Kurzschluss, bevor der Akku es tut.",
       "motors": "Drehrichtung der Motoren, ohne Propeller",
-      "motorsHint": "Lass Motoren am Prüfstand niemals mit montierten Propellern drehen.",
+      "motorsHint": "Lass Motoren auf der Werkbank niemals mit montierten Propellern drehen.",
       "calibrate": "Kalibrierung des Beschleunigungssensors",
       "calibrateHint": "Stell das Fluggerät waagerecht hin und kalibriere dann."
     },
@@ -84,11 +87,14 @@
       "props-on": "Motoren mit montierten Propellern gedreht",
       "inconsistent": "das Protokoll des Durchlaufs geht nicht auf"
     },
-    "fault": "Die Akkubuchse ist durchgebrannt. Zieh den Akku ab, setz den XT60 richtig herum neu ein und wiederhole den Smoke-Stopper-Test.",
+    "fault": "Der Kondensator am Akkukabel ist ausgegast. Steck den Akku ab, setz den XT60 richtig herum neu ein und wiederhol den Smoke-Stopper-Test.",
     "score": "Sicherheitswertung",
     "scoreValue": "{score}/100",
-    "pops": { "one": "{count} Knall beim Einschalten", "other": "{count} Knalle beim Einschalten" },
-    "otherLab": "Nachweise für Lektionen und Prüfstände kommen, sobald der Server diese Tests erneut abspielen kann. Heute kannst du den Nachweis für Sicherheit am Prüfstand an jeder Drohne verdienen.",
+    "pops": {
+      "one": "{count} Knall beim Einschalten",
+      "other": "{count} Knalle beim Einschalten"
+    },
+    "otherLab": "Nachweise für Lektionen und Werkbänke kommen, sobald der Server diese Tests erneut abspielen kann. Heute kannst du an jeder Drohne den Nachweis für Sicherheit auf der Werkbank verdienen.",
     "openPassport": "Deinen Pass öffnen",
     "mint": "Meinen Nachweis ausstellen",
     "needsWallet": "Verbinde eine Wallet, um ihn auszustellen.",
@@ -99,7 +105,10 @@
       "server": "Der Server spielt ihn erneut ab und stellt aus",
       "chain": "Von der Chain zurücklesen"
     },
-    "phaseStatus": { "done": "erledigt", "current": "läuft" },
+    "phaseStatus": {
+      "done": "erledigt",
+      "current": "läuft"
+    },
     "successTitle": "Nachweis ausgestellt",
     "successBody": "{skill} steht mit deinem Replay-Hash im Solana-Devnet. Jeder kann es überprüfen.",
     "viewTx": "Transaktion ansehen",
@@ -118,7 +127,7 @@
     "formTitle": "Eine Prämie sponsern",
     "formLede": "Sperre Devnet-SOL für eine Fähigkeit. Sie werden in derselben Transaktion an die nächste Person ausgezahlt, deren geprüfter Durchlauf diesen Nachweis verdient.",
     "skill": "Fähigkeit",
-    "skillOption": "Sicherheit am Prüfstand · {drone}",
+    "skillOption": "Sicherheit auf der Werkbank · {drone}",
     "learner": "Nur für diese Person (optional)",
     "learnerHint": "Eine Wallet-Adresse. Leer lassen, damit zahlt, wer den Nachweis zuerst verdient.",
     "learnerInvalid": "Das ist keine Solana-Wallet-Adresse.",
@@ -149,10 +158,10 @@
   },
   "credential": {
     "skills": {
-      "drone": "Drohnensicherheit am Prüfstand · {item}",
+      "drone": "Drohnensicherheit auf der Werkbank · {item}",
       "boardLessons": "Alle Lektionen · {item}",
       "boardLesson": "Lektion {lesson} · {item}",
-      "robotics": "Robotik-Prüfstand · {item}",
+      "robotics": "Robotik-Werkbank · {item}",
       "flight": "Strecke {item} unter {seconds} s",
       "unknown": "Fähigkeit {id}"
     },
@@ -175,7 +184,7 @@
     "title": "Dein Pass",
     "lede": "Nachweise, die du im Labor verdient hast, ins Solana-Devnet geschrieben, nachdem der Server deinen Durchlauf erneut abgespielt hat. Sponsoren können Prämien sperren, die beim nächsten geprüften Bestehen ausgezahlt werden.",
     "credentialsTitle": "Deine Nachweise",
-    "credentialsEmpty": "Noch keine Nachweise. Bestehe die Sicherheitstests am Prüfstand an einer beliebigen Drohne, um deinen ersten zu verdienen.",
+    "credentialsEmpty": "Noch keine Nachweise. Bestehe an einer beliebigen Drohne die Sicherheitstests auf der Werkbank, um deinen ersten zu verdienen.",
     "goDrones": "Zu den Drohnen",
     "connectFirst": "Verbinde eine Wallet, um deine Nachweise zu sehen.",
     "reading": "Solana-Devnet wird gelesen…",
