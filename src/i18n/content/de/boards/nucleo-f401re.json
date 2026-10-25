@@ -407,7 +407,7 @@
     },
     "upload-hello": {
       "title": "Einen Sketch hochladen",
-      "body": "Lade Serial hello hoch. Der ST-LINK programmiert den STM32 über SWD, LD1 blinkt rot und grün, während er den Flash schreibt; dann startet der Sketch und schreibt mit 115200 Baud über den virtuellen COM-Port.",
+      "body": "Lade „Serielles Hallo“ hoch. Der ST-LINK programmiert den STM32 über SWD, LD1 blinkt rot und grün, während er den Flash schreibt; dann startet der Sketch und schreibt mit 115200 Baud über den virtuellen COM-Port.",
       "refusal": "Steck zuerst USB ein: Uploads gehen über den ST-LINK am Kabel."
     },
     "reset": {
