@@ -83,7 +83,12 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-25 07:47 CDT (machine clock).
+- **Updated:** 2026-10-25 09:13 CDT (machine clock).
+- **09:00 request (CONTEXT.md §5):** rename SimLab to iynk everywhere (done in `ca09a95`; repo is now
+  github.com/kushwahaamar-dev/iynk, Vercel project `iynk` at https://iynk.vercel.app), deploy Solana (program
+  `iynk_passport`, same id; devnet deploy running), redesign every page outside the labs (`wf_6b6f10f1-282`,
+  `scripts/workflows/redesign.js`, from 09:10: build:shell, build:landing, build:catalogue, build:pages, then review;
+  its agents commit locally and do not push, because every push deploys production), then a final verdict.
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-25 07:47 CDT (new session; the 18:22 session
   hit its weekly usage limit at 07:35). Amar is awake: his keys are in `.env.local` (07:32). The Mac is kept awake by
   `caffeinate -dimsu -t 54000` (pid 28721, from 23:08, until about 14:08).
@@ -115,7 +120,8 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   phase 4, now skipped.
 - **Running:** live claim check `wf_791f52ba-b58` (`scripts/workflows/live-claims.js`, from 08:57, this session):
   labels check:partner-room, check:voice, check:drone-serpapi, check:break-fly, check:mcp-counts, and a recheck for
-  each failed claim. Read-only against https://iynk.vercel.app; its results go into DEVPOST-WRITEUP, PITCH
+  each failed claim. Read-only against https://simlab-hacktx.vercel.app (now also https://iynk.vercel.app); its
+  results go into DEVPOST-WRITEUP, PITCH
   and JUDGE-QA. A relaunch from another session runs the committed script with the same args (base, scratch).
 - **Interaction audit** `wf_e0b543cb-6eb` (`scripts/workflows/interaction-audit.js`, 07:19-07:40): all five find
   labels (boards, robotics, drones, fly, shell) died on the old session's usage limit, so it reported nothing. Not

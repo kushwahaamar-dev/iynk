@@ -227,7 +227,18 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   reads only that name); the migrations had already been applied. Then a confirmed bug (concurrent first writes on a
   fresh instance fail with "malformed array literal") and his OK to break the freeze for it: "Yes, fix and redeploy".
   The freeze still holds for everything else.
+- **10-25 09:00, Amar.** "rename everything in this project from "SimLab" to "iynk". Everything … any documentation …
+  any URL". Asked whether Meta, Gemini and SerpApi are done and how to present them; "This is a Solana thing … we
+  should already have Solana … env variables and everything … Use that"; "Nothing should be missing. Give it a final
+  verdict." And: "the UI is really bad … outside, like the homepage, landing page … It's not … designer-ish,
+  minimalistic, chic. I want it to be best of the best … 'Wow, what a design taste.' … We only have one hour now."
+  Answers at 09:03: deploy Solana with about 3 devnet SOL from his wallet (yes), rename the GitHub repo (yes), record
+  on the live site, don't enter Gemini (it is only the partner's fallback). This lifts the freeze for the redesign.
+  Kept under the old name because they name real things: the working folder, the old repo
+  `github.com/kushwahaamar-dev/simlab`, `backup/simlab-history`, the database's `simlab_migrations` and
+  `simlab_expire_profiles`, the Vultr SSH key `simlab-realtime-deploy`, `~/simlab-scratch-backup`.
 
+## 6. Lessons learned (apply them)
 
 - **Never SendMessage a running Workflow agent by its id.** It starts a duplicate copy working on the same files
   instead of reaching the live agent. Talk to running agents through files they re-read, or through their follow-up
@@ -249,5 +260,7 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   connection fetches `pg_type`, so concurrent first queries send `"a,b"`. Send array literals (`arrayLiteral` in
   `src/lib/server/db/queries.ts`) with a `::text[]` cast. Tests that run queries one at a time never see it; a
   fresh-pool burst does.
+- **An Edit whose old text ends at a heading must put the heading back.** `3cd444c` dropped "## 6. Lessons learned"
+  that way; check `grep -n "^## " CONTEXT.md` after editing near a section boundary.
 - **`.vercelignore` drops tests by name**, so a test helper without `.test` in its name stays in the upload and
   gets typechecked without what it imports. Name helpers `*.test.*`, or list them in `.vercelignore`.
