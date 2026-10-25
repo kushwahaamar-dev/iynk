@@ -1,0 +1,837 @@
+{
+  "title": "Raspberry Pi 5 / Raspberry Pi 4",
+  "tagline": "Un ordinateur Linux quadricœur sur une carte de 85 x 56 mm : Python avec gpiozero sur 40 broches GPIO, et ROS 2 pour les robots",
+  "overview": "Les ordinateurs monocartes de Raspberry Pi. Le Raspberry Pi 5 porte un Broadcom BCM2712 (quatre cœurs Arm Cortex-A76 à 2,4 GHz et un GPU VideoCore VII) avec 1 à 16 GB de LPDDR4X, et confie chaque port à RP1, la puce d'E/S maison de Raspberry Pi, par un lien PCIe : l'USB, l'Ethernet, les voies caméra et écran et les broches GPIO du connecteur se trouvent toutes dans RP1. Un PMIC DA9091 à huit régulateurs à découpage produit chaque rail à partir du 5 V de l'USB-C et entretient une horloge temps réel avec un connecteur de pile. Le Raspberry Pi 4 Model B a le même contour et le même connecteur 40 broches, mais une disposition plus ancienne : un BCM2711 (quatre cœurs Cortex-A72 à 1,8 GHz), de la LPDDR4, un contrôleur USB 3 VL805, une prise A/V de 3,5 mm et pas de bouton d'alimentation. Aucune des deux cartes n'a de flash où téléverser : un programme est un fichier sur la carte microSD, et on le lance sous Linux, en général par SSH. Chaque GPIO fonctionne en 3,3 V, ne fournit pas plus de 16 mA et ne tolère pas le 5 V. Les broches 5 V du connecteur sont directement sur le rail d'entrée, sans rien entre les deux : une alimentation branchée là doit être propre et dans le bon sens.",
+  "variants": {
+    "pi5": "La carte actuelle : BCM2712 à 2,4 GHz, RP1 pour chaque port et chaque broche GPIO, un bouton d'alimentation, une LED d'état bicolore, du PCIe, une RTC, un connecteur de ventilateur 4 broches et un connecteur UART 3 broches. Il lui faut du 5 V 5 A d'une alimentation USB PD (l'officielle fait 27 W) ; sur une alimentation de 3 A, il démarre mais limite les ports USB à 600 mA.",
+    "pi4": "BCM2711 à 1,8 GHz avec de la LPDDR4, une puce VL805 pour les ports USB 3, des LED PWR rouge et ACT verte séparées, une prise A/V de 3,5 mm et des connecteurs caméra et écran 15 broches. Pas de bouton d'alimentation ni de connecteur de ventilateur. Il lui faut du 5 V 3 A en USB-C (2,5 A suffisent si les périphériques USB tirent moins de 500 mA). Le connecteur et les leçons sont les mêmes."
+  },
+  "mcu": {
+    "rp1": "Le contrôleur d'E/S maison de Raspberry Pi (TSMC 40LP), sur un lien PCIe 2.0 x4 depuis le BCM2712. Il contient deux contrôleurs hôtes USB (chacun avec un port USB 3 et un port USB 2), le MAC Gigabit Ethernet, les deux voies MIPI caméra/écran et le banc GPIO, et fait tourner son propre Cortex-M3 double cœur. Sur un Pi 5, chaque broche du connecteur est une broche de RP1.",
+    "da9091": "Circuit de gestion de l'alimentation (« Gilmour ») à huit alimentations à découpage, dont une alimentation de cœur capable de fournir 20 A aux cœurs Cortex-A76. Il gère aussi le bouton d'alimentation et entretient l'horloge temps réel.",
+    "vl805": "Contrôleur hôte USB 3.0 VIA Labs sur la voie PCIe du BCM2711 : il pilote les deux ports USB 3 bleus et les deux ports USB 2 noirs.",
+    "mxl7704": "PMIC MaxLinear des premières cartes Pi 4 : quatre régulateurs buck (système, mémoire, E/S et cœur) et un LDO de 100 mA. Les cartes plus récentes utilisent d'autres PMIC que Raspberry Pi ne liste pas.",
+    "cyw43455": "Radio Wi-Fi 802.11ac bi-bande et Bluetooth 5.0 Infineon (Cypress) sous le capot métallique, avec une antenne céramique dans le coin supérieur gauche."
+  },
+  "power": {
+    "usb": {
+      "protection": "L'USB-C a un détrompeur : il ne peut pas se brancher à l'envers. Sous 4,63 V (à 5 % près), le PMIC signale une sous-tension : le noyau l'inscrit dans le journal et le firmware bride la fréquence. Un Pi 5 négocie 5 A en USB PD ; avec une simple alimentation 5 V 3 A, il démarre quand même mais limite les ports USB à 600 mA."
+    },
+    "pin5": {
+      "protection": "Aucune. Les broches 2 et 4 du connecteur sont le rail d'entrée 5 V lui-même : pas de fusible, pas de diode. Une alimentation inversée ou trop haute atteint le PMIC sans rien pour l'arrêter. Un Pi 5 alimenté ici a besoin de PSU_MAX_CURRENT dans la configuration de son bootloader pour utiliser pleinement les ports USB."
+    },
+    "rails": {
+      "5v": "Le rail d'entrée : l'USB-C, ou les broches 2 et 4 du connecteur, ou un HAT PoE+. Tout le reste en est tiré, et les broches 5 V du connecteur et les ports USB le partagent.",
+      "3v3": "Produit par le PMIC : le banc GPIO, les broches 3V3 du connecteur (1 et 17) et la plus grande partie de la carte. Dans cette figure, le SoC s'arrête quand il passe sous 3 V, ce qui arrive dès que l'entrée 5 V s'affaisse à environ 3,4 V ; Raspberry Pi ne publie pas le vrai seuil de reset.",
+      "1v8": "Produit par le PMIC : les E/S 1,8 V et les alimentations analogiques des puces.",
+      "core": "Produit par le PMIC : l'alimentation des cœurs Arm. Le firmware la monte et la baisse avec l'horloge : 0,8 V est donc une valeur typique, pas une valeur fixe."
+    },
+    "io": "16 mA par broche et 50 mA pour toutes les broches GPIO ensemble, d'après la documentation de Raspberry Pi pour chaque modèle. Les pads se règlent de 2 à 16 mA ; la valeur par défaut est 8 mA. Pilotez une LED à travers 330 Ω à 1 kΩ, et tout ce qui est plus gros (un moteur, une bobine de relais) à travers un transistor ou une carte de pilotage."
+  },
+  "pins": {
+    "j8": {
+      "3v3": "Le rail 3,3 V du PMIC, partagé avec le banc GPIO. Bon pour des capteurs et de petits HAT, pas pour des moteurs.",
+      "5v": "Directement sur le rail d'entrée 5 V, sans protection. En sortie, elle donne ce que donne l'alimentation USB-C ; en entrée, elle alimente tout le Pi : ce doit donc être un 5 V propre, dans le bon sens.",
+      "gpio0": "Réservée à l'EEPROM d'identification des HAT (I2C0 SDA). Laissez-la libre, sauf si vous savez que vous n'en avez pas besoin.",
+      "gpio1": "Réservée à l'EEPROM d'identification des HAT (I2C0 SCL).",
+      "gpio2": "I2C1 SDA, avec un pull-up fixe de 1,8 kΩ vers 3,3 V sur la carte : elle lit donc l'état haut quand rien ne la pilote.",
+      "gpio3": "I2C1 SCL, avec un pull-up fixe de 1,8 kΩ. La mettre à l'état bas réveille un Pi 4 arrêté ; un Pi 5 a son bouton d'alimentation pour ça.",
+      "gpio14": "UART0 TXD (/dev/ttyAMA0 sur un Pi 5). Sur un Pi 4, elle transporte la console série quand enable_uart=1 est réglé ; un Pi 5 a un connecteur UART séparé pour ça.",
+      "gpio15": "UART0 RXD. Sa partenaire est GPIO14 sur la broche 8.",
+      "gpio18": "L'une des quatre broches PWM matérielles (12, 13, 18, 19). Le PWMLED de gpiozero utilise quand même un PWM logiciel via lgpio, sur n'importe quelle broche."
+    }
+  },
+  "leds": {
+    "LED1": "Une seule LED bicolore près du bouton d'alimentation. Rouge à l'arrivée du courant et de nouveau après l'arrêt (veille) ; verte au démarrage du firmware, avec de brèves extinctions pendant la lecture de la carte microSD. Les erreurs de démarrage s'affichent en clignotements verts longs et courts : 0 long et 8 courts, c'est une panne de SDRAM ; 4 longs et 3 courts signifient que RP1 n'a pas été trouvé. Linux la voit comme deux LED, ACT (verte) et PWR (rouge).",
+    "D3": "LED PWR rouge, allumée par le signal power-good du PMIC à travers un transistor. Elle s'éteint ou vacille quand l'alimentation est en sous-tension, et le firmware peut l'éteindre.",
+    "D5": "LED ACT verte sur le GPIO 42 du BCM2711. Elle vacille avec l'activité de la microSD et affiche les codes d'erreur de démarrage par clignotements."
+  },
+  "controls": {
+    "SW1": "Bouton d'alimentation du Pi 5. À la première mise sous tension, le Pi démarre tout seul. Un appui bref demande au bureau de s'éteindre (sur Raspberry Pi OS Lite, un seul appui éteint) ; un appui pendant l'arrêt redémarre le Pi ; maintenu enfoncé, il coupe l'alimentation. Pour Linux, c'est une touche KEY_POWER sur l'une des broches propres du SoC, pas un GPIO du connecteur."
+  },
+  "parts": {
+    "U1": {
+      "name": "SoC BCM2712 (Pi 5) ou BCM2711 (Pi 4)",
+      "what": "Le processeur : quatre cœurs Arm (Cortex-A76 à 2,4 GHz sur le Pi 5, Cortex-A72 à 1,8 GHz sur le Pi 4), le GPU VideoCore et le contrôleur mémoire. Une puce flip-chip sur un substrat organique, sous un dissipateur nickelé. C'est elle qui chauffe et qui bride sa fréquence."
+    },
+    "U2": {
+      "name": "SDRAM LPDDR4X (Pi 5) ou LPDDR4 (Pi 4)",
+      "what": "La mémoire de travail, 1 à 16 GB sur un Pi 5 et 1 à 8 GB sur un Pi 4 : des puces DRAM empilées dans un seul boîtier BGA. Sans elle, le bootloader ne peut pas charger Linux et clignote le code d'erreur SDRAM."
+    },
+    "U3": {
+      "name": "Contrôleur d'E/S RP1 (Pi 5) ou contrôleur USB 3 VL805 (Pi 4)",
+      "what": "Pi 5 : le RP1 de Raspberry Pi, qui détient l'USB, l'Ethernet, les voies caméra et écran et chaque GPIO du connecteur, par le PCIe depuis le SoC. Pi 4 : le VL805, qui ne pilote que les ports USB ; là, les GPIO du connecteur viennent du SoC lui-même."
+    },
+    "U4": {
+      "name": "Circuit de gestion de l'alimentation (DA9091 sur le Pi 5)",
+      "what": "Transforme l'entrée 5 V en rails cœur, mémoire, 1,8 V et 3,3 V avec des régulateurs à découpage et, sur le Pi 5, entretient aussi l'horloge temps réel et lit le bouton d'alimentation. C'est la première chose que détruit une alimentation inversée ou en surtension sur le connecteur."
+    },
+    "L1": {
+      "name": "Inductances de puissance du PMIC",
+      "what": "Les blocs gris à côté du PMIC (quatre sur le Pi 5, un seul plus gros sur le Pi 4) : chaque régulateur à découpage stocke de l'énergie dans l'un d'eux à chaque cycle."
+    },
+    "U5": {
+      "name": "Module Wi-Fi et Bluetooth",
+      "what": "Wi-Fi 802.11ac bi-bande et Bluetooth 5.0 sous un blindage en métal embouti, avec son quartz et ses composants d'adaptation RF."
+    },
+    "U6": {
+      "name": "PHY Gigabit Ethernet",
+      "what": "Transforme les signaux numériques du MAC Ethernet en quatre paires de ligne qui passent par les transformateurs de la prise (tournée de 45° sur le Pi 5)."
+    },
+    "RC": {
+      "name": "Condensateurs de découplage et résistances",
+      "what": "De petits condensateurs céramiques autour du SoC, du PMIC et de la puce d'E/S, qui tiennent les rails stables quand les cœurs font varier le courant. Leurs positions ici sont indicatives : aucun fichier publié ne les donne."
+    },
+    "LED1": {
+      "name": "LED d'alimentation et d'état (Pi 5)",
+      "what": "Une seule LED rouge et verte derrière un guide de lumière au bord gauche : rouge, c'est l'alimentation sans firmware en marche ; verte, c'est en marche, avec de brèves extinctions pendant les lectures de la carte."
+    },
+    "SW1": {
+      "name": "Bouton d'alimentation (Pi 5)",
+      "what": "Un bouton à appui latéral au bord gauche, lu par le PMIC et le SoC : appui bref pour éteindre, appui pendant l'arrêt pour démarrer, maintien pour couper l'alimentation."
+    },
+    "J20": {
+      "name": "Connecteur PCIe (Pi 5)",
+      "what": "Un FFC 16 broches au pas de 0,5 mm avec une voie PCIe 2.0, le 5 V et les signaux PCIE_PWR_EN et de réveil, pour un HAT SSD NVMe ou une autre carte PCIe."
+    },
+    "J3": {
+      "name": "Connecteur caméra/écran 0 (connecteur caméra sur le Pi 4)",
+      "what": "Pi 5 : un FFC 22 broches au pas de 0,5 mm avec quatre voies MIPI, qui accepte une caméra ou un écran. Pi 4 : le connecteur CAMERA 15 broches au pas de 1 mm (CSI-2 à 2 voies). Les nappes ne sont pas interchangeables."
+    },
+    "J4": {
+      "name": "Connecteur caméra/écran 1 (connecteur écran sur le Pi 4)",
+      "what": "Pi 5 : le second connecteur MIPI 22 broches. Pi 4 : le connecteur DISPLAY 15 broches (DSI à 2 voies) au bord gauche."
+    },
+    "J5": {
+      "name": "Connecteur de pile RTC (Pi 5)",
+      "what": "Un JST-SH 2 broches pour une pile bouton lithium-manganèse rechargeable, qui fait tourner l'horloge temps réel du PMIC pendant que le Pi est débranché. La charge est désactivée tant que vous ne l'activez pas dans config.txt."
+    },
+    "UART": {
+      "name": "Connecteur UART de débogage (Pi 5)",
+      "what": "Un JST-SH 3 broches : broche 1 RX vers le SoC, broche 2 GND, broche 3 TX qui en sort, 115200 8N1, /dev/ttyAMA10. La Raspberry Pi Debug Probe s'y branche directement et affiche le journal de démarrage."
+    },
+    "FAN": {
+      "name": "Connecteur de ventilateur (Pi 5)",
+      "what": "Un JST-SH 4 broches pour l'Active Cooler ou le ventilateur du boîtier : broche 1 +5 V, broche 2 PWM, broche 3 GND, broche 4 tachymètre. Le firmware règle la vitesse du ventilateur d'après la température du SoC."
+    },
+    "J1": {
+      "name": "Entrée d'alimentation USB-C",
+      "what": "Entrée 5 V : 5 A avec l'USB PD sur un Pi 5, 3 A sur un Pi 4. C'est une entrée d'alimentation ; il n'y a pas de pont USB-série derrière."
+    },
+    "MICROSD": {
+      "name": "Support de carte microSD",
+      "what": "Sous la carte, au bord gauche. Il tient la carte sur laquelle le Pi démarre ; son couvercle en acier embouti recouvre les contacts à ressort."
+    },
+    "J6": {
+      "name": "Micro-HDMI 0",
+      "what": "La première sortie vidéo, à côté de l'USB-C ; utilisez celle-ci avec un seul moniteur. Jusqu'à 4Kp60."
+    },
+    "J13": {
+      "name": "Micro-HDMI 1",
+      "what": "La seconde sortie vidéo."
+    },
+    "J8": {
+      "name": "Connecteur GPIO 40 broches",
+      "what": "Deux rangées de 20 broches au pas de 2,54 mm : 28 GPIO en 3,3 V (numéros BCM 0-27), deux broches 3V3, deux broches 5V et huit broches GND, dans le même ordre sur chaque Raspberry Pi à 40 broches depuis 2014. La broche 1 (3V3) a la pastille carrée."
+    },
+    "J14": {
+      "name": "Connecteur PoE",
+      "what": "Quatre broches qui amènent les points milieux des transformateurs Ethernet à un HAT PoE (Pi 4) ou PoE+ (Pi 5), lequel renvoie du 5 V sur les broches 5V du connecteur."
+    },
+    "J10": {
+      "name": "Prise Gigabit Ethernet",
+      "what": "Une RJ45 avec les transformateurs d'isolement (magnétiques) et les LED verte de liaison et ambre d'activité intégrées."
+    },
+    "J12": {
+      "name": "Ports USB 3.0 (bleus)",
+      "what": "Deux ports à 5 Gbit/s au milieu du bord droit."
+    },
+    "J11": {
+      "name": "Ports USB 2.0 (noirs)",
+      "what": "Deux ports à 480 Mbit/s. Les ports USB partagent une seule limite de courant : 1,6 A sur un Pi 5 avec une alimentation de 5 A (600 mA avec 3 A), 1,2 A sur un Pi 4."
+    },
+    "CARD": {
+      "name": "Carte microSD",
+      "what": "Le système d'exploitation et vos programmes : Raspberry Pi OS, ou Ubuntu pour ROS 2, écrits avec Raspberry Pi Imager. Elle se met en dernier, et la retirer pendant que Linux y écrit peut la corrompre."
+    },
+    "ANT": {
+      "name": "Antenne Wi-Fi (Pi 4)",
+      "what": "La petite antenne céramique du coin supérieur gauche. Tenez les boîtiers métalliques et les grands plans de masse à l'écart."
+    },
+    "D3": {
+      "name": "LED PWR (Pi 4, rouge)",
+      "what": "Allumée par le signal power-good du PMIC : allumée tant que l'alimentation est bonne, éteinte ou vacillante quand elle s'affaisse sous 4,63 V."
+    },
+    "D5": {
+      "name": "LED ACT (Pi 4, verte)",
+      "what": "Sur le GPIO 42 du SoC : elle vacille avec l'activité de la carte et affiche les codes d'erreur de démarrage par clignotements."
+    },
+    "J2": {
+      "name": "Pastilles RUN / GLOBAL_EN (Pi 4, non montées)",
+      "what": "Trois pastilles non équipées : relier RUN à GND réinitialise le SoC ; mettre GLOBAL_EN à l'état bas éteint toute la carte."
+    },
+    "J7": {
+      "name": "Prise A/V 3,5 mm (Pi 4)",
+      "what": "Audio stéréo et vidéo composite sur une seule prise à 4 pôles. Le Pi 5 n'a pas d'audio analogique."
+    }
+  },
+  "wireables": {
+    "led": {
+      "note": "Anode (patte longue) vers GPIO17 sur la broche 11 à travers une résistance de 330 Ω, cathode vers GND sur la broche 9 : environ 4 mA depuis 3,3 V. gpiozero l'appelle LED(17).",
+      "caution": "Ne branchez jamais une LED sans sa résistance : la broche essaierait de fournir bien plus de 16 mA."
+    },
+    "push-button": {
+      "note": "Une patte vers GPIO27 sur la broche 13, l'autre vers GND sur la broche 14. Le Button de gpiozero active le pull-up interne, donc aucune résistance n'est nécessaire : la broche lit l'état haut jusqu'à ce que vous appuyiez."
+    },
+    "hc-sr04": {
+      "note": "VCC vers 5V sur la broche 2, GND vers la broche 6, TRIG vers GPIO23 sur la broche 16 (3,3 V suffisent pour le déclencher), ECHO vers GPIO24 sur la broche 18 à travers un diviseur : 1 kΩ en série, 2 kΩ vers GND.",
+      "caution": "ECHO est une sortie 5 V. Branchée directement sur une broche GPIO, elle pousse du courant à travers la diode de protection du pad vers le rail 3,3 V et peut tuer la broche ou toute la puce d'E/S."
+    },
+    "servo-sg90": {
+      "note": "Signal vers GPIO18 sur la broche 12, rouge vers 5V, marron vers GND. Les Servo et AngularServo de gpiozero génèrent les impulsions à 50 Hz en logiciel : attendez-vous à un peu de tremblement ; une carte PCA9685 donne des impulsions stables.",
+      "caution": "Le courant de blocage d'un servo sort du rail 5 V du Pi. Un SG90 passe ; pour plus, donnez-leur leur propre alimentation 5 V avec une masse commune."
+    },
+    "mpu6050": {
+      "note": "VCC vers 3V3, GND vers GND, SDA vers GPIO2 (broche 3), SCL vers GPIO3 (broche 5). Les pull-ups de 1,8 kΩ de la carte sont déjà sur ces broches. Activez l'I2C avec raspi-config et vérifiez avec i2cdetect -y 1 : il répond à 0x68."
+    },
+    "ssd1306": {
+      "note": "GND, VCC vers 3V3, SCL vers GPIO3, SDA vers GPIO2 : le même bus I2C que les autres capteurs, en général à l'adresse 0x3C."
+    },
+    "piezo-buzzer": {
+      "note": "Plus vers GPIO22 sur la broche 15, moins vers GND. Un buzzer actif n'a besoin que du Buzzer(22) de gpiozero ; un buzzer passif a besoin d'une tonalité, avec TonalBuzzer."
+    }
+  },
+  "failures": {
+    "reverse-pin5": {
+      "title": "Alimentation inversée sur les broches 5V du connecteur",
+      "symptom": "Rien ne s'allume, l'alimentation de labo reste à sa limite de courant et le PMIC chauffe.",
+      "explanation": "Les broches 2 et 4 sont le rail d'entrée 5 V lui-même : pas de fusible, pas de diode. À l'envers, le courant traverse les diodes de structure des interrupteurs du PMIC et les protections derrière chaque rail. Le PMIC y survit rarement.",
+      "fix": "Vérifiez la polarité au multimètre avant de brancher. Alimentez le Pi par l'USB-C quand c'est possible, ou ajoutez une diode ou un module à diode idéale sur votre fil 5 V, en tenant compte de sa chute de tension."
+    },
+    "overvolt-pin5": {
+      "title": "12 V sur les broches 5V du connecteur",
+      "symptom": "Un claquement ou une odeur, puis plus rien : la carte ne redémarre jamais.",
+      "explanation": "Les broches 5V du connecteur sont le rail d'entrée : le 12 V atteint donc directement le PMIC, plus du double de ce pour quoi il est conçu. Raspberry Pi ne publie pas le maximum absolu ; dans cette figure, le PMIC lâche au-dessus de 6 V.",
+      "fix": "N'alimentez le connecteur qu'avec une source 5 V régulée : réglez un convertisseur buck sur 5,1 V et mesurez-le avant de brancher le Pi. Ou utilisez l'USB-C."
+    },
+    "weak-charger": {
+      "title": "Un chargeur de téléphone au lieu d'une alimentation pour Pi",
+      "symptom": "Il démarre, mais le noyau écrit « Undervoltage detected! », vcgencmd get_throttled renvoie 0x50005 et l'horloge Arm descend à son minimum (1,5 GHz sur un Pi 5, 600 MHz sur un Pi 4). Sur un Pi 4, la LED PWR rouge s'éteint ou vacille.",
+      "explanation": "Un chargeur 5 V 2 A s'affaisse à environ 4,6 V dès que le Pi tire du courant. Sous 4,63 V, le PMIC signale une sous-tension et le firmware bride la fréquence ; des chutes plus profondes réinitialisent la carte, et un reset au milieu d'une écriture peut corrompre la carte microSD.",
+      "fix": "Utilisez l'alimentation officielle : 27 W USB PD (5,1 V 5 A) pour un Pi 5, 15 W (5,1 V 3 A) pour un Pi 4, avec un câble court et épais."
+    },
+    "motor-brownout": {
+      "title": "Les moteurs sur le même 5 V que le Pi",
+      "symptom": "Chaque fois que les moteurs démarrent, le Pi redémarre : la LED s'éteint, le journal de démarrage recommence et le programme en cours a disparu.",
+      "explanation": "Le courant de démarrage d'un moteur à courant continu (2,5 A ici) fait chuter l'alimentation 5 V partagée ; les rails du PMIC suivent et le SoC se réinitialise. La carte microSD peut aussi être corrompue.",
+      "fix": "Donnez aux moteurs leur propre alimentation ou leur propre convertisseur buck, ne reliez que les masses, et placez un gros condensateur au pilote de moteur."
+    },
+    "cold-gpio17": {
+      "title": "Soudure froide sur la broche 11 du connecteur (GPIO17)",
+      "symptom": "La LED sur GPIO17 vacille ou décroche pendant que le programme continue de tourner. Appuyer sur le connecteur la fait revenir.",
+      "explanation": "Une soudure terne qui n'a jamais mouillé la broche ne fait contact que de temps en temps : GPIO17 n'atteint la platine d'essai que par à-coups. Le Pi lui-même va bien.",
+      "fix": "Réchauffez la soudure avec du flux et un peu de soudure neuve jusqu'à ce qu'elle forme un cône brillant autour de la broche."
+    },
+    "no-card": {
+      "title": "Pas de carte microSD",
+      "symptom": "L'alimentation monte mais rien ne démarre : pas d'invite de connexion et, sur un moniteur, l'écran de diagnostic du bootloader pendant qu'il cherche une carte, une clé USB ou le réseau.",
+      "explanation": "Le Pi n'a pas de système d'exploitation sur la carte elle-même. Le bootloader de sa flash SPI charge Linux depuis la carte microSD ; sans elle, il n'y a rien à exécuter, et votre programme ne démarre jamais.",
+      "fix": "Écrivez Raspberry Pi OS (ou Ubuntu, pour ROS 2) sur une carte avec Raspberry Pi Imager, puis glissez-la dans le support sous la carte, contacts vers la carte, avant de brancher l'alimentation."
+    },
+    "no-ram": {
+      "title": "Boîtier de RAM absent",
+      "symptom": "Rien ne démarre. Sur un Pi 5, la LED verte répète l'erreur SDRAM : aucun clignotement long, puis 8 courts.",
+      "explanation": "Le bootloader tourne depuis la flash SPI et la mémoire propre du SoC, mais il ne peut pas charger Linux sans SDRAM : il signale donc la panne par le code de clignotement de la LED.",
+      "fix": "Un boîtier mémoire BGA ne se pose pas à la main : c'est un défaut d'usine. Cherchez le code de clignotement dans la liste de Raspberry Pi avant de soupçonner autre chose."
+    },
+    "short-3v3": {
+      "title": "Pont de soudure entre 3V3 et GND",
+      "symptom": "Tout s'arrête : le SoC et les GPIO perdent leur rail 3,3 V et la carte s'éteint.",
+      "explanation": "Le régulateur 3,3 V du PMIC voit un court-circuit franc, atteint sa limite de courant et replie sa sortie. Rien sur le rail 3,3 V ne peut fonctionner.",
+      "fix": "Débranchez, puis trouvez le pont au multimètre en mode continuité entre une broche 3V3 (1 ou 17) et une broche GND. Un fil de liaison égaré est le coupable habituel."
+    },
+    "short-5v": {
+      "title": "Pont de soudure entre 5V et GND",
+      "symptom": "L'alimentation se coupe ou hoquette et la carte s'éteint.",
+      "explanation": "La broche 4 (5V) est juste à côté de la broche 6 (GND) sur la rangée extérieure. Une goutte de soudure ou un fil de liaison mal placé entre elles court-circuite le rail d'entrée lui-même. Rien sur la carte ne le limite : seule la protection de l'alimentation arrête le courant, et les pistes chauffent pendant ce temps.",
+      "fix": "Débranchez, retirez le pont et vérifiez les broches 4 et 6 au multimètre avant de remettre sous tension."
+    },
+    "five-volt-echo": {
+      "title": "ECHO du HC-SR04 directement sur GPIO24",
+      "symptom": "Le capteur semble fonctionner, puis GPIO24 ou tout le banc GPIO cesse de répondre ; au pire, le Pi ne démarre plus.",
+      "explanation": "ECHO monte jusqu'à 5 V. Les pads GPIO ne supportent que 3,3 V : au-dessus d'environ 3,6 V, la diode de protection conduit vers le rail 3,3 V et surcharge la broche et la puce derrière elle, le RP1 sur un Pi 5 ou le BCM2711 lui-même sur un Pi 4.",
+      "fix": "Placez un diviseur sur ECHO : 1 kΩ en série et 2 kΩ vers GND transforment 5 V en 3,3 V."
+    }
+  },
+  "assembly": {
+    "strip": {
+      "title": "Partir de la carte nue",
+      "body": "Dépouillez le Pi jusqu'à son circuit imprimé nu : une carte de 85 x 56 mm avec quatre trous de fixation de 2,7 mm sur une grille de 58 x 49 mm et l'empreinte du connecteur 40 broches le long du bord supérieur. Les deux faces portent des composants.",
+      "refusal": "Débranchez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension."
+    },
+    "pick-place": {
+      "title": "Placement des CMS, puis refusion",
+      "body": "Les composants montés en surface se posent d'abord, sur les deux faces : le support microSD et de petits passifs en dessous, puis le SoC, la RAM, la puce d'E/S, le PMIC et les inductances, le capot Wi-Fi, les connecteurs FFC et JST et l'USB-C au-dessus. Un four de refusion les soude tous d'un coup.",
+      "refusal": "Dépouillez d'abord la carte."
+    },
+    "low": {
+      "title": "Placer les composants traversants bas",
+      "body": "Les pattes des prises micro-HDMI traversent la carte (et la prise A/V sur un Pi 4). Les composants bas d'abord, pour que les hauts ne gênent pas.",
+      "refusal": "Refondez d'abord les composants montés en surface."
+    },
+    "tall": {
+      "title": "Placer les composants traversants hauts",
+      "body": "Le connecteur 40 broches, le connecteur PoE, la prise Ethernet et les deux blocs USB. En usine, ils passent par une étape de soudure sélective ou à la vague.",
+      "refusal": "Placez d'abord les composants bas."
+    },
+    "solder": {
+      "title": "Souder les joints traversants",
+      "body": "Chaque broche de connecteur et chaque patte reçoit une soudure : un cône brillant qui mouille à la fois la broche et la pastille. Le connecteur à lui seul en compte 40.",
+      "refusal": "Placez d'abord tous les composants traversants."
+    },
+    "card": {
+      "title": "Enfoncer la carte microSD",
+      "body": "La carte microSD est la dernière pièce et la seule qui n'est pas soudée : le système d'exploitation et vos programmes y vivent. Écrivez-la d'abord avec Raspberry Pi Imager.",
+      "refusal": "Finissez d'abord de souder la carte."
+    },
+    "plug": {
+      "title": "Brancher l'USB-C et démarrer",
+      "body": "Mise sous tension : la LED du Pi 5 est rouge, passe au vert quand le firmware démarre et s'éteint brièvement pendant la lecture de la carte (le Pi 4 montre une PWR rouge et une ACT verte qui vacille). Le journal du noyau se termine sur une invite de connexion.",
+      "refusal": "Finissez la carte, carte microSD comprise, avant de l'alimenter."
+    },
+    "rails": {
+      "title": "Vérifier les rails",
+      "body": "Sur la fiche d'alimentation : 5,1 V sur le rail d'entrée depuis l'alimentation USB-C et 3,3 V du PMIC sur le rail GPIO. Ce sont les valeurs à mesurer sur les broches 2 et 1 du connecteur."
+    },
+    "blink": {
+      "title": "Lancer blink.py",
+      "body": "Il n'y a rien à téléverser : le programme est un fichier sur la carte microSD et vous le lancez avec python3 blink.py. GPIO17 sur la broche 11 bascule chaque seconde."
+    },
+    "health": {
+      "title": "Vérifier l'alimentation et la température",
+      "body": "vcgencmd get_throttled doit afficher 0x0 (pas de sous-tension, pas de bridage) ; measure_temp et measure_clock arm donnent la température et l'horloge du SoC."
+    },
+    "exploded": {
+      "title": "Vue éclatée",
+      "body": "Chaque pièce soulevée de la carte dans l'ordre de montage : les CMS des deux faces, les composants traversants bas et hauts, puis la carte microSD.",
+      "refusal": "Débranchez d'abord l'alimentation."
+    }
+  },
+  "lessons": {
+    "blink": {
+      "title": "Faire clignoter une LED avec gpiozero",
+      "lede": "Votre premier programme sur un Pi : allumer et éteindre une LED sur GPIO17 avec gpiozero, la bibliothèque GPIO fournie avec Raspberry Pi OS.",
+      "steps": {
+        "1": "Placez une LED et une résistance de 330 Ω sur la platine d'essai : GPIO17 (broche 11 du connecteur) vers la résistance, la résistance vers la patte longue de la LED, la patte courte vers GND sur la broche 9.",
+        "2": "Enregistrez le programme sous blink.py sur le Pi, par SSH ou dans Thonny.",
+        "3": "Lancez-le avec python3 blink.py : la LED change d'état chaque seconde. Ctrl+C l'arrête.",
+        "4": "Changez la durée et relancez. Il n'y a ni compilation ni téléversement : Python relit le fichier à chaque fois."
+      },
+      "hints": {
+        "1": "gpiozero prend les numéros BCM : LED(17), c'est GPIO17, qui est la broche physique 11, pas la broche 17.",
+        "2": "RPi.GPIO ne fonctionne pas sur un Pi 5, parce que les GPIO sont désormais dans RP1. gpiozero fonctionne sur les deux cartes.",
+        "3": "Si rien ne s'allume, retournez la LED : le courant ne passe que de la patte longue vers la courte."
+      },
+      "specs": {
+        "1": {
+          "label": "Niveau des GPIO",
+          "value": "3,3 V"
+        },
+        "2": {
+          "label": "Courant de la LED",
+          "value": "environ 4 mA à travers 330 Ω"
+        },
+        "3": {
+          "label": "Limite par broche",
+          "value": "16 mA, 50 mA pour toutes les broches"
+        }
+      },
+      "features": {
+        "1": "Une LED sur une vraie broche du connecteur",
+        "2": "La classe LED de gpiozero",
+        "3": "sleep() pour la temporisation"
+      },
+      "checks": {
+        "1": "Le programme continue de tourner",
+        "2": "GPIO17 clignote avec une période régulière",
+        "3": "Utilise LED(17), pas RPi.GPIO"
+      },
+      "params": {
+        "secs": {
+          "label": "Durée allumée et éteinte"
+        }
+      },
+      "pins": {
+        "GPIO17": {
+          "to": "Résistance de 330 Ω et patte longue de la LED",
+          "role": "Sortie numérique"
+        },
+        "GND": {
+          "to": "Patte courte de la LED",
+          "role": "Retour"
+        }
+      },
+      "callouts": {
+        "D1": "Patte longue du côté de la résistance et de GPIO17",
+        "R1": "330 Ω gardent le courant vers 4 mA",
+        "J8": "La broche 11 est GPIO17 ; la broche 9 est GND"
+      },
+      "code": {
+        "top": "Faire clignoter une LED sur GPIO17 (broche 11 du connecteur)",
+        "led": "numéro BCM 17 = broche physique 11"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Quelle broche du connecteur est LED(17) ?",
+          "options": {
+            "1": "La broche 17",
+            "2": "La broche 11",
+            "3": "La broche 27"
+          },
+          "why": "gpiozero utilise les numéros BCM. GPIO17 est sur la broche physique 11 ; la broche 17 est une broche 3V3."
+        },
+        "q2": {
+          "q": "Comment « téléverse »-t-on blink.py sur un Pi ?",
+          "options": {
+            "1": "On le flashe par l'USB-C",
+            "2": "On appuie sur le bouton d'alimentation",
+            "3": "On ne le fait pas : on lance le fichier avec python3"
+          },
+          "why": "Un Pi fait tourner Linux depuis sa carte microSD. Un programme est un fichier que l'on lance, pas un firmware que l'on flashe."
+        },
+        "q3": {
+          "q": "Pourquoi ne pas utiliser RPi.GPIO sur un Pi 5 ?",
+          "options": {
+            "1": "Ses GPIO sont dans RP1, que RPi.GPIO ne sait pas piloter",
+            "2": "Il lui faut des broches 5 V",
+            "3": "Il ne fonctionne qu'en Wi-Fi"
+          },
+          "why": "RPi.GPIO écrit dans les anciens registres GPIO de Broadcom. Sur un Pi 5, les broches du connecteur appartiennent à RP1, derrière le PCIe : utilisez donc gpiozero (lgpio)."
+        }
+      }
+    },
+    "button": {
+      "title": "Un bouton avec des callbacks",
+      "lede": "Lire un bouton-poussoir sur GPIO27 avec le pull-up interne et laisser gpiozero appeler votre code à chaque appui, au lieu de scruter dans une boucle.",
+      "steps": {
+        "1": "Gardez la LED sur GPIO17 et ajoutez un bouton à cheval sur la rainure de la platine d'essai : un côté vers GPIO27 (broche 13), l'autre vers GND (broche 14).",
+        "2": "Lancez button.py : la LED s'allume tant que vous tenez le bouton et le terminal compte les appuis.",
+        "3": "Réglez le temps d'anti-rebond sur None et appuyez de nouveau : un appui peut compter deux ou trois fois.",
+        "4": "Remarquez que le programme se termine par pause() : rien ne scrute, et gpiozero exécute les callbacks depuis son propre thread."
+      },
+      "hints": {
+        "1": "Button() active le pull-up de la broche : elle lit l'état haut au repos et l'état bas quand on appuie, sans résistance.",
+        "2": "Les contacts rebondissent pendant quelques millisecondes. bounce_time ignore les fronts qui arrivent trop tôt après le précédent.",
+        "3": "when_released = led.off passe la méthode elle-même, sans parenthèses. Avec des parenthèses, vous l'appelleriez une fois, tout de suite."
+      },
+      "specs": {
+        "1": {
+          "label": "Pull-up",
+          "value": "interne, environ 47 kΩ vers 3,3 V"
+        },
+        "2": {
+          "label": "Rebond des contacts",
+          "value": "jusqu'à environ 5 ms"
+        },
+        "3": {
+          "label": "Callbacks",
+          "value": "exécutés dans le thread de gpiozero"
+        }
+      },
+      "features": {
+        "1": "Pull-up interne, sans résistance",
+        "2": "Callbacks when_pressed et when_released",
+        "3": "Un anti-rebond que l'on peut couper"
+      },
+      "checks": {
+        "1": "La LED s'allume dans les 50 ms qui suivent l'appui",
+        "2": "La LED est de nouveau éteinte après le relâchement",
+        "3": "Compte le deuxième appui",
+        "4": "Utilise les callbacks de Button(27) et pause(), sans boucle de scrutation"
+      },
+      "params": {
+        "bounce": {
+          "label": "Temps d'anti-rebond",
+          "none": "None (pas d'anti-rebond)",
+          "none-note": "Chaque rebond compte comme un appui : regardez le compteur sauter.",
+          "10": "10 ms",
+          "50": "50 ms"
+        }
+      },
+      "world": {
+        "btn": "Bouton sur GPIO27"
+      },
+      "pins": {
+        "GPIO27": {
+          "to": "Bouton, l'autre côté vers GND",
+          "role": "Entrée numérique avec pull-up"
+        },
+        "GPIO17": {
+          "to": "Résistance de 330 Ω et LED",
+          "role": "Sortie numérique"
+        },
+        "GND": {
+          "to": "Bouton et LED",
+          "role": "Retour"
+        }
+      },
+      "callouts": {
+        "BTN1": "Enfoncé, il relie GPIO27 à GND",
+        "D1": "Allumée par le callback when_pressed"
+      },
+      "code": {
+        "top": "Un bouton sur GPIO27 allume la LED et compte les appuis",
+        "button": "pull-up actif : relâché = haut, enfoncé = bas",
+        "callback": "passer la fonction, ne pas l'appeler",
+        "pause": "attendre ici ; gpiozero appelle les fonctions"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Que lit GPIO27 quand le bouton est relâché ?",
+          "options": {
+            "1": "L'état bas, parce que rien ne la pilote",
+            "2": "Elle flotte entre les deux",
+            "3": "L'état haut, grâce au pull-up interne"
+          },
+          "why": "Button() active le pull-up : la broche reste à 3,3 V jusqu'à ce que le bouton la relie à GND."
+        },
+        "q2": {
+          "q": "Pourquoi un appui peut-il compter pour trois avec bounce_time=None ?",
+          "options": {
+            "1": "Les contacts rebondissent et créent plusieurs fronts",
+            "2": "Python exécute la fonction trois fois exprès",
+            "3": "Le pull-up est trop faible"
+          },
+          "why": "Les contacts métalliques crépitent pendant quelques millisecondes ; chaque front ressemble à un nouvel appui, sauf si quelque chose ignore les fronts en trop."
+        },
+        "q3": {
+          "q": "Qu'est-ce qui ne va pas avec button.when_pressed = led.on() ?",
+          "options": {
+            "1": "Rien, ça marche pareil",
+            "2": "Il appelle led.on une fois maintenant et garde son résultat, None",
+            "3": "Il fait clignoter la LED"
+          },
+          "why": "Avec des parenthèses, Python appelle la méthode tout de suite. gpiozero a besoin de la méthode elle-même, pour l'appeler plus tard."
+        }
+      }
+    },
+    "fade": {
+      "title": "Faire varier une LED en PWM",
+      "lede": "Un Pi n'a pas de sorties analogiques : la luminosité vient donc de la modulation de largeur d'impulsion. PWMLED commute GPIO18 très vite et règle la durée pendant laquelle chaque impulsion reste haute.",
+      "steps": {
+        "1": "Déplacez la résistance de la LED vers GPIO18 (broche 12).",
+        "2": "Lancez fade.py : la luminosité monte par paliers de 10 % puis recommence.",
+        "3": "Regardez la valeur affichée : 0.5 signifie que la broche est à l'état haut pendant la moitié de chaque cycle.",
+        "4": "Essayez 50 Hz et regardez la LED à travers l'appareil photo d'un téléphone : le scintillement apparaît."
+      },
+      "hints": {
+        "1": "led.value prend une valeur de 0.0 à 1.0 : la fraction de chaque cycle pendant laquelle la broche est haute.",
+        "2": "Le PWMLED de gpiozero fait du PWM logiciel via lgpio, à 100 Hz par défaut, sur n'importe quelle broche.",
+        "3": "GPIO12, 13, 18 et 19 ont aussi un PWM matériel, que l'on active avec un overlay de device tree (dtoverlay=pwm-2chan)."
+      },
+      "specs": {
+        "1": {
+          "label": "Fréquence PWM par défaut",
+          "value": "100 Hz"
+        },
+        "2": {
+          "label": "Plage du rapport cyclique",
+          "value": "0.0 à 1.0"
+        },
+        "3": {
+          "label": "Broches PWM matériel",
+          "value": "GPIO12, 13, 18, 19"
+        }
+      },
+      "features": {
+        "1": "La luminosité par la largeur d'impulsion",
+        "2": "PWMLED.value de 0 à 1",
+        "3": "Une fréquence que l'on peut changer"
+      },
+      "checks": {
+        "1": "Mi-luminosité après cinq paliers",
+        "2": "Pleine luminosité en haut de la rampe",
+        "3": "Affiche la luminosité",
+        "4": "Utilise PWMLED sur GPIO18"
+      },
+      "params": {
+        "freq": {
+          "label": "Fréquence PWM",
+          "50": "50 Hz",
+          "50-note": "Assez lent pour scintiller à la caméra.",
+          "100": "100 Hz (valeur par défaut de gpiozero)",
+          "1000": "1 kHz"
+        }
+      },
+      "pins": {
+        "GPIO18": {
+          "to": "Résistance de 330 Ω et LED",
+          "role": "Sortie PWM"
+        },
+        "GND": {
+          "to": "Patte courte de la LED",
+          "role": "Retour"
+        }
+      },
+      "callouts": {
+        "D1": "Son courant moyen suit le rapport cyclique"
+      },
+      "code": {
+        "top": "Monter la luminosité d'une LED sur GPIO18 (broche 12)",
+        "led": "PWM logiciel via lgpio",
+        "value": "0.0 = éteinte, 1.0 = pleinement allumée"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Que fait led.value = 0.3 à GPIO18 ?",
+          "options": {
+            "1": "La garde à l'état haut 30 % de chaque cycle",
+            "2": "La met à 0,3 V",
+            "3": "La met à 30 % de 5 V"
+          },
+          "why": "Le PWM ne produit jamais de tension intermédiaire : la broche est soit à 0, soit à 3,3 V, et le rapport cyclique fixe la moyenne."
+        },
+        "q2": {
+          "q": "Pourquoi la LED paraît-elle stable à 100 Hz ?",
+          "options": {
+            "1": "La broche produit une vraie tension analogique",
+            "2": "La LED ne peut pas commuter aussi vite",
+            "3": "Votre œil fait la moyenne des éclairs au-delà d'environ 50-60 par seconde"
+          },
+          "why": "La LED commute à chaque fois ; c'est votre œil qui fond les éclairs ensemble. Un appareil photo peut quand même les saisir."
+        },
+        "q3": {
+          "q": "Quelles broches un PWMLED peut-il utiliser ?",
+          "options": {
+            "1": "Seulement 12, 13, 18 et 19",
+            "2": "N'importe quelle broche GPIO",
+            "3": "Seulement les broches 5V"
+          },
+          "why": "Le PWM logiciel de gpiozero fonctionne sur n'importe quel GPIO ; les quatre broches PWM matériel ne comptent que si vous les activez pour une temporisation plus stable."
+        }
+      }
+    },
+    "distance": {
+      "title": "Un radar de recul avec le HC-SR04",
+      "lede": "Mesurer une distance avec un capteur à ultrasons : le DistanceSensor de gpiozero chronomètre l'écho, et une LED s'allume quand quelque chose s'approche trop.",
+      "steps": {
+        "1": "Câblez le HC-SR04 : VCC vers 5V (broche 2), GND vers la broche 6, TRIG vers GPIO23 (broche 16), ECHO à travers le diviseur 1 kΩ / 2 kΩ vers GPIO24 (broche 18).",
+        "2": "Gardez la LED sur GPIO17 et lancez distance.py : il affiche la distance deux fois par seconde.",
+        "3": "Approchez la main (faites glisser la distance) sous 30 cm : la LED s'allume, puis s'éteint quand vous vous éloignez.",
+        "4": "Changez le seuil et voyez la LED basculer à une autre distance."
+      },
+      "hints": {
+        "1": "Ne sautez jamais le diviseur : ECHO est un signal 5 V et les broches GPIO ne supportent que 3,3 V.",
+        "2": "Le capteur envoie huit impulsions à 40 kHz ; la broche d'écho reste à l'état haut pendant l'aller-retour, 58 µs par centimètre.",
+        "3": "DistanceSensor émet une impulsion toutes les 60 ms en arrière-plan et rend la médiane de ses neuf dernières mesures : il réagit donc avec quelques dixièmes de seconde de retard. Sa portée s'arrête à max_distance, 1 m par défaut."
+      },
+      "specs": {
+        "1": {
+          "label": "Portée",
+          "value": "2 cm à 4 m (gpiozero la plafonne à max_distance)"
+        },
+        "2": {
+          "label": "Vitesse du son",
+          "value": "343 m/s"
+        },
+        "3": {
+          "label": "Diviseur d'écho",
+          "value": "1 kΩ / 2 kΩ : 5 V deviennent 3,3 V"
+        }
+      },
+      "features": {
+        "1": "La mesure de l'écho faite pour vous",
+        "2": "when_in_range et when_out_of_range",
+        "3": "Un diviseur qui protège la broche"
+      },
+      "checks": {
+        "1": "La LED est éteinte tant que la voie est libre",
+        "2": "La LED s'allume quand quelque chose est à 15 cm",
+        "3": "La LED s'éteint de nouveau à 80 cm",
+        "4": "Affiche la distance quand la voie est libre",
+        "5": "Affiche la distance quand l'obstacle est proche",
+        "6": "Utilise DistanceSensor avec echo=24 et trigger=23"
+      },
+      "params": {
+        "near": {
+          "label": "Alerter en dessous de",
+          "20": "20 cm",
+          "30": "30 cm (valeur par défaut de gpiozero)",
+          "50": "50 cm"
+        }
+      },
+      "world": {
+        "sonar": "Distance jusqu'à l'obstacle"
+      },
+      "pins": {
+        "GPIO23": {
+          "to": "TRIG du HC-SR04",
+          "role": "Sortie d'impulsion de déclenchement"
+        },
+        "GPIO24": {
+          "to": "ECHO du HC-SR04 à travers le diviseur",
+          "role": "Entrée d'écho"
+        },
+        "5V": {
+          "to": "VCC du HC-SR04",
+          "role": "Alimentation du capteur"
+        },
+        "GND": {
+          "to": "GND du HC-SR04, diviseur et LED",
+          "role": "Retour"
+        },
+        "GPIO17": {
+          "to": "Résistance de 330 Ω et LED",
+          "role": "Sortie d'alerte"
+        }
+      },
+      "callouts": {
+        "US1": "Envoie l'impulsion et chronomètre son écho",
+        "R2": "1 kΩ en série avec ECHO",
+        "R3": "2 kΩ vers GND : GPIO24 voit 3,3 V"
+      },
+      "code": {
+        "top": "Allumer la LED quand quelque chose est plus proche que le seuil",
+        "sensor": "numéros BCM : écho sur la broche 18, déclenchement sur la broche 16",
+        "near": "appelée une fois à chaque passage du seuil",
+        "print": "la distance est en mètres"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Pourquoi ECHO passe-t-il par un diviseur 1 kΩ / 2 kΩ ?",
+          "options": {
+            "1": "Pour rendre l'écho plus fort",
+            "2": "Parce qu'ECHO est en 5 V et que les broches acceptent 3,3 V",
+            "3": "Pour ralentir l'impulsion"
+          },
+          "why": "5 V x 2 / 3 font environ 3,3 V. Sans le diviseur, l'écho à 5 V pousse du courant dans la diode de protection de la broche."
+        },
+        "q2": {
+          "q": "L'impulsion d'écho dure 2,9 ms. À quelle distance est l'obstacle ?",
+          "options": {
+            "1": "Environ 50 cm",
+            "2": "Environ 1 m",
+            "3": "Environ 5 cm"
+          },
+          "why": "Le son fait l'aller et le retour : 2,9 ms x 343 m/s / 2 font environ 0,5 m."
+        },
+        "q3": {
+          "q": "Pourquoi la LED bascule-t-elle un instant après le changement de distance ?",
+          "options": {
+            "1": "Python est lent",
+            "2": "La LED a besoin de chauffer",
+            "3": "DistanceSensor rend la médiane de ses dernières mesures"
+          },
+          "why": "Il mesure toutes les 60 ms et garde neuf mesures : la médiane ne bouge donc qu'après environ cinq nouvelles."
+        }
+      }
+    },
+    "ros2": {
+      "title": "Un nœud de conduite ROS 2 avec arrêt d'urgence",
+      "lede": "Faire du Pi le cerveau d'un robot : un nœud ROS 2 publie des consignes de vitesse sur /cmd_vel dix fois par seconde, et un bouton sur GPIO27 l'arrête pour de bon.",
+      "steps": {
+        "1": "Gardez le bouton sur GPIO27 et la LED sur GPIO17 : le bouton est l'arrêt d'urgence, la LED montre que le robot roule.",
+        "2": "Lancez le nœud (python3 drive.py une fois l'environnement ROS 2 sourcé) : chaque seconde, il note combien de consignes il a envoyées.",
+        "3": "Appuyez sur l'arrêt d'urgence : le nœud écrit un avertissement, envoie désormais une vitesse nulle et la LED s'éteint.",
+        "4": "Dans un second terminal, ros2 topic echo /cmd_vel montre les messages et ros2 topic hz /cmd_vel montre 10 Hz."
+      },
+      "hints": {
+        "1": "ROS 2 Lyrical Luth (la version LTS de mai 2026) a des paquets Tier 1 pour Ubuntu 26.04 sur arm64 : faites donc tourner Ubuntu sur le Pi, ou Docker sur Raspberry Pi OS.",
+        "2": "create_timer(0.1, ...) exécute tick toutes les 100 ms depuis rclpy.spin() ; ne dormez jamais dans un callback, sinon tous les autres callbacks attendent.",
+        "3": "L'arrêt d'urgence est verrouillé : relâcher le bouton ne relance pas le robot. Un vrai robot coupe aussi l'alimentation des moteurs de façon matérielle."
+      },
+      "specs": {
+        "1": {
+          "label": "Cadence",
+          "value": "10 Hz sur /cmd_vel"
+        },
+        "2": {
+          "label": "Message",
+          "value": "geometry_msgs/msg/Twist"
+        },
+        "3": {
+          "label": "Version de ROS 2",
+          "value": "Lyrical Luth (LTS jusqu'en mai 2031)"
+        }
+      },
+      "features": {
+        "1": "Un publisher sur un timer",
+        "2": "gpiozero dans un nœud ROS 2",
+        "3": "Un arrêt d'urgence logiciel verrouillé"
+      },
+      "checks": {
+        "1": "Note dix consignes de conduite dans la première seconde",
+        "2": "La LED d'état est allumée pendant la conduite",
+        "3": "La LED s'éteint dans les 50 ms qui suivent l'arrêt d'urgence",
+        "4": "Écrit l'avertissement d'arrêt d'urgence",
+        "5": "Envoie une vitesse nulle après l'arrêt",
+        "6": "Utilise un timer et rclpy.spin(), pas une boucle avec sleep"
+      },
+      "params": {
+        "speed": {
+          "label": "Vitesse en avant",
+          "slow": "0,1 m/s",
+          "walk": "0,2 m/s",
+          "fast": "0,5 m/s"
+        }
+      },
+      "world": {
+        "estop": "Bouton d'arrêt d'urgence sur GPIO27"
+      },
+      "pins": {
+        "GPIO27": {
+          "to": "Bouton d'arrêt d'urgence, l'autre côté vers GND",
+          "role": "Entrée numérique avec pull-up"
+        },
+        "GPIO17": {
+          "to": "Résistance de 330 Ω et LED d'état",
+          "role": "Sortie numérique"
+        },
+        "GND": {
+          "to": "Bouton et LED",
+          "role": "Retour"
+        }
+      },
+      "callouts": {
+        "BTN1": "L'arrêt d'urgence : un appui arrête le nœud",
+        "D1": "Allumée pendant que le nœud fait rouler le robot",
+        "U1": "Fait tourner Linux, ROS 2 et le nœud"
+      },
+      "code": {
+        "top": "Publier /cmd_vel à 10 Hz jusqu'à l'appui sur l'arrêt d'urgence",
+        "timer": "période de 0,1 s : 10 Hz",
+        "estop": "GPIO27, l'appui la relie à GND",
+        "latch": "reste arrêté jusqu'au redémarrage du nœud"
+      },
+      "quiz": {
+        "q1": {
+          "q": "À quelle fréquence tick() s'exécute-t-il ?",
+          "options": {
+            "1": "Une fois, au démarrage du nœud",
+            "2": "Aussi vite que le processeur le permet",
+            "3": "Toutes les 0,1 s, dix fois par seconde"
+          },
+          "why": "create_timer(0.1, self.tick) demande à l'exécuteur d'appeler tick toutes les 100 ms pendant que rclpy.spin() tourne."
+        },
+        "q2": {
+          "q": "Pourquoi n'y a-t-il pas de boucle while True avec sleep() ?",
+          "options": {
+            "1": "ROS 2 interdit les boucles",
+            "2": "rclpy.spin() exécute les timers et les callbacks ; un sleep les bloquerait",
+            "3": "Python n'a pas de boucles while"
+          },
+          "why": "spin() est la boucle. Dormir dans un callback retarde tous les autres timers et abonnements du nœud."
+        },
+        "q3": {
+          "q": "Après l'arrêt d'urgence, que publie le nœud ?",
+          "options": {
+            "1": "Des messages Twist avec une vitesse nulle",
+            "2": "Rien du tout",
+            "3": "La dernière vitesse, pour toujours"
+          },
+          "why": "Il continue de publier à 10 Hz, mais avec linear.x et angular.z à 0 : la base reçoit ainsi un arrêt explicite."
+        }
+      }
+    }
+  }
+}
