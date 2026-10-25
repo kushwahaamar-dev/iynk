@@ -27,7 +27,7 @@
     "figure8": "8 字航线",
     "yaw": "尾舵机偏航演示",
     "motorfail": "电机故障测试",
-    "demo": "Demo: the autopilot flies it"
+    "demo": "演示：由自动驾驶来飞"
   },
   "buttons": {
     "arm": "解锁",
@@ -60,7 +60,7 @@
     "gate": "第 {n}/{total} 门",
     "checkpoint": "{label}（{n}/{total}）",
     "home": "起点",
-    "par": "Medal times",
+    "par": "奖牌用时",
     "parValue": "{gold} / {silver} / {bronze}"
   },
   "osd": {
@@ -114,13 +114,13 @@
     "fpvOn": "已戴上 FPV 眼镜",
     "fpvOff": "追踪视角",
     "armBlockedAcc": "无法解锁：加速度计未校准。请在工作台上运行“校准加速度计”",
-    "hintDemo": "The autopilot is flying the course: switch mode to take over",
-    "demoTime": "Demo done in {time} s: the autopilot's time does not count",
-    "missionTime": "Mission complete: {time} s",
-    "missionBest": "Mission complete: {time} s (best!)",
-    "medal": "{line}. {medal} medal!",
-    "noMedal": "{line}. Bronze is {s} s",
-    "drop": "Parcel released: {kg} kg off, so it flies home on less throttle"
+    "hintDemo": "自动驾驶正在飞这条赛道：切换模式即可接管",
+    "demoTime": "演示完成，用时 {time} 秒：自动驾驶的成绩不计入",
+    "missionTime": "任务完成：{time} 秒",
+    "missionBest": "任务完成：{time} 秒（最佳！）",
+    "medal": "{line}。{medal}！",
+    "noMedal": "{line}。铜牌线是 {s} 秒",
+    "drop": "包裹已投放：减轻了 {kg} kg，返航时需要的油门更小"
   },
   "dirs": [
     "东方",
@@ -205,124 +205,124 @@
     "flipMotor": "起飞时翻倒：从未检查电机转向（工作台：检查电机转向）",
     "flipServo": "起飞时失控打转：尾部舵机方向反了"
   },
-  "demoHint": "The autopilot flies this course's line with the same physics you fly. Watch it, then beat it: its times never count.",
+  "demoHint": "自动驾驶用和你一样的物理模型飞这条赛道的路线。先看它飞，再打败它：它的成绩永远不计入。",
   "medals": {
-    "gold": "Gold",
-    "silver": "Silver",
-    "bronze": "Bronze"
+    "gold": "金牌",
+    "silver": "银牌",
+    "bronze": "铜牌"
   },
   "ghosts": {
-    "title": "Ghosts",
-    "best": "Your best lap ({time} s)",
-    "bestNone": "Your best lap (fly one to race it)",
-    "pace": "The autopilot's line ({time} s)",
-    "labelBest": "BEST {time} s",
-    "labelPace": "AUTOPILOT"
+    "title": "幽灵",
+    "best": "你的最佳单圈（{time} 秒）",
+    "bestNone": "你的最佳单圈（先飞完一圈才能和它比）",
+    "pace": "自动驾驶的路线（{time} 秒）",
+    "labelBest": "最佳 {time} 秒",
+    "labelPace": "自动驾驶"
   },
   "why": {
-    "title": "Here's why",
-    "badge": "REPLAY ×⅓",
-    "replay": "Watch the slow-motion replay",
-    "replaying": "Replaying in slow motion…",
-    "flipFc": "The flight controller was mounted backwards. It read every tilt the wrong way round, so each correction pushed the craft further over until it flipped. On a real build, turn the board so its arrow points forward, or set align_board_yaw = 180 in the CLI.",
-    "flipProps": "The props were on the wrong motors. A prop on a motor that spins the other way blows air up, so that corner pushed down instead of lifting and the craft rolled over on take-off. Each prop goes on the motor whose spin matches its direction.",
-    "flipMotor": "One motor spun the wrong way, because nobody checked the motor direction with the props off. Its torque fought the others and the craft flipped as soon as it lifted. On the bench, run Check motor direction and reverse the odd one out.",
-    "flipServo": "The tail servo was reversed. Every yaw correction turned the tail the wrong way, so the spin grew instead of stopping until the tricopter pirouetted out of control and tipped over. On a real build, turn the servo round or reverse it in the CLI (smix reverse 5 2 r), and check its direction by hand before every flight.",
-    "desync": "The motors ran past their rating: this pack's voltage times the motors' KV spins them faster than the ESCs can follow. An ESC lost sync, the motor stuttered and the craft fell. Pick motors or a pack within the rating.",
-    "battery": "The pack hit its cut-off voltage and the ESCs stopped the motors, so it fell. Land when LOW BATTERY shows, and never run a LiPo flat.",
-    "servos": "The elevons moved the wrong way: a command to lift the nose pushed it down, and the wing dived into the ground. Reverse the servos in the flight controller and check them by hand before every launch.",
-    "tailHeavy": "The centre of gravity was behind the mark, so the nose kept pitching up until the wing stalled and dropped. Move the pack forward until the wing balances on its CG mark.",
-    "propBackwards": "The pusher prop was on backwards. It gives less than half its thrust, so the wing never reached flying speed and sank into the grass. The printed side of the prop faces forward.",
-    "hardLanding": "It hit the ground at {speed} m/s, and the frame and props take about 3 m/s. With a manual throttle you catch the fall yourself: ease the throttle up before the ground, not after.",
-    "wingLanding": "It touched down too fast, too steep or banked. A wing lands level, slow and into the wind: let return-to-home bring it round, or line up long and flare just above the grass.",
-    "hit": "It flew into {what} at {kmh} km/h. Distance is hard to judge in the chase view: the FPV goggles (V) show what is ahead, and the autopilot's ghost flies a line that clears everything.",
+    "title": "原因在这里",
+    "badge": "回放 ×⅓",
+    "replay": "观看慢动作回放",
+    "replaying": "正在慢动作回放…",
+    "flipFc": "飞控装反了。它把每一次倾斜都读反了，所以每次修正都把飞机推得更斜，直到翻倒。在真实的组装中，把飞控转过来让箭头朝前，或者在 CLI 里设置 align_board_yaw = 180。",
+    "flipProps": "螺旋桨装错了电机。螺旋桨装在反向旋转的电机上会把气流往上吹，所以那个角不但不产生升力，反而往下压，飞机一起飞就翻了。每个螺旋桨都要装在旋转方向和它一致的电机上。",
+    "flipMotor": "有一个电机转反了，因为没人在拆下螺旋桨的情况下检查电机转向。它的扭矩和其他电机对着干，飞机一离地就翻了。在工作台上运行“检查电机转向”，把转反的那个调过来。",
+    "flipServo": "尾部舵机方向反了。每一次偏航修正都让尾部往反方向转，所以旋转不但没停，反而越转越快，直到三旋翼原地打转、失控翻倒。在真实的组装中，把舵机掉个头，或者在 CLI 里把它反向（smix reverse 5 2 r），并在每次飞行前用手检查它的方向。",
+    "desync": "电机超出了额定范围：这块电池的电压乘以电机的 KV 值，让电机转得比电调能跟上的还快。一个电调失步，电机抖动，飞机就掉了下来。请选择在额定范围内的电机或电池。",
+    "battery": "电池降到了截止电压，电调停掉了电机，所以飞机掉了下来。看到“电量低”就降落，绝不要把锂聚合物电池用到没电。",
+    "servos": "升降副翼动反了：让机头抬起的指令反而把机头压了下去，飞翼一头扎进了地里。在飞控里把舵机反向，并在每次起飞前用手检查。",
+    "tailHeavy": "重心在标记之后，所以机头不停上仰，直到机翼失速掉了下来。把电池往前移，直到飞翼在重心标记处保持平衡。",
+    "propBackwards": "推进桨装反了。它的推力不到一半，所以飞翼一直达不到飞行速度，慢慢沉进了草地。螺旋桨印字的一面朝前。",
+    "hardLanding": "它以 {speed} 米/秒的速度撞到地面，而机架和螺旋桨大约只能承受 3 米/秒。手动油门时要自己接住下落：在接近地面之前就慢慢推油门，而不是撞上之后。",
+    "wingLanding": "触地太快、太陡，或者机身还倾斜着。飞翼要水平、低速、逆风着陆：让返航模式把它带回来，或者提前远远地对准，在贴近草地时拉平。",
+    "hit": "它以 {kmh} 公里/小时的速度撞上了{what}。在追踪视角下很难判断距离：FPV 眼镜（V）能看到前方，自动驾驶的幽灵飞的是一条避开所有障碍的路线。",
     "what": {
-      "tree": "a tree",
-      "roof": "a roof",
-      "wall": "a wall",
-      "pole": "a power pole",
-      "gate": "a gate post",
-      "building": "a building",
-      "pillar": "a pillar",
-      "tower": "the tower",
-      "barrel": "a barrel",
-      "obstacle": "an obstacle"
+      "tree": "树",
+      "roof": "屋顶",
+      "wall": "墙",
+      "pole": "电线杆",
+      "gate": "门柱",
+      "building": "建筑物",
+      "pillar": "柱子",
+      "tower": "塔",
+      "barrel": "油桶",
+      "obstacle": "障碍物"
     },
     "fix": {
-      "fcReversed": "Turn the flight controller round",
-      "propsSwapped": "Put the props on the right motors",
-      "motorDirUnchecked": "Check the motor direction",
-      "accUncalibrated": "Calibrate the accelerometer",
-      "overKv": "Fit motors and a pack within their rating",
-      "servosReversed": "Reverse the servos",
-      "tailHeavy": "Move the pack forward to the CG mark",
-      "propBackwards": "Turn the prop round",
-      "mode": "Switch to {mode} and go again",
-      "pace": "Show the autopilot's line and go again",
-      "reset": "Fresh pack, back on the pad"
+      "fcReversed": "把飞控转过来",
+      "propsSwapped": "把螺旋桨装到正确的电机上",
+      "motorDirUnchecked": "检查电机转向",
+      "accUncalibrated": "校准加速度计",
+      "overKv": "换上额定范围内的电机和电池",
+      "servosReversed": "把舵机反向",
+      "tailHeavy": "把电池前移到重心标记",
+      "propBackwards": "把螺旋桨掉个头",
+      "mode": "切换到{mode}再飞一次",
+      "pace": "显示自动驾驶的路线再飞一次",
+      "reset": "换一块满电电池，回到起降坪"
     },
-    "fixed": "Fixed: {fix}. Arm and fly again"
+    "fixed": "已修复：{fix}。解锁再飞一次"
   },
   "breakIt": {
-    "title": "Break it",
-    "lede": "Put a real build mistake in, even mid-flight, and watch what it does. A crash replays in slow motion and says why.",
-    "reset": "Undo my changes",
-    "noBoard": "Laps flown with something broken don't go on the leaderboards.",
+    "title": "弄坏它",
+    "lede": "放进一个真实的组装错误（飞行中也可以），看看会发生什么。坠机会以慢动作回放，并告诉你原因。",
+    "reset": "撤销我的改动",
+    "noBoard": "带着故障飞的圈不计入排行榜。",
     "items": {
       "fcReversed": {
-        "label": "Mount the flight controller backwards",
-        "what": "Its arrow points at the tail, so it reads every tilt the wrong way round."
+        "label": "把飞控装反",
+        "what": "它的箭头指向机尾，所以每次倾斜都读反了。"
       },
       "propsSwapped": {
-        "label": "Swap the props round",
-        "what": "Each prop sits on a motor that spins it the wrong way: that corner pushes down."
+        "label": "把螺旋桨对调",
+        "what": "每个螺旋桨都装在让它反转的电机上：那个角会往下压。"
       },
       "motorDirUnchecked": {
-        "label": "Skip the motor direction check",
-        "what": "One motor spins the wrong way, and nobody looked with the props off."
+        "label": "跳过电机转向检查",
+        "what": "有一个电机转反了，而且没人在拆下螺旋桨时看过。"
       },
       "accUncalibrated": {
-        "label": "Skip the accelerometer calibration",
-        "what": "The flight controller doesn't know which way is level, so it won't arm."
+        "label": "跳过加速度计校准",
+        "what": "飞控不知道哪边是水平，所以无法解锁。"
       },
       "overKv": {
-        "label": "Run the motors over their rating",
-        "what": "Too many volts for these motors' KV: the ESCs lose sync at full throttle."
+        "label": "让电机超出额定范围",
+        "what": "电压对这些电机的 KV 来说太高：满油门时电调会失步。"
       },
       "servosReversed": {
-        "label": "Reverse the servos",
-        "what": "The servos move the wrong way: every correction makes it worse."
+        "label": "把舵机反向",
+        "what": "舵机动反了：每次修正都让情况更糟。"
       },
       "tailHeavy": {
-        "label": "Put the pack too far back",
-        "what": "The centre of gravity sits behind the mark, so the nose keeps pitching up."
+        "label": "把电池放得太靠后",
+        "what": "重心在标记之后，所以机头不停上仰。"
       },
       "propBackwards": {
-        "label": "Fit the prop backwards",
-        "what": "The pusher prop gives less than half its thrust."
+        "label": "把螺旋桨装反",
+        "what": "推进桨的推力不到一半。"
       }
     }
   },
   "challenge": {
-    "title": "Daily challenge",
-    "day": "{date}, the same for everyone (UTC)",
-    "what": "{craft} on {course}, with the {pack} pack",
-    "windOn": "Wind on",
-    "windOff": "No wind",
-    "fly": "Fly the challenge",
-    "flyThere": "Fly it with the {craft}",
-    "flying": "You're flying the challenge: the factory build, this pack and this wind, like everyone else today.",
-    "stop": "Back to free flight",
-    "best": "Your best: {time} s",
-    "none": "No time yet: a finished lap or run counts.",
-    "beat": "{by} flew it in {time} s. Beat that.",
-    "beatAnon": "A friend flew it in {time} s. Beat that.",
-    "share": "Share the challenge",
-    "copied": "Link copied",
-    "copyFailed": "Couldn't copy: here is the link",
-    "link": "Challenge link",
-    "shareText": "SimLab daily drone challenge: {craft} on {course}.",
-    "shareBeat": "SimLab daily drone challenge: {craft} on {course}. Can you beat {time} s?",
-    "board": "{course}, challenge of {date}"
+    "title": "每日挑战",
+    "day": "{date}，所有人都一样（UTC）",
+    "what": "{craft}，赛道：{course}，电池：{pack}",
+    "windOn": "有风",
+    "windOff": "无风",
+    "fly": "开始挑战",
+    "flyThere": "用{craft}来飞",
+    "flying": "你正在进行挑战：出厂配置、这块电池和这样的风，和今天的所有人一样。",
+    "stop": "回到自由飞行",
+    "best": "你的最佳：{time} 秒",
+    "none": "还没有成绩：飞完一圈或一次任务才算。",
+    "beat": "{by} 用 {time} 秒飞完了。来打败这个成绩吧。",
+    "beatAnon": "一位朋友用 {time} 秒飞完了。来打败这个成绩吧。",
+    "share": "分享挑战",
+    "copied": "链接已复制",
+    "copyFailed": "无法复制：链接在这里",
+    "link": "挑战链接",
+    "shareText": "SimLab 每日无人机挑战：{craft}，赛道 {course}。",
+    "shareBeat": "SimLab 每日无人机挑战：{craft}，赛道 {course}。你能打败 {time} 秒吗？",
+    "board": "{course}，{date} 的挑战"
   }
 }
