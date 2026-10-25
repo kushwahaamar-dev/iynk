@@ -1,0 +1,381 @@
+{
+  "title": "GPS-Kameradrohne",
+  "tagline": "Ein Quad der F450-Klasse mit ArduPilot, der weiß, wo er ist: Er hält seine Position im Wind, fliegt von selbst nach Hause und hält die Kamera waagerecht.",
+  "sub": "ArduCopter + Pixhawk 6C",
+  "hint": "Bau einen GPS-Quad, kalibrier seinen Kompass und flieg dann eine Fotomission um einen Mast",
+  "noun": "GPS-Kameradrohne",
+  "overview": "Das ist die Drohne, die sich die meisten vorstellen: ein mittelgroßer Quad, der weiß, wo er ist. Sein Pixhawk läuft mit ArduPilot, dessen Schätzer (EKF3) Gyro, Beschleunigungssensor, Barometer, Kompass und GPS zu einer Position und Geschwindigkeit verrechnet. Dadurch kann er in Loiter einen Punkt im Wind halten, in AltHold nur seine Höhe halten, in RTL von selbst nach Hause fliegen und landen und in AUTO eine geplante Route fliegen, während ein Gimbal die Kamera waagerecht hält. Er ist für lange, ruhige Flüge gebaut statt für Wucht: Motoren mit wenig KV, große, langsame 10-Zoll-Propeller und ein großer 4S-Akku. Drohnen wie diese machen Luftbilder, Inspektionen von Dächern und Masten und Kartierungen, und derselbe Aufbau ist die Standard-Lernplattform für ArduPilot und PX4 (das X500-Kit von Holybro ist eine). Wähl die Teile und beobachte die Zahlen, bau ihn, mach die Prüfungen auf der Werkbank und flieg dann die Mastinspektion von Hand oder lass sie AUTO fliegen.",
+  "practice": "Flieg die Mastinspektion zuerst in Loiter: Die Drohne hält an, wenn du die Knüppel loslässt, also kannst du jeden Fotopunkt in deinem eigenen Tempo anpeilen. Probier dann AltHold und sieh, wie sie mit dem Wind abdriftet, und Stabilize, um zu spüren, was das GPS für dich getan hat. Schalte schließlich auf AUTO und sieh zu, wie sie dieselbe Route fliegt, an jedem Fotopunkt pausiert, dann RTL und Landung. Bei einem echten Aufbau: Smoke Stopper beim ersten Einstecken, Motortest ohne Propeller (A vorne rechts, dann im Uhrzeigersinn), Kalibrierung von Beschleunigungssensor und Kompass weg von Metall, ein GPS-Fix draußen, der Failsafe-Test ohne Propeller, und lies vor dem ersten Flug jede PreArm-Meldung.",
+  "design": {
+    "fixed": {
+      "FRAME": "F450-Rahmen: Platte mit Stromverteilung und 4 Arme",
+      "GEAR": "Landegestell und Akkuträger",
+      "ESC": "4 × 30-A-ESCs",
+      "XT60": "Strommodul PM02, XT60 und Kondensator",
+      "FC": "Flugcontroller Pixhawk 6C",
+      "GPS": "M10-GPS + Kompass auf einem Mast",
+      "TELEM": "915-MHz-SiK-Telemetriefunk",
+      "RX": "ExpressLRS-Empfänger 2,4 GHz",
+      "GIMBAL": "Bürstenloser 2-Achsen-Gimbal + Kamera",
+      "TOP": "Deckplatte und Schrauben",
+      "STRAP": "Akkugurte"
+    },
+    "verdict": {
+      "over": "{kv} KV an {cells}S mit diesen Propellern verlangt weit mehr Strom, als Motoren und ESCs vertragen: Sie überhitzen, und ein ESC verliert die Synchronisation. Wenig KV und große Propeller passen zu einer Kameradrohne.",
+      "weak": "Ein Schub-Gewichts-Verhältnis von {tw}:1 ist zu niedrig: Sie steigt kaum und kann ihre Position im Wind nicht halten. Eine Kameradrohne will etwa 2:1 oder mehr.",
+      "ok": "Die Teile passen zusammen: {tw}:1 ist reichlich für eine Kameradrohne, und der niedrige Schwebestrom ergibt lange Flüge. Das Schwebegas des Rechners ist für diese Klasse pessimistisch: Echte F450 schweben bei 35 bis 50 %, und ArduPilot lernt den echten Wert im Flug."
+    }
+  },
+  "parts": {
+    "GEAR": {
+      "name": "Landegestell, Kufen und Akkuträger",
+      "what": "Zwei Kufenrohre auf vier Beinen heben den Rahmen 120 mm über den Boden, damit der Gimbal unter der Nase bei der Landung frei bleibt. Ein Träger zwischen den Beinen trägt den Akku tief, unter der Mitte des Rahmens."
+    },
+    "FRAME": {
+      "name": "F450-Rahmen: Platte mit Stromverteilung und 4 Arme",
+      "what": "Der klassische 450-mm-Rahmen im DJI-Stil: vier gespritzte Arme zwischen zwei Platten verschraubt, die Motoren diagonal 450 mm voneinander entfernt. Die untere Platte ist eine Leiterplatte, die zugleich als Stromverteilung dient, mit Akku-Pads hinten und einem Plus- und Minus-Pad an jeder Armwurzel für deren ESC. Die beiden vorderen Arme sind farbig, damit du vom Boden aus die Nase erkennst."
+    },
+    "MOTORS": {
+      "name": "4 bürstenlose Motoren (2212, 920 KV)",
+      "what": "Außenläufer mit einem 22 mm breiten und 12 mm hohen Stator. 920 KV an einem 4S-Akku drehen einen 10-Zoll-Propeller ohne Last mit etwa 13.600 U/min: langsam und effizient, und das gibt einer Kameradrohne 15 bis 20 Minuten in der Luft. ArduPilot nummeriert sie M1 vorne rechts, M2 hinten links, M3 vorne links, M4 hinten rechts."
+    },
+    "ESC": {
+      "name": "4 einzelne 30-A-ESCs an den Armen",
+      "what": "Ein Drehzahlsteller pro Arm, jeder von seinen Pads auf der Stromverteilung gespeist und mit dreiphasigem Antrieb für seinen Motor. Sie bekommen DShot600 von den MAIN-Ausgängen des Pixhawk. Ein Motor der 2216-Klasse mit einem 10-Zoll-Propeller zieht im Schwebeflug etwa 3 A und bei Vollgas 16 A, also lassen 30 A reichlich Reserve."
+    },
+    "WIRES": {
+      "name": "Motorphasenkabel und Stromkabel der ESCs",
+      "what": "Drei Phasenkabel von jedem ESC zu seinem Motor, und ein rotes und ein schwarzes Kabel von jedem ESC hinunter zu seinen Pads auf der Stromverteilung. Das Tauschen zweier beliebiger Phasenkabel kehrt einen Motor um; mit DShot kannst du ihn auch in den ESC-Einstellungen umkehren."
+    },
+    "XT60": {
+      "name": "Strommodul PM02, XT60 und Low-ESR-Kondensator",
+      "what": "Der Akku wird in den XT60 des Strommoduls gesteckt. Es leitet den Strom an die Stromverteilung weiter, misst Spannung und Strom für die Akkuüberwachung von ArduPilot und gibt dem Pixhawk über das 6-polige Kabel POWER1 eigene, saubere 5,2 V. Ein Low-ESR-Kondensator über den Akku-Pads schluckt Spitzen; sein Streifen geht zu Minus."
+    },
+    "TOP": {
+      "name": "Deckplatte, auf die Arme geschraubt",
+      "what": "Die obere Platte schließt den Rahmen über den Armwurzeln und der Verkabelung. Alles, was freie Sicht zum Himmel oder einen ruhigen Platz braucht, sitzt oben drauf: der Pixhawk, der GPS-Mast und die beiden Funkmodule."
+    },
+    "FC": {
+      "name": "Flugcontroller Pixhawk 6C (ArduCopter)",
+      "what": "Ein STM32H743 mit 480 MHz und zwei temperaturgeregelten, schwingungsentkoppelten IMUs und einem Barometer, auf dem ArduCopter 4.7.2 läuft. Er sitzt auf Schaum in der Mitte der Deckplatte, Pfeil zur Nase. Er hat acht MAIN-Ausgänge (IO) und acht AUX-Ausgänge (FMU), drei TELEM-Ports, zwei GPS-Ports und zwei CAN-Busse, und er versorgt sich über das Strommodul, nicht über die Servoschiene."
+    },
+    "GPS": {
+      "name": "M10-GPS + Kompass auf einem Mast",
+      "what": "Ein u-blox-M10-Empfänger und ein Kompass IST8310 in einem Puck, mit der Status-LED von ArduPilot (blau blinkend: kein Fix, grün: 3D-Fix). Er sitzt auf einem klappbaren Mast, weil der Strom von Akku und ESCs ein Magnetfeld erzeugt, das einen Kompass ablenkt; ein paar Zentimeter Höhe verringern das stark. Sein Pfeil muss zur Nase zeigen, wie der des Pixhawk."
+    },
+    "TELEM": {
+      "name": "915-MHz-SiK-Telemetriefunk",
+      "what": "Eine MAVLink-Funkverbindung zur Bodenstation (915 MHz in Amerika, 433 MHz in Europa) an TELEM1. Darüber zeigt Mission Planner oder QGroundControl die Drohne auf einer Karte, lädt Missionen hoch und ändert Parameter in der Luft."
+    },
+    "RX": {
+      "name": "ExpressLRS-Empfänger 2,4 GHz (CRSF)",
+      "what": "Die Funkverbindung des Piloten, als serieller Empfänger an TELEM2 angeschlossen. ELRS spricht CRSF, und das braucht einen vollständigen UART mit TX und RX: Der RCIN-Pin des Pixhawk 6C nimmt SBUS und PPM, aber kein CRSF. Er schickt auch die Verbindungsqualität zurück, damit die Bodenstation sie zeigen kann."
+    },
+    "GIMBAL": {
+      "name": "Bürstenloser 2-Achsen-Gimbal und Kamera",
+      "what": "Eine Kamera auf zwei kleinen bürstenlosen Motoren, Rollen und Nicken, unter der Nase auf Gummidämpfern. Der Gimbal hat einen eigenen Controller und eine eigene IMU und hält die Kamera selbst waagerecht; ArduPilot sagt ihm nur, in welchen Winkel er zeigen soll, über zwei PWM-Drähte von AUX 1 und 2. Das Nicken reicht von senkrecht nach unten (-90°) bis 25° nach oben. Ein 2-Achsen-Gimbal kann die Kamera nicht seitlich drehen, also giert die Drohne, um sie auszurichten."
+    },
+    "BATT": {
+      "name": "LiPo-Akku und Gurte",
+      "what": "Ein 4S-Akku mit 5000 mAh (etwa 500 g, 74 Wh), auf den Träger unter dem Rahmen geschnallt. Eine Kameradrohne trägt einen großen Akku, weil sie die meiste Zeit schwebt: Hier ergibt er 15 bis 20 Minuten."
+    },
+    "PROPS": {
+      "name": "10-Zoll-Zweiblattpropeller, 2 CW + 2 CCW",
+      "what": "Große, langsame Propeller machen die Drohne effizient. M1 und M2 drehen gegen den Uhrzeigersinn und bekommen CCW-Propeller, M3 und M4 drehen im Uhrzeigersinn und bekommen CW-Propeller (ArduPilot nennt sie Pusher). Die dickere, abgerundete Kante jedes Blatts zeigt in die Drehrichtung."
+    }
+  },
+  "build": {
+    "gear": {
+      "title": "Landegestell und Akkuträger zusammenbauen",
+      "body": "Schraub die vier Beine in die Kufenrohre, steck die Gummikappen auf und schraub den Akkuträger zwischen die Beine."
+    },
+    "frame": {
+      "title": "Den F450-Rahmen auf dem Gestell aufbauen",
+      "body": "Schraub die vier Arme an die Platte mit der Stromverteilung, die farbigen Arme nach vorn, und schraub den Rahmen auf die Halterung des Gestells. Prüf, ob die Arme gerade sitzen: Ein verdrehter Arm neigt seinen Motor, der dann gegen die anderen arbeitet.",
+      "refusal": "Der Rahmen wird auf das Landegestell geschraubt: Bau zuerst das Gestell zusammen."
+    },
+    "motors": {
+      "title": "Die vier Motoren montieren",
+      "body": "Je vier M3-Schrauben in die Armenden, die Kabel nach innen. Zu lange Schrauben erreichen die Wicklungen und schließen sie kurz.",
+      "refusal": "Die Motoren sitzen an den Armenden: Bau zuerst den Rahmen auf."
+    },
+    "esc": {
+      "title": "Auf jeden Arm einen ESC setzen",
+      "body": "Mach jeden 30-A-ESC mit Kabelbindern oben auf seinem Arm fest, zwischen Motor und Rahmen, mit seinen Stromkabeln zur Mitte.",
+      "refusal": "Die ESCs sitzen auf den Armen: Bau zuerst den Rahmen auf."
+    },
+    "wires": {
+      "title": "Motoren und Stromkabel der ESCs verdrahten",
+      "body": "Verbinde die drei Phasenkabel jedes Motors mit seinem ESC und löte dann das rote und das schwarze Kabel jedes ESC an die Pads an seiner Armwurzel auf der Stromverteilung: Rot an Plus, Schwarz an Minus.",
+      "refusal": "Diese Kabel verbinden Motoren und ESCs: Setz zuerst beide ein."
+    },
+    "power": {
+      "title": "Strommodul und Kondensator einsetzen",
+      "body": "Das PM02 sitzt hinten auf der Stromverteilung, sein XT60 hängt hinten heraus. Löte seinen Ausgang an die Akku-Pads und den Kondensator über dieselben Pads, mit dem Streifen auf der Minusseite. Das 6-polige Kabel kommt später an POWER1 des Pixhawk.",
+      "refusal": "Das Strommodul speist die ESC-Pads auf der Stromverteilung: Setz zuerst die ESCs ein."
+    },
+    "top": {
+      "title": "Den Rahmen mit der Deckplatte schließen",
+      "body": "Schraub die Deckplatte auf die Arme. Prüf vor dem Festziehen, dass kein Kabel zwischen Arm und Platte eingeklemmt ist.",
+      "refusal": "Die Deckplatte deckt Verkabelung und Strommodul ab: Setz zuerst beides ein."
+    },
+    "fc": {
+      "title": "Den Pixhawk montieren, Pfeil nach vorn",
+      "body": "Auf sein Schaumpad in der Mitte der Deckplatte, Pfeil zur Nase. Steck das Strommodul an POWER1 und die vier Signalkabel der ESCs an MAIN OUT 1 bis 4, in der Reihenfolge der Motoren.",
+      "refusal": "Der Pixhawk sitzt auf der Deckplatte: Setz zuerst die Deckplatte auf."
+    },
+    "gps": {
+      "title": "Den GPS-Mast hinten aufstellen",
+      "body": "Klapp den Mast hinten auf der Deckplatte hoch, den Pfeil des Pucks zur Nase, und steck sein 10-poliges Kabel an GPS1. Je höher er über den Stromkabeln sitzt, desto sauberer liest der Kompass.",
+      "refusal": "Der GPS-Mast sitzt auf der Deckplatte: Setz zuerst die Deckplatte auf."
+    },
+    "telem": {
+      "title": "Den Telemetriefunk an TELEM1 einsetzen",
+      "body": "Auf die Deckplatte hinten links, Antenne aufrecht, Kabel an TELEM1. Das Funkmodul der Bodenstation an deinem Laptop ist seine andere Hälfte.",
+      "refusal": "Der Telemetriefunk wird an den Pixhawk gesteckt: Montier zuerst den Pixhawk."
+    },
+    "rx": {
+      "title": "Den ELRS-Empfänger an TELEM2 einsetzen",
+      "body": "Hinten rechts, seine T-Antenne frei von Carbon und Propellern. TX an RX und RX an TX an TELEM2, nie an RCIN: CRSF braucht einen vollständigen seriellen Port.",
+      "refusal": "Der Empfänger wird an den Pixhawk gesteckt: Montier zuerst den Pixhawk."
+    },
+    "gimbal": {
+      "title": "Den Gimbal unter die Nase hängen",
+      "body": "Schraub die Halterung unter die Vorderseite des Rahmens, häng die gedämpfte Platte an ihre vier Gummibälle und setz die Kamera ein. Führ die Signalkabel für Rollen und Nicken zu AUX 1 und 2 und versorg den Gimbal über ein BEC: Der Pixhawk versorgt seine Servoschiene nicht.",
+      "refusal": "Die Gimbal-Halterung wird unter den Rahmen geschraubt: Bau zuerst den Rahmen auf."
+    },
+    "batt": {
+      "title": "Den Akku auf den Träger schnallen",
+      "body": "Antirutschpad, Akku, zwei Gurte, Kabel nach hinten zum XT60 des Strommoduls. Heb die Drohne an der Deckplatte an und schieb den Akku, bis sie waagerecht hängt.",
+      "refusal": "Der Akku sitzt auf dem Träger des Gestells und wird ins Strommodul gesteckt: Setz zuerst beides ein."
+    },
+    "props": {
+      "title": "Propeller zuletzt",
+      "body": "Erst nach dem Smoke-Test und dem Motortest. CCW-Propeller auf M1 (vorne rechts) und M2 (hinten links), CW-Propeller auf M3 (vorne links) und M4 (hinten rechts), abgerundete Kante vorn.",
+      "refusal": "Die Propeller kommen zuletzt drauf: Setz Motoren und Deckplatte ein und mach dann den Smoke-Stopper-Test und den Motortest."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "Der XT60 des Akkus wird ins Strommodul gesteckt. Ein 4S-Akku hat voll 16,8 V und nominal 14,8 V.",
+    "XT60-ESC": "Der Ausgang des Strommoduls geht an die Akku-Pads auf der Stromverteilung; das Kupfer der Platine führt ihn zu einem Plus- und Minus-Pad an jeder Armwurzel, wo die Kabel der einzelnen ESCs angelötet sind.",
+    "ESC-MOTORS": "Drei Phasenkabel von jedem ESC zu seinem Motor. Jede Reihenfolge dreht ihn; das Tauschen zweier kehrt ihn um.",
+    "XT60-FC": "Das 6-polige Kabel an POWER1 führt die 5,2-V-Versorgung des Pixhawk und dazu die Messleitungen für Spannung und Strom für die Akkuüberwachung (BATT_MONITOR 4).",
+    "FC-ESC": "MAIN OUT 1 bis 4 führen DShot600 zu den Motoren 1 bis 4. Beim Pixhawk 6C kommen die MAIN-Ausgänge vom IO-Chip, der BRD_IO_DSHOT 1 braucht, um DShot zu sprechen.",
+    "GPS-FC": "Ein 10-poliges Kabel an GPS1: die seriellen Daten des GPS (SERIAL3) und der Kompass an I²C, dazu die LED und 5 V.",
+    "TELEM-FC": "Der SiK-Funk an TELEM1 (SERIAL1) mit 57600 Baud, MAVLink2 in beide Richtungen.",
+    "RX-FC": "Der ELRS-Empfänger an TELEM2 (SERIAL2, Protokoll 23 RCIN) mit 420 kBaud, eingestellt über Bit 13 von RC_OPTIONS.",
+    "FC-GIMBAL": "Zwei PWM-Signalkabel von AUX 1 und AUX 2 (SERVO9 Rollen, SERVO10 Nicken). Der Gimbal bekommt seinen Strom von einem BEC, nicht vom Pixhawk."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke-Stopper-Test",
+      "pass": "Die Lampe hat nur kurz geblinkt: kein Kurzschluss zwischen Plus und Minus. Du kannst den Akku jetzt direkt einstecken.",
+      "fail": "Die Lampe blieb an: Etwas ist kurzgeschlossen. Hier sitzt der Kondensator verkehrt herum; dreh ihn um (Streifen zu Minus) und teste erneut."
+    },
+    "motors": {
+      "title": "Motortest (ohne Propeller)",
+      "pass": "Der Motortest von Mission Planner hat sie von A bis D gedreht, vorne rechts beginnend und im Uhrzeigersinn weiter: M1 und M2 gegen den Uhrzeigersinn, M3 und M4 im Uhrzeigersinn. Die Propeller können drauf.",
+      "fail": "Ein Motor hat sich falsch herum gedreht. Tausch zwei seiner Phasenkabel oder kehr ihn im ESC um; mit Propellern würde er sich beim Start überschlagen."
+    },
+    "calibrate": {
+      "title": "Kalibrierung des Beschleunigungssensors",
+      "pass": "In den sechs Lagen kalibriert (waagerecht, beide Seiten, Nase nach unten, Nase nach oben, auf dem Rücken), dann Calibrate Level in Fluglage. Die PreArm-Sperre \"3D Accel calibration needed\" ist weg.",
+      "fail": "Setz zuerst den Pixhawk ein. Zeigt sein Pfeil nach hinten, dreh ihn um oder setz AHRS_ORIENTATION auf 4 (Yaw180), starte neu und kalibrier erneut."
+    },
+    "compass": {
+      "title": "Kompasskalibrierung",
+      "pass": "Die Kalibrierung an Bord hat jede Seite abgetastet, die Offsets gespeichert und um einen Neustart gebeten. Mit dem Pfeil des Pucks nach vorn stimmen Kompass und GPS überein, also hält Loiter still, statt zu kreisen.",
+      "fail": "Setz Pixhawk und GPS ein und nimm die Propeller ab: Du drehst die Drohne in deinen Händen um. Zeigt der Puck nach hinten, liest der Kompass um 180° neben der GPS-Spur, und die PreArm-Prüfung meldet \"Compasses inconsistent\"."
+    },
+    "gps": {
+      "title": "GPS-Fix",
+      "pass": "3D-Fix mit 14 Satelliten und HDOP 0,8: EKF3 nutzt das GPS, die LED blinkt grün, und Loiter, RTL und AUTO sind erlaubt.",
+      "fail": "Setz Pixhawk und GPS ein und steck den Akku ein: Das GPS braucht Strom und freie Sicht zum Himmel. Ohne 3D-Fix meldet die PreArm-Prüfung \"GPS 1: Bad fix\"."
+    },
+    "failsafe": {
+      "title": "Funk-Failsafe (ohne Propeller)",
+      "pass": "Auf der Werkbank gearmt, Sender aus: Am Boden disarmt sie sofort. In der Luft würde FS_THR_ENABLE 1 sie auf RTL schalten und nach Hause bringen.",
+      "fail": "Nimm die Propeller ab, setz Pixhawk und Empfänger ein und steck den Akku ein. Eine Drohne ohne Funk-Failsafe behält ihre letzten Knüppelwerte und fliegt davon."
+    },
+    "gimbal": {
+      "title": "Gimbal-Test",
+      "pass": "Der Neigungsregler hat die Kamera von senkrecht nach unten (-90°) bis 25° nach oben und zurück bewegt, und das Rollen blieb waagerecht: Der Gimbal folgt MNT1 und hält den Horizont selbst.",
+      "fail": "Setz Gimbal und Pixhawk ein und steck den Akku ein: Der Gimbal läuft über sein eigenes BEC am Akku."
+    },
+    "prearm": {
+      "title": "PreArm-Prüfungen",
+      "pass": "Keine PreArm-Meldungen: Beschleunigungssensor und Kompass kalibriert und einig, Empfänger gefunden, 3D-GPS-Fix. Bereit zum Armen in Loiter.",
+      "fail": "ArduPilot nennt das Erste, was nicht stimmt, zum Beispiel \"PreArm: GPS 1: Bad fix\" oder \"PreArm: Compasses inconsistent\". Behebe das und mach die Prüfungen erneut; überspring sie nie mit ARMING_SKIPCHK."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Rahmen, Ausgänge und Strom",
+      "explain": "In ArduCopter 4.7.2 setzt du Parameter, keine Befehle: In MAVProxy wird jedes param set sofort gespeichert, in Mission Planner ist es Write Params. Rahmen Quad X, DShot600 an den MAIN-Ausgängen (der IO-Chip des 6C braucht dafür BRD_IO_DSHOT 1), das PM02 als analoge Akkuüberwachung und die Spannung des vollen und leeren Akkus, damit der Schub nicht nachlässt, während sich der Akku leert."
+    },
+    "radio": {
+      "title": "Ports für Telemetrie, Empfänger und GPS",
+      "explain": "Jeder serielle Port bekommt ein Protokoll: MAVLink2 für den SiK-Funk an TELEM1, RCIN für den ELRS-Empfänger an TELEM2 mit 420 kBaud, GPS an GPS1. COMPASS_ORIENT sagt, in welche Richtung der Kompass des Pucks zeigt."
+    },
+    "modes": {
+      "title": "Der Modusschalter",
+      "explain": "Kanal 5 wählt über sein PWM-Band einen von sechs Flugmodi. Die Zahlen sind die Modusnummern von ArduCopter: 5 Loiter, 2 AltHold, 3 Auto, 0 Stabilize, 9 Land, 6 RTL. Loiter ist Position 1, also gibt dir ein panischer Schnipp ans Ende des Schalters eine Drohne, die anhält und die Position hält."
+    },
+    "gimbal": {
+      "title": "Gimbal an AUX 1 und 2",
+      "explain": "Typ 7 (BrushlessPWM) ist für einen Gimbal, der sich selbst stabilisiert: ArduPilot schickt nur den gewünschten Winkel auf zwei Ausgängen. Typ 1 ist für einfache Servos, die ArduPilot stabilisieren muss; bei einem bürstenlosen Gimbal würden beide versuchen, die Neigung auszugleichen. Der Neigungsregler an Kanal 6 bewegt das Nicken zwischen -90° und 25°."
+    },
+    "failsafe": {
+      "title": "Failsafes und Geofence",
+      "explain": "Funk verloren: RTL. Akku schwach (3,5 V pro Zelle oder noch 1000 mAh übrig): RTL. Akku kritisch (3,3 V pro Zelle): an Ort und Stelle landen. Die Standardwerte sind für 3S gemacht, also muss eine 4S-Drohne ihre eigenen Spannungen setzen. Der Geofence schickt sie nach Hause, wenn sie höher als 100 m steigt oder sich mehr als 300 m von zu Hause entfernt."
+    },
+    "stabilize": {
+      "title": "Stabilize",
+      "explain": "Die Drohne richtet sich selbst auf, und der Gasknüppel steuert die Motoren direkt, also hältst du die Höhe selbst. ATC_ANGLE_MAX begrenzt die Neigung in jedem Modus; in 4.7 ist es in Grad angegeben (früher war es ANGLE_MAX in Hundertstelgrad)."
+    },
+    "althold": {
+      "title": "AltHold",
+      "explain": "Das Barometer hält die Höhe. Gas in der Mitte hält sie; hoch oder runter verlangt Steigen oder Sinken, bis PILOT_SPD_UP (2,5 m/s). Es gibt kein Halten der Position, also schiebt der Wind sie weiter."
+    },
+    "loiter": {
+      "title": "Loiter",
+      "explain": "GPS und Kompass halten die Position und die Höhe: Lass los, und sie bremst und hält an. Die Knüppel verlangen eine Geschwindigkeit, bis LOIT_SPEED_MS. Version 4.7 hat die Loiter-Parameter auf SI-Einheiten umbenannt: Aus LOIT_SPEED 500 (cm/s) wurde LOIT_SPEED_MS 5."
+    },
+    "rtl": {
+      "title": "Rückkehr zum Startpunkt",
+      "explain": "Sie steigt auf RTL_ALT_M (oder bleibt höher, wenn sie schon höher ist), fliegt mit WP_SPD nach Hause, schwebt RTL_LOIT_TIME lang über dem Startpunkt und landet mit LAND_SPD_MS. Setz RTL_ALT_M über alles, was zwischen der Drohne und zu Hause steht: Hier ist der Mast 18 m hoch, also 20 m."
+    },
+    "auto": {
+      "title": "AUTO: die Mastinspektion",
+      "explain": "AUTO fliegt die geladene Mission: Start auf 8 m, vier Fotopunkte rund um den Mast in 12 m Höhe, dann RTL. ArduCopter armt nicht in AUTO, solange AUTO_OPTIONS es nicht erlaubt, also arm in Loiter und schalte um. Die Konsole des Labs hat keinen Missionslader; die wp-Zeile zeigt, was du in MAVProxy eintippen würdest."
+    }
+  },
+  "flight": {
+    "modes": {
+      "loiter": {
+        "title": "Loiter",
+        "hint": "GPS-Positionshaltung: Die Knüppel legen eine Geschwindigkeit bis 5 m/s fest, und die Drohne hält an, wenn du loslässt."
+      },
+      "althold": {
+        "title": "AltHold",
+        "hint": "Das Barometer hält die Höhe, aber nichts hält die Position: Der Wind treibt sie ab."
+      },
+      "stabilize": {
+        "title": "Stabilize",
+        "hint": "Selbstnivellierend mit einer Neigungsgrenze von 30°; das Gas liegt bei dir, also hältst du die Höhe."
+      },
+      "rtl": {
+        "title": "RTL",
+        "hint": "Steigt auf 20 m, fliegt nach Hause und landet selbst auf dem Landeplatz."
+      },
+      "auto": {
+        "title": "AUTO-Mission",
+        "hint": "Fliegt die Inspektion selbst: vier Fotostopps rund um den Mast, dann nach Hause zur Landung."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Funk verloren: Die Drohne schaltet auf RTL, steigt auf 20 m und kommt nach Hause.",
+      "low-battery": "Unter 14,0 V oder noch 1000 mAh übrig: RTL, mit Zeit in Reserve.",
+      "battery-critical": "Unter 13,2 V: Sie landet an Ort und Stelle, statt den Heimflug zu riskieren.",
+      "ekf": "Der Schätzer vertraut seiner Position nicht mehr (schlechter Kompass und GPS zugleich): Sie landet.",
+      "fence": "Höher als 100 m oder mehr als 300 m von zu Hause: RTL."
+    },
+    "controls": "Tastatur: Leertaste armt und disarmt, W und S steigen und sinken, die Pfeiltasten fliegen vorwärts, rückwärts und seitwärts, A und D gieren, V schaltet auf die Gimbal-Kamera, R setzt die Drohne zurück auf den Landeplatz. In Loiter hält sie an, wenn du loslässt. Auf dem Handy ist der linke Knüppel Gas und Gieren, der rechte Nicken und Rollen. Ein Gamepad funktioniert in Mode 2."
+  },
+  "courses": {
+    "inspection": {
+      "title": "Mastinspektion",
+      "brief": "Starte vom Landeplatz, fotografier den Funkmast von vier Seiten in 12 m Höhe und 8 m Abstand, komm dann nach Hause und lande auf dem Landeplatz. Flieg sie selbst in Loiter gegen die Sollzeiten oder schalte auf AUTO und sieh zu, wie sie die Mission fliegt.",
+      "goals": {
+        "1": "START: auf 8 m steigen",
+        "2": "FOTO 1: Südseite",
+        "3": "FOTO 2: Ostseite",
+        "4": "FOTO 3: Nordseite",
+        "5": "FOTO 4: Westseite",
+        "6": "HEIM: auf dem Landeplatz landen"
+      }
+    }
+  },
+  "quizzes": {
+    "power": {
+      "module": {
+        "q": "Was macht das Strommodul, außer den Akkustrom durchzuleiten?",
+        "options": {
+          "1": "Es lädt den Akku im Flug",
+          "2": "Es treibt die Motoren an",
+          "3": "Es misst Spannung und Strom und gibt dem Pixhawk eigene 5,2 V"
+        },
+        "why": "Das PM02 sagt ArduPilot, wie viel Ladung übrig ist (für den Akku-Failsafe), und versorgt den Pixhawk über POWER1 mit sauberem Strom, getrennt von der verrauschten ESC-Seite."
+      },
+      "hover": {
+        "q": "Warum nutzt eine Kameradrohne 920-KV-Motoren und 10-Zoll-Propeller statt der 2500 KV und 5-Zoll-Propeller eines Racers?",
+        "options": {
+          "1": "Große, langsame Propeller bewegen mehr Luft mit weniger Leistung, also schwebt sie länger",
+          "2": "Große Propeller machen sie schneller",
+          "3": "Motoren mit wenig KV sind billiger"
+        },
+        "why": "Schub entsteht durch bewegte Luft. Ein großer Propeller, der viel Luft langsam bewegt, braucht weniger Leistung als ein kleiner, der wenig Luft schnell bewegt, und das ergibt Schwebeflüge von 15 bis 20 Minuten."
+      }
+    },
+    "gps": {
+      "mast": {
+        "q": "Warum sitzt der Puck aus GPS + Kompass auf einem Mast?",
+        "options": {
+          "1": "Damit das GPS mehr Satelliten sehen kann",
+          "2": "Um den Kompass vom Magnetfeld des Akku- und ESC-Stroms wegzubringen",
+          "3": "Um ihn bei einem Absturz zu schützen"
+        },
+        "why": "Dutzende Ampere durch die Stromkabel erzeugen ein Magnetfeld, das stark genug ist, einen Kompass abzulenken. Mit Abstand wird es schnell schwächer, also ergeben ein paar Zentimeter Mast eine viel sauberere Richtung."
+      },
+      "arrow": {
+        "q": "Der GPS-Puck ist mit dem Pfeil nach hinten montiert. Was passiert?",
+        "options": {
+          "1": "Der Kompass liest um 180° neben dem, was die GPS-Spur sagt, die PreArm-Prüfung verweigert, und wenn man es erzwingt, kreist sie und fliegt davon",
+          "2": "Nichts: Dem GPS ist egal, in welche Richtung es zeigt",
+          "3": "Sie fliegt rückwärts"
+        },
+        "why": "Der Kompass im Puck liefert die Richtung. Verdreht widerspricht er der Richtung, in die das GPS die Drohne sich bewegen sieht, ArduPilot meldet \"Compasses inconsistent\", und eine Drohne, die trotzdem fliegt, zieht als „Toilet Bowl“ immer größere Kreise."
+      }
+    },
+    "gimbal": {
+      "type": {
+        "q": "Der Gimbal hat einen eigenen Controller und eine eigene IMU. Welchen MNT1_TYPE sollte er nutzen?",
+        "options": {
+          "1": "1, Servo, damit ArduPilot ihn stabilisieren kann",
+          "2": "0, None: Er arbeitet von selbst",
+          "3": "7, BrushlessPWM: ArduPilot schickt nur den gewünschten Winkel"
+        },
+        "why": "Ein selbststabilisierender Gimbal gleicht die Neigung der Drohne schon aus. Mit Typ 1 würde ArduPilot sie ebenfalls ausgleichen, und die beiden Korrekturen würden sich addieren. Mit Typ 0 hätten der Neigungsregler und die Kamerabefehle von AUTO niemanden, mit dem sie reden könnten."
+      }
+    },
+    "fly": {
+      "loiter": {
+        "q": "Du lässt bei leichtem Wind die Knüppel los. Was macht jeder Modus?",
+        "options": {
+          "1": "Alle drei halten an und halten ihre Position",
+          "2": "Loiter hält seinen Punkt, AltHold hält nur die Höhe und driftet, Stabilize richtet auf, aber du musst auch die Höhe halten",
+          "3": "Alle drei landen"
+        },
+        "why": "Jeder Modus fügt eine Schicht hinzu: Stabilize richtet die Drohne auf, AltHold ergänzt das Barometer für die Höhe, Loiter ergänzt GPS und Kompass für die Position."
+      },
+      "rtl": {
+        "q": "Warum RTL_ALT_M auf diesem Feld auf 20 m setzen?",
+        "options": {
+          "1": "Damit der Heimweg über den 18-m-Mast hinwegführt",
+          "2": "Weil RTL nicht tiefer fliegen kann",
+          "3": "Um Akku zu sparen"
+        },
+        "why": "RTL steigt auf RTL_ALT_M und fliegt dann geradewegs nach Hause. Alles, was höher im Weg steht, wird getroffen, also muss die Rückkehrhöhe über das höchste Hindernis reichen (ist die Drohne schon höher, behält sie ihre Höhe)."
+      },
+      "auto": {
+        "q": "Du armst in AUTO, und sie verweigert. Warum?",
+        "options": {
+          "1": "Die Mission ist zu lang",
+          "2": "AUTO braucht zuerst eine Kompasskalibrierung",
+          "3": "ArduCopter armt nicht in AUTO, solange AUTO_OPTIONS es nicht erlaubt: Arm in Loiter und schalte dann um"
+        },
+        "why": "Direkt in einen Modus zu armen, der die Drohne von selbst bewegt, ist ein Sicherheitsrisiko, also ist es aus, solange du nicht Bit 0 von AUTO_OPTIONS setzt. Üblich ist, in Loiter oder Stabilize zu armen und dann auf AUTO umzuschalten."
+      }
+    }
+  }
+}
