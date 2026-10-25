@@ -186,6 +186,19 @@ Short entries: who, when, what was asked or decided, in the user's words where i
 - **10-24 23:08, Amar.** "make sure it never sleeps like caffinate and im going to sleep i want this to go an till
   fully built our like u have full control full autnoy demon time". The driver started `caffeinate -dimsu -t 54000`
   (pid 28721, on AC power, until about 14:08 on 10-25) and keeps building to the end without stopping.
+- **10-24 23:08 to 10-25 02:02, Amar.** Questions only, answered in the session: "eta?", whether phase3-prose and
+  phase3-wave were done (they are launchers; T2 used them), "List me all the API keys you need" (META_API_KEY and
+  SERPAPI_KEY for the demo, NEXT_PUBLIC_REALTIME_URL for two devices, DATABASE_URL and GEMINI_API_KEY optional,
+  NEXT_PUBLIC_SITE_URL before the production build; he adds them to `.env.local` himself) and what is left after
+  this.
+- **10-25 02:02, Amar.** "Also, if you're done with everything and if I'm not awake yet, do this. Finally, make sure
+  every single thing is working and, if there can be made any improvement, do research. If there can be made any
+  improvement, any sort that is made, the UI should be top class, utilize the entire page dimension. Make it chic,
+  minimalistic, best-of-the-best UI. There should be literally no room for improvement. You can use Fable if you
+  want, but go beast mode. Make sure all are the best of the best." Read as: after gate 3, fresh eyes and the sweep,
+  and while he sleeps, a final pass: re-test everything, research what the best maker and lab UIs do, and polish
+  every page (full-width layouts that use the viewport, minimal and consistent), then gate again. Same limits as
+  before: no keys, no Vercel, no Vultr, no spending, no Devpost; the hackathon rule holds.
 
 ## 6. Lessons learned (apply them)
 
