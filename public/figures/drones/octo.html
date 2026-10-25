@@ -1944,7 +1944,15 @@ window.SL = window.SL || {};
     return (F.plate.z != null ? F.plate.z : (F.gear ? F.gear.h : 0)) + F.arm.t;
   };
   SD.motorZ = frameTop;
-  const motorH = d => 3 + d.motor.bell[1];
+  // a motor's and a prop's small parts come from the catalogue entry when it gives them (a whoop's 0702 motor and
+  // 31 mm prop); without, a 5-inch motor's: shaft 5 x 7 mm, a 3 mm base, spokes from 3.5 mm, a 12 x 5.5 mm hub and
+  // its 8.4 mm nut
+  const baseH = mt => mt.base != null ? +mt.base : 3;
+  const shaftOf = mt => Array.isArray(mt.shaft) ? [mt.shaft[0] / 2, mt.shaft[1]] : [2.5, 7];
+  const spokesOf = (mt, R) => mt.shaft ? [Math.max(mt.shaft[0] / 2 + .4, R * .35), R * .8] : [3.5, R - 2.4];
+  const capOf = (mt, R) => mt.shaft ? Math.max(mt.shaft[0] / 2 + .5, R * .3) : 3.2;
+  const hubOf = pr => Array.isArray(pr.hub) ? [pr.hub[0] / 2, pr.hub[1], (pr.hub[2] || 0) / 2] : [6, 5.5, 4.2];
+  const motorH = d => baseH(d.motor) + d.motor.bell[1];
   // a motor's own frame: offsets (a, b) across the shaft and h along it, from the mount face. tilt (deg) turns the
   // shaft from straight up towards the nose: 90 is a tractor motor, -90 a pusher, in between a tilt-rotor. bank (deg)
   // then rocks it about the craft's x axis through the mount, + tipping the top of the shaft to the left (+y), as a
@@ -1958,45 +1966,47 @@ window.SL = window.SL || {};
   const upright = mo => { const q = SD.poseOf(mo); return !q.tilt && !q.bank; };
 
   function tiltedMotor(mo, i, ctx, z0, bell, base, propsOn){
-    const d = ctx.design, R = d.motor.bell[0] / 2, hb = d.motor.bell[1], Mf = motorFrame(mo, z0), k = ctx.k, out = [];
+    const d = ctx.design, mt = d.motor, R = mt.bell[0] / 2, hb = mt.bell[1], Mf = motorFrame(mo, z0), k = ctx.k, out = [];
     const q0 = Mf(0, 0, 0), q1 = Mf(0, 0, 1), axis = [q1[0] - q0[0], q1[1] - q0[1], q1[2] - q0[2]];
-    out.push(...g.rod(Mf(0, 0, 0), Mf(0, 0, 3), R - .8, base, 99, 18));
-    if (k > 0){ const sz = 3 + Math.max(1, (hb - d.motor.stator[1]) / 2); out.push(...g.rod(Mf(0, 0, sz), Mf(0, 0, sz + d.motor.stator[1]), d.motor.stator[0] / 2, 'copper', 99, 16)); }
-    const bl = g.rod(Mf(0, 0, 3), Mf(0, 0, 3 + hb), R, bell, 99, 22)[0];
+    const bh = baseH(mt), [sr, sl] = shaftOf(mt), [r0, r1] = spokesOf(mt, R), sw = mt.shaft ? 1 : 1.6;
+    out.push(...g.rod(Mf(0, 0, 0), Mf(0, 0, bh), R - .8, base, 99, 18));
+    if (k > 0){ const sz = bh + Math.max(1, (hb - mt.stator[1]) / 2); out.push(...g.rod(Mf(0, 0, sz), Mf(0, 0, sz + mt.stator[1]), mt.stator[0] / 2, 'copper', 99, 16)); }
+    const bl = g.rod(Mf(0, 0, bh), Mf(0, 0, bh + hb), R, bell, 99, 22)[0];
     if (k > 0) bl.svg = `<g opacity="${(1 - .62 * k).toFixed(3)}">${bl.svg}</g>`;
-    const zt = 3 + hb, a = ctx.spin[i] || 0;
+    const zt = bh + hb, a = ctx.spin[i] || 0;
     if (vis(axis)) for (let j = 0; j < 3; j++){
-      const aa = a + j * TAU / 3, p0 = W(...Mf(3.5 * Math.cos(aa), 3.5 * Math.sin(aa), zt + .05)), p1 = W(...Mf((R - 2.4) * Math.cos(aa), (R - 2.4) * Math.sin(aa), zt + .05));
-      bl.svg += `<path d="${pd([p0, p1], false)}" stroke="${INK}" stroke-width="1.6" stroke-linecap="round" fill="none"/>`;
+      const aa = a + j * TAU / 3, p0 = W(...Mf(r0 * Math.cos(aa), r0 * Math.sin(aa), zt + .05)), p1 = W(...Mf(r1 * Math.cos(aa), r1 * Math.sin(aa), zt + .05));
+      bl.svg += `<path d="${pd([p0, p1], false)}" stroke="${INK}" stroke-width="${sw}" stroke-linecap="round" fill="none"/>`;
     }
     out.push(bl);
-    if (!propsOn) out.push(...g.rod(Mf(0, 0, zt), Mf(0, 0, zt + 7), 2.5, 'metal', 99, 10));
+    if (!propsOn) out.push(...g.rod(Mf(0, 0, zt), Mf(0, 0, zt + sl), sr, 'metal', 99, 10));
     return out;
   }
 
   K.motors = (pc, ctx) => {
-    const items = [], d = ctx.design, R = d.motor.bell[0] / 2, zMount = frameTop(ctx.craft), hb = d.motor.bell[1];
+    const items = [], d = ctx.design, mt = d.motor, R = mt.bell[0] / 2, zMount = frameTop(ctx.craft), hb = mt.bell[1];
+    const bh = baseH(mt), [sr, sl] = shaftOf(mt), [r0, r1] = spokesOf(mt, R), sw = mt.shaft ? 1 : 1.6;
     let z0 = zMount;
     const k = ctx.k, bell = SD.mat(pc.color || 'pal'), base = SD.mat(pc.base || 'dark');
     const propsOn = SD.isOn(ctx.st, 'PROPS') || (ctx.st.placed.PROPS && !ctx.st.placed.PROPS.leave);
     ctx.craft.motors.forEach((mo, i) => {
       if (!upright(mo)) { items.push(...tiltedMotor(mo, i, ctx, z0, bell, base, propsOn)); return; }
       if (mo.z != null) z0 = mo.z; else z0 = zMount;
-      let s = g.cyl(mo.x, mo.y, z0, z0 + 3, R - .8, base, 18).svg;
+      let s = g.cyl(mo.x, mo.y, z0, z0 + bh, R - .8, base, 18).svg;
       if (k > 0){
-        const sr = d.motor.stator[0] / 2, sz = z0 + 3 + Math.max(1, (hb - d.motor.stator[1]) / 2);
-        s += g.cyl(mo.x, mo.y, sz, sz + d.motor.stator[1], sr, 'copper', 16).svg;
+        const str = mt.stator[0] / 2, sz = z0 + bh + Math.max(1, (hb - mt.stator[1]) / 2);
+        s += g.cyl(mo.x, mo.y, sz, sz + mt.stator[1], str, 'copper', 16).svg;
       }
-      const bellSvg = g.cyl(mo.x, mo.y, z0 + 3, z0 + 3 + hb, R, bell, 22, 1.1).svg;
+      const bellSvg = g.cyl(mo.x, mo.y, z0 + bh, z0 + bh + hb, R, bell, 22, 1.1).svg;
       s += k > 0 ? `<g opacity="${(1 - .62 * k).toFixed(3)}">${bellSvg}</g>` : bellSvg;
-      const zt = z0 + 3 + hb, a = ctx.spin[i] || 0;
+      const zt = z0 + bh + hb, a = ctx.spin[i] || 0;
       for (let j = 0; j < 3; j++){
-        const aa = a + j * TAU / 3, p0 = W(mo.x + 3.5 * Math.cos(aa), mo.y + 3.5 * Math.sin(aa), zt), p1 = W(mo.x + (R - 2.4) * Math.cos(aa), mo.y + (R - 2.4) * Math.sin(aa), zt);
-        s += `<path d="${pd([p0, p1], false)}" stroke="${INK}" stroke-width="1.6" stroke-linecap="round" fill="none"/>`;
+        const aa = a + j * TAU / 3, p0 = W(mo.x + r0 * Math.cos(aa), mo.y + r0 * Math.sin(aa), zt), p1 = W(mo.x + r1 * Math.cos(aa), mo.y + r1 * Math.sin(aa), zt);
+        s += `<path d="${pd([p0, p1], false)}" stroke="${INK}" stroke-width="${sw}" stroke-linecap="round" fill="none"/>`;
       }
-      s += g.disc(mo.x, mo.y, zt + .01, 3.2, 'metal', 10, .6);
+      s += g.disc(mo.x, mo.y, zt + .01, capOf(mt, R), 'metal', 10, .6);
       items.push({ box: SD.bbox([W(mo.x - R, mo.y - R, z0), W(mo.x + R, mo.y + R, zt)]), svg: s });
-      if (!propsOn) items.push(g.cyl(mo.x, mo.y, zt, zt + 7, 2.5, 'metal', 10, .8));
+      if (!propsOn) items.push(g.cyl(mo.x, mo.y, zt, zt + sl, sr, 'metal', 10, .8));
       ctx.shadows.push(SD.circ(mo.x, mo.y, R, 10).map(([x, y]) => W(x, y, zt)));
     });
     return items;
@@ -2005,14 +2015,15 @@ window.SL = window.SL || {};
   K.props = (pc, ctx) => {
     const items = [], d = ctx.design, R = d.prop.d * 25.4 / 2, hp = motorH(d), col = SD.colOf(d.prop.color || '#3fa8d8');
     const swapped = ctx.part.id === 'PROPS' && ctx.orient === 1, z0 = frameTop(ctx.craft);
+    const [hubR, hubH, nutR] = hubOf(d.prop), nutH = nutR * 4.5 / 4.2;
     ctx.craft.motors.forEach((mo, i) => {
-      const rpm = ctx.rpm[i] || 0, a0 = ctx.spin[i] || 0, Mf = motorFrame(mo, z0), hb = hp + 2.5;
+      const rpm = ctx.rpm[i] || 0, a0 = ctx.spin[i] || 0, Mf = motorFrame(mo, z0), hb = hp + (d.prop.hub ? hubH * .45 : 2.5);
       if (rpm > .12){
         const ring = Array.from({ length: 28 }, (_, j) => { const a = j / 28 * TAU; return W(...Mf(R * Math.cos(a), R * Math.sin(a), hb)); });
         items.push({ box: SD.bbox(ring, 1), svg: `<path d="${pd(ring)}" fill="${col}" opacity="${(.18 + .22 * rpm).toFixed(3)}" stroke="${INK}" stroke-width=".6"/>` });
       } else {
         // leading edge raised: CW props lead toward decreasing angle; swapped props are mirrored (they push air up)
-        const lead = (mo.dir === 'CW' ? -1 : 1) * (swapped ? -1 : 1), r0 = 6, n = 6;
+        const lead = (mo.dir === 'CW' ? -1 : 1) * (swapped ? -1 : 1), r0 = hubR, n = 6;
         for (let b = 0; b < d.prop.blades; b++){
           const th = a0 + b * TAU / d.prop.blades, ux = Math.cos(th), uy = Math.sin(th), tx = -uy, ty = ux;
           const edge = side => Array.from({ length: n + 1 }, (_, j) => {
@@ -2026,11 +2037,13 @@ window.SL = window.SL || {};
         }
       }
       const hubCol = d.prop.color && /^#/.test(d.prop.color) ? d.prop.color : 'cobalt';
-      if (!upright(mo)) items.push(...g.rod(Mf(0, 0, hp), Mf(0, 0, hp + 5.5), 6, hubCol, 99, 14), ...g.rod(Mf(0, 0, hp + 5.5), Mf(0, 0, hp + 10), 4.2, 'metal', 99, 6));
-      else {
-        const zp = Mf(0, 0, hp)[2], hub = g.cyl(mo.x, mo.y, zp, zp + 5.5, 6, hubCol, 14);
-        hub.svg += g.cyl(mo.x, mo.y, zp + 5.5, zp + 10, 4.2, 'metal', 6, .8).svg;
-        hub.box = SD.bbox([W(mo.x - 6, mo.y - 6, zp), W(mo.x + 6, mo.y + 6, zp + 10)]);
+      if (!upright(mo)){
+        items.push(...g.rod(Mf(0, 0, hp), Mf(0, 0, hp + hubH), hubR, hubCol, 99, 14));
+        if (nutR > 0) items.push(...g.rod(Mf(0, 0, hp + hubH), Mf(0, 0, hp + hubH + nutH), nutR, 'metal', 99, 6));
+      } else {
+        const zp = Mf(0, 0, hp)[2], hub = g.cyl(mo.x, mo.y, zp, zp + hubH, hubR, hubCol, 14);
+        if (nutR > 0) hub.svg += g.cyl(mo.x, mo.y, zp + hubH, zp + hubH + nutH, nutR, 'metal', 6, .8).svg;
+        hub.box = SD.bbox([W(mo.x - hubR, mo.y - hubR, zp), W(mo.x + hubR, mo.y + hubR, zp + hubH + nutH)]);
         items.push(hub);
       }
     });
@@ -2349,11 +2362,14 @@ window.SL = window.SL || {};
   SD.sheet = st => {
     const c = SD.craft(), Wr = c.wiring, svgEl = document.getElementById('fig'), vb = svgEl && svgEl.viewBox && svgEl.viewBox.baseVal;
     const vw = vb && vb.width ? vb.width : 585, vh = vb && vb.height ? vb.height : 440;
-    // leave the figure's own button column free when it is shown (standalone or embedded without bare=1)
-    const btns = document.getElementById('btns'), html = document.documentElement;
-    const left = btns && !html.classList.contains('cf-bare') && getComputedStyle(btns).display !== 'none' && innerWidth > 560 ? vw * .24 : 0;
+    // leave the figure's own button column free when it is shown (standalone or embedded without bare=1): a quarter of
+    // the frame, or up to its widest button when that reaches further ("Calibrate accelerometer" on the delivery quad)
+    const btns = document.getElementById('btns'), html = document.documentElement, frameBox = svgEl && svgEl.getBoundingClientRect();
+    const btnsShown = btns && !html.classList.contains('cf-bare') && getComputedStyle(btns).display !== 'none' && innerWidth > 560;
+    const btnRight = btnsShown && frameBox && frameBox.width ? Math.max(0, ...[...btns.children].map(el => el.getBoundingClientRect().right)) : 0;
+    const left = btnsShown ? Math.max(vw * .24, btnRight ? (btnRight - frameBox.left) * vw / frameBox.width + 6 : 0) : 0;
     // and the stats panel (parts, checks, battery) on the right
-    const stE = document.getElementById('stats'), frameBox = svgEl && svgEl.getBoundingClientRect();
+    const stE = document.getElementById('stats');
     const right = stE && frameBox && frameBox.width && getComputedStyle(stE).display !== 'none' && innerWidth > 560
       ? Math.max(0, frameBox.right - stE.getBoundingClientRect().left) * vw / frameBox.width : 0;
     const room = vw - left - right, sc = Math.min(room * .95 / 780, vh * .9 / 380), ox = left + (room - 760 * sc) / 2, oy = (vh - 360 * sc) / 2;
