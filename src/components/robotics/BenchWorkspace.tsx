@@ -449,7 +449,8 @@ export function BenchWorkspace({ setup, messages, notice: untranslated, walk }: 
           onChange={(next) => setTab(next as RailTab)}
           phoneGrid
           // Four tabs share a phone's width as four equal cells; labels and their counts may wrap.
-          listClassName={cx("ws-sticky-tabs", hasFaults && hasQuiz && "max-sm:!grid-cols-4")}
+          // Below xl the rail is 22rem, a few px short of four tabs with their counts.
+          listClassName={cx("ws-sticky-tabs lg:max-xl:[&>[role=tab]]:px-2", hasFaults && hasQuiz && "max-sm:!grid-cols-4")}
           tabs={[
             {
               id: "steps",
