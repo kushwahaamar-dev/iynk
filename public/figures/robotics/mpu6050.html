@@ -2737,12 +2737,13 @@ B.bbParams = (st, params) => {
   st.cparams = st.cparams || {};
   for (const [id, pv] of Object.entries(params)){
     const p = (c.parts || []).find(q => q.id === id) || (c.props || []).find(q => q.id === id); if (!p || !pv || typeof pv !== 'object') continue;
-    const def = p.kind && !p.part ? B.props[p.kind] : B.parts[p.part], allowed = (def && def.params) || {}, out = {};
+    const def = p.prop ? B.props[p.prop] : B.parts[p.part], allowed = (def && def.params) || {}, out = {};
     for (const [k, v] of Object.entries(pv)){
       if (!own2(allowed, k)) continue;
       const spec = allowed[k];
       if (B.paramRange(spec) ? typeof v === 'number' && v >= spec[0] && v <= spec[1] : spec.includes(v)) out[k] = v;
     }
+    if (!Object.keys(out).length) continue;
     st.cparams[id] = Object.assign(st.cparams[id] || {}, out);
     if (st.burnt) delete st.burnt[id];
   }
@@ -2771,7 +2772,7 @@ const extent = () => {
     area[0] = Math.min(area[0], q.at[0] - r); area[1] = Math.min(area[1], q.at[1] - r); area[2] = Math.max(area[2], q.at[0] + r); area[3] = Math.max(area[3], q.at[1] + r);
   }
   for (const q of (pl && pl.c.props) || []){
-    const def = B.props[q.kind], ft = def && Array.isArray(def.foot) ? def.foot : [30, 30, 30];
+    const def = B.props[q.prop], ft = def && Array.isArray(def.foot) ? def.foot : [30, 30, 30];
     if (!Array.isArray(q.at)) continue;
     const r = Math.hypot(ft[0], ft[1]) / 2 + 6;
     h = Math.max(h, ft[2] + 4);
@@ -2802,10 +2803,10 @@ const drawCircuitPart = (pl, q, k) => {
   return { p, def, sel, items, lb };
 };
 /* props: the scenery a lesson's world inputs name (a desk lamp over the LDR, the obstacle in front of the HC-SR04).
-   circuit.props: [{ id, kind, at: [x, y], aim?, rot?, ...params }]; drawings register with SL.bench.prop(kind, def)
+   circuit.props: [{ id, prop, at: [x, y], aim?, rot?, ...params }]; drawings register with SL.bench.prop(name, def)
    (bench-props.js), def = { name, foot: [w, d, h], params, defaults?, draw(ctx) }. The solver never sees them. */
 B.props = {};
-B.prop = (kind, def) => { if (!def || typeof def.draw !== 'function') return B.note(`prop "${kind}" has no draw`); B.props[kind] = def; };
+B.prop = (name, def) => { if (!def || typeof def.draw !== 'function') return B.note(`prop "${name}" has no draw`); B.props[name] = def; };
 const matZ = () => B.G.matH - B.G.top;
 // where a prop aims: the middle of a circuit part (its legs' strips, or its spot on the mat) or another prop's foot
 const aimPoint = (pl, id) => {
@@ -2820,7 +2821,7 @@ const aimPoint = (pl, id) => {
   return pr && Array.isArray(pr.at) ? B.BP(pr.at[0], pr.at[1], matZ()) : null;
 };
 const drawProp = (pl, q, k) => {
-  const st = B.st, def = B.props[q.kind];
+  const st = B.st, def = B.props[q.prop];
   if (!def){ unknownProp(q); return null; }
   if (!Array.isArray(q.at)){ B.note(`prop ${q.id}: no at`); return null; }
   const p = Object.assign({}, def.defaults || {}, q, (st.cparams || {})[q.id] || {});
@@ -2873,7 +2874,7 @@ B.viewDef('breadboard', {
       for (const q of pl.c.props || []){
         const d = drawProp(pl, q, k); if (!d) continue;
         d.lb.done(d.items.map(it => it.box));
-        for (const it of d.items) items.push({ box: it.box, svg: act('part', d.sel ? `<g class="bsel">${it.svg}</g>` : it.svg, `data-id="${CF_ESC(q.id)}" data-label="${CF_ESC(T(d.def.name || q.kind) + ' ' + q.id)}"`) });
+        for (const it of d.items) items.push({ box: it.box, svg: act('part', d.sel ? `<g class="bsel">${it.svg}</g>` : it.svg, `data-id="${CF_ESC(q.id)}" data-label="${CF_ESC(T(d.def.name || q.prop) + ' ' + q.id)}"`) });
       }
       const wire = B.parts.wire;
       if (wire) for (const w of pl.c.wires || []){
@@ -2904,8 +2905,8 @@ B.viewDef('breadboard', {
 const noted = new Set();
 const unknownPart = p => { const key = p.id + ':' + p.part; if (noted.has(key)) return; noted.add(key);
   B.note(`circuit part ${p.id}: unknown part "${p.part}" (add // @cf use parts/${String(p.part).replace(/[^\w-]/g, '')}.js)`); };
-const unknownProp = q => { const key = 'prop:' + q.id + ':' + q.kind; if (noted.has(key)) return; noted.add(key);
-  B.note(`prop ${q.id}: unknown kind "${q.kind}" (add // @cf use engine/bench-props.js)`); };
+const unknownProp = q => { const key = 'prop:' + q.id + ':' + q.prop; if (noted.has(key)) return; noted.add(key);
+  B.note(`prop ${q.id}: unknown prop "${q.prop}" (add // @cf use engine/bench-props.js)`); };
 const unknownAim = q => { const key = 'aim:' + q.id + ':' + q.aim; if (noted.has(key)) return; noted.add(key);
   B.note(`prop ${q.id}: aims at "${q.aim}", which is not in the circuit`); };
 
@@ -4106,7 +4107,9 @@ function model(st){
   else if (!B.isSet('C14')) status = 'Gyro noise: no CPOUT capacitor';
   else if (st.mode === 'tilt') status = alarm ? `Roll ${Math.round(roll)}°: ALARM` : `Roll ${Math.round(roll)}°: level enough`;
   else status = `Level: az ${s.az.toFixed(2)} g, gx ${s.gx.toFixed(1)} °/s`;
-  const stats = run ? [['Roll', Math.round(roll) + '°'], ['az', s.az.toFixed(2) + ' g'], ['gx', s.gx.toFixed(1) + ' °/s'], ['Address', '0x' + addr.toString(16)]] : [];
+  // the rows stay while the bench is powered, so the stats column keeps its narrow, wrapping layout in a fault too
+  const shown = v => (run ? v : '–');
+  const stats = [['Roll', shown(Math.round(roll) + '°')], ['az', shown(s.az.toFixed(2) + ' g')], ['gx', shown(s.gx.toFixed(1) + ' °/s')], ['Address', '0x' + addr.toString(16)]];
   return {
     readings: { BUZ: { f: alarm ? BEEP : 0, v: 0 } },
     report: { imu: { roll: run ? Math.round(roll) : null, az: run ? Math.round(s.az * 100) / 100 : null, gx: run ? Math.round(s.gx * 10) / 10 : null,

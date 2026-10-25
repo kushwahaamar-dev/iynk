@@ -63,7 +63,9 @@ function model(st){
   else if (!B.isSet('C14')) status = 'Gyro noise: no CPOUT capacitor';
   else if (st.mode === 'tilt') status = alarm ? `Roll ${Math.round(roll)}°: ALARM` : `Roll ${Math.round(roll)}°: level enough`;
   else status = `Level: az ${s.az.toFixed(2)} g, gx ${s.gx.toFixed(1)} °/s`;
-  const stats = run ? [['Roll', Math.round(roll) + '°'], ['az', s.az.toFixed(2) + ' g'], ['gx', s.gx.toFixed(1) + ' °/s'], ['Address', '0x' + addr.toString(16)]] : [];
+  // the rows stay while the bench is powered, so the stats column keeps its narrow, wrapping layout in a fault too
+  const shown = v => (run ? v : '–');
+  const stats = [['Roll', shown(Math.round(roll) + '°')], ['az', shown(s.az.toFixed(2) + ' g')], ['gx', shown(s.gx.toFixed(1) + ' °/s')], ['Address', '0x' + addr.toString(16)]];
   return {
     readings: { BUZ: { f: alarm ? BEEP : 0, v: 0 } },
     report: { imu: { roll: run ? Math.round(roll) : null, az: run ? Math.round(s.az * 100) / 100 : null, gx: run ? Math.round(s.gx * 10) / 10 : null,

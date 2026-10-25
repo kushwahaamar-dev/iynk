@@ -212,8 +212,9 @@ function model(st, dt){
   else if (run && st.mode === 'sweep') status = 'Base at ' + deg + '°';
   else if (run) status = 'Servos centred: 1500 µs';
   const live = st.power && run;
+  // the rows stay while the bench is powered, so the stats column keeps its narrow, wrapping layout in a fault too
   const stats = live ? [['V+', vplus.toFixed(1) + ' V'], ...(frame ? [['Frame', (1000 / frame).toFixed(1) + ' ms']] : []),
-    ['Arm', `${deg}° · ${Math.round(arm.a[1])}° · ${Math.round(arm.a[2])}°`], ['Servos', ma + ' mA']] : [];
+    ['Arm', `${deg}° · ${Math.round(arm.a[1])}° · ${Math.round(arm.a[2])}°`], ['Servos', ma + ' mA']] : [['V+', '–'], ['Arm', '–'], ['Servos', '–']];
   return {
     readings: { ARM: { b: deg, s: Math.round(arm.a[1]), g: Math.round(arm.a[2]), i_mA: ma, held: c.held ? 1 : 0 },
       PACK: { state: has('pack-reversed') ? 'reverse' : (st.supply || {}).bench > 10 ? 'li-ion' : 'ok', v: r1(vplus), i_mA: Math.round(ma) } },

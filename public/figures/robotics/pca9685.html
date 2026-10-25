@@ -1260,13 +1260,16 @@ function outputs(){
     if (st.ext) Object.assign(o.pins, st.pins);
     else { const md = MD.modes[st.mode]; if (md && md.out) try { Object.assign(o.pins, md.out(st, st.t) || {}); } catch (e) { note('mode ' + st.mode + ': ' + e.message); } }
   }
+  // a cold joint on a header pin breaks the pin, not the trace: what plugs into it (o.pins feeds the breadboard and the
+  // wire glow) cuts out in bursts, while an on-board LED on the same net (Nucleo LD2 on D13) keeps the MCU's level
+  const mcu = Object.assign({}, o.pins);
   for (const fid of st.faults) if (fid.startsWith('cold:')){ const pin = MD.pins[fid.slice(5)]; if (pin && coldHit(hashS(pin.id), st.t)) o.pins[pin.net] = 0; }
   for (const p of MD.parts){
     if (!p.led || !isSet(p.id)) continue;
     let v = 0;
     const L0 = p.led;
     if (L0.rail) v = (ev.rails[L0.rail] || 0) > 2 ? ((ev.status === 'brownout') ? (coldHit(9, st.t * 2) ? .25 : .7) : 1) : 0;
-    else if (L0.net){ const lv = o.pins[L0.net]; v = running ? (L0.invert ? 1 - (+lv || 0) : (+lv || 0)) : 0; }
+    else if (L0.net){ const lv = mcu[L0.net]; v = running ? (L0.invert ? 1 - (+lv || 0) : (+lv || 0)) : 0; }
     else if (L0.serial){ v = st.up ? (L0.serial === 'rx' ? (Math.sin(st.upT * 60) > -.2 ? 1 : 0) : (st.upT > st.upDur - .45 && Math.sin(st.upT * 70) > 0 ? 1 : 0)) : (st.txT > 0 && L0.serial === 'tx' ? 1 : 0); }
     if (bl && bl.led === p.id && ev.status === 'running' && !st.up && st.t < 0){ const u = st.t + (bl.wait || 1); v = u < (bl.flashes || 3) / (bl.hz || 8) && Math.floor(u * (bl.hz || 8) * 2) % 2 === 0 ? 1 : 0; }
     if (L0.via && !L0.via.every(id => isSet(id) && !coldOff(id))) v = 0;
@@ -1425,7 +1428,7 @@ A.view = v => {
   st.view = v; refresh(); return true;
 };
 A.explode = on => { const want = on == null ? !st.exploded : !!on; if (want && st.power) return say(MSG.live); st.exploded = want; kick(); };
-A.select = id => { st.sel = id && (MD.byId[id] || MAT.byId[id] || (B.bbPart && B.bbPart(id))) ? id : null; refresh(); };
+A.select = id => { st.sel = id && (MD.byId[id] || MAT.byId[id] || (B.bbPart && B.bbPart(id)) || (B.bbProp && B.bbProp(id))) ? id : null; refresh(); };
 // set the mat out up to step sid (null: clear it); one step forward at a time, never on a live bench
 A.matStep = sid => {
   const i = sid == null ? -1 : MAT.steps.findIndex(s => s.id === sid);
@@ -2733,13 +2736,14 @@ B.bbParams = (st, params) => {
   const c = B.md.circuits[st.circuit]; if (!c) return;
   st.cparams = st.cparams || {};
   for (const [id, pv] of Object.entries(params)){
-    const p = (c.parts || []).find(q => q.id === id); if (!p || !pv || typeof pv !== 'object') continue;
-    const def = B.parts[p.part], allowed = (def && def.params) || {}, out = {};
+    const p = (c.parts || []).find(q => q.id === id) || (c.props || []).find(q => q.id === id); if (!p || !pv || typeof pv !== 'object') continue;
+    const def = p.prop ? B.props[p.prop] : B.parts[p.part], allowed = (def && def.params) || {}, out = {};
     for (const [k, v] of Object.entries(pv)){
       if (!own2(allowed, k)) continue;
       const spec = allowed[k];
       if (B.paramRange(spec) ? typeof v === 'number' && v >= spec[0] && v <= spec[1] : spec.includes(v)) out[k] = v;
     }
+    if (!Object.keys(out).length) continue;
     st.cparams[id] = Object.assign(st.cparams[id] || {}, out);
     if (st.burnt) delete st.burnt[id];
   }
@@ -2749,6 +2753,7 @@ const own2 = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 // a param spec is either a list of allowed values or a numeric range [min, max]
 B.paramRange = spec => Array.isArray(spec) && spec.length === 2 && spec.every(v => typeof v === 'number') && spec[1] > spec[0];
 B.bbPart = id => { const c = circuitNow(); return c && (c.parts || []).find(p => p.id === id); };
+B.bbProp = id => { const c = circuitNow(); return c && (c.props || []).find(p => p.id === id); };
 
 /* ---------- scene ---------- */
 // the breadboard view's mat in board mm: the board, the breadboard and every circuit part lying on the mat (its `at`
@@ -2764,6 +2769,13 @@ const extent = () => {
     if (tall > 0) h = Math.max(h, tall + 4);
     if (!Array.isArray(q.at)) continue;
     const sz = ft || (def && Array.isArray(def.matSize) ? def.matSize : [20, 12]), r = Math.hypot(sz[0], sz[1]) / 2 + 6;
+    area[0] = Math.min(area[0], q.at[0] - r); area[1] = Math.min(area[1], q.at[1] - r); area[2] = Math.max(area[2], q.at[0] + r); area[3] = Math.max(area[3], q.at[1] + r);
+  }
+  for (const q of (pl && pl.c.props) || []){
+    const def = B.props[q.prop], ft = def && Array.isArray(def.foot) ? def.foot : [30, 30, 30];
+    if (!Array.isArray(q.at)) continue;
+    const r = Math.hypot(ft[0], ft[1]) / 2 + 6;
+    h = Math.max(h, ft[2] + 4);
     area[0] = Math.min(area[0], q.at[0] - r); area[1] = Math.min(area[1], q.at[1] - r); area[2] = Math.max(area[2], q.at[0] + r); area[3] = Math.max(area[3], q.at[1] + r);
   }
   return { box: area, h };
@@ -2788,6 +2800,38 @@ const drawCircuitPart = (pl, q, k) => {
   const items = [], lb = B.labeller();
   try { def.draw({ p, st, legs, holes, origin, pl, m: mm, lit: mm.state === 'ok' ? Math.min(1, Math.pow(Math.max(0, mm.i_mA) / 13.6, .55)) : 0, sel, k,
     solo: !!md.def.partPage, label: lb.label, put: (bx, svg) => { if (svg) items.push({ box: bx, svg }); } }); } catch (e) { B.note(`${p.id}: ${e.message}`); }
+  return { p, def, sel, items, lb };
+};
+/* props: the scenery a lesson's world inputs name (a desk lamp over the LDR, the obstacle in front of the HC-SR04).
+   circuit.props: [{ id, prop, at: [x, y], aim?, rot?, ...params }]; drawings register with SL.bench.prop(name, def)
+   (bench-props.js), def = { name, foot: [w, d, h], params, defaults?, draw(ctx) }. The solver never sees them. */
+B.props = {};
+B.prop = (name, def) => { if (!def || typeof def.draw !== 'function') return B.note(`prop "${name}" has no draw`); B.props[name] = def; };
+const matZ = () => B.G.matH - B.G.top;
+// where a prop aims: the middle of a circuit part (its legs' strips, or its spot on the mat) or another prop's foot
+const aimPoint = (pl, id) => {
+  const q = (pl.c.parts || []).find(x => x.id === id);
+  if (q){
+    const def = B.parts[q.part], tall = def ? (Array.isArray(def.foot) ? def.foot[2] : +def.height) || 8 : 8;
+    if (Array.isArray(q.at)) return B.BP(q.at[0], q.at[1], matZ() + tall / 2);
+    const holes = (q.holes || []).map(h => B.hole(pl.geo, h)).filter(Boolean);
+    if (holes.length) return pl.at(holes.reduce((t, h) => t + h.x, 0) / holes.length, holes.reduce((t, h) => t + h.y, 0) / holes.length, pl.zTop + Math.min(tall, 14) / 2);
+  }
+  const pr = (pl.c.props || []).find(x => x.id === id);
+  return pr && Array.isArray(pr.at) ? B.BP(pr.at[0], pr.at[1], matZ()) : null;
+};
+const drawProp = (pl, q, k) => {
+  const st = B.st, def = B.props[q.prop];
+  if (!def){ unknownProp(q); return null; }
+  if (!Array.isArray(q.at)){ B.note(`prop ${q.id}: no at`); return null; }
+  const p = Object.assign({}, def.defaults || {}, q, (st.cparams || {})[q.id] || {});
+  const target = q.aim ? (pl.c.parts || []).find(x => x.id === q.aim) || (pl.c.props || []).find(x => x.id === q.aim) : null;
+  const aim = q.aim ? aimPoint(pl, q.aim) : null;
+  if (q.aim && !aim){ unknownAim(q); }
+  const items = [], lb = B.labeller(), sel = st.sel === q.id;
+  try { def.draw({ p, st, k, sel, origin: B.BP(q.at[0], q.at[1], matZ()), aim, at: (x, y) => B.BP(x, y, matZ()),
+    aimPart: target ? Object.assign({}, target, (st.cparams || {})[target.id] || {}) : null, m: target ? (st.meas || {})[target.id] || {} : {},
+    label: lb.label, put: (bx, svg) => { if (svg) items.push({ box: bx, svg }); } }); } catch (e) { B.note(`${q.id}: ${e.message}`); }
   return { p, def, sel, items, lb };
 };
 // a part page frames its part, not the whole breadboard: the parts' drawn box plus 10 mm of breadboard round it
@@ -2826,6 +2870,12 @@ B.viewDef('breadboard', {
         d.lb.done(d.items.map(it => it.box));
         for (const it of d.items) items.push({ box: it.box, svg: act('bb', sel ? `<g class="bsel">${it.svg}</g>` : it.svg, `data-id="${CF_ESC(p.id)}" data-label="${CF_ESC(T(def.name || p.part) + ' ' + p.id)}"`) });
       }
+      // props press as parts ('part' bridge events), so a host can hold or drag the thing its world input names
+      for (const q of pl.c.props || []){
+        const d = drawProp(pl, q, k); if (!d) continue;
+        d.lb.done(d.items.map(it => it.box));
+        for (const it of d.items) items.push({ box: it.box, svg: act('part', d.sel ? `<g class="bsel">${it.svg}</g>` : it.svg, `data-id="${CF_ESC(q.id)}" data-label="${CF_ESC(T(d.def.name || q.prop) + ' ' + q.id)}"`) });
+      }
       const wire = B.parts.wire;
       if (wire) for (const w of pl.c.wires || []){
         const end = ref => { const h = B.hole(pl.geo, ref) || legHole(pl.c, pl.geo, ref); if (h) return { pt: pl.at(h.x, h.y, pl.zTop + (h.z || 0)), down: 0 };
@@ -2855,6 +2905,10 @@ B.viewDef('breadboard', {
 const noted = new Set();
 const unknownPart = p => { const key = p.id + ':' + p.part; if (noted.has(key)) return; noted.add(key);
   B.note(`circuit part ${p.id}: unknown part "${p.part}" (add // @cf use parts/${String(p.part).replace(/[^\w-]/g, '')}.js)`); };
+const unknownProp = q => { const key = 'prop:' + q.id + ':' + q.prop; if (noted.has(key)) return; noted.add(key);
+  B.note(`prop ${q.id}: unknown prop "${q.prop}" (add // @cf use engine/bench-props.js)`); };
+const unknownAim = q => { const key = 'aim:' + q.id + ':' + q.aim; if (noted.has(key)) return; noted.add(key);
+  B.note(`prop ${q.id}: aims at "${q.aim}", which is not in the circuit`); };
 
 /* ---------- part pages: public/figures/parts/<id>.html shows the part on a breadboard ---------- */
 const SHOW = {
@@ -4253,8 +4307,9 @@ function model(st, dt){
   else if (run && st.mode === 'sweep') status = 'Base at ' + deg + '°';
   else if (run) status = 'Servos centred: 1500 µs';
   const live = st.power && run;
+  // the rows stay while the bench is powered, so the stats column keeps its narrow, wrapping layout in a fault too
   const stats = live ? [['V+', vplus.toFixed(1) + ' V'], ...(frame ? [['Frame', (1000 / frame).toFixed(1) + ' ms']] : []),
-    ['Arm', `${deg}° · ${Math.round(arm.a[1])}° · ${Math.round(arm.a[2])}°`], ['Servos', ma + ' mA']] : [];
+    ['Arm', `${deg}° · ${Math.round(arm.a[1])}° · ${Math.round(arm.a[2])}°`], ['Servos', ma + ' mA']] : [['V+', '–'], ['Arm', '–'], ['Servos', '–']];
   return {
     readings: { ARM: { b: deg, s: Math.round(arm.a[1]), g: Math.round(arm.a[2]), i_mA: ma, held: c.held ? 1 : 0 },
       PACK: { state: has('pack-reversed') ? 'reverse' : (st.supply || {}).bench > 10 ? 'li-ion' : 'ok', v: r1(vplus), i_mA: Math.round(ma) } },

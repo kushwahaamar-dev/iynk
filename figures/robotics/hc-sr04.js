@@ -61,7 +61,8 @@ function model(st){
   else if (st.mode === 'cushion') status = cm == null ? 'Cushion: the sound soaks in, no echo' : `Cushion: an echo from the wall behind, ${Math.round(cm)} cm`;
   else status = 'Nothing in range: every ping times out';
   const us = cm != null ? Math.round(cm * 58) : NO_ECHO_US;
-  const stats = run ? [['Distance', cm != null ? cm.toFixed(1) + ' cm' : 'no echo'], ['Echo', (us / 1000).toFixed(2) + ' ms']] : [];
+  // the rows stay while the bench is powered, so the stats column keeps its narrow, wrapping layout in a fault too
+  const stats = [['Distance', run ? (cm != null ? cm.toFixed(1) + ' cm' : 'no echo') : '–'], ['Echo', run ? (us / 1000).toFixed(2) + ' ms' : '–']];
   return {
     readings: { BUZ: { f: beep ? BEEP : 0, v: 0 } },
     report: { sonar: { cm: cm != null ? Math.round(cm * 10) / 10 : null, echo: run && cm != null, us: run ? us : null, beep } },
