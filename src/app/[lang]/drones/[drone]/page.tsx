@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function DronePage({ params }: Props) {
   return (
-    <Suspense fallback={<div className="mx-auto min-h-[80vh] max-w-7xl px-4 sm:px-6" aria-busy="true" />}>
+    <Suspense fallback={<div className="min-h-[calc(100dvh-var(--header-h))]" aria-busy="true" />}>
       <Drone params={params} />
     </Suspense>
   );
@@ -46,11 +46,14 @@ async function Drone({ params }: Pick<Props, "params">) {
   const [craft, messages] = await Promise.all([loadCraft(lang, drone), getMessages(lang, "dronelab")]);
   if (!craft) notFound();
   return (
-    <>
-      <UntranslatedNotice lang={lang} textLang={craft.textLang} />
-      <LabRoom lab="drone" itemId={drone}>
-        <DroneWorkspace lang={lang} content={craft.content} text={craft.text} messages={messages} />
-      </LabRoom>
-    </>
+    <LabRoom lab="drone" itemId={drone}>
+      <DroneWorkspace
+        lang={lang}
+        content={craft.content}
+        text={craft.text}
+        messages={messages}
+        notice={<UntranslatedNotice lang={lang} textLang={craft.textLang} variant="chip" />}
+      />
+    </LabRoom>
   );
 }

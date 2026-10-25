@@ -109,6 +109,7 @@
     },
     "figureTitle": "{title} auf der Werkbank",
     "figureFocus": "Abbildung benutzen",
+    "empty": "Noch keine Teile verbaut",
     "figureHint": "Zieh, um sie zu drehen, und klick ein Teil an, um es auszuwählen. Drück Escape, um zur Seite zurückzukommen.",
     "view": "Ansicht",
     "viewBench": "Werkbank",

@@ -109,6 +109,7 @@
     },
     "figureTitle": "{title} sur l'établi",
     "figureFocus": "Utiliser la figure",
+    "empty": "Aucune pièce montée pour l'instant",
     "figureHint": "Faites glisser pour la tourner, cliquez sur une pièce pour la sélectionner. Appuyez sur Échap pour revenir à la page.",
     "view": "Vue",
     "viewBench": "Banc",

@@ -103,6 +103,7 @@
     },
     "figureTitle": "实验台上的 {title}",
     "figureFocus": "操作图示",
+    "empty": "还没有装上任何零件",
     "figureHint": "拖动可以转动它，点击零件可以选中它。按 Esc 回到页面。",
     "view": "视图",
     "viewBench": "实验台",

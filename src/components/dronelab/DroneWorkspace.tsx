@@ -1,13 +1,14 @@
 "use client";
 
-import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import type { DroneContent } from "@/content/schema";
-import { DRONES } from "@/content/ids";
 import { LabDock } from "@/components/dock/LabDock";
 import { FigureFrame, type FigureEvent, type FigureHandle, type HostCommand } from "@/components/figure";
-import { SoundToggle, UsageToggle } from "@/components/settings";
+import { SoundToggle } from "@/components/settings";
+import { StageDrawer, WorkspaceBar, WorkspaceFrame } from "@/components/shell/workspace";
 import { Button, ButtonLink } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
+import { Panel } from "@/components/ui/Panel";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { Tabs } from "@/components/ui/Tabs";
 import { Toggle } from "@/components/ui/Toggle";
@@ -49,9 +50,11 @@ type Props = {
   content: DroneContent;
   text: Record<string, unknown>;
   messages: DroneLabMessages;
+  /** The untranslated chip, from the server page. */
+  notice?: ReactNode;
 };
 
-export function DroneWorkspace({ lang, content, text, messages }: Props) {
+export function DroneWorkspace({ lang, content, text, messages, notice }: Props) {
   const room = useRoom();
   const t = useMemo(() => droneLabT(lang, messages), [lang, messages]);
   const ct = useMemo(() => contentT(lang, content.id, text), [lang, content.id, text]);
@@ -59,6 +62,7 @@ export function DroneWorkspace({ lang, content, text, messages }: Props) {
   const state = useSyncExternalStore(store.subscribe, store.getState, store.getState);
   const [figure, setFigure] = useState<FigureHandle | null>(null);
   const [flash, setFlash] = useState("");
+  const [logOpen, setLogOpen] = useState(false);
   const enterFigure = useRef<HTMLButtonElement>(null);
   const id = content.id;
   const dispatch = store.dispatch;
@@ -133,7 +137,6 @@ export function DroneWorkspace({ lang, content, text, messages }: Props) {
 
   const bench = readBench(state.figure);
   const initial = useMemo(() => figureInitial(content, state), [content, state]);
-  const meta = DRONES[id];
   const fig = String(content.fig).padStart(2, "0");
   const fwName = t(`firmware.${content.firmware.firmware}`);
   const keys = useMemo(() => droneProgressKeys(content), [content]);
@@ -200,158 +203,192 @@ export function DroneWorkspace({ lang, content, text, messages }: Props) {
       : []),
   ];
 
-  return (
-    <div className="mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6">
-      <nav aria-label={t("workspace.crumbs")} className="font-ui text-xs font-bold uppercase tracking-wider">
-        <Link href={`/${lang}/drones`} className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">
-          {t("workspace.back")}
-        </Link>
-      </nav>
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div className="min-w-0">
-          <p className="ink-kicker">
-            {t("workspace.fig", { n: fig })} · {t(`classes.${content.class}`)} · {content.firmware.version}
-          </p>
-          <h1 className="mt-2">{ct(content.title)}</h1>
-          <p className="mt-2 text-lg text-muted">{ct(content.sub)}</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <CraftProgress
-            keys={keys}
-            label={t("workspace.progress")}
-            countTemplate={messages.index.progressValue}
-            valueTemplate={messages.workspace.progressLabel}
-          />
-          <SoundToggle />
-          <KeyboardHelp t={t} />
-          <ButtonLink
-            href={withRoom(`/${lang}/drones/${id}/fly`, room?.id)}
-            variant="primary"
-            data-testid="fly-link"
-            aria-describedby={`fly-note-${id}`}
-          >
-            {t("workspace.fly")}
-          </ButtonLink>
-        </div>
-        <p id={`fly-note-${id}`} className="w-full text-end text-sm text-muted">
-          {bench.flight?.ready ? t("workspace.flyReady") : t("workspace.flyNotReady")}
-        </p>
-      </header>
+  const lastLine = state.log.lines[state.log.lines.length - 1];
+  const nextPart = bench.next ? content.parts.find((p) => p.id === bench.next) : undefined;
+  const empty = ready && bench.fitted === 0 && state.sheet !== "wiring";
+  const figureTitle = t("workspace.figureTitle", { title: ct(content.title) });
+  const flyNote = bench.flight?.ready ? t("workspace.flyReady") : t("workspace.flyNotReady");
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
-        <section
-          aria-label={t("workspace.figureTitle", { title: ct(content.title) })}
-          className="space-y-3 self-start lg:sticky lg:top-4"
+  const stage = (
+    <>
+      <div className="flex shrink-0 items-center gap-2 overflow-x-auto [scrollbar-width:none]">
+        <SegmentedControl
+          label={t("workspace.view")}
+          value={state.sheet === "wiring" ? "wiring" : "bench"}
+          options={[
+            { value: "bench", label: t("workspace.viewBench") },
+            { value: "wiring", label: t("workspace.viewWiring") },
+          ]}
+          onChange={(v) => dispatch({ type: "sheet", sheet: v === "wiring" ? "wiring" : null })}
+          size="sm"
+        />
+        <Toggle
+          checked={state.exploded}
+          onChange={(on) => dispatch({ type: "exploded", on })}
+          label={t("workspace.exploded")}
+          // the wiring sheet covers the craft: exploding it then shows nothing
+          disabled={!ready || state.sheet === "wiring"}
+          className="shrink-0 !gap-2 whitespace-nowrap"
+        />
+        <dl
+          aria-label={t("workspace.status.title")}
+          // the figure's own HUD shows parts and the battery too: on a phone the row keeps to the view switches
+          className="ms-auto flex shrink-0 items-center gap-x-4 whitespace-nowrap ps-2 max-sm:sr-only"
+          data-testid="bench-status"
         >
-          <div className="flex flex-wrap items-center gap-3">
-            <SegmentedControl
-              label={t("workspace.view")}
-              value={state.sheet === "wiring" ? "wiring" : "bench"}
-              options={[
-                { value: "bench", label: t("workspace.viewBench") },
-                { value: "wiring", label: t("workspace.viewWiring") },
-              ]}
-              onChange={(v) => dispatch({ type: "sheet", sheet: v === "wiring" ? "wiring" : null })}
-              size="sm"
-            />
-            <Toggle
-              checked={state.exploded}
-              onChange={(on) => dispatch({ type: "exploded", on })}
-              label={t("workspace.exploded")}
-              disabled={!ready}
-            />
-            <Button ref={enterFigure} size="sm" variant="ghost" onClick={() => figure?.focus()} aria-keyshortcuts="F">
-              {t("workspace.figureFocus")}
-            </Button>
+          <div className="flex items-baseline gap-1.5">
+            <dt className="ink-label">{t("workspace.status.parts")}</dt>
+            <dd className="tabular font-ui text-sm font-semibold">{ready ? `${bench.fitted}/${bench.total}` : "…"}</dd>
           </div>
-          <FigureFrame
-            ref={setFigure}
-            src={`${content.figure.page}?step=0&fresh=1`}
-            title={t("workspace.figureTitle", { title: ct(content.title) })}
-            initial={initial}
-            onEvent={onEvent}
-          />
-          <p className="text-xs text-muted">{t("workspace.figureHint")}</p>
-          <div role="status" aria-live="polite" className="min-h-6 font-ui text-sm font-bold" data-testid="figure-flash">
-            {flash}
+          <div className="flex items-baseline gap-1.5 max-sm:hidden">
+            <dt className="ink-label">{t("workspace.status.plugged")}</dt>
+            <dd className="font-ui text-sm font-semibold">{bench.plugged ? t("workspace.status.pluggedOn") : t("workspace.status.pluggedOff")}</dd>
           </div>
-          <dl
-            aria-label={t("workspace.status.title")}
-            className="grid grid-cols-3 gap-2 rounded-ink border-2 border-line bg-surface p-3 text-sm"
-            data-testid="bench-status"
-          >
-            <div>
-              <dt className="ink-kicker text-[0.65rem]">{t("workspace.status.parts")}</dt>
-              <dd className="font-ui font-bold">{ready ? `${bench.fitted}/${bench.total}` : "…"}</dd>
+          <div className="flex items-baseline gap-1.5 max-sm:hidden">
+            <dt className="ink-label">{t("workspace.status.fault")}</dt>
+            <dd className={`font-ui text-sm font-semibold ${bench.fault ? "text-bad" : ""}`}>
+              {bench.fault ? t("workspace.status.faultCap") : t("workspace.status.faultNone")}
+            </dd>
+          </div>
+        </dl>
+        <IconButton
+          ref={enterFigure}
+          icon="target"
+          size="sm"
+          label={t("workspace.figureFocus")}
+          shortcut="F"
+          onClick={() => figure?.focus()}
+          aria-keyshortcuts="F"
+          className="[@media(pointer:coarse)]:hidden"
+        />
+      </div>
+      <div className="relative min-h-0 flex-1">
+        <FigureFrame
+          ref={setFigure}
+          src={`${content.figure.page}?step=0&fresh=1`}
+          title={figureTitle}
+          initial={initial}
+          onEvent={onEvent}
+          fill
+        />
+        {empty ? (
+          <div className="pointer-events-none absolute inset-0 grid place-items-end justify-items-center p-3 sm:place-items-center sm:p-4">
+            <div className="pointer-events-auto w-full max-w-sm rounded-ink border-2 border-line bg-surface p-3 text-center shadow-ink animate-ink-fade sm:p-4">
+              <p className="font-head text-base sm:text-lg">{t("workspace.empty")}</p>
+              <div className="mt-3 flex flex-wrap justify-center gap-2">
+                <Button variant="primary" onClick={() => dispatch({ type: "bench/run", run: "build" })} data-testid="empty-build">
+                  {t("build.buildForMe")}
+                </Button>
+                {bench.next && nextPart ? (
+                  <Button onClick={() => dispatch({ type: "bench/add", id: bench.next!, orient: 0 })}>
+                    {t("build.fit", { short: nextPart.short })}
+                  </Button>
+                ) : null}
+              </div>
             </div>
-            <div>
-              <dt className="ink-kicker text-[0.65rem]">{t("workspace.status.plugged")}</dt>
-              <dd className="font-ui font-bold">
-                {bench.plugged ? t("workspace.status.pluggedOn") : t("workspace.status.pluggedOff")}
-              </dd>
-            </div>
-            <div>
-              <dt className="ink-kicker text-[0.65rem]">{t("workspace.status.fault")}</dt>
-              <dd className={`font-ui font-bold ${bench.fault ? "text-bad" : ""}`}>
-                {bench.fault ? t("workspace.status.faultCap") : t("workspace.status.faultNone")}
-              </dd>
-            </div>
-          </dl>
-          {!ready ? <p className="text-sm text-muted">{t("workspace.status.waiting")}</p> : null}
-          <section aria-label={t("log.title", { name: fwName })} className="overflow-hidden rounded-ink border-2 border-line">
-            <h2 className="border-b-2 border-line bg-sunken px-3 py-1.5 font-ui text-xs font-bold uppercase tracking-wider">
-              {t("log.title", { name: fwName })}
-            </h2>
-            <div
-              role="log"
-              aria-live="polite"
-              tabIndex={0}
-              className="max-h-40 overflow-y-auto bg-[#1d2a26] p-3 font-ui text-xs leading-relaxed text-[#8af0ae]"
-              data-testid="figure-log"
-            >
-              {state.log.lines.length === 0 ? (
-                <p className="text-[#8aa59a]">{t("log.empty")}</p>
-              ) : (
-                state.log.lines.slice(-40).map((line, i) => <div key={i}>{line}</div>)
-              )}
-            </div>
-          </section>
-          <LabDock lab="drone" itemId={id} store={store} figure={figure} />
-        </section>
+          </div>
+        ) : null}
+      </div>
+      <p className="sr-only">{t("workspace.figureHint")}</p>
+      <div role="status" aria-live="polite" className="sr-only" data-testid="figure-flash">
+        {flash || (ready ? "" : t("workspace.status.waiting"))}
+      </div>
+      <StageDrawer title={t("log.title", { name: fwName })} summary={lastLine ?? t("log.empty")} open={logOpen} onOpenChange={setLogOpen} height={168}>
+        <div
+          role="log"
+          aria-live="polite"
+          aria-label={t("log.title", { name: fwName })}
+          tabIndex={0}
+          className="h-full overflow-y-auto bg-console p-3 font-ui text-xs leading-relaxed text-console-accent"
+          data-testid="figure-log"
+        >
+          {state.log.lines.length === 0 ? (
+            <p className="text-console-muted">{t("log.empty")}</p>
+          ) : (
+            state.log.lines.slice(-40).map((line, i) => <div key={i}>{line}</div>)
+          )}
+        </div>
+      </StageDrawer>
+    </>
+  );
 
-        <section aria-label={t("workspace.sections")} className="min-w-0">
+  const below = (
+    <section className="grid gap-x-12 gap-y-8 lg:grid-cols-2" aria-labelledby={`meet-${id}-${lang}`}>
+      <div className="ink-prose">
+        <h2 id={`meet-${id}-${lang}`}>{t("workspace.meet", { noun: ct(content.noun) })}</h2>
+        {ct(content.overview)
+          .split(/\n{2,}/)
+          .map((para, i) => (
+            <p key={i}>{para}</p>
+          ))}
+      </div>
+      <div className="ink-prose">
+        <h2>{t("workspace.practice")}</h2>
+        <p>{ct(content.practice)}</p>
+        <p className="text-muted">{ct(content.hint)}</p>
+      </div>
+    </section>
+  );
+
+  return (
+    <WorkspaceFrame
+      className="[--stage-h:56svh]"
+      bar={
+        <WorkspaceBar
+          back={{ href: `/${lang}/drones`, label: t("workspace.back") }}
+          kicker={`${t("workspace.fig", { n: fig })} · ${t(`classes.${content.class}`)} · ${content.firmware.version}`}
+          title={ct(content.title)}
+          tone="tomato"
+          status={
+            <>
+              {notice}
+              <CraftProgress
+                keys={keys}
+                label={t("workspace.progress")}
+                countTemplate={messages.index.progressValue}
+                valueTemplate={messages.workspace.progressLabel}
+                size="xs"
+              />
+            </>
+          }
+          actions={
+            <>
+              <ButtonLink
+                href={withRoom(`/${lang}/drones/${id}/fly`, room?.id)}
+                variant="primary"
+                size="sm"
+                data-testid="fly-link"
+                aria-describedby={`fly-note-${id}`}
+                title={flyNote}
+                className="shrink-0 whitespace-nowrap"
+              >
+                {t("workspace.fly")}
+              </ButtonLink>
+              <span id={`fly-note-${id}`} className="sr-only">
+                {flyNote}
+              </span>
+              <SoundToggle compact />
+              <KeyboardHelp t={t} />
+              <LabDock lab="drone" itemId={id} store={store} figure={figure} />
+            </>
+          }
+        />
+      }
+      stage={stage}
+      rail={
+        <Panel className="h-full">
           <Tabs
             label={t("workspace.sections")}
             tabs={tabs}
             value={state.tab}
             onChange={(tab) => dispatch({ type: "tab", tab: tab as DroneTab })}
-            panelClassName="pt-5"
+            fill
+            phoneGrid
+            listClassName="ws-sticky-tabs"
           />
-        </section>
-      </div>
-
-      <section className="mt-12 grid gap-6 lg:grid-cols-2" aria-labelledby={`meet-${id}-${lang}`}>
-        <div className="ink-prose">
-          <h2 id={`meet-${id}-${lang}`}>{t("workspace.meet", { noun: ct(content.noun) })}</h2>
-          {ct(content.overview)
-            .split(/\n{2,}/)
-            .map((para, i) => (
-              <p key={i}>{para}</p>
-            ))}
-        </div>
-        <div className="ink-prose">
-          <h2>{t("workspace.practice")}</h2>
-          <p>{ct(content.practice)}</p>
-          <p className="text-muted">{ct(content.hint)}</p>
-          <p className="font-ui text-xs text-muted">
-            {meta.tags.map((tag) => `#${(messages.tags as Record<string, string>)[tag] ?? tag}`).join(" ")}
-          </p>
-        </div>
-      </section>
-
-      <div className="mt-12">
-        <UsageToggle />
-      </div>
-    </div>
+        </Panel>
+      }
+      below={below}
+    />
   );
 }

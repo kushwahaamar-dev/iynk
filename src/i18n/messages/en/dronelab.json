@@ -109,6 +109,7 @@
     },
     "figureTitle": "{title} on the workbench",
     "figureFocus": "Use the figure",
+    "empty": "No parts fitted yet",
     "figureHint": "Drag to turn it, click a part to select it. Press Escape to come back to the page.",
     "view": "View",
     "viewBench": "Bench",

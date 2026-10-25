@@ -109,6 +109,7 @@
     },
     "figureTitle": "{title} en el banco de trabajo",
     "figureFocus": "Usar la figura",
+    "empty": "Aún no hay ninguna pieza montada",
     "figureHint": "Arrastra para girarlo y haz clic en una pieza para seleccionarla. Pulsa Escape para volver a la página.",
     "view": "Vista",
     "viewBench": "Banco",
