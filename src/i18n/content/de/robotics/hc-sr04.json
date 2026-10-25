@@ -1,0 +1,381 @@
+{
+  "title": "Einparksensor HC-SR04",
+  "sub": "Entfernung aus einem Echo, das du stoppen kannst",
+  "hint": "Bau die Sonarplatine auf, ping sie an und lass dann einen Summer schneller piepen, je näher eine Hand kommt",
+  "overview": "Ein Roboter, der gegen Wände fährt, muss wissen, wie weit sie weg sind. Der HC-SR04 schreit aus einer Kapsel einen Stoß 40-kHz-Schall hinaus und lauscht mit der anderen auf das Echo; sein Echo-Pin bleibt für den Hin- und Rückweg HIGH. Schall legt einen Zentimeter hin und zurück in 58 µs zurück, also bedeutet ein Impuls von 1740 µs eine Wand in 30 cm Entfernung. Bau die Platine auf, ping sie von einem Nano aus an und lass dann einen Summer schneller piepen, je näher eine Hand kommt, wie bei der Einparkhilfe eines Autos. Dann mach sie kaputt: versorg sie verpolt oder mit 3,3 V, zieh den Empfänger ab, lass eine kalte Lötstelle an Echo, vergiss das Timeout von pulseIn() und schließ ihre Versorgung kurz.",
+  "parts": {
+    "T": {
+      "name": "Sender T: ein 40-kHz-Piezo in einer 16-mm-Kapsel",
+      "what": "Eine Piezoscheibe auf einem kleinen Konus, auf 40 kHz abgestimmt, über allem, was du hören kannst. Der MAX3232 treibt sie acht Perioden lang von beiden Enden: ein Ping."
+    },
+    "R": {
+      "name": "Empfänger R: derselbe Wandler, der lauscht",
+      "what": "Das Echo bringt seine Scheibe zum Klingen und liefert ein paar Millivolt. Der LM324 dahinter verstärkt, filtert und vergleicht das, bis die MCU es sehen kann."
+    },
+    "U1": {
+      "name": "Mikrocontroller EM78P153S (auf der Rückseite)",
+      "what": "Wartet auf ein HIGH von mindestens 10 µs an Trig, sendet den Stoß, hebt Echo an und senkt es wieder, wenn der Empfänger das Echo hört, oder nach etwa 38 ms, wenn nichts zurückkommt."
+    },
+    "U2": {
+      "name": "Sendetreiber MAX3232 (auf der Rückseite)",
+      "what": "Ein RS-232-Chip, der wegen seiner Ladungspumpe hier sitzt: Er macht aus 5 V etwa ±10 V und treibt T von beiden Enden, also sieht die Kapsel Hübe von etwa 20 V. Das macht den Ping laut genug."
+    },
+    "U3": {
+      "name": "Vierfach-OPV LM324 (auf der Rückseite)",
+      "what": "Drei Stufen aus Verstärkung und Filterung und ein Komparator machen aus den Millivolt des Empfängers eine saubere Flanke für die MCU."
+    },
+    "Y1": {
+      "name": "4-MHz-Quarz",
+      "what": "Der Takt der MCU: Er bestimmt das Timing des 40-kHz-Stoßes und des Echos. Ohne ihn läuft nichts auf der Platine."
+    },
+    "J1": {
+      "name": "4-polige gewinkelte Stiftleiste: Vcc, Trig, Echo, Gnd",
+      "what": "Ihr Körper sitzt auf der Rückseite, und die Stifte laufen über die Unterkante hinaus, also steht die Platine aufrecht und nach vorn gerichtet im Steckbrett."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "Sendet den 10-µs-Impuls an D9, misst Echo an D10 mit pulseIn() und teilt durch 58. Sein 5V-Pin versorgt den Sensor; der Summer hängt an D8."
+    },
+    "BUZ": {
+      "name": "Piezo-Summer an D8",
+      "what": "Ein passiver Piezo: tone(8, 2000) lässt ihn mit 2 kHz tönen. Ein paar mA, also kommt er direkt an einen Pin."
+    }
+  },
+  "power": {
+    "label": "Den Prüfstand mit Strom versorgen",
+    "ok": "Nano an USB: Vcc 5 V, direkt an jeden Chip auf der Platine"
+  },
+  "modes": {
+    "wall": {
+      "title": "Ping und Ausgabe"
+    },
+    "approach": {
+      "title": "Einparkpiepser"
+    },
+    "cushion": {
+      "title": "Ein Kissen anpingen"
+    },
+    "open": {
+      "title": "Nichts in Reichweite"
+    },
+    "code": {
+      "wall": "Ping und Ausgabe: eine Wand 30 cm davor",
+      "cushion": "Ping und Ausgabe, auf ein Kissen in 40 cm Entfernung gerichtet",
+      "open": "Ping und Ausgabe, auf einen leeren Raum gerichtet",
+      "park": "Einparksensor: piept schneller, je näher eine Hand kommt",
+      "trig": "ein HIGH von mindestens 10 µs startet einen Ping",
+      "timeout": "nach 30 ms aufgeben (etwa 5 m): 0 heißt kein Echo",
+      "cm": "58 µs Hin- und Rückweg pro cm",
+      "noEcho": "0 heißt nicht \"sehr nah\": Es kam nichts zurück",
+      "gap": "mindestens 60 ms zwischen den Pings, damit das letzte Echo verklungen ist",
+      "stop": "unter 10 cm: ein langer Ton",
+      "rate": "ein 50-ms-Piep alle cm x 10 ms: schneller, je näher es kommt"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Bis auf die nackte Platine zerlegen",
+      "body": "Nimm jedes Bauteil von der blauen Platine. Du setzt sie so wieder zusammen, wie sie hergestellt wird: zuerst die Chips auf der Rückseite, dann der Quarz und die Stiftleiste, dann die beiden Kapseln.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einer Platine unter Spannung"
+    },
+    "smd": {
+      "title": "Die SMD-Bauteile bestücken, dann reflowlöten",
+      "body": "Jeder Chip sitzt auf der Rückseite: der EM78P153S, der MAX3232, der LM324, zwei Transistoren und etwa dreißig Widerstände und Kondensatoren. Auf der Vorderseite bleiben nur die Kapseln, der Quarz und die Lötstellen der Stiftleiste.",
+      "refusal": "Die SMD-Bauteile kommen zuerst drauf, auf eine nackte Platine"
+    },
+    "low": {
+      "title": "Quarz und Stiftleiste einsetzen",
+      "body": "Die flachen Bauteile zuerst: der 4-MHz-Quarz zwischen den Lötflächen der Kapseln und die gewinkelte Stiftleiste mit ihrem Körper auf der Rückseite.",
+      "refusal": "Zuerst die SMD-Bauteile: Bestücken und reflowlöten"
+    },
+    "cans": {
+      "title": "Die beiden Kapseln einsetzen",
+      "body": "T links, R rechts. Sie sehen gleich aus, und auf den meisten Platinen sind sie es auch; der Buchstabe im Bestückungsdruck sagt, welche welche ist.",
+      "refusal": "Zuerst die flachen Bauteile: Mit den Kapseln drauf kippelt die Platine, wenn du sie zum Löten umdrehst"
+    },
+    "solder": {
+      "title": "Die bedrahteten Bauteile löten",
+      "body": "Von der Rückseite: zwei Beine pro Kapsel, zwei für den Quarz, vier für die Stiftleiste. Eine kalte Lötstelle an einem Kapselbein, und die Platine wird taub; an Echo kommen und gehen die Messwerte.",
+      "refusal": "Noch nichts zu löten: Setz zuerst die Bauteile ein"
+    },
+    "wire-nano": {
+      "title": "Den Nano verdrahten",
+      "body": "Vcc an 5V, Trig an D9, Echo an D10, Gnd an GND. Echo ist ein 5-V-Ausgang: an einem Nano in Ordnung, für eine 3,3-V-Platine ohne Teiler zu viel.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einer Platine unter Spannung"
+    },
+    "wire-buzzer": {
+      "title": "Den Summer verdrahten",
+      "body": "+ an D8, - an GND. Er ist die Stimme des Einparksensors.",
+      "refusal": "Zieh zuerst den Strom ab und verdrahte zuerst den Nano"
+    },
+    "plug": {
+      "title": "Den Prüfstand mit Strom versorgen",
+      "body": "USB in den Nano. Am HC-SR04 leuchtet nichts: Er hat keine Power-LED. Er wartet auf einen Impuls an Trig.",
+      "refusal": "Schließ zuerst den Aufbau ab: Jedes Bauteil drauf und gelötet, Nano und Summer verdrahtet"
+    },
+    "wall": {
+      "title": "„Ping und Ausgabe“ hochladen",
+      "body": "Einmal pro Sekunde: ein 10-µs-Impuls an Trig, dann misst pulseIn() Echo. Eine Wand in 30 cm Entfernung ergibt etwa 1740 µs, 30 cm. Sieh zu, wie die Ringe T verlassen und wieder auf R herunterkommen.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "approach": {
+      "title": "„Einparkpiepser“ hochladen",
+      "body": "Eine Hand kommt von 1 m auf 5 cm heran. Der Sketch pingt alle 60 ms und piept einmal alle Entfernung x 10 ms: jede Sekunde bei 1 m, alle 300 ms bei 30 cm, ein langer Ton unter 10 cm.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "cushion": {
+      "title": "„Ein Kissen anpingen“ hochladen",
+      "body": "Derselbe Sketch, auf ein Kissen in 40 cm Entfernung gerichtet. Weicher Stoff schluckt den Schall: Die meisten Pings melden kein Echo, und ab und zu antwortet die Wand dahinter bei 183 cm.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "open": {
+      "title": "„Nichts in Reichweite“ hochladen",
+      "body": "Auf einen leeren Raum gerichtet. Die Platine wartet etwa 38 ms, senkt Echo, und jeder Ping meldet kein Echo: pulseIn() hat nach 30 ms aufgegeben und 0 zurückgegeben.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "reverse-vcc": {
+      "title": "Vcc und Gnd vertauscht anschließen",
+      "body": "5 V an Gnd und GND an Vcc. Die Platine hat keine Diode, keine Sicherung und keinen Regler."
+    },
+    "vcc-on-3v3": {
+      "title": "Vcc vom 3V3-Pin des Nano versorgen",
+      "body": "Das Kabel einen Pin weiter, an 3V3. Die Chips laufen noch. Achte auf die Ringe und die Messwerte."
+    },
+    "no-receiver": {
+      "title": "Den Empfänger abziehen",
+      "body": "Nimm R von der Platine und ping die Wand an."
+    },
+    "cold-echo": {
+      "title": "Eine kalte Lötstelle an Echo lassen",
+      "body": "Eine matte, rissige Lötstelle am Echo-Pin der Stiftleiste. Ping die Wand an."
+    },
+    "no-timeout": {
+      "title": "Das Timeout von pulseIn() vergessen",
+      "body": "pulseIn(ECHO, HIGH) ohne drittes Argument und ohne Prüfung auf „no echo“, auf den leeren Raum gerichtet."
+    },
+    "short-vcc": {
+      "title": "Vcc mit Gnd kurzschließen",
+      "body": "Ein verirrtes Kabel über die äußeren Stifte der Stiftleiste."
+    },
+    "exploded": {
+      "title": "Explosionsansicht",
+      "body": "Zieh den Strom ab und heb die Bauteile nach Baugruppen ab: die Chips auf der Rückseite, Quarz und Stiftleiste, dann die Kapseln.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einer Platine unter Spannung"
+    }
+  },
+  "faults": {
+    "reverse-vcc": {
+      "title": "Vcc verpolt",
+      "symptom": "Die Chips werden innerhalb von Sekunden heiß, und der USB des Nano kann aussteigen. Danach misst die Platine oft gar nichts mehr.",
+      "explanation": "Nichts auf dem HC-SR04 blockiert eine verpolte Versorgung: Strom fließt rückwärts durch die Schutzdioden in jedem Chip. Der MAX3232 und die MCU sterben meistens.",
+      "fix": "Sofort abstecken, Vcc an 5V und Gnd an GND anschließen. Schließ Gnd zuerst an, wie es in den Datenblättern steht."
+    },
+    "vcc-on-3v3": {
+      "title": "Nur 3,3 V an Vcc",
+      "symptom": "Jeder Ping meldet kein Echo. Die Ringe des Stoßes gehen schwach hinaus, und nichts kommt zurück.",
+      "explanation": "Die MCU läuft mit 3,3 V, aber der Treiber des MAX3232 und die Verstärkung des LM324 brauchen 4,5 bis 5,5 V. Der Stoß ist zu schwach und der Empfänger zu taub, um ihn zurückkommen zu hören.",
+      "fix": "Versorg Vcc mit 5V. An einer 3,3-V-Platine nimm den HC-SR04P, der ab 3,0 V läuft."
+    },
+    "no-receiver": {
+      "title": "Kein Empfänger",
+      "symptom": "Jeder Ping meldet kein Echo, obwohl der Stoß hinausgeht.",
+      "explanation": "Ohne R hört niemand das Echo, also wartet die MCU ihre 38 ms und senkt Echo. Eine kalte Lötstelle an einem Kapselbein macht dasselbe.",
+      "fix": "Setz R ein und löte beide Beine."
+    },
+    "cold-echo": {
+      "title": "Kalte Lötstelle an Echo",
+      "symptom": "Die Messwerte kommen und gehen: eine gute Entfernung, dann kein Echo, dann wieder eine gute. Berührst du die Platine, ändert es sich.",
+      "explanation": "Über eine Lötstelle, die mal Kontakt hat und mal nicht, kommt der Echo-Impuls manchmal nie beim Nano an, und pulseIn() läuft ins Timeout.",
+      "fix": "Erhitz die Lötstelle mit frischem Lötzinn neu, bis es zu einem glänzenden Kegel verläuft."
+    },
+    "no-timeout": {
+      "title": "pulseIn() ohne Timeout",
+      "symptom": "Ein leerer Raum misst 655 cm, jenseits der 4 m des Sensors, und jeder Ping dauert länger.",
+      "explanation": "Ohne etwas, das ein Echo gibt, hält die Platine Echo für ihr eigenes Timeout, etwa 38 ms, auf HIGH und senkt es dann. pulseIn() ohne Timeout wartet bis zu einer Sekunde, misst diesen 38-ms-Impuls, und der Sketch gibt ihn als 38000 / 58 = 655 cm aus.",
+      "fix": "Übergib ein Timeout, pulseIn(ECHO, HIGH, 30000UL), und behandle 0 als „no echo“, nicht als Entfernung."
+    },
+    "short-vcc": {
+      "title": "Vcc mit Gnd kurzgeschlossen",
+      "symptom": "Alles geht aus: Der Nano setzt sich zurück oder sein USB steigt aus, und seine Polyfuse wird warm.",
+      "explanation": "Die Platine hat keine eigene Sicherung. Der Kurzschluss zieht die 5 V des Nano herunter, bis seine USB-Polyfuse den Strom begrenzt.",
+      "fix": "Abstecken, das verirrte Kabel entfernen und die Stifte der Stiftleiste auf eine Lötbrücke prüfen."
+    }
+  },
+  "status": {
+    "status": "Status",
+    "powered": "Strom am Prüfstand",
+    "mode": "Sketch",
+    "distance": "Entfernung",
+    "echo": "Echo-Impuls (µs)",
+    "beep": "Piepen",
+    "vcc": "Vcc",
+    "usb": "USB-Strom"
+  },
+  "current": {
+    "usb": "USB des Nano (500-mA-Polyfuse)",
+    "nano": "Nano in Betrieb",
+    "board": "HC-SR04 misst",
+    "buzzer": "Summer tönt"
+  },
+  "tasks": {
+    "sonar": "Entfernung zu dem, was vor dem Sensor ist",
+    "brake": {
+      "title": "Im leeren Raum nicht bremsen",
+      "brief": "Der Stoßstangen-Sketch dieses Roboters schaltet das Bremslicht (D13) ein, wenn etwas näher als 20 cm ist. Vor einer Wand funktioniert das, aber in einem offenen Raum bremst er auch: Wenn nichts ein Echo gibt, gibt pulseIn() 0 zurück, und 0 cm ist „näher als 20“. Brems nur, wenn es wirklich ein Echo unter 20 cm gab. Die Wand ist 80 cm entfernt, bei 1,5 s 15 cm, bei 3 s weg und bei 4,5 s 8 cm entfernt.",
+      "hints": {
+        "1": "ping() gibt 0 zurück, wenn nichts zurückkam. 0 ist keine Entfernung.",
+        "2": "Beides muss wahr sein: Es gab ein Echo, und es war nah.",
+        "3": "bool brake = cm > 0 && cm < 20;"
+      },
+      "checks": {
+        "1": "Läuft",
+        "2": "Wand in 80 cm: keine Bremse",
+        "3": "Wand in 15 cm: Bremse",
+        "4": "Leerer Raum: keine Bremse",
+        "5": "Wand in 8 cm: Bremse"
+      },
+      "code": {
+        "goal": "Unter 20 cm bremsen, aber nicht, wenn nichts ein Echo gibt",
+        "todo": "0 heißt kein Echo: Das hier bremst auch in einem leeren Raum",
+        "zero": "0, wenn innerhalb von 30 ms nichts zurückkam"
+      }
+    },
+    "speed": {
+      "title": "Wie schnell kommt es näher?",
+      "brief": "Ein Roboter muss nicht nur wissen, wie weit, sondern auch, wie schnell. Der Sketch pingt alle 500 ms. Berechne die Annäherungsgeschwindigkeit aus dieser Entfernung, der letzten und der Zeit dazwischen und häng an jede Zeile \", approaching at N cm/s\", \", moving away at N cm/s\" oder \", holding\" (innerhalb von 2 cm/s) an. Eine Hand kommt mit 20 cm/s von 1 m auf 30 cm heran, hält an und zieht sich dann zurück.",
+      "hints": {
+        "1": "speed = (last - cm) / Sekunden zwischen den Pings: positiv, wenn es näher kommt.",
+        "2": "Behalte last und lastAt vom vorigen Ping; lass die Geschwindigkeit weg, wenn einer der beiden Messwerte kein Echo ist.",
+        "3": "Serial.print(speed, 0) gibt sie ohne Nachkommastellen aus."
+      },
+      "checks": {
+        "1": "Läuft",
+        "2": "Meldet approaching mit etwa 20 cm/s",
+        "3": "Meldet holding, wenn die Hand bei 30 cm anhält",
+        "4": "Meldet moving away mit etwa 20 cm/s"
+      },
+      "code": {
+        "goal": "Nach jeder Entfernung die Annäherungsgeschwindigkeit ausgeben",
+        "todo": "mit dem letzten Messwert vergleichen: approaching at N cm/s, moving away at N cm/s oder holding"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "crystal": {
+        "q": "Was macht der 4-MHz-Quarz?",
+        "options": {
+          "1": "Er taktet die MCU, die den Stoß erzeugt und das Echo misst",
+          "2": "Er verstärkt das Echo",
+          "3": "Er regelt die 5 V"
+        },
+        "why": "Der EM78P153S zählt den 40-kHz-Stoß und das Echo anhand seines Takts ab. Nimm den Quarz heraus, und nichts läuft."
+      },
+      "cans": {
+        "q": "T und R sind dieselbe Art von Kapsel. Was macht eine davon zum Sender?",
+        "options": {
+          "1": "T ist größer",
+          "2": "Woran sie angeschlossen ist: T an den MAX3232, der sie treibt, R an den LM324, der lauscht",
+          "3": "R hat keinen Piezo"
+        },
+        "why": "Ein Piezo macht aus Spannung Bewegung und aus Bewegung Spannung. Kräftig getrieben sendet er; an einen Verstärker angeschlossen lauscht er."
+      },
+      "protection": {
+        "q": "Was schützt den HC-SR04 vor einer falschen Versorgung?",
+        "options": {
+          "1": "Ein Regler",
+          "2": "Eine Verpolungsschutzdiode",
+          "3": "Nichts: Vcc geht direkt an jeden Chip"
+        },
+        "why": "Die klassische Platine hat keinen Regler, keine Diode und keine Sicherung. Schließ Vcc richtig an, bevor du einsteckst."
+      }
+    },
+    "ping": {
+      "formula": {
+        "q": "Echo ist 1740 µs lang HIGH. Wie weit ist die Wand entfernt?",
+        "options": {
+          "1": "17,4 cm",
+          "2": "30 cm",
+          "3": "58 cm"
+        },
+        "why": "1740 / 58 = 30. Der Impuls ist der Hin- und Rückweg, und 58 µs sind ein Zentimeter hin und zurück."
+      },
+      "why58": {
+        "q": "Warum 58 µs pro cm?",
+        "options": {
+          "1": "Schall legt bei 343 m/s einen Zentimeter in 29 µs zurück, und er muss hin und zurück",
+          "2": "Der Quarz teilt durch 58",
+          "3": "Das Datenblatt des Sensors hat es so festgelegt"
+        },
+        "why": "1 cm / 34 300 cm/s = 29 µs für eine Richtung, 58 µs für Hin- und Rückweg. Mit der Temperatur ändert es sich ein wenig."
+      },
+      "zero": {
+        "q": "pulseIn(ECHO, HIGH, 30000UL) gibt 0 zurück. Was bedeutet das?",
+        "options": {
+          "1": "Etwas berührt den Sensor",
+          "2": "Der Sensor ist kaputt",
+          "3": "Innerhalb von 30 ms hat kein Echo begonnen"
+        },
+        "why": "Mit 0 sagt pulseIn(), dass es aufgegeben hat. Es ist keine Entfernung."
+      }
+    },
+    "faults": {
+      "low-vcc": {
+        "q": "Mit 3,3 V läuft die Platine, meldet aber kein Echo. Warum?",
+        "options": {
+          "1": "Die MCU bleibt stehen",
+          "2": "Der Sendetreiber und die Verstärkung des Empfängers brauchen 4,5 bis 5,5 V",
+          "3": "Echo wird zu hoch"
+        },
+        "why": "Der MAX3232 macht seine ±10 V aus Vcc, und die Verstärkung des LM324 sinkt mit. Der Stoß geht schwach hinaus, und nichts wird gehört."
+      },
+      "soft": {
+        "q": "Warum meldet ein Kissen kein Echo?",
+        "options": {
+          "1": "Es ist zu nah",
+          "2": "Es ist zu warm",
+          "3": "Weicher Stoff schluckt den Schall, statt ihn zurückzuwerfen"
+        },
+        "why": "Harte, flache Ziele geben das beste Echo. Stoff, Schaumstoff und Fell schlucken den größten Teil des Stoßes; schräge Flächen werfen ihn weg."
+      },
+      "timeout": {
+        "q": "Warum misst ein leerer Raum ohne Timeout 655 cm?",
+        "options": {
+          "1": "pulseIn() misst den eigenen 38-ms-Timeout-Impuls der Platine, und 38000 / 58 = 655",
+          "2": "Der Raum ist 6,5 m lang",
+          "3": "Der Takt des Nano ist falsch"
+        },
+        "why": "Ohne etwas, das ein Echo gibt, hebt die Platine Echo trotzdem an und senkt es nach etwa 38 ms. Ohne kürzeres Timeout hält der Sketch das für eine Entfernung."
+      }
+    },
+    "end": {
+      "cone": {
+        "q": "Der Sensor hört in einem Kegel von etwa 15°. Was bedeutet das für einen Roboter?",
+        "options": {
+          "1": "Ein dünnes Stuhlbein seitlich daneben kann übersehen werden",
+          "2": "Er sieht hinter sich",
+          "3": "Er sieht durch Wände"
+        },
+        "why": "Alles außerhalb des Kegels oder zu Dünne für ein Echo ist unsichtbar. Roboter drehen den Sensor oft auf einem Servo oder nehmen zwei."
+      },
+      "two": {
+        "q": "Zwei Roboter pingen dicht nebeneinander. Was geht schief?",
+        "options": {
+          "1": "Nichts",
+          "2": "Jeder kann den Stoß des anderen hören und eine falsche Entfernung messen",
+          "3": "Beide messen weiter"
+        },
+        "why": "Jeder HC-SR04 benutzt 40 kHz. Lass sie abwechselnd pingen oder ignorier Messwerte, die springen."
+      },
+      "gap": {
+        "q": "Warum mindestens 60 ms zwischen den Pings warten?",
+        "options": {
+          "1": "Der Chip überhitzt",
+          "2": "Serial braucht die Zeit",
+          "3": "Damit die Echos des letzten Pings verklungen sind, bevor der nächste Stoß kommt"
+        },
+        "why": "Schall, der vom letzten Ping noch durch den Raum hallt, kann als Echo des nächsten gehört werden."
+      }
+    }
+  }
+}
