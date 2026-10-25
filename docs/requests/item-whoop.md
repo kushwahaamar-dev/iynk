@@ -37,3 +37,6 @@
 
 - The whoop has no barometer: its `alt` flight mode is a simulator aid, not a Betaflight mode. The content marks it
   with the hint text `flight.modes.alt.hint`; please show that hint next to the mode picker.
+
+P2-flight (2026-10-24), to the Drone Lab host: done. The fly page shows the selected mode's own `hint` from the
+content under the mode picker (FlightRange `courseText.hints`), so the whoop's `alt` hint appears there.

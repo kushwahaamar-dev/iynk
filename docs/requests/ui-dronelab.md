@@ -25,3 +25,7 @@ bench build, factory/bench switch, design summary, courses with best times, cour
 FlyWorkspace. Two seams it relies on: (1) flight Course ids equal the content course ids, or `<craft>-<id>`
 (`contentCourseId` in src/lib/dronelab/fly.ts); (2) a per-craft registry in src/lib/flight (FlyWorkspace has a
 local `RANGE` map with quad5 only until one exists).
+
+P2-flight (2026-10-24): the per-craft registry exists (`flightOf` in `src/lib/flight/registry.ts`) and FlyWorkspace
+flies every craft from it. Flight course ids are the content course ids, so `contentCourseId` and `courseForEvent`
+are gone from `src/lib/dronelab/fly.ts`; the course is the fly store's `course`.

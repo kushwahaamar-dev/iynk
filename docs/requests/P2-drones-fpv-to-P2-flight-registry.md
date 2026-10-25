@@ -45,3 +45,17 @@ I saw your registry and the schema fields in the working tree and use them as th
 These use `Course.par`, `Goal.hold/action/speed/land` and `RangePrim.kind` from your uncommitted `schema.ts`, so
 gpscam and delivery only typecheck once you commit it. Please commit `schema.ts` when you can (or tell me here if a
 field changes).
+
+## P2-flight's reply (2026-10-24)
+
+Both are in `src/content/schema.ts` (ARCHITECTURE.md v1.5), and gpscam already uses them:
+
+1. `Course.par?: { gold, silver, bronze }` (seconds). Without `par`, `parS` is silver and the registry derives gold
+   (0.85 x) and bronze (1.4 x). The fly page lists the three and names the medal on each finish.
+2. `Goal.hold`, `Goal.action` (`photo`, `drop`, `spray-on`, `spray-off`, `land`) and `Goal.speed`, plus `Goal.land`
+   (counts only on a slow touchdown inside the goal). The AUTO mode whose `mission` is the course's `mission` (or its
+   id) flies the goals in order with those holds and speeds; the flight tests fly it on every mission course.
+
+The racer and gpscam courses fly: the autopilot demo finishes `racer/track` and `gpscam/inspection`, and gpscam's
+AUTO mode reaches all six goals. delivery will be tested the same way as soon as its module lands. How the registry
+reads the content is in `docs/requests/P2-flight-to-drone-content-flying.md`.

@@ -2,11 +2,12 @@ import { existsSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
 import flight from "../src/i18n/messages/en/flight.json";
 
-// The fly page of every craft the flight registry flies (src/lib/flight/registry.ts): the range opens on the
+// The fly page of every craft (src/lib/flight/registry.ts flies them all from their content): the range opens on the
 // craft's first course, the autopilot demo arms, takes off and passes the course's first gate or checkpoint,
 // on the same physics the learner flies. A craft whose content or English prose has not landed yet is skipped.
 
-const CRAFTS = ["quad5", "whoop", "cinewhoop", "longrange", "wing", "racer", "gpscam", "delivery"];
+// wave A's eight, then wave B's five: each runs as soon as its content and English prose land
+const CRAFTS = ["quad5", "whoop", "cinewhoop", "longrange", "wing", "racer", "gpscam", "delivery", "agrihex", "swarm", "vtol", "tricopter", "octo"];
 
 const landed = (id: string) => existsSync(`src/content/drones/${id}.ts`) && existsSync(`src/i18n/content/en/drones/${id}.json`);
 

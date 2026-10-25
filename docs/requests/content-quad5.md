@@ -63,3 +63,7 @@ src/content/drones/quad5.test.ts:
 Also from docs/facts/quad5.md (data kept identical, noted for the record): the fixed part TOP (22 g) partly
 double-counts the frame kit; the 5.4 g/W hover efficiency makes hover time optimistic (12.3 min computed against
 6-8 min real); the original's wiring label "BLHeli_32" is replaced by AM32 (BLHeli_32 ended 30 June 2024).
+
+P2-flight (2026-10-24), §4: done. The sim applies expo to roll and pitch only, so acro yaw is the CLI's straight
+200 deg/s (tested in `src/lib/flight/flight.test.ts`, "rates"). `src/lib/flight/courses/quad5.ts` is gone: the range
+flies quad5's content course, which has no `OLD ROAD` decal label.

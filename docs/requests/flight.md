@@ -21,3 +21,7 @@
 6. **Settings (shell-app, optional)**: the gamepad mapping is kept per viewer in
    `localStorage["simlab:flight-pad:v1"]`, a convenience outside the D7 `simlab:v1` record. Fold it into settings if
    you want one key; the shape is `PadMapping` in `src/lib/flight/input.ts`, validated by `isPadMapping`.
+
+P2-flight (2026-10-24): item 4 is superseded. Crafts and courses come from each craft's content module through
+`src/lib/flight/registry.ts`; `src/lib/flight/crafts/` and `courses/` are gone, and `figures/flight/build.mjs`
+embeds the quad5 gate race from its content. See `docs/requests/P2-flight-to-drone-content-flying.md`.
