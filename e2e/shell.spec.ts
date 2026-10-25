@@ -120,6 +120,20 @@ test("switching language keeps the path, saves the choice and keeps the theme", 
   expect(errors).toEqual([]);
 });
 
+test("a first visit is light from the first frame, even on a dark OS", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.addInitScript(() => {
+    requestAnimationFrame(() => {
+      (window as Window & { firstFrameTheme?: string | null }).firstFrameTheme = document.documentElement.dataset.theme ?? null;
+    });
+  });
+  await page.goto("/en");
+  expect(await page.evaluate(() => (window as Window & { firstFrameTheme?: string | null }).firstFrameTheme)).toBe("light");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  expect(await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme)).toBe("light");
+  await expect((await openSettings(page)).getByRole("radio", { name: shell.theme.light })).toHaveAttribute("aria-checked", "true");
+});
+
 test("the theme choice persists and is applied before the first paint", async ({ page }) => {
   await page.goto("/en");
   await (await openSettings(page)).getByRole("radio", { name: shell.theme.dark }).click();

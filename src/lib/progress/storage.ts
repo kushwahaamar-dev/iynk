@@ -29,7 +29,8 @@ export type Saved = {
 };
 
 export const DEFAULT_SETTINGS: Readonly<Settings> = Object.freeze({
-  theme: "system",
+  // Light until the learner picks dark or system, whatever the OS prefers.
+  theme: "light",
   sound: false,
   lofi: false,
   labels: true,

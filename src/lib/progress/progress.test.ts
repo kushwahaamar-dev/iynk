@@ -21,7 +21,7 @@ test("markDone saves a versioned document and isDone reads it", () => {
   expect(isDone(key)).toBe(false);
   markDone(key);
   expect(isDone(key)).toBe(true);
-  expect(stored()).toMatchObject({ v: 1, done: { [key]: true }, quiz: {}, best: {}, settings: { theme: "system" } });
+  expect(stored()).toMatchObject({ v: 1, done: { [key]: true }, quiz: {}, best: {}, settings: { theme: "light" } });
 });
 
 test("getSaved returns the same object until storage changes", () => {
@@ -91,7 +91,7 @@ describe("reading what is stored", () => {
     expect(saved.done).toEqual({ "board:nano:lesson:a": true });
     expect(saved.quiz).toEqual({ good: { score: 3, total: 4 } });
     expect(saved.best).toEqual({ ok: 12.5 });
-    expect(saved.settings).toEqual({ theme: "system", sound: true, lofi: false, labels: true, reduceMotion: false, telemetry: true });
+    expect(saved.settings).toEqual({ theme: "light", sound: true, lofi: false, labels: true, reduceMotion: false, telemetry: true });
   });
 });
 

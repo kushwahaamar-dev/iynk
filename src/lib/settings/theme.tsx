@@ -6,8 +6,9 @@ import { useSettings } from "./hooks";
 import { applySettingsToDocument } from "./settings";
 
 // Runs while the HTML is parsed, before first paint, so a saved dark theme
-// never flashes light. Mirrors applySettingsToDocument.
-const BOOT = `(function(){try{var s=JSON.parse(localStorage.getItem(${JSON.stringify(STORAGE_KEY)})||"{}").settings||{},d=document.documentElement;if(s.theme==="dark"||s.theme==="light")d.dataset.theme=s.theme;if(s.reduceMotion===true)d.dataset.reduceMotion="true"}catch(e){}})()`;
+// never flashes light and a first visit is light even on a dark OS. Mirrors
+// applySettingsToDocument with DEFAULT_SETTINGS.theme for nothing saved.
+const BOOT = `(function(){var d=document.documentElement;d.dataset.theme="light";try{var s=JSON.parse(localStorage.getItem(${JSON.stringify(STORAGE_KEY)})||"{}").settings||{};if(s.theme==="dark")d.dataset.theme="dark";else if(s.theme==="system")delete d.dataset.theme;if(s.reduceMotion===true)d.dataset.reduceMotion="true"}catch(e){}})()`;
 
 /**
  * The boot script for <head>. It has to be a Client Component: when a soft
