@@ -234,7 +234,7 @@ export function DroneWorkspace({ lang, content, text, messages, notice }: Props)
 
   const stage = (
     <>
-      <div className="flex shrink-0 items-center gap-2 overflow-x-auto [scrollbar-width:none]">
+      <div className="flex shrink-0 flex-wrap items-center gap-x-2 gap-y-1 sm:flex-nowrap sm:overflow-x-auto sm:[scrollbar-width:none]">
         <SegmentedControl
           label={t("workspace.view")}
           value={state.sheet === "wiring" ? "wiring" : "bench"}
@@ -296,10 +296,11 @@ export function DroneWorkspace({ lang, content, text, messages, notice }: Props)
           fill
         />
         {empty ? (
-          <div className="pointer-events-none absolute inset-0 grid place-items-end justify-items-center p-3 sm:place-items-center sm:p-4">
+          // on a phone the card sits low, between the figure's HUD and its See-through and zoom row
+          <div className="pointer-events-none absolute inset-0 grid place-items-end justify-items-center p-3 pb-14 sm:place-items-center sm:p-4">
             <div className="pointer-events-auto w-full max-w-sm rounded-ink border-2 border-line bg-surface p-3 text-center shadow-ink animate-ink-fade sm:p-4">
               <p className="font-head text-base sm:text-lg">{t("workspace.empty")}</p>
-              <div className="mt-3 flex flex-wrap justify-center gap-2">
+              <div className="mt-2 flex flex-wrap justify-center gap-2 sm:mt-3">
                 <Button variant="primary" onClick={() => dispatch({ type: "bench/run", run: "build" })} data-testid="empty-build">
                   {t("build.buildForMe")}
                 </Button>
