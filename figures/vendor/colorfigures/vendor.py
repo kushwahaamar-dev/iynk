@@ -31,7 +31,10 @@ const CF_T = (s, vars) => {
   if (vars && typeof t === 'string') t = t.replace(/\{(\w+)\}/g, (m, k) => Object.prototype.hasOwnProperty.call(vars, k) ? String(vars[k]) : m);
   return t; };
 const CF_ESC = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const CF_L = s => `<span data-cft="${CF_ESC(s)}">${CF_ESC(CF_T(s))}</span>`;   // a translatable piece of chrome
+// a translatable piece of chrome: English, or [template, vars] for one with a live value (['Press {name}', { name }]),
+// which keeps its template and values so a new dictionary relabels it
+const CF_L = s => { const [k, v] = Array.isArray(s) ? s : [s, null];
+  return `<span data-cft="${CF_ESC(k)}"${v ? ` data-cftv="${CF_ESC(JSON.stringify(v))}"` : ''}>${CF_ESC(CF_T(k, v))}</span>`; };
 const CF_SLUG = s => String(s).toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'button';
 // P1: label pills are sized from the real text width in the pill's font (cached per string at 100 px), not from
 // text.length, which overflows CJK and doubles Devanagari (combining marks count as characters)
@@ -67,7 +70,7 @@ function CF_SETLOCALE(lang, strings){
   CF_STR = strings && typeof strings === 'object' && !Array.isArray(strings) ? strings : {};
   document.documentElement.lang = CF_LANG === 'zh' ? 'zh-Hans' : CF_LANG;
   for (const el of document.querySelectorAll('.zchip button[aria-label]:not([data-cft-aria])')) el.dataset.cftAria = el.getAttribute('aria-label');
-  for (const el of document.querySelectorAll('[data-cft]')) el.textContent = CF_T(el.dataset.cft);
+  for (const el of document.querySelectorAll('[data-cft]')) el.textContent = CF_T(el.dataset.cft, el.dataset.cftv ? JSON.parse(el.dataset.cftv) : null);
   for (const el of document.querySelectorAll('[data-cft-aria]')) el.setAttribute('aria-label', CF_T(el.dataset.cftAria));
   if (CF_CFG) document.title = CF_T(CF_CFG.title);
   if (CF_UI) CF_UI.render();
@@ -130,7 +133,7 @@ PATCHES = [
     ('P3 frame shape', "const PA = window.FIG_A ? FIG_A() : .75,", "const PA = CF_EMBED ? CF_FRAME_A() : window.FIG_A ? FIG_A() : .75,"),
     ('P2 flash', "ui.flash = (text, ms=1600) => { ui._flash = true;", "ui.flash = (text, ms=1600) => { ui._flashEn = text; text = CF_T(text); ui._flash = true;"),
     ('P2 button label', "el.innerHTML = `${b.label}${b.choices ? '<span class=\"car\">▾</span>' : ''}`;",
-     "el.dataset.id = b.id || CF_SLUG(b.label); el.innerHTML = `${CF_L(b.label)}${b.choices ? '<span class=\"car\" aria-hidden=\"true\">▾</span>' : ''}`;"),
+     "el.dataset.id = b.id || CF_SLUG(Array.isArray(b.label) ? b.label[0] : b.label); el.innerHTML = `${CF_L(b.label)}${b.choices ? '<span class=\"car\" aria-hidden=\"true\">▾</span>' : ''}`;"),
     ('P2 chip label', "ch.textContent = c.label;", "ch.dataset.id = c.id || CF_SLUG(c.label); ch.textContent = CF_T(c.label);"),
     ('P2 chip current', "return ui.flash(`${c.label} — already set`);",
      "return ui.flash(CF_T('{label} — already set', { label: CF_T(c.label) }));"),

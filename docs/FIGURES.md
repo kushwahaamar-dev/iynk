@@ -59,7 +59,9 @@ Rules:
      anything that changes every frame. The bridge posts it whenever it changes, at most about 30 times a second.
 5. **Every string through `CF_T`.** Write English and call `CF_T('Text')`, or `CF_T('{n} mA', { n })` for values.
    `tag()`, `xrCallouts()`, buttons, chips, switches and `ui.flash()` already translate their own text, so pass
-   English to them. Write labels in capitals only for Latin, Greek and Cyrillic text. The host sends the dictionary
+   English to them. A button label with a live value is a template with its values,
+   `label: ['Press {name}', { name: 'RESET' }]`, never a filled-in string: a button is labelled once, at mount, and a
+   new dictionary relabels it from its template. Write labels in capitals only for Latin, Greek and Cyrillic text. The host sends the dictionary
    (`src/i18n/figures/<lang>.json`, keyed by the English text), so every new string needs a key there.
 6. **Test parameters.** Read query parameters in `cfg.params(st, q)`:
    - `?exploded=1` sets `st.exploded = true` (cfshoot shoots the exploded set only when it does).

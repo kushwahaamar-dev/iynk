@@ -37,7 +37,10 @@
   });
 
   const labelOf = el => { const s = el.querySelector('[data-cft]'); return (s ? s.textContent : el.textContent).replace('▾', '').trim(); };
-  const enOf = el => { const s = el.querySelector('[data-cft]'); return s ? s.dataset.cft : labelOf(el); };
+  // the English label; a label with a live value keeps its template and values (core CF_L) and is filled in here
+  const enOf = el => { const s = el.querySelector('[data-cft]'); if (!s) return labelOf(el);
+    const v = s.dataset.cftv ? JSON.parse(s.dataset.cftv) : null;
+    return v ? s.dataset.cft.replace(/\{(\w+)\}/g, (m, k) => own(v, k) ? String(v[k]) : m) : s.dataset.cft; };
   const readout = () => { if (typeof cfg.readout !== 'function') return '';
     try { return String(CF_T(cfg.readout(ui.st)) ?? ''); } catch (e) { return ''; } };
   const report = () => { if (!cfg.embed || typeof cfg.embed.report !== 'function') return null;

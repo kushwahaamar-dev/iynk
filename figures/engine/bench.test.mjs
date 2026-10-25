@@ -883,3 +883,16 @@ describe('silkscreen (sweep 11)', () => {
     expect(html).not.toMatch(/MOTEUR/);
   });
 });
+
+describe('button labels with a live value translate (figure strings)', () => {
+  it('"Press RESET" and "Press BOOT" follow the dictionary, as a template with its value', async () => {
+    page = await loadFigure(buildFigure('boards/esp32-s3-devkitc-1'), { path: '/figures/boards/esp32-s3-devkitc-1.html' });
+    const doc = page.win.document;
+    const ctl = () => [...doc.querySelectorAll('#btns .act[data-id^="ctl-"]')].map((b) => b.textContent.trim());
+    expect(ctl()).toEqual(expect.arrayContaining(['Press RESET', 'Press BOOT']));
+    page.win.CF_SETLOCALE('hi', { 'Press {name}': '{name} दबाएँ' });
+    expect(ctl()).toEqual(expect.arrayContaining(['RESET दबाएँ', 'BOOT दबाएँ']));
+    page.win.CF_SETLOCALE('en', {});
+    expect(ctl()).toEqual(expect.arrayContaining(['Press RESET', 'Press BOOT']));
+  });
+});

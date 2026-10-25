@@ -1035,9 +1035,10 @@ function buttons(){
   const modes = Object.entries(MD.modes);
   // a bench whose modes are positions, not sketches, names the picker: modesLabel { button: 'Move jumper', stat: 'Jumper' }
   if (modes.length) bt.push({ id: 'upload', label: (MD.def.modesLabel && MD.def.modesLabel.button) || 'Upload sketch', choices: () => modes.map(([key, md]) => ({ id: key, label: md.title || key, current: st.mode === key && !st.ext, onClick: () => A.upload(key) })) });
-  // a control is a button of its own, ctl-<id>; more than four of a type fold into one picker (an FPGA board's 16
-  // switches), each choice still ctl-<id>, and each keeps a hidden ctl-<id> button too (keepFolded), so a host or a
-  // content step that presses ctl-sw0 still reaches it
+  // a control is a button of its own, ctl-<id>, labelled with a template and its value (['Press {name}', { name }]) so
+  // the label follows the dictionary ("RESET दबाएँ") while the name, printed on the board, stays. More than four of a
+  // type fold into one picker (an FPGA board's 16 switches), each choice still ctl-<id>, and each keeps a hidden
+  // ctl-<id> button too (keepFolded), so a host or a content step that presses ctl-sw0 still reaches it
   const ctls = MD.parts.filter(p => p.control), slide = p => p.control.type === 'slide';
   ctlFolded = {};
   for (const [kind, label] of [['slide', T('Flip a switch')], ['press', T('Press a button')]]){
@@ -1045,7 +1046,7 @@ function buttons(){
     if (group.length > 4){
       for (const p of group) ctlFolded['ctl-' + p.id.toLowerCase()] = p;
       bt.push({ id: 'ctl-' + kind, label, choices: () => group.map(p => ({ id: 'ctl-' + p.id.toLowerCase(), label: p.short || p.id, onClick: ctlWork(p) })) });
-    } else for (const p of group) bt.push({ id: 'ctl-' + p.id.toLowerCase(), label: slide(p) ? T('Flip {name}', { name: p.short || p.id }) : T('Press {name}', { name: p.short || p.id }), onClick: ctlWork(p) });
+    } else for (const p of group) bt.push({ id: 'ctl-' + p.id.toLowerCase(), label: slide(p) ? ['Flip {name}', { name: p.short || p.id }] : ['Press {name}', { name: p.short || p.id }], onClick: ctlWork(p) });
   }
   bt.push({ id: 'strip', label: 'Strip to bare PCB', onClick: () => A.strip() });
   if (partsIn('smd').length) bt.push({ id: 'pnp', label: 'Pick & place SMD', onClick: () => A.pnp() });
