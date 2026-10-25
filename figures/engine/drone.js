@@ -719,6 +719,9 @@ window.SL = window.SL || {};
     });
     xrMount(() => ui, () => T(craft.xrCaption || 'See-through: the covers fade so the insides, the power path and the signals show.'));
     const fig = document.getElementById('fig');
+    // the drawing holds pressable parts (one tab stop each), so it is a group: the core's role="img" makes its
+    // children presentational, and axe reports every part as an interactive control nested inside it
+    if (fig) fig.setAttribute('role', 'group');
     if (fig) fig.addEventListener('keydown', e => {
       if (e.key !== 'Enter' && e.key !== ' ') return;
       const el = e.target.closest && e.target.closest('[data-act="part"][tabindex]');

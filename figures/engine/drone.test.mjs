@@ -195,3 +195,26 @@ describe('Build it for me says what it did (DR U10)', () => {
     expect(st.log.lines.at(-1)).not.toMatch(/calibration done/);
   });
 });
+
+describe('accessibility (DR audit: axe nested-interactive)', () => {
+  it('no pressable part sits inside an element whose children are presentational, after build, sheet and exploded', async () => {
+    const { readFileSync } = await import('node:fs');
+    const { createRequire } = await import('node:module');
+    const axeSrc = readFileSync(createRequire(import.meta.url).resolve('axe-core/axe.min.js'), 'utf8');
+    page = await quad();
+    const SD = page.drone, st = SD.api.st, win = page.win;
+    const nested = async () => {
+      if (!win.axe) win.eval(axeSrc);
+      const r = await win.axe.run(win.document, { runOnly: ['nested-interactive'] });
+      return r.violations.flatMap((v) => v.nodes.map((n) => n.target.join(' ')));
+    };
+    expect(await nested()).toEqual([]);
+    SD.actions.build(st);
+    await SD.settle();
+    st.sheet = 'wiring'; SD.api.render();
+    expect(await nested()).toEqual([]);
+    st.sheet = null; SD.actions.explode(st, true);
+    await SD.settle();
+    expect(await nested()).toEqual([]);
+  });
+});
