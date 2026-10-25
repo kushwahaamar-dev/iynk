@@ -83,7 +83,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-25 02:28 CDT (machine clock).
+- **Updated:** 2026-10-25 02:35 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session). Amar is asleep
   since 22:20 and gave full autonomy for every remaining build phase except Solana and hardware (CONTEXT.md §5) The Mac is kept awake by `caffeinate -dimsu -t 54000` (pid 28721, from 23:08, until about 14:08).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Do not build in
@@ -166,6 +166,13 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
     the production server `.next-final` at http://127.0.0.1:3430 (started by the driver; stop it and delete the
     folder after phase 2), then F-direction writes `docs/design/POLISH-SPEC.md`, F-build-shell, then F-build-boards,
     -robotics, -drones, -panels (dev servers 3441-3445), then F-review. Gate 3 runs after it, on the final UI.
+  - Figure-string delta, run `wf_7bcff872-581` (`phase3-wave.js`, `P3-figs-delta-<lang>`), since 02:31: the 1964
+    new keys of `src/i18n/figure-keys.json` (3719, `a786238`) in five languages. `figure-strings.test.ts` fails for
+    those five until it lands.
+  - Quiz side job, run `wf_78186578-fbd` (brief `final.md`, F-quiz-pico, F-quiz-esp), since 02:34: the 14 board
+    lessons without a quiz.
+  - Gate 2 figures (`gate2-figs.sh`: probe every bench, cfshoot every page) running since 02:35; then the driver
+    writes `docs/verify/gate2.md`.
   - Phase 3 D, run `wf_d61de94b-466` (`phase3-wave.js`), since 01:54: P3-docs-repo (README, missing prompt records,
     DECISIONS) and P3-docs-pitch (PITCH, DEVPOST-WRITEUP, DEVPOST, VIDEO, JUDGE-QA), started before gate 2: they check
     each claim against the repo and list what the driver must recheck after gate 3.
