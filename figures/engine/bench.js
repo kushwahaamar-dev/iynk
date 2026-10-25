@@ -328,13 +328,16 @@ function outputs(){
     if (st.ext) Object.assign(o.pins, st.pins);
     else { const md = MD.modes[st.mode]; if (md && md.out) try { Object.assign(o.pins, md.out(st, st.t) || {}); } catch (e) { note('mode ' + st.mode + ': ' + e.message); } }
   }
+  // a cold joint on a header pin breaks the pin, not the trace: what plugs into it (o.pins feeds the breadboard and the
+  // wire glow) cuts out in bursts, while an on-board LED on the same net (Nucleo LD2 on D13) keeps the MCU's level
+  const mcu = Object.assign({}, o.pins);
   for (const fid of st.faults) if (fid.startsWith('cold:')){ const pin = MD.pins[fid.slice(5)]; if (pin && coldHit(hashS(pin.id), st.t)) o.pins[pin.net] = 0; }
   for (const p of MD.parts){
     if (!p.led || !isSet(p.id)) continue;
     let v = 0;
     const L0 = p.led;
     if (L0.rail) v = (ev.rails[L0.rail] || 0) > 2 ? ((ev.status === 'brownout') ? (coldHit(9, st.t * 2) ? .25 : .7) : 1) : 0;
-    else if (L0.net){ const lv = o.pins[L0.net]; v = running ? (L0.invert ? 1 - (+lv || 0) : (+lv || 0)) : 0; }
+    else if (L0.net){ const lv = mcu[L0.net]; v = running ? (L0.invert ? 1 - (+lv || 0) : (+lv || 0)) : 0; }
     else if (L0.serial){ v = st.up ? (L0.serial === 'rx' ? (Math.sin(st.upT * 60) > -.2 ? 1 : 0) : (st.upT > st.upDur - .45 && Math.sin(st.upT * 70) > 0 ? 1 : 0)) : (st.txT > 0 && L0.serial === 'tx' ? 1 : 0); }
     if (bl && bl.led === p.id && ev.status === 'running' && !st.up && st.t < 0){ const u = st.t + (bl.wait || 1); v = u < (bl.flashes || 3) / (bl.hz || 8) && Math.floor(u * (bl.hz || 8) * 2) % 2 === 0 ? 1 : 0; }
     if (L0.via && !L0.via.every(id => isSet(id) && !coldOff(id))) v = 0;

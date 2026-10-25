@@ -415,7 +415,7 @@ Fault ids (strings; the host sets them with `set {fault}`; the figure's "Break i
 |---|---|---|
 | `reversed:<part>` | place a polar part the wrong way round; on power-up its `polar.fault`: `pop` (electrolytic vents), `hot` (IC/regulator burns), `dark` (LED stays off) | "<name> is in backwards" · "Unplug, then turn it round" |
 | `missing:<part>` | leave the part out | effects follow from the power tree, `mcu.needs`, `upload.needs`, LEDs |
-| `cold:<part>` or `cold:<pin>` | cold solder joint: the part (or one header pin) works in bursts, deterministic | "Cold joint on <name>: it works, then it doesn't" · "Reflow the joint" |
+| `cold:<part>` or `cold:<pin>` | cold solder joint: the part (or one header pin) works in bursts, deterministic; a header pin cuts only what plugs into it, so an on-board LED on its net keeps blinking | "Cold joint on <name>: it works, then it doesn't" · "Reflow the joint" |
 | `reverse-polarity:<source>` | the supply is connected backwards; a `protect` part blocks it, else the regulator burns | "Reverse polarity: <protect> blocks it, nothing powers up" or "Reverse polarity: <part> burned" · "Swap the leads" |
 | `wrong-voltage:<source>:<volts>` | sets that source's voltage (e.g. `wrong-voltage:pin5:12`) | "<volts> V on <label>: <part> is damaged" or "<volts> V is too low: brown-out" · "Use <range> V" |
 | `brownout` | a motor on the 5 V pin: the rail sags under load and the MCU resets in a loop | "Brown-out: the motor drags 5 V down and the board resets" · "Power motors separately" |

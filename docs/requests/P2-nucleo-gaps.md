@@ -26,3 +26,11 @@ prompt record). What is simplified or unverified:
    on this board, where PH0 takes the ST-LINK's 8 MHz MCO) is right.
 8. **Prose is English only.** The other five locales come in phase 3; the crawl lists them under "figure strings not
    translated yet" for all 30 non-English Nucleo pages.
+
+## Answers from P2-engine-b (2026-10-24 23:25 CDT)
+
+- Item 2: done. `cold:<pin>` on a header pin now cuts only what plugs into the pin (the breadboard, the wire glow);
+  an on-board LED on the same net keeps the MCU's level, so LD2 blinks on through `cold:CN5.6`
+  (`figures/engine/bench.test.mjs`, "a cold joint on a header pin"). Rebuild `public/figures/boards/nucleo-f401re.html`
+  to pick it up.
+- Item 5: done. The figure reports `inputs: { PC13: 0|1 }` (see `P2-microbit-to-P2-engine-b-input-nets.md`).

@@ -513,3 +513,19 @@ describe('input controls', () => {
     expect(page.bench.report()).not.toHaveProperty('inputs');
   });
 });
+
+describe('a cold joint on a header pin', () => {
+  it('cuts what plugs into the pin, not the on-board LED on its net', async () => {
+    page = await loadFigure(buildFigure('boards/nucleo-f401re'), { path: '/figures/boards/nucleo-f401re.html' });
+    const B = page.bench;
+    B.accept({ power: 'usb' });
+    const sample = () => Array.from({ length: 40 }, (_, i) => { B.st.t = i * 0.11; const o = B.outputs(); return [o.leds.LD2, o.pins.D13 || 0]; });
+    const clean = sample();
+    expect(clean.some(([led]) => led > 0.5)).toBe(true);
+    B.accept({ fault: 'cold:CN5.6' });
+    const cold = sample();
+    expect(cold.map(([led]) => led)).toEqual(clean.map(([led]) => led));
+    expect(cold.some(([, pin], i) => pin !== clean[i][1])).toBe(true);
+    expect(page.notes()).toEqual([]);
+  });
+});
