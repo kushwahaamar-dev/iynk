@@ -1,0 +1,340 @@
+{
+  "title": "Tricóptero",
+  "tagline": "Tres motores en Y y un servo que inclina el motor de cola para girar: guiñada por vectorización del empuje, con Betaflight.",
+  "sub": "Mezclador TRI de Betaflight + servo de cola",
+  "hint": "Monta un chasis en Y con la cola basculante, prueba el servo y luego vuela el parque del pueblo",
+  "noun": "tricóptero",
+  "overview": "Un tricóptero tiene tres motores en Y: dos delante y uno en un brazo de cola. Tres hélices no pueden anular su par entre sí como lo hacen cuatro, así que el motor de cola va sobre una bisagra y un servo lo inclina unos grados a izquierda o derecha. Ese empuje lateral hace girar la cola y gira el morro: guiñada por vectorización del empuje, que hace que un tri se incline en los giros como un avión pequeño. Este es un montaje de 5 pulgadas en 4S: tres motores 2306 con ESC individuales, una controladora de vuelo F405 con su propia placa de potencia, un servo de cola con engranajes metálicos y FPV analógico, unos 655 g con una batería de 2200 mAh y 5:1 de empuje/peso. El servo es la pieza que hace que un tri sea un tri, y la que se rompe: pruébalo antes de poner las hélices. Elige aquí las piezas y mira los números, móntalo, haz las pruebas de seguridad y luego vuela el parque del pueblo.",
+  "practice": "Haz primero un estacionario en mantener altitud y mira la cola: mantiene unos grados de inclinación aunque no toques la palanca de guiñada, para anular el par de la hélice de cola. Luego haz slalom entre las farolas del parque del pueblo y da vueltas a la fuente; la guiñada cerrada es donde un tri se nota distinto de un quad. Corre las vueltas al parque en modo ángulo cuando eso te resulte fácil, y prueba el acro lo último. En un montaje real: smoke stopper en la primera conexión, la prueba del servo sin hélices (guiñada a la derecha tiene que inclinar el empuje de la cola hacia la izquierda), la comprobación del sentido de los motores y el failsafe con la emisora apagada. Haz el primer estacionario bajo y ajusta el centro del servo si el tri gira solo poco a poco. Aterriza a unos 3,5 V por celda.",
+  "design": {
+    "fixed": {
+      "FRAME": "Chasis en Y: placa central, dos brazos delanteros, brazo de cola",
+      "ESC": "3 ESC individuales (Bluejay), uno por brazo",
+      "FC": "Controladora de vuelo F405 con placa de potencia, 30,5 mm",
+      "TAILSERVO": "Servo digital de cola con engranajes metálicos y mecanismo de inclinación",
+      "CAM": "Cámara FPV analógica micro",
+      "VTX": "VTX de 5,8 GHz (SmartAudio) y antena",
+      "RX": "Receptor ExpressLRS de 2,4 GHz",
+      "XT60": "Cable XT60 y condensador de 1000 µF 35 V de baja ESR",
+      "TOP": "Placa superior, separadores de 30 mm y tornillos",
+      "STRAP": "Correa de batería y almohadilla antideslizante"
+    },
+    "verdict": {
+      "ok": "Un buen tri para todo: {tw}:1 de empuje/peso. Si salta la comprobación de los ESC de abajo, la corriente a tope de un motor supera lo que admite su ESC: una hélice más suave o unos ESC mayores lo arreglan."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Chasis en Y con brazo de cola y soporte basculante",
+      "what": "Una placa central de carbono de 3 mm con dos brazos delanteros en las diagonales de 60° (los motores delanteros a 208 mm entre sí) y un brazo de cola hasta el motor de cola, 150 mm por detrás del centro. Al final del brazo, un bloque de bisagra lleva la placa de motor de 30 x 30 mm, que bascula alrededor del eje del brazo."
+    },
+    "MOTORS": {
+      "name": "Tres motores brushless 2306",
+      "what": "Vistos desde arriba, M1 en la cola gira en sentido antihorario, M2 delante a la derecha en sentido horario y M3 delante a la izquierda en sentido antihorario. El mezclador TRI de Betaflight nunca usa la velocidad de los motores para la guiñada, pero las dos hélices delanteras tienen que girar en sentidos opuestos para que sus pares se anulen."
+    },
+    "ESC": {
+      "name": "Tres ESC individuales",
+      "what": "Un ESC pequeño en cada brazo, con Bluejay para DShot bidireccional. Una placa 4 en 1 encaja mal en un tri: un canal se quedaría sin usar y los cables del motor de cola tendrían que volver por el brazo de todos modos. Cada ESC lleva la corriente de un motor, y la calculadora la compara con lo que admite el ESC."
+    },
+    "TAILSERVO": {
+      "name": "Servo de cola",
+      "what": "Un micro servo digital con engranajes metálicos en el brazo de cola que mueve la placa del motor a través de un brazo de servo y una varilla corta. Tiene que ser digital porque recibe pulsos de 333 Hz; un servo analógico a esa frecuencia se recalienta. Montado al revés inclina la cola hacia el lado equivocado, y el tri gira sobre sí mismo desde el despegue."
+    },
+    "WIRES": {
+      "name": "Cables de los motores",
+      "what": "Tres cables de fase de cada motor a su ESC, cortados a medida y soldados. Intercambiar dos cualesquiera invierte ese motor, aunque es más fácil invertirlo en el firmware del ESC."
+    },
+    "FC": {
+      "name": "Controladora de vuelo F405 con placa de potencia",
+      "what": "Una placa F405 de 30,5 mm con su propia placa de potencia: pads de batería, tres parejas de pads para los ESC y reguladores de 5 V y 9 V. Su salida SERVO 1 (el pad S9 en una SpeedyBee F405 V4) está en un temporizador que no usa ningún motor, porque el servo quiere PWM a 333 Hz mientras los motores reciben DShot. La flecha apunta al morro."
+    },
+    "XT60": {
+      "name": "Cable XT60 y condensador",
+      "what": "El conector de la batería, y un condensador de 1000 µF 35 V de baja ESR sobre los pads de batería que absorbe los picos de tensión de tres ESC conmutando. Su franja marca el negativo."
+    },
+    "CAM": {
+      "name": "Cámara FPV micro",
+      "what": "Una cámara analógica entre las placas del morro con 20° de inclinación hacia arriba. Un tri vuela un poco con el morro abajo cuando avanza, y la inclinación mantiene el horizonte a la vista."
+    },
+    "RX": {
+      "name": "Receptor ExpressLRS",
+      "what": "Un receptor ELRS de 2,4 GHz en UART2 con el protocolo CRSF. Su antena apunta hacia atrás y hacia arriba, lejos del carbono."
+    },
+    "VTX": {
+      "name": "Transmisor de vídeo de 5,8 GHz",
+      "what": "Un VTX analógico con SmartAudio en UART1, para que el OSD pueda cambiar su canal y su potencia. 25 mW: en la mayoría de los países es todo lo que puedes usar sin licencia de radioaficionado."
+    },
+    "TOP": {
+      "name": "Placa superior",
+      "what": "Una placa de carbono de 94 x 56 mm sobre cuatro separadores de 30 mm. Protege el stack y lleva la batería."
+    },
+    "BATT": {
+      "name": "Batería LiPo 4S",
+      "what": "Va sobre la placa superior bajo una correa. Deslízala hasta que el tri haga el estacionario nivelado sin tocar nada: el centro de gravedad de un tri va unos 10 mm por detrás del centro del chasis, donde se equilibra el empuje de los tres motores."
+    },
+    "PROPS": {
+      "name": "Hélices",
+      "what": "Dos hélices CCW (cola y delante a la izquierda) y una CW (delante a la derecha). Van las últimas, después del smoke stopper, la comprobación de los motores y la prueba del servo."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Prepara el chasis en Y",
+      "body": "Atornilla los dos brazos delanteros y el brazo de cola a la placa central, y coloca el bloque de bisagra y la placa del motor al final del brazo de cola. La placa tiene que bascular libremente alrededor del brazo, sin holgura."
+    },
+    "motors": {
+      "title": "Monta los tres motores",
+      "body": "El motor delantero izquierdo y el de cola giran en sentido antihorario, el delantero derecho en sentido horario. Usa tornillos cortos: uno que llegue a los bobinados cortocircuita el motor.",
+      "refusal": "Los motores se atornillan a los brazos: primero prepara el chasis."
+    },
+    "esc": {
+      "title": "Coloca los tres ESC",
+      "body": "Un ESC individual en cada brazo, cerca de su motor, sujeto con una brida sobre el termorretráctil. Sus cables de potencia van por los brazos hasta los pads de los ESC en la placa de potencia.",
+      "refusal": "Los ESC van sobre los brazos: primero prepara el chasis."
+    },
+    "servo": {
+      "title": "Coloca el servo de cola",
+      "body": "Atornilla el servo al lateral del brazo de cola con su brazo de servo hacia la cola, y une el brazo de servo a la placa del motor con la varilla. Centra el servo antes de poner el brazo de servo, para que la placa quede nivelada a 1500 µs. El cable marrón es tierra, el rojo 5 V y el naranja la señal.",
+      "refusal": "El servo se monta en el brazo de cola: primero prepara el chasis."
+    },
+    "wires": {
+      "title": "Suelda los cables de los motores",
+      "body": "Corta a medida los tres cables de cada motor y suéldalos a su ESC. Mantenlos cortos y lejos de las hélices.",
+      "refusal": "Coloca los motores y los ESC antes que los cables que los unen."
+    },
+    "fc": {
+      "title": "Monta la controladora de vuelo",
+      "body": "Sobre gomas de montaje blando en el stack de 30,5 mm, con la flecha hacia el morro. Conecta los tres cables de señal de los ESC (M1 cola, M2 delante a la derecha, M3 delante a la izquierda) y el cable del servo en la salida de servo.",
+      "refusal": "La controladora de vuelo va sobre el chasis: primero prepara el chasis."
+    },
+    "xt60": {
+      "title": "Suelda el XT60 y el condensador",
+      "body": "El cable de la batería va a los pads de batería de la placa de potencia, el rojo al positivo. El condensador va en los mismos pads con su franja hacia el negativo. Un condensador al revés revienta la primera vez que ve la batería.",
+      "refusal": "El cable de la batería se suelda a la placa de potencia de la controladora: móntala primero."
+    },
+    "cam": {
+      "title": "Monta la cámara",
+      "body": "Entre las placas del morro con 20° de inclinación hacia arriba, con su cable de vídeo al pad CAM de la controladora.",
+      "refusal": "La cámara se monta entre las placas del morro del chasis: primero prepara el chasis."
+    },
+    "rx": {
+      "title": "Coloca el receptor",
+      "body": "El receptor ELRS va en UART2 (su TX al RX de la placa, RX a TX, más 5 V y tierra), con la antena saliendo por detrás, lejos del carbono.",
+      "refusal": "El receptor se conecta a la controladora: móntala primero."
+    },
+    "vtx": {
+      "title": "Coloca el VTX",
+      "body": "El vídeo entra desde la controladora, que añade el OSD; SmartAudio a UART1 TX; la antena por detrás. Nunca alimentes un VTX sin su antena.",
+      "refusal": "El VTX se conecta a la controladora: móntala primero."
+    },
+    "top": {
+      "title": "Cierra con la placa superior",
+      "body": "Cuatro separadores de 30 mm y la placa superior sobre el stack. Nada puede tocar la articulación de la cola.",
+      "refusal": "La placa superior cierra sobre la controladora, la cámara, el receptor y el VTX: colócalos primero."
+    },
+    "batt": {
+      "title": "Sujeta la batería",
+      "body": "Sobre la placa superior, con una almohadilla antideslizante y una correa. Deslízala para equilibrar el tri unos 10 mm por detrás del centro del chasis.",
+      "refusal": "La batería se sujeta a la placa superior y se conecta al XT60: coloca las dos cosas primero."
+    },
+    "props": {
+      "title": "Las hélices, lo último",
+      "body": "Dos hélices CCW en los motores de cola y delantero izquierdo, la hélice CW en el delantero derecho. Solo después del smoke stopper, la comprobación de los motores y la prueba del servo de cola, con la batería desconectada.",
+      "refusal": "Las hélices van en los motores, sobre la placa superior y después de poner el servo de cola: coloca eso primero, y luego haz el smoke stopper y la comprobación de los motores."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "El XT60 de la batería encaja con el del aparato. Tiene forma única, así que solo entra en un sentido.",
+    "XT60-ESC": "La placa de potencia lleva la batería a los tres ESC a través de sus pads. El condensador va sobre los mismos pads, con la franja hacia el negativo.",
+    "ESC-MOTORS": "Tres cables de fase por motor. Su orden no es una cuestión de seguridad: intercambiar dos cualesquiera invierte el motor.",
+    "FC-ESC": "Señales DShot600 para M1 (cola), M2 (delante a la derecha) y M3 (delante a la izquierda). M4 se queda sin usar.",
+    "FC-TAILSERVO": "La salida propia del servo, en un temporizador que no usa ningún motor: el servo quiere PWM a 333 Hz y los motores DShot. El rojo son 5 V del regulador de la placa, que necesita corriente de sobra para cuando el servo se bloquea.",
+    "RX-FC": "ELRS en UART2 con el protocolo CRSF, alimentado a 5 V.",
+    "CAM-FC": "Vídeo analógico hacia la controladora, que le superpone el OSD.",
+    "FC-VTX": "Vídeo con el OSD hacia el VTX, alimentación de 9 V, y SmartAudio en UART1 TX para que el OSD pueda cambiar el canal y la potencia."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Prueba del smoke stopper",
+      "pass": "La lámpara solo ha parpadeado: no hay cortocircuito entre positivo y negativo. Ya se puede conectar la batería directamente.",
+      "fail": "La lámpara se ha quedado encendida: hay algo en cortocircuito. Aquí el condensador está al revés; dale la vuelta (franja hacia el negativo) y vuelve a probar antes de conectar."
+    },
+    "motors": {
+      "title": "Comprobación del sentido de los motores (sin hélices)",
+      "pass": "M1 en la cola y M3 delante a la izquierda giran en sentido antihorario, M2 delante a la derecha en sentido horario. La pareja delantera anula su par entre sí; el servo compensa el de la cola.",
+      "fail": "Un motor ha girado al revés. Inviértelo en el firmware del ESC (ESC Configurator). Dos hélices delanteras girando en el mismo sentido retuercen el chasis más de lo que el servo puede compensar."
+    },
+    "calibrate": {
+      "title": "Calibración del acelerómetro",
+      "pass": "Nivel calibrado con el chasis plano (el chasis, no la cola inclinada): el modo ángulo y mantener altitud ya saben dónde está el nivel.",
+      "fail": "Primero coloca la controladora y pon el chasis plano. Si la flecha apunta hacia atrás, gira la placa o pon align_board_yaw = 180."
+    },
+    "servo": {
+      "title": "Prueba del servo de cola (sin hélices)",
+      "pass": "Guiñada a la derecha ha inclinado el empuje del motor de cola hacia la izquierda: la cola gira a la izquierda y el morro a la derecha. Gira a mano el chasis con el morro a la derecha y la cola se inclina hacia el otro lado, oponiéndose al giro.",
+      "fail": "Primero coloca el servo de cola y la controladora, quita las hélices y conecta. Si guiñada a la derecha inclina la cola hacia el lado equivocado, el servo está invertido y el tri giraría cada vez más rápido desde el despegue: móntalo en el sentido correcto, o inviértelo con smix reverse 5 2 r."
+    },
+    "failsafe": {
+      "title": "Prueba del failsafe (sin hélices, emisora apagada)",
+      "pass": "Emisora apagada: a los 1,5 s los motores se han parado y el tri se ha desarmado (DROP). El servo de cola se sigue moviendo desarmado; eso es tri_unarmed_servo, e inofensivo.",
+      "fail": "Primero coloca el receptor y la controladora, quita las hélices y conecta la batería. Un tri que mantiene su último gas cuando se corta el enlace se escapa volando."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Primera configuración",
+      "explain": "Betaflight sigue volando tricópteros, pero el soporte de servos es una opción de compilación que viene desactivada en la compilación en la nube por defecto: marca Servos al flashear, o el mezclador TRI no tendrá ninguna guiñada. Luego el mezclador TRI, la flecha de la placa hacia delante, DShot600 con telemetría para el filtro RPM, y los dos puertos serie: ELRS en UART2 y SmartAudio en UART1."
+    },
+    "servo": {
+      "title": "El servo de cola",
+      "explain": "333 Hz van bien para un servo digital; uno analógico se queda en 50 Hz o se quema. Con tri_unarmed_servo activado, la cola sigue a la palanca de guiñada aunque esté desarmado, así que puedes probarla sin hélices. El centro y el recorrido se ajustan con el comando servo o en la pestaña Servos. Luego comprueba el sentido con la prueba del servo de cola: guiñada a la derecha tiene que inclinar el empuje de la cola hacia la izquierda. Si lo inclina hacia la derecha, escribe smix reverse 5 2 r y guarda, o da la vuelta al servo."
+    },
+    "failsafe": {
+      "title": "Failsafe: dejar caer",
+      "explain": "Si se pierde el enlace de radio durante 1,5 s, se paran los motores. Sin GPS, un tri no tiene manera de volver a casa, y caer en el parque es mejor que escaparse volando."
+    },
+    "althold": {
+      "title": "Mantener altitud",
+      "explain": "ALTHOLD (id de modo 3) en AUX3, por encima de ANGLE en AUX2. Con la palanca de gas en el 15 % central, el tri mantiene la altura con el barómetro; súbela o bájala para subir o bajar. La forma más fácil de aprender cómo se siente la cola."
+    },
+    "angle": {
+      "title": "Modo ángulo",
+      "explain": "Autonivelado con la inclinación limitada a 60°: suelta la palanca derecha y se nivela. La altura la llevas tú con el gas."
+    },
+    "acro": {
+      "title": "Rates de acro",
+      "explain": "Con ANGLE y ALTHOLD los dos desactivados, las palancas fijan velocidades de giro: 540°/s de alabeo y cabeceo con la palanca a fondo, y 400°/s de guiñada, porque el servo tiene que mover la cola. Más P e I en la guiñada que los valores por defecto de un quad ayudan a la cola a mantener el rumbo cuando el par del motor de cola cambia con el gas."
+    },
+    "race": {
+      "title": "Vueltas de carrera",
+      "explain": "Modo ángulo para las puertas y el cronómetro de carrera en el OSD: osd_tim1 = 18 cuenta desde el último armado en centésimas, y 2103 lo pone cerca de la esquina superior derecha de la pantalla en el perfil 1 del OSD."
+    },
+    "park": {
+      "title": "Recorrido por el parque",
+      "explain": "El recorrido por el parque en mantener altitud, con el mismo cronómetro que la carrera. La palanca sube y baja y, centrada, mantiene la altura, así que puedes centrarte en la guiñada alrededor de las farolas."
+    }
+  },
+  "flight": {
+    "modes": {
+      "althold": {
+        "title": "Mantener altitud",
+        "hint": "Autonivelado y altura fija: centra el gas y se queda donde está. Empieza por aquí."
+      },
+      "angle": {
+        "title": "Ángulo",
+        "hint": "Autonivelado, con la inclinación limitada a 60°. La altura la llevas tú con el gas."
+      },
+      "acro": {
+        "title": "Acro",
+        "hint": "Sin autonivelado: las palancas fijan velocidades de giro, 540°/s de alabeo y cabeceo y 400°/s de guiñada. Mira cómo la cola se retrasa en una guiñada rápida."
+      },
+      "race": {
+        "title": "Carrera (ángulo)",
+        "hint": "Las seis puertas del parque en orden, cronometradas vuelta a vuelta."
+      },
+      "park": {
+        "title": "Recorrido por el parque (mantener altitud)",
+        "hint": "Las farolas, la fuente y el cenador en orden, y luego aterriza en la plataforma. El reloj se para cuando tocas tierra."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Enlace de radio perdido durante 1,5 s: los motores se paran y el tri cae.",
+      "low-battery": "Por debajo de 3,5 V por celda: el OSD avisa. Vuelve y aterriza.",
+      "battery-empty": "Por debajo de 3,2 V por celda: la batería cae tanto que los ESC se cortan, y el tri se cae."
+    },
+    "controls": "Teclado: Espacio arma y desarma, W y S gas, las flechas cabeceo y alabeo, A y D guiñada (la gira el servo de cola, así que va un poco retrasada), V cambia a FPV, R vuelve a poner el tri en la plataforma. En un móvil, la palanca izquierda es acelerador y guiñada, y la derecha es cabeceo y alabeo. Un mando funciona en Modo 2."
+  },
+  "courses": {
+    "park": {
+      "title": "Parque del pueblo",
+      "brief": "Haz slalom entre las cuatro farolas del camino, pasando cada una por un lado distinto, da una vuelta a la fuente en sentido antihorario, atraviesa el cenador desde el este y luego aterriza en la plataforma. Mantener altitud conserva tu altura mientras diriges.",
+      "goals": {
+        "1": "Farola 1, lado sur",
+        "2": "Farola 2, lado norte",
+        "3": "Farola 3, lado sur",
+        "4": "Farola 4, lado norte",
+        "5": "Fuente, sur",
+        "6": "Fuente, este",
+        "7": "Fuente, norte",
+        "8": "Fuente, oeste",
+        "9": "A través del cenador, hacia el oeste",
+        "10": "Aterriza en la plataforma"
+      }
+    },
+    "laps": {
+      "title": "Vueltas al parque",
+      "brief": "Seis puertas de 1,6 m alrededor del borde del parque, voladas en sentido horario desde la puerta que hay delante de la plataforma: por el lado oeste pasando el estanque, a lo largo de la valla norte, por el lado este pasando la fuente y de vuelta por el camino sur. Vuela las puertas en orden; el reloj de la vuelta arranca en la primera."
+    }
+  },
+  "quizzes": {
+    "tail": {
+      "yaw": {
+        "q": "¿Cómo gira el morro (guiñada) un tricóptero?",
+        "options": {
+          "1": "Acelera los motores que giran en un sentido, como un quad",
+          "2": "Un servo inclina el motor de cola, así que parte de su empuje empuja la cola hacia un lado",
+          "3": "Un timón va en el flujo de la hélice de cola"
+        },
+        "why": "El mezclador TRI de Betaflight no les da ninguna guiñada a los motores; la guiñada sale del servo. Guiñada a la derecha inclina el empuje del motor de cola hacia la izquierda, así que la cola gira a la izquierda y el morro a la derecha."
+      },
+      "front": {
+        "q": "¿Por qué las dos hélices delanteras giran en sentidos opuestos?",
+        "options": {
+          "1": "Para que la cámara nunca vea una hélice",
+          "2": "En un tri no importa",
+          "3": "Para que sus pares se anulen, y solo quede el par del motor de cola para que lo compense el servo"
+        },
+        "why": "A Betaflight le da igual en qué sentido giren, pero al chasis no: dos hélices delanteras girando en el mismo sentido lo retuercen todo el tiempo. Sobra el par propio de la hélice de cola, y el servo mantiene unos grados de inclinación para anularlo."
+      }
+    },
+    "power": {
+      "esc": {
+        "q": "¿Qué fija la corriente que tiene que llevar un ESC de este tri?",
+        "options": {
+          "1": "Su propio motor a tope: más o menos un tercio de la corriente de la batería",
+          "2": "Toda la corriente de la batería, porque los tres comparten una batería",
+          "3": "Solo la corriente de estacionario"
+        },
+        "why": "Cada ESC individual mueve un motor, así que lleva la parte de ese motor. La comprobación de los ESC de la calculadora compara la corriente a tope de un motor con lo que admite el ESC, y una hélice agresiva puede pasarse."
+      },
+      "bec": {
+        "q": "¿De dónde saca la alimentación el servo de cola?",
+        "options": {
+          "1": "Directamente de la batería 4S",
+          "2": "De un regulador de 5 V con corriente de sobra, por el cable rojo de su conector",
+          "3": "Del receptor"
+        },
+        "why": "Un servo es una pieza de 5 o 6 V, y los 16,8 V de la batería lo matarían. Consume amperios cuando se bloquea, así que el regulador necesita margen: un servo que hunde la línea de 5 V puede reiniciar la controladora en el aire."
+      }
+    },
+    "fly": {
+      "pirouette": {
+        "q": "Justo después de despegar, el tri empieza a girar sobre sí mismo, cada vez más rápido. ¿Cuál es la causa probable?",
+        "options": {
+          "1": "El servo de cola está invertido, así que cada corrección de guiñada empuja hacia el lado equivocado",
+          "2": "La batería es demasiado pequeña",
+          "3": "La inclinación de la cámara está mal"
+        },
+        "why": "Un servo invertido convierte el lazo de guiñada en una realimentación positiva: cuanto más gira, más fuerte lo empuja la cola. Betaflight no tiene ninguna comprobación previa al armado para eso, y por eso la prueba del servo sin hélices va primero."
+      },
+      "motorout": {
+        "q": "Un motor delantero falla en el aire. ¿Qué pasa?",
+        "options": {
+          "1": "Sigue volando con dos motores",
+          "2": "El servo de cola lo compensa",
+          "3": "Se inclina hacia ese lado y cae: un tricóptero no tiene motor de sobra"
+        },
+        "why": "Con tres motores, todos hacen falta para la sustentación y el equilibrio. Si se pierde el motor de cola, la cola cae y vuelca hacia atrás. Un octocóptero puede perder un motor; un tri, como un quad, se cae."
+      },
+      "servos": {
+        "q": "Has flasheado la compilación en la nube por defecto de Betaflight y la cola no se mueve. ¿Por qué?",
+        "options": {
+          "1": "Los tricópteros necesitan INAV",
+          "2": "El soporte de servos está desactivado en la compilación en la nube por defecto: marca Servos y vuelve a flashear",
+          "3": "El servo necesita una frecuencia de 50 Hz"
+        },
+        "why": "Betaflight 2026.6.2 sigue volando tricópteros, pero el soporte de servos (USE_SERVOS) es una opción de compilación desactivada por defecto. Sin ella no hay salida de servo y el mezclador TRI no tiene ninguna guiñada: no lo vueles."
+      }
+    }
+  }
+}
