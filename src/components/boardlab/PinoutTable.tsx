@@ -32,7 +32,8 @@ export function PinoutTable({ board, rows }: { board: string; rows: PinRow[] }) 
           </select>
         </label>
       </div>
-      <div className="mt-3 max-h-[560px] overflow-auto rounded-md border-2 border-line">
+      {/* Scrolls both ways, so it takes focus (keyboard scrolling) and is named by the section heading. */}
+      <div role="region" aria-labelledby={`${id}-title`} tabIndex={0} className="mt-3 max-h-[560px] overflow-auto rounded-md border-2 border-line">
         <table className="w-full min-w-[640px] text-sm">
           <caption className="sr-only">{t("pinout.caption", { board })}</caption>
           <thead className="sticky top-0 bg-surface">

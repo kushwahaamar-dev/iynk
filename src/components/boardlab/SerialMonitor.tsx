@@ -70,7 +70,7 @@ export function SerialMonitor({ store, onStop }: { store: BoardLabStore; onStop:
   const serial = useLab(store, (s) => s.serial);
   const height = useSyncExternalStore(subscribeHeight, readHeight, () => DEFAULT_H);
   const [draft, setDraft] = useState("");
-  const listRef = useRef<HTMLOListElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ y: number; h: number } | null>(null);
 
   useEffect(() => {
@@ -172,30 +172,33 @@ export function SerialMonitor({ store, onStop }: { store: BoardLabStore; onStop:
           {t("serial.mismatch", { sketch: serial.sketchBaud, monitor: serial.baud })}
         </p>
       )}
-      <ol
+      {/* role="log" replaces a list's role, so the lines are plain rows (as in the robotics serial panel). It
+          scrolls, so it takes focus for keyboard scrolling. */}
+      <div
         ref={listRef}
         role="log"
         aria-live="polite"
         aria-label={t("serial.lines")}
+        tabIndex={0}
         className="overflow-y-auto bg-code-bg px-3 py-2 font-mono text-[13px] leading-5"
         style={{ height }}
         data-testid="serial-lines"
       >
         {serial.lines.length === 0 ? (
-          <li className="text-muted">{t("serial.empty")}</li>
+          <p className="text-muted">{t("serial.empty")}</p>
         ) : (
           serial.lines.map((line) => (
-            <li key={line.id} className={cx("whitespace-pre-wrap break-words", KIND_CLASS[line.kind])} data-kind={line.kind}>
+            <div key={line.id} className={cx("whitespace-pre-wrap break-words", KIND_CLASS[line.kind])} data-kind={line.kind}>
               {line.t !== null && line.kind !== "sys" ? (
                 <span className="me-2 text-muted tabular select-none" aria-hidden="true">
                   {(line.t / 1000).toFixed(3)}
                 </span>
               ) : null}
               {lineText(line)}
-            </li>
+            </div>
           ))
         )}
-      </ol>
+      </div>
       <form onSubmit={send} className="flex gap-2 border-t border-rule p-2">
         <label className="sr-only" htmlFor={`${id}-input`}>
           {t("serial.input")}
