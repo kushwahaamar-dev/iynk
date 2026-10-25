@@ -340,14 +340,14 @@ function Workspace({ lang, model }: { lang: Locale; model: LessonModel }) {
       {/* Lesson titles are long: the links wrap instead of widening a phone page. */}
       <nav aria-label={t("lesson.strip")} className="flex flex-wrap justify-between gap-3 border-t-2 border-line pt-4">
         {prev ? (
-          <ButtonLink href={`/${lang}/boards/${board.id}/${prev.id}`} variant="secondary" className="max-w-full !whitespace-normal">
+          <ButtonLink href={`/${lang}/boards/${board.id}/${prev.id}`} variant="secondary">
             ‹ {t("lesson.prev")}: {prev.title}
           </ButtonLink>
         ) : (
           <span />
         )}
         {next && (
-          <ButtonLink href={`/${lang}/boards/${board.id}/${next.id}`} variant={done ? "primary" : "secondary"} className="max-w-full !whitespace-normal">
+          <ButtonLink href={`/${lang}/boards/${board.id}/${next.id}`} variant={done ? "primary" : "secondary"}>
             {done ? t("lesson.nextCta", { title: next.title }) : `${t("lesson.next")}: ${next.title}`} ›
           </ButtonLink>
         )}

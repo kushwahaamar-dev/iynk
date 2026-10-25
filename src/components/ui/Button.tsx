@@ -5,8 +5,9 @@ import { cx } from "./cx";
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "ink";
 export type ButtonSize = "sm" | "md" | "lg";
 
+// max-w-full: a label longer than its row (a long translation on a phone) wraps instead of pushing the page sideways.
 const base =
-  "inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-full border-2 font-ui font-bold no-underline transition-[transform,box-shadow,background-color] duration-100 disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50";
+  "inline-flex max-w-full select-none items-center justify-center gap-2 text-center rounded-full border-2 font-ui font-bold no-underline transition-[transform,box-shadow,background-color] duration-100 disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50";
 
 // Raised buttons sit on an offset ink shadow and press down into it.
 const raised =

@@ -72,7 +72,7 @@ function QuizBlock({ quizId, content, state, t, ct, dispatch }: Props & { quizId
                         variant="secondary"
                         aria-pressed={picked}
                         disabled={solved && !right}
-                        className={`h-auto justify-start whitespace-normal py-2 text-start ${right ? "!bg-mint !text-on-color" : ""} ${wrong ? "line-through opacity-60" : ""}`}
+                        className={`h-auto justify-start py-2 !text-start ${right ? "!bg-mint !text-on-color" : ""} ${wrong ? "line-through opacity-60" : ""}`}
                         onClick={() => dispatch({ type: "quiz/answer", quiz: quiz.id, question: question.id, option: oi })}
                       >
                         {ct(option)}

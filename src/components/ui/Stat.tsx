@@ -19,7 +19,7 @@ export function Stat({ label, value, unit, hint, size = "md", tone = "ink", clas
   return (
     <div className={cx("min-w-0", className)}>
       <div className="ink-kicker">{label}</div>
-      <div className={cx("tabular font-ui font-extrabold leading-tight tracking-tight", valueSize[size], toneClass[tone])}>
+      <div className={cx("tabular hyphens-auto break-words font-ui font-extrabold leading-tight tracking-tight", valueSize[size], toneClass[tone])}>
         {value}
         {unit ? <span className="ms-1 text-[0.5em] font-bold text-muted">{unit}</span> : null}
       </div>
