@@ -83,7 +83,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 19:24 CDT (machine clock).
+- **Updated:** 2026-10-24 19:26 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Fast-forwarded to
   `94d3caa`. Do not build in `/Users/amar/Codes/sim`.
@@ -114,9 +114,10 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   build, vitest 1347/0, app-path 59/59, bench probe 17/17, cfshoot uno-r3 and quad5, Playwright 57/57, route crawl
   606 pages with 0 failed. Still red: `content:check` (uno-r4, whoop, cinewhoop, longrange, wing have no English
   prose), which phase 2 writes. The first run's reds and their fixes are in the report.
-- **Next step:** plan the phase-2 wave from BUILD-PLAN §5 (rows, labels, file ownership, how each row is checked)
-  and write it to `scripts/workflows/phase2.md` the way `phase1.md` is written. Before launching, tell Amar how many
-  agents and for how long (the 14:19 usage-limit stop) and wait for his go.
+- **Next step:** phase 2 is planned in `scripts/workflows/phase2.md`: wave A (9 agents, about 2–2.5 h), then wave B
+  (10 agents, about 2.5–3 h). Waiting for Amar's go on wave A (or a smaller wave). On his go, write the Workflow
+  script for wave A's labels from that file, commit it to `scripts/workflows/`, launch it, and record the run id and
+  labels in the checkpoint log. Never SendMessage a running workflow agent.
 - **Agents:** P1-checks `1e6f87c4-b1ea-4a31-9425-b1de6de9a88f` done (`39cca43`, `c168147`). P1-health
   `d393e1cb-35bc-4db4-bc0b-37c02c1b8e14` done (`28d8564`). P1-voice `b337455f-1b6d-45d5-93d8-51efb828d421` done
   (`b1e5308`). P1-engine `1a0582c2-ec24-42ab-8b3c-e2ac162b8e48` done (`f104e10`, `a45ec96`, `03eaab0`, `9d49d45`,
@@ -138,6 +139,12 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 19:26 CDT (Amar): phase 2 planned in `scripts/workflows/phase2.md` from BUILD-PLAN §5 and the
+  audits: 19 labels in two waves (A: engine, uno-r4, modules, drone prose, racer/gpscam/delivery, flight registry,
+  uno-r3-build + led-resistor, motor benches, sync/sound/telemetry; B: engine, micro:bit, Nucleo, Pi + pi5-ros2, FPGA
+  pair, sensor benches with the arm and line follower, a4988 + lm2596, agrihex + swarm, VTOL + tricopter + octo,
+  ghosts and challenges), one owner per shared file per wave. Not launched: waiting for Amar's go.
 
 - 2026-10-24 19:24 CDT (Amar): gate-1 reds (1) and (2) fixed and gate 1 rerun at `06ac3f0`: green apart from
   `content:check` (phase-2 prose). e2e: `fb0cc92` (robotics quiz test, CommonJS double default), `7860244` (quad5

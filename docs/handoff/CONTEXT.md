@@ -166,6 +166,10 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   one pill axe flagged, because dark-mode text was about 1.4:1 on all of them. The board serial log becomes rows in
   a focusable `div`, as the robotics serial panel already is. SegmentedControl wraps for every caller rather than
   per page. Gate 1 now fails only on English prose that phase 2 writes, so the driver plans phase 2 next.
+- **10-24 19:26, Amar (driver plan).** Phase 2 runs as two waves of 9 and 10 agents, not 17 at once, to stay inside
+  the 8–10 guideline after the 14:19 usage-limit stop. Wave A holds what wave B builds on (engine requests, sensor
+  module figures, the flight registry, the mat parts). Every shared file has one owner per wave; new UI keys carry
+  English in the other locales and are listed for phase 3. Asked Amar for the go and the wave size before launching.
 
 ## 6. Lessons learned (apply them)
 
