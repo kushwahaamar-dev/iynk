@@ -1,0 +1,381 @@
+{
+  "title": "GPS camera drone",
+  "tagline": "An F450-class quad on ArduPilot that knows where it is: it holds its spot in the wind, flies home on its own and keeps the camera level.",
+  "sub": "ArduCopter + Pixhawk 6C",
+  "hint": "Build a GPS quad, calibrate its compass, then fly a photo mission round a mast",
+  "noun": "GPS camera drone",
+  "overview": "This is the drone most people picture: a mid-size quad that knows where it is. Its Pixhawk runs ArduPilot, whose estimator (EKF3) blends the gyro, accelerometer, barometer, compass and GPS into one position and speed. That is what lets it hold a point in the wind in Loiter, hold only its height in AltHold, fly home and land on its own in RTL, and fly a planned route in AUTO while a gimbal keeps the camera level. It is built for long, smooth flights rather than punch: low-KV motors, big slow 10-inch props and a big 4S pack. Drones like it do aerial photography, roof and mast inspections and mapping, and the same layout is the standard ArduPilot and PX4 learning platform (Holybro's X500 kit is one). Pick the parts and watch the numbers, build it, run the bench checks, then fly the mast inspection by hand or let AUTO fly it.",
+  "practice": "Fly the mast inspection in Loiter first: the drone stops when you let go of the sticks, so you can line up each photo point at your own pace. Then try AltHold and see it drift with the wind, and Stabilize to feel what the GPS was doing for you. Finally switch to AUTO and watch it fly the same route, pausing at each photo point, then RTL and land. On a real build: smoke stopper on the first plug, motor test with the props off (A front right, then clockwise), accelerometer and compass calibration away from metal, a GPS lock outdoors, the failsafe test with the props off, and read every PreArm message before the first flight.",
+  "design": {
+    "fixed": {
+      "FRAME": "F450 frame: power-board plate and 4 arms",
+      "GEAR": "Landing gear and battery tray",
+      "ESC": "4 × 30 A ESCs",
+      "XT60": "PM02 power module, XT60 and capacitor",
+      "FC": "Pixhawk 6C flight controller",
+      "GPS": "M10 GPS + compass on a mast",
+      "TELEM": "915 MHz SiK telemetry radio",
+      "RX": "ExpressLRS 2.4 GHz receiver",
+      "GIMBAL": "2-axis brushless gimbal + camera",
+      "TOP": "Top plate and screws",
+      "STRAP": "Battery straps"
+    },
+    "verdict": {
+      "over": "{kv} KV on {cells}S with these props asks far more current than the motors and ESCs can take: they overheat and an ESC desyncs. Low KV and big props suit a camera drone.",
+      "weak": "Thrust to weight {tw}:1 is too low: it will barely climb and can't hold its position in wind. A camera drone wants about 2:1 or more.",
+      "ok": "Parts match: {tw}:1 is plenty for a camera drone, and the low hover current gives long flights. The calculator's hover throttle is pessimistic for this class: real F450s hover at 35 to 50 %, and ArduPilot learns the real value in flight."
+    }
+  },
+  "parts": {
+    "GEAR": {
+      "name": "Landing gear, skids and battery tray",
+      "what": "Two skid tubes on four legs lift the frame 120 mm off the ground, so the gimbal under the nose clears it on landing. A tray between the legs carries the battery low, under the centre of the frame."
+    },
+    "FRAME": {
+      "name": "F450 frame: power-board plate and 4 arms",
+      "what": "The classic DJI-style 450 mm frame: four moulded arms bolted between two plates, motors 450 mm apart across the diagonal. The bottom plate is a printed circuit board that doubles as the power distribution board, with battery pads at the rear and a plus and minus pad at each arm root for its ESC. The two front arms are coloured so you can tell the nose from the ground."
+    },
+    "MOTORS": {
+      "name": "4 brushless motors (2212, 920 KV)",
+      "what": "Outrunners with a 22 mm wide, 12 mm tall stator. 920 KV on a 4S pack turns a 10-inch prop at about 13,600 rpm unloaded: slow and efficient, which is what gives a camera drone 15 to 20 minutes in the air. ArduPilot numbers them M1 front right, M2 rear left, M3 front left, M4 rear right."
+    },
+    "ESC": {
+      "name": "4 separate 30 A ESCs on the arms",
+      "what": "One speed controller per arm, each fed from its pads on the power board and sending three-phase drive to its motor. They take DShot600 from the Pixhawk's MAIN outputs. A 2216-class motor with a 10-inch prop draws about 3 A in a hover and 16 A flat out, so 30 A leaves plenty of headroom."
+    },
+    "WIRES": {
+      "name": "Motor phase wires and ESC power leads",
+      "what": "Three phase wires from each ESC to its motor, and a red and a black lead from each ESC down to its pads on the power board. Swapping any two phase wires reverses a motor; with DShot you can also reverse it in the ESC settings."
+    },
+    "XT60": {
+      "name": "PM02 power module, XT60 and low-ESR capacitor",
+      "what": "The battery plugs into the power module's XT60. It passes the current through to the power board, measures the voltage and current for ArduPilot's battery monitor, and gives the Pixhawk its own clean 5.2 V on the 6-pin POWER1 cable. A low-ESR capacitor across the battery pads soaks up spikes; its stripe goes to minus."
+    },
+    "TOP": {
+      "name": "Top plate, bolted on the arms",
+      "what": "The upper plate closes the frame over the arm roots and the wiring. Everything that needs a clear view of the sky or a quiet spot sits on top of it: the Pixhawk, the GPS mast and the two radios."
+    },
+    "FC": {
+      "name": "Pixhawk 6C flight controller (ArduCopter)",
+      "what": "An STM32H743 at 480 MHz with two temperature-controlled, vibration-isolated IMUs and a barometer, running ArduCopter 4.7.2. It mounts on foam in the middle of the top plate, arrow to the nose. It has eight MAIN (IO) and eight AUX (FMU) outputs, three TELEM ports, two GPS ports and two CAN buses, and it powers itself from the power module, not from the servo rail."
+    },
+    "GPS": {
+      "name": "M10 GPS + compass on a mast",
+      "what": "A u-blox M10 receiver and an IST8310 compass in one puck, with ArduPilot's status LED (flashing blue: no fix, green: 3D fix). It rides on a folding mast because the battery and ESC current makes a magnetic field that throws a compass off; a few centimetres of height cut that a lot. Its arrow must point at the nose, like the Pixhawk's."
+    },
+    "TELEM": {
+      "name": "915 MHz SiK telemetry radio",
+      "what": "A MAVLink radio link to the ground station (915 MHz in the Americas, 433 MHz in Europe) on TELEM1. It is how Mission Planner or QGroundControl shows the drone on a map, uploads missions and changes parameters in the air."
+    },
+    "RX": {
+      "name": "ExpressLRS 2.4 GHz receiver (CRSF)",
+      "what": "The pilot's radio link, wired to TELEM2 as a serial receiver. ELRS speaks CRSF, which needs a full UART with TX and RX: the Pixhawk 6C's RCIN pin takes SBUS and PPM but not CRSF. It also sends the link quality back so the ground station can show it."
+    },
+    "GIMBAL": {
+      "name": "2-axis brushless gimbal and camera",
+      "what": "A camera on two small brushless motors, roll and pitch, under the nose on rubber dampers. The gimbal has its own controller and IMU and keeps the camera level by itself; ArduPilot only tells it which angle to point at, over two PWM wires from AUX 1 and 2. Pitch runs from straight down (-90°) to 25° up. A 2-axis gimbal can't turn the camera sideways, so the drone yaws to aim it."
+    },
+    "BATT": {
+      "name": "LiPo battery and straps",
+      "what": "A 4S 5000 mAh pack (about 500 g, 74 Wh) strapped to the tray under the frame. A camera drone carries a big pack because it hovers most of the time: here it gives 15 to 20 minutes."
+    },
+    "PROPS": {
+      "name": "10-inch two-blade props, 2 CW + 2 CCW",
+      "what": "Big, slow props are what make the drone efficient. M1 and M2 spin counter-clockwise and take CCW props, M3 and M4 spin clockwise and take CW props (ArduPilot calls them pushers). The thicker, rounded edge of each blade leads in the direction it turns."
+    }
+  },
+  "build": {
+    "gear": {
+      "title": "Assemble the landing gear and battery tray",
+      "body": "Bolt the four legs into the skid tubes, fit the rubber end caps and screw the battery tray between the legs."
+    },
+    "frame": {
+      "title": "Build the F450 frame on the gear",
+      "body": "Screw the four arms to the power-board plate, coloured arms to the front, and bolt the frame onto the gear mount. Check the arms sit square: a twisted arm tilts its motor and fights the others.",
+      "refusal": "The frame bolts onto the landing gear: assemble the gear first."
+    },
+    "motors": {
+      "title": "Mount the four motors",
+      "body": "Four M3 screws each into the arm ends, wires pointing inwards. Screws that are too long reach the windings and short them.",
+      "refusal": "The motors mount on the arm ends: build the frame first."
+    },
+    "esc": {
+      "title": "Fit an ESC on each arm",
+      "body": "Zip-tie each 30 A ESC to the top of its arm, between the motor and the frame, with its power leads towards the middle.",
+      "refusal": "The ESCs sit on the arms: build the frame first."
+    },
+    "wires": {
+      "title": "Wire the motors and ESC power leads",
+      "body": "Join each motor's three phase wires to its ESC, then solder each ESC's red and black leads to the pads at its arm root on the power board: red to plus, black to minus.",
+      "refusal": "These wires join the motors and the ESCs: fit both first."
+    },
+    "power": {
+      "title": "Fit the power module and capacitor",
+      "body": "The PM02 sits at the rear of the power board with its XT60 hanging out the back. Solder its output to the battery pads, and the capacitor across the same pads with its stripe on the minus side. The 6-pin cable will go to the Pixhawk's POWER1.",
+      "refusal": "The power module feeds the ESC pads on the power board: fit the ESCs first."
+    },
+    "top": {
+      "title": "Close the frame with the top plate",
+      "body": "Bolt the top plate onto the arms. Check no wire is pinched between the arm and a plate before you tighten.",
+      "refusal": "The top plate covers the wiring and the power module: fit both first."
+    },
+    "fc": {
+      "title": "Mount the Pixhawk, arrow forward",
+      "body": "On its foam pad in the middle of the top plate, arrow to the nose. Plug the power module into POWER1 and the four ESC signal leads into MAIN OUT 1 to 4, in motor order.",
+      "refusal": "The Pixhawk mounts on the top plate: fit the top plate first."
+    },
+    "gps": {
+      "title": "Stand the GPS mast at the rear",
+      "body": "Fold the mast up at the rear of the top plate, puck arrow to the nose, and plug its 10-pin cable into GPS1. The higher it sits above the power wires, the cleaner the compass reads.",
+      "refusal": "The GPS mast mounts on the top plate: fit the top plate first."
+    },
+    "telem": {
+      "title": "Fit the telemetry radio on TELEM1",
+      "body": "On the top plate at the left rear, antenna upright, cable to TELEM1. The ground station's radio on your laptop is its other half.",
+      "refusal": "The telemetry radio plugs into the Pixhawk: mount the Pixhawk first."
+    },
+    "rx": {
+      "title": "Fit the ELRS receiver on TELEM2",
+      "body": "At the right rear, its T antenna clear of the carbon and the props. TX to RX and RX to TX on TELEM2, never on RCIN: CRSF needs a full serial port.",
+      "refusal": "The receiver plugs into the Pixhawk: mount the Pixhawk first."
+    },
+    "gimbal": {
+      "title": "Hang the gimbal under the nose",
+      "body": "Bolt the bracket under the front of the frame, hang the damped plate on its four rubber balls and fit the camera. Run the roll and pitch signal leads to AUX 1 and 2, and power the gimbal from a BEC: the Pixhawk does not power its servo rail.",
+      "refusal": "The gimbal bracket bolts under the frame: build the frame first."
+    },
+    "batt": {
+      "title": "Strap the battery onto the tray",
+      "body": "Grip pad, pack, two straps, lead to the rear and the power module's XT60. Lift the drone by the top plate and slide the pack until it hangs level.",
+      "refusal": "The pack sits on the gear's tray and plugs into the power module: fit both first."
+    },
+    "props": {
+      "title": "Props on last",
+      "body": "Only after the smoke test and the motor test. CCW props on M1 (front right) and M2 (rear left), CW props on M3 (front left) and M4 (rear right), rounded edge leading.",
+      "refusal": "Props go on last: fit the motors and the top plate, then run the smoke stopper test and the motor test."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "The pack's XT60 plugs into the power module. A 4S pack is 16.8 V full and 14.8 V nominal.",
+    "XT60-ESC": "The power module's output goes to the battery pads on the power board; the board's copper carries it to a plus and minus pad at each arm root, where each ESC's leads are soldered.",
+    "ESC-MOTORS": "Three phase wires from each ESC to its motor. Any order spins it; swapping two reverses it.",
+    "XT60-FC": "The 6-pin cable to POWER1 carries the Pixhawk's 5.2 V supply plus the voltage and current sense lines for the battery monitor (BATT_MONITOR 4).",
+    "FC-ESC": "MAIN OUT 1 to 4 carry DShot600 to motors 1 to 4. On a Pixhawk 6C the MAIN outputs come from the IO chip, which needs BRD_IO_DSHOT 1 to speak DShot.",
+    "GPS-FC": "One 10-pin cable to GPS1: the GPS's serial data (SERIAL3) and the compass on I²C, plus the LED and 5 V.",
+    "TELEM-FC": "The SiK radio on TELEM1 (SERIAL1) at 57600 baud, MAVLink2 both ways.",
+    "RX-FC": "The ELRS receiver on TELEM2 (SERIAL2, protocol 23 RCIN) at 420 kbaud, set by RC_OPTIONS bit 13.",
+    "FC-GIMBAL": "Two PWM signal leads from AUX 1 and AUX 2 (SERVO9 roll, SERVO10 pitch). The gimbal takes its power from a BEC, not from the Pixhawk."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke stopper test",
+      "pass": "The lamp only blinked: no short between plus and minus. Safe to plug the pack in directly.",
+      "fail": "The lamp stayed lit: something is shorted. Here the capacitor is in backwards; turn it round (stripe to minus) and test again."
+    },
+    "motors": {
+      "title": "Motor test (props off)",
+      "pass": "Mission Planner's motor test spun them A to D, starting at the front right and going clockwise: M1 and M2 counter-clockwise, M3 and M4 clockwise. The props can go on.",
+      "fail": "One motor spun the wrong way. Swap two of its phase wires, or reverse it in the ESC; with the props on it would flip on take-off."
+    },
+    "calibrate": {
+      "title": "Accelerometer calibration",
+      "pass": "Calibrated in the six positions (level, both sides, nose down, nose up, on its back), then Calibrate Level in the flying attitude. The \"3D Accel calibration needed\" pre-arm block is gone.",
+      "fail": "Fit the Pixhawk first. If its arrow points backwards, turn it round or set AHRS_ORIENTATION to 4 (Yaw180), reboot and calibrate again."
+    },
+    "compass": {
+      "title": "Compass calibration",
+      "pass": "The onboard calibration sampled every side, saved the offsets and asked for a reboot. With the puck arrow forward, compass and GPS agree, so Loiter holds still instead of circling.",
+      "fail": "Fit the Pixhawk and the GPS, and take the props off: you turn the drone over in your hands. If the puck faces backwards, the compass reads 180° off the GPS track and the pre-arm says \"Compasses inconsistent\"."
+    },
+    "gps": {
+      "title": "GPS lock",
+      "pass": "3D fix with 14 satellites and HDOP 0.8: EKF3 is using the GPS, the LED flashes green and Loiter, RTL and AUTO are allowed.",
+      "fail": "Fit the Pixhawk and the GPS, and plug the pack in: the GPS needs power and a clear view of the sky. Without a 3D fix the pre-arm says \"GPS 1: Bad fix\"."
+    },
+    "failsafe": {
+      "title": "Radio failsafe (props off)",
+      "pass": "Armed on the bench, transmitter off: on the ground it disarms at once. In the air FS_THR_ENABLE 1 would switch it to RTL and bring it home.",
+      "fail": "Take the props off, fit the Pixhawk and the receiver, and plug the pack in. A drone with no radio failsafe keeps its last sticks and flies away."
+    },
+    "gimbal": {
+      "title": "Gimbal test",
+      "pass": "The tilt knob moved the camera from straight down (-90°) to 25° up and back, and the roll stayed level: the gimbal follows MNT1 and holds the horizon by itself.",
+      "fail": "Fit the gimbal and the Pixhawk and plug the pack in: the gimbal runs from its own BEC on the battery."
+    },
+    "prearm": {
+      "title": "Pre-arm checks",
+      "pass": "No PreArm messages: accelerometer and compass calibrated and agreeing, receiver found, 3D GPS fix. Ready to arm in Loiter.",
+      "fail": "ArduPilot names the first thing that is wrong, for example \"PreArm: GPS 1: Bad fix\" or \"PreArm: Compasses inconsistent\". Fix that one and run the checks again; never skip them with ARMING_SKIPCHK."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Frame, outputs and power",
+      "explain": "In ArduCopter 4.7.2 you set parameters, not commands: in MAVProxy each param set is stored at once, in Mission Planner it is Write Params. Quad X frame, DShot600 on the MAIN outputs (the 6C's IO chip needs BRD_IO_DSHOT 1 for that), the PM02 as an analog battery monitor, and the pack's full and empty voltage so the thrust doesn't fade as the pack drains."
+    },
+    "radio": {
+      "title": "Telemetry, receiver and GPS ports",
+      "explain": "Each serial port gets a protocol: MAVLink2 for the SiK radio on TELEM1, RCIN for the ELRS receiver on TELEM2 at 420 kbaud, GPS on GPS1. COMPASS_ORIENT says which way the puck's compass faces."
+    },
+    "modes": {
+      "title": "The mode switch",
+      "explain": "Channel 5 picks one of six flight modes by its PWM band. The numbers are ArduCopter's mode numbers: 5 Loiter, 2 AltHold, 3 Auto, 0 Stabilize, 9 Land, 6 RTL. Loiter is position 1, so a panicked flick to the end of the switch gives you a drone that stops and holds."
+    },
+    "gimbal": {
+      "title": "Gimbal on AUX 1 and 2",
+      "explain": "Type 7 (BrushlessPWM) is for a gimbal that stabilises itself: ArduPilot just sends the angle it wants on two outputs. Type 1 is for plain servos that ArduPilot must stabilise; on a brushless gimbal both would try to cancel the lean. The tilt knob on channel 6 moves the pitch between -90° and 25°."
+    },
+    "failsafe": {
+      "title": "Failsafes and fence",
+      "explain": "Radio lost: RTL. Battery low (3.5 V a cell, or 1000 mAh left): RTL. Battery critical (3.3 V a cell): land where it is. The defaults are made for 3S, so a 4S drone must set its own voltages. The fence sends it home if it goes above 100 m or 300 m from home."
+    },
+    "stabilize": {
+      "title": "Stabilize",
+      "explain": "The drone levels itself and the throttle stick drives the motors directly, so you hold the height yourself. ATC_ANGLE_MAX caps the lean in every mode; in 4.7 it is in degrees (it was ANGLE_MAX in centi-degrees)."
+    },
+    "althold": {
+      "title": "AltHold",
+      "explain": "The barometer holds the height. Throttle in the middle holds it; up or down asks for a climb or descent, up to PILOT_SPD_UP (2.5 m/s). There is no position hold, so the wind pushes it along."
+    },
+    "loiter": {
+      "title": "Loiter",
+      "explain": "GPS and compass hold the position as well as the height: let go and it brakes and stops. The sticks ask for a speed, up to LOIT_SPEED_MS. 4.7 renamed the Loiter parameters to SI units: LOIT_SPEED 500 (cm/s) became LOIT_SPEED_MS 5."
+    },
+    "rtl": {
+      "title": "Return to launch",
+      "explain": "It climbs to RTL_ALT_M (or stays higher if it already is), flies home at WP_SPD, hovers over home for RTL_LOIT_TIME and lands at LAND_SPD_MS. Set RTL_ALT_M above anything between the drone and home: here the mast is 18 m, so 20 m."
+    },
+    "auto": {
+      "title": "AUTO: the mast inspection",
+      "explain": "AUTO flies the loaded mission: take off to 8 m, four photo points round the mast at 12 m, then RTL. ArduCopter won't arm in AUTO unless AUTO_OPTIONS allows it, so arm in Loiter and switch. The lab's console has no mission loader; the wp line shows what you'd type in MAVProxy."
+    }
+  },
+  "flight": {
+    "modes": {
+      "loiter": {
+        "title": "Loiter",
+        "hint": "GPS position hold: the sticks set a speed up to 5 m/s, and the drone stops when you let go."
+      },
+      "althold": {
+        "title": "AltHold",
+        "hint": "The barometer holds the height, but nothing holds the position: the wind drifts it."
+      },
+      "stabilize": {
+        "title": "Stabilize",
+        "hint": "Self-levelling with a 30° lean limit; the throttle is yours, so you hold the height."
+      },
+      "rtl": {
+        "title": "RTL",
+        "hint": "Climbs to 20 m, flies home and lands on the pad by itself."
+      },
+      "auto": {
+        "title": "AUTO mission",
+        "hint": "Flies the inspection on its own: four photo stops round the mast, then home to land."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Radio lost: the drone switches to RTL, climbs to 20 m and comes home.",
+      "low-battery": "Below 14.0 V or 1000 mAh left: RTL, with time to spare.",
+      "battery-critical": "Below 13.2 V: it lands where it is rather than risk the flight home.",
+      "ekf": "The estimator stops trusting its position (a bad compass and GPS together): it lands.",
+      "fence": "Above 100 m or more than 300 m from home: RTL."
+    },
+    "controls": "Keyboard: Space arms and disarms, W and S climb and descend, the arrows fly forward, back and sideways, A and D yaw, V switches to the gimbal camera, R puts the drone back on the pad. In Loiter it stops when you let go. On a phone the left stick is throttle and yaw and the right stick is pitch and roll. A gamepad works in Mode 2."
+  },
+  "courses": {
+    "inspection": {
+      "title": "Mast inspection",
+      "brief": "Take off from the pad, photograph the telecom mast from four sides at 12 m, 8 m out from it, then come home and land on the pad. Fly it yourself in Loiter against the par times, or switch to AUTO and watch it fly the mission.",
+      "goals": {
+        "1": "TAKE OFF: climb to 8 m",
+        "2": "PHOTO 1: south face",
+        "3": "PHOTO 2: east face",
+        "4": "PHOTO 3: north face",
+        "5": "PHOTO 4: west face",
+        "6": "HOME: land on the pad"
+      }
+    }
+  },
+  "quizzes": {
+    "power": {
+      "module": {
+        "q": "What does the power module do besides passing the battery current through?",
+        "options": {
+          "1": "It charges the battery in flight",
+          "2": "It drives the motors",
+          "3": "It measures voltage and current and gives the Pixhawk its own 5.2 V"
+        },
+        "why": "The PM02 tells ArduPilot how much charge is left (for the battery failsafe) and powers the Pixhawk from a clean supply on POWER1, separate from the noisy ESC side."
+      },
+      "hover": {
+        "q": "Why does a camera drone use 920 KV motors and 10-inch props instead of a racer's 2500 KV and 5-inch props?",
+        "options": {
+          "1": "Big, slow props move more air for less power, so it hovers longer",
+          "2": "Big props make it faster",
+          "3": "Low-KV motors are cheaper"
+        },
+        "why": "Thrust comes from moving air. A big prop moving a lot of air slowly needs less power than a small one moving a little air fast, which is what gives 15 to 20 minute hovers."
+      }
+    },
+    "gps": {
+      "mast": {
+        "q": "Why is the GPS + compass puck on a mast?",
+        "options": {
+          "1": "So the GPS can see more satellites",
+          "2": "To move the compass away from the magnetic field of the battery and ESC current",
+          "3": "To protect it in a crash"
+        },
+        "why": "Tens of amps through the power wires make a magnetic field strong enough to throw a compass off. Distance weakens it fast, so a few centimetres of mast give a much cleaner heading."
+      },
+      "arrow": {
+        "q": "The GPS puck is mounted with its arrow pointing backwards. What happens?",
+        "options": {
+          "1": "The compass reads 180° off what the GPS track says, the pre-arm refuses, and if forced it circles and flies away",
+          "2": "Nothing: GPS doesn't care which way it faces",
+          "3": "It flies backwards"
+        },
+        "why": "The compass inside the puck gives the heading. Turned round, it disagrees with the direction the GPS sees the drone move, ArduPilot reports \"Compasses inconsistent\", and a drone that flies anyway \"toilet-bowls\" in growing circles."
+      }
+    },
+    "gimbal": {
+      "type": {
+        "q": "The gimbal has its own controller and IMU. Which MNT1_TYPE should it use?",
+        "options": {
+          "1": "1, Servo, so ArduPilot can stabilise it",
+          "2": "0, None: it works on its own",
+          "3": "7, BrushlessPWM: ArduPilot only sends the angle it wants"
+        },
+        "why": "A self-stabilising gimbal already cancels the drone's lean. With type 1 ArduPilot would cancel it as well and the two corrections would add up. Type 0 would leave the tilt knob and AUTO's camera commands with nothing to talk to."
+      }
+    },
+    "fly": {
+      "loiter": {
+        "q": "You let go of the sticks in a breeze. What does each mode do?",
+        "options": {
+          "1": "All three stop and hold their position",
+          "2": "Loiter holds its spot, AltHold holds only its height and drifts, Stabilize levels but you must hold the height too",
+          "3": "All three land"
+        },
+        "why": "Each mode adds one layer: Stabilize levels the drone, AltHold adds the barometer for height, Loiter adds GPS and compass for position."
+      },
+      "rtl": {
+        "q": "Why set RTL_ALT_M to 20 m on this field?",
+        "options": {
+          "1": "So the trip home clears the 18 m mast",
+          "2": "Because RTL can't fly lower",
+          "3": "To save battery"
+        },
+        "why": "RTL climbs to RTL_ALT_M and then flies straight home. Anything taller in the way gets hit, so the return height must clear the tallest obstacle (if the drone is already higher, it keeps its height)."
+      },
+      "auto": {
+        "q": "You arm in AUTO and it refuses. Why?",
+        "options": {
+          "1": "The mission is too long",
+          "2": "AUTO needs a compass calibration first",
+          "3": "ArduCopter won't arm in AUTO unless AUTO_OPTIONS allows it: arm in Loiter, then switch"
+        },
+        "why": "Arming straight into a mode that moves the drone on its own is a safety risk, so it's off unless you set AUTO_OPTIONS bit 0. The usual way is to arm in Loiter or Stabilize and then flip to AUTO."
+      }
+    }
+  }
+}

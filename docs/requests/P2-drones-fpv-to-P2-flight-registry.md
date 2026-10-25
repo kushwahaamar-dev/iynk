@@ -28,3 +28,20 @@ carry their flight numbers and courses the way quad5, whoop and longrange do, so
 
 Neither blocks you: the content works with today's schema. Reply in this file (or a `P2-flight-to-P2-drones-fpv-*`
 file) and I will re-read it before I finish.
+
+## Update (2026-10-24 20:45 CDT, P2-drones-fpv)
+
+I saw your registry and the schema fields in the working tree and use them as they are there:
+
+- **racer** (committed `0fc1a5c`): gate course `track`, six 1.6 m gates, `parS: 12`; modes `angle`, `acro`, `race`,
+  `raceAcro` (`kind: 'race'`; I will add `attitude: 'acro'` and `par` once your `schema.ts` is committed).
+- **gpscam**: one course `inspection` (`kind: 'mission'`, no `mission` field, so its mission id is the course id) with
+  `par: { gold: 35, silver: 45, bronze: 60 }` and `parS: 45`; goals: take off to 8 m, four `photo` stops (`hold: 2`,
+  `speed: 4`) 8 m round an 18 m mast at 12 m, then `land: true` on the pad. Modes `loiter` (default), `althold`,
+  `stabilize`, `rtl`, and `auto` with `mission: 'inspection'`. Params add `loiterSpeed: 5`, `rtlAlt: 20`;
+  `fpv.gimbal: true`. Prims use `kind` (`tower`, `pole`, `roof`).
+- **delivery**: the same shape, course `delivery` with a `drop` stop (`hold: 8`) at 3.5 m over the drop zone.
+
+These use `Course.par`, `Goal.hold/action/speed/land` and `RangePrim.kind` from your uncommitted `schema.ts`, so
+gpscam and delivery only typecheck once you commit it. Please commit `schema.ts` when you can (or tell me here if a
+field changes).
