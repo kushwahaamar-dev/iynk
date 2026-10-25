@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
 import { cx } from "@/components/ui/cx";
+import { IconButton } from "@/components/ui/IconButton";
 import { Icon } from "@/components/ui/icons";
 import type { RoboticsContent } from "@/content/schema";
 import type { BenchAction } from "@/lib/robotics/store";
@@ -23,93 +24,122 @@ type Props = {
 
 const KIND_TONE = { build: "cobalt", break: "tomato", test: "mint" } as const;
 
+/** The nearest ancestor that scrolls (the rail's tab panel on a wide screen; none on a phone, where the page scrolls). */
+function scroller(el: HTMLElement): HTMLElement | null {
+  for (let node = el.parentElement; node; node = node.parentElement) {
+    const { overflowY } = getComputedStyle(node);
+    if ((overflowY === "auto" || overflowY === "scroll") && node.scrollHeight > node.clientHeight) return node;
+  }
+  return null;
+}
+
+/**
+ * The build as a checklist: done steps are one quiet line, the step to do next
+ * is open with its "Do it", later steps are their title and a small button.
+ */
 export function StepsPanel({ bench, session, savedDone, t, tx, dispatch, onFocusFigure, headingId }: Props) {
   const current = currentStepIndex(bench.steps, session);
   const listRef = useRef<HTMLOListElement>(null);
 
-  // On wide screens the list scrolls inside the panel: keep the step to do next in view.
+  // Keep the step to do next in view inside the scrolling rail, without moving the page.
   useEffect(() => {
-    const list = listRef.current;
-    const item = list?.children[current] as HTMLElement | undefined;
-    if (!list || !item || list.scrollHeight <= list.clientHeight) return;
-    list.scrollTop = Math.max(0, item.offsetTop - list.offsetTop - 8);
+    const item = listRef.current?.children[current] as HTMLElement | undefined;
+    const box = item ? scroller(item) : null;
+    if (!item || !box) return;
+    const top = item.getBoundingClientRect().top - box.getBoundingClientRect().top + box.scrollTop;
+    box.scrollTop = Math.max(0, top - 48);
   }, [current]);
-  const doneCount = bench.steps.filter((step) => session[step.id]?.done || savedDone(step.id)).length;
 
   return (
-    <section aria-labelledby={headingId} className="ink-card p-4 sm:p-5">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 id={headingId} className="text-xl">
-          {t("steps.heading")}
-        </h2>
-        <span className="tabular font-ui text-sm font-bold">{t("steps.count", { done: doneCount, total: bench.steps.length })}</span>
-      </div>
-      <ol ref={listRef} className="mt-4 flex flex-col gap-3 lg:max-h-[36rem] lg:overflow-y-auto lg:p-1">
+    <section aria-labelledby={headingId} className="flex flex-col">
+      <h2 id={headingId} className="font-head text-lg">
+        {t("steps.heading")}
+      </h2>
+      <ol ref={listRef} className="mt-2 flex flex-col divide-y divide-rule">
         {bench.steps.map((step, index) => {
           const progress = session[step.id];
           const doneNow = progress?.done === true;
-          const doneBefore = !doneNow && savedDone(step.id);
+          const done = doneNow || savedDone(step.id);
           const isCurrent = index === current;
           const fault = step.fault ? bench.faults.find((f) => f.id === step.fault) : undefined;
           const title = tx(step.title);
-          return (
-            <li
-              key={step.id}
-              data-step={step.id}
-              aria-current={isCurrent ? "step" : undefined}
-              className={cx(
-                "rounded-ink border-2 p-3",
-                isCurrent ? "border-line bg-surface shadow-ink" : "border-rule",
-                doneNow && "on-fill border-rule bg-good-bg",
-              )}
-            >
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="tabular font-ui text-sm font-extrabold">{index + 1}.</span>
-                <Chip tone={KIND_TONE[step.kind]}>{t(`steps.kinds.${step.kind}`)}</Chip>
-                <h3 className="min-w-0 flex-1 text-base">{title}</h3>
-                {doneNow || doneBefore ? (
-                  <span className={cx("inline-flex items-center gap-1 font-ui text-xs font-bold", !doneNow && "text-good")}>
-                    <Icon name="check" size={16} aria-hidden="true" />
-                    {t("steps.done")}
+          const byHand = step.action === null;
+          const label = byHand ? t("steps.byHand") : doneNow ? t("steps.redo") : t("steps.doIt");
+          const run = () => {
+            dispatch({ type: "step/do", step: step.id });
+            if (byHand && canStart(bench.steps, session, step.id)) onFocusFigure();
+          };
+
+          if (isCurrent) {
+            return (
+              <li
+                key={step.id}
+                data-step={step.id}
+                aria-current="step"
+                className="relative -mx-4 bg-sunken/60 px-4 py-3 before:absolute before:inset-y-0 before:start-0 before:w-1 before:bg-ink"
+              >
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="tabular font-ui text-sm font-bold">{index + 1}</span>
+                  <Chip tone={KIND_TONE[step.kind]}>{t(`steps.kinds.${step.kind}`)}</Chip>
+                  <span className="ms-auto font-body text-xs font-semibold text-muted">
+                    {done ? (
+                      <span className="inline-flex items-center gap-1 text-good">
+                        <Icon name="check" size={14} />
+                        {t("steps.done")}
+                      </span>
+                    ) : (
+                      t("steps.current")
+                    )}
                   </span>
-                ) : isCurrent ? (
-                  <span className="font-ui text-xs font-bold">{t("steps.current")}</span>
+                </div>
+                <h3 className="mt-1.5 font-body text-base font-semibold leading-snug">{title}</h3>
+                <p className="mt-1 text-sm leading-relaxed">{tx(step.body)}</p>
+                {step.kind === "break" && progress?.seen && !doneNow && fault ? (
+                  <p className="mt-2 text-sm font-semibold">{t("steps.faultSeen", { fix: tx(fault.fix) })}</p>
                 ) : null}
-              </div>
-              {isCurrent || !doneNow ? <p className="mt-2 text-sm leading-relaxed">{tx(step.body)}</p> : null}
-              {step.kind === "break" && progress?.seen && !doneNow && fault ? (
-                <p className="mt-2 text-sm font-bold">{t("steps.faultSeen", { fix: tx(fault.fix) })}</p>
+                {step.major ? <p className="mt-1 text-xs text-muted">{t("steps.quizAfter")}</p> : null}
+                <Button size="sm" variant="primary" className="mt-3" onClick={run}>
+                  {byHand ? <Icon name="target" size={16} /> : <Icon name="play" size={16} />}
+                  {label}
+                  <span className="sr-only">: {title}</span>
+                </Button>
+              </li>
+            );
+          }
+
+          return (
+            <li key={step.id} data-step={step.id} className={cx("-mx-4 flex min-h-12 items-center gap-3 px-4 py-1.5", done && "text-muted")}>
+              <span className="tabular w-6 shrink-0 text-end font-ui text-sm font-semibold">{index + 1}</span>
+              <h3 className="min-w-0 flex-1 font-body text-sm font-semibold leading-snug">
+                {title}
+                {step.kind === "break" ? (
+                  <span className="ms-2 whitespace-nowrap text-xs font-semibold text-bad">{t("steps.kinds.break")}</span>
+                ) : null}
+              </h3>
+              {done ? (
+                <span className="inline-flex shrink-0 items-center gap-1 font-body text-xs font-semibold text-good">
+                  <Icon name="check" size={16} />
+                  <span className="max-sm:sr-only">{t("steps.done")}</span>
+                </span>
               ) : null}
-              {step.major ? <p className="mt-1 font-ui text-xs text-muted">{t("steps.quizAfter")}</p> : null}
-              <div className="mt-3 flex flex-wrap gap-2">
-                {step.action ? (
-                  <Button
-                    size="sm"
-                    variant={isCurrent ? "primary" : "secondary"}
-                    onClick={() => dispatch({ type: "step/do", step: step.id })}
-                  >
-                    {doneNow ? t("steps.redo") : t("steps.doIt")}
-                    <span className="sr-only">: {title}</span>
-                  </Button>
-                ) : (
-                  <Button
-                    size="sm"
-                    variant={isCurrent ? "primary" : "secondary"}
-                    onClick={() => {
-                      dispatch({ type: "step/do", step: step.id });
-                      if (canStart(bench.steps, session, step.id)) onFocusFigure();
-                    }}
-                  >
-                    {t("steps.byHand")}
-                    <span className="sr-only">: {title}</span>
-                  </Button>
-                )}
-              </div>
+              <IconButton
+                size="sm"
+                icon={byHand ? "target" : done ? "rotate-left" : "play"}
+                label={`${label}: ${title}`}
+                title={label}
+                tooltipSide="top"
+                onClick={run}
+              />
             </li>
           );
         })}
       </ol>
-      {current === bench.steps.length ? <p className="mt-4 text-sm font-bold">{t("steps.allDone")}</p> : null}
+      {current === bench.steps.length ? (
+        <p className="mt-3 flex items-center gap-2 text-sm font-semibold">
+          <Icon name="check" size={18} className="text-good" />
+          {t("steps.allDone")}
+        </p>
+      ) : null}
     </section>
   );
 }

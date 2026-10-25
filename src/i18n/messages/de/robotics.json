@@ -23,7 +23,19 @@
       "m5": "Monat 5 · Stromversorgung und das ROS-2-Gehirn"
     },
     "tagsLabel": "Themen",
-    "progressName": "Fortschritt"
+    "progressName": "Fortschritt",
+    "steps": {
+      "one": "{count} Schritt",
+      "other": "{count} Schritte"
+    },
+    "tasks": {
+      "one": "{count} Aufgabe",
+      "other": "{count} Aufgaben"
+    },
+    "quizzes": {
+      "one": "{count} Quiz",
+      "other": "{count} Quizze"
+    }
   },
   "benches": {
     "uno-r3-build": {
@@ -125,7 +137,14 @@
     "focusFigure": "In die Abbildung wechseln",
     "selected": "Ausgewähltes Bauteil",
     "nothingSelected": "Nichts ausgewählt. Klick ein Bauteil in der Abbildung oder in den Bauteil-Schaltflächen darunter an.",
-    "walk": "Weitere Werkbänke"
+    "walk": "Weitere Werkbänke",
+    "tabs": {
+      "label": "Bereiche der Werkbank",
+      "steps": "Schritte",
+      "faults": "Kaputt machen",
+      "status": "Status",
+      "quiz": "Quiz"
+    }
   },
   "steps": {
     "heading": "Bauen und kaputt machen",
@@ -152,6 +171,7 @@
     "heading": "Absichtlich kaputt machen",
     "intro": "Jeder Fehler ist einer, über den echte Bastler stolpern. Lös ihn aus, lies das Symptom an der Werkbank ab und beheb ihn dann.",
     "trigger": "Auslösen",
+    "repair": "Reparieren",
     "clear": "Alle Fehler beheben",
     "active": "Aktiv",
     "symptom": "Symptom",

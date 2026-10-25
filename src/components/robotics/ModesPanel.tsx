@@ -33,7 +33,7 @@ export function ModesPanel({ bench, selected, running, texts, t, tx, dispatch, h
   const isRunning = running === mode.id;
 
   return (
-    <section aria-labelledby={headingId} className="ink-card p-4 sm:p-5">
+    <section aria-labelledby={headingId} className="min-w-0">
       <h2 id={headingId} className="text-xl">
         {t("modes.heading")}
       </h2>
@@ -56,7 +56,7 @@ export function ModesPanel({ bench, selected, running, texts, t, tx, dispatch, h
           {mode.instant ? t("modes.switch") : t("modes.upload")}
           <span className="sr-only">: {title}</span>
         </Button>
-        <span className="font-ui text-xs font-bold" aria-live="polite">
+        <span className="text-xs font-semibold text-muted" aria-live="polite">
           {isRunning ? t("modes.running") : t("modes.selected")}
         </span>
       </div>

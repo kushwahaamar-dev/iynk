@@ -23,7 +23,19 @@
       "m5": "Mois 5 · alimentation et cerveau ROS 2"
     },
     "tagsLabel": "Thèmes",
-    "progressName": "Progression"
+    "progressName": "Progression",
+    "steps": {
+      "one": "{count} étape",
+      "other": "{count} étapes"
+    },
+    "tasks": {
+      "one": "{count} exercice",
+      "other": "{count} exercices"
+    },
+    "quizzes": {
+      "one": "{count} quiz",
+      "other": "{count} quiz"
+    }
   },
   "benches": {
     "uno-r3-build": {
@@ -125,7 +137,14 @@
     "focusFigure": "Entrer dans la figure",
     "selected": "Pièce sélectionnée",
     "nothingSelected": "Rien de sélectionné. Cliquez sur une pièce de la figure ou sur les boutons de pièces en dessous.",
-    "walk": "Autres bancs"
+    "walk": "Autres bancs",
+    "tabs": {
+      "label": "Panneaux du banc",
+      "steps": "Étapes",
+      "faults": "Casser",
+      "status": "État",
+      "quiz": "Quiz"
+    }
   },
   "steps": {
     "heading": "Monter et casser",
@@ -152,6 +171,7 @@
     "heading": "Casser exprès",
     "intro": "Chaque panne est de celles qui piègent ceux qui montent pour de vrai. Déclenchez-la, lisez le symptôme sur le banc, puis réparez.",
     "trigger": "Déclencher",
+    "repair": "Réparer",
     "clear": "Effacer toutes les pannes",
     "active": "Active",
     "symptom": "Symptôme",

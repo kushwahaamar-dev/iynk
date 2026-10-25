@@ -23,7 +23,19 @@
       "m5": "Month 5 · power and the ROS 2 brain"
     },
     "tagsLabel": "Topics",
-    "progressName": "Progress"
+    "progressName": "Progress",
+    "steps": {
+      "one": "{count} step",
+      "other": "{count} steps"
+    },
+    "tasks": {
+      "one": "{count} task",
+      "other": "{count} tasks"
+    },
+    "quizzes": {
+      "one": "{count} quiz",
+      "other": "{count} quizzes"
+    }
   },
   "benches": {
     "uno-r3-build": {
@@ -125,7 +137,14 @@
     "focusFigure": "Go into the figure",
     "selected": "Selected part",
     "nothingSelected": "Nothing selected. Click a part in the figure or in the part buttons under it.",
-    "walk": "More benches"
+    "walk": "More benches",
+    "tabs": {
+      "label": "Bench panels",
+      "steps": "Steps",
+      "faults": "Break it",
+      "status": "Status",
+      "quiz": "Quiz"
+    }
   },
   "steps": {
     "heading": "Build and break",
@@ -152,6 +171,7 @@
     "heading": "Break it on purpose",
     "intro": "Each fault is one that catches real builders. Trigger it, read the symptom on the bench, then fix it.",
     "trigger": "Trigger",
+    "repair": "Repair",
     "clear": "Clear every fault",
     "active": "Active",
     "symptom": "Symptom",

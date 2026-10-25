@@ -8,6 +8,7 @@ import { Icon } from "@/components/ui/icons";
 import type { PracticeTask, RoboticsContent } from "@/content/schema";
 import { allPass } from "@/lib/robotics/runner";
 import type { BenchAction, TaskSession } from "@/lib/robotics/store";
+import { Fold } from "./Fold";
 import type { BenchT, TextOf } from "./messages";
 
 type Props = {
@@ -25,16 +26,18 @@ export function TasksPanel({ bench, tasks, savedDone, t, tx, dispatch, headingId
   const done = bench.tasks.filter((task) => savedDone(task.id)).length;
   return (
     <section aria-labelledby={headingId} className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 id={headingId} tabIndex={-1} className="text-2xl outline-none">
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        <h2 id={headingId} tabIndex={-1} className="text-xl outline-none">
           {t("tasks.heading")}
         </h2>
-        <span className="tabular font-ui text-sm font-bold">{t("tasks.count", { done, total: bench.tasks.length })}</span>
+        <span className="tabular font-ui text-sm font-semibold text-muted">{t("tasks.count", { done, total: bench.tasks.length })}</span>
       </div>
-      <p className="max-w-3xl text-sm">{t("tasks.intro")}</p>
-      {bench.tasks.map((task) => (
-        <TaskCard key={task.id} task={task} session={tasks[task.id]} done={savedDone(task.id)} t={t} tx={tx} dispatch={dispatch} />
-      ))}
+      <p className="max-w-[68ch] text-sm text-muted">{t("tasks.intro")}</p>
+      <div className="grid grid-cols-1 items-start gap-4 lg:gap-6 2xl:grid-cols-2">
+        {bench.tasks.map((task) => (
+          <TaskCard key={task.id} task={task} session={tasks[task.id]} done={savedDone(task.id)} t={t} tx={tx} dispatch={dispatch} />
+        ))}
+      </div>
     </section>
   );
 }
@@ -58,7 +61,7 @@ function TaskCard({ task, session, done, t, tx, dispatch }: CardProps) {
   return (
     <article aria-labelledby={`${id}-title`} data-task={task.id} className="ink-card p-4 sm:p-5">
       <div className="flex flex-wrap items-center gap-2">
-        <h3 id={`${id}-title`} className="min-w-0 flex-1 text-lg">
+        <h3 id={`${id}-title`} className="min-w-0 flex-1 text-lg leading-snug">
           {title}
         </h3>
         <Chip tone="cobalt">{t(`tasks.language.${task.language}`)}</Chip>
@@ -71,7 +74,7 @@ function TaskCard({ task, session, done, t, tx, dispatch }: CardProps) {
       </div>
       <p className="mt-2 text-sm leading-relaxed">{tx(task.brief)}</p>
 
-      <label htmlFor={`${id}-code`} className="ink-kicker mt-4 block">
+      <label htmlFor={`${id}-code`} className="ink-label mt-4 block">
         {t("tasks.editor", { title })}
       </label>
       <textarea
@@ -88,19 +91,19 @@ function TaskCard({ task, session, done, t, tx, dispatch }: CardProps) {
         autoCapitalize="off"
         autoCorrect="off"
         rows={Math.min(24, Math.max(8, (session?.code ?? "").split("\n").length + 1))}
-        className="mt-1 w-full resize-y rounded-ink-sm border-2 border-line bg-surface p-3 font-ui text-[0.82rem] leading-relaxed text-ink"
+        className="mt-1 w-full resize-y rounded-ink-sm border-2 border-line bg-surface p-3 font-ui text-sm leading-relaxed text-ink"
         data-task-editor
       />
 
       <div className="mt-3 flex flex-wrap gap-2">
-        <Button variant="primary" onClick={() => dispatch({ type: "task/run", task: task.id })} disabled={running} aria-describedby={`${id}-result`}>
+        <Button size="sm" variant="primary" onClick={() => dispatch({ type: "task/run", task: task.id })} disabled={running} aria-describedby={`${id}-result`}>
           <Icon name="play" size={16} aria-hidden="true" />
           {running ? t("tasks.runningNow") : t("tasks.run")}
         </Button>
-        <Button variant="secondary" onClick={() => dispatch({ type: "task/reset", task: task.id })}>
+        <Button size="sm" variant="secondary" onClick={() => dispatch({ type: "task/reset", task: task.id })}>
           {t("tasks.resetCode")}
         </Button>
-        <Button variant="ghost" onClick={() => dispatch({ type: "task/solution", task: task.id })}>
+        <Button size="sm" variant="ghost" onClick={() => dispatch({ type: "task/solution", task: task.id })}>
           {t("tasks.solution")}
         </Button>
       </div>
@@ -119,18 +122,18 @@ function TaskCard({ task, session, done, t, tx, dispatch }: CardProps) {
       </div>
 
       <h4 className="ink-kicker mt-4">{t("tasks.checks")}</h4>
-      <ul className="mt-2 flex flex-col gap-1.5">
+      <ul className="mt-2 flex flex-col divide-y divide-rule">
         {task.checks.map((check, index) => {
           const outcome = result?.status === "ok" ? result.checks[index] : undefined;
           return (
-            <li key={index} className="flex items-start gap-2 text-sm">
+            <li key={index} className="flex items-start gap-3 py-1.5 text-sm">
               <span
                 className={
                   outcome === undefined
-                    ? "font-ui text-xs font-bold text-muted"
+                    ? "w-20 shrink-0 pt-px text-xs font-semibold text-muted"
                     : outcome.pass
-                      ? "font-ui text-xs font-bold text-good"
-                      : "font-ui text-xs font-bold text-bad"
+                      ? "w-20 shrink-0 pt-px text-xs font-semibold text-good"
+                      : "w-20 shrink-0 pt-px text-xs font-semibold text-bad"
                 }
               >
                 {outcome === undefined ? t("tasks.notRun") : outcome.pass ? t("tasks.pass") : t("tasks.fail")}
@@ -145,27 +148,25 @@ function TaskCard({ task, session, done, t, tx, dispatch }: CardProps) {
       </ul>
 
       {result?.status === "ok" || result?.status === "error" ? (
-        <details className="mt-3 text-sm">
-          <summary className="cursor-pointer font-ui text-xs font-bold">{t("tasks.serialOut")}</summary>
+        <Fold summary={t("tasks.serialOut")} className="mt-3 text-sm">
           {result.serial.length > 0 ? (
-            <pre className="mt-2 max-h-48 overflow-auto rounded-ink-sm border-2 border-line bg-[#1d2a26] p-3 font-ui text-[0.78rem] text-[#8af0ae]">
+            <pre className="mt-2 max-h-48 overflow-auto rounded-ink-sm border-[1.5px] border-line bg-console p-3 font-ui text-xs text-console-accent">
               {result.serial.join("\n")}
             </pre>
           ) : (
             <p className="mt-2 text-muted">{t("tasks.noSerial")}</p>
           )}
-        </details>
+        </Fold>
       ) : null}
 
       {task.hints.length > 0 ? (
-        <details className="mt-3 text-sm">
-          <summary className="cursor-pointer font-ui text-xs font-bold">{t("tasks.hints")}</summary>
+        <Fold summary={t("tasks.hints")} className="mt-3 text-sm">
           <ol className="mt-2 flex list-decimal flex-col gap-1 ps-5">
             {task.hints.map((hint) => (
               <li key={hint}>{tx(hint)}</li>
             ))}
           </ol>
-        </details>
+        </Fold>
       ) : null}
     </article>
   );

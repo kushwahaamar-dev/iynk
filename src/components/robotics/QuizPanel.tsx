@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
 import { Dialog } from "@/components/ui/Dialog";
 import { cx } from "@/components/ui/cx";
+import { Icon } from "@/components/ui/icons";
 import type { Quiz, RoboticsContent } from "@/content/schema";
 import type { QuizResult } from "@/lib/progress/storage";
 import type { BenchAction, QuizSession } from "@/lib/robotics/store";
@@ -32,20 +33,22 @@ export function QuizPanel({ bench, session, unlocked, best, t, tx, dispatch, hea
   const open = bench.quizzes.find((quiz) => quiz.id === session.open) ?? null;
 
   return (
-    <section aria-labelledby={headingId} className="ink-card p-4 sm:p-5">
-      <h2 id={headingId} className="text-xl">
+    <section aria-labelledby={headingId} className="flex flex-col">
+      <h2 id={headingId} className="font-head text-lg">
         {t("quiz.heading")}
       </h2>
-      <ul className="mt-4 flex flex-col gap-3">
+      <ul className="mt-2 flex flex-col divide-y divide-rule">
         {bench.quizzes.map((quiz) => {
           const isOpen = unlocked(quiz);
           const result = best(quiz.id);
           const step = quiz.afterStep ? bench.steps.find((s) => s.id === quiz.afterStep) : undefined;
+          const title = quizTitle(quiz, bench, t, tx);
           return (
-            <li key={quiz.id} data-quiz={quiz.id} className="flex flex-wrap items-center gap-3 rounded-ink border-2 border-rule p-3">
+            <li key={quiz.id} data-quiz={quiz.id} className={cx("-mx-4 flex min-h-14 items-center gap-3 px-4 py-2.5", !isOpen && "text-muted")}>
+              {isOpen ? null : <Icon name="lock" size={18} className="shrink-0" />}
               <div className="min-w-0 flex-1">
-                <h3 className="text-base">{quizTitle(quiz, bench, t, tx)}</h3>
-                <p className="text-sm text-muted">
+                <h3 className="font-body text-sm font-semibold leading-snug">{title}</h3>
+                <p className="text-xs text-muted">
                   {!isOpen
                     ? step
                       ? t("quiz.unlocks", { step: tx(step.title) })
@@ -55,10 +58,17 @@ export function QuizPanel({ bench, session, unlocked, best, t, tx, dispatch, hea
                       : t("quiz.notTaken")}
                 </p>
               </div>
-              <Button size="sm" variant={isOpen && !result ? "primary" : "secondary"} disabled={!isOpen} onClick={() => dispatch({ type: "quiz/open", quiz: quiz.id })}>
-                {result ? t("quiz.retake") : t("quiz.open")}
-                <span className="sr-only">: {quizTitle(quiz, bench, t, tx)}</span>
-              </Button>
+              {isOpen ? (
+                <Button
+                  size="sm"
+                  variant={result ? "secondary" : "primary"}
+                  className="shrink-0 whitespace-nowrap"
+                  onClick={() => dispatch({ type: "quiz/open", quiz: quiz.id })}
+                >
+                  {result ? t("quiz.retake") : t("quiz.open")}
+                  <span className="sr-only">: {title}</span>
+                </Button>
+              ) : null}
             </li>
           );
         })}
@@ -159,7 +169,7 @@ function QuizDialog({ quiz, bench, session, best, t, tx, dispatch }: DialogProps
                   checked={isChosen}
                   disabled={session.checked}
                   onChange={() => dispatch({ type: "quiz/choose", option: index })}
-                  className="size-5 accent-[var(--ink)]"
+                  className="size-5"
                 />
                 <span>{tx(option)}</span>
               </label>

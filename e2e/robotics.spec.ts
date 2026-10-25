@@ -84,8 +84,10 @@ test.describe("a bench page", () => {
     const m = main(page);
     await expect(m.locator("h1")).toBeVisible();
     await expect(m.getByRole("heading", { name: robotics.steps.heading })).toBeVisible();
-    await expect(m.getByRole("heading", { name: robotics.status.heading })).toBeVisible();
     await expect(m.locator("iframe")).toHaveCount(1);
+    // Live status and its meters are the rail's Status tab.
+    await m.getByRole("tab", { name: robotics.bench.tabs.status }).click();
+    await expect(m.getByRole("heading", { name: robotics.status.heading })).toBeVisible();
     await expect(m.getByRole("meter").first()).toBeVisible();
 
     await m.locator("h1").click();
@@ -112,6 +114,7 @@ test.describe("a bench page", () => {
     }, done);
     await page.goto(`/en/robotics/${benchId}`);
 
+    await main(page).getByRole("tab", { name: new RegExp(`^${robotics.bench.tabs.quiz}`) }).click();
     const row = main(page).locator(`[data-quiz="${quiz.id}"]`);
     await row.getByRole("button").click();
     const dialog = page.getByRole("dialog");

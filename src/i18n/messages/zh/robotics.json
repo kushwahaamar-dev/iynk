@@ -23,7 +23,19 @@
       "m5": "第 5 个月 · 电源与 ROS 2 大脑"
     },
     "tagsLabel": "主题",
-    "progressName": "进度"
+    "progressName": "进度",
+    "steps": {
+      "one": "{count} 步",
+      "other": "{count} 步"
+    },
+    "tasks": {
+      "one": "{count} 个任务",
+      "other": "{count} 个任务"
+    },
+    "quizzes": {
+      "one": "{count} 个测验",
+      "other": "{count} 个测验"
+    }
   },
   "benches": {
     "uno-r3-build": {
@@ -125,7 +137,14 @@
     "focusFigure": "进入图示",
     "selected": "选中的零件",
     "nothingSelected": "没有选中任何东西。点击图示里的零件，或图示下方的零件按钮。",
-    "walk": "更多实验台"
+    "walk": "更多实验台",
+    "tabs": {
+      "label": "工作台面板",
+      "steps": "步骤",
+      "faults": "弄坏它",
+      "status": "状态",
+      "quiz": "测验"
+    }
   },
   "steps": {
     "heading": "组装与弄坏",
@@ -152,6 +171,7 @@
     "heading": "故意弄坏它",
     "intro": "每一种故障都真实地困扰过动手的人。触发它，在实验台上读出症状，然后把它修好。",
     "trigger": "触发",
+    "repair": "修复",
     "clear": "清除所有故障",
     "active": "生效中",
     "symptom": "症状",

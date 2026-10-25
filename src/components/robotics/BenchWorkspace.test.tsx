@@ -77,12 +77,14 @@ describe("BenchWorkspace", () => {
   test("renders every panel from the bench data", () => {
     mount();
     expect(screen.getByRole("heading", { name: "Build and break" })).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Live status" })).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Bench notes" })).toBeTruthy();
+    expect(screen.getByRole("tab", { name: /^Steps\s*0\/5$/ }).getAttribute("aria-selected")).toBe("true");
     expect(screen.getByRole("heading", { name: "Practice tasks" })).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Check yourself" })).toBeTruthy();
-    expect(screen.getByText("0/5 steps")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Bench notes", expanded: false })).toBeTruthy();
+    fireEvent.click(screen.getByRole("tab", { name: "Status" }));
+    expect(screen.getByRole("heading", { name: "Live status" })).toBeTruthy();
     expect(screen.getByRole("meter")).toBeTruthy();
+    fireEvent.click(screen.getByRole("tab", { name: /^Quiz/ }));
+    expect(screen.getByRole("heading", { name: "Check yourself" })).toBeTruthy();
   });
 
   test("a step out of order is refused with its refusal, in order it is sent to the figure", () => {
@@ -104,8 +106,8 @@ describe("BenchWorkspace", () => {
     report({ build: "bare", status: "off" });
     report({ build: "tht", status: "off" });
     report({ build: "assembled", status: "off", serial: { n: 1, line: "-- power on --" } });
-    expect(screen.getByText("3/5 steps")).toBeTruthy();
-    expect(screen.getByText("-- power on --")).toBeTruthy();
+    expect(screen.getByRole("tab", { name: /^Steps\s*3\/5$/ })).toBeTruthy();
+    expect(within(document.querySelector("[data-serial]") as HTMLElement).getByText("-- power on --")).toBeTruthy();
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}") as { done: Record<string, true> };
     expect(saved.done["robotics:led-resistor:step:solder"]).toBe(true);
 
@@ -139,6 +141,7 @@ describe("BenchWorkspace", () => {
     mount();
     fromFigure("ready", ready);
     report({ status: "running", mode: "r220" });
+    fireEvent.click(screen.getByRole("tab", { name: "Status" }));
     expect(screen.getByRole("meter").getAttribute("aria-valuenow")).toBe("13.6");
     expect(screen.getByText("13.6 of 500 mA")).toBeTruthy();
   });

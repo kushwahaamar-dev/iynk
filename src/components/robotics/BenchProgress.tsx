@@ -21,7 +21,8 @@ type Props = {
   countTemplate: string;
   /** "{done} of {total} … done" */
   valueTemplate: string;
-  size?: "sm" | "md";
+  /** xs: the thin bar and count of a workspace bar. */
+  size?: "xs" | "sm" | "md";
   className?: string;
 };
 

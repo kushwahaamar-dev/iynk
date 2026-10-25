@@ -4,14 +4,14 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { LabRoom } from "@/components/dock/LabRoom";
 import { UntranslatedNotice } from "@/components/shell";
-import { BenchProgress } from "@/components/robotics/BenchProgress";
+import { Icon } from "@/components/ui/icons";
 import { BenchWorkspace } from "@/components/robotics/BenchWorkspace";
 import type { BenchMessages } from "@/components/robotics/messages";
-import { ROBOTICS, ROBOTICS_IDS, isRoboticsId } from "@/content/ids";
+import { ROBOTICS_IDS, isRoboticsId } from "@/content/ids";
 import { isLocale } from "@/i18n/config";
 import { alternatesFor } from "@/i18n/seo";
 import { getMessages, getT } from "@/i18n/server";
-import { benchKeys, boardProduct, nextBench, prevBench } from "@/lib/robotics/catalog";
+import { nextBench, prevBench } from "@/lib/robotics/catalog";
 import { loadBench } from "@/lib/robotics/load";
 
 type Props = PageProps<"/[lang]/robotics/[bench]">;
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function BenchPage({ params }: Props) {
   return (
-    <Suspense fallback={<div className="mx-auto min-h-[80vh] max-w-7xl px-4 sm:px-6" aria-busy="true" />}>
+    <Suspense fallback={<div className="min-h-[calc(100dvh-var(--header-h))]" aria-busy="true" />}>
       <Bench params={params} />
     </Suspense>
   );
@@ -63,92 +63,42 @@ async function Bench({ params }: Pick<Props, "params">) {
     keys: all.keys,
   };
 
-  const keys = benchKeys(bench);
-  const meta = ROBOTICS[id];
   // Neighbours are linked only when their content and prose are written.
   const [prevId, nextId] = [prevBench(id), nextBench(id)];
   const [prev, next] = await Promise.all(
     [prevId, nextId].map(async (other) => (other && (await loadBench(lang, other)) ? other : null)),
   );
 
-  return (
-    <>
-      <UntranslatedNotice lang={lang} textLang={loaded.textLang} />
-      <div className="mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6 sm:pt-10" data-bench-page={id}>
-        <nav aria-label={t("bench.back")} className="text-sm">
-          <Link href={`/${lang}/robotics`} className="inline-flex min-h-11 items-center font-ui font-bold">
-            ← {t("bench.back")}
+  const walk =
+    prev || next ? (
+      <nav aria-label={t("bench.walk")} className="flex flex-wrap justify-between gap-3 border-t-[1.5px] border-rule pt-6">
+        {prev ? (
+          <Link href={`/${lang}/robotics/${prev}`} className="inline-flex min-h-11 items-center gap-1.5 font-body text-sm font-semibold">
+            <Icon name="chevron-left" size={18} />
+            {t("bench.prevBench", { name: t(`benches.${prev}.name`) })}
           </Link>
-        </nav>
-
-        <header className="mt-2 grid gap-4 lg:grid-cols-12">
-          <div className="lg:col-span-8">
-            <p className="ink-kicker tabular">{t("bench.kicker", { n: String(meta.fig).padStart(2, "0") })}</p>
-            <h1 className="mt-2">{texts[bench.title]}</h1>
-            <p className="mt-2 text-lg">{texts[bench.sub]}</p>
-            <p className="mt-1 text-muted">{texts[bench.hint]}</p>
-          </div>
-          <div className="flex flex-col justify-end gap-3 lg:col-span-4">
-            <BenchProgress
-              keys={[...keys.steps, ...keys.tasks, ...keys.quizzes]}
-              label={t("bench.progressName")}
-              countTemplate={t("bench.progress", { done: "{done}", total: "{total}" })}
-              valueTemplate={t("bench.progressLabel", { done: "{done}", total: "{total}" })}
-              size="md"
-            />
-            {bench.board ? (
-              <Link href={`/${lang}/boards/${bench.board}`} className="inline-flex min-h-11 items-center font-ui text-sm font-bold">
-                {t("bench.boardLink", { board: boardProduct(id) ?? bench.board })}
-              </Link>
-            ) : null}
-          </div>
-        </header>
-
-        <section aria-labelledby={`bench-${id}-overview`} className="mt-6 max-w-3xl">
-          <h2 id={`bench-${id}-overview`} className="sr-only">
-            {t("bench.overview")}
-          </h2>
-          <p className="leading-relaxed">{texts[bench.overview]}</p>
-        </section>
-
-        <div className="mt-8">
-          <LabRoom lab="robotics" itemId={id}>
-            <BenchWorkspace setup={{ bench, texts, starters: loaded.starters, solutions: loaded.solutions }} messages={messages} />
-          </LabRoom>
-        </div>
-
-        {bench.sources.length > 0 ? (
-          <section aria-labelledby={`bench-${id}-sources`} className="mt-12">
-            <h2 id={`bench-${id}-sources`} className="text-xl">
-              {t("bench.sources")}
-            </h2>
-            <ul className="mt-3 flex flex-col gap-1 text-sm">
-              {bench.sources.map((source) => (
-                <li key={source.url}>
-                  <a href={source.url} rel="noopener noreferrer" className="inline-flex min-h-11 items-center">
-                    {source.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </section>
+        ) : (
+          <span />
+        )}
+        {next ? (
+          <Link href={`/${lang}/robotics/${next}`} className="inline-flex min-h-11 items-center gap-1.5 font-body text-sm font-semibold">
+            {t("bench.nextBench", { name: t(`benches.${next}.name`) })}
+            <Icon name="chevron-right" size={18} />
+          </Link>
         ) : null}
+      </nav>
+    ) : null;
 
-        <nav aria-label={t("bench.walk")} className="mt-12 flex flex-wrap justify-between gap-3 border-t-2 border-rule pt-6">
-          {prev ? (
-            <Link href={`/${lang}/robotics/${prev}`} className="inline-flex min-h-11 items-center font-ui text-sm font-bold">
-              ← {t("bench.prevBench", { name: t(`benches.${prev}.name`) })}
-            </Link>
-          ) : (
-            <span />
-          )}
-          {next ? (
-            <Link href={`/${lang}/robotics/${next}`} className="inline-flex min-h-11 items-center font-ui text-sm font-bold">
-              {t("bench.nextBench", { name: t(`benches.${next}.name`) })} →
-            </Link>
-          ) : null}
-        </nav>
-      </div>
-    </>
+  return (
+    <div data-bench-page={id}>
+      <LabRoom lab="robotics" itemId={id}>
+        <BenchWorkspace
+          setup={{ bench, texts, starters: loaded.starters, solutions: loaded.solutions }}
+          messages={messages}
+          notice={<UntranslatedNotice lang={lang} textLang={loaded.textLang} variant="chip" />}
+          walk={walk}
+        />
+      </LabRoom>
+    </div>
   );
 }

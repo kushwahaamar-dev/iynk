@@ -23,7 +23,19 @@
       "m5": "Mes 5 · alimentación y el cerebro ROS 2"
     },
     "tagsLabel": "Temas",
-    "progressName": "Progreso"
+    "progressName": "Progreso",
+    "steps": {
+      "one": "{count} paso",
+      "other": "{count} pasos"
+    },
+    "tasks": {
+      "one": "{count} tarea",
+      "other": "{count} tareas"
+    },
+    "quizzes": {
+      "one": "{count} quiz",
+      "other": "{count} quizzes"
+    }
   },
   "benches": {
     "uno-r3-build": {
@@ -125,7 +137,14 @@
     "focusFigure": "Entrar en la figura",
     "selected": "Pieza seleccionada",
     "nothingSelected": "No hay nada seleccionado. Haz clic en una pieza de la figura o en los botones de piezas que hay debajo.",
-    "walk": "Más bancos"
+    "walk": "Más bancos",
+    "tabs": {
+      "label": "Paneles del banco",
+      "steps": "Pasos",
+      "faults": "Averíala",
+      "status": "Estado",
+      "quiz": "Quiz"
+    }
   },
   "steps": {
     "heading": "Monta y avería",
@@ -152,6 +171,7 @@
     "heading": "Averíala a propósito",
     "intro": "Cada avería es de las que pillan a quien monta de verdad. Provócala, lee el síntoma en el banco y luego arréglala.",
     "trigger": "Provocar",
+    "repair": "Reparar",
     "clear": "Reparar todas las averías",
     "active": "Activa",
     "symptom": "Síntoma",
