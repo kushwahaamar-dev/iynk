@@ -1,0 +1,374 @@
+{
+  "title": "Schwerlast-Oktokopter",
+  "tagline": "Ein 15-kg-Kino-Oktokopter mit ArduPilot: Acht Motoren tragen ein Gimbal und eine Filmkamera, und er fliegt weiter, wenn einer davon stehen bleibt.",
+  "sub": "ArduCopter + Pixhawk 6X + 12S",
+  "hint": "Bau einen Kamera-Oktokopter, teste sein Einziehfahrwerk und beide GPS, flieg dann über das Studiogelände und stopp in der Luft einen Motor",
+  "noun": "Oktokopter",
+  "overview": "Ein Oktokopter hat acht Motoren, wo ein Quad vier hat. Das bringt zweierlei: Auftrieb für eine schwere Nutzlast und Redundanz. Dieser hier trägt ein 3-Achsen-Gimbal und eine Kinokamera, 3,7 kg der 15,5 kg, die er mit zwei 6S-Akkus in Reihe wiegt. Mit acht Motoren kostet der Verlust von einem ein Achtel des Schubs und sonst nichts: Der Mixer treibt die anderen sieben etwas stärker an, und die Aufnahme geht weiter, wo ein Quad mit totem Motor abstürzt. Der Rahmen misst 1360 mm von Motor zu Motor, auf klappbaren 32-mm-Carbonarmen, geflogen von einem Pixhawk 6X mit ArduCopter 4.7.2, mit zwei GPS, einem 900-MHz-Telemetriefunk und einem ELRS-Empfänger. Seine Beine klappen nach dem Start hoch, damit die Kamera ganz herum schwenken kann. Filmteams fliegen solche Fluggeräte zu zweit: ein Pilot und ein Kameraoperator an einer zweiten Funke, der nur das Gimbal ausrichtet. Wähl die Teile und behalt die Zahlen im Blick, bau ihn, führ die Werkbanktests durch und flieg dann über das Studiogelände.",
+  "practice": "Fang in Loiter an: Starte, halt einen Schwebeflug, flieg die Straße hinunter und lande auf dem Landeplatz. Flieg dann die Verfolgungsjagd von Hand und lass AUTO die Orbit-Aufnahme um den Wasserturm fliegen. Wenn du ihm vertraust, steig über freiem Gelände auf 15 m und wähl Motorausfall: Ein Motor bleibt stehen, und er fliegt auf sieben weiter und dreht sich langsam, weil das Gieren knapp wird. Bei einem echten Aufbau: ein strombegrenztes erstes Einstecken, ausgelegt für 12S, der Motortest A bis H ohne Propeller, Kalibrierung von Beschleunigungssensor und Kompass, das Fahrwerk auf der Werkbank, beide GPS mit Fix, jede Pre-Arm-Meldung gelesen und vor jedem Flug an jedem Arm gezogen, um seine Klemme zu prüfen.",
+  "design": {
+    "fixed": {
+      "FRAME": "Klappbarer Carbon-Oktorahmen, 1360 mm",
+      "ESC": "Acht 80-A-ESCs für 12S (PWM)",
+      "FC": "Flugcontroller Pixhawk 6X",
+      "GPS": "Zwei Module GPS + Kompass auf Masten",
+      "XT60": "12S-Stromverteiler, XT90-S, 63-V-Kondensator, PM02D HV",
+      "RX": "ELRS-Empfänger und 900-MHz-Telemetriefunk",
+      "GEAR": "Einziehfahrwerk und seine Servos",
+      "GIMBAL": "Bürstenloses 3-Achsen-Gimbal",
+      "CAM": "Kinokamera und Objektiv (die Nutzlast, ohne Preis)",
+      "TOP": "Akkuträger, Stützen und Gurte"
+    },
+    "verdict": {
+      "ok": "Die Teile passen zusammen: Schub-Gewichts-Verhältnis {tw}:1. Ein Motorausfall kostet ein Achtel des Schubs, also können die anderen sieben den Schwebeflug noch halten und landen. Schwerlast will etwa 2:1: Viel weniger lässt nichts für Wind oder einen Motorausfall übrig, viel mehr ist Gewicht, das nur die Flugzeit verkürzt.",
+      "weak": "Schub-Gewichts-Verhältnis {tw}:1: Er kann dieses Gewicht nicht mit Reserve heben und dürfte nie einen Motor verlieren. Schwerlast braucht etwa 2:1, was die 170-KV-Motoren an 12S mit 20-Zoll-Propellern liefern.",
+      "over": "{kv} KV an {cells}S drehen Propeller dieser Größe viel zu schnell: Die Motoren und ihre ESCs überhitzen, und einer verliert in der Luft den Takt (Desync). 6010-Motoren für 20-Zoll-Propeller haben an 12S 130-170 KV."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Oktorahmen",
+      "what": "Zwei achteckige Carbonplatten im Abstand von 60 mm, mit acht 32-mm-Carbonrohren dazwischen geklemmt, die jeweils etwa 250 mm weiter außen an einem Scharnier für den Transport einklappen. Von Motor zu Motor quer über den Rahmen sind es 1360 mm, also sitzen benachbarte Motoren 520 mm auseinander: Der breiteste Propeller, der passt, hat knapp unter 20,5 Zoll."
+    },
+    "GEAR": {
+      "name": "Einziehfahrwerk",
+      "what": "Zwei Beine pro Seite an Scharnieren unter der Bodenplatte, verbunden durch Kufenrohre, jede Seite an einem Einziehservo. Unten halten sie die Kamera vom Boden frei; oben klappen sie aus dem Bild, damit das Gimbal ganz herum schwenken kann. Die Servos laufen an AUX OUT 1 (SERVO9, LandingGear) und werden über einen Schalter auf Kanal 7 bedient."
+    },
+    "MOTORS": {
+      "name": "Acht Motoren 6010 mit 170 KV",
+      "what": "60-mm-Statoren, 170 KV an 12S. Das Octa X von ArduPilot nummeriert sie außer der Reihe: M1 vorne rechts, dann im Uhrzeigersinn M3, M8, M4, M2, M6, M7, M5, abwechselnd im und gegen den Uhrzeigersinn. Gegenüberliegende Motoren drehen in dieselbe Richtung."
+    },
+    "ESC": {
+      "name": "Acht 80-A-ESCs",
+      "what": "Einer oben auf jedem Arm, unter seinem Propeller, wo der Abwind ihn kühlt, nah am Motor, damit die Phasendrähte kurz bleiben. Sie nehmen einfaches PWM von MAIN OUT 1-8 und müssen für 12S ausgelegt sein. Der Motor kommt in der Spitze auf knapp 30 A, also sind 80 A großzügig."
+    },
+    "WIRES": {
+      "name": "Verkabelung der Arme",
+      "what": "Pro Arm ein rot-schwarzes Paar mit 12 AWG vom Stromverteiler und das Signalkabel des ESC entlang des Rohrs nach außen, mit einer lockeren Schlaufe über dem Klappgelenk, damit der Arm einklappen kann, ohne an einem Kabel zu ziehen. Drei Phasendrähte von jedem ESC zu seinem Motor; vertausch zwei beliebige, um ihn umzukehren."
+    },
+    "XT60": {
+      "name": "Stromverteiler",
+      "what": "Ein 160-mm-Stromverteiler zwischen den Platten: Die Akkus kommen hinten über einen Antifunken-Stecker XT90-S herein, und ein 1000-µF-Kondensator für 63 V mit niedrigem ESR liegt über dem Bus, Streifen zu Minus. 12S sind voll 50,4 V, also würde der 35-V-Kondensator eines 6S-Quads ausfallen. Ein Modul PM02D HV bringt 5,2 V und die Akkuspannung an POWER1 des Pixhawk."
+    },
+    "FC": {
+      "name": "Pixhawk 6X",
+      "what": "Ein Flugcontroller mit STM32H753, drei IMUs und zwei Barometern, auf Schwingungsdämpfern auf der Deckplatte, Pfeil zur Nase. MAIN OUT 1-8 treiben die acht ESCs (SERVO1-8), AUX OUT 1 das Fahrwerk (SERVO9). Er läuft mit ArduCopter 4.7.2."
+    },
+    "RX": {
+      "name": "Empfänger und Telemetriefunk",
+      "what": "Ein ELRS-Empfänger an UART4 (SERIAL6, CRSF) für die Knüppel des Piloten und ein 900-MHz-Funk an TELEM1 für die MAVLink-Verbindung der Bodenstation. Beide hängen unter der Bodenplatte, die Antennen nach unten, frei vom Carbon."
+    },
+    "GPS": {
+      "name": "Zwei GPS auf Masten",
+      "what": "Zwei Module GPS + Kompass an GPS1 und GPS2, jedes auf einem Mast hinter dem Akkuträger, Pfeile nach vorne, so weit von der 12S-Verkabelung entfernt, wie der Rahmen erlaubt. ArduPilot fliegt mit dem besseren der beiden und warnt, wenn sie sich widersprechen."
+    },
+    "TOP": {
+      "name": "Akkuträger",
+      "what": "Ein Carbonträger auf vier Stützen über dem Pixhawk, mit Gurten für die beiden Akkus. Er bringt das Gewicht der Akkus über die Mitte des Rahmens, wo der Schwerpunkt liegen muss."
+    },
+    "GIMBAL": {
+      "name": "3-Achsen-Gimbal",
+      "what": "Ein bürstenloses Gimbal, auf Gummidämpfern unter die Vorderseite des Rahmens gehängt: Motoren für Gieren, Rollen und Neigen und eine eigene IMU halten die Kamera ruhig, während sich der Oktokopter neigt. Es spricht MAVLink an TELEM2, aber meist richtet der Kameraoperator es von einer zweiten Funke aus."
+    },
+    "CAM": {
+      "name": "Kinokamera",
+      "what": "Die Nutzlast: eine Kinokamera mit Objektiv, etwa 2,3 kg. Sie zeichnet auf ihre eigenen Speichermedien auf und schickt ein Videobild hinunter zum Kameraoperator. Wucht sie vor dem ersten Einschalten bei ausgeschaltetem Gimbal auf allen drei Achsen aus."
+    },
+    "BATT": {
+      "name": "Zwei 6S-Akkus in Reihe",
+      "what": "Zwei 6S-Akkus mit 16000 mAh nebeneinander auf dem Träger, in Reihe verdrahtet: 44,4 V nominal, 50,4 V voll, weiterhin 16000 mAh. In Reihe addieren sich die Volt, und die Kapazität bleibt; parallel wäre es andersherum."
+    },
+    "PROPS": {
+      "name": "Klapppropeller",
+      "what": "Acht klappbare Carbonpropeller 20 x 5,5 Zoll, im und gegen den Uhrzeigersinn passend zu jedem Motor. Zwischen benachbarten Blattspitzen bleiben 12 mm, was knapp ist; 22-Zoll-Propeller würden sich überlappen und beim Hochdrehen gegeneinanderschlagen."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Den Rahmen zusammenbauen",
+      "body": "Klemm die acht Arme zwischen die beiden Platten, klapp sie aus und verriegle jedes Klappgelenk. Zieh an jedem Arm: Eine unverriegelte Klemme klappt im Flug ein. Ohne seine Beine steht der Rahmen auf einem gepolsterten Ständer."
+    },
+    "gear": {
+      "title": "Das Fahrwerk anbringen",
+      "body": "Die Beine hängen an Scharnieren unter der Bodenplatte, zwei pro Seite, mit den Kufenrohren unten entlang. Steck die Einziehservos später in AUX OUT 1, sobald der Pixhawk drauf ist.",
+      "refusal": "Die Beine hängen an Scharnieren unter der Bodenplatte: Bau zuerst den Rahmen zusammen."
+    },
+    "motors": {
+      "title": "Die acht Motoren montieren",
+      "body": "An den Klemmen an den Armenden, nach ArduPilot-Nummer: M1 vorne rechts, dann im Uhrzeigersinn M3, M8, M4, M2, M6, M7, M5. Gegenüberliegende Motoren drehen in dieselbe Richtung.",
+      "refusal": "Die Motoren werden an die Armenden geschraubt: Bau zuerst den Rahmen zusammen."
+    },
+    "esc": {
+      "title": "Die acht ESCs einsetzen",
+      "body": "Einer oben auf jedem Arm, unter dem Propeller, mit seinem Signalkabel nach innen.",
+      "refusal": "Die ESCs sitzen auf den Armen: Bau zuerst den Rahmen zusammen."
+    },
+    "wires": {
+      "title": "Die Arme verkabeln",
+      "body": "Stromkabelpaar und Signalkabel entlang jedes Rohrs nach außen, mit einer lockeren Schlaufe über dem Klappgelenk; drei Phasendrähte von jedem ESC zu seinem Motor.",
+      "refusal": "Setz die Motoren und die ESCs ein, bevor die Kabel kommen, die sie verbinden."
+    },
+    "power": {
+      "title": "Den Stromverteiler einsetzen",
+      "body": "Zwischen die Platten, das XT90-S-Kabel hinten heraus, der 63-V-Kondensator über dem Bus mit dem Streifen zu Minus und das Modul PM02D HV für den Pixhawk.",
+      "refusal": "Der Stromverteiler speist die Kabel der ESCs: Setz zuerst die ESCs ein."
+    },
+    "fc": {
+      "title": "Den Pixhawk 6X montieren",
+      "body": "Auf seinen Dämpfern in der Mitte der Deckplatte, Pfeil zur Nase. ESC-Signalkabel in Motorreihenfolge an MAIN OUT 1-8, die Fahrwerksservos an AUX OUT 1, das PM02D an POWER1.",
+      "refusal": "Der Pixhawk wird vom Stromverteiler versorgt: Setz den zuerst ein."
+    },
+    "rx": {
+      "title": "Den Empfänger und den Telemetriefunk einsetzen",
+      "body": "Unter der Bodenplatte, Antennen nach unten: der ELRS-Empfänger an UART4, der 900-MHz-Funk an TELEM1.",
+      "refusal": "Die Funkmodule werden in den Pixhawk gesteckt: Montier ihn zuerst."
+    },
+    "gps": {
+      "title": "Die GPS-Masten aufstellen",
+      "body": "Zwei Masten hinter der Stelle, an die der Träger kommt, die Module mit dem Pfeil nach vorne, Kabel an GPS1 und GPS2.",
+      "refusal": "Die GPS-Module werden in den Pixhawk gesteckt: Montier ihn zuerst."
+    },
+    "tray": {
+      "title": "Den Akkuträger anbringen",
+      "body": "Auf vier Stützen über dem Pixhawk, mittig auf dem Rahmen.",
+      "refusal": "Der Träger kommt über den Pixhawk: Montier ihn zuerst."
+    },
+    "gimbal": {
+      "title": "Das Gimbal aufhängen",
+      "body": "Auf seiner Dämpferplatte unter der Vorderseite des Rahmens, sein Kabel an TELEM2.",
+      "refusal": "Das Gimbal hängt unter dem Rahmen, und die Beine müssen dran sein, damit es frei über der Werkbank hängt: Bring zuerst das Fahrwerk an."
+    },
+    "cam": {
+      "title": "Die Kamera montieren und auswuchten",
+      "body": "Schieb die Kamera ins Gimbal und wucht sie bei ausgeschaltetem Gimbal auf allen drei Achsen aus, damit seine Motoren sie nur halten und nie gegen ihr Gewicht ankämpfen.",
+      "refusal": "Die Kamera kommt ins Gimbal: Häng das zuerst auf."
+    },
+    "batt": {
+      "title": "Die Akkus festschnallen",
+      "body": "Beide Akkus nebeneinander unter die Gurte auf den Träger, die Reihenverbindung zwischen ihnen, das Kabel zum XT90-S. Steck zuletzt ein, mit den Propellern noch ab.",
+      "refusal": "Die Akkus sitzen auf dem Träger und werden in den Stromverteiler gesteckt: Setz zuerst beides ein."
+    },
+    "props": {
+      "title": "Propeller drauf, zuletzt",
+      "body": "Jeder Propeller passend zu seinem Motor: Propeller im Uhrzeigersinn auf M1, M2, M7 und M8, gegen den Uhrzeigersinn auf M3, M4, M5 und M6.",
+      "refusal": "Die Propeller kommen nach den Motoren und den Akkus, sobald jeder Werkbanktest bestanden ist: Setz die zuerst ein."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "Die beiden Akkus in Reihe enden in einem Stecker XT90-S. Sein Antifunkenkontakt steckt zuerst über einen Widerstand und lädt den Kondensator sanft, damit 50 V keinen Lichtbogen über die Kontakte ziehen.",
+    "XT60-ESC": "Die Pads des Stromverteilers speisen ein rot-schwarzes Paar mit 12 AWG entlang jedes Arms, insgesamt acht.",
+    "ESC-MOTORS": "Drei Phasendrähte pro Motor, kurz, weil der ESC auf dem Arm direkt darunter sitzt. Ihre Reihenfolge legt die Drehrichtung fest: Vertausch zwei beliebige, um einen Motor umzukehren.",
+    "XT60-FC": "Das PM02D HV bringt 5,2 V an POWER1 des Pixhawk und meldet die Akkuspannung über I2C (BATT_MONITOR 21). Seine eigenen Kabel tragen nur den Strom des Pixhawk, nicht die 190 A der Motoren.",
+    "FC-ESC": "MAIN OUT 1-8 (SERVO1-8, Funktionen 33-40) an die ESCs in der Reihenfolge der Motornummern, als einfaches PWM. Das Signalkabel jedes ESC muss an den Ausgang seines eigenen Motors: Der Motor Test A bis H zeigt ein vertauschtes Paar.",
+    "FC-GEAR": "AUX OUT 1 (SERVO9 = 29, LandingGear) an die Einziehservos; ihren Strom bekommen sie von einem eigenen BEC, nicht vom Pixhawk.",
+    "GPS-FC": "Ein GPS an GPS1 (SERIAL3) und eines an GPS2 (SERIAL4), jedes mit seinem Kompass am selben Kabel.",
+    "RX-FC": "Der ELRS-Empfänger an UART4 (SERIAL6 = 23, CRSF) und der 900-MHz-Funk an TELEM1 (SERIAL1, MAVLink2 mit 57600).",
+    "FC-GIMBAL": "TELEM2 (SERIAL2, MAVLink2 mit 115200) zum Gimbal, eingerichtet als MNT1_TYPE 6. Der Flugcontroller kann es auf die Region of Interest einer Mission richten; sonst richtet der Kameraoperator es aus."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke-Stopper-Test",
+      "pass": "Die Lampe hat nur kurz geblinkt: kein Kurzschluss zwischen Plus und Minus am 12S-Bus. Smoke Stopper für 6S-Quads sind nicht für 50 V ausgelegt, also wird ein Fluggerät wie dieses zum ersten Mal an einem strombegrenzten Netzteil oder einem für 12S ausgelegten Begrenzer eingesteckt.",
+      "fail": "Die Lampe blieb an: Irgendetwas ist kurzgeschlossen. Hier steckt der Kondensator verkehrt herum; dreh ihn um, Streifen zu Minus, und teste noch einmal."
+    },
+    "motors": {
+      "title": "Motortest (ohne Propeller)",
+      "pass": "Der Motor Test von Mission Planner hat sie von A bis H gedreht, von vorne rechts im Uhrzeigersinn: M1, M3, M8, M4, M2, M6, M7, M5, abwechselnd im und gegen den Uhrzeigersinn. Die Propeller können drauf.",
+      "fail": "Ein Motor hat falsch herum gedreht, oder der falsche Arm hat sich bewegt. Vertausch zwei Phasendrähte dieses Motors und prüf die Reihenfolge der Signalkabel an MAIN OUT 1-8: Mit Propellern würde er beim Start heftig gieren oder sich überschlagen."
+    },
+    "calibrate": {
+      "title": "Kalibrierung des Beschleunigungssensors",
+      "pass": "In sechs Lagen kalibriert (waagerecht, beide Seiten, Nase unten, Nase oben, auf dem Rücken), dann Calibrate Level auf seinen Beinen. Ein Fluggerät dieser Größe wird auf der Werkbank umgedreht, bevor die Arme ausgeklappt sind, oder mit einem Helfer.",
+      "fail": "Setz zuerst den Pixhawk ein. Wenn sein Pfeil nach hinten zeigt, dreh ihn um oder setz AHRS_ORIENTATION auf 4 (Yaw180), starte neu und kalibriere noch einmal."
+    },
+    "gear": {
+      "title": "Fahrwerkstest",
+      "pass": "Auf dem Ständer, disarmt: Der Fahrwerksschalter oben hat die Beine aus dem Blickfeld der Kamera hochgeklappt, unten hat er sie wieder heruntergeholt. Im Flug klappen sie beim Steigen durch 4 m von selbst hoch und kommen beim Sinken durch 3 m herunter.",
+      "fail": "Bring zuerst das Fahrwerk, den Pixhawk und den Empfänger an und steck ein. Wenn sich die Beine für den Schalter falsch herum bewegen, setz SERVO9_REVERSED 1."
+    },
+    "gps": {
+      "title": "GPS-Prüfung (beide Empfänger)",
+      "pass": "Beide GPS haben einen 3D-Fix mit vielen Satelliten, ihre Positionen stimmen auf einen Meter überein, und die Kompasse stimmen überein. Loiter kann jetzt eine Position halten.",
+      "fail": "Bring beide GPS-Masten und den Pixhawk an und steck ein, draußen unter freiem Himmel, dann warte, bis beide einen Fix haben. Drinnen oder neben einem Gebäude bekommen sie nie einen Fix."
+    },
+    "prearm": {
+      "title": "Pre-Arm-Prüfungen (ohne Propeller)",
+      "pass": "Jede Prüfung hat bestanden, und er hat sich auf der Werkbank armen lassen, die Motoren im Leerlauf mit MOT_SPIN_ARM, dann disarmt. Mit ARMING_SKIPCHK 0 wird nichts übersprungen.",
+      "fail": "Setz den Pixhawk, die GPS-Masten und den Empfänger ein, ohne Propeller, Akkus drin. Dann lies die PreArm-Meldung: \"3D Accel calibration needed\" heißt kalibrieren, \"GPS 1: Bad fix\" heißt die GPS-Prüfung durchführen und auf einen Fix warten."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Rahmen, Ausgänge und Strom",
+      "explain": "FRAME_CLASS 3 und FRAME_TYPE 1 machen ihn zum Octa X, und die acht SERVOn_FUNCTIONs legen Motor1 bis Motor8 auf MAIN OUT 1-8. Einfaches PWM ist hier die einfache Wahl, weil die MAIN-Ausgänge des 6X DShot nur mit einer zusätzlichen Board-Einstellung können. MOT_BAT_VOLT_MAX und _MIN lassen ArduPilot den Schub gleich halten, während die Akkus absacken. Der Harmonic Notch folgt dem Gas, um die Vibration der Motoren aus den Gyros zu filtern. Der 6X liest sein Strommodul digital (BATT_MONITOR 21). Mehrere davon brauchen einen Neustart."
+    },
+    "links": {
+      "title": "Telemetrie, GPS, Empfänger und Gimbal",
+      "explain": "Jeder Port bekommt sein Protokoll: MAVLink2 zum Telemetriefunk und zum Gimbal, GPS an beiden GPS-Ports, das CRSF des Empfängers an UART4. MNT1_TYPE 6 ist ein MAVLink-Gimbal; nach einem Neustart erscheinen die MNT1-Zeilen darunter, und die Gier-Grenzen von ±180° lassen es ganz herum drehen."
+    },
+    "gear": {
+      "title": "Fahrwerk",
+      "explain": "SERVO9_FUNCTION 29 legt das Fahrwerk auf AUX OUT 1, und RC7_OPTION 29 legt es auf einen Schalter. Die Höhen sind in Metern: Das ursprüngliche Blatt nannte LGR_DEPLOY_ALT 300, als wären es Zentimeter, was ArduCopter als 300 m liest, und es fährt nur nach Höhe ein, wenn LGR_RETRACT_ALT mindestens LGR_DEPLOY_ALT ist. Mit 4 und 3 klappen die Beine nach dem Start hoch und kommen zu jeder Landung herunter."
+    },
+    "failsafe": {
+      "title": "Failsafes und Pre-Arm",
+      "explain": "Eine verlorene Funkverbindung heißt RTL. Ein schwacher Akku (42 V, 3,5 V pro Zelle) heißt ebenfalls RTL; ein kritischer (40,8 V) landet an Ort und Stelle. Eine schlechte Positionsschätzung landet, statt blind weiterzufliegen, und ein Absturz disarmt. ARMING_SKIPCHK 0 führt jede Pre-Arm-Prüfung durch."
+    },
+    "loiter": {
+      "title": "Loiter",
+      "explain": "GPS-Positionshaltung: Die Knüppel verlangen eine Geschwindigkeit bis LOIT_SPEED_MS, und er bremst und hält die Stelle, wenn du loslässt. Sanftes Beschleunigen und Bremsen ergeben ruhige Kamerafahrten. Das ist der Modus zum Filmen."
+    },
+    "althold": {
+      "title": "AltHold",
+      "explain": "Das Barometer hält die Höhe, aber nichts hält die Position, also driftet er mit dem Wind. Die Rückfallebene des Piloten, wenn das GPS weg ist, und gute Übung, um ihn von Hand zu fliegen."
+    },
+    "stabilize": {
+      "title": "Stabilize",
+      "explain": "Selbstnivellierend mit einer Neigungsgrenze von 30°; das Gas liegt bei dir. ATC_ANGLE_MAX begrenzt die Neigung in jedem Modus. Ein 15-kg-Fluggerät reagiert langsam, also steuere klein und früh."
+    },
+    "rtl": {
+      "title": "RTL",
+      "explain": "Rückkehr zum Startpunkt: steigt auf RTL_ALT_M (25 m reichen über den Wasserturm), fliegt nach Hause, wartet 5 s und landet; die Beine kommen bei 3 m herunter. Setz RTL_ALT_M über alles, was auf dem Heimweg liegt, sonst fliegt er hinein."
+    },
+    "auto": {
+      "title": "AUTO: die Orbit-Aufnahme",
+      "explain": "AUTO fliegt die hochgeladene Mission: Start, ein Standbild von jeder Seite des Wasserturms, wobei DO_SET_ROI das Gimbal auf ihn gerichtet hält, dann nach Hause zur Landung. Gearmt wird in Loiter, weil AUTO nicht von selbst armen kann."
+    },
+    "motorout": {
+      "title": "Motorausfall",
+      "explain": "Für einen Motorausfall gibt es keinen Modus: Der Mixer treibt einfach die anderen sieben stärker an. Die beiden Nachbarn des toten Motors drehen schneller, und der Motor gegenüber, der in dieselbe Richtung dreht, wird langsamer, also bleibt das Fluggerät waagerecht, aber das Gieren wird knapp, und es dreht sich langsam. ArduCopter sagt nichts, solange nichts in die Sättigung geht: dann erscheint \"Yaw Imbalance\" oder \"Potential Thrust Loss\". Der Modus „Motorausfall“ des Flugfelds stoppt einen Motor, damit du es spüren kannst."
+    }
+  },
+  "flight": {
+    "modes": {
+      "loiter": {
+        "title": "Loiter",
+        "hint": "GPS-Positionshaltung: Die Knüppel legen eine Geschwindigkeit bis 8 m/s fest, und er hält an, wenn du loslässt. Der Modus zum Filmen."
+      },
+      "althold": {
+        "title": "AltHold",
+        "hint": "Hält die Höhe, nicht die Position: Er driftet mit dem Wind."
+      },
+      "stabilize": {
+        "title": "Stabilize",
+        "hint": "Selbstnivellierend mit einer Neigungsgrenze von 30°; das Gas liegt bei dir. Schwer und träge in der Reaktion: kleine Eingaben."
+      },
+      "rtl": {
+        "title": "RTL",
+        "hint": "Steigt auf 25 m, über den Wasserturm, fliegt nach Hause und landet auf dem Landeplatz."
+      },
+      "auto": {
+        "title": "AUTO-Orbit",
+        "hint": "Fliegt die Orbit-Aufnahme selbst: ein Standbild von jeder Seite des Wasserturms, dann nach Hause zur Landung."
+      },
+      "motorout": {
+        "title": "Motorausfall",
+        "hint": "Loiter, bei dem ein Motor stehen bleibt, sobald du den Modus in der Luft wählst. Er fliegt auf sieben weiter und dreht sich langsam. Wähl ihn hoch, über freiem Gelände."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Funk des Piloten verloren: RTL, hoch auf 25 m und nach Hause.",
+      "low-battery": "Unter 42 V (3,5 V pro Zelle): RTL.",
+      "battery-critical": "Unter 40,8 V: Er landet an Ort und Stelle, statt den Heimflug zu riskieren.",
+      "ekf": "Der Schätzer vertraut seiner Position nicht mehr: Er landet, weil er nicht mehr weiß, wo er ist.",
+      "crash": "Absturz erkannt (starke Neigung ohne Kontrolle): Die Motoren halten an."
+    },
+    "controls": "Tastatur: Leertaste armt und disarmt, W und S steigen und sinken, die Pfeiltasten fliegen vorwärts, rückwärts und seitwärts, A und D gieren, V schaltet auf die Gimbal-Kamera, R setzt die Drohne zurück auf den Landeplatz. In Loiter hält sie an, wenn du loslässt. Auf dem Handy ist der linke Knüppel Gas und Gieren, der rechte Nicken und Rollen. Ein Gamepad funktioniert in Mode 2."
+  },
+  "courses": {
+    "chase": {
+      "title": "Verfolgungsjagd",
+      "brief": "Die Autoverfolgung über das Studiogelände: vom Landeplatz hoch zum Westende der Hauptstraße, in 4 m Höhe die Straße zwischen den Kulissenfassaden hinunter, über das Filmauto am Ostende, dann über das Dach des Wasserturms steigen und zur Landung auf dem Landeplatz nach Hause kommen.",
+      "goals": {
+        "1": "Hauptstraße, Westende",
+        "2": "Am Saloon vorbei, in 4 m Höhe",
+        "3": "Über das Filmauto",
+        "4": "Über den Wasserturm",
+        "5": "Auf dem Landeplatz landen"
+      }
+    },
+    "orbit": {
+      "title": "Orbit-Aufnahme (AUTO)",
+      "brief": "Die Aufnahme, für die dieses Fluggerät gebaut ist, als Mission: auf 10 m starten, dann je ein Standbild von 2 s von Westen, Norden, Osten und Süden des Wasserturms, 12 m entfernt und 18 m hoch, und nach Hause zur Landung auf dem Landeplatz.",
+      "goals": {
+        "1": "Auf 10 m starten",
+        "2": "Standbild: von Westen",
+        "3": "Standbild: von Norden",
+        "4": "Standbild: von Osten",
+        "5": "Standbild: von Süden",
+        "6": "Auf dem Landeplatz landen"
+      }
+    }
+  },
+  "quizzes": {
+    "power": {
+      "series": {
+        "q": "Zwei 6S-Akkus mit 16000 mAh (je 22,2 V) werden in Reihe verdrahtet. Was bekommt der Oktokopter?",
+        "options": {
+          "1": "44,4 V und 16000 mAh",
+          "2": "22,2 V und 32000 mAh",
+          "3": "44,4 V und 32000 mAh"
+        },
+        "why": "In Reihe addieren sich die Spannungen, und durch beide Akkus fließt derselbe Strom, also bleibt die Kapazität bei 16000 mAh. Parallel wären es 22,2 V und 32000 mAh. So oder so verdoppelt sich die Energie."
+      },
+      "cap": {
+        "q": "Warum braucht dieser Stromverteiler einen 63-V-Kondensator und nicht den 35-V-Kondensator eines 6S-Quads?",
+        "options": {
+          "1": "Ein größerer Kondensator hält mehr Ladung für das Gimbal",
+          "2": "Zwei 6S-Akkus haben voll 50,4 V, und die Spitzen gehen höher: Ein 35-V-Kondensator würde ausfallen",
+          "3": "63-V-Kondensatoren haben einen niedrigeren Widerstand"
+        },
+        "why": "Die Nennspannung eines Kondensators muss deutlich über der höchsten Spannung liegen, die er sieht. 12S sind voll 50,4 V, plus die Spitzen, die die ESCs zurückwerfen; ein 35-V- oder 50-V-Kondensator überhitzt und kann abblasen. Sein Streifen kommt trotzdem an Minus."
+      }
+    },
+    "gear": {
+      "why": {
+        "q": "Warum werden die Beine im Flug hochgeklappt?",
+        "options": {
+          "1": "Um den Luftwiderstand zu senken",
+          "2": "Damit das Gimbal ganz herum schwenken kann, ohne die Beine im Bild",
+          "3": "Um den Schwerpunkt zu senken"
+        },
+        "why": "Mit ausgefahrenen Beinen bringt jeder Schwenk über die Seiten hinaus sie ins Bild. Hochgeklappt sieht die Kamera rundum. Vor der Landung kommen sie nach Höhe (LGR_DEPLOY_ALT) oder per Schalter wieder herunter."
+      },
+      "metres": {
+        "q": "Ein altes Einstellblatt nennt LGR_DEPLOY_ALT 300 und meint 3 m. Was macht ArduCopter 4.7.2 damit?",
+        "options": {
+          "1": "Es fährt die Beine bei 3 m aus",
+          "2": "Es liest 300 m: Die Beine kommen nie nach Höhe herunter, und das Einfahren nach Höhe hört auch auf",
+          "3": "Es lehnt den Wert ab"
+        },
+        "why": "Die LGR-Höhen sind in Metern. 300 ist ein zulässiger Wert, also warnt dich nichts. Und weil das Fahrwerk nur nach Höhe einfährt, wenn LGR_RETRACT_ALT mindestens LGR_DEPLOY_ALT ist, bleiben die Beine im Bild oder, per Schalter hochgeklappt, kommen zur Landung nie herunter."
+      }
+    },
+    "fly": {
+      "motorout": {
+        "q": "Einer der acht Motoren bleibt im Schwebeflug stehen. Was macht ArduCopter?",
+        "options": {
+          "1": "Nichts Besonderes: Der Mixer treibt die anderen sieben stärker an, und er fliegt weiter",
+          "2": "Er schaltet sofort auf LAND",
+          "3": "Er stoppt auch den gegenüberliegenden Motor, um im Gleichgewicht zu bleiben"
+        },
+        "why": "Mit einem Schub-Gewichts-Verhältnis von 2:1 tragen sieben Motoren 15,5 kg mit je etwa der Hälfte ihres vollen Schubs. Einen Modus für Motorausfälle gibt es nicht: Der Lageregler hält ihn waagerecht, und du bringst ihn nach Hause. Nur wenn ein Motor in die Sättigung geht, warnt er: \"Yaw Imbalance\" oder \"Potential Thrust Loss\"."
+      },
+      "which": {
+        "q": "M1, vorne rechts und im Uhrzeigersinn, bleibt stehen. Welche Motoren ändern sich am stärksten?",
+        "options": {
+          "1": "Alle sieben drehen gleich viel schneller",
+          "2": "Seine beiden Nachbarn (gegen den Uhrzeigersinn) drehen schneller, und M2 gegenüber (im Uhrzeigersinn) wird langsamer",
+          "3": "Nur M2, gegenüber"
+        },
+        "why": "Die Nachbarn übernehmen den verlorenen Auftrieb auf dieser Seite, und M2 wird langsamer, um ihn waagerecht zu halten. Jetzt arbeiten die Motoren gegen den Uhrzeigersinn stärker als die im Uhrzeigersinn, und das zusätzliche Drehmoment dreht das Fluggerät: Deshalb giert er mit einem ausgefallenen Motor langsam."
+      },
+      "props": {
+        "q": "Die 22-Zoll-Propeller erzeugen mehr Schub. Warum nicht sie montieren?",
+        "options": {
+          "1": "Sie sind zu schwer für die Motoren",
+          "2": "Die ESCs können sie nicht treiben",
+          "3": "Die Motoren stehen 520 mm auseinander und die Propeller sind 558 mm breit: Nachbarn würden sich treffen"
+        },
+        "why": "Bei einem Okto begrenzt der Abstand zwischen benachbarten Motoren den Propeller, nicht die Rahmengröße. 2 × 680 mm × sin 22,5° sind 520 mm, also haben 20-Zoll-Propeller (508 mm) 12 mm Luft, und 22-Zoll-Propeller überlappen sich und zersplittern beim Hochdrehen."
+      }
+    }
+  }
+}
