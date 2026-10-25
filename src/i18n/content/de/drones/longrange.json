@@ -1,0 +1,414 @@
+{
+  "title": "7-Zoll-Long-Range-Quad",
+  "tagline": "Der 7-Zoll-Cruiser: GPS, eine 900-MHz-Verbindung und ein Li-Ionen-Akku, kilometerweit hinaus und per Rettung nach Hause.",
+  "sub": "Long-Range-Cruiser mit GPS Rescue",
+  "hint": "Bau ihn, warte auf den GPS-Fix, teste die Rettung ohne Propeller und flieg dann das Tal",
+  "noun": "Long-Range-Quad",
+  "overview": "Ein 7-Zoll-Long-Range-Quad tauscht den Punch eines 5-Zöllers gegen Effizienz: große Propeller mit geringer Steigung, langsam gedreht von 1300-KV-Motoren, und ein 6S1P-Akku aus 21700-Li-Ionen-Zellen, der pro Gramm etwa doppelt so viel Energie speichert wie ein LiPo. Ein GPS und ein Kompass auf einem Mast sagen Betaflight, wo zu Hause ist, und eine ExpressLRS-Verbindung auf 900 MHz reicht mehrere Kilometer weit. Bricht die Verbindung ab, steigt GPS Rescue, dreht Richtung Heimat, fliegt zurück und landet. Dieser hier hat einen 315-mm-Carbonrahmen in True-X-Form, einen 30,5-mm-F7-Stack und einen analogen Videosender mit 1 W. Wähl Akku, Motoren und Propeller und sieh zu, wie sich die Flugzeit ändert, bau ihn Teil für Teil, mach die Prüfungen von Kompass, GPS und Failsafe ohne Propeller und flieg dann das Tal.",
+  "practice": "Flieg zuerst die Gates am Bauernhaus, um ein Gefühl für einen schweren 7-Zöller zu bekommen, dann den Flug durchs Tal mit einem Auge auf dem Heimatpfeil, und sieh dann zu, wie GPS Rescue ihn nach Hause bringt. Bei einem echten Long-Range-Quad: Kalibrier den Kompass und vergleich seine Richtung mit einem Handy, warte vor dem Armen auf 8 oder mehr Satelliten und teste die Rettung in der Nähe (50 bis 100 m entfernt GPS RESCUE einschalten und zusehen, wie er zurückkommt), bevor du ihr weit draußen vertraust. Kehr bei 3,1 V pro Zelle um, und kenne die Regeln dort, wo du fliegst: Die meisten Länder verlangen, dass der Quad in Sichtweite bleibt, oder einen Spotter neben dir.",
+  "design": {
+    "fixed": {
+      "FRAME": "7-Zoll-Carbonrahmen in True-X-Form",
+      "ESC": "50-A-4-in-1-ESC (AM32)",
+      "FC": "F7-Flugcontroller mit Barometer",
+      "CAM": "Analoge FPV-Kamera",
+      "VTX": "5,8-GHz-VTX mit 1 W und Stubby-Antenne",
+      "RX": "ELRS-Diversity-Empfänger 900 MHz und T-Antenne",
+      "GPS": "M10-GPS + Kompass QMC5883L",
+      "XT60": "XT60-Pigtail und Low-ESR-Kondensator",
+      "TOP": "Deckplatte, Abstandsbolzen und GPS-Mast",
+      "STRAP": "Akkugurt und Antirutschpad"
+    },
+    "verdict": {
+      "ok": "Die Teile passen zusammen. Effizient und ruhig: ein Long-Range-Cruiser.",
+      "over": "{kv} KV an {cells}S drehen einen 7-Zoll-Propeller weit schneller, als diese Motoren es vertragen: riesiger Strom, heiße Motoren und Desyncs. 6S-7-Zoll-Aufbauten nutzen etwa 1300 KV; 1700-KV-Motoren sind für 4S."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "7-Zoll-Carbonrahmen in True-X-Form",
+      "what": "6 mm starke Carbonarme in einem quadratischen True-X, 315 mm von Motor zu Motor über die Diagonale (111,4 mm nach vorn oder hinten und zu jeder Seite der Mitte), auf einer 132 x 52 mm großen Rumpfplatte mit den 30,5-mm-Stack-Löchern in der Mitte. 7-Zoll-Propeller lassen etwa 45 mm zwischen benachbarten Spitzen. Dicke Arme verhindern, dass die großen Propeller den Rahmen verbiegen. Etwa 162 g."
+    },
+    "MOTORS": {
+      "name": "Vier 2807-Motoren mit niedrigem KV",
+      "what": "Außenläufer mit einem 28-mm-Stator von 7 mm Höhe und 12N14P-Wicklung (motor_poles 14), etwa 48 g pro Stück. 1300 KV an 6S sind der klassische 7-Zoll-Motor: Er dreht die großen Propeller im Reiseflug langsam und effizient und hat trotzdem das Fünffache seines Gewichts an Schub. Die Option 3008 mit 1100 KV ist größer und ruhiger; die Option mit 1700 KV ist ein 4S-Motor und überdreht einen 7-Zoll-Propeller an 6S."
+    },
+    "ESC": {
+      "name": "50-A-4-in-1-ESC (AM32)",
+      "what": "Vier 50-A-Motortreiber mit 12 MOSFETs auf einer 30,5-mm-Platine ganz unten im Stack, Akku-Pads hinten. Er läuft mit AM32-Firmware (BLHeli_32 endete 2024), nimmt DShot600 vom Flugcontroller an und meldet, da bidirektional, die Drehzahl jedes Motors für den RPM-Filter zurück."
+    },
+    "WIRES": {
+      "name": "Phasenkabel der Motoren",
+      "what": "Drei Kabel pro Motor, entlang der langen Arme geführt und an die Pads dieser Ecke am ESC gelötet. Jede Reihenfolge dreht den Motor; das Tauschen zweier Kabel oder das Umkehren in der ESC-Firmware lässt ihn andersherum drehen. Bind sie fest: Ein loses Kabel an einem 7-Zoll-Arm landet im Propeller."
+    },
+    "XT60": {
+      "name": "XT60-Kabel und 1000-µF-35-V-Kondensator",
+      "what": "Ein Pigtail mit 12 AWG und dem gelben XT60-Stecker, an die Akku-Pads des ESC gelötet, und ein Low-ESR-Kondensator mit 1000 µF über denselben Pads, Streifen am Minus-Bein. Die langen Akkukabel eines 7-Zöllers schwingen bei jedem Schalten und Bremsen der ESCs mit Spannungsspitzen; der Kondensator schluckt sie, bevor sie den Gyro und das Video erreichen. 35 V sind das Minimum für 6S (25,2 V voll); 50 V geben Reserve."
+    },
+    "FC": {
+      "name": "F7-Flugcontroller mit Barometer",
+      "what": "Ein F722-Flugcontroller auf dem 30,5-mm-Stack, mit einem Gyro, einem Barometer für die Höhe und einem analogen OSD-Chip. Er läuft mit Betaflight 2026.6.2. Der Empfänger hängt an UART2, das GPS an UART3, der Kompass an den I2C-Pads und das SmartAudio des VTX an UART1. GPS Rescue braucht den Beschleunigungssensor, das GPS an einem vollwertigen UART und für die Höhe das Barometer. Der Pfeil muss zur Nase zeigen."
+    },
+    "VTX": {
+      "name": "5,8-GHz-VTX mit 1 W und Stubby-Antenne",
+      "what": "Ein analoger Videosender mit bis zu 1 W (30 dBm), oben auf dem Stack, mit einer Stubby-Antenne nach hinten hinaus. Betaflight stellt Band, Kanal und Leistung über SmartAudio ein. Weit draußen verblasst das 5,8-GHz-Video, bevor die 900-MHz-Steuerverbindung abreißt. Schalte ihn nie ohne Antenne ein, und lass ihn auf der Werkbank bei 25 mW: 1 W wird schnell heiß."
+    },
+    "CAM": {
+      "name": "Analoge FPV-Kamera, 20° Uptilt",
+      "what": "Eine 19-mm-Analogkamera zwischen den Seitenplatten an der Nase, 20 Grad nach oben geneigt, damit das Bild waagerecht ist, wenn sich der Quad zum Reiseflug nach vorn neigt. Ihr Video geht an das CAM-Pad des Flugcontrollers, wo das OSD Verbindungsqualität, Satelliten, Heimatpfeil und Akku darüberschreibt."
+    },
+    "RX": {
+      "name": "ELRS-Diversity-Empfänger 900 MHz und T-Antenne",
+      "what": "Ein ExpressLRS-Empfänger auf 868 oder 915 MHz mit zwei Antennen (Diversity) auf einer T-förmigen Halterung hinten. Eine niedrigere Frequenz reicht weiter und kommt besser um Bäume und Hügel herum als 2,4 GHz. Er spricht CRSF mit Betaflight an UART2 und schickt Verbindungsqualität (LQ) und Signalstärke (RSSI dBm) für das OSD zurück: Behalte bei einem langen Flug beide im Blick."
+    },
+    "TOP": {
+      "name": "Deckplatte, Abstandsbolzen und GPS-Mast",
+      "what": "Eine 2 mm starke Carbon-Deckplatte auf vier 30-mm-Abstandsbolzen und hinten ein gedruckter TPU-Mast, der um 22 Grad nach hinten geneigt ist und in einer waagerechten Plattform endet. Der Mast bringt GPS und Kompass weit weg von VTX, ESC und Akkukabeln, deren Ströme den Kompass stören würden."
+    },
+    "GPS": {
+      "name": "M10-GPS + Kompass QMC5883L",
+      "what": "Ein 20 x 20 mm großes Modul von etwa 8 g auf dem Mast: ein u-blox-M10-Empfänger (GPS, Galileo, BeiDou, GLONASS) an UART3 und ein Kompass QMC5883L an I2C, in einem 6-poligen Kabel. Es muss flach sitzen, mit seinem Pfeil zur Nase. Die grüne LED leuchtet dauerhaft, solange es sucht, und blinkt mit einem 3D-Fix einmal pro Sekunde. Betaflight braucht 8 Satelliten, bevor es armt, damit es einen Heimatpunkt hat."
+    },
+    "BATT": {
+      "name": "6S1P-Akku aus 21700-Li-Ionen-Zellen",
+      "what": "Sechs 21700-Zellen in Reihe (6S, eine parallel: 1P), 3 x 2 gebündelt zu einem 71 x 65 x 44 mm großen Block von etwa 440 g, auf der Deckplatte festgeschnallt. Eine Li-Ionen-Zelle hat voll 4,2 V und nominal 3,6 V, ist bis etwa 3,0 V gut nutzbar und trägt pro Gramm etwa doppelt so viel Energie wie ein LiPo. Aber eine 4000-mAh-Zelle ist für etwa 45 A ausgelegt: Ein Punch-out mit 120 A lässt sie stark einbrechen und heizt sie auf. Die Option P50B speichert 5000 mAh bei 60 A; der 6S-1800-LiPo ist leichter und kräftiger, mit weniger als der Hälfte der Energie."
+    },
+    "PROPS": {
+      "name": "7-Zoll-Zweiblatt-Propeller, 2 CW + 2 CCW",
+      "what": "Vier Zweiblatt-Propeller 7 x 3.5, die effiziente Wahl für Long Range. Die Auswahl bietet außerdem einen längeren Zweiblatt 7.5 x 3.7 und einen kräftigeren Dreiblatt 7 x 4, der besser greift, aber Flugzeit kostet. Zwei drehen im Uhrzeigersinn und zwei gegen den Uhrzeigersinn (props in). Sie kommen zuletzt drauf."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Mit dem Rahmen anfangen",
+      "body": "Schraub die Arme zwischen die Platten und prüf jede Schraube: Ein 7-Zöller rüttelt los, was ein 5-Zöller nie lockert. Feil jede scharfe Carbonkante dort ab, wo später Kabel laufen."
+    },
+    "motors": {
+      "title": "Die vier Motoren anschrauben",
+      "body": "Je vier M3-Schrauben in die 16-x-16-mm-Löcher an den Armspitzen, die Kabel nach innen entlang des Arms. Prüf, ob die Schrauben die Wicklungen nicht berühren.",
+      "refusal": "Die Motoren werden an die Arme des Rahmens geschraubt: Setz zuerst den Rahmen ein."
+    },
+    "esc": {
+      "title": "Den 4-in-1-ESC montieren",
+      "body": "Auf die 30,5-mm-Stack-Löcher, mit den Akku-Pads hinten. Nichts an seiner Unterseite darf das Carbon berühren.",
+      "refusal": "Der ESC sitzt auf den Stack-Löchern des Rahmens: Setz zuerst den Rahmen ein."
+    },
+    "wires": {
+      "title": "Die Motorkabel anlöten",
+      "body": "Führ die drei Kabel jedes Motors entlang seines Arms, kürz sie auf Länge und löte sie an die Pads in seiner Ecke. Bind sie mit einem Schlauch oder Klebeband fest, damit nichts einen Propeller erreichen kann.",
+      "refusal": "Die Kabel laufen von den Motoren zum ESC: Setz zuerst beide ein."
+    },
+    "xt60": {
+      "title": "XT60 und Kondensator anlöten",
+      "body": "Das Pigtail mit 12 AWG Rot an + und Schwarz an - auf die Akku-Pads des ESC, und den 1000-µF-Kondensator über dieselben Pads mit dem Streifen zu Minus. Prüf + und - mit einem Messgerät auf Kurzschluss.",
+      "refusal": "Der XT60 und sein Kondensator werden an die Akku-Pads des ESC gelötet: Setz zuerst den ESC ein."
+    },
+    "fc": {
+      "title": "Den Flugcontroller aufstapeln, Pfeil nach vorn",
+      "body": "Auf Gummitüllen über dem ESC, mit eingestecktem 8-poligem Kabelbaum und dem aufgedruckten Pfeil zur Nase. Muss er anders herum sitzen, stell align_board_yaw passend ein.",
+      "refusal": "Der Flugcontroller kommt oben auf den ESC: Setz zuerst den ESC ein."
+    },
+    "vtx": {
+      "title": "Den VTX und seine Antenne einsetzen",
+      "body": "Oben auf den Stack, mit Video und 9 V vom Flugcontroller und SmartAudio an TX1. Schraub die Stubby-Antenne an, bevor er jemals Strom bekommt.",
+      "refusal": "Der VTX hängt am Flugcontroller: Setz zuerst den Flugcontroller ein."
+    },
+    "cam": {
+      "title": "Die Kamera einsetzen",
+      "body": "Zwischen die Seitenplatten an der Nase, 20 Grad nach oben geneigt, mit Video, 5 V und Masse an den CAM-Pads des Flugcontrollers.",
+      "refusal": "Die Kamera hängt an den CAM-Pads des Flugcontrollers: Setz zuerst den Flugcontroller ein."
+    },
+    "rx": {
+      "title": "Den 900-MHz-Empfänger einsetzen",
+      "body": "Hinten, sein TX an RX2 und RX an TX2, dazu 5 V und Masse. Montier die T-Antenne mit ihren beiden Elementen im Winkel von 90 Grad zueinander, frei von Carbon und Propellern.",
+      "refusal": "Der Empfänger hängt am UART2 des Flugcontrollers: Setz zuerst den Flugcontroller ein."
+    },
+    "top": {
+      "title": "Deckplatte und GPS-Mast aufsetzen",
+      "body": "Auf ihre vier Abstandsbolzen über dem Stack, mit dem Mast hinten. Nichts darunter darf eingeklemmt werden.",
+      "refusal": "Die Deckplatte schließt über dem Stack: Setz zuerst Flugcontroller, VTX, Kamera und Empfänger ein."
+    },
+    "gps": {
+      "title": "Das GPS auf dem Mast montieren",
+      "body": "Flach auf die Plattform des Masts, mit seinem Pfeil zur Nase, und sein Kabel an UART3, I2C, 5 V und Masse. Geneigt oder verdreht liest der Kompass falsch.",
+      "refusal": "Das GPS sitzt auf dem Mast: Setz zuerst die Deckplatte auf."
+    },
+    "batt": {
+      "title": "Den Li-Ionen-Akku festschnallen",
+      "body": "Auf das Antirutschpad, mit dem Gurt durch den Rahmen, mittig, sodass der Quad zwischen den vier Motoren ausbalanciert ist. Steck ihn noch nicht ein.",
+      "refusal": "Der Akku sitzt auf der Deckplatte und wird in den XT60 gesteckt: Setz zuerst beide ein."
+    },
+    "props": {
+      "title": "Die Propeller montieren, zuletzt",
+      "body": "Erst nach dem Smoke-Stopper-Test und der Prüfung der Motordrehrichtung, mit abgestecktem Akku. Propeller im Uhrzeigersinn auf M1 und M4, gegen den Uhrzeigersinn auf M2 und M3, Muttern fest angezogen.",
+      "refusal": "Die Propeller kommen zuletzt drauf: Mach zuerst den Smoke-Stopper-Test und die Prüfung der Motordrehrichtung."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "Der Akku wird in den XT60 gesteckt. 6S hat voll 25,2 V und nominal 22,2 V (21,6 V bei den 3,6-V-Zellen eines Li-Ionen-Akkus). Ein Punch-out zieht bis zu 120 A, weit mehr, als ein 45-A-Li-Ionen-Akku mag.",
+    "XT60-ESC": "Kabel mit 12 AWG zu den Akku-Pads des ESC, mit dem Low-ESR-Kondensator 1000 µF 35 V darüber.",
+    "ESC-MOTORS": "Drei Phasenkabel pro Motor. Jede Reihenfolge dreht ihn; das Tauschen zweier Kabel oder das Umkehren in der ESC-Firmware lässt ihn andersherum drehen.",
+    "FC-ESC": "Der 8-polige Kabelbaum: vier Motorsignale in DShot600 (bidirektional, also meldet jeder ESC die Drehzahl), Akkuspannung, Masse und der Stromsensor.",
+    "RX-FC": "ELRS an UART2 mit CRSF: TX des Empfängers an RX2 und RX an TX2, dazu 5 V und Masse. Beide Drähte zählen: Die Telemetrie (LQ, RSSI, Akku) geht zurück zur Fernsteuerung.",
+    "GPS-FC": "Ein 6-poliges Kabel: TX des GPS an RX3 und RX an TX3 (u-blox UBX mit 57600 Baud, sobald Betaflight es eingerichtet hat), SDA und SCL des Kompasses an die I2C-Pads, 5 V und Masse.",
+    "CAM-FC": "Das Video der Kamera ins CAM-Pad, mit 5 V und Masse. Das analoge OSD des Flugcontrollers schreibt die Daten von GPS, Verbindung und Akku darüber.",
+    "FC-VTX": "Video mit OSD aus dem VTX-Pad, 9 V vom BEC des Flugcontrollers und SmartAudio von TX1, damit Betaflight Band, Kanal und Leistung einstellt."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke-Stopper-Test",
+      "pass": "Die Lampe hat nur kurz geblinkt: Nichts ist kurzgeschlossen, und der Kondensator sitzt richtig herum. Du kannst den Akku jetzt direkt einstecken.",
+      "fail": "Die Lampe leuchtet dauerhaft: Etwas ist kurzgeschlossen, hier ein Kondensator mit dem Streifen zu Plus. Setz ihn mit dem Streifen zu Minus neu ein und wiederhol den Test, bevor du richtig einsteckst."
+    },
+    "motors": {
+      "title": "Prüfung der Motordrehrichtung (ohne Propeller)",
+      "pass": "Alle vier drehen so, wie der Mixer es erwartet: M1 und M4 im Uhrzeigersinn, M2 und M3 gegen den Uhrzeigersinn (props in). Jetzt können die Propeller drauf.",
+      "fail": "Ein Motor hat falsch herum gedreht (sein Pfeil wird rot). Die Prüfung kehrt ihn in den ESC-Einstellungen um, so wie du es im ESC Configurator tun würdest, statt umzulöten. Mit Propellern hätte er den Quad beim Start überschlagen."
+    },
+    "accel": {
+      "title": "Kalibrierung des Beschleunigungssensors",
+      "pass": "Auf einer ebenen Fläche kalibriert: Der Angle-Modus, Höhe halten und GPS Rescue wissen jetzt, wo waagerecht ist. Mit GPS Rescue als Failsafe sperrt ein unkalibrierter Beschleunigungssensor das Armen (NO_ACC_CAL).",
+      "fail": "Setz zuerst den Flugcontroller ein und stell den Quad auf eine ebene Fläche. Wenn der Pfeil nach hinten zeigt, hilft Kalibrieren nicht: Dreh die Platine um oder setz align_board_yaw = 180."
+    },
+    "compass": {
+      "title": "Kompasskalibrierung und Richtungsprüfung",
+      "pass": "Kalibriert (30 s lang durch jede Achse gedreht), und die Richtung stimmt mit der Nase nach Norden, Osten, Süden und Westen auf 10 Grad mit einem Handykompass überein. Jetzt ist trust_mag = ON sicher.",
+      "fail": "Setz zuerst das Modul aus GPS + Kompass ein: Der Kompass sitzt darin. Liegt die Richtung um 180 Grad daneben, zeigt der Pfeil des Moduls nach hinten: Dreh es um und kalibrier erneut, bevor du ihm vertraust."
+    },
+    "gps": {
+      "title": "GPS-Fix (draußen)",
+      "pass": "3D-Fix mit 14 Satelliten, 8 sind zum Armen nötig. Die LED blinkt einmal pro Sekunde, Betaflight piept, wenn das GPS bereit ist, und der Heimatpunkt wird dort gesetzt, wo du armst.",
+      "fail": "Setz das Modul aus GPS + Kompass ein und bring den Quad nach draußen unter freien Himmel. Ohne 3D-Fix und 8 Satelliten sperrt Betaflight das Armen (Flag GPS): kein Heimatpunkt, keine Rettung."
+    },
+    "failsafe": {
+      "title": "Test von Failsafe und Rettung (ohne Propeller)",
+      "pass": "Fernsteuerung aus: RXLOSS, 1,5 s Stufe 1, dann GPS RESCUE im OSD, die Motoren drehen hoch, und der Piepser gibt SOS. Fernsteuerung wieder an und die Knüppel bewegt: Die Kontrolle liegt wieder bei dir.",
+      "fail": "Nimm die Propeller ab, setz Empfänger und GPS ein, steck ein, kalibrier den Beschleunigungssensor und warte zuerst auf einen GPS-Fix: Er muss armen können. Zeigt der Heimatpfeil im OSD von zu Hause weg, ist der Kompass verdreht: Dreh das GPS-Modul um."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Erste Einrichtung nach dem Flashen",
+      "explain": "Setzt den Mixer, die Ausrichtung der Platine und DShot600 mit bidirektionaler Telemetrie für den RPM-Filter; motor_poles ist 14 für diese 12N14P-Motoren. Jede serial-Zeile gibt einem Port seine Aufgabe: 64 ist der ELRS-Empfänger an UART2, 2 ist das GPS an UART3 mit 57600 Baud, und 2048 ist SmartAudio an UART1, das nur den TX-Draht braucht. resource gibt die Pinbelegung aus, damit du die Pins für Motoren, UARTs und I2C mit der Platine vergleichen kannst."
+    },
+    "gps": {
+      "title": "GPS und Kompass",
+      "explain": "feature GPS schaltet das GPS ein, und gps_auto_config lässt Betaflight das u-blox-Modul selbst einrichten (Rate, Konstellationen, Galileo). Der Kompass wird an I2C gefunden; align_mag sagt Betaflight, wie er sitzt: CW270FLIP passt für ein Matek M10Q-5883 mit seinem Pfeil zur Nase, andere Module unterscheiden sich, also prüf die Richtung. Seit 2026.6 wird der Kompass für die Richtung ignoriert, solange trust_mag nicht ON ist: Schalte es erst ein, nachdem du ihn kalibriert und geprüft hast."
+    },
+    "rescue": {
+      "title": "GPS Rescue als Failsafe",
+      "explain": "Ist die Verbindung für failsafe_delay (1,5 s) weg, steigt GPS Rescue, dreht Richtung Heimat, fliegt mit 7,5 m/s zurück und beginnt 20 m vorher den Sinkflug. return_alt zählt nur mit FIXED_ALT; das standardmäßige MAX_ALT kehrt in der größten Höhe seit dem Armen plus 10 m zurück, was unter einem Grat liegen kann, wenn du tief durch ein Tal geflogen bist. Mit weniger als 8 Satelliten armt Betaflight nicht (Flag GPS). FS_ONLY bedeutet, dass eine fehlgeschlagene Prüfung bei einem echten Failsafe (kein Heimatpunkt, GPS verloren, 20 s lang keine Annäherung an zu Hause) in einem Sinkflug an Ort und Stelle endet. ap_hover_throttle sagt dem Autopiloten den echten Schwebeflug dieses Quads, 1420 µs. Die aux-Zeile legt GPS RESCUE (Modus 46) zum Testen auf einen Schalter."
+    },
+    "stage1": {
+      "title": "Stufe 1: das Gas halten",
+      "explain": "0,3 s lang nach dem Abbruch der Verbindung hält jeder Kanal seinen letzten Wert; danach nimmt jeder seinen rxfail-Wert an, bis failsafe_delay abläuft. Standardmäßig geht das Gas auf niedrig, also fällt ein 7-Zöller im Reiseflug über eine Sekunde lang, bevor die Rettung startet. rxfail 3 h lässt das Gas (Kanal 3: Rollen, Nicken, Gieren, Gas zählen ab 0) stattdessen seinen letzten Wert halten. Die vier Flugkanäle nehmen nur a (auto) oder h (halten)."
+    },
+    "liion": {
+      "title": "Spannungsalarme für Li-Ionen",
+      "explain": "Die Standardwerte von Betaflight sind LiPo-Zahlen: eine Warnung bei 3,5 V pro Zelle und das Minimum bei 3,3 V. Eine Li-Ionen-Zelle hat bei 3,5 V noch etwa die Hälfte ihrer Energie und wird unter Last bis etwa 3,0 V genutzt (die Zellen sind bis 2,5 V spezifiziert), also geht die Warnung auf 3,1 V und das Minimum auf 2,9 V. Mit bat_capacity kann das OSD auch nach verbrauchten mAh warnen; stell es auf deinen Akku ein."
+    },
+    "osd": {
+      "title": "Das Long-Range-OSD",
+      "explain": "Jeder _pos-Wert ist 2048 (OSD-Profil 1) plus die Spalte plus 32 pro Zeile. Oben links stehen die Verbindungsqualität und der RSSI in dBm, die beiden Zahlen, die dich warnen, wenn die Verbindung dünn wird; oben entlang der Heimatpfeil, die Entfernung nach Hause und die Satellitenzahl; Geschwindigkeit und Höhe auf halber Höhe; die Warnungen in der Mitte, wo RESCUE N/A, RESCUE FAIL und HEADING N/A erscheinen; Flugmodus, Volt pro Zelle, Ampere und mAh unten entlang."
+    },
+    "vtx": {
+      "title": "Leistungstabelle des 1-W-VTX",
+      "explain": "Ein VTX mit SmartAudio 2.1 nimmt seine Leistung in dBm: 14, 20, 26 und 30 dBm sind 25, 100, 400 und 1000 mW. vtx_power wählt eine Stufe aus dieser Tabelle, 1 ist die niedrigste. Bleib auf der Werkbank bei 25 mW und bis zum Armen bei niedriger Leistung (vtx_low_power_disarm), und dreh sie erst hoch, wenn du weit fliegst: 1 W wird heiß."
+    },
+    "switches": {
+      "title": "Schalter: Arming, Angle, Höhe halten, Rettung, Piepser",
+      "explain": "aux nimmt die Nummer des Modus: 0 ARM, 1 ANGLE, 3 ALTHOLD, 46 GPS RESCUE, 13 BEEPER. Der Kanal zählt ab 0 = AUX1, und der Bereich ist in Mikrosekunden angegeben. Mit dem Schalter für GPS RESCUE kannst du die Rettung in der Nähe testen und sie absichtlich auslösen, wenn das Video zerfällt; der Piepser hilft dir, den Quad im hohen Gras zu finden."
+    },
+    "alt": {
+      "title": "Höhe halten",
+      "explain": "ALTHOLD hält die Höhe mit dem Barometer und dem GPS. Gas in Mittelstellung hält; das Totband sind die 20 % Knüppelweg um die Mitte, die als Mitte zählen, und voller Knüppel steigt oder sinkt mit 3 m/s (30 Zehntel)."
+    },
+    "angle": {
+      "title": "Angle-Modus",
+      "explain": "Der Flugcontroller richtet den Quad auf, wenn du loslässt, und neigt ihn nie über angle_limit hinaus: hier 45 Grad, reichlich für den Reiseflug und sanfter als die standardmäßigen 60."
+    },
+    "acro": {
+      "title": "Sanfte Acro-Raten",
+      "explain": "Acro ist das, was fliegt, wenn Angle und Höhe halten aus sind: Die Knüppel legen die Drehrate fest, und nichts richtet ihn auf. Bei ACTUAL-Raten ergeben 7 und 50 70 Grad pro Sekunde um die Mitte und 500 bei vollem Knüppel, sanft für einen schweren 7-Zöller. Gieren endet bei 200."
+    },
+    "race": {
+      "title": "Gate-Timer",
+      "explain": "osd_tim1 packt Quelle und Genauigkeit des Timers in eine Zahl: 2 (seit dem letzten Armen) plus 1 x 16 (Hundertstel) ergibt 18. Seine Position, 2135, ist 2048 plus Spalte 23 plus Zeile 2 x 32."
+    },
+    "range": {
+      "title": "Der Flug durchs Tal",
+      "explain": "Flieg ihn mit Höhe halten, damit sich die Höhe von selbst regelt, während du dem Fluss folgst. Heimatpfeil und Entfernung bleiben im OSD: Wenn der Akku sagt, dass du umkehren sollst, zeigen sie den Weg zurück."
+    }
+  },
+  "flight": {
+    "modes": {
+      "alt": {
+        "title": "Höhe halten (leicht)",
+        "hint": "Angle-Modus plus Höhe halten (Barometer und GPS): W und S steigen und sinken mit bis zu 3 m/s, und er hält seine Höhe, wenn du loslässt. Die Pfeiltasten neigen ihn bis 45 Grad, A und D gieren, Leertaste armt."
+      },
+      "angle": {
+        "title": "Angle-Modus",
+        "hint": "Selbstnivellierend bis 45 Grad, so wie die meisten Long-Range-Flüge cruisen. Das Gas bleibt, wo du es lässt, also halte die Höhe mit W und S."
+      },
+      "acro": {
+        "title": "Acro-Modus (Rate)",
+        "hint": "Die Knüppel legen fest, wie schnell er sich dreht (bis zu 500 Grad pro Sekunde), und nichts richtet ihn auf. Lässt du los, behält er seinen Winkel."
+      },
+      "race": {
+        "title": "Gates am Bauernhaus (Angle)",
+        "hint": "Fünf Gates im Ring um den Landeplatz, der Reihe nach. Die Uhr startet an Gate 1; die Sollzeit ist 25 Sekunden."
+      },
+      "rescue": {
+        "title": "GPS Rescue",
+        "hint": "Sieh zu, wie die Rettung ihn nach Hause bringt: Bricht die Verbindung ab, steigt er auf 45 m, dreht Richtung Heimat, fliegt mit 7,5 m/s zurück und landet auf dem Landeplatz. Beweg die Knüppel, um zu übernehmen."
+      },
+      "range": {
+        "title": "Flugfeld: Bergtal",
+        "hint": "Den Fluss entlang, über den See, durch den Sattel zwischen den Hügeln, zur Spitze des Funkturms und nach Hause. Die Sollzeit ist 150 Sekunden."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Verbindung 1,5 s lang verloren: GPS Rescue steigt auf 45 m, dreht Richtung Heimat, fliegt mit 7,5 m/s zurück und landet. Ist die Verbindung wieder da, beweg die Knüppel, um zu übernehmen.",
+      "rescue-fail": "Kommt der Quad 20 s lang nicht näher an zu Hause heran (ein verdrehter Kompass, ein Gegenwind, gegen den er nicht ankommt), gibt die Rettung auf: RESCUE FAIL, und er sinkt an Ort und Stelle.",
+      "no-fix": "Weniger als 8 Satelliten: Das Armen ist gesperrt (Flag GPS), weil es keinen Heimatpunkt gäbe, zu dem er zurückkehren könnte.",
+      "low-battery": "Unter 3,1 V pro Zelle warnt das OSD: Kehr jetzt um.",
+      "battery-critical": "Unter 2,9 V pro Zelle: jetzt landen. Die Zellen sind fast leer und brechen bei jedem Steigen weiter ein."
+    },
+    "controls": "Tastatur: Leertaste armt und disarmt, W und S geben Gas, die Pfeiltasten nicken und rollen, A und D gieren, V schaltet auf FPV, R setzt den Quad zurück auf den Landeplatz. Auf dem Handy ist der linke Knüppel Gas und Gieren, der rechte Nicken und Rollen. Ein Gamepad funktioniert in Mode 2."
+  },
+  "courses": {
+    "valley": {
+      "title": "Bergtal",
+      "brief": "Ein langer Flug vom Landeplatz am Bauernhaus: den Fluss entlang zum See, zurück durch den Sattel zwischen den Hügeln, hinauf zur Spitze des Funkturms auf der anderen Seite und nach Hause. Behalte Heimatpfeil und Entfernung im OSD im Blick.",
+      "goals": {
+        "1": "DEN FLUSS ENTLANG",
+        "2": "ÜBER DEN SEE",
+        "3": "DURCH DEN SATTEL",
+        "4": "TURMSPITZE",
+        "5": "NACH HAUSE"
+      }
+    },
+    "gates": {
+      "title": "Gates am Bauernhaus",
+      "brief": "Fünf Gates mit 1,6 m in einem engen Ring um den Landeplatz beim Bauernhaus: ein Aufwärmen im Angle-Modus, gegen die Uhr. Die Uhr startet an Gate 1."
+    },
+    "rescue": {
+      "title": "Test von GPS Rescue",
+      "brief": "Der Test, den echte Piloten in der Nähe machen, bevor sie einer Rettung weit draußen vertrauen: hinaus zu einem Punkt etwa 65 m vom Landeplatz und 20 m hoch, wo die Verbindung getrennt wird. Nach 1,5 s steigt GPS Rescue auf 45 m, dreht Richtung Heimat, fliegt mit 7,5 m/s zurück und landet auf dem Landeplatz.",
+      "goals": {
+        "1": "65 M HINAUS, 20 M HOCH",
+        "2": "RETTUNG STEIGT AUF 45 M",
+        "3": "ZU HAUSE LANDEN"
+      }
+    }
+  },
+  "quizzes": {
+    "power": {
+      "cap": {
+        "q": "Warum braucht ein 7-Zöller am ESC einen 1000-µF-Kondensator?",
+        "options": {
+          "1": "Um Energie für GPS Rescue zu speichern",
+          "2": "Um die Spannung für den 1-W-VTX zu erhöhen",
+          "3": "Seine langen Akkukabel schwingen mit Spannungsspitzen, wenn die ESCs schalten und bremsen, und der Kondensator schluckt sie"
+        },
+        "why": "Lange Kabel haben Induktivität, und jedes Mal, wenn die ESCs schalten oder die Motoren bremsen, springt die Spannung an den Pads hoch. Ein Low-ESR-Kondensator direkt an den Pads fängt das ab. Ohne ihn bekommst du verrauschtes Video, Rauschen am Gyro und mit der Zeit tote MOSFETs im ESC."
+      },
+      "smoke": {
+        "q": "Was macht ein Smoke Stopper beim ersten Einstecken?",
+        "options": {
+          "1": "Er prüft die Drehrichtung der Motoren",
+          "2": "Er begrenzt den Strom, sodass ein Kurzschluss seine Lampe leuchten lässt oder ihn auslöst, statt den ESC zu verbrennen",
+          "3": "Er gleicht die Zellen aus"
+        },
+        "why": "Ein 6S-Akku kann Hunderte Ampere in eine Lötbrücke oder einen verkehrt herum eingesetzten Kondensator drücken. Der Smoke Stopper setzt beim ersten Einschalten eine Lampe oder eine selbstrückstellende Sicherung in Reihe, sodass sich ein Fehler als leuchtende Lampe zeigt, nicht als Rauch."
+      }
+    },
+    "gps": {
+      "sats": {
+        "q": "Das OSD zeigt 6 Satelliten, und der Quad armt nicht. Warum?",
+        "options": {
+          "1": "Der Akku ist schwach",
+          "2": "GPS Rescue braucht einen Heimatpunkt: Unter gps_rescue_min_sats (8) sperrt Betaflight das Armen mit dem Flag GPS",
+          "3": "Der Kompass muss kalibriert werden"
+        },
+        "why": "Der Heimatpunkt wird dort gesetzt, wo du armst. Mit zu wenigen Satelliten ist die Position ungenau, und die Rettung würde an den falschen Ort fliegen, also weigert sich Betaflight zu armen, bis es einen 3D-Fix mit 8 oder mehr hat."
+      },
+      "arrow": {
+        "q": "Der Pfeil des GPS-Moduls zeigt nach hinten, und trust_mag ist ON. Was passiert bei einer Rettung?",
+        "options": {
+          "1": "Nichts: Einem GPS ist egal, in welche Richtung es zeigt",
+          "2": "Die Kompassrichtung liegt um 180 Grad daneben, also fliegt die Rettung von zu Hause weg, bis die Flyaway-Prüfung sie stoppt",
+          "3": "Er landet sofort an Ort und Stelle"
+        },
+        "why": "Der Kompass sitzt im Modul, also legt der Pfeil des Moduls die Richtung fest, der Betaflight vertraut. Verkehrt herum ist \"Richtung Heimat\" von zu Hause weg. Nach 20 s ohne Annäherung meldet die Flyaway-Prüfung RESCUE FAIL, und er sinkt an Ort und Stelle, weit weg von dir. Vergleich die Richtung vor dem Flug mit einem Handy."
+      },
+      "mast": {
+        "q": "Warum sitzt das GPS hinten auf einem Mast und wird waagerecht gehalten?",
+        "options": {
+          "1": "Um den Kompass von VTX, ESC und Akkukabeln fernzuhalten, deren Ströme ihn stören; geneigt liest er falsch",
+          "2": "Damit die Kamera es sehen kann",
+          "3": "Um den Quad auszubalancieren"
+        },
+        "why": "Ein Kompass misst das schwache Magnetfeld der Erde, und die Dutzenden Ampere in den Akkukabeln und im ESC erzeugen eigene Felder. Abstand hilft, und ebenso, ihn flach zu halten: Der Hersteller des Moduls rät dringend davon ab, das Magnetometer zu neigen."
+      }
+    },
+    "battery": {
+      "liion": {
+        "q": "Warum ein 6S1P-Akku aus 21700-Li-Ionen-Zellen statt eines LiPo?",
+        "options": {
+          "1": "Er liefert mehr Strom für Punch-outs",
+          "2": "Mehr Energie pro Gramm: etwa die doppelte Flugzeit, zum Cruisen, nicht für Punch-outs",
+          "3": "Er bricht nie ein"
+        },
+        "why": "Sechs 21700-Zellen speichern etwa 90 bis 100 Wh in etwa 440 g; ein 6S-1800-LiPo speichert 40 Wh in 300 g. Aber eine Zelle der Klasse P42A ist für etwa 45 A ausgelegt, gegenüber 120 A für einen vollen Punch-out bei diesem Aufbau: Li-Ionen sind zum Cruisen da."
+      },
+      "alarm": {
+        "q": "Warum ändert man die Spannungsalarme für Li-Ionen?",
+        "options": {
+          "1": "Li-Ionen-Zellen haben voll 3 V",
+          "2": "Um die Motoren schneller zu machen",
+          "3": "Die LiPo-Alarme (Warnung bei 3,5 V) würden ertönen, wenn der Li-Ionen-Akku noch die Hälfte seiner Energie hat; Li-Ionen sind bis etwa 3,0 V pro Zelle gut nutzbar"
+        },
+        "why": "Die Spannung eines LiPo bleibt flach und fällt dann ab, also bedeuten 3,5 V fast leer. Die Spannung einer Li-Ionen-Zelle sinkt im Lauf des Flugs gleichmäßig, also geht die Warnung auf 3,1 V und das Minimum auf 2,9 V pro Zelle."
+      }
+    },
+    "rescue": {
+      "trigger": {
+        "q": "Wann startet GPS Rescue von selbst?",
+        "options": {
+          "1": "Sobald das Video zerfällt",
+          "2": "Wenn die Steuerverbindung für failsafe_delay (1,5 s) verloren ist und failsafe_procedure GPS-RESCUE ist",
+          "3": "Wenn der Akku schwach ist"
+        },
+        "why": "Die Rettung ist Stufe 2 eines Failsafe: Betaflight muss den Empfänger 1,5 s lang nicht mehr hören. Ein schwacher Akku warnt nur, und verlorenes Video ist überhaupt kein Failsafe."
+      },
+      "altitude": {
+        "q": "Warum gps_rescue_alt_mode = FIXED_ALT mit return_alt = 45 setzen?",
+        "options": {
+          "1": "Damit er auf 45 m steigt, über den höchsten Grat, bevor er nach Hause fliegt; ohne FIXED_ALT wird return_alt ignoriert",
+          "2": "Damit er schneller nach Hause fliegt",
+          "3": "Um Akku zu sparen"
+        },
+        "why": "Das standardmäßige MAX_ALT kehrt in der größten Höhe seit dem Armen plus 10 m zurück. Fliegst du tief durch ein Tal, kann das unter dem Grat zwischen dir und zu Hause liegen. FIXED_ALT macht die Rückkehrhöhe zu der Zahl, die du gewählt hast."
+      },
+      "video": {
+        "q": "Weit draußen wird die Brille schwarz, aber der Quad reagiert noch auf die Knüppel. Was jetzt?",
+        "options": {
+          "1": "Warten: GPS Rescue startet von selbst",
+          "2": "Die Fernsteuerung ausschalten",
+          "3": "Verlorenes Video ist kein Failsafe: Leg den Schalter GPS RESCUE selbst um und lass ihn den Quad nach Hause bringen"
+        },
+        "why": "Das 5,8-GHz-Video verblasst meist vor der 900-MHz-Steuerverbindung. Solange Betaflight die Fernsteuerung hört, gibt es keinen Failsafe, also passiert von selbst nichts. Der Schalter GPS RESCUE (hier AUX4) startet die Rettung auf Wunsch."
+      },
+      "flyaway": {
+        "q": "Bei einer Rettung kommt der Quad 20 s lang nicht näher an zu Hause heran. Was macht Betaflight?",
+        "options": {
+          "1": "Er fliegt weiter, bis der Akku leer ist",
+          "2": "Es meldet RESCUE FAIL und sinkt an Ort und Stelle",
+          "3": "Er dreht um und versucht es in der anderen Richtung"
+        },
+        "why": "Die Flyaway-Plausibilitätsprüfung beobachtet die Annäherungsgeschwindigkeit. Bleibt sie 20 s lang unter 20 % des Ziels (ein verdrehter Kompass, ein Gegenwind, gegen den er nicht ankommt), gibt die Rettung auf, und bei einem echten Failsafe mit RESCUE_SANITY_FS_ONLY kommt er direkt an Ort und Stelle herunter."
+      }
+    }
+  }
+}
