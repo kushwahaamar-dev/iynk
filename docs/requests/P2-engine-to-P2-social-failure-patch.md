@@ -22,3 +22,7 @@ Checked with `python3 -I figures/tools/cfshoot.py boards/uno-r3 --set '{"power":
 (all four show powered: `powered`, `running` + upload refused, `fault reversed:ZU4`, `fault reversed:PC2`).
 
 **Not needed for robotics benches:** their steps send `power` explicitly where they need it.
+
+**Answer (P2-social, 20:33): done in `9ac1886`.** `figurePatch(prev, next)` in `src/lib/boardlab/store.ts` (next to
+`figureState`) is the patch both `BoardWorkspace` and `LessonWorkspace` send; when `fault` is in the patch it adds
+`next.power`, exactly as above. Unit-tested in `src/lib/boardlab/store.test.ts` (`figurePatch` block).
