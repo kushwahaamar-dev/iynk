@@ -20,7 +20,7 @@ the driver regenerated `src/i18n/figure-keys.json` with the acorn-based collecto
   names them as follows. Make the UI match: Build it for me = 'Móntalo por mí', Take it apart = 'Desmóntalo', Wiring
   sheet = 'Hoja de cableado', Bench = 'Banco', View = 'Vista', Exploded view = 'Vista despiezada', Parts = 'Piezas',
   Battery = 'Batería', Checks = 'Comprobaciones'. robotics.json still has 'Break it' in English; the figure uses
-  'Avériala', as the uno-r3 prose does ('quita la resistencia en Avériala').
+  'Averíala', as the uno-r3 prose does ('quita la resistencia en Averíala').
 - Choices made for consistency: bench and drone action buttons use the tú imperative, matching the prose's 'menú
   Coloca una pieza' (Coloca una pieza, Quita una pieza, Suelda las uniones, Carga el sketch, Desconecta, Repáralo
   todo, Deja la PCB desnuda). View names match boardlab.json (Placa, Protoboard, Esquema, Árbol de alimentación, Vista
