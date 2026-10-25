@@ -14,7 +14,7 @@ import { Tabs } from "@/components/ui/Tabs";
 import { Toggle } from "@/components/ui/Toggle";
 import type { Locale } from "@/i18n/config";
 import { isDesignPick } from "@/lib/drone/design";
-import { buildComplete, droneProgressKeys, testStatus } from "@/lib/dronelab/bench";
+import { buildComplete, droneProgressKeys, isEngineTest, testStatus } from "@/lib/dronelab/bench";
 import { readBench } from "@/lib/dronelab/figure";
 import { readBenchSummary, writeBenchSummary } from "@/lib/dronelab/session";
 import { benchSummary, createDroneLabStore, figureInitial, type DroneLabState, type DroneTab } from "@/lib/dronelab/store";
@@ -66,6 +66,17 @@ export function DroneWorkspace({ lang, content, text, messages, notice }: Props)
   const enterFigure = useRef<HTMLButtonElement>(null);
   const id = content.id;
   const dispatch = store.dispatch;
+  // a test the figure refuses (props on, a part missing) says why only in its toast: keep the reason for the row
+  const pendingRun = useRef<{ test: string; at: number } | null>(null);
+  const [refusal, setRefusal] = useState<{ test: string; text: string } | null>(null);
+  const runTest = useCallback(
+    (test: string) => {
+      pendingRun.current = { test, at: performance.now() };
+      setRefusal(null);
+      dispatch({ type: "test/run", test });
+    },
+    [dispatch],
+  );
 
   useEffect(() => (figure ? store.connect((command) => sendTo(figure, command)) : undefined), [figure, store]);
   const moments = useCallback((prev: DroneLabState, next: DroneLabState) => droneMoments(content, prev, next), [content]);
@@ -124,15 +135,20 @@ export function DroneWorkspace({ lang, content, text, messages, notice }: Props)
         case "button":
           if (event.by === "user") dispatch({ type: "figure/button", id: event.id });
           break;
-        case "flash":
+        case "flash": {
           setFlash(event.text);
+          const run = pendingRun.current;
+          pendingRun.current = null;
+          const test = run && performance.now() - run.at < 1500 ? content.tests.find((x) => x.id === run.test) : undefined;
+          if (test && isEngineTest(test) && readBench(store.getState().figure).test !== test.button) setRefusal({ test: test.id, text: event.text });
           break;
+        }
         case "focus":
           if (!event.on) enterFigure.current?.focus();
           break;
       }
     },
-    [dispatch, figureSound],
+    [dispatch, figureSound, content.tests, store],
   );
 
   const bench = readBench(state.figure);
@@ -183,6 +199,8 @@ export function DroneWorkspace({ lang, content, text, messages, notice }: Props)
           ready={ready}
           t={t}
           ct={ct}
+          onRun={runTest}
+          refusal={refusal}
           dispatch={dispatch}
         />
       ),

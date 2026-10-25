@@ -28,22 +28,23 @@ type Props = {
 
 export function WiringPanel({ content, sheet, sel, ready, t, ct, dispatch }: Props) {
   const short = (id: string) => content.parts.find((p) => p.id === id)?.short ?? id;
+  // an end of a wire: a text button that selects the part on the figure (both ends light up)
   const end = (id: string) => (
-    <Button
-      size="sm"
-      variant="secondary"
+    <button
+      type="button"
       aria-pressed={sel === id}
       aria-label={t("wiring.selectEnd", { short: short(id) })}
       onClick={() => dispatch({ type: "select", id })}
+      className="-my-2 inline-flex min-h-11 items-center whitespace-nowrap rounded-ink-sm px-1.5 font-ui text-sm font-semibold underline decoration-rule decoration-2 underline-offset-4 hover:bg-sunken hover:decoration-ink aria-pressed:bg-ink aria-pressed:text-paper aria-pressed:no-underline"
     >
       {short(id)}
-    </Button>
+    </button>
   );
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl">{t("wiring.title")}</h2>
-      <p className="text-muted">{t("wiring.lede")}</p>
+      <h2 className="sr-only">{t("wiring.title")}</h2>
+      <p className="text-sm text-muted">{t("wiring.lede")}</p>
       <Button
         variant={sheet === "wiring" ? "ink" : "primary"}
         aria-pressed={sheet === "wiring"}
@@ -58,7 +59,7 @@ export function WiringPanel({ content, sheet, sel, ready, t, ct, dispatch }: Pro
         {(Object.keys(KIND_COLOR) as DroneWire["kind"][])
           .filter((kind) => content.wiring.some((w) => w.kind === kind))
           .map((kind) => (
-            <li key={kind} className="flex items-center gap-1.5 font-ui text-xs">
+            <li key={kind} className="flex items-center gap-1.5 text-xs text-muted">
               <svg width="26" height="6" aria-hidden="true">
                 <line
                   x1="1"
@@ -75,48 +76,28 @@ export function WiringPanel({ content, sheet, sel, ready, t, ct, dispatch }: Pro
           ))}
       </ul>
 
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[34rem] border-collapse text-sm">
-          <thead>
-            <tr className="border-b-2 border-line font-ui text-xs uppercase tracking-wider">
-              <th scope="col" className="py-1.5 text-start">
-                {t("wiring.from")}
-              </th>
-              <th scope="col" className="py-1.5 text-start">
-                {t("wiring.to")}
-              </th>
-              <th scope="col" className="py-1.5 text-start">
-                {t("wiring.kind")}
-              </th>
-              <th scope="col" className="py-1.5 text-start">
-                {t("wiring.label")}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {content.wiring.map((wire) => (
-              <tr key={`${wire.from}-${wire.to}`} className="border-b border-rule align-top">
-                <td className="py-2 pe-2">{end(wire.from)}</td>
-                <td className="py-2 pe-2">{end(wire.to)}</td>
-                <td className="py-2 pe-2">
-                  <span className="flex items-center gap-1.5 font-ui text-xs">
-                    <span
-                      aria-hidden="true"
-                      className="inline-block h-1 w-5 rounded"
-                      style={{ background: KIND_COLOR[wire.kind] }}
-                    />
-                    {t(`wiring.kinds.${wire.kind}`)}
-                  </span>
-                </td>
-                <td className="py-2">
-                  <span className="font-ui text-xs font-bold">{wire.label}</span>
-                  <p className="mt-0.5 text-sm text-muted">{ct(wire.note)}</p>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <ul className="divide-y divide-rule" aria-label={t("wiring.title")}>
+        {content.wiring.map((wire) => (
+          <li key={`${wire.from}-${wire.to}`} className="py-3">
+            <div className="flex flex-wrap items-center gap-x-1 gap-y-1">
+              <span
+                aria-hidden="true"
+                className="me-1.5 inline-block h-1 w-5 shrink-0 rounded"
+                style={{ background: KIND_COLOR[wire.kind] }}
+                title={t(`wiring.kinds.${wire.kind}`)}
+              />
+              <span className="sr-only">{t(`wiring.kinds.${wire.kind}`)}:</span>
+              {end(wire.from)}
+              <span aria-hidden="true" className="text-muted">
+                →
+              </span>
+              {end(wire.to)}
+              <span className="ms-auto ps-2 font-ui text-xs font-semibold text-muted">{wire.label}</span>
+            </div>
+            <p className="mt-1 text-sm text-muted">{ct(wire.note)}</p>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

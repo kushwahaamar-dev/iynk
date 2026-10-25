@@ -75,12 +75,13 @@ export function DesignPanel({ lang, content, pick, t, ct, onPick }: Props) {
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl">{t("design.title")}</h2>
-      <p className="text-muted">{t("design.lede")}</p>
-      <div className="grid gap-3 sm:grid-cols-3">
+      <h2 className="sr-only">{t("design.title")}</h2>
+      <p className="text-sm text-muted">{t("design.lede")}</p>
+      {/* one pick per row, so "6S 1100 mAh LiPo" is never cut */}
+      <div className="space-y-2">
         {selects.map((s) => (
-          <div key={s.key} className="flex flex-col gap-1.5">
-            <label htmlFor={`${base}-${s.key}`} className="ink-kicker">
+          <div key={s.key} className="grid grid-cols-[6.5rem_minmax(0,1fr)] items-center gap-3">
+            <label htmlFor={`${base}-${s.key}`} className="font-body text-sm font-semibold">
               {s.label}
             </label>
             <select
@@ -104,15 +105,11 @@ export function DesignPanel({ lang, content, pick, t, ct, onPick }: Props) {
         <h3 id={`${base}-results`} className="ink-kicker">
           {t("design.results")}
         </h3>
-        <dl className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3" aria-live="polite" data-testid="design-tiles">
+        <dl className="mt-2 grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3" aria-live="polite" data-testid="design-tiles">
           {tiles.map((tile) => (
-            <div
-              key={tile.id}
-              className="rounded-ink border-2 border-line bg-surface px-3 py-2 shadow-ink-sm"
-              data-tile={tile.id}
-            >
-              <dt className="font-ui text-[0.7rem] font-bold uppercase tracking-wider text-muted">{tile.label}</dt>
-              <dd className="mt-0.5 font-ui text-lg font-bold">{tile.value}</dd>
+            <div key={tile.id} className="min-w-0" data-tile={tile.id}>
+              <dt className="ink-label hyphens-auto">{tile.label}</dt>
+              <dd className="tabular whitespace-nowrap font-ui text-lg font-bold leading-tight">{tile.value}</dd>
             </div>
           ))}
         </dl>
@@ -123,7 +120,7 @@ export function DesignPanel({ lang, content, pick, t, ct, onPick }: Props) {
           {t("design.checksTitle")}
         </h3>
         {verdictLines.map((key) => (
-          <p key={key} className="font-bold">
+          <p key={key} className="font-semibold">
             {ct(key, { tw: n(r.tw, 1), kv: design.motors[pick.motor].kv, cells: design.batts[pick.batt].cells })}
           </p>
         ))}
@@ -134,10 +131,7 @@ export function DesignPanel({ lang, content, pick, t, ct, onPick }: Props) {
             {checks.map((check) => {
               const level = checkLevel[check.code];
               return (
-                <li
-                  key={check.code}
-                  className={`flex items-start gap-2 rounded-ink border-2 bg-surface px-3 py-2 ${LEVEL_BORDER[level]}`}
-                >
+                <li key={check.code} className={`flex items-start gap-2 border-s-4 py-1 ps-3 text-sm ${LEVEL_BORDER[level]}`}>
                   <Chip tone={LEVEL_TONE[level]}>{t(`design.levels.${level}`)}</Chip>
                   <span>{checkText(check, t, n)}</span>
                 </li>
@@ -153,7 +147,7 @@ export function DesignPanel({ lang, content, pick, t, ct, onPick }: Props) {
         </h3>
         <table className="mt-2 w-full border-collapse text-sm">
           <thead>
-            <tr className="border-b-2 border-line text-start font-ui text-xs uppercase tracking-wider">
+            <tr className="border-b-[1.5px] border-rule text-start text-xs text-muted">
               <th scope="col" className="py-1.5 text-start">
                 {t("design.cost.category")}
               </th>
@@ -170,22 +164,22 @@ export function DesignPanel({ lang, content, pick, t, ct, onPick }: Props) {
               <th scope="row" className="py-1.5 text-start font-normal">
                 {t("design.cost.electrical")}
               </th>
-              <td className="py-1.5 text-end font-ui">{n(electrical, 0)}</td>
-              <td className="py-1.5 text-end font-ui">{money(r.cost.electrical)}</td>
+              <td className="tabular py-1.5 text-end font-ui">{n(electrical, 0)}</td>
+              <td className="tabular py-1.5 text-end font-ui">{money(r.cost.electrical)}</td>
             </tr>
             <tr className="border-b border-rule">
               <th scope="row" className="py-1.5 text-start font-normal">
                 {t("design.cost.mechanical")}
               </th>
-              <td className="py-1.5 text-end font-ui">{n(mechanical, 0)}</td>
-              <td className="py-1.5 text-end font-ui">{money(r.cost.mechanical)}</td>
+              <td className="tabular py-1.5 text-end font-ui">{n(mechanical, 0)}</td>
+              <td className="tabular py-1.5 text-end font-ui">{money(r.cost.mechanical)}</td>
             </tr>
             <tr>
               <th scope="row" className="py-1.5 text-start">
                 {t("design.cost.total")}
               </th>
-              <td className="py-1.5 text-end font-ui">{n(electrical + mechanical, 0)}</td>
-              <td className="py-1.5 text-end font-ui font-bold">{money(r.cost.total)}</td>
+              <td className="tabular py-1.5 text-end font-ui">{n(electrical + mechanical, 0)}</td>
+              <td className="tabular py-1.5 text-end font-ui font-bold">{money(r.cost.total)}</td>
             </tr>
           </tbody>
         </table>

@@ -103,7 +103,7 @@ export function CliConsole({ content, cli, t, ct, dispatch }: Props) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl">{t("cli.title", { cli: firmware.cliName })}</h2>
+      <h2 className="sr-only">{t("cli.title", { cli: firmware.cliName })}</h2>
       <p className="text-muted">{t("cli.lede", { firmware: fwName })}</p>
       <div className="overflow-hidden rounded-ink border-2 border-line shadow-ink">
         <div

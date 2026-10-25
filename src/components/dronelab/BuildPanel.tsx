@@ -42,7 +42,7 @@ export function BuildPanel({ content, figure, ready, sel, t, ct, dispatch }: Pro
 
   return (
     <div className="space-y-5">
-      <h2 className="text-xl">{t("build.title")}</h2>
+      <h2 className="sr-only">{t("build.title")}</h2>
       <p className="text-muted">{t("build.lede")}</p>
 
       <div className="flex flex-wrap items-center gap-2">
