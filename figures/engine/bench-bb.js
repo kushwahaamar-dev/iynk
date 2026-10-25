@@ -146,7 +146,7 @@ B.viewDef('breadboard', {
     const items = [];
     if (!md.def.noBoard){
       const pcb = B.drawBoardBase(k);
-      for (const [x, y] of md.def.holes || []){ const w = B.BP(x, y, 0); s += cyl(w[0], w[1], B.G.matH, B.G.z0, 2.3, B.M.gold, toneI, .8, 12); }
+      if (md.pcb.standoffs !== false) for (const [x, y] of md.def.holes || []){ const w = B.BP(x, y, 0); s += cyl(w[0], w[1], B.G.matH, B.G.z0, 2.3, B.M.gold, toneI, .8, 12); }
       s += castShadow([...pcb.top, ...pcb.bot], B.G.matH, mat.top) + pcb.svg;
       items.push(...B.boardItems(st.o, k));
     }

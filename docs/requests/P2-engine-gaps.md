@@ -22,3 +22,11 @@ Written 2026-10-24 ~21:00 CDT by P2-engine, for P2-engine-b (wave B) and the dri
   sheet that opens over the buttons are the options.
 - **Figure string dictionaries** (`engine-bench.md` 1): `src/i18n/figures/<lang>.json` does not exist, so `CF_T`
   returns English in every locale. Phase 3 (`P2-engine-to-phase3-strings.md`).
+- **Boards in the breadboard** (`item-nano.md` 2): `circuit.board: 'in'` with `at: { 'J2.15': 'd5' }`, pins joined
+  to their strips in the solver (`netlist` in `bench-solve.js` would union each pin's strip node with its board net).
+- **Bottom-side parts** (`item-nano.md` 4-6, 8; `item-esp32-devkitc.md` 4): footprints of removed bottom parts,
+  exploded bottom parts above the mat, a `wireZ(p)` kind hook, bottom headers drawn before the PCB, a library `male`
+  header with `under: true`.
+- **Download mode as a status** (`item-esp32-devkitc.md` 2): `status: 'download'` while `st.boot === 'download'`,
+  with the host's status panel and run gate taught the value; and `esp32-devkitc.js` moving `strap:GPIO12` into
+  `straps` once its content stops expecting the serial line.

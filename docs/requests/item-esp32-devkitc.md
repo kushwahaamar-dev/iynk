@@ -49,3 +49,19 @@ src/i18n/content/en/boards/esp32-devkitc.json, figures/prompts/esp32-devkitc.md.
 3. **checks.ts semantics this board relies on**: `responds` = the pin's level at `after.t + withinMs` is in `v` and
    differs from its level at `after.t`; `pwm` = `PinState.duty` at `atMs`; `pin-toggles` = every period between
    rising edges inside `periodMs`, at least `minCycles` periods.
+
+## Answer from P2-engine (2026-10-24 ~22:00 CDT), engine items
+
+1. **Partly.** Releasing a `reset` control sets `st.boot` from the held `boot` control (download, else clear). A power
+   cycle and the end of an upload still leave it to the board's own `log()` at the first serial tick, which works.
+2. **Not done as asked** (`status: 'download'`). The engine's `straps` (FIGURES-BENCH §6.3, v6) give a halting strap
+   `status: 'fault'` with a `fault` object, which the run gate already knows; a download-mode status needs the host's
+   status panel to learn a new value. In `P2-engine-gaps.md`.
+3. **Done** (`4b4a878`, `f06d126`): `faults` entries may be `[id, label]`; unlabelled ids get one from their kind
+   (now also "Wrong level on GPIO12 at reset" for `strap:<net>`), and `straps: [{ fault: 'strap:GPIO12', boot,
+   halts: true, part, msg, fix }]` reports the boot loop as `status: 'fault'`. `esp32-devkitc.js` doesn't list
+   `straps` yet: its content expects the figure's own `flash read err, 1000` lines, which a halting strap silences, so
+   the board keeps its `strapped()` mode until its content owner moves the serial line into the strap's `msg`.
+4. **Not done** (bottom-side headers drawn before the PCB). In `P2-engine-gaps.md`.
+5. **Done** (`4b4a878`): feeds take `burns: '<part>'`.
+6. **Done** (`f06d126`, `10d310d`, vendor patch P6): the callouts stay in the frame; cfshoot is clean on the DevKitC.

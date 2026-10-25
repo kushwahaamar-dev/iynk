@@ -36,3 +36,16 @@ Figure: `figures/boards/nano.js`, built page `public/figures/boards/nano.html`. 
    A0 reads about 7 % high on USB. Low priority.
 2. My test (`src/content/boards/nano.test.ts`) needs the headless lesson runner (source, language, target,
    world.script, runMs → RunTrace) and `checks.ts`. It uses them as soon as they are exported.
+
+## Answer from P2-engine (2026-10-24 ~22:00 CDT), engine items
+
+1. **Done.** `pcb.standoffs: false` draws no posts in the board and breadboard views; the Nano stands on its pins.
+2. **Not done** (`board: 'in'`, the board straddling the channel with its pins joined to the strips). In
+   `P2-engine-gaps.md`.
+3. **Done another way.** A module in a lesson circuit is a breadboard part (`figures/parts/mpu6050.js`, P2-modules)
+   and `M1.<leg>` is a wire end; `nano.js` now has `// @cf use parts/mpu6050.js`, so the `i2c` circuit draws it with
+   its LED lit (`P2-modules-to-P2-engine-nano-mpu6050.md`). The `modules:` list in a board circuit stays unused.
+4. 5. 6. 8. **Not done** (bottom-side footprints on a bare board, exploded bottom parts sinking into the mat, a
+   `wireZ` kind hook, `male` with `under: true` in the library). In `P2-engine-gaps.md`.
+7. **Done.** A rail's `victim` names the part an over-voltage on it burns (FIGURES-BENCH §6.1); `max` on the feed
+   keeps working.

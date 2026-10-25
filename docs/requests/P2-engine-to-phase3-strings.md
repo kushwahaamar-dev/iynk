@@ -17,3 +17,7 @@ Placeholders in braces stay as they are. Added in wave A (`4b4a878`, `f06d126`, 
 | {name} burned out: {w} W is too much for its track |
 | Boot strap |
 | Free the pin and press RESET |
+| Wrong level on {name} at reset |
+| Status |
+| Program |
+| Bench |

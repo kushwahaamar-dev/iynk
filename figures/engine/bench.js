@@ -253,7 +253,7 @@ function evaluate(){
       else v = vin - (fd.drop || 0);
       if (v > best){ best = v; bestFd = fd; }
     }
-    if (rail.max != null && best > rail.max){ burned = burned || { part: (pw.mcu && pw.mcu.part), kind: 'over', v: best, rail: rid }; }
+    if (rail.max != null && best > rail.max){ burned = burned || { part: rail.victim || (pw.mcu && pw.mcu.part), kind: 'over', v: best, rail: rid }; }
     ev.rails[rid] = Math.max(0, best); fedBy[rid] = bestFd;
   }
   // overloads and shorts sag a rail
@@ -844,8 +844,8 @@ function sceneBoard(k){
   const mat = drawMat(...matBox());
   const pcb = drawPCB(k);
   let s = mat.svg;
-  // standoffs, then the PCB's shadow on the mat
-  for (const [x, y] of MD.def.holes || []){ const w = BP(x, y, 0); s += cyl(w[0], w[1], G.matH, G.z0, 2.3, M.gold, toneI, .8, 12); }
+  // standoffs (none on a board that stands on its header pins: pcb.standoffs false), then the PCB's shadow on the mat
+  if (MD.pcb.standoffs !== false) for (const [x, y] of MD.def.holes || []){ const w = BP(x, y, 0); s += cyl(w[0], w[1], G.matH, G.z0, 2.3, M.gold, toneI, .8, 12); }
   s += castShadow([...pcb.top, ...pcb.bot], G.matH, mat.top);
   s += pcb.svg;
   const items = [...B.boardItems(st.o, k), ...matItems(k)];
@@ -992,6 +992,7 @@ function faultLabel(id){
   if (kind === 'missing' && a) return T('Leave out {name}', { name: a });
   if (kind === 'reversed' && a) return T('{name} in backwards', { name: a });
   if (kind === 'cold' && a) return T('Cold joint on {name}', { name: a });
+  if (kind === 'strap' && a) return T('Wrong level on {name} at reset', { name: a });
   if (kind === 'wrong-voltage' && a && b){ const s = (MD.power.sources || {})[a]; return T('{v} V on {src}', { v: b, src: T((s && s.label) || a) }); }
   if (kind === 'reverse-polarity' && a){ const s = (MD.power.sources || {})[a]; return T('Reverse polarity on {src}', { src: T((s && s.label) || a) }); }
   return T(id);

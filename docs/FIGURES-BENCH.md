@@ -16,7 +16,9 @@ Changes after the first publication are additive only. Every change is logged he
   the source's `ilim` browns the board out with the reason (§6.1). Part files may add `press(p, down)`, `steps`,
   `step({ p, st, m }, dt)`, `sound(p, m)`, `legAt(p, origin, i)`, `foot: [w, d, h]` or `height`; `draw` gets `k` and
   `solo` (§8). The breadboard view's mat grows to fit circuit parts that sit on it (`at`) and is fitted per circuit.
-  `tones` is in the §13 table. A bench may name its modes picker with `modesLabel` (§7). The see-through labels' right
+  `tones` is in the §13 table. A bench may name its modes picker with `modesLabel` (§7). `pcb.standoffs: false` draws
+  no standoff posts (a board standing on its header pins); a rail's `victim` names the part an over-voltage on it
+  burns (§6.1). The see-through labels' right
   column starts under the stats panel. There is no `module` elec type (v1 listed one; it was never built): a module's part
   file declares its insides in the types above.
 - v6 (19:40, P2-engine): one `set` patch is applied as one moment: unplug (`power: null`) first, then `exploded`,
@@ -334,7 +336,8 @@ also feed several rails at once: `{ label, parts: ['NANO', 'BATT'], feeds: { VM:
 A feed is alive when its source is connected (or its upstream rail is alive) and every `via` part is in, soldered,
 not reversed and not cold (cold = alive in bursts). Feed voltage: `src.v − drop`, or for a regulator
 `min(reg, in − dropout)`. `offIf: [rail, '>', volts]` switches a feed off (the Uno's comparator). A rail takes the
-highest live feed. Above a rail's `max` the parts on it are damaged (fault `wrong-voltage`). Below `mcu.min` the MCU
+highest live feed. Above a rail's `max` the parts on it are damaged (fault `wrong-voltage`; the part named as burnt is
+the rail's `victim`, else the MCU). Below `mcu.min` the MCU
 resets (fault `brownout`). LEDs with `led.rail` light when that rail is alive; with `led.net` when the pin is high
 (or `invert`: low).
 
@@ -413,7 +416,7 @@ Fault ids (strings; the host sets them with `set {fault}`; the figure's "Break i
 `state.faults` lists every fault in force: the ids set, `missing:<id>` while that part is out, and `reversed:<id>`
 while a polar part sits backwards. A board's or bench's own `faults` list may give labels for Break it:
 `faults: [['short:5V:GND', 'Solder bridge from 5V to GND'], 'short:3V3:GND']`; an id without one is labelled from its
-kind ("Short from 3V3 to GND", "Leave out C5", "9 V on Barrel jack").
+kind ("Short from 3V3 to GND", "Leave out C5", "9 V on Barrel jack", "Wrong level on GPIO12 at reset").
 
 
 ## 7. Modes (built-in demo programs)
