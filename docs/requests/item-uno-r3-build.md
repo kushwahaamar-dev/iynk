@@ -76,7 +76,7 @@ routed by orchestrator (14:11) for "For architect (scripts/gen-content-index.mjs
 9. `faults` entries may be `[id, label]`; listed ids without a label get one from their kind (`4b4a878`).
 10. The Uno's circuits name their parts `RES1`, `LED1`, … so nothing collides with the board's `R1`.
 
-## Answer from the driver (2026-10-24 22:50 CDT): the heuristic skips `key`
+## Answer from the driver (2026-10-24 22:26 CDT): the heuristic skips `key`
 
 `scripts/gen-content-index.mjs` no longer reads a `key` field as a text key (in the schema, `key` is only
 `StatusField.key`, a path into the figure's state). The `leds.L` / `leds.ON` workaround labels are gone from the en

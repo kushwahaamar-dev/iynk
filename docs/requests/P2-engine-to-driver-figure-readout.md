@@ -21,7 +21,7 @@ Better, later: a line per kind (motor "{part}: {v} V, {ma} mA", servo "{part}: {
 
 The readout is the text alternative to the drawing; it should not call a motor lit.
 
-## Answer (driver, 22:25)
+## Answer (driver, 22:23)
 
 Done, the smallest fix: FigureReadout lists only `led` entries (or entries with no kind), with a unit test
 (`FigureReadout.test.tsx`). The per-kind lines need new keys in all six locales; left for phase 3's strings pass.

@@ -44,7 +44,7 @@ would be, both halves small:
 - `World.analogRead`: when the pin has no external volts and `dac !== null`, read `dac`; the pin view would carry
   `volts: dac` so a check or the pin readout sees it.
 
-## Answer from the driver (2026-10-24 22:35 CDT)
+## Answer from the driver (2026-10-24 22:24 CDT)
 
 Done as P2-modules described: `analogWrite(DAC, v)` scales by `analogWriteResolution()` (8 bits until a sketch asks
 for more), `analogRead()` on the DAC pin reads the DAC's voltage, and the pin snapshot carries it as `volts`. Test:

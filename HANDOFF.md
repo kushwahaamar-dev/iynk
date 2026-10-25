@@ -83,18 +83,18 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 23:00 CDT (machine clock).
+- **Updated:** 2026-10-24 22:40 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session). Amar is asleep
   since 22:20 and gave full autonomy for every remaining build phase except Solana and hardware (CONTEXT.md §5).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Do not build in
   `/Users/amar/Codes/sim`.
-- **Phase:** 2 and 3 at once. Phase 1 done, gate 1 green (19:21). Wave A done (21:27). Since 23:05 wave B
+- **Phase:** 2 and 3 at once. Phase 1 done, gate 1 green (19:21). Wave A done (21:27). Since 22:30 wave B
   (`wf_7b610548-7fb`) and phase 3's prose wave T1 (`wf_0e06f30a-c43`, `scripts/workflows/phase3.md`) are running.
 - **Plan:** `docs/hacktx/BUILD-PLAN.md`, written from the six audits in `docs/audit/` (boards, robotics, drones,
   platform, sponsor-layer, history). Phases 1–3 build for Best Overall, SerpApi, Most Entertaining and Meta.
   Solana and Best Hardware Hack were phase 4, only if time is left after gate 3 (Amar, 16:15); at 22:20 Amar said
   to leave them aside, so phase 4 is skipped.
-- **Checks after wave A (22:15–23:00, driver):** `npm run typecheck` exit 0. `npx eslint . --quiet` exit 0.
+- **Checks after wave A (21:30–22:30, driver):** `npm run typecheck` exit 0. `npx eslint . --quiet` exit 0.
   `npm run content:check` exit 0 (every item with a data module has English prose). Full vitest on a quiet machine:
   1759 passed, 4 skipped (TimescaleDB, no database), 0 failed (`0b71e59` set one 30 s test timeout: the web-server
   lessons took 2-3 s alone and passed 5 s under load). Production build with typecheck on: exit 0. Route crawl, 606
@@ -128,7 +128,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   | P2-rob-motor | transistor-switch, tb6612fng, l298n benches on the model hook, TT motor, AA holder, 2S LiPo (`bc79f7c`…`7c3e84d`) | wiring faults on the breadboard → P2-engine-b |
   | P2-social | room sync and baton in every lab store, Web Audio sound, telemetry on AI calls, failure patch (`8d42b08`…`246bb90`) | telemetry opt-out, kinds, privacy copy → P2-fun; FigureReadout: driver (`73acdd8`) |
 
-- **Running since 23:05 (don't touch their files, never SendMessage their agents):**
+- **Running since 22:30 (don't touch their files, never SendMessage their agents):**
   - Wave B, run `wf_7b610548-7fb` from `scripts/workflows/phase2-wave-b.js` (`10b6951`), no args: P2-engine-b,
     P2-microbit, P2-nucleo, P2-pi, P2-fpga, P2-rob-sensors, P2-rob-power, P2-drones-heavy, P2-drones-vtol, P2-fun.
   - Prose T1, run `wf_0e06f30a-c43` from `scripts/workflows/phase3-prose.js` (`88b7db2`): P3-prose-es, -fr, -de, -zh,
@@ -165,10 +165,10 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Checkpoint log (newest first)
 
-- 2026-10-24 23:05 CDT (Amar's session): wave B launched (`wf_7b610548-7fb`, 10 agents) and phase 3 prose T1 beside
+- 2026-10-24 22:30 CDT (Amar's session): wave B launched (`wf_7b610548-7fb`, 10 agents) and phase 3 prose T1 beside
   it (`wf_0e06f30a-c43`, 5 agents, judge path first), under Amar's 22:20 full-autonomy go.
 
-- 2026-10-24 23:00 CDT (Amar's session): wave A done at 21:27, all 9 labels pushed. Driver closed it: content index
+- 2026-10-24 22:30 CDT (Amar's session): wave A done at 21:27, all 9 labels pushed. Driver closed it: content index
   (`baa671a`), every figure rebuilt (`6576766`) and shot, layout problems filed for P2-engine-b (`a4c7e9f`), suite
   timeout (`0b71e59`), driver requests done (FigureReadout `73acdd8`, R4 DAC `e8ce4d3`, racer ESC `7f1f0db`,
   content-index heuristic `f2ee57b`), translated-prose test (`a2b8b9b`). Gate checks after wave A green (Current
