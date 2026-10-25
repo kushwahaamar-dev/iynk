@@ -4,7 +4,7 @@ import { useId } from "react";
 import type { DesignPick, DroneContent } from "@/content/schema";
 import { Callout } from "@/components/ui/Callout";
 import { Chip, type ChipTone } from "@/components/ui/Chip";
-import type { Locale } from "@/i18n/config";
+import { htmlLang, type Locale } from "@/i18n/config";
 import { checkLevel, tileDigits, verdicts, type DesignCheck } from "@/lib/drone/calc";
 import { evaluateDesign } from "@/lib/drone/design";
 import type { DesignKey } from "@/lib/dronelab/store";
@@ -119,11 +119,15 @@ export function DesignPanel({ lang, content, pick, t, ct, onPick }: Props) {
         <h3 id={`${base}-checks`} className="ink-kicker">
           {t("design.checksTitle")}
         </h3>
-        {verdictLines.map((key) => (
-          <p key={key} className="font-semibold">
-            {ct(key, { tw: n(r.tw, 1), kv: design.motors[pick.motor].kv, cells: design.batts[pick.batt].cells })}
-          </p>
-        ))}
+        {verdictLines.map((key) => {
+          const [lead, rest] = firstSentence(lang, ct(key, { tw: n(r.tw, 1), kv: design.motors[pick.motor].kv, cells: design.batts[pick.batt].cells }));
+          return (
+            <p key={key} data-testid="design-verdict">
+              <strong className="font-semibold">{lead}</strong>
+              {rest}
+            </p>
+          );
+        })}
         {checks.length === 0 ? (
           <Callout tone="success">{t("design.allGood")}</Callout>
         ) : (
@@ -186,6 +190,13 @@ export function DesignPanel({ lang, content, pick, t, ct, onPick }: Props) {
       </section>
     </div>
   );
+}
+
+/** The verdict's first sentence (bold on the page) and the rest, split where the language ends a sentence. */
+function firstSentence(lang: Locale, text: string): [string, string] {
+  const first = new Intl.Segmenter(htmlLang(lang), { granularity: "sentence" }).segment(text)[Symbol.iterator]().next();
+  const lead = first.done ? text : first.value.segment;
+  return [lead, text.slice(lead.length)];
 }
 
 function checkText(check: DesignCheck, t: DroneLabT, n: (value: number, digits: number) => string): string {
