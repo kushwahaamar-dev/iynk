@@ -41,7 +41,7 @@
       "15": "Regulator input. On USB it sits at about 4.65 V (5 V minus the SS14 drop); you can feed 5-9 V here instead. The silkscreen says 5-12 V, but at 12 V the regulator overheats under Wi-Fi load. Not protected against reverse polarity."
     },
     "j2": {
-      "1": "GPIO16 and the board's blue LED (LED1, lit when LOW). No PWM, no interrupts and no pull-up (only INPUT_PULLDOWN_16). It is also the deep-sleep wake output.",
+      "1": "GPIO16 and the board's blue LED (LED1, lit when LOW). PWM through analogWrite() works (core 3.x, not MicroPython), but no interrupts and no pull-up (only INPUT_PULLDOWN_16). It is also the deep-sleep wake output.",
       "2": "GPIO5, the default I2C SCL for Wire. Quiet at boot, so a good first choice for outputs.",
       "3": "GPIO4, the default I2C SDA for Wire. Quiet at boot.",
       "4": "GPIO0 and the FLASH button, pulled up by R1. It must be high at reset or the chip starts the ROM bootloader instead of your sketch. After boot it works as a button input.",
@@ -457,7 +457,7 @@
       "hints": {
         "1": "analogRead() is 10-bit (0-1023) and analogWrite() uses 0-255 in core 3.x, so map() converts one to the other.",
         "2": "Old tutorials use analogWrite(pin, 1023): that was the 2.x range. With 255 as the range, 1023 just means fully on.",
-        "3": "D0 cannot do PWM. Every other D pin can, at 1 kHz by default (analogWriteFreq() changes it)."
+        "3": "Every D pin does PWM in core 3.x, D0 included (MicroPython leaves D0 out), at 1 kHz by default; analogWriteFreq() changes it."
       },
       "specs": {
         "1": { "label": "ADC", "value": "10-bit, 0-3.2 V on A0" },

@@ -41,7 +41,7 @@
       "15": "Eingang des Reglers. An USB liegt er bei etwa 4,65 V (5 V minus den Spannungsabfall an der SS14); du kannst hier stattdessen 5-9 V einspeisen. Der Bestückungsdruck sagt 5-12 V, aber bei 12 V überhitzt der Regler unter WLAN-Last. Nicht gegen Verpolung geschützt."
     },
     "j2": {
-      "1": "GPIO16 und die blaue LED des Boards (LED1, leuchtet bei LOW). Keine PWM, keine Interrupts und kein Pull-up (nur INPUT_PULLDOWN_16). Er ist außerdem der Weckausgang für Deep Sleep.",
+      "1": "GPIO16 und die blaue LED des Boards (LED1, leuchtet bei LOW). PWM geht mit analogWrite() (Core 3.x, nicht in MicroPython), aber keine Interrupts und kein Pull-up (nur INPUT_PULLDOWN_16). Er ist außerdem der Weckausgang für Deep Sleep.",
       "2": "GPIO5, das Standard-I2C-SCL für Wire. Beim Booten ruhig, also eine gute erste Wahl für Ausgänge.",
       "3": "GPIO4, das Standard-I2C-SDA für Wire. Beim Booten ruhig.",
       "4": "GPIO0 und der FLASH-Taster, von R1 hochgezogen. Er muss beim Reset HIGH sein, sonst startet der Chip statt deines Sketches den ROM-Bootloader. Nach dem Booten funktioniert er als Tastereingang.",
@@ -613,7 +613,7 @@
       "hints": {
         "1": "analogRead() hat 10 Bit (0-1023), und analogWrite() nutzt im Core 3.x 0-255, also rechnet map() das eine ins andere um.",
         "2": "Alte Anleitungen nutzen analogWrite(pin, 1023): Das war der Bereich von 2.x. Mit 255 als Bereich bedeutet 1023 einfach voll an.",
-        "3": "D0 kann keine PWM. Jeder andere D-Pin kann es, standardmäßig mit 1 kHz (analogWriteFreq() ändert das)."
+        "3": "Jeder D-Pin kann im Core 3.x PWM, auch D0 (MicroPython lässt D0 aus), standardmäßig mit 1 kHz; analogWriteFreq() ändert das."
       },
       "specs": {
         "1": {

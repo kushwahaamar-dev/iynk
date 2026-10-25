@@ -41,7 +41,7 @@
       "15": "Entrada del regulador. Con USB se queda en unos 4,65 V (5 V menos la caída del SS14); en su lugar puedes meter aquí 5-9 V. La serigrafía dice 5-12 V, pero a 12 V el regulador se sobrecalienta con la carga del Wi-Fi. Sin protección contra la inversión de polaridad."
     },
     "j2": {
-      "1": "GPIO16 y el LED azul de la placa (LED1, encendido en LOW). Sin PWM, sin interrupciones y sin pull-up (solo INPUT_PULLDOWN_16). También es la salida para despertar del sueño profundo.",
+      "1": "GPIO16 y el LED azul de la placa (LED1, encendido en LOW). Hace PWM con analogWrite() (núcleo 3.x, no en MicroPython), pero sin interrupciones y sin pull-up (solo INPUT_PULLDOWN_16). También es la salida para despertar del sueño profundo.",
       "2": "GPIO5, el SCL del I2C por defecto para Wire. Tranquilo al arrancar, así que es una buena primera opción para salidas.",
       "3": "GPIO4, el SDA del I2C por defecto para Wire. Tranquilo al arrancar.",
       "4": "GPIO0 y el botón FLASH, con pull-up de R1. Tiene que estar en alto en el reinicio o el chip arranca el bootloader de la ROM en lugar de tu sketch. Después del arranque funciona como entrada para un botón.",
@@ -613,7 +613,7 @@
       "hints": {
         "1": "analogRead() es de 10 bits (0-1023) y analogWrite() usa 0-255 en el núcleo 3.x, así que map() convierte uno en el otro.",
         "2": "Los tutoriales antiguos usan analogWrite(pin, 1023): ese era el rango de la 2.x. Con 255 como rango, 1023 significa simplemente encendido del todo.",
-        "3": "D0 no puede hacer PWM. Todos los demás pines D sí, a 1 kHz por defecto (analogWriteFreq() lo cambia)."
+        "3": "Todos los pines D hacen PWM en el núcleo 3.x, también D0 (MicroPython lo excluye), a 1 kHz por defecto; analogWriteFreq() lo cambia."
       },
       "specs": {
         "1": {

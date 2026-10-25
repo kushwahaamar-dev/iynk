@@ -152,13 +152,13 @@ const esp32s3: BoardProfile = {
 const nodemcu: BoardProfile = {
   id: 'nodemcu', name: 'NodeMCU v3 (ESP8266)', mcu: 'ESP8266EX (ESP-12E)', languages: ['arduino'],
   clockHz: 80_000_000, logicV: 3.3, intBits: 32, doubleBits: 64, charSigned: false,
-  adcBits: 10, adcMaxBits: 10, adcVref: 3.3, analogPins: [17], pwmPins: [0, 1, 2, 3, 4, 5, 12, 13, 14, 15], pwmBits: 8,
+  adcBits: 10, adcMaxBits: 10, adcVref: 3.3, analogPins: [17], pwmPins: [0, 1, 2, 3, 4, 5, 12, 13, 14, 15, 16], pwmBits: 8,
   interruptPins: [0, 1, 2, 3, 4, 5, 12, 13, 14, 15], digitalPins: [0, 1, 2, 3, 4, 5, 9, 10, 12, 13, 14, 15, 16],
   leds: [{ name: 'LED (ESP-12)', pin: 2, activeLow: true, kind: 'single', color: 'cobalt' }, { name: 'LED (board)', pin: 16, activeLow: true, kind: 'single', color: 'tomato' }],
   buttons: [{ name: 'FLASH', pin: 0, pressedLevel: 0 }],
   aliases: { D0: 16, D1: 5, D2: 4, D3: 0, D4: 2, D5: 14, D6: 12, D7: 13, D8: 15, RX: 3, TX: 1, SD2: 9, SD3: 10, A0: 17, LED_BUILTIN: 2, SDA: 4, SCL: 5 },
   i2c: { sda: 4, scl: 5 }, opUs: 0.25, pinMaxMa: 12, hasWifi: true,
-  notes: ['the on-board LEDs are active LOW: digitalWrite(LED_BUILTIN, LOW) turns them on', 'D-numbers are not GPIO numbers: D4 is GPIO2', 'A0 reads 0-3.3 V through the board divider (0-1 V at the chip)', 'GPIO16 (D0) has no PWM and no interrupt'],
+  notes: ['the on-board LEDs are active LOW: digitalWrite(LED_BUILTIN, LOW) turns them on', 'D-numbers are not GPIO numbers: D4 is GPIO2', 'A0 reads 0-3.3 V through the board divider (0-1 V at the chip)', 'GPIO16 (D0) has no interrupt; analogWrite() PWM works on it in core 3.x'],
 };
 
 const pico: BoardProfile = {

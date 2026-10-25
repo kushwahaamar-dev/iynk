@@ -25,7 +25,7 @@ const j1: PinSpec[] = [
 ];
 
 const j2: PinSpec[] = [
-  ['1', 'D0', ['GPIO16', 'WAKE', 'LED_BUILTIN_AUX (LED1)'], ['digital', 'led'], 3.3, 'D0'],
+  ['1', 'D0', ['GPIO16', 'WAKE', 'LED_BUILTIN_AUX (LED1)'], ['digital', 'pwm', 'led'], 3.3, 'D0'],
   ['2', 'D1', ['GPIO5', 'SCL (Wire)'], ['digital', 'pwm', 'interrupt', 'i2c'], 3.3, 'D1'],
   ['3', 'D2', ['GPIO4', 'SDA (Wire)'], ['digital', 'pwm', 'interrupt', 'i2c'], 3.3, 'D2'],
   ['4', 'D3', ['GPIO0', 'FLASH button', 'boot strap (HIGH to run)'], ['digital', 'pwm', 'interrupt', 'strapping'], 3.3, 'D3'],

@@ -41,7 +41,7 @@
       "15": "稳压器输入。USB 供电时约为 4.65 V（5 V 减去 SS14 的压降）；你也可以改为从这里输入 5-9 V。丝印写着 5-12 V，但在 12 V 时稳压器在 Wi-Fi 负载下会过热。没有防反接保护。"
     },
     "j2": {
-      "1": "GPIO16 和板上的蓝色 LED（LED1，LOW 时点亮）。没有 PWM、没有中断，也没有上拉（只有 INPUT_PULLDOWN_16）。它还是深度睡眠的唤醒输出。",
+      "1": "GPIO16 和板上的蓝色 LED（LED1，LOW 时点亮）。可以用 analogWrite() 输出 PWM（核心 3.x；MicroPython 不行），但没有中断，也没有上拉（只有 INPUT_PULLDOWN_16）。它还是深度睡眠的唤醒输出。",
       "2": "GPIO5，Wire 默认的 I2C SCL。启动时很安静，所以是做输出的首选。",
       "3": "GPIO4，Wire 默认的 I2C SDA。启动时很安静。",
       "4": "GPIO0 和 FLASH 按钮，由 R1 上拉。复位时它必须为高，否则芯片会启动 ROM 引导程序，而不是你的程序。启动之后它可以作为按钮输入。",
@@ -613,7 +613,7 @@
       "hints": {
         "1": "analogRead() 是 10 位的（0-1023），而在核心 3.x 里 analogWrite() 用 0-255，所以用 map() 在两者之间换算。",
         "2": "旧教程用 analogWrite(pin, 1023)：那是 2.x 的范围。范围是 255 时，1023 就只表示全开。",
-        "3": "D0 不能输出 PWM。其他每个 D 引脚都可以，默认 1 kHz（analogWriteFreq() 可以修改）。"
+        "3": "在核心 3.x 里每个 D 引脚都能输出 PWM，D0 也可以（MicroPython 不支持 D0），默认 1 kHz；analogWriteFreq() 可以修改。"
       },
       "specs": {
         "1": {
