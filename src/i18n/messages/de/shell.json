@@ -28,10 +28,8 @@
     "label": "Einstellungen"
   },
   "footer": {
-    "summary": "Ein Mitmach-Labor für Boards, Roboter und Drohnen. Alles läuft in deinem Browser.",
     "privacy": "Keine Konten. Dein Fortschritt bleibt in diesem Browser. Die Labs senden anonyme Nutzungszahlen, die du in den Einstellungen abschalten kannst.",
     "figures": "Figuren gezeichnet mit Colorfigures von April Zhu (MIT-Lizenz).",
-    "about": "Credits und Lizenzen",
     "pages": "Seiten der Website"
   },
   "ui": {

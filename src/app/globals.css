@@ -183,6 +183,7 @@
   --frame-pad: 1rem;
   --rail-w: clamp(22rem, 30vw, 36rem);
   --stage-h: 46svh;
+  --footer-gap: 4rem;
 }
 @media (width >= 40rem) {
   :root { --frame-pad: 1.5rem; }
@@ -190,10 +191,12 @@
 @media (width >= 48rem) {
   :root { --stage-h: 52svh; }
 }
-/* A lab page is a workspace: the header and footer span the screen with the workspace's gutter. */
-:root:has([data-frame="workspace"]) {
+/* A lab page is a workspace: the header and footer span the screen with the workspace's gutter. Activity keeps
+   earlier pages in the DOM under display: none, and those must not count. */
+:root:has([data-frame="workspace"]:not([style*="display: none"], [style*="display: none"] *)) {
   --frame-max: none;
   --frame-pad: 1rem;
+  --footer-gap: 0px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -418,6 +421,8 @@ html:lang(zh-Hans) body {
     background-repeat: no-repeat;
     cursor: pointer;
   }
+
+  .site-footer { margin-top: var(--footer-gap); }
 
   /* Reading frame: landing, about, catalogues, the small pages. */
   .frame {

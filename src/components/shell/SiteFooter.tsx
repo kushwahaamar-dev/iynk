@@ -8,27 +8,29 @@ export async function SiteFooter({ lang }: { lang: Locale }) {
   const [t, common] = await Promise.all([getT(lang, "shell"), getT(lang, "common")]);
   const labels = Object.fromEntries(NAV.map((entry) => [entry.id, t(`nav.${entry.id}`)])) as Record<NavId, string>;
   return (
-    <footer className="mt-16 border-t-2 border-line">
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1.4fr_1fr]">
-        <div className="flex gap-4">
-          <Logo size={44} className="shrink-0" />
-          <div className="min-w-0 space-y-2 text-sm">
-            <p className="font-head text-lg font-bold leading-tight">{common("site.name")}</p>
-            <p className="ink-kicker">{common("site.tagline")}</p>
-            <p>{t("footer.summary")}</p>
-            <p className="text-muted">{t("footer.privacy")}</p>
-            <p className="text-muted">
-              <a href="https://april-zhu.com/colorfigures" rel="noopener noreferrer">
-                {t("footer.figures")}
-              </a>
-            </p>
-          </div>
+    <footer className="site-footer border-t-2 border-line">
+      <div className="frame flex flex-col gap-x-8 gap-y-3 py-5 lg:flex-row lg:items-center">
+        <div className="flex min-w-0 flex-1 items-start gap-3">
+          <Logo size={28} className="mt-0.5 shrink-0" />
+          <p className="min-w-0 text-sm text-muted">
+            <span lang="en" className="me-2 font-head text-base font-bold text-ink">
+              {common("site.name")}
+            </span>
+            {t("footer.privacy")}
+          </p>
         </div>
-        <nav aria-labelledby={`footer-pages-${lang}`}>
-          <h2 id={`footer-pages-${lang}`} className="ink-kicker mb-2">
+        <nav aria-labelledby={`footer-pages-${lang}`} className="flex flex-col gap-x-4 sm:flex-row sm:items-center lg:shrink-0">
+          <h2 id={`footer-pages-${lang}`} className="sr-only">
             {t("footer.pages")}
           </h2>
-          <FooterNav lang={lang} labels={labels} aboutLabel={t("footer.about")} />
+          <FooterNav lang={lang} labels={labels} />
+          <a
+            href="https://april-zhu.com/colorfigures"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-11 max-w-[22rem] items-center text-xs leading-snug text-muted"
+          >
+            {t("footer.figures")}
+          </a>
         </nav>
       </div>
     </footer>

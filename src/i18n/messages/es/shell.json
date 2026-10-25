@@ -28,10 +28,8 @@
     "label": "Ajustes"
   },
   "footer": {
-    "summary": "Un laboratorio práctico de placas, robots y drones. Todo funciona en tu navegador.",
     "privacy": "Sin cuentas. Tu progreso se queda en este navegador. Los laboratorios envían recuentos de uso anónimos, que puedes desactivar en Ajustes.",
     "figures": "Figuras dibujadas con Colorfigures, de April Zhu (licencia MIT).",
-    "about": "Créditos y licencias",
     "pages": "Páginas del sitio"
   },
   "ui": {

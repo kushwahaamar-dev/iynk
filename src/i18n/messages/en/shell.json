@@ -28,10 +28,8 @@
     "label": "Settings"
   },
   "footer": {
-    "summary": "A hands-on lab for boards, robots and drones. Everything runs in your browser.",
     "privacy": "No accounts. Your progress stays in this browser. The labs send anonymous usage counts, which you can turn off in Settings.",
     "figures": "Figures drawn with Colorfigures by April Zhu (MIT licence).",
-    "about": "Credits and licences",
     "pages": "Site pages"
   },
   "ui": {

@@ -28,10 +28,8 @@
     "label": "Réglages"
   },
   "footer": {
-    "summary": "Un labo pratique pour les cartes, les robots et les drones. Tout tourne dans votre navigateur.",
     "privacy": "Aucun compte. Votre progression reste dans ce navigateur. Les labos envoient des statistiques d’usage anonymes, que vous pouvez désactiver dans les Réglages.",
     "figures": "Figures dessinées avec Colorfigures, d’April Zhu (licence MIT).",
-    "about": "Crédits et licences",
     "pages": "Pages du site"
   },
   "ui": {
