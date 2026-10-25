@@ -68,7 +68,7 @@
   const hingeAxis = s => [[xH(YI), s * YI, zc(YI)], [xH(YT), s * YT, zc(YT)]];
 
   /* ---------- the craft's own bench checks: elevons (sticks + stabiliser) and CG ---------- */
-  const ELEV_T = 4.5, CG_T = 2.4, REFLEX = 2;
+  const ELEV_T = 4.5, CG_T = 2.4, REFLEX = 2, CG_X = -5;
   const phaseOf = t => t < 1.5 ? 0 : t < 3 ? 1 : 2;
   const bump = t => Math.sin(Math.PI * Math.min(1, Math.max(0, (t % 1.5) / 1.5)));
   // elevon deflections in degrees, trailing edge up positive: [left, right]
@@ -165,6 +165,17 @@
       ready: elevonOk && cgOk };
   }
 
+  // the engine calls this when a part is re-seated or removed, or the wing is rebuilt or stripped (why = the part id,
+  // 'build' or 'strip'): a check only counts for the parts it ran on
+  function wingReset(st, why){
+    const w = st.wing;
+    if (!w) return;
+    const hit = needs => why === 'build' || why === 'strip' || needs.includes(why);
+    if (w.elev && hit(['SERVOS', 'FC', 'RX'])) w.elev = null;
+    if (w.cg && hit(['BATT'])) w.cg = null;
+    for (const id of Object.keys(SIMPLE)) if (w[id] && hit(SIMPLE[id].needs)) w[id] = false;
+  }
+
   /* ---------- pill for the check phases (screen px through the ink scale) ---------- */
   function pillAt(p3, text, fill){
     const [X, Y] = P(...W(...p3)), fs = 8.6 * INK_K, h = fs * 1.8, t = CF_T(text), w = CF_TW(t, fs) + fs * 1.5;
@@ -196,8 +207,9 @@
       // winglet just outboard of the tip
       const wl = [[-150, Z0 + 4], [-250, Z0 + 2], [-262, Z0 + 118], [-212, Z0 + 118]];
       items.push(solid(wl.map(([x, z]) => [x, s * YT, z]), wl.map(([x, z]) => [x, s * (YT + 4), z]), tipM, [true, true], 1.2));
-      // CG mark on the top skin: 15-20 % of the mean chord, about 35 mm ahead of the root chord's mid-point
-      const cx = 35, cy = s * 100, cz = topAt(cx, 100) + .25, live = st.test && st.test.kind === 'cg';
+      // CG mark on the top skin at 15-20 % of the mean aerodynamic chord (x +1.5 to -11, docs/facts/wing.md §2),
+      // about 130 mm behind the root leading edge
+      const cx = CG_X, cy = s * 100, cz = topAt(cx, 100) + .25, live = st.test && st.test.kind === 'cg';
       const col = live ? (st.test.cg === 'tail' ? '#e2483d' : '#43a35a') : '#231e16';
       const ring = Array.from({ length: 16 }, (_, i) => { const t = i / 16 * 2 * Math.PI; return W(cx + 7 * Math.cos(t), cy + 7 * Math.sin(t), cz); });
       const q = (a0, a1) => [W(cx, cy, cz), ...Array.from({ length: 5 }, (_, i) => { const t = a0 + (a1 - a0) * i / 4; return W(cx + 7 * Math.cos(t), cy + 7 * Math.sin(t), cz); })];
@@ -228,7 +240,7 @@
     if (st.test && SIMPLE[st.test.kind]) items.push({ box: [W(150, -6, 140), W(162, 6, 142)], svg: pillAt([40, 0, 150], SIMPLE[st.test.kind].pill, '#fff4d6') });
     if (st.test && st.test.kind === 'cg'){
       const cg = st.test.cg, text = cg === 'tail' ? 'TAIL DROPS' : cg === 'nose' ? 'NOSE DIPS A LITTLE' : 'HANGS LEVEL';
-      items.push({ box: [W(150, -6, 140), W(162, 6, 142)], svg: pillAt([35, 0, 150], text, cg === 'tail' ? '#f6b2a8' : '#d6f0dc') });
+      items.push({ box: [W(150, -6, 140), W(162, 6, 142)], svg: pillAt([CG_X, 0, 150], text, cg === 'tail' ? '#f6b2a8' : '#d6f0dc') });
     }
     return items;
   }
@@ -468,8 +480,9 @@
       { id: 'failsafe', label: 'Failsafe test', onClick: simpleCheck('failsafe') },
     ],
     report: wingReport,
+    reset: wingReset,
     inside: [
-      { at: [35, 100, 28], text: 'CG MARK: 15-20 % OF THE MEAN CHORD' },
+      { at: [CG_X, 100, 28], text: 'CG MARK: 15-20 % OF THE MEAN CHORD', part: 'FRAME' },
     ],
     wiring: {
       nodes: {

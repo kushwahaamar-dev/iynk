@@ -1,0 +1,404 @@
+{
+  "title": "900 mm FPV flying wing",
+  "tagline": "A foam flying wing on INAV: elevons instead of a tail, a pusher prop, and GPS to fly it home.",
+  "sub": "INAV elevon wing with GPS return to home",
+  "hint": "Build it, check the elevons and the balance, then throw it and fly the pylons",
+  "noun": "flying wing",
+  "overview": "A flying wing has no tail. Its swept planform and slightly raised elevons keep it stable in pitch, and the two elevons do the work of an elevator (moving together) and of ailerons (moving apart). One pusher prop behind the wing keeps the blades clear of your hand at the throw and of the ground on a belly landing. This one is a 900 mm EPP foam wing on an F405 wing board running INAV 9.1, with GPS, an ExpressLRS receiver and analog FPV. INAV can level it, launch it, hold a course and fly it home on GPS, and it cruises on a few amps, so half-hour flights are normal. Pick the pack, motor and prop and watch the balance and the flight time change, build it, check the elevons and the CG, then fly the airfield.",
+  "practice": "Fly the pylon race in angle mode, then the return-to-home run. On a real wing: check the elevons before every first flight (the sticks and the stabiliser), balance it on the CG marks with the pack in, wait for a GPS fix before you arm, and throw it level, into the wind, at half throttle or with NAV LAUNCH. Set the failsafe to RTH and test it with the prop off. Most countries want the wing within sight: fly FPV with a spotter next to you.",
+  "design": {
+    "fixed": {
+      "FRAME": "900 mm EPP wing, pod and spar",
+      "ESC": "40 A ESC",
+      "FC": "F405 wing FC and power board",
+      "GPS": "M10 GPS + compass",
+      "CAM": "Analog FPV camera",
+      "VTX": "5.8 GHz VTX and antenna",
+      "RX": "ELRS 2.4 GHz receiver",
+      "SERVOS": "Two 9 g metal-gear servos",
+      "XT60": "XT60 lead and 470 µF capacitor",
+      "TOP": "Hatch, pushrods and horns",
+      "WIRES": "Motor wires and bullets"
+    },
+    "verdict": {
+      "ok": "Parts match: {tw} times its weight in thrust for the throw and the climb, and a cruise of a few amps.",
+      "over": "{kv} KV is a 5-inch quad motor. On a wing prop it pulls far more than the 40 A ESC can take and burns out in seconds. Wing motors on {cells}S are about 1000 to 1400 KV.",
+      "weak": "Only {tw} times its weight in thrust: a throw will sink before it climbs. Aim for at least half its weight.",
+      "tail": "This light pack leaves the wing tail-heavy: after the throw it pitches up and stalls. Move the pack forward or add nose weight, then run the CG check."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "900 mm EPP foam flying wing",
+      "what": "A tailless swept wing of EPP foam, 900 mm tip to tip, with a carbon spar inside, winglets at the tips and a 305 x 84 x 54 mm pod in the middle for the electronics. The leading edge sweeps back 28 degrees from a 300 mm root chord to a 155 mm tip. EPP bends instead of breaking, so belly landings are fine. The CG marks on top sit at 15 to 20 % of the mean chord, about 130 mm behind the root leading edge."
+    },
+    "SERVOS": {
+      "name": "Elevon servos, horns and pushrods",
+      "what": "Two 9 g metal-gear servos in the wing, 175 mm out on each side, with pushrods to horns on the elevons (55 mm wide, from 120 mm out to the tips). They plug into pads S3 and S4 and run on the FC's 4.9 V servo BEC. A servo that moves the wrong way crashes the wing straight after the throw: check them on the bench."
+    },
+    "MOTORS": {
+      "name": "Pusher motor on the trailing edge",
+      "what": "One outrunner on a mount at the back of the centre section, shaft pointing aft, so the prop sits behind the wing. The default 2212 1400 KV is about 55 g and runs hot on 4S with an 8x6: real 4S wings use 1000 to 1200 KV with that prop. The 2810 1100 KV is the stronger, calmer choice; the 2306 2400 KV is a 5-inch quad motor."
+    },
+    "ESC": {
+      "name": "40 A ESC",
+      "what": "One 40 A ESC in the pod, fed from the power board's ESC pads. INAV drives it with OneShot125 from pad S1. Its own 5 V BEC is not needed, because the FC's servo BEC powers the servos, so leave its red lead unconnected. INAV cannot reverse a motor: that is done in the ESC's own tool or by swapping two motor wires."
+    },
+    "WIRES": {
+      "name": "Motor wires and bullets",
+      "what": "The motor's three phase wires to the ESC through 3.5 mm bullet connectors. Any order spins the motor; swapping any two turns it the other way."
+    },
+    "FC": {
+      "name": "F405 wing flight controller (INAV)",
+      "what": "An F405 board made for wings (like the SpeedyBee F405 WING) on its own power board: battery input for 2 to 6S, a 90 A current sensor and three BECs, 5 V for the FC, 9 V for the VTX and 4.9 V for the servos. It runs INAV 9.1 with a gyro, a barometer and an analog OSD chip. It sits flat in the pod with its arrow to the nose."
+    },
+    "XT60": {
+      "name": "XT60 lead and 470 µF capacitor",
+      "what": "The battery lead soldered to the power board's BAT pads, with a 470 µF 35 V low-ESR capacitor across them, stripe on the minus pad. It soaks up the ESC's voltage spikes before they reset the FC or streak the video."
+    },
+    "GPS": {
+      "name": "M10 GPS + compass",
+      "what": "A u-blox M10 GPS with a QMC5883 compass, on top of the wing behind the pod and at least 5 cm from the ESC and the power wires. The GPS is on UART3 and the compass on I2C1. INAV needs the GPS for RTH, launch and cruise. On a wing the compass is optional: once it flies, INAV can steer by the GPS course."
+    },
+    "RX": {
+      "name": "ELRS 2.4 GHz receiver",
+      "what": "A tiny ExpressLRS receiver in the pod on UART1 (CRSF), with its T-antenna standing out of the pod. An antenna buried in the foam or lying along the carbon spar loses range and brings an early failsafe."
+    },
+    "CAM": {
+      "name": "FPV camera in the nose",
+      "what": "An analog camera in the nose, tilted up about 8 degrees: a wing flies nearly level, so it needs little uptilt. Its video goes into the FC's CAM pad, where INAV's OSD adds the altitude, speed, home arrow and battery."
+    },
+    "VTX": {
+      "name": "5.8 GHz VTX and antenna",
+      "what": "An analog video transmitter on the FC's 9 V BEC, its lollipop antenna standing up out of the pod. INAV sets the band, channel and power over SmartAudio; the power levels come from the VTX itself (INAV has no vtxtable). Never power it without the antenna."
+    },
+    "BATT": {
+      "name": "Battery (the balance weight)",
+      "what": "The pack slides into the pod's bay and is the wing's CG ballast. The 4S 2200 LiPo balances it on the marks. The 4S Li-ion 3000 makes it slightly nose-heavy, which is the safe side and gives long flights. The light 3S 1300 leaves it tail-heavy, and a tail-heavy wing is not safe to fly."
+    },
+    "TOP": {
+      "name": "Hatch",
+      "what": "The foam hatch over the pod, held by a latch. Check that it closes: a hatch that opens in flight drops the battery."
+    },
+    "PROPS": {
+      "name": "Pusher propeller",
+      "what": "A two-blade pusher (P) prop, 8x6 by default, mounted printed side forward. It turns counter-clockwise seen from behind and blows the air backwards. Mounted the wrong way round it gives weak thrust and slow climbs. A 9-inch prop clears the elevons by only a few millimetres."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Start with the wing",
+      "body": "Glue the two wing halves to the centre section with the carbon spar in its slot, fit the winglets, and check that the elevons swing freely on their hinges."
+    },
+    "servos": {
+      "title": "Fit the elevon servos",
+      "body": "Press the servos into their pockets, centre them, and set the pushrods so both elevons sit a little up at centre (reflex): that is what keeps a flying wing stable in pitch.",
+      "refusal": "The servos sit in the wing's pockets: fit the wing first."
+    },
+    "motors": {
+      "title": "Mount the pusher motor",
+      "body": "On the mount at the back of the centre section, shaft pointing aft. Check that the screws do not touch the windings.",
+      "refusal": "The motor screws to the wing's motor mount: fit the wing first."
+    },
+    "esc": {
+      "title": "Fit the ESC in the pod",
+      "body": "In the pod with the motor leads to the back. Tuck its BEC lead away: the flight controller powers the servos.",
+      "refusal": "The ESC goes in the wing's pod: fit the wing first."
+    },
+    "wires": {
+      "title": "Connect the motor wires",
+      "body": "Plug the motor's three bullets into the ESC's. If the motor turns the wrong way later, swap any two.",
+      "refusal": "The bullets join the motor to the ESC: fit both first."
+    },
+    "fc": {
+      "title": "Fit the flight controller, arrow to the nose",
+      "body": "Flat in the pod on its power board, the printed arrow to the nose. The ESC signal goes to S1, the servos to S3 and S4.",
+      "refusal": "The flight controller's power board feeds the ESC: fit the ESC first."
+    },
+    "xt60": {
+      "title": "Solder the XT60 and the capacitor",
+      "body": "The battery lead to the power board's BAT pads, red to + and black to -, and the 470 µF capacitor across the same pads with its stripe to minus. Check + and - for a short with a meter.",
+      "refusal": "The XT60 solders to the flight controller's power board: fit the flight controller first."
+    },
+    "gps": {
+      "title": "Fit the GPS on top",
+      "body": "On top of the wing behind the pod, arrow to the nose, at least 5 cm from the ESC and the power wires. Its lead goes to UART3 and I2C1.",
+      "refusal": "The GPS is wired to the flight controller: fit the flight controller first."
+    },
+    "rx": {
+      "title": "Fit the receiver",
+      "body": "In the pod on UART1: receiver TX to RX1 and RX to TX1. Stand its T-antenna out of the pod, away from the carbon spar.",
+      "refusal": "The receiver is wired to the flight controller's UART1: fit the flight controller first."
+    },
+    "cam": {
+      "title": "Fit the camera in the nose",
+      "body": "In the nose, tilted up about 8 degrees, its lead to the flight controller's CAM pads.",
+      "refusal": "The camera sits in the wing's nose: fit the wing first."
+    },
+    "vtx": {
+      "title": "Fit the VTX",
+      "body": "In the pod on the 9 V BEC, with the antenna screwed on before it ever gets power and standing up out of the pod.",
+      "refusal": "The VTX is wired to the flight controller: fit the flight controller first."
+    },
+    "batt": {
+      "title": "Slide the battery in",
+      "body": "Into the bay and strapped down where the CG marks say. With the 4S 2200 that is where it balances. Do not plug it in yet.",
+      "refusal": "The pack plugs into the XT60 on the flight controller's power board: fit both first."
+    },
+    "top": {
+      "title": "Close the hatch",
+      "body": "Over the pod, latched. Nothing may be pinched under it.",
+      "refusal": "The hatch closes over the battery, the receiver and the VTX: fit them first."
+    },
+    "props": {
+      "title": "Fit the pusher prop, last",
+      "body": "Only after the smoke stopper test and the motor direction check, with the pack unplugged. Printed side forward, nut tight.",
+      "refusal": "The prop goes on last: run the smoke stopper test and the motor direction check first."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "The pack plugs into the XT60. 4S is 14.8 V nominal and 16.8 V full; the Li-ion option is 4S too.",
+    "XT60-FC": "The XT60 lead is soldered to the power board's BAT pads (2 to 6S), with the 470 µF 35 V low-ESR capacitor across them, stripe to minus.",
+    "XT60-ESC": "The ESC takes its power from the power board's ESC pads, after the 90 A current sensor, so the OSD shows amps and mAh used.",
+    "FC-ESC": "The ESC signal from pad S1: motor 1, OneShot125 (INAV's default). The ESC's own BEC lead stays unconnected.",
+    "ESC-MOTORS": "Three phase wires on 3.5 mm bullets. Swap any two to reverse the motor.",
+    "FC-SERVOS": "Servo 1 on S3 and servo 2 on S4, powered by the servo BEC at 4.9 V (6 or 7.2 V by a jumper, only if the servos are rated for it). Brown or black is ground, red is plus, orange or white is the signal.",
+    "RX-FC": "ELRS on UART1 with CRSF: receiver TX to RX1 and RX to TX1, plus 5 V and ground.",
+    "GPS-FC": "One lead: the GPS on UART3 (u-blox protocol), the compass on I2C1 (SCL and SDA), 5 V and ground.",
+    "CAM-FC": "Camera video into the CAM pad, with 5 V and ground. INAV's OSD chip writes over it.",
+    "FC-VTX": "Video with the OSD out of the VTX pad, 9 V from the VTX BEC, and SmartAudio on a spare UART so INAV sets the band, channel and power."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke stopper test",
+      "pass": "The lamp only blinked: nothing is shorted and the capacitor is the right way round. Safe to plug the pack in directly.",
+      "fail": "The lamp lit up solid: something is shorted, here a capacitor fitted stripe to plus. Re-fit it stripe to minus and run the test again before you plug in for real."
+    },
+    "motors": {
+      "title": "Motor direction check (prop off)",
+      "pass": "The motor turns counter-clockwise seen from behind, the way a pusher prop needs, so the air will blow backwards. Now the prop can go on.",
+      "fail": "It turned the wrong way. INAV cannot reverse a motor: swap any two motor wires, or reverse it in the ESC's own tool, as the check does here. With the prop on, it would blow the air forward and barely fly."
+    },
+    "calibrate": {
+      "title": "Accelerometer calibration (wing level)",
+      "pass": "Calibrated with the wing level in its flying attitude: ANGLE mode and the OSD horizon now know where level is.",
+      "fail": "Fit the flight controller and set the wing level, the way it flies. If the arrow points backwards, calibrating will not fix it: turn the board round or set align_board_yaw = 1800."
+    },
+    "elevons": {
+      "title": "Elevon check (sticks and stabiliser)",
+      "pass": "Stick back: both elevons up. Stick right: right elevon up, left one down. Right wing tilted down in ANGLE: the right elevon goes down to lift it back. The sticks and the stabiliser both push the right way.",
+      "fail": "Fit the servos, the flight controller and the receiver, and plug in. If stick back moves the elevons down, a servo is reversed: give it a negative rate (servo 1 1000 2000 1500 -100) or tick Reverse in the Outputs tab. If the sticks are right but the stabiliser pushes the wrong way, the FC arrow points backwards."
+    },
+    "cg": {
+      "title": "CG check",
+      "pass": "It hangs level, or a little nose down, on two fingertips at the CG marks (15 to 20 % of the mean chord). Safe to throw.",
+      "fail": "Put the pack in first: in a wing the battery is the balance. If the tail drops, the wing is tail-heavy and will pitch up and stall after the throw. Slide the pack forward or add nose weight, then check again."
+    },
+    "compass": {
+      "title": "Compass calibration",
+      "pass": "Calibrated: turned through every axis for 30 s, away from the ESC and the battery leads. Check the heading against a real compass before you trust it.",
+      "fail": "Fit the GPS module (the compass is inside it) and the flight controller, and plug in. On a wing the compass is optional: INAV can steer by the GPS course once it flies."
+    },
+    "airspeed": {
+      "title": "Virtual airspeed check",
+      "pass": "pitot_hardware = VIRTUAL: INAV estimates the airspeed from the GPS speed and its wind estimate, enough for the OSD and for coordinated turns. A real pitot tube would need zeroing with the tube covered.",
+      "fail": "Fit the GPS and the flight controller and plug in: the virtual airspeed comes from the GPS."
+    },
+    "failsafe": {
+      "title": "Failsafe test (prop off)",
+      "pass": "Radio off: FAILSAFE on the OSD after 0.5 s, then RTH, which in flight climbs to 30 m and flies home. Radio back on and a stick moved: control is yours again.",
+      "fail": "Take the prop off, fit the receiver and the flight controller, and plug in: when the failsafe starts RTH, the motor spins up."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "First setup: the Flying Wing preset",
+      "explain": "The Configurator's Flying Wing preset, typed in the CLI. Since INAV 7 the mixer lives in mixer profiles, and a plain wing only uses profile 1. motorstop_on_low keeps the prop still at low throttle (old guides say feature MOTOR_STOP, which no longer exists). mmix 0 gives motor 1, on pad S1, throttle only. Each smix line is rule, servo, input, weight: both servos take +50 % of pitch (input 1), and roll (input 0) at +50 % on one and -50 % on the other, so pitch moves them together and roll moves them apart. That is an elevon. Then CRSF for the receiver on UART1 and the GPS on UART3."
+    },
+    "servos": {
+      "title": "Servo travel, direction and level trim",
+      "explain": "servo takes the travel in microseconds (min, max, centre) and a rate: a negative rate reverses that servo, so give it -100 if the elevon check shows it moving the wrong way. fw_level_pitch_trim is the nose-up angle ANGLE mode holds as level; most wings want 1 to 4 degrees, and the AUTO LEVEL TRIM mode learns it in flight. align_board_yaw is in tenths of a degree: 1800 if the flight controller is mounted arrow backwards."
+    },
+    "switches": {
+      "title": "Switches: arm, flight modes, launch, RTH",
+      "explain": "INAV's aux takes the slot, the mode's number, the channel (0 = AUX1) and the range in microseconds. Mode numbers: 0 ARM, 12 MANUAL, 1 ANGLE, 53 NAV CRUISE, 36 NAV LAUNCH, 10 NAV RTH. A three-position switch on AUX2 picks MANUAL, ANGLE or CRUISE; CRUISE holds the heading and the height, and the sticks change them."
+    },
+    "launch": {
+      "title": "NAV LAUNCH",
+      "explain": "Arm, switch NAV LAUNCH on (AUX3), raise the throttle (the motor stays at idle) and throw. INAV sees the throw, waits nav_fw_launch_motor_delay (0.5 s, so the prop is clear of your hand), runs the motor at 1700 µs and climbs at 18 degrees nose up until the timeout, 5 s, then hands over. These are INAV's defaults, written out so you can see and change them."
+    },
+    "failsafe": {
+      "title": "Failsafe: fly home",
+      "explain": "INAV's default failsafe is LAND, which on a wing circles down wherever it is. RTH flies it home instead. failsafe_delay and failsafe_recovery_delay are in tenths of a second: 0.5 s of lost link before the failsafe starts, 0.5 s of good link before it can end. failsafe_stick_threshold is how far you must move a stick to take control back."
+    },
+    "airspeed": {
+      "title": "Airspeed without a pitot tube",
+      "explain": "VIRTUAL estimates the airspeed from the GPS speed and the wind. fw_reference_airspeed is the airspeed the PIDs were tuned at, 1500 cm/s (15 m/s), used to coordinate turns. nav_fw_cruise_speed only feeds the remaining flight time on the OSD; it does not set how fast INAV flies."
+    },
+    "angle": {
+      "title": "Angle mode",
+      "explain": "INAV levels the wing when you let go and never banks it past max_angle_inclination_rll: 450 tenths of a degree, 45 degrees. fw_level_pitch_trim stays 0 here; if the wing slowly climbs or dives hands-off, trim it."
+    },
+    "manual": {
+      "title": "Manual",
+      "explain": "MANUAL passes the sticks straight to the elevons: nothing levels or steadies the wing. manual_roll_rate and manual_pitch_rate are the percent of servo travel at full stick, not degrees per second; 100 is all of it."
+    },
+    "rth": {
+      "title": "NAV RTH",
+      "explain": "NAV RTH (AUX4, or the failsafe) climbs first to at least nav_rth_altitude, 3000 cm (30 m, above the trees), flies home on GPS and circles it. nav_fw_loiter_radius is 5000 cm, 50 m: at 15 m/s and INAV's 35 degree bank the tightest circle is about 33 m, so 50 m leaves room. NEVER means it circles until you take over and land it yourself."
+    },
+    "stats": {
+      "title": "Flight stats",
+      "explain": "INAV shows a stats page by itself after you disarm (there is no osd_stats_page setting). osd_stats_energy_unit shows the energy used in mAh, each page stays up 3 s, and stats = ON keeps a lifetime count of flights, flight time and distance."
+    }
+  },
+  "flight": {
+    "modes": {
+      "angle": {
+        "title": "Angle mode",
+        "hint": "INAV levels the wing when you let go and banks it up to 45 degrees. Arm, then raise the throttle past a quarter to throw it. The arrows bank and pitch it; it turns by banking."
+      },
+      "manual": {
+        "title": "Manual",
+        "hint": "The sticks move the elevons directly and nothing levels the wing. Let go in a turn and it keeps banking."
+      },
+      "rth": {
+        "title": "NAV RTH",
+        "hint": "Watch it come home: it climbs to 30 m, flies back on GPS and circles the field 50 m out. Switch back to angle to land it yourself."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Link lost for 0.5 s: FAILSAFE, then RTH climbs to 30 m, flies home and circles. When the link is back, move a stick to take over.",
+      "stall": "Below stall speed the nose drops and a wing tip falls: lower the nose and add throttle, never pull back.",
+      "low-battery": "Below 3.5 V a cell the OSD warns: turn for home and land.",
+      "fence": "More than 180 m from home the range warns you: turn back while you can still see the wing."
+    },
+    "controls": "Keyboard: Space arms and disarms, W and S throttle (past a quarter throttle the wing is thrown), the arrows pitch and roll, V switches to FPV, R puts it back on the runway. A wing turns by banking: it has no rudder, so A and D do nothing. On a phone the left stick is throttle and the right stick is pitch and roll. A gamepad works in Mode 2."
+  },
+  "courses": {
+    "pylons": {
+      "title": "Airfield pylon race",
+      "brief": "Four orange pylons stand round the runway in an 80 x 50 m box. Throw the wing, fly round the outside of each pylon in turn, anticlockwise, then belly-land on the runway: slow, wings level, gently down.",
+      "prims": {
+        "pilots": "Pilot box",
+        "hangar": "Hangar"
+      },
+      "goals": {
+        "1": "PYLON 1",
+        "2": "PYLON 2",
+        "3": "PYLON 3",
+        "4": "PYLON 4",
+        "5": "BELLY LANDING"
+      }
+    },
+    "home": {
+      "title": "Return to home",
+      "brief": "Fly out to the red pole in the far corner, about 100 m from home, then switch to NAV RTH: INAV climbs to 30 m, flies home and circles the field 50 m out. Then take over in angle mode and belly-land on the runway.",
+      "goals": {
+        "1": "RED POLE",
+        "2": "RTH CIRCLE, 30 M UP",
+        "3": "BELLY LANDING"
+      }
+    }
+  },
+  "quizzes": {
+    "controls": {
+      "elevons": {
+        "q": "What does an elevon do?",
+        "options": {
+          "1": "It only steers left and right",
+          "2": "It is elevator and aileron in one: both move together for pitch and in opposite ways for roll",
+          "3": "It changes the pitch of the propeller"
+        },
+        "why": "A flying wing has no tail, so the two surfaces on its trailing edge do both jobs. The mixer adds the pitch and roll commands for each one: stick back lifts both, stick right lifts the right one and lowers the left."
+      },
+      "bench": {
+        "q": "On the bench, in ANGLE mode, you tilt the right wing down. Which way should the right elevon move?",
+        "options": {
+          "1": "Up, following the tilt",
+          "2": "Down, to lift that wing back up",
+          "3": "Not at all: only the sticks move it"
+        },
+        "why": "In ANGLE the stabiliser fights the tilt: the right elevon goes down, adding lift on the right wing to roll it back level. If it goes up instead, the flight controller is mounted backwards or its alignment is wrong, and the wing rolls over the moment it leaves your hand. The stick check alone cannot catch that."
+      }
+    },
+    "power": {
+      "pads": {
+        "q": "On this F405 wing board, which pad drives the pusher motor?",
+        "options": {
+          "1": "S1: INAV gives the first output to motor 1, and the servos take the next free timer, S3 and S4",
+          "2": "S3, after the two servos",
+          "3": "Any pad: INAV finds the motor by itself"
+        },
+        "why": "INAV hands out the outputs by timer. Motor 1 gets S1, and S2 shares its timer, so it can only drive a motor too. The servos take the next timer, S3 and S4. Which elevon is servo 1 is set by the smix lines and checked on the bench."
+      },
+      "cap": {
+        "q": "Why the low-ESR capacitor on the power board's battery pads?",
+        "options": {
+          "1": "To keep the servos powered when the battery is unplugged",
+          "2": "To raise the battery voltage",
+          "3": "To soak up the ESC's voltage spikes, which would otherwise reset the FC or put lines in the video"
+        },
+        "why": "Every time the ESC switches, the battery leads ring with voltage spikes. A 470 µF low-ESR capacitor right at the pads absorbs them. 25 V is enough for 4S (16.8 V full); 35 V allows up to 6S. Stripe to the minus pad."
+      }
+    },
+    "balance": {
+      "tail": {
+        "q": "You swap the 4S 2200 for a light 3S 1300 in the same place. What happens?",
+        "options": {
+          "1": "Nothing: the balance does not depend on the battery",
+          "2": "The wing turns tail-heavy: after the throw it pitches up and stalls. Move the pack forward or add nose weight",
+          "3": "It turns nose-heavy and dives"
+        },
+        "why": "In a wing the pack is the ballast that puts the CG on the marks. A lighter pack in the same bay lets the CG move back, and a tail-heavy wing pitches up, porpoises and stalls, often straight after the throw. Nose-heavy is the safe side: it needs a little more speed, but it flies."
+      },
+      "mac": {
+        "q": "Where does the CG go on a swept wing like this one?",
+        "options": {
+          "1": "At 15 to 20 % of the mean aerodynamic chord: here about 125 to 135 mm behind the root leading edge",
+          "2": "At 25 % of the root chord, 75 mm behind the leading edge",
+          "3": "Halfway between the nose and the trailing edge"
+        },
+        "why": "On a swept, tapered wing the CG is measured on the mean aerodynamic chord, which sits out along the span and further back than the root. 25 % of the root chord would be far too far forward, and 25 % of the mean chord is about the neutral point, too far back to fly. Balance it on two fingertips at the marks: level, or a little nose down."
+      }
+    },
+    "flight": {
+      "stall": {
+        "q": "Just after the throw the wing slows, a tip drops and the nose falls. What happened, and what do you do?",
+        "options": {
+          "1": "The motor stopped: switch to manual",
+          "2": "It stalled, too slow or thrown nose-high: lower the nose, level the wings and add throttle",
+          "3": "The GPS lost its fix: wait for it"
+        },
+        "why": "Below its stall speed (about 9 to 10 m/s for this wing) the wing stops lifting and a tip drops. Pulling back makes it worse. Let the nose down to gain speed, level the wings and add throttle. Throw it level or a few degrees nose up, into the wind, at half throttle or more."
+      },
+      "loiter": {
+        "q": "Why is nav_fw_loiter_radius 50 m and not 22 m?",
+        "options": {
+          "1": "To save battery",
+          "2": "Because INAV counts it in feet",
+          "3": "A wing cannot hover: at 15 m/s and a 35 degree bank its tightest circle is about 33 m, so a 22 m circle cannot be flown"
+        },
+        "why": "The turn radius is the speed squared over g times the tangent of the bank: 15² / (9.81 x tan 35°) is about 33 m. Ask for a smaller circle and the wing flies a wobbly bigger one. INAV's default is 75 m, and 30 to 75 m is the useful range."
+      },
+      "failsafe": {
+        "q": "Far out, the link drops for a second. What does this wing do?",
+        "options": {
+          "1": "After 0.5 s it goes to failsafe and RTH: it climbs to 30 m, flies home and circles until you take over",
+          "2": "It cuts the motor and glides down where it is",
+          "3": "It flies straight on until the battery is empty"
+        },
+        "why": "failsafe_procedure = RTH replaces INAV's default LAND, which circles down where it is. failsafe_delay = 5 is 0.5 s. When the link is back, moving a stick past failsafe_stick_threshold gives you control again."
+      },
+      "motor": {
+        "q": "Why is the 2306 2400 KV quad motor a bad choice for this wing?",
+        "options": {
+          "1": "It is too heavy",
+          "2": "On an 8-inch prop at 4S it would pull around 100 A, far past the 40 A ESC: the motor or the ESC burns out in seconds",
+          "3": "It spins the wrong way"
+        },
+        "why": "A 5-inch quad motor is wound to spin a small prop very fast. Give it an 8x6 and the current climbs with the load: about 97 A by the calculator. Wing motors on 4S are about 1000 to 1400 KV with 8-inch props."
+      }
+    }
+  }
+}

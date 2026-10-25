@@ -331,7 +331,7 @@ const wing: DroneContent = {
       },
       {
         id: 'stats',
-        mode: 'range',
+        mode: 'build',
         title: 'firmware.stats.title',
         explain: 'firmware.stats.explain',
         code: [
@@ -484,7 +484,8 @@ const wing: DroneContent = {
   },
 
   // The "Airfield pylon race" (x east, y north, metres): four pylon checkpoints just outside the pylons, then a belly
-  // landing on the runway; and a fly-out-and-come-home run for RTH.
+  // landing on the runway; and a fly-out-and-come-home run for RTH, whose second goal sits on the RTH circle (the
+  // loiter radius from home, at the return altitude) so the RTH mode reaches it by itself.
   courses: [
     {
       id: 'pylons',
@@ -554,7 +555,7 @@ const wing: DroneContent = {
       gates: [],
       goals: [
         { x: 175, y: 175, z: 20, r: 12, label: 'courses.home.goals.1' },
-        { x: 100, y: 100, z: 30, r: 15, label: 'courses.home.goals.2' },
+        { x: 150, y: 100, z: 30, r: 15, label: 'courses.home.goals.2' },
         { x: 118, y: 100, z: 1, r: 6, label: 'courses.home.goals.3' },
       ],
       mission: 'rth',
