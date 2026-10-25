@@ -88,8 +88,8 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   since 22:20 and gave full autonomy for every remaining build phase except Solana and hardware (CONTEXT.md §5).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Do not build in
   `/Users/amar/Codes/sim`.
-- **Phase:** 2. Phase 1 done, gate 1 green (19:21). Wave A done (21:27). Wave B next, with phase 3's prose wave T1
-  beside it (`scripts/workflows/phase3.md`).
+- **Phase:** 2 and 3 at once. Phase 1 done, gate 1 green (19:21). Wave A done (21:27). Since 23:05 wave B
+  (`wf_7b610548-7fb`) and phase 3's prose wave T1 (`wf_0e06f30a-c43`, `scripts/workflows/phase3.md`) are running.
 - **Plan:** `docs/hacktx/BUILD-PLAN.md`, written from the six audits in `docs/audit/` (boards, robotics, drones,
   platform, sponsor-layer, history). Phases 1–3 build for Best Overall, SerpApi, Most Entertaining and Meta.
   Solana and Best Hardware Hack were phase 4, only if time is left after gate 3 (Amar, 16:15); at 22:20 Amar said
@@ -128,10 +128,21 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   | P2-rob-motor | transistor-switch, tb6612fng, l298n benches on the model hook, TT motor, AA holder, 2S LiPo (`bc79f7c`…`7c3e84d`) | wiring faults on the breadboard → P2-engine-b |
   | P2-social | room sync and baton in every lab store, Web Audio sound, telemetry on AI calls, failure patch (`8d42b08`…`246bb90`) | telemetry opt-out, kinds, privacy copy → P2-fun; FigureReadout: driver (`73acdd8`) |
 
-- **Next step:** launch wave B (`scripts/workflows/phase2-wave-b.js`, 10 agents, 2.5–3 h) and phase 3's T1 prose wave
-  beside it, record their run ids here, then wait. When wave B finishes: its reports here, "Between and after the
-  waves" in `phase2.md` (content index, `cfbuild.py --all` with `cfshoot`, gate checks, `docs/verify/gate2.md`), then
-  phase 3 waves T2 and D (planned at gate 2 in `phase3.md`).
+- **Running since 23:05 (don't touch their files, never SendMessage their agents):**
+  - Wave B, run `wf_7b610548-7fb` from `scripts/workflows/phase2-wave-b.js` (`10b6951`), no args: P2-engine-b,
+    P2-microbit, P2-nucleo, P2-pi, P2-fpga, P2-rob-sensors, P2-rob-power, P2-drones-heavy, P2-drones-vtol, P2-fun.
+  - Prose T1, run `wf_0e06f30a-c43` from `scripts/workflows/phase3-prose.js` (`88b7db2`): P3-prose-es, -fr, -de, -zh,
+    -hi, each through the same 21 items in order: `boards/uno-r3`, `drones/quad5`, `robotics/esp32-s3-build`,
+    `robotics/uno-r3-build`, `drones/racer`, `drones/whoop`, `boards/nano`, `boards/esp32-devkitc`, `boards/pico`,
+    `boards/esp32-s3-devkitc-1`, `boards/nodemcu`, `boards/uno-r4`, `drones/cinewhoop`, `drones/longrange`,
+    `drones/wing`, `drones/gpscam`, `drones/delivery`, `robotics/led-resistor`, `robotics/transistor-switch`,
+    `robotics/tb6612fng`, `robotics/l298n`.
+  - If this session dies: `git log` shows what each label pushed. Relaunch the unfinished wave-B labels with
+    `args: { labels: [...], resume: { stoppedAt, since: "88b7db2", backup } }` after backing up the uncommitted files,
+    and the prose wave with the items not yet in `src/i18n/content/<lang>/`.
+- **Next step:** wait for both. When wave B finishes: its reports here, "Between and after the waves" in `phase2.md`
+  (content index, `cfbuild.py --all` with `cfshoot`, gate checks, `docs/verify/gate2.md`), then plan and launch phase
+  3's T2 (UI strings, figure dictionaries, wave B's prose) and D (docs) in `phase3.md`.
 - **Agents:** P1-checks `1e6f87c4-b1ea-4a31-9425-b1de6de9a88f` done (`39cca43`, `c168147`). P1-health
   `d393e1cb-35bc-4db4-bc0b-37c02c1b8e14` done (`28d8564`). P1-voice `b337455f-1b6d-45d5-93d8-51efb828d421` done
   (`b1e5308`). P1-engine `1a0582c2-ec24-42ab-8b3c-e2ac162b8e48` done (`f104e10`, `a45ec96`, `03eaab0`, `9d49d45`,
@@ -153,6 +164,9 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 23:05 CDT (Amar's session): wave B launched (`wf_7b610548-7fb`, 10 agents) and phase 3 prose T1 beside
+  it (`wf_0e06f30a-c43`, 5 agents, judge path first), under Amar's 22:20 full-autonomy go.
 
 - 2026-10-24 23:00 CDT (Amar's session): wave A done at 21:27, all 9 labels pushed. Driver closed it: content index
   (`baa671a`), every figure rebuilt (`6576766`) and shot, layout problems filed for P2-engine-b (`a4c7e9f`), suite
