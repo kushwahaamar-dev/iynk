@@ -378,6 +378,35 @@
         "top": "Haz parpadear el LED de la placa y un LED en GP15",
         "led": "el LED de la placa, en cualquier Pico",
         "ext": "el LED de la protoboard"
+      },
+      "quiz": {
+        "q1": {
+          "q": "¿Por qué el código usa Pin(\"LED\") y no Pin(25)?",
+          "options": {
+            "1": "Pin(25) no es un pin válido en MicroPython",
+            "2": "En las placas W, GP25 es de la radio, no del LED",
+            "3": "Pin(\"LED\") alimenta el LED con más fuerza"
+          },
+          "why": "La Pico y la Pico 2 tienen el LED en GP25, pero en la Pico W y la Pico 2 W es el WL_GPIO0 de la radio. El nombre \"LED\" encuentra el correcto en las cuatro placas."
+        },
+        "q2": {
+          "q": "¿Qué hace la resistencia de 330 Ω delante del LED de GP15?",
+          "options": {
+            "1": "Limita la corriente a unos 4 mA, que el pin puede dar",
+            "2": "Baja los 5 V del pin a unos 3,3 V seguros",
+            "3": "Fija la velocidad del parpadeo"
+          },
+          "why": "(3,3 V - 2,0 V) / 330 Ω ≈ 4 mA, dentro de los 4 mA de salida por defecto del pin. Los GPIO son de 3,3 V en todas las Pico, y sin la resistencia el pin intentaría dar mucho más de 12 mA."
+        },
+        "q3": {
+          "q": "Con el retardo en 500 ms, ¿cuánto dura un parpadeo completo, encendido y apagado?",
+          "options": {
+            "1": "250 ms",
+            "2": "500 ms",
+            "3": "1 segundo"
+          },
+          "why": "toggle() invierte el LED una vez por retardo, así que está 500 ms encendido y 500 ms apagado: el periodo es el doble del retardo."
+        }
       }
     },
     "button": {
@@ -451,6 +480,35 @@
         "pullup": "suelto = 1, pulsado = 0",
         "sensor": "canal 4 del ADC: el sensor del chip",
         "pressed": "bajo significa pulsado"
+      },
+      "quiz": {
+        "q1": {
+          "q": "El botón une GP14 con GND y el pin usa Pin.PULL_UP. ¿Qué devuelve button.value() mientras mantienes pulsado el botón?",
+          "options": {
+            "1": "1 (alto)",
+            "2": "Un valor al azar",
+            "3": "0 (bajo)"
+          },
+          "why": "El pull-up interno, de unos 50 kΩ a 3,3 V, mantiene GP14 en 1 mientras el botón está suelto. Al pulsarlo, el botón lo une a GND y lee 0: por eso el código comprueba value() == 0."
+        },
+        "q2": {
+          "q": "¿Qué mide ADC(4)?",
+          "options": {
+            "1": "El potenciómetro de GP26",
+            "2": "El sensor de temperatura del interior del chip",
+            "3": "La tensión de la batería en VSYS"
+          },
+          "why": "El canal 4 es el sensor de temperatura del propio chip, así que mide el chip, que está un poco más caliente que la habitación. GP26 a GP28 son ADC0 a ADC2, y ADC3 lee VSYS / 3."
+        },
+        "q3": {
+          "q": "El sensor da 0,706 V a 27 °C. ¿Qué hace su tensión cuando el chip se calienta?",
+          "options": {
+            "1": "Baja unos 1,721 mV por grado",
+            "2": "Sube unos 1,721 mV por grado",
+            "3": "Se queda en 0,706 V"
+          },
+          "why": "La tensión baja cuando sube la temperatura, y por eso la fórmula es T = 27 - (V - 0,706) / 0,001721: una lectura por debajo de 0,706 V significa más de 27 °C."
+        }
       }
     },
     "fade": {
@@ -529,6 +587,35 @@
         "pot": "ADC0 en GP26",
         "freq": "frecuencia del PWM en Hz",
         "raw": "de 0 a 65535"
+      },
+      "quiz": {
+        "q1": {
+          "q": "El ADC tiene 12 bits. ¿Qué rango devuelve pot.read_u16()?",
+          "options": {
+            "1": "De 0 a 1023",
+            "2": "De 0 a 4095",
+            "3": "De 0 a 65535"
+          },
+          "why": "read_u16() escala cada lectura a 16 bits, de 0 a 65535. duty_u16() acepta el mismo rango, así que la lectura entra directamente en el ciclo de trabajo del PWM."
+        },
+        "q2": {
+          "q": "¿Por qué el extremo superior del potenciómetro va a 3V3 y no a VBUS?",
+          "options": {
+            "1": "Los pines del ADC admiten 3,3 V como mucho, también en la Pico 2",
+            "2": "VBUS no da corriente suficiente para un potenciómetro",
+            "3": "VBUS es solo una entrada y no da tensión"
+          },
+          "why": "El cursor puede llegar a lo que haya en los extremos, y VBUS tiene 5 V con el USB. Los pines del ADC tienen un diodo a 3,3 V y tienen que quedarse por debajo de unos 3,6 V; la tolerancia a 5 V de la Pico 2 solo cubre de GP0 a GP22, no los pines del ADC."
+        },
+        "q3": {
+          "q": "Pones la frecuencia del PWM en 100 Hz y mueves el LED deprisa. ¿Qué ves?",
+          "options": {
+            "1": "Parece más brillante que a 1 kHz",
+            "2": "Parpadea",
+            "3": "Se apaga"
+          },
+          "why": "A 100 Hz los pulsos son lo bastante lentos para verse en cuanto el LED se mueve; a 20 kHz nadie los nota. El brillo sigue al ciclo de trabajo, no a la frecuencia."
+        }
       }
     },
     "i2c-mpu6050": {
@@ -605,6 +692,35 @@
         "scan": "direcciones que responden",
         "wake": "borra el bit de sueño de PWR_MGMT_1",
         "read": "ACCEL_ZOUT_H y ACCEL_ZOUT_L"
+      },
+      "quiz": {
+        "q1": {
+          "q": "i2c.scan() imprime found [104]. ¿Qué es 104?",
+          "options": {
+            "1": "La dirección del MPU-6050, 0x68 en hexadecimal",
+            "2": "El número de bytes que envió el sensor",
+            "3": "La velocidad del bus en kHz"
+          },
+          "why": "scan() da en decimal la dirección de cada dispositivo que responde. 104 es 0x68, la dirección del MPU-6050 (0x69 con su pin AD0 en alto)."
+        },
+        "q2": {
+          "q": "scan() imprime una lista vacía. ¿Qué compruebas primero?",
+          "options": {
+            "1": "El reloj del I2C: 400 kHz es demasiado rápido",
+            "2": "Los números de registro del código",
+            "3": "El cableado: ¿están cambiados SDA y SCL?"
+          },
+          "why": "Una lista vacía significa que no ha respondido ningún dispositivo, así que el fallo está en la protoboard: VCC a 3V3, GND, SDA a GP4 y SCL a GP5. Los registros solo importan cuando el sensor ya responde."
+        },
+        "q3": {
+          "q": "¿Por qué el código escribe primero 0 en el registro 0x6B?",
+          "options": {
+            "1": "Para fijar la dirección del sensor en 0x68",
+            "2": "Para despertar el sensor, que arranca dormido",
+            "3": "Para borrar la última lectura"
+          },
+          "why": "El MPU-6050 arranca dormido, y escribir 0 en PWR_MGMT_1 (0x6B) borra su bit de reposo. Su dirección la fija el pin AD0: 0x68, o 0x69 con AD0 en alto."
+        }
       }
     },
     "wifi": {
@@ -664,6 +780,35 @@
         "led": "el LED cuelga de la radio",
         "wait": "parpadea mientras se conecta",
         "get": "un GET de HTTP sencillo"
+      },
+      "quiz": {
+        "q1": {
+          "q": "¿Por qué esta lección necesita una Pico W o una Pico 2 W?",
+          "options": {
+            "1": "Las placas normales tienen poca flash para el código de red",
+            "2": "Solo las placas W llevan radio, el CYW43439",
+            "3": "Solo las placas W pueden escribir en el monitor serie"
+          },
+          "why": "Las placas W añaden un chip Wi-Fi y Bluetooth CYW43439 de Infineon bajo la tapa metálica, con una antena impresa. La Pico y la Pico 2 no tienen radio."
+        },
+        "q2": {
+          "q": "En una Pico W, ¿qué GPIO tiene que dejar en paz tu programa?",
+          "options": {
+            "1": "GP0 y GP1",
+            "2": "GP26, GP27 y GP28",
+            "3": "GP23, GP24, GP25 y GP29"
+          },
+          "why": "Esos cuatro son el enlace SPI de la radio: encendido, datos, chip select y reloj. Si los usas, el Wi-Fi deja de funcionar, y por eso Pin(25) no es el LED en una placa W."
+        },
+        "q3": {
+          "q": "La placa tarda en conectarse a la red o la pierde una y otra vez. ¿Qué ayuda en la propia placa?",
+          "options": {
+            "1": "Alejar el metal y los dedos del extremo de la antena",
+            "2": "Mantener pulsado BOOTSEL mientras se conecta",
+            "3": "Hacer parpadear el LED con Pin(25)"
+          },
+          "why": "La antena es una pista de cobre impresa en el extremo opuesto al USB. El metal, los planos de tierra y los dedos cerca de ella debilitan la señal."
+        }
       }
     },
     "blink-cpp": {
@@ -727,6 +872,35 @@
         "builtin": "GP25, o el LED de la radio en las placas W",
         "serial": "serie por USB: los baudios se ignoran",
         "nodelay": "ha pasado el tiempo, sin esperar"
+      },
+      "quiz": {
+        "q1": {
+          "q": "¿Por qué este sketch mide el parpadeo con millis() y no con delay()?",
+          "options": {
+            "1": "millis() deja loop() libre para otras tareas entre cambio y cambio",
+            "2": "delay() no funciona en la Pico",
+            "3": "millis() hace que el LED parpadee más rápido"
+          },
+          "why": "delay() para todo el bucle mientras espera. Comparar now - last con el intervalo deja que loop() siga corriendo y haga otras tareas entre medias."
+        },
+        "q2": {
+          "q": "¿Qué hace el 115200 de Serial.begin(115200) en la Pico?",
+          "options": {
+            "1": "Fija la velocidad del chip USB-serie",
+            "2": "Nada: se ignoran los baudios",
+            "3": "Fija el intervalo del parpadeo"
+          },
+          "why": "La Pico no tiene puente USB-serie: el USB va directo al RP2040 o al RP2350, y Serial es el propio dispositivo USB del chip, así que el número de Serial.begin() no cambia nada."
+        },
+        "q3": {
+          "q": "millis() vuelve a 0 a los 49 días más o menos. ¿Qué le pasa entonces al parpadeo?",
+          "options": {
+            "1": "Se para hasta que reinicias la placa",
+            "2": "La placa se reinicia sola",
+            "3": "Sigue como antes"
+          },
+          "why": "La resta sin signo da la vuelta igual que millis(), así que now - last sigue dando el tiempo que ha pasado."
+        }
       }
     }
   }

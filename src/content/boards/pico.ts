@@ -1,6 +1,6 @@
 // Raspberry Pi Pico family (Pico, Pico W, Pico 2, Pico 2 W). Facts: docs/facts/pico.md; figure: figures/boards/pico.js.
 // Text fields are keys into src/i18n/content/<lang>/boards/pico.json.
-import type { BoardContent, BoardPower, Check, Lesson, Mcu, PinCap, PinRow } from '@/content/schema';
+import type { BoardContent, BoardPower, Check, Lesson, Mcu, PinCap, PinRow, Quiz } from '@/content/schema';
 
 // Default hardware functions per GPIO (RP2040 datasheet function table; the RP2350A maps GPIO 0-29 the same way).
 const SPI_SIG = ['RX', 'CSn', 'SCK', 'TX'];
@@ -208,6 +208,14 @@ const lessonText = (id: string, steps: number, hints: number, specs: number, fea
   features: features.map((icon, i) => ({ icon, text: `lessons.${id}.features.${i + 1}` })),
 });
 const chk = (id: string, n: number) => `lessons.${id}.checks.${n}`;
+/** The lesson's end-of-lesson quiz; `answers` are the right option (0-2) of q1, q2, q3. */
+const quiz = (id: string, answers: [number, number, number]): Quiz => ({
+  id, afterStep: null,
+  questions: answers.map((answer, i) => {
+    const key = `lessons.${id}.quiz.q${i + 1}`;
+    return { id: `q${i + 1}`, q: `${key}.q`, options: [`${key}.options.1`, `${key}.options.2`, `${key}.options.3`], answer, why: `${key}.why` };
+  }),
+});
 
 const blinkChecks: Check[] = [
   { kind: 'runs', minMs: 3000, label: chk('blink', 1) },
@@ -231,6 +239,7 @@ const lessons: Lesson[] = [
       { pin: 'GND', to: 'lessons.blink.pins.GND.to', role: 'lessons.blink.pins.GND.role', color: 'black' },
     ],
     callouts: [{ part: 'D2', text: 'lessons.blink.callouts.D2' }, { part: 'R1', text: 'lessons.blink.callouts.R1' }],
+    quiz: quiz('blink', [1, 0, 2]),
     ...lessonText('blink', 4, 3, 3, ['led', 'code', 'clock']),
   },
   {
@@ -260,6 +269,7 @@ const lessons: Lesson[] = [
       { pin: 'GND', to: 'lessons.button.pins.GND.to', role: 'lessons.button.pins.GND.role', color: 'black' },
     ],
     callouts: [{ part: 'BTN1', text: 'lessons.button.callouts.BTN1' }, { part: 'U1', text: 'lessons.button.callouts.U1' }],
+    quiz: quiz('button', [2, 1, 0]),
     ...lessonText('button', 4, 3, 3, ['button', 'thermometer', 'terminal']),
   },
   {
@@ -295,6 +305,7 @@ const lessons: Lesson[] = [
       { pin: 'GP15', to: 'lessons.fade.pins.GP15.to', role: 'lessons.fade.pins.GP15.role', color: 'orange' },
     ],
     callouts: [{ part: 'POT1', text: 'lessons.fade.callouts.POT1' }, { part: 'LED1', text: 'lessons.fade.callouts.LED1' }],
+    quiz: quiz('fade', [2, 0, 1]),
     ...lessonText('fade', 4, 3, 3, ['dial', 'wave', 'chart']),
   },
   {
@@ -329,6 +340,7 @@ const lessons: Lesson[] = [
       { pin: 'GND', to: 'lessons.i2c-mpu6050.pins.GND.to', role: 'lessons.i2c-mpu6050.pins.GND.role', color: 'black' },
     ],
     callouts: [{ part: 'IMU1', text: 'lessons.i2c-mpu6050.callouts.IMU1' }],
+    quiz: quiz('i2c-mpu6050', [0, 2, 1]),
     ...lessonText('i2c-mpu6050', 4, 3, 3, ['bus', 'chip', 'compass']),
   },
   {
@@ -352,6 +364,7 @@ const lessons: Lesson[] = [
     variants: ['pico-w', 'pico2-w'],
     pins: [{ pin: 'WL_GPIO0', to: 'lessons.wifi.pins.WL_GPIO0.to', role: 'lessons.wifi.pins.WL_GPIO0.role', color: 'green' }],
     callouts: [{ part: 'SH1', text: 'lessons.wifi.callouts.SH1' }, { part: 'ANT', text: 'lessons.wifi.callouts.ANT' }, { part: 'D2', text: 'lessons.wifi.callouts.D2' }],
+    quiz: quiz('wifi', [1, 2, 0]),
     ...lessonText('wifi', 4, 3, 3, ['wifi', 'globe', 'led']),
   },
   {
@@ -373,6 +386,7 @@ const lessons: Lesson[] = [
       { pin: 'GND', to: 'lessons.blink-cpp.pins.GND.to', role: 'lessons.blink-cpp.pins.GND.role', color: 'black' },
     ],
     callouts: [{ part: 'D2', text: 'lessons.blink-cpp.callouts.D2' }],
+    quiz: quiz('blink-cpp', [0, 1, 2]),
     ...lessonText('blink-cpp', 4, 3, 3, ['code', 'clock', 'terminal']),
   },
 ];

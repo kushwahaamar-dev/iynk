@@ -99,6 +99,19 @@ describe('pico lessons pass their checks', () => {
     }
   });
 
+  it('gives every lesson a three-question quiz whose answers are among its options', () => {
+    for (const l of pico.lessons) {
+      expect(l.quiz?.id, l.id).toBe(l.id);
+      expect(l.quiz?.questions, l.id).toHaveLength(3);
+      for (const q of l.quiz!.questions) {
+        expect(q.options, `${l.id} ${q.id}`).toHaveLength(3);
+        expect([0, 1, 2], `${l.id} ${q.id}`).toContain(q.answer);
+        for (const key of [q.q, q.why, ...q.options]) expect(text(key).length, key).toBeGreaterThan(0);
+      }
+    }
+    expect(new Set(pico.lessons.flatMap((l) => l.quiz!.questions.map((q) => q.answer))).size).toBe(3);
+  });
+
   for (const l of pico.lessons) {
     it(`${l.id}: the code passes its checks through the app check path`, () => {
       const { trace, results } = runChecks(lessonJob(pico, l, reference(l)));

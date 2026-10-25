@@ -162,6 +162,23 @@
         "top": "Blink the on-board LED and an LED on GP15",
         "led": "the board's LED, on any Pico",
         "ext": "the LED on the breadboard"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Why does the code use Pin(\"LED\") and not Pin(25)?",
+          "options": { "1": "Pin(25) is not a valid pin in MicroPython", "2": "On the W boards GP25 belongs to the radio, not the LED", "3": "Pin(\"LED\") drives the LED harder" },
+          "why": "The Pico and Pico 2 have the LED on GP25, but on the Pico W and Pico 2 W it is the radio's WL_GPIO0. The name \"LED\" finds the right one on all four boards."
+        },
+        "q2": {
+          "q": "What does the 330 Ω resistor in front of the GP15 LED do?",
+          "options": { "1": "It limits the current to about 4 mA, which the pin can supply", "2": "It drops the pin's 5 V to a safe 3.3 V", "3": "It sets how fast the LED blinks" },
+          "why": "(3.3 V - 2.0 V) / 330 Ω ≈ 4 mA, within the pin's default 4 mA drive. GPIOs are 3.3 V on every Pico, and without the resistor the pin would try to drive far more than 12 mA."
+        },
+        "q3": {
+          "q": "With the delay at 500 ms, how long is one full blink, on and off?",
+          "options": { "1": "250 ms", "2": "500 ms", "3": "1 second" },
+          "why": "toggle() flips the LED once per delay, so it is on for 500 ms and off for 500 ms: the period is twice the delay."
+        }
       }
     },
     "button": {
@@ -198,6 +215,23 @@
         "pullup": "released = 1, pressed = 0",
         "sensor": "ADC channel 4: the on-chip sensor",
         "pressed": "low means pressed"
+      },
+      "quiz": {
+        "q1": {
+          "q": "The button joins GP14 to GND, and the pin uses Pin.PULL_UP. What does button.value() return while you hold the button down?",
+          "options": { "1": "1 (high)", "2": "It flips at random", "3": "0 (low)" },
+          "why": "The internal pull-up, about 50 kΩ to 3.3 V, holds GP14 at 1 while the button is released. Pressed, the button ties it to GND and it reads 0, which is why the code tests value() == 0."
+        },
+        "q2": {
+          "q": "What does ADC(4) measure?",
+          "options": { "1": "The potentiometer on GP26", "2": "The temperature sensor inside the chip", "3": "The battery voltage on VSYS" },
+          "why": "Channel 4 is the on-chip temperature sensor, so it measures the chip, which runs a little warmer than the room. GP26 to GP28 are ADC0 to ADC2, and ADC3 reads VSYS / 3."
+        },
+        "q3": {
+          "q": "The sensor gives 0.706 V at 27 °C. What does its voltage do as the chip warms up?",
+          "options": { "1": "It falls by about 1.721 mV per degree", "2": "It rises by about 1.721 mV per degree", "3": "It stays at 0.706 V" },
+          "why": "The voltage drops as the temperature climbs, which is why the formula is T = 27 - (V - 0.706) / 0.001721: a reading below 0.706 V means more than 27 °C."
+        }
       }
     },
     "fade": {
@@ -235,6 +269,23 @@
         "pot": "ADC0 on GP26",
         "freq": "PWM frequency in Hz",
         "raw": "0 to 65535"
+      },
+      "quiz": {
+        "q1": {
+          "q": "The ADC has 12 bits. What range does pot.read_u16() return?",
+          "options": { "1": "0 to 1023", "2": "0 to 4095", "3": "0 to 65535" },
+          "why": "read_u16() scales every reading to 16 bits, 0 to 65535. duty_u16() takes the same range, so the reading goes straight into the PWM duty cycle."
+        },
+        "q2": {
+          "q": "Why does the potentiometer's top end go to 3V3 and not to VBUS?",
+          "options": { "1": "The ADC pins take 3.3 V at most, on the Pico 2 as well", "2": "VBUS can't supply enough current for a potentiometer", "3": "VBUS is an input only and gives no voltage out" },
+          "why": "The wiper can reach whatever is on the ends, and VBUS is 5 V on USB. ADC pins have a diode to 3.3 V and must stay below about 3.6 V; the Pico 2's 5 V tolerance covers GP0 to GP22 only, not the ADC pins."
+        },
+        "q3": {
+          "q": "You set the PWM frequency to 100 Hz and move the LED quickly. What do you see?",
+          "options": { "1": "It looks brighter than at 1 kHz", "2": "It flickers", "3": "It goes dark" },
+          "why": "At 100 Hz the pulses are slow enough to see once the LED moves; at 20 kHz nobody can see them. The brightness follows the duty cycle, not the frequency."
+        }
       }
     },
     "i2c-mpu6050": {
@@ -272,6 +323,23 @@
         "scan": "addresses that answer",
         "wake": "clear the sleep bit in PWR_MGMT_1",
         "read": "ACCEL_ZOUT_H and ACCEL_ZOUT_L"
+      },
+      "quiz": {
+        "q1": {
+          "q": "i2c.scan() prints found [104]. What is 104?",
+          "options": { "1": "The MPU-6050's address, 0x68 in hex", "2": "The number of bytes the sensor sent", "3": "The bus speed in kHz" },
+          "why": "scan() lists, in decimal, the address of every device that answers. 104 is 0x68, the MPU-6050's address (0x69 with its AD0 pin high)."
+        },
+        "q2": {
+          "q": "scan() prints an empty list. What do you check first?",
+          "options": { "1": "The I2C clock: 400 kHz is too fast", "2": "The register numbers in the code", "3": "The wiring: are SDA and SCL swapped?" },
+          "why": "An empty list means no device answered at all, so the fault is on the breadboard: VCC to 3V3, GND, SDA to GP4 and SCL to GP5. Registers only matter once the sensor answers."
+        },
+        "q3": {
+          "q": "Why does the code write 0 to register 0x6B first?",
+          "options": { "1": "To set the sensor's address to 0x68", "2": "To wake the sensor, which starts asleep", "3": "To clear the last reading" },
+          "why": "The MPU-6050 powers up asleep, and writing 0 to PWR_MGMT_1 (0x6B) clears its sleep bit. Its address comes from the AD0 pin: 0x68, or 0x69 with AD0 high."
+        }
       }
     },
     "wifi": {
@@ -303,6 +371,23 @@
         "led": "the LED hangs off the radio",
         "wait": "blink while connecting",
         "get": "a plain HTTP GET"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Why does this lesson need a Pico W or Pico 2 W?",
+          "options": { "1": "The plain boards have too little flash for network code", "2": "Only the W boards carry a radio, the CYW43439", "3": "Only the W boards can print to the serial monitor" },
+          "why": "The W boards add an Infineon CYW43439 Wi-Fi and Bluetooth chip under the metal can, with a printed antenna. The Pico and Pico 2 have no radio at all."
+        },
+        "q2": {
+          "q": "On a Pico W, which GPIOs must your program leave alone?",
+          "options": { "1": "GP0 and GP1", "2": "GP26, GP27 and GP28", "3": "GP23, GP24, GP25 and GP29" },
+          "why": "Those four are the radio's SPI link: power-on, data, chip select and clock. Driving them breaks Wi-Fi, and it is why Pin(25) is not the LED on a W board."
+        },
+        "q3": {
+          "q": "The board joins the network slowly or keeps dropping it. What helps on the board itself?",
+          "options": { "1": "Keeping metal and fingers away from the antenna end", "2": "Holding BOOTSEL while it connects", "3": "Blinking the LED with Pin(25) instead" },
+          "why": "The antenna is a copper trace printed at the end opposite USB. Metal, ground planes and fingers near it weaken the signal."
+        }
       }
     },
     "blink-cpp": {
@@ -337,6 +422,23 @@
         "builtin": "GP25, or the radio's LED on W boards",
         "serial": "USB serial: the baud rate is ignored",
         "nodelay": "time passed, no waiting"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Why does this sketch time the blink with millis() and not delay()?",
+          "options": { "1": "millis() keeps loop() free for other work between toggles", "2": "delay() does not work on the Pico", "3": "millis() makes the LED blink faster" },
+          "why": "delay() stops the whole loop while it waits. Comparing now - last with the interval lets loop() run on and do other work in between."
+        },
+        "q2": {
+          "q": "What does the 115200 in Serial.begin(115200) do on the Pico?",
+          "options": { "1": "It sets the speed of the USB-to-serial chip", "2": "Nothing: the baud rate is ignored", "3": "It sets the blink interval" },
+          "why": "The Pico has no USB-to-serial bridge: USB goes straight into the RP2040 or RP2350, and Serial is the chip's own USB device, so the number in Serial.begin() changes nothing."
+        },
+        "q3": {
+          "q": "millis() wraps back to 0 after about 49 days. What happens to the blink then?",
+          "options": { "1": "It stops until the board is reset", "2": "The board resets itself", "3": "It keeps going as before" },
+          "why": "Unsigned subtraction wraps the same way millis() does, so now - last still gives the time that has passed."
+        }
       }
     }
   }

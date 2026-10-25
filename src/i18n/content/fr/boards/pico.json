@@ -378,6 +378,35 @@
         "top": "Faire clignoter la LED de la carte et une LED sur GP15",
         "led": "la LED de la carte, sur toute Pico",
         "ext": "la LED de la platine d'essai"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Pourquoi le code utilise-t-il Pin(\"LED\") et pas Pin(25) ?",
+          "options": {
+            "1": "Pin(25) n'est pas une broche valide en MicroPython",
+            "2": "Sur les cartes W, GP25 appartient à la radio, pas à la LED",
+            "3": "Pin(\"LED\") alimente la LED plus fort"
+          },
+          "why": "La Pico et la Pico 2 ont la LED sur GP25, mais sur la Pico W et la Pico 2 W c'est le WL_GPIO0 de la radio. Le nom \"LED\" trouve la bonne sur les quatre cartes."
+        },
+        "q2": {
+          "q": "À quoi sert la résistance de 330 Ω devant la LED de GP15 ?",
+          "options": {
+            "1": "Elle limite le courant à environ 4 mA, ce que la broche peut fournir",
+            "2": "Elle abaisse les 5 V de la broche à 3,3 V sans danger",
+            "3": "Elle règle la vitesse du clignotement"
+          },
+          "why": "(3,3 V - 2,0 V) / 330 Ω ≈ 4 mA, dans la limite des 4 mA par défaut de la broche. Les GPIO sont en 3,3 V sur toutes les Pico, et sans la résistance la broche essaierait de fournir bien plus de 12 mA."
+        },
+        "q3": {
+          "q": "Avec un délai de 500 ms, combien dure un clignotement complet, allumé puis éteint ?",
+          "options": {
+            "1": "250 ms",
+            "2": "500 ms",
+            "3": "1 seconde"
+          },
+          "why": "toggle() bascule la LED une fois par délai : elle reste allumée 500 ms et éteinte 500 ms, la période vaut donc deux fois le délai."
+        }
       }
     },
     "button": {
@@ -451,6 +480,35 @@
         "pullup": "relâché = 1, appuyé = 0",
         "sensor": "canal 4 du CAN : le capteur de la puce",
         "pressed": "à l'état bas, c'est appuyé"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Le bouton relie GP14 à GND et la broche utilise Pin.PULL_UP. Que renvoie button.value() tant que vous maintenez le bouton enfoncé ?",
+          "options": {
+            "1": "1 (haut)",
+            "2": "Une valeur au hasard",
+            "3": "0 (bas)"
+          },
+          "why": "La pull-up interne, environ 50 kΩ vers 3,3 V, maintient GP14 à 1 tant que le bouton est relâché. Enfoncé, le bouton la relie à GND et elle lit 0 : voilà pourquoi le code teste value() == 0."
+        },
+        "q2": {
+          "q": "Que mesure ADC(4) ?",
+          "options": {
+            "1": "Le potentiomètre sur GP26",
+            "2": "Le capteur de température dans la puce",
+            "3": "La tension de la batterie sur VSYS"
+          },
+          "why": "Le canal 4 est le capteur de température de la puce : il mesure donc la puce, qui chauffe un peu plus que la pièce. GP26 à GP28 sont ADC0 à ADC2, et ADC3 lit VSYS / 3."
+        },
+        "q3": {
+          "q": "Le capteur donne 0,706 V à 27 °C. Que fait sa tension quand la puce chauffe ?",
+          "options": {
+            "1": "Elle baisse d'environ 1,721 mV par degré",
+            "2": "Elle monte d'environ 1,721 mV par degré",
+            "3": "Elle reste à 0,706 V"
+          },
+          "why": "La tension baisse quand la température monte, d'où la formule T = 27 - (V - 0.706) / 0.001721 : une lecture sous 0,706 V signifie plus de 27 °C."
+        }
       }
     },
     "fade": {
@@ -529,6 +587,35 @@
         "pot": "ADC0 sur GP26",
         "freq": "fréquence PWM en Hz",
         "raw": "0 à 65535"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Le CAN a 12 bits. Quelle plage renvoie pot.read_u16() ?",
+          "options": {
+            "1": "De 0 à 1023",
+            "2": "De 0 à 4095",
+            "3": "De 0 à 65535"
+          },
+          "why": "read_u16() ramène chaque lecture sur 16 bits, de 0 à 65535. duty_u16() prend la même plage : la lecture va donc telle quelle dans le rapport cyclique du PWM."
+        },
+        "q2": {
+          "q": "Pourquoi l'extrémité haute du potentiomètre va-t-elle sur 3V3 et pas sur VBUS ?",
+          "options": {
+            "1": "Les broches CAN acceptent 3,3 V au plus, sur la Pico 2 aussi",
+            "2": "VBUS ne fournit pas assez de courant pour un potentiomètre",
+            "3": "VBUS est seulement une entrée et ne fournit aucune tension"
+          },
+          "why": "Le curseur peut atteindre ce qu'il y a aux extrémités, et VBUS est à 5 V sur USB. Les broches CAN ont une diode vers le 3,3 V et doivent rester sous environ 3,6 V ; la tolérance au 5 V de la Pico 2 ne couvre que GP0 à GP22, pas les broches CAN."
+        },
+        "q3": {
+          "q": "Vous réglez la fréquence PWM sur 100 Hz et bougez vite la LED. Que voyez-vous ?",
+          "options": {
+            "1": "Elle paraît plus lumineuse qu'à 1 kHz",
+            "2": "Elle scintille",
+            "3": "Elle s'éteint"
+          },
+          "why": "À 100 Hz, les impulsions sont assez lentes pour se voir dès que la LED bouge ; à 20 kHz, personne ne les voit. La luminosité suit le rapport cyclique, pas la fréquence."
+        }
       }
     },
     "i2c-mpu6050": {
@@ -605,6 +692,35 @@
         "scan": "adresses qui répondent",
         "wake": "effacer le bit de sommeil dans PWR_MGMT_1",
         "read": "ACCEL_ZOUT_H et ACCEL_ZOUT_L"
+      },
+      "quiz": {
+        "q1": {
+          "q": "i2c.scan() affiche found [104]. Que représente 104 ?",
+          "options": {
+            "1": "L'adresse du MPU-6050, 0x68 en hexadécimal",
+            "2": "Le nombre d'octets envoyés par le capteur",
+            "3": "La vitesse du bus en kHz"
+          },
+          "why": "scan() liste en décimal l'adresse de chaque appareil qui répond. 104 vaut 0x68, l'adresse du MPU-6050 (0x69 avec sa broche AD0 à l'état haut)."
+        },
+        "q2": {
+          "q": "scan() affiche une liste vide. Que vérifiez-vous d'abord ?",
+          "options": {
+            "1": "L'horloge I2C : 400 kHz, c'est trop rapide",
+            "2": "Les numéros de registre dans le code",
+            "3": "Le câblage : SDA et SCL sont-ils inversés ?"
+          },
+          "why": "Une liste vide signifie qu'aucun appareil n'a répondu : le problème est sur la platine d'essai, avec VCC sur 3V3, GND, SDA sur GP4 et SCL sur GP5. Les registres ne comptent qu'une fois que le capteur répond."
+        },
+        "q3": {
+          "q": "Pourquoi le code écrit-il d'abord 0 dans le registre 0x6B ?",
+          "options": {
+            "1": "Pour fixer l'adresse du capteur à 0x68",
+            "2": "Pour réveiller le capteur, qui démarre endormi",
+            "3": "Pour effacer la dernière lecture"
+          },
+          "why": "Le MPU-6050 démarre endormi, et écrire 0 dans PWR_MGMT_1 (0x6B) efface son bit de sommeil. Son adresse vient de la broche AD0 : 0x68, ou 0x69 avec AD0 à l'état haut."
+        }
       }
     },
     "wifi": {
@@ -664,6 +780,35 @@
         "led": "la LED est reliée à la radio",
         "wait": "clignoter pendant la connexion",
         "get": "un simple GET HTTP"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Pourquoi cette leçon demande-t-elle une Pico W ou une Pico 2 W ?",
+          "options": {
+            "1": "Les cartes simples ont trop peu de flash pour le code réseau",
+            "2": "Seules les cartes W ont une radio, le CYW43439",
+            "3": "Seules les cartes W peuvent écrire sur le moniteur série"
+          },
+          "why": "Les cartes W ajoutent une puce Wi-Fi et Bluetooth CYW43439 d'Infineon sous le capot métallique, avec une antenne imprimée. La Pico et la Pico 2 n'ont pas de radio du tout."
+        },
+        "q2": {
+          "q": "Sur une Pico W, quels GPIO votre programme doit-il laisser tranquilles ?",
+          "options": {
+            "1": "GP0 et GP1",
+            "2": "GP26, GP27 et GP28",
+            "3": "GP23, GP24, GP25 et GP29"
+          },
+          "why": "Ces quatre-là forment la liaison SPI de la radio : mise sous tension, données, chip select et horloge. Les piloter casse le Wi-Fi, et c'est pourquoi Pin(25) n'est pas la LED sur une carte W."
+        },
+        "q3": {
+          "q": "La carte se connecte lentement au réseau ou le perd sans cesse. Qu'est-ce qui aide sur la carte elle-même ?",
+          "options": {
+            "1": "Éloigner le métal et les doigts de l'extrémité de l'antenne",
+            "2": "Maintenir BOOTSEL pendant la connexion",
+            "3": "Faire clignoter la LED avec Pin(25) à la place"
+          },
+          "why": "L'antenne est une piste de cuivre imprimée à l'extrémité opposée à l'USB. Le métal, les plans de masse et les doigts près d'elle affaiblissent le signal."
+        }
       }
     },
     "blink-cpp": {
@@ -727,6 +872,35 @@
         "builtin": "GP25, ou la LED de la radio sur les cartes W",
         "serial": "série par l'USB : le débit en bauds est ignoré",
         "nodelay": "temps écoulé, sans attendre"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Pourquoi ce sketch chronomètre-t-il le clignotement avec millis() et pas avec delay() ?",
+          "options": {
+            "1": "millis() laisse loop() libre pour d'autres tâches entre deux bascules",
+            "2": "delay() ne fonctionne pas sur la Pico",
+            "3": "millis() fait clignoter la LED plus vite"
+          },
+          "why": "delay() arrête toute la boucle pendant l'attente. Comparer now - last à l'intervalle laisse loop() continuer et faire autre chose entre-temps."
+        },
+        "q2": {
+          "q": "Que fait le 115200 de Serial.begin(115200) sur la Pico ?",
+          "options": {
+            "1": "Il règle la vitesse de la puce USB-série",
+            "2": "Rien : le débit en bauds est ignoré",
+            "3": "Il règle l'intervalle du clignotement"
+          },
+          "why": "La Pico n'a pas de pont USB-série : l'USB va directement au RP2040 ou au RP2350, et Serial est le périphérique USB de la puce elle-même, donc le nombre passé à Serial.begin() ne change rien."
+        },
+        "q3": {
+          "q": "millis() repart à zéro après environ 49 jours. Que devient alors le clignotement ?",
+          "options": {
+            "1": "Il s'arrête jusqu'à ce qu'on réinitialise la carte",
+            "2": "La carte se réinitialise toute seule",
+            "3": "Il continue comme avant"
+          },
+          "why": "La soustraction non signée déborde de la même façon que millis() : now - last donne donc toujours le temps écoulé."
+        }
       }
     }
   }

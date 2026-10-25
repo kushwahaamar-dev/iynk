@@ -378,6 +378,35 @@
         "top": "Die LED auf dem Board und eine LED an GP15 blinken lassen",
         "led": "die LED des Boards, auf jedem Pico",
         "ext": "die LED auf dem Steckbrett"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Warum nutzt der Code Pin(\"LED\") und nicht Pin(25)?",
+          "options": {
+            "1": "Pin(25) ist in MicroPython kein gültiger Pin",
+            "2": "Auf den W-Boards gehört GP25 dem Funkteil, nicht der LED",
+            "3": "Pin(\"LED\") treibt die LED stärker"
+          },
+          "why": "Pico und Pico 2 haben die LED an GP25, auf Pico W und Pico 2 W ist sie das WL_GPIO0 des Funkteils. Der Name \"LED\" findet auf allen vier Boards die richtige."
+        },
+        "q2": {
+          "q": "Was macht der 330-Ω-Widerstand vor der LED an GP15?",
+          "options": {
+            "1": "Er begrenzt den Strom auf etwa 4 mA, die der Pin liefern kann",
+            "2": "Er senkt die 5 V des Pins auf sichere 3,3 V",
+            "3": "Er legt fest, wie schnell die LED blinkt"
+          },
+          "why": "(3,3 V - 2,0 V) / 330 Ω ≈ 4 mA, innerhalb der standardmäßigen 4 mA Treiberstärke des Pins. Die GPIOs haben auf jedem Pico 3,3 V, und ohne den Widerstand würde der Pin versuchen, weit mehr als 12 mA zu treiben."
+        },
+        "q3": {
+          "q": "Bei einer Verzögerung von 500 ms: Wie lang ist ein ganzes Blinken, an und aus?",
+          "options": {
+            "1": "250 ms",
+            "2": "500 ms",
+            "3": "1 Sekunde"
+          },
+          "why": "toggle() schaltet die LED einmal pro Verzögerung um, also ist sie 500 ms an und 500 ms aus: Die Periode ist doppelt so lang wie die Verzögerung."
+        }
       }
     },
     "button": {
@@ -451,6 +480,35 @@
         "pullup": "losgelassen = 1, gedrückt = 0",
         "sensor": "ADC-Kanal 4: der Sensor auf dem Chip",
         "pressed": "LOW heißt gedrückt"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Der Taster verbindet GP14 mit GND, und der Pin nutzt Pin.PULL_UP. Was liefert button.value(), solange du den Taster gedrückt hältst?",
+          "options": {
+            "1": "1 (HIGH)",
+            "2": "Ein zufälliger Wert",
+            "3": "0 (LOW)"
+          },
+          "why": "Der interne Pull-up, etwa 50 kΩ nach 3,3 V, hält GP14 auf 1, solange der Taster losgelassen ist. Gedrückt verbindet der Taster ihn mit GND, und er liest 0: Deshalb prüft der Code value() == 0."
+        },
+        "q2": {
+          "q": "Was misst ADC(4)?",
+          "options": {
+            "1": "Das Potentiometer an GP26",
+            "2": "Den Temperatursensor im Chip",
+            "3": "Die Batteriespannung an VSYS"
+          },
+          "why": "Kanal 4 ist der Temperatursensor auf dem Chip, er misst also den Chip, der etwas wärmer läuft als der Raum. GP26 bis GP28 sind ADC0 bis ADC2, und ADC3 liest VSYS / 3."
+        },
+        "q3": {
+          "q": "Der Sensor liefert 0,706 V bei 27 °C. Was macht seine Spannung, wenn der Chip wärmer wird?",
+          "options": {
+            "1": "Sie fällt um etwa 1,721 mV pro Grad",
+            "2": "Sie steigt um etwa 1,721 mV pro Grad",
+            "3": "Sie bleibt bei 0,706 V"
+          },
+          "why": "Die Spannung sinkt, wenn die Temperatur steigt, deshalb lautet die Formel T = 27 - (V - 0,706) / 0,001721: Ein Messwert unter 0,706 V bedeutet mehr als 27 °C."
+        }
       }
     },
     "fade": {
@@ -529,6 +587,35 @@
         "pot": "ADC0 an GP26",
         "freq": "PWM-Frequenz in Hz",
         "raw": "0 bis 65535"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Der ADC hat 12 Bit. Welchen Bereich liefert pot.read_u16()?",
+          "options": {
+            "1": "0 bis 1023",
+            "2": "0 bis 4095",
+            "3": "0 bis 65535"
+          },
+          "why": "read_u16() skaliert jeden Messwert auf 16 Bit, 0 bis 65535. duty_u16() nimmt denselben Bereich, also geht der Messwert direkt ins PWM-Tastverhältnis."
+        },
+        "q2": {
+          "q": "Warum kommt das obere Ende des Potentiometers an 3V3 und nicht an VBUS?",
+          "options": {
+            "1": "Die ADC-Pins vertragen höchstens 3,3 V, auch auf dem Pico 2",
+            "2": "VBUS liefert nicht genug Strom für ein Potentiometer",
+            "3": "VBUS ist nur ein Eingang und gibt keine Spannung aus"
+          },
+          "why": "Der Schleifer erreicht alles, was an den Enden liegt, und VBUS hat am USB 5 V. ADC-Pins haben eine Diode nach 3,3 V und müssen unter etwa 3,6 V bleiben; die 5-V-Toleranz des Pico 2 gilt nur für GP0 bis GP22, nicht für die ADC-Pins."
+        },
+        "q3": {
+          "q": "Du stellst die PWM-Frequenz auf 100 Hz und bewegst die LED schnell. Was siehst du?",
+          "options": {
+            "1": "Sie wirkt heller als bei 1 kHz",
+            "2": "Sie flackert",
+            "3": "Sie geht aus"
+          },
+          "why": "Bei 100 Hz sind die Pulse langsam genug, dass man sie sieht, sobald sich die LED bewegt; bei 20 kHz sieht sie niemand. Die Helligkeit folgt dem Tastverhältnis, nicht der Frequenz."
+        }
       }
     },
     "i2c-mpu6050": {
@@ -605,6 +692,35 @@
         "scan": "Adressen, die antworten",
         "wake": "das Schlaf-Bit in PWR_MGMT_1 löschen",
         "read": "ACCEL_ZOUT_H und ACCEL_ZOUT_L"
+      },
+      "quiz": {
+        "q1": {
+          "q": "i2c.scan() gibt found [104] aus. Was ist 104?",
+          "options": {
+            "1": "Die Adresse des MPU-6050, hexadezimal 0x68",
+            "2": "Die Zahl der Bytes, die der Sensor gesendet hat",
+            "3": "Der Bustakt in kHz"
+          },
+          "why": "scan() listet dezimal die Adresse jedes Geräts, das antwortet. 104 ist 0x68, die Adresse des MPU-6050 (0x69, wenn sein Pin AD0 HIGH ist)."
+        },
+        "q2": {
+          "q": "scan() gibt eine leere Liste aus. Was prüfst du zuerst?",
+          "options": {
+            "1": "Den I2C-Takt: 400 kHz ist zu schnell",
+            "2": "Die Registernummern im Code",
+            "3": "Die Verdrahtung: Sind SDA und SCL vertauscht?"
+          },
+          "why": "Eine leere Liste heißt, dass gar kein Gerät geantwortet hat, der Fehler liegt also auf dem Steckbrett: VCC an 3V3, GND, SDA an GP4 und SCL an GP5. Register zählen erst, wenn der Sensor antwortet."
+        },
+        "q3": {
+          "q": "Warum schreibt der Code zuerst eine 0 in Register 0x6B?",
+          "options": {
+            "1": "Um die Adresse des Sensors auf 0x68 zu setzen",
+            "2": "Um den Sensor zu wecken, der im Schlafmodus startet",
+            "3": "Um den letzten Messwert zu löschen"
+          },
+          "why": "Der MPU-6050 startet im Schlafmodus, und eine 0 in PWR_MGMT_1 (0x6B) löscht sein Schlaf-Bit. Seine Adresse kommt vom Pin AD0: 0x68, oder 0x69, wenn AD0 HIGH ist."
+        }
       }
     },
     "wifi": {
@@ -664,6 +780,35 @@
         "led": "die LED hängt am Funkteil",
         "wait": "beim Verbinden blinken",
         "get": "ein einfaches HTTP-GET"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Warum braucht diese Lektion einen Pico W oder Pico 2 W?",
+          "options": {
+            "1": "Die einfachen Boards haben zu wenig Flash für Netzwerkcode",
+            "2": "Nur die W-Boards haben ein Funkteil, den CYW43439",
+            "3": "Nur die W-Boards können auf den seriellen Monitor schreiben"
+          },
+          "why": "Die W-Boards haben zusätzlich einen WLAN- und Bluetooth-Chip CYW43439 von Infineon unter der Metallhaube, dazu eine aufgedruckte Antenne. Pico und Pico 2 haben gar kein Funkteil."
+        },
+        "q2": {
+          "q": "Welche GPIOs muss dein Programm auf einem Pico W in Ruhe lassen?",
+          "options": {
+            "1": "GP0 und GP1",
+            "2": "GP26, GP27 und GP28",
+            "3": "GP23, GP24, GP25 und GP29"
+          },
+          "why": "Diese vier sind die SPI-Verbindung zum Funkteil: Einschalten, Daten, Chip-Select und Takt. Wer sie ansteuert, legt das WLAN lahm, und deshalb ist Pin(25) auf einem W-Board nicht die LED."
+        },
+        "q3": {
+          "q": "Das Board verbindet sich langsam mit dem Netz oder verliert es immer wieder. Was hilft am Board selbst?",
+          "options": {
+            "1": "Metall und Finger vom Antennenende fernhalten",
+            "2": "BOOTSEL beim Verbinden gedrückt halten",
+            "3": "Die LED stattdessen mit Pin(25) blinken lassen"
+          },
+          "why": "Die Antenne ist eine aufgedruckte Kupferbahn am USB-fernen Ende. Metall, Masseflächen und Finger in ihrer Nähe schwächen das Signal."
+        }
       }
     },
     "blink-cpp": {
@@ -727,6 +872,35 @@
         "builtin": "GP25, oder die LED des Funkteils auf W-Boards",
         "serial": "USB-Seriell: Die Baudrate wird ignoriert",
         "nodelay": "Zeit abgelaufen, kein Warten"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Warum steuert dieser Sketch das Blinken mit millis() und nicht mit delay()?",
+          "options": {
+            "1": "millis() hält loop() zwischen den Umschaltungen frei für andere Arbeit",
+            "2": "delay() funktioniert auf dem Pico nicht",
+            "3": "millis() lässt die LED schneller blinken"
+          },
+          "why": "delay() hält die ganze Schleife an, solange es wartet. Wer now - last mit dem Intervall vergleicht, lässt loop() weiterlaufen und dazwischen andere Arbeit erledigen."
+        },
+        "q2": {
+          "q": "Was bewirkt die 115200 in Serial.begin(115200) auf dem Pico?",
+          "options": {
+            "1": "Sie stellt die Geschwindigkeit des USB-Seriell-Chips ein",
+            "2": "Nichts: Die Baudrate wird ignoriert",
+            "3": "Sie stellt das Blinkintervall ein"
+          },
+          "why": "Der Pico hat keinen USB-Seriell-Wandler: USB geht direkt in den RP2040 oder RP2350, und Serial ist das eigene USB-Gerät des Chips, also ändert die Zahl in Serial.begin() nichts."
+        },
+        "q3": {
+          "q": "millis() springt nach etwa 49 Tagen auf 0 zurück. Was passiert dann mit dem Blinken?",
+          "options": {
+            "1": "Es hört auf, bis das Board zurückgesetzt wird",
+            "2": "Das Board setzt sich selbst zurück",
+            "3": "Es blinkt weiter wie zuvor"
+          },
+          "why": "Vorzeichenlose Subtraktion läuft genauso über wie millis(), also liefert now - last weiterhin die vergangene Zeit."
+        }
       }
     }
   }
