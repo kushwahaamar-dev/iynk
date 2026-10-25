@@ -257,7 +257,10 @@ function evaluate(){
     ev.rails[rid] = Math.max(0, best); fedBy[rid] = bestFd;
   }
   // overloads and shorts sag a rail
+  // (the circuit on the breadboard can do it too: more current than the source gives, st.sag from bench-bb.js)
+  const sag = !!(st.sag && st.sag.until > st.t);
   if (st.faults.includes('brownout') && pw.mcu){ const r = pw.mcu.rail; if (ev.rails[r]) ev.rails[r] = coldHit(5, st.t * 1.4) ? ev.rails[r] * .42 : ev.rails[r] * .9; }
+  else if (sag && pw.mcu){ const r = pw.mcu.rail; if (ev.rails[r]) ev.rails[r] *= .42; }
   // a short on a rail fed through a current-limited regulator (feed ilim, amps) folds that regulator back: the rail and
   // the rails it feeds fall to 0 V and the rest keeps running; any other short trips the supply
   for (const fid of st.faults) if (fid.startsWith('short:')){
@@ -296,7 +299,9 @@ function evaluate(){
   if (mcu){
     const v = ev.rails[mcu.rail] || 0;
     if (v < .5){ ev.status = 'no-power'; ev.why = T('No power on {rail}: nothing reaches the chip', { rail: mcu.rail }); return ev; }
-    if (v < (mcu.min || 0)){ ev.status = 'brownout'; ev.why = T('Brown-out: {rail} is at {v} V, the chip keeps resetting', { rail: mcu.rail, v: v.toFixed(1) }); return ev; }
+    if (v < (mcu.min || 0)){ ev.status = 'brownout';
+      ev.why = sag ? T('Brown-out: the circuit draws {n} mA, more than {src} gives ({max} mA), so the chip keeps resetting', { n: st.sag.mA, src: T(src.label || st.power), max: st.sag.max })
+        : T('Brown-out: {rail} is at {v} V, the chip keeps resetting', { rail: mcu.rail, v: v.toFixed(1) }); return ev; }
     const miss = (mcu.needs || []).find(id => !isSet(id) || coldOff(id));
     if (miss){ ev.why = T('Powered, but nothing runs: {name} is missing', { name: nameOf(miss) }); return ev; }
     if (st.ctl && Object.entries(st.ctl).some(([id, v]) => v && MD.byId[id] && MD.byId[id].control && MD.byId[id].control.action === 'reset')){ ev.status = 'reset'; return ev; }
@@ -412,11 +417,11 @@ A.build = what => {
 };
 A.flip = id => { const p = MD.byId[id]; if (!p || !p.polar || !isIn(id)) return; if (!guard()) return; st.placed[id].orient ^= 1; say(st.placed[id].orient ? '{name} turned the wrong way round' : '{name} turned the right way round', { name: nameOf(id) }); refresh(); };
 A.power = key => {
-  if (key == null || key === 'off'){ if (!st.power) return; st.power = null; st.up = null; st.strap = null; st.ext = st.ext && false; sfx('unplug'); refresh(); return; }
+  if (key == null || key === 'off'){ if (!st.power) return; st.power = null; st.up = null; st.strap = null; st.sag = null; st.ext = st.ext && false; sfx('unplug'); refresh(); return; }
   const src = (MD.power.sources || {})[key]; if (!src) return say('No supply {name} on this board', { name: key });
   if (st.exploded) return say(MSG.exploded);
   // plugging in the cable that is already in changes nothing (the sketch keeps its clock)
-  if (st.power !== key){ st.power = key; st.t = 0; st.serialN = -1; sfx('plug'); sampleStraps(); }
+  if (st.power !== key){ st.power = key; st.t = 0; st.serialN = -1; st.sag = null; sfx('plug'); sampleStraps(); }
   refresh(true);
 };
 A.upload = key => {
@@ -877,7 +882,8 @@ function scene(stt){
   const vd = VIEWS[v];
   if (vd.flat) return vd.scene(k);
   const bnd = vd.bounds(), corners = B.boxCorners(bnd);
-  const sc = v === (B.mountView || 'board') ? 1 : viewFit(v, corners);
+  // the breadboard view is fitted per circuit: a motor on the mat needs a wider frame than a blinking LED
+  const sc = v === (B.mountView || 'board') ? 1 : viewFit(v === 'breadboard' ? v + ':' + stt.circuit : v, corners);
   let svg = vd.scene(k);
   if (sc !== 1){
     const c3 = [(bnd[0] + bnd[3]) / 2, (bnd[1] + bnd[4]) / 2, (bnd[2] + bnd[5]) / 2], pc = P(...c3), rc = P(RC[0], RC[1], RCZ);
@@ -907,7 +913,7 @@ function partButtons(){
   // a choice changes the selected part, or the first one when nothing is selected
   const target = () => (c.parts || []).find(q => q.id === st.sel) || (c.parts || [])[0];
   for (const [k, spec] of Object.entries(def.params || {})){
-    const vals = B.paramRange(spec) ? rangeSteps(k, spec) : spec;
+    const vals = def.steps && Array.isArray(def.steps[k]) ? def.steps[k] : B.paramRange(spec) ? rangeSteps(k, spec) : spec;
     const onoff = typeof spec[0] === 'boolean' || /^(pressed|on|closed|down)$/.test(k);
     const show = v => onoff ? T(v ? 'yes' : 'no') : k === 'ohms' ? B.ohmsText(v) : k === 'lux' ? v + ' lx' : k === 'pos' ? Math.round(v * 100) + ' %' : T(String(v));
     bt.push({ id: k, label: (def.paramNames && def.paramNames[k]) || PARAM_NAMES[k] || k[0].toUpperCase() + k.slice(1), choices: () => vals.map(v => ({ id: CF_SLUG(String(v)), label: show(v),
@@ -1013,7 +1019,7 @@ const report = () => {
   const r0 = { id: MD.id, view: st.view, exploded: st.exploded, build, power: st.power, status: st.up ? 'uploading' : ev.status,
     mode: st.mode, ext: st.ext, rails: r, fault: ev.fault, faults: faultsNow(), missing: MD.parts.filter(p => !isIn(p.id)).map(p => p.id),
     selected: st.sel, controls: Object.assign({}, st.ctl), boot: st.strap ? (st.strap.boot || null) : st.boot, leds, circuit: st.circuit, meas: st.meas || {}, serial: st.serial, sfx: st.sfx,
-    why: ev.why || null, tasks: taskState(),
+    why: ev.why || null, tasks: taskState(), ...(st.circuit ? { volts: st.volts || {}, sound: st.sound || null } : {}),
     ...(MAT.steps.length ? { matStep: st.matStep >= 0 ? MAT.steps[st.matStep].id : null } : {}),
     ...(typeof MD.def.model === 'function' ? { readings: roundDeep(st.readings || {}), benchStatus: st.benchStatus || null } : {}) };
   for (const [k, v] of Object.entries(st.modelReport || {})){ if (own(r0, k)) modelNote(`report key "${k}" is the engine's own`); else r0[k] = roundDeep(v); }
@@ -1119,7 +1125,7 @@ function start(pick){
     view: 'board', exploded: false, exK: 0, placed: {}, left: {}, drop: {}, reflowT: null, solderQ: null, solderT: 0,
     power: null, supply: {}, faults: [], mode: def.mode || Object.keys(MD.modes)[0] || null, ext: false, pins: {}, t: 0, serialN: -1,
     up: null, upT: 0, upDur: 2.2, ctl: {}, boot: null, sel: null, serial: null, txT: 0, circuit: def.circuit || null, meas: {}, sfx: null, tones: {}, strap: null,
-    matStep: MAT.steps.length - 1, readings: {}, benchStatus: null,
+    matStep: MAT.steps.length - 1, readings: {}, benchStatus: null, volts: {}, sound: null, sag: null,
   };
   for (const p of MD.parts) st.placed[p.id] = { orient: 0, sold: true };
   for (const p of MD.parts) if (p.control && p.control.type === 'slide') st.ctl[p.id] = 0;
@@ -1151,15 +1157,16 @@ function start(pick){
       ctl: (s, el) => { const id = el.dataset.id; A.press(id, true); held = id; },
       pin: (s, el) => { A.select(el.dataset.part || null); },
       hole: () => {},
-      bb: (s, el) => { A.select(st.sel === el.dataset.id ? null : el.dataset.id); },
+      bb: (s, el) => { const id = el.dataset.id; A.select(st.sel === id ? null : id); if (B.bbPress && B.bbPress(id, true)) heldBb = id; },
       periph: (s, el) => { A.select(st.sel === el.dataset.id ? null : el.dataset.id); },
     },
     readout: () => st.msg || '',
     embed: { report: () => report(), accept: (s, p) => accept(s, p) },
     credit: true,
   });
-  addEventListener('pointerup', () => { if (held){ const id = held; held = null; const p = MD.byId[id]; if (p && p.control && p.control.type !== 'slide') A.press(id, false); } });
-  addEventListener('keyup', e => { if (held && (e.key === 'Enter' || e.key === ' ')){ const id = held; held = null; A.press(id, false); } });
+  addEventListener('pointerup', () => { if (heldBb){ const id = heldBb; heldBb = null; B.bbPress(id, false); } if (held){ const id = held; held = null; const p = MD.byId[id]; if (p && p.control && p.control.type !== 'slide') A.press(id, false); } });
+  addEventListener('keyup', e => { if (e.key !== 'Enter' && e.key !== ' ') return;
+    if (held){ const id = held; held = null; A.press(id, false); } if (heldBb){ const id = heldBb; heldBb = null; B.bbPress(id, false); } });
   if (typeof xrMount === 'function') xrMount(() => ui, s => s.xr > .5 ? T('See-through: the chips show their silicon, copper shows where current flows') : '');
   // a hot part gets a red tint filter
   const defs = document.getElementById('fdefs') || document.querySelector('#fig defs');
@@ -1170,7 +1177,7 @@ function start(pick){
   if (!CF_EMBED) keyList();
   if (st.power) refresh(true); else kick();
 }
-let held = null;
+let held = null, heldBb = null;
 
 // standalone page: the SVG re-renders all the time, so keyboard and screen-reader access to the parts drawn in it is a
 // group of real buttons kept off-screen (the focused one shows as a chip). Focus selects the part, Enter or Space
@@ -1184,21 +1191,25 @@ function keyList(){
   document.head.appendChild(css);
   keysBox.addEventListener('focusin', e => { const b = e.target.closest('button'); if (b && st.sel !== b.dataset.id) A.select(b.dataset.id); });
   keysBox.addEventListener('keydown', e => { const b = e.target.closest('button'); if (!b || (e.key !== 'Enter' && e.key !== ' ')) return;
-    e.preventDefault(); if (b.dataset.ctl && !e.repeat && !held){ A.press(b.dataset.id, true); held = b.dataset.id; } });
+    e.preventDefault(); if (e.repeat) return;
+    if (b.dataset.ctl && !held){ A.press(b.dataset.id, true); held = b.dataset.id; }
+    else if (b.dataset.press && !heldBb && B.bbPress(b.dataset.id, true)) heldBb = b.dataset.id; });
   // a screen reader's virtual click comes without key events
-  keysBox.addEventListener('click', e => { const b = e.target.closest('button'); if (!b || !b.dataset.ctl || held) return;
-    const id = b.dataset.id; A.press(id, true); setTimeout(() => A.press(id, false), 200); });
+  keysBox.addEventListener('click', e => { const b = e.target.closest('button'); if (!b || held || heldBb) return;
+    const id = b.dataset.id;
+    if (b.dataset.ctl){ A.press(id, true); setTimeout(() => A.press(id, false), 200); }
+    else if (b.dataset.press && B.bbPress(id, true)) setTimeout(() => B.bbPress(id, false), 200); });
   syncKeys();
 }
 function syncKeys(){
   if (!keysBox) return;
   const c = st.circuit && MD.circuits[st.circuit];
   const items = MD.parts.filter(p => isIn(p.id)).map(p => [p.id, T(p.name), !!p.control]);
-  if (c && st.view !== 'board') for (const q of c.parts || []) items.push([q.id, q.id + ' · ' + T((B.parts[q.part] || {}).name || q.part), false]);
+  if (c && st.view !== 'board') for (const q of c.parts || []) items.push([q.id, q.id + ' · ' + T((B.parts[q.part] || {}).name || q.part), false, typeof (B.parts[q.part] || {}).press === 'function']);
   const key = items.map(i => i[0]).join(' ');
   if (key === keysKey) return;
   keysKey = key; keysBox.textContent = '';
-  for (const [id, label, ctl] of items){ const b = document.createElement('button'); b.type = 'button'; b.dataset.id = id; if (ctl) b.dataset.ctl = '1'; b.textContent = label; keysBox.append(b); }
+  for (const [id, label, ctl, press] of items){ const b = document.createElement('button'); b.type = 'button'; b.dataset.id = id; if (ctl) b.dataset.ctl = '1'; if (press) b.dataset.press = '1'; b.textContent = label; keysBox.append(b); }
 }
 B.start = pick => start(pick);
 B.ui = () => ui;
