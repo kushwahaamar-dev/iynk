@@ -95,7 +95,10 @@ function Workspace({ lang, model }: { lang: Locale; model: LessonModel }) {
   const [help, setHelp] = useState(false);
   const [pulse, setPulse] = useState<string | null>(null);
 
-  const figureOpts = useMemo(() => ({ circuit: lesson.circuit, failures: board.failures }), [lesson.circuit, board.failures]);
+  const figureOpts = useMemo(
+    () => ({ circuit: lesson.circuit, failures: board.failures, inputs: lesson.world.inputs }),
+    [lesson.circuit, board.failures, lesson.world.inputs],
+  );
   const chipParts = useMemo(() => Object.fromEntries(lesson.params.filter((p) => p.figure).map((p) => [p.id, p.figure!.part])), [lesson.params]);
 
   // Restore this lesson's saved chip values, then keep saving them (debounced).

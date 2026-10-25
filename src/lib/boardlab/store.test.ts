@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { ParamChip } from '@/content/schema';
+import uno from '@/content/boards/uno-r3';
 import { figurePatch, figureState, initialState, reducer, type BoardLabState } from './store';
 
 const PARAMS: ParamChip[] = [
@@ -46,6 +47,32 @@ describe('joining a room', () => {
     expect(odd.view).toBe('breadboard');
     expect(odd.values).toEqual({ ms: 5000 });
     expect(odd.edited).toBe(false);
+  });
+});
+
+describe('figureState', () => {
+  const lessonState = (id: string) => {
+    const lesson = uno.lessons.find((l) => l.id === id)!;
+    const s = initialState({ board: 'uno-r3', lesson: id, language: 'arduino-cpp', template: lesson.code.source, params: lesson.params, view: 'breadboard' });
+    return { s, opts: { circuit: lesson.circuit, failures: uno.failures, inputs: lesson.world.inputs } };
+  };
+
+  it("sends each world input's value to its prop, the default until the learner moves it", () => {
+    const { s, opts } = lessonState('light');
+    expect(figureState(s, opts).params).toEqual({ LED1: { color: 'yellow' }, LAMP: { value: 50 } });
+    const bright = reducer(s, { type: 'input/set', id: 'light', value: 800 });
+    expect(figurePatch(figureState(s, opts), figureState(bright, opts))).toEqual({ params: { LED1: { color: 'yellow' }, LAMP: { value: 800 } } });
+  });
+
+  it("puts the value next to what the chips give the same prop", () => {
+    const { s, opts } = lessonState('distance');
+    const near = reducer(reducer(s, { type: 'param/set', id: 'obstacle', value: 'car' }), { type: 'input/set', id: 'distance', value: 12 });
+    expect(figureState(near, opts).params).toMatchObject({ OBST: { kind: 'car', value: 12 } });
+  });
+
+  it('sends no input values without the lesson inputs (the board overview)', () => {
+    const { s, opts } = lessonState('light');
+    expect(figureState(s, { circuit: opts.circuit, failures: opts.failures }).params).toEqual({ LED1: { color: 'yellow' } });
   });
 });
 

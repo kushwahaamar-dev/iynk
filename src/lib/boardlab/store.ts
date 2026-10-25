@@ -4,7 +4,7 @@
 // run.ts and subscribe to the store.
 
 import type { LabStore } from '@/components/dock/types';
-import type { FailureMode, Language, ParamChip, Sheet } from '@/content/schema';
+import type { FailureMode, Language, ParamChip, Sheet, WorldInput } from '@/content/schema';
 import type { PinSample, RunError } from './engine';
 import { applyChip, mapChips, normalizeParams, renderTemplate, setParam, type ChipRange, type ParamValue, type ParamValues } from './template';
 
@@ -345,8 +345,15 @@ export function sketchTones(pins: Record<string, PinSample>): Record<string, num
   return out;
 }
 
+export interface FigureOptions {
+  circuit: string | null;
+  failures: FailureMode[];
+  /** The lesson's world inputs: each one's value goes to its part, so a prop (the lamp, the obstacle) shows it. */
+  inputs?: WorldInput[];
+}
+
 /** The figure state the store implies, sent as FigureFrame's `initial` after every `ready`. */
-export function figureState(s: BoardLabState, opts: { circuit: string | null; failures: FailureMode[] }): Record<string, unknown> {
+export function figureState(s: BoardLabState, opts: FigureOptions): Record<string, unknown> {
   const out: Record<string, unknown> = {
     view: s.view,
     exploded: s.exploded,
@@ -362,6 +369,8 @@ export function figureState(s: BoardLabState, opts: { circuit: string | null; fa
     const figValue = chip.kind === 'choice' ? (chip.options.find((o) => o.value === value)?.figureValue ?? value) : value;
     (params[chip.figure.part] ??= {})[chip.figure.key] = figValue;
   }
+  // The figure keeps only the params a part lists, so a button's value is dropped there.
+  for (const input of opts.inputs ?? []) (params[input.part] ??= {}).value = s.inputs[input.id] ?? input.default;
   if (Object.keys(params).length) out.params = params;
   // The figure solves a buzzer from these; {} once the last one stops.
   out.tones = sketchTones(s.pins);
