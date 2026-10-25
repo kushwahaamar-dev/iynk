@@ -32,3 +32,14 @@ computes. The figure's `dac-wave` circuit still draws the A0 → A1 jumper.
 
 A wire between two board pins in the world (A0 → A1) would let the lesson read it back again; that needs a schema
 device kind too, so it's a phase-3 idea, not a wave-A ask.
+
+## Answer from P2-modules (2026-10-24 ~20:50 CDT)
+
+Not done: this wave P2-modules owns only the sensor inputs in `src/lib/interp/**`, and the DAC is an output path in
+`arduino/libs.ts` (no wave-B label owns `interp/arduino/**` either). Left for the driver to route. What the change
+would be, both halves small:
+
+- `analogWrite` on the R4's DAC pin: `const max = (1 << rt.world.pwmBits) - 1; st.dac = (clamp(v, 0, max) / max) *
+  p.logicV;` (`analogWriteResolution()` already sets `pwmBits`, so 12 bits gives 4095 = 5 V and 1040 ≈ 1.27 V);
+- `World.analogRead`: when the pin has no external volts and `dac !== null`, read `dac`; the pin view would carry
+  `volts: dac` so a check or the pin readout sees it.

@@ -44,3 +44,22 @@ The assembly in the content uses only the toolbar's own ids (`strip`, `pnp`, `pl
 `group-tall`, `solder`, `upload` with `hello`, `ctl-pb1`), and both variants offer all of them today. If a rebuild
 changes a group (a header moving from `low` to `tall`, the Qwiic box getting a group), the assembly still completes,
 because its done conditions are `build` and `missing.length: 0`, not part counts.
+
+## Answer from P2-modules (2026-10-24 ~20:50 CDT)
+
+All three done in `figures/boards/uno-r4.js` and its built page (both variants):
+
+1. **`i2c-scan` circuit**, ids as you asked: `MPU1` (`part: 'mpu6050'`, the new `figures/parts/mpu6050.js`) with its
+   header in `i12`-`i19` (VCC GND SCL SDA XDA XCL AD0 INT); jumpers `5V → j12` (red), `GND → j13` (black),
+   `SCL → j14` (yellow), `SDA → j15` (blue). AD0 stays open (the module's pull-down gives 0x68). The GY-521 lies over
+   rows f-h, component side up, and its power LED lights on the live 5 V. You can switch the lesson to
+   `circuit: 'i2c-scan'`; the circuit title is "MPU-6050 on the I2C header (SDA, SCL), 5 V". The part takes
+   `params: { ad0: 'low' | 'high' }` (its tag then reads 0x68 or 0x69), if you want your address chip to map onto it
+   with `figure: { part: 'MPU1', key: 'ad0' }`.
+2. **Parts drawn**: the figure now bundles `parts/push-button.js`, `parts/potentiometer.js` and `parts/mpu6050.js`, so
+   `SW1`, `POT1` and `MPU1` draw (`R1` and `LED1` always did). Checked every circuit of both variants in
+   `?view=breadboard&circuit=<key>`: every part drawn, no engine notes.
+3. **Straps**: both defs declare `straps` (Minima `[MD]`, WiFi `[MD, ESP_DOWNLOAD]`) with your shapes, and the
+   `lastT`/`sample()`/`rom()` closure is gone. Checked on the built page: `short:MD:GND` on USB gives status `fault`
+   with `fault.id` `short:MD:GND` and strap `rom` (Minima and WiFi); on the WiFi `short:ESP_DOWNLOAD:GND` keeps the
+   sketch `running`, strap `esp-download`, and the Serial hello lines stop.

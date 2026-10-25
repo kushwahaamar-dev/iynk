@@ -1,5 +1,8 @@
 // @cf title Raspberry Pi Pico
 // @cf use engine/bench.list
+// @cf use parts/push-button.js
+// @cf use parts/potentiometer.js
+// @cf use parts/mpu6050.js
 /* Raspberry Pi Pico family: Pico (Rev3), Pico W, Pico 2 and Pico 2 W, one variant each (?variant=pico|pico-w|pico2|pico2-w).
    Geometry from docs/facts/pico.md: the 21 x 51 mm outline, holes, the 40 castellated pins and the SWD pads come from the
    dimensioned datasheet drawings; Pico and Pico W part centres from the published STEP files (Pico-R3.step, PicoW.stp);
@@ -78,16 +81,16 @@ function circuits(v){
   const c = {
     blink: blinkCircuit(),
     button: { title: 'Button on GP14, LED on GP15', breadboard: 'half',
-      parts: [{ id: 'BTN1', part: 'push-button', holes: ['e8', 'e10', 'f8', 'f10'] }, ...led.parts],
+      // legs 1-2 straddle the trench at column 8 and 3-4 at column 10: pressing joins GP14 to GND
+      parts: [{ id: 'BTN1', part: 'push-button', holes: ['e8', 'f8', 'e10', 'f10'] }, ...led.parts],
       wires: [{ from: 'GP14', to: 'a8', color: 'yellow' }, { from: 'GND', to: 'a10', color: 'black' }, ...led.wires] },
     fade: { title: 'Potentiometer on GP26 (ADC0), LED on GP15 (PWM)', breadboard: 'half',
       parts: [{ id: 'POT1', part: 'potentiometer', holes: ['e2', 'e4', 'e6'] }, ...led.parts],
       wires: [{ from: '3V3', to: 'a2', color: 'red' }, { from: 'GP26', to: 'a4', color: 'yellow' }, { from: 'AGND', to: 'a6', color: 'black' }, ...led.wires] },
     'i2c-mpu6050': { title: 'MPU-6050 on I2C0 (GP4 SDA, GP5 SCL)', breadboard: 'half',
-      // GY-521 breakout header: VCC GND SCL SDA XDA XCL AD0 INT, plugged in from e12
-      modules: [{ id: 'IMU1', module: 'mpu6050', holes: 'e12' }],
-      parts: [],
-      wires: [{ from: '3V3', to: 'a12', color: 'red' }, { from: 'GND', to: 'a13', color: 'black' }, { from: 'GP5', to: 'a14', color: 'yellow' }, { from: 'GP4', to: 'a15', color: 'blue' }] },
+      // GY-521 header VCC GND SCL SDA XDA XCL AD0 INT in row i; the board lies over rows f-h, the jumpers go in row j
+      parts: [{ id: 'IMU1', part: 'mpu6050', holes: ['i12', 'i13', 'i14', 'i15', 'i16', 'i17', 'i18', 'i19'] }],
+      wires: [{ from: '3V3', to: 'j12', color: 'red' }, { from: 'GND', to: 'j13', color: 'black' }, { from: 'GP5', to: 'j14', color: 'yellow' }, { from: 'GP4', to: 'j15', color: 'blue' }] },
     'blink-cpp': blinkCircuit(),
   };
   return c;

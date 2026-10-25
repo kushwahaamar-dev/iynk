@@ -1,5 +1,8 @@
 // @cf title Arduino UNO R4
 // @cf use engine/bench.list
+// @cf use parts/push-button.js
+// @cf use parts/potentiometer.js
+// @cf use parts/mpu6050.js
 /* Arduino UNO R4 Minima (ABX00080) and UNO R4 WiFi (ABX00087), switched with ?variant=minima|wifi (default minima).
    Every position is the part's origin in Arduino's own Altium PcbDoc (both CAD zips), shifted so the bottom-left
    outline corner is (0, 0); the facts and their sources are in docs/facts/uno-r4.md. Both boards keep the UNO R3
@@ -37,29 +40,30 @@ const scatter = (spots, extra) => {
   return Object.assign({ kind: 'uno-r4-passives', at: [(x0 + x1) / 2, (y0 + y1) / 2], size: [x1 - x0, y1 - y0], spots }, extra);
 };
 
-/* straps: the chips sample them when the program (re)starts */
-let lastT = Infinity, romBoot = false, espDownload = false;
-const sample = st => {
-  if (st.t < lastT){ romBoot = st.faults.includes('short:MD:GND'); espDownload = st.faults.includes('short:ESP_DOWNLOAD:GND'); }
-  lastT = st.t;
-};
-const rom = st => { sample(st); return romBoot; };
-const bridgeUp = st => { sample(st); return B.isSet('M1') && B.isSet('U4') && !espDownload; };
+/* boot straps (FIGURES-BENCH §6.3): the engine latches them when the program (re)starts, as the chips read their mode
+   pins at reset. MD low halts the RA4M1 in its ROM boot mode; ESP_DOWNLOAD low parks the ESP32-S3 in download mode,
+   so the USB bridge and Serial are gone while the RA4M1 keeps running its sketch. */
+const STRAP_MD = { fault: 'short:MD:GND', boot: 'rom', halts: true,
+  msg: 'BOOT (MD) was low at reset: the RA4M1 started its ROM boot mode, not your sketch', fix: 'Free the BOOT pin and press RESET' };
+const STRAP_ESP = { fault: 'short:ESP_DOWNLOAD:GND', boot: 'esp-download', part: 'M1', blocks: ['upload', 'serial'],
+  msg: 'ESP_DOWNLOAD was low at reset: the ESP32-S3 waits in ROM download mode, so USB and Serial are gone', fix: 'Free ESP header pin 4 and press RESET' };
+// the WiFi's Serial reaches USB through the ESP32-S3 and the TXB0108
+const bridgeUp = () => B.isSet('M1') && B.isSet('U4');
 
 const HEART_BIG = ['011100001110', '111110011111', '111111111111', '011111111110', '001111111100', '000111111000', '000011110000', '000001100000'].join('');
 const HEART_SMALL = ['000000000000', '001100001100', '011110011110', '011111111110', '001111111100', '000111111000', '000011110000', '000001100000'].join('');
 const one = i => '0'.repeat(i) + '1' + '0'.repeat(95 - i);
 
 const MODES_MINIMA = {
-  blink: { title: 'Blink', out: (st, t) => rom(st) ? {} : { D13: blink(t, 1, 1) } },
-  fast: { title: 'Blink without delay()', out: (st, t) => rom(st) ? {} : { D13: blink(t, .2, .2) } },
-  hello: { title: 'Serial hello', out: () => ({}), serial: (k, st) => rom(st) ? null : k === 0 ? 'UNO R4 Minima ready' : 'hello from the R4 #' + k },
+  blink: { title: 'Blink', out: (st, t) => ({ D13: blink(t, 1, 1) }) },
+  fast: { title: 'Blink without delay()', out: (st, t) => ({ D13: blink(t, .2, .2) }) },
+  hello: { title: 'Serial hello', out: () => ({}), serial: k => k === 0 ? 'UNO R4 Minima ready' : 'hello from the R4 #' + k },
 };
 const MODES_WIFI = {
-  heart: { title: 'Matrix heart', out: (st, t) => rom(st) ? {} : { MATRIX: blink(t, .6, .4) ? HEART_BIG : HEART_SMALL } },
-  scan: { title: 'Matrix scan', out: (st, t) => rom(st) ? {} : { MATRIX: one(Math.floor(t * 12) % 96) } },
-  blink: { title: 'Blink', out: (st, t) => rom(st) ? {} : { D13: blink(t, 1, 1) } },
-  hello: { title: 'Serial hello', out: () => ({}), serial: (k, st) => rom(st) || !bridgeUp(st) ? null : k === 0 ? 'UNO R4 WiFi ready' : 'hello from the R4 #' + k },
+  heart: { title: 'Matrix heart', out: (st, t) => ({ MATRIX: blink(t, .6, .4) ? HEART_BIG : HEART_SMALL }) },
+  scan: { title: 'Matrix scan', out: (st, t) => ({ MATRIX: one(Math.floor(t * 12) % 96) }) },
+  blink: { title: 'Blink', out: (st, t) => ({ D13: blink(t, 1, 1) }) },
+  hello: { title: 'Serial hello', out: () => ({}), serial: k => !bridgeUp() ? null : k === 0 ? 'UNO R4 WiFi ready' : 'hello from the R4 #' + k },
 };
 
 /* shared geometry: both boards put these at the same place */
@@ -131,6 +135,16 @@ const CIRCUITS = {
     title: 'DAC on A0 read back on A1', breadboard: 'half',
     parts: [],
     wires: [{ from: 'A0', to: 'a12', color: 'purple' }, { from: 'A1', to: 'c12', color: 'blue' }],
+  },
+  'i2c-scan': {
+    title: 'MPU-6050 on the I2C header (SDA, SCL), 5 V', breadboard: 'half',
+    // GY-521 header VCC GND SCL SDA XDA XCL AD0 INT in row i; the board lies over rows f-h, the jumpers go in row j.
+    // AD0 stays open: the module's own 4.7 kΩ pull-down keeps the address at 0x68
+    parts: [{ id: 'MPU1', part: 'mpu6050', holes: ['i12', 'i13', 'i14', 'i15', 'i16', 'i17', 'i18', 'i19'] }],
+    wires: [
+      { from: '5V', to: 'j12', color: 'red' }, { from: 'GND', to: 'j13', color: 'black' },
+      { from: 'SCL', to: 'j14', color: 'yellow' }, { from: 'SDA', to: 'j15', color: 'blue' },
+    ],
   },
 };
 
@@ -207,6 +221,7 @@ const minima = {
   mode: 'blink',
   modes: MODES_MINIMA,
   faults: ['short:5V:GND', 'short:MD:GND', 'wrong-voltage:pin33:5', 'wrong-voltage:usb:2', 'wrong-voltage:jack:48'],
+  straps: [STRAP_MD],
   xr: {
     flow: [
       ['USBVCC', [[5.9, 37.9], [8.2, 33.5], [9.7, 28.6]]],
@@ -305,6 +320,7 @@ const wifi = Object.assign({}, minima, {
   mode: 'heart',
   modes: MODES_WIFI,
   faults: ['short:5V:GND', 'short:MD:GND', 'short:ESP_DOWNLOAD:GND', 'wrong-voltage:pin33:5', 'wrong-voltage:usb:2', 'wrong-voltage:jack:48'],
+  straps: [STRAP_MD, STRAP_ESP],
   xr: {
     flow: [
       ['USBVCC', [[5.9, 37.9], [16, 31], [26.4, 30.5]]],

@@ -607,11 +607,17 @@ function xrCallouts(items, B){
   let top = { [-1]: fs, [1]: fs + 30*k };
   if (btn && svgEl.getScreenCTM()){ const r = btn.getBoundingClientRect(), q = new DOMPoint(r.right, r.bottom + 50).matrixTransform(svgEl.getScreenCTM().inverse());
     if (q.y > 0) top[-1] = q.y + hgt; }
-  for (const [col, side] of [[L, -1], [R, 1]]){
+  const stack = (col, side) => {
     col.sort((a, b) => a.Y - b.Y);
     let y = -1e9; for (const c of col){ c.py = Math.max(c.Y, y + gap, top[side]); y = c.py; }
     const shift = col.length ? Math.max(0, col.reduce((a, c) => a + c.py - c.Y, 0) / col.length) : 0;
     const room = col.length ? col[0].py - top[side] : 0; for (const c of col) c.py -= Math.min(shift, room);
+  };
+  stack(L, -1); stack(R, 1);
+  // a tall button column pushes the left labels down: the ones that would leave the frame move to the right column
+  const bottom = vb.y + vb.height - hgt/2 - 2*k;
+  if (roomR && L.some(c => c.py > bottom)){ while (L.length && L[L.length - 1].py > bottom) R.push(L.pop()); stack(L, -1); stack(R, 1); }
+  for (const [col, side] of [[L, -1], [R, 1]]){
     for (const c of col){
       c.n = ((window.__ln || (window.__ln = {}))[c.text] || (__ln[c.text] = Object.keys(__ln).length + 1)); const ct = CF_T(c.text), w = u ? hgt*(c.n > 9 ? 1.3 : 1) : CF_TW(ct, fs) + fs*1.5;
       let px = side < 0 ? xmin - 10*k - w/2 : xmax + 10*k + w/2; px = Math.max(vb.x + w/2 + 2*k, Math.min(vb.x + vb.width - w/2 - 2*k, px));
@@ -1146,8 +1152,9 @@ function evaluate(){
   if (gone){ ev.status = 'no-power'; ev.why = T('No power: {name} is missing', { name: nameOf(gone) }); return ev; }
   const rails = Object.assign(Object.fromEntries(Object.keys(feeds).map(r => [r, { from: [] }])), pw.rails || {});
   let burned = null;
+  const fedBy = {};     // the feed each rail takes its voltage from (null: straight from the source)
   for (const [rid, rail] of Object.entries(rails)){
-    let best = 0;
+    let best = 0, bestFd = null;
     if (own(feeds, rid)){
       if (rev) burned = burned || { part: rail.burns || (pw.mcu && pw.mcu.part), kind: 'reverse' };
       else best = +feeds[rid] * scale;
@@ -1160,21 +1167,34 @@ function evaluate(){
       if (!via.every(ok)){ continue; }
       if (vin < 0){
         if (fd.protect && via.includes(fd.protect)){ ev.why = T('Reverse polarity: {name} blocks it, nothing powers up', { name: nameOf(fd.protect) }); continue; }
-        burned = burned || { part: via[via.length - 1] || (pw.mcu && pw.mcu.part), kind: 'reverse' }; continue;
+        burned = burned || { part: fd.burns || via[via.length - 1] || (pw.mcu && pw.mcu.part), kind: 'reverse' }; continue;
       }
       if (fd.offIf){ const [r2, op, lim] = fd.offIf, v2 = ev.rails[r2] || 0; if (op === '>' ? v2 > lim : v2 < lim) continue; }
       if (fd.max != null && vin > fd.max){ burned = burned || { part: via[via.length - 1], kind: 'over', v: vin }; continue; }
       let v = vin;
       if (fd.reg != null) v = Math.min(fd.reg, vin - (fd.dropout || 0));
       else v = vin - (fd.drop || 0);
-      best = Math.max(best, v);
+      if (v > best){ best = v; bestFd = fd; }
     }
     if (rail.max != null && best > rail.max){ burned = burned || { part: (pw.mcu && pw.mcu.part), kind: 'over', v: best, rail: rid }; }
-    ev.rails[rid] = Math.max(0, best);
+    ev.rails[rid] = Math.max(0, best); fedBy[rid] = bestFd;
   }
   // overloads and shorts sag a rail
   if (st.faults.includes('brownout') && pw.mcu){ const r = pw.mcu.rail; if (ev.rails[r]) ev.rails[r] = coldHit(5, st.t * 1.4) ? ev.rails[r] * .42 : ev.rails[r] * .9; }
-  for (const fid of st.faults) if (fid.startsWith('short:')){ const [, a, b2] = fid.split(':'); for (const r of [a, b2]) if (own(ev.rails, r)) { for (const k of Object.keys(ev.rails)) ev.rails[k] = 0; ev.why = T('Short between {a} and {b}: the supply trips', { a, b: b2 }); } }
+  // a short on a rail fed through a current-limited regulator (feed ilim, amps) folds that regulator back: the rail and
+  // the rails it feeds fall to 0 V and the rest keeps running; any other short trips the supply
+  for (const fid of st.faults) if (fid.startsWith('short:')){
+    const [, a, b2] = fid.split(':');
+    for (const r of [a, b2]) if (own(ev.rails, r)){
+      const fd = fedBy[r];
+      if (fd && fd.ilim && ev.rails[r] > 0){
+        const dead = new Set([r]);
+        for (const k of Object.keys(ev.rails)) if (dead.has(k) || (fedBy[k] && fedBy[k].rail && dead.has(fedBy[k].rail))){ dead.add(k); ev.rails[k] = 0; }
+        const reg = (fd.via || [])[(fd.via || []).length - 1];
+        ev.why = T('Short between {a} and {b}: {name} limits its current, so {rail} falls to 0 V and the rest runs', { a, b: b2, name: reg ? nameOf(reg) : r, rail: r });
+      } else { for (const k of Object.keys(ev.rails)) ev.rails[k] = 0; ev.why = T('Short between {a} and {b}: the supply trips', { a, b: b2 }); }
+    }
+  }
   if (burned){
     const pid = burned.part || '';
     ev.status = 'fault';
@@ -1183,8 +1203,9 @@ function evaluate(){
       : { id: 'wrong-voltage:' + st.power, kind: 'hot', part: pid, msg: T('{v} V on {src}: {name} is damaged', { v: (+burned.v).toFixed(1), src: T(src.label || st.power), name: nameOf(pid) }), fix: T('Use {range} V', { range: (src.range || [src.v, src.v]).join('–') }) };
     return ev;
   }
-  // reversed polar parts on a live board
+  // reversed polar parts on a live board (polar.rail: only while that rail is live, so a cap on VIN is safe on USB)
   for (const p of MD.parts) if (p.polar && isIn(p.id) && isRev(p.id) && isSet(p.id)){
+    if (p.polar.rail && !((ev.rails[p.polar.rail] || 0) > .5)) continue;
     const kind = p.polar.fault || (p.kind === 'ecap' || p.kind === 'ecap-smd' ? 'pop' : /led/.test(p.kind) ? 'dark' : 'hot');
     if (kind === 'dark') continue;
     ev.status = 'fault';
@@ -1197,15 +1218,25 @@ function evaluate(){
   const mcu = pw.mcu;
   if (mcu){
     const v = ev.rails[mcu.rail] || 0;
+    if (v < .5){ ev.status = 'no-power'; ev.why = T('No power on {rail}: nothing reaches the chip', { rail: mcu.rail }); return ev; }
     if (v < (mcu.min || 0)){ ev.status = 'brownout'; ev.why = T('Brown-out: {rail} is at {v} V, the chip keeps resetting', { rail: mcu.rail, v: v.toFixed(1) }); return ev; }
     const miss = (mcu.needs || []).find(id => !isSet(id) || coldOff(id));
     if (miss){ ev.why = T('Powered, but nothing runs: {name} is missing', { name: nameOf(miss) }); return ev; }
     if (st.ctl && Object.entries(st.ctl).some(([id, v]) => v && MD.byId[id] && MD.byId[id].control && MD.byId[id].control.action === 'reset')){ ev.status = 'reset'; return ev; }
     ev.status = 'running';
+    // a strap latched at the last restart that keeps the sketch from starting (ROM boot mode)
+    if (st.strap && st.strap.halts){ ev.status = 'fault'; ev.fault = { id: st.strap.fault, kind: 'boot', part: st.strap.part || mcu.part, msg: T(st.strap.msg || 'Boot strap'), fix: T(st.strap.fix || 'Free the pin and press RESET') }; }
   }
   return ev;
 }
 B.evaluate = () => evaluate();
+
+/* boot straps (def.straps: [{ fault, boot, halts?, part?, blocks?: ['upload', 'serial'], msg, fix }]): the chip reads its
+   mode pins when the program (re)starts (power on, RESET released, an upload done), so a strap fault in force then is
+   latched until the next restart. halts: the sketch never starts (status fault, kind boot); blocks: it runs, but
+   uploads are refused with msg and its Serial lines stop. state.boot reports the latched strap's boot. */
+const sampleStraps = () => { st.strap = (MD.def.straps || []).find(x => x && typeof x.fault === 'string' && st.faults.includes(x.fault)) || null; };
+const strapBlocks = what => !!(st.strap && (st.strap.blocks || []).includes(what));
 
 /* ---------- outputs: pin levels and LEDs ---------- */
 function outputs(){
@@ -1244,8 +1275,10 @@ A.pnp = () => {
   if (!guard()) return;
   const todo = partsIn('smd').filter(p => !isIn(p.id) && !st.left[p.id] && !p.fixed);
   if (!todo.length){ say(partsIn('smd').length ? 'Every SMD part is on already' : 'This board has no SMD parts'); return; }
-  todo.forEach((p, i) => { st.drop[p.id] = -.22 * i; st.placed[p.id] = { orient: 0, sold: false }; });
-  st.reflowT = -.22 * todo.length - .3;
+  // 0.22 s a part, faster on a crowded board so the whole run stays under about 3 s
+  const gap = Math.min(.22, 2.6 / todo.length);
+  todo.forEach((p, i) => { st.drop[p.id] = -gap * i; st.placed[p.id] = { orient: 0, sold: false }; });
+  st.reflowT = -gap * todo.length - .3;
   say('Pick and place: {n} parts, then into the reflow oven', { n: todo.length });
   kick();
 };
@@ -1302,10 +1335,11 @@ A.build = what => {
 };
 A.flip = id => { const p = MD.byId[id]; if (!p || !p.polar || !isIn(id)) return; if (!guard()) return; st.placed[id].orient ^= 1; say(st.placed[id].orient ? '{name} turned the wrong way round' : '{name} turned the right way round', { name: nameOf(id) }); refresh(); };
 A.power = key => {
-  if (key == null || key === 'off'){ if (!st.power) return; st.power = null; st.up = null; st.ext = st.ext && false; sfx('unplug'); refresh(); return; }
+  if (key == null || key === 'off'){ if (!st.power) return; st.power = null; st.up = null; st.strap = null; st.ext = st.ext && false; sfx('unplug'); refresh(); return; }
   const src = (MD.power.sources || {})[key]; if (!src) return say('No supply {name} on this board', { name: key });
   if (st.exploded) return say(MSG.exploded);
-  st.power = key; st.t = 0; st.serialN = -1; sfx('plug');
+  // plugging in the cable that is already in changes nothing (the sketch keeps its clock)
+  if (st.power !== key){ st.power = key; st.t = 0; st.serialN = -1; sfx('plug'); sampleStraps(); }
   refresh(true);
 };
 A.upload = key => {
@@ -1314,8 +1348,10 @@ A.upload = key => {
   const ups = MD.power.upload || {};
   if (md.instant){ st.mode = key; st.ext = false; st.t = 0; st.serialN = -1; say('{name} running', { name: T(md.title) }); refresh(); return; }
   if (!st.power || (ups.source && st.power !== ups.source)) return say(MSG.plugFirst);
+  if (strapBlocks('upload')) return say(st.strap.msg || 'Upload failed');
   if (st.ev.status === 'fault') return say(MSG.faulted);
-  const miss = (ups.needs || []).find(id => !isSet(id) || coldOff(id));
+  // the bootloader runs on the MCU: with its clock or socket out, avrdude never gets in sync
+  const miss = [...(ups.needs || []), ...((MD.power.mcu && MD.power.mcu.needs) || [])].find(id => !isSet(id) || coldOff(id));
   if (miss) return say('Upload failed: {name} is missing', { name: nameOf(miss) });
   if (st.ev.status !== 'running' && st.ev.status !== 'powered') return say(st.ev.why || MSG.plugFirst);
   st.up = key; st.upT = 0; st.upDur = md.uploadS || ups.seconds || 2.2; st.ext = false;
@@ -1328,7 +1364,7 @@ A.press = (id, down) => {
   const c = p.control, was = st.ctl[id] || 0;
   if (c.type === 'slide'){ if (down) st.ctl[id] = (was + 1) % ((c.positions || [0, 1]).length); }
   else st.ctl[id] = down ? 1 : 0;
-  if (c.action === 'reset' && was && !down){ st.t = MD.def.bootloader ? -(MD.def.bootloader.wait || 1) : 0; st.serialN = -1;
+  if (c.action === 'reset' && was && !down){ st.t = MD.def.bootloader ? -(MD.def.bootloader.wait || 1) : 0; st.serialN = -1; sampleStraps();
     if (st.ctlBoot) st.boot = 'download'; else if (st.boot === 'download') st.boot = null; }
   if (c.action === 'boot') st.ctlBoot = !!down;
   if (c.action === 'bootsel' && down && !st.power) st.boot = 'uf2';
@@ -1337,9 +1373,13 @@ A.press = (id, down) => {
 };
 // a part left out by a fault stays in st.faults as missing:<id> until it is back on the board
 const backOn = id => { st.faults = st.faults.filter(f => f !== 'missing:' + id); };
+// polar parts sitting backwards: reported as reversed:<id> in state.faults for as long as they are
+const reversedIds = () => MD.parts.filter(p => p.polar && isIn(p.id) && isRev(p.id)).map(p => p.id);
+const faultsNow = () => [...st.faults, ...reversedIds().map(id => 'reversed:' + id)];
 A.fault = id => {
   if (id == null){
     for (const f of st.faults) if (f.startsWith('missing:')){ const pid = f.slice(8); if (MD.byId[pid] && !isIn(pid)){ st.placed[pid] = { orient: 0, sold: true }; delete st.left[pid]; } }
+    for (const pid of reversedIds()) st.placed[pid].orient = 0;
     st.faults = []; st.supply = {}; refresh(true); return;
   }
   if (typeof id !== 'string') return;
@@ -1355,7 +1395,10 @@ A.fault = id => {
   if (kind === 'wrong-voltage'){ const v = +b; if (!(MD.power.sources || {})[a] || !Number.isFinite(v)) return say('Unknown supply {name}', { name: a }); st.supply[a] = v; }
   if (kind === 'reverse-polarity' && !(MD.power.sources || {})[a]) return say('Unknown supply {name}', { name: a });
   if (!st.faults.includes(id)) st.faults.push(id);
+  if (st.power && (MD.def.straps || []).some(x => x && x.fault === id)){ st.t = 0; st.serialN = -1; sampleStraps(); }
   refresh(true);
+  // a fault the sketch survives (a 3V3 short) still says what it did
+  if (st.power && st.ev.status === 'running' && st.ev.why) say(st.ev.why, null, 3200);
 };
 A.view = v => {
   if (v === 'iso') v = 'board';
@@ -1376,6 +1419,9 @@ A.matStep = sid => {
   st.matStep = i; sfx(i >= 0 ? 'place' : 'pop'); if (i >= 0) say(MAT.steps[i].label);
   refresh(); return true;
 };
+// tone() square waves from the host's sketch, by net in Hz (0 or missing: silent); the breadboard solver hands them to
+// the buzzer on that net
+A.setTones = tones => { st.tones = {}; for (const [k, v] of Object.entries(tones)){ const x = +v; if (typeof k === 'string' && k.length < 24 && Number.isFinite(x) && x > 0) st.tones[k] = clamp(x, 1, 20000); } refresh(); };
 A.setPins = pins => { st.ext = true; for (const [k, v] of Object.entries(pins)){ const x = +v; if (typeof k === 'string' && k.length < 24 && Number.isFinite(x)) st.pins[k] = clamp(x, 0, 1); } refresh(); };
 
 /* ---------- sound: figures emit sfx events; the host plays them (S10) ---------- */
@@ -1396,15 +1442,15 @@ function step(dt){
   // the program clock
   if (st.power){
     st.t += dt;
-    if (st.up){ st.upT += dt; if (st.upT >= st.upDur){ const key = st.up; st.up = null; st.mode = key; st.t = 0; st.serialN = -1;
+    if (st.up){ st.upT += dt; if (st.upT >= st.upDur){ const key = st.up; st.up = null; st.mode = key; st.t = 0; st.serialN = -1; sampleStraps();
         say('Done uploading: {name} is running', { name: T(MD.modes[key].title) }); sfx('ding'); } }
     st.ev = evaluate();
     if (st.ev.status === 'brownout' && Math.floor(st.t / .6) !== st.boN){ st.boN = Math.floor(st.t / .6); st.serialN = -1; }
     const md = MD.modes[st.mode];
-    if (st.ev.status === 'running' && !st.up && !st.ext && md){
+    if (st.ev.status === 'running' && !st.up && !st.ext && md && !strapBlocks('serial')){
       const k = Math.floor(st.t);
       if (st.t >= 0 && k !== st.serialN){
-        if (st.serialN < 0 && md.banner){ emit(T(md.banner)); }
+        if (st.serialN < 0 && md.banner){ emit(String(md.banner)); }
         st.serialN = k;
         if (md.serial){ let line = null; try { line = md.serial(k, st); } catch (e) { note('serial: ' + e.message); } if (line != null) emit(String(line)); }
       }
@@ -1422,18 +1468,31 @@ function step(dt){
 B.advance = (seconds, dt = 1 / 30) => { for (let t = 0; t < seconds - 1e-9; t += dt) step(Math.min(dt, seconds - t)); ui && ui.render(); };
 const emit = line => { st.serial = { n: (st.serial ? st.serial.n : 0) + 1, line }; st.txT = .09; };
 
-/* a bench's electrical behaviour in its own words: def.model(st, dt) -> { readings: {…}, status: 'text' } runs after the
-   outputs every frame (dt 0 on a state change); st.o.pins, st.ev.rails, st.t, st.mode and st.matStep are its inputs.
-   readings go out as state.readings (numbers rounded), status as state.benchStatus and on the stats panel */
+/* a bench's electrical behaviour in its own words: def.model(st, dt) runs after the outputs every frame (dt 0 on a state
+   change); st.o.pins, st.ev.rails, st.meas, st.t, st.mode and st.matStep are its inputs. It returns
+     { readings: {…}, status: 'text', stats: [[label, value]], meas: {partId: {…}}, report: {key: value},
+       flow: {net: bool}, accent: [partId] }   (every field optional)
+   readings go out as state.readings (numbers rounded) and to mat parts as their m; status as state.benchStatus and on
+   the stats panel; stats on the stats panel while powered; meas merges over the breadboard solver's state.meas;
+   report adds top-level state keys (state.levels…) the engine does not use itself; flow lights xr.flow paths and
+   mat wires on those nets; accent rings those parts */
 const modelErrs = new Set();
+const modelNote = m => { if (!modelErrs.has(m)){ modelErrs.add(m); note('model: ' + m); } };
+const obj = v => v && typeof v === 'object' && !Array.isArray(v) ? v : null;
 function runModel(dt){
   const fn = MD.def.model;
   if (typeof fn !== 'function') return;
   let r = null;
-  try { r = fn(st, dt); } catch (e) { if (!modelErrs.has(e.message)){ modelErrs.add(e.message); note('model: ' + e.message); } }
-  st.readings = r && r.readings && typeof r.readings === 'object' ? r.readings : {};
+  try { r = fn(st, dt); } catch (e) { modelNote(e.message); }
+  st.readings = (r && obj(r.readings)) || {};
   st.benchStatus = r && typeof r.status === 'string' ? r.status : null;
+  st.modelStats = r && Array.isArray(r.stats) ? r.stats.filter(x => Array.isArray(x) && x.length === 2) : [];
+  st.modelReport = (r && obj(r.report)) || {};
+  st.flow = (r && obj(r.flow)) || {};
+  st.accent = r && Array.isArray(r.accent) ? r.accent.filter(id => typeof id === 'string') : [];
+  if (r && obj(r.meas)) st.meas = Object.assign({}, st.meas || {}, r.meas);
 }
+const flowOn = net => !!(st.flow && st.flow[net]);
 const roundDeep = v => typeof v === 'number' ? (Number.isFinite(v) ? Math.round(v * 1000) / 1000 : null)
   : Array.isArray(v) ? v.map(roundDeep) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, roundDeep(x)])) : v;
 function refresh(newPower){
@@ -1444,7 +1503,7 @@ function refresh(newPower){
   runModel(0);
   if (newPower && st.power){
     const ev = st.ev;
-    if (ev.status === 'fault' && prev !== 'fault'){ const fk = ev.fault.kind; sfx(fk === 'pop' ? 'pop' : 'sizzle'); say(ev.fault.msg, null, 3200); }
+    if (ev.status === 'fault' && prev !== 'fault'){ const fk = ev.fault.kind; if (fk !== 'boot') sfx(fk === 'pop' ? 'pop' : 'sizzle'); say(ev.fault.msg, null, 3200); }
     else if (ev.status === 'running' && prev !== 'running'){ const md = MD.modes[st.mode]; say(md && md.powerMsg ? md.powerMsg : 'Powered: {name} starts', { name: md ? T(md.title) : '' }); }
     else if (ev.why && ev.status !== prev) say(ev.why, null, 3000);
   }
@@ -1528,7 +1587,7 @@ function drawParts(o, k){
     const drop = st.drop[p.id] != null ? clamp(st.drop[p.id], 0, 1) : 1;
     const lift = (LIFT[p.group] || 0) * ex + (1 - ease(drop)) * 14;
     const fault = st.ev.fault && st.ev.fault.part === p.id ? st.ev.fault.kind : null;
-    const opt = { lift, k, lit: o.leds[p.id] || 0, rev: isRev(p.id), sel: st.sel === p.id, hot: fault === 'hot', pop: fault === 'pop',
+    const opt = { lift, k, lit: o.leds[p.id] || 0, rev: isRev(p.id), sel: st.sel === p.id || (st.accent || []).includes(p.id), hot: fault === 'hot', pop: fault === 'pop',
       on: !!(st.ctl[p.id]), sold: isSet(p.id), o };
     const { ctx, items: its } = partCtx(p, st, opt);
     try { kd.draw(ctx); } catch (e) { note(`${p.id} (${p.kind}): ${e.message}`); }
@@ -1542,7 +1601,7 @@ function drawParts(o, k){
     }
     // the soldering iron visits the part being soldered
     if (st.solderQ && st.solderQ[0] === p.id){ const tp = ctx.W(0, 0, p.h + 2); items.push({ box: [[tp[0] - 1, tp[1] - 1, tp[2]], [tp[0] + 1, tp[1] + 1, tp[2] + 30]], svg: ironSvg(tp) }); }
-    if (fault && st.power) items.push({ box: [ctx.W(0, 0, p.h + 1), ctx.W(0, 0, p.h + 1)].map((q, i) => i ? q.map(v => v + 1) : q), svg: smokeSvg(ctx, p) });
+    if ((fault === 'hot' || fault === 'pop') && st.power) items.push({ box: [ctx.W(0, 0, p.h + 1), ctx.W(0, 0, p.h + 1)].map((q, i) => i ? q.map(v => v + 1) : q), svg: smokeSvg(ctx, p) });
   }
   return items;
 }
@@ -1585,7 +1644,7 @@ function xrLayer(k){
   let s = '';
   const t = st.t || 0;
   for (const [net, path] of (MD.def.xr && MD.def.xr.flow) || []){
-    const live = (st.ev.rails[net] || 0) > .5 || (st.o.pins[net] || 0) > .5;
+    const live = (st.ev.rails[net] || 0) > .5 || (st.o.pins[net] || 0) > .5 || flowOn(net);
     const pts = path.map(([x, y]) => BP(x, y, .3));
     s += `<path d="${pd(pts, false)}" fill="none" stroke="#f7a531" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="${f(.55 * k)}"/>`;
     if (!live) continue;
@@ -1627,7 +1686,7 @@ const matNote = m => { if (!matErrs.has(m)){ matErrs.add(m); note(m); } };
 const periphData = it => `data-id="${CF_ESC(it.id)}" data-label="${CF_ESC(it.name)}"`;
 function periphBoard(it, k, live){
   return inFrame(it, () => {
-    const pc = it.md.pcb, items = [], data = periphData(it), sel = st.sel === it.id;
+    const pc = it.md.pcb, items = [], data = periphData(it), sel = st.sel === it.id || (st.accent || []).includes(it.id);
     const wrap = svg => act('periph', sel ? `<g class="bsel">${svg}</g>` : svg, data);
     items.push({ box: aabb([BP(0, 0, -pc.thick), BP(pc.w, pc.h, 0)]), svg: wrap(slabW(BP, 0, 0, pc.w, pc.h, -pc.thick, 0, matOf(pc.color))) });
     for (const [x, y] of [[1.5, 1.5], [pc.w - 1.5, 1.5], [1.5, pc.h - 1.5], [pc.w - 1.5, pc.h - 1.5]]){
@@ -1649,7 +1708,7 @@ const legsOf = it => {
   return pts.map(([x, y]) => BP(x, y, z));
 };
 function periphPart(it, k, live){
-  const z = G.matH - G.top, items = [], sel = st.sel === it.id, legs = legsOf(it);
+  const z = G.matH - G.top, items = [], sel = st.sel === it.id || (st.accent || []).includes(it.id), legs = legsOf(it);
   const p = Object.assign({ id: it.id, part: it.q.part }, it.def.example || {}, it.q.params || {});
   const pl = { at: (x, y, zz = z) => BP(it.at[0] + x, it.at[1] + y, zz), zTop: z, geo: null };
   const put = (bx, svg) => { if (svg) items.push({ box: bx, svg: act('periph', sel ? `<g class="bsel">${svg}</g>` : svg, periphData(it)) }); };
@@ -1681,7 +1740,7 @@ function matItems(k){
     if (!stepOn(w.step)) continue;
     const a = matEnd(w.from), b = matEnd(w.to);
     if (!a || !b){ matNote(`wire ${w.from}-${w.to}: unknown end`); continue; }
-    const net = a.net || b.net, on = !!net && ((st.o.pins[net] || 0) > .5 || (st.ev.rails[net] || 0) > .5);
+    const net = a.net || b.net, on = !!net && ((st.o.pins[net] || 0) > .5 || (st.ev.rails[net] || 0) > .5 || flowOn(net));
     const pin = a.pin || b.pin;
     wire.draw({ a: a.pt, b: b.pt, color: w.color || 'green', live: on, k, put: (bx, svg) => items.push({ box: bx, svg: act('pin', svg,
       `data-id="${CF_ESC(pin ? pin.id : w.from)}" data-part="${CF_ESC(pin ? pin.part : '')}" data-label="${CF_ESC(T('Wire from {a} to {b}', { a: w.from, b: w.to }))}"`) }) });
@@ -1813,7 +1872,7 @@ function buttons(){
   } });
   bt.push({ id: 'solder', label: 'Solder joints', onClick: () => A.solder() });
   bt.push({ id: 'remove', label: 'Remove a part', choices: () => MD.parts.filter(p => isIn(p.id) && !p.fixed).map(p => ({ id: p.id.toLowerCase(), label: p.id + ' · ' + T(p.name), onClick: () => A.remove(p.id) })) });
-  bt.push({ id: 'break', label: 'Break it', choices: () => faultChoices().map(([id, label]) => ({ id: id ? CF_SLUG(id) : 'repair', label, current: st.faults.includes(id), onClick: () => A.fault(id) })) });
+  bt.push({ id: 'break', label: 'Break it', choices: () => faultChoices().map(([id, label]) => ({ id: id ? CF_SLUG(id) : 'repair', label, current: faultsNow().includes(id), onClick: () => A.fault(id) })) });
   bt.push({ id: 'view', label: 'View', choices: () => [
     { id: 'board', label: 'Board', current: st.view === 'board' && !st.exploded, onClick: () => { A.explode(false); A.view('board'); } },
     ...(Object.keys(MD.circuits).length && VIEWS.breadboard ? [{ id: 'breadboard', label: 'Breadboard', current: st.view === 'breadboard', onClick: () => A.view('breadboard') }] : []),
@@ -1832,13 +1891,27 @@ function faultChoices(){
   }
   if (MD.power.mcu) out.push(['brownout', T('Motor on the 5 V pin (brown-out)')]);
   for (const p of MD.parts) if (p.polar && !p.fixed) out.push(['reversed:' + p.id, T('{name} in backwards', { name: p.id })]);
-  for (const id of MD.def.faults || []) if (!out.some(o => o[0] === id)) out.push([id, T(id)]);
+  for (const fd of MD.def.faults || []){
+    const [id, label] = Array.isArray(fd) ? fd : [fd, null];
+    if (typeof id === 'string' && !out.some(o => o[0] === id)) out.push([id, label ? T(label) : faultLabel(id)]);
+  }
   const cold = MD.parts.filter(p => p.led || p.control || (MD.power.mcu && (MD.power.mcu.needs || []).includes(p.id))).slice(0, 6);
   for (const p of cold) out.push(['cold:' + p.id, T('Cold joint on {name}', { name: p.id })]);
   out.push(['', T('Repair everything')]);
   return out.map(([id, label]) => [id || null, label]);
 }
 B.faultChoices = () => faultChoices();
+// a Break it label for a listed fault that brings none: 'short:5V:GND' reads "Short from 5V to GND"
+function faultLabel(id){
+  const [kind, a, b] = id.split(':');
+  if (kind === 'short' && a && b) return T('Short from {a} to {b}', { a, b });
+  if (kind === 'missing' && a) return T('Leave out {name}', { name: a });
+  if (kind === 'reversed' && a) return T('{name} in backwards', { name: a });
+  if (kind === 'cold' && a) return T('Cold joint on {name}', { name: a });
+  if (kind === 'wrong-voltage' && a && b){ const s = (MD.power.sources || {})[a]; return T('{v} V on {src}', { v: b, src: T((s && s.label) || a) }); }
+  if (kind === 'reverse-polarity' && a){ const s = (MD.power.sources || {})[a]; return T('Reverse polarity on {src}', { src: T((s && s.label) || a) }); }
+  return T(id);
+}
 function stats(){
   if (MD.def.noBoard) return [];
   const out = [{ label: 'Status', value: statusText() }];
@@ -1846,6 +1919,7 @@ function stats(){
   if (mcu && st.power) out.push({ label: mcu.rail, value: (st.ev.rails[mcu.rail] || 0).toFixed(1) + ' V', small: true });
   if (st.ev.status === 'running' && MD.modes[st.mode]) out.push({ label: 'Program', value: st.ext ? T('your sketch') : T(MD.modes[st.mode].title), small: true });
   if (st.benchStatus) out.push({ label: 'Bench', value: T(st.benchStatus), small: true });
+  if (st.power) for (const [label, value] of st.modelStats || []) out.push({ label: T(String(label)), value: typeof value === 'number' ? String(+value.toFixed(2)) : T(String(value)), small: true });
   return out;
 }
 
@@ -1859,34 +1933,47 @@ const report = () => {
     : MD.parts.filter(p => p.group !== 'last').every(p => isSet(p.id) || st.left[p.id]) ? 'soldered'
     : partsIn('smd').every(p => isSet(p.id) || st.left[p.id]) ? (MD.parts.some(p => p.group !== 'smd' && isIn(p.id)) ? 'tht' : 'reflowed') : 'smd';
   const ev = st.ev;
-  return { id: MD.id, view: st.view, exploded: st.exploded, build, power: st.power, status: st.up ? 'uploading' : ev.status,
-    mode: st.mode, ext: st.ext, rails: r, fault: ev.fault, faults: st.faults.slice(), missing: MD.parts.filter(p => !isIn(p.id)).map(p => p.id),
-    selected: st.sel, controls: Object.assign({}, st.ctl), boot: st.boot, leds, circuit: st.circuit, meas: st.meas || {}, serial: st.serial, sfx: st.sfx,
+  const r0 = { id: MD.id, view: st.view, exploded: st.exploded, build, power: st.power, status: st.up ? 'uploading' : ev.status,
+    mode: st.mode, ext: st.ext, rails: r, fault: ev.fault, faults: faultsNow(), missing: MD.parts.filter(p => !isIn(p.id)).map(p => p.id),
+    selected: st.sel, controls: Object.assign({}, st.ctl), boot: st.strap ? (st.strap.boot || null) : st.boot, leds, circuit: st.circuit, meas: st.meas || {}, serial: st.serial, sfx: st.sfx,
     why: ev.why || null, tasks: taskState(),
     ...(MAT.steps.length ? { matStep: st.matStep >= 0 ? MAT.steps[st.matStep].id : null } : {}),
     ...(typeof MD.def.model === 'function' ? { readings: roundDeep(st.readings || {}), benchStatus: st.benchStatus || null } : {}) };
+  for (const [k, v] of Object.entries(st.modelReport || {})){ if (own(r0, k)) modelNote(`report key "${k}" is the engine's own`); else r0[k] = roundDeep(v); }
+  return r0;
 };
 B.report = () => report();
 B.accept = p => accept(st, p);
+// One patch is one moment on the bench: unplug first, then change the board (build, parts, fault, mat, controls), then
+// plug in, so { power: 'usb', fault: 'missing:Y2' } shows the powered board without Y2 and { power: null, build: 'bare' }
+// unplugs before it strips. A host fault replaces the one before it (the host shows one failure at a time).
 const accept = (s, p) => {
   let ok = true;
   const bad = m => { ok = m; };
+  const powerOk = own(p, 'power') && (p.power === null || own(MD.power.sources, p.power));
+  if (own(p, 'power') && !powerOk) bad('unknown power source');
   if (own(p, 'pins')){ if (p.pins && typeof p.pins === 'object') A.setPins(p.pins); else bad('pins must be an object'); }
   if (own(p, 'mode')){ if (!A.mode(p.mode)) bad('unknown mode'); }
-  if (own(p, 'power')){ if (p.power === null || own(MD.power.sources, p.power)) A.power(p.power); else bad('unknown power source'); }
-  if (own(p, 'fault')){ if (p.fault === null || typeof p.fault === 'string') A.fault(p.fault); else bad('fault must be a string or null'); }
-  if (own(p, 'view')){ if (!A.view(p.view)) bad('unknown view'); }
+  if (powerOk && p.power === null) A.power(null);
   if (own(p, 'exploded')) A.explode(!!p.exploded);
-  if (own(p, 'circuit')){ if (p.circuit === null || own(MD.circuits, p.circuit)){ st.circuit = p.circuit; refresh(); } else bad('unknown circuit'); }
-  if (own(p, 'params') && p.params && typeof p.params === 'object' && B.bbParams) B.bbParams(st, p.params);
-  if (own(p, 'select')) A.select(typeof p.select === 'string' ? p.select : null);
   if (own(p, 'build')){ if (p.build === 'bare' || p.build === 'assembled') A.build(p.build); else bad('build must be bare or assembled'); }
   if (own(p, 'remove') && typeof p.remove === 'string') A.remove(p.remove);
   if (own(p, 'restore') && typeof p.restore === 'string') A.restore(p.restore);
-  if (own(p, 'press') && p.press && typeof p.press.id === 'string') A.press(p.press.id, !!p.press.down);
-  if (own(p, 'serial') && typeof p.serial === 'string'){ st.txT = .09; kick(); }
+  if (own(p, 'fault')){
+    if (p.fault === null) A.fault(null);
+    else if (typeof p.fault === 'string'){ if (st.faults.length || reversedIds().length) A.fault(null); A.fault(p.fault); }
+    else bad('fault must be a string or null');
+  }
   if (own(p, 'matStep')){ if (p.matStep === null || MAT.steps.some(s => s.id === p.matStep)){ if (A.matStep(p.matStep) !== true) bad('mat step refused'); } else bad('unknown mat step'); }
+  if (own(p, 'circuit')){ if (p.circuit === null || own(MD.circuits, p.circuit)){ st.circuit = p.circuit; refresh(); } else bad('unknown circuit'); }
+  if (own(p, 'params') && p.params && typeof p.params === 'object' && B.bbParams) B.bbParams(st, p.params);
+  if (own(p, 'tones')){ if (p.tones && typeof p.tones === 'object') A.setTones(p.tones); else bad('tones must be an object'); }
   if (own(p, 'inputs') && p.inputs && typeof p.inputs === 'object') for (const [k, v] of Object.entries(p.inputs)) if (MD.byId[k] && MD.byId[k].control) st.ctl[k] = +v || 0;
+  if (own(p, 'press') && p.press && typeof p.press.id === 'string') A.press(p.press.id, !!p.press.down);
+  if (powerOk && p.power !== null) A.power(p.power);
+  if (own(p, 'view')){ if (!A.view(p.view)) bad('unknown view'); }
+  if (own(p, 'select')) A.select(typeof p.select === 'string' ? p.select : null);
+  if (own(p, 'serial') && typeof p.serial === 'string'){ st.txT = .09; kick(); }
   return ok;
 };
 
@@ -1954,7 +2041,7 @@ function start(pick){
   st = B.st = {
     view: 'board', exploded: false, exK: 0, placed: {}, left: {}, drop: {}, reflowT: null, solderQ: null, solderT: 0,
     power: null, supply: {}, faults: [], mode: def.mode || Object.keys(MD.modes)[0] || null, ext: false, pins: {}, t: 0, serialN: -1,
-    up: null, upT: 0, upDur: 2.2, ctl: {}, boot: null, sel: null, serial: null, txT: 0, circuit: def.circuit || null, meas: {}, sfx: null,
+    up: null, upT: 0, upDur: 2.2, ctl: {}, boot: null, sel: null, serial: null, txT: 0, circuit: def.circuit || null, meas: {}, sfx: null, tones: {}, strap: null,
     matStep: MAT.steps.length - 1, readings: {}, benchStatus: null,
   };
   for (const p of MD.parts) st.placed[p.id] = { orient: 0, sold: true };
@@ -1975,6 +2062,7 @@ function start(pick){
   if (q.get('power') && own(MD.power.sources, q.get('power'))) { st.power = q.get('power'); }
   else if (q.get('power') !== '0' && q.get('build') !== 'bare' && MD.power.default && !q.get('fault')) st.power = MD.power.default;
   else if (q.get('fault') && q.get('power') !== '0' && MD.power.default) st.power = MD.power.default;
+  if (st.power) sampleStraps();
   checkChoices();
   // the core frames the box [0,W] x [0,D] x [0,H]: shift the world so the mount view's bounds start at 0
   let vb = VIEWS[B.mountView].bounds(); G.ox -= vb[0]; G.oy -= vb[1]; vb = VIEWS[B.mountView].bounds();
@@ -2915,9 +3003,351 @@ B.part('wire', {
 })();
 
 </script>
+<script>/* figures/parts/push-button.js */
+// @cf title Push button
+// @cf use engine/bench.list
+/* 6 x 6 mm through-hole tactile switch (Omron B3F class, the kit part with a 5 mm tall plunger). Legs ['1','2','3',
+   '4'] as in Omron's drawing: 1-2 are always joined, 3-4 are always joined, and pressing the plunger joins 1-2 to
+   3-4. The joined pairs face each other across the 6.5 mm direction, so on a breadboard that direction straddles the
+   trench (legs bent out to 7.62 mm) and the switched pair sits on one side, 4.5 mm apart, bent to 5.08 mm (two
+   columns): holes ['e8','f8','e10','f10'] give 1=e8, 2=f8, 3=e10, 4=f10, and pressing joins column 8 to column 10.
+   Turned 90 degrees on one side of the trench, the switched pair lands in one strip and the switch reads "pressed"
+   for ever: the solver sees that from the holes, nothing here fakes it. Rating 50 mA at 24 V DC, bounce 5 ms max,
+   travel 0.25 mm. See-through: the stainless snap dome over the centre contact (3-4) inside the outer ring (1-2). */
+(() => {
+const B = SL.bench, T = B.T;
+const CAP = { black: '#34302c', red: '#e2483d', yellow: '#f2c230', green: '#43b05c', blue: '#3e86d9', white: '#ece6d6' };
+const DEF = { pressed: 0, color: 'black', fault: 'none' };
+// faults the page can set; in a circuit the solver's verdict (m.state) is used unless one is set here
+const FAULTS = { none: null, 'contacts burnt': 'burnt' };
+const stateOf = (p, m) => FAULTS[p.fault] || (m && m.state) || null;
+const DOME = { l: '#f4f6f6', m: '#c9d0d2', d: '#8e979a' };
+const LIVE = '#f4b829';
+
+// a local frame on the legs: a along leg i0 -> leg i1, b toward the front (the viewer when the legs run left to
+// right), z up from the breadboard top; every breadboard placement is a multiple of 90 degrees
+const frame = (legs, i0, i1) => {
+  const n = legs.length, o = [0, 1, 2].map(k => legs.reduce((s, q) => s + q[k], 0) / n);
+  const dx = legs[i1][0] - legs[i0][0], dy = legs[i1][1] - legs[i0][1], l = Math.hypot(dx, dy) || 1, ux = dx / l, uy = dy / l;
+  const W = (a, b, z) => [o[0] + ux * a - uy * b, o[1] + uy * a + ux * b, o[2] + z];
+  return { o, W,
+    loc: q => { const x = q[0] - o[0], y = q[1] - o[1]; return [x * ux + y * uy, -x * uy + y * ux]; },
+    slab: (a0, b0, a1, b1, z0, z1, m, w = .6) => B.slabW(W, a0, b0, a1, b1, z0, z1, m, toneI, w),
+    bx: (a0, b0, z0, a1, b1, z1) => B.aabb([W(a0, b0, z0), W(a1, b1, z1), W(a0, b1, z0), W(a1, b0, z1)]) };
+};
+const xrK = ctx => ctx.k != null ? ctx.k : ease(Math.min(1, Math.max(0, (ctx.st && ctx.st.xr) || 0)));
+// a label pill on the side of the part its anchor is on, as seen now, so pills don't cross when it turns
+const pill = (F, pt, dx, dy, text, on) => { const X = P(...pt)[0], Xc = P(...F.o)[0]; return tag(pt, (X < Xc - .5 ? -1 : X > Xc + .5 ? 1 : Math.sign(dx) || 1) * Math.abs(dx), dy, text, on); };
+const ring = (F, a, b, z, r, n = 20) => B.circ(a, b, r, n).map(([u, v]) => F.W(u, v, z));
+
+B.part('push-button', {
+  name: 'Push button',
+  legs: ['1', '2', '3', '4'],
+  span: [0, 3],
+  params: { pressed: [0, 1], color: Object.keys(CAP), fault: Object.keys(FAULTS) },
+  paramNames: { color: 'Plunger colour', fault: 'Break it' },
+  defaults: DEF,
+  // 1-2 and 3-4 always joined; pressed joins the two pairs
+  elec: p => ({ type: 'button', pressed: +p.pressed > 0, pairs: [[0, 1], [2, 3]], imax: .05, vmax: 24, bounce: .005 }),
+  press: (p, down) => ({ pressed: down ? 1 : 0 }),
+  tag: (p, m) => stateOf(p, m) === 'shorted' ? T('{id} · always closed: turn it 90°', { id: p.id })
+    : stateOf(p, m) === 'burnt' ? T('{id} · contacts burnt', { id: p.id })
+    : +p.pressed > 0 ? T('{id} · pressed', { id: p.id }) : T('{id} · released', { id: p.id }),
+  draw(ctx){
+    const p = Object.assign({}, DEF, ctx.p), legs = ctx.legs, k = xrK(ctx), down = +p.pressed > 0, m = ctx.m || {};
+    const F = frame(legs, 0, 2), sg = v => v < 0 ? -1 : 1;
+    const zl = .9, zb = 3.4, zt = 3.65, plH = down ? 1.1 : 1.35;
+    const sf = stateOf(p, m), burnt = sf === 'burnt', flowing = down && !burnt && (m.i_mA || 0) > .05;
+    let s = '';
+    // legs: out of the two sides that face across the trench, then bent down into the holes
+    for (const L of legs){ const [a, b] = F.loc(L), a0 = sg(a) * 2.25, b0 = sg(b) * 3;
+      s += rod(F.W(a0, b0, zl), F.W(a, b, zl), .26, B.M.tin, toneI, .4) + rod(F.W(a, b, zl), F.W(a, b, -.3), .26, B.M.tin, toneI, .4); }
+    // see-through: outer ring contact (legs 1-2, at a < 0), centre contact (legs 3-4, at a > 0), the snap dome
+    if (k > .02){
+      const cu = flowing ? matOf(LIVE) : burnt ? matOf('#4a3b30') : B.M.copper;
+      let x = F.slab(-2.6, -3, -2.0, 3, .6, .9, cu, .35) + F.slab(2.0, -3, 2.6, 3, .6, .9, cu, .35) + F.slab(.4, -.35, 2.3, .35, .6, .9, cu, .3);
+      x += fill(pd(ring(F, 0, 0, .95, 2.45)), flowing ? LIVE : B.M.copper.m) + fill(pd(ring(F, 0, 0, .97, 1.85)), '#2a2623') + fill(pd(ring(F, 0, 0, 1.0, .85)), flowing ? LIVE : B.M.copper.l);
+      const domeTop = down ? 1.15 : 1.75;
+      x += rod(F.W(0, 0, 1.02), F.W(0, 0, domeTop), 2.35, DOME, toneI, .4, down ? 2.1 : 1.1);
+      if (flowing) x += `<path d="${pd([F.W(-2.3, -2.6, .95), F.W(-1.6, -.6, 1.05), F.W(0, 0, 1.05), F.W(1.6, .3, .95), F.W(2.3, 2.6, .95)], false)}" fill="none" stroke="${LIVE}" stroke-width="1.2" stroke-dasharray="1.2 1.6" opacity=".95"/>`;
+      s += `<g opacity="${f(Math.min(1, k * 1.4))}">${x}</g>`;
+    }
+    // body, metal frame with its two clip tabs, plunger
+    let body = F.slab(-3, -3, 3, 3, 0, zb, burnt ? matOf('#4a3b30') : B.M.black, .7) + F.slab(-3, -3, 3, 3, zb, zt, B.M.steel, .45)
+      + F.slab(-1.1, -3.14, 1.1, -3, 1.3, zt, B.M.steel, .35) + F.slab(-1.1, 3, 1.1, 3.14, 1.3, zt, B.M.steel, .35);
+    for (const [a, b] of [[-2.2, -2.2], [2.2, -2.2], [2.2, 2.2], [-2.2, 2.2]]) body += fill(pd(ring(F, a, b, zt + .01, .32, 8)), B.M.steel.d);
+    const c0 = F.W(0, 0, zt), capM = matOf(CAP[p.color] || CAP.black);
+    if (down) body += `<path d="${pd(ring(F, 0, 0, zt + .02, 2.25))}" fill="none" stroke="${LIVE}" stroke-width="1.1" opacity=".9"/>`;
+    body += cyl(c0[0], c0[1], c0[2], c0[2] + plH, 1.75, capM, toneI, .6, 18);
+    s += k > .02 ? `<g opacity="${f(1 - .68 * k)}">${body}</g>` : body;
+    if ((ctx.solo || (B.md && B.md.def && B.md.def.partPage)) && k > .5){
+      s += pill(F, F.W(0, 0, 1.6), 46, -46, T('Snap dome'), down) + pill(F, F.W(-2.3, -3, .8), -52, 16, T('Ring: pins 1–2'), flowing)
+        + pill(F, F.W(2.3, 3, .8), 54, 50, T('Centre: pins 3–4'), flowing);
+    }
+    ctx.put(F.bx(-4.2, -4.2, -.3, 4.2, 4.2, zt + 1.4), s);
+  },
+  show: { breadboard: 'mini', holes: ['e8', 'f8', 'e10', 'f10'], params: { pressed: 0, color: 'black' } },
+});
+})();
+
+</script>
+<script>/* figures/parts/potentiometer.js */
+// @cf title Potentiometer
+// @cf use engine/bench.list
+/* B10K rotary potentiometer, the 9 mm kit part (RK09 class): blue 9.8 mm body, metal bushing, black knurled knob,
+   three legs in a row on 2.5 mm pitch so they sit in three neighbouring holes. "B" is the linear taper, 10 kOhm
+   +-20 % end to end, about 300 degrees of rotation. Legs ['1','W','3']: with the legs toward you and the shaft up,
+   pin 1 is the left (anticlockwise) end, W the wiper, pin 3 the right (clockwise) end; turning clockwise moves the
+   wiper from pin 1 toward pin 3. pos 0..1 is the wiper position (0 = full anticlockwise, at pin 1), so with pin 1 on
+   GND and pin 3 on 5 V, V(W) = 5 V x pos. Rated about 0.05 W (typical for a 9 mm carbon pot): with 5 V on one end and
+   GND on the wiper, turning toward that end shorts 5 V through a sliver of track, which gets hot and burns.
+   See-through: the horseshoe carbon track (300 degrees, open toward the legs), the end terminals, the wiper on the
+   shaft and the collector ring that carries the wiper to the middle leg; the track between pin 1 and the wiper and
+   between the wiper and pin 3 is tinted with its share of the resistance. */
+(() => {
+const B = SL.bench, T = B.T;
+const DEF = { pos: .5, ohms: 10000, fault: 'none' };
+// faults the page can set; in a circuit the solver's verdict (m.state) is used unless one is set here
+const FAULTS = { none: null, 'track shorted': 'hot', 'track burnt': 'burnt' };
+const stateOf = (p, m) => FAULTS[p.fault] || (m && m.state) || null;
+const SWEEP = 300;
+const BLUE = { l: '#5b8fd9', m: '#3f6fb8', d: '#28487a' }, KNOB = { l: '#5a5550', m: '#3a3632', d: '#24211f' };
+const TRACK = '#3b302a', SEG1 = '#e2483d', SEG2 = '#3e86d9', LIVE = '#f4b829';
+
+const frame = (legs, i0, i1) => {
+  const n = legs.length, o = [0, 1, 2].map(k => legs.reduce((s, q) => s + q[k], 0) / n);
+  const dx = legs[i1][0] - legs[i0][0], dy = legs[i1][1] - legs[i0][1], l = Math.hypot(dx, dy) || 1, ux = dx / l, uy = dy / l;
+  const W = (a, b, z) => [o[0] + ux * a - uy * b, o[1] + uy * a + ux * b, o[2] + z];
+  return { o, W,
+    loc: q => { const x = q[0] - o[0], y = q[1] - o[1]; return [x * ux + y * uy, -x * uy + y * ux]; },
+    slab: (a0, b0, a1, b1, z0, z1, m, w = .6) => B.slabW(W, a0, b0, a1, b1, z0, z1, m, toneI, w),
+    bx: (a0, b0, z0, a1, b1, z1) => B.aabb([W(a0, b0, z0), W(a1, b1, z1), W(a0, b1, z0), W(a1, b0, z1)]) };
+};
+const xrK = ctx => ctx.k != null ? ctx.k : ease(Math.min(1, Math.max(0, (ctx.st && ctx.st.xr) || 0)));
+// a label pill on the side of the part its anchor is on, as seen now, so pills don't cross when it turns
+const pill = (F, pt, dx, dy, text, on) => { const X = P(...pt)[0], Xc = P(...F.o)[0]; return tag(pt, (X < Xc - .5 ? -1 : X > Xc + .5 ? 1 : Math.sign(dx) || 1) * Math.abs(dx), dy, text, on); };
+const ring = (F, a, b, z, r, n = 24) => B.circ(a, b, r, n).map(([u, v]) => F.W(u, v, z));
+// clockwise angle from 12 o'clock (away from the legs), seen from above: direction in the part's (a, b) plane
+const dirOf = deg => { const r = deg * Math.PI / 180; return [Math.sin(r), -Math.cos(r)]; };
+const arc = (F, cb, z, r, d0, d1, n) => { const o = []; for (let i = 0; i <= n; i++){ const [x, y] = dirOf(d0 + (d1 - d0) * i / n); o.push(F.W(x * r, cb + y * r, z)); } return o; };
+const pos01 = p => Math.max(0, Math.min(1, +p.pos || 0));
+
+B.part('potentiometer', {
+  name: 'Potentiometer',
+  legs: ['1', 'W', '3'],
+  span: [2, 4],
+  params: { pos: [0, 1], ohms: [1000, 1000000], fault: Object.keys(FAULTS) },
+  paramNames: { fault: 'Break it' },
+  steps: { pos: [0, .25, .5, .75, 1], ohms: [1000, 10000, 100000] },
+  defaults: DEF,
+  // legs [end 1, wiper, end 3]; R(1-W) = ohms x pos, R(W-3) = ohms x (1 - pos)
+  elec: p => ({ type: 'pot', ohms: Math.max(1, +p.ohms || DEF.ohms), pos: pos01(Object.assign({}, DEF, p)), pmax: .05, taper: 'linear', sweep: SWEEP }),
+  // each press turns the knob an eighth of its travel clockwise, then back to the start
+  press: (p, down) => down ? { pos: pos01(Object.assign({}, DEF, p)) >= .999 ? 0 : Math.min(1, Math.round((pos01(Object.assign({}, DEF, p)) + .125) * 8) / 8) } : null,
+  tag: (p, m) => {
+    const q = Object.assign({}, DEF, p), pct = Math.round(pos01(q) * 100);
+    if (stateOf(q, m) === 'burnt') return T('{id} · track burnt', { id: q.id });
+    if (stateOf(q, m) === 'hot') return T('{id} · hot: 5 V shorted through the track', { id: q.id });
+    if (m && m.v != null) return T('{id} · {pct} % · {v} V', { id: q.id, pct, v: (+m.v).toFixed(2) });
+    return T('{id} · {pct} %', { id: q.id, pct });
+  },
+  draw(ctx){
+    const p = Object.assign({}, DEF, ctx.p), legs = ctx.legs, k = xrK(ctx), m = ctx.m || {}, pos = pos01(p);
+    const F = frame(legs, 0, legs.length - 1), cb = -2.6;            // the shaft sits 2.6 mm behind the leg row
+    const sf = stateOf(p, m), hot = sf === 'hot', burnt = sf === 'burnt', ang = (pos - .5) * SWEEP;
+    const zb = 6.2, zbu = 7.6, zk0 = 7.8, zk1 = 13.6, rk = 4.6;
+    let s = '';
+    // legs: straight down out of the front of the body
+    for (const L of legs){ const [a, b] = F.loc(L);
+      s += rod(F.W(a, -.4, 1.4), F.W(a, b, 1.4), .3, B.M.tin, toneI, .4) + rod(F.W(a, b, 1.4), F.W(a, b, -.3), .3, B.M.tin, toneI, .4); }
+    // see-through internals, under a ghosted body
+    if (k > .02){
+      const z = 3.4, r = 3.3, d1 = -SWEEP / 2 + SWEEP * pos;
+      let x = fill(pd(ring(F, 0, cb, z - .25, 4.3)), '#c9a874');                          // phenolic wafer
+      x += `<path d="${pd(arc(F, cb, z, r, -SWEEP / 2, SWEEP / 2, 30), false)}" fill="none" stroke="${burnt ? '#1f1a17' : TRACK}" stroke-width="2.6" stroke-linecap="butt"/>`;
+      x += `<path d="${pd(arc(F, cb, z + .02, r, -SWEEP / 2, d1, 22), false)}" fill="none" stroke="${SEG1}" stroke-width="1" opacity=".85"/>`;
+      x += `<path d="${pd(arc(F, cb, z + .02, r, d1, SWEEP / 2, 22), false)}" fill="none" stroke="${SEG2}" stroke-width="1" opacity=".85"/>`;
+      x += `<path d="${pd(ring(F, 0, cb, z + .03, 1.5))}" fill="none" stroke="${B.M.steel.m}" stroke-width="1.3"/>`;    // collector ring
+      // end terminals and the centre terminal, from the arc ends and the ring down to the legs
+      const [e1x, e1y] = dirOf(-SWEEP / 2), [e3x, e3y] = dirOf(SWEEP / 2), la = legs.map(L => F.loc(L));
+      x += rod(F.W(e1x * r, cb + e1y * r, z), F.W(la[0][0], -.4, z - .8), .35, B.M.tin, toneI, .3) + rod(F.W(e3x * r, cb + e3y * r, z), F.W(la[2][0], -.4, z - .8), .35, B.M.tin, toneI, .3)
+        + rod(F.W(0, cb + 1.5, z), F.W(la[1][0], -.4, z - .8), .35, B.M.tin, toneI, .3);
+      // wiper: a sprung blade from the collector ring to the track at the knob angle
+      const [wx, wy] = dirOf(ang), wc = hot || burnt ? '#e2483d' : B.M.steel.l;
+      x += rod(F.W(wx * 1.2, cb + wy * 1.2, z + .5), F.W(wx * r, cb + wy * r, z + .15), .35, matOf(wc), toneI, .35) + fill(pd(ring(F, wx * r, cb + wy * r, z + .2, .45, 10)), LIVE);
+      if (hot && !burnt){ const [X, Y] = P(...F.W(wx * r, cb + wy * r, z)); x += `<circle cx="${f(X)}" cy="${f(Y)}" r="5" fill="#f08a2b" opacity=".45"/>`; }
+      s += `<g opacity="${f(Math.min(1, k * 1.4))}">${x}</g>`;
+    }
+    // body, bushing, knob
+    let body = F.slab(-4.9, cb - 4.9, 4.9, cb + 4.9, 0, zb - .35, burnt ? matOf('#3f3a3a') : hot ? matOf('#c0504a') : BLUE, .7);
+    body += F.slab(-4.6, cb - 4.6, 4.6, cb + 4.6, zb - .35, zb, B.M.steel, .45);                    // the metal cover that holds the bushing
+    const c = F.W(0, cb, zb), kc = F.W(0, cb, zk0);
+    body += cyl(c[0], c[1], c[2], zbu - zb + c[2], 3.4, B.M.steel, toneI, .6, 18);
+    body += cyl(kc[0], kc[1], kc[2], kc[2] + zk1 - zk0, rk, KNOB, toneI, .9, 22);
+    // knurls round the side of the knob, on the half that faces the viewer
+    const n0 = F.W(0, cb, 0);
+    for (let i = 0; i < 20; i++){ const a = i / 20 * 2 * Math.PI, d = [Math.cos(a), Math.sin(a)];
+      const n = F.W(d[0], cb + d[1], 0); if (!vis([n[0] - n0[0], n[1] - n0[1], 0])) continue;
+      body += `<path d="${pd([F.W(d[0] * rk, cb + d[1] * rk, zk0 + .6), F.W(d[0] * rk, cb + d[1] * rk, zk1 - .4)], false)}" stroke="${KNOB.d}" stroke-width=".45" fill="none"/>`; }
+    // indicator line on the knob top shows the angle
+    const [ix, iy] = dirOf(ang);
+    body += `<path d="${pd([F.W(ix * .8, cb + iy * .8, zk1 + .02), F.W(ix * (rk - .6), cb + iy * (rk - .6), zk1 + .02)], false)}" stroke="#f6f3ea" stroke-width="1.3" stroke-linecap="round" fill="none"/>`;
+    // the 300-degree travel marks on the body top, so the angle reads against a scale
+    for (const d of [-SWEEP / 2, 0, SWEEP / 2]){ const [mx, my] = dirOf(d);
+      body += `<path d="${pd([F.W(mx * 3.9, cb + my * 3.9, zb + .02), F.W(mx * 4.6, cb + my * 4.6, zb + .02)], false)}" stroke="#3a3632" stroke-width=".8" fill="none"/>`; }
+    s += k > .02 ? `<g opacity="${f(1 - .7 * k)}">${body}</g>` : body;
+    if (hot || burnt){ const [X, Y] = P(...F.W(0, cb, zk1 + 2)); s += `<circle cx="${f(X)}" cy="${f(Y - 6)}" r="4" fill="#8a847a" opacity=".4"/><circle cx="${f(X + 3)}" cy="${f(Y - 12)}" r="3" fill="#8a847a" opacity=".3"/>`; }
+    if ((ctx.solo || (B.md && B.md.def && B.md.def.partPage)) && k > .5){
+      const [wx, wy] = dirOf(ang);
+      s += pill(F, F.W(-3.3, cb, 3.4), -58, -24, T('Carbon track')) + pill(F, F.W(wx * 3.3, cb + wy * 3.3, 3.6), 52, -62, T('Wiper'), true)
+        + pill(F, F.W(0, cb + 1.5, 3.4), 40, 34, T('Ring to pin W'));
+    }
+    ctx.put(F.bx(-5.2, cb - 5.2, -.3, 5.2, cb + 5.2, zk1 + .2), s);
+  },
+  show: { breadboard: 'mini', holes: ['e8', 'e9', 'e10'], params: { pos: .7 } },
+});
+})();
+
+</script>
+<script>/* figures/parts/mpu6050.js */
+// @cf title Accelerometer and gyroscope (MPU-6050 on a GY-521)
+// @cf use engine/bench.list
+/* GY-521 breakout (docs/facts/mpu6050.md): a blue 15.6 x 20.3 mm board with the MPU-6050 (4 x 4 mm QFN), a 662K
+   (XC6206) 3.3 V regulator, 4.7 kOhm I2C pull-ups to 3.3 V, a 4.7 kOhm pull-down on AD0 (address 0x68), a power LED
+   with 1 kOhm, a 10 uF tantalum and an 8-pin 2.54 mm header. Positions are the fact sheet's, measured from a photo of a
+   real board (+-0.3 mm) in its own frame: header along the left edge at x = 1.4, VCC at the top (y = 19.03) down to
+   INT (y = 1.25). Legs ['VCC','GND','SCL','SDA','XDA','XCL','AD0','INT'], header order. On a breadboard the straight
+   header is soldered pointing down with its plastic spacer under the board, component side up, so with VCC in the
+   lower-numbered column the board lies over the rows on the trench side of the pins (rows f-h for pins in row i,
+   rows b-d for pins in row a), and jumper wires go into the free holes on the other side of the same strips.
+   The power LED lights when the VCC strip is wired to a live rail and the GND strip to GND, through the 662K (so it
+   lights from 3.3 V or 5 V). The readings themselves come from the interpreter's mpu6050 device on the I2C bus.
+   See-through: the QFN holds two dies, the CMOS signal chip and the MEMS die bonded face down on it (the proof masses
+   and comb fingers), with gold bond wires to the lead frame. */
+(() => {
+const B = SL.bench, T = B.T;
+const PCB = { l: '#2f7ee0', m: '#1d63c6', d: '#123f86' }, TAN = { l: '#d8bf93', m: '#bba070', d: '#83703f' };
+const RES = { l: '#3c3935', m: '#2c2a27', d: '#1c1b19' }, TANT = { l: '#f3cf4a', m: '#d9ad22', d: '#8c6d0c' };
+const CMOS = { l: '#8c95b8', m: '#6b7397', d: '#3f4565' }, MEMS = { l: '#c9d3e6', m: '#a3afc8', d: '#6c7896' };
+const W0 = 15.6, H0 = 20.3, HX = 1.4, Y1 = 19.03;
+const ZS = 2.5, ZB = ZS, ZT = ZS + 1.6, PIN_TOP = ZT + 1.5;
+const LABELS = ['VCC', 'GND', 'SCL', 'SDA', 'XDA', 'XCL', 'AD0', 'INT'];
+const pinY = i => Y1 - i * 2.54;
+
+// the board's own frame (x right, y up, z up from the breadboard top) on the breadboard: VCC on the first hole
+const frame = ctx => {
+  const h = ctx.holes, pl = ctx.pl, x0 = h[0].x, y0 = h[0].y;
+  const dx = h[h.length - 1].x - x0, dy = h[h.length - 1].y - y0, l = Math.hypot(dx, dy) || 1, ux = dx / l, uy = dy / l;
+  const W = (x, y, z) => { const a = Y1 - y, b = x - HX; return pl.at(x0 + ux * a - uy * b, y0 + uy * a + ux * b, pl.zTop + z); };
+  const dir = (x, y, dx2, dy2) => sub(W(x + dx2, y + dy2, 0), W(x, y, 0));
+  const slab = (xa, ya, xb, yb, za, zb, m, w = .5) => B.slabW(W, xa, ya, xb, yb, za, zb, m, toneI, w);
+  const text = (x, y, z, str, size, col = '#f2f4f6', rot = 0, anchor = 'middle') => {
+    const r = rot * Math.PI / 180, c = Math.cos(r), s = Math.sin(r);
+    return `<text transform="${txM(P(...W(x, y, z)), Dv(...dir(x, y, c, s)), Dv(...dir(x, y, s, -c)))}" font-size="${f(size)}" fill="${col}" text-anchor="${anchor}" font-family="ui-monospace,Menlo,monospace" font-weight="800">${CF_ESC(str)}</text>`;
+  };
+  const disc = (x, y, z, r, col, w = 0) => { const d = pd(B.circ(x, y, r, 16).map(([u, v]) => W(u, v, z))); return fill(d, col) + (w ? ink(d, w) : ''); };
+  return { W, slab, text, disc };
+};
+
+// volts on the VCC leg's strip, when its GND leg's strip reaches GND: union the circuit's wires like the solver does
+const supply = ctx => {
+  const pl = ctx.pl, c = pl && pl.c, st = ctx.st || {}, h = ctx.holes;
+  if (!c || !st.ev || !h || h.length < 2) return 0;
+  const par = {}, find = a => { while (par[a] !== a) a = par[a] = par[par[a]]; return a; };
+  const add = a => { if (!(a in par)) par[a] = a; return a; };
+  const node = ref => { const q = B.hole(pl.geo, ref) || B.legHole(c, pl.geo, ref); if (q && q.node) return q.node; const pin = B.pinOf(ref); return pin ? 'N:' + pin.net : null; };
+  for (const w of c.wires || []){ const a = node(w.from), b = node(w.to); if (a && b) par[find(add(a))] = find(add(b)); }
+  const nets = n => (n in par) ? Object.keys(par).filter(k => k.startsWith('N:') && find(k) === find(n)).map(k => k.slice(2)) : [];
+  if (!nets(h[1].node).includes('GND')) return 0;
+  return Math.max(0, ...nets(h[0].node).map(n => (st.ev.rails || {})[n] || 0));
+};
+
+B.part('mpu6050', {
+  name: 'Accelerometer and gyroscope (MPU-6050)',
+  legs: LABELS,
+  span: [7, 7],
+  pinZ: PIN_TOP,
+  params: { ad0: ['low', 'high'] },
+  paramNames: { ad0: 'AD0 pin' },
+  example: { ad0: 'low' },
+  tag: p => T('{id} · I2C {addr}', { id: p.id, addr: p.ad0 === 'high' ? '0x69' : '0x68' }),
+  draw(ctx){
+    const F = frame(ctx), W = F.W, st = ctx.st || {}, legs = ctx.legs;
+    const k = ctx.k != null ? ctx.k : ease(Math.min(1, Math.max(0, st.xr || 0)));
+    const v = supply(ctx), lit = v >= 2.6 ? Math.min(1, (v - 2.2) / 1.1) : 0;
+    let s = '';
+    // the header: pins from the holes up through the plastic spacer and the board, the spacer under the board edge
+    for (const L of legs) s += rod(L, [L[0], L[1], L[2] + ZB], .32, B.M.tin, toneI, .3);
+    s += F.slab(HX - 1.27, pinY(7) - 1.27, HX + 1.27, pinY(0) + 1.27, 0, ZS, B.M.black, .6);
+    // the board, its mounting holes and the pads round the header pins
+    s += F.slab(0, 0, W0, H0, ZB, ZT, PCB, .8);
+    for (const [x, y] of [[12.9, 17.9], [12.9, 2.7]]) s += F.disc(x, y, ZT + .01, 2, B.M.tin.l, .3) + F.disc(x, y, ZT + .02, 1.5, '#1d1b19');
+    for (let i = 0; i < 8; i++) s += F.disc(HX, pinY(i), ZT + .01, .85, B.M.tin.l, .3);
+    // silkscreen: the pin names beside the pads, ITG/MPU along the right edge, the X and Y axis arrows
+    LABELS.forEach((t, i) => { s += F.text(2.45, pinY(i) - .42, ZT + .01, t, 1.1, '#f2f4f6', 0, 'start'); });
+    s += F.text(14.7, 10.3, ZT + .01, 'ITG/MPU', 1.15, '#f2f4f6', 90);
+    const arrow = (x0, y0, x1, y1) => `<path d="${pd([W(x0, y0, ZT + .01), W(x1, y1, ZT + .01)], false)}" stroke="#f2f4f6" stroke-width=".22" fill="none"/>`;
+    s += arrow(10.2, 1.6, 10.2, 4.6) + arrow(9.9, 4.1, 10.2, 4.6) + arrow(10.5, 4.1, 10.2, 4.6) + F.text(11, 3.2, ZT + .01, 'Y', .9);
+    s += arrow(5.9, 1.7, 8.9, 1.7) + arrow(8.4, 2, 8.9, 1.7) + arrow(8.4, 1.4, 8.9, 1.7) + F.text(9.6, 1.3, ZT + .01, 'X', .9);
+    // passives: 0603 capacitors (tan) and resistors (black, three-digit codes)
+    const chip = (x, y, vert, m, h, code) => {
+      const [hl, hw] = vert ? [.4, .8] : [.8, .4], e = .3;
+      let c = vert ? F.slab(x - hl, y - hw + e, x + hl, y + hw - e, ZT, ZT + h, m, .35) + F.slab(x - hl, y - hw, x + hl, y - hw + e, ZT, ZT + h, B.M.tin, .3) + F.slab(x - hl, y + hw - e, x + hl, y + hw, ZT, ZT + h, B.M.tin, .3)
+        : F.slab(x - hl + e, y - hw, x + hl - e, y + hw, ZT, ZT + h, m, .35) + F.slab(x - hl, y - hw, x - hl + e, y + hw, ZT, ZT + h, B.M.tin, .3) + F.slab(x + hl - e, y - hw, x + hl, y + hw, ZT, ZT + h, B.M.tin, .3);
+      if (code) c += F.text(x, y - .14, ZT + h + .01, code, .42, '#e9e4d6');
+      return c;
+    };
+    for (const [x, y, vert] of [[10.3, 18.5, true], [6.7, 16.7], [10.1, 15.4], [10.1, 14.0], [6.7, 6.6], [10.1, 6.6]]) s += chip(x, y, vert, TAN, .8);
+    for (const [x, y, code] of [[6.7, 15.4, '472'], [6.7, 14.0, '472'], [6.7, 5.1, '472'], [10.1, 5.1, '102']]) s += chip(x, y, false, RES, .45, code);
+    // 662K regulator (SOT-23, long axis up the board) and the 10 uF tantalum with its + stripe at the top
+    s += F.slab(6.95, 17.5, 8.25, 20.2, ZT, ZT + 1.1, RES, .4) + F.text(7.6, 18.75, ZT + 1.11, '662K', .5, '#d9d4c6', 90);
+    for (const y of [17.8, 18.9, 20.0]) s += F.slab(6.55, y - .2, 6.95, y + .2, ZT, ZT + .3, B.M.tin, .25);
+    s += F.slab(8.25, 18.7, 8.65, 19.1, ZT, ZT + .3, B.M.tin, .25);
+    s += F.slab(11.9, 8.7, 13.5, 11.9, ZT, ZT + 1.6, TANT, .45) + F.slab(11.9, 11.2, 13.5, 11.9, ZT + .01, ZT + 1.61, matOf('#8a5a34'), .3);
+    // the power LED: a clear 0603 lens, red when the board has power
+    s += chip(6.7, 3.6, false, matOf(lit ? mix('#ff5a4a', '#ffffff', .25) : '#e8e2d2'), .6);
+    // the MPU-6050 itself: a 4 x 4 x 0.9 mm QFN, pin 1 dot top left, ghosted in see-through
+    let ic = F.slab(6.5, 8.7, 10.5, 12.7, ZT, ZT + .9, B.M.black, .5) + F.disc(6.95, 12.25, ZT + .91, .2, '#55514c');
+    for (let i = 0; i < 6; i++){ const t = 9.45 + i * .5;
+      ic += F.slab(6.35, t - .12, 6.5, t + .12, ZT, ZT + .2, B.M.tin, .2) + F.slab(10.5, t - .12, 10.65, t + .12, ZT, ZT + .2, B.M.tin, .2)
+        + F.slab(t - .7, 8.55, t - .7 + .24, 8.7, ZT, ZT + .2, B.M.tin, .2) + F.slab(t - .7, 12.7, t - .7 + .24, 12.85, ZT, ZT + .2, B.M.tin, .2); }
+    ic += F.text(8.5, 10.95, ZT + .91, 'MPU-6050', .5, '#bdb7ab') + F.text(8.5, 10.2, ZT + .91, 'INVENSENSE', .36, '#9d978b');
+    s += k > .02 ? `<g opacity="${f(1 - .7 * k)}">${ic}</g>` : ic;
+    if (k > .02){
+      // two dies: the CMOS chip on the lead frame and the MEMS die on top of it, gold wires out to the pads
+      let x = F.slab(7.1, 9.3, 9.9, 12.1, ZT + .25, ZT + .45, CMOS, .35) + F.slab(7.5, 9.7, 9.5, 11.7, ZT + .45, ZT + .62, MEMS, .3);
+      for (let i = 0; i < 4; i++) x += `<path d="${pd([W(7.8 + i * .45, 9.85, ZT + .63), W(7.8 + i * .45, 11.55, ZT + .63)], false)}" stroke="#56607e" stroke-width=".18" fill="none"/>`;
+      for (let i = 0; i < 6; i++){ const t = 9.45 + i * .5;
+        x += `<path d="${pd([W(7.15, t, ZT + .45), W(6.8, t, ZT + .65), W(6.45, t, ZT + .2)], false)}" stroke="#e8c36a" stroke-width=".2" fill="none"/>`
+          + `<path d="${pd([W(9.85, t, ZT + .45), W(10.2, t, ZT + .65), W(10.55, t, ZT + .2)], false)}" stroke="#e8c36a" stroke-width=".2" fill="none"/>`; }
+      s += `<g opacity="${f(k)}">${x}</g>`;
+    }
+    // the pin tips above the board in their solder cones, drawn last so they sit on top
+    for (let i = 0; i < 8; i++) s += rod(W(HX, pinY(i), ZT), W(HX, pinY(i), ZT + .45), .62, B.M.tin, toneI, .3, .36, 12) + rod(W(HX, pinY(i), ZT + .45), W(HX, pinY(i), PIN_TOP), .32, B.M.tin, toneI, .3);
+    if (lit){
+      // the glow is sized in millimetres on the board, so it stays the LED's size at any zoom
+      const [X, Y] = P(...W(6.7, 3.6, ZT + .6)), [Xe, Ye] = P(...W(8.2, 3.6, ZT + .6)), mm = Math.hypot(Xe - X, Ye - Y) / 1.5;
+      s += `<circle cx="${f(X)}" cy="${f(Y)}" r="${f(mm * (1 + 1.2 * lit))}" fill="#ff5a4a" opacity="${f(.35 * lit)}"/><circle cx="${f(X)}" cy="${f(Y)}" r="${f(mm * .55)}" fill="#fff1e6" opacity="${f(.7 * lit)}"/>`;
+    }
+    if ((ctx.solo || (B.md && B.md.def && B.md.def.partPage)) && k > .5){
+      // each pill goes out on the side its anchor is on, as seen now, so the pills never cross as the part turns
+      const Xc = P(...W(W0 / 2, H0 / 2, ZT))[0], pill = (pt, dx, dy, text, on) => { const X = P(...pt)[0]; return tag(pt, (X < Xc ? -1 : 1) * dx, dy, text, on); };
+      s += pill(W(8.5, 10.7, ZT + .6), 30, -58, T('MEMS die on the CMOS chip')) + pill(W(7.6, 18.9, ZT + 1.1), 64, -6, T('3.3 V regulator (662K)'))
+        + pill(W(6.7, 3.6, ZT + .6), 60, 34, T('Power LED'), lit > 0);
+    }
+    ctx.put(B.aabb([W(0, 0, 0), W(W0, H0, 0), W(0, H0, PIN_TOP), W(W0, 0, PIN_TOP)]), s);
+  },
+  show: { breadboard: 'mini', holes: ['f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10'] },
+});
+})();
+
+</script>
 <script>/* figures/boards/uno-r4.js */
 // @cf title Arduino UNO R4
 // @cf use engine/bench.list
+// @cf use parts/push-button.js
+// @cf use parts/potentiometer.js
+// @cf use parts/mpu6050.js
 /* Arduino UNO R4 Minima (ABX00080) and UNO R4 WiFi (ABX00087), switched with ?variant=minima|wifi (default minima).
    Every position is the part's origin in Arduino's own Altium PcbDoc (both CAD zips), shifted so the bottom-left
    outline corner is (0, 0); the facts and their sources are in docs/facts/uno-r4.md. Both boards keep the UNO R3
@@ -2955,29 +3385,30 @@ const scatter = (spots, extra) => {
   return Object.assign({ kind: 'uno-r4-passives', at: [(x0 + x1) / 2, (y0 + y1) / 2], size: [x1 - x0, y1 - y0], spots }, extra);
 };
 
-/* straps: the chips sample them when the program (re)starts */
-let lastT = Infinity, romBoot = false, espDownload = false;
-const sample = st => {
-  if (st.t < lastT){ romBoot = st.faults.includes('short:MD:GND'); espDownload = st.faults.includes('short:ESP_DOWNLOAD:GND'); }
-  lastT = st.t;
-};
-const rom = st => { sample(st); return romBoot; };
-const bridgeUp = st => { sample(st); return B.isSet('M1') && B.isSet('U4') && !espDownload; };
+/* boot straps (FIGURES-BENCH §6.3): the engine latches them when the program (re)starts, as the chips read their mode
+   pins at reset. MD low halts the RA4M1 in its ROM boot mode; ESP_DOWNLOAD low parks the ESP32-S3 in download mode,
+   so the USB bridge and Serial are gone while the RA4M1 keeps running its sketch. */
+const STRAP_MD = { fault: 'short:MD:GND', boot: 'rom', halts: true,
+  msg: 'BOOT (MD) was low at reset: the RA4M1 started its ROM boot mode, not your sketch', fix: 'Free the BOOT pin and press RESET' };
+const STRAP_ESP = { fault: 'short:ESP_DOWNLOAD:GND', boot: 'esp-download', part: 'M1', blocks: ['upload', 'serial'],
+  msg: 'ESP_DOWNLOAD was low at reset: the ESP32-S3 waits in ROM download mode, so USB and Serial are gone', fix: 'Free ESP header pin 4 and press RESET' };
+// the WiFi's Serial reaches USB through the ESP32-S3 and the TXB0108
+const bridgeUp = () => B.isSet('M1') && B.isSet('U4');
 
 const HEART_BIG = ['011100001110', '111110011111', '111111111111', '011111111110', '001111111100', '000111111000', '000011110000', '000001100000'].join('');
 const HEART_SMALL = ['000000000000', '001100001100', '011110011110', '011111111110', '001111111100', '000111111000', '000011110000', '000001100000'].join('');
 const one = i => '0'.repeat(i) + '1' + '0'.repeat(95 - i);
 
 const MODES_MINIMA = {
-  blink: { title: 'Blink', out: (st, t) => rom(st) ? {} : { D13: blink(t, 1, 1) } },
-  fast: { title: 'Blink without delay()', out: (st, t) => rom(st) ? {} : { D13: blink(t, .2, .2) } },
-  hello: { title: 'Serial hello', out: () => ({}), serial: (k, st) => rom(st) ? null : k === 0 ? 'UNO R4 Minima ready' : 'hello from the R4 #' + k },
+  blink: { title: 'Blink', out: (st, t) => ({ D13: blink(t, 1, 1) }) },
+  fast: { title: 'Blink without delay()', out: (st, t) => ({ D13: blink(t, .2, .2) }) },
+  hello: { title: 'Serial hello', out: () => ({}), serial: k => k === 0 ? 'UNO R4 Minima ready' : 'hello from the R4 #' + k },
 };
 const MODES_WIFI = {
-  heart: { title: 'Matrix heart', out: (st, t) => rom(st) ? {} : { MATRIX: blink(t, .6, .4) ? HEART_BIG : HEART_SMALL } },
-  scan: { title: 'Matrix scan', out: (st, t) => rom(st) ? {} : { MATRIX: one(Math.floor(t * 12) % 96) } },
-  blink: { title: 'Blink', out: (st, t) => rom(st) ? {} : { D13: blink(t, 1, 1) } },
-  hello: { title: 'Serial hello', out: () => ({}), serial: (k, st) => rom(st) || !bridgeUp(st) ? null : k === 0 ? 'UNO R4 WiFi ready' : 'hello from the R4 #' + k },
+  heart: { title: 'Matrix heart', out: (st, t) => ({ MATRIX: blink(t, .6, .4) ? HEART_BIG : HEART_SMALL }) },
+  scan: { title: 'Matrix scan', out: (st, t) => ({ MATRIX: one(Math.floor(t * 12) % 96) }) },
+  blink: { title: 'Blink', out: (st, t) => ({ D13: blink(t, 1, 1) }) },
+  hello: { title: 'Serial hello', out: () => ({}), serial: k => !bridgeUp() ? null : k === 0 ? 'UNO R4 WiFi ready' : 'hello from the R4 #' + k },
 };
 
 /* shared geometry: both boards put these at the same place */
@@ -3049,6 +3480,16 @@ const CIRCUITS = {
     title: 'DAC on A0 read back on A1', breadboard: 'half',
     parts: [],
     wires: [{ from: 'A0', to: 'a12', color: 'purple' }, { from: 'A1', to: 'c12', color: 'blue' }],
+  },
+  'i2c-scan': {
+    title: 'MPU-6050 on the I2C header (SDA, SCL), 5 V', breadboard: 'half',
+    // GY-521 header VCC GND SCL SDA XDA XCL AD0 INT in row i; the board lies over rows f-h, the jumpers go in row j.
+    // AD0 stays open: the module's own 4.7 kΩ pull-down keeps the address at 0x68
+    parts: [{ id: 'MPU1', part: 'mpu6050', holes: ['i12', 'i13', 'i14', 'i15', 'i16', 'i17', 'i18', 'i19'] }],
+    wires: [
+      { from: '5V', to: 'j12', color: 'red' }, { from: 'GND', to: 'j13', color: 'black' },
+      { from: 'SCL', to: 'j14', color: 'yellow' }, { from: 'SDA', to: 'j15', color: 'blue' },
+    ],
   },
 };
 
@@ -3125,6 +3566,7 @@ const minima = {
   mode: 'blink',
   modes: MODES_MINIMA,
   faults: ['short:5V:GND', 'short:MD:GND', 'wrong-voltage:pin33:5', 'wrong-voltage:usb:2', 'wrong-voltage:jack:48'],
+  straps: [STRAP_MD],
   xr: {
     flow: [
       ['USBVCC', [[5.9, 37.9], [8.2, 33.5], [9.7, 28.6]]],
@@ -3223,6 +3665,7 @@ const wifi = Object.assign({}, minima, {
   mode: 'heart',
   modes: MODES_WIFI,
   faults: ['short:5V:GND', 'short:MD:GND', 'short:ESP_DOWNLOAD:GND', 'wrong-voltage:pin33:5', 'wrong-voltage:usb:2', 'wrong-voltage:jack:48'],
+  straps: [STRAP_MD, STRAP_ESP],
   xr: {
     flow: [
       ['USBVCC', [[5.9, 37.9], [16, 31], [26.4, 30.5]]],

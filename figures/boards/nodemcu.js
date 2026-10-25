@@ -1,5 +1,7 @@
 // @cf title NodeMCU ESP8266
 // @cf use engine/bench.list
+// @cf use parts/ldr.js
+// @cf use parts/potentiometer.js
 /* NodeMCU DevKit v1.0 "Amica" (ESP-12E module, CP2102 USB-UART, 1117-3.3 regulator), 25.40 x 48.26 mm.
    Every position is the footprint centre from the NodeMCU team's own Altium file (NODEMCU_DEVKIT_V1.0_OFFSET.PcbDoc,
    origin bottom-left, y up), as extracted in docs/facts/nodemcu.md. Two estimates, both flagged there: the ESP-12E
