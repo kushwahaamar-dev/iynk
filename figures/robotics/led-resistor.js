@@ -9,8 +9,8 @@
    red 5 mm LED D1 to GND. Ohm's law: I = (V − Vf) / R with Vf = 2.0 V (red AlGaInP, docs/facts/la-components.md §4).
    No protection diode on purpose: it would eat 0.7 V of the 3 V the lesson is about, so a reversed bench supply
    reverse-biases C1 (it vents) while the LED just blocks.
-   The bench model (current, meter, burn-out, supply limit, faults) runs after the engine's power tree on every frame
-   through the SL.bench.bbStep seam; docs/requests/item-led-resistor.md asks engine:bench for a proper bench hook. */
+   The bench model (current, meter, burn-out, supply limit, faults) is the bench's def.model: the engine runs it after
+   its power tree on every frame. The lesson content is src/content/robotics/led-resistor.ts. */
 (() => {
 const B = SL.bench, M = B.M, K = B.kind, T = B.T;
 const ID = 'led-resistor';
@@ -18,11 +18,11 @@ const VF = 2.0;                    // red LED forward drop the lesson uses
 const LED_MAX = .03;               // A: a 5 mm red LED's absolute maximum continuous current (typ. 20-30 mA)
 const LED_POP = .1;                // A: above this the die fails at once (flash, then open)
 const R_WATTS = .25;               // 1/4 W resistors
-const ROWS = {                     // jumper positions: JP1 pin pair (1 = front), the part it selects, its resistance
-  r220: { pair: 4, part: 'R1', ohms: 220 },
-  r1k: { pair: 3, part: 'R2', ohms: 1000 },
-  r10k: { pair: 2, part: 'R3', ohms: 10000 },
-  bypass: { pair: 1, part: 'JL1', ohms: .5 },     // copper only
+const ROWS = {                     // jumper positions: JP1 pin pair (1 = front), the part it selects, its resistance, its net
+  r220: { pair: 4, part: 'R1', ohms: 220, net: 'ROW_220' },
+  r1k: { pair: 3, part: 'R2', ohms: 1000, net: 'ROW_1K' },
+  r10k: { pair: 2, part: 'R3', ohms: 10000, net: 'ROW_10K' },
+  bypass: { pair: 1, part: 'JL1', ohms: .5, net: 'ROW_NONE' },     // copper only
 };
 const mine = () => B.md && B.md.id === ID;
 
@@ -225,7 +225,7 @@ function model(st, dt){
   } else if (lr.dead.D1 && st.power){
     const c = lr.dead.D1;
     ev.fault = c === 'no-resistor'
-      ? { id: c, kind: 'pop', part: 'D1', msg: T('Flash, then dark: with no resistor the LED tries to pass amps and burns out. Unplug, move the jumper back and fit a new LED'), fix: T('Unplug, move the jumper back to 220 Ω, then replace D1') }
+      ? { id: c, kind: 'pop', part: 'D1', msg: T("Flash, then dark: with no resistor only the LED itself and the charger's limit hold the current back, hundreds of mA against its 30 mA maximum, and it burns out"), fix: T('Unplug, move the jumper back to 220 Ω, then replace D1') }
       : { id: c, kind: 'pop', part: 'D1', msg: T('{v} V through {r} Ω pushes {ma} mA: D1 overheats and dies', { v: (sup != null ? sup : src.v).toFixed(1), r: ohmsTxt(row.ohms), ma: Math.round(lr.flashMa || 0) }), fix: T('Unplug, set the supply back to 5 V (or use a bigger resistor), then replace D1') };
     announce(lr, 'd1:' + c + ':D1', ev.fault.msg);
   } else if (led === 'reverse'){
@@ -249,17 +249,25 @@ function model(st, dt){
   ev.load = mA / 1000;
   st.ev = ev; st.o.ev = ev;
   st.o.leds.D1 = led === 'ok' ? brightness(mA) : 0;
-  st.meas = {
-    D1: { i_mA: Math.round(mA * 100) / 100, state: led },
-    MM1: { i_mA: Math.round(mA * 100) / 100, text },
-    JP1: { row: st.mode, part: row.part, ohms: row.part === 'JL1' ? 0 : row.ohms, mW: Math.round(watts * 10000) / 10 },
-  };
+  const lit = ev.status === 'running' && led === 'ok';
   // bench notes: the paper calculation for the live numbers, every 4 s while current flows
-  if (ev.status === 'running' && led === 'ok' && st.t >= 0){
+  if (lit && st.t >= 0){
     if (!lr.banner){ lr.banner = true; serial(st, T('-- bench notes --')); }
     const k = Math.floor(st.t / 4);
     if (k !== lr.sn){ lr.sn = k; serial(st, T('I = {v} V / {r} = {ma} mA  {verdict}', { v: (vcc - VF).toFixed(1), r: ohmsTxt(row.ohms), ma: fmt(mA), verdict: T(verdict(mA)) })); }
   }
+  const flowing = mA > 0;
+  return {
+    meas: {
+      D1: { i_mA: Math.round(mA * 100) / 100, state: led },
+      MM1: { i_mA: Math.round(mA * 100) / 100, text },
+      JP1: { row: st.mode, part: row.part, ohms: row.part === 'JL1' ? 0 : row.ohms, mW: Math.round(watts * 10000) / 10 },
+    },
+    status: lit ? verdict(mA) : null,
+    stats: [['Current', text + ' mA'], ['Resistor', row.part === 'JL1' ? T('none') : MOVES[st.mode]]],
+    // the loop the meter reads: TP2, the resistor bus, the row the jumper picks, the LED
+    flow: { LOOP: flowing, LED_A: flowing, LED_K: flowing, [row.net]: flowing },
+  };
 }
 const serial = (st, line) => { st.serial = { n: (st.serial ? st.serial.n : 0) + 1, line }; st.txT = .09; };
 
@@ -293,8 +301,6 @@ A.power = key => {
 A.remove = id => { const r = remove0(id); if (mine() && !B.isIn(id)) B.st.faults = B.st.faults.filter(x => x !== 'cold:' + id); return r; };
 A.build = what => { if (mine() && B.st && !B.st.power) B.st.lr = fresh(); return build0(what); };
 A.strip = () => { if (mine() && B.st && !B.st.power) B.st.lr = fresh(); return strip0(); };
-const bb0 = B.bbStep;
-B.bbStep = (st, dt) => { if (bb0) bb0(st, dt); if (mine()) model(st, dt || 0); };
 
 /* ---------- the board ---------- */
 const LOW = ['R1', 'R2', 'R3', 'JL1', 'R4', 'R5', 'SW1', 'TP1', 'TP2', 'JP1'], TALL = ['J1', 'J2', 'C1', 'D1'], LAST = ['SHUNT', 'MM1'];
@@ -362,11 +368,19 @@ B.bench({
     r10k: { title: '10 kΩ', instant: true, bytes: 0, out: () => ({}), powerMsg: '5 V on: current flows through the meter, the jumper, the resistor and the LED' },
     bypass: { title: 'No resistor', instant: true, bytes: 0, out: () => ({}), powerMsg: '5 V on: nothing but copper between the supply and the LED' },
   },
-  faults: ['brownout'],
+  model,
+  faults: [['no-resistor', 'Jumper on NONE (no resistor)'], ['missing:R4', 'Leave out R4 (a CC pull-down)'], ['brownout', 'Supply current limit at 10 mA']],
   xr: {
     flow: [
       ['VIN', [[6.2, 20], [8.5, 20]]],
       ['VCC', [[17.1, 20], [19.2, 20], [19.2, 10], [41, 10], [41, 9.3]]],
+      ['LOOP', [[46.5, 9.3], [46.5, 15], [22.65, 15], [22.65, 33]]],
+      ['ROW_220', [[35.35, 33], [37.6, 33], [39.27, 29.31]]],
+      ['ROW_1K', [[35.35, 28], [37.2, 28], [39.27, 26.77]]],
+      ['ROW_10K', [[35.35, 23], [37.2, 23], [39.27, 24.23]]],
+      ['ROW_NONE', [[35.35, 18], [37.6, 18], [39.27, 21.69]]],
+      ['LED_A', [[41.81, 23.5], [46.73, 23.5]]],
+      ['LED_K', [[49.27, 23.5], [54, 23.5], [54, 6], [58, 6]]],
     ],
     notes: [['D1', 'LED DIE'], ['C1', 'ELECTROLYTIC'], ['JP1', 'PICKS THE RESISTOR']],
   },

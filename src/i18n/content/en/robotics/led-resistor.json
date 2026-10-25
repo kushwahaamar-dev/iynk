@@ -1,0 +1,384 @@
+{
+  "title": "LED + resistor",
+  "sub": "Ohm's law with a meter",
+  "hint": "Build the trainer, move the jumper, predict the current and read the meter, then break it on purpose",
+  "overview": "The first circuit of the course has no chip at all: 5 V, a switch, one resistor and a red LED, with a multimeter in the loop to read the current. A jumper picks the resistor: 220 Ω, 1 kΩ, 10 kΩ or a bare wire. Work out each current on paper first, I = (V − V_F) / R with about 2 V across the LED, then move the jumper and check the meter: 13.6, 3.0 and 0.30 mA. Then break it on purpose: no resistor, the LED or the capacitor in backwards, a missing USB-C pull-down, a cold joint, swapped supply leads, 12 V instead of 5 V, a supply that runs out of current. Every LED, pull-up and sensor divider on a robot runs on this one formula.",
+  "power": {
+    "label": "Plug in the USB-C charger",
+    "ok": "Powered: the LED is lit and the meter reads its current"
+  },
+  "parts": {
+    "J1": { "name": "USB-C power jack", "what": "A power-only USB-C receptacle: VBUS, GND and the two CC pins, no data. The charger's 5 V comes in here." },
+    "J2": { "name": "Screw terminal for a bench supply", "what": "Two-way 5.08 mm screw terminal: red lead to +, black to −. Nothing on the board stops a swapped pair, on purpose." },
+    "R4": { "name": "5.1 kΩ CC1 pull-down", "what": "A USB-C charger keeps its 5 V off until it sees 5.1 kΩ from a CC pin to ground: that is how it knows a device, not a loose cable end, is plugged in. R4 sits on CC1." },
+    "R5": { "name": "5.1 kΩ CC2 pull-down", "what": "The same 5.1 kΩ on CC2. A USB-C plug fits either way up and only one CC pin connects at a time, so each needs its own." },
+    "SW1": { "name": "Slide switch", "what": "Breaks the 5 V line right after the supply, where a robot's power switch goes. Slide it to ON." },
+    "C1": { "name": "100 µF 16 V electrolytic capacitor", "what": "Smooths the moment you plug in. It is polarised: the stripe on the sleeve marks the − lead, which goes toward GND. Reverse-biased, an electrolytic leaks, heats and vents." },
+    "R1": { "name": "220 Ω resistor", "what": "Red, red, brown, gold: 22 × 10 = 220 Ω, ±5 %. (5 V − 2 V) / 220 Ω = 13.6 mA, bright and well under the LED's 30 mA." },
+    "R2": { "name": "1 kΩ resistor", "what": "Brown, black, red, gold: 10 × 100 = 1 kΩ. 3 V / 1000 Ω = 3.0 mA: clearly lit, a usual indicator current." },
+    "R3": { "name": "10 kΩ resistor", "what": "Brown, black, orange, gold: 10 × 1000 = 10 kΩ. 0.30 mA: dim but visible. 10 kΩ is also the classic pull-up value." },
+    "JL1": { "name": "Wire link (no resistor)", "what": "A bare wire, 0 Ω: the NONE row. Here only the LED itself and the supply limit the current. Try it once, on purpose." },
+    "JP1": { "name": "2 × 4 jumper header", "what": "Each row joins one resistor to the LED's anode while the jumper cap sits on it. Two caps at once put two resistors in parallel." },
+    "SHUNT": { "name": "Jumper cap", "what": "Joins the two pins of one JP1 row. Moving it is how you change the resistor." },
+    "D1": { "name": "Red 5 mm LED", "what": "A red 5 mm LED (WP7113ID class): about 2 V across it when lit (1.9 V typical at 10 mA), 30 mA DC at most. Current flows one way only, from the long leg (anode) to the leg by the flat on the rim (cathode)." },
+    "TP1": { "name": "Test point (+)", "what": "The meter's red lead clips on here. The current comes from the supply to TP1, goes through the meter and comes back on TP2." },
+    "TP2": { "name": "Test point (COM)", "what": "The meter's black lead (COM). From here the current goes on through the resistor the jumper picks and the LED, to ground." },
+    "MM1": { "name": "Pocket multimeter, 200 mA range", "what": "On its 200 mA DC range with the red lead in the mA jack. It sits in series, so all the LED's current goes through it: it reads the loop current. Above 200 mA it shows OL." }
+  },
+  "math": {
+    "supply": "volts from the USB-C charger",
+    "vf": "a red LED drops about 2 V when lit",
+    "watts": "heat in the resistor (a 1/4 W part)",
+    "led": "heat in the LED (75 mW at most)"
+  },
+  "modes": {
+    "r220": {
+      "title": "220 Ω",
+      "code": {
+        "what": "Jumper on 220 Ω: Ohm's law for the LED, I = (V - V_F) / R",
+        "bands": "red red brown gold",
+        "verdict": "13.6 mA: bright and safe. Run a 5 mm red LED at 5-20 mA, never above 30 mA"
+      }
+    },
+    "r1k": {
+      "title": "1 kΩ",
+      "code": {
+        "what": "Jumper on 1 kΩ",
+        "bands": "brown black red gold",
+        "verdict": "3.0 mA: clearly lit, an indicator's current"
+      }
+    },
+    "r10k": {
+      "title": "10 kΩ",
+      "code": {
+        "what": "Jumper on 10 kΩ",
+        "bands": "brown black orange gold",
+        "verdict": "0.30 mA: dim but visible"
+      }
+    },
+    "bypass": {
+      "title": "No resistor",
+      "code": {
+        "what": "Jumper on NONE: the bare wire link",
+        "bands": "the wire link: no resistor at all",
+        "nothing": "no answer, nothing in the formula limits the current",
+        "real": "the real limit is the LED's own few ohms and the charger: hundreds of mA",
+        "verdict": "ten times the LED's 30 mA maximum: it burns out"
+      }
+    }
+  },
+  "steps": {
+    "unplug": {
+      "title": "Unplug it",
+      "body": "The trainer comes plugged in, its LED lit at 220 Ω. Unplug the USB-C cable before you touch a part: never work on a live board."
+    },
+    "strip": {
+      "title": "Strip it to the bare PCB",
+      "body": "Take every part off, the jumper cap and the meter too. What is left is the board: copper, solder mask and the silkscreen that says where each part goes.",
+      "refusal": "Unplug the power first: never work on a live board"
+    },
+    "low": {
+      "title": "Fit the low parts",
+      "body": "Through-hole parts go in from the lowest to the tallest, so each one lies flat while you solder it: the three resistors and the wire link, the two CC pull-downs, the slide switch, the two test points and the jumper header.",
+      "refusal": "Strip the board first, with the power off"
+    },
+    "tall": {
+      "title": "Fit the tall parts",
+      "body": "Now the USB-C jack, the screw terminal, C1 and the LED. Two of them only fit one way: D1's long leg (anode) goes in the + hole, and C1's striped lead (−) goes toward GND, as the silkscreen shows.",
+      "refusal": "Low parts first: a tall part in the way keeps the low ones from lying flat"
+    },
+    "solder": {
+      "title": "Solder every joint",
+      "body": "Heat the pad and the lead together, then feed in the solder: a good joint is a shiny little cone. A dull, grainy blob is a cold joint, and it only makes contact some of the time.",
+      "refusal": "Fit the parts first"
+    },
+    "jumper-meter": {
+      "title": "Jumper cap and meter",
+      "body": "Put the jumper cap on the 220 row, then clip the meter's red lead to TP1 and its black lead to TP2. The meter closes the loop: without it no current flows at all.",
+      "refusal": "Solder everything first: the cap and the meter go on last"
+    },
+    "plug": {
+      "title": "Predict, then plug in",
+      "body": "Work it out before you plug in: the LED takes about 2 V, so the resistor gets 3 V, and 3 V / 220 Ω = 13.6 mA. Plug the charger in: the LED lights and the meter reads 13.6."
+    },
+    "row-1k": {
+      "title": "Move the jumper to 1 kΩ",
+      "body": "About five times the resistance, about a fifth of the current: 3 V / 1000 Ω = 3.0 mA, and the LED is plainly dimmer. At this current a real red LED drops nearer 1.8 V, so a real meter shows 3.0 to 3.2 mA."
+    },
+    "row-10k": {
+      "title": "Move it to 10 kΩ",
+      "body": "Ten times more again: 0.30 mA. The LED is dim but still visible, and the resistor warms by less than a milliwatt."
+    },
+    "row-220": {
+      "title": "Back to 220 Ω",
+      "body": "13.6 mA again. Every reading matched the sum: that is Ohm's law, I = V / R, where V is the 3 V the resistor gets after the LED takes its 2 V."
+    },
+    "no-resistor": {
+      "title": "Break it: no resistor",
+      "body": "Move the jumper to NONE, so only the bare wire link sits between the supply and the LED. Watch the LED and the meter. Then repair it: unplug, move the jumper back to 220 Ω and fit a new LED."
+    },
+    "led-backwards": {
+      "title": "Break it: the LED in backwards",
+      "body": "Fit D1 the wrong way round and power up. Then turn it round and power up again."
+    },
+    "cap-backwards": {
+      "title": "Break it: C1 in backwards",
+      "body": "Fit C1 with its stripe toward + and power up. Then fit a new one the right way round."
+    },
+    "cc-missing": {
+      "title": "Break it: leave out R4",
+      "body": "Build the board without one of the two 5.1 kΩ CC pull-downs and plug the charger in. Then fit R4 and plug in again."
+    },
+    "cold-led": {
+      "title": "Break it: a cold joint on the LED",
+      "body": "One of D1's joints is dull and grainy. Watch the LED and the meter, then reheat the joint."
+    },
+    "reverse-supply": {
+      "title": "Break it: swap the bench supply's leads",
+      "body": "Power the board from the bench supply on J2 with red and black swapped. Then swap them back and fit a new C1."
+    },
+    "over-voltage": {
+      "title": "Break it: 12 V on the 5 V input",
+      "body": "Turn the bench supply up to 12 V. Read the meter, then wait a few seconds. Repair it with the supply back at 5 V and a new LED."
+    },
+    "current-limit": {
+      "title": "Break it: a 10 mA current limit",
+      "body": "Set the bench supply's current limit to 10 mA, less than the LED wants. Read the meter and the supply voltage, then raise the limit again."
+    },
+    "usb-again": {
+      "title": "Back on USB",
+      "body": "Plug the charger back in. The meter reads 13.6 mA: the trainer is whole again."
+    }
+  },
+  "faults": {
+    "no-resistor": {
+      "title": "No resistor (jumper on NONE)",
+      "symptom": "A bright flash and OL on the meter, then the LED is dark for good and the meter reads 0.",
+      "explanation": "With 0 Ω in the row, nothing in I = (V − V_F) / R limits the current. Only the LED's own few ohms and the charger's limit hold it back: hundreds of milliamps against the LED's 30 mA maximum. The die and its bond wire overheat in a moment and the LED goes open.",
+      "fix": "Unplug, move the jumper back to 220 Ω and fit a new LED: a burnt LED never comes back."
+    },
+    "led-backwards": {
+      "title": "LED in backwards",
+      "symptom": "The LED stays dark and the meter reads 0.00.",
+      "explanation": "An LED conducts only from anode to cathode. Turned round it is reverse-biased, and at 5 V (its reverse rating) only a few microamps of leakage flow. It survives; it just stays dark.",
+      "fix": "Unplug and turn D1 round: the long leg (anode) in the + hole, the flat side toward −."
+    },
+    "cap-backwards": {
+      "title": "C1 in backwards",
+      "symptom": "C1 hisses and its vent opens. The LED keeps working.",
+      "explanation": "An aluminium electrolytic blocks current one way only. Reverse-biased it leaks more and more, heats up, makes gas and the scored vent on top opens. The LED doesn't need C1, so it stays lit, but the capacitor is ruined.",
+      "fix": "Unplug and fit a new C1 with its stripe (−) toward GND."
+    },
+    "cc-missing": {
+      "title": "R4 left out (a USB-C pull-down)",
+      "symptom": "Nothing at all: the LED is dark and the meter reads 0, as if the charger were dead.",
+      "explanation": "A USB-C charger keeps its 5 V off until it sees a 5.1 kΩ pull-down on the CC pin, so a loose cable end is never live. R4 and R5 are those pull-downs, one for each way up of the plug, and without R4 this way up gets no power. A USB-A-to-C cable always gives 5 V, which hides the mistake until someone uses a C-to-C cable.",
+      "fix": "Unplug, fit R4 (5.1 kΩ) and solder it."
+    },
+    "cold-led": {
+      "title": "Cold joint on D1",
+      "symptom": "The LED flickers and the meter jumps between 13.6 and 0.",
+      "explanation": "A cold joint is solder that never wetted the pad properly: dull, grainy, sometimes cracked. It touches, then it doesn't, so the loop opens and closes. On a robot this is the fault that comes and goes when it moves.",
+      "fix": "Unplug and reheat the joint with a little fresh solder until it flows into a shiny cone."
+    },
+    "reverse-supply": {
+      "title": "Bench supply leads swapped",
+      "symptom": "The LED stays dark, then C1 vents.",
+      "explanation": "J2 has no reverse-polarity diode, on purpose: one would eat 0.7 V of the 3 V this lesson is about. With the leads swapped, the 5 V line sits at −5 V. The LED is reverse-biased and simply blocks, but C1, right across the supply, is reverse-biased too, and vents.",
+      "fix": "Unplug, swap the leads (red to +), then fit a new C1."
+    },
+    "over-voltage": {
+      "title": "12 V on the 5 V input",
+      "symptom": "The LED glares and the meter reads 45.5 mA. A few seconds later it flashes and goes dark.",
+      "explanation": "(12 V − 2 V) / 220 Ω = 45 mA, half as much again as the LED's 30 mA maximum, and 0.45 W in a 1/4 W resistor. The simulator burns the LED out after about 3 s; a real one may last longer, getting dimmer as it dies. Either way the resistor was sized for 5 V, not 12.",
+      "fix": "Unplug, set the supply back to 5 V (or work out a bigger resistor for 12 V) and fit a new LED."
+    },
+    "current-limit": {
+      "title": "Supply current limit at 10 mA",
+      "symptom": "The LED is a little dimmer, the meter reads 10.0 and the supply sags to 4.2 V.",
+      "explanation": "A bench supply holds its voltage only until the load wants more than its current limit. Then it lowers the voltage to hold the current at the limit: 10 mA here, which leaves 2 V + 10 mA × 220 Ω = 4.2 V. That is a brown-out: nothing breaks, but the circuit no longer gets what you set.",
+      "fix": "Raise the current limit above what the circuit needs (20 mA is plenty here), or use a bigger resistor."
+    }
+  },
+  "status": {
+    "status": "Status",
+    "meter": "Meter reads (mA)",
+    "resistor": "Resistor (Ω)",
+    "heat": "Heat in the resistor (mW)",
+    "rail": "Supply after SW1",
+    "current": "Current draw"
+  },
+  "current": {
+    "usb": "USB-C charger, 5 V: 500 mA",
+    "bench": "Bench supply, 5 V: 1 A",
+    "led": "The LED loop, as the meter reads it"
+  },
+  "tasks": {
+    "ohms-law": {
+      "title": "Ohm's law in a sketch",
+      "brief": "Make an Uno do the paper maths and print the current for each jumper row (220, 1000 and 10000 ohm) with a 5 V supply and a 2 V LED, in the form \"220 ohm: 13.64 mA\". The starter prints 0 mA for all three rows: find out why. Then add one line with the smallest resistor that keeps the LED at 20 mA: \"20 mA needs 150 ohm\".",
+      "hints": {
+        "1": "In C++ an int divided by an int is an int: 3 / 220 is 0, and 0 × 1000 is still 0.",
+        "2": "Make the numbers float (5.0, 2.0, 1000.0) and the division keeps its decimals.",
+        "3": "R = (V − V_F) / I, with I in amps: 3.0 / 0.020 = 150. Serial.print(x, 0) prints a float with no decimals."
+      },
+      "checks": {
+        "1": "220 ohm: 13.6 mA",
+        "2": "1000 ohm: 3.0 mA",
+        "3": "10000 ohm: 0.30 mA",
+        "4": "Prints 20 mA needs 150 ohm"
+      },
+      "code": {
+        "starter": "Ohm's law on an Uno: the current for each jumper row",
+        "volts": "volts",
+        "law": "I = (V - V_F) / R, times 1000 for mA",
+        "floats": "float keeps the decimals: 3.0 / 220 = 0.0136",
+        "smallest": "the smallest resistor for 20 mA: R = (V - V_F) / I"
+      }
+    },
+    "pwm-current": {
+      "title": "Set the average current with PWM",
+      "brief": "Wire the trainer's 220 Ω and LED to pin 9 of an Uno: pin 9, then the resistor, then the LED, then GND. Fully on, pin 9 sits at about 5 V, so the LED draws 13.6 mA. PWM switches the pin fully on and fully off about 490 times a second, so the average current is the duty times 13.6 mA, and that average is what the meter shows. Step the LED through 13.6, 6.8 and 3.4 mA on average, one second each, and print each step.",
+      "hints": {
+        "1": "digitalWrite() knows only HIGH and LOW: the full 13.6 mA or nothing.",
+        "2": "analogWrite(9, duty), with duty from 0 to 255, sets the share of each cycle the pin is on: 128 is about half.",
+        "3": "duty = target / 13.6 × 255, rounded: 255, 128 and 64."
+      },
+      "checks": {
+        "1": "Uses analogWrite()",
+        "2": "The full 13.6 mA in the first second",
+        "3": "About half, 6.8 mA, in the second",
+        "4": "About a quarter, 3.4 mA, in the third",
+        "5": "Prints the 6.8 mA step"
+      },
+      "code": {
+        "starter": "Three currents with digitalWrite(): it only does full or nothing",
+        "pin": "pin 9 -> 220 ohm -> LED -> GND",
+        "full": "13.6 mA: (5 - 2) / 220",
+        "half": "half the current? digitalWrite has only HIGH and LOW",
+        "peak": "the current while the pin is on: (5 - 2) / 220 A",
+        "duty": "the share of each cycle the pin is on, 0-255"
+      }
+    }
+  },
+  "quizzes": {
+    "solder": {
+      "led-legs": {
+        "q": "Which way round does D1 go in?",
+        "options": {
+          "1": "The flat side of the rim in the + hole",
+          "2": "The long leg (anode) in the + hole",
+          "3": "Either way: an LED works like a resistor"
+        },
+        "why": "Current flows from anode to cathode only. The anode is the longer leg; the cathode is the one by the flat on the rim. Backwards, the LED just stays dark."
+      },
+      "cap-stripe": {
+        "q": "What does the stripe on C1's sleeve mark?",
+        "options": {
+          "1": "The − lead, which goes toward GND",
+          "2": "The + lead",
+          "3": "Its voltage rating"
+        },
+        "why": "Electrolytics are marked on the negative side. Reverse-biased they leak, heat and vent, so the stripe goes toward GND."
+      }
+    },
+    "plug": {
+      "predict": {
+        "q": "A 5 V supply, a red LED that drops about 2 V, and 220 Ω. What will the meter read?",
+        "options": {
+          "1": "22.7 mA",
+          "2": "13.6 mA",
+          "3": "2.3 mA"
+        },
+        "why": "The resistor only gets what the LED leaves: 5 V − 2 V = 3 V, and 3 V / 220 Ω = 13.6 mA. 5 V / 220 Ω = 22.7 mA forgets the LED's drop."
+      },
+      "series": {
+        "q": "Why does the meter sit between TP1 and TP2, inside the loop?",
+        "options": {
+          "1": "So it can measure the supply voltage",
+          "2": "On its mA range a meter can go anywhere",
+          "3": "A current meter has to carry the current it measures, so it goes in series"
+        },
+        "why": "On its mA range a meter is nearly a short: a shunt of an ohm or so. In series it reads the loop's current; put across the supply it would short it and blow its fuse."
+      }
+    },
+    "row-10k": {
+      "heat": {
+        "q": "At 10 kΩ the meter reads 0.30 mA. How much heat is in the resistor?",
+        "options": {
+          "1": "0.9 mW",
+          "2": "3 mW",
+          "3": "30 mW"
+        },
+        "why": "P = I² × R = 0.0003² × 10000 = 0.0009 W, under a milliwatt. Even the 220 Ω row makes only 40.9 mW, a sixth of its 1/4 W rating."
+      },
+      "pull-up": {
+        "q": "Where else will you meet a 10 kΩ resistor?",
+        "options": {
+          "1": "Setting a bright LED's current",
+          "2": "As a fuse in a power line",
+          "3": "As the pull-up or pull-down on a button input"
+        },
+        "why": "10 kΩ lets so little through (0.5 mA at 5 V) that it can hold an input at a level without wasting power. That makes it the classic pull-up."
+      }
+    },
+    "no-resistor": {
+      "why": {
+        "q": "Why did the LED die on the NONE row?",
+        "options": {
+          "1": "The jumper shorted 5 V straight to GND",
+          "2": "Nothing limited the current: hundreds of mA against a 30 mA maximum",
+          "3": "5 V is too high a voltage for any LED"
+        },
+        "why": "The LED was still in the loop, so it was no dead short, but with 0 Ω only its own few ohms and the charger held the current back. 5 V is fine for an LED with a resistor: the resistor is what sets the current."
+      },
+      "ol": {
+        "q": "The meter flashed OL. What did that mean?",
+        "options": {
+          "1": "The current was over its 200 mA range",
+          "2": "The meter's battery is flat",
+          "3": "The leads are swapped"
+        },
+        "why": "OL means over limit: more than the range can show. Swapped leads show a minus sign instead. On a cheap meter a surge like this can also blow the mA fuse."
+      }
+    },
+    "end": {
+      "r330": {
+        "q": "You fit a 330 Ω resistor (orange, orange, brown) instead. What current flows?",
+        "options": {
+          "1": "15.2 mA",
+          "2": "3.3 mA",
+          "3": "9.1 mA"
+        },
+        "why": "(5 − 2) V / 330 Ω = 9.1 mA: a little dimmer than 220 Ω, still well lit."
+      },
+      "smallest": {
+        "q": "What is the smallest safe resistor for this LED on USB? Allow for USB at 5.25 V, a V_F as low as 1.8 V and the 30 mA maximum.",
+        "options": {
+          "1": "120 Ω",
+          "2": "100 Ω",
+          "3": "220 Ω"
+        },
+        "why": "(5.25 − 1.8) V / 0.030 A = 115 Ω, and the next standard (E12) value up is 120 Ω. 100 Ω would allow 34.5 mA. 220 Ω is safe, but it isn't the smallest."
+      },
+      "cc": {
+        "q": "Why do R4 and R5 (5.1 kΩ) sit on the USB-C jack's CC pins?",
+        "options": {
+          "1": "They set the LED's current",
+          "2": "A USB-C charger turns its 5 V on only when it sees them",
+          "3": "They protect against reverse polarity"
+        },
+        "why": "The pull-downs tell the charger a device is attached. Without them a C-to-C cable gives no power at all."
+      },
+      "two-caps": {
+        "q": "Two jumper caps at once, on the 220 Ω and the 1 kΩ rows. What does the meter read?",
+        "options": {
+          "1": "2.5 mA: 220 + 1000 = 1220 Ω",
+          "2": "16.6 mA: the two in parallel make 180 Ω",
+          "3": "13.6 mA: only the first cap counts"
+        },
+        "why": "Both rows join the same two points, so the resistors are in parallel: 220 × 1000 / 1220 = 180 Ω, and 3 V / 180 Ω = 16.6 mA."
+      }
+    }
+  }
+}
