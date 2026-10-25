@@ -50,6 +50,12 @@ export type FigureFrameProps = {
   className?: string;
   /** Overrides the iframe's sizing (default: 4:3, about 10:11 on phones). */
   frameClassName?: string;
+  /**
+   * Fill the parent's height instead of keeping an aspect ratio (a workspace
+   * stage). The figure-controls list then stays out of sight until keyboard
+   * focus enters it, and opens over the bottom of the plate.
+   */
+  fill?: boolean;
 };
 
 // How long after the iframe's load event a figure may take to say `ready`.
@@ -78,6 +84,7 @@ export function FigureFrame({
   controls = true,
   className,
   frameClassName,
+  fill = false,
 }: FigureFrameProps) {
   const locale = useLocale();
   const t = useCommonT();
@@ -270,9 +277,53 @@ export function FigureFrame({
   const count = buttons.length + switches.length + parts.length;
   const hasControls = controls && count > 0;
 
+  const controlsList = hasControls ? (
+    <details
+      className={cx(
+        "text-sm",
+        fill
+          ? "ink-card absolute inset-x-3 bottom-3 z-10 max-h-[50%] overflow-auto border-line px-4 py-3 shadow-ink [&:not(:focus-within)]:sr-only"
+          : "ink-card px-4 py-3",
+      )}
+    >
+      <summary className="cursor-pointer font-body font-semibold">
+        {t("figure.controls")} ({count})
+      </summary>
+      <p className="mt-2 text-muted">{t("figure.controlsHint")}</p>
+      {buttons.length + switches.length > 0 && (
+        <ControlGroup
+          label={t("figure.buttons")}
+          items={[
+            ...buttons.map((button) => ({
+              key: `b:${button.id}`,
+              label: button.label,
+              onPress: () => send("press", { id: button.id }),
+            })),
+            ...switches.map((toggle) => ({
+              key: `s:${toggle.id}`,
+              label: toggle.label,
+              pressed: toggle.on,
+              onPress: () => send("press", { id: toggle.id }),
+            })),
+          ]}
+        />
+      )}
+      {parts.length > 0 && (
+        <ControlGroup
+          label={t("figure.parts")}
+          items={parts.map((part) => ({
+            key: `p:${part.act}|${part.id ?? ""}`,
+            label: part.label,
+            onPress: () => send("act", part.id === null ? { name: part.act } : { name: part.act, data: { id: part.id } }),
+          }))}
+        />
+      )}
+    </details>
+  ) : null;
+
   return (
-    <div className={cx("figure-frame flex min-w-0 flex-col gap-3", className)}>
-      <div className="relative">
+    <div className={cx("figure-frame flex min-w-0 flex-col gap-3", fill && "h-full min-h-0 flex-1", className)}>
+      <div className={cx("relative", fill && "min-h-0 flex-1")}>
         <iframe
           ref={frameRef}
           src={withLang(src, locale)}
@@ -280,49 +331,25 @@ export function FigureFrame({
           loading="lazy"
           onLoad={onLoad}
           aria-busy={!info && !failed}
-          className={cx("ink-plate block aspect-[10/11] max-h-[80vh] w-full sm:aspect-[4/3]", frameClassName)}
+          className={cx(
+            "ink-plate block w-full",
+            fill ? "h-full" : "aspect-[10/11] max-h-[80vh] sm:aspect-[4/3]",
+            frameClassName,
+          )}
         />
-        <p role="status" className={cx(failed ? "mt-2 text-sm font-bold text-bad" : "sr-only")}>
+        <p
+          role="status"
+          className={cx(
+            failed ? "text-sm font-semibold text-bad" : "sr-only",
+            failed && (fill ? "absolute inset-x-3 top-3 rounded-ink-sm bg-surface px-3 py-2 shadow-ink-sm" : "mt-2"),
+          )}
+        >
           {failed ? t("figure.failed") : info ? "" : t("figure.loading")}
         </p>
+        {fill ? controlsList : null}
       </div>
 
-      {hasControls && (
-        <details className="ink-card px-4 py-3 text-sm">
-          <summary className="cursor-pointer font-ui font-bold">
-            {t("figure.controls")} ({count})
-          </summary>
-          <p className="mt-2 text-muted">{t("figure.controlsHint")}</p>
-          {buttons.length + switches.length > 0 && (
-            <ControlGroup
-              label={t("figure.buttons")}
-              items={[
-                ...buttons.map((button) => ({
-                  key: `b:${button.id}`,
-                  label: button.label,
-                  onPress: () => send("press", { id: button.id }),
-                })),
-                ...switches.map((toggle) => ({
-                  key: `s:${toggle.id}`,
-                  label: toggle.label,
-                  pressed: toggle.on,
-                  onPress: () => send("press", { id: toggle.id }),
-                })),
-              ]}
-            />
-          )}
-          {parts.length > 0 && (
-            <ControlGroup
-              label={t("figure.parts")}
-              items={parts.map((part) => ({
-                key: `p:${part.act}|${part.id ?? ""}`,
-                label: part.label,
-                onPress: () => send("act", part.id === null ? { name: part.act } : { name: part.act, data: { id: part.id } }),
-              }))}
-            />
-          )}
-        </details>
-      )}
+      {fill ? null : controlsList}
     </div>
   );
 }
@@ -346,7 +373,7 @@ function ControlGroup({ label, items }: { label: string; items: ControlItem[] })
               type="button"
               aria-pressed={item.pressed}
               onClick={item.onPress}
-              className="touch-target rounded-full border-2 border-line bg-surface px-3 py-1.5 font-ui text-xs font-bold text-ink hover:bg-sunken"
+              className="touch-target rounded-full border-2 border-line bg-surface px-3 py-1.5 font-body text-sm font-semibold text-ink hover:bg-sunken aria-pressed:bg-ink aria-pressed:text-paper"
             >
               {item.label}
             </button>
