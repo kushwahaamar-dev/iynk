@@ -1,0 +1,396 @@
+{
+  "title": "Landwirtschaftlicher Sprüh-Hexakopter",
+  "tagline": "Ein Hexakopter mit 1800 mm, der 10 L Spritzmittel trägt: RTK und GPS-Gierwinkel aus zwei Antennen halten ihn auf den Reihen, ein Radar hält ihn 2,5 m über dem Bestand, und ArduPilot steuert die Pumpe.",
+  "sub": "ArduCopter + Cube Orange+ + RTK",
+  "hint": "Bau eine Sprühdrohne für 10 L, teste ihre Pumpe und ihren GPS-Gierwinkel und besprüh dann sechs Reihen eines Felds",
+  "noun": "Sprühdrohne",
+  "overview": "Eine landwirtschaftliche Sprühdrohne hat eine einzige Aufgabe: eine abgemessene Menge Flüssigkeit auf jeden Quadratmeter eines Felds zu bringen und nirgendwo sonst hin. Diese hier trägt 10 L. Sechs 30-Zoll-Propeller an 900-mm-Armen heben beim Start 33 kg, und ein Cube Orange+ lässt ArduCopter laufen, das die Reihen eines Vermessungsrasters in AUTO abfliegt. Zwei RTK-Empfänger bestimmen ihre Position auf etwa 2 cm genau und nehmen die Flugrichtung aus der Linie zwischen ihren Antennen, also liegen die Reihen genau eine Arbeitsbreite auseinander, und kein Stahlschuppen kann einen Kompass stören. Ein Radar unter der Nase hält sie 2,5 m über dem Bestand, während der Boden steigt und fällt. Der Sprayer von ArduPilot lässt die Pumpe proportional zur Geschwindigkeit über Grund laufen, also bleibt die Dosis gleich, wenn sie für eine Kurve langsamer wird, und die Mission schaltet ihn am Anfang jeder Reihe ein und am Ende aus. Mit sechs Motoren kann der Mixer sie auf fünf lange genug waagerecht halten, um zu landen, wenn genug Schub übrig ist. Wähl die Teile, bau sie, führ die Werkbanktests durch (darunter einen Pumpentest) und flieg dann die Reihen von Hand oder lass AUTO das Feld besprühen.",
+  "practice": "Flieg das Feld zuerst in Loiter: Steig auf 5 m, sink am Westende der ersten Reihe auf 2,5 m, flieg sie mit etwa 4 m/s nach Osten, rück am Ende 4 m nach Norden und flieg zurück. Die Drohne ist schwer und bremst langsam (25° Neigung, sanfte Beschleunigungen), also beginn jede Kurve früh. Halt Abstand von den Bäumen auf der Westseite und der Stromleitung auf der Ostseite, dann bring sie nach Hause und lande. Schalte danach auf AUTO und sieh zu, wie die Pumpe an den Reihenenden an- und ausgeht. Bei einem echten Aufbau: Smoke Stopper beim ersten Einstecken, Motortest ohne Propeller (A vorne rechts, dann im Uhrzeigersinn), Kalibrierung des Beschleunigungssensors, ein Pumpentest mit klarem Wasser, um den Durchfluss zu messen, ein RTK-Fix und eine Prüfung des GPS-Gierwinkels draußen, jede PreArm-Meldung beseitigt und ein erster Schwebeflug niedrig über freiem Gelände, ohne jemanden in der Nähe der Propeller.",
+  "design": {
+    "fixed": {
+      "FRAME": "1,8-m-Carbonzentrum und sechs klappbare 35-mm-Arme",
+      "SKIDS": "Landebeine und Kufen",
+      "ESC": "6 × 80-A-FOC-ESCs (in den X8-Motorgondeln, PWM)",
+      "FC": "Autopilot Cube Orange+ mit Trägerplatine",
+      "RTK": "RTK-GNSS mit zwei Antennen (2 × u-blox F9P)",
+      "RADAR": "Abwärts gerichtetes Radar, 0,5-50 m (Klasse Ainstein US-D1)",
+      "RX": "900-MHz-Telemetriefunk und RC-Empfänger",
+      "XT60": "Antifunken-Kabel AS150U, Power Brick, 63-V-Kondensatoren",
+      "TANK": "10-L-Sprühtank",
+      "PUMP": "Membranpumpe mit Treiber",
+      "BOOM": "1,64-m-Sprühbalken mit vier Düsen"
+    },
+    "verdict": {
+      "over": "{kv} KV an {cells}S drehen 30-Zoll-Propeller viel zu schnell: Die Motoren überhitzen, und die ESCs verlieren mit vollem Tank den Takt (Desync). Ein Motor mit 180 KV gehört an Propeller mit 22 bis 24 Zoll; 30-Zoll-Propeller wollen etwa 100 KV an 12S.",
+      "weak": "Schub-Gewichts-Verhältnis {tw}:1 mit 10 L an Bord. Eine Sprühdrohne braucht etwa 1,6:1 oder mehr (1,8:1 ist besser), um voll beladen in einer Böe steuerbar zu bleiben und am Ende einer Reihe über eine Baumreihe zu steigen.",
+      "ok": "Die Teile passen zusammen: {tw}:1 mit 10 L an Bord, genug Reserve, um voll beladen gegen eine Böe anzukommen. Das Schwebegas des Rechners ist für diese großen, langsamen Propeller pessimistisch: Hobbywing hat bei dieser Last 57 % gemessen, und ArduCopter lernt seinen eigenen Schwebewert (MOT_THST_HOVER). Während sich der Tank leert, wird die Drohne 10 kg leichter, und das Schwebegas sinkt."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Carbonzentrum, sechs klappbare Arme, Beine und Kufen",
+      "what": "Ein Zentrum aus Carbon-Sandwich von 480 × 420 mm mit sechs Armen aus 35-mm-Carbonrohr, die Motoren 900 mm von der Mitte entfernt (1800 mm über alles). Jeder Arm hat 300 mm weiter außen ein Klappgelenk, damit die Drohne auf einen Anhänger passt, und wird mit einer Hülse verriegelt: Eine unverriegelte Hülse lässt den Arm unter Schub einklappen, und die Drohne überschlägt sich. Vier Beine tragen zwei Kufen von 940 mm, sodass der Sprühbalken frei über dem Bestand hängt."
+    },
+    "MOTORS": {
+      "name": "6 × Motoren 8120 mit 100 KV",
+      "what": "Große, langsame, abgedichtete Motoren: Statoren mit 81 mm, 100 U/min pro Volt. An 12S drehen sie einen 30-Zoll-Propeller im Schwebeflug mit etwa 2400 U/min, und jeder kann bis zu 15 kg heben. Hobbywings X8 baut Motor, ESC und Propelleraufnahme in eine Einheit, erhältlich in CW- und CCW-Ausführung."
+    },
+    "ESC": {
+      "name": "6 × 80-A-FOC-ESCs",
+      "what": "ESCs mit feldorientierter Regelung in der gerippten Gondel unter jedem Motor, gekühlt vom Abwind des Propellers. Sie nehmen einfaches PWM (1100 bis 1940 µs) vom Cube, kein DShot, und brauchen keine Gaskalibrierung. 80 A ist die Spitze für 3 s. Sie haben kein BEC, also bekommt der Cube eine eigene Versorgung."
+    },
+    "WIRES": {
+      "name": "Stromkabel der Arme und Signalkabel der ESCs",
+      "what": "Ein rot-schwarzes Kabelpaar mit 12 AWG läuft an jedem Arm vom Stromverteiler zu seinem ESC: etwa 13 A pro Arm im Schwebeflug, 80 A in der Spitze. Daneben führt ein dünnes Signalkabel (Masse und PWM) zurück zu den MAIN-Ausgängen des Cube, in der Reihenfolge der Motornummern."
+    },
+    "XT60": {
+      "name": "Stromverteilung: Kabel AS150U, Power Brick, 63-V-Kondensatoren",
+      "what": "Der Akku wird an einen Antifunken-Stecker AS150U gesteckt: Ein Widerstand lädt die ESC-Kondensatoren vor, damit der Stecker bei 50 V keinen Lichtbogen zieht. Der Stromverteiler speist die sechs Arme und die Pumpe, 63-V-Kondensatoren mit niedrigem ESR schlucken die Schaltspitzen, und ein Power Brick gibt dem Cube saubere 5 V und misst Spannung und Strom."
+    },
+    "FC": {
+      "name": "Autopilot Cube Orange+",
+      "what": "Ein STM32H757 mit ArduCopter 4.7.2, drei IMUs, zwei Barometern und einem schwingungsgedämpften Kern, auf einer Trägerplatine vorne am Zentrum, mit dem Pfeil zur Nase. Er fliegt die Drohne, betreibt den Schätzer EKF3 mit RTK und GPS-Gierwinkel, folgt der Radarhöhe und schaltet die Pumpe."
+    },
+    "RX": {
+      "name": "900-MHz-Telemetriefunk und RC-Empfänger",
+      "what": "Der Telemetriefunk ist die Verbindung der Bodenstation über das Feld: MAVLink hinaus, RTK-Korrekturen herein. Mit dem RC-Empfänger kann der Pilot jederzeit übernehmen; wenn beide Verbindungen verstummen, bringen die Failsafes die Drohne nach Hause."
+    },
+    "RADAR": {
+      "name": "Abwärts gerichtetes Radar (Klasse US-D1)",
+      "what": "Ein 24-GHz-Radar unter der Nase, das die Höhe über dem Bestand misst, 0,5 bis 50 m, durch Staub und Sprühnebel, die ein Lidar blind machen. Unter 0,5 m misst es nichts, also hilft es auf dem letzten halben Meter einer Landung nicht."
+    },
+    "TOP": {
+      "name": "Haube und FPV-Kamera",
+      "what": "Eine geformte Abdeckung, die Spritzmittel vom Cube, vom Funk und vom Stromverteiler fernhält, mit einer kleinen FPV-Kamera in der Nase, 10° nach unten geneigt, damit der Pilot die Reihe vor sich sieht."
+    },
+    "GPS": {
+      "name": "RTK-GNSS mit zwei Antennen",
+      "what": "Zwei Empfänger u-blox F9P mit Antennen auf Masten, die längs des Rumpfs 340 mm auseinander stehen. Mit Korrekturen einer Basisstation bestimmen sie die Position der Drohne auf etwa 2 cm, damit die Reihen nicht auseinanderdriften, und die Linie zwischen den beiden Antennen liefert die Flugrichtung (GPS-Gierwinkel mit Moving Baseline), also braucht es keinen Kompass. GPS1 muss vorne sitzen."
+    },
+    "TANK": {
+      "name": "10-L-Sprühtank",
+      "what": "Hängt unter dem Zentrum auf der Mittellinie der Drohne, also ändert sich der Schwerpunkt kaum, während er sich leert. Ein Sichtstreifen an der Seite zeigt den Füllstand. Voll bringt er 10 kg dazu: fast ein Drittel des Startgewichts."
+    },
+    "PUMP": {
+      "name": "Membranpumpe mit Treiber",
+      "what": "Saugt aus dem Tank und drückt die Flüssigkeit zum Sprühbalken. Ihr Treiber läuft am 12S-Bus und nimmt ein PWM-Signal von AUX 1 des Cube. Der Sprayer von ArduPilot stellt die Pumpendrehzahl proportional zur Geschwindigkeit über Grund ein, also bekommt jeder Quadratmeter dieselbe Dosis."
+    },
+    "BOOM": {
+      "name": "Sprühbalken mit vier Düsen",
+      "what": "1,64 m breit, unter dem Tank, mit Flachstrahldüsen 300 und 720 mm links und rechts der Mitte. Der Abwind der Propeller treibt die Tröpfchen nach unten in den Bestand und verteilt sie auf eine Arbeitsbreite von etwa 4 m."
+    },
+    "BATT": {
+      "name": "12S-Smart-Akku mit 22000 mAh",
+      "what": "Sitzt oben über dem Schwerpunkt, mit einem Griff für schnelle Wechsel bei jedem Nachfüllen. Zwölf Zellen: 50,4 V voll, 44,4 V nominal und etwa 12 Minuten Schwebeflug mit vollem Tank."
+    },
+    "PROPS": {
+      "name": "30-Zoll-Klapppropeller, 3 CW und 3 CCW",
+      "what": "Zweiblättrige Carbonpropeller, die für den Transport einklappen und beim Drehen ausschwenken. Ein CW-Propeller gehört auf einen CW-Motor: Auf dem falschen Motor drückt er die Luft nach oben, und die Drohne überschlägt sich beim Start. Benachbarte Blattspitzen laufen mit 138 mm Abstand aneinander vorbei."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Den Rahmen ausklappen und verriegeln",
+      "body": "Stell das Zentrum auf seine Kufen, klapp die sechs Arme aus und schieb jede Verriegelungshülse bis zum Einrasten ganz auf. Zieh an jedem Armende, um das Gelenk zu prüfen."
+    },
+    "motors": {
+      "title": "Die sechs Motoren montieren",
+      "body": "Klemm einen Motor an jedes Armende, CW und CCW abwechselnd rund um den Ring: M5 vorne rechts CCW, M1 rechts CW, M4 hinten rechts CCW, M6 hinten links CW, M2 links CCW, M3 vorne links CW.",
+      "refusal": "Die Motoren werden an die Armenden geklemmt: Klapp zuerst den Rahmen aus und verriegle ihn."
+    },
+    "esc": {
+      "title": "Die ESC-Gondeln einsetzen",
+      "body": "Jeder ESC sitzt in der gerippten Gondel unter seinem Motor, wo ihn der Abwind des Propellers kühlt. Die drei Phasendrähte des Motors sind schon darin.",
+      "refusal": "Die ESC-Gondeln werden an die Armenden geklemmt: Klapp zuerst den Rahmen aus."
+    },
+    "wires": {
+      "title": "Die Armkabel verlegen",
+      "body": "Verleg an jedem Arm ein 12-AWG-Paar und ein Signalkabel, bind sie alle 100 mm am Rohr fest, damit sie nicht in einen Propeller schlagen können, und lass am Klappgelenk eine Schlaufe, damit das Einklappen nicht an ihnen zieht.",
+      "refusal": "Die Kabel enden an den Motoren und den ESC-Gondeln: Setz die zuerst ein."
+    },
+    "power": {
+      "title": "Die Stromverteilung einsetzen",
+      "body": "Setz den Stromverteiler hinten ans Zentrum, löte die sechs Armpaare, die Pumpenzuleitung und das Kabel AS150U an und setz die 63-V-Kondensatoren mit dem weißen Streifen zu Minus ein. Das Kabel des Power Brick kommt später an den Cube.",
+      "refusal": "Der Stromverteiler speist die ESCs: Setz zuerst die ESC-Gondeln ein."
+    },
+    "fc": {
+      "title": "Den Cube Orange+ montieren",
+      "body": "Montier die Trägerplatine auf ihrer gedämpften Platte vorne am Zentrum, Pfeil zur Nase. Steck den Power Brick in POWER1 und die sechs ESC-Signalkabel nach Motornummer in MAIN 1 bis 6.",
+      "refusal": "Der Cube wird vom Stromverteiler versorgt: Setz zuerst den Stromverteiler ein."
+    },
+    "rx": {
+      "title": "Den Funk einsetzen",
+      "body": "Setz den 900-MHz-Telemetriefunk an TELEM1 und den RC-Empfänger an RCIN, mit der Antenne nach unten unter das Zentrum hängend, weg vom Carbon und von den Stromkabeln.",
+      "refusal": "Der Funk wird in den Cube gesteckt: Montier zuerst den Cube."
+    },
+    "radar": {
+      "title": "Das Radar einsetzen",
+      "body": "Schraub das Radar unter die Nase, senkrecht nach unten blickend und mit nichts in seinem Strahl: kein Bein, nicht der Sprühbalken. Steck es in TELEM2.",
+      "refusal": "Das Radar wird in TELEM2 des Cube gesteckt: Montier zuerst den Cube."
+    },
+    "top": {
+      "title": "Die Haube aufsetzen",
+      "body": "Setz die Haube über den Cube, den Funk und den Stromverteiler und verriegle sie: Sprühnebel ist korrosiv, und nasse Elektronik schließt kurz.",
+      "refusal": "Was unter die Haube gehört, kommt zuerst hinein: Setz den Cube und den Funk ein."
+    },
+    "gps": {
+      "title": "Die RTK-Masten anbringen",
+      "body": "Schraub die beiden Masten auf die Haube, längs des Rumpfs 340 mm auseinander: GPS1 (die Basis der Moving Baseline) vorne, GPS2 dahinter. Steck GPS1 in den Port GPS1 des Cube und GPS2 in GPS2. Andersherum kommt die Flugrichtung um 180° falsch heraus.",
+      "refusal": "Die Masten werden auf die Haube geschraubt: Setz zuerst die Haube auf."
+    },
+    "tank": {
+      "title": "Den Tank aufhängen",
+      "body": "Schnall den 10-L-Tank unter dem Zentrum auf der Mittellinie fest, mit erreichbarem Einfülldeckel und dem Sichtstreifen nach außen.",
+      "refusal": "Der Tank hängt am Zentrum: Klapp zuerst den Rahmen aus."
+    },
+    "pump": {
+      "title": "Die Pumpe einsetzen",
+      "body": "Montier die Pumpe und ihren Treiber hinter dem Tank. Schließ den Schlauch vom Tankauslass, die 12S-Zuleitung vom Stromverteiler und das PWM-Kabel an AUX 1 des Cube an.",
+      "refusal": "Die Pumpe saugt aus dem Tank: Häng zuerst den Tank auf."
+    },
+    "boom": {
+      "title": "Den Sprühbalken anbringen",
+      "body": "Klemm den Sprühbalken unter den Tank, rechtwinklig zum Rumpf, und verleg den Schlauch vom Pumpenauslass zu den vier Düsen. Die äußeren Düsen sitzen unter den seitlichen Propellern, wo der Abwind am stärksten ist.",
+      "refusal": "Der Sprühbalken wird von der Pumpe gespeist: Setz zuerst die Pumpe ein."
+    },
+    "batt": {
+      "title": "Den Akku einsetzen",
+      "body": "Schieb den 12S-Akku auf seine Halterung oben auf der Haube, über den Schwerpunkt, und schnall ihn fest. Lass ihn bis zum Smoke-Stopper-Test ausgesteckt.",
+      "refusal": "Der Akku sitzt auf der Haube und wird in den Stromverteiler gesteckt: Setz zuerst beides ein."
+    },
+    "props": {
+      "title": "Die Propeller montieren (zuletzt)",
+      "body": "Erst nach dem Smoke-Stopper-Test, dem Motortest und der Kalibrierung. CW-Propeller auf die CW-Motoren (M1, M3, M6), CCW-Propeller auf die CCW-Motoren (M2, M4, M5); prüf, dass jedes Blatt frei ausschwenkt.",
+      "refusal": "Die Propeller kommen zuletzt, wenn die Motoren montiert sind und die Haube drauf ist: Setz die zuerst ein."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "Der Antifunken-Stecker AS150U des Akkus in das Kabel des Stromverteilers. Sein Vorladewiderstand füllt die ESC-Kondensatoren, bevor die Hauptkontakte sich berühren, also zieht der Stecker bei 50 V keinen Lichtbogen, der die Kontakte anfrisst.",
+    "XT60-ESC": "Ein rot-schwarzes Paar mit 12 AWG pro Arm, an die Pads des Stromverteilers gelötet: etwa 13 A pro Arm im Schwebeflug, 80 A in der Spitze.",
+    "ESC-MOTORS": "Die drei Phasendrähte bleiben in jeder X8-Gondel. Ein Motor, der falsch herum dreht, wird durch Vertauschen von zwei davon behoben oder durch die Einheit mit der anderen Drehrichtung: Der Autopilot kann einen PWM-ESC nicht umkehren.",
+    "XT60-FC": "Die X8-ESCs haben kein BEC, also bringt ein Power Brick den 12S-Bus auf saubere 5 V für den Cube herunter und meldet Spannung und Strom des Akkus an POWER1 (BATT_MONITOR 4).",
+    "XT60-PUMP": "Der Pumpentreiber nimmt seinen Strom direkt vom 12S-Bus, über eine eigene Sicherung.",
+    "FC-ESC": "MAIN 1 bis 6 tragen ein PWM-Signal pro Motor (SERVO1 bis 6 auf Motor1 bis 6 gesetzt). MOT_PWM_MIN 1050 und MOT_PWM_MAX 1950 passen zum Bereich des X8.",
+    "FC-PUMP": "AUX 1 (SERVO9) ist SprayerPump: Die Pulsbreite sagt dem Treiber, wie schnell die Pumpe laufen soll.",
+    "RX-FC": "Der Telemetriefunk an TELEM1 (SERIAL1, MAVLink2) trägt die Befehle der Bodenstation und die RTK-Korrekturen; das SBUS des RC-Empfängers geht in RCIN.",
+    "GPS-FC": "GPS1, die vordere Antenne und Basis der Moving Baseline, am Port GPS1 (SERIAL3); GPS2, der Rover, an GPS2 (SERIAL4). Die Basis schickt ihre Korrekturen an den Rover, der daraus die Flugrichtung berechnet.",
+    "RADAR-FC": "Das Radar an TELEM2 (SERIAL2 Protokoll 9, Rangefinder, 115200 Baud) meldet viele Male pro Sekunde die Höhe über dem Bestand."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke-Stopper-Test",
+      "pass": "Die Lampe hat nur kurz geblinkt: kein Kurzschluss zwischen Plus und Minus am 12S-Bus. Das erste Einschalten einer 50-V-Drohne läuft über einen Strombegrenzer, der für diese Spannung ausgelegt ist; danach verhindert die Vorladung des AS150U Funken am Stecker.",
+      "fail": "Die Lampe blieb an: Irgendetwas ist kurzgeschlossen. Hier steckt ein Kondensator verkehrt herum; dreh ihn um (Streifen zu Minus) und teste noch einmal."
+    },
+    "motors": {
+      "title": "Motortest (ohne Propeller)",
+      "pass": "Der Motor Test von Mission Planner hat sie von A bis F gedreht, von vorne rechts im Uhrzeigersinn: A ist M5, B ist M1, C ist M4, D ist M6, E ist M2, F ist M3, abwechselnd CCW und CW. Die Propeller können drauf.",
+      "fail": "Ein Motor hat falsch herum gedreht, oder der falsche Arm hat sich bewegt. Vertausch zwei Phasendrähte dieses Motors (oder setz die X8-Einheit mit der anderen Drehrichtung ein) und prüf die Reihenfolge der MAIN-Kabel: Mit Propellern würde sie sich beim Start drehen oder überschlagen."
+    },
+    "calibrate": {
+      "title": "Kalibrierung des Beschleunigungssensors",
+      "pass": "In sechs Lagen kalibriert (waagerecht, beide Seiten, Nase unten, Nase oben, auf dem Rücken), dann Calibrate Level auf den Kufen. Eine so große Drohne wird auf der Werkbank umgedreht, bevor die Arme drankommen, oder mit einem Helfer. Die Pre-Arm-Sperre \"3D Accel calibration needed\" ist weg.",
+      "fail": "Setz zuerst den Cube ein. Wenn sein Pfeil nach hinten zeigt, dreh ihn um oder setz AHRS_ORIENTATION auf 4 (Yaw180), starte neu und kalibriere noch einmal."
+    },
+    "pump": {
+      "title": "Pumpentest (disarmt)",
+      "pass": "Bei disarmter Drohne und Sprayer-Schalter oben lief die Pumpe mit SPRAY_PUMP_RATE, der Rate für 1 m/s, und alle vier Düsen haben gesprüht. Fang eine Minute davon in einem Krug auf: Die Liter pro Minute kalibrieren die Dosis. Armen bricht den Test ab.",
+      "fail": "Setz den Cube, den Tank, die Pumpe und den Sprühbalken ein und steck den Akku ein: Der Pumpentreiber läuft am 12S-Bus. Eine Düse, die nicht sprüht, ist verstopft, und ihr Streifen des Bestands bleibt unbehandelt."
+    },
+    "gpsyaw": {
+      "title": "RTK-Fix und GPS-Gierwinkel",
+      "pass": "Beide Empfänger melden RTK Fixed mit den Korrekturen der Basisstation, und die Flugrichtung aus den beiden Antennen stimmt mit der Nase überein. EKF3 nimmt seinen Gierwinkel vom GPS (EK3_SRC1_YAW 2), also braucht er keinen Kompass.",
+      "fail": "Setz den Cube, die Masten und den Funk ein und steck den Akku ein. Mit GPS1 hinten liegt die Flugrichtung um 180° daneben, und der Pre-Arm meldet \"EKF3 Yaw inconsistent\": Tausch die Masten, sodass GPS1 vorne sitzt, wo es laut GPS1_POS_X 0.17 sein soll."
+    },
+    "prearm": {
+      "title": "Pre-Arm-Prüfungen",
+      "pass": "Jede Prüfung besteht (ARMING_SKIPCHK 0): RTK-Fix und GPS-Gierwinkel, Radardaten, Beschleunigungssensoren kalibriert, der Akku über BATT_ARM_VOLT. Der Cube lässt sich armen.",
+      "fail": "Eine PreArm-Meldung blockiert das Armen: \"Rangefinder 1: No Data\" (setz das Radar ein), \"GPS 1: Need 3D Fix\" oder \"EKF3 Yaw inconsistent\" (führ die Prüfung von RTK und GPS-Gierwinkel durch), \"3D Accel calibration needed\" (kalibriere). Beseitige jede einzelne; schalte die Prüfungen nie ab."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Rahmen, Motorausgänge und Strom",
+      "explain": "In ArduCopter 4.7.2 setzt du Parameter, und MAVProxy speichert jedes param set sofort. Rahmen Hexa X, die sechs Motoren nach Motornummer an MAIN 1 bis 6. Der integrierte ESC des X8 nimmt einfaches PWM zwischen 1050 und 1950 µs, also bleibt MOT_PWM_TYPE auf Normal. Der Harmonic Notch folgt dem Gas und liegt auf der Blattfolgefrequenz: Zwei Blätter mit etwa 2400 U/min brummen mit 80 Hz. MOT_HOVER_LEARN 2 lässt ihn sein eigenes Schwebegas lernen, das sinkt, während sich der Tank leert."
+    },
+    "links": {
+      "title": "Funk, Radar und RTK",
+      "explain": "Der 900-MHz-Funk an TELEM1 trägt MAVLink und die RTK-Korrekturen, und das Radar spricht mit TELEM2. GPS1_TYPE 17 und GPS2_TYPE 18 machen die beiden F9P zu einem Paar mit Moving Baseline: Der Rover misst, wo er relativ zur Basis sitzt, und diese Linie ist die Flugrichtung. Die Antennenpositionen sind in Metern vom Schwerpunkt angegeben, mit y nach rechts. Mit EK3_SRC1_YAW 2 bleibt der Kompass außen vor, weit weg von Stahlschuppen und 450 A Stromkabeln."
+    },
+    "spray": {
+      "title": "Der Sprayer",
+      "explain": "Der Sprayer von ArduPilot lässt die Pumpe proportional zur Geschwindigkeit über Grund laufen: SPRAY_PUMP_RATE 10 bedeutet 10 % pro m/s, also 40 % bei 4 m/s und 70 % bei 7 m/s, und die Dosis pro Quadratmeter bleibt gleich. Unter SPRAY_SPEED_MIN (1 m/s, noch in cm/s angegeben) hält er an, also bildet sich im Schwebeflug nie eine Pfütze. Der Schalter auf Kanal 7 erlaubt das Sprühen; disarmt nach oben gelegt, startet er den Pumpentest."
+    },
+    "failsafe": {
+      "title": "Failsafes, Geofence und Pre-Arm-Prüfungen",
+      "explain": "Funk verloren oder die Bodenstation 5 s lang still: RTL. Die Schwelle für niedrigen Akkustand ist 3,5 V pro Zelle oder 30 % übrig, dann RTL; bei kritischen 3,4 V pro Zelle landet sie an Ort und Stelle. Der Geofence hält sie unter 30 m und innerhalb von 300 m um den Startpunkt. 4.7 benennt die Arming-Prüfungen andersherum: ARMING_SKIPCHK listet die Prüfungen, die übersprungen werden, und 0 überspringt keine."
+    },
+    "stabilize": {
+      "title": "Stabilize",
+      "explain": "Der Cube richtet die Drohne waagerecht aus, wenn die Knüppel in der Mitte stehen, aber das Gas ist die Leistung der Motoren: Nichts hält die Höhe oder die Position. Bei einer 33-kg-Drohne mit schwappendem Wasser darin ist das der Modus für den Fall, dass GPS oder Radar ausgefallen sind. ATC_ANGLE_MAX 25 begrenzt die Neigung in jedem Modus."
+    },
+    "althold": {
+      "title": "AltHold",
+      "explain": "Der Gasknüppel verlangt Steigen oder Sinken, bis PILOT_SPD_UP 2,5 m/s, und in der Mitte hält er die Höhe. Mit SURFTRAK_MODE 1 und dem Radar ist das die Höhe über dem Bestand statt über dem Startpunkt, also steigt und sinkt sie mit dem Boden. Nichts hält die Position: Der Wind schiebt sie weg."
+    },
+    "loiter": {
+      "title": "Loiter",
+      "explain": "Hält Höhe, Position und Flugrichtung bei Knüppeln in der Mitte, mit RTK auf wenige Zentimeter genau. Voller Knüppel fliegt mit LOIT_SPEED_MS 8 m/s, und LOIT_ACC_MAX_M 3 hält Anfahren und Anhalten sanft, damit das Wasser im Tank die Drohne nicht hin und her schaukelt."
+    },
+    "rtl": {
+      "title": "Rückkehr zum Startpunkt",
+      "explain": "Steigt auf RTL_ALT_M 12 m, über die 10 m hohen Bäume und die 9 m hohe Stromleitung, fliegt mit 6 m/s nach Hause und landet. Der Sprayer gehört nicht zum Modus: Die Sprayer-Bibliothek von ArduPilot lässt die Pumpe über einen Moduswechsel hinweg erlaubt, also beendet eine Mission jede Reihe mit DO_SPRAYER 0, und ein Pilot schaltet den Sprayer-Schalter aus, bevor er übernimmt. Sonst besprüht sie auf dem Heimweg den Hof."
+    },
+    "auto": {
+      "title": "AUTO: die Sprühmission",
+      "explain": "Die Mission wird als Vermessungsraster geplant: Reihen im Abstand einer Arbeitsbreite (4 m), an den Enden verbunden. Jede Reihe beginnt mit DO_SPRAYER 1 und endet mit DO_SPRAYER 0, also läuft die Pumpe nur über dem Bestand. WP_RFND_USE 1 und Wegpunkte im Terrain-Frame halten sie per Radar 2,5 m über dem Bestand. Kommt sie vom Nachfüllen zurück, lässt DO_SET_RESUME_REPEAT_DIST sie etwas vor der Stelle, an der sie aufgehört hat, wieder in die Reihe einsteigen, also wird kein Streifen ausgelassen. AUTO kann nicht armen: Arme in Loiter und schalte dann um."
+    }
+  },
+  "flight": {
+    "modes": {
+      "loiter": {
+        "title": "Loiter",
+        "hint": "RTK-Positionshaltung: Die Knüppel legen eine Geschwindigkeit bis 8 m/s fest, und die Drohne hält an, wenn du loslässt. Der Modus, um die Reihen von Hand zu fliegen."
+      },
+      "althold": {
+        "title": "AltHold",
+        "hint": "Hält die Höhe, aber nichts hält die Position: Selbst eine 33-kg-Drohne driftet mit dem Wind."
+      },
+      "stabilize": {
+        "title": "Stabilize",
+        "hint": "Selbstnivellierend mit einer Neigungsgrenze von 25°; das Gas liegt bei dir. Schwer und träge in der Reaktion, also steuere mit kleinen Eingaben."
+      },
+      "rtl": {
+        "title": "RTL",
+        "hint": "Steigt auf 12 m über die Bäume und die Stromleitung, fliegt nach Hause und landet auf dem Landeplatz."
+      },
+      "auto": {
+        "title": "AUTO-Sprühen",
+        "hint": "Fliegt die Sprühmission selbst: sechs Reihen in 2,5 m Höhe, mit laufender Pumpe auf jeder davon, dann nach Hause zur Landung."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Funk des Piloten verloren: RTL, mit Steigflug auf 12 m über die Bäume und die Stromleitung vorweg.",
+      "gcs-loss": "5 s lang kein Heartbeat von der Bodenstation: RTL.",
+      "low-battery": "Unter 42 V (3,5 V pro Zelle) oder noch 6600 mAh übrig: RTL. Auf dem Feld ist das der Moment, in dem sie für einen frischen Akku und eine Tankfüllung zurückkommt.",
+      "battery-critical": "Unter 40,8 V: Sie landet an Ort und Stelle, selbst im Bestand, statt den Heimflug zu riskieren.",
+      "ekf": "Der Schätzer vertraut seiner Position nicht mehr (RTK verloren, GPS-Gierwinkel widersprüchlich): Sie landet, weil sie nicht mehr weiß, wohin sie fliegt.",
+      "fence": "Höher als 30 m oder mehr als 300 m von zu Hause: RTL."
+    },
+    "controls": "Tastatur: Leertaste armt und disarmt, W und S steigen und sinken, die Pfeiltasten fliegen vorwärts, rückwärts und seitwärts, A und D gieren, V schaltet auf die Nasenkamera, R setzt die Drohne zurück auf den Landeplatz. In Loiter hält sie an, wenn du loslässt. Auf dem Handy ist der linke Knüppel Gas und Gieren, der rechte Nicken und Rollen. Ein Gamepad funktioniert in Mode 2."
+  },
+  "courses": {
+    "spray": {
+      "title": "Das Nordfeld besprühen",
+      "brief": "Starte vom Hof, besprüh sechs 36 m lange Reihen des Feldblocks in 2,5 m Höhe darüber und 4 m Abstand, Pumpe an auf jeder Reihe und aus in den Kurven, dann komm nach Hause und lande auf dem Landeplatz. Flieg selbst in Loiter gegen die Richtzeiten und achte auf die Bäume auf der Westseite und die Stromleitung im Osten, oder schalte auf AUTO und sieh zu, wie das Vermessungsraster sich selbst abfliegt.",
+      "goals": {
+        "1": "START: über dem Landeplatz auf 5 m steigen",
+        "2": "REIHE 1: hinunter zum Westende, Pumpe an",
+        "3": "REIHE 1: bis zum Ostende sprühen, Pumpe aus",
+        "4": "REIHE 2: 4 m nach Norden rücken, Pumpe an",
+        "5": "REIHE 2: zurück nach Westen sprühen, Pumpe aus",
+        "6": "REIHE 3: nach Norden rücken, Pumpe an",
+        "7": "REIHE 3: nach Osten sprühen, Pumpe aus",
+        "8": "REIHE 4: nach Norden rücken, Pumpe an",
+        "9": "REIHE 4: nach Westen sprühen, Pumpe aus",
+        "10": "REIHE 5: nach Norden rücken, Pumpe an",
+        "11": "REIHE 5: nach Osten sprühen, Pumpe aus",
+        "12": "REIHE 6: nach Norden rücken, Pumpe an",
+        "13": "REIHE 6: nach Westen sprühen, Pumpe aus",
+        "14": "HEIM: zurück über den Hof in 5 m Höhe",
+        "15": "LANDEN: auf dem Landeplatz"
+      }
+    }
+  },
+  "quizzes": {
+    "power": {
+      "caps": {
+        "q": "Warum trägt der Stromverteiler 63-V-Kondensatoren mit niedrigem ESR?",
+        "options": {
+          "1": "Sie speichern Energie für die Pumpe",
+          "2": "Sie schlucken die Spannungsspitzen von sechs ESCs, die je bis zu 80 A schalten und sonst ESCs zerstören und Desyncs verursachen würden",
+          "3": "Sie filtern das Rauschen des Funks"
+        },
+        "why": "Lange Akkukabel haben Induktivität, und ein ESC, der zig Ampere durch sie schaltet, erzeugt Spitzen weit über der Akkuspannung. Kondensatoren mit niedrigem ESR am Stromverteiler fangen sie auf. 63-V-Bauteile reichen an einem 12S-Akku mit 50,4 V, aber nicht an einem 14S-Akku mit 58,8 V: Der braucht Bauteile für 80 bis 100 V."
+      },
+      "brick": {
+        "q": "Die ESCs des X8 haben kein BEC. Was versorgt den Cube?",
+        "options": {
+          "1": "Die Signalkabel der ESCs",
+          "2": "Die RTK-Empfänger",
+          "3": "Ein Power Brick vom 12S-Bus in POWER1"
+        },
+        "why": "Ohne BEC in den ESCs kommen die 5 V des Autopiloten von einem Strommodul (dem Power Brick), das auch Spannung und Strom des Akkus für die Failsafes misst. Eine schwache Versorgung, die einbricht, wenn 450 A den Akku absacken lassen, startet den Cube in der Luft neu."
+      }
+    },
+    "gps": {
+      "baseline": {
+        "q": "Warum zwei GPS-Antennen mit 340 mm Abstand?",
+        "options": {
+          "1": "Die Linie zwischen ihnen liefert die Flugrichtung, also braucht die Drohne keinen Kompass in der Nähe von Stahlschuppen und Kabeln mit hohem Strom",
+          "2": "Zwei Antennen sehen doppelt so viele Satelliten",
+          "3": "Eine ist Ersatz, falls die andere ausfällt"
+        },
+        "why": "In einem Paar mit Moving Baseline misst der Rover seine Position relativ zur Basis auf etwa einen Zentimeter genau, und das ergibt die Richtung der Linie zwischen ihnen: die Flugrichtung. ArduPilot will die Antennen mindestens 30 cm auseinander."
+      },
+      "swap": {
+        "q": "GPS1 landet auf dem hinteren Mast und GPS2 auf dem vorderen. Was passiert?",
+        "options": {
+          "1": "Nichts: Beide Richtungen funktionieren",
+          "2": "Der RTK-Fix geht verloren",
+          "3": "Die Flugrichtung kommt um 180° falsch heraus, und der Pre-Arm meldet EKF3 Yaw inconsistent"
+        },
+        "why": "GPS1_POS_X sagt, dass die Basisantenne 0,17 m vorne sitzt. Sitzt sie in Wirklichkeit hinten, zeigt die gemessene Linie nach hinten, und die GPS-Flugrichtung widerspricht allem anderen um 180°. Tausch die Masten zurück (oder die Typen und Offsets), am Boden; find es nicht erst in der Luft heraus."
+      }
+    },
+    "boom": {
+      "rate": {
+        "q": "SPRAY_PUMP_RATE ist 10. Wie stark läuft die Pumpe bei 4 m/s?",
+        "options": {
+          "1": "10 %",
+          "2": "40 %",
+          "3": "100 %"
+        },
+        "why": "Die Rate gilt pro m/s Geschwindigkeit über Grund: 10 % × 4 = 40 %. Bei 10 m/s erreicht sie 100 %, und noch schneller beginnt die Dosis zu sinken."
+      },
+      "dose": {
+        "q": "Du fliegst die Reihen mit 7 m/s statt mit 4 m/s. Was passiert mit den Litern pro Hektar?",
+        "options": {
+          "1": "Nichts: Die Pumpe läuft mit 70 % statt 40 %, also bekommt jeder Quadratmeter gleich viel",
+          "2": "Sie fallen auf etwa 57 %",
+          "3": "Sie verdoppeln sich"
+        },
+        "why": "Der Durchfluss steigt mit der Geschwindigkeit über Grund und ebenso die Fläche, die jede Sekunde überflogen wird, also kürzt sich die Geschwindigkeit heraus: L/ha = voller Durchfluss × RATE/100 ÷ Arbeitsbreite × 10000. Eine Pumpe mit 3 L/min über eine Arbeitsbreite von 4 m ergibt bei jeder Geschwindigkeit bis 10 m/s 12,5 L/ha. Nur eine Pumpe, die an ihre Grenze kommt, oder eine mit festem Durchfluss ändert die Dosis."
+      }
+    },
+    "fly": {
+      "pump": {
+        "q": "Auf halber Strecke einer Reihe wird der Akku knapp, und sie schaltet auf RTL. Was macht die Pumpe?",
+        "options": {
+          "1": "Sie hält beim Moduswechsel von selbst an",
+          "2": "Sie läuft weiter, solange die Drohne schneller als SPRAY_SPEED_MIN fliegt, außer ein DO_SPRAYER 0 oder der Schalter hat sie ausgeschaltet",
+          "3": "Sie läuft mit voller Drehzahl"
+        },
+        "why": "Der Sprayer von ArduPilot achtet nicht auf den Flugmodus. Das Sprühen bleibt erlaubt bis zu einem DO_SPRAYER 0, bis der Schalter nach unten geht oder die Geschwindigkeit unter 1 m/s fällt. Deshalb endet jede Reihe mit DO_SPRAYER 0, und deshalb schaltet ein Pilot den Sprayer-Schalter aus, bevor er übernimmt."
+      },
+      "resume": {
+        "q": "Nach dem Nachfüllen armst du und schaltest zurück auf AUTO; der Cube blieb versorgt. Wohin fliegt sie?",
+        "options": {
+          "1": "Zurück zur ersten Reihe",
+          "2": "Sie landet",
+          "3": "Zurück zu der Reihe, auf der sie war, mit Einstieg ein paar Meter vor der Stelle, an der sie aufgehört hat"
+        },
+        "why": "MIS_RESTART 0 setzt die Mission fort, statt sie neu zu starten, und DO_SET_RESUME_REPEAT_DIST lässt sie so weit zurück wieder in die Spur einsteigen, also wird kein Streifen ausgelassen. Der Wiederaufnahmepunkt liegt nur im RAM: Schaltet der Akkuwechsel den Cube aus, beginnt AUTO wieder beim ersten Eintrag."
+      },
+      "kv": {
+        "q": "Warum fallen die Motoren 10025 mit 80 KV an 12S mit 30-Zoll-Propellern zu schwach aus?",
+        "options": {
+          "1": "80 KV an 44,4 V drehen einen 30-Zoll-Propeller zu langsam: 1,20:1 mit vollem Tank",
+          "2": "Sie sind zu schwer für die Arme",
+          "3": "Sie ziehen zu viel Strom"
+        },
+        "why": "Der Schub wächst mit dem Quadrat der Drehzahl, und die Drehzahl ist KV mal Volt. Ein Motor mit 80 KV ist für größere Propeller oder einen 14S-Akku gedacht: An 12S mit 30-Zoll-Propellern schafft er 6,9 kg pro Motor gegenüber 10,8 kg beim 100-KV-Motor, zu wenig Reserve für eine Böe mit 10 L an Bord."
+      }
+    }
+  }
+}
