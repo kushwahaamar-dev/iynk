@@ -100,9 +100,9 @@ afterAll(() => {
   const refPass = rows.filter((r) => pass(r.reference) && !r.referenceError).length;
   const starterFail = rows.filter((r) => !pass(r.starter)).length;
   const header = [
-    '# Phase 1: every lesson and task through the app check path',
+    '# Every lesson and task through the app check path',
     '',
-    `Generated ${new Date().toISOString().slice(0, 10)} by \`SIMLAB_LESSON_TABLE=docs/verify/phase1-lessons.md npx vitest run src/lib/interp/lessons.test.ts\`.`,
+    `Generated ${new Date().toISOString().slice(0, 10)} by \`SIMLAB_LESSON_TABLE=${out} npx vitest run src/lib/interp/lessons.test.ts\`.`,
     'Each row runs `runChecks` (runHeadless + evaluateChecks, the same code the Board Lab and Robotics workers run) on the',
     "reference code and on the starter (board lessons have no starter, so the empty program stands in). Variant is the lesson's first variant.",
     '',
