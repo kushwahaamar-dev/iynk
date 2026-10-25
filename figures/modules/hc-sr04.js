@@ -140,7 +140,7 @@ B.kind('hcsr04-passives', {
 });
 
 B.module({
-  id: 'hc-sr04', name: 'HC-SR04 ultrasonic distance sensor',
+  id: 'hc-sr04', fig: '10', name: 'HC-SR04 ultrasonic distance sensor',
   sub: 'Times a 40 kHz ping to the target and back: 58 µs per cm, 2 cm to 4 m, on 5 V',
   pcb: { w: 45, h: 20, thick: 1.6, r: 0, color: '#2d6cc0', silk: '#f2f4f6', standoff: 2.6 },
   mat: { front: 9, back: 9, left: 9, right: 9 }, height: 16, pal: 'cobalt', logic: 5,

@@ -87,7 +87,7 @@ const coilsText = (s, st) => { const on = s.reduce((a, b) => a + b, 0), vm = (st
 const slow = (tbl, rate) => ({ out: seq(tbl, rate), serial: (k, st) => 'step ' + (k * rate) + ' · ' + coilsText(tbl[(k * rate) % tbl.length], st) });
 
 B.module({
-  id: 'uln2003', name: 'ULN2003 stepper driver board', sub: 'Seven Darlington switches with clamp diodes: an Uno pin drives a 28BYJ-48 coil',
+  id: 'uln2003', fig: '17', name: 'ULN2003 stepper driver board', sub: 'Seven Darlington switches with clamp diodes: an Uno pin drives a 28BYJ-48 coil',
   pcb: { w: 35, h: 32, thick: 1.6, r: 1, color: '#1f6e48', silk: '#f2f1e8', standoff: 4 },
   mat: { front: 10, back: 16, left: 10, right: 10 }, height: 14, pal: 'mint', logic: 5,
   holes: [[2.5, 2.5, 3], [32.5, 2.5, 3], [2.5, 29.5, 3], [32.5, 29.5, 3]],

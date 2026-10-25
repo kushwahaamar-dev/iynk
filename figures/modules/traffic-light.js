@@ -88,7 +88,7 @@ function make(order){
   });
   traces.push([[18.9, 44.5], [18.9, 1.2], [px('GND'), 1.2], [px('GND'), 2.6]]);
   return {
-    id: 'traffic-light', name: 'Traffic-light LED module', sub: 'Red, yellow and green 8 mm LEDs with built-in resistors, active high',
+    id: 'traffic-light', fig: '16', name: 'Traffic-light LED module', sub: 'Red, yellow and green 8 mm LEDs with built-in resistors, active high',
     pcb: { w: 21, h: 56, thick: 1.6, r: 1.5, color: '#1f1e1c', silk: '#f2efe6', standoff: 9 },
     mat: { front: 10, back: 10, left: 10, right: 10 }, height: 14, pal: 'tomato', logic: 5,
     holes: [[10.5, 52.6, 3.2]],

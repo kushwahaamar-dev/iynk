@@ -62,7 +62,7 @@ const reading = (st, k) => {
 const program = title => ({ title, instant: true, bytes: 0, out: () => ({}), serial: (k, st) => reading(st, k) });
 
 B.module({
-  id: 'mpu6050', name: 'MPU-6050 accelerometer and gyroscope (GY-521)',
+  id: 'mpu6050', fig: '09', name: 'MPU-6050 accelerometer and gyroscope (GY-521)',
   sub: 'A 6-axis motion sensor on I2C (0x68): 3-axis gyroscope, 3-axis accelerometer and a 3.3 V regulator',
   pcb: { w: 15.6, h: 20.3, thick: 1.6, r: 0, color: '#1d63c6', silk: '#f2f4f6', standoff: 8.5 },
   mat: { front: 9, back: 9, left: 12, right: 9 }, height: 12, pal: 'cobalt', logic: 3.3,

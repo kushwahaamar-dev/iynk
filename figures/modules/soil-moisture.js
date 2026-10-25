@@ -97,7 +97,7 @@ const env = (title, key) => ({ title, instant: true, bytes: 2380, out: () => ({ 
 
 function make(timer){
   return {
-    id: 'soil-moisture', name: 'Capacitive soil moisture sensor v1.2', sub: 'A 555 oscillator and a copper pad: wetter soil gives a lower AOUT voltage',
+    id: 'soil-moisture', fig: '14', name: 'Capacitive soil moisture sensor v1.2', sub: 'A 555 oscillator and a copper pad: wetter soil gives a lower AOUT voltage',
     timer,
     pcb: { w: LEN, h: WID, thick: 1.6, r: 0, color: '#1b1a1c', silk: '#f2efe6', standoff: .2,
       outline: [[0, 0], [LEN - TIP, 0], [LEN, WID / 2], [LEN - TIP, WID], [0, WID]] },

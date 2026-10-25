@@ -211,7 +211,7 @@ function make(order){
   const pins = order === 'vcc-gnd' ? ['VCC', 'GND', 'SCL', 'SDA'] : ['GND', 'VCC', 'SCL', 'SDA'];
   const hx = i => PCBW / 2 + (i - 1.5) * 2.54;
   return {
-    id: 'ssd1306', name: 'SSD1306 OLED module', sub: '0.96 inch, 128 x 64 pixels, I²C at 0x3C, 3.3-5 V',
+    id: 'ssd1306', fig: '15', name: 'SSD1306 OLED module', sub: '0.96 inch, 128 x 64 pixels, I²C at 0x3C, 3.3-5 V',
     pcb: { w: PCBW, h: PCBH, thick: 1.2, r: .8, color: '#1d3f8f', silk: '#f2f1e8', standoff: 9.5 },
     mat: { front: 9, back: 9, left: 9, right: 9 }, height: 6, pal: 'cobalt', logic: 3.3,
     holes: [[2.1, 2.1, 2], [PCBW - 2.1, 2.1, 2], [2.1, PCBH - 2.1, 2], [PCBW - 2.1, PCBH - 2.1, 2]],
