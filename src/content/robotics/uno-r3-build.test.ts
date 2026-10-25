@@ -87,6 +87,9 @@ describe('uno-r3-build content', () => {
   });
 });
 
+// a task's virtual run takes well under a second alone, but several seconds while the whole suite shares the CPU
+const RUN_BUDGET_MS = 30_000;
+
 describe('uno-r3-build code through the app check path', () => {
   it('runs Blink at 1 s on, 1 s off', () => {
     const trace = runHeadless({ board: 'uno-r3', language: 'arduino-cpp', source: render(bench.modes[0].code), world: NO_WORLD, runMs: 4500 });
@@ -108,12 +111,12 @@ describe('uno-r3-build code through the app check path', () => {
       const { trace, results } = runChecks(taskJob(task, task.solution));
       expect(trace.error).toBeNull();
       expect(task.checks.filter((_, i) => !results[i].ok).map((c) => String(leaf(c.label)))).toEqual([]);
-    });
+    }, RUN_BUDGET_MS);
 
     it(`${task.id}: the starter runs and does not already pass`, () => {
       const { trace, results } = runChecks(taskJob(task, render(task.starter)));
       expect(trace.error).toBeNull();
       expect(results.some((r) => !r.ok)).toBe(true);
-    });
+    }, RUN_BUDGET_MS);
   }
 });
