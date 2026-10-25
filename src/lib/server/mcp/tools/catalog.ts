@@ -166,7 +166,7 @@ function details(content: ItemContent, t: Prose) {
 
 export const getItem = defineTool({
   name: "get_item",
-  title: "Get a iynk board, bench or drone",
+  title: "Get an iynk board, bench or drone",
   description:
     "Details of one iynk item: what it is, its lessons, practice tasks or bench tests, a drone's battery, motor and prop options (feed them to drone_calc), sources, and the link that opens it in the browser. Ids come from search_catalog (for example board uno-r3, robotics tb6612fng, drone quad5).",
   input: z.object({

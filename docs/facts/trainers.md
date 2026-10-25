@@ -78,7 +78,7 @@ part). These are the canonical layout for iynk; there is no external design file
 **Outline**: 60.0 (x) x 40.0 (y) mm, corner radius 2.0 mm, 1.6 mm FR-4. Bottom edge = the front, where the meter sits and the test
 points are. USB-C enters from the **left** edge. **Mounting holes** (centres): (3, 3), (57, 3), (3, 37), (57, 37); diameter not given
 by the original: use **3.2 mm plated, for M3 on 4 mm standoffs** (standoff height 4 from the original; hole size estimated).
-**Colours**: original palette "mint" = green solder mask, white silkscreen, gold (ENIG) or tinned pads (exact hex is a iynk style
+**Colours**: original palette "mint" = green solder mask, white silkscreen, gold (ENIG) or tinned pads (exact hex is an iynk style
 choice; use the shared figure palette).
 
 | Ref | What | Package | Centre (x, y) | Rot | Footprint w x h | Height | Colour / marking |
@@ -133,7 +133,7 @@ with its flat side; "+" next to LED1's anode; "Q1", "D1", "R1", "R2", "C1" refer
 **Circuit** (original `sig.base`, `load`, `ret`): H1.IN -> R1 -> Q1 base. BATT + (J1) -> C1 + -> J2 MOTOR+ ; J2 MOTOR- -> Q1
 collector; Q1 emitter -> GND bus -> J1 BATT - and H1 GND (shared ground). D1 cathode to BATT + / MOTOR+, anode to MOTOR- / collector.
 LED1 + R2: BATT + -> R2 -> LED1 -> collector node, so LED1 lights when Q1 pulls the collector low (original deco ends at the collector
-side; exact LED1 return node is a iynk design choice, unverified in the original). H1 5V is not needed by the circuit (it can feed
+side; exact LED1 return node is an iynk design choice, unverified in the original). H1 5V is not needed by the circuit (it can feed
 nothing or only an optional pull-down); keep it for the lesson on shared ground.
 
 **On the mat** (original): Arduino Nano in front of the board, USB toward the viewer; a 4 x AA holder right of the Nano (use a real

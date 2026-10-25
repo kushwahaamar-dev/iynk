@@ -15,7 +15,7 @@
   "statusError": "Couldn't reach this deployment's status.",
   "wallet": {
     "title": "Wallet",
-    "useDevnet": "Use a iynk devnet wallet",
+    "useDevnet": "Use an iynk devnet wallet",
     "useExisting": "Use your iynk devnet wallet ({address})",
     "useDevnetHint": "One click. A test key kept in this browser, for Solana devnet only. Never put real funds in it.",
     "chooseBrowser": "Connect a browser wallet",
@@ -193,7 +193,7 @@
     "invalid": "That is not a Solana address.",
     "empty": "Enter an address, or open a link someone shared with ?learner= or ?credential=.",
     "noneForLearner": "No iynk credentials for this wallet.",
-    "noCredential": "This address is not a iynk credential.",
+    "noCredential": "This address is not an iynk credential.",
     "resultsFor": "Credentials of {address}",
     "program": "Program",
     "howTitle": "How the check works",

@@ -317,7 +317,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 - 2026-10-24 17:12 CDT (Amar): a second P1-checks in `/Users/amar/Codes/sim` stood down (`69f24d0b`, local note
   `c3c61a7`, not pushed). It reported 56 of 59 lessons passing on that clone at `94d3caa`. The 3 failures were
-  pi5-ros2. That number is not a iynk result. The iynk P1-checks (`1e6f87c4`) keeps the label. The earlier
+  pi5-ros2. That number is not an iynk result. The iynk P1-checks (`1e6f87c4`) keeps the label. The earlier
   clone wave was told to stop and not push. P1-engine has a local commit `f104e10` (esp32-s3-build check types)
   that this checkpoint pushes with the handoff update.
 

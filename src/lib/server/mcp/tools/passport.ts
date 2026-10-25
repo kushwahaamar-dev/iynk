@@ -10,7 +10,7 @@ import { localeInput } from "./catalog";
 
 export const getPassport = defineTool({
   name: "get_passport",
-  title: "Read a iynk Proof of Build passport",
+  title: "Read an iynk Proof of Build passport",
   description:
     "Lists the Proof of Build credentials a learner holds on Solana devnet: which board lessons, drone safety tests, robotics benches or flight courses they passed (skill ids such as drone:quad5:safety), the score, the replay hash the server verified before issuing it, when it was issued and a Solana Explorer link, plus iynk's public verify page for the learner. Credentials are devnet-only and cannot be transferred.",
   input: z.object({

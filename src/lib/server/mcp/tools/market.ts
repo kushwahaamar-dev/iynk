@@ -61,7 +61,7 @@ export const priceParts = defineTool({
   name: "price_parts",
   title: "Price the parts for a real build",
   description:
-    "Turns a iynk item into a real shopping list: its parts list (a drone's frame, electronics, battery, motors and props; a bench's board, modules and parts; a board's starter kit), live listings from Google Shopping, Amazon and eBay through SerpApi, the cheapest relevant one in stock, what each quantity costs and the total. For a drone, choose the battery, motor and prop as in drone_calc. Pass parts to price a list of your own instead. Prices are live US listings and change often.",
+    "Turns an iynk item into a real shopping list: its parts list (a drone's frame, electronics, battery, motors and props; a bench's board, modules and parts; a board's starter kit), live listings from Google Shopping, Amazon and eBay through SerpApi, the cheapest relevant one in stock, what each quantity costs and the total. For a drone, choose the battery, motor and prop as in drone_calc. Pass parts to price a list of your own instead. Prices are live US listings and change often.",
   input: z.object({
     lab: labInput,
     id: z.string().trim().min(1).max(64).describe("Item id, e.g. quad5, tb6612fng, uno-r3."),

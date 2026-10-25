@@ -25,7 +25,7 @@ export function tipMemo(roomId: string): string {
   return `iynk:tip:${roomId}`;
 }
 
-/** Reads a tip memo back; null when the memo is not a iynk tip. */
+/** Reads a tip memo back; null when the memo is not an iynk tip. */
 export function roomOfTip(memo: string): string | null {
   const m = /^iynk:tip:([23456789abcdefghjkmnpqrstuvwxyz]{6})$/.exec(memo);
   return m ? m[1] : null;
