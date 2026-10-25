@@ -1,0 +1,974 @@
+{
+  "title": "STM32 Nucleo-F401RE",
+  "tagline": "La placa Cortex-M4 de ST a 84 MHz con su propio programador ST-LINK: zócalos Arduino arriba, todos los pines en las filas morpho, lógica de 3,3 V y un solo cable mini-USB para la alimentación, las cargas y Serial.",
+  "overview": "La Nucleo-F401RE son dos placas en una. El tercio de arriba, detrás de una fila de ranuras de separación, es un ST-LINK/V2-1: un STM32F103 que funciona desde el conector mini-USB, programa el chip de destino por SWD y pasa el Serial del destino a tu ordenador como un puerto COM virtual. Debajo está el destino: un STM32F401RE (Arm Cortex-M4F a 84 MHz, 512 KB de flash, 96 KB de RAM) con zócalos Arduino al estilo de la Uno y dos conectores ST morpho de 38 pines que llevan todos los pines. La lógica es de 3,3 V, pero la mayoría de los pines admiten 5 V como entradas digitales. Hay tres jumpers importantes: JP5 elige el USB o una alimentación externa para +5V, JP6 une el regulador de 3,3 V con el MCU (quítalo para medir la corriente), y los dos jumpers de CN2 dejan que el ST-LINK llegue al destino. En el IDE de Arduino es la placa Nucleo-64 del núcleo STM32duino: LED_BUILTIN es el LD2 verde en D13, USER_BTN es el B1 azul en PC13, y Serial pasa por el ST-LINK.",
+  "mcu": {
+    "stlink": "El programador ST-LINK/V2-1: un STM32F103 que escribe la flash del F401 por SWD y pasa Serial (USART2) a tu ordenador como un puerto COM virtual."
+  },
+  "power": {
+    "usb": {
+      "protection": "Sin fusible; el conector mini-B no puede entrar al revés. El ST-LINK arranca enseguida, pero el +5V del destino solo se enciende cuando el ST-LINK ha pedido 300 mA al ordenador y ha activado T2. Pon JP1 para funcionar con un cargador de móvil, que nunca los concede."
+    },
+    "vin": {
+      "protection": "Ninguna: VIN va directo al LD1117 (U3), sin diodo contra la polaridad inversa. D4, después de él, impide que E5V y el USB vuelvan hacia atrás. JP5 va en 2-3. La corriente que puede dar baja a medida que sube VIN: 800 mA a 7 V, 450 mA hasta 9 V y 250 mA hasta 12 V."
+    },
+    "e5v": {
+      "protection": "Ninguna: con JP5 en 2-3, E5V (pin 6 de CN7) es la línea +5V. Usa solo una alimentación regulada de 4,75-5,25 V, con la polaridad correcta, y enciéndela antes de conectar el USB."
+    },
+    "rails": {
+      "u5v": "Los 5 V del USB, antes del interruptor T2. Alimenta el ST-LINK a través de D2.",
+      "e5v": "5 V de U3 a través de D4, o del pin E5V. Alimenta el ST-LINK a través de D3, y +5V a través de JP5 2-3.",
+      "5v": "Los 5 V del destino: del USB a través de T2 y JP5 1-2, o de E5V a través de JP5 2-3. Enciende LD3 y alimenta el regulador de 3,3 V.",
+      "3v3": "Del LD39050 (U4) a través de SB2: los pines 3V3, IOREF y, a través de JP6, el MCU.",
+      "vdd": "La alimentación propia del STM32, después del jumper IDD JP6. También está en el pin 5 de CN7.",
+      "3v3st": "Los 3,3 V propios del ST-LINK, de U1, para que el programador funcione aunque el destino esté apagado."
+    },
+    "io": "El límite absoluto de la hoja de datos es de 25 mA por pin y 120 mA para todos los pines juntos; ST especifica los niveles de salida hasta 20 mA (8 mA para niveles completos), y PC13-PC15 solo hasta 3 mA. Las salidas nunca pasan de 3,3 V, pero la mayoría de los pines admiten 5 V como entradas digitales."
+  },
+  "pins": {
+    "analog": "Una entrada del ADC lee de 0 a 3,3 V (AVDD). En modo analógico el pin no tolera 5 V: 4,0 V como mucho, así que alimenta los sensores analógicos desde 3V3.",
+    "ioref": "Unido a +3V3: le indica a un shield que la lógica de esta placa es de 3,3 V.",
+    "nrst": "A nivel bajo reinicia el STM32. Lo comparten B2 y el ST-LINK, que lo lleva a nivel bajo durante una carga.",
+    "3v3": "Salida de U4, 500 mA compartidos con el MCU. Solo puede ser una entrada cuando el ST-LINK está separado o SB2 y SB12 están abiertos.",
+    "5v": "Salida: +5V del USB (a través de T2) o de E5V/VIN con JP5 en 2-3. Por USB, mantén todo dentro del presupuesto de 300 mA.",
+    "vin": "Entrada de 7-12 V, a través del LD1117: 800 mA a 7 V, 450 mA hasta 9 V, 250 mA hasta 12 V. Sin protección contra la polaridad inversa. Pasa JP5 a 2-3.",
+    "d13": "LD2 cuelga de este pin a través de 510 Ω. También es el reloj del SPI1, así que LD2 parpadea mientras funciona el SPI.",
+    "avdd": "La referencia del ADC (VDDA), unida a VDD a través de la ferrita L1. Está donde una Uno tiene AREF, pero no es una entrada.",
+    "i2c": "I2C1 (Wire). La placa no lleva pull-ups en él: los tiene que poner el módulo o el shield.",
+    "d0d1": "Sin conectar por defecto: PA2/PA3 (USART2) van al ST-LINK, así que Serial llega a tu ordenador. Cerrar SB62/SB63 los lleva al conector.",
+    "vdd": "La alimentación del MCU, después de JP6. Mide aquí para comprobar que JP6 está puesto.",
+    "e5v": "Entrada externa de 5 V (4,75-5,25 V), directa a +5V cuando JP5 está en 2-3. Sin ninguna protección.",
+    "boot0": "Llevado a nivel bajo en la placa, así que el STM32 ejecuta tu sketch desde la flash. Un jumper a VDD (pin 5) arranca en su lugar el bootloader de la ROM de ST.",
+    "swd": "Los usa el ST-LINK para el SWD. No los uses como E/S mientras esté conectado.",
+    "pc13": "El pin de B1, con el pull-up de 4,7 kΩ de R30. PC13 está en el dominio de respaldo: absorbe 3 mA como mucho y no debe dar corriente, así que nunca controles un LED desde él.",
+    "lse": "Controla el cristal de 32,768 kHz X2. Solo llega a CN7 con SB48/SB49 cerrados.",
+    "hse": "Los pines del reloj: el reloj de 8 MHz del ST-LINK llega a PH0 (OSC_IN). En modo oscilador no toleran 5 V; déjalos para el reloj.",
+    "vbat": "La alimentación de respaldo del reloj de tiempo real, unida a VDD a través de SB45.",
+    "u5v": "Los 5 V del USB antes del interruptor T2: están en cuanto se conecta el cable.",
+    "cn4": "El puerto SWD propio del ST-LINK, para programar otra placa. Quita los jumpers de CN2 para usarlo."
+  },
+  "leds": {
+    "LD2": "Verde, en D13 (PA5) a través de 510 Ω: encendido cuando D13 está en HIGH, unos 2,5 mA.",
+    "LD3": "Rojo, encendido siempre que hay +5V. Sigue encendido cuando solo ha fallado la parte de 3,3 V.",
+    "LD1": "El LED COM rojo y verde del ST-LINK: rojo cuando está conectado, rojo y verde alternando durante una carga, verde cuando ha terminado y naranja cuando ha fallado."
+  },
+  "controls": {
+    "B1": "El botón azul USER en PC13: lee LOW mientras está pulsado.",
+    "B2": "El botón negro RESET: el STM32 vuelve a empezar desde setup(). El ST-LINK sigue conectado."
+  },
+  "parts": {
+    "U5": {
+      "name": "Microcontrolador STM32F401RET6",
+      "what": "Aquí se ejecuta tu sketch: un Arm Cortex-M4 con unidad de coma flotante a 84 MHz, 512 KB de flash y 96 KB de RAM, en un LQFP de 64 pines. Funciona a 3,3 V y tiene un ADC de 12 bits con 16 entradas, pero no tiene DAC. STM32duino le da el reloj desde su oscilador interno de 16 MHz a través del PLL."
+    },
+    "U2": {
+      "name": "STM32F103 con el ST-LINK/V2-1",
+      "what": "Un segundo microcontrolador, un Cortex-M3, con el firmware ST-LINK de ST. Por el único cable USB hace de depurador que programa el F401 por SWD, de puerto COM virtual para el Serial del destino y de unidad USB llamada NODE_F401RE."
+    },
+    "X1": {
+      "name": "Cristal de 8 MHz (X1)",
+      "what": "Da el reloj al STM32F103 del ST-LINK. El ST-LINK también pasa los 8 MHz al PH0 del destino, que los proyectos de Cube usan como reloj HSE."
+    },
+    "X2": {
+      "name": "Cristal de 32,768 kHz (X2)",
+      "what": "Alimenta el reloj de tiempo real del destino (el LSE en PC14/PC15), para que la biblioteca STM32RTC lleve la hora con precisión."
+    },
+    "X3": {
+      "name": "Huella vacía del cristal X3",
+      "what": "Sitio para un cristal de 8 MHz de inserción para el destino. ST lo deja vacío: los 8 MHz vienen del ST-LINK, y los sketches de STM32duino usan de todos modos el oscilador interno."
+    },
+    "CN1": {
+      "name": "Conector USB Mini-B (CN1)",
+      "what": "El único conector USB de la placa: alimentación, programación y puerto COM virtual, todo a través del ST-LINK. Sus 5 V son la línea U5V."
+    },
+    "T2": {
+      "name": "Interruptor de alimentación USB (T2)",
+      "what": "Un MOSFET de canal P STS9P3LLH6 entre U5V y el +5V del destino. El ST-LINK solo lo activa cuando el ordenador le concede 300 mA, así que con un cargador de móvil el destino se queda apagado salvo que pongas JP1."
+    },
+    "T1": {
+      "name": "Transistor que controla el interruptor (T1)",
+      "what": "Permite que la lógica de 3,3 V del ST-LINK encienda y apague el MOSFET T2."
+    },
+    "U1": {
+      "name": "Regulador de 3,3 V LD3985 (U1)",
+      "what": "Alimenta solo el ST-LINK (150 mA), desde el USB a través de D2 o desde E5V a través de D3."
+    },
+    "D2": {
+      "name": "Diodo Schottky BAT60J (D2)",
+      "what": "Pasa los 5 V del USB al regulador del ST-LINK."
+    },
+    "D3": {
+      "name": "Diodo Schottky BAT60J (D3)",
+      "what": "Pasa E5V al regulador del ST-LINK, para que el programador funcione cuando VIN o E5V alimentan la placa."
+    },
+    "U3": {
+      "name": "Regulador de 5 V LD1117 (U3)",
+      "what": "Convierte los 7-12 V de VIN en 5 V. No tiene ningún diodo contra la polaridad inversa delante y, como es un regulador lineal, convierte la tensión sobrante en calor."
+    },
+    "D4": {
+      "name": "Diodo Schottky STPS2L30A (D4)",
+      "what": "Lleva los 5 V de U3 a E5V e impide que los 5 V de E5V o del USB vuelvan al regulador. Su franja de cátodo mira hacia el lado de E5V."
+    },
+    "C16": {
+      "name": "Condensador de tántalo de 10 µF en VIN (C16)",
+      "what": "El condensador de entrada de U3, de 25 V. Los condensadores de tántalo tienen polaridad: la franja marca el lado positivo."
+    },
+    "C17": {
+      "name": "Condensador de tántalo de 10 µF en la salida de U3 (C17)",
+      "what": "Mantiene estable el regulador de 5 V. Tiene polaridad, como C16."
+    },
+    "U4": {
+      "name": "Regulador de 3,3 V LD39050 (U4)",
+      "what": "Genera la línea de 3,3 V a partir de +5V, hasta 500 mA, con límite de corriente y apagado térmico. Alimenta el MCU (a través de JP6), los pines 3V3 e IOREF."
+    },
+    "SB2": {
+      "name": "Puente de soldadura SB2",
+      "what": "Una unión de 0 Ω desde la salida de U4 a la línea de 3,3 V. Ábrelo para meter los 3,3 V desde fuera."
+    },
+    "JP5": {
+      "name": "Conector JP5 de la fuente de alimentación",
+      "what": "Tres pines: el 1 es U5V (USB a través de T2), el 2 es +5V y el 3 es E5V (VIN o 5 V externos). El jumper une el pin 2 con uno de los otros."
+    },
+    "JP5_CAP": {
+      "name": "Jumper de JP5",
+      "what": "En 1-2 para el USB, en 2-3 para VIN o E5V. La figura lo mueve por ti cuando eliges VIN o E5V. Sin él, +5V no está conectado a nada."
+    },
+    "JP6": {
+      "name": "Conector IDD JP6",
+      "what": "Está entre la línea de 3,3 V y el VDD del MCU. Quita el jumper y pon un amperímetro entre los pines para medir lo que consume el STM32."
+    },
+    "JP6_CAP": {
+      "name": "Jumper de JP6",
+      "what": "Cierra la unión IDD. Sin él, el MCU no tiene ninguna alimentación."
+    },
+    "CN2": {
+      "name": "Conector CN2 ST-LINK / NUCLEO",
+      "what": "Cuatro pines que llevan el reloj y los datos SWD del ST-LINK al STM32 de esta placa (jumpers puestos) o al conector CN4 (jumpers quitados)."
+    },
+    "CN2_CAPS": {
+      "name": "Jumpers de CN2",
+      "what": "Dos jumpers que conectan el ST-LINK al destino de esta placa. Quítalos para programar otra placa a través de CN4."
+    },
+    "JP1": {
+      "name": "Conector JP1 USB PWR",
+      "what": "Abierto por defecto. Con un jumper, el ST-LINK pide al ordenador solo 100 mA y enciende el destino de todos modos, para los cargadores, que nunca hacen la enumeración USB."
+    },
+    "LD1": {
+      "name": "LED COM LD1 (rojo y verde)",
+      "what": "El estado del ST-LINK: rojo mientras está conectado, rojo y verde alternando mientras habla con el destino, verde cuando ha terminado una carga y naranja cuando ha fallado."
+    },
+    "LD2": {
+      "name": "LED de usuario verde LD2",
+      "what": "En D13 (PA5) a través de 510 Ω, encendido cuando D13 está en HIGH. Es LED_BUILTIN en STM32duino."
+    },
+    "R31": {
+      "name": "Resistencia de 510 Ω para LD2 (R31)",
+      "what": "Limita la corriente de LD2 a unos 2,5 mA desde el pin de 3,3 V."
+    },
+    "LD3": {
+      "name": "LED rojo de alimentación LD3",
+      "what": "Encendido siempre que hay +5V, a través de una resistencia de 1 kΩ. No dice nada de la línea de 3,3 V ni del MCU."
+    },
+    "R32": {
+      "name": "Resistencia de 1 kΩ para LD3 (R32)",
+      "what": "Unos 3 mA para el LED PWR."
+    },
+    "B1": {
+      "name": "Botón USER B1 (azul)",
+      "what": "En PC13 (USER_BTN): en HIGH a través de un pull-up de 4,7 kΩ, en LOW mientras está pulsado. La demo de fábrica lo usa para cambiar la velocidad del parpadeo de LD2."
+    },
+    "R30": {
+      "name": "Pull-up de 4,7 kΩ para B1 (R30)",
+      "what": "Mantiene PC13 en HIGH mientras B1 está suelto, así que el sketch no necesita INPUT_PULLUP."
+    },
+    "R29": {
+      "name": "Resistencia de 100 Ω del filtro de B1 (R29)",
+      "what": "Con C15, un pequeño filtro en el botón que suaviza los rebotes de su contacto."
+    },
+    "C15": {
+      "name": "Condensador de 100 nF del filtro de B1 (C15)",
+      "what": "La otra mitad del filtro antirrebote de B1."
+    },
+    "B2": {
+      "name": "Botón RESET B2 (negro)",
+      "what": "Lleva NRST a nivel bajo: el STM32 se reinicia y vuelve a ejecutarse desde setup(). El ST-LINK sigue conectado."
+    },
+    "C14": {
+      "name": "Condensador de 100 nF en NRST (C14)",
+      "what": "Filtra la línea de reinicio para que un pico no reinicie el MCU."
+    },
+    "L1": {
+      "name": "Ferrita (L1)",
+      "what": "Filtra VDD para dar la alimentación analógica VDDA (AVDD), que también es la referencia del ADC."
+    },
+    "CN5": {
+      "name": "Conector Arduino CN5 (D8-D15)",
+      "what": "Conector hembra con D8-D13, GND, AVDD y los pines I2C D14/D15, donde los tiene una Uno."
+    },
+    "CN6": {
+      "name": "Conector Arduino POWER CN6",
+      "what": "Conector hembra con IOREF (3,3 V), NRST, 3V3, 5V, dos GND y VIN."
+    },
+    "CN8": {
+      "name": "Conector analógico Arduino CN8 (A0-A5)",
+      "what": "Conector hembra para seis de las entradas del ADC."
+    },
+    "CN9": {
+      "name": "Conector Arduino CN9 (D0-D7)",
+      "what": "Conector hembra para D0-D7. D0 y D1 no están conectados: sus pines (PA3, PA2) van al ST-LINK como Serial."
+    },
+    "CN7": {
+      "name": "Conector ST morpho CN7 (izquierdo)",
+      "what": "38 pines macho con la mitad izquierda de los pines del destino, entre ellos PC13, BOOT0, E5V y VBAT. Los pines sobresalen por encima y por debajo de la placa."
+    },
+    "CN10": {
+      "name": "Conector ST morpho CN10 (derecho)",
+      "what": "38 pines macho con el resto de los GPIO, U5V y los pines USB OTG PA11/PA12."
+    },
+    "CN4": {
+      "name": "Conector SWD CN4",
+      "what": "La salida SWD del ST-LINK, para programar y depurar otra placa STM32 una vez quitados los jumpers de CN2."
+    },
+    "CN3": {
+      "name": "Conector COM virtual CN3",
+      "what": "El RX y el TX serie del ST-LINK, para usarlo como adaptador USB-serie de otra placa."
+    },
+    "SLOTS": {
+      "name": "Ranuras de separación",
+      "what": "Ranuras fresadas que cruzan la placa. Pártela por ellas y la parte del ST-LINK se separa; el destino funciona entonces desde E5V, VIN o 3,3 V."
+    },
+    "PASSIVES": {
+      "name": "Resistencias y condensadores 0603",
+      "what": "Los pequeños condensadores de desacoplo y las resistencias alrededor del MCU y de los reguladores, dibujados como un solo grupo."
+    },
+    "SB": {
+      "name": "Puentes de soldadura (cara inferior)",
+      "what": "Uniones de 0 Ω debajo de la placa que deciden qué pin del MCU llega a qué pin del conector; por ejemplo, SB62/SB63 abiertos mantienen D0 y D1 fuera del conector Arduino."
+    }
+  },
+  "wireables": {
+    "led": {
+      "note": "Un LED en el pin PWM D9 a través de 220 Ω: unos 5 mA desde 3,3 V.",
+      "caution": "Usa siempre una resistencia. Un LED azul o blanco necesita él solo unos 3 V, así que desde un pin de 3,3 V apenas brilla."
+    },
+    "push-button": {
+      "note": "Un lado a D2 y el otro a GND, con INPUT_PULLUP. El B1 azul en PC13 no necesita ningún cable."
+    },
+    "potentiometer": {
+      "note": "Los extremos a GND y 3V3, el cursor a A0: analogRead() da 0-4095 después de analogReadResolution(12).",
+      "caution": "Aliméntalo desde 3V3, nunca desde 5V: una entrada del ADC en modo analógico admite 4,0 V como mucho, y lee 4095 para cualquier tensión por encima de 3,3 V."
+    },
+    "tmp36": {
+      "note": "Funciona desde 3V3 en A1: 750 mV a 25 °C y 10 mV por °C."
+    },
+    "servo-sg90": {
+      "note": "Señal en el pin PWM D9; el pulso de 3,3 V basta para la mayoría de los servos de modelismo.",
+      "caution": "Aliméntalo con su propia fuente de 5 V y une las tierras. Por USB, toda la placa tiene 300 mA, y un servo al arrancar pide más."
+    },
+    "hc-sr04": {
+      "note": "VCC a 5V, TRIG a D7, ECHO a D8. D8 (PA9) tolera 5 V, así que aquí el eco de 5 V no necesita divisor.",
+      "caution": "Lleva ECHO a un pin digital, nunca a una entrada que leas con analogRead(): en modo analógico un pin admite 4,0 V como mucho."
+    },
+    "mpu6050": {
+      "note": "VCC a 3V3, SDA a D14, SCL a D15. La GY-521 trae los pull-ups de I2C que le faltan a la Nucleo."
+    },
+    "ssd1306": {
+      "note": "Una OLED I2C de 0,96 pulgadas funciona a 3,3 V en D14/D15; la mayoría de los módulos llevan sus propios pull-ups."
+    }
+  },
+  "failures": {
+    "reverse-vin": {
+      "title": "Alimentación al revés en VIN",
+      "symptom": "No se enciende nada. La fuente llega a su límite de corriente y U3, el regulador de 5 V que está encima del conector A0-A5, se calienta.",
+      "explanation": "VIN no tiene diodo contra la polaridad inversa: va directo al LD1117 (U3) y al tántalo C16. Al revés, la corriente atraviesa el regulador en el sentido equivocado, limitada solo por tu fuente, y el LD1117 se sobrecalienta o falla en cortocircuito. D4, después de él, bloquea la tensión inversa hacia E5V, así que el resto de la placa normalmente se salva.",
+      "fix": "Apaga y comprueba la polaridad con un multímetro antes de volver a conectar: + a VIN (pin 8 de CN6), - a GND. Cambia U3 si la placa ya no funciona desde VIN; desde el USB sigue funcionando."
+    },
+    "vin-overvoltage": {
+      "title": "20 V en VIN",
+      "symptom": "U3 se calienta mucho y luego la placa se apaga: LD3 apagado.",
+      "explanation": "El LD1117 es un regulador lineal: convierte en calor (VIN - 5 V) multiplicado por la corriente, y 15 V es su máximo absoluto. ST limita VIN a 7-12 V, y aun así a 800 mA a 7 V, 450 mA hasta 9 V y 250 mA hasta 12 V por ese calor. A 20 V el regulador se estropea.",
+      "fix": "Usa 7-12 V en VIN (9 V es una buena elección), o alimenta la placa por USB o con una fuente de 5 V en E5V. Cambia U3."
+    },
+    "reverse-e5v": {
+      "title": "Alimentación al revés en E5V",
+      "symptom": "Todo se queda apagado, la fuente entra en limitación de corriente y U4 se calienta.",
+      "explanation": "E5V (pin 6 de CN7) no tiene protección: con JP5 en 2-3 es la línea +5V. Invertida, llegan -5 V a la entrada del LD39050 (U4), a LD3 y a los pines de 5 V de un shield. D3 los mantiene lejos del ST-LINK, pero U4, y el MCU que está detrás, pueden destruirse.",
+      "fix": "Comprueba la polaridad con un multímetro antes de conectar. Cambia U4 y prueba el MCU después de una inversión."
+    },
+    "e5v-overvoltage": {
+      "title": "9 V en E5V",
+      "symptom": "LD3 se enciende un momento y luego U4 se estropea; la línea de 3,3 V puede subir y llevarse por delante el MCU.",
+      "explanation": "E5V tiene que estar entre 4,75 y 5,25 V porque va directo a +5V. El regulador de 3,3 V LD39050 (U4) admite unos pocos voltios por encima de su entrada de 5 V, unos 7 V como mucho, así que 9 V lo destruyen. VIN es la entrada que admite 7-12 V, a través de su propio regulador.",
+      "fix": "Pon una fuente de 9 V en VIN, nunca en E5V; en E5V solo van 5 V regulados. Cambia U4."
+    },
+    "short-5v": {
+      "title": "5V en cortocircuito con GND",
+      "symptom": "Se apagan todos los LED, LD1 incluido, y el ordenador puede avisar de una sobrecorriente en el USB.",
+      "explanation": "La placa no tiene fusible. Por USB, el interruptor T2 deja pasar el cortocircuito hasta que el puerto del ordenador se apaga; por VIN, U3 limita la corriente y se sobrecalienta; por E5V, solo lo para el límite de tu fuente.",
+      "fix": "Desconecta, busca el cable suelto o el puente de soldadura entre 5V y GND, y comprueba con el modo de continuidad de un multímetro antes de volver a alimentarla."
+    },
+    "short-3v3": {
+      "title": "3V3 en cortocircuito con GND",
+      "symptom": "LD3 sigue encendido y LD1 sigue funcionando, pero LD2 está apagado, no funciona nada y U4 se calienta.",
+      "explanation": "El LD39050 (U4) limita su corriente y se apaga cuando se calienta demasiado, así que el cortocircuito se queda en la línea de 3,3 V. +5V sigue bien, y por eso LD3, que cuelga de +5V, sigue brillando mientras el MCU no tiene alimentación.",
+      "fix": "Desconecta y quita el cortocircuito; lo típico es un sensor de 3,3 V con VCC y GND intercambiados. U4 normalmente sobrevive."
+    },
+    "jp6-off": {
+      "title": "Jumper JP6 (IDD) quitado",
+      "symptom": "LD3 está encendido y el ordenador reconoce el ST-LINK, pero LD2 nunca parpadea y una carga termina con \"No STM32 target found\".",
+      "explanation": "JP6 es la única unión entre el regulador de 3,3 V y los pines VDD del MCU. ST lo puso ahí para que puedas cambiarlo por un amperímetro y medir lo que consume el STM32. Sin el jumper, el MCU no tiene ninguna alimentación.",
+      "fix": "Vuelve a poner el jumper en JP6, o un amperímetro entre sus dos pines si estás midiendo la corriente."
+    },
+    "jp5-off": {
+      "title": "JP5 sin jumper",
+      "symptom": "Por USB, LD3 se queda apagado y el destino está muerto, pero LD1 COM se enciende: el ST-LINK funciona.",
+      "explanation": "JP5 elige de dónde viene +5V: los pines 1-2 para el USB (U5V), 2-3 para E5V y VIN. Sin jumper, +5V no está conectado a nada. El ST-LINK tiene su propia alimentación desde el USB a través de D2 y U1, así que el ordenador lo sigue reconociendo.",
+      "fix": "Pon el jumper en JP5: 1-2 (U5V) para el USB, 2-3 (E5V) para VIN o E5V."
+    },
+    "cn2-off": {
+      "title": "Jumpers de CN2 quitados",
+      "symptom": "El sketch que ya está en la placa sigue funcionando, pero todas las cargas fallan con \"No STM32 target found\".",
+      "explanation": "Los dos jumpers de CN2 conectan SWCLK y SWDIO del ST-LINK al STM32 de destino. Sin ellos, el ST-LINK controla el conector SWD CN4, para programar otra placa, y no puede llegar a esta.",
+      "fix": "Vuelve a poner los dos jumpers en CN2 para programar la propia Nucleo."
+    },
+    "reversed-d4": {
+      "title": "D4 soldado al revés",
+      "symptom": "Por VIN no se enciende nada; por USB la placa funciona con normalidad.",
+      "explanation": "D4, un Schottky STPS2L30A, lleva los 5 V del LD1117 a E5V. Al revés, bloquea esa corriente, así que VIN nunca llega a +5V. El USB no pasa por D4, y por eso la placa sigue funcionando por USB.",
+      "fix": "Desuelda D4 y dale la vuelta para que su franja de cátodo mire hacia el lado de E5V, como indica la serigrafía."
+    },
+    "reversed-c16": {
+      "title": "Tántalo C16 al revés",
+      "symptom": "Por VIN la fuente entra en limitación de corriente, y C16 se calienta y puede agrietarse o echar humo.",
+      "explanation": "C16 es un condensador de tántalo de 10 µF con polaridad, colocado justo entre VIN y GND. Invertido, su capa de óxido conduce, así que se convierte casi en un cortocircuito en la entrada, y los condensadores de tántalo pueden arder cuando fallan así.",
+      "fix": "Cambia C16 por uno nuevo, con la franja del positivo hacia U3. Un tántalo que ha estado invertido está dañado aunque parezca estar bien."
+    },
+    "brownout": {
+      "title": "Servo en el pin 5V",
+      "symptom": "El sketch se reinicia una y otra vez mientras el servo se mueve, y el ordenador puede perder el puerto USB.",
+      "explanation": "Por USB, el ST-LINK pidió al ordenador 300 mA, y la placa usa parte de ellos. Un servo al arrancar o bloqueado pide varios cientos de mA más, y no hay fusible: los 5 V del USB caen, +5V y luego 3,3 V los siguen, y el STM32 se reinicia cada vez que VDD baja de unos 1,7 V (su reinicio por apagado; el detector de caída de tensión viene desactivado de fábrica).",
+      "fix": "Alimenta los servos y los motores con su propia fuente, contrólalos con un driver y une las tierras."
+    },
+    "cold-usb": {
+      "title": "Soldaduras agrietadas en el conector USB",
+      "symptom": "La placa se apaga y se enciende cuando se mueve el cable, LD1 vuelve a empezar y el ordenador se conecta y se desconecta.",
+      "explanation": "Las patillas de la carcasa del conector mini-B reciben la fuerza cada vez que enchufas, y en una placa muy usada sus soldaduras se agrietan. Una soldadura agrietada de VBUS o de tierra corta la alimentación un momento cada vez que se mueve el cable.",
+      "fix": "Vuelve a fundir las patillas de la carcasa del conector y sus cinco pines con estaño y flux nuevos, y sujeta el cable para que no haga palanca sobre el conector."
+    },
+    "cold-d13": {
+      "title": "Soldadura fría en D13",
+      "symptom": "El LED de la protoboard se salta parpadeos o titila, mientras el sketch funciona con normalidad.",
+      "explanation": "Una soldadura fría es estaño que nunca mojó el pin: gris, con grumos y suelta. El pin 6 de CN5 solo toca su pad de vez en cuando, así que la señal de D13 va y viene en el conector.",
+      "fix": "Vuelve a calentar la soldadura con una punta limpia y un poco de estaño nuevo hasta que fluya en un cono brillante."
+    }
+  },
+  "assembly": {
+    "unplug": {
+      "title": "Desconéctala",
+      "body": "Quita el cable USB y lo que haya en VIN o E5V. Nunca montes ni repares una placa con tensión."
+    },
+    "strip": {
+      "title": "Déjala en la PCB desnuda",
+      "body": "Quita todas las piezas. Lo que queda es la placa blanca MB1136 con su serigrafía azul, las ranuras de separación bajo el ST-LINK y la huella vacía de X3 que ST nunca monta.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión."
+    },
+    "reflow": {
+      "title": "Colocación automática, y luego reflujo",
+      "body": "Una máquina pone pasta en los pads y coloca todas las piezas de montaje superficial: el STM32F401 y el STM32F103 del ST-LINK, los tres reguladores, el interruptor del USB, los diodos, los LED, el conector mini-B, B1 y B2, el cristal de 32 kHz y un centenar de resistencias y condensadores 0603. Luego el horno de reflujo funde la pasta.",
+      "refusal": "Primero deja la placa desnuda: el reflujo empieza con los pads vacíos."
+    },
+    "low": {
+      "title": "Coloca las piezas bajas",
+      "body": "Ahora van el cristal de 8 MHz X1 y los conectores macho: las dos filas morpho de 38 pines CN7 y CN10, CN2, CN3, CN4, JP1, JP5, JP6 y los dos conectores de aparcamiento CN11 y CN12 para los jumpers de repuesto.",
+      "refusal": "Primero las piezas de montaje superficial y el reflujo: el horno fundiría el plástico de los conectores."
+    },
+    "sockets": {
+      "title": "Coloca los zócalos Arduino",
+      "body": "Luego los cuatro conectores hembra Arduino altos: CN6 POWER, CN8 A0-A5, CN5 D8-D15 y CN9 D0-D7.",
+      "refusal": "Primero las piezas bajas: con los zócalos altos puestos, la placa se tambalea y las piezas bajas se caen al darle la vuelta."
+    },
+    "solder": {
+      "title": "Suelda las uniones de inserción",
+      "body": "Dale la vuelta a la placa y suelda todos los pines, unos 130. Una buena soldadura es un cono brillante que moja tanto el pad como el pin.",
+      "refusal": "Primero coloca las piezas de inserción: todavía no hay nada que soldar."
+    },
+    "jumpers": {
+      "title": "Pon los jumpers",
+      "body": "Mete los jumpers negros: JP5 en 1-2 (U5V, alimentación por USB), JP6 (IDD) y los dos de CN2 para que el ST-LINK programe esta placa. JP1 se queda abierto. Así viene de fábrica de ST.",
+      "refusal": "Primero suelda los conectores: los jumpers van sobre sus pines."
+    },
+    "power-up": {
+      "title": "Conecta el USB",
+      "body": "LD1 COM parpadea en rojo mientras el ordenador reconoce el ST-LINK, y luego se queda en rojo. LD3 PWR se enciende en cuanto T2 pasa los 5 V al destino, y la demo de fábrica hace parpadear LD2; pulsa B1 para cambiar la velocidad. El ordenador ve una unidad NODE_F401RE y un puerto COM virtual."
+    },
+    "rails": {
+      "title": "Comprueba las líneas de alimentación",
+      "body": "Con un multímetro: 5V marca unos 5 V por USB y 3V3 marca 3,3 V. VDD, en el pin 5 de CN7, también debería marcar 3,3 V; 0 V ahí con 3V3 bien quiere decir que JP6 está quitado."
+    },
+    "upload-hello": {
+      "title": "Carga un sketch",
+      "body": "Carga Hola por serie. El ST-LINK programa el STM32 por SWD, con LD1 parpadeando en rojo y verde mientras escribe la flash; luego arranca el sketch e imprime por el puerto COM virtual a 115200 baudios.",
+      "refusal": "Primero conecta el USB: las cargas llegan por el cable a través del ST-LINK."
+    },
+    "reset": {
+      "title": "Pulsa RESET",
+      "body": "Pulsa el B2 negro. NRST pasa a nivel bajo, el STM32 se reinicia y el sketch vuelve a empezar desde setup(). El ST-LINK y su puerto COM siguen conectados."
+    }
+  },
+  "lessons": {
+    "blink": {
+      "title": "Haz parpadear LD2 y un LED",
+      "lede": "El Hola Mundo de la Nucleo. D13 es el pin PA5, que controla el LD2 verde de la placa; conecta un LED y una resistencia al mismo pin y los dos parpadean a la vez, a 3,3 V en lugar de los 5 V de una Uno.",
+      "code": {
+        "intro": "Haz parpadear LD2, y un LED en D13, a 3,3 V",
+        "resistor": "Resistencia en serie con el LED de la protoboard:",
+        "pin": "el LD2 verde de la placa"
+      },
+      "params": {
+        "on": {
+          "label": "LED encendido durante"
+        },
+        "off": {
+          "label": "LED apagado durante"
+        },
+        "resistor": {
+          "220": "220 Ω",
+          "label": "Resistencia del LED de la protoboard",
+          "220-note": "Unos 6 mA desde 3,3 V: brillante.",
+          "1k": "1 kΩ",
+          "1k-note": "Unos 1,3 mA: más tenue, pero se ve bien.",
+          "10k": "10 kΩ",
+          "10k-note": "Unos 0,13 mA: apenas brilla."
+        }
+      },
+      "checks": {
+        "1": "Funciona durante 9 segundos sin errores",
+        "2": "D13 parpadea con un periodo de entre 0,1 y 4 s",
+        "3": "Usa pinMode(), digitalWrite() y delay()"
+      },
+      "pins": {
+        "D13": {
+          "to": "Resistencia de 220 Ω y luego la pata larga del LED",
+          "role": "Salida: 3,3 V en HIGH, 0 V en LOW. LD2 parpadea con ella."
+        },
+        "GND": {
+          "to": "La pata corta del LED",
+          "role": "El camino de vuelta de la corriente."
+        }
+      },
+      "callouts": {
+        "LD2": "LD2 en la placa, en D13 a través de 510 Ω.",
+        "R1": "Limita la corriente del LED desde el pin de 3,3 V.",
+        "LED1": "Pata larga (ánodo) hacia D13."
+      },
+      "specs": {
+        "1": {
+          "label": "LD2",
+          "value": "D13 (PA5), 510 Ω, unos 2,5 mA"
+        },
+        "2": {
+          "label": "HIGH lógico",
+          "value": "3,3 V"
+        },
+        "3": {
+          "label": "Límite por pin",
+          "value": "25 mA absolutos, 20 mA en uso"
+        },
+        "4": {
+          "label": "Carga",
+          "value": "ST-LINK por SWD, sin bootloader"
+        }
+      },
+      "features": {
+        "1": "LD2 en la placa también parpadea: es el mismo pin",
+        "2": "Elige la resistencia y mira cómo cambia el brillo",
+        "3": "El ST-LINK carga por SWD: sin bootloader y sin botón de reinicio"
+      },
+      "steps": {
+        "1": "Conecta D13 a través de la resistencia a la pata larga del LED, y la pata corta a GND en CN5.",
+        "2": "Carga: LD1 parpadea en rojo y verde, y luego arranca el sketch.",
+        "3": "Cambia los tiempos de encendido y apagado y vuelve a cargar."
+      },
+      "hints": {
+        "1": "A 3,3 V la misma resistencia da menos corriente que en una Uno: 220 Ω es un buen punto de partida.",
+        "2": "LED_BUILTIN, LED_GREEN, PA5 y 13 son nombres del mismo pin en STM32duino."
+      },
+      "quiz": {
+        "q1": {
+          "q": "¿Qué tensión da D13 en HIGH en la Nucleo?",
+          "options": {
+            "1": "5 V",
+            "2": "3,3 V",
+            "3": "Depende del cable USB"
+          },
+          "why": "El STM32 funciona a 3,3 V, así que sus salidas van de 0 V a 3,3 V."
+        },
+        "q2": {
+          "q": "¿En qué pin está LD2?",
+          "options": {
+            "1": "D13 (PA5)",
+            "2": "PC13",
+            "3": "D0"
+          },
+          "why": "LD2 cuelga de PA5, el D13 de Arduino, a través de 510 Ω. PC13 es el botón B1."
+        },
+        "q3": {
+          "q": "¿Cómo llega el sketch al STM32?",
+          "options": {
+            "1": "Por un bootloader serie, como en una Uno",
+            "2": "Por Wi-Fi",
+            "3": "El ST-LINK escribe la flash por SWD"
+          },
+          "why": "El ST-LINK de la placa es un depurador: programa el destino a través de SWDIO y SWCLK, las líneas que conectan los dos jumpers de CN2."
+        }
+      }
+    },
+    "user-button": {
+      "title": "B1 y un potenciómetro en A0",
+      "lede": "Lee el botón azul B1 en PC13 y un potenciómetro en A0 con el ADC completo de 12 bits, e imprime los dos por el puerto COM virtual del ST-LINK. LD2 se enciende mientras mantienes pulsado B1.",
+      "code": {
+        "intro": "Lee B1 y un potenciómetro en A0, e imprímelos a través del ST-LINK",
+        "bits": "resolución del ADC en bits",
+        "full": "4095 con 12 bits, 1023 con 10",
+        "pullup": "R30, en la placa, lo lleva a nivel alto",
+        "vcp": "Serial va al puerto COM del ST-LINK",
+        "low": "B1 conecta PC13 a GND"
+      },
+      "params": {
+        "bits": {
+          "10": "10 bits (0-1023)",
+          "12": "12 bits (0-4095)",
+          "label": "Resolución del ADC",
+          "12-note": "El ADC completo del STM32: 0,8 mV por paso.",
+          "10-note": "El valor por defecto de STM32duino, para código escrito para una Uno."
+        },
+        "period": {
+          "label": "Imprime cada"
+        }
+      },
+      "world": {
+        "button": "Botón USER B1",
+        "knob": "Potenciómetro en A0"
+      },
+      "checks": {
+        "1": "Funciona durante 4 segundos sin errores",
+        "2": "Imprime A0 y su tensión mientras B1 está suelto",
+        "3": "LD2 se enciende antes de 1,1 s después de pulsar B1",
+        "4": "Imprime B1=DOWN mientras el botón está pulsado",
+        "5": "El potenciómetro girado del todo marca 3,30 V"
+      },
+      "pins": {
+        "PC13": {
+          "to": "B1 en la placa (no hace falta cable)",
+          "role": "Entrada con el pull-up de 4,7 kΩ de R30: LOW mientras está pulsado."
+        },
+        "A0": {
+          "to": "La pata central (cursor) del potenciómetro",
+          "role": "Entrada del ADC, de 0 a 3,3 V."
+        },
+        "3V3": {
+          "to": "Un extremo del potenciómetro",
+          "role": "El tope del recorrido del potenciómetro: 3,3 V, nunca 5 V."
+        },
+        "GND": {
+          "to": "El otro extremo del potenciómetro",
+          "role": "El fondo del recorrido."
+        }
+      },
+      "callouts": {
+        "B1": "Lleva PC13 a GND mientras está pulsado.",
+        "RV1": "Su cursor da 0-3,3 V en A0.",
+        "LD2": "Se enciende mientras B1 está pulsado."
+      },
+      "specs": {
+        "1": {
+          "label": "ADC",
+          "value": "12 bits: 0-4095 para 0-3,3 V"
+        },
+        "2": {
+          "label": "Resolución por defecto",
+          "value": "10 bits en STM32duino"
+        },
+        "3": {
+          "label": "Límite de una entrada analógica",
+          "value": "4,0 V absolutos: alimenta los sensores desde 3V3"
+        },
+        "4": {
+          "label": "Serie",
+          "value": "USART2 a través del ST-LINK, 115200 baudios"
+        }
+      },
+      "features": {
+        "1": "Pulsa B1 en la figura, o deja que lo pulse el script",
+        "2": "No hay pull-up que conectar: R30 está en la placa",
+        "3": "Conecta el potenciómetro a 3V3: 5 V en un pin del ADC pueden dañarlo"
+      },
+      "steps": {
+        "1": "Pon el potenciómetro en la protoboard: un extremo a 3V3, el otro a GND y la pata central a A0.",
+        "2": "Carga y abre el monitor serie a 115200 baudios.",
+        "3": "Gira el potenciómetro y mantén pulsado B1: los números cambian y LD2 se enciende."
+      },
+      "hints": {
+        "1": "B1 lee LOW cuando está pulsado: el botón conecta PC13 a GND.",
+        "2": "Sin analogReadResolution(12), analogRead() devuelve 0-1023, como en una Uno.",
+        "3": "¿No sale nada en el monitor serie? Ponlo a 115200 baudios."
+      },
+      "quiz": {
+        "q1": {
+          "q": "¿Qué devuelve digitalRead(USER_BTN) mientras B1 está pulsado?",
+          "options": {
+            "1": "HIGH",
+            "2": "Nada: queda al aire",
+            "3": "LOW"
+          },
+          "why": "R30 lleva PC13 a 3,3 V; al pulsar B1 se conecta a GND."
+        },
+        "q2": {
+          "q": "¿Por qué el potenciómetro va a 3V3 y no a 5V?",
+          "options": {
+            "1": "Un pin del ADC en modo analógico admite 4,0 V como mucho y solo mide hasta 3,3 V",
+            "2": "La Nucleo no tiene pin 5V",
+            "3": "El potenciómetro giraría al revés"
+          },
+          "why": "La tolerancia a 5 V del STM32 solo vale para las entradas digitales. En modo analógico el límite es de 4,0 V, y cualquier tensión por encima de 3,3 V lee 4095 de todos modos."
+        },
+        "q3": {
+          "q": "Después de analogReadResolution(12), ¿qué lee 1,65 V?",
+          "options": {
+            "1": "512",
+            "2": "Unos 2048",
+            "3": "4095"
+          },
+          "why": "12 bits dan 4096 pasos para 3,3 V, así que la mitad de 3,3 V son unos 2048."
+        }
+      }
+    },
+    "pwm-dimmer": {
+      "title": "Regula un LED con PWM",
+      "lede": "El F401 no tiene DAC, así que analogWrite() genera PWM: D9 se enciende y se apaga 1000 veces por segundo y el ciclo de trabajo fija el brillo. Un potenciómetro en A0 elige el ciclo de trabajo.",
+      "code": {
+        "intro": "Un potenciómetro en A0 fija el brillo de un LED en D9",
+        "pin": "PWM del temporizador TIM3",
+        "map": "entra 0..4095, sale un ciclo de trabajo de 0..255"
+      },
+      "params": {
+        "period": {
+          "label": "Actualiza cada"
+        }
+      },
+      "world": {
+        "knob": "Potenciómetro en A0"
+      },
+      "checks": {
+        "1": "Funciona durante 4,5 segundos sin errores",
+        "2": "Un cuarto de vuelta da un ciclo de trabajo de un 25 % en D9",
+        "3": "Girado del todo, D9 se queda encendido",
+        "4": "Girado a cero, imprime raw=0 duty=0"
+      },
+      "pins": {
+        "D9": {
+          "to": "Resistencia de 220 Ω y luego la pata larga del LED",
+          "role": "Salida PWM: 1 kHz, ciclo de trabajo de 8 bits."
+        },
+        "A0": {
+          "to": "El cursor del potenciómetro",
+          "role": "Entrada del ADC, 0-4095."
+        },
+        "3V3": {
+          "to": "Un extremo del potenciómetro",
+          "role": "El tope del recorrido del potenciómetro."
+        },
+        "GND": {
+          "to": "El otro extremo del potenciómetro y la pata corta del LED",
+          "role": "Tierra común."
+        }
+      },
+      "callouts": {
+        "LED1": "Conmuta 1000 veces por segundo: tu ojo ve un brillo continuo.",
+        "RV1": "Su posición se convierte en el ciclo de trabajo.",
+        "R1": "Limita la corriente: unos 5 mA con el ciclo de trabajo al máximo."
+      },
+      "specs": {
+        "1": {
+          "label": "Pines PWM",
+          "value": "D3, D5, D6, D9, D10, D11"
+        },
+        "2": {
+          "label": "PWM",
+          "value": "1 kHz, 8 bits por defecto"
+        },
+        "3": {
+          "label": "DAC",
+          "value": "ninguno en el F401"
+        }
+      },
+      "features": {
+        "1": "Gira el potenciómetro en la figura",
+        "2": "analogWriteResolution() y analogWriteFrequency() cambian los valores por defecto",
+        "3": "No hay una salida analógica de verdad: un multímetro en D9 muestra la media de los pulsos"
+      },
+      "steps": {
+        "1": "Conecta D9 a través de 220 Ω al LED, y el potenciómetro entre 3V3 y GND con el cursor en A0.",
+        "2": "Carga y gira el potenciómetro.",
+        "3": "Mira el monitor serie: el ciclo de trabajo sigue a la lectura."
+      },
+      "hints": {
+        "1": "map() escala 0-4095 a 0-255; su aritmética entera redondea hacia abajo.",
+        "2": "Aquí solo los pines marcados como PWM en la serigrafía funcionan con analogWrite()."
+      },
+      "quiz": {
+        "q1": {
+          "q": "¿Qué hace analogWrite(9, 128) en la Nucleo?",
+          "options": {
+            "1": "Enciende y apaga D9 a 1 kHz, encendido la mitad del tiempo",
+            "2": "Pone D9 a 1,65 V con un DAC",
+            "3": "Pone D9 en HIGH"
+          },
+          "why": "El F401 no tiene DAC: analogWrite() es PWM, y 128 de 255 es un ciclo de trabajo de un 50 %."
+        },
+        "q2": {
+          "q": "¿Por qué escalar 0-4095 a 0-255?",
+          "options": {
+            "1": "El LED necesita 255 mA",
+            "2": "El PWM es de 12 bits",
+            "3": "El ADC lee 12 bits, pero el PWM es de 8 bits por defecto"
+          },
+          "why": "analogReadResolution(12) da 0-4095, y analogWrite() acepta 0-255 salvo que cambies analogWriteResolution()."
+        },
+        "q3": {
+          "q": "¿Qué marca un multímetro en voltios de continua en D9 con un ciclo de trabajo del 25 %?",
+          "options": {
+            "1": "3,3 V",
+            "2": "Unos 0,8 V",
+            "3": "0 V"
+          },
+          "why": "El multímetro promedia los pulsos rápidos: el 25 % de 3,3 V son unos 0,8 V."
+        }
+      }
+    },
+    "i2c-scan": {
+      "title": "Encuentra un sensor I2C",
+      "lede": "Explora el bus I2C en D14 (SDA) y D15 (SCL) y pídele a un MPU-6050 su registro WHO_AM_I. La Nucleo no tiene pull-ups de I2C propios, así que los tiene que traer el módulo.",
+      "code": {
+        "intro": "Busca dispositivos en el I2C1 y luego lee el ID del MPU-6050",
+        "addr": "AD0 a nivel bajo: 0x68",
+        "pins": "D14 = SDA (PB9), D15 = SCL (PB8)",
+        "restart": "inicio repetido: conserva el bus",
+        "alive": "haz parpadear LD2 para saber que funciona"
+      },
+      "params": {
+        "blink": {
+          "label": "Tiempo de parpadeo de LD2"
+        }
+      },
+      "world": {
+        "imu": "Inclinación del MPU-6050"
+      },
+      "checks": {
+        "1": "Funciona durante 3 segundos sin errores",
+        "2": "Encuentra un dispositivo en 0x68",
+        "3": "Lee WHO_AM_I = 0x68",
+        "4": "Usa Wire.begin(), beginTransmission() y endTransmission()"
+      },
+      "pins": {
+        "D14": {
+          "to": "El SDA del módulo",
+          "role": "Datos del I2C (PB9)."
+        },
+        "D15": {
+          "to": "El SCL del módulo",
+          "role": "Reloj del I2C (PB8)."
+        },
+        "3V3": {
+          "to": "El VCC del módulo",
+          "role": "Alimentación, 3,3 V."
+        },
+        "GND": {
+          "to": "El GND del módulo",
+          "role": "Tierra común."
+        }
+      },
+      "callouts": {
+        "MPU1": "GY-521: un MPU-6050 con su propio regulador de 3,3 V y pull-ups de 4,7 kΩ.",
+        "U5": "El I2C1 del STM32 controla D14 y D15.",
+        "CN5": "D14 y D15 son los dos pines de arriba de CN5, donde una Uno R3 tiene SDA y SCL."
+      },
+      "specs": {
+        "1": {
+          "label": "Bus",
+          "value": "I2C1 en D14/D15 (PB9/PB8)"
+        },
+        "2": {
+          "label": "Pull-ups en la Nucleo",
+          "value": "ninguno"
+        },
+        "3": {
+          "label": "Dirección del MPU-6050",
+          "value": "0x68 (AD0 a nivel bajo)"
+        },
+        "4": {
+          "label": "Velocidad del bus",
+          "value": "100 kHz por defecto"
+        }
+      },
+      "features": {
+        "1": "Inclina el módulo en la figura",
+        "2": "Los mismos dos pines que SDA y SCL en una Uno R3",
+        "3": "endTransmission() devuelve 0 cuando responde un dispositivo"
+      },
+      "steps": {
+        "1": "Conecta la GY-521: VCC a 3V3, GND a GND, SDA a D14, SCL a D15.",
+        "2": "Carga y abre el monitor serie a 115200 baudios.",
+        "3": "Lee la exploración: un dispositivo en 0x68, y WHO_AM_I = 0x68."
+      },
+      "hints": {
+        "1": "¿No encuentra nada? Comprueba que SDA y SCL no están intercambiados y que el módulo tiene pull-ups.",
+        "2": "Pon AD0 en HIGH y el MPU-6050 pasa a 0x69.",
+        "3": "En la Nucleo, A4 y A5 son pines analógicos normales: el I2C está en D14 y D15."
+      },
+      "quiz": {
+        "q1": {
+          "q": "¿Dónde está el I2C en los conectores Arduino de la Nucleo?",
+          "options": {
+            "1": "A4 y A5",
+            "2": "D14 (SDA) y D15 (SCL)",
+            "3": "D0 y D1"
+          },
+          "why": "STM32duino pone Wire en el I2C1, PB9 y PB8, que son D14 y D15 en CN5. Aquí A4 y A5 solo son entradas analógicas."
+        },
+        "q2": {
+          "q": "¿Qué significa que endTransmission() devuelva 0?",
+          "options": {
+            "1": "No hay ningún dispositivo",
+            "2": "El bus está bloqueado",
+            "3": "Un dispositivo ha confirmado su dirección"
+          },
+          "why": "0 significa que la dirección se ha confirmado (ACK); 2 significa que no ha respondido ningún dispositivo."
+        },
+        "q3": {
+          "q": "¿Por qué funciona la GY-521 sin resistencias adicionales?",
+          "options": {
+            "1": "Lleva sus propios pull-ups en SDA y SCL",
+            "2": "La Nucleo tiene pull-ups en D14 y D15",
+            "3": "El I2C no necesita pull-ups"
+          },
+          "why": "Las líneas I2C son de drenador abierto y necesitan pull-ups. La Nucleo no tiene, así que los pone el módulo."
+        }
+      }
+    },
+    "sonar": {
+      "title": "Distancia con un HC-SR04",
+      "lede": "Mide la distancia con un sensor de ultrasonidos y enciende LD2 cuando algo se acerca. El sensor funciona a 5 V, y su pin ECHO entra directamente en D8, uno de los pines de la Nucleo que toleran 5 V.",
+      "code": {
+        "intro": "Mide la distancia y enciende LD2 cuando algo está cerca",
+        "ft": "tolera 5 V, así que ECHO entra directamente",
+        "near": "más cerca que esto enciende LD2",
+        "ping": "un pulso de 10 µs envía la ráfaga",
+        "echo": "ECHO se queda en HIGH durante la ida y vuelta: 58 µs por cm"
+      },
+      "params": {
+        "near": {
+          "label": "Cerca si está a menos de"
+        },
+        "every": {
+          "label": "Mide cada"
+        }
+      },
+      "world": {
+        "distance": "Distancia al objeto"
+      },
+      "checks": {
+        "1": "Marca 30 cm en el primer segundo",
+        "2": "Marca 12 cm y lo considera NEAR",
+        "3": "LD2 se enciende antes de 0,4 s después de acercarse el objeto",
+        "4": "Marca 45 cm cuando se aleja",
+        "5": "Mide el eco con pulseIn()"
+      },
+      "pins": {
+        "5V": {
+          "to": "El VCC del sensor",
+          "role": "El HC-SR04 necesita 5 V."
+        },
+        "D7": {
+          "to": "TRIG",
+          "role": "Salida: un pulso de 10 µs y 3,3 V empieza una medida."
+        },
+        "D8": {
+          "to": "ECHO",
+          "role": "Entrada: un pulso de 5 V, sin problema en este pin que tolera 5 V."
+        },
+        "GND": {
+          "to": "El GND del sensor",
+          "role": "Tierra común."
+        }
+      },
+      "callouts": {
+        "US1": "Envía ráfagas de 40 kHz desde T y escucha en R.",
+        "CN5": "D8 (PA9) admite 5 V como entrada digital.",
+        "LD2": "Se enciende cuando el objeto está cerca."
+      },
+      "specs": {
+        "1": {
+          "label": "Alcance",
+          "value": "De 2 cm a unos 4 m"
+        },
+        "2": {
+          "label": "Tiempos",
+          "value": "58 µs de eco por cm"
+        },
+        "3": {
+          "label": "Alimentación del sensor",
+          "value": "5 V, unos 15 mA"
+        },
+        "4": {
+          "label": "Nivel de ECHO",
+          "value": "5 V: solo a un pin digital que tolere 5 V"
+        }
+      },
+      "features": {
+        "1": "Arrastra el objeto en la figura",
+        "2": "ECHO va a un pin digital: una entrada del ADC en modo analógico admite 4,0 V como mucho",
+        "3": "Cambia la distancia de cerca y mira LD2"
+      },
+      "steps": {
+        "1": "Conecta VCC a 5V, GND a GND, TRIG a D7 y ECHO a D8.",
+        "2": "Carga y abre el monitor serie a 115200 baudios.",
+        "3": "Mueve la mano delante del sensor: LD2 se enciende cuando se acerca."
+      },
+      "hints": {
+        "1": "pulseIn() devuelve 0 cuando no vuelve ningún eco antes de su tiempo de espera.",
+        "2": "En la práctica, el pulso TRIG de 3,3 V basta para el HC-SR04.",
+        "3": "En una placa de 3,3 V sin pines que toleren 5 V, ECHO necesita un divisor de tensión."
+      },
+      "quiz": {
+        "q1": {
+          "q": "¿Por qué ECHO puede ir directamente a D8?",
+          "options": {
+            "1": "El HC-SR04 funciona a 3,3 V",
+            "2": "ECHO solo da 2 V",
+            "3": "PA9 tolera 5 V como entrada digital"
+          },
+          "why": "Casi todos los pines del STM32F401 son FT: mientras la placa tiene alimentación, una entrada digital admite hasta VDD + 4 V."
+        },
+        "q2": {
+          "q": "¿Cuánto tiempo está ECHO en HIGH con un objeto a 10 cm?",
+          "options": {
+            "1": "10 µs",
+            "2": "Unos 580 µs",
+            "3": "58 ms"
+          },
+          "why": "El sonido tarda unos 58 µs por cm en ir y volver, así que 10 cm dan unos 580 µs."
+        },
+        "q3": {
+          "q": "¿Qué devuelve pulseIn() cuando no vuelve ningún eco?",
+          "options": {
+            "1": "0, después de su tiempo de espera",
+            "2": "La última distancia",
+            "3": "-1"
+          },
+          "why": "Con un tiempo de espera de 30000 µs, pulseIn() se rinde y devuelve 0, así que el sketch imprime 0 cm."
+        }
+      }
+    }
+  }
+}
