@@ -73,8 +73,9 @@ Do: Run. The LED blinks, the serial monitor says Running, and Checks reads "All 
 > She wires her first LED and runs Blink.
 > That's Arduino code, running in her browser on a virtual clock.
 
-Do: in Break it, find "LED with no resistor" and press Trigger. One bright flash, then dark. The readout under the
-figure says the LED burnt out and how many milliamps did it.
+Do: in Break it, find "LED with no resistor" and press Trigger. One bright flash, then dark. The figure's note says
+how many milliamps did it ("LED1 burned out: 113 mA is far above its 20 mA", for a few seconds), and the readout
+under the figure says "LED1: burnt out".
 
 > Then she does what everyone does once. No resistor.
 > One bright flash, and the LED is gone. SimLab solved the circuit and knows exactly how much current killed it.

@@ -70,8 +70,9 @@ Each shot has what's on screen, the clicks, and the voice-over line (VO). Times 
 ### 4 · 0:28–0:38 · Break it
 
 - Screen: the same, scrolled so Break it and the figure are both in frame.
-- Clicks: "LED with no resistor", Trigger. One bright flash, then dark; the readout says the LED burnt out and how many
-  milliamps did it. Hold two seconds on the "What you see / Why / Fix" text.
+- Clicks: "LED with no resistor", Trigger. One bright flash, then dark; the figure's note says how many milliamps did it
+  ("LED1 burned out: 113 mA …", a few seconds) and the readout under the figure says "LED1: burnt out". Hold two
+  seconds on the "What you see / Why / Fix" text.
 - VO: "Then the classic mistake: no resistor. One bright flash, and the LED is gone. Break it shows what you'd see,
   why it happened, and the fix."
 
