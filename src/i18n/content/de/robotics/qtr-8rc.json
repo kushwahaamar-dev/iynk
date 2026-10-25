@@ -1,0 +1,467 @@
+{
+  "title": "Linienfolger QTR-8RC",
+  "sub": "acht IR-Sensoren, die über die Zeit messen",
+  "hint": "bau die Leiste, lies die Linie, dann lenk",
+  "overview": "Der QTR-8RC ist eine rote Leiste von 75 mm mit acht Infrarot-Reflexsensoren in einer Reihe, 9,5 mm auseinander. Jeder Sensor ist eine IR-LED und ein Fototransistor nebeneinander, die auf den Boden 3 mm darunter blicken. Weiß reflektiert viel IR, schwarzes Klebeband fast nichts. Die RC-Version misst über die Zeit: Der Nano treibt jeden Ausgang auf HIGH, lässt los und zählt, wie lange die Leitung zum Abfallen braucht, etwa 120 µs über Weiß und über Schwarz länger als das Timeout der Bibliothek von 2500 µs. Aus acht solchen Zeiten wird eine Zahl von 0 bis 7000: wo die Linie unter der Leiste liegt. Bau die Leiste, verdrahte sie mit einem Nano, einem TB6612FNG und zwei Getriebemotoren, schieb eine Testkarte darunter und lass den Roboter zurück auf die Linie lenken. Dann mach sie kaputt: zu wenig Spannung, ein überbrückter Bypass, eine kalte Lötstelle, Sonnenlicht, die Leiste zu hoch, die Motoren vertauscht.",
+  "parts": {
+    "U1": {
+      "name": "Reflexsensoren 1-8",
+      "what": "Acht Sensoren im Stil des QRE1113 in einer Reihe, 9,525 mm auseinander: Jeder ist eine IR-LED (940 nm) und ein Fototransistor in einem schwarzen Gehäuse von 2,8 x 3,6 mm mit zwei Fenstern. Die LED leuchtet auf den Boden; je mehr IR zurückkommt, desto stärker zieht der Fototransistor seinen Ausgang nach unten. Sensor 1 ist links, unter OUT1."
+    },
+    "Q1": {
+      "name": "LED-Schalter (N-MOSFET)",
+      "what": "Schaltet alle acht IR-LEDs auf einmal. Sein Gate ist LEDON, über 47 kΩ auf VCC hochgezogen, also sind die LEDs an, solange der Nano LEDON nicht auf LOW zieht. Sie zwischen den Messungen auszuschalten spart den größten Teil der 100 mA."
+    },
+    "R3": {
+      "name": "47-Ω-Widerstand im LED-Strang 1+2",
+      "what": "Die LEDs laufen als vier Paare in Reihe: 1+2, 3+4, 5+6 und 7+8. Jedes Paar hat einen dieser Widerstände (R3, R9, R13, R16), der seinen Strom festlegt, bei 5 V etwa 20 mA. Fehlt einer, werden beide Sensoren seines Paars dunkel."
+    },
+    "R4": {
+      "name": "47-kΩ-Pull-up an LEDON",
+      "what": "Hält LEDON auf HIGH, sodass die LEDs auch leuchten, wenn nichts an LEDON angeschlossen ist. Zieh ihn auf LOW, um sie auszuschalten."
+    },
+    "C1": {
+      "name": "10-nF-Zeitkondensatoren",
+      "what": "Jeder Ausgang hat einen 10-nF-Kondensator und einen 220-Ω-Widerstand. Der Nano lädt den Knoten, indem er den Pin auf HIGH treibt; lässt er los, entlädt der Fototransistor den Kondensator. Je mehr Licht, desto schneller der Abfall: Diese Zeit ist der Messwert."
+    },
+    "BYP": {
+      "name": "Pads 3.3V BYPASS",
+      "what": "Zwei Pads am Rand der Stiftleiste. Überbrückt schließen sie die gemeinsame 47-Ω-Stufe kurz, damit die LEDs an 3,3 V hell bleiben. Überbrück sie nie an 5 V: Jeder LED-Strang nimmt dann etwa 55 mA, mehr als die 50 mA, für die die LEDs ausgelegt sind."
+    },
+    "PERF": {
+      "name": "Trennlinie",
+      "what": "Eine Spalte von Durchkontaktierungen zwischen den Sensoren 6 und 7. Brich die Platine hier, um eine Leiste mit 6 und eine mit 2 Sensoren zu bekommen. Das kleine Stück braucht dann den 100-Ω-Widerstand aus dem Bausatz, damit seine LEDs leuchten, und sie bleiben die ganze Zeit an."
+    },
+    "J1": {
+      "name": "11-polige Stiftleiste: GND, VCC, LEDON, OUT1-OUT8",
+      "what": "Bedrahtete Bauteile sind keine bestückt. Die Stiftleiste kommt auf die Rückseite, damit ihre Pins nach oben vom Boden weg zeigen, wenn die Sensoren nach unten blicken. GND ist das quadratische Pad."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "Liest die Leiste und treibt die Räder. GND, VCC und LEDON der Leiste gehen an GND, 5V und D2; OUT1-OUT6 an A0-A5 (jeder Pin kann einen RC-Ausgang messen); OUT7 und OUT8 an D11 und D12. Der Treiber nimmt D5-D10 und D4."
+    },
+    "DRV": {
+      "name": "Motortreiber TB6612FNG",
+      "what": "Der MOSFET-Treiber aus Abb. 05: PWMA D5, AIN1 D7, AIN2 D8, STBY D9, BIN1 D10, BIN2 D4, PWMB D6. Seine Logik läuft an den 5 V des Nano, die Motoren am LiPo an VM."
+    },
+    "MOTL": {
+      "name": "Motor L (linkes Rad)",
+      "what": "Ein TT-Getriebemotor an A01/A02. PWMA legt seine Drehzahl fest: Der Sketch „Der Linie folgen“ bremst ihn, wenn die Linie links liegt, also dreht der Roboter nach links."
+    },
+    "MOTR": {
+      "name": "Motor R (rechtes Rad)",
+      "what": "Der zweite TT-Getriebemotor, an B01/B02, Drehzahl von PWMB."
+    },
+    "BATT": {
+      "name": "2S-LiPo-Akku, 7,4 V",
+      "what": "Versorgt die Motoren über VM des Treibers. Nano und Leiste laufen über USB, also drückt der Motorstrom nie ihre 5 V nach unten."
+    },
+    "TRACK": {
+      "name": "Testkarte mit schwarzem Klebeband",
+      "what": "Weiße Karte mit 19 mm breitem schwarzem Isolierband quer darüber, unter die Leiste geschoben. Rote Striche markieren, wohin jeder Sensor blickt. Während der Sketch „Der Linie folgen“ läuft, driftet das Band, wenn die Strecke eine Kurve macht, und kommt zurück, wenn der Roboter darauf zulenkt."
+    }
+  },
+  "power": {
+    "label": "Den Prüfstand mit Strom versorgen",
+    "ok": "Nano an USB, LiPo an VM: Die Leiste misst, und der Treiber ist bereit"
+  },
+  "modes": {
+    "raw": {
+      "title": "Rohe RC-Zeiten"
+    },
+    "line": {
+      "title": "Position der Linie"
+    },
+    "follow": {
+      "title": "Der Linie folgen"
+    },
+    "code": {
+      "title": "QTR-8RC: acht RC-Sensoren, deren Zeit der Nano misst",
+      "pins": "OUT1-OUT8: Jeder Digitalpin kann einen RC-Ausgang messen",
+      "emitter": "LEDON: Die Bibliothek schaltet die IR-LEDs für jede Messung ein",
+      "read": "acht Abfallzeiten in µs: etwa 120 über Weiß, 2500 (das Timeout) über Schwarz",
+      "calibrate": "führ die Leiste jetzt über das Band: Jeder Sensor lernt sein eigenes Weiß und Schwarz",
+      "position": "0 = die Linie unter Sensor 1, 3500 = Mitte, 7000 = unter Sensor 8",
+      "motors": "beide Räder vorwärts, Drehzahl von 0 bis 255",
+      "error": "wie weit die Linie von der Mitte entfernt ist: negativ = links",
+      "kp": "Kp = 0.05: 2500 neben der Mitte ändern jedes Rad um 125"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Bis auf die nackte Platine zerlegen",
+      "body": "Nimm jedes Bauteil von der roten Platine. Du baust sie so wieder auf, wie sie hergestellt wird: zuerst die SMD-Sensoren, Widerstände, Kondensatoren und den MOSFET, dann die Stiftleiste.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einer Platine unter Spannung"
+    },
+    "smd": {
+      "title": "Die SMD-Bauteile bestücken, dann reflowlöten",
+      "body": "Die acht Sensoren, der LED-Schalter Q1, sechzehn 0603-Widerstände und zwölf Kondensatoren kommen in einem Durchgang drauf und durch den Ofen. Die Sensoren zeigen auf dieser Seite nach oben: Am Roboter zeigt diese Seite zum Boden.",
+      "refusal": "Die SMD-Bauteile kommen zuerst drauf, auf eine nackte Platine"
+    },
+    "header": {
+      "title": "Die 11-polige Stiftleiste auf der Rückseite einsetzen",
+      "body": "Drück die Stiftleiste von hinten hinein, damit ihre Pins vom Boden weg zeigen, wenn die Sensoren nach unten blicken. Nimm die Reihe 11 x 1: GND, VCC, LEDON und OUT1-OUT8.",
+      "refusal": "Zuerst die SMD-Bauteile: Bestücken und Reflow-Löten ausführen. Der Ofen würde die Kunststoff-Stiftleiste schmelzen"
+    },
+    "solder": {
+      "title": "Die Stiftleiste löten",
+      "body": "Elf Lötstellen, von der Bauteilseite gelötet. Jeder OUT-Pin trägt den Messwert seines Sensors, also zeigt sich eine kalte Lötstelle hier als ein Sensor, der auf Schwarz hängen bleibt.",
+      "refusal": "Noch nichts zu löten: Setz zuerst die Stiftleiste ein"
+    },
+    "wire-nano": {
+      "title": "Die Leiste mit dem Nano verdrahten",
+      "body": "GND an GND, VCC an 5V, LEDON an D2. OUT1-OUT6 an A0-A5 und OUT7, OUT8 an D11, D12: Die RC-Messung braucht nur einen Pin, der erst Ausgang und dann Eingang sein kann, und die Analogpins können das.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einer Platine unter Spannung"
+    },
+    "wire-driver": {
+      "title": "Den TB6612FNG verdrahten",
+      "body": "PWMA D5, AIN1 D7, AIN2 D8, STBY D9, BIN1 D10, BIN2 D4, PWMB D6, GND an GND und VCC an 5V des Nano. D5 und D6 sind die PWM-Pins, die die Sensoren frei gelassen haben.",
+      "refusal": "Zieh zuerst den Strom ab und verdrahte die Leiste vor dem Treiber"
+    },
+    "wire-motors": {
+      "title": "Die Motoren anschließen",
+      "body": "Der linke Motor an A01/A02, der rechte an B01/B02. Welcher links ist, spielt eine Rolle: Der Sketch bremst das Rad auf der Seite, auf der die Linie liegt.",
+      "refusal": "Zieh zuerst den Strom ab und verdrahte den Treiber vor den Motoren"
+    },
+    "wire-battery": {
+      "title": "Den LiPo an VM und GND anschließen",
+      "body": "Rot an VM, Schwarz an GND. Die Motoren laufen am Akku; Nano und Leiste bleiben an USB.",
+      "refusal": "Zieh zuerst den Strom ab und schließ die Motoren vor dem LiPo an"
+    },
+    "card": {
+      "title": "Die Testkarte unter die Leiste schieben",
+      "body": "Weiße Karte, schwarzes Band, 3 mm unter den Sensoren: der Abstand, der laut Pololu am besten funktioniert. Ohne etwas darunter sieht die Leiste kein zurückkommendes IR, und jeder Sensor misst Schwarz.",
+      "refusal": "Schließ zuerst den LiPo an"
+    },
+    "plug": {
+      "title": "Den Prüfstand mit Strom versorgen",
+      "body": "USB in den Nano, den LiPo an VM. Die IR-LEDs sind für dein Auge unsichtbar (eine Handykamera zeigt sie), und der Nano startet den Sketch „Rohe RC-Zeiten“.",
+      "refusal": "Bau zuerst fertig: jedes Bauteil drauf, jede Lötstelle gelötet, alles auf der Matte verdrahtet"
+    },
+    "raw": {
+      "title": "Rohe RC-Zeiten hochladen",
+      "body": "read() misst die Zeit aller acht Ausgänge: etwa 120 µs, wo ein Sensor weiße Karte sieht, 2500, wo er Band sieht (das ist das Timeout: echtes Schwarz braucht etwa 2,6 ms). Beweg die Karte und sieh zu, wie die 2500er wandern.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "line": {
+      "title": "Position der Linie hochladen",
+      "body": "Hundert Aufrufe von calibrate(), während du die Leiste über das Band führst, lassen jeden Sensor sein eigenes Weiß und Schwarz lernen. Dann macht readLineBlack() aus den acht Messwerten eine Zahl: 0 unter Sensor 1, 3500 in der Mitte, 7000 unter Sensor 8.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "follow": {
+      "title": "Der Linie folgen hochladen",
+      "body": "error = position - 3500. Jedes Rad bekommt 150 plus oder minus error/20: Liegt die Linie links, wird das linke Rad langsamer, der Roboter dreht nach links, und die Linie kommt zurück in die Mitte. Sieh zu, wie das Band driftet, wenn die Strecke eine Kurve macht, und zurückkommt.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "three-volts": {
+      "title": "Die Leiste aus 3,3 V versorgen",
+      "body": "VCC an den 3.3V-Pin des Nano statt an 5V. Die LEDs laufen mit dem, was nach zwei Abfällen von 1,2 V und 141 Ω übrig bleibt: etwa einem Drittel ihres Stroms. Selbst von Weiß kommt zu wenig IR zurück."
+    },
+    "bridge-bypass": {
+      "title": "3.3V BYPASS an 5 V überbrücken",
+      "body": "Ein Lotklecks über den Bypass-Pads, während die Leiste noch an 5 V hängt. Die gemeinsame Widerstandsstufe ist weg, und jeder LED-Strang nimmt etwa 55 mA. Ein Paar brennt durch."
+    },
+    "cold-out1": {
+      "title": "Eine kalte Lötstelle an OUT1 lassen",
+      "body": "Eine matte, gerissene Lötstelle am Pin OUT1 der Stiftleiste. Der Messwert von Sensor 1 hat mal Kontakt und mal nicht."
+    },
+    "no-r9": {
+      "title": "R9 weglassen",
+      "body": "Der 47-Ω-Widerstand im LED-Strang der Sensoren 3 und 4. Fehlt er, haben die beiden LEDs in Reihe keinen Strompfad."
+    },
+    "sunlight": {
+      "title": "Den Prüfstand in die Sonne stellen",
+      "body": "Sonnenlicht steckt voller Infrarot. Die Fototransistoren können es nicht vom Licht ihrer eigenen LEDs unterscheiden."
+    },
+    "lift-array": {
+      "title": "Die Leiste 10 mm anheben",
+      "body": "Das Chassis des Roboters hält die Leiste 10 mm statt 3 mm über dem Boden. Lass „Der Linie folgen“ laufen und beobachte die Messwerte."
+    },
+    "swap-motors": {
+      "title": "Linken und rechten Motor vertauschen",
+      "body": "Motor L an B01/B02, Motor R an A01/A02. Der Sketch bremst weiterhin das Rad, das er auf der Seite der Linie vermutet."
+    },
+    "motors-on-5v": {
+      "title": "Die Motoren aus den 5 V des Nano versorgen",
+      "body": "VM an den 5V-Pin des Nano statt an den LiPo. Jeder Motorstart zieht Hunderte mA über USB."
+    },
+    "exploded": {
+      "title": "Explosionsansicht",
+      "body": "Zieh den Strom ab und heb die Bauteile nach Baugruppen ab: zuerst die SMD-Bauteile, dann die Stiftleiste.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einer Platine unter Spannung"
+    }
+  },
+  "faults": {
+    "low-vcc": {
+      "title": "Leiste an 3,3 V ohne den Bypass",
+      "symptom": "Jeder Sensor misst dunkel, weiße Karte eingeschlossen; die Position springt oder bleibt in der Mitte hängen.",
+      "explanation": "Jeder LED-Strang besteht aus zwei LEDs mit etwa 1,2 V und 141 Ω. Aus 5 V bleiben 2,6 V für die Widerstände: etwa 18 mA. Aus 3,3 V nur 0,9 V: etwa 6 mA, ein Drittel des Lichts. Der Fototransistor bekommt so wenig IR zurück, dass selbst Weiß langsam abfällt, und nach einer Kalibrierung an 5 V zählt alles als Schwarz.",
+      "fix": "Versorg VCC aus 5 V. Auf einem 3,3-V-Board überbrück die Pads 3.3V BYPASS, damit die LEDs ihren Strom zurückbekommen."
+    },
+    "bypass-5v": {
+      "title": "Bypass an 5 V überbrückt",
+      "symptom": "Die Sensoren 5 und 6 messen über weißer Karte Schwarz und bleiben dabei; die Platine zieht etwa 220 mA, und die LEDs werden warm.",
+      "explanation": "Die Bypass-Pads schließen die beiden 47-Ω-Widerstände kurz, die sich alle Stränge teilen. An 5 V nimmt dann jeder Strang (5 - 2,4 V) / 47 Ω, etwa 55 mA, mehr als die 50 mA, für die die LEDs ausgelegt sind. Die LEDs sind in Paaren in Reihe, also wird beim Durchbrennen der einen ihr Partner mit dunkel.",
+      "fix": "Entfern die Lötbrücke und ersetz die Sensoren des durchgebrannten Paars. Überbrück den Bypass nur an 3,3 V."
+    },
+    "cold-out1": {
+      "title": "Kalte Lötstelle an OUT1",
+      "symptom": "Sensor 1 springt ab und zu auf 2500 (Schwarz), und die Position zuckt nach links.",
+      "explanation": "Die RC-Messung braucht den Pin, um den Knoten zu laden und dann seinen Abfall zu beobachten. Über eine Lötstelle, die Kontakt macht und wieder verliert, sieht der Nano manchmal nichts zurückkommen und läuft bei 2500 ins Timeout: der Messwert eines Sensors über Schwarz.",
+      "fix": "Erwärm die Lötstelle mit frischem Lot, bis es in einen glänzenden Kegel um den Pin fließt."
+    },
+    "no-r9": {
+      "title": "R9 fehlt",
+      "symptom": "Die Sensoren 3 und 4 messen über Weiß wie über Schwarz 2500; die Position neigt sich zu ihnen hin.",
+      "explanation": "Die LEDs der Sensoren 3 und 4 liegen über R9 in Reihe. Ohne ihn gibt es keinen Strompfad, also leuchtet keine der beiden LEDs. Ein Sensor, der kein IR aussendet, bekommt keins zurück und misst Schwarz.",
+      "fix": "Setz R9 (47 Ω) ein und löte ihn im Reflow-Ofen nach. Zwei Sensoren, die zusammen tot sind, bedeuten meist ihren gemeinsamen LED-Strang."
+    },
+    "sunlight": {
+      "title": "Sonnenlicht auf dem Boden",
+      "symptom": "Jeder Sensor misst schnell, schwarzes Band eingeschlossen: Die Leiste findet die Linie nicht.",
+      "explanation": "Sonnenlicht trägt viel mehr Infrarot als die LEDs. Es erreicht jeden Fototransistor, egal was darunter liegt, also fallen die Ausgänge überall schnell ab, und Schwarz sieht aus wie Weiß.",
+      "fix": "Schatte die Leiste ab, oder miss zweimal, mit LEDs an und aus, und zieh ab (QTRReadMode::OnAndOff in QTRSensors)."
+    },
+    "lifted": {
+      "title": "Leiste 10 mm über dem Boden",
+      "symptom": "Weiß misst etwa 780 µs statt 120, Schwarz läuft ins Timeout; die Position wandert, und der Roboter schlingert.",
+      "explanation": "Das Licht der LED weitet sich auf dem Weg nach unten und zurück auf. Pololu hat über Weiß 120 µs bei 3 mm und 780 µs bei 10 mm gemessen: ein Sechstel des Lichts. Mit der niedrigen Einstellung kalibriert, sieht Weiß jetzt für jeden Sensor grau aus.",
+      "fix": "Montier die Leiste 3 mm über dem Boden (der beste Abstand laut Pololu, höchstens 9,5 mm) und kalibriere in der Höhe, in der du fährst."
+    },
+    "motors-swapped": {
+      "title": "Linker und rechter Motor vertauscht",
+      "symptom": "Der Roboter dreht von der Linie weg, verliert sie und dreht sich im Kreis.",
+      "explanation": "Liegt die Linie links, bremst der Sketch das linke Rad. Aber dieses Rad sitzt jetzt rechts, also dreht der Roboter nach rechts, und die Linie wandert weiter nach links: Die Korrektur macht den Fehler größer.",
+      "fix": "Tausch die Motorkabel zurück oder tausch PWMA und PWMB im Sketch."
+    },
+    "brownout": {
+      "title": "Motoren an den 5 V des Nano",
+      "symptom": "Die Räder rucken, der Nano startet immer wieder neu, und die Kalibrierung wird nie fertig.",
+      "explanation": "Ein TT-Motor nimmt im Lauf 200-300 mA und beim Anlaufen über 1 A. Über USB und die 500-mA-Sicherung des Nano zieht das die 5 V unter das, was der ATmega braucht, also setzt er sich zurück, die Motoren halten an, die Spannung erholt sich, und alles beginnt von vorn.",
+      "fix": "Versorg VM aus dem LiPo. Halt Logik und Motoren an getrennten Versorgungen mit gemeinsamer Masse."
+    }
+  },
+  "status": {
+    "status": "Status",
+    "powered": "Strom am Prüfstand",
+    "mode": "Sketch",
+    "position": "Position der Linie (0-7000)",
+    "sensor1": "Sensor 1 (µs)",
+    "sensor4": "Sensor 4 (µs)",
+    "left": "Tastgrad linkes Rad",
+    "right": "Tastgrad rechtes Rad",
+    "vcc": "VCC der Leiste",
+    "rpm": "Drehzahl linkes Rad",
+    "battery": "Akkustrom",
+    "usb": "USB-Strom"
+  },
+  "current": {
+    "usb": "Nano über USB (500-mA-Polyfuse)",
+    "lipo": "2S-LiPo an VM",
+    "nano": "Nano in Betrieb",
+    "array": "Acht IR-LEDs (vier Stränge mit je etwa 24 mA)",
+    "logic": "Logik des TB6612FNG",
+    "motors": "Zwei TT-Motoren, die der Linie folgen",
+    "bypass": "LED-Stränge mit überbrücktem Bypass"
+  },
+  "tasks": {
+    "line": "Wo die Linie unter der Leiste liegt",
+    "steer": {
+      "title": "Zurück auf die Linie lenken",
+      "brief": "Der Startcode liest die Linie, treibt aber beide Räder mit 150, egal was er sieht. Bring ihn zum Lenken: error = position - 3500, dann left = 150 + error / 20 und right = 150 - error / 20. Liegt die Linie unter Sensor 2, muss das linke Rad langsamer und das rechte schneller werden; unter Sensor 7 andersherum; mittig beide bei 150.",
+      "hints": {
+        "1": "readLineBlack() gibt eine vorzeichenlose Zahl zurück; wandle sie vor dem Abziehen um: int error = (int)pos - 3500;",
+        "2": "error / 20 ist dasselbe wie error x 0.05, nur ohne Gleitkomma: Das ist Kp.",
+        "3": "motors() begrenzt jedes Rad schon mit constrain() auf 0-255."
+      },
+      "checks": {
+        "1": "Läuft 4,5 s lang",
+        "2": "Liest die Linie mit readLineBlack()",
+        "3": "STBY (D9) ist HIGH: Der Treiber ist wach",
+        "4": "Mittig: das linke Rad (D5) bei etwa 150/255",
+        "5": "Mittig: das rechte Rad (D6) bei etwa 150/255",
+        "6": "Linie unter Sensor 2: Das linke Rad wird langsamer",
+        "7": "Linie unter Sensor 2: Das rechte Rad wird schneller",
+        "8": "Linie unter Sensor 7: Das linke Rad wird schneller",
+        "9": "Linie unter Sensor 7: Das rechte Rad wird langsamer",
+        "10": "Wieder mittig: zurück auf 150"
+      },
+      "code": {
+        "goal": "Der Linie folgen: das Rad auf der Seite der Linie bremsen",
+        "todo": "berechne den Fehler aus pos und lenk damit, statt geradeaus zu fahren"
+      }
+    },
+    "search": {
+      "title": "Drehen, um die Linie zu finden",
+      "brief": "In einer scharfen Kurve landet die Linie unter dem äußersten Sensor, und Lenken allein ist zu langsam. Liegt die Position unter 1000, dreh auf der Stelle nach links: linkes Rad rückwärts, rechtes vorwärts, beide mit 110. Über 6000 dreh nach rechts. Dazwischen lenk wie vorher.",
+      "hints": {
+        "1": "wheel() nimmt eine Drehzahl mit Vorzeichen: Eine negative setzt IN1 auf LOW und IN2 auf HIGH, also dreht das Rad rückwärts.",
+        "2": "if (pos < 1000) { motors(-110, 110); } else if (pos > 6000) { motors(110, -110); } else { ... }",
+        "3": "Behalt im letzten Zweig die Lenkzeile aus der ersten Aufgabe."
+      },
+      "checks": {
+        "1": "Läuft 4,3 s lang",
+        "2": "Linie weit links: AIN1 (D7) ist LOW",
+        "3": "Linie weit links: AIN2 (D8) ist HIGH, das linke Rad dreht rückwärts",
+        "4": "Linie weit links: BIN1 (D10) ist HIGH, das rechte Rad vorwärts",
+        "5": "Mittig: das linke Rad wieder vorwärts",
+        "6": "Linie weit rechts: BIN1 (D10) ist LOW",
+        "7": "Linie weit rechts: BIN2 (D4) ist HIGH, das rechte Rad rückwärts",
+        "8": "Linie weit rechts: das linke Rad vorwärts",
+        "9": "Drehung nach links mit 110: Der Tastgrad des linken Rads liegt bei etwa 43 %",
+        "10": "Drehung nach rechts mit 110: Der Tastgrad des rechten Rads liegt bei etwa 43 %"
+      },
+      "code": {
+        "goal": "Auf der Stelle drehen, wenn die Linie unter einem Endsensor liegt",
+        "todo": "füg die beiden Drehungen hinzu: unter 1000 nach links drehen, über 6000 nach rechts"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "header-side": {
+        "q": "Warum kommt die Stiftleiste auf die Rückseite der Platine?",
+        "options": {
+          "1": "Die Vorderseite hat keine Pads dafür",
+          "2": "Die Sensoren müssen zum Boden blicken, also sollen die Pins nach oben zeigen, weg vom Boden",
+          "3": "Nur die Rückseite lässt sich löten"
+        },
+        "why": "Die Leiste arbeitet 3 mm über dem Boden mit nach unten gerichteten Sensoren. Eine Stiftleiste auf der Rückseite zeigt nach oben in den Roboter, wo die Kabel hingehen; auf der Vorderseite würde sie auf den Boden stoßen."
+      },
+      "pairs": {
+        "q": "Zwei benachbarte Sensoren, 3 und 4, messen beide über weißer Karte Schwarz. Was ist die wahrscheinlichste Ursache?",
+        "options": {
+          "1": "Ihr gemeinsamer LED-Strang: Die LEDs sind in Paaren in Reihe geschaltet",
+          "2": "Zwei kalte Lötstellen auf einmal",
+          "3": "Die Pins 3 und 4 des Nano sind defekt"
+        },
+        "why": "Die acht IR-LEDs laufen als vier Paare in Reihe, jedes über seinen eigenen 47-Ω-Widerstand. Eine offene LED oder ein fehlender Widerstand macht beide Sensoren des Paars dunkel."
+      },
+      "bypass": {
+        "q": "Wann überbrückst du die Pads 3.3V BYPASS?",
+        "options": {
+          "1": "Immer: Die Leiste ist heller",
+          "2": "Wenn die Platine in zwei Teile gebrochen ist",
+          "3": "Nur wenn VCC 3,3 V ist"
+        },
+        "why": "Überbrückt entfernen die Pads die gemeinsame 47-Ω-Stufe. An 3,3 V gibt das den LEDs ihren Strom zurück; an 5 V treibt es sie über ihre Grenzwerte und brennt ein Paar durch."
+      }
+    },
+    "read": {
+      "rc": {
+        "q": "Wie liest der Nano einen RC-Sensor?",
+        "options": {
+          "1": "Er treibt den Pin auf HIGH, lässt los und misst, wie lange er braucht, um auf LOW zu fallen",
+          "2": "Er liest eine Spannung mit analogRead()",
+          "3": "Er zählt Pulse, die der Sensor sendet"
+        },
+        "why": "Wird der Pin auf HIGH getrieben, liegt über dem 10-nF-Kondensator keine Spannung mehr. Losgelassen entlädt ihn der Fototransistor: viel reflektiertes IR, ein schneller Abfall; wenig, ein langsamer."
+      },
+      "timeout": {
+        "q": "Ein Sensor misst genau 2500. Was bedeutet das?",
+        "options": {
+          "1": "Der Sensor ist defekt",
+          "2": "Er ist ins Timeout gelaufen: Sehr wenig IR kam zurück, wie über schwarzem Band",
+          "3": "Er hat 2,5 V gesehen"
+        },
+        "why": "Die Bibliothek hört standardmäßig nach 2500 µs auf zu warten. Schwarzes Band braucht typischerweise etwa 2,6 ms, also misst Schwarz als Timeout."
+      },
+      "calibrate": {
+        "q": "Warum führst du die Leiste über das Band, während calibrate() läuft?",
+        "options": {
+          "1": "Um die LEDs aufzuwärmen",
+          "2": "Um die Kondensatoren zu laden",
+          "3": "Damit jeder Sensor sein eigenes Weiß und Schwarz aufzeichnet und die Messwerte bei allen acht gleich auf 0-1000 skaliert werden"
+        },
+        "why": "Keine zwei Sensoren sind gleich. calibrate() merkt sich für jeden Minimum und Maximum; readLineBlack() skaliert jeden Messwert dazwischen, also ist der gewichtete Mittelwert fair."
+      }
+    },
+    "follow": {
+      "error": {
+        "q": "readLineBlack() gibt 1000 zurück. In welche Richtung muss der Roboter drehen?",
+        "options": {
+          "1": "Nach rechts: das rechte Rad bremsen",
+          "2": "Nach links: Die Linie liegt unter Sensor 2, also das linke Rad bremsen",
+          "3": "Geradeaus"
+        },
+        "why": "1000 heißt, die Linie liegt unter Sensor 2, links der Mitte (3500). Das linke Rad zu bremsen dreht den Roboter nach links, zurück über die Linie."
+      },
+      "kp": {
+        "q": "Der Roboter schlingert von Seite zu Seite über die Linie. Was probierst du zuerst?",
+        "options": {
+          "1": "Ein kleineres Kp (den Fehler durch mehr als 20 teilen)",
+          "2": "Ein größeres Kp",
+          "3": "Eine höhere Grundgeschwindigkeit"
+        },
+        "why": "Ein großes Kp lenkt bei einem kleinen Fehler stark, schießt über und schwingt zurück. Senk es, bis das Schlingern aufhört; dann kann ein Differenzialanteil den Rest dämpfen."
+      },
+      "lost": {
+        "q": "Die Linie verlässt die Leiste nach links. Was gibt readLineBlack() zurück?",
+        "options": {
+          "1": "3500, die Mitte",
+          "2": "Nichts: Es wartet auf die Linie",
+          "3": "0, weil die Linie zuletzt links gesehen wurde"
+        },
+        "why": "Wenn kein Sensor die Linie sieht, gibt die Bibliothek das Ende zurück, an dem sie zuletzt gesehen wurde: 0 oder 7000. Ein P-Regler lenkt dann stark in diese Richtung, was meist richtig ist."
+      }
+    },
+    "faults": {
+      "three-volts": {
+        "q": "Die Leiste läuft an 3,3 V ohne den Bypass. Was messen die Sensoren?",
+        "options": {
+          "1": "Genau dasselbe wie an 5 V",
+          "2": "Überall Weiß",
+          "3": "Überall dunkel: Die LEDs bekommen etwa ein Drittel ihres Stroms"
+        },
+        "why": "Zwei LEDs nehmen etwa 2,4 V, und es bleiben 0,9 V für 141 Ω: 6 mA statt 18. Mit so wenig IR fällt selbst weiße Karte langsam ab."
+      },
+      "pair": {
+        "q": "Nach dem Überbrücken des Bypass an 5 V werden die Sensoren 5 und 6 zusammen dunkel. Warum beide?",
+        "options": {
+          "1": "Ihre LEDs liegen in Reihe: Wenn eine durchbrennt, verliert auch die andere ihren Strom",
+          "2": "Sie teilen sich einen OUT-Pin",
+          "3": "Der Nano hat sie ausgeschaltet"
+        },
+        "why": "Jeder Strang ist LED, Widerstand, LED in Reihe. Eine offene LED unterbricht den Stromkreis für beide."
+      },
+      "swapped": {
+        "q": "Die Motoren sind vertauscht. Warum flieht der Roboter von der Linie weg, statt nur zu wackeln?",
+        "options": {
+          "1": "Die Motoren laufen langsamer",
+          "2": "Jede Korrektur dreht in die falsche Richtung, also macht sie den Fehler größer",
+          "3": "Die Sensoren sind auch vertauscht"
+        },
+        "why": "Rückkopplung funktioniert nur mit dem richtigen Vorzeichen. Vertauscht schiebt jede Korrektur die Linie weiter aus der Mitte, bis sie die Leiste verlässt."
+      }
+    },
+    "end": {
+      "why-rc": {
+        "q": "Warum braucht der QTR-8RC keine Analogeingänge?",
+        "options": {
+          "1": "Er hat einen eigenen ADC auf der Platine",
+          "2": "Er macht aus Licht eine Zeit, und jeder Digitalpin kann eine Zeit messen",
+          "3": "Er sendet I2C-Nachrichten"
+        },
+        "why": "Die Abfallzeit des Kondensators trägt den Messwert. Acht Digitalpins lassen sich parallel lesen, über einem typischen Boden etwa 1 ms für alle acht."
+      },
+      "height": {
+        "q": "Was ist der beste Abstand zwischen den Sensoren und dem Boden?",
+        "options": {
+          "1": "Etwa 3 mm",
+          "2": "Etwa 30 mm",
+          "3": "Den Boden berührend"
+        },
+        "why": "Pololu nennt 3 mm (0,125 Zoll) als besten Wert und 9,5 mm als Maximum. Weiter oben sehen sich Weiß und Schwarz immer ähnlicher."
+      },
+      "derivative": {
+        "q": "Was bringt ein Differenzialanteil (D) dem Linienfolger?",
+        "options": {
+          "1": "Mehr Tempo auf gerader Strecke",
+          "2": "Nichts: P reicht immer",
+          "3": "Er reagiert darauf, wie schnell sich der Fehler ändert, also hört der Roboter auf zu lenken, bevor er überschießt"
+        },
+        "why": "D addiert Kd x (Fehler - letzter Fehler). Schwingt der Roboter schon zurück zur Linie, schwächt dieser Anteil die Lenkung ab, und das dämpft das Schlingern, das ein größeres Kp verursacht."
+      }
+    }
+  }
+}
