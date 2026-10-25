@@ -136,7 +136,6 @@
     "figureHeading": "The bench",
     "focusFigure": "Go into the figure",
     "selected": "Selected part",
-    "nothingSelected": "Nothing selected. Click a part in the figure or in the part buttons under it.",
     "walk": "More benches",
     "tabs": {
       "label": "Bench panels",
@@ -148,7 +147,6 @@
   },
   "steps": {
     "heading": "Build and break",
-    "count": "{done}/{total} steps",
     "doIt": "Do it",
     "redo": "Do it again",
     "byHand": "Do this in the figure",

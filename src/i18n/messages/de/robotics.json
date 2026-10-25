@@ -136,7 +136,6 @@
     "figureHeading": "Die Werkbank",
     "focusFigure": "In die Abbildung wechseln",
     "selected": "Ausgewähltes Bauteil",
-    "nothingSelected": "Nichts ausgewählt. Klick ein Bauteil in der Abbildung oder in den Bauteil-Schaltflächen darunter an.",
     "walk": "Weitere Werkbänke",
     "tabs": {
       "label": "Bereiche der Werkbank",
@@ -148,7 +147,6 @@
   },
   "steps": {
     "heading": "Bauen und kaputt machen",
-    "count": "{done}/{total} Schritte",
     "doIt": "Ausführen",
     "redo": "Erneut ausführen",
     "byHand": "Mach das in der Abbildung",

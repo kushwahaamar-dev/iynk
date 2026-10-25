@@ -136,7 +136,6 @@
     "figureHeading": "El banco",
     "focusFigure": "Entrar en la figura",
     "selected": "Pieza seleccionada",
-    "nothingSelected": "No hay nada seleccionado. Haz clic en una pieza de la figura o en los botones de piezas que hay debajo.",
     "walk": "Más bancos",
     "tabs": {
       "label": "Paneles del banco",
@@ -148,7 +147,6 @@
   },
   "steps": {
     "heading": "Monta y avería",
-    "count": "{done}/{total} pasos",
     "doIt": "Hacerlo",
     "redo": "Hacerlo otra vez",
     "byHand": "Hazlo en la figura",

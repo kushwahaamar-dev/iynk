@@ -136,7 +136,6 @@
     "figureHeading": "实验台",
     "focusFigure": "进入图示",
     "selected": "选中的零件",
-    "nothingSelected": "没有选中任何东西。点击图示里的零件，或图示下方的零件按钮。",
     "walk": "更多实验台",
     "tabs": {
       "label": "工作台面板",
@@ -148,7 +147,6 @@
   },
   "steps": {
     "heading": "组装与弄坏",
-    "count": "{done}/{total} 步",
     "doIt": "执行",
     "redo": "再执行一次",
     "byHand": "在图示里完成这一步",

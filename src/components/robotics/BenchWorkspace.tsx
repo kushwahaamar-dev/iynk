@@ -358,6 +358,7 @@ export function BenchWorkspace({ setup, messages, notice: untranslated, walk }: 
       <h2 id={ids.figure} ref={figureHeadingRef} tabIndex={-1} className="sr-only">
         {t("bench.figureHeading")}
       </h2>
+      <p className="sr-only">{t("bench.figureHint")}</p>
       <div className="relative flex min-h-0 flex-1 flex-col">
         <FigureFrame ref={setFigure} fill src={bench.figure.page} title={t("bench.figureTitle", { name: tx(bench.title) })} onEvent={onEvent} />
 
@@ -371,9 +372,10 @@ export function BenchWorkspace({ setup, messages, notice: untranslated, walk }: 
           {selected ? (
             <div className="rounded-ink-sm border-[1.5px] border-line bg-surface/95 px-3 py-2 shadow-ink-sm">
               <p className="text-sm font-semibold leading-snug">
+                <span className="sr-only">{t("bench.selected")}: </span>
                 <span className="tabular font-ui">{selected.id}</span> · {tx(selected.name)}
               </p>
-              <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-muted">{tx(selected.what)}</p>
+              <p className="mt-0.5 line-clamp-3 text-xs leading-snug text-muted">{tx(selected.what)}</p>
             </div>
           ) : null}
         </div>

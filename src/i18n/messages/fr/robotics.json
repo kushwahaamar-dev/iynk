@@ -136,7 +136,6 @@
     "figureHeading": "Le banc",
     "focusFigure": "Entrer dans la figure",
     "selected": "Pièce sélectionnée",
-    "nothingSelected": "Rien de sélectionné. Cliquez sur une pièce de la figure ou sur les boutons de pièces en dessous.",
     "walk": "Autres bancs",
     "tabs": {
       "label": "Panneaux du banc",
@@ -148,7 +147,6 @@
   },
   "steps": {
     "heading": "Monter et casser",
-    "count": "{done}/{total} étapes",
     "doIt": "Faire",
     "redo": "Refaire",
     "byHand": "À faire dans la figure",
