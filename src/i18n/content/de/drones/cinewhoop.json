@@ -1,0 +1,424 @@
+{
+  "title": "3-Zoll-Cinewhoop",
+  "tagline": "Die Kameraplattform mit Ducts: ruhige One-Take-Aufnahmen durch Häuser, nah an Menschen.",
+  "sub": "HD-Kameraplattform mit Ducts",
+  "hint": "Bau ihn, mach die Prüfungen auf der Werkbank und film dann eine Tour durchs Haus in einem Take",
+  "noun": "Cinewhoop",
+  "overview": "Ein Cinewhoop ist eine Kameraplattform, kein Akrobat. Jeder 3-Zoll-Propeller dreht sich in einem Duct, einem Ring, der ihn schützt, sodass der Quad durch Häuser, Läden und Veranstaltungsorte fliegen kann, nah an Menschen, und einen Stoß gegen eine Wand übersteht. Dieser hier hat einen 147-mm-Carbonrahmen in True-X-Form mit einem 20-x-20-Stack (ein 35-A-4-in-1-ESC und ein F722-Flugcontroller mit Betaflight), eine DJI O3 Air Unit für das HD-Livebild, einen ExpressLRS-Empfänger und oben eine nackte Actioncam, die die Aufnahmen macht. Die Ducts, die beiden Kameras und die kleinen Propeller kosten Flugzeit: Rechne mit 5 bis 6 Minuten an einem 4S 1100. Wähl Akku, Motoren und Propeller und sieh zu, wie sich die Zahlen ändern, bau ihn Teil für Teil, mach die Prüfungen auf der Werkbank ohne Propeller und flieg dann einen ruhigen Take durchs Haus.",
+  "practice": "Flieg zuerst das Gate-Rennen im Garten, dann den Immobilien-Take: durch die Haustür hinein, den Flur entlang, durch die Schiebetür hinaus, über den Pool, hoch über das Dach und wieder hinunter zum Landeplatz, langsam und ruhig. Bei einem echten Cinewhoop: Dreh vor jedem Flug jeden Propeller in seinem Duct von Hand, prüf OSD und Funkverbindung ohne Propeller, teste den Failsafe und flieg das Cine-Profil mit sanften Knüppelbewegungen. Sink langsam oder während du vorwärts fliegst, sonst wackelt der Quad in seinem eigenen Propellerabwind, und lande bei etwa 3,5 V pro Zelle.",
+  "design": {
+    "fixed": {
+      "FRAME": "3-Zoll-Carbonrahmen und Platten",
+      "DUCTS": "Gedruckte Ducts und TPU-Bumper (selbst gedruckt)",
+      "ESC": "35-A-4-in-1-ESC, 20 x 20",
+      "FC": "F722-Flugcontroller, 20 x 20",
+      "VTX": "DJI O3 Air Unit und Kamera",
+      "RX": "ExpressLRS-Empfänger 2,4 GHz",
+      "XT60": "XT60-Pigtail und Low-ESR-Kondensator",
+      "TOP": "Deckplatte und Abstandsbolzen",
+      "STRAP": "Akkugurt und Antirutschpad",
+      "GOPRO": "Nackte Actioncam, TPU-Keil und BEC"
+    },
+    "verdict": {
+      "ok": "Die Teile passen zusammen. Ruhig und stabil genug zum Filmen.",
+      "weak": "Schub zu Gewicht {tw}:1: zu wenig, um zwei Kameras und die Ducts zu tragen. Er sackt in Kurven ab und kommt nicht aus seinem eigenen Propellerabwind heraus. Ziel auf mindestens 3:1.",
+      "over": "{kv} KV an {cells}S drehen einen 3-Zoll-Propeller schneller, als diese Motoren es vertragen: Sie laufen heiß und können desynchronisieren. 6S-Cinewhoops nutzen Motoren mit etwa 1700 bis 2150 KV."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Carbon-Bodenplatte, Arme und Duct-Streben",
+      "what": "Eine 3 mm starke Carbon-Bodenplatte in True-X-Form, mit den Motoren 147 mm auseinander über die Diagonale (52 mm nach vorn oder hinten und 52 mm zu jeder Seite der Mitte). Kurze Arme und zwei Streben pro Ecke halten jeden Duct-Ring. In der Mitte liegen die 20-x-20-mm-Löcher für den Stack, vorn die Seitenplatten für die O3-Kamera. Der Plattensatz wiegt etwa 62 g."
+    },
+    "DUCTS": {
+      "name": "Ducts (Propellerschutz) mit TPU-Bumpern",
+      "what": "Ein Ring um jeden Propeller, innen 79 mm breit und 24 mm hoch, mit einem weichen TPU-Bumperband außen. Ein 3-Zoll-Propeller misst 76,2 mm, also laufen die Spitzen 1,4 mm von der Wand entfernt. Die Ducts halten die Propeller von Wänden, Möbeln und Menschen fern. Ein enger Spitzenspalt bringt bei niedriger Geschwindigkeit etwas zusätzlichen Schub, aber die Ducts bringen etwa 52 g und Luftwiderstand mit, was Flugzeit kostet und den Quad windanfällig macht."
+    },
+    "MOTORS": {
+      "name": "4 bürstenlose 2004-Motoren",
+      "what": "Außenläufer mit einem 20-mm-Stator von 4 mm Höhe, 12 Spulen und 14 Magneten (12N14P), also bleibt motor_poles in Betaflight bei 14. Etwa 19 g pro Stück mit Kabeln, jeder mitten in seinem Duct an die Bodenplatte geschraubt. Die Standardwahl mit 3000 KV ist für 4S gemacht. Die Option 1404 ist leichter, aber schwächer, und hat 12 Magnete (9N12P), braucht also motor_poles = 12."
+    },
+    "ESC": {
+      "name": "35-A-4-in-1-ESC, 20 x 20 (AM32)",
+      "what": "Vier 35-A-Motortreiber auf einer 26-mm-Platine, auf kurzen Abstandsbolzen ganz unten im Stack, mit den Akku-Pads hinten. Ein AT32-Chip läuft mit AM32-Firmware (BLHeli_32 ist tot, seit sein Entwickler 2024 aufgehört hat). Er nimmt DShot300 vom Flugcontroller an und meldet, da bidirektional, die Drehzahl jedes Motors für den RPM-Filter zurück."
+    },
+    "WIRES": {
+      "name": "An den ESC gelötete Phasenkabel der Motoren",
+      "what": "Drei Kabel pro Motor, auf Länge gekürzt und an die drei Pads dieser Ecke am ESC gelötet. Jede Reihenfolge dreht den Motor; das Tauschen zweier Kabel oder das Umkehren der Richtung in der ESC-Firmware kehrt ihn um. Welche Ecke in welche Richtung dreht, findet die Motorprüfung ohne Propeller heraus."
+    },
+    "FC": {
+      "name": "F722-Flugcontroller, 20 x 20 (Betaflight)",
+      "what": "Ein STM32F722 führt Betaflight 2026.6.2 aus und liest einen Gyro ICM-42688-P. Er sitzt auf Gummitüllen über dem ESC und ist mit ihm über einen 8-poligen Kabelbaum verbunden (Akkuspannung, Masse, Stromsensor und die vier Motorsignale). Die DJI Air Unit hängt an UART1, der Empfänger an UART2. Der aufgedruckte Pfeil muss zur Nase zeigen: Verkehrt herum geht jede Korrektur in die falsche Richtung, und er überschlägt sich beim Start."
+    },
+    "XT60": {
+      "name": "XT60-Pigtail und 470-µF-35-V-Kondensator",
+      "what": "Ein Pigtail mit 14 AWG und dem gelben XT60-Stecker, an die Akku-Pads des ESC gelötet, und ein Low-ESR-Kondensator mit 470 µF 35 V über denselben Pads, Beine kurz geschnitten, Streifen am Minus-Bein. Der Kondensator schluckt die Spannungsspitzen, die die ESCs beim Abbremsen der Motoren erzeugen und die sonst den Gyro und das Video erreichen würden. 35 V lassen an einem 6S-Akku (25,2 V voll) Reserve. Verkehrt herum eingebaut, platzt er beim ersten Einstecken."
+    },
+    "CAM": {
+      "name": "DJI-O3-Kameramodul, 15° Uptilt",
+      "what": "Die Kamera der O3, 21,2 x 20 x 19,5 mm mit einem 155-Grad-Objektiv, zwischen zwei Seitenplatten an der Nase gehalten. Sie ist nur 15 Grad nach oben geneigt: Ein Cinewhoop fliegt langsam und fast waagerecht, braucht also wenig Neigung. Ein Koaxkabel bringt das Bild zur Air Unit, die es an die Brille sendet und gleichzeitig auf der Air Unit aufzeichnet."
+    },
+    "VTX": {
+      "name": "DJI O3 Air Unit (HD-Videosender)",
+      "what": "Der digitale Videosender, 32,5 x 30,5 x 14,5 mm und 36,4 g mit Kamera, oben auf dem Stack. Er läuft direkt am Akku (7,4 bis 26,4 V, 2S bis 6S) und sendet 1080p mit 100 Bildern pro Sekunde und etwa 30 ms Verzögerung an die Brille. Sein 3-in-1-Kabel führt Strom, Masse und UART1, über den Betaflight das OSD (MSP DisplayPort) schickt, das die Brille zeichnet. Seine beiden Antennen führen zwischen den hinteren Ducts hinaus. Schalte ihn nie ohne sie ein."
+    },
+    "RX": {
+      "name": "ExpressLRS-Empfänger 2,4 GHz (CRSF)",
+      "what": "Ein Nano-ELRS-Empfänger hinten auf der Bodenplatte, an UART2 mit dem CRSF-Protokoll, seine Antenne zwischen den hinteren Ducts nach hinten geführt. Er ist eine vom Video getrennte Verbindung: Drinnen können Wände das HD-Bild einfrieren, während ELRS noch die Kontrolle hat, was ein Grund ist, warum es ein eigener Empfänger ist."
+    },
+    "TOP": {
+      "name": "Deckplatte und 31-mm-Abstandsbolzen",
+      "what": "Eine 2,5 mm starke Carbonplatte auf vier Abstandsbolzen, über den Oberkanten der Ducts und frei von den Propellern. Sie schließt den Stack ein und trägt den Akku und die Actioncam. Sie kommt drauf, sobald Flugcontroller, Kameras und Empfänger drin sind, weil sie sie abdeckt."
+    },
+    "GOPRO": {
+      "name": "Nackte Actioncam, TPU-Keil und 5-V-BEC",
+      "what": "Eine Actioncam ohne Gehäuse und Akku, etwa 36 g, auf einem um 14 Grad geneigten TPU-Keil. Ein kleiner BEC macht aus der Akkuspannung 5 V für sie (3S bis 6S rein, 5 V 3 A raus); Platinen von Hero 10 und 11 brauchen die Firmware GoPro Labs, um ohne Akku zu starten. Sie hat keine Datenverbindung zum Flugcontroller: Sie zeichnet die Aufnahmen auf, die der Kunde sieht, mit Gyrodaten, damit Gyroflow oder ReelSteady sie später glätten können."
+    },
+    "BATT": {
+      "name": "LiPo-Akku, Gurt und Antirutschpad",
+      "what": "Der Akku auf der Deckplatte hinter der Actioncam, auf einem Antirutschpad unter einem Gurt, mittig über den vier Motoren, damit der Quad ausbalanciert ist. Der Standardakku 4S 1100 mAh misst 66 x 34 x 28 mm und wiegt 128 g. Eine LiPo-Zelle hat voll 4,2 V und nominal 3,7 V; lande bei etwa 3,5 V pro Zelle und lagere sie bei 3,8 V."
+    },
+    "PROPS": {
+      "name": "3-Zoll-Duct-Propeller, 2 CW + 2 CCW",
+      "what": "Vier 76-mm-Propeller mit breiten, eckigen Spitzen, gemacht für Ducts. Zwei drehen im Uhrzeigersinn und zwei gegen den Uhrzeigersinn (props in), sodass sich die Drehmomente der Motoren aufheben und das Gieren durch Beschleunigen eines diagonalen Paares entsteht. Die Auswahl bietet einen Dreiblatt (3x3x3), einen ruhiger klingenden, aber etwas weniger effizienten Fünfblatt (3x2x5) und einen kräftigeren Dreiblatt mit hoher Steigung (3x3.5x3). Sie kommen zuletzt drauf."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Mit der Bodenplatte anfangen",
+      "body": "Prüf das Carbon an den Streben auf Risse und Delamination, und feil jede scharfe Carbonkante dort ab, wo später Kabel laufen: Carbon leitet und schneidet Isolierung durch."
+    },
+    "ducts": {
+      "title": "Die Ducts anschrauben",
+      "body": "Jeden Ring an seinen Arm und zwei Streben, das Bumperband außen. Prüf, ob jeder Duct rund ist und rechtwinklig zur Platte sitzt: An einem verzogenen Duct wird ein Propeller schleifen.",
+      "refusal": "Die Ducts werden an die Streben der Bodenplatte geschraubt: Setz zuerst den Rahmen ein."
+    },
+    "motors": {
+      "title": "Die vier Motoren einschrauben",
+      "body": "In die Mitte jedes Ducts, die Kabel nach innen zum Stack. Nimm die Schrauben, die bei den Motoren dabei waren: Eine zu lange Schraube erreicht die Wicklungen und schließt den Motor kurz.",
+      "refusal": "Die Motoren werden an die Bodenplatte geschraubt: Setz zuerst den Rahmen ein."
+    },
+    "esc": {
+      "title": "Den 4-in-1-ESC montieren",
+      "body": "Auf die 20-x-20-Löcher, auf kurzen Abstandsbolzen, mit den Akku-Pads hinten. Nichts an seiner Unterseite darf das Carbon berühren.",
+      "refusal": "Der ESC sitzt auf den Stack-Löchern der Bodenplatte: Setz zuerst den Rahmen ein."
+    },
+    "wires": {
+      "title": "Die Motorkabel anlöten",
+      "body": "Kürz die drei Kabel jedes Motors auf Länge und löte sie an die Pads in seiner Ecke des ESC. Jede Reihenfolge dreht den Motor; die Prüfung ohne Propeller zeigt, in welche Richtung.",
+      "refusal": "Die Kabel laufen von den Motoren zum ESC: Setz zuerst beide ein."
+    },
+    "fc": {
+      "title": "Den Flugcontroller aufstapeln, Pfeil nach vorn",
+      "body": "Auf Gummitüllen über dem ESC, aufgedruckter Pfeil zur Nase, mit eingestecktem 8-poligem Kabelbaum. Muss er anders herum sitzen, stell align_board_yaw passend ein.",
+      "refusal": "Der Flugcontroller kommt oben auf den ESC: Setz zuerst den ESC ein."
+    },
+    "xt60": {
+      "title": "XT60 und Kondensator anlöten",
+      "body": "Das Pigtail Rot an + und Schwarz an - auf die Akku-Pads des ESC, und den 470-µF-Kondensator über dieselben Pads mit dem Streifen zu Minus, Beine kurz geschnitten. Prüf + und - mit einem Messgerät auf Kurzschluss.",
+      "refusal": "Der XT60 und sein Kondensator werden an die Akku-Pads des ESC gelötet: Setz zuerst den ESC ein."
+    },
+    "cam": {
+      "title": "Die O3-Kamera einsetzen",
+      "body": "Zwischen die beiden Seitenplatten an der Nase, 15 Grad nach oben geneigt, das Koaxkabel nach hinten zum Stack geführt.",
+      "refusal": "Die Kamera sitzt zwischen den Seitenplatten des Rahmens: Setz zuerst den Rahmen ein."
+    },
+    "vtx": {
+      "title": "Die O3 Air Unit montieren",
+      "body": "Oben auf den Stack, mit eingeklicktem Koaxkabel der Kamera, dem 3-in-1-Kabel an UART1 und Akkuspannung am Flugcontroller, und beide Antennen zwischen den hinteren Ducts hinausgeführt.",
+      "refusal": "Die Air Unit braucht den Flugcontroller darunter und die Kamera zum Anschließen: Setz zuerst beide ein."
+    },
+    "rx": {
+      "title": "Den ELRS-Empfänger einsetzen",
+      "body": "Hinten auf der Bodenplatte, sein TX an RX2 und RX an TX2 des Flugcontrollers, dazu 5 V und Masse. Führ die Antenne zwischen den hinteren Ducts nach hinten, weg vom Carbon und von den Videoantennen.",
+      "refusal": "Der Empfänger hängt am UART2 des Flugcontrollers: Setz zuerst den Flugcontroller ein."
+    },
+    "top": {
+      "title": "Die Deckplatte aufsetzen",
+      "body": "Auf ihre vier Abstandsbolzen, über den Oberkanten der Ducts. Nichts darunter darf eingeklemmt werden, und kein Kabel darf in einen Duct reichen.",
+      "refusal": "Die Deckplatte schließt über dem Stack: Setz zuerst Flugcontroller, Kamera, Air Unit und Empfänger ein."
+    },
+    "gopro": {
+      "title": "Die nackte Actioncam montieren",
+      "body": "Auf ihren TPU-Keil vorn auf der Deckplatte, mit dem Kabel des BEC an der Stromversorgung vom Akku. Prüf, ob Ducts und Propeller nicht im Bild sind.",
+      "refusal": "Die Actioncam wird auf die Deckplatte montiert: Setz zuerst die Deckplatte auf."
+    },
+    "batt": {
+      "title": "Den Akku festschnallen",
+      "body": "Auf das Antirutschpad hinter der Actioncam, mittig, sodass der Quad über der Mitte der vier Motoren ausbalanciert ist. Steck ihn noch nicht ein.",
+      "refusal": "Der Akku sitzt auf der Deckplatte und wird in den XT60 gesteckt: Setz zuerst beide ein."
+    },
+    "props": {
+      "title": "Die Propeller montieren, zuletzt",
+      "body": "Erst nach dem Smoke-Stopper-Test und der Prüfung der Motordrehrichtung, mit abgestecktem Akku. Propeller im Uhrzeigersinn auf M1 und M4, gegen den Uhrzeigersinn auf M2 und M3, dann dreh jeden von Hand: Er darf seinen Duct nicht berühren.",
+      "refusal": "Die Propeller kommen zuletzt drauf, in die Ducts und unter die Deckplatte: Mach zuerst den Smoke-Stopper-Test und die Prüfung der Motordrehrichtung."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "Der Akku wird in den XT60 gesteckt. Ein 4S-Akku hat voll 16,8 V und nominal 14,8 V; ein 6S hat voll 25,2 V.",
+    "XT60-ESC": "Kabel mit 14 AWG zu den Akku-Pads des ESC, mit dem Low-ESR-Kondensator 470 µF 35 V darüber, der die Spitzen vom Abbremsen der Motoren schluckt.",
+    "ESC-MOTORS": "Drei Phasenkabel pro Motor. Jede Reihenfolge dreht ihn; das Tauschen zweier Kabel oder das Umkehren in der ESC-Firmware lässt ihn andersherum drehen.",
+    "FC-ESC": "Der 8-polige Kabelbaum: die vier Motorsignale in DShot300 (bidirektional, also meldet der ESC die Drehzahl zurück), dazu Akkuspannung, Masse und der Stromsensor für das OSD.",
+    "RX-FC": "ExpressLRS an UART2: TX des Empfängers an RX2 des Flugcontrollers und RX an TX2, dazu 5 V und Masse. Betaflight stellt ihn als seriellen RX mit dem CRSF-Protokoll ein.",
+    "VTX-FC": "Das 3-in-1-Kabel der Air Unit: Akkuspannung (7,4 bis 26,4 V) und Masse, und UART1 für MSP DisplayPort, der das OSD und die Flugdaten zur Brille trägt.",
+    "CAM-VTX": "Das Koaxkabel der O3-Kamera in die Air Unit. Die Air Unit sendet das Livebild und zeichnet es gleichzeitig auf.",
+    "XT60-GOPRO": "Die nackte Actioncam hat keinen Akku: Ein kleiner BEC an der Stromversorgung vom Akku gibt ihr 5 V mit bis zu 3 A. Eine Datenverbindung gibt es nicht; sie zeichnet selbstständig auf."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke-Stopper-Test",
+      "pass": "Die Lampe hat nur kurz geblinkt: Nichts ist kurzgeschlossen, und der Kondensator sitzt richtig herum. Du kannst den Akku jetzt direkt einstecken.",
+      "fail": "Die Lampe leuchtet dauerhaft: Etwas ist kurzgeschlossen, hier ein Kondensator mit dem Streifen zu Plus. Setz ihn mit dem Streifen zu Minus neu ein und wiederhol den Test, bevor du richtig einsteckst."
+    },
+    "motors": {
+      "title": "Prüfung der Motordrehrichtung (ohne Propeller)",
+      "pass": "Alle vier drehen so, wie der Mixer es erwartet: M1 und M4 im Uhrzeigersinn, M2 und M3 gegen den Uhrzeigersinn (props in). Jetzt können die Propeller drauf.",
+      "fail": "Ein Motor hat falsch herum gedreht (sein Pfeil wird rot). Die Prüfung kehrt ihn in den ESC-Einstellungen um, so wie du es im ESC Configurator tun würdest, statt umzulöten. Mit Propellern hätte er den Quad beim Start überschlagen."
+    },
+    "calibrate": {
+      "title": "Kalibrierung des Beschleunigungssensors",
+      "pass": "Auf einer ebenen Fläche kalibriert: Der Angle-Modus, Höhe halten und der OSD-Horizont wissen jetzt, wo waagerecht ist, und die Arming-Sperre NO_ACC_CAL von Betaflight ist weg.",
+      "fail": "Setz zuerst den Flugcontroller ein und stell den Quad auf eine ebene Fläche. Wenn der Pfeil nach hinten zeigt, hilft Kalibrieren nicht: Dreh die Platine um oder setz align_board_yaw = 180."
+    },
+    "clearance": {
+      "title": "Prüfung des Propellerspiels (ohne Akku)",
+      "pass": "Jeder Propeller von Hand in seinem Duct gedreht: ringsum ein gleichmäßiger Spalt von 1,4 mm zur Wand, kein Schleifen und keine abgebrochenen Spitzen. Ein Schleifen würde die Kamera schütteln und in den Aufnahmen als Jello sichtbar werden.",
+      "fail": "Steck den Akku ab, setz Ducts und Propeller ein und dreh dann jeden Propeller von Hand. Ein Propeller, der am Duct schleift, oder eine abgebrochene oder verbogene Spitze wird vor dem Flug ersetzt."
+    },
+    "arm": {
+      "title": "Prüfung vor dem Armen",
+      "pass": "Der Befehl status listet keine Arming-Flags: Der Quad würde armen. Diese Prüfung erkennt keine verkehrt herum montierte Platine, also sieh dir vor dem ersten Flug selbst den Pfeil auf dem Flugcontroller an.",
+      "fail": "Das Armen ist gesperrt, und status sagt, warum: RXLOSS heißt keine Verbindung zum Empfänger (setz den Empfänger ein), NO_ACC_CAL heißt, zuerst den Beschleunigungssensor kalibrieren. Dafür braucht es Flugcontroller, Empfänger und Akku, eingesteckt."
+    },
+    "osd": {
+      "title": "Prüfung von OSD und Verbindung (ohne Propeller)",
+      "pass": "In der Brille: das HD-Bild mit dem OSD von Betaflight darüber (Akku, Verbindungsqualität, Timer). UART1 führt MSP und VTX_MSP (131073), und osd_displayport_device ist MSP.",
+      "fail": "Setz Flugcontroller, O3-Kamera und Air Unit und den Empfänger ein, dann steck ein: Die Air Unit läuft an der Akkuspannung, nicht an USB. Bei einem echten Aufbau bedeutet ein Bild ohne OSD meist, dass UART1 das Bit VTX_MSP fehlt, TX und RX vertauscht sind oder osd_displayport_device nicht MSP ist."
+    },
+    "failsafe": {
+      "title": "Failsafe-Test (ohne Propeller)",
+      "pass": "Auf der Werkbank ohne Propeller gearmt, Fernsteuerung ausgeschaltet: RXLOSS, 1,5 s auf den letzten sicheren Knüppelwerten, dann hat DROP die Motoren gestoppt und disarmt. Richtig für einen Quad mit Ducts, der drinnen über Menschen fliegt.",
+      "fail": "Nimm die Propeller ab, setz den Empfänger ein, steck einen Akku an und kalibrier den Beschleunigungssensor, damit er armen kann, dann schalte die Fernsteuerung aus und beobachte die Motoren."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Erste Einrichtung nach dem Flashen",
+      "explain": "Setzt den Mixer, die Ausrichtung der Platine und das Motorprotokoll: DShot300 mit bidirektionaler Telemetrie, sodass jeder ESC die Drehzahl meldet. motor_poles ist 14 für diese 12N14P-Motoren. Die O3 liegt an UART1 mit der Funktion 131073, MSP (1) plus VTX_MSP (131072); so bekommt eine DJI-Einheit seit Betaflight 4.4 das OSD, das alte displayport_msp_serial gibt es nicht mehr. vcd_video_system = HD legt das OSD auf das HD-Raster mit 53 x 20. ExpressLRS ist serieller RX (64) an UART2 mit CRSF."
+    },
+    "rpm": {
+      "title": "RPM-Filter: kein Jello",
+      "explain": "Kleine, schnelle Motoren schütteln den Gyro, und das zeigt sich in den Aufnahmen als Jello, ein rollendes Wabern. Mit der Drehzahl jedes Motors setzt Betaflight Notch-Filter genau auf das Rauschen jedes Motors und seine Harmonischen. Das braucht bidirektionales DShot und das richtige motor_poles; die anderen Zahlen sind die Standardwerte von Betaflight, mit ihren Bereichen aufgeführt."
+    },
+    "switches": {
+      "title": "Schalter und Failsafe",
+      "explain": "aux nimmt die Nummer des Modus: 0 ARM, 1 ANGLE, 3 ALTHOLD, 35 FLIP OVER AFTER CRASH (Turtle). Der Kanal zählt ab 0 = AUX1, und der Bereich ist in Mikrosekunden angegeben. Einen ACRO-Modus zum Einschalten gibt es nicht: Acro ist das, was fliegt, wenn Angle und Höhe halten aus sind. Failsafe DROP stoppt die Motoren nach 1,5 s ohne Verbindung: Drinnen, nahe an Menschen, ist ein Fall in die Ducts sicherer als Weiterfliegen."
+    },
+    "alt": {
+      "title": "Höhe halten",
+      "explain": "ALTHOLD von Betaflight (seit 2025.12) hält die Höhe mit dem Barometer des Flugcontrollers, also prüf, ob deine Platine eins hat. Mit ANGLE und ALTHOLD zusammen hält Gas in Mittelstellung die Höhe; das Totband sind die 20 % Knüppelweg um die Mitte, die als Mitte zählen, und voller Knüppel steigt oder sinkt mit 1,5 m/s (15 Zehntel). Die Neigung ist auf 30 Grad begrenzt."
+    },
+    "cine": {
+      "title": "Cine-Raten auf einem Schalter",
+      "explain": "Cine ist kein Flugmodus von Betaflight, sondern ein zweites Ratenprofil mit sanften Raten: Bei ACTUAL-Raten ist voller Knüppel der größere Wert aus rc_rate und srate mal 10, also 150 Grad pro Sekunde auf Rollen und Nicken und 100 auf Gieren. rateprofile zählt ab 0, also ist 1 das Rateprofile 2 im Configurator. Die Zeile adjrange mit der Funktion 12 lässt einen Schalter auf AUX5 das Profil wählen. Mehr RC-Smoothing und Feedforward-Smoothing runden die Knüppelbewegungen ab, auf Kosten einer kleinen Verzögerung."
+    },
+    "angle": {
+      "title": "Angle-Modus",
+      "explain": "Der Flugcontroller richtet den Quad auf, wenn du loslässt, und neigt ihn nie über angle_limit hinaus: hier 30 Grad statt der standardmäßigen 60, was die Aufnahme ruhig und das Tempo niedrig hält. angle_p_gain bestimmt, wie stark er aufrichtet; ältere Betaflight-Versionen nannten es p_level."
+    },
+    "acro": {
+      "title": "Sanfte Acro-Raten",
+      "explain": "Acro ist das, was fliegt, wenn Angle und Höhe halten aus sind: Die Knüppel legen die Drehrate fest, und nichts richtet ihn auf. 7 und 40 ergeben 70 Grad pro Sekunde um die Mitte und 400 bei vollem Knüppel, sanft für einen 440-g-Quad mit Ducts (der Standard von Betaflight ist 670). Gieren endet bei 270."
+    },
+    "race": {
+      "title": "Gate-Timer im HD-OSD",
+      "explain": "osd_tim1 packt Quelle und Genauigkeit des Timers in eine Zahl: 2 (seit dem letzten Armen) plus 1 x 16 (Hundertstel) ergibt 18. Die Position ist 2048 (OSD-Profil 1) plus die Spalte plus 32 pro Zeile: Spalte 23, Zeile 1, oben nahe der Mitte der HD-Fläche."
+    },
+    "range": {
+      "title": "Ein Take durchs Haus",
+      "explain": "Flieg den Take mit dem Cine-Profil, mit dem Gas in diesem Profil auf 80 % skaliert, damit dich voller Knüppel nie durch einen Raum schießt. Stell die Actioncam auf 4K mit 60 Bildern pro Sekunde und einer Belichtungszeit von etwa 1/120 s (die doppelte Bildrate) für natürliche Bewegungsunschärfe, nutze bei Tageslicht einen ND-Filter und schalte Gyrodaten für die spätere Stabilisierung ein."
+    }
+  },
+  "flight": {
+    "modes": {
+      "alt": {
+        "title": "Höhe halten (leicht)",
+        "hint": "Angle-Modus plus Höhe halten von Betaflight: W und S steigen und sinken mit bis zu 1,5 m/s, und er hält seine Höhe, wenn du loslässt. Die Pfeiltasten neigen ihn bis 30 Grad, A und D gieren, Leertaste armt."
+      },
+      "cine": {
+        "title": "Cine (ruhig)",
+        "hint": "Höhe halten mit den sanften Cine-Raten: höchstens 150 Grad pro Sekunde, 100 auf Gieren. Langsame, gleichmäßige Knüppelbewegungen ergeben die ruhigen Aufnahmen, für die ein Kunde bezahlt."
+      },
+      "angle": {
+        "title": "Angle-Modus",
+        "hint": "Selbstnivellierend bis 30 Grad. Das Gas bleibt, wo du es lässt, also halte die Höhe mit W und S."
+      },
+      "acro": {
+        "title": "Acro-Modus (Rate)",
+        "hint": "Die Knüppel legen fest, wie schnell er sich dreht (bis zu 400 Grad pro Sekunde), und nichts richtet ihn auf. Lässt du los, behält er seinen Winkel."
+      },
+      "race": {
+        "title": "Gate-Durchflug",
+        "hint": "Fünf Gates rund um Vorgarten und Garten, der Reihe nach. Die Uhr startet an Gate 1; die Sollzeit ist 50 Sekunden."
+      },
+      "range": {
+        "title": "Flugfeld: Immobilientour",
+        "hint": "Durch die Haustür hinein, den Flur entlang, durch die Schiebetür hinaus, über den Pool und das Dach, dann zurück zum Landeplatz. Die Sollzeit ist 75 Sekunden."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Funkverbindung verloren: 1,5 s lang halten die Knüppel ihre sicheren Werte, dann stoppt DROP die Motoren, und der Quad fällt. Die Ducts machen das überlebbar.",
+      "video-loss": "Das HD-Bild friert hinter Wänden ein oder zerfällt, aber die ELRS-Verbindung bleibt: Von selbst passiert nichts, also steig oder kehr in Richtung deines Standorts um, bis das Bild zurückkommt.",
+      "low-battery": "Unter 3,5 V pro Zelle warnt das OSD mit LOW BATTERY: Bring die Aufnahme zu Ende und lande.",
+      "battery-empty": "Unter etwa 3,2 V pro Zelle ist der Akku leer: sofort landen. Er bricht bei jedem Punch weiter ein, und der Flugcontroller oder die Air Unit kann in den Brown-out geraten."
+    },
+    "controls": "Tastatur: Leertaste armt und disarmt, W und S geben Gas, die Pfeiltasten nicken und rollen, A und D gieren, V schaltet auf FPV, R setzt den Quad zurück auf den Landeplatz. Auf dem Handy ist der linke Knüppel Gas und Gieren, der rechte Nicken und Rollen. Ein Gamepad funktioniert in Mode 2."
+  },
+  "courses": {
+    "race": {
+      "title": "Gate-Rennen im Garten",
+      "brief": "Fünf Gates mit 1,6 m rund um Vorgarten und Garten, mit Abstand zum Haus: Flieg sie der Reihe nach. Die Uhr startet an Gate 1."
+    },
+    "realestate": {
+      "title": "Immobilientour",
+      "brief": "Die Haustour in einem Take: durch die Haustür hinein, den Flur entlang, durch die Schiebetür hinaus, über den Pool, hoch über das Dach und wieder hinunter zum Landeplatz. Die Gates aus dem Garten stehen auch auf dem Feld: Flieg um sie herum.",
+      "goals": {
+        "1": "HAUSTÜR",
+        "2": "FLUR",
+        "3": "SCHIEBETÜR",
+        "4": "ÜBER DEN POOL",
+        "5": "ÜBER DAS DACH",
+        "6": "ZURÜCK ZUM LANDEPLATZ"
+      }
+    }
+  },
+  "quizzes": {
+    "ducts": {
+      "purpose": {
+        "q": "Wofür sind die Ducts an einem Cinewhoop da?",
+        "options": {
+          "1": "Für die Höchstgeschwindigkeit",
+          "2": "Sie schützen die Propeller, sodass er nah an Menschen und drinnen fliegen und gegen eine Wand stoßen kann, ohne etwas zu zerschneiden",
+          "3": "Sie halten den Akku"
+        },
+        "why": "Ein Cinewhoop filmt dort, wo ein Quad mit offenen Propellern nicht hin darf: durch Häuser, Läden und Menschenmengen. Die Ducts halten die Propeller von Wänden, Möbeln und Menschen fern. Sie kosten Masse, Luftwiderstand und Flugzeit, deshalb fliegen Quads mit offenen Propellern schneller und länger."
+      },
+      "gap": {
+        "q": "Ein 3-Zoll-Propeller (76,2 mm) dreht sich in einem Duct mit 79 mm Durchmesser. Warum hält man diesen Spalt klein, aber nie bei null?",
+        "options": {
+          "1": "Ein großer Spalt sieht vor der Kamera besser aus",
+          "2": "Der Spalt macht keinen Unterschied",
+          "3": "Ein enger Spalt (hier 1,4 mm) bringt etwas zusätzlichen Schub, aber ein Propeller, der die Wand berührt, splittert und schüttelt die Kamera"
+        },
+        "why": "Luft strömt an den Propellerspitzen vorbei. Ein enger Duct hält einen Teil davon auf und bringt bei niedriger Geschwindigkeit etwas Schub. Berührt der Propeller die Wand, surrt er, seine Spitzen splittern, und er bringt Vibrationen in die Aufnahmen, also dreh vor dem Flug jeden Propeller in seinem Duct von Hand."
+      }
+    },
+    "power": {
+      "cap": {
+        "q": "Was macht der 470-µF-Kondensator über den Akku-Pads?",
+        "options": {
+          "1": "Er schluckt die Spannungsspitzen, die die ESCs beim Abbremsen der Motoren erzeugen, bevor sie den Gyro und das Video erreichen",
+          "2": "Er hält den Quad in der Luft, nachdem der Akku abgesteckt ist",
+          "3": "Er erhöht die Akkuspannung"
+        },
+        "why": "Jedes Mal, wenn ein ESC einen Motor abbremst, drückt er eine Spitze zurück in die Akkukabel. Ein Low-ESR-Kondensator direkt an den Pads fängt sie ab. Ohne ihn bekommst du verrauschtes Video, Rauschen am Gyro und im schlimmsten Fall einen toten ESC oder Flugcontroller."
+      },
+      "smoke": {
+        "q": "Der Kondensator wurde mit dem Streifen zu Plus eingesetzt. Was bemerkt das, bevor etwas durchbrennt?",
+        "options": {
+          "1": "Der Flugcontroller weigert sich zu booten",
+          "2": "Ein Smoke Stopper beim ersten Einstecken: Seine Lampe leuchtet dauerhaft und begrenzt den Strom",
+          "3": "Nichts: Die Polarität eines Kondensators spielt keine Rolle"
+        },
+        "why": "Ein verkehrt herum eingesetzter Elektrolytkondensator lässt Strom durch und platzt. Ein Smoke Stopper setzt beim ersten Einschalten eine strombegrenzende Lampe oder Sicherung in die Akkuleitung, sodass ein Kurzschluss die Lampe leuchten lässt, statt das Bauteil zu verbrennen."
+      }
+    },
+    "video": {
+      "twocams": {
+        "q": "Warum trägt dieser Cinewhoop zwei Kameras?",
+        "options": {
+          "1": "Eine ist Ersatz, falls die andere ausfällt",
+          "2": "Die O3-Kamera gibt dem Piloten das Livebild; die nackte Actioncam zeichnet die Aufnahmen auf, die der Kunde bekommt",
+          "3": "Eine schaut nach vorn und eine nach hinten"
+        },
+        "why": "Der Pilot fliegt mit dem verzögerungsarmen Livebild der O3 (die auch aufzeichnet). Die Actioncam zeichnet die hochwertigen Aufnahmen mit Gyrodaten auf, damit sie sich danach in Gyroflow oder ReelSteady stabilisieren lassen."
+      },
+      "osd": {
+        "q": "Die Brille zeigt das HD-Bild, aber kein OSD. Was ist die wahrscheinlichste Ursache?",
+        "options": {
+          "1": "UART1 fehlt das Bit VTX_MSP (131073 = MSP + VTX_MSP), oder osd_displayport_device ist nicht MSP",
+          "2": "Das Objektiv der Kamera ist schmutzig",
+          "3": "Die Propeller sind verkehrt herum montiert"
+        },
+        "why": "Bei einer DJI-Einheit schickt Betaflight das OSD als MSP-DisplayPort-Nachrichten über den UART der Air Unit, und die Brille zeichnet es. Fehlt dem Port VTX_MSP, ist das Gerät nicht MSP oder sind TX und RX vertauscht, funktioniert das Video weiterhin, aber das OSD kommt nie an."
+      },
+      "cost": {
+        "q": "Wohin geht beim Standardaufbau das meiste Geld?",
+        "options": {
+          "1": "In den Carbonrahmen",
+          "2": "In die beiden Kameras: die O3 Air Unit und die Actioncam",
+          "3": "In die Propeller"
+        },
+        "why": "Im Rechner kostet die O3 $229 und die Actioncam $199: $428 eines Aufbaus für $712. Rahmen, Ducts und Propeller zusammen kosten weniger als jede der beiden Kameras, deshalb schützen die Ducts eines Cinewhoops die Kameras ebenso sehr wie die Menschen."
+      }
+    },
+    "props": {
+      "last": {
+        "q": "Warum kommen die Propeller zuletzt drauf?",
+        "options": {
+          "1": "Sie sind das leichteste Teil",
+          "2": "Damit der Smoke Stopper und die Motortests ohne etwas laufen, das jemanden schneiden oder den Quad von der Werkbank werfen kann",
+          "3": "Die Ducts passen danach nicht mehr"
+        },
+        "why": "Ein Motor, der auf der Werkbank unerwartet oder falsch herum hochdreht, ist ohne Propeller harmlos. Die Prüfungen auf der Werkbank laufen ohne Propeller, und die Propeller kommen erst drauf, wenn beide bestanden sind."
+      },
+      "spin": {
+        "q": "Props in, Nummerierung von Betaflight: In welche Richtung dreht M1, der Motor hinten rechts, von oben gesehen?",
+        "options": {
+          "1": "Im Uhrzeigersinn",
+          "2": "Gegen den Uhrzeigersinn",
+          "3": "Das hängt vom Akku ab"
+        },
+        "why": "In QUAD X von Betaflight mit props in drehen M1 (hinten rechts) und M4 (vorn links) im Uhrzeigersinn, M2 und M3 gegen den Uhrzeigersinn. Diagonale Paare drehen in dieselbe Richtung, sodass sich die Drehmomente der Motoren aufheben, und der Quad giert, indem er ein Paar beschleunigt."
+      }
+    },
+    "flight": {
+      "efficiency": {
+        "q": "Warum fliegt dieser Cinewhoop nur etwa 5 bis 6 Minuten?",
+        "options": {
+          "1": "Kleine Propeller in Ducts liefern weniger Schub pro Watt, und er trägt die Ducts und zwei Kameras",
+          "2": "Die Air Unit leert den größten Teil des Akkus",
+          "3": "Betaflight begrenzt die Flugzeit"
+        },
+        "why": "Kleine Propeller müssen schnell drehen, um einen schweren Quad zu heben, und schnelle Propeller verschwenden mehr Leistung. Ducts, die O3 und eine zweite Kamera bringen etwa 125 g dazu. Der Rechner sagt 6 Minuten im Schwebeflug und etwa 5 im Reiseflug, nah an den 5 bis 8 Minuten, die echte Cinewhoops fliegen."
+      },
+      "cine": {
+        "q": "Was ist der \"Cine-Modus\" in Betaflight?",
+        "options": {
+          "1": "Ein Flugmodus namens CINE, den du mit aux einschaltest",
+          "2": "Eine Kameraeinstellung in der Brille",
+          "3": "Überhaupt kein Modus: ein Ratenprofil mit sanften Raten und Glättung, per Schalter gewählt"
+        },
+        "why": "Betaflight hat keinen Cine-Modus. Piloten legen ein zweites Ratenprofil mit niedrigen Raten und mehr Glättung an, wählen es per Schalter (adjrange Funktion 12) und fliegen es dann im Angle-Modus oder in Acro."
+      },
+      "failsafe": {
+        "q": "Beim Filmen in einem Haus bricht die Verbindung ab. Was macht Failsafe DROP?",
+        "options": {
+          "1": "Nach 1,5 s ohne Verbindung stoppt er die Motoren, und der Quad fällt in seinen Ducts",
+          "2": "Er fliegt per GPS nach Hause",
+          "3": "Er schwebt, bis der Akku leer ist"
+        },
+        "why": "Stufe 1 hält für failsafe_delay (1,5 s) sichere Knüppelwerte, falls die Verbindung zurückkommt. Stufe 2 DROP stoppt die Motoren. Drinnen und nahe an Menschen ist das die sichere Wahl; GPS Rescue braucht ein GPS, das dieser Quad nicht trägt, und würde in einem Haus ohnehin nicht funktionieren."
+      },
+      "jello": {
+        "q": "Die Aufnahmen wabern wie Wackelpudding. Was prüfst du zuerst?",
+        "options": {
+          "1": "Die Akkuspannung",
+          "2": "Ob ein Propeller an seinem Duct schleift oder angeschlagen ist, und ob der RPM-Filter läuft (bidirektionales DShot, das richtige motor_poles)",
+          "3": "Die Helligkeit der Brille"
+        },
+        "why": "Jello sind Vibrationen, die den Rolling Shutter der Kamera erreichen. Ein angeschlagener oder schleifender Propeller schüttelt den Rahmen; ohne RPM-Filter erreicht Motorrauschen den Gyro, und die Motoren zucken. Dreh jeden Propeller in seinem Duct von Hand und prüf, ob die ESCs die Drehzahl melden."
+      }
+    }
+  }
+}
