@@ -1,5 +1,6 @@
 "use client";
 
+import { useLayoutEffect, useRef, useState } from "react";
 import type { FigureHandle } from "@/components/figure/protocol";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
@@ -20,7 +21,10 @@ export function homeYaw(figure: FigureHandle | null): number {
 // The figure's own buttons the host draws itself (the power select, the views, Break it).
 const HOST_DRAWN = ["power", "view", "break"];
 // A lesson's Run is the upload, and building the board is the board page's Assembly: these stay off a lesson's figure.
-export const LESSON_HIDDEN = [...HOST_DRAWN, "upload", "strip", "pnp", "mat", "place", "solder", "remove"];
+const BUILD = ["strip", "pnp", "mat", "place", "solder", "remove"];
+export const LESSON_HIDDEN = [...HOST_DRAWN, "upload", ...BUILD];
+// On a board page the Assembly tab presses the build buttons; under lg they would cover most of a small plate.
+export const boardHidden = (): readonly string[] => (window.matchMedia("(max-width: 1023px)").matches ? [...HOST_DRAWN, ...BUILD] : HOST_DRAWN);
 
 /** After every `ready`: hide the figure's copies of controls this page already has, so each shows once. */
 export function hideHostDrawn(figure: FigureHandle | null, buttons: { id: string }[] | undefined, ids: readonly string[] = HOST_DRAWN): void {
@@ -56,6 +60,23 @@ export function ViewBar({ store, board, figure, views, variants, xr, onXr, yaw, 
   const power = useLab(store, (s) => s.power);
   const variant = useLab(store, (s) => s.variant);
   const status = useLab(store, (s) => s.figure.status);
+  const rowRef = useRef<HTMLDivElement>(null);
+  const [overflow, setOverflow] = useState(false);
+
+  // A row too long for the stage (German, a phone) scrolls; a fade at the end says there is more.
+  useLayoutEffect(() => {
+    const row = rowRef.current;
+    if (!row) return;
+    const measure = () => setOverflow(row.scrollLeft + row.clientWidth < row.scrollWidth - 2);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(row);
+    row.addEventListener("scroll", measure, { passive: true });
+    return () => {
+      observer.disconnect();
+      row.removeEventListener("scroll", measure);
+    };
+  }, []);
 
   const turn = (deg: number) => {
     const next = yaw + deg;
@@ -71,7 +92,9 @@ export function ViewBar({ store, board, figure, views, variants, xr, onXr, yaw, 
 
   return (
     <div
-      className="-mx-1 flex shrink-0 flex-nowrap items-center gap-1.5 overflow-x-auto px-1 py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      ref={rowRef}
+      data-overflow={overflow || undefined}
+      className="-mx-1 flex shrink-0 flex-nowrap items-center gap-1.5 overflow-x-auto px-1 py-0.5 [scrollbar-width:none] data-overflow:[mask-image:linear-gradient(to_right,#000_calc(100%-3rem),transparent)] [&::-webkit-scrollbar]:hidden"
       data-testid="viewbar"
     >
       <SegmentedControl

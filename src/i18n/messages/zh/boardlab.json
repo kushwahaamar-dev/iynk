@@ -17,7 +17,8 @@
     "clock": "{mhz} MHz",
     "languages": "编程语言",
     "fig": "图 {n}",
-    "assemblyTodo": "尚未组装"
+    "assemblyTodo": "尚未组装",
+    "ghz": "{ghz} GHz"
   },
   "lang": {
     "arduino-cpp": "Arduino C++",

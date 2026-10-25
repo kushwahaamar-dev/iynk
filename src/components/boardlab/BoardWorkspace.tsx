@@ -26,7 +26,7 @@ import type { BoardModel, LessonLink } from "./model";
 import { PinoutTable } from "./PinoutTable";
 import { BoardLabText, useText, type BoardLabMessages } from "./text";
 import { useLab } from "./useLab";
-import { ViewBar, hideHostDrawn, homeYaw } from "./ViewBar";
+import { ViewBar, boardHidden, hideHostDrawn, homeYaw } from "./ViewBar";
 import { WireInPanel } from "./WireInPanel";
 
 export type BoardOverview = {
@@ -285,7 +285,7 @@ function Overview({ lang, data, notice }: { lang: Locale; data: BoardOverview; n
       figureSound(e);
       if (e.type === "ready") {
         setYaw(homeYaw(figureRef.current));
-        hideHostDrawn(figureRef.current, e.buttons);
+        hideHostDrawn(figureRef.current, e.buttons, boardHidden());
         const state = (e as { state?: unknown }).state;
         if (state && typeof state === "object") store.dispatch({ type: "figure/state", state: state as Record<string, unknown> });
       } else if (e.type === "state") store.dispatch({ type: "figure/state", state: e.state });

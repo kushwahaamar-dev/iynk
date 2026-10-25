@@ -17,7 +17,8 @@
     "clock": "{mhz} MHz",
     "languages": "Se programa en",
     "fig": "Fig. {n}",
-    "assemblyTodo": "Montaje pendiente"
+    "assemblyTodo": "Montaje pendiente",
+    "ghz": "{ghz} GHz"
   },
   "lang": {
     "arduino-cpp": "Arduino C++",

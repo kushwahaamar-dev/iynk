@@ -17,7 +17,8 @@
     "clock": "{mhz} MHz",
     "languages": "कोड की भाषा",
     "fig": "चित्र {n}",
-    "assemblyTodo": "असेंबली बाकी"
+    "assemblyTodo": "असेंबली बाकी",
+    "ghz": "{ghz} GHz"
   },
   "lang": {
     "arduino-cpp": "Arduino C++",
