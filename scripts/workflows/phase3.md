@@ -58,17 +58,21 @@ short, every file you did is, and your report lists the ones left.
 ### P3-ui-<lang> (es, fr, de, zh, hi)
 
 Owns `src/i18n/messages/<lang>/*.json` and `src/i18n/figures/<lang>.json` for its one language (the five agents never
-share a file). Two jobs, the T1 translation rules apply to both:
+share a file). Three jobs, the T1 translation rules apply to all:
 
 1. **UI strings.** Every leaf in `src/i18n/messages/<lang>/<namespace>.json` that still carries the English text is
    translated (find them by comparing with `src/i18n/messages/en/`; the `*-to-phase3-strings.md` requests in
    `docs/requests/` list the keys added in phase 2). Keys stay exactly as they are (`src/i18n/messages.test.ts`).
    Short labels that are the same word in your language, product names and units may stay.
-2. **Figure strings.** Write `src/i18n/figures/<lang>.json`: one entry for every key in `src/i18n/figure-keys.json`
-   (the English text the figures show, with the figures that use it), value the translation. Placeholders in braces
-   stay as they are. A part reference before the dot stays (`R18 · 47.5 kΩ VBUS sense resistor` → `R18 · …`).
-   Button names the prose tells a learner to press must read the same as in your prose translations in
-   `src/i18n/content/<lang>/`: check a few with `grep`. `npx vitest run src/i18n/figure-strings.test.ts` checks it.
+2. **Figure strings.** `src/i18n/figures/<lang>.json` exists (T2a) for the keys listed then. The driver has since
+   regenerated `src/i18n/figure-keys.json` with the acorn-based collector (wave B's figures, the drone and bench
+   message tables, status words, craft logs, "Off"), so `npx vitest run src/i18n/figure-strings.test.ts` lists the
+   keys your file lacks and the ones it has that are gone: add the new ones, drop the gone ones, keep every other
+   entry as it is. Same rules as T2a (the notes at the top of your file's commit history): placeholders in braces
+   stay, a part reference before the dot stays (`R18 · …`), silkscreen text printed on a board stays as printed,
+   CLI and log lines keep their commands and values, button names match your prose.
+3. **Consistency.** Where T2a's report noted that a UI string and the figure name the same control differently
+   (e.g. es "Móntalo por mí" in the figure, English in `dronelab.json`), make the UI match the figure and the prose.
 
 Done when `npx vitest run src/i18n` passes and no leaf of yours equals English unless it should.
 
