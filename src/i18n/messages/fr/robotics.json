@@ -7,6 +7,10 @@
   "index": {
     "kicker": "Labo de robotique",
     "title": "Montez, alimentez, cassez, réparez",
+    "count": {
+      "one": "{count} banc",
+      "other": "{count} bancs"
+    },
     "lede": "Treize bancs dessinés à l'encre, dans l'ordre d'un parcours de robotique de six mois. Chacun vous guide dans le montage, vous laisse provoquer les pannes qui piègent ceux qui montent pour de vrai, et se termine par des exercices pratiques, vérifiés en exécutant du code, et un petit quiz.",
     "fig": "Fig. {n}",
     "progress": "{done}/{total}",

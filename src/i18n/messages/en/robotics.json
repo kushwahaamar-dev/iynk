@@ -7,6 +7,10 @@
   "index": {
     "kicker": "Robotics Lab",
     "title": "Build it, power it, break it, fix it",
+    "count": {
+      "one": "{count} bench",
+      "other": "{count} benches"
+    },
     "lede": "Thirteen hand-inked benches in the order of a six-month robotics roadmap. Each one walks you through the build, lets you cause the failures that catch real builders, and ends with practice tasks you check by running code and a short quiz.",
     "fig": "Fig. {n}",
     "progress": "{done}/{total}",

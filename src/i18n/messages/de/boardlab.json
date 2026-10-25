@@ -6,6 +6,7 @@
   },
   "index": {
     "title": "Board-Labor",
+    "kicker": "Mikrocontroller und FPGAs",
     "lede": "Zwölf echte Boards. Bau jedes zusammen, schalte es ein, schreib Code, der wirklich läuft, schließ Sensoren an und mach es absichtlich kaputt, um zu sehen, was ausfällt und warum.",
     "count": "{count} Boards",
     "open": "{board} öffnen",

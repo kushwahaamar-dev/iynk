@@ -6,6 +6,7 @@
   },
   "index": {
     "title": "Board Lab",
+    "kicker": "Microcontrollers and FPGAs",
     "lede": "Twelve real boards. Assemble each one, power it up, write code that really runs, wire in sensors and break it on purpose to see what fails and why.",
     "count": "{count} boards",
     "open": "Open {board}",

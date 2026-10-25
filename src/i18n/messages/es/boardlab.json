@@ -6,6 +6,7 @@
   },
   "index": {
     "title": "Laboratorio de placas",
+    "kicker": "Microcontroladores y FPGA",
     "lede": "Doce placas reales. Monta cada una, dale corriente, escribe código que se ejecuta de verdad, conecta sensores y averíala a propósito para ver qué falla y por qué.",
     "count": "{count} placas",
     "open": "Abrir {board}",

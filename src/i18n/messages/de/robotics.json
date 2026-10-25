@@ -7,6 +7,10 @@
   "index": {
     "kicker": "Robotik-Labor",
     "title": "Bauen, einschalten, kaputt machen, reparieren",
+    "count": {
+      "one": "{count} Werkbank",
+      "other": "{count} Werkbänke"
+    },
     "lede": "Dreizehn von Hand getuschte Werkbänke in der Reihenfolge eines sechsmonatigen Robotik-Fahrplans. Jede führt dich durch den Bau, lässt dich die Fehler auslösen, über die echte Bastler stolpern, und endet mit Übungsaufgaben, die du prüfst, indem du Code ausführst, und mit einem kurzen Quiz.",
     "fig": "Abb. {n}",
     "progress": "{done}/{total}",

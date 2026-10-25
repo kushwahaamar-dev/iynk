@@ -7,6 +7,10 @@
   "index": {
     "kicker": "Laboratorio de robótica",
     "title": "Móntalo, dale corriente, averíalo, arréglalo",
+    "count": {
+      "one": "{count} banco",
+      "other": "{count} bancos"
+    },
     "lede": "Trece bancos entintados a mano, en el orden de una hoja de ruta de robótica de seis meses. Cada uno te guía por el montaje, te deja provocar los fallos que pillan a los que montan de verdad y termina con tareas prácticas que compruebas ejecutando código y con un cuestionario corto.",
     "fig": "Fig. {n}",
     "progress": "{done}/{total}",

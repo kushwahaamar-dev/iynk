@@ -9,6 +9,7 @@
   },
   "index": {
     "title": "Drone Lab",
+    "kicker": "Multirotors and fixed wings",
     "lede": "Hand-inked drones you design, build and then fly.",
     "fig": "Fig. {n}",
     "progress": "Progress",

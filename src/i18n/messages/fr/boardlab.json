@@ -6,6 +6,7 @@
   },
   "index": {
     "title": "Labo des cartes",
+    "kicker": "Microcontrôleurs et FPGA",
     "lede": "Douze vraies cartes. Montez chacune d'elles, mettez-la sous tension, écrivez du code qui tourne vraiment, branchez des capteurs et cassez-la exprès pour voir ce qui lâche et pourquoi.",
     "count": "{count} cartes",
     "open": "Ouvrir {board}",
