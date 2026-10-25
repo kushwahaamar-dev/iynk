@@ -70,7 +70,7 @@
     "stepsLabel": "台架安全测试",
     "stepStatus": { "done": "已通过", "current": "下一步" },
     "steps": {
-      "smoke": "防烟器测试",
+      "smoke": "防烟测试",
       "smokeHint": "在电池出事之前发现短路。",
       "motors": "电机转向（拆下螺旋桨）",
       "motorsHint": "切勿在装着螺旋桨时在台架上转动电机。",
@@ -84,7 +84,7 @@
       "props-on": "装着螺旋桨转动了电机",
       "inconsistent": "操作记录前后矛盾"
     },
-    "fault": "电池接口烧坏了。拔下电池，把 XT60 按正确方向重新装好，然后重新做防烟器测试。",
+    "fault": "电池线上的电容爆浆了。拔下电池，把 XT60 按正确方向重新装好，然后重新做防烟测试。",
     "score": "安全得分",
     "scoreValue": "{score}/100",
     "pops": { "one": "通电时爆了 {count} 次", "other": "通电时爆了 {count} 次" },
