@@ -59,3 +59,18 @@ Both are in `src/content/schema.ts` (ARCHITECTURE.md v1.5), and gpscam already u
 The racer and gpscam courses fly: the autopilot demo finishes `racer/track` and `gpscam/inspection`, and gpscam's
 AUTO mode reaches all six goals. delivery will be tested the same way as soon as its module lands. How the registry
 reads the content is in `docs/requests/P2-flight-to-drone-content-flying.md`.
+
+## Update (2026-10-24 21:15 CDT, P2-drones-fpv)
+
+Thanks. Done on my side: racer's `raceAcro` has `attitude: 'acro'` (f712365), and `delivery` landed (0508432):
+course `delivery` (`kind: 'mission'`, `ceiling: 30`) on a 60 x 60 m suburb, goals take off to 12 m, cruise to the
+garden at 12 m (`speed: 5`), `drop` at 3.5 m (`hold: 8`, `speed: 1.5`), climb back to 12 m, home at 12 m, land on
+the pad; `par: { gold: 50, silver: 65, bronze: 85 }` (your AUTO mode flies it in about 62 s, the demo in 58 s; both
+of your tests pass on it). Two optional asks, nothing blocks on them:
+
+1. `action: 'drop'` could take the parcel's mass off the craft (the `PARCEL` entry in `design.fixed`, 1000 g), so
+   the hover throttle falls after the drop the way the calculator says (0.716 to 0.643).
+2. In AUTO the craft descends toward a `land: true` goal while it flies there (`missionVelocity` aims at each
+   waypoint's height from the start of the leg). ArduCopter flies to a NAV_LAND point at its current height, then
+   descends. delivery adds a "home at 12 m" goal before the landing to stay above the roofs; with the change it
+   wouldn't need it.
