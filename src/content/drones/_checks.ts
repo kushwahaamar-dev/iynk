@@ -287,8 +287,8 @@ export function checkBetaflightSyntax(content: DroneContent) {
       }
     });
 
-    it('never uses removed or invented setting names', () => {
-      for (const s of content.firmware.snippets) expect(s.code, s.id).not.toMatch(BF_GONE);
+    it('never uses removed or invented setting names (a comment may name the old one)', () => {
+      for (const { id, line } of lines.filter((l) => !l.line.startsWith('#'))) expect(line, id).not.toMatch(BF_GONE);
       for (const name of Object.keys(content.firmware.emulator.settings)) expect(name).not.toMatch(BF_GONE);
     });
 

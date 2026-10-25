@@ -1,0 +1,419 @@
+{
+  "title": "3-inch cinewhoop",
+  "tagline": "The ducted camera platform: smooth one-take shots through houses, close to people.",
+  "sub": "Ducted HD camera platform",
+  "hint": "Build it, run the bench checks, then film a one-take tour of the house",
+  "noun": "cinewhoop",
+  "overview": "A cinewhoop is a camera platform, not an acrobat. Each 3-inch prop spins inside a duct, a ring that guards it, so the quad can fly through houses, shops and venues, close to people, and survive bumping a wall. This one is a 147 mm true-X carbon frame with a 20 x 20 stack (a 35 A 4-in-1 ESC and an F722 flight controller running Betaflight), a DJI O3 air unit for the HD live view, an ExpressLRS receiver, and a naked action camera on top that records the footage. The ducts, the two cameras and the small props cost flight time: expect 5 to 6 minutes on a 4S 1100. Pick the pack, motors and props and watch the numbers change, build it part by part, run the bench checks with the props off, then fly a smooth take through the house.",
+  "practice": "Fly the yard gate race first, then the real-estate take: in through the front door, down the hallway, out through the sliding door, over the pool, up over the roof and back down to the pad, slowly and smoothly. On a real cinewhoop: turn every prop by hand inside its duct before each flight, check the OSD and link with the props off, test the failsafe, and fly the cine profile with gentle stick moves. Descend slowly or while moving forward, or the quad wobbles in its own prop wash, and land at about 3.5 V a cell.",
+  "design": {
+    "fixed": {
+      "FRAME": "3-inch carbon frame and plates",
+      "DUCTS": "Printed ducts and TPU bumpers (printed yourself)",
+      "ESC": "35 A 4-in-1 ESC, 20 x 20",
+      "FC": "F722 flight controller, 20 x 20",
+      "VTX": "DJI O3 air unit and camera",
+      "RX": "ExpressLRS 2.4 GHz receiver",
+      "XT60": "XT60 pigtail and low-ESR capacitor",
+      "TOP": "Top plate and standoffs",
+      "STRAP": "Battery strap and grip pad",
+      "GOPRO": "Naked action camera, TPU wedge and BEC"
+    },
+    "verdict": {
+      "ok": "Parts match. Smooth and steady enough to film with.",
+      "weak": "Thrust to weight {tw}:1: too little to carry two cameras and the ducts. It sinks in turns and can't climb out of its own prop wash. Aim for at least 3:1.",
+      "over": "{kv} KV on {cells}S spins a 3-inch prop faster than these motors are made for: they run hot and can desync. 6S cinewhoops use motors of about 1700 to 2150 KV."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Carbon bottom plate, arms and duct spokes",
+      "what": "A 3 mm carbon bottom plate in a true-X shape, with the motors 147 mm apart across the diagonal (52 mm forward or back and 52 mm to each side of the centre). Short arms and two spokes per corner hold each duct ring. In the middle are the 20 x 20 mm holes for the stack, and at the front the side plates for the O3 camera. The plate set weighs about 62 g."
+    },
+    "DUCTS": {
+      "name": "Ducts (prop guards) with TPU bumpers",
+      "what": "A ring round each prop, 79 mm across inside and 24 mm tall, with a soft TPU bumper band on the outside. A 3-inch prop is 76.2 mm across, so the tips run 1.4 mm from the wall. The ducts keep the props off walls, furniture and people. A tight tip gap gives a little extra thrust at low speed, but the ducts add about 52 g and drag, which costs flight time and makes the quad catch the wind."
+    },
+    "MOTORS": {
+      "name": "4 brushless 2004 motors",
+      "what": "Outrunners with a 20 mm stator 4 mm tall, 12 coils and 14 magnets (12N14P), so Betaflight's motor_poles stays at 14. About 19 g each with wires, each screwed to the bottom plate in the middle of its duct. The default 3000 KV is made for 4S. The 1404 option is lighter but weaker, and has 12 magnets (9N12P), so it needs motor_poles = 12."
+    },
+    "ESC": {
+      "name": "35 A 4-in-1 ESC, 20 x 20 (AM32)",
+      "what": "Four 35 A motor drivers on one 26 mm board, on short standoffs at the bottom of the stack, with the battery pads at the rear. An AT32 chip runs AM32 firmware (BLHeli_32 has been dead since its developer stopped in 2024). It takes DShot300 from the flight controller and, being bidirectional, reports each motor's rpm back for the RPM filter."
+    },
+    "WIRES": {
+      "name": "Motor phase wires soldered to the ESC",
+      "what": "Three wires per motor, cut to length and soldered to that corner's three pads on the ESC. Any order spins the motor; swapping two wires, or flipping the direction in the ESC firmware, reverses it. Which corner spins which way is what the props-off motor check finds out."
+    },
+    "FC": {
+      "name": "F722 flight controller, 20 x 20 (Betaflight)",
+      "what": "An STM32F722 runs Betaflight 2026.6.2 and reads an ICM-42688-P gyro. It sits on grommets above the ESC, joined to it by an 8-pin harness (battery voltage, ground, current sensor and the four motor signals). The DJI air unit is wired to UART1 and the receiver to UART2. The arrow printed on it must point at the nose: backwards, every correction goes the wrong way and it flips on take-off."
+    },
+    "XT60": {
+      "name": "XT60 pigtail and 470 µF 35 V capacitor",
+      "what": "A 14 AWG pigtail with the yellow XT60 plug, soldered to the ESC's battery pads, and a 470 µF 35 V low-ESR capacitor across the same pads, legs cut short, stripe on the minus leg. The capacitor soaks up the voltage spikes the ESCs make when they brake the motors, which would otherwise reach the gyro and the video. 35 V leaves margin on a 6S pack (25.2 V full). Fitted the wrong way round, it vents on the first plug-in."
+    },
+    "CAM": {
+      "name": "DJI O3 camera module, 15° uptilt",
+      "what": "The O3's camera, 21.2 x 20 x 19.5 mm with a 155 degree lens, held between two side plates at the nose. It is tilted up only 15 degrees: a cinewhoop flies slowly and nearly level, so it needs little tilt. A coax cable takes the picture to the air unit, which sends it to the goggles and records it on the air unit at the same time."
+    },
+    "VTX": {
+      "name": "DJI O3 air unit (HD video transmitter)",
+      "what": "The digital video transmitter, 32.5 x 30.5 x 14.5 mm and 36.4 g with its camera, on top of the stack. It runs straight off the pack (7.4 to 26.4 V, 2S to 6S) and sends 1080p at 100 frames a second to the goggles with about 30 ms of delay. Its 3-in-1 lead carries power, ground and UART1, over which Betaflight sends the OSD (MSP DisplayPort) for the goggles to draw. Its two antennas lead out between the rear ducts. Never power it without them."
+    },
+    "RX": {
+      "name": "ExpressLRS 2.4 GHz receiver (CRSF)",
+      "what": "A nano ELRS receiver at the rear of the bottom plate, on UART2 with the CRSF protocol, its antenna led back between the rear ducts. It is a separate link from the video: indoors, walls can freeze the HD picture while ELRS still has control, which is one reason it is a separate receiver."
+    },
+    "TOP": {
+      "name": "Top plate and 31 mm standoffs",
+      "what": "A 2.5 mm carbon plate on four standoffs, above the duct tops and clear of the props. It closes the stack in and carries the battery and the action camera. It goes on once the flight controller, the cameras and the receiver are in, because it covers them."
+    },
+    "GOPRO": {
+      "name": "Naked action camera, TPU wedge and 5 V BEC",
+      "what": "An action camera stripped of its case and battery, about 36 g, on a TPU wedge tilted 14 degrees. A small BEC turns the pack's voltage into 5 V for it (3S to 6S in, 5 V 3 A out); Hero 10 and 11 boards need GoPro Labs firmware to start without a battery. It has no data link to the flight controller: it records the footage the client sees, with gyro data so Gyroflow or ReelSteady can smooth it later."
+    },
+    "BATT": {
+      "name": "LiPo battery, strap and grip pad",
+      "what": "The pack on the top plate behind the action camera, on a grip pad under a strap, centred over the middle of the four motors so the quad balances. The default 4S 1100 mAh is 66 x 34 x 28 mm and 128 g. A LiPo cell is 4.2 V full and 3.7 V nominal; land at about 3.5 V a cell and store at 3.8 V."
+    },
+    "PROPS": {
+      "name": "3-inch ducted props, 2 CW + 2 CCW",
+      "what": "Four 76 mm props with wide, square tips made for ducts. Two turn clockwise and two counter-clockwise (props in), so the motor torques cancel and yaw comes from speeding up one diagonal pair. The picker offers a 3-blade (3x3x3), a smoother-sounding but slightly less efficient 5-blade (3x2x5) and a punchier high-pitch 3-blade (3x3.5x3). They go on last."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Start with the bottom plate",
+      "body": "Check the carbon for cracks and delamination at the spokes, and file any sharp carbon edge near where wires will run: carbon conducts and cuts insulation."
+    },
+    "ducts": {
+      "title": "Bolt on the ducts",
+      "body": "Each ring onto its arm and two spokes, the bumper band on the outside. Check that every duct is round and sits square to the plate: a warped duct is where a prop will rub.",
+      "refusal": "The ducts bolt to the bottom plate's spokes: fit the frame first."
+    },
+    "motors": {
+      "title": "Screw in the four motors",
+      "body": "In the middle of each duct, wires pointing in towards the stack. Use the screws that came with the motors: a screw that is too long reaches the windings and shorts the motor.",
+      "refusal": "The motors screw to the bottom plate: fit the frame first."
+    },
+    "esc": {
+      "title": "Mount the 4-in-1 ESC",
+      "body": "On the 20 x 20 holes, on short standoffs, with the battery pads at the rear. Nothing on its underside may touch the carbon.",
+      "refusal": "The ESC sits on the bottom plate's stack holes: fit the frame first."
+    },
+    "wires": {
+      "title": "Solder the motor wires",
+      "body": "Cut each motor's three wires to length and solder them to the pads in its corner of the ESC. Any order spins the motor; the props-off check shows which way.",
+      "refusal": "The wires run from the motors to the ESC: fit both first."
+    },
+    "fc": {
+      "title": "Stack the flight controller, arrow forward",
+      "body": "On grommets above the ESC, printed arrow to the nose, with the 8-pin harness plugged in. If it has to sit another way round, set align_board_yaw to match.",
+      "refusal": "The flight controller stacks on top of the ESC: fit the ESC first."
+    },
+    "xt60": {
+      "title": "Solder the XT60 and the capacitor",
+      "body": "The pigtail red to + and black to - on the ESC's battery pads, and the 470 µF capacitor across the same pads with its stripe to minus, legs cut short. Check + and - for a short with a meter.",
+      "refusal": "The XT60 and its capacitor solder to the ESC's battery pads: fit the ESC first."
+    },
+    "cam": {
+      "title": "Fit the O3 camera",
+      "body": "Between the two side plates at the nose, tilted up 15 degrees, coax routed back towards the stack.",
+      "refusal": "The camera fits between the frame's side plates: fit the frame first."
+    },
+    "vtx": {
+      "title": "Mount the O3 air unit",
+      "body": "On top of the stack, with the camera coax clicked in, the 3-in-1 lead to UART1 and battery voltage on the flight controller, and both antennas led out between the rear ducts.",
+      "refusal": "The air unit needs the flight controller under it and the camera to connect to: fit both first."
+    },
+    "rx": {
+      "title": "Fit the ELRS receiver",
+      "body": "At the rear of the bottom plate, its TX to RX2 and RX to TX2 on the flight controller, plus 5 V and ground. Lead the antenna back between the rear ducts, away from the carbon and the video antennas.",
+      "refusal": "The receiver is wired to the flight controller's UART2: fit the flight controller first."
+    },
+    "top": {
+      "title": "Fit the top plate",
+      "body": "On its four standoffs, above the duct tops. Nothing under it may be pinched, and no wire may reach into a duct.",
+      "refusal": "The top plate closes over the stack: fit the flight controller, the camera, the air unit and the receiver first."
+    },
+    "gopro": {
+      "title": "Mount the naked action camera",
+      "body": "On its TPU wedge at the front of the top plate, with the BEC lead to the pack's power. Check that the ducts and props are out of its picture.",
+      "refusal": "The action camera mounts on the top plate: fit the top plate first."
+    },
+    "batt": {
+      "title": "Strap on the battery",
+      "body": "On the grip pad behind the action camera, centred so the quad balances on the middle of the four motors. Do not plug it in yet.",
+      "refusal": "The pack rides on the top plate and plugs into the XT60: fit both first."
+    },
+    "props": {
+      "title": "Fit the props, last",
+      "body": "Only after the smoke stopper test and the motor direction check, with the pack unplugged. Clockwise props on M1 and M4, counter-clockwise on M2 and M3, then turn each one by hand: it must not touch its duct.",
+      "refusal": "Props go on last, inside the ducts and under the top plate: run the smoke stopper test and the motor direction check first."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "The pack plugs into the XT60. A 4S pack is 16.8 V full and 14.8 V nominal; a 6S is 25.2 V full.",
+    "XT60-ESC": "14 AWG leads to the ESC's battery pads, with the 470 µF 35 V low-ESR capacitor across them to soak up the spikes from motor braking.",
+    "ESC-MOTORS": "Three phase wires per motor. Any order spins it; swapping two, or reversing it in the ESC firmware, turns it the other way.",
+    "FC-ESC": "The 8-pin harness: the four motor signals in DShot300 (bidirectional, so the ESC reports rpm back), plus battery voltage, ground and the current sensor for the OSD.",
+    "RX-FC": "ExpressLRS on UART2: receiver TX to the flight controller's RX2 and RX to TX2, plus 5 V and ground. Betaflight sets it as serial RX with the CRSF protocol.",
+    "VTX-FC": "The air unit's 3-in-1 lead: battery voltage (7.4 to 26.4 V) and ground, and UART1 for MSP DisplayPort, which carries the OSD and the flight data to the goggles.",
+    "CAM-VTX": "The O3 camera's coax into the air unit. The air unit sends the live view and records it at the same time.",
+    "XT60-GOPRO": "The naked action camera has no battery: a small BEC off the pack's power gives it 5 V at up to 3 A. There is no data link; it records on its own."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke stopper test",
+      "pass": "The lamp only blinked: nothing is shorted and the capacitor is the right way round. Safe to plug the pack in directly.",
+      "fail": "The lamp lit up solid: something is shorted, here a capacitor fitted stripe to plus. Re-fit it stripe to minus and run the test again before you plug in for real."
+    },
+    "motors": {
+      "title": "Motor direction check (props off)",
+      "pass": "All four spin the way the mixer expects: M1 and M4 clockwise, M2 and M3 counter-clockwise (props in). Now the props can go on.",
+      "fail": "One motor spun the wrong way (its arrow turns red). The check reverses it in the ESC settings, the way you would in ESC Configurator, instead of re-soldering. With the props on, it would have flipped the quad on take-off."
+    },
+    "calibrate": {
+      "title": "Accelerometer calibration",
+      "pass": "Calibrated on a level surface: angle mode, altitude hold and the OSD horizon now know where level is, and Betaflight's NO_ACC_CAL arming block is gone.",
+      "fail": "Fit the flight controller and set the quad on a level surface first. If the arrow points backwards, calibrating will not fix it: turn the board round or set align_board_yaw = 180."
+    },
+    "arm": {
+      "title": "Pre-arm check",
+      "pass": "The status command lists no arming flags: the quad would arm. This check cannot see a backwards board, so look at the flight controller's arrow yourself before the first flight.",
+      "fail": "Arming is blocked, and status says why: RXLOSS means no receiver link (fit the receiver), NO_ACC_CAL means calibrate the accelerometer first. It needs the flight controller, the receiver and the battery, plugged in."
+    },
+    "osd": {
+      "title": "OSD and link check (props off)",
+      "pass": "In the goggles: the HD picture with Betaflight's OSD on top (battery, link quality, timer). UART1 carries MSP and VTX_MSP (131073), and osd_displayport_device is MSP.",
+      "fail": "Fit the flight controller, the O3 camera and air unit and the receiver, then plug in: the air unit runs on battery voltage, not USB. On a real build, a picture with no OSD usually means UART1 lacks the VTX_MSP bit, TX and RX are swapped, or osd_displayport_device is not MSP."
+    },
+    "failsafe": {
+      "title": "Failsafe test (props off)",
+      "pass": "Armed on the bench with the props off, radio switched off: RXLOSS, 1.5 s on the last safe sticks, then DROP stopped the motors and disarmed. Right for a ducted quad flying over people indoors.",
+      "fail": "Take the props off, fit the receiver, plug in a pack and calibrate the accelerometer so it can arm, then switch the radio off and watch the motors."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "First setup after flashing",
+      "explain": "Sets the mixer, the board alignment and the motor protocol: DShot300 with bidirectional telemetry, so each ESC reports rpm. motor_poles is 14 for these 12N14P motors. The O3 is on UART1 with function 131073, MSP (1) plus VTX_MSP (131072), which since Betaflight 4.4 is how a DJI unit gets the OSD; the old displayport_msp_serial is gone. vcd_video_system = HD lays the OSD out on the 53 x 20 HD grid. ExpressLRS is serial RX (64) on UART2 with CRSF."
+    },
+    "rpm": {
+      "title": "RPM filter: no jello",
+      "explain": "Small, fast motors shake the gyro, and that shows as jello, a rolling wobble, in the footage. With rpm from every motor, Betaflight puts notch filters exactly on each motor's noise and its harmonics. It needs bidirectional DShot and the right motor_poles; the other numbers are Betaflight's defaults, listed with their ranges."
+    },
+    "switches": {
+      "title": "Switches and failsafe",
+      "explain": "aux takes the mode's number: 0 ARM, 1 ANGLE, 3 ALTHOLD, 35 FLIP OVER AFTER CRASH (turtle). The channel counts from 0 = AUX1, and the range is in microseconds. There is no ACRO mode to switch on: acro is what flies when angle and altitude hold are off. Failsafe DROP stops the motors after 1.5 s without a link: indoors, near people, falling into the ducts is safer than flying on."
+    },
+    "alt": {
+      "title": "Altitude hold",
+      "explain": "Betaflight's ALTHOLD (since 2025.12) holds the height with the flight controller's barometer, so check that your board has one. With ANGLE and ALTHOLD both on, centred throttle holds height; the deadband is the 20 % of stick round the centre that counts as centred, and full stick climbs or sinks at 1.5 m/s (15 tenths). Tilt is capped at 30 degrees."
+    },
+    "cine": {
+      "title": "Cine rates on a switch",
+      "explain": "Cine is not a Betaflight flight mode but a second rate profile with soft rates: under ACTUAL rates full stick is the larger of rc_rate and srate times 10, so 150 degrees a second on roll and pitch and 100 on yaw. rateprofile counts from 0, so 1 is the Configurator's Rateprofile 2. The adjrange line with function 12 lets a switch on AUX5 pick the profile. More rc smoothing and feedforward smoothing round off the stick moves at the cost of a little delay."
+    },
+    "angle": {
+      "title": "Angle mode",
+      "explain": "The flight controller levels the quad when you let go and never tilts it past angle_limit: 30 degrees here instead of the default 60, which keeps the shot steady and the speed down. angle_p_gain is how hard it levels; older Betaflight called it p_level."
+    },
+    "acro": {
+      "title": "Soft acro rates",
+      "explain": "Acro is what flies with angle and altitude hold off: the sticks set the rotation rate and nothing levels it. 7 and 40 give 70 degrees a second round the centre and 400 at full stick, gentle for a 440 g ducted quad (Betaflight's default is 670). Yaw stops at 270."
+    },
+    "race": {
+      "title": "Gate timer on the HD OSD",
+      "explain": "osd_tim1 packs the timer's source and precision into one number: 2 (since the last arm) plus 1 x 16 (hundredths) is 18. The position is 2048 (OSD profile 1) plus the column plus 32 per row: column 23, row 1, near the top middle of the HD canvas."
+    },
+    "range": {
+      "title": "One take through the house",
+      "explain": "Fly the take on the cine profile, with the throttle scaled to 80 % in that profile so a full stick never shoots you through a room. Set the action camera to 4K at 60 frames a second with a shutter of about 1/120 s (twice the frame rate) for natural motion blur, using an ND filter in daylight, and turn on gyro data for stabilising later."
+    }
+  },
+  "flight": {
+    "modes": {
+      "alt": {
+        "title": "Altitude hold (easy)",
+        "hint": "Angle mode plus Betaflight's altitude hold: W and S climb and sink at up to 1.5 m/s, and it holds its height when you let go. The arrows tilt it up to 30 degrees, A and D yaw, Space arms."
+      },
+      "cine": {
+        "title": "Cine (smooth)",
+        "hint": "Altitude hold with the soft cine rates: 150 degrees a second at most, 100 on yaw. Slow, even stick moves make the smooth shots a client pays for."
+      },
+      "angle": {
+        "title": "Angle mode",
+        "hint": "Self-levelling up to 30 degrees. The throttle stays where you leave it, so hold the height with W and S."
+      },
+      "acro": {
+        "title": "Acro (rate) mode",
+        "hint": "The sticks set how fast it rotates, up to 400 degrees a second, and nothing levels it. Let go and it keeps its angle."
+      },
+      "race": {
+        "title": "Gate fly-through",
+        "hint": "Five gates round the front yard and the garden, in order. The clock starts at gate 1; par is 50 seconds."
+      },
+      "range": {
+        "title": "Range: Real-estate tour",
+        "hint": "In through the front door, down the hallway, out the sliding door, over the pool and the roof, then back to the pad. Par is 75 seconds."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Radio link lost: for 1.5 s the sticks hold their safe values, then DROP stops the motors and the quad falls. The ducts make that survivable.",
+      "video-loss": "The HD picture freezes or breaks up behind walls, but the ELRS link stays: nothing happens on its own, so climb or turn back towards where you stand until the picture returns.",
+      "low-battery": "Below 3.5 V a cell the OSD warns LOW BATTERY: finish the shot and land.",
+      "battery-empty": "Below about 3.2 V a cell the pack is empty: land at once. It sags further on every punch, and the flight controller or the air unit can brown out."
+    },
+    "controls": "Keyboard: Space arms and disarms, W and S throttle, the arrows pitch and roll, A and D yaw, V switches to FPV, R puts the quad back on the pad. On a phone the left stick is throttle and yaw and the right stick is pitch and roll. A gamepad works in Mode 2."
+  },
+  "courses": {
+    "race": {
+      "title": "Yard gate race",
+      "brief": "Five 1.6 m gates round the front yard and the garden, clear of the house: fly them in order. The clock starts at gate 1."
+    },
+    "realestate": {
+      "title": "Real-estate tour",
+      "brief": "The one-take house tour: in through the front door, down the hallway, out through the sliding door, over the pool, up over the roof and back down to the pad. The yard gates stand on the field too: fly round them.",
+      "goals": {
+        "1": "FRONT DOOR",
+        "2": "HALLWAY",
+        "3": "SLIDING DOOR",
+        "4": "OVER THE POOL",
+        "5": "OVER THE ROOF",
+        "6": "BACK TO THE PAD"
+      }
+    }
+  },
+  "quizzes": {
+    "ducts": {
+      "purpose": {
+        "q": "What are the ducts on a cinewhoop for?",
+        "options": {
+          "1": "Top speed",
+          "2": "They guard the props, so it can fly close to people and indoors, and bump a wall without cutting anything",
+          "3": "They hold the battery"
+        },
+        "why": "A cinewhoop films where a bare-prop quad must not go: through houses, shops and crowds. The ducts keep the props off walls, furniture and people. They cost mass, drag and flight time, which is why open-prop quads fly faster and longer."
+      },
+      "gap": {
+        "q": "A 3-inch prop (76.2 mm) spins inside a duct 79 mm across. Why keep that gap small, but never zero?",
+        "options": {
+          "1": "A big gap looks better on camera",
+          "2": "The gap makes no difference",
+          "3": "A tight gap (1.4 mm here) gives a little extra thrust, but a prop that touches the wall chips and shakes the camera"
+        },
+        "why": "Air leaks round the prop tips. A tight duct stops some of that leak and adds a little thrust at low speed. If the prop touches, it buzzes, chips its tips and puts vibration into the footage, so turn each prop by hand inside its duct before you fly."
+      }
+    },
+    "power": {
+      "cap": {
+        "q": "What does the 470 µF capacitor across the battery pads do?",
+        "options": {
+          "1": "It soaks up the voltage spikes from the ESCs braking the motors, before they reach the gyro and the video",
+          "2": "It keeps the quad flying after the battery is unplugged",
+          "3": "It raises the battery voltage"
+        },
+        "why": "Every time an ESC brakes a motor, it pushes a spike back into the battery leads. A low-ESR capacitor right at the pads absorbs it. Without one you get noisy video, gyro noise and, in the worst case, a dead ESC or flight controller."
+      },
+      "smoke": {
+        "q": "The capacitor went in stripe to plus. What catches that before anything burns?",
+        "options": {
+          "1": "The flight controller refuses to boot",
+          "2": "A smoke stopper on the first plug-in: its lamp stays lit and limits the current",
+          "3": "Nothing: a capacitor's polarity does not matter"
+        },
+        "why": "An electrolytic capacitor fitted backwards passes current and vents. A smoke stopper puts a current-limiting lamp or fuse in the battery lead for the first power-up, so a short lights the lamp instead of burning the part."
+      }
+    },
+    "video": {
+      "twocams": {
+        "q": "Why does this cinewhoop carry two cameras?",
+        "options": {
+          "1": "One is a spare in case the other fails",
+          "2": "The O3 camera gives the pilot the live view; the naked action camera records the footage the client gets",
+          "3": "One looks forward and one looks back"
+        },
+        "why": "The pilot flies on the O3's low-delay live view (it records too). The action camera records the high-quality footage with gyro data, so it can be stabilised in Gyroflow or ReelSteady afterwards."
+      },
+      "osd": {
+        "q": "The goggles show the HD picture but no OSD. What is the most likely cause?",
+        "options": {
+          "1": "UART1 is missing the VTX_MSP bit (131073 = MSP + VTX_MSP), or osd_displayport_device is not MSP",
+          "2": "The camera lens is dirty",
+          "3": "The props are on backwards"
+        },
+        "why": "On a DJI unit, Betaflight sends the OSD as MSP DisplayPort messages over the air unit's UART and the goggles draw it. If the port lacks VTX_MSP, the device is not MSP, or TX and RX are swapped, the video still works but the OSD never arrives."
+      },
+      "cost": {
+        "q": "On the default build, where does most of the money go?",
+        "options": {
+          "1": "The carbon frame",
+          "2": "The two cameras: the O3 air unit and the action camera",
+          "3": "The props"
+        },
+        "why": "In the calculator the O3 is $229 and the action camera $199: $428 of a $712 build. The frame, the ducts and the props together cost less than either camera, which is why a cinewhoop's ducts protect the cameras as much as the people."
+      }
+    },
+    "props": {
+      "last": {
+        "q": "Why do the props go on last?",
+        "options": {
+          "1": "They are the lightest part",
+          "2": "So the smoke stopper and the motor tests run with nothing that can cut anyone or throw the quad off the bench",
+          "3": "The ducts will not fit afterwards"
+        },
+        "why": "A motor that spins up unexpectedly on the bench, or the wrong way round, is harmless without a prop. The bench checks are done props off, and the props go on after both have passed."
+      },
+      "spin": {
+        "q": "Props in, Betaflight numbering: which way does M1, the rear right motor, turn, seen from above?",
+        "options": {
+          "1": "Clockwise",
+          "2": "Counter-clockwise",
+          "3": "It depends on the battery"
+        },
+        "why": "In Betaflight's QUAD X, props in, M1 (rear right) and M4 (front left) turn clockwise, M2 and M3 counter-clockwise. Diagonal pairs turn the same way, so the motor torques cancel, and the quad yaws by speeding up one pair."
+      }
+    },
+    "flight": {
+      "efficiency": {
+        "q": "Why does this cinewhoop fly only about 5 to 6 minutes?",
+        "options": {
+          "1": "Small props in ducts give less thrust per watt, and it carries the ducts and two cameras",
+          "2": "The air unit drains most of the pack",
+          "3": "Betaflight limits the flight time"
+        },
+        "why": "Small props must spin fast to lift a heavy quad, and fast props waste more power. Ducts, the O3 and a second camera add about 125 g. The calculator says 6 minutes hovering and about 5 cruising, close to the 5 to 8 minutes real cinewhoops fly."
+      },
+      "cine": {
+        "q": "What is \"cine mode\" in Betaflight?",
+        "options": {
+          "1": "A flight mode called CINE that you switch on with aux",
+          "2": "A camera setting in the goggles",
+          "3": "Not a mode at all: a rate profile with soft rates and smoothing, picked with a switch"
+        },
+        "why": "Betaflight has no cine mode. Pilots keep a second rate profile with low rates and more smoothing and pick it with a switch (adjrange function 12), then fly it in angle mode or acro."
+      },
+      "failsafe": {
+        "q": "The link drops while filming inside a house. What does failsafe DROP do?",
+        "options": {
+          "1": "After 1.5 s without a link it stops the motors, and the quad falls inside its ducts",
+          "2": "It flies home on GPS",
+          "3": "It hovers until the battery is flat"
+        },
+        "why": "Stage 1 holds safe stick values for failsafe_delay (1.5 s) in case the link comes back. Stage 2 DROP stops the motors. Indoors and near people that is the safe choice; GPS Rescue needs a GPS this quad does not carry, and it would not work inside a house anyway."
+      },
+      "jello": {
+        "q": "The footage wobbles like jelly. What do you check first?",
+        "options": {
+          "1": "The battery voltage",
+          "2": "A prop rubbing its duct or chipped, and that the RPM filter is running (bidirectional DShot, the right motor_poles)",
+          "3": "The goggles' brightness"
+        },
+        "why": "Jello is vibration reaching the camera's rolling shutter. A chipped or rubbing prop shakes the frame; without the RPM filter, motor noise reaches the gyro and the motors twitch. Turn each prop by hand in its duct and check that the ESCs report rpm."
+      }
+    }
+  }
+}
