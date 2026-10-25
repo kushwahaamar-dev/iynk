@@ -20,7 +20,7 @@ describe('octo design', () => {
     return { r: calc(input), checks: designChecks(input).map((c) => c.code) };
   };
   // the calculator's hover-throttle rule of thumb, or the craft's own limit once its model carries one
-  const hoverLimit = (octo.design.model as unknown as { hoverLimit?: number }).hoverLimit ?? HOVER_THR_LIMIT;
+  const hoverLimit = octo.design.model.hoverLimit ?? HOVER_THR_LIMIT;
 
   it('opens on a build whose only possible note is the hover-throttle rule of thumb', () => {
     const { r, checks } = at({});

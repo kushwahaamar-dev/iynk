@@ -250,7 +250,7 @@
     },
     "auto": {
       "title": "AUTO: the coast survey",
-      "explain": "AUTO flies the uploaded mission: a vertical take-off, the three photo points and a vertical landing on the village pad. Arm in a Q mode, then switch to AUTO."
+      "explain": "AUTO flies the uploaded mission: a vertical take-off, the three photo points and a vertical landing on the village pad. A DO_VTOL_TRANSITION 3 after the take-off keeps the photo legs in VTOL flight so it can stop over each point; without it Plane would transition and fly the waypoints on the wing. Arm in a Q mode, then switch to AUTO."
     }
   },
   "flight": {
