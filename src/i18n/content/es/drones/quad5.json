@@ -1,0 +1,371 @@
+{
+  "title": "Quad freestyle de 5 pulgadas",
+  "tagline": "El primer montaje FPV clásico: diséñalo, móntalo, haz la prueba de humo y vuélalo.",
+  "sub": "Betaflight + FPV",
+  "hint": "Diséñalo, móntalo, haz la prueba de humo y luego vuélalo",
+  "noun": "quad freestyle",
+  "overview": "Un quad freestyle de 5 pulgadas es el primer montaje FPV de verdad por excelencia. Cuatro motores brushless van sobre un chasis True-X de carbono; un ESC 4 en 1 y una controladora de vuelo Betaflight comparten un stack de 30,5 mm en el centro; una cámara analógica y un transmisor de vídeo de 5,8 GHz mandan la imagen a tus gafas, y un receptor ExpressLRS lleva las palancas de tu emisora. El bucle PID de la controladora es la misma idea que el seguidor de líneas del Laboratorio de robótica, pero en tres ejes y miles de veces por segundo. Elige aquí la batería, los motores y las hélices y mira cómo cambian los números, móntalo pieza a pieza, haz la prueba de humo en la primera conexión, comprueba los motores sin hélices y luego vuélalo en mantener altitud, ángulo y acro.",
+  "practice": "Vuela cinco vueltas de la carrera de puertas en modo ángulo y luego una en acro. Después, el recorrido del bando: por el hueco, a través del bando, hasta lo alto de la torre, abajo en picado y un aterrizaje suave en la plataforma. En un montaje real: pon un smoke stopper en la primera conexión, comprueba el sentido de giro de cada motor sin hélices, haz la prueba de failsafe y compara tu tiempo de vuelo real con el de la calculadora. Cuenta con menos de lo que dice: de 3 a 5 minutos de freestyle con una batería 6S de 1100 mAh.",
+  "design": {
+    "fixed": {
+      "FRAME": "Chasis de carbono de 5 pulgadas",
+      "ESC": "ESC 4 en 1 de 45 A",
+      "FC": "Controladora de vuelo F405",
+      "CAM": "Cámara FPV analógica",
+      "VTX": "VTX de 5,8 GHz y antena",
+      "RX": "Receptor ExpressLRS de 2,4 GHz",
+      "XT60": "Cable XT60 y condensador de baja ESR",
+      "TOP": "Placa superior, separadores y tornillos",
+      "STRAP": "Correa y almohadilla de la batería"
+    },
+    "verdict": {
+      "over": "{kv} KV en {cells}S hace girar las hélices muy por encima de lo que aguantan los motores y el ESC: cuenta con motores calientes y una desincronización.",
+      "weak": "Una relación empuje/peso de {tw}:1 es demasiado baja para este tipo de vuelo.",
+      "ok": "Las piezas encajan. Buen montaje para todo.",
+      "punch": "Las piezas encajan. Potencia de sobra."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Chasis de carbono: placa inferior y brazos",
+      "what": "Un chasis True-X: cuatro brazos de carbono de 5 mm sobre una placa inferior, 225 mm de motor a motor, con un stack M3 de 30,5 x 30,5 mm en el centro. La fibra de carbono es rígida y ligera, y conduce la electricidad: un cable de batería pelado o un cable rozado que la toque es un cortocircuito."
+    },
+    "MOTORS": {
+      "name": "4 motores brushless (2306)",
+      "what": "La campana, forrada con 14 imanes, gira alrededor de unos bobinados de cobre fijos (el estátor: 23 mm de diámetro y 6 mm de alto en un 2306). KV son las rpm por voltio sin carga, así que KV por la tensión de la batería da la velocidad máxima: 1750 KV en 6S (22,2 V) son unas 38 900 rpm. Cada motor se atornilla con cuatro tornillos M3 en un patrón de 16 x 16 mm; un tornillo demasiado largo llega a los bobinados y cortocircuita el motor."
+    },
+    "ESC": {
+      "name": "ESC 4 en 1 de 45 A (AM32)",
+      "what": "Cuatro variadores electrónicos en una sola placa de 30,5 mm. Cada canal conmuta un puente de MOSFET para convertir la corriente continua de la batería en la señal trifásica de su motor, siguiendo las órdenes DShot600 de la controladora de vuelo. Lleva firmware AM32 o Bluejay (BLHeli_32 se acabó en 2024) y, con DShot bidireccional, devuelve por el mismo cable las rpm de cada motor para el filtro RPM."
+    },
+    "WIRES": {
+      "name": "Cables de fase de los motores, soldados a los pads del ESC",
+      "what": "Tres cables de fase por motor, soldados en cualquier orden a los pads A, B y C de su canal del ESC. Intercambiar dos cualesquiera invierte el motor, pero nadie vuelve a soldar por eso: el sentido se fija después en el firmware del ESC. Córtalos cortos y mantenlos lejos de las hélices y de los bordes de carbono."
+    },
+    "FC": {
+      "name": "Controladora de vuelo F405 (Betaflight)",
+      "what": "Un STM32F405 (168 MHz) lee su giroscopio ICM-42688-P miles de veces por segundo y ejecuta el bucle PID de Betaflight, que convierte las órdenes de tus palancas en cuatro órdenes para los motores. La flecha impresa en la placa tiene que apuntar al morro: si apunta hacia atrás, todas las correcciones van al revés y el quad da la vuelta en cuanto despega. Gira la placa, o díselo a Betaflight con set align_board_yaw = 180."
+    },
+    "XT60": {
+      "name": "Cable XT60 y condensador de 1000 µF 35 V de baja ESR",
+      "what": "Un XT60 macho con cables rojo y negro de 12 AWG (la batería lleva el hembra) y un condensador de 1000 µF 35 V de baja ESR entre los pads de batería del ESC. El condensador absorbe los picos de tensión de la conmutación del ESC. Tiene polaridad: la franja blanca marca la pata negativa, y puesto al revés revienta en la primera conexión."
+    },
+    "CAM": {
+      "name": "Cámara FPV analógica de 19 mm, inclinada 30°",
+      "what": "Una microcámara de 19 mm entre las placas laterales, inclinada 30 grados hacia arriba: en vuelo rápido hacia delante el quad baja el morro, y la inclinación mantiene el horizonte a la vista. Su vídeo va al pad CAM de la controladora, donde el chip del OSD escribe encima la tensión de la batería, el temporizador y los avisos."
+    },
+    "RX": {
+      "name": "Receptor ExpressLRS de 2,4 GHz (CRSF)",
+      "what": "Une tu emisora con la controladora de vuelo por un UART completo: TX del receptor a RX2, RX del receptor a TX2, más 5 V y tierra, hablando CRSF. Monta su antena lejos del carbono y de la antena del VTX; con dos antenas, ponlas a 90 grados entre sí."
+    },
+    "VTX": {
+      "name": "VTX analógico de 5,8 GHz y antena",
+      "what": "Envía a tus gafas la imagen de la cámara con el OSD. Se alimenta con los 9 V de la controladora, y Betaflight fija su banda, su canal y su potencia por SmartAudio en TX1. Nunca lo alimentes sin antena: se sobrecalienta y quema su etapa de salida. La potencia que puedes emitir depende de las normas de tu país."
+    },
+    "TOP": {
+      "name": "Placa superior y separadores de 27,5 mm",
+      "what": "Una placa de carbono de 2 mm sobre cuatro separadores de aluminio de 27,5 mm que cierra el stack, protege la electrónica y lleva la almohadilla y la correa de la batería. Unos separadores demasiado cortos aplastan el stack; en un choque, el golpe se lo lleva la placa, no la controladora."
+    },
+    "BATT": {
+      "name": "Batería LiPo, correa y almohadilla antideslizante",
+      "what": "La pieza más pesada, sujeta con la correa sobre la placa superior en el centro para que el quad quede equilibrado. Una celda LiPo da 4,2 V cargada y 3,7 V nominales: aterriza hacia los 3,5 V por celda, nunca bajes de 3,0 V, guárdala a 3,8 V, cárgala solo con un cargador balanceador y vigilándola, y retira una batería que se hinche."
+    },
+    "PROPS": {
+      "name": "Hélices tripala de 5 pulgadas, 2 CW + 2 CCW",
+      "what": "Hélices de cinco pulgadas en ejes M5. Dos giran en sentido horario y dos en antihorario (props in: los bordes delanteros barren hacia dentro, hacia la cámara), así que los pares de los motores se anulan y la guiñada sale de acelerar una pareja en diagonal. El selector de diseño ofrece la tripala 5x4.3x3 para todo, una 5.1x2.5x3 de paso bajo para vuelos más largos y una 5x5x3 para más potencia. Se ponen las últimas, después del smoke stopper y de la comprobación del sentido de los motores, y se quitan siempre que los motores giren en el banco."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Prepara el chasis",
+      "body": "Atornilla los brazos a la placa inferior con los tornillos del stack puestos y comprueba que cada brazo está apretado: un brazo flojo sacude el giroscopio y el quad oscila."
+    },
+    "motors": {
+      "title": "Monta los cuatro motores",
+      "body": "Cuatro tornillos M3 cada uno, en el patrón de 16 x 16 mm, con los cables hacia el centro. Usa tornillos que muerdan de 3 a 4 mm: los más largos tocan los bobinados.",
+      "refusal": "Los motores se atornillan a los brazos: primero prepara el chasis."
+    },
+    "esc": {
+      "title": "Coloca el ESC 4 en 1",
+      "body": "Sobre gomas antivibración en la parte de abajo del stack, con los pads de batería atrás, por donde entrará el cable XT60.",
+      "refusal": "El ESC va sobre los tornillos del stack del chasis: primero prepara el chasis."
+    },
+    "wires": {
+      "title": "Suelda los cables de los motores",
+      "body": "Corta a medida los tres cables de cada motor, estáñalos y suéldalos en cualquier orden a los pads de su canal. Cuenta con que al menos un motor gire al revés: lo encuentra la comprobación del sentido de los motores.",
+      "refusal": "Los cables van de los motores al ESC: primero coloca las dos cosas."
+    },
+    "fc": {
+      "title": "Monta la controladora de vuelo, con la flecha hacia delante",
+      "body": "En el stack, encima del ESC, unida por el arnés de 8 pines (tensión de la batería, tierra, corriente, telemetría y las cuatro señales de los motores). Apunta la flecha impresa hacia el morro.",
+      "refusal": "La controladora de vuelo va encima del ESC: primero coloca el ESC."
+    },
+    "xt60": {
+      "title": "Suelda el cable XT60 y el condensador",
+      "body": "Rojo a BAT+, negro a BAT-, y luego el condensador entre los mismos pads con su franja en el lado negativo. Comprueba con un multímetro que el positivo y el negativo no están en cortocircuito antes de acercar una batería.",
+      "refusal": "El cable de la batería se suelda a los pads del ESC: primero coloca el ESC."
+    },
+    "cam": {
+      "title": "Coloca la cámara",
+      "body": "Entre las placas laterales, inclinada 30 grados hacia arriba, con sus cables de vídeo, 5 V y tierra a los pads CAM de la controladora.",
+      "refusal": "La cámara se monta en el chasis: primero prepara el chasis."
+    },
+    "rx": {
+      "title": "Conecta el receptor",
+      "body": "TX del receptor a RX2, RX a TX2, 5 V y tierra. Emparéjalo (bind) con tu emisora y saca la antena por detrás.",
+      "refusal": "El receptor se conecta a un UART de la controladora: primero monta la controladora."
+    },
+    "vtx": {
+      "title": "Coloca el transmisor de vídeo",
+      "body": "Vídeo desde el pad VTX de la controladora, 9 V y tierra, SmartAudio a TX1. Enrosca la antena antes de que reciba alimentación por primera vez.",
+      "refusal": "El VTX toma el vídeo y la alimentación de la controladora: móntala primero."
+    },
+    "top": {
+      "title": "Cierra el stack con la placa superior",
+      "body": "Atornilla la placa superior a los separadores. Comprueba que no queda nada pellizcado y que ningún cable cuelga donde pueda alcanzarlo una hélice.",
+      "refusal": "Primero coloca la controladora, la cámara, el receptor y el VTX: la placa superior se cierra sobre ellos."
+    },
+    "batt": {
+      "title": "Sujeta la batería",
+      "body": "Céntrala en la almohadilla para que el quad quede equilibrado por el centro, apriétala bien con la correa y mantén el cable lejos de las hélices. Todavía no la conectes.",
+      "refusal": "Primero coloca la placa superior y el cable XT60: la batería va sobre una y se conecta al otro."
+    },
+    "props": {
+      "title": "Las hélices, las últimas",
+      "body": "Solo después de la prueba del smoke stopper y de la comprobación del sentido de los motores, con la batería desconectada. Hélices horarias en los motores horarios (M1 y M4), antihorarias en M2 y M3, con las tuercas apretadas.",
+      "refusal": "Las hélices van las últimas: primero haz la prueba del smoke stopper y la comprobación del sentido de los motores."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "El XT60 hembra de la batería se une al macho del quad. Una batería 6S da 25,2 V cargada y puede entregar bastante más de 100 A, así que esta es la única unión que nunca puede hacer cortocircuito.",
+    "XT60-ESC": "Cables de 12 AWG a los pads BAT+ y BAT- del ESC, con el condensador de 1000 µF 35 V de baja ESR entre los mismos pads, franja al negativo.",
+    "ESC-MOTORS": "Tres cables de fase por motor en los pads A, B y C de su canal. En cualquier orden el motor gira; dos cables intercambiados lo invierten.",
+    "FC-ESC": "Un arnés de 8 pines une el stack: las cuatro señales de motor DShot600 (M1 a M4) bajan al ESC, y la tensión de la batería, la tierra, el sensor de corriente y la telemetría del ESC suben a la controladora, cuyos reguladores de 5 V y 9 V se alimentan de ahí. Con DShot bidireccional, cada canal del ESC responde por su línea de señal con las rpm del motor.",
+    "RX-FC": "UART2: TX del receptor a RX2, RX del receptor a TX2, más 5 V y tierra. Betaflight activa Serial RX en el UART2 con el protocolo CRSF.",
+    "CAM-FC": "El vídeo de la cámara entra por el pad CAM, y la cámara se alimenta de los 5 V.",
+    "FC-VTX": "Vídeo con el OSD saliendo por el pad VTX, 9 V de alimentación y SmartAudio en TX1 para que Betaflight pueda fijar la banda, el canal y la potencia."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Prueba del smoke stopper",
+      "pass": "La lámpara solo ha parpadeado: no hay cortocircuito entre positivo y negativo. Ya puedes conectar la batería directamente.",
+      "fail": "La lámpara se ha quedado encendida: hay algo en cortocircuito. Aquí el condensador está al revés. Dale la vuelta (franja al negativo) y repite la prueba antes de conectar."
+    },
+    "motors": {
+      "title": "Comprobación del sentido de los motores (sin hélices)",
+      "pass": "Todos los motores giran como espera el mezclador: M1 y M4 en sentido horario, M2 y M3 en antihorario (props in). Ya puedes poner las hélices.",
+      "fail": "Un motor ha girado al revés (su flecha se pone roja). La comprobación lo invierte en el firmware del ESC, como harías en ESC Configurator, en lugar de volver a soldar; con las hélices puestas, ese motor habría volcado el quad al despegar."
+    },
+    "calibrate": {
+      "title": "Calibración del acelerómetro",
+      "pass": "Nivel calibrado sobre una superficie plana: el modo ángulo, el mantener altitud y el horizonte del OSD ya saben dónde está la horizontal, y ha desaparecido el bloqueo de armado NO_ACC_CAL de Betaflight.",
+      "fail": "Primero monta la controladora y pon el quad sobre una superficie plana. Si la flecha apunta hacia atrás, calibrar no lo arregla: gira la placa o pon align_board_yaw = 180."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Primera configuración después de flashear",
+      "explain": "Fija el mezclador, la orientación de la placa, el protocolo de los motores y los dos UART. DShot600 es el protocolo digital de los motores; dshot_bidir permite que los ESC devuelvan las rpm. Las líneas serial llevan el nombre del puerto y una máscara de bits de funciones (64 = receptor serie, 2048 = SmartAudio). yaw_motors_reversed solo le dice al mezclador hacia dónde giran las hélices; nunca cambia los motores en sí."
+    },
+    "switches": {
+      "title": "Interruptores: armado, ángulo, mantener altitud, beeper, tortuga",
+      "explain": "aux recibe el número del modo, no su nombre: 0 ARM, 1 ANGLE, 3 ALTHOLD, 13 BEEPER, 35 modo tortuga (flip over after crash). El canal se cuenta desde 0 = AUX1, y el rango va en microsegundos. No hay un modo ACRO que activar: acro es como vuela el quad cuando los modos de autonivelado están desactivados."
+    },
+    "rpm": {
+      "title": "Filtro RPM con DShot bidireccional",
+      "explain": "Con las rpm de cada motor, Betaflight coloca filtros notch que siguen exactamente el ruido de los motores. Necesita un firmware de ESC con DShot bidireccional (AM32, Bluejay); si un ESC no responde, el armado se bloquea con DSHOT_TELEM."
+    },
+    "vtx": {
+      "title": "Tabla VTX, banda y canal",
+      "explain": "La tabla recoge las frecuencias y los valores de potencia SmartAudio que acepta el transmisor; la banda 5 canal 1 es la Raceband R1 a 5658 MHz. vtx_low_power_disarm mantiene la potencia al mínimo mientras estás en el banco."
+    },
+    "failsafe": {
+      "title": "Failsafe: caída",
+      "explain": "Cuando se pierde el enlace de radio, la etapa 1 usa los valores de reserva (palancas centradas, acelerador bajo) durante failsafe_delay (15 = 1,5 s), así que un fallo corto pasa sin más. Si el enlace no vuelve, la etapa 2 DROP para los motores: un 5 pulgadas que cae es más seguro que uno que se va volando. GPS-RESCUE necesita un GPS, y este quad no lo lleva."
+    },
+    "alt": {
+      "title": "Mantener altitud",
+      "explain": "Desde la 2025.12, Betaflight puede mantener la altura con el barómetro. La palanca del acelerador pide entonces una velocidad de ascenso: alt_hold_climb_rate = 22 son los 2,2 m/s con los que vuela el campo con la palanca a tope, y la zona muerta del centro mantiene la altura."
+    },
+    "angle": {
+      "title": "Modo ángulo",
+      "explain": "La controladora nivela el quad cuando sueltas y nunca lo inclina más de angle_limit (38 grados aquí, el número del campo). angle_p_gain es la fuerza del autonivelado. Las versiones antiguas de Betaflight los llamaban level_limit y angle_level_strength (p_level antes de la 4.0); esos nombres ya no existen."
+    },
+    "acro": {
+      "title": "Rates de acro",
+      "explain": "Con los rates ACTUAL, rc_rate es la sensibilidad en el centro dividida entre 10 y srate la velocidad con la palanca a tope dividida entre 10: 200 grados por segundo alrededor del centro y 670 a tope, los números con los que vuela el campo. El expo suaviza el centro de la palanca para un control fino."
+    },
+    "race": {
+      "title": "Cronómetro de vueltas en el OSD",
+      "explain": "osd_tim1 mete en un solo número la fuente del temporizador, su precisión y una alarma: 2 (desde el último armado) más 1 x 16 (centésimas) da 18. El valor _pos lo coloca: 2048 lo muestra en el perfil 1 del OSD, más la columna, más 32 por fila."
+    },
+    "raceAcro": {
+      "title": "Carrera de puertas en acro",
+      "explain": "Los pilotos de carreras vuelan en acro con el air mode activado (Betaflight activa la función AIRMODE por defecto), así que el bucle PID mantiene toda su autoridad con el acelerador a cero y el quad sigue bajo control cuando cortas gas para entrar en una puerta. Deja abajo el interruptor de ANGLE."
+    },
+    "range": {
+      "title": "Recorrido del campo: mantener altitud y la altura en el OSD",
+      "explain": "Mantener altitud hace fácil la larga subida hasta lo alto de la torre; el elemento de altitud del OSD (osd_altitude_pos) muestra la altura del barómetro para que sepas cuándo estás por encima de la losa de 10 m."
+    }
+  },
+  "flight": {
+    "modes": {
+      "alt": {
+        "title": "Mantener altitud (fácil)",
+        "hint": "W y S suben y bajan, y el quad mantiene la altura cuando sueltas. Las flechas lo inclinan y luego se vuelve a nivelar; A y D hacen guiñada. Espacio arma."
+      },
+      "angle": {
+        "title": "Modo ángulo",
+        "hint": "Autonivelado hasta 38 grados. W y S mueven el acelerador y se queda donde lo dejas; las flechas inclinan, A y D hacen guiñada."
+      },
+      "acro": {
+        "title": "Modo acro (velocidad angular)",
+        "hint": "Lo que vuelan los pilotos de freestyle: las palancas fijan lo rápido que gira (hasta 670 grados por segundo) y nada lo nivela. Si sueltas, mantiene su ángulo."
+      },
+      "race": {
+        "title": "Carrera de puertas (ángulo)",
+        "hint": "Cinco puertas en orden. El reloj arranca en la puerta 1, y cada vuelta después de la primera es una vuelta lanzada."
+      },
+      "raceAcro": {
+        "title": "Carrera de puertas (acro)",
+        "hint": "Las mismas cinco puertas en acro, como las vuelan los pilotos de carreras. El acelerador se queda donde lo dejas."
+      },
+      "range": {
+        "title": "Campo: bando de freestyle",
+        "hint": "Pasa por el hueco, vuela a través del bando, sube a lo alto de la torre, baja en picado y aterriza en la plataforma. Mantener altitud hace la subida por ti."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Enlace de radio perdido: durante 1,5 s las palancas pasan a sus valores de reserva (centradas, acelerador bajo), luego DROP para los motores y el quad cae.",
+      "low-battery": "Por debajo de 3,5 V por celda, el OSD hace parpadear BATERÍA BAJA: aterriza ya.",
+      "battery-empty": "Por debajo de 3,2 V por celda con carga, la batería se hunde y los ESC cortan, esté donde esté el quad."
+    },
+    "controls": "Teclado: Espacio arma y desarma, W y S acelerador, las flechas cabeceo y alabeo, A y D guiñada, V cambia a FPV, R vuelve a poner el quad en la plataforma. En un móvil, la palanca izquierda es acelerador y guiñada, y la derecha es cabeceo y alabeo. Un mando funciona en Modo 2."
+  },
+  "courses": {
+    "race": {
+      "title": "Carrera de puertas",
+      "brief": "Cinco puertas en un circuito por el terreno abierto: el césped del sur, la carretera vieja, la vuelta por detrás del hueco y de regreso por el lado oeste. Vuélalas en orden; el reloj arranca en la puerta 1."
+    },
+    "bando": {
+      "title": "Bando de freestyle",
+      "brief": "Pasa por el hueco entre las dos paredes, vuela a través de la planta baja del bando, sube a lo alto de la torre, baja en picado por su fachada y aterriza suavemente en la plataforma.",
+      "goals": {
+        "1": "EL HUECO",
+        "2": "BANDO",
+        "3": "CIMA DE LA TORRE",
+        "4": "PICADO",
+        "5": "ATERRIZAJE"
+      }
+    }
+  },
+  "quizzes": {
+    "power": {
+      "cap": {
+        "q": "¿Qué hace el condensador grande del cable XT60?",
+        "options": {
+          "1": "Guarda energía para vuelos más largos",
+          "2": "Absorbe los picos de tensión de la conmutación del ESC",
+          "3": "Solo filtra el ruido del vídeo"
+        },
+        "why": "El ESC conmuta decenas de amperios miles de veces por segundo, y los cables largos de la batería convierten eso en picos de tensión. Un condensador de baja ESR justo en los pads del ESC los absorbe antes de que maten un MOSFET o reinicien la electrónica. 1000 µF guardan demasiada poca energía para notarse en el tiempo de vuelo."
+      },
+      "xt60": {
+        "q": "¿Qué XT60 va en el cable del quad?",
+        "options": {
+          "1": "El macho, con los pines al aire: la batería lleva el hembra",
+          "2": "El hembra, para que el lado del quad quede tapado",
+          "3": "Cualquiera: son iguales"
+        },
+        "why": "La batería siempre lleva el XT60 hembra, con los contactos hundidos, para que una batería suelta en la mochila no pueda hacer cortocircuito entre sus pines. El quad y los cables del cargador llevan el macho."
+      },
+      "smoke": {
+        "q": "¿Por qué usar un smoke stopper en la primera conexión?",
+        "options": {
+          "1": "Carga la batería con suavidad",
+          "2": "Limita la corriente, así que un cortocircuito enciende su lámpara en lugar de quemar el ESC",
+          "3": "Comprueba el sentido de giro de los motores"
+        },
+        "why": "Un smoke stopper pone una lámpara o un fusible en serie con la batería. Con un puente de soldadura o una pieza al revés, la lámpara se enciende y la corriente se queda en uno o dos amperios; conectado directamente, ese mismo cortocircuito tiene toda la batería detrás."
+      }
+    },
+    "stack": {
+      "arrow": {
+        "q": "La flecha de la controladora apunta hacia atrás. ¿Qué pasa al despegar?",
+        "options": {
+          "1": "Nada: al giroscopio le da igual",
+          "2": "Todas las correcciones van al revés y vuelca al instante",
+          "3": "Simplemente vuela más despacio"
+        },
+        "why": "Betaflight da por hecho que la flecha apunta al morro. Montada al revés, una inclinación a la izquierda se lee como una inclinación a la derecha, así que el bucle PID empuja hacia el lado equivocado y el quad vuelca en cuanto despega. Gira la placa, o pon align_board_yaw = 180."
+      },
+      "dshot": {
+        "q": "¿Qué envía la controladora por cada cable de señal de motor?",
+        "options": {
+          "1": "La alimentación trifásica del motor",
+          "2": "Una orden digital de acelerador DShot600; con DShot bidireccional vuelven las rpm del motor",
+          "3": "La tensión de la batería"
+        },
+        "why": "La controladora envía un valor digital de acelerador por motor (DShot600 va a 600 kbit/s); el ESC genera él mismo la señal trifásica. Con dshot_bidir = ON, el ESC responde por el mismo cable con las rpm, que alimentan el filtro RPM de Betaflight."
+      }
+    },
+    "props": {
+      "last": {
+        "q": "¿Por qué se ponen las hélices las últimas?",
+        "options": {
+          "1": "Son frágiles",
+          "2": "Una prueba de motores o un cortocircuito con las hélices puestas puede lanzarte el quad encima",
+          "3": "Tapan la cámara"
+        },
+        "why": "Una hélice de 5 pulgadas a toda velocidad corta hondo. Todas las pruebas de banco que hacen girar los motores, y toda primera conexión que pueda encontrar una avería, se hacen sin hélices; se ponen solo cuando han pasado el smoke stopper y la comprobación del sentido de los motores."
+      },
+      "torque": {
+        "q": "¿Por qué dos hélices giran en sentido horario y dos en antihorario?",
+        "options": {
+          "1": "Para que los pares de los motores se anulen y la guiñada salga de acelerar una pareja en diagonal",
+          "2": "Para que el quad haga menos ruido",
+          "3": "Para que las cuatro empujen el aire hacia el mismo lado"
+        },
+        "why": "Cada hélice que gira retuerce el chasis hacia el otro lado. Con las parejas en diagonal girando en sentidos opuestos, los giros se anulan en estacionario; para hacer guiñada, Betaflight acelera una pareja y frena la otra."
+      }
+    },
+    "flight": {
+      "acro": {
+        "q": "Sueltas las palancas en modo acro. El quad...",
+        "options": {
+          "1": "se nivela solo",
+          "2": "mantiene el ángulo que tuviera",
+          "3": "aterriza"
+        },
+        "why": "En acro, las palancas mandan una velocidad de giro, y con las palancas centradas significa «deja de girar», así que el quad mantiene su última actitud. El modo ángulo es el que nivela cuando sueltas, hasta angle_limit (38 grados aquí)."
+      },
+      "failsafe": {
+        "q": "El enlace de radio se corta en el aire y failsafe_procedure es DROP. ¿Qué hace el quad?",
+        "options": {
+          "1": "Se queda en estacionario hasta que vuelve el enlace",
+          "2": "Centra las palancas y corta el acelerador durante failsafe_delay (1,5 s), y luego para los motores",
+          "3": "Vuelve a casa volando"
+        },
+        "why": "La etapa 1 salva un fallo corto: durante failsafe_delay (15 = 1,5 s), Betaflight usa los valores de reserva, palancas centradas y acelerador bajo. Si el enlace sigue sin volver, la etapa 2 DROP desarma y el quad cae, que es más seguro que uno que se va volando. Para volver a casa hace falta un GPS y GPS-RESCUE."
+      },
+      "lipo": {
+        "q": "¿Con qué tensión de batería aterrizas?",
+        "options": {
+          "1": "Cuando el OSD muestra unos 3,5 V por celda",
+          "2": "Cuando llega a 3,0 V por celda",
+          "3": "Cuando el quad empieza a ir lento"
+        },
+        "why": "Cada minuto por debajo de unos 3,5 V por celda con carga envejece la batería, y por debajo de 3,0 V por celda una LiPo se daña. Betaflight avisa por defecto a 3,5 V por celda (vbat_warning_cell_voltage = 350)."
+      },
+      "angle": {
+        "q": "¿Qué línea del CLI limita el modo ángulo a 38 grados de inclinación?",
+        "options": {
+          "1": "set angle_limit = 38",
+          "2": "set level_limit = 38",
+          "3": "set p_level = 38"
+        },
+        "why": "angle_limit (de 10 a 80 grados, 60 por defecto) es el nombre actual. level_limit fue su nombre hasta Betaflight 4.4, y p_level era la fuerza del autonivelado en la 3.x (hoy angle_p_gain); ninguno de los dos existe ya."
+      }
+    }
+  }
+}
