@@ -26,19 +26,23 @@ export function watchErrors(page: Page) {
   return errors;
 }
 
-/** The open dock: the inline panel on a desk, the bottom sheet on a phone. */
+/**
+ * Opens the dock from its "Lab tools" button in the page and returns it: the drawer on a desk, the sheet on a phone.
+ * A room link opens it by itself, so the button is pressed only while the dock isn't showing (and again if a click
+ * landed before hydration).
+ */
 export async function openDock(page: Page, phone: boolean): Promise<Locator> {
-  const root = page.locator('[data-testid="lab-dock"][data-ready="true"]:visible');
-  await expect(root).toBeVisible();
-  if (!phone) {
-    await expect(root).toHaveAttribute("data-layout", "desk");
-    return root;
-  }
-  await expect(root).toHaveAttribute("data-layout", "phone");
-  await root.getByRole("button", { name: dockCopy.open }).click();
-  const dialog = page.getByRole("dialog", { name: dockCopy.label });
-  await expect(dialog).toBeVisible();
-  return dialog;
+  const trigger = page.locator("main").getByRole("button", { name: dockCopy.open });
+  await expect(trigger).toBeVisible();
+  const dock = phone
+    ? page.getByRole("dialog", { name: dockCopy.label })
+    : page.locator('[data-testid="lab-dock"][data-ready="true"][data-layout="desk"]');
+  await expect(async () => {
+    if (!(await dock.isVisible())) await trigger.click({ timeout: 2_000 });
+    await expect(dock).toBeVisible({ timeout: 1_500 });
+  }).toPass({ timeout: 15_000 });
+  if (phone) await expect(dock.locator('[data-testid="lab-dock"][data-ready="true"]')).toHaveAttribute("data-layout", "phone");
+  return dock;
 }
 
 export async function expectTabs(dock: Locator) {

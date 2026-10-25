@@ -1,17 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import { createPortal } from "react-dom";
 import { PartnerPanel, useBuildLog } from "@/components/ai";
-import type { LabDockProps } from "@/components/dock/types";
+import type { LabDockProps, LabKind } from "@/components/dock/types";
 import { HardwareTwinPanel } from "@/components/hw/HardwareTwinPanel";
 import { TogetherPanel } from "@/components/realtime";
 import { NearbyPanel, RealBuildPanel, VideoHelp } from "@/components/search";
+import { useSearchAvailability } from "@/components/search/shared";
 import { PassportPanel } from "@/components/solana/PassportPanel";
-import { Button, Sheet, Tabs } from "@/components/ui";
+import { Button, Icon, IconButton, Sheet, Tabs, useIsClient } from "@/components/ui";
 import { useCommonT } from "@/i18n/client";
 import { DOCK_TAB_EVENT } from "@/lib/ai/run-tools";
 import { DOCK_TABS, type DockTab } from "@/lib/ai/tools";
 import { useFeatures, type Features } from "@/lib/features";
+import { useTogether } from "@/lib/realtime";
 import { ROOM_PARAM } from "@/lib/realtime/config";
 import { isRoomId, normalizeRoomId } from "@/lib/realtime/protocol";
 import { useRegisterLabStore } from "./LabRoom";
@@ -40,6 +43,12 @@ function tabShown(tab: DockTab, features: Features): boolean {
   return flag === null || features[flag] === true;
 }
 
+/** The first tab that does something on this deployment: the partner when AI is on, else rooms, or prices on a drone. */
+function firstWorkingTab(lab: LabKind, features: Features): DockTab {
+  if (features.ai) return "partner";
+  return lab === "drone" ? "real" : "together";
+}
+
 function isDockTab(value: string): value is DockTab {
   return (DOCK_TABS as readonly string[]).includes(value);
 }
@@ -55,48 +64,70 @@ function roomInAddress() {
   return isRoomId(raw ? normalizeRoomId(raw) : "");
 }
 
+function RealTab(lab: LabDockProps) {
+  const search = useSearchAvailability();
+  return (
+    <div className="flex flex-col gap-8">
+      <RealBuildPanel {...lab} />
+      {search === "off" ? null : (
+        <>
+          <NearbyPanel {...lab} />
+          <VideoHelp {...lab} />
+        </>
+      )}
+    </div>
+  );
+}
+
 function TabBody({ tab, ...lab }: LabDockProps & { tab: DockTab }) {
   if (tab === "partner") return <PartnerPanel {...lab} />;
   if (tab === "together") return <TogetherPanel {...lab} />;
   if (tab === "passport") return <PassportPanel {...lab} />;
   if (tab === "hardware") return <HardwareTwinPanel {...lab} />;
-  return (
-    <div className="flex flex-col gap-6">
-      <RealBuildPanel {...lab} />
-      <NearbyPanel {...lab} />
-      <VideoHelp {...lab} />
-    </div>
-  );
+  return <RealTab {...lab} />;
 }
 
 /**
- * Partner, Together and Real on every lab page. Passport and Hardware are
- * the same tabs, shown only when their feature flags are on. Phones get a
- * bottom sheet; wider screens get the panel in the page.
+ * Partner, Together and Build it for real on every lab page (Passport and
+ * Hardware when their flags are on). Rendered where the page puts it (the
+ * workspace bar) as a "Lab tools" button: on a desk it opens a drawer along
+ * the right edge that leaves the figure in view, on a phone a bottom sheet.
  */
 export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>) {
   const t = useCommonT();
   const { features } = useFeatures();
+  const together = useTogether();
+  const isClient = useIsClient();
+  const drawerId = useId();
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLElement>(null);
   // Start on the desktop layout with no room so the server HTML matches hydration.
   // The real layout and ?room= are applied on the next turn.
   const [phone, setPhone] = useState(false);
-  const [inRoom, setInRoom] = useState(false);
+  const [addressRoom, setAddressRoom] = useState(false);
   const register = useRegisterLabStore();
   const { lab, itemId, store } = props;
   useBuildLog({ lab, itemId, store });
 
-  const [tab, setTab] = useState<DockTab>("partner");
-  const [picked, setPicked] = useState(false);
-  const [sheet, setSheet] = useState(false);
+  const [tab, setTab] = useState<DockTab | null>(null);
+  const [open, setOpen] = useState(false);
   const [dismissedRoom, setDismissedRoom] = useState(false);
+  const inRoom = together ? together.roomId !== null : addressRoom;
   const shown = DOCK_TABS.filter((id) => tabShown(id, features));
-  const fromRoom = !picked && inRoom && shown.includes("together");
-  const selected = fromRoom ? "together" : shown.includes(tab) ? tab : shown[0];
-  const sheetOpen = sheet || (inRoom && !dismissedRoom);
+  const preferred = firstWorkingTab(lab, features);
+  const fromRoom = tab === null && inRoom && shown.includes("together");
+  const selected = fromRoom ? "together" : tab && shown.includes(tab) ? tab : shown.includes(preferred) ? preferred : shown[0];
+  const roomOpened = inRoom && !dismissedRoom;
+  const isOpen = open || roomOpened;
 
   function choose(id: DockTab) {
-    setPicked(true);
     setTab(id);
+  }
+
+  function close() {
+    setOpen(false);
+    setDismissedRoom(true);
+    triggerRef.current?.focus();
   }
 
   useEffect(() => {
@@ -116,15 +147,17 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
     };
   }, []);
 
+  // Outside a RoomProvider (tests, a page without rooms) the address is the only source.
   useEffect(() => {
-    const read = () => setInRoom(roomInAddress());
+    if (together) return;
+    const read = () => setAddressRoom(roomInAddress());
     const timer = window.setTimeout(read, 0);
     window.addEventListener("popstate", read);
     return () => {
       window.clearTimeout(timer);
       window.removeEventListener("popstate", read);
     };
-  }, []);
+  }, [together]);
 
   useEffect(() => {
     const onDockTab = (event: Event) => {
@@ -132,11 +165,24 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
       if (!next || !tabShown(next, features)) return;
       choose(next);
       setDismissedRoom(false);
-      setSheet(true);
+      setOpen(true);
     };
     window.addEventListener(DOCK_TAB_EVENT, onDockTab);
     return () => window.removeEventListener(DOCK_TAB_EVENT, onDockTab);
   }, [features]);
+
+  // On a desk the drawer takes focus when it opens: the name field when a room link brought you here, else the tab.
+  const wantsName = roomOpened && together?.identity === null;
+  useEffect(() => {
+    if (phone || !isOpen) return;
+    const frame = requestAnimationFrame(() => {
+      const drawer = drawerRef.current;
+      if (!drawer || drawer.contains(document.activeElement)) return;
+      const name = wantsName ? drawer.querySelector<HTMLInputElement>('input[autocomplete="nickname"]') : null;
+      (name ?? drawer.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]'))?.focus();
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [phone, isOpen, wantsName]);
 
   const tabs = shown.map((id) => ({
     id,
@@ -149,52 +195,82 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
       label={t("dock.label")}
       tabs={tabs}
       value={selected}
+      fill={!phone}
+      phoneGrid={phone}
       onChange={(id) => {
         if (isDockTab(id) && shown.includes(id)) choose(id);
       }}
     />
   );
 
+  const trigger = (
+    <Button
+      ref={triggerRef}
+      variant="secondary"
+      size="sm"
+      aria-label={t("dock.open")}
+      aria-haspopup={phone ? "dialog" : undefined}
+      aria-expanded={isOpen}
+      aria-controls={phone ? undefined : drawerId}
+      aria-pressed={!phone && isOpen ? true : undefined}
+      onClick={() => {
+        if (isOpen && !phone) return close();
+        setDismissedRoom(false);
+        setOpen(true);
+      }}
+      className="relative shrink-0 whitespace-nowrap max-sm:size-11 max-sm:px-0"
+    >
+      <Icon name="tools" size={18} />
+      <span className="max-sm:sr-only">{t("dock.label")}</span>
+      {inRoom ? <span aria-hidden="true" className="absolute -end-0.5 -top-0.5 size-3 rounded-full border-[1.5px] border-line bg-mint" /> : null}
+    </Button>
+  );
+
   if (phone) {
     return (
-      <div
-        data-testid="lab-dock"
-        data-ready="true"
-        data-layout="phone"
-        className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
-      >
-        <Button
-          variant="primary"
-          className="pointer-events-auto"
-          aria-haspopup="dialog"
-          aria-expanded={sheetOpen}
-          onClick={() => {
-            setDismissedRoom(false);
-            setSheet(true);
-          }}
-        >
-          {t("dock.open")}
-        </Button>
-        <Sheet
-          open={sheetOpen}
-          onClose={() => {
-            setSheet(false);
-            setDismissedRoom(true);
-          }}
-          title={t("dock.label")}
-          closeLabel={t("dock.close")}
-          side="bottom"
-        >
-          {tabList}
+      <>
+        {trigger}
+        <Sheet open={isOpen} onClose={close} title={t("dock.label")} closeLabel={t("dock.close")} side="bottom" height="full">
+          <div data-testid="lab-dock" data-ready="true" data-layout="phone">
+            {tabList}
+          </div>
         </Sheet>
-      </div>
+      </>
     );
   }
 
+  const onDrawerKey = (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key !== "Escape" || event.defaultPrevented) return;
+    event.preventDefault();
+    close();
+  };
+
   return (
-    <section data-testid="lab-dock" data-ready="true" data-layout="desk" aria-label={t("dock.label")} className="ink-card min-w-0 p-3 sm:p-4">
-      <p className="text-sm text-muted">{t("dock.hint")}</p>
-      <div className="mt-3">{tabList}</div>
-    </section>
+    <>
+      {trigger}
+      {isClient
+        ? createPortal(
+            <aside
+              ref={drawerRef}
+              id={drawerId}
+              aria-label={t("dock.label")}
+              data-testid="lab-dock"
+              data-ready="true"
+              data-layout="desk"
+              hidden={!isOpen}
+              onKeyDown={onDrawerKey}
+              className="fixed end-0 top-(--header-h) bottom-0 z-30 flex w-[min(26rem,calc(100vw-3rem))] flex-col border-s-2 border-line bg-surface shadow-[-4px_0_0_var(--shadow-c)] animate-ink-from-end"
+            >
+              <div className="flex min-h-14 shrink-0 items-center gap-2 border-b-[1.5px] border-rule ps-4 pe-2">
+                <Icon name="tools" size={18} className="text-muted" />
+                <h2 className="min-w-0 flex-1 font-head text-lg">{t("dock.label")}</h2>
+                <IconButton icon="close" size="sm" label={t("dock.close")} onClick={close} />
+              </div>
+              <div className="min-h-0 flex-1">{tabList}</div>
+            </aside>,
+            document.body,
+          )
+        : null}
+    </>
   );
 }
