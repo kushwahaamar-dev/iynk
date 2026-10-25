@@ -1645,7 +1645,7 @@ window.SL = window.SL || {};
         const r = report(s), checks = [craft.tests.smoke && s.smokeOk, craft.tests.motors && craft.motors.length && s.motorOk, has('FC') && s.accOk].filter(Boolean).length;
         const nChecks = [craft.tests.smoke, craft.tests.motors && craft.motors.length, has('FC')].filter(Boolean).length;
         return [{ label: T('Parts'), value: `${r.fitted}/${r.total}` }, { label: T('Checks'), value: `${checks}/${nChecks}` },
-          { label: T('Battery'), value: s.fault ? T('FAULT') : s.plugged ? T('ON') : T('OFF'), small: true }];
+          { label: T('Battery'), value: s.fault ? T('FAULT') : s.plugged ? T('PLUGGED IN') : T('UNPLUGGED'), small: true }];
       },
       acts: { part: (s, el) => { const id = el.dataset.id; if (id && byId(id)) A.select(s, id); } },
       params: (s, q) => {
