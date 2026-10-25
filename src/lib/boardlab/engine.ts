@@ -74,7 +74,11 @@ export interface Session {
   takeSerial(): { t: number; text: string }[];
   /** Whatever is still buffered, newline or not. */
   flushSerial(): { t: number; text: string }[];
-  /** Drive an input pin from the figure: a digital level, or null to let it float. */
+  /**
+   * Drive an input from the figure (a switch or button drawn on the board). The figure reports where its controls are
+   * on every state event, so only a change is applied: a level set from the World panel in between is not undone by a
+   * report that has not moved.
+   */
   drive(net: string, level: 0 | 1 | null): void;
   /** Set a world input (button, pot, sonar distance, tilt, line position, phone request) to a value now. */
   setInput(input: WorldInput, value: number): void;
@@ -109,6 +113,8 @@ class InterpSession implements Session {
   private lines: { t: number; text: string }[] = [];
   private warnings: string[] = [];
   private http: HttpExchange[] = [];
+  /** The level the figure last reported per net (see drive). */
+  private readonly figureLevels = new Map<string, 0 | 1 | null>();
   readonly baud: number;
   error: RunError | null = null;
 
@@ -170,9 +176,15 @@ class InterpSession implements Session {
       out[pinNet(this.profile, Number(key), this.nets)] = sample;
     }
     // An FPGA design drives its ports: each bit lands on its board net (LD0, LEDR3), a dimmed or multiplexed light as
-    // its duty, and every 7-segment digit as one net per segment (DIG0_A).
+    // its duty, and every 7-segment digit as one net per segment (DIG0_A). The switches and keys it reads go out as
+    // levels too, so the figure draws each lever where the run has it (the World panel can flip them). Dark segments
+    // and low inputs are left out: the figure takes a net it was sent before and no longer gets as 0, and the pin
+    // readout lists what is lit or on.
     if (snap.ports) {
-      for (const [net, x] of Object.entries(fpgaNets(this.profile, snap, this.ports))) out[net] = { mode: x.input ? 'input' : 'output', value: x.v, pwm: x.pwm };
+      for (const [net, x] of Object.entries(fpgaNets(this.profile, snap, this.ports))) {
+        if ((x.input || x.pwm) && x.v === 0) continue;
+        out[net] = { mode: 'output', value: x.v, pwm: x.pwm };
+      }
     }
     return out;
   }
@@ -192,6 +204,8 @@ class InterpSession implements Session {
   }
 
   drive(net: string, level: 0 | 1 | null): void {
+    if (this.figureLevels.get(net) === level) return;
+    this.figureLevels.set(net, level);
     const pin = this.resolve(net);
     if (pin !== undefined) this.run.input(pin, level);
   }

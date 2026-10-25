@@ -140,3 +140,55 @@ void loop() {
     }
   });
 });
+
+// An FPGA design in the live run: its ports land on the figure's nets through the lesson's port map, and the figure's
+// own switches drive it on change only, so the World panel and the drawn switches can both flip the same input.
+describe('a Verilog design on the Basys 3 in the live run', () => {
+  const source = `module top #(parameter CLK_HZ = 100_000_000) (input clk, input [15:0] sw, input btnC,
+  output [15:0] led, output reg [6:0] seg, output [3:0] an, output dp);
+  assign led = sw;
+  assign an = btnC ? 4'b1110 : 4'b1111;   // digit 0 on while the button is held
+  assign dp = 1'b1;
+  always @* seg = 7'b1111001;             // "1": segments b and c
+endmodule
+`;
+  const ports = {
+    sw: Array.from({ length: 16 }, (_, i) => `SW${i}`),
+    led: Array.from({ length: 16 }, (_, i) => `LD${i}`),
+    btnC: ['BTNC'],
+  };
+  const sw3: WorldInput = { id: 'sw3', quantity: 'switch', device: { kind: 'switch' }, pins: ['SW3'], part: 'SW3', min: 0, max: 1, step: 1, default: 0, gesture: 'slide', label: 'world.sw3' };
+  const session = () => {
+    const result = compile({ language: 'verilog', source, board: 'basys3', ports, world: { inputs: [sw3], script: [] }, logicV: 3.3 });
+    if (!result.ok) throw new Error(result.error.message);
+    return result.session;
+  };
+
+  it('shows LEDs, the switches it reads and the lit segments as nets', () => {
+    const s = session();
+    s.setInput(sw3, 1);
+    s.drive('BTNC', 1);
+    s.advanceTo(100);
+    const pins = s.pins();
+    expect(pins.LD3).toEqual({ mode: 'output', value: 1, pwm: false });
+    expect(pins.LD2).toEqual({ mode: 'output', value: 0, pwm: false });
+    expect(pins.SW3).toEqual({ mode: 'output', value: 1, pwm: false });
+    expect(pins.SW2).toBeUndefined(); // a low switch is left out: the figure reads a net it no longer gets as 0
+    expect(pins.DIG0_B?.value).toBe(1);
+    expect(pins.DIG0_A).toBeUndefined(); // dark segment
+    expect(pins.DIG1_B).toBeUndefined(); // digit 1 is off
+  });
+
+  it('applies a figure report only when it changes', () => {
+    const s = session();
+    s.drive('SW3', 0); // the figure's switch is down
+    s.setInput(sw3, 1); // the World panel flips it up
+    s.drive('SW3', 0); // the figure reports the same position again
+    s.advanceTo(50);
+    expect(s.pins().LD3?.value).toBe(1);
+    s.drive('SW3', 1);
+    s.drive('SW3', 0); // the figure's switch is flipped down
+    s.advanceTo(100);
+    expect(s.pins().LD3?.value).toBe(0);
+  });
+});

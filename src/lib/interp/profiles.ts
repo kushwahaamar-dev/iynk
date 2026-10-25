@@ -216,9 +216,11 @@ const basys3: BoardProfile = {
       { name: 'btnD', dir: 'in', width: 1 }, { name: 'led', dir: 'out', width: 16 },
       { name: 'seg', dir: 'out', width: 7, activeLow: true }, { name: 'dp', dir: 'out', width: 1, activeLow: true },
       { name: 'an', dir: 'out', width: 4, activeLow: true },
+      // Pmod JA, JB, JC: pins 1-4 and 7-10 (each through 200 Ω on the board). Bidirectional on the board, outputs here.
+      { name: 'JA', dir: 'out', width: 8 }, { name: 'JB', dir: 'out', width: 8 }, { name: 'JC', dir: 'out', width: 8 },
     ],
   },
-  notes: ['100 MHz clock on W5 (port clk)', 'buttons are active high', '7-segment: common anode, an[3:0] and seg[6:0] (CA..CG) are active LOW; multiplex the digits at 1-60 kHz'],
+  notes: ['100 MHz clock on W5 (port clk)', 'buttons are active high', '7-segment: common anode, an[3:0] and seg[6:0] (CA..CG) are active LOW; light one digit at a time and refresh all four every 1-16 ms', 'Pmod ports JA, JB, JC are outputs in the simulator'],
 };
 
 const de10: BoardProfile = {
@@ -232,9 +234,11 @@ const de10: BoardProfile = {
       { name: 'MAX10_CLK1_50', dir: 'in', width: 1 }, { name: 'SW', dir: 'in', width: 10 },
       { name: 'KEY', dir: 'in', width: 2, activeLow: true }, { name: 'LEDR', dir: 'out', width: 10 },
       ...[0, 1, 2, 3, 4, 5].map((i): FpgaPort => ({ name: `HEX${i}`, dir: 'out', width: 8, activeLow: true })),
+      // The Arduino header D0-D15 (D14 SDA, D15 SCL): bidirectional on the board, outputs here.
+      { name: 'ARDUINO_IO', dir: 'out', width: 16 },
     ],
   },
-  notes: ['50 MHz clock MAX10_CLK1_50', 'KEY[1:0] read 0 while pressed', 'HEX0-HEX5 are separate, active-LOW 7-segment displays: bit 7 is the decimal point'],
+  notes: ['50 MHz clock MAX10_CLK1_50', 'KEY[1:0] read 0 while pressed', 'HEX0-HEX5 are separate, active-LOW 7-segment displays: bit 7 is the decimal point', 'ARDUINO_IO[15:0] is an output in the simulator'],
 };
 
 export const PROFILES: Record<BoardId, BoardProfile> = {

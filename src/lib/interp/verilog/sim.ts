@@ -609,7 +609,7 @@ export interface VerilogSim {
   run(n: number): void;
   setInput(name: string, value: number): void;
   outputs(): Record<string, number>;
-  /** Per output port, per bit: the fraction of recent time it was high (PERSIST_S average). */
+  /** Per output port, per bit, what an LED on it shows: its level, or while it switches its PERSIST_S average. */
   duty(): Record<string, number[]>;
   /** Per digit [a, b, c, d, e, f, g, dp], how brightly it is lit (PERSIST_S average): Basys 3 digits, or DE10-Lite HEX displays. */
   seg7(): number[][];
@@ -1064,7 +1064,9 @@ export function compileVerilog(source: string, profile: BoardProfile, overrides:
   for (const i of edgeSigs) prev[i] = s[i];
 
   // Persistence: every output bit and every multiplexed digit segment is averaged over PERSIST_S, run by run (a run is
-  // the cycles a value held), so the cost is per change, not per cycle and bit.
+  // the cycles a value held), so the cost is per change, not per cycle and bit. A bit shows its average only while it
+  // switches (two edges within 2 x PERSIST_S); a bit that just stepped shows its new level at once, as an LED does.
+  let cycles = 0;
   const tau = clockHz * PERSIST_S;
   const fade = (lit: Float64Array | number[], i: number, on: number, cycles: number) => {
     lit[i] = on + (lit[i] - on) * Math.exp(-cycles / tau);
@@ -1073,13 +1075,25 @@ export function compileVerilog(source: string, profile: BoardProfile, overrides:
   const tracked = outNames.map((name) => {
     const i = index.get(name)!;
     const w = sigs[i].w;
-    return { name, i, w, last: s[i], run: 0, lit: Float64Array.from({ length: w }, (_, b) => (s[i] >>> b) & 1) };
+    return {
+      name, i, w, last: s[i], run: 0,
+      lit: Float64Array.from({ length: w }, (_, b) => (s[i] >>> b) & 1),
+      /** Per bit, the cycle of the edge before its last one. */
+      prevEdge: new Float64Array(w).fill(-Infinity),
+      lastEdge: new Float64Array(w).fill(-Infinity),
+    };
   });
-  const persist = (p: (typeof tracked)[number]) => {
+  type Tracked = (typeof tracked)[number];
+  const persist = (p: Tracked) => {
     if (!p.run) return;
     for (let b = 0; b < p.w; b++) fade(p.lit, b, (p.last >>> b) & 1, p.run);
     p.run = 0;
   };
+  const edge = (p: Tracked, now: number) => {
+    const changed = (s[p.i] ^ p.last) >>> 0;
+    for (let b = 0; b < p.w; b++) if ((changed >>> b) & 1) { p.prevEdge[b] = p.lastEdge[b]; p.lastEdge[b] = now; }
+  };
+  const shown = (p: Tracked, b: number) => (cycles - p.prevEdge[b] < 2 * tau ? p.lit[b] : (p.last >>> b) & 1);
 
   // Basys 3: four digits share the cathodes seg/dp, the active-low anodes an[3:0] pick the digit that shows them.
   const segIdx = index.get('seg');
@@ -1102,7 +1116,6 @@ export function compileVerilog(source: string, profile: BoardProfile, overrides:
   // DE10-Lite: six HEX displays with their own active-low pins (bit 7 = DP).
   const hexPorts = [0, 1, 2, 3, 4, 5].map((k) => tracked.find((p) => p.name === `HEX${k}`));
 
-  let cycles = 0;
   const sim: VerilogSim = {
     clockHz,
     get cycles() {
@@ -1122,6 +1135,7 @@ export function compileVerilog(source: string, profile: BoardProfile, overrides:
         for (const p of tracked) {
           if (s[p.i] !== p.last) {
             persist(p);
+            edge(p, cycles);
             p.last = s[p.i];
           }
           p.run++;
@@ -1157,7 +1171,7 @@ export function compileVerilog(source: string, profile: BoardProfile, overrides:
       const out: Record<string, number[]> = {};
       for (const p of tracked) {
         persist(p);
-        out[p.name] = Array.from(p.lit);
+        out[p.name] = Array.from({ length: p.w }, (_, b) => shown(p, b));
       }
       return out;
     },
@@ -1166,7 +1180,7 @@ export function compileVerilog(source: string, profile: BoardProfile, overrides:
         return hexPorts.map((p) => {
           if (!p) return new Array(8).fill(0);
           persist(p);
-          return Array.from({ length: 8 }, (_, k) => (k < p.w ? 1 - p.lit[k] : 0));
+          return Array.from({ length: 8 }, (_, k) => (k < p.w ? 1 - shown(p, k) : 0));
         });
       }
       if (!muxed) return [];
