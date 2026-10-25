@@ -500,6 +500,33 @@ describe("the autopilot demo", () => {
   });
 });
 
+describe("a wing's return to home", () => {
+  it("climbs to the content's RTH altitude and circles home at its loiter radius", () => {
+    const wing = crafts.find((c) => c.flight.physics === "fixed-wing" && typeof c.flight.params.loiterRadius === "number");
+    expect(wing, "a fixed-wing craft with a loiter radius").toBeDefined();
+    const { craft, courses } = flightOf(wing!)!;
+    const rth = craft.modes.find((m) => m.task === "rth")!;
+    const course = courses[0];
+    const s = createSim(craft, course, flightCalc(wing!, wing!.design.default), { mode: craft.modes[0].id });
+    dispatch(s, { type: "arm" });
+    sticks(s, { throttle: 0.7 });
+    run(s, 6);
+    dispatch(s, { type: "mode", mode: rth.id });
+    const events = run(s, 90);
+    expect(events.find((e) => e.type === "crash")).toBeUndefined();
+    const [hx, hy] = course.pad;
+    const r: number[] = [];
+    for (let i = 0; i < 20; i++) {
+      run(s, 1);
+      r.push(Math.hypot(s.p[0] - hx, s.p[1] - hy));
+    }
+    const mean = r.reduce((a, b) => a + b, 0) / r.length;
+    expect(mean).toBeGreaterThan(craft.loiterRadius! * 0.7);
+    expect(mean).toBeLessThan(craft.loiterRadius! * 1.4);
+    expect(Math.abs(s.p[2] - craft.rtlAlt!)).toBeLessThan(6);
+  });
+});
+
 describe("rates", () => {
   it("applies expo to roll and pitch only: acro yaw is the CLI's straight 200 deg/s", () => {
     const s = createSim(quad5Craft, quad5Course, quad5Calc(), { mode: "alt" });

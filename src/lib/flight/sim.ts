@@ -637,7 +637,9 @@ function wingStep(s: SimState, dt: number) {
   const target = demo && live ? wingTarget(s) : null;
   const gliding = !!target && target.z < 1.5;
   let thr = live ? clamp(st.throttle, 0, 1) : 0;
-  if (rth && live) thr = Math.min(0.8, 1.25 * calc.hoverThrottle + (s.p[2] < 13 ? 0.15 : 0));
+  // home: the craft's return altitude and loiter circle (the CLI's), else 15 m and 22 m
+  const homeAlt = c.rtlAlt ?? 15;
+  if (rth && live) thr = Math.min(0.8, 1.25 * calc.hoverThrottle + (s.p[2] < homeAlt - 2 ? 0.15 : 0));
   // the demo holds a slow cruise (a tight turning circle) and climbs on throttle
   if (demo && live) thr = clamp(calc.hoverThrottle + 0.08 * (w.vmin * 1.35 - s.airspeed) + (s.p[2] < (target?.z ?? 13) - 1 ? 0.12 : 0), 0.1, 0.85);
   if (gliding && live) thr = s.airspeed < w.vmin * 1.15 ? 0.25 : 0;
@@ -660,7 +662,7 @@ function wingStep(s: SimState, dt: number) {
   if (rth || demo) {
     // home: circle the pad at 22 m; the demo: steer for the route's next point, then circle home
     const [hx, hy] = target ? [target.x, target.y] : s.course.pad;
-    const R = 22;
+    const R = c.loiterRadius ?? 22;
     const d = Math.hypot(hx - s.p[0], hy - s.p[1]);
     let head = Math.atan2(hy - s.p[1], hx - s.p[0]);
     if (!target && d < 2.2 * R) head += Math.PI / 2 - clamp((d - R) / R, -1, 1) * (Math.PI / 3);
@@ -668,7 +670,7 @@ function wingStep(s: SimState, dt: number) {
     const maxBank = demo ? Math.min(w.bankLimit, 50) * DEG : 0.6;
     const bank = clamp(1.4 * err, -maxBank, maxBank) / DEG;
     s.roll += (bank - s.roll) * Math.min(1, 3.5 * dt);
-    const pitchT = clamp(-0.05 * ((target?.z ?? 15) - s.p[2]), -0.35, gliding ? 0.1 : 0.3) / DEG;
+    const pitchT = clamp(-0.05 * ((target?.z ?? homeAlt) - s.p[2]), -0.35, gliding ? 0.1 : 0.3) / DEG;
     s.pitch += (pitchT - s.pitch) * Math.min(1, 3 * dt);
   } else if (s.mode.attitude === "angle") {
     s.roll += (st.roll * w.bankLimit - s.roll) * Math.min(1, 3.5 * dt);

@@ -92,6 +92,7 @@ export interface FlightCraft {
   swarm?: SwarmParams;
   loiterSpeed?: number; // m/s, GPS modes at full stick
   rtlAlt?: number; // m
+  loiterRadius?: number; // m, the circle a wing flies round home
   look: CraftLook;
   modes: FlightMode[];
 }

@@ -8,6 +8,7 @@ import type { CraftClass, CraftLook, FlightCraft, FlightMode, Course, Mission, M
 // defaults below):
 //   every craft   drag ceiling hitRadius angleLimit acroRate yawRate levelRate climbRate spool camTilt fov
 //                 loiterSpeed rtlAlt fpvProps (1 = props in the FPV image)
+//   fixed-wing    loiterRadius (the circle round home on RTH)
 //   fixed-wing    vstall vmin cd launchSpeed bankLimit pitchLimit rollRate pitchRate
 //   quadplane     the wing's, plus transitionS hoverMotors
 //   tricopter     tailMaxDeg tailRateDegS
@@ -185,6 +186,7 @@ export function flightCraft(content: DroneContent): FlightCraft {
   if (num("fpvProps", content.class === "freestyle" || content.class === "racing" ? 1 : 0) === 1) craft.fpvProps = true;
   if (typeof p.loiterSpeed === "number") craft.loiterSpeed = p.loiterSpeed;
   if (typeof p.rtlAlt === "number") craft.rtlAlt = p.rtlAlt;
+  if (typeof p.loiterRadius === "number") craft.loiterRadius = p.loiterRadius;
   if (cls === "wing" || cls === "vtol") {
     const wing: WingParams = {
       vstall: num("vstall", 8),
