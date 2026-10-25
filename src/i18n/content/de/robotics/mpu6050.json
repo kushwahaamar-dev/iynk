@@ -46,7 +46,7 @@
     }
   },
   "power": {
-    "label": "Den Prüfstand mit Strom versorgen",
+    "label": "Die Werkbank mit Strom versorgen",
     "ok": "Nano an USB: VCC 5 V, der Regler macht 3,3 V, der Chip ist bereit"
   },
   "modes": {
@@ -109,29 +109,29 @@
       "refusal": "Zieh zuerst den Strom ab und verdrahte zuerst den Nano"
     },
     "plug": {
-      "title": "Den Prüfstand mit Strom versorgen",
+      "title": "Die Werkbank mit Strom versorgen",
       "body": "USB in den Nano. Die rote LED leuchtet: Der Regler funktioniert. Der Chip schläft noch.",
       "refusal": "Schließ zuerst den Aufbau ab: Jedes Bauteil drauf, die Stiftleiste gelötet, Nano und Summer verdrahtet"
     },
     "flat": {
       "title": "„Rohwerte“ hochladen",
       "body": "wake() schreibt 0 in PWR_MGMT_1, dann liest der Sketch jede Sekunde 14 Bytes ab 0x3B. Flach liegend: etwa 1.00 g auf Z, 0 auf X und Y und ein Gyro, das ein paar °/s misst, obwohl sich nichts dreht. Das ist sein Nullpunktfehler.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "tilt": {
       "title": "„Kippalarm“ hochladen",
       "body": "Schaukel das Board um X. roll = atan2(ay, az) macht aus der Aufteilung der Schwerkraft zwischen Y und Z einen Winkel; über 20° in eine der beiden Richtungen ertönt der Summer, und D13 leuchtet. Achte auf den Pfeil über dem Chip: Das ist die Schwerkraft, wie der Beschleunigungssensor sie sieht.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "asleep": {
       "title": "„Nie aufgeweckt“ hochladen",
       "body": "Dieselben Lesezugriffe ohne wake(). Der Chip antwortet auf dem Bus, aber jeder Messwert ist 0: Er ist im Schlaf gestartet, und niemand hat ihn aufgeweckt.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "scan": {
       "title": "„I2C-Scan“ hochladen",
       "body": "Der Scanner ruft jede Adresse an und listet die auf, die antworten: 0x68.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "reverse-vcc": {
       "title": "VCC und GND vertauscht anschließen",
@@ -203,7 +203,7 @@
   },
   "status": {
     "status": "Status",
-    "powered": "Strom am Prüfstand",
+    "powered": "Strom an der Werkbank",
     "mode": "Sketch",
     "roll": "Rollen",
     "az": "Z-Beschleunigung (g)",

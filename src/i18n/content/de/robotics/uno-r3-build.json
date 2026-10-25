@@ -281,7 +281,7 @@
     },
     "low-tht": {
       "title": "Die niedrigen bedrahteten Bauteile einsetzen",
-      "body": "Bedrahtete Bauteile kommen vom niedrigsten bis zum höchsten hinein. Zuerst die niedrigen: der DIP-28-Sockel SK1 und die beiden 2x3-ICSP-Stiftleisten. Niedrige Bauteile zuerst, damit die Platine flach liegt, wenn du sie zum Löten umdrehst. Nimm für jedes davon „Place a part“.",
+      "body": "Bedrahtete Bauteile kommen vom niedrigsten bis zum höchsten hinein. Zuerst die niedrigen: der DIP-28-Sockel SK1 und die beiden 2x3-ICSP-Stiftleisten. Niedrige Bauteile zuerst, damit die Platine flach liegt, wenn du sie zum Löten umdrehst. Nimm für jedes davon „Bauteil einsetzen“.",
       "refusal": "Zuerst die SMD-Bauteile: Bestücken + Reflow-Löten ausführen. Der Ofen würde Kunststoffteile schmelzen"
     },
     "tall-tht": {

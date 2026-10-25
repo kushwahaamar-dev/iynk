@@ -306,7 +306,7 @@
     },
     "headers": {
       "title": "Die beiden Stiftleisten einsetzen",
-      "body": "Setz J2 und J3 über das Menü „Place a part“. Die Pins zeigen nach unten ins Steckbrett; die Reihen liegen 25,4 mm auseinander, sodass das Board die Mittelrille überbrückt.",
+      "body": "Setz J2 und J3 über das Menü „Bauteil einsetzen“. Die Pins zeigen nach unten ins Steckbrett; die Reihen liegen 25,4 mm auseinander, sodass das Board die Mittelrille überbrückt.",
       "refusal": "Zuerst die SMD-Bauteile: Bestücken und Reflow-Löten ausführen. Der Ofen würde den Kunststoff der Stiftleisten schmelzen."
     },
     "solder": {

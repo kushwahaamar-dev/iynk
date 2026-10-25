@@ -281,7 +281,7 @@
     },
     "headers": {
       "title": "Die beiden Stiftleisten einsetzen",
-      "body": "Setz beide 20-poligen Stiftleisten (H1 und H2 unter „Place a part“) von unten ein, lange Pins nach unten. Drück sie zuerst in ein Steckbrett und leg das Pico darauf: Das Steckbrett hält sie gerade, während du lötest.",
+      "body": "Setz beide 20-poligen Stiftleisten (H1 und H2 unter „Bauteil einsetzen“) von unten ein, lange Pins nach unten. Drück sie zuerst in ein Steckbrett und leg das Pico darauf: Das Steckbrett hält sie gerade, während du lötest.",
       "refusal": "Zuerst die SMD-Bauteile: Bestücken und Reflow-Löten vor jedem bedrahteten Bauteil ausführen."
     },
     "solder": {

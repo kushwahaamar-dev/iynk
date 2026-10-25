@@ -4,7 +4,7 @@
   "hint": "Bau ihn auf, miss am Poti, steppe einen NEMA 17",
   "overview": "Ein Schrittmotor dreht sich in festen Schritten, 200 pro Umdrehung bei einem NEMA 17, und hält mit beiden eingeschalteten Spulen seine Position. Der A4988 übernimmt den schwierigen Teil: Er schaltet die beiden Spulen über zwei H-Brücken in der richtigen Reihenfolge, einen Schritt für jeden Impuls an STEP, in der Richtung, die DIR vorgibt, und er begrenzt den Strom in jeder Spule mit einem Chopper, der die Spannung an einem 0,068-Ω-Messwiderstand überwacht. Diese Grenze stellst du ein, bevor sich irgendetwas dreht: Die Spannung am metallenen Schleifer des Trimmpotis, VREF, ergibt I_MAX = VREF / (8 x 0,068 Ω), also bedeuten 0,544 V auf dem Messgerät 1,0 A, etwa so viel, wie die nackte Trägerplatine ohne Kühlkörper verträgt. Bau die Pololu-Trägerplatine auf, verdrahte einen Nano, den Motor und einen 2S-LiPo, miss am Poti, während ein Halte-Sketch die Spulen eingeschaltet lässt, und steppe dann den Motor in Voll-, Halb- und 1/16-Schritten. Die Fehler sind die Klassiker: ein verpolter Akku, der Reset-Pin offen gelassen, ein erschöpfter Akku unter 8 V, vertauschte Spulenpaare, die Grenze bis auf die 1,68 A des Motors aufgedreht und der Motor, der im Lauf abgesteckt wird.",
   "power": {
-    "label": "Den Prüfstand mit Strom versorgen",
+    "label": "Die Werkbank mit Strom versorgen",
     "ok": "Nano an USB, LiPo an VMOT: Die Spulen sind an, und die Welle hält"
   },
   "parts": {
@@ -141,14 +141,14 @@
       "refusal": "Schließ zuerst den LiPo an"
     },
     "plug": {
-      "title": "Den Prüfstand mit Strom versorgen",
+      "title": "Die Werkbank mit Strom versorgen",
       "body": "USB in den Nano, der Akku eingeschaltet. Der Halte-Sketch startet: Beide Spulen sind an, und die Welle hält. Das Messgerät zeigt etwa 0,30 V, eine Grenze von 0,55 A, so wie das Poti ab Werk steht.",
       "refusal": "Schließ zuerst den Aufbau ab: Jedes Bauteil drauf, jede Lötstelle gelötet und alles auf der Matte verdrahtet"
     },
     "vref": {
       "title": "Die Strombegrenzung einstellen",
       "body": "Dreh bei laufendem Halte-Sketch das Poti im Uhrzeigersinn und sieh zu, wie das Messgerät steigt. Hör bei 0,544 V auf: 0,544 / (8 x 0,068) = 1,0 A. Jede Spule hält dann mit 0,71 A, und die nackte Trägerplatine bleibt weit unter ihrer Übertemperaturabschaltung.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "full": {
       "title": "Vollschritt",
@@ -245,7 +245,7 @@
   },
   "status": {
     "status": "Status",
-    "powered": "Strom am Prüfstand",
+    "powered": "Strom an der Werkbank",
     "mode": "Sketch",
     "step": "STEP",
     "dir": "DIR",

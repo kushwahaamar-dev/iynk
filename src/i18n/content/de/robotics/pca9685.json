@@ -58,7 +58,7 @@
     }
   },
   "power": {
-    "label": "Den Prüfstand mit Strom versorgen",
+    "label": "Die Werkbank mit Strom versorgen",
     "ok": "Nano an USB, der Akku an V+: Der Chip ist versorgt, und die Servos haben Strom"
   },
   "modes": {
@@ -137,29 +137,29 @@
       "refusal": "Zieh zuerst den Strom ab und steck den Arm vor dem Akku ein"
     },
     "plug": {
-      "title": "Den Prüfstand mit Strom versorgen",
+      "title": "Die Werkbank mit Strom versorgen",
       "body": "USB in den Nano, den Akku eingeschaltet. Die grüne LED leuchtet aus VCC; die Servos bleiben schlaff, bis ein Sketch den Chip mit begin() startet.",
       "refusal": "Bau zuerst fertig: jedes Bauteil drauf, jede Lötstelle gelötet, alles auf der Matte verdrahtet"
     },
     "centre": {
       "title": "„Arm zentrieren“ hochladen",
       "body": "begin() weckt den Chip, setPWMFreq(50) setzt den 20-ms-Rahmen, und writeMicroseconds(ch, 1500) legt 307 Ticks auf die Kanäle 0-2: jeder Servo auf 90°. Danach tut loop() nichts, und die Servos halten trotzdem: Der Chip sendet weiter.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "sweep": {
       "title": "„Basis schwenken“ hochladen",
       "body": "Ein Grad alle 16 ms: Die Basis dreht sich in 3 s von 0 auf 180° und zurück. Jeder Schritt ist ein kurzer I2C-Schreibvorgang; die Pulse dazwischen kosten den Nano nichts.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "pick": {
       "title": "„Greifen und Ablegen“ hochladen",
       "body": "Acht Posen pro Runde, eine pro Sekunde: zum Würfel drehen, öffnen, senken, schließen, heben, drehen, senken, loslassen. Jedes Gelenk bewegt sich ein Grad nach dem anderen, damit der Würfel nicht wegfliegt. Die nächste Runde läuft gespiegelt und trägt ihn zurück.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "scan": {
       "title": "„I2C-Scan“ hochladen",
       "body": "Der Scanner ruft jede Adresse von 1 bis 126 auf und listet die, die antworten: 0x40, das Board, und 0x70, die All-Call-Adresse, auf die jeder PCA9685 antwortet. Die Servos werden schlaff: Nichts startet den Chip.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "reverse-pack": {
       "title": "Den Akku verkehrt herum anschrauben",
@@ -251,7 +251,7 @@
   },
   "status": {
     "status": "Status",
-    "powered": "Strom am Prüfstand",
+    "powered": "Strom an der Werkbank",
     "mode": "Sketch",
     "frame": "PWM-Frequenz",
     "ch0": "Puls Kanal 0 (µs)",
@@ -336,7 +336,7 @@
           "2": "Man braucht nie einen",
           "3": "1 µF"
         },
-        "why": "Die Regel von Adafruit ist n x 100 µF. Er hält V+ in dem Moment oben, in dem mehrere Servos gleichzeitig anlaufen. Dieser Prüfstand setzt 470 µF ein."
+        "why": "Die Regel von Adafruit ist n x 100 µF. Er hält V+ in dem Moment oben, in dem mehrere Servos gleichzeitig anlaufen. Diese Werkbank setzt 470 µF ein."
       },
       "kit": {
         "q": "Welche Teile lötest du an diesem Board selbst?",

@@ -42,7 +42,7 @@
     }
   },
   "power": {
-    "label": "Den Prüfstand mit Strom versorgen",
+    "label": "Die Werkbank mit Strom versorgen",
     "ok": "Nano an USB: Vcc 5 V, direkt an jeden Chip auf der Platine"
   },
   "modes": {
@@ -109,29 +109,29 @@
       "refusal": "Zieh zuerst den Strom ab und verdrahte zuerst den Nano"
     },
     "plug": {
-      "title": "Den Prüfstand mit Strom versorgen",
+      "title": "Die Werkbank mit Strom versorgen",
       "body": "USB in den Nano. Am HC-SR04 leuchtet nichts: Er hat keine Power-LED. Er wartet auf einen Impuls an Trig.",
       "refusal": "Schließ zuerst den Aufbau ab: Jedes Bauteil drauf und gelötet, Nano und Summer verdrahtet"
     },
     "wall": {
       "title": "„Ping und Ausgabe“ hochladen",
       "body": "Einmal pro Sekunde: ein 10-µs-Impuls an Trig, dann misst pulseIn() Echo. Eine Wand in 30 cm Entfernung ergibt etwa 1740 µs, 30 cm. Sieh zu, wie die Ringe T verlassen und wieder auf R herunterkommen.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "approach": {
       "title": "„Einparkpiepser“ hochladen",
       "body": "Eine Hand kommt von 1 m auf 5 cm heran. Der Sketch pingt alle 60 ms und piept einmal alle Entfernung x 10 ms: jede Sekunde bei 1 m, alle 300 ms bei 30 cm, ein langer Ton unter 10 cm.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "cushion": {
       "title": "„Ein Kissen anpingen“ hochladen",
       "body": "Derselbe Sketch, auf ein Kissen in 40 cm Entfernung gerichtet. Weicher Stoff schluckt den Schall: Die meisten Pings melden kein Echo, und ab und zu antwortet die Wand dahinter bei 183 cm.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "open": {
       "title": "„Nichts in Reichweite“ hochladen",
       "body": "Auf einen leeren Raum gerichtet. Die Platine wartet etwa 38 ms, senkt Echo, und jeder Ping meldet kein Echo: pulseIn() hat nach 30 ms aufgegeben und 0 zurückgegeben.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "reverse-vcc": {
       "title": "Vcc und Gnd vertauscht anschließen",
@@ -203,7 +203,7 @@
   },
   "status": {
     "status": "Status",
-    "powered": "Strom am Prüfstand",
+    "powered": "Strom an der Werkbank",
     "mode": "Sketch",
     "distance": "Entfernung",
     "echo": "Echo-Impuls (µs)",

@@ -2,7 +2,7 @@
   "title": "Treiber L298N",
   "sub": "warum man ihn nicht nimmt",
   "hint": "Versorg ihn, wähl eine Richtung, spür die Wärme",
-  "overview": "Der L298N ist der Motortreiber in fast jedem Starterset: eine rote, 43 mm große quadratische Platine mit einem schwarzen Kühlkörper, zwei blauen Motorklemmen und einem 2S-LiPo an ihrer Stromklemme. Im Chip stecken zwei H-Brücken aus Bipolartransistoren, ein Design aus den 1990ern. IN1 und IN2 wählen die Richtung von Motor A, IN3 und IN4 die von Motor B, und ENA und ENB schalten jede Brücke ein; im Auslieferungszustand verbinden zwei Jumper-Kappen beide Enables mit +5V, also laufen die Motoren mit voller Drehzahl. Ein Spannungsregler 78M05 hinter der Kappe 5V-EN erzeugt aus der Batterie die 5-V-Logikversorgung des Chips. Der Haken ist der Spannungsabfall: Zwei bipolare Schalter liegen mit jedem Motor in Reihe und verlieren zusammen 1,4 + 1,15 x I Volt, etwa 1,6 V mit einem frei laufenden TT-Motor und 2,7 V mit festgehaltenem Rad, und alles davon wird zu Wärme. Bau das Modul, verdrahte Nano, Motoren und Akku, fahr in jede Richtung, dann halt die Räder fest und sieh zu, wie der Kühlkörper heißer wird, bis der Chip abschaltet. Der TB6612FNG vom Prüfstand davor erledigt dieselbe Arbeit und verliert etwa 0,1 V.",
+  "overview": "Der L298N ist der Motortreiber in fast jedem Starterset: eine rote, 43 mm große quadratische Platine mit einem schwarzen Kühlkörper, zwei blauen Motorklemmen und einem 2S-LiPo an ihrer Stromklemme. Im Chip stecken zwei H-Brücken aus Bipolartransistoren, ein Design aus den 1990ern. IN1 und IN2 wählen die Richtung von Motor A, IN3 und IN4 die von Motor B, und ENA und ENB schalten jede Brücke ein; im Auslieferungszustand verbinden zwei Jumper-Kappen beide Enables mit +5V, also laufen die Motoren mit voller Drehzahl. Ein Spannungsregler 78M05 hinter der Kappe 5V-EN erzeugt aus der Batterie die 5-V-Logikversorgung des Chips. Der Haken ist der Spannungsabfall: Zwei bipolare Schalter liegen mit jedem Motor in Reihe und verlieren zusammen 1,4 + 1,15 x I Volt, etwa 1,6 V mit einem frei laufenden TT-Motor und 2,7 V mit festgehaltenem Rad, und alles davon wird zu Wärme. Bau das Modul, verdrahte Nano, Motoren und Akku, fahr in jede Richtung, dann halt die Räder fest und sieh zu, wie der Kühlkörper heißer wird, bis der Chip abschaltet. Der TB6612FNG von der Werkbank davor erledigt dieselbe Arbeit und verliert etwa 0,1 V.",
   "parts": {
     "U1": {
       "name": "Doppel-H-Brücke L298N auf ihrem Kühlkörper",
@@ -70,7 +70,7 @@
     }
   },
   "power": {
-    "label": "Den Prüfstand mit Strom versorgen",
+    "label": "Die Werkbank mit Strom versorgen",
     "ok": "Nano an USB, LiPo an +12V: Die Power-LED leuchtet, und die Brücken laufen"
   },
   "modes": {
@@ -148,34 +148,34 @@
       "refusal": "Zieh zuerst den Strom ab und verdrahte die Motoren vor dem LiPo"
     },
     "plug": {
-      "title": "Den Prüfstand mit Strom versorgen",
+      "title": "Die Werkbank mit Strom versorgen",
       "body": "USB in den Nano, den LiPo ans Modul. Die Power-LED leuchtet, der Nano startet mit Vorwärts, und beide Räder drehen sich.",
       "refusal": "Schließ zuerst den Aufbau ab: Jedes Bauteil drauf, jede Lötstelle gelötet und alles auf der Matte verdrahtet"
     },
     "fwd": {
       "title": "Vorwärts hochladen",
       "body": "IN1 HIGH, IN2 LOW, IN3 HIGH, IN4 LOW: Beide Räder drehen vorwärts. Der Akku liefert 7,4 V, und jeder Motor bekommt etwa 5,8 V: Die anderen 1,6 V gehen in der Brücke verloren.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "rev": {
       "title": "Rückwärts hochladen",
       "body": "Tausch jedes Paar: IN1 LOW, IN2 HIGH und dasselbe für B. Dieselben 1,6 V gehen in umgekehrter Richtung verloren.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "spin": {
       "title": "Auf der Stelle drehen hochladen",
       "body": "Motor A vorwärts, Motor B rückwärts. An einem Roboter dreht ihn das auf der Stelle.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "brake": {
       "title": "Bremsen hochladen",
       "body": "IN1 = IN2 und IN3 = IN4 mit den Enables auf HIGH: Beide Kabel jedes Motors liegen an derselben Schiene, also treibt die eigene Spannung des Motors einen Strom, der ihn hart stoppt. Aus der Batterie kommt nichts.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "half": {
       "title": "Halbe Drehzahl hochladen",
       "body": "Der Sketch schreibt 128 auf ENA und ENB, aber nichts ändert sich: Die Kappen halten beide Enables auf 5 V, und D9 und D3 sind nicht einmal verdrahtet. Drehzahlregelung braucht die gezogene Kappe und ENA an einem PWM-Pin; die Aufgabe zum Sanftanlauf macht das.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "lipo-backwards": {
       "title": "Den LiPo verkehrt herum anschließen",
@@ -267,7 +267,7 @@
   },
   "status": {
     "status": "Status",
-    "powered": "Strom am Prüfstand",
+    "powered": "Strom an der Werkbank",
     "mode": "Sketch",
     "in1": "IN1",
     "in2": "IN2",

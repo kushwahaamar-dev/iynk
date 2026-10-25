@@ -62,7 +62,7 @@
     }
   },
   "power": {
-    "label": "Den Prüfstand mit Strom versorgen",
+    "label": "Die Werkbank mit Strom versorgen",
     "ok": "Nano an USB, LiPo an VM: Die Leiste misst, und der Treiber ist bereit"
   },
   "modes": {
@@ -134,24 +134,24 @@
       "refusal": "Schließ zuerst den LiPo an"
     },
     "plug": {
-      "title": "Den Prüfstand mit Strom versorgen",
+      "title": "Die Werkbank mit Strom versorgen",
       "body": "USB in den Nano, den LiPo an VM. Die IR-LEDs sind für dein Auge unsichtbar (eine Handykamera zeigt sie), und der Nano startet den Sketch „Rohe RC-Zeiten“.",
       "refusal": "Bau zuerst fertig: jedes Bauteil drauf, jede Lötstelle gelötet, alles auf der Matte verdrahtet"
     },
     "raw": {
       "title": "„Rohe RC-Zeiten“ hochladen",
       "body": "read() misst die Zeit aller acht Ausgänge: etwa 120 µs, wo ein Sensor weiße Karte sieht, 2500, wo er Band sieht (das ist das Timeout: echtes Schwarz braucht etwa 2,6 ms). Beweg die Karte und sieh zu, wie die 2500er wandern.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "line": {
       "title": "„Position der Linie“ hochladen",
       "body": "Hundert Aufrufe von calibrate(), während du die Leiste über das Band führst, lassen jeden Sensor sein eigenes Weiß und Schwarz lernen. Dann macht readLineBlack() aus den acht Messwerten eine Zahl: 0 unter Sensor 1, 3500 in der Mitte, 7000 unter Sensor 8.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "follow": {
       "title": "„Der Linie folgen“ hochladen",
       "body": "error = position - 3500. Jedes Rad bekommt 150 plus oder minus error/20: Liegt die Linie links, wird das linke Rad langsamer, der Roboter dreht nach links, und die Linie kommt zurück in die Mitte. Sieh zu, wie das Band driftet, wenn die Strecke eine Kurve macht, und zurückkommt.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "three-volts": {
       "title": "Die Leiste aus 3,3 V versorgen",
@@ -170,7 +170,7 @@
       "body": "Der 47-Ω-Widerstand im LED-Strang der Sensoren 3 und 4. Fehlt er, haben die beiden LEDs in Reihe keinen Strompfad."
     },
     "sunlight": {
-      "title": "Den Prüfstand in die Sonne stellen",
+      "title": "Die Werkbank in die Sonne stellen",
       "body": "Sonnenlicht steckt voller Infrarot. Die Fototransistoren können es nicht vom Licht ihrer eigenen LEDs unterscheiden."
     },
     "lift-array": {
@@ -243,7 +243,7 @@
   },
   "status": {
     "status": "Status",
-    "powered": "Strom am Prüfstand",
+    "powered": "Strom an der Werkbank",
     "mode": "Sketch",
     "position": "Position der Linie (0-7000)",
     "sensor1": "Sensor 1 (µs)",

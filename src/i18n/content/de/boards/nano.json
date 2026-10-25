@@ -334,7 +334,7 @@
     },
     "upload-hello": {
       "title": "Einen seriellen Sketch hochladen",
-      "body": "Lade \"Serial hello\" hoch. DTR setzt den 328P zurück, RX flackert, während die Bytes mit 115 200 Baud hineingehen, dann gibt der Sketch \"Nano ready\" aus, und TX blinkt einmal pro Sekunde mit jeder Zeile.",
+      "body": "Lade „Serielles Hallo“ hoch. DTR setzt den 328P zurück, RX flackert, während die Bytes mit 115 200 Baud hineingehen, dann gibt der Sketch \"Nano ready\" aus, und TX blinkt einmal pro Sekunde mit jeder Zeile.",
       "refusal": "Steck zuerst USB ein: Uploads laufen über das Kabel."
     }
   },

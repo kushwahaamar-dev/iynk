@@ -4,7 +4,7 @@
   "hint": "bau ihn, stell mit einem Messgerät 5 V ein, lass einen Motor laufen, mach ihn kaputt",
   "overview": "Batterien haben die falsche Spannung. Ein 2S-LiPo liefert voll 8,4 V und fast leer 6,6 V; ein TT-Motor, der 5V-Pin eines Nano oder ein Servo wollen 5 V. Ein Abwärtswandler senkt die Spannung, ohne die Differenz als Wärme zu verheizen: Der LM2596 schaltet den Eingang 150.000-mal pro Sekunde ein und aus, eine 33-µH-Drossel und ein Kondensator glätten die zerhackte Spannung, und eine Schottky-Diode führt den Strom der Drossel, solange der Schalter aus ist. Ein Trimmer mit 25 Umdrehungen stellt den Ausgang über die Formel Vout = 1,23 x (1 + R2 / 330) ein. Hier baust du das blaue Modul, stellst mit einem Messgerät 5 V ein, bevor irgendetwas am Ausgang hängt, schließt einen Motor an, verlangst 12 V, um zu sehen, dass ein Abwärtswandler nur heruntersetzt, und machst ihn dann auf sieben Arten kaputt. Er hat keinen Verpolungsschutz, keine Sicherung und keine Unterspannungsabschaltung, und jedes davon zeigt sich.",
   "power": {
-    "label": "Den Prüfstand mit Strom versorgen",
+    "label": "Die Werkbank mit Strom versorgen",
     "ok": "Akku an IN+ und IN-: Die Anzeige leuchtet mit der Eingangsspannung, und der Wandler schaltet"
   },
   "parts": {
@@ -135,7 +135,7 @@
     "strip": {
       "title": "Bis auf die nackte Platine zerlegen",
       "body": "Eine blaue Platine von 66 x 34 mm mit vier M3-Löchern. Eingang am linken Rand, Ausgang am rechten, beide mit der Plusklemme oben. Das große Pad links von der Mitte ist für die Kühlfahne des Reglers: Es ist Masse und Kühlkörper.",
-      "refusal": "Zieh zuerst den Strom am Prüfstand ab"
+      "refusal": "Zieh zuerst den Strom an der Werkbank ab"
     },
     "smd": {
       "title": "Die SMD-Bauteile bestücken und reflowlöten",
@@ -282,7 +282,7 @@
   },
   "status": {
     "status": "Status",
-    "powered": "Strom am Prüfstand",
+    "powered": "Strom an der Werkbank",
     "mode": "Trimmereinstellung",
     "vin": "Eingang (IN)",
     "vout": "Ausgang (Messgerät)",

@@ -348,7 +348,7 @@
     },
     "upload": {
       "title": "Einen Sketch hochladen",
-      "body": "Lade Serial hello hoch. Das Minima nimmt ihn über sein eigenes USB mit dfu-util an. Beim WiFi öffnet die IDE den Port mit 1200 Baud, der ESP32-S3 setzt den RA4M1 in seinen Bootloader zurück, und bossac beschreibt den Flash. Dann gibt der serielle Monitor bei 115200 Baud eine Bereit-Zeile und jede Sekunde ein Hallo aus.",
+      "body": "Lade „Serielles Hallo“ hoch. Das Minima nimmt ihn über sein eigenes USB mit dfu-util an. Beim WiFi öffnet die IDE den Port mit 1200 Baud, der ESP32-S3 setzt den RA4M1 in seinen Bootloader zurück, und bossac beschreibt den Flash. Dann gibt der serielle Monitor bei 115200 Baud eine Bereit-Zeile und jede Sekunde ein Hallo aus.",
       "refusal": "Steck zuerst USB ein: Uploads laufen über das Kabel."
     },
     "reset": {

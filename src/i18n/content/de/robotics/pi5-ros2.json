@@ -2,7 +2,7 @@
   "title": "Raspberry Pi 5",
   "sub": "ROS-2-Gehirn",
   "hint": "Bau ihn auf, Karte und Kühler zuletzt, dann versorg ihn mit einem echten 5-A-Netzteil",
-  "overview": "Der Raspberry Pi 5 ist das Gehirn des Roboters, nicht sein Rückenmark: ein Linux-Computer mit vier Kernen und 2,4 GHz, auf dem ROS 2, SLAM Toolbox, Nav2 und die Kamera-Pipeline laufen. Linux ist nicht echtzeitfähig, also leben die Motor- und Balance-Regelkreise auf einem ESP32 oder Nano, der über USB-Seriell mit dem Pi spricht, dieselbe Aufteilung wie beim UGV Rover von Waveshare. Bau ihn von der nackten Platine an auf, gib ihm seine microSD-Karte und den Active Cooler, versorg ihn mit einem echten 5-V-Netzteil mit 5 A und beobachte das Terminal. Wärme breitet sich hier etwa zehnmal schneller aus als auf einem echten Board, also siehst du in Sekunden, was auf dem Prüfstand Minuten dauert.",
+  "overview": "Der Raspberry Pi 5 ist das Gehirn des Roboters, nicht sein Rückenmark: ein Linux-Computer mit vier Kernen und 2,4 GHz, auf dem ROS 2, SLAM Toolbox, Nav2 und die Kamera-Pipeline laufen. Linux ist nicht echtzeitfähig, also leben die Motor- und Balance-Regelkreise auf einem ESP32 oder Nano, der über USB-Seriell mit dem Pi spricht, dieselbe Aufteilung wie beim UGV Rover von Waveshare. Bau ihn von der nackten Platine an auf, gib ihm seine microSD-Karte und den Active Cooler, versorg ihn mit einem echten 5-V-Netzteil mit 5 A und beobachte das Terminal. Wärme breitet sich hier etwa zehnmal schneller aus als auf einem echten Board, also siehst du in Sekunden, was auf der Werkbank Minuten dauert.",
   "power": {
     "label": "Das 27-W-USB-C-Netzteil einstecken / abziehen",
     "ok": "Versorgt: Die LED wechselt von Rot zu Grün, während Linux bootet"

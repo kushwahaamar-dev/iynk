@@ -1,7 +1,7 @@
 {
   "title": "Treiber TB6612FNG",
   "sub": "H-Brücke, PWM",
-  "hint": "Versorg den Prüfstand und schick dann Fahrbefehle",
+  "hint": "Versorg die Werkbank und schick dann Fahrbefehle",
   "overview": "Ein Pin des Nano liefert etwa 20 mA bei 5 V. Ein TT-Getriebemotor will 150 mA, nur um sich zu drehen, und etwa ein Ampere beim Anlaufen oder Blockieren, bei 6 bis 7 V. Der TB6612FNG sitzt dazwischen: zwei H-Brücken, jede aus vier Schaltern, die den Motor in die eine Richtung, in die andere Richtung anschließen oder seine Kabel zum Bremsen kurzschließen. IN1 und IN2 wählen die Richtung, und PWM legt die Drehzahl fest, indem es die Brücke fast tausendmal pro Sekunde ein- und ausschaltet (977 Hz an den Pins 5 und 6). Motorstrom (VM, 2,5 bis 13,5 V, hier ein 2S-LiPo) und Logikstrom (VCC, 2,7 bis 5,5 V, hier die 5 V des Nano) sind getrennte Versorgungen mit einer gemeinsamen Masse, und STBY muss HIGH sein, sonst schläft der ganze Chip. Seine MOSFET-Schalter verlieren bei 1 A etwa 0,5 V und bei 0,3 A nur etwa 0,15 V, gegenüber etwa 2 V bei den bipolaren Schaltern des L298N, also ist das der Treiber der Wahl. Bau das Breakout, versorg es mit Strom und probier dann Bremsen und Auslaufen direkt nacheinander: Bremsen stoppt das Rad hart, Auslaufen lässt es ausdrehen.",
   "parts": {
     "U1": {
@@ -46,7 +46,7 @@
     }
   },
   "power": {
-    "label": "Den Prüfstand mit Strom versorgen",
+    "label": "Die Werkbank mit Strom versorgen",
     "ok": "Nano an USB, LiPo an VM: Der Treiber ist wach (STBY HIGH)"
   },
   "modes": {
@@ -126,39 +126,39 @@
       "refusal": "Zieh zuerst den Strom ab und verdrahte die Motoren vor dem LiPo"
     },
     "plug": {
-      "title": "Den Prüfstand mit Strom versorgen",
+      "title": "Die Werkbank mit Strom versorgen",
       "body": "USB in den Nano, den LiPo an VM und GND. Die 5 V des Nano speisen VCC; die Massen sind verbunden. Der Nano startet mit Vorwärts 50 %.",
       "refusal": "Schließ zuerst den Aufbau ab: Jedes Bauteil drauf und jede Lötstelle gelötet"
     },
     "fwd50": {
       "title": "Vorwärts 50 % senden",
       "body": "AIN1 HIGH, AIN2 LOW, PWMA 128: Beide Räder drehen vorwärts mit etwa halber Drehzahl, im Mittel etwa 3,7 V.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "brake": {
       "title": "Bremsen senden",
       "body": "AIN1 und AIN2 beide HIGH: Beide Low-Side-Schalter legen die Motorkabel an GND, die eigene Gegen-EMK des Motors arbeitet gegen ihn, und er stoppt hart.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "coast": {
       "title": "Auslaufen senden",
       "body": "AIN1 und AIN2 beide LOW mit PWMA HIGH: Jeder Schalter ist aus, nichts hält den Motor, und das Rad dreht von selbst aus. Vergleich es mit Bremsen.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "rev": {
       "title": "Rückwärts senden",
       "body": "AIN1 LOW, AIN2 HIGH, PWMA 160: Die andere Diagonale der Brücke leitet, also fließt der Strom andersherum, und die Räder drehen mit 63 % Tastverhältnis rückwärts.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "fwd100": {
       "title": "Vorwärts 100 % senden",
       "body": "PWMA 255 hält die Brücke die ganze Zeit an: Der Motor sieht die Batterie minus den Spannungsabfall der Schalter, etwa 7,3 V bei 150 mA.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "standby": {
       "title": "STBY auf LOW ziehen",
       "body": "Der Sketch legt STBY auf LOW: Jeder Ausgang schaltet ab, und der Chip zieht unter 1 µA, obwohl IN1, IN2 und PWM immer noch vorwärts sagen. Ein herausgefallener STBY-Draht bewirkt dasselbe, wegen des 200-kΩ-Pull-downs.",
-      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+      "refusal": "Versorg zuerst die Werkbank mit Strom"
     },
     "c3-backwards": {
       "title": "Kaputt machen: C3 verkehrt herum",
@@ -237,7 +237,7 @@
   },
   "status": {
     "status": "Status",
-    "powered": "Strom am Prüfstand",
+    "powered": "Strom an der Werkbank",
     "mode": "Befehl",
     "stby": "STBY",
     "ain1": "AIN1",
