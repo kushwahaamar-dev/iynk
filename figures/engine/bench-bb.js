@@ -314,13 +314,21 @@ B.viewDef('breadboard', {
       }
     }
     s += byDepth(items);
-    // labels on the circuit parts
+    // labels on the circuit parts; parts a few holes apart (an LED and its resistor) would stack their pills, so each
+    // pill goes up past the ones already placed (sizes as tag() draws them: a numbered badge on a phone)
+    const placed = [];
     if (pl && k < .6) for (const q of pl.c.parts || []){
       const holes = (q.holes || []).map(h => B.hole(pl.geo, h)).filter(Boolean); if (!holes.length) continue;
       const cx = holes.reduce((a, h) => a + h.x, 0) / holes.length, cy = holes.reduce((a, h) => a + h.y, 0) / holes.length, mm = (st.meas || {})[q.id];
       const p = Object.assign({}, q, (st.cparams || {})[q.id] || {}), def = B.parts[q.part];
-      const txt = def && def.tag ? def.tag(p, mm) : q.id;
-      s += tag(pl.at(cx, cy, pl.zTop + 8), 26, -34 - holes[0].x * .0, txt, !!(mm && mm.state === 'ok' && mm.i_mA > 0));
+      const txt = def && def.tag ? def.tag(p, mm) : q.id, at = pl.at(cx, cy, pl.zTop + 8), [X, Y] = P(...at);
+      const u = window.LBL_U ? LBL_U() : 0, fs = u ? 10 * u : 8.6 * INK_K, h = u ? 17 * u : fs * 1.8, w = u ? h * 1.3 : CF_TW(CF_T(txt), fs) + fs * 1.5;
+      const pill = dy => ({ x0: X + 26 * INK_K - w / 2, x1: X + 26 * INK_K + w / 2, y0: Y + dy * INK_K - h / 2, y1: Y + dy * INK_K + h / 2 });
+      const hits = b => placed.some(o => b.x0 < o.x1 && o.x0 < b.x1 && b.y0 < o.y1 + 2 && o.y0 - 2 < b.y1);
+      let dy = -34;
+      while (hits(pill(dy))) dy -= h / INK_K + 3;
+      placed.push(pill(dy));
+      s += tag(at, 26, dy, txt, !!(mm && mm.state === 'ok' && mm.i_mA > 0));
     }
     return s;
   },

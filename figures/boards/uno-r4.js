@@ -330,7 +330,7 @@ const wifi = Object.assign({}, minima, {
       ['VIN', [[12.4, 8.3], [15.4, 8.3], [22, 13.5], [26.8, 22.1]], [[45.72, 3.4], [45.72, 6], [22, 13.5]]],
       ['D13', [[52.75, 41.9], [40, 44.2], [14, 44.2], [12.5, 44.1]], [[28.96, 50.2], [28.96, 44.2]]],
     ],
-    notes: [['U1', 'SILICON DIE'], ['M1', 'ESP32-S3 + 8 MB FLASH + 40 MHZ CRYSTAL'], ['U3', 'BUCK CONVERTER'], ['U5', '3.3 V REGULATOR'], ['U4', 'LEVEL SHIFTER'], ['U_LEDMATRIX', 'CHARLIEPLEXED LEDS']],
+    notes: [['U1', 'SILICON DIE'], ['M1', 'ESP32-S3 + 8 MB FLASH + 40 MHZ CRYSTAL'], ['U3', 'BUCK CONVERTER'], ['U5', '3.3 V REGULATOR'], ['U4', 'LEVEL SHIFTER']],
   },
   tags: [['U1', 40, -30], ['M1', -40, 30], ['U_LEDMATRIX', 36, 34], ['J1', -44, 12], ['J5', -40, 22], ['PB1', -30, -26], ['DL4', 30, -30], ['J2', 40, 10]],
 });
