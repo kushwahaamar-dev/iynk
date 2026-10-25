@@ -11,6 +11,7 @@ import type { Locale } from "@/i18n/config";
 import { reloadFeatures, useFeatures } from "@/lib/features";
 import { useSaved } from "@/lib/progress";
 import { createRoom, useIdentity } from "@/lib/realtime";
+import { track } from "@/lib/telemetry";
 import { FeatureGate, postJson, roomPath } from "./api";
 
 type Profile = { id: string; name: string; lang: Locale; interests: string[]; built: string[]; wants: string };
@@ -85,6 +86,7 @@ export function Buddies({ t, titles }: { t: TogetherT; titles: Map<string, strin
       return setState({ kind: "error" });
     }
     if (pool.length === 0) return setState({ kind: "done", matches: [], pool: new Map() });
+    track("ai.call", { kind: "match" });
     const matched = await postJson<{ matches: Match[] }>("/api/ai/match", { me: profile, pool });
     if (!matched.ok) return setState({ kind: "error" });
     setState({ kind: "done", matches: matched.data.matches, pool: new Map(pool.map((p) => [p.id, p])) });

@@ -3,6 +3,7 @@
 // the server caches by hash as well.
 
 import type { Locale } from "@/i18n/config";
+import { track } from "@/lib/telemetry";
 import type { ChatMsg } from "./types";
 
 const MAX_BATCH = 20;
@@ -26,6 +27,7 @@ export function needsTranslation(msg: ChatMsg, to: Locale): boolean {
 type TranslateResult = { ok: true; texts: string[] } | { ok: false; code: string };
 
 export async function translateTexts(texts: string[], to: Locale, from: Locale, signal?: AbortSignal): Promise<TranslateResult> {
+  track("ai.call", { kind: "translate" });
   try {
     const res = await fetch("/api/ai/translate", {
       method: "POST",

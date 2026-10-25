@@ -12,6 +12,7 @@ import type {
   StoryResponse,
   TranscribeResponse,
 } from "./protocol";
+import { track } from "@/lib/telemetry";
 import { blobToVoiceWav, VoiceWavError } from "./voice-wav";
 
 export type AiErrorCode = "not_configured" | "rate_limited" | "bad_input" | "upstream" | "offline" | "aborted";
@@ -191,6 +192,7 @@ export async function* streamChat(request: ChatRequest, options: CallOptions = {
 
   try {
     arm();
+    track("ai.call", { kind: "chat" });
     let res: Response;
     try {
       res = await doFetch("/api/ai/chat", {
@@ -245,10 +247,12 @@ async function postJson<T>(path: string, body: unknown, timeoutMs: number, optio
 }
 
 export function writeStory(request: StoryRequest, options: CallOptions = {}): Promise<StoryResponse> {
+  track("ai.call", { kind: "story" });
   return postJson<StoryResponse>("/api/ai/story", request, 60_000, options);
 }
 
 export async function drawCover(prompt: string, options: CallOptions = {}): Promise<ImageResponse> {
+  track("ai.call", { kind: "image" });
   const result = await postJson<ImageResponse>(
     "/api/ai/image",
     { prompt: prompt.slice(0, 600), style: "colorfigures" },
@@ -279,6 +283,7 @@ export async function transcribe(audio: Blob, lang: Locale, options: CallOptions
   const signal = options.signal
     ? AbortSignal.any([options.signal, AbortSignal.timeout(30_000)])
     : AbortSignal.timeout(30_000);
+  track("ai.call", { kind: "transcribe" });
   let res: Response;
   try {
     res = await doFetch("/api/ai/transcribe", { method: "POST", body: form, signal });

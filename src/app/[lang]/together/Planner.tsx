@@ -9,6 +9,7 @@ import { useLocale } from "@/i18n/client";
 import { LOCALES, type Locale } from "@/i18n/config";
 import { reloadFeatures, useFeatures } from "@/lib/features";
 import { createRoom, useIdentity } from "@/lib/realtime";
+import { track } from "@/lib/telemetry";
 import { FeatureGate, postJson, roomPath } from "./api";
 
 type Level = "new" | "some" | "lots";
@@ -44,6 +45,7 @@ export function Planner({ t, titles }: { t: TogetherT; titles: Map<string, strin
     const participants = rows.filter((p) => p.name.trim() || p.wants.trim());
     if (participants.length === 0 || participants.some((p) => !p.name.trim() || !p.wants.trim())) return setState({ kind: "missing" });
     setState({ kind: "busy" });
+    track("ai.call", { kind: "plan" });
     const result = await postJson<Plan>("/api/ai/plan", {
       locale,
       participants: participants.map(({ name, lang, level, wants }) => ({ name: name.trim().slice(0, 24), lang, level, wants: wants.trim().slice(0, 300) })),
