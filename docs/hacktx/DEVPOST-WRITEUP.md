@@ -150,7 +150,7 @@ Vercel functions can't hold WebSockets, so iynk's realtime relay runs on a Vultr
 
 ### [MLH] Best Use of Solana
 
-Skills you learn in iynk become credentials you own, on Solana devnet. When you pass a lesson, the server re-runs your exact run on its own deterministic simulator, and only then does our Anchor program, `iynk_passport`, issue a credential to your wallet: one per learner and skill, with the score and a hash of the replay, signed by iynk's issuer. Sponsors can lock a bounty on a skill, and the same instruction that issues the credential pays it out, once, to the right learner. Anyone can check a credential on the Verify page, which reads it straight from the chain, so nobody has to trust our server. A learner without a wallet gets a one-click devnet wallet kept in the browser. The program has 34 tests on a local validator and is live at `BYFLDTLNi946Z8jT4JnxgE8Cpzkr9ud7tSrnThFTv31w`.
+Skills you learn in iynk become credentials you own, on Solana devnet. When you pass the bench safety checks on a drone, the server re-runs your exact run on its own deterministic simulator, and only then does our Anchor program, `iynk_passport`, issue a credential to your wallet: one per learner and skill, with the score and a hash of the replay, signed by iynk's issuer. Sponsors can lock a bounty on a skill, and the same instruction that issues the credential pays it out, once, to the right learner. Anyone can check a credential on the Verify page, which reads it straight from the chain, so nobody has to trust our server. A learner without a wallet gets a one-click devnet wallet kept in the browser. The program has 34 tests on a local validator and is live at `BYFLDTLNi946Z8jT4JnxgE8Cpzkr9ud7tSrnThFTv31w`.
 
 ### [MLH] Best Use of Tiger Data
 
