@@ -83,20 +83,20 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-25 09:13 CDT (machine clock).
-- **09:00 request (CONTEXT.md §5):** rename SimLab to iynk everywhere (done in `ca09a95`; repo is now
-  github.com/kushwahaamar-dev/iynk, Vercel project `iynk` at https://iynk.vercel.app), deploy Solana (program
-  `iynk_passport`, same id; devnet deploy running), redesign every page outside the labs (`wf_6b6f10f1-282`,
-  `scripts/workflows/redesign.js`, from 09:10: build:shell, build:landing, build:catalogue, build:pages, then review;
-  its agents commit locally and do not push, because every push deploys production), then a final verdict.
+- **Updated:** 2026-10-25 09:55 CDT (machine clock).
+- **09:00 request (CONTEXT.md §5), done by 09:55:** SimLab renamed to iynk everywhere (`ca09a95`; repo
+  github.com/kushwahaamar-dev/iynk, Vercel project `iynk` at https://iynk.vercel.app); Solana program `iynk_passport`
+  deployed and initialized on devnet (same id, `docs/hacktx/SOLANA.md` deploy record) and on in production; every page
+  outside the labs redesigned (`wf_6b6f10f1-282`, `scripts/workflows/redesign.js`, commits `d4db93e`..`827a1e4`);
+  Meta model now muse-spark-1.3 and Gemini fallback gemini-3.5-flash (`3d44d33`).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-25 07:47 CDT (new session; the 18:22 session
   hit its weekly usage limit at 07:35). Amar is awake: his keys are in `.env.local` (07:32). The Mac is kept awake by
   `caffeinate -dimsu -t 54000` (pid 28721, from 23:08, until about 14:08).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Do not build in
   `/Users/amar/Codes/sim`.
 - **Phase:** every build phase is done and **gate 3 is green** (05:46-06:11 at `569b205`, all six languages,
-  `docs/verify/gate3.md`). Phase 4 (Solana, Best Hardware Hack) is skipped (Amar, 22:20). What is left needs Amar:
-  keys, deploy, video and Devpost ("Next step").
+  `docs/verify/gate3.md`). Solana is live since 09:50 (Amar, 09:03); Best Hardware Hack stays skipped. Keys and deploy
+  are done; what is left needs Amar: video and Devpost ("Next step").
 - **Plan:** `docs/hacktx/BUILD-PLAN.md`, written from the six audits in `docs/audit/`. Phases 1-3 build for Best
   Overall, SerpApi, Most Entertaining and Meta.
 - **Gate 3:** typecheck, eslint and content:check clean; build with typecheck on, 826 pages; vitest 2788 passed, 5
@@ -126,8 +126,11 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 - **Interaction audit** `wf_e0b543cb-6eb` (`scripts/workflows/interaction-audit.js`, 07:19-07:40): all five find
   labels (boards, robotics, drones, fly, shell) died on the old session's usage limit, so it reported nothing. Not
   relaunched yet. Their leftover `scripts/.tmp-audit-*.mjs` were moved out of the repo.
-- **Servers (this session's background tasks):** `next start` on http://127.0.0.1:3000 from `.next-keys` (Amar's
-  keys, built 07:33) and the relay `server/realtime` on port 43117. `.next-tags` (no keys) was deleted.
+- **Servers:** none local (stopped 09:54). Production is https://iynk.vercel.app (Vercel project `iynk`; every push
+  to `main` deploys it) with the relay on Vultr (`wss://216-128-138-203.sslip.io/ws`, VM label `iynk-realtime`,
+  compose stack still named `simlab-realtime` in `/opt/simlab-realtime`: run `docker compose down` there before the
+  next `scripts/realtime-deploy.sh`). Every `/api/status` flag is on: ai, image, voice, search, realtime, db,
+  gemini, solana.
 - **Keys smoke (07:51, `docs/hacktx/DEPLOY.md`):** `/api/status` has ai, image, voice, search, realtime and gemini on
   (solana and db off); Meta 7 of 7, SerpApi 5 of 5, the partner answers in the app, and two browser profiles share a
   room through the relay in en and es with no console errors.
@@ -139,26 +142,16 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   `docs/design/POLISH-SPEC.md`, builds, F-review's `docs/verify/ui-review.md`), review fixes `wf_62976d4a-988`, and
   four figure-string deltas (`wf_7bcff872-581`, `wf_f8a79fd5-c38`, `wf_4259a342-6a9`, `wf_0e7f6757-d55`). Gate 2
   02:20 (`docs/verify/gate2.md`), gate 3 06:11. No agent or workflow is running.
-- **Next step (Amar):**
-  1. Done 07:32: keys in `.env.local` (Meta, Gemini, SerpApi, relay URL). No `DATABASE_URL`, so no leaderboard.
-  2. Answered 08:10: Vercel yes, relay on Vultr, no Tiger, app frozen (CONTEXT.md §3). Vercel project
-     `simlab-hacktx` (scope `kushwahaamar2ak5-7403s-projects`, linked 08:12, GitHub repo connected, so every push to
-     `main` builds production) has 10 production variables: the five `META_*`, `GEMINI_API_KEY`, `GEMINI_MODEL`,
-     `SERPAPI_KEY`, `SERPAPI_MONTHLY_BUDGET`, `NEXT_PUBLIC_SITE_URL=https://iynk.vercel.app`. Upload script
-     trims whitespace (two keys have a space after `=` in `.env.local`). Vultr waits for `VULTR_API_KEY` in
-     `.env.local` (asked 08:13); then `scripts/realtime-vultr-create.sh`, `REALTIME_ALLOWED_ORIGINS=https://iynk.vercel.app
-     VULTR_HOST=<ip> scripts/realtime-deploy.sh`, set `NEXT_PUBLIC_REALTIME_URL=wss://<ip-with-dashes>.sslip.io/ws`
-     on Vercel and redeploy.
-  3. Done locally 07:51 (see "Keys smoke") and on **https://iynk.vercel.app** (`docs/hacktx/DEPLOY.md`
-     "Production on Vercel"): everything on but solana. Rooms on the live site run through the Vultr relay
-     `wss://216-128-138-203.sslip.io/ws` since the 08:38 redeploy, checked with two browser profiles. Tiger is on
-     since 08:49 (`DATABASE_URL` added; Build Buddies and leaderboards work), with the array fix `951ef39`. Still to
-     do before judging: JUDGE-QA's "Recheck before judging" and PITCH's "Confirm before pitching".
-  4. Video 08:30-10:00 from `docs/hacktx/VIDEO.md` (setup, shot list, clicks checked at gate 3). Devpost by 10:30
-     from `docs/hacktx/DEVPOST-WRITEUP.md`, filling its [BRACKETS]; Amar submits.
-  Optional, small, if someone has time: the robotics HUD verdict is English only (`benchStatus` fills English), the fr
-  and es level-shifter wording differs between figure and prose, the Pico's flash label style, the live HackTX
-  counter (`LiveCounter`) is not on a page, and a drone's bench empties on reload.
+- **Next step (Amar, from 09:55):**
+  1. Record the video on https://iynk.vercel.app from `docs/hacktx/VIDEO.md`. Open each demo page once first (the
+     first visit after a deploy is slow). Check Build it for real on quad5 just before shot 7: PITCH and VIDEO quote
+     the 09:13 live prices ($291.50; $280 swaps the battery to a 4S 1500).
+  2. Devpost from `docs/hacktx/DEVPOST-WRITEUP.md`: fill [VIDEO_URL], the Muse connector bracket (tried from Muse,
+     or an MCP client only), the organizers' answers; confirm the credits and "new ground" with the teammate. Tracks:
+     Meta, SerpApi, Best Overall, Most Entertaining, Best Pitch, MLH Vultr, MLH Tiger Data, MLH Solana. Amar submits.
+  3. Before judging: JUDGE-QA's "Recheck before judging" and PITCH's "Confirm before pitching".
+  Known and accepted: Google Events often times out or comes back empty for drone searches; a translated chat line
+  that failed stays on "couldn't translate" until reload (no retry); the story's Facebook share links the lesson.
 - **Stopped (17:12):** an earlier wave in `/Users/amar/Codes/sim` was told to stop and not push. That clone is ahead
   by unpushed `c3c61a7` and has uncommitted files. Leave both. Do not push them.
 
