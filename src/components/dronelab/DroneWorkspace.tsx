@@ -54,6 +54,8 @@ type Props = {
   notice?: ReactNode;
 };
 
+const BENCH_CHROME = ["build", "strip", "explode", "plug", "wiring"];
+
 export function DroneWorkspace({ lang, content, text, messages, notice }: Props) {
   const room = useRoom();
   const t = useMemo(() => droneLabT(lang, messages), [lang, messages]);
@@ -153,6 +155,9 @@ export function DroneWorkspace({ lang, content, text, messages, notice }: Props)
 
   const bench = readBench(state.figure);
   const initial = useMemo(() => figureInitial(content, state), [content, state]);
+  // the toolbar, the Build tab and the Tests tab draw these; the figure keeps its part pickers, which can also fit a
+  // part the wrong way round
+  const hideChrome = useMemo(() => [...BENCH_CHROME, ...content.tests.map((test) => test.button)], [content.tests]);
   const fig = String(content.fig).padStart(2, "0");
   const fwName = t(`firmware.${content.firmware.firmware}`);
   const keys = useMemo(() => droneProgressKeys(content), [content]);
@@ -287,6 +292,7 @@ export function DroneWorkspace({ lang, content, text, messages, notice }: Props)
           title={figureTitle}
           initial={initial}
           onEvent={onEvent}
+          hideChrome={hideChrome}
           fill
         />
         {empty ? (
