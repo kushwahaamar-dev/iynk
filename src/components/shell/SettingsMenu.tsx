@@ -1,7 +1,7 @@
 "use client";
 
 import { UsageToggle } from "@/components/settings/UsageToggle";
-import { IconButton } from "@/components/ui/IconButton";
+import { Icon } from "@/components/ui/icons";
 import { Popover } from "@/components/ui/Popover";
 import { Toggle } from "@/components/ui/Toggle";
 import { useCommonT } from "@/i18n/client";
@@ -44,10 +44,25 @@ export function SettingsPanel({ lang, labels }: { lang: Locale; labels: Settings
   );
 }
 
-/** The header's Settings button and its popover. */
+/**
+ * The header's Settings button and its popover. The button is quiet: the page's language code in mono and a gear,
+ * since the language picker is the first thing most people come here for.
+ */
 export function SettingsMenu({ lang, labels }: { lang: Locale; labels: SettingsLabels }) {
+  const trigger = (
+    <button
+      type="button"
+      className="inline-flex h-9 items-center gap-2 rounded-full border border-rule ps-3 pe-2.5 text-muted transition-colors hover:border-line hover:text-ink aria-expanded:border-line aria-expanded:text-ink [@media(pointer:coarse)]:h-11"
+    >
+      <span className="sr-only">{labels.settings}</span>
+      <span aria-hidden="true" className="font-ui text-[11px] font-medium uppercase leading-none tracking-[0.08em]">
+        {lang}
+      </span>
+      <Icon name="settings" size={16} aria-hidden="true" />
+    </button>
+  );
   return (
-    <Popover label={labels.settings} trigger={<IconButton icon="settings" label={labels.settings} />} className="w-[min(21rem,calc(100vw-2rem))] p-4">
+    <Popover label={labels.settings} trigger={trigger} className="w-[min(21rem,calc(100vw-2rem))] p-4">
       <SettingsPanel lang={lang} labels={labels} />
     </Popover>
   );

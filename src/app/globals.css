@@ -2,7 +2,7 @@
 
 /*
   iynk look: warm paper, ink lines, the five Colorfigures palettes and a warm
-  technical monochrome. Light/mid/dark bands match the figure engine
+  technical monochrome, set in Geist and Geist Mono. Light/mid/dark bands match the figure engine
   (figures/vendor/colorfigures/core.js) so host chrome and figures agree.
 
   Theme: <html data-theme="light|dark"> forces a theme; no attribute (or
@@ -124,7 +124,9 @@
 
   --font-body: var(--font-sans, ui-sans-serif), system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-ui: var(--font-mono, ui-monospace), ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  --font-head: var(--font-display, var(--font-sans, ui-sans-serif)), Georgia, serif;
+  /* Geist sets headings too; Instrument Serif (--font-display) is only the italic accent word, via font-accent. */
+  --font-head: var(--font-sans, ui-sans-serif), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-accent: var(--font-display, Georgia), Georgia, "Times New Roman", serif;
 }
 
 /* Paper plates reuse the light token set, so whatever sits on one (labels,
@@ -177,7 +179,15 @@
   --console-warn: #f2c230;
   --console-err: #ff8f7a;
 
-  /* Page frames (POLISH-SPEC 1.1). The header is h-14 plus its 2 px rule. */
+  /* The one accent: tomato as a mark (the wordmark's dot, a live indicator) and a darker step for text on paper. */
+  --accent: #ef6a4c;
+  --accent-ink: #a8402b;
+
+  /* The site shell (header, footer): up to 1440 px with fluid gutters, as the editorial pages. */
+  --shell-max: 1440px;
+  --shell-pad: clamp(16px, 4vw, 56px);
+
+  /* Page frames (POLISH-SPEC 1.1). The header is 57 px plus its 1 px hairline. */
   --header-h: 58px;
   --frame-max: 80rem;
   --frame-pad: 1rem;
@@ -201,6 +211,8 @@
   --frame-max: none;
   --frame-pad: 1rem;
   --footer-gap: 0px;
+  --shell-max: none;
+  --shell-pad: 1rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -225,6 +237,7 @@
     --info: #9dbcef;
     --focus: #f4b829;
     --halo: rgb(244 184 41 / 0.35);
+    --accent-ink: #f08a70;
     --code-bg: #14120e;
     --code-fg: #ece6d8;
     --code-kw: #9dbcef;
@@ -260,6 +273,7 @@
   --info: #9dbcef;
   --focus: #f4b829;
   --halo: rgb(244 184 41 / 0.35);
+  --accent-ink: #f08a70;
   --code-bg: #14120e;
   --code-fg: #ece6d8;
   --code-kw: #9dbcef;
@@ -274,13 +288,13 @@
 }
 
 /* Hindi needs a Devanagari face first (next/font's Latin fallbacks would win
-   otherwise); Chinese appends platform CJK faces after the Latin one. Titles keep
-   Newsreader behind the script's own face, and the wordmark (lang="en") keeps it whole. */
+   otherwise); Chinese appends platform CJK faces after the Latin one. The wordmark
+   is drawn (Logo.tsx), so it keeps its shape in every language. */
 html:lang(hi) {
   --font-sans: var(--font-devanagari, "Noto Sans Devanagari"), "Kohinoor Devanagari", "Nirmala UI", sans-serif;
 }
 :is(h1, h2, h3, h4, .font-head):lang(hi) {
-  font-family: var(--font-devanagari, "Noto Sans Devanagari"), var(--font-display), "Kohinoor Devanagari", "Nirmala UI", serif;
+  font-family: var(--font-devanagari, "Noto Sans Devanagari"), "Kohinoor Devanagari", "Nirmala UI", sans-serif;
 }
 html:lang(zh-Hans) {
   --font-cjk: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC";
@@ -289,7 +303,7 @@ html:lang(zh-Hans) body {
   font-family: var(--font-sans, ui-sans-serif), var(--font-cjk), sans-serif;
 }
 :is(h1, h2, h3, h4, .font-head):lang(zh-Hans) {
-  font-family: var(--font-display, ui-sans-serif), var(--font-cjk), sans-serif;
+  font-family: var(--font-sans, ui-sans-serif), var(--font-cjk), sans-serif;
 }
 /* Small caps and letter-spaced mono read badly in Devanagari and Han: those labels take the body face. */
 :is(.ink-kicker, .ink-label, .font-ui:not(code, pre, kbd, .tabular)):is(:lang(hi), :lang(zh-Hans)) {
@@ -427,6 +441,40 @@ html:lang(zh-Hans) body {
   }
 
   .site-footer { margin-top: var(--footer-gap); }
+
+  /* Header and footer frame. */
+  .shell-frame {
+    margin-inline: auto;
+    width: 100%;
+    max-width: var(--shell-max);
+    padding-inline: var(--shell-pad);
+  }
+
+  /* Small uppercase mono metadata (11 px, 0.08em). Devanagari and Han keep the body face, uncapped. */
+  .shell-meta {
+    font-family: var(--font-ui);
+    font-size: 0.6875rem;
+    line-height: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .shell-meta:is(:lang(hi), :lang(zh-Hans)) {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  /* The accent word inside a big headline: Instrument Serif italic, a touch larger to sit on Geist's x-height. */
+  .accent-serif {
+    font-family: var(--font-accent);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    font-size: 1.06em;
+  }
 
   /* Reading frame: landing, about, catalogues, the small pages. */
   .frame {

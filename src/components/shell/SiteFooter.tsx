@@ -8,30 +8,39 @@ export async function SiteFooter({ lang }: { lang: Locale }) {
   const [t, common] = await Promise.all([getT(lang, "shell"), getT(lang, "common")]);
   const labels = Object.fromEntries(NAV.map((entry) => [entry.id, t(`nav.${entry.id}`)])) as Record<NavId, string>;
   return (
-    <footer className="site-footer border-t-2 border-line">
-      <div className="frame flex flex-col gap-x-8 gap-y-3 py-5 lg:flex-row lg:items-center">
-        <div className="flex min-w-0 flex-1 items-start gap-3">
-          <Logo size={28} className="mt-0.5 shrink-0" />
-          <p className="min-w-0 text-sm text-muted">
-            <span lang="en" className="me-2 font-head text-base font-bold text-ink">
-              {common("site.name")}
-            </span>
-            {t("footer.privacy")}
-          </p>
+    <footer className="site-footer border-t border-rule">
+      <div className="shell-frame">
+        <div className="grid grid-cols-1 gap-x-6 gap-y-14 pt-[clamp(56px,7vw,112px)] lg:grid-cols-12">
+          <div className="min-w-0 lg:col-span-5">
+            <p className="max-w-[24ch] text-[clamp(22px,2.1vw,30px)] font-medium leading-[1.18] tracking-[-0.022em] text-balance text-ink">
+              {common("site.description")}
+            </p>
+            <p className="mt-6 max-w-[50ch] text-sm leading-relaxed text-muted">{t("footer.privacy")}</p>
+          </div>
+          <nav aria-labelledby={`footer-pages-${lang}`} className="min-w-0 lg:col-span-6 lg:col-start-7">
+            <h2 id={`footer-pages-${lang}`} className="sr-only">
+              {t("footer.pages")}
+            </h2>
+            <FooterNav
+              lang={lang}
+              labels={labels}
+              headings={{ labs: t("nav.label"), site: common("site.name"), language: t("language.label") }}
+            />
+          </nav>
         </div>
-        <nav aria-labelledby={`footer-pages-${lang}`} className="flex flex-col gap-x-4 sm:flex-row sm:items-center lg:shrink-0">
-          <h2 id={`footer-pages-${lang}`} className="sr-only">
-            {t("footer.pages")}
-          </h2>
-          <FooterNav lang={lang} labels={labels} />
-          <a
-            href="https://april-zhu.com/colorfigures"
-            rel="noopener noreferrer"
-            className="inline-flex min-h-11 max-w-[22rem] items-center text-xs leading-snug text-muted"
-          >
-            {t("footer.figures")}
-          </a>
-        </nav>
+        <div className="mt-[clamp(64px,9vw,144px)] grid grid-cols-1 items-end gap-x-6 gap-y-8 pb-[clamp(24px,3vw,40px)] lg:grid-cols-12">
+          <Logo height={188} className="h-auto w-[clamp(168px,30vw,400px)] text-ink lg:col-span-5" />
+          <div className="flex min-w-0 flex-col gap-2 border-t border-rule pt-4 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6 lg:col-span-6 lg:col-start-7">
+            <p className="shell-meta shrink-0">{common("site.tagline")}</p>
+            <a
+              href="https://april-zhu.com/colorfigures"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 items-center text-xs leading-snug text-muted underline-offset-4 hover:text-ink sm:text-end"
+            >
+              {t("footer.figures")}
+            </a>
+          </div>
+        </div>
       </div>
     </footer>
   );

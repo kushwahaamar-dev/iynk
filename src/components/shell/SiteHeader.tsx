@@ -15,7 +15,7 @@ type SiteHeaderProps = {
 };
 
 export async function SiteHeader({ lang, actions }: SiteHeaderProps) {
-  const [t, common] = await Promise.all([getT(lang, "shell"), getT(lang, "common")]);
+  const t = await getT(lang, "shell");
   const nav = Object.fromEntries(NAV.map((entry) => [entry.id, t(`nav.${entry.id}`)])) as Record<NavId, string>;
   const settings: SettingsLabels = {
     settings: t("settings.label"),
@@ -24,17 +24,15 @@ export async function SiteHeader({ lang, actions }: SiteHeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-30 border-b-2 border-line bg-paper/95 backdrop-blur-sm supports-[backdrop-filter]:bg-paper/85">
-      <div className="frame flex h-14 items-center gap-3">
-        <Link href={`/${lang}`} className="-ms-1 flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-1 no-underline">
-          <Logo size={34} />
-          {/* The wordmark is a name: it keeps its face in every language. */}
-          <span aria-hidden="true" lang="en" className="font-head text-xl font-bold leading-none tracking-tight">
-            {common("site.name")}
-          </span>
+    <header className="sticky top-0 z-30 border-b border-rule bg-paper [background-image:var(--grain)]">
+      <div className="shell-frame flex h-[57px] items-center gap-5">
+        <Link href={`/${lang}`} className="-ms-2 flex min-h-11 shrink-0 items-center rounded-md px-2 text-ink no-underline">
+          {/* The wordmark is a drawing: it keeps its face in every language. */}
+          <Logo height={23} />
           <span className="sr-only">{t("brand.home")}</span>
         </Link>
-        <nav aria-label={t("nav.label")} className="ms-3 hidden min-w-0 lg:block">
+        <span aria-hidden="true" className="hidden h-4 w-px bg-rule lg:block" />
+        <nav aria-label={t("nav.label")} className="hidden min-w-0 lg:block">
           <NavLinks lang={lang} labels={nav} layout="bar" />
         </nav>
         <div className="ms-auto flex items-center gap-1.5">

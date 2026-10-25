@@ -14,12 +14,44 @@ type NavLinksProps = {
   onNavigate?: () => void;
 };
 
+/** The current page is marked as the wordmark marks its i: a lit LED in the accent. */
+function Led({ on, className }: { on: boolean; className?: string }) {
+  return <span aria-hidden="true" className={cx("size-[5px] shrink-0 rounded-full", on ? "bg-[var(--accent)]" : "bg-transparent", className)} />;
+}
+
 export function NavLinks({ lang, labels, layout, onNavigate }: NavLinksProps) {
   const pathname = usePathname() ?? "";
   const { features } = useFeatures();
   const entries = NAV.filter((entry) => showNavEntry(entry, features, layout));
+
+  if (layout === "sheet") {
+    return (
+      <ul>
+        {entries.map((entry, index) => {
+          const active = isActive(entry, lang, pathname);
+          return (
+            <li key={entry.id} className="border-b border-rule">
+              <Link
+                href={`/${lang}${entry.href}`}
+                aria-current={active ? "page" : undefined}
+                onClick={onNavigate}
+                className="flex min-h-14 items-center gap-4 py-2 text-[22px] font-medium leading-tight tracking-[-0.02em] text-ink no-underline"
+              >
+                <span aria-hidden="true" className="w-6 shrink-0 font-ui text-[11px] font-medium tracking-[0.08em] text-muted tabular">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className="min-w-0 flex-1">{labels[entry.id]}</span>
+                <Led on={active} />
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    );
+  }
+
   return (
-    <ul className={layout === "bar" ? "flex items-center gap-0.5" : "flex flex-col gap-1"}>
+    <ul className="flex items-center">
       {entries.map((entry) => {
         const active = isActive(entry, lang, pathname);
         return (
@@ -29,12 +61,12 @@ export function NavLinks({ lang, labels, layout, onNavigate }: NavLinksProps) {
               aria-current={active ? "page" : undefined}
               onClick={onNavigate}
               className={cx(
-                "flex min-h-11 items-center whitespace-nowrap rounded-full font-body font-semibold no-underline transition-colors",
-                layout === "bar" ? "px-3 text-sm" : "px-4 text-base",
-                active ? "bg-ink text-paper" : "text-ink hover:bg-sunken",
+                "relative flex min-h-11 items-center whitespace-nowrap rounded-md px-2.5 text-sm font-medium tracking-[-0.005em] no-underline transition-colors xl:px-3.5",
+                active ? "text-ink" : "text-muted hover:text-ink",
               )}
             >
               {labels[entry.id]}
+              <Led on={active} className="absolute bottom-0.5 start-1/2 -translate-x-1/2" />
             </Link>
           </li>
         );
