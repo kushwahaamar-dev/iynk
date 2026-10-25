@@ -20,6 +20,17 @@ void loop() {
 }
 `;
 
+/** Sets D13 once and never touches it again, like a lesson whose outputs never change. */
+const STEADY = `void setup() {
+  pinMode(13, OUTPUT);
+  digitalWrite(13, HIGH);
+}
+
+void loop() {
+  delay(1000);
+}
+`;
+
 const NO_WORLD: WorldModel = { inputs: [], script: [] };
 
 /** A hand-driven clock: frames and timeouts run only when the test advances time. */
@@ -117,6 +128,35 @@ describe('LessonRunner', () => {
     expect(out.slice(0, 3)).toEqual(['Blink ready', 'on', 'off']);
     // The figure never gets more than 30 pin updates a second.
     expect(figure.sent.filter((s) => 'pins' in s).length).toBeLessThanOrEqual(Math.ceil((sched.t / 1000) * 30));
+  });
+
+  it('sends pins that never change once the figure is there, and again after it reloads', () => {
+    const store = createBoardLabStore(initialState({ board: 'uno-r3', lesson: 'blink', language: 'arduino-cpp', template: STEADY }));
+    const sched = new FakeScheduler();
+    const figure = fakeFigure();
+    let present = false;
+    const runner = new LessonRunner({
+      store,
+      board: { id: 'uno-r3', name: 'Arduino Uno', logicV: 5 },
+      lesson: { world: NO_WORLD, runMs: 4500, checks: [] },
+      resetControls: ['RESET'],
+      figure: () => (present ? figure.handle : null),
+      reduceMotion: () => true,
+      onPassed: () => {},
+      scheduler: sched,
+    });
+    runner.attach();
+    store.dispatch({ type: 'run/start' });
+    sched.advance(300);
+    expect(store.getState().run.status).toBe('running');
+    // Run was pressed while the figure was still loading: nothing reached it.
+    present = true;
+    sched.advance(100);
+    expect(figure.sent.filter((s) => 'pins' in s)).toEqual([{ pins: { D13: 1 } }]);
+    // The iframe reloads: the new page starts from scratch and needs the pins again.
+    runner.figureReady();
+    sched.advance(100);
+    expect(figure.sent.filter((s) => 'pins' in s)).toEqual([{ pins: { D13: 1 } }, { pins: { D13: 1 } }]);
   });
 
   it('stops: the LED goes dark and the monitor says so', () => {

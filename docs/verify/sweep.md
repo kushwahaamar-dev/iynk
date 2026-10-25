@@ -26,12 +26,12 @@ where, what a user sees, and the cause where known. Struck through when fixed, w
    built-in mode that drives their LED on the figure page alone (the lesson page drives the pins from the
    interpreter, so the lessons themselves work). Check on the lesson pages at gate 3.
 
-13. `boards/uno-r3` distance lesson: the obstacle is drawn past the mat's edge at 200 cm, and the slider goes to 450 cm
-    (the obstacle's scale in `figures/engine/bench-props.js`). (P2-req-host)
-14. `boards/uno-r3` light and distance lessons: the figure's HUD reads "PROGRAM Blink" while those lessons' sketches
-    run. (P2-req-host)
-15. `boards/nucleo-f401re` test "a cold D13 joint drops blinks while the sketch runs on" fails on the shared tree
-    since about 00:20, with P2-engine-b's engine changes uncommitted; recheck once they land. (P2-req-interp)
+13. ~~`boards/uno-r3` distance lesson: the obstacle is drawn past the mat's edge at 200 cm, and the slider goes to 450 cm
+    (the obstacle's scale in `figures/engine/bench-props.js`). (P2-req-host)~~ Fixed in `ac8675d` (on the mat at 450 cm).
+14. ~~`boards/uno-r3` light and distance lessons: the figure's HUD reads "PROGRAM Blink" while those lessons' sketches
+    run. (P2-req-host)~~ Fixed: the figure side in `74266e7`, the runner side (pins kept only once delivered, resent on `ready`) by the driver.
+15. ~~`boards/nucleo-f401re` test "a cold D13 joint drops blinks while the sketch runs on" fails on the shared tree
+    since about 00:20, with P2-engine-b's engine changes uncommitted; recheck once they land. (P2-req-interp)~~ Fixed in `eea3352` (the test counts the breadboard LED).
 16. micro:bit `microphone` LOUD/QUIET events never fire (`sound_level()` reads the input; the thresholds are not in
     `docs/facts`). (P2-req-interp)
 

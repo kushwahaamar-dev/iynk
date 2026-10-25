@@ -174,6 +174,7 @@ function Workspace({ lang, model }: { lang: Locale; model: LessonModel }) {
       figureSound(e);
       if (e.type === "ready") {
         setYaw(homeYaw(figureRef.current));
+        runnerRef.current?.figureReady();
         const state = (e as { state?: unknown }).state;
         if (state && typeof state === "object") store.dispatch({ type: "figure/state", state: state as Record<string, unknown> });
       } else if (e.type === "state") {

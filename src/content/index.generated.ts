@@ -12,6 +12,11 @@ export const boardLoaders: Partial<Record<BoardId, Loader<BoardContent>>> = {
   'esp32-s3-devkitc-1': () => import('./boards/esp32-s3-devkitc-1'),
   'nodemcu': () => import('./boards/nodemcu'),
   'pico': () => import('./boards/pico'),
+  'nucleo-f401re': () => import('./boards/nucleo-f401re'),
+  'microbit-v2': () => import('./boards/microbit-v2'),
+  'pi4-pi5': () => import('./boards/pi4-pi5'),
+  'basys3': () => import('./boards/basys3'),
+  'de10-lite': () => import('./boards/de10-lite'),
 };
 
 export const roboticsLoaders: Partial<Record<RoboticsId, Loader<RoboticsContent>>> = {
@@ -21,6 +26,12 @@ export const roboticsLoaders: Partial<Record<RoboticsId, Loader<RoboticsContent>
   'esp32-s3-build': () => import('./robotics/esp32-s3-build'),
   'tb6612fng': () => import('./robotics/tb6612fng'),
   'l298n': () => import('./robotics/l298n'),
+  'a4988': () => import('./robotics/a4988'),
+  'pca9685': () => import('./robotics/pca9685'),
+  'mpu6050': () => import('./robotics/mpu6050'),
+  'hc-sr04': () => import('./robotics/hc-sr04'),
+  'qtr-8rc': () => import('./robotics/qtr-8rc'),
+  'lm2596': () => import('./robotics/lm2596'),
   'pi5-ros2': () => import('./robotics/pi5-ros2'),
 };
 
@@ -32,14 +43,19 @@ export const droneLoaders: Partial<Record<DroneId, Loader<DroneContent>>> = {
   'racer': () => import('./drones/racer'),
   'gpscam': () => import('./drones/gpscam'),
   'delivery': () => import('./drones/delivery'),
+  'agrihex': () => import('./drones/agrihex'),
   'wing': () => import('./drones/wing'),
+  'vtol': () => import('./drones/vtol'),
+  'swarm': () => import('./drones/swarm'),
+  'tricopter': () => import('./drones/tricopter'),
+  'octo': () => import('./drones/octo'),
 };
 
 /** Item ids that have a data module today, in figure order. */
 export const AVAILABLE: { board: readonly BoardId[]; robotics: readonly RoboticsId[]; drone: readonly DroneId[] } = {
-  board: ['uno-r3', 'nano', 'uno-r4', 'esp32-devkitc', 'esp32-s3-devkitc-1', 'nodemcu', 'pico'],
-  robotics: ['uno-r3-build', 'led-resistor', 'transistor-switch', 'esp32-s3-build', 'tb6612fng', 'l298n', 'pi5-ros2'],
-  drone: ['quad5', 'whoop', 'cinewhoop', 'longrange', 'racer', 'gpscam', 'delivery', 'wing'],
+  board: ['uno-r3', 'nano', 'uno-r4', 'esp32-devkitc', 'esp32-s3-devkitc-1', 'nodemcu', 'pico', 'nucleo-f401re', 'microbit-v2', 'pi4-pi5', 'basys3', 'de10-lite'],
+  robotics: ['uno-r3-build', 'led-resistor', 'transistor-switch', 'esp32-s3-build', 'tb6612fng', 'l298n', 'a4988', 'pca9685', 'mpu6050', 'hc-sr04', 'qtr-8rc', 'lm2596', 'pi5-ros2'],
+  drone: ['quad5', 'whoop', 'cinewhoop', 'longrange', 'racer', 'gpscam', 'delivery', 'agrihex', 'wing', 'vtol', 'swarm', 'tricopter', 'octo'],
 };
 
 export async function loadBoard(id: BoardId): Promise<BoardContent | null> {

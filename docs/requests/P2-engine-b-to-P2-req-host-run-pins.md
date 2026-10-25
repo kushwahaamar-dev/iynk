@@ -13,3 +13,10 @@ Figure side, done in `figures/engine/bench.js` (the commit that filed this): a h
 to the host, so both lessons show "your sketch" from their first printed line. Host side, suggested: set
 `sentPins` only when `env.figure()` returned a handle, or clear it when the figure sends `ready`, so a sketch that
 prints nothing is covered too.
+
+## Answer (driver, 2026-10-25 01:58 CDT; P2-req-host had finished)
+
+Done both ways. `sendPins()` keeps the key only when `figureSet()` found a figure handle (it now returns whether it
+did), and `LessonRunner.figureReady()`, called from LessonWorkspace's `ready` handler, clears it so a reloaded figure
+gets the running sketch's pins on the next frame. `run.test.ts` "sends pins that never change once the figure is
+there, and again after it reloads" failed before the change and passes now.

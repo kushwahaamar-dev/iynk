@@ -276,12 +276,19 @@ export class LessonRunner {
     for (const net of this.touched) if (!(net in levels)) levels[net] = 0;
     const key = JSON.stringify(levels);
     if (key === this.sentPins) return;
-    this.sentPins = key;
-    this.figureSet({ pins: levels });
+    // Remembered only once a figure took it: pins that never change would otherwise never reach a late figure.
+    if (this.figureSet({ pins: levels })) this.sentPins = key;
   }
 
-  private figureSet(state: Record<string, unknown>): void {
-    this.env.figure()?.send('set', { state });
+  private figureSet(state: Record<string, unknown>): boolean {
+    const figure = this.env.figure();
+    figure?.send('set', { state });
+    return figure !== null;
+  }
+
+  /** The figure (re)loaded and starts from its own state: send the running sketch's pins again on the next frame. */
+  figureReady(): void {
+    this.sentPins = '';
   }
 
   private onFigure(state: Record<string, unknown>): void {
