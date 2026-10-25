@@ -2702,7 +2702,7 @@
   "POWER1": "POWER1",
   "POWER1 · PM": "POWER1 · PM",
   "POWER1 5.2 V": "POWER1 5.2 V",
-  "POWERED": "VERSORGT",
+  "POWERED": "UNTER STROM",
   "Powered, bridges idle": "Unter Strom, die Brücken ruhen",
   "Powered, but {name} is missing: no current flows": "Strom an, aber {name} fehlt: Es fließt kein Strom",
   "Powered, but nothing loads at power-up: {name} is missing": "Versorgt, aber beim Einschalten lädt nichts: {name} fehlt",

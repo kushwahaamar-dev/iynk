@@ -2702,7 +2702,7 @@
   "POWER1": "POWER1",
   "POWER1 · PM": "POWER1 · PM",
   "POWER1 5.2 V": "POWER1 5.2 V",
-  "POWERED": "पावर मिली",
+  "POWERED": "पावर मिल रही है",
   "Powered, bridges idle": "पावर मिली, ब्रिज रुके हुए",
   "Powered, but {name} is missing: no current flows": "पावर मिली, पर {name} नहीं लगा है: कोई करंट नहीं बहता",
   "Powered, but nothing loads at power-up: {name} is missing": "पावर मिली, पर पावर-अप पर कुछ लोड नहीं होता: {name} नहीं लगा है",
