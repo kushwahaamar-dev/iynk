@@ -131,10 +131,11 @@ const CIRCUITS = {
       { from: 'D9', to: 'a10', color: 'orange' }, { from: 'GND', to: 'a15', color: 'black' },
     ],
   },
+  // the DAC's voltage on A0 goes out to the breadboard, with a ground jumper beside it, for a meter or a scope to probe
   'dac-wave': {
-    title: 'DAC on A0 read back on A1', breadboard: 'half',
+    title: 'DAC out on A0, with ground beside it for a meter', breadboard: 'half',
     parts: [],
-    wires: [{ from: 'A0', to: 'a12', color: 'purple' }, { from: 'A1', to: 'c12', color: 'blue' }],
+    wires: [{ from: 'A0', to: 'a12', color: 'purple' }, { from: 'GND', to: 'a15', color: 'black' }],
   },
   'i2c-scan': {
     title: 'MPU-6050 on the I2C header (SDA, SCL), 5 V', breadboard: 'half',
