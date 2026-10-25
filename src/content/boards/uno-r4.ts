@@ -3,7 +3,17 @@
 // geometry, build groups, power tree and lesson circuits; ids here (part ids, nets, circuit keys, fault ids) match it.
 // Variants share the outline and headers; where a designator means different parts on the two boards (J1, J2, J3,
 // U2, D2, D3) the part text names both.
-import type { BoardContent } from '@/content/schema';
+import type { BoardContent, Quiz } from '@/content/schema';
+
+/** A lesson's three-question quiz; `answers` are the right option (0-2) of q1, q2, q3. */
+const quiz = (lesson: string, answers: [number, number, number]): Quiz => ({
+  id: `${lesson}-quiz`,
+  afterStep: null,
+  questions: answers.map((answer, i) => {
+    const key = `lessons.${lesson}.quiz.q${i + 1}`;
+    return { id: `q${i + 1}`, q: `${key}.q`, options: [`${key}.options.1`, `${key}.options.2`, `${key}.options.3`], answer, why: `${key}.why` };
+  }),
+});
 
 const board = {
   lab: 'board',
@@ -286,6 +296,8 @@ const board = {
       id: 'brownout',
       kind: 'brownout',
       trigger: { by: 'load', rail: '5V', ma: 1500, part: 'dc-motor' },
+      // the motor's start current sags VBUS at the board to about 2 V (no polyfuse, so the cable and the host port
+      // limit it); the figure's own `brownout` dips stay above the RA4M1's 1.8 V and never show a reset
       figure: { type: 'set', state: { power: 'usb', fault: 'wrong-voltage:usb:2' } },
       effect: { power: 'resetting', halts: true, extraMa: 1500 },
       title: 'failures.brownout.title',
@@ -341,7 +353,7 @@ const board = {
       id: 'missing-inductor',
       kind: 'missing-part',
       trigger: { by: 'remove-part', part: 'L3' },
-      figure: { type: 'set', state: { fault: 'missing:L3' } },
+      figure: { type: 'set', state: { power: 'jack', fault: 'missing:L3' } },
       effect: { power: 'off', halts: true },
       title: 'failures.missing-inductor.title',
       symptom: 'failures.missing-inductor.symptom',
@@ -352,7 +364,7 @@ const board = {
       id: 'boot-strap',
       kind: 'boot-strap',
       trigger: { by: 'short', nets: ['MD', 'GND'] },
-      figure: { type: 'set', state: { fault: 'short:MD:GND' } },
+      figure: { type: 'set', state: { power: 'usb', fault: 'short:MD:GND' } },
       effect: { power: 'on', halts: true },
       title: 'failures.boot-strap.title',
       symptom: 'failures.boot-strap.symptom',
@@ -363,7 +375,7 @@ const board = {
       id: 'esp-download-strap',
       kind: 'boot-strap',
       trigger: { by: 'short', nets: ['ESP_DOWNLOAD', 'GND'] },
-      figure: { type: 'set', state: { fault: 'short:ESP_DOWNLOAD:GND' } },
+      figure: { type: 'set', state: { power: 'usb', fault: 'short:ESP_DOWNLOAD:GND' } },
       effect: { power: 'on', halts: false },
       title: 'failures.esp-download-strap.title',
       symptom: 'failures.esp-download-strap.symptom',
@@ -383,15 +395,19 @@ const board = {
     },
   ],
 
+  // Both variants: every SMD part (U1, the buck, LEDs, USB-C, RESET) goes on in one reflow, then the low headers
+  // (ICSP, SWD on the Minima; ICSP, ESP and OFF/VRTC on the WiFi), then the tall ones (barrel jack and the four
+  // shield headers). The done conditions avoid part counts, which differ between the variants.
   assembly: [
+    { id: 'unplug', kind: 'build', action: { type: 'set', state: { power: null } }, done: { power: null }, major: false, title: 'assembly.unplug.title', body: 'assembly.unplug.body' },
     { id: 'strip', kind: 'build', action: { type: 'press', id: 'strip' }, done: { build: 'bare' }, major: false, title: 'assembly.strip.title', body: 'assembly.strip.body', refusal: 'assembly.strip.refusal' },
     { id: 'smd', kind: 'build', action: { type: 'press', id: 'pnp' }, done: { build: 'reflowed' }, major: false, title: 'assembly.smd.title', body: 'assembly.smd.body', refusal: 'assembly.smd.refusal' },
-    { id: 'low', kind: 'build', action: null, done: { build: 'tht' }, major: false, title: 'assembly.low.title', body: 'assembly.low.body', refusal: 'assembly.low.refusal' },
-    { id: 'tall', kind: 'build', action: null, done: { build: 'tht' }, major: false, title: 'assembly.tall.title', body: 'assembly.tall.body', refusal: 'assembly.tall.refusal' },
+    { id: 'low', kind: 'build', action: { type: 'press', id: 'place', choice: 'group-low' }, done: { build: 'tht' }, major: false, title: 'assembly.low.title', body: 'assembly.low.body', refusal: 'assembly.low.refusal' },
+    { id: 'tall', kind: 'build', action: { type: 'press', id: 'place', choice: 'group-tall' }, done: { 'missing.length': 0 }, major: false, title: 'assembly.tall.title', body: 'assembly.tall.body', refusal: 'assembly.tall.refusal' },
     { id: 'solder', kind: 'build', action: { type: 'press', id: 'solder' }, done: { build: 'assembled' }, major: false, title: 'assembly.solder.title', body: 'assembly.solder.body', refusal: 'assembly.solder.refusal' },
-    { id: 'power-up', kind: 'test', action: { type: 'set', state: { power: 'usb' } }, done: { power: 'usb', status: 'running' }, major: false, title: 'assembly.power-up.title', body: 'assembly.power-up.body', refusal: 'assembly.power-up.refusal' },
+    { id: 'power-up', kind: 'test', action: { type: 'set', state: { power: 'usb' } }, done: { power: 'usb', status: 'running', 'leds.DL3': 1 }, major: false, title: 'assembly.power-up.title', body: 'assembly.power-up.body', refusal: 'assembly.power-up.refusal' },
     { id: 'rails', kind: 'test', action: null, done: { 'rails.5V': 4.7, 'rails.3V3': 3.3 }, major: false, title: 'assembly.rails.title', body: 'assembly.rails.body' },
-    { id: 'banner', kind: 'test', action: { type: 'set', state: { mode: 'hello' } }, done: { mode: 'hello', status: 'running' }, major: false, title: 'assembly.banner.title', body: 'assembly.banner.body' },
+    { id: 'upload', kind: 'test', action: { type: 'press', id: 'upload', choice: 'hello' }, done: { mode: 'hello', status: 'running' }, major: false, title: 'assembly.upload.title', body: 'assembly.upload.body', refusal: 'assembly.upload.refusal' },
     { id: 'reset', kind: 'test', action: { type: 'press', id: 'ctl-pb1' }, done: { 'controls.PB1': 0, status: 'running' }, major: false, title: 'assembly.reset.title', body: 'assembly.reset.body' },
   ],
 
@@ -421,7 +437,7 @@ void loop() {
         libraries: [],
       },
       params: [
-        { id: 'wait', kind: 'number', label: 'lessons.blink.params.wait.label', default: 500, min: 100, max: 2000, step: 100, unit: 'ms' },
+        { id: 'wait', kind: 'number', label: 'lessons.blink.params.wait.label', default: 500, min: 100, max: 1000, step: 100, unit: 'ms' },
         {
           id: 'ohms',
           kind: 'choice',
@@ -438,9 +454,10 @@ void loop() {
       circuit: 'blink',
       world: { inputs: [], script: [] },
       serial: { baud: 9600, sample: [] },
-      runMs: 3000,
+      // a full blink is 2 x WAIT_MS: 200-2000 ms over the chip's range, so the check follows whatever the code says
+      runMs: 5000,
       checks: [
-        { kind: 'pin-toggles', pin: 'D13', periodMs: [900, 1100], minCycles: 2, label: 'lessons.blink.checks.1' },
+        { kind: 'pin-toggles', pin: 'D13', periodMs: [180, 2200], minCycles: 2, label: 'lessons.blink.checks.1' },
         { kind: 'code', must: ['pinMode', 'OUTPUT', 'digitalWrite'], mustNot: [], label: 'lessons.blink.checks.2' },
       ],
       variants: [],
@@ -466,6 +483,7 @@ void loop() {
       lede: 'lessons.blink.lede',
       steps: ['lessons.blink.steps.1', 'lessons.blink.steps.2', 'lessons.blink.steps.3'],
       hints: ['lessons.blink.hints.1', 'lessons.blink.hints.2'],
+      quiz: quiz('blink', [1, 0, 2]),
     },
     {
       id: 'button',
@@ -542,8 +560,7 @@ void loop() {
       checks: [
         { kind: 'responds', after: { t: 1000, input: 'button', value: 1 }, pin: 'D13', withinMs: 50, mode: 'out', v: [1, 1], label: 'lessons.button.checks.1' },
         { kind: 'serial', match: '^presses: 2$', regex: true, minCount: 1, byMs: 3000, label: 'lessons.button.checks.2' },
-        { kind: 'serial', match: '^presses: 3$', regex: true, minCount: 0, byMs: 3500, label: 'lessons.button.checks.3' },
-        { kind: 'code', must: ['attachInterrupt', 'INPUT_PULLUP'], mustNot: [], label: 'lessons.button.checks.4' },
+        { kind: 'code', must: ['attachInterrupt', 'INPUT_PULLUP'], mustNot: [], label: 'lessons.button.checks.3' },
       ],
       variants: [],
       pins: [
@@ -568,6 +585,7 @@ void loop() {
       lede: 'lessons.button.lede',
       steps: ['lessons.button.steps.1', 'lessons.button.steps.2', 'lessons.button.steps.3'],
       hints: ['lessons.button.hints.1', 'lessons.button.hints.2'],
+      quiz: quiz('button', [2, 0, 1]),
     },
     {
       id: 'pot-pwm',
@@ -670,6 +688,7 @@ void loop() {
       lede: 'lessons.pot-pwm.lede',
       steps: ['lessons.pot-pwm.steps.1', 'lessons.pot-pwm.steps.2', 'lessons.pot-pwm.steps.3'],
       hints: ['lessons.pot-pwm.hints.1', 'lessons.pot-pwm.hints.2'],
+      quiz: quiz('pot-pwm', [0, 2, 1]),
     },
     {
       id: 'dac-wave',
@@ -683,7 +702,6 @@ const int STEPS = {{p:steps}};
 void setup() {
   Serial.begin(115200);
   analogWriteResolution(12);       // {{t:lessons.dac-wave.code.res}}
-  analogReadResolution(14);
 }
 
 void loop() {
@@ -691,14 +709,12 @@ void loop() {
     int level = (long)i * 4095 / (STEPS - 1);
     analogWrite(DAC, level);       // {{t:lessons.dac-wave.code.dac}}
     delay(10);
-    int back = analogRead(A1);     // {{t:lessons.dac-wave.code.back}}
     if (i % (STEPS / 4) == 0) {
       Serial.print("DAC ");
       Serial.print(level);
       Serial.print(" = ");
       Serial.print(level * 5.0 / 4095, 2);
-      Serial.print(" V, A1 reads ");
-      Serial.println(back);
+      Serial.println(" V");
     }
   }
 }
@@ -720,17 +736,17 @@ void loop() {
       ],
       circuit: 'dac-wave',
       world: { inputs: [], script: [] },
-      serial: { baud: 115200, sample: ['DAC 0 = 0.00 V, A1 reads 0', 'DAC 1040 = 1.27 V, A1 reads 4161'] },
-      runMs: 1500,
+      serial: { baud: 115200, sample: ['DAC 0 = 0.00 V', 'DAC 1040 = 1.27 V'] },
+      // 256 steps take 2.6 s a sweep and print every 64th step, so four lines need about 2 s
+      runMs: 3000,
       checks: [
-        { kind: 'serial', match: '^DAC \\d+ = \\d\\.\\d\\d V, A1 reads \\d+$', regex: true, minCount: 4, byMs: 1500, label: 'lessons.dac-wave.checks.1' },
+        { kind: 'serial', match: '^DAC \\d+ = \\d\\.\\d\\d V$', regex: true, minCount: 4, byMs: 3000, label: 'lessons.dac-wave.checks.1' },
         { kind: 'serial', match: '^DAC 0 = 0\\.00 V', regex: true, minCount: 1, byMs: 700, label: 'lessons.dac-wave.checks.2' },
         { kind: 'code', must: ['analogWriteResolution(12)', 'DAC'], mustNot: [], label: 'lessons.dac-wave.checks.3' },
       ],
       variants: [],
       pins: [
         { pin: 'A0', to: 'lessons.dac-wave.pins.A0.to', role: 'lessons.dac-wave.pins.A0.role', color: 'purple' },
-        { pin: 'A1', to: 'lessons.dac-wave.pins.A1.to', role: 'lessons.dac-wave.pins.A1.role', color: 'blue' },
       ],
       callouts: [{ part: 'U1', text: 'lessons.dac-wave.callouts.U1' }],
       specs: [
@@ -746,6 +762,7 @@ void loop() {
       lede: 'lessons.dac-wave.lede',
       steps: ['lessons.dac-wave.steps.1', 'lessons.dac-wave.steps.2', 'lessons.dac-wave.steps.3'],
       hints: ['lessons.dac-wave.hints.1', 'lessons.dac-wave.hints.2'],
+      quiz: quiz('dac-wave', [1, 2, 0]),
     },
     {
       id: 'i2c-scan',
@@ -850,6 +867,7 @@ void loop() {
       lede: 'lessons.i2c-scan.lede',
       steps: ['lessons.i2c-scan.steps.1', 'lessons.i2c-scan.steps.2', 'lessons.i2c-scan.steps.3'],
       hints: ['lessons.i2c-scan.hints.1', 'lessons.i2c-scan.hints.2'],
+      quiz: quiz('i2c-scan', [2, 1, 0]),
     },
     {
       id: 'wifi',
@@ -920,7 +938,7 @@ void loop() {
         ],
         script: [],
       },
-      serial: { baud: 115200, sample: ['Connecting to SimLab', '..', 'Connected, IP 192.168.4.57', 'Signal -52 dBm'] },
+      serial: { baud: 115200, sample: ['Connecting to SimLab', '...', 'Connected, IP 192.168.4.166', 'Signal -55 dBm'] },
       runMs: 4000,
       checks: [
         { kind: 'serial', match: '^Connected, IP 192\\.168\\.4\\.\\d+$', regex: true, minCount: 1, byMs: 4000, label: 'lessons.wifi.checks.1' },
@@ -946,6 +964,7 @@ void loop() {
       lede: 'lessons.wifi.lede',
       steps: ['lessons.wifi.steps.1', 'lessons.wifi.steps.2', 'lessons.wifi.steps.3'],
       hints: ['lessons.wifi.hints.1', 'lessons.wifi.hints.2'],
+      quiz: quiz('wifi', [0, 2, 1]),
     },
     {
       id: 'matrix',
@@ -1009,6 +1028,7 @@ void loop() {
       lede: 'lessons.matrix.lede',
       steps: ['lessons.matrix.steps.1', 'lessons.matrix.steps.2', 'lessons.matrix.steps.3'],
       hints: ['lessons.matrix.hints.1', 'lessons.matrix.hints.2'],
+      quiz: quiz('matrix', [1, 0, 2]),
     },
   ],
 
