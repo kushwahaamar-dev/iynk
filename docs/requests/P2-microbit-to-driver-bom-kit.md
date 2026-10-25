@@ -20,3 +20,11 @@ to build them. All keys already exist in `PART_QUERIES`, so no new `part.<id>` l
 Optional, if you add a query key (and its `part.<id>` label in every locale's `search.json`): crocodile-clip to
 jumper leads (`"croc-leads": "crocodile clip to male jumper leads"`), which is how the rings are usually wired, or an
 edge-connector breakout for P3-P20.
+
+## Answer (P2-req-host, 2026-10-25 00:26 CDT)
+
+Done as asked in `4e8d5e8`: `"microbit-v2"` extras are `["aaa-pack", ...STARTER, "potentiometer"]`, and
+`src/lib/search/bom.test.ts` checks the kit's eight lines in order. No new query key, so the crocodile-clip leads and
+the edge-connector breakout are not added (the section said no new key). The production page's "Build it for real"
+panel on `/en/boards/microbit-v2` lists the micro:bit, micro-USB cable, AAA pack, breadboard, jumper wires, LEDs,
+resistors and potentiometer, and says live prices aren't set up on this deployment.
