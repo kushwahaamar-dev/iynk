@@ -53,41 +53,146 @@
     "LEDS": "25 red LEDs in five rows and five columns. Rows switch on from the nRF52833's own pins; columns P3, P4, P6, P7 and P10 sink the current. MicroPython scans them fast enough that you see a steady picture with ten brightness levels."
   },
   "parts": {
-    "U2": { "name": "nRF52833 processor", "what": "Runs your program: an Arm Cortex-M4F at 64 MHz with 512 KB of flash, 128 KB of RAM and a 2.4 GHz radio for Bluetooth and micro:bit radio, all on one die." },
-    "X1": { "name": "32 MHz crystal", "what": "Keeps the nRF52833's clock and radio on frequency. Without it the processor never starts." },
-    "U5": { "name": "nRF52820 interface chip", "what": "Talks USB. It shows the MICROBIT drive, writes the file you drop on it into the nRF52833, passes serial at 115200 baud and drives the yellow USB LED." },
-    "U3": { "name": "NCP114 3.3 V regulator", "what": "Turns USB or battery power into the 3.3 V rail. It can give 300 mA and limits its own current when something shorts the rail." },
-    "D51": { "name": "BAT60J USB diode", "what": "Lets USB 5 V onto VCOMBINED and stops batteries from feeding back into the computer." },
-    "D59": { "name": "BAT60A battery diodes", "what": "D59 and D57 in series on the battery input: a pack wired backwards cannot push current into the board." },
-    "D1": { "name": "BAT54T diode", "what": "Stops the regulator's output from rising above its input when power comes in through the 3V ring." },
-    "L5": { "name": "USB common-mode choke", "what": "Filters noise on the USB data pair before it reaches the interface chip." },
-    "D62": { "name": "USB ESD protection", "what": "Clamps static zaps on the USB data lines." },
-    "J3": { "name": "Micro-USB socket", "what": "Power, the MICROBIT drive and serial, all over one cable." },
-    "J2": { "name": "Battery socket", "what": "Two-pin 2.0 mm socket for a 2 x AAA pack. It is keyed so the plug only goes in one way." },
-    "SW1": { "name": "Reset button", "what": "Short press restarts your program. Hold it until the red LED fades to switch the board off." },
-    "SW2": { "name": "Button A", "what": "Front button on P5 with a 10 kΩ pull-up; reads LOW when pressed." },
-    "SW3": { "name": "Button B", "what": "Front button on P11 with a 10 kΩ pull-up; reads LOW when pressed." },
-    "LOGO": { "name": "Touch logo", "what": "A gold pad on the nRF52833's P1.04 that senses your finger by capacitance." },
-    "LEDS": { "name": "5 x 5 LED matrix", "what": "25 red 0603 LEDs, D2 to D50, scanned row by row. Run in reverse, they also work as a rough light sensor." },
-    "D60": { "name": "Red power LED", "what": "Shows the board has power: bright on USB, dimmer on batteries." },
-    "D61": { "name": "Yellow USB LED", "what": "On while USB is connected to a computer; flickers while a program copies." },
-    "D70": { "name": "Microphone LED", "what": "Lights from the same pin that powers the microphone." },
-    "U6": { "name": "LSM303AGR motion sensor", "what": "Accelerometer and compass in one 2 x 2 mm package, on the internal I²C bus at 0x19 and 0x1E." },
-    "U4": { "name": "MEMS microphone", "what": "Hears through a small hole in the board. Powered only while your program uses it." },
-    "SP1": { "name": "Magnetic speaker", "what": "A coil, a magnet and a steel disc, loudest near 2.7 kHz. The program drives it from P0.00 through T2." },
-    "T2": { "name": "Speaker MOSFET", "what": "Switches the speaker current so the processor pin does not have to carry it." },
-    "D5": { "name": "Speaker flyback diode", "what": "Catches the voltage spike from the speaker coil each time T2 switches off." },
-    "ANT": { "name": "PCB antenna", "what": "A copper trace in the board's corner that sends and receives Bluetooth and micro:bit radio." },
-    "RF": { "name": "Antenna matching parts", "what": "L3, L7 and C11 match the radio's output to the antenna trace." },
-    "RLED": { "name": "Status LED resistors", "what": "R38 and R39, 220 Ω each, set the current for the red and yellow LEDs." },
-    "TVS": { "name": "Edge ESD diodes", "what": "D71 to D74 clamp static on the rings you touch and clip leads to." },
-    "TR": { "name": "Small transistors", "what": "Digital transistors that sense where power comes from and pass signals between the two chips." },
-    "RING0": { "name": "Ring 0", "what": "P0: analog in, touch, PWM. Sound plays here as well as on the speaker." },
-    "RING1": { "name": "Ring 1", "what": "P1: analog in, touch, PWM. The lessons drive their LED from here." },
-    "RING2": { "name": "Ring 2", "what": "P2: analog in, touch, PWM. The dimmer lesson reads its knob here." },
-    "RING3V": { "name": "3V ring", "what": "3.3 V out for your circuits, up to 190 mA. Power fed in here skips every protection on the board." },
-    "RINGGND": { "name": "GND ring", "what": "Ground for everything you connect." },
-    "EDGE": { "name": "Edge connector", "what": "The narrow gold strips on a 1.27 mm grid carry the other pins (P3 to P16, P19, P20, 3V and GND). Plug the board into an edge breakout to reach them." }
+    "U2": {
+      "name": "nRF52833 processor",
+      "what": "Runs your program: an Arm Cortex-M4F at 64 MHz with 512 KB of flash, 128 KB of RAM and a 2.4 GHz radio for Bluetooth and micro:bit radio, all on one die."
+    },
+    "X1": {
+      "name": "32 MHz crystal",
+      "what": "Keeps the nRF52833's clock and radio on frequency. Without it the processor never starts."
+    },
+    "U5": {
+      "name": "nRF52820 interface chip",
+      "what": "Talks USB. It shows the MICROBIT drive, writes the file you drop on it into the nRF52833, passes serial at 115200 baud and drives the yellow USB LED."
+    },
+    "U3": {
+      "name": "NCP114 3.3 V regulator",
+      "what": "Turns USB or battery power into the 3.3 V rail. It can give 300 mA and limits its own current when something shorts the rail."
+    },
+    "D51": {
+      "name": "BAT60J USB diode",
+      "what": "Lets USB 5 V onto VCOMBINED and stops batteries from feeding back into the computer."
+    },
+    "D59": {
+      "name": "BAT60A battery diodes",
+      "what": "D59 and D57 in series on the battery input: a pack wired backwards cannot push current into the board."
+    },
+    "D1": {
+      "name": "BAT54T diode",
+      "what": "Stops the regulator's output from rising above its input when power comes in through the 3V ring."
+    },
+    "L5": {
+      "name": "USB common-mode choke",
+      "what": "Filters noise on the USB data pair before it reaches the interface chip."
+    },
+    "D62": {
+      "name": "USB ESD protection",
+      "what": "Clamps static zaps on the USB data lines."
+    },
+    "J3": {
+      "name": "Micro-USB socket",
+      "what": "Power, the MICROBIT drive and serial, all over one cable."
+    },
+    "J2": {
+      "name": "Battery socket",
+      "what": "Two-pin 2.0 mm socket for a 2 x AAA pack. It is keyed so the plug only goes in one way."
+    },
+    "SW1": {
+      "name": "Reset button",
+      "what": "Short press restarts your program. Hold it until the red LED fades to switch the board off."
+    },
+    "SW2": {
+      "name": "Button A",
+      "what": "Front button on P5 with a 10 kΩ pull-up; reads LOW when pressed."
+    },
+    "SW3": {
+      "name": "Button B",
+      "what": "Front button on P11 with a 10 kΩ pull-up; reads LOW when pressed."
+    },
+    "LOGO": {
+      "name": "Touch logo",
+      "what": "A gold pad on the nRF52833's P1.04 that senses your finger by capacitance."
+    },
+    "LEDS": {
+      "name": "5 x 5 LED matrix",
+      "what": "25 red 0603 LEDs, D2 to D50, scanned row by row. Run in reverse, they also work as a rough light sensor."
+    },
+    "D60": {
+      "name": "Red power LED",
+      "what": "Shows the board has power: bright on USB, dimmer on batteries."
+    },
+    "D61": {
+      "name": "Yellow USB LED",
+      "what": "On while USB is connected to a computer; flickers while a program copies."
+    },
+    "D70": {
+      "name": "Microphone LED",
+      "what": "Lights from the same pin that powers the microphone."
+    },
+    "U6": {
+      "name": "LSM303AGR motion sensor",
+      "what": "Accelerometer and compass in one 2 x 2 mm package, on the internal I²C bus at 0x19 and 0x1E."
+    },
+    "U4": {
+      "name": "MEMS microphone",
+      "what": "Hears through a small hole in the board. Powered only while your program uses it."
+    },
+    "SP1": {
+      "name": "Magnetic speaker",
+      "what": "A coil, a magnet and a steel disc, loudest near 2.7 kHz. The program drives it from P0.00 through T2."
+    },
+    "T2": {
+      "name": "Speaker MOSFET",
+      "what": "Switches the speaker current so the processor pin does not have to carry it."
+    },
+    "D5": {
+      "name": "Speaker flyback diode",
+      "what": "Catches the voltage spike from the speaker coil each time T2 switches off."
+    },
+    "ANT": {
+      "name": "PCB antenna",
+      "what": "A copper trace in the board's corner that sends and receives Bluetooth and micro:bit radio."
+    },
+    "RF": {
+      "name": "Antenna matching parts",
+      "what": "L3, L7 and C11 match the radio's output to the antenna trace."
+    },
+    "RLED": {
+      "name": "Status LED resistors",
+      "what": "R38 and R39, 220 Ω each, set the current for the red and yellow LEDs."
+    },
+    "TVS": {
+      "name": "Edge ESD diodes",
+      "what": "D71 to D74 clamp static on the rings you touch and clip leads to."
+    },
+    "TR": {
+      "name": "Small transistors",
+      "what": "Digital transistors that sense where power comes from and pass signals between the two chips."
+    },
+    "RING0": {
+      "name": "Ring 0",
+      "what": "P0: analog in, touch, PWM. Sound plays here as well as on the speaker."
+    },
+    "RING1": {
+      "name": "Ring 1",
+      "what": "P1: analog in, touch, PWM. The lessons drive their LED from here."
+    },
+    "RING2": {
+      "name": "Ring 2",
+      "what": "P2: analog in, touch, PWM. The dimmer lesson reads its knob here."
+    },
+    "RING3V": {
+      "name": "3V ring",
+      "what": "3.3 V out for your circuits, up to 190 mA. Power fed in here skips every protection on the board."
+    },
+    "RINGGND": {
+      "name": "GND ring",
+      "what": "Ground for everything you connect."
+    },
+    "EDGE": {
+      "name": "Edge connector",
+      "what": "The narrow gold strips on a 1.27 mm grid carry the other pins (P3 to P16, P19, P20, 3V and GND). Plug the board into an edge breakout to reach them."
+    }
   },
   "wireables": {
     "led": {
@@ -194,14 +299,9 @@
       "refusal": "Unplug the board first."
     },
     "pick-place": {
-      "title": "Place every part",
-      "body": "All the parts are surface mount. The pick-and-place machine puts the LEDs and buttons on the front and everything else on the back: both nRF52 chips, the crystal, the regulator, the sensors, the speaker and the sockets.",
+      "title": "Place and reflow every part",
+      "body": "All the parts are surface mount. The pick-and-place machine puts the LEDs and buttons on the front and everything else on the back: both nRF52 chips, the crystal, the regulator, the sensors, the speaker and the sockets. Then the board goes through the reflow oven, where the solder paste melts and every joint forms.",
       "refusal": "Strip the board first."
-    },
-    "reflow": {
-      "title": "Reflow both sides",
-      "body": "Solder paste melts in the oven and every joint forms. The board goes through twice, once per side.",
-      "refusal": "Place the parts first."
     },
     "plug-usb": {
       "title": "Plug in USB",
@@ -243,15 +343,25 @@
         "pixel": "x, y from the top-left; brightness 0-9",
         "pin": "3.3 V on ring 1"
       },
-      "params": { "ms": { "label": "On and off time" } },
+      "params": {
+        "ms": {
+          "label": "On and off time"
+        }
+      },
       "checks": {
         "1": "The program runs for 3 seconds",
         "2": "Pin 1 blinks once a second",
         "3": "Uses display.set_pixel and pin1.write_digital"
       },
       "pins": {
-        "P1": { "to": "LED long leg, through 470 Ω", "role": "Drives the LED" },
-        "GND": { "to": "LED short leg", "role": "Ground" }
+        "P1": {
+          "to": "LED long leg, through 470 Ω",
+          "role": "Drives the LED"
+        },
+        "GND": {
+          "to": "LED short leg",
+          "role": "Ground"
+        }
       },
       "callouts": {
         "LEDS": "The centre LED is x = 2, y = 2",
@@ -259,9 +369,18 @@
         "R1": "470 Ω keeps it near 3 mA"
       },
       "specs": {
-        "1": { "label": "Period", "value": "1 s" },
-        "2": { "label": "LED current", "value": "About 3 mA" },
-        "3": { "label": "Pins", "value": "P1, GND" }
+        "1": {
+          "label": "Period",
+          "value": "1 s"
+        },
+        "2": {
+          "label": "LED current",
+          "value": "About 3 mA"
+        },
+        "3": {
+          "label": "Pins",
+          "value": "P1, GND"
+        }
       },
       "features": {
         "1": "One pixel on the matrix",
@@ -282,17 +401,29 @@
       "quiz": {
         "q1": {
           "q": "Why is there a 470 Ω resistor in front of the LED?",
-          "options": { "1": "To make it blink faster", "2": "To keep the current near 3 mA, which a micro:bit pin can supply", "3": "Because the LED needs 5 V" },
+          "options": {
+            "1": "To make it blink faster",
+            "2": "To keep the current near 3 mA, which a micro:bit pin can supply",
+            "3": "Because the LED needs 5 V"
+          },
           "why": "(3.3 V − 2 V) / 470 Ω is about 2.8 mA. A V2 pin gives 1 to 4 mA, so a bare LED would ask too much of it."
         },
         "q2": {
           "q": "What does display.set_pixel(2, 2, 9) do?",
-          "options": { "1": "Lights the middle LED at full brightness", "2": "Lights two LEDs at brightness 2", "3": "Puts 9 V on pin 2" },
+          "options": {
+            "1": "Lights the middle LED at full brightness",
+            "2": "Lights two LEDs at brightness 2",
+            "3": "Puts 9 V on pin 2"
+          },
           "why": "x and y count 0 to 4 from the top-left corner, so (2, 2) is the middle; brightness runs from 0 to 9."
         },
         "q3": {
           "q": "With sleep(500) twice in the loop, how long is one full blink?",
-          "options": { "1": "500 ms", "2": "250 ms", "3": "1000 ms" },
+          "options": {
+            "1": "500 ms",
+            "2": "250 ms",
+            "3": "1000 ms"
+          },
           "why": "500 ms on plus 500 ms off: one blink per second."
         }
       }
@@ -305,28 +436,56 @@
         "was": "True once after each press",
         "is": "True for as long as B is held"
       },
-      "params": { "poll": { "label": "Check every" } },
+      "params": {
+        "poll": {
+          "label": "Check every"
+        }
+      },
       "checks": {
         "1": "Prints A pressed 2 after two presses of A",
         "2": "Pin 1 goes high within 50 ms of pressing B",
         "3": "Pin 1 is low again after B is let go",
         "4": "Uses button_a.was_pressed() and button_b.is_pressed()"
       },
-      "world": { "a": "Button A", "b": "Button B" },
+      "world": {
+        "a": "Button A",
+        "b": "Button B"
+      },
       "pins": {
-        "P5": { "to": "Button A on the board", "role": "Reads LOW when pressed" },
-        "P11": { "to": "Button B on the board", "role": "Reads LOW when pressed" },
-        "P1": { "to": "LED long leg, through 470 Ω", "role": "On while B is held" },
-        "GND": { "to": "LED short leg", "role": "Ground" }
+        "P5": {
+          "to": "Button A on the board",
+          "role": "Reads LOW when pressed"
+        },
+        "P11": {
+          "to": "Button B on the board",
+          "role": "Reads LOW when pressed"
+        },
+        "P1": {
+          "to": "LED long leg, through 470 Ω",
+          "role": "On while B is held"
+        },
+        "GND": {
+          "to": "LED short leg",
+          "role": "Ground"
+        }
       },
       "callouts": {
         "SW2": "Button A: counts presses",
         "SW3": "Button B: hold to light the LED"
       },
       "specs": {
-        "1": { "label": "Buttons", "value": "A on P5, B on P11" },
-        "2": { "label": "Pull-ups", "value": "10 kΩ on the board" },
-        "3": { "label": "Serial", "value": "115200 baud" }
+        "1": {
+          "label": "Buttons",
+          "value": "A on P5, B on P11"
+        },
+        "2": {
+          "label": "Pull-ups",
+          "value": "10 kΩ on the board"
+        },
+        "3": {
+          "label": "Serial",
+          "value": "115200 baud"
+        }
       },
       "features": {
         "1": "was_pressed() for single presses",
@@ -347,17 +506,29 @@
       "quiz": {
         "q1": {
           "q": "Which edge pin is button A?",
-          "options": { "1": "P0", "2": "P11", "3": "P5" },
+          "options": {
+            "1": "P0",
+            "2": "P11",
+            "3": "P5"
+          },
           "why": "A is P5 and B is P11, each with a 10 kΩ pull-up, so they read LOW when pressed. Keep those pins for the buttons."
         },
         "q2": {
           "q": "You press A twice between two checks. What does was_pressed() say?",
-          "options": { "1": "False, the presses were too quick", "2": "True once, then False on the next call", "3": "True twice in a row" },
+          "options": {
+            "1": "False, the presses were too quick",
+            "2": "True once, then False on the next call",
+            "3": "True twice in a row"
+          },
           "why": "was_pressed() remembers that a press happened since you last asked, then resets. get_presses() gives the count."
         },
         "q3": {
           "q": "Why does B use is_pressed() here?",
-          "options": { "1": "The LED should stay on only while you hold B", "2": "is_pressed() counts presses", "3": "B cannot use was_pressed()" },
+          "options": {
+            "1": "The LED should stay on only while you hold B",
+            "2": "is_pressed() counts presses",
+            "3": "B cannot use was_pressed()"
+          },
           "why": "is_pressed() reads the button right now, which is what a hold-to-light needs."
         }
       }
@@ -371,28 +542,55 @@
         "write": "PWM duty 0 to 1023",
         "bars": "0 to 5 lit LEDs on the bottom row"
       },
-      "params": { "every": { "label": "Read every" } },
+      "params": {
+        "every": {
+          "label": "Read every"
+        }
+      },
       "checks": {
         "1": "Half way round, the LED gets half duty",
         "2": "All the way round, the LED is fully on",
         "3": "Prints raw and volts at least 4 times",
         "4": "Uses pin2.read_analog() and pin1.write_analog()"
       },
-      "world": { "pot": "Knob on ring 2" },
+      "world": {
+        "pot": "Knob on ring 2"
+      },
       "pins": {
-        "P2": { "to": "Potentiometer middle leg", "role": "Analog in" },
-        "3V": { "to": "Potentiometer outer leg", "role": "Top of the track" },
-        "GND": { "to": "Potentiometer other leg and the LED", "role": "Ground" },
-        "P1": { "to": "LED long leg, through 470 Ω", "role": "PWM out" }
+        "P2": {
+          "to": "Potentiometer middle leg",
+          "role": "Analog in"
+        },
+        "3V": {
+          "to": "Potentiometer outer leg",
+          "role": "Top of the track"
+        },
+        "GND": {
+          "to": "Potentiometer other leg and the LED",
+          "role": "Ground"
+        },
+        "P1": {
+          "to": "LED long leg, through 470 Ω",
+          "role": "PWM out"
+        }
       },
       "callouts": {
         "POT1": "Turn it: 0 to 3.3 V on ring 2",
         "LED1": "Brightness follows the knob"
       },
       "specs": {
-        "1": { "label": "ADC", "value": "10 bits, 0 to 1023" },
-        "2": { "label": "PWM period", "value": "20 ms" },
-        "3": { "label": "Analog pins", "value": "P0, P1, P2, P3, P4, P10" }
+        "1": {
+          "label": "ADC",
+          "value": "10 bits, 0 to 1023"
+        },
+        "2": {
+          "label": "PWM period",
+          "value": "20 ms"
+        },
+        "3": {
+          "label": "Analog pins",
+          "value": "P0, P1, P2, P3, P4, P10"
+        }
       },
       "features": {
         "1": "Read a voltage",
@@ -413,17 +611,29 @@
       "quiz": {
         "q1": {
           "q": "What range does pin2.read_analog() return?",
-          "options": { "1": "0 to 1023", "2": "0 to 3.3", "3": "0 to 255" },
+          "options": {
+            "1": "0 to 1023",
+            "2": "0 to 3.3",
+            "3": "0 to 255"
+          },
           "why": "MicroPython reads the ADC as 10 bits: 0 is 0 V and 1023 is the 3.3 V rail."
         },
         "q2": {
           "q": "Which pins can read an analog voltage?",
-          "options": { "1": "Every pin", "2": "Only the three rings", "3": "P0, P1, P2, P3, P4 and P10" },
+          "options": {
+            "1": "Every pin",
+            "2": "Only the three rings",
+            "3": "P0, P1, P2, P3, P4 and P10"
+          },
           "why": "Six pins reach the ADC. P3, P4 and P10 are also LED columns, so the rings are the easy choice."
         },
         "q3": {
           "q": "What does pin1.write_analog(512) do to pin 1?",
-          "options": { "1": "Holds it at 1.65 V", "2": "Switches it fully on about half the time", "3": "Turns it off" },
+          "options": {
+            "1": "Holds it at 1.65 V",
+            "2": "Switches it fully on about half the time",
+            "3": "Turns it off"
+          },
           "why": "There is no DAC. write_analog sets the PWM duty, with a 20 ms period by default."
         }
       }
@@ -436,22 +646,37 @@
         "dead": "Ignore tilts smaller than this, in milli-g",
         "read": "Milli-g along the board, from the LSM303AGR over I²C"
       },
-      "params": { "dead": { "label": "Dead zone" } },
+      "params": {
+        "dead": {
+          "label": "Dead zone"
+        }
+      },
       "checks": {
         "1": "Prints y 0 level while flat",
         "2": "Prints y 500 logo down tipped 30° towards the logo",
         "3": "Prints y -707 pins down tipped 45° the other way",
         "4": "Uses accelerometer.get_y()"
       },
-      "world": { "tilt": "Tilt the board" },
+      "world": {
+        "tilt": "Tilt the board"
+      },
       "callouts": {
         "U6": "LSM303AGR at I²C address 0x19",
         "LEDS": "The arrow points to the lower end"
       },
       "specs": {
-        "1": { "label": "Sensor", "value": "LSM303AGR" },
-        "2": { "label": "Bus", "value": "Internal I²C, 0x19" },
-        "3": { "label": "Units", "value": "Milli-g, 1000 = 1 g" }
+        "1": {
+          "label": "Sensor",
+          "value": "LSM303AGR"
+        },
+        "2": {
+          "label": "Bus",
+          "value": "Internal I²C, 0x19"
+        },
+        "3": {
+          "label": "Units",
+          "value": "Milli-g, 1000 = 1 g"
+        }
       },
       "features": {
         "1": "Measure tilt",
@@ -472,17 +697,29 @@
       "quiz": {
         "q1": {
           "q": "How does the program reach the accelerometer?",
-          "options": { "1": "Through ring 0", "2": "Over the board's own I²C bus, at address 0x19", "3": "Over USB serial" },
+          "options": {
+            "1": "Through ring 0",
+            "2": "Over the board's own I²C bus, at address 0x19",
+            "3": "Over USB serial"
+          },
           "why": "The LSM303AGR sits on an internal I²C bus, separate from P19 and P20, at 0x19 (accelerometer) and 0x1E (compass). MicroPython reads it for you."
         },
         "q2": {
           "q": "Lying flat, face up, what does accelerometer.get_z() give?",
-          "options": { "1": "0", "2": "About +1000", "3": "About -1000" },
+          "options": {
+            "1": "0",
+            "2": "About +1000",
+            "3": "About -1000"
+          },
           "why": "Values are in milli-g. Flat and face up, gravity pulls straight through the board and z reads about -1000."
         },
         "q3": {
           "q": "What is DEAD for?",
-          "options": { "1": "Ignoring small tilts so the arrow does not flicker near level", "2": "Setting the I²C speed", "3": "Switching the sensor off" },
+          "options": {
+            "1": "Ignoring small tilts so the arrow does not flicker near level",
+            "2": "Setting the I²C speed",
+            "3": "Switching the sensor off"
+          },
           "why": "Any reading between -DEAD and DEAD counts as level, which hides the shake of your hand."
         }
       }
@@ -496,25 +733,44 @@
         "pitch": "Speaker and pin 0, for 200 ms",
         "wait": "One touch counts once"
       },
-      "params": { "hz": { "label": "Note" } },
+      "params": {
+        "hz": {
+          "label": "Note"
+        }
+      },
       "checks": {
         "1": "Counts the first touch",
         "2": "Counts the second touch",
         "3": "A prints touches 2 and the temperature",
         "4": "Uses pin_logo.is_touched(), music.pitch() and temperature()"
       },
-      "world": { "logo": "Touch the logo", "a": "Button A" },
+      "world": {
+        "logo": "Touch the logo",
+        "a": "Button A"
+      },
       "pins": {
-        "P0": { "to": "A buzzer or headphones (optional)", "role": "The note plays here too" }
+        "P0": {
+          "to": "A buzzer or headphones (optional)",
+          "role": "The note plays here too"
+        }
       },
       "callouts": {
         "LOGO": "Capacitive: just touch it",
         "SP1": "The note comes from here"
       },
       "specs": {
-        "1": { "label": "Touch", "value": "Capacitive, on P1.04" },
-        "2": { "label": "Sound", "value": "Speaker and pin 0" },
-        "3": { "label": "Temperature", "value": "On the processor's die, ±5 °C" }
+        "1": {
+          "label": "Touch",
+          "value": "Capacitive, on P1.04"
+        },
+        "2": {
+          "label": "Sound",
+          "value": "Speaker and pin 0"
+        },
+        "3": {
+          "label": "Temperature",
+          "value": "On the processor's die, ±5 °C"
+        }
       },
       "features": {
         "1": "The touch logo",
@@ -535,17 +791,29 @@
       "quiz": {
         "q1": {
           "q": "How does the logo know you touched it?",
-          "options": { "1": "It is a push button", "2": "It measures light", "3": "It senses the capacitance of your finger" },
+          "options": {
+            "1": "It is a push button",
+            "2": "It measures light",
+            "3": "It senses the capacitance of your finger"
+          },
           "why": "The logo is a capacitive pad on P1.04, so you don't need to hold GND. Rings 0 to 2 use resistive touch and do."
         },
         "q2": {
           "q": "Where does music.pitch() send the sound?",
-          "options": { "1": "To the speaker on the back and to ring 0", "2": "Only to the speaker", "3": "To ring 2" },
+          "options": {
+            "1": "To the speaker on the back and to ring 0",
+            "2": "Only to the speaker",
+            "3": "To ring 2"
+          },
           "why": "By default sound plays on the speaker and on pin 0, so a buzzer or headphones on ring 0 hear it too."
         },
         "q3": {
           "q": "Why does the program wait while the logo is still touched?",
-          "options": { "1": "To save power", "2": "So one long touch counts once", "3": "Because the speaker needs it" },
+          "options": {
+            "1": "To save power",
+            "2": "So one long touch counts once",
+            "3": "Because the speaker needs it"
+          },
           "why": "The loop runs every 20 ms. Without the wait, a half-second touch would count about 25 times."
         }
       }
