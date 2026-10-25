@@ -83,7 +83,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-25 00:17 CDT (machine clock).
+- **Updated:** 2026-10-25 00:44 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session). Amar is asleep
   since 22:20 and gave full autonomy for every remaining build phase except Solana and hardware (CONTEXT.md §5) The Mac is kept awake by `caffeinate -dimsu -t 54000` (pid 28721, from 23:08, until about 14:08).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Do not build in
@@ -142,10 +142,14 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
     Bugs they found are in `docs/verify/sweep.md`.
   - Wave B at 00:17: 7 of 10 reported (P2-nucleo, -microbit, -fun, -drones-heavy, -rob-sensors, -pi, -rob-power);
     P2-engine-b, P2-fpga and P2-drones-vtol (the octo next) still running.
-  - Wave B tail, run `wf_759ed985-c9a` (`scripts/workflows/phase3-wave.js` with `brief: phase2.md`), since 00:18:
-    P2-req-interp, P2-req-host, P2-req-drone close the driver's requests (sections in `phase2.md`). The driver did
-    the R4 cold-joint test (`e401e33`) and the ids.ts mat parts (`e223f43`). Left for the driver: the octo's
-    `hoverLimit: 0.7` once its content exists.
+  - Wave B tail, run `wf_759ed985-c9a`: **done at 00:38.** P2-req-interp: onboard sensor inputs (`3f92443`), PCA9685
+    channels in the trace and the knob task's pulse checks (`f71771e`, `9215470`). P2-req-host: lesson props follow
+    the world inputs (`8aa908e`), the WHEEL callout folded into STP1 in six languages (`59d76ef`), the micro:bit kit
+    (`4e8d5e8`). P2-req-drone: `readOnly` (`7af326b`), Crazyflie checks and Betaflight `servo`/`smix` (`faa07c4`,
+    `4deaf4e`), tricopter 40 A and `hoverLimit` (`8c71183`). The driver then did the follow-ups: the tri's reversed
+    servo in the sim and the mixer reversal (`6bd22e6`), the ticks pulse check (`3ef8999`), ARCHITECTURE v1.8.
+    Still for the driver: the octo's `hoverLimit: 0.7` once `octo.ts` exists, and the tri's servo prose
+    (`docs/requests/P2-req-drone-to-P2-drones-vtol-tri-servo-prose.md`) if P2-drones-vtol leaves it.
   - If this session dies: `git log` shows what each label pushed. Relaunch the unfinished wave-B labels with
     `args: { labels: [...], resume: { stoppedAt, since: "88b7db2", backup } }` after backing up the uncommitted files,
     and the prose wave with the items not yet in `src/i18n/content/<lang>/`.
