@@ -288,7 +288,8 @@ B.board({
       // VU feeds the bucks (the LTC3633 takes up to 15 V) and the USB-A port as it is; C27 is a 10 V part. SW16 (fixed
       // ON here) only enables the bucks, so it is not in their feeds
       VU: { from: [{ rail: 'VBUS', via: ['JP2'] }, { rail: 'VEXT', via: ['JP2'] }], max: 10, victim: 'C27' },
-      '1V0': { from: [{ rail: 'VU', via: ['IC10'], reg: 1.0, dropout: .3, ilim: 2 }] },
+      // past 10 V the input capacitor C27 fails short and drags VU down, so the bucks drop out and the board goes dark
+      '1V0': { from: [{ rail: 'VU', via: ['IC10'], reg: 1.0, dropout: .3, ilim: 2, offIf: ['VU', '>', 10] }] },
       '1V8': { from: [{ rail: 'VU', via: ['IC11'], reg: 1.8, dropout: .3, ilim: .3, offIf: ['1V0', '<', .9] }] },
       '3V3': { from: [{ rail: 'VU', via: ['IC10'], reg: 3.3, dropout: .3, ilim: 2, offIf: ['1V8', '<', 1.6] }] },
     },

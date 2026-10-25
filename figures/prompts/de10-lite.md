@@ -31,7 +31,7 @@ What it does:
 - **Program the FPGA ▾**: the factory design (the LEDs blink and hex digits walk across the displays; KEY0 lights every
   LED and segment; with SW0 up the LEDs are a spirit level, the middle two lit when flat), Blink LEDR0 from a counter,
   the switches to the LEDs, and the switches as a hex number on HEX2-HEX0. Programming goes only over USB through the
-  USB-Blaster. The stat reads Design.
+  USB-Blaster, whose CPLD runs on the clock generator's 24 MHz. The stat reads Design.
 - **Flip SW0 … SW9, press KEY0 and KEY1**: the keys read 0 while pressed; while a design runs in the Board Lab the host
   moves the levers and holds the keys to match the levels the design reads.
 - **Strip to bare PCB, Pick & place SMD (reflow), Place a part ▾ (low parts first, then tall), Solder joints, Remove a

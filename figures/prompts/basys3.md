@@ -36,7 +36,7 @@ What it does:
   runs in the Board Lab the host moves the levers to match the levels the design reads.
 - **Strip to bare PCB, Pick & place SMD (reflow), Place a part ▾ (low parts first, then tall), Solder joints, Remove a
   part ▾**: the real build order with its refusals.
-- **Break it ▾**: EXT wired backwards (the LTC3633 burns), 12 V on EXT (C27 fails), 3 V on EXT (brown-out), a Pmod
+- **Break it ▾**: EXT wired backwards (the LTC3633 burns), 12 V on EXT (C27 fails short and the board goes dark), 3 V on EXT (brown-out), a Pmod
   3V3 pin shorted to GND, VU shorted to GND, the JP2 shunt lost (dead), no flash (powered, nothing runs), a motor on
   the rail (brown-out resets), and a cold joint on any switch or button (its LED flickers by itself).
 - **View ▾**: the board; the breadboard with an LED on Pmod JB (JB pin 1 → 220 Ω → red LED → JB pin 5, real current);

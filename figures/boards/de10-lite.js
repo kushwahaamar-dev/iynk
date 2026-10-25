@@ -252,7 +252,8 @@ B.board({
       '1V8': { from: [{ rail: '3V3', via: ['REG2'], reg: 1.8, dropout: .1, ilim: .5 }] },
     },
     mcu: { part: 'U5', rail: '3V3', min: 3.0, needs: ['U5', 'U3', 'Y1'] },
-    upload: { source: 'usb', needs: ['U2', 'U10', 'U5'], tool: 'quartus' },
+    // the Blaster's CPLD runs on the clock generator's 24 MHz, so programming needs U3 and its crystal too
+    upload: { source: 'usb', needs: ['U2', 'U10', 'U3', 'Y1', 'U5'], tool: 'quartus' },
   },
   // an FPGA takes a design (a .sof over the USB-Blaster), not a sketch
   modesLabel: { button: 'Program the FPGA', stat: 'Design' },

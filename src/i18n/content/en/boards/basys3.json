@@ -213,7 +213,7 @@
     "ext-12v": {
       "title": "12 V on the EXT header",
       "symptom": "The board goes dark, and the input capacitor C27 is ruined.",
-      "explanation": "EXT is a 4.5-5.5 V input. VU passes it on unregulated: the bucks would cope, but the 10 V input capacitor C27 does not, and a keyboard on the USB-A port would get 12 V too.",
+      "explanation": "EXT is a 4.5-5.5 V input, and VU passes it on unregulated. The bucks would cope, but the input capacitor C27 is a 10 V part: it fails short and drags VU down, so the regulators drop out. A keyboard on the USB-A port would get 12 V too.",
       "fix": "Use a regulated 5 V supply on J6. To run from a 7-12 V adapter, put a 5 V regulator in front of the board."
     },
     "ext-3v": {

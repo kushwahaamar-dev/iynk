@@ -147,7 +147,10 @@ describe('basys3 failures in the figure', () => {
       expect(r.faults.length + (r.fault ? 1 : 0), where).toBeGreaterThan(0);
       // a sagging rail dips in and out of reset, so watch it for a few seconds
       if (f.effect.power === 'resetting') expect(statuses(page, 40), where).toContain('brownout');
-      else if (f.effect.halts && f.effect.power === 'off') expect(['no-power', 'fault'], where).toContain(r.status);
+      else if (f.effect.halts && f.effect.power === 'off') {
+        expect(['no-power', 'fault'], where).toContain(r.status);
+        for (const l of board.leds.filter((x) => x.drivenBy === 'power')) expect(r.leds[l.id], `${where} ${l.id}`).toBe(0);
+      }
       else if (f.effect.halts) expect(['powered', 'fault'], where).toContain(r.status);
       else expect(r.status, where).toBe('running');
       for (const part of f.effect.damages ?? []) expect(r.fault?.msg, where).toContain(page.md.byId[part].name);
