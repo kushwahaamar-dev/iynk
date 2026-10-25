@@ -238,6 +238,14 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   `github.com/kushwahaamar-dev/simlab`, `backup/simlab-history`, the database's `simlab_migrations` and
   `simlab_expire_profiles`, the Vultr SSH key `simlab-realtime-deploy`, `~/simlab-scratch-backup`.
 
+- **10-25 09:58, Amar.** Asked for the Devpost "About the project" story: how people can't access hardware and give up,
+  how expensive experiments are, especially in other countries and rural areas ("it's built for them"); every aspect,
+  the challenges and why we built it. "It's a personal issue for me because I gave up on my dream of robotics and
+  computer engineering because of this. My teammate, who is a computer engineer, had this idea … so that we don't have
+  to experiment … over expensive equipment and sensors. Instead, just a final prototype can be done." He asked for a
+  humanizer skill, which isn't installed; the driver wrote it plainly, numbers only from the verified checks:
+  `docs/hacktx/DEVPOST-STORY.md`.
+
 ## 6. Lessons learned (apply them)
 
 - **Never SendMessage a running Workflow agent by its id.** It starts a duplicate copy working on the same files

@@ -163,6 +163,10 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Checkpoint log (newest first)
 
+- 2026-10-25 10:07 CDT (Amar): Solana credential flow checked live (a drone's bench safety run mints; board lessons
+  don't earn credentials yet). Fixed `8f92122`: the wallet provider rebuilt its Connection on every render (170 devnet
+  calls in 15 s on quad5, 160 refused; now 1). Devpost story in `docs/hacktx/DEVPOST-STORY.md`.
+
 - 2026-10-25 09:42 CDT (Amar): rename to iynk pushed (`ca09a95`), redesign pushed (`d4db93e`..`827a1e4`, About fix
   `0d39165`), docs from the live claim check (`dc42867`). Production build with typecheck: 827 pages; unit tests 2797
   passed, 5 skipped; e2e on a keyless build (as gate 3) 116 passed, 2 skipped (with Amar's keys, 6 tests that assume
