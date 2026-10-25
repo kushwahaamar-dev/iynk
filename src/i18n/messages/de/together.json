@@ -152,6 +152,7 @@
     "title": "Niemand muss allein bauen",
     "lede": "Öffne einen Raum für ein Board, einen Roboter oder eine Drohne und schick den Link. Alle sehen dieselbe Werkbank, es tippt immer eine Person, und der Chat zeigt jede Nachricht in deiner Sprache.",
     "notSetUp": "Auf dieser Installation nicht eingerichtet",
+    "aiOff": "Bau-Buddys und der Bauabend-Planer brauchen den KI-Dienst, und der ist auf dieser Installation nicht eingerichtet.",
     "retry": "Nochmal versuchen",
     "create": {
       "title": "Raum öffnen",

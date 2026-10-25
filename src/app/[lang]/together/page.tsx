@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function TogetherPage({ params }: Props) {
   return (
-    <Suspense fallback={<div className="mx-auto min-h-[70vh] max-w-5xl px-4 sm:px-6" aria-busy="true" />}>
+    <Suspense fallback={<div className="frame min-h-[70vh]" aria-busy="true" />}>
       <TogetherLobby params={params} />
     </Suspense>
   );
@@ -32,11 +32,11 @@ async function TogetherLobby({ params }: Props) {
   const t = createTranslator(lang, messages, `${lang}/together`);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 pt-8 pb-16 sm:px-6 sm:pt-12">
-      <header>
+    <div className="frame pt-10 pb-16 lg:pt-14">
+      <header className="max-w-[68ch]">
         <p className="ink-kicker">{t("lobby.eyebrow")}</p>
         <h1 className="mt-3">{t("lobby.title")}</h1>
-        <p className="mt-5 max-w-2xl text-lg leading-relaxed">{t("lobby.lede")}</p>
+        <p className="mt-4 text-lg leading-relaxed">{t("lobby.lede")}</p>
       </header>
       <TogetherStrings locale={lang} messages={messages}>
         <Lobby items={items} />

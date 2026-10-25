@@ -4,8 +4,9 @@ import { useRouter } from "next/navigation";
 import { useId, useMemo, useState, type FormEvent } from "react";
 import type { LabKind } from "@/components/dock/types";
 import { useTogetherT, type TogetherT } from "@/components/realtime/messages";
-import { Button, Callout, Card, SegmentedControl } from "@/components/ui";
+import { Button, Callout, Card, SegmentedControl, Select, TextInput } from "@/components/ui";
 import { useLocale } from "@/i18n/client";
+import { useFeatures } from "@/lib/features";
 import { createRoom, parseRoomInput, probeRoom, roomLink, type ProbeResult } from "@/lib/realtime";
 import { roomPath } from "./api";
 import { Buddies } from "./Buddies";
@@ -28,7 +29,7 @@ function StartRoom({ items, t }: { items: LobbyItem[]; t: TogetherT }) {
 
   return (
     <form
-      className="flex flex-col gap-3"
+      className="flex flex-1 flex-col gap-4"
       onSubmit={(event) => {
         event.preventDefault();
         if (chosen) router.push(roomPath(createRoom(chosen.lab, chosen.id, locale)));
@@ -37,6 +38,7 @@ function StartRoom({ items, t }: { items: LobbyItem[]; t: TogetherT }) {
       {labs.length > 1 ? (
         <SegmentedControl
           label={t("lobby.create.lab")}
+          stretch
           options={labs.map((value) => ({ value, label: t(`labs.${value}`) }))}
           value={lab}
           onChange={(value) => {
@@ -45,22 +47,14 @@ function StartRoom({ items, t }: { items: LobbyItem[]; t: TogetherT }) {
           }}
         />
       ) : null}
-      <label htmlFor={`${id}-item`} className="flex flex-col gap-1 text-sm font-bold">
-        {t("lobby.create.item")}
-        <select
-          id={`${id}-item`}
-          value={chosen?.id ?? ""}
-          onChange={(event) => setItemId(event.target.value)}
-          className="min-h-11 rounded-ink-sm border-2 border-line bg-surface px-2 font-body text-base font-normal text-ink"
-        >
-          {inLab.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.title}
-            </option>
-          ))}
-        </select>
-      </label>
-      <Button type="submit" variant="primary" className="self-start" disabled={!chosen}>
+      <Select id={`${id}-item`} label={t("lobby.create.item")} value={chosen?.id ?? ""} onChange={(event) => setItemId(event.target.value)}>
+        {inLab.map((item) => (
+          <option key={item.id} value={item.id}>
+            {item.title}
+          </option>
+        ))}
+      </Select>
+      <Button type="submit" variant="primary" className="mt-auto self-start" disabled={!chosen}>
         {t("lobby.create.go")}
       </Button>
     </form>
@@ -108,27 +102,25 @@ function JoinRoom({ t }: { t: TogetherT }) {
   })();
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-2" noValidate>
-      <label htmlFor={`${id}-code`} className="text-sm font-bold">
-        {t("panel.joinLabel")}
-      </label>
-      <div className="flex gap-2">
-        <input
-          id={`${id}-code`}
-          value={value}
-          onChange={(event) => setValue(event.target.value)}
-          placeholder={t("panel.joinPlaceholder")}
-          autoComplete="off"
-          autoCapitalize="none"
-          spellCheck={false}
-          aria-invalid={state.kind === "bad"}
-          className="min-h-11 min-w-0 flex-1 rounded-ink-sm border-2 border-line bg-surface px-3 font-ui text-base text-ink aria-invalid:border-bad"
-        />
-        <Button type="submit" disabled={state.kind === "looking"}>
-          {t("lobby.join.go")}
-        </Button>
+    <form onSubmit={submit} className="flex flex-1 flex-col gap-4" noValidate>
+      <TextInput
+        id={`${id}-code`}
+        label={t("panel.joinLabel")}
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+        placeholder={t("panel.joinPlaceholder")}
+        autoComplete="off"
+        autoCapitalize="none"
+        spellCheck={false}
+        aria-invalid={state.kind === "bad"}
+        className="font-ui aria-invalid:border-bad"
+      />
+      <div aria-live="polite" className="empty:hidden">
+        {message ? <Callout tone={message.tone}>{message.text}</Callout> : null}
       </div>
-      <div aria-live="polite">{message ? <Callout tone={message.tone}>{message.text}</Callout> : null}</div>
+      <Button type="submit" className="mt-auto self-start" disabled={state.kind === "looking"}>
+        {t("lobby.join.go")}
+      </Button>
     </form>
   );
 }
@@ -136,29 +128,42 @@ function JoinRoom({ t }: { t: TogetherT }) {
 /** The /together lobby: start or join a room, Build Buddies and the Build Night planner. */
 export function Lobby({ items }: { items: LobbyItem[] }) {
   const t = useTogetherT()!;
+  const { status, features } = useFeatures();
   const titles = useMemo(() => new Map(items.map((item) => [`${item.lab}:${item.id}`, item.title])), [items]);
+  // Both tools below need the AI service: without it they are one line, not two cards that say "not set up".
+  const aiOff = status === "ready" && !features.ai;
 
   return (
-    <div className="mt-10 flex flex-col gap-8">
+    <div className="mt-10 flex flex-col gap-10 lg:mt-12 lg:gap-12">
       {/* grid-cols-1 keeps the one phone column at the page width; an implicit column grows to the widest select option. */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <Card as="section" aria-labelledby="together-start" className="flex flex-col gap-3">
-          <h2 id="together-start" className="text-xl">
-            {t("lobby.create.title")}
-          </h2>
-          <p className="text-sm text-muted">{t("lobby.create.hint")}</p>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-6">
+        <Card as="section" aria-labelledby="together-start" className="flex flex-col gap-4">
+          <div>
+            <h2 id="together-start" className="text-2xl">
+              {t("lobby.create.title")}
+            </h2>
+            <p className="mt-1 text-sm text-muted">{t("lobby.create.hint")}</p>
+          </div>
           <StartRoom items={items} t={t} />
         </Card>
-        <Card as="section" aria-labelledby="together-join" className="flex flex-col gap-3">
-          <h2 id="together-join" className="text-xl">
-            {t("lobby.join.title")}
-          </h2>
-          <p className="text-sm text-muted">{t("lobby.join.hint")}</p>
+        <Card as="section" aria-labelledby="together-join" className="flex flex-col gap-4">
+          <div>
+            <h2 id="together-join" className="text-2xl">
+              {t("lobby.join.title")}
+            </h2>
+            <p className="mt-1 text-sm text-muted">{t("lobby.join.hint")}</p>
+          </div>
           <JoinRoom t={t} />
         </Card>
       </div>
-      <Buddies t={t} titles={titles} />
-      <Planner t={t} titles={titles} />
+      {aiOff ? (
+        <Callout variant="quiet">{t("lobby.aiOff")}</Callout>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 lg:gap-6 xl:grid-cols-2">
+          <Buddies t={t} titles={titles} />
+          <Planner t={t} titles={titles} />
+        </div>
+      )}
     </div>
   );
 }

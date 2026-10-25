@@ -152,6 +152,7 @@
     "title": "Nadie tiene que construir solo",
     "lede": "Abre una sala para cualquier placa, robot o dron y envía el enlace. Todos ven el mismo banco de trabajo, una persona escribe a la vez y el chat muestra cada mensaje en tu propio idioma.",
     "notSetUp": "No está configurado en esta instalación",
+    "aiOff": "Compañeros de construcción y el Planificador de noche de construcción necesitan el servicio de IA, que no está configurado en esta instalación.",
     "retry": "Reintentar",
     "create": {
       "title": "Abrir una sala",
