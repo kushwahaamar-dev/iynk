@@ -1,0 +1,721 @@
+{
+  "title": "ESP32-S3-DevKitC-1",
+  "tagline": "WLAN, Bluetooth LE und zwei Kerne mit 240 MHz auf einem 3,3-V-Board fürs Steckbrett",
+  "overview": "Das ESP32-S3-Board von Espressif selbst: ein Modul ESP32-S3-WROOM-1 (Doppelkern Xtensa LX7 mit 240 MHz, 512 KB SRAM, 8 MB Flash, 8 MB PSRAM, WLAN und Bluetooth 5 LE) auf einem Board von 25,4 x 62,7 mm mit zwei Micro-USB-Ports. Der Port UART geht über eine Brücke CP2102N an UART0, wo Uploads und Serial standardmäßig laufen; der Port USB ist das eigene Full-Speed-USB des Chips an GPIO19/20. Ein Regler SGM2212 macht aus USB 3,3 V, die rote D5 zeigt, dass die 3,3 V anliegen, und eine adressierbare RGB-LED sitzt an GPIO38 (GPIO48 bei der älteren v1.0). Jeder GPIO verträgt nur 3,3 V: Speise niemals 5 V ein.",
+  "variants": {
+    "v1-1": "Aktuelle Revision (Platine 2022-04). Die Datenleitung der RGB-LED ist GPIO38, und auf dem Bestückungsdruck steht RGB@IO38. Das allgemeine \"ESP32S3 Dev Module\" von Arduino legt RGB_BUILTIN noch auf GPIO48, also schreib Pin 38 selbst.",
+    "v1-0": "Erste Revision (2021). Die Datenleitung der RGB-LED ist GPIO48 (Bestückungsdruck RGB@IO48). Auf Modulen mit 1,8-V-PSRAM läuft GPIO48 mit 1,8 V, zu wenig für die LED, deshalb hat Espressif sie in v1.1 auf GPIO38 verlegt. Alles andere ist gleich."
+  },
+  "mcu": {
+    "cp2102n": "USB-UART-Brücke von Silicon Labs hinter dem Port UART. Sie ist UART0 für Serial und den ROM-Bootloader, und ihre Leitungen DTR/RTS setzen den Chip bei jedem Upload in den Download-Modus zurück."
+  },
+  "power": {
+    "uart": {
+      "protection": "5 V vom USB-Host über die Schottky-Diode 1N5819 D1 (etwa 0,35 V Spannungsabfall) und eine ESD-Diode an VBUS. Ein kodierter Micro-USB-Stecker lässt sich nicht verkehrt herum einstecken. Auf dem Board gibt es keine Sicherung: Die eigene Grenze des Host-Ports (500 mA bei USB 2.0) schützt es."
+    },
+    "usb": {
+      "protection": "Genau wie beim Port UART, über D7. Beide Kabel können gleichzeitig stecken: Die beiden Schottky-Dioden teilen sich die Last und speisen nie einen Computer aus dem anderen."
+    },
+    "pin5": {
+      "protection": "Keiner. Der 5V-Pin liegt hinter den Schottky-Dioden, also treibt eine verpolte Versorgung den Eingang des Reglers negativ und brennt ihn durch. Der SGM2212 verträgt bis zu 20 V, verwandelt aber über 5 V die Differenz in Wärme. Versorge das Board nie gleichzeitig über den 5V-Pin und den 3V3-Pin."
+    },
+    "pin3": {
+      "protection": "Keiner. Die 3V3-Pins gehen über die 0-Ω-Brücke R24 direkt an das Modul und speisen rückwärts in den Ausgang des Reglers. Halt sie zwischen 3,0 und 3,6 V: 5 V hier zerstören den ESP32-S3."
+    },
+    "rails": {
+      "5v": "VCC_5V: die 5 V von USB abzüglich des Spannungsabfalls an der Schottky-Diode, etwa 4,6 V. Sie speist den Regler und den 5V-Pin.",
+      "vcc-3v3": "Der 3,3-V-Ausgang des Reglers: Der CP2102N, die RGB-LED und die rote D5 laufen daran.",
+      "3v3": "Das Modul und die beiden 3V3-Pins, über die 0-Ω-Brücke R24 mit dem Regler verbunden."
+    },
+    "io": "Jeder GPIO arbeitet mit 3,3 V, und keiner ist 5-V-tolerant. Ein Pin liefert bei der Standard-Treiberstärke etwa 20 mA und höchstens 40 mA; das Board als Ganzes ist durch den 800-mA-Regler und den USB-Port begrenzt."
+  },
+  "pins": {
+    "j1": {
+      "1": "3,3 V Ausgang vom Regler (bis zu etwa 800 mA abzüglich dessen, was das Board verbraucht), oder ein 3,3-V-Eingang, wenn kein USB steckt.",
+      "3": "EN (CHIP_PU). Über R5 (10 kΩ) hochgezogen, mit 1 µF Verzögerung an C6. Zieh ihn auf LOW, um den Chip im Reset zu halten; RESET tut dasselbe.",
+      "4": "Die Lektionen nutzen ihn für die LED (mit 330 Ω). ADC1-Kanal, funktioniert auch bei eingeschaltetem WLAN, und eine Touch-Fläche.",
+      "12": "Das Standard-I2C-SDA von Arduino (Wire.begin(8, 9)).",
+      "13": "Strapping-Pin (Auswahl der JTAG-Quelle). Lass ihn beim Reset offen.",
+      "14": "Strapping-Pin. Muss für den Download-Modus beim Reset LOW sein; halt ihn während eines Uploads nie auf HIGH.",
+      "21": "VCC_5V: etwa 4,6 V Ausgang von USB hinter den Schottky-Dioden, oder ein 5-V-Eingang ohne Schutz."
+    },
+    "j3": {
+      "2": "UART0 TX, mit dem CP2102N verbunden. Ausgaben von Serial kommen hier heraus; halt ihn frei.",
+      "3": "UART0 RX vom CP2102N. Uploads kommen hier herein; halt ihn frei.",
+      "10": "Treibt bei v1.1 die RGB-LED (WS2812-Daten). Als GPIO nutzbar, aber die LED reagiert darauf.",
+      "11": "GPIO37 steht auf der Stiftleiste, aber bei diesem Modul N8R8 hängt er am Octal-PSRAM. Ihn zu nutzen, bringt das Board zum Absturz.",
+      "12": "GPIO36 steht auf der Stiftleiste, aber bei diesem Modul N8R8 hängt er am Octal-PSRAM. Ihn zu nutzen, bringt das Board zum Absturz.",
+      "13": "GPIO35 steht auf der Stiftleiste, aber bei diesem Modul N8R8 hängt er am Octal-PSRAM. Ihn zu nutzen, bringt das Board zum Absturz.",
+      "14": "Strapping-Pin mit dem BOOT-Taster nach GND. HIGH beim Reset startet deinen Sketch, LOW den Download-Modus. Nach dem Booten gefahrlos als Taster lesbar.",
+      "15": "Strapping-Pin (Auswahl der Flash-Spannung). Halt ihn beim Reset auf LOW oder offen.",
+      "16": "Daten der RGB-LED nur bei Boards v1.0. Läuft auf Modulen mit 1,8-V-PSRAM mit 1,8 V.",
+      "17": "Läuft auf Modulen mit 1,8-V-PSRAM mit 1,8 V; bei diesem N8R8 mit 3,3 V.",
+      "19": "USB D+ des Ports USB. Ihn als GPIO zu nutzen, beendet die native USB-Verbindung.",
+      "20": "USB D− des Ports USB. Ihn als GPIO zu nutzen, beendet die native USB-Verbindung."
+    }
+  },
+  "leds": {
+    "D5": "Rote Power-LED an der 3,3-V-Schiene über 5,1 kΩ (etwa 0,25 mA). Sie leuchtet, sobald 3,3 V anliegen, und kein Code kann sie ausschalten.",
+    "D6": "Adressierbare RGB-LED SK68XXMINI-HS (WS2812-Protokoll, 24-Bit-Farbe über einen Datendraht) an GPIO38 über die 0-Ω-Brücke R17. Steuer sie mit rgbLedWrite(38, r, g, b) an.",
+    "D6-v1-0": "Adressierbare RGB-LED SK68XXMINI-HS an GPIO48 über R17 (v1.0). Steuer sie mit rgbLedWrite(48, r, g, b) an."
+  },
+  "controls": {
+    "SW1": "BOOT zieht GPIO0 auf GND. Halt ihn gedrückt, während du RESET drückst und loslässt, um in den Download-Modus des ROM zu kommen; nach dem Booten ist er ein normaler Taster, der gedrückt LOW liest.",
+    "SW2": "RESET zieht EN auf LOW. Beim Loslassen startet der Chip neu aus dem ROM: Das Boot-Log erscheint wieder, und setup() läuft von vorn."
+  },
+  "parts": {
+    "U4": {
+      "name": "Modul ESP32-S3-WROOM-1-N8R8",
+      "what": "Der ganze Computer unter einer Abschirmhaube: der ESP32-S3 (zwei LX7-Kerne, WLAN, BLE) mit 8 MB Octal-PSRAM im selben Gehäuse, ein 8-MB-Flash-Chip und ein 40-MHz-Quarz. Die Zickzack-Antenne ragt über die Kante des Boards: Halt Metall und Finger davon fern."
+    },
+    "U3": {
+      "name": "USB-UART-Brücke CP2102N",
+      "what": "Macht aus dem USB des Ports UART die serielle Verbindung für UART0 und steuert Q1/Q2, sodass esptool den Chip in den Download-Modus zurücksetzen kann. Ohne sie sieht der Computer am Anschluss UART keinen seriellen Port."
+    },
+    "U2": {
+      "name": "3,3-V-Regler SGM2212",
+      "what": "Low-Dropout-Regler im SOT-223: 5 V rein, 3,3 V raus, bis zu 800 mA, Eingang bis 20 V. WLAN-Stöße von etwa 350 mA gehen durch ihn."
+    },
+    "D6": {
+      "name": "RGB-LED SK68XXMINI-HS",
+      "what": "Drei LED-Chips und ein Treiber-IC in einem 3,5-mm-Gehäuse. Ein Datendraht stellt jede Farbe ein; dasselbe Protokoll steuert ganze Statusstreifen auf Robotern."
+    },
+    "D5": {
+      "name": "Rote Power-LED D5",
+      "what": "Fest an 3,3 V verdrahtet. Sie verbraucht selbst im Deep Sleep einen Bruchteil eines Milliampere; bei einem Akku-Roboter löten die Leute sie aus."
+    },
+    "SW1": {
+      "name": "BOOT-Taster SW1",
+      "what": "GPIO0 nach GND. Der Rettungstaster: Halt BOOT gedrückt, drück kurz RESET, und der Chip wartet im Download-Modus auf esptool."
+    },
+    "SW2": {
+      "name": "RESET-Taster SW2",
+      "what": "EN nach GND. Startet den Chip und deinen Sketch ab setup() neu."
+    },
+    "J2": {
+      "name": "Micro-USB-Port UART",
+      "what": "Geht an den CP2102N. Nimm ihn im Zweifel: Uploads und Serial funktionieren, egal was dein Sketch mit dem nativen USB anstellt."
+    },
+    "J4": {
+      "name": "Micro-USB-Port USB",
+      "what": "Das eigene USB des ESP32-S3 an GPIO19/20. Es erscheint als USB JTAG/serial debug unit, und ein Sketch kann daraus eine Tastatur, ein MIDI-Gerät oder ein Laufwerk machen."
+    },
+    "J1": {
+      "name": "Stiftleiste J1",
+      "what": "22 Pins links: 3V3, RST, GPIO4-18 und 3, 46, 5V und G. Von unten angelötet, damit das Board in ein Steckbrett passt."
+    },
+    "J3": {
+      "name": "Stiftleiste J3",
+      "what": "22 Pins rechts: TX, RX, GPIO0-2, 19-21, 35-48 und drei Massen."
+    },
+    "Q1": {
+      "name": "Auto-Reset-Transistor Q1",
+      "what": "Lässt die DTR-Leitung des CP2102N über R8 EN auf LOW ziehen. Zusammen mit Q2 macht er Uploads ohne Handgriff möglich."
+    },
+    "Q2": {
+      "name": "Auto-Boot-Transistor Q2",
+      "what": "Lässt die RTS-Leitung des CP2102N über R13 GPIO0 auf LOW ziehen, sodass der Chip im Download-Modus aufwacht."
+    },
+    "D1": {
+      "name": "Schottky-Diode D1",
+      "what": "1N5819: lässt die 5 V des Ports UART auf die 5-V-Schiene des Boards und verhindert, dass Strom zurück in diesen Computer fließt."
+    },
+    "D7": {
+      "name": "Schottky-Diode D7",
+      "what": "1N5819: dieselbe Aufgabe für den Port USB."
+    },
+    "esd": {
+      "what": "Diode LESD5D5.0, die statische Funken auf einer USB-Leitung nach Masse ableitet, bevor sie die Chips erreichen."
+    },
+    "D2": {
+      "name": "ESD-Diode D2 (UART VBUS)"
+    },
+    "D3": {
+      "name": "ESD-Diode D3 (UART D−)"
+    },
+    "D4": {
+      "name": "ESD-Diode D4 (UART D+)"
+    },
+    "D8": {
+      "name": "ESD-Diode D8 (USB VBUS)"
+    },
+    "D9": {
+      "name": "ESD-Diode D9 (USB D−, GPIO19)"
+    },
+    "D10": {
+      "name": "ESD-Diode D10 (USB D+, GPIO20)"
+    },
+    "C3": {
+      "name": "Kondensator C3, 10 µF",
+      "what": "Stützt die 5-V-Schiene, wenn ein Kabel eingesteckt wird oder WLAN einschaltet."
+    },
+    "ldo-caps": {
+      "what": "Eingangs- und Ausgangskondensatoren, die der Regler braucht, um stabil zu bleiben: 10 µF für Stromstöße, 100 nF für schnelles Rauschen."
+    },
+    "C7": {
+      "name": "Kondensator C7, 10 µF (Eingang des Reglers)"
+    },
+    "C8": {
+      "name": "Kondensator C8, 100 nF (Eingang des Reglers)"
+    },
+    "C9": {
+      "name": "Kondensator C9, 100 nF (Ausgang des Reglers)"
+    },
+    "C10": {
+      "name": "Kondensator C10, 10 µF (Ausgang des Reglers)"
+    },
+    "C1": {
+      "name": "Kondensator C1, 10 µF",
+      "what": "Der Puffer des Moduls an 3,3 V: WLAN-Senden zieht stoßweise etwa 350 mA."
+    },
+    "C2": {
+      "name": "Kondensator C2, 100 nF",
+      "what": "Schnelle Entkopplung an 3,3 V direkt neben dem Modul."
+    },
+    "R24": {
+      "name": "R24, 0-Ω-Brücke",
+      "what": "Verbindet die 3,3 V des Reglers mit dem Modul und den 3V3-Pins. Heb sie an, um den Strom des Moduls zu messen; nimm sie heraus, und das Modul wird dunkel, während D5 weiter leuchtet."
+    },
+    "R5": {
+      "name": "R5, 10-kΩ-Pull-up an EN",
+      "what": "Hält EN auf HIGH, damit der Chip läuft. Ohne ihn hängt EN in der Luft, und der Chip startet nicht."
+    },
+    "C6": {
+      "name": "C6, 1-µF-Kondensator an EN",
+      "what": "Verzögert EN zusammen mit R5 um etwa 10 ms, sodass der Chip erst startet, wenn die 3,3 V stabil sind."
+    },
+    "R11": {
+      "name": "R11, 5,1 kΩ",
+      "what": "Begrenzt die Power-LED auf etwa ein Viertel Milliampere."
+    },
+    "R17": {
+      "name": "R17, 0-Ω-Brücke zur RGB-LED",
+      "what": "Die einzige Verbindung zwischen dem Datenpin und der RGB-LED. Nimm dieses eine winzige Bauteil heraus, und die LED bleibt dunkel, egal was der Code tut."
+    },
+    "autoprog": {
+      "what": "Teil der Auto-Program-Schaltung mit zwei Transistoren zwischen den Leitungen DTR/RTS des CP2102N und EN/GPIO0."
+    },
+    "R8": {
+      "name": "R8, 0 Ω (Q1 zu EN)"
+    },
+    "R13": {
+      "name": "R13, 0 Ω (Q2 zu GPIO0)"
+    },
+    "R10": {
+      "name": "R10, 10 kΩ (DTR zur Basis von Q1)"
+    },
+    "R12": {
+      "name": "R12, 10 kΩ (RTS zur Basis von Q2)"
+    },
+    "uart-links": {
+      "what": "0-Ω-Brücke in der seriellen Leitung zwischen dem CP2102N und UART0. Nimm sie heraus, und Uploads über den Port UART scheitern."
+    },
+    "R7": {
+      "name": "R7, 0 Ω (TXD des CP2102N zu RX)"
+    },
+    "R9": {
+      "name": "R9, 0 Ω (TX zu RXD des CP2102N)"
+    },
+    "vbus-sense": {
+      "what": "Teiler, der dem CP2102N meldet, dass ein USB-Host angeschlossen ist."
+    },
+    "R19": {
+      "name": "R19, 22,1 kΩ (VBUS-Erkennung)"
+    },
+    "R18": {
+      "name": "R18, 47,5 kΩ (VBUS-Erkennung)"
+    },
+    "C12": {
+      "name": "C12, 1 µF (VBUS-Erkennung)"
+    },
+    "R16": {
+      "name": "R16, 1 kΩ",
+      "what": "Pull-up am Reset-Pin des CP2102N."
+    },
+    "C11": {
+      "name": "C11, 10 µF",
+      "what": "Versorgungskondensator für den CP2102N."
+    }
+  },
+  "wireables": {
+    "led": {
+      "note": "Jeder freie GPIO über einen 330-Ω-Widerstand: (3,3 − 2,0) V / 330 Ω sind etwa 4 mA, weit innerhalb der 20 mA, die ein Pin standardmäßig liefert."
+    },
+    "push-button": {
+      "note": "Taster zwischen GPIO5 und G mit pinMode(5, INPUT_PULLUP): Er liest gedrückt LOW. Meide GPIO0, 3, 45 und 46 für Taster, die beim Einschalten gedrückt sein könnten."
+    },
+    "potentiometer": {
+      "note": "Enden an 3V3 und G, Schleifer an GPIO1 (ADC1). analogRead() liefert 0-4095, analogReadMilliVolts() die kalibrierte Spannung.",
+      "caution": "Nimm bei eingeschaltetem WLAN ADC1-Pins (GPIO1-10): ADC2 (GPIO11-20) lässt sich nicht lesen, solange das Funkteil läuft. Verbinde die Enden nie mit 5V."
+    },
+    "ldr": {
+      "note": "Fotowiderstand von 3V3 nach GPIO2 und 10 kΩ von GPIO2 nach G: mehr Licht, höherer Messwert."
+    },
+    "servo-sg90": {
+      "note": "Signal an GPIO18 mit 50 Hz (ledcAttach(18, 50, 14) oder die Bibliothek ESP32Servo). Das 3,3-V-Signal reicht für den SG90.",
+      "caution": "Versorg den Servo nur dann aus dem 5V-Pin, wenn es ein einzelner kleiner Servo an einem guten USB-Port ist; sein Anlaufstrom kann das Board in den Brown-out treiben. Größere Lasten brauchen eine eigene Versorgung mit gemeinsamer Masse."
+    },
+    "hc-sr04": {
+      "note": "TRIG an GPIO5, ECHO an GPIO6, VCC an 5V.",
+      "caution": "ECHO ist ein 5-V-Signal: Setz einen Teiler aus 1 kΩ / 2 kΩ vor GPIO6 (etwa 3,3 V) oder nimm einen 3,3-V-Sensor wie den HC-SR04P. Direkte 5 V beschädigen den Pin."
+    },
+    "mpu6050": {
+      "note": "I2C an SDA GPIO8 und SCL GPIO9 mit Wire.begin(8, 9); Adresse 0x68. Der Regler des Breakouts läuft problemlos an 3V3."
+    },
+    "ssd1306": {
+      "note": "128-x-64-OLED an I2C (GPIO8, GPIO9), Adresse 0x3C, versorgt aus 3V3."
+    },
+    "piezo-buzzer": {
+      "note": "Passiver Summer zwischen GPIO7 und G, angesteuert mit tone(7, 440) oder ledcWriteTone()."
+    },
+    "tmp36": {
+      "note": "Funktioniert ab 2,7 V, also passt 3V3. Lies GPIO1 mit analogReadMilliVolts(1): °C = (mV − 500) / 10."
+    }
+  },
+  "failures": {
+    "reverse-pin5": {
+      "title": "Verpolung am 5V-Pin",
+      "symptom": "Nichts leuchtet. Das Labornetzteil geht in die Strombegrenzung, und der Regler U2 wird heiß.",
+      "explanation": "Der 5V-Pin liegt hinter den Schottky-Dioden, also hält nichts eine verpolte Versorgung auf. Strom fließt rückwärts durch die interne Diode des Reglers und brennt ihn durch.",
+      "fix": "Tausch die Kabel und ersetz dann U2, falls er keine 3,3 V mehr liefert. Speise externe Versorgung über eine Diode ein, oder nimm den Port USB."
+    },
+    "reverse-pin3": {
+      "title": "Verpolung am 3V3-Pin",
+      "symptom": "Keine LEDs, und das Modul wird innerhalb von Sekunden heiß.",
+      "explanation": "Die 3V3-Pins gehen direkt an den ESP32-S3. Verpolt leiten seine Schutzdioden den ganzen Versorgungsstrom, und der Chip stirbt.",
+      "fix": "Tausch die Kabel. Das Modul ist meist verloren: Ersetz das Board. Prüf die Polarität mit einem Messgerät, bevor du eine Versorgung anschließt."
+    },
+    "five-volts-on-3v3": {
+      "title": "5 V am 3V3-Pin",
+      "symptom": "Das Modul wird heiß, und das Board funktioniert nicht mehr, oft endgültig.",
+      "explanation": "3,6 V sind die absolute Grenze für den ESP32-S3. 5 V am 3V3-Pin fließen außerdem über R24 zurück in den CP2102N und die LEDs.",
+      "fix": "5-V-Versorgungen gehören an den 5V-Pin, niemals an 3V3. Ersetz das Board, wenn das Modul heiß oder tot bleibt."
+    },
+    "overvoltage-pin5": {
+      "title": "24 V am 5V-Pin",
+      "symptom": "Ein Knacken oder ein Geruch von U2, dann nichts mehr.",
+      "explanation": "Der SGM2212 verträgt höchstens 20 V. Darüber fällt er aus, und ein Regler, der mit Kurzschluss ausfällt, legt die volle Eingangsspannung auf die 3,3-V-Schiene.",
+      "fix": "Nimm 5 V am 5V-Pin. Setz für Versorgungen von 7-24 V einen Abwärtswandler (etwa einen auf 5 V eingestellten LM2596) vor das Board."
+    },
+    "brownout": {
+      "title": "Brown-out",
+      "symptom": "Das Board setzt sich in einer Schleife zurück, und der Monitor zeigt Brownout detector was triggered, dann wieder das Boot-Log.",
+      "explanation": "Ein Motor am 5V-Pin oder WLAN-Stöße von etwa 350 mA an einem schwachen Port oder einem langen, dünnen Kabel ziehen die Versorgung herunter. Unter etwa 2,7 V setzt der Brown-out-Detektor des Chips ihn zurück.",
+      "fix": "Versorge Motoren getrennt mit gemeinsamer Masse, nimm ein kurzes Kabel und einen guten Port, und behalte die 10-µF-Kondensatoren."
+    },
+    "low-voltage-pin5": {
+      "title": "3 V am 5V-Pin",
+      "symptom": "Die rote LED glimmt, und der Chip setzt sich ständig zurück.",
+      "explanation": "Der Regler braucht etwa 0,4 V Spielraum: Aus 3 V am Eingang werden deutlich unter 3 V am Ausgang, unter der Brown-out-Schwelle.",
+      "fix": "Nimm 5 V am 5V-Pin oder eine saubere 3,3-V-Versorgung am 3V3-Pin."
+    },
+    "cold-gpio4": {
+      "title": "Kalte Lötstelle am Pin GPIO4 der Stiftleiste",
+      "symptom": "Die LED an GPIO4 flackert und fällt aus, am schlimmsten, wenn du das Board berührst.",
+      "explanation": "Eine matte, gerissene Lötstelle hat nur manchmal Kontakt.",
+      "fix": "Erhitz die Lötstelle, bis das Lot um Pin und Pad fließt, und prüf dann, ob sie glänzt."
+    },
+    "cold-usb": {
+      "title": "Kalte Lötstelle am Port UART",
+      "symptom": "Der Computer gibt Töne von sich, weil sich der Port verbindet und trennt; das Board setzt sich zurück, wenn sich das Kabel bewegt.",
+      "explanation": "Die VBUS-Lötstelle der Micro-USB-Buchse ist gerissen, also kommt und geht die Versorgung.",
+      "fix": "Löte die Pins und Gehäuselaschen der Buchse nach, oder nimm den anderen Port."
+    },
+    "missing-r17": {
+      "title": "R17 fehlt",
+      "symptom": "Alles funktioniert außer der RGB-LED, die nie leuchtet.",
+      "explanation": "R17 ist die 0-Ω-Brücke zwischen dem Datenpin und der LED. Ohne sie kommen die Daten nie an, egal was der Code tut.",
+      "fix": "Setz R17 wieder ein, oder überbrück die Pads mit Lot."
+    },
+    "missing-r24": {
+      "title": "R24 fehlt",
+      "symptom": "Die rote LED leuchtet, aber es gibt kein Boot-Log und kein WLAN.",
+      "explanation": "R24 verbindet den Regler mit dem Modul. Die LED sitzt davor, leuchtet also weiter, während das Modul nichts bekommt.",
+      "fix": "Setz R24 ein (oder eine Lötbrücke). Espressif nutzt diese Brücke, um den Strom des Moduls zu messen."
+    },
+    "missing-u3": {
+      "title": "CP2102N fehlt",
+      "symptom": "Am Port UART läuft das Board, aber der Computer sieht keinen seriellen Port, und Uploads scheitern.",
+      "explanation": "Strom erreicht das Board über D1, aber die USB-Daten haben ohne die Brücke kein Ziel.",
+      "fix": "Setz U3 ein, oder lade über den Port USB hoch, der direkt mit dem ESP32-S3 spricht."
+    },
+    "strap-gpio0": {
+      "title": "GPIO0 beim Reset auf LOW",
+      "symptom": "Nach einem Reset läuft nichts; der Monitor zeigt boot:0x0 (DOWNLOAD(USB/UART0)) und waiting for download.",
+      "explanation": "Das ROM liest GPIO0 beim Reset: LOW heißt, auf esptool zu warten, statt deinen Sketch zu starten. Ein gedrückt gehaltener BOOT-Taster oder eine Schaltung, die GPIO0 auf LOW zieht, bewirkt das.",
+      "fix": "Lass BOOT los oder leg die Schaltung von GPIO0 weg und drück dann RESET."
+    },
+    "five-volts-on-gpio": {
+      "title": "5 V in einen 3,3-V-GPIO",
+      "symptom": "Der Pin funktioniert nicht mehr, und der Chip läuft warm.",
+      "explanation": "Ein 5-V-Ausgang, etwa das ECHO eines HC-SR04, treibt Strom durch die Schutzdiode des Pins in die 3,3-V-Schiene. Der Pin wird zerstört.",
+      "fix": "Nimm einen Teiler (1 kΩ / 2 kΩ), einen Pegelwandler oder einen 3,3-V-Sensor. Weich auf einen frischen Pin aus; der beschädigte bleibt tot."
+    },
+    "short-5v": {
+      "title": "5V mit G kurzgeschlossen",
+      "symptom": "Alles wird dunkel, und der Computer warnt vielleicht vor einem USB-Gerät, das zu viel Strom zieht.",
+      "explanation": "Ein verirrter Draht oder eine Lötbrücke schließt die 5-V-Schiene kurz. Das Board hat keine Sicherung, also schaltet der Port des Computers die Versorgung ab.",
+      "fix": "Abklemmen, den Kurzschluss beseitigen und dann wieder einstecken."
+    }
+  },
+  "assembly": {
+    "strip": {
+      "title": "Bis auf die nackte Platine zerlegen",
+      "body": "Fang mit der schwarzen, zweilagigen Platine ohne irgendetwas darauf an. Jedes Bauteil kommt in der Reihenfolge zurück, die eine Fabrik nutzt.",
+      "refusal": "Trenn zuerst die Stromversorgung: Arbeite nie an einem Board unter Spannung."
+    },
+    "pick-place": {
+      "title": "Bestücken, dann Reflow-Löten",
+      "body": "Das Modul, der CP2102N, der Regler, beide LEDs, beide Taster, die Micro-USB-Ports und jedes Bauteil der Bauform 0402 und 0603 kommen in einem Durchgang darauf und dann zusammen durch den Reflow-Ofen.",
+      "refusal": "Zerleg zuerst das Board und trenn es von der Stromversorgung."
+    },
+    "first-power": {
+      "title": "Vor den Stiftleisten einschalten",
+      "body": "Steck ein Kabel in den Port UART. Nur mit den SMD-Bauteilen läuft das Board schon: Die rote D5 leuchtet, und die RGB-LED blinkt. Das ist der erste Test der Fabrik."
+    },
+    "unplug": {
+      "title": "Abklemmen",
+      "body": "Stiftleisten werden von Hand gelötet: Zieh zuerst das Kabel ab."
+    },
+    "place-j1": {
+      "title": "Die Stiftleiste J1 einsetzen",
+      "body": "Drück die 22-polige Stiftleiste von unten ein, lange Pins nach unten, damit das Board in einem Steckbrett stehen kann.",
+      "refusal": "Zuerst die SMD-Bauteile: Bestücken und Reflow-Löten ausführen. Der Ofen würde den Kunststoff der Stiftleiste schmelzen."
+    },
+    "place-j3": {
+      "title": "Die Stiftleiste J3 einsetzen",
+      "body": "Die rechte Stiftleiste kommt genauso hinein. Mit 22,86 mm zwischen den Reihen passt das Board über die Mittelrille eines Steckbretts."
+    },
+    "solder": {
+      "title": "Die Pins der Stiftleisten löten",
+      "body": "44 Lötstellen, auf der Oberseite gelötet. Jede sollte ein glänzender Kegel sein; eine matte Kugel ist eine kalte Lötstelle.",
+      "refusal": "Noch nichts zu löten: Setz zuerst eine Stiftleiste ein."
+    },
+    "plug-uart": {
+      "title": "In den Port UART einstecken",
+      "body": "Der CP2102N erscheint am Computer (VID 10C4, PID EA60), D5 leuchtet, und die 3,3-V-Schiene zeigt 3,3 V.",
+      "refusal": "Mach zuerst die Lötstellen fertig."
+    },
+    "upload": {
+      "title": "Einen Sketch hochladen",
+      "body": "esptool schaltet DTR und RTS um, Q1 und Q2 ziehen EN und GPIO0 auf LOW, der Chip wacht im Download-Modus auf, der Flash wird beschrieben, und RTS setzt ihn zurück. Kein Taster nötig.",
+      "refusal": "Steck zuerst den Port UART ein: Uploads laufen über das Kabel."
+    },
+    "download-mode": {
+      "title": "Den Download-Modus von Hand erzwingen",
+      "body": "Die Rettung, wenn ein Upload meldet, dass er keine Verbindung bekommt: Halt BOOT gedrückt, drück RESET und lass ihn los, dann lass BOOT los. Der Chip wartet auf esptool."
+    },
+    "power-up-check": {
+      "title": "Prüfung nach dem Einschalten",
+      "body": "Drück RESET. Das ROM-Log erscheint mit 115200 Baud, D5 leuchtet, 3V3 zeigt 3,3 V und 5V etwa 4,6 V, und der Sketch startet ab setup()."
+    }
+  },
+  "lessons": {
+    "blink": {
+      "title": "Blink: eine LED und die RGB-LED",
+      "lede": "Lass eine LED an GPIO4 und die eigene RGB-LED des Boards zusammen blinken und lerne, warum die RGB-LED rgbLedWrite() und den richtigen Pin für deine Board-Revision braucht.",
+      "steps": {
+        "1": "Verbinde GPIO4 (J1 Pin 4) über einen 330-Ω-Widerstand mit dem langen Bein der LED und das kurze Bein mit G.",
+        "2": "Führ den Sketch aus: Die LED und die RGB-LED blinken zusammen, und der Monitor gibt on und off aus.",
+        "3": "Ändere den Chip für die halbe Periode und sieh zu, wie die Blinkgeschwindigkeit folgt.",
+        "4": "Stell den Chip für den RGB-Pin auf diesem Board v1.1 auf 48: Die RGB-LED wird dunkel, weil ihre Datenleitung GPIO38 ist."
+      },
+      "hints": {
+        "1": "Die RGB-LED ist keine einfache LED: digitalWrite() kann ihre Farbe nicht einstellen. rgbLedWrite(pin, r, g, b) sendet die WS2812-Daten.",
+        "2": "Bleibt die LED an GPIO4 dunkel, prüf, ob das lange Bein (Anode) zum Widerstand zeigt.",
+        "3": "Helligkeit 64 von 255 reicht völlig: Volle Helligkeit ist aus der Nähe unangenehm."
+      },
+      "specs": {
+        "1": {
+          "label": "LED-Strom",
+          "value": "(3,3 − 2,0) V / 330 Ω ≈ 4 mA"
+        },
+        "2": {
+          "label": "Daten der RGB-LED",
+          "value": "GPIO38 bei v1.1, GPIO48 bei v1.0"
+        },
+        "3": {
+          "label": "Serial",
+          "value": "115200 Baud am Port UART"
+        }
+      },
+      "pins": {
+        "GPIO4": {
+          "to": "330 Ω, dann die Anode der LED",
+          "role": "Digitaler Ausgang"
+        },
+        "GPIO38": {
+          "to": "RGB-LED D6 (auf dem Board)",
+          "role": "WS2812-Daten"
+        },
+        "GND": {
+          "to": "Kathode der LED",
+          "role": "Masse"
+        }
+      },
+      "callouts": {
+        "D6": "Ein Datendraht stellt jede Farbe ein",
+        "R1": "330 Ω halten die LED bei etwa 4 mA"
+      },
+      "features": {
+        "1": "Zwei LEDs, zwei sehr unterschiedliche Ansteuerungen",
+        "2": "Ein Chip wechselt zwischen dem Pin von v1.1 und v1.0",
+        "3": "3,3-V-Logik: Ein Pin liefert standardmäßig 20 mA"
+      },
+      "params": {
+        "halfMs": {
+          "label": "Halbe Periode"
+        },
+        "rgbPin": {
+          "38": "38 (v1.1)",
+          "48": "48 (v1.0)",
+          "label": "Pin der RGB-LED",
+          "note": "Nur auf einem Board v1.0 richtig"
+        }
+      },
+      "checks": {
+        "1": "Der Sketch läuft 3 Sekunden",
+        "2": "Er gibt beim Start blink ready aus",
+        "3": "GPIO4 blinkt",
+        "4": "Er nutzt rgbLedWrite(), nicht das alte neopixelWrite()"
+      },
+      "code": {
+        "header": "Eine LED an GPIO4 und die RGB-LED blinken lassen",
+        "led": "J1 Pin 4, über 330 Ω",
+        "rgb": "Daten der RGB-LED: 38 bei v1.1, 48 bei v1.0",
+        "red": "Rot mit 64 von 255",
+        "off": "alle drei Farben aus"
+      }
+    },
+    "boot-button": {
+      "title": "Der BOOT-Taster und das Thermometer des Chips",
+      "lede": "BOOT ist beim Reset ein Strapping-Taster, danach aber ein gewöhnlicher Eingang. Lies ihn mit Entprellung, schalte die LED um und gib den eigenen Temperatursensor des Chips aus.",
+      "steps": {
+        "1": "Behalte die LED an GPIO4 aus der ersten Lektion.",
+        "2": "Führ den Sketch aus und drück BOOT: Die LED schaltet um, und der Monitor gibt die Anzahl der Drücke und die Temperatur des Chips aus.",
+        "3": "Stell den Chip für die Entprellung auf 0 ms und drück noch einmal: Ein Druck kann doppelt zählen, weil die Kontakte prellen."
+      },
+      "hints": {
+        "1": "BOOT zieht GPIO0 auf Masse, also liest gedrückt LOW. INPUT_PULLUP liefert das HIGH, wenn er losgelassen ist.",
+        "2": "Halt BOOT während eines Resets nur gedrückt, wenn du den Download-Modus willst; nach dem Booten ist Drücken gefahrlos.",
+        "3": "temperatureRead() ist die Temperatur des Die, ein paar Grad über der des Raums. Es ist ein grober Sensor, kein Raumthermometer."
+      },
+      "specs": {
+        "1": {
+          "label": "BOOT-Taster",
+          "value": "GPIO0 nach GND, aktiv LOW"
+        },
+        "2": {
+          "label": "Interner Pull-up",
+          "value": "etwa 45 kΩ"
+        },
+        "3": {
+          "label": "Entprellen",
+          "value": "standardmäßig 30 ms"
+        }
+      },
+      "pins": {
+        "GPIO0": {
+          "to": "BOOT-Taster SW1 (auf dem Board)",
+          "role": "Eingang mit Pull-up"
+        },
+        "GPIO4": {
+          "to": "330 Ω, dann die LED",
+          "role": "Digitaler Ausgang"
+        }
+      },
+      "callouts": {
+        "SW1": "Gedrückt liest LOW",
+        "U4": "Der Temperatursensor sitzt im Chip"
+      },
+      "features": {
+        "1": "Ein echter Eingang ohne zusätzliche Bauteile",
+        "2": "Entprellen mit millis(), niemals mit delay()",
+        "3": "GPIO0 ist beim Reset ein Strapping-Pin"
+      },
+      "params": {
+        "debounceMs": {
+          "label": "Entprellzeit"
+        }
+      },
+      "world": {
+        "boot": "BOOT-Taster"
+      },
+      "checks": {
+        "1": "Der Sketch läuft 3 Sekunden",
+        "2": "Der erste Druck schaltet die LED ein",
+        "3": "Der zweite Druck schaltet sie aus",
+        "4": "Jeder Druck gibt seine Nummer und die Temperatur des Chips aus"
+      },
+      "code": {
+        "header": "Der BOOT-Taster schaltet die LED um und gibt die Temperatur des Chips aus",
+        "boot": "BOOT-Taster (SW1) an GPIO0",
+        "pullup": "gedrückt = LOW, losgelassen = HIGH",
+        "edge": "der Messwert hat sich geändert: Timer neu starten",
+        "low": "ein sauberer Druck",
+        "temp": "Temperatur des Die in °C"
+      },
+      "quiz": {
+        "reset": {
+          "q": "Du hältst BOOT gedrückt, während du RESET drückst und loslässt. Was passiert?",
+          "options": {
+            "1": "Der Sketch startet neu, und BOOT liest LOW",
+            "2": "Der Chip wartet im Download-Modus auf esptool",
+            "3": "Der Flash wird gelöscht"
+          },
+          "why": "GPIO0 wird beim Reset abgefragt: LOW bedeutet den Download-Modus des ROM. Dein Sketch läuft erst nach einem Reset mit losgelassenem BOOT wieder."
+        }
+      }
+    },
+    "dimmer": {
+      "title": "Die LED mit einem Drehknopf dimmen",
+      "lede": "Ein Potentiometer an GPIO1 stellt die Helligkeit der LED an GPIO4 ein. Der ESP32-S3 liest den Schleifer mit einem 12-Bit-ADC und treibt die LED mit LEDC-PWM.",
+      "steps": {
+        "1": "Schließ das 10-kΩ-Potentiometer an: ein Ende an 3V3, den Schleifer an GPIO1, das andere Ende an G. Behalte die LED an GPIO4 über 330 Ω.",
+        "2": "Führ den Sketch aus und dreh am Knopf. Die LED wird heller, die RGB-LED wandert von Blau zu Rot, und der Monitor gibt den Rohwert, die Millivolt und das Tastverhältnis aus.",
+        "3": "Ändere den Chip für die PWM-Frequenz. Die Helligkeit bleibt gleich, weil das Auge alles über etwa 100 Hz mittelt."
+      },
+      "hints": {
+        "1": "analogRead() liefert nach analogReadResolution(12) 0 bis 4095. Geteilt durch 16 ergibt das ein 8-Bit-Tastverhältnis, 0 bis 255.",
+        "2": "Arduino-ESP32 3.x hängt PWM an den Pin: ledcAttach(pin, freq, bits), dann ledcWrite(pin, duty). ledcSetup() und ledcAttachPin() waren die API von 2.x.",
+        "3": "analogReadMilliVolts() meldet denselben Pin in Millivolt, mit der Kalibrierung des Chips. Ein Schleifer bei 3,3 V liest etwa 3300."
+      },
+      "specs": {
+        "1": {
+          "label": "ADC",
+          "value": "12 Bit, etwa 0–3,3 V an GPIO1"
+        },
+        "2": {
+          "label": "PWM",
+          "value": "8-Bit-LEDC, standardmäßig 5 kHz"
+        },
+        "3": {
+          "label": "Skala",
+          "value": "duty = raw / 16"
+        }
+      },
+      "pins": {
+        "GPIO1": {
+          "to": "Schleifer des Potentiometers",
+          "role": "Analoger Eingang"
+        },
+        "GPIO4": {
+          "to": "330 Ω, dann die LED",
+          "role": "PWM-Ausgang"
+        },
+        "3V3": {
+          "to": "Ein Ende des Potentiometers",
+          "role": "3,3-V-Referenz"
+        }
+      },
+      "callouts": {
+        "POT1": "Dreh daran: Das Tastverhältnis folgt dem Schleifer",
+        "LED1": "Die Helligkeit folgt dem Tastverhältnis"
+      },
+      "features": {
+        "1": "Ein 12-Bit-Messwert wird zu einem 8-Bit-Tastverhältnis",
+        "2": "Die LEDC-API von 3.x, an den Pin gehängt",
+        "3": "Die Spannung am Schleifer, in Millivolt ausgegeben"
+      },
+      "params": {
+        "pwmHz": {
+          "label": "PWM-Frequenz"
+        }
+      },
+      "world": {
+        "knob": "Winkel des Drehknopfs"
+      },
+      "checks": {
+        "1": "Der Sketch läuft 3 Sekunden",
+        "2": "Bei einer Vierteldrehung liegt GPIO4 nahe einem Viertel Tastverhältnis",
+        "3": "Bei drei Vierteln liegt GPIO4 nahe drei Vierteln Tastverhältnis",
+        "4": "Ganz im Uhrzeigersinn ist GPIO4 voll an",
+        "5": "Er gibt den Rohwert, die Millivolt und das Tastverhältnis aus",
+        "6": "Er nutzt analogRead(), ledcAttach() und ledcWrite(), nicht die API von 2.x"
+      },
+      "code": {
+        "header": "Eine LED mit einem Potentiometer dimmen",
+        "pot": "Schleifer des 10-kΩ-Potis, GPIO1",
+        "bits": "8 Bit: Tastverhältnis 0 bis 255",
+        "adc": "12-Bit-ADC: Rohwert 0 bis 4095",
+        "attach": "API von 3.x: PWM an den Pin hängen",
+        "raw": "0 an einem Ende des Knopfs, 4095 am anderen",
+        "scale": "4095 / 16 = 255, volles Tastverhältnis"
+      }
+    },
+    "web-server": {
+      "title": "WLAN-Webserver",
+      "lede": "Verbinde dich mit einem 2,4-GHz-Netz, gib die IP-Adresse des Boards aus und schalte die LED aus dem Browser eines Handys. Die RGB-LED zeigt den WLAN-Zustand.",
+      "steps": {
+        "1": "Behalte die LED an GPIO4.",
+        "2": "Führ den Sketch aus: Die RGB-LED blinkt blau, während er sich verbindet, wird dann grün, und der Monitor gibt die IP-Adresse aus.",
+        "3": "Öffne /on und /off vom Handy aus: Die LED folgt, und der Monitor protokolliert jede Anfrage.",
+        "4": "Wähl das Netz HackTX mit demselben Passwort und sieh zu, wie es nie eine Verbindung bekommt."
+      },
+      "hints": {
+        "1": "WiFi.h und WebServer.h kommen mit dem ESP32-Core; nichts zu installieren.",
+        "2": "Der ESP32-S3 hat kein 5-GHz-Funkteil: Er sieht nur 2,4-GHz-Netze.",
+        "3": "Ruf hier in loop() nie delay() auf: server.handleClient() muss ständig laufen, um zu antworten."
+      },
+      "specs": {
+        "1": {
+          "label": "Funkteil",
+          "value": "2,4-GHz-WLAN 802.11 b/g/n, Bluetooth 5 LE"
+        },
+        "2": {
+          "label": "Sendestrom",
+          "value": "bis zu etwa 355 mA"
+        },
+        "3": {
+          "label": "Seiten",
+          "value": "/, /on, /off auf Port 80"
+        }
+      },
+      "pins": {
+        "GPIO4": {
+          "to": "330 Ω, dann die LED",
+          "role": "Von der Webseite geschaltet"
+        },
+        "GPIO38": {
+          "to": "RGB-LED D6",
+          "role": "WLAN-Status"
+        }
+      },
+      "callouts": {
+        "U4": "Das Antennenende muss frei bleiben",
+        "D6": "Blau: verbindet. Grün: online"
+      },
+      "features": {
+        "1": "Eine Webseite, die das Board ausliefert",
+        "2": "Status auf der RGB-LED",
+        "3": "WLAN-Stöße brauchen eine gute USB-Versorgung"
+      },
+      "params": {
+        "ssid": {
+          "label": "Netz",
+          "bench-lab": "bench-lab",
+          "HackTX": "HackTX",
+          "note": "Sein Passwort ist nicht robotics, also versucht es das Board immer weiter"
+        }
+      },
+      "world": {
+        "phone": "Anfrage vom Handy"
+      },
+      "checks": {
+        "1": "Der Sketch läuft 4,5 Sekunden",
+        "2": "Er verbindet sich mit dem Netz und gibt seine IP-Adresse aus",
+        "3": "Das Öffnen von /on schaltet die LED ein",
+        "4": "Das Öffnen von /off schaltet sie aus",
+        "5": "Er startet WLAN und beantwortet Anfragen in loop()"
+      },
+      "code": {
+        "header": "Die LED an GPIO4 von einer Webseite aus schalten",
+        "pass": "das Passwort des Netzes bench-lab",
+        "sta": "als Station mit einem Netz verbinden",
+        "blue": "blaues Blinken beim Verbinden",
+        "green": "Grün: im Netz",
+        "loop": "Anfragen beantworten, hier nie blockieren"
+      }
+    }
+  }
+}
