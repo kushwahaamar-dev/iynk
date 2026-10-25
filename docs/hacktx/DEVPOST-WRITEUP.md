@@ -122,13 +122,11 @@ We also learned to cut. Proof of Build on Solana and a hardware twin for a real 
 
 next.js, react, typescript, tailwindcss, codemirror, zod, colorfigures, svg, javascript, python, node.js, websockets, ws, vercel, vultr, docker, caddy, meta-model-api, muse-spark, muse-image, muse-voice-transcribe, model-context-protocol, facebook-share-dialog, serpapi, tiger-data, timescaledb, postgresql, vitest, playwright, axe-core, claude-code
 
-Drop vultr, docker and caddy if the relay isn't running there at submission, and tiger-data, timescaledb and postgresql if the database isn't connected.
-
 ---
 
 ## Prize tracks we're entering
 
-Entering: Meta, SerpApi, Best Overall, Most Entertaining and Best Pitch; MLH Vultr, Tiger Data and .Tech only if each is live at submission. Not entering: Solana and Best Hardware Hack (both features are switched off), the MLH A-Team track (it requires Cursor and Grok Bot as core tools; we used Claude Code), Gemini, NMC2, Capital One, Toyota and Snowflake. Best Novice only if every team member is a first-time hacker.
+Entering: Meta, SerpApi, Best Overall, Most Entertaining, Best Pitch, MLH Vultr and MLH Tiger Data. Not entering: MLH .Tech (we have no .tech domain), Solana and Best Hardware Hack (both features are switched off), the MLH A-Team track (it requires Cursor and Grok Bot as core tools; we used Claude Code), Gemini, NMC2, Capital One, Toyota and Snowflake. Best Novice only if every team member is a first-time hacker.
 
 ### [Title Sponsor: Meta/Facebook] Bringing People Closer Together with AI
 
@@ -152,11 +150,7 @@ Vercel functions can't hold WebSockets, so SimLab's realtime relay runs on a Vul
 
 ### [MLH] Best Use of Tiger Data
 
-Enter only if the database is connected at submission. SimLab's anonymous usage counts live in Tiger Data. One events hypertable in one-day chunks, compressed to the columnstore after a day and kept 30 days, holds flight samples, laps, lesson attempts and passes, faults, room actions and AI and search calls. A real-time continuous aggregate of the best lap per course per day drives the flight leaderboard, so it reads precomputed rows instead of scanning raw events, and a second aggregate counts activity per minute. Opt-in buddy profiles sit in a regular table in the same database and expire after 24 hours.
-
-### [MLH] Best .Tech Domain Name
-
-Enter only if the domain is set. SimLab lives at [SITE], and the realtime relay at rt.[DOMAIN]. [One sentence on why the name fits.]
+SimLab's anonymous usage counts live in Tiger Data. One events hypertable in one-day chunks, compressed to the columnstore after a day and kept 30 days, holds flight samples, laps, lesson attempts and passes, faults, room actions and AI and search calls. A real-time continuous aggregate of the best lap per course per day drives the flight leaderboard, so it reads precomputed rows instead of scanning raw events, and a second aggregate counts activity per minute. Opt-in buddy profiles sit in a regular table in the same database and expire after 24 hours.
 
 ### [Best Pitch] A Bard's Tale
 
@@ -176,7 +170,7 @@ The idea for SimLab and our hardware research predate HackTX. Before 11:30 a.m. 
 ## Confirm before submitting
 
 - Filled 08:39: the site (https://simlab-hacktx.vercel.app) and the repo (https://github.com/kushwahaamar-dev/sim, public). Still open: [VIDEO_URL]. No .tech domain, so no [DOMAIN].
-- `/api/status` on the production deployment: `ai`, `image`, `voice`, `search`, `realtime` and `db` true (`solana` stays false). Soften or cut any paragraph whose flag is false, and drop the Vultr, Tiger Data and .Tech tracks if their part isn't live.
+- `/api/status` on production (checked 08:54): `ai`, `image`, `voice`, `search`, `realtime`, `db` and `gemini` true, `solana` false. Vultr and Tiger Data are entered; .Tech is not (no domain), and its section is gone.
 - Meta model ids: `.env.example` has `muse-spark-1.1`, `muse-image-1.0` and `muse-voice-transcribe-1.0`; check them against `docs/hacktx/AI.md`. Fill in the Muse connector bracket (a custom connector in Muse, or an MCP client only): at 02:00 it had not been tried from Muse (`docs/hacktx/MUSE-CONNECTOR.md`). Confirm Facebook's share dialog opens from a story.
 - The partner calling `ask_peer` with a real key, voice transcription, chat translation and the story cover, each tried once on the deployed site.
 - SerpApi engines that actually ship. Keep Google Lens in "What's next" only.
