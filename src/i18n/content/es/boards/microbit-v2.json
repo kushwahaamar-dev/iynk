@@ -1,0 +1,822 @@
+{
+  "title": "BBC micro:bit V2",
+  "tagline": "Un ordenador de bolsillo con 25 LED, dos botones, un logotipo táctil, un sensor de movimiento, un altavoz y un micrófono",
+  "overview": "La micro:bit es la placa que los colegios reparten primero. Por delante tiene una cuadrícula de 5 x 5 LED rojos, los botones A y B, un logotipo dorado que puedes tocar y un conector de borde dorado con cinco anillos grandes (0, 1, 2, 3V y GND) a los que puedes enganchar pinzas de cocodrilo. Por detrás lleva el nRF52833 que ejecuta tu programa, un segundo chip nRF52 que convierte el USB en una unidad llamada MICROBIT y un puerto serie, un regulador de 3,3 V, un sensor de movimiento, un altavoz y un micrófono. Escribes MicroPython, arrastras el archivo a la unidad y la placa se reinicia con tu programa. Todo funciona a 3,3 V, y ningún pin admite 5 V.",
+  "mcu": {
+    "nrf52820": "Chip de interfaz: ejecuta DAPLink, que muestra la unidad MICROBIT, copia tu programa en el nRF52833 y pasa el puerto serie por USB",
+    "lsm303agr": "Sensor de movimiento: acelerómetro en la dirección I²C 0x19 y brújula en 0x1E, en el bus I²C propio de la placa",
+    "ncp114": "Regulador de 3,3 V (300 mA, con límite de corriente y apagado térmico) que alimenta toda la placa"
+  },
+  "power": {
+    "usb": {
+      "protection": "El diodo Schottky BAT60J D51 pasa los 5 V del USB a VCOMBINED e impide que una batería empuje corriente de vuelta al ordenador. Luego el regulador NCP114 genera 3,3 V."
+    },
+    "battery": {
+      "protection": "Dos diodos BAT60A en serie (D59 y luego D57 de reserva) bloquean un portapilas invertido, así que un portapilas conectado al revés no hace nada. El conector tiene forma y solo entra en un sentido. Usa 2 pilas AAA o 2 AA (3 V)."
+    },
+    "ring3v": {
+      "protection": "Ninguna. La alimentación que metes por el anillo 3V o por los pads de batería de detrás va directa a la línea de 3,3 V, saltándose el regulador y todos los diodos. Usa una fuente regulada de 1,8 a 3,6 V con un diodo en serie, nunca una LiPo ni 5 V."
+    },
+    "rails": {
+      "vbus": "Los 5 V del USB desde el conector micro-USB, antes de cualquier protección",
+      "vcombined": "Los 5 V del USB menos la caída de D51 (unos 4,7 V), o la batería menos dos caídas de diodo: la que sea más alta alimenta el regulador",
+      "3v": "La línea de 3,3 V del NCP114: los dos chips nRF52, los sensores, los LED y el anillo 3V. 300 mA en total, de los que hasta 190 mA pueden salir por el conector de borde."
+    },
+    "io": "Los pines funcionan a 3,3 V y no toleran 5 V. Con la corriente de salida normal, un pin da de 1 a 4 mA, así que pon una resistencia delante de un LED y un transistor delante de cualquier cosa más grande. El conector de borde en conjunto puede dar 190 mA desde el anillo 3V."
+  },
+  "pins": {
+    "ring": {
+      "p0": "Por aquí también sale el sonido: la música y el altavoz suenan a la vez en el pin 0. Táctil resistivo (pull-up de 10 MΩ), así que toca GND con la otra mano.",
+      "3v": "Salida de 3,3 V, hasta 190 mA. También puedes alimentar la placa por aquí, pero nada protege este anillo: la polaridad al revés o más de 3,6 V dañan los chips."
+    },
+    "edge": {
+      "column": "Una de las cinco columnas de la matriz de LED. Apaga la pantalla antes de usarlo para otra cosa.",
+      "button": "Conectado a un botón de la parte de delante con un pull-up de 10 kΩ. Lee LOW cuando se pulsa el botón; déjalo para el botón.",
+      "p9": "Comparte el pin de la antena NFC del nRF52833. Funciona como GPIO, pero elige otro pin si puedes.",
+      "p12": "Reservado para dispositivos de accesibilidad. Funciona como GPIO para pruebas, pero déjalo libre en tus proyectos.",
+      "i2c": "El bus I²C externo (P19 es SCL, P20 es SDA) con pull-ups de 4,7 kΩ en la placa. Es un bus distinto del que usa el sensor de movimiento.",
+      "guard": "Tira estrecha de 3V junto al anillo 3V: la misma línea, los mismos límites"
+    }
+  },
+  "leds": {
+    "D60": "Rojo, en la parte de atrás. Brillo máximo por USB, más tenue con pilas; se va apagando cuando mantienes pulsado RESET para apagar la placa.",
+    "D61": "Amarillo, en la parte de atrás. Encendido mientras hay un ordenador conectado; parpadea mientras se copia un programa.",
+    "D70": "Rojo, en la parte de atrás junto al micrófono. Se enciende siempre que el micrófono está activado, para que veas cuándo está escuchando la placa."
+  },
+  "controls": {
+    "SW2": "El botón A de delante. Lee LOW en P5 mientras está pulsado.",
+    "SW3": "El botón B de delante. Lee LOW en P11 mientras está pulsado.",
+    "LOGO": "Toca el logotipo dorado: pin_logo.is_touched() pasa a True mientras tienes el dedo encima.",
+    "SW1": "RESET, en la parte de atrás. Una pulsación corta reinicia tu programa; mantenlo unos 4 segundos para apagar la placa."
+  },
+  "displays": {
+    "LEDS": "25 LED rojos en cinco filas y cinco columnas. Las filas se encienden desde pines propios del nRF52833; las columnas P3, P4, P6, P7 y P10 absorben la corriente. MicroPython las recorre tan rápido que ves una imagen fija con diez niveles de brillo."
+  },
+  "parts": {
+    "U2": {
+      "name": "Procesador nRF52833",
+      "what": "Ejecuta tu programa: un Arm Cortex-M4F a 64 MHz con 512 KB de flash, 128 KB de RAM y una radio de 2,4 GHz para Bluetooth y la radio de la micro:bit, todo en un solo chip."
+    },
+    "X1": {
+      "name": "Cristal de 32 MHz",
+      "what": "Mantiene en frecuencia el reloj y la radio del nRF52833. Sin él, el procesador nunca arranca."
+    },
+    "U5": {
+      "name": "Chip de interfaz nRF52820",
+      "what": "Habla USB. Muestra la unidad MICROBIT, escribe en el nRF52833 el archivo que sueltas en ella, pasa el puerto serie a 115200 baudios y controla el LED amarillo del USB."
+    },
+    "U3": {
+      "name": "Regulador de 3,3 V NCP114",
+      "what": "Convierte la alimentación del USB o de las pilas en la línea de 3,3 V. Puede dar 300 mA y limita su propia corriente cuando algo cortocircuita la línea."
+    },
+    "D51": {
+      "name": "Diodo USB BAT60J",
+      "what": "Deja pasar los 5 V del USB a VCOMBINED e impide que las pilas alimenten de vuelta el ordenador."
+    },
+    "D59": {
+      "name": "Diodos de batería BAT60A",
+      "what": "D59 y D57 en serie en la entrada de la batería: un portapilas conectado al revés no puede empujar corriente hacia la placa."
+    },
+    "D1": {
+      "name": "Diodo BAT54T",
+      "what": "Impide que la salida del regulador suba por encima de su entrada cuando la alimentación entra por el anillo 3V."
+    },
+    "L5": {
+      "name": "Choque de modo común del USB",
+      "what": "Filtra el ruido del par de datos USB antes de que llegue al chip de interfaz."
+    },
+    "D62": {
+      "name": "Protección ESD del USB",
+      "what": "Recorta las descargas de electricidad estática en las líneas de datos USB."
+    },
+    "J3": {
+      "name": "Conector micro-USB",
+      "what": "La alimentación, la unidad MICROBIT y el puerto serie, todo por un solo cable."
+    },
+    "J2": {
+      "name": "Conector de batería",
+      "what": "Conector de dos pines de 2,0 mm para un portapilas de 2 AAA. Tiene forma, así que la clavija solo entra en un sentido."
+    },
+    "SW1": {
+      "name": "Botón de reinicio",
+      "what": "Una pulsación corta reinicia tu programa. Mantenlo hasta que el LED rojo se apague para apagar la placa."
+    },
+    "SW2": {
+      "name": "Botón A",
+      "what": "Botón de delante en P5 con un pull-up de 10 kΩ; lee LOW cuando se pulsa."
+    },
+    "SW3": {
+      "name": "Botón B",
+      "what": "Botón de delante en P11 con un pull-up de 10 kΩ; lee LOW cuando se pulsa."
+    },
+    "LOGO": {
+      "name": "Logotipo táctil",
+      "what": "Un pad dorado en el P1.04 del nRF52833 que detecta tu dedo por capacidad."
+    },
+    "LEDS": {
+      "name": "Matriz de LED de 5 x 5",
+      "what": "25 LED rojos 0603, de D2 a D50, recorridos fila a fila. Usados al revés, también funcionan como un sensor de luz aproximado."
+    },
+    "D60": {
+      "name": "LED rojo de alimentación",
+      "what": "Indica que la placa tiene alimentación: brillante por USB, más tenue con pilas."
+    },
+    "D61": {
+      "name": "LED amarillo del USB",
+      "what": "Encendido mientras el USB está conectado a un ordenador; parpadea mientras se copia un programa."
+    },
+    "D70": {
+      "name": "LED del micrófono",
+      "what": "Se enciende desde el mismo pin que alimenta el micrófono."
+    },
+    "U6": {
+      "name": "Sensor de movimiento LSM303AGR",
+      "what": "Acelerómetro y brújula en un solo encapsulado de 2 x 2 mm, en el bus I²C interno en 0x19 y 0x1E."
+    },
+    "U4": {
+      "name": "Micrófono MEMS",
+      "what": "Oye a través de un pequeño agujero en la placa. Solo tiene alimentación mientras tu programa lo usa."
+    },
+    "SP1": {
+      "name": "Altavoz magnético",
+      "what": "Una bobina, un imán y un disco de acero, con más volumen cerca de 2,7 kHz. El programa lo controla desde P0.00 a través de T2."
+    },
+    "T2": {
+      "name": "MOSFET del altavoz",
+      "what": "Conmuta la corriente del altavoz para que no tenga que pasar por el pin del procesador."
+    },
+    "D5": {
+      "name": "Diodo de protección del altavoz",
+      "what": "Absorbe el pico de tensión de la bobina del altavoz cada vez que T2 se apaga."
+    },
+    "ANT": {
+      "name": "Antena en la PCB",
+      "what": "Una pista de cobre en la esquina de la placa que envía y recibe Bluetooth y la radio de la micro:bit."
+    },
+    "RF": {
+      "name": "Piezas de adaptación de la antena",
+      "what": "L3, L7 y C11 adaptan la salida de la radio a la pista de la antena."
+    },
+    "RLED": {
+      "name": "Resistencias de los LED de estado",
+      "what": "R38 y R39, de 220 Ω cada una, fijan la corriente de los LED rojo y amarillo."
+    },
+    "TVS": {
+      "name": "Diodos ESD del borde",
+      "what": "De D71 a D74 recortan la electricidad estática de los anillos que tocas y a los que enganchas pinzas."
+    },
+    "TR": {
+      "name": "Transistores pequeños",
+      "what": "Transistores digitales que detectan de dónde viene la alimentación y pasan señales entre los dos chips."
+    },
+    "RING0": {
+      "name": "Anillo 0",
+      "what": "P0: entrada analógica, táctil, PWM. El sonido suena aquí además de en el altavoz."
+    },
+    "RING1": {
+      "name": "Anillo 1",
+      "what": "P1: entrada analógica, táctil, PWM. Las lecciones controlan su LED desde aquí."
+    },
+    "RING2": {
+      "name": "Anillo 2",
+      "what": "P2: entrada analógica, táctil, PWM. La lección del regulador de brillo lee aquí su potenciómetro."
+    },
+    "RING3V": {
+      "name": "Anillo 3V",
+      "what": "Salida de 3,3 V para tus circuitos, hasta 190 mA. La alimentación que entra por aquí se salta todas las protecciones de la placa."
+    },
+    "RINGGND": {
+      "name": "Anillo GND",
+      "what": "La tierra de todo lo que conectes."
+    },
+    "EDGE": {
+      "name": "Conector de borde",
+      "what": "Las tiras doradas estrechas, con un paso de 1,27 mm, llevan los demás pines (de P3 a P16, P19, P20, 3V y GND). Enchufa la placa en un adaptador de borde para llegar a ellos."
+    }
+  },
+  "wireables": {
+    "led": {
+      "note": "Engancha el anillo 1 a la pata larga del LED a través de una resistencia de 470 Ω y la pata corta a GND: unos 3 mA.",
+      "caution": "Un pin de la V2 solo da de 1 a 4 mA. Nunca conectes un LED sin resistencia."
+    },
+    "push-button": {
+      "note": "Usa P8 y activa el pull-up interno con pin8.set_pull(pin8.PULL_UP); el pin lee 0 mientras está pulsado."
+    },
+    "potentiometer": {
+      "note": "Los extremos a 3V y GND, el cursor al anillo 2: pin2.read_analog() da de 0 a 1023."
+    },
+    "ldr": {
+      "note": "Haz un divisor con una resistencia de 10 kΩ del anillo 0 a GND, y léelo con pin0.read_analog()."
+    },
+    "piezo-buzzer": {
+      "note": "Anillo 0 y GND: la música ya suena en el pin 0, así que pita a la vez que el altavoz."
+    },
+    "servo-sg90": {
+      "note": "Señal en el anillo 1: pin1.set_analog_period(20), y luego de pin1.write_analog(51) a pin1.write_analog(102) para pulsos de 1 a 2 ms.",
+      "caution": "Un SG90 puede pedir cientos de mA al arrancar. Alimentado desde el anillo 3V, provoca una caída de tensión en la placa; dale su propia fuente de 4 a 6 V y une las tierras."
+    },
+    "mpu6050": {
+      "note": "P19 a SCL y P20 a SDA a través de un adaptador de borde; el objeto i2c de MicroPython usa ese bus externo a 100 kHz."
+    },
+    "ssd1306": {
+      "note": "El mismo bus I²C externo que cualquier otro sensor: P19 SCL, P20 SDA, 3V y GND."
+    },
+    "hc-sr04": {
+      "note": "TRIG en P13 y ECHO en P14 a través de un adaptador de borde.",
+      "caution": "El HC-SR04 clásico necesita 5 V y devuelve un eco de 5 V, que ningún pin de la micro:bit admite. Usa una versión de 3,3 V, o aliméntalo con 5 V y reduce el eco a 3,3 V con un divisor."
+    }
+  },
+  "failures": {
+    "reverse-ring3v": {
+      "title": "Batería al revés en el anillo 3V",
+      "symptom": "No se enciende nada, los chips se calientan rápido y la placa puede oler a quemado.",
+      "explanation": "El anillo 3V va directo a la línea de 3,3 V. En este camino no hay ningún diodo, así que la alimentación invertida empuja corriente hacia atrás por los diodos de protección de dentro de cada chip.",
+      "fix": "Desconecta enseguida. Alimenta por el conector de batería o por USB, o pon un diodo en serie si de verdad tienes que alimentar por el anillo 3V."
+    },
+    "reverse-battery": {
+      "title": "Portapilas conectado al revés",
+      "symptom": "No pasa nada de nada: ni LED rojo, ni imagen, ni daños.",
+      "explanation": "D59 y D57 van en serie en la entrada de la batería y solo conducen en un sentido, así que un portapilas invertido no puede empujar corriente hacia la placa.",
+      "fix": "Vuelve a cablear la clavija del portapilas (rojo al +) o usa un portapilas hecho para la micro:bit."
+    },
+    "lipo-on-3v": {
+      "title": "Una LiPo de 4,2 V en el anillo 3V",
+      "symptom": "La placa puede funcionar un momento, y luego el acelerómetro y la brújula dejan de responder.",
+      "explanation": "El anillo 3V se salta el regulador, así que la línea se queda a 4,2 V. El máximo absoluto del LSM303AGR es de 3,6 V y el de los nRF52 de 3,9 V.",
+      "fix": "Alimenta la placa con 2 pilas AAA en el conector de batería, o por USB. Alimenta el anillo 3V solo con una fuente regulada de 3,3 V."
+    },
+    "flat-battery": {
+      "title": "Pilas gastadas",
+      "symptom": "La imagen es tenue, el programa se reinicia una y otra vez, y al tocar un sonido la placa se reinicia.",
+      "explanation": "Dos pilas AAA cansadas dan menos de 2 V después de los diodos. El nRF52833 se reinicia cerca de 1,7 V, así que cada pico de consumo (los LED, el altavoz) lo hunde por debajo.",
+      "fix": "Pon pilas nuevas, o conecta el USB."
+    },
+    "overload-3v": {
+      "title": "Demasiada carga en el anillo 3V",
+      "symptom": "La pantalla parpadea y el programa se reinicia cada vez que el motor o la tira de LED consumen corriente.",
+      "explanation": "El regulador da 300 mA y solo 190 mA de ellos están pensados para el conector de borde. Un motor o una tira de NeoPixels piden más, la línea cae y el procesador se reinicia.",
+      "fix": "Alimenta los motores y las tiras de LED con su propia fuente y conecta a la micro:bit solo las tierras y la señal."
+    },
+    "short-3v": {
+      "title": "3V en cortocircuito con GND",
+      "symptom": "Todo se apaga, la unidad MICROBIT desaparece y el regulador se calienta.",
+      "explanation": "Una pinza de cocodrilo suelta une los anillos 3V y GND. La alimentación del USB y la de las pilas llegan a la línea a través del NCP114, que limita su corriente y se apaga cuando se calienta demasiado.",
+      "fix": "Desconecta, busca la pinza o el cable suelto y vuelve a encenderla. La placa se recupera."
+    },
+    "five-volt-pin": {
+      "title": "5 V en un pin",
+      "symptom": "Las cosas funcionan de forma rara, luego falla el sensor de movimiento y puede que el procesador no vuelva a arrancar.",
+      "explanation": "Una señal de 5 V, como el eco de un HC-SR04, supera el límite de 3,6 V del pin. La corriente pasa por el diodo de protección del pin hacia la línea de 3,3 V y sube toda la línea por encima de lo que aguantan los sensores.",
+      "fix": "Nunca conectes señales de 5 V. Usa un divisor de tensión o un adaptador de niveles, o una versión de 3,3 V del módulo."
+    },
+    "loose-clip": {
+      "title": "Pinza de cocodrilo suelta en el anillo 1",
+      "symptom": "El LED del pin 1 titila o se salta parpadeos, y las lecturas dan saltos.",
+      "explanation": "Una pinza que solo sujeta medio anillo hace y deshace contacto cada vez que se mueve la placa.",
+      "fix": "Engancha la pinza atravesando el agujero del anillo para que las mordazas sujeten los dos lados, o atornilla el cable con un tornillo M3."
+    },
+    "no-crystal": {
+      "title": "Sin cristal de 32 MHz",
+      "symptom": "El LED rojo está encendido y aparece la unidad, pero tu programa nunca se ejecuta.",
+      "explanation": "El nRF52833 necesita X1 para arrancar su reloj y su radio. El chip de interfaz tiene su propio cristal, así que el USB sigue funcionando.",
+      "fix": "Coloca un cristal de 32 MHz en X1."
+    },
+    "no-regulator": {
+      "title": "Falta el regulador",
+      "symptom": "El USB está conectado, pero no se enciende nada: ni siquiera el LED rojo.",
+      "explanation": "Todas las fuentes salvo el anillo 3V llegan a los chips a través de U3. Sin él, la línea de 3,3 V se queda a 0 V.",
+      "fix": "Coloca el NCP114 en U3."
+    }
+  },
+  "assembly": {
+    "unplug": {
+      "title": "Desconecta la placa",
+      "body": "Quita el cable USB y la batería antes de trabajar en la placa."
+    },
+    "strip": {
+      "title": "Empieza desde la PCB desnuda",
+      "body": "Déjala en la placa negra de dos capas: el conector de borde dorado, los cinco agujeros metalizados de los anillos, el pad del logotipo táctil y la pista de la antena.",
+      "refusal": "Primero desconecta la placa."
+    },
+    "pick-place": {
+      "title": "Coloca todas las piezas y haz el reflujo",
+      "body": "Todas las piezas son de montaje superficial. La máquina de colocación automática pone los LED y los botones por delante y todo lo demás por detrás: los dos chips nRF52, el cristal, el regulador, los sensores, el altavoz y los conectores. Luego la placa pasa por el horno de reflujo, donde la pasta de soldar se funde y se forman todas las uniones.",
+      "refusal": "Primero deja la placa desnuda."
+    },
+    "plug-usb": {
+      "title": "Conecta el USB",
+      "body": "Se enciende el LED rojo, el amarillo lo sigue cuando el ordenador ve la placa, y el corazón de fábrica late en la matriz."
+    },
+    "rails": {
+      "title": "Comprueba la alimentación",
+      "body": "En la vista de alimentación, VCOMBINED debería marcar unos 4,7 V (el USB menos un diodo) y la línea 3V, 3,3 V."
+    },
+    "flash-blink": {
+      "title": "Graba un programa",
+      "body": "Suelta el programa de parpadeo en MICROBIT. El LED amarillo parpadea mientras se copia, y luego el LED central y el pin 1 parpadean una vez por segundo.",
+      "refusal": "Primero conecta el USB."
+    },
+    "buttons": {
+      "title": "Prueba los botones",
+      "body": "Graba el programa de los botones y luego pulsa A para ver una cara feliz y B para una triste."
+    },
+    "battery": {
+      "title": "Funciona con pilas",
+      "body": "Desconecta el USB y enchufa el portapilas AAA. El LED rojo se vuelve más tenue, el amarillo se apaga y la línea baja a unos 3 V, que sigue siendo más que suficiente."
+    },
+    "serial": {
+      "title": "Lee el puerto serie",
+      "body": "Graba el programa de la temperatura y abre el monitor serie a 115200 baudios: llega una línea cada segundo."
+    },
+    "exploded": {
+      "title": "Mira por dentro",
+      "body": "Desconecta y despieza la placa para ver sus dos caras por separado: la de delante, con los LED y los botones, y la de atrás, con los chips.",
+      "refusal": "Primero desconecta la placa."
+    }
+  },
+  "lessons": {
+    "blink": {
+      "title": "Haz parpadear un LED",
+      "lede": "Enciende el centro de la matriz y un LED en el anillo 1 a la vez, y luego apágalos, una vez por segundo.",
+      "code": {
+        "top": "Haz parpadear el LED del medio y un LED en el pin 1",
+        "pixel": "x, y desde arriba a la izquierda; brillo 0-9",
+        "pin": "3,3 V en el anillo 1"
+      },
+      "params": {
+        "ms": {
+          "label": "Tiempo encendido y apagado"
+        }
+      },
+      "checks": {
+        "1": "El programa funciona durante 3 segundos",
+        "2": "El pin 1 parpadea una vez por segundo",
+        "3": "Usa display.set_pixel y pin1.write_digital"
+      },
+      "pins": {
+        "P1": {
+          "to": "Pata larga del LED, a través de 470 Ω",
+          "role": "Controla el LED"
+        },
+        "GND": {
+          "to": "Pata corta del LED",
+          "role": "Tierra"
+        }
+      },
+      "callouts": {
+        "LEDS": "El LED central es x = 2, y = 2",
+        "LED1": "Pata larga hacia la resistencia",
+        "R1": "470 Ω lo mantienen cerca de 3 mA"
+      },
+      "specs": {
+        "1": {
+          "label": "Periodo",
+          "value": "1 s"
+        },
+        "2": {
+          "label": "Corriente del LED",
+          "value": "Unos 3 mA"
+        },
+        "3": {
+          "label": "Pines",
+          "value": "P1, GND"
+        }
+      },
+      "features": {
+        "1": "Un píxel en la matriz",
+        "2": "Un LED en el anillo 1",
+        "3": "Tiempos con sleep()"
+      },
+      "steps": {
+        "1": "Engancha el anillo 1 a la resistencia de 470 Ω y la resistencia a la pata larga del LED.",
+        "2": "Engancha la pata corta del LED al anillo GND.",
+        "3": "Ejecuta el programa y mira el centro de la matriz y el LED.",
+        "4": "Cambia el selector del tiempo y mira a qué velocidad parpadea."
+      },
+      "hints": {
+        "1": "¿No se enciende nada en la protoboard? Puede que el LED esté al revés: la pata larga va a la resistencia.",
+        "2": "set_pixel recibe primero x y luego y, las dos de 0 a 4.",
+        "3": "Cada sleep() hace una pausa de esos milisegundos."
+      },
+      "quiz": {
+        "q1": {
+          "q": "¿Por qué hay una resistencia de 470 Ω delante del LED?",
+          "options": {
+            "1": "Para que parpadee más rápido",
+            "2": "Para mantener la corriente cerca de 3 mA, que un pin de la micro:bit puede dar",
+            "3": "Porque el LED necesita 5 V"
+          },
+          "why": "(3,3 V − 2 V) / 470 Ω son unos 2,8 mA. Un pin de la V2 da de 1 a 4 mA, así que un LED sin resistencia le pediría demasiado."
+        },
+        "q2": {
+          "q": "¿Qué hace display.set_pixel(2, 2, 9)?",
+          "options": {
+            "1": "Enciende el LED del medio al brillo máximo",
+            "2": "Enciende dos LED con brillo 2",
+            "3": "Pone 9 V en el pin 2"
+          },
+          "why": "x e y cuentan de 0 a 4 desde la esquina de arriba a la izquierda, así que (2, 2) es el centro; el brillo va de 0 a 9."
+        },
+        "q3": {
+          "q": "Con dos sleep(500) en el bucle, ¿cuánto dura un parpadeo completo?",
+          "options": {
+            "1": "500 ms",
+            "2": "250 ms",
+            "3": "1000 ms"
+          },
+          "why": "500 ms encendido más 500 ms apagado: un parpadeo por segundo."
+        }
+      }
+    },
+    "buttons": {
+      "title": "Botones A y B",
+      "lede": "Cuenta las pulsaciones de A con was_pressed() y mantén pulsado B para encender el LED del pin 1.",
+      "code": {
+        "top": "Cuenta las pulsaciones de A, mantén B para encender el pin 1",
+        "was": "True una vez después de cada pulsación",
+        "is": "True mientras B siga pulsado"
+      },
+      "params": {
+        "poll": {
+          "label": "Comprueba cada"
+        }
+      },
+      "checks": {
+        "1": "Imprime A pressed 2 después de dos pulsaciones de A",
+        "2": "El pin 1 pasa a nivel alto antes de 50 ms después de pulsar B",
+        "3": "El pin 1 vuelve a nivel bajo después de soltar B",
+        "4": "Usa button_a.was_pressed() y button_b.is_pressed()"
+      },
+      "world": {
+        "a": "Botón A",
+        "b": "Botón B"
+      },
+      "pins": {
+        "P5": {
+          "to": "El botón A de la placa",
+          "role": "Lee LOW cuando se pulsa"
+        },
+        "P11": {
+          "to": "El botón B de la placa",
+          "role": "Lee LOW cuando se pulsa"
+        },
+        "P1": {
+          "to": "Pata larga del LED, a través de 470 Ω",
+          "role": "Encendido mientras B está pulsado"
+        },
+        "GND": {
+          "to": "Pata corta del LED",
+          "role": "Tierra"
+        }
+      },
+      "callouts": {
+        "SW2": "Botón A: cuenta las pulsaciones",
+        "SW3": "Botón B: mantenlo para encender el LED"
+      },
+      "specs": {
+        "1": {
+          "label": "Botones",
+          "value": "A en P5, B en P11"
+        },
+        "2": {
+          "label": "Pull-ups",
+          "value": "10 kΩ en la placa"
+        },
+        "3": {
+          "label": "Serie",
+          "value": "115200 baudios"
+        }
+      },
+      "features": {
+        "1": "was_pressed() para pulsaciones sueltas",
+        "2": "print() al monitor serie",
+        "3": "is_pressed() para mantener pulsado"
+      },
+      "steps": {
+        "1": "Deja el LED del anillo 1 de la lección del parpadeo.",
+        "2": "Ejecuta el programa y pulsa A dos veces: la cara sonríe y la cuenta sube.",
+        "3": "Mantén pulsado B: la cara se pone triste y el LED se enciende.",
+        "4": "Suelta B y el LED se apaga."
+      },
+      "hints": {
+        "1": "¿No aparece la cuenta en el monitor serie? Ábrelo a 115200 baudios.",
+        "2": "was_pressed() olvida la pulsación en cuanto ha dicho True, así que llámalo una vez por vuelta del bucle.",
+        "3": "Los botones ya tienen pull-ups, así que no hace falta cablearlos."
+      },
+      "quiz": {
+        "q1": {
+          "q": "¿Qué pin del borde es el botón A?",
+          "options": {
+            "1": "P0",
+            "2": "P11",
+            "3": "P5"
+          },
+          "why": "A es P5 y B es P11, cada uno con un pull-up de 10 kΩ, así que leen LOW cuando se pulsan. Deja esos pines para los botones."
+        },
+        "q2": {
+          "q": "Pulsas A dos veces entre dos comprobaciones. ¿Qué dice was_pressed()?",
+          "options": {
+            "1": "False, las pulsaciones fueron demasiado rápidas",
+            "2": "True una vez, y luego False en la siguiente llamada",
+            "3": "True dos veces seguidas"
+          },
+          "why": "was_pressed() recuerda que ha habido una pulsación desde la última vez que preguntaste, y luego se pone a cero. get_presses() da la cuenta."
+        },
+        "q3": {
+          "q": "¿Por qué aquí B usa is_pressed()?",
+          "options": {
+            "1": "El LED solo debe seguir encendido mientras mantienes pulsado B",
+            "2": "is_pressed() cuenta las pulsaciones",
+            "3": "B no puede usar was_pressed()"
+          },
+          "why": "is_pressed() lee el botón en este momento, que es justo lo que hace falta para encender el LED mientras se mantiene pulsado."
+        }
+      }
+    },
+    "dimmer": {
+      "title": "Un potenciómetro que regula un LED",
+      "lede": "Lee un potenciómetro en el anillo 2, fija con él el brillo del LED del anillo 1 y dibuja una barra en la fila de abajo.",
+      "code": {
+        "top": "El potenciómetro del pin 2 fija el brillo del LED del pin 1",
+        "read": "de 0 a 1023",
+        "write": "ciclo de trabajo del PWM de 0 a 1023",
+        "bars": "de 0 a 5 LED encendidos en la fila de abajo"
+      },
+      "params": {
+        "every": {
+          "label": "Lee cada"
+        }
+      },
+      "checks": {
+        "1": "A media vuelta, el LED recibe la mitad del ciclo de trabajo",
+        "2": "Girado del todo, el LED está encendido al máximo",
+        "3": "Imprime raw y volts al menos 4 veces",
+        "4": "Usa pin2.read_analog() y pin1.write_analog()"
+      },
+      "world": {
+        "pot": "Potenciómetro en el anillo 2"
+      },
+      "pins": {
+        "P2": {
+          "to": "Pata central del potenciómetro",
+          "role": "Entrada analógica"
+        },
+        "3V": {
+          "to": "Pata exterior del potenciómetro",
+          "role": "El extremo alto de la pista"
+        },
+        "GND": {
+          "to": "La otra pata del potenciómetro y el LED",
+          "role": "Tierra"
+        },
+        "P1": {
+          "to": "Pata larga del LED, a través de 470 Ω",
+          "role": "Salida PWM"
+        }
+      },
+      "callouts": {
+        "POT1": "Gíralo: de 0 a 3,3 V en el anillo 2",
+        "LED1": "El brillo sigue al potenciómetro"
+      },
+      "specs": {
+        "1": {
+          "label": "ADC",
+          "value": "10 bits, de 0 a 1023"
+        },
+        "2": {
+          "label": "Periodo del PWM",
+          "value": "20 ms"
+        },
+        "3": {
+          "label": "Pines analógicos",
+          "value": "P0, P1, P2, P3, P4, P10"
+        }
+      },
+      "features": {
+        "1": "Lee una tensión",
+        "2": "Regula el brillo con PWM",
+        "3": "Un gráfico de barras en la matriz"
+      },
+      "steps": {
+        "1": "Pon el potenciómetro en la protoboard y engancha sus patas exteriores a 3V y GND.",
+        "2": "Engancha su pata central al anillo 2.",
+        "3": "Ejecuta el programa y gira el potenciómetro: el LED y la fila de abajo lo siguen.",
+        "4": "Mira el monitor serie: raw va de 0 a 1023 mientras volts va de 0 a 3,3."
+      },
+      "hints": {
+        "1": "¿Se queda en 0 o en 1023? Comprueba que al anillo 2 va la pata central, no un extremo.",
+        "2": "write_analog() enciende y apaga el pin muy deprisa; tu ojo ve la media.",
+        "3": "El LED parece estar al máximo mucho antes de 1023: los ojos no son lineales."
+      },
+      "quiz": {
+        "q1": {
+          "q": "¿Qué rango devuelve pin2.read_analog()?",
+          "options": {
+            "1": "De 0 a 1023",
+            "2": "De 0 a 3,3",
+            "3": "De 0 a 255"
+          },
+          "why": "MicroPython lee el ADC con 10 bits: 0 son 0 V y 1023 es la línea de 3,3 V."
+        },
+        "q2": {
+          "q": "¿Qué pines pueden leer una tensión analógica?",
+          "options": {
+            "1": "Todos los pines",
+            "2": "Solo los tres anillos",
+            "3": "P0, P1, P2, P3, P4 y P10"
+          },
+          "why": "Seis pines llegan al ADC. P3, P4 y P10 también son columnas de LED, así que los anillos son la opción fácil."
+        },
+        "q3": {
+          "q": "¿Qué le hace pin1.write_analog(512) al pin 1?",
+          "options": {
+            "1": "Lo mantiene a 1,65 V",
+            "2": "Lo enciende del todo más o menos la mitad del tiempo",
+            "3": "Lo apaga"
+          },
+          "why": "No hay DAC. write_analog fija el ciclo de trabajo del PWM, con un periodo de 20 ms por defecto."
+        }
+      }
+    },
+    "tilt": {
+      "title": "La inclinación y el sensor de movimiento",
+      "lede": "Lee el acelerómetro y apunta con una flecha al extremo de la placa que esté más bajo.",
+      "code": {
+        "top": "Muestra una flecha que apunta al extremo más bajo",
+        "dead": "Ignora las inclinaciones más pequeñas que esto, en mili-g",
+        "read": "Mili-g a lo largo de la placa, del LSM303AGR por I²C"
+      },
+      "params": {
+        "dead": {
+          "label": "Zona muerta"
+        }
+      },
+      "checks": {
+        "1": "Imprime y 0 level con la placa plana",
+        "2": "Imprime y 500 logo down inclinada 30° hacia el logotipo",
+        "3": "Imprime y -707 pins down inclinada 45° hacia el otro lado",
+        "4": "Usa accelerometer.get_y()"
+      },
+      "world": {
+        "tilt": "Inclina la placa"
+      },
+      "callouts": {
+        "U6": "LSM303AGR en la dirección I²C 0x19",
+        "LEDS": "La flecha apunta al extremo más bajo"
+      },
+      "specs": {
+        "1": {
+          "label": "Sensor",
+          "value": "LSM303AGR"
+        },
+        "2": {
+          "label": "Bus",
+          "value": "I²C interno, 0x19"
+        },
+        "3": {
+          "label": "Unidades",
+          "value": "Mili-g, 1000 = 1 g"
+        }
+      },
+      "features": {
+        "1": "Mide la inclinación",
+        "2": "Un sensor I²C en la placa",
+        "3": "Flechas en la matriz"
+      },
+      "steps": {
+        "1": "Ejecuta el programa con la placa plana: un punto en el centro e y cerca de 0.",
+        "2": "Baja el extremo del logotipo: una flecha apunta hacia arriba en la matriz, hacia el logotipo.",
+        "3": "Baja el extremo de los pines: la flecha apunta a los pines.",
+        "4": "Cambia la zona muerta y busca la inclinación más pequeña que todavía mueve la flecha."
+      },
+      "hints": {
+        "1": "y es más o menos 1000 veces el seno del ángulo de inclinación: 30° dan 500.",
+        "2": "No hace falta cablear nada: el sensor está en la parte de atrás de la placa.",
+        "3": "Una zona muerta más pequeña reacciona antes, pero parpadea cuando la placa está casi nivelada."
+      },
+      "quiz": {
+        "q1": {
+          "q": "¿Cómo llega el programa al acelerómetro?",
+          "options": {
+            "1": "A través del anillo 0",
+            "2": "Por el bus I²C propio de la placa, en la dirección 0x19",
+            "3": "Por el USB serie"
+          },
+          "why": "El LSM303AGR está en un bus I²C interno, separado de P19 y P20, en 0x19 (acelerómetro) y 0x1E (brújula). MicroPython lo lee por ti."
+        },
+        "q2": {
+          "q": "Plana y boca arriba, ¿qué da accelerometer.get_z()?",
+          "options": {
+            "1": "0",
+            "2": "Unos +1000",
+            "3": "Unos -1000"
+          },
+          "why": "Los valores están en mili-g. Plana y boca arriba, la gravedad tira en línea recta a través de la placa y z marca unos -1000."
+        },
+        "q3": {
+          "q": "¿Para qué sirve DEAD?",
+          "options": {
+            "1": "Para ignorar las inclinaciones pequeñas, de modo que la flecha no parpadee cerca de la horizontal",
+            "2": "Para fijar la velocidad del I²C",
+            "3": "Para apagar el sensor"
+          },
+          "why": "Cualquier lectura entre -DEAD y DEAD cuenta como nivelada, lo que oculta el temblor de tu mano."
+        }
+      }
+    },
+    "touch-tune": {
+      "title": "Contador de notas con el logotipo táctil",
+      "lede": "Un pequeño proyecto: toca el logotipo para tocar una nota y contarla, y pulsa A para imprimir la cuenta con la temperatura.",
+      "code": {
+        "top": "Toca el logotipo para tocar una nota; A imprime la cuenta",
+        "touch": "True mientras hay un dedo en el logotipo",
+        "pitch": "Altavoz y pin 0, durante 200 ms",
+        "wait": "Un toque cuenta una sola vez"
+      },
+      "params": {
+        "hz": {
+          "label": "Nota"
+        }
+      },
+      "checks": {
+        "1": "Cuenta el primer toque",
+        "2": "Cuenta el segundo toque",
+        "3": "A imprime touches 2 y la temperatura",
+        "4": "Usa pin_logo.is_touched(), music.pitch() y temperature()"
+      },
+      "world": {
+        "logo": "Toca el logotipo",
+        "a": "Botón A"
+      },
+      "pins": {
+        "P0": {
+          "to": "Un zumbador o unos auriculares (opcional)",
+          "role": "La nota también suena aquí"
+        }
+      },
+      "callouts": {
+        "LOGO": "Capacitivo: basta con tocarlo",
+        "SP1": "La nota sale de aquí"
+      },
+      "specs": {
+        "1": {
+          "label": "Táctil",
+          "value": "Capacitivo, en P1.04"
+        },
+        "2": {
+          "label": "Sonido",
+          "value": "Altavoz y pin 0"
+        },
+        "3": {
+          "label": "Temperatura",
+          "value": "En el chip del procesador, ±5 °C"
+        }
+      },
+      "features": {
+        "1": "El logotipo táctil",
+        "2": "Notas en el altavoz",
+        "3": "El termómetro integrado"
+      },
+      "steps": {
+        "1": "Ejecuta el programa y toca el logotipo: suena una nota y aparece una corchea.",
+        "2": "Vuelve a tocarlo y mira la cuenta en el monitor serie.",
+        "3": "Pulsa A para imprimir la cuenta y la temperatura.",
+        "4": "Cambia el selector de la nota y escucha."
+      },
+      "hints": {
+        "1": "¿No oyes nada en una placa real? Puede que algo haya llamado a speaker.off(); la nota sigue sonando en el pin 0.",
+        "2": "temperature() lee el sensor propio del procesador, así que marca un poco de más.",
+        "3": "Sin el bucle de espera, mantener el dedo en el logotipo contaría muchas veces."
+      },
+      "quiz": {
+        "q1": {
+          "q": "¿Cómo sabe el logotipo que lo has tocado?",
+          "options": {
+            "1": "Es un pulsador",
+            "2": "Mide la luz",
+            "3": "Detecta la capacidad de tu dedo"
+          },
+          "why": "El logotipo es un pad capacitivo en P1.04, así que no hace falta que toques GND. Los anillos 0 a 2 usan táctil resistivo y sí lo necesitan."
+        },
+        "q2": {
+          "q": "¿Adónde envía music.pitch() el sonido?",
+          "options": {
+            "1": "Al altavoz de detrás y al anillo 0",
+            "2": "Solo al altavoz",
+            "3": "Al anillo 2"
+          },
+          "why": "Por defecto el sonido suena en el altavoz y en el pin 0, así que un zumbador o unos auriculares en el anillo 0 también lo oyen."
+        },
+        "q3": {
+          "q": "¿Por qué el programa espera mientras el logotipo sigue tocado?",
+          "options": {
+            "1": "Para ahorrar energía",
+            "2": "Para que un toque largo cuente una sola vez",
+            "3": "Porque el altavoz lo necesita"
+          },
+          "why": "El bucle se ejecuta cada 20 ms. Sin la espera, un toque de medio segundo contaría unas 25 veces."
+        }
+      }
+    }
+  }
+}
