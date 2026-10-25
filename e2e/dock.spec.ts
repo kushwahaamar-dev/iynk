@@ -33,3 +33,18 @@ test("a room link opens Together, and a hidden tab event does not reveal Passpor
   await expect(dock.getByRole("tab", { name: dockCopy.tabs.together })).toHaveAttribute("aria-selected", "true");
   await expect(page.getByRole("link", { name: shell.nav.passport })).toHaveCount(0);
 });
+
+test.describe("on a 1440 px desk", () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  test("the open drawer takes its width from the rail before the stage", async ({ page }) => {
+    await page.goto("/en/boards/nano/blink");
+    const width = (selector: string) => page.locator(`main:visible ${selector}`).first().evaluate((el) => el.getBoundingClientRect().width);
+    const stage = await width(".ws-stage");
+    await openDock(page, false);
+    // The 416 px drawer pushes the page over; the rail drops to 22rem (352 px, its floor on a 1024 px screen) first.
+    await expect.poll(() => width(".ws-rail")).toBeLessThanOrEqual(352.5);
+    expect(await width(".ws-stage")).toBeGreaterThan(stage - 416 + 100);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
+  });
+});
