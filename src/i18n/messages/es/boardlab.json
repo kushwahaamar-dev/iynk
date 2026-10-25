@@ -5,7 +5,6 @@
     "lessonTitle": "{lesson} · {board}"
   },
   "index": {
-    "kicker": "Módulo 1",
     "title": "Laboratorio de placas",
     "lede": "Doce placas reales. Monta cada una, dale corriente, escribe código que se ejecuta de verdad, conecta sensores y averíala a propósito para ver qué falla y por qué.",
     "count": "{count} placas",
@@ -301,7 +300,7 @@
       "unsupported": "Este código no se puede ejecutar en esta versión."
     },
     "tab": "Serie",
-    "notRunning": "Tu código aún no se está ejecutando",
+    "notRunning": "Tu código aún no se está ejecutando. Hasta que pulses Ejecutar, la placa ejecuta el programa que ya tiene.",
     "lostPower": "La placa se quedó sin alimentación. El código se detuvo."
   },
   "params": {

@@ -5,7 +5,6 @@
     "lessonTitle": "{lesson} · {board}"
   },
   "index": {
-    "kicker": "Module 1",
     "title": "Labo des cartes",
     "lede": "Douze vraies cartes. Montez chacune d'elles, mettez-la sous tension, écrivez du code qui tourne vraiment, branchez des capteurs et cassez-la exprès pour voir ce qui lâche et pourquoi.",
     "count": "{count} cartes",
@@ -301,7 +300,7 @@
       "unsupported": "Ce code ne peut pas tourner dans cette version."
     },
     "tab": "Série",
-    "notRunning": "Votre code ne tourne pas encore",
+    "notRunning": "Votre code ne tourne pas encore. Tant que vous n'appuyez pas sur Lancer, la carte exécute le programme qu'elle contient déjà.",
     "lostPower": "La carte n'est plus alimentée. Le code s'est arrêté."
   },
   "params": {

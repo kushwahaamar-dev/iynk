@@ -44,10 +44,9 @@ async function Boards({ params }: Pick<Props, "params">) {
   return (
     <div className="frame pb-16 pt-8 sm:pt-12">
       <header className="max-w-[68ch]">
-        <p className="ink-kicker">{t("index.kicker")}</p>
+        <p className="ink-kicker">{t("index.count", { count: boards.length })}</p>
         <h1 className="mt-3">{t("index.title")}</h1>
         <p className="mt-4 text-lg leading-relaxed">{t("index.lede")}</p>
-        <p className="mt-2 text-sm text-muted">{t("index.count", { count: boards.length })}</p>
       </header>
 
       <ul className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] lg:gap-6" data-testid="board-grid">

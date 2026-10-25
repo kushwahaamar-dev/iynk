@@ -5,7 +5,6 @@
     "lessonTitle": "{lesson} · {board}"
   },
   "index": {
-    "kicker": "Modul 1",
     "title": "Board-Labor",
     "lede": "Zwölf echte Boards. Bau jedes zusammen, schalte es ein, schreib Code, der wirklich läuft, schließ Sensoren an und mach es absichtlich kaputt, um zu sehen, was ausfällt und warum.",
     "count": "{count} Boards",
@@ -301,7 +300,7 @@
       "unsupported": "Dieser Code kann in diesem Build nicht laufen."
     },
     "tab": "Seriell",
-    "notRunning": "Dein Code läuft noch nicht",
+    "notRunning": "Dein Code läuft noch nicht. Bis du auf „Ausführen“ drückst, läuft das Programm, das schon auf dem Board ist.",
     "lostPower": "Das Board hat keinen Strom mehr. Der Code wurde gestoppt."
   },
   "params": {
