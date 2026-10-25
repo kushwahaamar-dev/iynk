@@ -237,10 +237,11 @@ const tricopter: DroneContent = {
           '# The tail servo: TRI mixes stabilised yaw into servo 5, on SERVO 1 (the S9 pad on a SpeedyBee F405 V4)',
           'set servo_pwm_rate = 333           # a digital servo; leave 50 Hz for an analog one',
           'set tri_unarmed_servo = ON         # the tail follows the yaw stick while disarmed, for the bench check',
-          '# Centre and travel (Servos tab, or the servo command): servo <n> <min> <max> <middle> <rate> <forward>',
-          '#   servo 5 1000 2000 1520 100 -1   middle 1520 us levels this tail plate; -1 = no channel forwarding',
-          '#   servo 5 1100 1950 1520 100 -1   endpoints that stop short of the hinge binding, about 40 deg each way',
-          '# Yaw right must tilt the tail thrust LEFT. If it goes right, reverse the servo for input 2 (stabilised yaw):',
+          '# Centre, then travel (or the Servos tab): servo <n> <min> <max> <middle> <rate> <forward>',
+          'servo 5 1000 2000 1520 100 -1      # middle 1520 us levels this tail plate; -1 = no channel forwarding',
+          'servo 5 1100 1950 1520 100 -1      # endpoints that stop short of the hinge binding, about 40 deg each way',
+          '# Yaw right must tilt the tail thrust LEFT. Only if it tilts it right, reverse servo 5 for input 2,',
+          '# stabilised yaw (or turn the servo round):',
           '#   smix reverse 5 2 r',
           'save',
         ].join('\n'),
@@ -396,8 +397,7 @@ const tricopter: DroneContent = {
         i_yaw: { min: 0, max: 250 },
         osd_tim1: { min: 0, max: 32767 },
       },
-      // No servo or smix here: the snippets show those lines as comments (docs/requests/P2-drones-vtol-to-driver-cli-servo.md).
-      commands: ['help', 'set', 'get', 'diff', 'dump', 'save', 'defaults', 'exit', 'status', 'version', 'resource', 'mixer', 'serial', 'aux', 'feature', 'beeper'],
+      commands: ['help', 'set', 'get', 'diff', 'dump', 'save', 'defaults', 'exit', 'status', 'version', 'resource', 'mixer', 'serial', 'aux', 'feature', 'beeper', 'servo', 'smix'],
       // Settings that change how the bench build flies. Numbers use the range's FlightCraft names (src/lib/flight/types.ts).
       effects: [
         { setting: 'align_board_yaw', equals: 0, set: { boardYaw: 0 } },

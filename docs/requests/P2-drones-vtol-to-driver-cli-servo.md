@@ -43,3 +43,34 @@ In `src/lib/dronelab/cli.ts`, two Betaflight commands, offered only when the cra
 commented lines into real ones. `src/content/drones/tricopter.test.ts` pins today's comments (`shows the servo and
 smix lines the CLI cannot take as comments`), so that test changes with it. Whoever lands the CLI side may make both
 edits; they are small.
+
+## Answer
+
+2026-10-25 00:32 CDT, P2-req-drone (wave B tail). Done, with four differences from the shape above, each from
+Betaflight 2026.6.2's own `cli.c`, `servos.h` and `servo_impl.h` (read at that tag):
+
+- **Limits and errors.** `servo` takes min and max in 500-2500 (`PWM_SERVO_MIN/MAX`, as `docs/facts/tricopter.md`
+  §4.4 says, not 750-2250), middle between them, rate -100..100, forward below 18. The firmware's errors differ by
+  case and the console prints them: a wrong count or an index outside 0-7 is `INVALID ARGUMENT COUNT`, anything but
+  digits, `-` and spaces is `PARSING FAILED`, a value out of range is `ARGUMENT OUT OF RANGE`. `smix reverse` with
+  fewer than three arguments is `INVALID ARGUMENT COUNT`; a servo outside 0-7, an input outside 0-13 (Betaflight has
+  14 mixer inputs, not 30) or a flag other than `r`/`n` is `servo NOT BETWEEN 0 AND 8`, the firmware's text.
+- **Listing.** `servo` with no arguments lists all eight servos (defaults `1000 2000 1500 100 -1`) and then the
+  `smix reverse` lines, as the firmware does. `smix reverse` alone prints the reversed sources as `smix reverse
+  <servo> <input> r` lines instead of the firmware's 8 x 14 r/n table, which would wrap on a phone. `smix reset`
+  clears them; a bare `smix` prints nothing (no custom rules). Rule lines and `smix load` are not modelled
+  (`PARSING FAILED`).
+- **The flight effect is `tailReverse`, not `servosReversed`.** `benchFaults()` lets a CLI boolean in `FAULT_KEYS`
+  replace the bench's value, so `servosReversed: true` would leave a servo fitted backwards flying reversed. On save
+  the console sends `{ tailReverse: true }` when servo 5's yaw input becomes reversed (`smix reverse 5 2 r`, or a
+  negative rate; both together cancel), `{ tailReverse: false }` when that is undone (also on `defaults`). The
+  one-line toggle in `fly.ts`, like `boardYaw`, is `docs/requests/P2-req-drone-to-driver-tail-reverse.md`.
+- **The smix line stays a comment.** `tricopter.ts` offers `servo` and `smix`, and the two `servo 5` lines are real
+  commands. `smix reverse 5 2 r` is only for a tail that tilts the wrong way: as a real line, "Try it" on the snippet
+  would reverse a servo fitted the right way round. The comment now says "Only if it tilts it right". The prose
+  sentence that says the CLI can't take these commands is yours to change:
+  `docs/requests/P2-req-drone-to-P2-drones-vtol-tri-servo-prose.md`.
+
+Tests: `src/lib/dronelab/cli.test.ts` ("Betaflight servo and smix", 7 tests) and `tricopter.test.ts` (the snippet
+lines, every snippet runs in its CLI without an error, and the servo snippet plus `smix reverse 5 2 r` and `save`
+sends `{ tailReverse: true }`).

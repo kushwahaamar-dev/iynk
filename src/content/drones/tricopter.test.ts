@@ -1,7 +1,9 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import en from '@/i18n/content/en/drones/tricopter.json';
+import { runnableLines } from '@/components/dronelab/CliConsole';
 import { calc, designChecks } from '@/lib/drone/calc';
 import { designInput } from '@/lib/drone/design';
+import { createCliSession, runCli, type CliContext, type CliPatch } from '@/lib/dronelab/cli';
 import { readBench } from '@/lib/dronelab/figure';
 import { flightFaults } from '@/lib/dronelab/fly';
 import { flightOf } from '@/lib/flight/registry';
@@ -85,14 +87,39 @@ describe('tricopter flight', () => {
     expect(cli.tri_unarmed_servo).toBe('ON');
   });
 
-  it('shows the servo and smix lines the CLI cannot take as comments, and never offers those commands', () => {
-    const code = tricopter.firmware.snippets.map((s) => s.code).join('\n');
-    expect(code).toMatch(/^# {3}servo 5 1000 2000 1520 100 -1/m);
-    expect(code).toMatch(/^# {3}smix reverse 5 2 r$/m);
-    expect(code).not.toMatch(/^(servo|smix) /m);
-    expect(tricopter.firmware.emulator.commands).not.toContain('servo');
-    expect(tricopter.firmware.emulator.commands).toContain('mixer');
-    expect(code).toMatch(/^mixer TRI\b/m);
+  it('sets the tail servo’s centre and travel in the CLI, and leaves the reversal to a tail that needs it', () => {
+    const servo = tricopter.firmware.snippets.find((s) => s.id === 'servo')!.code;
+    expect(servo).toMatch(/^servo 5 1000 2000 1520 100 -1 /m);
+    expect(servo).toMatch(/^servo 5 1100 1950 1520 100 -1 /m);
+    // a servo fitted the right way round must not be reversed: the smix line is the one to type if the check fails
+    expect(servo).toMatch(/^# {3}smix reverse 5 2 r$/m);
+    expect(tricopter.firmware.emulator.commands).toEqual(expect.arrayContaining(['mixer', 'servo', 'smix']));
+    expect(tricopter.firmware.snippets.map((s) => s.code).join('\n')).toMatch(/^mixer TRI\b/m);
+  });
+
+  it('runs every snippet in its CLI without an error, and saves a reversed tail as a flight patch', () => {
+    const emu = tricopter.firmware.emulator;
+    const ctx: CliContext = { version: tricopter.firmware.version, plugged: true, cells: 4, accCal: true, built: true };
+    const enter = (lines: string[]) => {
+      let session = createCliSession(emu);
+      const effects: CliPatch[] = [];
+      for (const line of lines) {
+        const r = runCli(emu, ctx, session, line);
+        expect(r.out.filter((o) => o.kind === 'err'), line).toEqual([]);
+        session = r.session;
+        effects.push(...r.effects);
+      }
+      return { session, effects };
+    };
+    for (const s of tricopter.firmware.snippets) {
+      const lines = runnableLines(s, tricopter);
+      expect(lines, s.id).not.toBeNull();
+      enter(lines!);
+    }
+    const servo = runnableLines(tricopter.firmware.snippets.find((s) => s.id === 'servo')!, tricopter)!;
+    const fixed = enter([...servo, 'smix reverse 5 2 r', 'save']);
+    expect(fixed.session.savedExtra).toEqual(['servo 5 1100 1950 1520 100 -1', 'smix reverse 5 2 r']);
+    expect(fixed.effects).toEqual([{ tailReverse: true }]);
   });
 
   it('opens in altitude hold, races the gates in angle, and flies the park run with the height held', () => {
