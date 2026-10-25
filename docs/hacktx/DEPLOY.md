@@ -2,6 +2,24 @@
 
 P1-deploy, 2026-10-24 17:23 CDT. The local smoke was rerun by the driver at 18:24 CDT. The app is a Next.js 16.4.3 App Router project. Vercel is not linked, nothing has been deployed, and no environment variables have been uploaded. Those three wait for a yes (BUILD-PLAN §9, D4).
 
+## Where it stands (2026-10-25 02:45 CDT)
+
+The smoke further down is from 18:24 on Oct 24, when the content index had 7 boards, 4 benches and 5 drones and
+`/es/boards/uno-r3` was a 404. Both are history: all 38 items are in, every item has prose in all six languages, and
+gate 2's production build and crawl (`docs/verify/gate2-routes.md`: 786 pages, 780 clean, 6 expected 404, 0 failed)
+replace that smoke for routes. Still not linked, deployed or given env vars; that waits for Amar's yes.
+
+After a deploy with keys, the live smokes are, against the real URL:
+
+```bash
+node scripts/smoke-ai.mjs                                # Meta: chat, translate, transcribe, image
+node scripts/smoke-search.mjs --base https://<the site>  # SerpApi: offers, web, nearby, events, videos
+curl -s https://<the site>/api/status                    # which features the deployment has on
+```
+
+Both scripts read the keys from the environment or `.env.local`, never print them, and say SKIP without one.
+`smoke-search.mjs` spends at most one SerpApi search per route (web up to three); a cached answer spends none.
+
 ## What is already set
 
 | File | State |
