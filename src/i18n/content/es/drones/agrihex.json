@@ -1,0 +1,396 @@
+{
+  "title": "Hexacóptero agrícola de fumigación",
+  "tagline": "Un hexacóptero de 1800 mm que lleva 10 L de producto: el RTK y la guiñada por GPS de dos antenas lo mantienen sobre las filas, un radar lo sujeta a 2,5 m sobre el cultivo y ArduPilot controla la bomba.",
+  "sub": "ArduCopter + Cube Orange+ + RTK",
+  "hint": "Monta un dron de fumigación de 10 L, prueba su bomba y su guiñada por GPS, y luego fumiga seis filas de un campo",
+  "noun": "dron de fumigación",
+  "overview": "Un dron agrícola de fumigación tiene un solo trabajo: echar una dosis medida de líquido en cada metro cuadrado de un campo y en ningún otro sitio. Este lleva 10 L. Seis hélices de 30 pulgadas en brazos de 900 mm levantan 33 kg al despegar, y una Cube Orange+ ejecuta ArduCopter, que vuela en AUTO las filas de una cuadrícula de levantamiento. Dos receptores RTK lo sitúan con unos 2 cm de precisión y sacan el rumbo de la línea entre sus antenas, así que las filas quedan exactamente a una pasada de distancia y ninguna nave de acero puede despistar a una brújula. Un radar bajo el morro lo mantiene a 2,5 m sobre el cultivo mientras el terreno sube y baja. El pulverizador de ArduPilot hace funcionar la bomba en proporción a la velocidad sobre el suelo, así que la dosis sigue siendo la misma cuando frena para girar, y la misión la enciende al principio de cada fila y la apaga al final. Con seis motores, el mezclador puede mantenerlo nivelado con cinco el tiempo suficiente para aterrizar, si sobra empuje. Elige las piezas, móntalo, haz las comprobaciones en el banco (entre ellas una prueba de la bomba) y luego vuela las filas a mano o deja que AUTO fumigue el campo.",
+  "practice": "Vuela primero el campo en Loiter: despega hasta 5 m, baja a 2,5 m en el extremo oeste de la primera fila, vuélala hacia el este a unos 4 m/s, avanza 4 m hacia el norte al final y vuelve. El dron pesa mucho y le cuesta frenar (25° de inclinación, aceleraciones suaves), así que empieza cada giro con tiempo. Mantente lejos de los árboles del lado oeste y del tendido eléctrico del lado este, y luego tráelo a casa y aterriza. Después cambia a AUTO y mira cómo la bomba se enciende y se apaga en los extremos de las filas. En un montaje real: smoke stopper en la primera conexión, la prueba de motores sin hélices (A delante a la derecha, y luego en sentido horario), la calibración del acelerómetro, una prueba de la bomba con agua limpia para medir el caudal, un fix RTK y una comprobación de la guiñada por GPS al aire libre, todos los mensajes PreArm resueltos, y un primer estacionario bajo sobre terreno despejado sin nadie cerca de las hélices.",
+  "design": {
+    "fixed": {
+      "FRAME": "Cuerpo central de carbono de 1,8 m y seis brazos plegables de 35 mm",
+      "SKIDS": "Patas y patines de aterrizaje",
+      "ESC": "6 ESC FOC de 80 A (en las góndolas de motor X8, PWM)",
+      "FC": "Autopiloto Cube Orange+ y placa base",
+      "RTK": "GNSS RTK de dos antenas (2 × u-blox F9P)",
+      "RADAR": "Radar hacia abajo, 0,5-50 m (tipo Ainstein US-D1)",
+      "RX": "Radio de telemetría de 900 MHz y receptor de RC",
+      "XT60": "Cable antichispas AS150U, módulo de alimentación, condensadores de 63 V",
+      "TANK": "Depósito de fumigación de 10 L",
+      "PUMP": "Bomba de membrana y su driver",
+      "BOOM": "Barra de 1,64 m con cuatro boquillas"
+    },
+    "verdict": {
+      "over": "{kv} KV en {cells}S hace girar las hélices de 30 pulgadas demasiado rápido: los motores se recalientan y los ESC pierden la sincronización con el depósito lleno. Un motor de 180 KV es para hélices de 22 a 24 pulgadas; las de 30 pulgadas quieren unos 100 KV en 12S.",
+      "weak": "Empuje/peso de {tw}:1 con 10 L a bordo. Un dron de fumigación necesita unos 1,6:1 o más (mejor 1,8:1) para seguir siendo controlable en una ráfaga mientras va lleno, y para remontar una hilera de árboles al final de una fila.",
+      "ok": "Las piezas encajan: {tw}:1 con 10 L a bordo, margen suficiente para aguantar una ráfaga con el depósito lleno. El gas de estacionario de la calculadora es pesimista para estas hélices grandes y lentas: Hobbywing midió un 57 % con esta carga, y ArduCopter aprende su propio valor de estacionario (MOT_THST_HOVER). Al vaciarse el depósito, el dron pesa 10 kg menos y el gas de estacionario baja."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Cuerpo central de carbono, seis brazos plegables, patas y patines",
+      "what": "Un cuerpo central de sándwich de carbono de 480 × 420 mm con seis brazos de tubo de carbono de 35 mm, con los motores a 900 mm del centro (1800 mm de lado a lado). Cada brazo se pliega por una articulación situada 300 mm hacia fuera para que el dron quepa en un remolque, y se bloquea con un manguito: un manguito sin bloquear deja que el brazo se pliegue con el empuje, y el dron vuelca. Cuatro patas sostienen dos patines de 940 mm, para que la barra quede por encima del cultivo."
+    },
+    "MOTORS": {
+      "name": "6 motores 8120 de 100 KV",
+      "what": "Motores grandes, lentos y estancos: estátores de 81 mm, 100 rpm por voltio. En 12S mueven una hélice de 30 pulgadas a unas 2400 rpm en estacionario, y cada uno puede levantar hasta 15 kg. El X8 de Hobbywing integra el motor, el ESC y el soporte de la hélice en una sola unidad, que se vende en versión CW y CCW."
+    },
+    "ESC": {
+      "name": "6 ESC FOC de 80 A",
+      "what": "ESC de control orientado al campo en la góndola con aletas de debajo de cada motor, refrigerados por el flujo de la hélice. Reciben PWM normal (de 1100 a 1940 µs) de la Cube, no DShot, y no necesitan calibración del acelerador. 80 A es el pico durante 3 s. No tienen BEC, así que la Cube lleva su propia alimentación."
+    },
+    "WIRES": {
+      "name": "Cables de potencia de los brazos y cables de señal de los ESC",
+      "what": "Un par rojo y negro de 12 AWG baja por cada brazo desde la placa de potencia hasta su ESC: unos 13 A cada uno en estacionario, 80 A en el pico. A su lado, un cable de señal fino (tierra y PWM) vuelve a las salidas MAIN de la Cube por orden de número de motor."
+    },
+    "XT60": {
+      "name": "Distribución de potencia: cable AS150U, módulo de alimentación, condensadores de 63 V",
+      "what": "La batería se enchufa en un conector antichispas AS150U: una resistencia precarga los condensadores de los ESC para que el conector no haga arco a 50 V. La placa de potencia alimenta los seis brazos y la bomba, unos condensadores de 63 V y baja ESR absorben los picos de conmutación, y un módulo de alimentación le da a la Cube unos 5 V limpios y mide la tensión y la corriente."
+    },
+    "FC": {
+      "name": "Autopiloto Cube Orange+",
+      "what": "Un STM32H757 con ArduCopter 4.7.2, tres IMU, dos barómetros y un núcleo con amortiguación de vibraciones, sobre una placa base en la parte delantera del cuerpo con la flecha hacia el morro. Vuela el dron, ejecuta el estimador EKF3 con RTK y guiñada por GPS, sigue la altura del radar y conmuta la bomba."
+    },
+    "RX": {
+      "name": "Radio de telemetría de 900 MHz y receptor de RC",
+      "what": "La radio de telemetría es el enlace de la estación de tierra a través del campo: sale MAVLink, entran las correcciones RTK. El receptor de RC permite al piloto tomar el control en cualquier momento; si los dos enlaces se quedan en silencio, los failsafes traen el dron a casa."
+    },
+    "RADAR": {
+      "name": "Radar hacia abajo (tipo US-D1)",
+      "what": "Un radar de 24 GHz bajo el morro que mide la altura sobre el cultivo, de 0,5 a 50 m, a través del polvo y de la niebla de pulverización que ciegan a un lidar. Por debajo de 0,5 m no lee nada, así que no ayuda en el último medio metro de un aterrizaje."
+    },
+    "TOP": {
+      "name": "Carcasa superior y cámara FPV",
+      "what": "Una tapa moldeada que protege del producto la Cube, la radio y la placa de potencia, con una pequeña cámara FPV en el morro inclinada 10° hacia abajo para que el piloto vea la fila que tiene delante."
+    },
+    "GPS": {
+      "name": "GNSS RTK de dos antenas",
+      "what": "Dos receptores u-blox F9P con antenas en mástiles separados 340 mm a lo largo del cuerpo. Con las correcciones de una estación base sitúan el dron con unos 2 cm de precisión, para que las filas no se separen, y la línea entre las dos antenas da el rumbo (guiñada por GPS con línea base móvil), así que no hace falta brújula. GPS1 tiene que ser la delantera."
+    },
+    "TANK": {
+      "name": "Depósito de fumigación de 10 L",
+      "what": "Cuelga bajo el cuerpo central, en el eje del dron, así que el equilibrio apenas cambia al vaciarse. Un visor en el lateral muestra el nivel. Lleno, añade 10 kg: casi un tercio del peso al despegar."
+    },
+    "PUMP": {
+      "name": "Bomba de membrana y su driver",
+      "what": "Aspira del depósito y empuja el líquido hacia la barra. Su driver se alimenta del bus de 12S y recibe una señal PWM desde la AUX 1 de la Cube. El pulverizador de ArduPilot ajusta la velocidad de la bomba en proporción a la velocidad sobre el suelo, así que cada metro cuadrado recibe la misma dosis."
+    },
+    "BOOM": {
+      "name": "Barra de pulverización con cuatro boquillas",
+      "what": "1,64 m de lado a lado, bajo el depósito, con boquillas de abanico plano a 300 y 720 mm a cada lado del centro. El flujo de las hélices empuja las gotas hacia abajo, dentro del cultivo, y las reparte en una pasada de unos 4 m de ancho."
+    },
+    "BATT": {
+      "name": "Batería inteligente 12S de 22000 mAh",
+      "what": "Va arriba, sobre el centro de gravedad, con un asa para cambiarla rápido en cada recarga del depósito. Doce celdas: 50,4 V cargada, 44,4 V nominales, y unos 12 minutos de estacionario con el depósito lleno."
+    },
+    "PROPS": {
+      "name": "Hélices plegables de 30 pulgadas, 3 CW y 3 CCW",
+      "what": "Hélices bipala de carbono que se pliegan para el transporte y se despliegan al girar. Una hélice CW va en un motor CW: en el motor equivocado empuja el aire hacia arriba y el dron vuelca al despegar. Las puntas de hélices vecinas se cruzan a 138 mm una de otra."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Despliega y bloquea el chasis",
+      "body": "Pon el cuerpo central de pie sobre sus patines, despliega los seis brazos y desliza cada manguito de bloqueo hasta el fondo, hasta que haga clic. Tira del extremo de cada brazo para comprobar la unión."
+    },
+    "motors": {
+      "title": "Monta los seis motores",
+      "body": "Sujeta un motor en el extremo de cada brazo, alternando CW y CCW alrededor del anillo: M5 delante a la derecha CCW, M1 a la derecha CW, M4 detrás a la derecha CCW, M6 detrás a la izquierda CW, M2 a la izquierda CCW, M3 delante a la izquierda CW.",
+      "refusal": "Los motores se sujetan en los extremos de los brazos: primero despliega y bloquea el chasis."
+    },
+    "esc": {
+      "title": "Coloca las góndolas de los ESC",
+      "body": "Cada ESC va en la góndola con aletas de debajo de su motor, donde lo refrigera el flujo de la hélice. Los tres cables de fase del motor ya están dentro.",
+      "refusal": "Las góndolas de los ESC se sujetan en los extremos de los brazos: primero despliega el chasis."
+    },
+    "wires": {
+      "title": "Tiende los cables de los brazos",
+      "body": "Lleva un par de 12 AWG y un cable de señal a lo largo de cada brazo, átalos al tubo cada 100 mm para que no puedan agitarse hasta una hélice, y deja un bucle en la articulación de plegado para que al plegar no tire de ellos.",
+      "refusal": "Los cables terminan en los motores y en las góndolas de los ESC: colócalos primero."
+    },
+    "power": {
+      "title": "Coloca la distribución de potencia",
+      "body": "Coloca la placa de potencia en la parte trasera del cuerpo central, suelda los seis pares de los brazos, la alimentación de la bomba y el cable AS150U, y pon los condensadores de 63 V con la franja blanca hacia el negativo. El cable del módulo de alimentación va a la Cube más adelante.",
+      "refusal": "La placa de potencia alimenta los ESC: primero coloca las góndolas de los ESC."
+    },
+    "fc": {
+      "title": "Monta la Cube Orange+",
+      "body": "Monta la placa base sobre su soporte amortiguado en la parte delantera del cuerpo central, con la flecha hacia el morro. Conecta el módulo de alimentación a POWER1 y los seis cables de señal de los ESC a MAIN 1 a 6 por número de motor.",
+      "refusal": "La Cube se alimenta desde la placa de potencia: primero coloca la placa de potencia."
+    },
+    "rx": {
+      "title": "Coloca la radio",
+      "body": "Coloca la radio de telemetría de 900 MHz en TELEM1 y el receptor de RC en RCIN, con la antena colgando por debajo del cuerpo central, lejos del carbono y de los cables de potencia.",
+      "refusal": "La radio se conecta a la Cube: primero monta la Cube."
+    },
+    "radar": {
+      "title": "Coloca el radar",
+      "body": "Atornilla el radar bajo el morro, mirando hacia abajo y sin nada en su haz: ni una pata ni la barra. Conéctalo a TELEM2.",
+      "refusal": "El radar se conecta a la TELEM2 de la Cube: primero monta la Cube."
+    },
+    "top": {
+      "title": "Coloca la carcasa superior",
+      "body": "Pon la carcasa sobre la Cube, la radio y la placa de potencia y ciérrala: la niebla de pulverización es corrosiva, y la electrónica mojada hace cortocircuito.",
+      "refusal": "Lo que va bajo la carcasa va primero: coloca la Cube y la radio."
+    },
+    "gps": {
+      "title": "Coloca los mástiles del RTK",
+      "body": "Atornilla los dos mástiles sobre la carcasa, separados 340 mm a lo largo del cuerpo: GPS1 (la base de la línea base móvil) delante y GPS2 detrás. Conecta GPS1 al puerto GPS1 de la Cube y GPS2 a GPS2. Al revés, el rumbo sale 180° equivocado.",
+      "refusal": "Los mástiles se atornillan a la carcasa: primero coloca la carcasa."
+    },
+    "tank": {
+      "title": "Cuelga el depósito",
+      "body": "Sujeta con correas el depósito de 10 L bajo el cuerpo central, en el eje, con el tapón de llenado accesible y el visor de nivel hacia fuera.",
+      "refusal": "El depósito cuelga del cuerpo central: primero despliega el chasis."
+    },
+    "pump": {
+      "title": "Coloca la bomba",
+      "body": "Monta la bomba y su driver detrás del depósito. Conecta la manguera desde la salida del depósito, la alimentación de 12S desde la placa de potencia y el cable PWM a la AUX 1 de la Cube.",
+      "refusal": "La bomba aspira del depósito: primero cuelga el depósito."
+    },
+    "boom": {
+      "title": "Coloca la barra",
+      "body": "Sujeta la barra bajo el depósito, perpendicular al cuerpo, y lleva la manguera desde la salida de la bomba hasta las cuatro boquillas. Las boquillas exteriores quedan bajo las hélices laterales, donde el flujo hacia abajo es más fuerte.",
+      "refusal": "La barra la alimenta la bomba: primero coloca la bomba."
+    },
+    "batt": {
+      "title": "Coloca la batería",
+      "body": "Desliza la batería 12S en su bandeja sobre la carcasa, encima del centro de gravedad, y sujétala con la correa. Déjala desconectada hasta la prueba del smoke stopper.",
+      "refusal": "La batería va sobre la carcasa y se conecta a la placa de potencia: coloca las dos primero."
+    },
+    "props": {
+      "title": "Coloca las hélices (lo último)",
+      "body": "Solo después de la prueba del smoke stopper, la prueba de motores y la calibración. Hélices CW en los motores CW (M1, M3, M6), hélices CCW en los CCW (M2, M4, M5); comprueba que cada pala se despliega libremente.",
+      "refusal": "Las hélices van las últimas, con los motores montados y la carcasa puesta: coloca eso primero."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "El conector antichispas AS150U de la batería en el cable de la placa de potencia. Su resistencia de precarga llena los condensadores de los ESC antes de que se toquen los pines principales, para que los 50 V no hagan arco en el conector ni piquen los contactos.",
+    "XT60-ESC": "Un par rojo y negro de 12 AWG por brazo, soldado a los pads de la placa de potencia: unos 13 A cada uno en estacionario, 80 A en el pico.",
+    "ESC-MOTORS": "Los tres cables de fase se quedan dentro de cada góndola X8. Un motor que gira al revés se arregla intercambiando dos de ellos, o poniendo la unidad del otro sentido: el autopiloto no puede invertir un ESC PWM.",
+    "XT60-FC": "Los ESC X8 no tienen BEC, así que un módulo de alimentación baja el bus de 12S a unos 5 V limpios para la Cube e informa de la tensión y la corriente de la batería en POWER1 (BATT_MONITOR 4).",
+    "XT60-PUMP": "El driver de la bomba toma la alimentación directamente del bus de 12S, a través de su propio fusible.",
+    "FC-ESC": "MAIN 1 a 6 llevan una señal PWM por motor (SERVO1 a 6 configurados como Motor1 a 6). MOT_PWM_MIN 1050 y MOT_PWM_MAX 1950 coinciden con el rango del X8.",
+    "FC-PUMP": "AUX 1 (SERVO9) es SprayerPump: el ancho del pulso le dice al driver a qué velocidad mover la bomba.",
+    "RX-FC": "La radio de telemetría en TELEM1 (SERIAL1, MAVLink2) lleva los comandos de la estación de tierra y las correcciones RTK; el SBUS del receptor de RC entra por RCIN.",
+    "GPS-FC": "GPS1, la antena delantera y base de la línea base móvil, en el puerto GPS1 (SERIAL3); GPS2, el rover, en GPS2 (SERIAL4). La base envía sus correcciones al rover, que calcula el rumbo a partir de ellas.",
+    "RADAR-FC": "El radar en TELEM2 (SERIAL2 protocolo 9, Rangefinder, 115200 baudios) informa de la altura sobre el cultivo muchas veces por segundo."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Prueba del smoke stopper",
+      "pass": "La lámpara solo ha parpadeado: no hay cortocircuito entre positivo y negativo en el bus de 12S. La primera puesta en tensión de un dron de 50 V pasa por un limitador de corriente preparado para esa tensión; después, la precarga del AS150U evita que el conector eche chispas.",
+      "fail": "La lámpara se ha quedado encendida: hay algo en cortocircuito. Aquí hay un condensador puesto al revés; dale la vuelta (franja hacia el negativo) y vuelve a probar."
+    },
+    "motors": {
+      "title": "Prueba de motores (sin hélices)",
+      "pass": "El Motor Test de Mission Planner los ha hecho girar de la A a la F, desde delante a la derecha en sentido horario: A es M5, B es M1, C es M4, D es M6, E es M2, F es M3, alternando CCW y CW. Ya se pueden poner las hélices.",
+      "fail": "Un motor ha girado al revés, o se ha movido el brazo equivocado. Intercambia dos de los cables de fase de ese motor (o pon la unidad X8 del otro sentido) y comprueba el orden de los cables MAIN: con las hélices puestas giraría sobre sí mismo o volcaría al despegar."
+    },
+    "calibrate": {
+      "title": "Calibración del acelerómetro",
+      "pass": "Calibrado en seis posiciones (nivelado, sobre cada lado, morro abajo, morro arriba, boca abajo), y luego Calibrate Level sobre los patines. A un dron tan grande se le da la vuelta en el banco antes de poner los brazos, o con un ayudante. Ha desaparecido el bloqueo previo al armado \"3D Accel calibration needed\".",
+      "fail": "Primero coloca la Cube. Si su flecha apunta hacia atrás, dale la vuelta o pon AHRS_ORIENTATION a 4 (Yaw180), reinicia y vuelve a calibrar."
+    },
+    "pump": {
+      "title": "Prueba de la bomba (desarmado)",
+      "pass": "Con el dron desarmado y el interruptor del pulverizador arriba, la bomba ha funcionado a SPRAY_PUMP_RATE, el caudal para 1 m/s, y las cuatro boquillas han pulverizado. Recoge un minuto en una jarra: los litros por minuto calibran la dosis. Armar cancela la prueba.",
+      "fail": "Coloca la Cube, el depósito, la bomba y la barra, y conecta la batería: el driver de la bomba se alimenta del bus de 12S. Una boquilla que no pulveriza está atascada, y su franja de cultivo se queda sin tratar."
+    },
+    "gpsyaw": {
+      "title": "Fix RTK y guiñada por GPS",
+      "pass": "Los dos receptores indican RTK Fixed con las correcciones de la estación base, y el rumbo de las dos antenas coincide con el morro. EKF3 toma la guiñada del GPS (EK3_SRC1_YAW 2), así que no necesita brújula.",
+      "fail": "Coloca la Cube, los mástiles y la radio, y conecta la batería. Con GPS1 detrás, el rumbo sale desviado 180° y la comprobación previa al armado dice \"EKF3 Yaw inconsistent\": intercambia los mástiles para que GPS1 quede delante, donde dice GPS1_POS_X 0.17."
+    },
+    "prearm": {
+      "title": "Comprobaciones previas al armado",
+      "pass": "Pasan todas las comprobaciones (ARMING_SKIPCHK 0): fix RTK y guiñada por GPS, datos del radar, acelerómetros calibrados, la batería por encima de BATT_ARM_VOLT. La Cube armará.",
+      "fail": "Un mensaje PreArm bloquea el armado: \"Rangefinder 1: No Data\" (coloca el radar), \"GPS 1: Need 3D Fix\" o \"EKF3 Yaw inconsistent\" (haz la comprobación del RTK y de la guiñada por GPS), \"3D Accel calibration needed\" (calibra). Resuelve cada uno; nunca desactives las comprobaciones."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Chasis, salidas de motor y alimentación",
+      "explain": "En ArduCopter 4.7.2 se ajustan parámetros, y MAVProxy guarda cada param set al momento. Chasis Hexa X, con los seis motores en MAIN 1 a 6 por número de motor. El ESC integrado del X8 recibe PWM normal entre 1050 y 1950 µs, así que MOT_PWM_TYPE se queda en Normal. El filtro notch armónico sigue al acelerador y se sitúa en la frecuencia de paso de pala: dos palas a unas 2400 rpm zumban a 80 Hz. MOT_HOVER_LEARN 2 le deja aprender su propio gas de estacionario, que baja a medida que se vacía el depósito."
+    },
+    "links": {
+      "title": "Radio, radar y RTK",
+      "explain": "La radio de 900 MHz en TELEM1 lleva MAVLink y las correcciones RTK, y el radar habla con TELEM2. GPS1_TYPE 17 y GPS2_TYPE 18 convierten los dos F9P en una pareja de línea base móvil: el rover mide dónde está respecto a la base, y esa línea es el rumbo. Las posiciones de las antenas van en metros desde el centro de gravedad, con la y hacia la derecha. Con EK3_SRC1_YAW 2 la brújula se queda fuera, lejos de las naves de acero y de 450 A de cables de potencia."
+    },
+    "spray": {
+      "title": "El pulverizador",
+      "explain": "El pulverizador de ArduPilot hace funcionar la bomba en proporción a la velocidad sobre el suelo: SPRAY_PUMP_RATE 10 significa un 10 % por cada m/s, así que un 40 % a 4 m/s y un 70 % a 7 m/s, y la dosis por metro cuadrado sigue siendo la misma. Por debajo de SPRAY_SPEED_MIN (1 m/s, que todavía se escribe en cm/s) se para, así que nunca encharca en estacionario. El interruptor del canal 7 permite pulverizar; subido con el dron desarmado, hace la prueba de la bomba."
+    },
+    "failsafe": {
+      "title": "Failsafes, geovalla y comprobaciones previas al armado",
+      "explain": "Radio perdida, o la estación de tierra en silencio durante 5 s: RTL. El nivel de batería baja es 3,5 V por celda o un 30 % restante, y entonces RTL; en el nivel crítico de 3,4 V por celda aterriza donde está. La geovalla lo mantiene por debajo de 30 m y a menos de 300 m de casa. La 4.7 nombra las comprobaciones de armado al revés: ARMING_SKIPCHK lista las comprobaciones que se saltan, y 0 no se salta ninguna."
+    },
+    "stabilize": {
+      "title": "Stabilize",
+      "explain": "La Cube nivela el dron cuando las palancas están centradas, pero el gas es la potencia de los motores: nada mantiene la altura ni la posición. En un dron de 33 kg con agua moviéndose dentro, este es el modo para cuando ha fallado el GPS o el radar. ATC_ANGLE_MAX 25 limita la inclinación en todos los modos."
+    },
+    "althold": {
+      "title": "AltHold",
+      "explain": "La palanca de gas pide subir o bajar, hasta PILOT_SPD_UP 2,5 m/s, y centrada mantiene la altura. Con SURFTRAK_MODE 1 y el radar, es la altura sobre el cultivo y no sobre el punto de despegue, así que sube y baja con el terreno. Nada mantiene la posición: el viento lo empuja."
+    },
+    "loiter": {
+      "title": "Loiter",
+      "explain": "Mantiene la altura, la posición y el rumbo con las palancas centradas, con unos pocos centímetros de precisión gracias al RTK. Con la palanca a fondo vuela a LOIT_SPEED_MS 8 m/s, y LOIT_ACC_MAX_M 3 mantiene suaves los arranques y las paradas, para que el agua del depósito no zarandee el dron."
+    },
+    "rtl": {
+      "title": "Volver al punto de despegue",
+      "explain": "Sube a RTL_ALT_M 12 m, por encima de los árboles de 10 m y del tendido eléctrico de 9 m, vuelve a casa a 6 m/s y aterriza. El pulverizador no forma parte del modo: la librería del pulverizador de ArduPilot mantiene la bomba permitida al cambiar de modo, así que una misión termina cada fila con DO_SPRAYER 0, y un piloto apaga el interruptor del pulverizador antes de tomar el control. Si no, fumiga el patio de camino a casa."
+    },
+    "auto": {
+      "title": "AUTO: la misión de fumigación",
+      "explain": "La misión se planifica como una cuadrícula de levantamiento: filas separadas una pasada (4 m), unidas por los extremos. Cada fila empieza con DO_SPRAYER 1 y termina con DO_SPRAYER 0, así que la bomba solo funciona sobre el cultivo. WP_RFND_USE 1 y los waypoints en el marco Terrain lo mantienen a 2,5 m sobre el cultivo gracias al radar. Cuando vuelve de recargar el depósito, DO_SET_RESUME_REPEAT_DIST hace que se reincorpore a la fila un poco antes de donde se paró, así que no se salta ninguna franja. AUTO no puede armar: arma en Loiter y luego cambia."
+    }
+  },
+  "flight": {
+    "modes": {
+      "loiter": {
+        "title": "Loiter",
+        "hint": "Mantener posición por RTK: las palancas fijan una velocidad de hasta 8 m/s, y el dron se para cuando sueltas. El modo para volar las filas a mano."
+      },
+      "althold": {
+        "title": "AltHold",
+        "hint": "Mantiene la altura, pero nada mantiene la posición: hasta un dron de 33 kg se deja llevar por el viento."
+      },
+      "stabilize": {
+        "title": "Stabilize",
+        "hint": "Autonivelado con un límite de inclinación de 25°; el gas es cosa tuya. Pesa mucho y responde despacio, así que haz movimientos pequeños."
+      },
+      "rtl": {
+        "title": "RTL",
+        "hint": "Sube a 12 m por encima de los árboles y del tendido eléctrico, vuelve a casa y aterriza en la plataforma."
+      },
+      "auto": {
+        "title": "Fumigación en AUTO",
+        "hint": "Vuela la misión de fumigación por su cuenta: seis filas a 2,5 m con la bomba encendida a lo largo de cada una, y luego vuelve a casa a aterrizar."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Radio del piloto perdida: RTL, subiendo primero a 12 m por encima de los árboles y del tendido eléctrico.",
+      "gcs-loss": "Ningún latido de la estación de tierra durante 5 s: RTL.",
+      "low-battery": "Por debajo de 42 V (3,5 V por celda) o con 6600 mAh restantes: RTL. En el campo, es cuando vuelve a por una batería nueva y a recargar el depósito.",
+      "battery-critical": "Por debajo de 40,8 V: aterriza donde está, aunque sea en el cultivo, en lugar de arriesgarse a volver a casa.",
+      "ekf": "El estimador deja de fiarse de su posición (RTK perdido, la guiñada por GPS no cuadra): aterriza, porque ya no sabe hacia dónde va.",
+      "fence": "Por encima de 30 m o a más de 300 m de casa: RTL."
+    },
+    "controls": "Teclado: Espacio arma y desarma, W y S suben y bajan, las flechas lo mueven hacia delante, hacia atrás y hacia los lados, A y D guiñada, V cambia a la cámara del morro, R vuelve a poner el dron en la plataforma. En Loiter se para cuando sueltas. En un móvil, la palanca izquierda es acelerador y guiñada, y la derecha es cabeceo y alabeo. Un mando funciona en Modo 2."
+  },
+  "courses": {
+    "spray": {
+      "title": "Fumiga el campo norte",
+      "brief": "Despega del patio, fumiga seis filas de 36 m de la parcela de cultivo a 2,5 m por encima y separadas 4 m, con la bomba encendida a lo largo de cada fila y apagada en los giros, y luego vuelve a casa y aterriza en la plataforma. Vuélalo tú en Loiter contra los tiempos par, ojo con los árboles del lado oeste y el tendido eléctrico del este, o cambia a AUTO y mira cómo la cuadrícula de levantamiento se vuela sola.",
+      "goals": {
+        "1": "DESPEGUE: sube a 5 m sobre la plataforma",
+        "2": "FILA 1: baja al extremo oeste, bomba encendida",
+        "3": "FILA 1: fumiga hasta el extremo este, bomba apagada",
+        "4": "FILA 2: avanza 4 m al norte, bomba encendida",
+        "5": "FILA 2: fumiga de vuelta al oeste, bomba apagada",
+        "6": "FILA 3: avanza al norte, bomba encendida",
+        "7": "FILA 3: fumiga hacia el este, bomba apagada",
+        "8": "FILA 4: avanza al norte, bomba encendida",
+        "9": "FILA 4: fumiga hacia el oeste, bomba apagada",
+        "10": "FILA 5: avanza al norte, bomba encendida",
+        "11": "FILA 5: fumiga hacia el este, bomba apagada",
+        "12": "FILA 6: avanza al norte, bomba encendida",
+        "13": "FILA 6: fumiga hacia el oeste, bomba apagada",
+        "14": "CASA: de vuelta sobre el patio a 5 m",
+        "15": "ATERRIZAJE: en la plataforma"
+      }
+    }
+  },
+  "quizzes": {
+    "power": {
+      "caps": {
+        "q": "¿Por qué lleva la placa de potencia condensadores de 63 V y baja ESR?",
+        "options": {
+          "1": "Almacenan energía para la bomba",
+          "2": "Absorben los picos de tensión de seis ESC que conmutan hasta 80 A cada uno, que si no matarían los ESC y causarían desincronizaciones",
+          "3": "Filtran el ruido de la radio"
+        },
+        "why": "Los cables largos de la batería tienen inductancia, y un ESC que conmuta decenas de amperios a través de ellos genera picos muy por encima de la tensión de la batería. Los condensadores de baja ESR en la placa de potencia los absorben. Los de 63 V valen sobre una batería 12S de 50,4 V, pero no sobre una 14S de 58,8 V: esa necesita condensadores de 80 a 100 V."
+      },
+      "brick": {
+        "q": "Los ESC del X8 no tienen BEC. ¿Qué alimenta la Cube?",
+        "options": {
+          "1": "Los cables de señal de los ESC",
+          "2": "Los receptores RTK",
+          "3": "Un módulo de alimentación desde el bus de 12S hasta POWER1"
+        },
+        "why": "Sin BEC en los ESC, los 5 V del autopiloto salen de un módulo de alimentación, que además mide la tensión y la corriente de la batería para los failsafes. Una alimentación débil que se cae cuando 450 A hunden la batería reinicia la Cube en el aire."
+      }
+    },
+    "gps": {
+      "baseline": {
+        "q": "¿Por qué dos antenas GPS separadas 340 mm?",
+        "options": {
+          "1": "La línea entre ellas da el rumbo, así que el dron no necesita una brújula cerca de naves de acero y de cables con mucha corriente",
+          "2": "Dos antenas ven el doble de satélites",
+          "3": "Una es de repuesto por si falla la otra"
+        },
+        "why": "En una pareja de línea base móvil, el rover mide su posición respecto a la base con una precisión de un centímetro, lo que da la dirección de la línea entre ellas: el rumbo. ArduPilot quiere las antenas separadas al menos 30 cm."
+      },
+      "swap": {
+        "q": "GPS1 acaba en el mástil trasero y GPS2 en el delantero. ¿Qué pasa?",
+        "options": {
+          "1": "Nada: funciona de las dos maneras",
+          "2": "Se pierde el fix RTK",
+          "3": "El rumbo sale 180° equivocado y la comprobación previa al armado dice EKF3 Yaw inconsistent"
+        },
+        "why": "GPS1_POS_X dice que la antena base está 0,17 m por delante. Si en realidad está detrás, la línea medida apunta hacia atrás y el rumbo del GPS discrepa 180° de todo lo demás. Vuelve a intercambiar los mástiles (o los tipos y las posiciones) en tierra; no lo descubras en el aire."
+      }
+    },
+    "boom": {
+      "rate": {
+        "q": "SPRAY_PUMP_RATE vale 10. ¿A cuánto funciona la bomba a 4 m/s?",
+        "options": {
+          "1": "Al 10 %",
+          "2": "Al 40 %",
+          "3": "Al 100 %"
+        },
+        "why": "El valor es por cada m/s de velocidad sobre el suelo: 10 % × 4 = 40 %. A 10 m/s llega al 100 %, y más rápido la dosis empieza a bajar."
+      },
+      "dose": {
+        "q": "Vuelas las filas a 7 m/s en lugar de a 4 m/s. ¿Qué pasa con los litros por hectárea?",
+        "options": {
+          "1": "Nada: la bomba funciona al 70 % en lugar de al 40 %, así que cada metro cuadrado recibe lo mismo",
+          "2": "Bajan a cerca del 57 %",
+          "3": "Se duplican"
+        },
+        "why": "El caudal sube con la velocidad sobre el suelo y también la superficie cubierta cada segundo, así que la velocidad se anula: L/ha = caudal máximo × RATE/100 ÷ pasada × 10000. Una bomba de 3 L/min con una pasada de 4 m da 12,5 L/ha a cualquier velocidad hasta 10 m/s. Solo una bomba que se satura, o una de caudal fijo, cambia la dosis."
+      }
+    },
+    "fly": {
+      "pump": {
+        "q": "A mitad de una fila la batería se queda baja y pasa a RTL. ¿Qué hace la bomba?",
+        "options": {
+          "1": "Se para sola con el cambio de modo",
+          "2": "Sigue funcionando mientras el dron vaya más rápido que SPRAY_SPEED_MIN, salvo que un DO_SPRAYER 0 o el interruptor la hayan apagado",
+          "3": "Funciona a toda velocidad"
+        },
+        "why": "El pulverizador de ArduPilot no mira el modo de vuelo. Pulverizar sigue permitido hasta un DO_SPRAYER 0, hasta que se baja el interruptor o hasta que la velocidad cae por debajo de 1 m/s. Por eso cada fila termina con DO_SPRAYER 0, y por eso un piloto apaga el interruptor del pulverizador antes de tomar el control."
+      },
+      "resume": {
+        "q": "Tras recargar el depósito armas y vuelves a AUTO; la Cube no se ha apagado. ¿Adónde va?",
+        "options": {
+          "1": "De vuelta a la primera fila",
+          "2": "Aterriza",
+          "3": "De vuelta a la fila en la que estaba, reincorporándose un par de metros antes de donde se paró"
+        },
+        "why": "MIS_RESTART 0 reanuda la misión en lugar de empezarla de nuevo, y DO_SET_RESUME_REPEAT_DIST hace que se reincorpore a la trayectoria así de atrás, para que no se salte ninguna franja. El punto de reanudación solo vive en la RAM: si al cambiar la batería se apaga la Cube, AUTO vuelve a empezar desde el primer elemento."
+      },
+      "kv": {
+        "q": "¿Por qué los motores 10025 de 80 KV en 12S con hélices de 30 pulgadas salen flojos?",
+        "options": {
+          "1": "80 KV con 44,4 V hacen girar una hélice de 30 pulgadas demasiado despacio: 1,20:1 con el depósito lleno",
+          "2": "Pesan demasiado para los brazos",
+          "3": "Consumen demasiada corriente"
+        },
+        "why": "El empuje va con el cuadrado de las rpm, y las rpm son el KV por los voltios. Un motor de 80 KV es para hélices más grandes o para una batería 14S: en 12S con hélices de 30 pulgadas da 6,9 kg por motor frente a 10,8 kg del de 100 KV, demasiado poco margen para una ráfaga con 10 L a bordo."
+      }
+    }
+  }
+}
