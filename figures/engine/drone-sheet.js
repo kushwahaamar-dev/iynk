@@ -30,26 +30,67 @@
     return [p[0] - dy / L * o, p[1] + dx / L * o];
   });
 
+  // where the sheet goes: the biggest copy of its canvas (CW x CH sheet units) that fits the frame (vw x vh) without
+  // touching any of the figure's own controls drawn over it (boxes [x0, y0, x1, y1] in frame units). Its edges are
+  // tried at the frame's edges and at the boxes' edges, and it is centred in the room it gets; of the places within 4 %
+  // of the biggest, the one nearest the middle of the frame wins. Returns the canvas box.
+  const CW = 784, CH = 392, X0 = -12, Y0 = -26;
+  SD.sheetFit = (vw, vh, boxes) => {
+    const m = Math.min(vw, vh) * .015, pad = Math.min(vw, vh) * .012;
+    const bs = boxes.map(([x0, y0, x1, y1]) => [x0 - pad, y0 - pad, x1 + pad, y1 + pad]).filter(b => b[2] > m && b[3] > m && b[0] < vw - m && b[1] < vh - m);
+    const inX = v => v >= m && v <= vw - m, inY = v => v >= m && v <= vh - m;
+    const ls = [m, ...bs.map(b => b[2]).filter(inX)], rs = [vw - m, ...bs.map(b => b[0]).filter(inX)];
+    const ts = [m, ...bs.map(b => b[3]).filter(inY)], bts = [vh - m, ...bs.map(b => b[1]).filter(inY)];
+    const places = floor => {
+      const out = [];
+      for (const l of ls) for (const r of rs){
+        if (r - l <= 0 || (r - l) / CW < floor) continue;
+        for (const t of ts) for (const b of bts){
+          const s = Math.min((r - l) / CW, (b - t) / CH);
+          if (b - t <= 0 || s < floor) continue;
+          if (bs.some(q => q[0] < r && l < q[2] && q[1] < b && t < q[3])) continue;
+          const w = CW * s, h = CH * s;
+          out.push({ s, x: (l + r - w) / 2, y: (t + b - h) / 2, w, h });
+          if (floor === 0) floor = s;
+        }
+      }
+      return out;
+    };
+    const all = places(0), top = all.reduce((a, p) => Math.max(a, p.s), 0);
+    if (!top){ const s = Math.min((vw - 2 * m) / CW, (vh - 2 * m) / CH); return { x: (vw - CW * s) / 2, y: (vh - CH * s) / 2, w: CW * s, h: CH * s }; }
+    const off = p => Math.hypot(p.x + p.w / 2 - vw / 2, p.y + p.h / 2 - vh / 2);
+    const { x, y, w, h } = places(top * .96).reduce((a, p) => off(p) < off(a) ? p : a);
+    return { x, y, w, h };
+  };
+  let fitKey = '', fitBox = null;
+
   SD.sheet = st => {
     const c = SD.craft(), Wr = c.wiring, svgEl = document.getElementById('fig'), vb = svgEl && svgEl.viewBox && svgEl.viewBox.baseVal;
     const vw = vb && vb.width ? vb.width : 585, vh = vb && vb.height ? vb.height : 440;
-    // leave the figure's own button column free when it is shown (standalone or embedded without bare=1): a quarter of
-    // the frame, or up to its widest button when that reaches further ("Calibrate accelerometer" on the delivery quad)
-    const btns = document.getElementById('btns'), html = document.documentElement, frameBox = svgEl && svgEl.getBoundingClientRect();
-    const btnsShown = btns && !html.classList.contains('cf-bare') && getComputedStyle(btns).display !== 'none' && innerWidth > 560;
-    const btnRight = btnsShown && frameBox && frameBox.width ? Math.max(0, ...[...btns.children].map(el => el.getBoundingClientRect().right)) : 0;
-    const left = btnsShown ? Math.max(vw * .24, btnRight ? (btnRight - frameBox.left) * vw / frameBox.width + 6 : 0) : 0;
-    // and the stats panel (parts, checks, battery) on the right
-    const stE = document.getElementById('stats');
-    const right = stE && frameBox && frameBox.width && getComputedStyle(stE).display !== 'none' && innerWidth > 560
-      ? Math.max(0, frameBox.right - stE.getBoundingClientRect().left) * vw / frameBox.width : 0;
-    const room = vw - left - right, sc = Math.min(room * .95 / 780, vh * .9 / 380), ox = left + (room - 760 * sc) / 2, oy = (vh - 360 * sc) / 2;
-    const X = x => f(ox + x * sc), Y = y => f(oy + y * sc), sw = w => (w * sc / INK_K).toFixed(2), fs = v => f(v * sc);
+    // the figure's own controls over the frame: the buttons the host has not hidden, the switches, the stats panel
+    // (parts, checks, battery) and the zoom chip; on a phone they sit above and below the frame, so it gets it all
+    // (screen px to frame units through the SVG's own transform: a short frame letterboxes the drawing)
+    const ctm = svgEl && svgEl.getScreenCTM ? svgEl.getScreenCTM() : null, px = ctm && ctm.a > 0 ? ctm.a : 0, boxes = [];
+    const vx = vb ? vb.x : 0, vy = vb ? vb.y : 0;
+    if (px) for (const el of document.querySelectorAll('#btns > *, .vset, #stats, .zchip')){
+      const r = el.getBoundingClientRect();
+      if (r.width && r.height) boxes.push([(r.left - ctm.e) / px - vx, (r.top - ctm.f) / px - vy, (r.right - ctm.e) / px - vx, (r.bottom - ctm.f) / px - vy].map(v => Math.round(v)));
+    }
+    const key = [vw, vh, ...boxes.flat()].map(v => Math.round(v)).join(' ');
+    // the controls settle after the first draw (the zoom chip comes in after mount, fonts load, a host hides buttons):
+    // a new layout draws once more on the next frame, until it holds
+    if (key !== fitKey){ fitKey = key; fitBox = SD.sheetFit(vw, vh, boxes); const u = SD.ui(); if (u && px) requestAnimationFrame(() => u.render()); }
+    const sc = fitBox.w / CW, ox = vx + fitBox.x - X0 * sc, oy = vy + fitBox.y - Y0 * sc;
+    // on a small frame the text grows (up to 1.6 times) so a block title reads at about 10 px; a title or a line that
+    // would then overrun its block shrinks back to fit
+    const tf = Math.min(1.6, Math.max(1, 10 / (12.5 * sc * (px || 1))));
+    const X = x => f(ox + x * sc), Y = y => f(oy + y * sc), sw = w => (w * sc / INK_K).toFixed(2), fs = v => f(v * sc), ft = v => f(v * sc * tf);
+    const fit = (text, size, room) => f(Math.min(size * tf, room / Math.max(1, [...String(text)].length * .62)) * sc);
     const d = SD.resolved(st), V = st.calc && st.calc.V ? st.calc.V : d.batt.cells * 3.7, on = SD.powered(st);
     const t = st.test, spinning = t && t.kind === 'motors' ? t.cur : -1;
-    let s = `<rect x="${X(-12)}" y="${Y(-26)}" width="${f(784 * sc)}" height="${f(392 * sc)}" rx="${fs(8)}" fill="#fbf8f0" stroke="${INK}" stroke-width="${sw(1.4)}"/>`;
-    s += `<text x="${X(0)}" y="${Y(-8)}" font-size="${fs(11)}" font-family="ui-monospace,Menlo,monospace" font-weight="800" fill="${INK}">${CF_ESC(CF_T('WIRING'))} · ${CF_ESC(CF_T(c.title))}</text>`;
-    s += `<text x="${X(748)}" y="${Y(-8)}" font-size="${fs(9.5)}" text-anchor="end" font-family="ui-monospace,Menlo,monospace" fill="#857d6e">${CF_ESC(CF_T('click a block'))}</text>`;
+    let s = `<rect x="${X(X0)}" y="${Y(Y0)}" width="${f(CW * sc)}" height="${f(CH * sc)}" rx="${fs(8)}" fill="#fbf8f0" stroke="${INK}" stroke-width="${sw(1.4)}"/>`;
+    s += `<text x="${X(0)}" y="${Y(-8)}" font-size="${ft(11)}" font-family="ui-monospace,Menlo,monospace" font-weight="800" fill="${INK}">${CF_ESC(CF_T('WIRING'))} · ${CF_ESC(CF_T(c.title))}</text>`;
+    s += `<text x="${X(748)}" y="${Y(-8)}" font-size="${ft(9.5)}" text-anchor="end" font-family="ui-monospace,Menlo,monospace" fill="#857d6e">${CF_ESC(CF_T('click a block'))}</text>`;
     const used = new Set();
     for (const e of Wr.edges){
       const A = Wr.nodes[e.from], B = Wr.nodes[e.to], k = KIND[e.kind] || KIND.signal;
@@ -76,7 +117,7 @@
         const txt = e.label === 'V' ? CF_T('{v} V', { v: V.toFixed(1) }) : CF_T(e.label);
         const mid = base.length === 2 ? [(base[0][0] + base[1][0]) / 2, (base[0][1] + base[1][1]) / 2] : [(base[1][0] + base[2][0]) / 2, (base[1][1] + base[2][1]) / 2];
         const lx = mid[0] + (e.labelAt ? e.labelAt[0] : 0), ly = mid[1] + (e.labelAt ? e.labelAt[1] : -6);
-        s += `<text x="${X(lx)}" y="${Y(ly)}" font-size="${fs(9.5)}" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" fill="#5c564b" paint-order="stroke" stroke="#fbf8f0" stroke-width="${sw(3)}">${CF_ESC(txt)}</text>`;
+        s += `<text x="${X(lx)}" y="${Y(ly)}" font-size="${ft(9.5)}" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" fill="#5c564b" paint-order="stroke" stroke="#fbf8f0" stroke-width="${sw(3)}">${CF_ESC(txt)}</text>`;
       }
     }
     for (const [id, nd] of Object.entries(Wr.nodes)){
@@ -85,19 +126,26 @@
       const subText = nd.sub === 'batt' ? d.batt.label : nd.sub === 'motor' ? d.motor.label : nd.sub === 'prop' ? (d.prop.label || st.design.prop) : CF_T(nd.sub || '');
       let b = `<rect x="${X(x)}" y="${Y(y)}" width="${fs(BW)}" height="${fs(BH)}" rx="${fs(10)}" fill="${sel ? 'var(--accent,#f4b829)' : '#fbf8f0'}" stroke="${INK}" stroke-width="${sw(1.6)}"${fitted ? '' : ` stroke-dasharray="${f(5 * sc)} ${f(3 * sc)}"`}/>`;
       b += `<path d="M${X(x + 10)} ${Y(y + .8)}L${X(x + 8)} ${Y(y + .8)}Q${X(x + .8)} ${Y(y + .8)} ${X(x + .8)} ${Y(y + 10)}L${X(x + .8)} ${Y(y + BH - 10)}Q${X(x + .8)} ${Y(y + BH - .8)} ${X(x + 8)} ${Y(y + BH - .8)}L${X(x + 10)} ${Y(y + BH - .8)}Z" fill="${bar}"/>`;
-      b += `<text x="${X(x + 18)}" y="${Y(y + 23)}" font-size="${fs(12.5)}" font-weight="800" font-family="ui-monospace,Menlo,monospace" fill="${INK}">${CF_ESC(CF_T(nd.title))}</text>`;
-      b += `<text x="${X(x + 18)}" y="${Y(y + 41)}" font-size="${fs(10.5)}" font-family="ui-monospace,Menlo,monospace" fill="#5c564b">${CF_ESC(subText)}</text>`;
-      if (!fitted) b += `<text x="${X(x + BW - 8)}" y="${Y(y + 13)}" font-size="${fs(8)}" text-anchor="end" font-family="ui-monospace,Menlo,monospace" fill="#857d6e">${CF_ESC(CF_T('not fitted'))}</text>`;
+      // with the text grown, "not fitted" takes the second line instead of the corner, where the title would cover it
+      const title = CF_T(nd.title), corner = !fitted && tf < 1.05, line2 = fitted || corner ? subText : CF_T('not fitted');
+      b += `<text x="${X(x + 18)}" y="${Y(y + 23)}" font-size="${fit(title, 12.5, BW - 26)}" font-weight="800" font-family="ui-monospace,Menlo,monospace" fill="${INK}">${CF_ESC(title)}</text>`;
+      b += `<text x="${X(x + 18)}" y="${Y(y + 41)}" font-size="${fit(line2, 10.5, BW - 26)}" font-family="ui-monospace,Menlo,monospace" fill="${line2 === subText ? '#5c564b' : '#857d6e'}">${CF_ESC(line2)}</text>`;
+      if (corner) b += `<text x="${X(x + BW - 8)}" y="${Y(y + 13)}" font-size="${fs(8)}" text-anchor="end" font-family="ui-monospace,Menlo,monospace" fill="#857d6e">${CF_ESC(CF_T('not fitted'))}</text>`;
       if (fitted && on && nd.led) b += `<circle cx="${X(x + BW - 12)}" cy="${Y(y + 12)}" r="${fs(4)}" fill="${SD.colOf(nd.led)}" stroke="${INK}" stroke-width="${sw(.8)}"/>`;
-      const part = c.byId[id];
-      const lbl = CF_ESC(CF_T(part.name || part.short));
-      s += act('part', `<g opacity="${fitted ? 1 : .6}">${b}</g>`, `data-id="${id}" data-label="${lbl}" tabindex="0" role="button" aria-label="${lbl}" aria-pressed="${sel}"`);
+      // data-label is the English name the host lists (and translates); aria-label is what a screen reader reads here
+      const part = c.byId[id], en = part.name || part.short;
+      s += act('part', `<g opacity="${fitted ? 1 : .6}">${b}</g>`, `data-id="${id}" data-label="${CF_ESC(en)}" tabindex="0" role="button" aria-label="${CF_ESC(CF_T(en))}" aria-pressed="${sel}"`);
     }
     const legend = Wr.legend || ['power', 'signal', 'video', 'phase', ...['rf', 'ground'].filter(k => used.has(k))];
+    // the legend runs along the bottom, each entry as wide as its name, at a size that keeps the row inside the sheet
+    const names = legend.map(k => CF_T((KIND[k] || KIND.signal).name)), chars = names.reduce((n, t) => n + [...t].length, 0);
+    const lf = Math.min(10 * tf, (752 - legend.length * 44) / Math.max(1, chars * .62));
+    let lx = 4;
     legend.forEach((k, i) => {
-      const kk = KIND[k] || KIND.signal, lx = 4 + i * 150, ly = 342;
+      const kk = KIND[k] || KIND.signal, ly = 342;
       s += `<path d="M${X(lx)} ${Y(ly)}L${X(lx + 22)} ${Y(ly)}" stroke="${kk.col}" stroke-width="${sw(4)}"${kk.dash ? ` stroke-dasharray="${f(kk.dash[0] * sc)} ${f(kk.dash[1] * sc)}"` : ''}/>`;
-      s += `<text x="${X(lx + 28)}" y="${Y(ly + 3.5)}" font-size="${fs(10)}" font-family="ui-monospace,Menlo,monospace" fill="#5c564b">${CF_ESC(CF_T(kk.name))}</text>`;
+      s += `<text x="${X(lx + 28)}" y="${Y(ly + 3.5)}" font-size="${f(lf * sc)}" font-family="ui-monospace,Menlo,monospace" fill="#5c564b">${CF_ESC(names[i])}</text>`;
+      lx += Math.max(150, 44 + [...names[i]].length * .62 * lf);
     });
     return s;
   };

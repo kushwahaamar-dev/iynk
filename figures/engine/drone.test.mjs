@@ -139,3 +139,41 @@ describe('motor pose', () => {
     await expect(SD.settle()).resolves.toBeUndefined();
   });
 });
+
+describe('the wiring sheet fits its plate (DR U6)', () => {
+  // a 633 x 475 laptop plate: the figure's button column, its switches, its stats panel and the zoom chip
+  const column = Array.from({ length: 10 }, (_, i) => [12, 10 + 38 * i, i === 8 ? 222 : 160, 40 + 38 * i]);
+  const top = [[422, 10, 621, 40], [520, 44, 621, 203], [533, 441, 631, 469]];
+  const clear = (b, boxes) => boxes.every(([x0, y0, x1, y1]) => b.x + b.w <= x0 || x1 <= b.x || b.y + b.h <= y0 || y1 <= b.y);
+
+  it('takes the whole frame when nothing sits over it, centred', async () => {
+    page = await quad();
+    const b = page.drone.sheetFit(633, 475, []);
+    expect(b.w).toBeGreaterThan(633 * .95);
+    expect(b.w / b.h).toBeCloseTo(2, 1);
+    expect(b.x).toBeCloseTo((633 - b.w) / 2, 0);
+    expect(b.y).toBeCloseTo((475 - b.h) / 2, 0);
+  });
+
+  it('keeps clear of the controls and still fills most of the plate', async () => {
+    page = await quad();
+    const SD = page.drone;
+    const all = SD.sheetFit(633, 475, [...column, ...top]);
+    expect(clear(all, [...column, ...top])).toBe(true);
+    expect(all.w).toBeGreaterThan(633 * .6);
+    // the host draws the buttons itself (chrome): only the switches, the stats and the zoom chip are left
+    const bare = SD.sheetFit(633, 475, top);
+    expect(clear(bare, top)).toBe(true);
+    expect(bare.w).toBeGreaterThan(633 * .8);
+  });
+
+  it('draws the sheet into that box', async () => {
+    page = await loadFigure(buildFigure('drones/quad5'), { path: '/figures/drones/quad5.html', query: 'sheet=wiring' });
+    const doc = page.win.document, vb = doc.getElementById('fig').viewBox.baseVal;
+    const want = page.drone.sheetFit(vb.width, vb.height, []);
+    const r = doc.querySelector('#art rect');
+    expect(+r.getAttribute('width')).toBeCloseTo(want.w, 0);
+    expect(+r.getAttribute('x')).toBeCloseTo(want.x, 0);
+    expect(page.notes()).toEqual([]);
+  });
+});

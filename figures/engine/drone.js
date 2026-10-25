@@ -554,11 +554,12 @@ window.SL = window.SL || {};
       if (G.dz > 0.5) ctx.shadows.length = before;       // lifted parts drop their shadow
       let op = pl.leave ? Math.max(0, pl.t) : 1;
       if (part.cover && k > 0) op *= 1 - 0.72 * k;
-      const lbl = CF_ESC(T(part.name || part.short));
+      // data-label is the English name the host lists (and translates); aria-label is what a screen reader reads here
+      const en = CF_ESC(part.name || part.short), lbl = CF_ESC(T(part.name || part.short));
       its.forEach((it, j) => {
         // one tab stop per part, on its first item; Enter or Space presses it (see define)
         const a11y = j === 0 ? ` tabindex="0" role="button" aria-label="${lbl}" aria-pressed="${st.sel === part.id}"` : '';
-        let svg = act('part', it.svg, `data-id="${part.id}" data-label="${lbl}"${a11y}`);
+        let svg = act('part', it.svg, `data-id="${part.id}" data-label="${en}"${a11y}`);
         if (op < 0.999) svg = `<g opacity="${op.toFixed(3)}">${svg}</g>`;
         items.push({ box: it.box, at: it.at, svg });
       });
