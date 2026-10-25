@@ -24,24 +24,28 @@ const SIGMA = .55;                                 // the line's footprint in se
 const PAIRS = [[0, 1], [2, 3], [4, 5], [6, 7]], STRING_R = ['R3', 'R9', 'R13', 'R16'];
 
 const dark = pos => SX.map((_, i) => pos == null ? 0 : Math.exp(-((i - pos) ** 2) / (2 * SIGMA * SIGMA)));
-// LED current against 5 V: two 1.2 V LEDs and about 141 Ω per string
+// LED current against 5 V: two 1.2 V LEDs and about 141 Ω per string. The RC time follows the light that comes back
+// more than linearly (a phototransistor's gain falls in dim light), fitted so 3.3 V without the bypass reads dark
 const drive = vcc => vcc <= 2.4 ? 0 : (vcc - 2.4) / 2.6;
+const response = lit => Math.pow(lit, 1.6);
 
 /* one read of all eight: { us, lit } for a line at `pos` (sensor units, null = no line), with what is fitted, the
-   faults in force and VCC. Shared with the robotics bench (figures/robotics/qtr-8rc.js). */
+   faults in force and VCC. opts: emitters (LEDON high), vcc, gain, surface. Shared with the robotics bench
+   (figures/robotics/qtr-8rc.js). */
 function read(st, pos, opts = {}){
   const faults = st.faults || [], has = f => faults.includes(f), vcc = opts.vcc != null ? opts.vcc : ((st.ev && st.ev.rails && st.ev.rails.VCC) || 0);
   const emit = opts.emitters !== false && B.isSet('Q1') && B.isSet('R1') && B.isSet('R2');
   const burnt = has('bypass-5v') ? [4, 5] : [];
   const lit = SX.map((_, i) => {
     const pair = PAIRS.findIndex(p => p.includes(i));
-    return emit && B.isSet(STRING_R[pair]) && !burnt.includes(i) && B.isSet('U' + (PAIRS[pair][0] + 1)) && B.isSet('U' + (PAIRS[pair][1] + 1)) ? drive(vcc) * (has('bypass-5v') ? 2.1 : 1) : 0;
+    return emit && B.isSet(STRING_R[pair]) && !burnt.includes(i) && B.isSet('U' + (PAIRS[pair][0] + 1)) && B.isSet('U' + (PAIRS[pair][1] + 1)) ? drive(vcc) * (has('bypass-5v') ? 3 : 1) : 0;
   });
   const d = dark(pos), sun = has('ambient-ir') ? 3 : 0;
   const us = SX.map((_, i) => {
     if (!B.isSet('U' + (i + 1))) return TIMEOUT;
     if (i === 0 && has('cold:J1.4') && Math.floor((st.t || 0) * 3.3) % 3 === 0) return TIMEOUT;
-    const light = lit[i] * (1 - .954 * d[i]) + sun;
+    // gain: how much of the LED's IR the floor sends back (1 at 3 mm, about 0.15 at 10 mm); no surface, none
+    const light = (opts.surface === false ? 0 : response(lit[i]) * (opts.gain != null ? opts.gain : 1) * (1 - .954 * d[i])) + sun;
     return light > 0 ? Math.min(TIMEOUT, Math.round(WHITE_US / light)) : TIMEOUT;
   });
   return { us, lit };
@@ -145,7 +149,7 @@ function model(st){
   const p = position(r.us, st.qtrLast);
   if (run) st.qtrLast = p.pos;
   st.qtr = { run, us: r.us, lit: r.lit, pos: p.pos, line: pos };
-  const vcc = (st.ev && st.ev.rails && st.ev.rails.VCC) || 0, mA = Math.round(r.lit.reduce((a, x, i) => a + (i % 2 ? 0 : x * 20), 0));
+  const vcc = (st.ev && st.ev.rails && st.ev.rails.VCC) || 0, mA = Math.round(r.lit.reduce((a, x, i) => a + (i % 2 ? 0 : x * 24), 0));
   let status = 'Unpowered';
   if (st.power && st.ev.status === 'fault') status = 'Fault: unplug and repair';
   else if (st.power && !run) status = 'Powered, nothing reading it';

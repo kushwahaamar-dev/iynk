@@ -1,0 +1,461 @@
+{
+  "title": "QTR-8RC line follower",
+  "sub": "eight IR sensors that read by timing",
+  "hint": "build the array, read the line, then steer",
+  "overview": "The QTR-8RC is a red 75 mm strip with eight infrared reflectance sensors in a row, 9.5 mm apart. Each sensor is an IR LED and a phototransistor side by side, looking at the floor 3 mm below. White reflects a lot of IR, black tape almost none. The RC version reads by timing: the Nano drives each output HIGH, lets go, and counts how long the line takes to fall, about 120 µs over white and past the library's 2500 µs timeout over black. Eight of those times become one number from 0 to 7000: where the line is under the array. Build the array, wire it to a Nano with a TB6612FNG and two gear motors, slide a test card under it and make the robot steer back onto the line. Then break it: too little voltage, a bridged bypass, a cold joint, sunlight, the array too high, the motors swapped.",
+  "parts": {
+    "U1": {
+      "name": "Reflectance sensors 1-8",
+      "what": "Eight QRE1113-style sensors in one row, 9.525 mm apart: each is an IR LED (940 nm) and a phototransistor in a 2.8 x 3.6 mm black package with two windows. The LED shines at the floor; the more IR comes back, the harder the phototransistor pulls its output down. Sensor 1 is on the left, under OUT1."
+    },
+    "Q1": {
+      "name": "LED switch (N-MOSFET)",
+      "what": "Switches all eight IR LEDs at once. Its gate is LEDON, pulled up to VCC through 47 kΩ, so the LEDs are on unless the Nano pulls LEDON low. Turning them off between reads saves most of the 100 mA."
+    },
+    "R3": {
+      "name": "47 Ω resistor in LED string 1+2",
+      "what": "The LEDs run as four series pairs: 1+2, 3+4, 5+6 and 7+8. Each pair has one of these resistors (R3, R9, R13, R16) to set its current, about 20 mA at 5 V. If one is missing, both sensors of its pair go dark."
+    },
+    "R4": {
+      "name": "47 kΩ LEDON pull-up",
+      "what": "Holds LEDON high, so the LEDs light even when nothing is wired to LEDON. Pull it low to switch them off."
+    },
+    "C1": {
+      "name": "10 nF timing capacitors",
+      "what": "Each output has a 10 nF capacitor and a 220 Ω resistor. The Nano charges the node by driving the pin HIGH; when it lets go, the phototransistor discharges the capacitor. The more light, the faster the fall: that time is the reading."
+    },
+    "BYP": {
+      "name": "3.3V BYPASS pads",
+      "what": "Two pads on the header edge. Bridged, they short out the shared 47 Ω stage so the LEDs stay bright on 3.3 V. Never bridge them on 5 V: each LED string then takes about 55 mA, over the LEDs' 50 mA rating."
+    },
+    "PERF": {
+      "name": "Snap line",
+      "what": "A column of vias between sensors 6 and 7. Snap the board here to get a 6-sensor and a 2-sensor array. The small piece then needs the 100 Ω resistor from the kit to light its LEDs, and they stay on all the time."
+    },
+    "J1": {
+      "name": "11-pin header: GND, VCC, LEDON, OUT1-OUT8",
+      "what": "Nothing through-hole comes fitted. The header goes on the back, so its pins point up and away from the floor when the sensors face down. GND is the square pad."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "Reads the array and drives the wheels. The array's GND, VCC and LEDON go to GND, 5V and D2; OUT1-OUT6 to A0-A5 (any pin can time an RC output); OUT7 and OUT8 to D11 and D12. The driver takes D5-D10 and D4."
+    },
+    "DRV": {
+      "name": "TB6612FNG motor driver",
+      "what": "The MOSFET driver from Fig. 05: PWMA D5, AIN1 D7, AIN2 D8, STBY D9, BIN1 D10, BIN2 D4, PWMB D6. Its logic runs from the Nano's 5 V, the motors from the LiPo on VM."
+    },
+    "MOTL": {
+      "name": "Motor L (left wheel)",
+      "what": "A TT gear motor on A01/A02. PWMA sets its speed: the Follow sketch slows it when the line is on the left, so the robot turns left."
+    },
+    "MOTR": {
+      "name": "Motor R (right wheel)",
+      "what": "The second TT gear motor, on B01/B02, speed from PWMB."
+    },
+    "BATT": {
+      "name": "2S LiPo battery, 7.4 V",
+      "what": "Powers the motors through the driver's VM. The Nano and the array run from USB, so motor current never sags their 5 V."
+    },
+    "TRACK": {
+      "name": "Test card with black tape",
+      "what": "White card with 19 mm black electrical tape across it, slid under the array. Red ticks mark where each sensor looks. While the Follow sketch runs, the tape drifts as the track curves and comes back as the robot turns toward it."
+    }
+  },
+  "power": {
+    "label": "Power the bench",
+    "ok": "Nano on USB, LiPo on VM: the array reads and the driver is ready"
+  },
+  "modes": {
+    "raw": { "title": "Raw RC times" },
+    "line": { "title": "Line position" },
+    "follow": { "title": "Follow the line" },
+    "code": {
+      "title": "QTR-8RC: eight RC sensors timed by the Nano",
+      "pins": "OUT1-OUT8: any digital pin can time an RC output",
+      "emitter": "LEDON: the library turns the IR LEDs on for each read",
+      "read": "eight fall times in µs: about 120 over white, 2500 (the timeout) over black",
+      "calibrate": "sweep the array over the tape now: each sensor learns its own white and black",
+      "position": "0 = the line under sensor 1, 3500 = centre, 7000 = under sensor 8",
+      "motors": "both wheels forward, speed from 0 to 255",
+      "error": "how far the line is from the centre: negative = left",
+      "kp": "Kp = 0.05: 2500 off centre changes each wheel by 125"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Strip to the bare PCB",
+      "body": "Take every part off the red board. You will put it back the way it is made: the SMD sensors, resistors, capacitors and the MOSFET first, then the header.",
+      "refusal": "Unplug the power first: never work on a live board"
+    },
+    "smd": {
+      "title": "Pick and place the SMD parts, then reflow",
+      "body": "The eight sensors, the LED switch Q1, sixteen 0603 resistors and twelve capacitors go on in one pass and through the oven. The sensors face up on this side: on the robot this side faces the floor.",
+      "refusal": "The SMD parts go on first, on a bare board"
+    },
+    "header": {
+      "title": "Fit the 11-pin header on the back",
+      "body": "Push the header in from the back, so its pins point away from the floor when the sensors face down. Use the 11 x 1 row: GND, VCC, LEDON and OUT1-OUT8.",
+      "refusal": "SMD parts first: run pick and place and reflow. The oven would melt the plastic header"
+    },
+    "solder": {
+      "title": "Solder the header",
+      "body": "Eleven joints, soldered from the component side. Each OUT pin carries its sensor's reading, so a cold joint here shows up as one sensor stuck on black.",
+      "refusal": "Nothing to solder yet: place the header first"
+    },
+    "wire-nano": {
+      "title": "Wire the array to the Nano",
+      "body": "GND to GND, VCC to 5V, LEDON to D2. OUT1-OUT6 to A0-A5 and OUT7, OUT8 to D11, D12: the RC read only needs a pin that can be an output and then an input, and the analog pins can.",
+      "refusal": "Unplug the power first: never work on a live board"
+    },
+    "wire-driver": {
+      "title": "Wire the TB6612FNG",
+      "body": "PWMA D5, AIN1 D7, AIN2 D8, STBY D9, BIN1 D10, BIN2 D4, PWMB D6, GND to GND and VCC to the Nano's 5V. D5 and D6 are the PWM pins the sensors left free.",
+      "refusal": "Unplug the power first, and wire the array before the driver"
+    },
+    "wire-motors": {
+      "title": "Wire the motors",
+      "body": "The left motor on A01/A02, the right one on B01/B02. Which is left matters: the sketch slows the wheel on the side the line is on.",
+      "refusal": "Unplug the power first, and wire the driver before the motors"
+    },
+    "wire-battery": {
+      "title": "Wire the LiPo to VM and GND",
+      "body": "Red to VM, black to GND. The motors run from the pack; the Nano and the array stay on USB.",
+      "refusal": "Unplug the power first, and wire the motors before the LiPo"
+    },
+    "card": {
+      "title": "Slide the test card under the array",
+      "body": "White card, black tape, 3 mm under the sensors: the distance Pololu says works best. With nothing under it the array sees no IR coming back and every sensor reads black.",
+      "refusal": "Wire the LiPo first"
+    },
+    "plug": {
+      "title": "Power the bench",
+      "body": "USB into the Nano, the LiPo on VM. The IR LEDs are invisible to your eye (a phone camera shows them) and the Nano starts the Raw sketch.",
+      "refusal": "Finish the build first: every part on, every joint soldered, everything on the mat wired"
+    },
+    "raw": {
+      "title": "Upload Raw RC times",
+      "body": "read() times all eight outputs: about 120 µs where a sensor sees white card, 2500 where it sees tape (that is the timeout: real black takes about 2.6 ms). Move the card and watch the 2500s move.",
+      "refusal": "Power the bench first"
+    },
+    "line": {
+      "title": "Upload Line position",
+      "body": "A hundred calibrate() calls while you sweep the array over the tape let each sensor learn its own white and black. Then readLineBlack() turns the eight readings into one number: 0 under sensor 1, 3500 in the middle, 7000 under sensor 8.",
+      "refusal": "Power the bench first"
+    },
+    "follow": {
+      "title": "Upload Follow the line",
+      "body": "error = position - 3500. Each wheel gets 150 plus or minus error/20: with the line on the left the left wheel slows, the robot turns left and the line comes back to the middle. Watch the tape drift as the track curves and return.",
+      "refusal": "Power the bench first"
+    },
+    "three-volts": {
+      "title": "Power the array from 3.3 V",
+      "body": "VCC on the Nano's 3.3V pin instead of 5V. The LEDs run on what is left after two 1.2 V drops and 141 Ω: about a third of their current. Too little IR comes back even from white."
+    },
+    "bridge-bypass": {
+      "title": "Bridge 3.3V BYPASS on 5 V",
+      "body": "A solder blob across the bypass pads with the array still on 5 V. The shared resistor stage is gone and each LED string takes about 55 mA. One pair burns out."
+    },
+    "cold-out1": {
+      "title": "Leave a cold joint on OUT1",
+      "body": "A dull, cracked joint on the header's OUT1 pin. Sensor 1's reading makes and breaks contact."
+    },
+    "no-r9": {
+      "title": "Leave out R9",
+      "body": "The 47 Ω resistor in the LED string of sensors 3 and 4. With it missing, the two LEDs in series have no path."
+    },
+    "sunlight": {
+      "title": "Put the bench in the sun",
+      "body": "Sunlight is full of infrared. The phototransistors cannot tell it from their own LEDs' light."
+    },
+    "lift-array": {
+      "title": "Lift the array 10 mm",
+      "body": "The robot's chassis holds the array 10 mm above the floor instead of 3 mm. Run Follow and watch the readings."
+    },
+    "swap-motors": {
+      "title": "Swap the left and right motors",
+      "body": "Motor L on B01/B02, motor R on A01/A02. The sketch still slows the wheel it thinks is on the line side."
+    },
+    "motors-on-5v": {
+      "title": "Run the motors from the Nano's 5 V",
+      "body": "VM on the Nano's 5V pin instead of the LiPo. Each motor start pulls hundreds of mA through USB."
+    },
+    "exploded": {
+      "title": "Exploded view",
+      "body": "Unplug and lift the parts by build group: the SMD parts first, then the header.",
+      "refusal": "Unplug the power first: never work on a live board"
+    }
+  },
+  "faults": {
+    "low-vcc": {
+      "title": "Array on 3.3 V without the bypass",
+      "symptom": "Every sensor reads dark, white card included; the position jumps or sticks in the middle.",
+      "explanation": "Each LED string is two LEDs of about 1.2 V and 141 Ω. From 5 V that leaves 2.6 V for the resistors: about 18 mA. From 3.3 V only 0.9 V: about 6 mA, a third of the light. The phototransistor gets so little IR back that even white falls slowly, and after calibrating on 5 V everything counts as black.",
+      "fix": "Power VCC from 5 V. On a 3.3 V board, bridge the 3.3V BYPASS pads so the LEDs get their current back."
+    },
+    "bypass-5v": {
+      "title": "Bypass bridged on 5 V",
+      "symptom": "Sensors 5 and 6 read black over white card and stay that way; the board pulls about 220 mA and the LEDs get warm.",
+      "explanation": "The bypass pads short out the two 47 Ω resistors every string shares. On 5 V each string then takes (5 - 2.4 V) / 47 Ω, about 55 mA, over the LEDs' 50 mA rating. The LEDs are in series pairs, so when one burns open, its partner goes dark with it.",
+      "fix": "Remove the solder bridge and replace the burnt pair's sensors. Bridge the bypass only on 3.3 V."
+    },
+    "cold-out1": {
+      "title": "Cold joint on OUT1",
+      "symptom": "Sensor 1 jumps to 2500 (black) now and then, and the position flicks toward the left.",
+      "explanation": "The RC read needs the pin to charge the node and then watch it fall. Through a joint that makes and breaks, the Nano sometimes sees nothing come back and times out at 2500: the reading of a sensor over black.",
+      "fix": "Reheat the joint with fresh solder until it flows into a shiny cone around the pin."
+    },
+    "no-r9": {
+      "title": "R9 missing",
+      "symptom": "Sensors 3 and 4 read 2500 over white and black alike; the position leans toward them.",
+      "explanation": "The LEDs of sensors 3 and 4 are in series through R9. Without it there is no path, so neither LED lights. A sensor that sends out no IR gets none back and reads as black.",
+      "fix": "Fit R9 (47 Ω) and reflow it. Two sensors dead together usually means their shared LED string."
+    },
+    "sunlight": {
+      "title": "Sunlight on the floor",
+      "symptom": "Every sensor reads fast, black tape included: the array cannot find the line.",
+      "explanation": "Sunlight carries far more infrared than the LEDs. It reaches every phototransistor whatever is under it, so the outputs fall fast everywhere and black looks white.",
+      "fix": "Shade the array, or read twice with the LEDs on and off and subtract (QTRReadMode::OnAndOff in QTRSensors)."
+    },
+    "lifted": {
+      "title": "Array 10 mm above the floor",
+      "symptom": "White reads about 780 µs instead of 120, black times out; the position wanders and the robot weaves.",
+      "explanation": "The LED's light spreads out on its way down and back. Pololu measured 120 µs over white at 3 mm and 780 µs at 10 mm: a sixth of the light. Calibrated on the low setting, white now looks grey to every sensor.",
+      "fix": "Mount the array 3 mm above the floor (Pololu's best distance, 9.5 mm at most) and calibrate at the height you drive."
+    },
+    "motors-swapped": {
+      "title": "Left and right motors swapped",
+      "symptom": "The robot turns away from the line, loses it and spins.",
+      "explanation": "With the line on the left the sketch slows the left wheel. But that wheel is now on the right side, so the robot turns right and the line moves further left: the correction makes the error bigger.",
+      "fix": "Swap the motor wires back, or swap PWMA and PWMB in the sketch."
+    },
+    "brownout": {
+      "title": "Motors on the Nano's 5 V",
+      "symptom": "The wheels jerk, the Nano restarts over and over and calibration never finishes.",
+      "explanation": "A TT motor takes 200-300 mA running and over 1 A to start. Through USB and the Nano's 500 mA fuse that pulls 5 V down below what the ATmega needs, so it resets, the motors stop, the voltage recovers and it starts again.",
+      "fix": "Power VM from the LiPo. Keep the logic and the motors on separate supplies with a common ground."
+    }
+  },
+  "status": {
+    "status": "Status",
+    "powered": "Bench power",
+    "mode": "Sketch",
+    "position": "Line position (0-7000)",
+    "sensor1": "Sensor 1 (µs)",
+    "sensor4": "Sensor 4 (µs)",
+    "left": "Left wheel duty",
+    "right": "Right wheel duty",
+    "vcc": "Array VCC",
+    "rpm": "Left wheel speed",
+    "battery": "Battery current",
+    "usb": "USB current"
+  },
+  "current": {
+    "usb": "Nano USB (500 mA polyfuse)",
+    "lipo": "2S LiPo on VM",
+    "nano": "Nano running",
+    "array": "Eight IR LEDs (four strings of about 24 mA)",
+    "logic": "TB6612FNG logic",
+    "motors": "Two TT motors following the line",
+    "bypass": "LED strings with the bypass bridged"
+  },
+  "tasks": {
+    "line": "Where the line is under the array",
+    "steer": {
+      "title": "Steer back onto the line",
+      "brief": "The starter reads the line but drives both wheels at 150 whatever it sees. Make it steer: error = position - 3500, then left = 150 + error / 20 and right = 150 - error / 20. With the line under sensor 2 the left wheel must slow and the right speed up; under sensor 7 the other way round; centred, both at 150.",
+      "hints": {
+        "1": "readLineBlack() returns an unsigned number; cast it before subtracting: int error = (int)pos - 3500;",
+        "2": "error / 20 is the same as error x 0.05 without floating point: that is Kp.",
+        "3": "motors() already clamps each wheel to 0-255 with constrain()."
+      },
+      "checks": {
+        "1": "Runs for 4.5 s",
+        "2": "Reads the line with readLineBlack()",
+        "3": "STBY (D9) is HIGH: the driver is awake",
+        "4": "Centred: the left wheel (D5) at about 150/255",
+        "5": "Centred: the right wheel (D6) at about 150/255",
+        "6": "Line under sensor 2: the left wheel slows",
+        "7": "Line under sensor 2: the right wheel speeds up",
+        "8": "Line under sensor 7: the left wheel speeds up",
+        "9": "Line under sensor 7: the right wheel slows",
+        "10": "Centred again: back to 150"
+      },
+      "code": {
+        "goal": "Follow the line: slow the wheel on the side the line is on",
+        "todo": "work out the error from pos and steer with it instead of driving straight"
+      }
+    },
+    "search": {
+      "title": "Spin to find the line",
+      "brief": "On a sharp bend the line ends up under the outermost sensor and steering alone is too slow. When the position is under 1000, spin left on the spot: left wheel backwards, right forwards, both at 110. Over 6000, spin right. In between, steer as before.",
+      "hints": {
+        "1": "wheel() takes a signed speed: a negative one sets IN1 LOW and IN2 HIGH, so the wheel turns backwards.",
+        "2": "if (pos < 1000) { motors(-110, 110); } else if (pos > 6000) { motors(110, -110); } else { ... }",
+        "3": "Keep the steering line from the first task in the last branch."
+      },
+      "checks": {
+        "1": "Runs for 4.3 s",
+        "2": "Line far left: AIN1 (D7) is LOW",
+        "3": "Line far left: AIN2 (D8) is HIGH, the left wheel turns backwards",
+        "4": "Line far left: BIN1 (D10) is HIGH, the right wheel forwards",
+        "5": "Centred: the left wheel forwards again",
+        "6": "Line far right: BIN1 (D10) is LOW",
+        "7": "Line far right: BIN2 (D4) is HIGH, the right wheel backwards",
+        "8": "Line far right: the left wheel forwards",
+        "9": "Spinning left at 110: the left wheel's duty is about 43%",
+        "10": "Spinning right at 110: the right wheel's duty is about 43%"
+      },
+      "code": {
+        "goal": "Spin on the spot when the line is under an end sensor",
+        "todo": "add the two spins: under 1000 spin left, over 6000 spin right"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "header-side": {
+        "q": "Why does the header go on the back of the board?",
+        "options": {
+          "1": "The front has no pads for it",
+          "2": "The sensors must face the floor, so the pins should point up, away from it",
+          "3": "The back side is the only one that can be soldered"
+        },
+        "why": "The array works 3 mm above the floor with its sensors facing down. A header on the back points up into the robot, where the wires go; on the front it would hit the floor."
+      },
+      "pairs": {
+        "q": "Two neighbouring sensors, 3 and 4, both read black over white card. What is the likeliest cause?",
+        "options": {
+          "1": "Their shared LED string: the LEDs are wired in series pairs",
+          "2": "Two cold joints at once",
+          "3": "The Nano's pins 3 and 4 are broken"
+        },
+        "why": "The eight IR LEDs run as four series pairs, each through its own 47 Ω resistor. One open LED or a missing resistor darkens both sensors of the pair."
+      },
+      "bypass": {
+        "q": "When do you bridge the 3.3V BYPASS pads?",
+        "options": {
+          "1": "Always: the array is brighter",
+          "2": "When the board is snapped in two",
+          "3": "Only when VCC is 3.3 V"
+        },
+        "why": "Bridged, the pads remove the shared 47 Ω stage. On 3.3 V that gives the LEDs back their current; on 5 V it pushes them past their rating and burns a pair."
+      }
+    },
+    "read": {
+      "rc": {
+        "q": "How does the Nano read an RC sensor?",
+        "options": {
+          "1": "Drives the pin HIGH, lets go, and times how long it takes to fall LOW",
+          "2": "Reads a voltage with analogRead()",
+          "3": "Counts pulses the sensor sends"
+        },
+        "why": "Driving the pin HIGH leaves the 10 nF capacitor with nothing across it. Released, the phototransistor discharges it: lots of reflected IR, a fast fall; little, a slow one."
+      },
+      "timeout": {
+        "q": "A sensor reads exactly 2500. What does that mean?",
+        "options": {
+          "1": "The sensor is broken",
+          "2": "It timed out: very little IR came back, as over black tape",
+          "3": "It saw 2.5 V"
+        },
+        "why": "The library stops waiting after 2500 µs by default. Black tape typically takes about 2.6 ms, so black reads as the timeout."
+      },
+      "calibrate": {
+        "q": "Why sweep the array over the tape while calibrate() runs?",
+        "options": {
+          "1": "To warm up the LEDs",
+          "2": "To charge the capacitors",
+          "3": "So each sensor records its own white and black, and readings scale 0-1000 the same for all eight"
+        },
+        "why": "No two sensors are alike. calibrate() keeps each one's minimum and maximum; readLineBlack() scales every reading between them, so the weighted average is fair."
+      }
+    },
+    "follow": {
+      "error": {
+        "q": "readLineBlack() returns 1000. Which way must the robot turn?",
+        "options": {
+          "1": "Right: slow the right wheel",
+          "2": "Left: the line is under sensor 2, so slow the left wheel",
+          "3": "Straight on"
+        },
+        "why": "1000 means the line is under sensor 2, left of the middle (3500). Slowing the left wheel turns the robot left, back over the line."
+      },
+      "kp": {
+        "q": "The robot weaves from side to side across the line. What do you try first?",
+        "options": {
+          "1": "A smaller Kp (divide the error by more than 20)",
+          "2": "A bigger Kp",
+          "3": "A faster base speed"
+        },
+        "why": "A big Kp turns hard for a small error, overshoots and swings back. Lower it until the weaving stops; then a derivative term can damp what is left."
+      },
+      "lost": {
+        "q": "The line leaves the array on the left. What does readLineBlack() return?",
+        "options": {
+          "1": "3500, the middle",
+          "2": "Nothing: it waits for the line",
+          "3": "0, because the line was last seen on the left"
+        },
+        "why": "When no sensor sees the line the library returns the end it was last seen at: 0 or 7000. A P controller then turns hard that way, which is usually right."
+      }
+    },
+    "faults": {
+      "three-volts": {
+        "q": "The array runs from 3.3 V without the bypass. What do the sensors read?",
+        "options": {
+          "1": "Exactly the same as on 5 V",
+          "2": "White everywhere",
+          "3": "Dark everywhere: the LEDs get about a third of their current"
+        },
+        "why": "Two LEDs take about 2.4 V, leaving 0.9 V for 141 Ω: 6 mA instead of 18. With that little IR, even white card falls slowly."
+      },
+      "pair": {
+        "q": "After bridging the bypass on 5 V, sensors 5 and 6 go dark together. Why both?",
+        "options": {
+          "1": "Their LEDs are in series: when one burns open, the other loses its current too",
+          "2": "They share one OUT pin",
+          "3": "The Nano turned them off"
+        },
+        "why": "Each string is LED, resistor, LED in series. An open LED breaks the circuit for both."
+      },
+      "swapped": {
+        "q": "The motors are swapped. Why does the robot run away from the line instead of just wobbling?",
+        "options": {
+          "1": "The motors run slower",
+          "2": "Each correction turns the wrong way, so it makes the error bigger",
+          "3": "The sensors are reversed too"
+        },
+        "why": "Feedback only works with the right sign. Swapped, every correction pushes the line further off centre until it leaves the array."
+      }
+    },
+    "end": {
+      "why-rc": {
+        "q": "Why does the QTR-8RC need no analog inputs?",
+        "options": {
+          "1": "It has its own ADC on board",
+          "2": "It turns light into a time, and any digital pin can measure a time",
+          "3": "It sends I2C messages"
+        },
+        "why": "The capacitor's fall time carries the reading. Eight digital pins can be read in parallel, about 1 ms for all eight over a typical floor."
+      },
+      "height": {
+        "q": "What is the best distance between the sensors and the floor?",
+        "options": {
+          "1": "About 3 mm",
+          "2": "About 30 mm",
+          "3": "Touching the floor"
+        },
+        "why": "Pololu gives 3 mm (0.125 in) as best and 9.5 mm as the most. Higher, white and black look more and more alike."
+      },
+      "derivative": {
+        "q": "What does a derivative (D) term add to the line follower?",
+        "options": {
+          "1": "More speed on straight track",
+          "2": "Nothing: P is always enough",
+          "3": "It reacts to how fast the error changes, so the robot stops turning before it overshoots"
+        },
+        "why": "D adds Kd x (error - last error). When the robot is already swinging back toward the line, that term eases the turn, which damps the weaving a bigger Kp causes."
+      }
+    }
+  }
+}
