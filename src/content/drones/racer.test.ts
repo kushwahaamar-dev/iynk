@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import en from '@/i18n/content/en/drones/racer.json';
 import { calc, designChecks } from '@/lib/drone/calc';
 import { designInput } from '@/lib/drone/design';
+import { flightOf } from '@/lib/flight/registry';
 import { checkBetaflightSyntax, checkCraft, openFigure, text } from './_checks';
 import racer from './racer';
 
@@ -68,6 +69,13 @@ describe('racer flight', () => {
     expect(track.gateSize).toEqual([1.6, 1.6]);
     expect(cli.vtx_power).toBe(1);
     expect(cli.vtx_band).toBe(5);
+  });
+
+  it('races the gates in angle or in acro, and the acro race snippet leaves the ANGLE switch alone', () => {
+    const race = (id: string) => flightOf(racer)!.craft.modes.find((m) => m.id === id)!;
+    expect([race('race').task, race('race').attitude]).toEqual(['race', 'angle']);
+    expect([race('raceAcro').task, race('raceAcro').attitude]).toEqual(['race', 'acro']);
+    expect(racer.firmware.snippets.find((s) => s.id === 'raceAcro')!.code).not.toMatch(/^aux \d+ 1 /m);
   });
 
   it('drops out of the sky on a lost link, the netted-track failsafe, and says so in the failsafe list', () => {

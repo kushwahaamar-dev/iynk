@@ -83,15 +83,18 @@ describe('gpscam flight', () => {
   });
 });
 
-describe('gpscam craft tests in the figure', { timeout: 120000 }, () => {
+describe('gpscam craft tests in the figure', { timeout: 300000 }, () => {
   let fig: Awaited<ReturnType<typeof openFigure>> | null = null;
   afterEach(() => {
     fig?.close();
     fig = null;
   });
   const test = (id: string) => gpscam.tests.find((t) => t.id === id)!;
-  /** The checks run on the figure's clock (seconds of animation, slower than real time in jsdom): wait for them. */
-  const until = async (id: string, want: 'passed' | 'failed', ms = 30000) => {
+  /**
+   * The checks run on the figure's clock: animation frames, which jsdom spaces out and the engine caps per frame, so
+   * a 4 s calibration takes 6 s of real time on an idle machine and much longer on a busy one. Wait for the result.
+   */
+  const until = async (id: string, want: 'passed' | 'failed', ms = 120000) => {
     const end = Date.now() + ms;
     while (fig!.status(test(id)) !== want && Date.now() < end) await new Promise((r) => setTimeout(r, 50));
     return fig!.status(test(id));
@@ -99,8 +102,10 @@ describe('gpscam craft tests in the figure', { timeout: 120000 }, () => {
 
   it('calibrates the compass only with the props off', async () => {
     fig = await openFigure('gpscam');
-    await fig.run('strip');
-    await fig.run('build');
+    // taking the GPS puck off clears the factory calibration
+    await fig.remove('GPS');
+    await fig.add('GPS');
+    expect(fig.status(test('compass'))).toBe('failed');
     await fig.press('compass');
     expect(fig.status(test('compass'))).toBe('failed');
     await fig.remove('PROPS');
@@ -134,7 +139,7 @@ describe('gpscam craft tests in the figure', { timeout: 120000 }, () => {
     expect(await until('gps', 'passed')).toBe('passed');
     await fig.press('prearm');
     expect(fig.status(test('prearm'))).toBe('failed');
-    expect(fig.state().log.lines.at(-1)).toBe('PreArm: Compasses inconsistent');
+    expect((fig.state().log as { lines: string[] }).lines.at(-1)).toBe('PreArm: Compasses inconsistent');
   });
 
   it('runs the failsafe test only with the props off and the pack in', async () => {

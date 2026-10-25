@@ -486,7 +486,7 @@ const racer: DroneContent = {
       { id: 'angle', kind: 'angle', title: 'flight.modes.angle.title', hint: 'flight.modes.angle.hint' },
       { id: 'acro', kind: 'acro', title: 'flight.modes.acro.title', hint: 'flight.modes.acro.hint' },
       { id: 'race', kind: 'race', title: 'flight.modes.race.title', hint: 'flight.modes.race.hint' },
-      { id: 'raceAcro', kind: 'race', title: 'flight.modes.raceAcro.title', hint: 'flight.modes.raceAcro.hint' },
+      { id: 'raceAcro', kind: 'race', attitude: 'acro', title: 'flight.modes.raceAcro.title', hint: 'flight.modes.raceAcro.hint' },
     ],
     defaultMode: 'race',
     fpv: { fovDeg: 120, camTiltDeg: 40, gimbal: false },
