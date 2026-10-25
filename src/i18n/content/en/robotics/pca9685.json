@@ -279,7 +279,8 @@
         "2": "Sets the frame to 50 Hz with setPWMFreq(50)",
         "3": "1500 µs comes out as 306-308 ticks",
         "4": "600 µs comes out as 122-124 ticks",
-        "5": "2400 µs comes out as 490-493 ticks"
+        "5": "2400 µs comes out as 490-493 ticks",
+        "6": "Channel 0 sends a 1500 µs pulse in a 50 Hz frame"
       },
       "code": {
         "goal": "Turn microseconds into the chip's ticks",

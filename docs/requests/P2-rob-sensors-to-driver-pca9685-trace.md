@@ -51,3 +51,9 @@ starter still fails.
   `pwm` at 1017 Hz):
   - `pca9685.ts`, ticks checks: `{ kind: 'servo', pin: 'PCA40.0', deg: pulseDeg(1480, 1520), atMs: 500, label: 'tasks.ticks.checks.6' }`
   - `pca9685.json`, `tasks.ticks.checks.6`: "Channel 0 sends a 1500 µs pulse in a 50 Hz frame"
+
+## Ticks task (driver, 2026-10-25 00:43 CDT)
+
+Added as P2-req-interp proposed: `tasks.ticks.checks.6`, a servo check on `PCA40.0` at 500 ms for 1480-1520 µs, with
+the English label "Channel 0 sends a 1500 µs pulse in a 50 Hz frame". The lesson table reads `pca9685 | ticks | pass |
+fails | 6/6`; `pca9685.test.ts` 18 passed.

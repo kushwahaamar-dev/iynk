@@ -388,6 +388,7 @@ const pca9685 = {
         { kind: 'serial', match: '^ch0 1500 us = 30[6-8] ticks$', regex: true, minCount: 1, label: 'tasks.ticks.checks.3' },
         { kind: 'serial', match: '^ch1 600 us = 12[2-4] ticks$', regex: true, minCount: 1, label: 'tasks.ticks.checks.4' },
         { kind: 'serial', match: '^ch2 2400 us = 49[0-3] ticks$', regex: true, minCount: 1, label: 'tasks.ticks.checks.5' },
+        { kind: 'servo', pin: 'PCA40.0', deg: pulseDeg(1480, 1520), atMs: 500, label: 'tasks.ticks.checks.6' },
       ],
       title: 'tasks.ticks.title',
       brief: 'tasks.ticks.brief',
