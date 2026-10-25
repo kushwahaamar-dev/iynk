@@ -3,11 +3,13 @@
 //
 //   node scripts/figure-strings.mjs            writes src/i18n/figure-keys.json
 //   node scripts/figure-strings.mjs --check    exits 1 when the built figures show a string that file lacks
+//   node scripts/figure-strings.mjs --static   the same check on the sources alone, without a browser (--why lists
+//                                              the properties and tables it follows)
 //
 // Two passes. In a browser, each page gets a dictionary that records every key CF_T looks up (core.js checks it
 // with hasOwnProperty, so a Proxy sees each one and the figure keeps its English), then every control is pressed:
 // see-through, labels, views, each button and each choice of each picker, twice over so later states show too.
-// In the sources, every literal passed to CF_T, CF_L or the engines' T() is added, for states no press reaches.
+// Then the sources are read for the text of states no press reaches (faults, refusals, logs): see fromSources.
 import { createRequire } from 'node:module';
 import { readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -15,8 +17,12 @@ import { join, resolve } from 'node:path';
 const ROOT = resolve(import.meta.dirname, '..');
 const OUT = join(ROOT, 'src/i18n/figure-keys.json');
 const KINDS = ['boards', 'robotics', 'modules', 'parts', 'drones'];
-const check = process.argv.includes('--check');
-const { chromium } = createRequire(join(ROOT, 'package.json'))('playwright');
+const quick = process.argv.includes('--static');
+const check = quick || process.argv.includes('--check');
+const failures = [];
+const require = createRequire(join(ROOT, 'package.json'));
+const { chromium } = require('playwright');
+const acorn = require('acorn');
 
 const pages = KINDS.flatMap((kind) =>
   readdirSync(join(ROOT, 'public/figures', kind))
@@ -82,33 +88,129 @@ async function collect(browser, id) {
   return { keys, errors };
 }
 
+// The static pass reads the figure sources with acorn and follows the text into T the way the engines do. Text is a
+// literal passed to a translating call (CF_T, CF_L, T, say, flash, log: the drone engine's say(st, text) and
+// log(st, text) take it second), the value of a property the engines translate (`T(p.name)` makes `name` one), or a
+// value in a table they translate from (`say(MSG.live)`, `T(GROUP_NAMES[g])`, a craft's `messages`). Ternaries and
+// `||` fallbacks are followed into each branch. The properties and tables are found in the engines and the core, then
+// read in every figure.
+const SAY = new Set(['CF_T', 'CF_L', 'T', 'say', 'flash', 'log']);
+// Ids that a T() call falls back to (`T(def.name || q.prop)`), never text.
+const NOT_TEXT = new Set(['id', 'key', 'kind', 'part', 'prop', 'state', 'status', 'color', 'type', 'mode', 'group', 'fault', 'power', 'rail', 'circuit', 'default', 't']);
+const isIdent = (s) => !/\s/.test(s) && (/[.:_#/[\]]/.test(s) || /[a-z][A-Z]/.test(s));
+
 function fromSources() {
-  const found = new Map();
-  const dirs = ['figures/engine', 'figures/vendor/colorfigures', ...KINDS.map((k) => `figures/${k}`)];
-  const call = /\b(?:CF_T|CF_L|T)\(\s*(['"`])((?:\\.|(?!\1)[^\\])*)\1\s*[,)]/g;
-  for (const dir of dirs) {
-    for (const f of readdirSync(join(ROOT, dir)).filter((f) => f.endsWith('.js'))) {
-      const src = readFileSync(join(ROOT, dir, f), 'utf8');
-      for (const m of src.matchAll(call)) {
-        if (m[1] === '`' && m[2].includes('${')) continue;
-        const s = m[2].replace(/\\(['"`\\])/g, '$1').replace(/\\n/g, '\n');
-        if (!found.has(s)) found.set(s, new Set());
-        found.get(s).add(`${dir}/${f}`);
-      }
+  const files = ['figures/engine', 'figures/vendor/colorfigures', ...KINDS.map((k) => `figures/${k}`)].flatMap((dir) =>
+    readdirSync(join(ROOT, dir)).filter((f) => f.endsWith('.js')).map((f) => `${dir}/${f}`),
+  );
+  const trees = new Map();
+  for (const f of files) {
+    try {
+      trees.set(f, acorn.parse(readFileSync(join(ROOT, f), 'utf8'), { ecmaVersion: 'latest', sourceType: 'script', allowReturnOutsideFunction: true, locations: true }));
+    } catch (e) {
+      failures.push(`${f}: can't parse (${e.message})`);
     }
   }
+  const props = new Set(), tables = new Set(), tableProps = new Set(), found = new Map(), learned = [];
+  const callee = (n) => (n.type === 'Identifier' ? n.name : n.type === 'MemberExpression' && !n.computed ? n.property.name : null);
+  const textArg = (call) => {
+    const [a, b] = call.arguments;
+    const first = a && (a.type === 'Identifier' ? a.name === 'st' : a.type === 'MemberExpression' && !a.computed && a.property.name === 'st');
+    return first ? b : a;
+  };
+
+  // Follow one text expression: keep its literals, learn the properties and tables it reads.
+  const text = (n, file, learn) => {
+    if (!n) return;
+    if (n.type === 'Literal' && typeof n.value === 'string') return keep(n.value, file);
+    if (n.type === 'TemplateLiteral' && !n.expressions.length) return keep(n.quasis[0].value.cooked, file);
+    if (n.type === 'ConditionalExpression') return text(n.consequent, file, learn), text(n.alternate, file, learn);
+    if (n.type === 'LogicalExpression') return text(n.left, file, learn), text(n.right, file, learn);
+    if (n.type === 'CallExpression' && callee(n.callee) === 'String') return text(n.arguments[0], file, learn);
+    if (n.type === 'CallExpression' && callee(n.callee) === 'reword') return text(n.arguments[0], file, learn), text(n.arguments[2], file, learn);
+    if (n.type === 'ObjectExpression') return values(n, file);
+    if (n.type !== 'MemberExpression') return;
+    if (n.object.type === 'ObjectExpression') return values(n.object, file);
+    if (learn) {
+      if (n.object.type === 'Identifier' && /^[A-Z][A-Z_]+$/.test(n.object.name)) tables.add(n.object.name);
+      if (n.computed && n.object.type === 'MemberExpression' && !n.object.computed) tableProps.add(n.object.property.name);
+      if (!n.computed && !NOT_TEXT.has(n.property.name)) {
+        if (n.object.type === 'Identifier' && /^[A-Z][A-Z_]+$/.test(n.object.name)) return;
+        if (!props.has(n.property.name)) learned.push(`${n.property.name} <- ${file}:${n.loc.start.line}`);
+        props.add(n.property.name);
+      }
+    }
+  };
+  const values = (table, file) => {
+    if (table.type === 'ArrayExpression') for (const q of table.elements) text(q, file, false);
+    else for (const q of table.properties) if (q.type === 'Property') text(q.value, file, false);
+  };
+  const keep = (s, file) => {
+    if (isIdent(s)) return;
+    if (!found.has(s)) found.set(s, new Set());
+    found.get(s).add(file);
+  };
+  const propName = (q) => (q.key.type === 'Identifier' ? q.key.name : typeof q.key.value === 'string' ? q.key.value : null);
+
+  const walk = (n, visit) => {
+    if (!n || typeof n.type !== 'string') return;
+    visit(n);
+    for (const k in n) {
+      if (k === 'loc' || k === 'start' || k === 'end') continue;
+      const v = n[k];
+      if (Array.isArray(v)) v.forEach((c) => walk(c, visit));
+      else if (v && typeof v.type === 'string') walk(v, visit);
+    }
+  };
+  const pass = (file, tree, learn) =>
+    walk(tree, (n) => {
+      if (n.type === 'CallExpression' && SAY.has(callee(n.callee))) text(textArg(n), file, learn);
+      else if (n.type === 'Property' && !n.computed && !n.shorthand) {
+        const name = propName(n);
+        if (props.has(name)) text(n.value, file, learn);
+        else if (tableProps.has(name) && /^(Object|Array)Expression$/.test(n.value.type)) values(n.value, file);
+      } else if (n.type === 'AssignmentExpression' && n.left.type === 'MemberExpression' && !n.left.computed && props.has(n.left.property.name)) text(n.right, file, learn);
+      else if (n.type === 'VariableDeclarator' && n.id.type === 'Identifier' && tables.has(n.id.name)) {
+        let init = n.init;
+        while (init && init.type === 'AssignmentExpression') init = init.right;
+        if (init && init.type === 'ObjectExpression') values(init, file);
+      }
+    });
+
+  // Learn from the engines and the core until nothing new turns up, then read every figure.
+  const engines = [...trees].filter(([f]) => f.startsWith('figures/engine/') || f.startsWith('figures/vendor/'));
+  for (let size = -1; size !== props.size + tables.size + tableProps.size; ) {
+    size = props.size + tables.size + tableProps.size;
+    for (const [f, tree] of engines) pass(f, tree, true);
+  }
+  for (const [f, tree] of trees) pass(f, tree, false);
+  // A helper that puts its first parameter in a text field (`ledCircuit = (title) => ({ title, ... })`) takes text first.
+  const helpers = new Set();
+  for (const [, tree] of trees)
+    walk(tree, (n) => {
+      if (n.type !== 'VariableDeclarator' || n.id.type !== 'Identifier' || n.init?.type !== 'ArrowFunctionExpression') return;
+      let p0 = n.init.params[0];
+      if (p0?.type === 'AssignmentPattern') p0 = p0.left;
+      const body = n.init.body;
+      if (p0?.type !== 'Identifier' || !props.has(p0.name) || body.type !== 'ObjectExpression') return;
+      if (body.properties.some((q) => q.type === 'Property' && q.shorthand && q.key.name === p0.name)) helpers.add(n.id.name);
+    });
+  for (const [f, tree] of trees)
+    walk(tree, (n) => {
+      if (n.type === 'CallExpression' && n.callee.type === 'Identifier' && helpers.has(n.callee.name)) text(n.arguments[0], f, false);
+    });
+  if (process.argv.includes('--why')) console.error(learned.join('\n') + `\ntext properties: ${[...props].sort().join(' ')}\ntables: ${[...tables].sort().join(' ')}\ntable properties: ${[...tableProps].sort().join(' ')}\nhelpers: ${[...helpers].sort().join(' ')}`);
   return found;
 }
 
-const browser = await chromium.launch();
 const where = new Map();
 const add = (key, from) => {
   if (!translatable(key)) return;
   if (!where.has(key)) where.set(key, new Set());
   where.get(key).add(from);
 };
-const failures = [];
-const queue = [...pages];
+const browser = quick ? null : await chromium.launch();
+const queue = quick ? [] : [...pages];
 await Promise.all(Array.from({ length: 3 }, async () => {
   for (let id = queue.shift(); id; id = queue.shift()) {
     try {
@@ -121,10 +223,12 @@ await Promise.all(Array.from({ length: 3 }, async () => {
     }
   }
 }));
-await browser.close();
-for (const [key, files] of fromSources()) for (const f of files) add(key, f);
+await browser?.close();
+const literals = fromSources();
+for (const [key, files] of literals) for (const f of files) add(key, f);
 
-const kept = new Set(withoutFilledTemplates([...where.keys()]));
+// Only strings seen in a browser can be filled-in templates; a literal in the sources is a key whatever it looks like.
+const kept = new Set([...withoutFilledTemplates([...where.keys()]), ...literals.keys()]);
 const sorted = Object.fromEntries(
   [...where].filter(([k]) => kept.has(k)).sort(([a], [b]) => a.localeCompare(b, 'en')).map(([k, v]) => [k, [...v].sort()]),
 );
@@ -132,7 +236,7 @@ for (const f of failures) console.error(f);
 if (check) {
   const known = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : {};
   const missing = Object.keys(sorted).filter((k) => !(k in known));
-  for (const k of missing.slice(0, 40)) console.error(`not in src/i18n/figure-keys.json: ${JSON.stringify(k)} (${sorted[k].join(', ')})`);
+  for (const k of missing.slice(0, process.argv.includes('--why') ? Infinity : 40)) console.error(`not in src/i18n/figure-keys.json: ${JSON.stringify(k)} (${sorted[k].join(', ')})`);
   console.log(`figure strings: ${Object.keys(sorted).length} found, ${missing.length} missing from figure-keys.json`);
   process.exit(missing.length || failures.length ? 1 : 0);
 }
