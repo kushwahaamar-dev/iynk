@@ -299,9 +299,10 @@
     "ok": "OK",
     "blocked": "blocks arming",
     "warning": "flies badly",
+    "broken": "Broken on purpose",
     "rules": {
       "built": "Every part is fitted",
-      "capFault": "No vented capacitor (unplug and re-seat the XT60 the right way)",
+      "capFault": "No vented capacitor (unplug and re-seat the {part} the right way)",
       "smoke": "Smoke stopper test passed",
       "motors": "Motor direction checked with the props off",
       "acc": "Accelerometer calibrated",

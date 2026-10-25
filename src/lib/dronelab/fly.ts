@@ -40,9 +40,37 @@ export function initialFly(content: DroneContent): FlyState {
   return { id: content.id, bench: null, source: "factory", course: content.courses[0]?.id ?? null, breaks: {}, challenge: null };
 }
 
-/** The rules for the build that flies: the factory build passes them all. */
-export function flyRules(s: FlyState): ArmRule[] {
-  return armingRules(s.source === "bench" && s.bench ? { built: s.bench.built, flight: s.bench.flight } : null);
+/** The rule each Break it switch breaks, and how badly: only the accelerometer refuses to arm, the rest flip. */
+const BREAK_RULES: Partial<Record<BreakId, { rule: ArmRule["id"]; level: ArmRule["level"] }>> = {
+  fcReversed: { rule: "fcArrow", level: "warn" },
+  propsSwapped: { rule: "props", level: "warn" },
+  motorDirUnchecked: { rule: "motors", level: "warn" },
+  accUncalibrated: { rule: "acc", level: "block" },
+};
+
+/** The bench test each rule stands for: a craft without that test has no such rule. */
+const RULE_TESTS: Partial<Record<ArmRule["id"], string>> = { smoke: "smoke", motors: "motors", acc: "calibrate" };
+
+/**
+ * The rules for the build that flies (the factory build passes them all), in this craft's words: the capacitor
+ * rule names its own power lead and goes when it has none, a rule for a test the craft doesn't have goes, and a
+ * Break it switch shows on its rule, so the list says what Arm will say.
+ */
+export function flyRules(content: DroneContent, s: FlyState): ArmRule[] {
+  const lead = content.parts.find((p) => p.id === "XT60")?.short;
+  const tests = new Set(content.tests.map((t) => t.button));
+  const rules = armingRules(s.source === "bench" && s.bench ? { built: s.bench.built, flight: s.bench.flight } : null)
+    .filter((r) => (r.id === "capFault" ? lead !== undefined : !RULE_TESTS[r.id] || tests.has(RULE_TESTS[r.id]!)))
+    .map((r) => (r.id === "capFault" ? { ...r, part: lead } : r));
+  for (const [id, on] of Object.entries(s.breaks) as Array<[BreakId, boolean]>) {
+    const hit = BREAK_RULES[id];
+    if (!hit) continue;
+    const at = rules.findIndex((r) => r.id === hit.rule);
+    const rule: ArmRule = on ? { id: hit.rule, ok: false, level: hit.level, broken: true } : { id: hit.rule, ok: true, level: hit.level };
+    if (at >= 0) rules[at] = rule;
+    else if (on) rules.splice(rules.length - 1, 0, rule);
+  }
+  return rules;
 }
 
 export function reduceFly(content: DroneContent, s: FlyState, action: FlyAction): FlyState {

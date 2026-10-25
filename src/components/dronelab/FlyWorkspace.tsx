@@ -91,7 +91,7 @@ export function FlyWorkspace({ lang, content, text, messages, flight, pool, boar
   // read on every render; bestSaved re-renders after a new best is saved
   const challengeBest = useSyncExternalStore(noSubscribe, () => (challenge ? loadChallengeBest(challenge.date) : null), () => null);
   const ghosts = useRoomGhosts(flightCourse?.id ?? "");
-  const rules = flyRules(state);
+  const rules = flyRules(content, state);
   const keys = useMemo(() => droneProgressKeys(content), [content]);
   // the course's own words and the craft's own mode names, in the page's language (a missing key falls back)
   const courseText = useMemo((): CourseText | undefined => {
@@ -309,10 +309,11 @@ function DesignSummary({
 
 function ArmingRules({ rules, t }: { rules: ArmRule[]; t: DroneLabT }) {
   const ok = canArm(rules);
+  const clean = rules.every((r) => r.ok);
   const passed = rules.filter((r) => r.ok).length;
-  // all clear, the list folds to one line; anything wrong keeps it open
+  // all clear, the list folds to one line; anything wrong or broken on purpose keeps it open
   const [open, setOpen] = useState(false);
-  const shown = open || !ok;
+  const shown = open || !clean;
   return (
     <div className="space-y-2">
       <button
@@ -320,14 +321,14 @@ function ArmingRules({ rules, t }: { rules: ArmRule[]; t: DroneLabT }) {
         aria-expanded={shown}
         aria-controls="fly-arming-list"
         onClick={() => setOpen((v) => !v)}
-        disabled={!ok}
+        disabled={!clean}
         className="flex min-h-11 w-full items-center gap-3 rounded-ink-sm text-start hover:bg-sunken disabled:cursor-default disabled:hover:bg-transparent"
       >
         <span id="fly-arming" className="font-body text-sm font-semibold">
           {t("fly.preflight")}
         </span>
-        <Chip tone={ok ? "mint" : "tomato"}>{ok ? `${passed}/${rules.length} ${t("fly.ok")}` : t("fly.blocked")}</Chip>
-        {ok ? (
+        <Chip tone={!ok ? "tomato" : clean ? "mint" : "mustard"}>{ok ? `${passed}/${rules.length} ${t("fly.ok")}` : t("fly.blocked")}</Chip>
+        {clean ? (
           <svg aria-hidden="true" width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className={`ms-auto transition-transform ${shown ? "rotate-180" : ""}`}>
             <path d="M5.5 9.5L12 16l6.5-6.5" />
           </svg>
@@ -338,10 +339,16 @@ function ArmingRules({ rules, t }: { rules: ArmRule[]; t: DroneLabT }) {
         <ul className="space-y-1.5" aria-labelledby="fly-arming" data-testid="arming-rules" data-can-arm={ok}>
           {rules.map((rule, i) => (
             <li key={`${rule.id}-${i}`} className="flex items-start gap-2 text-sm" data-rule={rule.id} data-ok={rule.ok}>
-              <Chip tone={rule.ok ? "mint" : rule.level === "block" ? "tomato" : "mustard"} className="shrink-0">
-                {rule.ok ? t("fly.ok") : rule.level === "block" ? t("fly.blocked") : t("fly.warning")}
+              <Chip tone={rule.ok ? "mint" : rule.level === "block" || rule.broken ? "tomato" : "mustard"} className="shrink-0">
+                {rule.ok ? t("fly.ok") : rule.broken ? t("fly.broken") : rule.level === "block" ? t("fly.blocked") : t("fly.warning")}
               </Chip>
-              <span>{rule.id === "mistakes" ? t("fly.rules.mistakes", { code: rule.code ?? "" }) : t(`fly.rules.${rule.id}`)}</span>
+              <span>
+                {rule.id === "mistakes"
+                  ? t("fly.rules.mistakes", { code: rule.code ?? "" })
+                  : rule.id === "capFault"
+                    ? t("fly.rules.capFault", { part: rule.part ?? "XT60" })
+                    : t(`fly.rules.${rule.id}`)}
+              </span>
             </li>
           ))}
         </ul>

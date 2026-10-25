@@ -299,9 +299,10 @@
     "ok": "OK",
     "blocked": "bloquea el armado",
     "warning": "vuela mal",
+    "broken": "Roto a propósito",
     "rules": {
       "built": "Todas las piezas están colocadas",
-      "capFault": "Ningún condensador reventado (desconecta y vuelve a poner el XT60 en el sentido correcto)",
+      "capFault": "Ningún condensador reventado (desconecta y vuelve a poner {part} en el sentido correcto)",
       "smoke": "Prueba del smoke stopper superada",
       "motors": "Sentido de los motores comprobado sin hélices",
       "acc": "Acelerómetro calibrado",

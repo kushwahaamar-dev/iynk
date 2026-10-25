@@ -58,7 +58,16 @@ export function droneProgressKeys(content: DroneContent): string[] {
 }
 
 export type ArmRuleId = "built" | "capFault" | "smoke" | "motors" | "acc" | "fcArrow" | "props" | "throttle" | "mistakes";
-export type ArmRule = { id: ArmRuleId; ok: boolean; level: "block" | "warn" | "rule"; code?: string };
+export type ArmRule = {
+  id: ArmRuleId;
+  ok: boolean;
+  level: "block" | "warn" | "rule";
+  code?: string;
+  /** Switched on in Break it, over what the build has. */
+  broken?: boolean;
+  /** The craft's own power lead, for the capacitor rule ("XT60 + CAP", "BT2.0 LEAD", "PDB + CAP"). */
+  part?: string;
+};
 
 /**
  * What happens on the range for a bench build (null = the factory build): blockers refuse to arm, warnings

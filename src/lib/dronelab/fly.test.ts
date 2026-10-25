@@ -2,6 +2,7 @@
 import { describe, expect, test } from "vitest";
 import { quad5Fixture as content } from "./__fixtures__/quad5";
 import type { DailyChallenge } from "@/lib/flight/challenge";
+import { canArm } from "./bench";
 import {
   anyBreak,
   craftPatch,
@@ -31,11 +32,34 @@ const ready: BenchSummary = {
 };
 
 describe("fly page store", () => {
+  test("the arming rules show what Break it broke, and only Break it's accelerometer refuses to arm", () => {
+    let s = reduceFly(content, initialFly(content), { type: "bench/loaded", bench: null });
+    s = reduceFly(content, s, { type: "break", id: "fcReversed", on: true });
+    expect(flyRules(content, s).find((r) => r.id === "fcArrow")).toMatchObject({ ok: false, level: "warn", broken: true });
+    expect(canArm(flyRules(content, s))).toBe(true);
+    s = reduceFly(content, s, { type: "break", id: "accUncalibrated", on: true });
+    expect(flyRules(content, s).find((r) => r.id === "acc")).toMatchObject({ ok: false, level: "block", broken: true });
+    expect(canArm(flyRules(content, s))).toBe(false);
+    s = reduceFly(content, s, { type: "break/reset" });
+    expect(flyRules(content, s).every((r) => r.ok && !r.broken)).toBe(true);
+  });
+
+  test("the rules are the craft's own: its power lead, and no rule for a test it doesn't have", () => {
+    const lead = content.parts.find((p) => p.id === "XT60")!.short;
+    const s = reduceFly(content, initialFly(content), { type: "bench/loaded", bench: null });
+    expect(flyRules(content, s).find((r) => r.id === "capFault")?.part).toBe(lead);
+    const tiny = { ...content, parts: content.parts.filter((p) => p.id !== "XT60"), tests: content.tests.filter((t) => t.button !== "smoke") };
+    const ids = flyRules(tiny, s).map((r) => r.id);
+    expect(ids).not.toContain("capFault");
+    expect(ids).not.toContain("smoke");
+    expect(ids).toContain("motors");
+  });
+
   test("without a bench build the factory build flies the default design", () => {
     const s = reduceFly(content, initialFly(content), { type: "bench/loaded", bench: null });
     expect(s.source).toBe("factory");
     expect(flyPick(content, s)).toEqual(content.design.default);
-    expect(flyRules(s).every((r) => r.ok)).toBe(true);
+    expect(flyRules(content, s).every((r) => r.ok)).toBe(true);
     expect(flightFaults(content, s)).toBeUndefined();
   });
 
@@ -51,7 +75,7 @@ describe("fly page store", () => {
     let s = reduceFly(content, initialFly(content), { type: "bench/loaded", bench });
     expect(s.source).toBe("factory");
     s = reduceFly(content, s, { type: "source", source: "bench" });
-    expect(flyRules(s).find((r) => r.id === "smoke")).toMatchObject({ ok: false, level: "block" });
+    expect(flyRules(content, s).find((r) => r.id === "smoke")).toMatchObject({ ok: false, level: "block" });
   });
 
   test("bench mistakes and saved CLI settings reach the flight", () => {

@@ -299,9 +299,10 @@
     "ok": "OK",
     "blocked": "bloque l'armement",
     "warning": "vole mal",
+    "broken": "Cassé exprès",
     "rules": {
       "built": "Chaque pièce est montée",
-      "capFault": "Aucun condensateur dégazé (débranchez et remettez la prise XT60 dans le bon sens)",
+      "capFault": "Aucun condensateur dégazé (débranchez et remettez {part} dans le bon sens)",
       "smoke": "Test au smoke stopper réussi",
       "motors": "Sens des moteurs vérifié sans hélices",
       "acc": "Accéléromètre calibré",

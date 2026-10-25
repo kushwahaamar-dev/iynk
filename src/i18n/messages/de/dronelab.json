@@ -299,9 +299,10 @@
     "ok": "OK",
     "blocked": "blockiert das Armen",
     "warning": "fliegt schlecht",
+    "broken": "Absichtlich kaputt",
     "rules": {
       "built": "Alle Teile sind verbaut",
-      "capFault": "Kein ausgegaster Kondensator (abstecken und den XT60 richtig herum neu einstecken)",
+      "capFault": "Kein ausgegaster Kondensator (abstecken und {part} richtig herum neu einstecken)",
       "smoke": "Smoke-Stopper-Test bestanden",
       "motors": "Motordrehrichtung ohne Propeller geprüft",
       "acc": "Beschleunigungssensor kalibriert",
