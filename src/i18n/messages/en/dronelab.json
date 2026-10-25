@@ -252,7 +252,8 @@
       "arming-checks": "Read the pre-arm messages: every check must pass before the autopilot lets you arm.",
       "motor-redundancy": "Stop one motor on the bench: the mixer must still hold the craft level on the remaining motors.",
       "radio-link": "Check the link quality and that every stick and switch moves the right channel.",
-      "transition": "Practise the change from hover to wing-borne flight and back at a safe height."
+      "transition": "Practise the change from hover to wing-borne flight and back at a safe height.",
+      "prop-clearance": "Battery out, props on: turn each prop by hand inside its duct. It must turn freely with an even gap to the wall all round; a rub or a chipped tip shakes the camera and shows as jello in the footage."
     }
   },
   "cli": {

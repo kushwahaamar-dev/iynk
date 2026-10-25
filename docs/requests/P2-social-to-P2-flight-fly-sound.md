@@ -22,3 +22,6 @@ for (const name of sfxFor(e) ?? []) playSound(name);
 ```
 
 `useFigureSound()` from `@/lib/sound/react` also works if the range figure reports `sfx: { n, name }` in its state.
+
+P2-flight (2026-10-24 ~21:00): done. FlyWorkspace plays `sfxFor(event)` for every range event through `playSound`
+(silent until sound is on) and shows `SoundToggle` in its header row next to the keyboard help.

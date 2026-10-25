@@ -6,6 +6,7 @@ import type { DroneContent } from "@/content/schema";
 import { LabDock } from "@/components/dock/LabDock";
 import type { FigureHandle } from "@/components/figure";
 import { FlightRange } from "@/components/flight/FlightRange";
+import { SoundToggle } from "@/components/settings";
 import { Chip } from "@/components/ui/Chip";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import type { Locale } from "@/i18n/config";
@@ -15,10 +16,11 @@ import { designInput } from "@/lib/drone/design";
 import { canArm, droneProgressKeys, type ArmRule } from "@/lib/dronelab/bench";
 import { craftPatch, createFlyStore, flightCalc, flightFaults, flyPick, flyRules, type FlySource } from "@/lib/dronelab/fly";
 import { readBenchSummary } from "@/lib/dronelab/session";
-import { flightOf, medalFor, parOf, startMode, type CourseText, type FlightEvent } from "@/lib/flight";
+import { flightOf, medalFor, parOf, sfxFor, startMode, type CourseText, type FlightEvent } from "@/lib/flight";
 import { useBest } from "@/lib/progress/hooks";
 import { progressKey } from "@/lib/progress/keys";
 import { markDone, recordBest } from "@/lib/progress/progress";
+import { playSound } from "@/lib/sound";
 import { CraftProgress } from "./CraftProgress";
 import { KeyboardHelp } from "./KeyboardHelp";
 import { contentT, droneLabT, formatNumber, type ContentT, type DroneLabMessages, type DroneLabT } from "./text";
@@ -66,9 +68,11 @@ export function FlyWorkspace({ lang, content, text, messages, flight }: Props) {
     };
   }, [content, ct, course]);
 
-  // a finished lap, run or mission counts for the course flown; the autopilot demo's never does
+  // every event has its sound (silent until sound is on); a finished lap, run or mission counts for the course
+  // flown, the autopilot demo's never does
   const onEvent = useCallback(
     (event: FlightEvent) => {
+      for (const name of sfxFor(event) ?? []) playSound(name);
       if (!flightCourse || (event.type !== "lap" && event.type !== "run" && event.type !== "missionDone") || event.demo) return;
       const key = progressKey.droneCourse(id, flightCourse.id);
       if (event.time !== undefined) recordBest(key, event.time, "lower");
@@ -103,6 +107,7 @@ export function FlyWorkspace({ lang, content, text, messages, flight }: Props) {
             countTemplate={messages.index.progressValue}
             valueTemplate={messages.workspace.progressLabel}
           />
+          <SoundToggle />
           <KeyboardHelp t={t} flight />
         </div>
       </header>

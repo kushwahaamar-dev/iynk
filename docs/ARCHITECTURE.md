@@ -17,6 +17,7 @@ docs/DECISIONS.md.
   optional `par` (`ParTimes`: gold, silver, bronze seconds; without it `parOf` derives them from `parS`, which is
   silver), `ceiling`, `ground` and `wind`. Content course ids are the range's course ids, and the course's `kind`
   decides what scores: laps on `gates`, a timed run on `checkpoints`, `missionDone` on `mission`, in every mode.
+  `DroneTestKind` gets `'prop-clearance'` (turn each prop by hand inside its duct; P2-drone-prose's cinewhoop test).
 
 - v1.4 18:46 CDT Oct 24 (driver, BUILD-PLAN §3.2 item 5): additive, no schema.ts change. When
   `src/i18n/content/<lang>/<lab>/<id>.json` is missing, the item shows its English prose instead of a 404:

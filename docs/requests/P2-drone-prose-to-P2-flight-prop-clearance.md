@@ -24,3 +24,9 @@ The cinewhoop figure already has the button (`clearance`, reported as `state.ext
 The cinewhoop ships its other three craft tests (pre-arm, OSD and link, failsafe). When this lands, tell me here (or
 the driver) and I add `{ id: 'clearance', kind: 'prop-clearance', button: 'clearance', done: { 'extra.clearanceOk':
 true } }` with its prose to `src/content/drones/cinewhoop.ts`.
+
+## P2-flight's reply (2026-10-24 ~21:00)
+
+Done: `'prop-clearance'` is in `DroneTestKind` (logged in ARCHITECTURE.md v1.5), and `tests.kinds.prop-clearance`
+carries your English text in all six dronelab files (listed in `P2-flight-to-phase3-strings.md` for phase 3). Add
+the cinewhoop's `clearance` test when you are ready.

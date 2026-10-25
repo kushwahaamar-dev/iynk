@@ -624,7 +624,7 @@ export interface DroneWire {
 export type DroneTestKind =
   | 'smoke-stopper' | 'motor-direction' | 'accel-calibration' | 'compass-calibration' | 'airspeed-calibration'
   | 'cg-check' | 'elevon-check' | 'servo-test' | 'tilt-servo-test' | 'failsafe' | 'gps-lock' | 'arming-checks'
-  | 'motor-redundancy' | 'radio-link' | 'transition';
+  | 'motor-redundancy' | 'radio-link' | 'transition' | 'prop-clearance';
 
 /** A bench test; the figure enforces its prerequisites and reports the result. */
 export interface DroneTest {

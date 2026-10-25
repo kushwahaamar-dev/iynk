@@ -25,5 +25,6 @@ text until phase 3 translates them. Placeholders in braces stay as they are.
 |---|---|
 | `fly.medalTimes` | Gold {gold} s · silver {silver} s · bronze {bronze} s |
 | `fly.bestMedal` | Best: {s} s, {medal} |
+| `tests.kinds.prop-clearance` | Battery out, props on: turn each prop by hand inside its duct. It must turn freely with an even gap to the wall all round; a rub or a chipped tip shakes the camera and shows as jello in the footage. |
 
 Removed: `fly.par` (the course list shows the three medal times instead).
