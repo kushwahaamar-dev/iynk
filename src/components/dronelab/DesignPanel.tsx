@@ -57,7 +57,10 @@ export function DesignPanel({ lang, content, pick, t, ct, onPick }: Props) {
     });
   }
 
+  // An over-spun or weak build always gets a check below that says so with its numbers (evaluateDesign), so
+  // only the craft's "ok" verdict line adds anything here.
   const verdictLines = verdicts(r)
+    .filter((v) => v === "ok")
     .map((v) => `design.verdict.${v}`)
     .filter((key) => ct.has(key));
   const electrical = design.fixed.filter((p) => p.category === "Electrical").length + 2;
