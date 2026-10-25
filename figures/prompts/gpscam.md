@@ -40,7 +40,9 @@ What it does:
 - **Gimbal test** (powered): the camera pitches to -90° (straight down), up to +25° and back while roll stays level.
 - **Pre-arm checks** (powered) names the first problem as ArduPilot does: "3D Accel calibration needed", "Compass not
   calibrated", "Compasses inconsistent", "RC not found", "GPS 1: Bad fix", or passes.
-- Re-seating the GPS clears its compass calibration and fix; taking the drone apart clears every check.
+- A check holds only for the parts it ran on: re-seating the GPS clears its compass calibration and fix, the
+  Pixhawk its fix, failsafe and gimbal checks, the receiver its failsafe check, the gimbal its sweep; taking the drone
+  apart clears every check.
 - **Wiring sheet**: battery → power module → ESCs → motors, power module → Pixhawk (POWER1), Pixhawk → ESCs (MAIN 1-4
   DShot600), GPS → Pixhawk (GPS1 UART + I²C), telemetry → TELEM1 (MAVLink2), receiver → TELEM2 (CRSF), Pixhawk →
   gimbal (AUX 1-2 PWM).

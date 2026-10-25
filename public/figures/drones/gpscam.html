@@ -604,9 +604,14 @@ function xrCallouts(items, B){
   const roomL = xmin - vb.x >= wMax, roomR = vb.x + vb.width - xmax >= wMax;
   for (const it of items){ const [X, Y] = P(...it.at); ((X < cx && roomL) || !roomR ? L : R).push({ ...it, X, Y }); }
   let s = '';
-  let top = { [-1]: fs, [1]: fs + 30*k };
-  if (btn && svgEl.getScreenCTM()){ const r = btn.getBoundingClientRect(), q = new DOMPoint(r.right, r.bottom + 50).matrixTransform(svgEl.getScreenCTM().inverse());
-    if (q.y > 0) top[-1] = q.y + hgt; }
+  let top = { [-1]: fs, [1]: fs + 30*k }, tight = null, under = null;
+  if (btn && svgEl.getScreenCTM()){ const r = btn.getBoundingClientRect(), inv = svgEl.getScreenCTM().inverse(), q = new DOMPoint(r.right, r.bottom + 50).matrixTransform(inv);
+    if (q.y > 0){ top[-1] = q.y + hgt; tight = new DOMPoint(r.right, r.bottom + 6).matrixTransform(inv).y + hgt/2; } }
+  // the right column starts under the stats panel (status, rails, counters) where that panel sits over the drawing
+  const sts = document.getElementById('stats');
+  if (sts && svgEl.getScreenCTM()){ const r = sts.getBoundingClientRect(), sr = svgEl.getBoundingClientRect();
+    if (r.height && r.bottom > sr.top && r.top < sr.bottom && r.right > sr.left && r.left < sr.right){
+      under = new DOMPoint(r.left, r.bottom + 6).matrixTransform(svgEl.getScreenCTM().inverse()).y + hgt/2; top[1] = Math.max(top[1], under); } }
   const stack = (col, side) => {
     col.sort((a, b) => a.Y - b.Y);
     let y = -1e9; for (const c of col){ c.py = Math.max(c.Y, y + gap, top[side]); y = c.py; }
@@ -614,9 +619,13 @@ function xrCallouts(items, B){
     const room = col.length ? col[0].py - top[side] : 0; for (const c of col) c.py -= Math.min(shift, room);
   };
   stack(L, -1); stack(R, 1);
-  // a tall button column pushes the left labels down: the ones that would leave the frame move to the right column
+  // a tall button column pushes the left labels down: first they close up under the buttons, then the ones that would
+  // still leave the frame move to the right column (clamped inside the frame even when the drawing leaves no room there)
   const bottom = vb.y + vb.height - hgt/2 - 2*k;
-  if (roomR && L.some(c => c.py > bottom)){ while (L.length && L[L.length - 1].py > bottom) R.push(L.pop()); stack(L, -1); stack(R, 1); }
+  if (tight != null && L.some(c => c.py > bottom)){ top[-1] = Math.min(top[-1], tight); stack(L, -1); }
+  if (L.some(c => c.py > bottom)){ while (L.length && L[L.length - 1].py > bottom) R.push(L.pop()); stack(L, -1); stack(R, 1); }
+  // a right column too long to fit under the stats panel starts at the top after all
+  if (under != null && R.some(c => c.py > bottom)){ top[1] = fs + 30*k; stack(R, 1); }
   for (const [col, side] of [[L, -1], [R, 1]]){
     for (const c of col){
       c.n = ((window.__ln || (window.__ln = {}))[c.text] || (__ln[c.text] = Object.keys(__ln).length + 1)); const ct = CF_T(c.text), w = u ? hgt*(c.n > 9 ? 1.3 : 1) : CF_TW(ct, fs) + fs*1.5;
@@ -1232,13 +1241,18 @@ window.SL = window.SL || {};
     step(st, n){
       if (busy(st)) return say(st, MSG.busy, null, 1600, 'tick');
       A.unplug(st, true); st.exT = 0; st.exploded = false;
+      // a part taken off or turned round clears the passes as remove does (place() does it for a part put on); a step
+      // back to nothing is a strip
+      const moved = [];
       craft.parts.forEach((p, i) => {
         const pl = st.placed[p.id], want = i < n;
         if (want && (!pl || pl.leave)) place(st, p.id, 0);
-        else if (want && pl.orient === 1) { pl.orient = 0; pl.t = 0; if (p.id === 'XT60') st.smokeOk = false; if (p.id === 'FC') st.accOk = false; }
-        else if (!want && pl && !pl.leave) { pl.leave = true; if (p.id === 'XT60') st.smokeOk = false; if (p.id === 'WIRES') st.motorOk = false; if (p.id === 'FC') st.accOk = false; }
+        else if (want && pl.orient === 1) { pl.orient = 0; pl.t = 0; moved.push(p.id); if (p.id === 'XT60') st.smokeOk = false; if (p.id === 'FC') st.accOk = false; }
+        else if (!want && pl && !pl.leave) { pl.leave = true; moved.push(p.id); if (p.id === 'XT60') st.smokeOk = false; if (p.id === 'WIRES') st.motorOk = false; if (p.id === 'FC') st.accOk = false; }
       });
       if (n === 0) { st.fault = null; st.smoke = []; }
+      if (n === 0 && moved.length) resetCraft(st, 'strip');
+      else for (const id of moved) resetCraft(st, id);
       st.sel = n > 0 ? craft.parts[n - 1].id : null;
       kick();
     },
@@ -2626,11 +2640,15 @@ window.SL = window.SL || {};
       failsafeOk: done(st, x.failsafeAt), gimbalOk: done(st, x.gimbalAt), preArmOk: !!x.preArmOk,
     };
   }
+  // the engine calls this with 'strip', 'build' or the id of a part taken off, re-seated or turned round (also on a
+  // step of the host's slider): a check holds only for the parts it ran on
   function reset(st, why){
     const x = extra(st);
     if (why === 'strip') Object.assign(x, { compassOk: false, compassBack: false, compassAt: null, gpsAt: null, failsafeAt: null, gimbalAt: null, gimbalT0: null, preArmOk: false, run: null });
     if (why === 'GPS') Object.assign(x, { compassOk: false, compassBack: false, compassAt: null, gpsAt: null, preArmOk: false });
-    if (why === 'FC') Object.assign(x, { gpsAt: null, preArmOk: false });
+    if (why === 'FC') Object.assign(x, { gpsAt: null, failsafeAt: null, gimbalAt: null, gimbalT0: null, preArmOk: false });
+    if (why === 'RX') Object.assign(x, { failsafeAt: null, preArmOk: false });
+    if (why === 'GIMBAL') Object.assign(x, { gimbalAt: null, gimbalT0: null });
   }
 
   SD.define({

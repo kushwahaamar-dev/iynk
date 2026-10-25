@@ -1241,13 +1241,18 @@ window.SL = window.SL || {};
     step(st, n){
       if (busy(st)) return say(st, MSG.busy, null, 1600, 'tick');
       A.unplug(st, true); st.exT = 0; st.exploded = false;
+      // a part taken off or turned round clears the passes as remove does (place() does it for a part put on); a step
+      // back to nothing is a strip
+      const moved = [];
       craft.parts.forEach((p, i) => {
         const pl = st.placed[p.id], want = i < n;
         if (want && (!pl || pl.leave)) place(st, p.id, 0);
-        else if (want && pl.orient === 1) { pl.orient = 0; pl.t = 0; if (p.id === 'XT60') st.smokeOk = false; if (p.id === 'FC') st.accOk = false; }
-        else if (!want && pl && !pl.leave) { pl.leave = true; if (p.id === 'XT60') st.smokeOk = false; if (p.id === 'WIRES') st.motorOk = false; if (p.id === 'FC') st.accOk = false; }
+        else if (want && pl.orient === 1) { pl.orient = 0; pl.t = 0; moved.push(p.id); if (p.id === 'XT60') st.smokeOk = false; if (p.id === 'FC') st.accOk = false; }
+        else if (!want && pl && !pl.leave) { pl.leave = true; moved.push(p.id); if (p.id === 'XT60') st.smokeOk = false; if (p.id === 'WIRES') st.motorOk = false; if (p.id === 'FC') st.accOk = false; }
       });
       if (n === 0) { st.fault = null; st.smoke = []; }
+      if (n === 0 && moved.length) resetCraft(st, 'strip');
+      else for (const id of moved) resetCraft(st, id);
       st.sel = n > 0 ? craft.parts[n - 1].id : null;
       kick();
     },

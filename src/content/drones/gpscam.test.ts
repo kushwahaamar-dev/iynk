@@ -142,7 +142,7 @@ describe('gpscam craft tests in the figure', { timeout: 300000 }, () => {
     expect((fig.state().log as { lines: string[] }).lines.at(-1)).toBe('PreArm: Compasses inconsistent');
   });
 
-  it('runs the failsafe test only with the props off and the pack in', async () => {
+  it('runs the failsafe test only with the props off and the pack in, and a re-seated receiver needs it again', async () => {
     fig = await openFigure('gpscam');
     await fig.run('plugIn');
     await fig.press('failsafe');
@@ -152,14 +152,22 @@ describe('gpscam craft tests in the figure', { timeout: 300000 }, () => {
     await fig.run('plugIn');
     await fig.press('failsafe');
     expect(await until('failsafe', 'passed')).toBe('passed');
+    await fig.run('unplug');
+    await fig.remove('RX');
+    await fig.add('RX');
+    expect(fig.status(test('failsafe'))).toBe('failed');
   });
 
-  it('sweeps the gimbal once it has power', async () => {
+  it('sweeps the gimbal once it has power, and again after the gimbal is re-seated', async () => {
     fig = await openFigure('gpscam');
     await fig.press('gimbal');
     expect(fig.status(test('gimbal'))).toBe('failed');
     await fig.run('plugIn');
     await fig.press('gimbal');
     expect(await until('gimbal', 'passed')).toBe('passed');
+    await fig.run('unplug');
+    await fig.remove('GIMBAL');
+    await fig.add('GIMBAL');
+    expect(fig.status(test('gimbal'))).toBe('failed');
   });
 });

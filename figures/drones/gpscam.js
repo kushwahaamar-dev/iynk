@@ -265,11 +265,15 @@
       failsafeOk: done(st, x.failsafeAt), gimbalOk: done(st, x.gimbalAt), preArmOk: !!x.preArmOk,
     };
   }
+  // the engine calls this with 'strip', 'build' or the id of a part taken off, re-seated or turned round (also on a
+  // step of the host's slider): a check holds only for the parts it ran on
   function reset(st, why){
     const x = extra(st);
     if (why === 'strip') Object.assign(x, { compassOk: false, compassBack: false, compassAt: null, gpsAt: null, failsafeAt: null, gimbalAt: null, gimbalT0: null, preArmOk: false, run: null });
     if (why === 'GPS') Object.assign(x, { compassOk: false, compassBack: false, compassAt: null, gpsAt: null, preArmOk: false });
-    if (why === 'FC') Object.assign(x, { gpsAt: null, preArmOk: false });
+    if (why === 'FC') Object.assign(x, { gpsAt: null, failsafeAt: null, gimbalAt: null, gimbalT0: null, preArmOk: false });
+    if (why === 'RX') Object.assign(x, { failsafeAt: null, preArmOk: false });
+    if (why === 'GIMBAL') Object.assign(x, { gimbalAt: null, gimbalT0: null });
   }
 
   SD.define({
