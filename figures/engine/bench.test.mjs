@@ -586,6 +586,18 @@ describe('circuit params from the host', () => {
     B.advance(1.5);
     expect(B.st.meas.LED1.state).toBe('ok');
   });
+
+  it('a board with no circuit measures nothing (no reading left over from the last circuit)', async () => {
+    page = await loadFigure(buildFigure('boards/uno-r3'), { path: '/figures/boards/uno-r3.html' });
+    const B = page.bench;
+    B.accept({ view: 'breadboard', circuit: 'blink', power: 'usb' });
+    B.advance(1.5);
+    expect(B.st.meas.LED1).toBeDefined();
+    B.accept({ view: 'board', circuit: null });
+    B.advance(.5);
+    expect(B.st.meas).toEqual({});
+    expect(B.st.circuitLoad).toBe(0);
+  });
 });
 
 describe('the generic brown-out break', () => {

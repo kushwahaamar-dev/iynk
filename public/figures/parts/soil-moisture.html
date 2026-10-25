@@ -2853,8 +2853,8 @@ B.pinOf = pinOf;
 /* ---------- the circuit solver runs every frame (bench-solve.js); parts that burn stay burnt until the circuit
    changes; a part's own motion hook def.step({ p, st, m }, dt) runs on the virtual clock ---------- */
 B.bbStep = (st, dt) => {
-  if (!st.circuit) return;
-  const pl = place();
+  // no circuit (or none placed): nothing to measure, so no reading outlives the circuit that made it
+  const pl = st.circuit && place();
   if (!pl){ st.meas = {}; st.volts = {}; st.circuitLoad = 0; return; }
   const r = B.solveCircuit(st, pl, dt || 0);
   st.meas = r.meas; st.volts = r.volts; st.circuitLoad = r.load;
