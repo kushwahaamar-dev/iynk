@@ -23,6 +23,8 @@ below was read. Raw numbers: `<s>/F-review/{en-light,en-dark,de,hi}.json`.
   scrolls (lesson, board, bench, workshop); bench Do it, Break it and Status tabs; workshop Build it for me, Tests,
   Wiring, CLI, Lab tools; fly page "Mount the flight controller backwards" → Arm → hold W; dark mode; a returning
   learner on the landing.
+- `walk.mjs --all`: every board overview (12), bench (13), workshop (13) and fly page (13) in English light at
+  1440 and 390, 102 loads more, with screenshots.
 - `node scripts/crawl-routes.mjs --base http://127.0.0.1:3446 --dist .next-review --workers 3` (all 786 routes).
 - `E2E_SKIP_BUILD=1 NEXT_DIST_DIR=.next-review npx playwright test` (the whole suite, 86 tests).
 - Also, for the driver: `npx tsc --noEmit`, `npx vitest run src/components src/i18n`, `npx eslint src e2e --quiet`.
@@ -31,7 +33,7 @@ below was read. Raw numbers: `<s>/F-review/{en-light,en-dark,de,hi}.json`.
 
 | Check | Result |
 |---|---|
-| Plate share of a 1440 × 900 screen on lab pages (spec ≥ 45 %) | **46–52 %** (lessons 46, board page 48, workshops 48, fly 46–48, benches 52) |
+| Plate share of a 1440 × 900 screen on lab pages (spec ≥ 45 %) | **46–52 %** (lessons 46, board pages 48, workshops 48, fly 46–48, benches 52), the same on all 51 lab pages of each kind |
 | Plate share at 1920 × 1080 (spec ≥ 50 %) | **51–55 %** |
 | Plate top edge at 1440 (spec ≤ 200 px) | **138–190 px** |
 | Workspace fills the screen at ≥ 1024, no page scroll inside it | yes: `.ws` = viewport − 58 px on every lab page, every size, every language |
@@ -40,7 +42,8 @@ below was read. Raw numbers: `<s>/F-review/{en-light,en-dark,de,hi}.json`.
 | axe on 125 English loads (light and dark, three sizes) | **0 violations** |
 | Text under 12 px | only the fly telemetry units (finding U6) |
 | Phone touch targets under 44 px | serial resize handle 24 px (N2), robotics "Hints" 53 × 32 (N3); "Figure controls (n)" is visually hidden until focused, by design |
-| Sideways scroll on a phone | **every board page** (B1); nothing else |
+| Sideways scroll on a phone | **every board page** (B1, all 12 boards); no bench, workshop, fly or reading page |
+| Console and page errors | none on the 309 loads, except the 404 page's own 404 and the devnet 429 (N11) |
 | Route crawl | **786 pages: 274 clean, 6 expected 404, 506 failed**: 498 are B1 (every board route in every language, 541–969 px wide at 390), 8 are a 429 from `api.devnet.solana.com` (N11) |
 | E2E, whole suite | **82 passed, 2 failed, 2 skipped** in 2.4 min. Failed: `room.spec.ts:56` (Break it rows now sit in a tab) and `sound.spec.ts:53` (two "Build it for me" buttons). The tree holds uncommitted fixes to both (not mine); rerun with them, `room` + `sound` + `dronelab`: 9 passed, 1 failed, the failure being the uncommitted `dronelab.spec.ts` edit that expects quad5's fourth (failsafe) test, which this build doesn't have. Skipped: `boardlab.spec.ts:176` and `:187` (the untranslated-board notice; the spec skips it because every board's prose now exists in every language). |
 | Fly page Break it with keyboard flight (FE B1, the blocker) | **fixed**: switch on, Arm, hold W → "Flipped on take-off", Crashes 1, slow-motion replay, "Here's why" with "Turn the flight controller round" |
@@ -155,6 +158,8 @@ below was read. Raw numbers: `<s>/F-review/{en-light,en-dark,de,hi}.json`.
 | N13 | bench and workshop bar | The bar's progress reads "0/26" (bench) and "0/10" (workshop) with its label hidden, while the Steps tab says "0/19" | F-build-shell (`ProgressBadge size="xs"`): a Tooltip with the label, or `aria-describedby` text made visible on hover |
 | N14 | `/en/about` | Kicker "ABOUT" over "About SimLab" | F-build-shell: drop the kicker or make it "How SimLab works" |
 | N15 | `scripts/crawl-routes.mjs` | `--out` with an absolute path is joined under the repo root (`join(ROOT, OUT)`) and the run dies after crawling; I had to rerun and capture stdout | driver: `resolve(ROOT, OUT)` |
+| N16 | drone workshop, Design tab (`agrihex`) | The check verdict is one bold 16 px paragraph of up to seven lines | F-build-drones: the verdict's first sentence bold, the rest in body weight |
+| N17 | drone workshop at 1440 with Lab tools open | The stage gives up 416 px: the toolbar's readouts are cut mid-word ("Battery unplugge", Fault gone) and the figure drops to about 540 px wide | F-build-drones: the readouts `truncate` with an ellipsis or hide under a container width; F-build-panels: from 1280 the drawer could take its width from the rail rather than the stage. `ix_drone-labtools.png` |
 
 ## What meets the spec and should stay
 
@@ -175,7 +180,7 @@ below was read. Raw numbers: `<s>/F-review/{en-light,en-dark,de,hi}.json`.
 
 ## Not checked
 
-- Every one of the 13 benches and 13 workshops by eye: three benches and two workshops were walked; the crawl covered
-  all of them at 390 for errors and overflow.
+- The steps, faults and tests of every bench and workshop by hand: their pages were measured and screenshotted at
+  1440 and 390, but clicked through only on `led-resistor` and `quad5` (the e2e suite covers more).
 - Board lessons other than the five above by eye (the crawl covered all 71).
 - Real touch input on the fly sticks (emulated touch only), and the room flow beyond what `room.spec.ts` covers.
