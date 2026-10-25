@@ -512,7 +512,7 @@
         "options": {
           "1": "Oui, les broches tolèrent le 5 V",
           "2": "Oui, avec une résistance de 1 kΩ en série",
-          "3": "Non : le GPIO est en 3,3 V seulement, utilisez donc un pont diviseur (1 kΩ au-dessus de 2 kΩ) ou un adaptateur de niveau"
+          "3": "Non : le GPIO est en 3,3 V seulement, utilisez donc un pont diviseur (1 kΩ au-dessus de 2 kΩ) ou un convertisseur de niveau"
         },
         "why": "Les broches GPIO du Pi ne tolèrent pas le 5 V : au-dessus d'environ 3,6 V, la diode de protection de la broche conduit vers le rail 3,3 V et peut détruire la broche ou le RP1. Un pont diviseur de 1 kΩ et 2 kΩ transforme 5 V en 3,3 V."
       },

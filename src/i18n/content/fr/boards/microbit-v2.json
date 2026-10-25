@@ -267,7 +267,7 @@
       "title": "5 V sur une broche",
       "symptom": "Les choses fonctionnent bizarrement, puis le capteur de mouvement lâche et le processeur peut ne plus jamais redémarrer.",
       "explanation": "Un signal de 5 V, comme l'écho d'un HC-SR04, dépasse la limite de 3,6 V de la broche. Le courant traverse la diode de protection de la broche vers le rail 3,3 V et pousse tout le rail au-dessus de ce que supportent les capteurs.",
-      "fix": "Ne branchez jamais de signaux 5 V. Utilisez un pont diviseur ou un adaptateur de niveau, ou une version 3,3 V du module."
+      "fix": "Ne branchez jamais de signaux 5 V. Utilisez un pont diviseur ou un convertisseur de niveau, ou une version 3,3 V du module."
     },
     "loose-clip": {
       "title": "Pince crocodile lâche sur l'anneau 1",
