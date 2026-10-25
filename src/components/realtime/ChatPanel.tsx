@@ -90,7 +90,7 @@ export function ChatPanel({ room, t, locale }: { room: RoomApi; t: TogetherT; lo
   const id = useId();
   const { features, status } = useFeatures();
   const [draft, setDraft] = useState("");
-  const list = useRef<HTMLOListElement>(null);
+  const list = useRef<HTMLDivElement>(null);
   const pinned = useRef(true);
   const everyone = useMemo(() => new Map([room.you, ...room.peers].map((peer) => [peer.id, peer])), [room.you, room.peers]);
   const clock = useMemo(() => new Intl.DateTimeFormat(htmlLang(locale), { hour: "numeric", minute: "2-digit" }), [locale]);
@@ -130,9 +130,10 @@ export function ChatPanel({ room, t, locale }: { room: RoomApi; t: TogetherT; lo
         {t("chat.title")}
       </h3>
       {offNote ? <p className="text-xs text-muted">{offNote}</p> : null}
-      <ol
+      <div
         ref={list}
         role="log"
+        aria-labelledby={`${id}-title`}
         aria-live="polite"
         aria-relevant="additions"
         tabIndex={0}
@@ -142,26 +143,31 @@ export function ChatPanel({ room, t, locale }: { room: RoomApi; t: TogetherT; lo
         }}
         className="flex max-h-80 min-h-32 flex-col gap-3 overflow-y-auto rounded-ink-sm bg-sunken p-3"
       >
-        {count === 0 ? <li className="m-auto max-w-56 text-center text-sm text-muted">{t("chat.empty")}</li> : null}
-        {room.messages.map((msg) =>
-          msg.kind === "system" && msg.system ? (
-            <li key={msg.id} className="text-center text-xs text-muted">
-              {systemLine(t, msg.system)}
-            </li>
-          ) : (
-            <Message
-              key={msg.id}
-              msg={msg}
-              sender={everyone.get(msg.from)}
-              mine={msg.from === room.you.id}
-              locale={locale}
-              t={t}
-              translating={translateReady}
-              time={clock.format(msg.ts)}
-            />
-          ),
+        {count === 0 ? (
+          <p className="m-auto max-w-56 text-center text-sm text-muted">{t("chat.empty")}</p>
+        ) : (
+          <ol className="flex flex-col gap-3">
+            {room.messages.map((msg) =>
+              msg.kind === "system" && msg.system ? (
+                <li key={msg.id} className="text-center text-xs text-muted">
+                  {systemLine(t, msg.system)}
+                </li>
+              ) : (
+                <Message
+                  key={msg.id}
+                  msg={msg}
+                  sender={everyone.get(msg.from)}
+                  mine={msg.from === room.you.id}
+                  locale={locale}
+                  t={t}
+                  translating={translateReady}
+                  time={clock.format(msg.ts)}
+                />
+              ),
+            )}
+          </ol>
         )}
-      </ol>
+      </div>
       <form onSubmit={send} className="flex items-end gap-2">
         {voiceReady ? <VoiceButton t={t} lang={locale} enabled onText={(text, lang) => room.chat(text, "voice", { lang })} /> : null}
         <div className="flex min-w-0 flex-1 flex-col gap-1">
