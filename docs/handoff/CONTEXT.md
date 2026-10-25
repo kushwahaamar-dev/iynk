@@ -46,6 +46,7 @@ SimLab is a hardware lab in the browser (Boards, Robotics, Drones, flight sim) e
 | 10-24 16:13 | **D2 confirmed:** translate all UI and figure text, plus judge-path prose (Uno R3, quad5, esp32-s3 bench); English prose with a "not yet translated" notice elsewhere; the rest overnight | Jagrati: "for D2 confirm the default" |
 | 10-24 16:13 | **D4: API keys stay placeholders for now.** No Meta, SerpApi, Gemini, Tiger or Vultr keys yet; Jagrati's `.env.local` is a copy of `.env.example` with empty values, so sponsor panels show "not set up" and the core lab works. Vultr VM, Vercel link/env upload and Tiger are **not** approved: still ask before creating or uploading anything | Jagrati: "leave the api keys as place holder" |
 | 10-25 08:10 | Deploy to Vercel with the Meta, Gemini and SerpApi keys; relay on a Vultr VM; no Tiger; the app is frozen (no more feature or polish changes) | Amar's answers (§5). Supersedes D4's "not approved yet" for Vercel and Vultr |
+| 10-25 08:49 | Tiger after all (Build Buddies needs it); one exception to the freeze: the database array fix (`951ef39`) | Amar's answers (§5) |
 | 10-24 ~16:00 | Raw session transcripts are **not** committed; this file summarises them instead | The tool permission check blocked exporting them, and they can contain secrets and file dumps |
 
 ## 4. Things that live on one machine only
@@ -220,6 +221,12 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   and a relay that let in only localhost pages. Asked who set it up and how to go on, Amar answered "how to do step 2
   step by step" (add this Mac's key), then "done all step 6": he ran `ssh-copy-id` with the root password from the
   Vultr dashboard. Decision: keep that VM (no second one), keep its localhost origins and add the Vercel origin.
+- **10-25 08:40 to 08:49, Amar (Tiger).** Told that skipping Tiger also turns off Build Buddies (one of the Meta
+  examples in the write-up), he answered "already done check env.local i set up all the database keys there": the
+  Tiger file's `TIMESCALE_SERVICE_URL` and `PG*` lines. The driver added `DATABASE_URL` with the same URL (the app
+  reads only that name); the migrations had already been applied. Then a confirmed bug (concurrent first writes on a
+  fresh instance fail with "malformed array literal") and his OK to break the freeze for it: "Yes, fix and redeploy".
+  The freeze still holds for everything else.
 
 
 - **Never SendMessage a running Workflow agent by its id.** It starts a duplicate copy working on the same files
@@ -238,3 +245,9 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   component's base class (Button's `whitespace-nowrap`) needs `!`.
 - Stamp HANDOFF and request times from `date`, never from a guess: the driver once wrote 23:05 for a 22:30 launch.
 - Under Playwright, `src/` loads as CommonJS: a dynamic `import()` of a content module gives `{ default: module }`.
+- **postgres.js `sql.array()` races on a fresh pool.** It serializes from an array-type table filled only after a
+  connection fetches `pg_type`, so concurrent first queries send `"a,b"`. Send array literals (`arrayLiteral` in
+  `src/lib/server/db/queries.ts`) with a `::text[]` cast. Tests that run queries one at a time never see it; a
+  fresh-pool burst does.
+- **`.vercelignore` drops tests by name**, so a test helper without `.test` in its name stays in the upload and
+  gets typechecked without what it imports. Name helpers `*.test.*`, or list them in `.vercelignore`.

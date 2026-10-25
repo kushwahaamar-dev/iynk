@@ -140,9 +140,10 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
      VULTR_HOST=<ip> scripts/realtime-deploy.sh`, set `NEXT_PUBLIC_REALTIME_URL=wss://<ip-with-dashes>.sslip.io/ws`
      on Vercel and redeploy.
   3. Done locally 07:51 (see "Keys smoke") and on **https://simlab-hacktx.vercel.app** (`docs/hacktx/DEPLOY.md`
-     "Production on Vercel"): everything on but db and solana. Rooms on the live site run through the Vultr relay
-     `wss://216-128-138-203.sslip.io/ws` since the 08:38 redeploy, checked with two browser profiles. Still to do
-     before judging: JUDGE-QA's "Recheck before judging" and PITCH's "Confirm before pitching".
+     "Production on Vercel"): everything on but solana. Rooms on the live site run through the Vultr relay
+     `wss://216-128-138-203.sslip.io/ws` since the 08:38 redeploy, checked with two browser profiles. Tiger is on
+     since 08:49 (`DATABASE_URL` added; Build Buddies and leaderboards work), with the array fix `951ef39`. Still to
+     do before judging: JUDGE-QA's "Recheck before judging" and PITCH's "Confirm before pitching".
   4. Video 08:30-10:00 from `docs/hacktx/VIDEO.md` (setup, shot list, clicks checked at gate 3). Devpost by 10:30
      from `docs/hacktx/DEVPOST-WRITEUP.md`, filling its [BRACKETS]; Amar submits.
   Optional, small, if someone has time: the robotics HUD verdict is English only (`benchStatus` fills English), the fr
@@ -158,6 +159,11 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-25 08:54 CDT (Amar): Tiger on in production (`DATABASE_URL` from Amar's Tiger file). Fixed and deployed
+  `951ef39`: concurrent first writes on a fresh instance failed with "malformed array literal" (postgres.js
+  `sql.array()`). Six concurrent buddy joins live all pass; no production errors since. Typecheck and eslint exit 0;
+  db, buddies, telemetry and leaderboard tests 34 passed, 4 skipped (no Docker). Next: Devpost write-up for Tiger.
 
 - 2026-10-25 08:39 CDT (Amar): Amar added this Mac's SSH key to the Vultr VM; the relay now also lets in
   https://simlab-hacktx.vercel.app (localhost origins kept), Vercel has `NEXT_PUBLIC_REALTIME_URL` and was

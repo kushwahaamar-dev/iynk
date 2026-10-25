@@ -67,6 +67,24 @@ the Vercel origin and from `http://localhost:3000` opens; one from another origi
 `/api/status` has `realtime` true, and two separate Chromium profiles (en and es Blink, `?room=`) on the live site
 join one room over that relay: status "Live", each sees the other with their language, no console errors.
 
+### The database (Tiger Data, 08:49)
+
+Amar put the Tiger service's credentials file into `.env.local` (`TIMESCALE_SERVICE_URL` and `PG*`); the app reads
+only `DATABASE_URL`, so the driver added `DATABASE_URL` with the same URL. `node scripts/db-migrate.mjs --status`:
+0001_events, 0002_aggregates and 0003_profiles already applied. `DATABASE_URL` is on Vercel production; since then
+`/api/status` has `db` true and `/api/leaderboard?course=race` answers from the database.
+
+The first live test found a bug: on a fresh instance, concurrent writes failed with "malformed array literal" (one
+buddy join returned `db_unavailable`, and a telemetry batch was dropped). Cause: postgres.js `sql.array()` needs an
+array-type table each pool fills only after a connection fetches `pg_type`. Reproduced from the Mac on fresh pools
+(6 of 18 concurrent writes failed). Fixed in `951ef39` (`arrayLiteral` in `src/lib/server/db/queries.ts`, unit
+tests in `queries.test.ts`), with Amar's OK despite the freeze. After the deploy: six concurrent buddy joins on the
+fresh deployment all 200 and stored exactly, Muse matched a complementary pair at 98, every test profile removed, and
+no error in the production logs.
+
+Every push to `main` builds production through the GitHub link (all those builds are Ready), so a push alone now
+redeploys.
+
 The first visit to a page after a deploy is slow (quad5 took 24 s to go quiet once, then 1.9 s), so open the demo
 pages once before judging.
 
