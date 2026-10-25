@@ -1,0 +1,550 @@
+{
+  "title": "Interrupteur moteur à transistor",
+  "sub": "la logique commande la puissance",
+  "hint": "une broche de 20 mA commute un moteur de 160 mA",
+  "overview": "Une broche de Nano peut fournir environ 20 mA (40 mA, c'est la limite absolue). Un motoréducteur TT veut environ 160 mA rien que pour faire tourner sa roue, et plus de 1 A à l'instant où il démarre ou quand vous bloquez la roue. Branchez-le sur une broche et la broche meurt. Ici, la broche 9 envoie environ 3,4 mA à travers une résistance de 1 kΩ dans la base d'un Darlington TIP120, et ce petit courant commute l'alimentation propre du moteur : quatre piles AA, 6 V. Le moteur est entre le plus de la batterie et le collecteur du TIP120 (un interrupteur côté bas), l'émetteur va à la masse, et le moins de la batterie partage cette masse avec le Nano. Une diode 1N4007 aux bornes du moteur donne au courant de la bobine un chemin quand le transistor se bloque ; sans elle, la bobine fait grimper le collecteur au-delà des 60 V nominaux du TIP120. Une LED verte sur la broche 9 montre ce que fait la broche, à mi-luminosité en PWM parce que votre œil fait la moyenne, comme le moteur.",
+  "parts": {
+    "R1": {
+      "name": "Résistance de base de 1 kΩ (marron, noir, rouge, or)",
+      "what": "Fixe le courant de base : (4,7 V − 1,3 V) / 1000 Ω ≈ 3,4 mA. Le TIP120 est un Darlington, deux transistors en un : sa base demande donc environ 1,3 V au lieu de 0,7 V. Sans cette résistance, la broche pousse directement dans la jonction de base et essaie de fournir bien plus de 100 mA, ce qui tue la broche."
+    },
+    "Q1": {
+      "name": "Transistor Darlington NPN TIP120",
+      "what": "Face imprimée vers vous et pattes vers le bas : base, collecteur, émetteur ; la languette métallique est aussi le collecteur. Son gain est d'au moins 1000 : 3,4 mA dans la base pourraient donc laisser passer plusieurs ampères ; avec seulement 160 mA demandés, il est complètement passant (saturé) et fait chuter environ 0,8 V du collecteur à l'émetteur. Donné pour 60 V, 5 A et 2 W sans dissipateur."
+    },
+    "D1": {
+      "name": "Diode de roue libre 1N4007",
+      "what": "Elle est aux bornes du moteur, anneau (cathode) vers le plus de la batterie, extrémité sans marque vers le collecteur. Pendant que le moteur tourne, elle ne fait rien. Quand le TIP120 se bloque, la bobine maintient son courant et la diode le laisse tourner en boucle à travers le moteur : le collecteur reste ainsi à une chute de diode au-dessus de la batterie au lieu de sauter à 60 V et plus."
+    },
+    "R2": {
+      "name": "Résistance de LED de 1 kΩ",
+      "what": "Limite la LED témoin à (4,7 V − 2,1 V) / 1000 Ω ≈ 2,6 mA, assez pour la voir et rien que la broche remarque."
+    },
+    "LED1": {
+      "name": "LED témoin verte sur la broche 9",
+      "what": "S'allume tant que la broche 9 est à HIGH. En PWM, elle paraît à mi-luminosité : en réalité, elle clignote 490 fois par seconde et votre œil fait la moyenne des éclairs. Elle a son propre fil de masse vers le Nano : elle vous dit donc encore ce que fait la broche quand le côté moteur est mal câblé."
+    },
+    "M1": {
+      "name": "Motoréducteur TT avec une roue jaune (3-6 V, réducteur 1:48)",
+      "what": "Un petit moteur à courant continu à balais derrière un réducteur en plastique 1:48. Roue en l'air, il tire environ 160 mA et fait tourner la roue à environ 220 rpm sur cette batterie. Bloqué (calé), il tire plus de 1 A, et à l'instant où il démarre, il tire presque autant : c'est cet appel de courant qui fait redémarrer une carte qui alimente des moteurs par son propre 5 V."
+    },
+    "BT1": {
+      "name": "Boîtier 4 piles AA (6 V)",
+      "what": "Quatre piles alcalines en série : environ 6,4 V neuves, 6 V en nominal, et chaque pile a 0,15 à 0,3 Ω à l'intérieur : le pack chute donc sous un fort courant. Il n'alimente que le côté moteur. Son fil moins doit être relié à la masse du Nano, sinon le courant de base n'a aucun chemin de retour."
+    }
+  },
+  "power": {
+    "label": "Branchez l'USB du Nano",
+    "ok": "Sous tension : le Nano exécute le sketch que vous avez téléversé, et les piles alimentent le moteur"
+  },
+  "modes": {
+    "high": "Entrée HIGH",
+    "pwm": "PWM 50 %",
+    "low": "Entrée LOW",
+    "ramp": "Rampe de démarrage progressif",
+    "code": {
+      "high": {
+        "c1": "Entrée HIGH : la broche 9 tient le TIP120 complètement passant",
+        "c2": "vers R1 (1 kΩ), puis la base du TIP120",
+        "c3": "environ 3.4 mA dans la base...",
+        "c4": "...laissent passer les 160 mA de la batterie dans le moteur",
+        "c5": "une broche donne 20 mA au plus : n'y branchez jamais un moteur"
+      },
+      "pwm": {
+        "c1": "PWM 50 % : la broche 9 bloque et débloque le TIP120 490 fois par seconde",
+        "c2": "une broche ~ : PWM matérielle du Timer1",
+        "c3": "128 sur 255 = rapport cyclique de 50 % à 490 Hz",
+        "c4": "le moteur en fait la moyenne : un peu moins de la moitié de la vitesse, et un sifflement",
+        "c5": "à chaque temps d'arrêt, D1 fait circuler le courant de la bobine à travers le moteur"
+      },
+      "low": {
+        "c1": "Entrée LOW : la broche 9 tient le TIP120 bloqué",
+        "c2": "pas de courant de base : le TIP120 est bloqué",
+        "c3": "l'énergie de la bobine se décharge dans D1 et le moteur ralentit en roue libre jusqu'à l'arrêt"
+      },
+      "ramp": {
+        "c1": "Démarrage progressif : monter le rapport cyclique d'un cran toutes les 8 ms, sans delay()",
+        "c2": "255 crans de 8 ms font environ 2 s de l'arrêt à pleine vitesse",
+        "c3": "afficher le rapport cyclique une fois par seconde"
+      }
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Démontez le Nano jusqu'au circuit nu",
+      "body": "Partez de la carte nue pour voir chaque composant se poser. Ici, le Nano est le contrôleur ; le circuit du moteur est sur la platine d'essai.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    },
+    "pnp": {
+      "title": "Placement automatique des composants CMS, puis refusion",
+      "body": "La machine dépose chaque composant monté en surface sur sa pâte à braser, puis le four fait fondre la pâte en soudures. L'ATmega328P, le pont USB FT232, le régulateur, le résonateur et les composants passifs se posent tous maintenant.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    },
+    "headers": {
+      "title": "Posez les deux connecteurs 15 broches",
+      "body": "Les connecteurs sont les seuls composants traversants du Nano : ils se posent après la refusion, car le four ferait fondre leur plastique. Le Nano n'a ni composants hauts ni support de puce : les groupes bas, hauts et derniers se résument donc à ces deux connecteurs.",
+      "refusal": "Les composants CMS d'abord : lancez le placement puis la refusion. Le four ferait fondre les pièces en plastique"
+    },
+    "solder": {
+      "title": "Soudez les broches des connecteurs",
+      "body": "Trente soudures. Chacune doit être un petit cône brillant qui mouille à la fois la broche et la pastille ; une boule terne posée dessus est une soudure froide et ne fonctionnera que de temps en temps.",
+      "refusal": "Rien à souder pour l'instant : placez d'abord un composant"
+    },
+    "bb-drive": {
+      "title": "Placez le TIP120 et sa résistance de base",
+      "body": "Enfoncez le TIP120 dans trois colonnes, face imprimée vers vous : base, collecteur, émetteur de gauche à droite. Reliez la colonne de la broche 9 à celle de la base avec la résistance de 1 kΩ, et amenez l'émetteur au rail de masse. Ajoutez la LED et sa 1 kΩ sur la broche 9 pour voir la broche.",
+      "refusal": "Montez d'abord le Nano : démontage, placement, soudure"
+    },
+    "bb-motor": {
+      "title": "Posez le moteur et la diode de roue libre",
+      "body": "Le fil moins du moteur va dans la colonne du collecteur, son fil plus dans une colonne qui portera le plus de la batterie. La 1N4007 relie ces deux mêmes colonnes, anneau vers le plus. Diode aux bornes du moteur, anneau vers le plus : dites-le en la posant.",
+      "refusal": "Placez d'abord le TIP120 et sa résistance de base"
+    },
+    "bb-power": {
+      "title": "Branchez la batterie et la masse commune",
+      "body": "Le rouge de la batterie sur le rail plus, le noir sur le rail de masse, et un fil de plus du GND du Nano vers ce même rail. Ce dernier fil est celui qu'on oublie : sans lui, le courant de base n'a aucun chemin de retour vers le Nano et le TIP120 ne devient jamais passant.",
+      "refusal": "Posez d'abord le moteur et la diode de roue libre"
+    },
+    "plug": {
+      "title": "Branchez l'USB",
+      "body": "Le Nano démarre le sketch qu'il contient : « Entrée HIGH ». La broche 9 passe à l'état haut, la LED s'allume, environ 3,4 mA entrent dans la base et la roue tourne. Regardez les courants de base et du moteur dans le panneau d'état.",
+      "refusal": "Fermez d'abord la vue éclatée"
+    },
+    "upload-pwm": {
+      "title": "Téléversez « PWM 50 % »",
+      "body": "analogWrite(9, 128) débloque et bloque le TIP120 490 fois par seconde. Le moteur fait la moyenne des impulsions et tourne à un peu moins de la moitié de sa vitesse (sa propre résistance mange une partie de la tension), la LED paraît à mi-luminosité, et vous entendez le sifflement à 490 Hz.",
+      "refusal": "Branchez d'abord l'USB : les téléversements passent par le câble"
+    },
+    "measure": {
+      "title": "Mesurez le gain",
+      "body": "Téléversez de nouveau « Entrée HIGH » et lisez le panneau d'état : courant de base d'environ 3,4 mA, courant moteur d'environ 160 mA. Leur rapport, environ 47, est le gain que vous utilisez. Le TIP120 pourrait donner 1000 fois plus : il est saturé, il travaille en interrupteur, et c'est ce qui le garde froid."
+    },
+    "exploded": {
+      "title": "Débranchez et ouvrez la vue éclatée",
+      "body": "Les couches s'écartent : les composants CMS, puis les connecteurs. La vue éclatée refuse tant que la carte est sous tension.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    },
+    "break-flyback": {
+      "title": "Cassez-la : sans diode de roue libre",
+      "body": "Retirez D1, lancez « PWM 50 % » et regardez le pic du collecteur dans le panneau d'état. Puis remettez-la et regardez le pic redescendre à une diode au-dessus de la batterie."
+    },
+    "break-diode": {
+      "title": "Cassez-la : la diode à l'envers",
+      "body": "Tournez D1 pour que son anneau soit côté collecteur, puis mettez le moteur en marche."
+    },
+    "break-tip120": {
+      "title": "Cassez-la : le TIP120 à l'envers",
+      "body": "Retournez le TIP120 pour que sa languette soit face à vous. La LED dit toujours que la broche 9 est à HIGH. La roue tourne-t-elle ?"
+    },
+    "break-ground": {
+      "title": "Cassez-la : oubliez la masse commune",
+      "body": "Retirez le fil qui va du GND du Nano au rail moins de la batterie."
+    },
+    "break-base": {
+      "title": "Cassez-la : sans résistance de base",
+      "body": "Remplacez R1 par un simple fil de liaison et activez la broche 9."
+    },
+    "break-pin": {
+      "title": "Cassez-la : le moteur directement sur la broche 9",
+      "body": "Retirez le TIP120 du circuit : le plus du moteur sur la broche 9, le moins du moteur à la masse."
+    },
+    "break-brownout": {
+      "title": "Cassez-la : le moteur sur le 5 V du Nano",
+      "body": "Débranchez la batterie et alimentez plutôt le rail plus par la broche 5V du Nano."
+    },
+    "break-polarity": {
+      "title": "Cassez-la : les fils de la batterie inversés",
+      "body": "Inversez les fils rouge et noir de la batterie sur les rails."
+    },
+    "break-voltage": {
+      "title": "Cassez-la : des piles Li-ion dans le boîtier",
+      "body": "Remplissez le boîtier de quatre cellules 14500. Elles ont la taille de piles AA, mais chacune donne 3,7 à 4,2 V."
+    },
+    "break-cold": {
+      "title": "Cassez-la : une soudure froide sur la cosse du moteur",
+      "body": "Le fil rouge du moteur est soudé sur sa cosse par une boule terne et granuleuse qui ne fait que toucher la cosse."
+    },
+    "break-stall": {
+      "title": "Cassez-la : bloquez la roue",
+      "body": "Arrêtez la roue avec les doigts pendant que la broche 9 est à HIGH et regardez le courant moteur."
+    }
+  },
+  "faults": {
+    "no-flyback": {
+      "title": "Pas de diode de roue libre",
+      "symptom": "Le moteur tourne, mais le pic du collecteur affiche 60 V ou plus à chaque blocage. En PWM, ça fait 490 coups par seconde : au bout de quelques secondes, le TIP120 claque en court-circuit et le moteur tourne à fond quoi que dise la broche 9.",
+      "explanation": "Un moteur est une bobine. Quand le TIP120 se bloque, la bobine maintient son courant un instant et fait monter le collecteur jusqu'à ce que quelque chose cède : ici, le transistor claque à sa limite de 60 V et absorbe l'énergie. Un blocage, il y survit ; des centaines par seconde l'usent, et un transistor mort claque en général en court-circuit. Avec D1 en place, le courant tourne en boucle à travers la diode et le collecteur s'arrête à une chute de diode au-dessus de la batterie.",
+      "fix": "Débranchez, posez un TIP120 neuf et mettez D1 aux bornes du moteur, anneau vers le plus de la batterie."
+    },
+    "flyback-reversed": {
+      "title": "Diode de roue libre à l'envers",
+      "symptom": "Dès que la broche 9 passe à HIGH, la diode chauffe, la tension de la batterie s'effondre et le moteur ralentit. Avec la broche 9 à LOW, rien ne se passe.",
+      "explanation": "Retournée, D1 pointe du plus de la batterie vers le collecteur. Quand le TIP120 devient passant, il tire le collecteur à la masse, et la diode conduit alors directement du plus de la batterie à la masse : un court-circuit franc à travers D1 et le transistor, limité seulement par les piles. Plusieurs ampères dans une diode de 1 A la font cuire.",
+      "fix": "Débranchez la batterie et retournez D1 : anneau vers le plus de la batterie."
+    },
+    "tip120-reversed": {
+      "title": "TIP120 à l'envers",
+      "symptom": "La LED s'allume, la broche 9 est à HIGH, mais la roue ne tourne jamais et rien ne chauffe.",
+      "explanation": "Retourner un TO-220 échange ses pattes extérieures : la résistance arrive maintenant sur l'émetteur et la base est à la masse. La jonction base-émetteur est polarisée en inverse : aucun courant de base ne passe et le transistor reste bloqué. Sur ce boîtier, ce ne sont pas le collecteur et l'émetteur qui s'échangent, mais la base et l'émetteur.",
+      "fix": "Débranchez et retournez le TIP120 : face imprimée vers vous, base à gauche."
+    },
+    "no-ground": {
+      "title": "Pas de masse commune",
+      "symptom": "La LED s'allume, la broche 9 est à HIGH, mais le moteur ne tourne pas.",
+      "explanation": "Le courant de base quitte la broche 9, traverse R1, la base et l'émetteur jusqu'au rail de masse, et doit revenir au GND du Nano pour boucler le circuit. Le moins de la batterie n'est pas la masse du Nano tant qu'aucun fil ne les relie : aucun courant ne passe donc et le TIP120 reste bloqué. La LED a son propre fil vers le GND du Nano : c'est pourquoi elle s'allume encore.",
+      "fix": "Tirez un fil du GND du Nano vers le rail moins de la batterie."
+    },
+    "no-base-resistor": {
+      "title": "Pas de résistance de base",
+      "symptom": "Le moteur démarre d'un coup, puis la broche 9 cesse de fonctionner : la LED s'éteint et le moteur s'arrête. Le Nano chauffe près de la puce.",
+      "explanation": "Avec un simple fil, la broche 9 attaque directement la jonction de base. La jonction tient la base vers 1,3 V : la seule chose qui limite le courant, c'est donc le transistor de sortie de la broche elle-même, qui essaie de fournir bien plus de 100 mA. L'ATmega328P accepte 40 mA par broche en maximum absolu, et son étage de sortie grille.",
+      "fix": "Débranchez et remettez la résistance de base de 1 kΩ. La broche 9 du Nano est abîmée : utilisez une autre broche PWM (3, 5, 6, 10 ou 11) ou un Nano neuf."
+    },
+    "motor-on-pin": {
+      "title": "Moteur directement sur la broche 9",
+      "symptom": "La roue tressaute ou ne fait rien, et au bout d'un moment la broche 9 est morte.",
+      "explanation": "Le moteur a besoin d'environ 160 mA pour tourner et de plus de 1 A pour démarrer. La broche 9 peut donner 20 mA sans peine et 40 mA en maximum absolu. Pendant qu'elle essaie, la tension de la broche s'effondre bien en dessous d'un volt, trop peu pour démarrer le moteur, tandis que l'étage de sortie surchargé surchauffe et lâche.",
+      "fix": "Débranchez, remettez le TIP120 entre le moteur et la masse, et utilisez une autre broche : la broche 9 est abîmée."
+    },
+    "brownout": {
+      "title": "Brown-out : le moteur sur le 5 V du Nano",
+      "symptom": "Chaque fois que le moteur démarre, le Nano redémarre : la LED s'éteint un instant, le message d'accueil série se répète, la roue donne un à-coup et s'arrête.",
+      "explanation": "Alimenté par l'USB, le 5 V du Nano passe par un polyfusible de 500 mA et une diode Schottky. Un moteur qui démarre avale plus de 1 A, le rail 5 V chute sous le seuil de brown-out de 2,7 V de l'ATmega328P, et la puce redémarre. La broche 9 passe à l'état bas, le moteur cesse de tirer du courant, le rail remonte, le sketch redémarre et remet le moteur en marche : et ça tourne en boucle.",
+      "fix": "Alimentez le moteur par sa propre batterie et ne partagez que la masse."
+    },
+    "battery-reversed": {
+      "title": "Polarité inversée sur la batterie",
+      "symptom": "D1 chauffe aussitôt, quoi que fasse la broche 9, et les piles tiédissent. Le moteur ne tourne pas.",
+      "explanation": "Fils inversés, le plus de la batterie est sur le rail de masse. Le courant passe alors en direct à travers la diode émetteur-collecteur intégrée du TIP120, puis en direct à travers D1 : deux chutes de diode directement aux bornes de la batterie, un court-circuit franc limité seulement par la résistance interne des piles.",
+      "fix": "Débranchez la batterie et inversez ses fils : rouge sur le rail plus, noir sur le rail de masse."
+    },
+    "li-ion-cells": {
+      "title": "Mauvaise tension : des cellules Li-ion dans un boîtier AA",
+      "symptom": "La batterie affiche environ 16 V, la roue hurle à trois fois sa vitesse, et au bout d'un moment le moteur sent le chaud et s'arrête.",
+      "explanation": "Une cellule Li-ion 14500 a la taille d'une AA mais donne 3,7 V en nominal et 4,2 V pleine : quatre d'entre elles font donc environ 16,8 V au lieu de 6 V. Le moteur 3-6 V tourne bien trop vite, ses balais font des arcs et ses bobinages surchauffent. Le TIP120 (60 V) et D1 (1000 V) s'en moquent ; le moteur, non.",
+      "fix": "Utilisez quatre piles AA alcalines de 1,5 V (ou NiMH de 1,2 V) : 4,8 à 6,4 V."
+    },
+    "cold-motor": {
+      "title": "Soudure froide sur le moteur",
+      "symptom": "La roue hoquette : elle tourne, s'arrête, repart, alors que la broche 9 reste à HIGH.",
+      "explanation": "L'étain n'a jamais mouillé la cosse du moteur : la soudure ne fait que reposer dessus. Les vibrations établissent et coupent le contact, et chaque coupure est aussi un petit blocage que la diode de roue libre doit rattraper.",
+      "fix": "Refaites la soudure jusqu'à ce que l'étain coule sur la cosse et forme un congé brillant."
+    },
+    "stall": {
+      "title": "Moteur calé",
+      "symptom": "La roue s'arrête, le courant moteur dépasse 1 A, la tension de la batterie baisse et le TIP120 chauffe.",
+      "explanation": "Un moteur qui tourne génère une force contre-électromotrice qui retient son courant. À l'arrêt, seuls les quelques ohms du bobinage le limitent : environ 1,5 A sous 6 V. Le TIP120 fait alors chuter environ 1 V et dissipe plus d'un watt, près de sa limite de 2 W sans dissipateur, et les piles chutent sous la charge.",
+      "fix": "Lâchez la roue. Dans un robot, détectez le calage (par le courant ou une impulsion d'encodeur manquante) et coupez l'alimentation."
+    }
+  },
+  "status": {
+    "program": "Programme",
+    "powered": "Sous tension",
+    "pin9": "Broche 9 (rapport cyclique)",
+    "base": "Courant de base (moyen)",
+    "motor": "Courant moteur (moyen)",
+    "battery-current": "Courant batterie (moyen)",
+    "vce": "Chute du TIP120, collecteur à émetteur",
+    "peak": "Pic du collecteur au blocage",
+    "rpm": "Vitesse de la roue",
+    "battery": "Tension de la batterie",
+    "q1-temp": "Température du TIP120 (°C)",
+    "usb-current": "Courant USB"
+  },
+  "current": {
+    "usb": "USB à travers le polyfusible de 500 mA du Nano",
+    "batt": "4 piles AA alcalines, 6 V (les courbes de la fiche technique vont jusqu'à 1 A)",
+    "nano": "Le Nano lui-même (MCU, pont USB, LED ON)",
+    "base": "Courant de base à travers R1",
+    "led": "LED témoin",
+    "motor-batt": "Moteur, alimenté par les piles",
+    "motor-usb": "Moteur, alimenté par le 5 V du Nano"
+  },
+  "tasks": {
+    "pulse": {
+      "title": "Faites pulser le moteur sans delay()",
+      "brief": "Allumez le moteur 1 s et éteignez-le 1 s, indéfiniment, avec millis() au lieu de delay(), pour que le sketch puisse encore lire des boutons ou des capteurs entre-temps.",
+      "hints": {
+        "1": "Retenez quand vous avez basculé pour la dernière fois : unsigned long last = 0;",
+        "2": "Dans loop(), quand millis() - last >= 1000, ajoutez 1000 à last et inversez la broche.",
+        "3": "digitalWrite(MOTOR, on ? HIGH : LOW) écrit un drapeau bool sur la broche."
+      },
+      "checks": {
+        "1": "La broche 9 bascule avec une période de 2 s",
+        "2": "Le moteur est en marche à 1,5 s",
+        "3": "Le moteur est arrêté à 2,5 s",
+        "4": "Utilise millis(), pas de delay()"
+      },
+      "code": {
+        "c1": "Réécrivez ceci sans delay() : le sketch est sourd pendant qu'il attend",
+        "c2": "bloque tout le sketch pendant une seconde"
+      }
+    },
+    "soft-start": {
+      "title": "Démarrage progressif",
+      "brief": "Démarrer à pleine puissance fait avaler au moteur plus de 1 A pendant un instant. Faites monter la broche 9 de 0 à 255 en 2 s avec analogWrite() et millis(), puis tenez la pleine vitesse.",
+      "hints": {
+        "1": "t = millis() - start vous dit où vous en êtes dans la rampe.",
+        "2": "Le rapport cyclique vaut t * 255 / RAMP_MS tant que t < RAMP_MS : en unsigned long, il ne peut pas déborder ici.",
+        "3": "Après la rampe, analogWrite(MOTOR, 255) tient la broche complètement à l'état haut."
+      },
+      "checks": {
+        "1": "Environ 25 % de rapport cyclique à 0,5 s",
+        "2": "Environ 50 % de rapport cyclique à 1 s",
+        "3": "Environ 75 % de rapport cyclique à 1,5 s",
+        "4": "Complètement en marche à 2,5 s",
+        "5": "Utilise millis() et analogWrite(), pas de delay()"
+      },
+      "code": {
+        "c1": "Faire monter le moteur sur RAMP_MS au lieu de le lancer d'un coup",
+        "c2": "pleine puissance d'un coup : l'appel de courant que vous voulez éviter"
+      }
+    },
+    "speed-knob": {
+      "title": "Molette de vitesse",
+      "brief": "Un potentiomètre de 10 kΩ sur A0 règle la vitesse du moteur. Convertissez sa lecture de 0-1023 en 0-255 pour analogWrite(), et coupez complètement le moteur sous un rapport cyclique de 40, où le moteur TT ne fait que bourdonner et chauffer au lieu de tourner.",
+      "hints": {
+        "1": "map(raw, 0, 1023, 0, 255) met la lecture à l'échelle.",
+        "2": "if (duty < 40) duty = 0; donne la zone morte.",
+        "3": "analogWrite(9, 0) et analogWrite(9, 255) donnent un LOW et un HIGH stables."
+      },
+      "checks": {
+        "1": "Molette à zéro : moteur arrêté",
+        "2": "Molette à mi-course : environ 50 % de rapport cyclique",
+        "3": "Molette à fond : moteur complètement en marche",
+        "4": "Molette presque à zéro : moteur arrêté, sans bourdonnement",
+        "5": "Lit A0 et écrit la broche 9 avec analogWrite()"
+      },
+      "code": {
+        "c1": "Régler la vitesse du moteur avec la molette sur A0",
+        "c2": "de 0 à 1023",
+        "c3": "convertir raw en rapport cyclique, ajouter une zone morte, puis le passer à analogWrite()"
+      },
+      "world": {
+        "pot": "Molette de vitesse"
+      }
+    },
+    "toggle-button": {
+      "title": "Bouton bascule avec anti-rebond",
+      "brief": "Un bouton-poussoir de D2 vers la masse (INPUT_PULLUP) fait basculer le moteur : un appui pour le mettre en marche, un autre pour l'arrêter. Les contacts rebondissent pendant quelques millisecondes, et le sketch de départ compte chaque rebond comme un appui. Ajoutez un anti-rebond avec millis().",
+      "hints": {
+        "1": "Notez l'heure chaque fois que la lecture brute change.",
+        "2": "N'acceptez un nouvel état qu'une fois que la lecture est restée la même pendant 30 ms.",
+        "3": "Ne basculez que sur le passage à LOW : c'est l'appui, pas le relâchement."
+      },
+      "checks": {
+        "1": "Le premier appui met le moteur en marche en moins de 60 ms",
+        "2": "Il reste en marche après les rebonds",
+        "3": "Le deuxième appui l'arrête en moins de 60 ms",
+        "4": "Il reste arrêté",
+        "5": "Utilise millis() et INPUT_PULLUP, pas de delay()"
+      },
+      "code": {
+        "c1": "Chaque appui doit faire basculer le moteur une fois. Les contacts qui rebondissent cassent ça.",
+        "c2": "appuyé = LOW",
+        "c3": "un rebond ressemble exactement à un autre appui"
+      },
+      "world": {
+        "btn": "Bouton sur D2"
+      }
+    }
+  },
+  "quizzes": {
+    "q-smd": {
+      "why-first": {
+        "q": "Pourquoi les composants CMS se posent-ils avant les connecteurs ?",
+        "options": {
+          "1": "Les composants CMS coûtent plus cher",
+          "2": "Le four de refusion ferait fondre le plastique des connecteurs",
+          "3": "Les connecteurs ont besoin de la soudure CMS pour tenir"
+        },
+        "why": "Toute la carte passe dans le four de refusion à environ 240 °C. Les composants traversants à corps en plastique se posent ensuite et se soudent à la main ou à la vague."
+      },
+      "reflow": {
+        "q": "Que fait le four de refusion ?",
+        "options": {
+          "1": "Il sèche le flux avant la soudure",
+          "2": "Il colle les composants pour qu'ils ne bougent plus",
+          "3": "Il fait fondre la pâte à braser sous tous les composants CMS à la fois"
+        },
+        "why": "Le placement automatique pose chaque composant sur sa pâte ; le four fait fondre toute la pâte en un seul passage, et la tension superficielle tire les composants bien d'équerre sur leurs pastilles."
+      }
+    },
+    "q-solder": {
+      "cold": {
+        "q": "Que fait une soudure froide ?",
+        "options": {
+          "1": "Elle fonctionne, puis non : le contact va et vient",
+          "2": "Elle met la broche en court-circuit avec la masse",
+          "3": "Rien, tant qu'elle a l'air assez grosse"
+        },
+        "why": "Une soudure froide n'a jamais mouillé la pastille ni la broche : elle ne fait que reposer dessus. Les vibrations et la chaleur établissent et coupent le contact."
+      },
+      "headers": {
+        "q": "Pourquoi le Nano a-t-il des broches sous sa face inférieure ?",
+        "options": {
+          "1": "Pour tenir le connecteur USB loin du bureau",
+          "2": "Pour refroidir l'ATmega328P",
+          "3": "Pour qu'il s'enfiche directement dans une platine d'essai, à cheval sur la rainure centrale"
+        },
+        "why": "Ses deux rangées de 15 broches sont espacées de 0,6 pouce, comme une puce DIP large : chaque broche tombe donc dans sa propre colonne de la platine d'essai."
+      }
+    },
+    "q-ground": {
+      "shared": {
+        "q": "Le GND de la batterie n'est pas relié au GND du Nano. Que se passe-t-il ?",
+        "options": {
+          "1": "Rien, ce sont des circuits séparés",
+          "2": "Le courant de base n'a pas de chemin de retour : le TIP120 ne devient jamais passant",
+          "3": "Le moteur tourne à l'envers"
+        },
+        "why": "Le courant de base doit sortir de la broche 9 et revenir au GND du Nano. L'émetteur va au moins de la batterie : ce moins doit donc être relié à la masse du Nano."
+      },
+      "low-side": {
+        "q": "Pourquoi parle-t-on d'interrupteur côté bas ?",
+        "options": {
+          "1": "Le transistor se trouve entre le moteur et la masse",
+          "2": "Il ne fonctionne qu'à basse vitesse",
+          "3": "La tension de la batterie est basse"
+        },
+        "why": "Le moteur est relié en permanence au plus de la batterie ; le TIP120 ouvre et ferme son chemin vers la masse. Un transistor NPN fonctionne au mieux à cet endroit, émetteur à la masse."
+      }
+    },
+    "q-pwm": {
+      "freq": {
+        "q": "À quelle fréquence analogWrite() commute-t-il la broche 9 du Nano ?",
+        "options": {
+          "1": "50 Hz, comme un servo",
+          "2": "16 MHz, la fréquence d'horloge",
+          "3": "Environ 490 Hz"
+        },
+        "why": "Les broches 9 et 10 tournent sur le Timer1 à environ 490 Hz ; les broches 5 et 6 sur le Timer0 à environ 980 Hz."
+      },
+      "half": {
+        "q": "Avec 50 % de rapport cyclique, pourquoi la roue tourne-t-elle un peu moins vite que la moitié de sa pleine vitesse ?",
+        "options": {
+          "1": "La PWM n'est pas vraiment à 50 %",
+          "2": "La propre résistance du moteur prend une part fixe de la tension moyenne",
+          "3": "La diode de roue libre freine le moteur"
+        },
+        "why": "La vitesse suit la tension qui reste une fois que la résistance du bobinage a pris sa part. La moitié de la tension, moins la même chute dans la résistance, donne un peu moins de la moitié de la vitesse."
+      },
+      "led": {
+        "q": "Pourquoi la LED paraît-elle à mi-luminosité en PWM ?",
+        "options": {
+          "1": "Elle clignote 490 fois par seconde et votre œil en fait la moyenne",
+          "2": "La PWM divise par deux la tension sur la broche",
+          "3": "La résistance de la LED chauffe davantage"
+        },
+        "why": "La broche est toujours soit complètement à HIGH, soit complètement à LOW. Votre œil ne peut pas suivre 490 Hz et voit la moyenne, comme le fait le moteur."
+      }
+    },
+    "q-flyback": {
+      "protects": {
+        "q": "Que protège D1 ?",
+        "options": {
+          "1": "La batterie contre la surcharge",
+          "2": "Le TIP120 contre le pic de tension quand la bobine est coupée",
+          "3": "La LED contre la tension inverse"
+        },
+        "why": "Quand le TIP120 se bloque, le courant de la bobine doit aller quelque part. D1 le laisse tourner en boucle à travers le moteur au lieu de faire monter le collecteur au-delà de 60 V."
+      },
+      "band": {
+        "q": "Dans quel sens se pose la diode de roue libre ?",
+        "options": {
+          "1": "Anneau vers le plus de la batterie, aux bornes du moteur",
+          "2": "Anneau vers le collecteur",
+          "3": "En série avec le moteur"
+        },
+        "why": "À l'envers, elle court-circuite la batterie chaque fois que le transistor devient passant ; en série, elle bloquerait le moteur. Aux bornes du moteur, anneau vers le plus, elle ne conduit que le coup de la bobine."
+      }
+    },
+    "q-pin": {
+      "why-not": {
+        "q": "Pourquoi ne pas brancher le moteur directement sur la broche 9 ?",
+        "options": {
+          "1": "La broche donne environ 20 mA ; le moteur veut 160 mA en marche et plus de 1 A pour démarrer",
+          "2": "Les broches ne sortent que 3,3 V",
+          "3": "Le moteur a besoin de courant alternatif"
+        },
+        "why": "L'ATmega328P accepte 40 mA par broche en maximum absolu. Le moteur ferait chuter la tension de la broche et grillerait son étage de sortie."
+      },
+      "base-r": {
+        "q": "Que fait la résistance de base de 1 kΩ ?",
+        "options": {
+          "1": "Elle ralentit le moteur",
+          "2": "Elle protège le moteur de la batterie",
+          "3": "Elle limite le courant de base à quelques mA que la broche peut fournir"
+        },
+        "why": "Les jonctions base-émetteur tiennent la base à environ 1,3 V. La résistance prend le reste de la tension de la broche : (4,7 − 1,3) / 1000 ≈ 3,4 mA."
+      }
+    },
+    "q-brownout": {
+      "reset": {
+        "q": "Le Nano redémarre chaque fois que le moteur démarre. Quelle est la cause la plus probable ?",
+        "options": {
+          "1": "Le sketch a un bug dans setup()",
+          "2": "Le moteur est alimenté par le 5 V de la carte et son courant de démarrage fait chuter le rail",
+          "3": "La diode de roue libre est trop grosse"
+        },
+        "why": "Un moteur qui démarre tire plus de 1 A. À travers le polyfusible et la diode de l'USB, le rail 5 V chute sous le seuil de brown-out de 2,7 V et la puce redémarre."
+      },
+      "cure": {
+        "q": "Qu'est-ce qui règle le problème ?",
+        "options": {
+          "1": "Un delay() plus long dans setup()",
+          "2": "Une résistance de base plus grande",
+          "3": "Une alimentation moteur séparée qui ne partage que la masse"
+        },
+        "why": "Le courant du moteur ne passe alors jamais par le rail 5 V du Nano. Un démarrage progressif et un condensateur réservoir aident aussi, mais la vraie solution, c'est l'alimentation séparée."
+      }
+    },
+    "q-end": {
+      "drop": {
+        "q": "La batterie donne 6 V. Combien en arrive à peu près au moteur à travers un TIP120 complètement passant ?",
+        "options": {
+          "1": "6 V : un interrupteur n'a pas de chute de tension",
+          "2": "3 V : la moitié est perdue dans le transistor",
+          "3": "Environ 5,2 V : un Darlington fait chuter environ 0,8 V même saturé"
+        },
+        "why": "Le transistor de sortie d'un Darlington ne peut pas se saturer en dessous de la tension base-émetteur du transistor de commande : il fait donc chuter 0,7 à 1 V à ces courants. Un MOSFET logic-level fait chuter bien moins."
+      },
+      "gain": {
+        "q": "Courant de base de 3,4 mA, courant moteur de 160 mA. Quel gain utilisez-vous ?",
+        "options": {
+          "1": "Environ 47, bien en dessous des 1000 du TIP120 : il est saturé, c'est un interrupteur",
+          "2": "Environ 1000, le gain de la fiche technique",
+          "3": "Environ 160"
+        },
+        "why": "160 / 3,4 ≈ 47. Demander bien moins que ce que le gain pourrait donner rend le transistor franchement passant, ce qui garde sa chute de tension et sa chaleur basses."
+      },
+      "pinout": {
+        "q": "Face imprimée vers vous, pattes vers le bas : quelles sont les pattes du TIP120 de gauche à droite ?",
+        "options": {
+          "1": "Émetteur, base, collecteur",
+          "2": "Base, collecteur, émetteur (la languette est le collecteur)",
+          "3": "Collecteur, émetteur, base"
+        },
+        "why": "B, C, E, avec la languette reliée au collecteur. Retourné, la base et l'émetteur s'échangent et le transistor ne devient jamais passant."
+      },
+      "stall": {
+        "q": "Qu'est-ce qui limite le courant d'un moteur calé ?",
+        "options": {
+          "1": "Le réducteur",
+          "2": "La diode de roue libre",
+          "3": "Seule la résistance du bobinage : il n'y a pas de force contre-électromotrice quand il ne tourne pas"
+        },
+        "why": "Un moteur qui tourne génère une force contre-électromotrice qui s'oppose à l'alimentation. À l'arrêt, seuls quelques ohms de cuivre et la résistance interne de la batterie limitent le courant."
+      },
+      "mosfet": {
+        "q": "Qu'utiliseriez-vous à la place du TIP120 dans une nouvelle conception ?",
+        "options": {
+          "1": "Un MOSFET canal N logic-level, qui fait chuter une fraction de volt",
+          "2": "Un relais pour la PWM",
+          "3": "Une deuxième broche Arduino en parallèle"
+        },
+        "why": "Un MOSFET logic-level (IRLZ44N, IRLB8721) devient complètement passant avec une broche à 5 V, sans presque aucun courant de grille, et fait chuter une fraction de volt : le moteur reçoit donc davantage de la batterie."
+      }
+    }
+  }
+}
