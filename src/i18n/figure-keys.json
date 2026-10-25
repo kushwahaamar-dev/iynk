@@ -1,0 +1,8338 @@
+{
+  "-- bench notes --": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "{id} · {c} °C · {v} V": [
+    "figures/parts/tmp36.js",
+    "parts/tmp36"
+  ],
+  "{id} · {ch} burnt": [
+    "figures/parts/rgb-led.js",
+    "parts/rgb-led"
+  ],
+  "{id} · {hz} Hz": [
+    "figures/parts/piezo-buzzer.js",
+    "parts/piezo-buzzer"
+  ],
+  "{id} · {hz} Hz ({note})": [
+    "figures/parts/piezo-buzzer.js",
+    "parts/piezo-buzzer"
+  ],
+  "{id} · {lux} lx · {r}": [
+    "figures/parts/ldr.js",
+    "parts/ldr"
+  ],
+  "{id} · {n} %": [
+    "figures/parts/soil-moisture.js",
+    "parts/soil-moisture"
+  ],
+  "{id} · {n} mA": [
+    "figures/parts/led.js",
+    "figures/parts/npn-2n2222.js",
+    "figures/parts/tip120.js",
+    "parts/npn-2n2222",
+    "parts/tip120",
+    "robotics/transistor-switch"
+  ],
+  "{id} · {n} N · {r}": [
+    "figures/parts/fsr402.js",
+    "parts/fsr402"
+  ],
+  "{id} · {n} rpm": [
+    "figures/parts/fan.js",
+    "figures/parts/tt-motor.js",
+    "robotics/transistor-switch"
+  ],
+  "{id} · {n}°": [
+    "figures/parts/servo-sg90.js",
+    "figures/parts/stepper-28byj48.js"
+  ],
+  "{id} · {pct} %": [
+    "figures/parts/potentiometer.js",
+    "parts/potentiometer"
+  ],
+  "{id} · {pct} % · {v} V": [
+    "figures/parts/potentiometer.js"
+  ],
+  "{id} · {v} V": [
+    "figures/parts/aa-holder-4.js",
+    "figures/parts/lipo-2s.js",
+    "robotics/transistor-switch"
+  ],
+  "{id} · {v} V · {n} mA": [
+    "figures/parts/dc-motor.js",
+    "figures/parts/diode-1n4007.js",
+    "parts/diode-1n4007"
+  ],
+  "{id} · {v} V: too much": [
+    "figures/parts/dc-motor.js",
+    "figures/parts/fan.js",
+    "figures/parts/tt-motor.js"
+  ],
+  "{id} · 0x3C": [
+    "figures/parts/ssd1306.js",
+    "parts/ssd1306"
+  ],
+  "{id} · always closed: turn it 90°": [
+    "figures/parts/push-button.js"
+  ],
+  "{id} · backwards": [
+    "figures/parts/led.js"
+  ],
+  "{id} · backwards: burning hot": [
+    "figures/parts/tmp36.js",
+    "parts/tmp36"
+  ],
+  "{id} · backwards: dark": [
+    "figures/parts/rgb-led.js",
+    "parts/rgb-led"
+  ],
+  "{id} · backwards: no spin": [
+    "figures/parts/fan.js"
+  ],
+  "{id} · backwards: silent": [
+    "figures/parts/piezo-buzzer.js",
+    "parts/piezo-buzzer"
+  ],
+  "{id} · base on the load side": [
+    "figures/parts/npn-2n2222.js"
+  ],
+  "{id} · base on the motor side": [
+    "figures/parts/tip120.js"
+  ],
+  "{id} · blocking": [
+    "figures/parts/diode-1n4007.js",
+    "parts/diode-1n4007",
+    "robotics/transistor-switch"
+  ],
+  "{id} · burnt": [
+    "figures/parts/diode-1n4007.js",
+    "figures/parts/led.js",
+    "figures/parts/npn-2n2222.js",
+    "figures/parts/tip120.js",
+    "parts/diode-1n4007",
+    "parts/npn-2n2222",
+    "parts/tip120"
+  ],
+  "{id} · burnt out": [
+    "figures/parts/dc-motor.js",
+    "figures/parts/fan.js",
+    "figures/parts/servo-sg90.js",
+    "figures/parts/tt-motor.js"
+  ],
+  "{id} · C and E swapped": [
+    "figures/parts/npn-2n2222.js",
+    "figures/parts/tip120.js"
+  ],
+  "{id} · clamping the motor spike": [
+    "figures/parts/diode-1n4007.js",
+    "parts/diode-1n4007"
+  ],
+  "{id} · contacts burnt": [
+    "figures/parts/push-button.js",
+    "parts/push-button"
+  ],
+  "{id} · destroyed": [
+    "figures/parts/tmp36.js",
+    "parts/tmp36"
+  ],
+  "{id} · hot: {w} W": [
+    "figures/parts/npn-2n2222.js",
+    "figures/parts/tip120.js",
+    "parts/npn-2n2222",
+    "parts/tip120"
+  ],
+  "{id} · hot: 5 V shorted through the track": [
+    "figures/parts/potentiometer.js",
+    "parts/potentiometer"
+  ],
+  "{id} · I2C {addr}": [
+    "figures/parts/mpu6050.js",
+    "parts/mpu6050"
+  ],
+  "{id} · jitters: supply too low": [
+    "figures/parts/servo-sg90.js"
+  ],
+  "{id} · leads swapped": [
+    "figures/parts/aa-holder-4.js",
+    "figures/parts/lipo-2s.js",
+    "robotics/transistor-switch"
+  ],
+  "{id} · no flyback diode": [
+    "figures/parts/dc-motor.js",
+    "figures/parts/fan.js",
+    "figures/parts/tt-motor.js"
+  ],
+  "{id} · no force · open": [
+    "figures/parts/fsr402.js",
+    "parts/fsr402"
+  ],
+  "{id} · no pulses": [
+    "figures/parts/servo-sg90.js"
+  ],
+  "{id} · one click, then silence: use tone()": [
+    "figures/parts/piezo-buzzer.js"
+  ],
+  "{id} · overheated": [
+    "figures/parts/ldr.js",
+    "parts/ldr"
+  ],
+  "{id} · pressed": [
+    "figures/parts/push-button.js",
+    "parts/push-button"
+  ],
+  "{id} · pushing its end stop": [
+    "figures/parts/servo-sg90.js"
+  ],
+  "{id} · R {r} · G {g} · B {b} mA": [
+    "figures/parts/rgb-led.js",
+    "parts/rgb-led"
+  ],
+  "{id} · released": [
+    "figures/parts/push-button.js",
+    "parts/push-button",
+    "robotics/uno-r3-build"
+  ],
+  "{id} · rough buzz: an active buzzer wants a steady HIGH": [
+    "figures/parts/piezo-buzzer.js",
+    "parts/piezo-buzzer"
+  ],
+  "{id} · silent": [
+    "figures/parts/piezo-buzzer.js",
+    "parts/piezo-buzzer"
+  ],
+  "{id} · stalled: {n} mA": [
+    "figures/parts/dc-motor.js",
+    "figures/parts/tt-motor.js"
+  ],
+  "{id} · supply too low": [
+    "figures/parts/tmp36.js",
+    "parts/tmp36"
+  ],
+  "{id} · tabs melted: open circuit": [
+    "figures/parts/fsr402.js",
+    "parts/fsr402"
+  ],
+  "{id} · too fast: it hums and stalls": [
+    "figures/parts/stepper-28byj48.js"
+  ],
+  "{id} · track burnt": [
+    "figures/parts/potentiometer.js",
+    "parts/potentiometer"
+  ],
+  "{id} · wrong coil order: it jitters": [
+    "figures/parts/stepper-28byj48.js"
+  ],
+  "{label} — already set": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "figures/vendor/colorfigures/core.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "{label} isn't possible right now": [
+    "figures/vendor/colorfigures/core.js"
+  ],
+  "{n} mA": [
+    "figures/engine/sheets.js"
+  ],
+  "{n} parts placed": [
+    "robotics/led-resistor"
+  ],
+  "{name} in backwards": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "figures/engine/bench.js",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "{name} is in backwards": [
+    "figures/engine/bench.js"
+  ],
+  "{name} is missing": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/esp32-s3-build",
+    "robotics/led-resistor",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "{name} isn't soldered: the power pins don't touch the copper": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "{name} placed": [
+    "robotics/l298n",
+    "robotics/tb6612fng"
+  ],
+  "{name} placed the wrong way round": [
+    "robotics/l298n"
+  ],
+  "{name} removed": [
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng"
+  ],
+  "{name} removed with hot air": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "{name} running": [
+    "boards/pico",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/tb6612fng"
+  ],
+  "{part} is now {value}": [
+    "parts/aa-holder-4",
+    "parts/dc-motor",
+    "parts/diode-1n4007",
+    "parts/fan",
+    "parts/fsr402",
+    "parts/ldr",
+    "parts/led",
+    "parts/lipo-2s",
+    "parts/mpu6050",
+    "parts/npn-2n2222",
+    "parts/piezo-buzzer",
+    "parts/potentiometer",
+    "parts/push-button",
+    "parts/resistor",
+    "parts/rgb-led",
+    "parts/servo-sg90",
+    "parts/soil-moisture",
+    "parts/stepper-28byj48",
+    "parts/tip120",
+    "parts/tmp36",
+    "parts/tt-motor"
+  ],
+  "{short} goes on after {need}": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing"
+  ],
+  "{short} is off": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing"
+  ],
+  "{v} V connected": [
+    "figures/engine/sheets.js"
+  ],
+  "{v} V is not enough to light a red LED: it needs about 2 V": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "{v} V on {src}": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/uno-r4",
+    "figures/engine/bench.js",
+    "modules/l298n",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/transistor-switch"
+  ],
+  "{v} V on {src}: {name} is damaged": [
+    "boards/pico",
+    "figures/engine/bench.js"
+  ],
+  "{v} V on {src}: D1 gets {ma} mA through {r} Ω": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "{v} V reg.": [
+    "boards/nano",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "figures/engine/sheets.js",
+    "modules/tb6612fng",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "{v} V through {r} Ω pushes {ma} mA: D1 overheats and dies": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "$ armed on the bench, props off; radio switched off": [
+    "figures/drones/cinewhoop.js"
+  ],
+  "$ build it for me: smoke stopper, motor check and calibration done": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing"
+  ],
+  "$ prop clearance: prop r {r} mm in a {d} mm duct: {g} mm": [
+    "figures/drones/cinewhoop.js"
+  ],
+  "0 lx": [
+    "parts/ldr"
+  ],
+  "0 mA · 0 rpm": [
+    "robotics/transistor-switch"
+  ],
+  "0 Ω link on RXD0 (GPIO3)": [
+    "boards/esp32-devkitc"
+  ],
+  "0 Ω link on TXD0 (GPIO1)": [
+    "boards/esp32-devkitc"
+  ],
+  "0 Ω link: CP2102N TXD to RX (GPIO44)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "0 Ω link: Q1 to EN": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "0 Ω link: Q2 to GPIO0": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "0 Ω link: TX (GPIO43) to CP2102N RXD": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "0.1 µF capacitor on VCC": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "0.1 µF capacitor on VM": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "1 kΩ CP2102N reset pull-up": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "1 kΩ resistor": [
+    "robotics/led-resistor"
+  ],
+  "1 kΩ resistor array (L, TX, RX LEDs)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "1 kΩ resistor array (ON LED)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "1 kΩ resistor for LED A": [
+    "modules/uln2003"
+  ],
+  "1 kΩ resistor for LED B": [
+    "modules/uln2003"
+  ],
+  "1 kΩ resistor for LED C": [
+    "modules/uln2003"
+  ],
+  "1 kΩ resistor for LED D": [
+    "modules/uln2003"
+  ],
+  "1 kΩ resistor for the power LED": [
+    "modules/mpu6050"
+  ],
+  "1 lx": [
+    "parts/ldr"
+  ],
+  "1 MΩ": [
+    "modules/soil-moisture"
+  ],
+  "1 MΩ bleed resistor": [
+    "modules/soil-moisture"
+  ],
+  "1 MΩ resistor across the crystal": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "1 MΩ resistor across the resonator": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "1 MΩ shield bleed resistor": [
+    "boards/uno-r4"
+  ],
+  "1 µF capacitor": [
+    "boards/uno-r4"
+  ],
+  "1 µF capacitor (16U2 UCAP)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "1 µF capacitor (3.3 V out)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "1 µF capacitor on 5 V": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "1 µF capacitor on the regulator output": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "1 µF decoupling capacitor (5 V)": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "1 µF EN delay capacitor": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "1 µF VBUS sense capacitor": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "10 kΩ base resistor (DTR)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "10 kΩ base resistor (RTS)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "10 kΩ EN pull-up": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "10 kΩ EN pull-up resistor": [
+    "boards/esp32-devkitc"
+  ],
+  "10 kΩ resistor": [
+    "robotics/led-resistor"
+  ],
+  "10 kΩ resistor array (reset pull-ups)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "10 lx": [
+    "parts/ldr"
+  ],
+  "10 µF": [
+    "modules/mpu6050",
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "10 µF capacitor (CP2102N supply)": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "10 µF capacitor (LDO input)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "10 µF capacitor (LDO output)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "10 µF capacitor on 3.3 V (regulator output)": [
+    "boards/nodemcu"
+  ],
+  "10 µF capacitor on 3.3 V (Wi-Fi bursts)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "10 µF capacitor on 5 V": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "10 µF capacitor on Vin (regulator input)": [
+    "boards/nodemcu"
+  ],
+  "10 µF capacitor: CP2102 supply": [
+    "boards/nodemcu"
+  ],
+  "10 µF capacitor: USB VBUS": [
+    "boards/nodemcu"
+  ],
+  "10 µF tantalum capacitor on 3.3 V": [
+    "modules/mpu6050"
+  ],
+  "10 µF tantalum capacitor on VM": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "10 µH buck inductor": [
+    "boards/uno-r4"
+  ],
+  "10 µH inductor: AVCC filter": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "10-inch two-blade props, 2 CW + 2 CCW": [
+    "drones/gpscam"
+  ],
+  "100 kΩ 0.1 % divider resistor": [
+    "boards/uno-r4"
+  ],
+  "100 kΩ A0 divider, bottom": [
+    "boards/nodemcu"
+  ],
+  "100 lx": [
+    "parts/ldr"
+  ],
+  "100 nF auto-reset capacitor (DTR to RESET)": [
+    "boards/nano",
+    "boards/uno-r3",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "100 nF capacitor": [
+    "boards/esp32-devkitc"
+  ],
+  "100 nF capacitor (16U2 reset)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "100 nF capacitor (3.3 V regulator in)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "100 nF capacitor (AVCC)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "100 nF capacitor (CP2102N supply)": [
+    "boards/esp32-devkitc"
+  ],
+  "100 nF capacitor (LDO input)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "100 nF capacitor (LDO output)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "100 nF capacitor (USB power)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "100 nF capacitor on +12V (VS)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "100 nF capacitor on +5V (VSS)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "100 nF capacitor on 3.3 V": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "100 nF capacitor on AREF": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "100 nF capacitor on GPIO0": [
+    "boards/esp32-devkitc"
+  ],
+  "100 nF capacitor on REGOUT (the chip's own regulator)": [
+    "modules/mpu6050"
+  ],
+  "100 nF capacitor on the FT232 3.3 V output": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "100 nF capacitor on VUSB": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "100 nF capacitor: CP2102 supply": [
+    "boards/nodemcu"
+  ],
+  "100 nF capacitor: reset filter": [
+    "boards/nodemcu"
+  ],
+  "100 nF capacitor: USB VBUS": [
+    "boards/nodemcu"
+  ],
+  "100 nF decoupling capacitor": [
+    "boards/uno-r4"
+  ],
+  "100 nF decoupling capacitor (16U2)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "100 nF decoupling capacitor (328P)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "100 nF decoupling capacitor (module)": [
+    "boards/esp32-devkitc"
+  ],
+  "100 nF decoupling capacitor (VDD)": [
+    "modules/mpu6050"
+  ],
+  "100 nF EN delay capacitor": [
+    "boards/esp32-devkitc"
+  ],
+  "100 µF 16 V electrolytic capacitor": [
+    "robotics/led-resistor"
+  ],
+  "1000 lx": [
+    "parts/ldr"
+  ],
+  "1000 µF 35 V": [
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer"
+  ],
+  "10000 lx": [
+    "parts/ldr"
+  ],
+  "100000 lx": [
+    "parts/ldr"
+  ],
+  "12 kΩ base resistor for VT1 (DTR)": [
+    "boards/nodemcu"
+  ],
+  "12 kΩ base resistor for VT2 (RTS)": [
+    "boards/nodemcu"
+  ],
+  "12 kΩ pull-up on RST": [
+    "boards/nodemcu"
+  ],
+  "12 MHz": [
+    "boards/pico"
+  ],
+  "12 MHz crystal": [
+    "boards/pico"
+  ],
+  "13.7 kΩ 0.1 % divider resistor": [
+    "boards/uno-r4"
+  ],
+  "14 mm nano FPV camera, 25° uptilt": [
+    "drones/whoop"
+  ],
+  "14 mm, 25° up": [
+    "drones/whoop"
+  ],
+  "15-inch carbon props, 2 CW + 2 CCW": [
+    "drones/delivery"
+  ],
+  "155°, 15° up": [
+    "drones/cinewhoop"
+  ],
+  "158 mA · 203 rpm": [
+    "robotics/transistor-switch"
+  ],
+  "16 MHz ceramic resonator": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "16 MHz ceramic resonator for the 328P": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "16 MHz CRYSTAL": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "16 MHz crystal for the 16U2 (HC-49/S, through-hole)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "16U2 spare pins PB4-PB7 (no header fitted)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "19 mm analog FPV camera, 30° uptilt": [
+    "drones/quad5"
+  ],
+  "1N4007 diode": [
+    "parts/diode-1n4007",
+    "robotics/transistor-switch"
+  ],
+  "1N4007 diode D1": [
+    "parts/diode-1n4007",
+    "robotics/transistor-switch"
+  ],
+  "1N4007 diode D2": [
+    "parts/diode-1n4007"
+  ],
+  "1N5819 Schottky diode: UART port VBUS to 5 V": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "1N5819 Schottky diode: USB port VBUS to 5 V": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "1S LiHV pack and BT2.0 plug, in the holder under the frame": [
+    "drones/whoop"
+  ],
+  "1S pigtail, 26 AWG": [
+    "drones/whoop"
+  ],
+  "1W VTX": [
+    "drones/longrange"
+  ],
+  "2 kΩ resistor (CP2102N side)": [
+    "boards/esp32-devkitc"
+  ],
+  "2 x 9 g servo": [
+    "drones/wing"
+  ],
+  "2-axis brushless gimbal and camera": [
+    "drones/gpscam"
+  ],
+  "2-axis, MNT1": [
+    "drones/gpscam"
+  ],
+  "2.1 mm barrel jack, centre positive, 6-24 V": [
+    "boards/uno-r4"
+  ],
+  "2.1 mm barrel jack, centre positive, 7-12 V": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "2.2 nF capacitor on CPOUT (the gyro's charge pump)": [
+    "modules/mpu6050"
+  ],
+  "2.2 µH inductor for the buck-boost": [
+    "boards/pico"
+  ],
+  "2.4 GHz, on the AIO": [
+    "drones/whoop"
+  ],
+  "20-pin header, pins 1-20 (you solder it)": [
+    "boards/pico"
+  ],
+  "20-pin header, pins 21-40 (you solder it)": [
+    "boards/pico"
+  ],
+  "22 pF crystal capacitor": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "22 µF 25 V buck input capacitor": [
+    "boards/uno-r4"
+  ],
+  "22 µF buck output capacitor": [
+    "boards/uno-r4"
+  ],
+  "22 Ω resistor array (USB data lines)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "22.1 kΩ VBUS sense resistor": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "220 kΩ A0 divider, top": [
+    "boards/nodemcu"
+  ],
+  "220 µF 35 V capacitor on +12V": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "220 µF 35 V capacitor on +5V": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "220 Ω resistor": [
+    "robotics/led-resistor"
+  ],
+  "25-200 mW race VTX (SmartAudio)": [
+    "drones/racer"
+  ],
+  "28BYJ-48 motor plug": [
+    "modules/uln2003"
+  ],
+  "28BYJ-48 stepper": [
+    "parts/stepper-28byj48"
+  ],
+  "28BYJ-48 stepper ST1": [
+    "parts/stepper-28byj48"
+  ],
+  "2N2222 transistor": [
+    "parts/npn-2n2222"
+  ],
+  "2N2222 transistor Q1": [
+    "parts/npn-2n2222"
+  ],
+  "2N2222 transistor Q2": [
+    "parts/npn-2n2222"
+  ],
+  "2S LiPo": [
+    "robotics/l298n",
+    "robotics/tb6612fng"
+  ],
+  "2S LiPo (7.4 V) on +12V": [
+    "modules/l298n"
+  ],
+  "2S LiPo battery (7.4 V)": [
+    "parts/lipo-2s"
+  ],
+  "2S LiPo battery (7.4 V) BATT": [
+    "parts/lipo-2s"
+  ],
+  "3-inch cinewhoop": [
+    "drones/cinewhoop"
+  ],
+  "3-inch ducted props, 2 CW + 2 CCW": [
+    "drones/cinewhoop"
+  ],
+  "3-ph ×4": [
+    "drones/delivery"
+  ],
+  "3-phase": [
+    "drones/gpscam",
+    "drones/wing"
+  ],
+  "3-phase ×4": [
+    "drones/longrange"
+  ],
+  "3-phase x4": [
+    "drones/cinewhoop",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop"
+  ],
+  "3.3 V from the board": [
+    "modules/hc-sr04",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306"
+  ],
+  "3.3 V is up: the red power LED lights and Blink RGB starts": [
+    "robotics/esp32-s3-build"
+  ],
+  "3.3 V regulator (662K, XC6206): VCC to 3.3 V, 6 V at most": [
+    "modules/mpu6050"
+  ],
+  "3.3 V regulator (662K)": [
+    "figures/parts/mpu6050.js",
+    "modules/soil-moisture",
+    "modules/ssd1306"
+  ],
+  "3.3V pin": [
+    "boards/uno-r4"
+  ],
+  "3.3V pin (an output)": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "3.7 V · 126 rpm": [
+    "robotics/tb6612fng"
+  ],
+  "30 A, DShot600": [
+    "drones/gpscam"
+  ],
+  "300 lx": [
+    "parts/ldr"
+  ],
+  "31 mm press-fit props, 2 CW + 2 CCW": [
+    "drones/whoop"
+  ],
+  "330 Ω resistor for green": [
+    "modules/traffic-light"
+  ],
+  "330 Ω resistor for red": [
+    "modules/traffic-light"
+  ],
+  "330 Ω resistor for the L LED": [
+    "boards/uno-r4"
+  ],
+  "330 Ω resistor for the ON LED": [
+    "boards/uno-r4"
+  ],
+  "330 Ω resistor for the RX LED": [
+    "boards/uno-r4"
+  ],
+  "330 Ω resistor for the TX LED": [
+    "boards/uno-r4"
+  ],
+  "330 Ω resistor for yellow": [
+    "modules/traffic-light"
+  ],
+  "35 A 4-in-1 ESC, 20 x 20 (AM32)": [
+    "drones/cinewhoop"
+  ],
+  "35 A x4, AM32": [
+    "drones/cinewhoop"
+  ],
+  "3V3 decoupling capacitor (module)": [
+    "boards/esp32-devkitc"
+  ],
+  "3V3 LDO": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "3V3 pin": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nodemcu",
+    "robotics/esp32-s3-build"
+  ],
+  "3V3 REG": [
+    "boards/nodemcu",
+    "modules/mpu6050"
+  ],
+  "4 × 40 A ESCs out on the arms": [
+    "drones/delivery"
+  ],
+  "4 brushless 0702 motors": [
+    "drones/whoop"
+  ],
+  "4 brushless motors": [
+    "drones/cinewhoop"
+  ],
+  "4 brushless motors (2212)": [
+    "drones/gpscam"
+  ],
+  "4 brushless motors (2306)": [
+    "drones/quad5"
+  ],
+  "4 low-KV outrunner motors (4114 class)": [
+    "drones/delivery"
+  ],
+  "4 MHz": [
+    "modules/hc-sr04"
+  ],
+  "4 MHz crystal: the MCU's clock, which times the 40 kHz burst": [
+    "modules/hc-sr04"
+  ],
+  "4 race motors (2207)": [
+    "drones/racer"
+  ],
+  "4 separate 30 A ESCs on the arms": [
+    "drones/gpscam"
+  ],
+  "4 x 1 kΩ array: D0 and D1 to the FT232, ON LED, RESET pull-up": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "4 x 1 kΩ array: L, TX and RX LEDs": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "4 x AA battery holder": [
+    "parts/aa-holder-4",
+    "robotics/transistor-switch"
+  ],
+  "4 x AA battery holder BT1": [
+    "parts/aa-holder-4",
+    "robotics/transistor-switch"
+  ],
+  "4-IN-1 ESC": [
+    "drones/cinewhoop",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer"
+  ],
+  "4-pin header (GND R Y G)": [
+    "modules/traffic-light"
+  ],
+  "4-pin header (GND VCC SCL SDA)": [
+    "modules/ssd1306"
+  ],
+  "4-pin right-angle header: Vcc, Trig, Echo, Gnd": [
+    "modules/hc-sr04"
+  ],
+  "4.7 kΩ AD0 pull-down (address 0x68)": [
+    "modules/mpu6050"
+  ],
+  "4.7 kΩ SCL pull-up to 3.3 V": [
+    "modules/mpu6050"
+  ],
+  "4.7 kΩ SDA pull-up to 3.3 V": [
+    "modules/mpu6050"
+  ],
+  "4.7 nF 1000 V capacitor (USB shield to GND)": [
+    "boards/uno-r4"
+  ],
+  "4.7 µF capacitor": [
+    "boards/uno-r4"
+  ],
+  "4.7 µF capacitor: regulator input": [
+    "modules/mpu6050"
+  ],
+  "4.7 µF tantalum capacitor (5 V)": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "4.7 µF tantalum capacitor (USB)": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "40 A ESC with 5 V BEC": [
+    "drones/wing"
+  ],
+  "40 A, BEC unused": [
+    "drones/wing"
+  ],
+  "40 A, DShot600": [
+    "drones/delivery"
+  ],
+  "40 kHz ultrasonic receiver (R): a piezo disc in a 16 mm can": [
+    "modules/hc-sr04"
+  ],
+  "40 kHz ultrasonic transmitter (T): a piezo disc in a 16 mm can": [
+    "modules/hc-sr04"
+  ],
+  "40A ESC": [
+    "drones/wing"
+  ],
+  "45 A 4-in-1 ESC (AM32)": [
+    "drones/quad5"
+  ],
+  "45 A x4, AM32": [
+    "drones/quad5"
+  ],
+  "47 µF capacitor (3.3 V side of the buck-boost)": [
+    "boards/pico"
+  ],
+  "47 µF capacitor (VSYS side of the buck-boost)": [
+    "boards/pico"
+  ],
+  "47 µF capacitor on 5 V": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "47 µF capacitor on VIN": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "47.5 kΩ VBUS sense resistor": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "470 µF 35 V": [
+    "drones/cinewhoop",
+    "drones/wing"
+  ],
+  "470 Ω from CP2102 TXD to the ESP RX pin": [
+    "boards/nodemcu"
+  ],
+  "470 Ω in series with LED1": [
+    "boards/nodemcu"
+  ],
+  "470 Ω in series with the FLASH button": [
+    "boards/nodemcu"
+  ],
+  "470 Ω in series with the RST button": [
+    "boards/nodemcu"
+  ],
+  "4G, USB to the Pi": [
+    "drones/delivery"
+  ],
+  "4G/LTE USB modem and antennas": [
+    "drones/delivery"
+  ],
+  "5 V BEC": [
+    "drones/cinewhoop"
+  ],
+  "5 V from the board": [
+    "modules/hc-sr04",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306"
+  ],
+  "5 V on: current flows through the meter, the jumper, the resistor and the LED": [
+    "robotics/led-resistor"
+  ],
+  "5 V supply on − +": [
+    "modules/uln2003"
+  ],
+  "5-in-1 AIO: FC, 4 ESCs, ELRS RX, VTX, OSD": [
+    "drones/whoop"
+  ],
+  "5-inch freestyle quad": [
+    "drones/quad5"
+  ],
+  "5-inch racing quad": [
+    "drones/racer"
+  ],
+  "5-inch tri-blade props, 2 CW + 2 CCW": [
+    "drones/quad5"
+  ],
+  "5.1 kΩ CC1 pull-down (tells a USB-C charger to turn 5 V on)": [
+    "robotics/led-resistor"
+  ],
+  "5.1 kΩ CC2 pull-down (the other way round of the plug)": [
+    "robotics/led-resistor"
+  ],
+  "5.1 kΩ RESET pull-up": [
+    "boards/uno-r4"
+  ],
+  "5.1 kΩ resistor for the power LED": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "5.1 kΩ USB-C CC1 pull-down (asks for 5 V)": [
+    "boards/uno-r4"
+  ],
+  "5.1 kΩ USB-C CC2 pull-down (asks for 5 V)": [
+    "boards/uno-r4"
+  ],
+  "5.8 GHz · 1 W": [
+    "drones/longrange"
+  ],
+  "5.8 GHz 1 W VTX + stubby": [
+    "drones/longrange"
+  ],
+  "5.8 GHz analog VTX and antenna": [
+    "drones/quad5"
+  ],
+  "5.8 GHz VTX + antenna": [
+    "drones/wing"
+  ],
+  "5.8 GHz VTX antenna (the VTX is on the AIO)": [
+    "drones/whoop"
+  ],
+  "5.8 GHz, 25-400 mW": [
+    "drones/whoop"
+  ],
+  "5.8 GHz, SmartAudio": [
+    "drones/quad5",
+    "drones/wing"
+  ],
+  "5.8 V · 211 rpm": [
+    "robotics/l298n"
+  ],
+  "50 A ×4 · AM32": [
+    "drones/longrange"
+  ],
+  "50 A 4-in-1 ESC (AM32)": [
+    "drones/longrange"
+  ],
+  "500 mA resettable polyfuse": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "500 mA resettable polyfuse (USB)": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "55 A 4-in-1 ESC (AM32), 20 x 20 mm": [
+    "drones/racer"
+  ],
+  "55 A x4, AM32": [
+    "drones/racer"
+  ],
+  "5V IN": [
+    "robotics/led-resistor"
+  ],
+  "5V pin": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/esp32-s3-build",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "5V REG": [
+    "boards/uno-r3",
+    "modules/l298n",
+    "robotics/l298n",
+    "robotics/uno-r3-build"
+  ],
+  "5V REGULATOR": [
+    "robotics/l298n"
+  ],
+  "5V-EN": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "5V-EN CAP": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "5V-EN header (+12V to the regulator input)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "5V-EN jumper cap (regulator on)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "65 mm one-piece ducted frame (PP)": [
+    "drones/whoop"
+  ],
+  "6S LiPo and straps": [
+    "drones/delivery"
+  ],
+  "6S1P 21700 Li-ion pack": [
+    "drones/longrange"
+  ],
+  "7-inch bi-blade props": [
+    "drones/longrange"
+  ],
+  "7-inch carbon True-X frame": [
+    "drones/longrange"
+  ],
+  "7-inch long-range quad": [
+    "drones/longrange"
+  ],
+  "7.4 V · 148 mA": [
+    "robotics/tb6612fng"
+  ],
+  "7.4 V · 378 mA": [
+    "robotics/l298n"
+  ],
+  "78M05 5 V regulator (logic supply)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "8-pin header: VCC GND SCL SDA XDA XCL AD0 INT": [
+    "modules/mpu6050"
+  ],
+  "915 MHz SiK telemetry radio": [
+    "drones/gpscam"
+  ],
+  "Accelerometer and gyroscope (MPU-6050)": [
+    "parts/mpu6050"
+  ],
+  "Accelerometer and gyroscope (MPU-6050) P1": [
+    "parts/mpu6050"
+  ],
+  "ACTION CAM": [
+    "drones/cinewhoop"
+  ],
+  "active": [
+    "parts/piezo-buzzer"
+  ],
+  "AD · Analog header A0-A5": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "AD0": [
+    "modules/mpu6050"
+  ],
+  "AD0 pin": [
+    "parts/mpu6050"
+  ],
+  "Add next part": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing"
+  ],
+  "ADDR · Address resistor (0x78 = 0x3C)": [
+    "modules/ssd1306"
+  ],
+  "Address resistor (0x78 = 0x3C)": [
+    "modules/ssd1306"
+  ],
+  "AI1": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "AI2": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "AIO 5-IN-1": [
+    "drones/whoop"
+  ],
+  "AIO BOARD": [
+    "drones/whoop"
+  ],
+  "AIO BOARD: arrow backward": [
+    "drones/whoop"
+  ],
+  "AIO BOARD: arrow forward": [
+    "drones/whoop"
+  ],
+  "AIR UNIT": [
+    "drones/cinewhoop"
+  ],
+  "All joints soldered": [
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng"
+  ],
+  "All last parts": [
+    "modules/l298n",
+    "modules/uln2003",
+    "robotics/l298n",
+    "robotics/led-resistor"
+  ],
+  "All low parts": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "All tall parts": [
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/uno-r3-build"
+  ],
+  "AM32 50A": [
+    "drones/longrange"
+  ],
+  "AMS1117-3.3 regulator": [
+    "boards/esp32-devkitc",
+    "boards/nodemcu"
+  ],
+  "An LED on D1 and the blue LED on D4": [
+    "boards/nodemcu"
+  ],
+  "analog · 20° up": [
+    "drones/longrange"
+  ],
+  "Analog FPV camera, 20° uptilt": [
+    "drones/longrange"
+  ],
+  "Analog header A0-A5": [
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/uno-r3-build"
+  ],
+  "ANALOG IN": [
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/uno-r3-build"
+  ],
+  "analog, 30° up": [
+    "drones/quad5"
+  ],
+  "analog, 8° up": [
+    "drones/wing"
+  ],
+  "analogWrite on pin 13 (no PWM there)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "Angle": [
+    "parts/servo-sg90"
+  ],
+  "anode": [
+    "parts/rgb-led"
+  ],
+  "AOUT": [
+    "modules/soil-moisture"
+  ],
+  "AOUT VCC GND": [
+    "modules/soil-moisture"
+  ],
+  "ArduCopter 4.7.2": [
+    "drones/gpscam"
+  ],
+  "ArduCopter, 2 IMUs": [
+    "drones/delivery"
+  ],
+  "ARDUINO": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "Arduino Nano": [
+    "boards/nano",
+    "robotics/l298n",
+    "robotics/tb6612fng"
+  ],
+  "Arduino Uno R3": [
+    "boards/uno-r3"
+  ],
+  "Arduino UNO R4 Minima": [
+    "boards/uno-r4"
+  ],
+  "ARDUINO.CC": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "AREF": [
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/uno-r3-build"
+  ],
+  "Arming blocked: {flags}": [
+    "figures/drones/cinewhoop.js"
+  ],
+  "arming disable flags: {flags}": [
+    "figures/drones/cinewhoop.js"
+  ],
+  "Arming refused: {flags}": [
+    "figures/drones/cinewhoop.js"
+  ],
+  "arrow backward": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop"
+  ],
+  "arrow backwards": [
+    "drones/wing"
+  ],
+  "arrow forward": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop"
+  ],
+  "arrow to the nose": [
+    "drones/wing"
+  ],
+  "AT32": [
+    "drones/cinewhoop",
+    "drones/quad5"
+  ],
+  "ATmega16U2 USB-to-serial bridge": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "ATmega328P microcontroller": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "ATmega328P microcontroller (VQFN-32)": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "Auto-program base resistor (DTR)": [
+    "boards/esp32-devkitc"
+  ],
+  "Auto-program base resistor (RTS)": [
+    "boards/esp32-devkitc"
+  ],
+  "Auto-program transistor (EN)": [
+    "boards/esp32-devkitc"
+  ],
+  "Auto-program transistor (GPIO0)": [
+    "boards/esp32-devkitc"
+  ],
+  "Autonomous delivery quad": [
+    "drones/delivery"
+  ],
+  "AUX 1-2 PWM": [
+    "drones/gpscam"
+  ],
+  "AUX 1-4 · DShot600": [
+    "drones/delivery"
+  ],
+  "AUX5 · PWM + 6 V": [
+    "drones/delivery"
+  ],
+  "backwards": [
+    "parts/piezo-buzzer",
+    "parts/rgb-led",
+    "parts/tmp36"
+  ],
+  "Barrel jack": [
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/uno-r3-build"
+  ],
+  "Base": [
+    "robotics/transistor-switch"
+  ],
+  "BAT760 Schottky diode": [
+    "boards/esp32-devkitc"
+  ],
+  "BATT": [
+    "parts/lipo-2s"
+  ],
+  "Battery": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "figures/engine/drone.js",
+    "robotics/l298n",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch"
+  ],
+  "BATTERY": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing"
+  ],
+  "Battery (sets the balance)": [
+    "drones/wing"
+  ],
+  "Battery and common ground: the whole switch": [
+    "robotics/transistor-switch"
+  ],
+  "Battery leads swapped": [
+    "robotics/transistor-switch"
+  ],
+  "Battery on VSYS": [
+    "boards/pico"
+  ],
+  "Bench": [
+    "figures/engine/bench.js",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch"
+  ],
+  "Bench power: 5 V logic on VCC, 2S LiPo on VM": [
+    "modules/tb6612fng"
+  ],
+  "Bench supply on J2": [
+    "robotics/led-resistor"
+  ],
+  "BI1": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "BI2": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "black": [
+    "parts/push-button"
+  ],
+  "Blank flash (factory): the RPI-RP2 drive": [
+    "boards/pico"
+  ],
+  "BLEED · 1 MΩ bleed resistor": [
+    "modules/soil-moisture"
+  ],
+  "Blink": [
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/uno-r3-build"
+  ],
+  "Blink an LED": [
+    "boards/nano",
+    "boards/uno-r3"
+  ],
+  "Blink an LED on GP15": [
+    "boards/pico"
+  ],
+  "Blink an LED on GPIO23": [
+    "boards/esp32-devkitc"
+  ],
+  "Blink an LED on GPIO4": [
+    "boards/esp32-s3-devkitc-1"
+  ],
+  "Blink an LED through 1 kΩ": [
+    "boards/uno-r4"
+  ],
+  "Blink GPIO23": [
+    "boards/esp32-devkitc"
+  ],
+  "Blink RGB": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "Blink without delay()": [
+    "boards/nano",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/uno-r3-build"
+  ],
+  "blocking": [
+    "parts/diode-1n4007"
+  ],
+  "blue": [
+    "parts/led",
+    "parts/push-button"
+  ],
+  "Blue duty": [
+    "parts/rgb-led"
+  ],
+  "Blue LED on the board (D0)": [
+    "boards/nodemcu"
+  ],
+  "Blue LED on the module (D4)": [
+    "boards/nodemcu"
+  ],
+  "Board": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Boot": [
+    "boards/esp32-devkitc"
+  ],
+  "BOOT": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "BOOT button (GPIO0 to GND)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "BOOT button as an input": [
+    "boards/esp32-s3-devkitc-1"
+  ],
+  "Boot button on GPIO0": [
+    "boards/esp32-devkitc"
+  ],
+  "BOOTSEL": [
+    "boards/pico"
+  ],
+  "BOOTSEL button": [
+    "boards/pico"
+  ],
+  "Both bridges on: IN1 high, IN2 low, both motors forward": [
+    "modules/l298n"
+  ],
+  "Both forward": [
+    "robotics/l298n",
+    "robotics/tb6612fng"
+  ],
+  "Both LEDs": [
+    "boards/nodemcu"
+  ],
+  "Brake": [
+    "modules/tb6612fng",
+    "robotics/l298n",
+    "robotics/tb6612fng"
+  ],
+  "Brake (IN1 = IN2)": [
+    "modules/l298n"
+  ],
+  "Brass disc": [
+    "figures/parts/piezo-buzzer.js"
+  ],
+  "Breadboard": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "figures/parts/breadboard.js",
+    "parts/aa-holder-4",
+    "parts/breadboard",
+    "parts/dc-motor",
+    "parts/diode-1n4007",
+    "parts/fan",
+    "parts/fsr402",
+    "parts/hc-sr04",
+    "parts/ldr",
+    "parts/led",
+    "parts/lipo-2s",
+    "parts/mpu6050",
+    "parts/npn-2n2222",
+    "parts/piezo-buzzer",
+    "parts/potentiometer",
+    "parts/push-button",
+    "parts/resistor",
+    "parts/rgb-led",
+    "parts/servo-sg90",
+    "parts/soil-moisture",
+    "parts/ssd1306",
+    "parts/stepper-28byj48",
+    "parts/tip120",
+    "parts/tmp36",
+    "parts/traffic-light",
+    "parts/tt-motor",
+    "parts/wire",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Break it": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "parts/fsr402",
+    "parts/ldr",
+    "parts/piezo-buzzer",
+    "parts/potentiometer",
+    "parts/push-button",
+    "parts/rgb-led",
+    "parts/tmp36",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "bright, safe": [
+    "robotics/led-resistor"
+  ],
+  "Brown-out loop": [
+    "robotics/transistor-switch"
+  ],
+  "Brown-out: {rail} is at {v} V, the chip keeps resetting": [
+    "figures/engine/bench.js"
+  ],
+  "Brown-out: the circuit draws {n} mA, more than {src} gives ({max} mA), so the chip keeps resetting": [
+    "figures/engine/bench.js"
+  ],
+  "Brown-out: the supply hits its {ma} mA limit and sags to {v} V": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "BT1": [
+    "parts/aa-holder-4"
+  ],
+  "BT1 · 6.3 V": [
+    "robotics/transistor-switch"
+  ],
+  "BT1 · 6.4 V": [
+    "robotics/transistor-switch"
+  ],
+  "BT2.0": [
+    "drones/whoop"
+  ],
+  "BT2.0 battery pigtail, soldered to the AIO pads": [
+    "drones/whoop"
+  ],
+  "BT2.0 LEAD": [
+    "drones/whoop"
+  ],
+  "BT2.0 LEAD: red lead to - (reversed)": [
+    "drones/whoop"
+  ],
+  "BT2.0 LEAD: red lead to +": [
+    "drones/whoop"
+  ],
+  "BUCK": [
+    "boards/uno-r4"
+  ],
+  "BUCK-BOOST": [
+    "boards/pico"
+  ],
+  "Build an Arduino Uno R3": [
+    "robotics/uno-r3-build"
+  ],
+  "Build an ESP32-S3-DevKitC-1": [
+    "robotics/esp32-s3-build"
+  ],
+  "Build it for me": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing"
+  ],
+  "burnt": [
+    "parts/dc-motor",
+    "parts/diode-1n4007",
+    "parts/fan",
+    "parts/npn-2n2222",
+    "parts/servo-sg90",
+    "parts/tip120",
+    "parts/tt-motor"
+  ],
+  "BY": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "C_IN · Regulator input capacitor": [
+    "modules/ssd1306"
+  ],
+  "C_OSC · Timer capacitor": [
+    "modules/soil-moisture"
+  ],
+  "C_REG · Regulator output capacitor": [
+    "modules/soil-moisture"
+  ],
+  "C1 · 0.1 µF capacitor on VM": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "C1 · 10 µF capacitor on 3.3 V (Wi-Fi bursts)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "C1 · 100 nF capacitor (3.3 V regulator in)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "C1 · 100 nF capacitor on AREF": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "C1 · 100 nF capacitor: reset filter": [
+    "boards/nodemcu"
+  ],
+  "C1 · 100 µF 16 V electrolytic capacitor": [
+    "robotics/led-resistor"
+  ],
+  "C1 · 100 µF 16 V electrolytic capacitor · stripe (−) toward GND, as printed": [
+    "robotics/led-resistor"
+  ],
+  "C1 · 100 µF 16 V electrolytic capacitor · stripe toward + (backwards)": [
+    "robotics/led-resistor"
+  ],
+  "C1 · 220 µF 35 V capacitor on +12V": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "C1 · 220 µF 35 V capacitor on +12V · stripe (minus) to the front, as printed": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "C1 · 220 µF 35 V capacitor on +12V · stripe to the back (backwards)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "C1 · 47 µF capacitor (VSYS side of the buck-boost)": [
+    "boards/pico"
+  ],
+  "C1 · Regulator input capacitor (22 µF)": [
+    "boards/esp32-devkitc"
+  ],
+  "C1 is in backwards: the electrolytic is reverse-biased and vents": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "C10 · 10 µF capacitor (LDO output)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "C10 · 10 µF tantalum capacitor on 3.3 V": [
+    "modules/mpu6050"
+  ],
+  "C10 · 100 nF capacitor (AVCC)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "C10 · 100 nF decoupling capacitor": [
+    "boards/uno-r4"
+  ],
+  "C102 · 100 nF decoupling capacitor (VDD)": [
+    "modules/mpu6050"
+  ],
+  "C11 · 10 µF capacitor (CP2102N supply)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "C11 · 22 pF crystal capacitor": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "C11 · 4.7 µF capacitor": [
+    "boards/uno-r4"
+  ],
+  "C12 · 1 µF VBUS sense capacitor": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "C12 · 100 nF decoupling capacitor (VDD)": [
+    "modules/mpu6050"
+  ],
+  "C13 · 100 nF capacitor on REGOUT (the chip's own regulator)": [
+    "modules/mpu6050"
+  ],
+  "C13 · 22 µF 25 V buck input capacitor": [
+    "boards/uno-r4"
+  ],
+  "C14 · 100 nF capacitor": [
+    "boards/esp32-devkitc"
+  ],
+  "C14 · 2.2 nF capacitor on CPOUT (the gyro's charge pump)": [
+    "modules/mpu6050"
+  ],
+  "C15 · 100 nF capacitor on GPIO0": [
+    "boards/esp32-devkitc"
+  ],
+  "C15 · 22 µF buck output capacitor": [
+    "boards/uno-r4"
+  ],
+  "C16 · 22 µF buck output capacitor": [
+    "boards/uno-r4"
+  ],
+  "C17 · 22 µF buck output capacitor": [
+    "boards/uno-r4"
+  ],
+  "C18 · 22 µF buck output capacitor": [
+    "boards/uno-r4"
+  ],
+  "C19 · 100 nF capacitor (CP2102N supply)": [
+    "boards/esp32-devkitc"
+  ],
+  "C19 · 22 µF 25 V buck input capacitor": [
+    "boards/uno-r4"
+  ],
+  "C2 · 0.1 µF capacitor on VCC": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "C2 · 100 nF capacitor (USB power)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "C2 · 100 nF capacitor on 3.3 V": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "C2 · 220 µF 35 V capacitor on +5V": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "C2 · 220 µF 35 V capacitor on +5V · stripe (minus) to the front, as printed": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "C2 · 220 µF 35 V capacitor on +5V · stripe to the back (backwards)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "C2 · 4.7 µF tantalum capacitor (USB)": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "C2 · 47 µF capacitor (3.3 V side of the buck-boost)": [
+    "boards/pico"
+  ],
+  "C2 · Capacitor: regulator output": [
+    "modules/mpu6050"
+  ],
+  "C2 · Tantalum capacitor C2 (100 µF)": [
+    "boards/nodemcu"
+  ],
+  "C20 · 10 µF capacitor (CP2102N supply)": [
+    "boards/esp32-devkitc"
+  ],
+  "C21 · 3V3 decoupling capacitor (module)": [
+    "boards/esp32-devkitc"
+  ],
+  "C21 · 4.7 nF 1000 V capacitor (USB shield to GND)": [
+    "boards/uno-r4"
+  ],
+  "C22 · 100 nF decoupling capacitor (module)": [
+    "boards/esp32-devkitc"
+  ],
+  "C3 · 1 µF capacitor (3.3 V out)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "C3 · 1 µF decoupling capacitor (5 V)": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "C3 · 10 µF capacitor on 5 V": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "C3 · 10 µF capacitor: CP2102 supply": [
+    "boards/nodemcu"
+  ],
+  "C3 · 10 µF tantalum capacitor on VM": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "C3 · 100 nF capacitor on +12V (VS)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "C3 · 4.7 µF capacitor: regulator input": [
+    "modules/mpu6050"
+  ],
+  "C3 · Regulator output capacitor (22 µF)": [
+    "boards/esp32-devkitc"
+  ],
+  "C4 · 100 nF auto-reset capacitor (DTR to RESET)": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "C4 · 100 nF capacitor (16U2 reset)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "C4 · 100 nF capacitor on +5V (VSS)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "C4 · 100 nF capacitor: CP2102 supply": [
+    "boards/nodemcu"
+  ],
+  "C4 · 4.7 µF capacitor": [
+    "boards/uno-r4"
+  ],
+  "C5 · 10 µF capacitor: USB VBUS": [
+    "boards/nodemcu"
+  ],
+  "C5 · 100 nF auto-reset capacitor (DTR to RESET)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "C5 · 100 nF decoupling capacitor": [
+    "boards/uno-r4"
+  ],
+  "C5 · 4.7 µF tantalum capacitor (5 V)": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "C6 · 1 µF EN delay capacitor": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "C6 · 100 nF capacitor on the FT232 3.3 V output": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "C6 · 100 nF capacitor: USB VBUS": [
+    "boards/nodemcu"
+  ],
+  "C6 · 100 nF decoupling capacitor": [
+    "boards/uno-r4"
+  ],
+  "C6 · 100 nF decoupling capacitor (328P)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "C7 · 1 µF capacitor on the regulator output": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "C7 · 10 µF capacitor (LDO input)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "C7 · 10 µF capacitor on Vin (regulator input)": [
+    "boards/nodemcu"
+  ],
+  "C7 · 100 nF decoupling capacitor (16U2)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "C7 · 4.7 µF capacitor": [
+    "boards/uno-r4"
+  ],
+  "C8 · 1 µF capacitor (16U2 UCAP)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "C8 · 1 µF capacitor on 5 V": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "C8 · 10 µF capacitor on 3.3 V (regulator output)": [
+    "boards/nodemcu"
+  ],
+  "C8 · 100 nF capacitor (LDO input)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "C8 · 100 nF decoupling capacitor": [
+    "boards/uno-r4"
+  ],
+  "C9 · 1 µF capacitor": [
+    "boards/uno-r4"
+  ],
+  "C9 · 100 nF capacitor (LDO output)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "C9 · 100 nF capacitor on VUSB": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "C9 · 100 nF EN delay capacitor": [
+    "boards/esp32-devkitc"
+  ],
+  "C9 · 22 pF crystal capacitor": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "CABLE · 28BYJ-48 motor plug": [
+    "modules/uln2003"
+  ],
+  "CABLE · Sensor cable plug": [
+    "modules/soil-moisture"
+  ],
+  "Calibrate accelerometer": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop"
+  ],
+  "Calibrate accelerometer (wing level)": [
+    "drones/wing"
+  ],
+  "Calibrate compass": [
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/wing"
+  ],
+  "CAM pad": [
+    "drones/racer",
+    "drones/wing"
+  ],
+  "CAMERA": [
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing"
+  ],
+  "CANOPY": [
+    "drones/whoop"
+  ],
+  "Canopy that holds the camera": [
+    "drones/whoop"
+  ],
+  "CAP · Jumper cap (power on)": [
+    "modules/uln2003"
+  ],
+  "cap stripe to minus": [
+    "drones/gpscam"
+  ],
+  "cap stripe to plus": [
+    "drones/gpscam"
+  ],
+  "Capacitive soil moisture sensor v1.2": [
+    "modules/soil-moisture"
+  ],
+  "Capacitive Soil Moisture Sensor v1.2": [
+    "modules/soil-moisture"
+  ],
+  "Capacitor: regulator output": [
+    "modules/mpu6050"
+  ],
+  "Carbon bottom plate, arms and duct spokes": [
+    "drones/cinewhoop"
+  ],
+  "Carbon frame: bottom plate and arms": [
+    "drones/quad5"
+  ],
+  "Carbon frame: hub, four folding 25 mm tube arms, landing skids": [
+    "drones/delivery"
+  ],
+  "Carbon track": [
+    "figures/parts/potentiometer.js"
+  ],
+  "Castellated pins 1-20 (GP0-GP15)": [
+    "boards/pico"
+  ],
+  "Castellated pins 21-40 (GP16-GP28, power)": [
+    "boards/pico"
+  ],
+  "cathode": [
+    "parts/rgb-led"
+  ],
+  "CBE": [
+    "parts/npn-2n2222"
+  ],
+  "CdS track": [
+    "figures/parts/ldr.js"
+  ],
+  "Centre: pins 3–4": [
+    "figures/parts/push-button.js"
+  ],
+  "Ceramic base": [
+    "figures/parts/ldr.js"
+  ],
+  "CG check": [
+    "drones/wing"
+  ],
+  "Charge-pump capacitor 1": [
+    "modules/ssd1306"
+  ],
+  "Charge-pump capacitor 2": [
+    "modules/ssd1306"
+  ],
+  "Check airspeed": [
+    "drones/wing"
+  ],
+  "Check elevons": [
+    "drones/wing"
+  ],
+  "Check motor direction": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing"
+  ],
+  "Checks": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "figures/engine/drone.js"
+  ],
+  "clamping a motor spike": [
+    "parts/diode-1n4007"
+  ],
+  "click a block": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "figures/engine/drone-sheet.js"
+  ],
+  "CLK": [
+    "boards/esp32-devkitc",
+    "boards/nodemcu"
+  ],
+  "Close the exploded view first": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "CMD": [
+    "boards/esp32-devkitc",
+    "boards/nodemcu"
+  ],
+  "Coast": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "coax": [
+    "drones/cinewhoop"
+  ],
+  "Cold joint on {name}": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "figures/engine/bench.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Cold joint: the LED and the meter cut out and come back": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "Colour": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "figures/vendor/colorfigures/core.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "parts/aa-holder-4",
+    "parts/breadboard",
+    "parts/dc-motor",
+    "parts/diode-1n4007",
+    "parts/fan",
+    "parts/fsr402",
+    "parts/hc-sr04",
+    "parts/ldr",
+    "parts/led",
+    "parts/lipo-2s",
+    "parts/mpu6050",
+    "parts/npn-2n2222",
+    "parts/piezo-buzzer",
+    "parts/potentiometer",
+    "parts/push-button",
+    "parts/resistor",
+    "parts/rgb-led",
+    "parts/servo-sg90",
+    "parts/soil-moisture",
+    "parts/ssd1306",
+    "parts/stepper-28byj48",
+    "parts/tip120",
+    "parts/tmp36",
+    "parts/traffic-light",
+    "parts/tt-motor",
+    "parts/wire",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "COM": [
+    "robotics/led-resistor"
+  ],
+  "Comb electrode": [
+    "figures/parts/ldr.js"
+  ],
+  "Common lead": [
+    "parts/rgb-led"
+  ],
+  "COMPANION": [
+    "drones/delivery"
+  ],
+  "companion, MAVSDK": [
+    "drones/delivery"
+  ],
+  "conducting 200 mA": [
+    "parts/diode-1n4007"
+  ],
+  "contacts burnt": [
+    "parts/push-button"
+  ],
+  "CONTROL": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "Control header (PWMA, AIN2, AIN1, STBY, BIN1, BIN2, PWMB, GND)": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "Control header IN1-IN4": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "CONTROL PINS": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "Cooling fan": [
+    "parts/fan"
+  ],
+  "Cooling fan FAN1": [
+    "parts/fan"
+  ],
+  "COUT · Output hold capacitor": [
+    "modules/soil-moisture"
+  ],
+  "CP1 · Charge-pump capacitor 1": [
+    "modules/ssd1306"
+  ],
+  "CP2 · Charge-pump capacitor 2": [
+    "modules/ssd1306"
+  ],
+  "CP2102": [
+    "boards/nodemcu"
+  ],
+  "CP2102 USB-to-UART bridge": [
+    "boards/nodemcu"
+  ],
+  "CP2102N USB-to-UART bridge": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "Current": [
+    "robotics/led-resistor"
+  ],
+  "Cushion at 40 cm (soft)": [
+    "modules/hc-sr04"
+  ],
+  "CV · VCOMH capacitor": [
+    "modules/ssd1306"
+  ],
+  "D1 · 1N5819 Schottky diode: UART port VBUS to 5 V": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "D1 · Flyback diode D1 (OUT1 to +12V)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "D1 · M7 diode: reverse-polarity protection": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "D1 · MBR120 Schottky diode (VBUS to VSYS)": [
+    "boards/pico"
+  ],
+  "D1 · Power LED (red)": [
+    "modules/mpu6050"
+  ],
+  "D1 · Red 5 mm LED": [
+    "robotics/led-resistor"
+  ],
+  "D1 · Red 5 mm LED · long leg in the + hole": [
+    "robotics/led-resistor"
+  ],
+  "D1 · Red 5 mm LED · long leg in the − hole (backwards)": [
+    "robotics/led-resistor"
+  ],
+  "D1 · Red power LED": [
+    "boards/esp32-devkitc"
+  ],
+  "D1 · SS14 Schottky diode D1": [
+    "boards/nodemcu"
+  ],
+  "D1 · SS1P3L Schottky diode: USB to 5 V": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "D1 is in backwards: an LED only conducts one way, so it stays dark. Unplug and flip it": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "D10 · ESD protection diode on D+ (GPIO20)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "D2 · ESD protection diode on VBUS": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "D2 · Flyback diode D2 (GND to OUT1)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "D2 · PMEG6020 Schottky: VIN reverse-polarity guard": [
+    "boards/uno-r4"
+  ],
+  "D2 · Reset clamp diode (328P)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "D2 · User LED (GP25)": [
+    "boards/pico"
+  ],
+  "D3 · BAT760 Schottky diode": [
+    "boards/esp32-devkitc"
+  ],
+  "D3 · ESD protection diode on D-": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "D3 · Flyback diode D3 (OUT2 to +12V)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "D3 · PMEG6020 Schottky: USB VBUS to 5 V": [
+    "boards/uno-r4"
+  ],
+  "D3 · Reset clamp diode (16U2)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "D4 · ESD protection diode on D+": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "D4 · Flyback diode D4 (GND to OUT2)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "D4 · LESD5D5.0 ESD diode on a USB data line": [
+    "boards/esp32-devkitc"
+  ],
+  "D4 · PRTR5V0U2X USB ESD protection": [
+    "boards/uno-r4"
+  ],
+  "D435i class, USB 3": [
+    "drones/delivery"
+  ],
+  "D5 · Flyback diode D5 (OUT3 to +12V)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "D5 · LESD5D5.0 ESD diode on USB VBUS": [
+    "boards/esp32-devkitc"
+  ],
+  "D5 · Red power LED (3.3 V)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "D6 · Flyback diode D6 (GND to OUT3)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "D6 · LESD5D5.0 ESD diode on a USB data line": [
+    "boards/esp32-devkitc"
+  ],
+  "D6 · SK68XXMINI-HS addressable RGB LED": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "D7 · 1N5819 Schottky diode: USB port VBUS to 5 V": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "D7 · Flyback diode D7 (OUT4 to +12V)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "D8 · ESD protection diode on VBUS": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "D8 · Flyback diode D8 (GND to OUT4)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "D9 · ESD protection diode on D- (GPIO19)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "data / signal": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing"
+  ],
+  "DC motor": [
+    "parts/dc-motor"
+  ],
+  "DC motor MOT1": [
+    "parts/dc-motor"
+  ],
+  "DEBUG": [
+    "boards/pico"
+  ],
+  "Deep sleep": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "DEPTH": [
+    "drones/delivery"
+  ],
+  "DEPTH CAM": [
+    "drones/delivery"
+  ],
+  "DEPTH CAMERA": [
+    "drones/delivery"
+  ],
+  "destroyed": [
+    "parts/tmp36"
+  ],
+  "DET · Peak-detector diode": [
+    "modules/soil-moisture"
+  ],
+  "DEVKIT": [
+    "boards/nodemcu"
+  ],
+  "DIGITAL (PWM~)": [
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/uno-r3-build"
+  ],
+  "Digital header D0-D7": [
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/uno-r3-build"
+  ],
+  "Digital header D8-D13, GND, AREF, SDA, SCL": [
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/uno-r3-build"
+  ],
+  "DIP-28 socket": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "direction checked": [
+    "drones/wing"
+  ],
+  "disableOutputs()": [
+    "modules/uln2003"
+  ],
+  "Display off": [
+    "modules/ssd1306"
+  ],
+  "DJI O3 air unit (HD video transmitter)": [
+    "drones/cinewhoop"
+  ],
+  "DJI O3 camera module, 15° uptilt": [
+    "drones/cinewhoop"
+  ],
+  "DJI O3, 1080p/100": [
+    "drones/cinewhoop"
+  ],
+  "DL1 · TX LED (yellow)": [
+    "boards/uno-r4"
+  ],
+  "DL2 · RX LED (yellow)": [
+    "boards/uno-r4"
+  ],
+  "DL3 · ON LED (5 V, green)": [
+    "boards/uno-r4"
+  ],
+  "DL4 · L LED (pin 13, yellow)": [
+    "boards/uno-r4"
+  ],
+  "DMG1012T MOSFET (stops ADC3 leaking into 3V3)": [
+    "boards/pico"
+  ],
+  "DRIVER": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "DRIVER IC": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "Dry air": [
+    "modules/soil-moisture"
+  ],
+  "Dry soil": [
+    "modules/soil-moisture"
+  ],
+  "DShot300 bidir + VBAT, CUR": [
+    "drones/cinewhoop"
+  ],
+  "DShot600": [
+    "drones/quad5",
+    "drones/racer"
+  ],
+  "DShot600 ×4": [
+    "drones/longrange"
+  ],
+  "DUCTS": [
+    "drones/cinewhoop",
+    "drones/whoop"
+  ],
+  "Ducts (prop guards) with TPU bumpers": [
+    "drones/cinewhoop"
+  ],
+  "EBC": [
+    "parts/npn-2n2222"
+  ],
+  "Echo": [
+    "modules/hc-sr04"
+  ],
+  "Elevon servos, horns and pushrods": [
+    "drones/wing"
+  ],
+  "ELEVONS": [
+    "drones/wing"
+  ],
+  "ELRS": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/quad5",
+    "drones/racer",
+    "drones/wing"
+  ],
+  "ELRS 2.4 GHz": [
+    "drones/cinewhoop",
+    "drones/gpscam",
+    "drones/quad5",
+    "drones/racer",
+    "drones/wing"
+  ],
+  "ELRS 2.4 GHz receiver (CRSF)": [
+    "drones/racer"
+  ],
+  "ELRS 900": [
+    "drones/longrange"
+  ],
+  "ELRS 900 MHz": [
+    "drones/longrange"
+  ],
+  "ELRS 900 MHz diversity receiver + T-antenna": [
+    "drones/longrange"
+  ],
+  "ELRS ANT": [
+    "drones/whoop"
+  ],
+  "ELRS ANTENNA": [
+    "drones/whoop"
+  ],
+  "ELRS receiver": [
+    "drones/wing"
+  ],
+  "ELRS UART3 CRSF": [
+    "drones/whoop"
+  ],
+  "EM78P153S microcontroller: sends the burst, times the echo": [
+    "modules/hc-sr04"
+  ],
+  "Empty crystal footprint Y1: the RA4M1 runs on its internal 48 MHz oscillator": [
+    "boards/uno-r4"
+  ],
+  "EN": [
+    "boards/esp32-devkitc",
+    "boards/nodemcu"
+  ],
+  "EN (reset) button": [
+    "boards/esp32-devkitc"
+  ],
+  "EN pull-up R3 (12 kΩ)": [
+    "boards/nodemcu"
+  ],
+  "ENA": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "ENA header (enable A and +5V)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "ENA jumper cap (motor A always enabled)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "ENB": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "ENB header (enable B and +5V)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "ENB jumper cap (motor B always enabled)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "EPP foam wing, pod and winglets": [
+    "drones/wing"
+  ],
+  "ESC": [
+    "drones/longrange",
+    "drones/wing"
+  ],
+  "ESC M1-M4": [
+    "drones/whoop"
+  ],
+  "ESC x4": [
+    "drones/gpscam"
+  ],
+  "ESCs": [
+    "drones/delivery",
+    "drones/gpscam"
+  ],
+  "ESCs ×4": [
+    "drones/delivery"
+  ],
+  "ESD protection diode on D-": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "ESD protection diode on D- (GPIO19)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "ESD protection diode on D+": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "ESD protection diode on D+ (GPIO20)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "ESD protection diode on VBUS": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "ESP-12E": [
+    "boards/nodemcu"
+  ],
+  "ESP-12E Wi-Fi module": [
+    "boards/nodemcu"
+  ],
+  "ESP32 MODULE": [
+    "boards/esp32-devkitc"
+  ],
+  "ESP32-DevKitC V4": [
+    "boards/esp32-devkitc"
+  ],
+  "ESP32-S3 MODULE": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "ESP32-S3-DevKitC-1 v1.1": [
+    "boards/esp32-s3-devkitc-1"
+  ],
+  "ESP32-S3-WROOM-1-N8R8 module": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "ESP32-WROOM-32E module": [
+    "boards/esp32-devkitc"
+  ],
+  "Every part is on the board": [
+    "figures/engine/bench.js",
+    "robotics/led-resistor"
+  ],
+  "Exploded view": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "ExpressLRS 2.4 GHz antenna (the receiver is on the AIO)": [
+    "drones/whoop"
+  ],
+  "ExpressLRS 2.4 GHz receiver (CRSF)": [
+    "drones/cinewhoop",
+    "drones/gpscam",
+    "drones/quad5"
+  ],
+  "ExpressLRS backup receiver (CRSF on TELEM3)": [
+    "drones/delivery"
+  ],
+  "ExpressLRS, CRSF": [
+    "drones/delivery"
+  ],
+  "EXT 5V": [
+    "robotics/led-resistor"
+  ],
+  "F1 · 500 mA resettable polyfuse": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "F1 · 500 mA resettable polyfuse (USB)": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "F405 flight controller (Betaflight)": [
+    "drones/quad5"
+  ],
+  "F405 wing flight controller (INAV)": [
+    "drones/wing"
+  ],
+  "F405 WING, INAV": [
+    "drones/wing"
+  ],
+  "F405, Betaflight": [
+    "drones/quad5"
+  ],
+  "F450 frame: power-board plate and 4 arms": [
+    "drones/gpscam"
+  ],
+  "F450 PDB": [
+    "drones/gpscam"
+  ],
+  "F7 + baro": [
+    "drones/longrange"
+  ],
+  "F7 flight controller + baro": [
+    "drones/longrange"
+  ],
+  "F7 flight controller, 20 x 20 mm": [
+    "drones/racer"
+  ],
+  "F7, Betaflight": [
+    "drones/racer"
+  ],
+  "F722 flight controller, 20 x 20 (Betaflight)": [
+    "drones/cinewhoop"
+  ],
+  "F722, Betaflight": [
+    "drones/cinewhoop"
+  ],
+  "Fade green (PWM)": [
+    "modules/traffic-light"
+  ],
+  "failsafe stage 2: DROP, motors stopped, disarmed": [
+    "figures/drones/cinewhoop.js"
+  ],
+  "Failsafe test": [
+    "drones/cinewhoop",
+    "drones/whoop",
+    "drones/wing"
+  ],
+  "Failsafe test (props off)": [
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange"
+  ],
+  "Failsafe test (radio off)": [
+    "drones/racer"
+  ],
+  "FAN": [
+    "drones/delivery"
+  ],
+  "FAN1": [
+    "parts/fan"
+  ],
+  "FAULT": [
+    "boards/pico",
+    "figures/engine/drone.js"
+  ],
+  "FDN340P MOSFET: USB power switch": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "Ferrite bead on the USB shield": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "Ferrite bead: analog reference filter": [
+    "boards/uno-r4"
+  ],
+  "Ferrite bead: analog supply filter": [
+    "boards/uno-r4"
+  ],
+  "Fit the {part} first": [
+    "figures/drones/cinewhoop.js"
+  ],
+  "Fit the battery, the BT2.0 lead and the VTX antenna first: never power a VTX without its antenna": [
+    "drones/whoop"
+  ],
+  "Fix the fault first: unplug, then replace {name}": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "FLASH": [
+    "boards/nodemcu",
+    "boards/pico"
+  ],
+  "FLASH button (GPIO0, D3)": [
+    "boards/nodemcu"
+  ],
+  "Flash, then dark: with no resistor only the LED itself and the charger's limit hold the current back, hundreds of mA against its 30 mA maximum, and it burns out": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "flat side to the left (backwards)": [
+    "modules/traffic-light"
+  ],
+  "flat side to the right, as printed": [
+    "modules/traffic-light"
+  ],
+  "FLIGHT CTRL": [
+    "drones/cinewhoop",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/wing"
+  ],
+  "FLIGHT CTRL: arrow backward": [
+    "drones/cinewhoop",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer"
+  ],
+  "FLIGHT CTRL: arrow backwards": [
+    "drones/wing"
+  ],
+  "FLIGHT CTRL: arrow forward": [
+    "drones/cinewhoop",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer"
+  ],
+  "FLIGHT CTRL: arrow to the nose": [
+    "drones/wing"
+  ],
+  "Flip {name}": [
+    "figures/engine/bench.js"
+  ],
+  "Flyback diode D1 (OUT1 to +12V)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "Flyback diode D2 (GND to OUT1)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "Flyback diode D3 (OUT2 to +12V)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "Flyback diode D4 (GND to OUT2)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "Flyback diode D5 (OUT3 to +12V)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "Flyback diode D6 (GND to OUT3)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "Flyback diode D7 (OUT4 to +12V)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "Flyback diode D8 (GND to OUT4)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "Force (N)": [
+    "parts/fsr402"
+  ],
+  "Force sensor (FSR 402)": [
+    "parts/fsr402"
+  ],
+  "Force sensor (FSR 402) P1": [
+    "parts/fsr402"
+  ],
+  "Force-sensing ink": [
+    "figures/parts/fsr402.js"
+  ],
+  "Forward": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "Forward 100%": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "Forward 50%": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "Four 2807 low-KV motors": [
+    "drones/longrange"
+  ],
+  "FPV camera in the nose": [
+    "drones/wing"
+  ],
+  "FPV flying wing on INAV": [
+    "drones/wing"
+  ],
+  "FRAME": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer"
+  ],
+  "free": [
+    "parts/dc-motor"
+  ],
+  "fresh": [
+    "parts/aa-holder-4"
+  ],
+  "Front view": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "figures/vendor/colorfigures/core.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "parts/aa-holder-4",
+    "parts/breadboard",
+    "parts/dc-motor",
+    "parts/diode-1n4007",
+    "parts/fan",
+    "parts/fsr402",
+    "parts/hc-sr04",
+    "parts/ldr",
+    "parts/led",
+    "parts/lipo-2s",
+    "parts/mpu6050",
+    "parts/npn-2n2222",
+    "parts/piezo-buzzer",
+    "parts/potentiometer",
+    "parts/push-button",
+    "parts/resistor",
+    "parts/rgb-led",
+    "parts/servo-sg90",
+    "parts/soil-moisture",
+    "parts/ssd1306",
+    "parts/stepper-28byj48",
+    "parts/tip120",
+    "parts/tmp36",
+    "parts/traffic-light",
+    "parts/tt-motor",
+    "parts/wire",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "FT232RNL USB-to-serial bridge": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "full": [
+    "parts/dc-motor",
+    "parts/fan",
+    "parts/lipo-2s",
+    "parts/stepper-28byj48",
+    "parts/tt-motor"
+  ],
+  "Full step at 500 steps/s": [
+    "modules/uln2003"
+  ],
+  "Full step, slowed down": [
+    "modules/uln2003"
+  ],
+  "G473 FC + 4 x 5 A ESC": [
+    "drones/whoop"
+  ],
+  "GIMBAL": [
+    "drones/gpscam"
+  ],
+  "GIMBAL + CAM": [
+    "drones/gpscam"
+  ],
+  "Gimbal test": [
+    "drones/gpscam"
+  ],
+  "Gnd": [
+    "modules/hc-sr04"
+  ],
+  "GND": [
+    "boards/esp32-devkitc",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "robotics/l298n",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "GND R Y G": [
+    "modules/traffic-light"
+  ],
+  "GND VCC SCL SDA": [
+    "modules/ssd1306"
+  ],
+  "Gold bond wires": [
+    "figures/parts/tmp36.js"
+  ],
+  "GPIO0 pull-up R1 (12 kΩ)": [
+    "boards/nodemcu"
+  ],
+  "GPIO15 pull-down R5 (12 kΩ)": [
+    "boards/nodemcu"
+  ],
+  "GPIO2 pull-up R2 (12 kΩ)": [
+    "boards/nodemcu"
+  ],
+  "gpio5v:GPIO4": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "GPS": [
+    "drones/delivery",
+    "drones/longrange",
+    "drones/wing"
+  ],
+  "GPS + COMPASS": [
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/wing"
+  ],
+  "GPS + COMPASS: arrow backward": [
+    "drones/gpscam"
+  ],
+  "GPS + COMPASS: arrow forward": [
+    "drones/gpscam"
+  ],
+  "GPS camera drone": [
+    "drones/gpscam"
+  ],
+  "GPS lock (outdoors)": [
+    "drones/longrange"
+  ],
+  "GPS MAST": [
+    "drones/delivery"
+  ],
+  "GPS MAST: arrow backward": [
+    "drones/delivery"
+  ],
+  "GPS MAST: arrow forward": [
+    "drones/delivery"
+  ],
+  "GPS: arrow backward": [
+    "drones/longrange"
+  ],
+  "GPS: arrow forward": [
+    "drones/longrange"
+  ],
+  "GPS1 · UART + I2C": [
+    "drones/delivery"
+  ],
+  "GPS1 UART + I2C": [
+    "drones/gpscam"
+  ],
+  "green": [
+    "parts/led",
+    "parts/push-button",
+    "robotics/transistor-switch"
+  ],
+  "GREEN": [
+    "modules/traffic-light"
+  ],
+  "Green duty": [
+    "parts/rgb-led"
+  ],
+  "Green LED": [
+    "modules/traffic-light"
+  ],
+  "H1 · 20-pin header, pins 1-20 (you solder it)": [
+    "boards/pico"
+  ],
+  "H1 · 8-pin header: VCC GND SCL SDA XDA XCL AD0 INT": [
+    "modules/mpu6050"
+  ],
+  "H2 · 20-pin header, pins 21-40 (you solder it)": [
+    "boards/pico"
+  ],
+  "half": [
+    "parts/dc-motor",
+    "parts/fan",
+    "parts/stepper-28byj48",
+    "parts/tt-motor"
+  ],
+  "half on: hot (150 mA at 4 V)": [
+    "parts/npn-2n2222"
+  ],
+  "Half speed (caps on)": [
+    "robotics/l298n"
+  ],
+  "Half step, slowed down": [
+    "modules/uln2003"
+  ],
+  "Hand coming closer": [
+    "modules/hc-sr04"
+  ],
+  "Hand-drawn wobble": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "figures/vendor/colorfigures/core.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "parts/aa-holder-4",
+    "parts/breadboard",
+    "parts/dc-motor",
+    "parts/diode-1n4007",
+    "parts/fan",
+    "parts/fsr402",
+    "parts/hc-sr04",
+    "parts/ldr",
+    "parts/led",
+    "parts/lipo-2s",
+    "parts/mpu6050",
+    "parts/npn-2n2222",
+    "parts/piezo-buzzer",
+    "parts/potentiometer",
+    "parts/push-button",
+    "parts/resistor",
+    "parts/rgb-led",
+    "parts/servo-sg90",
+    "parts/soil-moisture",
+    "parts/ssd1306",
+    "parts/stepper-28byj48",
+    "parts/tip120",
+    "parts/tmp36",
+    "parts/traffic-light",
+    "parts/tt-motor",
+    "parts/wire",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Hatch": [
+    "drones/wing"
+  ],
+  "HATCH": [
+    "drones/wing"
+  ],
+  "HC-SR04 ultrasonic distance sensor": [
+    "modules/hc-sr04"
+  ],
+  "HEADER": [
+    "modules/hc-sr04",
+    "modules/mpu6050"
+  ],
+  "Header J1: TX1, RX0, RST, GND, D2-D12": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "Header J2 (left side, 19 pins)": [
+    "boards/esp32-devkitc"
+  ],
+  "Header J2: D13, 3.3V, REF, A0-A7, 5V, RST, GND, VIN": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "Header J3 (right side, 19 pins)": [
+    "boards/esp32-devkitc"
+  ],
+  "Heatsink": [
+    "robotics/l298n"
+  ],
+  "Hello, world": [
+    "modules/ssd1306"
+  ],
+  "high": [
+    "parts/mpu6050"
+  ],
+  "hold 0°": [
+    "parts/servo-sg90"
+  ],
+  "hold 180°": [
+    "parts/servo-sg90"
+  ],
+  "hold 90°": [
+    "parts/servo-sg90"
+  ],
+  "Hold the wheel": [
+    "robotics/transistor-switch"
+  ],
+  "I = {v} V / {r} = {ma} mA  {verdict}": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "I2C scan": [
+    "modules/mpu6050"
+  ],
+  "I²C scanner": [
+    "modules/ssd1306"
+  ],
+  "IC1 · FT232RNL USB-to-serial bridge": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "IC1 · MPU-6050 motion sensor: 3-axis gyro and accelerometer (4 x 4 mm QFN)": [
+    "modules/mpu6050"
+  ],
+  "IC2 · LD1117 5 V regulator (VIN)": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "IC3 · ATmega328P microcontroller (VQFN-32)": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "ICSP": [
+    "boards/nano",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "ICSP · ICSP header for the 328P": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "ICSP header (SPI: CIPO, SCK, COPI, RESET)": [
+    "boards/uno-r4"
+  ],
+  "ICSP header for the 16U2": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "ICSP header for the 328P": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "ICSP pads (no header fitted)": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "ICSP1 · ICSP header for the 16U2": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "idle": [
+    "parts/stepper-28byj48"
+  ],
+  "IN · Input header IN1-IN4": [
+    "modules/uln2003"
+  ],
+  "In water": [
+    "modules/soil-moisture"
+  ],
+  "IN1": [
+    "modules/l298n",
+    "modules/uln2003",
+    "robotics/l298n"
+  ],
+  "IN1-IN4": [
+    "modules/uln2003"
+  ],
+  "IN2": [
+    "modules/l298n",
+    "modules/uln2003",
+    "robotics/l298n"
+  ],
+  "IN3": [
+    "modules/l298n",
+    "modules/uln2003",
+    "robotics/l298n"
+  ],
+  "IN4": [
+    "modules/l298n",
+    "modules/uln2003",
+    "robotics/l298n"
+  ],
+  "Input header IN1-IN4": [
+    "modules/uln2003"
+  ],
+  "Input HIGH": [
+    "robotics/transistor-switch"
+  ],
+  "Input LOW": [
+    "robotics/transistor-switch"
+  ],
+  "INT": [
+    "modules/mpu6050"
+  ],
+  "IOH · Digital header D8-D13, GND, AREF, SDA, SCL": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "IOL · Digital header D0-D7": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "IOREF": [
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/uno-r3-build"
+  ],
+  "ISL854102 buck converter (VIN to 5 V, 1.2 A)": [
+    "boards/uno-r4"
+  ],
+  "ITG/MPU": [
+    "modules/mpu6050"
+  ],
+  "J1 · 4-pin header (GND VCC SCL SDA)": [
+    "modules/ssd1306"
+  ],
+  "J1 · 4-pin right-angle header: Vcc, Trig, Echo, Gnd": [
+    "modules/hc-sr04"
+  ],
+  "J1 · Header J1: TX1, RX0, RST, GND, D2-D12": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "J1 · ICSP header (SPI: CIPO, SCK, COPI, RESET)": [
+    "boards/uno-r4"
+  ],
+  "J1 · Left header: A0, flash pins, EN, RST, 3V3, Vin": [
+    "boards/nodemcu"
+  ],
+  "J1 · Left pin header J1 (22 pins)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "J1 · Micro-USB socket": [
+    "boards/esp32-devkitc"
+  ],
+  "J1 · Micro-USB socket (power and USB data)": [
+    "boards/pico"
+  ],
+  "J1 · Power terminal +12V / GND / +5V": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "J1 · Sensor socket (JST-PH, AOUT VCC GND)": [
+    "modules/soil-moisture"
+  ],
+  "J1 · USB-C power jack (power-only receptacle)": [
+    "robotics/led-resistor"
+  ],
+  "J2 · Header J2 (left side, 19 pins)": [
+    "boards/esp32-devkitc"
+  ],
+  "J2 · Header J2: D13, 3.3V, REF, A0-A7, 5V, RST, GND, VIN": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "J2 · Micro-USB port \"UART\" (to the CP2102N)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "J2 · Motor A terminal (OUT1, OUT2)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "J2 · Right header: D0-D8, RX, TX, 3V3": [
+    "boards/nodemcu"
+  ],
+  "J2 · Screw terminal for a bench supply (EXT 5V)": [
+    "robotics/led-resistor"
+  ],
+  "J2 · SWD/JTAG debug header, 2 x 5, 1.27 mm (pin 1 is +5 V)": [
+    "boards/uno-r4"
+  ],
+  "J3 · Header J3 (right side, 19 pins)": [
+    "boards/esp32-devkitc"
+  ],
+  "J3 · Motor B terminal (OUT3, OUT4)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "J3 · Right pin header J3 (22 pins)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "J3 · USB Mini-B socket": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "J3 · USB-C socket (5 V sink, no Power Delivery)": [
+    "boards/uno-r4"
+  ],
+  "J4 · 2.1 mm barrel jack, centre positive, 6-24 V": [
+    "boards/uno-r4"
+  ],
+  "J4 · Control header IN1-IN4": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "J4 · Micro-USB port \"USB\" (native ESP32-S3 USB)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "JANALOG_A · Analog header A0-A5": [
+    "boards/uno-r4"
+  ],
+  "JANALOG_P · Power header (BOOT, IOREF, RESET, 3.3V, 5V, GND, GND, VIN)": [
+    "boards/uno-r4"
+  ],
+  "JDIGITAL_H · Digital header D8-D13, GND, AREF, SDA, SCL": [
+    "boards/uno-r4"
+  ],
+  "JDIGITAL_L · Digital header D0-D7": [
+    "boards/uno-r4"
+  ],
+  "JE5 · 5V-EN header (+12V to the regulator input)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "JEA · ENA header (enable A and +5V)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "JEB · ENB header (enable B and +5V)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "JL1": [
+    "robotics/led-resistor"
+  ],
+  "JL1 · Wire link (no resistor)": [
+    "robotics/led-resistor"
+  ],
+  "JP · Power jumper pins": [
+    "modules/uln2003"
+  ],
+  "JP1": [
+    "robotics/led-resistor"
+  ],
+  "JP1 · Jumper header 2x4": [
+    "robotics/led-resistor"
+  ],
+  "JP1 · Power and motor header (VM, VCC, GND, A01, A02, B02, B01, GND)": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "JP2 · Control header (PWMA, AIN2, AIN1, STBY, BIN1, BIN2, PWMB, GND)": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "JP5 · 5V-EN jumper cap (regulator on)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "JPA · ENA jumper cap (motor A always enabled)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "JPB · ENB jumper cap (motor B always enabled)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "JST1.25 x4": [
+    "drones/whoop"
+  ],
+  "JUMPER": [
+    "robotics/led-resistor"
+  ],
+  "Jumper cap": [
+    "robotics/led-resistor"
+  ],
+  "Jumper cap (power on)": [
+    "modules/uln2003"
+  ],
+  "Jumper header 2x4": [
+    "robotics/led-resistor"
+  ],
+  "Jumper on {name}": [
+    "figures/robotics/led-resistor.js",
+    "robotics/led-resistor"
+  ],
+  "Jumper wire": [
+    "parts/wire"
+  ],
+  "Keypad": [
+    "figures/vendor/colorfigures/core.js"
+  ],
+  "Knob position": [
+    "parts/potentiometer"
+  ],
+  "L · L LED (pin 13)": [
+    "boards/nano",
+    "boards/uno-r3",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "L LED": [
+    "boards/nano",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/uno-r3-build"
+  ],
+  "L LED (pin 13, yellow)": [
+    "boards/uno-r4"
+  ],
+  "L LED (pin 13)": [
+    "boards/nano",
+    "boards/uno-r3",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "L1 · 2.2 µH inductor for the buck-boost": [
+    "boards/pico"
+  ],
+  "L1 · Ferrite bead on the USB shield": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "L1 · Ferrite bead: analog supply filter": [
+    "boards/uno-r4"
+  ],
+  "L2 · 10 µH inductor: AVCC filter": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "L2 · Ferrite bead: analog reference filter": [
+    "boards/uno-r4"
+  ],
+  "L298N dual H-bridge module": [
+    "modules/l298n"
+  ],
+  "L298N dual H-bridge on its heatsink": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "L298N MODULE": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "L298N motor driver": [
+    "robotics/l298n"
+  ],
+  "L3 · 10 µH buck inductor": [
+    "boards/uno-r4"
+  ],
+  "L8050 transistor: auto-boot (RTS to GPIO0)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "L8050 transistor: auto-reset (DTR to EN)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "Labels": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "figures/vendor/colorfigures/core.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "parts/aa-holder-4",
+    "parts/breadboard",
+    "parts/dc-motor",
+    "parts/diode-1n4007",
+    "parts/fan",
+    "parts/fsr402",
+    "parts/hc-sr04",
+    "parts/ldr",
+    "parts/led",
+    "parts/lipo-2s",
+    "parts/mpu6050",
+    "parts/npn-2n2222",
+    "parts/piezo-buzzer",
+    "parts/potentiometer",
+    "parts/push-button",
+    "parts/resistor",
+    "parts/rgb-led",
+    "parts/servo-sg90",
+    "parts/soil-moisture",
+    "parts/ssd1306",
+    "parts/stepper-28byj48",
+    "parts/tip120",
+    "parts/tmp36",
+    "parts/traffic-light",
+    "parts/tt-motor",
+    "parts/wire",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Lamp test": [
+    "modules/traffic-light"
+  ],
+  "LANDING GEAR": [
+    "drones/gpscam"
+  ],
+  "Landing gear, skids and battery tray": [
+    "drones/gpscam"
+  ],
+  "LD1117 5 V regulator (VIN)": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "Lead frame": [
+    "figures/parts/tmp36.js"
+  ],
+  "Leave out {name}": [
+    "boards/esp32-s3-devkitc-1",
+    "boards/nodemcu",
+    "boards/pico",
+    "figures/engine/bench.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/tb6612fng",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/tb6612fng"
+  ],
+  "LED": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "figures/engine/sheets.js",
+    "parts/led",
+    "robotics/led-resistor",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "LED + resistor": [
+    "robotics/led-resistor"
+  ],
+  "LED A (coil 1)": [
+    "modules/uln2003"
+  ],
+  "LED B (coil 2)": [
+    "modules/uln2003"
+  ],
+  "LED C (coil 3)": [
+    "modules/uln2003"
+  ],
+  "LED D (coil 4)": [
+    "modules/uln2003"
+  ],
+  "LED D0": [
+    "boards/nodemcu"
+  ],
+  "LED D4": [
+    "boards/nodemcu"
+  ],
+  "LED follows BOOTSEL": [
+    "boards/pico"
+  ],
+  "LED LED1": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "parts/led",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "LED LED101": [
+    "boards/nodemcu"
+  ],
+  "LED LED2": [
+    "parts/led"
+  ],
+  "LED LED3": [
+    "parts/led"
+  ],
+  "LED LED4": [
+    "parts/led"
+  ],
+  "LED LED5": [
+    "parts/led"
+  ],
+  "LED pad + 5 V": [
+    "drones/racer"
+  ],
+  "LED STRIP": [
+    "drones/racer"
+  ],
+  "LED STRIPS": [
+    "drones/racer"
+  ],
+  "LED strips on the rear arms": [
+    "drones/racer"
+  ],
+  "LED TRAINER": [
+    "robotics/led-resistor"
+  ],
+  "LED_A · LED A (coil 1)": [
+    "modules/uln2003"
+  ],
+  "LED_B · LED B (coil 2)": [
+    "modules/uln2003"
+  ],
+  "LED_C · LED C (coil 3)": [
+    "modules/uln2003"
+  ],
+  "LED_D · LED D (coil 4)": [
+    "modules/uln2003"
+  ],
+  "LED_G · Green LED": [
+    "modules/traffic-light"
+  ],
+  "LED_G · Green LED · flat side to the left (backwards)": [
+    "modules/traffic-light"
+  ],
+  "LED_G · Green LED · flat side to the right, as printed": [
+    "modules/traffic-light"
+  ],
+  "LED_R · Red LED": [
+    "modules/traffic-light"
+  ],
+  "LED_R · Red LED · flat side to the left (backwards)": [
+    "modules/traffic-light"
+  ],
+  "LED_R · Red LED · flat side to the right, as printed": [
+    "modules/traffic-light"
+  ],
+  "LED_Y · Yellow LED": [
+    "modules/traffic-light"
+  ],
+  "LED_Y · Yellow LED · flat side to the left (backwards)": [
+    "modules/traffic-light"
+  ],
+  "LED_Y · Yellow LED · flat side to the right, as printed": [
+    "modules/traffic-light"
+  ],
+  "LED1": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "parts/led",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "LED1 · 2.6 mA": [
+    "robotics/transistor-switch"
+  ],
+  "LED1 · Blue LED on the board (D0)": [
+    "boards/nodemcu"
+  ],
+  "LED1 · Power LED (+5V)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "LED101": [
+    "boards/nodemcu"
+  ],
+  "LED2": [
+    "parts/led"
+  ],
+  "LED3": [
+    "parts/led"
+  ],
+  "LED4": [
+    "parts/led"
+  ],
+  "LED5": [
+    "parts/led"
+  ],
+  "LEDC fade on GPIO23": [
+    "boards/esp32-devkitc"
+  ],
+  "Left header: A0, flash pins, EN, RST, 3V3, Vin": [
+    "boards/nodemcu"
+  ],
+  "Left pin header J1 (22 pins)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "LESD5D5.0 ESD diode on a USB data line": [
+    "boards/esp32-devkitc"
+  ],
+  "LESD5D5.0 ESD diode on USB VBUS": [
+    "boards/esp32-devkitc"
+  ],
+  "LEVEL 0.0 / 0.0": [
+    "figures/engine/drone-pieces.js"
+  ],
+  "li-ion": [
+    "parts/aa-holder-4"
+  ],
+  "Li-ion cells in the AA holder": [
+    "robotics/transistor-switch"
+  ],
+  "Light level": [
+    "parts/ldr"
+  ],
+  "Light sensor (LDR)": [
+    "parts/ldr"
+  ],
+  "Light sensor (LDR) P1": [
+    "parts/ldr"
+  ],
+  "LiPo battery and straps": [
+    "drones/gpscam"
+  ],
+  "LiPo battery, strap and grip pad": [
+    "drones/cinewhoop",
+    "drones/quad5"
+  ],
+  "LM324 quad op-amp: amplifies, filters and compares what R hears": [
+    "modules/hc-sr04"
+  ],
+  "LMV358 op-amp: USB/VIN switch and L buffer": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "Load": [
+    "parts/dc-motor"
+  ],
+  "Logic on VCC, battery on VM: the driver is awake (STBY high)": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "long leg in the + hole": [
+    "robotics/led-resistor"
+  ],
+  "long leg in the − hole (backwards)": [
+    "robotics/led-resistor"
+  ],
+  "Lost": [
+    "robotics/l298n"
+  ],
+  "LOVE test point on the bottom (an Arduino joke)": [
+    "boards/uno-r4"
+  ],
+  "low": [
+    "parts/lipo-2s",
+    "parts/mpu6050"
+  ],
+  "Low parts first: with tall parts on, the board rocks and loose parts fall out when you flip it to solder": [
+    "robotics/l298n"
+  ],
+  "low supply": [
+    "parts/servo-sg90"
+  ],
+  "LP2985 3.3 V regulator": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "LTE": [
+    "drones/delivery"
+  ],
+  "LTE MODEM": [
+    "drones/delivery"
+  ],
+  "Lying flat": [
+    "modules/mpu6050"
+  ],
+  "M1 · 203 rpm": [
+    "robotics/transistor-switch"
+  ],
+  "M10 + IST8310": [
+    "drones/gpscam"
+  ],
+  "M10 + QMC5883L": [
+    "drones/longrange"
+  ],
+  "M10 GPS + compass": [
+    "drones/wing"
+  ],
+  "M10 GPS + compass on a 129 mm mast": [
+    "drones/delivery"
+  ],
+  "M10 GPS + compass on a mast": [
+    "drones/gpscam"
+  ],
+  "M10 GPS + QMC5883L compass": [
+    "drones/longrange"
+  ],
+  "M10, QMC5883": [
+    "drones/wing"
+  ],
+  "M7 diode: reverse-polarity protection": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "Made with Colorfigures ↗": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "figures/vendor/colorfigures/core.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "parts/aa-holder-4",
+    "parts/breadboard",
+    "parts/dc-motor",
+    "parts/diode-1n4007",
+    "parts/fan",
+    "parts/fsr402",
+    "parts/hc-sr04",
+    "parts/ldr",
+    "parts/led",
+    "parts/lipo-2s",
+    "parts/mpu6050",
+    "parts/npn-2n2222",
+    "parts/piezo-buzzer",
+    "parts/potentiometer",
+    "parts/push-button",
+    "parts/resistor",
+    "parts/rgb-led",
+    "parts/servo-sg90",
+    "parts/soil-moisture",
+    "parts/ssd1306",
+    "parts/stepper-28byj48",
+    "parts/tip120",
+    "parts/tmp36",
+    "parts/traffic-light",
+    "parts/tt-motor",
+    "parts/wire",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "MAIN 1-4 DShot600": [
+    "drones/gpscam"
+  ],
+  "MAX": [
+    "modules/soil-moisture"
+  ],
+  "MAX3232 transmit driver: drives T in antiphase from its charge pump": [
+    "modules/hc-sr04"
+  ],
+  "MBR120 Schottky diode (VBUS to VSYS)": [
+    "boards/pico"
+  ],
+  "MCU": [
+    "boards/nano",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "drones/longrange",
+    "robotics/uno-r3-build"
+  ],
+  "MEMS die on the CMOS chip": [
+    "figures/parts/mpu6050.js"
+  ],
+  "METER": [
+    "robotics/led-resistor"
+  ],
+  "MICRO-USB": [
+    "boards/esp32-devkitc"
+  ],
+  "Micro-USB port \"UART\" (to the CP2102N)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "Micro-USB port \"USB\" (native ESP32-S3 USB)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "Micro-USB socket": [
+    "boards/esp32-devkitc",
+    "boards/nodemcu"
+  ],
+  "Micro-USB socket (power and USB data)": [
+    "boards/pico"
+  ],
+  "MicroPython blink": [
+    "boards/pico"
+  ],
+  "MINI-USB": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "MM1 · Pocket multimeter on the 200 mA range": [
+    "robotics/led-resistor"
+  ],
+  "Moisture screen": [
+    "modules/ssd1306"
+  ],
+  "MOT1": [
+    "parts/dc-motor"
+  ],
+  "Motor": [
+    "robotics/transistor-switch"
+  ],
+  "MOTOR": [
+    "drones/wing",
+    "modules/tb6612fng",
+    "modules/uln2003",
+    "robotics/tb6612fng"
+  ],
+  "MOTOR · Motor socket (JST-XH, 5 pins)": [
+    "modules/uln2003"
+  ],
+  "MOTOR + POWER": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "Motor A": [
+    "robotics/l298n",
+    "robotics/tb6612fng"
+  ],
+  "MOTOR A": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "Motor A terminal (OUT1, OUT2)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "Motor B": [
+    "robotics/l298n",
+    "robotics/tb6612fng"
+  ],
+  "MOTOR B": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "Motor B terminal (OUT3, OUT4)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "Motor bullets to the ESC": [
+    "drones/wing"
+  ],
+  "Motor off": [
+    "robotics/transistor-switch"
+  ],
+  "Motor on": [
+    "robotics/transistor-switch"
+  ],
+  "Motor on the 5 V pin (brown-out)": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "figures/engine/bench.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Motor phase wires": [
+    "drones/longrange"
+  ],
+  "Motor phase wires and ESC power leads": [
+    "drones/delivery",
+    "drones/gpscam"
+  ],
+  "Motor phase wires soldered to the ESC": [
+    "drones/cinewhoop"
+  ],
+  "Motor phase wires, soldered to the ESC pads": [
+    "drones/quad5"
+  ],
+  "motor phases": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing"
+  ],
+  "MOTOR PLUGS": [
+    "drones/whoop"
+  ],
+  "Motor plugs in the AIO sockets": [
+    "drones/whoop"
+  ],
+  "Motor socket (JST-XH, 5 pins)": [
+    "modules/uln2003"
+  ],
+  "Motor straight on pin 9": [
+    "robotics/transistor-switch"
+  ],
+  "MOTOR WIRES": [
+    "drones/cinewhoop",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/wing"
+  ],
+  "Motor wires, cut short and soldered": [
+    "drones/racer"
+  ],
+  "MOTORS": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop"
+  ],
+  "MOTORS ×4": [
+    "drones/delivery",
+    "drones/longrange"
+  ],
+  "MOTORS x4": [
+    "drones/cinewhoop",
+    "drones/gpscam",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop"
+  ],
+  "Mount the battery and its power lead first": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/wing"
+  ],
+  "Mount the flight controller first": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing"
+  ],
+  "mounted backwards": [
+    "drones/wing"
+  ],
+  "MPU-6050": [
+    "modules/mpu6050"
+  ],
+  "MPU-6050 accelerometer and gyroscope (GY-521)": [
+    "modules/mpu6050"
+  ],
+  "MPU-6050 motion sensor: 3-axis gyro and accelerometer (4 x 4 mm QFN)": [
+    "modules/mpu6050"
+  ],
+  "Naked action camera, TPU wedge and 5 V BEC": [
+    "drones/cinewhoop"
+  ],
+  "naked, 4K + gyro": [
+    "drones/cinewhoop"
+  ],
+  "nano analog, 40° up": [
+    "drones/racer"
+  ],
+  "NANO CAMERA": [
+    "drones/whoop"
+  ],
+  "Nano low-latency camera, 40° uptilt": [
+    "drones/racer"
+  ],
+  "Nano on USB, 2S LiPo on +12V": [
+    "robotics/l298n"
+  ],
+  "Nano on USB, 2S LiPo on VM": [
+    "robotics/tb6612fng"
+  ],
+  "NCP1117 5 V regulator": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "Never woken up": [
+    "modules/mpu6050"
+  ],
+  "Night flash": [
+    "modules/traffic-light"
+  ],
+  "no": [
+    "parts/npn-2n2222",
+    "parts/piezo-buzzer",
+    "parts/push-button",
+    "parts/tip120"
+  ],
+  "No base resistor": [
+    "robotics/transistor-switch"
+  ],
+  "No circuit on the breadboard": [
+    "figures/engine/sheets.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng"
+  ],
+  "No common ground": [
+    "robotics/l298n",
+    "robotics/transistor-switch"
+  ],
+  "NO POWER": [
+    "boards/nano",
+    "boards/uno-r4",
+    "robotics/transistor-switch"
+  ],
+  "No power on {rail}: nothing reaches the chip": [
+    "boards/nano",
+    "boards/uno-r4",
+    "figures/engine/bench.js",
+    "robotics/transistor-switch"
+  ],
+  "No power: {name} is missing": [
+    "figures/engine/bench.js",
+    "figures/robotics/led-resistor.js"
+  ],
+  "No power: {name} is missing or unsoldered": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "No power: a USB-C charger only turns on 5 V when it sees a 5.1 kΩ pull-down on each CC pin, and {name} is missing": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "No power: nothing reaches the board": [
+    "figures/engine/bench.js"
+  ],
+  "No resistor": [
+    "robotics/led-resistor"
+  ],
+  "no resistors": [
+    "parts/rgb-led"
+  ],
+  "NODEMCU": [
+    "boards/nodemcu"
+  ],
+  "NodeMCU ESP8266 (DevKit v1.0)": [
+    "boards/nodemcu"
+  ],
+  "nominal": [
+    "parts/lipo-2s"
+  ],
+  "none": [
+    "figures/drones/cinewhoop.js",
+    "figures/robotics/led-resistor.js",
+    "parts/fsr402",
+    "parts/ldr",
+    "parts/piezo-buzzer",
+    "parts/potentiometer",
+    "parts/push-button",
+    "parts/rgb-led",
+    "parts/tmp36",
+    "robotics/led-resistor"
+  ],
+  "NONE": [
+    "robotics/led-resistor"
+  ],
+  "not connected": [
+    "figures/engine/sheets.js"
+  ],
+  "not fitted": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "figures/engine/drone-sheet.js"
+  ],
+  "notch left (backwards)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "notch left, as printed": [
+    "modules/uln2003"
+  ],
+  "notch right (backwards)": [
+    "modules/uln2003"
+  ],
+  "notch right, as printed": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "Nothing in range": [
+    "modules/hc-sr04"
+  ],
+  "Nothing is fitted": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "figures/engine/drone.js"
+  ],
+  "Nothing to solder yet: place a part first": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "NPN comparator output to the MCU (BC847 in the schematic)": [
+    "modules/hc-sr04"
+  ],
+  "O3 CAMERA": [
+    "drones/cinewhoop"
+  ],
+  "off": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "figures/engine/sheets.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "parts/diode-1n4007",
+    "parts/npn-2n2222",
+    "parts/tip120",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "OFF": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "figures/engine/drone.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "OLED display (SSD1306)": [
+    "parts/ssd1306"
+  ],
+  "OLED display (SSD1306) P1": [
+    "parts/ssd1306"
+  ],
+  "OLED glass with the SSD1306 controller": [
+    "modules/ssd1306"
+  ],
+  "OLED PANEL": [
+    "modules/ssd1306"
+  ],
+  "On": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "figures/vendor/colorfigures/core.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "parts/aa-holder-4",
+    "parts/breadboard",
+    "parts/dc-motor",
+    "parts/diode-1n4007",
+    "parts/fan",
+    "parts/fsr402",
+    "parts/hc-sr04",
+    "parts/ldr",
+    "parts/led",
+    "parts/lipo-2s",
+    "parts/mpu6050",
+    "parts/npn-2n2222",
+    "parts/piezo-buzzer",
+    "parts/potentiometer",
+    "parts/push-button",
+    "parts/resistor",
+    "parts/rgb-led",
+    "parts/servo-sg90",
+    "parts/soil-moisture",
+    "parts/ssd1306",
+    "parts/stepper-28byj48",
+    "parts/tip120",
+    "parts/tmp36",
+    "parts/traffic-light",
+    "parts/tt-motor",
+    "parts/wire",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "ON": [
+    "boards/nano",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "figures/engine/drone.js",
+    "modules/uln2003",
+    "robotics/led-resistor",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "ON · ON LED (5 V)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "ON JUMPER": [
+    "modules/uln2003"
+  ],
+  "ON LED (5 V present)": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "ON LED (5 V, green)": [
+    "boards/uno-r4"
+  ],
+  "ON LED (5 V)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "On the shaft": [
+    "parts/stepper-28byj48"
+  ],
+  "On-chip temperature": [
+    "boards/pico"
+  ],
+  "open": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/uno-r3-build"
+  ],
+  "Oscillator": [
+    "figures/parts/piezo-buzzer.js"
+  ],
+  "OSD": [
+    "drones/wing"
+  ],
+  "OSD and link check": [
+    "drones/cinewhoop"
+  ],
+  "osd: MSP DisplayPort, HD canvas 53 x 20, link quality on": [
+    "figures/drones/cinewhoop.js"
+  ],
+  "OUT1": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "OUT2": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "OUT3": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "OUT4": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "Output hold capacitor": [
+    "modules/soil-moisture"
+  ],
+  "overheated": [
+    "parts/ldr"
+  ],
+  "overheating (2 A, no heatsink)": [
+    "parts/tip120"
+  ],
+  "P1 · 0 lx · 1 MΩ": [
+    "parts/ldr"
+  ],
+  "P1 · 0.2 N · 30 kΩ": [
+    "parts/fsr402"
+  ],
+  "P1 · 1 lx · 59.72 kΩ": [
+    "parts/ldr"
+  ],
+  "P1 · 1 N · 6 kΩ": [
+    "parts/fsr402"
+  ],
+  "P1 · 10 lx · 15 kΩ": [
+    "parts/ldr"
+  ],
+  "P1 · 10 N · 1 kΩ": [
+    "parts/fsr402"
+  ],
+  "P1 · 100 lx · 3.77 kΩ": [
+    "parts/ldr"
+  ],
+  "P1 · 100k lx · 60 Ω": [
+    "parts/ldr"
+  ],
+  "P1 · 10k lx · 238 Ω": [
+    "parts/ldr"
+  ],
+  "P1 · 1k lx · 946 Ω": [
+    "parts/ldr"
+  ],
+  "P1 · 300 lx · 1.95 kΩ": [
+    "parts/ldr"
+  ],
+  "P1 · 4000 Hz": [
+    "parts/piezo-buzzer"
+  ],
+  "P1 · 440 Hz (A4)": [
+    "parts/piezo-buzzer"
+  ],
+  "P1 · 5 N · 1.72 kΩ": [
+    "parts/fsr402"
+  ],
+  "PARCEL 1 KG": [
+    "drones/delivery"
+  ],
+  "Parking sensor": [
+    "modules/traffic-light"
+  ],
+  "Parts": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "figures/engine/bench.js",
+    "figures/engine/drone.js"
+  ],
+  "passive": [
+    "parts/piezo-buzzer"
+  ],
+  "PASSIVES · Small 0402 resistors and capacitors around the buck and the MCU": [
+    "boards/uno-r4"
+  ],
+  "past the stop": [
+    "parts/servo-sg90"
+  ],
+  "PB1 · RESET button": [
+    "boards/uno-r4"
+  ],
+  "PC1 · 47 µF capacitor on VIN": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "PC2 · 47 µF capacitor on 5 V": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "PDB": [
+    "drones/delivery"
+  ],
+  "PDB + CAP": [
+    "drones/delivery"
+  ],
+  "PDB + CAP: stripe to minus": [
+    "drones/delivery"
+  ],
+  "PDB + CAP: stripe to plus": [
+    "drones/delivery"
+  ],
+  "PDB ESC pads": [
+    "drones/wing"
+  ],
+  "Peak": [
+    "robotics/transistor-switch"
+  ],
+  "Peak-detector diode": [
+    "modules/soil-moisture"
+  ],
+  "Pi 5": [
+    "drones/delivery"
+  ],
+  "Pick & place SMD": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Pick and place: {n} parts, then into the reflow oven": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Piezo buzzer": [
+    "parts/piezo-buzzer"
+  ],
+  "Piezo buzzer P1": [
+    "parts/piezo-buzzer"
+  ],
+  "Piezo ceramic": [
+    "figures/parts/piezo-buzzer.js"
+  ],
+  "Pin 9": [
+    "robotics/transistor-switch"
+  ],
+  "Pin order in code": [
+    "parts/stepper-28byj48"
+  ],
+  "Pinout": [
+    "parts/npn-2n2222"
+  ],
+  "PINS · 4-pin header (GND R Y G)": [
+    "modules/traffic-light"
+  ],
+  "Pins of a 3.3 V board (ESP32, Pico)": [
+    "modules/traffic-light"
+  ],
+  "Pixel test": [
+    "modules/ssd1306"
+  ],
+  "PIXHAWK": [
+    "drones/gpscam"
+  ],
+  "PIXHAWK 6C": [
+    "drones/delivery",
+    "drones/gpscam"
+  ],
+  "Pixhawk 6C flight controller (ArduCopter)": [
+    "drones/gpscam"
+  ],
+  "Pixhawk 6C flight controller on a damped plate": [
+    "drones/delivery"
+  ],
+  "PIXHAWK 6C: arrow backward": [
+    "drones/delivery"
+  ],
+  "PIXHAWK 6C: arrow forward": [
+    "drones/delivery"
+  ],
+  "PIXHAWK: arrow backward": [
+    "drones/gpscam"
+  ],
+  "PIXHAWK: arrow forward": [
+    "drones/gpscam"
+  ],
+  "Place a part": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Plant pot": [
+    "modules/soil-moisture"
+  ],
+  "Plug / unplug battery": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing"
+  ],
+  "Plug in USB first: uploads go over the cable": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Plunger colour": [
+    "parts/push-button"
+  ],
+  "PM": [
+    "drones/delivery"
+  ],
+  "PM02": [
+    "drones/gpscam"
+  ],
+  "PM02 power module, XT60 and low-ESR capacitor": [
+    "drones/gpscam"
+  ],
+  "PM02, V + I, 5.2 V": [
+    "drones/gpscam"
+  ],
+  "PMEG6020 Schottky: USB VBUS to 5 V": [
+    "boards/uno-r4"
+  ],
+  "PMEG6020 Schottky: VIN reverse-polarity guard": [
+    "boards/uno-r4"
+  ],
+  "PNP switch: powers the driver only during a ping (BC857 in the schematic)": [
+    "modules/hc-sr04"
+  ],
+  "Pocket multimeter on the 200 mA range": [
+    "robotics/led-resistor"
+  ],
+  "pointer": [
+    "parts/stepper-28byj48"
+  ],
+  "Potentiometer": [
+    "parts/potentiometer"
+  ],
+  "Potentiometer P1": [
+    "parts/potentiometer"
+  ],
+  "power": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing"
+  ],
+  "Power": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "POWER": [
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/led-resistor",
+    "robotics/uno-r3-build"
+  ],
+  "POWER · Power header": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "Power and motor header (VM, VCC, GND, A01, A02, B02, B01, GND)": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "POWER BOARD": [
+    "drones/delivery"
+  ],
+  "Power board: XT90-S lead, power module, 1000 µF cap, BECs": [
+    "drones/delivery"
+  ],
+  "Power header": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "Power header (BOOT, IOREF, RESET, 3.3V, 5V, GND, GND, VIN)": [
+    "boards/uno-r4"
+  ],
+  "POWER IN": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "POWER JACK": [
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/uno-r3-build"
+  ],
+  "Power jumper pins": [
+    "modules/uln2003"
+  ],
+  "Power LED": [
+    "figures/parts/mpu6050.js"
+  ],
+  "POWER LED": [
+    "boards/esp32-s3-devkitc-1",
+    "modules/mpu6050",
+    "robotics/esp32-s3-build"
+  ],
+  "Power LED (+5V)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "Power LED (red)": [
+    "modules/mpu6050"
+  ],
+  "Power LED resistor": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "Power LED resistor (2 kΩ)": [
+    "boards/esp32-devkitc"
+  ],
+  "POWER MODULE": [
+    "drones/gpscam"
+  ],
+  "POWER MODULE: cap stripe to minus": [
+    "drones/gpscam"
+  ],
+  "POWER MODULE: cap stripe to plus": [
+    "drones/gpscam"
+  ],
+  "Power pins − + (5-12 V)": [
+    "modules/uln2003"
+  ],
+  "Power terminal +12V / GND / +5V": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "Power tree": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Power tree · {name}": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "figures/engine/sheets.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "POWER1 · PM": [
+    "drones/delivery"
+  ],
+  "POWER1 5.2 V": [
+    "drones/gpscam"
+  ],
+  "Powered, but {name} is missing: no current flows": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "Powered, but nothing runs: {name} is missing": [
+    "figures/engine/bench.js"
+  ],
+  "Powered, but the meter is not in the loop: nothing joins TP1 to TP2, so no current flows": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "Powered: Blink GPIO23 starts": [
+    "boards/esp32-devkitc"
+  ],
+  "Powered: Blink RGB starts": [
+    "boards/esp32-s3-devkitc-1"
+  ],
+  "Powered: Blink starts": [
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/uno-r3-build"
+  ],
+  "Powered: Forward starts": [
+    "robotics/l298n"
+  ],
+  "Powered: Full step, slowed down starts": [
+    "modules/uln2003"
+  ],
+  "Powered: Hand coming closer starts": [
+    "modules/hc-sr04"
+  ],
+  "Powered: Input HIGH starts": [
+    "robotics/transistor-switch"
+  ],
+  "Powered: MicroPython blink starts": [
+    "boards/pico"
+  ],
+  "Powered: Moisture screen starts": [
+    "modules/ssd1306"
+  ],
+  "Powered: Plant pot starts": [
+    "modules/soil-moisture"
+  ],
+  "Powered: Rocking about X starts": [
+    "modules/mpu6050"
+  ],
+  "Powered: Traffic cycle starts": [
+    "modules/traffic-light"
+  ],
+  "Pre-arm check": [
+    "drones/cinewhoop"
+  ],
+  "Pre-arm checks": [
+    "drones/gpscam"
+  ],
+  "Press {name}": [
+    "figures/engine/bench.js"
+  ],
+  "Pressed": [
+    "parts/push-button"
+  ],
+  "printed side forward": [
+    "drones/wing"
+  ],
+  "PROBE": [
+    "modules/soil-moisture"
+  ],
+  "Probe pad (one plate of the capacitor)": [
+    "modules/soil-moisture"
+  ],
+  "Program": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "prop": [
+    "parts/dc-motor"
+  ],
+  "PROP": [
+    "drones/wing"
+  ],
+  "Prop clearance check": [
+    "drones/cinewhoop"
+  ],
+  "PROP: mounted backwards": [
+    "drones/wing"
+  ],
+  "PROP: printed side forward": [
+    "drones/wing"
+  ],
+  "PROPS": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop"
+  ],
+  "props in": [
+    "drones/longrange"
+  ],
+  "props in (correct)": [
+    "drones/cinewhoop",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop"
+  ],
+  "props matched to motor spin": [
+    "drones/delivery"
+  ],
+  "props on the right motors": [
+    "drones/gpscam"
+  ],
+  "props swapped": [
+    "drones/longrange"
+  ],
+  "PROPS: props in": [
+    "drones/longrange"
+  ],
+  "PROPS: props in (correct)": [
+    "drones/cinewhoop",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop"
+  ],
+  "PROPS: props matched to motor spin": [
+    "drones/delivery"
+  ],
+  "PROPS: props on the right motors": [
+    "drones/gpscam"
+  ],
+  "PROPS: props swapped": [
+    "drones/longrange"
+  ],
+  "PROPS: swapped CW/CCW": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop"
+  ],
+  "PRTR5V0U2X USB ESD protection": [
+    "boards/uno-r4"
+  ],
+  "Push button": [
+    "parts/push-button",
+    "robotics/uno-r3-build"
+  ],
+  "Push button P1": [
+    "parts/push-button"
+  ],
+  "Push button SW1": [
+    "robotics/uno-r3-build"
+  ],
+  "PUSHER M1": [
+    "drones/wing"
+  ],
+  "Pusher motor + mount": [
+    "drones/wing"
+  ],
+  "Pusher propeller": [
+    "drones/wing"
+  ],
+  "Put the battery in first: in a wing the battery IS the balance": [
+    "drones/wing"
+  ],
+  "Put the LiPo down and wire +12V and GND": [
+    "robotics/l298n"
+  ],
+  "Put the LiPo down and wire VM and GND": [
+    "robotics/tb6612fng"
+  ],
+  "Put the motors down and wire A01/A02, B01/B02": [
+    "robotics/tb6612fng"
+  ],
+  "Put the motors down and wire OUT1/OUT2, OUT3/OUT4": [
+    "robotics/l298n"
+  ],
+  "Put the Nano down and wire IN1-IN4 and GND": [
+    "robotics/l298n"
+  ],
+  "Put the Nano down and wire JP2 and VCC": [
+    "robotics/tb6612fng"
+  ],
+  "PWM 50%": [
+    "robotics/transistor-switch"
+  ],
+  "PWM winch, 1 kg": [
+    "drones/delivery"
+  ],
+  "PWMA": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "PWMB": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "PWR": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "PWR · ON LED (5 V present)": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "PWR · Power pins − + (5-12 V)": [
+    "modules/uln2003"
+  ],
+  "PWR LED": [
+    "boards/esp32-devkitc"
+  ],
+  "Q1 · 100 mA": [
+    "parts/npn-2n2222"
+  ],
+  "Q1 · 158 mA": [
+    "robotics/transistor-switch"
+  ],
+  "Q1 · 200 mA": [
+    "parts/tip120"
+  ],
+  "Q1 · Auto-program transistor (EN)": [
+    "boards/esp32-devkitc"
+  ],
+  "Q1 · DMG1012T MOSFET (stops ADC3 leaking into 3V3)": [
+    "boards/pico"
+  ],
+  "Q1 · L8050 transistor: auto-reset (DTR to EN)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "Q1 · PNP switch: powers the driver only during a ping (BC857 in the schematic)": [
+    "modules/hc-sr04"
+  ],
+  "Q2 · Auto-program transistor (GPIO0)": [
+    "boards/esp32-devkitc"
+  ],
+  "Q2 · L8050 transistor: auto-boot (RTS to GPIO0)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "Q2 · NPN comparator output to the MCU (BC847 in the schematic)": [
+    "modules/hc-sr04"
+  ],
+  "R · 40 kHz ultrasonic receiver (R): a piezo disc in a 16 mm can": [
+    "modules/hc-sr04"
+  ],
+  "R_A · 1 kΩ resistor for LED A": [
+    "modules/uln2003"
+  ],
+  "R_B · 1 kΩ resistor for LED B": [
+    "modules/uln2003"
+  ],
+  "R_C · 1 kΩ resistor for LED C": [
+    "modules/uln2003"
+  ],
+  "R_D · 1 kΩ resistor for LED D": [
+    "modules/uln2003"
+  ],
+  "R_G · 330 Ω resistor for green": [
+    "modules/traffic-light"
+  ],
+  "R_OSC · Timer resistor (sets the frequency)": [
+    "modules/soil-moisture"
+  ],
+  "R_PAD · Series resistor to the pad (the RC with the soil)": [
+    "modules/soil-moisture"
+  ],
+  "R_R · 330 Ω resistor for red": [
+    "modules/traffic-light"
+  ],
+  "R_SCL · SCL pull-up resistor (to VCC)": [
+    "modules/ssd1306"
+  ],
+  "R_SDA · SDA pull-up resistor (to VCC)": [
+    "modules/ssd1306"
+  ],
+  "R_Y · 330 Ω resistor for yellow": [
+    "modules/traffic-light"
+  ],
+  "R1 · 1 kΩ": [
+    "boards/uno-r4",
+    "parts/resistor",
+    "robotics/transistor-switch"
+  ],
+  "R1 · 1 MΩ resistor across the crystal": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "R1 · 10 kΩ": [
+    "parts/resistor"
+  ],
+  "R1 · 100 kΩ": [
+    "parts/resistor"
+  ],
+  "R1 · 220 Ω resistor": [
+    "robotics/led-resistor"
+  ],
+  "R1 · 4.7 kΩ": [
+    "parts/resistor"
+  ],
+  "R1 · GPIO0 pull-up R1 (12 kΩ)": [
+    "boards/nodemcu"
+  ],
+  "R1 · Power LED resistor": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "R10 · 10 kΩ base resistor (DTR)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "R10 · 100 kΩ 0.1 % divider resistor": [
+    "boards/uno-r4"
+  ],
+  "R10 pads, not fitted (D0 to RST link)": [
+    "boards/nodemcu"
+  ],
+  "R11 · 10 kΩ EN pull-up resistor": [
+    "boards/esp32-devkitc"
+  ],
+  "R11 · 470 Ω in series with the RST button": [
+    "boards/nodemcu"
+  ],
+  "R11 · 5.1 kΩ resistor for the power LED": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "R12 · 10 kΩ base resistor (RTS)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "R12 · 470 Ω in series with the FLASH button": [
+    "boards/nodemcu"
+  ],
+  "R13 · 0 Ω link: Q2 to GPIO0": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "R13 · 220 kΩ A0 divider, top": [
+    "boards/nodemcu"
+  ],
+  "R14 · 100 kΩ A0 divider, bottom": [
+    "boards/nodemcu"
+  ],
+  "R14 · 330 Ω resistor for the TX LED": [
+    "boards/uno-r4"
+  ],
+  "R15 · 330 Ω resistor for the RX LED": [
+    "boards/uno-r4"
+  ],
+  "R16 · 1 kΩ CP2102N reset pull-up": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "R16 · 330 Ω resistor for the ON LED": [
+    "boards/uno-r4"
+  ],
+  "R17 · 0 Ω link on TXD0 (GPIO1)": [
+    "boards/esp32-devkitc"
+  ],
+  "R17 · 330 Ω resistor for the L LED": [
+    "boards/uno-r4"
+  ],
+  "R17 · R17 0 Ω link: data pin to the RGB LED": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "R17 0 Ω link: data pin to the RGB LED": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "R18 · 0 Ω link on RXD0 (GPIO3)": [
+    "boards/esp32-devkitc"
+  ],
+  "R18 · 47.5 kΩ VBUS sense resistor": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "R19 · 22.1 kΩ VBUS sense resistor": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "R2 · 1 kΩ": [
+    "parts/resistor",
+    "robotics/transistor-switch"
+  ],
+  "R2 · 1 kΩ resistor": [
+    "robotics/led-resistor"
+  ],
+  "R2 · 1 MΩ resistor across the resonator": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "R2 · GPIO2 pull-up R2 (12 kΩ)": [
+    "boards/nodemcu"
+  ],
+  "R2 · Power LED resistor (2 kΩ)": [
+    "boards/esp32-devkitc"
+  ],
+  "R201 · 1 kΩ resistor for the power LED": [
+    "modules/mpu6050"
+  ],
+  "R21 · Auto-program base resistor (DTR)": [
+    "boards/esp32-devkitc"
+  ],
+  "R22 · Auto-program base resistor (RTS)": [
+    "boards/esp32-devkitc"
+  ],
+  "R23 · 1 MΩ shield bleed resistor": [
+    "boards/uno-r4"
+  ],
+  "R24 · 2 kΩ resistor (CP2102N side)": [
+    "boards/esp32-devkitc"
+  ],
+  "R24 · 5.1 kΩ USB-C CC1 pull-down (asks for 5 V)": [
+    "boards/uno-r4"
+  ],
+  "R24 · R24 0 Ω link: 3.3 V to the module and 3V3 pins": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "R24 0 Ω link: 3.3 V to the module and 3V3 pins": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "R25 · 22.1 kΩ VBUS sense resistor": [
+    "boards/esp32-devkitc"
+  ],
+  "R25 · 5.1 kΩ USB-C CC2 pull-down (asks for 5 V)": [
+    "boards/uno-r4"
+  ],
+  "R26 · 13.7 kΩ 0.1 % divider resistor": [
+    "boards/uno-r4"
+  ],
+  "R26 · 47.5 kΩ VBUS sense resistor": [
+    "boards/esp32-devkitc"
+  ],
+  "R3 · 10 kΩ resistor": [
+    "robotics/led-resistor"
+  ],
+  "R3 · 4.7 kΩ": [
+    "parts/resistor"
+  ],
+  "R3 · 5.1 kΩ RESET pull-up": [
+    "boards/uno-r4"
+  ],
+  "R3 · EN pull-up R3 (12 kΩ)": [
+    "boards/nodemcu"
+  ],
+  "R4 · 10 kΩ": [
+    "parts/resistor"
+  ],
+  "R4 · 12 kΩ pull-up on RST": [
+    "boards/nodemcu"
+  ],
+  "R4 · 4.7 kΩ SDA pull-up to 3.3 V": [
+    "modules/mpu6050"
+  ],
+  "R4 · 5.1 kΩ CC1 pull-down (tells a USB-C charger to turn 5 V on)": [
+    "robotics/led-resistor"
+  ],
+  "R4 5769 MHz, 25 mW": [
+    "drones/racer"
+  ],
+  "R4 MINIMA": [
+    "boards/uno-r4"
+  ],
+  "R5 · 10 kΩ EN pull-up": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "R5 · 4.7 kΩ SCL pull-up to 3.3 V": [
+    "modules/mpu6050"
+  ],
+  "R5 · 5.1 kΩ CC2 pull-down (the other way round of the plug)": [
+    "robotics/led-resistor"
+  ],
+  "R5 · GPIO15 pull-down R5 (12 kΩ)": [
+    "boards/nodemcu"
+  ],
+  "R6 · 4.7 kΩ AD0 pull-down (address 0x68)": [
+    "modules/mpu6050"
+  ],
+  "R6 · 470 Ω from CP2102 TXD to the ESP RX pin": [
+    "boards/nodemcu"
+  ],
+  "R7 · 0 Ω link: CP2102N TXD to RX (GPIO44)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "R7 · 12 kΩ base resistor for VT1 (DTR)": [
+    "boards/nodemcu"
+  ],
+  "R8 · 0 Ω link: Q1 to EN": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "R8 · 12 kΩ base resistor for VT2 (RTS)": [
+    "boards/nodemcu"
+  ],
+  "R9 · 0 Ω link: TX (GPIO43) to CP2102N RXD": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "R9 · 470 Ω in series with LED1": [
+    "boards/nodemcu"
+  ],
+  "Race LiPo + strap and grip pad": [
+    "drones/racer"
+  ],
+  "Race propellers, 2 CW + 2 CCW": [
+    "drones/racer"
+  ],
+  "RACE VTX": [
+    "drones/racer"
+  ],
+  "Raise the supply current limit, or use a bigger resistor": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "RASPBERRY PI 5": [
+    "drones/delivery"
+  ],
+  "Raspberry Pi 5 companion computer (MAVLink on TELEM2)": [
+    "drones/delivery"
+  ],
+  "Raspberry Pi Pico": [
+    "boards/pico"
+  ],
+  "Raspberry Pi Pico © 2020": [
+    "boards/pico"
+  ],
+  "RC · Resistors and capacitors on the back (R1-R21, C1-C16)": [
+    "modules/hc-sr04"
+  ],
+  "RC BACKUP": [
+    "drones/delivery"
+  ],
+  "RC RECEIVER": [
+    "drones/delivery",
+    "drones/gpscam"
+  ],
+  "Reaction timer: LED on D13, button from D2 to GND": [
+    "robotics/uno-r3-build"
+  ],
+  "RECEIVER": [
+    "drones/cinewhoop",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/wing",
+    "modules/hc-sr04"
+  ],
+  "Receiver test": [
+    "drones/racer",
+    "drones/whoop"
+  ],
+  "red": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "parts/led",
+    "parts/push-button",
+    "robotics/uno-r3-build"
+  ],
+  "RED": [
+    "modules/traffic-light"
+  ],
+  "Red 5 mm LED": [
+    "robotics/led-resistor"
+  ],
+  "Red duty": [
+    "parts/rgb-led"
+  ],
+  "red lead to - (reversed)": [
+    "drones/whoop"
+  ],
+  "red lead to +": [
+    "drones/whoop"
+  ],
+  "Red LED": [
+    "modules/traffic-light"
+  ],
+  "Red power LED": [
+    "boards/esp32-devkitc"
+  ],
+  "Red power LED (3.3 V)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "Red, green and blue dies": [
+    "figures/parts/rgb-led.js"
+  ],
+  "REF": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "Reflow done: every SMD joint is soldered": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "REG · 3.3 V regulator (662K)": [
+    "modules/soil-moisture",
+    "modules/ssd1306"
+  ],
+  "Regulator input capacitor": [
+    "modules/ssd1306"
+  ],
+  "Regulator input capacitor (22 µF)": [
+    "boards/esp32-devkitc"
+  ],
+  "Regulator output capacitor": [
+    "modules/soil-moisture"
+  ],
+  "Regulator output capacitor (22 µF)": [
+    "boards/esp32-devkitc"
+  ],
+  "Remove a part": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Renesas RA4M1 microcontroller (R7FA4M1AB3CFM)": [
+    "boards/uno-r4"
+  ],
+  "Repair everything": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "figures/engine/bench.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "RES1 · 220 Ω": [
+    "boards/uno-r3"
+  ],
+  "RESET": [
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/esp32-s3-build",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "RESET · RESET button": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "RESET button": [
+    "boards/nano",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "RESET button (EN to GND)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "Reset clamp diode (16U2)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "Reset clamp diode (328P)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "Reset zoom": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "parts/aa-holder-4",
+    "parts/breadboard",
+    "parts/dc-motor",
+    "parts/diode-1n4007",
+    "parts/fan",
+    "parts/fsr402",
+    "parts/hc-sr04",
+    "parts/ldr",
+    "parts/led",
+    "parts/lipo-2s",
+    "parts/mpu6050",
+    "parts/npn-2n2222",
+    "parts/piezo-buzzer",
+    "parts/potentiometer",
+    "parts/push-button",
+    "parts/resistor",
+    "parts/rgb-led",
+    "parts/servo-sg90",
+    "parts/soil-moisture",
+    "parts/ssd1306",
+    "parts/stepper-28byj48",
+    "parts/tip120",
+    "parts/tmp36",
+    "parts/traffic-light",
+    "parts/tt-motor",
+    "parts/wire",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "RESET-EN solder jumper (cut it to stop auto-reset)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "Resistor": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "figures/engine/sheets.js",
+    "parts/resistor",
+    "robotics/led-resistor",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Resistor R1": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/pico",
+    "boards/uno-r4",
+    "parts/resistor",
+    "robotics/transistor-switch"
+  ],
+  "Resistor R101": [
+    "boards/nodemcu"
+  ],
+  "Resistor R2": [
+    "parts/resistor",
+    "robotics/transistor-switch"
+  ],
+  "Resistor R3": [
+    "parts/resistor",
+    "robotics/uno-r3-build"
+  ],
+  "Resistor R4": [
+    "parts/resistor"
+  ],
+  "Resistor RES1": [
+    "boards/uno-r3"
+  ],
+  "Resistors and capacitors on the back (R1-R21, C1-C16)": [
+    "modules/hc-sr04"
+  ],
+  "RESONATOR": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "Reverse": [
+    "modules/l298n",
+    "modules/tb6612fng",
+    "robotics/l298n",
+    "robotics/tb6612fng"
+  ],
+  "Reverse polarity on {src}": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "figures/engine/bench.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Reverse polarity: {name} blocks it, nothing powers up": [
+    "figures/engine/bench.js"
+  ],
+  "Reverse polarity: {name} burned": [
+    "figures/engine/bench.js"
+  ],
+  "Reverse polarity: the supply leads are swapped. C1 is reverse-biased and vents; D1 only blocks, so it survives": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "Reverse polarity: the supply leads are swapped. D1 blocks and stays dark": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "reversed": [
+    "parts/dc-motor",
+    "parts/fan",
+    "parts/tt-motor"
+  ],
+  "reversed (untested)": [
+    "drones/wing"
+  ],
+  "RF / antenna": [
+    "drones/whoop"
+  ],
+  "RGB colour wheel": [
+    "robotics/esp32-s3-build"
+  ],
+  "RGB LED": [
+    "boards/esp32-s3-devkitc-1",
+    "parts/rgb-led",
+    "robotics/esp32-s3-build"
+  ],
+  "RGB LED P1": [
+    "parts/rgb-led"
+  ],
+  "RGB rainbow": [
+    "boards/esp32-s3-devkitc-1"
+  ],
+  "RGB@IO38": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "Right header: D0-D8, RX, TX, 3V3": [
+    "boards/nodemcu"
+  ],
+  "Right pin header J3 (22 pins)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "Ring to pin W": [
+    "figures/parts/potentiometer.js"
+  ],
+  "Ring: pins 1–2": [
+    "figures/parts/push-button.js"
+  ],
+  "RN1 · 10 kΩ resistor array (reset pull-ups)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "RN2 · 1 kΩ resistor array (L, TX, RX LEDs)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "RN3 · 22 Ω resistor array (USB data lines)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "RN4 · 1 kΩ resistor array (ON LED)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "Rocking about X": [
+    "modules/mpu6050"
+  ],
+  "RP1 · 4 x 1 kΩ array: D0 and D1 to the FT232, ON LED, RESET pull-up": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "RP2 · 4 x 1 kΩ array: L, TX and RX LEDs": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "RP2040": [
+    "boards/pico"
+  ],
+  "RP2040 microcontroller (dual Cortex-M0+, 264 KB SRAM)": [
+    "boards/pico"
+  ],
+  "RST": [
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "robotics/esp32-s3-build",
+    "robotics/transistor-switch"
+  ],
+  "RST button": [
+    "boards/nodemcu"
+  ],
+  "RST EN": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "RSV": [
+    "boards/nodemcu"
+  ],
+  "RT6150B buck-boost regulator (VSYS to 3.3 V)": [
+    "boards/pico"
+  ],
+  "running": [
+    "parts/aa-holder-4"
+  ],
+  "RUNNING": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "RX": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/esp32-s3-build",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "RX · RX LED": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "RX · RX LED (the computer sends)": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "RX LED": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "RX LED (the computer sends)": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "RX LED (yellow)": [
+    "boards/uno-r4"
+  ],
+  "RX←0": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "RX◂0": [
+    "boards/uno-r4"
+  ],
+  "RX0": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "RXLOSS: failsafe stage 1, last sticks for 1.5 s": [
+    "figures/drones/cinewhoop.js"
+  ],
+  "S1 · RST button": [
+    "boards/nodemcu"
+  ],
+  "S1 OneShot125": [
+    "drones/wing"
+  ],
+  "S2 · FLASH button (GPIO0, D3)": [
+    "boards/nodemcu"
+  ],
+  "S8050 transistor: auto-program (pulls GPIO0 low)": [
+    "boards/nodemcu"
+  ],
+  "S8050 transistor: auto-reset (pulls RST low)": [
+    "boards/nodemcu"
+  ],
+  "Schematic": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Schematic · {name}": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "figures/engine/sheets.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "SCL": [
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/mpu6050",
+    "modules/ssd1306",
+    "robotics/uno-r3-build"
+  ],
+  "SCL pull-up resistor (to VCC)": [
+    "modules/ssd1306"
+  ],
+  "Screw terminal for a bench supply (EXT 5V)": [
+    "robotics/led-resistor"
+  ],
+  "SD0": [
+    "boards/nodemcu"
+  ],
+  "SD1": [
+    "boards/nodemcu"
+  ],
+  "SD2": [
+    "boards/nodemcu"
+  ],
+  "SD3": [
+    "boards/nodemcu"
+  ],
+  "SDA": [
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/mpu6050",
+    "modules/ssd1306",
+    "robotics/uno-r3-build"
+  ],
+  "SDA pull-up resistor (to VCC)": [
+    "modules/ssd1306"
+  ],
+  "See-through": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "figures/vendor/colorfigures/core.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "parts/aa-holder-4",
+    "parts/breadboard",
+    "parts/dc-motor",
+    "parts/diode-1n4007",
+    "parts/fan",
+    "parts/fsr402",
+    "parts/hc-sr04",
+    "parts/ldr",
+    "parts/led",
+    "parts/lipo-2s",
+    "parts/mpu6050",
+    "parts/npn-2n2222",
+    "parts/piezo-buzzer",
+    "parts/potentiometer",
+    "parts/push-button",
+    "parts/resistor",
+    "parts/rgb-led",
+    "parts/servo-sg90",
+    "parts/soil-moisture",
+    "parts/ssd1306",
+    "parts/stepper-28byj48",
+    "parts/tip120",
+    "parts/tmp36",
+    "parts/traffic-light",
+    "parts/tt-motor",
+    "parts/wire",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "See-through: the chips show their silicon, copper shows where current flows": [
+    "figures/engine/bench.js",
+    "robotics/l298n",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch"
+  ],
+  "See-through: the covers fade so the insides, the power path and the signals show.": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing"
+  ],
+  "See-through: the top plate and battery fade so the stack, the power path and the signals show.": [
+    "drones/quad5"
+  ],
+  "Sensor cable plug": [
+    "modules/soil-moisture"
+  ],
+  "Sensor socket (JST-PH, AOUT VCC GND)": [
+    "modules/soil-moisture"
+  ],
+  "Serial hello": [
+    "boards/esp32-devkitc",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/uno-r3-build"
+  ],
+  "Series resistor to the pad (the RC with the soil)": [
+    "modules/soil-moisture"
+  ],
+  "Servo winch, release hook, cargo cage and 1 kg parcel": [
+    "drones/delivery"
+  ],
+  "SERVOS": [
+    "drones/wing"
+  ],
+  "SERVOS: direction checked": [
+    "drones/wing"
+  ],
+  "SERVOS: reversed (untested)": [
+    "drones/wing"
+  ],
+  "Set up the mat": [
+    "robotics/l298n",
+    "robotics/tb6612fng"
+  ],
+  "Set. Now power the board to see it": [
+    "figures/robotics/led-resistor.js",
+    "robotics/led-resistor"
+  ],
+  "SG90 servo": [
+    "parts/servo-sg90"
+  ],
+  "SG90 servo SV1": [
+    "parts/servo-sg90"
+  ],
+  "SGM2212 3.3 V regulator (LDO)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "Short between {a} and {b}: {name} limits its current, so {rail} falls to 0 V and the rest runs": [
+    "figures/engine/bench.js"
+  ],
+  "Short between {a} and {b}: the supply trips": [
+    "figures/engine/bench.js"
+  ],
+  "Short from {a} to {b}": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "figures/engine/bench.js",
+    "modules/hc-sr04",
+    "modules/mpu6050",
+    "robotics/esp32-s3-build",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Show": [
+    "parts/aa-holder-4",
+    "parts/dc-motor",
+    "parts/diode-1n4007",
+    "parts/fan",
+    "parts/lipo-2s",
+    "parts/npn-2n2222",
+    "parts/servo-sg90",
+    "parts/stepper-28byj48",
+    "parts/tip120",
+    "parts/tt-motor"
+  ],
+  "SHUNT · Jumper cap": [
+    "robotics/led-resistor"
+  ],
+  "SiK": [
+    "drones/delivery"
+  ],
+  "SIK": [
+    "drones/gpscam"
+  ],
+  "SiK 915 MHz": [
+    "drones/gpscam"
+  ],
+  "SiK 915/433 MHz": [
+    "drones/delivery"
+  ],
+  "SiK telemetry radio (915 MHz US / 433 MHz EU)": [
+    "drones/delivery"
+  ],
+  "Silicon die": [
+    "figures/parts/tmp36.js"
+  ],
+  "Silver fingers": [
+    "figures/parts/fsr402.js"
+  ],
+  "SK1 · DIP-28 socket": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "SK68XXMINI-HS addressable RGB LED": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "Slide switch": [
+    "robotics/led-resistor"
+  ],
+  "Small 0402 resistors and capacitors around the buck and the MCU": [
+    "boards/uno-r4"
+  ],
+  "SMD parts first: run pick and place + reflow. The oven would melt plastic parts": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Smoke stopper test": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing"
+  ],
+  "Snap dome": [
+    "figures/parts/push-button.js"
+  ],
+  "Soft start ramp": [
+    "robotics/transistor-switch"
+  ],
+  "Soil moisture (%)": [
+    "parts/soil-moisture"
+  ],
+  "Soil moisture sensor (capacitive)": [
+    "parts/soil-moisture"
+  ],
+  "Soil moisture sensor (capacitive) S1": [
+    "parts/soil-moisture"
+  ],
+  "Solder everything first: this part goes on last": [
+    "modules/l298n",
+    "robotics/l298n",
+    "robotics/led-resistor"
+  ],
+  "Solder joints": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Solder the power lead and the ESC first": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/wing"
+  ],
+  "Soldering {n} parts": [
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng"
+  ],
+  "Sound hole": [
+    "figures/parts/piezo-buzzer.js"
+  ],
+  "SPACE": [
+    "figures/vendor/colorfigures/core.js"
+  ],
+  "Spacer, air vent": [
+    "figures/parts/fsr402.js"
+  ],
+  "Spin on the spot": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "SS14": [
+    "boards/nodemcu"
+  ],
+  "SS14 Schottky diode D1": [
+    "boards/nodemcu"
+  ],
+  "SS1P3L Schottky diode: USB to 5 V": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "SSD1306 OLED module": [
+    "modules/ssd1306"
+  ],
+  "ST": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "ST1": [
+    "parts/stepper-28byj48"
+  ],
+  "stall": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "stalled": [
+    "parts/dc-motor",
+    "parts/tt-motor"
+  ],
+  "Standby (STBY low)": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "Status": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "figures/engine/bench.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Steady HIGH": [
+    "parts/piezo-buzzer"
+  ],
+  "Stepping": [
+    "parts/stepper-28byj48"
+  ],
+  "Stereo depth camera (RealSense D435i class), forward-facing": [
+    "drones/delivery"
+  ],
+  "stopped": [
+    "parts/dc-motor",
+    "parts/fan",
+    "parts/tt-motor"
+  ],
+  "Stretched-X carbon race frame": [
+    "drones/racer"
+  ],
+  "Strip to bare PCB": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "stripe (−) toward GND, as printed": [
+    "robotics/led-resistor"
+  ],
+  "stripe (minus) to the front, as printed": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "stripe to minus": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/wing"
+  ],
+  "stripe to plus": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/wing"
+  ],
+  "stripe to the back (backwards)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "stripe toward + (backwards)": [
+    "robotics/led-resistor"
+  ],
+  "Stripped to the bare PCB: build it back part by part": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Supply current limit at 10 mA": [
+    "robotics/led-resistor"
+  ],
+  "supply too low": [
+    "parts/tmp36"
+  ],
+  "SV1": [
+    "parts/servo-sg90"
+  ],
+  "SW1": [
+    "robotics/led-resistor"
+  ],
+  "SW1 · BOOT button (GPIO0 to GND)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "SW1 · Boot button on GPIO0": [
+    "boards/esp32-devkitc"
+  ],
+  "SW1 · BOOTSEL button": [
+    "boards/pico"
+  ],
+  "SW1 · RESET button": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "SW1 · Slide switch": [
+    "robotics/led-resistor"
+  ],
+  "SW1 is OFF: slide it to ON": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "SW2 · EN (reset) button": [
+    "boards/esp32-devkitc"
+  ],
+  "SW2 · RESET button (EN to GND)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "Swap the leads": [
+    "figures/engine/bench.js"
+  ],
+  "swapped CW/CCW": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop"
+  ],
+  "SWD": [
+    "boards/uno-r4"
+  ],
+  "SWD debug pads (SWCLK, GND, SWDIO)": [
+    "boards/pico"
+  ],
+  "SWD/JTAG debug header, 2 x 5, 1.27 mm (pin 1 is +5 V)": [
+    "boards/uno-r4"
+  ],
+  "switching 100 mA": [
+    "parts/npn-2n2222"
+  ],
+  "switching 200 mA": [
+    "parts/tip120"
+  ],
+  "T · 40 kHz ultrasonic transmitter (T): a piezo disc in a 16 mm can": [
+    "modules/hc-sr04"
+  ],
+  "T1 · FDN340P MOSFET: USB power switch": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "tabs melted": [
+    "parts/fsr402"
+  ],
+  "Take it apart": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing"
+  ],
+  "Take the {dep} off first": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing"
+  ],
+  "Tantalum capacitor C2 (100 µF)": [
+    "boards/nodemcu"
+  ],
+  "TB6612FNG dual H-bridge driver": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "TB6612FNG dual motor driver": [
+    "modules/tb6612fng"
+  ],
+  "TB6612FNG motor driver": [
+    "robotics/tb6612fng"
+  ],
+  "TELEM1": [
+    "drones/delivery"
+  ],
+  "TELEM1 MAVLink2": [
+    "drones/gpscam"
+  ],
+  "TELEM2 · 921600": [
+    "drones/delivery"
+  ],
+  "TELEM2 CRSF": [
+    "drones/gpscam"
+  ],
+  "TELEM3": [
+    "drones/delivery"
+  ],
+  "TELEMETRY": [
+    "drones/delivery",
+    "drones/gpscam"
+  ],
+  "Temperature (°C)": [
+    "parts/tmp36"
+  ],
+  "Temperature sensor (TMP36)": [
+    "parts/tmp36"
+  ],
+  "Temperature sensor (TMP36) P1": [
+    "parts/tmp36"
+  ],
+  "Test pad TP1 (GND, underside)": [
+    "boards/pico"
+  ],
+  "Test pads TP3 and TP2 (USB D+ and D-, underside)": [
+    "boards/pico"
+  ],
+  "Test pads TP6, TP5, TP4 (BOOTSEL, GP25, GP23; underside)": [
+    "boards/pico"
+  ],
+  "Test point (+)": [
+    "robotics/led-resistor"
+  ],
+  "Test point (COM)": [
+    "robotics/led-resistor"
+  ],
+  "Thin top plate + 20 mm standoffs": [
+    "drones/racer"
+  ],
+  "TIMER · TLC555 CMOS timer (runs from 2 V)": [
+    "modules/soil-moisture"
+  ],
+  "Timer capacitor": [
+    "modules/soil-moisture"
+  ],
+  "Timer resistor (sets the frequency)": [
+    "modules/soil-moisture"
+  ],
+  "Tiny Whoop 65 mm": [
+    "drones/whoop"
+  ],
+  "TIP120 transistor": [
+    "parts/tip120",
+    "robotics/transistor-switch"
+  ],
+  "TIP120 transistor Q1": [
+    "parts/tip120",
+    "robotics/transistor-switch"
+  ],
+  "TLC555": [
+    "modules/soil-moisture"
+  ],
+  "TLC555 CMOS timer (runs from 2 V)": [
+    "modules/soil-moisture"
+  ],
+  "Tone (Hz)": [
+    "parts/piezo-buzzer"
+  ],
+  "too fast": [
+    "parts/stepper-28byj48"
+  ],
+  "Too fast: 1000 steps/s": [
+    "modules/uln2003"
+  ],
+  "Too high a voltage on {src}": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "figures/engine/bench.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Too low a voltage on {src}": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "figures/engine/bench.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "TOP PLATE": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer"
+  ],
+  "Top plate and 27.5 mm standoffs": [
+    "drones/quad5"
+  ],
+  "Top plate and 31 mm standoffs": [
+    "drones/cinewhoop"
+  ],
+  "Top plate on 40 mm standoffs, battery straps": [
+    "drones/delivery"
+  ],
+  "Top plate, bolted on the arms": [
+    "drones/gpscam"
+  ],
+  "Top plate, standoffs + GPS mast": [
+    "drones/longrange"
+  ],
+  "TP1 · Test point (+)": [
+    "robotics/led-resistor"
+  ],
+  "TP1 +": [
+    "robotics/led-resistor"
+  ],
+  "TP2": [
+    "robotics/led-resistor"
+  ],
+  "TP2 · Test point (COM)": [
+    "robotics/led-resistor"
+  ],
+  "track burnt": [
+    "parts/potentiometer"
+  ],
+  "track shorted": [
+    "parts/potentiometer"
+  ],
+  "Traffic cycle": [
+    "modules/traffic-light"
+  ],
+  "TRAFFIC LIGHT": [
+    "modules/traffic-light"
+  ],
+  "Traffic light module": [
+    "parts/traffic-light"
+  ],
+  "Traffic light module P1": [
+    "parts/traffic-light"
+  ],
+  "Traffic-light LED module": [
+    "modules/traffic-light"
+  ],
+  "Transistor switch: a Nano drives a motor": [
+    "robotics/transistor-switch"
+  ],
+  "TRANSMITTER": [
+    "modules/hc-sr04"
+  ],
+  "Trig": [
+    "modules/hc-sr04"
+  ],
+  "TT gear motor": [
+    "parts/tt-motor",
+    "robotics/transistor-switch"
+  ],
+  "TT gear motor M1": [
+    "parts/tt-motor",
+    "robotics/transistor-switch"
+  ],
+  "Turned every prop by hand: {g} mm to the duct wall all round, no rub, no chipped tips": [
+    "figures/drones/cinewhoop.js"
+  ],
+  "turning": [
+    "parts/stepper-28byj48"
+  ],
+  "Turntable": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "figures/vendor/colorfigures/core.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "parts/aa-holder-4",
+    "parts/breadboard",
+    "parts/dc-motor",
+    "parts/diode-1n4007",
+    "parts/fan",
+    "parts/fsr402",
+    "parts/hc-sr04",
+    "parts/ldr",
+    "parts/led",
+    "parts/lipo-2s",
+    "parts/mpu6050",
+    "parts/npn-2n2222",
+    "parts/piezo-buzzer",
+    "parts/potentiometer",
+    "parts/push-button",
+    "parts/resistor",
+    "parts/rgb-led",
+    "parts/servo-sg90",
+    "parts/soil-moisture",
+    "parts/ssd1306",
+    "parts/stepper-28byj48",
+    "parts/tip120",
+    "parts/tmp36",
+    "parts/traffic-light",
+    "parts/tt-motor",
+    "parts/wire",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "TWO BIPOLAR H-BRIDGES": [
+    "robotics/l298n"
+  ],
+  "TWO H-BRIDGES": [
+    "robotics/tb6612fng"
+  ],
+  "TX": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/esp32-s3-build",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "TX · TX LED": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "TX · TX LED (the Nano sends)": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "TX LED": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "TX LED (the Nano sends)": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "TX LED (yellow)": [
+    "boards/uno-r4"
+  ],
+  "TX→1": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "TX▸1": [
+    "boards/uno-r4"
+  ],
+  "TX1": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "Type": [
+    "parts/diode-1n4007",
+    "parts/piezo-buzzer"
+  ],
+  "u-blox M10, mast": [
+    "drones/delivery"
+  ],
+  "U1 · CP2102N USB-to-UART bridge": [
+    "boards/esp32-devkitc"
+  ],
+  "U1 · EM78P153S microcontroller: sends the burst, times the echo": [
+    "modules/hc-sr04"
+  ],
+  "U1 · ESP-12E Wi-Fi module": [
+    "boards/nodemcu"
+  ],
+  "U1 · L298N dual H-bridge on its heatsink": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "U1 · NCP1117 5 V regulator": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "U1 · OLED glass with the SSD1306 controller": [
+    "modules/ssd1306"
+  ],
+  "U1 · Renesas RA4M1 microcontroller (R7FA4M1AB3CFM)": [
+    "boards/uno-r4"
+  ],
+  "U1 · RP2040 microcontroller (dual Cortex-M0+, 264 KB SRAM)": [
+    "boards/pico"
+  ],
+  "U1 · TB6612FNG dual H-bridge driver": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "U1 · ULN2003 Darlington driver": [
+    "modules/uln2003"
+  ],
+  "U1 · ULN2003 Darlington driver · notch left, as printed": [
+    "modules/uln2003"
+  ],
+  "U1 · ULN2003 Darlington driver · notch right (backwards)": [
+    "modules/uln2003"
+  ],
+  "U2 · 3.3 V regulator (662K, XC6206): VCC to 3.3 V, 6 V at most": [
+    "modules/mpu6050"
+  ],
+  "U2 · 78M05 5 V regulator (logic supply)": [
+    "modules/l298n",
+    "robotics/l298n"
+  ],
+  "U2 · AMS1117-3.3 regulator": [
+    "boards/esp32-devkitc"
+  ],
+  "U2 · CP2102 USB-to-UART bridge": [
+    "boards/nodemcu"
+  ],
+  "U2 · ISL854102 buck converter (VIN to 5 V, 1.2 A)": [
+    "boards/uno-r4"
+  ],
+  "U2 · LP2985 3.3 V regulator": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "U2 · MAX3232 transmit driver: drives T in antiphase from its charge pump": [
+    "modules/hc-sr04"
+  ],
+  "U2 · RT6150B buck-boost regulator (VSYS to 3.3 V)": [
+    "boards/pico"
+  ],
+  "U2 · SGM2212 3.3 V regulator (LDO)": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "U3 · ATmega16U2 USB-to-serial bridge": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "U3 · CP2102N USB-to-UART bridge": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "U3 · ESP32-WROOM-32E module": [
+    "boards/esp32-devkitc"
+  ],
+  "U3 · LM324 quad op-amp: amplifies, filters and compares what R hears": [
+    "modules/hc-sr04"
+  ],
+  "U3 · Micro-USB socket": [
+    "boards/nodemcu"
+  ],
+  "U3 · W25Q16JV 2 MB QSPI flash": [
+    "boards/pico"
+  ],
+  "U4 · AMS1117-3.3 regulator": [
+    "boards/nodemcu"
+  ],
+  "U4 · ESP32-S3-WROOM-1-N8R8 module": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "U5 · LMV358 op-amp: USB/VIN switch and L buffer": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "UART": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "UART PORT": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "UART1 CRSF": [
+    "drones/wing"
+  ],
+  "UART1 MSP + VBAT": [
+    "drones/cinewhoop"
+  ],
+  "UART2 · CRSF": [
+    "drones/longrange"
+  ],
+  "UART2 CRSF": [
+    "drones/quad5",
+    "drones/racer"
+  ],
+  "UART2 CRSF + 5 V": [
+    "drones/cinewhoop"
+  ],
+  "UART3 + I2C": [
+    "drones/longrange"
+  ],
+  "UART3 + I2C1": [
+    "drones/wing"
+  ],
+  "ULN2003": [
+    "modules/uln2003"
+  ],
+  "ULN2003 Darlington driver": [
+    "modules/uln2003"
+  ],
+  "ULN2003 stepper driver board": [
+    "modules/uln2003"
+  ],
+  "Ultrasonic distance sensor (HC-SR04)": [
+    "parts/hc-sr04"
+  ],
+  "Ultrasonic distance sensor (HC-SR04) P1": [
+    "parts/hc-sr04"
+  ],
+  "UNO": [
+    "boards/uno-r4"
+  ],
+  "Uno pins (5 V logic)": [
+    "modules/traffic-light"
+  ],
+  "UNO R3": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "Unplug": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Unplug, fit {name} and solder it": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "Unplug, move the jumper back to 220 Ω, then replace D1": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "Unplug, set the supply back to 5 V (or use a bigger resistor), then replace D1": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "Unplug, swap the leads (red to +)": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "Unplug, swap the leads (red to +), then fit a new C1": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "Unplug, then fit a new C1 with its stripe (−) toward GND": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "Unplug, then turn D1 round: long leg (anode) in the + hole": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "Unplug, then turn it round": [
+    "figures/engine/bench.js"
+  ],
+  "Unpowered": [
+    "robotics/l298n",
+    "robotics/tb6612fng"
+  ],
+  "Upload sketch": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "UPLOADING": [
+    "figures/engine/bench.js"
+  ],
+  "USB": [
+    "boards/esp32-s3-devkitc-1",
+    "boards/nodemcu",
+    "boards/pico",
+    "drones/delivery",
+    "robotics/esp32-s3-build"
+  ],
+  "USB 3": [
+    "drones/delivery"
+  ],
+  "USB cable": [
+    "boards/esp32-devkitc",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "USB cable in the UART port": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "USB cable in the USB port": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "USB Mini-B socket": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "USB PORT": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "USB-B": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "USB-B socket": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "USB-C": [
+    "boards/uno-r4"
+  ],
+  "USB-C cable": [
+    "boards/uno-r4"
+  ],
+  "USB-C charger": [
+    "robotics/led-resistor"
+  ],
+  "USB-C power jack (power-only receptacle)": [
+    "robotics/led-resistor"
+  ],
+  "USB-C socket (5 V sink, no Power Delivery)": [
+    "boards/uno-r4"
+  ],
+  "USB-SERIAL": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "USB-UART": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "USB, with a 5 V sensor output on GP17": [
+    "boards/pico"
+  ],
+  "Use {range} V": [
+    "boards/pico",
+    "figures/engine/bench.js",
+    "figures/robotics/led-resistor.js"
+  ],
+  "User LED (GP25)": [
+    "boards/pico"
+  ],
+  "Value": [
+    "parts/potentiometer",
+    "parts/resistor"
+  ],
+  "Varistor: ESD guard on USB D+": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "Varistor: ESD guard on USB D−": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "VBAT": [
+    "drones/cinewhoop",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer"
+  ],
+  "VBAT 2-6S": [
+    "drones/wing"
+  ],
+  "VBAT pads": [
+    "drones/whoop"
+  ],
+  "VBUS pin": [
+    "boards/pico"
+  ],
+  "Vcc": [
+    "modules/hc-sr04"
+  ],
+  "VCC": [
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "VCOMH capacitor": [
+    "modules/ssd1306"
+  ],
+  "video": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing"
+  ],
+  "video · SmartAudio": [
+    "drones/longrange"
+  ],
+  "video + 5 V": [
+    "drones/whoop"
+  ],
+  "video + OSD, 9 V": [
+    "drones/wing"
+  ],
+  "video + OSD, SmartAudio": [
+    "drones/racer"
+  ],
+  "video in": [
+    "drones/longrange"
+  ],
+  "View": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "figures/vendor/colorfigures/core.js",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "parts/aa-holder-4",
+    "parts/breadboard",
+    "parts/dc-motor",
+    "parts/diode-1n4007",
+    "parts/fan",
+    "parts/fsr402",
+    "parts/hc-sr04",
+    "parts/ldr",
+    "parts/led",
+    "parts/lipo-2s",
+    "parts/mpu6050",
+    "parts/npn-2n2222",
+    "parts/piezo-buzzer",
+    "parts/potentiometer",
+    "parts/push-button",
+    "parts/resistor",
+    "parts/rgb-led",
+    "parts/servo-sg90",
+    "parts/soil-moisture",
+    "parts/ssd1306",
+    "parts/stepper-28byj48",
+    "parts/tip120",
+    "parts/tmp36",
+    "parts/traffic-light",
+    "parts/tt-motor",
+    "parts/wire",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Vin": [
+    "boards/nodemcu"
+  ],
+  "VIN": [
+    "boards/nano",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/led-resistor",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Vin pin": [
+    "boards/nodemcu"
+  ],
+  "VIN pin": [
+    "boards/nano",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "VM": [
+    "modules/tb6612fng",
+    "robotics/tb6612fng"
+  ],
+  "VN": [
+    "boards/esp32-devkitc"
+  ],
+  "VP": [
+    "boards/esp32-devkitc"
+  ],
+  "VT1 · S8050 transistor: auto-reset (pulls RST low)": [
+    "boards/nodemcu"
+  ],
+  "VT2 · S8050 transistor: auto-program (pulls GPIO0 low)": [
+    "boards/nodemcu"
+  ],
+  "VTX": [
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/wing"
+  ],
+  "VTX ANT": [
+    "drones/whoop"
+  ],
+  "VTX ANTENNA": [
+    "drones/whoop"
+  ],
+  "VTX UART2 SmartAudio": [
+    "drones/whoop"
+  ],
+  "W25Q16JV 2 MB QSPI flash": [
+    "boards/pico"
+  ],
+  "Wait for GPS lock": [
+    "drones/delivery",
+    "drones/gpscam"
+  ],
+  "Wall at 30 cm": [
+    "modules/hc-sr04"
+  ],
+  "wave": [
+    "parts/stepper-28byj48"
+  ],
+  "Wave drive, slowed down": [
+    "modules/uln2003"
+  ],
+  "Wet soil": [
+    "modules/soil-moisture"
+  ],
+  "wheel": [
+    "parts/stepper-28byj48"
+  ],
+  "white": [
+    "parts/led",
+    "parts/push-button"
+  ],
+  "Wi-Fi server": [
+    "boards/nodemcu"
+  ],
+  "Wi-Fi web server": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
+  "WINCH": [
+    "drones/delivery"
+  ],
+  "WINCH + HOOK": [
+    "drones/delivery"
+  ],
+  "Winch test": [
+    "drones/delivery"
+  ],
+  "WING": [
+    "drones/wing"
+  ],
+  "Wiper": [
+    "figures/parts/potentiometer.js"
+  ],
+  "Wire from {a} to {b}": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "figures/engine/bench-bb.js",
+    "figures/engine/bench.js",
+    "parts/wire",
+    "robotics/l298n",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Wire link (no resistor)": [
+    "robotics/led-resistor"
+  ],
+  "Wire the motors and mount the flight controller first": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing"
+  ],
+  "WIRING": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "figures/engine/drone-sheet.js"
+  ],
+  "Wiring sheet": [
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing"
+  ],
+  "WRONG": [
+    "figures/engine/drone-pieces.js"
+  ],
+  "Wrong address 0x3D": [
+    "modules/ssd1306"
+  ],
+  "Wrong level on {name} at reset": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "figures/engine/bench.js",
+    "robotics/esp32-s3-build"
+  ],
+  "wrong pin order": [
+    "parts/stepper-28byj48"
+  ],
+  "Wrong pin order 8, 9, 10, 11": [
+    "modules/uln2003"
+  ],
+  "WS2812B x8": [
+    "drones/racer"
+  ],
+  "X1 · 12 MHz crystal": [
+    "boards/pico"
+  ],
+  "X1 · 2.1 mm barrel jack, centre positive, 7-12 V": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "X2 · USB-B socket": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "XCL": [
+    "modules/mpu6050"
+  ],
+  "XDA": [
+    "modules/mpu6050"
+  ],
+  "XT60 + CAP": [
+    "drones/cinewhoop",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/wing"
+  ],
+  "XT60 + CAP: stripe to minus": [
+    "drones/cinewhoop",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/wing"
+  ],
+  "XT60 + CAP: stripe to plus": [
+    "drones/cinewhoop",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/wing"
+  ],
+  "XT60 lead + 1000 µF 35 V low-ESR cap": [
+    "drones/longrange"
+  ],
+  "XT60 lead + low-ESR capacitor": [
+    "drones/wing"
+  ],
+  "XT60 pigtail + 1000 µF 35 V low-ESR capacitor": [
+    "drones/racer"
+  ],
+  "XT60 pigtail and 1000 µF 35 V low-ESR capacitor": [
+    "drones/quad5"
+  ],
+  "XT60 pigtail and 470 µF 35 V low-ESR capacitor": [
+    "drones/cinewhoop"
+  ],
+  "XT90, PM, BECs": [
+    "drones/delivery"
+  ],
+  "Y1 · 16 MHz ceramic resonator": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "Y1 · 16 MHz crystal for the 16U2 (HC-49/S, through-hole)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "Y1 · 4 MHz crystal: the MCU's clock, which times the 40 kHz burst": [
+    "modules/hc-sr04"
+  ],
+  "Y2 · 16 MHz ceramic resonator for the 328P": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "yellow": [
+    "parts/led",
+    "parts/push-button"
+  ],
+  "YELLOW": [
+    "modules/traffic-light"
+  ],
+  "Yellow LED": [
+    "modules/traffic-light"
+  ],
+  "yes": [
+    "parts/npn-2n2222",
+    "parts/piezo-buzzer",
+    "parts/push-button",
+    "parts/tip120"
+  ],
+  "your sketch": [
+    "figures/engine/bench.js"
+  ],
+  "Z1 · Varistor: ESD guard on USB D+": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "Z2 · Varistor: ESD guard on USB D−": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "Zoom in": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "parts/aa-holder-4",
+    "parts/breadboard",
+    "parts/dc-motor",
+    "parts/diode-1n4007",
+    "parts/fan",
+    "parts/fsr402",
+    "parts/hc-sr04",
+    "parts/ldr",
+    "parts/led",
+    "parts/lipo-2s",
+    "parts/mpu6050",
+    "parts/npn-2n2222",
+    "parts/piezo-buzzer",
+    "parts/potentiometer",
+    "parts/push-button",
+    "parts/resistor",
+    "parts/rgb-led",
+    "parts/servo-sg90",
+    "parts/soil-moisture",
+    "parts/ssd1306",
+    "parts/stepper-28byj48",
+    "parts/tip120",
+    "parts/tmp36",
+    "parts/traffic-light",
+    "parts/tt-motor",
+    "parts/wire",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "Zoom out": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/quad5",
+    "drones/racer",
+    "drones/whoop",
+    "drones/wing",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/mpu6050",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "parts/aa-holder-4",
+    "parts/breadboard",
+    "parts/dc-motor",
+    "parts/diode-1n4007",
+    "parts/fan",
+    "parts/fsr402",
+    "parts/hc-sr04",
+    "parts/ldr",
+    "parts/led",
+    "parts/lipo-2s",
+    "parts/mpu6050",
+    "parts/npn-2n2222",
+    "parts/piezo-buzzer",
+    "parts/potentiometer",
+    "parts/push-button",
+    "parts/resistor",
+    "parts/rgb-led",
+    "parts/servo-sg90",
+    "parts/soil-moisture",
+    "parts/ssd1306",
+    "parts/stepper-28byj48",
+    "parts/tip120",
+    "parts/tmp36",
+    "parts/traffic-light",
+    "parts/tt-motor",
+    "parts/wire",
+    "robotics/esp32-s3-build",
+    "robotics/l298n",
+    "robotics/led-resistor",
+    "robotics/tb6612fng",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
+  ],
+  "ZU4 · ATmega328P microcontroller": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "ZU4 · ATmega328P microcontroller · notch left (backwards)": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ],
+  "ZU4 · ATmega328P microcontroller · notch right, as printed": [
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
+  ]
+}
