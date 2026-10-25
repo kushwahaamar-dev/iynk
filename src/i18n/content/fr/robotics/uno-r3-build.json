@@ -1,0 +1,653 @@
+{
+  "title": "Monter un Arduino Uno R3",
+  "sub": "Du circuit imprimé nu au Blink",
+  "hint": "Démontez-la, placez et refondez les CMS, posez les composants traversants du plus bas au plus haut, soudez, mettez la puce, branchez, téléversez, puis cassez-la",
+  "overview": "L'Uno est une carte à microcontrôleur construite autour de l'ATmega328P, et c'est là que commence la robotique : digitalWrite(), le PWM, les interruptions et le débogage série y apparaissent en premier. Montez-la comme en usine : une machine place les composants montés en surface et le four de refusion les soude tous d'un coup, puis les composants traversants se posent du plus bas au plus haut et se soudent, et la puce va sur son support en dernier, à froid. Branchez, téléversez un sketch, puis cassez la carte exprès : une puce à l'envers, un fusible absent, une alimentation inversée, un moteur sur la broche 5V, une soudure froide. Chaque panne montre ce qu'elle fait vraiment, et comment la réparer.",
+  "power": {
+    "label": "Brancher l'USB",
+    "ok": "Sous tension : la LED ON est allumée"
+  },
+  "parts": {
+    "ZU4": {
+      "name": "Microcontrôleur ATmega328P",
+      "what": "Le cerveau : un AVR 8 bits à 16 MHz avec 32 KB de flash (dont 512 octets pour le bootloader Optiboot), 2 KB de RAM et 1 KB d'EEPROM. Il exécute votre sketch : setup() une fois, loop() à l'infini. Il est posé sur un support, encoche vers le connecteur ICSP, broche 1 du côté de l'encoche."
+    },
+    "SK1": {
+      "name": "Support DIP-28",
+      "what": "Tient l'ATmega328P sans soudure : le fer ne chauffe jamais la puce, et une puce morte se remplace en quelques secondes. Il se soude avec les autres composants traversants bas."
+    },
+    "U3": {
+      "name": "Pont USB-série ATmega16U2",
+      "what": "Un second AVR qui exécute un firmware USB. Il transforme l'USB de votre ordinateur en port série du 328P, pour que les téléversements et Serial.print() fonctionnent, et il envoie une impulsion sur le RESET du 328P à travers C5 quand le port s'ouvre : c'est ainsi que démarre un téléversement."
+    },
+    "Y1": {
+      "name": "Quartz 16 MHz du 16U2",
+      "what": "Horloge à quartz de la puce USB. L'USB full-speed demande une précision d'environ ±0,25 %, que seul un quartz fournit."
+    },
+    "Y2": {
+      "name": "Résonateur céramique 16 MHz du 328P",
+      "what": "Horloge de l'ATmega328P, avec ses deux condensateurs de charge intégrés (trois pastilles ; celle du milieu est la masse). Environ ±0,5 % : suffisant pour un sketch et le port série, pas pour l'USB. Les fusibles de configuration du 328P l'attendent : sans lui, rien ne tourne."
+    },
+    "U1": {
+      "name": "Régulateur 5 V NCP1117",
+      "what": "Régulateur linéaire qui transforme la tension du jack en 5 V. Il a besoin d'environ 1,1 V de marge et brûle la différence en chaleur, (VIN − 5 V) × courant : 12 V à 300 mA, c'est 2,1 W, assez pour le mettre en protection thermique. D'où les 7-12 V sur le jack."
+    },
+    "U2": {
+      "name": "Régulateur 3,3 V LP2985",
+      "what": "Produit la broche 3.3V à partir du 5 V, 150 mA au maximum : assez pour un capteur, pas pour un module Wi-Fi ou un servo."
+    },
+    "U5": {
+      "name": "Ampli op LMV358 : bascule USB/VIN et tampon de L",
+      "what": "Deux amplis op dans un même boîtier. L'un compare VIN/2 à 3,3 V et coupe l'alimentation USB dès que VIN dépasse 6,6 V. L'autre sert de tampon à la broche 13 pour la LED L, afin que la LED ne charge jamais la broche."
+    },
+    "T1": {
+      "name": "MOSFET FDN340P : interrupteur d'alimentation USB",
+      "what": "MOSFET canal P entre le 5 V de l'USB et le rail 5 V de la carte. L'ampli op le bloque quand une alimentation sur le jack au-dessus de 6,6 V prend le relais."
+    },
+    "F1": {
+      "name": "Polyfusible réarmable 500 mA",
+      "what": "Fusible PTC sur la ligne 5 V de l'USB : il tient 0,5 A et disjoncte vers 1 A. Court-circuitez 5 V et GND : il chauffe, sa résistance grimpe et le port de votre ordinateur survit ; il se réarme en refroidissant."
+    },
+    "D1": {
+      "name": "Diode M7 : protection contre l'inversion de polarité",
+      "what": "Une diode 1 A, 1000 V en série avec la prise jack. Une alimentation branchée à l'envers la trouve polarisée en inverse et rien ne passe. Le prix à payer : environ 0,7-1 V de chute."
+    },
+    "D2": {
+      "name": "Diode d'écrêtage du reset (328P)",
+      "what": "Limite la ligne RESET du 328P à 5 V, pour que l'impulsion d'auto-reset à travers C5 ne puisse pas pousser RESET au-dessus de l'alimentation."
+    },
+    "D3": {
+      "name": "Diode d'écrêtage du reset (16U2)",
+      "what": "Le même écrêtage pour la ligne de reset du 16U2."
+    },
+    "PC1": {
+      "name": "Condensateur 47 µF sur VIN",
+      "what": "Condensateur électrolytique de réserve sur VIN, avant le régulateur 5 V. Polarisé : la bande sombre marque le moins. Monté à l'envers sur un rail sous tension, il fuit, chauffe et dégaze."
+    },
+    "PC2": {
+      "name": "Condensateur 47 µF sur le 5 V",
+      "what": "Condensateur de réserve sur le rail 5 V : il compense les creux quand une charge s'allume. Polarisé comme PC1."
+    },
+    "L2": {
+      "name": "Inductance 10 µH : filtre d'AVCC",
+      "what": "Filtre le 5 V vers AVCC, l'alimentation du CAN du 328P, pour que le bruit numérique reste en dehors d'analogRead()."
+    },
+    "L1": {
+      "name": "Perle de ferrite sur le blindage USB",
+      "what": "Relie le blindage du câble USB à la masse USB à travers une perle de ferrite, qui absorbe le bruit haute fréquence."
+    },
+    "C1": {
+      "name": "Condensateur 100 nF (entrée du régulateur 3,3 V)",
+      "what": "Découple le rail 5 V juste à l'entrée du LP2985."
+    },
+    "C2": {
+      "name": "Condensateur 100 nF (alimentation USB)",
+      "what": "Découple le rail 5 V là où arrive l'alimentation USB."
+    },
+    "C3": {
+      "name": "Condensateur 1 µF (sortie 3,3 V)",
+      "what": "Le condensateur de sortie dont le LP2985 a besoin pour rester stable."
+    },
+    "C4": {
+      "name": "Condensateur 100 nF sur AREF",
+      "what": "Filtre AREF, la broche de référence du CAN."
+    },
+    "C5": {
+      "name": "Condensateur d'auto-reset 100 nF (DTR vers RESET)",
+      "what": "Transforme le front de DTR venu du 16U2 en courte impulsion basse sur le RESET du 328P quand le port série s'ouvre : la carte redémarre, Optiboot écoute, le téléversement commence. Sans lui, il faudrait appuyer sur RESET à la main pile au bon moment."
+    },
+    "C6": {
+      "name": "Condensateur de découplage 100 nF (328P)",
+      "what": "Une minuscule réserve d'énergie locale aux broches d'alimentation du 328P : elle absorbe les pics de courant quand la logique commute."
+    },
+    "C7": {
+      "name": "Condensateur de découplage 100 nF (16U2)",
+      "what": "Découplage local aux broches d'alimentation du 16U2."
+    },
+    "C8": {
+      "name": "Condensateur 1 µF (UCAP du 16U2)",
+      "what": "Stabilise le régulateur USB 3,3 V interne du 16U2, sur sa broche UCAP."
+    },
+    "C9": {
+      "name": "Condensateur de quartz 22 pF",
+      "what": "Condensateur de charge du quartz Y1 : avec C11, il fixe la fréquence à laquelle oscille le quartz."
+    },
+    "C10": {
+      "name": "Condensateur 100 nF (AVCC)",
+      "what": "Découple AVCC après le filtre L2."
+    },
+    "C11": {
+      "name": "Condensateur de quartz 22 pF",
+      "what": "Le second condensateur de charge du quartz Y1."
+    },
+    "R1": {
+      "name": "Résistance 1 MΩ en parallèle sur le quartz",
+      "what": "Polarise l'oscillateur du 16U2 pour que le quartz démarre."
+    },
+    "R2": {
+      "name": "Résistance 1 MΩ en parallèle sur le résonateur",
+      "what": "Polarise l'oscillateur du 328P pour que le résonateur démarre."
+    },
+    "RN1": {
+      "name": "Réseau de résistances 10 kΩ (pull-ups des resets)",
+      "what": "Quatre résistances de 10 kΩ dans une seule puce : les pull-ups qui maintiennent les deux lignes RESET à l'état haut, et le diviseur qui donne VIN/2 au comparateur. Sans le pull-up, RESET flotte et le 328P ne sort jamais du reset."
+    },
+    "RN2": {
+      "name": "Réseau de résistances 1 kΩ (LED L, TX, RX)",
+      "what": "Résistances de limitation de courant des LED L, TX et RX, environ 3 mA chacune. Retirez-le et ces trois LED s'éteignent alors que le sketch continue de tourner."
+    },
+    "RN3": {
+      "name": "Réseau de résistances 22 Ω (lignes de données USB)",
+      "what": "Résistances série sur D+ et D− de l'USB, comme le demande la spécification USB. Sans elles, l'ordinateur ne peut pas parler au 16U2."
+    },
+    "RN4": {
+      "name": "Réseau de résistances 1 kΩ (LED ON)",
+      "what": "Deux de ses résistances en parallèle alimentent la LED ON (environ 6 mA) ; les deux autres sont en série avec D0 et D1, pour qu'un shield puisse piloter ces broches sans lutter contre le 16U2."
+    },
+    "Z1": {
+      "name": "Varistance : protection ESD sur D+ de l'USB",
+      "what": "Évacue vers le blindage les décharges électrostatiques sur la ligne D+ de l'USB avant qu'elles n'atteignent le 16U2."
+    },
+    "Z2": {
+      "name": "Varistance : protection ESD sur D− de l'USB",
+      "what": "Évacue vers le blindage les décharges électrostatiques sur la ligne D− de l'USB avant qu'elles n'atteignent le 16U2."
+    },
+    "L": {
+      "name": "LED L (broche 13)",
+      "what": "LED_BUILTIN : la broche 13 la pilote à travers le tampon de l'ampli op et une résistance de 1 kΩ, et HIGH l'allume. La première sortie que pilote tout roboticien."
+    },
+    "TX": {
+      "name": "LED TX",
+      "what": "Le 16U2 l'allume quand des octets partent de la carte vers l'ordinateur : Serial.print() et la fin d'un téléversement."
+    },
+    "RX": {
+      "name": "LED RX",
+      "what": "Le 16U2 l'allume quand des octets arrivent de l'ordinateur vers la carte, c'est-à-dire pendant la plus grande partie d'un téléversement."
+    },
+    "ON": {
+      "name": "LED ON (5 V)",
+      "what": "Allumée dès que le rail 5 V est présent. Faible ou vacillante : soupçonnez l'alimentation avant le code."
+    },
+    "RESET": {
+      "name": "Bouton RESET",
+      "what": "Tire RESET à l'état bas. Relâchez-le : Optiboot fait clignoter L trois fois, attend un téléversement pendant environ une seconde, puis votre sketch redémarre depuis setup(). Il n'efface rien."
+    },
+    "JP2": {
+      "name": "Broches libres PB4-PB7 du 16U2 (sans connecteur)",
+      "what": "Quatre trous métallisés pour les broches de port libres du 16U2. Aucun connecteur n'est soudé en usine."
+    },
+    "RESET-EN": {
+      "name": "Cavalier à souder RESET-EN (à couper pour supprimer l'auto-reset)",
+      "what": "Une fine piste sur le chemin de DTR vers RESET. Coupez-la et l'ouverture du port série ne réinitialise plus la carte ; les téléversements demandent alors un appui sur RESET au bon moment."
+    },
+    "ICSP1": {
+      "name": "Connecteur ICSP du 16U2",
+      "what": "Connecteur de programmation de la puce USB : utilisé en usine, et pour sauver un 16U2 dont le firmware est cassé."
+    },
+    "ICSP": {
+      "name": "Connecteur ICSP du 328P",
+      "what": "Connecteur de programmation SPI du 328P : gravez le bootloader avec un programmateur externe, sans USB. Il porte aussi D11-D13 pour les shields."
+    },
+    "X2": {
+      "name": "Prise USB-B",
+      "what": "Alimentation (5 V, jusqu'à 500 mA à travers F1) et données pour les téléversements et le moniteur série."
+    },
+    "X1": {
+      "name": "Prise jack 2,1 mm, positif au centre, 7-12 V",
+      "what": "Alimente VIN à travers D1 jusqu'au régulateur 5 V. La datasheet autorise 6-20 V ; 7-12 V garde U1 en régulation et assez frais."
+    },
+    "IOH": {
+      "name": "Connecteur numérique D8-D13, GND, AREF, SDA, SCL",
+      "what": "D8-D13 plus GND, AREF et une seconde copie de SDA et SCL (les mêmes broches que A4 et A5). D13 est la LED L ; ~9, ~10 et ~11 font du PWM."
+    },
+    "IOL": {
+      "name": "Connecteur numérique D0-D7",
+      "what": "D0-D7 : ~3, ~5 et ~6 font du PWM, D2 et D3 acceptent les interruptions. D0 et D1 sont le port série partagé avec l'USB : laissez-les libres pendant un téléversement."
+    },
+    "POWER": {
+      "name": "Connecteur d'alimentation",
+      "what": "IOREF, RESET, 3.3V, 5V, GND, GND et VIN. Bien pour les capteurs, jamais pour les moteurs : un moteur qui cale tire le 5 V vers le bas et la puce redémarre (brown-out)."
+    },
+    "AD": {
+      "name": "Connecteur analogique A0-A5",
+      "what": "A0-A5 vers le CAN 10 bits : analogRead() donne 0-1023 pour 0-5 V. A4 et A5 sont aussi SDA et SCL de l'I2C."
+    },
+    "R3": {
+      "name": "Résistance 220 Ω",
+      "what": "Fixe le courant de la LED : (5 V − 2 V) / 220 Ω ≈ 14 mA."
+    },
+    "LED1": {
+      "name": "LED rouge",
+      "what": "S'allume quand sa broche passe à HIGH. La patte longue (anode) est côté résistance, la patte courte va à GND."
+    },
+    "SW1": {
+      "name": "Bouton-poussoir",
+      "what": "Relie D2 à GND tant qu'on appuie. Avec INPUT_PULLUP, la broche lit HIGH au repos et LOW quand on appuie ; les contacts rebondissent pendant quelques millisecondes."
+    }
+  },
+  "modes": {
+    "blink": {
+      "title": "Blink",
+      "code": {
+        "what": "Blink : la LED L allumée 1 s, éteinte 1 s",
+        "pin": "broche 13 = la LED L",
+        "blocks": "bloquant : rien d'autre ne tourne pendant 1 s"
+      }
+    },
+    "fast": {
+      "title": "Blink sans delay()",
+      "code": {
+        "what": "Blink sans delay() : inverse toutes les 200 ms d'après l'horloge",
+        "check": "non bloquant : les 200 ms sont-elles écoulées ?",
+        "free": "loop() reste libre pour lire capteurs, boutons et port série"
+      }
+    },
+    "fade13": {
+      "title": "analogWrite sur la broche 13 (pas de PWM ici)",
+      "code": {
+        "what": "Un fondu sur la broche 13, qui n'a pas de PWM",
+        "nopwm": "la broche 13 n'a pas de timer PWM :",
+        "half": "0-127 écrit LOW, 128-255 écrit HIGH",
+        "fix": "fondu sur une broche ~ : 3, 5, 6, 9, 10 ou 11"
+      }
+    },
+    "hello": {
+      "title": "Bonjour en série",
+      "code": {
+        "what": "Bonjour en série : une ligne par seconde par l'USB",
+        "int": "int fait 16 bits sur l'Uno : après 32767 vient -32768",
+        "baud": "le moniteur série doit aussi être à 9600 bauds"
+      }
+    }
+  },
+  "steps": {
+    "unplug": {
+      "title": "Débranchez le câble USB",
+      "body": "Le banc démarre comme une carte neuve : branchée et faisant tourner le Blink d'usine. Ne travaillez jamais sur une carte sous tension : débranchez d'abord."
+    },
+    "strip": {
+      "title": "Démontez jusqu'au circuit nu",
+      "body": "Retirez tous les composants. Il reste le circuit imprimé nu : cuivre, vernis épargne et sérigraphie. L'ATmega328P est sur un support : il s'enlève à froid et garde son programme.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    },
+    "pick-place": {
+      "title": "Placez les composants CMS",
+      "body": "Une machine pose chaque composant monté en surface sur ses pastilles enduites de pâte à braser : le 16U2, les régulateurs, l'ampli op, le MOSFET, les diodes, les réseaux de résistances, les condensateurs, les LED, le polyfusible, le résonateur et le bouton reset. Ils reposent dans la pâte encore humide, pas encore soudés.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    },
+    "reflow": {
+      "title": "Refondez les soudures CMS",
+      "body": "La carte passe dans le four de refusion. La pâte fond et toutes les soudures CMS se forment d'un coup, et la tension superficielle redresse les composants légèrement de travers. Voilà pourquoi les CMS passent en premier : le four ferait fondre le plastique des composants traversants. Le four démarre tout seul après le placement."
+    },
+    "low-tht": {
+      "title": "Posez les composants traversants bas",
+      "body": "Les composants traversants se posent du plus bas au plus haut. D'abord les bas : le support DIP-28 SK1 et les deux connecteurs ICSP 2x3. Les bas d'abord, pour que la carte reste à plat quand vous la retournez pour souder. Utilisez « Placer un composant » pour chacun.",
+      "refusal": "Les composants CMS d'abord : lancez le placement puis la refusion. Le four ferait fondre les pièces en plastique"
+    },
+    "tall-tht": {
+      "title": "Posez les composants traversants hauts",
+      "body": "Maintenant les hauts : la prise USB-B X2, la prise jack X1 et les quatre connecteurs femelles (D8-D13, D0-D7, POWER et A0-A5).",
+      "refusal": "Les composants bas d'abord : avec les hauts en place, la carte bascule et les pièces non soudées tombent quand vous la retournez pour souder"
+    },
+    "solder": {
+      "title": "Soudez les composants traversants",
+      "body": "Retournez la carte et soudez chaque broche traversante : chauffez la pastille et la broche ensemble pendant 2-3 s, apportez l'étain, et cherchez un cône brillant. Une boule terne et granuleuse est une soudure froide.",
+      "refusal": "Rien à souder pour l'instant : placez d'abord un composant"
+    },
+    "chip": {
+      "title": "Enfoncez l'ATmega328P dans son support",
+      "body": "Dernier groupe : la puce va dans le support soudé, encoche vers le connecteur ICSP, broche 1 du côté de l'encoche. Le fer ne l'a jamais touchée.",
+      "refusal": "Soudez tout d'abord. Ne chauffez jamais une puce posée sur son support"
+    },
+    "plug": {
+      "title": "Branchez l'USB",
+      "body": "La LED ON s'allume aussitôt. La puce a gardé son programme en flash pendant le démontage : Blink redémarre, L allumée une seconde, éteinte une seconde."
+    },
+    "upload": {
+      "title": "Téléversez « Bonjour en série »",
+      "body": "Téléversez un nouveau sketch. Le 16U2 bascule DTR, C5 en fait une impulsion de reset, Optiboot fait clignoter L et reçoit le téléversement à 115200 bauds pendant que RX et TX scintillent. Ensuite, le sketch affiche une ligne par seconde : regardez TX clignoter et lisez le moniteur série à 9600 bauds.",
+      "refusal": "Branchez d'abord l'USB : les téléversements passent par le câble"
+    },
+    "exploded": {
+      "title": "Ouvrez la vue éclatée",
+      "body": "Débranchez, puis écartez les couches : les composants CMS, les composants traversants bas et hauts, et la puce au-dessus, dans l'ordre où ils ont été posés.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    },
+    "chip-backwards": {
+      "title": "Cassez-la : la puce à l'envers",
+      "body": "« Faire » ferme la vue éclatée, retourne l'ATmega328P dans son support et branche l'USB. Surveillez l'état, puis réparez."
+    },
+    "cap-backwards": {
+      "title": "Cassez-la : un condensateur à l'envers",
+      "body": "« Faire » débranche la carte, soude PC2, le condensateur de 47 µF sur le 5 V, dans le mauvais sens et rebranche l'USB. Observez, puis réparez."
+    },
+    "chip-missing": {
+      "title": "Cassez-la : pas de puce sur le support",
+      "body": "« Faire » débranche la carte, retire l'ATmega328P et rebranche l'USB. Regardez les LED et essayez un téléversement, puis remettez la puce."
+    },
+    "resonator-missing": {
+      "title": "Cassez-la : sans le résonateur",
+      "body": "« Faire » débranche la carte, retire Y2, le résonateur de 16 MHz (un minuscule CMS), et rebranche l'USB. Voyez ce qui fonctionne encore."
+    },
+    "fuse-missing": {
+      "title": "Cassez-la : sans le polyfusible",
+      "body": "« Faire » débranche la carte, retire F1 et rebranche l'USB. Regardez les LED."
+    },
+    "bridge-missing": {
+      "title": "Cassez-la : sans le pont USB",
+      "body": "« Faire » débranche la carte, retire l'ATmega16U2 et rebranche l'USB. Voyez ce qui tourne encore, et essayez un téléversement."
+    },
+    "reverse-jack": {
+      "title": "Cassez-la : une alimentation inversée sur le jack",
+      "body": "« Faire » branche sur la prise jack un adaptateur 9 V à la polarité inversée. Regardez ce qui se passe, et ce qui ne se passe pas."
+    },
+    "reverse-vin": {
+      "title": "Cassez-la : une alimentation inversée sur VIN",
+      "body": "« Faire » relie une pile 9 V à la broche VIN dans le mauvais sens. Comparez avec la prise jack."
+    },
+    "jack-too-high": {
+      "title": "Cassez-la : 24 V sur la prise jack",
+      "body": "« Faire » branche un adaptateur 24 V sur le jack, le double du haut de la plage 7-12 V."
+    },
+    "jack-too-low": {
+      "title": "Cassez-la : 4 V sur la prise jack",
+      "body": "« Faire » branche une alimentation 4 V sur le jack, bien en dessous du minimum de 7 V."
+    },
+    "motor-brownout": {
+      "title": "Cassez-la : un moteur sur la broche 5V",
+      "body": "« Faire » alimente un petit moteur à courant continu directement par les broches 5V et GND de l'Uno, sur l'alimentation USB. Surveillez la LED ON, l'état et le moniteur série."
+    },
+    "cold-usb": {
+      "title": "Cassez-la : une soudure froide sur la prise USB",
+      "body": "« Faire » laisse une soudure froide sur la broche 5 V de la prise USB. Surveillez la LED ON et l'état pendant un moment."
+    },
+    "solder-bridge": {
+      "title": "Cassez-la : un pont de soudure entre 5V et GND",
+      "body": "« Faire » dépose une goutte d'étain entre les broches voisines 5V et GND du connecteur d'alimentation. Regardez ce que fait le polyfusible."
+    },
+    "blink": {
+      "title": "Terminez avec Blink",
+      "body": "Toutes les pannes sont réparées. Téléversez Blink : la carte que vous avez montée fait clignoter L une fois par seconde, comme à sa sortie d'usine.",
+      "refusal": "Branchez d'abord l'USB : les téléversements passent par le câble"
+    }
+  },
+  "faults": {
+    "chip-backwards": {
+      "title": "ATmega328P monté à l'envers",
+      "symptom": "DÉFAUT : la puce chauffe, le polyfusible tiédit et rien ne tourne.",
+      "explanation": "Retournée, la broche 5 V du support (7) tombe sur la broche de masse de la puce (22), et la masse du support sur le VCC de la puce : l'alimentation traverse la puce à l'envers par ses diodes de protection. Quelques secondes ne la tuent généralement pas ; laissée sous tension, la puce cuit.",
+      "fix": "Débranchez immédiatement, retirez la puce, tournez-la encoche vers le connecteur ICSP et renfoncez-la."
+    },
+    "cap-backwards": {
+      "title": "Condensateur de 47 µF monté à l'envers",
+      "symptom": "Pop : PC2, sur le rail 5 V, dégaze et fume.",
+      "explanation": "Un électrolytique aluminium ne fonctionne que dans un sens. Inversé, sa couche d'oxyde cède, le courant passe, l'électrolyte bout et le boîtier dégaze.",
+      "fix": "Débranchez, retirez PC2 à l'air chaud et posez-en un neuf avec sa bande moins là où l'indique la sérigraphie : un condensateur qui a dégazé est fichu."
+    },
+    "chip-missing": {
+      "title": "Pas d'ATmega328P sur le support",
+      "symptom": "ON s'allume, mais L reste éteinte et rien ne tourne. Un téléversement échoue.",
+      "explanation": "L'alimentation arrive sur tous les rails, mais il n'y a aucun processeur pour exécuter un sketch. avrdude n'obtient aucune réponse et s'arrête sur stk500_getsync(): not in sync.",
+      "fix": "Débranchez, enfoncez la puce dans son support, encoche vers le connecteur ICSP, et rebranchez."
+    },
+    "resonator-missing": {
+      "title": "Résonateur 16 MHz absent",
+      "symptom": "ON s'allume, L reste éteinte, rien ne tourne.",
+      "explanation": "Les fusibles de configuration du 328P lui disent de tourner sur une horloge externe de 16 MHz. Sans Y2, pas d'horloge : le processeur n'exécute jamais une instruction, pas même le bootloader, et les téléversements échouent aussi.",
+      "fix": "Débranchez et ressoudez Y2 à l'air chaud : c'est un CMS à trois pastilles."
+    },
+    "fuse-missing": {
+      "title": "Polyfusible F1 absent",
+      "symptom": "L'USB est branché, mais rien ne s'allume : pas de LED ON, pas de clignotement.",
+      "explanation": "F1 est en série entre le 5 V de l'USB et la carte. Sans lui, le chemin est ouvert : aucun courant n'arrive de l'USB à la carte. Une alimentation sur la prise jack fonctionnerait encore.",
+      "fix": "Débranchez et ressoudez F1 à l'air chaud."
+    },
+    "bridge-missing": {
+      "title": "ATmega16U2 absent",
+      "symptom": "La carte s'allume et le sketch enregistré tourne, mais l'ordinateur ne voit aucune carte et chaque téléversement échoue.",
+      "explanation": "L'alimentation USB passe par F1 et T1, pas par le 16U2 : la carte tourne donc encore. C'est le 16U2 qui transforme l'USB en série : sans lui, pas de port pour téléverser et pas de Serial.print() sur l'ordinateur.",
+      "fix": "Débranchez et ressoudez le 16U2 (son firmware est chargé par ICSP1 en usine), puis téléversez de nouveau."
+    },
+    "reverse-jack": {
+      "title": "Alimentation inversée sur la prise jack",
+      "symptom": "Rien ne s'allume et rien ne chauffe.",
+      "explanation": "D1 est en série avec le jack. Une alimentation inversée la polarise en inverse : aucun courant ne passe et VIN reste à 0 V. La protection fait son travail.",
+      "fix": "Utilisez un adaptateur 7-12 V positif au centre (ou inversez les fils) et rebranchez."
+    },
+    "reverse-vin": {
+      "title": "Alimentation inversée sur la broche VIN",
+      "symptom": "DÉFAUT : le régulateur 5 V chauffe et la carte est endommagée.",
+      "explanation": "La broche VIN rejoint la carte après D1 : rien n'y bloque une alimentation inversée, qui frappe directement PC1 et le régulateur NCP1117.",
+      "fix": "Débranchez et remplacez le régulateur endommagé et PC1. Reliez le fil plus à VIN et le fil moins à GND, ou mieux, utilisez la prise jack, qui a D1."
+    },
+    "jack-too-high": {
+      "title": "24 V sur la prise jack",
+      "symptom": "DÉFAUT : le régulateur 5 V est endommagé.",
+      "explanation": "Le NCP1117 accepte au plus 20 V. À 24 V il lâche, et un régulateur qui claque en court-circuit envoie toute la tension d'entrée sur le rail 5 V et tue les deux AVR.",
+      "fix": "Débranchez, remplacez U1 et utilisez une alimentation 7-12 V."
+    },
+    "jack-too-low": {
+      "title": "4 V sur la prise jack",
+      "symptom": "ON brille faiblement, la carte redémarre sans cesse et rien ne tourne.",
+      "explanation": "D1 fait chuter environ 0,7 V et le NCP1117 a besoin d'environ 1,1 V de marge : avec 4 V en entrée, il reste environ 2,2 V sur le rail 5 V. C'est sous le seuil de brown-out de 2,7 V du 328P, qui reste donc en reset.",
+      "fix": "Mettez une alimentation 7-12 V sur le jack, ou alimentez la carte par l'USB."
+    },
+    "motor-brownout": {
+      "title": "Moteur sur la broche 5V : brown-out",
+      "symptom": "La carte redémarre encore et encore : L recommence et la bannière série se répète.",
+      "explanation": "Un petit moteur à courant continu tire environ 1 A au démarrage ou quand il cale, bien plus que ce que l'USB et le polyfusible de 500 mA peuvent donner. Le rail 5 V s'affaisse sous le seuil de brown-out de 2,7 V, le 328P redémarre, le rail remonte, le sketch relance le moteur : une boucle de resets.",
+      "fix": "Alimentez les moteurs avec leur propre alimentation à travers un driver (Fig. 03, 05 et 06) et ne reliez que les masses."
+    },
+    "cold-usb": {
+      "title": "Soudure froide sur la prise USB",
+      "symptom": "La LED ON vacille et la carte redémarre au hasard, encore plus quand le câble bouge.",
+      "explanation": "Une soudure froide est une boule terne et granuleuse qui n'a jamais mouillé la pastille. Son contact va et vient : le 5 V de l'USB arrive à la carte par à-coups.",
+      "fix": "Refaites la soudure : chauffez pastille et broche ensemble, ajoutez un peu d'étain neuf avec du flux, et vérifiez que vous obtenez un cône brillant."
+    },
+    "solder-bridge": {
+      "title": "Pont de soudure entre 5V et GND",
+      "symptom": "Une fois branchée, tout reste éteint et le polyfusible tiédit.",
+      "explanation": "Sur le connecteur d'alimentation, les broches 5V et GND sont côte à côte, à 2,54 mm. Une goutte d'étain entre elles court-circuite l'alimentation ; F1 disjoncte vers 1 A et protège le port de l'ordinateur.",
+      "fix": "Débranchez, retirez le pont avec de la tresse à dessouder, vérifiez au multimètre que 5V et GND ne sont plus reliés, et rebranchez : F1 se réarme en refroidissant."
+    }
+  },
+  "status": {
+    "status": "État",
+    "powered": "Sous tension (LED ON)",
+    "pin13": "Broche 13 (LED L)",
+    "rail-5v": "Rail 5 V",
+    "rail-3v3": "Rail 3,3 V",
+    "rail-vin": "VIN",
+    "current": "Courant consommé"
+  },
+  "current": {
+    "usb": "USB, 5 V : 500 mA à travers le polyfusible",
+    "jack": "Prise jack, 9 V : environ 300 mA avant que le régulateur 5 V ne surchauffe",
+    "vin": "Broche VIN, 9 V : environ 300 mA avant que le régulateur 5 V ne surchauffe",
+    "board": "16U2, régulateurs, ampli op et LED ON",
+    "mcu": "ATmega328P tournant à 16 MHz",
+    "led-l": "LED L",
+    "led-ext": "LED sur la platine d'essai"
+  },
+  "tasks": {
+    "reaction-timer": {
+      "title": "Chronomètre de réflexes",
+      "brief": "Créez un jeu de réflexes sur la carte que vous venez de monter. La LED de la broche 13 s'allume après une attente aléatoire de 1 à 3 s ; le joueur appuie le plus vite possible sur le bouton de D2 (relié à GND), et le temps entre la LED et l'appui s'affiche, par exemple, sous la forme Reaction: 312 ms. Un appui avant la LED affiche Too soon!. Après chaque appui, la LED s'éteint et une nouvelle manche commence. Captez l'appui avec une interruption sur D2, filtrez les rebonds, et chronométrez tout avec millis(), jamais avec delay().",
+      "hints": {
+        "1": "attachInterrupt(digitalPinToInterrupt(2), onFall, FALLING) exécute onFall dès que D2 descend. Gardez la routine d'interruption courte : notez millis() dans une variable volatile et levez un drapeau.",
+        "2": "Les contacts rebondissent pendant quelques millisecondes à l'appui, puis de nouveau au relâchement. Ne comptez un front que si la broche lit encore LOW 20 ms plus tard.",
+        "3": "Pas de delay() : enregistrez le moment où la LED doit s'allumer, millis() + random(1000, 3001), et comparez dans loop() avec (long)(millis() - goAt) >= 0, qui résiste au débordement de millis().",
+        "4": "Copiez ce qu'écrit l'interruption avec les interruptions coupées (noInterrupts() … interrupts()) : un unsigned long fait 4 octets, et l'AVR le lit un octet à la fois."
+      },
+      "checks": {
+        "1": "Utilise attachInterrupt, INPUT_PULLUP et millis(), et jamais delay()",
+        "2": "La LED reste d'abord éteinte",
+        "3": "La LED s'allume en moins de 3 s",
+        "4": "Un appui éteint aussitôt la LED et lance une nouvelle manche",
+        "5": "Affiche le temps de réaction, par exemple Reaction: 312 ms",
+        "6": "Un appui avant la LED affiche Too soon!"
+      },
+      "code": {
+        "starter": "Ça marche, mais c'est aveugle : delay() et une boucle d'attente ratent des appuis",
+        "blocks": "bloquant : un appui maintenant passe inaperçu",
+        "poll": "attente active : on attend ici, sans interruption",
+        "pins": "broche 13 : la LED L et la LED de la platine d'essai ; D2 : bouton vers GND",
+        "isr": "gardez une interruption courte : notez l'heure et levez un drapeau",
+        "bounce": "anti-rebond : ne compter le front que si le bouton est encore enfoncé 20 ms plus tard",
+        "seed": "A0 flotte, donc chaque partie est différente"
+      },
+      "world": {
+        "button": "Bouton sur D2"
+      }
+    },
+    "fade-pwm": {
+      "title": "Un vrai fondu",
+      "brief": "La broche 13 n'a pas de timer PWM : le sketch de fondu ne fait que la faire clignoter. Déplacez la LED sur la broche ~9 (le circuit de la platine d'essai l'y a déjà) et faites un vrai fondu : montez le rapport cyclique de 0 à 255 puis redescendez à 0, un pas toutes les 4 ms, pour qu'une respiration complète dure environ 2 s.",
+      "hints": {
+        "1": "analogWrite(9, v) règle le rapport cyclique : 0 est éteint et 255 complètement allumé. La broche 9 commute à environ 490 Hz, trop vite pour l'œil.",
+        "2": "Deux boucles for : v de 0 à 255 avec delay(4) après chaque pas, puis de 255 à 0.",
+        "3": "analogWrite() met la broche en sortie tout seul, mais pinMode(9, OUTPUT) dans setup() dit clairement ce que vous voulez."
+      },
+      "checks": {
+        "1": "Utilise analogWrite() et laisse la broche 13 tranquille",
+        "2": "Environ mi-luminosité au bout d'une demi-seconde",
+        "3": "Presque pleine luminosité à 1 s",
+        "4": "De nouveau presque éteinte à 2 s"
+      },
+      "code": {
+        "starter": "Le fondu de la broche 13 : déplacez-le sur une broche ~ pour un vrai fondu",
+        "up": "montée : 256 pas de 4 ms",
+        "down": "et redescente"
+      }
+    }
+  },
+  "quizzes": {
+    "reflow": {
+      "smd-first": {
+        "q": "Pourquoi les composants CMS passent-ils avant tout composant traversant ?",
+        "options": {
+          "1": "Le four de refusion ferait fondre le plastique des supports, connecteurs et prises",
+          "2": "Les CMS sont les composants les plus importants",
+          "3": "Les composants traversants ont besoin que la pâte à braser sèche d'abord"
+        },
+        "why": "La refusion chauffe toute la carte au-delà du point de fusion de l'étain, vers 240 °C. Les supports, les connecteurs et la prise USB sont en plastique : ils se posent après, soudés broche par broche."
+      },
+      "self-align": {
+        "q": "Dans le four, une résistance est légèrement de travers sur ses pastilles. Que se passe-t-il ?",
+        "options": {
+          "1": "Elle reste de travers et il faut la refaire",
+          "2": "La tension superficielle de l'étain fondu la redresse",
+          "3": "Elle tombe de la carte"
+        },
+        "why": "La pâte qui fond mouille les deux pastilles et sa tension superficielle centre le composant. Cet auto-alignement est l'une des raisons pour lesquelles la refusion marche si bien."
+      }
+    },
+    "socket": {
+      "socket-first": {
+        "q": "Pourquoi souder le support DIP avant d'y mettre l'ATmega328P ?",
+        "options": {
+          "1": "La puce ne se programme qu'après la soudure",
+          "2": "Le fer ne chauffe jamais la puce",
+          "3": "Un support chaud tient mieux la puce"
+        },
+        "why": "C'est le support qui prend la chaleur. La puce se pose ensuite à froid et reste remplaçable : une puce morte se change en quelques secondes."
+      },
+      "notch": {
+        "q": "Dans quel sens se pose l'ATmega328P ?",
+        "options": {
+          "1": "N'importe lequel : les broches sont symétriques",
+          "2": "Encoche vers la prise USB",
+          "3": "Encoche vers le connecteur ICSP, broche 1 du côté de l'encoche"
+        },
+        "why": "La broche 1 est à côté de l'encoche, et la carte indique l'encoche vers le connecteur ICSP. À l'envers, le 5 V arrive sur la broche de masse de la puce."
+      }
+    },
+    "usb": {
+      "bridge": {
+        "q": "Quelle puce transforme l'USB en série pour les téléversements ?",
+        "options": {
+          "1": "ATmega16U2",
+          "2": "NCP1117",
+          "3": "LMV358"
+        },
+        "why": "Le 16U2 exécute un firmware USB et parle en UART au 328P. Le NCP1117 est le régulateur 5 V et le LMV358 l'ampli op."
+      },
+      "auto-reset": {
+        "q": "Comment un téléversement démarre-t-il sans que personne n'appuie sur RESET ?",
+        "options": {
+          "1": "Le 328P surveille les lignes USB",
+          "2": "Le 16U2 bascule DTR, et C5 transforme ce front en impulsion de reset",
+          "3": "avrdude efface d'abord la puce"
+        },
+        "why": "Ouvrir le port bascule DTR. À travers C5, le RESET du 328P plonge à l'état bas, Optiboot démarre, fait clignoter L et écoute pendant environ une seconde."
+      },
+      "d0d1": {
+        "q": "Les téléversements échouent avec « not in sync » quand un module est relié à D0 et D1. Pourquoi ?",
+        "options": {
+          "1": "D0 et D1 sont les lignes série qu'utilise le téléversement, et le module les perturbe",
+          "2": "Le module tire trop de courant",
+          "3": "D0 et D1 n'ont pas de résistances de pull-up"
+        },
+        "why": "Le 16U2 atteint le 328P par D0 et D1, avec 1 kΩ en série. Tout ce qui pilote ces broches brouille le téléversement : débranchez-le pendant le téléversement."
+      }
+    },
+    "brownout": {
+      "motor": {
+        "q": "L'Uno redémarre chaque fois qu'un moteur démarre. Premier suspect ?",
+        "options": {
+          "1": "Un bug dans setup()",
+          "2": "Le câble USB est trop long",
+          "3": "Le courant du moteur fait s'affaisser le rail 5 V (brown-out)"
+        },
+        "why": "L'appel de courant du moteur fait tomber le 5 V sous le seuil de brown-out et la puce redémarre. Alimentez les moteurs avec leur propre alimentation, à travers un driver."
+      },
+      "bod": {
+        "q": "À quelle tension l'ATmega328P de l'Uno se maintient-il en reset ?",
+        "options": {
+          "1": "En dessous d'environ 2,7 V",
+          "2": "En dessous de 4,5 V",
+          "3": "Jamais : il n'a pas de détecteur de brown-out"
+        },
+        "why": "Les fusibles de configuration de l'Uno règlent le détecteur de brown-out à 2,7 V (fusible étendu 0xFD). En dessous, la puce reste en reset ; quand l'alimentation remonte, le sketch repart depuis setup()."
+      }
+    },
+    "end": {
+      "pwm13": {
+        "q": "Vous faites un fondu avec analogWrite() sur la broche 13 et la LED L ne fait que s'allumer et s'éteindre d'un coup. Pourquoi ?",
+        "options": {
+          "1": "La broche 13 n'a pas de PWM matériel",
+          "2": "La LED est grillée",
+          "3": "delay(8) est trop court"
+        },
+        "why": "Seules 3, 5, 6, 9, 10 et 11 ont des timers PWM. Sur toute autre broche, analogWrite() écrit LOW en dessous de 128 et HIGH à partir de 128 : le fondu devient un signal carré."
+      },
+      "jack-reverse": {
+        "q": "Un adaptateur 9 V est branché sur la prise jack avec la polarité inversée. Que se passe-t-il ?",
+        "options": {
+          "1": "Rien : D1 le bloque et la carte reste éteinte",
+          "2": "Le régulateur 5 V grille",
+          "3": "La carte fonctionne, mais à l'envers"
+        },
+        "why": "D1 est en série avec le jack. Polarisée en inverse, elle ne laisse passer aucun courant : rien n'est endommagé. La broche VIN n'a pas cette diode."
+      },
+      "two-clocks": {
+        "q": "Pourquoi l'Uno a-t-il un quartz et un résonateur céramique ?",
+        "options": {
+          "1": "L'un sert de rechange à l'autre",
+          "2": "L'USB a besoin de la précision du quartz ; le 328P se contente du résonateur, moins cher",
+          "3": "Le résonateur cadence le régulateur 3,3 V"
+        },
+        "why": "L'USB full-speed demande une précision d'environ ±0,25 % : le 16U2 a donc le quartz Y1. Le résonateur Y2 (environ ±0,5 %) suffit pour le 328P."
+      },
+      "int16": {
+        "q": "Sur l'Uno, int n = 32767; n++; donne quelle valeur à n ?",
+        "options": {
+          "1": "32768",
+          "2": "-32768",
+          "3": "0"
+        },
+        "why": "Sur l'AVR 8 bits, un int fait 16 bits : 32767 est la plus grande valeur, et un de plus repasse à -32768. Utilisez long, ou unsigned long pour millis()."
+      }
+    }
+  }
+}
