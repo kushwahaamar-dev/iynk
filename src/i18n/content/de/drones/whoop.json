@@ -1,0 +1,371 @@
+{
+  "title": "Tiny Whoop 65 mm",
+  "tagline": "Der 25-g-Trainer für drinnen: dasselbe Betaflight, dieselbe Brille, Crashs kosten nichts.",
+  "sub": "1S-Trainer für drinnen",
+  "hint": "Bau ihn, teste ihn ohne Propeller und flieg dann durchs Wohnzimmer",
+  "noun": "Whoop",
+  "overview": "Ein Tiny Whoop ist der Indoor-Trainer des FPV: ein 65-mm-Quad von etwa 25 g, dessen Ducts die Propeller schützen, sodass er gegen Wände, Möbel und Menschen stoßen kann, ohne Schaden anzurichten. Ein einziges All-in-One-Board trägt den Flugcontroller, vier 5-A-ESCs, einen ExpressLRS-Empfänger, das OSD und einen 5,8-GHz-Videosender. Eine 14-mm-Nano-Kamera sitzt in der Haube, und ein einzelliger LiHV-Akku wird unten in eine Halterung geschoben. Er läuft mit derselben Betaflight-Firmware, demselben PID-Regelkreis und denselben Modi wie ein 5-Zoll-Quad und nutzt dieselbe Brille und Fernsteuerung, also lässt sich alles, was du hier lernst, übertragen. Wähl Akku, Motoren und Propeller und sieh zu, wie sich die Zahlen ändern, bau ihn Teil für Teil zusammen, prüf die Motoren ohne Propeller und flieg dann durchs Wohnzimmer.",
+  "practice": "Flieg das Rennen mit drei Gates durch den Raum, dann den Wohnzimmer-Lauf: unter dem Couchtisch durch, zwischen den Esszimmerstühlen hindurch, an der Lampe vorbei, über das Sofa und hinunter auf den Teppich. Bei einem echten Whoop: Prüf bei jedem Motor ohne Propeller die Drehrichtung, mach den Empfänger- und den Failsafe-Test, lern den Turtle-Modus, bevor du ihn brauchst, und lande, wenn das OSD etwa 3,3 V zeigt. Rechne mit etwa 4 Minuten gemischtem Fliegen mit einem 300-mAh-Akku, weniger als die Schwebezeit des Rechners.",
+  "design": {
+    "fixed": {
+      "FRAME": "65-mm-Rahmen mit Ducts",
+      "FC": "5-in-1-AIO: Flugcontroller, 4 x 5-A-ESC, ELRS-Empfänger, VTX",
+      "CAM": "Nano-FPV-Kamera",
+      "VTX": "VTX-Antenne (der VTX sitzt auf dem AIO)",
+      "RX": "ELRS-Antenne",
+      "TOP": "Haube",
+      "SCREWS": "Schrauben und Gummitüllen"
+    },
+    "verdict": {
+      "ok": "Die Teile passen zusammen. Leicht, sicher und ein Spaß in der Wohnung.",
+      "punch": "Die Teile passen zusammen. Kräftig für einen Whoop.",
+      "weak": "Schub zu Gewicht {tw}:1: Er fühlt sich schwammig an und kommt nicht aus einem Sturzflug heraus. Ziel auf etwa 4:1.",
+      "over": "{kv} KV an {cells}S drehen diese 1S-Motoren etwa doppelt so schnell, wie ihre Wicklungen es vertragen: Sie überhitzen schnell. 2S-Whoops mit 65 mm nutzen 0802-Motoren mit etwa 12000 bis 14000 KV an einem 2S-Board."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "65-mm-Rahmen aus einem Stück mit Ducts",
+      "what": "Ein einziges gespritztes Teil aus Polypropylen: vier Ducts mit 34,9 mm, 14,5 mm hoch, um einen Mittelboden, 65 mm von Motor zu Motor über die Diagonale. Es wiegt unter 3 g und biegt sich, statt zu brechen. Jeder Motor sitzt auf einer runden Halterung unten in seinem Duct, vier Stifte tragen die Flugplatine auf Gummitüllen, und der Akku wird unten in Schienen geschoben."
+    },
+    "MOTORS": {
+      "name": "4 bürstenlose 0702-Motoren",
+      "what": "Winzige Außenläufer: ein 7-mm-Stator, 2 mm hoch, mit 9 Spulen und 12 Magneten (9N12P), einer 1-mm-Welle und je etwa 1,5 g. Mit 25000 KV an einer Zelle drehen sie ohne Last etwa 90.000 U/min. Jeder wird mit drei M1.4-Schrauben auf einem 6,6-mm-Lochkreis an seiner Halterung festgeschraubt und mit einem kleinen 3-poligen JST1.25-Stecker ins AIO gesteckt."
+    },
+    "FC": {
+      "name": "5-in-1-AIO-Board (Betaflight)",
+      "what": "Flugcontroller, vier 5-A-ESCs, ELRS-Empfänger 2,4 GHz, OSD und 5,8-GHz-Videosender auf einer 29-mm-Platine mit 26 x 26 mm Lochabstand. Ein STM32G473 führt Betaflight aus (Target BETAFPVG473) und liest ein ICM-42688-P-Gyro; die ESCs laufen mit Bluejay. Der Empfänger ist auf der Platine mit UART3 verdrahtet, der VTX mit UART2. Der aufgedruckte Pfeil muss zur Kamera zeigen: Verkehrt herum geht jede Korrektur in die falsche Richtung, und er überschlägt sich, sobald er abhebt."
+    },
+    "WIRES": {
+      "name": "Motorstecker in den Buchsen des AIO",
+      "what": "Die drei Phasendrähte jedes Motors enden in einem JST1.25-Stecker, der in die Buchse in seiner Ecke des AIO kommt. Der Stecker hat keine Polarität: In jeder Reihenfolge dreht der Motor, und die Drehrichtung wird später in der ESC-Firmware eingestellt. Welche Buchse M1, M2, M3 oder M4 ist, prüft der Motortest ohne Propeller."
+    },
+    "XT60": {
+      "name": "BT2.0-Akkukabel, an die Pads des AIO gelötet",
+      "what": "Ein kurzer 26-AWG-Pigtail mit BT2.0-Stecker, hinten am AIO angelötet: Rot an das +-Pad, Schwarz an das --Pad. BT2.0 hat massive Kontakte im Bananenstil mit weniger Widerstand als der alte PH2.0-Stecker, was bei 10 bis 15 A an einer Zelle zählt. An einem 1S-Whoop gibt es keinen großen Kondensator: Der Fehler, den du hier vermeiden musst, ist ein falsch herum angelötetes Kabel, das den Akku verpolt ans Board legt."
+    },
+    "VTX": {
+      "name": "5,8-GHz-VTX-Antenne",
+      "what": "Der Videosender sitzt auf dem AIO; das hier ist seine Antenne. Betaflight stellt über SmartAudio an UART2 Band, Kanal und Leistung ein, von 25 mW (drinnen reichlich) bis 400 mW. Schalte den VTX nie ohne seine Antenne ein: Die Endstufe weiß nicht, wohin mit ihrer Leistung, und überhitzt."
+    },
+    "RX": {
+      "name": "ExpressLRS-Antenne 2,4 GHz",
+      "what": "Der Empfänger ist im AIO eingebaut und spricht an UART3 CRSF mit Betaflight. Nur seine Antenne ist ein eigenes Teil: Führ sie nach hinten heraus, weg von den Propellern. Zum Binden schaltest du den Whoop dreimal hintereinander ein, bis die LED des Empfängers doppelt blinkt, dann bindest du von deiner Fernsteuerung aus."
+    },
+    "TOP": {
+      "name": "Haube",
+      "what": "Eine dünne gespritzte Schale, etwa 1,5 g, die über das AIO schnappt, Finger und Teppichfasern von der Elektronik fernhält und vorn die Kamera hält. Bei einem Crash stecken Haube und Ducts den Schlag ein."
+    },
+    "CAM": {
+      "name": "14-mm-Nano-FPV-Kamera, 25° Uptilt",
+      "what": "Eine 14 x 14 mm Analogkamera mit einem Weitwinkelobjektiv von 155 bis 160 Grad, vorn in der Haube um 25 Grad nach oben geneigt, damit das Bild waagerecht bleibt, wenn sich der Whoop nach vorn neigt. Drei Drähte gehen an die CAM-Pads des AIO: 5 V, Masse und Video, dort schreibt das OSD Spannung, Timer und Warnungen darüber."
+    },
+    "BATT": {
+      "name": "1S-LiHV-Akku mit BT2.0-Stecker",
+      "what": "Eine Lithiumzelle in der Halterung unter dem Rahmen, Stecker hinten. Eine LiHV-Zelle hat voll 4,35 V und nominal 3,8 V; eine einzelne Zelle bricht unter Last stark ein, also kann das OSD bei einem Punch 3,4 V zeigen und beim Loslassen wieder auf 3,9 V springen. Lande bei etwa 3,3 V in Ruhe, lass sie unter Last nie unter 3,0 V fallen und lagere sie bei 3,8 V."
+    },
+    "PROPS": {
+      "name": "31-mm-Steckpropeller, 2 CW + 2 CCW",
+      "what": "Vier 31-mm-Propeller, die auf die 1-mm-Wellen gedrückt werden. Zwei drehen im Uhrzeigersinn und zwei gegen den Uhrzeigersinn (props in: Die Vorderkanten schwingen nach innen zur Kamera), sodass sich die Drehmomente der Motoren aufheben und das Gieren entsteht, indem ein diagonales Paar schneller dreht. Die Auswahl bietet Vierblatt, Dreiblatt und einen effizienten Zweiblatt. Sie kommen ganz zum Schluss drauf, nach dem Smoke Stopper und der Prüfung der Motordrehrichtung."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Mit dem Rahmen anfangen",
+      "body": "Prüf die Ducts auf Risse und die Motorhalterungen auf Grate von der Spritzform. Ein gerissener Duct schüttelt das Gyro durch, und der Whoop wackelt."
+    },
+    "motors": {
+      "title": "Die vier Motoren einschrauben",
+      "body": "Je drei Schrauben M1.4 x 3 mm in die Halterung unten in jedem Duct, die Drähte zeigen zur Mitte. Längere Schrauben erreichen die Wicklungen und schließen den Motor kurz.",
+      "refusal": "Die Motoren sitzen in den Ducts des Rahmens: Fang mit dem Rahmen an."
+    },
+    "aio": {
+      "title": "Das AIO montieren, Pfeil nach vorn",
+      "body": "Auf die vier Gummitüllen über den Stiften des Rahmens, mit dem aufgedruckten Pfeil zur Kameraseite. Die Tüllen halten das Motorsurren vom Gyro fern.",
+      "refusal": "Das AIO sitzt auf den Tüllenstiften des Rahmens: Setz zuerst den Rahmen ein."
+    },
+    "plugs": {
+      "title": "Die Motoren einstecken",
+      "body": "Den Stecker jedes Motors in die Buchse in seiner eigenen Ecke, die Drähte nach unten aus dem Duct gesteckt. Die Stecker passen nur in einer Richtung, sagen aber nichts über die Drehrichtung: Das prüft der Motortest.",
+      "refusal": "Die Stecker führen von den Motoren ins AIO: Setz zuerst beides ein."
+    },
+    "lead": {
+      "title": "Das BT2.0-Akkukabel anlöten",
+      "body": "Rot an das +-Pad, Schwarz an das --Pad, hinten am AIO. Prüf mit einem Messgerät, dass + und - nicht kurzgeschlossen sind und dass Rot wirklich auf + liegt, bevor ein Akku in die Nähe kommt.",
+      "refusal": "Das Kabel wird an die Akku-Pads des AIO gelötet: Montier zuerst das AIO."
+    },
+    "vtx": {
+      "title": "Die VTX-Antenne anbringen",
+      "body": "Auf den Videosender des AIO, nach oben und hinten gerichtet. Sie kommt dran, bevor die Platine jemals Strom bekommt.",
+      "refusal": "Die Antenne kommt an den VTX auf dem AIO: Montier zuerst das AIO."
+    },
+    "rx": {
+      "title": "Die ELRS-Antenne verlegen",
+      "body": "Führ die Antenne des Empfängers zwischen den hinteren Ducts nach hinten heraus, wo kein Propeller sie erwischen kann.",
+      "refusal": "Die Antenne gehört zum Empfänger auf dem AIO: Montier zuerst das AIO."
+    },
+    "canopy": {
+      "title": "Die Haube aufschnappen lassen",
+      "body": "Über das AIO, die Antennen durch ihre Schlitze. Nichts darf auf die Platine drücken oder einen Draht einklemmen.",
+      "refusal": "Setz zuerst das AIO und beide Antennen ein: Die Haube schließt sich darüber."
+    },
+    "cam": {
+      "title": "Die Kamera einsetzen",
+      "body": "Vorn in die Haube, mit 25 Grad, ihre Drähte für 5 V, Masse und Video an die CAM-Pads des AIO.",
+      "refusal": "Die Kamera wird in die Haube geklipst: Setz zuerst die Haube auf."
+    },
+    "batt": {
+      "title": "Den Akku in seine Halterung schieben",
+      "body": "Unter den Rahmen, Stecker hinten, mittig, damit der Whoop ausbalanciert ist. Noch nicht einstecken.",
+      "refusal": "Der Akku braucht die Halterung des Rahmens und das BT2.0-Kabel: Setz zuerst beides ein."
+    },
+    "props": {
+      "title": "Die Propeller aufdrücken, ganz zum Schluss",
+      "body": "Erst nach dem Smoke-Stopper-Test und der Prüfung der Motordrehrichtung, bei abgestecktem Akku. Propeller im Uhrzeigersinn auf M1 und M4, gegen den Uhrzeigersinn auf M2 und M3, gerade nach unten auf die Welle gedrückt.",
+      "refusal": "Die Propeller kommen zum Schluss drauf: Mach zuerst den Smoke-Stopper-Test und die Prüfung der Motordrehrichtung."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "Der BT2.0-Stecker des Akkus trifft auf den Pigtail. Eine LiHV-Zelle hat voll 4,35 V und nominal 3,8 V; bei Vollgas zieht der Whoop 10 bis 15 A durch diesen Stecker.",
+    "XT60-FC": "Der Pigtail ist an die Pads + und - des AIO gelötet. Betaflight liest die Akkuspannung an PA0 und den Stromsensor an PA1 (current_meter = ADC), sodass das OSD den echten Verbrauch zeigt.",
+    "FC-WIRES": "Die vier ESC-Kanäle (Betaflight-Ausgänge M1 bis M4 an PB0, PB1, PB6 und PC13) treiben die Motorbuchsen mit DShot300 und bidirektionaler Drehzahltelemetrie, je 5 A.",
+    "WIRES-MOTORS": "Drei Phasendrähte pro Motor in einem JST1.25-Stecker. In jeder Reihenfolge dreht er; die Drehrichtung wird in der ESC-Firmware Bluejay eingestellt.",
+    "CAM-FC": "5 V, Masse und Video der Kamera in die CAM-Pads, über den OSD-Chip AT7456E, der Spannung, Timer und Warnungen ins Bild schreibt.",
+    "FC-RX": "Der ExpressLRS-Empfänger sitzt auf dem AIO, an UART3 als Serial RX mit dem Protokoll CRSF verdrahtet (der Standard des Targets).",
+    "FC-VTX": "Der analoge VTX sitzt auf dem AIO, mit SmartAudio 2.0 an UART2, sodass Betaflight Band, Kanal und Leistung einstellt (25, 100, 200 oder 400 mW)."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke-Stopper-Test",
+      "pass": "Die Lampe hat nur kurz geblinkt: Das BT2.0-Kabel hat Rot auf Plus, und nichts ist kurzgeschlossen. Du kannst den Akku jetzt direkt einstecken.",
+      "fail": "Die Lampe leuchtet dauerhaft: Das BT2.0-Kabel ist falsch herum angelötet. Löte es neu, Rot an +, und wiederhol den Test, bevor du richtig einsteckst."
+    },
+    "motors": {
+      "title": "Prüfung der Motordrehrichtung (ohne Propeller)",
+      "pass": "Alle vier drehen so, wie der Mixer es erwartet: M1 und M4 im Uhrzeigersinn, M2 und M3 gegen den Uhrzeigersinn (props in). Jetzt können die Propeller drauf.",
+      "fail": "Ein Motor hat falsch herum gedreht (sein Pfeil wird rot). Die Prüfung kehrt ihn in den Bluejay-Einstellungen um, so wie du es im ESC Configurator über das Betaflight-Passthrough tun würdest; bei steckbaren Motoren gibt es nichts umzulöten. Mit Propellern hätte er den Whoop beim Start überschlagen."
+    },
+    "calibrate": {
+      "title": "Kalibrierung des Beschleunigungssensors",
+      "pass": "Auf einer ebenen Fläche kalibriert: Der Angle-Modus und der OSD-Horizont wissen jetzt, wo waagerecht ist, und die Arming-Sperre NO_ACC_CAL von Betaflight ist weg.",
+      "fail": "Montier zuerst das AIO und stell den Whoop auf eine ebene Fläche. Wenn der Pfeil nach hinten zeigt, hilft Kalibrieren nicht: Dreh die Platine um oder setz align_board_yaw = 180."
+    },
+    "rxtest": {
+      "title": "Empfängertest",
+      "pass": "Gebunden: Im Receiver-Tab bewegen die Knüppel Roll, Pitch, Yaw und Throttle, und auch AUX1 bis AUX3 bewegen sich. AUX1 armt, AUX2 wählt Angle, und AUX3 ist der Turtle-Modus, so wie die CLI sie gesetzt hat.",
+      "fail": "Kein Kanal hat sich bewegt. Setz das AIO und die ELRS-Antenne ein und steck einen Akku an: Der Empfänger läuft auf dem AIO. Zum Binden schaltest du ihn dreimal hintereinander ein, bis die LED doppelt blinkt, dann bindest du von der Fernsteuerung aus."
+    },
+    "failsafe": {
+      "title": "Failsafe-Test (ohne Propeller)",
+      "pass": "Fernsteuerung aus: Das OSD zeigt RXLOSS, die Motoren stoppen, und der Whoop disarmt (DROP). Das ist der richtige Failsafe für 25 g drinnen: Er fällt einen Meter auf den Teppich, statt davonzufliegen.",
+      "fail": "Nimm die Propeller ab, setz die ELRS-Antenne ein und steck einen Akku an, dann schalte die Fernsteuerung aus und beobachte das OSD und die Motoren."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Erste Einrichtung nach dem Flashen",
+      "explain": "Setzt den Mixer, die Ausrichtung der Platine, das Motorprotokoll und die beiden UARTs, die das AIO intern verdrahtet. DShot300 reicht für die ESCs eines Whoops völlig, und dshot_bidir lässt sie die Drehzahl melden. Der Standardwert motor_poles 14 ist für 9N12P-Whoop-Motoren falsch: Mit 12 landen jeder Drehzahlwert und jeder Filter-Notch dort, wo sie hingehören. motor_idle ist in Hundertstel Prozent angegeben, also sind 700 genau 7 %."
+    },
+    "battery": {
+      "title": "Eine LiHV-Zelle: Spannungen und der Stromsensor",
+      "explain": "Eine LiHV-Zelle ist bei 4,35 V voll, über dem Standardmaximum von Betaflight von 4,30 V, also muss vbat_max_cell_voltage hoch, sonst stimmen Zellenzahl und OSD nicht. Eine einzelne Zelle bricht unter Last stark ein, also liegen Warnung und Minimum niedriger als bei einem 5-Zöller. Das AIO hat einen echten Stromsensor (ADC); kalibrier ibata_scale gegen das, was dein Ladegerät wieder hineinlädt. vbat_sag_compensation hält das Knüppelgefühl gleich, während der Akku einbricht."
+    },
+    "switches": {
+      "title": "Schalter: Arming, Angle, Turtle",
+      "explain": "aux nimmt die Nummer des Modus: 0 ARM, 1 ANGLE, 35 FLIP OVER AFTER CRASH (Turtle). Der Kanal zählt ab 0 = AUX1, und der Bereich ist in Mikrosekunden angegeben. Turtle bekommt einen eigenen Schalter auf AUX3, damit er nie mit Angle auf AUX2 kollidiert. Einen ACRO-Modus zum Einschalten gibt es nicht: Acro ist das, was fliegt, wenn Angle aus ist."
+    },
+    "turtle": {
+      "title": "Turtle-Modus (nach einem Crash umdrehen)",
+      "explain": "Auf dem Rücken liegend AUX3 einschalten und armen: Betaflight überspringt seine Arming-Sperre für die Rückenlage, sagt den ESCs, dass sie rückwärts laufen sollen, und der Knüppel, den du drückst, hebt diese Seite herum. Turtle braucht ein DShot-Protokoll, weil der Befehl zum Rückwärtslaufen ein DShot-Befehl ist. Mit crashflip_auto_rearm OFF disarmt der Whoop, wenn du Turtle ausschaltest, und zeigt FLIP_SWITCH, bis du disarmst und wieder armst."
+    },
+    "rpm": {
+      "title": "RPM-Filter bei Whoop-Drehzahlen",
+      "explain": "Ein 1S-Whoop-Motor dreht 60.000 bis 100.000 U/min, 1.000- bis 1.700-mal pro Sekunde, weit über dem Rauschen eines 5-Zöllers. Mit der Drehzahl jedes Motors setzt Betaflight Notch-Filter genau darauf, deshalb muss motor_poles stimmen. Die dritte Harmonische trägt bei einem Whoop wenig bei, also geht ihr Gewicht auf 0."
+    },
+    "vtx": {
+      "title": "VTX-Leistungsstufen",
+      "explain": "Füg zuerst die vtxtable aus dem Handbuch des AIO ein. SmartAudio 2.0 nimmt für die vier Leistungen Stufennummern (0 bis 3), wo SmartAudio 2.1 dBm nehmen würde. 25 mW auf Raceband 1 reichen drinnen völlig, und vtx_low_power_disarm hält die Leistung auf der niedrigsten Stufe, solange der Whoop auf der Werkbank steht."
+    },
+    "failsafe": {
+      "title": "Failsafe: Drop",
+      "explain": "Geht die Funkverbindung verloren, hält Stufe 1 für failsafe_delay (15 = 1,5 s) die Ersatzwerte (Knüppel mittig, wenig Gas), sodass ein kurzer Aussetzer vorbeigeht. Bleibt die Verbindung weg, stoppt Stufe 2 DROP die Motoren. Für einen 25-g-Whoop drinnen ist das die sichere Wahl; GPS-RESCUE braucht ein GPS, das dieses Fluggerät nicht hat."
+    },
+    "alt": {
+      "title": "„Höhe halten“ ist hier eine Hilfe des Simulators",
+      "explain": "ALTHOLD von Betaflight (Modus 3) hält die Höhe mit einem Barometer oder GPS, und ein Whoop-AIO hat keins von beiden. Das Höhe halten von SimLab macht die ersten Flüge leicht; am echten Whoop lernst du dasselbe im Angle-Modus, mit einer Neigungsgrenze von 45 Grad für einen Raum."
+    },
+    "angle": {
+      "title": "Angle-Modus",
+      "explain": "Der Flugcontroller richtet den Whoop waagerecht aus, wenn du loslässt, und neigt ihn nie über angle_limit hinaus: hier 45 Grad, sanfter als der Standard von 60, was zu Möbeln passt. angle_p_gain ist, wie kräftig er sich aufrichtet. Ältere Betaflight-Versionen nannten sie level_limit und angle_level_strength; diese Namen gibt es nicht mehr."
+    },
+    "acro": {
+      "title": "Acro-Rates",
+      "explain": "Mit ACTUAL-Rates ist rc_rate die Empfindlichkeit in der Mitte und srate die Rate bei vollem Knüppel, beide geteilt durch 10: 70 Grad pro Sekunde um die Mitte und 670 bei vollem Knüppel, die Werte, mit denen du hier auf dem Flugfeld fliegst. Gieren endet bei 300 Grad pro Sekunde, was zwischen Möbeln leichter ist. AIRMODE behält bei null Gas die volle Kontrolle, sodass du dich durch eine Lücke fallen lassen kannst."
+    },
+    "race": {
+      "title": "Rundenzeit und der Akku im OSD",
+      "explain": "osd_tim1 packt Timerquelle und Genauigkeit in eine Zahl: 2 (seit dem letzten Arming) plus 1 x 16 (Hundertstel) ergibt 18. Jeder _pos-Wert ist 2048 (OSD-Profil 1) plus die Spalte plus 32 pro Zeile: der Timer oben rechts, die Zellenspannung unten links."
+    },
+    "range": {
+      "title": "Wohnzimmer-Lauf: Verbindungsqualität und Warnungen",
+      "explain": "Angle-Modus für den Lauf, mit der Verbindungsqualität oben links, den Warnungen in der Mitte, wo du LOW BATTERY nicht übersehen kannst, und den verbrauchten mAh unten rechts. Drinnen schwächen Wände und Möbel die Verbindung, nicht die Entfernung."
+    }
+  },
+  "flight": {
+    "modes": {
+      "alt": {
+        "title": "Höhe halten (leicht, nur im Simulator)",
+        "hint": "Eine Hilfe des Simulators: Ein echter Whoop hat kein Barometer, also kann Betaflight seine Höhe nicht halten. W und S steigen und sinken, und er bleibt stehen, wenn du loslässt; die Pfeiltasten neigen ihn, A und D gieren, Leertaste armt."
+      },
+      "angle": {
+        "title": "Angle-Modus",
+        "hint": "Selbstnivellierend bis 45 Grad, so wie die meisten Piloten an einem echten Whoop lernen. Das Gas bleibt, wo du es lässt, also halte den Schwebeflug mit W und S."
+      },
+      "acro": {
+        "title": "Acro-Modus (Rate)",
+        "hint": "Die Knüppel legen fest, wie schnell er sich dreht (bis zu 670 Grad pro Sekunde), und nichts richtet ihn auf. Lässt du los, behält er seinen Winkel."
+      },
+      "race": {
+        "title": "Gate-Rennen (Angle)",
+        "hint": "Drei Gates der Reihe nach durch den Raum. Die Uhr startet an Gate 1; die Sollzeit ist 20 Sekunden pro Runde."
+      },
+      "range": {
+        "title": "Flugfeld: Wohnzimmer",
+        "hint": "Unter dem Couchtisch durch, zwischen den Esszimmerstühlen hindurch, an der Lampe vorbei, über das Sofa und hinunter auf den Teppich. Die Sollzeit ist 45 Sekunden."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Funkverbindung verloren: 1,5 s lang gehen die Knüppel auf ihre Ersatzwerte, dann stoppt DROP die Motoren, und der Whoop fällt.",
+      "low-battery": "Unter 3,3 V pro Zelle blinkt im OSD LOW BATTERY: jetzt landen.",
+      "brown-out": "Eine müde Zelle, die bei einem Punch unter etwa 3,0 V einbricht, kann Video und Empfänger zurücksetzen: Das Bild rollt durch oder wird schwarz, und der Whoop fällt."
+    },
+    "controls": "Tastatur: Leertaste armt und disarmt, W und S geben Gas, die Pfeiltasten nicken und rollen, A und D gieren, V schaltet auf FPV, R setzt den Whoop zurück auf den Landeplatz. Auf dem Handy ist der linke Knüppel Gas und Gieren, der rechte Nicken und Rollen. Ein Gamepad funktioniert in Mode 2."
+  },
+  "courses": {
+    "prims": {
+      "wall": "Aufgeschnittene Wand",
+      "coffee": "Couchtisch",
+      "sofa": "Sofa",
+      "tv": "Fernsehschrank",
+      "dining": "Esstisch",
+      "chair": "Stuhl",
+      "lamp": "Stehlampe",
+      "shelf": "Bücherregal"
+    },
+    "race": {
+      "title": "Gate-Rennen im Wohnzimmer",
+      "brief": "Drei Gates mit 0,8 m auf dem freien Boden: nach Norden am Couchtisch vorbei, nach Osten über den Teppich, dann nach Westen zurück zum Landeplatz beim Fernseher. Flieg sie der Reihe nach; die Uhr startet an Gate 1."
+    },
+    "living": {
+      "title": "Wohnzimmer",
+      "brief": "Starte vom Landeplatz, schlüpf unter dem Couchtisch durch, fädle zwischen den beiden Esszimmerstühlen hindurch, schwing an der Stehlampe vorbei, hüpf über das Sofa und lande auf dem Teppich. Die Renn-Gates stehen auch im Raum.",
+      "goals": {
+        "1": "UNTER DEM TISCH",
+        "2": "ZWISCHEN DEN STÜHLEN",
+        "3": "AN DER LAMPE VORBEI",
+        "4": "ÜBER DAS SOFA",
+        "5": "AUF DEM TEPPICH LANDEN"
+      }
+    }
+  },
+  "quizzes": {
+    "aio": {
+      "combine": {
+        "q": "Was bringt das 5-in-1-AIO-Board auf einer Platine unter?",
+        "options": {
+          "1": "Flugcontroller, vier ESCs, Empfänger, OSD und Videosender",
+          "2": "Den Akku, die Motoren und die Kamera",
+          "3": "Fünf Flugcontroller, damit einer ausfallen darf"
+        },
+        "why": "Bei 25 g ist kein Platz für einen Stack. Das AIO des Whoops trägt den Flugcontroller, vier 5-A-ESCs, einen ExpressLRS-Empfänger an UART3, den OSD-Chip und einen 5,8-GHz-VTX an UART2, alles auf einer 29-mm-Platine von unter 4 g."
+      },
+      "arrow": {
+        "q": "Der Pfeil auf dem AIO zeigt nach hinten. Was passiert beim Start?",
+        "options": {
+          "1": "Nichts: Ein Whoop ist symmetrisch",
+          "2": "Jede Korrektur geht in die falsche Richtung, und er überschlägt sich sofort",
+          "3": "Nur das Kamerabild steht auf dem Kopf"
+        },
+        "why": "Betaflight geht davon aus, dass der Pfeil zur Nase zeigt. Verkehrt herum liest sich eine Neigung nach links wie eine nach rechts, also drückt der PID-Regelkreis in die falsche Richtung, und der Whoop überschlägt sich beim Abheben. Dreh die Platine um, oder setz align_board_yaw = 180."
+      }
+    },
+    "power": {
+      "polarity": {
+        "q": "Das BT2.0-Kabel wurde mit Rot an das Minus-Pad gelötet. Was passiert beim Einstecken?",
+        "options": {
+          "1": "Er fliegt rückwärts",
+          "2": "Nichts: Das Board sortiert die Polarität selbst",
+          "3": "Der Akku speist das AIO verpolt und kann seinen Eingang verbrennen"
+        },
+        "why": "Eine Verpolung legt die Zelle falsch herum an die Regler und die ESC-MOSFETs, und der Akku kann weit mehr Strom liefern, als sie überleben. Ein Smoke Stopper beim ersten Einstecken oder eine Prüfung der Pads mit dem Messgerät erwischt das, bevor etwas verbrennt."
+      },
+      "bt2": {
+        "q": "Warum nutzen Whoops BT2.0-Stecker statt der älteren PH2.0?",
+        "options": {
+          "1": "Sie sind billiger",
+          "2": "Weniger Widerstand: weniger Spannungseinbruch und längere Flüge",
+          "3": "Sie können zwei Zellen tragen"
+        },
+        "why": "Bei 10 bis 15 A macht sich an einer Zelle jedes Milliohm bemerkbar. BETAFPV hat mit BT2.0 bei 9 A etwa 0,2 V weniger Einbruch gemessen als mit PH2.0 am selben Akku, und einen längeren Flug."
+      }
+    },
+    "props": {
+      "ducts": {
+        "q": "Wozu sind die Ducts um die Propeller da?",
+        "options": {
+          "1": "Für Tempo",
+          "2": "Sie schützen die Propeller, sodass er ohne Schaden gegen Wände, Möbel und Menschen stoßen kann",
+          "3": "Zum Kühlen der Motoren"
+        },
+        "why": "Ein Whoop ist zum Crashen gemacht. Die Ducts halten die Propeller von Wänden, Vorhängen und Fingern fern, und der weiche PP-Rahmen biegt sich, statt zu brechen. Genau das macht das Fliegen drinnen, in der Nähe von Menschen, sicher."
+      },
+      "last": {
+        "q": "Warum kommen die Propeller zum Schluss drauf?",
+        "options": {
+          "1": "Damit die Motortests laufen, ohne dass etwas schneiden oder wegschleudern kann",
+          "2": "Sie sind das schwerste Teil",
+          "3": "Sonst passt die Haube nicht"
+        },
+        "why": "Selbst 31-mm-Propeller bei 90.000 U/min können Haut aufschneiden und den Whoop von der Werkbank schleudern. Smoke Stopper und Prüfung der Motordrehrichtung laufen ohne Propeller; die Propeller kommen erst drauf, wenn beides bestanden ist."
+      }
+    },
+    "flight": {
+      "sag": {
+        "q": "Das OSD zeigt 4,1 V, fällt bei einem Punch auf 3,4 V und kommt dann auf 4,0 V zurück. Was passiert da?",
+        "options": {
+          "1": "Der Akku ist kaputt",
+          "2": "Spannungseinbruch: Der Widerstand der Zelle kostet unter Last Volt, und sie kommen zurück, wenn die Last sinkt",
+          "3": "Das OSD muss kalibriert werden"
+        },
+        "why": "Bei 10 bis 15 A verlieren eine einzelne Zelle, ihr Stecker und ihre Kabel 0,4 bis 1 V an ihrem Widerstand. Die Spannung kommt zurück, wenn das Gas zurückgeht. Der Einbruch wächst, je leerer, kälter oder älter der Akku ist, und ein tiefer Einbruch kann Video und Empfänger per Brown-out zurücksetzen."
+      },
+      "twos": {
+        "q": "Warum fliegt man diese 0702-Motoren mit 25000 KV nicht an einem 2S-Akku?",
+        "options": {
+          "1": "2S ist drinnen nicht erlaubt",
+          "2": "Sie würden etwa doppelt so schnell drehen, wie ihre Wicklungen es vertragen, und überhitzen",
+          "3": "Es würde sich nichts ändern"
+        },
+        "why": "KV ist die Drehzahl pro Volt, also bedeutet doppelte Spannung doppelte Drehzahl: an 2S etwa 185.000 U/min ohne Last. Strom und Wärme steigen viel schneller als die Drehzahl. Echte 2S-Whoops mit 65 mm nutzen 0802-Motoren mit etwa 12000 bis 14000 KV an einem Board, das für 2S ausgelegt ist."
+      },
+      "turtle": {
+        "q": "Der Whoop landet hinter dem Sofa auf dem Rücken. Was bringt ihn wieder in die Luft?",
+        "options": {
+          "1": "Armen und Vollgas geben",
+          "2": "Nichts: Hingehen und ihn umdrehen",
+          "3": "Turtle-Modus: einschalten, armen und den Knüppel so drücken, dass die Motoren rückwärts drehen und ihn umdrehen"
+        },
+        "why": "FLIP OVER AFTER CRASH (Modus 35) kehrt die Motoren mit einem DShot-Befehl um und lässt dich in Rückenlage armen. Drück den Knüppel zu der Seite, die sich heben soll. Mit crashflip_auto_rearm OFF schaltest du Turtle aus, disarmst und armst wieder, um weiterzufliegen."
+      },
+      "alt": {
+        "q": "Das Höhe halten von SimLab fliegt diesen Whoop. Hat der echte das auch?",
+        "options": {
+          "1": "Nein: Er hat weder Barometer noch GPS, also kann das Höhe halten von Betaflight nicht laufen",
+          "2": "Ja: Jeder Betaflight-Quad hat es",
+          "3": "Nur an einem 2S-Akku"
+        },
+        "why": "ALTHOLD von Betaflight braucht ein Barometer oder GPS, und das AIO eines Whoops hat keins von beiden. Im Simulator ist es eine Lernhilfe; am echten Whoop hältst du die Höhe mit deinem Gas, zuerst im Angle-Modus."
+      }
+    }
+  }
+}
