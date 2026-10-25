@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { createPortal } from "react-dom";
 import type { LabKind, LabStore } from "@/components/dock/types";
 import { PresenceCursors } from "@/components/realtime";
@@ -13,31 +13,71 @@ export function useRegisterLabStore(): ((store: LabStore) => () => void) | null 
   return useContext(RegisterContext);
 }
 
-function idleStore(): LabStore {
-  return {
-    getState: () => ({}),
-    subscribe: () => () => {},
-    dispatch: () => {},
+const NO_STATE = {};
+
+/**
+ * The store the room sees for the page's whole life. The workspace store is
+ * created inside the page and registered after mount; if the room were handed
+ * that store directly, the swap from a stand-in would make a guest join, leave
+ * and join again. So the room gets this one object, and the registered store
+ * is routed through it: the room's sync wraps `dispatch` on the object it was
+ * given, and the workspace's own `dispatch` calls go through that wrapper.
+ */
+function stableStore() {
+  let target: LabStore | null = null;
+  let waiting: { type: string }[] = [];
+  const listeners = new Set<() => void>();
+  const notify = () => {
+    for (const listener of [...listeners]) listener();
   };
+  const store: LabStore = {
+    getState: () => (target ? target.getState() : NO_STATE),
+    subscribe(listener) {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+    // What the room's sync keeps as the "original" dispatch: the registered store's own.
+    dispatch(action) {
+      if (target) target.dispatch(action);
+      else if (waiting.length < 64) waiting.push(action);
+    },
+  };
+
+  function attach(next: LabStore) {
+    const own = next.dispatch;
+    const mine: LabStore = { getState: () => next.getState(), subscribe: (l) => next.subscribe(l), dispatch: (action) => own.call(next, action) };
+    target = mine;
+    next.dispatch = (action) => store.dispatch(action);
+    const off = next.subscribe(notify);
+    // A room snapshot that arrived before the page's store existed.
+    const queued = waiting;
+    waiting = [];
+    for (const action of queued) mine.dispatch(action);
+    notify();
+    return () => {
+      off();
+      next.dispatch = own;
+      if (target !== mine) return;
+      target = null;
+      notify();
+    };
+  }
+
+  return { store, attach };
 }
 
 /**
  * One room for a lab page. The workspace store is created inside the page, so
- * LabDock registers it after mount; until then the provider holds a stand-in
- * that is never joined.
+ * LabDock registers it after mount; the room holds one stable store throughout
+ * and joins once.
  */
 export function LabRoom({ lab, itemId, children }: { lab: LabKind; itemId: string; children: ReactNode }) {
   const rootRef = useRef<HTMLDivElement>(null);
-  const [idle] = useState(idleStore);
-  const [registered, setRegistered] = useState<LabStore | null>(null);
-  const register = useCallback((next: LabStore) => {
-    setRegistered(() => next);
-    return () => setRegistered((current) => (current === next ? null : current));
-  }, []);
+  const [{ store, attach }] = useState(stableStore);
 
   return (
-    <RegisterContext.Provider value={register}>
-      <RoomProvider lab={lab} itemId={itemId} store={registered ?? idle}>
+    <RegisterContext.Provider value={attach}>
+      <RoomProvider lab={lab} itemId={itemId} store={store}>
         <div ref={rootRef} data-lab-room={lab} data-lab-item={itemId} className="contents">
           {children}
           <FigureCursors rootRef={rootRef} />
