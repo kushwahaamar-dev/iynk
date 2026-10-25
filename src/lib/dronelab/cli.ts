@@ -551,7 +551,8 @@ function mavproxy(emu: CliEmulator, ctx: CliContext, s: CliSession, line: string
         out: [
           ...lines,
           out(`${ctx.version}`),
-          out(`Mode ${s.mode ?? "STABILIZE"}`),
+          // before any mode command the craft is in mode 0, the first of its modes (MANUAL on Plane, STABILIZE on Copter)
+          out(`Mode ${s.mode ?? emu.limits.mode?.values?.[0] ?? "STABILIZE"}`),
           out(ctx.plugged ? "Battery present" : "Battery not present"),
         ],
         effects: [],

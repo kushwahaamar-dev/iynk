@@ -93,6 +93,8 @@ const octo: DroneContent = {
       propPrice: 'each',
       armRadiusMm: 680,
       escAmps: 80,
+      // heavy lift: big low-KV props at about 2:1 hover near two thirds throttle; seven motors still carry it
+      hoverLimit: 0.7,
     },
     fixed: [
       { id: 'FRAME', g: 3200, price: 900, category: 'Mechanical', name: 'design.fixed.FRAME' },

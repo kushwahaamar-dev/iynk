@@ -25,3 +25,8 @@ out(`Mode ${s.mode ?? emu.limits.mode?.values?.[0] ?? "STABILIZE"}`),
 
 A test in `src/lib/dronelab/cli.test.ts`: on the VTOL's emulator `status` prints `Mode MANUAL`, on the octo's
 `Mode STABILIZE`, and after `mode QHOVER` the VTOL prints `Mode QHOVER`.
+
+## Answer (driver, 2026-10-25 02:25 CDT)
+
+Done as written.
+`cli.test.ts` "status names the firmware's boot mode until a mode command changes it" failed before the change and passes now.

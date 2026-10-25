@@ -147,5 +147,7 @@ export const calcModels: Record<DroneId, CalcModel> = {
     propPrice: 'each',
     armRadiusMm: 680,
     escAmps: 80,
+    // heavy lift: big low-KV props at about 2:1 hover near two thirds throttle; seven motors still carry it
+    hoverLimit: 0.7,
   },
 };

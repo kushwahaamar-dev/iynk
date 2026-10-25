@@ -38,3 +38,8 @@ still over-spin and the single 6S pack still cannot hover. `octo.test.ts` passes
 (`design.checks.hover-high` names no limit).
 
 Check: `npx vitest run src/content/drones/octo.test.ts src/lib/drone/content.test.ts src/lib/drone/calc.test.ts`.
+
+## Answer (driver, 2026-10-25 02:25 CDT)
+
+Done as written.
+The octo opens with no design check tripped; `npx vitest run src/content/drones/octo.test.ts src/lib/drone`: 473 passed.

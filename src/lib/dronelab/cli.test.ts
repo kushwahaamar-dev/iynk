@@ -283,6 +283,13 @@ describe("MAVProxy", () => {
     expect(out).toContain("PreArm: 3D Accel calibration needed");
     expect(out).toContain("Got COMMAND_ACK: COMPONENT_ARM_DISARM: FAILED");
   });
+
+  test("status names the firmware's boot mode until a mode command changes it", () => {
+    const plane: CliEmulator = { ...mav, prompt: "MANUAL> ", limits: { mode: { values: ["MANUAL", "CIRCLE", "STABILIZE", "FBWA", "QHOVER"] } } };
+    expect(run(["status"], plane).out).toContain("Mode MANUAL");
+    expect(run(["mode QHOVER", "status"], plane).out).toContain("Mode QHOVER");
+    expect(run(["status"], mav).out).toContain("Mode STABILIZE");
+  });
 });
 
 describe("cflib", () => {
