@@ -352,6 +352,14 @@ export interface FigureOptions {
   inputs?: WorldInput[];
 }
 
+/**
+ * The figure page for a variant. A figure builds its board once, from `?variant=`, so picking another variant loads
+ * the page again rather than patching it.
+ */
+export function figureSrc(page: string, variant: string | null): string {
+  return variant ? `${page}${page.includes('?') ? '&' : '?'}variant=${encodeURIComponent(variant)}` : page;
+}
+
 /** The figure state the store implies, sent as FigureFrame's `initial` after every `ready`. */
 export function figureState(s: BoardLabState, opts: FigureOptions): Record<string, unknown> {
   const out: Record<string, unknown> = {
@@ -361,7 +369,6 @@ export function figureState(s: BoardLabState, opts: FigureOptions): Record<strin
     power: s.power,
     select: s.selected,
   };
-  if (s.variant) out.variant = s.variant;
   const params: Record<string, Record<string, unknown>> = {};
   for (const chip of s.params) {
     if (!chip.figure) continue;

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { ParamChip } from '@/content/schema';
 import uno from '@/content/boards/uno-r3';
-import { figurePatch, figureState, initialState, reducer, type BoardLabState } from './store';
+import { figurePatch, figureSrc, figureState, initialState, reducer, type BoardLabState } from './store';
 
 const PARAMS: ParamChip[] = [
   { id: 'ms', kind: 'number', label: 'p.ms', default: 1000, min: 50, max: 5000, step: 50, unit: 'ms' },
@@ -96,5 +96,13 @@ describe('figurePatch', () => {
   it('sends a fault with the power it needs, even when the power did not change', () => {
     expect(figurePatch({ power: 'usb', fault: null }, { power: 'usb', fault: 'missing:Y2' })).toEqual({ power: 'usb', fault: 'missing:Y2' });
     expect(figurePatch({ power: 'usb', fault: 'missing:Y2' }, { power: 'usb', fault: null })).toEqual({ power: 'usb', fault: null });
+  });
+
+  it('picks the variant in the figure page, which draws its board once at load, and never in a patch', () => {
+    expect(figureSrc('/figures/boards/uno-r4.html', 'wifi')).toBe('/figures/boards/uno-r4.html?variant=wifi');
+    expect(figureSrc('/figures/boards/esp32-s3-devkitc-1.html', 'v1.0')).toBe('/figures/boards/esp32-s3-devkitc-1.html?variant=v1.0');
+    expect(figureSrc('/figures/boards/uno-r3.html', null)).toBe('/figures/boards/uno-r3.html');
+    const wifi = initialState({ board: 'uno-r4', lesson: null, variant: 'wifi', language: 'arduino-cpp', template: SRC, params: PARAMS });
+    expect(figureState(wifi, { circuit: null, failures: [] })).not.toHaveProperty('variant');
   });
 });

@@ -16,7 +16,7 @@ import { Tabs, type TabItem } from "@/components/ui/Tabs";
 import type { Locale } from "@/i18n/config";
 import { controlFor } from "@/lib/boardlab/inputs";
 import { LessonRunner } from "@/lib/boardlab/run";
-import { createBoardLabStore, figurePatch, figureState, initialState, type BoardLabState, type BoardLabStore } from "@/lib/boardlab/store";
+import { createBoardLabStore, figurePatch, figureSrc, figureState, initialState, type BoardLabState, type BoardLabStore } from "@/lib/boardlab/store";
 import { markDone, progressKey, useDone } from "@/lib/progress";
 import { useSettings } from "@/lib/settings/hooks";
 import { boardMoments } from "@/lib/sound/moments";
@@ -182,15 +182,17 @@ function Workspace({ lang, model, notice }: { lang: Locale; model: LessonModel; 
   const values = useLab(store, (s) => s.values);
   const variant = useLab(store, (s) => s.variant);
   const initial = useMemo(
-    () => figureState({ ...store.getState(), view, exploded, power, fault, selected, values, variant } as BoardLabState, figureOpts),
-    [store, view, exploded, power, fault, selected, values, variant, figureOpts],
+    () => figureState({ ...store.getState(), view, exploded, power, fault, selected, values } as BoardLabState, figureOpts),
+    [store, view, exploded, power, fault, selected, values, figureOpts],
   );
 
   const onEvent = useCallback(
     (e: FigureEvent) => {
       figureSound(e);
       if (e.type === "ready") {
+        // a figure loaded again (another variant) starts square-on and solid
         setYaw(homeYaw(figureRef.current));
+        setXr(false);
         hideHostDrawn(figureRef.current, e, LESSON_HIDDEN);
         runnerRef.current?.figureReady();
         const state = (e as { state?: unknown }).state;
@@ -363,7 +365,7 @@ function Workspace({ lang, model, notice }: { lang: Locale; model: LessonModel; 
       stage={
         <>
           <ViewBar store={store} board={board} figure={getFigure} views={views} variants={variants} xr={xr} onXr={setXr} yaw={yaw} onYaw={setYaw} />
-          <FigureFrame fill ref={attachFigure} src={board.figurePage} title={`${board.name}: ${tc(lesson.title)}`} initial={initial} onEvent={onEvent} />
+          <FigureFrame fill ref={attachFigure} src={figureSrc(board.figurePage, variant)} title={`${board.name}: ${tc(lesson.title)}`} initial={initial} onEvent={onEvent} />
           <ScrollRow label={t("readout.label")} className="min-h-8">
             <FigureReadout store={store} leds={board.leds} />
             <PinReadout store={store} />

@@ -14,7 +14,7 @@ import { Panel } from "@/components/ui/Panel";
 import { Tabs } from "@/components/ui/Tabs";
 import type { BoardContent, PinRow } from "@/content/schema";
 import type { Locale } from "@/i18n/config";
-import { createBoardLabStore, figurePatch, figureState, initialState, type BoardLabStore } from "@/lib/boardlab/store";
+import { createBoardLabStore, figurePatch, figureSrc, figureState, initialState, type BoardLabStore } from "@/lib/boardlab/store";
 import { progressKey, useDone, useSaved } from "@/lib/progress";
 import { boardMoments } from "@/lib/sound/moments";
 import { useFigureSound, useLabMoments } from "@/lib/sound/react";
@@ -279,13 +279,15 @@ function Overview({ lang, data, notice }: { lang: Locale; data: BoardOverview; n
   const fault = useLab(store, (s) => s.fault);
   const variant = useLab(store, (s) => s.variant);
   const assemblyDone = useLab(store, (s) => s.assembly.length);
-  const initial = useMemo(() => figureState({ ...store.getState(), view, exploded, power, fault, variant }, figureOpts), [store, view, exploded, power, fault, variant, figureOpts]);
+  const initial = useMemo(() => figureState({ ...store.getState(), view, exploded, power, fault }, figureOpts), [store, view, exploded, power, fault, figureOpts]);
 
   const onEvent = useCallback(
     (e: FigureEvent) => {
       figureSound(e);
       if (e.type === "ready") {
+        // a figure loaded again (another variant) starts square-on and solid
         setYaw(homeYaw(figureRef.current));
+        setXr(false);
         hideHostDrawn(figureRef.current, e, boardHidden(board.assembly));
         const state = (e as { state?: unknown }).state;
         if (state && typeof state === "object") store.dispatch({ type: "figure/state", state: state as Record<string, unknown> });
@@ -395,7 +397,7 @@ function Overview({ lang, data, notice }: { lang: Locale; data: BoardOverview; n
       stage={
         <>
           <ViewBar store={store} board={model} figure={getFigure} views={["board", "power"]} variants={model.variants} xr={xr} onXr={setXr} yaw={yaw} onYaw={setYaw} />
-          <FigureFrame fill ref={attachFigure} src={model.figurePage} title={model.name} initial={initial} onEvent={onEvent} />
+          <FigureFrame fill ref={attachFigure} src={figureSrc(model.figurePage, variant)} title={model.name} initial={initial} onEvent={onEvent} />
           <ScrollRow label={t("readout.label")} className="min-h-8">
             <FigureReadout store={store} leds={model.leds} />
           </ScrollRow>

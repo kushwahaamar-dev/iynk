@@ -75,6 +75,19 @@ test.describe("Board Lab", () => {
     expect(errors).toEqual([]);
   });
 
+  test("a variant is its own figure: the Uno R4 WiFi when picked, and in the lessons that need it", async ({ page }) => {
+    const errors = watchErrors(page);
+    // the figure builds its board once, at load, and names it in its title
+    const figureTitle = () => main(page).frameLocator("iframe").locator("header h1");
+    await page.goto("/en/boards/uno-r4");
+    await expect(figureTitle()).toContainText("UNO R4 Minima");
+    await main(page).locator("select").filter({ has: page.locator('option[value="wifi"]') }).selectOption("wifi");
+    await expect(figureTitle()).toContainText("UNO R4 WiFi");
+    await page.goto("/en/boards/uno-r4/matrix");
+    await expect(figureTitle()).toContainText("UNO R4 WiFi");
+    expect(errors).toEqual([]);
+  });
+
   test("Blink: Run uploads, the LED follows D13 and the serial monitor shows the run", async ({ page }) => {
     const errors = watchErrors(page);
     await openBlink(page);
