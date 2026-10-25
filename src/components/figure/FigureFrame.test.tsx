@@ -235,3 +235,35 @@ test("observe() sees the traffic in both directions", () => {
   const summary = seen.map((traffic) => `${traffic.dir}:${traffic.message.type}`);
   expect(summary).toEqual(["in:ready", "out:theme", "out:locale", "out:labels", "out:set", "out:act"]);
 });
+
+test("shows the plate with the figure's name while it loads, reloads a silent figure once, then says it failed", () => {
+  vi.useFakeTimers();
+  try {
+    mount();
+    const status = () => screen.getByRole("status");
+    expect(status().textContent).toBe(en.client.figure.loading);
+    expect(screen.getByText("Arduino Uno R3")).toBeTruthy();
+
+    const first = document.querySelector("iframe")!;
+    fireEvent.load(first);
+    act(() => {
+      vi.advanceTimersByTime(10_000);
+    });
+    const second = document.querySelector("iframe")!;
+    expect(second).not.toBe(first);
+    expect(status().textContent).toBe(en.client.figure.loading);
+
+    fireEvent.load(second);
+    act(() => {
+      vi.advanceTimersByTime(10_000);
+    });
+    expect(document.querySelector("iframe")).toBe(second);
+    expect(status().textContent).toBe(en.client.figure.failed);
+
+    fromFigure("ready", ready);
+    expect(status().textContent).toBe("");
+    expect(screen.queryByText(en.client.figure.loading)).toBeNull();
+  } finally {
+    vi.useRealTimers();
+  }
+});

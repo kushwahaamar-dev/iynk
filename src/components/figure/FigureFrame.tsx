@@ -105,7 +105,9 @@ export function FigureFrame({
   // The pressable parts can change as the figure's state changes (a build step adds a part).
   const [parts, setParts] = useState<FigurePart[]>([]);
   const [failed, setFailed] = useState(false);
-  const [loadedAt, setLoadedAt] = useState(0);
+  const [loads, setLoads] = useState(0);
+  // A figure that misses its ready gets one fresh document before the lab says it failed.
+  const [attempt, setAttempt] = useState(0);
   const [loadedStrings, setLoadedStrings] = useState<{ locale: string; strings: Record<string, string> } | null>(null);
   const figureStrings = strings ?? (loadedStrings?.locale === locale ? loadedStrings.strings : undefined);
 
@@ -261,16 +263,18 @@ export function FigureFrame({
   // Never reset readiness on load: a figure's `ready` can arrive before it.
   const onLoad = useCallback(() => {
     post({ type: "hello" });
-    setLoadedAt(performance.now());
+    setLoads((n) => n + 1);
   }, [post]);
 
   useEffect(() => {
-    if (!loadedAt) return;
+    if (!loads) return;
     const timer = window.setTimeout(() => {
-      if (!readyRef.current && !hiddenRef.current) setFailed(true);
+      if (readyRef.current || hiddenRef.current) return;
+      if (attempt === 0) setAttempt(1);
+      else setFailed(true);
     }, READY_TIMEOUT_MS);
     return () => window.clearTimeout(timer);
-  }, [loadedAt]);
+  }, [loads, attempt]);
 
   const buttons = info?.buttons ?? [];
   const switches = info?.switches ?? [];
@@ -325,6 +329,7 @@ export function FigureFrame({
     <div className={cx("figure-frame flex min-w-0 flex-col gap-3", fill && "h-full min-h-0 flex-1", className)}>
       <div className={cx("relative", fill && "min-h-0 flex-1")}>
         <iframe
+          key={attempt}
           ref={frameRef}
           src={withLang(src, locale)}
           title={title}
@@ -337,15 +342,19 @@ export function FigureFrame({
             frameClassName,
           )}
         />
-        <p
-          role="status"
-          className={cx(
-            failed ? "text-sm font-semibold text-bad" : "sr-only",
-            failed && (fill ? "absolute inset-x-3 top-3 rounded-ink-sm bg-surface px-3 py-2 shadow-ink-sm" : "mt-2"),
-          )}
-        >
-          {failed ? t("figure.failed") : info ? "" : t("figure.loading")}
-        </p>
+        {info && !failed ? (
+          <p role="status" className="sr-only" />
+        ) : (
+          // The plate while the figure loads (or after it failed): its name and one quiet line, no spinner.
+          <div className="ink-plate pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1 p-6 text-center shadow-none">
+            <p aria-hidden="true" className="max-w-full truncate font-head text-lg text-muted">
+              {title}
+            </p>
+            <p role="status" className={cx("text-sm", failed ? "font-semibold text-bad" : "text-muted")}>
+              {failed ? t("figure.failed") : t("figure.loading")}
+            </p>
+          </div>
+        )}
         {fill ? controlsList : null}
       </div>
 
