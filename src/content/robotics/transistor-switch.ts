@@ -121,7 +121,8 @@ void loop() {
 ];
 
 const set = (state: Record<string, unknown>) => ({ type: 'set', state }) as const;
-const fault = (id: string) => set({ fault: id });
+// a fault's command plugs the Nano in with it, so the failure shows on a powered bench
+const fault = (id: string) => set({ power: 'usb', fault: id });
 
 const faults: FailureMode[] = [
   {
@@ -184,15 +185,18 @@ const faults: FailureMode[] = [
 const step = (id: string, kind: BuildStep['kind'], action: BuildStep['action'], done: BuildStep['done'], major: boolean, extra: Partial<BuildStep> = {}): BuildStep => ({
   id, kind, action, done, major, title: `steps.${id}.title`, body: `steps.${id}.body`, ...extra,
 });
-const breakStep = (id: string, faultId: string, major = false): BuildStep => {
+// a break step: Do it sends the fault's own command (plus `extra`) on the breadboard view; the learner repairs it and
+// the Nano must run again on USB
+const breakStep = (id: string, faultId: string, major = false, extra: Record<string, unknown> = {}): BuildStep => {
   const f = faults.find((x) => x.id === faultId);
-  return step(id, 'break', f ? f.figure : null, { status: 'running' }, major, { fault: faultId });
+  const state = f && f.figure.type === 'set' ? f.figure.state : {};
+  return step(id, 'break', set({ ...state, view: 'breadboard', ...extra }), { power: 'usb', status: 'running' }, major, { fault: faultId });
 };
 
 const steps: BuildStep[] = [
-  step('strip', 'build', { type: 'press', id: 'strip' }, { build: 'bare' }, false, { refusal: 'steps.strip.refusal' }),
+  step('strip', 'build', set({ power: null, build: 'bare' }), { build: 'bare' }, false, { refusal: 'steps.strip.refusal' }),
   step('pnp', 'build', { type: 'press', id: 'pnp' }, { build: 'reflowed' }, true, { refusal: 'steps.pnp.refusal' }),
-  step('headers', 'build', null, { build: 'tht' }, false, { refusal: 'steps.headers.refusal' }),
+  step('headers', 'build', { type: 'press', id: 'place', choice: 'group-low' }, { build: 'tht' }, false, { refusal: 'steps.headers.refusal' }),
   step('solder', 'build', { type: 'press', id: 'solder' }, { build: 'assembled' }, true, { refusal: 'steps.solder.refusal' }),
   step('bb-drive', 'build', set({ circuit: 'stage-drive' }), { circuit: 'stage-drive' }, false, { refusal: 'steps.bb-drive.refusal' }),
   step('bb-motor', 'build', set({ circuit: 'stage-motor' }), { circuit: 'stage-motor' }, false, { refusal: 'steps.bb-motor.refusal' }),
@@ -200,9 +204,9 @@ const steps: BuildStep[] = [
   step('plug', 'test', { type: 'press', id: 'power', choice: 'usb' }, { power: 'usb', status: 'running' }, false, { refusal: 'steps.plug.refusal' }),
   step('upload-pwm', 'test', { type: 'press', id: 'upload', choice: 'pwm' }, { mode: 'pwm', status: 'running' }, true, { refusal: 'steps.upload-pwm.refusal' }),
   step('measure', 'test', { type: 'press', id: 'upload', choice: 'high' }, { mode: 'high', status: 'running' }, false),
-  step('exploded', 'test', set({ power: null, exploded: true }), { exploded: true }, false, { refusal: 'steps.exploded.refusal' }),
-  breakStep('break-flyback', 'no-flyback', true),
-  breakStep('break-diode', 'flyback-reversed'),
+  step('exploded', 'test', set({ power: null, view: 'exploded' }), { exploded: true }, false, { refusal: 'steps.exploded.refusal' }),
+  breakStep('break-flyback', 'no-flyback', true, { exploded: false, mode: 'pwm' }),
+  breakStep('break-diode', 'flyback-reversed', false, { mode: 'high' }),
   breakStep('break-tip120', 'tip120-reversed'),
   breakStep('break-ground', 'no-ground'),
   breakStep('break-base', 'no-base-resistor'),

@@ -6,14 +6,26 @@
    Wheel: 65 mm across, 26 mm wide, black rubber tyre on a yellow six-window rim. Legs [+, -]: a red and a black lead
    from the two motor tabs, ending in two breadboard holes (or on the mat for a bench that wires them itself).
    Numbers (Adafruit 3777 measurements, docs/facts/la-components.md §13): about 160 mA with the wheel free at 6 V,
-   about 220 rpm at the wheel, over 1 A held still or for the instant it starts. The motor itself has no model here:
-   the bench that drives it says what it does through m = { state, v, i_mA, rpm } (its model readings by part id):
+   about 220 rpm at the wheel, over 1 A held still or for the instant it starts. `model.steady(v)` gives its speed and
+   current at an average voltage; the bench that drives it says what it does through m = { state, v, i_mA, rpm } (its model readings by part id):
    state 'off' | 'ok' | 'stall' | 'over' | 'burnt' | 'spike' (switched off with no flyback diode), v the average volts
    from + to - (negative turns it backwards), rpm at the wheel. */
 (() => {
 const B = SL.bench, T = B.T;
 const callouts = ctx => !!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage);
 const RPM_AT_6V = 220, WHEEL_R = 32.5, WHEEL_W = 26, ZS = 34.5;
+// steady state at an average voltage v (benches call it through B.parts['tt-motor'].model): winding 4 Ω, so a held
+// wheel draws 1.5 A at 6 V; back-EMF 24.4 mV per wheel rpm and a running current of 130-160 mA (gear friction rises
+// with speed) give 160 mA and 220 rpm at 6 V. Below 1 V it does not start, below 0.6 V it stops.
+const R = 4, KE = .02436, VSTART = 1, VSTOP = .6, VMAX = 9;
+const i0 = rpm => .13 + .03 * Math.min(2, Math.abs(rpm) / RPM_AT_6V);
+const steady = (v, held = false) => {
+  const av = Math.abs(v), sg = Math.sign(v) || 1;
+  if (held || av < VSTOP) return { rpm: 0, i: sg * av / R };
+  let rpm = 0;
+  for (let k = 0; k < 10; k++) rpm = Math.max(0, (av - i0(rpm) * R) / KE);
+  return { rpm: sg * rpm, i: sg * (av - KE * rpm) / R };
+};
 const YELLOW = { l: '#f6cf3e', m: '#dcae22', d: '#93700f' }, RUBBER = { l: '#55514c', m: '#3b3834', d: '#24221f' };
 const CAN = { l: '#eef0f0', m: '#c3c9cb', d: '#7d878a' }, WOOD = { l: '#e3c79a', m: '#c9a874', d: '#8f7449' }, WHITE = B.M.white;
 // footprint in the motor's own frame (x along the gearbox, y along the shaft, wheel on +y): the origin sits in its middle
@@ -51,6 +63,7 @@ B.part('tt-motor', {
   params: { demo: Object.keys(DEMO) },
   paramNames: { demo: 'Show' },
   example: { demo: 'full' },
+  model: { steady, R, KE, VSTART, VSTOP, VMAX, RPM_AT_6V },
   foot: [X1 - X0, Y1 - Y0, ZS + WHEEL_R],
   matSize: [X1 - X0, Y1 - Y0],
   show: { breadboard: 'mini', parts: [{ id: 'M1', part: 'tt-motor', at: [10, -40], rot: 90, demo: 'full', holes: ['c4', 'c8'] }], wires: [] },
