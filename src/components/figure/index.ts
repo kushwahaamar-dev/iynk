@@ -1,4 +1,5 @@
 export { FigureFrame, type FigureFrameProps } from "./FigureFrame";
+export { FigureStill } from "./FigureStill";
 export type {
   CustomFigureEvent,
   CustomHostCommand,

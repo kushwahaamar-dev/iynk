@@ -79,7 +79,12 @@ python3 -I figures/tools/cfbuild.py boards/uno-r3 drones/quad5
 python3 -I figures/tools/cfbuild.py --kind boards             # every figure of one kind
 python3 -I figures/tools/cfbuild.py --all                     # everything (files starting with _ are skipped)
 python3 -I figures/tools/cfbuild.py _smoke/smoke --out /tmp/x.html
+node scripts/figure-thumbs.mjs                                # the catalogue cards' pictures -> public/thumbs
+node scripts/figure-thumbs.mjs boards/uno-r3,drones/quad5     # just these
 ```
+
+After a change that shows when a board, bench or drone stands at rest, redraw its catalogue picture too: the index
+cards show `public/thumbs/<kind>/<id>.webp` (`FigureStill`), and `FigureStill.test.tsx` fails for an item without one.
 
 The build fails, naming the file and line, on:
 

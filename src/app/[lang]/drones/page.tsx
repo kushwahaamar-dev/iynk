@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { CraftProgress } from "@/components/dronelab/CraftProgress";
 import { loadCards, type CraftCard } from "@/components/dronelab/data";
 import { formatNumber } from "@/components/dronelab/text";
+import { FigureStill } from "@/components/figure";
 import { Card } from "@/components/ui/Card";
 import { Chip, type ChipTone } from "@/components/ui/Chip";
 import { DRONE_IDS } from "@/content/ids";
@@ -71,7 +72,7 @@ async function DronesIndex({ params }: Pick<Props, "params">) {
 
       <ul aria-labelledby={headingId} className="mt-10 grid grid-cols-[repeat(auto-fill,minmax(min(17.5rem,100%),1fr))] gap-4 lg:gap-6">
         {cards.map((card) => (
-          <li key={card.id} className="row-span-4 grid grid-rows-subgrid gap-y-0">
+          <li key={card.id} className="row-span-5 grid grid-rows-subgrid gap-y-0">
             <CraftCardView card={card} lang={lang} t={t} messages={messages} />
           </li>
         ))}
@@ -98,14 +99,15 @@ function CraftCardView({
     <Card
       as="article"
       padding="none"
-      // a subgrid of the list's rows: band, title, chips and numbers line up across every card of a row
-      className="group relative row-span-4 grid grid-rows-subgrid gap-y-0 overflow-hidden focus-within:outline-[2.5px] focus-within:outline-offset-2 focus-within:outline-(--focus)"
+      // a subgrid of the list's rows: band, picture, title, chips and numbers line up across every card of a row
+      className="group relative row-span-5 grid grid-rows-subgrid gap-y-0 overflow-hidden focus-within:outline-[2.5px] focus-within:outline-offset-2 focus-within:outline-(--focus)"
       aria-labelledby={titleId}
     >
       <div className={`flex items-center justify-between gap-3 border-b-2 border-line px-4 py-1.5 text-on-color sm:py-2 ${BAND[card.palette]}`}>
         <span className="font-ui text-xs font-bold uppercase tracking-wider">{t("index.fig", { n: fig })}</span>
         <span className="font-ui text-xs font-bold uppercase tracking-wider">{t(`firmware.${card.firmware}`)}</span>
       </div>
+      <FigureStill item={`drones/${card.id}`} className="px-3 pt-3 sm:px-4 sm:pt-4" />
       {craft ? (
         <>
           <div className="px-3 pt-3 sm:px-4 sm:pt-4">

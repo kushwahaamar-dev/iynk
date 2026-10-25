@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { BoardProgress } from "@/components/boardlab/BoardProgress";
+import { FigureStill } from "@/components/figure";
 import { Chip } from "@/components/ui/Chip";
 import { isLocale } from "@/i18n/config";
 import { alternatesFor } from "@/i18n/seo";
@@ -63,7 +64,8 @@ async function Boards({ params }: Pick<Props, "params">) {
           ].filter(Boolean);
           const tags = meta.tags.filter((tag) => !meta.languages.some((l) => t(`lang.${l}`) === t(`tags.${tag}` as Parameters<typeof t>[0])));
           return (
-            <li key={id} className="ink-card relative row-span-6 grid grid-rows-subgrid gap-y-3 p-5 transition-transform hover:-translate-y-0.5 has-[a:focus-visible]:outline-[2.5px] has-[a:focus-visible]:outline-offset-3 has-[a:focus-visible]:outline-(--focus) motion-reduce:hover:translate-y-0" data-board={id}>
+            <li key={id} className="ink-card group relative row-span-7 grid grid-rows-subgrid gap-y-3 p-5 transition-transform hover:-translate-y-0.5 has-[a:focus-visible]:outline-[2.5px] has-[a:focus-visible]:outline-offset-3 has-[a:focus-visible]:outline-(--focus) motion-reduce:hover:translate-y-0" data-board={id}>
+              <FigureStill item={`boards/${id}`} className="-mx-1 -mt-1 mb-1" />
               <p className="ink-label truncate">{board.maker}</p>
               <h2 className="text-2xl leading-tight">
                 <Link

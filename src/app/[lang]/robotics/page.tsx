@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { FigureStill } from "@/components/figure";
 import { BenchProgress } from "@/components/robotics/BenchProgress";
 import { Chip } from "@/components/ui/Chip";
 import { ROBOTICS, ROBOTICS_IDS, type RoboticsId } from "@/content/ids";
@@ -104,10 +105,11 @@ async function RoboticsIndex({ params }: Pick<Props, "params">) {
                     <li key={id}>
                       <article
                         data-bench={id}
-                        className="ink-card relative flex h-full flex-col overflow-hidden p-0 transition-transform duration-150 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-ink has-[a:hover]:-translate-y-0.5"
+                        className="ink-card group relative flex h-full flex-col overflow-hidden p-0 transition-transform duration-150 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-ink has-[a:hover]:-translate-y-0.5"
                       >
                         <div className={`h-2 border-b-[1.5px] border-line ${BAND[meta.palette] ?? "bg-mono-300"}`} aria-hidden="true" />
                         <div className="flex flex-1 flex-col gap-2.5 p-5">
+                          <FigureStill item={`robotics/${id}`} className="-mx-1 -mt-1 mb-1" />
                           <p className="ink-kicker tabular">{t("index.fig", { n: String(meta.fig).padStart(2, "0") })}</p>
                           <h3 className="text-xl leading-snug">
                             {keys ? (
