@@ -140,7 +140,8 @@ export function Lobby({ items }: { items: LobbyItem[] }) {
 
   return (
     <div className="mt-10 flex flex-col gap-8">
-      <div className="grid gap-6 md:grid-cols-2">
+      {/* grid-cols-1 keeps the one phone column at the page width; an implicit column grows to the widest select option. */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <Card as="section" aria-labelledby="together-start" className="flex flex-col gap-3">
           <h2 id="together-start" className="text-xl">
             {t("lobby.create.title")}

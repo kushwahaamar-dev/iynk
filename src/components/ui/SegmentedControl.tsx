@@ -45,12 +45,14 @@ export function SegmentedControl<V extends string>({ label, options, value, onCh
     }
   }
 
+  // Long labels (four Pico boards) wrap onto a second row rather than widen a phone page. 26px is half the tallest
+  // single row, so one row still draws as a pill and two rows get rounded corners.
   return (
     <div
       role="radiogroup"
       aria-label={label}
       onKeyDown={onKeyDown}
-      className={cx("inline-flex rounded-full border-2 border-line bg-surface p-0.5", className)}
+      className={cx("inline-flex max-w-full flex-wrap rounded-[26px] border-2 border-line bg-surface p-0.5", className)}
     >
       {options.map((option, i) => {
         const checked = i === current;
