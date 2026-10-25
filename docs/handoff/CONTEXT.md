@@ -45,6 +45,7 @@ SimLab is a hardware lab in the browser (Boards, Robotics, Drones, flight sim) e
 | 10-24 16:15 | Solana and Hardware go last (phase 4), built only if time is left after gate 3; their UI stays hidden until then. Rest of the plan fine | Amar: put Solana and Hardware "as the last end of it. We will do that after only when we have time left. Don't put that into build phase yet. Everything else looks fine." |
 | 10-24 16:13 | **D2 confirmed:** translate all UI and figure text, plus judge-path prose (Uno R3, quad5, esp32-s3 bench); English prose with a "not yet translated" notice elsewhere; the rest overnight | Jagrati: "for D2 confirm the default" |
 | 10-24 16:13 | **D4: API keys stay placeholders for now.** No Meta, SerpApi, Gemini, Tiger or Vultr keys yet; Jagrati's `.env.local` is a copy of `.env.example` with empty values, so sponsor panels show "not set up" and the core lab works. Vultr VM, Vercel link/env upload and Tiger are **not** approved: still ask before creating or uploading anything | Jagrati: "leave the api keys as place holder" |
+| 10-25 08:10 | Deploy to Vercel with the Meta, Gemini and SerpApi keys; relay on a Vultr VM; no Tiger; the app is frozen (no more feature or polish changes) | Amar's answers (§5). Supersedes D4's "not approved yet" for Vercel and Vultr |
 | 10-24 ~16:00 | Raw session transcripts are **not** committed; this file summarises them instead | The tool permission check blocked exporting them, and they can contain secrets and file dumps |
 
 ## 4. Things that live on one machine only
@@ -209,6 +210,11 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   run `scripts/handoff-status.sh`, follow HANDOFF.md exactly, take over as driver under his own git identity and
   continue from "Next step". Commit and push after every step and log his instructions and decisions here. Ask
   before anything HANDOFF.md says needs a user's OK. On "I'm stopping", hand over.
+- **10-25 08:10, Amar (answers to the deploy questions).** Vercel: "Yes, deploy" (link a project, upload only the
+  Meta, Gemini and SerpApi keys and the site URL, not the Solana keypair; deploy to production; smoke the live URL).
+  Relay: "Vultr server" (a paid VM with HTTPS for rooms on the live site and the Vultr track). Tiger: "Skip it", so
+  no leaderboard and no Tiger Data track. Bug hunt: "No, freeze the app", so the pages stay as they are for the
+  video and judging; the audit is not relaunched.
 
 ## 6. Lessons learned (apply them)
 
