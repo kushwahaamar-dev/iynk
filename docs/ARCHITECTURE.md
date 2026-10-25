@@ -7,6 +7,20 @@ docs/DECISIONS.md.
 
 ## 0. Change log (newest first; after 14:00 CDT Oct 24 schema and id changes are additive only)
 
+- v1.8 00:43 CDT Oct 25 (driver, wave B tail): additive. `schema.ts`: `CliEmulator.readOnly?: string[]`, the cflib
+  parameters the firmware only reports (the console answers `AttributeError: <name> is read-only!`). Interpreter:
+  `World.onboard`, a map from sensor name to value, set by a world input with `device: { kind: 'onboard', sensor }`
+  (temperature in °C, compass in degrees, microphone and light 0-255, touch 1 = touched), kept over a reset or a
+  deep-sleep wake, and read by the Pico's `ADC(4)`, the micro:bit's temperature, compass, sound and light level and
+  logo, and the ESP32's `temperatureRead()`. The check trace has each PCA9685 channel as a pseudo-pin
+  `PCA<hex address>.<ch>`: `servo` in degrees on the Servo library's 544-2400 µs scale for a 0.5-2.5 ms pulse in a
+  40-60 Hz frame, else `pwm` duty; off or asleep is `out` 0, fully on `out` 1. Board Lab: `figureState` sends each
+  world input's value as `params[input.part].value`, so lesson props follow the sliders. Drone Lab: the Betaflight
+  CLI takes `servo` and `smix reverse`, and `save` sends the flight patch `tailReverse`, which `fly.ts` turns into a
+  toggle on `servosReversed` (as `boardYaw` 180 toggles `fcReversed`); `CalcModel.hoverLimit?` replaces the
+  `hover-high` limit for one model; the flight sim's `flipWhy` and crash cause get `flipServo`, and
+  `BREAKS.tricopter` offers `servosReversed`.
+
 - v1.7 Oct 24 (P2-fun): additive, no schema.ts change. Fly page fun (§3.2 item 8): two localStorage keys,
   `simlab:ghost:v1:<craft>:<course>` (your fastest lap as a ghost track, cut from a replay of the session log) and
   `simlab:challenge:v1:<yyyy-mm-dd>` (your best time on that day's challenge). Leaderboard course ids are
