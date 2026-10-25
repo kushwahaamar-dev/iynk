@@ -50,7 +50,8 @@ needs for the current step is below the fold; the page itself does not scroll, t
 
 **SimLab.** `LessonWorkspace`, `BenchWorkspace`, `DroneWorkspace`, `FlyWorkspace`: drop the `max-w-7xl` container
 and the page-level vertical stack; make the frame a `lg:` grid of `minmax(0,1fr)` for the figure and 400–460 px for
-the panel column, height `calc(100dvh - <header>)`. Pass `frameClassName` to `FigureFrame` so the iframe takes the
+the panel column, height `calc(100dvh - 66px)` (the sticky `SiteHeader` measures 66 px at every size). Pass
+`frameClassName` to `FigureFrame` so the iframe takes the
 cell's height (`h-full`) rather than `aspect-[4/3]`. Target: figure ≥ 50 % of a 1440×900 screen and ≥ 55 % of
 1920×1080 (today 23–32 % and 14–20 %), its top edge under 130 px (today 375–620 px).
 
@@ -73,8 +74,9 @@ title, subtitle, tagline and a nine-line paragraph. The drone page spends 375 px
 
 ### 3. Panels collapse, resize and remember
 
-**Source.** Figma UI3 help (help.figma.com/hc/articles/23954856027159): resizable and collapsible panels, Minimize UI
-collapses the navigation and properties panels, and the UI minimizes by itself when following a collaborator.
+**Source.** Figma's help centre article "Navigating UI3" (as summarised in search results; the article URL itself
+answered 404 when fetched): resizable and collapsible panels, Minimize UI collapses the navigation and properties
+panels, and the UI minimizes by itself when following a collaborator. The UI3 blog post confirms the first two.
 VS Code: toggle the secondary side bar, move the panel to any edge, `View: Toggle Maximized Panel`. Wokwi's serial
 monitor (docs.wokwi.com/guides/serial-monitor): `display: auto` shows the monitor "when there's some output (the
 default)", `collapse: true` opens it collapsed.
@@ -94,7 +96,8 @@ keep it and give the lab panels the same chevron.
 tab at a time in the Panel." Codecademy's learning environment (curriculum-documentation.codecademy.com, exercises /
 le-layouts): an exercise is 2–5 panes, the narrative pane first, an Output Terminal that "must be used alongside a
 Code Editor". Codecademy's 2015 redesign post (medium.com/about-codecademy/redesigning-our-learning-environment-
-process): the lesson text, the editor and the output side by side, the text scrolling on its own.
+process): a darker backdrop so the lesson content stands out; a learner's critique of that environment asks for the
+lesson text to scroll on its own so the code stays in place, which is the behaviour to build.
 
 **In practice.** Content that the learner uses in turn (read, then code, then check) sits in one column as tabs or as
 two stacked panes with one scroll container each. Content that belongs to one moment (code and its output) stacks.
@@ -313,9 +316,12 @@ the enhanced level. Apple HIG: 44×44 pt as the recommended size.
 **In practice.** Phone: 44 px minimum everywhere (`.touch-target`). Desktop dense rows: 28–32 px tall is fine if
 there is 8 px between controls.
 
-**SimLab.** The lesson page has 59 controls under 44 px at 1440 (acceptable if they meet 24 px plus spacing: the
-rotate icons at the view bar are smaller than that) and 7 at 390: fix those 7 (`ViewBar` rotate icons, `LessonStrip`
-chevrons). Re-run `shoot.mjs` after the rebuild; it counts them.
+**SimLab.** Measured with `<scratchpad>/F-research/targets.mjs`. At 1440 the lesson page has 59 controls under 44
+px, but 57 of them are 36–40 px tall buttons with spacing (fine by the 24 px floor); the real offenders on every size
+are a 16×16 colour swatch ("Red") in the wire-in palette, an unlabelled 16×16 control, the 12 px-tall "Resize the
+serial monitor" handle (`SerialMonitor`), and on the fly page the two 13×13 ghost toggles (`data-testid=ghost-best`,
+`ghost-pace` in `FlightRange`). At 390 the three `ViewBar` rotate icons are 35–42 px wide (44 tall): widen to 44. The
+footer credit link is 40 px tall. Re-run the script after the rebuild; it lists them.
 
 ### 19. The lesson strip is a progress rail, not a card carousel
 
@@ -395,8 +401,8 @@ design summary in a collapsible panel.
 Devanagari needs more line height (globals.css already swaps the family). Figma and Onshape both compact labels before
 they truncate.
 
-**In practice.** Buttons never truncate and never grow past their row (already fixed in `282f1`): give them
-`min-w-0` and allow two lines at 390; headings `text-wrap: balance`; panels at least 320 px wide; test de and hi in
+**In practice.** Buttons never truncate and never grow past their row: give them
+`min-w-0` and allow two lines at 390 (commit `282f15d` fixed the French and German cases); headings `text-wrap: balance`; panels at least 320 px wide; test de and hi in
 every layout, not only en.
 
 **SimLab.** Every new string in all six `src/i18n/messages/<lang>/*.json`; keep the strings few (rule 5). The German
