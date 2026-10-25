@@ -45,6 +45,16 @@
         "passport": "Pass",
         "hardware": "Hardware"
       }
+    },
+    "sound": {
+      "label": "Sound",
+      "turnOn": "Turn sound on",
+      "turnOff": "Turn sound off"
+    },
+    "usage": {
+      "label": "Anonymous usage counts",
+      "body": "SimLab counts what happens in the labs (a lesson passed, a step built, a fault tried) for the live counters and leaderboards. Each event carries a random id for this browser, never your name or your code.",
+      "toggle": "Share anonymous usage counts"
     }
   }
 }

@@ -12,7 +12,7 @@ beforeEach(() => {
 });
 
 test("settings start at the defaults and setSetting saves one field", () => {
-  expect(getSettings()).toEqual({ theme: "system", sound: true, lofi: false, labels: true, reduceMotion: false });
+  expect(getSettings()).toEqual({ theme: "system", sound: false, lofi: false, labels: true, reduceMotion: false, telemetry: true });
   setSetting("lofi", true);
   setSetting("theme", "dark");
   expect(getSettings()).toMatchObject({ lofi: true, theme: "dark" });
@@ -21,10 +21,10 @@ test("settings start at the defaults and setSetting saves one field", () => {
 
 test("settings share the saved document with progress", () => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({ v: 1, done: { "drone:quad5:build": true } }));
-  setSetting("sound", false);
+  setSetting("sound", true);
   const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}");
   expect(saved.done).toEqual({ "drone:quad5:build": true });
-  expect(saved.settings.sound).toBe(false);
+  expect(saved.settings.sound).toBe(true);
 });
 
 test("resolveTheme follows the OS only for system", () => {
@@ -36,10 +36,10 @@ test("resolveTheme follows the OS only for system", () => {
 
 test("applySettingsToDocument sets the attributes globals.css reads", () => {
   const root = document.documentElement;
-  applySettingsToDocument({ theme: "dark", sound: true, lofi: false, labels: true, reduceMotion: true });
+  applySettingsToDocument({ theme: "dark", sound: true, lofi: false, labels: true, reduceMotion: true, telemetry: true });
   expect(root.dataset.theme).toBe("dark");
   expect(root.dataset.reduceMotion).toBe("true");
-  applySettingsToDocument({ theme: "system", sound: true, lofi: false, labels: true, reduceMotion: false });
+  applySettingsToDocument({ theme: "system", sound: true, lofi: false, labels: true, reduceMotion: false, telemetry: true });
   expect(root.dataset.theme).toBeUndefined();
   expect(root.dataset.reduceMotion).toBeUndefined();
 });

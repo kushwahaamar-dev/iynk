@@ -9,10 +9,13 @@ export type ThemeSetting = "system" | "light" | "dark";
 
 export type Settings = {
   theme: ThemeSetting;
+  /** Figure sound effects and lab cues (src/lib/sound). Off until the learner turns it on. */
   sound: boolean;
   lofi: boolean;
   labels: boolean;
   reduceMotion: boolean;
+  /** Anonymous usage events (src/lib/telemetry). On unless the learner opts out. */
+  telemetry: boolean;
 };
 
 export type QuizResult = { score: number; total: number };
@@ -27,10 +30,11 @@ export type Saved = {
 
 export const DEFAULT_SETTINGS: Readonly<Settings> = Object.freeze({
   theme: "system",
-  sound: true,
+  sound: false,
   lofi: false,
   labels: true,
   reduceMotion: false,
+  telemetry: true,
 });
 
 /** What the server renders and what a first visit starts from: nothing saved. */
@@ -97,6 +101,7 @@ function normalize(doc: Record<string, unknown>): Saved {
     lofi: typeof raw.lofi === "boolean" ? raw.lofi : DEFAULT_SETTINGS.lofi,
     labels: typeof raw.labels === "boolean" ? raw.labels : DEFAULT_SETTINGS.labels,
     reduceMotion: typeof raw.reduceMotion === "boolean" ? raw.reduceMotion : DEFAULT_SETTINGS.reduceMotion,
+    telemetry: typeof raw.telemetry === "boolean" ? raw.telemetry : DEFAULT_SETTINGS.telemetry,
   };
 
   return { v: STORAGE_VERSION, done, quiz, best, settings };

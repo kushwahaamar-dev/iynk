@@ -86,12 +86,12 @@ describe("reading what is stored", () => {
       done: { "board:nano:lesson:a": true, "board:nano:lesson:b": "yes" },
       quiz: { good: { score: 3, total: 4 }, bad: { score: 9, total: 4 }, worse: 7 },
       best: { ok: 12.5, nan: "fast" },
-      settings: { theme: "neon", sound: false, lofi: "on" },
+      settings: { theme: "neon", sound: true, lofi: "on", telemetry: 0 },
     });
     expect(saved.done).toEqual({ "board:nano:lesson:a": true });
     expect(saved.quiz).toEqual({ good: { score: 3, total: 4 } });
     expect(saved.best).toEqual({ ok: 12.5 });
-    expect(saved.settings).toEqual({ theme: "system", sound: false, lofi: false, labels: true, reduceMotion: false });
+    expect(saved.settings).toEqual({ theme: "system", sound: true, lofi: false, labels: true, reduceMotion: false, telemetry: true });
   });
 });
 

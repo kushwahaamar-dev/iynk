@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { LabDock } from "@/components/dock/LabDock";
 import { FigureFrame, type FigureEvent, type FigureHandle } from "@/components/figure";
+import { SoundToggle, UsageToggle } from "@/components/settings";
 import { Button } from "@/components/ui/Button";
 import { Kbd } from "@/components/ui/Kbd";
 import { markDone, recordQuiz } from "@/lib/progress/progress";
@@ -12,8 +13,10 @@ import { terminalKind } from "@/lib/robotics/catalog";
 import { currentDraw } from "@/lib/robotics/current";
 import { quizUnlocked } from "@/lib/robotics/quiz";
 import { interpRunner, type TaskRunResult } from "@/lib/robotics/runner";
-import { createBenchStore, type BenchEffect, type BenchSetup, type BenchStore, type Notice } from "@/lib/robotics/store";
+import { createBenchStore, type BenchEffect, type BenchSetup, type BenchState, type BenchStore, type Notice } from "@/lib/robotics/store";
 import { activeFaults, currentStepIndex } from "@/lib/robotics/steps";
+import { benchMoments } from "@/lib/sound/bench-moments";
+import { useFigureSound, useLabMoments } from "@/lib/sound/react";
 import { FaultsPanel } from "./FaultsPanel";
 import { KeyHelp } from "./KeyHelp";
 import { textLookup, useBenchState, useBenchT, type BenchMessages, type BenchT, type TextOf } from "./messages";
@@ -141,6 +144,9 @@ export function BenchWorkspace({ setup, messages }: Props) {
   const tasksRef = useRef<HTMLDivElement>(null);
 
   useEffects(store, figure, setup);
+  const moments = useCallback((prev: BenchState, next: BenchState) => benchMoments(bench, prev, next), [bench]);
+  useLabMoments(store, moments, bench.id);
+  const figureSound = useFigureSound();
 
   const figureState = state.figure.state;
   const active = useMemo(() => activeFaults(bench.faults, figureState), [bench.faults, figureState]);
@@ -156,6 +162,7 @@ export function BenchWorkspace({ setup, messages }: Props) {
 
   const onEvent = useCallback(
     (event: FigureEvent) => {
+      figureSound(event);
       switch (event.type) {
         case "ready":
           store.dispatch({ type: "figure/ready" });
@@ -175,7 +182,7 @@ export function BenchWorkspace({ setup, messages }: Props) {
           return;
       }
     },
-    [store],
+    [store, figureSound],
   );
 
   const readyQuiz = useMemo(
@@ -224,6 +231,7 @@ export function BenchWorkspace({ setup, messages }: Props) {
             {t("bench.figureHeading")}
           </h2>
           <div className="flex flex-wrap items-center gap-2">
+            <SoundToggle />
             <Button size="sm" variant="secondary" onClick={() => figure?.focus()}>
               {t("bench.focusFigure")}
             </Button>
@@ -326,6 +334,10 @@ export function BenchWorkspace({ setup, messages }: Props) {
 
       <div className="min-w-0 lg:col-span-12" ref={tasksRef}>
         <TasksPanel bench={bench} tasks={state.tasks} savedDone={savedTask} t={t} tx={tx} dispatch={dispatch} headingId={ids.tasks} />
+      </div>
+
+      <div className="min-w-0 lg:col-span-12">
+        <UsageToggle />
       </div>
 
       <KeyHelp open={help} onClose={() => setHelp(false)} t={t} />

@@ -6,6 +6,7 @@ import type { DroneContent } from "@/content/schema";
 import { DRONES } from "@/content/ids";
 import { LabDock } from "@/components/dock/LabDock";
 import { FigureFrame, type FigureEvent, type FigureHandle, type HostCommand } from "@/components/figure";
+import { SoundToggle, UsageToggle } from "@/components/settings";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { Tabs } from "@/components/ui/Tabs";
@@ -15,9 +16,11 @@ import { isDesignPick } from "@/lib/drone/design";
 import { buildComplete, droneProgressKeys, testStatus } from "@/lib/dronelab/bench";
 import { readBench } from "@/lib/dronelab/figure";
 import { readBenchSummary, writeBenchSummary } from "@/lib/dronelab/session";
-import { benchSummary, createDroneLabStore, figureInitial, type DroneTab } from "@/lib/dronelab/store";
+import { benchSummary, createDroneLabStore, figureInitial, type DroneLabState, type DroneTab } from "@/lib/dronelab/store";
 import { progressKey } from "@/lib/progress/keys";
 import { markDone } from "@/lib/progress/progress";
+import { droneMoments } from "@/lib/sound/moments";
+import { useFigureSound, useLabMoments } from "@/lib/sound/react";
 import { BuildPanel } from "./BuildPanel";
 import { CliConsole } from "./CliConsole";
 import { CraftProgress } from "./CraftProgress";
@@ -59,6 +62,9 @@ export function DroneWorkspace({ lang, content, text, messages }: Props) {
   const dispatch = store.dispatch;
 
   useEffect(() => (figure ? store.connect((command) => sendTo(figure, command)) : undefined), [figure, store]);
+  const moments = useCallback((prev: DroneLabState, next: DroneLabState) => droneMoments(content, prev, next), [content]);
+  useLabMoments(store, moments, id);
+  const figureSound = useFigureSound();
 
   // The design picked earlier in this tab, restored after hydration so server and client render the same.
   useEffect(() => {
@@ -101,6 +107,7 @@ export function DroneWorkspace({ lang, content, text, messages }: Props) {
 
   const onEvent = useCallback(
     (event: FigureEvent) => {
+      figureSound(event);
       switch (event.type) {
         case "ready":
           dispatch({ type: "figure/ready" });
@@ -119,7 +126,7 @@ export function DroneWorkspace({ lang, content, text, messages }: Props) {
           break;
       }
     },
-    [dispatch],
+    [dispatch, figureSound],
   );
 
   const bench = readBench(state.figure);
@@ -213,6 +220,7 @@ export function DroneWorkspace({ lang, content, text, messages }: Props) {
             countTemplate={messages.index.progressValue}
             valueTemplate={messages.workspace.progressLabel}
           />
+          <SoundToggle />
           <KeyboardHelp t={t} />
           <ButtonLink
             href={`/${lang}/drones/${id}/fly`}
@@ -338,6 +346,10 @@ export function DroneWorkspace({ lang, content, text, messages }: Props) {
           </p>
         </div>
       </section>
+
+      <div className="mt-12">
+        <UsageToggle />
+      </div>
     </div>
   );
 }

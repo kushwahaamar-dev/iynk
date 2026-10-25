@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { LabDock } from "@/components/dock";
 import { FigureFrame } from "@/components/figure";
+import { SoundToggle, UsageToggle } from "@/components/settings";
 import type { FigureEvent, FigureHandle } from "@/components/figure/protocol";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/icons";
@@ -12,6 +13,8 @@ import type { BoardContent, PinRow } from "@/content/schema";
 import type { Locale } from "@/i18n/config";
 import { createBoardLabStore, figurePatch, figureState, initialState, type BoardLabStore } from "@/lib/boardlab/store";
 import { progressKey, useDone } from "@/lib/progress";
+import { boardMoments } from "@/lib/sound/moments";
+import { useFigureSound, useLabMoments } from "@/lib/sound/react";
 import { AssemblyPanel } from "./AssemblyPanel";
 import { BoardProgress } from "./BoardProgress";
 import { FailurePanel } from "./FailurePanel";
@@ -250,6 +253,9 @@ function Overview({ lang, data }: { lang: Locale; data: BoardOverview }) {
     });
   }, [store, figureOpts]);
 
+  useLabMoments(store, boardMoments, model.id);
+  const figureSound = useFigureSound();
+
   const view = useLab(store, (s) => s.view);
   const exploded = useLab(store, (s) => s.exploded);
   const power = useLab(store, (s) => s.power);
@@ -259,13 +265,14 @@ function Overview({ lang, data }: { lang: Locale; data: BoardOverview }) {
 
   const onEvent = useCallback(
     (e: FigureEvent) => {
+      figureSound(e);
       if (e.type === "ready") {
         setYaw(homeYaw(figureRef.current));
         const state = (e as { state?: unknown }).state;
         if (state && typeof state === "object") store.dispatch({ type: "figure/state", state: state as Record<string, unknown> });
       } else if (e.type === "state") store.dispatch({ type: "figure/state", state: e.state });
     },
-    [store],
+    [store, figureSound],
   );
 
   const variantDef = board.variants.find((v) => v.figureVariant === variant) ?? board.variants[0];
@@ -277,10 +284,13 @@ function Overview({ lang, data }: { lang: Locale; data: BoardOverview }) {
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 pb-16 pt-6 sm:px-6" data-testid="board-workspace" data-board={model.id}>
       <header className="flex flex-col gap-2">
-        <Link href={`/${lang}/boards`} className="inline-flex min-h-11 items-center gap-1 self-start text-sm">
-          <Icon name="chevron-right" size={16} className="rotate-180" aria-hidden="true" />
-          {t("board.back")}
-        </Link>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Link href={`/${lang}/boards`} className="inline-flex min-h-11 items-center gap-1 text-sm">
+            <Icon name="chevron-right" size={16} className="rotate-180" aria-hidden="true" />
+            {t("board.back")}
+          </Link>
+          <SoundToggle />
+        </div>
         <p className="ink-kicker">
           {t("index.fig", { n: model.fig })} · {board.maker}
         </p>
@@ -359,6 +369,8 @@ function Overview({ lang, data }: { lang: Locale; data: BoardOverview }) {
       )}
 
       <LabDock lab="board" itemId={model.id} store={store} figure={figure} />
+
+      <UsageToggle />
     </div>
   );
 }

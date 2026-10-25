@@ -20,6 +20,16 @@ type Snapshot = { scope: string; state: unknown };
 const isSnapshot = (value: unknown): value is Snapshot =>
   typeof value === "object" && value !== null && typeof (value as Snapshot).scope === "string" && "state" in value;
 
+let hydrating = 0;
+
+/**
+ * True while a joiner's store takes the host's snapshot. Store listeners that react to what just
+ * happened (sound cues, telemetry) skip that change: catching up is not finishing every step again.
+ */
+export function isHydrating(): boolean {
+  return hydrating > 0;
+}
+
 /**
  * Puts a lab store in a room. While attached, the store's dispatch sends
  * shared actions to the relay instead of applying them, and the room applies
@@ -104,8 +114,13 @@ export function attachStore<S, A extends { type: string }>(
     snapshot: (): Snapshot => ({ scope, state: store.getState() }),
     hydrate: (snapshot) => {
       if (!isSnapshot(snapshot) || snapshot.scope !== scope) return;
-      run({ type: HYDRATE, state: snapshot.state });
-      for (const action of sync.resume(snapshot.state)) run(action);
+      hydrating += 1;
+      try {
+        run({ type: HYDRATE, state: snapshot.state });
+        for (const action of sync.resume(snapshot.state)) run(action);
+      } finally {
+        hydrating -= 1;
+      }
       sentKey = sync.codeKey(store.getState());
     },
     apply: (action, from) => {

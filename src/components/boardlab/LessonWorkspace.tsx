@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LabDock } from "@/components/dock";
 import { FigureFrame } from "@/components/figure";
+import { SoundToggle, UsageToggle } from "@/components/settings";
 import type { FigureEvent, FigureHandle } from "@/components/figure/protocol";
 import { ButtonLink } from "@/components/ui/Button";
 import { Button } from "@/components/ui/Button";
@@ -16,6 +17,8 @@ import { LessonRunner } from "@/lib/boardlab/run";
 import { createBoardLabStore, figurePatch, figureState, initialState, type BoardLabState, type BoardLabStore } from "@/lib/boardlab/store";
 import { markDone, progressKey, useDone } from "@/lib/progress";
 import { useSettings } from "@/lib/settings/hooks";
+import { boardMoments } from "@/lib/sound/moments";
+import { useFigureSound, useLabMoments, useSketchTones } from "@/lib/sound/react";
 import { ChecksPanel } from "./ChecksPanel";
 import { CodePanel } from "./CodePanel";
 import { FailurePanel } from "./FailurePanel";
@@ -147,6 +150,10 @@ function Workspace({ lang, model }: { lang: Locale; model: LessonModel }) {
     });
   }, [store, figureOpts]);
 
+  useLabMoments(store, boardMoments, board.id);
+  useSketchTones(store);
+  const figureSound = useFigureSound();
+
   const view = useLab(store, (s) => s.view);
   const exploded = useLab(store, (s) => s.exploded);
   const power = useLab(store, (s) => s.power);
@@ -161,6 +168,7 @@ function Workspace({ lang, model }: { lang: Locale; model: LessonModel }) {
 
   const onEvent = useCallback(
     (e: FigureEvent) => {
+      figureSound(e);
       if (e.type === "ready") {
         setYaw(homeYaw(figureRef.current));
         const state = (e as { state?: unknown }).state;
@@ -175,7 +183,7 @@ function Workspace({ lang, model }: { lang: Locale; model: LessonModel }) {
         }
       }
     },
-    [store, lesson.world.inputs],
+    [store, lesson.world.inputs, figureSound],
   );
 
   const toggleRun = useCallback(() => {
@@ -279,10 +287,13 @@ function Workspace({ lang, model }: { lang: Locale; model: LessonModel }) {
               {t("lesson.done")}
             </span>
           )}
-          <Button size="sm" variant="ghost" className="ms-auto" onClick={() => setHelp(true)} title={t("keys.open")}>
-            <span aria-hidden="true">?</span>
-            <span>{t("keys.title")}</span>
-          </Button>
+          <div className="ms-auto flex flex-wrap gap-2">
+            <SoundToggle />
+            <Button size="sm" variant="ghost" onClick={() => setHelp(true)} title={t("keys.open")}>
+              <span aria-hidden="true">?</span>
+              <span>{t("keys.title")}</span>
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -337,6 +348,8 @@ function Workspace({ lang, model }: { lang: Locale; model: LessonModel }) {
           </ButtonLink>
         )}
       </nav>
+
+      <UsageToggle />
 
       <ShortcutsDialog open={help} onClose={() => setHelp(false)} />
     </div>
