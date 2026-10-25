@@ -1,42 +1,125 @@
 {
   "title": "Raspberry Pi 5",
   "sub": "ROS 2 brain",
-  "hint": "Build it, fit the cooler, power it from a real 5 A supply",
-  "overview": "The Raspberry Pi 5 is the robot's brain, not its spinal cord: a 2.4 GHz quad-core Linux computer that runs ROS 2, SLAM Toolbox, Nav2 and the camera pipeline. Linux is not real-time, so the motor and balance loops live on an ESP32 or Nano that talks to the Pi over USB serial, the same split as Waveshare's UGV Rover. Feed it a real 5 V 5 A supply, fit the Active Cooler last and watch the terminal.",
+  "hint": "Build it, card and cooler last, then power it from a real 5 A supply",
+  "overview": "The Raspberry Pi 5 is the robot's brain, not its spinal cord: a 2.4 GHz quad-core Linux computer that runs ROS 2, SLAM Toolbox, Nav2 and the camera pipeline. Linux is not real-time, so the motor and balance loops live on an ESP32 or Nano that talks to the Pi over USB serial, the same split as Waveshare's UGV Rover. Build it up from the bare board, give it its microSD card and the Active Cooler, feed it a real 5 V 5 A supply and watch the terminal. Heat moves about ten times faster here than on a real board, so you see in seconds what takes minutes on the bench.",
   "power": {
     "label": "Plug / unplug the 27 W USB-C supply",
     "ok": "Powered: the LED turns from red to green while Linux boots"
   },
   "parts": {
-    "U1": { "name": "BCM2712 SoC", "what": "Four Cortex-A76 cores at 2.4 GHz and a VideoCore VII GPU on a flip-chip die under a metal heat spreader. It runs Linux, ROS 2, SLAM and vision, fast but not real-time." },
-    "U2": { "name": "LPDDR4X RAM", "what": "1 to 16 GB of LPDDR4X-4267 right next to the SoC: at these speeds the memory traces have to be short." },
-    "U3": { "name": "RP1 I/O controller", "what": "Raspberry Pi's own chip for USB, Ethernet, the cameras and the GPIO header, linked to the SoC over four lanes of PCIe 2.0. Every port on the board comes from it." },
-    "U4": { "name": "Power management IC (Renesas DA9091)", "what": "Makes every rail (core, memory, 1.8 V, 3.3 V) from the 5 V input, keeps the real-time clock, handles the power button and flags under-voltage below 4.63 V." },
-    "U5": { "name": "Wi-Fi and Bluetooth module", "what": "Dual-band 802.11ac Wi-Fi and Bluetooth 5.0 under a metal can. Fine for SSH and Foxglove; robot control traffic is safer on a cable." },
-    "U6": { "name": "Gigabit Ethernet PHY", "what": "Turns the RP1's Ethernet signals into the voltages on the cable; it sits at 45 degrees next to the jack." },
-    "L1": { "name": "PMIC power inductors", "what": "The four grey blocks beside the PMIC store energy for its switching regulators." },
-    "RC": { "name": "Decoupling capacitors and resistors", "what": "Hundreds of tiny parts: every fast chip needs a local energy reserve right at its power pins." },
-    "LED1": { "name": "Power and status LED (red/green)", "what": "Red when power arrives, green once the firmware starts, flickering off for SD-card reads. Flash codes report boot errors." },
-    "SW1": { "name": "Power button", "what": "New on the Pi 5. The first power-up boots by itself; a press then shuts down cleanly, a press while halted boots again, a long hold cuts the power." },
-    "J1": { "name": "USB-C power input", "what": "5 V in. The official 27 W supply tells the Pi over USB PD that it can give 5 A; a 5 V 3 A supply boots it but caps the USB ports at 600 mA." },
-    "J2": { "name": "PCIe connector", "what": "16-pin 0.5 mm ribbon with one lane of PCIe 2.0, for an NVMe drive HAT or an AI accelerator." },
-    "J3": { "name": "Camera/display connector 0", "what": "22-pin 0.5 mm ribbon, four MIPI lanes, for a camera or a DSI display. Two cameras make a stereo pair: calibrate each one with a chessboard first." },
-    "J4": { "name": "Camera/display connector 1", "what": "The second 4-lane MIPI connector. Pi 4 camera cables are 15-pin 1 mm and need an adapter cable." },
-    "J5": { "name": "RTC battery connector", "what": "2-pin JST-SH for a small cell that keeps the clock running while unplugged, so log and bag timestamps stay right." },
-    "J6": { "name": "Fan connector", "what": "4-pin JST-SH PWM fan header: the firmware speeds the fan up as the SoC heats." },
-    "J7": { "name": "UART debug connector", "what": "3-pin JST-SH serial console (pin 1 RX, 2 GND, 3 TX) at 115200 baud, /dev/ttyAMA10 in Linux." },
-    "J8": { "name": "40-pin GPIO header", "what": "3.3 V logic with I2C, SPI, UART and PWM. Never 5 V into a pin, and motors go to a microcontroller, not here. Pins 2 and 4 are wired straight to the 5 V input." },
-    "J9": { "name": "Micro-HDMI 0", "what": "Up to 4K at 60 Hz. On a robot it is mostly for the first boot." },
-    "J10": { "name": "Micro-HDMI 1", "what": "A second 4K60 display: RViz on one screen, terminals on the other." },
-    "J11": { "name": "Gigabit Ethernet jack", "what": "The reliable way to stream topics and camera frames. Green LED = link, amber = traffic." },
-    "J12": { "name": "USB 3.0 ports (blue)", "what": "Two 5 Gbit/s ports that work at full speed together: depth cameras, lidar, SSDs." },
-    "J13": { "name": "USB 2.0 ports (black)", "what": "Keyboard, teleop gamepad and the USB serial link to the Nano or ESP32." },
-    "J14": { "name": "PoE+ header", "what": "Four pins that take power from the Ethernet cable through the PoE+ HAT." },
-    "FAN": { "name": "Active Cooler", "what": "Aluminium heatsink and blower fan on two spring pins, with thermal pads on the SoC, RAM and RP1, and a cable to the fan header. Without it ROS 2 load reaches 80-85 °C and the clock is cut." }
+    "U1": {
+      "name": "BCM2712 SoC",
+      "what": "Four Cortex-A76 cores at 2.4 GHz and a VideoCore VII GPU on a flip-chip die under a metal heat spreader. It runs Linux, ROS 2, SLAM and vision, fast but not real-time."
+    },
+    "U2": {
+      "name": "LPDDR4X RAM",
+      "what": "1 to 16 GB of LPDDR4X-4267 right next to the SoC: at these speeds the memory traces have to be short."
+    },
+    "U3": {
+      "name": "RP1 I/O controller",
+      "what": "Raspberry Pi's own chip for USB, Ethernet, the cameras and the GPIO header, linked to the SoC over four lanes of PCIe 2.0. Every port on the board comes from it."
+    },
+    "U4": {
+      "name": "Power management IC (Renesas DA9091)",
+      "what": "Makes every rail (core, memory, 1.8 V, 3.3 V) from the 5 V input, keeps the real-time clock, handles the power button and flags under-voltage below 4.63 V."
+    },
+    "U5": {
+      "name": "Wi-Fi and Bluetooth module",
+      "what": "Dual-band 802.11ac Wi-Fi and Bluetooth 5.0 under a metal can. Fine for SSH and Foxglove; robot control traffic is safer on a cable."
+    },
+    "U6": {
+      "name": "Gigabit Ethernet PHY",
+      "what": "Turns the RP1's Ethernet signals into the voltages on the cable; it sits at 45 degrees next to the jack."
+    },
+    "L1": {
+      "name": "PMIC power inductors",
+      "what": "The four grey blocks beside the PMIC store energy for its switching regulators."
+    },
+    "RC": {
+      "name": "Decoupling capacitors and resistors",
+      "what": "Hundreds of tiny parts: every fast chip needs a local energy reserve right at its power pins."
+    },
+    "LED1": {
+      "name": "Power and status LED (red/green)",
+      "what": "Red when power arrives, green once the firmware starts, blinking off for SD-card reads. Boot errors show as long and short green flash codes."
+    },
+    "SW1": {
+      "name": "Power button",
+      "what": "New on the Pi 5. The first power-up boots by itself; a press then shuts down cleanly, a press while halted boots again, a long hold cuts the power."
+    },
+    "J1": {
+      "name": "USB-C power input",
+      "what": "5 V in. The official 27 W supply tells the Pi over USB PD that it can give 5 A; a 5 V 3 A supply boots it but caps the USB ports at 600 mA."
+    },
+    "J20": {
+      "name": "PCIe connector",
+      "what": "16-pin 0.5 mm ribbon connector with one lane of PCIe 2.0, for an NVMe drive or an AI accelerator HAT."
+    },
+    "J3": {
+      "name": "Camera/display connector 0",
+      "what": "22-pin 0.5 mm ribbon, four MIPI lanes, for a camera or a DSI display. Two cameras make a stereo pair: calibrate each one with a chessboard first."
+    },
+    "J4": {
+      "name": "Camera/display connector 1",
+      "what": "The second 4-lane MIPI connector. Pi 4 camera cables are 15-pin 1 mm and need an adapter cable."
+    },
+    "J5": {
+      "name": "RTC battery connector",
+      "what": "2-pin JST-SH for a small cell that keeps the clock running while unplugged, so log and bag timestamps stay right."
+    },
+    "UART": {
+      "name": "UART debug connector",
+      "what": "3-pin JST-SH serial console (pin 1 RX, 2 GND, 3 TX) at 115200 baud, /dev/ttyAMA10 in Linux."
+    },
+    "FAN": {
+      "name": "Fan connector",
+      "what": "4-pin JST-SH PWM fan header: the firmware speeds the fan up as the SoC heats."
+    },
+    "MICROSD": {
+      "name": "microSD card socket",
+      "what": "A push-push socket on the underside. The Pi has no flash of its own for programs: Raspberry Pi OS, your ROS 2 workspace and every log live on the card in it."
+    },
+    "J6": {
+      "name": "Micro-HDMI 0",
+      "what": "Up to 4K at 60 Hz. On a robot it is mostly for the first boot."
+    },
+    "J13": {
+      "name": "Micro-HDMI 1",
+      "what": "A second 4K60 display: RViz on one screen, terminals on the other."
+    },
+    "J8": {
+      "name": "40-pin GPIO header",
+      "what": "3.3 V logic with I2C, SPI, UART and PWM. Never 5 V into a pin, and motors go to a microcontroller, not here. Pins 2 and 4 are wired straight to the 5 V input."
+    },
+    "J14": {
+      "name": "PoE+ header",
+      "what": "Four pins that take power from the Ethernet cable through the PoE+ HAT."
+    },
+    "J10": {
+      "name": "Gigabit Ethernet jack",
+      "what": "The reliable way to stream topics and camera frames. Green LED = link, amber = traffic."
+    },
+    "J12": {
+      "name": "USB 3.0 ports (blue)",
+      "what": "Two 5 Gbit/s ports that work at full speed together: depth cameras, lidar, SSDs."
+    },
+    "J11": {
+      "name": "USB 2.0 ports (black)",
+      "what": "Keyboard, teleop gamepad and the USB serial link to the Nano or ESP32."
+    },
+    "CARD": {
+      "name": "microSD card",
+      "what": "The operating system. Write Raspberry Pi OS or Ubuntu to it with Raspberry Pi Imager; a Class A2 card of 32 GB or more keeps ROS 2 builds and bag files quick. Unplugging while it writes can corrupt it."
+    },
+    "COOLER": {
+      "name": "Active Cooler",
+      "what": "Aluminium heatsink and blower fan on two spring pins, with thermal pads on the SoC, and a cable to the fan connector. Without it, ROS 2 load takes the SoC past 80 °C and the firmware cuts the clock."
+    }
   },
   "modes": {
     "boot": {
-      "title": "Boot Linux",
+      "title": "Boot and check",
       "code": {
         "what": "boot_check.py: run it after the first boot to see that the Pi is healthy",
         "first": "on a fresh SD card, update first:",
@@ -46,7 +129,7 @@
       }
     },
     "teleop": {
-      "title": "ros2 run: the drive node",
+      "title": "ROS 2 drive node",
       "code": {
         "what": "drive.py: a ROS 2 node that drives the robot (ROS 2 Lyrical on Ubuntu 26.04)",
         "rate": "10 Hz",
@@ -57,10 +140,10 @@
       }
     },
     "health": {
-      "title": "Check power and heat",
+      "title": "Supply and heat check",
       "code": {
         "what": "health.py: decode vcgencmd get_throttled bit by bit",
-        "brick": "a phone charger sags under load: random reboots, corrupted SD cards, USB devices dropping out",
+        "charger": "a phone charger sags under load: random reboots, corrupted SD cards, USB devices dropping out",
         "fix": "fix: the official 5 V 5 A (27 W) USB-C supply"
       }
     }
@@ -68,22 +151,22 @@
   "steps": {
     "strip": {
       "title": "Strip it to the bare PCB",
-      "body": "Unplug the supply, then take every part off. The Pi 5 is built like any modern board: surface-mount parts first, then the through-hole connectors, and the Active Cooler last.",
+      "body": "Unplug the supply, then take every part off. The Pi 5 is built like any modern board: surface-mount parts first, then the through-hole connectors from low to tall, and the microSD card and the Active Cooler last.",
       "refusal": "Unplug the power first: never work on a live board"
     },
     "smd": {
       "title": "Pick and place the SMD parts, then reflow",
-      "body": "The machine sets the BCM2712, the RAM, the RP1, the PMIC and its inductors, the Wi-Fi can, the Ethernet PHY and every small capacitor and resistor on solder paste. The reflow oven melts the paste under every pad at about 245 °C.",
+      "body": "The machine sets the BCM2712, the RAM, the RP1, the PMIC and its inductors, the Wi-Fi can, the Ethernet PHY and every small capacitor and resistor on solder paste, and with them the surface-mount connectors: USB-C, the PCIe and camera ribbon sockets, the RTC, UART and fan connectors, the microSD socket, the LED and the power button. The reflow oven melts the paste under every pad at about 245 °C.",
       "refusal": "The SMD parts are already on the board"
     },
     "low": {
       "title": "Place the low through-hole parts",
-      "body": "Power button, the PCIe and both camera/display ribbon connectors, then the RTC, fan and UART headers. Low parts go in first so the board lies flat when you flip it to solder.",
+      "body": "The two micro-HDMI sockets. Low parts go in first so the board lies flat on them when you flip it to solder.",
       "refusal": "SMD parts first: run pick and place + reflow. The oven would melt plastic parts"
     },
     "tall": {
       "title": "Place the tall connectors",
-      "body": "USB-C, both micro-HDMI sockets, the 40-pin GPIO header, the PoE+ header, the Ethernet jack and the two USB stacks.",
+      "body": "The 40-pin GPIO header, the PoE+ header, the Ethernet jack and the two USB stacks.",
       "refusal": "Low parts first: with tall parts on, the board rocks and loose parts fall out when you flip it to solder"
     },
     "solder": {
@@ -91,15 +174,20 @@
       "body": "Every joint should be shiny and concave, with no bridges between the GPIO pins.",
       "refusal": "Nothing to solder yet: place a part first"
     },
+    "card": {
+      "title": "Push in the microSD card",
+      "body": "The card holds the operating system, so it goes in only once every joint is soldered. It clicks into the socket under the board, contacts up toward the board.",
+      "refusal": "Solder everything first: the card goes in last"
+    },
     "cooler": {
-      "title": "Fit the Active Cooler last",
-      "body": "Push its two spring pins into the holes beside the SoC so the thermal pads sit on the SoC, RAM and RP1, then plug its cable into the fan header.",
+      "title": "Fit the Active Cooler",
+      "body": "Push its two spring pins into the holes beside the SoC so the thermal pad sits on the SoC, then plug its cable into the 4-pin fan connector.",
       "refusal": "Solder everything first: this part goes on last"
     },
     "plug": {
       "title": "Plug in the 27 W USB-C supply",
-      "body": "The official supply offers 5 V at 5 A over USB PD. The LED lights red, turns green as the firmware starts and flickers off with SD-card reads while Linux boots.",
-      "refusal": "There's nothing to plug into: place J1 first"
+      "body": "The official supply offers 5 V at 5 A over USB PD. The LED lights red, turns green as the firmware starts and blinks off with SD-card reads while Linux boots, then boot_check.py prints the supply flags, the temperature and the clock.",
+      "refusal": "There is nothing to plug into: put J1 back first"
     },
     "teleop": {
       "title": "Run the ROS 2 drive node",
@@ -107,20 +195,19 @@
     },
     "health": {
       "title": "Check power and heat",
-      "body": "vcgencmd get_throttled packs the supply and thermal history into one number. 0x0 means the supply has never sagged and the clock has never been cut."
+      "body": "vcgencmd get_throttled packs the supply and thermal history into one number. 0x0 means the supply has never sagged and the clock has never been cut since this boot."
     },
     "charger": {
       "title": "Break it: power it from a 5 V 2 A phone charger",
-      "body": "Under load the charger and its thin cable sag below 4.63 V. Watch the supply, the clock and the throttled flags, then go back to the 27 W supply."
+      "body": "Under load the charger and its thin cable sag to 4.6 V, below the 4.63 V limit. Watch the supply, the clock and the throttled flags, then go back to the 27 W supply."
     },
     "no-cooler": {
       "title": "Break it: run it without the Active Cooler",
-      "body": "Unplug, take the cooler off, power up and run the drive node. The SoC climbs about 2.4 °C a second until the firmware cuts the clock. Then unplug, refit the cooler and power up again.",
-      "refusal": "Unplug the power first: never work on a live board"
+      "body": "The cooler comes off and the drive node runs on a bare SoC. The temperature climbs a few degrees a second, the clock drops past 80 °C and the node warns. Then repair it: the cooler goes back on and the board cools down."
     },
     "cold-fan": {
       "title": "Break it: a cold joint on the fan header",
-      "body": "One fan-header pin barely touches its pad, so the fan stutters and the SoC runs hotter. Reflow the joint (Repair everything) to fix it."
+      "body": "One fan-connector pin barely touches its pad, so the fan stutters and the SoC runs hotter. Reflow the joint (Repair everything) to fix it."
     },
     "motors": {
       "title": "Break it: drive motors on the Pi's 5 V",
@@ -143,19 +230,19 @@
   "faults": {
     "undervoltage": {
       "title": "Under-voltage from a phone charger",
-      "symptom": "The supply reads about 4.62 V, the clock drops to 1.5 GHz, get_throttled shows 0x50005 and the kernel logs 'Undervoltage detected!'.",
+      "symptom": "The supply reads 4.6 V, the clock drops to 1.5 GHz, get_throttled shows 0x50005 and the kernel logs 'Undervoltage detected!'.",
       "explanation": "The Pi 5 flags under-voltage below 4.63 V (±5 %). A 5 V 2 A phone charger and a thin cable sag under the Pi's load, so the firmware caps the clock. Weak supplies also cause random reboots, corrupted SD cards and USB devices dropping out.",
       "fix": "Use the official 5 V 5 A (27 W) USB-C supply."
     },
     "no-cooler": {
       "title": "No Active Cooler",
-      "symptom": "The CPU temperature climbs about 2.4 °C a second, the clock falls from 2.4 GHz to 1.5 GHz near 85 °C and the drive node warns about the heat.",
-      "explanation": "The firmware throttles the Arm cores step by step from 80 °C, and the GPU too at 85 °C. Under ROS 2 load a bare BCM2712 gets there in seconds, and 1.5 GHz is only 62.5 % of full speed.",
-      "fix": "Unplug, refit the Active Cooler and plug its cable into the fan header."
+      "symptom": "The CPU temperature climbs past 80 °C, the clock falls from 2.4 GHz toward 1.5 GHz, get_throttled shows 0x40004 and the drive node warns about the heat.",
+      "explanation": "The firmware throttles the Arm cores step by step from 80 °C, and the GPU too at 85 °C. Under ROS 2 load a bare BCM2712 gets there quickly, and 1.5 GHz is only 62.5 % of full speed.",
+      "fix": "Unplug, refit the Active Cooler and plug its cable into the fan connector."
     },
     "cold-fan": {
-      "title": "Cold joint on the fan header",
-      "symptom": "The fan stops and starts, its duty jumps around and the CPU runs several degrees hotter.",
+      "title": "Cold joint on the fan connector",
+      "symptom": "The fan stops and starts, its duty jumps between 0 and the curve's value, and the CPU runs hotter.",
       "explanation": "A cold joint is a dull, grainy blob that never wetted the pad, so it makes contact only some of the time. The fan's supply or PWM pin drops out with every vibration.",
       "fix": "Reflow the joint: heat the pad and the pin together, add a little fresh solder and let it set into a shiny, concave fillet."
     },
@@ -177,6 +264,12 @@
       "explanation": "The 5 V pins bypass every regulator: whatever you feed them reaches the PMIC input directly. A 3S battery (11.1-12.6 V) is more than twice what the PMIC is built for.",
       "fix": "Feed the 5 V pins only from a regulated 5 V supply, such as a buck converter set to 5.1 V, or use USB-C."
     },
+    "no-card": {
+      "title": "No microSD card",
+      "symptom": "The LED stays red: the board has power, but no boot log appears.",
+      "explanation": "The Pi 5 has no operating system of its own. The bootloader in its SPI flash looks for one on the card (then USB and the network, if you set the boot order) and finds nothing to load.",
+      "fix": "Unplug, push in a card written with Raspberry Pi Imager, and power up again."
+    },
     "no-pmic": {
       "title": "PMIC left off",
       "symptom": "No light at all: nothing on the board powers up.",
@@ -185,7 +278,7 @@
     },
     "no-soc": {
       "title": "BCM2712 left off",
-      "symptom": "The board is powered but nothing runs: no boot log, no LED pattern.",
+      "symptom": "The LED stays red: the rails come up, but no boot log and no green light.",
       "explanation": "The BCM2712 is the computer: the four Arm cores, the GPU and the memory controller. The rails come up but nothing runs the bootloader.",
       "fix": "Put U1 back and reflow it."
     },
@@ -209,13 +302,13 @@
     "cpu": "CPU temperature (°C)",
     "clock": "Arm clock (GHz)",
     "throttled": "get_throttled",
-    "fan": "Fan duty",
+    "fan": "Cooler fan duty",
     "current": "Current draw"
   },
   "current": {
-    "gpio5v": "Robot's 3 A buck on GPIO pins 2/4",
-    "pd27": "27 W USB-C supply (5 V 5 A)",
-    "brick": "Phone charger (5 V 2 A)",
+    "pin5": "Robot's 3 A buck on GPIO pins 2/4",
+    "usbc": "27 W USB-C supply (5 V 5 A)",
+    "charger": "Phone charger (5 V 2 A)",
     "pi": "Pi 5 running Linux",
     "ros": "ROS 2 load on all four cores",
     "camera": "USB 3 depth camera",
@@ -317,11 +410,11 @@
       "last": {
         "q": "Why does the Active Cooler go on last?",
         "options": {
-          "1": "It covers the SoC area and plugs into the fan header, so everything under it and the header must be soldered first",
+          "1": "It covers the SoC and plugs into the fan connector, so everything under it must be soldered first",
           "2": "It only fits on a powered board",
           "3": "Its thermal pads have to be heated with the iron"
         },
-        "why": "The cooler clips into the two holes beside the SoC and sits over the SoC, RAM and RP1. Nothing under it can be reached once it is on, and its cable needs the fan header."
+        "why": "The cooler clips into the two holes beside the SoC and sits over it. Nothing under it can be reached once it is on, and its cable needs the fan connector."
       }
     },
     "plug": {
@@ -337,7 +430,7 @@
       "led": {
         "q": "You plug in the supply. What does the Pi 5's LED do?",
         "options": {
-          "1": "Red at first, green once the firmware starts, flickering off for SD-card reads",
+          "1": "Red at first, green once the firmware starts, blinking off for SD-card reads",
           "2": "Green at first, then red once Linux is up",
           "3": "It stays off until you press the power button"
         },
@@ -397,7 +490,7 @@
       "fan": {
         "q": "How does the firmware drive the Active Cooler's fan?",
         "options": {
-          "1": "Through the 4-pin fan header, faster as the SoC heats: off below 50 °C, full speed from 75 °C",
+          "1": "Through the 4-pin fan connector, faster as the SoC heats: off below 50 °C, full speed from 75 °C",
           "2": "At full speed whenever the Pi is on",
           "3": "From a GPIO pin that your program has to toggle"
         },
