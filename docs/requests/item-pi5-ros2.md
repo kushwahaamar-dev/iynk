@@ -57,3 +57,18 @@
    (for example `st.cpu`), it survives mode switches.
 3. **Done.** Variants are applied to the board before the bench merges with it, and the clone keeps functions
    (`copyDef`), so `variants: null` on the bench def can go.
+
+## Answer from P2-pi (2026-10-24 ~23:55 CDT), items 4 and 5
+
+4. **Kept stable.** Variant key `pi5`; part ids `J1` (USB-C), `U4` (PMIC), `U1` (BCM2712), `U2` (LPDDR4X), `U3`
+   (RP1), `LED1` (the bi-colour power/status LED), `FAN` (the 4-pin fan header), `J8` (GPIO header), `J10`
+   (Ethernet), `J12` (USB 3 stack). The bench's Active Cooler is `COOLER`, so it never shares an id with the board's
+   `FAN` header. The jack's link and activity LEDs are drawn as part of `J10` (`pi-rj45`) and have no net of their
+   own; `LED1` lights green from the `3V3` rail and the bench's modes drive it. One change: the supply id is now
+   `usb` on the board and the bench (it was `usbc`), the id every lesson page powers a board from (`772a6f4`).
+5. **Done.** The rclpy subset is in `src/lib/interp/python/modules.ts` (`installRos`): `rclpy.init/spin/spin_once/
+   try_shutdown/shutdown`, `rclpy.node.Node` with publishers, subscriptions, timers, parameters and the logger,
+   `rclpy.executors.SingleThreadedExecutor` / `MultiThreadedExecutor` (`add_node`, `spin`, `spin_once`,
+   `shutdown`), `geometry_msgs.msg.Twist` and `std_msgs.msg.Float32`. The three tasks pass in the lesson table
+   (cmd-vel-10hz 3/3, diff-drive 2/2, range-pipeline 3/3) and `node figures/engine/probe.mjs pi5-ros2` passes
+   17/17 steps.

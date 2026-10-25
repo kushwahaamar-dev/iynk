@@ -33,7 +33,9 @@ What it does:
   firmware flags under-voltage and the Pi 4's PWR LED goes out (it hangs off the PMIC's power-good signal).
 - **Run a program ▾**: there is no flash to upload to; programs run on Linux from the card. Boot to a shell, blink.py
   (gpiozero LED on GPIO17), button.py (GPIO27 to GND drives the LED), fade.py (PWMLED on GPIO18), and a vcgencmd
-  health check whose `throttled=` and `EXT5V_V` lines follow the supply.
+  health check whose `throttled=` and voltage lines follow the supply (`EXT5V_V` on the Pi 5, the core `volt=` on
+  the Pi 4). Under-voltage throttles the Arm clock; the model drops it to the firmware minimum (1.5 GHz on the
+  Pi 5, 600 MHz on the Pi 4; the fact sheet gives no figure, unverified).
 - **LEDs**: the Pi 5 LED is red with power and no firmware, green when running and blinks off for SD reads; with the
   RAM missing it flashes 0 long / 8 short, with the RP1 missing 4 long / 3 short. The Pi 4's ACT LED flickers with
   the card.
@@ -43,7 +45,7 @@ What it does:
 - **Break it ▾**: reverse polarity and over- or under-voltage on the pin supply, a motor browning out the 5 V rail, cold
   joints on header pins 11 and 13, no card, a 3V3-GND bridge (the PMIC's limit drops 3.3 V and everything stops), a
   5 V bridge (the supply trips), missing RAM or RP1.
-- **View ▾**: the board; a half breadboard behind the board for each lesson (LED on GPIO17 through 330 Ω, a button
+- **View ▾**: the board; a half breadboard behind the board for each lesson (LED D1 on GPIO17 through 330 Ω R1, a button
   on GPIO27, an LED on GPIO18, an HC-SR04 on GPIO23/24 with its echo through a 1 kΩ / 2 kΩ divider); the schematic and
   power-tree sheets; the exploded view. **See-through** shows the dies, the jack's magnetics and the 5 V, 3V3, CORE
   and GPIO17 paths.
