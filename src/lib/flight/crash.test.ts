@@ -76,6 +76,8 @@ describe("why it crashed", () => {
     expect(causeOf("ground", {}, [{ t, type: "desync", motor: 3 }])).toBe("desync");
     expect(causeOf("ground", {}, [])).toBe("hardLanding");
     expect(causeOf("tree", {}, [])).toBe("hit");
+    // flipping over from a backwards FC and then hitting a gate post is the FC's fault
+    expect(causeOf("gate", { fcReversed: true }, [], "flipFc")).toBe("flipFc");
   });
 
   it("reads a wing's faults when it hits the ground", () => {

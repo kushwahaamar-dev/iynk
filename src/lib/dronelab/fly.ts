@@ -32,7 +32,9 @@ export type FlyAction =
   | { type: "course"; id: string }
   | { type: "break"; id: BreakId; on: boolean }
   | { type: "break/reset" }
-  | { type: "challenge"; challenge: DailyChallenge | null };
+  | { type: "challenge"; challenge: DailyChallenge | null }
+  // a room hands every lab store the host's snapshot; each pilot keeps their own build, breaks and challenge
+  | { type: "sync/hydrate"; state: unknown };
 
 export function initialFly(content: DroneContent): FlyState {
   return { id: content.id, bench: null, source: "factory", course: content.courses[0]?.id ?? null, breaks: {}, challenge: null };
@@ -69,6 +71,8 @@ export function reduceFly(content: DroneContent, s: FlyState, action: FlyAction)
       const fits = c.craft === content.id && content.courses.some((x) => x.id === c.course) && c.batt in content.design.batts;
       return fits ? { ...s, challenge: c, course: c.course, source: "factory" } : s;
     }
+    default:
+      return s;
   }
 }
 

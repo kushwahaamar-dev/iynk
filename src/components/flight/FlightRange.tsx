@@ -549,7 +549,14 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
   const best = isRace ? snap.bestLap : snap.bestRun;
 
   return (
-    <div className={className} onKeyDown={onKeyDown} onKeyUp={onKeyUp} onBlur={(e) => !e.currentTarget.contains(e.relatedTarget) && input.current.keys.clear()}>
+    <div
+      className={className}
+      data-testid="flight-range"
+      data-course={course.id}
+      onKeyDown={onKeyDown}
+      onKeyUp={onKeyUp}
+      onBlur={(e) => !e.currentTarget.contains(e.relatedTarget) && input.current.keys.clear()}
+    >
       <div className="mb-2 flex flex-wrap items-end gap-2">
         <label className="flex flex-col text-xs font-bold">
           {dict.mode}

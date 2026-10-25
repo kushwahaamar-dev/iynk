@@ -46,9 +46,15 @@ export interface CrashReplay {
 
 type CrashWhy = Extract<FlightEvent, { type: "crash" }>["why"];
 
-/** Why it crashed, from what it hit, the faults that were on and what happened in the seconds before. */
-export function causeOf(why: CrashWhy, faults: CraftFaults, recent: FlightEvent[]): CrashCause {
+type Flip = "flipFc" | "flipProps" | "flipMotor";
+
+/**
+ * Why it crashed, from what it hit, the faults that were on and what happened in the seconds before. A craft that
+ * was already flipping over (`flip`) crashed because of that, whatever it then hit.
+ */
+export function causeOf(why: CrashWhy, faults: CraftFaults, recent: FlightEvent[], flip: Flip | null = null): CrashCause {
   if (why === "flipFc" || why === "flipProps" || why === "flipMotor") return why;
+  if (flip) return flip;
   if (recent.some((e) => e.type === "battery" && e.level === "empty")) return "battery";
   if (recent.some((e) => e.type === "desync")) return "desync";
   if (why === "groundWing") {
@@ -107,7 +113,8 @@ export function crashReplay(
   const keepFrom = Math.max(0, steps - Math.round((before + 1) / STEP));
   const frames: Array<{ step: number; frame: FlightFrame }> = [];
   const events: Array<{ step: number; e: FlightEvent }> = [];
-  let crash: { step: number; why: CrashWhy; faults: CraftFaults; mode: FlightMode; speed: number } | null = null;
+  type Seen = { step: number; why: CrashWhy; flip: Flip | null; faults: CraftFaults; mode: FlightMode; speed: number };
+  let crash: Seen | null = null;
   const { sim } = replay(origin.craft, origin.course, origin.calc, log, steps + Math.round(after / STEP), origin.opts, (s, now) => {
     if (s.step < keepFrom) return;
     frames.push({ step: s.step, frame: frameOf(s) });
@@ -116,16 +123,16 @@ export function crashReplay(
       if (e.type === "crash" && s.step <= steps) {
         // the speed it had coming in, before the impact took it off
         const prev = frames.length > 1 ? frames[frames.length - 2].frame : frameOf(s);
-        crash = { step: s.step, why: e.why, faults: { ...s.faults }, mode: s.mode, speed: prev.speed };
+        crash = { step: s.step, why: e.why, flip: s.flipWhy, faults: { ...s.faults }, mode: s.mode, speed: prev.speed };
       }
     }
   });
-  const c = crash as { step: number; why: CrashWhy; faults: CraftFaults; mode: FlightMode; speed: number } | null;
+  const c = crash as Seen | null;
   if (!c) return null;
   const from = c.step - Math.round(before / STEP), to = c.step + Math.round(after / STEP);
   const window = frames.filter((f) => f.step >= from && f.step <= to);
   const recent = events.filter((x) => x.step >= c.step - Math.round(3 / STEP) && x.step <= c.step).map((x) => x.e);
-  const cause = causeOf(c.why, c.faults, recent);
+  const cause = causeOf(c.why, c.faults, recent, c.flip);
   const hit = c.why === "ground" || c.why === "groundWing" || c.why.startsWith("flip") ? null : (c.why as HitKind);
   return {
     frames: window.map((f) => f.frame),
