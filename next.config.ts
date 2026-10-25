@@ -32,21 +32,26 @@ const nextConfig: NextConfig = {
     ];
   },
   async redirects() {
-    // "/" has no page: saved language cookie, then the browser's languages, then English.
+    // A path with no language ("/", "/boards/uno-r3" from a pitch or a shared link): the saved language cookie, then
+    // the browser's languages, then English. The query (a room link's ?room=) comes along.
+    const toLanguage = (source: string, path: string) => [
+      {
+        source,
+        has: [{ type: "cookie" as const, key: LANG_COOKIE, value: `(?<lang>${LOCALES.join("|")})` }],
+        destination: `/:lang${path}`,
+        permanent: false,
+      },
+      {
+        source,
+        has: [{ type: "header" as const, key: "accept-language", value: acceptLanguagePattern() }],
+        destination: `/:lang${path}`,
+        permanent: false,
+      },
+      { source, destination: `/${DEFAULT_LOCALE}${path}`, permanent: false },
+    ];
     return [
-      {
-        source: "/",
-        has: [{ type: "cookie", key: LANG_COOKIE, value: `(?<lang>${LOCALES.join("|")})` }],
-        destination: "/:lang",
-        permanent: false,
-      },
-      {
-        source: "/",
-        has: [{ type: "header", key: "accept-language", value: acceptLanguagePattern() }],
-        destination: "/:lang",
-        permanent: false,
-      },
-      { source: "/", destination: `/${DEFAULT_LOCALE}`, permanent: false },
+      ...toLanguage("/", ""),
+      ...toLanguage("/:section(boards|robotics|drones|about|together|passport|verify)/:rest*", "/:section/:rest*"),
     ];
   },
 };
