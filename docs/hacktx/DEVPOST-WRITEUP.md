@@ -146,6 +146,26 @@ AI tools field: Anthropic, Gemini, and Meta (or Other). Not Vultr: it runs the r
 
 ---
 
+## Feedback about the technology (Devpost question)
+
+Meta Model API (Muse Spark, Muse Image, Muse Voice Transcribe): being OpenAI-compatible made it quick to start, and tool calling and structured output worked well. Voice transcription came back in 1 to 2 seconds, and the Muse Image covers matched our ink style. Friction: muse-spark-1.1 sometimes answered "404 model_not_found" for a model that exists, which looked like a typo on our side and cost us time. Switching to muse-spark-1.3 fixed it and was 2 to 4 times faster. Under load we also got "busy" errors with no documented rate limits. Clearer error codes and published limits would help.
+
+SerpApi: the most dependable API we used. Google Shopping, Amazon, eBay, Maps and YouTube all returned useful results in about a second, and its caching kept our budget down. Google Events often timed out or came back empty for niche searches like "drone FPV meetup".
+
+Solana: Anchor 0.31 and local validator testing were a good experience. The devnet faucet was our biggest blocker: it refused every airdrop overnight, so a finished program sat undeployed until we used our own devnet SOL. The public RPC then rate-limited us so hard that a 286 KB deploy over RPC crawled for 40 minutes, while sending over TPU finished in minutes. Also, wallet-adapter's ConnectionProvider rebuilds the Connection if you pass an inline config object, which flooded the RPC. A docs warning would save people.
+
+Tiger Data: setup was fast, and continuous aggregates and columnstore policies are great for leaderboards. Small thing: the credentials file names the URL TIMESCALE_SERVICE_URL, while most apps read DATABASE_URL.
+
+Vultr: the VM was up in minutes and Docker plus Caddy gave us HTTPS for WebSockets easily. The API key's IP allowlist is an easy step to miss.
+
+Gemini: the OpenAI-compatible endpoint made it a drop-in fallback, but the newest flash models answered 503/429 under demand while gemini-3.5-flash stayed steady.
+
+Vercel: GitHub deploys were smooth. One CLI upload failed with an HTML error page instead of JSON, and a retry fixed it.
+
+Claude Code (Anthropic): ran more than 250 agents in parallel waves for us. The usage limits were the real constraint, so we learned to commit after every step.
+
+---
+
 ## Prize tracks we're entering
 
 Entering: Meta, SerpApi, Best Overall, Most Entertaining, Best Pitch, MLH Vultr, MLH Tiger Data and MLH Solana. Not entering: MLH .Tech (we have no .tech domain), Best Hardware Hack (the hardware twin is switched off), the MLH A-Team track (it requires Cursor and Grok Bot as core tools; we used Claude Code), Gemini, NMC2, Capital One, Toyota and Snowflake. Best Novice only if every team member is a first-time hacker.
