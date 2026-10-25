@@ -30,11 +30,15 @@ export function swapItem(html, item, src) {
   return html.slice(0, at) + tag + src + html.slice(end);
 }
 
-/** Runs a page; resolves once the engine has mounted. `path` is the page's URL path, `query` its ?query. */
-export async function loadFigure(html, { path = '/figures/robotics/fixture.html', query = '' } = {}) {
+/** Runs a page; resolves once the engine has mounted. `path` is the page's URL path, `query` its ?query.
+ *  With `host: true` the page runs embedded: its parent is a stand-in host that records what the bridge posts
+ *  (`sent`), and `post(msg)` delivers a host-to-figure message the way the bridge accepts one (source, origin). */
+export async function loadFigure(html, { path = '/figures/robotics/fixture.html', query = '', host = false } = {}) {
   const errors = [];
   const vc = new VirtualConsole();
   vc.on('jsdomError', (e) => { if (!/getContext|not implemented/i.test(e.message)) errors.push(e.message); });
+  const sent = [];
+  const parent = { postMessage: (m) => sent.push(m) };
   const dom = new JSDOM(html, {
     runScripts: 'dangerously', pretendToBeVisual: true, virtualConsole: vc,
     url: `http://localhost${path}${query ? '?' + query : ''}`,
@@ -42,6 +46,7 @@ export async function loadFigure(html, { path = '/figures/robotics/fixture.html'
       w.ResizeObserver = class { observe() {} unobserve() {} disconnect() {} };
       w.HTMLCanvasElement.prototype.getContext = () => null;
       w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} });
+      if (host) w.parent = parent;
     },
   });
   const win = dom.window;
@@ -49,5 +54,10 @@ export async function loadFigure(html, { path = '/figures/robotics/fixture.html'
     await new Promise((r) => setTimeout(r, 20));
   }
   const notes = () => (win.document.documentElement.dataset.errors || '').split(';').map((s) => s.trim()).filter(Boolean);
-  return { win, bench: win.SL && win.SL.bench, drone: win.SL && win.SL.drone, errors, notes, close: () => win.close() };
+  const post = (msg) => {
+    const ev = new win.Event('message');
+    Object.defineProperties(ev, { data: { value: { source: 'simlab', v: 1, ...msg } }, origin: { value: win.location.origin }, source: { value: parent } });
+    win.dispatchEvent(ev);
+  };
+  return { win, bench: win.SL && win.SL.bench, drone: win.SL && win.SL.drone, errors, notes, sent, post, close: () => win.close() };
 }

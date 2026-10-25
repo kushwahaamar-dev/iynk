@@ -54,8 +54,19 @@
     for (const g of document.querySelectorAll('#fig .tag[data-t]')){ const n = +g.dataset.n;
       if (!m.has(n)) m.set(n, { n, text: g.dataset.t, en: g.dataset.en ?? g.dataset.t, on: g.classList.contains('on') }); }
     return [...m.values()].sort((a, b) => a.n - b.n); };
+  // the figure's own buttons the host hides because it draws them itself (chrome); press still reaches them
+  let hidden = new Set();
   const buttons = () => [...document.querySelectorAll('#btns .act[data-id]')]
-    .map(b => ({ id: b.dataset.id, label: labelOf(b), en: enOf(b), picker: !!b.querySelector('.car') }));
+    .map(b => ({ id: b.dataset.id, label: labelOf(b), en: enOf(b), picker: !!b.querySelector('.car'), ...(hidden.has(b.dataset.id) ? { hidden: true } : {}) }));
+  const chrome = hide => {
+    if (!Array.isArray(hide) || hide.some(id => typeof id !== 'string')) return err('chrome: hide must be a list of button ids');
+    const all = [...document.querySelectorAll('#btns .act[data-id]')], ids = new Set(all.map(b => b.dataset.id));
+    hidden = new Set(hide.filter(id => ids.has(id)));
+    for (const b of all) (b.closest('.stepwrap') || b).toggleAttribute('data-cf-hidden', hidden.has(b.dataset.id));
+    ui.render();
+    const unknown = hide.filter(id => !ids.has(id));
+    if (unknown.length) err(`chrome: no button "${unknown.join('", "')}"`);
+  };
   const switches = () => [...document.querySelectorAll('.vset .act[data-id]')]
     .map(b => ({ id: b.dataset.id, label: labelOf(b), on: b.getAttribute('aria-pressed') === 'true' }));
 
@@ -119,6 +130,7 @@
     pause: () => { hostPaused = true; },
     resume: () => { hostPaused = false; wake(); },
     press: m => press(m.id, m.choice),
+    chrome: m => chrome(m.hide),
     act: m => runAct(m.name, m.data),
     set: m => setState(m.state),
     view: m => { const y = num(m.yaw, -720, 720, null); if (y == null) return err('view: yaw must be a number');
@@ -154,6 +166,9 @@
     cfg = c; ui = u;
     const fig = document.getElementById('fig');
     fig.setAttribute('tabindex', '0');
+    const css = document.createElement('style');
+    css.textContent = '#btns .stepwrap[data-cf-hidden]{display:none!important}';
+    document.head.appendChild(css);
     // parts: report the press before the figure acts on it, so 'part' arrives ahead of the 'state' it causes
     fig.addEventListener('pointerdown', e => { if (e.button) return; const a = e.target.closest && e.target.closest('[data-act]');
       if (a && own(cfg.acts, a.dataset.act)) send('part', { act: a.dataset.act, id: a.dataset.id ?? null, data: { ...a.dataset }, by: 'user' }); }, true);

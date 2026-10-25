@@ -147,6 +147,7 @@ itself is ignored. Commands that arrive before the figure is ready are queued (u
 |---|---|---|
 | `hello` | | answers `ready` (idempotent, as often as you like) |
 | `press` | `id`, `choice?` | clicks a button by id. With `choice`, it opens the picker and clicks that chip by id |
+| `chrome` | `hide [id]` | hides the figure's own buttons with those ids (and their pickers) because the host draws them itself. They stay pressable through `press`, and `ready.buttons` still lists them, marked `hidden: true`. Each `chrome` replaces the last one: `hide: []` shows every button again. See-through, Labels, zoom and the HUD can't be hidden. An id with no button comes back as `error` (the others are still hidden) |
 | `act` | `name`, `data?` | runs `cfg.acts[name]` on the drawn part whose `data-*` match `data` (or on a stand-in) and redraws |
 | `set` | `state` | `cfg.embed.accept(st, state)`. A rejection comes back as `error` |
 | `view` | `yaw`, `pitch?`, `ms?` | eases the camera (the figure's turn limit applies) |
@@ -157,10 +158,11 @@ itself is ignored. Commands that arrive before the figure is ready are queued (u
 | `theme` | `mode` | `'dark'` dims the paper, anything else restores it |
 | `flash` | `text`, `ms?` | shows a notice on the figure (translated when `text` is a key) |
 | `query` | | answers `state` and `labels` |
+| `pause`, `resume` | | the host hid or showed the figure: its animation clock stops and goes on where it stopped (a hidden tab pauses it too) |
 
 | Figure → host | Payload | When |
 |---|---|---|
-| `ready` | `fig`, `title`, `en`, `lang`, `buttons [{id, label, en, picker}]`, `switches [{id, label, on}]`, `acts [name]`, `parts [{act, id, label, en}]`, `pals`, `pal`, `view {yaw, pitch}`, `state`, `readout`, `embedded` | at `DOMContentLoaded` after mount, and after every `hello` |
+| `ready` | `fig`, `title`, `en`, `lang`, `buttons [{id, label, en, picker, hidden?}]`, `switches [{id, label, on}]`, `acts [name]`, `parts [{act, id, label, en}]`, `pals`, `pal`, `view {yaw, pitch}`, `state`, `readout`, `embedded` | at `DOMContentLoaded` after mount, and after every `hello` |
 | `part` | `act`, `id`, `data` (all `data-*`), `by: 'user' \| 'host'` | a part was pressed, sent before the figure acts on it |
 | `button` | `id`, `choice?`, `on?` (switches: the new position), `by` | a button, chip or switch was clicked, sent before its handler runs |
 | `state` | `state` (the `report(st)` object), `changed [keys]`, `readout`, `parts` | after a render that changed any of them (at most about 30 per second), and on `query` |
