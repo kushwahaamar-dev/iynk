@@ -274,6 +274,8 @@ B.board({
     ['short:3V3:GND', 'Header 3.3 V pin shorted to GND'],
     ['short:5V:GND', 'Header 5 V pin shorted to GND'],
     ['missing:Y1', 'No 24 MHz crystal: no clocks'],
+    // the engine's own cold joints stop at the first six LEDs and needed parts; SW0 is the one the content breaks
+    'cold:SW0',
   ],
   xr: {
     flow: [['USB5', USB_RUN], ['5V', V5_RUN], ['3V3', V3_RUN], ['LEDR0', LED0_RUN], ['SW0', SW0_RUN], ['KEY0', KEY0_RUN], ['DIG0_A', HEX0_RUN]],

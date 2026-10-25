@@ -131,6 +131,17 @@ describe('de10-lite failures in the figure', () => {
     for (const k of ['reverse-polarity', 'wrong-voltage', 'brownout', 'short', 'missing-part', 'cold-solder'] as const) expect(kinds).toContain(k);
   });
 
+  it('breaks the board only in ways its Break it picker offers', async () => {
+    const page = await open();
+    const offered = (page.B.faultChoices() as [string | null, string][]).map(([id]) => id);
+    for (const f of board.failures) {
+      const state = f.figure.type === 'set' ? f.figure.state : {};
+      expect(offered, f.id).toContain(state.fault);
+      expect(Object.keys(page.md.def.power.sources), f.id).toContain(state.power);
+    }
+    page.close();
+  });
+
   it('every failure changes what the figure reports, the way its effect says', async () => {
     const page = await open();
     expect(page.fail({ figure: { type: 'set', state: {} } }).status).toBe('running');
