@@ -74,7 +74,7 @@ const racer: DroneContent = {
       minTW: 9,
       over: { kind: 'kvCells', max: 1750 * 6 * 1.15 },
       propPrice: 'pair',
-      escAmps: 45,
+      escAmps: 55,
     },
     fixed: [
       { id: 'FRAME', g: 95, price: 45, category: 'Mechanical', name: 'design.fixed.FRAME' },

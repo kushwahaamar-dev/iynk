@@ -9,7 +9,7 @@
   "design": {
     "fixed": {
       "FRAME": "Stretched-X race frame, 4 mm arms",
-      "ESC": "45 A 4-in-1 ESC (AM32)",
+      "ESC": "55 A 4-in-1 ESC (AM32)",
       "FC": "F7 flight controller, 20 x 20 mm",
       "CAM": "Nano low-latency camera",
       "VTX": "25-200 mW race VTX",
@@ -35,8 +35,8 @@
       "what": "Brushless outrunners with a 22 mm wide, 7 mm tall stator and 14 magnets in the bell. 2500 KV on a 4S pack (14.8 V nominal) gives about 37,000 rpm unloaded, which is what pulls a 5-inch prop hard enough for 14:1 thrust to weight. The same motor on 6S would spin the props far past what they and the ESC survive."
     },
     "ESC": {
-      "name": "45 A 4-in-1 ESC (AM32), 20 x 20 mm",
-      "what": "Four speed controllers on one small board, each switching MOSFETs to turn the pack's DC into three-phase drive for its motor, following the DShot600 commands from the flight controller. It runs AM32 firmware and, with bidirectional DShot, reports each motor's rpm on the same wire for the RPM filter. A race ESC is sized for the punch-outs: the calculator compares each motor's full-throttle current with the 45 A rating."
+      "name": "55 A 4-in-1 ESC (AM32), 20 x 20 mm",
+      "what": "Four speed controllers on one small board, each switching MOSFETs to turn the pack's DC into three-phase drive for its motor, following the DShot600 commands from the flight controller. It runs AM32 firmware and, with bidirectional DShot, reports each motor's rpm on the same wire for the RPM filter. A race ESC is sized for the punch-outs: the calculator compares each motor's full-throttle current with the 55 A rating."
     },
     "WIRES": {
       "name": "Motor wires, cut short and soldered",

@@ -6,7 +6,7 @@ green cutting mat with a 40 mm grid, with a flat blue cast shadow. The frame is 
 arms around a 120 x 32 mm centre plate. Draw every part where a real race build puts it:
 
 - Four **2207 2500 KV** motors with their phase wires cut short and soldered straight to the ESC pads.
-- A 20 x 20 mm **45 A 4-in-1 ESC** (AM32, four FETs, two battery pads at the rear) on short standoffs.
+- A 20 x 20 mm **55 A 4-in-1 ESC** (AM32, four FETs, two battery pads at the rear) on short standoffs.
 - Above it a blue **F7 flight controller** (F722 MCU, forward arrow, blue LED, USB on the right). Its 8-pin ESC
   harness (GND, VBAT, M1-M4, current, telemetry) loops down the right-hand edge.
 - On top of the stack a **race VTX** (25-200 mW, aluminium can, red LED). Its coax runs out the back to a lollipop

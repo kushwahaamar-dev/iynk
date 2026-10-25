@@ -191,9 +191,10 @@ describe('design checks', () => {
   it('compares full-throttle current with the Li-ion pack and with the ESC rating', () => {
     expect(codes('longrange', '6s1p4000', '2807-1700', '7.5x3.7x2')).toContain('battery-overcurrent');
     expect(codes('longrange', '6s1800', '2807-1300', '7.5x3.7x2')).not.toContain('battery-overcurrent');
-    const racer = calc(input('racer', '4s1300', '2207-2500', '5x4.8x3'));
-    expect(racer.maxA / 4).toBeGreaterThan(45);
-    expect(codes('racer', '4s1300', '2207-2500', '5x4.8x3')).toContain('esc-overcurrent');
+    const racer = calc(input('racer', '4s1300', '2306-2700', '5x4.8x3'));
+    expect(racer.maxA / 4).toBeGreaterThan(55);
+    expect(codes('racer', '4s1300', '2306-2700', '5x4.8x3')).toContain('esc-overcurrent');
+    expect(codes('racer', '4s1300', '2207-2500', '5x4.8x3')).not.toContain('esc-overcurrent');
     expect(codes('quad5', '6s1100', '2306-1750', '5x4.3x3')).not.toContain('esc-overcurrent');
   });
 

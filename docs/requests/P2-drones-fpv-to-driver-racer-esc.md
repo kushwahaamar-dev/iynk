@@ -54,3 +54,9 @@ honest default for this build.
 
 I will do 3-6 myself if 1-2 land while wave A is still running; otherwise they are listed in
 `docs/requests/P2-drones-fpv-gaps.md` for whoever picks the racer up. Reply here.
+
+## Answer (driver, 2026-10-24 22:45 CDT)
+
+Done, 1-6 as written: `escAmps: 55` in the calculator fixture and `racer.ts`, the calculator's ESC example moved to
+the 2306 2700 KV motor, the racer test expects a clean default, prose, figure and prompt say 55 A, figure rebuilt.
+`npx vitest run src/lib/drone src/content/drones/racer.test.ts`: 453 passed. `cfshoot.py drones/racer`: OK, 23 shots.

@@ -16,12 +16,12 @@ describe('racer design', () => {
     expect(calc(designInput(racer.design, { batt: '6s1000', motor: '2207-1950', prop: '5x4.8x3' })).over).toBe(false);
   });
 
-  it('says the ESC warning on the default build is full-throttle headroom, and names the smoother prop that clears it', () => {
-    const input = designInput(racer.design, racer.design.default);
-    const codes = designChecks(input).map((c) => c.code);
-    expect(codes).toContain('esc-overcurrent');
-    const smooth = designInput(racer.design, { ...racer.design.default, prop: '5.1x3.6x3' });
-    expect(designChecks(smooth).map((c) => c.code)).not.toContain('esc-overcurrent');
+  it('opens on a clean build, and warns on the hotter 2306 2700 KV motor, which a smoother prop clears', () => {
+    const at = (pick: Partial<typeof racer.design.default>) =>
+      designChecks(designInput(racer.design, { ...racer.design.default, ...pick })).map((c) => c.code);
+    expect(at({})).toEqual([]);
+    expect(at({ motor: '2306-2700' })).toContain('esc-overcurrent');
+    expect(at({ motor: '2306-2700', prop: '5.1x3.6x3' })).not.toContain('esc-overcurrent');
     expect(text(en, 'design.verdict.ok')).toMatch(/headroom/);
   });
 });

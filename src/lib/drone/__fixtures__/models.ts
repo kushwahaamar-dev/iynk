@@ -56,7 +56,7 @@ export const calcModels: Record<DroneId, CalcModel> = {
     minTW: 9,
     over: stockOver,
     propPrice: 'pair',
-    escAmps: 45,
+    escAmps: 55,
   },
   gpscam: {
     motors: 4,

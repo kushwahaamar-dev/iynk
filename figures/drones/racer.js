@@ -6,7 +6,7 @@
 // @cf use engine/drone-sheet.js
 /* Fig. 05, the 5-inch racing quad on Betaflight (docs/facts/racer.md).
    Stretched-X frame: motors at x +-86, y +-70 mm (172 mm front to back, 140 mm side to side, 221.8 mm motor to
-   motor), 12 mm wide 4 mm carbon arms, a 120 x 32 mm centre plate, a 20 x 20 mm stack (45 A 4-in-1 ESC, F7 flight
+   motor), 12 mm wide 4 mm carbon arms, a 120 x 32 mm centre plate, a 20 x 20 mm stack (55 A 4-in-1 ESC, F7 flight
    controller, race VTX) under a 92 x 34 mm top plate on 20 mm standoffs, a 14 mm nano camera at 40 deg uptilt,
    ELRS receiver with its T antenna on the rear-right arm, eight WS2812B LEDs on the rear arms, XT60 to the tail.
    Craft-local mm: x forward, y left, z up, z = 0 on the mat. Betaflight QUAD X order, props in. */
@@ -144,7 +144,7 @@
       { id: 'MOTORS', short: 'MOTORS', name: '4 race motors (2207)', after: ['FRAME'], z: 1.6,
         piece: { kind: 'motors' }, tag: { at: [86, 70, 24], dx: 72, dy: 30 },
         xr: [{ at: [86, -70, 14], text: 'STATOR 22 x 7 MM' }] },
-      { id: 'ESC', short: '4-IN-1 ESC', name: '45 A 4-in-1 ESC (AM32), 20 x 20 mm', after: ['FRAME'], z: 1,
+      { id: 'ESC', short: '4-IN-1 ESC', name: '55 A 4-in-1 ESC (AM32), 20 x 20 mm', after: ['FRAME'], z: 1,
         piece: [
           { kind: 'standoffs', at: H20, z0: ARM_TOP, z1: 8, r: 2.2, color: '#3d3b39' },
           { kind: 'board', at: [0, 0, 8], size: [27, 27], t: 1.6, color: 'pcbBlack', holes: 20, fets: 4,
@@ -217,7 +217,7 @@
       nodes: {
         BATT: { at: [10, 22], title: 'BATTERY', sub: 'batt', color: 'tomato' },
         XT60: { at: [10, 145], title: 'XT60 + CAP', sub: '1000 µF 35 V', color: 'tomato' },
-        ESC: { at: [215, 145], title: '4-IN-1 ESC', sub: '45 A x4, AM32', color: '#f08a2b' },
+        ESC: { at: [215, 145], title: '4-IN-1 ESC', sub: '55 A x4, AM32', color: '#f08a2b' },
         MOTORS: { at: [215, 268], title: 'MOTORS x4', sub: 'motor', color: '#f08a2b' },
         FC: { at: [420, 145], title: 'FLIGHT CTRL', sub: 'F7, Betaflight', color: '#43a35a', led: '#4aa3ff' },
         CAM: { at: [420, 22], title: 'CAMERA', sub: 'nano analog, 40° up', color: '#f2c230' },
