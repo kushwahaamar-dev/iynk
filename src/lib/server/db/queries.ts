@@ -15,6 +15,15 @@ export type EventRow = {
 };
 
 /**
+ * A Postgres array literal for a parameter cast to text[] or timestamptz[]. Not sql.array(): postgres.js serializes
+ * that from an array-type table a pool fills only once a connection has fetched pg_type, so on a fresh serverless
+ * instance a concurrent query went out as "a,b" and failed with "malformed array literal".
+ */
+export function arrayLiteral(values: readonly (string | null)[]): string {
+  return `{${values.map((v) => (v === null ? "NULL" : `"${v.replace(/["\\]/g, "\\$&")}"`)).join(",")}}`;
+}
+
+/**
  * One INSERT for any number of rows: six array parameters unnested server-side,
  * so the statement and its parameter count stay the same at 1 row or 5,000.
  */
@@ -24,12 +33,12 @@ export async function insertEvents(sql: Sql, rows: readonly EventRow[]): Promise
     INSERT INTO events (ts, kind, session, room, item, data)
     SELECT u.ts, u.kind, u.session, u.room, u.item, u.data::jsonb
     FROM unnest(
-      ${sql.array(rows.map((r) => r.ts.toISOString()))}::timestamptz[],
-      ${sql.array(rows.map((r) => r.kind))}::text[],
-      ${sql.array(rows.map((r) => r.session))}::text[],
-      ${sql.array(rows.map((r) => r.room))}::text[],
-      ${sql.array(rows.map((r) => r.item))}::text[],
-      ${sql.array(rows.map((r) => JSON.stringify(r.data)))}::text[]
+      ${arrayLiteral(rows.map((r) => r.ts.toISOString()))}::timestamptz[],
+      ${arrayLiteral(rows.map((r) => r.kind))}::text[],
+      ${arrayLiteral(rows.map((r) => r.session))}::text[],
+      ${arrayLiteral(rows.map((r) => r.room))}::text[],
+      ${arrayLiteral(rows.map((r) => r.item))}::text[],
+      ${arrayLiteral(rows.map((r) => JSON.stringify(r.data)))}::text[]
     ) AS u(ts, kind, session, room, item, data)`;
 }
 
@@ -130,8 +139,8 @@ type ProfileRow = { id: string; name: string; lang: BuddyProfile["lang"]; intere
 export async function upsertProfile(sql: Sql, p: Profile, token: string): Promise<{ expiresAt: Date } | null> {
   const [row] = await sql<{ expires_at: Date }[]>`
     INSERT INTO profiles AS p (id, token_hash, name, lang, interests, built, wants, updated_at, expires_at)
-    VALUES (${p.id}, ${hashToken(token)}, ${p.name}, ${p.lang}, ${sql.array(p.interests)}::text[],
-            ${sql.array(p.built)}::text[], ${p.wants}, now(), now() + INTERVAL '24 hours')
+    VALUES (${p.id}, ${hashToken(token)}, ${p.name}, ${p.lang}, ${arrayLiteral(p.interests)}::text[],
+            ${arrayLiteral(p.built)}::text[], ${p.wants}, now(), now() + INTERVAL '24 hours')
     ON CONFLICT (id) DO UPDATE SET
       token_hash = EXCLUDED.token_hash,
       name = EXCLUDED.name,
