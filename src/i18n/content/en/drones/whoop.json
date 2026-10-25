@@ -1,0 +1,371 @@
+{
+  "title": "Tiny Whoop 65 mm",
+  "tagline": "The 25 g indoor trainer: same Betaflight, same goggles, crashes cost nothing.",
+  "sub": "1S indoor trainer",
+  "hint": "Build it, test it with the props off, then fly the living room",
+  "noun": "whoop",
+  "overview": "A Tiny Whoop is the indoor trainer of FPV: a 65 mm quad of about 25 g whose ducts guard the props, so it can bump into walls, furniture and people without doing harm. One all-in-one board carries the flight controller, four 5 A ESCs, an ExpressLRS receiver, the OSD and a 5.8 GHz video transmitter. A 14 mm nano camera sits in the canopy and a single-cell LiHV pack slides into a holder underneath. It runs the same Betaflight firmware, PID loop and modes as a 5-inch quad and uses the same goggles and radio, so what you learn here carries over. Pick the pack, motors and props and watch the numbers change, build it part by part, check the motors with the props off, then fly the living room.",
+  "practice": "Fly the three-gate race round the room, then the living room run: under the coffee table, between the dining chairs, past the lamp, over the sofa and down onto the rug. On a real whoop: check every motor's direction with the props off, run the receiver and failsafe tests, learn turtle mode before you need it, and land when the OSD shows about 3.3 V. Expect about 4 minutes of mixed flying on a 300 mAh pack, less than the calculator's hover time.",
+  "design": {
+    "fixed": {
+      "FRAME": "65 mm ducted frame",
+      "FC": "5-in-1 AIO: flight controller, 4 x 5 A ESC, ELRS receiver, VTX",
+      "CAM": "Nano FPV camera",
+      "VTX": "VTX antenna (the VTX is on the AIO)",
+      "RX": "ELRS antenna",
+      "TOP": "Canopy",
+      "SCREWS": "Screws and grommets"
+    },
+    "verdict": {
+      "ok": "Parts match. Light, safe and fun indoors.",
+      "punch": "Parts match. Punchy for a whoop.",
+      "weak": "Thrust to weight {tw}:1: it feels floaty and won't pull out of a dive. Aim for about 4:1.",
+      "over": "{kv} KV on {cells}S spins these 1S motors about twice as fast as their windings are made for: they overheat fast. 2S 65 mm whoops use 0802 motors of about 12000 to 14000 KV on a 2S board."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "65 mm one-piece ducted frame",
+      "what": "One moulded polypropylene part: four 34.9 mm ducts, 14.5 mm tall, round a centre floor, 65 mm from motor to motor across the diagonal. It weighs under 3 g and flexes instead of breaking. Each motor sits on a round mount at the bottom of its duct, four posts carry the flight board on rubber grommets, and the battery slides into rails underneath."
+    },
+    "MOTORS": {
+      "name": "4 brushless 0702 motors",
+      "what": "Tiny outrunners: a 7 mm stator, 2 mm tall, with 9 coils and 12 magnets (9N12P), a 1 mm shaft and about 1.5 g each. At 25000 KV on one cell they turn about 90,000 rpm unloaded. Each one screws to its mount with three M1.4 screws on a 6.6 mm circle and plugs into the AIO with a small 3-pin JST1.25 plug."
+    },
+    "FC": {
+      "name": "5-in-1 AIO board (Betaflight)",
+      "what": "Flight controller, four 5 A ESCs, ELRS 2.4 GHz receiver, OSD and 5.8 GHz video transmitter on one 29 mm board, on 26 x 26 mm holes. An STM32G473 runs Betaflight (target BETAFPVG473) and reads an ICM-42688-P gyro; the ESCs run Bluejay. The receiver is wired inside the board to UART3 and the VTX to UART2. The arrow printed on it must point at the camera: backwards, every correction goes the wrong way and it flips the moment it lifts."
+    },
+    "WIRES": {
+      "name": "Motor plugs in the AIO sockets",
+      "what": "Each motor's three phase wires end in a JST1.25 plug that goes into the socket in its corner of the AIO. The plug has no polarity: any order spins the motor, and the spin direction is set later in the ESC firmware. Which socket is M1, M2, M3 or M4 is what the props-off motor test checks."
+    },
+    "XT60": {
+      "name": "BT2.0 battery lead, soldered to the AIO pads",
+      "what": "A short 26 AWG pigtail with a BT2.0 plug, soldered red to the + pad and black to the - pad at the back of the AIO. BT2.0 has solid banana-style contacts with less resistance than the old PH2.0 plug, which matters at 10 to 15 A on one cell. There is no big capacitor on a 1S whoop: the mistake to avoid here is a lead soldered the wrong way round, which puts the pack on the board backwards."
+    },
+    "VTX": {
+      "name": "5.8 GHz VTX antenna",
+      "what": "The video transmitter is on the AIO; this is its antenna. Betaflight sets the band, channel and power over SmartAudio on UART2, from 25 mW (plenty indoors) up to 400 mW. Never power the VTX without its antenna: the output stage has nowhere to send its power and overheats."
+    },
+    "RX": {
+      "name": "ExpressLRS 2.4 GHz antenna",
+      "what": "The receiver is built into the AIO and talks CRSF to Betaflight on UART3. Only its antenna is a separate part: lead it back and out, clear of the props. To bind, power the whoop on three times in a row until the receiver LED double-blinks, then bind from your radio."
+    },
+    "TOP": {
+      "name": "Canopy",
+      "what": "A thin moulded shell, about 1.5 g, that snaps over the AIO, keeps fingers and carpet fibres off the electronics, and holds the camera in its nose. In a crash the canopy and the ducts take the hit."
+    },
+    "CAM": {
+      "name": "14 mm nano FPV camera, 25° uptilt",
+      "what": "A 14 x 14 mm analog camera with a wide 155 to 160 degree lens, tilted up 25 degrees in the canopy nose so the picture stays level when the whoop leans forward. Three wires go to the AIO's CAM pads: 5 V, ground and video, where the OSD writes the voltage, timer and warnings on top."
+    },
+    "BATT": {
+      "name": "1S LiHV pack with a BT2.0 plug",
+      "what": "One lithium cell in the holder under the frame, plug at the rear. A LiHV cell is 4.35 V full and 3.8 V nominal; one cell sags hard under load, so the OSD can read 3.4 V on a punch and spring back to 3.9 V when you let go. Land at about 3.3 V resting, never run it below 3.0 V under load, and store it at 3.8 V."
+    },
+    "PROPS": {
+      "name": "31 mm press-fit props, 2 CW + 2 CCW",
+      "what": "Four 31 mm props that press onto the 1 mm shafts. Two turn clockwise and two counter-clockwise (props in: the front edges sweep in towards the camera), so the motor torques cancel and yaw comes from speeding up one diagonal pair. The picker offers 4-blade, 3-blade and an efficient 2-blade. They go on last, after the smoke stopper and the motor direction check."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Start with the frame",
+      "body": "Check the ducts for cracks and the motor mounts for flash from the mould. A cracked duct shakes the gyro and the whoop wobbles."
+    },
+    "motors": {
+      "title": "Screw in the four motors",
+      "body": "Three M1.4 x 3 mm screws each, into the mount at the bottom of each duct, with the wires pointing to the middle. Longer screws reach the windings and short the motor.",
+      "refusal": "The motors sit in the frame's ducts: start with the frame."
+    },
+    "aio": {
+      "title": "Mount the AIO, arrow forward",
+      "body": "On the four rubber grommets over the frame's posts, with the printed arrow pointing at the camera end. The grommets keep the motor buzz out of the gyro.",
+      "refusal": "The AIO sits on the frame's grommet posts: fit the frame first."
+    },
+    "plugs": {
+      "title": "Plug in the motors",
+      "body": "Each motor's plug into the socket in its own corner, wires tucked down out of the duct. The plugs only go in one way, but they say nothing about spin: the motor test checks that.",
+      "refusal": "The plugs run from the motors into the AIO: fit both first."
+    },
+    "lead": {
+      "title": "Solder the BT2.0 battery lead",
+      "body": "Red to the + pad, black to the - pad, at the back of the AIO. Check with a meter that + and - are not shorted, and that red really is on +, before a pack comes near it.",
+      "refusal": "The lead solders to the AIO's battery pads: mount the AIO first."
+    },
+    "vtx": {
+      "title": "Fit the VTX antenna",
+      "body": "Onto the AIO's video transmitter, pointing up and back. It goes on before the board ever gets power.",
+      "refusal": "The antenna connects to the VTX on the AIO: mount the AIO first."
+    },
+    "rx": {
+      "title": "Route the ELRS antenna",
+      "body": "Lead the receiver's antenna back and out between the rear ducts, where no prop can catch it.",
+      "refusal": "The antenna belongs to the receiver on the AIO: mount the AIO first."
+    },
+    "canopy": {
+      "title": "Snap on the canopy",
+      "body": "Over the AIO, with the antennas through their slots. Nothing should press on the board or pinch a wire.",
+      "refusal": "Fit the AIO and both antennas first: the canopy closes over them."
+    },
+    "cam": {
+      "title": "Fit the camera",
+      "body": "Into the canopy nose at 25 degrees, with its 5 V, ground and video wires to the AIO's CAM pads.",
+      "refusal": "The camera clips into the canopy: fit the canopy first."
+    },
+    "batt": {
+      "title": "Slide the pack into its holder",
+      "body": "Under the frame, plug at the rear, centred so the whoop balances. Do not plug it in yet.",
+      "refusal": "The pack needs the frame's holder and the BT2.0 lead: fit both first."
+    },
+    "props": {
+      "title": "Press the props on, last",
+      "body": "Only after the smoke stopper test and the motor direction check, with the pack unplugged. Clockwise props on M1 and M4, counter-clockwise on M2 and M3, pressed straight down onto the shaft.",
+      "refusal": "Props go on last: run the smoke stopper test and the motor direction check first."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "The pack's BT2.0 plug meets the pigtail. One LiHV cell is 4.35 V full and 3.8 V nominal; at full throttle the whoop pulls 10 to 15 A through this plug.",
+    "XT60-FC": "The pigtail is soldered to the AIO's + and - pads. Betaflight reads the pack voltage on PA0 and the current sensor on PA1 (current_meter = ADC), so the OSD shows the real draw.",
+    "FC-WIRES": "The four ESC channels (Betaflight outputs M1 to M4 on PB0, PB1, PB6 and PC13) drive the motor sockets with DShot300 and bidirectional rpm telemetry, 5 A each.",
+    "WIRES-MOTORS": "Three phase wires per motor in a JST1.25 plug. Any order spins it; the spin direction is set in the Bluejay ESC firmware.",
+    "CAM-FC": "Camera 5 V, ground and video into the CAM pads, through the AT7456E OSD chip that writes the voltage, timer and warnings on the picture.",
+    "FC-RX": "The ExpressLRS receiver is on the AIO, wired to UART3 as serial RX with the CRSF protocol (the target's default).",
+    "FC-VTX": "The analog VTX is on the AIO, with SmartAudio 2.0 on UART2, so Betaflight sets the band, channel and power (25, 100, 200 or 400 mW)."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke stopper test",
+      "pass": "The lamp only blinked: the BT2.0 lead is red to plus and nothing is shorted. Safe to plug the pack in directly.",
+      "fail": "The lamp lit up solid: the BT2.0 lead is soldered the wrong way round. Re-solder it red to + and run the test again before you plug in for real."
+    },
+    "motors": {
+      "title": "Motor direction check (props off)",
+      "pass": "All four spin the way the mixer expects: M1 and M4 clockwise, M2 and M3 counter-clockwise (props in). Now the props can go on.",
+      "fail": "One motor spun the wrong way (its arrow turns red). The check reverses it in the Bluejay settings, the way you would in ESC Configurator through Betaflight passthrough; on plug-in motors there is nothing to re-solder. With the props on, it would have flipped the whoop on take-off."
+    },
+    "calibrate": {
+      "title": "Accelerometer calibration",
+      "pass": "Calibrated on a flat surface: angle mode and the OSD horizon now know where level is, and Betaflight's NO_ACC_CAL arming block is gone.",
+      "fail": "Mount the AIO and set the whoop on a flat surface first. If the arrow points backwards, calibrating will not fix it: turn the board round or set align_board_yaw = 180."
+    },
+    "rxtest": {
+      "title": "Receiver test",
+      "pass": "Bound: in the Receiver tab the sticks move roll, pitch, yaw and throttle, and AUX1 to AUX3 move too. AUX1 arms, AUX2 picks angle and AUX3 is turtle mode, as the CLI set them.",
+      "fail": "No channels moved. Fit the AIO and the ELRS antenna and plug in a pack: the receiver runs on the AIO. To bind, power it on three times in a row until the LED double-blinks, then bind from the radio."
+    },
+    "failsafe": {
+      "title": "Failsafe test (props off)",
+      "pass": "Radio off: the OSD shows RXLOSS, the motors stop and the whoop disarms (DROP). That is the right failsafe for 25 g indoors: it falls a metre onto the carpet instead of flying off.",
+      "fail": "Take the props off, fit the ELRS antenna and plug in a pack, then switch the radio off and watch the OSD and the motors."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "First setup after flashing",
+      "explain": "Sets the mixer, the board alignment, the motor protocol and the two UARTs the AIO wires inside. DShot300 is plenty for a whoop's ESCs, and dshot_bidir lets them report rpm. The default motor_poles of 14 is wrong for 9N12P whoop motors: with 12 every rpm reading and filter notch lands where it should. motor_idle is in hundredths of a percent, so 700 is 7 %."
+    },
+    "battery": {
+      "title": "One LiHV cell: voltages and the current sensor",
+      "explain": "A LiHV cell is full at 4.35 V, above Betaflight's default 4.30 V maximum, so vbat_max_cell_voltage must go up or the cell count and OSD go wrong. One cell sags hard under load, so the warning and minimum go lower than on a 5-inch. The AIO has a real current sensor (ADC); calibrate ibata_scale against what your charger puts back in. vbat_sag_compensation keeps the stick feel the same as the pack sags."
+    },
+    "switches": {
+      "title": "Switches: arm, angle, turtle",
+      "explain": "aux takes the mode's number: 0 ARM, 1 ANGLE, 35 FLIP OVER AFTER CRASH (turtle). The channel counts from 0 = AUX1 and the range is in microseconds. Turtle gets its own switch on AUX3 so it never fights with angle on AUX2. There is no ACRO mode to switch on: acro is what flies when angle is off."
+    },
+    "turtle": {
+      "title": "Turtle mode (flip over after crash)",
+      "explain": "Upside down, flip AUX3 on and arm: Betaflight skips its upside-down arming block, tells the ESCs to run backwards, and the stick you push lifts that side over. Turtle needs a DShot protocol, because the reverse command is a DShot command. With crashflip_auto_rearm OFF the whoop disarms when you switch turtle off and shows FLIP_SWITCH until you disarm and arm again."
+    },
+    "rpm": {
+      "title": "RPM filter at whoop speeds",
+      "explain": "A 1S whoop motor turns 60,000 to 100,000 rpm, 1,000 to 1,700 times a second, far above a 5-inch's noise. With rpm from every motor, Betaflight puts notch filters exactly on it, which is why motor_poles must be right. The third harmonic carries little on a whoop, so its weight goes to 0."
+    },
+    "vtx": {
+      "title": "VTX power levels",
+      "explain": "Paste the factory vtxtable from the AIO's manual first. SmartAudio 2.0 takes level numbers (0 to 3) for the four powers, where SmartAudio 2.1 would take dBm. 25 mW on Raceband 1 is plenty indoors, and vtx_low_power_disarm keeps it lowest while the whoop sits on the bench."
+    },
+    "failsafe": {
+      "title": "Failsafe: drop",
+      "explain": "When the radio link is lost, stage 1 holds the fallback values (sticks centred, throttle low) for failsafe_delay (15 = 1.5 s), so a short glitch passes. If the link stays gone, stage 2 DROP stops the motors. For a 25 g whoop indoors that is the safe choice; GPS-RESCUE needs a GPS this craft does not have."
+    },
+    "alt": {
+      "title": "\"Altitude hold\" is a simulator aid here",
+      "explain": "Betaflight's ALTHOLD (mode 3) holds height with a barometer or GPS, and a whoop AIO has neither. SimLab's altitude hold makes the first flights easy; on the real whoop you learn the same thing in angle mode, with the tilt capped at 45 degrees for a room."
+    },
+    "angle": {
+      "title": "Angle mode",
+      "explain": "The flight controller levels the whoop when you let go and never tilts it past angle_limit: 45 degrees here, gentler than the default 60, which suits furniture. angle_p_gain is how hard it levels. Older Betaflight called these level_limit and angle_level_strength; those names no longer exist."
+    },
+    "acro": {
+      "title": "Acro rates",
+      "explain": "With ACTUAL rates, rc_rate is the centre sensitivity and srate the full-stick rate, both divided by 10: 70 degrees a second around the centre and 670 at full stick, the numbers the range flies. Yaw stops at 300 degrees a second, which is easier between furniture. AIRMODE keeps full control at zero throttle, so you can drop through a gap."
+    },
+    "race": {
+      "title": "Lap timer and the pack on the OSD",
+      "explain": "osd_tim1 packs the timer source and its precision into one number: 2 (since the last arm) plus 1 x 16 (hundredths) is 18. Each _pos value is 2048 (OSD profile 1) plus the column plus 32 per row: the timer top right, the cell voltage bottom left."
+    },
+    "range": {
+      "title": "Living room run: link quality and warnings",
+      "explain": "Angle mode for the run, with link quality top left, the warnings in the middle where you cannot miss LOW BATTERY, and the mAh used bottom right. Indoors, walls and furniture are what weaken the link, not distance."
+    }
+  },
+  "flight": {
+    "modes": {
+      "alt": {
+        "title": "Altitude hold (easy, sim only)",
+        "hint": "A simulator aid: a real whoop has no barometer, so Betaflight cannot hold its height. W and S climb and sink and it stays put when you let go; the arrows tilt it, A and D yaw, Space arms."
+      },
+      "angle": {
+        "title": "Angle mode",
+        "hint": "Self-levelling up to 45 degrees, the way most pilots learn on a real whoop. The throttle stays where you leave it, so hold a hover with W and S."
+      },
+      "acro": {
+        "title": "Acro (rate) mode",
+        "hint": "The sticks set how fast it rotates (up to 670 degrees a second) and nothing levels it. Let go and it keeps its angle."
+      },
+      "race": {
+        "title": "Gate race (angle)",
+        "hint": "Three gates round the room in order. The clock starts at gate 1; par is 20 seconds a lap."
+      },
+      "range": {
+        "title": "Range: Living room",
+        "hint": "Under the coffee table, between the dining chairs, past the lamp, over the sofa and down onto the rug. Par is 45 seconds."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Radio link lost: for 1.5 s the sticks go to their fallback values, then DROP stops the motors and the whoop falls.",
+      "low-battery": "Below 3.3 V per cell the OSD flashes LOW BATTERY: land now.",
+      "brown-out": "A tired cell sagging below about 3.0 V on a punch can reset the video and the receiver: the picture rolls or goes black and the whoop drops."
+    },
+    "controls": "Keyboard: Space arms and disarms, W and S throttle, the arrows pitch and roll, A and D yaw, V switches to FPV, R puts the whoop back on the pad. On a phone the left stick is throttle and yaw and the right stick is pitch and roll. A gamepad works in Mode 2."
+  },
+  "courses": {
+    "prims": {
+      "wall": "Cut-away wall",
+      "coffee": "Coffee table",
+      "sofa": "Sofa",
+      "tv": "TV stand",
+      "dining": "Dining table",
+      "chair": "Chair",
+      "lamp": "Floor lamp",
+      "shelf": "Bookshelf"
+    },
+    "race": {
+      "title": "Living room gate race",
+      "brief": "Three 0.8 m gates on the open floor: north past the coffee table, east over the rug, then west back towards the pad by the TV. Fly them in order; the clock starts at gate 1."
+    },
+    "living": {
+      "title": "Living room",
+      "brief": "Take off from the pad, slip under the coffee table, thread between the two dining chairs, swing past the floor lamp, hop over the sofa and land on the rug. The race gates stand in the room too.",
+      "goals": {
+        "1": "UNDER THE TABLE",
+        "2": "BETWEEN THE CHAIRS",
+        "3": "PAST THE LAMP",
+        "4": "OVER THE SOFA",
+        "5": "LAND ON THE RUG"
+      }
+    }
+  },
+  "quizzes": {
+    "aio": {
+      "combine": {
+        "q": "What does the 5-in-1 AIO board put on one board?",
+        "options": {
+          "1": "Flight controller, four ESCs, receiver, OSD and video transmitter",
+          "2": "The battery, the motors and the camera",
+          "3": "Five flight controllers, so one can fail"
+        },
+        "why": "At 25 g there is no room for a stack. The whoop's AIO carries the flight controller, four 5 A ESCs, an ExpressLRS receiver on UART3, the OSD chip and a 5.8 GHz VTX on UART2, all on a 29 mm board of under 4 g."
+      },
+      "arrow": {
+        "q": "The arrow on the AIO points backwards. What happens on take-off?",
+        "options": {
+          "1": "Nothing: a whoop is symmetrical",
+          "2": "Every correction goes the wrong way and it flips at once",
+          "3": "Only the camera picture is upside down"
+        },
+        "why": "Betaflight assumes the arrow points at the nose. Backwards, a tilt to the left reads as a tilt to the right, so the PID loop pushes the wrong way and the whoop flips as it lifts. Turn the board round, or set align_board_yaw = 180."
+      }
+    },
+    "power": {
+      "polarity": {
+        "q": "The BT2.0 lead was soldered red to the minus pad. What happens when you plug in?",
+        "options": {
+          "1": "It flies backwards",
+          "2": "Nothing: the board sorts the polarity out",
+          "3": "The pack drives the AIO backwards and can burn its input"
+        },
+        "why": "Reverse polarity puts the cell across the regulators and the ESC MOSFETs the wrong way round, and the pack can push far more current than they survive. A smoke stopper on the first plug, or a meter check of the pads, catches it before anything burns."
+      },
+      "bt2": {
+        "q": "Why do whoops use BT2.0 plugs instead of the older PH2.0?",
+        "options": {
+          "1": "They are cheaper",
+          "2": "Less resistance: less voltage sag and longer flights",
+          "3": "They can carry two cells"
+        },
+        "why": "At 10 to 15 A, every milliohm on one cell shows. BETAFPV measured about 0.2 V less sag at 9 A with BT2.0 than with PH2.0 on the same pack, and a longer flight."
+      }
+    },
+    "props": {
+      "ducts": {
+        "q": "What are the ducts round the props for?",
+        "options": {
+          "1": "Speed",
+          "2": "They guard the props, so it can bump walls, furniture and people without harm",
+          "3": "Cooling the motors"
+        },
+        "why": "A whoop is meant to crash. The ducts keep the props off walls, curtains and fingers, and the soft PP frame bends instead of breaking. That is what makes flying it indoors, near people, safe."
+      },
+      "last": {
+        "q": "Why do the props go on last?",
+        "options": {
+          "1": "So the motor tests run with nothing to cut or fling",
+          "2": "They are the heaviest part",
+          "3": "The canopy will not fit otherwise"
+        },
+        "why": "Even 31 mm props at 90,000 rpm can cut skin and throw the whoop off the bench. The smoke stopper and the motor direction check are done props off; the props go on after both have passed."
+      }
+    },
+    "flight": {
+      "sag": {
+        "q": "The OSD reads 4.1 V, drops to 3.4 V on a punch, then comes back to 4.0 V. What is going on?",
+        "options": {
+          "1": "The pack is broken",
+          "2": "Voltage sag: the cell's resistance costs volts under load, and they come back when the load drops",
+          "3": "The OSD needs calibrating"
+        },
+        "why": "At 10 to 15 A a single cell, its plug and leads lose 0.4 to 1 V across their resistance. The voltage comes back when the throttle does. The sag grows as the pack empties, gets cold or ages, and a deep one can brown out the video and the receiver."
+      },
+      "twos": {
+        "q": "Why not fly these 0702 25000 KV motors on a 2S pack?",
+        "options": {
+          "1": "2S is not allowed indoors",
+          "2": "They would spin about twice as fast as their windings are made for and overheat",
+          "3": "Nothing would change"
+        },
+        "why": "KV is rpm per volt, so twice the voltage is twice the rpm: about 185,000 rpm unloaded on 2S. The current and the heat rise much faster than the rpm. Real 2S 65 mm whoops use 0802 motors of about 12000 to 14000 KV on a board rated for 2S."
+      },
+      "turtle": {
+        "q": "The whoop lands upside down behind the sofa. What gets it flying again?",
+        "options": {
+          "1": "Arm and give it full throttle",
+          "2": "Nothing: walk over and turn it",
+          "3": "Turtle mode: switch it on, arm, and push the stick so the motors spin backwards and flip it"
+        },
+        "why": "FLIP OVER AFTER CRASH (mode 35) reverses the motors with a DShot command and lets you arm upside down. Push the stick towards the side that should lift. With crashflip_auto_rearm OFF, switch turtle off, disarm and arm again to fly on."
+      },
+      "alt": {
+        "q": "SimLab's altitude hold flies this whoop. Does the real one have it?",
+        "options": {
+          "1": "No: it has no barometer or GPS, so Betaflight's altitude hold cannot run",
+          "2": "Yes: every Betaflight quad has it",
+          "3": "Only on a 2S pack"
+        },
+        "why": "Betaflight's ALTHOLD needs a barometer or a GPS, and a whoop's AIO carries neither. In the sim it is a learning aid; on the real whoop you hold height with your throttle, in angle mode first."
+      }
+    }
+  }
+}

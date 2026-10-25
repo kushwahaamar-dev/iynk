@@ -210,12 +210,13 @@ const whoop: DroneContent = {
     { from: 'FC', to: 'VTX', kind: 'rf', label: 'UART2 · SmartAudio 2.0 · 5.8 GHz 25-400 mW', note: 'wiring.FC-VTX' },
   ],
 
+  // The engine's three checks, then the whoop's two buttons: api.pass(id) reports them as state.extra.<id>.
   tests: [
     { id: 'smoke', kind: 'smoke-stopper', button: 'smoke', done: { smokeOk: true }, title: 'tests.smoke.title', pass: 'tests.smoke.pass', fail: 'tests.smoke.fail' },
     { id: 'motors', kind: 'motor-direction', button: 'motors', done: { motorOk: true }, title: 'tests.motors.title', pass: 'tests.motors.pass', fail: 'tests.motors.fail' },
     { id: 'calibrate', kind: 'accel-calibration', button: 'calibrate', done: { accOk: true }, title: 'tests.calibrate.title', pass: 'tests.calibrate.pass', fail: 'tests.calibrate.fail' },
-    { id: 'rxtest', kind: 'radio-link', button: 'rxtest', done: { 'checks.rxtest': true }, title: 'tests.rxtest.title', pass: 'tests.rxtest.pass', fail: 'tests.rxtest.fail' },
-    { id: 'failsafe', kind: 'failsafe', button: 'failsafe', done: { 'checks.failsafe': true }, title: 'tests.failsafe.title', pass: 'tests.failsafe.pass', fail: 'tests.failsafe.fail' },
+    { id: 'rxtest', kind: 'radio-link', button: 'rxtest', done: { 'extra.rxtest': true }, title: 'tests.rxtest.title', pass: 'tests.rxtest.pass', fail: 'tests.rxtest.fail' },
+    { id: 'failsafe', kind: 'failsafe', button: 'failsafe', done: { 'extra.failsafe': true }, title: 'tests.failsafe.title', pass: 'tests.failsafe.pass', fail: 'tests.failsafe.fail' },
   ],
 
   firmware: {
