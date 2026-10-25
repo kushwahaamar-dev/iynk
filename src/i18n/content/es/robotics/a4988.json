@@ -1,0 +1,465 @@
+{
+  "title": "Driver de motor paso a paso A4988",
+  "sub": "ajusta el límite de corriente y luego da pasos",
+  "hint": "móntalo, mide el trimpot, mueve un NEMA 17 paso a paso",
+  "overview": "Un motor paso a paso gira en pasos fijos, 200 por vuelta en un NEMA 17, y se mantiene en su sitio con las dos bobinas encendidas. El A4988 hace la parte difícil: conmuta las dos bobinas a través de dos puentes H en el orden correcto, un paso por cada pulso en STEP, en el sentido que fija DIR, y limita la corriente de cada bobina con un chopper que vigila la tensión en una resistencia de sensado de 0,068 Ω. Ese límite se ajusta antes de que nada gire: la tensión en el rotor metálico del trimpot, VREF, da I_MAX = VREF / (8 x 0,068 Ω), así que 0,544 V en un multímetro son 1,0 A, más o menos lo que aguanta la placa portadora sin disipador. Monta la placa portadora de Pololu, conecta una Nano, el motor y una LiPo 2S, mide el trimpot mientras un sketch de retención mantiene las bobinas encendidas, y luego mueve el motor en pasos completos, medios pasos y pasos de 1/16. Las averías son las clásicas: una batería al revés, el pin de reinicio al aire, una batería cansada por debajo de 8 V, las parejas de bobinas mezcladas, el límite subido hasta los 1,68 A del motor y el motor desconectado mientras funciona.",
+  "power": {
+    "label": "Alimenta el banco",
+    "ok": "La Nano por USB, la LiPo en VMOT: las bobinas están encendidas y el eje se mantiene"
+  },
+  "parts": {
+    "U1": {
+      "name": "Driver con micropasos Allegro A4988",
+      "what": "Un QFN-28 de 5 x 5 mm con un pad expuesto por debajo. Dentro: un traductor que convierte los pulsos de STEP y DIR en corrientes de bobina (paso completo, 1/2, 1/4, 1/8 y 1/16 de paso), dos puentes H DMOS y un chopper de tiempo de apagado fijo por bobina que regula la corriente con las resistencias de sensado. Alimentación de los motores de 8 a 35 V, lógica de 3 a 5,5 V, apagado térmico a 165 °C y sin protección contra la polaridad inversa."
+    },
+    "RV1": {
+      "name": "Trimpot del límite de corriente",
+      "what": "Un pequeño potenciómetro de ajuste entre VDD y GND a través de una resistencia. Su rotor metálico es el nodo VREF, así que la punta roja de un multímetro va directamente sobre él. Girarlo en sentido horario sube VREF y con ella el límite de corriente: I_MAX = VREF / (8 x 0,068 Ω)."
+    },
+    "RS1": {
+      "name": "Resistencia de sensado, bobina 1",
+      "what": "0,068 Ω, marcada R068 sobre un cuerpo blanco. La corriente de la bobina 1 pasa por ella hasta tierra; el chopper apaga el puente cuando la tensión en ella llega a VREF / 8."
+    },
+    "RS2": {
+      "name": "Resistencia de sensado, bobina 2",
+      "what": "La misma pieza de 0,068 Ω para la bobina 2. Las placas portadoras antiguas usaban resistencias de 0,050 Ω con el cuerpo verde, lo que cambia la fórmula: comprueba la marca antes de fiarte de una tabla de VREF."
+    },
+    "C1": {
+      "name": "Cerámico de 4,7 µF en VMOT",
+      "what": "Un condensador cerámico 1206 justo en los pines de alimentación de los motores del chip: se encarga de los flancos rápidos del chopper. Es demasiado pequeño para absorber el pico que los cables largos de la alimentación generan al conectar, y para eso está el de 100 µF."
+    },
+    "CAPS": {
+      "name": "Seis condensadores 0603",
+      "what": "El desacoplo de VDD y VMOT, los condensadores de la bomba de carga que permiten al chip controlar sus interruptores del lado alto, y el condensador del regulador interno."
+    },
+    "RES": {
+      "name": "Cuatro resistencias 0603",
+      "what": "El pull-up de SLP, el pull-down de EN (para que las salidas estén activas por defecto), la resistencia del tiempo de apagado y la parte de arriba del divisor de VREF."
+    },
+    "H1": {
+      "name": "Conector de control",
+      "what": "Desde el extremo del trimpot: DIR, STEP, SLP, RST, MS3, MS2, MS1, EN. MS1 a MS3 tienen pull-downs en el chip, así que al aire significan paso completo. EN tiene un pull-down, así que las salidas están activas salvo que lo pongas en alto."
+    },
+    "H2": {
+      "name": "Conector de alimentación y del motor",
+      "what": "Desde el extremo del trimpot: GND, VDD, 1B, 1A, 2A, 2B, GND, VMOT. Una bobina va en 1A y 1B, y la otra en 2A y 2B. Los nombres de los pines solo están impresos por debajo."
+    },
+    "LINK": {
+      "name": "Jumper de RST a SLP",
+      "what": "La placa portadora lleva SLP a nivel alto, pero deja RST al aire. Este jumper une RST con SLP, así que RST se mantiene en alto y el driver sale del reinicio."
+    },
+    "CB": {
+      "name": "Electrolítico de 100 µF en VMOT",
+      "what": "El esquema de conexión de Pololu pone 100 µF entre VMOT y GND, cerca de la placa, con la franja hacia GND. Sin él, la inductancia de los cables de la alimentación y el cerámico pequeño oscilan al conectar la alimentación, y el pico puede pasar de 35 V incluso con una fuente de 12 V."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "Genera los pulsos: STEP en D3, DIR en D4, MS1 a MS3 en D5 a D7. Su pin de 5 V alimenta el VDD del driver y su GND se une con el del driver y el de la batería."
+    },
+    "MOT": {
+      "name": "Motor paso a paso NEMA 17",
+      "what": "SY42STH38-1684A: 42,3 mm de lado, 38 mm de largo, 200 pasos por vuelta, 1,68 A y 1,65 Ω por fase, 36 N·cm de par de retención. El negro y el verde son una bobina (2B y 2A), y el rojo y el azul la otra (1A y 1B)."
+    },
+    "BATT": {
+      "name": "LiPo 2S",
+      "what": "7,4 V nominales, 8,4 V cargada. El A4988 necesita al menos 8 V en VMOT, así que una batería 2S solo funciona por los pelos cuando está recién cargada. Una batería 3S o una fuente de 12 V son mejor opción."
+    },
+    "MM": {
+      "name": "Multímetro de bolsillo",
+      "what": "En la escala de 2 V de continua, la punta roja en el rotor del trimpot y la negra en un pin GND. Lee VREF directamente, y así es como se ajusta el límite de corriente sin medir la corriente del motor."
+    }
+  },
+  "modes": {
+    "vref": {
+      "title": "Retención, ajusta Vref"
+    },
+    "full": {
+      "title": "Paso completo, 1 vuelta por segundo"
+    },
+    "half": {
+      "title": "Medio paso"
+    },
+    "micro": {
+      "title": "1/16 de paso, un cuarto de vuelta por segundo"
+    },
+    "code": {
+      "title": "A4988: un pulso en STEP es un paso, DIR elige el sentido",
+      "pins": "STEP y DIR",
+      "ms": "MS1, MS2 y MS3 eligen el tamaño del paso",
+      "pulses": "n pulsos, cada uno en HIGH y luego en LOW durante halfUs microsegundos",
+      "full": "todos en bajo: paso completo, 200 pasos por vuelta",
+      "half": "MS1 en alto: medio paso, 400 pasos por vuelta",
+      "micro": "todos en alto: 1/16 de paso, 3200 pasos por vuelta",
+      "wake": "el chip necesita 1 ms después de despertar antes del primer paso",
+      "hold": "sin pulsos: las dos bobinas siguen encendidas y el eje se mantiene"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Déjala en la placa desnuda",
+      "body": "Empieza desde la placa portadora verde desnuda: 15,24 x 20,32 mm, esquinas rectas, sin agujeros de montaje y dieciséis agujeros metalizados a lo largo de los dos lados largos. Todo vuelve a su sitio en el orden de fábrica.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    },
+    "smd": {
+      "title": "Coloca las piezas de montaje superficial y haz el reflujo",
+      "body": "Pasta, colocación, reflujo: el A4988 en el centro, el trimpot en un extremo, las dos resistencias de sensado R068 a lo largo del lado del motor, el cerámico de 4,7 µF junto a VMOT, y los seis condensadores 0603 y las cuatro resistencias 0603 alrededor del chip. El pad expuesto de debajo del A4988 también se suelda: es el camino principal del calor del chip hacia la placa.",
+      "refusal": "Primero deja la placa desnuda"
+    },
+    "headers": {
+      "title": "Pon las dos tiras de pines",
+      "body": "Dos tiras de pines macho de 1 x 8, con los pines largos hacia arriba para que encajen encima cables con hembra. El control en un lado (DIR, STEP, SLP, RST, MS3, MS2, MS1, EN), y la alimentación y el motor en el otro (GND, VDD, 1B, 1A, 2A, 2B, GND, VMOT).",
+      "refusal": "Primero haz el reflujo de las piezas de montaje superficial"
+    },
+    "solder": {
+      "title": "Suelda los 16 pines de las tiras",
+      "body": "Una soldadura por pin, cada una un cono limpio. Una soldadura fría en un pin del motor es peor de lo que parece: cada vez que se abre, es lo mismo que desconectar el motor con tensión.",
+      "refusal": "Primero pon las dos tiras de pines"
+    },
+    "link-cap": {
+      "title": "Pon el jumper RST-SLP y el de 100 µF",
+      "body": "Un jumper entre RST y SLP: en esta placa portadora RST queda al aire, y el pull-up de SLP lo mantiene en alto a través del jumper. Luego el electrolítico de 100 µF entre VMOT y GND, con la franja hacia GND, tumbado sobre la alfombrilla con las patas en los dos pines.",
+      "refusal": "Primero suelda las tiras de pines"
+    },
+    "wire-nano": {
+      "title": "Conecta la Nano",
+      "body": "D3 a STEP, D4 a DIR, D5, D6 y D7 a MS1, MS2 y MS3, el 5V de la Nano a VDD y GND a GND.",
+      "refusal": "Primero termina la placa: las dos tiras soldadas, y el jumper y el de 100 µF puestos"
+    },
+    "wire-motor": {
+      "title": "Conecta el motor",
+      "body": "Los cuatro cables en orden en 2B, 2A, 1A, 1B: el negro y el verde son una bobina, y el rojo y el azul la otra. Hazlo con la alimentación apagada, siempre.",
+      "refusal": "Primero conecta la Nano"
+    },
+    "wire-battery": {
+      "title": "Conecta la LiPo",
+      "body": "El rojo a VMOT y el negro al GND de al lado. Una batería 2S cargada da 8,4 V, justo por encima de los 8 V mínimos del A4988.",
+      "refusal": "Primero conecta el motor"
+    },
+    "wire-meter": {
+      "title": "Pon el multímetro en el trimpot",
+      "body": "El selector en 2 V de continua. La punta roja en el rotor metálico del trimpot y la negra en un pin GND. Lee VREF en cuanto VDD tiene tensión.",
+      "refusal": "Primero conecta la LiPo"
+    },
+    "plug": {
+      "title": "Alimenta el banco",
+      "body": "El USB a la Nano y la batería encendida. Arranca el sketch de retención: las dos bobinas están encendidas y el eje se mantiene. El multímetro marca unos 0,30 V, un límite de 0,55 A, como venía el trimpot.",
+      "refusal": "Primero termina el montaje: todas las piezas puestas, todas las uniones soldadas y todo lo de la alfombrilla conectado"
+    },
+    "vref": {
+      "title": "Ajusta el límite de corriente",
+      "body": "Con el sketch de retención en marcha, gira el trimpot en sentido horario y mira cómo sube el multímetro. Para en 0,544 V: 0,544 / (8 x 0,068) = 1,0 A. Cada bobina se mantiene entonces a 0,71 A, y la placa sin disipador queda muy lejos de su corte térmico.",
+      "refusal": "Primero alimenta el banco"
+    },
+    "full": {
+      "title": "Paso completo",
+      "body": "MS1 a MS3 en bajo. El sketch envía 200 pulsos separados 5 ms, una vuelta en un segundo, y luego espera un segundo con las bobinas encendidas. Cada pulso mueve el eje 1,8°: puedes oír cada uno.",
+      "refusal": "Primero ajusta el límite de corriente"
+    },
+    "half": {
+      "title": "Medio paso",
+      "body": "MS1 en alto. Los mismos pulsos de 5 ms mueven ahora 0,9° cada uno, así que hacen falta 400 para una vuelta y el eje va a la mitad de velocidad. Un paso de cada dos tiene una bobina apagada y la otra al límite completo.",
+      "refusal": "Primero ejecuta el sketch de paso completo"
+    },
+    "micro": {
+      "title": "1/16 de paso",
+      "body": "MS1, MS2 y MS3 en alto: 3200 pulsos por vuelta, 0,1125° cada uno. El sketch da un pulso cada 1,25 ms (625 µs en alto, 625 µs en bajo), 800 por segundo, un cuarto de vuelta por segundo. Las corrientes de las bobinas siguen un seno y un coseno, y el eje se desliza en lugar de ir a saltitos.",
+      "refusal": "Primero ejecuta el sketch de medio paso"
+    },
+    "lipo-backwards": {
+      "title": "Conecta la LiPo al revés",
+      "body": "El negro en VMOT y el rojo en GND. En esta placa portadora nada lo impide: la corriente pasa hacia atrás por los diodos intrínsecos de los interruptores del puente, directamente entre los extremos de la batería. Repáralo y vuelve a dar alimentación."
+    },
+    "cap-backwards": {
+      "title": "Pon el de 100 µF al revés",
+      "body": "La franja hacia VMOT. Un electrolítico invertido conduce, se calienta y abre la válvula. Repáralo y vuelve a dar alimentación."
+    },
+    "no-link": {
+      "title": "Deja sin poner el jumper RST-SLP",
+      "body": "Sin el jumper, RST queda al aire. El driver se queda en reinicio: no hay corriente en las bobinas, el eje gira libremente con la mano y los pulsos no van a ninguna parte. Vuelve a poner el jumper y da alimentación otra vez."
+    },
+    "tired-pack": {
+      "title": "Funciona con una batería cansada",
+      "body": "La batería ha bajado a 7,4 V, su tensión nominal, por debajo de los 8 V mínimos del A4988. Ejecuta el sketch de paso completo y mira cómo el eje se va quedando atrás. Repáralo y vuelve a dar alimentación."
+    },
+    "coils-mixed": {
+      "title": "Mezcla las parejas de bobinas",
+      "body": "El verde y el rojo intercambiados: cada pareja de salidas controla ahora media bobina de cada una. El motor zumba en su sitio y no gira. Vuelve a poner los cables en orden y da alimentación otra vez."
+    },
+    "limit-too-high": {
+      "title": "Sube el límite hasta 1,68 A",
+      "body": "El motor admite 1,68 A, así que ¿por qué no? El multímetro marca 0,914 V. Ejecuta el sketch de paso completo y mira cómo la temperatura del chip pasa de 150 °C hasta que salta el apagado térmico a 165 °C. Repáralo y vuelve a dar alimentación."
+    },
+    "unplug-live": {
+      "title": "Desconecta el motor mientras funciona",
+      "body": "Quita el conector del motor mientras por las bobinas pasa corriente. Repáralo y vuelve a dar alimentación."
+    },
+    "exploded": {
+      "title": "Vista despiezada",
+      "body": "Desmóntalo todo en el aire: la placa, el chip y sus pasivos, las tiras de pines, el condensador y el jumper, y todo lo de la alfombrilla.",
+      "refusal": "Primero avería y repara todo"
+    }
+  },
+  "faults": {
+    "reverse-polarity": {
+      "title": "LiPo conectada al revés",
+      "symptom": "Un chasquido en el chip, los cables de la batería se calientan y el driver queda muerto.",
+      "explanation": "Pololu no indica ninguna protección contra la tensión inversa. Cada interruptor del puente tiene un diodo intrínseco que va de GND a VMOT; al revés, esos diodos conducen y cortocircuitan la batería a través del chip. Una LiPo puede dar decenas de amperios, mucho más de lo que aguantan los diodos.",
+      "fix": "Comprueba que el rojo va a VMOT antes de conectar, usa un conector con forma, o pon un diodo en serie o un MOSFET de protección contra la polaridad inversa en la alimentación."
+    },
+    "cap-reversed": {
+      "title": "Electrolítico de 100 µF al revés",
+      "symptom": "El condensador se calienta, se hincha y abre la válvula con un siseo.",
+      "explanation": "Un electrolítico solo aguanta tensión en un sentido. Al revés, la capa de óxido se rompe, conduce, se calienta y se abre la válvula de presión de su parte de arriba.",
+      "fix": "La franja (negativo) a GND y la pata larga a VMOT. Cambia un condensador que ha estado al revés aunque parezca estar bien."
+    },
+    "no-link": {
+      "title": "RST al aire",
+      "symptom": "Hay alimentación y la Nano envía pulsos, pero las bobinas están apagadas: el eje gira libremente con la mano.",
+      "explanation": "En esta placa portadora RST no tiene pull-up propio. Al aire, se queda en bajo o va cambiando, y mientras RST está en bajo el traductor se queda en Home y las salidas están apagadas.",
+      "fix": "Vuelve a poner el jumper entre RST y SLP, o pon RST en alto desde un pin."
+    },
+    "tired-pack": {
+      "title": "VMOT por debajo de 8 V",
+      "symptom": "El motor va a trompicones y se queda atrás respecto a los pulsos: pierde pasos y acaba en un sitio distinto de donde cree el sketch.",
+      "explanation": "El A4988 está especificado a partir de 8 V en VMOT. Una batería 2S da 8,4 V cargada, pero baja de 8 V mucho antes de estar vacía. Por debajo de eso el chip está fuera de sus valores nominales: las salidas se cortan y se pierden pasos. Un motor paso a paso no tiene sensor, así que nada se da cuenta.",
+      "fix": "Usa una batería 3S o una fuente de 12 V, y deja de usarla antes de que la batería caiga."
+    },
+    "coils-mixed": {
+      "title": "Parejas de bobinas mezcladas",
+      "symptom": "El motor zumba y tiembla en su sitio, pero no gira.",
+      "explanation": "Cada puente H tiene que controlar los dos extremos de una misma bobina. Con el verde y el rojo intercambiados, cada puente controla un extremo de cada bobina, los dos campos se pelean y el rotor oscila entre dos posiciones.",
+      "fix": "Busca las parejas con un multímetro: unos pocos ohmios entre los dos cables de una bobina, circuito abierto entre bobinas. Luego una pareja en 1A y 1B, y la otra en 2A y 2B."
+    },
+    "limit-too-high": {
+      "title": "Límite de corriente demasiado alto",
+      "symptom": "La placa quema al tocarla, luego el motor se para, vuelve a arrancar unos segundos después y se para otra vez.",
+      "explanation": "A 1,68 A, los caminos de las dos bobinas disipan unos 1,8 W en el chip, I² por unos 0,64 Ω, y más a medida que se calienta. La placa sin disipador no puede deshacerse de ese calor: el chip llega a 165 °C, el apagado térmico desconecta las salidas, se enfría 15 °C y vuelve a empezar. Pololu sitúa el límite sin disipador en 1 A por bobina, más o menos.",
+      "fix": "Vuelve a bajar VREF a 0,544 V (1,0 A). Para más corriente, pon un disipador y ventilación."
+    },
+    "unplug-live": {
+      "title": "Motor desconectado con alimentación",
+      "symptom": "Una chispita en el conector, el motor queda flojo y el driver ya nunca vuelve a moverlo.",
+      "explanation": "La corriente de una bobina no puede pararse de golpe. Abrir el circuito la obliga a hacerlo, y la bobina responde con un pico de tensión, L x di/dt, muy por encima de los 35 V que admiten las salidas del A4988. Pololu avisa de que esto puede destruir el driver, a menudo sin dejar ninguna marca visible.",
+      "fix": "Conecta o desconecta el motor solo con la alimentación apagada. Revisa los conectores del motor y las soldaduras de las tiras: uno suelto hace lo mismo."
+    }
+  },
+  "status": {
+    "status": "Estado",
+    "powered": "Alimentación del banco",
+    "mode": "Sketch",
+    "step": "STEP",
+    "dir": "DIR",
+    "ms1": "MS1",
+    "vref": "VREF (multímetro)",
+    "limit": "Límite de corriente",
+    "coil": "Cada bobina",
+    "chip": "Chip (°C)",
+    "vmot": "VMOT (alimentación del motor)",
+    "rpm": "Velocidad del eje",
+    "shaft": "Ángulo del eje",
+    "battery": "Corriente de la batería",
+    "usb": "Corriente del USB"
+  },
+  "current": {
+    "usb": "USB de la Nano (polifusible de 500 mA)",
+    "lipo": "LiPo 2S en VMOT",
+    "nano": "Nano en marcha",
+    "logic": "Lógica del A4988 en VDD",
+    "quiescent": "Corriente de alimentación del lado del motor del A4988",
+    "coils": "Bobinas con un límite de 1,0 A, a través del chopper",
+    "coilsHigh": "Bobinas con un límite de 1,68 A",
+    "capShort": "El de 100 µF conduciendo al revés",
+    "reverse": "Batería invertida a través de los diodos intrínsecos del puente"
+  },
+  "tasks": {
+    "turn-and-back": {
+      "title": "Una vuelta de ida y vuelta",
+      "brief": "Paso completo, con los pines MS al aire. Gira el eje exactamente una vuelta hacia delante (DIR en D4 en HIGH, 200 pulsos en D3, cada uno 2500 µs en alto y 2500 µs en bajo), imprime \"one turn\", espera 500 ms, y luego pon DIR en LOW, da 200 pulsos de vuelta hasta donde empezó e imprime \"home\".",
+      "hints": {
+        "1": "200 pasos completos de 1,8° hacen 360°. Cada pulso: digitalWrite(STEP, HIGH); delayMicroseconds(2500); digitalWrite(STEP, LOW); delayMicroseconds(2500);",
+        "2": "Mete el bucle de pulsos en una función, steps(int n), y llámala dos veces.",
+        "3": "Cambia DIR entre los dos movimientos, antes del primer pulso de la vuelta."
+      },
+      "checks": {
+        "1": "Funciona durante 3 s",
+        "2": "DIR (D4) está en HIGH a la ida",
+        "3": "STEP (D3) da un pulso cada 5 ms, unas 400 veces",
+        "4": "Imprime \"one turn\" después del primer segundo",
+        "5": "DIR está en LOW a la vuelta",
+        "6": "Imprime \"home\""
+      },
+      "code": {
+        "goal": "Una vuelta hacia delante, imprime \"one turn\", espera 500 ms, una vuelta hacia atrás, imprime \"home\"",
+        "start": "de momento solo media vuelta, y sin vuelta atrás"
+      }
+    },
+    "quarter-turn": {
+      "title": "Un cuarto de vuelta por segundo, en pasos de 1/16",
+      "brief": "Pon MS1, MS2 y MS3 (D5, D6, D7) en HIGH para 1/16 de paso. Luego da pulsos en STEP a 800 pulsos por segundo, 625 µs en alto y 625 µs en bajo, para que el eje gire un cuarto de vuelta cada segundo, e imprime \"1 turn\" después de cada 3200 pulsos.",
+      "hints": {
+        "1": "1/16 de paso necesita los tres pines MS en HIGH, fijados una vez en setup().",
+        "2": "Un cuarto de vuelta son 800 micropasos; 800 por segundo es uno cada 1250 µs, así que 625 µs en alto y 625 µs en bajo.",
+        "3": "Cuenta 3200 pulsos en un bucle for y luego imprime. 3200 x 1,25 ms = 4 s por vuelta."
+      },
+      "checks": {
+        "1": "Funciona durante 4,3 s",
+        "2": "MS1 (D5) está en HIGH",
+        "3": "MS2 (D6) está en HIGH",
+        "4": "MS3 (D7) está en HIGH",
+        "5": "STEP (D3) da un pulso cada 1,25 ms, al menos 3000 veces",
+        "6": "Imprime \"1 turn\" después de 4 s"
+      },
+      "code": {
+        "goal": "1/16 de paso a un cuarto de vuelta por segundo: 3200 pulsos separados 1250 µs, y luego imprime \"1 turn\"",
+        "fast": "150 µs en cada sentido en paso completo: algo más de cuatro vueltas por segundo, y los pines MS nunca se fijan"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "rst": {
+        "q": "¿Qué hace el jumper entre RST y SLP?",
+        "options": {
+          "1": "Elige el modo de paso completo",
+          "2": "Mantiene RST en alto con el pull-up de SLP, así que el driver sale del reinicio",
+          "3": "Une los dos pines GND"
+        },
+        "why": "En esta placa portadora RST queda al aire. Con RST en bajo, el traductor se queda en Home y las salidas siguen apagadas; el jumper toma prestado el pull-up de SLP para mantenerlo en alto."
+      },
+      "bulk": {
+        "q": "¿Por qué va un condensador de 100 µF entre VMOT y GND?",
+        "options": {
+          "1": "Para absorber el pico que generan los cables de la alimentación al conectar, que puede pasar de 35 V incluso con 12 V",
+          "2": "Para fijar el límite de corriente",
+          "3": "Para que la placa funcione con 5 V"
+        },
+        "why": "La inductancia de los cables y el cerámico de 4,7 µF forman un circuito resonante. El electrolítico lo amortigua y mantiene estable VMOT mientras conmuta el chopper."
+      },
+      "labels": {
+        "q": "¿Dónde están impresos los nombres de los pines en esta placa portadora?",
+        "options": {
+          "1": "Junto a cada pin, por arriba",
+          "2": "En el chip",
+          "3": "Solo por debajo"
+        },
+        "why": "La cara de arriba está llena de piezas; los nombres están en la serigrafía de abajo. Comprueba el orden de los pines antes de que la placa acabe puesta del revés o girada."
+      }
+    },
+    "limit": {
+      "formula": {
+        "q": "El multímetro marca 0,544 V en el trimpot. ¿Qué límite de corriente es ese?",
+        "options": {
+          "1": "1,0 A: 0,544 / (8 x 0,068)",
+          "2": "0,544 A: un amperio por voltio",
+          "3": "8 A: ocho veces VREF"
+        },
+        "why": "I_MAX = VREF / (8 x R_sense), y las resistencias de sensado son de 0,068 Ω, así que 0,544 V son 1,0 A."
+      },
+      "coil": {
+        "q": "Con un límite de 1,0 A en paso completo, ¿cuánta corriente lleva cada bobina mientras el eje se mantiene?",
+        "options": {
+          "1": "1,0 A cada una",
+          "2": "0,5 A cada una: el límite se reparte",
+          "3": "Unos 0,71 A cada una: el paso completo pone el 70,7 % del límite en las dos bobinas"
+        },
+        "why": "En paso completo las dos bobinas están encendidas al 70,71 % de I_MAX, el punto de 45° de la tabla del seno. Por eso, al medir una bobina, sale menos que el límite."
+      },
+      "vdd": {
+        "q": "Ajustas 0,544 V con la lógica a 5 V, y luego alimentas la lógica con 3,3 V. ¿Qué le pasa al límite?",
+        "options": {
+          "1": "Nada: VREF queda fija una vez ajustada",
+          "2": "Baja más o menos un tercio: el trimpot divide VDD, así que VREF baja con ella",
+          "3": "Se duplica"
+        },
+        "why": "VREF sale de un divisor conectado a VDD. Vuelve a ajustarla con la VDD con la que de verdad vayas a funcionar."
+      }
+    },
+    "steps": {
+      "pulses": {
+        "q": "MS1, MS2 y MS3 están todos en HIGH. ¿Cuántos pulsos de STEP hacen girar una vez un motor de 200 pasos?",
+        "options": {
+          "1": "200",
+          "2": "3200",
+          "3": "16"
+        },
+        "why": "Los tres en alto es 1/16 de paso: 200 x 16 = 3200 pulsos, de 0,1125° cada uno."
+      },
+      "timing": {
+        "q": "El sketch de 1/16 mantiene STEP en alto 625 µs y en bajo 625 µs. ¿A qué velocidad gira el eje?",
+        "options": {
+          "1": "Un cuarto de vuelta por segundo: 800 pulsos por segundo, 3200 por vuelta",
+          "2": "Una vuelta por segundo",
+          "3": "Dieciséis vueltas por segundo"
+        },
+        "why": "Un pulso cada 1250 µs son 800 por segundo. A 3200 por vuelta, eso es 0,25 vueltas por segundo, 15 rpm."
+      },
+      "ms": {
+        "q": "¿Por qué el paso de 1/16 es más suave que el paso completo a la misma velocidad?",
+        "options": {
+          "1": "El motor recibe más tensión",
+          "2": "El chip apaga una bobina",
+          "3": "Las corrientes de las bobinas siguen un seno en pasos pequeños, así que el rotor avanza arrastrado en lugar de saltar 1,8° cada vez"
+        },
+        "why": "Cada micropaso cambia un poco el equilibrio entre las corrientes de las dos bobinas, así que el campo magnético gira en incrementos pequeños."
+      }
+    },
+    "faults": {
+      "unplug": {
+        "q": "¿Por qué desconectar el motor mientras funciona mata el A4988?",
+        "options": {
+          "1": "La corriente de la bobina no puede pararse de golpe; cortarla provoca un pico de tensión, L x di/dt, muy por encima de lo que aguantan las salidas",
+          "2": "El motor cortocircuita VMOT con GND",
+          "3": "La Nano envía demasiados pulsos"
+        },
+        "why": "Una bobina se opone a cualquier cambio de su corriente. Si cortas el camino, la tensión sube hasta que algo conduce, y ese algo es la etapa de salida del chip."
+      },
+      "hot": {
+        "q": "El límite está en los 1,68 A del motor y la placa portadora no tiene disipador. ¿Qué hace el motor?",
+        "options": {
+          "1": "Gira con más par, todo el tiempo que quieras",
+          "2": "Se para enseguida y no vuelve a funcionar",
+          "3": "Funciona, se para cuando el chip llega a 165 °C y vuelve a arrancar cuando se ha enfriado 15 °C: va a trompicones"
+        },
+        "why": "El apagado térmico protege el chip, pero no tu posición: cada pausa pierde pasos."
+      },
+      "tired": {
+        "q": "La batería 2S ha bajado a 7,4 V. ¿Qué falla?",
+        "options": {
+          "1": "Nada: la tensión nominal del motor es solo de 2,8 V",
+          "2": "VMOT está por debajo de los 8 V mínimos del A4988: las salidas se cortan y se pierden pasos",
+          "3": "La Nano se reinicia"
+        },
+        "why": "El chopper necesita una tensión de alimentación bastante por encima de la caída propia de la bobina para meter la corriente deprisa. Por debajo de 8 V el chip está fuera de sus valores nominales."
+      }
+    },
+    "end": {
+      "vs-l298n": {
+        "q": "¿Por qué controlar un motor paso a paso con un A4988 y no con un L298N?",
+        "options": {
+          "1": "Es más grande y más fácil de soldar",
+          "2": "Limita él mismo la corriente de las bobinas y hace la secuencia de pasos: dos pines, STEP y DIR, en lugar de cuatro, y micropasos gratis",
+          "3": "No necesita alimentación para los motores"
+        },
+        "why": "El L298N no regula la corriente, así que un motor de baja resistencia con una alimentación alta se sobrecalienta. El A4988 trocea la corriente hasta el límite que fijas."
+      },
+      "lost": {
+        "q": "Un motor paso a paso no tiene sensor. ¿Cómo sabe la Nano dónde está el eje?",
+        "options": {
+          "1": "Cuenta los pulsos que ha enviado; un paso perdido se pierde para siempre hasta que la máquina vuelve a buscar su origen",
+          "2": "El A4988 informa del ángulo",
+          "3": "El motor devuelve pulsos"
+        },
+        "why": "Por eso las impresoras 3D y las máquinas CNC buscan el origen contra un final de carrera al arrancar, y por eso los pasos perdidos aparecen como capas desplazadas."
+      },
+      "supply": {
+        "q": "¿Qué alimentación le va mejor a este motor y a este driver?",
+        "options": {
+          "1": "Una LiPo 1S, 3,7 V",
+          "2": "Una LiPo 2S, 7,4 V",
+          "3": "Una LiPo 3S o 12 V: bien dentro de los 8 a 35 V, con margen para la velocidad"
+        },
+        "why": "Una alimentación más alta mete la corriente en las bobinas más deprisa, así que el par se mantiene a velocidad, y el chopper mantiene la corriente en el límite de todos modos."
+      }
+    }
+  }
+}
