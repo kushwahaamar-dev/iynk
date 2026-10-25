@@ -1,0 +1,822 @@
+{
+  "title": "BBC micro:bit V2",
+  "tagline": "Ein Taschencomputer mit 25 LEDs, zwei Tastern, einem Touch-Logo, einem Bewegungssensor, einem Lautsprecher und einem Mikrofon",
+  "overview": "Der micro:bit ist das Board, das Schulen als Erstes verteilen. Vorne hat er ein 5 x 5-Raster aus roten LEDs, die Taster A und B, ein goldenes Logo, das du berühren kannst, und einen goldenen Platinenstecker mit fünf großen Ringen (0, 1, 2, 3V und GND), an die du Krokodilklemmen klemmen kannst. Auf der Rückseite sitzen der nRF52833, der dein Programm ausführt, ein zweiter nRF52-Chip, der aus USB ein Laufwerk namens MICROBIT und einen seriellen Port macht, ein 3,3-V-Regler, ein Bewegungssensor, ein Lautsprecher und ein Mikrofon. Du schreibst MicroPython, ziehst die Datei auf das Laufwerk, und das Board startet mit deinem Programm neu. Alles läuft mit 3,3 V, und kein Pin verträgt 5 V.",
+  "mcu": {
+    "nrf52820": "Schnittstellenchip: führt DAPLink aus, das das Laufwerk MICROBIT anzeigt, dein Programm in den nRF52833 kopiert und Serial über USB weiterreicht",
+    "lsm303agr": "Bewegungssensor: Beschleunigungssensor an I²C-Adresse 0x19 und Kompass an 0x1E, am eigenen I²C-Bus des Boards",
+    "ncp114": "3,3-V-Regler (300 mA, mit Strombegrenzung und Übertemperaturabschaltung), der das ganze Board versorgt"
+  },
+  "power": {
+    "usb": {
+      "protection": "Die Schottky-Diode BAT60J D51 lässt die 5 V von USB auf VCOMBINED und verhindert, dass eine Batterie Strom in den Computer zurückdrückt. Der Regler NCP114 erzeugt dann 3,3 V."
+    },
+    "battery": {
+      "protection": "Zwei Dioden BAT60A in Reihe (D59, dann D57 als Reserve) sperren einen verpolten Batteriehalter, also bewirkt ein verkehrt herum verdrahteter Halter nichts. Die Buchse ist codiert. Nimm 2 x AAA- oder 2 x AA-Zellen (3 V)."
+    },
+    "ring3v": {
+      "protection": "Nichts. Strom, der in den 3V-Ring oder die Batteriepads auf der Rückseite eingespeist wird, geht direkt auf die 3,3-V-Schiene, vorbei am Regler und an jeder Diode. Nimm eine geregelte Versorgung mit 1,8 bis 3,6 V und einer Diode in Reihe, nie einen LiPo oder 5 V."
+    },
+    "rails": {
+      "vbus": "Die 5 V von USB aus der Micro-USB-Buchse, vor jedem Schutz",
+      "vcombined": "Die 5 V von USB minus den Spannungsabfall an D51 (etwa 4,7 V) oder die Batterie minus zwei Diodenspannungen: Was höher ist, speist den Regler",
+      "3v": "Die 3,3-V-Schiene vom NCP114: beide nRF52-Chips, die Sensoren, die LEDs und der 3V-Ring. 300 mA insgesamt, von denen bis zu 190 mA über den Platinenstecker hinausgehen dürfen."
+    },
+    "io": "Die Pins arbeiten mit 3,3 V und sind nicht 5-V-tolerant. Mit Standard-Treiberstärke liefert ein Pin 1 bis 4 mA, also setz einen Widerstand vor eine LED und einen Transistor vor alles Größere. Der Platinenstecker als Ganzes kann aus dem 3V-Ring 190 mA liefern."
+  },
+  "pins": {
+    "ring": {
+      "p0": "Hier kommt auch der Ton heraus: Musik und der Lautsprecher spielen gleichzeitig auf Pin 0. Resistive Berührung (10-MΩ-Pull-up), also fass mit der anderen Hand GND an.",
+      "3v": "3,3 V Ausgang, bis zu 190 mA. Du kannst das Board auch hier versorgen, aber nichts schützt diesen Ring: Falsche Polarität oder mehr als 3,6 V beschädigen die Chips."
+    },
+    "edge": {
+      "column": "Eine der fünf Spalten der LED-Matrix. Schalte die Anzeige aus, bevor du ihn für etwas anderes benutzt.",
+      "button": "Mit einem Taster auf der Vorderseite verbunden, mit 10-kΩ-Pull-up. Er liest LOW, wenn der Taster gedrückt ist; lass ihn für den Taster frei.",
+      "p9": "Teilt sich den Pin mit der NFC-Antenne des nRF52833. Er funktioniert als GPIO, aber nimm wenn möglich einen anderen Pin.",
+      "p12": "Für Geräte zur Barrierefreiheit reserviert. Zum Testen funktioniert er als GPIO, aber lass ihn in deinen Projekten frei.",
+      "i2c": "Der externe I²C-Bus (P19 ist SCL, P20 ist SDA) mit 4,7-kΩ-Pull-ups auf dem Board. Er ist ein anderer Bus als der, den der Bewegungssensor benutzt.",
+      "guard": "Schmaler 3V-Streifen neben dem 3V-Ring: dasselbe Netz, dieselben Grenzen"
+    }
+  },
+  "leds": {
+    "D60": "Rot, auf der Rückseite. Volle Helligkeit an USB, dunkler an Batterien; sie verblasst, wenn du RESET gedrückt hältst, um das Board auszuschalten.",
+    "D61": "Gelb, auf der Rückseite. An, solange ein Computer verbunden ist; sie flackert, während ein Programm hinüberkopiert wird.",
+    "D70": "Rot, auf der Rückseite neben dem Mikrofon. Sie leuchtet, sobald das Mikrofon eingeschaltet ist, damit du siehst, wann das Board zuhört."
+  },
+  "controls": {
+    "SW2": "Taster A auf der Vorderseite. Liest LOW an P5, solange er gedrückt ist.",
+    "SW3": "Taster B auf der Vorderseite. Liest LOW an P11, solange er gedrückt ist.",
+    "LOGO": "Berühr das goldene Logo: pin_logo.is_touched() wird True, solange dein Finger darauf liegt.",
+    "SW1": "RESET auf der Rückseite. Ein kurzer Druck startet dein Programm neu; halt ihn etwa 4 Sekunden, um das Board auszuschalten."
+  },
+  "displays": {
+    "LEDS": "25 rote LEDs in fünf Zeilen und fünf Spalten. Die Zeilen werden von den eigenen Pins des nRF52833 eingeschaltet; die Spalten P3, P4, P6, P7 und P10 nehmen den Strom auf. MicroPython scannt sie schnell genug, dass du ein ruhiges Bild mit zehn Helligkeitsstufen siehst."
+  },
+  "parts": {
+    "U2": {
+      "name": "Prozessor nRF52833",
+      "what": "Führt dein Programm aus: ein Arm Cortex-M4F mit 64 MHz, 512 KB Flash, 128 KB RAM und einem 2,4-GHz-Funkteil für Bluetooth und micro:bit-Funk, alles auf einem Die."
+    },
+    "X1": {
+      "name": "32-MHz-Quarz",
+      "what": "Hält den Takt und das Funkteil des nRF52833 auf der richtigen Frequenz. Ohne ihn startet der Prozessor nie."
+    },
+    "U5": {
+      "name": "Schnittstellenchip nRF52820",
+      "what": "Spricht USB. Er zeigt das Laufwerk MICROBIT, schreibt die Datei, die du darauf ziehst, in den nRF52833, reicht Serial mit 115200 Baud weiter und treibt die gelbe USB-LED."
+    },
+    "U3": {
+      "name": "3,3-V-Regler NCP114",
+      "what": "Macht aus USB- oder Batteriestrom die 3,3-V-Schiene. Er kann 300 mA liefern und begrenzt seinen eigenen Strom, wenn etwas die Schiene kurzschließt."
+    },
+    "D51": {
+      "name": "USB-Diode BAT60J",
+      "what": "Lässt die 5 V von USB auf VCOMBINED und verhindert, dass Batterien in den Computer zurückspeisen."
+    },
+    "D59": {
+      "name": "Batteriedioden BAT60A",
+      "what": "D59 und D57 in Reihe am Batterieeingang: Ein verkehrt herum verdrahteter Halter kann keinen Strom ins Board drücken."
+    },
+    "D1": {
+      "name": "Diode BAT54T",
+      "what": "Verhindert, dass der Ausgang des Reglers über seinen Eingang steigt, wenn der Strom über den 3V-Ring hereinkommt."
+    },
+    "L5": {
+      "name": "USB-Gleichtaktdrossel",
+      "what": "Filtert Störungen auf dem USB-Datenpaar, bevor sie den Schnittstellenchip erreichen."
+    },
+    "D62": {
+      "name": "USB-ESD-Schutz",
+      "what": "Fängt statische Entladungen auf den USB-Datenleitungen ab."
+    },
+    "J3": {
+      "name": "Micro-USB-Buchse",
+      "what": "Strom, das Laufwerk MICROBIT und Serial, alles über ein Kabel."
+    },
+    "J2": {
+      "name": "Batteriebuchse",
+      "what": "Zweipolige Buchse mit 2,0 mm Raster für einen 2 x AAA-Halter. Sie ist codiert, damit der Stecker nur in einer Richtung hineingeht."
+    },
+    "SW1": {
+      "name": "Reset-Taster",
+      "what": "Ein kurzer Druck startet dein Programm neu. Halt ihn, bis die rote LED verblasst, um das Board auszuschalten."
+    },
+    "SW2": {
+      "name": "Taster A",
+      "what": "Taster vorne an P5 mit 10-kΩ-Pull-up; liest LOW, wenn er gedrückt ist."
+    },
+    "SW3": {
+      "name": "Taster B",
+      "what": "Taster vorne an P11 mit 10-kΩ-Pull-up; liest LOW, wenn er gedrückt ist."
+    },
+    "LOGO": {
+      "name": "Touch-Logo",
+      "what": "Ein goldenes Pad an P1.04 des nRF52833, das deinen Finger kapazitiv erkennt."
+    },
+    "LEDS": {
+      "name": "5 x 5-LED-Matrix",
+      "what": "25 rote 0603-LEDs, D2 bis D50, Zeile für Zeile gescannt. Rückwärts betrieben funktionieren sie auch als grober Lichtsensor."
+    },
+    "D60": {
+      "name": "Rote Power-LED",
+      "what": "Zeigt, dass das Board Strom hat: hell an USB, dunkler an Batterien."
+    },
+    "D61": {
+      "name": "Gelbe USB-LED",
+      "what": "An, solange USB mit einem Computer verbunden ist; flackert, während ein Programm kopiert wird."
+    },
+    "D70": {
+      "name": "Mikrofon-LED",
+      "what": "Leuchtet über denselben Pin, der das Mikrofon versorgt."
+    },
+    "U6": {
+      "name": "Bewegungssensor LSM303AGR",
+      "what": "Beschleunigungssensor und Kompass in einem 2 x 2 mm großen Gehäuse, am internen I²C-Bus an 0x19 und 0x1E."
+    },
+    "U4": {
+      "name": "MEMS-Mikrofon",
+      "what": "Hört durch ein kleines Loch im Board. Nur versorgt, solange dein Programm es benutzt."
+    },
+    "SP1": {
+      "name": "Magnetischer Lautsprecher",
+      "what": "Eine Spule, ein Magnet und eine Stahlscheibe, am lautesten bei etwa 2,7 kHz. Das Programm treibt ihn von P0.00 über T2."
+    },
+    "T2": {
+      "name": "Lautsprecher-MOSFET",
+      "what": "Schaltet den Strom des Lautsprechers, damit der Prozessorpin ihn nicht tragen muss."
+    },
+    "D5": {
+      "name": "Freilaufdiode des Lautsprechers",
+      "what": "Fängt die Spannungsspitze der Lautsprecherspule jedes Mal ab, wenn T2 abschaltet."
+    },
+    "ANT": {
+      "name": "Platinenantenne",
+      "what": "Eine Kupferleiterbahn in der Ecke des Boards, die Bluetooth und micro:bit-Funk sendet und empfängt."
+    },
+    "RF": {
+      "name": "Bauteile zur Antennenanpassung",
+      "what": "L3, L7 und C11 passen den Ausgang des Funkteils an die Antennenleiterbahn an."
+    },
+    "RLED": {
+      "name": "Widerstände der Status-LEDs",
+      "what": "R38 und R39, je 220 Ω, legen den Strom für die rote und die gelbe LED fest."
+    },
+    "TVS": {
+      "name": "ESD-Dioden am Rand",
+      "what": "D71 bis D74 fangen statische Ladung an den Ringen ab, die du berührst und an die du Klemmen hängst."
+    },
+    "TR": {
+      "name": "Kleine Transistoren",
+      "what": "Digitaltransistoren, die erkennen, woher der Strom kommt, und Signale zwischen den beiden Chips weiterreichen."
+    },
+    "RING0": {
+      "name": "Ring 0",
+      "what": "P0: Analogeingang, Berührung, PWM. Ton spielt hier ebenso wie am Lautsprecher."
+    },
+    "RING1": {
+      "name": "Ring 1",
+      "what": "P1: Analogeingang, Berührung, PWM. Die Lektionen treiben ihre LED von hier aus."
+    },
+    "RING2": {
+      "name": "Ring 2",
+      "what": "P2: Analogeingang, Berührung, PWM. Die Dimmer-Lektion liest hier ihren Drehknopf."
+    },
+    "RING3V": {
+      "name": "3V-Ring",
+      "what": "3,3 V Ausgang für deine Schaltungen, bis zu 190 mA. Strom, der hier eingespeist wird, umgeht jeden Schutz auf dem Board."
+    },
+    "RINGGND": {
+      "name": "GND-Ring",
+      "what": "Masse für alles, was du anschließt."
+    },
+    "EDGE": {
+      "name": "Platinenstecker",
+      "what": "Die schmalen goldenen Streifen im 1,27-mm-Raster führen die anderen Pins (P3 bis P16, P19, P20, 3V und GND). Steck das Board in ein Edge-Breakout, um an sie heranzukommen."
+    }
+  },
+  "wireables": {
+    "led": {
+      "note": "Klemm Ring 1 über einen 470-Ω-Widerstand an das lange Bein der LED und das kurze Bein an GND: etwa 3 mA.",
+      "caution": "Ein Pin des V2 liefert nur 1 bis 4 mA. Schließ nie eine LED ohne Widerstand an."
+    },
+    "push-button": {
+      "note": "Nimm P8 und schalte den internen Pull-up mit pin8.set_pull(pin8.PULL_UP) ein; der Pin liest 0, solange gedrückt ist."
+    },
+    "potentiometer": {
+      "note": "Enden an 3V und GND, Schleifer an Ring 2: pin2.read_analog() liefert 0 bis 1023."
+    },
+    "ldr": {
+      "note": "Bau mit einem 10-kΩ-Widerstand einen Spannungsteiler von Ring 0 nach GND und lies ihn mit pin0.read_analog()."
+    },
+    "piezo-buzzer": {
+      "note": "Ring 0 und GND: Musik spielt schon auf Pin 0, also piept er zusammen mit dem Lautsprecher."
+    },
+    "servo-sg90": {
+      "note": "Signal an Ring 1: pin1.set_analog_period(20), dann pin1.write_analog(51) bis pin1.write_analog(102) für Impulse von 1 bis 2 ms.",
+      "caution": "Ein SG90 kann beim Anlaufen Hunderte mA ziehen. Aus dem 3V-Ring versorgt, löst er am Board einen Brown-out aus; gib ihm eine eigene Versorgung mit 4 bis 6 V und verbinde die Massen."
+    },
+    "mpu6050": {
+      "note": "P19 an SCL und P20 an SDA über ein Edge-Breakout; das i2c-Objekt von MicroPython benutzt diesen externen Bus mit 100 kHz."
+    },
+    "ssd1306": {
+      "note": "Derselbe externe I²C-Bus wie für jeden anderen Sensor: P19 SCL, P20 SDA, 3V und GND."
+    },
+    "hc-sr04": {
+      "note": "TRIG an P13 und ECHO an P14 über ein Edge-Breakout.",
+      "caution": "Der klassische HC-SR04 braucht 5 V und sendet ein 5-V-Echo, das kein Pin des micro:bit verträgt. Nimm eine 3,3-V-Version oder versorg ihn mit 5 V und teil das Echo auf 3,3 V herunter."
+    }
+  },
+  "failures": {
+    "reverse-ring3v": {
+      "title": "Batterie verkehrt herum am 3V-Ring",
+      "symptom": "Nichts leuchtet, die Chips werden schnell heiß, und das Board riecht eventuell verbrannt.",
+      "explanation": "Der 3V-Ring ist direkt mit der 3,3-V-Schiene verbunden. Auf diesem Weg gibt es keine Diode, also treibt verpolter Strom rückwärts durch die Schutzdioden in jedem Chip.",
+      "fix": "Sofort trennen. Versorg das Board über die Batteriebuchse oder USB oder setz eine Diode in Reihe, wenn du unbedingt über den 3V-Ring einspeisen musst."
+    },
+    "reverse-battery": {
+      "title": "Batteriehalter verkehrt herum verdrahtet",
+      "symptom": "Gar nichts passiert: keine rote LED, kein Bild, kein Schaden.",
+      "explanation": "D59 und D57 liegen in Reihe am Batterieeingang und leiten nur in einer Richtung, also kann ein verpolter Halter keinen Strom ins Board drücken.",
+      "fix": "Verdrahte den Stecker des Halters neu (Rot an +) oder nimm einen Halter, der für den micro:bit gemacht ist."
+    },
+    "lipo-on-3v": {
+      "title": "Ein 4,2-V-LiPo am 3V-Ring",
+      "symptom": "Das Board läuft vielleicht kurz, dann antworten Beschleunigungssensor und Kompass nicht mehr.",
+      "explanation": "Der 3V-Ring umgeht den Regler, also liegt die Schiene bei 4,2 V. Das absolute Maximum des LSM303AGR liegt bei 3,6 V und das der nRF52 bei 3,9 V.",
+      "fix": "Betreib das Board mit 2 x AAA-Zellen in der Batteriebuchse oder an USB. Speis den 3V-Ring nur aus einer geregelten 3,3-V-Versorgung."
+    },
+    "flat-battery": {
+      "title": "Leere Batterien",
+      "symptom": "Das Bild ist schwach, das Programm startet immer wieder neu, und ein Ton setzt das Board zurück.",
+      "explanation": "Zwei erschöpfte AAA-Zellen liefern hinter den Dioden weniger als 2 V. Der nRF52833 setzt sich bei etwa 1,7 V zurück, also zieht ihn jede Lastspitze (LEDs, der Lautsprecher) darunter.",
+      "fix": "Setz frische Zellen ein oder steck USB ein."
+    },
+    "overload-3v": {
+      "title": "Zu viel am 3V-Ring",
+      "symptom": "Die Anzeige flackert, und das Programm startet neu, sobald der Motor oder der LED-Streifen Strom zieht.",
+      "explanation": "Der Regler liefert 300 mA, und nur 190 mA davon sind für den Platinenstecker gedacht. Ein Motor oder ein Streifen NeoPixels verlangt mehr, die Schiene sackt ab, und der Prozessor setzt sich zurück.",
+      "fix": "Versorg Motoren und LED-Streifen aus einer eigenen Quelle und verbinde nur die Massen und das Signal mit dem micro:bit."
+    },
+    "short-3v": {
+      "title": "3V mit GND kurzgeschlossen",
+      "symptom": "Alles wird dunkel, das Laufwerk MICROBIT verschwindet, und der Regler wird warm.",
+      "explanation": "Eine lose Krokodilklemme verbindet den 3V- und den GND-Ring. USB- und Batteriestrom erreichen die Schiene beide über den NCP114, der seinen Strom begrenzt und abschaltet, wenn er zu heiß wird.",
+      "fix": "Zieh den Stecker, such die verirrte Klemme oder den Draht und schalte wieder ein. Das Board erholt sich."
+    },
+    "five-volt-pin": {
+      "title": "5 V an einen Pin",
+      "symptom": "Erst funktionieren Dinge seltsam, dann fällt der Bewegungssensor aus, und der Prozessor startet eventuell nie wieder.",
+      "explanation": "Ein 5-V-Signal, etwa das Echo eines HC-SR04, liegt über der Grenze des Pins von 3,6 V. Strom fließt durch die Schutzdiode des Pins in die 3,3-V-Schiene und drückt die ganze Schiene über das, was die Sensoren vertragen.",
+      "fix": "Schließ nie 5-V-Signale an. Nimm einen Spannungsteiler oder einen Pegelwandler oder eine 3,3-V-Version des Moduls."
+    },
+    "loose-clip": {
+      "title": "Lose Krokodilklemme an Ring 1",
+      "symptom": "Die LED an Pin 1 flackert oder lässt Blinker aus, und die Messwerte springen.",
+      "explanation": "Eine Klemme, die den Ring nur halb greift, schließt und öffnet den Kontakt, sobald sich das Board bewegt.",
+      "fix": "Klemm gerade durch das Ringloch, sodass die Backen beide Seiten greifen, oder schraub das Kabel mit einer M3-Schraube fest."
+    },
+    "no-crystal": {
+      "title": "Kein 32-MHz-Quarz",
+      "symptom": "Die rote LED ist an, und das Laufwerk erscheint, aber dein Programm läuft nie.",
+      "explanation": "Der nRF52833 braucht X1, um seinen Takt und sein Funkteil zu starten. Der Schnittstellenchip hat seinen eigenen Quarz, also funktioniert USB weiterhin.",
+      "fix": "Bestück X1 mit einem 32-MHz-Quarz."
+    },
+    "no-regulator": {
+      "title": "Regler fehlt",
+      "symptom": "USB ist eingesteckt, aber nichts leuchtet: nicht einmal die rote LED.",
+      "explanation": "Jede Quelle außer dem 3V-Ring erreicht die Chips über U3. Ohne ihn bleibt die 3,3-V-Schiene bei 0 V.",
+      "fix": "Bestück U3 mit dem NCP114."
+    }
+  },
+  "assembly": {
+    "unplug": {
+      "title": "Das Board abklemmen",
+      "body": "Nimm das USB-Kabel und die Batterie ab, bevor du am Board arbeitest."
+    },
+    "strip": {
+      "title": "Mit der nackten Platine beginnen",
+      "body": "Zerleg ihn bis auf die schwarze zweilagige Platine: goldener Platinenstecker, fünf durchkontaktierte Ringlöcher, das Pad des Touch-Logos und die Antennenleiterbahn.",
+      "refusal": "Klemm das Board zuerst ab."
+    },
+    "pick-place": {
+      "title": "Jedes Bauteil bestücken und reflowlöten",
+      "body": "Alle Bauteile sind SMD. Der Bestückungsautomat setzt die LEDs und Taster auf die Vorderseite und alles andere auf die Rückseite: beide nRF52-Chips, den Quarz, den Regler, die Sensoren, den Lautsprecher und die Buchsen. Dann läuft das Board durch den Reflow-Ofen, wo die Lotpaste schmilzt und sich jede Lötstelle bildet.",
+      "refusal": "Zerleg zuerst das Board."
+    },
+    "plug-usb": {
+      "title": "USB einstecken",
+      "body": "Die rote LED geht an, die gelbe folgt, wenn der Computer das Board erkennt, und das Werksherz schlägt auf der Matrix."
+    },
+    "rails": {
+      "title": "Die Versorgung prüfen",
+      "body": "In der Versorgungsansicht sollte VCOMBINED etwa 4,7 V zeigen (USB minus eine Diode) und die 3V-Schiene 3,3 V."
+    },
+    "flash-blink": {
+      "title": "Ein Programm aufspielen",
+      "body": "Zieh das Blink-Programm auf MICROBIT. Die gelbe LED flackert, während es kopiert wird, dann blinken die mittlere LED und Pin 1 einmal pro Sekunde.",
+      "refusal": "Steck zuerst USB ein."
+    },
+    "buttons": {
+      "title": "Die Taster ausprobieren",
+      "body": "Spiel das Taster-Programm auf, dann drück A für ein fröhliches Gesicht und B für ein trauriges."
+    },
+    "battery": {
+      "title": "Mit Batterien betreiben",
+      "body": "Zieh USB ab und steck den AAA-Halter ein. Die rote LED wird dunkler, die gelbe geht aus, und die Schiene sinkt auf etwa 3 V, was immer noch reichlich ist."
+    },
+    "serial": {
+      "title": "Den seriellen Port lesen",
+      "body": "Spiel das Temperatur-Programm auf und öffne den seriellen Monitor mit 115200 Baud: Jede Sekunde kommt eine Zeile."
+    },
+    "exploded": {
+      "title": "Hineinschauen",
+      "body": "Klemm ab und zerleg das Board in der Explosionsansicht, um beide Seiten getrennt zu sehen: die Vorderseite mit ihren LEDs und Tastern, die Rückseite mit den Chips.",
+      "refusal": "Klemm das Board zuerst ab."
+    }
+  },
+  "lessons": {
+    "blink": {
+      "title": "Eine LED blinken lassen",
+      "lede": "Lass die Mitte der Matrix und eine LED an Ring 1 zusammen leuchten und schalte sie dann wieder aus, einmal pro Sekunde.",
+      "code": {
+        "top": "Die mittlere LED und eine LED an Pin 1 blinken lassen",
+        "pixel": "x, y von oben links; Helligkeit 0-9",
+        "pin": "3,3 V an Ring 1"
+      },
+      "params": {
+        "ms": {
+          "label": "An- und Aus-Zeit"
+        }
+      },
+      "checks": {
+        "1": "Das Programm läuft 3 Sekunden",
+        "2": "Pin 1 blinkt einmal pro Sekunde",
+        "3": "Benutzt display.set_pixel und pin1.write_digital"
+      },
+      "pins": {
+        "P1": {
+          "to": "Langes Bein der LED, über 470 Ω",
+          "role": "Treibt die LED"
+        },
+        "GND": {
+          "to": "Kurzes Bein der LED",
+          "role": "Masse"
+        }
+      },
+      "callouts": {
+        "LEDS": "Die mittlere LED ist x = 2, y = 2",
+        "LED1": "Langes Bein zum Widerstand",
+        "R1": "470 Ω halten sie bei etwa 3 mA"
+      },
+      "specs": {
+        "1": {
+          "label": "Periode",
+          "value": "1 s"
+        },
+        "2": {
+          "label": "LED-Strom",
+          "value": "Etwa 3 mA"
+        },
+        "3": {
+          "label": "Pins",
+          "value": "P1, GND"
+        }
+      },
+      "features": {
+        "1": "Ein Pixel auf der Matrix",
+        "2": "Eine LED an Ring 1",
+        "3": "Timing mit sleep()"
+      },
+      "steps": {
+        "1": "Klemm Ring 1 an den 470-Ω-Widerstand und den Widerstand an das lange Bein der LED.",
+        "2": "Klemm das kurze Bein der LED an den GND-Ring.",
+        "3": "Führ das Programm aus und beobachte die Mitte der Matrix und die LED.",
+        "4": "Ändere den Zeit-Chip und sieh, wie schnell es blinkt."
+      },
+      "hints": {
+        "1": "Nichts auf dem Steckbrett? Vielleicht ist die LED verkehrt herum: Das lange Bein kommt an den Widerstand.",
+        "2": "set_pixel nimmt zuerst x, dann y, beide von 0 bis 4.",
+        "3": "Jedes sleep() pausiert für so viele Millisekunden."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Warum sitzt ein 470-Ω-Widerstand vor der LED?",
+          "options": {
+            "1": "Damit sie schneller blinkt",
+            "2": "Um den Strom bei etwa 3 mA zu halten, die ein Pin des micro:bit liefern kann",
+            "3": "Weil die LED 5 V braucht"
+          },
+          "why": "(3,3 V − 2 V) / 470 Ω sind etwa 2,8 mA. Ein Pin des V2 liefert 1 bis 4 mA, also würde eine LED ohne Widerstand zu viel von ihm verlangen."
+        },
+        "q2": {
+          "q": "Was macht display.set_pixel(2, 2, 9)?",
+          "options": {
+            "1": "Lässt die mittlere LED mit voller Helligkeit leuchten",
+            "2": "Lässt zwei LEDs mit Helligkeit 2 leuchten",
+            "3": "Legt 9 V an Pin 2"
+          },
+          "why": "x und y zählen von 0 bis 4 ab der oberen linken Ecke, also ist (2, 2) die Mitte; die Helligkeit reicht von 0 bis 9."
+        },
+        "q3": {
+          "q": "Mit zweimal sleep(500) in der Schleife: Wie lange dauert ein ganzer Blinker?",
+          "options": {
+            "1": "500 ms",
+            "2": "250 ms",
+            "3": "1000 ms"
+          },
+          "why": "500 ms an plus 500 ms aus: ein Blinker pro Sekunde."
+        }
+      }
+    },
+    "buttons": {
+      "title": "Taster A und B",
+      "lede": "Zähl die Drücke auf A mit was_pressed() und halt B gedrückt, um die LED an Pin 1 leuchten zu lassen.",
+      "code": {
+        "top": "A-Drücke zählen, B halten lässt Pin 1 leuchten",
+        "was": "nach jedem Druck einmal True",
+        "is": "True, solange B gehalten wird"
+      },
+      "params": {
+        "poll": {
+          "label": "Prüfen alle"
+        }
+      },
+      "checks": {
+        "1": "Gibt nach zwei Drücken auf A A pressed 2 aus",
+        "2": "Pin 1 geht innerhalb von 50 ms nach dem Drücken von B auf HIGH",
+        "3": "Pin 1 ist wieder LOW, nachdem B losgelassen wurde",
+        "4": "Benutzt button_a.was_pressed() und button_b.is_pressed()"
+      },
+      "world": {
+        "a": "Taster A",
+        "b": "Taster B"
+      },
+      "pins": {
+        "P5": {
+          "to": "Taster A auf dem Board",
+          "role": "Liest LOW, wenn gedrückt"
+        },
+        "P11": {
+          "to": "Taster B auf dem Board",
+          "role": "Liest LOW, wenn gedrückt"
+        },
+        "P1": {
+          "to": "Langes Bein der LED, über 470 Ω",
+          "role": "An, solange B gehalten wird"
+        },
+        "GND": {
+          "to": "Kurzes Bein der LED",
+          "role": "Masse"
+        }
+      },
+      "callouts": {
+        "SW2": "Taster A: zählt Drücke",
+        "SW3": "Taster B: halten lässt die LED leuchten"
+      },
+      "specs": {
+        "1": {
+          "label": "Taster",
+          "value": "A an P5, B an P11"
+        },
+        "2": {
+          "label": "Pull-ups",
+          "value": "10 kΩ auf dem Board"
+        },
+        "3": {
+          "label": "Serial",
+          "value": "115200 Baud"
+        }
+      },
+      "features": {
+        "1": "was_pressed() für einzelne Drücke",
+        "2": "print() in den seriellen Monitor",
+        "3": "is_pressed() fürs Halten"
+      },
+      "steps": {
+        "1": "Lass die LED aus der Blink-Lektion an Ring 1.",
+        "2": "Führ das Programm aus und drück zweimal A: Das Gesicht lächelt, und der Zähler steigt.",
+        "3": "Halt B gedrückt: Das Gesicht wird traurig, und die LED leuchtet.",
+        "4": "Lass B los, und die LED geht aus."
+      },
+      "hints": {
+        "1": "Kein Zählerstand im seriellen Monitor? Öffne ihn mit 115200 Baud.",
+        "2": "was_pressed() vergisst den Druck, sobald es True gemeldet hat, also ruf es einmal pro Schleifendurchlauf auf.",
+        "3": "Die Taster haben schon Pull-ups, also brauchen sie keine Verdrahtung."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Welcher Pin am Platinenstecker ist Taster A?",
+          "options": {
+            "1": "P0",
+            "2": "P11",
+            "3": "P5"
+          },
+          "why": "A ist P5 und B ist P11, jeder mit einem 10-kΩ-Pull-up, also lesen sie LOW, wenn sie gedrückt sind. Lass diese Pins für die Taster frei."
+        },
+        "q2": {
+          "q": "Du drückst A zwischen zwei Prüfungen zweimal. Was meldet was_pressed()?",
+          "options": {
+            "1": "False, die Drücke waren zu schnell",
+            "2": "Einmal True, dann beim nächsten Aufruf False",
+            "3": "Zweimal hintereinander True"
+          },
+          "why": "was_pressed() merkt sich, dass seit deiner letzten Frage ein Druck passiert ist, und setzt sich dann zurück. get_presses() liefert die Anzahl."
+        },
+        "q3": {
+          "q": "Warum benutzt B hier is_pressed()?",
+          "options": {
+            "1": "Die LED soll nur an bleiben, solange du B hältst",
+            "2": "is_pressed() zählt Drücke",
+            "3": "B kann was_pressed() nicht benutzen"
+          },
+          "why": "is_pressed() liest den Taster genau jetzt, und genau das braucht ein Leuchten beim Halten."
+        }
+      }
+    },
+    "dimmer": {
+      "title": "Ein Drehknopf, der eine LED dimmt",
+      "lede": "Lies ein Potentiometer an Ring 2, stell damit die Helligkeit der LED an Ring 1 ein und zeichne einen Balken in die unterste Zeile.",
+      "code": {
+        "top": "Poti an Pin 2 stellt die Helligkeit der LED an Pin 1 ein",
+        "read": "0 bis 1023",
+        "write": "PWM-Tastverhältnis 0 bis 1023",
+        "bars": "0 bis 5 leuchtende LEDs in der untersten Zeile"
+      },
+      "params": {
+        "every": {
+          "label": "Lesen alle"
+        }
+      },
+      "checks": {
+        "1": "Halb aufgedreht bekommt die LED das halbe Tastverhältnis",
+        "2": "Ganz aufgedreht ist die LED voll an",
+        "3": "Gibt mindestens 4-mal raw und volts aus",
+        "4": "Benutzt pin2.read_analog() und pin1.write_analog()"
+      },
+      "world": {
+        "pot": "Drehknopf an Ring 2"
+      },
+      "pins": {
+        "P2": {
+          "to": "Mittleres Bein des Potentiometers",
+          "role": "Analogeingang"
+        },
+        "3V": {
+          "to": "Äußeres Bein des Potentiometers",
+          "role": "Oberes Ende der Bahn"
+        },
+        "GND": {
+          "to": "Anderes Bein des Potentiometers und die LED",
+          "role": "Masse"
+        },
+        "P1": {
+          "to": "Langes Bein der LED, über 470 Ω",
+          "role": "PWM-Ausgang"
+        }
+      },
+      "callouts": {
+        "POT1": "Dreh ihn: 0 bis 3,3 V an Ring 2",
+        "LED1": "Die Helligkeit folgt dem Drehknopf"
+      },
+      "specs": {
+        "1": {
+          "label": "ADC",
+          "value": "10 Bit, 0 bis 1023"
+        },
+        "2": {
+          "label": "PWM-Periode",
+          "value": "20 ms"
+        },
+        "3": {
+          "label": "Analogpins",
+          "value": "P0, P1, P2, P3, P4, P10"
+        }
+      },
+      "features": {
+        "1": "Eine Spannung lesen",
+        "2": "Mit PWM dimmen",
+        "3": "Ein Balkendiagramm auf der Matrix"
+      },
+      "steps": {
+        "1": "Setz das Potentiometer aufs Steckbrett und klemm seine äußeren Beine an 3V und GND.",
+        "2": "Klemm sein mittleres Bein an Ring 2.",
+        "3": "Führ das Programm aus und dreh den Knopf: Die LED und die unterste Zeile folgen.",
+        "4": "Beobachte den seriellen Monitor: raw geht von 0 bis 1023, während volts von 0 bis 3,3 geht."
+      },
+      "hints": {
+        "1": "Hängt es bei 0 oder 1023? Prüf, ob das mittlere Bein und nicht ein Ende an Ring 2 geht.",
+        "2": "write_analog() schaltet den Pin sehr schnell ein und aus; dein Auge sieht den Mittelwert.",
+        "3": "Die LED sieht lange vor 1023 voll hell aus: Augen sind nicht linear."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Welchen Bereich liefert pin2.read_analog()?",
+          "options": {
+            "1": "0 bis 1023",
+            "2": "0 bis 3,3",
+            "3": "0 bis 255"
+          },
+          "why": "MicroPython liest den ADC mit 10 Bit: 0 ist 0 V, und 1023 ist die 3,3-V-Schiene."
+        },
+        "q2": {
+          "q": "Welche Pins können eine analoge Spannung lesen?",
+          "options": {
+            "1": "Jeder Pin",
+            "2": "Nur die drei Ringe",
+            "3": "P0, P1, P2, P3, P4 und P10"
+          },
+          "why": "Sechs Pins erreichen den ADC. P3, P4 und P10 sind auch LED-Spalten, also sind die Ringe die einfache Wahl."
+        },
+        "q3": {
+          "q": "Was macht pin1.write_analog(512) mit Pin 1?",
+          "options": {
+            "1": "Hält ihn auf 1,65 V",
+            "2": "Schaltet ihn etwa die Hälfte der Zeit voll ein",
+            "3": "Schaltet ihn aus"
+          },
+          "why": "Es gibt keinen DAC. write_analog stellt das PWM-Tastverhältnis ein, standardmäßig mit einer Periode von 20 ms."
+        }
+      }
+    },
+    "tilt": {
+      "title": "Neigung und der Bewegungssensor",
+      "lede": "Lies den Beschleunigungssensor und lass einen Pfeil auf das Ende des Boards zeigen, das tiefer liegt.",
+      "code": {
+        "top": "Einen Pfeil zeigen, der auf das tiefere Ende zeigt",
+        "dead": "Neigungen kleiner als das ignorieren, in Milli-g",
+        "read": "Milli-g entlang des Boards, vom LSM303AGR über I²C"
+      },
+      "params": {
+        "dead": {
+          "label": "Totzone"
+        }
+      },
+      "checks": {
+        "1": "Gibt flach liegend y 0 level aus",
+        "2": "Gibt um 30° zum Logo gekippt y 500 logo down aus",
+        "3": "Gibt um 45° in die andere Richtung gekippt y -707 pins down aus",
+        "4": "Benutzt accelerometer.get_y()"
+      },
+      "world": {
+        "tilt": "Das Board kippen"
+      },
+      "callouts": {
+        "U6": "LSM303AGR an I²C-Adresse 0x19",
+        "LEDS": "Der Pfeil zeigt auf das tiefere Ende"
+      },
+      "specs": {
+        "1": {
+          "label": "Sensor",
+          "value": "LSM303AGR"
+        },
+        "2": {
+          "label": "Bus",
+          "value": "Internes I²C, 0x19"
+        },
+        "3": {
+          "label": "Einheiten",
+          "value": "Milli-g, 1000 = 1 g"
+        }
+      },
+      "features": {
+        "1": "Neigung messen",
+        "2": "Ein I²C-Sensor auf dem Board",
+        "3": "Pfeile auf der Matrix"
+      },
+      "steps": {
+        "1": "Führ das Programm mit flach liegendem Board aus: ein Punkt in der Mitte und y nahe 0.",
+        "2": "Kipp das Logo-Ende nach unten: Ein Pfeil zeigt auf der Matrix nach oben, zum Logo.",
+        "3": "Kipp das Pin-Ende nach unten: Der Pfeil zeigt zu den Pins.",
+        "4": "Ändere die Totzone und finde die kleinste Neigung, die den Pfeil noch bewegt."
+      },
+      "hints": {
+        "1": "y ist etwa 1000-mal der Sinus des Neigungswinkels: 30° ergeben 500.",
+        "2": "Es ist keine Verdrahtung nötig: Der Sensor sitzt auf der Rückseite des Boards.",
+        "3": "Eine kleinere Totzone reagiert früher, flackert aber, wenn das Board fast waagerecht liegt."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Wie erreicht das Programm den Beschleunigungssensor?",
+          "options": {
+            "1": "Über Ring 0",
+            "2": "Über den eigenen I²C-Bus des Boards, an Adresse 0x19",
+            "3": "Über USB-Seriell"
+          },
+          "why": "Der LSM303AGR sitzt an einem internen I²C-Bus, getrennt von P19 und P20, an 0x19 (Beschleunigungssensor) und 0x1E (Kompass). MicroPython liest ihn für dich."
+        },
+        "q2": {
+          "q": "Flach liegend, mit der Vorderseite nach oben: Was liefert accelerometer.get_z()?",
+          "options": {
+            "1": "0",
+            "2": "Etwa +1000",
+            "3": "Etwa -1000"
+          },
+          "why": "Die Werte sind in Milli-g. Flach und mit der Vorderseite nach oben zieht die Schwerkraft gerade durch das Board, und z liest etwa -1000."
+        },
+        "q3": {
+          "q": "Wozu dient DEAD?",
+          "options": {
+            "1": "Kleine Neigungen zu ignorieren, damit der Pfeil nahe der Waagerechten nicht flackert",
+            "2": "Die I²C-Geschwindigkeit einzustellen",
+            "3": "Den Sensor auszuschalten"
+          },
+          "why": "Jeder Messwert zwischen -DEAD und DEAD gilt als waagerecht, was das Zittern deiner Hand verdeckt."
+        }
+      }
+    },
+    "touch-tune": {
+      "title": "Melodiezähler mit dem Touch-Logo",
+      "lede": "Ein kleines Projekt: Berühr das Logo, um einen Ton zu spielen und ihn zu zählen, und drück A, um den Zählerstand mit der Temperatur auszugeben.",
+      "code": {
+        "top": "Das Logo berühren spielt einen Ton; A gibt den Zählerstand aus",
+        "touch": "True, solange ein Finger auf dem Logo liegt",
+        "pitch": "Lautsprecher und Pin 0, für 200 ms",
+        "wait": "Eine Berührung zählt einmal"
+      },
+      "params": {
+        "hz": {
+          "label": "Ton"
+        }
+      },
+      "checks": {
+        "1": "Zählt die erste Berührung",
+        "2": "Zählt die zweite Berührung",
+        "3": "A gibt touches 2 und die Temperatur aus",
+        "4": "Benutzt pin_logo.is_touched(), music.pitch() und temperature()"
+      },
+      "world": {
+        "logo": "Das Logo berühren",
+        "a": "Taster A"
+      },
+      "pins": {
+        "P0": {
+          "to": "Ein Summer oder Kopfhörer (optional)",
+          "role": "Der Ton spielt auch hier"
+        }
+      },
+      "callouts": {
+        "LOGO": "Kapazitiv: einfach berühren",
+        "SP1": "Von hier kommt der Ton"
+      },
+      "specs": {
+        "1": {
+          "label": "Berührung",
+          "value": "Kapazitiv, an P1.04"
+        },
+        "2": {
+          "label": "Ton",
+          "value": "Lautsprecher und Pin 0"
+        },
+        "3": {
+          "label": "Temperatur",
+          "value": "Auf dem Die des Prozessors, ±5 °C"
+        }
+      },
+      "features": {
+        "1": "Das Touch-Logo",
+        "2": "Töne auf dem Lautsprecher",
+        "3": "Das eingebaute Thermometer"
+      },
+      "steps": {
+        "1": "Führ das Programm aus und berühr das Logo: Ein Ton spielt, und eine Achtelnote erscheint.",
+        "2": "Berühr es noch einmal und beobachte den Zählerstand im seriellen Monitor.",
+        "3": "Drück A, um den Zählerstand und die Temperatur auszugeben.",
+        "4": "Ändere den Ton-Chip und hör hin."
+      },
+      "hints": {
+        "1": "Hörst du an einem echten Board nichts? Vielleicht hat etwas speaker.off() aufgerufen; der Ton spielt trotzdem auf Pin 0.",
+        "2": "temperature() liest den eigenen Sensor des Prozessors, also zeigt er etwas zu warm an.",
+        "3": "Ohne die Warteschleife würde das Halten des Logos viele Male zählen."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Woher weiß das Logo, dass du es berührt hast?",
+          "options": {
+            "1": "Es ist ein Taster",
+            "2": "Es misst Licht",
+            "3": "Es erkennt die Kapazität deines Fingers"
+          },
+          "why": "Das Logo ist ein kapazitives Pad an P1.04, also musst du GND nicht anfassen. Die Ringe 0 bis 2 arbeiten mit resistiver Berührung und brauchen das."
+        },
+        "q2": {
+          "q": "Wohin schickt music.pitch() den Ton?",
+          "options": {
+            "1": "An den Lautsprecher auf der Rückseite und an Ring 0",
+            "2": "Nur an den Lautsprecher",
+            "3": "An Ring 2"
+          },
+          "why": "Standardmäßig spielt der Ton auf dem Lautsprecher und auf Pin 0, also hört man ihn auch über einen Summer oder Kopfhörer an Ring 0."
+        },
+        "q3": {
+          "q": "Warum wartet das Programm, solange das Logo noch berührt wird?",
+          "options": {
+            "1": "Um Strom zu sparen",
+            "2": "Damit eine lange Berührung einmal zählt",
+            "3": "Weil der Lautsprecher das braucht"
+          },
+          "why": "Die Schleife läuft alle 20 ms. Ohne das Warten würde eine halbe Sekunde Berührung etwa 25-mal zählen."
+        }
+      }
+    }
+  }
+}
