@@ -151,8 +151,9 @@ const VTX_SUBS = ["bands", "channels", "band", "powerlevels", "powervalues", "po
 // bench can cause.
 const BF_FLAGS = ["RXLOSS", "CLI", "NO_ACC_CAL"] as const;
 
-// Servo limits at 2026.6.2 (src/main/drivers/servo_impl.h, src/main/flight/servos.h): 8 servos, pulses the CLI
-// takes, 18 RC channels to forward from, 14 mixer inputs. TRI mixes stabilised yaw (input 2) into servo 5, the tail.
+// Servo limits at 2026.6.2 (target/common_defaults_post.h, drivers/servo_impl.h, rx/rx.h, flight/servos.h): 8
+// servos, the pulses the CLI takes, 18 RC channels to forward from, 14 mixer inputs. TRI mixes stabilised yaw
+// (input 2) into servo 5, the tail.
 const SERVOS = 8;
 const SERVO_PULSE = { min: 500, max: 2500 };
 const SERVO_DEFAULT = "1000 2000 1500 100 -1";
@@ -410,7 +411,7 @@ function betaflight(emu: CliEmulator, ctx: CliContext, start: CliSession, line: 
     case "smix": {
       const [sub = "", ...params] = rest;
       const reversed = (extra: string[]) => reversals(extra).map(out);
-      // no custom servo rules here: TRI's built-in one, so a bare smix lists nothing
+      // A bare smix lists the custom servo rules; TRI uses its built-in one and rules aren't modelled, so none.
       if (!args) return { session: s, out: lines, effects: [] };
       if (sub.toLowerCase() === "reset") {
         return { session: { ...s, extra: s.extra.filter((l) => !l.startsWith("smix reverse ")) }, out: lines, effects: [] };

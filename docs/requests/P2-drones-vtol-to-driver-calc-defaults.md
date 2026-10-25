@@ -53,7 +53,7 @@ pass before and after), and the two verdict texts explain the warning as headroo
 
 ## Answer
 
-2026-10-25 00:36 CDT, P2-req-drone (wave B tail).
+2026-10-25 00:35 CDT, P2-req-drone (wave B tail).
 
 1. Done. `tricopter.escAmps` is 40 in `src/lib/drone/__fixtures__/models.ts` and in `src/content/drones/tricopter.ts`,
    in one commit. Every 4S pick on the 5x4.3x3 and 6x4x2 props now opens clean (the default pulls 37.8 A a motor);
