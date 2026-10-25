@@ -203,10 +203,11 @@ function Workspace({ lang, model, notice }: { lang: Locale; model: LessonModel; 
     [store, lesson.world.inputs, figureSound],
   );
 
-  // Run shows its output: starting a run brings the serial monitor to the front.
+  // Run shows its output: starting a run brings the serial monitor to the front, unless the learner is
+  // on a tab they play while it runs (the inputs, the parameters).
   const toggleRun = useCallback(() => {
     const status = store.getState().run.status;
-    if (status === "stopped") setTab("serial");
+    if (status === "stopped") setTab((current) => (current === "inputs" || current === "params" ? current : "serial"));
     store.dispatch({ type: status === "stopped" ? "run/start" : "run/stop" });
   }, [store]);
 
