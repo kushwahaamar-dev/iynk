@@ -587,15 +587,31 @@ interface CExpr {
 }
 type Exec = (s: Float64Array) => void;
 
+/**
+ * The clock a design with a `CLK_HZ` parameter runs at in the simulator. Its counters are written against CLK_HZ
+ * (`localparam HALF = CLK_HZ / 2`), so the simulator sets CLK_HZ to this rate and clocks the design at it: a 1 Hz
+ * blink takes 100 000 cycles instead of 100 million, and simulated time still matches the board's.
+ */
+export const SIM_CLOCK_HZ = 100_000;
+
+/**
+ * How long an LED and the eye average a light that switches (16 ms of simulated time): a multiplexed 7-segment digit
+ * and a PWM-dimmed LED show as steady brightness, as they do on the board.
+ */
+const PERSIST_S = 0.016;
+
 /** A compiled design ready to clock. */
 export interface VerilogSim {
+  /** The rate the design is clocked at: the board's oscillator, or SIM_CLOCK_HZ for a design with CLK_HZ. */
   readonly clockHz: number;
   readonly cycles: number;
   /** Run `n` clock cycles. */
   run(n: number): void;
   setInput(name: string, value: number): void;
   outputs(): Record<string, number>;
-  /** Per digit [a, b, c, d, e, f, g, dp] lit fraction since the last call (Basys 3), or each HEX display (DE10-Lite). */
+  /** Per output port, per bit: the fraction of recent time it was high (PERSIST_S average). */
+  duty(): Record<string, number[]>;
+  /** Per digit [a, b, c, d, e, f, g, dp], how brightly it is lit (PERSIST_S average): Basys 3 digits, or DE10-Lite HEX displays. */
   seg7(): number[][];
   /** $display output callback. */
   onPrint: (text: string) => void;
@@ -949,6 +965,9 @@ export function compileVerilog(source: string, profile: BoardProfile, overrides:
   };
 
   const topOverrides = new Map(Object.entries(overrides));
+  const usesClkHz = top.params.some((p) => p.name === 'CLK_HZ' && !p.local);
+  if (usesClkHz && !topOverrides.has('CLK_HZ')) topOverrides.set('CLK_HZ', SIM_CLOCK_HZ);
+  const clockHz = topOverrides.get('CLK_HZ') ?? profile.clockHz;
   elaborate(top, '', topOverrides, 0);
 
   // Check the top ports against the board's pins (the constraints file).
@@ -1044,36 +1063,48 @@ export function compileVerilog(source: string, profile: BoardProfile, overrides:
   settleFast();
   for (const i of edgeSigs) prev[i] = s[i];
 
-  // 7-segment persistence of vision.
+  // Persistence: every output bit and every multiplexed digit segment is averaged over PERSIST_S, run by run (a run is
+  // the cycles a value held), so the cost is per change, not per cycle and bit.
+  const tau = clockHz * PERSIST_S;
+  const fade = (lit: Float64Array | number[], i: number, on: number, cycles: number) => {
+    lit[i] = on + (lit[i] - on) * Math.exp(-cycles / tau);
+  };
+  const outNames = top.decls.filter((d) => d.kind === 'output').map((d) => d.name);
+  const tracked = outNames.map((name) => {
+    const i = index.get(name)!;
+    const w = sigs[i].w;
+    return { name, i, w, last: s[i], run: 0, lit: Float64Array.from({ length: w }, (_, b) => (s[i] >>> b) & 1) };
+  });
+  const persist = (p: (typeof tracked)[number]) => {
+    if (!p.run) return;
+    for (let b = 0; b < p.w; b++) fade(p.lit, b, (p.last >>> b) & 1, p.run);
+    p.run = 0;
+  };
+
+  // Basys 3: four digits share the cathodes seg/dp, the active-low anodes an[3:0] pick the digit that shows them.
   const segIdx = index.get('seg');
   const anIdx = index.get('an');
   const dpIdx = index.get('dp');
-  const hexIdx = [0, 1, 2, 3, 4, 5].map((k) => index.get(`HEX${k}`));
-  const acc = Array.from({ length: 6 }, () => new Array(8).fill(0));
-  let accCycles = 0;
-  let lastKey = -1;
-  let runLen = 0;
-  const segState = () => {
-    if (segIdx === undefined || anIdx === undefined) return -1;
-    return s[segIdx] + s[anIdx] * 128 + (dpIdx !== undefined ? s[dpIdx] * 2048 : 0);
+  const muxed = segIdx !== undefined && anIdx !== undefined;
+  const segState = () => (muxed ? s[segIdx] + s[anIdx] * 128 + (dpIdx !== undefined ? s[dpIdx] * 2048 : 2048) : -1);
+  const segLit = (key: number, d: number, k: number) => {
+    if ((Math.floor(key / 128) >> d) & 1) return 0;
+    return k < 7 ? 1 - ((key >> k) & 1) : 1 - (Math.floor(key / 2048) & 1);
   };
+  let lastKey = segState();
+  let runLen = 0;
+  const digits = Array.from({ length: 4 }, (_, d) => Array.from({ length: 8 }, (_, k) => (muxed ? segLit(lastKey, d, k) : 0)));
   const flushRun = () => {
-    if (lastKey < 0 || !runLen) return;
-    const seg = lastKey & 127;
-    const an = Math.floor(lastKey / 128) & 15;
-    const dp = Math.floor(lastKey / 2048) & 1;
-    for (let d = 0; d < 4; d++) {
-      if ((an >> d) & 1) continue; // anodes are active low
-      for (let k = 0; k < 7; k++) if (!((seg >> k) & 1)) acc[d][k] += runLen;
-      if (!dp) acc[d][7] += runLen;
-    }
+    if (!muxed || !runLen) return;
+    for (let d = 0; d < 4; d++) for (let k = 0; k < 8; k++) fade(digits[d], k, segLit(lastKey, d, k), runLen);
     runLen = 0;
   };
+  // DE10-Lite: six HEX displays with their own active-low pins (bit 7 = DP).
+  const hexPorts = [0, 1, 2, 3, 4, 5].map((k) => tracked.find((p) => p.name === `HEX${k}`));
 
   let cycles = 0;
-  const outNames = top.decls.filter((d) => d.kind === 'output').map((d) => d.name);
   const sim: VerilogSim = {
-    clockHz: profile.clockHz,
+    clockHz,
     get cycles() {
       return cycles;
     },
@@ -1088,13 +1119,21 @@ export function compileVerilog(source: string, profile: BoardProfile, overrides:
           propagate();
         }
         cycles++;
-        const key = segState();
-        if (key !== lastKey) {
-          flushRun();
-          lastKey = key;
+        for (const p of tracked) {
+          if (s[p.i] !== p.last) {
+            persist(p);
+            p.last = s[p.i];
+          }
+          p.run++;
         }
-        runLen++;
-        accCycles++;
+        if (muxed) {
+          const key = segState();
+          if (key !== lastKey) {
+            flushRun();
+            lastKey = key;
+          }
+          runLen++;
+        }
       }
     },
     setInput(name: string, value: number) {
@@ -1114,23 +1153,25 @@ export function compileVerilog(source: string, profile: BoardProfile, overrides:
       for (const p of fpga.ports) if (p.dir === 'in' && index.has(p.name)) o[p.name] = s[index.get(p.name)!];
       return o;
     },
-    seg7() {
-      if (hexIdx.some((x) => x !== undefined)) {
-        return hexIdx.map((i) => (i === undefined ? new Array(8).fill(0) : Array.from({ length: 8 }, (_, k) => (((s[i] >> k) & 1) === 0 ? 1 : 0))));
+    duty() {
+      const out: Record<string, number[]> = {};
+      for (const p of tracked) {
+        persist(p);
+        out[p.name] = Array.from(p.lit);
       }
-      if (segIdx === undefined) return [];
-      flushRun();
-      const total = accCycles || 1;
-      const out = acc.slice(0, 4).map((d) => d.map((x) => x / total));
-      if (!accCycles) {
-        // No cycles since the last read: show the current state.
-        const seg = s[segIdx];
-        const an = s[anIdx!];
-        return [0, 1, 2, 3].map((d) => Array.from({ length: 8 }, (_, k) => (((an >> d) & 1) === 0 && (k < 7 ? ((seg >> k) & 1) === 0 : dpIdx !== undefined && !s[dpIdx]) ? 1 : 0)));
-      }
-      for (const d of acc) d.fill(0);
-      accCycles = 0;
       return out;
+    },
+    seg7() {
+      if (hexPorts.some((p) => p !== undefined)) {
+        return hexPorts.map((p) => {
+          if (!p) return new Array(8).fill(0);
+          persist(p);
+          return Array.from({ length: 8 }, (_, k) => (k < p.w ? 1 - p.lit[k] : 0));
+        });
+      }
+      if (!muxed) return [];
+      flushRun();
+      return digits.map((d) => d.slice());
     },
   };
   return sim;

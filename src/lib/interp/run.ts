@@ -175,6 +175,7 @@ class RunImpl implements Run {
       } else {
         this.fpga = compileVerilog(this.opts.source, this.profile, this.opts.params ?? {});
         w.ports = this.fpga.outputs();
+        w.duty = this.fpga.duty();
         w.seg7 = this.fpga.seg7();
       }
     } catch (e) {
@@ -300,6 +301,7 @@ class RunImpl implements Run {
     // FPGA time follows simulated cycles, so slow motion shows as slower time.
     this.world.clock.advanceTo(this.world.now + (cycles / sim.clockHz) * 1e6);
     this.world.ports = sim.outputs();
+    this.world.duty = sim.duty();
     this.world.seg7 = sim.seg7();
     this.world.touch();
     this.emitPins(false);

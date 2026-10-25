@@ -51,7 +51,9 @@ export interface Snapshot {
   pwmDrivers?: Record<number, { hz: number; duty: number[] }>;
   /** FPGA port values (bit vectors as numbers). */
   ports?: Record<string, number>;
-  /** 7-segment digits: per digit the lit fraction of segments a..g and dp over the last frame. */
+  /** FPGA output ports: per bit the fraction of recent time it was high (what an LED on it shows). */
+  duty?: Record<string, number[]>;
+  /** 7-segment digits: per digit how brightly segments a..g and dp are lit (multiplexing averaged out). */
   seg7?: number[][];
   tone?: { pin: number; hz: number } | null;
   wifi?: { status: string; ssid: string; ip: string; rssi: number };
@@ -161,6 +163,7 @@ export class World {
   oled: { w: number; h: number; on: boolean; inverted: boolean; contrast: number; fb: Uint8Array; texts: OledText[] } | null = null;
   lcd: { cols: number; rows: number; text: string[]; backlight: boolean; cursor: [number, number] } | null = null;
   ports: Record<string, number> | null = null;
+  duty: Record<string, number[]> | null = null;
   seg7: number[][] | null = null;
   // Wi-Fi.
   readonly networks: WifiNetwork[];
@@ -540,6 +543,7 @@ export class World {
     }
     if (anyDriver) snap.pwmDrivers = drivers;
     if (this.ports) snap.ports = { ...this.ports };
+    if (this.duty) snap.duty = Object.fromEntries(Object.entries(this.duty).map(([port, bits]) => [port, bits.map(round3)]));
     if (this.seg7) snap.seg7 = this.seg7.map((d) => d.map(round3));
     let tone: Snapshot['tone'] = null;
     for (const [n, p] of this.pins) if (p.toneHz) tone = { pin: n, hz: p.toneHz };

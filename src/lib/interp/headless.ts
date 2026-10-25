@@ -7,6 +7,7 @@ import { WorldBinding, runOptionsFor, type HttpExchange } from './lesson-world';
 import { netResolver, pinNet } from './pins';
 import { getProfile, type BoardId, type BoardProfile, type Language } from './profiles';
 import { createRun, type Run } from './run';
+import { fpgaNets } from './verilog/nets';
 import type { PinView, World } from './world';
 
 export const INTERP_LANGUAGE: Record<ContentLanguage, Language> = {
@@ -167,13 +168,7 @@ export function runHeadless(o: HeadlessOptions): RunTrace {
       const s = sample(view);
       push(pinNet(profile, Number(key), o.nets), t, s.v, s.mode);
     }
-    if (snap.ports && o.ports) {
-      for (const [port, nets] of Object.entries(o.ports)) {
-        const value = snap.ports[port];
-        if (value === undefined) continue;
-        nets.forEach((net, bit) => push(net, t, (value >> bit) & 1, 'out'));
-      }
-    }
+    if (snap.ports) for (const [net, x] of Object.entries(fpgaNets(profile, snap, o.ports))) push(net, t, x.v, x.pwm ? 'pwm' : x.input ? 'in' : 'out');
   };
 
   const clock = typeof performance !== 'undefined' ? () => performance.now() : () => Date.now();

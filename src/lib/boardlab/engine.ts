@@ -17,6 +17,7 @@ import {
   type PinView,
   type Run,
 } from '@/lib/interp';
+import { fpgaNets } from '@/lib/interp/verilog/nets';
 
 /** Where and why code could not run. Lines are 1-based; 0 means "no line". */
 export interface RunError {
@@ -168,15 +169,10 @@ class InterpSession implements Session {
       if (view.volts !== undefined) sample.volts = view.volts;
       out[pinNet(this.profile, Number(key), this.nets)] = sample;
     }
-    // FPGA designs drive their ports; spread each port's bits onto the board nets.
-    if (snap.ports && this.ports) {
-      for (const [port, nets] of Object.entries(this.ports)) {
-        const value = snap.ports[port];
-        if (value === undefined) continue;
-        nets.forEach((net, bit) => {
-          out[net] = { mode: 'output', value: (value >> bit) & 1, pwm: false };
-        });
-      }
+    // An FPGA design drives its ports: each bit lands on its board net (LD0, LEDR3), a dimmed or multiplexed light as
+    // its duty, and every 7-segment digit as one net per segment (DIG0_A).
+    if (snap.ports) {
+      for (const [net, x] of Object.entries(fpgaNets(this.profile, snap, this.ports))) out[net] = { mode: x.input ? 'input' : 'output', value: x.v, pwm: x.pwm };
     }
     return out;
   }
