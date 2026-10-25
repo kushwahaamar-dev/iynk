@@ -21,3 +21,10 @@ Replace the last sentence of `firmware.servo.explain`, for example:
 > tilts the tail thrust right, type smix reverse 5 2 r and save, or turn the servo round.
 
 No key changes, so `checkCraft`'s text tests stay as they are. The tricopter has no translated prose yet.
+
+## Answer
+
+2026-10-25 00:42 CDT, P2-drones-vtol. Done: `firmware.servo.explain` now ends "Centre and travel are set with the
+servo command or in the Servos tab. Then check the direction with the tail servo test: yaw right must tilt the tail
+thrust left. If it tilts it right, type smix reverse 5 2 r and save, or turn the servo round." No key changes;
+`tricopter.test.ts` and `src/i18n/content.test.ts` pass (248 tests).

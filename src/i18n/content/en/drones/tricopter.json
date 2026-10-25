@@ -187,7 +187,7 @@
     },
     "servo": {
       "title": "The tail servo",
-      "explain": "333 Hz suits a digital servo; an analog one stays at 50 Hz or it burns. With tri_unarmed_servo on, the tail follows the yaw stick while disarmed, so you can test it with the props off. Centre, travel and direction are set with the servo and smix commands or in the Servos tab; this lab's CLI doesn't take those two commands, so they are shown as comments."
+      "explain": "333 Hz suits a digital servo; an analog one stays at 50 Hz or it burns. With tri_unarmed_servo on, the tail follows the yaw stick while disarmed, so you can test it with the props off. Centre and travel are set with the servo command or in the Servos tab. Then check the direction with the tail servo test: yaw right must tilt the tail thrust left. If it tilts it right, type smix reverse 5 2 r and save, or turn the servo round."
     },
     "failsafe": {
       "title": "Failsafe: drop",
