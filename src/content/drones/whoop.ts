@@ -532,7 +532,7 @@ const whoop: DroneContent = {
     ],
   },
 
-  // Numbers the range flies (the flight agent's src/lib/flight/crafts/whoop.ts takes these); the CLI sets the same.
+  // Numbers the range flies (src/lib/flight/registry.ts reads them from here); the CLI sets the same.
   flight: {
     physics: 'multirotor',
     params: {

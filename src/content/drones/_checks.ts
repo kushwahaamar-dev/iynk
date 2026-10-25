@@ -80,7 +80,13 @@ export function verdictKey(content: DroneContent, pick: DesignPick, r: CalcResul
   return opts.punchAbove !== undefined && r.tw > opts.punchAbove ? 'design.verdict.punch' : 'design.verdict.ok';
 }
 
-const setLine = /^set (\w+) = (\S+)$/;
+// A settings line: Betaflight and INAV `set name = value`, MAVProxy (ArduPilot) `param set NAME value`.
+const setLine = /^(?:set (\w+) = (\S+)|param set (\w+) (\S+))$/;
+const isSet = (line: string) => line.startsWith('set ') || line.startsWith('param set ');
+function setOf(line: string): [name: string, value: string] | null {
+  const m = setLine.exec(line);
+  return m ? [m[1] ?? m[3], m[2] ?? m[4]] : null;
+}
 
 function snippetLines(content: DroneContent) {
   return content.firmware.snippets.flatMap((s) =>
@@ -200,8 +206,10 @@ export function checkCraft(content: DroneContent, en: Prose, opts: CraftOptions 
       const lim = emulator.limits[name];
       if (!lim) return true;
       if (lim.values) return lim.values.includes(String(value));
+      // Betaflight and INAV settings are whole numbers; ArduPilot parameters are floats
       const n = Number(value);
-      return Number.isInteger(n) && (lim.min === undefined || n >= lim.min) && (lim.max === undefined || n <= lim.max);
+      const whole = emulator.kind === 'mavproxy' || Number.isInteger(n);
+      return Number.isFinite(n) && whole && (lim.min === undefined || n >= lim.min) && (lim.max === undefined || n <= lim.max);
     };
 
     it('has a snippet for the build and for every flight mode', () => {
@@ -212,19 +220,20 @@ export function checkCraft(content: DroneContent, en: Prose, opts: CraftOptions 
 
     it('only sets settings the emulator knows, within their ranges', () => {
       for (const [name, value] of Object.entries(emulator.settings)) expect(valid(name, value), name).toBe(true);
-      for (const { id: sid, line } of lines.filter((l) => l.line.startsWith('set '))) {
-        const m = setLine.exec(line);
-        expect(m, `${sid}: ${line}`).not.toBeNull();
-        expect(Object.keys(emulator.settings), `${sid}: ${m![1]}`).toContain(m![1]);
-        expect(valid(m![1], m![2]), `${sid}: ${line}`).toBe(true);
+      for (const { id: sid, line } of lines.filter((l) => isSet(l.line))) {
+        const set = setOf(line);
+        expect(set, `${sid}: ${line}`).not.toBeNull();
+        const [name, value] = set!;
+        expect(Object.keys(emulator.settings), `${sid}: ${name}`).toContain(name);
+        expect(valid(name, value), `${sid}: ${line}`).toBe(true);
       }
     });
 
     it('starts the CLI emulator with the values the snippets set', () => {
-      const from = lines.filter((l) => l.line.startsWith('set ') && (opts.allSnippetsInEmulator || l.mode === 'build'));
+      const from = lines.filter((l) => isSet(l.line) && (opts.allSnippetsInEmulator || l.mode === 'build'));
       expect(from.length).toBeGreaterThan(0);
       for (const { id: sid, line } of from) {
-        const [, name, value] = setLine.exec(line)!;
+        const [name, value] = setOf(line)!;
         expect(String(emulator.settings[name]), `${sid}: ${line}`).toBe(value);
       }
     });
@@ -263,8 +272,8 @@ export function checkCraft(content: DroneContent, en: Prose, opts: CraftOptions 
 }
 
 // Betaflight 2026.6.2 permanent mode ids (src/main/msp/msp_box.c) the crafts use: ARM, ANGLE, HORIZON, ALTHOLD,
-// BEEPER, FLIP OVER AFTER CRASH, GPS RESCUE.
-const BF_MODES = new Set([0, 1, 2, 3, 13, 35, 46]);
+// BEEPER, FLIP OVER AFTER CRASH, VTX PIT MODE, GPS RESCUE, LAUNCH CONTROL.
+const BF_MODES = new Set([0, 1, 2, 3, 13, 35, 39, 46, 49]);
 // Names older Betaflight had, or the originals invented; none exists in 2026.6.2.
 const BF_GONE = /\b(p_level|i_level|level_limit|angle_level_strength|alt_hold_throttle_deadband|osd_timer_1|osd_stat_max_spd|mini_quad|dshot_idle_value|d_min_roll|gyro_1_sensor_align|crashflip_expo)\b/;
 
@@ -312,7 +321,7 @@ export async function openFigure(id: string) {
     !!st().test ||
     st().queue.length > 0 ||
     Object.values(st().placed as Record<string, { t: number; leave: boolean }>).some((p) => p.leave || p.t < 1);
-  const settle = async (ms = 8000) => {
+  const settle = async (ms = 25000) => {
     const end = Date.now() + ms;
     await new Promise((r) => setTimeout(r, 30));
     while (busy() && Date.now() < end) await new Promise((r) => setTimeout(r, 25));

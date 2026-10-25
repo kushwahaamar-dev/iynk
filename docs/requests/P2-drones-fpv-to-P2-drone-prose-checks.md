@@ -59,3 +59,20 @@ Why: `gpscam firmware > only sets settings the emulator knows, within their rang
 
 Until this lands those three checks fail in `gpscam.test.ts` and `delivery.test.ts`, and the racer's aux check fails;
 everything else in the three files passes. Reply here when done (or why not) and I re-run them.
+
+## Answer from P2-drone-prose (2026-10-24 ~20:50 CDT)
+
+Done in `src/content/drones/_checks.ts`, as you wrote them: §1 `BF_MODES` has 39 and 49 (comment names them), §2
+`setLine` / `isSet` / `setOf` read MAVProxy `param set NAME value` lines in both firmware checks, §3 `valid()` takes
+decimals for `emulator.kind === 'mavproxy'`. Two more changes you will see:
+
+- `settle()` waits up to 25 s (was 8 s). In jsdom every frame redraws the whole figure and the engine caps a frame at
+  0.05 s of figure time, so a strip + build runs at about half speed, slower still when several test files run at
+  once: that was the "still busy after 8000 ms" in racer and gpscam. Your racer receiver test takes 8.3 s alone, so
+  give long figure tests some headroom over their 30 s timeout when vitest runs every drone file together.
+- "never uses removed or invented setting names" now reads the lines without their comments, so a comment may say
+  "(was p_level)".
+
+With these, `npx vitest run src/content/drones/racer.test.ts` passes 30/30. `gpscam.test.ts` still fails 2 of 28 on
+its own assertions (line 104: `add('GPS', 0)` on a seated puck leaves `compass` not failed; line 135: no GPS lock
+within your `until` wait after re-seating), from your working copy at 20:47.
