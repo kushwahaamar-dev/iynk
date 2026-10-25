@@ -351,6 +351,17 @@ void loop() {
       title: 'lessons.blink.title', lede: 'lessons.blink.lede',
       steps: ['lessons.blink.steps.1', 'lessons.blink.steps.2', 'lessons.blink.steps.3', 'lessons.blink.steps.4'],
       hints: ['lessons.blink.hints.1', 'lessons.blink.hints.2', 'lessons.blink.hints.3'],
+      quiz: {
+        id: 'blink', afterStep: null,
+        questions: [
+          { id: 'data', q: 'lessons.blink.quiz.data.q', answer: 2, why: 'lessons.blink.quiz.data.why',
+            options: ['lessons.blink.quiz.data.options.1', 'lessons.blink.quiz.data.options.2', 'lessons.blink.quiz.data.options.3'] },
+          { id: 'pin', q: 'lessons.blink.quiz.pin.q', answer: 0, why: 'lessons.blink.quiz.pin.why',
+            options: ['lessons.blink.quiz.pin.options.1', 'lessons.blink.quiz.pin.options.2', 'lessons.blink.quiz.pin.options.3'] },
+          { id: 'power', q: 'lessons.blink.quiz.power.q', answer: 1, why: 'lessons.blink.quiz.power.why',
+            options: ['lessons.blink.quiz.power.options.1', 'lessons.blink.quiz.power.options.2', 'lessons.blink.quiz.power.options.3'] },
+        ],
+      },
     },
     {
       id: 'boot-button', n: 2, level: 'input', language: 'arduino-cpp', circuit: 'boot-button', variants: [], runMs: 3500,
@@ -436,6 +447,10 @@ void loop() {
         questions: [
           { id: 'reset', q: 'lessons.boot-button.quiz.reset.q', answer: 1, why: 'lessons.boot-button.quiz.reset.why',
             options: ['lessons.boot-button.quiz.reset.options.1', 'lessons.boot-button.quiz.reset.options.2', 'lessons.boot-button.quiz.reset.options.3'] },
+          { id: 'bounce', q: 'lessons.boot-button.quiz.bounce.q', answer: 0, why: 'lessons.boot-button.quiz.bounce.why',
+            options: ['lessons.boot-button.quiz.bounce.options.1', 'lessons.boot-button.quiz.bounce.options.2', 'lessons.boot-button.quiz.bounce.options.3'] },
+          { id: 'temp', q: 'lessons.boot-button.quiz.temp.q', answer: 2, why: 'lessons.boot-button.quiz.temp.why',
+            options: ['lessons.boot-button.quiz.temp.options.1', 'lessons.boot-button.quiz.temp.options.2', 'lessons.boot-button.quiz.temp.options.3'] },
         ],
       },
     },
@@ -512,6 +527,17 @@ void loop() {
       title: 'lessons.dimmer.title', lede: 'lessons.dimmer.lede',
       steps: ['lessons.dimmer.steps.1', 'lessons.dimmer.steps.2', 'lessons.dimmer.steps.3'],
       hints: ['lessons.dimmer.hints.1', 'lessons.dimmer.hints.2', 'lessons.dimmer.hints.3'],
+      quiz: {
+        id: 'dimmer', afterStep: null,
+        questions: [
+          { id: 'scale', q: 'lessons.dimmer.quiz.scale.q', answer: 1, why: 'lessons.dimmer.quiz.scale.why',
+            options: ['lessons.dimmer.quiz.scale.options.1', 'lessons.dimmer.quiz.scale.options.2', 'lessons.dimmer.quiz.scale.options.3'] },
+          { id: 'adc2', q: 'lessons.dimmer.quiz.adc2.q', answer: 0, why: 'lessons.dimmer.quiz.adc2.why',
+            options: ['lessons.dimmer.quiz.adc2.options.1', 'lessons.dimmer.quiz.adc2.options.2', 'lessons.dimmer.quiz.adc2.options.3'] },
+          { id: 'freq', q: 'lessons.dimmer.quiz.freq.q', answer: 2, why: 'lessons.dimmer.quiz.freq.why',
+            options: ['lessons.dimmer.quiz.freq.options.1', 'lessons.dimmer.quiz.freq.options.2', 'lessons.dimmer.quiz.freq.options.3'] },
+        ],
+      },
     },
     {
       id: 'web-server', n: 4, level: 'wireless', language: 'arduino-cpp', circuit: 'web-server', variants: [], runMs: 5000,
@@ -610,6 +636,17 @@ void loop() {
       title: 'lessons.web-server.title', lede: 'lessons.web-server.lede',
       steps: ['lessons.web-server.steps.1', 'lessons.web-server.steps.2', 'lessons.web-server.steps.3', 'lessons.web-server.steps.4'],
       hints: ['lessons.web-server.hints.1', 'lessons.web-server.hints.2', 'lessons.web-server.hints.3'],
+      quiz: {
+        id: 'web-server', afterStep: null,
+        questions: [
+          { id: 'band', q: 'lessons.web-server.quiz.band.q', answer: 1, why: 'lessons.web-server.quiz.band.why',
+            options: ['lessons.web-server.quiz.band.options.1', 'lessons.web-server.quiz.band.options.2', 'lessons.web-server.quiz.band.options.3'] },
+          { id: 'loop', q: 'lessons.web-server.quiz.loop.q', answer: 2, why: 'lessons.web-server.quiz.loop.why',
+            options: ['lessons.web-server.quiz.loop.options.1', 'lessons.web-server.quiz.loop.options.2', 'lessons.web-server.quiz.loop.options.3'] },
+          { id: 'power', q: 'lessons.web-server.quiz.power.q', answer: 0, why: 'lessons.web-server.quiz.power.why',
+            options: ['lessons.web-server.quiz.power.options.1', 'lessons.web-server.quiz.power.options.2', 'lessons.web-server.quiz.power.options.3'] },
+        ],
+      },
     },
   ],
 

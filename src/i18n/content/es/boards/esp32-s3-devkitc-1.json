@@ -485,6 +485,35 @@
         "rgb": "datos del LED RGB: 38 en la v1.1, 48 en la v1.0",
         "red": "rojo a 64 sobre 255",
         "off": "los tres colores apagados"
+      },
+      "quiz": {
+        "data": {
+          "q": "digitalWrite(38, HIGH) deja apagado el LED RGB. ¿Por qué?",
+          "options": {
+            "1": "GPIO38 es un pin solo de entrada",
+            "2": "El LED necesita 5 V en su línea de datos",
+            "3": "Necesita datos de color de rgbLedWrite()"
+          },
+          "why": "D6 es un LED direccionable: lee 24 bits de color por un solo cable de datos. rgbLedWrite(38, r, g, b) los envía; un HIGH fijo no lleva ningún color."
+        },
+        "pin": {
+          "q": "En una placa v1.1, rgbLedWrite(RGB_BUILTIN, 64, 0, 0) no enciende nada, pero rgbLedWrite(38, 64, 0, 0) sí funciona. ¿Por qué?",
+          "options": {
+            "1": "RGB_BUILTIN es GPIO48, el pin de la v1.0",
+            "2": "RGB_BUILTIN solo funciona con el Wi-Fi activo",
+            "3": "El LED necesita un brillo de 255"
+          },
+          "why": "Espressif pasó la línea de datos del LED de GPIO48 a GPIO38 en la v1.1, pero el \"ESP32S3 Dev Module\" genérico de Arduino sigue la v1.0. Escribe 38 tú mismo."
+        },
+        "power": {
+          "q": "El pequeño LED rojo D5 se enciende en cuanto enchufas el USB. ¿Puede apagarlo tu sketch?",
+          "options": {
+            "1": "Sí, con digitalWrite(LED_BUILTIN, LOW)",
+            "2": "No, indica que hay 3,3 V",
+            "3": "Sí, con rgbLedWrite()"
+          },
+          "why": "D5 está conectado a la línea de 3,3 V a través de 5,1 kΩ, así que ningún código llega a él. Los LED que controla tu código aquí son el LED RGB y el que cableas a GPIO4."
+        }
       }
     },
     "boot-button": {
@@ -564,6 +593,24 @@
             "3": "Se borra la flash"
           },
           "why": "GPIO0 se lee en el reinicio: a nivel bajo significa el modo de descarga de la ROM. Tu sketch solo vuelve a ejecutarse después de un reinicio con BOOT suelto."
+        },
+        "bounce": {
+          "q": "Con el botón del antirrebote en 0 ms, una pulsación de BOOT a veces cuenta dos veces. ¿Por qué?",
+          "options": {
+            "1": "Los contactos rebotan al cerrarse",
+            "2": "GPIO0 se lee dos veces en el reinicio",
+            "3": "Serial.printf() repite la línea"
+          },
+          "why": "Un contacto mecánico vibra durante unos milisegundos. El sketch solo cuenta una pulsación cuando la lectura lleva DEBOUNCE_MS quieta."
+        },
+        "temp": {
+          "q": "temperatureRead() marca unos grados más que el termómetro de la habitación. ¿Por qué?",
+          "options": {
+            "1": "El sensor está estropeado",
+            "2": "Tu dedo sobre BOOT lo calienta",
+            "3": "Mide el propio chip"
+          },
+          "why": "El sensor está dentro del ESP32-S3, que funciona más caliente que el aire que lo rodea. Es un sensor aproximado: úsalo para vigilar el chip, no la habitación."
         }
       }
     },
@@ -641,6 +688,35 @@
         "attach": "API 3.x: une el PWM por pin",
         "raw": "0 en un extremo del mando, 4095 en el otro",
         "scale": "4095 / 16 = 255, ciclo de trabajo completo"
+      },
+      "quiz": {
+        "scale": {
+          "q": "analogRead() en GPIO1 da de 0 a 4095. ¿Por qué el sketch divide la lectura entre 16?",
+          "options": {
+            "1": "Para obtener milivoltios",
+            "2": "Para encajar en un ciclo de trabajo de 8 bits, de 0 a 255",
+            "3": "Para filtrar el ruido"
+          },
+          "why": "PWM_BITS es 8, así que ledcWrite() acepta de 0 a 255, y 4095 / 16 son 255. La llamada que da milivoltios es analogReadMilliVolts()."
+        },
+        "adc2": {
+          "q": "Pasas el cursor de GPIO1 a GPIO15 y más tarde añades el Wi-Fi. Las lecturas salen mal. ¿Por qué?",
+          "options": {
+            "1": "GPIO15 está en el ADC2, que usa el Wi-Fi",
+            "2": "GPIO15 es un pin de arranque",
+            "3": "GPIO15 no tiene pull-up"
+          },
+          "why": "En el ESP32-S3, el ADC1 va de GPIO1 a GPIO10 y el ADC2 de GPIO11 a GPIO20. El ADC2 no se puede leer con el Wi-Fi activo, así que deja los sensores analógicos en el ADC1."
+        },
+        "freq": {
+          "q": "Cambias la frecuencia del PWM de 5 kHz a 20 kHz. ¿Qué le pasa al brillo?",
+          "options": {
+            "1": "Se duplica",
+            "2": "Baja a la cuarta parte",
+            "3": "Sigue igual"
+          },
+          "why": "El brillo sigue al ciclo de trabajo, la parte de cada ciclo en que el LED está encendido. La frecuencia solo fija lo rápido que se repiten los ciclos, y el ojo promedia todo lo que esté por encima de unos 100 Hz."
+        }
       }
     },
     "web-server": {
@@ -715,6 +791,35 @@
         "blue": "parpadeo azul mientras se conecta",
         "green": "verde: en la red",
         "loop": "responde a las peticiones, nunca bloquees aquí"
+      },
+      "quiz": {
+        "band": {
+          "q": "El punto de acceso de tu móvil funciona solo en 5 GHz. ¿Qué pasa cuando la placa intenta unirse?",
+          "options": {
+            "1": "Se conecta, solo que más despacio",
+            "2": "No se conecta nunca",
+            "3": "Se conecta pero no sirve páginas"
+          },
+          "why": "El ESP32-S3 solo tiene una radio de 2,4 GHz, así que una red de 5 GHz es invisible para él. Pasa el punto de acceso a 2,4 GHz."
+        },
+        "loop": {
+          "q": "Añades delay(2000) a loop() para espaciar un mensaje de estado. ¿Qué le pasa a la página web?",
+          "options": {
+            "1": "No cambia nada",
+            "2": "La placa se cae del Wi-Fi",
+            "3": "Responde con hasta dos segundos de retraso"
+          },
+          "why": "El servidor solo responde cuando se ejecuta server.handleClient(), y ahora eso pasa una vez cada dos segundos. Mide las tareas lentas con millis()."
+        },
+        "power": {
+          "q": "La placa se reinicia cada vez que arranca el Wi-Fi, y el monitor muestra \"Brownout detector was triggered\". ¿Qué deberías probar primero?",
+          "options": {
+            "1": "Un cable y un puerto USB mejores",
+            "2": "Una contraseña de Wi-Fi más larga",
+            "3": "Pasar el LED a GPIO38"
+          },
+          "why": "El Wi-Fi transmite a ráfagas de hasta unos 355 mA. Un puerto débil o un cable fino dejan que la línea de 3,3 V se hunda, y el detector de caída de tensión reinicia el chip."
+        }
       }
     }
   }

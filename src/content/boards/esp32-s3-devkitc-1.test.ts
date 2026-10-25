@@ -24,6 +24,16 @@ describe('esp32-s3-devkitc-1 lessons', () => {
     expect(board.lessons.map((l) => [l.n, l.level])).toEqual([[1, 'io'], [2, 'input'], [3, 'analog'], [4, 'wireless']]);
   });
 
+  it('gives every lesson a three-question quiz whose answers are among its options', () => {
+    for (const l of board.lessons) {
+      expect(l.quiz?.questions, l.id).toHaveLength(3);
+      for (const q of l.quiz!.questions) {
+        expect(q.answer, `${l.id} ${q.id}`).toBeLessThan(q.options.length);
+        for (const key of [q.q, q.why, ...q.options]) expect(text(key).length, key).toBeGreaterThan(0);
+      }
+    }
+  });
+
   for (const lesson of board.lessons) {
     it(`${lesson.id}: the code passes every check through the app check path`, () => {
       const { trace, results } = runChecks(lessonJob(board, lesson, render(lesson)));

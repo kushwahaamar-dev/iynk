@@ -317,6 +317,35 @@
         "rgb": "RGB LED data: 38 on v1.1, 48 on v1.0",
         "red": "red at 64 of 255",
         "off": "all three colours off"
+      },
+      "quiz": {
+        "data": {
+          "q": "digitalWrite(38, HIGH) leaves the RGB LED dark. Why?",
+          "options": {
+            "1": "GPIO38 is an input-only pin",
+            "2": "The LED needs 5 V on its data line",
+            "3": "It needs colour data from rgbLedWrite()"
+          },
+          "why": "D6 is an addressable LED: it reads 24 bits of colour on one data wire. rgbLedWrite(38, r, g, b) sends them; a steady HIGH carries no colour."
+        },
+        "pin": {
+          "q": "On a v1.1 board, rgbLedWrite(RGB_BUILTIN, 64, 0, 0) lights nothing, but rgbLedWrite(38, 64, 0, 0) works. Why?",
+          "options": {
+            "1": "RGB_BUILTIN is GPIO48, the v1.0 pin",
+            "2": "RGB_BUILTIN only works with Wi-Fi on",
+            "3": "The LED needs brightness 255"
+          },
+          "why": "Espressif moved the LED's data line from GPIO48 to GPIO38 in v1.1, but Arduino's generic \"ESP32S3 Dev Module\" still follows v1.0. Write 38 yourself."
+        },
+        "power": {
+          "q": "The small red LED D5 lights as soon as you plug in USB. Can your sketch switch it off?",
+          "options": {
+            "1": "Yes, with digitalWrite(LED_BUILTIN, LOW)",
+            "2": "No, it shows that 3.3 V is up",
+            "3": "Yes, with rgbLedWrite()"
+          },
+          "why": "D5 is wired to the 3.3 V rail through 5.1 kΩ, so no code can reach it. The LEDs your code drives here are the RGB LED and the one you wire to GPIO4."
+        }
       }
     },
     "boot-button": {
@@ -379,6 +408,24 @@
             "3": "The flash is erased"
           },
           "why": "GPIO0 is sampled at reset: low means the ROM's download mode. Your sketch only runs again after a reset with BOOT released."
+        },
+        "bounce": {
+          "q": "With the debounce chip at 0 ms, one press of BOOT sometimes counts twice. Why?",
+          "options": {
+            "1": "The contacts bounce as they close",
+            "2": "GPIO0 is read twice at reset",
+            "3": "Serial.printf() repeats the line"
+          },
+          "why": "A mechanical contact chatters for a few milliseconds. The sketch only counts a press once the reading has held still for DEBOUNCE_MS."
+        },
+        "temp": {
+          "q": "temperatureRead() prints a few degrees more than the room thermometer. Why?",
+          "options": {
+            "1": "The sensor is faulty",
+            "2": "Your finger on BOOT warms it",
+            "3": "It measures the chip itself"
+          },
+          "why": "The sensor sits inside the ESP32-S3, which runs warmer than the air around it. It is a rough sensor: use it to watch the chip, not the room."
         }
       }
     },
@@ -436,6 +483,35 @@
         "attach": "3.x API: attach PWM by pin",
         "raw": "0 at one end of the knob, 4095 at the other",
         "scale": "4095 / 16 = 255, full duty"
+      },
+      "quiz": {
+        "scale": {
+          "q": "analogRead() on GPIO1 reads 0 to 4095. Why does the sketch divide the reading by 16?",
+          "options": {
+            "1": "To get millivolts",
+            "2": "To fit an 8-bit duty, 0 to 255",
+            "3": "To filter out noise"
+          },
+          "why": "PWM_BITS is 8, so ledcWrite() takes 0 to 255, and 4095 / 16 is 255. analogReadMilliVolts() is the call that gives millivolts."
+        },
+        "adc2": {
+          "q": "You move the wiper from GPIO1 to GPIO15 and later add Wi-Fi. The readings go wrong. Why?",
+          "options": {
+            "1": "GPIO15 is on ADC2, which Wi-Fi uses",
+            "2": "GPIO15 is a strapping pin",
+            "3": "GPIO15 has no pull-up"
+          },
+          "why": "On the ESP32-S3, ADC1 is GPIO1 to GPIO10 and ADC2 is GPIO11 to GPIO20. ADC2 can't be read while Wi-Fi is on, so keep analog sensors on ADC1."
+        },
+        "freq": {
+          "q": "You change the PWM frequency from 5 kHz to 20 kHz. What happens to the brightness?",
+          "options": {
+            "1": "It doubles",
+            "2": "It drops to a quarter",
+            "3": "It stays the same"
+          },
+          "why": "Brightness follows the duty, the share of each cycle the LED is on. The frequency only sets how fast the cycles repeat, and the eye averages anything above about 100 Hz."
+        }
       }
     },
     "web-server": {
@@ -490,6 +566,35 @@
         "blue": "blue blink while connecting",
         "green": "green: on the network",
         "loop": "answer requests, never block here"
+      },
+      "quiz": {
+        "band": {
+          "q": "Your phone's hotspot runs on 5 GHz only. What happens when the board tries to join it?",
+          "options": {
+            "1": "It connects, only more slowly",
+            "2": "It never connects",
+            "3": "It connects but serves no pages"
+          },
+          "why": "The ESP32-S3 has a 2.4 GHz radio only, so a 5 GHz network is invisible to it. Switch the hotspot to 2.4 GHz."
+        },
+        "loop": {
+          "q": "You add delay(2000) to loop() to slow down a status print. What happens to the web page?",
+          "options": {
+            "1": "Nothing changes",
+            "2": "The board drops off Wi-Fi",
+            "3": "It answers up to two seconds late"
+          },
+          "why": "The server only answers when server.handleClient() runs, and now that is once every two seconds. Time slow jobs with millis() instead."
+        },
+        "power": {
+          "q": "The board resets each time Wi-Fi starts, and the monitor shows \"Brownout detector was triggered\". What should you try first?",
+          "options": {
+            "1": "A better USB cable and port",
+            "2": "A longer Wi-Fi password",
+            "3": "Moving the LED to GPIO38"
+          },
+          "why": "Wi-Fi transmits in bursts of up to about 355 mA. A weak port or a thin cable lets the 3.3 V rail sag, and the brown-out detector resets the chip."
+        }
       }
     }
   }
