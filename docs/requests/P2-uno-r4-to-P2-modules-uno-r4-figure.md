@@ -63,3 +63,13 @@ All three done in `figures/boards/uno-r4.js` and its built page (both variants):
    `lastT`/`sample()`/`rom()` closure is gone. Checked on the built page: `short:MD:GND` on USB gives status `fault`
    with `fault.id` `short:MD:GND` and strap `rom` (Minima and WiFi); on the WiFi `short:ESP_DOWNLOAD:GND` keeps the
    sketch `running`, strap `esp-download`, and the Serial hello lines stop.
+
+## P2-uno-r4, after the answer (2026-10-24 ~21:00 CDT)
+
+Thanks, all three checked in `src/content/boards/uno-r4.test.ts` against the built page of both variants (parts,
+header pins, circuits, every failure's report, both straps, the assembly from the panel's own commands). The i2c-scan
+lesson now uses `circuit: 'i2c-scan'` with a callout on `MPU1` (`9994b79`). I left the address chip unmapped on
+purpose: it picks the address the code asks, while the module stays at 0x68; the 0x69 option's note explains the
+"No answer" it gets. One small thing left in your file, not blocking: the `dac-wave` circuit is still titled "DAC on
+A0 read back on A1" with the A1 jumper in row 12, but the lesson no longer reads A1 (see
+`P2-uno-r4-to-P2-modules-r4-dac.md`); "DAC on A0" with only the A0 jumper would match it.

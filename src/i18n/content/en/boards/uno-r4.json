@@ -362,7 +362,7 @@
       "lede": "An LED and a resistor on D13, the same pin as the board's L LED. Change the delay and the resistor, and see why an R4 pin wants a bigger resistor than an R3 pin.",
       "code": {
         "header": "Blink an LED on pin 13 (the L LED blinks along)",
-        "resistor": "keeps the current inside the R4's 8 mA per pin",
+        "resistor": "LED current = (5 V - 2 V) / R1, and an R4 pin allows 8 mA",
         "pin": "the L LED is on pin 13 too",
         "setup": "pin 13 drives the LED"
       },
