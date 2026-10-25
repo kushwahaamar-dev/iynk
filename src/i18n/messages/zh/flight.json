@@ -58,7 +58,7 @@
     "crashes": "坠毁次数",
     "splits": "分段用时",
     "gate": "第 {n}/{total} 门",
-    "checkpoint": "{label}（{n}/{total}）",
+    "checkpoint": "{n}/{total} · {label}",
     "home": "起点",
     "par": "奖牌用时",
     "parValue": "{gold} / {silver} / {bronze}"

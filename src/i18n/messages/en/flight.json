@@ -58,7 +58,7 @@
     "crashes": "Crashes",
     "splits": "Splits",
     "gate": "Gate {n}/{total}",
-    "checkpoint": "{label} ({n}/{total})",
+    "checkpoint": "{n}/{total} · {label}",
     "home": "Home",
     "par": "Medal times",
     "parValue": "{gold} / {silver} / {bronze}"

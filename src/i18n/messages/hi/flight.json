@@ -58,7 +58,7 @@
     "crashes": "क्रैश",
     "splits": "बीच के समय",
     "gate": "गेट {n}/{total}",
-    "checkpoint": "{label} ({n}/{total})",
+    "checkpoint": "{n}/{total} · {label}",
     "home": "घर",
     "par": "पदक के समय",
     "parValue": "{gold} / {silver} / {bronze}"

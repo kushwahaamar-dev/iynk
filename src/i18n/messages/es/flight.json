@@ -58,7 +58,7 @@
     "crashes": "Choques",
     "splits": "Parciales",
     "gate": "Puerta {n}/{total}",
-    "checkpoint": "{label} ({n}/{total})",
+    "checkpoint": "{n}/{total} · {label}",
     "home": "Casa",
     "par": "Tiempos de medalla",
     "parValue": "{gold} / {silver} / {bronze}"

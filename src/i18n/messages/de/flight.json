@@ -58,7 +58,7 @@
     "crashes": "Abstürze",
     "splits": "Zwischenzeiten",
     "gate": "Gate {n}/{total}",
-    "checkpoint": "{label} ({n}/{total})",
+    "checkpoint": "{n}/{total} · {label}",
     "home": "Start",
     "par": "Medaillenzeiten",
     "parValue": "{gold} / {silver} / {bronze}"

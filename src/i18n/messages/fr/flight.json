@@ -58,7 +58,7 @@
     "crashes": "Crashs",
     "splits": "Temps intermédiaires",
     "gate": "Porte {n}/{total}",
-    "checkpoint": "{label} ({n}/{total})",
+    "checkpoint": "{n}/{total} · {label}",
     "home": "Maison",
     "par": "Temps des médailles",
     "parValue": "{gold} / {silver} / {bronze}"

@@ -587,14 +587,20 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
     <div
       className={cx(
         "pointer-events-auto w-full rounded-ink-sm border-[1.5px] border-rule bg-paper/90 px-3 py-1.5 shadow-ink-sm",
-        coarse ? "grid grid-cols-[repeat(3,auto)] justify-between gap-x-3 gap-y-1 [&_.tabular]:text-base" : "flex flex-wrap gap-x-4 gap-y-1",
+        coarse ? "grid grid-cols-[repeat(3,auto)] justify-between gap-x-3 gap-y-1 [&_.tabular]:text-base" : "flex flex-wrap gap-x-4 gap-y-1 xl:flex-nowrap",
       )}
       data-testid="flight-telemetry"
     >
       {telemetry
         .filter((s) => !coarse || !s.wide)
         .map(({ id, wide: _wide, ...stat }) => (
-          <Stat key={id} size="sm" className="shrink-0" {...stat} />
+          <Stat
+            key={id}
+            size="sm"
+            // a long checkpoint name truncates instead of pushing the strip onto a second line
+            className={id !== "next" ? "shrink-0" : cx("min-w-0 [&_.tabular]:truncate", coarse ? "col-span-2" : "min-w-28 shrink")}
+            {...stat}
+          />
         ))}
     </div>
   );
