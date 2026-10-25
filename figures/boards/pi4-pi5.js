@@ -198,32 +198,33 @@ function modes(v){
     health: { title: 'vcgencmd health', instant: true, out: () => ({}),
       serial: (k, st) => {
         const uv = under(st), lines = [uv ? 'throttled=0x50005' : 'throttled=0x0', `temp=${(47.2 + (k % 6) * .5).toFixed(1)}'C`,
-          `frequency(0)=${uv ? 1500000000 : v.pi5 ? 2400000000 : 1800000000}`, uv ? 'hwmon hwmon1: Undervoltage detected!' : `EXT5V_V volt(24)=${(st.ev.rails['5V'] || 0).toFixed(4)}V`];
+          `frequency(0)=${v.pi5 ? (uv ? 1500000000 : 2400000000) : (uv ? 600000000 : 1800000000)}`, uv ? 'hwmon hwmon1: Undervoltage detected!'
+            : v.pi5 ? `EXT5V_V volt(24)=${(st.ev.rails['5V'] || 0).toFixed(4)}V` : `volt=${(st.ev.rails.CORE || 0).toFixed(4)}V`];
         return lines[k % lines.length];
       } },
   };
 }
 
 /* ---------- lesson circuits: a half breadboard behind the board, next to the header (docs/facts/pi4-pi5.md §7) ---------- */
-const LED = (net, col, color = 'red') => [
+const LED = (col, color = 'red') => [
   { id: 'R1', part: 'resistor', ohms: 330, holes: ['b' + col, 'b' + (col + 4)] },
-  { id: 'LED1', part: 'led', color, holes: ['c' + (col + 4), 'c' + (col + 5)] },
+  { id: 'D1', part: 'led', color, holes: ['c' + (col + 4), 'c' + (col + 5)] },
 ];
 const ledWires = (net, col, wire) => [{ from: net, to: 'a' + col, color: wire }, { from: 'J8.9', to: 'a' + (col + 5), color: 'black' }];
 const BUTTON = { id: 'BTN1', part: 'push-button', holes: ['e14', 'f14', 'e16', 'f16'] };
 const buttonCircuit = title => ({ title, breadboard: 'half', board: 'back',
   // the button straddles the trench at columns 14 and 16: pressing joins GPIO27 (pin 13) to GND (pin 14)
-  parts: [...LED('GPIO17', 4), BUTTON],
+  parts: [...LED(4), BUTTON],
   wires: [...ledWires('GPIO17', 4, 'orange'), { from: 'GPIO27', to: 'j14', color: 'yellow' }, { from: 'J8.14', to: 'j16', color: 'black' }] });
 const circuits = () => ({
-  blink: { title: 'An LED on GPIO17 (pin 11) through 330 Ω', breadboard: 'half', board: 'back', parts: LED('GPIO17', 4), wires: ledWires('GPIO17', 4, 'orange') },
+  blink: { title: 'An LED on GPIO17 (pin 11) through 330 Ω', breadboard: 'half', board: 'back', parts: LED(4), wires: ledWires('GPIO17', 4, 'orange') },
   button: buttonCircuit('A button on GPIO27 (pin 13), the LED on GPIO17'),
-  fade: { title: 'An LED on GPIO18 (pin 12), the PWM pin', breadboard: 'half', board: 'back', parts: LED('GPIO18', 4, 'yellow'), wires: ledWires('GPIO18', 4, 'green') },
+  fade: { title: 'An LED on GPIO18 (pin 12), the PWM pin', breadboard: 'half', board: 'back', parts: LED(4, 'yellow'), wires: ledWires('GPIO18', 4, 'green') },
   distance: { title: 'HC-SR04 on GPIO23/24, the 5 V echo through a 1 kΩ / 2 kΩ divider', breadboard: 'half', board: 'back',
     // US1 legs VCC TRIG ECHO GND in a20-a23; ECHO -> 1 kΩ -> column 26 (to GPIO24) -> 2 kΩ -> column 30 (GND)
     parts: [{ id: 'US1', part: 'hc-sr04', holes: ['a20', 'a21', 'a22', 'a23'] },
       { id: 'R2', part: 'resistor', ohms: 1000, holes: ['d22', 'd26'] }, { id: 'R3', part: 'resistor', ohms: 2000, holes: ['c26', 'c30'] },
-      ...LED('GPIO17', 4)],
+      ...LED(4)],
     wires: [{ from: 'J8.2', to: 'e20', color: 'red' }, { from: 'GPIO23', to: 'e21', color: 'yellow' }, { from: 'J8.6', to: 'e23', color: 'black' },
       { from: 'b23', to: 'b30', color: 'black' }, { from: 'GPIO24', to: 'e26', color: 'green' }, ...ledWires('GPIO17', 4, 'orange')] },
   estop: buttonCircuit('E-stop button on GPIO27, status LED on GPIO17'),

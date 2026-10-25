@@ -2,7 +2,7 @@ import { Mpu6050 } from '../devices';
 import { charPixels, scrollColumns, scrollFrame } from '../font5x5';
 import type { Gen } from '../exec';
 import {
-  EXC, I, PyBytes, PyClass, PyDict, PyInstance, PyList, PyModule, PyNative, PyProp, PyRange, PyRt, PyTuple,
+  EXC, I, PyBound, PyBytes, PyClass, PyDict, PyFunc, PyInstance, PyList, PyModule, PyNative, PyProp, PyRange, PyRt, PyTuple,
   isInt, pyErr, toBig, toNum, truthy, typeName, type NativeFn, type PyValue,
 } from './runtime';
 
@@ -838,7 +838,7 @@ function installGpiozero(rt: PyRt): void {
       __init__: (self, [pin], kw) => {
         const n = gpio(pin ?? kw.pin);
         claim(n, cls);
-        self.native = { pin: n, activeHigh: kw.active_high === undefined ? true : truthy(kw.active_high), value: 0, pwm };
+        self.native = { pin: n, activeHigh: kw.active_high === undefined ? true : truthy(kw.active_high), value: 0, pwm, hz: pwm ? toNum(kw.frequency ?? 100n) : 0 };
         w.setMode(n, 'output');
         if (kw.initial_value !== undefined && truthy(kw.initial_value)) setOut(self, 1);
         else setOut(self, 0);
@@ -884,16 +884,16 @@ function installGpiozero(rt: PyRt): void {
     if (!self.native.pwm && x !== 0 && x !== 1) throw pyErr('ValueError', 'a plain LED can only be on (1) or off (0): use PWMLED for brightness');
     self.native.value = x;
     const level = self.native.activeHigh ? x : 1 - x;
-    if (self.native.pwm && level > 0 && level < 1) w.analogWrite(self.native.pin, Math.round(level * 255), 255, 100);
+    if (self.native.pwm && level > 0 && level < 1) w.analogWrite(self.native.pin, Math.round(level * 255), 255, self.native.hz);
     else w.digitalWrite(self.native.pin, level >= 1 ? 1 : 0);
   };
   const LED = out('LED');
   const PWMLED = out('PWMLED', {
-    pulse: (self, [fi, fo]) => {
+    pulse: (self, [fi, fo], kw) => {
       // Approximate the fade with 20 steps per second.
       stopBlink(self.native.pin);
-      const up = toNum(fi ?? 1n) * 1e6;
-      const down = toNum(fo ?? 1n) * 1e6;
+      const up = toNum(fi ?? kw.fade_in_time ?? 1n) * 1e6;
+      const down = toNum(fo ?? kw.fade_out_time ?? 1n) * 1e6;
       let live = true;
       let t = 0;
       const tick = () => {
@@ -947,10 +947,11 @@ function installGpiozero(rt: PyRt): void {
     while (pressedNow(self)) yield w.now + 1000;
     return true;
   }));
+  // gpiozero calls a callback with no arguments when it takes none, else with the device (a method's self excluded)
   const cbArgs = (cb: PyValue, self: PyInstance) => {
-    const f = cb instanceof PyInstance ? null : cb;
-    const n = f && 'params' in f ? (f.params as unknown[]).length : 0;
-    return n >= 1 ? [self] : [];
+    const f = cb instanceof PyBound ? cb.fn : cb;
+    const required = f instanceof PyFunc ? f.params.filter((p) => !p.def && !p.star).length - (cb instanceof PyBound ? 1 : 0) : 0;
+    return required >= 1 ? [self] : [];
   };
   // Servo: 1-2 ms pulses at 50 Hz; value -1..1, AngularServo maps angles.
   const servoSet = (self: PyInstance, v: number) => {

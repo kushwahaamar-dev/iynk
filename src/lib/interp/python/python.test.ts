@@ -220,6 +220,60 @@ pause()
     expect(run.snapshot().pins[17].level).toBe(0);
   });
 
+  it('gpiozero hands the device only to callbacks that take an argument, bound methods included', () => {
+    const { run, out, errors } = boot(`from gpiozero import Button
+from signal import pause
+
+
+class Panel:
+    def __init__(self):
+        self.a = Button(5)
+        self.b = Button(6)
+        self.a.when_pressed = self.plain
+        self.b.when_pressed = self.with_device
+
+    def plain(self):
+        print('plain')
+
+    def with_device(self, device):
+        print('device', device.is_pressed)
+
+
+def free(btn=None):
+    print('free', btn)
+
+
+panel = Panel()
+c = Button(13)
+c.when_pressed = free
+pause()
+`, 'pi4-pi5');
+    advance(run, 10);
+    for (const pin of ['GPIO5', 'GPIO6', 'GPIO13']) run.input(pin, 0);
+    advance(run, 20);
+    expect(errors).toEqual([]);
+    expect(out()).toBe('plain\ndevice True\nfree None\n');
+  });
+
+  it('gpiozero PWMLED takes its frequency, and pulse() its keyword times', () => {
+    const { run, errors } = boot(`from gpiozero import PWMLED
+from signal import pause
+led = PWMLED(18, frequency=50)
+led.value = 0.25
+slow = PWMLED(19)
+slow.pulse(fade_in_time=2, fade_out_time=2)
+pause()
+`, 'pi4-pi5');
+    advance(run, 1000);
+    expect(errors).toEqual([]);
+    const fixed = run.world.pin(18);
+    expect(fixed.pwmHz).toBe(50);
+    expect(fixed.duty).toBeCloseTo(0.25, 2);
+    // halfway up a 2 s fade, not at the top of a 1 s one
+    expect(run.world.pin(19).duty).toBeGreaterThan(0.4);
+    expect(run.world.pin(19).duty).toBeLessThan(0.6);
+  });
+
   it('rclpy teleop node publishes Twist on a 10 Hz timer', () => {
     const { run, out, ros, errors } = boot(`import rclpy
 from rclpy.node import Node
