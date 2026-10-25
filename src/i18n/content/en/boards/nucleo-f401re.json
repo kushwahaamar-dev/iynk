@@ -1,0 +1,648 @@
+{
+  "title": "STM32 Nucleo-F401RE",
+  "tagline": "ST's 84 MHz Cortex-M4 board with its own ST-LINK programmer: Arduino sockets on top, every pin on the morpho rows, 3.3 V logic, and one mini-USB cable for power, uploads and Serial.",
+  "overview": "The Nucleo-F401RE is two boards in one. The top third, behind a row of snap-off slots, is an ST-LINK/V2-1: an STM32F103 that runs from the mini-USB socket, programs the target over SWD and passes the target's Serial to your computer as a virtual COM port. Below it is the target: an STM32F401RE (Arm Cortex-M4F at 84 MHz, 512 KB of flash, 96 KB of RAM) with Uno-style Arduino sockets and two 38-pin ST morpho headers that carry every pin. Logic is 3.3 V, but most pins take 5 V as digital inputs. Three jumpers matter: JP5 picks USB or an external supply for +5V, JP6 links the 3.3 V regulator to the MCU (pull it to measure the current), and the two CN2 caps let the ST-LINK reach the target. In the Arduino IDE it is the STM32duino core's Nucleo-64 board: LED_BUILTIN is the green LD2 on D13, USER_BTN is the blue B1 on PC13, and Serial goes through the ST-LINK.",
+  "mcu": {
+    "stlink": "The ST-LINK/V2-1 programmer: an STM32F103 that writes the F401's flash over SWD and passes Serial (USART2) to your computer as a virtual COM port."
+  },
+  "power": {
+    "usb": {
+      "protection": "No fuse; the mini-B plug can't go in backwards. The ST-LINK starts at once, but the target's +5V comes on only after the ST-LINK has asked the computer for 300 mA and switched T2 on. Fit JP1 to run from a phone charger, which never grants it."
+    },
+    "vin": {
+      "protection": "None: VIN goes straight into the LD1117 (U3), with no reverse diode. D4 after it stops E5V and USB flowing back. JP5 goes on 2-3. The current it can give falls as VIN rises: 800 mA at 7 V, 450 mA up to 9 V, 250 mA up to 12 V."
+    },
+    "e5v": {
+      "protection": "None: with JP5 on 2-3, E5V (CN7 pin 6) is the +5V rail. Use only a regulated 4.75-5.25 V supply, the right way round, and switch it on before you plug in USB."
+    },
+    "rails": {
+      "u5v": "USB's 5 V, before the T2 switch. Feeds the ST-LINK through D2.",
+      "e5v": "5 V from U3 through D4, or from the E5V pin. Feeds the ST-LINK through D3, and +5V through JP5 2-3.",
+      "5v": "The target's 5 V: from USB through T2 and JP5 1-2, or from E5V through JP5 2-3. Lights LD3 and feeds the 3.3 V regulator.",
+      "3v3": "From the LD39050 (U4) through SB2: the 3V3 pins, IOREF and, through JP6, the MCU.",
+      "vdd": "The STM32's own supply, after the JP6 IDD jumper. Also on CN7 pin 5.",
+      "3v3st": "The ST-LINK's own 3.3 V from U1, so the programmer works even when the target is off."
+    },
+    "io": "The datasheet's absolute limit is 25 mA per pin and 120 mA for all pins together; ST specifies the output levels up to 20 mA (8 mA for full levels), and PC13-PC15 only 3 mA. Outputs never go above 3.3 V, but most pins take 5 V as digital inputs."
+  },
+  "pins": {
+    "analog": "An ADC input reads 0 to 3.3 V (AVDD). In analog mode the pin is not 5 V tolerant: 4.0 V at most, so power analog sensors from 3V3.",
+    "ioref": "Tied to +3V3: it tells a shield that this board's logic is 3.3 V.",
+    "nrst": "LOW resets the STM32. Shared with B2 and with the ST-LINK, which pulls it during an upload.",
+    "3v3": "Output from U4, 500 mA shared with the MCU. It can be an input only when the ST-LINK is snapped off or SB2 and SB12 are open.",
+    "5v": "Output: +5V from USB (through T2) or from E5V/VIN with JP5 on 2-3. On USB, keep everything within the 300 mA budget.",
+    "vin": "7-12 V in, through the LD1117: 800 mA at 7 V, 450 mA up to 9 V, 250 mA up to 12 V. No reverse protection. Move JP5 to 2-3.",
+    "d13": "LD2 hangs on this pin through 510 Ω. It is also SPI1's clock, so LD2 flickers while SPI runs.",
+    "avdd": "The ADC's reference (VDDA), tied to VDD through the ferrite L1. It sits where an Uno has AREF but is not an input.",
+    "i2c": "I2C1 (Wire). The board has no pull-ups on it: the module or shield must bring them.",
+    "d0d1": "Not connected by default: PA2/PA3 (USART2) go to the ST-LINK, so Serial reaches your computer instead. Closing SB62/SB63 brings them to the header.",
+    "vdd": "The MCU's supply, after JP6. Measure here to check that JP6 is on.",
+    "e5v": "External 5 V in (4.75-5.25 V), straight onto +5V when JP5 is on 2-3. No protection at all.",
+    "boot0": "Pulled LOW on the board, so the STM32 runs your sketch from flash. A jumper to VDD (pin 5) starts ST's ROM bootloader instead.",
+    "swd": "Used by the ST-LINK for SWD. Don't use these as I/O while it is connected.",
+    "pc13": "B1's pin, with R30's 4.7 kΩ pull-up. PC13 sits in the backup domain: it sinks 3 mA at most and must not source current, so never drive an LED from it.",
+    "lse": "Drives the 32.768 kHz crystal X2. Reaches CN7 only with SB48/SB49 closed.",
+    "hse": "The clock pins: the ST-LINK's 8 MHz clock arrives on PH0 (OSC_IN). Leave them for the clock.",
+    "vbat": "The real-time clock's backup supply, tied to VDD through SB45.",
+    "u5v": "USB's 5 V before the T2 switch: there as soon as the cable is in.",
+    "cn4": "The ST-LINK's own SWD port, for programming another board. Take the CN2 caps off to use it."
+  },
+  "leds": {
+    "LD2": "Green, on D13 (PA5) through 510 Ω: lit when D13 is HIGH, about 2.5 mA.",
+    "LD3": "Red, lit whenever +5V is present. It stays on when only the 3.3 V side has failed.",
+    "LD1": "The ST-LINK's red and green COM LED: red when connected, red and green in turn during an upload, green when it finished, orange when it failed."
+  },
+  "controls": {
+    "B1": "The blue USER button on PC13: reads LOW while pressed.",
+    "B2": "The black RESET button: the STM32 starts again from setup(). The ST-LINK stays connected."
+  },
+  "parts": {
+    "U5": { "name": "STM32F401RET6 microcontroller", "what": "Your sketch runs here: an Arm Cortex-M4 with a floating-point unit at 84 MHz, 512 KB of flash and 96 KB of RAM, in a 64-pin LQFP. It runs at 3.3 V and has a 12-bit ADC on 16 inputs but no DAC. STM32duino clocks it from its internal 16 MHz oscillator through the PLL." },
+    "U2": { "name": "STM32F103 running the ST-LINK/V2-1", "what": "A second microcontroller, a Cortex-M3, running ST's ST-LINK firmware. Over the one USB cable it is a debugger that programs the F401 through SWD, a virtual COM port for the target's Serial, and a USB drive called NODE_F401RE." },
+    "X1": { "name": "8 MHz crystal (X1)", "what": "Clocks the ST-LINK's STM32F103. The ST-LINK also passes 8 MHz on to the target's PH0, which Cube projects use as their HSE clock." },
+    "X2": { "name": "32.768 kHz crystal (X2)", "what": "Feeds the target's real-time clock (the LSE on PC14/PC15), so the STM32RTC library keeps accurate time." },
+    "X3": { "name": "Empty X3 crystal footprint", "what": "Room for an 8 MHz through-hole crystal for the target. ST leaves it empty: the 8 MHz comes from the ST-LINK, and STM32duino sketches use the internal oscillator anyway." },
+    "CN1": { "name": "USB Mini-B socket (CN1)", "what": "The board's only USB connector: power, programming and the virtual COM port, all through the ST-LINK. Its 5 V is the U5V net." },
+    "T2": { "name": "USB power switch (T2)", "what": "An STS9P3LLH6 P-channel MOSFET between U5V and the target's +5V. The ST-LINK turns it on only after the computer grants 300 mA, so on a phone charger the target stays off unless JP1 is fitted." },
+    "T1": { "name": "Switch driver transistor (T1)", "what": "Lets the ST-LINK's 3.3 V logic turn the T2 MOSFET on and off." },
+    "U1": { "name": "LD3985 3.3 V regulator (U1)", "what": "Powers the ST-LINK only (150 mA), from USB through D2 or from E5V through D3." },
+    "D2": { "name": "BAT60J Schottky diode (D2)", "what": "Passes USB's 5 V to the ST-LINK's regulator." },
+    "D3": { "name": "BAT60J Schottky diode (D3)", "what": "Passes E5V to the ST-LINK's regulator, so the programmer runs when VIN or E5V powers the board." },
+    "U3": { "name": "LD1117 5 V regulator (U3)", "what": "Turns 7-12 V on VIN into 5 V. There is no reverse diode in front of it, and as a linear regulator it turns the extra voltage into heat." },
+    "D4": { "name": "STPS2L30A Schottky diode (D4)", "what": "Carries U3's 5 V onto E5V and stops 5 V from E5V or USB flowing back into the regulator. Its cathode band faces the E5V side." },
+    "C16": { "name": "10 µF tantalum capacitor on VIN (C16)", "what": "The input capacitor of U3, rated 25 V. Tantalum capacitors are polarised: the band marks the plus side." },
+    "C17": { "name": "10 µF tantalum capacitor on U3's output (C17)", "what": "Keeps the 5 V regulator stable. Polarised like C16." },
+    "U4": { "name": "LD39050 3.3 V regulator (U4)", "what": "Makes the 3.3 V rail from +5V, up to 500 mA, with a current limit and thermal shutdown. It feeds the MCU (through JP6), the 3V3 pins and IOREF." },
+    "SB2": { "name": "SB2 solder bridge", "what": "A 0 Ω link from U4's output to the 3.3 V rail. Open it to feed 3.3 V from outside instead." },
+    "JP5": { "name": "JP5 power source header", "what": "Three pins: 1 is U5V (USB through T2), 2 is +5V, 3 is E5V (VIN or an external 5 V). The cap joins pin 2 to one of the others." },
+    "JP5_CAP": { "name": "JP5 jumper cap", "what": "On 1-2 for USB, on 2-3 for VIN or E5V. The figure moves it for you when you pick VIN or E5V. Without it, +5V is connected to nothing." },
+    "JP6": { "name": "JP6 IDD header", "what": "Sits between the 3.3 V rail and the MCU's VDD. Take the cap off and put an ammeter across the pins to measure what the STM32 draws." },
+    "JP6_CAP": { "name": "JP6 jumper cap", "what": "Closes the IDD link. With it off, the MCU has no power at all." },
+    "CN2": { "name": "CN2 ST-LINK / NUCLEO header", "what": "Four pins that route the ST-LINK's SWD clock and data either to this board's STM32 (caps on) or to the CN4 header (caps off)." },
+    "CN2_CAPS": { "name": "CN2 jumper caps", "what": "Two caps that connect the ST-LINK to the target on this board. Take them off to program another board through CN4." },
+    "JP1": { "name": "JP1 USB PWR header", "what": "Open by default. With a cap, the ST-LINK asks the computer for only 100 mA and switches the target on anyway, for chargers that never enumerate." },
+    "LD1": { "name": "LD1 COM LED (red and green)", "what": "The ST-LINK's status: red while connected, red and green in turn while it talks to the target, green when an upload finished, orange when it failed." },
+    "LD2": { "name": "LD2 green user LED", "what": "On D13 (PA5) through 510 Ω, lit when D13 is HIGH. It's LED_BUILTIN in STM32duino." },
+    "R31": { "name": "510 Ω resistor for LD2 (R31)", "what": "Limits LD2's current to about 2.5 mA from the 3.3 V pin." },
+    "LD3": { "name": "LD3 red power LED", "what": "Lit whenever +5V is present, through a 1 kΩ resistor. It says nothing about the 3.3 V rail or the MCU." },
+    "R32": { "name": "1 kΩ resistor for LD3 (R32)", "what": "About 3 mA for the PWR LED." },
+    "B1": { "name": "B1 USER button (blue)", "what": "On PC13 (USER_BTN): HIGH through a 4.7 kΩ pull-up, LOW while pressed. The factory demo uses it to change LD2's blink rate." },
+    "R30": { "name": "4.7 kΩ pull-up for B1 (R30)", "what": "Holds PC13 HIGH while B1 is up, so the sketch needs no INPUT_PULLUP." },
+    "R29": { "name": "100 Ω resistor in B1's filter (R29)", "what": "With C15, a small filter on the button that softens its contact bounce." },
+    "C15": { "name": "100 nF capacitor in B1's filter (C15)", "what": "The other half of B1's debounce filter." },
+    "B2": { "name": "B2 RESET button (black)", "what": "Pulls NRST low: the STM32 restarts and runs from setup() again. The ST-LINK stays connected." },
+    "C14": { "name": "100 nF capacitor on NRST (C14)", "what": "Filters the reset line so a spike doesn't restart the MCU." },
+    "L1": { "name": "Ferrite bead (L1)", "what": "Filters VDD into the analog supply VDDA (AVDD), which is also the ADC's reference." },
+    "CN5": { "name": "CN5 Arduino header (D8-D15)", "what": "Female socket with D8-D13, GND, AVDD and the I2C pins D14/D15, where an Uno has them." },
+    "CN6": { "name": "CN6 Arduino POWER header", "what": "Female socket with IOREF (3.3 V), NRST, 3V3, 5V, two GND and VIN." },
+    "CN8": { "name": "CN8 Arduino analog header (A0-A5)", "what": "Female socket for six of the ADC inputs." },
+    "CN9": { "name": "CN9 Arduino header (D0-D7)", "what": "Female socket for D0-D7. D0 and D1 are not connected: their pins (PA3, PA2) go to the ST-LINK as Serial." },
+    "CN7": { "name": "CN7 ST morpho header (left)", "what": "38 male pins with the left half of the target's pins, among them PC13, BOOT0, E5V and VBAT. The pins stick out above and below the board." },
+    "CN10": { "name": "CN10 ST morpho header (right)", "what": "38 male pins with the rest of the GPIOs, U5V and the USB OTG pins PA11/PA12." },
+    "CN4": { "name": "CN4 SWD header", "what": "The ST-LINK's SWD output, to program and debug another STM32 board once the CN2 caps are off." },
+    "CN3": { "name": "CN3 virtual COM header", "what": "The ST-LINK's serial RX and TX, to use it as a USB-serial adapter for another board." },
+    "SLOTS": { "name": "Snap-off slots", "what": "Routed slots across the board. Break along them and the ST-LINK part comes away; the target then runs from E5V, VIN or 3.3 V." },
+    "PASSIVES": { "name": "0603 resistors and capacitors", "what": "The small decoupling capacitors and resistors around the MCU and the regulators, drawn as one group." },
+    "SB": { "name": "Solder bridges (bottom side)", "what": "0 Ω links under the board that decide which MCU pin reaches which header pin, for example the open SB62/SB63 that keep D0 and D1 off the Arduino header." }
+  },
+  "wireables": {
+    "led": {
+      "note": "An LED on PWM pin D9 through 220 Ω: about 5 mA from 3.3 V.",
+      "caution": "Always use a resistor. A blue or white LED needs about 3 V itself, so from a 3.3 V pin it glows only faintly."
+    },
+    "push-button": {
+      "note": "One side to D2, the other to GND, with INPUT_PULLUP. The blue B1 on PC13 needs no wiring at all."
+    },
+    "potentiometer": {
+      "note": "Ends to GND and 3V3, wiper to A0: analogRead() gives 0-4095 after analogReadResolution(12).",
+      "caution": "Power it from 3V3, never 5V: an ADC input in analog mode takes 4.0 V at most, and reads 4095 for anything above 3.3 V."
+    },
+    "tmp36": {
+      "note": "Runs from 3V3 on A1: 750 mV at 25 °C and 10 mV per °C."
+    },
+    "servo-sg90": {
+      "note": "Signal on PWM pin D9; the 3.3 V pulse is enough for most hobby servos.",
+      "caution": "Power it from its own 5 V supply and join the grounds. On USB the whole board has 300 mA, and a servo starting takes more."
+    },
+    "hc-sr04": {
+      "note": "VCC on 5V, TRIG on D7, ECHO on D8. D8 (PA9) is 5 V tolerant, so the 5 V echo needs no divider here.",
+      "caution": "Take ECHO to a digital pin, never to an input you read with analogRead(): in analog mode a pin takes 4.0 V at most."
+    },
+    "mpu6050": {
+      "note": "VCC on 3V3, SDA on D14, SCL on D15. The GY-521 brings the I2C pull-ups the Nucleo lacks."
+    },
+    "ssd1306": {
+      "note": "A 0.96 inch I2C OLED runs at 3.3 V on D14/D15; most modules carry their own pull-ups."
+    }
+  },
+  "failures": {
+    "reverse-vin": {
+      "title": "Supply backwards on VIN",
+      "symptom": "Nothing lights. The supply hits its current limit and U3, the 5 V regulator above the A0-A5 header, gets hot.",
+      "explanation": "VIN has no reverse diode: it goes straight to the LD1117 (U3) and the tantalum C16. Backwards, current flows through the regulator the wrong way, limited only by your supply, and the LD1117 overheats or fails short. D4 after it blocks the reverse voltage from E5V, so the rest of the board is usually spared.",
+      "fix": "Switch off and check the polarity with a meter before reconnecting: + to VIN (CN6 pin 8), - to GND. Replace U3 if the board no longer runs from VIN; it still runs from USB."
+    },
+    "vin-overvoltage": {
+      "title": "20 V on VIN",
+      "symptom": "U3 gets very hot, then the board goes dark: LD3 off.",
+      "explanation": "The LD1117 is a linear regulator: it turns (VIN - 5 V) times the current into heat, and 15 V is its absolute maximum. ST limits VIN to 7-12 V, and even then to 800 mA at 7 V, 450 mA up to 9 V and 250 mA up to 12 V because of that heat. At 20 V the regulator fails.",
+      "fix": "Use 7-12 V on VIN (9 V is a good choice), or power the board from USB or a 5 V supply on E5V. Replace U3."
+    },
+    "reverse-e5v": {
+      "title": "Supply backwards on E5V",
+      "symptom": "Everything stays dark, the supply goes into current limit, and U4 gets hot.",
+      "explanation": "E5V (CN7 pin 6) has no protection: with JP5 on 2-3 it is the +5V rail. Reversed, -5 V lands on the input of the LD39050 (U4), on LD3 and on a shield's 5 V pins. D3 keeps it away from the ST-LINK, but U4, and the MCU behind it, can be destroyed.",
+      "fix": "Check the polarity with a meter before connecting. Replace U4 and test the MCU after a reversal."
+    },
+    "e5v-overvoltage": {
+      "title": "9 V on E5V",
+      "symptom": "LD3 lights for a moment, then U4 fails; the 3.3 V rail can rise and take the MCU with it.",
+      "explanation": "E5V must be 4.75-5.25 V because it goes straight onto +5V. The LD39050 3.3 V regulator (U4) is rated for a few volts above its 5 V input, about 7 V at most, so 9 V destroys it. VIN is the input that takes 7-12 V, through its own regulator.",
+      "fix": "Put a 9 V supply on VIN, never on E5V; only a regulated 5 V goes on E5V. Replace U4."
+    },
+    "short-5v": {
+      "title": "5V shorted to GND",
+      "symptom": "All the LEDs go out, LD1 included, and the computer may warn about a USB over-current.",
+      "explanation": "There is no fuse on the board. On USB, the T2 switch passes the short until the computer's port shuts down; on VIN, U3 current-limits and overheats; on E5V, only your supply's limit stops it.",
+      "fix": "Unplug, find the stray wire or solder bridge between 5V and GND, and check with a meter's continuity mode before powering it again."
+    },
+    "short-3v3": {
+      "title": "3V3 shorted to GND",
+      "symptom": "LD3 stays on and LD1 still works, but LD2 is dark, nothing runs, and U4 gets warm.",
+      "explanation": "The LD39050 (U4) limits its current and shuts down when it gets too hot, so the short stops at the 3.3 V rail. +5V is still fine, which is why LD3, which hangs on +5V, keeps shining while the MCU has no supply.",
+      "fix": "Unplug and remove the short; a 3.3 V sensor with VCC and GND swapped is the usual one. U4 normally survives it."
+    },
+    "jp6-off": {
+      "title": "JP6 (IDD) jumper off",
+      "symptom": "LD3 is on and the ST-LINK enumerates, but LD2 never blinks and an upload ends with \"No STM32 target found\".",
+      "explanation": "JP6 is the only link from the 3.3 V regulator to the MCU's VDD pins. ST put it there so you can replace it with an ammeter and measure what the STM32 draws. Without the cap the MCU has no power at all.",
+      "fix": "Put the cap back on JP6, or an ammeter across its two pins if you are measuring the current."
+    },
+    "jp5-off": {
+      "title": "No cap on JP5",
+      "symptom": "On USB, LD3 stays dark and the target is dead, but LD1 COM lights: the ST-LINK runs.",
+      "explanation": "JP5 picks where +5V comes from: pins 1-2 for USB (U5V), 2-3 for E5V and VIN. With no cap, +5V is connected to nothing. The ST-LINK has its own supply from USB through D2 and U1, so it still enumerates.",
+      "fix": "Fit the cap on JP5: 1-2 (U5V) for USB, 2-3 (E5V) for VIN or E5V."
+    },
+    "cn2-off": {
+      "title": "CN2 jumpers off",
+      "symptom": "The sketch already on the board keeps running, but every upload fails with \"No STM32 target found\".",
+      "explanation": "The two CN2 caps connect the ST-LINK's SWCLK and SWDIO to the target STM32. With them off, the ST-LINK drives the CN4 SWD header instead, to program another board, and can't reach this one.",
+      "fix": "Put both caps back on CN2 to program the Nucleo itself."
+    },
+    "reversed-d4": {
+      "title": "D4 soldered backwards",
+      "symptom": "On VIN nothing lights; on USB the board works normally.",
+      "explanation": "D4, an STPS2L30A Schottky, carries the LD1117's 5 V onto E5V. Backwards, it blocks that current, so VIN never reaches +5V. USB doesn't pass through D4, which is why the board still runs from USB.",
+      "fix": "Desolder D4 and turn it round so its cathode band faces the E5V side, as the silkscreen shows."
+    },
+    "reversed-c16": {
+      "title": "C16 tantalum backwards",
+      "symptom": "On VIN the supply goes into current limit, and C16 gets hot and may crack or smoke.",
+      "explanation": "C16 is a 10 µF polarised tantalum capacitor right across VIN. Reversed, its oxide layer conducts, so it becomes a near short across the input, and tantalum capacitors can burn when they fail this way.",
+      "fix": "Replace C16 with a new one, its plus band towards U3. A tantalum that has been reversed is damaged even if it looks fine."
+    },
+    "brownout": {
+      "title": "Servo on the 5V pin",
+      "symptom": "The sketch restarts over and over while the servo moves, and the computer may drop the USB port.",
+      "explanation": "On USB the ST-LINK asked the computer for 300 mA, and the board uses part of that itself. A servo starting or stalling pulls several hundred mA more, and there is no fuse: USB's 5 V sags, +5V and then 3.3 V follow, and the STM32 resets each time VDD falls below about 1.7 V (its power-down reset; the brown-out detector is off from the factory).",
+      "fix": "Power servos and motors from their own supply, switch them with a driver, and join the grounds."
+    },
+    "cold-usb": {
+      "title": "Cracked joints on the USB socket",
+      "symptom": "The board blinks off and on when the cable moves, LD1 starts over, and the computer connects and disconnects.",
+      "explanation": "The mini-B socket's shell tabs take the force every time you plug in, and their joints crack on a well-used board. A cracked VBUS or ground joint breaks the power for a moment whenever the cable moves.",
+      "fix": "Reflow the socket's shell tabs and its five pins with fresh solder and flux, and support the cable so it doesn't lever the socket."
+    },
+    "cold-d13": {
+      "title": "Cold joint on D13",
+      "symptom": "The LED on the breadboard misses blinks or flickers, while the sketch runs normally.",
+      "explanation": "A cold joint is solder that never wetted the pin: grey, lumpy and loose. CN5 pin 6 only touches its pad now and then, so D13's signal comes and goes at the socket.",
+      "fix": "Reheat the joint with a clean tip and a little fresh solder until it flows into a shiny cone."
+    }
+  },
+  "assembly": {
+    "unplug": {
+      "title": "Unplug it",
+      "body": "Pull the USB cable and anything on VIN or E5V. Never build or repair a live board."
+    },
+    "strip": {
+      "title": "Strip to the bare PCB",
+      "body": "Take every part off. What's left is the white MB1136 board with its blue silkscreen, the snap-off slots under the ST-LINK and the empty X3 footprint that ST never fits.",
+      "refusal": "Unplug the power first: never work on a live board."
+    },
+    "reflow": {
+      "title": "Pick and place, then reflow",
+      "body": "A machine pastes the pads and sets down every surface-mount part: the STM32F401 and the ST-LINK's STM32F103, the three regulators, the USB switch, the diodes, the LEDs, the mini-B socket, B1 and B2, the 32 kHz crystal and about a hundred 0603 resistors and capacitors. Then the reflow oven melts the paste.",
+      "refusal": "Strip the board first: the reflow starts from bare pads."
+    },
+    "low": {
+      "title": "Place the low parts",
+      "body": "Next come the 8 MHz crystal X1 and the male headers: the two 38-pin morpho rows CN7 and CN10, CN2, CN3, CN4, JP1, JP5, JP6 and the two parking headers CN11 and CN12 for spare caps.",
+      "refusal": "Surface-mount parts and the reflow come first: the oven would melt the headers' plastic."
+    },
+    "sockets": {
+      "title": "Place the Arduino sockets",
+      "body": "Then the four tall female Arduino headers: CN6 POWER, CN8 A0-A5, CN5 D8-D15 and CN9 D0-D7.",
+      "refusal": "Low parts first: with the tall sockets in, the board rocks and the low parts fall out when you turn it over."
+    },
+    "solder": {
+      "title": "Solder the through-hole joints",
+      "body": "Turn the board over and solder every pin, about 130 of them. A good joint is a shiny cone that wets both the pad and the pin.",
+      "refusal": "Place the through-hole parts first: there is nothing to solder yet."
+    },
+    "jumpers": {
+      "title": "Fit the jumper caps",
+      "body": "Push the black caps on: JP5 on 1-2 (U5V, power from USB), JP6 (IDD), and both CN2 caps so the ST-LINK programs this board. JP1 stays open. This is ST's out-of-the-box setting.",
+      "refusal": "Solder the headers first: the caps sit on their pins."
+    },
+    "power-up": {
+      "title": "Plug in USB",
+      "body": "LD1 COM blinks red while the computer enumerates the ST-LINK, then stays red. LD3 PWR lights once T2 switches 5 V to the target, and the factory demo blinks LD2; press B1 to change the rate. The computer sees a NODE_F401RE drive and a virtual COM port."
+    },
+    "rails": {
+      "title": "Check the rails",
+      "body": "With a meter: 5V reads about 5 V on USB and 3V3 reads 3.3 V. VDD on CN7 pin 5 should read 3.3 V too; 0 V there with 3V3 fine means JP6 is off."
+    },
+    "upload-hello": {
+      "title": "Upload a sketch",
+      "body": "Upload Serial hello. The ST-LINK programs the STM32 over SWD, with LD1 flashing red and green while it writes the flash; then the sketch starts and prints over the virtual COM port at 115200 baud.",
+      "refusal": "Plug in USB first: uploads go through the ST-LINK on the cable."
+    },
+    "reset": {
+      "title": "Press RESET",
+      "body": "Press the black B2. NRST goes low, the STM32 restarts and the sketch begins again from setup(). The ST-LINK and its COM port stay connected."
+    }
+  },
+  "lessons": {
+    "blink": {
+      "title": "Blink LD2 and an LED",
+      "lede": "The Nucleo's Hello World. D13 is pin PA5, which drives the green LD2 on the board; wire an LED and a resistor to the same pin and both blink together, at 3.3 V instead of an Uno's 5 V.",
+      "code": {
+        "intro": "Blink LD2, and an LED on D13, at 3.3 V",
+        "resistor": "Resistor in series with the breadboard LED:",
+        "pin": "the green LD2 on the board"
+      },
+      "params": {
+        "on": { "label": "LED on for" },
+        "off": { "label": "LED off for" },
+        "resistor": {
+          "label": "Breadboard LED resistor",
+          "220": "220 Ω",
+          "220-note": "About 6 mA from 3.3 V: bright.",
+          "1k": "1 kΩ",
+          "1k-note": "About 1.3 mA: dimmer, still easy to see.",
+          "10k": "10 kΩ",
+          "10k-note": "About 0.13 mA: it barely glows."
+        }
+      },
+      "checks": {
+        "1": "Runs for 9 seconds without an error",
+        "2": "D13 blinks with a period between 0.1 and 4 s",
+        "3": "Uses pinMode(), digitalWrite() and delay()"
+      },
+      "pins": {
+        "D13": { "to": "220 Ω resistor, then the LED's long leg", "role": "Output: 3.3 V when HIGH, 0 V when LOW. LD2 blinks with it." },
+        "GND": { "to": "The LED's short leg", "role": "The current's way back." }
+      },
+      "callouts": {
+        "LD2": "LD2 on the board, on D13 through 510 Ω.",
+        "R1": "Limits the LED's current from the 3.3 V pin.",
+        "LED1": "Long leg (anode) towards D13."
+      },
+      "specs": {
+        "1": { "label": "LD2", "value": "D13 (PA5), 510 Ω, about 2.5 mA" },
+        "2": { "label": "Logic HIGH", "value": "3.3 V" },
+        "3": { "label": "Pin limit", "value": "25 mA absolute, 20 mA in use" },
+        "4": { "label": "Upload", "value": "ST-LINK over SWD, no bootloader" }
+      },
+      "features": {
+        "1": "LD2 on the board blinks too: it's the same pin",
+        "2": "Pick the resistor and watch the brightness change",
+        "3": "The ST-LINK uploads over SWD: no bootloader, no reset button"
+      },
+      "steps": {
+        "1": "Wire D13 through the resistor to the LED's long leg, and the short leg to GND on CN5.",
+        "2": "Upload: LD1 flashes red and green, then the sketch starts.",
+        "3": "Change the on and off times and upload again."
+      },
+      "hints": {
+        "1": "At 3.3 V the same resistor gives less current than on an Uno: 220 Ω is a good start.",
+        "2": "LED_BUILTIN, LED_GREEN, PA5 and 13 all name the same pin in STM32duino."
+      },
+      "quiz": {
+        "q1": {
+          "q": "What voltage does D13 give when it is HIGH on the Nucleo?",
+          "options": { "1": "5 V", "2": "3.3 V", "3": "It depends on the USB cable" },
+          "why": "The STM32 runs from 3.3 V, so its outputs swing between 0 V and 3.3 V."
+        },
+        "q2": {
+          "q": "Which pin is LD2 on?",
+          "options": { "1": "D13 (PA5)", "2": "PC13", "3": "D0" },
+          "why": "LD2 hangs on PA5, the Arduino D13, through 510 Ω. PC13 is the B1 button."
+        },
+        "q3": {
+          "q": "How does the sketch get into the STM32?",
+          "options": { "1": "Through a serial bootloader, as on an Uno", "2": "Over Wi-Fi", "3": "The ST-LINK writes the flash over SWD" },
+          "why": "The on-board ST-LINK is a debugger: it programs the target through SWDIO and SWCLK, the lines the two CN2 caps connect."
+        }
+      }
+    },
+    "user-button": {
+      "title": "B1 and a knob on A0",
+      "lede": "Read the blue B1 button on PC13 and a potentiometer on A0 with the full 12-bit ADC, and print both over the ST-LINK's virtual COM port. LD2 lights while you hold B1.",
+      "code": {
+        "intro": "Read B1 and a knob on A0, and print them through the ST-LINK",
+        "bits": "ADC resolution in bits",
+        "full": "4095 at 12 bits, 1023 at 10",
+        "pullup": "R30 on the board pulls it up",
+        "vcp": "Serial goes to the ST-LINK's COM port",
+        "low": "B1 connects PC13 to GND"
+      },
+      "params": {
+        "bits": {
+          "label": "ADC resolution",
+          "12": "12 bits (0-4095)",
+          "12-note": "The STM32's full ADC: 0.8 mV per step.",
+          "10": "10 bits (0-1023)",
+          "10-note": "STM32duino's default, for code written for an Uno."
+        },
+        "period": { "label": "Print every" }
+      },
+      "world": {
+        "button": "B1 USER button",
+        "knob": "Knob on A0"
+      },
+      "checks": {
+        "1": "Runs for 4 seconds without an error",
+        "2": "Prints A0 and its voltage while B1 is up",
+        "3": "LD2 lights within 1.1 s of pressing B1",
+        "4": "Prints B1=DOWN while the button is held",
+        "5": "The knob turned all the way reads 3.30 V"
+      },
+      "pins": {
+        "PC13": { "to": "B1 on the board (no wire needed)", "role": "Input with R30's 4.7 kΩ pull-up: LOW while pressed." },
+        "A0": { "to": "The knob's middle leg (wiper)", "role": "ADC input, 0 to 3.3 V." },
+        "3V3": { "to": "One end of the knob", "role": "The top of the knob's range: 3.3 V, never 5 V." },
+        "GND": { "to": "The knob's other end", "role": "The bottom of the range." }
+      },
+      "callouts": {
+        "B1": "Pulls PC13 to GND while pressed.",
+        "RV1": "Its wiper gives 0-3.3 V on A0.",
+        "LD2": "Lights while B1 is held."
+      },
+      "specs": {
+        "1": { "label": "ADC", "value": "12-bit: 0-4095 for 0-3.3 V" },
+        "2": { "label": "Default resolution", "value": "10-bit in STM32duino" },
+        "3": { "label": "Analog input limit", "value": "4.0 V absolute: power sensors from 3V3" },
+        "4": { "label": "Serial", "value": "USART2 through the ST-LINK, 115200 baud" }
+      },
+      "features": {
+        "1": "Press B1 in the figure, or let the script press it",
+        "2": "No pull-up to wire: R30 is on the board",
+        "3": "Wire the knob to 3V3: 5 V on an ADC pin can damage it"
+      },
+      "steps": {
+        "1": "Put the knob on the breadboard: one end to 3V3, the other to GND, the middle leg to A0.",
+        "2": "Upload and open the serial monitor at 115200 baud.",
+        "3": "Turn the knob and hold B1: the numbers change and LD2 lights."
+      },
+      "hints": {
+        "1": "B1 reads LOW when pressed: the button connects PC13 to GND.",
+        "2": "Without analogReadResolution(12), analogRead() returns 0-1023, as on an Uno.",
+        "3": "Nothing in the serial monitor? Set it to 115200 baud."
+      },
+      "quiz": {
+        "q1": {
+          "q": "What does digitalRead(USER_BTN) return while B1 is pressed?",
+          "options": { "1": "HIGH", "2": "Nothing: it floats", "3": "LOW" },
+          "why": "R30 pulls PC13 up to 3.3 V; pressing B1 connects it to GND."
+        },
+        "q2": {
+          "q": "Why does the knob go to 3V3 and not to 5V?",
+          "options": { "1": "An ADC pin in analog mode takes 4.0 V at most and measures only up to 3.3 V", "2": "The Nucleo has no 5V pin", "3": "The knob would turn the other way" },
+          "why": "The STM32's 5 V tolerance holds for digital inputs only. In analog mode the limit is 4.0 V, and anything over 3.3 V reads 4095 anyway."
+        },
+        "q3": {
+          "q": "After analogReadResolution(12), what does 1.65 V read?",
+          "options": { "1": "512", "2": "About 2048", "3": "4095" },
+          "why": "12 bits give 4096 steps over 3.3 V, so half of 3.3 V is about 2048."
+        }
+      }
+    },
+    "pwm-dimmer": {
+      "title": "Dim an LED with PWM",
+      "lede": "The F401 has no DAC, so analogWrite() makes PWM: D9 switches on and off 1000 times a second and the duty sets the brightness. A knob on A0 picks the duty.",
+      "code": {
+        "intro": "A knob on A0 sets the brightness of an LED on D9",
+        "pin": "PWM from timer TIM3",
+        "map": "0..4095 in, 0..255 duty out"
+      },
+      "params": {
+        "period": { "label": "Update every" }
+      },
+      "world": {
+        "knob": "Knob on A0"
+      },
+      "checks": {
+        "1": "Runs for 4.5 seconds without an error",
+        "2": "A quarter turn gives about 25 % duty on D9",
+        "3": "Turned all the way, D9 stays on",
+        "4": "Turned to zero, it prints raw=0 duty=0"
+      },
+      "pins": {
+        "D9": { "to": "220 Ω resistor, then the LED's long leg", "role": "PWM output: 1 kHz, 8-bit duty." },
+        "A0": { "to": "The knob's wiper", "role": "ADC input, 0-4095." },
+        "3V3": { "to": "One end of the knob", "role": "The top of the knob's range." },
+        "GND": { "to": "The knob's other end and the LED's short leg", "role": "Common ground." }
+      },
+      "callouts": {
+        "LED1": "Switches 1000 times a second: your eye sees a steady glow.",
+        "RV1": "Its position becomes the duty.",
+        "R1": "Limits the current: about 5 mA at full duty."
+      },
+      "specs": {
+        "1": { "label": "PWM pins", "value": "D3, D5, D6, D9, D10, D11" },
+        "2": { "label": "PWM", "value": "1 kHz, 8-bit by default" },
+        "3": { "label": "DAC", "value": "none on the F401" }
+      },
+      "features": {
+        "1": "Turn the knob in the figure",
+        "2": "analogWriteResolution() and analogWriteFrequency() change the defaults",
+        "3": "No true analog output: a meter on D9 shows the average of the pulses"
+      },
+      "steps": {
+        "1": "Wire D9 through 220 Ω to the LED, and the knob between 3V3 and GND with its wiper on A0.",
+        "2": "Upload and turn the knob.",
+        "3": "Watch the serial monitor: the duty follows the reading."
+      },
+      "hints": {
+        "1": "map() scales 0-4095 to 0-255; its integer maths rounds down.",
+        "2": "Only the pins marked PWM on the silkscreen work with analogWrite() here."
+      },
+      "quiz": {
+        "q1": {
+          "q": "What does analogWrite(9, 128) do on the Nucleo?",
+          "options": { "1": "Switches D9 on and off at 1 kHz, on half the time", "2": "Sets D9 to 1.65 V with a DAC", "3": "Sets D9 HIGH" },
+          "why": "The F401 has no DAC: analogWrite() is PWM, and 128 of 255 is about 50 % duty."
+        },
+        "q2": {
+          "q": "Why map 0-4095 to 0-255?",
+          "options": { "1": "The LED needs 255 mA", "2": "PWM is 12-bit", "3": "The ADC reads 12 bits but PWM is 8-bit by default" },
+          "why": "analogReadResolution(12) gives 0-4095, and analogWrite() takes 0-255 unless you change analogWriteResolution()."
+        },
+        "q3": {
+          "q": "What does a meter on DC volts read on D9 at 25 % duty?",
+          "options": { "1": "3.3 V", "2": "About 0.8 V", "3": "0 V" },
+          "why": "The meter averages the fast pulses: 25 % of 3.3 V is about 0.8 V."
+        }
+      }
+    },
+    "i2c-scan": {
+      "title": "Find an I2C sensor",
+      "lede": "Scan the I2C bus on D14 (SDA) and D15 (SCL) and ask an MPU-6050 for its WHO_AM_I register. The Nucleo has no I2C pull-ups of its own, so the module has to bring them.",
+      "code": {
+        "intro": "Scan I2C1 for devices, then read the MPU-6050's ID",
+        "addr": "AD0 low: 0x68",
+        "pins": "D14 = SDA (PB9), D15 = SCL (PB8)",
+        "restart": "repeated start: keep the bus",
+        "alive": "blink LD2 so you know it runs"
+      },
+      "params": {
+        "blink": { "label": "LD2 blink time" }
+      },
+      "world": {
+        "imu": "MPU-6050 tilt"
+      },
+      "checks": {
+        "1": "Runs for 3 seconds without an error",
+        "2": "Finds a device at 0x68",
+        "3": "Reads WHO_AM_I = 0x68",
+        "4": "Uses Wire.begin(), beginTransmission() and endTransmission()"
+      },
+      "pins": {
+        "D14": { "to": "The module's SDA", "role": "I2C data (PB9)." },
+        "D15": { "to": "The module's SCL", "role": "I2C clock (PB8)." },
+        "3V3": { "to": "The module's VCC", "role": "Power, 3.3 V." },
+        "GND": { "to": "The module's GND", "role": "Common ground." }
+      },
+      "callouts": {
+        "MPU1": "GY-521: an MPU-6050 with its own 3.3 V regulator and 4.7 kΩ pull-ups.",
+        "U5": "I2C1 inside the STM32 drives D14 and D15.",
+        "CN5": "D14 and D15 are the top two pins of CN5, where an Uno R3 has SDA and SCL."
+      },
+      "specs": {
+        "1": { "label": "Bus", "value": "I2C1 on D14/D15 (PB9/PB8)" },
+        "2": { "label": "Pull-ups on the Nucleo", "value": "none" },
+        "3": { "label": "MPU-6050 address", "value": "0x68 (AD0 low)" },
+        "4": { "label": "Bus speed", "value": "100 kHz by default" }
+      },
+      "features": {
+        "1": "Tilt the module in the figure",
+        "2": "The same two pins as an Uno R3's SDA and SCL",
+        "3": "endTransmission() returns 0 when a device answers"
+      },
+      "steps": {
+        "1": "Wire the GY-521: VCC to 3V3, GND to GND, SDA to D14, SCL to D15.",
+        "2": "Upload and open the serial monitor at 115200 baud.",
+        "3": "Read the scan: one device at 0x68, and WHO_AM_I = 0x68."
+      },
+      "hints": {
+        "1": "Nothing found? Check that SDA and SCL aren't swapped and that the module has pull-ups.",
+        "2": "Tie AD0 HIGH and the MPU-6050 moves to 0x69.",
+        "3": "On the Nucleo, A4 and A5 are plain analog pins: I2C is on D14 and D15."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Where is I2C on the Nucleo's Arduino headers?",
+          "options": { "1": "A4 and A5", "2": "D14 (SDA) and D15 (SCL)", "3": "D0 and D1" },
+          "why": "STM32duino puts Wire on I2C1, PB9 and PB8, which are D14 and D15 on CN5. A4 and A5 are only analog inputs here."
+        },
+        "q2": {
+          "q": "What does endTransmission() returning 0 mean?",
+          "options": { "1": "No device is there", "2": "The bus is stuck", "3": "A device acknowledged its address" },
+          "why": "0 means the address was acknowledged; 2 means no device answered."
+        },
+        "q3": {
+          "q": "Why does the GY-521 work with no extra resistors?",
+          "options": { "1": "It has its own pull-ups on SDA and SCL", "2": "The Nucleo has pull-ups on D14 and D15", "3": "I2C doesn't need pull-ups" },
+          "why": "I2C lines are open-drain and need pull-ups. The Nucleo has none, so they come from the module."
+        }
+      }
+    },
+    "sonar": {
+      "title": "Distance with an HC-SR04",
+      "lede": "Measure distance with an ultrasonic sensor and light LD2 when something comes close. The sensor runs at 5 V, and its ECHO pin goes straight into D8, one of the Nucleo's 5 V tolerant pins.",
+      "code": {
+        "intro": "Measure distance and light LD2 when something is near",
+        "ft": "5 V tolerant, so ECHO goes in directly",
+        "near": "closer than this lights LD2",
+        "ping": "a 10 µs pulse sends the burst",
+        "echo": "ECHO stays HIGH for the round trip: 58 µs per cm"
+      },
+      "params": {
+        "near": { "label": "Near if closer than" },
+        "every": { "label": "Measure every" }
+      },
+      "world": {
+        "distance": "Distance to the object"
+      },
+      "checks": {
+        "1": "Reads 30 cm in the first second",
+        "2": "Reads 12 cm and calls it NEAR",
+        "3": "LD2 lights within 0.4 s of the object coming close",
+        "4": "Reads 45 cm when it moves away",
+        "5": "Times the echo with pulseIn()"
+      },
+      "pins": {
+        "5V": { "to": "The sensor's VCC", "role": "The HC-SR04 needs 5 V." },
+        "D7": { "to": "TRIG", "role": "Output: a 10 µs, 3.3 V pulse starts a measurement." },
+        "D8": { "to": "ECHO", "role": "Input: a 5 V pulse, fine on this 5 V tolerant pin." },
+        "GND": { "to": "The sensor's GND", "role": "Common ground." }
+      },
+      "callouts": {
+        "US1": "Sends 40 kHz bursts from T and listens on R.",
+        "CN5": "D8 (PA9) takes 5 V as a digital input.",
+        "LD2": "Lights when the object is near."
+      },
+      "specs": {
+        "1": { "label": "Range", "value": "2 cm to about 4 m" },
+        "2": { "label": "Timing", "value": "58 µs of echo per cm" },
+        "3": { "label": "Sensor supply", "value": "5 V, about 15 mA" },
+        "4": { "label": "ECHO level", "value": "5 V: only into a 5 V tolerant digital pin" }
+      },
+      "features": {
+        "1": "Drag the object in the figure",
+        "2": "ECHO goes to a digital pin: an ADC input in analog mode takes 4.0 V at most",
+        "3": "Change the near distance and watch LD2"
+      },
+      "steps": {
+        "1": "Wire VCC to 5V, GND to GND, TRIG to D7 and ECHO to D8.",
+        "2": "Upload and open the serial monitor at 115200 baud.",
+        "3": "Move your hand in front of the sensor: LD2 lights when it comes close."
+      },
+      "hints": {
+        "1": "pulseIn() returns 0 when no echo comes back before its timeout.",
+        "2": "The 3.3 V TRIG pulse is enough for the HC-SR04 in practice.",
+        "3": "On a 3.3 V board without 5 V tolerant pins, ECHO needs a voltage divider."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Why can ECHO go straight into D8?",
+          "options": { "1": "The HC-SR04 runs at 3.3 V", "2": "ECHO is only 2 V", "3": "PA9 is 5 V tolerant as a digital input" },
+          "why": "Almost every STM32F401 pin is FT: while the board is powered, a digital input takes up to VDD + 4 V."
+        },
+        "q2": {
+          "q": "How long is ECHO HIGH for an object 10 cm away?",
+          "options": { "1": "10 µs", "2": "About 580 µs", "3": "58 ms" },
+          "why": "Sound needs about 58 µs per cm for the trip out and back, so 10 cm gives about 580 µs."
+        },
+        "q3": {
+          "q": "What does pulseIn() return when nothing echoes back?",
+          "options": { "1": "0, after its timeout", "2": "The last distance", "3": "-1" },
+          "why": "With a 30000 µs timeout, pulseIn() gives up and returns 0, so the sketch prints 0 cm."
+        }
+      }
+    }
+  }
+}
