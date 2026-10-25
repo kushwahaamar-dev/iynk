@@ -1,0 +1,410 @@
+{
+  "title": "Autonomer Liefer-Quad",
+  "tagline": "Ein 690-mm-Schwerlast-Quad mit zwei Computern: ArduPilot fliegt ihn, ein Raspberry Pi plant die Lieferung, und eine Winde lässt das Paket an einer Leine hinab.",
+  "sub": "ArduCopter + Pixhawk 6C + Raspberry Pi 5",
+  "hint": "Bau eine Lieferdrohne, teste ihre Winde und Failsafes und flieg dann ein Paket in einen Garten hinterm Haus",
+  "noun": "Lieferdrohne",
+  "overview": "Zwei Computer teilen sich diesen Rahmen. Der Pixhawk 6C läuft mit ArduCopter: Lageregelung, der Schätzer EKF3, GPS-Navigation, die Mission und jeder Failsafe. Der Raspberry Pi 5 übernimmt das langsame Denken: die Lieferlogik (ein MAVSDK-Skript), das Umwandeln des Bilds der Tiefenkamera in Hindernisabstände für den Pixhawk und eine 4G-Verbindung zur Bodenstation. Sie sprechen MAVLink2 über ein serielles Kabel mit 921600 Baud. Bei einer Lieferung startet sie im Depot, steigt über die Dächer und die Stromleitung, fliegt zur Adresse, sinkt auf einen Schwebeflug in 3,5 m Höhe, lässt das Paket per Winde auf den Boden hinab und gibt es frei, holt die Leine wieder ein und fliegt nach Hause. Das Ablassen an einer Leine hält die 15-Zoll-Propeller, die bis auf den Knochen schneiden, weit weg von Menschen, Haustieren und Zäunen; Wing, Flytrex und Manna liefern genauso. Wähl die Teile und beobachte die Zahlen, bau sie, mach die Prüfungen auf der Werkbank und flieg dann die Lieferung von Hand oder lass sie AUTO fliegen.",
+  "practice": "Flieg die Lieferung zuerst in Loiter: Steig über dem Landeplatz auf 12 m, flieg zum Garten, sink langsam auf 3,5 m über der roten Abwurfscheibe, steig wieder heraus und bring sie zur Landung nach Hause. Sie ist schwer: Sie steigt mit 1,5 m/s und neigt sich nicht mehr als 30°, also plan voraus. Probier AltHold, um zu spüren, wie der Wind eine 5-kg-Drohne herumschiebt, und lass dann AUTO die ganze Mission fliegen und sieh zu, wie sie über dem Garten hält, während das Paket hinuntergeht. Bei einem echten Aufbau: Smoke Stopper beim ersten Einstecken, Motortest ohne Propeller (A vorne rechts, dann im Uhrzeigersinn), Kalibrierung von Beschleunigungssensor und Kompass, ein GPS-Fix draußen, der Windentest, beide Failsafe-Tests ohne Propeller, und lies vor dem ersten Flug jede PreArm-Meldung.",
+  "design": {
+    "fixed": {
+      "FRAME": "690-mm-Klapprahmen aus Carbon und Landekufen",
+      "ESC": "4 × 40-A-ESCs (DShot)",
+      "FC": "Flugcontroller Pixhawk 6C",
+      "COMP": "Raspberry Pi 5 8 GB mit aktivem Kühler",
+      "DEPTH": "Stereo-Tiefenkamera (Klasse RealSense D435i)",
+      "GPS": "M10-GPS + Kompass auf einem Mast",
+      "LTE": "4G/LTE-USB-Modem und Antennen",
+      "RX": "ExpressLRS-Reserveempfänger",
+      "TEL": "SiK-Telemetriefunk",
+      "XT60": "Power Board: XT90-S, Strommodul, Kondensator, BECs",
+      "TOP": "Deckplatte, Abstandsbolzen und Akkugurte",
+      "CARGO": "Servowinde, Auslösehaken und Frachtkäfig",
+      "PARCEL": "Das Paket (1 kg)"
+    },
+    "verdict": {
+      "over": "{kv} KV an {cells}S dreht 15-Zoll-Propeller viel zu schnell: Die Motoren überhitzen, und die ESCs verlieren die Synchronisation. Große Propeller wollen wenig KV, 300 bis 450 KV an 6S.",
+      "weak": "Schub-Gewichts-Verhältnis {tw}:1 mit dem 1-kg-Paket. Unter etwa 1,6:1 kann eine Schwerlastdrohne sich nicht aus einer Böe herausarbeiten oder einen einbrechenden Akku überstehen, und unter 1:1 hebt sie nicht vom Boden ab.",
+      "ok": "Die Teile passen zusammen: {tw}:1 mit Paket an Bord, genug, um sich aus einer Böe herauszuarbeiten und mit einem müden Akku zu landen. Das Schwebegas des Rechners ist für große Propeller pessimistisch: Bei diesem Aufbau lernt ArduPilot einen Schwebeflug bei etwa 50 % (MOT_THST_HOVER), und der echte Strom bei Vollgas liegt eher bei 75 A als beim Wert des Rechners."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "690-mm-Klapprahmen aus Carbon",
+      "what": "Eine Carbon-Nabe mit vier Armen aus 25-mm-Carbonrohr, die sich für den Transport nach hinten klappen lassen, und zwei Landekufen, die die Nabe 21 cm hoch halten, damit der Frachtkäfig darunter passt. Jeder Arm rastet mit einem Verschluss an seinem Gelenk ein: Ein Arm, der nicht ganz eingerastet ist, klappt beim Start unter Schub ein, und die Drohne überschlägt sich."
+    },
+    "MOTORS": {
+      "name": "4 × Motoren 4114 mit 400 KV",
+      "what": "Große Außenläufer mit wenig KV: 400 U/min pro Volt, also etwa 8900 U/min ohne Last an einem 6S-Akku mit 22,2 V, die richtige Drehzahl für 15-Zoll-Propeller. Mit 15-Zoll-Carbonpropellern bringt jeder bei Vollgas etwa 2,6 kg und bei halbem Gas mit 6 A etwa 1,3 kg, und deshalb schwebt sie mit einem Paket 20 Minuten lang."
+    },
+    "ESC": {
+      "name": "4 × 40-A-ESCs an den Armen",
+      "what": "Ein ESC pro Motor, auf halber Länge jedes Arms, wo der Propellerabwind ihn kühlt und die Motorkabel kurz bleiben. Jeder bekommt den Akkustrom direkt vom Power Board und ein DShot600-Signal vom Pixhawk. Bei Vollgas zieht ein Motor etwa 19 A, also lassen 40 A reichlich Reserve."
+    },
+    "WIRES": {
+      "name": "Motorphasenkabel und Stromkabel der ESCs",
+      "what": "Drei Phasenkabel von jedem ESC zu seinem Motor (tausch zwei beliebige, und der Motor läuft rückwärts), und ein rotes und ein schwarzes Kabel von den Pads des Power Boards den Arm entlang zu jedem ESC. Bei einer 6S-Drohne dieser Größe haben die Hauptkabel 10 bis 12 AWG."
+    },
+    "XT60": {
+      "name": "Power Board, Strommodul und Kondensator",
+      "what": "Das Akkukabel (ein Anti-Spark-Stecker XT90-S: Ein 6S-Akku mit 10 Ah ist zu viel für einen XT60), ein Strommodul, das Spannung und Strom für den Pixhawk an POWER1 misst, ein Low-ESR-Kondensator mit 1000 µF über den Akku-Pads (Streifen zu Minus), der Spannungsspitzen schluckt, und zwei BECs: 5 V 5 A für den Pi und 6 V für das Windenservo."
+    },
+    "FC": {
+      "name": "Flugcontroller Pixhawk 6C",
+      "what": "Ein STM32H743 mit ArduCopter, zwei IMUs (ein ICM-42688-P und ein BMI055 oder BMI088), einem Barometer und 16 Ausgängen. Er sitzt auf einer schwingungsdämpfenden Platte in der Mitte der Nabe, mit seinem Pfeil zur Nase. Er fliegt die Drohne selbst: Der Pi bittet ihn nur um Dinge."
+    },
+    "RX": {
+      "name": "ExpressLRS-Reserveempfänger",
+      "what": "Ein Mensch muss immer übernehmen können. Der ELRS-Empfänger an TELEM3 bringt den Sender des Sicherheitspiloten mit: Schnipp auf Loiter, und die Knüppel fliegen sie, egal, was die Mission gerade tat. Bricht die Funkverbindung ab, fliegt der RC-Failsafe RTL."
+    },
+    "TEL": {
+      "name": "SiK-Telemetriefunk",
+      "what": "Ein serielles Funkpaar mit großer Reichweite: eines an TELEM1, eines am USB der Bodenstation, MAVLink2 mit 57600 Baud über ein paar Kilometer. Wähl das Band für dein Land: 915 MHz in den USA, 433 MHz in Europa."
+    },
+    "DEPTH": {
+      "name": "Stereo-Tiefenkamera",
+      "what": "Eine Kamera der Klasse RealSense D435i an der Nase: Zwei Infrarotkameras messen über etwa 87° hinweg, wie weit alles vor ihr entfernt ist. Der Pi macht aus jedem Tiefenbild bis zu 72 Hindernisabstände und schickt sie zehnmal pro Sekunde an den Pixhawk. Sie schaut nur nach vorn: Nichts neben, hinter oder unter der Drohne wird gesehen."
+    },
+    "TOP": {
+      "name": "Deckplatte und Akkugurte",
+      "what": "Eine Carbonplatte auf 40-mm-Abstandsbolzen über dem Pixhawk. Sie trägt den Pi, das LTE-Modem, den GPS-Mast und den Akku und hält Stromverkabelung und Flugcontroller vor dem Wetter geschützt."
+    },
+    "COMP": {
+      "name": "Begleitcomputer Raspberry Pi 5",
+      "what": "Der zweite Computer: Er führt das Lieferskript (MAVSDK), die Verarbeitung der Tiefenkamera und mavlink-router aus, das seine eine MAVLink-Verbindung zum Pixhawk mit den lokalen Programmen und über 4G mit der Bodenstation teilt. Drei Drähte zu TELEM2 (TX, RX, Masse; beide Seiten arbeiten mit 3,3 V). Er wird von seinem eigenen 5-V-5-A-BEC versorgt, nie vom TELEM-Port des Pixhawk."
+    },
+    "LTE": {
+      "name": "4G/LTE-Modem",
+      "what": "Ein USB-Modem am Pi mit zwei Antennen. Es bringt MAVLink zu einer Bodenstation überall dort, wo Mobilfunk ist, über ein VPN, weil Mobilfunknetze keine eingehenden Verbindungen annehmen. Damit außerhalb der Sichtweite zu fliegen, braucht eine Genehmigung der Luftfahrtbehörde."
+    },
+    "GPS": {
+      "name": "M10-GPS + Kompass auf einem Mast",
+      "what": "Ein u-blox-M10-Empfänger mit seinem Kompass, 13 cm über der Deckplatte auf einem Carbonmast, so weit wie möglich weg von den 20 bis 75 A in den Stromkabeln, die eine Kompassmessung verbiegen würden. Sein Pfeil zeigt zur Nase. Seine LED blinkt ohne Fix blau und mit einem 3D-Fix grün."
+    },
+    "CARGO": {
+      "name": "Winde, Auslösehaken und Frachtkäfig",
+      "what": "Ein Servo mit Endlosdrehung dreht eine Trommel unter der Nabe: Sein PWM legt fest, wie schnell die Leine hinaus- oder hereingeht. Das 1-kg-Paket reist in einem unten offenen Käfig, hängt an einem Haken, der sich öffnet, wenn die Leine am Boden schlaff wird, und geht an der Leine hinunter, während die Drohne in 3,5 m Höhe schwebt. Die Winde hat keinen Encoder: ArduPilot schätzt die Leinenlänge aus der Geschwindigkeit, die es verlangt hat."
+    },
+    "BATT": {
+      "name": "6S-LiPo mit 10000 mAh",
+      "what": "Nominal 22,2 V, voll 25,2 V, etwa 1,35 kg, über dem Schwerpunkt auf die Deckplatte geschnallt. Er ergibt etwa 20 Minuten Schwebeflug mit dem Paket und 15 bis 17 Minuten Lieferflug, und die Failsafes halten 30 % für den Heimweg zurück."
+    },
+    "PROPS": {
+      "name": "15-Zoll-Carbonpropeller",
+      "what": "Zweiblättrige Carbonpropeller mit 15 × 5.5 Zoll: gegen den Uhrzeigersinn auf M1 und M2, im Uhrzeigersinn auf M3 und M4. Carbon ist steif und effizient, und scharf: Ein 15-Zoll-Propeller mit 6000 U/min schneidet bis auf den Knochen, und deshalb geht das Paket an einer Leine hinunter, statt dass die Drohne in einem Garten landet."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Den Rahmen aufklappen",
+      "body": "Stell den Rahmen auf seine Kufen und klapp die vier Arme auf, bis jeder Verschluss einrastet. Prüf jeden Verschluss: Ein Arm, der nicht verriegelt ist, klappt unter Schub ein."
+    },
+    "motors": {
+      "title": "Die vier Motoren montieren",
+      "body": "Ein 4114-Motor an jedes Armende, vier Schrauben in die 52-mm-Halterung. ArduPilot nummeriert sie M1 vorne rechts, M2 hinten links, M3 vorne links, M4 hinten rechts.",
+      "refusal": "Die Motoren werden an die Armenden geschraubt: Klapp zuerst den Rahmen auf."
+    },
+    "esc": {
+      "title": "Die ESCs an den Armen anbringen",
+      "body": "Mach je einen 40-A-ESC mit Kabelbindern auf halber Länge jedes Arms fest, unter dem Propeller, damit der Propellerabwind ihn kühlt.",
+      "refusal": "Die ESCs sitzen auf den Armen: Klapp zuerst den Rahmen auf."
+    },
+    "wires": {
+      "title": "Motoren und Strom der ESCs verdrahten",
+      "body": "Löte die drei Phasenkabel jedes Motors an seinen ESC und führ die roten und schwarzen Kabel von den ESCs die Arme entlang zur Nabe.",
+      "refusal": "Diese Verkabelung verbindet die Motoren mit den ESCs: Setz zuerst beide ein."
+    },
+    "power": {
+      "title": "Das Power Board einsetzen",
+      "body": "Montier das Power Board an der Nabe: das Akkukabel mit seinem XT90-S hinten heraus, das Strommodul, die beiden BECs und den 1000-µF-Kondensator über den Akku-Pads mit dem Streifen zu Minus.",
+      "refusal": "Die Kabel der ESCs enden am Power Board: Setz zuerst die ESCs ein."
+    },
+    "fc": {
+      "title": "Den Pixhawk 6C montieren",
+      "body": "Kleb den Pixhawk auf seine Dämpfungsplatte in der Mitte der Nabe, Pfeil zur Nase. Steck das Strommodul an POWER1 und die vier Signalkabel der ESCs an AUX 1 bis 4.",
+      "refusal": "Der Pixhawk wird vom Power Board versorgt: Setz zuerst das Power Board ein."
+    },
+    "rx": {
+      "title": "Den Reserveempfänger einsetzen",
+      "body": "Montier den ELRS-Empfänger rechts an der Nabe, die Antenne über den Arm hinaus, und steck ihn an TELEM3.",
+      "refusal": "Der Empfänger wird an den Pixhawk gesteckt: Setz zuerst den Pixhawk ein."
+    },
+    "tel": {
+      "title": "Den Telemetriefunk einsetzen",
+      "body": "Montier den SiK-Funk links an der Nabe, mit der Antenne schräg nach oben und außen, und steck ihn an TELEM1.",
+      "refusal": "Der Telemetriefunk wird an den Pixhawk gesteckt: Setz zuerst den Pixhawk ein."
+    },
+    "depth": {
+      "title": "Die Tiefenkamera montieren",
+      "body": "Schraub die Tiefenkamera vorn an die Nabe, waagerecht und geradeaus blickend: Die Tiefenkamera-Unterstützung von ArduPilot erwartet sie nach vorn gerichtet.",
+      "refusal": "Die Tiefenkamera wird an die Nabe geschraubt: Klapp zuerst den Rahmen auf."
+    },
+    "top": {
+      "title": "Mit der Deckplatte schließen",
+      "body": "Schraub die Deckplatte auf ihre vier 40-mm-Abstandsbolzen über Pixhawk, Empfänger und Funk, mit den Akkugurten durchgefädelt.",
+      "refusal": "Die Deckplatte deckt Pixhawk, Empfänger und Telemetriefunk ab: Setz zuerst alle drei ein."
+    },
+    "comp": {
+      "title": "Den Raspberry Pi 5 einsetzen",
+      "body": "Montier den Pi auf der Deckplatte. Verbinde seinen UART mit TELEM2: TX des Pi an RX des Pixhawk, RX des Pi an TX des Pixhawk, Masse an Masse, und lass den 5-V-Pin von TELEM unverbunden. Versorg ihn über das 5-V-5-A-BEC und steck die Tiefenkamera in einen blauen USB-3-Port.",
+      "refusal": "Der Pi sitzt auf der Deckplatte: Setz zuerst die Deckplatte auf."
+    },
+    "lte": {
+      "title": "Das LTE-Modem ergänzen",
+      "body": "Steck das 4G-Modem in einen der USB-Ports des Pi und stell seine beiden Antennen auf, weg vom GPS-Mast.",
+      "refusal": "Das Modem wird in den Pi gesteckt: Setz zuerst den Pi ein."
+    },
+    "gps": {
+      "title": "Den GPS-Mast aufstellen",
+      "body": "Klapp den GPS-Mast hinten auf der Deckplatte hoch, den Pfeil des Pucks zur Nase, und steck sein 10-poliges Kabel an GPS1.",
+      "refusal": "Der GPS-Mast sitzt auf der Deckplatte: Setz zuerst die Deckplatte auf."
+    },
+    "cargo": {
+      "title": "Winde und Frachtkäfig aufhängen",
+      "body": "Schraub die Winde und ihren Käfig unter die Nabe, steck das Windenservo an AUX 5, fädel die Leine ein und häng das Paket in den Auslösehaken.",
+      "refusal": "Die Winde hängt an der Nabe: Klapp zuerst den Rahmen auf."
+    },
+    "batt": {
+      "title": "Den Akku festschnallen",
+      "body": "Schnall den 6S-Akku längs auf die Deckplatte über der Mitte der Drohne. Lass ihn bis zu den Prüfungen auf der Werkbank abgesteckt.",
+      "refusal": "Der Akku wird auf die Deckplatte geschnallt und ins Power Board gesteckt: Setz zuerst beides ein."
+    },
+    "props": {
+      "title": "Die Propeller montieren, ganz zuletzt",
+      "body": "Propeller gegen den Uhrzeigersinn auf M1 und M2, im Uhrzeigersinn auf M3 und M4. Mach das erst nach dem Motortest, mit abgestecktem Akku.",
+      "refusal": "Die Propeller kommen auf die Motoren, und erst, wenn die Deckplatte drauf ist: Setz zuerst beides ein."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "Der XT90-S-Stecker des 6S-Akkus ins Kabel des Power Boards. Der Anti-Spark-Stecker verhindert, dass der Einschaltstrom des großen Kondensators die Kontakte anfrisst.",
+    "XT60-ESC": "Akkuspannung von den Pads des Power Boards zu jedem ESC, ein rotes und ein schwarzes Kabel an jedem Arm entlang.",
+    "ESC-MOTORS": "Drei Phasenkabel pro Motor. Die Reihenfolge der drei legt die Drehrichtung fest.",
+    "XT60-FC": "Das 6-polige Kabel des Strommoduls an POWER1: eine saubere 5-V-Versorgung für den Pixhawk und dazu die Messwerte für Spannung und Strom, die die Akku-Failsafes brauchen.",
+    "XT60-COMP": "5 V von einem 5-A-BEC in die Stiftleiste des Pi (Pin 2 oder 4, und Masse an Pin 6). Der Pi 5 mit einer Tiefenkamera und einem Modem an seinem USB braucht das; der TELEM-Port des Pixhawk kann es nicht liefern.",
+    "COMP-FC": "MAVLink2 mit 921600 Baud an TELEM2: drei Drähte, TX an RX, RX an TX, Masse. Beide Seiten arbeiten mit 3,3 V, also kein Pegelwandler, und der 5-V-Pin bleibt unverbunden.",
+    "TEL-FC": "Der SiK-Funk an TELEM1: MAVLink2 mit 57600 Baud zur Bodenstation.",
+    "RX-FC": "Der ELRS-Empfänger an TELEM3: CRSF braucht einen vollständigen UART, also kommt er an einen TELEM-Port, nicht an den RCIN-Pin.",
+    "GPS-FC": "Ein 10-poliges Kabel an GPS1: die seriellen Daten des GPS, der Kompass an I²C, die Leitungen für LED, Summer und Sicherheitsschalter, und 5 V.",
+    "FC-ESC": "DShot600 an AUX 1 bis 4 (SERVO9 bis 12 auf Motor1 bis Motor4 gesetzt). Die eigenen FMU-Ausgänge des Pixhawk können DShot ohne zusätzliche Einstellung.",
+    "FC-CARGO": "Das Windenservo an AUX 5 (SERVO13, Winch), versorgt vom 6-V-BEC an der Servoschiene: Ein großes Servo an den eigenen 5 V des Pixhawk könnte ihn in einen Brown-out treiben.",
+    "DEPTH-COMP": "Die Tiefenkamera an einem USB-3-Port des Pi: die Tiefenbilder, die die Ausweich-Pipeline in Hindernisabstände umwandelt.",
+    "LTE-COMP": "Das 4G-Modem an einem USB-Port des Pi, das MAVLink zur Bodenstation trägt."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke-Stopper-Test",
+      "pass": "Die Lampe hat nur kurz geblinkt: kein Kurzschluss zwischen Plus und Minus. Nimm bei einer 6S-Drohne einen Stopper, der für 6S ausgelegt ist, und entfern ihn vor dem Armen: Die Motoren können den Flugstrom nicht durch ihn ziehen.",
+      "fail": "Die Lampe blieb an: Etwas ist kurzgeschlossen. Hier sitzt der Kondensator verkehrt herum; dreh ihn um (Streifen zu Minus) und teste erneut."
+    },
+    "motors": {
+      "title": "Motortest (ohne Propeller)",
+      "pass": "Der Motortest von Mission Planner hat sie von A bis D gedreht, von vorne rechts im Uhrzeigersinn: A ist M1, B ist M4, C ist M2, D ist M3. M1 und M2 gegen den Uhrzeigersinn, M3 und M4 im Uhrzeigersinn. Die Propeller können drauf.",
+      "fail": "Ein Motor hat sich falsch herum oder an der falschen Ecke gedreht. Tausch zwei seiner Phasenkabel (oder kehr ihn im ESC um) und prüf die Reihenfolge der AUX-Kabel: Mit Propellern würde sie sich beim Start überschlagen."
+    },
+    "calibrate": {
+      "title": "Kalibrierung des Beschleunigungssensors",
+      "pass": "In den sechs Lagen kalibriert (waagerecht, beide Seiten, Nase nach unten, Nase nach oben, auf dem Rücken), dann Calibrate Level auf den Kufen. Die PreArm-Sperre \"3D Accel calibration needed\" ist weg.",
+      "fail": "Setz zuerst den Pixhawk ein. Zeigt sein Pfeil nach hinten, dreh ihn um oder setz AHRS_ORIENTATION auf 4 (Yaw180), starte neu und kalibrier erneut."
+    },
+    "compass": {
+      "title": "Kompasskalibrierung",
+      "pass": "Die Kalibrierung an Bord hat jede Seite abgetastet, die Offsets gespeichert und um einen Neustart gebeten. Mit dem Pfeil des Pucks nach vorn stimmen Kompass und GPS überein, und Loiter hält still, statt zu kreisen.",
+      "fail": "Setz Pixhawk und GPS-Mast ein und nimm die Propeller ab: Du drehst die Drohne in deinen Händen um (bei einer so großen Drohne macht Large Vehicle MagCal das stattdessen aus einer bekannten Richtung). Wird der Puck neu eingesetzt, heißt das, erneut zu kalibrieren."
+    },
+    "gps": {
+      "title": "GPS-Fix",
+      "pass": "3D-Fix mit 18 Satelliten und HDOP 0,7: EKF3 nutzt das GPS, die LED blinkt grün, und Loiter, RTL und AUTO sind erlaubt.",
+      "fail": "Setz Pixhawk und GPS-Mast ein und steck den Akku ein: Das GPS braucht Strom und freien Himmel. Ohne 3D-Fix meldet die PreArm-Prüfung \"GPS 1: Bad fix\", und AUTO startet nicht."
+    },
+    "winch": {
+      "title": "Windentest",
+      "pass": "Ein DO_WINCH von der Bodenstation hat 3 cm abgespult, gehalten und wieder eingeholt, richtig herum. Die Länge ist nur eine Schätzung aus der befohlenen Geschwindigkeit, also setz sie jedes Mal auf null, wenn die Leine ganz eingeholt ist.",
+      "fail": "Setz Pixhawk und Winde ein und steck den Akku ein: Das Windenservo läuft über das 6-V-BEC an der Servoschiene. Eine Winde, die falsch herum spult, würde den Haken in die Trommel wickeln."
+    },
+    "failsafe": {
+      "title": "Funk-Failsafe (ohne Propeller)",
+      "pass": "Auf der Werkbank gearmt, Sender aus: Am Boden disarmt sie sofort. In der Luft würde FS_THR_ENABLE 1 RTL fliegen, und FS_GCS_ENABLE 1 tut dasselbe, wenn Telemetrie und 4G beide 5 s lang verstummen.",
+      "fail": "Nimm die Propeller ab, setz Pixhawk, Empfänger und Telemetriefunk ein und steck den Akku ein. Eine Drohne ohne Failsafe macht weiter, was man ihr zuletzt gesagt hat, wohin auch immer sie das führt."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Rahmen, Motorausgänge und Strom",
+      "explain": "In ArduCopter 4.7.2 setzt du Parameter, keine Befehle: In MAVProxy wird jedes param set sofort gespeichert. Rahmen Quad X, die vier Motoren an AUX 1 bis 4 mit DShot600 (AUX 5 und 6 sind eine andere Timer-Gruppe, also kann die Winde an AUX 5 bei PWM bleiben), Schublinearisierung für 15-Zoll-Propeller, die Spannung des vollen und leeren 6S-Akkus, ein niedrigerer Gyrofilter für langsame große Propeller und das Strommodul als analoge Akkuüberwachung."
+    },
+    "links": {
+      "title": "Ports für Funk, Begleitcomputer und GPS",
+      "explain": "Jeder serielle Port bekommt ein Protokoll. TELEM1 ist MAVLink2 zum SiK-Funk mit 57600, TELEM2 ist MAVLink2 zum Pi mit 921600 (die schnelle Verbindung, die die Tiefendaten brauchen), TELEM3 (SERIAL5) ist RCIN für den ELRS-Empfänger mit 420 kBaud, und GPS1 ist das GPS."
+    },
+    "winch": {
+      "title": "Die Winde an AUX 5",
+      "explain": "Eine PWM-Winde ist ein Servo mit Endlosdrehung: Die Pulsbreite legt die Leinengeschwindigkeit fest. ArduPilot treibt sie bis WINCH_RATE_MAX an und berechnet die Leinenlänge, indem es die verlangte Geschwindigkeit aufsummiert, also driftet die Länge. Das DO_WINCH der Mission verlangt eine Länge; RC8_OPTION 45 legt die Winde für den Sicherheitspiloten auf einen Drehregler."
+    },
+    "avoid": {
+      "title": "Hindernisvermeidung mit der Tiefenkamera",
+      "explain": "Der Pi schickt die Hindernisabstände der Tiefenkamera als MAVLink-Näherungssensor (PRX1_TYPE 2). In Loiter hält die einfache Vermeidung 1,5 m vor allem an, was vorn liegt (AVOID_*); in AUTO lenkt BendyRuler (OA_TYPE 1) die Route um Hindernisse herum, die es gesehen hat. Die Kamera schaut nur nach vorn, also kann sie keinen Draht daneben und keinen Baum dahinter sehen."
+    },
+    "failsafe": {
+      "title": "Failsafes und Geofence",
+      "explain": "Funk verloren: RTL. Bodenstation 5 s lang verloren (SiK- und 4G-Verbindung beide): RTL. Akku schwach (3,5 V pro Zelle oder noch 3000 mAh übrig, eine Reserve von 30 %): RTL. Kritisch (3,3 V pro Zelle): an Ort und Stelle landen. Ein Akku unter 23,4 V armt nicht. Der Geofence begrenzt sie auf 30 m Höhe und 300 m Entfernung von zu Hause. ARMING_SKIPCHK 0 führt jede PreArm-Prüfung aus: 4.7 hat ARMING_CHECK, das die auszuführenden Prüfungen auflistete, durch eine Liste der zu überspringenden Prüfungen ersetzt."
+    },
+    "stabilize": {
+      "title": "Stabilize",
+      "explain": "Die Drohne richtet sich selbst auf, und der Gasknüppel steuert die Motoren direkt, also hält der Pilot die Höhe. Sie braucht weder GPS noch Barometer, und das macht diesen Modus zur letzten Rettung des Sicherheitspiloten. ATC_ANGLE_MAX begrenzt die Neigung in jedem Modus, seit 4.7 in Grad."
+    },
+    "althold": {
+      "title": "AltHold",
+      "explain": "Das Barometer hält die Höhe; der Gasknüppel verlangt Steigen oder Sinken, bis PILOT_SPD_UP. Mit 5 kg an Bord sind 1,5 m/s reichlich. Nichts hält die Position, also schiebt der Wind sie weiter."
+    },
+    "loiter": {
+      "title": "Loiter",
+      "explain": "GPS und Kompass halten auch die Position: Lass los, und sie bremst und hält an. LOIT_SPEED_MS begrenzt die Geschwindigkeit und LOIT_ACC_MAX_M die Beschleunigung, niedrig gehalten, damit ein Paket an der Leine nicht zu schwingen beginnt. 4.7 hat sie auf SI-Einheiten umbenannt: LOIT_SPEED 500 (cm/s) ist jetzt LOIT_SPEED_MS 5."
+    },
+    "rtl": {
+      "title": "Rückkehr zum Startpunkt",
+      "explain": "Sie steigt auf RTL_ALT_M (oder bleibt höher), fliegt mit RTL_SPEED_MS nach Hause, schwebt RTL_LOIT_TIME lang über dem Startpunkt und landet mit LAND_SPD_MS. Hier reichen 12 m über die 7 m hohen Dächer und die 9 m hohe Stromleitung. RTL funktioniert aus jedem Modus, sobald sie eine Position und einen Startpunkt hat, aber man kann nicht darin armen: Arm in Loiter, starte, dann schalte um."
+    },
+    "auto": {
+      "title": "AUTO: die Lieferung",
+      "explain": "Der Pi lädt die Mission hoch: Start auf 12 m, Flug zum Garten, hinunter auf 3,5 m, DO_WINCH spult 3,4 m Leine ab, während ein 4-s-Loiter die Drohne stillhält, der Haken öffnet sich am Boden, DO_WINCH holt sie während eines zweiten Loiters wieder ein, dann RTL. DO-Befehle halten die Drohne nicht, also sind es die Loiter, die sie an Ort und Stelle halten, während sich die Leine bewegt. Arm in Loiter und schalte dann auf AUTO."
+    }
+  },
+  "flight": {
+    "modes": {
+      "loiter": {
+        "title": "Loiter",
+        "hint": "GPS-Positionshaltung: Die Knüppel legen eine Geschwindigkeit bis 5 m/s fest, und die Drohne hält an, wenn du loslässt."
+      },
+      "althold": {
+        "title": "AltHold",
+        "hint": "Das Barometer hält die Höhe, aber nichts hält die Position: Auch eine 5-kg-Drohne driftet mit dem Wind."
+      },
+      "stabilize": {
+        "title": "Stabilize",
+        "hint": "Selbstnivellierend mit einer Neigungsgrenze von 30°; das Gas liegt bei dir, also hältst du die Höhe."
+      },
+      "rtl": {
+        "title": "RTL",
+        "hint": "Steigt auf 12 m, fliegt nach Hause und landet selbst auf dem Landeplatz."
+      },
+      "auto": {
+        "title": "AUTO-Lieferung",
+        "hint": "Fliegt die Lieferung selbst: in 12 m Höhe zum Garten, hinunter auf 3,5 m, 8 s an der Winde, dann nach Hause zur Landung."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Funk des Sicherheitspiloten verloren: RTL, mit Steigflug auf 12 m für den Heimweg.",
+      "gcs-loss": "5 s lang kein Heartbeat von der Bodenstation, weder über SiK noch über 4G: RTL.",
+      "low-battery": "Unter 21,0 V oder noch 3000 mAh übrig: RTL, mit einer Reserve von 30 % für den Heimweg.",
+      "battery-critical": "Unter 19,8 V oder 1500 mAh: Sie landet an Ort und Stelle, statt den Heimflug zu riskieren.",
+      "ekf": "Der Schätzer vertraut seiner Position nicht mehr (ein GPS-Aussetzer zwischen Häusern, ein gestörter Kompass): Sie landet.",
+      "fence": "Höher als 30 m oder mehr als 300 m von zu Hause: RTL."
+    },
+    "controls": "Tastatur: Leertaste armt und disarmt, W und S steigen und sinken, die Pfeiltasten fliegen vorwärts, rückwärts und seitwärts, A und D gieren, V schaltet auf die Ansicht der Tiefenkamera, R setzt die Drohne zurück auf den Landeplatz. In Loiter hält sie an, wenn du loslässt. Auf dem Handy ist der linke Knüppel Gas und Gieren, der rechte Nicken und Rollen. Ein Gamepad funktioniert in Mode 2."
+  },
+  "courses": {
+    "delivery": {
+      "title": "Abwurf im Garten hinterm Haus",
+      "brief": "Starte im Depot, steig auf 12 m über die Dächer und die Stromleitung, flieg zum Garten hinterm Haus, sink für das Paket auf 3,5 m über der roten Scheibe, steig wieder heraus und lande zurück auf dem Landeplatz. Flieg sie selbst in Loiter gegen die Sollzeiten oder schalte auf AUTO und sieh zu, wie sie die Mission fliegt.",
+      "goals": {
+        "1": "START: über dem Landeplatz auf 12 m steigen",
+        "2": "REISEFLUG: in 12 m Höhe zum Garten",
+        "3": "ABWURF: in 3,5 m über der roten Scheibe schweben",
+        "4": "STEIGEN: wieder hoch auf 12 m",
+        "5": "HEIM: in 12 m Höhe über dem Depot",
+        "6": "LANDEN: auf dem Landeplatz"
+      }
+    }
+  },
+  "quizzes": {
+    "power": {
+      "module": {
+        "q": "Warum braucht diese Drohne ein Strommodul an POWER1?",
+        "options": {
+          "1": "Um den Akku zwischen Lieferungen zu laden",
+          "2": "Damit der Pixhawk die Spannung und den gezogenen Strom kennt, die die Akku-Failsafes brauchen",
+          "3": "Um die Winde anzutreiben"
+        },
+        "why": "Ohne es kann ArduPilot nicht sagen, wie viel Ladung übrig ist, also löst das RTL bei schwachem Akku nie aus. Das Strommodul gibt dem Pixhawk außerdem eine eigene, saubere 5-V-Versorgung."
+      },
+      "bec": {
+        "q": "Woher bekommt der Raspberry Pi 5 seinen Strom?",
+        "options": {
+          "1": "Vom TELEM2-Port des Pixhawk",
+          "2": "Von einer USB-Powerbank",
+          "3": "Von seinem eigenen 5-V-5-A-BEC auf dem Power Board"
+        },
+        "why": "Ein Pi 5 mit einer Tiefenkamera und einem Modem an seinem USB zieht weit mehr, als der 5-V-Pin eines TELEM-Ports liefern sollte, und eine einbrechende Versorgung würde ihn mitten in der Lieferung neu starten. Er bekommt sein eigenes BEC; das TELEM-Kabel führt nur TX, RX und Masse."
+      }
+    },
+    "comp": {
+      "split": {
+        "q": "Welcher Computer hält die Drohne in der Luft?",
+        "options": {
+          "1": "Der Pixhawk: Er führt Lageregelung, Schätzer und Failsafes aus, egal, was der Pi tut",
+          "2": "Der Raspberry Pi: Er ist der schnellere Computer",
+          "3": "Beide teilen sich die Aufgabe zu gleichen Teilen"
+        },
+        "why": "Der Pixhawk erledigt das Fliegen in Echtzeit. Der Pi bittet nur über MAVLink um Dinge (eine Mission, eine Geschwindigkeit, eine Hindernisliste); stürzt er ab, macht der Pixhawk weiter, und der Failsafe der Bodenstation bringt die Drohne nach Hause."
+      },
+      "uart": {
+        "q": "Wie ist der serielle Port des Pi mit TELEM2 verbunden?",
+        "options": {
+          "1": "TX an TX und RX an RX, mit 5 V",
+          "2": "Über einen 5-V-Pegelwandler",
+          "3": "TX des Pi an RX des Pixhawk, RX des Pi an TX des Pixhawk, und Masse"
+        },
+        "why": "Eine serielle Verbindung kreuzt: Was die eine Seite sendet, empfängt die andere. Beide Platinen nutzen 3,3-V-Logik, also kein Pegelwandler, und der 5-V-Pin von TELEM bleibt unverbunden."
+      }
+    },
+    "cargo": {
+      "line": {
+        "q": "Warum das Paket an einer Leine hinablassen, statt im Garten zu landen?",
+        "options": {
+          "1": "Die Winde ist schneller als eine Landung",
+          "2": "So bleiben die 15-Zoll-Propeller hoch über Menschen, Haustieren und Zäunen",
+          "3": "Eine Landung würde zu viel Akku verbrauchen"
+        },
+        "why": "Drehende Carbonpropeller dieser Größe schneiden bis auf den Knochen. In 3,5 m Höhe zu schweben, während das Paket an einer Leine hinuntergeht, hält sie außer Reichweite, und so arbeiten kommerzielle Lieferdrohnen."
+      },
+      "length": {
+        "q": "Woher weiß ArduPilot, wie viel Leine eine PWM-Winde abgespult hat?",
+        "options": {
+          "1": "Es schätzt es, indem es die verlangte Geschwindigkeit aufsummiert, also driftet die Länge",
+          "2": "Ein Encoder an der Trommel zählt die Umdrehungen",
+          "3": "Die Tiefenkamera misst es"
+        },
+        "why": "Eine PWM-Winde hat keinen Sensor: Die Pulsbreite legt nur eine Geschwindigkeit fest, und ArduPilot integriert diese Geschwindigkeit zu einer Länge. Setz sie jedes Mal auf null, wenn die Leine ganz eingeholt ist."
+      }
+    },
+    "fly": {
+      "rtl": {
+        "q": "Du hast in Loiter gearmt und fliegst. Du legst den Schalter auf RTL um. Was passiert?",
+        "options": {
+          "1": "Nichts: RTL funktioniert nur, wenn du in RTL gearmt hast",
+          "2": "Sie landet an Ort und Stelle",
+          "3": "Sie steigt auf RTL_ALT_M, fliegt nach Hause und landet"
+        },
+        "why": "RTL greift aus jedem Modus, sobald die Drohne eine Position und einen Startpunkt hat. Was du nicht kannst, ist in RTL zu armen: Es ist kein Modus, in dem man armen kann."
+      },
+      "gcs": {
+        "q": "In AUTO stürzt der Pi ab, und die 4G-Verbindung verstummt. Was macht FS_GCS_ENABLE 1?",
+        "options": {
+          "1": "Nach FS_GCS_TIMEOUT (5 s) ohne Heartbeat der Bodenstation fliegt sie RTL",
+          "2": "Sie beendet zuerst die Mission",
+          "3": "Sie stoppt die Motoren"
+        },
+        "why": "Mit den standardmäßigen FS_OPTIONS bedeutet eine verlorene Bodenstation in AUTO RTL. Mit gesetztem Bit 1 von FS_OPTIONS würde sie stattdessen die Mission zu Ende fliegen."
+      },
+      "fourS": {
+        "q": "Warum kann ein 4S-Akku mit 10000 mAh diese Drohne mit den 400-KV-Motoren nicht fliegen?",
+        "options": {
+          "1": "4S-Akkus sind zu schwer",
+          "2": "Bei 14,8 V drehen die Motoren zu langsam: Das Schub-Gewichts-Verhältnis fällt unter 1, also hebt sie nie vom Boden ab",
+          "3": "Der Pixhawk kann nicht an 4S laufen"
+        },
+        "why": "Der Schub steigt mit dem Quadrat der Drehzahl, und die Drehzahl ist KV mal Volt. Der Wechsel von 6S auf 4S senkt den Schub um mehr als die Hälfte: 0,95:1 mit dem Paket, also kann Vollgas sie nicht heben."
+      }
+    }
+  }
+}
