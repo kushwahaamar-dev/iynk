@@ -1,3 +1,6 @@
+> Copy of the HackTX 2026 Devpost page as pasted on 2026-10-24 at 13:09 CDT, kept for reference: rules, prizes and
+> judging criteria. SimLab's own text for Devpost is in `docs/hacktx/DEVPOST-WRITEUP.md`.
+
 HackTX 2026
 Once upon a time, incredible things were built...
 Join hackathon
