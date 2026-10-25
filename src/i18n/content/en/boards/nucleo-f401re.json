@@ -42,7 +42,7 @@
     "swd": "Used by the ST-LINK for SWD. Don't use these as I/O while it is connected.",
     "pc13": "B1's pin, with R30's 4.7 kΩ pull-up. PC13 sits in the backup domain: it sinks 3 mA at most and must not source current, so never drive an LED from it.",
     "lse": "Drives the 32.768 kHz crystal X2. Reaches CN7 only with SB48/SB49 closed.",
-    "hse": "The clock pins: the ST-LINK's 8 MHz clock arrives on PH0 (OSC_IN). Leave them for the clock.",
+    "hse": "The clock pins: the ST-LINK's 8 MHz clock arrives on PH0 (OSC_IN). In oscillator mode they are not 5 V tolerant; leave them for the clock.",
     "vbat": "The real-time clock's backup supply, tied to VDD through SB45.",
     "u5v": "USB's 5 V before the T2 switch: there as soon as the cable is in.",
     "cn4": "The ST-LINK's own SWD port, for programming another board. Take the CN2 caps off to use it."
