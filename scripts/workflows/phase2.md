@@ -35,7 +35,7 @@ Wave A goes first because it holds what wave B builds on: the engine requests, t
 
    | Shared file | Wave A | Wave B |
    |---|---|---|
-   | `figures/engine/**`, `figures/tools/**` | P2-engine | P2-engine-b |
+   | `figures/engine/**`, `figures/tools/**`, `figures/vendor/**` | P2-engine | P2-engine-b |
    | `src/content/schema.ts` (additive only, logged at the top of `docs/ARCHITECTURE.md`) | P2-flight | P2-drones-vtol |
    | `src/lib/interp/**` | P2-modules (sensor inputs only) | P2-pi (`python/**`), P2-fpga (`verilog/**`, compile options) |
    | `src/lib/boardlab/engine.ts`, `src/lib/boardlab/inputs.ts` | P2-modules | P2-fpga |

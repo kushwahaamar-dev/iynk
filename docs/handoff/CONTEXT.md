@@ -172,6 +172,10 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   English in the other locales and are listed for phase 3. Asked Amar for the go and the wave size before launching.
 - **10-24 19:29, Amar.** Phase 2 start: "Launch wave A, 9 agents (Recommended)". Wave A runs as a workflow from
   `scripts/workflows/phase2-wave-a.js`; wave B waits for his next go.
+- **10-24 19:50, Amar.** "Pause this simply. We will resume after one hour again. I'll ask you to resume it. Pause
+  this safely." The driver stopped wave A (no agent had finished), left the agents' uncommitted work in the tree
+  untouched with a backup outside the repo, and made the script relaunch each label with a note to continue from its
+  own work. Resume only when Amar says so.
 
 ## 6. Lessons learned (apply them)
 

@@ -5,7 +5,8 @@ export const meta = {
   phases: [{ title: 'Wave A', detail: 'one agent per label, each owning the files in its phase2.md section' }],
 }
 
-// Runs every wave-A label, or only the labels passed as args (a relaunch after a dead session).
+// Runs every wave-A label, or only the labels passed in args: either a list of labels, or
+// { labels, resume: { stoppedAt, since, backup } } when an earlier run was stopped part way.
 const LABELS = [
   'P2-engine',
   'P2-uno-r4',
@@ -17,7 +18,19 @@ const LABELS = [
   'P2-rob-motor',
   'P2-social',
 ]
-const labels = Array.isArray(args) && args.length ? LABELS.filter((l) => args.includes(l)) : LABELS
+const picked = Array.isArray(args) ? args : args?.labels
+const labels = picked?.length ? LABELS.filter((l) => picked.includes(l)) : LABELS
+const resume = Array.isArray(args) ? null : args?.resume
+
+const resumeNote = (label) =>
+  resume
+    ? `
+
+You are resuming. An earlier run of ${label} was stopped at ${resume.stoppedAt} when the driver paused the wave.
+Its commits since ${resume.since} are on origin/main, and its uncommitted edits are still in the tree (a copy is in
+${resume.backup}). Start with \`git log --oneline ${resume.since}..HEAD\` and \`git status --short\`, find the work
+on your own paths, check it (it may stop mid-edit) and carry on from it instead of starting over.`
+    : ''
 
 const REPORT = {
   type: 'object',
@@ -48,7 +61,7 @@ How this differs from the CLAUDE.md files you were given:
 - Commit and push after each verified step, with only your own paths (Shared rules 8), so a dead session loses little.
 
 Finish with the structured report: what you changed, your commits, what you verified (commands and real results),
-what is not done and why, and the requests you filed.`
+what is not done and why, and the requests you filed.${resumeNote(label)}`
 
 phase('Wave A')
 log(`Wave A: ${labels.join(', ')}`)
