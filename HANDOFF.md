@@ -170,6 +170,14 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Checkpoint log (newest first)
 
+- 2026-10-25 09:42 CDT (Amar): rename to iynk pushed (`ca09a95`), redesign pushed (`d4db93e`..`827a1e4`, About fix
+  `0d39165`), docs from the live claim check (`dc42867`). Production build with typecheck: 827 pages; unit tests 2797
+  passed, 5 skipped; e2e on a keyless build (as gate 3) 116 passed, 2 skipped (with Amar's keys, 6 tests that assume
+  no keys fail by design). Gemini fallback model now `gemini-3.5-flash` (3.8 and 3.7 are rate-limited on the key).
+  Vultr VM label `iynk-realtime`; its compose stack is still `simlab-realtime` in `/opt/simlab-realtime`, so before the
+  next `scripts/realtime-deploy.sh` run `docker compose down` there first. Solana deploy still uploading (public RPC
+  throttles this IP); next: `npm run setup:devnet -- --smoke`, then the Solana env on Vercel.
+
 - 2026-10-25 08:57 CDT (Amar): write-up filled (site, repo, more than 250 agents, Vultr in Dallas; Vultr and Tiger
   Data entered, .Tech dropped). Live claim check `wf_791f52ba-b58` launched (5 labels, read-only).
 
