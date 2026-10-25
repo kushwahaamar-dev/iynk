@@ -19,6 +19,11 @@ const tilt = (deg: number): WorldInput => ({
   min: -90, max: 90, step: 1, default: deg, unit: '°', gesture: 'tilt', label: 'tilt',
 });
 
+const mic = (level: number): WorldInput => ({
+  id: 'mic', quantity: 'level', device: { kind: 'onboard', sensor: 'microphone' }, pins: [], part: 'MIC1',
+  min: 0, max: 255, step: 1, default: level, gesture: 'slide', label: 'mic',
+});
+
 describe('micro:bit music', () => {
   it('sounds on pin 0 the way Arduino tone() does, so the trace and the figure see it', () => {
     const { trace } = run('import music\nmusic.pitch(440, 500)\n', 1000);
@@ -86,6 +91,41 @@ except OSError as e:
     const { trace, out } = run('from microbit import microphone, SoundEvent\nprint(microphone.sound_level(), microphone.current_event(), SoundEvent.LOUD)\n', 100);
     expect(out).toEqual(["0 None SoundEvent('loud')"]);
     expect(trace.pins.P202?.at(-1)).toMatchObject({ mode: 'out', v: 1 });
+  });
+
+  it('hears LOUD when the level rises through 196 and QUIET when it falls back through 118 (CODAL 85 dB and 65 dB)', () => {
+    const source = `from microbit import *
+print(microphone.current_event(), microphone.was_event(SoundEvent.LOUD))
+sleep(150)
+print(microphone.current_event(), microphone.is_event(SoundEvent.LOUD))
+sleep(100)
+print(microphone.current_event(), microphone.is_event(SoundEvent.LOUD))
+sleep(100)
+print(microphone.current_event(), microphone.get_events())
+print(microphone.was_event(SoundEvent.LOUD), microphone.get_events())
+`;
+    // quiet room, then a clap, then a level between the two thresholds (no event), then quiet again
+    const script = [{ t: 100, input: 'mic', value: 220 }, { t: 200, input: 'mic', value: 150 }, { t: 300, input: 'mic', value: 60 }];
+    const { trace, out } = run(source, 500, { inputs: [mic(50)], script });
+    expect(trace.error).toBeNull();
+    expect(out).toEqual([
+      'None False',
+      "SoundEvent('loud') True",
+      "SoundEvent('loud') True",
+      "SoundEvent('quiet') (SoundEvent('loud'), SoundEvent('quiet'))",
+      'False ()',
+    ]);
+  });
+
+  it('moves the thresholds with set_threshold, clamped to 0-255, LOUD always above QUIET', () => {
+    const source = `from microbit import *
+microphone.set_threshold(SoundEvent.LOUD, 100)
+print(microphone.was_event(SoundEvent.LOUD))
+microphone.set_threshold(SoundEvent.QUIET, 300)
+print(microphone.was_event(SoundEvent.QUIET))
+`;
+    // 150 is under the default LOUD (196) but over 100; QUIET at 255 lifts LOUD to 256, so 150 is quiet again
+    expect(run(source, 100, { inputs: [mic(150)], script: [] }).out).toEqual(['True', 'True']);
   });
 
   it('points north in a 48 µT field, and calibrates on the first heading', () => {

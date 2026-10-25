@@ -239,7 +239,7 @@ export function installMicrobit(rt: PyRt): void {
   }));
 
   // The microphone takes its power from RUN_MIC (nRF P0.20, here pin 202), which also lights the red D70 beside it.
-  // The room is quiet unless a world input sets the level; LOUD and QUIET events are not simulated yet.
+  // The room is quiet unless a world input sets the level.
   const RUN_MIC = 202;
   const micOn = () => {
     w.setMode(RUN_MIC, 'output');
@@ -255,17 +255,60 @@ export function installMicrobit(rt: PyRt): void {
   const QUIET = soundEvent('quiet');
   SoundEvent.dict.set('LOUD', LOUD);
   SoundEvent.dict.set('QUIET', QUIET);
+  // LOUD and QUIET the way CODAL's level detector makes them: LOUD when the level rises to the LOUD threshold, QUIET
+  // when it falls back to the QUIET one, nothing in between. MicroPython hands set_threshold straight to CODAL, on
+  // the same 0-255 scale as sound_level() (35 dB = 0, 100 dB = 255), and CODAL starts at 85 dB and 65 dB: about 196
+  // and 118 (codal-microbit-v2 MicroBitAudio.cpp, codal-core LevelDetectorSPL.h). The level is read whenever the
+  // program uses the microphone, so a clap shorter than the gap between two reads goes unheard.
+  const threshold = { loud: 196, quiet: 118 };
+  let loud = false;
+  let last: PyInstance | null = null;
+  let history: PyInstance[] = [];
+  const listen = () => {
+    micOn();
+    const level = Math.round(clamp(w.onboard.get('microphone') ?? 0, 0, 255));
+    const event = !loud && level >= threshold.loud ? LOUD : loud && level <= threshold.quiet ? QUIET : null;
+    if (event) {
+      loud = event === LOUD;
+      last = event;
+      // kept short, so a program that never reads its events doesn't grow the list without end
+      history = [...history, event].slice(-16);
+    }
+    return level;
+  };
+  const soundEventArg = (event: unknown) => {
+    if (event !== LOUD && event !== QUIET) throw pyErr('TypeError', 'expecting SoundEvent.LOUD or SoundEvent.QUIET');
+    return event;
+  };
   const microphone = new PyInstance(nclass('MicroBitMicrophone', {
-    sound_level: () => { micOn(); return BigInt(Math.round(clamp(w.onboard.get('microphone') ?? 0, 0, 255))); },
-    current_event: () => { micOn(); return null; },
-    was_event: () => { micOn(); return false; },
-    is_event: () => { micOn(); return false; },
-    get_events: () => { micOn(); return new PyTuple([]); },
+    sound_level: () => BigInt(listen()),
+    current_event: () => { listen(); return last; },
+    // was_event and get_events clear the history; is_event only looks at its newest entry
+    was_event: (_s, [event]) => {
+      soundEventArg(event);
+      listen();
+      const heard = history.includes(event as PyInstance);
+      history = [];
+      return heard;
+    },
+    is_event: (_s, [event]) => { soundEventArg(event); listen(); return history.at(-1) === event; },
+    get_events: () => {
+      listen();
+      const events = new PyTuple(history);
+      history = [];
+      return events;
+    },
     set_threshold: (_s, [event, value]) => {
-      const v = Number(toBig(value));
-      if (event !== LOUD && event !== QUIET) throw pyErr('TypeError', 'expecting SoundEvent.LOUD or SoundEvent.QUIET');
-      if (v < 0 || v > 255) throw pyErr('ValueError', 'threshold must be 0-255');
-      micOn();
+      soundEventArg(event);
+      const v = Math.round(clamp(Number(toBig(value)), 0, 255));
+      if (event === LOUD) {
+        threshold.loud = v;
+        if (threshold.quiet >= v) threshold.quiet = v - 1;
+      } else {
+        threshold.quiet = v;
+        if (threshold.loud <= v) threshold.loud = v + 1;
+      }
+      listen();
       return null;
     },
   }));
