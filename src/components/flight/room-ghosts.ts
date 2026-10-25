@@ -33,15 +33,18 @@ export function useRoomGhosts(course: string) {
   const seen = useRef(new Map<string, Seen>());
   const roomId = room?.id ?? null;
   useEffect(() => {
-    const live = roomRef.current;
+    seen.current.clear();
+  }, [roomId]);
+  // the provider can swap the client under the same room id (when the page's store registers), and every room
+  // change is a new api object: listening again each time is a Set add and delete
+  useEffect(() => {
+    if (!room) return;
     const map = seen.current;
-    map.clear();
-    if (!live) return;
-    return live.onPose((from, raw) => {
+    return room.onPose((from, raw) => {
       const pose = readPose(raw);
       if (pose) map.set(from, { ...pose, at: performance.now() });
     });
-  }, [roomId]);
+  }, [room]);
 
   const peers = useCallback((): PeerGhost[] => {
     const live = roomRef.current;

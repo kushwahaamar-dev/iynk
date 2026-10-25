@@ -608,21 +608,6 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
       <p role="status" aria-live="polite" className="mt-2 min-h-[1.5em] text-sm font-bold" data-testid="flight-message">
         {message}
       </p>
-      <dl className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <Stat label={dict.stats.state} value={stateText} />
-        <Stat label={dict.stats.battery} value={t("stats.perCell", { v: snap.perCell.toFixed(2) })} tone={snap.low ? "bad" : "ink"} />
-        <Stat label={dict.stats.altitude} value={snap.alt.toFixed(1)} unit="m" />
-        <Stat label={dict.stats.speed} value={String(snap.speed)} unit="km/h" />
-        <Stat label={dict.stats.throttle} value={String(Math.round(snap.throttle * 100))} unit="%" />
-        <Stat label={dict.stats.current} value={snap.amps.toFixed(1)} unit="A" />
-        <Stat label={dict.stats.used} value={String(snap.mah)} unit="mAh" />
-        <Stat label={dict.stats.next} value={nextText} />
-        <Stat label={dict.stats.best} value={best === null ? dict.stats.noBest : isRace ? fmtTime(best) : best.toFixed(1)} unit={best === null ? undefined : "s"} />
-        <Stat label={dict.stats.laps} value={String(snap.laps)} />
-        <Stat label={dict.stats.crashes} value={String(snap.crashes)} />
-        {par && <Stat label={dict.stats.par} value={t("stats.parValue", { gold: par.gold, silver: par.silver, bronze: par.bronze })} unit="s" />}
-        {isRace && snap.splits.length > 0 && <Stat label={dict.stats.splits} value={snap.splits.map(fmtTime).join(" · ")} unit="s" />}
-      </dl>
       {crash && crashFix && (
         <section
           aria-labelledby="flight-why-title"
@@ -644,6 +629,21 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
           </div>
         </section>
       )}
+      <dl className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <Stat label={dict.stats.state} value={stateText} />
+        <Stat label={dict.stats.battery} value={t("stats.perCell", { v: snap.perCell.toFixed(2) })} tone={snap.low ? "bad" : "ink"} />
+        <Stat label={dict.stats.altitude} value={snap.alt.toFixed(1)} unit="m" />
+        <Stat label={dict.stats.speed} value={String(snap.speed)} unit="km/h" />
+        <Stat label={dict.stats.throttle} value={String(Math.round(snap.throttle * 100))} unit="%" />
+        <Stat label={dict.stats.current} value={snap.amps.toFixed(1)} unit="A" />
+        <Stat label={dict.stats.used} value={String(snap.mah)} unit="mAh" />
+        <Stat label={dict.stats.next} value={nextText} />
+        <Stat label={dict.stats.best} value={best === null ? dict.stats.noBest : isRace ? fmtTime(best) : best.toFixed(1)} unit={best === null ? undefined : "s"} />
+        <Stat label={dict.stats.laps} value={String(snap.laps)} />
+        <Stat label={dict.stats.crashes} value={String(snap.crashes)} />
+        {par && <Stat label={dict.stats.par} value={t("stats.parValue", { gold: par.gold, silver: par.silver, bronze: par.bronze })} unit="s" />}
+        {isRace && snap.splits.length > 0 && <Stat label={dict.stats.splits} value={snap.splits.map(fmtTime).join(" · ")} unit="s" />}
+      </dl>
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm" role="group" aria-labelledby="flight-ghosts-title" data-testid="ghosts">
         <span id="flight-ghosts-title" className="font-bold">
           {dict.ghosts.title}

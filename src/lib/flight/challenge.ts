@@ -44,16 +44,26 @@ function hash(text: string): number {
   return h;
 }
 
+/** The item that scores highest for the day (rendezvous hashing): a craft added later only moves days it wins. */
+function pickFor<T>(date: string, items: T[], key: (item: T) => string): T {
+  let best = items[0], top = -1;
+  for (const item of items) {
+    const score = hash(`simlab:${date}:${key(item)}`);
+    if (score > top || (score === top && key(item) < key(best))) [best, top] = [item, score];
+  }
+  return best;
+}
+
 /** The day's challenge, or null when nothing flies. */
 export function dailyChallenge(date: string, pool: ChallengeCraft[]): DailyChallenge | null {
   if (!isChallengeDay(date)) return null;
-  const crafts = pool.filter((c) => c.courses.length > 0 && c.batts.length > 0).sort((a, b) => (a.id < b.id ? -1 : 1));
+  const crafts = pool.filter((c) => c.courses.length > 0 && c.batts.length > 0);
   if (!crafts.length) return null;
-  const h = hash(`simlab:${date}`);
-  const craft = crafts[h % crafts.length];
-  const course = craft.courses[(h >>> 8) % craft.courses.length];
-  const batt = [...craft.batts].sort()[(h >>> 16) % craft.batts.length];
-  return { date, craft: craft.id, course: course.id, batt, wind: ((h >>> 24) & 1) === 1, board: `daily-${date.replaceAll("-", "")}` };
+  const craft = pickFor(date, crafts, (c) => c.id);
+  const course = pickFor(date, craft.courses, (c) => `${craft.id}/${c.id}`);
+  const batt = pickFor(date, craft.batts, (b) => `${craft.id}#${b}`);
+  const wind = (hash(`simlab:${date}:wind`) & 1) === 1;
+  return { date, craft: craft.id, course: course.id, batt, wind, board: `daily-${date.replaceAll("-", "")}` };
 }
 
 /** The share link's path and query: the day, and optionally the time to beat and who flew it. */

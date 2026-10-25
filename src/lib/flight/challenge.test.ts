@@ -30,6 +30,18 @@ describe("the daily challenge", () => {
     expect(crafts.size).toBe(2);
   });
 
+  it("moves to a craft added later only on the days that craft wins", () => {
+    const more = [...pool, { id: "octo", courses: [{ id: "farm" }], batts: ["6s"] }];
+    let moved = 0;
+    for (let d = 1; d <= 28; d++) {
+      const date = `2027-02-${String(d).padStart(2, "0")}`;
+      const before = dailyChallenge(date, pool)!, after = dailyChallenge(date, more)!;
+      if (after.craft === "octo") moved++;
+      else expect(after).toEqual(before);
+    }
+    expect(moved).toBeGreaterThan(0);
+  });
+
   it("flies a course and pack the craft has", () => {
     for (let d = 1; d <= 28; d++) {
       const c = dailyChallenge(`2026-12-${String(d).padStart(2, "0")}`, pool)!;

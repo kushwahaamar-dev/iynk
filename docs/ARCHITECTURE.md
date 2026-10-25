@@ -7,6 +7,12 @@ docs/DECISIONS.md.
 
 ## 0. Change log (newest first; after 14:00 CDT Oct 24 schema and id changes are additive only)
 
+- v1.7 Oct 24 (P2-fun): additive, no schema.ts change. Fly page fun (§3.2 item 8): two localStorage keys,
+  `simlab:ghost:v1:<craft>:<course>` (your fastest lap as a ghost track, cut from a replay of the session log) and
+  `simlab:challenge:v1:<yyyy-mm-dd>` (your best time on that day's challenge). Leaderboard course ids are
+  `<craft>-<course>` and `daily-<yyyymmdd>`; `flight.lap` is sent only for non-demo laps flown with nothing broken on
+  purpose, `flight.start` on each take-off. Room poses on the fly page are `{ p: [x, y, z], q: [yaw, pitch, roll, 0],
+  gate: <course id> }` (degrees). The fly store ignores `sync/hydrate`: each pilot in a room keeps their own build.
 - v1.6 Oct 24 (P2-fun): additive, no schema.ts change. D7 settings: `settings.telemetry: boolean` (default true,
   opt-out: the "Share anonymous usage counts" checkbox at the bottom of each lab page), and `settings.sound` now
   defaults to false (BUILD-PLAN §3.1 "off by default"). Old saved documents keep their stored `sound`; a document
