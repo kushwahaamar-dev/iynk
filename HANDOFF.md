@@ -83,7 +83,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-25 03:06 CDT (machine clock).
+- **Updated:** 2026-10-25 03:21 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session). Amar is asleep
   since 22:20 and gave full autonomy for every remaining build phase except Solana and hardware (CONTEXT.md §5) The Mac is kept awake by `caffeinate -dimsu -t 54000` (pid 28721, from 23:08, until about 14:08).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Do not build in
@@ -195,13 +195,25 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
     delta with the languages whose `figure-strings.test.ts` still fails, the quiz job with the boards still missing
     quizzes. Stop the audit server on port 3430 (`pkill -f "next start -H 127.0.0.1 -p 3430"`) and delete
     `.next-final` once phase 2 of the final pass is done.
-- **Next step:** wait for the three runs (final pass, figure delta, quizzes) and the gate 2 figure run. Write
-  `docs/verify/gate2.md` from the gate 2 results above. As each final-pass phase reports, record it here; after
-  F-review, fix or relaunch what `docs/verify/ui-review.md` lists, then run gate 3 locally (BUILD-PLAN §6 in all six
-  languages: the gate-2 commands plus the crawl and Playwright on the final UI), and recheck the claims wave D listed
-  (counts, the figure-string caveat in JUDGE-QA Q22, VIDEO and DEVPOST-WRITEUP, the click labels). Then prepare
-  Amar's morning list: keys into `.env.local`, his OK for Vercel env and deploy, the relay host, video 08:30-10:00,
-  Devpost by 10:30 (he submits).
+- **Next step:** wait for the final pass (`wf_c95e5cdf-cda`) and the figure sweep (`wf_7513ba0c-9cb`); record each
+  report here. Then, in this order (each item's files are free only once its owner is done):
+  1. After F-review: fix or relaunch what `docs/verify/ui-review.md` lists.
+  2. After the sweep: `python3 -I figures/tools/cfbuild.py --all`, commit `public/figures`; quad5 gets the racer's
+     Betaflight failsafe test (button in `figures/drones/quad5.js`, `tests` entry in `src/content/drones/quad5.ts`,
+     prose in six languages; sweep item 34).
+  3. After F-build-panels and F-build-shell: `FigureFrame` sends the figure `{ type: 'chrome', hide: [...] }` with the
+     button ids S-engine lists per page kind (`docs/FIGURES.md`); `ai.json` `unavailableBody` names Gemini as well as
+     Meta, in six languages.
+  4. `node scripts/figure-strings.mjs`, commit the key list, one figure-string delta (`phase3-wave.js`,
+     `P3-figs-delta-<lang>`) for every key not yet translated; HUD "ON"/"OFF" can be translated once silkscreen no
+     longer goes through `CF_T` (sweep item 11).
+  5. Gate 3 (BUILD-PLAN §6 in all six languages): the gate-2 commands, `src/i18n/figure-strings.test.ts` with 0
+     missing, `node scripts/figure-langs.mjs <base> <dir>` (figures in every language, laptop and phone). Clean
+     `tsconfig.json` by parsing it, never with a regex, and `AGENTS.md`, and the `.next-*` folders agents leave.
+  6. Recheck the docs against the final UI: VIDEO and PITCH click labels, BUILD-PLAN §1 step 1 (now `led-backwards`
+     exists), JUDGE-QA counts and Q22, DEVPOST-WRITEUP.
+  7. Amar's morning list: keys into `.env.local`, his OK for the Vercel env upload and deploy, the relay host, video
+     08:30-10:00, Devpost by 10:30 (he submits).
 - **Agents:** P1-checks `1e6f87c4-b1ea-4a31-9425-b1de6de9a88f` done (`39cca43`, `c168147`). P1-health
   `d393e1cb-35bc-4db4-bc0b-37c02c1b8e14` done (`28d8564`). P1-voice `b337455f-1b6d-45d5-93d8-51efb828d421` done
   (`b1e5308`). P1-engine `1a0582c2-ec24-42ab-8b3c-e2ac162b8e48` done (`f104e10`, `a45ec96`, `03eaab0`, `9d49d45`,
