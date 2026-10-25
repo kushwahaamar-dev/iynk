@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type ComponentProps } from "react";
+import { useId, type ComponentProps } from "react";
 import { cx } from "./cx";
 import { Icon, type IconName } from "./icons";
-import { Kbd } from "./Kbd";
+import { TipBubble, useTip } from "./Tooltip";
 
 type IconButtonProps = Omit<ComponentProps<"button">, "children" | "aria-label"> & {
   /** Accessible name; also shown as the tooltip. */
@@ -39,24 +39,8 @@ export function IconButton({
   ...rest
 }: IconButtonProps) {
   const tipId = useId();
-  const [tip, setTip] = useState(false);
-  const delay = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const tip = useTip();
   const described = [rest["aria-describedby"], tipId].filter(Boolean).join(" ");
-
-  useEffect(() => () => clearTimeout(delay.current), []);
-  useEffect(() => {
-    if (!tip) return;
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setTip(false);
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [tip]);
-
-  const hide = () => {
-    clearTimeout(delay.current);
-    setTip(false);
-  };
 
   return (
     <button
@@ -66,25 +50,23 @@ export function IconButton({
       aria-describedby={described}
       onPointerEnter={(event) => {
         onPointerEnter?.(event);
-        if (event.pointerType === "touch") return;
-        clearTimeout(delay.current);
-        delay.current = setTimeout(() => setTip(true), 400);
+        tip.onPointerEnter(event);
       }}
       onPointerLeave={(event) => {
         onPointerLeave?.(event);
-        hide();
+        tip.onPointerLeave();
       }}
       onPointerDown={(event) => {
         onPointerDown?.(event);
-        hide();
+        tip.hide();
       }}
       onFocus={(event) => {
         onFocus?.(event);
-        if (event.currentTarget.matches(":focus-visible")) setTip(true);
+        tip.onFocus(event);
       }}
       onBlur={(event) => {
         onBlur?.(event);
-        hide();
+        tip.onBlur();
       }}
       className={cx(
         "relative inline-flex shrink-0 items-center justify-center rounded-full border-2 text-ink transition-[transform,box-shadow,background-color] duration-100",
@@ -97,18 +79,9 @@ export function IconButton({
       )}
     >
       <Icon name={icon} size={size === "sm" ? 18 : 20} />
-      <span
-        id={tipId}
-        role="tooltip"
-        hidden={!tip}
-        className={cx(
-          "pointer-events-none absolute start-1/2 z-40 flex w-max max-w-64 -translate-x-1/2 items-center gap-1.5 rounded-lg border-[1.5px] border-line bg-ink px-2.5 py-1 font-body text-xs font-semibold leading-snug text-paper shadow-ink-sm",
-          tooltipSide === "top" ? "bottom-full mb-2" : "top-full mt-2",
-        )}
-      >
+      <TipBubble id={tipId} open={tip.open} side={tooltipSide} shortcut={shortcut}>
         {title ?? label}
-        {shortcut ? <Kbd className="text-ink">{shortcut}</Kbd> : null}
-      </span>
+      </TipBubble>
     </button>
   );
 }

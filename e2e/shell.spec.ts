@@ -32,6 +32,21 @@ async function openSettings(page: Page) {
   return panel;
 }
 
+// The theme options whose words don't fit their pill, or that the row hides by scrolling.
+function cutThemeOptions(page: Page) {
+  return page.evaluate(() => {
+    const group = [...document.querySelectorAll('[role="dialog"] [role="radiogroup"]')].find((g) => (g as HTMLElement).offsetParent !== null);
+    if (!group) return ["no theme control"];
+    const box = group.getBoundingClientRect();
+    return [...group.querySelectorAll('[role="radio"]')].flatMap((radio) => {
+      const pill = radio.getBoundingClientRect();
+      const words = (radio.querySelector("span") ?? radio).getBoundingClientRect();
+      const cut = words.right > pill.right + 0.5 || words.left < pill.left - 0.5 || pill.right > box.right + 0.5 || pill.left < box.left - 0.5;
+      return cut ? [radio.textContent ?? ""] : [];
+    });
+  });
+}
+
 async function expectNoAxeViolations(page: Page) {
   const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
   const summary = results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`);
@@ -136,8 +151,27 @@ test("an unknown URL is a real 404 inside the localized layout", async ({ page }
   await expect(page.locator("footer:visible")).toHaveCount(1);
 });
 
+for (const locale of LOCALES) {
+  test(`the ${locale} theme options read in full in the Settings popover`, async ({ page }) => {
+    await page.goto(`/${locale}`);
+    await openSettings(page);
+    expect(await cutThemeOptions(page)).toEqual([]);
+  });
+}
+
 test.describe("on a phone", () => {
   test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+
+  for (const locale of ["en", "fr"] as const) {
+    test(`the ${locale} menu reads in full and shows no tooltip on its close button`, async ({ page }) => {
+      await page.goto(`/${locale}`);
+      await visibleHeader(page).locator('button[aria-haspopup="dialog"]:visible').first().tap();
+      await expect(page.getByRole("dialog").first()).toBeVisible();
+      expect(await cutThemeOptions(page)).toEqual([]);
+      // Opening the menu moves focus to its close button; a touch screen has no hover to take a tip away again.
+      await expect(page.getByRole("tooltip")).toHaveCount(0);
+    });
+  }
 
   for (const path of ["/en", "/hi", "/de/no-such-page"]) {
     test(`${path} fits the screen without sideways scrolling`, async ({ page }) => {

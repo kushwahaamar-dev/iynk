@@ -1,4 +1,8 @@
+"use client";
+
+import type { ComponentProps, ReactNode } from "react";
 import { cx } from "./cx";
+import { TipBubble, useTip } from "./Tooltip";
 
 type ProgressBadgeProps = {
   done: number;
@@ -36,19 +40,7 @@ export function ProgressBadge({ done, total, label, countText, valueText, size =
     "aria-valuetext": valueText,
   } as const;
 
-  if (size === "xs") {
-    return (
-      <div {...aria} className={cx("inline-flex items-center gap-2", className)}>
-        <span className="sr-only">{label}</span>
-        <span aria-hidden="true" className="relative h-1 w-24 overflow-hidden rounded-full bg-sunken">
-          {fill}
-        </span>
-        <span aria-hidden="true" className="tabular whitespace-nowrap font-ui text-xs font-bold">
-          {countText}
-        </span>
-      </div>
-    );
-  }
+  if (size === "xs") return <CompactProgress aria={aria} fill={fill} countText={countText} valueText={valueText} className={className} />;
 
   return (
     <div {...aria} className={cx("flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1", className)}>
@@ -62,6 +54,37 @@ export function ProgressBadge({ done, total, label, countText, valueText, size =
       <span aria-hidden="true" className={cx("tabular shrink-0 font-ui font-bold", size === "sm" ? "text-sm" : "text-base")}>
         {countText}
       </span>
+    </div>
+  );
+}
+
+// The workspace bar's form: a thin bar and the count, with no room for the label. The read-out says what it counts:
+// screen readers hear it as the bar's value, and a mouse sees it in a tip on hover.
+function CompactProgress({
+  aria,
+  fill,
+  countText,
+  valueText,
+  className,
+}: {
+  aria: ComponentProps<"div">;
+  fill: ReactNode;
+  countText: string;
+  valueText: string;
+  className?: string;
+}) {
+  const tip = useTip();
+  return (
+    <div {...aria} onPointerEnter={tip.onPointerEnter} onPointerLeave={tip.onPointerLeave} className={cx("relative inline-flex items-center gap-2", className)}>
+      <span aria-hidden="true" className="relative h-1 w-24 overflow-hidden rounded-full bg-sunken">
+        {fill}
+      </span>
+      <span aria-hidden="true" className="tabular whitespace-nowrap font-ui text-xs font-bold">
+        {countText}
+      </span>
+      <TipBubble open={tip.open} side="bottom" aria-hidden>
+        {valueText}
+      </TipBubble>
     </div>
   );
 }
