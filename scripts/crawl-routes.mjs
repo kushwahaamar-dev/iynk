@@ -34,7 +34,7 @@ const KNOWN = [
 ];
 const knownReason = (problem) => KNOWN.find(([re]) => re.test(problem))?.[1];
 
-const manifest = JSON.parse(readFileSync(join(ROOT, DIST, 'prerender-manifest.json'), 'utf8'));
+const manifest = JSON.parse(readFileSync(resolve(ROOT, DIST, 'prerender-manifest.json'), 'utf8'));
 const routes = Object.keys(manifest.routes)
   .filter((p) => LOCALES.some((l) => p === `/${l}` || p.startsWith(`/${l}/`)))
   .filter((p) => !ONLY || p.includes(ONLY))
@@ -127,6 +127,6 @@ for (const [title, list] of [['Known problems a later phase owns (200)', known],
   lines.push('');
 }
 const report = lines.join('\n');
-if (OUT) writeFileSync(join(ROOT, OUT), report);
+if (OUT) writeFileSync(resolve(ROOT, OUT), report);
 console.log(report);
 process.exit(failed.length ? 1 : 0);
