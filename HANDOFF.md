@@ -83,19 +83,19 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 18:58 CDT (machine clock).
+- **Updated:** 2026-10-24 19:24 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Fast-forwarded to
   `94d3caa`. Do not build in `/Users/amar/Codes/sim`.
-- **Phase:** 1. All seven labels from `scripts/workflows/phase1.md` are done and none is running. Gate 1 ran
-  locally at 18:57 and is red (below). Jagrati's session should not resume its own copies.
+- **Phase:** 1 done. All seven labels from `scripts/workflows/phase1.md` are done and none is running. Gate 1 reran
+  locally at 19:21 and is green apart from phase-2 prose (below). Jagrati's session should not resume its own copies.
 - **Plan:** `docs/hacktx/BUILD-PLAN.md`, written from the six audits in `docs/audit/` (boards, robotics, drones,
   platform, sponsor-layer, history). Phases 1–3 build for Best Overall, SerpApi, Most Entertaining and Meta.
   Solana and Best Hardware Hack are phase 4, only if time is left after gate 3 (Amar, 16:15). Don't start them
   earlier.
-- **Checks on this tree (18:45, `6da9aac`):** `npm run typecheck` exit 0. `npx eslint . --quiet` exit 0. Full
-  vitest: 1347 passed, 4 skipped (TimescaleDB integration, no database), 8 todo, 0 failed. `next build` with
-  typecheck on exits 0, 645 of 645 pages, one warning (`src/i18n/figures/<locale>.json` missing).
+- **Checks on this tree (19:21, `06ac3f0`):** `npm run typecheck` exit 0. `npx eslint . --quiet` exit 0. Full
+  vitest: 1347 passed, 4 skipped (TimescaleDB integration, no database), 8 todo, 0 failed. `npm run build` with
+  typecheck on exits 0, 645 of 645 pages, one warning (`src/i18n/figures/<locale>.json` missing). Playwright 57/57.
   **`npm run content:check` exits 1:** `uno-r4` and drones `whoop`, `cinewhoop`, `longrange`, `wing` have data
   modules but no English prose, so they 404 in every language (phase-2 rows). Do not run `npm ci` here (a fresh
   install in `/Users/amar/Codes/sim` showed `PageProps` errors this install does not have).
@@ -104,23 +104,19 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   `/figures/boards/uno-r3.html` are 200. `/api/mcp` POST `initialize` and `tools/list` 200 (7 tools).
   `/es/boards/uno-r3` was 404 then; since `3defc3d`–`6da9aac` it is 200 with the English prose under a "Aún sin
   traducir" note (BUILD-PLAN §3.2 item 5, ARCHITECTURE.md v1.4). The Uno board and Blink pages fit a 390 px
-  screen in all six languages (`6f51a80`). Other pages were not measured at 390 px yet.
+  screen in all six languages (`6f51a80`). Since `06ac3f0` no page in the route crawl scrolls sideways at 390 px.
 - **Decided:** D1 (tracks, above). Amar: "Everything else looks fine."
 - **Decided by Jagrati (16:13):** D2 confirmed (the plan's default). D4: API keys stay placeholders for now;
   `.env.local` on Jagrati's Mac is `.env.example` with empty values. Vultr, Vercel env upload and Tiger are not
   approved yet, so gate 1 runs without live Meta/SerpApi and rooms use the one-browser fallback until keys arrive.
   D3 (devnet SOL) is asked only when phase 4 starts.
-- **Gate 1 (18:57, local, `docs/verify/gate1.md`): red.** Green: typecheck, eslint, build, vitest 1347/0, app-path
-  59/59, bench probe 17/17, cfshoot uno-r3 and quad5, every demo-path page in the crawl. Red: (1) e2e 53/57:
-  axe on the Uno workspace and lesson pages (`.bg-good-bg` contrast, a scroll box without focus, a stray list item),
-  quad5's KV warning rendered twice, robotics quiz test reading `bench.quizzes` of a bench without quizzes; (2) 99
-  pages scroll sideways at 390 px (Pico, NodeMCU, ESP32-S3, ESP32-DevKitC lessons, Nano fade in es, `/fr/together`);
-  (3) `content:check`: uno-r4, whoop, cinewhoop, longrange, wing have no English prose (phase 2).
-- **Next step:** fix gate-1 reds (1) and (2), one commit each, rerunning the failing e2e tests and
-  `scripts/crawl-routes.mjs` (3 workers) on a fresh `.next-gate1` build after each. Use
-  `superpowers:systematic-debugging`: read the error, find the root cause, then fix. (3) is phase 2's. Then rerun
-  gate 1 and, if only phase-2/3 items are left, plan the phase-2 wave (BUILD-PLAN §5). Before launching a wave of
-  agents, tell Amar how many and for how long (the 14:19 usage-limit stop).
+- **Gate 1 (19:21 rerun, local, `docs/verify/gate1.md`): green apart from phase-2 prose.** Typecheck, eslint,
+  build, vitest 1347/0, app-path 59/59, bench probe 17/17, cfshoot uno-r3 and quad5, Playwright 57/57, route crawl
+  606 pages with 0 failed. Still red: `content:check` (uno-r4, whoop, cinewhoop, longrange, wing have no English
+  prose), which phase 2 writes. The first run's reds and their fixes are in the report.
+- **Next step:** plan the phase-2 wave from BUILD-PLAN §5 (rows, labels, file ownership, how each row is checked)
+  and write it to `scripts/workflows/phase2.md` the way `phase1.md` is written. Before launching, tell Amar how many
+  agents and for how long (the 14:19 usage-limit stop) and wait for his go.
 - **Agents:** P1-checks `1e6f87c4-b1ea-4a31-9425-b1de6de9a88f` done (`39cca43`, `c168147`). P1-health
   `d393e1cb-35bc-4db4-bc0b-37c02c1b8e14` done (`28d8564`). P1-voice `b337455f-1b6d-45d5-93d8-51efb828d421` done
   (`b1e5308`). P1-engine `1a0582c2-ec24-42ab-8b3c-e2ac162b8e48` done (`f104e10`, `a45ec96`, `03eaab0`, `9d49d45`,
@@ -142,6 +138,12 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 19:24 CDT (Amar): gate-1 reds (1) and (2) fixed and gate 1 rerun at `06ac3f0`: green apart from
+  `content:check` (phase-2 prose). e2e: `fb0cc92` (robotics quiz test, CommonJS double default), `7860244` (quad5
+  verdict repeated its check), `a9ca415` (`.on-fill` text on pastel fills, 8 components), `181b8fe` (serial log and
+  pinout scroller reachable by keyboard). Phone: `06ac3f0` (SegmentedControl wraps, lesson links wrap, lobby
+  `grid-cols-1`). Playwright 57/57, crawl 0 failed. Build dir deleted, `tsconfig.json` reverted. Next: plan phase 2.
 
 - 2026-10-24 18:58 CDT (Amar): gate 1 ran locally on `.next-gate1` (`fcfb537`). Red on 4 e2e tests, 99 pages
   with sideways scroll at 390 px, and `content:check`. Everything else is green, including the demo-path pages.

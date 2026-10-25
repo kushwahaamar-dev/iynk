@@ -160,6 +160,12 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   e2e failures and the phone overflow first. `content:check` stays with phase 2. A crawl problem that a later phase
   owns (figure strings, unbuilt bench figures) is counted as known, not failed, and listed in the report. The crawl
   runs at 3 workers, because at 6 the app's per-IP rate limit answers 429.
+- **10-24 19:24, Amar (driver decisions).** Each gate-1 red was fixed at its cause, not by loosening the test.
+  quad5's verdict line repeated its over-spin check word for word, so the UI now shows only the "ok" verdict; the
+  locator stays strict. Text on every pastel status fill gets the dark on-colour (`.on-fill`), not just on the
+  one pill axe flagged, because dark-mode text was about 1.4:1 on all of them. The board serial log becomes rows in
+  a focusable `div`, as the robotics serial panel already is. SegmentedControl wraps for every caller rather than
+  per page. Gate 1 now fails only on English prose that phase 2 writes, so the driver plans phase 2 next.
 
 ## 6. Lessons learned (apply them)
 
@@ -174,3 +180,7 @@ Short entries: who, when, what was asked or decided, in the user's words where i
 - **Missing prose silently 404s a page.** Check `node scripts/gen-content-index.mjs --check` before every deploy.
 - Install npm packages in small groups: one combined Solana install hung npm's resolver.
 - `next build` adds `.next-<label>` lines to `tsconfig.json`; remove them before committing.
+- A grid with no column template sizes its one phone column to the widest item's min-content (a long `<select>`
+  option is enough). Start phone grids with `grid-cols-1`. `cx` doesn't merge Tailwind classes, so overriding a
+  component's base class (Button's `whitespace-nowrap`) needs `!`.
+- Under Playwright, `src/` loads as CommonJS: a dynamic `import()` of a content module gives `{ default: module }`.
