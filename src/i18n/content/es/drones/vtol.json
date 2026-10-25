@@ -1,0 +1,373 @@
+{
+  "title": "VTOL de rotores basculantes",
+  "tagline": "Un QuadPlane de rotores basculantes con ArduPilot: despega como un dron, inclina sus rotores delanteros hacia delante y vuela sobre su ala, y luego baja en vuelo estacionario para aterrizar.",
+  "sub": "QuadPlane de ArduPlane, tri basculante",
+  "hint": "Móntalo, prueba los servos de basculación y luego vuela la costa y pásale el relevo al ala",
+  "noun": "VTOL",
+  "overview": "Un avión VTOL (despegue y aterrizaje vertical) despega y aterriza como un multicóptero y vuela como un avión. Este es un QuadPlane tricóptero de rotores basculantes: dos motores delanteros van en góndolas que basculan de mirar hacia arriba, para el vuelo estacionario, a mirar hacia delante, para el crucero, y un tercer motor en el tubo de cola solo sustenta. Cuando el ala lleva el peso, los motores solo empujan contra la resistencia, así que en crucero consume unos 5 A donde en estacionario necesita 15: más de una hora en el aire en lugar de 20 minutos. Lo difícil es la transición, los pocos segundos en que el ala todavía va demasiado lenta para sustentar y los rotores ya apuntan en parte hacia delante. ArduPlane 4.7.2 se encarga de ella: inclina los rotores a 45°, mantiene la altura con ellos hasta que el sensor de velocidad aerodinámica marca 12 m/s, y luego le pasa el relevo al ala. Es un fuselaje de espuma de 1,2 m con una Matek H743-WING, GPS, sensor de velocidad aerodinámica y FPV analógico, de unos 1,6 kg con una batería de iones de litio de 8000 mAh. Aparatos como este cartografían campos e inspeccionan costas y líneas eléctricas desde lugares sin pista. Elige las piezas y mira los números, móntalo, haz las comprobaciones en el banco y luego vuela la costa.",
+  "practice": "Empieza en QHOVER y QLOITER: despega, mantente en estacionario y aterriza en la plataforma. Luego, alto y bien lejos de todo, cambia a FBWA con el gas arriba y mira cómo la velocidad aerodinámica pasa de 12 m/s mientras los rotores basculan y el ala toma el relevo; vuelve a QHOVER para frenar y quedarte otra vez en estacionario. Vuela así el recorrido de la costa, y deja que AUTO vuele el reconocimiento. En un montaje real: un smoke stopper en la primera conexión, la prueba de los servos de basculación y la comprobación del sentido de los motores sin hélices, la calibración del acelerómetro y de la brújula, la comprobación de la velocidad aerodinámica, y leer todos los mensajes de pre-arm. Haz la primera transición a 30 m o más, contra el viento, con el pulgar en el interruptor para volver a QHOVER.",
+  "design": {
+    "fixed": {
+      "FRAME": "Fuselaje de espuma, tubo de cola de carbono y patines de aterrizaje",
+      "WING": "Ala de espuma sobre un larguero de carbono",
+      "TAIL": "Cola en V y dos servos de ruddervator",
+      "TILT": "Dos servos de basculación con engranajes metálicos y las góndolas",
+      "ESC": "Tres ESC de 40 A (AM32)",
+      "FC": "Controladora de vuelo Matek H743-WING y receptor ELRS",
+      "GPS": "GPS M10 y brújula en un mástil",
+      "ARSPD": "Sensor de velocidad aerodinámica ASPD-4525 y tubo pitot",
+      "CAM": "Cámara FPV analógica y VTX de 800 mW",
+      "XT60": "Cable XT60 y condensador de 1000 µF 35 V"
+    },
+    "verdict": {
+      "ok": "Las piezas encajan: relación empuje/peso de {tw}:1 para el despegue y el aterrizaje, unos 15 A en estacionario y unos 5 A en crucero, en cuanto el ala lleva el peso. El tiempo en estacionario supone que nunca sale del estacionario; el tiempo de crucero es lo que da el ala. Una misión real solo pasa un minuto o dos en estacionario en cada extremo.",
+      "weak": "Una relación empuje/peso de {tw}:1 es demasiado baja para mantenerse en estacionario con seguridad: un VTOL quiere unos 2:1, 1,6:1 es el mínimo justo, y el viento pide más. Un motor adecuado para la batería o hélices más grandes lo arreglan.",
+      "over": "{kv} KV en {cells}S hacen girar hélices de este tamaño demasiado rápido: el motor y su ESC de 40 A se sobrecargan y se queman en segundos. Los motores de sustentación de un VTOL son grandes y lentos, unos 1000 KV en 4S o 700 KV en 6S."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Fuselaje de espuma, tubo y patines",
+      "what": "Una cápsula de espuma de 370 x 90 x 80 mm con una tapa sobre el compartimento del morro, un tubo de carbono hasta la cola y patines de alambre para aterrizar. El soporte del motor trasero de sustentación se fija al tubo 475 mm por detrás de los ejes de basculación delanteros, lo bastante atrás para equilibrar la pareja delantera alrededor del CG."
+    },
+    "TAIL": {
+      "name": "Cola en V",
+      "what": "Dos aletas a 35° por encima de la horizontal, cada una con un ruddervator en su propio servo (S7, S8). Moviéndose juntos cabecean el avión y moviéndose en sentidos opuestos lo hacen guiñar; ArduPilot mezcla las dos cosas. Solo dirigen en vuelo hacia delante: en estacionario lo hacen los rotores."
+    },
+    "FC": {
+      "name": "Controladora de vuelo Matek H743-WING",
+      "what": "Una placa H743 de 54 x 36 mm en una bandeja del compartimento del morro, con la flecha hacia el morro, que ejecuta ArduPlane 4.7.2. Tiene 13 salidas, un sensor de corriente, un OSD analógico y un BEC de 8 A para los seis servos. El receptor ELRS va a su lado en el USART1, con la antena saliendo por el costado de la cápsula."
+    },
+    "XT60": {
+      "name": "Cable XT60 y condensador",
+      "what": "El cable de la batería va a los pads de batería de la placa, el rojo al positivo, con un condensador de baja ESR de 1000 µF 35 V entre ellos, con la franja hacia el negativo. Matek lo pide: el sensor de corriente de la placa es sensible al ruido de conmutación de los ESC."
+    },
+    "GPS": {
+      "name": "GPS y brújula en un mástil",
+      "what": "Un GPS M10 con brújula, en un mástil de 50 mm sobre el tubo, detrás del ala, lejos de las corrientes de la batería y de los ESC, que desviarían la brújula. QLOITER, QRTL y AUTO lo necesitan."
+    },
+    "CAM": {
+      "name": "Cámara FPV y VTX",
+      "what": "Una cámara analógica en el morro, inclinada 8° hacia arriba, con su imagen pasando por el OSD de la placa hasta un VTX de 800 mW en la cubierta trasera, con una antena lollipop. Un avión vuela en crucero con el morro nivelado, así que necesita mucha menos inclinación que un quad de carreras."
+    },
+    "WING": {
+      "name": "Ala",
+      "what": "1200 mm de envergadura y 195 mm de cuerda: 0,234 m² de espuma sobre un larguero de carbono, con un alerón en cada panel exterior (S9, S10). Necesita todo eso: un ala de 840 x 150 mm con 1,6 kg entraría en pérdida a 13 o 14 m/s. Las marcas del CG están debajo, a un cuarto de la cuerda desde el borde de ataque."
+    },
+    "ARSPD": {
+      "name": "Sensor de velocidad aerodinámica y pitot",
+      "what": "Un tubo pitot bajo el ala derecha, con la punta por delante del borde de ataque y fuera del flujo del rotor derecho, unido por dos tubos de silicona a una placa MS4525DO en el I2C. El ala vuela según la velocidad aerodinámica, no la velocidad respecto al suelo: ArduPilot la usa para saber cuándo puede el ala llevar el peso."
+    },
+    "TILT": {
+      "name": "Servos de basculación y góndolas",
+      "what": "Un servo con engranajes metálicos en cada góndola delantera hace pasar su motor de mirar hacia arriba (estacionario) a mirar hacia delante (crucero), en S1 y S2. Con Q_TILT_TYPE 2 también se inclinan hasta 10° en sentidos opuestos para guiñar en estacionario, así que este tri no necesita servo de cola. Los dos están enfrentados, así que uno de ellos va invertido en los parámetros."
+    },
+    "MOTORS": {
+      "name": "Tres motores 2810",
+      "what": "1000 KV en 4S. El tri de ArduPilot los llama M1 delante a la derecha, M2 delante a la izquierda y M4 detrás; no hay M3. Visto desde arriba, M1 gira en sentido horario y M2 en sentido antihorario: la pareja delantera tiene que girar en sentidos opuestos, o cada corrección de alabeo y cabeceo también lo haría guiñar. M4 mira hacia arriba, nunca bascula y se para en crucero."
+    },
+    "ESC": {
+      "name": "Tres ESC de 40 A",
+      "what": "Uno por motor: dos en las góndolas y uno en el tubo junto al motor trasero, con DShot600 desde S3, S4 y S5. Los ESC nuevos de 32 bits usan AM32 (BLHeli_32 terminó en junio de 2024). Con el gas a tope, la calculadora da unos 39 A por motor, justo por debajo de su valor nominal."
+    },
+    "WIRES": {
+      "name": "Cables de los motores",
+      "what": "Los tres cables de fase de cada motor van a su ESC. En las góndolas cruzan el eje de basculación en un bucle holgado, para que se doblen a lo largo de un tramo y no en un solo punto: un bucle apretado se rompe después de unos cientos de transiciones y el motor se para en el aire."
+    },
+    "BATT": {
+      "name": "Batería de iones de litio 4S2P",
+      "what": "Ocho celdas 21700, 8000 mAh y 560 g, sobre una almohadilla antideslizante y bajo una cinta, centrada en las marcas del CG. Los iones de litio guardan más energía por gramo que una LiPo, pero dan menos corriente y caen más: lo adecuado para un avión que vuela una hora en crucero, no para un dron de carreras."
+    },
+    "HATCH": {
+      "name": "Tapa del morro",
+      "what": "Una tapa de espuma con cierre sobre el compartimento del morro, donde viven la controladora de vuelo, la placa de velocidad aerodinámica y la batería. Ciérrala antes de poner las hélices."
+    },
+    "PROPS": {
+      "name": "Hélices",
+      "what": "Hélices bipala 9x5: la pareja delantera gira en sentidos opuestos (M1 en sentido horario, M2 en sentido antihorario visto desde arriba) y la trasera va con M4. Se ponen las últimas, después del smoke stopper, la comprobación del sentido de los motores y la prueba de basculación."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Prepara el fuselaje",
+      "body": "Pega el tubo en la cápsula y coloca los patines, el soporte de la cola y el soporte del motor trasero sobre el tubo."
+    },
+    "tail": {
+      "title": "Coloca la cola en V",
+      "body": "Mete las dos aletas en el extremo del tubo y une cada ruddervator con su servo.",
+      "refusal": "La cola en V va en el extremo del tubo: primero prepara el fuselaje."
+    },
+    "fc": {
+      "title": "Monta la controladora de vuelo",
+      "body": "En la bandeja del compartimento del morro, con la flecha hacia el morro. El receptor ELRS va a su lado, con la antena saliendo por el costado de la cápsula.",
+      "refusal": "La controladora de vuelo va en el fuselaje: primero prepáralo."
+    },
+    "xt60": {
+      "title": "Suelda el XT60 y el condensador",
+      "body": "El cable de la batería a los pads de batería de la placa, el rojo al positivo, y el condensador sobre los mismos pads con la franja hacia el negativo. El conector queda detrás del compartimento de la batería.",
+      "refusal": "El cable de la batería se suelda a los pads de la controladora de vuelo: primero móntala."
+    },
+    "gps": {
+      "title": "Coloca el mástil del GPS",
+      "body": "Sobre el tubo, detrás del ala, con la flecha hacia delante. Su cable entra por la parte de atrás de la cápsula hasta el puerto GPS y los pads I2C de la placa.",
+      "refusal": "El GPS va conectado a la controladora de vuelo: primero móntala."
+    },
+    "cam": {
+      "title": "Coloca la cámara y el VTX",
+      "body": "La cámara en el morro, inclinada 8° hacia arriba, y el VTX en la cubierta trasera con la antena hacia arriba. El vídeo entra en la placa y vuelve a salir con el OSD hacia el VTX.",
+      "refusal": "La cámara y el VTX van conectados a la controladora de vuelo: primero móntala."
+    },
+    "wing": {
+      "title": "Atornilla el ala",
+      "body": "Encima de la cápsula, en escuadra con el tubo. Sus servos de alerón se conectan a S9 y S10.",
+      "refusal": "El ala se atornilla al fuselaje: primero prepáralo."
+    },
+    "arspd": {
+      "title": "Coloca el sensor de velocidad aerodinámica",
+      "body": "El pitot bajo el ala derecha, con la punta por delante del borde de ataque, fuera del flujo del rotor derecho. Sus dos tubos entran en la cápsula hasta la placa 4525, y la placa va en el bus I2C.",
+      "refusal": "El pitot cuelga bajo el ala y su placa va conectada a la controladora de vuelo: primero coloca las dos cosas."
+    },
+    "tilt": {
+      "title": "Coloca los servos de basculación",
+      "body": "Uno en cada góndola bajo el ala, con su brazo unido al soporte del motor. Conéctalos a S1 y S2.",
+      "refusal": "Las góndolas cuelgan bajo el ala: primero atornilla el ala."
+    },
+    "motors": {
+      "title": "Monta los tres motores",
+      "body": "M1 delante a la derecha y M2 delante a la izquierda en los soportes basculantes, M4 en el tubo. La pareja delantera gira en sentidos opuestos: M1 en sentido horario y M2 en sentido antihorario visto desde arriba.",
+      "refusal": "Los motores delanteros se atornillan a los soportes basculantes: primero coloca los servos de basculación."
+    },
+    "esc": {
+      "title": "Coloca los tres ESC",
+      "body": "Uno en la cara exterior de cada góndola y otro en el tubo junto al motor trasero. La alimentación sale de los pads de batería de la placa y las señales de S3, S4 y S5.",
+      "refusal": "Dos de los ESC van en las góndolas: primero coloca los servos de basculación."
+    },
+    "wires": {
+      "title": "Suelda los cables de los motores",
+      "body": "Cada motor a su ESC. En las góndolas deja un bucle holgado que cruce el eje, para que los cables se doblen a lo largo de un tramo y no en un solo punto.",
+      "refusal": "Coloca los motores y los ESC antes que los cables que los unen."
+    },
+    "batt": {
+      "title": "Sujeta la batería",
+      "body": "Sobre una almohadilla antideslizante en el compartimento bajo el ala, bajo una cinta, centrada en las marcas del CG. Una vez completo, debería quedar nivelado sobre las yemas de los dedos en las marcas.",
+      "refusal": "La batería se conecta al XT60: primero suéldalo."
+    },
+    "hatch": {
+      "title": "Cierra la tapa",
+      "body": "La tapa de espuma sobre el compartimento del morro, con el cierre puesto, y la batería y la placa de velocidad aerodinámica dentro.",
+      "refusal": "La tapa cierra sobre la batería y la placa de velocidad aerodinámica: primero coloca las dos cosas."
+    },
+    "props": {
+      "title": "Las hélices, las últimas",
+      "body": "La pareja delantera gira en sentidos opuestos, M1 en sentido horario y M2 en sentido antihorario, y la hélice trasera va con el giro horario de M4. Solo después del smoke stopper, la comprobación del sentido de los motores y la prueba de basculación.",
+      "refusal": "Las hélices van en los motores, después de los servos de basculación y con la tapa cerrada: primero coloca todo eso."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "El XT60 de la batería encaja con el del aparato. Tiene forma, así que solo entra en un sentido, y la batería lleva el conector hembra, así que una batería suelta no puede hacer un cortocircuito.",
+    "XT60-ESC": "Los pads de batería de la controladora de vuelo alimentan los tres cables de los ESC: dos salen bajo el ala hacia las góndolas y uno va hacia atrás por el tubo. El condensador está sobre los mismos pads.",
+    "ESC-MOTORS": "Tres cables de fase por motor, en un bucle holgado que cruza cada eje de basculación. Su orden no es una cuestión de seguridad: intercambiar dos cualesquiera invierte el motor.",
+    "FC-ESC": "DShot600 en S3, S4 y S5, un grupo de salidas que solo funciona con DShot: Motor1 delante a la derecha, Motor2 delante a la izquierda, Motor4 en el tubo.",
+    "FC-TILT": "Los servos de basculación en S1 y S2, alimentados por el BEC de servos de 8 A de la placa. Tienen su propio grupo de salidas, así que pueden funcionar a frecuencia de servo mientras S3 a S6 funcionan con DShot.",
+    "FC-TAIL": "Los dos servos de ruddervator en S7 y S8; ArduPilot mezcla en ellos el cabeceo y la guiñada.",
+    "FC-WING": "Los dos servos de alerón en S9 y S10, los dos configurados como Aileron (función 4). Invierte uno si se mueve hacia el lado equivocado.",
+    "GPS-FC": "El GPS en el USART2, el puerto GPS de la placa, y su brújula en el bus I2C.",
+    "ARSPD-FC": "La placa de velocidad aerodinámica 4525 en el I2C (ARSPD_TYPE 1). Los dos tubos del pitot van a sus dos tomas: intercambiados, marca 0 o menos.",
+    "CAM-FC": "El vídeo de la cámara entra en la placa, que le superpone el OSD, y sale hacia el VTX de la cubierta trasera, alimentado por el BEC de 9/12 V. SmartAudio en el TX del UART4 permite al OSD cambiar el canal y la potencia."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Prueba del smoke stopper",
+      "pass": "La lámpara solo ha parpadeado: no hay cortocircuito entre el positivo y el negativo. Ya puedes conectar la batería directamente.",
+      "fail": "La lámpara se ha quedado encendida: hay algo en cortocircuito. Aquí el condensador está al revés; dale la vuelta, con la franja hacia el negativo, antes de conectar una batería."
+    },
+    "motors": {
+      "title": "Comprobación del sentido de los motores (sin hélices)",
+      "pass": "ArduPilot ha hecho girar cada motor por turnos con poco gas: M1 delante a la derecha en sentido horario, M2 delante a la izquierda en sentido antihorario, M4 en el tubo en sentido horario. El orden y los sentidos son correctos.",
+      "fail": "Un motor ha girado al revés. Intercambia dos cualesquiera de sus tres cables, o inviértelo en el ESC (SERVO_BLH_RVMASK). La pareja delantera tiene que girar en sentidos opuestos."
+    },
+    "calibrate": {
+      "title": "Calibración del acelerómetro",
+      "pass": "Seis posiciones y luego la de nivel, con el ala nivelada y el fuselaje en su actitud de vuelo. QHOVER ya sabe dónde está arriba.",
+      "fail": "Primero coloca la controladora de vuelo. Si su flecha apunta hacia atrás, dale la vuelta o pon AHRS_ORIENTATION 4."
+    },
+    "tilt": {
+      "title": "Prueba de los servos de basculación (sin hélices)",
+      "pass": "MANUAL ha llevado los dos rotores hacia delante, QSTABILIZE los ha devuelto hacia arriba a 25°/s, y la guiñada a la derecha ha llevado el rotor izquierdo hacia delante y el derecho hacia atrás. Los servos están en el sentido correcto.",
+      "fail": "Primero coloca los servos de basculación y la controladora de vuelo, quita las hélices y conecta la batería. Si MANUAL inclina un rotor hacia atrás, ese servo está invertido: cambia su SERVOn_REVERSED, o la primera transición levantará el morro y lo volcará sobre la cola."
+    },
+    "airspeed": {
+      "title": "Comprobación de la velocidad aerodinámica",
+      "pass": "Al soplar con suavidad en el pitot, la velocidad aerodinámica ha subido y ha vuelto a bajar a unos 0: el sensor lee y los tubos están en las tomas correctas. Tapa el pitot mientras arranca la placa: es entonces cuando pone el sensor a cero.",
+      "fail": "Primero coloca el sensor de velocidad aerodinámica y la controladora de vuelo, y conecta la batería. Con los tubos intercambiados marca 0 o menos; un tubo obstruido no marca nada."
+    },
+    "prearm": {
+      "title": "Chequeos previos al armado (sin hélices)",
+      "pass": "Todos los chequeos han pasado y se ha armado en el banco, con los motores al ralentí en Q_M_SPIN_ARM. Nunca te saltes un chequeo con ARMING_SKIPCHK.",
+      "fail": "Coloca la controladora de vuelo, el GPS y el sensor de velocidad aerodinámica, sin hélices y con la batería conectada. Luego lee cada mensaje PreArm: \"3D Accel calibration needed\" significa que primero hay que calibrar, y \"Q_ASSIST_SPEED is not set\" significa que vale 0."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "QuadPlane y rotores basculantes",
+      "explain": "Q_ENABLE convierte ArduPlane en un QuadPlane, Q_FRAME_CLASS 7 hace que sus motores de sustentación sean un tri y Q_TILT_ENABLE añade el código de los rotores basculantes. Reinicia después de esos tres, o el pre-arm dirá \"tiltrotor setup not complete, reboot\". Q_TILT_TYPE 2, la guiñada vectorizada, es lo que permite a este tri guiñar sin servo de cola. Cuidado con los nombres de las velocidades, que es fácil confundirlos: RATE_DN es de estacionario a hacia delante, RATE_UP de hacia delante de vuelta a estacionario."
+    },
+    "outputs": {
+      "title": "Salidas",
+      "explain": "La H743-WING agrupa sus salidas, y todas las salidas de un grupo funcionan a la misma frecuencia: los servos de basculación en S1 y S2, los tres motores de sustentación en S3 a S5 con DShot600, y los ruddervators y los alerones en S7 a S10. El tri de ArduPilot usa los motores 1, 2 y 4. Ajusta la inversión en el banco, para que MANUAL apunte los rotores hacia delante y QSTABILIZE hacia arriba."
+    },
+    "sensors": {
+      "title": "Placa, radio, GPS y velocidad aerodinámica",
+      "explain": "La flecha hacia el morro; ELRS en un UART completo con CRSF a 420 kbaudios; el GPS en el USART2; la placa de velocidad aerodinámica 4525 en el I2C, usada en vuelo; y el sensor de corriente propio de la placa, con la escala que da Matek para la WING V3."
+    },
+    "speeds": {
+      "title": "Velocidades aerodinámicas y la transición",
+      "explain": "Todo en m/s desde la 4.5. AIRSPEED_MIN queda un 20 % por encima de la pérdida, y Q_ASSIST_SPEED 3 m/s por debajo de ese valor, para que los rotores sujeten un giro lento antes de que entre en pérdida; con 0 se niega a armar. Si una transición no ha llegado a AIRSPEED_MIN después de 15 s, se cancela y el aparato vuelve a casa en QRTL."
+    },
+    "failsafe": {
+      "title": "Failsafes",
+      "explain": "Un enlace perdido durante 5 s en un modo de avión significa RTL, que se convierte en un aterrizaje vertical cerca de casa; en los modos Q, un enlace perdido significa QLAND al instante. Dos niveles de batería: RTL a 3,3 V por celda y QLAND a 3,1 V. Los iones de litio bajan más que una LiPo, así que estos valores están más bajos que en un aparato con LiPo."
+    },
+    "osd": {
+      "title": "OSD y VTX",
+      "explain": "El OSD integrado superpone la batería, la velocidad aerodinámica y el modo a la imagen de la cámara. El VTX empieza a 25 mW en el banco; sube VTX_POWER solo donde la ley lo permita."
+    },
+    "qhover": {
+      "title": "QHOVER",
+      "explain": "Estacionario con mantenimiento de altura: centra el gas y mantiene la altura, y la palanca derecha lo inclina hasta 30°. Se deja llevar por el viento. Todos los vuelos empiezan y terminan aquí."
+    },
+    "qloiter": {
+      "title": "QLOITER",
+      "explain": "QHOVER más mantenimiento de posición por GPS: suelta las palancas y se para donde está. Úsalo para los primeros estacionarios y para alinear un aterrizaje."
+    },
+    "fbwa": {
+      "title": "La transición: FBWA",
+      "explain": "Cambia de un modo Q a FBWA y empieza la transición: los rotores basculan a 45° y acelera con ellos; al pasar de AIRSPEED_MIN el ala toma el peso, los rotores terminan de bascular y el motor trasero se para. Entonces las palancas inclinan y cabecean el avión, hasta 45° y 20°, y el gas fija la velocidad. Cambia a un modo Q para volver al estacionario."
+    },
+    "qrtl": {
+      "title": "QRTL",
+      "explain": "QRTL vuelve a casa a Q_RTL_ALT y aterriza en vertical. Con Q_RTL_MODE 1, un RTL normal vuelve a casa como avión y se convierte en QRTL cerca de casa. Con eso, RTL_AUTOLAND tiene que quedarse en 0, o la placa se niega a armar."
+    },
+    "auto": {
+      "title": "AUTO: el reconocimiento de la costa",
+      "explain": "AUTO vuela la misión cargada: un despegue vertical, los tres puntos de foto y un aterrizaje vertical en la plataforma del pueblo. Un DO_VTOL_TRANSITION 3 después del despegue mantiene los tramos de fotos en vuelo VTOL para que pueda pararse sobre cada punto; sin él, Plane haría la transición y volaría los waypoints con el ala. Arma en un modo Q y luego cambia a AUTO."
+    }
+  },
+  "flight": {
+    "modes": {
+      "qhover": {
+        "title": "QHOVER",
+        "hint": "Estacionario con mantenimiento de altura, con inclinación de hasta 30°. Empieza aquí."
+      },
+      "qloiter": {
+        "title": "QLOITER",
+        "hint": "Estacionario con mantenimiento de posición por GPS: suelta y se para."
+      },
+      "fbwa": {
+        "title": "FBWA (transición)",
+        "hint": "Desde un estacionario, los rotores basculan hacia delante y acelera; al pasar de 12 m/s el ala toma el relevo. Mantén el gas arriba: en FBWA fija la velocidad. Cambia a un modo Q para volver al estacionario."
+      },
+      "qrtl": {
+        "title": "QRTL",
+        "hint": "Vuelve a casa a 15 m y aterriza en vertical en la plataforma."
+      },
+      "auto": {
+        "title": "AUTO (reconocimiento de la costa)",
+        "hint": "Vuela solo el reconocimiento: despegue, tres puntos de foto y un aterrizaje en la plataforma del pueblo."
+      }
+    },
+    "failsafes": {
+      "rx-loss-q": "Enlace perdido en un modo Q: aterriza donde está (QLAND).",
+      "rx-loss": "Enlace perdido durante 5 s en un modo de avión: RTL, vuelve a casa como avión y luego baja como multicóptero (QRTL).",
+      "transition": "Sin AIRSPEED_MIN 15 s después de empezar una transición: la abandona y vuelve a casa en QRTL.",
+      "low-battery": "Por debajo de 13,2 V (3,3 V por celda): RTL.",
+      "battery-critical": "Por debajo de 12,4 V (3,1 V por celda): QLAND donde esté."
+    },
+    "controls": "Teclado: Espacio arma y desarma, W y S suben y bajan en los modos Q y fijan el gas en FBWA, las flechas lo inclinan (en FBWA inclinan y cabecean el avión), A y D guiñada, V cambia a FPV, R vuelve a ponerlo en la plataforma. En un móvil, la palanca izquierda es el gas y la guiñada, y la derecha es cabeceo y alabeo. Un mando funciona en Modo 2."
+  },
+  "courses": {
+    "coast": {
+      "title": "Recorrido de la costa",
+      "brief": "Despega de la plataforma del campo, rodea el faro por el lado del mar, pasa por encima de la boya, pasa al norte de la antena de radio de la colina y luego aterriza en la plataforma de la plaza del pueblo. Con QHOVER puedes hacerlo todo; lo rápido es una transición a FBWA para los tramos largos y volver a QHOVER antes de la plataforma.",
+      "goals": {
+        "1": "Faro, por el lado del mar",
+        "2": "Por encima de la boya",
+        "3": "Antena de radio, por el norte",
+        "4": "Aterriza en la plataforma del pueblo"
+      }
+    },
+    "survey": {
+      "title": "Reconocimiento de la costa (AUTO)",
+      "brief": "La misma costa como misión: un despegue vertical hasta 12 m, una parada de 2 s para hacer una foto en el faro, en la boya y en la antena de radio, y luego un aterrizaje vertical en la plataforma del pueblo. Cambia a AUTO y mira, o vuélalo tú y gánale al piloto automático.",
+      "goals": {
+        "1": "Despega hasta 12 m",
+        "2": "Foto: el faro",
+        "3": "Foto: la boya",
+        "4": "Foto: la antena de radio",
+        "5": "Aterriza en la plataforma del pueblo"
+      }
+    }
+  },
+  "quizzes": {
+    "tilt": {
+      "manual": {
+        "q": "En el banco, ¿hacia dónde deberían apuntar MANUAL y QSTABILIZE los rotores?",
+        "options": {
+          "1": "Los dos hacia arriba: los rotores solo se mueven en vuelo",
+          "2": "MANUAL hacia delante, QSTABILIZE hacia arriba",
+          "3": "MANUAL hacia arriba, QSTABILIZE hacia delante"
+        },
+        "why": "MANUAL es un modo de avión, así que los rotores basculan hacia delante; QSTABILIZE es un modo de estacionario, así que apuntan hacia arriba. Si MANUAL inclina un rotor hacia atrás, ese servo está invertido, y la primera transición volcaría el aparato sobre la cola."
+      },
+      "yaw": {
+        "q": "Este tri no tiene servo de cola. ¿Cómo gira el morro en estacionario?",
+        "options": {
+          "1": "Lo gira el par del motor trasero",
+          "2": "Los ruddervators lo dirigen en el flujo de las hélices",
+          "3": "Los rotores delanteros se inclinan un poco en sentidos opuestos"
+        },
+        "why": "Q_TILT_TYPE 2, la guiñada vectorizada: un rotor delantero se inclina hacia delante y el otro hacia atrás, hasta Q_TILT_YAW_ANGLE, y entre los dos hacen girar el morro. El motor trasero solo sustenta, y las superficies de cola solo dirigen cuando vuela lo bastante rápido."
+      }
+    },
+    "airspeed": {
+      "why": {
+        "q": "¿Por qué un QuadPlane necesita un sensor de velocidad aerodinámica si ya tiene GPS?",
+        "options": {
+          "1": "El ala sustenta con el aire que pasa por ella, y con viento el GPS no puede verlo",
+          "2": "El GPS no puede medir la velocidad",
+          "3": "Solo para mostrar la velocidad en el OSD"
+        },
+        "why": "El GPS da la velocidad respecto al suelo. Con 6 m/s de viento en contra, 6 m/s respecto al suelo son 12 m/s de aire sobre el ala; con el viento a favor, no hay ninguno. ArduPilot termina una transición según la velocidad aerodinámica, así que una lectura errónea le pasa el relevo a un ala que entra en pérdida, o no se lo pasa nunca."
+      }
+    },
+    "fly": {
+      "transition": {
+        "q": "Cambias de QHOVER a FBWA. ¿Cuándo terminan de bascular hacia delante los rotores?",
+        "options": {
+          "1": "Enseguida, de una vez",
+          "2": "En cuanto la velocidad aerodinámica pasa de AIRSPEED_MIN",
+          "3": "Al cabo de 5 segundos fijos"
+        },
+        "why": "Basculan hasta Q_TILT_MAX (45°) y se quedan ahí, todavía sustentando, mientras acelera. Solo cuando la velocidad aerodinámica llega a AIRSPEED_MIN su sustentación se desvanece durante Q_TRANSITION_MS mientras terminan de bascular. MANUAL es la excepción: los lleva hacia delante enseguida, lo que hace entrar en pérdida a un aparato lento."
+      },
+      "assist": {
+        "q": "¿Qué hace Q_ASSIST_SPEED 9?",
+        "options": {
+          "1": "Por debajo de 9 m/s de velocidad aerodinámica en un modo de avión, los motores de sustentación ayudan al ala",
+          "2": "Limita la velocidad en estacionario a 9 m/s",
+          "3": "Fija lo rápida que es la transición"
+        },
+        "why": "Es la red de seguridad para un giro lento o una ráfaga: por debajo de 9 m/s, los motores VTOL aceleran y sujetan el aparato. Ponlo 3 m/s por debajo de AIRSPEED_MIN; con 0, el pre-arm se niega con \"Q_ASSIST_SPEED is not set\"."
+      },
+      "motorout": {
+        "q": "Un motor delantero se para durante el estacionario. ¿Qué pasa?",
+        "options": {
+          "1": "Los otros dos lo mantienen nivelado y aterriza",
+          "2": "Cambia a modo de avión y planea",
+          "3": "Cae: un tri no tiene motor de sobra en estacionario"
+        },
+        "why": "Con tres motores, todos son necesarios para equilibrar el alabeo, el cabeceo y la guiñada. En crucero lo lleva el ala, así que puede planear o volar con el otro motor delantero, pero en estacionario no hay forma de evitarlo. Pasa el menor tiempo posible en estacionario, y revisa los cables de los ejes."
+      }
+    }
+  }
+}
