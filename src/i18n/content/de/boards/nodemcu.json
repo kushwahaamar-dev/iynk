@@ -474,6 +474,15 @@
             "3": "D2"
           },
           "why": "Einfache Zahlen sind GPIO-Nummern. GPIO4 ist als D2 beschriftet; D4 ist GPIO2. Schreib sicherheitshalber D4 oder LED_BUILTIN."
+        },
+        "resistor": {
+          "q": "Du tauschst den 220-Ω-Widerstand gegen 1 kΩ. Was passiert mit der LED an D1?",
+          "options": {
+            "1": "Sie wird dunkler",
+            "2": "Sie wird heller",
+            "3": "Nichts: Der Pin legt den Strom fest"
+          },
+          "why": "Der Strom ist (3,3 V - 2,0 V) / R: etwa 6 mA mit 220 Ω und etwa 1,3 mA mit 1 kΩ. Weniger Strom, weniger Licht."
         }
       }
     },
@@ -561,6 +570,35 @@
         "off": "HIGH schaltet die blaue LED aus",
         "divider": "durch den Teiler auf dem Board liest 3,2 V als 1023",
         "debounce": "eine kurze Pause überbrückt auch das Prellen der Kontakte"
+      },
+      "quiz": {
+        "pullup": {
+          "q": "Warum reicht pinMode(BUTTON, INPUT) für FLASH, ohne INPUT_PULLUP?",
+          "options": {
+            "1": "FLASH liest gedrückt HIGH",
+            "2": "Das Board hat an D3 einen 12-kΩ-Pull-up",
+            "3": "Der ESP8266 hat keine internen Pull-ups"
+          },
+          "why": "R1 auf dem Board hält D3 (GPIO0) auf HIGH, und ein Druck auf FLASH zieht ihn auf LOW. INPUT_PULLUP ginge auch, aber der Widerstand ist schon da."
+        },
+        "boot": {
+          "q": "Du hältst FLASH gedrückt und drückst RST. Der Sketch startet nicht. Was ist passiert?",
+          "options": {
+            "1": "Das Board ist im Download-Modus",
+            "2": "Der Sketch ist abgestürzt",
+            "3": "Der Fotowiderstand hat den Taster kurzgeschlossen"
+          },
+          "why": "D3 ist GPIO0, ein Boot-Pin: LOW beim Reset lässt den Chip auf einen Upload warten. Lass FLASH los und drück RST, damit der Sketch wieder läuft."
+        },
+        "divider": {
+          "q": "analogRead(A0) liefert 1023. Welche Spannung liegt am Pin A0?",
+          "options": {
+            "1": "1,0 V",
+            "2": "5 V",
+            "3": "3,2 V oder mehr"
+          },
+          "why": "Der ADC des ESP8266 selbst nimmt 0 bis 1 V. Der Teiler aus 220 kΩ / 100 kΩ auf dem Board streckt das auf 0 bis 3,2 V an A0, also ergibt raw x 3.2 / 1023 die Volt."
+        }
       }
     },
     "dimmer": {
@@ -640,6 +678,35 @@
         "range": "0-255 ist im Core 3.x schon der Standard",
         "read": "0-1023 für 0-3,2 V am Pin A0",
         "map": "10-Bit-Eingang auf 8-Bit-Tastverhältnis skalieren"
+      },
+      "quiz": {
+        "range": {
+          "q": "Eine Anleitung für den Core 2.x stellt halbe Helligkeit mit analogWrite(D5, 512) ein. Was bekommst du im Core 3.x?",
+          "options": {
+            "1": "Halbe Helligkeit",
+            "2": "Nichts: Der Aufruf schlägt fehl",
+            "3": "Volle Helligkeit"
+          },
+          "why": "Der Core 3.x hat den Standardbereich von 0-1023 auf 0-255 geändert, und ein Wert über 255 bedeutet einfach voll an. Die Hälfte ist jetzt etwa 128."
+        },
+        "fullscale": {
+          "q": "Beim Aufdrehen erreicht der Messwert 1023 etwas vor dem Ende. Warum?",
+          "options": {
+            "1": "Das Potentiometer ist abgenutzt",
+            "2": "Der Vollausschlag von A0 ist 3,2 V, nicht 3,3 V",
+            "3": "map() schneidet oben ab"
+          },
+          "why": "Der Teiler auf dem Board lässt 3,2 V als 1023 lesen. Das letzte Stück des Drehwegs, von 3,2 V bis zu den 3,3 V am Ende der Bahn, liest dasselbe."
+        },
+        "map": {
+          "q": "Warum nutzt der Sketch map(raw, 0, 1023, 0, 255)?",
+          "options": {
+            "1": "Um 0-1023 in ein Tastverhältnis von 0-255 umzurechnen",
+            "2": "Um den Messwert in Volt umzurechnen",
+            "3": "Um Rauschen zu glätten"
+          },
+          "why": "analogRead() liefert 0 bis 1023, und analogWrite() nimmt hier 0 bis 255, also rechnet map() das eine ins andere um. raw / 4 täte dasselbe."
+        }
       }
     },
     "webserver": {
@@ -738,6 +805,15 @@
             "3": "Der Port des Webservers ist belegt"
           },
           "why": "Mit einer falschen SSID kommt einfach nie eine Verbindung zustande. Resets genau beim Verbinden sind ein Brown-out: Nimm ein besseres Kabel oder setz einen großen Kondensator an 3V3."
+        },
+        "loop": {
+          "q": "Du fügst am Ende von loop() delay(5000) ein. Was passiert, wenn das Handy /on öffnet?",
+          "options": {
+            "1": "Die LED schaltet sofort",
+            "2": "Das Board verlässt das Netz",
+            "3": "Die Seite ist langsam oder läuft in einen Timeout"
+          },
+          "why": "Der Server antwortet nur, wenn server.handleClient() läuft, und das passiert jetzt einmal alle fünf Sekunden. Halt loop() frei von langen Pausen."
         }
       }
     }

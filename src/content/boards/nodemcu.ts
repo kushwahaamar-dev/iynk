@@ -223,6 +223,7 @@ void loop() {
       questions: [
         { id: 'activelow', q: 'lessons.blink.quiz.activelow.q', options: ['lessons.blink.quiz.activelow.options.1', 'lessons.blink.quiz.activelow.options.2', 'lessons.blink.quiz.activelow.options.3'], answer: 1, why: 'lessons.blink.quiz.activelow.why' },
         { id: 'dnames', q: 'lessons.blink.quiz.dnames.q', options: ['lessons.blink.quiz.dnames.options.1', 'lessons.blink.quiz.dnames.options.2', 'lessons.blink.quiz.dnames.options.3'], answer: 2, why: 'lessons.blink.quiz.dnames.why' },
+        { id: 'resistor', q: 'lessons.blink.quiz.resistor.q', options: ['lessons.blink.quiz.resistor.options.1', 'lessons.blink.quiz.resistor.options.2', 'lessons.blink.quiz.resistor.options.3'], answer: 0, why: 'lessons.blink.quiz.resistor.why' },
       ],
     },
   },
@@ -316,6 +317,15 @@ void loop() {
     lede: 'lessons.button.lede',
     steps: ['lessons.button.steps.1', 'lessons.button.steps.2', 'lessons.button.steps.3', 'lessons.button.steps.4'],
     hints: ['lessons.button.hints.1', 'lessons.button.hints.2', 'lessons.button.hints.3'],
+    quiz: {
+      id: 'button',
+      afterStep: null,
+      questions: [
+        { id: 'pullup', q: 'lessons.button.quiz.pullup.q', options: ['lessons.button.quiz.pullup.options.1', 'lessons.button.quiz.pullup.options.2', 'lessons.button.quiz.pullup.options.3'], answer: 1, why: 'lessons.button.quiz.pullup.why' },
+        { id: 'boot', q: 'lessons.button.quiz.boot.q', options: ['lessons.button.quiz.boot.options.1', 'lessons.button.quiz.boot.options.2', 'lessons.button.quiz.boot.options.3'], answer: 0, why: 'lessons.button.quiz.boot.why' },
+        { id: 'divider', q: 'lessons.button.quiz.divider.q', options: ['lessons.button.quiz.divider.options.1', 'lessons.button.quiz.divider.options.2', 'lessons.button.quiz.divider.options.3'], answer: 2, why: 'lessons.button.quiz.divider.why' },
+      ],
+    },
   },
   {
     id: 'dimmer',
@@ -393,6 +403,15 @@ void loop() {
     lede: 'lessons.dimmer.lede',
     steps: ['lessons.dimmer.steps.1', 'lessons.dimmer.steps.2', 'lessons.dimmer.steps.3', 'lessons.dimmer.steps.4'],
     hints: ['lessons.dimmer.hints.1', 'lessons.dimmer.hints.2', 'lessons.dimmer.hints.3'],
+    quiz: {
+      id: 'dimmer',
+      afterStep: null,
+      questions: [
+        { id: 'range', q: 'lessons.dimmer.quiz.range.q', options: ['lessons.dimmer.quiz.range.options.1', 'lessons.dimmer.quiz.range.options.2', 'lessons.dimmer.quiz.range.options.3'], answer: 2, why: 'lessons.dimmer.quiz.range.why' },
+        { id: 'fullscale', q: 'lessons.dimmer.quiz.fullscale.q', options: ['lessons.dimmer.quiz.fullscale.options.1', 'lessons.dimmer.quiz.fullscale.options.2', 'lessons.dimmer.quiz.fullscale.options.3'], answer: 1, why: 'lessons.dimmer.quiz.fullscale.why' },
+        { id: 'map', q: 'lessons.dimmer.quiz.map.q', options: ['lessons.dimmer.quiz.map.options.1', 'lessons.dimmer.quiz.map.options.2', 'lessons.dimmer.quiz.map.options.3'], answer: 0, why: 'lessons.dimmer.quiz.map.why' },
+      ],
+    },
   },
   {
     id: 'webserver',
@@ -514,6 +533,7 @@ void loop() {
       questions: [
         { id: 'band', q: 'lessons.webserver.quiz.band.q', options: ['lessons.webserver.quiz.band.options.1', 'lessons.webserver.quiz.band.options.2', 'lessons.webserver.quiz.band.options.3'], answer: 0, why: 'lessons.webserver.quiz.band.why' },
         { id: 'power', q: 'lessons.webserver.quiz.power.q', options: ['lessons.webserver.quiz.power.options.1', 'lessons.webserver.quiz.power.options.2', 'lessons.webserver.quiz.power.options.3'], answer: 1, why: 'lessons.webserver.quiz.power.why' },
+        { id: 'loop', q: 'lessons.webserver.quiz.loop.q', options: ['lessons.webserver.quiz.loop.options.1', 'lessons.webserver.quiz.loop.options.2', 'lessons.webserver.quiz.loop.options.3'], answer: 2, why: 'lessons.webserver.quiz.loop.why' },
       ],
     },
   },

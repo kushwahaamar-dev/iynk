@@ -474,6 +474,15 @@
             "3": "D2"
           },
           "why": "Les nombres simples sont des numéros de GPIO. GPIO4 est imprimé D2 ; D4 est GPIO2. Écrivez D4 ou LED_BUILTIN pour être sûr."
+        },
+        "resistor": {
+          "q": "Vous remplacez la résistance de 220 Ω par une de 1 kΩ. Que devient la LED sur D1 ?",
+          "options": {
+            "1": "Elle faiblit",
+            "2": "Elle brille plus",
+            "3": "Rien : la broche fixe le courant"
+          },
+          "why": "Le courant vaut (3,3 V - 2,0 V) / R : environ 6 mA avec 220 Ω et environ 1,3 mA avec 1 kΩ. Moins de courant, moins de lumière."
         }
       }
     },
@@ -561,6 +570,35 @@
         "off": "HIGH éteint la LED bleue",
         "divider": "le pont diviseur de la carte fait lire 3.2 V comme 1023",
         "debounce": "une courte pause absorbe aussi les rebonds des contacts"
+      },
+      "quiz": {
+        "pullup": {
+          "q": "Pourquoi pinMode(BUTTON, INPUT) suffit-il pour FLASH, sans INPUT_PULLUP ?",
+          "options": {
+            "1": "FLASH lit HIGH quand on appuie",
+            "2": "La carte a un pull-up de 12 kΩ sur D3",
+            "3": "L'ESP8266 n'a pas de pull-up interne"
+          },
+          "why": "R1, sur la carte, maintient D3 (GPIO0) à HIGH, et un appui sur FLASH le met à LOW. INPUT_PULLUP marcherait aussi, mais la résistance est déjà là."
+        },
+        "boot": {
+          "q": "Vous maintenez FLASH et appuyez sur RST. Le sketch ne démarre pas. Que s'est-il passé ?",
+          "options": {
+            "1": "La carte est en mode téléchargement",
+            "2": "Le sketch a planté",
+            "3": "La photorésistance a court-circuité le bouton"
+          },
+          "why": "D3 est GPIO0, une broche de démarrage : LOW au reset fait attendre un téléversement à la puce. Relâchez FLASH et appuyez sur RST pour relancer le sketch."
+        },
+        "divider": {
+          "q": "analogRead(A0) renvoie 1023. Quelle tension y a-t-il sur la broche A0 ?",
+          "options": {
+            "1": "1,0 V",
+            "2": "5 V",
+            "3": "3,2 V ou plus"
+          },
+          "why": "Le CAN de l'ESP8266 lui-même accepte 0 à 1 V. Le pont diviseur 220 kΩ / 100 kΩ de la carte étend cela à 0-3,2 V sur A0 : raw x 3.2 / 1023 donne donc les volts."
+        }
       }
     },
     "dimmer": {
@@ -640,6 +678,35 @@
         "range": "0-255 est déjà la valeur par défaut du core 3.x",
         "read": "0-1023 pour 0-3.2 V sur la broche A0",
         "map": "passer d'une entrée 10 bits à un rapport cyclique 8 bits"
+      },
+      "quiz": {
+        "range": {
+          "q": "Un tutoriel du core 2.x règle la mi-luminosité avec analogWrite(D5, 512). Qu'obtenez-vous avec le core 3.x ?",
+          "options": {
+            "1": "La mi-luminosité",
+            "2": "Rien : l'appel échoue",
+            "3": "La pleine luminosité"
+          },
+          "why": "Le core 3.x a changé la plage par défaut de 0-1023 à 0-255, et une valeur au-dessus de 255 veut juste dire complètement allumée. La moitié, c'est maintenant environ 128."
+        },
+        "fullscale": {
+          "q": "En tournant le bouton, la lecture atteint 1023 un peu avant la fin de course. Pourquoi ?",
+          "options": {
+            "1": "Le potentiomètre est usé",
+            "2": "La pleine échelle de A0 est de 3,2 V, pas 3,3 V",
+            "3": "map() coupe le haut"
+          },
+          "why": "Le pont diviseur de la carte fait lire 1023 à 3,2 V. Le dernier bout de course, de 3,2 V jusqu'aux 3,3 V au bout de la piste, donne la même valeur."
+        },
+        "map": {
+          "q": "Pourquoi le sketch utilise-t-il map(raw, 0, 1023, 0, 255) ?",
+          "options": {
+            "1": "Pour passer de 0-1023 à un rapport cyclique 0-255",
+            "2": "Pour convertir la lecture en volts",
+            "3": "Pour lisser le bruit"
+          },
+          "why": "analogRead() donne 0 à 1023 et analogWrite() prend ici 0 à 255 : map() fait passer de l'un à l'autre. raw / 4 ferait la même chose."
+        }
       }
     },
     "webserver": {
@@ -738,6 +805,15 @@
             "3": "Le port du serveur web est déjà utilisé"
           },
           "why": "Un mauvais SSID ne se connecte simplement jamais. Des redémarrages juste au moment de la connexion, c'est un brown-out : utilisez un meilleur câble ou ajoutez un gros condensateur sur le 3V3."
+        },
+        "loop": {
+          "q": "Vous ajoutez delay(5000) à la fin de loop(). Que se passe-t-il quand le téléphone ouvre /on ?",
+          "options": {
+            "1": "La LED bascule tout de suite",
+            "2": "La carte quitte le réseau",
+            "3": "La page est lente ou expire"
+          },
+          "why": "Le serveur ne répond que quand server.handleClient() tourne, et c'est maintenant une fois toutes les cinq secondes. Ne mettez pas de longues attentes dans loop()."
         }
       }
     }

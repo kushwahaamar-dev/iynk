@@ -107,6 +107,16 @@ describe('nodemcu content matches the figure', () => {
       for (const p of l.pins) expect(labels.has(p.pin), `${l.id} ${p.pin}`).toBe(true);
     }
   });
+
+  it('gives every lesson a three-question quiz whose answers are among its options', () => {
+    for (const l of board.lessons) {
+      expect(l.quiz?.questions, l.id).toHaveLength(3);
+      for (const q of l.quiz!.questions) {
+        expect(q.answer, `${l.id} ${q.id}`).toBeLessThan(q.options.length);
+        for (const key of [q.q, q.why, ...q.options]) expect(text(key).length, key).toBeGreaterThan(0);
+      }
+    }
+  });
 });
 
 describe('nodemcu lessons pass their checks through the app check path', () => {

@@ -344,6 +344,15 @@
             "3": "D2"
           },
           "why": "Plain numbers are GPIO numbers. GPIO4 is printed D2; D4 is GPIO2. Write D4 or LED_BUILTIN to be safe."
+        },
+        "resistor": {
+          "q": "You swap the 220 Ω resistor for 1 kΩ. What happens to the LED on D1?",
+          "options": {
+            "1": "It gets dimmer",
+            "2": "It gets brighter",
+            "3": "Nothing: the pin sets the current"
+          },
+          "why": "The current is (3.3 V - 2.0 V) / R: about 6 mA with 220 Ω and about 1.3 mA with 1 kΩ. Less current, less light."
         }
       }
     },
@@ -405,6 +414,35 @@
         "off": "HIGH switches the blue LED off",
         "divider": "the board's divider makes 3.2 V read as 1023",
         "debounce": "a short pause also rides over contact bounce"
+      },
+      "quiz": {
+        "pullup": {
+          "q": "Why is pinMode(BUTTON, INPUT) enough for FLASH, without INPUT_PULLUP?",
+          "options": {
+            "1": "FLASH reads HIGH when pressed",
+            "2": "The board has a 12 kΩ pull-up on D3",
+            "3": "The ESP8266 has no internal pull-ups"
+          },
+          "why": "R1 on the board holds D3 (GPIO0) HIGH, and pressing FLASH pulls it LOW. INPUT_PULLUP would work too, but the resistor is already there."
+        },
+        "boot": {
+          "q": "You hold FLASH and press RST. The sketch doesn't start. What happened?",
+          "options": {
+            "1": "The board is in download mode",
+            "2": "The sketch crashed",
+            "3": "The LDR shorted the button"
+          },
+          "why": "D3 is GPIO0, a boot pin: LOW at reset makes the chip wait for an upload. Release FLASH and press RST to run the sketch again."
+        },
+        "divider": {
+          "q": "analogRead(A0) returns 1023. What voltage is on the A0 pin?",
+          "options": {
+            "1": "1.0 V",
+            "2": "5 V",
+            "3": "3.2 V or more"
+          },
+          "why": "The ESP8266's own ADC takes 0 to 1 V. The board's 220 kΩ / 100 kΩ divider stretches that to 0 to 3.2 V on A0, so raw x 3.2 / 1023 gives the volts."
+        }
       }
     },
     "dimmer": {
@@ -461,6 +499,35 @@
         "range": "0-255 is already the default in core 3.x",
         "read": "0-1023 for 0-3.2 V on the A0 pin",
         "map": "scale 10-bit input to 8-bit duty"
+      },
+      "quiz": {
+        "range": {
+          "q": "A core 2.x tutorial sets half brightness with analogWrite(D5, 512). What do you get on core 3.x?",
+          "options": {
+            "1": "Half brightness",
+            "2": "Nothing: the call fails",
+            "3": "Full brightness"
+          },
+          "why": "Core 3.x changed the default range from 0-1023 to 0-255, and a value above 255 just means fully on. Half is about 128 now."
+        },
+        "fullscale": {
+          "q": "Turning the knob up, the reading reaches 1023 a little before the end. Why?",
+          "options": {
+            "1": "The potentiometer is worn",
+            "2": "A0's full scale is 3.2 V, not 3.3 V",
+            "3": "map() cuts off the top"
+          },
+          "why": "The board's divider makes 3.2 V read 1023. The last bit of travel, from 3.2 V up to the 3.3 V at the end of the track, reads the same."
+        },
+        "map": {
+          "q": "Why does the sketch use map(raw, 0, 1023, 0, 255)?",
+          "options": {
+            "1": "To turn 0-1023 into a 0-255 duty",
+            "2": "To turn the reading into volts",
+            "3": "To smooth out noise"
+          },
+          "why": "analogRead() gives 0 to 1023 and analogWrite() takes 0 to 255 here, so map() scales one onto the other. raw / 4 would do the same."
+        }
       }
     },
     "webserver": {
@@ -541,6 +608,15 @@
             "3": "The web server port is in use"
           },
           "why": "A wrong SSID just never connects. Resets right at connection time are a brown-out: use a better cable or add a large capacitor on 3V3."
+        },
+        "loop": {
+          "q": "You add delay(5000) at the end of loop(). What happens when the phone opens /on?",
+          "options": {
+            "1": "The LED switches at once",
+            "2": "The board leaves the network",
+            "3": "The page is slow or times out"
+          },
+          "why": "The server only answers when server.handleClient() runs, and now that is once every five seconds. Keep loop() free of long delays."
         }
       }
     }

@@ -474,6 +474,15 @@
             "3": "D2"
           },
           "why": "Los números sin más son números de GPIO. GPIO4 está rotulado D2; D4 es GPIO2. Escribe D4 o LED_BUILTIN para ir sobre seguro."
+        },
+        "resistor": {
+          "q": "Cambias la resistencia de 220 Ω por una de 1 kΩ. ¿Qué le pasa al LED de D1?",
+          "options": {
+            "1": "Brilla menos",
+            "2": "Brilla más",
+            "3": "Nada: el pin fija la corriente"
+          },
+          "why": "La corriente es (3,3 V - 2,0 V) / R: unos 6 mA con 220 Ω y unos 1,3 mA con 1 kΩ. Menos corriente, menos luz."
         }
       }
     },
@@ -561,6 +570,35 @@
         "off": "HIGH apaga el LED azul",
         "divider": "el divisor de la placa hace que 3,2 V se lean como 1023",
         "debounce": "una pausa corta también salva el rebote de los contactos"
+      },
+      "quiz": {
+        "pullup": {
+          "q": "¿Por qué basta con pinMode(BUTTON, INPUT) para FLASH, sin INPUT_PULLUP?",
+          "options": {
+            "1": "FLASH lee HIGH al pulsarlo",
+            "2": "La placa tiene una pull-up de 12 kΩ en D3",
+            "3": "El ESP8266 no tiene pull-ups internas"
+          },
+          "why": "R1, en la placa, mantiene D3 (GPIO0) en HIGH, y al pulsar FLASH lo lleva a LOW. INPUT_PULLUP también funcionaría, pero la resistencia ya está ahí."
+        },
+        "boot": {
+          "q": "Mantienes FLASH y pulsas RST. El sketch no arranca. ¿Qué ha pasado?",
+          "options": {
+            "1": "La placa está en modo de descarga",
+            "2": "El sketch se ha colgado",
+            "3": "La fotorresistencia cortocircuitó el botón"
+          },
+          "why": "D3 es GPIO0, un pin de arranque: LOW en el reinicio hace que el chip espere una carga. Suelta FLASH y pulsa RST para que el sketch vuelva a funcionar."
+        },
+        "divider": {
+          "q": "analogRead(A0) devuelve 1023. ¿Qué tensión hay en el pin A0?",
+          "options": {
+            "1": "1,0 V",
+            "2": "5 V",
+            "3": "3,2 V o más"
+          },
+          "why": "El ADC del propio ESP8266 admite de 0 a 1 V. El divisor de 220 kΩ / 100 kΩ de la placa lo amplía a 0-3,2 V en A0, así que lectura x 3,2 / 1023 da los voltios."
+        }
       }
     },
     "dimmer": {
@@ -640,6 +678,35 @@
         "range": "0-255 ya es el rango por defecto en el núcleo 3.x",
         "read": "0-1023 para 0-3,2 V en el pin A0",
         "map": "escala la entrada de 10 bits a un ciclo de trabajo de 8 bits"
+      },
+      "quiz": {
+        "range": {
+          "q": "Un tutorial del núcleo 2.x pone medio brillo con analogWrite(D5, 512). ¿Qué obtienes con el núcleo 3.x?",
+          "options": {
+            "1": "Medio brillo",
+            "2": "Nada: la llamada falla",
+            "3": "Brillo máximo"
+          },
+          "why": "El núcleo 3.x cambió el rango por defecto de 0-1023 a 0-255, y un valor por encima de 255 significa simplemente encendido del todo. Ahora la mitad es unos 128."
+        },
+        "fullscale": {
+          "q": "Al subir el mando, la lectura llega a 1023 un poco antes del final. ¿Por qué?",
+          "options": {
+            "1": "El potenciómetro está gastado",
+            "2": "El fondo de escala de A0 es 3,2 V, no 3,3 V",
+            "3": "map() recorta la parte de arriba"
+          },
+          "why": "El divisor de la placa hace que 3,2 V den 1023. El último tramo del recorrido, de 3,2 V a los 3,3 V del final de la pista, da lo mismo."
+        },
+        "map": {
+          "q": "¿Por qué el sketch usa map(raw, 0, 1023, 0, 255)?",
+          "options": {
+            "1": "Para pasar de 0-1023 a un ciclo de trabajo de 0-255",
+            "2": "Para convertir la lectura en voltios",
+            "3": "Para suavizar el ruido"
+          },
+          "why": "analogRead() da de 0 a 1023 y aquí analogWrite() acepta de 0 a 255, así que map() lleva una escala a la otra. raw / 4 haría lo mismo."
+        }
       }
     },
     "webserver": {
@@ -738,6 +805,15 @@
             "3": "El puerto del servidor web está ocupado"
           },
           "why": "Con un SSID equivocado simplemente nunca se conecta. Los reinicios justo al conectarse son una caída de tensión: usa un cable mejor o añade un condensador grande en 3V3."
+        },
+        "loop": {
+          "q": "Añades delay(5000) al final de loop(). ¿Qué pasa cuando el móvil abre /on?",
+          "options": {
+            "1": "El LED cambia al instante",
+            "2": "La placa se sale de la red",
+            "3": "La página tarda o agota el tiempo de espera"
+          },
+          "why": "El servidor solo responde cuando se ejecuta server.handleClient(), y ahora eso pasa una vez cada cinco segundos. No pongas esperas largas en loop()."
         }
       }
     }
