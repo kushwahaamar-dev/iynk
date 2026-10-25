@@ -130,7 +130,7 @@ export function BuildPanel({ content, figure, ready, sel, t, ct, dispatch }: Pro
               <Button
                 key={id}
                 size="sm"
-                variant="danger"
+                variant="secondary"
                 disabled={!ready}
                 onClick={() => dispatch({ type: "bench/add", id, orient: 1 })}
               >
