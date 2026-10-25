@@ -71,9 +71,10 @@ where, what a user sees, and the cause where known. Struck through when fixed, w
 27. Two tabs of one browser profile share one name and one progress (localStorage), so the no-relay fallback needs
     two Chrome profiles to show two people; a phone on a LAN `http://` address can't record voice (getUserMedia needs
     HTTPS). Both are written into VIDEO.md and JUDGE-QA; the deploy (https, relay) removes them.
-28. `/api/status` says `solana: true` on this machine (`.env.local` has the issuer key and program id); the client
-    still hides Passport and Verify unless the devnet Config account exists. For the deploy, leave the Solana vars
-    out of Vercel unless phase 4 runs.
+28. ~~`/api/status` says `solana: true` on this machine (`.env.local` has the issuer key and program id) while the
+    client hides Passport and Verify unless the devnet Config account exists, reading devnet from every page (a 429
+    became a console error, F-review N11).~~ The server checks the Config account (cached) and `/api/status` says
+    `solana` only once it exists. For the deploy, leave the Solana vars out of Vercel unless phase 4 runs.
 29. BUILD-PLAN §1's demo path doesn't match the build in three places (the Uno Blink lesson has no reversed-LED
     failure, that is `led-backwards` on `/robotics/led-resistor`; "Short 5V" leaves the board dark with a warm
     polyfuse instead of smoke; quad5 can't be under $150, the catalogue range is $330-370). PITCH.md and VIDEO.md

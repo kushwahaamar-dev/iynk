@@ -2,6 +2,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("next/server", () => ({ connection: async () => {} }));
+const configReady = vi.hoisted(() => vi.fn(async () => false));
+vi.mock("@/lib/solana/config-ready", () => ({ configAccountReady: configReady }));
 
 async function load(vars: Record<string, string>) {
   vi.resetModules();
@@ -22,6 +24,19 @@ describe("GET /api/status", () => {
     expect(features.ai).toBe(true);
     expect(features.search).toBe(false);
     for (const value of Object.values(features)) expect(typeof value).toBe("boolean");
+  });
+
+  it("says Proof of Build is on only once its Config account is on devnet", async () => {
+    const solana = {
+      SOLANA_ISSUER_KEYPAIR: JSON.stringify(Array.from({ length: 64 }, (_, i) => i)),
+      NEXT_PUBLIC_SOLANA_PROGRAM_ID: "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS",
+    };
+    configReady.mockResolvedValue(false);
+    let { GET } = await load(solana);
+    expect((await (await GET(new Request("http://localhost/api/status"))).json()).features.solana).toBe(false);
+    configReady.mockResolvedValue(true);
+    ({ GET } = await load(solana));
+    expect((await (await GET(new Request("http://localhost/api/status"))).json()).features.solana).toBe(true);
   });
 
   it("is rate limited", async () => {

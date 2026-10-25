@@ -1,9 +1,6 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-const configReady = vi.hoisted(() => vi.fn(async () => false));
-vi.mock("@/lib/solana/config-ready", () => ({ configAccountReady: configReady }));
-
 async function load() {
   vi.resetModules();
   return import("./features");
@@ -11,8 +8,6 @@ async function load() {
 
 afterEach(() => {
   vi.unstubAllGlobals();
-  configReady.mockReset();
-  configReady.mockResolvedValue(false);
 });
 
 describe("useFeatures", () => {
@@ -76,25 +71,16 @@ describe("getFeatures", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it("keeps Proof of Build off until the Config account exists, and hardware off", async () => {
-    configReady.mockResolvedValue(false);
-    vi.stubGlobal("fetch", vi.fn(async () => Response.json({ features: { ai: true, solana: true, hw: true } })));
-    const { useFeatures } = await load();
-    const { result } = renderHook(() => useFeatures());
-    await waitFor(() => expect(result.current.status).toBe("ready"));
-    expect(result.current.features.solana).toBe(false);
-    expect(result.current.features.hw).toBe(false);
-    expect(result.current.features.ai).toBe(true);
-    expect(configReady).toHaveBeenCalled();
-  });
-
-  it("turns Proof of Build on once the Config account exists", async () => {
-    configReady.mockResolvedValue(true);
-    vi.stubGlobal("fetch", vi.fn(async () => Response.json({ features: { solana: true, hw: true } })));
+  it("takes Proof of Build from the server, which has checked the Config account, and keeps hardware off", async () => {
+    const fetchMock = vi.fn(async () => Response.json({ features: { solana: true, hw: true } }));
+    vi.stubGlobal("fetch", fetchMock);
     const { useFeatures, NO_FEATURES } = await load();
     const { result } = renderHook(() => useFeatures());
     await waitFor(() => expect(result.current.status).toBe("ready"));
     expect(result.current.features).toEqual({ ...NO_FEATURES, solana: true });
+    // one request, to SimLab's own server: the browser never asks the Solana RPC
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock.mock.calls[0]).toEqual(["/api/status", expect.anything()]);
   });
 
   it("resolves to every feature off when the server can't be reached", async () => {
