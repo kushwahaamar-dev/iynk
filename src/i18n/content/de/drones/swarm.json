@@ -1,0 +1,297 @@
+{
+  "title": "Crazyflie-Schwarmdrohne",
+  "tagline": "Ein 29 g leichter Crazyflie, den du in Python programmierst: Lighthouse- und Flow-Deck, ein Crazyradio und drei weitere wie er, die einen Lichtshow-Stern fliegen.",
+  "sub": "Crazyflie 2.1+, cflib und Lighthouse",
+  "hint": "Bau einen Crazyflie, prüf seine Decks und seine Funkverbindung und flieg dann eine Lichtshow mit vier Drohnen",
+  "noun": "Crazyflie",
+  "overview": "Ein Crazyflie ist ein 29 g leichter Quadcopter, den du programmierst, statt ihn zu fliegen. Seine 92-mm-Platine ist Rahmen und Flugcontroller in einem, mit vier Coreless-Motoren, die direkt von der Platine geschaltet werden, und zwei Stiftleisten für Erweiterungsdecks. Ein Flow-Deck darunter beobachtet den Boden und misst die Höhe; ein Lighthouse-Deck oben misst die Zeiten der Laserschwenks zweier Basisstationen und weiß auf wenige Zentimeter genau, wo im Raum die Drohne ist. Ein Python-Skript auf einem Laptop spricht über ein Crazyradio mit cflib mit ihr, und dasselbe Funkmodul spricht mit einem ganzen Schwarm, jede Drohne unter ihrer eigenen Adresse. Diese hier führt vier Drohnen durch eine Lichtshow: ein fünfzackiger Stern mit 0,8 m/s, jede Drohne in ihrer eigenen Ecke eines 0,6-m-Quadrats, ihre LEDs wechseln an jedem Punkt die Farbe. Wähl die Teile, bau sie zusammen, prüf die Motoren, die Funkverbindung, die Decks und den Failsafe bei Verbindungsverlust und flieg dann die Show von Hand oder lass sie den High-Level-Commander fliegen.",
+  "practice": "Flieg zuerst im Modus Schweben: Starte auf 1 m über dem Landeplatz und flieg dann den Stern von Hand von Punkt zu Punkt, langsam. Die Knüppel verlangen höchstens 1 m/s und 20° Neigung. Sieh zu, wie die anderen drei ihre Plätze neben und hinter dir halten, und lande dann auf dem Landeplatz. Schalte dann auf den Modus Show und lass den High-Level-Commander fliegen. Bei einem echten Schwarm: Gib jeder Drohne ihre eigene Adresse, halte sie beim Einschalten still und waagerecht, prüf, dass beide Decks 1 melden, mach die Motorprüfung und den Verbindungsverlust-Test ohne Propeller und den Propellertest mit ihnen, und flieg die erste Show niedrig, über einem Netz, mit einem Landebefehl in deinem Skript in Bereitschaft.",
+  "design": {
+    "fixed": {
+      "FRAME": "Crazyflie-2.1+-Platine und Motorhalter (der Rahmen)",
+      "FLOW": "Flow-Deck v2",
+      "DECKL": "Lighthouse-Positionierungsdeck",
+      "HDR": "Lange Stiftleisten",
+      "RADIO": "Crazyradio 2.0 (am Laptop, also wiegt es hier nichts)",
+      "STRAP": "Schaumstoff-Akkupolster (der „Gurt“ des Originals: Ein Crazyflie hat keinen)"
+    },
+    "verdict": {
+      "ok": "Die Teile passen: {tw}:1, genug Reserve, um drinnen eine enge Formation zu halten. Der Rechner behält die Teilemassen des Originals bei; die echte Drohne wiegt mit beiden Decks etwa 34 g, also ist ihre Reserve etwas kleiner.",
+      "over": "8,5 x 20-mm-Motoren passen nicht in die 7-mm-Motorhalter des Crazyflie, und ihr Gewicht frisst den Schub, den sie bringen: {tw}:1. Bleib bei 7-mm-Motoren; das eigene Schub-Upgrade von Bitcraze ist ein 7 x 20-mm-Motor.",
+      "weak": "Schub-Gewichts-Verhältnis {tw}:1: zu schwer für vier 7 x 16-Motoren. Er schwebt nahe Vollgas mit wenig Reserve, um eine Drift zu korrigieren, also kann er seinen Platz in der Formation nicht halten. Nimm eine leichtere Zelle oder die 47-17-Propeller."
+    }
+  },
+  "parts": {
+    "MOTORS": {
+      "name": "4 × 7 x 16-mm-Coreless-Motoren in ihren Haltern",
+      "what": "Bürstenbehaftete Gleichstrommotoren mit 7 mm Durchmesser und 16 mm Länge, 14000 U/min pro Volt, eingepresst in Kunststoffhalter, die über die Armspitzen geklipst werden und zugleich die Beine sind. Ein Coreless-Rotor hat kein Eisen, also ist der Motor winzig und dreht schnell hoch, aber die Bürsten verschleißen: Ein müder Motor zeigt sich als langsame Drift zu seiner Ecke hin. Alle vier sind dasselbe Bauteil."
+    },
+    "FC": {
+      "name": "Crazyflie-2.1+-Platine",
+      "what": "Die ganze Zelle ist diese 92 mm große, X-förmige Platine. Ein STM32F405 rechnet den Schätzer und die Regler, ein nRF51822 kümmert sich um Funk und Stromversorgung, ein BMI088 misst Drehung und Beschleunigung und ein BMP388 den Luftdruck. Der Antennenbuckel markiert vorn, und die blauen LEDs sind hinten. Es gibt keinen Kompass, keinen ESC und keine Board-Ausrichtung einzustellen."
+    },
+    "WIRES": {
+      "name": "Motorstecker (Molex PicoBlade)",
+      "what": "Jeder Motor hat zwei kurze Kabel, die in einem 2-poligen PicoBlade-Stecker enden, der in eine Buchse auf seinem Arm kommt. Der Stecker ist codiert, und die Polarität jeder Buchse legt fest, in welche Richtung sich ihr Motor dreht."
+    },
+    "HDR": {
+      "name": "Lange Stiftleisten",
+      "what": "Zwei Leisten mit je zehn Stiften im 2-mm-Raster: 19 mm über einem 2-mm-Kunststoffabstandshalter und 4 mm darunter, damit ein Deck oben und eines unten sitzen kann. Sie führen 3,0 V, Masse, die Akkuspannung, I²C, SPI, zwei UARTs und die 1-Wire-Leitung, auf der der ID-Chip jedes Decks antwortet."
+    },
+    "FLOW": {
+      "name": "Flow-Deck v2",
+      "what": "Ein optischer Flusssensor PMW3901 beobachtet, wie der Boden vorbeigleitet, und ein Laufzeitsensor VL53L1x misst die Höhe. Zusammen halten sie die Position ohne irgendetwas im Raum, von 0,2 bis etwa 3 m über einem strukturierten, matten Boden. Firmware-Name bcFlow2."
+    },
+    "BATT": {
+      "name": "1S-LiPo mit 250 mAh",
+      "what": "Eine Zelle, 3,7 V, 7,1 g, an einem Molex-51005-Stecker und mit eigener Schutzplatine. Sie liegt auf einem Schaumstoffpolster zwischen den Stiftleisten, unter dem oberen Deck, und lädt über die USB-Buchse der Platine. Etwa 7 Minuten Schwebeflug bei einer nackten Drohne, weniger mit zwei Decks."
+    },
+    "DECKL": {
+      "name": "Lighthouse-Positionierungsdeck",
+      "what": "Vier Infrarotempfänger TS4231 messen die Zeiten der Laserschwenks der Lighthouse-V2-Basisstationen, und ein ICE40-FPGA macht aus den Zeiten Winkel für das Kalman-Filter. Absolut besser als 10 cm in einem 5 x 5 m großen Raum, und unter einem Millimeter von einem Moment zum nächsten. Jede Drohne berechnet ihre eigene Position, also können sich beliebig viele dieselben Stationen teilen. Firmware-Name bcLighthouse4."
+    },
+    "RADIO": {
+      "name": "Crazyradio 2.0",
+      "what": "Ein USB-Dongle am Laptop mit einem nRF52840, einem 20-dBm-Verstärker und einer 2-dBi-Antenne an einer RP-SMA-Buchse. Ein Funkmodul bedient den ganzen Schwarm: Jede Drohne sitzt auf demselben Kanal unter ihrer eigenen Adresse."
+    },
+    "PROPS": {
+      "name": "Zweiblattpropeller, 2 CW und 2 CCW",
+      "what": "Auf 0,8-mm-Wellen. Der 2.1+ kommt mit 47-17-Propellern (47 mm, 17 mm Steigung): 47-17 dreht gegen den Uhrzeigersinn und 47-17R im Uhrzeigersinn. Die älteren 45-mm-Propeller sind mit B (gegen den Uhrzeigersinn) und A (im Uhrzeigersinn) markiert. Die gewölbte Seite kommt nach oben. Ein Propeller auf dem falschen Motor überschlägt die Drohne beim Abheben, und die Sturzerkennung schaltet die Motoren ab."
+    }
+  },
+  "build": {
+    "motors": {
+      "title": "Motoren in ihre Halter",
+      "body": "Press jeden Motor in einen Kunststoffhalter, seine Kabel aus dem Schlitz heraus. Alle vier 7 x 16-Motoren sind dasselbe Bauteil: Die Platine entscheidet, in welche Richtung sich jeder dreht, also ist es egal, welcher wohin kommt."
+    },
+    "board": {
+      "title": "Die Platine auf die Halter klipsen",
+      "body": "Leg die Platine auf die vier Halter, den Antennenbuckel vorn, und drück jede Armspitze in den Clip ihres Halters, bis sie flach sitzt. Die Platine ist der Rahmen: Es gibt nichts zu verschrauben.",
+      "refusal": "Die Armspitzen der Platine werden in die Motorhalter geklipst: Setz zuerst die Motoren ein."
+    },
+    "plugs": {
+      "title": "Die Motoren einstecken",
+      "body": "Drück den PicoBlade-Stecker jedes Motors in die Buchse auf seinem Arm und leg die Kabel am Arm entlang, weg vom Propeller.",
+      "refusal": "Die Stecker kommen in die Buchsen der Platine: Setz zuerst die Motoren und die Platine ein."
+    },
+    "pins": {
+      "title": "Die langen Stifte einsetzen",
+      "body": "Drück die beiden langen Stiftleisten von oben durch die Löcher der Stiftleisten, den Kunststoffabstandshalter flach auf der Platine: 19 mm stehen nach oben für das Lighthouse-Deck, und 4 mm kommen unten für das Flow-Deck heraus.",
+      "refusal": "Die Stifte gehen durch die Löcher der Platine: Setz zuerst die Platine ein."
+    },
+    "flow": {
+      "title": "Das Flow-Deck unten einsetzen",
+      "body": "Drück das Flow-Deck unter der Platine auf die Stifte, Kamera und Entfernungssensor zum Boden und den Aufdruck richtig herum.",
+      "refusal": "Das Flow-Deck hängt an den langen Stiften: Setz die zuerst ein."
+    },
+    "batt": {
+      "title": "Den Akku einlegen",
+      "body": "Leg ein Schaumstoffpolster zwischen den Stiftleisten auf die Platine und die Zelle darauf, ihr Kabel nach hinten. Lass sie abgesteckt, bis die Decks drauf sind.",
+      "refusal": "Die Zelle liegt zwischen den Stiftleisten auf der Platine: Setz zuerst die Platine ein."
+    },
+    "lighthouse": {
+      "title": "Das Lighthouse-Deck oben aufsetzen",
+      "body": "Schieb das Lighthouse-Deck über dem Akku die langen Stifte hinunter, richtig herum: Verdreht trifft sein ID-Chip die falschen Stifte, und die Firmware sieht es nie. Seine vier Empfänger brauchen freie Sicht auf die Basisstationen.",
+      "refusal": "Das Deck sitzt auf den langen Stiften: Setz die zuerst ein."
+    },
+    "radio": {
+      "title": "Das Crazyradio einrichten",
+      "body": "Schraub die Antenne auf das Crazyradio 2.0 und steck es in den Laptop. Gib in cfclient (Connect, Configure 2.x) jeder Drohne ihre eigene Adresse auf demselben Kanal: E7E7E7E701 bis E7E7E7E704 auf Kanal 80.",
+      "refusal": "Das Crazyradio spricht mit der Platine: Setz zuerst die Platine ein."
+    },
+    "props": {
+      "title": "Die Propeller montieren (zuletzt)",
+      "body": "Erst nach der Motorprüfung und der Kalibrierung. 47-17 (gegen den Uhrzeigersinn) auf M1 und M3, 47-17R (im Uhrzeigersinn) auf M2 und M4; bei den alten 45-mm-Propellern kommt B auf M1 und M3 und A auf M2 und M4. Gewölbte Seite nach oben, ganz auf die Welle geschoben.",
+      "refusal": "Die Propeller kommen zuletzt drauf, wenn Motoren und Platine montiert sind: Setz die zuerst ein."
+    }
+  },
+  "wiring": {
+    "BATT-FC": "Die 1S-Zelle wird in die Molex-51005-Buchse der Platine gesteckt. Der nRF51 schaltet den Strom und lädt die Zelle über USB, und Regler erzeugen die 3,0 V, mit denen die Elektronik läuft.",
+    "FC-WIRES": "Vier MOSFETs auf der Platine schalten die Motoren mit einer 8-Bit-PWM aus den Timern des STM32, etwa 328.000-mal pro Sekunde. Es gibt keinen ESC und nichts einzustellen: Bei einem Bürstenmotor muss sich nur die mittlere Spannung ändern.",
+    "WIRES-MOTORS": "Zwei Kabel pro Motor. Die Polarität jeder Buchse legt die Drehrichtung fest: M1 und M3 gegen den Uhrzeigersinn, M2 und M4 im Uhrzeigersinn, von oben gesehen.",
+    "DECKL-FC": "Über die langen Stifte: Das FPGA schickt seine Schwenkzeiten über einen UART, und der ID-Chip des Decks meldet der Firmware, dass es da ist.",
+    "FLOW-FC": "Über die unteren Enden der Stifte: der Flusssensor an SPI, der Entfernungssensor an I²C.",
+    "RADIO-FC": "Das 2-Mbit/s-Funkprotokoll von Nordic auf 2,4 GHz, Kanal 80. Sollwerte, Parameter und Logs laufen alle darüber; bei gestreamten Sollwerten bringt eine Lücke von 0,5 s die Drohne in die Waagerechte, und eine Lücke von 2 s stoppt ihre Motoren."
+  },
+  "tests": {
+    "motors": {
+      "title": "Motorprüfung (ohne Propeller)",
+      "pass": "Jeder Motor lief ohne Propeller einzeln über motorPowerSet: M1 (vorne rechts) und M3 drehten von oben gesehen gegen den Uhrzeigersinn, M2 und M4 im Uhrzeigersinn. Alle vier Motoren sind dasselbe Bauteil, und die Buchsen legen die Richtung fest, also findet diese Prüfung einen toten Motor, einen lockeren Stecker oder einen schlecht gecrimpten. Der Selbsttest beim Einschalten lässt auch jeden Motor kurz ticken.",
+      "fail": "Ein Motor hat sich falsch herum oder gar nicht gedreht: Sein Stecker sitzt nicht ganz, oder seine Kabel sind verkehrt herum gecrimpt. Steck den Stecker neu oder setz einen guten Motor ein. Nichts in der Firmware kehrt einen Bürstenmotor um."
+    },
+    "calibrate": {
+      "title": "Sensorkalibrierung (still halten)",
+      "pass": "Die Firmware hat das Gyroskop selbst kalibriert, während die Drohne beim Einschalten still und waagerecht lag, und LED1 ging von langsamem Blinken zu zwei roten Blinkern pro Sekunde über. Es gibt keinen Kompass zu kalibrieren und keine Board-Ausrichtung einzustellen: Die IMU ist auf den Rahmen gelötet.",
+      "fail": "Setz zuerst die Platine ein. Blinkt LED1 weiter langsam, bewegt etwas die Drohne: Stell sie auf eine ruhige, waagerechte Fläche und schalte sie wieder ein."
+    },
+    "link": {
+      "title": "Crazyradio-Verbindung",
+      "pass": "Verbunden über radio://0/80/2M/E7E7E7E701 mit 100 % Verbindungsqualität. Jede Drohne im Schwarm hat ihre eigene Adresse (E7E7E7E701 bis 04), alle auf Kanal 80, also spricht ein Crazyradio mit allen vieren.",
+      "fail": "Setz die Platine und das Crazyradio ein und steck den Akku an. Ohne aufgeschraubte Antenne verliert das Crazyradio Pakete (die Werkbank zeigt 23 %): Schraub sie auf, bevor du ihm einen Schwarm anvertraust."
+    },
+    "position": {
+      "title": "Decks und Positionierung",
+      "pass": "deck.bcFlow2 und deck.bcLighthouse4 melden beide 1, das Kalman-Filter hat die Lighthouse-Schwenks aufgenommen und sich eingependelt, und swarm.reset_estimators() ist zurückgekehrt. Jede Drohne weiß jetzt, wo sie im selben Koordinatensystem ist.",
+      "fail": "Ein Deck meldet 0 (das Lighthouse-Deck verdreht, die langen Stifte nicht richtig eingesteckt, das Flow-Deck fehlt), oder die Sensoren sind noch nicht kalibriert. Ohne gemeinsame Position kann der Schwarm keine Formation halten, und reset_estimators() kehrt nie zurück."
+    },
+    "failsafe": {
+      "title": "Verbindungsverlust-Test (ohne Propeller)",
+      "pass": "Mit gestreamten Sollwerten und abgezogenem Crazyradio ging sie nach 0,5 s in die Waagerechte und hielt ihren Schub, und nach 2 s stoppte sie ihre Motoren. Ein go_to vom High-Level-Commander wäre bis zu seinem Ende weitergeflogen: Plan die Show so, dass eine Drohne, die ihre Verbindung verliert, an einem sicheren Ort schwebt.",
+      "fail": "Setz die Motoren, ihre Stecker, die Platine und das Crazyradio ein, verbinde dich zuerst und nimm die Propeller ab."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Schätzer, Regler, Lighthouse und Grenzen",
+      "explain": "Die Parameter eines Crazyflie werden aus Python über Funk gesetzt: mit cf.param.set_value('group.name', value) aus cflib oder im Tab Parameters in cfclient. Jedes der beiden Decks erzwingt das Kalman-Filter, und PID ist der Standardregler; die Basisstationen hier sind Lighthouse V2. Die posCtlPid-Grenzen deckeln, was der Positionsregler verlangen darf, 20° Neigung und 1 m/s, und das sind die Zahlen, mit denen das Flugfeld fliegt."
+    },
+    "decks": {
+      "title": "Sind die Decks da?",
+      "explain": "Jedes Deck meldet sich beim Einschalten über seinen 1-Wire-ID-Chip, und die Firmware setzt für jedes gefundene Deck einen schreibgeschützten Parameter. get_value gibt den Wert als Text zurück, also vergleicht ein Skript ihn mit '1'."
+    },
+    "motortest": {
+      "title": "Motorprüfung, einer nach dem anderen",
+      "explain": "Ohne Propeller gibt motorPowerSet einen Wert von 0 bis 65535 direkt an die PWM jedes Motors. Lass sie einzeln laufen und sieh dir die Drehrichtung von oben an. Die Übersteuerung wirkt nur, solange der Supervisor die Motoren laufen lässt, und ein 2.1+ schaltet sich selbst scharf; setz enable wieder auf 0, wenn du fertig bist."
+    },
+    "health": {
+      "title": "Propellertest",
+      "explain": "health.startPropTest lässt jeden Motor der Reihe nach drehen, während der Beschleunigungssensor das Rütteln misst. Ein angeschlagener Propeller oder ein müder Motor rüttelt stärker als die anderen drei. Mach ihn mit montierten Propellern auf einem ebenen Boden."
+    },
+    "lights": {
+      "title": "Die LEDs für die Show",
+      "explain": "Bit 7 von led.bitmask nimmt der Firmware die vier LEDs für ihr Status-Blinken weg, und die anderen Bits wählen, welche leuchten: 138 sind beide grünen, 148 beide roten, 129 die linke blaue. In der Show setzt jede Drohne an jedem Punkt des Sterns ihren eigenen Wert. 0 gibt die LEDs zurück. Solange die Bitmaske aktiv ist, kann LED1 dich nicht vor einem schwachen Akku warnen."
+    },
+    "hover": {
+      "title": "Schweben: MotionCommander",
+      "explain": "MotionCommander macht aus Strecken Geschwindigkeitssollwerte und streamt sie alle 0,2 s: forward(0.6, velocity=0.4) fliegt 0,6 m mit 0,4 m/s, gemessen vom Flow-Deck. Beim Eintritt in den with-Block startet er auf default_height, beim Verlassen landet er. Das Skript prüft zuerst, ob das Flow-Deck da ist, denn ohne es würde nichts die Position halten."
+    },
+    "althold": {
+      "title": "Höhe halten: zdistance-Sollwerte",
+      "explain": "send_zdistance_setpoint nimmt Rollen und Nicken in Grad, eine Gierrate und eine Höhe in Metern: Der Entfernungssensor des Flow-Decks hält die Höhe, während du die Neigung vorgibst. Sende mit 10 Hz oder schneller und beende mit send_notify_setpoint_stop, damit der High-Level-Commander übernehmen kann."
+    },
+    "stabilize": {
+      "title": "Winkel und roher Schub",
+      "explain": "send_setpoint ist Rollen, Nicken, Gierrate und roher Schub, höchstens 60000. Die Firmware ignoriert den Schub, bis sie einen Sollwert mit Schub 0 gesehen hat, also fängt ein Skript mit einem solchen an. Nichts hält die Höhe: Der Schub, den du schickst, ist alles, was sie bekommt."
+    },
+    "show": {
+      "title": "Die Lichtshow für vier",
+      "explain": "Swarm öffnet eine Verbindung zu jeder Drohne, reset_estimators() wartet, bis sich jedes Kalman-Filter eingependelt hat, und parallel_safe führt show() auf allen vieren gleichzeitig aus, jede mit ihrem eigenen Platzversatz. Der High-Level-Commander plant jedes go_to auf der Drohne selbst, also beendet eine Drohne, die ihre Verbindung verliert, den Abschnitt und hält dort, statt abzustürzen. Jeder Abschnitt setzt led.bitmask: grün, rot, grün, rot, grün, dann blau, um den Stern zu schließen."
+    }
+  },
+  "flight": {
+    "modes": {
+      "hover": {
+        "title": "Schweben",
+        "hint": "Positionshaltung mit Flow-Deck und Lighthouse, wie MotionCommander: Die Knüppel verlangen bis zu 1 m/s, und sie bleibt stehen, wenn du loslässt. Die anderen drei halten ihre Plätze um dich herum."
+      },
+      "althold": {
+        "title": "Höhe halten",
+        "hint": "Zdistance-Sollwerte: Du gibst die Neigung vor, und der Entfernungssensor hält die Höhe. Nichts hält die Position, also wird jede Neigung zu einer Drift."
+      },
+      "stabilize": {
+        "title": "Angle",
+        "hint": "Einfache Sollwerte: Winkel und roher Schub. Nichts hält die Höhe oder die Position, also mach kleine Eingaben und bleib niedrig."
+      },
+      "show": {
+        "title": "Show",
+        "hint": "Die Lichtshow: Der High-Level-Commander fliegt den Stern mit 0,8 m/s von Punkt zu Punkt, die anderen drei in Formation, und landet dann auf dem Landeplatz."
+      }
+    },
+    "failsafes": {
+      "setpoint-500": "Kein gestreamter Sollwert (MotionCommander, send_setpoint) für 0,5 s: Der Supervisor bringt sie in die Waagerechte und hält den Schub.",
+      "setpoint-2000": "Kein Sollwert für 2 s: Motoren aus, und sie fällt von dort herunter, wo sie war. Deshalb fliegen Schwärme drinnen niedrig oder über einem Netz.",
+      "high-level": "Ein take-off, go_to oder land vom High-Level-Commander läuft auf der Drohne: Ist die Verbindung weg, beendet sie diesen Befehl und hält den letzten Sollwert. Von selbst landet sie nicht.",
+      "tumble": "Kopfüber oder abgestürzt (supervisor.tmblChckEn 1): Motoren aus, und sie schaltet sich erst wieder scharf, wenn sie eine Crash-Recovery-Anfrage bekommt.",
+      "low-battery": "5 s lang unter 3,2 V (pm.lowVoltage): LED1 leuchtet dauerhaft rot. Nichts landet sie für dich, also lande den Schwarm aus deinem Skript."
+    },
+    "controls": "Tastatur: Leertaste armt und disarmt, W und S steigen und sinken, die Pfeiltasten fliegen vorwärts, rückwärts und seitwärts, A und D gieren, V schaltet auf die Sicht von der Drohne (ein Crazyflie hat keine Kamera, außer du ergänzt eine auf einem Deck), R setzt sie zurück auf den Landeplatz. Im Modus Schweben bleibt sie stehen, wenn du loslässt, und die anderen drei halten ihre Plätze. Auf dem Handy ist der linke Knüppel Gas und Gieren und der rechte Nicken und Rollen. Ein Gamepad funktioniert in Mode 2."
+  },
+  "courses": {
+    "show": {
+      "title": "Lichtshow: ein Stern für vier",
+      "brief": "Vier Crazyflies stehen in einem 0,6-m-Quadrat auf dem Landeplatz, zwei Lighthouse-Basisstationen hoch oben in den Ecken. Starte auf 1 m und flieg einen fünfzackigen Stern 1,5 m von der Mitte der Arena entfernt, seine Spitzen auf 1,5 m und 1,2 m, und halte oben eine Sekunde, wenn du ihn beginnst und wenn du ihn schließt. Komm dann über den Landeplatz zurück und lande. Die anderen drei fliegen denselben Stern von ihren Plätzen aus.",
+      "goals": {
+        "1": "START: 1 m über dem Landeplatz",
+        "2": "STERNSPITZE OBEN: 1,5 m, eine Sekunde halten (grün)",
+        "3": "SPITZE UNTEN LINKS: 1,2 m (rot)",
+        "4": "SPITZE RECHTS: 1,5 m (grün)",
+        "5": "SPITZE LINKS: 1,5 m (rot)",
+        "6": "SPITZE UNTEN RECHTS: 1,2 m (grün)",
+        "7": "STERNSPITZE OBEN: den Stern schließen und halten (blau)",
+        "8": "ZURÜCK über den Landeplatz auf 1 m",
+        "9": "LANDEN auf dem Landeplatz"
+      }
+    }
+  },
+  "quizzes": {
+    "plugs": {
+      "esc": {
+        "q": "Wo ist der ESC des Crazyflie?",
+        "options": {
+          "1": "Unter jedem Motor",
+          "2": "Auf einem 4-in-1-Board unter dem Flugcontroller",
+          "3": "Es gibt keinen: MOSFETs auf der Platine schalten die Bürstenmotoren"
+        },
+        "why": "Bei einem Bürstenmotor muss sich nur die Spannung ändern, also erledigen ein MOSFET pro Motor und eine schnelle PWM (etwa 328 kHz) die Arbeit. Keine ESC-Firmware, kein DShot und keine Einstellung der Motordrehrichtung."
+      },
+      "spin": {
+        "q": "Bei der Motorprüfung dreht M2 gegen den Uhrzeigersinn. Was tust du?",
+        "options": {
+          "1": "Einen guten Motor einsetzen: Die Buchse legt die Richtung fest, also sind die Kabel dieses Motors verkehrt herum gecrimpt",
+          "2": "M2 in der Firmware umkehren",
+          "3": "Seinen Propeller gegen die andere Sorte tauschen"
+        },
+        "why": "Jeder 7 x 16-Motor ist dasselbe Bauteil, und die Buchsen der Platine legen die Drehrichtung fest. Die Firmware kann einen Bürstenmotor nicht umkehren, und mit dem anderen Propeller darauf drehen drei Propeller in dieselbe Richtung: Sie hebt ab, dreht sich aber auf der Stelle."
+      }
+    },
+    "lighthouse": {
+      "how": {
+        "q": "Woher weiß das Lighthouse-Deck, wo die Drohne ist?",
+        "options": {
+          "1": "Eine Kamera an der Wand beobachtet sie",
+          "2": "Seine Empfänger messen die Zeiten der schwenkenden Laserebenen der Basisstationen, und die Zeiten sind Winkel zu jeder Station",
+          "3": "Über GPS"
+        },
+        "why": "Jede Basisstation überstreicht den Raum mit Infrarotebenen. Die vier Empfänger des Decks messen, wann ein Schwenk sie trifft; diese Zeiten sind Winkel, und das Kalman-Filter macht aus Winkeln zu Stationen, die es kennt, eine Position. Die Drohne rechnet das an Bord aus, also können beliebig viele Drohnen dieselben Stationen nutzen."
+      },
+      "flow": {
+        "q": "Was bringt das Flow-Deck noch, wenn das Lighthouse-Deck drauf ist?",
+        "options": {
+          "1": "Eine direkte Höhe über dem Boden und schnelle Bewegungsmessungen zwischen den Schwenks",
+          "2": "Nichts: Es wird nur zum Scharfschalten gebraucht",
+          "3": "Ein zweites Funkmodul"
+        },
+        "why": "Beide Decks speisen dasselbe Kalman-Filter: Lighthouse liefert die Position im Raum, und Flusskamera und Entfernungssensor ergänzen schnelle lokale Messungen. Eine Show-Drohne trägt oft nur das Lighthouse-Deck, was etwa 2 g spart; mit dem Flow-Deck kann eine einzelne Drohne ganz ohne Basisstationen schweben."
+      }
+    },
+    "fly": {
+      "linkloss": {
+        "q": "Mitten in der Show verliert eine Drohne auf halbem Weg durch ein go_to ihre Verbindung. Was macht sie?",
+        "options": {
+          "1": "Sie landet sofort",
+          "2": "Sie beendet das go_to an Bord und schwebt an seinem Ende",
+          "3": "Sie stoppt nach 2 s ihre Motoren"
+        },
+        "why": "Der High-Level-Commander läuft auf der Drohne und frischt seinen eigenen Sollwert ständig auf, also schlägt der Watchdog nie an: Sie fliegt bis zum Ende des Abschnitts und hält dort. Bei gestreamten Sollwerten ist es anders: 0,5 s ohne einen, und sie geht in die Waagerechte, 2 s, und die Motoren stoppen."
+      },
+      "slots": {
+        "q": "Warum fliegt jede Drohne den Stern aus ihrer eigenen Ecke eines 0,6-m-Quadrats?",
+        "options": {
+          "1": "Damit das Funkmodul sie unterscheiden kann",
+          "2": "Damit der Stern größer aussieht",
+          "3": "Damit keine im Abwind einer anderen fliegt oder in sie hinein"
+        },
+        "why": "Eine Drohne unter einer anderen wird von deren Propellerstrahl nach unten gedrückt und wackelt. Jede fliegt denselben Stern, um ihren Platz verschoben, also teilen sie sich nie eine Luftsäule, und die Form bleibt gleich."
+      },
+      "heavy": {
+        "q": "Warum ist die 450-mAh-Zelle eine schlechte Wahl für eine Show-Drohne?",
+        "options": {
+          "1": "Das Schub-Gewichts-Verhältnis sinkt auf etwa 1,6:1, also schwebt sie nahe Vollgas mit wenig Reserve, um ihren Platz zu halten",
+          "2": "Sie passt nicht in die Molex-Buchse",
+          "3": "Die Funkreichweite sinkt"
+        },
+        "why": "Die Zelle wiegt 5,4 g mehr als die mit 250 mAh, und die Motoren liefern nicht mehr Schub. Unter etwa 1,65:1 hat der Regler keinen Spielraum mehr zum Korrigieren, und Drohnen driften aus der Formation. Bitcraze baut keinen 450-mAh-Akku, und ein Nachbau passt vielleicht nicht zwischen die Stiftleisten."
+      }
+    }
+  }
+}
