@@ -1,0 +1,511 @@
+{
+  "title": "Convertisseur abaisseur LM2596",
+  "sub": "réglez la tension avant de brancher la charge",
+  "hint": "montez-le, réglez 5 V au multimètre, faites tourner un moteur, cassez-le",
+  "overview": "Les batteries n'ont jamais la bonne tension. Une LiPo 2S donne 8,4 V pleine et 6,6 V presque vide ; un moteur TT, la broche 5V d'un Nano ou un servo veulent du 5 V. Un convertisseur abaisseur (buck) baisse la tension sans brûler la différence en chaleur : le LM2596 hache l'entrée 150 000 fois par seconde, une inductance de 33 µH et un condensateur lissent la tension hachée, et une diode Schottky porte le courant de l'inductance pendant que l'interrupteur est ouvert. Un trimmer 25 tours règle la sortie selon la formule Vout = 1.23 x (1 + R2 / 330). Ici, vous montez le module bleu, réglez 5 V au multimètre avant de brancher quoi que ce soit en sortie, y mettez un moteur, lui demandez 12 V pour voir qu'un buck ne fait que baisser la tension, puis le cassez de sept façons. Il n'a ni protection contre l'inversion, ni fusible, ni coupure de batterie faible, et chacun de ces manques se manifeste.",
+  "power": {
+    "label": "Mettez le banc sous tension",
+    "ok": "Batterie sur IN+ et IN- : l'afficheur s'allume avec la tension d'entrée et le convertisseur commute"
+  },
+  "parts": {
+    "U1": {
+      "name": "Régulateur abaisseur LM2596S-ADJ (TO-263-5)",
+      "what": "L'interrupteur, l'oscillateur à 150 kHz, une référence de 1,23 V et l'amplificateur d'erreur dans un seul boîtier à cinq broches. Il compare FB à 1,23 V et change la durée pendant laquelle son interrupteur reste fermé à chaque cycle jusqu'à ce qu'ils soient égaux. La languette est la broche 3, la masse, soudée à un cuivre qui répartit la chaleur."
+    },
+    "L1": {
+      "name": "Inductance blindée de 33 µH",
+      "what": "Marquée 330 : 33 suivi de 0 zéro, en µH. Pendant que l'interrupteur est fermé, le courant qui la traverse monte et elle stocke de l'énergie ; quand il est ouvert, elle maintient le courant à travers la diode vers la sortie."
+    },
+    "D1": {
+      "name": "Diode Schottky de roue libre SS34",
+      "what": "Porte le courant de l'inductance pendant que l'interrupteur est ouvert : environ un tiers de chaque cycle à 5 V en sortie. Une Schottky ne chute que d'environ 0,4 V : elle gaspille donc peu. Elle est prévue pour 3 A et 40 V, moins que ce que le module peut lui demander avec une sortie en court-circuit ou une entrée à 44 V."
+    },
+    "C1": {
+      "name": "Condensateur d'entrée 220 µF 50 V",
+      "what": "Fournit les impulsions de courant brusques que tire l'interrupteur : les fils de la batterie ne portent ainsi que la moyenne. Polarisé : la bande marque le moins."
+    },
+    "C2": {
+      "name": "Condensateur de sortie 220 µF 50 V",
+      "what": "Lisse la sortie avec l'inductance ; il reste une ondulation de quelques dizaines de millivolts à 150 kHz. Polarisé comme C1."
+    },
+    "RV1": {
+      "name": "Trimmer 10 kΩ 25 tours (3296W)",
+      "what": "Le R2 de la formule : 400 Ω par tour. Dans le sens horaire, la sortie monte. Il arrive en général en butée haute, ce qui demande 38,5 V : les vingt premiers tours ne changent donc rien de visible."
+    },
+    "R7": {
+      "name": "Résistance de contre-réaction près du trimmer",
+      "what": "Fait partie du réseau diviseur autour du trimmer qui alimente FB."
+    },
+    "C5": {
+      "name": "Condensateur de contre-réaction",
+      "what": "Un petit céramique dans le réseau de contre-réaction."
+    },
+    "J1": {
+      "name": "Bornier d'entrée (IN+, IN-)",
+      "what": "Deux bornes à vis au pas de 5 mm pour les fils de la batterie. Rien derrière elles ne vérifie leur sens."
+    },
+    "J2": {
+      "name": "Bornier de sortie (OUT-, OUT+)",
+      "what": "Bornes à vis pour la charge. OUT- et IN- sont la même masse."
+    },
+    "DS1": {
+      "name": "Afficheur voltmètre rouge à 3 chiffres",
+      "what": "Affiche l'entrée ou la sortie : x.xx sous 10 V, xx.x au-dessus. Les vendeurs le donnent à ±0,1 V, et celui-ci lit 0,03 V de trop : c'est pour ça qu'on règle une tension au multimètre."
+    },
+    "U2": {
+      "name": "Régulateur du voltmètre",
+      "what": "Alimente le petit circuit de mesure depuis l'entrée : l'afficheur fonctionne même quand la sortie est en court-circuit. Il lui faut environ 4 V : en dessous, l'afficheur s'éteint."
+    },
+    "BITS": {
+      "name": "Circuit du voltmètre",
+      "what": "Des résistances de pont diviseur, du découplage et deux petits transistors autour du microcontrôleur du voltmètre."
+    },
+    "SW1": {
+      "name": "Bouton de sélection de l'affichage",
+      "what": "Chaque appui fait basculer l'afficheur entre IN et OUT."
+    },
+    "LED_IN": {
+      "name": "Témoin IN",
+      "what": "Allumé quand l'afficheur montre la tension d'entrée."
+    },
+    "LED_OUT": {
+      "name": "Témoin OUT",
+      "what": "Allumé quand l'afficheur montre la tension de sortie."
+    },
+    "X1": {
+      "name": "Petit composant noir à deux bornes près de l'entrée",
+      "what": "Non identifié sur les photos ; il se trouve dans le coin du circuit du voltmètre."
+    },
+    "BATT": {
+      "name": "LiPo 2S, 1000 mAh",
+      "what": "Deux cellules en série : 8,4 V pleine, 7,4 V nominale, 6,0 V vide (3,0 V par cellule, le plancher). Elle peut débiter des dizaines d'ampères dans un court-circuit."
+    },
+    "MM": {
+      "name": "Multimètre de poche sur 20 V DC",
+      "what": "Pointe rouge sur OUT+, noire sur OUT-. C'est sa valeur qui sert à régler le trimmer."
+    },
+    "MOT": {
+      "name": "Motoréducteur TT",
+      "what": "Un petit moteur à balais avec un réducteur 1:48, prévu pour 3 à 6 V. Environ 0,15 A en rotation libre à 5 V, environ 1,25 A bloqué."
+    }
+  },
+  "modes": {
+    "found": {
+      "title": "Trimmer tel que livré",
+      "code": {
+        "what": "Le trimmer tel qu'il arrive : en haut de ses 25 tours",
+        "top": "la totalité des 10 kΩ",
+        "empty": "rien sur OUT",
+        "verdict": "la sortie suit l'entrée, un volt en dessous : 7.6 V surmèneraient un moteur de 6 V"
+      }
+    },
+    "set5": {
+      "title": "Tournez le trimmer jusqu'à 5 V",
+      "code": {
+        "what": "5 V pour le moteur (ou la broche 5V d'un Nano)",
+        "verdict": "environ 74 % de rendement ici ; un régulateur linéaire ferait au mieux 5.0 / 8.4 = 60 %"
+      }
+    },
+    "set33": {
+      "title": "Tournez le trimmer jusqu'à 3,3 V",
+      "code": {
+        "what": "3.3 V, la tension que veulent un ESP32 ou la plupart des capteurs",
+        "verdict": "l'interrupteur est fermé moins de la moitié du temps ; les pertes fixes pèsent plus, donc le rendement baisse"
+      }
+    },
+    "set12": {
+      "title": "Tournez le trimmer jusqu'à 12 V",
+      "code": {
+        "what": "12 V demandés à une batterie de 8.4 V",
+        "verdict": "un buck ne fait que baisser la tension : il donne ce qu'il peut, et le moteur reçoit 7.6 V"
+      }
+    },
+    "code": {
+      "vref": "le LM2596 maintient FB à 1.23 V",
+      "r1": "de FB à la masse",
+      "turn": "le trimmer de 10 kΩ est R2, réparti sur 25 tours",
+      "vin": "une LiPo 2S pleine",
+      "above": "Vset dépasse Vin : l'interrupteur reste fermé en permanence (rapport cyclique de 100 %)",
+      "from": "en partant du bas",
+      "duty": "la fraction de chaque cycle pendant laquelle l'interrupteur est fermé",
+      "meter": "les 15 mA de l'afficheur compris"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Démontez jusqu'au circuit nu",
+      "body": "Une carte bleue de 66 x 34 mm avec quatre trous M3. L'entrée sur le bord gauche, la sortie sur le droit, toutes deux avec la borne plus en haut. La grande pastille au milieu à gauche reçoit la languette du régulateur : c'est la masse et le dissipateur.",
+      "refusal": "Coupez d'abord l'alimentation du banc"
+    },
+    "smd": {
+      "title": "Placez et refondez les composants CMS",
+      "body": "Le LM2596 avec sa languette sur la grande pastille, la SS34 sous ses pattes, l'inductance de 33 µH à côté, puis le circuit du voltmètre, les deux LED et le bouton. L'interrupteur, la diode, l'inductance et le condensateur de sortie forment une boucle serrée ; plus elle est courte, moins la carte rayonne à 150 kHz.",
+      "refusal": "Démontez d'abord la carte"
+    },
+    "trimmer-display": {
+      "title": "Posez le trimmer et l'afficheur",
+      "body": "Le trimmer bleu 25 tours le long du bord supérieur, sa vis en laiton à gauche, et l'afficheur à 3 chiffres le long du bord inférieur.",
+      "refusal": "Refondez d'abord les composants CMS"
+    },
+    "caps-terminals": {
+      "title": "Posez les condensateurs et les borniers",
+      "body": "C1 près de l'entrée, C2 près de la sortie, chacun avec sa bande (le moins) vers le bord de la carte, comme l'indique la sérigraphie. Puis les deux borniers à vis, entrées de fil vers l'extérieur.",
+      "refusal": "Posez d'abord le trimmer et l'afficheur"
+    },
+    "solder": {
+      "title": "Soudez les composants traversants",
+      "body": "Les pattes des condensateurs portent tout le courant de commutation par impulsions : faites-leur une vraie soudure. Les trois broches du trimmer comptent tout autant, comme le montre plus loin une des pannes.",
+      "refusal": "Posez d'abord tous les composants"
+    },
+    "wire-battery": {
+      "title": "Câblez la batterie sur IN+ et IN-",
+      "body": "Rouge sur IN+ (en haut à gauche), noir sur IN- (en bas à gauche). Vérifiez deux fois : le module n'a rien qui arrête une batterie inversée.",
+      "refusal": "Finissez d'abord de souder le module"
+    },
+    "wire-meter": {
+      "title": "Mettez le multimètre sur la sortie",
+      "body": "Sélecteur sur 20 V DC, pointe rouge sur OUT+, noire sur OUT-. Rien d'autre sur la sortie pour l'instant : on règle d'abord la tension, et on branche la charge ensuite.",
+      "refusal": "Câblez d'abord la batterie"
+    },
+    "plug": {
+      "title": "Allumez la batterie",
+      "body": "L'afficheur s'allume et montre l'entrée, 8,4 V, avec la LED IN allumée. Le multimètre lit 7,65 V. Ce n'est pas une panne : le trimmer est arrivé en butée haute, demandant 38,5 V, et un buck à qui l'on demande plus qu'il n'a donne son entrée moins environ un volt.",
+      "refusal": "Posez d'abord la batterie et le multimètre sur le tapis"
+    },
+    "show-out": {
+      "title": "Passez l'afficheur sur OUT",
+      "body": "Appuyez sur le bouton : la LED OUT s'allume et l'afficheur montre la sortie. Il est d'accord avec le multimètre à quelques centièmes près ici, mais l'afficheur n'est précis qu'à ±0,1 V : c'est donc le multimètre qui a le dernier mot.",
+      "refusal": "Allumez d'abord la batterie"
+    },
+    "set5": {
+      "title": "Descendez le trimmer jusqu'à 5 V",
+      "body": "Le sens antihoraire la fait baisser. Pendant une vingtaine de tours, rien ne se passe, parce que tout réglage au-dessus de 7,6 V donne les mêmes 7,6 V. Puis la valeur commence à baisser. Arrêtez quand le multimètre lit 5,00 V, à 2,53 tours de la butée basse : R2 = 330 x (5.00 / 1.23 - 1) = 1011 Ω.",
+      "refusal": "Allumez d'abord la batterie et branchez le multimètre"
+    },
+    "wire-motor": {
+      "title": "Coupez, puis câblez le moteur",
+      "body": "Batterie coupée d'abord. Fil rouge du moteur sur OUT+, noir sur OUT-. Le multimètre reste branché pour voir ce que la charge fait à la sortie.",
+      "refusal": "Réglez d'abord la sortie sur 5 V"
+    },
+    "load": {
+      "title": "Alimentez le moteur",
+      "body": "Le moteur tourne à environ 180 rpm sous 5 V et tire 155 mA sur la sortie. La batterie ne donne qu'environ 125 mA : le convertisseur échange de la tension contre du courant, 0,78 W en sortie pour 1,05 W en entrée. Les 5,00 V du multimètre ne bougent pas.",
+      "refusal": "Câblez d'abord le moteur"
+    },
+    "set33": {
+      "title": "Descendez-le à 3,3 V",
+      "body": "À 1,39 tour de la butée basse : R2 = 555 Ω. Le moteur ralentit à environ 110 rpm. Le rapport cyclique tombe à 45 %, et le rendement avec lui, parce que le voltmètre et les pertes de commutation restent les mêmes alors que la puissance de sortie baisse.",
+      "refusal": "Faites d'abord tourner le moteur à 5 V"
+    },
+    "set12": {
+      "title": "Demandez-lui 12 V",
+      "body": "7,22 tours : R2 = 2890 Ω donnerait 12 V depuis une entrée de 13 V. Depuis 8,4 V, c'est impossible : l'interrupteur reste fermé, le rapport cyclique affiche 100 % et la sortie reste à 7,6 V, l'entrée moins la saturation de l'interrupteur et le cuivre de l'inductance. Un buck ne fait que baisser la tension ; pour avoir 12 V depuis cette batterie, il faut un convertisseur élévateur (boost).",
+      "refusal": "Faites d'abord tourner le moteur à 3,3 V"
+    },
+    "lipo-backwards": {
+      "title": "Cassez-le : batterie à l'envers",
+      "body": "Inversez les fils de la batterie sur l'entrée. Rien sur le module ne l'empêche. Puis réparez et réglez de nouveau 5 V."
+    },
+    "cap-backwards": {
+      "title": "Cassez-le : C1 à l'envers",
+      "body": "Posez le condensateur d'entrée avec sa bande du mauvais côté et mettez sous tension. Puis réparez-le."
+    },
+    "wiper-open": {
+      "title": "Cassez-le : soudure froide sur le trimmer",
+      "body": "Une soudure terne et fissurée sur la broche du curseur du trimmer. Mettez sous tension avec le moteur branché et regardez le multimètre."
+    },
+    "flat-pack": {
+      "title": "Cassez-le : videz la batterie jusqu'à 5,5 V",
+      "body": "Laissez la batterie s'affaisser à 5,5 V, bien sous son plancher de 6,0 V, et regardez la sortie et l'afficheur."
+    },
+    "stall": {
+      "title": "Cassez-le : bloquez la roue",
+      "body": "Tenez la roue du moteur pour qu'elle ne puisse pas tourner, et regardez le multimètre, le courant de la batterie et la température de la puce."
+    },
+    "short-out": {
+      "title": "Cassez-le : court-circuit entre OUT+ et OUT-",
+      "body": "Un brin de fil égaré en travers du bornier de sortie. Regardez le multimètre, l'afficheur et la diode."
+    },
+    "ten-s-pack": {
+      "title": "Cassez-le : une entrée à 44 V",
+      "body": "Une batterie 10S, 42 V pleine, ou une alimentation de labo à 44 V sur l'entrée : dans les 45 V admis par le LM2596, au-delà de ceux de la diode."
+    },
+    "exploded": {
+      "title": "Vue éclatée",
+      "body": "Les couches séparées : la carte, les composants de puissance CMS, le trimmer et l'afficheur, les condensateurs et les borniers.",
+      "refusal": "Cassez-le et réparez-le de toutes les façons d'abord"
+    }
+  },
+  "faults": {
+    "reverse-polarity": {
+      "title": "Batterie branchée à l'envers",
+      "symptom": "L'afficheur reste éteint, la sortie est morte, le régulateur chauffe vite et C1 peut siffler. Souvent, le LM2596 lâche en court-circuit : le module est perdu même une fois les fils remis dans le bon sens.",
+      "explanation": "Avec le moins sur IN+, les diodes de protection internes du LM2596 et du régulateur du voltmètre conduisent directement aux bornes de la batterie, et C1 est polarisé en inverse. Une LiPo peut pousser des dizaines d'ampères par là. Il n'y a ni diode, ni fusible, ni MOSFET sur ce module pour l'arrêter.",
+      "fix": "Inversez les fils. La prochaine fois, un connecteur à détrompeur (XT30) sur le câble de la batterie, ou un MOSFET canal P ou une Schottky en série devant le module."
+    },
+    "cap-reversed": {
+      "title": "Condensateur d'entrée à l'envers",
+      "symptom": "C1 chauffe, peut siffler, puis dégaze par la croix sur son dessus. Les impulsions de commutation viennent maintenant des fils de la batterie.",
+      "explanation": "Un électrolytique aluminium ne fonctionne que dans un sens : à l'envers, sa couche d'oxyde claque, il conduit, chauffe et monte en pression jusqu'à ce que l'évent s'ouvre.",
+      "fix": "Remplacez C1 (un condensateur qui a dégazé ne se réutilise jamais), la bande vers le bord de la carte."
+    },
+    "wiper-open": {
+      "title": "Curseur du trimmer ouvert",
+      "symptom": "Le multimètre saute de 5,00 V à 7,6 V : la sortie suit l'entrée. Le moteur tourne vite et chauffe. Tourner le trimmer ne fait rien.",
+      "explanation": "Avec le curseur déconnecté, FB ne voit que R1 vers la masse : 0 V. Le LM2596 croit que la sortie est bien trop basse et ferme complètement son interrupteur. C'est la panne dangereuse : ce qui est en sortie reçoit la tension de la batterie.",
+      "fix": "Refondez les broches du trimmer. Pour tout ce qui ne supporte pas la tension d'entrée, ajoutez une zener ou un crowbar sur la sortie."
+    },
+    "flat-pack": {
+      "title": "Batterie vidée",
+      "symptom": "La sortie baisse avec la batterie : 4,7 V pour 5,5 V en entrée. Le moteur ralentit. L'afficheur fonctionne jusqu'à environ 4 V, le convertisseur jusqu'à environ 3,6 V. Rien ne vous prévient.",
+      "explanation": "Sous Vout plus la tension de déchet (environ 0,8 V ici), l'interrupteur reste fermé et la sortie vaut l'entrée moins cette chute. Le module n'a pas de verrouillage en sous-tension : il continue donc de vider une batterie 2S bien en dessous de 6,0 V, le point où les cellules s'abîment.",
+      "fix": "Chargez la batterie. Sur un robot, ajoutez une coupure : une alarme LiPo, ou un Nano qui lit la batterie à travers un diviseur et coupe la charge à 3,3 V par cellule (la tâche de coupure)."
+    },
+    "stall": {
+      "title": "Moteur bloqué",
+      "symptom": "Le courant du moteur saute à 1,25 A et celui de la batterie à environ 0,9 A. Le multimètre lit toujours 5,00 V. Le LM2596 monte à environ 70 °C.",
+      "explanation": "Un moteur bloqué n'a pas de force contre-électromotrice : ce n'est plus que son bobinage de 4 Ω, 1,25 A sous 5 V. C'est bien moins que les 4,2 A que peut donner le convertisseur : la sortie tient donc. Un petit moteur ne fait pas s'effondrer ce rail ; un gros, ou deux en parallèle, atteindrait la limite de courant et ferait chuter la sortie.",
+      "fix": "Lâchez. Dans un robot, arrêtez le moteur dans le code quand il cale (le courant monte, l'encodeur s'arrête) avant que le réducteur ou le module ne surchauffe."
+    },
+    "short-out": {
+      "title": "Sortie en court-circuit",
+      "symptom": "Le multimètre lit 0,00 V. L'afficheur, sur IN, lit toujours l'entrée, parce que le circuit du voltmètre est alimenté par l'entrée. La SS34 chauffe ; au bout de quelques secondes, elle lâche et la sortie reste morte.",
+      "explanation": "Le LM2596 limite son interrupteur à environ 4,5 A en crête, 4,2 A en moyenne. Dans un court-circuit, la sortie est proche de 0 V : l'interrupteur n'est donc fermé que moins d'un dixième de chaque cycle et la diode porte le courant le reste du temps. TI demande une diode prévue pour au moins la limite de courant ; la SS34 est prévue pour 3 A, et elle surchauffe.",
+      "fix": "Retirez le court-circuit et remplacez D1. Posez un fusible sur la sortie, ou une diode de 5 A (SS54) si les courts-circuits sont probables."
+    },
+    "ten-s-pack": {
+      "title": "Entrée au-dessus de 40 V",
+      "symptom": "La diode surchauffe et lâche ; elle emporte souvent le régulateur avec elle, et un régulateur qui lâche en court-circuit transmet toute l'entrée à la sortie.",
+      "explanation": "Pendant que l'interrupteur est fermé, la diode voit toute la tension d'entrée en inverse. La SS34 est un modèle 40 V, et TI veut 1,25 fois l'entrée la plus haute. Le module est vendu pour 4 à 40 V, ce qui ne laisse déjà aucune marge ; 44 V, c'est au-delà.",
+      "fix": "Restez sous environ 32 V avec cette diode, ou posez-en une de 60 V (SS36 ou SS56)."
+    }
+  },
+  "status": {
+    "status": "État",
+    "powered": "Alimentation du banc",
+    "mode": "Réglage du trimmer",
+    "vin": "Entrée (IN)",
+    "vout": "Sortie (multimètre)",
+    "display": "Afficheur du module",
+    "shows": "L'afficheur montre",
+    "trimmer": "Trimmer (tours)",
+    "duty": "Rapport cyclique",
+    "efficiency": "Rendement",
+    "chip": "LM2596 (°C)",
+    "motor": "Vitesse du moteur",
+    "motorCurrent": "Courant du moteur",
+    "battery": "Courant de la batterie"
+  },
+  "current": {
+    "lipo": "LiPo 2S, 1000 mAh 20C",
+    "meter": "Circuit du voltmètre",
+    "quiescent": "Courant de repos du LM2596",
+    "motor5": "Moteur TT à 5 V (155 mA en sortie)",
+    "motor33": "Moteur TT à 3,3 V (145 mA en sortie)",
+    "motorFlat": "Moteur TT à 7,6 V, rapport cyclique de 100 %",
+    "wiperOpen": "Moteur TT sur toute l'entrée (curseur ouvert)",
+    "flatPack": "Moteur TT depuis une batterie à 5,5 V",
+    "stall": "Moteur TT bloqué (1,25 A en sortie)",
+    "short": "Sortie en court-circuit, jusqu'à ce que la diode lâche",
+    "capReversed": "C1 qui conduit à l'envers",
+    "reverse": "Batterie inversée à travers U1 et le régulateur du voltmètre"
+  },
+  "tasks": {
+    "set-points": {
+      "title": "Où tourner le trimmer",
+      "brief": "Calculez R2 et le nombre de tours du trimmer pour 3,3 V, 5,0 V et 12,0 V, et affichez chacun sous la forme « 5.0 V: R2 = 1011 ohm, 2.5 turns ». Signalez toute tension qu'une batterie 2S pleine (8,4 V, moins environ 1 V de chute) ne peut pas donner par une ligne « needs a 3S pack ».",
+      "hints": {
+        "1": "Vout = 1.23 x (1 + R2 / R1). Isolez R2 : R2 = R1 x (Vout / 1.23 - 1).",
+        "2": "Le code de départ oublie le - 1 : à 5 V, il donne 1341 Ω, ce qui ferait 6,25 V.",
+        "3": "Un buck ne fait que baisser la tension : tout ce qui dépasse 8,4 - 1,0 = 7,4 V demande une batterie plus grosse."
+      },
+      "checks": {
+        "1": "Affiche la ligne 3,3 V : « R2 = 555 ohm, 1.4 turns »",
+        "2": "Affiche la ligne 5,0 V : « R2 = 1011 ohm, 2.5 turns »",
+        "3": "Affiche la ligne 12,0 V : « R2 = 2890 ohm, 7.2 turns »",
+        "4": "Indique que 12 V demande une batterie 3S"
+      },
+      "code": {
+        "goal": "Afficher R2 et le nombre de tours du trimmer pour 3.3, 5.0 et 12.0 V",
+        "vref": "FB est maintenu à 1.23 V",
+        "r1": "R1, de FB à la masse",
+        "turn": "10 kΩ sur 25 tours",
+        "wrong": "pas tout à fait : vérifiez la formule"
+      }
+    },
+    "cut-off": {
+      "title": "La coupure que le module n'a pas",
+      "brief": "La batterie passe par un diviseur 20 kΩ / 10 kΩ (un tiers de sa tension) vers A0 ; D7 pilote le MOSFET qui commute le moteur. Affichez des mesures du style « pack 8.4 » toutes les 250 ms et, quand la batterie passe sous 6,6 V (3,3 V par cellule), mettez D7 à LOW et affichez « cut-off ». Gardez-le coupé : une fois la charge partie, la tension de la batterie remonte.",
+      "hints": {
+        "1": "analogRead donne 0 à 1023 pour 0 à 5 V ; le diviseur divise par 3, il faut donc remultiplier : counts x 5.0 / 1023 x 3.",
+        "2": "Comparez à 6.6 et mettez D7 à LOW quand la batterie est en dessous.",
+        "3": "Utilisez un bool qui se souvient de la coupure : une batterie qui remonte à 6,9 V sans charge est toujours vide."
+      },
+      "checks": {
+        "1": "Tourne pendant 3,5 s",
+        "2": "La première mesure affiche « pack 8.4 »",
+        "3": "Le moteur reste en marche à 6,8 V",
+        "4": "Affiche « cut-off » une fois la batterie sous 6,6 V",
+        "5": "D7 passe à LOW à la coupure",
+        "6": "D7 reste à LOW quand la batterie remonte à 6,9 V"
+      },
+      "code": {
+        "goal": "Lire la batterie, couper le moteur sous 6.6 V, et le garder coupé",
+        "divider": "la batterie à travers 20 kΩ / 10 kΩ : un tiers de sa tension",
+        "load": "HIGH : le MOSFET du moteur conduit",
+        "scale": "c'est la tension sur A0, pas celle de la batterie",
+        "todo": "couper D7 sous 6.6 V et le garder coupé"
+      },
+      "world": {
+        "pack": "Tension de la batterie"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "diode": {
+        "q": "Que fait la SS34 pendant que l'interrupteur du LM2596 est ouvert ?",
+        "options": {
+          "1": "Rien : elle protège seulement contre une batterie inversée",
+          "2": "Elle porte le courant de l'inductance vers la sortie",
+          "3": "Elle maintient FB à 1,23 V"
+        },
+        "why": "Le courant d'une inductance ne peut pas s'arrêter d'un coup. Quand l'interrupteur s'ouvre, l'inductance continue de pousser du courant à travers la diode, de la masse vers la sortie. C'est pour ça qu'on l'appelle diode de roue libre, et qu'elle chauffe quand la sortie est en court-circuit."
+      },
+      "inductor": {
+        "q": "L'inductance est marquée 330. Qu'est-ce que c'est ?",
+        "options": {
+          "1": "33 µH",
+          "2": "330 µH",
+          "3": "330 Ω"
+        },
+        "why": "Comme pour les codes des résistances : deux chiffres et un multiplicateur, en µH. 33 suivi d'aucun zéro, c'est 33 µH."
+      },
+      "caps": {
+        "q": "Pourquoi C1 est-il juste à côté du régulateur ?",
+        "options": {
+          "1": "Pour filtrer le scintillement de l'afficheur",
+          "2": "Il fixe la fréquence de commutation",
+          "3": "Il fournit les impulsions de courant de l'interrupteur : les fils de la batterie ne portent ainsi que la moyenne"
+        },
+        "why": "L'interrupteur tire 1 A ou plus par impulsions à 150 kHz. Les longs fils de batterie ont une inductance et oscilleraient ; un condensateur juste à côté de la puce fournit les impulsions et se recharge grâce au courant régulier de la batterie."
+      }
+    },
+    "load": {
+      "order": {
+        "q": "Pourquoi régler la sortie avant de brancher le moteur ?",
+        "options": {
+          "1": "Le trimmer ne tourne qu'à vide",
+          "2": "L'afficheur doit d'abord être calibré",
+          "3": "Le trimmer est peut-être en butée haute, et le moteur recevrait l'entrée moins un volt"
+        },
+        "why": "Un module neuf arrive en général avec le trimmer en haut. Ici, ça fait 7,6 V sur un moteur prévu pour 6 ; avec une batterie 3S, ce serait 11 V dans tout ce que vous branchez. Réglez-le à vide, coupez, puis branchez."
+      },
+      "current": {
+        "q": "Le moteur tire 155 mA sous 5 V. Pourquoi la batterie ne donne-t-elle qu'environ 125 mA ?",
+        "options": {
+          "1": "La puissance d'entrée égale la puissance de sortie plus les pertes, et la batterie est à une tension plus haute",
+          "2": "Le voltmètre prend le reste",
+          "3": "Le condensateur de sortie fournit la différence"
+        },
+        "why": "0,78 W en sortie à environ 74 % de rendement, cela fait 1,05 W en entrée ; sous 8,4 V, cela fait 125 mA. Un buck échange de la tension contre du courant. Un régulateur linéaire tirerait les 155 mA complets sur la batterie et brûlerait la différence."
+      },
+      "meter": {
+        "q": "L'afficheur lit 5,03 V, le multimètre 5,00 V. Auquel vous fier ?",
+        "options": {
+          "1": "L'afficheur : il est intégré au module",
+          "2": "Le multimètre : l'afficheur n'est précis qu'à ±0,1 V",
+          "3": "Aucun des deux : la moyenne"
+        },
+        "why": "Le voltmètre du module est un simple diviseur vers une petite puce, ±0,1 V selon les vendeurs. Bien pour un coup d'œil, pas pour un composant 3,3 V dont le maximum absolu est 3,6 V."
+      }
+    },
+    "limits": {
+      "step-down": {
+        "q": "Vous demandez 12 V à une batterie de 8,4 V. Qu'obtenez-vous ?",
+        "options": {
+          "1": "12 V, mais la batterie se vide plus vite",
+          "2": "Environ 7,6 V : l'interrupteur reste fermé et la sortie vaut l'entrée moins la chute",
+          "3": "Rien : il se coupe"
+        },
+        "why": "Un buck ne peut produire qu'une tension plus basse. Si on lui demande plus, il ferme complètement son interrupteur et laisse passer l'entrée, moins la saturation de l'interrupteur et la résistance de l'inductance."
+      },
+      "turns": {
+        "q": "Le trimmer part de la butée haute. Pourquoi rien ne se passe-t-il pendant les vingt premiers tours vers le bas ?",
+        "options": {
+          "1": "Tout réglage au-dessus d'environ 7,6 V donne les mêmes 7,6 V avec cette batterie",
+          "2": "Le trimmer a une zone morte",
+          "3": "L'afficheur ne se met pas à jour pendant que vous tournez"
+        },
+        "why": "25 tours demandent 38,5 V. La sortie ne commence à suivre le trimmer qu'une fois le réglage passé sous ce que l'entrée peut donner, à environ 4,3 tours de la butée basse ici."
+      },
+      "efficiency": {
+        "q": "Pourquoi le convertisseur a-t-il un moins bon rendement à 3,3 V qu'à 5 V avec le même moteur ?",
+        "options": {
+          "1": "L'inductance sature à basse tension",
+          "2": "La diode est inversée à 3,3 V",
+          "3": "Les pertes fixes (le voltmètre, la commutation) pèsent plus lourd dans une sortie plus petite"
+        },
+        "why": "0,48 W en sortie à 3,3 V contre 0,78 W à 5 V, alors que les 15 mA du voltmètre et les pertes de commutation changent à peine. La diode conduit aussi plus longtemps à chaque cycle quand le rapport cyclique est plus bas."
+      }
+    },
+    "faults": {
+      "short": {
+        "q": "Avec OUT en court-circuit, l'afficheur du module lit toujours 8,4 V. Pourquoi ?",
+        "options": {
+          "1": "Il montre IN, et le circuit du voltmètre est alimenté par l'entrée",
+          "2": "Le court-circuit n'a pas encore eu lieu",
+          "3": "L'afficheur garde sa dernière valeur"
+        },
+        "why": "Le voltmètre a son propre régulateur sur l'entrée. Passez-le sur OUT et il lit 0.00, comme le multimètre."
+      },
+      "stall": {
+        "q": "Le moteur est bloqué et tire 1,25 A, mais la sortie reste à 5,00 V. Pourquoi ?",
+        "options": {
+          "1": "Le réducteur du moteur limite le courant",
+          "2": "Le multimètre est trop lent pour montrer la chute",
+          "3": "1,25 A, c'est bien moins que la limite de 4,2 A du convertisseur : il fournit simplement plus"
+        },
+        "why": "Un régulateur tient sa tension jusqu'à atteindre une limite. Seule une charge au-delà d'environ 4,2 A fait chuter cette sortie."
+      },
+      "wiper": {
+        "q": "Une soudure froide sur le curseur du trimmer. Que fait la sortie ?",
+        "options": {
+          "1": "Elle tombe à 1,23 V",
+          "2": "Elle saute à l'entrée moins la chute",
+          "3": "Elle reste où elle était"
+        },
+        "why": "FB voit 0 V à travers R1 : le régulateur croit que la sortie est bien trop basse et conduit à fond. Tout ce qui est en sortie reçoit la tension de la batterie : la panne la plus dangereuse de cette carte."
+      }
+    },
+    "end": {
+      "vs-7805": {
+        "q": "5 V sous 2 A depuis une batterie 3S à 11,1 V. Environ combien de chaleur produisent un 7805 et ce buck ?",
+        "options": {
+          "1": "À peu près autant, 2 W chacun",
+          "2": "Environ 12 W contre 2,5 W",
+          "3": "Environ 2,5 W contre 12 W"
+        },
+        "why": "Un régulateur linéaire brûle (11,1 - 5) x 2 = 12,2 W. Le buck à 80 % brûle 10 / 0,8 - 10 = 2,5 W. C'est pour ça que les robots utilisent des alimentations à découpage."
+      },
+      "cut-off": {
+        "q": "Pourquoi un robot alimenté par ce module a-t-il besoin de sa propre coupure de batterie faible ?",
+        "options": {
+          "1": "Le module coupe trop tôt",
+          "2": "L'afficheur du module vide la batterie",
+          "3": "Le module continue de fonctionner jusqu'à environ 3,6 V en entrée, bien sous le plancher de sécurité d'une LiPo"
+        },
+        "why": "Il n'a pas de verrouillage en sous-tension. Une batterie 2S s'abîme sous 6,0 V ; le convertisseur continue tranquillement de tourner : il faut donc que quelque chose d'autre surveille la batterie."
+      },
+      "first": {
+        "q": "Un module neuf, une batterie 3S et un ESP32 (3,3 V, maximum absolu 3,6 V). Que faites-vous d'abord ?",
+        "options": {
+          "1": "Batterie branchée, rien en sortie, trimmer tourné jusqu'à 3,30 V au multimètre",
+          "2": "Brancher l'ESP32 et tourner le trimmer jusqu'à ce qu'il démarre",
+          "3": "Se fier à l'afficheur et brancher"
+        },
+        "why": "Le trimmer est peut-être en butée haute : 11 V sur un composant de 3,6 V. Réglez-le sans rien de branché, lisez-le au multimètre, coupez, puis branchez."
+      }
+    }
+  }
+}
