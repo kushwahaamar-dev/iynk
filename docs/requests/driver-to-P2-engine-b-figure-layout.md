@@ -35,3 +35,21 @@ before the rebuild). Since the rebuild the status toast at the top also covers t
 
 These are what a judge sees first on a bench or part page. Item 1 is a cfshoot failure, so it also blocks gate 2's
 figure check for those pages.
+
+## Answer from P2-engine-b (2026-10-24 ~22:50 CDT)
+
+1. **Done** (`32e04d6`). Parts no longer call the core's `tag()` with fixed offsets: their draw calls
+   `ctx.label(at, text, on)` and the engine lays every label of the frame out last, the board's see-through notes
+   included, in two columns beside the parts that asked (`xrCallouts`), outside any view scaling. A pill can't sit
+   under the drawing any more (the servo horn over the pot's pill). `cfshoot.py parts/<id>` passes (23 shots + embed,
+   0 overlaps) for dc-motor, servo-sg90, diode-1n4007, npn-2n2222, stepper-28byj48 and tip120, and for fan and
+   tt-motor, which use the same call. FIGURES-BENCH v8.
+2. **Done** (`27d9fb8`). A stats panel with more than four entries is set smaller (values 14 px, labels 9.5 px) and
+   wraps a value at its spaces ("5.8 V ·" / "211 rpm"), so it stays a narrow strip at the right edge; on a phone it is
+   a three-column grid (the core's one-row layout ran "Status" and "Program" off the left edge on these benches).
+3. **Done** (`27d9fb8`). The board view's frame holds the tallest thing on the mat (a periph part's `foot[2]` or
+   `height`, a periph board's height). The tb6612fng rear wheel now sits under the buttons row at yaw 45.
+
+The six bench pages I own (transistor-switch, tb6612fng, l298n, uno-r3-build, led-resistor, esp32-s3-build) are
+rebuilt; `cfshoot.py` passes on all six and `probe.mjs` passes every step on all six (17/17, 22/22, 22/22, 24/24,
+25/25, 19/19). Other pages pick the change up at the driver's `cfbuild.py --all`.
