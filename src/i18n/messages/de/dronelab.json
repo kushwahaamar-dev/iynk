@@ -96,7 +96,7 @@
     "flyReady": "Startklar",
     "flyNotReady": "Schließ zuerst den Bau und die Sicherheitstests ab, oder flieg den Werksaufbau.",
     "progress": "Fortschritt",
-    "progressLabel": "{done} von {total} in dieser Werkstatt erledigt",
+    "progressLabel": "{done} von {total} in dieser Werkstatt erledigt: Bau, Tests, Quiz und Parcours",
     "sections": "Bereiche der Werkstatt",
     "tabs": {
       "design": "Entwurf",

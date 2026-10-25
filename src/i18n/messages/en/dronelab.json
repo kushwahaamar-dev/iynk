@@ -96,7 +96,7 @@
     "flyReady": "Ready to fly",
     "flyNotReady": "Finish the build and the safety tests first, or fly the factory-built craft.",
     "progress": "Progress",
-    "progressLabel": "{done} of {total} done in this workshop",
+    "progressLabel": "{done} of {total} done in this workshop: the build, tests, quizzes and courses",
     "sections": "Workshop sections",
     "tabs": {
       "design": "Design",

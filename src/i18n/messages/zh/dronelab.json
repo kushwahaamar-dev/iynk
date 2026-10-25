@@ -90,7 +90,7 @@
     "flyReady": "可以起飞了",
     "flyNotReady": "先完成组装和安全测试，或者试飞出厂组装好的那一架。",
     "progress": "进度",
-    "progressLabel": "本工作坊已完成 {done}/{total}",
+    "progressLabel": "本工作坊已完成 {done}/{total}：组装、测试、测验和赛道",
     "sections": "工作坊各部分",
     "tabs": {
       "design": "设计",

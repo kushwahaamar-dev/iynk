@@ -96,7 +96,7 @@
     "flyReady": "Listo para volar",
     "flyNotReady": "Termina primero el montaje y las pruebas de seguridad, o vuela el dron montado de fábrica.",
     "progress": "Progreso",
-    "progressLabel": "{done} de {total} completados en este taller",
+    "progressLabel": "{done} de {total} completados en este taller: montaje, pruebas, cuestionarios y circuitos",
     "sections": "Secciones del taller",
     "tabs": {
       "design": "Diseño",
