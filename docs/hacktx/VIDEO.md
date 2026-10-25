@@ -1,146 +1,210 @@
 # SimLab demo video
 
-Devpost requires a demo video before the deadline. Target length: 2:50, under three minutes. STRATEGY §8 has recording from 08:30 to 10:00 on Sunday, the upload done by 10:00, and the Devpost submission by 10:30.
+Devpost needs a demo video before the deadline. Target length: 2:55, under three minutes. Record 08:30–10:00 on
+Sunday, upload by 10:00, submit the Devpost entry by 10:30.
 
-The video tells the same story as the live pitch (Maya, a backwards LED, Lucía on a phone) and shows a little more, because a camera can cut where a stage can't. Values in [BRACKETS] and anything that depends on the final build are listed in "Confirm before recording" at the end.
+The video tells the same story as the live pitch (`docs/hacktx/PITCH.md`: Maya, a burnt-out LED, Lucía answering in
+Spanish) over the demo path in `docs/hacktx/BUILD-PLAN.md` §1, with the exact clicks. It is written to be recorded on
+a local production build with the keys in `.env.local` and the relay running on the same laptop, so nothing depends on
+the venue or on the deploy. Every click was checked against the repo on 2026-10-25 at 02:00 CDT (commit `33602e7`);
+values in [BRACKETS] and the lines that need a key are listed in "Confirm before recording".
+
+No Solana and no hardware twin: both were skipped, and their tabs stay hidden.
+
+## Local setup
+
+1. `.env.local` holds `META_API_KEY`, `SERPAPI_KEY`, `DATABASE_URL` (optional: the leaderboard) and
+   `NEXT_PUBLIC_REALTIME_URL=ws://127.0.0.1:43117/ws`. `NEXT_PUBLIC_*` is baked in at build time, so set it first.
+2. With a database: `node scripts/db-migrate.mjs` once, so the leaderboard has its tables.
+3. Terminal 1, the relay: `cd server/realtime && node server.js --port 43117`. `http://127.0.0.1:43117/healthz` answers
+   `{"ok":true,...}`. With `REALTIME_ALLOWED_ORIGINS` unset it accepts pages on `localhost`.
+4. Terminal 2, the app: `npm run build && npm run start`, then open `http://localhost:3000`.
+5. Check `http://localhost:3000/api/status`: `ai`, `image`, `voice`, `search` and `realtime` true (`db` too with a
+   database; `solana` stays false).
+6. Two Chrome profiles side by side, both on `localhost` (a secure origin, so the microphone works):
+   - **Maya**: English, the main recording window, 1920×1080.
+   - **Lucía**: a second profile, Spanish (`/es/...` pages), display name "Lucía". Before the first take, open
+     `/es/boards/uno-r3/blink`, press Ejecutar (Run) and wait for every check to pass: the partner asks her because her
+     progress shows Blink done.
+
+   One profile can't play both: two tabs of one profile share one saved name and one progress.
+7. Sound on in Maya's window (the Sound switch in the workspace header), so the pop and the flight are heard.
+
+Optional: once the deployed site and the relay are up, film Lucía's half on a real phone over HTTPS instead. A phone on
+a plain `http://` LAN address can't use the microphone.
 
 ## Before each take
 
-- Fresh demo state: a new devnet wallet on the laptop, a new bounty on the quad5 safety skill (posted from a second browser profile), and both rooms open on both devices. A credential is issued once per wallet and skill, so a reused wallet gets "already issued".
-- Display names: "Maya" on the laptop, "Lucía" on the phone. The phone has the Blink lesson passed already, so the partner picks her.
-- `/api/status` shows every feature true. If a feature is off in the final build, drop its shot and its line. Don't fake it in editing.
+- Rooms: on Maya's Blink lesson, dock tab Together, "Start a room"; note the code as [ROOM_A]. Open the same lesson in
+  Lucía's window with `?room=[ROOM_A]` (Spanish). Do the same on `/en/drones/quad5/fly` for [ROOM_B].
+- Break it all off on both pages (the board's Repair button; the fly page's "Undo my changes").
+- quad5 back on its default design (Battery 6S 1100 mAh, Motors 2306 1750KV, Props 5x4.3x3).
+- `/api/status` as in step 5. If a feature is off, drop its shot and its line. Don't fake it in editing.
 
 ## Shot list
 
-Each shot has what's on screen, the action, and the voice-over line (VO). Times are positions in the finished cut.
+Each shot has what's on screen, the clicks, and the voice-over line (VO). Times are positions in the finished cut.
 
-### 1 · 0:00–0:07 · Cold open
+### 1 · 0:00–0:08 · Cold open
 
-- Screen: the Uno R3 figure, full frame, on its paper background. Turntable on.
-- Action: let it turn. No cursor.
-- VO: "Hardware is the most fun you can have with a computer. It's also the most expensive, scary and lonely way to learn."
+- Screen: `/en/boards/uno-r3`, the figure full frame on its paper background.
+- Clicks: drag the figure round slowly (or press E). No other cursor movement.
+- VO: "Hardware is the most fun you can have with a computer. It's also the most expensive, scary and lonely way to
+  learn."
 
-### 2 · 0:07–0:18 · Meet the lab
+### 2 · 0:08–0:18 · Meet the lab
 
 - Screen: the same figure.
-- Action: See-through on. A beat later, Exploded view.
-- VO: "Picture Maya. She wants to build a drone, but parts cost money, batteries can catch fire, and at 2 a.m. there's nobody to ask. SimLab is a lab she can use tonight, free, in her browser."
+- Clicks: See-through. A beat later, Exploded view. Then cut to `/en` for two seconds: the three labs and their counts.
+- VO: "Picture Maya. She wants to build a drone, but parts cost money, batteries can catch fire, and at 2 a.m. there's
+  nobody to ask. SimLab is a lab she can use tonight, free, in her browser."
 - On screen: "SimLab" in the lower left.
 
-### 3 · 0:18–0:27 · Blink
+### 3 · 0:18–0:28 · Blink
 
-- Screen: the Blink lesson, code panel beside the figure, serial monitor visible.
-- Action: click Run. The LED blinks and the serial monitor reads Running.
-- VO: "She wires her first LED and runs Blink. That's real Arduino code on a virtual clock, and the figure follows every pin."
+- Screen: `/en/boards/uno-r3/blink?room=[ROOM_A]`, code panel beside the figure, serial monitor visible.
+- Clicks: Run (or Space). The LED blinks, the monitor says Running, and Checks turns to "All checks pass. Lesson done."
+- VO: "She wires her first LED and runs Blink. That's Arduino code, on a virtual clock in her browser, and the figure
+  follows every pin."
 
-### 4 · 0:27–0:33 · The mistake
+### 4 · 0:28–0:38 · Break it
 
-- Screen: the same.
-- Action: flip the LED. Run. Nothing lights.
-- VO: "Then the classic mistake. The LED goes in backwards. No error. Just nothing."
+- Screen: the same, scrolled so Break it and the figure are both in frame.
+- Clicks: "LED with no resistor", Trigger. One bright flash, then dark; the readout says the LED burnt out and how many
+  milliamps did it. Hold two seconds on the "What you see / Why / Fix" text.
+- VO: "Then the classic mistake: no resistor. One bright flash, and the LED is gone. Break it shows what you'd see,
+  why it happened, and the fix."
 
-### 5 · 0:33–0:47 · The partner
+### 5 · 0:38–0:52 · The partner asks a person
 
-- Screen: the Partner panel beside the figure.
-- Action: type "my LED won't light" and send. The LED flashes in the figure. A question to Lucía appears in the room chat.
-- VO: "She asks the lab partner, built on Meta's Muse Spark. It reads her circuit and her code, and points at the LED. It sees that her roommate Lucía passed this lesson, so before it answers, it asks Lucía."
+- Screen: the dock, Partner tab, beside the figure.
+- Clicks: type "My LED flashed once and died" and send. The LED is pointed out in the figure. "Asked Lucía to explain"
+  appears, and the question shows in the room chat.
+- VO: "She asks the lab partner, built on Meta's Muse Spark. It reads her circuit, her code and the fault, and points
+  at the LED. It sees that her roommate Lucía passed this lesson, so before it answers, it asks Lucía."
 
-### 6 · 0:47–1:02 · Lucía answers
+### 6 · 0:52–1:08 · Lucía answers in Spanish
 
-- Screen: split screen, laptop on the left, the phone's screen (Spanish) on the right. Optionally cut to a hand holding the phone, filmed with a second phone.
-- Action: Lucía holds push-to-talk and speaks. Her message lands on the laptop in English. Maya flips the LED back and it blinks.
-- Lucía, in her own voice: "Dale la vuelta al LED. La pata larga va hacia el pin 13."
-- On screen, under her line: "Turn the LED around. The long leg goes toward pin 13."
-- VO: "Muse Voice Transcribe hears her, Muse Spark translates, and Maya reads it in English. Fixed, with help from a person."
+- Screen: split, Maya's window on the left, Lucía's (Spanish) on the right.
+- Clicks, Lucía: Together tab, the question in Spanish in the room chat. "Grabar un mensaje de voz" (Record a voice
+  message), say the line, then stop and send. On Maya's side the message lands in English, marked "Translated from
+  Spanish". Maya: Repair, Run. It blinks.
+- Lucía, in her own voice: "Ponle una resistencia de 220 ohmios al LED."
+- On screen, under her line: "Put a 220 ohm resistor on the LED."
+- VO: "Muse Voice Transcribe hears her, Muse Spark translates, and Maya reads it in English. Fixed, with help from a
+  person."
 
-### 7 · 1:02–1:11 · The drone
+### 7 · 1:08–1:17 · The drone
 
-- Screen: quad5, the Design panel and the figure.
-- Action: change the battery and let the tiles update. If there's time, a two-second See-through on the drone.
-- VO: "Now the drone. A 5-inch freestyle quad, with the numbers live: weight, thrust-to-weight, hover throttle, flight time."
+- Screen: `/en/drones/quad5`, the Design tab and the figure.
+- Clicks: Battery to "6S 1800 mAh LiPo". The tiles update: All-up weight, Thrust : weight, Hover throttle, Hard-flying
+  time.
+- VO: "Now the drone. A 5-inch freestyle quad, with the numbers live: weight, thrust to weight, hover throttle, flight
+  time."
 
-### 8 · 1:11–1:26 · Build it for real
+### 8 · 1:17–1:35 · Build it for real
 
-- Screen: the Build it for real tab.
-- Action: the offers load with their sources and a total. Set the budget to [BUDGET]. The optimizer swaps the motors; the thrust-to-weight tile stays above 4.
-- VO: "Build it for real pulls live prices from Google Shopping, Amazon and eBay through SerpApi. Today that's [TOTAL]. With [BUDGET], the optimizer swaps the motors and re-runs the math, so it still flies."
-- On screen, small: "Prices captured [DATE, TIME]".
+- Screen: the dock, tab "Build it for real".
+- Clicks: Battery back to 6S 1100 first. The parts list loads with each offer's store and the Cheapest total. Drag
+  Budget to [BUDGET]; "Best build within [BUDGET]" lists the swaps. Press "Use this build in the lab"; the Design tiles
+  change.
+- VO: "Build it for real pulls live prices for every part from Google Shopping, Amazon and eBay through SerpApi. Today
+  that's [TOTAL]. With [BUDGET], the optimiser runs the drone maths on every combination and swaps [SWAPS], so it
+  still flies."
+- On screen, small: "Prices checked [DATE, TIME]".
 
-### 9 · 1:26–1:33 · Near you
+### 9 · 1:35–1:42 · Near you
 
-- Screen: the Nearby and Events lists.
-- Action: scroll slowly.
-- VO: "Maps and Events searches find her a makerspace, a flying field and a meetup nearby."
+- Screen: Near you, below the parts list.
+- Clicks: type "Austin, TX", Search. Scroll through Makerspaces and Flying fields, then Maker events.
+- VO: "SerpApi's Maps and Events searches find her a makerspace, a flying field and a meetup nearby."
 
-### 10 · 1:33–1:53 · Fly
+### 10 · 1:42–2:00 · Fly with Lucía's ghost
 
-- Screen: the flight range, third-person view, with Lucía's ghost.
-- Action: arm, fly through the gates, press V for the FPV view for two or three seconds, back to third person, finish the lap. The leaderboard updates.
-- VO: "Then she crashes it for free. Through the gates, with Lucía's ghost racing beside her over our relay on Vultr. Press V for the pilot's view. Lap times go into Tiger Data, and the leaderboard updates."
+- Screen: `/en/drones/quad5/fly?room=[ROOM_B]`, third-person view, Gate race.
+- Clicks: in Lucía's window, Flight mode "Demo" and Arm: her craft flies the course. In Maya's window, Space to arm,
+  W for throttle, the arrows to fly through the first gates beside the ghost with Lucía's name. Press V for two seconds
+  of FPV goggles, then V again.
+- VO: "Then she crashes it for free. That ghost with the name tag is Lucía's lap, live over our relay. Press V for the
+  pilot's view."
 
-### 11 · 1:53–2:13 · Prove it
+### 11 · 2:00–2:20 · Break it in flight
 
-- Screen: the quad5 bench, then the Passport tab.
-- Action: run Smoke stopper test, Check motor direction and Calibrate accelerometer until the checks read 3/3. Then Proof of Build. The result shows the credential and the bounty payout.
-- VO: "Before a real battery goes in: smoke stopper, motor direction with props off, accelerometer calibration. Our server replays her run, and only then writes a Proof of Build credential to Solana devnet. A bounty on that skill pays out in the same transaction."
+- Screen: the same page.
+- Clicks: Space to disarm, "Reset to the pad". Break it: switch on "Mount the flight controller backwards". Flight mode
+  "Demo: the autopilot flies it", Arm. It flips on take-off; "Here's why" opens and the replay plays with "REPLAY ×⅓".
+  Press "Turn the flight controller round", then Arm: it flies the course.
+- VO: "Break it here too: the flight controller mounted backwards. It flips on take-off, replays in slow motion and
+  says why. One click fixes it."
 
-### 12 · 2:13–2:20 · Verify
+### 12 · 2:20–2:27 · Medals and the daily challenge
 
-- Screen: Solana Explorer (devnet) on that transaction, then SimLab's /verify page for the credential.
-- VO: "Anyone can check it on Explorer, or on our verify page, without trusting us."
+- Screen: the course list ("Gold 10 s · silver 14 s · bronze 20 s") and the Daily challenge card, then the
+  Leaderboard if the database is set.
+- VO: "Every course has medal times, and there's a daily challenge, the same for everyone."
 
-### 13 · 2:20–2:25 · Tip
+### 13 · 2:27–2:38 · The story
 
-- Screen: the room's people list.
-- Action: tip Lucía. The tip appears in the room chat.
-- VO: "And she tips Lucía for the help."
+- Screen: back on the Blink lesson, the Partner tab.
+- Clicks: Build Story, then "Write our Build Story". "Writing your story…", then "Drawing the cover…", then the story
+  with its cover and "Lucía helped Maya". Hover Share; press Download PNG.
+- VO: "At the end, Muse Spark writes the session up as a story, what broke and who helped, and Muse Image draws the
+  cover."
 
-### 14 · 2:25–2:37 · The story
+### 14 · 2:38–2:50 · Everything else
 
-- Screen: the Build Story card.
-- Action: the cover image arrives. Open the share sheet.
-- VO: "At the end, Muse Spark writes the session up as a story, what broke and who helped, and Muse Image draws the cover."
-
-### 15 · 2:37–2:49 · Everything else
-
-- Screen: a montage, one to two seconds per clip. The Basys 3 running a Verilog LED chaser. The Pico. A robotics bench with its solder joints forming. The flying wing. The octocopter. The language menu switching to Hindi, then Chinese, with the figure labels changing. [The real Uno blinking in step with the figure, only if the hardware twin works.]
+- Screen: a montage, one to two seconds a clip:
+  - `/en/boards/basys3/counter`: Run, the Verilog counter on the LEDs.
+  - `/en/robotics/uno-r3-build`: the step "Solder the through-hole joints".
+  - `/en/drones/wing/fly`: Flight mode Demo, Arm.
+  - `/en/drones/octo/fly`: in the air, Flight mode "Motor out": it keeps flying on seven.
+  - The Language menu: Hindi, then Chinese, on `/hi/robotics/esp32-s3-build` and `/zh/robotics/esp32-s3-build`.
 - VO: "Twelve boards, including FPGAs running Verilog. Thirteen robotics benches. Thirteen drones. Six languages."
 
-### 16 · 2:49–2:55 · End card
+### 15 · 2:50–2:55 · End card
 
 - Screen: paper background, "SimLab", [SITE], and a QR code to it.
 - VO: "SimLab. Nobody builds alone."
-- On screen: "Built at HackTX 2026 · Muse Spark, Muse Image, Muse Voice Transcribe · SerpApi · Solana · Vultr · Tiger Data · Figures made with Colorfigures (MIT) · Code written during the event with Claude Code"
+- On screen: "Built at HackTX 2026 · Muse Spark, Muse Image, Muse Voice Transcribe · SerpApi · Figures made with
+  Colorfigures (MIT) · Code written during the event with Claude Code". Add Vultr and Tiger Data only if the relay and
+  the leaderboard in the final cut ran on them.
 
 ## Voice-over in one piece
 
-Read this straight through when you record the voice-over. Leave a breath between paragraphs so each line can be moved to its shot. Lucía's Spanish line is recorded live in shot 6, not here.
+Read this straight through when you record. Leave a breath between paragraphs so each line can move to its shot.
+Lucía's Spanish line is recorded live in shot 6, not here.
 
 > Hardware is the most fun you can have with a computer. It's also the most expensive, scary and lonely way to learn.
 >
-> Picture Maya. She wants to build a drone, but parts cost money, batteries can catch fire, and at 2 a.m. there's nobody to ask. SimLab is a lab she can use tonight, free, in her browser.
+> Picture Maya. She wants to build a drone, but parts cost money, batteries can catch fire, and at 2 a.m. there's
+> nobody to ask. SimLab is a lab she can use tonight, free, in her browser.
 >
-> She wires her first LED and runs Blink. That's real Arduino code on a virtual clock, and the figure follows every pin.
+> She wires her first LED and runs Blink. That's Arduino code, on a virtual clock in her browser, and the figure
+> follows every pin.
 >
-> Then the classic mistake. The LED goes in backwards. No error. Just nothing.
+> Then the classic mistake: no resistor. One bright flash, and the LED is gone. Break it shows what you'd see, why it
+> happened, and the fix.
 >
-> She asks the lab partner, built on Meta's Muse Spark. It reads her circuit and her code, and points at the LED. It sees that her roommate Lucía passed this lesson, so before it answers, it asks Lucía.
+> She asks the lab partner, built on Meta's Muse Spark. It reads her circuit, her code and the fault, and points at the
+> LED. It sees that her roommate Lucía passed this lesson, so before it answers, it asks Lucía.
 >
 > Muse Voice Transcribe hears her, Muse Spark translates, and Maya reads it in English. Fixed, with help from a person.
 >
-> Now the drone. A 5-inch freestyle quad, with the numbers live: weight, thrust-to-weight, hover throttle, flight time.
+> Now the drone. A 5-inch freestyle quad, with the numbers live: weight, thrust to weight, hover throttle, flight time.
 >
-> Build it for real pulls live prices from Google Shopping, Amazon and eBay through SerpApi. Today that's [TOTAL]. With [BUDGET], the optimizer swaps the motors and re-runs the math, so it still flies.
+> Build it for real pulls live prices for every part from Google Shopping, Amazon and eBay through SerpApi. Today
+> that's [TOTAL]. With [BUDGET], the optimiser runs the drone maths on every combination and swaps [SWAPS], so it
+> still flies.
 >
-> Maps and Events searches find her a makerspace, a flying field and a meetup nearby.
+> SerpApi's Maps and Events searches find her a makerspace, a flying field and a meetup nearby.
 >
-> Then she crashes it for free. Through the gates, with Lucía's ghost racing beside her over our relay on Vultr. Press V for the pilot's view. Lap times go into Tiger Data, and the leaderboard updates.
+> Then she crashes it for free. That ghost with the name tag is Lucía's lap, live over our relay. Press V for the
+> pilot's view.
 >
-> Before a real battery goes in: smoke stopper, motor direction with props off, accelerometer calibration. Our server replays her run, and only then writes a Proof of Build credential to Solana devnet. A bounty on that skill pays out in the same transaction.
+> Break it here too: the flight controller mounted backwards. It flips on take-off, replays in slow motion and says
+> why. One click fixes it.
 >
-> Anyone can check it on Explorer, or on our verify page, without trusting us.
->
-> And she tips Lucía for the help.
+> Every course has medal times, and there's a daily challenge, the same for everyone.
 >
 > At the end, Muse Spark writes the session up as a story, what broke and who helped, and Muse Image draws the cover.
 >
@@ -148,61 +212,70 @@ Read this straight through when you record the voice-over. Leave a breath betwee
 >
 > SimLab. Nobody builds alone.
 
-About 340 words. At a relaxed pace that's roughly two and a quarter minutes of voice, which leaves room for Lucía's line and a few silent beats.
+About 360 words: roughly two and a half minutes of relaxed voice, which leaves room for Lucía's line and a few silent
+beats.
 
 ## Recording tips
 
 ### Screen
 
-- Record at 1920×1080, 30 fps. Use 60 fps for the flight shot if your recorder allows it.
-- Size the Chrome window to exactly 1920×1080, or record the whole screen at that resolution. Browser zoom 110 to 125% so text stays readable on a judge's laptop.
-- Use a clean Chrome profile: no extensions, no bookmarks bar, no personal tabs. Hide the Dock and the menu bar. Turn on Do Not Disturb.
-- macOS: Cmd+Shift+5 records a window or the screen. For the phone, an iPhone on USB shows up in QuickTime (File, New Movie Recording, pick the iPhone as the camera). On Android, use scrcpy.
+- Record at 1920×1080, 30 fps; 60 fps for the flight shots if your recorder allows it.
+- Size Maya's Chrome window to exactly 1920×1080, or record the whole screen at that size. Browser zoom 110 to 125% so
+  text stays readable on a judge's laptop.
+- Clean profiles: no extensions, no bookmarks bar, no personal tabs. Hide the Dock and the menu bar. Do Not Disturb on.
+- macOS: Cmd+Shift+5 records a window or the screen. For a real phone, an iPhone on USB shows up in QuickTime (File,
+  New Movie Recording, pick the iPhone as the camera); on Android, use scrcpy.
 
 ### Mic
 
 - A USB mic or a wired headset, not the laptop's built-in mic.
-- Record the voice-over separately, after the picture is cut, in a small room with soft things in it. A closet full of clothes works.
-- Keep about a hand's width from the mic, slightly off to the side so the p's don't pop. Record ten seconds of silence first, for noise removal.
-- Read standing up, and smile on the first line. You can hear it.
-- Normalize so the voice is even and peaks sit just under -1 dB.
+- Record the voice-over separately, after the picture is cut, in a small room with soft things in it.
+- A hand's width from the mic, slightly to the side so the p's don't pop. Record ten seconds of silence first, for noise
+  removal. Normalise so peaks sit just under -1 dB.
 
 ### Cursor
 
 - Move slowly. Pause about a second before and after every click.
 - Make the pointer bigger (macOS: Accessibility, Display, Pointer size).
-- Don't scroll fast, and don't wiggle the cursor while the voice-over talks about something else on screen.
 
 ### Record in segments
 
 - Record each shot as its own clip, with two seconds of stillness at both ends.
-- Record the network shots first (partner, prices, the flight with the ghost, the credential), while there's still time to retry. Do the montage and the end card last.
+- Record the network shots first (partner, voice, prices, the ghost, the story), while there's time to retry. Do the
+  montage and the end card last.
 - Re-take a bad shot instead of patching it in the edit.
 
 ### Stitch
 
 - DaVinci Resolve, iMovie or CapCut all work. Cut on actions, not in the middle of a still screen.
-- You can trim waiting time (an AI answer arriving, a transaction confirming). If you speed something up instead, mark it "2×" in a corner. Never cut around a failure to make it look like it worked.
-- Music is optional. If you use it, keep it quiet and royalty-free under the voice. SimLab's own sound effects are fine to leave in.
+- You can trim waiting (an AI answer arriving, prices loading). If you speed something up instead, mark it "2×" in a
+  corner. Never cut around a failure to make it look like it worked.
+- Music is optional; keep it quiet and royalty-free. SimLab's own sounds are fine to leave in.
 
 ### Captions
 
-- Burn captions into the video. Judges often watch with the sound off.
-- Also upload an .srt to YouTube.
+- Burn captions in: judges often watch with the sound off. Also upload an `.srt` to YouTube.
 - Subtitle Lucía's Spanish line in English.
 
 ### Export and upload
 
 - Export 1080p H.264.
-- Upload to YouTube as Unlisted. Private videos don't play on Devpost. Open the link in a logged-out window to check that it plays, then paste it into Devpost and save the project.
-- Keep the final file on the laptop desktop for the stage fallback, and keep each shot as its own clip too, so you can play any single beat if the Wi-Fi fails during the live pitch.
+- Upload to YouTube as Unlisted (private videos don't play on Devpost). Open the link in a logged-out window to check
+  it plays, then paste it into Devpost and save.
+- Keep the final file and each shot's clip on the laptop desktop for the stage fallback.
 
 ## Confirm before recording
 
-- Every shot shows a feature that works on the deployed build. Drop any shot, and its line, that doesn't.
-- [SITE], [TOTAL], [BUDGET], and the capture date and time for shot 8.
-- Whether ghosts are live or replays. If they're replays, shot 10 says "Lucía's best lap" instead of "Lucía's ghost racing beside her".
-- Whether arming needs accelerometer calibration first. If it does, record the three checks before the flight and cut them in before shot 10; the credential part of shot 11 stays after the flight.
-- The hardware-twin clip in shot 15 only if a real Uno works on camera.
-- The counts in shot 15 (12 boards, 13 benches, 13 drones, 6 languages) match what shipped.
-- Facebook's share dialog and the Web Share sheet both open from the story card on the deployed URL.
+- `/api/status` on the local build as in setup step 5. A shot whose feature is off is dropped with its line.
+- [SITE], [TOTAL], [BUDGET], [SWAPS], and the prices' date and time for shot 8. At catalogue prices (no
+  `SERPAPI_KEY`) quad5 is $346, and a $340 budget swaps the battery (6S 1100 to 4S 1500 mAh) and the motors (1750KV to
+  2450KV) for $330; live prices will differ.
+- Shot 4: the flash and the burnt-out readout show.
+- Shot 5: the partner calls `ask_peer` and Lucía is named. It's the model's choice: take it until it does.
+- Shot 6: the voice message transcribes and arrives translated in Maya's window.
+- Shot 10: Lucía's ghost and its name tag show in Maya's window.
+- Shot 13: the story names Lucía as the helper, and the cover is drawn.
+- Shot 14: the Hindi and Chinese figure labels. At 02:00, 1391 newer figure strings were still English outside English
+  (`docs/hacktx/JUDGE-QA.md`, question 22); pick a figure whose labels are translated once the delta lands.
+- The counts in shot 14 (12 boards, 13 robotics benches, 13 drones, 6 languages) match what shipped.
+- Any label renamed by the morning's UI polish pass: re-read each click against the page.
