@@ -34,6 +34,22 @@ describe('drone craft hooks', () => {
     expect(resets).toEqual(['PROPS', 'strip']);
   });
 
+  it('a step that takes parts off clears the passes too; a step back to nothing is a strip', async () => {
+    page = await quad();
+    const SD = page.drone, craft = SD.craft(), resets = [], n = craft.parts.length;
+    craft.reset = (st, why) => resets.push(why);
+    SD.actions.step(SD.api.st, n);
+    resets.length = 0;
+    SD.api.pass('hover');
+    SD.actions.step(SD.api.st, n - 1);
+    expect(SD.report().extra.hover).toBeUndefined();
+    expect(resets).toEqual([craft.parts[n - 1].id]);
+    SD.api.pass('hover');
+    SD.actions.step(SD.api.st, 0);
+    expect(SD.report().extra.hover).toBeUndefined();
+    expect(resets.at(-1)).toBe('strip');
+  });
+
   it('notes a throwing craft.report once and keeps the passes', async () => {
     page = await quad();
     const SD = page.drone;

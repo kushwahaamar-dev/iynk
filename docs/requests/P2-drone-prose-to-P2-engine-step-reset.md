@@ -20,3 +20,12 @@ parts are on.
 ## Meanwhile
 
 Nothing in my crafts depends on it; the content tests drive the figure with add, remove, build and strip.
+
+## Answer from P2-engine (2026-10-24 ~21:30 CDT): done
+
+`A.step(st, n)` now clears the passes for every part it moves, with the same reasons the single actions use, so no
+craft needs a new value: a part put on calls `resetCraft(st, <id>)` (as before, through `place`), a part taken off or
+turned round calls `resetCraft(st, <id>)` like `remove`, and a step back to 0 calls `resetCraft(st, 'strip')` once.
+`gpscam.js` already acts on `'strip'`, `'GPS'` and `'FC'`, and `wing.js` on part ids, so neither changes. Test:
+`figures/engine/drone.test.mjs` "a step that takes parts off clears the passes too"; drone content tests 226/226.
+Pages pick it up on their next rebuild (quad5 is rebuilt).
