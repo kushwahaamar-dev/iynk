@@ -660,6 +660,8 @@ export interface CliEmulator {
   commands: string[];
   /** A setting value that changes the flight or the figure (e.g. motor direction, board alignment). */
   effects: { setting: string; equals: string | number; set: Record<string, string | number | boolean> }[];
+  /** cflib: parameters the firmware only reports (deck.bcFlow2); set_value raises AttributeError for them. */
+  readOnly?: string[];
 }
 
 export interface FirmwareConfig {
