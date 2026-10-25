@@ -1398,6 +1398,9 @@ A.fault = id => {
   }
   if (typeof id !== 'string') return;
   const [kind, a, b] = id.split(':');
+  // a part of the breadboard circuit (an id the board itself does not have): the circuit redraws without it, or turned
+  // round, while the fault is on (bench-bb.js circuitNow)
+  if ((kind === 'reversed' || kind === 'missing') && !MD.byId[a] && B.bbPart && B.bbPart(a)){ if (!st.faults.includes(id)) st.faults.push(id); refresh(true); return; }
   if (kind === 'reversed'){ const p = MD.byId[a]; if (!p || !p.polar) return say('{name} has no wrong way round', { name: a }); if (st.power) A.power(null); st.placed[a] = { orient: 1, sold: true }; refresh(); return; }
   if (kind === 'missing'){
     const p = MD.byId[a]; if (!p || p.fixed) return say('No part {name} on this board', { name: a });
@@ -2177,7 +2180,7 @@ function keyList(){
 }
 function syncKeys(){
   if (!keysBox) return;
-  const c = st.circuit && MD.circuits[st.circuit];
+  const c = st.circuit && B.circuitNow ? B.circuitNow() : null;
   const items = MD.parts.filter(p => isIn(p.id)).map(p => [p.id, T(p.name), !!p.control]);
   if (c && st.view !== 'board') for (const q of c.parts || []) items.push([q.id, q.id + ' · ' + T((B.parts[q.part] || {}).name || q.part), false, typeof (B.parts[q.part] || {}).press === 'function']);
   const key = items.map(i => i[0]).join(' ');
@@ -2599,9 +2602,52 @@ B.hole = (geo, ref) => {
   return null;
 };
 
+/* circuit faults: a fault can change what is on the breadboard. `missing:<id>` leaves a circuit part out, with the
+   wires that end on its legs; `reversed:<id>` turns it round (its `reversed` param when the part has one, else its
+   holes in the other order). Ids the board itself has stay board faults. A listed fault [id, label, edit] does the
+   same for its own id: edit = { missing: [ids], reversed: [ids], cut: [[from, to]] (wires left out), wires: [extra
+   wires], holes: { id: [holes] } (parts moved) }, each applied where the circuit has it. The solver, the drawing and
+   the schematic all read the changed circuit. */
+let faulted = { key: null, md: null, c: null };
+const circuitNow = () => {
+  const md = B.md, st = B.st, c = md.circuits[st.circuit]; if (!c) return null;
+  const fs = st.faults || []; if (!fs.length) return c;
+  const key = st.circuit + '|' + fs.join(',');
+  if (faulted.key === key && faulted.md === md) return faulted.c;
+  const missing = new Set(), reversed = new Set(), cut = [], add = [], holes = {};
+  const inCircuit = id => (c.parts || []).some(p => p.id === id);
+  for (const f of fs){
+    const m = /^(missing|reversed):(.+)$/.exec(f);
+    if (m && inCircuit(m[2]) && !md.byId[m[2]]) (m[1] === 'missing' ? missing : reversed).add(m[2]);
+    const fd = (md.def.faults || []).find(x => Array.isArray(x) && x[0] === f && x[2] && typeof x[2] === 'object');
+    if (!fd) continue;
+    const e = fd[2];
+    for (const id of e.missing || []) if (inCircuit(id)) missing.add(id);
+    for (const id of e.reversed || []) if (inCircuit(id)) reversed.add(id);
+    for (const w of e.cut || []) if (Array.isArray(w) && w.length === 2) cut.push(w);
+    for (const w of e.wires || []) if (w && typeof w.from === 'string' && typeof w.to === 'string') add.push(w);
+    for (const [id, hs] of Object.entries(e.holes || {})) if (inCircuit(id) && Array.isArray(hs)) holes[id] = hs;
+  }
+  let out = c;
+  if (missing.size || reversed.size || cut.length || add.length || Object.keys(holes).length){
+    const owner = ref => { const m = /^([A-Za-z_][\w-]*)\./.exec(ref); return m ? m[1] : null; };
+    const isCut = w => cut.some(([a, b]) => (w.from === a && w.to === b) || (w.from === b && w.to === a));
+    const parts = (c.parts || []).filter(p => !missing.has(p.id)).map(p => {
+      let q = holes[p.id] ? Object.assign({}, p, { holes: holes[p.id].slice() }) : p;
+      if (reversed.has(p.id)){ const def = B.parts[p.part];
+        q = def && def.params && def.params.reversed ? Object.assign({}, q, { reversed: true }) : Object.assign({}, q, { holes: (q.holes || []).slice().reverse() }); }
+      return q; });
+    const wires = (c.wires || []).filter(w => !missing.has(owner(w.from)) && !missing.has(owner(w.to)) && !isCut(w)).concat(add);
+    out = Object.assign({}, c, { parts, wires });
+  }
+  faulted = { key, md, c: out };
+  return out;
+};
+B.circuitNow = circuitNow;
+
 /* placement in board coordinates: the breadboard sits right of the board (or behind it) */
 const place = () => {
-  const md = B.md, c = md.circuits[B.st.circuit]; if (!c) return null;
+  const md = B.md, c = circuitNow(); if (!c) return null;
   const geo = B.bbGeom(c.breadboard || 'half');
   const behind = c.board === 'back';
   const ox = md.def.noBoard ? 0 : behind ? (md.pcb.w - geo.w) / 2 : md.pcb.w + 14, oy = md.def.noBoard ? 0 : behind ? md.pcb.h + 12 : (md.pcb.h - geo.h) / 2;
@@ -2674,7 +2720,7 @@ B.bbParams = (st, params) => {
 const own2 = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 // a param spec is either a list of allowed values or a numeric range [min, max]
 B.paramRange = spec => Array.isArray(spec) && spec.length === 2 && spec.every(v => typeof v === 'number') && spec[1] > spec[0];
-B.bbPart = id => { const c = B.md.circuits[B.st.circuit]; return c && (c.parts || []).find(p => p.id === id); };
+B.bbPart = id => { const c = circuitNow(); return c && (c.parts || []).find(p => p.id === id); };
 
 /* ---------- scene ---------- */
 // the breadboard view's mat in board mm: the board, the breadboard and every circuit part lying on the mat (its `at`
@@ -3194,7 +3240,7 @@ const accent = 'var(--accent,#f4b829)';
 /* ---------- schematic ---------- */
 // series chains found by the solver: board pin -> resistors -> LED -> resistors -> GND
 function chains(){
-  const md = B.md, st = B.st, c = md.circuits[st.circuit]; if (!c) return [];
+  const st = B.st, c = B.circuitNow(); if (!c) return [];
   const pl = B.bbPlace(); if (!pl) return [];
   const geo = pl.geo, par = {}, find = a => { while (par[a] && par[a] !== a) a = par[a]; return a; };
   const node = ref => { const h = B.hole(geo, ref); if (h) return h.node; const pin = B.pinOf(ref); return pin ? 'N:' + pin.net : null; };
@@ -3222,7 +3268,7 @@ const ledSym = (x, y, s, lit, col, sel) => {
   return g; };
 const gndSym = (x, y, s) => ln([[x - s * .5, y], [x + s * .5, y]], 1.3) + ln([[x - s * .32, y + s * .2], [x + s * .32, y + s * .2]], 1.1) + ln([[x - s * .14, y + s * .4], [x + s * .14, y + s * .4]], 1);
 B.viewDef('schematic', { flat: true, scene: () => {
-  const v = sheetBox(), md = B.md, st = B.st, c = md.circuits[st.circuit];
+  const v = sheetBox(), md = B.md, st = B.st, c = B.circuitNow();
   let s = plate(v, T('Schematic · {name}', { name: c ? T(c.title || st.circuit) : T(md.name) }));
   const u = v.width / 100, x0 = v.x + 12 * u, y0 = v.y + 20 * u;
   if (!c){ return s + txt(v.x + v.width / 2, v.y + v.height / 2, T('No circuit on the breadboard'), 3.2 * u, '#857d6e'); }
@@ -3745,7 +3791,7 @@ const parts = [
     pins: STRIPS.map(s => s[1]) },
   // back
   { id: 'J3', kind: 'microbit-usb', name: 'Micro-USB socket (power, the MICROBIT drive and serial)', short: 'USB', at: [25.93, 39.57], size: [5, 7.5], h: 2.7, rot: -90, side: 'bottom', plug: true },
-  { id: 'J2', kind: back('box'), name: 'Battery socket J2 (2-pin, 2.0 mm, for a 2 x AAA pack)', short: 'BATTERY', at: [6.98, 37.26], size: [7.9, 6], h: 5.5, side: 'bottom', color: '#efe6cf', labelColor: '#6b6458', label: 'BATT', face: '+y' },
+  { id: 'J2', kind: back('box'), name: 'Battery socket J2 (2-pin, 2.0 mm, for a 2 x AAA pack)', short: 'BATTERY', at: [6.98, 37.26], size: [7.9, 6], h: 5.5, group: 'smd', side: 'bottom', color: '#efe6cf', labelColor: '#6b6458', label: 'BATT', face: '+y' },
   { id: 'SW1', kind: back('tact'), name: 'Reset button (hold to power off)', short: 'RESET', at: [16.27, 38.86], size: [6.5, 6], h: 4.55, group: 'smd', side: 'bottom', control: { type: 'button', action: 'reset' } },
   { id: 'U2', kind: back('qfn'), name: 'nRF52833 processor (runs your program, Bluetooth radio)', short: 'nRF52833', at: [39.59, 25.15], size: [7, 7], rot: 45, n: 12, h: .85, side: 'bottom', label: 'N52833|QIAA' },
   { id: 'X1', kind: back('xtal-smd'), name: '32 MHz crystal for the nRF52833', short: '32 MHz', at: [46.1, 19.57], size: [3.2, 2.4], h: .6, rot: 45, side: 'bottom' },

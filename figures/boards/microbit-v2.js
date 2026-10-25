@@ -187,7 +187,7 @@ const parts = [
     pins: STRIPS.map(s => s[1]) },
   // back
   { id: 'J3', kind: 'microbit-usb', name: 'Micro-USB socket (power, the MICROBIT drive and serial)', short: 'USB', at: [25.93, 39.57], size: [5, 7.5], h: 2.7, rot: -90, side: 'bottom', plug: true },
-  { id: 'J2', kind: back('box'), name: 'Battery socket J2 (2-pin, 2.0 mm, for a 2 x AAA pack)', short: 'BATTERY', at: [6.98, 37.26], size: [7.9, 6], h: 5.5, side: 'bottom', color: '#efe6cf', labelColor: '#6b6458', label: 'BATT', face: '+y' },
+  { id: 'J2', kind: back('box'), name: 'Battery socket J2 (2-pin, 2.0 mm, for a 2 x AAA pack)', short: 'BATTERY', at: [6.98, 37.26], size: [7.9, 6], h: 5.5, group: 'smd', side: 'bottom', color: '#efe6cf', labelColor: '#6b6458', label: 'BATT', face: '+y' },
   { id: 'SW1', kind: back('tact'), name: 'Reset button (hold to power off)', short: 'RESET', at: [16.27, 38.86], size: [6.5, 6], h: 4.55, group: 'smd', side: 'bottom', control: { type: 'button', action: 'reset' } },
   { id: 'U2', kind: back('qfn'), name: 'nRF52833 processor (runs your program, Bluetooth radio)', short: 'nRF52833', at: [39.59, 25.15], size: [7, 7], rot: 45, n: 12, h: .85, side: 'bottom', label: 'N52833|QIAA' },
   { id: 'X1', kind: back('xtal-smd'), name: '32 MHz crystal for the nRF52833', short: '32 MHz', at: [46.1, 19.57], size: [3.2, 2.4], h: .6, rot: 45, side: 'bottom' },
