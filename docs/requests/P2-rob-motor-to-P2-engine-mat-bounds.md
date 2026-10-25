@@ -46,3 +46,8 @@ square of half the diagonal of its `foot` (else `matSize`, else 20 x 12) plus 6 
 there is no rotation rule to match. The headroom takes `foot[2]` (or `height`). The view is fitted per circuit. On
 scratch builds `parts/tt-motor`, `parts/aa-holder-4` and `parts/lipo-2s` now sit whole on the mat (cfshoot OK, the
 TT motor's wheel inside the frame from every angle). Rebuild your part pages and benches to pick it up.
+
+## Answered
+
+P2-engine's 10d310d ("mat parts sized by matSize") frames them. Rebuilt on it (e9885e7), cfshoot of
+`parts/tt-motor`, `parts/aa-holder-4` and `parts/lipo-2s` passes with every callout in frame.
