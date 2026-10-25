@@ -26,7 +26,7 @@
   },
   "footer": {
     "summary": "Un labo pratique pour les cartes, les robots et les drones. Tout tourne dans votre navigateur.",
-    "privacy": "Aucun compte. Votre progression reste dans ce navigateur ; les labos envoient des statistiques d’usage anonymes, que vous pouvez désactiver en bas de chaque page de labo.",
+    "privacy": "Aucun compte. Votre progression reste dans ce navigateur ; les labos envoient des statistiques d’usage anonymes, que vous pouvez désactiver en bas de chaque page de labo.",
     "figures": "Figures dessinées avec Colorfigures, d’April Zhu (licence MIT).",
     "about": "Crédits et licences",
     "pages": "Pages du site"
@@ -40,11 +40,11 @@
     "current": "Étape en cours",
     "stepOf": "Étape {n} sur {total}",
     "progress": "{done}/{total}",
-    "progressLabel": "{label} : {done} sur {total} terminés"
+    "progressLabel": "{label} : {done} sur {total} terminés"
   },
   "dashboard": {
     "metaTitle": "Tableau de bord",
-    "metaDescription": "Assembler, câbler, programmer, casser et voler : {boards} cartes, {benches} bancs de robotique et {drones} drones, dessinés à l’encre et entièrement interactifs.",
+    "metaDescription": "Assembler, câbler, programmer, casser et voler : {boards} cartes, {benches} bancs de robotique et {drones} drones, dessinés à l’encre et entièrement interactifs.",
     "kicker": "Explorer · Comprendre · Construire",
     "title": "Apprendre l’électronique en la construisant",
     "lede": "{boards} cartes de développement, {benches} bancs de robotique et {drones} drones, chacun une figure 3D encrée à la main. Faites-la tourner, regardez à l’intérieur, câblez-la, lancez du vrai code, cassez-la exprès et comprenez pourquoi.",
@@ -54,7 +54,7 @@
     "labsTitle": "Les trois labos",
     "open": "Ouvrir le {lab}",
     "board": {
-      "text": "De l’Arduino Uno R3 à deux cartes FPGA : des leçons, un éditeur de code en direct, des vues schéma et platine d’essai, un moniteur série et des pannes qui se produisent vraiment.",
+      "text": "De l’Arduino Uno R3 à deux cartes FPGA : des leçons, un éditeur de code en direct, des vues schéma et platine d’essai, un moniteur série et des pannes qui se produisent vraiment.",
       "count": "{count} cartes",
       "progress": "Leçons et assemblages"
     },
@@ -64,13 +64,13 @@
       "progress": "Étapes, exercices et quiz"
     },
     "drones": {
-      "text": "Du Tiny Whoop à l’octocoptère : un montage pièce par pièce, le poids et la poussée calculés en direct, des tests de sécurité, de vrais réglages Betaflight et ArduPilot, et un terrain de vol.",
+      "text": "Du Tiny Whoop à l’octocoptère : un montage pièce par pièce, le poids et la poussée calculés en direct, des tests de sécurité, de vrais réglages Betaflight et ArduPilot, et un terrain de vol.",
       "count": "{count} drones",
       "progress": "Montages, tests et parcours"
     },
     "continue": {
       "title": "Reprendre là où vous en étiez",
-      "empty": "Rien de terminé pour l’instant. L’Uno R3 est le meilleur point de départ : seize leçons courtes, des éléments de la carte jusqu’à un radar de recul.",
+      "empty": "Rien de terminé pour l’instant. L’Uno R3 est le meilleur point de départ : seize leçons courtes, des éléments de la carte jusqu’à un radar de recul.",
       "last": "Dernière chose terminée",
       "resume": "Continuer",
       "begin": "Commencer la première leçon",
@@ -95,7 +95,7 @@
       },
       "code": {
         "title": "Lancer du vrai code",
-        "text": "Modifiez du C++ Arduino, du MicroPython ou du Verilog et appuyez sur Exécuter : le simulateur anime la figure, les broches et le moniteur série."
+        "text": "Modifiez du C++ Arduino, du MicroPython ou du Verilog et appuyez sur Exécuter : le simulateur anime la figure, les broches et le moniteur série."
       },
       "break": {
         "title": "Casser exprès",
@@ -115,9 +115,9 @@
     "lede": "SimLab est un labo d’électronique qui s’ouvre dans un navigateur. Chaque carte, module et drone est une figure 3D encrée à la main que vous pouvez faire tourner, ouvrir et manipuler, reliée à des leçons, à du code qui s’exécute vraiment et à des pannes que vous pouvez provoquer exprès.",
     "howTitle": "Comment ça marche",
     "how": {
-      "figures": "Chaque figure est une page autonome dessinée avec le moteur Colorfigures : de vrais volumes 3D en aplats clairs, moyens et sombres, cernés à l’encre. La page dialogue avec la figure par un petit pont de messages : appuyer sur un bouton dans la leçon fait bouger la pièce dans la figure, et inversement.",
-      "code": "Les programmes tournent dans un simulateur, dans votre navigateur, sur une horloge virtuelle : un sous-ensemble du C++ Arduino avec la bonne taille d’entier pour chaque puce, un sous-ensemble de MicroPython et un sous-ensemble de Verilog pour les deux cartes FPGA.",
-      "privacy": "La progression et les réglages sont enregistrés dans le stockage local de ce navigateur. Il n’y a pas de compte. Quand ce déploiement a une base de données, les labos envoient des statistiques d’usage anonymes (une leçon réussie, une étape montée, une panne essayée, un temps au tour) pour les compteurs en direct et les classements, avec un identifiant aléatoire pour ce navigateur, jamais votre nom ni votre code. Décochez la case des statistiques d’usage anonymes en bas de n’importe quelle page de labo pour les arrêter."
+      "figures": "Chaque figure est une page autonome dessinée avec le moteur Colorfigures : de vrais volumes 3D en aplats clairs, moyens et sombres, cernés à l’encre. La page dialogue avec la figure par un petit pont de messages : appuyer sur un bouton dans la leçon fait bouger la pièce dans la figure, et inversement.",
+      "code": "Les programmes tournent dans un simulateur, dans votre navigateur, sur une horloge virtuelle : un sous-ensemble du C++ Arduino avec la bonne taille d’entier pour chaque puce, un sous-ensemble de MicroPython et un sous-ensemble de Verilog pour les deux cartes FPGA.",
+      "privacy": "La progression et les réglages sont enregistrés dans le stockage local de ce navigateur. Il n’y a pas de compte. Quand ce déploiement a une base de données, les labos envoient des statistiques d’usage anonymes (une leçon réussie, une étape montée, une panne essayée, un temps au tour) pour les compteurs en direct et les classements, avec un identifiant aléatoire pour ce navigateur, jamais votre nom ni votre code. Décochez « Partager les statistiques d’usage anonymes » en bas de n’importe quelle page de labo pour les arrêter."
     },
     "originalsTitle": "Les trois originaux",
     "originalsLede": "SimLab est né de la refonte de trois sites pédagogiques et veut faire tout ce qu’ils font, et davantage. Il reprend leurs faits, formules, durées et leçons, écrit tout son propre code et corrige les erreurs qu’il y a trouvées.",
@@ -128,7 +128,7 @@
       },
       "robotics": {
         "name": "Robotics Engineer",
-        "text": "Treize bancs interactifs : cartes, pilotes de moteurs, capteurs et étages d’alimentation, avec un déroulé de montage, des pannes et des quiz."
+        "text": "Treize bancs interactifs : cartes, pilotes de moteurs, capteurs et étages d’alimentation, avec un déroulé de montage, des pannes et des quiz."
       },
       "drones": {
         "name": "Drone Engineer",

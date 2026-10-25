@@ -1,6 +1,6 @@
 {
   "real": {
-    "title": "Le construire pour de vrai",
+    "title": "Construire pour de vrai",
     "lede": "Prix en direct de chaque pièce de ce montage sur Google Shopping, Amazon et eBay.",
     "loading": "Recherche des prix…",
     "refresh": "Vérifier à nouveau les prix",
@@ -28,8 +28,8 @@
     "offersHide": "Masquer les offres",
     "offersLabel": "Offres pour {part}",
     "partial": {
-      "quota": "Le budget de recherche de ce site est épuisé : certains prix viennent du catalogue.",
-      "upstream": "Certaines boutiques n’ont pas répondu : certains prix viennent du catalogue."
+      "quota": "Le budget de recherche de ce site est épuisé : certains prix viennent du catalogue.",
+      "upstream": "Certaines boutiques n’ont pas répondu : certains prix viennent du catalogue."
     },
     "failed": "Impossible de charger les prix.",
     "rateLimited": "Trop de vérifications d’affilée. Attendez une minute, puis réessayez.",
@@ -38,7 +38,7 @@
     "notSetUpDrone": "L’optimiseur ci-dessous utilise les prix du catalogue.",
     "statusError": "Impossible de joindre le serveur.",
     "noContent": "La liste des pièces de cet élément n’est pas encore publiée.",
-    "storesNote": "Les prix sont en dollars américains, chez des boutiques des États-Unis, et changent souvent ; vérifiez-les avant d’acheter.",
+    "storesNote": "Les prix sont en dollars américains, chez des boutiques des États-Unis, et changent souvent ; vérifiez-les avant d’acheter.",
     "unpriced": {
       "one": "{count} pièce n’a pas encore de prix",
       "other": "{count} pièces n’ont pas encore de prix"
@@ -58,10 +58,10 @@
       "motor": "Moteurs",
       "prop": "Hélices"
     },
-    "swap": "{slot} : {from} → {to}",
+    "swap": "{slot} : {from} → {to}",
     "apply": "Utiliser ce montage dans le labo",
     "applied": "Le labo utilise maintenant ce montage.",
-    "upgrade": "Pour {amount} de plus : poussée/poids {tw} et {minutes} min de vol.",
+    "upgrade": "Pour {amount} de plus : poussée/poids {tw} et {minutes} min de vol.",
     "noneBudget": "Rien ne respecte vos limites pour {amount} maximum. Le montage le moins cher qui les respecte coûte {cheapest}.",
     "noneConstraints": "Aucune combinaison de ces pièces ne respecte vos limites. Baissez un minimum pour voir un montage.",
     "tw": "P:P",
@@ -71,7 +71,7 @@
     "grams": "{value} g",
     "estimateNote": "Inclut des prix du catalogue",
     "checked": "Le calculateur a testé {count} combinaisons.",
-    "was": "Votre montage : {value}",
+    "was": "Votre montage : {value}",
     "budgetValue": "Budget {amount}"
   },
   "nearby": {
@@ -117,7 +117,7 @@
     "loading": "Recherche de vidéos…",
     "empty": "Aucune vidéo trouvée. Essayez d’autres mots.",
     "failed": "Impossible de charger les vidéos.",
-    "watch": "Regarder « {title} » de {channel} sur YouTube",
+    "watch": "Regarder « {title} » de {channel} sur YouTube",
     "duration": "Durée {duration}"
   },
   "sources": {

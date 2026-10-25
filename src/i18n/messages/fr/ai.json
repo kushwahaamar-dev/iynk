@@ -27,7 +27,7 @@
     "transcript": "Discussion avec ton partenaire de labo"
   },
   "hint": {
-    "label": "Bloqué ?",
+    "label": "Bloqué ?",
     "hint": "Donne-moi un indice",
     "another": "Un autre indice",
     "show": "Montre-moi",
@@ -36,14 +36,14 @@
     "askShow": "Montre-moi la solution."
   },
   "suggest": {
-    "fault": "Pourquoi ça arrive : {fault} ?",
-    "error": "Que veut dire cette erreur de compilation ?",
-    "failed": "Pourquoi « {test} » a-t-il échoué ?",
-    "start": "Que devrais-je essayer d’abord ?",
-    "code": "Que fait ce code ?",
-    "wiring": "Mon câblage est-il correct ?",
-    "drone": "Ce drone va-t-il bien voler ?",
-    "safety": "À quoi dois-je faire attention ?"
+    "fault": "Pourquoi ça arrive : {fault} ?",
+    "error": "Que veut dire cette erreur de compilation ?",
+    "failed": "Pourquoi « {test} » a-t-il échoué ?",
+    "start": "Que devrais-je essayer d’abord ?",
+    "code": "Que fait ce code ?",
+    "wiring": "Mon câblage est-il correct ?",
+    "drone": "Ce drone va-t-il bien voler ?",
+    "safety": "À quoi dois-je faire attention ?"
   },
   "tools": {
     "highlight": "Regarde {part}",
@@ -65,7 +65,7 @@
       "one": "{count} ligne inchangée",
       "other": "{count} lignes inchangées"
     },
-    "diffLabel": "Modifications : les lignes qui commencent par + sont ajoutées, celles qui commencent par − sont supprimées.",
+    "diffLabel": "Modifications : les lignes qui commencent par + sont ajoutées, celles qui commencent par − sont supprimées.",
     "askPeer": "J’ai demandé à {name} d’expliquer",
     "askPeerNoRoom": "Un ami qui a déjà fait ça pourrait te l’expliquer. Invite quelqu’un à construire avec toi.",
     "invite": "Inviter un ami",
@@ -73,18 +73,18 @@
     "tabs": {
       "partner": "Partenaire",
       "together": "Ensemble",
-      "real": "Construis-le pour de vrai",
+      "real": "Construire pour de vrai",
       "passport": "Passeport",
       "hardware": "Matériel"
     },
-    "question": "« {question} »"
+    "question": "« {question} »"
   },
   "errors": {
     "not_configured": "Le partenaire de labo n’est pas configuré sur ce déploiement.",
     "rate_limited": "Beaucoup de questions en ce moment. Attends quelques secondes, puis réessaie.",
     "bad_input": "Impossible d’envoyer ce message. Essaie une question plus courte.",
     "upstream": "Le partenaire n’a pas répondu cette fois. Réessaie.",
-    "offline": "Tu es hors ligne. Le labo fonctionne toujours ; le partenaire a besoin d’une connexion.",
+    "offline": "Tu es hors ligne. Le labo fonctionne toujours ; le partenaire a besoin d’une connexion.",
     "aborted": "Arrêté."
   },
   "status": {
@@ -107,7 +107,7 @@
   },
   "story": {
     "title": "Récit de construction",
-    "intro": "Transforme cette session en un court récit avec une couverture : qui a construit quoi, ce qui a cassé et qui a aidé.",
+    "intro": "Transforme cette session en un court récit avec une couverture : qui a construit quoi, ce qui a cassé et qui a aidé.",
     "make": "Écrire notre récit",
     "remake": "Le réécrire",
     "writing": "Écriture de ton récit…",
@@ -117,7 +117,7 @@
       "one": "{count} moment pour l’instant",
       "other": "{count} moments pour l’instant"
     },
-    "coverAlt": "Illustration de couverture pour « {title} »",
+    "coverAlt": "Illustration de couverture pour « {title} »",
     "builtBy": "Construit par",
     "helped": "{helper} a aidé {learner}",
     "highlights": "Temps forts",

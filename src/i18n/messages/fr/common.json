@@ -2,7 +2,7 @@
   "site": {
     "name": "SimLab",
     "tagline": "Explorer · Comprendre · Construire",
-    "description": "Un labo d’électronique pratique dans le navigateur : assemblez, câblez, programmez, cassez et faites voler cartes, robots et drones."
+    "description": "Un labo d’électronique pratique dans le navigateur : assemblez, câblez, programmez, cassez et faites voler cartes, robots et drones."
   },
   "a11y": {
     "skipToContent": "Aller au contenu principal"
@@ -41,20 +41,20 @@
       "tabs": {
         "partner": "Partenaire",
         "together": "Ensemble",
-        "real": "Construis-le pour de vrai",
+        "real": "Construire pour de vrai",
         "passport": "Passeport",
         "hardware": "Matériel"
       }
     },
     "sound": {
-      "label": "Sound",
-      "turnOn": "Turn sound on",
-      "turnOff": "Turn sound off"
+      "label": "Son",
+      "turnOn": "Activer le son",
+      "turnOff": "Couper le son"
     },
     "usage": {
-      "label": "Anonymous usage counts",
-      "body": "SimLab counts what happens in the labs (a lesson passed, a step built, a fault tried) for the live counters and leaderboards. Each event carries a random id for this browser, never your name or your code.",
-      "toggle": "Share anonymous usage counts"
+      "label": "Statistiques d’usage anonymes",
+      "body": "SimLab compte ce qui se passe dans les labos (une leçon réussie, une étape montée, une panne essayée) pour les compteurs en direct et les classements. Chaque événement porte un identifiant aléatoire propre à ce navigateur, jamais votre nom ni votre code.",
+      "toggle": "Partager les statistiques d’usage anonymes"
     }
   }
 }

@@ -9,7 +9,7 @@
   "sol": "{amount} SOL",
   "notSetUp": {
     "title": "Proof of Build n’est pas configuré sur ce déploiement",
-    "body": "Cette copie de SimLab n’a ni programme Solana ni clé d’émission : elle ne peut donc pas écrire de certificats. Tout le reste du labo fonctionne."
+    "body": "Cette copie de SimLab n’a ni programme Solana ni clé d’émission : elle ne peut donc pas écrire de certificats. Tout le reste du labo fonctionne."
   },
   "statusError": "Impossible de joindre l’état de ce déploiement.",
   "wallet": {
@@ -34,12 +34,12 @@
     "faucetDone": "0,02 SOL devnet est arrivé dans votre portefeuille.",
     "export": "Exporter la clé",
     "exportTitle": "La clé de votre portefeuille devnet",
-    "exportWarning": "Quiconque possède cette clé contrôle le portefeuille. Elle sert uniquement sur devnet : n’y envoyez jamais de vrais SOL.",
+    "exportWarning": "Quiconque possède cette clé contrôle le portefeuille. Elle sert uniquement sur devnet : n’y envoyez jamais de vrais SOL.",
     "exportHow": "Pour utiliser le même portefeuille dans Phantom, Solflare ou Backpack, choisissez Importer une clé privée et collez-la.",
     "exportCopy": "Copier la clé",
     "exportReveal": "Afficher la clé",
     "forget": "Oublier le portefeuille",
-    "forgetTitle": "Oublier ce portefeuille devnet ?",
+    "forgetTitle": "Oublier ce portefeuille devnet ?",
     "forgetBody": "La clé est effacée de ce navigateur. Ses certificats restent sur la chaîne, mais vous ne pourrez plus utiliser le portefeuille si vous n’avez pas exporté la clé.",
     "forgetConfirm": "L’oublier"
   },
@@ -61,14 +61,17 @@
   },
   "panel": {
     "title": "Proof of Build",
-    "lede": "Réussissez les tests ici : le serveur rejoue votre session avant d’écrire un certificat sur le devnet de Solana. Vous ne payez rien.",
+    "lede": "Réussissez les tests ici : le serveur rejoue votre session avant d’écrire un certificat sur le devnet de Solana. Vous ne payez rien.",
     "earnTitle": "Ce que vous pouvez obtenir ici",
     "droneSkill": "Certificat de sécurité au banc",
     "waitingFigure": "En attente de la figure. L’enregistrement commence dès qu’elle décrit le banc.",
     "recording": "Enregistrement de cette session depuis la figure.",
     "restart": "Recommencer",
     "stepsLabel": "Tests de sécurité au banc",
-    "stepStatus": { "done": "réussi", "current": "à suivre" },
+    "stepStatus": {
+      "done": "réussi",
+      "current": "à suivre"
+    },
     "steps": {
       "smoke": "Test au smoke stopper",
       "smokeHint": "Repérez un court-circuit avant la batterie.",
@@ -77,7 +80,7 @@
       "calibrate": "Étalonnage de l’accéléromètre",
       "calibrateHint": "Mettez l’appareil à plat, puis étalonnez."
     },
-    "violations": "Une règle de sécurité n’a pas été respectée pendant cette session : {rules}. Recommencez pour réessayer.",
+    "violations": "Une règle de sécurité n’a pas été respectée pendant cette session : {rules}. Recommencez pour réessayer.",
     "rules": {
       "live-work": "travail sur un appareil sous tension",
       "props-early": "hélices montées avant les tests",
@@ -87,7 +90,10 @@
     "fault": "Le connecteur de la batterie a grillé. Débranchez, remontez le XT60 dans le bon sens et refaites le test au smoke stopper.",
     "score": "Score de sécurité",
     "scoreValue": "{score}/100",
-    "pops": { "one": "{count} étincelle à la mise sous tension", "other": "{count} étincelles à la mise sous tension" },
+    "pops": {
+      "one": "{count} étincelle à la mise sous tension",
+      "other": "{count} étincelles à la mise sous tension"
+    },
     "otherLab": "Les certificats de leçons et de bancs arriveront quand le serveur saura rejouer ces tests. Aujourd’hui, vous pouvez obtenir le certificat de sécurité au banc sur n’importe quel drone.",
     "openPassport": "Ouvrir votre passeport",
     "mint": "Émettre mon certificat",
@@ -99,7 +105,10 @@
       "server": "Le serveur la rejoue et l’émet",
       "chain": "Relecture depuis la chaîne"
     },
-    "phaseStatus": { "done": "fait", "current": "en cours" },
+    "phaseStatus": {
+      "done": "fait",
+      "current": "en cours"
+    },
     "successTitle": "Certificat émis",
     "successBody": "{skill} est sur le devnet de Solana avec votre hash de rejeu. Tout le monde peut le vérifier.",
     "viewTx": "Voir la transaction",
@@ -166,7 +175,7 @@
     "account": "Compte du certificat",
     "explorer": "Voir sur Solana Explorer",
     "verifyLink": "Lien public de vérification",
-    "soulbound": "Non transférable : il réside à une adresse du programme liée à ce portefeuille et à cette compétence."
+    "soulbound": "Non transférable : il réside à une adresse du programme liée à ce portefeuille et à cette compétence."
   },
   "passport": {
     "metaTitle": "Votre passeport",
@@ -186,11 +195,11 @@
     "metaDescription": "Vérifiez n’importe quel certificat Proof of Build de SimLab directement sur le devnet de Solana, sans faire confiance à SimLab.",
     "kicker": "Vérifier",
     "title": "Vérifier un certificat",
-    "lede": "Collez l’adresse d’un portefeuille ou d’un certificat. Les données viennent directement du devnet de Solana : inutile de faire confiance à SimLab.",
+    "lede": "Collez l’adresse d’un portefeuille ou d’un certificat. Les données viennent directement du devnet de Solana : inutile de faire confiance à SimLab.",
     "inputLabel": "Adresse de portefeuille ou de certificat",
     "submit": "Rechercher",
     "invalid": "Ce n’est pas une adresse Solana.",
-    "empty": "Saisissez une adresse, ou ouvrez un lien partagé avec ?learner= ou ?credential=.",
+    "empty": "Saisissez une adresse, ou ouvrez un lien partagé avec ?learner= ou ?credential=.",
     "noneForLearner": "Aucun certificat SimLab pour ce portefeuille.",
     "noCredential": "Cette adresse n’est pas un certificat SimLab.",
     "resultsFor": "Certificats de {address}",
