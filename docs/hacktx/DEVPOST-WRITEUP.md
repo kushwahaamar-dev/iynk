@@ -2,7 +2,7 @@
 
 Paste each section into the matching Devpost field; each paragraph is one line so it pastes cleanly. Values in [BRACKETS], and every sentence that depends on the morning's keys and deploy, are listed in "Confirm before submitting" at the end. Submit by 10:30, not 11:29.
 
-Checked against the repo at gate 3, on 2026-10-25 at 05:53 CDT (commit `569b205`). Solana and the hardware twin are not claimed: both were planned for last and skipped, and their tabs stay hidden.
+Checked against the repo at gate 3, on 2026-10-25 at 05:53 CDT (commit `569b205`). Updated on 2026-10-25 at 09:55 CDT: Proof of Build on Solana is deployed to devnet and switched on; the hardware twin is not claimed and stays hidden.
 
 ## Project name
 
@@ -108,11 +108,11 @@ The bigger lesson was about building with many agents at once. Prompts mattered 
 
 We also learned how much of a hardware lesson is facts. Every board and drone got a fact sheet with sources before its content was written, and some numbers on the sites we learned from turned out to be wrong. We corrected them and logged each change.
 
-We also learned to cut. Proof of Build on Solana and a hardware twin for a real Uno were both started and both left switched off, because the night ran out and a half-working feature on stage is worse than none.
+We also learned to cut. A hardware twin for a real Uno was started and left switched off, because a half-working feature on stage is worse than none. Proof of Build on Solana almost went the same way: the public devnet faucet refused every airdrop overnight, so it went live only in the last hours.
 
 ## What's next for iynk
 
-- Finish Proof of Build on Solana and the real-Uno hardware twin, both built partway and switched off for this demo.
+- Finish the real-Uno hardware twin, built partway and switched off for this demo, and move Proof of Build from devnet to mainnet with sponsor-funded bounties.
 - Photograph a real breadboard and have iynk rebuild it in the sim, identifying parts through SerpApi's Google Lens API.
 - List iynk in Meta's Muse connector directory when it opens, and add Facebook Login after app review so stories can go to groups.
 - Translate the newest figure labels, and fill the Verilog gaps (functions, tasks, generate, a UART).
@@ -120,13 +120,13 @@ We also learned to cut. Proof of Build on Solana and a hardware twin for a real 
 
 ## Built with
 
-next.js, react, typescript, tailwindcss, codemirror, zod, colorfigures, svg, javascript, python, node.js, websockets, ws, vercel, vultr, docker, caddy, meta-model-api, muse-spark, muse-image, muse-voice-transcribe, model-context-protocol, facebook-share-dialog, serpapi, tiger-data, timescaledb, postgresql, vitest, playwright, axe-core, claude-code
+next.js, react, typescript, tailwindcss, codemirror, zod, colorfigures, svg, javascript, python, node.js, websockets, ws, vercel, vultr, docker, caddy, meta-model-api, muse-spark, muse-image, muse-voice-transcribe, model-context-protocol, facebook-share-dialog, serpapi, tiger-data, timescaledb, postgresql, solana, anchor, rust, vitest, playwright, axe-core, claude-code
 
 ---
 
 ## Prize tracks we're entering
 
-Entering: Meta, SerpApi, Best Overall, Most Entertaining, Best Pitch, MLH Vultr and MLH Tiger Data. Not entering: MLH .Tech (we have no .tech domain), Solana and Best Hardware Hack (both features are switched off), the MLH A-Team track (it requires Cursor and Grok Bot as core tools; we used Claude Code), Gemini, NMC2, Capital One, Toyota and Snowflake. Best Novice only if every team member is a first-time hacker.
+Entering: Meta, SerpApi, Best Overall, Most Entertaining, Best Pitch, MLH Vultr, MLH Tiger Data and MLH Solana. Not entering: MLH .Tech (we have no .tech domain), Best Hardware Hack (the hardware twin is switched off), the MLH A-Team track (it requires Cursor and Grok Bot as core tools; we used Claude Code), Gemini, NMC2, Capital One, Toyota and Snowflake. Best Novice only if every team member is a first-time hacker.
 
 ### [Title Sponsor: Meta/Facebook] Bringing People Closer Together with AI
 
@@ -147,6 +147,10 @@ iynk is built to be broken. Leave the resistor off an LED and watch it flash onc
 ### [MLH] Best Use of Vultr
 
 Vercel functions can't hold WebSockets, so iynk's realtime relay runs on a Vultr VM in Dallas. It's a small Node 24 server built on `ws`, running in Docker behind Caddy. It stamps every shared lab action with a sequence number so every screen applies them in the same order, relays chat, cursors, presence and flight ghosts, hands late joiners a snapshot, and keeps an empty room alive for 30 minutes in case people come back. Every multiplayer moment in our demo goes through it.
+
+### [MLH] Best Use of Solana
+
+Skills you learn in iynk become credentials you own, on Solana devnet. When you pass a lesson, the server re-runs your exact run on its own deterministic simulator, and only then does our Anchor program, `iynk_passport`, issue a credential to your wallet: one per learner and skill, with the score and a hash of the replay, signed by iynk's issuer. Sponsors can lock a bounty on a skill, and the same instruction that issues the credential pays it out, once, to the right learner. Anyone can check a credential on the Verify page, which reads it straight from the chain, so nobody has to trust our server. A learner without a wallet gets a one-click devnet wallet kept in the browser. The program has 34 tests on a local validator and is live at `BYFLDTLNi946Z8jT4JnxgE8Cpzkr9ud7tSrnThFTv31w`.
 
 ### [MLH] Best Use of Tiger Data
 
@@ -170,7 +174,7 @@ The idea for iynk and our hardware research predate HackTX. Before 11:30 a.m. on
 ## Confirm before submitting
 
 - Filled 08:39: the site (https://iynk.vercel.app) and the repo (https://github.com/kushwahaamar-dev/iynk, public). Still open: [VIDEO_URL]. No .tech domain, so no [DOMAIN].
-- `/api/status` on production (checked 08:54): `ai`, `image`, `voice`, `search`, `realtime`, `db` and `gemini` true, `solana` false. Vultr and Tiger Data are entered; .Tech is not (no domain), and its section is gone.
+- `/api/status` on production (checked 09:52): every flag true: `ai`, `image`, `voice`, `search`, `realtime`, `db`, `gemini` and `solana`. Vultr, Tiger Data and Solana are entered; .Tech is not (no domain). The learner credential flow is being checked live (see HANDOFF).
 - Meta model ids: `.env.example` has `muse-spark-1.1`, `muse-image-1.0` and `muse-voice-transcribe-1.0`; check them against `docs/hacktx/AI.md`. Fill in the Muse connector bracket (a custom connector in Muse, or an MCP client only): at 02:00 it had not been tried from Muse (`docs/hacktx/MUSE-CONNECTOR.md`). Confirm Facebook's share dialog opens from a story.
 - The partner calling `ask_peer` with a real key, voice transcription, chat translation and the story cover, each tried once on the deployed site.
 - SerpApi engines that actually ship. Keep Google Lens in "What's next" only.
