@@ -83,7 +83,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-25 06:18 CDT (machine clock).
+- **Updated:** 2026-10-25 07:17 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session). Amar is asleep
   since 22:20 and gave full autonomy for every remaining build phase except Solana and hardware, then at 02:02 a final
   pass on every page (CONTEXT.md §5). The Mac is kept awake by `caffeinate -dimsu -t 54000` (pid 28721, from 23:08,
@@ -104,7 +104,11 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 - **Since gate 3 (driver):** the Lab tools drawer no longer squeezes a lesson's code on a wide screen (`f43d420`,
   dock e2e at 1440 and 1920); PITCH, VIDEO, JUDGE-QA and DEVPOST-WRITEUP checked against the pages at 1920 x 1080 and
   given the gate-3 numbers (`b015738`); the catalogue cards show each board, bench and drone as its figure
-  (`7f72ce5`, `scripts/figure-thumbs.mjs`, axe clean on the three index pages in light and dark). Before the gate:
+  (`7f72ce5`, `scripts/figure-thumbs.mjs`, axe clean on the three index pages in light and dark), and so do the
+  landing's lab cards (`bd80229`). Picking a board variant now draws it: the Uno R4 WiFi, Pico W and 2, Pi 4 and
+  ESP32-S3 v1.0 had kept the default figure, and the R4's matrix and Wi-Fi lessons the Minima (`6f52be5`, e2e test);
+  the engine reports a `set` key it doesn't read (`d851653`); board labels step past each other (`c33432c`); fr and es
+  name the level shifter as the prose does (`00139d6`). All in `docs/verify/gate3.md`. Before the gate:
   the live Uno on the landing page (`ada2a24`), phone-sized figures without legend-less badges (`9898660`), the fly
   range's notes clear of the touch sticks (`569b205`), the drone workshop's progress label (`257daa0`).
 - **Decided:** D1 (tracks). Amar: "Everything else looks fine." Jagrati (16:13): D2 confirmed; D4 keys stay
