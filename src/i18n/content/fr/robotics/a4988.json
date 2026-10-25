@@ -1,0 +1,465 @@
+{
+  "title": "Driver pas à pas A4988",
+  "sub": "réglez la limite de courant, puis faites des pas",
+  "hint": "montez-le, mesurez le potentiomètre, faites tourner un NEMA 17 pas à pas",
+  "overview": "Un moteur pas à pas tourne par pas fixes, 200 par tour pour un NEMA 17, et tient sa position avec ses deux bobines alimentées. L'A4988 fait le plus dur : il commute les deux bobines à travers deux ponts en H dans le bon ordre, un pas pour chaque impulsion sur STEP, dans le sens que fixe DIR, et il limite le courant de chaque bobine avec un hacheur qui surveille la tension sur une résistance de mesure de 0,068 Ω. Cette limite se règle avant que quoi que ce soit ne tourne : la tension sur le rotor métallique du potentiomètre d'ajustage, VREF, donne I_MAX = VREF / (8 x 0,068 Ω), donc 0,544 V au multimètre signifie 1,0 A, à peu près ce que la carte nue supporte sans dissipateur. Montez la carte Pololu, câblez un Nano, le moteur et une LiPo 2S, mesurez le potentiomètre pendant qu'un sketch de maintien garde les bobines alimentées, puis faites tourner le moteur en pas entiers, en demi-pas et en 1/16 de pas. Les pannes sont les classiques : une batterie à l'envers, la broche de reset laissée en l'air, une batterie fatiguée sous 8 V, les paires de bobines mélangées, la limite poussée jusqu'aux 1,68 A du moteur, et le moteur débranché pendant qu'il tourne.",
+  "power": {
+    "label": "Mettez le banc sous tension",
+    "ok": "Nano sur l'USB, LiPo sur VMOT : les bobines sont alimentées et l'axe tient"
+  },
+  "parts": {
+    "U1": {
+      "name": "Driver micropas Allegro A4988",
+      "what": "Un QFN-28 de 5 x 5 mm avec une pastille thermique dessous. À l'intérieur : un traducteur qui transforme les impulsions STEP et DIR en courants de bobine (pas entier, 1/2, 1/4, 1/8 et 1/16 de pas), deux ponts en H DMOS, et un hacheur à temps de coupure fixe par bobine qui régule le courant d'après les résistances de mesure. Alimentation moteur de 8 à 35 V, logique de 3 à 5,5 V, coupure thermique à 165 °C, aucune protection contre l'inversion de polarité."
+    },
+    "RV1": {
+      "name": "Potentiomètre de limite de courant",
+      "what": "Un petit potentiomètre d'ajustage entre VDD et GND à travers une résistance. Son rotor métallique est le nœud VREF : la pointe rouge d'un multimètre se pose donc directement dessus. Le tourner en sens horaire augmente VREF et avec lui la limite de courant : I_MAX = VREF / (8 x 0,068 Ω)."
+    },
+    "RS1": {
+      "name": "Résistance de mesure, bobine 1",
+      "what": "0,068 Ω, marquée R068 sur un corps blanc. Le courant de la bobine 1 la traverse vers la masse ; le hacheur coupe le pont quand la tension à ses bornes atteint VREF / 8."
+    },
+    "RS2": {
+      "name": "Résistance de mesure, bobine 2",
+      "what": "La même pièce de 0,068 Ω pour la bobine 2. Les anciennes cartes utilisaient des résistances de 0,050 Ω à corps vert, ce qui change la formule : vérifiez le marquage avant de vous fier à une table de VREF."
+    },
+    "C1": {
+      "name": "Céramique de 4,7 µF sur VMOT",
+      "what": "Un condensateur céramique 1206 juste aux broches d'alimentation moteur de la puce : il absorbe les fronts rapides du hacheur. Il est trop petit pour encaisser le pic que provoquent de longs fils d'alimentation au branchement : c'est le rôle du 100 µF."
+    },
+    "CAPS": {
+      "name": "Six condensateurs 0603",
+      "what": "Le découplage de VDD et VMOT, les condensateurs de la pompe de charge qui permettent à la puce de piloter ses interrupteurs côté haut, et le condensateur du régulateur interne."
+    },
+    "RES": {
+      "name": "Quatre résistances 0603",
+      "what": "La pull-up de SLP, la pull-down d'EN (pour que les sorties soient actives par défaut), la résistance du temps de coupure et le haut du pont diviseur de VREF."
+    },
+    "H1": {
+      "name": "Connecteur de commande",
+      "what": "Depuis le côté du potentiomètre : DIR, STEP, SLP, RST, MS3, MS2, MS1, EN. MS1 à MS3 ont des pull-down dans la puce : laissées en l'air, elles signifient pas entier. EN est tirée à l'état bas : les sorties sont donc actives sauf si vous la mettez à l'état haut."
+    },
+    "H2": {
+      "name": "Connecteur d'alimentation et du moteur",
+      "what": "Depuis le côté du potentiomètre : GND, VDD, 1B, 1A, 2A, 2B, GND, VMOT. Une bobine va sur 1A et 1B, l'autre sur 2A et 2B. Les noms des broches ne sont imprimés que sur la face inférieure."
+    },
+    "LINK": {
+      "name": "Cavalier de RST vers SLP",
+      "what": "La carte tire SLP à l'état haut mais laisse RST en l'air. Ce cavalier relie RST à SLP : RST est ainsi maintenue à l'état haut et le driver sort du reset."
+    },
+    "CB": {
+      "name": "Électrolytique de 100 µF sur VMOT",
+      "what": "Le schéma de câblage de Pololu place 100 µF entre VMOT et GND, près de la carte, bande côté GND. Sans lui, l'inductance des fils d'alimentation et la petite céramique entrent en résonance au branchement, et le pic peut dépasser 35 V même avec une alimentation de 12 V."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "Produit les impulsions : STEP sur D3, DIR sur D4, MS1 à MS3 sur D5 à D7. Sa broche 5 V alimente le VDD du driver et son GND rejoint celui du driver et de la batterie."
+    },
+    "MOT": {
+      "name": "Moteur pas à pas NEMA 17",
+      "what": "SY42STH38-1684A : 42,3 mm de côté, 38 mm de long, 200 pas par tour, 1,68 A et 1,65 Ω par phase, 36 N·cm de couple de maintien. Le noir et le vert forment une bobine (2B et 2A), le rouge et le bleu l'autre (1A et 1B)."
+    },
+    "BATT": {
+      "name": "LiPo 2S",
+      "what": "7,4 V nominal, 8,4 V pleine. L'A4988 a besoin d'au moins 8 V sur VMOT : une batterie 2S ne fonctionne donc tout juste que lorsqu'elle est fraîche. Une batterie 3S ou une alimentation de 12 V est un meilleur choix."
+    },
+    "MM": {
+      "name": "Multimètre de poche",
+      "what": "Sur le calibre 2 V continu, pointe rouge sur le rotor du potentiomètre, noire sur une broche GND. Il lit VREF directement : c'est ainsi qu'on règle la limite de courant sans mesurer le courant du moteur."
+    }
+  },
+  "modes": {
+    "vref": {
+      "title": "Maintien, réglage de Vref"
+    },
+    "full": {
+      "title": "Pas entier, 1 tour par seconde"
+    },
+    "half": {
+      "title": "Demi-pas"
+    },
+    "micro": {
+      "title": "1/16 de pas, un quart de tour par seconde"
+    },
+    "code": {
+      "title": "A4988 : une impulsion sur STEP fait un pas, DIR choisit le sens",
+      "pins": "STEP et DIR",
+      "ms": "MS1, MS2 et MS3 choisissent la taille du pas",
+      "pulses": "n impulsions, chacune HIGH puis LOW pendant halfUs microsecondes",
+      "full": "toutes à LOW : pas entier, 200 pas par tour",
+      "half": "MS1 à HIGH : demi-pas, 400 pas par tour",
+      "micro": "toutes à HIGH : 1/16 de pas, 3200 pas par tour",
+      "wake": "la puce a besoin de 1 ms après le réveil avant le premier pas",
+      "hold": "pas d'impulsions : les deux bobines restent alimentées et l'axe tient"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Démontez jusqu'à la carte nue",
+      "body": "Partez de la carte verte nue : 15,24 x 20,32 mm, angles droits, pas de trous de fixation, seize trous métallisés le long des deux grands côtés. Tout se remet dans l'ordre de l'usine.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    },
+    "smd": {
+      "title": "Posez et refondez les composants montés en surface",
+      "body": "Pâte, placement, refusion : l'A4988 au milieu, le potentiomètre d'ajustage à une extrémité, les deux résistances de mesure R068 le long du côté moteur, la céramique de 4,7 µF près de VMOT, et les six condensateurs 0603 et les quatre résistances 0603 autour de la puce. La pastille thermique sous l'A4988 est soudée elle aussi : c'est le principal chemin de la chaleur de la puce vers la carte.",
+      "refusal": "Démontez d'abord la carte"
+    },
+    "headers": {
+      "title": "Posez les deux connecteurs",
+      "body": "Deux connecteurs mâles 1 x 8, broches longues vers le haut pour que des fils de liaison femelles s'enfichent dessus. La commande sur un bord (DIR, STEP, SLP, RST, MS3, MS2, MS1, EN), l'alimentation et le moteur sur l'autre (GND, VDD, 1B, 1A, 2A, 2B, GND, VMOT).",
+      "refusal": "Faites d'abord la refusion des composants montés en surface"
+    },
+    "solder": {
+      "title": "Soudez les 16 broches des connecteurs",
+      "body": "Une soudure par broche, chacune en cône propre. Une soudure froide sur une broche du moteur est pire qu'elle n'en a l'air : chaque fois qu'elle s'ouvre, c'est comme débrancher le moteur sous tension.",
+      "refusal": "Posez d'abord les deux connecteurs"
+    },
+    "link-cap": {
+      "title": "Posez le cavalier RST-SLP et le 100 µF",
+      "body": "Un cavalier entre RST et SLP : RST est en l'air sur cette carte, et la pull-up de SLP la maintient à l'état haut à travers le cavalier. Puis l'électrolytique de 100 µF entre VMOT et GND, bande côté GND, couché sur le tapis, ses pattes sur les deux broches.",
+      "refusal": "Soudez d'abord les connecteurs"
+    },
+    "wire-nano": {
+      "title": "Câblez le Nano",
+      "body": "D3 sur STEP, D4 sur DIR, D5, D6 et D7 sur MS1, MS2 et MS3, le 5V du Nano sur VDD et GND sur GND.",
+      "refusal": "Terminez d'abord la carte : les deux connecteurs soudés, le cavalier et le 100 µF en place"
+    },
+    "wire-motor": {
+      "title": "Branchez le moteur",
+      "body": "Les quatre fils dans l'ordre sur 2B, 2A, 1A, 1B : le noir et le vert forment une bobine, le rouge et le bleu l'autre. Faites-le hors tension, toujours.",
+      "refusal": "Câblez d'abord le Nano"
+    },
+    "wire-battery": {
+      "title": "Câblez la LiPo",
+      "body": "Le rouge sur VMOT, le noir sur le GND voisin. Une batterie 2S pleine donne 8,4 V, juste au-dessus du minimum de 8 V de l'A4988.",
+      "refusal": "Branchez d'abord le moteur"
+    },
+    "wire-meter": {
+      "title": "Posez le multimètre sur le potentiomètre",
+      "body": "Sélecteur sur 2 V continu. Pointe rouge sur le rotor métallique du potentiomètre d'ajustage, pointe noire sur une broche GND. Il lit VREF dès que VDD est présent.",
+      "refusal": "Câblez d'abord la LiPo"
+    },
+    "plug": {
+      "title": "Mettez le banc sous tension",
+      "body": "L'USB dans le Nano, la batterie allumée. Le sketch de maintien démarre : les deux bobines sont alimentées et l'axe tient. Le multimètre lit environ 0,30 V, soit une limite de 0,55 A, le réglage de sortie d'usine du potentiomètre.",
+      "refusal": "Terminez d'abord le montage : chaque composant posé, chaque soudure faite et tout ce qui est sur le tapis câblé"
+    },
+    "vref": {
+      "title": "Réglez la limite de courant",
+      "body": "Pendant que le sketch de maintien tourne, tournez le potentiomètre en sens horaire et regardez le multimètre monter. Arrêtez-vous à 0,544 V : 0,544 / (8 x 0,068) = 1,0 A. Chaque bobine tient alors à 0,71 A, et la carte nue reste bien en deçà de sa coupure thermique.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "full": {
+      "title": "Pas entier",
+      "body": "MS1 à MS3 à LOW. Le sketch envoie 200 impulsions espacées de 5 ms, un tour en une seconde, puis attend une seconde avec les bobines alimentées. Chaque impulsion fait tourner l'axe de 1,8° : vous entendez chacune d'elles.",
+      "refusal": "Réglez d'abord la limite de courant"
+    },
+    "half": {
+      "title": "Demi-pas",
+      "body": "MS1 à HIGH. Les mêmes impulsions de 5 ms font maintenant tourner de 0,9° chacune : 400 font donc un tour et l'axe va deux fois moins vite. Un pas sur deux, une bobine est coupée et l'autre est à la pleine limite.",
+      "refusal": "Lancez d'abord le sketch en pas entier"
+    },
+    "micro": {
+      "title": "1/16 de pas",
+      "body": "MS1, MS2 et MS3 à HIGH : 3200 impulsions par tour, 0,1125° chacune. Le sketch envoie une impulsion toutes les 1,25 ms (625 µs à l'état haut, 625 µs à l'état bas), 800 par seconde, un quart de tour par seconde. Les courants des bobines suivent un sinus et un cosinus, et l'axe glisse au lieu de cliqueter.",
+      "refusal": "Lancez d'abord le sketch en demi-pas"
+    },
+    "lipo-backwards": {
+      "title": "Branchez la LiPo à l'envers",
+      "body": "Le noir sur VMOT, le rouge sur GND. Rien sur cette carte ne l'empêche : le courant traverse à l'envers les diodes intrinsèques des interrupteurs du pont, directement en travers de la batterie. Réparez et remettez sous tension."
+    },
+    "cap-backwards": {
+      "title": "Posez le 100 µF à l'envers",
+      "body": "Bande côté VMOT. Un électrolytique inversé conduit, chauffe et dégaze. Réparez et remettez sous tension."
+    },
+    "no-link": {
+      "title": "Laissez le cavalier RST-SLP de côté",
+      "body": "Sans le cavalier, RST est en l'air. Le driver reste en reset : pas de courant dans les bobines, l'axe tourne librement à la main, et les impulsions ne vont nulle part. Remettez le cavalier et remettez sous tension."
+    },
+    "tired-pack": {
+      "title": "Faites tourner sur une batterie fatiguée",
+      "body": "La batterie est descendue à 7,4 V, sa tension nominale, sous le minimum de 8 V de l'A4988. Lancez le sketch en pas entier et regardez l'axe prendre du retard. Réparez et remettez sous tension."
+    },
+    "coils-mixed": {
+      "title": "Mélangez les paires de bobines",
+      "body": "Le vert et le rouge inversés : chaque paire de sorties pilote maintenant la moitié d'une bobine et la moitié de l'autre. Le moteur bourdonne sur place et ne tourne pas. Remettez les fils dans l'ordre et remettez sous tension."
+    },
+    "limit-too-high": {
+      "title": "Poussez la limite à 1,68 A",
+      "body": "Le moteur est prévu pour 1,68 A, alors pourquoi pas ? Le multimètre lit 0,914 V. Lancez le sketch en pas entier et regardez la température de la puce dépasser 150 °C jusqu'à ce que la coupure thermique intervienne à 165 °C. Réparez et remettez sous tension."
+    },
+    "unplug-live": {
+      "title": "Débranchez le moteur pendant qu'il tourne",
+      "body": "Retirez la fiche du moteur pendant que les bobines sont parcourues par le courant. Réparez et remettez sous tension."
+    },
+    "exploded": {
+      "title": "Vue éclatée",
+      "body": "Démontez tout en l'air : la carte, la puce et ses composants passifs, les connecteurs, le condensateur et le cavalier, et tout ce qui est sur le tapis.",
+      "refusal": "Cassez et réparez d'abord tout"
+    }
+  },
+  "faults": {
+    "reverse-polarity": {
+      "title": "LiPo branchée à l'envers",
+      "symptom": "Un claquement venant de la puce, les fils de la batterie chauffent, et le driver est mort ensuite.",
+      "explanation": "Pololu n'indique aucune protection contre la tension inverse. Chaque interrupteur du pont a une diode intrinsèque orientée de GND vers VMOT ; à l'envers, ces diodes conduisent et court-circuitent la batterie à travers la puce. Une LiPo peut fournir des dizaines d'ampères, bien plus que ce que les diodes supportent.",
+      "fix": "Vérifiez le rouge sur VMOT avant de brancher, utilisez un connecteur à détrompeur, ou ajoutez une diode en série ou un MOSFET de protection contre l'inversion sur l'alimentation."
+    },
+    "cap-reversed": {
+      "title": "Électrolytique de 100 µF à l'envers",
+      "symptom": "Le condensateur chauffe, gonfle et dégaze avec un sifflement.",
+      "explanation": "Un électrolytique ne tient la tension que dans un sens. À l'envers, la couche d'oxyde claque, il conduit, chauffe, et l'évent de surpression sur son dessus s'ouvre.",
+      "fix": "La bande (moins) côté GND, la patte longue côté VMOT. Remplacez un condensateur qui a été monté à l'envers, même s'il paraît intact."
+    },
+    "no-link": {
+      "title": "RST en l'air",
+      "symptom": "L'alimentation est là et le Nano envoie des impulsions, mais les bobines sont coupées : l'axe tourne librement à la main.",
+      "explanation": "Sur cette carte, RST n'a pas de pull-up à elle. En l'air, elle reste à l'état bas ou divague, et tant que RST est à l'état bas, le traducteur est maintenu en position Home et les sorties sont coupées.",
+      "fix": "Remettez le cavalier entre RST et SLP, ou mettez RST à l'état haut depuis une broche."
+    },
+    "tired-pack": {
+      "title": "VMOT sous 8 V",
+      "symptom": "Le moteur hoquette et prend du retard sur les impulsions : il rate des pas et finit ailleurs que là où le sketch le croit.",
+      "explanation": "L'A4988 est spécifié à partir de 8 V sur VMOT. Une batterie 2S fait 8,4 V pleine mais passe sous 8 V bien avant d'être vide. En dessous, la puce est hors de ses caractéristiques : les sorties décrochent et des pas sont perdus. Un moteur pas à pas n'a pas de capteur : rien ne s'en aperçoit.",
+      "fix": "Utilisez une batterie 3S ou une alimentation de 12 V, et arrêtez-vous avant que la batterie ne s'affaisse."
+    },
+    "coils-mixed": {
+      "title": "Paires de bobines mélangées",
+      "symptom": "Le moteur bourdonne et tremble sur place, mais ne tourne pas.",
+      "explanation": "Chaque pont en H doit piloter les deux extrémités d'une même bobine. Avec le vert et le rouge inversés, chaque pont pilote une extrémité de chaque bobine, les deux champs se combattent et le rotor oscille entre deux positions.",
+      "fix": "Trouvez les paires au multimètre : quelques ohms entre les deux fils d'une même bobine, circuit ouvert entre deux bobines. Puis une paire sur 1A et 1B, l'autre sur 2A et 2B."
+    },
+    "limit-too-high": {
+      "title": "Limite de courant trop haute",
+      "symptom": "La carte devient trop chaude pour être touchée, puis le moteur s'arrête, repart quelques secondes plus tard et s'arrête à nouveau.",
+      "explanation": "À 1,68 A, les deux chemins de bobine dissipent environ 1,8 W dans la puce, I² fois environ 0,64 Ω, davantage à mesure qu'elle chauffe. La carte nue ne peut pas évacuer cela : la puce atteint 165 °C, la coupure thermique coupe les sorties, elle refroidit de 15 °C et repart. Pololu place la limite sans dissipateur à environ 1 A par bobine.",
+      "fix": "Ramenez VREF à 0,544 V (1,0 A). Pour plus de courant, ajoutez un dissipateur et de la ventilation."
+    },
+    "unplug-live": {
+      "title": "Moteur débranché sous tension",
+      "symptom": "Une petite étincelle à la fiche, le moteur devient mou, et le driver ne le fait plus jamais bouger.",
+      "explanation": "Le courant d'une bobine ne peut pas s'arrêter d'un coup. Ouvrir le circuit l'y oblige, et la bobine répond par un pic de tension, L x di/dt, bien au-delà des 35 V que supportent les sorties de l'A4988. Pololu avertit que cela peut détruire le driver, souvent sans trace visible.",
+      "fix": "Ne branchez ou ne débranchez le moteur que hors tension. Vérifiez les fiches du moteur et les soudures des connecteurs : une fiche lâche fait la même chose."
+    }
+  },
+  "status": {
+    "status": "État",
+    "powered": "Alimentation du banc",
+    "mode": "Sketch",
+    "step": "STEP",
+    "dir": "DIR",
+    "ms1": "MS1",
+    "vref": "VREF (multimètre)",
+    "limit": "Limite de courant",
+    "coil": "Chaque bobine",
+    "chip": "Puce (°C)",
+    "vmot": "VMOT (alimentation moteur)",
+    "rpm": "Vitesse de l'axe",
+    "shaft": "Angle de l'axe",
+    "battery": "Courant batterie",
+    "usb": "Courant USB"
+  },
+  "current": {
+    "usb": "USB du Nano (polyfusible de 500 mA)",
+    "lipo": "LiPo 2S sur VMOT",
+    "nano": "Nano en fonctionnement",
+    "logic": "Logique de l'A4988 sur VDD",
+    "quiescent": "Courant d'alimentation côté moteur de l'A4988",
+    "coils": "Bobines à une limite de 1,0 A, à travers le hacheur",
+    "coilsHigh": "Bobines à une limite de 1,68 A",
+    "capShort": "100 µF qui conduit à l'envers",
+    "reverse": "Batterie inversée à travers les diodes intrinsèques du pont"
+  },
+  "tasks": {
+    "turn-and-back": {
+      "title": "Un tour et retour",
+      "brief": "Pas entier, broches MS en l'air. Faites tourner l'axe d'exactement un tour en avant (DIR sur D4 à HIGH, 200 impulsions sur D3, chacune 2500 µs à l'état haut et 2500 µs à l'état bas), affichez \"one turn\", attendez 500 ms, puis mettez DIR à LOW, revenez au point de départ en 200 impulsions et affichez \"home\".",
+      "hints": {
+        "1": "200 pas entiers de 1,8° font 360°. Chaque impulsion : digitalWrite(STEP, HIGH); delayMicroseconds(2500); digitalWrite(STEP, LOW); delayMicroseconds(2500);",
+        "2": "Mettez la boucle d'impulsions dans une fonction, steps(int n), et appelez-la deux fois.",
+        "3": "Changez DIR entre les deux mouvements, avant la première impulsion du retour."
+      },
+      "checks": {
+        "1": "Tourne 3 s",
+        "2": "DIR (D4) est à HIGH à l'aller",
+        "3": "STEP (D3) envoie une impulsion toutes les 5 ms, environ 400 fois",
+        "4": "Affiche \"one turn\" après la première seconde",
+        "5": "DIR est à LOW au retour",
+        "6": "Affiche \"home\""
+      },
+      "code": {
+        "goal": "Un tour en avant, afficher \"one turn\", attendre 500 ms, un tour en arrière, afficher \"home\"",
+        "start": "seulement un demi-tour pour l'instant, et pas de retour"
+      }
+    },
+    "quarter-turn": {
+      "title": "Un quart de tour par seconde, en 1/16 de pas",
+      "brief": "Mettez MS1, MS2 et MS3 (D5, D6, D7) à HIGH pour le 1/16 de pas. Puis envoyez des impulsions sur STEP à 800 par seconde, 625 µs à l'état haut et 625 µs à l'état bas, pour que l'axe fasse un quart de tour chaque seconde, et affichez \"1 turn\" toutes les 3200 impulsions.",
+      "hints": {
+        "1": "Le 1/16 de pas demande les trois broches MS à HIGH, réglées une fois dans setup().",
+        "2": "Un quart de tour fait 800 micropas ; 800 par seconde, c'est un toutes les 1250 µs, donc 625 µs à l'état haut et 625 µs à l'état bas.",
+        "3": "Comptez 3200 impulsions dans une boucle for, puis affichez. 3200 x 1,25 ms = 4 s par tour."
+      },
+      "checks": {
+        "1": "Tourne 4,3 s",
+        "2": "MS1 (D5) est à HIGH",
+        "3": "MS2 (D6) est à HIGH",
+        "4": "MS3 (D7) est à HIGH",
+        "5": "STEP (D3) envoie une impulsion toutes les 1,25 ms, au moins 3000 fois",
+        "6": "Affiche \"1 turn\" au bout de 4 s"
+      },
+      "code": {
+        "goal": "1/16 de pas à un quart de tour par seconde : 3200 impulsions espacées de 1250 µs, puis afficher \"1 turn\"",
+        "fast": "150 µs dans chaque sens en pas entier : un peu plus de quatre tours par seconde, et les broches MS ne sont jamais réglées"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "rst": {
+        "q": "Que fait le cavalier entre RST et SLP ?",
+        "options": {
+          "1": "Il choisit le mode pas entier",
+          "2": "Il maintient RST à l'état haut grâce à la pull-up de SLP, pour que le driver sorte du reset",
+          "3": "Il relie les deux broches GND"
+        },
+        "why": "RST est en l'air sur cette carte. Avec RST à l'état bas, le traducteur est maintenu en position Home et les sorties restent coupées ; le cavalier emprunte la pull-up de SLP pour la maintenir à l'état haut."
+      },
+      "bulk": {
+        "q": "Pourquoi un condensateur de 100 µF se place-t-il entre VMOT et GND ?",
+        "options": {
+          "1": "Pour absorber le pic que provoquent les fils d'alimentation au branchement, qui peut dépasser 35 V même depuis 12 V",
+          "2": "Pour régler la limite de courant",
+          "3": "Pour permettre à la carte de fonctionner en 5 V"
+        },
+        "why": "L'inductance des fils et la céramique de 4,7 µF forment un circuit résonant. L'électrolytique l'amortit et maintient VMOT stable pendant que le hacheur commute."
+      },
+      "labels": {
+        "q": "Où les noms des broches sont-ils imprimés sur cette carte ?",
+        "options": {
+          "1": "À côté de chaque broche sur le dessus",
+          "2": "Sur la puce",
+          "3": "Seulement sur la face inférieure"
+        },
+        "why": "Le dessus est couvert de composants ; les noms sont sur la sérigraphie du dessous. Vérifiez l'ordre des broches avant que la carte ne se retrouve à l'envers ou tournée."
+      }
+    },
+    "limit": {
+      "formula": {
+        "q": "Le multimètre lit 0,544 V sur le potentiomètre. Quelle limite de courant cela donne-t-il ?",
+        "options": {
+          "1": "1,0 A : 0,544 / (8 x 0,068)",
+          "2": "0,544 A : un ampère par volt",
+          "3": "8 A : huit fois VREF"
+        },
+        "why": "I_MAX = VREF / (8 x R_sense), et les résistances de mesure font 0,068 Ω : 0,544 V donnent donc 1,0 A."
+      },
+      "coil": {
+        "q": "Avec une limite de 1,0 A en pas entier, quel courant porte chaque bobine pendant que l'axe tient ?",
+        "options": {
+          "1": "1,0 A chacune",
+          "2": "0,5 A chacune : la limite est partagée",
+          "3": "Environ 0,71 A chacune : le pas entier met 70,7 % de la limite dans les deux bobines"
+        },
+        "why": "En pas entier, les deux bobines sont alimentées à 70,71 % d'I_MAX, le point à 45° de la table de sinus. C'est pourquoi la mesure d'une bobine donne moins que la limite."
+      },
+      "vdd": {
+        "q": "Vous réglez 0,544 V avec la logique en 5 V, puis vous alimentez la logique en 3,3 V. Qu'arrive-t-il à la limite ?",
+        "options": {
+          "1": "Rien : VREF est fixe une fois réglée",
+          "2": "Elle baisse d'environ un tiers : le potentiomètre divise VDD, VREF baisse donc avec lui",
+          "3": "Elle double"
+        },
+        "why": "VREF vient d'un pont diviseur sur VDD. Réglez-la à nouveau avec le VDD que vous utiliserez vraiment."
+      }
+    },
+    "steps": {
+      "pulses": {
+        "q": "MS1, MS2 et MS3 sont toutes à HIGH. Combien d'impulsions STEP font faire un tour à un moteur de 200 pas ?",
+        "options": {
+          "1": "200",
+          "2": "3200",
+          "3": "16"
+        },
+        "why": "Les trois à l'état haut, c'est le 1/16 de pas : 200 x 16 = 3200 impulsions, de 0,1125° chacune."
+      },
+      "timing": {
+        "q": "Le sketch en 1/16 tient STEP 625 µs à l'état haut et 625 µs à l'état bas. À quelle vitesse tourne l'axe ?",
+        "options": {
+          "1": "Un quart de tour par seconde : 800 impulsions par seconde, 3200 par tour",
+          "2": "Un tour par seconde",
+          "3": "Seize tours par seconde"
+        },
+        "why": "Une impulsion toutes les 1250 µs, cela fait 800 par seconde. À 3200 par tour, cela donne 0,25 tour par seconde, 15 tr/min."
+      },
+      "ms": {
+        "q": "Pourquoi le 1/16 de pas est-il plus doux que le pas entier à la même vitesse ?",
+        "options": {
+          "1": "Le moteur reçoit plus de tension",
+          "2": "La puce coupe une bobine",
+          "3": "Les courants des bobines suivent un sinus par petits pas : le rotor est entraîné au lieu de sauter de 1,8° à la fois"
+        },
+        "why": "Chaque micropas déplace un peu l'équilibre entre les courants des deux bobines : le champ magnétique tourne donc par petits incréments."
+      }
+    },
+    "faults": {
+      "unplug": {
+        "q": "Pourquoi débrancher le moteur pendant qu'il tourne tue-t-il l'A4988 ?",
+        "options": {
+          "1": "Le courant de la bobine ne peut pas s'arrêter d'un coup ; le couper force un pic de tension, L x di/dt, bien au-delà de ce que les sorties supportent",
+          "2": "Le moteur court-circuite VMOT avec GND",
+          "3": "Le Nano envoie trop d'impulsions"
+        },
+        "why": "Une inductance s'oppose à tout changement de son courant. Coupez le chemin et la tension monte jusqu'à ce que quelque chose conduise, et ce quelque chose, c'est l'étage de sortie de la puce."
+      },
+      "hot": {
+        "q": "La limite est aux 1,68 A du moteur et la carte n'a pas de dissipateur. Que fait le moteur ?",
+        "options": {
+          "1": "Il tourne avec plus de couple, aussi longtemps que vous voulez",
+          "2": "Il s'arrête aussitôt et ne tourne plus jamais",
+          "3": "Il tourne, s'arrête quand la puce atteint 165 °C, repart quand elle a refroidi de 15 °C : il hoquette"
+        },
+        "why": "La coupure thermique protège la puce, mais pas votre position : chaque pause fait perdre des pas."
+      },
+      "tired": {
+        "q": "La batterie 2S est descendue à 7,4 V. Qu'est-ce qui ne va pas ?",
+        "options": {
+          "1": "Rien : la tension nominale du moteur n'est que de 2,8 V",
+          "2": "VMOT est sous le minimum de 8 V de l'A4988 : les sorties décrochent et des pas sont perdus",
+          "3": "Le Nano se réinitialise"
+        },
+        "why": "Le hacheur a besoin d'une tension d'alimentation bien au-dessus de la chute propre de la bobine pour y injecter le courant rapidement. Sous 8 V, la puce est hors de ses caractéristiques."
+      }
+    },
+    "end": {
+      "vs-l298n": {
+        "q": "Pourquoi piloter un moteur pas à pas avec un A4988 plutôt qu'avec un L298N ?",
+        "options": {
+          "1": "Il est plus gros et plus facile à souder",
+          "2": "Il limite lui-même le courant des bobines et fait la séquence des pas : deux broches, STEP et DIR, au lieu de quatre, et le micropas en prime",
+          "3": "Il n'a pas besoin d'alimentation moteur"
+        },
+        "why": "Le L298N n'a pas de régulation de courant : un moteur de faible résistance sur une alimentation élevée surchauffe. L'A4988 hache le courant à la limite que vous réglez."
+      },
+      "lost": {
+        "q": "Un moteur pas à pas n'a pas de capteur. Comment le Nano sait-il où est l'axe ?",
+        "options": {
+          "1": "Il compte les impulsions qu'il a envoyées ; un pas raté est perdu pour de bon jusqu'à la prochaine prise d'origine",
+          "2": "L'A4988 lui indique l'angle",
+          "3": "Le moteur renvoie des impulsions"
+        },
+        "why": "C'est pourquoi les imprimantes 3D et les machines CNC font leur prise d'origine contre un interrupteur au démarrage, et pourquoi les pas ratés se voient sous forme de couches décalées."
+      },
+      "supply": {
+        "q": "Quelle alimentation convient le mieux à ce moteur et à ce driver ?",
+        "options": {
+          "1": "Une LiPo 1S, 3,7 V",
+          "2": "Une LiPo 2S, 7,4 V",
+          "3": "Une LiPo 3S ou du 12 V : bien à l'intérieur de 8 à 35 V, avec de la marge pour la vitesse"
+        },
+        "why": "Une alimentation plus élevée injecte le courant plus vite dans les bobines : le couple tient donc à haute vitesse, et le hacheur maintient de toute façon le courant à la limite."
+      }
+    }
+  }
+}
