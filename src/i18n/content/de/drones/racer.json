@@ -1,0 +1,346 @@
+{
+  "title": "5-Zoll-Racing-Quad",
+  "tagline": "Ein Stretched-X-Gate-Racer an 4S: leicht, schnell, im Acro-Modus auf Raceband mit 25 mW geflogen.",
+  "sub": "Betaflight + Race-VTX",
+  "hint": "Bau einen Gate-Racer, stell seinen Kanal ein und flieg dann das Rennen auf der Vereinsstrecke",
+  "noun": "Racing-Quad",
+  "overview": "Ein Race-Quad ist ein 5-Zoll-FPV-Quad, der auf eine einzige Aufgabe reduziert ist: schneller als alle anderen im Heat um eine Gate-Strecke zu kommen. Mit einem 4S-Akku mit 1300 mAh wiegt er etwa 440 g und hat ein Schub-Gewichts-Verhältnis von fast 14:1, also verbringt er den Großteil einer Runde stark nach vorn geneigt bei Vollgas. Der Rahmen ist ein Stretched X, länger als breit, damit die hinteren Propeller bei hohem Tempo saubere Luft greifen. Der Pilot fliegt im Acro-Modus mit einer analogen Brille, weil analoges Video die geringste Verzögerung hat und alle Piloten sich Raceband teilen. Der VTX läuft mit 25 mW auf dem Kanal, den die Rennleitung vergibt, damit vier bis acht Quads zusammen fliegen können. LED-Streifen in der Farbe des Piloten helfen Spottern und Zeitnehmern, die Quads auseinanderzuhalten. Wähl hier die Teile und beobachte die Zahlen, bau ihn, mach die Sicherheitstests und flieg dann das Rennen auf der Vereinsstrecke.",
+  "practice": "Lern die Vereinsstrecke im Rennmodus (Angle), bis du alle sechs Gates sauber durchfliegst, dann wechsle zum Acro-Rennen und jag drei Runden hintereinander unter der Sollzeit, so wie ein MultiGP-Qualifier sie zählt. Bei einem echten Bau: Setz beim ersten Einstecken einen Smoke Stopper dazwischen, prüf ohne Propeller die Motordrehrichtung, teste den Empfänger und den Failsafe (ohne Propeller, Fernsteuerung aus: Die Motoren müssen stoppen), und stell deinen VTX auf deinen zugeteilten Kanal mit 25 mW, bevor du in der Boxengasse einsteckst. Lande bei etwa 3,5 V pro Zelle; ein Race-Akku hält im Renntempo zwei bis drei Minuten.",
+  "design": {
+    "fixed": {
+      "FRAME": "Stretched-X-Race-Rahmen, 4-mm-Arme",
+      "ESC": "55-A-4-in-1-ESC (AM32)",
+      "FC": "F7-Flugcontroller, 20 x 20 mm",
+      "CAM": "Nano-Kamera mit geringer Latenz",
+      "VTX": "Race-VTX mit 25-200 mW",
+      "RX": "ExpressLRS-Empfänger 2,4 GHz",
+      "LED": "LED-Streifen WS2812B",
+      "XT60": "XT60-Kabel und Low-ESR-Kondensator",
+      "TOP": "Deckplatte, Abstandsbolzen und Schrauben",
+      "STRAP": "Akkugurt und rutschfestes Pad"
+    },
+    "verdict": {
+      "over": "{kv} KV an {cells}S drehen die Propeller weit über das hinaus, was Motoren und ESC überleben. Flieg Rennen an 4S mit etwa 2500 KV oder an 6S mit etwa 1950 KV.",
+      "weak": "Ein Schub-Gewichts-Verhältnis von {tw}:1 ist zu zahm für Rennen (ziel auf 12:1 oder mehr). Ein 6S-Motor an 4S fühlt sich an, als würdest du durch Sirup fliegen.",
+      "ok": "Rennbereit: {tw}:1 Schub zu Gewicht. Meldet sich unten die ESC-Prüfung, geht es um Reserve bei Vollgas: Ein sanfterer Propeller oder ein größerer ESC behebt das."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Stretched-X-Race-Rahmen aus Carbon",
+      "what": "Vier 4-mm-Carbonarme an einer schmalen Mittelplatte, die Motoren auf einem Rechteck von 172 mm Länge und 140 mm Breite (221,8 mm von Motor zu Motor). Das gestreckte X setzt die hinteren Propeller weiter hinter die vorderen, sodass sie bei starker Vorwärtsneigung weniger vom Abwind der vorderen Propeller abbekommen und der Quad bei hohem Tempo geradeaus läuft. Carbon leitet: Halt blanke Drähte davon fern."
+    },
+    "MOTORS": {
+      "name": "4 Race-Motoren (2207, 2500 KV)",
+      "what": "Bürstenlose Außenläufer mit einem 22 mm breiten, 7 mm hohen Stator und 14 Magneten in der Glocke. 2500 KV an einem 4S-Akku (nominal 14,8 V) ergeben ohne Last etwa 37.000 U/min, genug, um einen 5-Zoll-Propeller so kräftig zu ziehen, dass 14:1 Schub zu Gewicht herauskommen. Derselbe Motor an 6S würde die Propeller weit über das hinaus drehen, was sie und der ESC überleben."
+    },
+    "ESC": {
+      "name": "55-A-4-in-1-ESC (AM32), 20 x 20 mm",
+      "what": "Vier Drehzahlregler auf einer kleinen Platine; jeder schaltet MOSFETs, um aus dem Gleichstrom des Akkus eine dreiphasige Ansteuerung für seinen Motor zu machen, nach den DShot600-Befehlen des Flugcontrollers. Er läuft mit AM32-Firmware und meldet mit bidirektionalem DShot die Drehzahl jedes Motors über denselben Draht an den RPM-Filter. Ein Race-ESC ist für die Punch-outs ausgelegt: Der Rechner vergleicht den Vollgasstrom jedes Motors mit den 55 A Nennstrom."
+    },
+    "WIRES": {
+      "name": "Motordrähte, kurz geschnitten und angelötet",
+      "what": "Drei Phasendrähte pro Motor, am Arm entlang auf Länge geschnitten und an die Pads dieses Motors auf dem ESC gelötet. Kurze Drähte sparen Gewicht und verhaken sich bei einem Crash seltener. In jeder Reihenfolge der drei dreht der Motor; vertauschst du zwei, dreht er andersherum."
+    },
+    "XT60": {
+      "name": "XT60-Pigtail + Low-ESR-Kondensator 1000 µF 35 V",
+      "what": "Das Akkukabel (14 AWG, männlicher XT60 am Quad) und ein Low-ESR-Elektrolytkondensator über den Akku-Pads des ESC. Der Kondensator schluckt die Spannungsspitzen von harten Punches und Bremsmanövern, die sonst MOSFETs töten und Störungen auf Gyro und Video bringen würden. Sein weißer Streifen markiert das Minus-Bein: Verkehrt herum platzt er beim ersten Einstecken auf oder explodiert."
+    },
+    "FC": {
+      "name": "F7-Flugcontroller, 20 x 20 mm",
+      "what": "Ein STM32F722 mit Gyro, analogem OSD-Chip und Reglern für 5 V und 9 V, auf dem Betaflight läuft. Er liest die Knüppel vom Empfänger, führt tausende Male pro Sekunde den PID-Regelkreis aus und schickt DShot600 an den ESC. Der aufgedruckte Pfeil muss zur Nase zeigen, oder die Einstellung zur Board-Ausrichtung muss etwas anderes sagen; ein Race-Quad hat weder GPS noch Barometer, also auch kein Höhe halten."
+    },
+    "VTX": {
+      "name": "Race-VTX mit 25-200 mW (SmartAudio)",
+      "what": "Der analoge 5,8-GHz-Videosender oben auf dem Stack. Er schickt das Kamerabild mit darübergelegtem OSD an deine Brille. Der Flugcontroller stellt über SmartAudio Band, Kanal und Leistung ein, sodass die Rennleitung jeden Piloten auf einen eigenen Raceband-Kanal mit 25 mW setzen kann. Der Pit-Modus senkt die Leistung auf fast nichts, während du in der Boxengasse einsteckst."
+    },
+    "CAM": {
+      "name": "Nano-Kamera mit geringer Latenz, 40° Uptilt",
+      "what": "Eine 14-mm-Analogkamera zwischen zwei Seitenplatten an der Nase, 40° nach oben geneigt. Ein Race-Quad fliegt bei hohem Tempo mit gesenkter Nase, also muss die Kamera nach oben schauen, um das nächste Gate zu sehen; je mehr Tempo, desto mehr Uptilt. Analoges Video kommt mit wenigen Millisekunden Verzögerung vom Objektiv zur Brille, und das zählt bei 100 km/h mehr als die Bildqualität."
+    },
+    "RX": {
+      "name": "ELRS-Empfänger 2,4 GHz (CRSF)",
+      "what": "Ein ExpressLRS-Empfänger an UART2, der CRSF mit dem Flugcontroller spricht. Seine T-Antenne sitzt am hinteren rechten Arm, weg vom Carbon und vom VTX. Racer betreiben ihn mit hoher Paketrate (500 Hz oder F1000), damit die Knüppel mit so wenig Verzögerung beim Quad ankommen, wie das Video ihn verlässt."
+    },
+    "LED": {
+      "name": "LED-Streifen an den hinteren Armen",
+      "what": "Acht adressierbare LEDs WS2812B, vier an jedem hinteren Arm, in einer Kette vom LED-Pad des Flugcontrollers. Das Profil RACE von Betaflight lässt sie alle in einer Rennfarbe leuchten, der Farbe des Piloten für den Heat, damit Spotter und Zeitnehmer die Quads auseinanderhalten können; stellst du die Farbe auf BLACK, folgt sie stattdessen dem VTX-Kanal."
+    },
+    "TOP": {
+      "name": "Dünne Deckplatte + 20-mm-Abstandsbolzen",
+      "what": "Eine 2-mm-Carbonplatte auf vier Aluminium-Abstandsbolzen, die den Stack schließt und den Akku trägt. Dünn und leicht, weil jedes Gramm an einem Race-Quad Beschleunigung kostet."
+    },
+    "BATT": {
+      "name": "Race-LiPo + Gurt und rutschfestes Pad",
+      "what": "Ein 4S-Akku mit 1300 mAh und hoher Entladerate (etwa 150 g, 72 x 38 x 25 mm) auf einem rutschfesten Pad, von einem Gurt gehalten. Er kann eine Sekunde lang über 200 A liefern. Schieb ihn nach vorn oder hinten, um den Schwerpunkt zwischen die Motoren zu bringen."
+    },
+    "PROPS": {
+      "name": "Race-Propeller, 2 CW + 2 CCW",
+      "what": "Steife 5-Zoll-Dreiblattpropeller. Mehr Steigung (4,8 bis 5,2 Zoll) zieht bei hohem Tempo kräftiger und braucht mehr Strom; ein Propeller mit wenig Steigung ist sanfter und effizienter, aber langsamer. Props in: M1 und M4 drehen im Uhrzeigersinn, M2 und M3 gegen den Uhrzeigersinn, die erhöhte Kante jedes Blatts vorn."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Den Stretched-X-Rahmen auslegen",
+      "body": "Schraub die vier Arme zwischen die Bodenplatten und prüf sie auf Risse. Die lange Seite zeigt nach vorn: Die Nase ist dort, wo die Kameraplatten hinkommen."
+    },
+    "motors": {
+      "title": "Die vier Race-Motoren montieren",
+      "body": "Je vier kurze M3-Schrauben, die Drähte zeigen zur Mitte. Eine zu lange Schraube berührt die Wicklungen und brennt den Motor durch.",
+      "refusal": "Die Motoren werden an die Arme geschraubt: Leg zuerst den Rahmen aus."
+    },
+    "esc": {
+      "title": "Den 4-in-1-ESC auf den 20-x-20-Stack setzen",
+      "body": "Auf Gummitüllen unten im Stack, die Akku-Pads nach hinten, wo das XT60-Kabel hereinkommt.",
+      "refusal": "Der ESC sitzt auf den Stack-Schrauben des Rahmens: Leg zuerst den Rahmen aus."
+    },
+    "wires": {
+      "title": "Die Motordrähte kürzen und anlöten",
+      "body": "Führ die drei Drähte jedes Motors am Arm entlang, kürz sie auf Länge und löte sie an die Pads dieses Motors. Kurz und ordentlich, ohne blankes Kupfer in der Nähe des Carbons.",
+      "refusal": "Die Drähte verbinden die Motoren mit dem ESC: Setz zuerst beide ein."
+    },
+    "xt60": {
+      "title": "XT60-Kabel und Kondensator anlöten",
+      "body": "14 AWG Rot an BAT+, Schwarz an BAT-, und den 1000-µF-Kondensator über dieselben Pads, mit dem Streifen auf der Minusseite. Das ist die Verbindung, die ein Smoke Stopper testet.",
+      "refusal": "Das Akkukabel kommt auf die Pads des ESC: Setz zuerst den ESC ein."
+    },
+    "fc": {
+      "title": "Den Flugcontroller aufsetzen, Pfeil nach vorn",
+      "body": "Auf Tüllen über dem ESC, verbunden durch den 8-poligen Kabelbaum (Akkuspannung, Masse, Strom, Telemetrie und die vier Motorsignale). Richte den aufgedruckten Pfeil auf die Nase.",
+      "refusal": "Der Flugcontroller sitzt im Stack auf dem ESC: Setz zuerst den ESC ein."
+    },
+    "vtx": {
+      "title": "Den Race-VTX oben auf den Stack setzen",
+      "body": "Video und OSD vom VTX-Pad des FC, 9 V von seinem Regler und der SmartAudio-Draht an UART1 TX. Schraub die Antenne an, bevor er jemals Strom bekommt: Ein VTX ohne Antenne überhitzt.",
+      "refusal": "Der VTX sitzt im Stack auf dem Flugcontroller: Setz zuerst den Flugcontroller ein."
+    },
+    "cam": {
+      "title": "Die Nano-Kamera mit 40° Uptilt montieren",
+      "body": "Zwischen den Seitenplatten an der Nase, 40° nach oben geneigt. Video, 5 V und Masse gehen zurück zu den CAM-Pads am Flugcontroller.",
+      "refusal": "Die Kameraplatten werden an den Rahmen geschraubt: Leg zuerst den Rahmen aus."
+    },
+    "rx": {
+      "title": "Den ELRS-Empfänger an UART2 anschließen",
+      "body": "5 V, Masse, TX an RX und RX an TX an UART2. Befestige die Antenne mit Kabelbindern am hinteren rechten Arm, weg von den Propellern und vom Carbon.",
+      "refusal": "Der Empfänger wird mit dem Flugcontroller verdrahtet: Setz zuerst den Flugcontroller ein."
+    },
+    "led": {
+      "title": "Die LED-Streifen aufkleben",
+      "body": "Vier LEDs an jedem hinteren Arm, Dateneingang vom LED-Pad des FC am hinteren linken Ende, weiter verkettet zum hinteren rechten Streifen. 5 V und Masse kommen vom Flugcontroller.",
+      "refusal": "Die LED-Streifen gehen vom LED-Pad des Flugcontrollers aus: Setz zuerst den Flugcontroller ein."
+    },
+    "top": {
+      "title": "Den Stack mit der Deckplatte schließen",
+      "body": "Vier Abstandsbolzen und die dünne Carbonplatte. Prüf, dass kein Draht zwischen den Platten eingeklemmt ist, bevor du die Schrauben anziehst.",
+      "refusal": "Die Deckplatte schließt sich über dem Stack: Setz zuerst Flugcontroller, VTX, Kamera und Empfänger ein."
+    },
+    "batt": {
+      "title": "Den Race-Akku festschnallen",
+      "body": "Pad, Akku, Gurt, das Kabel hinten heraus zum XT60. Balancier den Quad auf zwei Fingern unter den Armen und schieb den Akku, bis er waagerecht liegt.",
+      "refusal": "Der Akku liegt auf der Deckplatte und wird in den XT60 gesteckt: Setz zuerst beides ein."
+    },
+    "props": {
+      "title": "Propeller zum Schluss, props in",
+      "body": "Erst nach dem Rauchtest und der Motorprüfung. Propeller im Uhrzeigersinn auf M1 und M4, gegen den Uhrzeigersinn auf M2 und M3, die erhöhte Kante vorn, Muttern fest.",
+      "refusal": "Die Propeller kommen zum Schluss drauf: Setz Motoren und Deckplatte ein, dann mach den Smoke-Stopper-Test und die Prüfung der Motordrehrichtung."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "Der weibliche XT60 des Akkus trifft auf den männlichen des Quads. Ein 4S-Race-Akku hat voll 16,8 V und kann bei einem Punch über 200 A liefern, also darf diese Verbindung niemals kurzschließen.",
+    "XT60-ESC": "14-AWG-Kabel an die Pads BAT+ und BAT- des ESC, mit dem Low-ESR-Kondensator 1000 µF 35 V über denselben Pads, Streifen auf Minus.",
+    "ESC-MOTORS": "Drei Phasendrähte pro Motor auf den Pads seines Kanals. In jeder Reihenfolge dreht der Motor; vertauschst du zwei, dreht er andersherum, was dir auch die ESC-Firmware abnehmen kann.",
+    "FC-ESC": "Ein 8-poliger Kabelbaum verbindet den Stack: Die vier DShot600-Motorsignale gehen hinunter zum ESC, und Akkuspannung, Masse, Stromsensor und ESC-Telemetrie kommen herauf. Mit bidirektionalem DShot antwortet jeder ESC-Kanal über denselben Draht mit der Drehzahl seines Motors.",
+    "CAM-FC": "Das analoge Video der Kamera, 5 V und Masse an die CAM-Pads. Der OSD-Chip des Flugcontrollers zeichnet Akku, Timer und Warnungen über das Bild.",
+    "FC-VTX": "Video mit OSD und 9 V von den VTX-Pads; der SmartAudio-Draht an UART1 TX lässt Betaflight Band, Kanal, Leistung und Pit-Modus einstellen.",
+    "RX-FC": "Der ELRS-Empfänger an UART2 mit 5 V: sein TX an RX des FC und sein RX an TX des FC, CRSF in beide Richtungen, damit die Verbindungsqualität im OSD erscheint.",
+    "FC-LED": "WS2812-Daten vom LED-Pad des FC (mit 5 V und Masse) in die erste LED; jede LED reicht die Daten an die nächste weiter, acht in einer Kette."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke-Stopper-Test",
+      "pass": "Die Lampe hat nur kurz geblinkt: kein Kurzschluss zwischen Plus und Minus. Du kannst den Akku jetzt direkt einstecken.",
+      "fail": "Die Lampe blieb an: Irgendetwas ist kurzgeschlossen. Hier ist der Kondensator falsch herum eingelötet; dreh ihn um (Streifen auf Minus) und teste noch einmal, bevor du einsteckst."
+    },
+    "motors": {
+      "title": "Prüfung der Motordrehrichtung (ohne Propeller)",
+      "pass": "Jeder Motor dreht so, wie der Mixer es erwartet: M1 und M4 im Uhrzeigersinn, M2 und M3 gegen den Uhrzeigersinn (props in). Die Propeller können drauf.",
+      "fail": "Ein Motor hat falsch herum gedreht. Kehr ihn in der ESC-Firmware um (ESC Configurator), statt umzulöten; mit Propellern würde er den Quad an der Startlinie überschlagen."
+    },
+    "calibrate": {
+      "title": "Kalibrierung des Beschleunigungssensors",
+      "pass": "Auf einer ebenen Fläche waagerecht kalibriert: Der Angle-Modus und die Neigungsgrenze der Launch Control wissen jetzt, wo waagerecht ist, und die Arming-Sperre NO_ACC_CAL ist weg.",
+      "fail": "Setz zuerst den Flugcontroller ein und stell den Quad auf eine ebene Fläche. Wenn der Pfeil nach hinten zeigt, dreh die Platine um oder setz align_board_yaw = 180."
+    },
+    "rx": {
+      "title": "Empfängertest",
+      "pass": "Gebunden: Im Receiver-Tab bewegt sich jeder Kanal in die richtige Richtung zwischen 1000 und 2000 µs, das Gas steht bei unten gehaltenem Knüppel auf 1000 µs, und der Arm-Schalter liegt auf AUX1.",
+      "fail": "Setz zuerst Empfänger und Flugcontroller ein. Bei einem echten Quad zeigt sich ein Kanal, der sich rückwärts bewegt, oder ein Arm-Schalter auf dem falschen AUX hier und nicht erst an der Startlinie."
+    },
+    "failsafe": {
+      "title": "Failsafe-Test (ohne Propeller, Fernsteuerung aus)",
+      "pass": "Fernsteuerung aus: Nach 1,5 s haben die Motoren gestoppt, und der Quad hat disarmt (DROP). Auf einer Strecke mit Netzen ist das genau, was die Rennleitung will.",
+      "fail": "Setz zuerst Empfänger und Flugcontroller ein, nimm die Propeller ab und steck den Akku ein. Ein Quad, der beim Verbindungsverlust sein letztes Gas hält, fliegt davon, mitten in die Zuschauer."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Erste Einrichtung",
+      "explain": "Mixer QUAD X, der Pfeil der Platine nach vorn, DShot600 mit bidirektionaler Telemetrie für den RPM-Filter, props in und die beiden seriellen Ports: der ELRS-Empfänger an UART2 und SmartAudio des VTX an UART1."
+    },
+    "switches": {
+      "title": "Rennschalter",
+      "explain": "Arming auf AUX1, Angle auf AUX2, VTX-Pit-Modus auf AUX3 und Launch Control und der Lost-Quad-Beeper an den beiden Enden von AUX4. aux nimmt die numerischen Modus-IDs von Betaflight: 0 Arming, 1 Angle, 39 Pit-Modus, 49 Launch Control, 13 Beeper."
+    },
+    "vtx": {
+      "title": "Raceband, dein Kanal, 25 mW",
+      "explain": "Die VTX-Tabelle sagt Betaflight, welche Bänder und Leistungsstufen der Sender hat (zuerst die Kanäle, sonst schlagen die Bandzeilen fehl). Band 5 ist Raceband; Kanal 4 ist 5769 MHz. Leistungsindex 1 ist die niedrigste echte Stufe, 25 mW, die Leistung für Rennen neben anderen Piloten. Geringe Leistung im disarmten Zustand und eine Pit-Modus-Frequenz außerhalb des Racebands verhindern, dass du in der Boxengasse jemandem das Video zerschießt."
+    },
+    "leds": {
+      "title": "LEDs in Rennfarbe",
+      "explain": "Das Layout ist eine led-Zeile pro LED: Rasterposition, keine Richtungen, Funktion C (Volltonfarbe) und Farbe 6 (GREEN); der LED-Strip-Tab des Configurators schreibt dieselben Zeilen. Die CLI dieses Labors nimmt keine led-Zeilen an, deshalb stehen sie als Kommentare da. Die beiden set-Zeilen wählen das Profil RACE, das den ganzen Streifen in ledstrip_race_color leuchten lässt: ein Farbname, keine Zahl."
+    },
+    "failsafe": {
+      "title": "Failsafe: Drop",
+      "explain": "Ist die Funkverbindung 1,5 s lang weg, werden die Motoren gestoppt. Auf einer Rennstrecke mit Netzen ist Fallenlassen sicherer als jeder Versuch, nach Hause zu fliegen, und ein Race-Quad hat ohnehin kein GPS, mit dem er heimfliegen könnte."
+    },
+    "angle": {
+      "title": "Angle-Modus zum Lernen der Strecke",
+      "explain": "Selbstnivellierend mit einer Neigungsgrenze von 45°: Lass den Knüppel los, und er richtet sich waagerecht aus. Gut, um die Reihenfolge der Gates zu lernen; zu langsam für Rennen, weil die Grenze auch begrenzt, wie stark er nach vorn kippen kann."
+    },
+    "acro": {
+      "title": "Race-Rates",
+      "explain": "Acro ist das, was der Quad fliegt, wenn kein selbstnivellierender Modus an ist. Mit ACTUAL-Rates ist die Mitte weich (70°/s) für kleine Linienkorrekturen, und voller Knüppel dreht mit 670°/s für schnelle Flicks um ein Gate; Gieren geht bis 450°/s."
+    },
+    "race": {
+      "title": "Renntimer und Launch Control",
+      "explain": "Der OSD-Timer zählt in Hundertsteln ab dem letzten Arming, sodass ein Pilot die Heat-Zeit in der Brille sieht; die Rundenzeiten selbst kommen vom Renntimer, der jeden VTX abhört. Launch Control hält den Quad im Startfeld, bis das Gas 20 % überschreitet, für einen sauberen Start auf den Ton."
+    },
+    "raceAcro": {
+      "title": "Rennen im Acro-Modus",
+      "explain": "Angle aus, Air Mode an, damit der Quad auch bei null Gas über der Kuppe eines Sturzflugs noch lenkt, Launch Control für den Start und der Renntimer im OSD."
+    }
+  },
+  "flight": {
+    "modes": {
+      "angle": {
+        "title": "Angle",
+        "hint": "Selbstnivellierend, Neigung bis 45° begrenzt: Flieg frei über die Strecke und lern die Linien."
+      },
+      "acro": {
+        "title": "Acro",
+        "hint": "Keine Selbstnivellierung: Die Knüppel legen Drehraten fest, bis zu 670°/s. Der Quad hält jeden Winkel, in dem du ihn lässt."
+      },
+      "race": {
+        "title": "Rennen (Angle)",
+        "hint": "Die sechs Gates der Reihe nach, Runde für Runde gestoppt, mit dem Sicherheitsnetz des Angle-Modus."
+      },
+      "raceAcro": {
+        "title": "Rennen (Acro)",
+        "hint": "Die sechs Gates im Acro-Modus, so wie Racer sie fliegen. Drei saubere Runden hintereinander zählt ein Qualifier."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Funkverbindung 1,5 s lang weg: Die Motoren stoppen, und der Quad fällt innerhalb der Netze.",
+      "low-battery": "Unter 3,5 V pro Zelle: Das OSD warnt. Flieg die Runde zu Ende und lande.",
+      "battery-empty": "Unter 3,2 V pro Zelle: Der Akku bricht so weit ein, dass die ESCs abschalten, und der Quad fällt."
+    },
+    "controls": "Tastatur: Leertaste armt und disarmt, W und S geben Gas, die Pfeiltasten nicken und rollen, A und D gieren, V schaltet auf FPV, R setzt den Quad zurück auf den Landeplatz. Auf dem Handy ist der linke Knüppel Gas und Gieren, der rechte Nicken und Rollen. Ein Gamepad funktioniert in Mode 2."
+  },
+  "courses": {
+    "track": {
+      "title": "Vereinsstrecke",
+      "brief": "Sechs Gates mit 1,6 m, gegen den Uhrzeigersinn geflogen ab dem Start-Ziel-Gate vor dem Landeplatz, mit einer Hürde auf der Gegengeraden und dem Zeitnahmeturm im Innenfeld. Ein verpasstes Gate muss noch einmal geflogen werden. Deine Rundenzeit startet am Start-Ziel-Gate; schlag die Sollzeit in drei Runden hintereinander."
+    }
+  },
+  "quizzes": {
+    "frame": {
+      "stretch": {
+        "q": "Warum ist ein Race-Rahmen gestreckt (länger als breit)?",
+        "options": {
+          "1": "Damit ein größerer Akku passt",
+          "2": "Damit die hinteren Propeller sauberere Luft bekommen, wenn der Quad schnell und mit gesenkter Nase fliegt",
+          "3": "Damit sich die Kamera weiter nach oben neigen lässt"
+        },
+        "why": "Bei starker Vorwärtsneigung fliegen die hinteren Propeller durch den Abwind der vorderen. Liegen sie weiter hinten, greifen sie sauberere Luft, sodass der Quad bei hohem Tempo geradeaus läuft."
+      },
+      "kv": {
+        "q": "Der Racer hat 2500-KV-Motoren an 4S. Was passiert mit denselben Motoren an einem 6S-Akku?",
+        "options": {
+          "1": "Er fliegt genauso, nur länger",
+          "2": "Er wird langsamer, weil der Akku schwerer ist",
+          "3": "Die Propeller drehen viel schneller, als Motoren und ESC überleben können"
+        },
+        "why": "KV ist die Drehzahl pro Volt: 2500 KV bei 25 V wollen über 60.000 U/min. Der Strom steigt mit, die Motoren überhitzen, und der ESC verliert die Synchronisation (Desync). 6S-Racer nutzen etwa 1950 KV."
+      }
+    },
+    "power": {
+      "cap": {
+        "q": "Was macht der Kondensator über den Akku-Pads des ESC?",
+        "options": {
+          "1": "Er fängt Spannungsspitzen von harten Punches und Bremsmanövern ab",
+          "2": "Er speichert Energie für eine zusätzliche Runde",
+          "3": "Er filtert das Videosignal"
+        },
+        "why": "Jeder harte Gaswechsel wirft eine Spannungsspitze auf die Akkukabel zurück. Der Low-ESR-Kondensator schluckt sie, bevor sie MOSFETs tötet oder als Störung auf Gyro und Video erscheint."
+      },
+      "esc": {
+        "q": "Der Rechner sagt, dass ein Motor bei Vollgas mehr Strom zieht, als der ESC verträgt. Was ist die vernünftige Lösung?",
+        "options": {
+          "1": "Ignorieren: Vollgas kommt im Rennen nie vor",
+          "2": "Einen Propeller mit weniger Steigung oder einen ESC mit höherem Nennstrom einbauen",
+          "3": "Einen größeren Akku nehmen"
+        },
+        "why": "Ein Rennen ist großteils Vollgas, also sieht der ESC diesen Strom auf jeder Geraden. Ein sanfterer Propeller mit weniger Steigung zieht weniger, oder ein ESC mit höherem Nennstrom gibt die Reserve; ein größerer Akku bringt nur Gewicht."
+      }
+    },
+    "video": {
+      "power": {
+        "q": "Warum läuft ein Race-VTX mit 25 mW?",
+        "options": {
+          "1": "Damit alle Piloten im Heat gleichzeitig fliegen können, ohne sich gegenseitig das Video zu überdecken",
+          "2": "Weil der Akku für mehr zu klein ist",
+          "3": "Weil 25 mW weiter reichen"
+        },
+        "why": "Bis zu acht Quads fliegen einen Heat auf getrennten Raceband-Kanälen, wenige Dutzend Meter voneinander entfernt. Bei hoher Leistung strahlt ein VTX in die Kanäle seiner Nachbarn hinein und zerstört ihr Video."
+      },
+      "analog": {
+        "q": "Warum fliegen die meisten Racer immer noch analoges Video?",
+        "options": {
+          "1": "Es hat das schärfste Bild",
+          "2": "Es braucht am wenigsten Strom",
+          "3": "Es hat die geringste Verzögerung, und alle Piloten teilen sich Raceband"
+        },
+        "why": "Bei 100 km/h sind ein paar Millisekunden mehr Verzögerung ein halber Meter. Analog bringt das Bild am schnellsten in die Brille, und Renntimer hören den analogen VTX jedes Piloten ab."
+      }
+    },
+    "race": {
+      "acro": {
+        "q": "Warum fliegen Racer im Acro- statt im Angle-Modus?",
+        "options": {
+          "1": "Acro braucht weniger Akku",
+          "2": "Der Angle-Modus begrenzt die Neigung, und Rennen brauchen steile, schnelle Winkelwechsel",
+          "3": "Acro hat GPS-Halten"
+        },
+        "why": "Der Angle-Modus begrenzt, wie weit der Quad nach vorn kippen kann, was sein Tempo begrenzt, und er richtet sich auf, wenn du das lieber nicht hättest. Acro hält jeden Winkel, den du einstellst, und dreht so schnell, wie deine Rates es erlauben."
+      },
+      "failsafe": {
+        "q": "Was soll der Quad auf einer Rennstrecke mit Netzen tun, wenn er die Funkverbindung verliert?",
+        "options": {
+          "1": "Die Motoren stoppen und fallen",
+          "2": "Per GPS nach Hause fliegen",
+          "3": "Seine letzten Knüppelstellungen halten"
+        },
+        "why": "Ein Race-Quad hat kein GPS, und das letzte Gas zu halten ist genau der Weg, auf dem Quads davonfliegen. Innerhalb der Netze zu fallen ist die sichere Wahl, und das ist die Standardprozedur DROP von Betaflight."
+      },
+      "laps": {
+        "q": "Wie ordnet ein MultiGP-Qualifier die Piloten?",
+        "options": {
+          "1": "Nach ihrer einzelnen schnellsten Runde",
+          "2": "Nach der Gesamtzahl der Runden in zwei Minuten",
+          "3": "Nach ihren schnellsten drei aufeinanderfolgenden Runden"
+        },
+        "why": "Eine Glücksrunde zählt nicht: Der globale Qualifier nimmt deine besten drei Runden hintereinander innerhalb einer festen Zwei-Minuten-Runde, also gewinnt Beständigkeit."
+      }
+    }
+  }
+}
