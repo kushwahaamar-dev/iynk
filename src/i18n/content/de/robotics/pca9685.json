@@ -1,0 +1,439 @@
+{
+  "title": "Servoarm mit PCA9685",
+  "sub": "sechzehn Servopulse über zwei I2C-Drähte",
+  "hint": "bau den Treiber, zentrier den Arm, dann greifen und ablegen",
+  "overview": "Ein Servo will alle 20 ms einen Puls von 600 bis 2400 µs Länge und dreht sich auf den Winkel, für den diese Länge steht. Das PCA9685-Board von Adafruit erzeugt diese Pulse für sechzehn Servos auf einmal: Der Nano schreibt die Werte jedes Kanals über zwei I2C-Drähte, und der Chip sendet sie dann aus seinem eigenen 25-MHz-Takt weiter, ohne Hilfe vom Nano. Die Servoversorgung kommt getrennt herein, an der blauen V+-Klemme, über einen MOSFET, der einen verpolten Akku blockiert. Bau das Board, verdrahte einen Nano, einen Halter mit 4 x AA und einen kleinen Arm mit drei Servos, und lass ihn dann einen Schaumstoffwürfel aufheben und auf der anderen Seite ablegen. Dann mach es kaputt: der Akku verkehrt herum, Li-Ionen-Zellen, Servos an den 5 V des Nano, kein setPWMFreq(50), die falsche Adresse, der Pufferkondensator verkehrt herum, eine kalte Lötstelle an SDA und ein Greifer, der zu fest zudrückt.",
+  "parts": {
+    "U1": {
+      "name": "16-Kanal-12-Bit-PWM-Controller PCA9685",
+      "what": "Sechzehn Zähler, die von einem 25-MHz-Oszillator laufen. setPWMFreq(50) setzt den Vorteiler auf 121: ein Rahmen von 19,99 ms aus 4096 Ticks, je 4,88 µs. Jeder Kanal hält in Ticks fest, wo sein Puls beginnt und endet, also sind 1500 µs 307 Ticks. Er startet schlafend, jeder Ausgang LOW, bis begin() ihn weckt."
+    },
+    "Q1": {
+      "name": "P-MOSFET AOD417: Verpolungsschutz",
+      "what": "Sitzt zwischen der V+-Klemme und den Servos, das Gate an GND. Ist der Akku richtig herum angeschlossen, leitet zuerst seine Body-Diode, dann schaltet der Kanal voll durch. Verpolt bleibt er aus, und nichts erreicht die Servos. Er schützt nur die Klemme: Der V+-Pin der seitlichen Stiftleiste liegt hinter ihm."
+    },
+    "J1": {
+      "name": "Schraubklemme V+ / GND",
+      "what": "Hier kommt die Servoversorgung herein: hier 4 x AA (6 V) oder ein 5-V-Netzteil mit 2 A oder mehr. Der Siebdruck sagt 6 V max. V+ geht an die mittlere Reihe jeder Servospalte; mit VCC ist es nicht verbunden."
+    },
+    "C2": {
+      "name": "470-µF-Kondensator an V+",
+      "what": "Nicht im Bausatz: Adafruit verlangt etwa 100 µF pro Servo, also setzt du einen ein. Er hält V+ oben, wenn mehrere Servos gleichzeitig anlaufen. Er ist gepolt: Der Streifen (Minus) kommt nach links, der Plus-Anschluss zu Q1."
+    },
+    "JP3": {
+      "name": "I2C-Stiftleiste: V+, VCC, SDA, SCL, OE, GND",
+      "what": "Hier wird der Nano angeschlossen: 5V an VCC (Strom nur für den Chip), GND, A4 an SDA und A5 an SCL. OE ist auf dem Board auf LOW gezogen, was jeden Ausgang einschaltet. Speis keinen Servostrom über ihren V+-Pin ein: Das umgeht Q1."
+    },
+    "JP2": {
+      "name": "Servo-Stiftleiste, Kanäle 0-3",
+      "what": "Jede Spalte ist ein Kanal: PWM am nächsten zum Chip, V+ in der Mitte, GND am Rand, also kommt ein Servostecker mit Braun an GND drauf. Der Arm nutzt Kanal 0 (Basis), 1 (Schulter) und 2 (Greifer)."
+    },
+    "R13": {
+      "name": "220 Ω in jedem Ausgang",
+      "what": "Ein Widerstandsnetzwerk in Reihe mit den Ausgängen 0-3 (und drei weitere für den Rest). Ein verkehrt aufgesteckter Servostecker oder ein kurzgeschlossener Pin zieht dann höchstens 23 mA, innerhalb der 25-mA-Grenze des Chips."
+    },
+    "R2": {
+      "name": "10-kΩ-Pull-ups für I2C",
+      "what": "Ziehen SDA und SCL auf VCC hoch, sodass der Bus im Ruhezustand auf den 5 V des Nano liegt. Beide Leitungen sind Open-Drain: Geräte ziehen sie immer nur nach unten."
+    },
+    "SJ_A0": {
+      "name": "Adress-Jumper A0",
+      "what": "Sechs Jumper addieren 1, 2, 4, 8, 16 oder 32 zur Adresse 0x40. Überbrück A0, und das Board antwortet auf 0x41, sodass sich ein zweites Board den Bus teilen kann. Jedes Board antwortet außerdem auf 0x70, die All-Call-Adresse."
+    },
+    "LED1": {
+      "name": "Grüne Power-LED",
+      "what": "Leuchtet aus VCC über 470 Ω. Sie zeigt, dass der Chip seine Logikversorgung hat, und sagt nichts über V+: Mit verpoltem oder fehlendem Akku leuchtet sie trotzdem."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "Führt den Sketch aus und spricht I2C an A4 (SDA) und A5 (SCL). Seine 5 V versorgen die Logik des PCA9685, ein paar mA. Die Servos ziehen nie Strom aus ihm."
+    },
+    "ARM": {
+      "name": "Tischarm mit drei Servos",
+      "what": "Drei Micro-Servos SG90: Die Basis dreht einen Drehteller (Kanal 0), die Schulter hebt ein 70-mm-Glied (Kanal 1), der Greifer öffnet zwei Finger (Kanal 2). Ein SG90 dreht sich in 0,1 s um 60° und nimmt im Stillstand etwa 10 mA, in Bewegung 100-250 mA und blockiert bis zu etwa 360-550 mA. Ein Schaumstoffwürfel von 16 mm wartet auf der Matte."
+    },
+    "PACK": {
+      "name": "Halter für 4 x AA",
+      "what": "Vier Alkalizellen in Reihe: 6 V, mit etwa 0,6 Ω Innenwiderstand, also sackt er etwas ab, wenn sich die Servos bewegen. Sein rotes Kabel kommt an V+, das schwarze an GND der Klemme."
+    }
+  },
+  "power": {
+    "label": "Den Prüfstand mit Strom versorgen",
+    "ok": "Nano an USB, der Akku an V+: Der Chip ist versorgt, und die Servos haben Strom"
+  },
+  "modes": {
+    "centre": {
+      "title": "Arm zentrieren"
+    },
+    "sweep": {
+      "title": "Basis schwenken"
+    },
+    "pick": {
+      "title": "Greifen und Ablegen"
+    },
+    "scan": {
+      "title": "I2C-Scan"
+    },
+    "code": {
+      "title": "PCA9685: Servopulse über I2C",
+      "address": "das Board an seiner Standardadresse, 0x40",
+      "servoDeg": "0-180° als 600-2400 µs, der Bereich der Servo-Bibliotheken",
+      "begin": "weckt den Chip (er startet schlafend, jeder Ausgang LOW)",
+      "freq": "ein Rahmen von 20 ms: Vorteiler 121, 4096 Ticks zu 4,88 µs",
+      "centre": "1500 µs = 307 Ticks: jeder Servo auf 90°",
+      "idle": "nichts zu tun: Der Chip sendet die Pulse von selbst weiter",
+      "sweep": "ein Grad alle 16 ms: 3 s in jede Richtung",
+      "poses": "eine Pose pro Sekunde: wo der Würfel ist, hinunter, greifen, hoch, hinüber, hinunter, loslassen",
+      "ease": "jedes Gelenk ein Grad nach dem anderen, 8 ms pro Schritt, damit der Arm den Würfel nicht wegschleudert",
+      "mirror": "jede zweite Runde läuft gespiegelt, also wandert der Würfel wieder zurück",
+      "scanTitle": "I2C-Scanner: Wer antwortet auf dem Bus?",
+      "ack": "0 = ein Gerät hat seine Adresse bestätigt"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Bis auf die nackte Platine zerlegen",
+      "body": "Nimm jedes Bauteil von der blauen Platine. Du baust sie in der Reihenfolge der Fabrik wieder auf: zuerst der Chip, der MOSFET und die kleinen Bauteile, dann die Stiftleisten, die Klemme und der Kondensator.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einer Platine unter Spannung"
+    },
+    "smd": {
+      "title": "Die SMD-Bauteile bestücken, dann reflowlöten",
+      "body": "Der PCA9685, Q1, C1, die LED und die Widerstandsnetzwerke kommen in einem Durchgang drauf und durch den Ofen. So wird das Board ausgeliefert; als Nächstes kommen die losen Teile des Bausatzes.",
+      "refusal": "Die SMD-Bauteile kommen zuerst drauf, auf eine nackte Platine"
+    },
+    "headers": {
+      "title": "Die I2C-Stiftleiste und die vier Servoblöcke einsetzen",
+      "body": "Die Stiftleiste 1 x 6 am linken Rand und vier Blöcke 3 x 4 entlang der Unterkante: eine Spalte pro Kanal, PWM, V+ und GND. Niedrige Bauteile zuerst, damit die Platine flach liegt, wenn du sie zum Löten umdrehst.",
+      "refusal": "Zuerst die SMD-Bauteile: Bestücken und Reflow-Löten ausführen. Der Ofen würde die Kunststoff-Stiftleisten schmelzen"
+    },
+    "terminal": {
+      "title": "Die V+-Klemme einsetzen",
+      "body": "Die blaue Schraubklemme, mit den Kabeleinführungen nach außen. Hier kommt die Servoversorgung herein, über Q1.",
+      "refusal": "Zuerst die Stiftleisten: niedrige Bauteile vor hohen"
+    },
+    "cap": {
+      "title": "C2, 470 µF, richtig herum einsetzen",
+      "body": "Etwa 100 µF pro Servo, sagt Adafruit, und im Bausatz ist keiner. Der Streifen (Minus) nach links, der Plus-Anschluss zu Q1: Er ist gepolt.",
+      "refusal": "Setz zuerst die Klemme ein"
+    },
+    "solder": {
+      "title": "Die bedrahteten Bauteile löten",
+      "body": "Jeder Pin der Stiftleisten, die Klemme und C2. Die Pins SDA und SCL der I2C-Stiftleiste tragen jeden Befehl, also lässt eine matte Lötstelle dort den Arm stottern.",
+      "refusal": "Noch nichts zu löten: Setz zuerst die Bauteile ein"
+    },
+    "wire-nano": {
+      "title": "Den Nano verdrahten",
+      "body": "5V an VCC, GND an GND, A4 an SDA und A5 an SCL. VCC ist nur der Logikstrom des Chips, ein paar mA.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einer Platine unter Spannung"
+    },
+    "wire-arm": {
+      "title": "Die Servos des Arms in die Kanäle 0-2 stecken",
+      "body": "Basis an Kanal 0, Schulter an 1, Greifer an 2. Braun an GND am Rand des Boards, Orange (Signal) zum Chip hin.",
+      "refusal": "Zieh zuerst den Strom ab und verdrahte den Nano vor dem Arm"
+    },
+    "wire-pack": {
+      "title": "Den Akku an der V+-Klemme anschrauben",
+      "body": "Rot an V+, Schwarz an GND. Vier Alkali-AAs ergeben 6 V, das Höchste, was die Servos vertragen.",
+      "refusal": "Zieh zuerst den Strom ab und steck den Arm vor dem Akku ein"
+    },
+    "plug": {
+      "title": "Den Prüfstand mit Strom versorgen",
+      "body": "USB in den Nano, den Akku eingeschaltet. Die grüne LED leuchtet aus VCC; die Servos bleiben schlaff, bis ein Sketch den Chip mit begin() startet.",
+      "refusal": "Bau zuerst fertig: jedes Bauteil drauf, jede Lötstelle gelötet, alles auf der Matte verdrahtet"
+    },
+    "centre": {
+      "title": "„Arm zentrieren“ hochladen",
+      "body": "begin() weckt den Chip, setPWMFreq(50) setzt den 20-ms-Rahmen, und writeMicroseconds(ch, 1500) legt 307 Ticks auf die Kanäle 0-2: jeder Servo auf 90°. Danach tut loop() nichts, und die Servos halten trotzdem: Der Chip sendet weiter.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "sweep": {
+      "title": "„Basis schwenken“ hochladen",
+      "body": "Ein Grad alle 16 ms: Die Basis dreht sich in 3 s von 0 auf 180° und zurück. Jeder Schritt ist ein kurzer I2C-Schreibvorgang; die Pulse dazwischen kosten den Nano nichts.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "pick": {
+      "title": "„Greifen und Ablegen“ hochladen",
+      "body": "Acht Posen pro Runde, eine pro Sekunde: zum Würfel drehen, öffnen, senken, schließen, heben, drehen, senken, loslassen. Jedes Gelenk bewegt sich ein Grad nach dem anderen, damit der Würfel nicht wegfliegt. Die nächste Runde läuft gespiegelt und trägt ihn zurück.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "scan": {
+      "title": "„I2C-Scan“ hochladen",
+      "body": "Der Scanner ruft jede Adresse von 1 bis 126 auf und listet die, die antworten: 0x40, das Board, und 0x70, die All-Call-Adresse, auf die jeder PCA9685 antwortet. Die Servos werden schlaff: Nichts startet den Chip.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "reverse-pack": {
+      "title": "Den Akku verkehrt herum anschrauben",
+      "body": "Rot an GND, Schwarz an V+. Beobachte die grüne LED und die Servos."
+    },
+    "li-ion-cells": {
+      "title": "Den Halter mit Li-Ionen-Zellen 14500 füllen",
+      "body": "Zellen vom Typ 14500 sind so groß wie eine AA, haben aber je 3,7-4,2 V: Vier davon ergeben 16,8 V an V+."
+    },
+    "servos-on-5v": {
+      "title": "Die Servos aus den 5 V des Nano versorgen",
+      "body": "Ein Steckkabel von 5V des Nano an den V+-Pin statt des Akkus. Lass den Schwenk laufen."
+    },
+    "forget-freq": {
+      "title": "setPWMFreq(50) weglassen",
+      "body": "Derselbe Sketch ohne die Zeile für die Frequenz. begin() lässt den Chip bei etwa 1000 Hz."
+    },
+    "bridge-a0": {
+      "title": "Den Jumper A0 überbrücken",
+      "body": "Ein Lotklecks über SJ_A0. Der Sketch spricht weiterhin mit 0x40."
+    },
+    "c2-backwards": {
+      "title": "C2 verkehrt herum einsetzen",
+      "body": "Der Streifen zu Q1, dann einschalten. Geh auf Abstand."
+    },
+    "cold-sda": {
+      "title": "Eine kalte Lötstelle an SDA lassen",
+      "body": "Eine matte, gerissene Lötstelle am Pin SDA der I2C-Stiftleiste. Lass „Greifen und Ablegen“ laufen."
+    },
+    "squeeze": {
+      "title": "Den Greifer ganz um den Würfel schließen",
+      "body": "Ändere den Greifwinkel von 70 auf 0. Die Finger treffen bei etwa 72° auf den Würfel und kommen nicht weiter."
+    },
+    "exploded": {
+      "title": "Explosionsansicht",
+      "body": "Zieh den Strom ab und heb die Bauteile nach Baugruppen ab: die SMD-Bauteile, die Stiftleisten, dann die Klemme und C2.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einer Platine unter Spannung"
+    }
+  },
+  "faults": {
+    "pack-reversed": {
+      "title": "Akku verkehrt herum angeschraubt",
+      "symptom": "Nichts bewegt sich, und nichts wird warm; die grüne LED bleibt an.",
+      "explanation": "Q1 ist ein P-MOSFET mit dem Gate an GND. Mit negativem V+ liegt seine Body-Diode in Sperrrichtung, und seine Gate-Spannung hat die falsche Richtung, um ihn einzuschalten, also erreicht kein Strom die Servos. Die LED läuft aus VCC, den 5 V des Nano, also sagt sie nichts über V+.",
+      "fix": "Tausch die Kabel: Rot an V+, Schwarz an GND. Der V+-Pin der seitlichen Stiftleiste hat keinen solchen Schutz."
+    },
+    "li-ion": {
+      "title": "16,8 V an V+",
+      "symptom": "Die Servos brummen, werden heiß und bleiben für immer stehen. Chip und Nano sind in Ordnung.",
+      "explanation": "Ein SG90 ist für 4,8 V gebaut und verträgt höchstens 6 V. Vier Li-Ionen-Zellen 14500 liefern 16,8 V: Motor und Treiber überhitzen in Sekunden. Q1 (30 V) lässt das durch, er ist nur für die Polarität da. C2, für 10 V ausgelegt, liegt ebenfalls über seiner Grenze.",
+      "fix": "Nimm Alkali-AAs (6 V) oder NiMH (4,8 V) oder ein 5-V-Netzteil mit 2 A oder mehr. Ersetz die Servos und C2, wenn er sich wölbt."
+    },
+    "brownout": {
+      "title": "Servos an den 5 V des Nano",
+      "symptom": "Die Servos zucken, der Nano startet immer wieder neu, und der Arm beendet nie eine Bewegung.",
+      "explanation": "Bewegte SG90 nehmen je ein paar hundert mA, beim Anlaufen mehr. Über USB und die 500-mA-Sicherung des Nano zieht das die 5 V herunter, bis der Brownout-Detektor des ATmega (etwa 2,7 V) ihn zurücksetzt. Die Servos halten an, die Spannung erholt sich, der Sketch beginnt von vorn.",
+      "fix": "Gib den Servos eine eigene Versorgung an der V+-Klemme. VCC vom Nano ist nur für die Logik des Chips."
+    },
+    "no-freq": {
+      "title": "Kein setPWMFreq(50)",
+      "symptom": "Die Servos zucken, ignorieren ihre Befehle und werden warm.",
+      "explanation": "begin() lässt den Chip bei etwa 1000 Hz: ein Rahmen knapp unter 1 ms. Ein Puls von 1,5 ms passt nicht hinein, also bleiben die Ausgänge die meiste Zeit HIGH, und die Servos sehen nie eine Pulslänge, die sie verstehen.",
+      "fix": "Ruf pwm.setPWMFreq(50) nach begin() auf. Eine Frequenz gilt für alle sechzehn Kanäle."
+    },
+    "addr-a0": {
+      "title": "Board auf 0x41",
+      "symptom": "Die Servos bleiben schlaff; der Sketch läuft und gibt aus, als wäre alles in Ordnung.",
+      "explanation": "Der überbrückte Jumper A0 addiert 1 zur Adresse. Die Bibliothek schreibt an 0x40, niemand bestätigt, und der Chip auf 0x41 wacht nie auf. Ein I2C-Scan zeigt 0x41 und 0x70.",
+      "fix": "Entfern die Brücke oder erzeug den Treiber mit Adafruit_PWMServoDriver(0x41)."
+    },
+    "c2-reversed": {
+      "title": "C2 verkehrt herum",
+      "symptom": "C2 wölbt sich, zischt und knallt, sobald V+ anliegt.",
+      "explanation": "Ein Elektrolytkondensator hält seine Ladung auf einer dünnen Oxidschicht, die nur in einer Richtung funktioniert. Verkehrt herum leitet er, erhitzt sich und bläst ab.",
+      "fix": "Abklemmen, einen neuen Kondensator einsetzen, mit dem Streifen (Minus) nach links, weg von Q1."
+    },
+    "cold-sda": {
+      "title": "Kalte Lötstelle an SDA",
+      "symptom": "Der Arm stottert: Manche Bewegungen kommen zu spät, manche gar nicht.",
+      "explanation": "Jeder Befehl geht über SDA. Über eine Lötstelle, die Kontakt macht und wieder verliert, kommen manche Schreibvorgänge nie an, und der Chip sendet den alten Puls weiter, bis der nächste durchkommt.",
+      "fix": "Erwärm die Lötstelle mit frischem Lot, bis es in einen glänzenden Kegel um den Pin fließt."
+    },
+    "gripper-stall": {
+      "title": "Greifer am Würfel blockiert",
+      "symptom": "Der Greifer brummt, wird warm, und der Akkustrom springt um etwa 450 mA.",
+      "explanation": "Der Servo bekommt 0° gesagt, aber der Würfel stoppt die Finger bei etwa 72°. Sein Potentiometer meldet, dass er weit von seinem Soll entfernt ist, also drückt er mit allem, was er hat: Ein SG90 blockiert bei ungefähr 360-550 mA. Kunststoffzahnräder können ausreißen.",
+      "fix": "Schließ nur, bis die Finger berühren (hier 70°). Ein Servo hält am besten ein paar Grad hinter dem Kontakt, nicht am Ende seines Wegs."
+    }
+  },
+  "status": {
+    "status": "Status",
+    "powered": "Strom am Prüfstand",
+    "mode": "Sketch",
+    "frame": "PWM-Frequenz",
+    "ch0": "Puls Kanal 0 (µs)",
+    "base": "Basis",
+    "shoulder": "Schulter",
+    "grip": "Greifer",
+    "vplus": "Servoversorgung (V+)",
+    "vcc": "Logikversorgung (VCC)",
+    "servos": "Servostrom",
+    "pack": "Akkustrom",
+    "usb": "USB-Strom"
+  },
+  "current": {
+    "usb": "Nano über USB (500-mA-Polyfuse)",
+    "pack": "Akku 4 x AA an V+",
+    "nano": "Nano in Betrieb",
+    "logic": "PCA9685 und seine LED an VCC",
+    "idle": "Drei Servos halten",
+    "moving": "Servos in Bewegung (Greifen und Ablegen)",
+    "stall": "Greifer am Würfel blockiert"
+  },
+  "tasks": {
+    "ticks": {
+      "title": "Mikrosekunden sind keine Ticks",
+      "brief": "setPWM(ch, on, off) nimmt Ticks, keine Mikrosekunden: Bei 50 Hz ist ein Tick 20000 / 4096 µs. Der Startcode schickt 1500, als wären es µs, und vergisst außerdem setPWMFreq(50). Schreib ticksFor() so, dass aus 1500 µs etwa 307 Ticks werden, aus 600 etwa 123 und aus 2400 etwa 492, und setz den Rahmen auf 50 Hz.",
+      "hints": {
+        "1": "ticks = us x 4096 / 20000. Erst multiplizieren, dann teilen, sonst geht der Bruchteil verloren.",
+        "2": "1500 x 4096 ist über 6 Millionen, zu groß für ein int auf einem Nano: Wandle zuerst in uint32_t um.",
+        "3": "pwm.setPWMFreq(50); kommt direkt nach pwm.begin();"
+      },
+      "checks": {
+        "1": "Läuft",
+        "2": "Setzt den Rahmen mit setPWMFreq(50) auf 50 Hz",
+        "3": "Aus 1500 µs werden 306-308 Ticks",
+        "4": "Aus 600 µs werden 122-124 Ticks",
+        "5": "Aus 2400 µs werden 490-493 Ticks",
+        "6": "Kanal 0 sendet einen Puls von 1500 µs in einem 50-Hz-Rahmen"
+      },
+      "code": {
+        "goal": "Mikrosekunden in die Ticks des Chips umrechnen",
+        "todo": "das gibt Mikrosekunden zurück; gib stattdessen Ticks eines 20-ms-Rahmens zurück",
+        "setPWM": "an bei Tick 0, aus bei Tick off"
+      }
+    },
+    "knob": {
+      "title": "Die Basis mit einem Drehknopf drehen",
+      "world": "Drehknopf an A0",
+      "brief": "Setz ein 10-kΩ-Potentiometer an A0 und lass es die Basis lenken: Knopf ganz unten ist 0°, auf halbem Weg 90°, ganz oben 180°. Der Startcode schickt immer 90°. Lies den Knopf, bilde 0-1023 auf 0-180° ab und schick das.",
+      "hints": {
+        "1": "int deg = map(analogRead(A0), 0, 1023, 0, 180);",
+        "2": "Die Zeile danach macht aus Grad schon 600-2400 µs.",
+        "3": "report() gibt nur aus, wenn sich der Winkel ändert, damit der serielle Monitor lesbar bleibt."
+      },
+      "checks": {
+        "1": "Läuft",
+        "2": "Liest den Knopf mit analogRead(A0)",
+        "3": "Knopf auf halbem Weg: die Basis bei etwa 90°",
+        "4": "Knopf unten: 0° = 600 µs",
+        "5": "Knopf oben: 180° = 2400 µs"
+      },
+      "code": {
+        "goal": "Den Servo der Basis mit einem Drehknopf an A0 lenken",
+        "todo": "lies den Knopf statt einer festen 90"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "two-supplies": {
+        "q": "Warum hat das Board VCC und V+ als getrennte Versorgungen?",
+        "options": {
+          "1": "VCC ist eine Reserve für V+",
+          "2": "VCC versorgt nur den Chip; V+ trägt die Hunderte mA der Servos aus ihrer eigenen Versorgung",
+          "3": "V+ ist 3,3 V für den Chip"
+        },
+        "why": "Der Chip braucht ein paar mA, die Servos Hunderte. Getrennt kann ein anlaufender Servo V+ nach unten ziehen, ohne die Logik zu berühren, und der Nano trägt nie Servostrom."
+      },
+      "cap": {
+        "q": "Wie groß soll laut Adafruit ein Kondensator an V+ für drei Servos sein?",
+        "options": {
+          "1": "Etwa 300 µF: ungefähr 100 µF pro Servo",
+          "2": "Man braucht nie einen",
+          "3": "1 µF"
+        },
+        "why": "Die Regel von Adafruit ist n x 100 µF. Er hält V+ in dem Moment oben, in dem mehrere Servos gleichzeitig anlaufen. Dieser Prüfstand setzt 470 µF ein."
+      },
+      "kit": {
+        "q": "Welche Teile lötest du an diesem Board selbst?",
+        "options": {
+          "1": "Nur den Chip",
+          "2": "Die Widerstände und den MOSFET",
+          "3": "Die Stiftleisten, die Klemme und den Kondensator, den du hinzufügst"
+        },
+        "why": "Die SMD-Bauteile sind schon bestückt. Der Bausatz bringt eine 6-polige Stiftleiste, vier Blöcke 3 x 4 und die Klemme mit; der Kondensator ist dein eigener."
+      }
+    },
+    "pulses": {
+      "ticks": {
+        "q": "Wie viele Ticks sind bei 50 Hz ein Puls von 1500 µs?",
+        "options": {
+          "1": "1500",
+          "2": "4096",
+          "3": "Etwa 307"
+        },
+        "why": "Ein Rahmen sind 4096 Ticks auf etwa 20 ms: 4,88 µs pro Tick. 1500 / 4,88 = 307."
+      },
+      "frame": {
+        "q": "Was ändert setPWMFreq(50) eigentlich?",
+        "options": {
+          "1": "Den Vorteiler, damit der 4096-Tick-Zähler für eine Runde 20 ms braucht",
+          "2": "Die I2C-Geschwindigkeit",
+          "3": "Die eigene Geschwindigkeit des Servos"
+        },
+        "why": "Der Chip teilt seinen 25-MHz-Takt durch prescale + 1 = 122. 4096 Ticks dauern dann 19,99 ms: 50 Hz."
+      },
+      "cpu": {
+        "q": "loop() ist in „Arm zentrieren“ leer. Warum halten die Servos trotzdem ihren Winkel?",
+        "options": {
+          "1": "Die Servos merken ihn sich",
+          "2": "Der PCA9685 sendet die Pulse, die er bekommen hat, ohne Hilfe vom Nano weiter",
+          "3": "Der Nano sendet sie aus setup()"
+        },
+        "why": "Genau dafür ist der Chip da: Start- und Stopp-Tick jedes Kanals stehen in seinen Registern, und der Zähler wiederholt sie in jedem Rahmen."
+      }
+    },
+    "faults": {
+      "led-on": {
+        "q": "Der Akku ist verpolt. Warum leuchtet die grüne LED trotzdem?",
+        "options": {
+          "1": "Q1 lässt sie leuchten",
+          "2": "Sie läuft aus VCC, den 5 V des Nano, nicht aus V+",
+          "3": "Der Akku liefert weiterhin Strom"
+        },
+        "why": "Die LED zeigt, dass der Chip seine Logikversorgung hat. Die Servoversorgung ist getrennt, und Q1 hat sie abgeschaltet."
+      },
+      "stall": {
+        "q": "Warum zieht ein Greifer, der auf 0° schließen soll, an einem Würfel so viel Strom?",
+        "options": {
+          "1": "Die Pulse sind zu kurz",
+          "2": "Der Würfel leitet",
+          "3": "Der Würfel stoppt ihn vor 0°, also drückt er, so fest er kann: Er ist blockiert"
+        },
+        "why": "Ein Servo treibt seinen Motor, bis sein Potentiometer zum Puls passt. Schafft er das nie, bleibt er bei voller Kraft, ein SG90 bei ungefähr 360-550 mA."
+      },
+      "brownout": {
+        "q": "Die Servos hängen an den 5 V des Nano, und der Nano startet immer wieder neu. Was setzt ihn zurück?",
+        "options": {
+          "1": "Sein Brownout-Detektor: Die 5-V-Schiene sackt unter etwa 2,7 V ab",
+          "2": "Der PCA9685 sendet einen Reset",
+          "3": "Die Servosignale"
+        },
+        "why": "Der Strom der Servos zieht die 5 V von USB über Sicherung und Kabel herunter, bis der Brownout-Detektor des ATmega auslöst."
+      }
+    },
+    "end": {
+      "address": {
+        "q": "Du brauchst 24 Servos. Was machst du?",
+        "options": {
+          "1": "Ein zweites Board anhängen und seinen Jumper A0 überbrücken, damit es auf 0x41 antwortet",
+          "2": "Die Kanäle 16-23 auf demselben Board nutzen",
+          "3": "Zwei Boards auf dieselbe Adresse verdrahten"
+        },
+        "why": "Sechs Jumper ergeben 62 nutzbare Adressen auf einem Bus. Zwei Boards auf derselben Adresse würden beide jedem Befehl gehorchen."
+      },
+      "one-frequency": {
+        "q": "Kann Kanal 0 einen Servo mit 50 Hz betreiben, während Kanal 1 eine LED mit 1000 Hz dimmt?",
+        "options": {
+          "1": "Ja, jeder Kanal hat seine eigene Frequenz",
+          "2": "Nur auf den Kanälen 8-15",
+          "3": "Nein: Der Vorteiler wird geteilt, also laufen alle sechzehn mit einer Frequenz"
+        },
+        "why": "Es gibt einen Oszillator und einen Vorteiler. Die LED lässt sich trotzdem mit 50 Hz dimmen, indem man ihre Pulslänge ändert."
+      },
+      "six-volts": {
+        "q": "Was schützt das \"V+: 6V Max\" im Siebdruck?",
+        "options": {
+          "1": "Den Chip PCA9685",
+          "2": "Die Servos: Das Board selbst lässt bis zu den 30 V von Q1 durch",
+          "3": "Den Nano"
+        },
+        "why": "V+ geht nur an die Servo-Stiftleisten und C2. Die Grenze gilt für Servos der Klasse SG90, gebaut für 4,8-6 V."
+      }
+    }
+  }
+}
