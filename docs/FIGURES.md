@@ -181,6 +181,8 @@ itself is ignored. Commands that arrive before the figure is ready are queued (u
 - Check `event.source === iframe.contentWindow`, `event.origin`, `source === 'simlab-figure'` and `v === 1`.
 - Post to `location.origin`, never `'*'`.
 - Send `theme` and `locale` after every `ready`. Put `?lang=` in `src` so the first paint is not English.
+- Send `chrome` after every `ready` too when the host draws some of the figure's buttons itself: a reloaded page
+  starts with every button shown.
 - Don't use a `sandbox` attribute or `X-Frame-Options: DENY`.
 - Style the iframe element with `color-scheme: light` and a paper background (`#f2efe7`, or `#e4ddcf` in dark
   mode) so there is no white flash.
