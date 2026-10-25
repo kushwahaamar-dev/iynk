@@ -17,8 +17,8 @@ Pick one:
 
 ## Links
 
-- Try it: [SITE]
-- Code: [REPO_URL]
+- Try it: https://simlab-hacktx.vercel.app
+- Code: https://github.com/kushwahaamar-dev/sim
 - Video: [VIDEO_URL]
 
 ---
@@ -57,7 +57,7 @@ The core lab works with every API key missing. Each sponsor feature checks wheth
 
 ### Try it as a judge
 
-Open [SITE] on a phone or laptop. No account needed. Board Lab, Robotics Lab and Drone Lab are in the top menu; "Start with the Arduino Uno R3" on the first page is the quickest way in. Together opens a room you can share with the person next to you.
+Open https://simlab-hacktx.vercel.app on a phone or laptop. No account needed. Board Lab, Robotics Lab and Drone Lab are in the top menu; "Start with the Arduino Uno R3" on the first page is the quickest way in. Together opens a room you can share with the person next to you.
 
 ## How we built it
 
@@ -77,7 +77,7 @@ SimLab is a Next.js 16 app (React 19, TypeScript, Tailwind) on Vercel, with all 
 
 **Tiger Data.** One events hypertable holds anonymous, opt-out usage counts: flight samples, laps, lesson attempts and passes, faults, finished steps, room joins and actions, AI and search calls. A continuous aggregate computes the best lap per course per day for the flight leaderboard, and another counts activity per minute. Buddy profiles live in a regular table and expire after 24 hours; events are kept for 30 days.
 
-**How the work ran.** All of it was written during the event by AI coding agents: two of us driving Claude Code, which ran [AGENTS] agents in parallel waves. Each agent owned a fixed set of files and worked from written contracts (fixed decisions for the core, and a second contract for the hackathon layer). Agents asked each other for changes by writing request files instead of editing each other's code. The gates were TypeScript, ESLint, Vitest unit tests, a table that runs every lesson's reference solution and starter code, figure probes and screenshots, a crawl of every route, and Playwright end-to-end tests with axe accessibility checks.
+**How the work ran.** All of it was written during the event by AI coding agents: two of us driving Claude Code, which ran more than 250 agents in parallel waves. Each agent owned a fixed set of files and worked from written contracts (fixed decisions for the core, and a second contract for the hackathon layer). Agents asked each other for changes by writing request files instead of editing each other's code. The gates were TypeScript, ESLint, Vitest unit tests, a table that runs every lesson's reference solution and starter code, figure probes and screenshots, a crawl of every route, and Playwright end-to-end tests with axe accessibility checks.
 
 ## Challenges we ran into
 
@@ -98,7 +98,7 @@ SimLab is a Next.js 16 app (React 19, TypeScript, Tailwind) on Vercel, with all 
 - One visual system across every board, bench and drone, including the schematic and breadboard views, with every lesson in six languages.
 - A drone calculator that reproduces [342] reference builds from the Drone Engineer tables, and every lesson's reference solution passing its own checks.
 - The core lab works with every key missing, so a sponsor outage takes out one panel, not the app.
-- [AGENTS] agents producing one working product in 24 hours.
+- More than 250 agents producing one working product in 24 hours.
 
 ## What we learned
 
@@ -148,7 +148,7 @@ SimLab is built to be broken. Leave the resistor off an LED and watch it flash o
 
 ### [MLH] Best Use of Vultr
 
-Enter only if the relay runs on Vultr at submission. Vercel functions can't hold WebSockets, so SimLab's realtime relay runs on a Vultr VM [in REGION]. It's a small Node 24 server built on `ws`, running in Docker behind Caddy. It stamps every shared lab action with a sequence number so every screen applies them in the same order, relays chat, cursors, presence and flight ghosts, hands late joiners a snapshot, and keeps an empty room alive for 30 minutes in case people come back. Every multiplayer moment in our demo goes through it.
+Vercel functions can't hold WebSockets, so SimLab's realtime relay runs on a Vultr VM in Dallas. It's a small Node 24 server built on `ws`, running in Docker behind Caddy. It stamps every shared lab action with a sequence number so every screen applies them in the same order, relays chat, cursors, presence and flight ghosts, hands late joiners a snapshot, and keeps an empty room alive for 30 minutes in case people come back. Every multiplayer moment in our demo goes through it.
 
 ### [MLH] Best Use of Tiger Data
 
@@ -175,7 +175,7 @@ The idea for SimLab and our hardware research predate HackTX. Before 11:30 a.m. 
 
 ## Confirm before submitting
 
-- [SITE], [DOMAIN], [REPO_URL], [VIDEO_URL]. The repo's remote is `github.com/kushwahaamar-dev/sim`; it must be public before submitting.
+- Filled 08:45: the site (https://simlab-hacktx.vercel.app) and the repo (https://github.com/kushwahaamar-dev/sim, public). Still open: [VIDEO_URL]. No .tech domain, so no [DOMAIN].
 - `/api/status` on the production deployment: `ai`, `image`, `voice`, `search`, `realtime` and `db` true (`solana` stays false). Soften or cut any paragraph whose flag is false, and drop the Vultr, Tiger Data and .Tech tracks if their part isn't live.
 - Meta model ids: `.env.example` has `muse-spark-1.1`, `muse-image-1.0` and `muse-voice-transcribe-1.0`; check them against `docs/hacktx/AI.md`. Fill in the Muse connector bracket (a custom connector in Muse, or an MCP client only): at 02:00 it had not been tried from Muse (`docs/hacktx/MUSE-CONNECTOR.md`). Confirm Facebook's share dialog opens from a story.
 - The partner calling `ask_peer` with a real key, voice transcription, chat translation and the story cover, each tried once on the deployed site.
@@ -183,8 +183,8 @@ The idea for SimLab and our hardware research predate HackTX. Before 11:30 a.m. 
 - Content counts at gate 3 (05:53): 12 boards, 13 benches, 13 drones, 71 board lessons (16 on the Uno R3), 144 board failures, 272 bench steps, 106 bench faults, 31 bench tasks, 78 drone bench tests, 22 courses, 80 figure pages, six languages. If anything changes after that, change the numbers here and in PITCH.md, VIDEO.md and JUDGE-QA.md.
 - "Every lesson, step, quiz and screen is written in six languages, down to the labels inside the figures": true at gate 3 for prose, the UI and all 4087 figure strings (`npx vitest run src/i18n/figure-strings.test.ts`). Names, units, code, serial output and CLI commands stay as they are on a real board.
 - [342] reference builds: `npx vitest run src/lib/drone` passed 445 of 445 at 05:53, and the fixtures hold 342 rows. 102 of 102: the lesson table at gate 3 (`docs/verify/gate3-lessons.md`).
-- [AGENTS]: the final count of agent runs. About 60 were labelled by 02:00, plus 56 in the first build that the usage limit stopped at 14:19.
-- Vultr region, and whether the relay runs in Docker behind Caddy there.
+- Agents (filled 08:45): 253 agent transcripts on Amar's Mac start between 11:30 on 10-24 and 07:19 on 10-25 (141 in the first build, 6 in the 16:57 session, 106 in the 18:22 session), plus the teammate's phase-1 agents on her Mac; hence "more than 250".
+- Vultr (confirmed 08:39): the relay runs on a `vc2-1c-1gb` VM in Dallas, in Docker behind Caddy with a Let's Encrypt certificate, and the live site's rooms use it.
 - The organizers' answers: are pre-event research notes allowed, and how many prize tracks can one project enter.
 - Credit lines: the authors of Robotics Engineer and Drone Engineer, if you can confirm them.
 - "New ground for us" in What we learned: true for both of you?
