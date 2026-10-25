@@ -779,20 +779,22 @@ function followersStep(s: SimState, dt: number) {
 function groundContact(s: SimState, wing: boolean) {
   if (s.p[2] > 0) return;
   const speed = Math.hypot(s.v[0], s.v[1], s.v[2]);
-  if (!s.crashed && (wing ? s.launched : s.airborne || s.climbedOut)) {
-    if (wing) {
-      const ok = s.airspeed < 13.5 && Math.abs(s.roll) < 25 && s.pitch > -25 && s.pitch < 30 && s.v[2] > -3.5;
-      if (ok && s.armed) {
-        s.armed = false;
-        s.launched = false;
-        s.airspeed = 0;
-        emit(s, { type: "landed", mah: Math.round(s.battery.used), belly: true });
-      } else crash(s, "groundWing");
-    } else {
-      const { up } = bodyAxes(s.yaw, s.pitch, s.roll);
-      const tilt = Math.acos(clamp(up[2], -1, 1)) / DEG;
-      if (s.t > 0.3 && (s.v[2] < -3.2 || (tilt > 55 && speed > 1.5) || speed > 6)) crash(s, s.flipWhy ?? "ground");
-    }
+  if (!s.crashed && wing && s.launched) {
+    const ok = s.airspeed < 13.5 && Math.abs(s.roll) < 25 && s.pitch > -25 && s.pitch < 30 && s.v[2] > -3.5;
+    if (ok && s.armed) {
+      s.armed = false;
+      s.launched = false;
+      s.airspeed = 0;
+      emit(s, { type: "landed", mah: Math.round(s.battery.used), belly: true });
+    } else crash(s, "groundWing");
+  } else if (!s.crashed && !wing && s.t > 0.3) {
+    const { up } = bodyAxes(s.yaw, s.pitch, s.roll);
+    const tilt = Math.acos(clamp(up[2], -1, 1)) / DEG;
+    const hard = (s.airborne || s.climbedOut) && (s.v[2] < -3.2 || (tilt > 55 && speed > 1.5) || speed > 6);
+    // tipping over on the ground with the motors live (a flip on take-off before it lifts, a desync on the pad)
+    // puts the props into the dirt: a crash, not a craft skating along on its side at full power
+    const tipped = s.armed && tilt > 65;
+    if (hard || tipped) crash(s, s.flipWhy ?? "ground");
   }
   s.p[2] = 0;
   s.v[2] = Math.max(0, s.v[2]);

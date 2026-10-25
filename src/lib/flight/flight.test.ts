@@ -1,18 +1,19 @@
 import { describe, expect, it } from "vitest";
 import type { DroneContent } from "@/content/schema";
 import quad5 from "@/content/drones/quad5";
-import { flightCalc } from "@/lib/dronelab/fly";
+import { flightCalc, flightFaults } from "@/lib/dronelab/fly";
 import { calc, type CalcBattery, type CalcFixedPart, type CalcMotor, type CalcProp } from "../drone/calc";
 import catalogueData from "../drone/__fixtures__/catalogues.json";
 import { calcModels } from "../drone/__fixtures__/models";
 import { ocv, voltageFactor } from "./battery";
+import { crashReplay } from "./crash";
 import { fromCalc } from "./from-calc";
 import { createInput, DEFAULT_PAD, learnAxis, padSticks, readSticks } from "./input";
 import { DEG } from "./math";
 import { createSession } from "./session";
 import { flightOf, medalFor, modesFor, parOf, startMode } from "./registry";
 import { DEMO_MISSION } from "./route";
-import { createSim, dispatch, drainEvents, frameOf, hoverCommand, replay, stepSim, type SimState } from "./sim";
+import { createSim, dispatch, drainEvents, frameOf, hoverCommand, isClimbMode, replay, stepSim, type SimState } from "./sim";
 import type { CalcOutputs, Course, FlightCraft, FlightEvent, Sticks } from "./types";
 import { buildSolids, collide, throughGate } from "./world";
 
@@ -172,6 +173,31 @@ describe("multirotor physics", () => {
     sticks(s, { throttle: 0.6 });
     const ev = run(s, 4);
     expect(ev.some((e) => e.type === "crash" && e.why === "flipFc")).toBe(true);
+  });
+
+  // the fly page's path: the Break it switch, the page's start mode and course, and W held on the keyboard, which
+  // ramps a manual throttle up slowly (the test above sets the stick straight to 60 %)
+  it.each(["fcReversed", "propsSwapped", "motorDirUnchecked"] as const)("Break it %s flips and crashes when W ramps the throttle", (id) => {
+    const course = quad5Flight.courses.find((c) => c.id === quad5.courses[0].id)!;
+    const faults = flightFaults(quad5, { source: "factory", bench: null, breaks: { [id]: true } });
+    const session = createSession(quad5Craft, course, flightCalc(quad5, quad5.design.default), { mode: startMode(quad5, course.id), faults });
+    const inp = createInput();
+    session.dispatch({ type: "arm" });
+    inp.keys.add("KeyW");
+    const events: FlightEvent[] = [];
+    let maxOut = 0;
+    for (let frame = 0; frame < 6 * 60 && !session.sim.crashed; frame++) {
+      session.dispatch({ type: "sticks", sticks: readSticks(inp, isClimbMode(session.sim.mode), 1 / 60) });
+      events.push(...session.tick(1 / 60));
+      maxOut = Math.max(maxOut, Math.hypot(session.sim.p[0] - course.pad[0], session.sim.p[1] - course.pad[1]));
+    }
+    const crash = events.find((e) => e.type === "crash");
+    expect(crash).toMatchObject({ why: id === "fcReversed" ? "flipFc" : id === "propsSwapped" ? "flipProps" : "flipMotor" });
+    expect(crash!.t).toBeLessThan(4);
+    expect(maxOut).toBeLessThan(3);
+    const replayed = crashReplay(session.origin, session.log(), session.sim.step, false);
+    expect(replayed?.cause).toBe(crash && "why" in crash ? crash.why : null);
+    expect(replayed?.fix).toEqual({ kind: "fault", fault: id });
   });
 
   it("does not wipe the flight on a design change mid-air", () => {
