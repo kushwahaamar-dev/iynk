@@ -29,7 +29,8 @@ export function BreakIt({ craftClass, isOn, changed, broken, onToggle, onReset, 
         <h2 id="break-it-title" className="font-head text-lg">
           {dict.breakIt.title}
         </h2>
-        <Button size="sm" variant="ghost" onClick={onReset} disabled={!changed} data-testid="break-reset">
+        {/* nothing to undo: the button keeps its place but isn't drawn, so the heading doesn't jump */}
+        <Button size="sm" variant="ghost" onClick={onReset} disabled={!changed} className={changed ? undefined : "invisible"} data-testid="break-reset">
           {dict.breakIt.reset}
         </Button>
       </div>
