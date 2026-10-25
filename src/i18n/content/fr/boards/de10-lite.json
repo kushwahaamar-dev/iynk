@@ -1,0 +1,831 @@
+{
+  "title": "Terasic DE10-Lite",
+  "tagline": "Une carte FPGA Intel MAX 10 avec six afficheurs hexadécimaux, un connecteur Arduino et un USB-Blaster intégré.",
+  "overview": "La DE10-Lite porte un Intel MAX 10 10M50, un FPGA de 50 000 éléments logiques sans processeur : un design Verilog devient le câblage à l'intérieur de la puce. Contrairement à la plupart des FPGA, le MAX 10 garde sa configuration dans sa propre flash : il démarre donc en quelques millisecondes, sans puce de configuration à côté. Autour de lui se trouvent 10 interrupteurs à glissière (en haut = 1), 10 LED rouges (1 = allumée), deux boutons poussoirs dont la carte filtre les rebonds pour vous (enfoncé = 0) et six afficheurs 7 segments, chacun avec ses huit broches, allumés sur 0. Un connecteur GPIO 2 × 20 et un connecteur Arduino Uno sortent d'autres broches, toutes en 3,3 V ; seules les broches analogiques A0-A5 acceptent 0-5 V, vers le CAN 12 bits intégré à la puce. Il y a aussi 64 MB de SDRAM, un accéléromètre et un port VGA. Un seul câble USB-B alimente la carte et la programme à travers l'USB-Blaster intégré, depuis Quartus Prime Lite, le logiciel gratuit d'Intel.",
+  "mcu": {
+    "ft245bl": "La puce USB FTDI de l'USB-Blaster intégré : Quartus l'affiche sous le nom « USB-Blaster [USB-0] ».",
+    "epm240": "Un CPLD MAX II, l'autre moitié de l'USB-Blaster : il envoie le JTAG dans le FPGA en 2,5 V.",
+    "cdce937": "Générateur d'horloge : à partir du quartz 24 MHz Y1, il produit les deux horloges utilisateur de 50 MHz, l'horloge de 10 MHz du CAN et le 24 MHz du Blaster.",
+    "adxl345": "Accéléromètre 3 axes en SPI ou en I2C ; le design d'usine s'en sert comme niveau à bulle."
+  },
+  "power": {
+    "usb": {
+      "protection": "La fiche USB-B a un détrompeur et la diode Schottky D6 est en série. Un port d'ordinateur donne 500 mA. Il n'y a pas de fusible sur la carte : un court-circuit ne compte que sur la limite de courant du port lui-même."
+    },
+    "ext": {
+      "protection": "JP6 (sérigraphie « DC 5V ») alimente la carte à travers la diode Schottky D7, qui bloque une alimentation inversée, et le coupe-circuit de surtension Q2, qui ouvre VCC5 au-dessus d'environ 5,5 V. Pas de fusible."
+    },
+    "rails": {
+      "5v": "VCC5 : l'USB ou JP6 à travers leurs diodes, puis le coupe-circuit de surtension. Il alimente les deux convertisseurs buck et les broches 5 V des connecteurs.",
+      "3v3": "Sort du buck LTC3612 U7 (3 A) : tous les bancs d'E/S, la SDRAM, les LED, les interrupteurs et les broches 3,3 V des connecteurs.",
+      "1v2": "Le cœur du FPGA, depuis le second LTC3612 (U6). Il ne démarre qu'une fois que le 3,3 V signale « power good », et POWER GOOD (D4) s'allume avec lui.",
+      "2v5": "L'alimentation analogique du FPGA et son banc JTAG, depuis le régulateur LTC3025 REG1.",
+      "1v8": "Sort du second régulateur LTC3025, REG2."
+    },
+    "io": "Chaque broche utilisateur est en LVTTL 3,3 V avec 4 ou 8 mA de courant de sortie. Rien ne tolère le 5 V : l'entrée maximale absolue du MAX 10 est de 4,12 V, et ±25 mA par broche. Seules A0-A5 acceptent 0-5 V."
+  },
+  "pins": {
+    "clk": "Horloge utilisateur de 50 MHz venant du CDCE937 (U3). Terasic vous demande de ne pas modifier les réglages du générateur d'horloge.",
+    "adcclk": "Horloge de 10 MHz pour le CAN ; elle atteint le CAN à travers PLL1 ou PLL3.",
+    "sw": "Interrupteur à glissière, relié directement à la broche : en haut = 1. Sans anti-rebond.",
+    "ledr": "LED rouge à travers 330 Ω : 1 l'allume, environ 4 mA.",
+    "key": "Bouton poussoir avec une pull-up de 10 kΩ, un filtre RC et le buffer à trigger de Schmitt U14 : 0 tant qu'il est enfoncé, avec des fronts propres.",
+    "hex": "Un segment d'un afficheur, à anode commune : 0 l'allume. Le bit 7 est le point décimal.",
+    "arduino": "Broche du connecteur Arduino, reliée directement à une broche du FPGA. 3,3 V seulement.",
+    "ardreset": "La ligne de reset du connecteur Arduino : une simple entrée du FPGA avec trigger de Schmitt, que votre design peut lire. Elle ne réinitialise pas le FPGA.",
+    "ioref": "Indique à un shield que le niveau logique est de 3,3 V.",
+    "analog": "Entrée 0-5 V, divisée par deux par un ampli-op MCP6244 pour les 0-2,5 V du CAN. Du code aux volts : code ÷ 4095 × 5,0.",
+    "aref": "Terasic ne dit pas à quoi AREF est reliée ; le CAN mesure par rapport à sa propre référence de 2,5 V, U12.",
+    "vin": "Terasic ne documente pas VIN. Alimentez la carte par l'USB ou par JP6, pas par ici.",
+    "jp6": "Entrée 5 V, à travers la Schottky en série D7 et le coupe-circuit de surtension.",
+    "gpio": "Broche du FPGA sur le connecteur GPIO. 3,3 V seulement, 8 mA au maximum.",
+    "gpio5v": "5 V venant de VCC5. Les broches 5 V et 3,3 V des connecteurs se partagent 5 W.",
+    "gpio3v3": "3,3 V venant du buck U7. Sur l'alimentation USB, les 500 mA du port sont la vraie limite pour toute la carte."
+  },
+  "leds": {
+    "user": "Reliée directement à une broche du FPGA ; c'est votre design qui décide quand elle s'allume.",
+    "D1": "LOAD : allumée tant que l'USB-Blaster est alimenté et fonctionne.",
+    "D2": "CONF : allumée quand le FPGA a chargé sa configuration.",
+    "D4": "POWER GOOD : allumée quand le rail de cœur de 1,2 V, le dernier de la chaîne, est établi."
+  },
+  "controls": {
+    "sw": "Bascule l'interrupteur : en haut, c'est 1 sur sa broche.",
+    "key": "Lit 0 tant qu'il est maintenu enfoncé."
+  },
+  "displays": {
+    "HEX10": "Deux afficheurs à anode commune, HEX1 (à gauche) et HEX0 (à droite). Chacun a ses huit broches du FPGA : rien n'est multiplexé.",
+    "HEX32": "HEX3 et HEX2, câblés de la même façon.",
+    "HEX54": "HEX5 et HEX4, la paire la plus à gauche."
+  },
+  "parts": {
+    "U5": {
+      "name": "FPGA MAX 10 10M50DA",
+      "what": "50 000 éléments logiques, 1 638 Kbit de RAM en blocs, 144 multiplieurs, deux CAN 12 bits et sa propre flash de configuration, dans un BGA de 23 × 23 mm à 484 billes. Il charge sa configuration depuis cette flash à la mise sous tension."
+    },
+    "U4": {
+      "name": "SDRAM de 64 MB",
+      "what": "32M × 16 bits de mémoire. Un design y accède à travers l'IP SDRAM Controller de Platform Designer."
+    },
+    "U10": {
+      "name": "CPLD de l'USB-Blaster (MAX II EPM240)",
+      "what": "Une petite puce programmable qui transforme les données USB en signaux JTAG pour programmer le FPGA."
+    },
+    "U2": {
+      "name": "Puce USB FT245BL",
+      "what": "Le côté USB de l'USB-Blaster. C'est à elle que parle Quartus Programmer."
+    },
+    "U11": {
+      "name": "Protection ESD de l'USB",
+      "what": "Écrête les décharges électrostatiques sur les lignes de données USB avant qu'elles n'atteignent U2."
+    },
+    "U3": {
+      "name": "Générateur d'horloge CDCE937",
+      "what": "Produit les horloges de 50 MHz, 10 MHz et 24 MHz à partir du quartz Y1."
+    },
+    "Y1": {
+      "name": "Quartz 24 MHz",
+      "what": "La référence du générateur d'horloge. Sans lui, la carte n'a aucune horloge."
+    },
+    "U13": {
+      "name": "Accéléromètre ADXL345",
+      "what": "Mesure l'inclinaison et le mouvement sur trois axes ; le FPGA le lit en SPI ou en I2C."
+    },
+    "opamp": {
+      "name": "Quadruple ampli-op MCP6244",
+      "what": "Bufferise et divise par deux A0-A5 : 0-5 V au connecteur deviennent 0-2,5 V au CAN."
+    },
+    "U12": {
+      "name": "Référence de tension REF3125",
+      "what": "Un 2,5 V stable par rapport auquel le CAN mesure."
+    },
+    "hex": {
+      "name": "Paire d'afficheurs 7 segments",
+      "what": "Deux afficheurs à anode commune. Chaque segment a sa propre broche du FPGA et s'allume sur 0."
+    },
+    "ledr": {
+      "name": "LED utilisateur rouge",
+      "what": "Câblée depuis une broche du FPGA à travers 330 Ω : 1 l'allume, à environ 4 mA."
+    },
+    "sw": {
+      "name": "Interrupteur à glissière",
+      "what": "En haut = 1. Relié directement à sa broche du FPGA, sans anti-rebond."
+    },
+    "key": {
+      "name": "Bouton poussoir",
+      "what": "Tiré vers le haut et nettoyé par U14 : lit 0 tant qu'il est enfoncé, sans rebond."
+    },
+    "U14": {
+      "name": "Buffer à trigger de Schmitt SN74AUC17",
+      "what": "Transforme le signal RC lent et plein de rebonds des boutons en fronts propres."
+    },
+    "J3": {
+      "name": "Prise USB-B",
+      "what": "L'alimentation et l'USB-Blaster sur un seul câble."
+    },
+    "diode": {
+      "name": "Diode Schottky",
+      "what": "Ne laisse entrer le courant dans VCC5 que dans un sens : D6 depuis l'USB, D7 depuis JP6. Une alimentation inversée sur JP6 s'arrête ici."
+    },
+    "JP6": {
+      "name": "Connecteur d'entrée 5 V",
+      "what": "Deux broches, sérigraphie « DC 5V », pour une alimentation de labo quand l'USB ne suffit pas."
+    },
+    "Q2": {
+      "name": "Coupe-circuit de surtension",
+      "what": "Un MOSFET P commandé par une zener de 5,1 V : il ouvre VCC5 au-dessus d'environ 5,5 V, si bien que 12 V n'atteignent jamais les régulateurs."
+    },
+    "U7": {
+      "name": "Régulateur buck LTC3612 : 3,3 V",
+      "what": "Jusqu'à 3 A pour les E/S, la mémoire, les LED et les connecteurs."
+    },
+    "inductor": {
+      "name": "Inductance du buck",
+      "what": "Stocke l'énergie entre les impulsions de découpage du régulateur : L6 pour le 3,3 V, L5 pour le 1,2 V."
+    },
+    "U6": {
+      "name": "Régulateur buck LTC3612 : 1,2 V",
+      "what": "Jusqu'à 3 A pour le cœur du FPGA. Il démarre une fois que le 3,3 V est correct."
+    },
+    "bulk": {
+      "name": "Condensateur réservoir",
+      "what": "C18 (330 µF sur le 1,2 V) et C145 (100 µF sur le 3,3 V) maintiennent les rails stables lors des brusques variations de charge."
+    },
+    "ldo": {
+      "name": "Régulateur linéaire LTC3025",
+      "what": "REG1 produit le 2,5 V et REG2 le 1,8 V, tous deux à partir du 3,3 V."
+    },
+    "D4": {
+      "name": "LED POWER GOOD",
+      "what": "Verte : la chaîne d'alimentation est établie, jusqu'au cœur de 1,2 V."
+    },
+    "testpoint": {
+      "name": "Point de test",
+      "what": "Une pastille où poser une pointe de multimètre."
+    },
+    "D1": {
+      "name": "LED LOAD",
+      "what": "Verte : l'USB-Blaster fonctionne."
+    },
+    "D2": {
+      "name": "LED CONF",
+      "what": "Verte : le FPGA a chargé sa configuration."
+    },
+    "J1": {
+      "name": "Connecteur JTAG (non monté)",
+      "what": "Des pastilles pour un câble JTAG externe en 2,5 V. L'USB-Blaster intégré le rend inutile."
+    },
+    "VGA": {
+      "name": "Prise VGA",
+      "what": "4 bits pour chacun du rouge, du vert et du bleu, issus d'échelles de résistances, plus HS et VS."
+    },
+    "JP1": {
+      "name": "Connecteur GPIO 2 × 20",
+      "what": "36 broches du FPGA plus 5 V, 3,3 V et GND, pour des nappes et des cartes d'extension."
+    },
+    "arduino": {
+      "name": "Connecteur Arduino numérique",
+      "what": "D0-D15 (avec SDA et SCL), reliées directement à des broches du FPGA en 3,3 V."
+    },
+    "JP7": {
+      "name": "Connecteur d'alimentation Arduino",
+      "what": "IOREF (3,3 V), RESET, 3,3 V, 5 V, GND et VIN pour les shields."
+    },
+    "JP8": {
+      "name": "Connecteur Arduino analogique",
+      "what": "A0-A5, 0-5 V, vers le CAN du MAX 10 à travers les ampli-op."
+    }
+  },
+  "wireables": {
+    "led": {
+      "note": "L'anode sur D3 à travers 220 Ω, la cathode sur GND. Pilotez-la depuis votre design comme n'importe quelle LEDR.",
+      "caution": "Une broche donne 8 mA au maximum : mettez toujours la résistance."
+    },
+    "push-button": {
+      "note": "Entre D2 et GND. Activez la pull-up faible de cette broche dans Quartus et filtrez les rebonds dans votre design : seuls KEY0 et KEY1 sont nettoyés sur la carte."
+    },
+    "piezo-buzzer": {
+      "note": "+ sur D5. Basculez la broche à une fréquence audible (CLK_HZ / (2 × f) cycles par demi-période) pour jouer une note."
+    },
+    "potentiometer": {
+      "note": "Les extrémités sur 5 V et GND, le curseur sur A0. L'ampli-op divise la tension par deux pour le CAN, qu'un design lit à travers l'IP Modular ADC avec l'horloge CAN de 10 MHz.",
+      "caution": "A0-A5 sont les seules broches qui acceptent le 5 V. Ne câblez jamais du 5 V sur une broche numérique."
+    },
+    "servo-sg90": {
+      "note": "Signal sur D9, alimentation sur 5 V. Le design produit une impulsion de 1-2 ms, 50 fois par seconde.",
+      "caution": "Les pointes de courant du servo viennent elles aussi de l'USB : si la carte se réinitialise quand il bouge, alimentez-la par JP6 avec une alimentation de labo."
+    },
+    "hc-sr04": {
+      "note": "VCC sur 5 V, Trig sur D7, Echo sur D8. Mesurez l'impulsion d'écho en cycles d'horloge.",
+      "caution": "Echo est une sortie 5 V : placez un pont diviseur (1 kΩ au-dessus de 2 kΩ) entre elle et D8, sinon la broche voit plus que sa limite de 4,12 V."
+    },
+    "mpu6050": {
+      "note": "3,3 V, GND, et SCL et SDA sur les broches I2C du connecteur Arduino.",
+      "caution": "Il n'y a pas de périphérique I2C : votre design a besoin de son propre maître I2C, ou d'un processeur logiciel Nios V."
+    }
+  },
+  "failures": {
+    "reverse-ext": {
+      "title": "Connecteur 5 V câblé à l'envers",
+      "symptom": "Rien ne s'allume, pas même POWER GOOD, et rien ne chauffe.",
+      "explanation": "D7, une diode Schottky en série avec JP6, ne conduit que dans un sens. À l'envers, l'alimentation voit un circuit ouvert et la carte reste simplement éteinte.",
+      "fix": "Inversez les fils : le 5 V sur la broche marquée 5V. Aucun dégât."
+    },
+    "ext-12v": {
+      "title": "12 V sur le connecteur 5 V",
+      "symptom": "Morte : POWER GOOD (D4) reste éteinte.",
+      "explanation": "Le coupe-circuit de surtension (Q2, un MOSFET P commandé par une zener de 5,1 V) ouvre VCC5 au-dessus d'environ 5,5 V : les régulateurs ne voient donc jamais les 12 V. Bien au-delà de ses caractéristiques, le MOSFET lui-même pourrait lâcher.",
+      "fix": "Utilisez une alimentation 5 V régulée. Pour fonctionner sur un adaptateur 9-12 V, placez un régulateur 5 V devant la carte."
+    },
+    "ext-3v5": {
+      "title": "3,5 V sur le connecteur 5 V",
+      "symptom": "POWER GOOD vacille et le design redémarre sans cesse.",
+      "explanation": "D7 fait chuter environ 0,3 V et le buck 3,3 V a besoin d'une marge au-dessus de sa sortie : le rail s'affaisse donc à environ 2,9 V. Sous 3 V, le FPGA se réinitialise, et le cœur 1,2 V perd le « power good » qui l'active.",
+      "fix": "Alimentez JP6 en 4,75-5,25 V. Un seul élément Li-ion est trop faible ; une batterie externe USB sur la prise USB fonctionne."
+    },
+    "brownout": {
+      "title": "Brown-out sous une forte charge",
+      "symptom": "Les LED et les afficheurs s'éteignent, CONF s'éteint et le design repart de zéro.",
+      "explanation": "Des moteurs, des rubans de LED ou des shields sur les connecteurs peuvent tirer plus que les 500 mA du port USB ou les 3 A du régulateur. Quand le 3,3 V s'affaisse, le MAX 10 se réinitialise, puis, une fois le rail rétabli, il recharge sa configuration depuis sa propre flash.",
+      "fix": "Alimentez les fortes charges avec leur propre alimentation et un GND commun, ou alimentez JP6 avec une alimentation 5 V de 2 A."
+    },
+    "short-3v3": {
+      "title": "Broche 3,3 V du connecteur en court-circuit avec GND",
+      "symptom": "Tout s'éteint d'un coup ; le régulateur chauffe.",
+      "explanation": "La broche 29 du connecteur GPIO est le 3,3 V et la broche 30 est GND, côte à côte. En court-circuit, le LTC3612 atteint sa limite de courant, le 3,3 V s'effondre, le cœur 1,2 V perd son activation et le FPGA s'arrête.",
+      "fix": "Débranchez, trouvez le pont (souvent un fil de liaison décalé d'une broche), puis rebranchez."
+    },
+    "short-5v": {
+      "title": "Broche 5 V du connecteur en court-circuit avec GND",
+      "symptom": "La carte meurt et l'ordinateur peut signaler une surintensité USB.",
+      "explanation": "Il n'y a pas de fusible sur la carte : un court-circuit sur VCC5 fait chuter le port USB jusqu'à ce que la protection du port de l'ordinateur le coupe.",
+      "fix": "Débranchez, supprimez le court-circuit et rebranchez. Il faudra peut-être réactiver le port sur l'ordinateur."
+    },
+    "missing-y1": {
+      "title": "Quartz 24 MHz absent",
+      "symptom": "POWER GOOD est allumée, mais rien ne tourne et l'USB-Blaster ne peut pas programmer la carte.",
+      "explanation": "Le CDCE937 produit toutes les horloges de la carte à partir de Y1 : les deux horloges utilisateur de 50 MHz et le 24 MHz sur lequel tourne l'USB-Blaster. Sans lui, aucune bascule ne voit jamais de front.",
+      "fix": "Montez un quartz de 24,000 MHz en Y1."
+    },
+    "cold-sw0": {
+      "title": "Soudure froide sur SW0",
+      "symptom": "Le design d'usine passe toute seule du clignotement au niveau à bulle.",
+      "explanation": "SW0 est relié directement à sa broche, sans rien d'autre pour tenir le niveau. Avec une soudure fissurée, la broche flotte et lit du bruit, et dans le design d'usine, c'est SW0 qui active le niveau à bulle.",
+      "fix": "Réchauffez la soudure avec du flux neuf jusqu'à ce que la soudure coule autour de la broche. Dans vos propres designs, donnez un niveau défini à chaque entrée."
+    }
+  },
+  "assembly": {
+    "unplug": {
+      "title": "Débranchez la carte",
+      "body": "Retirez le câble USB et tout ce qui est branché sur JP6. Ne travaillez jamais sur une carte sous tension."
+    },
+    "strip": {
+      "title": "Démontez jusqu'au circuit nu",
+      "body": "Retirez tous les composants. Il reste le circuit imprimé bleu.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension."
+    },
+    "reflow": {
+      "title": "Placement automatique et refusion",
+      "body": "La machine pose les composants montés en surface sur la pâte à souder (le FPGA à 484 billes, la SDRAM, les puces du Blaster, les régulateurs et les LED) et le four les soude tous d'un coup.",
+      "refusal": "Démontez d'abord la carte jusqu'au circuit nu."
+    },
+    "place-low": {
+      "title": "Posez les composants bas",
+      "body": "Les dix interrupteurs à glissière, les deux boutons et le connecteur 5 V se posent en premier, tant que la carte peut encore reposer à plat sur eux.",
+      "refusal": "Faites d'abord la refusion des composants montés en surface."
+    },
+    "place-tall": {
+      "title": "Posez les composants hauts",
+      "body": "Puis les six afficheurs, les prises USB-B et VGA, le connecteur GPIO à détrompeur et les quatre connecteurs Arduino.",
+      "refusal": "Posez d'abord les composants bas, pour que la carte reste à plat pendant que vous soudez."
+    },
+    "solder": {
+      "title": "Soudez les composants traversants",
+      "body": "Chaque patte d'interrupteur, broche de prise et broche de connecteur reçoit sa soudure sur la face inférieure.",
+      "refusal": "Posez d'abord les composants traversants."
+    },
+    "power-up": {
+      "title": "Mise sous tension",
+      "body": "Branchez l'USB. Le 3,3 V s'établit, puis le cœur 1,2 V, et POWER GOOD (D4) s'allume. Le MAX 10 charge sa configuration depuis sa propre flash et CONF (D2) s'allume."
+    },
+    "factory-test": {
+      "title": "Testez le niveau à bulle",
+      "body": "Le design d'usine fait clignoter les LED et fait défiler des chiffres hexadécimaux sur les afficheurs. Basculez SW0 vers le haut : les LED deviennent un niveau à bulle et, carte à plat sur l'établi, les deux du milieu, LEDR4 et LEDR5, s'allument."
+    },
+    "program": {
+      "title": "Programmez un nouveau design",
+      "body": "Quartus Programmer envoie un design par l'USB-Blaster : le FPGA s'efface, CONF s'éteint, puis se rallume avec le nouveau design en marche. Celle-ci fait clignoter LEDR0.",
+      "refusal": "Branchez d'abord l'USB : c'est l'USB-Blaster qui programme."
+    }
+  },
+  "lessons": {
+    "switches": {
+      "title": "Interrupteurs, XOR et un bouton actif à l'état bas",
+      "lede": "SW7-SW0 allument les LED au-dessus d'eux, LEDR8 montre SW8 XOR SW9, et LEDR9 s'allume tant que vous maintenez KEY0. Un bouton lit 0 quand il est enfoncé : le design l'inverse donc.",
+      "steps": {
+        "1": "SW, KEY et LEDR sont les noms de ports du .qsf du System Builder de Terasic, qui relie chaque bit à sa broche du FPGA : SW[0] est PIN_C10, LEDR[0] est PIN_A8.",
+        "2": "Chaque assign est un fil ou une porte qui est toujours là : LEDR[7:0] est SW[7:0] câblé tout droit, LEDR[8] une porte XOR.",
+        "3": "Appuyez sur Lancer, basculez SW8 et SW9, puis maintenez KEY0 : LEDR9 ne s'allume que tant que le bouton est enfoncé."
+      },
+      "hints": {
+        "1": "Écrivez assign LEDR[9] = KEY[0]; et LEDR9 s'allume au contraire tant que le bouton est relâché : les boutons sont actifs à l'état bas.",
+        "2": "Remplacez ^ par & et LEDR8 ne s'allume qu'avec les deux interrupteurs en haut."
+      },
+      "specs": {
+        "1": {
+          "label": "Niveau logique",
+          "value": "LVTTL 3,3 V : interrupteur en haut = 1"
+        },
+        "2": {
+          "label": "Boutons",
+          "value": "Tirés vers le haut : relâché = 1, enfoncé = 0"
+        },
+        "3": {
+          "label": "Commande des LED",
+          "value": "Broche → 330 Ω → LED, environ 4 mA"
+        }
+      },
+      "features": {
+        "1": "Des fils et des portes avec assign",
+        "2": "Entrées actives à l'état bas : inversez KEY",
+        "3": "Basculez les interrupteurs et appuyez sur KEY0 pendant que ça tourne"
+      },
+      "pins": {
+        "SW8": {
+          "to": "Broche B14 du FPGA (SW[8])",
+          "role": "Entrée A du XOR"
+        },
+        "KEY0": {
+          "to": "Buffer de Schmitt U14 → broche B8 du FPGA (KEY[0])",
+          "role": "0 tant qu'il est enfoncé"
+        },
+        "LEDR9": {
+          "to": "Broche B11 du FPGA (LEDR[9])",
+          "role": "Allumée tant que KEY0 est maintenu"
+        }
+      },
+      "callouts": {
+        "SW8": "En haut = 1. Avec SW9, il commande le XOR de LEDR8.",
+        "KEY0": "Lit 0 tant qu'il est enfoncé.",
+        "U14": "Un buffer à trigger de Schmitt : les boutons arrivent propres au FPGA, sans rebond."
+      },
+      "checks": {
+        "1": "Le design tourne 2,5 s sans erreur",
+        "2": "XOR : LEDR8 s'allume avec seulement SW8 en haut",
+        "3": "XOR : LEDR8 s'éteint avec SW8 et SW9 tous deux en haut",
+        "4": "LEDR9 reste éteinte tant que KEY0 est relâché",
+        "5": "LEDR9 s'allume tant que KEY0 est maintenu",
+        "6": "LEDR9 s'éteint à nouveau quand KEY0 est relâché"
+      },
+      "code": {
+        "intro": "Des interrupteurs vers les LED, une porte XOR et un bouton actif à l'état bas.",
+        "qsf": "Noms de ports du .qsf du System Builder de Terasic, qui donne à chaque bit sa broche du FPGA.",
+        "sw": "10 interrupteurs à glissière, en haut = 1",
+        "key": "2 boutons poussoirs, 0 tant qu'ils sont enfoncés",
+        "copy": "SW7-SW0 tout droit vers les LED au-dessus d'eux",
+        "xor": "allumée quand exactement un de SW8 et SW9 est en haut",
+        "invert": "un bouton lit 0 quand il est enfoncé : on l'inverse donc"
+      },
+      "world": {
+        "sw8": "SW8",
+        "sw9": "SW9",
+        "key0": "KEY0 (lit 0 tant qu'il est enfoncé)"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Avec assign LEDR[9] = KEY[0]; quand LEDR9 s'allume-t-elle ?",
+          "options": {
+            "1": "Tant que KEY0 est maintenu",
+            "2": "Tant que KEY0 est relâché : le bouton lit 1 quand il est en haut",
+            "3": "Jamais"
+          },
+          "why": "Le bouton est tiré vers 3,3 V et l'enfoncer tire la broche à 0. Pour allumer la LED pendant l'appui, inversez-le : ~KEY[0]."
+        },
+        "q2": {
+          "q": "Quelles positions des interrupteurs allument LEDR8 ?",
+          "options": {
+            "1": "Les deux en haut",
+            "2": "Les deux en bas",
+            "3": "L'un en haut et l'autre en bas"
+          },
+          "why": "XOR vaut 1 quand ses entrées sont différentes."
+        },
+        "q3": {
+          "q": "Qu'est-ce qui décide que SW[0] est l'interrupteur de la broche C10 ?",
+          "options": {
+            "1": "Les affectations de broches du fichier .qsf",
+            "2": "L'ordre dans lequel les ports sont déclarés",
+            "3": "Quartus le devine d'après le nom"
+          },
+          "why": "Le Verilog ne fait que nommer des ports. Le .qsf relie chacun à une bille du FPGA, et le System Builder de Terasic l'écrit avec ces noms."
+        }
+      }
+    },
+    "blink": {
+      "title": "Clignoter avec l'horloge de 50 MHz",
+      "lede": "Il n'y a pas de delay() : LEDR0 clignote parce que le design compte 50 millions de cycles d'horloge par seconde, et LEDR9-LEDR6 comptent les clignotements.",
+      "steps": {
+        "1": "MAX10_CLK1_50 est une horloge de 50 MHz venant du générateur d'horloge CDCE937. À chaque front montant, le bloc always ajoute un à count.",
+        "2": "Quand count atteint HALF, il repart de zéro et LEDR0 change d'état : deux changements font un clignotement.",
+        "3": "LEDR9-LEDR6 comptent les clignotements en binaire. Changez la vitesse de clignotement et relancez."
+      },
+      "hints": {
+        "1": "CLK_HZ est l'horloge de la carte. Le simulateur fait tourner le design sur une horloge plus lente et règle CLK_HZ en conséquence : une seconde reste une seconde.",
+        "2": "count fait 32 bits de large : à 50 MHz, il lui faudrait 86 secondes pour déborder."
+      },
+      "specs": {
+        "1": {
+          "label": "Horloge",
+          "value": "50 MHz sur PIN_P11 : 20 ns par cycle"
+        },
+        "2": {
+          "label": "HALF à 2 Hz",
+          "value": "50 000 000 ÷ 4 = 12 500 000 cycles"
+        },
+        "3": {
+          "label": "Matériel",
+          "value": "32 bascules, un additionneur et un comparateur"
+        }
+      },
+      "features": {
+        "1": "Logique séquentielle avec always @(posedge clk)",
+        "2": "Le temps vient du comptage, pas de l'attente",
+        "3": "Réglez la vitesse de clignotement avec une valeur modifiable du code"
+      },
+      "params": {
+        "hz": {
+          "label": "Vitesse de clignotement"
+        }
+      },
+      "pins": {
+        "MAX10_CLK1_50": {
+          "to": "CDCE937 (U3) → PIN_P11",
+          "role": "Chaque front montant met à jour les registres"
+        },
+        "LEDR0": {
+          "to": "Broche A8 du FPGA (LEDR[0])",
+          "role": "Change d'état tous les HALF cycles"
+        },
+        "LEDR6": {
+          "to": "Broche E14 du FPGA (LEDR[6])",
+          "role": "Bit de poids faible du compte des clignotements"
+        }
+      },
+      "callouts": {
+        "U3": "Le générateur d'horloge : deux horloges de 50 MHz à partir d'un quartz de 24 MHz.",
+        "LEDR0": "Clignote à la vitesse que vous réglez.",
+        "LEDR6": "Bit 0 du compte des clignotements : deux fois moins vite que LEDR0."
+      },
+      "checks": {
+        "1": "Le design tourne 4 s sans erreur",
+        "2": "LEDR0 clignote (un cycle entre 0,15 et 1,1 s)",
+        "3": "LEDR6 compte les clignotements (un cycle entre 0,3 et 2,2 s)",
+        "4": "Il compte sur posedge MAX10_CLK1_50 et mesure le temps avec CLK_HZ"
+      },
+      "code": {
+        "intro": "Clignotement : compter les cycles d'horloge et inverser LEDR0 à chaque demi-période.",
+        "clk": "l'horloge de la carte : cycles par seconde",
+        "half": "Cycles d'horloge dans un demi-clignotement.",
+        "toggle": "inverse LEDR0",
+        "count": "LEDR0 va s'éteindre : un clignotement de plus"
+      },
+      "quiz": {
+        "q1": {
+          "q": "À 50 MHz avec BLINK_HZ = 2, combien vaut HALF ?",
+          "options": {
+            "1": "12 500 000",
+            "2": "25 000 000",
+            "3": "100 000 000"
+          },
+          "why": "HALF = 50 000 000 ÷ (2 × 2) = 12 500 000 cycles, un quart de seconde. Deux moitiés font un clignotement de 0,5 s."
+        },
+        "q2": {
+          "q": "Pourquoi le design compte-t-il des cycles d'horloge au lieu d'attendre ?",
+          "options": {
+            "1": "Compter consomme moins d'énergie",
+            "2": "Le Verilog ne permet pas d'écrire un nombre aussi grand",
+            "3": "Aucun processeur n'exécute d'étapes l'une après l'autre : le seul sens du temps du circuit, ce sont ses fronts d'horloge"
+          },
+          "why": "Un design, c'est du matériel. Sur la puce, une demi-seconde, ce sont 25 millions de fronts d'une horloge de 50 MHz."
+        },
+        "q3": {
+          "q": "Vous cadencez le design depuis MAX10_CLK2_50 à la place. Qu'est-ce qui change ?",
+          "options": {
+            "1": "Rien : elle est aussi à 50 MHz, CLK_HZ reste donc le même",
+            "2": "Il clignote deux fois plus vite",
+            "3": "Il s'arrête"
+          },
+          "why": "Les deux horloges utilisateur viennent du même CDCE937 à 50 MHz. Seule une horloge d'une autre fréquence demande un nouveau CLK_HZ."
+        }
+      }
+    },
+    "counter": {
+      "title": "Compter les appuis, maintenir pour effacer",
+      "lede": "Chaque appui sur KEY0 ajoute un à un nombre binaire affiché sur les LED. Une pression brève sur KEY1 ne fait rien ; la maintenir une seconde efface le compte.",
+      "steps": {
+        "1": "Deux bascules par bouton amènent KEY sur l'horloge de 50 MHz : un synchroniseur.",
+        "2": "press vaut 1 pendant exactement un cycle d'horloge quand KEY0 passe de 1 à 0, au moment de l'appui.",
+        "3": "held compte les cycles d'horloge tant que KEY1 est enfoncé et repart de zéro quand il est relâché ; l'équivalent d'une seconde, CLK_HZ cycles, déclenche clear.",
+        "4": "Appuyez sur Lancer : KEY0 est enfoncé trois fois, KEY1 est pressé brièvement, puis maintenu."
+      },
+      "hints": {
+        "1": "Pas d'anti-rebond ici : un filtre RC et le buffer de Schmitt U14 nettoient déjà les boutons sur la carte. Les interrupteurs à glissière n'ont pas cette aide : ne les comptez donc jamais de cette façon.",
+        "2": "Les boutons sont actifs à l'état bas : un appui est donc un front descendant, l'ancienne valeur 1, la nouvelle 0.",
+        "3": "Réglez HOLD sur CLK_HZ / 2 et une demi-seconde suffit pour effacer."
+      },
+      "specs": {
+        "1": {
+          "label": "Maintenir pour effacer",
+          "value": "CLK_HZ = 50 000 000 cycles : 1 s"
+        },
+        "2": {
+          "label": "Circuit des boutons",
+          "value": "10 kΩ vers 3,3 V, filtre RC, buffer de Schmitt U14"
+        },
+        "3": {
+          "label": "Compteur",
+          "value": "10 bits : jusqu'à 1 023 appuis"
+        }
+      },
+      "features": {
+        "1": "Synchroniser et trouver le front descendant",
+        "2": "Distinguer une pression brève d'un maintien en comptant les cycles",
+        "3": "Boutons sans rebond grâce à la carte"
+      },
+      "pins": {
+        "KEY0": {
+          "to": "U14 → PIN_B8 (KEY[0])",
+          "role": "Chaque appui ajoute un"
+        },
+        "KEY1": {
+          "to": "U14 → PIN_A7 (KEY[1])",
+          "role": "Maintenez une seconde pour effacer"
+        },
+        "LEDR0": {
+          "to": "PIN_A8 (LEDR[0])",
+          "role": "Bit 0 du compte"
+        }
+      },
+      "callouts": {
+        "KEY0": "Appuyez pour compter : lit 0 tant qu'il est maintenu.",
+        "KEY1": "Maintenez une seconde pour effacer.",
+        "U14": "Supprime les rebonds des deux boutons en matériel."
+      },
+      "checks": {
+        "1": "Le design tourne 3,5 s sans erreur",
+        "2": "Le premier appui apparaît sur LEDR0 en moins de 50 ms",
+        "3": "Après trois appuis, LEDR0 est allumée (3 s'écrit 0000000011)",
+        "4": "Après trois appuis, LEDR1 est allumée",
+        "5": "Une pression brève sur KEY1 laisse le compte intact",
+        "6": "Maintenir KEY1 une seconde l'efface"
+      },
+      "code": {
+        "intro": "Compte les appuis sur KEY0 sur les LED ; maintenez KEY1 une seconde pour effacer.",
+        "key": "0 tant qu'il est enfoncé, rebonds filtrés sur la carte",
+        "sync": "Synchronisation : deux bascules amènent chaque bouton sur notre horloge.",
+        "edge": "Front : une impulsion d'un cycle d'horloge quand KEY0 passe de 1 à 0.",
+        "hold": "Maintien : compter les cycles tant que KEY1 est enfoncé ; une seconde entière efface.",
+        "count": "Compter les appuis ; l'effacement l'emporte."
+      },
+      "world": {
+        "key0": "KEY0 (compter)",
+        "key1": "KEY1 (maintenir pour effacer)"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Pourquoi ce compteur n'a-t-il pas besoin d'anti-rebond, alors que celui de la Basys 3 en a besoin ?",
+          "options": {
+            "1": "Le MAX 10 ignore les rebonds",
+            "2": "50 MHz, c'est trop lent pour les voir",
+            "3": "La carte supprime les rebonds des boutons, avec un filtre RC et le buffer à trigger de Schmitt U14"
+          },
+          "why": "U14 transforme le contact qui rebondit en un seul front propre. Les interrupteurs à glissière n'ont pas ce circuit."
+        },
+        "q2": {
+          "q": "Que détecte wire press = k0[1] & ~k0[0]; ?",
+          "options": {
+            "1": "Le moment où KEY0 s'enfonce : il valait 1 et vaut maintenant 0",
+            "2": "KEY0 maintenu",
+            "3": "KEY0 relâché"
+          },
+          "why": "k0[1] est le bouton un cycle d'horloge plus tôt. Ce n'est qu'au premier cycle après un appui que l'ancienne valeur vaut 1 et la nouvelle 0."
+        },
+        "q3": {
+          "q": "Vous pressez KEY1 pendant 0,2 s. Qu'arrive-t-il au compte ?",
+          "options": {
+            "1": "Il s'efface",
+            "2": "Rien : held n'atteint que 10 millions des 50 millions de cycles nécessaires, puis repart de zéro",
+            "3": "Il augmente de un"
+          },
+          "why": "held revient à 0 dès que KEY1 est relâché : seul un maintien d'une seconde entière atteint HOLD."
+        }
+      }
+    },
+    "pwm": {
+      "title": "Varier une LED sur le connecteur Arduino",
+      "lede": "SW7-SW0 règlent la luminosité d'une LED sur la broche Arduino D3, de 0 à 255 sur 256. Basculez SW9 et elle respire toute seule, montant et descendant toutes les deux secondes.",
+      "steps": {
+        "1": "ramp compte de 0 à 255 en boucle ; bright vaut 1 tant que ramp est inférieur à duty : D3 est donc à l'état haut pendant duty cycles d'horloge sur 256.",
+        "2": "level monte d'un pas tous les STEP cycles, 256 pas par seconde, et fait demi-tour à 255 et à 0 : une onde triangulaire.",
+        "3": "SW9 choisit d'où vient duty : de SW7-SW0, ou de level. Câblez la LED sur D3 à travers 220 Ω et lancez."
+      },
+      "hints": {
+        "1": "SW7 seul vaut 128 (la moitié) ; SW7 et SW6 font 192 (les trois quarts).",
+        "2": "Les broches Arduino sont en 3,3 V et vont directement au FPGA : une sortie 5 V d'un shield peut l'endommager."
+      },
+      "specs": {
+        "1": {
+          "label": "Fréquence de la PWM",
+          "value": "50 MHz ÷ 256 ≈ 195 kHz"
+        },
+        "2": {
+          "label": "Respiration",
+          "value": "256 pas en montée, 256 en descente : 2 s"
+        },
+        "3": {
+          "label": "D3",
+          "value": "ARDUINO_IO[3] = PIN_AB8, 8 mA au maximum"
+        }
+      },
+      "features": {
+        "1": "Un compteur et un comparateur font de la PWM",
+        "2": "Un second compteur la fait respirer",
+        "3": "N'importe quelle broche du FPGA peut faire de la PWM"
+      },
+      "pins": {
+        "D3": {
+          "to": "R1 220 Ω → anode de la LED",
+          "role": "La sortie PWM, ARDUINO_IO[3]"
+        },
+        "GND": {
+          "to": "Cathode de la LED (GND sur JP2)",
+          "role": "Le chemin de retour"
+        },
+        "SW9": {
+          "to": "PIN_F15 (SW[9])",
+          "role": "En haut : respiration ; en bas : SW7-SW0 règlent le niveau"
+        }
+      },
+      "callouts": {
+        "JP3": "Broches Arduino D7-D0 : 3,3 V seulement, reliées directement à des broches du FPGA.",
+        "R1": "220 Ω : environ 5 mA à plein rapport cyclique, sous les 8 mA de la broche.",
+        "LED1": "Patte longue (anode) côté R1."
+      },
+      "checks": {
+        "1": "Le design tourne 3,2 s sans erreur",
+        "2": "Avec SW7 en haut, D3 est à l'état haut environ la moitié du temps",
+        "3": "Avec SW7 et SW6 en haut, environ les trois quarts",
+        "4": "SW9 en haut : la LED respire, à environ mi-luminosité en montée",
+        "5": "... et presque à fond une demi-seconde plus tard"
+      },
+      "code": {
+        "intro": "PWM sur la broche Arduino D3 : les interrupteurs règlent la luminosité, ou SW9 la fait respirer.",
+        "sw": "SW7-SW0 : luminosité 0-255 ; SW9 : respiration",
+        "io": "le connecteur Arduino, D0-D15 (D3 est le bit 3)",
+        "breath": "Respiration : level monte jusqu'à 255 et redescend, d'un pas tous les STEP cycles.",
+        "pick": "SW9 en haut : suivre la respiration ; en bas : les interrupteurs.",
+        "ramp": "PWM : à l'état haut tant qu'une rampe 8 bits libre est inférieure à duty.",
+        "d3": "seule D3 est pilotée ; les autres restent à l'état bas"
+      },
+      "world": {
+        "sw7": "SW7 (128)",
+        "sw6": "SW6 (64)",
+        "sw9": "SW9 (respiration)"
+      },
+      "quiz": {
+        "q1": {
+          "q": "duty vaut 64. Pendant quelle part du temps D3 est-elle à l'état haut ?",
+          "options": {
+            "1": "Les deux tiers",
+            "2": "Un quart : 64 cycles d'horloge sur 256",
+            "3": "Tout le temps"
+          },
+          "why": "bright vaut 1 pour ramp = 0 à 63 : 64 valeurs sur 256, soit 25 %."
+        },
+        "q2": {
+          "q": "Combien de temps dure une respiration, montée et descente ?",
+          "options": {
+            "1": "Environ 2 s : 256 pas en montée et 256 en descente, à 256 pas par seconde",
+            "2": "Environ 1 ms",
+            "3": "256 s"
+          },
+          "why": "STEP = CLK_HZ / 256 : level avance donc de 256 pas par seconde, une seconde pour monter, une seconde pour descendre."
+        },
+        "q3": {
+          "q": "Pourquoi un shield Arduino 5 V ne doit-il jamais piloter D3 ?",
+          "options": {
+            "1": "D3 est une broche analogique",
+            "2": "La LED serait trop brillante",
+            "3": "Les broches Arduino vont directement au FPGA, qui accepte environ 4,1 V au maximum"
+          },
+          "why": "L'entrée maximale absolue du MAX 10 est de 4,12 V. Seules A0-A5 acceptent 0-5 V, à travers l'étage d'entrée à ampli-op."
+        }
+      }
+    },
+    "hex": {
+      "title": "Chiffres hexadécimaux sur HEX2-HEX0",
+      "lede": "Affichez les dix interrupteurs sous la forme d'un nombre hexadécimal à trois chiffres. Chacun des six afficheurs a ses huit broches : un seul petit module, utilisé trois fois, les pilote donc tous en même temps.",
+      "steps": {
+        "1": "hex7 transforme une valeur de 4 bits en sept segments à allumer, avec le point décimal en bit 7.",
+        "2": "Les afficheurs sont à anode commune : un segment s'allume sur 0, hex7 inverse donc le motif, et un 1 en bit 7 garde le point éteint.",
+        "3": "top en fait trois copies : digit0 affiche SW3-SW0, digit1 SW7-SW4 et digit2 SW9-SW8.",
+        "4": "HEX5-HEX3 reçoivent 8'hFF, tous les segments éteints. Appuyez sur Lancer : SW0, SW1, SW3 et SW9 montent à tour de rôle."
+      },
+      "hints": {
+        "1": "Contrairement à la Basys 3, rien n'est multiplexé : chaque afficheur est allumé en permanence.",
+        "2": "Laissez une sortie HEX non pilotée et Quartus la relie à 0, ce qui allume tous les segments de cet afficheur. Pilotez les afficheurs inutilisés avec 8'hFF.",
+        "3": "SW9 seul fait afficher 2 à HEX2, parce que SW9 est le bit 1 de ce chiffre."
+      },
+      "specs": {
+        "1": {
+          "label": "Afficheurs",
+          "value": "Six afficheurs à anode commune, 8 broches chacun (a-g, DP)"
+        },
+        "2": {
+          "label": "Niveau actif",
+          "value": "0 = allumé ; HEX0[0] est le segment a"
+        },
+        "3": {
+          "label": "Matériel",
+          "value": "Trois copies d'une même table de correspondance, sans horloge"
+        }
+      },
+      "features": {
+        "1": "Un module, utilisé trois fois",
+        "2": "Sorties actives à l'état bas",
+        "3": "Les afficheurs inutilisés doivent être pilotés éteints"
+      },
+      "pins": {
+        "HEX0": {
+          "to": "8 broches du FPGA → les segments de l'afficheur de droite",
+          "role": "Le bit 0 est le segment a ; 0 l'allume"
+        },
+        "HEX2": {
+          "to": "8 broches du FPGA → le troisième afficheur en partant de la droite",
+          "role": "Affiche SW9-SW8"
+        },
+        "SW0": {
+          "to": "PIN_C10 (SW[0])",
+          "role": "Bit 0 du chiffre de droite"
+        }
+      },
+      "callouts": {
+        "HEX10": "HEX1 et HEX0 : chaque afficheur a ses huit broches.",
+        "HEX32": "HEX2 affiche SW9-SW8 ; HEX3 reste éteint.",
+        "SW0": "SW3-SW0 forment le chiffre le plus à droite."
+      },
+      "checks": {
+        "1": "Le design tourne 2 s sans erreur",
+        "2": "Tous les interrupteurs en bas : HEX0 affiche 0 (segment a allumé)",
+        "3": "... sans barre du milieu (segment g éteint)",
+        "4": "SW1 et SW0 en haut : il affiche 3 (g allumé)",
+        "5": "SW3 en haut aussi : il affiche b (a éteint)",
+        "6": "SW9 en haut : HEX2 affiche 2 (segment c éteint)",
+        "7": "HEX5 reste éteint"
+      },
+      "code": {
+        "intro": "Affiche SW[9:0] en trois chiffres hexadécimaux sur HEX2-HEX0.",
+        "module": "hex7 : le décodeur d'un chiffre, utilisé trois fois plus bas.",
+        "bits": "segments a-g dans les bits 0-6, le point décimal dans le bit 7 ; 0 = allumé",
+        "table": "Segments à allumer pour chaque valeur hexadécimale, sous la forme {g,f,e,d,c,b,a} avec 1 = allumé.",
+        "invert": "allumé sur 0, point décimal éteint",
+        "copies": "Trois copies de hex7, une par chiffre.",
+        "blank": "HEX5-HEX3 éteints : les huit bits à 1."
+      },
+      "world": {
+        "sw0": "SW0",
+        "sw1": "SW1",
+        "sw3": "SW3",
+        "sw9": "SW9"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Pourquoi ce design n'a-t-il pas besoin de multiplexage, alors que celui de la Basys 3 en a besoin ?",
+          "options": {
+            "1": "Chaque afficheur a ses huit broches du FPGA",
+            "2": "Le MAX 10 est plus rapide",
+            "3": "Les afficheurs partagent leurs fils de segments"
+          },
+          "why": "La DE10-Lite consacre 48 broches du FPGA à ses six afficheurs : ils peuvent donc tous être allumés en même temps."
+        },
+        "q2": {
+          "q": "hex7 pilote hex = {1'b1, ~lit}. Pourquoi le 1'b1 ?",
+          "options": {
+            "1": "Il allume le point décimal",
+            "2": "Il garde le point décimal éteint : comme les segments, il s'allume sur 0",
+            "3": "C'est un bit de parité"
+          },
+          "why": "Le bit 7 est le point décimal, actif à l'état bas comme le reste ; un 1 le garde éteint."
+        },
+        "q3": {
+          "q": "Que produit hex7 digit1 (.value(SW[7:4]), .hex(HEX1)); ?",
+          "options": {
+            "1": "Un appel de fonction qui s'exécute une fois",
+            "2": "Un fil entre deux modules",
+            "3": "Une deuxième copie du circuit décodeur, câblée sur SW7-SW4 et HEX1"
+          },
+          "why": "Une instance, c'est du matériel en plus : trois instances sont trois décodeurs qui travaillent côte à côte."
+        }
+      }
+    }
+  }
+}
