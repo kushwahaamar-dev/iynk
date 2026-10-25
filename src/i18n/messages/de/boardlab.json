@@ -150,7 +150,7 @@
   "assembly": {
     "title": "Zusammenbau und Einschalten",
     "lede": "Bau das Board in der richtigen Reihenfolge, schalte es dann ein und prüf es, wie auf der Werkbank.",
-    "doIt": "Ausführen",
+    "doIt": "Durchführen",
     "doneStep": "Erledigt",
     "build": "Bauen",
     "break": "Kaputt machen",
