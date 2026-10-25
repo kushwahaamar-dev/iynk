@@ -1,0 +1,414 @@
+{
+  "title": "Quad longue portée 7 pouces",
+  "tagline": "Le croiseur 7 pouces : GPS, liaison 900 MHz et batterie Li-ion, des kilomètres au loin et un sauvetage jusqu'au départ.",
+  "sub": "Croiseur longue portée avec GPS Rescue",
+  "hint": "Montez-le, accrochez le GPS et testez le sauvetage sans hélices, puis volez dans la vallée",
+  "noun": "quad longue portée",
+  "overview": "Un quad longue portée 7 pouces échange le punch d'un 5 pouces contre l'efficacité : de grandes hélices à petit pas tournées lentement par des moteurs de 1300 KV, et une batterie 6S1P de cellules Li-ion 21700 qui stocke environ deux fois plus d'énergie par gramme qu'une LiPo. Un GPS et une boussole sur un mât indiquent à Betaflight où est le point de départ, et une liaison ExpressLRS 900 MHz porte à plusieurs kilomètres. Si la liaison est perdue, GPS Rescue monte, se tourne vers le départ, revient et se pose. Celui-ci a un châssis carbone True-X de 315 mm, une stack F7 en 30,5 mm et un émetteur vidéo analogique de 1 W. Choisissez la batterie, les moteurs et les hélices et regardez le temps de vol changer, montez-le pièce par pièce, passez les vérifications de la boussole, du GPS et du failsafe sans hélices, puis volez dans la vallée.",
+  "practice": "Volez d'abord les portes de la ferme pour sentir un 7 pouces lourd, puis le parcours de la vallée en gardant un œil sur la flèche du départ, puis regardez GPS Rescue le ramener. Sur un vrai quad longue portée : calibrez la boussole et comparez son cap avec un téléphone, attendez 8 satellites ou plus avant d'armer, et testez le sauvetage de près (à 50 à 100 m, activez GPS RESCUE et regardez-le revenir) avant de lui faire confiance au loin. Faites demi-tour à 3,1 V par cellule, et connaissez les règles là où vous volez : la plupart des pays exigent que le quad reste en vue, ou un observateur à côté de vous.",
+  "design": {
+    "fixed": {
+      "FRAME": "Châssis carbone True-X 7 pouces",
+      "ESC": "ESC 4-en-1 de 50 A (AM32)",
+      "FC": "Contrôleur de vol F7 avec baromètre",
+      "CAM": "Caméra FPV analogique",
+      "VTX": "VTX 5,8 GHz 1 W et antenne courte",
+      "RX": "Récepteur ELRS 900 MHz diversity et antenne en T",
+      "GPS": "GPS M10 + boussole QMC5883L",
+      "XT60": "Câble XT60 et condensateur à faible ESR",
+      "TOP": "Plaque supérieure, entretoises et mât GPS",
+      "STRAP": "Sangle de batterie et patin antidérapant"
+    },
+    "verdict": {
+      "ok": "Les pièces vont ensemble. Efficace et calme : un croiseur longue portée.",
+      "over": "{kv} KV en {cells}S font tourner une hélice de 7 pouces bien plus vite que ce pour quoi ces moteurs sont faits : courant énorme, moteurs brûlants et désynchronisations. Les montages 7 pouces en 6S utilisent environ 1300 KV ; les moteurs de 1700 KV sont faits pour la 4S."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Châssis carbone True-X 7 pouces",
+      "what": "Des bras carbone de 6 mm en True-X carré, 315 mm d'un moteur à l'autre en diagonale (111,4 mm vers l'avant ou l'arrière et de chaque côté du centre), sur une plaque centrale de 132 x 52 mm avec les trous de stack de 30,5 mm au milieu. Les hélices de 7 pouces laissent environ 45 mm entre les bouts voisins. Des bras épais empêchent les grandes hélices de faire fléchir le châssis. Environ 162 g."
+    },
+    "MOTORS": {
+      "name": "Quatre moteurs 2807 à faible KV",
+      "what": "Des moteurs à cage tournante avec un stator de 28 mm sur 7 mm de haut et un bobinage 12N14P (motor_poles 14), environ 48 g chacun. 1300 KV en 6S, c'est le moteur classique du 7 pouces : il fait tourner les grandes hélices lentement et efficacement en croisière et garde 5 fois son poids en poussée. L'option 3008 1100 KV est plus grosse et plus calme ; l'option 1700 KV est un moteur 4S et fait tourner trop vite une hélice de 7 pouces en 6S."
+    },
+    "ESC": {
+      "name": "ESC 4-en-1 de 50 A (AM32)",
+      "what": "Quatre pilotes de moteur de 50 A avec 12 MOSFET sur une seule carte de 30,5 mm au bas de la stack, pastilles de batterie à l'arrière. Il fait tourner le firmware AM32 (BLHeli_32 a pris fin en 2024), reçoit le DShot600 du contrôleur de vol et, étant bidirectionnel, renvoie les rpm de chaque moteur pour le filtre RPM."
+    },
+    "WIRES": {
+      "name": "Fils de phase des moteurs",
+      "what": "Trois fils par moteur, passés le long des bras longs et soudés sur les pastilles de ce coin de l'ESC. N'importe quel ordre fait tourner le moteur ; en inverser deux, ou l'inverser dans le firmware de l'ESC, le fait tourner dans l'autre sens. Attachez-les : un fil lâche sur un bras de 7 pouces finit dans une hélice."
+    },
+    "XT60": {
+      "name": "Câble XT60 et condensateur 1000 µF 35 V",
+      "what": "Un câble en 12 AWG avec la prise XT60 jaune, soudé sur les pastilles de batterie de l'ESC, et un condensateur à faible ESR de 1000 µF sur ces mêmes pastilles, bande sur la patte moins. Les longs fils de batterie d'un 7 pouces résonnent de pics de tension à chaque commutation et à chaque freinage des ESC ; le condensateur les absorbe avant qu'ils n'atteignent le gyroscope et la vidéo. 35 V, c'est le minimum en 6S (25,2 V pleine) ; 50 V donnent de la marge."
+    },
+    "FC": {
+      "name": "Contrôleur de vol F7 avec baromètre",
+      "what": "Un contrôleur de vol F722 sur la stack de 30,5 mm, avec un gyroscope, un baromètre pour l'altitude et une puce OSD analogique. Il fait tourner Betaflight 2026.6.2. Le récepteur est sur l'UART2, le GPS sur l'UART3, la boussole sur les pastilles I2C et le SmartAudio du VTX sur l'UART1. GPS Rescue a besoin de l'accéléromètre, du GPS sur un UART complet et, pour la hauteur, du baromètre. La flèche doit pointer vers le nez."
+    },
+    "VTX": {
+      "name": "VTX 5,8 GHz 1 W et antenne courte",
+      "what": "Un émetteur vidéo analogique qui monte jusqu'à 1 W (30 dBm), en haut de la stack avec une antenne courte qui sort à l'arrière. Betaflight règle sa bande, son canal et sa puissance par SmartAudio. Au loin, la vidéo 5,8 GHz s'efface avant la liaison de contrôle 900 MHz. Ne l'alimentez jamais sans l'antenne, et gardez-le à 25 mW sur l'établi : 1 W chauffe vite."
+    },
+    "CAM": {
+      "name": "Caméra FPV analogique, uptilt de 20°",
+      "what": "Une caméra analogique de 19 mm entre les plaques latérales au nez, inclinée de 20 degrés vers le haut pour que l'image soit à plat quand le quad penche vers l'avant en croisière. Sa vidéo entre sur la pastille CAM du contrôleur de vol, où l'OSD inscrit par-dessus la qualité de liaison, les satellites, la flèche du départ et la batterie."
+    },
+    "RX": {
+      "name": "Récepteur ELRS 900 MHz diversity et antenne en T",
+      "what": "Un récepteur ExpressLRS en 868 ou 915 MHz avec deux antennes (diversity) sur un support en T à l'arrière. Une fréquence plus basse porte plus loin et contourne mieux les arbres et les collines que le 2,4 GHz. Il parle CRSF avec Betaflight sur l'UART2 et renvoie la qualité de liaison (LQ) et la force du signal (RSSI en dBm) pour l'OSD : surveillez les deux pendant un long vol."
+    },
+    "TOP": {
+      "name": "Plaque supérieure, entretoises et mât GPS",
+      "what": "Une plaque supérieure en carbone de 2 mm sur quatre entretoises de 30 mm, et un mât imprimé en TPU à l'arrière, incliné de 22 degrés vers l'arrière et terminé par une plateforme horizontale. Le mât éloigne le GPS et la boussole du VTX, de l'ESC et des fils de batterie, dont les courants perturberaient la boussole."
+    },
+    "GPS": {
+      "name": "GPS M10 + boussole QMC5883L",
+      "what": "Un module de 20 x 20 mm d'environ 8 g sur le mât : un récepteur u-blox M10 (GPS, Galileo, BeiDou, GLONASS) sur l'UART3 et une boussole QMC5883L en I2C, dans un seul câble à 6 broches. Il doit être à plat, flèche vers le nez. La LED verte est fixe pendant la recherche et clignote une fois par seconde avec un fix 3D. Betaflight exige 8 satellites avant d'armer, pour avoir un point de départ."
+    },
+    "BATT": {
+      "name": "Batterie Li-ion 6S1P 21700",
+      "what": "Six cellules 21700 en série (6S, une en parallèle : 1P), groupées en 3 x 2 dans un bloc de 71 x 65 x 44 mm d'environ 440 g, sanglé sur la plaque supérieure. Une cellule Li-ion fait 4,2 V pleine et 3,6 V en nominal et reste utile jusqu'à environ 3,0 V, avec environ deux fois l'énergie par gramme d'une LiPo. Mais une cellule de 4000 mAh est donnée pour environ 45 A : un coup de gaz à 120 A la fait fortement chuter et la chauffe. L'option P50B stocke 5000 mAh à 60 A ; la LiPo 6S 1800 est plus légère et plus nerveuse, avec moins de la moitié de l'énergie."
+    },
+    "PROPS": {
+      "name": "Hélices bipales 7 pouces, 2 CW + 2 CCW",
+      "what": "Quatre hélices bipales 7 x 3.5, le choix efficace pour la longue portée. Le sélecteur propose aussi une bipale plus longue en 7.5 x 3.7 et une tripale 7 x 4 plus nerveuse, qui accroche mieux mais coûte du temps de vol. Deux tournent en sens horaire et deux en sens antihoraire (props in). Elles se montent en dernier."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Commencez par le châssis",
+      "body": "Boulonnez les bras entre les plaques et vérifiez chaque vis : un 7 pouces fait se desserrer ce qu'un 5 pouces ne desserre jamais. Limez toute arête de carbone tranchante près du passage des fils."
+    },
+    "motors": {
+      "title": "Vissez les quatre moteurs",
+      "body": "Quatre vis M3 chacun sur les trous de 16 x 16 mm au bout des bras, fils tournés vers l'intérieur le long du bras. Vérifiez que les vis ne touchent pas les bobinages.",
+      "refusal": "Les moteurs se vissent sur les bras du châssis : posez d'abord le châssis."
+    },
+    "esc": {
+      "title": "Montez l'ESC 4-en-1",
+      "body": "Sur les trous de stack de 30,5 mm, pastilles de batterie à l'arrière. Rien sous lui ne doit toucher le carbone.",
+      "refusal": "L'ESC se pose sur les trous de stack du châssis : posez d'abord le châssis."
+    },
+    "wires": {
+      "title": "Soudez les fils des moteurs",
+      "body": "Passez les trois fils de chaque moteur le long de son bras, coupez-les à longueur et soudez-les sur les pastilles de son coin. Attachez-les avec une gaine ou du ruban pour que rien ne puisse atteindre une hélice.",
+      "refusal": "Les fils vont des moteurs à l'ESC : posez d'abord les deux."
+    },
+    "xt60": {
+      "title": "Soudez le XT60 et le condensateur",
+      "body": "Le câble en 12 AWG rouge sur + et noir sur - des pastilles de batterie de l'ESC, et le condensateur de 1000 µF sur ces mêmes pastilles avec sa bande côté moins. Vérifiez au multimètre qu'il n'y a pas de court-circuit entre + et -.",
+      "refusal": "Le XT60 et son condensateur se soudent sur les pastilles de batterie de l'ESC : posez d'abord l'ESC."
+    },
+    "fc": {
+      "title": "Empilez le contrôleur de vol, flèche vers l'avant",
+      "body": "Sur silentblocs au-dessus de l'ESC, avec le faisceau 8 broches branché et la flèche imprimée vers le nez. S'il doit être monté dans un autre sens, réglez align_board_yaw en conséquence.",
+      "refusal": "Le contrôleur de vol s'empile au-dessus de l'ESC : posez d'abord l'ESC."
+    },
+    "vtx": {
+      "title": "Posez le VTX et son antenne",
+      "body": "En haut de la stack, avec la vidéo et le 9 V venant du contrôleur de vol et le SmartAudio sur TX1. Vissez l'antenne courte avant toute mise sous tension.",
+      "refusal": "Le VTX est câblé au contrôleur de vol : posez d'abord le contrôleur de vol."
+    },
+    "cam": {
+      "title": "Posez la caméra",
+      "body": "Entre les plaques latérales au nez, inclinée de 20 degrés vers le haut, avec sa vidéo, son 5 V et sa masse sur les pastilles CAM du contrôleur de vol.",
+      "refusal": "La caméra est câblée sur les pastilles CAM du contrôleur de vol : posez d'abord le contrôleur de vol."
+    },
+    "rx": {
+      "title": "Posez le récepteur 900 MHz",
+      "body": "À l'arrière, son TX sur RX2 et son RX sur TX2, plus le 5 V et la masse. Montez l'antenne en T avec ses deux brins à 90 degrés l'un de l'autre, loin du carbone et des hélices.",
+      "refusal": "Le récepteur est câblé sur l'UART2 du contrôleur de vol : posez d'abord le contrôleur de vol."
+    },
+    "top": {
+      "title": "Posez la plaque supérieure et le mât GPS",
+      "body": "Sur ses quatre entretoises au-dessus de la stack, avec le mât à l'arrière. Rien ne doit être pincé dessous.",
+      "refusal": "La plaque supérieure ferme la stack : posez d'abord le contrôleur de vol, le VTX, la caméra et le récepteur."
+    },
+    "gps": {
+      "title": "Montez le GPS sur le mât",
+      "body": "À plat sur la plateforme du mât, flèche vers le nez, et son câble sur l'UART3, l'I2C, le 5 V et la masse. Incliné ou tourné, la boussole lit faux.",
+      "refusal": "Le GPS se pose sur le mât : posez d'abord la plaque supérieure."
+    },
+    "batt": {
+      "title": "Sanglez la batterie Li-ion",
+      "body": "Sur le patin antidérapant, la sangle passée dans le châssis, centrée pour que le quad soit équilibré entre les quatre moteurs. Ne la branchez pas encore.",
+      "refusal": "La batterie se pose sur la plaque supérieure et se branche sur le XT60 : posez d'abord les deux."
+    },
+    "props": {
+      "title": "Montez les hélices, en dernier",
+      "body": "Seulement après le test au smoke stopper et la vérification du sens des moteurs, batterie débranchée. Les hélices horaires sur M1 et M4, les antihoraires sur M2 et M3, écrous serrés.",
+      "refusal": "Les hélices se montent en dernier : passez d'abord le test au smoke stopper et la vérification du sens des moteurs."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "La batterie se branche sur le XT60. Une 6S fait 25,2 V pleine et 22,2 V en nominal (21,6 V avec les cellules Li-ion à 3,6 V). Un coup de gaz tire jusqu'à 120 A, bien plus que ce qu'aime une batterie Li-ion de 45 A.",
+    "XT60-ESC": "Des fils en 12 AWG vers les pastilles de batterie de l'ESC, avec le condensateur à faible ESR de 1000 µF 35 V branché entre elles.",
+    "ESC-MOTORS": "Trois fils de phase par moteur. N'importe quel ordre le fait tourner ; en inverser deux, ou l'inverser dans le firmware de l'ESC, le fait tourner dans l'autre sens.",
+    "FC-ESC": "Le faisceau 8 broches : quatre signaux moteur en DShot600 (bidirectionnel, pour que chaque ESC renvoie les rpm), la tension batterie, la masse et le capteur de courant.",
+    "RX-FC": "ELRS sur l'UART2 avec CRSF : le TX du récepteur sur RX2 et son RX sur TX2, plus le 5 V et la masse. Les deux fils comptent : la télémétrie (LQ, RSSI, batterie) repart vers la radiocommande.",
+    "GPS-FC": "Un seul câble à 6 broches : le TX du GPS sur RX3 et son RX sur TX3 (u-blox UBX à 57600 bauds une fois que Betaflight l'a configuré), SDA et SCL de la boussole sur les pastilles I2C, le 5 V et la masse.",
+    "CAM-FC": "La vidéo de la caméra sur la pastille CAM, avec le 5 V et la masse. L'OSD analogique du contrôleur de vol y inscrit par-dessus les données du GPS, de la liaison et de la batterie.",
+    "FC-VTX": "La vidéo avec l'OSD sort par la pastille VTX, le 9 V vient du BEC du contrôleur de vol, et le SmartAudio de TX1 permet à Betaflight de régler la bande, le canal et la puissance."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Test au smoke stopper",
+      "pass": "La lampe n'a fait que clignoter : rien n'est en court-circuit et le condensateur est dans le bon sens. Vous pouvez brancher la batterie directement.",
+      "fail": "La lampe est restée allumée : quelque chose est en court-circuit, ici un condensateur monté bande côté plus. Reposez-le bande côté moins et refaites le test avant de brancher pour de bon."
+    },
+    "motors": {
+      "title": "Vérification du sens des moteurs (sans hélices)",
+      "pass": "Les quatre tournent dans le sens qu'attend le mixeur : M1 et M4 en horaire, M2 et M3 en antihoraire (props in). Les hélices peuvent maintenant être montées.",
+      "fail": "Un moteur a tourné dans le mauvais sens (sa flèche passe au rouge). La vérification l'inverse dans les réglages de l'ESC, comme vous le feriez dans ESC Configurator, au lieu de ressouder. Avec les hélices montées, il aurait retourné le quad au décollage."
+    },
+    "accel": {
+      "title": "Calibrage de l'accéléromètre",
+      "pass": "Calibré sur une surface plane : le mode angle, le maintien d'altitude et GPS Rescue savent maintenant où est l'horizontale. Avec GPS Rescue comme failsafe, un accéléromètre non calibré bloque l'armement (NO_ACC_CAL).",
+      "fail": "Montez d'abord le contrôleur de vol et posez le quad sur une surface plane. Si la flèche pointe vers l'arrière, le calibrage n'y changera rien : tournez la carte ou faites set align_board_yaw = 180."
+    },
+    "compass": {
+      "title": "Calibrage de la boussole et vérification du cap",
+      "pass": "Calibrée (tournée selon chaque axe pendant 30 s), et le cap concorde avec la boussole d'un téléphone à 10 degrés près, nez au nord, à l'est, au sud et à l'ouest. trust_mag = ON est maintenant sans risque.",
+      "fail": "Posez d'abord le module GPS + boussole : la boussole est dedans. Si le cap est décalé de 180 degrés, la flèche du module pointe vers l'arrière : retournez-le et recalibrez avant de lui faire confiance."
+    },
+    "gps": {
+      "title": "Accroche du GPS (en extérieur)",
+      "pass": "Fix 3D avec 14 satellites, 8 nécessaires pour armer. La LED clignote une fois par seconde, Betaflight bipe quand le GPS est prêt, et le départ est enregistré là où vous armez.",
+      "fail": "Posez le module GPS + boussole et sortez le quad sous un ciel dégagé. Sans fix 3D et 8 satellites, Betaflight bloque l'armement (drapeau GPS) : pas de point de départ, pas de sauvetage."
+    },
+    "failsafe": {
+      "title": "Test du failsafe et du sauvetage (sans hélices)",
+      "pass": "Radio coupée : RXLOSS, 1,5 s d'étape 1, puis GPS RESCUE sur l'OSD, les moteurs montent en régime et le buzzer sonne SOS. Radio rallumée et manches bougés : vous avez de nouveau le contrôle.",
+      "fail": "Retirez les hélices, posez le récepteur et le GPS, branchez, calibrez l'accéléromètre et obtenez d'abord une accroche GPS : il doit pouvoir s'armer. Si la flèche du départ sur l'OSD pointe à l'opposé du départ, la boussole est inversée : retournez le module GPS."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Premier réglage après le flashage",
+      "explain": "Règle le mixeur, l'orientation de la carte et le DShot600 avec télémétrie bidirectionnelle pour le filtre RPM ; motor_poles vaut 14 pour ces moteurs 12N14P. Chaque ligne serial donne son rôle à un port : 64 est le récepteur ELRS sur l'UART2, 2 le GPS sur l'UART3 à 57600 bauds, et 2048 le SmartAudio sur l'UART1, qui n'a besoin que du fil TX. resource affiche la carte des broches, pour que vous puissiez comparer les broches des moteurs, des UART et de l'I2C avec la carte."
+    },
+    "gps": {
+      "title": "GPS et boussole",
+      "explain": "feature GPS active le GPS et gps_auto_config laisse Betaflight configurer lui-même le module u-blox (cadence, constellations, Galileo). La boussole est trouvée sur l'I2C ; align_mag indique à Betaflight comment elle est montée : CW270FLIP convient à un Matek M10Q-5883 flèche vers le nez, d'autres modules diffèrent, vérifiez donc le cap. Depuis la 2026.6, la boussole est ignorée pour le cap sauf si trust_mag vaut ON : ne l'activez qu'après l'avoir calibrée et vérifiée."
+    },
+    "rescue": {
+      "title": "GPS Rescue comme failsafe",
+      "explain": "Quand la liaison a disparu pendant failsafe_delay (1,5 s), GPS Rescue monte, se tourne vers le départ, revient à 7,5 m/s et commence à descendre à 20 m. return_alt ne compte qu'avec FIXED_ALT ; le MAX_ALT par défaut revient à la plus grande hauteur atteinte depuis l'armement plus 10 m, ce qui peut être sous une crête si vous avez volé bas le long d'une vallée. Avec moins de 8 satellites, Betaflight refuse d'armer (drapeau GPS). FS_ONLY signifie qu'une vérification échouée lors d'un vrai failsafe (pas de départ, GPS perdu, aucun rapprochement du départ pendant 20 s) se termine par une descente sur place. ap_hover_throttle indique au pilote automatique le vrai stationnaire de ce quad, 1420 µs. La ligne aux met GPS RESCUE (mode 46) sur un interrupteur pour les tests."
+    },
+    "stage1": {
+      "title": "Étape 1 : tenir les gaz",
+      "explain": "Pendant 0,3 s après la perte de liaison, chaque canal garde sa dernière valeur ; ensuite, chacun prend sa valeur rxfail jusqu'à la fin de failsafe_delay. Par défaut, les gaz passent au minimum : un 7 pouces en croisière chute donc pendant plus d'une seconde avant que le sauvetage ne commence. rxfail 3 h fait garder aux gaz (canal 3 : roulis, tangage, lacet, gaz se comptent à partir de 0) leur dernière valeur. Les quatre canaux de vol n'acceptent que a (auto) ou h (hold)."
+    },
+    "liion": {
+      "title": "Alarmes de tension pour le Li-ion",
+      "explain": "Les valeurs par défaut de Betaflight sont celles d'une LiPo : une alerte à 3,5 V par cellule et le minimum à 3,3 V. Une cellule Li-ion a encore environ la moitié de son énergie à 3,5 V et s'utilise jusqu'à environ 3,0 V en charge (les cellules sont données pour 2,5 V) : l'alerte passe donc à 3,1 V et le minimum à 2,9 V. bat_capacity permet aussi à l'OSD d'alerter sur les mAh consommés ; réglez-le sur votre batterie."
+    },
+    "osd": {
+      "title": "L'OSD longue portée",
+      "explain": "Chaque valeur _pos vaut 2048 (profil OSD 1) plus la colonne plus 32 par ligne. En haut à gauche, la qualité de liaison et le RSSI en dBm, les deux nombres qui vous préviennent que la liaison faiblit ; le long du haut, la flèche du départ, la distance au départ et le nombre de satellites ; la vitesse et l'altitude à mi-hauteur ; les alertes au milieu, là où s'affichent RESCUE N/A, RESCUE FAIL et HEADING N/A ; le mode de vol, les volts par cellule, les ampères et les mAh le long du bas."
+    },
+    "vtx": {
+      "title": "Table de puissance du VTX 1 W",
+      "explain": "Un VTX SmartAudio 2.1 prend sa puissance en dBm : 14, 20, 26 et 30 dBm valent 25, 100, 400 et 1000 mW. vtx_power choisit un niveau dans cette table, 1 étant le plus bas. Gardez 25 mW sur l'établi et une faible puissance tant qu'il n'est pas armé (vtx_low_power_disarm), et ne l'augmentez que pour voler loin : 1 W chauffe."
+    },
+    "switches": {
+      "title": "Interrupteurs : armement, angle, maintien d'altitude, sauvetage, buzzer",
+      "explain": "aux prend le numéro du mode : 0 ARM, 1 ANGLE, 3 ALTHOLD, 46 GPS RESCUE, 13 BEEPER. Le canal se compte à partir de 0 = AUX1, et la plage est en microsecondes. L'interrupteur GPS RESCUE permet de tester le sauvetage de près, et de le déclencher exprès quand la vidéo se dégrade ; le buzzer aide à retrouver le quad dans les hautes herbes."
+    },
+    "alt": {
+      "title": "Maintien d'altitude",
+      "explain": "ALTHOLD tient la hauteur grâce au baromètre et au GPS. Des gaz au centre tiennent la hauteur ; la zone morte, ce sont les 20 % de course autour du centre qui comptent comme centrés, et le manche à fond fait monter ou descendre à 3 m/s (30 dixièmes)."
+    },
+    "angle": {
+      "title": "Mode angle",
+      "explain": "Le contrôleur de vol remet le quad à plat quand vous lâchez et ne l'incline jamais au-delà d'angle_limit : 45 degrés ici, largement assez pour la croisière et plus doux que les 60 par défaut."
+    },
+    "acro": {
+      "title": "Rates acro douces",
+      "explain": "L'acro, c'est ce qui vole quand le mode angle et le maintien d'altitude sont coupés : les manches règlent la vitesse de rotation et rien ne le remet à plat. Avec les rates ACTUAL, 7 et 50 donnent 70 degrés par seconde autour du centre et 500 manche à fond, en douceur pour un 7 pouces lourd. Le lacet s'arrête à 200."
+    },
+    "race": {
+      "title": "Chrono des portes",
+      "explain": "osd_tim1 regroupe la source du chrono et sa précision en un seul nombre : 2 (depuis le dernier armement) plus 1 x 16 (centièmes) donne 18. Sa position, 2135, vaut 2048 plus la colonne 23 plus la ligne 2 x 32."
+    },
+    "range": {
+      "title": "Le parcours de la vallée",
+      "explain": "Volez-le en maintien d'altitude, pour que la hauteur se gère toute seule pendant que vous suivez la rivière. La flèche du départ et la distance restent sur l'OSD : quand la batterie dit de rentrer, elles montrent le chemin du retour."
+    }
+  },
+  "flight": {
+    "modes": {
+      "alt": {
+        "title": "Maintien d'altitude (facile)",
+        "hint": "Le mode angle plus le maintien d'altitude (baromètre et GPS) : W et S font monter et descendre jusqu'à 3 m/s, et il tient sa hauteur quand vous lâchez. Les flèches l'inclinent jusqu'à 45 degrés, A et D pivotent en lacet, Espace arme."
+      },
+      "angle": {
+        "title": "Mode angle",
+        "hint": "Auto-stabilisé jusqu'à 45 degrés, comme se volent la plupart des croisières longue portée. Les gaz restent là où vous les laissez : tenez donc la hauteur avec W et S."
+      },
+      "acro": {
+        "title": "Mode acro (rate)",
+        "hint": "Les manches règlent la vitesse de rotation, jusqu'à 500 degrés par seconde, et rien ne le remet à plat. Lâchez et il garde son angle."
+      },
+      "race": {
+        "title": "Portes de la ferme (angle)",
+        "hint": "Cinq portes en cercle autour de la plateforme, dans l'ordre. Le chrono démarre à la porte 1 ; le temps de référence est de 25 secondes."
+      },
+      "rescue": {
+        "title": "GPS Rescue",
+        "hint": "Regardez le sauvetage le ramener : quand la liaison tombe, il monte à 45 m, se tourne vers le départ, revient à 7,5 m/s et se pose sur la plateforme. Bougez les manches pour reprendre la main."
+      },
+      "range": {
+        "title": "Terrain : vallée de montagne",
+        "hint": "Le long de la rivière, au-dessus du lac, par le col entre les collines, jusqu'au sommet du pylône radio et retour. Le temps de référence est de 150 secondes."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Liaison perdue pendant 1,5 s : GPS Rescue monte à 45 m, se tourne vers le départ, revient à 7,5 m/s et se pose. Quand la liaison revient, bougez les manches pour reprendre la main.",
+      "rescue-fail": "Si le quad ne se rapproche pas du départ pendant 20 s (une boussole inversée, un vent de face qu'il ne peut pas vaincre), le sauvetage abandonne : RESCUE FAIL, et il descend sur place.",
+      "no-fix": "Moins de 8 satellites : l'armement est bloqué (drapeau GPS), car il n'y aurait aucun point de départ où revenir.",
+      "low-battery": "Sous 3,1 V par cellule, l'OSD affiche une alerte : rentrez maintenant.",
+      "battery-critical": "Sous 2,9 V par cellule : posez-vous maintenant. Les cellules sont presque vides et chutent encore à chaque montée."
+    },
+    "controls": "Clavier : Espace arme et désarme, W et S pour les gaz, les flèches pour le tangage et le roulis, A et D pour le lacet, V passe en vue FPV, R replace le quad sur la plateforme. Sur téléphone, le manche gauche gère les gaz et le lacet, le manche droit le tangage et le roulis. Une manette fonctionne en Mode 2."
+  },
+  "courses": {
+    "valley": {
+      "title": "Vallée de montagne",
+      "brief": "Un long parcours depuis la plateforme de la ferme : le long de la rivière jusqu'au lac, retour par le col entre les collines, montée jusqu'au sommet du pylône radio de l'autre côté, et retour. Gardez un œil sur la flèche du départ et la distance sur l'OSD.",
+      "goals": {
+        "1": "LE LONG DE LA RIVIÈRE",
+        "2": "AU-DESSUS DU LAC",
+        "3": "PAR LE COL",
+        "4": "SOMMET DU PYLÔNE",
+        "5": "RETOUR"
+      }
+    },
+    "gates": {
+      "title": "Portes de la ferme",
+      "brief": "Cinq portes de 1,6 m en cercle serré autour de la plateforme près de la ferme : un échauffement en mode angle, contre la montre. Le chrono démarre à la porte 1."
+    },
+    "rescue": {
+      "title": "Test de GPS Rescue",
+      "brief": "Le test que font les vrais pilotes de près avant de faire confiance à un sauvetage au loin : direction un point à environ 65 m de la plateforme et 20 m de haut, où la liaison est coupée. Après 1,5 s, GPS Rescue monte à 45 m, se tourne vers le départ, revient à 7,5 m/s et se pose sur la plateforme.",
+      "goals": {
+        "1": "À 65 M, 20 M DE HAUT",
+        "2": "MONTÉE DE SAUVETAGE À 45 M",
+        "3": "ATTERRISSAGE AU DÉPART"
+      }
+    }
+  },
+  "quizzes": {
+    "power": {
+      "cap": {
+        "q": "Pourquoi un 7 pouces a-t-il besoin d'un condensateur de 1000 µF sur l'ESC ?",
+        "options": {
+          "1": "Pour stocker de l'énergie pour GPS Rescue",
+          "2": "Pour augmenter la tension du VTX de 1 W",
+          "3": "Ses longs fils de batterie résonnent de pics de tension quand les ESC commutent et freinent, et le condensateur les absorbe"
+        },
+        "why": "Des fils longs ont de l'inductance, et chaque fois que les ESC commutent ou freinent les moteurs, la tension aux pastilles fait un pic. Un condensateur à faible ESR placé directement sur les pastilles l'absorbe. Sans lui, vous avez une vidéo parasitée, du bruit sur le gyroscope et, avec le temps, des MOSFET d'ESC morts."
+      },
+      "smoke": {
+        "q": "Que fait un smoke stopper au premier branchement ?",
+        "options": {
+          "1": "Il teste le sens des moteurs",
+          "2": "Il limite le courant : un court-circuit allume sa lampe ou le fait disjoncter au lieu de brûler l'ESC",
+          "3": "Il équilibre les cellules"
+        },
+        "why": "Une batterie 6S peut envoyer des centaines d'ampères dans un pont de soudure ou un condensateur inversé. Le smoke stopper place une lampe ou un fusible réarmable en série pour la première mise sous tension : un défaut se voit par une lampe allumée, pas par de la fumée."
+      }
+    },
+    "gps": {
+      "sats": {
+        "q": "L'OSD affiche 6 satellites et le quad refuse de s'armer. Pourquoi ?",
+        "options": {
+          "1": "La batterie est faible",
+          "2": "GPS Rescue a besoin d'un point de départ : sous gps_rescue_min_sats (8), Betaflight bloque l'armement avec le drapeau GPS",
+          "3": "La boussole doit être calibrée"
+        },
+        "why": "Le départ est enregistré là où vous armez. Avec trop peu de satellites, la position est mauvaise et le sauvetage volerait au mauvais endroit : Betaflight refuse donc d'armer tant qu'il n'a pas un fix 3D avec 8 satellites ou plus."
+      },
+      "arrow": {
+        "q": "La flèche du module GPS pointe vers l'arrière et trust_mag vaut ON. Que se passe-t-il lors d'un sauvetage ?",
+        "options": {
+          "1": "Rien : un GPS se moque de la direction dans laquelle il pointe",
+          "2": "Le cap de la boussole est décalé de 180 degrés : le sauvetage s'éloigne du départ jusqu'à ce que la vérification anti-fuite l'arrête",
+          "3": "Il se pose aussitôt sur place"
+        },
+        "why": "La boussole est dans le module : c'est donc la flèche du module qui fixe le cap auquel Betaflight se fie. À l'envers, « vers le départ » veut dire loin du départ. Après 20 s sans se rapprocher, la vérification anti-fuite déclare RESCUE FAIL et il descend sur place, loin de vous. Comparez le cap avec un téléphone avant de voler."
+      },
+      "mast": {
+        "q": "Pourquoi le GPS est-il sur un mât à l'arrière, et tenu à plat ?",
+        "options": {
+          "1": "Pour éloigner la boussole du VTX, de l'ESC et des fils de batterie, dont les courants la perturbent ; inclinée, elle lit faux",
+          "2": "Pour que la caméra puisse le voir",
+          "3": "Pour équilibrer le quad"
+        },
+        "why": "Une boussole mesure le faible champ magnétique terrestre, et les dizaines d'ampères dans les fils de batterie et l'ESC produisent leurs propres champs. La distance aide, et la garder à plat aussi : le fabricant du module déconseille fortement d'incliner le magnétomètre."
+      }
+    },
+    "battery": {
+      "liion": {
+        "q": "Pourquoi une batterie Li-ion 6S1P 21700 plutôt qu'une LiPo ?",
+        "options": {
+          "1": "Elle donne plus de courant pour les coups de gaz",
+          "2": "Plus d'énergie par gramme : environ deux fois le temps de vol, pour la croisière, pas pour les coups de gaz",
+          "3": "Elle ne chute jamais"
+        },
+        "why": "Six cellules 21700 stockent environ 90 à 100 Wh dans environ 440 g ; une LiPo 6S 1800 stocke 40 Wh dans 300 g. Mais une cellule de la classe P42A est donnée pour environ 45 A, contre 120 A pour un coup de gaz à fond sur ce montage : le Li-ion, c'est pour la croisière."
+      },
+      "alarm": {
+        "q": "Pourquoi changer les alarmes de tension pour le Li-ion ?",
+        "options": {
+          "1": "Les cellules Li-ion font 3 V une fois pleines",
+          "2": "Pour rendre les moteurs plus rapides",
+          "3": "Les alarmes LiPo (alerte à 3,5 V) sonneraient alors qu'il reste la moitié de l'énergie du Li-ion ; le Li-ion reste utile jusqu'à environ 3,0 V par cellule"
+        },
+        "why": "La tension d'une LiPo reste plate puis chute d'un coup : 3,5 V veut donc dire presque vide. La tension d'une cellule Li-ion baisse régulièrement tout au long du vol : l'alerte passe donc à 3,1 V et le minimum à 2,9 V par cellule."
+      }
+    },
+    "rescue": {
+      "trigger": {
+        "q": "Quand GPS Rescue se déclenche-t-il tout seul ?",
+        "options": {
+          "1": "Dès que la vidéo se dégrade",
+          "2": "Quand la liaison de contrôle a été perdue pendant failsafe_delay (1,5 s) et que failsafe_procedure vaut GPS-RESCUE",
+          "3": "Quand la batterie est faible"
+        },
+        "why": "Le sauvetage est l'étape 2 d'un failsafe : Betaflight doit cesser d'entendre le récepteur pendant 1,5 s. Une batterie faible ne fait qu'alerter, et une vidéo perdue n'est pas du tout un failsafe."
+      },
+      "altitude": {
+        "q": "Pourquoi régler gps_rescue_alt_mode = FIXED_ALT avec return_alt = 45 ?",
+        "options": {
+          "1": "Pour qu'il monte à 45 m, au-dessus de la plus haute crête, avant de rentrer ; sans FIXED_ALT, return_alt est ignoré",
+          "2": "Pour qu'il rentre plus vite",
+          "3": "Pour économiser la batterie"
+        },
+        "why": "Le MAX_ALT par défaut revient à la plus grande hauteur atteinte depuis l'armement plus 10 m. Volez bas le long d'une vallée et cette hauteur peut être sous la crête qui vous sépare du départ. FIXED_ALT fait de la hauteur de retour le nombre que vous avez choisi."
+      },
+      "video": {
+        "q": "Au loin, le masque devient noir mais le quad répond toujours aux manches. Que faire ?",
+        "options": {
+          "1": "Attendre : GPS Rescue se déclenche tout seul",
+          "2": "Éteindre la radiocommande",
+          "3": "Une vidéo perdue n'est pas un failsafe : basculez vous-même l'interrupteur GPS RESCUE et laissez-le ramener le quad"
+        },
+        "why": "La vidéo 5,8 GHz s'efface en général avant la liaison de contrôle 900 MHz. Tant que Betaflight entend la radiocommande, il n'y a pas de failsafe : rien ne se passe donc tout seul. L'interrupteur GPS RESCUE (AUX4 ici) lance le sauvetage à la demande."
+      },
+      "flyaway": {
+        "q": "Pendant un sauvetage, le quad ne se rapproche pas du départ pendant 20 s. Que fait Betaflight ?",
+        "options": {
+          "1": "Il continue de voler jusqu'à ce que la batterie soit vide",
+          "2": "Il déclare RESCUE FAIL et descend sur place",
+          "3": "Il fait demi-tour et essaie dans l'autre sens"
+        },
+        "why": "La vérification anti-fuite surveille la vitesse de rapprochement. Si elle reste sous 20 % de la cible pendant 20 s (une boussole inversée, un vent de face qu'il ne peut pas vaincre), le sauvetage abandonne, et lors d'un vrai failsafe avec RESCUE_SANITY_FS_ONLY il descend directement sur place."
+      }
+    }
+  }
+}
