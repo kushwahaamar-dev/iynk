@@ -604,9 +604,14 @@ function xrCallouts(items, B){
   const roomL = xmin - vb.x >= wMax, roomR = vb.x + vb.width - xmax >= wMax;
   for (const it of items){ const [X, Y] = P(...it.at); ((X < cx && roomL) || !roomR ? L : R).push({ ...it, X, Y }); }
   let s = '';
-  let top = { [-1]: fs, [1]: fs + 30*k }, tight = null;
+  let top = { [-1]: fs, [1]: fs + 30*k }, tight = null, under = null;
   if (btn && svgEl.getScreenCTM()){ const r = btn.getBoundingClientRect(), inv = svgEl.getScreenCTM().inverse(), q = new DOMPoint(r.right, r.bottom + 50).matrixTransform(inv);
     if (q.y > 0){ top[-1] = q.y + hgt; tight = new DOMPoint(r.right, r.bottom + 6).matrixTransform(inv).y + hgt/2; } }
+  // the right column starts under the stats panel (status, rails, counters) where that panel sits over the drawing
+  const sts = document.getElementById('stats');
+  if (sts && svgEl.getScreenCTM()){ const r = sts.getBoundingClientRect(), sr = svgEl.getBoundingClientRect();
+    if (r.height && r.bottom > sr.top && r.top < sr.bottom && r.right > sr.left && r.left < sr.right){
+      under = new DOMPoint(r.left, r.bottom + 6).matrixTransform(svgEl.getScreenCTM().inverse()).y + hgt/2; top[1] = Math.max(top[1], under); } }
   const stack = (col, side) => {
     col.sort((a, b) => a.Y - b.Y);
     let y = -1e9; for (const c of col){ c.py = Math.max(c.Y, y + gap, top[side]); y = c.py; }
@@ -619,6 +624,8 @@ function xrCallouts(items, B){
   const bottom = vb.y + vb.height - hgt/2 - 2*k;
   if (tight != null && L.some(c => c.py > bottom)){ top[-1] = Math.min(top[-1], tight); stack(L, -1); }
   if (L.some(c => c.py > bottom)){ while (L.length && L[L.length - 1].py > bottom) R.push(L.pop()); stack(L, -1); stack(R, 1); }
+  // a right column too long to fit under the stats panel starts at the top after all
+  if (under != null && R.some(c => c.py > bottom)){ top[1] = fs + 30*k; stack(R, 1); }
   for (const [col, side] of [[L, -1], [R, 1]]){
     for (const c of col){
       c.n = ((window.__ln || (window.__ln = {}))[c.text] || (__ln[c.text] = Object.keys(__ln).length + 1)); const ct = CF_T(c.text), w = u ? hgt*(c.n > 9 ? 1.3 : 1) : CF_TW(ct, fs) + fs*1.5;
@@ -1044,14 +1051,18 @@ window.SL = window.SL || {};
   SD.powered = powered;
 
   function sfx(st, name){ st.sfx = { n: (st.sfx ? st.sfx.n : 0) + 1, name }; }
+  // a craft may reword any engine message or log line by its key: craft.messages.pop, craft.logs.capNew (a whoop has
+  // a soldered battery lead where a 5-inch quad has a capacitor)
+  const MSG_KEY = new Map(Object.entries(MSG).map(([k, v]) => [v, k])), LOG_KEY = new Map(Object.entries(LOG).map(([k, v]) => [v, k]));
+  const reword = (own, keys, text) => { const k = keys.get(text); return k && own && typeof own[k] === 'string' ? own[k] : text; };
   function log(st, key, vars){
-    const text = T(key, vars);
+    const text = T(reword(craft && craft.logs, LOG_KEY, key), vars);
     st.log.lines.push(text); if (st.log.lines.length > 10) st.log.lines.shift();
     st.log.n++;
   }
   function say(st, key, vars, ms, sound){
     if (sound) sfx(st, sound);
-    const text = T(key, vars);
+    const text = T(reword(craft && craft.messages, MSG_KEY, key), vars);
     st.msg = text;
     if (ui) ui.flash(text, ms || 2200);
   }
@@ -1180,7 +1191,7 @@ window.SL = window.SL || {};
         log(st, LOG.pop);
         say(st, MSG.pop, null, 4200, 'pop');
       } else {
-        say(st, craft.messages && craft.messages.powered || MSG.powered, null, 2200, 'power');
+        say(st, MSG.powered, null, 2200, 'power');
       }
       kick();
     },
@@ -1234,13 +1245,18 @@ window.SL = window.SL || {};
     step(st, n){
       if (busy(st)) return say(st, MSG.busy, null, 1600, 'tick');
       A.unplug(st, true); st.exT = 0; st.exploded = false;
+      // a part taken off or turned round clears the passes as remove does (place() does it for a part put on); a step
+      // back to nothing is a strip
+      const moved = [];
       craft.parts.forEach((p, i) => {
         const pl = st.placed[p.id], want = i < n;
         if (want && (!pl || pl.leave)) place(st, p.id, 0);
-        else if (want && pl.orient === 1) { pl.orient = 0; pl.t = 0; if (p.id === 'XT60') st.smokeOk = false; if (p.id === 'FC') st.accOk = false; }
-        else if (!want && pl && !pl.leave) { pl.leave = true; if (p.id === 'XT60') st.smokeOk = false; if (p.id === 'WIRES') st.motorOk = false; if (p.id === 'FC') st.accOk = false; }
+        else if (want && pl.orient === 1) { pl.orient = 0; pl.t = 0; moved.push(p.id); if (p.id === 'XT60') st.smokeOk = false; if (p.id === 'FC') st.accOk = false; }
+        else if (!want && pl && !pl.leave) { pl.leave = true; moved.push(p.id); if (p.id === 'XT60') st.smokeOk = false; if (p.id === 'WIRES') st.motorOk = false; if (p.id === 'FC') st.accOk = false; }
       });
       if (n === 0) { st.fault = null; st.smoke = []; }
+      if (n === 0 && moved.length) resetCraft(st, 'strip');
+      else for (const id of moved) resetCraft(st, id);
       st.sel = n > 0 ? craft.parts[n - 1].id : null;
       kick();
     },
@@ -1467,7 +1483,7 @@ window.SL = window.SL || {};
       });
       if (pl.t >= 1 && !pl.leave){
         const anchor = part.tag && part.tag.at ? SD.W(...part.tag.at) : its.length ? topOf(its[0].box) : null;
-        if (anchor) ctx.tags.push({ id: part.id, at: anchor, dx: part.tag ? part.tag.dx || 0 : 0, dy: part.tag ? part.tag.dy || -26 : -26, text: part.short });
+        if (anchor && part.tag !== false) ctx.tags.push({ id: part.id, at: anchor, dx: part.tag ? part.tag.dx || 0 : 0, dy: part.tag ? part.tag.dy || -26 : -26, text: part.short });
         for (const c of part.xr || []) ctx.callouts.push({ at: SD.W(...c.at), text: c.text, on: st.sel === part.id });
       }
     }
@@ -2097,9 +2113,9 @@ window.SL = window.SL || {};
 
   K.xt60 = (pc, ctx) => {
     const items = [], [x, y, z] = pc.at, ax = pc.dir || [-1, 0, 0], st = ctx.st, rev = ctx.orient === 1, fault = st.fault === 'XT60';
-    // XT60: about 16 mm long, 15.5 mm wide, 8 mm thick
-    const hx = Math.abs(ax[0]) > .5 ? 8 : 7.8, hy = Math.abs(ax[0]) > .5 ? 7.8 : 8;
-    items.push(g.box(x - hx, y - hy, z - 4, x + hx, y + hy, z + 4, 'yellow', .9));
+    // XT60: about 16 mm long, 15.5 mm wide, 8 mm thick; pc.size [l, w, h] for another housing (an XT90 is 21 x 26 x 11)
+    const [sl, sw, sh] = pc.size || [16, 15.5, 8], hx = Math.abs(ax[0]) > .5 ? sl / 2 : sw / 2, hy = Math.abs(ax[0]) > .5 ? sw / 2 : sl / 2;
+    items.push(g.box(x - hx, y - hy, z - sh / 2, x + hx, y + hy, z + sh / 2, 'yellow', .9));
     const lead = pc.lead || [];
     if (lead.length > 1){
       const a = lead[0], b = lead[lead.length - 1], dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1, ox = -dy / L * 2.6, oy = dx / L * 2.6;
@@ -2108,7 +2124,7 @@ window.SL = window.SL || {};
       ctx.flows.push({ kind: 'power', pts: plus.slice().reverse().map(p => W(...p)) }, { kind: 'power', pts: minus.map(p => W(...p)) });
       ctx.leadPlus = plus; ctx.leadMinus = minus;
     }
-    ctx.xt60At = [x, y, z];
+    ctx.xt60At = [x, y, z]; ctx.xt60Size = [sl, sw, sh];
     if (pc.cap){
       const c = pc.cap, d = SD.normd(c.dir || [1, 0, 0]), r = c.r || 5, L = c.l || 20;
       const a = c.at, b = [a[0] + d[0] * L, a[1] + d[1] * L, a[2] + d[2] * L];
@@ -2160,10 +2176,11 @@ window.SL = window.SL || {};
       items.push(g.box(x - sw / 2, y - w / 2 - 1.2, zp + h * .55, x + sw / 2, y - w / 2 - .2, zp + h + .9, tab, .6));
     }
     if (ctx.st.plugged && ctx.xt60At){
-      const t = ctx.xt60At, from = [x - l / 2 - 1, y + 3, zp + h * .7];
-      const mid = [Math.min(from[0], t[0]) - 6, (from[1] + t[1]) / 2, (from[2] + t[2]) / 2 + 4], plug = [t[0] - 10, t[1], t[2]];
-      items.push(...g.wire([from, mid, [plug[0] - 6, plug[1] + 2.6, plug[2]]], '#d8473a', 3), ...g.wire([[from[0], from[1] - 5, from[2]], [mid[0], mid[1] - 5, mid[2]], [plug[0] - 6, plug[1] - 2.6, plug[2]]], '#2c2926', 3));
-      items.push(g.box(plug[0] - 6, plug[1] - 7.8, plug[2] - 4, plug[0] + 2, plug[1] + 7.8, plug[2] + 4, 'yellow', .9));
+      // the pack's own plug mates with the craft's connector, so it takes that housing's size (k = 1 for an XT60)
+      const t = ctx.xt60At, [, cw, ch] = ctx.xt60Size || [16, 15.5, 8], k = cw / 15.5, from = [x - l / 2 - 1, y + 3, zp + h * .7];
+      const mid = [Math.min(from[0], t[0]) - 6, (from[1] + t[1]) / 2, (from[2] + t[2]) / 2 + 4], plug = [t[0] - 10 * k, t[1], t[2]];
+      items.push(...g.wire([from, mid, [plug[0] - 6 * k, plug[1] + 2.6 * k, plug[2]]], '#d8473a', 3), ...g.wire([[from[0], from[1] - 5, from[2]], [mid[0], mid[1] - 5, mid[2]], [plug[0] - 6 * k, plug[1] - 2.6 * k, plug[2]]], '#2c2926', 3));
+      items.push(g.box(plug[0] - 6 * k, plug[1] - cw / 2, plug[2] - ch / 2, plug[0] + 2 * k, plug[1] + cw / 2, plug[2] + ch / 2, pc.plugColor || 'yellow', .9));
     }
     ctx.shadows.push([[x - l / 2, y - w / 2], [x + l / 2, y - w / 2], [x + l / 2, y + w / 2], [x - l / 2, y + w / 2]].map(([a, bb]) => W(a, bb, zp + h)));
     return items;
@@ -2278,14 +2295,16 @@ window.SL = window.SL || {};
   SD.WIRE_KINDS = KIND;
   const BW = 150, BH = 56;
 
-  function route(A, B){
+  // an elbow from the side centre of block A to that of block B; pa / pb (an edge's own `a` / `b`) replace the ends, so
+  // a block with many ports gives each its own point along the side
+  function route(A, B, pa, pb){
     const ac = [A.at[0] + BW / 2, A.at[1] + BH / 2], bc = [B.at[0] + BW / 2, B.at[1] + BH / 2];
     const dx = bc[0] - ac[0], dy = bc[1] - ac[1];
     if (Math.abs(dx) >= BW * .9){
-      const s = Math.sign(dx), a = [ac[0] + s * BW / 2, ac[1]], b = [bc[0] - s * BW / 2, bc[1]], mx = (a[0] + b[0]) / 2;
+      const s = Math.sign(dx), a = pa || [ac[0] + s * BW / 2, ac[1]], b = pb || [bc[0] - s * BW / 2, bc[1]], mx = (a[0] + b[0]) / 2;
       return Math.abs(a[1] - b[1]) < 1 ? [a, b] : [a, [mx, a[1]], [mx, b[1]], b];
     }
-    const s = Math.sign(dy) || 1, a = [ac[0], ac[1] + s * BH / 2], b = [bc[0], bc[1] - s * BH / 2], my = (a[1] + b[1]) / 2;
+    const s = Math.sign(dy) || 1, a = pa || [ac[0], ac[1] + s * BH / 2], b = pb || [bc[0], bc[1] - s * BH / 2], my = (a[1] + b[1]) / 2;
     return Math.abs(a[0] - b[0]) < 1 ? [a, b] : [a, [a[0], my], [b[0], my], b];
   }
   const offsetPath = (pts, o) => pts.map((p, i) => {
@@ -2299,7 +2318,11 @@ window.SL = window.SL || {};
     // leave the figure's own button column free when it is shown (standalone or embedded without bare=1)
     const btns = document.getElementById('btns'), html = document.documentElement;
     const left = btns && !html.classList.contains('cf-bare') && getComputedStyle(btns).display !== 'none' && innerWidth > 560 ? vw * .24 : 0;
-    const sc = Math.min((vw - left) * .95 / 780, vh * .9 / 380), ox = left + (vw - left - 760 * sc) / 2, oy = (vh - 360 * sc) / 2;
+    // and the stats panel (parts, checks, battery) on the right
+    const stE = document.getElementById('stats'), frameBox = svgEl && svgEl.getBoundingClientRect();
+    const right = stE && frameBox && frameBox.width && getComputedStyle(stE).display !== 'none' && innerWidth > 560
+      ? Math.max(0, frameBox.right - stE.getBoundingClientRect().left) * vw / frameBox.width : 0;
+    const room = vw - left - right, sc = Math.min(room * .95 / 780, vh * .9 / 380), ox = left + (room - 760 * sc) / 2, oy = (vh - 360 * sc) / 2;
     const X = x => f(ox + x * sc), Y = y => f(oy + y * sc), sw = w => (w * sc / INK_K).toFixed(2), fs = v => f(v * sc);
     const d = SD.resolved(st), V = st.calc && st.calc.V ? st.calc.V : d.batt.cells * 3.7, on = SD.powered(st);
     const t = st.test, spinning = t && t.kind === 'motors' ? t.cur : -1;
@@ -2310,7 +2333,7 @@ window.SL = window.SL || {};
     for (const e of Wr.edges){
       const A = Wr.nodes[e.from], B = Wr.nodes[e.to], k = KIND[e.kind] || KIND.signal;
       used.add(e.kind in KIND ? e.kind : 'signal');
-      const base = e.via ? [route(A, { at: [e.via[0][0] - BW / 2, e.via[0][1] - BH / 2] })[0], ...e.via, route(B, { at: [e.via[e.via.length - 1][0] - BW / 2, e.via[e.via.length - 1][1] - BH / 2] })[0]] : route(A, B);
+      const base = e.via ? [e.a || route(A, { at: [e.via[0][0] - BW / 2, e.via[0][1] - BH / 2] })[0], ...e.via, e.b || route(B, { at: [e.via[e.via.length - 1][0] - BW / 2, e.via[e.via.length - 1][1] - BH / 2] })[0]] : route(A, B, e.a, e.b);
       const n = e.n || 1, fitted = SD.isOn(st, e.from) && SD.isOn(st, e.to);
       for (let i = 0; i < n; i++){
         const pts = offsetPath(base, (i - (n - 1) / 2) * 3.4), dd = 'M' + pts.map(p => `${X(p[0])} ${Y(p[1])}`).join('L');
