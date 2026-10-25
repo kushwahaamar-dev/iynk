@@ -53,7 +53,15 @@ function netlist(st, pl){
   // a node of a part by leg index or name: its legs, then its inside nodes (def.nodes, numbered after the legs)
   const nodeIx = (def, nm) => { if (typeof nm === 'number') return nm; const legs = def.legs || [], i = legs.indexOf(nm);
     if (i >= 0) return i; const j = (def.nodes || []).indexOf(nm); return j >= 0 ? legs.length + j : -1; };
-  for (const w of c.wires || []) uni(end(w.from), end(w.to));
+  // a wire on a header whose pins pass through a resistor on the board (part.rs, ohms: the Basys 3's 200 Ω on every
+  // Pmod line) meets the pin's net through that resistor; any other wire joins its ends
+  const rsWires = [];
+  const rsOf = ref => { if (B.hole(geo, ref) || /^([A-Za-z_][\w-]*)\.([\w+~-]+)$/.test(ref) && byId[ref.split('.')[0]]) return 0;
+    const pin = B.pinOf(ref), part = pin && B.md.byId[pin.part], rails = (B.md.power && B.md.power.rails) || {};
+    // only signal pins: the header's ground and supply pins go straight to their planes
+    return part && +part.rs > 0 && pin.net !== 'GND' && !own(rails, pin.net) ? +part.rs : 0; };
+  for (const w of c.wires || []){ const a = end(w.from), b = end(w.to), rs = rsOf(w.from) || rsOf(w.to);
+    if (rs && a != null && b != null) rsWires.push({ a, b, rs, w }); else uni(a, b); }
   // a plug pushed into another part's socket (`plug: 'DRV1'`): its legs join that part's def.socket nodes, in order
   for (const q of parts){
     if (typeof q.plug !== 'string') continue;
@@ -105,6 +113,7 @@ function netlist(st, pl){
       else if (e.type === 'buzzer') els.push({ ...base, k: 'BZ', a: N(0), b: N(1), active: e.kind === 'active', vf: .05, rd: (+e.vmin || 3) / (+e.imax || .03) });
     }
   }
+  for (const r of rsWires) els.push({ id: r.w.from, key: 'rs:' + r.w.from + '>' + r.w.to, q: { id: r.w.from }, def: {}, e: { type: 'res', ohms: r.rs }, dead: false, k: 'R', a: r.a, b: r.b, g: 1 / r.rs });
   // a push button's pairs are always joined; pressing joins the two pairs. A switched pair already joined (both
   // sides in one strip) shorts the switch
   for (const bt of buttons) for (const pr of bt.e.pairs || []) uni(bt.n[pr[0]], bt.n[pr[1]]);

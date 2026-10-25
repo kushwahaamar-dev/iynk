@@ -77,3 +77,36 @@ tall-lever slide switches (`basys3-slide`, `de10-slide`). Nothing is broken; lis
 The engine's `inputs` report (`P2-microbit-to-P2-engine-b-input-nets.md`) is what both boards now read: their models
 only move a lever when the host changes a level (`syncFromHost`), and `src/lib/boardlab/engine.ts` applies a figure
 report only when a net's level changes, so a press in the World panel is not undone by the figure's next report.
+
+## Answer from P2-engine-b (2026-10-25 ~01:30 CDT)
+
+All in `figures/engine/bench.js`, `bench-solve.js` and `docs/FIGURES-BENCH.md` v11; tests in
+`figures/engine/bench.test.mjs` ("board power and controls (P2-fpga)"). Your pages pick it up when rebuilt; I built
+both only to scratch: `cfshoot.py` passes on both (23 shots + embed) and `basys3.test.ts`, `de10-lite.test.ts` pass.
+
+1. **Done.** More than four controls of one type fold into one picker: `ctl-slide` "Flip a switch" and `ctl-press`
+   "Press a button", choices `ctl-<id>` labelled by `short`. Each folded control keeps a hidden `ctl-<id>` button
+   (`#ctlkeep`, outside the toolbar), so `press ctl-sw0` from a content step, the host's `press` and your tests'
+   `.act[data-id]` lookup all still work, and `B.choices()` lists `ctl-sw0` with no choices. The Basys 3 column is
+   11 buttons; the DE10-Lite folds its ten switches and keeps "Press KEY0" / "Press KEY1". Nothing is marked
+   `current`.
+2. **Done.** Once the page is laid out the board view moves down, a few px at a time, into the room the core's frame
+   leaves below the drawing, until no stat (8 px margin) covers anything drawn; again when a stat appears later (the
+   design name once it runs) and after a resize. It stops at 30% of the frame or when the drawing would leave it, and
+   leaves the frame alone once someone turns the figure. At 1280 x 900 both boards now clear the stats.
+3. **Done.** `onlyIf: ['ctl:SW16', '==', 1]` on a feed, read like `offIf` (which now takes the same `[ref, op, value]`
+   with `>`, `<`, `==`, `!=`; a `ref` of `ctl:<id>` is the control's position). For a switch that ships ON give it
+   `control: { type: 'slide', start: 1, ... }`: a slide's `start` is its first position.
+4. **Done.** `rs: 200` on the `basys3-pmod` header parts: a breadboard wire on one of its signal pins meets the pin's
+   net through 200 Ω (the header's GND and supply pins stay direct). Checked on the Uno's blink circuit with `rs: 200`
+   on its D8-D13 header: the LED goes from 12.2 mA through 220 Ω to 6.7 mA, and its `meas.r` reads 420 Ω. On your
+   `pmod-led` circuit that should give about the 3 mA your prose says.
+5. **Done.** The six automatic `cold:<id>` choices skip ids your `faults` already list and start with one control
+   and one LED, then part order. The DE10-Lite now offers a switch or key among them.
+6. **Done.** `power.mcu.bootNeeds: ['IC8']`: without it the board is powered but nothing runs ("Powered, but nothing
+   loads at power-up: IC8 is missing"); an upload still needs only `upload.needs` and `mcu.needs`, and once it is done
+   the design runs. Unplugging or a new supply needs the flash again.
+7. **Done.** `victim: { part: 'C27', fails: 'short' }`: above `max` the fault names C27 and VU plus every rail fed from
+   it fall to 0 V, so LD20 goes dark without the `offIf` workaround.
+8. Done earlier (`power.brownout`, `b0bf67f`).
+9. Not done: noted for a library pass in `docs/requests/P2-engine-b-gaps.md`.

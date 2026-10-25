@@ -228,6 +228,9 @@ function evaluate(){
   const gone = [src.part, ...(src.parts || [])].find(id => id && (MAT.byId[id] ? !periphOn(id) : !isSet(id)));
   if (gone){ ev.status = 'no-power'; ev.why = T('No power: {name} is missing', { name: nameOf(gone) }); return ev; }
   const rails = Object.assign(Object.fromEntries(Object.keys(feeds).map(r => [r, { from: [] }])), pw.rails || {});
+  // a feed condition [ref, op, value]: ref a rail (its volts so far) or 'ctl:<id>' (a control's position: a power switch)
+  const cmp = ([ref, op, lim]) => { const v2 = typeof ref === 'string' && ref.startsWith('ctl:') ? (st.ctl[ref.slice(4)] || 0) : (ev.rails[ref] || 0);
+    return op === '>' ? v2 > lim : op === '<' ? v2 < lim : op === '!=' ? v2 !== lim : v2 === lim; };
   let burned = null;
   const fedBy = {};     // the feed each rail takes its voltage from (null: straight from the source)
   for (const [rid, rail] of Object.entries(rails)){
@@ -246,14 +249,17 @@ function evaluate(){
         if (fd.protect && via.includes(fd.protect)){ ev.why = T('Reverse polarity: {name} blocks it, nothing powers up', { name: nameOf(fd.protect) }); continue; }
         burned = burned || { part: fd.burns || via[via.length - 1] || (pw.mcu && pw.mcu.part), kind: 'reverse' }; continue;
       }
-      if (fd.offIf){ const [r2, op, lim] = fd.offIf, v2 = ev.rails[r2] || 0; if (op === '>' ? v2 > lim : v2 < lim) continue; }
+      if (fd.offIf && cmp(fd.offIf)) continue;
+      if (fd.onlyIf && !cmp(fd.onlyIf)) continue;
       if (fd.max != null && vin > fd.max){ burned = burned || { part: via[via.length - 1], kind: 'over', v: vin }; continue; }
       let v = vin;
       if (fd.reg != null) v = Math.min(fd.reg, vin - (fd.dropout || 0));
       else v = vin - (fd.drop || 0);
       if (v > best){ best = v; bestFd = fd; }
     }
-    if (rail.max != null && best > rail.max){ burned = burned || { part: rail.victim || (pw.mcu && pw.mcu.part), kind: 'over', v: best, rail: rid }; }
+    // victim: the part an over-voltage damages (a name, or { part, fails: 'short' }: it fails short and takes the rail down)
+    if (rail.max != null && best > rail.max){ const vc = rail.victim && typeof rail.victim === 'object' ? rail.victim : { part: rail.victim };
+      burned = burned || { part: vc.part || (pw.mcu && pw.mcu.part), kind: 'over', v: best, rail: rid, short: vc.fails === 'short' }; }
     ev.rails[rid] = Math.max(0, best); fedBy[rid] = bestFd;
   }
   // overloads and shorts sag a rail
@@ -278,6 +284,9 @@ function evaluate(){
   if (burned){
     const pid = burned.part || '';
     ev.status = 'fault';
+    // a victim that fails short pulls its rail to 0 V, and every rail fed from it
+    if (burned.short){ const dead = new Set([burned.rail]);
+      for (const k of Object.keys(ev.rails)) if (dead.has(k) || (fedBy[k] && fedBy[k].rail && dead.has(fedBy[k].rail))){ dead.add(k); ev.rails[k] = 0; } }
     ev.fault = burned.kind === 'reverse'
       ? { id: 'reverse-polarity:' + st.power, kind: 'hot', part: pid, msg: T('Reverse polarity: {name} burned', { name: nameOf(pid) }), fix: T('Swap the leads') }
       : { id: 'wrong-voltage:' + st.power, kind: 'hot', part: pid, msg: T('{v} V on {src}: {name} is damaged', { v: (+burned.v).toFixed(1), src: T(src.label || st.power), name: nameOf(pid) }), fix: T('Use {range} V', { range: (src.range || [src.v, src.v]).join('–') }) };
@@ -304,6 +313,9 @@ function evaluate(){
         : T('Brown-out: {rail} is at {v} V, the chip keeps resetting', { rail: mcu.rail, v: v.toFixed(1) }); return ev; }
     const miss = (mcu.needs || []).find(id => !isSet(id) || coldOff(id));
     if (miss){ ev.why = T('Powered, but nothing runs: {name} is missing', { name: nameOf(miss) }); return ev; }
+    // bootNeeds: parts only the power-up start reads (an FPGA's config flash); a program uploaded since runs without them
+    const bootMiss = !st.loaded && !st.ext && (mcu.bootNeeds || []).find(id => !isSet(id) || coldOff(id));
+    if (bootMiss){ ev.why = T('Powered, but nothing loads at power-up: {name} is missing', { name: nameOf(bootMiss) }); return ev; }
     if (st.ctl && Object.entries(st.ctl).some(([id, v]) => v && MD.byId[id] && MD.byId[id].control && MD.byId[id].control.action === 'reset')){ ev.status = 'reset'; return ev; }
     ev.status = 'running';
     // a strap latched at the last restart that keeps the sketch from starting (ROM boot mode)
@@ -420,11 +432,11 @@ A.build = what => {
 };
 A.flip = id => { const p = MD.byId[id]; if (!p || !p.polar || !isIn(id)) return; if (!guard()) return; st.placed[id].orient ^= 1; say(st.placed[id].orient ? '{name} turned the wrong way round' : '{name} turned the right way round', { name: nameOf(id) }); refresh(); };
 A.power = key => {
-  if (key == null || key === 'off'){ if (!st.power) return; st.power = null; st.up = null; st.strap = null; st.sag = null; st.ext = st.ext && false; sfx('unplug'); refresh(); return; }
+  if (key == null || key === 'off'){ if (!st.power) return; st.power = null; st.up = null; st.strap = null; st.sag = null; st.ext = st.ext && false; st.loaded = false; sfx('unplug'); refresh(); return; }
   const src = (MD.power.sources || {})[key]; if (!src) return say('No supply {name} on this board', { name: key });
   if (st.exploded) return say(MSG.exploded);
   // plugging in the cable that is already in changes nothing (the sketch keeps its clock)
-  if (st.power !== key){ st.power = key; st.t = 0; st.serialN = -1; st.sag = null; sfx('plug'); sampleStraps(); }
+  if (st.power !== key){ st.power = key; st.t = 0; st.serialN = -1; st.sag = null; st.loaded = false; sfx('plug'); sampleStraps(); }
   refresh(true);
 };
 A.upload = key => {
@@ -482,7 +494,7 @@ A.fault = id => {
   }
   if (kind === 'wrong-voltage'){ const v = +b; if (!(MD.power.sources || {})[a] || !Number.isFinite(v)) return say('Unknown supply {name}', { name: a }); st.supply[a] = v; }
   if (kind === 'reverse-polarity' && !(MD.power.sources || {})[a]) return say('Unknown supply {name}', { name: a });
-  if (kind === 'brownout' && !brownout()) return say('No 5 V pin to put a motor on here');
+  if (kind === 'brownout' && !brownout() && !listsFault('brownout')) return say('No 5 V pin to put a motor on here');
   if (!st.faults.includes(id)) st.faults.push(id);
   if (st.power && (MD.def.straps || []).some(x => x && x.fault === id)){ st.t = 0; st.serialN = -1; sampleStraps(); }
   refresh(true);
@@ -531,7 +543,7 @@ function step(dt){
   // the program clock
   if (st.power){
     st.t += dt;
-    if (st.up){ st.upT += dt; if (st.upT >= st.upDur){ const key = st.up; st.up = null; st.mode = key; st.t = 0; st.serialN = -1; sampleStraps();
+    if (st.up){ st.upT += dt; if (st.upT >= st.upDur){ const key = st.up; st.up = null; st.mode = key; st.t = 0; st.serialN = -1; st.loaded = true; sampleStraps();
         say('Done uploading: {name} is running', { name: T(MD.modes[key].title) }); sfx('ding'); } }
     st.ev = evaluate();
     if (st.ev.status === 'brownout' && Math.floor(st.t / .6) !== st.boN){ st.boN = Math.floor(st.t / .6); st.serialN = -1; }
@@ -969,6 +981,14 @@ function partButtons(){
   }
   return bt;
 }
+let ctlFolded = {};
+const ctlWork = p => () => { A.press(p.id, true); if (p.control.type !== 'slide') setTimeout(() => A.press(p.id, false), 260); };
+const keepFolded = () => {
+  const box = document.createElement('div'); box.hidden = true; box.id = 'ctlkeep';
+  for (const [cid, p] of Object.entries(ctlFolded)){ const b = document.createElement('button'); b.className = 'act'; b.dataset.id = cid; b.tabIndex = -1;
+    b.textContent = p.short || p.id; b.onclick = () => { ctlWork(p)(); ui.render(); }; box.appendChild(b); }
+  if (box.children.length) document.body.appendChild(box);
+};
 function buttons(){
   if (MD.def.noBoard) return MD.def.partPage ? partButtons() : [];
   const bt = [];
@@ -979,9 +999,18 @@ function buttons(){
   const modes = Object.entries(MD.modes);
   // a bench whose modes are positions, not sketches, names the picker: modesLabel { button: 'Move jumper', stat: 'Jumper' }
   if (modes.length) bt.push({ id: 'upload', label: (MD.def.modesLabel && MD.def.modesLabel.button) || 'Upload sketch', choices: () => modes.map(([key, md]) => ({ id: key, label: md.title || key, current: st.mode === key && !st.ext, onClick: () => A.upload(key) })) });
-  const ctls = MD.parts.filter(p => p.control);
-  for (const p of ctls) bt.push({ id: 'ctl-' + p.id.toLowerCase(), label: p.control.type === 'slide' ? T('Flip {name}', { name: p.short || p.id }) : T('Press {name}', { name: p.short || p.id }),
-    onClick: () => { A.press(p.id, true); if (p.control.type !== 'slide') setTimeout(() => A.press(p.id, false), 260); } });
+  // a control is a button of its own, ctl-<id>; more than four of a type fold into one picker (an FPGA board's 16
+  // switches), each choice still ctl-<id>, and each keeps a hidden ctl-<id> button too (keepFolded), so a host or a
+  // content step that presses ctl-sw0 still reaches it
+  const ctls = MD.parts.filter(p => p.control), slide = p => p.control.type === 'slide';
+  ctlFolded = {};
+  for (const [kind, label] of [['slide', T('Flip a switch')], ['press', T('Press a button')]]){
+    const group = ctls.filter(p => slide(p) === (kind === 'slide'));
+    if (group.length > 4){
+      for (const p of group) ctlFolded['ctl-' + p.id.toLowerCase()] = p;
+      bt.push({ id: 'ctl-' + kind, label, choices: () => group.map(p => ({ id: 'ctl-' + p.id.toLowerCase(), label: p.short || p.id, onClick: ctlWork(p) })) });
+    } else for (const p of group) bt.push({ id: 'ctl-' + p.id.toLowerCase(), label: slide(p) ? T('Flip {name}', { name: p.short || p.id }) : T('Press {name}', { name: p.short || p.id }), onClick: ctlWork(p) });
+  }
   bt.push({ id: 'strip', label: 'Strip to bare PCB', onClick: () => A.strip() });
   if (partsIn('smd').length) bt.push({ id: 'pnp', label: 'Pick & place SMD', onClick: () => A.pnp() });
   if (MAT.steps.length) bt.push({ id: 'mat', label: 'Set up the mat', choices: () => MAT.steps.map((s, i) => ({ id: s.id, label: s.label, current: st.matStep >= i, onClick: () => A.matStep(s.id) })) });
@@ -1013,8 +1042,10 @@ function buttons(){
     { id: 'exploded', label: 'Exploded view', current: st.exploded, onClick: () => { A.view('board'); A.explode(); } }] });
   return bt;
 }
-// the generic brown-out break (a motor on the MCU's supply pin): on with power.mcu, unless power.brownout is false
+// the generic brown-out break (a motor on the MCU's supply pin): on with power.mcu, unless power.brownout is false.
+// A board or bench that lists its own 'brownout' in faults models it itself (the LED trainer's supply limit).
 function brownout(){ return !!(MD.power.mcu && MD.power.brownout !== false); }
+const listsFault = id => (MD.def.faults || []).some(fd => (Array.isArray(fd) ? fd[0] : fd) === id);
 function faultChoices(){
   const out = [['', '']]; out.length = 0;
   const srcs = MD.power.sources || {};
@@ -1023,13 +1054,15 @@ function faultChoices(){
     if (s.range){ out.push([`wrong-voltage:${key}:${s.max != null ? s.max + 4 : s.range[1] * 2}`, T('Too high a voltage on {src}', { src: T(s.label || key) })]);
       out.push([`wrong-voltage:${key}:${Math.max(1, +(s.range[0] * .7).toFixed(1))}`, T('Too low a voltage on {src}', { src: T(s.label || key) })]); }
   }
-  if (brownout()) out.push(['brownout', T(typeof MD.power.brownout === 'string' ? MD.power.brownout : 'Motor on the 5 V pin (brown-out)')]);
+  if (brownout() && !listsFault('brownout')) out.push(['brownout', T(typeof MD.power.brownout === 'string' ? MD.power.brownout : 'Motor on the 5 V pin (brown-out)')]);
   for (const p of MD.parts) if (p.polar && !p.fixed) out.push(['reversed:' + p.id, T('{name} in backwards', { name: p.id })]);
   for (const fd of MD.def.faults || []){
     const [id, label] = Array.isArray(fd) ? fd : [fd, null];
     if (typeof id === 'string' && !out.some(o => o[0] === id)) out.push([id, label ? T(label) : faultLabel(id)]);
   }
-  const cold = MD.parts.filter(p => p.led || p.control || (MD.power.mcu && (MD.power.mcu.needs || []).includes(p.id))).slice(0, 6);
+  // six cold joints the board doesn't list itself: a control and an LED first, then in part order
+  const pool = MD.parts.filter(p => (p.led || p.control || (MD.power.mcu && (MD.power.mcu.needs || []).includes(p.id))) && !out.some(o => o[0] === 'cold:' + p.id));
+  const cold = [...new Set([pool.find(p => p.control), pool.find(p => p.led), ...pool].filter(Boolean))].slice(0, 6);
   for (const p of cold) out.push(['cold:' + p.id, T('Cold joint on {name}', { name: p.id })]);
   out.push(['', T('Repair everything')]);
   return out.map(([id, label]) => [id || null, label]);
@@ -1167,6 +1200,8 @@ function choiceIds(){
     else if (b.id === 'remove') out.remove = loose.map(p => p.id.toLowerCase());
     else out[b.id] = b.choices().map(c => c.id);
   }
+  // a control folded into a picker is still pressable on its own (its hidden button)
+  for (const cid of Object.keys(ctlFolded)) out[cid] = null;
   return out;
 }
 B.choices = () => choiceIds();
@@ -1196,7 +1231,8 @@ function start(pick){
     matStep: MAT.steps.length - 1, readings: {}, benchStatus: null, volts: {}, sound: null, sag: null,
   };
   for (const p of MD.parts) st.placed[p.id] = { orient: 0, sold: true };
-  for (const p of MD.parts) if (p.control && p.control.type === 'slide') st.ctl[p.id] = 0;
+  // a slide starts at control.start (a power switch that ships ON), else position 0
+  for (const p of MD.parts) if (p.control && p.control.type === 'slide') st.ctl[p.id] = +p.control.start || 0;
   st.ev = evaluate(); st.o = outputs();
   const q = CF_Q;
   if (q.get('bare') === '1' && q.get('build') === 'bare') A.build('bare');
@@ -1239,6 +1275,8 @@ function start(pick){
   // the core frames z from 0; bounds that start higher (a part page framed on its part) move the world down by z0:
   // P is affine, so raising the rotation centre and the screen offset by z0 maps z0 to where the core put 0, at any angle
   if (z0){ RCZ += z0; OY += z0; ui.render(); }
+  keepFolded();
+  clearStats();
   if (typeof xrMount === 'function') xrMount(() => ui, s => s.xr > .5 ? T('See-through: the chips show their silicon, copper shows where current flows') : '');
   // a hot part gets a red tint filter
   const defs = document.getElementById('fdefs') || document.querySelector('#fig defs');
@@ -1258,6 +1296,38 @@ function start(pick){
   if (st.power) refresh(true); else kick();
 }
 let held = null, heldBb = null;
+
+// the core frames the drawing a little high and right of centre, so on a wide board the stats column (top right) can
+// sit on its far end. Once laid out, the drawing moves down into the room the frame leaves below it, a few px at a
+// time, until no stat (with a small margin) covers anything drawn. A stat that appears later (a program's name once it
+// runs) only ever moves it further down; a resize starts again from the core's frame, since the stats keep their size
+// while the drawing scales. Only in the view it opened in: once someone turns the figure, it stays where they put it.
+// A phone's stats sit in a row above the drawing and never trigger it.
+function clearStats(){
+  const svg = document.getElementById('fig'), art = document.getElementById('art'), box = document.getElementById('stats');
+  if (!svg || !art || !box || typeof document.elementsFromPoint !== 'function') return;
+  const base = OY, pad = 8, step = 6, yaw = YAW, pitch = PITCH;
+  const covered = () => [...box.querySelectorAll('.stat')].some(el => {
+    const q = el.getBoundingClientRect(), x0 = q.left - pad, y0 = q.top - pad, w = q.width + 2 * pad, h = q.height + 2 * pad;
+    for (let i = 0; i <= 8; i++) for (let j = 0; j <= 4; j++)
+      if (document.elementsFromPoint(x0 + w * i / 8, y0 + h * j / 4).some(e => e !== art && art.contains(e))) return true;
+    return false;
+  });
+  const fit = again => {
+    const r = svg.getBoundingClientRect(), vb = svg.viewBox && svg.viewBox.baseVal;
+    if (!r.width || !vb || !vb.width) return;
+    if (again && OY !== base){ OY = base; ui.render(); }
+    if (YAW !== yaw || PITCH !== pitch) return;
+    const k = vb.width / r.width, most = base + r.height * .3 * k;
+    while (OY + step * k <= most && r.bottom - art.getBoundingClientRect().bottom > step && covered()){ OY += step * k; ui.render(); }
+  };
+  let queued = 0;
+  const later = again => { if (!queued) requestAnimationFrame(() => { const a = queued === 2; queued = 0; fit(a); }); queued = Math.max(queued, again ? 2 : 1); };
+  later(false);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => later(false));
+  if (typeof ResizeObserver === 'function') new ResizeObserver(() => later(false)).observe(box);
+  addEventListener('resize', () => later(true));
+}
 
 // standalone page: the SVG re-renders all the time, so keyboard and screen-reader access to the parts drawn in it is a
 // group of real buttons kept off-screen (the focused one shows as a chip). Focus selects the part, Enter or Space

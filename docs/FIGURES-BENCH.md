@@ -8,6 +8,15 @@ nothing else. The engine (`figures/engine/bench*.js`, `figures/engine/sheets*.js
 
 Changes after the first publication are additive only. Every change is logged here, newest first.
 
+- v11 (01:30 Oct 25, P2-engine-b, for the FPGA boards): a feed takes `onlyIf: ['ctl:SW16', '==', 1]` (a condition on
+  a rail's volts or a control's position; `offIf` reads the same way, §6.1); a rail's `victim` may be
+  `{ part, fails: 'short' }`, which pulls that rail and the rails fed from it to 0 V; a slide control's `start` sets
+  its first position; `mcu.bootNeeds` lists parts only
+  the power-up start reads, so an upload runs without them until the next power cycle; a header part's `rs` (ohms)
+  puts a resistor between its signal pins and any breadboard wire on them (§4.2). More than four controls of one
+  type fold into one picker, "Flip a switch" / "Press a button" (§6.3). The automatic cold joints skip ids the
+  board lists itself and start with a control and an LED. The board view moves down, once laid out, until no stat
+  covers the drawing.
 - v10 (00:40 Oct 25, P2-engine-b): a breadboard ULN2003 driver board (`figures/parts/uln2003.js`, legs IN1-IN4,
   GND, VCC on its header, lying on the mat) and the solver's `stepper` type: the 28BYJ-48 with `plug: 'DRV1'` sits
   in the board's socket and reports `coils` from the current in each coil, so the stepper turns from the circuit,
@@ -238,6 +247,8 @@ two rows (idc):     col = floor((n−1)/2), row = (n−1) % 2;  y = at.y + pitch
 ```
 
 `rot` turns the whole header, pins included. Every header pin becomes a board pin `H1.5` with `net`, `label`, `at`.
+`rs: 200` on a header part (ohms) is the series resistor the board puts on each of its signal pins (the Basys 3 Pmod
+lines): a breadboard wire on one of its pins meets the pin's net through it. Ground and rail pins are left direct.
 The engine also indexes pins by net name: `D13` resolves to the only pin on net D13; for nets with several pins
 (`GND`, `5V`) a circuit wire may name the pin id (`H3.6`) or just the net (the engine picks the pin nearest the
 breadboard).
@@ -356,9 +367,16 @@ also feed several rails at once: `{ label, parts: ['NANO', 'BATT'], feeds: { VM:
 
 A feed is alive when its source is connected (or its upstream rail is alive) and every `via` part is in, soldered,
 not reversed and not cold (cold = alive in bursts). Feed voltage: `src.v − drop`, or for a regulator
-`min(reg, in − dropout)`. `offIf: [rail, '>', volts]` switches a feed off (the Uno's comparator). A rail takes the
-highest live feed. Above a rail's `max` the parts on it are damaged (fault `wrong-voltage`; the part named as burnt is
-the rail's `victim`, else the MCU). Below `mcu.min` the MCU
+`min(reg, in − dropout)`. `offIf: [rail, '>', volts]` switches a feed off (the Uno's comparator); `onlyIf` switches
+it on only while its condition holds. A condition is `[ref, op, value]` with `op` one of `>`, `<`, `==`, `!=`, and `ref`
+a rail (its volts) or `'ctl:<id>'` (a control's position: 0/1 for a slide switch, 1 while a button is held), so a
+power switch gates its regulators: `{ rail: 'VU', via: ['IC10'], reg: 1.0, onlyIf: ['ctl:SW16', '==', 1] }`, with
+`control: { type: 'slide', start: 1 }` on SW16 so it starts ON (a slide's `start` is its first position). A rail
+takes the highest live feed. Above a rail's `max` the parts on it are damaged (fault `wrong-voltage`; the part named as
+burnt is the rail's `victim`, else the MCU). `victim: { part: 'C27', fails: 'short' }` is a part that fails short: the
+rail and every rail fed from it fall to 0 V, so the board goes dark. `mcu.bootNeeds: ['IC8']` lists parts only the
+power-up start reads (an FPGA's configuration flash): without one the board is powered but nothing runs ("nothing
+loads at power-up"), until an upload loads a program; the next power cycle needs them again. Below `mcu.min` the MCU
 resets (fault `brownout`). LEDs with `led.rail` light when that rail is alive; with `led.net` when the pin is high
 (or `invert`: low).
 
@@ -407,6 +425,11 @@ list) and reports its state:
 | `bootsel` | Pico BOOTSEL: held while USB is plugged in → mass-storage mode (`st.boot = 'uf2'`) |
 | `input` | a user input (buttons A/B, Basys 3 switches): its `net` level goes to the host as `inputs.<net>` |
 
+Each control is a toolbar button `ctl-<id>` ("Flip SW0", "Press KEY0"). More than four of one type (slides, or
+buttons) fold into one picker, `ctl-slide` "Flip a switch" or `ctl-press` "Press a button", whose choices keep the
+`ctl-<id>` ids. Each folded control also keeps a hidden `ctl-<id>` button, so a host or a content step that presses
+`ctl-sw0` still reaches it, and `B.choices()` lists it.
+
 Boot straps are data, not controls: `straps: [{ fault, boot, halts?, part?, blocks?: ['upload', 'serial'], msg,
 fix }]`. When the program (re)starts (plugged in, RESET released, an upload done, or that strap's fault set on a live
 board) the engine latches the first strap whose `fault` is in force, until the next restart. `state.boot` reports its
@@ -433,6 +456,9 @@ Fault ids (strings; the host sets them with `set {fault}`; the figure's "Break i
 | `wrong-voltage:<source>:<volts>` | sets that source's voltage (e.g. `wrong-voltage:pin5:12`) | "<volts> V on <label>: <part> is damaged" or "<volts> V is too low: brown-out" · "Use <range> V" |
 | `brownout` | a motor on the 5 V pin: the rail sags under load and the MCU resets in a loop | "Brown-out: the motor drags 5 V down and the board resets" · "Power motors separately" |
 | `short:<netA>:<netB>` | solder bridge; on a power rail the polyfuse or USB port trips; on a rail fed through an `ilim` regulator only that rail (and its children) drops | "Short between <netA> and <netB>" · "Clear the bridge" |
+
+Break it also offers six `cold:<id>` joints of its own: parts with an LED, a control or a place in `mcu.needs`, a
+control and an LED first, then in part order, skipping any id the board's `faults` list already names.
 
 `state.faults` lists every fault in force: the ids set, `missing:<id>` while that part is out, and `reversed:<id>`
 while a polar part sits backwards. A board's or bench's own `faults` list may give labels for Break it:

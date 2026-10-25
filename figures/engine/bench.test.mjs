@@ -594,4 +594,108 @@ describe('the generic brown-out break', () => {
     expect(B.report().status).toBe('running');
     expect(page.notes()).toEqual([]);
   });
+
+  it("is a bench's own when it lists brownout itself (the LED trainer's supply limit), with no MCU", async () => {
+    page = await loadFigure(buildFigure('robotics/led-resistor'), { path: '/figures/robotics/led-resistor.html' });
+    const B = page.bench;
+    expect(B.faultChoices().filter(([id]) => id === 'brownout').map(([, label]) => label)).toEqual(['Supply current limit at 10 mA']);
+    B.accept({ power: 'bench', fault: 'brownout' });
+    B.advance(1);
+    expect(B.report().faults).toContain('brownout');
+    expect(page.notes()).toEqual([]);
+  });
+});
+
+describe('board power and controls (P2-fpga)', () => {
+  const unoEdit = (...pairs) => loadFigure(swapItem(buildFigure('boards/uno-r3'), 'boards/uno-r3', pairs.reduce((src, [a, b]) => {
+    if (!src.includes(a)) throw new Error(`uno-r3.js has no ${a}`);
+    return src.replace(a, b);
+  }, readFileSync(resolve(import.meta.dirname, '..', 'boards', 'uno-r3.js'), 'utf8'))), { path: '/figures/boards/uno-r3.html' });
+  const USB_FEED = "{ rail: 'USBVCC', via: ['T1', 'U5'], drop: .05, offIf: ['VIN', '>', 6.6] }";
+
+  it('onlyIf on a feed: a power switch gates the rail', async () => {
+    page = await unoEdit([USB_FEED, USB_FEED.replace(' }', ", onlyIf: ['ctl:RESET', '==', 0] }")]);
+    const B = page.bench;
+    B.accept({ power: 'usb' }); B.advance(.5);
+    expect(B.st.ev.rails['5V']).toBeGreaterThan(4.9);
+    B.actions.press('RESET', true); B.advance(.1);
+    expect(B.st.ev.rails['5V']).toBe(0);
+    expect(B.report().status).toBe('no-power');
+    B.actions.press('RESET', false); B.advance(2);
+    expect(B.report().status).toBe('running');
+    expect(page.notes()).toEqual([]);
+  });
+
+  it('a slide control starts at its control.start', async () => {
+    const src = readFileSync(resolve(import.meta.dirname, '..', 'boards', 'basys3.js'), 'utf8');
+    const from = "control: { type: 'slide', action: 'input'";
+    expect(src).toContain(from);
+    page = await loadFigure(swapItem(buildFigure('boards/basys3'), 'boards/basys3', src.replace(from, "control: { type: 'slide', start: 1, action: 'input'")), { path: '/figures/boards/basys3.html' });
+    const slides = page.bench.md.parts.filter((p) => p.control && p.control.type === 'slide');
+    expect(slides.length).toBeGreaterThan(4);
+    expect(slides.every((p) => page.bench.st.ctl[p.id] === 1)).toBe(true);
+    expect(page.bench.report().inputs.SW0).toBe(1);
+  });
+
+  it('a victim that fails short takes its rail and the rails it feeds down', async () => {
+    page = await loadFigure(buildFigure('boards/uno-r3'), { path: '/figures/boards/uno-r3.html' });
+    page.bench.accept({ power: 'pin5', fault: 'wrong-voltage:pin5:9' }); page.bench.advance(.3);
+    expect(page.bench.report().status).toBe('fault');
+    expect(page.bench.st.ev.rails['5V']).toBeGreaterThan(8);
+    page.close();
+    page = await unoEdit(["{ src: 'pin5' }], max: 6 }", "{ src: 'pin5' }], max: 6, victim: { part: 'U5', fails: 'short' } }"]);
+    const B = page.bench;
+    B.accept({ power: 'pin5', fault: 'wrong-voltage:pin5:9' }); B.advance(.3);
+    expect(B.report().status).toBe('fault');
+    expect(B.st.ev.fault.part).toBe('U5');
+    expect(B.st.ev.rails['5V']).toBe(0);
+    expect(B.st.ev.rails['3V3']).toBe(0);
+  });
+
+  it('bootNeeds: a part only the power-up start reads; an upload runs without it until the next power cycle', async () => {
+    page = await unoEdit(["needs: ['ZU4', 'SK1', 'Y2', 'RN1'] }", "needs: ['ZU4', 'SK1', 'Y2', 'RN1'], bootNeeds: ['RN2'] }"]);
+    const B = page.bench;
+    B.accept({ power: 'usb', fault: 'missing:RN2' }); B.advance(.5);
+    expect(B.report().status).toBe('powered');
+    expect(B.st.ev.why).toMatch(/nothing loads at power-up/);
+    B.actions.upload('fast'); B.advance(3);
+    expect(B.report().status).toBe('running');
+    B.accept({ power: null }); B.accept({ power: 'usb' }); B.advance(.5);
+    expect(B.report().status).toBe('powered');
+  });
+
+  it('rs on a header: a wire on its pins meets the net through the board resistor', async () => {
+    page = await unoEdit(["{ id: 'IOH', kind: 'female',", "{ id: 'IOH', kind: 'female', rs: 200,"]);
+    const B = page.bench;
+    B.accept({ view: 'breadboard', circuit: 'blink', power: 'usb', pins: { D13: 1 } }); B.advance(.4);
+    const led = B.report().meas.LED1;
+    expect(led).toMatchObject({ state: 'ok', r: 420 });
+    expect(led.i_mA).toBeGreaterThan(6);
+    expect(led.i_mA).toBeLessThan(7.5);
+    expect(page.notes()).toEqual([]);
+  });
+
+  it('many switches fold into one picker that still presses ctl-<id>; cold joints are listed once, a control and an LED first', async () => {
+    page = await loadFigure(buildFigure('boards/basys3'), { path: '/figures/boards/basys3.html' });
+    const B = page.bench, doc = page.win.document, btn = (id) => doc.querySelector(`#btns .act[data-id="${id}"]`);
+    expect(btn('ctl-sw0')).toBeNull();
+    expect(doc.querySelectorAll('#btns .act').length).toBeLessThan(16);
+    btn('ctl-slide').click();
+    const chip = [...doc.querySelectorAll('#btns .chip')].find((c) => c.dataset.id === 'ctl-sw0');
+    const was = B.st.ctl.SW0 || 0;
+    chip.click();
+    expect(B.st.ctl.SW0 || 0).not.toBe(was);
+    // the hidden ctl-sw0 a host or a content step presses
+    const kept = doc.querySelector('#ctlkeep .act[data-id="ctl-sw0"]');
+    expect(kept.closest('[hidden]')).not.toBeNull();
+    kept.click();
+    expect(B.st.ctl.SW0 || 0).toBe(was);
+    const ids = B.faultChoices().map(([id]) => id).filter(Boolean);
+    expect(new Set(ids).size).toBe(ids.length);
+    page.close();
+    page = await loadFigure(buildFigure('boards/de10-lite'), { path: '/figures/boards/de10-lite.html' });
+    const cold = page.bench.faultChoices().map(([id]) => id).filter((id) => id && id.startsWith('cold:')).map((id) => page.bench.md.byId[id.slice(5)]);
+    expect(cold.some((p) => p && p.control)).toBe(true);
+    expect(cold.some((p) => p && p.led)).toBe(true);
+  });
 });

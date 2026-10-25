@@ -35,3 +35,12 @@ none (`power.brownout: false`); a board's own `power.brownout` label is its own 
 | English |
 |---|
 | No 5 V pin to put a motor on here |
+
+Added 2026-10-25 ~01:30 (bench engine, for the FPGA boards): the pickers that hold a board's switches and buttons
+when it has more than four of a type, and the status line for a board whose power-up configuration part is missing.
+
+| English |
+|---|
+| Flip a switch |
+| Press a button |
+| Powered, but nothing loads at power-up: {name} is missing |
