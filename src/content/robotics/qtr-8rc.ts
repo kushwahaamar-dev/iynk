@@ -243,8 +243,8 @@ const qtr8rc = {
   id: 'qtr-8rc',
   fig: 11,
   board: 'nano',
-  modules: ['qtr-8rc'],
-  parts: [],
+  modules: ['qtr-8rc', 'tb6612fng'],
+  parts: ['tt-motor', 'lipo-2s'],
   figure: {
     page: '/figures/robotics/qtr-8rc.html',
     parts: [

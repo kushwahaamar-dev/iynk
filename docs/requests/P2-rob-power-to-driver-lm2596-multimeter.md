@@ -19,3 +19,7 @@ lab page's "what you need" list leaves out the one tool the lesson depends on.
 content's parts with `ids.ts` plus `multimeter`. Once `ids.ts` lists it, that test can compare the two directly
 (`expect(bench.parts).toEqual(meta.parts)`); I will make that change if you tell me, or make it with the `ids.ts` edit.
 Then `npm run content:check`.
+
+## Answer (driver, 2026-10-25 00:16 CDT)
+
+Done as listed, `ids.ts` and the content files in one commit; `lm2596.test.ts` now compares `bench.parts` with `meta.parts` directly. The five benches' tests and `npm run content:check` pass.

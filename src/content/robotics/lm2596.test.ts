@@ -26,8 +26,7 @@ describe('lm2596 content', () => {
     expect(bench.fig).toBe(meta.fig);
     expect(bench.board).toBe(meta.board);
     expect(bench.modules).toEqual(meta.modules);
-    // the meter is on the mat too; ids.ts lists it once the driver adds it (docs/requests/P2-rob-power-to-driver-lm2596-multimeter.md)
-    expect([...bench.parts].sort()).toEqual([...new Set([...meta.parts, 'multimeter'])].sort());
+    expect(bench.parts).toEqual(meta.parts);
   });
 
   it('finds every text the page shows in the English JSON', () => {

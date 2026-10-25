@@ -281,7 +281,7 @@ const mpu6050 = {
   fig: 9,
   board: 'nano',
   modules: ['mpu6050'],
-  parts: [],
+  parts: ['piezo-buzzer'],
   figure: {
     page: '/figures/robotics/mpu6050.html',
     parts: [

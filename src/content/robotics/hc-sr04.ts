@@ -241,7 +241,7 @@ const hcsr04 = {
   fig: 10,
   board: 'nano',
   modules: ['hc-sr04'],
-  parts: [],
+  parts: ['piezo-buzzer'],
   figure: {
     page: '/figures/robotics/hc-sr04.html',
     parts: [

@@ -140,11 +140,11 @@ export const ROBOTICS: Record<RoboticsId, RoboticsMeta> = {
   tb6612fng: { fig: 5, palette: 'cobalt', tags: ['motor-driver', 'pwm'], board: 'nano', modules: ['tb6612fng'], parts: ['tt-motor', 'lipo-2s'] },
   l298n: { fig: 6, palette: 'tomato', tags: ['motor-driver', 'heat'], board: 'nano', modules: ['l298n'], parts: ['tt-motor', 'lipo-2s'] },
   a4988: { fig: 7, palette: 'mint', tags: ['stepper', 'microstepping'], board: 'nano', modules: ['a4988'], parts: ['nema17', 'lipo-2s', 'multimeter'] },
-  pca9685: { fig: 8, palette: 'blush', tags: ['i2c', 'servo', 'pwm'], board: 'nano', modules: ['pca9685'], parts: ['servo-sg90'] },
-  mpu6050: { fig: 9, palette: 'mustard', tags: ['i2c', 'imu', 'filters'], board: 'nano', modules: ['mpu6050'], parts: [] },
-  'hc-sr04': { fig: 10, palette: 'cobalt', tags: ['ultrasonic', 'timing'], board: 'nano', modules: ['hc-sr04'], parts: [] },
-  'qtr-8rc': { fig: 11, palette: 'tomato', tags: ['line-sensor', 'rc-timing'], board: 'nano', modules: ['qtr-8rc'], parts: [] },
-  lm2596: { fig: 12, palette: 'cobalt', tags: ['power', 'buck', 'brownout'], board: null, modules: ['lm2596'], parts: ['lipo-2s', 'tt-motor'] },
+  pca9685: { fig: 8, palette: 'blush', tags: ['i2c', 'servo', 'pwm'], board: 'nano', modules: ['pca9685'], parts: ['servo-sg90', 'aa-holder-4'] },
+  mpu6050: { fig: 9, palette: 'mustard', tags: ['i2c', 'imu', 'filters'], board: 'nano', modules: ['mpu6050'], parts: ['piezo-buzzer'] },
+  'hc-sr04': { fig: 10, palette: 'cobalt', tags: ['ultrasonic', 'timing'], board: 'nano', modules: ['hc-sr04'], parts: ['piezo-buzzer'] },
+  'qtr-8rc': { fig: 11, palette: 'tomato', tags: ['line-sensor', 'rc-timing'], board: 'nano', modules: ['qtr-8rc', 'tb6612fng'], parts: ['tt-motor', 'lipo-2s'] },
+  lm2596: { fig: 12, palette: 'cobalt', tags: ['power', 'buck', 'brownout'], board: null, modules: ['lm2596'], parts: ['lipo-2s', 'tt-motor', 'multimeter'] },
   'pi5-ros2': { fig: 13, palette: 'mint', tags: ['linux', 'ros2', 'power'], board: 'pi4-pi5', boardVariant: 'pi5', modules: [], parts: [] },
 };
 

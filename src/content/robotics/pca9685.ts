@@ -301,7 +301,7 @@ const pca9685 = {
   fig: 8,
   board: 'nano',
   modules: ['pca9685'],
-  parts: ['servo-sg90'],
+  parts: ['servo-sg90', 'aa-holder-4'],
   figure: {
     page: '/figures/robotics/pca9685.html',
     parts: [

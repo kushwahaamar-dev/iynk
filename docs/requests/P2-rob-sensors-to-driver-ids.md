@@ -24,3 +24,7 @@ motors and battery.
 
 **Check.** `npx vitest run src/content/robotics/{pca9685,mpu6050,hc-sr04,qtr-8rc}.test.ts` ("matches its ids.ts
 entry") and `npm run content:check`.
+
+## Answer (driver, 2026-10-25 00:16 CDT)
+
+Done as listed, `ids.ts` and the content files in one commit. The five benches' tests and `npm run content:check` pass.
