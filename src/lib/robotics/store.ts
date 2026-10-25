@@ -8,7 +8,7 @@ import type { BridgeCommand, FigureState, RoboticsContent } from "@/content/sche
 import { progressKey } from "@/lib/progress/keys";
 import { scoreQuiz, quizAfter } from "./quiz";
 import { allPass, type TaskRunResult } from "./runner";
-import { advanceSteps, canStart, currentStepIndex, emptySession, type StepsSession } from "./steps";
+import { activeFaults, advanceSteps, canStart, currentStepIndex, emptySession, type StepsSession } from "./steps";
 import type { BenchTexts } from "./text";
 
 export type FigureCommand = BridgeCommand | { type: "flash"; text: string; ms?: number };
@@ -67,7 +67,9 @@ export type BenchAction =
   | { type: "task/reset"; task: string }
   | { type: "task/solution"; task: string }
   | { type: "task/run"; task: string }
-  | { type: "task/result"; task: string; result: TaskRunResult };
+  | { type: "task/result"; task: string; result: TaskRunResult }
+  /** A room hands a joiner the host's state (src/lib/realtime/store-sync.ts). */
+  | { type: "sync/hydrate"; state: unknown };
 
 export type BenchEffect =
   | { kind: "send"; command: FigureCommand }
@@ -104,6 +106,42 @@ export function initialBenchState(setup: BenchSetup): BenchState {
 
 function notify(state: BenchState, notice: Notice): BenchState {
   return { ...state, notice: { seq: (state.notice?.seq ?? 0) + 1, notice } };
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+/**
+ * Takes a room host's steps, mode and task code, and walks this screen's figure to the same place:
+ * the finished steps' bridge commands in build order, then the faults the host's figure shows.
+ * Quiz, notices, serial lines and task results stay this screen's own. Steps done by hand in the
+ * host's figure have no command to replay.
+ */
+function hydrate(setup: BenchSetup, state: BenchState, raw: unknown, send: (command: FigureCommand) => void): BenchState {
+  const { bench } = setup;
+  if (!isRecord(raw) || raw.bench !== bench.id) return state;
+  const hostSteps = isRecord(raw.steps) ? raw.steps : {};
+  const steps: StepsSession = {};
+  for (const step of bench.steps) {
+    const p = hostSteps[step.id];
+    steps[step.id] = isRecord(p) ? { done: p.done === true, seen: p.seen === true } : { done: false, seen: false };
+  }
+  const hostMode = isRecord(raw.mode) ? raw.mode.selected : undefined;
+  const mode = typeof hostMode === "string" && bench.modes.some((m) => m.id === hostMode) ? { selected: hostMode } : state.mode;
+  const hostTasks = isRecord(raw.tasks) ? raw.tasks : {};
+  const tasks = Object.fromEntries(
+    Object.entries(state.tasks).map(([id, task]) => {
+      const code = isRecord(hostTasks[id]) ? hostTasks[id].code : undefined;
+      return [id, typeof code === "string" ? { ...task, code, result: null } : task];
+    }),
+  );
+
+  for (const step of bench.steps) if (steps[step.id].done && step.action) send(step.action);
+  const figure = isRecord(raw.figure) && isRecord(raw.figure.state) ? (raw.figure.state as FigureState) : {};
+  for (const fault of activeFaults(bench.faults, figure)) send(fault.figure);
+  if (typeof figure.mode === "string" && bench.modes.some((m) => m.id === figure.mode)) send({ type: "set", state: { mode: figure.mode } });
+
+  return { ...state, steps, mode, tasks };
 }
 
 function appendSerial(serial: BenchState["serial"], report: unknown): BenchState["serial"] {
@@ -254,6 +292,9 @@ export function reduceBench(setup: BenchSetup, state: BenchState, action: BenchA
       }
       return [next, effects];
     }
+
+    case "sync/hydrate":
+      return [hydrate(setup, state, action.state, send), effects];
   }
 }
 

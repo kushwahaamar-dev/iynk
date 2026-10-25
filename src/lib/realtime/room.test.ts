@@ -33,7 +33,7 @@ function droneReduce(s: Drone, a: Act): Drone {
     case "design/pick":
       return { ...s, pick: { ...s.pick, [String(a.key)]: String(a.value) }, log: [...s.log, `${String(a.key)}=${String(a.value)}`] };
     case "select":
-      return { ...s, sel: (a.id as string | null) ?? null };
+      return { ...s, sel: (a.id as string | null) ?? null, log: [...s.log, `sel=${String(a.id)}`] };
     case "tab":
       return { ...s, tab: String(a.tab) };
     case "sync/hydrate": {
@@ -45,14 +45,18 @@ function droneReduce(s: Drone, a: Act): Drone {
   }
 }
 
-type Board = { code: string; view: string };
+type Board = { code: string; view: string; power: string | null; run: { status: string } };
 
 function boardReduce(s: Board, a: Act): Board {
   if (a.type === "code/replace") return a.code === s.code ? s : { ...s, code: String(a.code) };
   if (a.type === "view/set") return { ...s, view: String(a.view) };
-  if (a.type === "sync/hydrate") return { ...(a.state as Board) };
+  if (a.type === "power/set") return { ...s, power: (a.source as string | null) ?? null };
+  if (a.type === "run/start") return s.run.status === "stopped" ? { ...s, run: { status: "compiling" } } : s;
+  if (a.type === "sync/hydrate") return { ...(a.state as Board), run: s.run };
   return s;
 }
+
+const boardInit: Board = { code: "void setup() {}", view: "board", power: "usb", run: { status: "stopped" } };
 
 // A tiny deterministic random, so latencies differ per client but every run is the same.
 function seeded(seed: number) {
@@ -63,7 +67,15 @@ function seeded(seed: number) {
   };
 }
 
-function join<S>(relay: FakeRelay, name: string, store: LabStore<S, Act>, latency: () => number, lab: LabKind = "drone", itemId = "quad5") {
+function join<S>(
+  relay: FakeRelay,
+  name: string,
+  store: LabStore<S, Act>,
+  latency: () => number,
+  lab: LabKind = "drone",
+  itemId = "quad5",
+  scope = `/${lab}/${itemId}`,
+) {
   const transport = relay.connect(latency);
   const room = new RoomClient({
     id: "abc234",
@@ -74,7 +86,7 @@ function join<S>(relay: FakeRelay, name: string, store: LabStore<S, Act>, latenc
     transport,
     snapshotTimeoutMs: 5000,
   });
-  const detach = attachStore(store, lab, room, { debounceMs: 100, maxWaitMs: 300 });
+  const detach = attachStore(store, lab, room, { scope, debounceMs: 100, maxWaitMs: 300 });
   room.start();
   return { room, store, transport, detach };
 }
@@ -99,10 +111,11 @@ describe("ordering and convergence", () => {
     vi.advanceTimersByTime(400);
     expect([a, b, c].map((x) => x.room.getState().status)).toEqual(["live", "live", "live"]);
 
+    // Selecting a part is free for everyone, so all three write at once.
     for (let i = 0; i < 6; i += 1) {
-      a.store.dispatch({ type: "design/pick", key: "motor", value: `a${i}` });
-      b.store.dispatch({ type: "design/pick", key: "prop", value: `b${i}` });
-      c.store.dispatch({ type: "design/pick", key: "frame", value: `c${i}` });
+      a.store.dispatch({ type: "select", id: `a${i}` });
+      b.store.dispatch({ type: "select", id: `b${i}` });
+      c.store.dispatch({ type: "select", id: `c${i}` });
       vi.advanceTimersByTime(7);
     }
     // No optimistic apply: nothing has come back from the relay for this tick's dispatch yet.
@@ -110,7 +123,9 @@ describe("ordering and convergence", () => {
     expect(a.store.getState().log).not.toContain("battery=late");
 
     vi.advanceTimersByTime(1000);
-    const relayOrder = relay.stamped.map(({ action }) => `${String(action.key)}=${String(action.value)}`);
+    const relayOrder = relay.stamped.map(({ action }) =>
+      action.type === "select" ? `sel=${String(action.id)}` : `${String(action.key)}=${String(action.value)}`,
+    );
     expect(relayOrder).toHaveLength(19);
     const logs = [a, b, c].map((x) => x.store.getState().log);
     expect(logs[0]).toEqual(relayOrder);
@@ -156,21 +171,41 @@ describe("joining", () => {
     expect(b.room.getState().status).toBe("live");
     expect(b.store.getState().log).toEqual(a.store.getState().log);
     expect(b.store.getState().sel).toBe("esc");
-    expect(b.store.getState().log).toEqual(["motor=2207", "prop=5x4.3", "battery=4s"]);
+    expect(b.store.getState().log).toEqual(["motor=2207", "sel=esc", "prop=5x4.3", "battery=4s"]);
   });
 
-  test("a store without sync/hydrate is rebuilt from its own actions", () => {
+  test("a joiner starts the sketch the host is running", () => {
     const relay = new FakeRelay();
-    const plain = (s: Drone, a: Act) => (a.type === "sync/hydrate" ? s : droneReduce(s, a));
-    const a = join(relay, "ana", makeStore(droneInit, plain), () => 5);
+    const a = join(relay, "ana", makeStore<Board>(boardInit, boardReduce), () => 5, "board", "uno-r3");
     vi.advanceTimersByTime(50);
-    a.store.dispatch({ type: "design/pick", key: "motor", value: "2207" });
-    a.store.dispatch({ type: "select", id: "fc" });
-    vi.advanceTimersByTime(100);
-    const b = join(relay, "bo", makeStore(droneInit, plain), () => 5);
+    a.store.dispatch({ type: "run/start" });
+    vi.advanceTimersByTime(50);
+    expect(a.store.getState().run.status).toBe("compiling");
+    const b = join(relay, "bo", makeStore<Board>(boardInit, boardReduce), () => 5, "board", "uno-r3");
     vi.advanceTimersByTime(300);
-    expect(b.store.getState().pick).toEqual({ motor: "2207" });
-    expect(b.store.getState().sel).toBe("fc");
+    expect(b.store.getState().run.status).toBe("compiling");
+    // Its own interpreter runs it: nothing went back to the room.
+    expect(relay.stamped.map(({ action }) => action.type)).toEqual(["run/start"]);
+  });
+
+  test("a board's lessons and a drone's fly page share the room but not each other's state", () => {
+    const relay = new FakeRelay();
+    const lesson = join(relay, "ana", makeStore<Board>(boardInit, boardReduce), () => 5, "board", "uno-r3", "/boards/uno-r3/blink");
+    vi.advanceTimersByTime(50);
+    lesson.store.dispatch({ type: "power/set", source: null });
+    vi.advanceTimersByTime(50);
+    const other = join(relay, "bo", makeStore<Board>(boardInit, boardReduce), () => 5, "board", "uno-r3", "/boards/uno-r3/button");
+    vi.advanceTimersByTime(300);
+    expect(other.room.getState().status).toBe("live");
+    expect(other.store.getState().power).toBe("usb");
+    lesson.store.dispatch({ type: "power/set", source: "barrel" });
+    vi.advanceTimersByTime(100);
+    expect(lesson.store.getState().power).toBe("barrel");
+    expect(other.store.getState().power).toBe("usb");
+    // Chat still reaches both pages.
+    other.room.chat("on the button lesson");
+    vi.advanceTimersByTime(100);
+    expect(lesson.room.getState().messages.some((m) => m.text === "on the button lesson")).toBe(true);
   });
 
   test("the host leaving hands the room to the next peer, which answers the next joiner", () => {
@@ -203,19 +238,19 @@ describe("reconnecting", () => {
     expect(b.room.getState().status).toBe("reconnecting");
     a.store.dispatch({ type: "design/pick", key: "motor", value: "2207" });
     // b's own action while offline waits in its outbox and goes out after the resume.
-    b.store.dispatch({ type: "design/pick", key: "prop", value: "51466" });
+    b.store.dispatch({ type: "select", id: "esc" });
     vi.advanceTimersByTime(1000);
     expect(b.room.getState().status).toBe("live");
     expect(b.room.getState().you.id).toBe("bo");
     expect(b.store.getState().log).toEqual(a.store.getState().log);
-    expect(a.store.getState().log).toEqual(["motor=2207", "prop=51466"]);
+    expect(a.store.getState().log).toEqual(["motor=2207", "sel=esc"]);
   });
 });
 
 describe("the keyboard baton", () => {
   test("only the holder edits code; the others follow the debounced full text", () => {
     const relay = new FakeRelay();
-    const board = () => makeStore<Board>({ code: "void setup() {}", view: "board" }, boardReduce);
+    const board = () => makeStore<Board>(boardInit, boardReduce);
     const a = join(relay, "ana", board(), () => 5, "board", "uno-r3");
     vi.advanceTimersByTime(50);
     const b = join(relay, "bo", board(), () => 5, "board", "uno-r3");
@@ -245,6 +280,27 @@ describe("the keyboard baton", () => {
     expect(a.store.getState().code).toBe("// bo was here");
     const lines = a.room.getState().messages.filter((m) => m.system?.event === "baton");
     expect(lines).toHaveLength(1);
+  });
+
+  test("only the holder changes the build; anyone can look around", () => {
+    const relay = new FakeRelay();
+    const a = join(relay, "ana", makeStore<Board>(boardInit, boardReduce), () => 5, "board", "uno-r3");
+    vi.advanceTimersByTime(50);
+    const b = join(relay, "bo", makeStore<Board>(boardInit, boardReduce), () => 5, "board", "uno-r3");
+    vi.advanceTimersByTime(200);
+
+    b.store.dispatch({ type: "power/set", source: null });
+    b.store.dispatch({ type: "run/start" });
+    expect(b.room.getState().batonDenied).toBe(2);
+    b.store.dispatch({ type: "view/set", view: "schematic" });
+    vi.advanceTimersByTime(100);
+    expect(relay.stamped.map(({ action }) => action.type)).toEqual(["view/set"]);
+    expect([a, b].map((x) => x.store.getState().view)).toEqual(["schematic", "schematic"]);
+    expect([a, b].map((x) => x.store.getState().power)).toEqual(["usb", "usb"]);
+
+    a.store.dispatch({ type: "power/set", source: "barrel" });
+    vi.advanceTimersByTime(100);
+    expect([a, b].map((x) => x.store.getState().power)).toEqual(["barrel", "barrel"]);
   });
 });
 

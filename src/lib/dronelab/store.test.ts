@@ -156,3 +156,33 @@ describe("store", () => {
     expect(figureInitial(content, store.getState())).toMatchObject({ sheet: "wiring", design: content.design.default });
   });
 });
+
+describe("joining a room", () => {
+  test("a joiner takes the host's design, view, tests and CLI, and builds its figure to the host's step", () => {
+    let host = initialState(content);
+    host = reduce(content, host, { type: "design/pick", key: "batt", value: "4s1500" }).state;
+    // The figure's report carries the view too, so it comes first here.
+    host = reduce(content, host, { type: "figure/state", state: { placed: { FRAME: 0, XT60: 1, PROPS: 0 } } }).state;
+    host = reduce(content, host, { type: "sheet", sheet: "wiring" }).state;
+    host = reduce(content, host, { type: "cli/run", line: "status" }).state;
+    host = reduce(content, host, { type: "tab", tab: "cli" }).state;
+
+    const step = reduce(content, initialState(content), { type: "sync/hydrate", state: JSON.parse(JSON.stringify(host)) });
+    expect(step.state.pick).toEqual({ ...content.design.default, batt: "4s1500" });
+    expect(step.state.sheet).toBe("wiring");
+    expect(step.state.cli.lines).toEqual(host.cli.lines);
+    // Tabs stay each person's own.
+    expect(step.state.tab).toBe("design");
+    // FRAME and XT60 are the first two build steps; FC isn't on, so PROPS doesn't count.
+    expect(step.send).toEqual([
+      { type: "set", state: expect.objectContaining({ design: step.state.pick, sheet: "wiring", exploded: false, sel: null, step: 2 }) },
+    ]);
+  });
+
+  test("another craft's snapshot and a bad pick are ignored", () => {
+    const s = initialState(content);
+    expect(reduce(content, s, { type: "sync/hydrate", state: { ...s, id: "whoop" } })).toEqual({ state: s, send: [] });
+    const bad = reduce(content, s, { type: "sync/hydrate", state: { ...s, pick: { batt: "9s", motor: "x", prop: "y" } } });
+    expect(bad.state.pick).toEqual(s.pick);
+  });
+});

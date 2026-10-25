@@ -97,14 +97,9 @@ export type BoardLabAction =
   | { type: 'checks/progress'; fraction: number }
   | { type: 'checks/result'; results: CheckResult[]; limit?: boolean }
   | { type: 'assembly/done'; id: string }
-  | { type: 'assembly/reset' };
-
-/** Actions that change what everyone in a room sees (the rest are local or derived by each client). */
-export const SHARED_ACTIONS: readonly BoardLabAction['type'][] = [
-  'code/replace', 'code/reset', 'param/set', 'run/start', 'run/stop', 'serial/send', 'serial/clear', 'serial/baud',
-  'input/set', 'input/request', 'view/set', 'exploded/set', 'part/select', 'power/set', 'fault/trigger', 'fault/clear', 'variant/set',
-  'assembly/reset',
-];
+  | { type: 'assembly/reset' }
+  /** A room hands a joiner the host's state (src/lib/realtime/store-sync.ts). */
+  | { type: 'sync/hydrate'; state: unknown };
 
 /** The serial monitor keeps this many lines (the original kept 40). */
 export const SERIAL_KEEP = 200;
@@ -159,6 +154,50 @@ function appendLines(s: BoardLabState, lines: Omit<SerialLine, 'id'>[]): BoardLa
   const added = lines.map((l) => ({ ...l, id: next++ }));
   const all = s.serial.lines.concat(added);
   return { ...s.serial, lines: all.length > SERIAL_KEEP ? all.slice(all.length - SERIAL_KEEP) : all, next };
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
+const VIEWS = new Set<string>(['board', 'breadboard', 'schematic', 'power']);
+const orNull = (value: unknown, fallback: string | null) => (value === null || typeof value === 'string' ? value : fallback);
+
+/**
+ * Takes what a room shares from another screen's state on the same lesson:
+ * the code, chips, variant, power, fault, world inputs, view and assembly.
+ * Run status, pins, serial lines, check results and the figure report stay
+ * this screen's own (its interpreter makes them). Anything malformed keeps
+ * this screen's value.
+ */
+function hydrate(s: BoardLabState, raw: unknown): BoardLabState {
+  if (!isRecord(raw) || raw.board !== s.board || raw.lesson !== s.lesson) return s;
+  const values = normalizeParams(s.params, raw.values);
+  let { code, chips } = renderTemplate(s.template, s.params, values);
+  const edited = raw.edited === true && typeof raw.code === 'string';
+  if (edited) {
+    code = raw.code as string;
+    const ids = new Set(s.params.map((p) => p.id));
+    chips = (Array.isArray(raw.chips) ? raw.chips : []).filter(
+      (c): c is ChipRange => isRecord(c) && ids.has(c.id as string) && typeof c.from === 'number' && typeof c.to === 'number' && c.from >= 0 && c.from <= c.to && c.to <= code.length,
+    );
+  }
+  const inputs = { ...s.inputs };
+  if (isRecord(raw.inputs)) for (const [id, value] of Object.entries(raw.inputs)) if (typeof value === 'number' && Number.isFinite(value)) inputs[id] = value;
+  const baud = isRecord(raw.serial) && typeof raw.serial.baud === 'number' ? raw.serial.baud : s.serial.baud;
+  return {
+    ...s,
+    variant: orNull(raw.variant, s.variant),
+    values,
+    code,
+    chips,
+    edited,
+    serial: { ...s.serial, baud },
+    inputs,
+    view: typeof raw.view === 'string' && VIEWS.has(raw.view) ? (raw.view as BoardView) : s.view,
+    exploded: typeof raw.exploded === 'boolean' ? raw.exploded : s.exploded,
+    selected: orNull(raw.selected, s.selected),
+    power: orNull(raw.power, s.power),
+    fault: orNull(raw.fault, s.fault),
+    assembly: Array.isArray(raw.assembly) ? raw.assembly.filter((id): id is string => typeof id === 'string') : s.assembly,
+  };
 }
 
 const sameFlat = (a: Record<string, unknown>, b: Record<string, unknown>) => {
@@ -265,6 +304,8 @@ export function reducer(s: BoardLabState, a: BoardLabAction): BoardLabState {
       return s.assembly.includes(a.id) ? s : { ...s, assembly: [...s.assembly, a.id] };
     case 'assembly/reset':
       return s.assembly.length === 0 ? s : { ...s, assembly: [] };
+    case 'sync/hydrate':
+      return hydrate(s, a.state);
   }
 }
 
@@ -318,5 +359,17 @@ export function figureState(s: BoardLabState, opts: { circuit: string | null; fa
   const failure = s.fault ? opts.failures.find((f) => f.id === s.fault) : undefined;
   if (failure && failure.figure.type === 'set') Object.assign(out, failure.figure.state);
   else out.fault = null;
+  return out;
+}
+
+/**
+ * The `set` patch that takes the figure from `prev` to `next` (two figureState results): the keys whose
+ * values changed. A fault always travels with the power it needs, because the bench engine applies one
+ * patch as unplug, change, plug back in: `{ fault: 'missing:Y2' }` alone would leave the board unplugged.
+ */
+export function figurePatch(prev: Record<string, unknown>, next: Record<string, unknown>): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(next)) if (JSON.stringify(prev[k]) !== JSON.stringify(v)) out[k] = v;
+  if ('fault' in out && 'power' in next) out.power = next.power;
   return out;
 }

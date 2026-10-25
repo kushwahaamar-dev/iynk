@@ -20,7 +20,9 @@ function droneStore(): LabStore<Drone, Act> {
       return () => listeners.delete(listener);
     },
     dispatch(action) {
+      // Picks need the keyboard (the host's); selecting a part is free, so every tab can write it.
       if (action.type === "design/pick") state = { log: [...state.log, String(action.value)] };
+      else if (action.type === "select") state = { log: [...state.log, String(action.id)] };
       else if (action.type === "sync/hydrate") state = action.state as Drone;
       else return;
       for (const l of listeners) l();
@@ -62,9 +64,9 @@ describe("BroadcastChannel transport", () => {
     await wait(120);
     expect([b.room.getState().hostId, c.room.getState().hostId]).toEqual(["ana", "ana"]);
     for (let i = 0; i < 5; i += 1) {
-      a.store.dispatch({ type: "design/pick", key: "m", value: `a${i}` });
-      b.store.dispatch({ type: "design/pick", key: "m", value: `b${i}` });
-      c.store.dispatch({ type: "design/pick", key: "m", value: `c${i}` });
+      a.store.dispatch({ type: "select", id: `a${i}` });
+      b.store.dispatch({ type: "select", id: `b${i}` });
+      c.store.dispatch({ type: "select", id: `c${i}` });
     }
     await wait(150);
     const log = a.store.getState().log;
@@ -78,7 +80,7 @@ describe("BroadcastChannel transport", () => {
     await wait(80);
     expect(b.room.getState().hostId).toBe("bo");
     expect(c.room.getState().hostId).toBe("bo");
-    c.store.dispatch({ type: "design/pick", key: "m", value: "after" });
+    c.store.dispatch({ type: "select", id: "after" });
     await wait(80);
     expect(b.store.getState().log.at(-1)).toBe("after");
     expect(c.store.getState().log).toEqual(b.store.getState().log);

@@ -5,7 +5,8 @@ import type { LabKind, LabStore } from "@/components/dock/types";
 import { useLocale } from "@/i18n/client";
 import { useFeatures } from "@/lib/features";
 import { progressPrefix, useSaved } from "@/lib/progress";
-import { createTransport, ROOM_PARAM, roomLink, transportKind } from "./config";
+import { setTelemetryContext, track } from "@/lib/telemetry";
+import { createTransport, pageLink, pageScope, ROOM_PARAM, transportKind } from "./config";
 import { getIdentity, getServerIdentity, subscribeIdentity, type Identity } from "./identity";
 import { isRoomId, newId, newRoomId, normalizeRoomId } from "./protocol";
 import { RoomClient, type RoomState } from "./room";
@@ -155,16 +156,22 @@ export function RoomProvider<S, A extends { type: string }>({
     if (!transport) return;
     const next = new RoomClient({
       id: roomId,
-      link: roomLink(roomId, lab, itemId),
+      link: pageLink(roomId),
       me: { id: newId(), name: me.name, color: me.color, lang: locale, done: latest.current.doneKeys },
       lab,
       itemId,
       transport,
     });
-    const detach = attachStore(store, lab, next);
-    // The room ended without us leaving (removed, full, wrong item): drop ?room= so a reload doesn't rejoin.
-    const offEnd = next.subscribe(() => {
-      const { ended } = next.getState();
+    const detach = attachStore(store, lab, next, { scope: pageScope(window.location.pathname) });
+    let joined = false;
+    const offStatus = next.subscribe(() => {
+      const { ended, status, peers } = next.getState();
+      if (status === "live" && !joined) {
+        joined = true;
+        setTelemetryContext({ room: roomId });
+        track("room.join", { peers: peers.length + 1 });
+      }
+      // The room ended without us leaving (removed, full, wrong item): drop ?room= so a reload doesn't rejoin.
       if (!ended || ended === "left") return;
       setLastEnded(ended);
       setRoomParam(null);
@@ -172,9 +179,10 @@ export function RoomProvider<S, A extends { type: string }>({
     next.start();
     setClient(next);
     return () => {
-      offEnd();
+      offStatus();
       detach();
       next.leave();
+      setTelemetryContext({ room: undefined });
       setClient((current) => (current === next ? null : current));
     };
   }, [roomId, named, lab, itemId, store, locale]);

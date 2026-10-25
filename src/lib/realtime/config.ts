@@ -47,6 +47,20 @@ export function roomLink(roomId: string, lab: LabKind, itemId: string, locale: L
   return url.toString();
 }
 
+/** A path without its language ("/es/boards/nano/blink" -> "/boards/nano/blink"): the page every language shares in a room. */
+export function pageScope(pathname: string): string {
+  const parts = pathname.split("/");
+  if (isLocale(parts[1])) parts.splice(1, 1);
+  return parts.join("/").replace(/\/+$/, "") || "/";
+}
+
+/** The invite link for the page you're on, so it opens the same lesson or fly page, not just the item. */
+export function pageLink(roomId: string): string {
+  const url = new URL(window.location.pathname, window.location.origin);
+  url.searchParams.set(ROOM_PARAM, roomId);
+  return url.toString();
+}
+
 /** H7.1: a link to a fresh room on one lab item. */
 export function createRoom(lab: LabKind, itemId: string, locale?: Locale): string {
   return roomLink(newRoomId(), lab, itemId, locale);

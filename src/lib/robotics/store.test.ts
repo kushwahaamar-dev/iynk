@@ -123,3 +123,39 @@ describe("bench store", () => {
     expect(JSON.parse(JSON.stringify(store.getState()))).toEqual(store.getState());
   });
 });
+
+describe("joining a room", () => {
+  test("a joiner takes the host's steps, mode and task code, and its figure is walked to the same place", () => {
+    const host = harness();
+    for (const build of ["bare", "tht", "assembled"]) host.store.dispatch({ type: "figure/state", state: { build, status: "off" } });
+    host.store.dispatch({ type: "mode/select", mode: "r1k" });
+    host.store.dispatch({ type: "task/edit", task: "blink-led", code: "// host's draft" });
+    host.store.dispatch({ type: "quiz/open", quiz: "after-solder" });
+    const snapshot = { ...host.store.getState(), figure: { ready: true, state: { build: "assembled", fault: "reversed:D1", mode: "r1k" } } };
+
+    const joiner = harness();
+    joiner.store.dispatch({ type: "sync/hydrate", state: JSON.parse(JSON.stringify(snapshot)) });
+    const s = joiner.store.getState();
+    expect(Object.entries(s.steps).filter(([, p]) => p.done).map(([id]) => id)).toEqual(["strip", "place", "solder"]);
+    expect(s.mode.selected).toBe("r1k");
+    expect(s.tasks["blink-led"].code).toBe("// host's draft");
+    // Each person's quiz stays their own.
+    expect(s.quiz.open).toBeNull();
+    expect(joiner.effects).toEqual([
+      { kind: "send", command: { type: "set", state: { build: "bare" } } },
+      { kind: "send", command: { type: "press", id: "place", choice: "D1" } },
+      { kind: "send", command: { type: "press", id: "solder" } },
+      { kind: "send", command: { type: "set", state: { fault: "reversed:D1" } } },
+      { kind: "send", command: { type: "set", state: { mode: "r1k" } } },
+    ]);
+  });
+
+  test("another bench's snapshot and junk are ignored", () => {
+    const joiner = harness();
+    const before = joiner.store.getState();
+    joiner.store.dispatch({ type: "sync/hydrate", state: { ...before, bench: "tb6612fng" } });
+    joiner.store.dispatch({ type: "sync/hydrate", state: "junk" });
+    expect(joiner.store.getState()).toBe(before);
+    expect(joiner.effects).toEqual([]);
+  });
+});

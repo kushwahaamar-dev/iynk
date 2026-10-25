@@ -35,8 +35,9 @@ function droneStore(): LabStore<Drone, Act> {
       return () => listeners.delete(listener);
     },
     dispatch(action) {
+      // Picks need the keyboard (the host's); selecting a part is free, so every peer can write it.
       if (action.type === "design/pick") state = { ...state, log: [...state.log, String(action.value)] };
-      else if (action.type === "select") state = { ...state, sel: (action.id as string | null) ?? null };
+      else if (action.type === "select") state = { ...state, sel: (action.id as string | null) ?? null, log: [...state.log, `sel:${String(action.id)}`] };
       else if (action.type === "sync/hydrate") state = action.state as Drone;
       else return;
       for (const l of listeners) l();
@@ -117,7 +118,7 @@ describe.skipIf(missing !== null)("against the real relay", () => {
     await until(() => a.room.getState().status === "live");
     a.store.dispatch({ type: "design/pick", value: "a-before" });
     a.store.dispatch({ type: "select", id: "esc" });
-    await until(() => a.store.getState().log.length === 1);
+    await until(() => a.store.getState().log.length === 2);
 
     const b = peer("bo", roomId);
     const c = peer("cy", roomId);
@@ -125,11 +126,11 @@ describe.skipIf(missing !== null)("against the real relay", () => {
     expect(b.store.getState()).toEqual(a.store.getState());
 
     for (let i = 0; i < 5; i += 1) {
-      a.store.dispatch({ type: "design/pick", value: `a${i}` });
-      b.store.dispatch({ type: "design/pick", value: `b${i}` });
-      c.store.dispatch({ type: "design/pick", value: `c${i}` });
+      a.store.dispatch({ type: "select", id: `a${i}` });
+      b.store.dispatch({ type: "select", id: `b${i}` });
+      c.store.dispatch({ type: "select", id: `c${i}` });
     }
-    await until(() => [a, b, c].every((x) => x.store.getState().log.length === 16));
+    await until(() => [a, b, c].every((x) => x.store.getState().log.length === 17));
     expect(b.store.getState().log).toEqual(a.store.getState().log);
     expect(c.store.getState().log).toEqual(a.store.getState().log);
     expect(new Set([a, b, c].map((x) => x.room.getState().seq)).size).toBe(1);
@@ -138,7 +139,7 @@ describe.skipIf(missing !== null)("against the real relay", () => {
     sockets.get(`bo-${roomId}`)!.at(-1)!.close();
     await until(() => b.room.getState().status !== "live");
     a.store.dispatch({ type: "design/pick", value: "while-b-away" });
-    await until(() => b.room.getState().status === "live" && b.store.getState().log.length === 17);
+    await until(() => b.room.getState().status === "live" && b.store.getState().log.length === 18);
     expect(b.store.getState().log).toEqual(a.store.getState().log);
     expect(b.room.getState().you.id).toBe(`bo-${roomId}`);
   }, 20_000);
