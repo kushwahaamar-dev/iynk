@@ -11,7 +11,7 @@ describe("readEnv", () => {
     expect(issues).toEqual([]);
     expect(env.META_API_KEY).toBeUndefined();
     expect(env.META_API_BASE).toBe("https://api.meta.ai/v1");
-    expect(env.META_MODEL).toBe("muse-spark-1.1");
+    expect(env.META_MODEL).toBe("muse-spark-1.3");
     expect(env.SERPAPI_MONTHLY_BUDGET).toBe(200);
     expect(env.NEXT_PUBLIC_SOLANA_CLUSTER).toBe("devnet");
     expect(env.NEXT_PUBLIC_SITE_URL).toBe("http://localhost:3000");
@@ -31,7 +31,7 @@ describe("readEnv", () => {
     const { env, issues } = readEnv({ META_API_KEY: "   ", META_MODEL: "" });
     expect(issues).toEqual([]);
     expect(env.META_API_KEY).toBeUndefined();
-    expect(env.META_MODEL).toBe("muse-spark-1.1");
+    expect(env.META_MODEL).toBe("muse-spark-1.3");
   });
 
   it("keeps going past malformed values and names them without their values", () => {

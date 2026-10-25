@@ -36,7 +36,7 @@ describe("chat streaming", () => {
     expect(calls[0].url).toBe("https://api.meta.ai/v1/chat/completions");
     expect((calls[0].init.headers as Record<string, string>).authorization).toBe("Bearer meta-key");
     expect(calls[0].body).toMatchObject({
-      model: "muse-spark-1.1",
+      model: "muse-spark-1.3",
       stream: true,
       stream_options: { include_usage: true },
       max_completion_tokens: 500,
@@ -126,7 +126,7 @@ describe("chat streaming", () => {
     const events = await drain(chat({ messages, stream: true, maxTokens: 100, user: "u", cacheKey: "k" }));
     expect(calls[2].url).toBe("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions");
     expect((calls[2].init.headers as Record<string, string>).authorization).toBe("Bearer g");
-    expect(calls[2].body).toMatchObject({ model: "gemini-3.8-flash", max_tokens: 100 });
+    expect(calls[2].body).toMatchObject({ model: "gemini-3.5-flash", max_tokens: 100 });
     expect(calls[2].body).not.toHaveProperty("safety_identifier");
     expect(calls[2].body).not.toHaveProperty("prompt_cache_key");
     expect(events.at(-1)).toMatchObject({ type: "done", usage: { provider: "gemini", inTokens: 3, outTokens: 1 } });

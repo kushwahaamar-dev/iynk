@@ -12,11 +12,11 @@ Server-only unless the name starts with NEXT_PUBLIC_. Local values live in `.env
 |---|---|---|
 | META_API_KEY | Meta Model API key | — |
 | META_API_BASE | OpenAI-compatible base | https://api.meta.ai/v1 |
-| META_MODEL | chat/vision/audio model | muse-spark-1.1 |
+| META_MODEL | chat/vision/audio model | muse-spark-1.3 |
 | META_IMAGE_MODEL | Muse Image model id (from dev.meta.ai/docs) | the documented id |
 | META_TRANSCRIBE_MODEL | Muse Voice Transcribe id; if it isn't on the API, audio goes through META_MODEL's audio input | the documented id |
 | GEMINI_API_KEY | optional second provider | — |
-| GEMINI_MODEL | Gemini fallback model id (additive, from hx:server-ai) | gemini-3.8-flash |
+| GEMINI_MODEL | Gemini fallback model id (additive, from hx:server-ai) | gemini-3.5-flash |
 | SERPAPI_KEY | SerpApi | — |
 | SERPAPI_MONTHLY_BUDGET | quota guard (searches per process lifetime before refusing non-cached calls) | 200 |
 | SOLANA_RPC_URL | server RPC | https://api.devnet.solana.com |
@@ -336,3 +336,7 @@ Never run npm install in the repo root and never edit package.json; the core's s
 - 13:50 orchestrator: H7.1 client API (useRoom, RoomProvider, createRoom); hx:data also owns src/components/data/**.
 - 14:00 orchestrator: H2 no longer asks for `export const runtime`. Never export runtime/dynamic/revalidate under cacheComponents; per-request GETs `await connection()`. H2 also points to the core's i18n, progress and figure APIs (docs/requests/shell-app.md) and says how new namespaces get registered. `.env.example` is un-ignored in .gitignore. H13 packages are all installed (docs/requests/hx-deps.md).
 - 14:20 orchestrator: H1 adds GEMINI_MODEL (optional, default gemini-3.8-flash; parsed in src/lib/server/env.ts). The solana routes' runtime exports are gone. Wave-1 requests that are still open go to wave 2's hx:fixups.
+- 2026-10-25 09:56 driver: H1 defaults move to META_MODEL=muse-spark-1.3 and GEMINI_MODEL=gemini-3.5-flash. On the live key,
+  muse-spark-1.1 answered `404 model_not_found` intermittently (it broke the Build Night planner), while 1.2 and 1.3 answered
+  every call and 1.3 was 2 to 4 times faster; gemini-3.8-flash and 3.7-flash were rate-limited (503/429) while 3.5-flash
+  answered. Production sets both explicitly.

@@ -28,7 +28,7 @@ Sources: the Markdown versions of the docs, listed at https://dev.meta.ai/llms.t
 
 | Model | Id | Notes |
 |---|---|---|
-| Muse Spark | `muse-spark-1.1` | The H1 default. The original version. |
+| Muse Spark | `muse-spark-1.1` | The original version. Answered `404 model_not_found` intermittently on 2026-10-25, so it is no longer the default. |
 | Muse Spark | `muse-spark-1.2` | Best for audio input. |
 | Muse Spark | `muse-spark-1.3` | Latest; "recommended for new work". Docs warn its audio input "may be degraded". |
 | Muse Image | `muse-image-1.0` | Image generation. |
@@ -91,7 +91,7 @@ Sources: the Markdown versions of the docs, listed at https://dev.meta.ai/llms.t
 
 **Gemini fallback** (https://ai.google.dev/gemini-api/docs/openai, read 2026-10-24):
 - **Endpoint:** base `https://generativelanguage.googleapis.com/v1beta/openai/`, with `Authorization: Bearer GEMINI_API_KEY`.
-- **Model:** the docs' examples use `gemini-3.8-flash`, which is our default (`GEMINI_MODEL`).
+- **Model:** our default is `gemini-3.5-flash` (`GEMINI_MODEL`); the docs' examples use `gemini-3.8-flash`, which was rate-limited on our key on 2026-10-25.
 - **Supported:** streaming, tools, `image_url` and `reasoning_effort` (minimal to high).
 - **What we send differently:** `max_tokens` replaces `max_completion_tokens`, and the Meta-only fields are dropped.
 

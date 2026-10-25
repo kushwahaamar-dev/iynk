@@ -31,11 +31,11 @@ const keypair = z
 const schema = {
   META_API_KEY: text.optional(),
   META_API_BASE: url.default("https://api.meta.ai/v1"),
-  META_MODEL: text.default("muse-spark-1.1"),
+  META_MODEL: text.default("muse-spark-1.3"),
   META_IMAGE_MODEL: text.default("muse-image-1.0"),
   META_TRANSCRIBE_MODEL: text.default("muse-voice-transcribe-1.0"),
   GEMINI_API_KEY: text.optional(),
-  GEMINI_MODEL: text.default("gemini-3.8-flash"),
+  GEMINI_MODEL: text.default("gemini-3.5-flash"),
   SERPAPI_KEY: text.optional(),
   SERPAPI_MONTHLY_BUDGET: z.coerce.number().int().min(0).default(200),
   SOLANA_RPC_URL: url.default("https://api.devnet.solana.com"),

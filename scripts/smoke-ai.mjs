@@ -31,7 +31,7 @@ if (!key) {
 }
 
 const base = (process.env.META_API_BASE?.trim() || "https://api.meta.ai/v1").replace(/\/+$/, "");
-const model = process.env.META_MODEL?.trim() || "muse-spark-1.1";
+const model = process.env.META_MODEL?.trim() || "muse-spark-1.3";
 const imageModel = process.env.META_IMAGE_MODEL?.trim() || "muse-image-1.0";
 const transcribeModel = process.env.META_TRANSCRIBE_MODEL?.trim() || "muse-voice-transcribe-1.0";
 const withImage = !process.argv.includes("--no-image");
