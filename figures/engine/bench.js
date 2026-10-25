@@ -496,7 +496,7 @@ A.view = v => {
   st.view = v; refresh(); return true;
 };
 A.explode = on => { const want = on == null ? !st.exploded : !!on; if (want && st.power) return say(MSG.live); st.exploded = want; kick(); };
-A.select = id => { st.sel = id && (MD.byId[id] || MAT.byId[id] || (B.bbPart && B.bbPart(id))) ? id : null; refresh(); };
+A.select = id => { st.sel = id && (MD.byId[id] || MAT.byId[id] || (B.bbPart && B.bbPart(id)) || (B.bbProp && B.bbProp(id))) ? id : null; refresh(); };
 // set the mat out up to step sid (null: clear it); one step forward at a time, never on a live bench
 A.matStep = sid => {
   const i = sid == null ? -1 : MAT.steps.findIndex(s => s.id === sid);

@@ -1260,13 +1260,16 @@ function outputs(){
     if (st.ext) Object.assign(o.pins, st.pins);
     else { const md = MD.modes[st.mode]; if (md && md.out) try { Object.assign(o.pins, md.out(st, st.t) || {}); } catch (e) { note('mode ' + st.mode + ': ' + e.message); } }
   }
+  // a cold joint on a header pin breaks the pin, not the trace: what plugs into it (o.pins feeds the breadboard and the
+  // wire glow) cuts out in bursts, while an on-board LED on the same net (Nucleo LD2 on D13) keeps the MCU's level
+  const mcu = Object.assign({}, o.pins);
   for (const fid of st.faults) if (fid.startsWith('cold:')){ const pin = MD.pins[fid.slice(5)]; if (pin && coldHit(hashS(pin.id), st.t)) o.pins[pin.net] = 0; }
   for (const p of MD.parts){
     if (!p.led || !isSet(p.id)) continue;
     let v = 0;
     const L0 = p.led;
     if (L0.rail) v = (ev.rails[L0.rail] || 0) > 2 ? ((ev.status === 'brownout') ? (coldHit(9, st.t * 2) ? .25 : .7) : 1) : 0;
-    else if (L0.net){ const lv = o.pins[L0.net]; v = running ? (L0.invert ? 1 - (+lv || 0) : (+lv || 0)) : 0; }
+    else if (L0.net){ const lv = mcu[L0.net]; v = running ? (L0.invert ? 1 - (+lv || 0) : (+lv || 0)) : 0; }
     else if (L0.serial){ v = st.up ? (L0.serial === 'rx' ? (Math.sin(st.upT * 60) > -.2 ? 1 : 0) : (st.upT > st.upDur - .45 && Math.sin(st.upT * 70) > 0 ? 1 : 0)) : (st.txT > 0 && L0.serial === 'tx' ? 1 : 0); }
     if (bl && bl.led === p.id && ev.status === 'running' && !st.up && st.t < 0){ const u = st.t + (bl.wait || 1); v = u < (bl.flashes || 3) / (bl.hz || 8) && Math.floor(u * (bl.hz || 8) * 2) % 2 === 0 ? 1 : 0; }
     if (L0.via && !L0.via.every(id => isSet(id) && !coldOff(id))) v = 0;
@@ -1398,6 +1401,9 @@ A.fault = id => {
   }
   if (typeof id !== 'string') return;
   const [kind, a, b] = id.split(':');
+  // a part of the breadboard circuit (an id the board itself does not have): the circuit redraws without it, or turned
+  // round, while the fault is on (bench-bb.js circuitNow)
+  if ((kind === 'reversed' || kind === 'missing') && !MD.byId[a] && B.bbPart && B.bbPart(a)){ if (!st.faults.includes(id)) st.faults.push(id); refresh(true); return; }
   if (kind === 'reversed'){ const p = MD.byId[a]; if (!p || !p.polar) return say('{name} has no wrong way round', { name: a }); if (st.power) A.power(null); st.placed[a] = { orient: 1, sold: true }; refresh(); return; }
   if (kind === 'missing'){
     const p = MD.byId[a]; if (!p || p.fixed) return say('No part {name} on this board', { name: a });
@@ -1422,7 +1428,7 @@ A.view = v => {
   st.view = v; refresh(); return true;
 };
 A.explode = on => { const want = on == null ? !st.exploded : !!on; if (want && st.power) return say(MSG.live); st.exploded = want; kick(); };
-A.select = id => { st.sel = id && (MD.byId[id] || MAT.byId[id] || (B.bbPart && B.bbPart(id))) ? id : null; refresh(); };
+A.select = id => { st.sel = id && (MD.byId[id] || MAT.byId[id] || (B.bbPart && B.bbPart(id)) || (B.bbProp && B.bbProp(id))) ? id : null; refresh(); };
 // set the mat out up to step sid (null: clear it); one step forward at a time, never on a live bench
 A.matStep = sid => {
   const i = sid == null ? -1 : MAT.steps.findIndex(s => s.id === sid);
@@ -1685,8 +1691,21 @@ function xrNotes(k){
   if (!items.length) return '';
   items.splice(8);
   const pc = [BP(0, 0, 0), BP(MD.pcb.w, MD.pcb.h, MD.height)];
-  return xrCallouts(items, [Math.min(pc[0][0], pc[1][0]), Math.max(pc[0][0], pc[1][0]), Math.min(pc[0][1], pc[1][1]), Math.max(pc[0][1], pc[1][1]), G.top, G.top + 10]);
+  LBL.items.push(...items);
+  LBL.box = growBox(LBL.box, [[Math.min(pc[0][0], pc[1][0]), Math.min(pc[0][1], pc[1][1]), G.top], [Math.max(pc[0][0], pc[1][0]), Math.max(pc[0][1], pc[1][1]), G.top + 10]]);
+  return '';
 }
+/* callouts: the board's notes (xrNotes) and the see-through labels of breadboard and mat parts, whose draw calls
+   ctx.label(at, text, on). scene() lays them all out last, in two columns beside what they label (xrCallouts), outside
+   any view scaling, so pills never overlap each other or sit under the drawing */
+const LBL = { items: [], box: null };
+const growBox = (box, b) => box ? [box[0].map((v, i) => Math.min(v, b[0][i])), box[1].map((v, i) => Math.max(v, b[1][i]))] : [b[0].slice(), b[1].slice()];
+// one part's labeller: label() queues its callouts, done(boxes) adds them with the part's drawn boxes as their bounds
+B.labeller = () => {
+  const mine = [];
+  return { label: (at, text, on) => { if (Array.isArray(at) && at.length === 3 && text) mine.push({ at, text, on: !!on }); },
+    done: boxes => { if (!mine.length) return; LBL.items.push(...mine); for (const b of boxes) if (b) LBL.box = growBox(LBL.box, b); } };
+};
 
 /* things on the mat: a periph board is drawn in its own frame (G and B.md swapped while it draws) */
 function inFrame(it, fn){
@@ -1726,8 +1745,10 @@ function periphPart(it, k, live){
   const p = Object.assign({ id: it.id, part: it.q.part }, it.def.example || {}, it.q.params || {});
   const pl = { at: (x, y, zz = z) => BP(it.at[0] + x, it.at[1] + y, zz), zTop: z, geo: null };
   const put = (bx, svg) => { if (svg) items.push({ box: bx, svg: act('periph', sel ? `<g class="bsel">${svg}</g>` : svg, periphData(it)) }); };
-  try { it.def.draw({ p, st, legs, holes: [], origin: BP(it.at[0] + it.w / 2, it.at[1] + it.h / 2, z), pl, m: (st.readings || {})[it.id] || {}, lit: live ? 1 : 0, sel, k, put }); }
+  const lb = B.labeller();
+  try { it.def.draw({ p, st, legs, holes: [], origin: BP(it.at[0] + it.w / 2, it.at[1] + it.h / 2, z), pl, m: (st.readings || {})[it.id] || {}, lit: live ? 1 : 0, sel, k, put, label: lb.label }); }
   catch (e) { matNote(`periph ${it.id} (${it.q.part}): ${e.message}`); }
+  lb.done(items.map(x => x.box));
   return items;
 }
 // a wire end in world coordinates, and the base net it sits on (for the live colour)
@@ -1768,6 +1789,16 @@ const matBox = () => {
   return box;
 };
 
+// the tallest thing on the mat, in board z: the board, or a periph standing higher (a TT motor's wheel, a module on
+// its standoffs), so the frame holds it at every step of the mat
+const matTop = () => {
+  let h = MD.height;
+  for (const it of MAT.items){
+    if (it.kind === 'board') h = Math.max(h, G.matH + it.md.pcb.standoff + it.md.pcb.thick + it.md.height - G.top);
+    else { const ft = Array.isArray(it.def.foot) ? it.def.foot[2] : +it.def.height; if (ft > 0) h = Math.max(h, G.matH - G.top + ft); }
+  }
+  return h;
+};
 /* the board view (also the base of the breadboard view) */
 B.boardItems = (o, k) => [...drawParts(o, k), ...drawSupply()];
 B.drawBoardBase = k => drawPCB(k);
@@ -1804,10 +1835,17 @@ function viewFit(name, corners){
 B.boxCorners = ([x0, y0, z0, x1, y1, z1]) => { const c = []; for (const x of [x0, x1]) for (const y of [y0, y1]) for (const z of [z0, z1]) c.push([x, y, z]); return c; };
 const strokeDiv = (svg, s) => s === 1 ? svg : svg.replace(/stroke-width="([\d.]+)"/g, (m, w) => `stroke-width="${(+w / s).toFixed(3)}"`).replace(/r="([\d.]+)"/g, (m, r) => m);
 B.viewDef('board', {
-  bounds: () => { const [x0, y0, x1, y1] = matBox(), a = BP(x0, y0, -G.top), b = BP(x1, y1, MD.height); return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), 0, Math.max(a[0], b[0]), Math.max(a[1], b[1]), G.top + MD.height]; },
+  bounds: () => { const [x0, y0, x1, y1] = matBox(), h = matTop(), a = BP(x0, y0, -G.top), b = BP(x1, y1, h); return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), 0, Math.max(a[0], b[0]), Math.max(a[1], b[1]), G.top + h]; },
   scene: k => sceneBoard(k),
 });
 
+const fadeToFrame = svg => {
+  const el = document.getElementById('fig'), vb = el && el.viewBox && el.viewBox.baseVal;
+  if (!vb || !vb.width) return svg;
+  const r = `x="${f(vb.x)}" y="${f(vb.y)}" width="${f(vb.width)}" height="${f(vb.height)}"`;
+  return `<defs><radialGradient id="bpfade" cx=".5" cy=".5" r=".5"><stop offset=".68" stop-color="#fff"/><stop offset="1" stop-color="#000"/></radialGradient>`
+    + `<mask id="bpmask" maskUnits="userSpaceOnUse" ${r}><rect ${r} fill="url(#bpfade)"/></mask></defs><g mask="url(#bpmask)">${svg}</g>`;
+};
 function scene(stt){
   const k = ease(stt.xr || 0);
   const v = VIEWS[stt.view] ? stt.view : 'board';
@@ -1816,10 +1854,19 @@ function scene(stt){
   const bnd = vd.bounds(), corners = B.boxCorners(bnd);
   // the breadboard view is fitted per circuit: a motor on the mat needs a wider frame than a blinking LED
   const sc = v === (B.mountView || 'board') ? 1 : viewFit(v === 'breadboard' ? v + ':' + stt.circuit : v, corners);
-  let svg = vd.scene(k);
+  LBL.items = []; LBL.box = null;
+  let svg = vd.scene(k), map = w => w;
   if (sc !== 1){
     const c3 = [(bnd[0] + bnd[3]) / 2, (bnd[1] + bnd[4]) / 2, (bnd[2] + bnd[5]) / 2], pc = P(...c3), rc = P(RC[0], RC[1], RCZ);
     svg = `<g transform="translate(${f(rc[0])} ${f(rc[1])}) scale(${sc.toFixed(4)}) translate(${f(-pc[0])} ${f(-pc[1])})">${strokeDiv(svg, sc)}</g>`;
+    // P is affine, so the world point RC + sc·(w − c3) lands where the scaled drawing put w
+    map = w => [RC[0] + sc * (w[0] - c3[0]), RC[1] + sc * (w[1] - c3[1]), RCZ + sc * (w[2] - c3[2])];
+  }
+  // a part page is framed on its part (bench-bb.js partFrame): the breadboard and mat round it fade out at the frame
+  if (MD.def.partPage) svg = fadeToFrame(svg);
+  if (LBL.items.length && LBL.box){
+    const a = map(LBL.box[0]), b = map(LBL.box[1]);
+    svg += xrCallouts(LBL.items.map(it => Object.assign({}, it, { at: map(it.at) })), [a[0], b[0], a[1], b[1], a[2], b[2]]);
   }
   return svg;
 }
@@ -1937,10 +1984,19 @@ function stats(){
   if (st.ev.status === 'running' && MD.modes[st.mode]) out.push({ label: T((MD.def.modesLabel && MD.def.modesLabel.stat) || 'Program'), value: st.ext ? T('your sketch') : T(MD.modes[st.mode].title), small: true });
   if (st.benchStatus) out.push({ label: T('Bench'), value: T(st.benchStatus), small: true });
   if (st.power) for (const [label, value] of st.modelStats || []) out.push({ label: T(String(label)), value: typeof value === 'number' ? String(+value.toFixed(2)) : T(String(value)), small: true });
+  document.documentElement.classList.toggle('bstats-long', out.length > 4);
   return out;
 }
 
 /* ---------- bridge ---------- */
+// input controls (buttons A/B, switches) with a net: the level each net reads now, for the host's running program.
+// `active` is the level while pressed or switched on: 0 for a button with a pull-up.
+const inputParts = () => MD.parts.filter(p => p.control && p.control.action === 'input' && p.control.net);
+const inputLevels = () => {
+  const out = {};
+  for (const p of inputParts()){ const active = p.control.active === 0 ? 0 : 1; out[p.control.net] = st.ctl[p.id] ? active : 1 - active; }
+  return out;
+};
 const report = () => {
   const r = {};
   for (const [k, v] of Object.entries(st.ev.rails)) r[k] = Math.round(v * 10) / 10;
@@ -1954,6 +2010,7 @@ const report = () => {
     mode: st.mode, ext: st.ext, rails: r, fault: ev.fault, faults: faultsNow(), missing: MD.parts.filter(p => !isIn(p.id)).map(p => p.id),
     selected: st.sel, controls: Object.assign({}, st.ctl), boot: st.strap ? (st.strap.boot || null) : st.boot, leds, circuit: st.circuit, meas: st.meas || {}, serial: st.serial, sfx: st.sfx,
     why: ev.why || null, tasks: taskState(), ...(st.circuit ? { volts: st.volts || {}, sound: st.sound || null } : {}),
+    ...(inputParts().length ? { inputs: inputLevels() } : {}),
     ...(MAT.steps.length ? { matStep: st.matStep >= 0 ? MAT.steps[st.matStep].id : null } : {}),
     ...(typeof MD.def.model === 'function' ? { readings: roundDeep(st.readings || {}), benchStatus: st.benchStatus || null } : {}) };
   for (const [k, v] of Object.entries(st.modelReport || {})){ if (own(r0, k)) modelNote(`report key "${k}" is the engine's own`); else r0[k] = roundDeep(v); }
@@ -1985,7 +2042,13 @@ const accept = (s, p) => {
   if (own(p, 'circuit')){ if (p.circuit === null || own(MD.circuits, p.circuit)){ st.circuit = p.circuit; refresh(); } else bad('unknown circuit'); }
   if (own(p, 'params') && p.params && typeof p.params === 'object' && B.bbParams) B.bbParams(st, p.params);
   if (own(p, 'tones')){ if (p.tones && typeof p.tones === 'object') A.setTones(p.tones); else bad('tones must be an object'); }
-  if (own(p, 'inputs') && p.inputs && typeof p.inputs === 'object') for (const [k, v] of Object.entries(p.inputs)) if (MD.byId[k] && MD.byId[k].control) st.ctl[k] = +v || 0;
+  // keyed by net, a value is the level the net reads (as report() gives it); keyed by part id, it is the control's state
+  if (own(p, 'inputs') && p.inputs && typeof p.inputs === 'object') for (const [k, v] of Object.entries(p.inputs)){
+    if (MD.byId[k] && MD.byId[k].control){ st.ctl[k] = +v || 0; continue; }
+    const part = inputParts().find(q => q.control.net === k);
+    if (part) st.ctl[part.id] = +v === (part.control.active === 0 ? 0 : 1) ? 1 : 0;
+    else bad(`unknown input ${k}`);
+  }
   if (own(p, 'press') && p.press && typeof p.press.id === 'string') A.press(p.press.id, !!p.press.down);
   if (powerOk && p.power !== null) A.power(p.power);
   if (own(p, 'view')){ if (!A.view(p.view)) bad('unknown view'); }
@@ -2083,8 +2146,9 @@ function start(pick){
   checkChoices();
   // the core frames the box [0,W] x [0,D] x [0,H]: shift the world so the mount view's bounds start at 0
   let vb = VIEWS[B.mountView].bounds(); G.ox -= vb[0]; G.oy -= vb[1]; vb = VIEWS[B.mountView].bounds();
+  const z0 = Math.max(0, vb[2] || 0);
   ui = mountFigure({
-    fig: def.fig || '', title: def.name, turn: 'full', size: [vb[3] - vb[0], vb[4] - vb[1], vb[5]], center: [(vb[0] + vb[3]) / 2, (vb[1] + vb[4]) / 2],
+    fig: def.fig || '', title: def.name, turn: 'full', size: [vb[3] - vb[0], vb[4] - vb[1], vb[5] - z0], center: [(vb[0] + vb[3]) / 2, (vb[1] + vb[4]) / 2],
     palette: def.pal || 'cobalt', state: st, scene: (s) => scene(s), buttons: buttons(), stats: () => stats(),
     acts: {
       part: (s, el) => { const id = el.dataset.id; A.select(st.sel === id ? null : id); },
@@ -2101,12 +2165,22 @@ function start(pick){
   addEventListener('pointerup', () => { if (heldBb){ const id = heldBb; heldBb = null; B.bbPress(id, false); } if (held){ const id = held; held = null; const p = MD.byId[id]; if (p && p.control && p.control.type !== 'slide') A.press(id, false); } });
   addEventListener('keyup', e => { if (e.key !== 'Enter' && e.key !== ' ') return;
     if (held){ const id = held; held = null; A.press(id, false); } if (heldBb){ const id = heldBb; heldBb = null; B.bbPress(id, false); } });
+  // the core frames z from 0; bounds that start higher (a part page framed on its part) move the world down by z0:
+  // P is affine, so raising the rotation centre and the screen offset by z0 maps z0 to where the core put 0, at any angle
+  if (z0){ RCZ += z0; OY += z0; ui.render(); }
   if (typeof xrMount === 'function') xrMount(() => ui, s => s.xr > .5 ? T('See-through: the chips show their silicon, copper shows where current flows') : '');
   // a hot part gets a red tint filter
   const defs = document.getElementById('fdefs') || document.querySelector('#fig defs');
   if (defs) defs.insertAdjacentHTML('beforeend', '<filter id="bhot"><feColorMatrix type="matrix" values="1 .25 .1 0 .12  .1 .45 .05 0 0  .05 .05 .35 0 0  0 0 0 1 0"/></filter>');
   const css = document.createElement('style');
-  css.textContent = '#fig .bsel > *{filter:drop-shadow(0 0 1.6px var(--accent,#f4b829)) drop-shadow(0 0 1.6px var(--accent,#f4b829))}#fig [data-act]{cursor:pointer}';
+  // a bench's long stats column (battery, motors, heat…) is set smaller and wraps a value at its spaces, so it stays a
+  // narrow strip at the right edge instead of running over the drawing
+  css.textContent = '#fig .bsel > *{filter:drop-shadow(0 0 1.6px var(--accent,#f4b829)) drop-shadow(0 0 1.6px var(--accent,#f4b829))}#fig [data-act]{cursor:pointer}'
+    + 'html.bstats-long .stats{gap:5px}html.bstats-long .stat .k{font-size:9.5px}html.bstats-long .stat .v{font-size:24px}'
+    + 'html.bstats-long .stat.small .v{font-size:14px;line-height:1.15;max-width:7.5em;text-wrap:balance}'
+    // on a phone the core sets the stats in one row, which runs off the left edge with this many: a three-column grid
+    + '@media (max-width:560px){html.bstats-long .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 12px;text-align:left}'
+    + 'html.bstats-long .stat .v,html.bstats-long .stat.small .v{font-size:14px;max-width:none}}';
   document.head.appendChild(css);
   if (!CF_EMBED) keyList();
   if (st.power) refresh(true); else kick();
@@ -2137,7 +2211,7 @@ function keyList(){
 }
 function syncKeys(){
   if (!keysBox) return;
-  const c = st.circuit && MD.circuits[st.circuit];
+  const c = st.circuit && B.circuitNow ? B.circuitNow() : null;
   const items = MD.parts.filter(p => isIn(p.id)).map(p => [p.id, T(p.name), !!p.control]);
   if (c && st.view !== 'board') for (const q of c.parts || []) items.push([q.id, q.id + ' · ' + T((B.parts[q.part] || {}).name || q.part), false, typeof (B.parts[q.part] || {}).press === 'function']);
   const key = items.map(i => i[0]).join(' ');
@@ -2559,9 +2633,52 @@ B.hole = (geo, ref) => {
   return null;
 };
 
+/* circuit faults: a fault can change what is on the breadboard. `missing:<id>` leaves a circuit part out, with the
+   wires that end on its legs; `reversed:<id>` turns it round (its `reversed` param when the part has one, else its
+   holes in the other order). Ids the board itself has stay board faults. A listed fault [id, label, edit] does the
+   same for its own id: edit = { missing: [ids], reversed: [ids], cut: [[from, to]] (wires left out), wires: [extra
+   wires], holes: { id: [holes] } (parts moved) }, each applied where the circuit has it. The solver, the drawing and
+   the schematic all read the changed circuit. */
+let faulted = { key: null, md: null, c: null };
+const circuitNow = () => {
+  const md = B.md, st = B.st, c = md.circuits[st.circuit]; if (!c) return null;
+  const fs = st.faults || []; if (!fs.length) return c;
+  const key = st.circuit + '|' + fs.join(',');
+  if (faulted.key === key && faulted.md === md) return faulted.c;
+  const missing = new Set(), reversed = new Set(), cut = [], add = [], holes = {};
+  const inCircuit = id => (c.parts || []).some(p => p.id === id);
+  for (const f of fs){
+    const m = /^(missing|reversed):(.+)$/.exec(f);
+    if (m && inCircuit(m[2]) && !md.byId[m[2]]) (m[1] === 'missing' ? missing : reversed).add(m[2]);
+    const fd = (md.def.faults || []).find(x => Array.isArray(x) && x[0] === f && x[2] && typeof x[2] === 'object');
+    if (!fd) continue;
+    const e = fd[2];
+    for (const id of e.missing || []) if (inCircuit(id)) missing.add(id);
+    for (const id of e.reversed || []) if (inCircuit(id)) reversed.add(id);
+    for (const w of e.cut || []) if (Array.isArray(w) && w.length === 2) cut.push(w);
+    for (const w of e.wires || []) if (w && typeof w.from === 'string' && typeof w.to === 'string') add.push(w);
+    for (const [id, hs] of Object.entries(e.holes || {})) if (inCircuit(id) && Array.isArray(hs)) holes[id] = hs;
+  }
+  let out = c;
+  if (missing.size || reversed.size || cut.length || add.length || Object.keys(holes).length){
+    const owner = ref => { const m = /^([A-Za-z_][\w-]*)\./.exec(ref); return m ? m[1] : null; };
+    const isCut = w => cut.some(([a, b]) => (w.from === a && w.to === b) || (w.from === b && w.to === a));
+    const parts = (c.parts || []).filter(p => !missing.has(p.id)).map(p => {
+      let q = holes[p.id] ? Object.assign({}, p, { holes: holes[p.id].slice() }) : p;
+      if (reversed.has(p.id)){ const def = B.parts[p.part];
+        q = def && def.params && def.params.reversed ? Object.assign({}, q, { reversed: true }) : Object.assign({}, q, { holes: (q.holes || []).slice().reverse() }); }
+      return q; });
+    const wires = (c.wires || []).filter(w => !missing.has(owner(w.from)) && !missing.has(owner(w.to)) && !isCut(w)).concat(add);
+    out = Object.assign({}, c, { parts, wires });
+  }
+  faulted = { key, md, c: out };
+  return out;
+};
+B.circuitNow = circuitNow;
+
 /* placement in board coordinates: the breadboard sits right of the board (or behind it) */
 const place = () => {
-  const md = B.md, c = md.circuits[B.st.circuit]; if (!c) return null;
+  const md = B.md, c = circuitNow(); if (!c) return null;
   const geo = B.bbGeom(c.breadboard || 'half');
   const behind = c.board === 'back';
   const ox = md.def.noBoard ? 0 : behind ? (md.pcb.w - geo.w) / 2 : md.pcb.w + 14, oy = md.def.noBoard ? 0 : behind ? md.pcb.h + 12 : (md.pcb.h - geo.h) / 2;
@@ -2619,8 +2736,8 @@ B.bbParams = (st, params) => {
   const c = B.md.circuits[st.circuit]; if (!c) return;
   st.cparams = st.cparams || {};
   for (const [id, pv] of Object.entries(params)){
-    const p = (c.parts || []).find(q => q.id === id); if (!p || !pv || typeof pv !== 'object') continue;
-    const def = B.parts[p.part], allowed = (def && def.params) || {}, out = {};
+    const p = (c.parts || []).find(q => q.id === id) || (c.props || []).find(q => q.id === id); if (!p || !pv || typeof pv !== 'object') continue;
+    const def = p.prop ? B.props[p.prop] : B.parts[p.part], allowed = (def && def.params) || {}, out = {};
     for (const [k, v] of Object.entries(pv)){
       if (!own2(allowed, k)) continue;
       const spec = allowed[k];
@@ -2634,7 +2751,8 @@ B.bbParams = (st, params) => {
 const own2 = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 // a param spec is either a list of allowed values or a numeric range [min, max]
 B.paramRange = spec => Array.isArray(spec) && spec.length === 2 && spec.every(v => typeof v === 'number') && spec[1] > spec[0];
-B.bbPart = id => { const c = B.md.circuits[B.st.circuit]; return c && (c.parts || []).find(p => p.id === id); };
+B.bbPart = id => { const c = circuitNow(); return c && (c.parts || []).find(p => p.id === id); };
+B.bbProp = id => { const c = circuitNow(); return c && (c.props || []).find(p => p.id === id); };
 
 /* ---------- scene ---------- */
 // the breadboard view's mat in board mm: the board, the breadboard and every circuit part lying on the mat (its `at`
@@ -2652,6 +2770,13 @@ const extent = () => {
     const sz = ft || (def && Array.isArray(def.matSize) ? def.matSize : [20, 12]), r = Math.hypot(sz[0], sz[1]) / 2 + 6;
     area[0] = Math.min(area[0], q.at[0] - r); area[1] = Math.min(area[1], q.at[1] - r); area[2] = Math.max(area[2], q.at[0] + r); area[3] = Math.max(area[3], q.at[1] + r);
   }
+  for (const q of (pl && pl.c.props) || []){
+    const def = B.props[q.prop], ft = def && Array.isArray(def.foot) ? def.foot : [30, 30, 30];
+    if (!Array.isArray(q.at)) continue;
+    const r = Math.hypot(ft[0], ft[1]) / 2 + 6;
+    h = Math.max(h, ft[2] + 4);
+    area[0] = Math.min(area[0], q.at[0] - r); area[1] = Math.min(area[1], q.at[1] - r); area[2] = Math.max(area[2], q.at[0] + r); area[3] = Math.max(area[3], q.at[1] + r);
+  }
   return { box: area, h };
 };
 // a wire end on the leg of a part that lies on the mat (no hole under it): the part's own def.legAt(p, origin, i)
@@ -2662,8 +2787,64 @@ const matLeg = (c, ref) => {
   const p = Object.assign({}, q, (B.st.cparams || {})[q.id] || {});
   try { return def.legAt(p, B.BP(q.at[0], q.at[1], B.G.matH - B.G.top), i); } catch (e) { B.note(`${q.id} legAt: ${e.message}`); return null; }
 };
+// one circuit part's drawing: its items (world box + svg) and its labeller; null when it can't be drawn
+const drawCircuitPart = (pl, q, k) => {
+  const md = B.md, st = B.st, p = Object.assign({}, q, (st.cparams || {})[q.id] || {}), def = B.parts[p.part];
+  if (!def){ unknownPart(p); return null; }
+  const holes = (p.holes || []).map(h => B.hole(pl.geo, h)).filter(Boolean);
+  if (holes.length !== (p.holes || []).length){ B.note(`circuit part ${p.id}: bad hole in ${p.holes}`); return null; }
+  const legs = holes.map(h => pl.at(h.x, h.y));
+  const origin = Array.isArray(p.at) ? B.BP(p.at[0], p.at[1], B.G.matH - B.G.top) : legs[0] || pl.at(0, 0);
+  const mm = (st.meas || {})[p.id] || {}, sel = st.sel === p.id;
+  const items = [], lb = B.labeller();
+  try { def.draw({ p, st, legs, holes, origin, pl, m: mm, lit: mm.state === 'ok' ? Math.min(1, Math.pow(Math.max(0, mm.i_mA) / 13.6, .55)) : 0, sel, k,
+    solo: !!md.def.partPage, label: lb.label, put: (bx, svg) => { if (svg) items.push({ box: bx, svg }); } }); } catch (e) { B.note(`${p.id}: ${e.message}`); }
+  return { p, def, sel, items, lb };
+};
+/* props: the scenery a lesson's world inputs name (a desk lamp over the LDR, the obstacle in front of the HC-SR04).
+   circuit.props: [{ id, prop, at: [x, y], aim?, rot?, ...params }]; drawings register with SL.bench.prop(name, def)
+   (bench-props.js), def = { name, foot: [w, d, h], params, defaults?, draw(ctx) }. The solver never sees them. */
+B.props = {};
+B.prop = (name, def) => { if (!def || typeof def.draw !== 'function') return B.note(`prop "${name}" has no draw`); B.props[name] = def; };
+const matZ = () => B.G.matH - B.G.top;
+// where a prop aims: the middle of a circuit part (its legs' strips, or its spot on the mat) or another prop's foot
+const aimPoint = (pl, id) => {
+  const q = (pl.c.parts || []).find(x => x.id === id);
+  if (q){
+    const def = B.parts[q.part], tall = def ? (Array.isArray(def.foot) ? def.foot[2] : +def.height) || 8 : 8;
+    if (Array.isArray(q.at)) return B.BP(q.at[0], q.at[1], matZ() + tall / 2);
+    const holes = (q.holes || []).map(h => B.hole(pl.geo, h)).filter(Boolean);
+    if (holes.length) return pl.at(holes.reduce((t, h) => t + h.x, 0) / holes.length, holes.reduce((t, h) => t + h.y, 0) / holes.length, pl.zTop + Math.min(tall, 14) / 2);
+  }
+  const pr = (pl.c.props || []).find(x => x.id === id);
+  return pr && Array.isArray(pr.at) ? B.BP(pr.at[0], pr.at[1], matZ()) : null;
+};
+const drawProp = (pl, q, k) => {
+  const st = B.st, def = B.props[q.prop];
+  if (!def){ unknownProp(q); return null; }
+  if (!Array.isArray(q.at)){ B.note(`prop ${q.id}: no at`); return null; }
+  const p = Object.assign({}, def.defaults || {}, q, (st.cparams || {})[q.id] || {});
+  const target = q.aim ? (pl.c.parts || []).find(x => x.id === q.aim) || (pl.c.props || []).find(x => x.id === q.aim) : null;
+  const aim = q.aim ? aimPoint(pl, q.aim) : null;
+  if (q.aim && !aim){ unknownAim(q); }
+  const items = [], lb = B.labeller(), sel = st.sel === q.id;
+  try { def.draw({ p, st, k, sel, origin: B.BP(q.at[0], q.at[1], matZ()), aim, at: (x, y) => B.BP(x, y, matZ()),
+    aimPart: target ? Object.assign({}, target, (st.cparams || {})[target.id] || {}) : null, m: target ? (st.meas || {})[target.id] || {} : {},
+    label: lb.label, put: (bx, svg) => { if (svg) items.push({ box: bx, svg }); } }); } catch (e) { B.note(`${q.id}: ${e.message}`); }
+  return { p, def, sel, items, lb };
+};
+// a part page frames its part, not the whole breadboard: the parts' drawn box plus 10 mm of breadboard round it
+const PART_MARGIN = 10;
+const partFrame = () => {
+  const pl = place(); if (!pl || !(pl.c.parts || []).length) return null;
+  let bx = null;
+  for (const q of pl.c.parts){ const d = drawCircuitPart(pl, q, 0); if (!d) continue;
+    for (const it of d.items) bx = bx ? [bx[0].map((v, i) => Math.min(v, it.box[0][i])), bx[1].map((v, i) => Math.max(v, it.box[1][i]))] : [it.box[0].slice(), it.box[1].slice()]; }
+  return bx && [bx[0][0] - PART_MARGIN, bx[0][1] - PART_MARGIN, Math.max(0, bx[0][2] - 3), bx[1][0] + PART_MARGIN, bx[1][1] + PART_MARGIN, bx[1][2] + 2];
+};
 B.viewDef('breadboard', {
   bounds: () => {
+    const pf = B.md.def.partPage ? partFrame() : null; if (pf) return pf;
     const { box: [x0, y0, x1, y1], h } = extent(), a = B.BP(x0, y0, -B.G.top), b = B.BP(x1, y1, h);
     return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), 0, Math.max(a[0], b[0]), Math.max(a[1], b[1]), B.G.top + h];
   },
@@ -2682,19 +2863,17 @@ B.viewDef('breadboard', {
       const bbDef = B.parts.breadboard;
       const ctx = { pl, st, put: (bx, svg) => { if (svg) items.push({ box: bx, svg }); } };
       if (bbDef) bbDef.draw(Object.assign({ p: { id: 'BB', kind: pl.geo.kind } }, ctx));
-      const meas = st.meas || {};
       for (const q of pl.c.parts || []){
-        const p = Object.assign({}, q, (st.cparams || {})[q.id] || {}), def = B.parts[p.part];
-        if (!def){ unknownPart(p); continue; }
-        const holes = (p.holes || []).map(h => B.hole(pl.geo, h)).filter(Boolean);
-        if (holes.length !== (p.holes || []).length){ B.note(`circuit part ${p.id}: bad hole in ${p.holes}`); continue; }
-        const legs = holes.map(h => pl.at(h.x, h.y));
-        const origin = Array.isArray(p.at) ? B.BP(p.at[0], p.at[1], B.G.matH - B.G.top) : legs[0] || pl.at(0, 0);
-        const mm = meas[p.id] || {}, sel = st.sel === p.id;
-        const subItems = [];
-        try { def.draw({ p, st, legs, holes, origin, pl, m: mm, lit: mm.state === 'ok' ? Math.min(1, Math.pow(Math.max(0, mm.i_mA) / 13.6, .55)) : 0, sel, k,
-          solo: !!md.def.partPage, put: (bx, svg) => { if (svg) subItems.push({ box: bx, svg }); } }); } catch (e) { B.note(`${p.id}: ${e.message}`); }
-        for (const it of subItems) items.push({ box: it.box, svg: act('bb', sel ? `<g class="bsel">${it.svg}</g>` : it.svg, `data-id="${CF_ESC(p.id)}" data-label="${CF_ESC(T(def.name || p.part) + ' ' + p.id)}"`) });
+        const d = drawCircuitPart(pl, q, k); if (!d) continue;
+        const { p, def, sel } = d;
+        d.lb.done(d.items.map(it => it.box));
+        for (const it of d.items) items.push({ box: it.box, svg: act('bb', sel ? `<g class="bsel">${it.svg}</g>` : it.svg, `data-id="${CF_ESC(p.id)}" data-label="${CF_ESC(T(def.name || p.part) + ' ' + p.id)}"`) });
+      }
+      // props press as parts ('part' bridge events), so a host can hold or drag the thing its world input names
+      for (const q of pl.c.props || []){
+        const d = drawProp(pl, q, k); if (!d) continue;
+        d.lb.done(d.items.map(it => it.box));
+        for (const it of d.items) items.push({ box: it.box, svg: act('part', d.sel ? `<g class="bsel">${it.svg}</g>` : it.svg, `data-id="${CF_ESC(q.id)}" data-label="${CF_ESC(T(d.def.name || q.prop) + ' ' + q.id)}"`) });
       }
       const wire = B.parts.wire;
       if (wire) for (const w of pl.c.wires || []){
@@ -2725,6 +2904,10 @@ B.viewDef('breadboard', {
 const noted = new Set();
 const unknownPart = p => { const key = p.id + ':' + p.part; if (noted.has(key)) return; noted.add(key);
   B.note(`circuit part ${p.id}: unknown part "${p.part}" (add // @cf use parts/${String(p.part).replace(/[^\w-]/g, '')}.js)`); };
+const unknownProp = q => { const key = 'prop:' + q.id + ':' + q.prop; if (noted.has(key)) return; noted.add(key);
+  B.note(`prop ${q.id}: unknown prop "${q.prop}" (add // @cf use engine/bench-props.js)`); };
+const unknownAim = q => { const key = 'aim:' + q.id + ':' + q.aim; if (noted.has(key)) return; noted.add(key);
+  B.note(`prop ${q.id}: aims at "${q.aim}", which is not in the circuit`); };
 
 /* ---------- part pages: public/figures/parts/<id>.html shows the part on a breadboard ---------- */
 const SHOW = {
@@ -3153,7 +3336,7 @@ const accent = 'var(--accent,#f4b829)';
 /* ---------- schematic ---------- */
 // series chains found by the solver: board pin -> resistors -> LED -> resistors -> GND
 function chains(){
-  const md = B.md, st = B.st, c = md.circuits[st.circuit]; if (!c) return [];
+  const st = B.st, c = B.circuitNow(); if (!c) return [];
   const pl = B.bbPlace(); if (!pl) return [];
   const geo = pl.geo, par = {}, find = a => { while (par[a] && par[a] !== a) a = par[a]; return a; };
   const node = ref => { const h = B.hole(geo, ref); if (h) return h.node; const pin = B.pinOf(ref); return pin ? 'N:' + pin.net : null; };
@@ -3181,7 +3364,7 @@ const ledSym = (x, y, s, lit, col, sel) => {
   return g; };
 const gndSym = (x, y, s) => ln([[x - s * .5, y], [x + s * .5, y]], 1.3) + ln([[x - s * .32, y + s * .2], [x + s * .32, y + s * .2]], 1.1) + ln([[x - s * .14, y + s * .4], [x + s * .14, y + s * .4]], 1);
 B.viewDef('schematic', { flat: true, scene: () => {
-  const v = sheetBox(), md = B.md, st = B.st, c = md.circuits[st.circuit];
+  const v = sheetBox(), md = B.md, st = B.st, c = B.circuitNow();
   let s = plate(v, T('Schematic · {name}', { name: c ? T(c.title || st.circuit) : T(md.name) }));
   const u = v.width / 100, x0 = v.x + 12 * u, y0 = v.y + 20 * u;
   if (!c){ return s + txt(v.x + v.width / 2, v.y + v.height / 2, T('No circuit on the breadboard'), 3.2 * u, '#857d6e'); }
@@ -3429,8 +3612,6 @@ const frame = (legs, i0, i1) => {
     bx: (a0, b0, z0, a1, b1, z1) => B.aabb([W(a0, b0, z0), W(a1, b1, z1), W(a0, b1, z0), W(a1, b0, z1)]) };
 };
 const xrK = ctx => ctx.k != null ? ctx.k : ease(Math.min(1, Math.max(0, (ctx.st && ctx.st.xr) || 0)));
-// a label pill on the side of the part its anchor is on, as seen now, so pills don't cross when it turns
-const pill = (F, pt, dx, dy, text, on) => { const X = P(...pt)[0], Xc = P(...F.o)[0]; return tag(pt, (X < Xc - .5 ? -1 : X > Xc + .5 ? 1 : Math.sign(dx) || 1) * Math.abs(dx), dy, text, on); };
 const ring = (F, a, b, z, r, n = 20) => B.circ(a, b, r, n).map(([u, v]) => F.W(u, v, z));
 
 B.part('push-button', {
@@ -3474,8 +3655,9 @@ B.part('push-button', {
     body += cyl(c0[0], c0[1], c0[2], c0[2] + plH, 1.75, capM, toneI, .6, 18);
     s += k > .02 ? `<g opacity="${f(1 - .68 * k)}">${body}</g>` : body;
     if ((ctx.solo || (B.md && B.md.def && B.md.def.partPage)) && k > .5){
-      s += pill(F, F.W(0, 0, 1.6), 46, -46, T('Snap dome'), down) + pill(F, F.W(-2.3, -3, .8), -52, 16, T('Ring: pins 1–2'), flowing)
-        + pill(F, F.W(2.3, 3, .8), 54, 50, T('Centre: pins 3–4'), flowing);
+      ctx.label(F.W(0, 0, 1.6), 'Snap dome', down);
+      ctx.label(F.W(-2.3, -3, .8), 'Ring: pins 1–2', flowing);
+      ctx.label(F.W(2.3, 3, .8), 'Centre: pins 3–4', flowing);
     }
     ctx.put(F.bx(-4.2, -4.2, -.3, 4.2, 4.2, zt + 1.4), s);
   },
@@ -3517,8 +3699,6 @@ const frame = (legs, i0, i1) => {
     bx: (a0, b0, z0, a1, b1, z1) => B.aabb([W(a0, b0, z0), W(a1, b1, z1), W(a0, b1, z0), W(a1, b0, z1)]) };
 };
 const xrK = ctx => ctx.k != null ? ctx.k : ease(Math.min(1, Math.max(0, (ctx.st && ctx.st.xr) || 0)));
-// a label pill on the side of the part its anchor is on, as seen now, so pills don't cross when it turns
-const pill = (F, pt, dx, dy, text, on) => { const X = P(...pt)[0], Xc = P(...F.o)[0]; return tag(pt, (X < Xc - .5 ? -1 : X > Xc + .5 ? 1 : Math.sign(dx) || 1) * Math.abs(dx), dy, text, on); };
 const ring = (F, a, b, z, r, n = 24) => B.circ(a, b, r, n).map(([u, v]) => F.W(u, v, z));
 // clockwise angle from 12 o'clock (away from the legs), seen from above: direction in the part's (a, b) plane
 const dirOf = deg => { const r = deg * Math.PI / 180; return [Math.sin(r), -Math.cos(r)]; };
@@ -3592,8 +3772,9 @@ B.part('potentiometer', {
     if (hot || burnt){ const [X, Y] = P(...F.W(0, cb, zk1 + 2)); s += `<circle cx="${f(X)}" cy="${f(Y - 6)}" r="4" fill="#8a847a" opacity=".4"/><circle cx="${f(X + 3)}" cy="${f(Y - 12)}" r="3" fill="#8a847a" opacity=".3"/>`; }
     if ((ctx.solo || (B.md && B.md.def && B.md.def.partPage)) && k > .5){
       const [wx, wy] = dirOf(ang);
-      s += pill(F, F.W(-3.3, cb, 3.4), -58, -24, T('Carbon track')) + pill(F, F.W(wx * 3.3, cb + wy * 3.3, 3.6), 52, -62, T('Wiper'), true)
-        + pill(F, F.W(0, cb + 1.5, 3.4), 40, 34, T('Ring to pin W'));
+      ctx.label(F.W(-3.3, cb, 3.4), 'Carbon track');
+      ctx.label(F.W(wx * 3.3, cb + wy * 3.3, 3.6), 'Wiper', true);
+      ctx.label(F.W(0, cb + 1.5, 3.4), 'Ring to pin W');
     }
     ctx.put(F.bx(-5.2, cb - 5.2, -.3, 5.2, cb + 5.2, zk1 + .2), s);
   },
@@ -3631,8 +3812,6 @@ const frame = (legs, i0, i1) => {
     bx: (a0, b0, z0, a1, b1, z1) => B.aabb([W(a0, b0, z0), W(a1, b1, z1), W(a0, b1, z0), W(a1, b0, z1)]) };
 };
 const xrK = ctx => ctx.k != null ? ctx.k : ease(Math.min(1, Math.max(0, (ctx.st && ctx.st.xr) || 0)));
-// a label pill on the side of the part its anchor is on, as seen now, so pills don't cross when it turns
-const pill = (F, pt, dx, dy, text, on) => { const X = P(...pt)[0], Xc = P(...F.o)[0]; return tag(pt, (X < Xc - .5 ? -1 : X > Xc + .5 ? 1 : Math.sign(dx) || 1) * Math.abs(dx), dy, text, on); };
 const ring = (F, a, b, z, r, n = 24) => B.circ(a, b, r, n).map(([u, v]) => F.W(u, v, z));
 const duty = v => Math.max(0, Math.min(1, +v || 0));
 // per colour: the solver's result when the LED is in a circuit, else the duty params through 220 Ohm (its own page)
@@ -3710,8 +3889,8 @@ B.part('rgb-led', {
       s += `<circle cx="${f(X)}" cy="${f(Y)}" r="${f(5 + 9 * glow)}" fill="${mixCol}" opacity="${f(.28 * glow)}"/><circle cx="${f(X)}" cy="${f(Y)}" r="${f(2 + 2 * glow)}" fill="#fffbe8" opacity="${f(.7 * glow)}"/>`; }
     if (burnt){ const [X, Y] = P(...F.W(0, 0, zt + .6)); s += `<circle cx="${f(X)}" cy="${f(Y - 4)}" r="3" fill="#8a847a" opacity=".45"/>`; }
     if ((ctx.solo || (B.md && B.md.def && B.md.def.partPage)) && k > .5){
-      s += pill(F, F.W(-.64, 0, zl + 3.32), 40, -60, T('Red, green and blue dies'))
-        + pill(F, F.W(-.64, 0, zl + 2.6), 58, 30, T((p.common === 'anode') ? 'Common anode cup' : 'Common cathode cup'));
+      ctx.label(F.W(-.64, 0, zl + 3.32), 'Red, green and blue dies');
+      ctx.label(F.W(-.64, 0, zl + 2.6), (p.common === 'anode') ? 'Common anode cup' : 'Common cathode cup');
     }
     ctx.put(F.bx(-4.2, -3.2, -.3, 4.2, 3.2, zt + .4), s);
   },
@@ -3750,8 +3929,6 @@ const frame = (legs, i0, i1) => {
     bx: (a0, b0, z0, a1, b1, z1) => B.aabb([W(a0, b0, z0), W(a1, b1, z1), W(a0, b1, z0), W(a1, b0, z1)]) };
 };
 const xrK = ctx => ctx.k != null ? ctx.k : ease(Math.min(1, Math.max(0, (ctx.st && ctx.st.xr) || 0)));
-// a label pill on the side of the part its anchor is on, as seen now, so pills don't cross when it turns
-const pill = (F, pt, dx, dy, text, on) => { const X = P(...pt)[0], Xc = P(...F.o)[0]; return tag(pt, (X < Xc - .5 ? -1 : X > Xc + .5 ? 1 : Math.sign(dx) || 1) * Math.abs(dx), dy, text, on); };
 const ring = (F, a, b, z, r, n = 24) => B.circ(a, b, r, n).map(([u, v]) => F.W(u, v, z));
 const luxOf = p => Math.max(0, Math.min(100000, +p.lux || 0));
 // the maker's gamma curve, clamped at the dark resistance
@@ -3812,7 +3989,9 @@ B.part('ldr', {
       s += `<g opacity="${f(k)}">${d}</g>`;
     }
     if ((ctx.solo || (B.md && B.md.def && B.md.def.partPage)) && k > .5){
-      s += pill(F, F.W(.4, .4, zf), 46, -44, T('CdS track')) + pill(F, F.W(-r + .3, 0, zf), -54, 0, T('Comb electrode')) + pill(F, F.W(0, r, z0 + .8), 30, 40, T('Ceramic base'));
+      ctx.label(F.W(.4, .4, zf), 'CdS track');
+      ctx.label(F.W(-r + .3, 0, zf), 'Comb electrode');
+      ctx.label(F.W(0, r, z0 + .8), 'Ceramic base');
     }
     ctx.put(F.bx(-3, -3, -.3, 3, 3, z1 + .2), s);
   },
@@ -3851,8 +4030,6 @@ const frame = (legs, i0, i1) => {
     bx: (a0, b0, z0, a1, b1, z1) => B.aabb([W(a0, b0, z0), W(a1, b1, z1), W(a0, b1, z0), W(a1, b0, z1)]) };
 };
 const xrK = ctx => ctx.k != null ? ctx.k : ease(Math.min(1, Math.max(0, (ctx.st && ctx.st.xr) || 0)));
-// a label pill on the side of the part its anchor is on, as seen now, so pills don't cross when it turns
-const pill = (F, pt, dx, dy, text, on) => { const X = P(...pt)[0], Xc = P(...F.o)[0]; return tag(pt, (X < Xc - .5 ? -1 : X > Xc + .5 ? 1 : Math.sign(dx) || 1) * Math.abs(dx), dy, text, on); };
 const ring = (F, a, b, z, r, n = 28) => B.circ(a, b, r, n).map(([u, v]) => F.W(u, v, z));
 const noteOf = hz => { if (!(hz > 0)) return ''; const n = Math.round(12 * Math.log2(hz / 440)) + 57, cents = 1200 * Math.log2(hz / (440 * Math.pow(2, (n - 57) / 12)));
   return Math.abs(cents) <= 20 && n >= 0 ? NOTES[n % 12] + Math.floor(n / 12) : ''; };
@@ -3932,8 +4109,10 @@ B.part('piezo-buzzer', {
       const [X, Y] = P(...F.W(0, 0, zt + 2.5)); s += `<path d="M${f(X - 3)} ${f(Y)}L${f(X + 3)} ${f(Y)}M${f(X)} ${f(Y - 3)}L${f(X)} ${f(Y + 3)}" stroke="#3e86d9" stroke-width=".9" opacity=".6"/>`;
     }
     if ((ctx.solo || (B.md && B.md.def && B.md.def.partPage)) && k > .5){
-      s += pill(F, F.W(4.6, 0, 6.3), 52, -30, T('Brass disc')) + pill(F, F.W(-2.6, 0, 6.9), -56, 10, T('Piezo ceramic')) + pill(F, F.W(0, 0, zt), 20, -66, T('Sound hole'));
-      if (active) s += pill(F, F.W(-4, 0, 2), -58, 46, T('Oscillator'));
+      ctx.label(F.W(4.6, 0, 6.3), 'Brass disc');
+      ctx.label(F.W(-2.6, 0, 6.9), 'Piezo ceramic');
+      ctx.label(F.W(0, 0, zt), 'Sound hole');
+      if (active) ctx.label(F.W(-4, 0, 2), 'Oscillator');
     }
     ctx.put(F.bx(-R - .3, -R - .3, -.3, R + .3, R + .3, zt + .3), s);
   },
@@ -3961,7 +4140,7 @@ B.part('piezo-buzzer', {
    'hot' (above 1.5 W in free air) or 'burnt' (junction past 150 °C: it fails short C-E). */
 (() => {
 const B = SL.bench, T = B.T;
-const callouts = ctx => !!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage);
+const callouts = ctx => typeof ctx.label === 'function' && (!!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage));
 const HFE = 1000, THETA = 62.5;                          // free-air °C/W: 2 W lifts the junction from 25 to 150 °C
 const log10 = Math.log10;
 // typical curves, approximate (fits through the points named above)
@@ -4043,8 +4222,12 @@ B.part('tip120', {
       if (on){ const q = (t * 1.6) % 1, pe = W(.9 + (2.54 - .9) * q, yd + .6, dz - 1.45 - (dz - 1.45 - z0) * q), [X, Y] = P(...pe);
         ins += `<circle cx="${f(X)}" cy="${f(Y)}" r="1.1" fill="#ffd34d"/>`; }
       body = `<g opacity="${f(1 - .7 * k)}">${body}</g><g opacity="${f(k)}">${ins}</g>`;
-      if (k > .5 && callouts(ctx)) body += tag(W(-.85, yt + .4, dz + .2), -34, -30, 'Q1 driver transistor', on) + tag(W(.85, yt + .4, dz + .2), 34, -40, 'Q2 output transistor', on)
-        + tag(W(0, yb, zt - 1), 30, -22, 'Tab = collector') + tag(W(-1.8, .6, z0 + 1.5), -40, 16, 'Base bond wire');
+      if (k > .5 && callouts(ctx)){
+        ctx.label(W(-.85, yt + .4, dz + .2), 'Q1 driver transistor', on);
+        ctx.label(W(.85, yt + .4, dz + .2), 'Q2 output transistor', on);
+        ctx.label(W(0, yb, zt - 1), 'Tab = collector');
+        ctx.label(W(-1.8, .6, z0 + 1.5), 'Base bond wire');
+      }
     }
     if (hot && !burnt){ const [X, Y] = P(...W(0, yf, zb + 1)); body += `<path d="M${f(X - 3)} ${f(Y)}q2 -3 0 -6q-2 -3 0 -6M${f(X + 2)} ${f(Y - 1)}q2 -3 0 -6q-2 -3 0 -6" fill="none" stroke="#e2483d" stroke-width=".8" opacity=".7"/>`; }
     if (burnt){ const [X, Y] = P(...W(0, yf, zt)); body += `<circle cx="${f(X)}" cy="${f(Y - 5)}" r="3.4" fill="#8a847a" opacity=".45"/><circle cx="${f(X + 3)}" cy="${f(Y - 10)}" r="2.4" fill="#8a847a" opacity=".3"/>`; }
@@ -4076,7 +4259,7 @@ B.part('tip120', {
    above 30 A: it fails short, then open). */
 (() => {
 const B = SL.bench, T = B.T;
-const callouts = ctx => !!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage);
+const callouts = ctx => typeof ctx.label === 'function' && (!!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage));
 const IS = 7.03e-9, NVT = 1.808 * 0.025852, RS = 0.0342;
 const VRRM = { '1N4001': 50, '1N4002': 100, '1N4003': 200, '1N4004': 400, '1N4005': 600, '1N4006': 800, '1N4007': 1000 };
 // forward drop at a current (A), and the current at a drop (V), from the fit above
@@ -4121,7 +4304,10 @@ B.part('diode-1n4007', {
       const ins = rod(at(-half + .1), at(-.25), .62, B.M.tin, toneI, .5) + rod(at(.25), at(half - .1), .62, B.M.tin, toneI, .5)
         + rod(at(-.25), at(.25), .78, SI, toneI, .5) + (m.state === 'ok' || m.state === 'clamp' ? `<circle cx="${f(P(...mid)[0])}" cy="${f(P(...mid)[1])}" r="2.2" fill="#ffd34d" opacity=".55"/>` : '');
       body = `<g opacity="${f(1 - .65 * k)}">${body}</g>` + `<g opacity="${f(k)}">${ins}</g>`;
-      if (k > .5 && callouts(ctx)) body += tag(mid, 26, -30, 'Silicon PN chip', m.state === 'ok' || m.state === 'clamp') + tag(at(half + .4), 30, 18, 'Cathode band');
+      if (k > .5 && callouts(ctx)){
+        ctx.label(mid, 'Silicon PN chip', m.state === 'ok' || m.state === 'clamp');
+        ctx.label(at(half + .4), 'Cathode band');
+      }
     }
     s += body;
     if (burnt){ const [X, Y] = P(mid[0], mid[1], mid[2] + 2); s += `<circle cx="${f(X)}" cy="${f(Y - 4)}" r="3" fill="#8a847a" opacity=".45"/><circle cx="${f(X + 3)}" cy="${f(Y - 8)}" r="2.2" fill="#8a847a" opacity=".3"/>`; }
@@ -4160,7 +4346,7 @@ B.part('diode-1n4007', {
    follow that pin's PWM through a low-side switch, the lesson 10 circuit. */
 (() => {
 const B = SL.bench, T = B.T;
-const callouts = ctx => !!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage);
+const callouts = ctx => typeof ctx.label === 'function' && (!!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage));
 const R = 1.43, KE = 3.06e-4, I0 = .12, IPROP = .08, VSTART = 1.0, VSTOP = .6, VMAX = 9;
 // steady state at an average voltage v: rpm and current, with the propeller load rising as speed squared
 const steady = (v, load = 'prop') => {
@@ -4268,7 +4454,11 @@ B.part('dc-motor', {
         ins += rod(W(-4, 0, zc), W(-4, y, zc + z), .8, B.M.steel, toneI, .4) + rod(W(-6, y, zc + z), W(9, y, zc + z), 2, COPPER, toneI, .5); }
       ins += rod(W(-11, 0, zc), W(-8, 0, zc), 1.6, COPPER, toneI, .5) + B.slabW(W, -10.6, 1.4, -9.6, 3.4, zc - .4, zc + .4, B.M.tin, toneI, .3) + B.slabW(W, -10.6, -3.4, -9.6, -1.4, zc - .4, zc + .4, B.M.tin, toneI, .3);
       can = `<g opacity="${f(1 - .72 * k)}">${can}</g><g opacity="${f(k)}">${ins}</g>`;
-      if (k > .5 && callouts(ctx)) can += tag(W(2, 7.6, zc + 5), 30, -34, 'Ferrite magnet') + tag(W(4, 0, zc + 4.2), -30, -40, 'Armature coils', run) + tag(W(-10, 2.4, zc), -40, 16, 'Brushes on the commutator', run);
+      if (k > .5 && callouts(ctx)){
+        ctx.label(W(2, 7.6, zc + 5), 'Ferrite magnet');
+        ctx.label(W(4, 0, zc + 4.2), 'Armature coils', run);
+        ctx.label(W(-10, 2.4, zc), 'Brushes on the commutator', run);
+      }
     }
     if (m.state === 'stall' || m.state === 'over'){ const [X, Y] = P(...W(-11, 0, zc + 8)); can += `<path d="M${f(X - 3)} ${f(Y)}q2 -3 0 -6q-2 -3 0 -6M${f(X + 2)} ${f(Y - 1)}q2 -3 0 -6q-2 -3 0 -6" fill="none" stroke="#e2483d" stroke-width=".9" opacity=".75"/>`; }
     if (burnt){ const [X, Y] = P(...W(-11, 0, zc + 8)); can += `<circle cx="${f(X)}" cy="${f(Y - 6)}" r="4" fill="#8a847a" opacity=".45"/><circle cx="${f(X + 4)}" cy="${f(Y - 12)}" r="2.6" fill="#8a847a" opacity=".3"/>`; }
@@ -4313,7 +4503,7 @@ B.part('dc-motor', {
    and `drop`, default 0.9 V) makes the fan follow that pin through a low-side switch, the lesson 11 circuit. */
 (() => {
 const B = SL.bench, T = B.T;
-const callouts = ctx => !!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage);
+const callouts = ctx => typeof ctx.label === 'function' && (!!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage));
 const VNOM = 5, INOM = .10, RPM = 6000, VSTALL = 2.5, VRUN = 1.8, VMAX = 6.5;
 const steady = v => { if (v < VRUN) return { rpm: 0, i: 0 }; const x = Math.min(VMAX, v); return { rpm: RPM * (x - VRUN) / (VNOM - VRUN), i: INOM * (.35 + .65 * x / VNOM) }; };
 const FRAME = { l: '#57524c', m: '#3f3b37', d: '#292624' }, BLADE = { l: '#4c4843', m: '#38342f', d: '#24211e' };
@@ -4401,7 +4591,10 @@ B.part('fan', {
       for (let i = 0; i < 4; i++){ const q = i * Math.PI / 2; ins += rod(W(-2.5, 4.4 * Math.cos(q), zc + 4.4 * Math.sin(q)), W(2.5, 4.4 * Math.cos(q), zc + 4.4 * Math.sin(q)), 1.7, { l: '#f0a46b', m: '#d4834a', d: '#8f5226' }, toneI, .4); }
       ins += shape(circ(-3.2, 8, 18), '#2f7d4a', .5) + B.slabW(W, -3.6, -2, -3.2, 1, zc - 6.5, zc - 4.3, matOf('#2a2725'), toneI, .3);
       inner = `<g opacity="${f(1 - .7 * k)}">${inner}</g><g opacity="${f(k)}">${ins}</g>`;
-      if (k > .5 && callouts(ctx)) inner += tag(W(0, 4.4, zc + 4.4), 34, -36, 'Stator coils', spinning) + tag(W(-3.4, 0, zc - 5.4), -36, 20, 'Hall sensor + driver IC', spinning);
+      if (k > .5 && callouts(ctx)){
+        ctx.label(W(0, 4.4, zc + 4.4), 'Stator coils', spinning);
+        ctx.label(W(-3.4, 0, zc - 5.4), 'Hall sensor + driver IC', spinning);
+      }
     }
     const back = faceAt(-5, nb), front = faceAt(5, ax);
     const body = fwd ? back + duct + inner + front : front + duct + inner + back;
@@ -4458,8 +4651,6 @@ const frame = (legs, i0, i1) => {
     bx: (a0, b0, z0, a1, b1, z1) => B.aabb([W(a0, b0, z0), W(a1, b1, z1), W(a0, b1, z0), W(a1, b0, z1)]) };
 };
 const xrK = ctx => ctx.k != null ? ctx.k : ease(Math.min(1, Math.max(0, (ctx.st && ctx.st.xr) || 0)));
-// a label pill on the side of the part its anchor is on, as seen now, so pills don't cross when it turns
-const pill = (F, pt, dx, dy, text, on) => { const X = P(...pt)[0], Xc = P(...F.o)[0]; return tag(pt, (X < Xc - .5 ? -1 : X > Xc + .5 ? 1 : Math.sign(dx) || 1) * Math.abs(dx), dy, text, on); };
 const tempOf = p => Math.max(-40, Math.min(150, +p.tempC || 0));
 const voutAt = c => .5 + .01 * c;
 // TO-92 outline in the part's (a, b) plane: the flat face at b = BF, straight sides 1.3 mm, a half round back
@@ -4528,7 +4719,9 @@ B.part('tmp36', {
       s += w; }
     if (dead){ const [X, Y] = P(...F.W(0, 0, z1 + 1)); s += `<circle cx="${f(X)}" cy="${f(Y - 5)}" r="3.5" fill="#8a847a" opacity=".45"/><circle cx="${f(X + 2.5)}" cy="${f(Y - 10)}" r="2.6" fill="#8a847a" opacity=".3"/>`; }
     if ((ctx.solo || (B.md && B.md.def && B.md.def.partPage)) && k > .5){
-      s += pill(F, F.W(0, .4, 5.9), 50, -44, T('Silicon die')) + pill(F, F.W(.9, .7, 6.9), 54, 6, T('Gold bond wires')) + pill(F, F.W(-1.27, 0, 4.0), -56, 44, T('Lead frame'));
+      ctx.label(F.W(0, .4, 5.9), 'Silicon die');
+      ctx.label(F.W(.9, .7, 6.9), 'Gold bond wires');
+      ctx.label(F.W(-1.27, 0, 4.0), 'Lead frame');
     }
     ctx.put(F.bx(-2.9, BF - 1.3 - RB - .1, -.3, 2.9, BF + .1, z1 + .2), s);
   },
@@ -4560,11 +4753,12 @@ B.part('tmp36', {
    'off' (no pulses: limp) | 'over' (above 6 V) | 'burnt'. */
 (() => {
 const B = SL.bench, T = B.T;
-const callouts = ctx => !!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage);
+const callouts = ctx => typeof ctx.label === 'function' && (!!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage));
 const US0 = 500, US1 = 2400, SPEED = 600, DEAD = 10;          // us for 0 and 180 deg, deg/s at 4.8 V, dead band us
 const angleOf = us => (us - US0) / (US1 - US0) * 180;
 const usOf = a => US0 + a / 180 * (US1 - US0);
 const CASE = { l: '#5f8fd6', m: '#4673b8', d: '#2c4f86' }, HORN = { l: '#fbf8ef', m: '#e3ddcc', d: '#b4ac98' };
+const SHAFT = { x: 5.2, top: 22.7, horn: 31, tip: 16 };   // shaft 5.2 mm from the case centre; horn at 31 mm, 16 mm long
 const GEAR = { l: '#f4efe2', m: '#ddd5c2', d: '#a89f88' }, PCB = { l: '#3f9a5c', m: '#2f7d4a', d: '#1d5230' };
 const DEMO = { 'hold 90°': { state: 'ok', angle: 90 }, 'hold 0°': { state: 'ok', angle: 0 }, 'hold 180°': { state: 'ok', angle: 180 },
   'past the stop': { state: 'stop', angle: 180, us: 2600 }, 'low supply': { state: 'jitter', angle: 90 }, burnt: { state: 'burnt', angle: 60 } };
@@ -4586,6 +4780,9 @@ B.part('servo-sg90', {
   example: { demo: 'hold 90°' },
   show: { breadboard: 'mini', parts: [{ id: 'SV1', part: 'servo-sg90', at: [2, 0], rot: 90, demo: 'hold 90°', holes: ['c4', 'c5', 'c6'] }], wires: [] },
   foot: [32, 12, 31],
+  // the output shaft in the servo's own frame (x from the case centre), the case top, the horn's height and length:
+  // what a prop built on the servo (the strength meter) lines up with
+  shaft: SHAFT,
   elec: () => ({ type: 'servo', vrange: [4.8, 6], vmin: 4, vmax: 6, period: .02, us: [US0, US1], dead: DEAD, speed: SPEED, iidle: .008, imove: .2, istall: .7 }),
   model: { angleOf, usOf, US0, US1, SPEED, DEAD },
   tag: (p, m) => {
@@ -4615,12 +4812,13 @@ B.part('servo-sg90', {
     const arm = (s.a + jit) * Math.PI / 180, moving = live && m.angle != null && Math.abs(m.angle - s.a) > 1;
     const o = ctx.origin || legs[0] || [0, 0, 0], r = (+p.rot || 0) * Math.PI / 180, ax = [Math.cos(r), Math.sin(r), 0], ay = [-ax[1], ax[0], 0];
     const W = (x, y, z) => [o[0] + ax[0] * x + ay[0] * y, o[1] + ax[1] * x + ay[1] * y, o[2] + z];
-    const items = [], sx = 5.2;                       // the output shaft sits 5.2 mm from the case centre
+    const items = [], sx = SHAFT.x;
     const caseM = burnt ? matOf('#4b5568') : CASE;
-    let body = B.slabW(W, -11.1, -5.9, 11.1, 5.9, 0, 22.7, caseM, toneI, 1.3)
+    const top = SHAFT.top;
+    let body = B.slabW(W, -11.1, -5.9, 11.1, 5.9, 0, top, caseM, toneI, 1.3)
       + B.slabW(W, -16, -5.9, 16, 5.9, 15.5, 18, caseM, toneI, 1)
-      + cyl(...W(sx, 0, 22.7).slice(0, 2), o[2] + 22.7, o[2] + 26.7, 5.9, caseM, toneI, 1)
-      + cyl(...W(sx - 6, 0, 22.7).slice(0, 2), o[2] + 22.7, o[2] + 25.2, 3.2, caseM, toneI, .8);
+      + cyl(...W(sx, 0, top).slice(0, 2), o[2] + top, o[2] + top + 4, 5.9, caseM, toneI, 1)
+      + cyl(...W(sx - 6, 0, top).slice(0, 2), o[2] + top, o[2] + top + 2.5, 3.2, caseM, toneI, .8);
     // mounting-ear holes
     for (const ex of [-13.8, 13.8]){ const h = Array.from({ length: 10 }, (_, i) => { const q = i / 10 * 2 * Math.PI; return W(ex + 1 * Math.cos(q), 1 * Math.sin(q), 18.02); }); body += shape(h, '#2b2825', .4); }
     if (k < .5 && vis(ay)){ const U = Dv(ax[0], ax[1], 0), V = Dv(0, 0, -1), t1 = P(...W(0, 5.92, 11)), t2 = P(...W(0, 5.92, 7.4));
@@ -4639,11 +4837,15 @@ B.part('servo-sg90', {
       const wp = W(sx + 2.6 * Math.cos(arm), 2.6 * Math.sin(arm), 8.1);
       ins += `<path d="M${P(...W(sx, 0, 8.1)).map(f).join(' ')}L${P(...wp).map(f).join(' ')}" stroke="#7a5a2a" stroke-width="1" fill="none"/>`;
       body = `<g opacity="${f(1 - .72 * k)}">${body}</g><g opacity="${f(k)}">${ins}</g>`;
-      if (k > .5 && callouts(ctx)) body += tag(W(-6, 0, 12), -40, -26, 'DC motor', moving) + tag(W(-1, 0, 18.2), -30, -46, 'Nylon gear train', moving)
-        + tag(W(sx, 0, 6), 40, 10, 'Position pot (5 kΩ)', moving) + tag(W(0, -5.4, 1.8), -30, 30, 'Control board');
+      if (k > .5 && callouts(ctx)){
+        ctx.label(W(-6, 0, 12), 'DC motor', moving);
+        ctx.label(W(-1, 0, 18.2), 'Nylon gear train', moving);
+        ctx.label(W(sx, 0, 6), 'Position pot (5 kΩ)', moving);
+        ctx.label(W(0, -5.4, 1.8), 'Control board');
+      }
     }
     // the horn: a hub and one arm to 16 mm, turning with the output shaft (0 deg points along -x)
-    const hz = 31, hc = W(sx, 0, hz), tip = 16;
+    const hz = SHAFT.horn, hc = W(sx, 0, hz), tip = SHAFT.tip;
     const hd = [Math.cos(Math.PI - arm), Math.sin(Math.PI - arm)];
     const hp = [[0, 3.1], [tip, 1.8], [tip + 1.6, 0], [tip, -1.8], [0, -3.1]].map(([a2, b2]) => W(sx + a2 * hd[0] - b2 * hd[1], a2 * hd[1] + b2 * hd[0], hz));
     let horn = cyl(...W(sx, 0, 26.7).slice(0, 2), o[2] + 26.7, o[2] + 29.4, 1.3, B.M.tin, toneI, .5)
@@ -4698,7 +4900,7 @@ B.part('servo-sg90', {
    ULN2003 (input high = coil on). Reports m-like state 'ok' | 'off' | 'stall' | 'jitter'. */
 (() => {
 const B = SL.bench, T = B.T;
-const callouts = ctx => !!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage);
+const callouts = ctx => typeof ctx.label === 'function' && (!!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage));
 const RATIO = 567424 / 8910, FULL = 32 * RATIO, HALF = 64 * RATIO;          // 63.68395, 2037.8864, 4075.7728
 const MAXRATE = { full: 510, half: 1000, wave: 400 };                        // steps/s before it stalls (approximate)
 const SEQ = { O: 0, OY: 1, Y: 2, PY: 3, P: 4, BP: 5, B: 6, BO: 7 };
@@ -4786,8 +4988,12 @@ B.part('stepper-28byj48', {
         for (let i = 0; i < 10; i++){ const q = rot + i / 10 * 2 * Math.PI; sv += line([W(x + rr * .75 * Math.cos(q), y + rr * .75 * Math.sin(q), z + 1.02), W(x + rr * Math.cos(q), y + rr * Math.sin(q), z + 1.02)], .3); } return sv; };
       ins += gear(0, 0, 3, zt - 5, ra) + gear(-4, 6, 6.5, zt - 4, -a * 8) + gear(3, -5, 5.5, zt - 3, a * 2.5) + gear(sx, 0, 7.5, zt - 2.2, a);
       body = `<g opacity="${f(1 - .72 * k)}">${body}</g><g opacity="${f(k)}">${ins}</g>`;
-      if (k > .5 && callouts(ctx)) body += tag(W(-12.5, 0, zb + 3.5), -40, -10, 'Winding O–P', !!coilOn[0][0]) + tag(W(12.5, 0, zb + 9), 40, 6, 'Winding Y–B', !!coilOn[1][0])
-        + tag(W(0, 0, zb + 12), -36, -44, '32-step magnet rotor') + tag(W(sx, 0, zt - 1.2), 40, -36, 'Gears 63.68 : 1');
+      if (k > .5 && callouts(ctx)){
+        ctx.label(W(-12.5, 0, zb + 3.5), 'Winding O–P', !!coilOn[0][0]);
+        ctx.label(W(12.5, 0, zb + 9), 'Winding Y–B', !!coilOn[1][0]);
+        ctx.label(W(0, 0, zb + 12), '32-step magnet rotor');
+        ctx.label(W(sx, 0, zt - 1.2), 'Gears 63.68 : 1');
+      }
     }
     items.push({ box: B.aabb([W(-21, -14, zb), W(21, 14, zt)]), svg: body });
     // boss, shaft with its flats, and the pointer or the prize wheel
@@ -4855,8 +5061,6 @@ const frame = (legs, i0, i1) => {
     bx: (a0, b0, z0, a1, b1, z1) => B.aabb([W(a0, b0, z0), W(a1, b1, z1), W(a0, b1, z0), W(a1, b0, z1)]) };
 };
 const xrK = ctx => ctx.k != null ? ctx.k : ease(Math.min(1, Math.max(0, (ctx.st && ctx.st.xr) || 0)));
-// a label pill on the side of the part its anchor is on, as seen now, so pills don't cross when it turns
-const pill = (F, pt, dx, dy, text, on) => { const X = P(...pt)[0], Xc = P(...F.o)[0]; return tag(pt, (X < Xc - .5 ? -1 : X > Xc + .5 ? 1 : Math.sign(dx) || 1) * Math.abs(dx), dy, text, on); };
 const forceOf = p => Math.max(0, Math.min(100, +p.force || 0));
 // log-log interpolation through the table; open below the actuation force
 const ohmsAt = F => {
@@ -4935,8 +5139,9 @@ B.part('fsr402', {
         + `<ellipse cx="${f(X - 1)}" cy="${f(Y - 1)}" rx="1.8" ry="1.1" fill="#f6dcc8" opacity=".9"/>`;
     }
     if ((ctx.solo || (B.md && B.md.def && B.md.def.partPage)) && k > .5){
-      s += pill(F, F.W(3, gap, zc + 3), 56, -6, T('Silver fingers')) + pill(F, F.W(ACT + 1.2, 0, zc - 2), 60, 30, T('Spacer, air vent'))
-        + pill(F, F.W(-2, -gap, zc - 2), -62, 22, T('Force-sensing ink'));
+      ctx.label(F.W(3, gap, zc + 3), 'Silver fingers');
+      ctx.label(F.W(ACT + 1.2, 0, zc - 2), 'Spacer, air vent');
+      ctx.label(F.W(-2, -gap, zc - 2), 'Force-sensing ink');
     }
     ctx.put(F.bx(-HEAD - .3, -1.4, -.3, HEAD + .3, 1.4, zc + HEAD + .3), s);
   },
@@ -5184,6 +5389,230 @@ B.part('soil-moisture', {
 })();
 
 </script>
+<script>/* figures/engine/bench-props.js */
+/* Lesson props: the scenery a lesson's world inputs name (FIGURES-BENCH §9.1). A circuit lists them as
+   props: [{ id, prop, at: [x, y] board mm, aim?: part or prop id, rot?, ...params }]; each stands on the mat at `at`,
+   turned to face its `aim`. They are not in the circuit: the solver never sees them. A host param `value` moves the
+   world quantity the prop stands for (lux for the lamp, cm for the obstacle, °C for the dryer); without it the prop
+   shows its everyday state. The UNO R3 lessons use every one:
+     desk-lamp      a small anglepoise whose shade points at its aim (the LDR); value = lux, 0 is off
+     hairdryer      standing on its handle, nozzle at its aim (the TMP36); value = °C at the sensor, warm air above 30
+     obstacle       kind 'car' | 'box' | 'ball' | 'wall' in front of its aim (the HC-SR04); value = cm, moves it
+     watering-can   spout toward its aim (the soil sensor's pot)
+     strength-meter a card dial on its aim servo's case, the horn as the needle, a bell at full swing (180°)
+     weights        50, 100, 200 and 500 g brass weights on cork coasters beside the FSR
+   The stepper's prize wheel is the stepper part's own `wheel: 'wheel'` param, and the plant pot is the soil
+   sensor's own pot (soil-moisture with `at`): neither is a prop. */
+(() => {
+const B = SL.bench;
+const LAMP = matOf('#e2483d'), STEEL = B.M.steel, DRYER = matOf('#4fb8ad'), NOZZLE = matOf('#4a4642'), CARD = B.M.tan;
+const RED = matOf('#d9483b'), GLASS = matOf('#9cc6e8'), TYRE = matOf('#2f2c29'), BALL = matOf('#e2483d'), BRICK = matOf('#b65a3c');
+const CAN = matOf('#43b05c'), BRASS = B.M.gold, CORK = matOf('#c9a46e');
+const clamp = B.clamp;
+
+// the prop's own frame: x toward its aim (or along rot), y to its left, z up from the mat
+const frame = ctx => {
+  const o = ctx.origin, a = ctx.aim;
+  let ax = null;
+  if (a){ const dx = a[0] - o[0], dy = a[1] - o[1], L = Math.hypot(dx, dy); if (L > 1) ax = [dx / L, dy / L, 0]; }
+  if (!ax){ const r = (+ctx.p.rot || 0) * Math.PI / 180; ax = [Math.cos(r), Math.sin(r), 0]; }
+  const ay = [-ax[1], ax[0], 0];
+  const W = (x, y, z) => [o[0] + ax[0] * x + ay[0] * y, o[1] + ax[1] * x + ay[1] * y, o[2] + z];
+  return { W, o, ax, ay, dist: a ? Math.hypot(a[0] - o[0], a[1] - o[1]) : 40, aimZ: a ? a[2] - o[2] : 10 };
+};
+const ringW = (W, x, y, z, r, n = 24) => Array.from({ length: n }, (_, i) => { const q = i / n * 2 * Math.PI; return W(x + r * Math.cos(q), y + r * Math.sin(q), z); });
+// a ring of radius r round centre c, square to the unit axis u
+const ringAbout = (c, u, r, n = 20) => {
+  const s = norm(cross(u, Math.abs(u[2]) < .9 ? [0, 0, 1] : [1, 0, 0])), t = cross(u, s);
+  return Array.from({ length: n }, (_, i) => { const q = i / n * 2 * Math.PI, cq = Math.cos(q) * r, sq = Math.sin(q) * r;
+    return [c[0] + s[0] * cq + t[0] * sq, c[1] + s[1] * cq + t[1] * sq, c[2] + s[2] * cq + t[2] * sq]; });
+};
+const along = (a, u, d) => [a[0] + u[0] * d, a[1] + u[1] * d, a[2] + u[2] * d];
+const towards = (a, b) => norm(sub(b, a));
+// a sphere: flat bands toward the light, an ink outline (orthographic, so its outline is a circle)
+const ball = (c, r, m) => { const [X, Y] = P(...c), R = r * CAM_K;
+  return `<circle cx="${f(X)}" cy="${f(Y)}" r="${f(R)}" fill="${m.d}"/><circle cx="${f(X - R * .12)}" cy="${f(Y - R * .14)}" r="${f(R * .84)}" fill="${m.m}"/>`
+    + `<circle cx="${f(X - R * .3)}" cy="${f(Y - R * .34)}" r="${f(R * .42)}" fill="${m.l}"/><circle cx="${f(X)}" cy="${f(Y)}" r="${f(R)}" fill="none" stroke="${INK}" stroke-width="1.2"/>`; };
+const shadow = (pts, o) => ({ box: B.aabb(pts.map(q => [q[0], q[1], o[2]])).map((v, i) => v.map(c => c + (i ? .05 : 0))), svg: castShadow(pts, o[2]) });
+// see-through fades the scenery so the circuit shows
+const fade = (k, svg) => k > .02 ? `<g opacity="${f(1 - .55 * k)}">${svg}</g>` : svg;
+const out = (ctx, items) => { for (const it of items) if (it.svg) ctx.put(it.box, fade(ctx.k || 0, it.svg)); };
+const val = (p, d) => typeof p.value === 'number' && Number.isFinite(p.value) ? p.value : d;
+
+B.prop('desk-lamp', {
+  name: 'Desk lamp', foot: [26, 26, 58], params: { value: [0, 100000] },
+  draw(ctx){
+    const { W, o, dist, aimZ } = frame(ctx), lux = val(ctx.p, 300), lit = lux > 0 ? clamp(Math.log10(1 + lux) / 3, .25, 1) : 0;
+    const elbow = W(-5, 0, 36), head = W(clamp(dist - 22, 6, 30), 0, 50), target = W(dist, 0, aimZ);
+    const u = towards(head, target), mouth = along(head, u, 13), items = [];
+    items.push(shadow([...ringW(W, 0, 0, 0, 11), ...ringW(W, 0, 0, 3, 11)], o), shadow([...ringAbout(mouth, u, 8.5, 12), along(head, u, -2)], o));
+    items.push({ box: B.aabb([W(-11, -11, 0), W(11, 11, 4)]), svg: cyl(...W(0, 0, 0).slice(0, 2), o[2], o[2] + 3, 11, LAMP, toneI, 1.2, 28)
+      + B.slabW(W, 4, -2.2, 7.5, 2.2, 3, 4.6, B.M.blackPl, toneI, .6) });
+    items.push({ box: B.aabb([W(-3, 0, 3), elbow]).map((v, i) => v.map(c => c + (i ? 2 : -2))), svg: rod(W(-2, 0, 3), elbow, 1.4, STEEL, toneI, .9) });
+    items.push({ box: B.aabb([elbow, head]).map((v, i) => v.map(c => c + (i ? 2 : -2))), svg: rod(elbow, head, 1.4, STEEL, toneI, .9)
+      + rod(W(-5, -2.8, 36), W(-5, 2.8, 36), 2.2, LAMP, toneI, .8) });
+    // the shade: a cone opening toward the aim, the bulb glowing in its mouth while lit
+    let shade = rod(along(head, u, -2), mouth, 3.2, LAMP, toneI, 1.1, 8.5, 22);
+    if (vis(u)) shade += shape(ringAbout(mouth, u, 7.8, 22), lit ? mix('#fff3c4', '#ffd36a', 1 - lit) : '#5a5550', .6);
+    items.push({ box: B.aabb([...ringAbout(mouth, u, 8.5, 8), along(head, u, -3)]), svg: shade });
+    if (lit){
+      // the light falling on the aim: a soft cone from the mouth to a spot round the target
+      const spot = ringAbout(target, u, 10, 16), cone = hull([...ringAbout(mouth, u, 7.8, 16), ...spot].map(q => P(...q)));
+      items.push({ box: B.aabb([mouth, target]), svg: fill(sp(cone), '#ffe08a', `opacity="${f(.12 + .2 * lit)}"`) });
+    }
+    out(ctx, items);
+  },
+});
+
+B.prop('hairdryer', {
+  name: 'Hair dryer', foot: [50, 24, 46], params: { value: [-40, 125] },
+  draw(ctx){
+    const { W, o, dist, aimZ } = frame(ctx), st = ctx.st || {}, t = val(ctx.p, 22), heat = clamp((t - 30) / 50, 0, 1), items = [];
+    const hub = W(-8, 0, 33), u = towards(hub, W(dist, 0, aimZ)), back = along(hub, u, -15), front = along(hub, u, 14), tip = along(front, u, 13);
+    items.push(shadow([...ringW(W, -10, 0, 0, 4.6), ...ringW(W, -8, 0, 26, 4.2)], o), shadow([...ringAbout(back, u, 10, 12), ...ringAbout(tip, u, 5.5, 12)], o));
+    items.push({ box: B.aabb([W(-14, -6, 0), W(-2, 6, 28)]), svg: rod(W(-10, 0, 0), W(-8, 0, 26), 4.6, DRYER, toneI, 1.1, 4.2)
+      + B.slabW(W, -8.2, -1.6, -5.8, 1.6, 14, 19, B.M.white, toneI, .6) });
+    // the cord leaves the foot of the handle and trails off over the mat
+    const cord = [W(-12, 0, .8), W(-20, 4, .8), W(-30, 2, .8), W(-38, 8, .8)];
+    for (let i = 0; i < cord.length - 1; i++) items.push({ box: B.aabb([cord[i], cord[i + 1]]).map((v, j) => v.map(c => c + (j ? 1 : -1))), svg: rod(cord[i], cord[i + 1], .9, B.M.blackPl, toneI, .6) });
+    let body = rod(back, front, 10, DRYER, toneI, 1.4, 10, 26);
+    // the intake grille on the back, when the back faces the viewer
+    if (!vis(u)) for (const r of [3, 6, 8.6]) body += `<path d="${pd(ringAbout(back, u, r, 22))}" fill="none" stroke="${INK}" stroke-width=".6" opacity=".7"/>`;
+    items.push({ box: B.aabb([...ringAbout(back, u, 10, 8), ...ringAbout(front, u, 10, 8)]), svg: body });
+    items.push({ box: B.aabb([...ringAbout(front, u, 8.5, 8), ...ringAbout(tip, u, 5.5, 8)]), svg: rod(front, tip, 8.5, NOZZLE, toneI, 1.1, 5.5, 20) });
+    if (heat > 0){
+      // warm air: wavy streaks from the nozzle to the sensor, moving with the clock
+      const ph = ((st.t || 0) * 1.6) % 1, to = W(dist, 0, aimZ), L = Math.hypot(...sub(to, tip));
+      let s = '';
+      for (const off of [-3.5, 0, 3.5]){
+        const side = norm(cross(u, [0, 0, 1])), pts = Array.from({ length: 12 }, (_, i) => { const d = (i / 11) * L * .9;
+          const w = Math.sin(i * 1.4 + ph * 6.28) * 1.6; return along(along(tip, u, d), side, off + w); });
+        s += `<path d="${pd(pts, false)}" fill="none" stroke="${mix('#f08a2b', '#e2483d', heat)}" stroke-width="1.2" stroke-linecap="round" opacity="${f(.3 + .5 * heat)}"/>`;
+      }
+      items.push({ box: B.aabb([tip, to]), svg: s });
+    }
+    out(ctx, items);
+  },
+});
+
+// the HC-SR04 sees 2-450 cm; on the mat that is squeezed to 0.3-2.2 times the prop's own distance (its at is 30 cm)
+const obstacleShift = (p, dist) => { if (typeof p.value !== 'number') return 0; const d = clamp(dist * Math.pow(Math.max(2, p.value) / 30, .45), 12, dist * 2.2); return dist - d; };
+// each kind returns its items, the first one its shadow (o is the mat point under it)
+const slabShadow = (W, o, x0, y0, x1, y1, h) => shadow([[x0, y0], [x1, y0], [x1, y1], [x0, y1]].flatMap(([x, y]) => [W(x, y, 0), W(x, y, h)]), o);
+const OBSTACLES = {
+  box: (W, o) => [slabShadow(W, o, -13, -15, 13, 15, 24), { box: B.aabb([W(-13, -15, 0), W(13, 15, 24)]), svg: B.slabW(W, -13, -15, 13, 15, 0, 24, CARD, toneI, 1.2)
+    + B.slabW(W, -13, -2, 13, 2, 24, 24.3, matOf('#d7c49a'), toneI, .4) }],
+  car: (W, o) => {
+    const items = [slabShadow(W, o, -10, -17, 10, 17, 18)], body = B.slabW(W, -9, -17, 9, 17, 4, 13, RED, toneI, 1.2) + B.slabW(W, -7, -8, 7, 7, 13, 20, RED, toneI, 1);
+    let win = '';
+    for (const s of [-1, 1]) if (vis(sub(W(s, 0, 0), W(0, 0, 0)))) win += shape([W(s * 7.05, -6.5, 14), W(s * 7.05, -1.2, 14), W(s * 7.05, -1.2, 19), W(s * 7.05, -6.5, 19)], GLASS.m, .6)
+      + shape([W(s * 7.05, .2, 14), W(s * 7.05, 5.5, 14), W(s * 7.05, 5.5, 19), W(s * 7.05, .2, 19)], GLASS.m, .6);
+    items.push({ box: B.aabb([W(-9, -17, 4), W(9, 17, 20)]), svg: body + win });
+    for (const y of [-11, 11]) for (const s of [-1, 1]) items.push({ box: B.aabb([W(s * 7.5, y - 4.5, 0), W(s * 10.5, y + 4.5, 9)]),
+      svg: rod(W(s * 7.5, y, 4.5), W(s * 10.5, y, 4.5), 4.5, TYRE, toneI, .9) });
+    return items;
+  },
+  ball: (W, o) => [shadow([...ringW(W, 0, 0, 0, 3, 8), ...ringW(W, 0, 0, 14, 14, 20)], o), { box: B.aabb([W(-14, -14, 0), W(14, 14, 28)]), svg: ball(W(0, 0, 14), 14, BALL) }],
+  wall: (W, o) => {
+    let s = B.slabW(W, -4, -32, 4, 32, 0, 36, BRICK, toneI, 1.2);
+    for (const fx of [-4.02, 4.02]){
+      if (!vis(sub(W(fx, 0, 0), W(0, 0, 0)))) continue;
+      let d = '';
+      for (let z = 6; z < 36; z += 6) d += `M${P(...W(fx, -32, z)).map(f).join(' ')}L${P(...W(fx, 32, z)).map(f).join(' ')}`;
+      for (let row = 0; row < 6; row++) for (let y = -32 + (row % 2 ? 6 : 12); y < 32; y += 12) d += `M${P(...W(fx, y, row * 6)).map(f).join(' ')}L${P(...W(fx, y, row * 6 + 6)).map(f).join(' ')}`;
+      s += `<path d="${d}" fill="none" stroke="#e8d9c4" stroke-width=".7" opacity=".85"/>`;
+    }
+    return [slabShadow(W, o, -4, -32, 4, 32, 36), { box: B.aabb([W(-4, -32, 0), W(4, 32, 36)]), svg: s }];
+  },
+};
+B.prop('obstacle', {
+  name: 'Obstacle', foot: [30, 64, 36], params: { kind: Object.keys(OBSTACLES), value: [2, 450] }, defaults: { kind: 'box' },
+  draw(ctx){
+    const F = frame(ctx), sh = obstacleShift(ctx.p, F.dist), W = (x, y, z) => F.W(x + sh, y, z);
+    out(ctx, (OBSTACLES[ctx.p.kind] || OBSTACLES.box)(W, F.o));
+  },
+});
+
+B.prop('watering-can', {
+  name: 'Watering can', foot: [50, 26, 36], params: {},
+  draw(ctx){
+    const { W, o } = frame(ctx), items = [];
+    items.push(shadow([...ringW(W, 0, 0, 0, 12), ...ringW(W, 0, 0, 22, 12)], o));
+    let body = cyl(...W(0, 0, 0).slice(0, 2), o[2], o[2] + 22, 12, CAN, toneI, 1.4, 28) + cyl(...W(0, 0, 0).slice(0, 2), o[2] + 21, o[2] + 22.6, 12.6, CAN, toneI, .8, 28);
+    body += shape(ringW(W, -4, 0, 22.62, 5.5, 18), '#2b2825', .5);
+    items.push({ box: B.aabb([W(-12.6, -12.6, 0), W(12.6, 12.6, 22.6)]), svg: body });
+    items.push({ box: B.aabb([W(8, -3, 4), W(31, 3, 28)]), svg: rod(W(9, 0, 5), W(30, 0, 26), 2.6, CAN, toneI, .9, 1.7) });
+    // the rose: a flared cap with its holes on the face, when the face is toward the viewer
+    const rose = towards(W(9, 0, 5), W(30, 0, 26)), face = along(W(30, 0, 26), rose, 4.05);
+    let rs = rod(W(30, 0, 26), along(W(30, 0, 26), rose, 4), 1.7, CAN, toneI, .8, 4.2);
+    if (vis(rose)) for (const h of [face, ...ringAbout(face, rose, 2.4, 6)]){ const [X, Y] = P(...h); rs += `<circle cx="${f(X)}" cy="${f(Y)}" r=".6" fill="#1f3d24"/>`; }
+    items.push({ box: B.aabb([W(29, -4.5, 22), W(35, 4.5, 30)]), svg: rs });
+    const handle = [W(-10, 0, 21), W(-9, 0, 30), W(-4, 0, 35), W(3, 0, 34), W(7, 0, 22)];
+    for (let i = 0; i < handle.length - 1; i++) items.push({ box: B.aabb([handle[i], handle[i + 1]]).map((v, j) => v.map(c => c + (j ? 1.6 : -1.6))), svg: rod(handle[i], handle[i + 1], 1.5, CAN, toneI, .8) });
+    out(ctx, items);
+  },
+});
+
+// the meter is built on its aim servo: a card on the case top, centred on the output shaft, under the horn
+B.prop('strength-meter', {
+  name: 'Strength meter', foot: [50, 30, 42], params: {},
+  draw(ctx){
+    const q = ctx.aimPart, def = q && B.parts[q.part], sh = def && def.shaft;
+    if (!q || !sh || !Array.isArray(q.at)){ B.note(`prop ${ctx.p.id}: a strength-meter needs a servo on the mat as its aim`); return; }
+    const o = ctx.at(q.at[0], q.at[1]), r = (+q.rot || 0) * Math.PI / 180, ax = [Math.cos(r), Math.sin(r), 0], ay = [-ax[1], ax[0], 0];
+    const W = (x, y, z) => [o[0] + ax[0] * x + ay[0] * y, o[1] + ax[1] * x + ay[1] * y, o[2] + z];
+    const st = ctx.st || {}, drv = st.drv && st.drv[q.id], m = ctx.m || {};
+    const angle = drv && Number.isFinite(drv.a) ? drv.a : Number.isFinite(m.angle) ? m.angle : 90;
+    // horn direction for an angle, as the servo draws it: 0° along -x, 90° along +y, 180° along +x
+    const dirAt = a => { const t = Math.PI - a * Math.PI / 180; return [Math.cos(t), Math.sin(t)]; };
+    const z = sh.top + .3, R0 = 10, R1 = 25, at = (a, rr, zz = z) => { const [dx, dy] = dirAt(a); return W(sh.x + dx * rr, dy * rr, zz); };
+    const items = [];
+    let card = '';
+    for (const [a0, a1, col] of [[0, 70, '#5cb85c'], [70, 120, '#f2c230'], [120, 160, '#f08a2b'], [160, 180, '#e2483d']]){
+      const n = Math.max(3, Math.round((a1 - a0) / 6)), pts = [];
+      for (let i = 0; i <= n; i++) pts.push(at(a0 + (a1 - a0) * i / n, R1));
+      for (let i = n; i >= 0; i--) pts.push(at(a0 + (a1 - a0) * i / n, R0));
+      card += shape(pts, col, 0);
+    }
+    const rim = []; for (let i = 0; i <= 30; i++) rim.push(at(i * 6, R1)); for (let i = 30; i >= 0; i--) rim.push(at(i * 6, R0));
+    card += `<path d="${pd(rim)}" fill="none" stroke="${INK}" stroke-width="1"/>`;
+    let ticks = ''; for (let a = 0; a <= 180; a += 20) ticks += `M${P(...at(a, R1 - 4)).map(f).join(' ')}L${P(...at(a, R1)).map(f).join(' ')}`;
+    card += `<path d="${ticks}" stroke="${INK}" stroke-width=".7" fill="none"/>`;
+    items.push({ box: B.aabb([W(sh.x - R1, -1, z - .1), W(sh.x + R1, R1, z + .1)]), svg: card });
+    // the bell on a post at full swing, where the horn's tip just reaches it
+    const post0 = at(180, sh.tip + 5, z), post1 = at(180, sh.tip + 5, sh.horn + 6), ring = angle >= 172;
+    let bell = rod(post0, post1, .8, STEEL, toneI, .6) + rod(at(180, sh.tip + 3.4, sh.horn + 6), at(180, sh.tip + 3.4, sh.horn - 1), 1.2, BRASS, toneI, .9, 4.4, 18);
+    if (ring){ const [X, Y] = P(...at(180, sh.tip + 3.4, sh.horn + 3)); bell += `<path d="M${f(X + 7)} ${f(Y - 7)}q4 5 0 10M${f(X + 11)} ${f(Y - 9)}q6 7 0 14M${f(X - 7)} ${f(Y - 7)}q-4 5 0 10" fill="none" stroke="#f2c230" stroke-width="1.4" stroke-linecap="round"/>`; }
+    items.push({ box: B.aabb([at(180, sh.tip, z), at(180, sh.tip + 6, sh.horn + 6)]).map((v, i) => v.map(c => c + (i ? 2 : -2))), svg: bell });
+    out(ctx, items);
+  },
+});
+
+const WEIGHTS = [[50, 4.5, 7], [100, 5.5, 9], [200, 7, 11], [500, 9.5, 15]];
+B.prop('weights', {
+  name: 'Weights', foot: [26, 80, 22], params: {},
+  draw(ctx){
+    const { W, o, ay } = frame(ctx), items = [];
+    let y = -(WEIGHTS.reduce((s, [, r]) => s + 2 * r + 9, 0) - 9) / 2;
+    // text along the row, as a board direction (B.flatText reads board axes)
+    const bd = [-ay[1], -ay[0]];
+    for (const [g, r, h] of WEIGHTS){
+      const cy = y + r + 3;
+      items.push(shadow([...ringW(W, 0, cy, 0, r + 3, 14), ...ringW(W, 0, cy, h + 2, r, 14)], o));
+      let s = cyl(...W(0, cy, 0).slice(0, 2), o[2], o[2] + 2, r + 3, CORK, toneI, .8, 24)
+        + cyl(...W(0, cy, 0).slice(0, 2), o[2] + 2, o[2] + 2 + h, r, BRASS, toneI, 1.1, 24)
+        + cyl(...W(0, cy, 0).slice(0, 2), o[2] + 2 + h, o[2] + 4 + h, r * .45, BRASS, toneI, .7, 16)
+        + cyl(...W(0, cy, 0).slice(0, 2), o[2] + 4 + h, o[2] + 6.5 + h, r * .62, BRASS, toneI, .8, 16);
+      s += B.flatText(W(-(r + 7), cy, .1), bd[0], bd[1], `${g} g`, 3.2, INK, 800);
+      items.push({ box: B.aabb([W(-(r + 9), cy - r - 3, 0), W(r + 3, cy + r + 3, h + 6.5)]), svg: s });
+      y += 2 * r + 9;
+    }
+    out(ctx, items);
+  },
+});
+})();
+
+</script>
 <script>/* figures/boards/uno-r3.js */
 // @cf title Arduino Uno R3
 // @cf use engine/bench.list
@@ -5204,6 +5633,7 @@ B.part('soil-moisture', {
 // @cf use parts/ssd1306.js
 // @cf use parts/traffic-light.js
 // @cf use parts/soil-moisture.js
+// @cf use engine/bench-props.js
 /* Arduino Uno R3 (A000066, the through-hole "UNO-TH Rev3e" layout). Every position below is the part's centre from
    Arduino's own Eagle board file (UNO-TH_Rev3e.brd, board origin bottom-left, y up), 68.58 x 53.34 mm.
    How it works: USB-B (X2) brings 5 V through the 500 mA polyfuse F1 to USBVCC; the P-MOSFET T1 passes it to the
@@ -5409,6 +5839,7 @@ B.board({
         { id: 'LDR1', part: 'ldr', holes: ['c20', 'c21'] },
         { id: 'RES2', part: 'resistor', ohms: 10000, holes: ['b17', 'b21'] },
       ],
+      props: [{ id: 'LAMP', prop: 'desk-lamp', at: [140, 82], aim: 'LDR1' }],
       wires: [
         { from: 'D9', to: 'a8', color: 'orange' },
         { from: 'IOH.4', to: 'a13', color: 'black' },
@@ -5422,6 +5853,7 @@ B.board({
       parts: [
         { id: 'US1', part: 'hc-sr04', holes: ['a10', 'a11', 'a12', 'a13'] },
       ],
+      props: [{ id: 'OBST', prop: 'obstacle', at: [114, -34], aim: 'US1' }],
       wires: [
         { from: 'POWER.5', to: 'e10', color: 'red' },
         { from: 'D9', to: 'e11', color: 'yellow' },
@@ -5482,6 +5914,7 @@ B.board({
         { id: 'DIO1', part: 'diode-1n4007', holes: ['d14', 'd19'] },
         { id: 'FAN1', part: 'fan', at: [192, 14], holes: ['e19', 'e14'] },
       ],
+      props: [{ id: 'DRYER', prop: 'hairdryer', at: [138, 86], aim: 'TMP1' }],
       wires: [
         { from: 'D6', to: 'a9', color: 'orange' },
         { from: 'IOH.4', to: 'a15', color: 'black' },
@@ -5518,8 +5951,9 @@ B.board({
       title: 'Smart plant', breadboard: 'half',
       parts: [
         { id: 'OLED1', part: 'ssd1306', holes: ['g4', 'g5', 'g6', 'g7'] },
-        { id: 'SOIL1', part: 'soil-moisture', at: [152, 12], holes: ['a20', 'a21', 'a22'] },
+        { id: 'SOIL1', part: 'soil-moisture', at: [184, 18], holes: ['a20', 'a21', 'a22'] },
       ],
+      props: [{ id: 'CAN', prop: 'watering-can', at: [210, -6], aim: 'SOIL1' }],
       wires: [
         { from: 'IOH.4', to: 'j4', color: 'black' },
         { from: 'POWER.4', to: 'j5', color: 'orange' },
@@ -5538,6 +5972,7 @@ B.board({
         { id: 'BUZ1', part: 'piezo-buzzer', holes: ['e1', 'e4'] },
         { id: 'SRV1', part: 'servo-sg90', at: [188, 30], holes: ['h20', 'h21', 'h22'] },
       ],
+      props: [{ id: 'METER', prop: 'strength-meter', at: [182, 40], aim: 'SRV1' }, { id: 'WEIGHTS', prop: 'weights', at: [124, 80], aim: 'FSR1' }],
       wires: [
         { from: 'POWER.5', to: 'd13', color: 'red' },
         { from: 'A0', to: 'd14', color: 'green' },
@@ -5555,6 +5990,7 @@ B.board({
         { id: 'US1', part: 'hc-sr04', holes: ['a8', 'a9', 'a10', 'a11'] },
         { id: 'TL1', part: 'traffic-light', holes: ['b20', 'b21', 'b22', 'b23'] },
       ],
+      props: [{ id: 'OBST', prop: 'obstacle', at: [109, -34], aim: 'US1' }],
       wires: [
         { from: 'POWER.5', to: 'e8', color: 'red' },
         { from: 'D9', to: 'e9', color: 'blue' },

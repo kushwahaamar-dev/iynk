@@ -17,6 +17,7 @@
 // @cf use parts/ssd1306.js
 // @cf use parts/traffic-light.js
 // @cf use parts/soil-moisture.js
+// @cf use engine/bench-props.js
 /* Arduino Uno R3 (A000066, the through-hole "UNO-TH Rev3e" layout). Every position below is the part's centre from
    Arduino's own Eagle board file (UNO-TH_Rev3e.brd, board origin bottom-left, y up), 68.58 x 53.34 mm.
    How it works: USB-B (X2) brings 5 V through the 500 mA polyfuse F1 to USBVCC; the P-MOSFET T1 passes it to the
@@ -222,6 +223,7 @@ B.board({
         { id: 'LDR1', part: 'ldr', holes: ['c20', 'c21'] },
         { id: 'RES2', part: 'resistor', ohms: 10000, holes: ['b17', 'b21'] },
       ],
+      props: [{ id: 'LAMP', prop: 'desk-lamp', at: [140, 82], aim: 'LDR1' }],
       wires: [
         { from: 'D9', to: 'a8', color: 'orange' },
         { from: 'IOH.4', to: 'a13', color: 'black' },
@@ -235,6 +237,7 @@ B.board({
       parts: [
         { id: 'US1', part: 'hc-sr04', holes: ['a10', 'a11', 'a12', 'a13'] },
       ],
+      props: [{ id: 'OBST', prop: 'obstacle', at: [114, -34], aim: 'US1' }],
       wires: [
         { from: 'POWER.5', to: 'e10', color: 'red' },
         { from: 'D9', to: 'e11', color: 'yellow' },
@@ -295,6 +298,7 @@ B.board({
         { id: 'DIO1', part: 'diode-1n4007', holes: ['d14', 'd19'] },
         { id: 'FAN1', part: 'fan', at: [192, 14], holes: ['e19', 'e14'] },
       ],
+      props: [{ id: 'DRYER', prop: 'hairdryer', at: [138, 86], aim: 'TMP1' }],
       wires: [
         { from: 'D6', to: 'a9', color: 'orange' },
         { from: 'IOH.4', to: 'a15', color: 'black' },
@@ -331,8 +335,9 @@ B.board({
       title: 'Smart plant', breadboard: 'half',
       parts: [
         { id: 'OLED1', part: 'ssd1306', holes: ['g4', 'g5', 'g6', 'g7'] },
-        { id: 'SOIL1', part: 'soil-moisture', at: [152, 12], holes: ['a20', 'a21', 'a22'] },
+        { id: 'SOIL1', part: 'soil-moisture', at: [184, 18], holes: ['a20', 'a21', 'a22'] },
       ],
+      props: [{ id: 'CAN', prop: 'watering-can', at: [210, -6], aim: 'SOIL1' }],
       wires: [
         { from: 'IOH.4', to: 'j4', color: 'black' },
         { from: 'POWER.4', to: 'j5', color: 'orange' },
@@ -351,6 +356,7 @@ B.board({
         { id: 'BUZ1', part: 'piezo-buzzer', holes: ['e1', 'e4'] },
         { id: 'SRV1', part: 'servo-sg90', at: [188, 30], holes: ['h20', 'h21', 'h22'] },
       ],
+      props: [{ id: 'METER', prop: 'strength-meter', at: [182, 40], aim: 'SRV1' }, { id: 'WEIGHTS', prop: 'weights', at: [124, 80], aim: 'FSR1' }],
       wires: [
         { from: 'POWER.5', to: 'd13', color: 'red' },
         { from: 'A0', to: 'd14', color: 'green' },
@@ -368,6 +374,7 @@ B.board({
         { id: 'US1', part: 'hc-sr04', holes: ['a8', 'a9', 'a10', 'a11'] },
         { id: 'TL1', part: 'traffic-light', holes: ['b20', 'b21', 'b22', 'b23'] },
       ],
+      props: [{ id: 'OBST', prop: 'obstacle', at: [109, -34], aim: 'US1' }],
       wires: [
         { from: 'POWER.5', to: 'e8', color: 'red' },
         { from: 'D9', to: 'e9', color: 'blue' },

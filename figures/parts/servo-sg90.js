@@ -25,6 +25,7 @@ const US0 = 500, US1 = 2400, SPEED = 600, DEAD = 10;          // us for 0 and 18
 const angleOf = us => (us - US0) / (US1 - US0) * 180;
 const usOf = a => US0 + a / 180 * (US1 - US0);
 const CASE = { l: '#5f8fd6', m: '#4673b8', d: '#2c4f86' }, HORN = { l: '#fbf8ef', m: '#e3ddcc', d: '#b4ac98' };
+const SHAFT = { x: 5.2, top: 22.7, horn: 31, tip: 16 };   // shaft 5.2 mm from the case centre; horn at 31 mm, 16 mm long
 const GEAR = { l: '#f4efe2', m: '#ddd5c2', d: '#a89f88' }, PCB = { l: '#3f9a5c', m: '#2f7d4a', d: '#1d5230' };
 const DEMO = { 'hold 90°': { state: 'ok', angle: 90 }, 'hold 0°': { state: 'ok', angle: 0 }, 'hold 180°': { state: 'ok', angle: 180 },
   'past the stop': { state: 'stop', angle: 180, us: 2600 }, 'low supply': { state: 'jitter', angle: 90 }, burnt: { state: 'burnt', angle: 60 } };
@@ -46,6 +47,9 @@ B.part('servo-sg90', {
   example: { demo: 'hold 90°' },
   show: { breadboard: 'mini', parts: [{ id: 'SV1', part: 'servo-sg90', at: [2, 0], rot: 90, demo: 'hold 90°', holes: ['c4', 'c5', 'c6'] }], wires: [] },
   foot: [32, 12, 31],
+  // the output shaft in the servo's own frame (x from the case centre), the case top, the horn's height and length:
+  // what a prop built on the servo (the strength meter) lines up with
+  shaft: SHAFT,
   elec: () => ({ type: 'servo', vrange: [4.8, 6], vmin: 4, vmax: 6, period: .02, us: [US0, US1], dead: DEAD, speed: SPEED, iidle: .008, imove: .2, istall: .7 }),
   model: { angleOf, usOf, US0, US1, SPEED, DEAD },
   tag: (p, m) => {
@@ -75,12 +79,13 @@ B.part('servo-sg90', {
     const arm = (s.a + jit) * Math.PI / 180, moving = live && m.angle != null && Math.abs(m.angle - s.a) > 1;
     const o = ctx.origin || legs[0] || [0, 0, 0], r = (+p.rot || 0) * Math.PI / 180, ax = [Math.cos(r), Math.sin(r), 0], ay = [-ax[1], ax[0], 0];
     const W = (x, y, z) => [o[0] + ax[0] * x + ay[0] * y, o[1] + ax[1] * x + ay[1] * y, o[2] + z];
-    const items = [], sx = 5.2;                       // the output shaft sits 5.2 mm from the case centre
+    const items = [], sx = SHAFT.x;
     const caseM = burnt ? matOf('#4b5568') : CASE;
-    let body = B.slabW(W, -11.1, -5.9, 11.1, 5.9, 0, 22.7, caseM, toneI, 1.3)
+    const top = SHAFT.top;
+    let body = B.slabW(W, -11.1, -5.9, 11.1, 5.9, 0, top, caseM, toneI, 1.3)
       + B.slabW(W, -16, -5.9, 16, 5.9, 15.5, 18, caseM, toneI, 1)
-      + cyl(...W(sx, 0, 22.7).slice(0, 2), o[2] + 22.7, o[2] + 26.7, 5.9, caseM, toneI, 1)
-      + cyl(...W(sx - 6, 0, 22.7).slice(0, 2), o[2] + 22.7, o[2] + 25.2, 3.2, caseM, toneI, .8);
+      + cyl(...W(sx, 0, top).slice(0, 2), o[2] + top, o[2] + top + 4, 5.9, caseM, toneI, 1)
+      + cyl(...W(sx - 6, 0, top).slice(0, 2), o[2] + top, o[2] + top + 2.5, 3.2, caseM, toneI, .8);
     // mounting-ear holes
     for (const ex of [-13.8, 13.8]){ const h = Array.from({ length: 10 }, (_, i) => { const q = i / 10 * 2 * Math.PI; return W(ex + 1 * Math.cos(q), 1 * Math.sin(q), 18.02); }); body += shape(h, '#2b2825', .4); }
     if (k < .5 && vis(ay)){ const U = Dv(ax[0], ax[1], 0), V = Dv(0, 0, -1), t1 = P(...W(0, 5.92, 11)), t2 = P(...W(0, 5.92, 7.4));
@@ -107,7 +112,7 @@ B.part('servo-sg90', {
       }
     }
     // the horn: a hub and one arm to 16 mm, turning with the output shaft (0 deg points along -x)
-    const hz = 31, hc = W(sx, 0, hz), tip = 16;
+    const hz = SHAFT.horn, hc = W(sx, 0, hz), tip = SHAFT.tip;
     const hd = [Math.cos(Math.PI - arm), Math.sin(Math.PI - arm)];
     const hp = [[0, 3.1], [tip, 1.8], [tip + 1.6, 0], [tip, -1.8], [0, -3.1]].map(([a2, b2]) => W(sx + a2 * hd[0] - b2 * hd[1], a2 * hd[1] + b2 * hd[0], hz));
     let horn = cyl(...W(sx, 0, 26.7).slice(0, 2), o[2] + 26.7, o[2] + 29.4, 1.3, B.M.tin, toneI, .5)

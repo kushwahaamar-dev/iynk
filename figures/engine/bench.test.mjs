@@ -529,3 +529,27 @@ describe('a cold joint on a header pin', () => {
     expect(page.notes()).toEqual([]);
   });
 });
+
+describe('lesson props', () => {
+  const unoPage = () => loadFigure(buildFigure('boards/uno-r3'), { path: '/figures/boards/uno-r3.html' });
+  const art = (page) => page.win.document.getElementById('art').innerHTML;
+
+  it('stand on the mat as pressable parts, outside the circuit, and take their params', async () => {
+    page = await unoPage();
+    const B = page.bench;
+    expect(B.accept({ view: 'breadboard', circuit: 'distance' })).toBe(true);
+    expect(art(page)).toContain('data-act="part" data-id="OBST"');
+    expect(B.st.meas.OBST).toBeUndefined();
+    B.accept({ params: { OBST: { kind: 'ball', value: 120 } } });
+    expect(B.st.cparams.OBST).toEqual({ kind: 'ball', value: 120 });
+    B.accept({ params: { OBST: { kind: 'piano', value: 9999 } } });
+    expect(B.st.cparams.OBST).toEqual({ kind: 'ball', value: 120 });
+    B.accept({ select: 'OBST' });
+    expect(B.report().selected).toBe('OBST');
+    for (const circuit of ['light', 'heat', 'plant', 'force', 'parking']) {
+      B.accept({ circuit });
+      for (const q of B.circuitNow().props) expect(art(page)).toContain(`data-id="${q.id}"`);
+    }
+    expect(page.notes()).toEqual([]);
+  });
+});

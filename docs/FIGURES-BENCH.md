@@ -8,6 +8,12 @@ nothing else. The engine (`figures/engine/bench*.js`, `figures/engine/sheets*.js
 
 Changes after the first publication are additive only. Every change is logged here, newest first.
 
+- v9 (23:50, P2-engine-b): lesson props (§9.1): `circuit.props: [{ id, prop, at, aim, ...params }]` stand the
+  scenery a world input names on the mat (desk lamp, hair dryer, obstacle, watering can, strength meter, weights;
+  `// @cf use engine/bench-props.js`). They are pressable like parts (`select`, `params`, a `part` event), never in
+  the solver. Part pages are framed on the part (§8): the frame is the part's drawn box plus 10 mm, the mat fades
+  out at its edge. `report.inputs` (§13) and `accept.inputs` keyed by net. A `cold:<pin>` header fault cuts only
+  what plugs into the pin, not the board's own LED on that net (§6.4).
 - v8 (22:40, P2-engine-b): breadboard and mat parts label their insides with `ctx.label(at, text, on)` (§8), not
   `tag()`; the scene lays those labels and the board's see-through notes out together, last, in two columns
   (`xrCallouts`) outside any view scaling. A stats panel with more than four entries is set smaller and wraps a
@@ -583,6 +589,46 @@ circuit: 'blink',
   above `pcb.w` is right of it) and draws from `ctx.origin`.
 - Wire ends may also be a module leg: `M1.VCC` is the hole under leg `VCC` of circuit part `M1`.
 
+### 9.1 Props
+
+A circuit can stand the thing its lesson's world input is about on the mat beside it: the lamp shining on the LDR,
+the box in front of the HC-SR04. Props are scenery. The solver never sees them, they report nothing in `meas`, and
+they draw from `figures/engine/bench-props.js` (`// @cf use engine/bench-props.js` in the figure).
+
+```js
+light: {
+  parts: [{ id: 'LDR1', part: 'ldr', holes: ['e20', 'e23'] }, ...],
+  props: [{ id: 'LAMP', prop: 'desk-lamp', at: [140, 82], aim: 'LDR1' }],
+},
+```
+
+- `at: [x, y]` is board mm, as for a part without holes; `aim` is a circuit part or another prop, and the prop turns
+  to face it (without `aim`, `rot` in degrees, 0 = +x). Put it on the side the aim faces: the HC-SR04's
+  transducers face −y, so its obstacle stands at negative y.
+- Extra fields are the prop's params, and the host changes them like a part's: `set {params: {OBST: {kind: 'car',
+  value: 40}}}`. A value outside the prop's list or range is ignored. `value` is the world quantity the lesson's
+  input sets; without it the prop shows its everyday state.
+
+  | `prop` | Params | What it shows |
+  |---|---|---|
+  | `desk-lamp` | `value` lux 0..100000 | an anglepoise lamp, shade on the aim; lit with a light cone above 0 lux |
+  | `hairdryer` | `value` °C -40..125 | a dryer on its handle, nozzle at the aim; warm air streaks above 30 °C |
+  | `obstacle` | `kind` box, car, ball, wall; `value` cm 2..450 | the thing in front of the aim, `value` cm away |
+  | `watering-can` | none | a can tipped toward the aim (the soil sensor's pot) |
+  | `strength-meter` | none | a card dial on the aim servo's case (its part def's `shaft`), the horn is the needle, a bell rings at 180° |
+  | `weights` | none | 50, 100, 200 and 500 g brass weights on cork coasters |
+
+- A prop is pressable like a part: the scene wraps it in `data-act="part"` with `data-id`/`data-label`, the bridge
+  sends the same `part` event, and `set {select: 'LAMP'}` selects it. It counts toward the mat's extent, so the
+  breadboard view frames it.
+- A new prop: `SL.bench.prop(name, { name, foot: [w, d, h], params, defaults, draw(ctx) })`. `ctx` has `p` (the
+  circuit entry with params applied), `origin` (the mat point under `at`), `aim` (the aim's world point or null),
+  `at(x, y)` (board mm to the mat), `aimPart` (the aim's circuit entry with its params) and `m` (its `meas`), `k`,
+  `sel`, `st`, `label`, and `put(box, svg)` for each drawn piece. An unknown prop is noted once and skipped; an
+  unknown aim is noted once and the prop faces `rot`.
+- The stepper's prize wheel is the stepper part's own `wheel: 'wheel'` param, and a soil sensor with `at` brings its
+  own pot: neither is a prop.
+
 ## 10. Views and sheets
 
 `st.view`: `'board'` (the iso PCB), `'breadboard'` (iso breadboard scene with the circuit), `'schematic'` (flat,
@@ -660,8 +706,8 @@ unplugs before it strips. Send `power` with every `fault` whose consequence need
 | `view` | `'board'\|'breadboard'\|'schematic'\|'power'`, also `'iso'` (= board), `'see-through'`, `'exploded'` (board view with that on) | switch sheet |
 | `exploded` | boolean | exploded view |
 | `circuit` | circuit key or `null` | which lesson circuit the breadboard shows |
-| `params` | `{partId: {…}}` | circuit part params |
-| `select` | part id or `null` | select (same as a click) |
+| `params` | `{partId: {…}}` | circuit part or prop params (§9, §9.1) |
+| `select` | part or prop id, or `null` | select (same as a click) |
 | `build` | `'bare'\|'assembled'` | jump the build state |
 | `remove`, `restore` | part id | take a part off / put it back |
 | `press` | `{id, down}` | press or release an on-board control |

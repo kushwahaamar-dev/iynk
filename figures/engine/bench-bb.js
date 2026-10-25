@@ -134,8 +134,8 @@ B.bbParams = (st, params) => {
   const c = B.md.circuits[st.circuit]; if (!c) return;
   st.cparams = st.cparams || {};
   for (const [id, pv] of Object.entries(params)){
-    const p = (c.parts || []).find(q => q.id === id); if (!p || !pv || typeof pv !== 'object') continue;
-    const def = B.parts[p.part], allowed = (def && def.params) || {}, out = {};
+    const p = (c.parts || []).find(q => q.id === id) || (c.props || []).find(q => q.id === id); if (!p || !pv || typeof pv !== 'object') continue;
+    const def = p.prop ? B.props[p.prop] : B.parts[p.part], allowed = (def && def.params) || {}, out = {};
     for (const [k, v] of Object.entries(pv)){
       if (!own2(allowed, k)) continue;
       const spec = allowed[k];
@@ -150,6 +150,7 @@ const own2 = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 // a param spec is either a list of allowed values or a numeric range [min, max]
 B.paramRange = spec => Array.isArray(spec) && spec.length === 2 && spec.every(v => typeof v === 'number') && spec[1] > spec[0];
 B.bbPart = id => { const c = circuitNow(); return c && (c.parts || []).find(p => p.id === id); };
+B.bbProp = id => { const c = circuitNow(); return c && (c.props || []).find(p => p.id === id); };
 
 /* ---------- scene ---------- */
 // the breadboard view's mat in board mm: the board, the breadboard and every circuit part lying on the mat (its `at`
@@ -165,6 +166,13 @@ const extent = () => {
     if (tall > 0) h = Math.max(h, tall + 4);
     if (!Array.isArray(q.at)) continue;
     const sz = ft || (def && Array.isArray(def.matSize) ? def.matSize : [20, 12]), r = Math.hypot(sz[0], sz[1]) / 2 + 6;
+    area[0] = Math.min(area[0], q.at[0] - r); area[1] = Math.min(area[1], q.at[1] - r); area[2] = Math.max(area[2], q.at[0] + r); area[3] = Math.max(area[3], q.at[1] + r);
+  }
+  for (const q of (pl && pl.c.props) || []){
+    const def = B.props[q.prop], ft = def && Array.isArray(def.foot) ? def.foot : [30, 30, 30];
+    if (!Array.isArray(q.at)) continue;
+    const r = Math.hypot(ft[0], ft[1]) / 2 + 6;
+    h = Math.max(h, ft[2] + 4);
     area[0] = Math.min(area[0], q.at[0] - r); area[1] = Math.min(area[1], q.at[1] - r); area[2] = Math.max(area[2], q.at[0] + r); area[3] = Math.max(area[3], q.at[1] + r);
   }
   return { box: area, h };
@@ -189,6 +197,38 @@ const drawCircuitPart = (pl, q, k) => {
   const items = [], lb = B.labeller();
   try { def.draw({ p, st, legs, holes, origin, pl, m: mm, lit: mm.state === 'ok' ? Math.min(1, Math.pow(Math.max(0, mm.i_mA) / 13.6, .55)) : 0, sel, k,
     solo: !!md.def.partPage, label: lb.label, put: (bx, svg) => { if (svg) items.push({ box: bx, svg }); } }); } catch (e) { B.note(`${p.id}: ${e.message}`); }
+  return { p, def, sel, items, lb };
+};
+/* props: the scenery a lesson's world inputs name (a desk lamp over the LDR, the obstacle in front of the HC-SR04).
+   circuit.props: [{ id, prop, at: [x, y], aim?, rot?, ...params }]; drawings register with SL.bench.prop(name, def)
+   (bench-props.js), def = { name, foot: [w, d, h], params, defaults?, draw(ctx) }. The solver never sees them. */
+B.props = {};
+B.prop = (name, def) => { if (!def || typeof def.draw !== 'function') return B.note(`prop "${name}" has no draw`); B.props[name] = def; };
+const matZ = () => B.G.matH - B.G.top;
+// where a prop aims: the middle of a circuit part (its legs' strips, or its spot on the mat) or another prop's foot
+const aimPoint = (pl, id) => {
+  const q = (pl.c.parts || []).find(x => x.id === id);
+  if (q){
+    const def = B.parts[q.part], tall = def ? (Array.isArray(def.foot) ? def.foot[2] : +def.height) || 8 : 8;
+    if (Array.isArray(q.at)) return B.BP(q.at[0], q.at[1], matZ() + tall / 2);
+    const holes = (q.holes || []).map(h => B.hole(pl.geo, h)).filter(Boolean);
+    if (holes.length) return pl.at(holes.reduce((t, h) => t + h.x, 0) / holes.length, holes.reduce((t, h) => t + h.y, 0) / holes.length, pl.zTop + Math.min(tall, 14) / 2);
+  }
+  const pr = (pl.c.props || []).find(x => x.id === id);
+  return pr && Array.isArray(pr.at) ? B.BP(pr.at[0], pr.at[1], matZ()) : null;
+};
+const drawProp = (pl, q, k) => {
+  const st = B.st, def = B.props[q.prop];
+  if (!def){ unknownProp(q); return null; }
+  if (!Array.isArray(q.at)){ B.note(`prop ${q.id}: no at`); return null; }
+  const p = Object.assign({}, def.defaults || {}, q, (st.cparams || {})[q.id] || {});
+  const target = q.aim ? (pl.c.parts || []).find(x => x.id === q.aim) || (pl.c.props || []).find(x => x.id === q.aim) : null;
+  const aim = q.aim ? aimPoint(pl, q.aim) : null;
+  if (q.aim && !aim){ unknownAim(q); }
+  const items = [], lb = B.labeller(), sel = st.sel === q.id;
+  try { def.draw({ p, st, k, sel, origin: B.BP(q.at[0], q.at[1], matZ()), aim, at: (x, y) => B.BP(x, y, matZ()),
+    aimPart: target ? Object.assign({}, target, (st.cparams || {})[target.id] || {}) : null, m: target ? (st.meas || {})[target.id] || {} : {},
+    label: lb.label, put: (bx, svg) => { if (svg) items.push({ box: bx, svg }); } }); } catch (e) { B.note(`${q.id}: ${e.message}`); }
   return { p, def, sel, items, lb };
 };
 // a part page frames its part, not the whole breadboard: the parts' drawn box plus 10 mm of breadboard round it
@@ -227,6 +267,12 @@ B.viewDef('breadboard', {
         d.lb.done(d.items.map(it => it.box));
         for (const it of d.items) items.push({ box: it.box, svg: act('bb', sel ? `<g class="bsel">${it.svg}</g>` : it.svg, `data-id="${CF_ESC(p.id)}" data-label="${CF_ESC(T(def.name || p.part) + ' ' + p.id)}"`) });
       }
+      // props press as parts ('part' bridge events), so a host can hold or drag the thing its world input names
+      for (const q of pl.c.props || []){
+        const d = drawProp(pl, q, k); if (!d) continue;
+        d.lb.done(d.items.map(it => it.box));
+        for (const it of d.items) items.push({ box: it.box, svg: act('part', d.sel ? `<g class="bsel">${it.svg}</g>` : it.svg, `data-id="${CF_ESC(q.id)}" data-label="${CF_ESC(T(d.def.name || q.prop) + ' ' + q.id)}"`) });
+      }
       const wire = B.parts.wire;
       if (wire) for (const w of pl.c.wires || []){
         const end = ref => { const h = B.hole(pl.geo, ref) || legHole(pl.c, pl.geo, ref); if (h) return { pt: pl.at(h.x, h.y, pl.zTop + (h.z || 0)), down: 0 };
@@ -256,6 +302,10 @@ B.viewDef('breadboard', {
 const noted = new Set();
 const unknownPart = p => { const key = p.id + ':' + p.part; if (noted.has(key)) return; noted.add(key);
   B.note(`circuit part ${p.id}: unknown part "${p.part}" (add // @cf use parts/${String(p.part).replace(/[^\w-]/g, '')}.js)`); };
+const unknownProp = q => { const key = 'prop:' + q.id + ':' + q.prop; if (noted.has(key)) return; noted.add(key);
+  B.note(`prop ${q.id}: unknown prop "${q.prop}" (add // @cf use engine/bench-props.js)`); };
+const unknownAim = q => { const key = 'aim:' + q.id + ':' + q.aim; if (noted.has(key)) return; noted.add(key);
+  B.note(`prop ${q.id}: aims at "${q.aim}", which is not in the circuit`); };
 
 /* ---------- part pages: public/figures/parts/<id>.html shows the part on a breadboard ---------- */
 const SHOW = {
