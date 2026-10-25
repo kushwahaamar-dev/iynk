@@ -1,0 +1,550 @@
+{
+  "title": "Interruptor de motor con transistor",
+  "sub": "la lógica controla la potencia",
+  "hint": "un pin de 20 mA conmuta un motor de 160 mA",
+  "overview": "Un pin de la Nano puede dar unos 20 mA (40 mA es el límite absoluto). Un motorreductor TT quiere unos 160 mA solo para mover su rueda, y más de 1 A en el instante en que arranca o cuando sujetas la rueda. Conéctalo a un pin y el pin muere. Aquí el pin 9 mete unos 3,4 mA a través de una resistencia de 1 kΩ en la base de un Darlington TIP120, y esa corriente pequeña conmuta la alimentación propia del motor: cuatro pilas AA, 6 V. El motor va entre el positivo de la batería y el colector del TIP120 (un interruptor en el lado bajo), el emisor va a tierra, y el negativo de la batería comparte esa tierra con la Nano. Un diodo 1N4007 entre los extremos del motor da a la corriente de la bobina un sitio adonde ir cuando el transistor se apaga; sin él, la bobina dispara el colector por encima de los 60 V que admite el TIP120. Un LED verde en el pin 9 muestra lo que hace el pin, a medio brillo en PWM porque tu ojo hace la media, igual que el motor.",
+  "parts": {
+    "R1": {
+      "name": "Resistencia de base de 1 kΩ (marrón, negro, rojo, dorado)",
+      "what": "Fija la corriente de base: (4,7 V − 1,3 V) / 1000 Ω ≈ 3,4 mA. El TIP120 es un Darlington, dos transistores en uno, así que su base necesita unos 1,3 V en lugar de 0,7 V. Sin esta resistencia, el pin empuja directamente contra la unión de la base e intenta dar bastante más de 100 mA, lo que mata el pin."
+    },
+    "Q1": {
+      "name": "Transistor Darlington NPN TIP120",
+      "what": "Con la cara impresa hacia ti y las patas hacia abajo: base, colector, emisor; la pestaña metálica también es el colector. Su ganancia es de 1000 como mínimo, así que 3,4 mA en la base podrían dejar pasar varios amperios; como solo se le piden 160 mA, está encendido del todo (saturado) y tiene una caída de unos 0,8 V de colector a emisor. Admite 60 V, 5 A y 2 W sin disipador."
+    },
+    "D1": {
+      "name": "Diodo de protección 1N4007",
+      "what": "Va entre los extremos del motor, con la banda (cátodo) hacia el positivo de la batería y el extremo liso hacia el colector. Mientras el motor gira no hace nada. Cuando el TIP120 se apaga, la bobina mantiene su corriente y el diodo deja que dé la vuelta por el motor, así que el colector se queda una caída de diodo por encima de la batería en lugar de saltar a 60 V o más."
+    },
+    "R2": {
+      "name": "Resistencia de 1 kΩ del LED",
+      "what": "Limita el LED indicador a (4,7 V − 2,1 V) / 1000 Ω ≈ 2,6 mA, suficiente para verlo y nada que el pin note."
+    },
+    "LED1": {
+      "name": "LED indicador verde en el pin 9",
+      "what": "Se enciende mientras el pin 9 está en HIGH. En PWM parece a medio brillo: en realidad parpadea 490 veces por segundo y tu ojo hace la media de los destellos. Tiene su propio cable de tierra a la Nano, así que sigue diciéndote lo que hace el pin aunque el lado del motor esté mal conectado."
+    },
+    "M1": {
+      "name": "Motorreductor TT con rueda amarilla (3-6 V, reductora 1:48)",
+      "what": "Un pequeño motor de corriente continua con escobillas detrás de una reductora de plástico 1:48. Con la rueda en el aire consume unos 160 mA y mueve la rueda a unas 220 rpm con esta batería. Bloqueado consume más de 1 A, y en el instante en que arranca consume casi lo mismo: ese pico de arranque es lo que reinicia una placa que alimenta motores con sus propios 5 V."
+    },
+    "BT1": {
+      "name": "Portapilas de 4 x AA (6 V)",
+      "what": "Cuatro pilas alcalinas en serie: unos 6,4 V nuevas, 6 V nominales, y cada pila tiene 0,15-0,3 Ω por dentro, así que el pack cae con corrientes altas. Solo alimenta el lado del motor. Su cable negativo tiene que ir unido a la tierra de la Nano, o la corriente de base no tiene por dónde volver."
+    }
+  },
+  "power": {
+    "label": "Conecta el USB de la Nano",
+    "ok": "Con alimentación: la Nano ejecuta el sketch que has cargado y las pilas alimentan el motor"
+  },
+  "modes": {
+    "high": "Entrada HIGH",
+    "pwm": "PWM 50 %",
+    "low": "Entrada LOW",
+    "ramp": "Rampa de arranque suave",
+    "code": {
+      "high": {
+        "c1": "Entrada HIGH: el pin 9 mantiene el TIP120 encendido del todo",
+        "c2": "a R1 (1 kΩ), y luego a la base del TIP120",
+        "c3": "unos 3.4 mA en la base...",
+        "c4": "...dejan pasar por el motor los 160 mA de la batería",
+        "c5": "un pin da 20 mA como mucho: nunca le conectes un motor"
+      },
+      "pwm": {
+        "c1": "PWM 50 %: el pin 9 enciende y apaga el TIP120 490 veces por segundo",
+        "c2": "un pin con ~: PWM por hardware desde el Timer1",
+        "c3": "128 de 255 = 50 % de ciclo de trabajo a 490 Hz",
+        "c4": "el motor hace la media: algo menos de media velocidad, y un pitido",
+        "c5": "en cada tiempo apagado, D1 lleva la corriente de la bobina de vuelta al motor"
+      },
+      "low": {
+        "c1": "Entrada LOW: el pin 9 mantiene el TIP120 apagado",
+        "c2": "sin corriente de base: el TIP120 está apagado",
+        "c3": "la energía de la bobina se descarga por D1 y el motor se para por inercia"
+      },
+      "ramp": {
+        "c1": "Arranque suave: sube el ciclo de trabajo un paso cada 8 ms, sin delay()",
+        "c2": "255 pasos de 8 ms son unos 2 s de parado a velocidad máxima",
+        "c3": "informa del ciclo de trabajo una vez por segundo"
+      }
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Deja la Nano en la PCB desnuda",
+      "body": "Empieza por la placa desnuda para ver cómo se coloca cada pieza. Aquí la Nano es la controladora; el circuito del motor vive en la protoboard.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    },
+    "pnp": {
+      "title": "Colocación automática de las piezas SMD, y luego reflujo",
+      "body": "La máquina deja cada pieza de montaje superficial sobre su pasta de soldar, y luego el horno funde la pasta y forma las soldaduras. El ATmega328P, el puente USB FT232, el regulador, el resonador y los pasivos se colocan ahora.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    },
+    "headers": {
+      "title": "Coloca las dos tiras de 15 pines",
+      "body": "Las tiras de pines son las únicas piezas de agujero pasante de la Nano: se ponen después del reflujo, porque el horno fundiría su plástico. La Nano no tiene piezas altas ni zócalo para el chip, así que los grupos de piezas bajas, altas y últimas son solo estas dos tiras.",
+      "refusal": "Primero las piezas SMD: haz la colocación automática + reflujo. El horno fundiría las piezas de plástico"
+    },
+    "solder": {
+      "title": "Suelda los pines de las tiras",
+      "body": "Treinta soldaduras. Cada una tiene que ser un pequeño cono brillante que moje tanto el pin como el pad; una bola mate que se queda encima es una soldadura fría y solo funcionará a veces.",
+      "refusal": "Todavía no hay nada que soldar: primero coloca una pieza"
+    },
+    "bb-drive": {
+      "title": "Coloca el TIP120 y su resistencia de base",
+      "body": "Mete el TIP120 en tres columnas con la cara impresa hacia ti: base, colector y emisor de izquierda a derecha. Une la columna del pin 9 con la columna de la base mediante la resistencia de 1 kΩ, y lleva el emisor a la línea de tierra. Añade el LED y su 1 kΩ en el pin 9 para poder ver el pin.",
+      "refusal": "Primero monta la Nano: desmontar, colocar, soldar"
+    },
+    "bb-motor": {
+      "title": "Coloca el motor y el diodo de protección",
+      "body": "El cable negativo del motor va a la columna del colector, y su cable positivo a una columna que llevará el positivo de la batería. El 1N4007 une esas mismas dos columnas, con la banda hacia el positivo. Diodo entre los extremos del motor, banda al positivo: dilo en voz alta mientras lo colocas.",
+      "refusal": "Primero coloca el TIP120 y su resistencia de base"
+    },
+    "bb-power": {
+      "title": "Conecta la batería y la tierra común",
+      "body": "El rojo de la batería a la línea positiva, el negro a la línea de tierra, y un cable más desde el GND de la Nano a esa misma línea. Ese último cable es el que la gente olvida: sin él, la corriente de base no tiene camino de vuelta a la Nano y el TIP120 nunca se enciende.",
+      "refusal": "Primero coloca el motor y el diodo de protección"
+    },
+    "plug": {
+      "title": "Conecta el USB",
+      "body": "La Nano arranca el sketch que tiene cargado: Entrada HIGH. El pin 9 pasa a HIGH, el LED se enciende, entran unos 3,4 mA en la base y la rueda gira. Mira las corrientes de base y del motor en el panel de estado.",
+      "refusal": "Primero cierra la vista despiezada"
+    },
+    "upload-pwm": {
+      "title": "Carga PWM 50 %",
+      "body": "analogWrite(9, 128) enciende y apaga el TIP120 490 veces por segundo. El motor hace la media de los pulsos y gira a algo menos de media velocidad (su propia resistencia se come parte de la tensión), el LED parece a medio brillo y se oye el pitido de 490 Hz.",
+      "refusal": "Primero conecta el USB: las cargas van por el cable"
+    },
+    "measure": {
+      "title": "Mide la ganancia",
+      "body": "Vuelve a cargar Entrada HIGH y lee el panel de estado: corriente de base de unos 3,4 mA, corriente del motor de unos 160 mA. Su cociente, unos 47, es la ganancia que estás usando. El TIP120 podría dar 1000 veces: está saturado, funcionando como interruptor, y eso es lo que lo mantiene frío."
+    },
+    "exploded": {
+      "title": "Desconéctala y abre la vista despiezada",
+      "body": "Las capas se separan: las piezas SMD y luego las tiras de pines. La vista despiezada se niega a abrirse mientras la placa tiene alimentación.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    },
+    "break-flyback": {
+      "title": "Avéríalo: quita el diodo de protección",
+      "body": "Quita D1, ejecuta PWM 50 % y mira el pico del colector en el panel de estado. Luego vuelve a ponerlo y mira cómo el pico baja a un diodo por encima de la batería."
+    },
+    "break-diode": {
+      "title": "Avéríalo: coloca el diodo al revés",
+      "body": "Gira D1 para que su banda mire hacia el colector, y luego enciende el motor."
+    },
+    "break-tip120": {
+      "title": "Avéríalo: pon el TIP120 al revés",
+      "body": "Dale la vuelta al TIP120 para que su pestaña mire hacia ti. El LED sigue diciendo que el pin 9 está en HIGH. ¿Gira la rueda?"
+    },
+    "break-ground": {
+      "title": "Avéríalo: olvida la tierra común",
+      "body": "Quita el cable que va del GND de la Nano a la línea del negativo de la batería."
+    },
+    "break-base": {
+      "title": "Avéríalo: quita la resistencia de base",
+      "body": "Sustituye R1 por un simple cable puente y enciende el pin 9."
+    },
+    "break-pin": {
+      "title": "Avéríalo: conecta el motor directamente al pin 9",
+      "body": "Saca el TIP120 de la ecuación: el positivo del motor al pin 9 y el negativo del motor a tierra."
+    },
+    "break-brownout": {
+      "title": "Avéríalo: alimenta el motor con los 5 V de la Nano",
+      "body": "Desconecta la batería y alimenta la línea positiva desde el pin 5V de la Nano."
+    },
+    "break-polarity": {
+      "title": "Avéríalo: conecta los cables de la batería al revés",
+      "body": "Intercambia los cables rojo y negro de la batería en las líneas."
+    },
+    "break-voltage": {
+      "title": "Avéríalo: llena el portapilas con celdas de iones de litio",
+      "body": "Llena el portapilas con cuatro celdas 14500. Tienen el tamaño de una pila AA, pero cada una da 3,7-4,2 V."
+    },
+    "break-cold": {
+      "title": "Avéríalo: una soldadura fría en el terminal del motor",
+      "body": "El cable rojo del motor está soldado a su terminal con una bola mate y granulada que solo toca el terminal."
+    },
+    "break-stall": {
+      "title": "Avéríalo: sujeta la rueda",
+      "body": "Para la rueda con los dedos mientras el pin 9 está en HIGH y mira la corriente del motor."
+    }
+  },
+  "faults": {
+    "no-flyback": {
+      "title": "Sin diodo de protección",
+      "symptom": "El motor gira, pero el pico del colector marca 60 V o más en cada apagado. En PWM eso son 490 golpes por segundo: tras unos segundos el TIP120 falla en cortocircuito y el motor gira a tope diga lo que diga el pin 9.",
+      "explanation": "Un motor es una bobina. Cuando el TIP120 se apaga, la bobina mantiene su corriente un momento y sube el colector hasta que algo cede: aquí, el transistor entra en ruptura en su límite de 60 V y absorbe la energía. Un apagado lo aguanta; cientos por segundo lo desgastan, y un transistor muerto suele fallar en cortocircuito. Con D1 en su sitio, la corriente da la vuelta por el diodo y el colector se para una caída de diodo por encima de la batería.",
+      "fix": "Desconecta, coloca un TIP120 nuevo y pon D1 entre los extremos del motor, con la banda hacia el positivo de la batería."
+    },
+    "flyback-reversed": {
+      "title": "Diodo de protección al revés",
+      "symptom": "En cuanto el pin 9 pasa a HIGH, el diodo se calienta, la tensión de la batería se hunde y el motor va más lento. Con el pin 9 en LOW no pasa nada.",
+      "explanation": "Al revés, D1 apunta del positivo de la batería al colector. Cuando el TIP120 se enciende lleva el colector a tierra, y entonces el diodo conduce directamente del positivo de la batería a tierra: un cortocircuito franco a través de D1 y del transistor, limitado solo por las pilas. Varios amperios por un diodo de 1 A lo cuecen.",
+      "fix": "Desconecta la batería y dale la vuelta a D1: banda hacia el positivo de la batería."
+    },
+    "tip120-reversed": {
+      "title": "TIP120 al revés",
+      "symptom": "El LED se enciende, el pin 9 está en HIGH, pero la rueda nunca gira y no se calienta nada.",
+      "explanation": "Dar la vuelta a un TO-220 intercambia sus patas de los extremos: la resistencia llega ahora al emisor y la base queda en tierra. La unión base-emisor queda polarizada en inversa, así que no circula corriente de base y el transistor sigue apagado. En este encapsulado no se intercambian el colector y el emisor, sino la base y el emisor.",
+      "fix": "Desconecta y dale la vuelta al TIP120: cara impresa hacia ti, base a la izquierda."
+    },
+    "no-ground": {
+      "title": "Sin tierra común",
+      "symptom": "El LED se enciende, el pin 9 está en HIGH, pero el motor no gira.",
+      "explanation": "La corriente de base sale del pin 9, pasa por R1, por la base y por el emisor hasta la línea de tierra, y tiene que volver al GND de la Nano para cerrar el circuito. El negativo de la batería no es la tierra de la Nano salvo que un cable los una, así que no circula corriente y el TIP120 sigue apagado. El LED tiene su propio cable al GND de la Nano, y por eso sigue encendiéndose.",
+      "fix": "Pon un cable desde el GND de la Nano a la línea del negativo de la batería."
+    },
+    "no-base-resistor": {
+      "title": "Sin resistencia de base",
+      "symptom": "El motor arranca de golpe y luego el pin 9 deja de funcionar: el LED se apaga y el motor se para. La Nano se calienta cerca del chip.",
+      "explanation": "Con solo un cable, el pin 9 ataca directamente la unión de la base. La unión mantiene la base cerca de 1,3 V, así que lo único que limita la corriente es el propio transistor de salida del pin: intenta dar bastante más de 100 mA. El ATmega328P admite 40 mA por pin como máximo absoluto, y su etapa de salida se quema.",
+      "fix": "Desconecta y vuelve a colocar la resistencia de base de 1 kΩ. El pin 9 de la Nano está dañado: usa otro pin PWM (3, 5, 6, 10 u 11) o una Nano nueva."
+    },
+    "motor-on-pin": {
+      "title": "Motor directamente en el pin 9",
+      "symptom": "La rueda da un tirón o no hace nada, y al momento el pin 9 está muerto.",
+      "explanation": "El motor necesita unos 160 mA para girar y más de 1 A para arrancar. El pin 9 puede dar 20 mA con holgura y 40 mA como máximo absoluto. Al intentarlo, la tensión del pin se hunde muy por debajo de un voltio, demasiado poco para arrancar el motor, mientras la etapa de salida sobrecargada se sobrecalienta y falla.",
+      "fix": "Desconecta, vuelve a poner el TIP120 entre el motor y tierra, y usa otro pin: el pin 9 está dañado."
+    },
+    "brownout": {
+      "title": "Caída de tensión: el motor en los 5 V de la Nano",
+      "symptom": "Cada vez que arranca el motor, la Nano se reinicia: el LED parpadea apagándose, el mensaje inicial del monitor serie se repite, la rueda da un tirón y se para.",
+      "explanation": "Alimentados por USB, los 5 V de la Nano pasan por un polifusible de 500 mA y un diodo Schottky. Un motor que arranca traga más de 1 A, la línea de 5 V cae por debajo del nivel de caída de tensión de 2,7 V del ATmega328P y el chip se reinicia. El pin 9 pasa a LOW, el motor deja de consumir, la línea se recupera, el sketch vuelve a empezar y enciende el motor: y vuelta a empezar.",
+      "fix": "Alimenta el motor con su propia batería y comparte solo la tierra."
+    },
+    "battery-reversed": {
+      "title": "Polaridad de la batería invertida",
+      "symptom": "D1 se calienta al momento, haga lo que haga el pin 9, y las pilas se calientan. El motor no gira.",
+      "explanation": "Con los cables cambiados, el positivo de la batería está en la línea de tierra. La corriente circula ahora en directa por el diodo emisor-colector integrado del TIP120 y luego en directa por D1: dos caídas de diodo directamente entre los extremos de la batería, un cortocircuito franco limitado solo por la resistencia interna de las pilas.",
+      "fix": "Desconecta la batería e intercambia sus cables: el rojo a la línea positiva y el negro a la línea de tierra."
+    },
+    "li-ion-cells": {
+      "title": "Tensión equivocada: celdas de iones de litio en un portapilas AA",
+      "symptom": "La batería marca unos 16 V, la rueda gira chillando a tres veces su velocidad, y al rato el motor huele a caliente y se para.",
+      "explanation": "Una celda 14500 de iones de litio tiene el tamaño de una AA pero da 3,7 V nominales y 4,2 V cargada, así que cuatro dan unos 16,8 V en lugar de 6 V. El motor de 3-6 V gira muy por encima de su velocidad, sus escobillas hacen arco y sus bobinados se sobrecalientan. Al TIP120 (60 V) y a D1 (1000 V) no les importa; al motor, sí.",
+      "fix": "Usa cuatro pilas AA alcalinas de 1,5 V (o de NiMH de 1,2 V): 4,8-6,4 V."
+    },
+    "cold-motor": {
+      "title": "Soldadura fría en el motor",
+      "symptom": "La rueda va a trompicones: gira, se para y vuelve a girar, aunque el pin 9 sigue en HIGH.",
+      "explanation": "El estaño nunca mojó el terminal del motor, así que la soldadura solo está apoyada en él. La vibración hace y deshace el contacto, y cada corte es también un pequeño apagado que tiene que absorber el diodo de protección.",
+      "fix": "Vuelve a calentar la soldadura hasta que el estaño fluya sobre el terminal y forme un filete brillante."
+    },
+    "stall": {
+      "title": "Motor bloqueado",
+      "symptom": "La rueda se para, la corriente del motor salta por encima de 1 A, la tensión de la batería cae y el TIP120 se calienta.",
+      "explanation": "Un motor que gira genera una tensión inversa que mantiene baja su corriente. Parado, solo la limitan los pocos ohmios del bobinado: unos 1,5 A a 6 V. Entonces el TIP120 tiene una caída de 1 V y disipa más de un vatio, cerca de su límite de 2 W sin disipador, y las pilas caen con la carga.",
+      "fix": "Suelta la rueda. En un robot, detecta el bloqueo (por la corriente o por un pulso de encoder que falta) y corta la alimentación."
+    }
+  },
+  "status": {
+    "program": "Programa",
+    "powered": "Con alimentación",
+    "pin9": "Pin 9 (ciclo de trabajo)",
+    "base": "Corriente de base (media)",
+    "motor": "Corriente del motor (media)",
+    "battery-current": "Corriente de la batería (media)",
+    "vce": "Caída del TIP120, de colector a emisor",
+    "peak": "Pico del colector al apagar",
+    "rpm": "Velocidad de la rueda",
+    "battery": "Tensión de la batería",
+    "q1-temp": "Temperatura del TIP120 (°C)",
+    "usb-current": "Corriente USB"
+  },
+  "current": {
+    "usb": "USB a través del polifusible de 500 mA de la Nano",
+    "batt": "4 x AA alcalinas, 6 V (las curvas de la hoja de datos llegan a 1 A)",
+    "nano": "La propia Nano (MCU, puente USB, LED ON)",
+    "base": "Corriente de base a través de R1",
+    "led": "LED indicador",
+    "motor-batt": "Motor, desde las pilas",
+    "motor-usb": "Motor, desde los 5 V de la Nano"
+  },
+  "tasks": {
+    "pulse": {
+      "title": "Haz pulsar el motor sin delay()",
+      "brief": "Enciende el motor 1 s y apágalo 1 s, para siempre, usando millis() en lugar de delay(), para que el sketch pueda seguir leyendo botones o sensores entre medias.",
+      "hints": {
+        "1": "Recuerda cuándo cambiaste por última vez: unsigned long last = 0;",
+        "2": "En loop(), cuando millis() - last >= 1000, suma 1000 a last y cambia el pin.",
+        "3": "digitalWrite(MOTOR, on ? HIGH : LOW) escribe un indicador bool en el pin."
+      },
+      "checks": {
+        "1": "El pin 9 cambia con un periodo de 2 s",
+        "2": "El motor está encendido a los 1,5 s",
+        "3": "El motor está apagado a los 2,5 s",
+        "4": "Usa millis(), sin delay()"
+      },
+      "code": {
+        "c1": "Reescribe esto sin delay(): el sketch está sordo mientras espera",
+        "c2": "bloquea todo el sketch durante un segundo"
+      }
+    },
+    "soft-start": {
+      "title": "Arranque suave",
+      "brief": "Arrancar a plena potencia hace que el motor trague más de 1 A durante un instante. Sube el pin 9 de 0 a 255 en 2 s con analogWrite() y millis(), y luego mantén la velocidad máxima.",
+      "hints": {
+        "1": "t = millis() - start te dice por dónde vas de la rampa.",
+        "2": "El ciclo de trabajo es t * 255 / RAMP_MS mientras t < RAMP_MS: con unsigned long aquí no puede desbordarse.",
+        "3": "Después de la rampa, analogWrite(MOTOR, 255) mantiene el pin encendido del todo."
+      },
+      "checks": {
+        "1": "Ciclo de trabajo de un 25 % a los 0,5 s",
+        "2": "Ciclo de trabajo de un 50 % a 1 s",
+        "3": "Ciclo de trabajo de un 75 % a los 1,5 s",
+        "4": "Encendido del todo a los 2,5 s",
+        "5": "Usa millis() y analogWrite(), sin delay()"
+      },
+      "code": {
+        "c1": "Sube el motor poco a poco durante RAMP_MS en lugar de encenderlo de golpe",
+        "c2": "plena potencia de una vez: el pico de arranque que quieres evitar"
+      }
+    },
+    "speed-knob": {
+      "title": "Mando de velocidad",
+      "brief": "Un potenciómetro de 10 kΩ en A0 fija la velocidad del motor. Convierte su lectura de 0-1023 a 0-255 para analogWrite(), y apaga del todo el motor por debajo de un ciclo de trabajo de 40, donde el motor TT solo zumba y se calienta en lugar de girar.",
+      "hints": {
+        "1": "map(raw, 0, 1023, 0, 255) escala la lectura.",
+        "2": "if (duty < 40) duty = 0; da la zona muerta.",
+        "3": "analogWrite(9, 0) y analogWrite(9, 255) dan un LOW y un HIGH fijos."
+      },
+      "checks": {
+        "1": "Mando en cero: motor apagado",
+        "2": "Mando a la mitad: ciclo de trabajo de un 50 %",
+        "3": "Mando a tope: motor encendido del todo",
+        "4": "Mando casi en cero: motor apagado, sin zumbar",
+        "5": "Lee A0 y escribe el pin 9 con analogWrite()"
+      },
+      "code": {
+        "c1": "Fija la velocidad del motor con el mando de A0",
+        "c2": "de 0 a 1023",
+        "c3": "escala raw a un ciclo de trabajo, añade una zona muerta y luego pásalo a analogWrite()"
+      },
+      "world": {
+        "pot": "Mando de velocidad"
+      }
+    },
+    "toggle-button": {
+      "title": "Botón conmutador con antirrebote",
+      "brief": "Un pulsador de D2 a tierra (INPUT_PULLUP) conmuta el motor: pulsa una vez para encenderlo y otra para apagarlo. Los contactos rebotan durante unos milisegundos, y el sketch inicial cuenta cada rebote como una pulsación. Ponle antirrebote con millis().",
+      "hints": {
+        "1": "Apunta la hora cada vez que cambie la lectura en bruto.",
+        "2": "Acepta un estado nuevo solo después de que la lectura se haya mantenido igual durante 30 ms.",
+        "3": "Conmuta solo en el cambio a LOW: eso es la pulsación, no la suelta."
+      },
+      "checks": {
+        "1": "La primera pulsación enciende el motor en menos de 60 ms",
+        "2": "Sigue encendido después de los rebotes",
+        "3": "La segunda pulsación lo apaga en menos de 60 ms",
+        "4": "Sigue apagado",
+        "5": "Usa millis() e INPUT_PULLUP, sin delay()"
+      },
+      "code": {
+        "c1": "Cada pulsación debería conmutar el motor una vez. Los contactos que rebotan lo estropean.",
+        "c2": "pulsado = LOW",
+        "c3": "un rebote parece exactamente otra pulsación"
+      },
+      "world": {
+        "btn": "Botón en D2"
+      }
+    }
+  },
+  "quizzes": {
+    "q-smd": {
+      "why-first": {
+        "q": "¿Por qué se ponen las piezas SMD antes que las tiras de pines?",
+        "options": {
+          "1": "Las piezas SMD son más caras",
+          "2": "El horno de reflujo fundiría el plástico de las tiras",
+          "3": "Las tiras necesitan el estaño de las SMD para sujetarse"
+        },
+        "why": "Toda la placa pasa por el horno de reflujo a unos 240 °C. Las piezas de agujero pasante con cuerpo de plástico se ponen después y se sueldan a mano o por ola."
+      },
+      "reflow": {
+        "q": "¿Qué hace el horno de reflujo?",
+        "options": {
+          "1": "Seca el flux antes de soldar",
+          "2": "Pega las piezas para que no se muevan",
+          "3": "Funde a la vez la pasta de soldar de debajo de todas las piezas SMD"
+        },
+        "why": "La colocación automática pone cada pieza sobre su pasta; el horno funde toda la pasta de una pasada, y la tensión superficial centra las piezas sobre sus pads."
+      }
+    },
+    "q-solder": {
+      "cold": {
+        "q": "¿Qué hace una soldadura fría?",
+        "options": {
+          "1": "Funciona y luego deja de funcionar: el contacto va y viene",
+          "2": "Cortocircuita el pin con tierra",
+          "3": "Nada, siempre que parezca lo bastante grande"
+        },
+        "why": "Una soldadura fría nunca mojó el pad ni el pin, así que solo está apoyada en ellos. La vibración y el calor hacen y deshacen el contacto."
+      },
+      "headers": {
+        "q": "¿Por qué viene la Nano con pines por debajo?",
+        "options": {
+          "1": "Para que el conector USB no toque la mesa",
+          "2": "Para refrigerar el ATmega328P",
+          "3": "Para que se enchufe directamente en una protoboard, a caballo sobre el canal central"
+        },
+        "why": "Sus dos filas de 15 pines están a 0,6 pulgadas una de otra, como un chip DIP ancho, así que cada pin cae en su propia columna de la protoboard."
+      }
+    },
+    "q-ground": {
+      "shared": {
+        "q": "El GND de la batería no está conectado al GND de la Nano. ¿Qué pasa?",
+        "options": {
+          "1": "Nada, son circuitos separados",
+          "2": "La corriente de base no tiene camino de vuelta: el TIP120 nunca se enciende",
+          "3": "El motor gira al revés"
+        },
+        "why": "La corriente de base tiene que salir del pin 9 y volver al GND de la Nano. El emisor va al negativo de la batería, así que ese negativo tiene que estar unido a la tierra de la Nano."
+      },
+      "low-side": {
+        "q": "¿Por qué se llama interruptor en el lado bajo?",
+        "options": {
+          "1": "El transistor va entre el motor y tierra",
+          "2": "Solo funciona a baja velocidad",
+          "3": "La tensión de la batería es baja"
+        },
+        "why": "El motor está conectado al positivo de la batería todo el tiempo; el TIP120 abre y cierra su camino a tierra. Un transistor NPN funciona mejor ahí, con su emisor en tierra."
+      }
+    },
+    "q-pwm": {
+      "freq": {
+        "q": "¿A qué frecuencia conmuta analogWrite() el pin 9 de la Nano?",
+        "options": {
+          "1": "50 Hz, como un servo",
+          "2": "16 MHz, la velocidad del reloj",
+          "3": "Unos 490 Hz"
+        },
+        "why": "Los pines 9 y 10 funcionan con el Timer1 a unos 490 Hz; los pines 5 y 6 funcionan con el Timer0 a unos 980 Hz."
+      },
+      "half": {
+        "q": "Con un 50 % de ciclo de trabajo, ¿por qué gira la rueda algo más despacio que la mitad de su velocidad máxima?",
+        "options": {
+          "1": "El PWM no es realmente del 50 %",
+          "2": "La propia resistencia del motor se lleva una parte fija de la tensión media",
+          "3": "El diodo de protección frena el motor"
+        },
+        "why": "La velocidad sigue a la tensión que queda después de que la resistencia del bobinado se lleve su parte. La mitad de la tensión menos la misma caída en la resistencia da algo menos de la mitad de la velocidad."
+      },
+      "led": {
+        "q": "¿Por qué parece el LED a medio brillo en PWM?",
+        "options": {
+          "1": "Parpadea 490 veces por segundo y tu ojo hace la media",
+          "2": "El PWM reduce a la mitad la tensión del pin",
+          "3": "La resistencia del LED se calienta más"
+        },
+        "why": "El pin siempre está del todo en HIGH o del todo en LOW. Tu ojo no puede seguir 490 Hz y ve la media, igual que el motor."
+      }
+    },
+    "q-flyback": {
+      "protects": {
+        "q": "¿Qué protege D1?",
+        "options": {
+          "1": "La batería de la sobrecarga",
+          "2": "El TIP120 del pico de tensión cuando la bobina se apaga",
+          "3": "El LED de la tensión inversa"
+        },
+        "why": "Cuando el TIP120 se apaga, la corriente de la bobina tiene que ir a algún sitio. D1 deja que dé la vuelta por el motor en lugar de subir el colector por encima de 60 V."
+      },
+      "band": {
+        "q": "¿En qué sentido va el diodo de protección?",
+        "options": {
+          "1": "Con la banda hacia el positivo de la batería, entre los extremos del motor",
+          "2": "Con la banda hacia el colector",
+          "3": "En serie con el motor"
+        },
+        "why": "Al revés, cortocircuita la batería cada vez que el transistor se enciende; en serie, bloquearía el motor. Entre los extremos del motor con la banda al positivo, solo conduce el golpe de la bobina."
+      }
+    },
+    "q-pin": {
+      "why-not": {
+        "q": "¿Por qué no conectar el motor directamente al pin 9?",
+        "options": {
+          "1": "El pin da unos 20 mA; el motor quiere 160 mA girando y más de 1 A para arrancar",
+          "2": "Los pines solo dan 3,3 V",
+          "3": "El motor necesita corriente alterna"
+        },
+        "why": "El ATmega328P admite 40 mA por pin como máximo absoluto. El motor hundiría la tensión del pin y quemaría su etapa de salida."
+      },
+      "base-r": {
+        "q": "¿Qué hace la resistencia de base de 1 kΩ?",
+        "options": {
+          "1": "Frena el motor",
+          "2": "Protege el motor de la batería",
+          "3": "Limita la corriente de base a unos pocos mA que el pin puede dar"
+        },
+        "why": "Las uniones base-emisor mantienen la base a unos 1,3 V. La resistencia se lleva el resto de la tensión del pin: (4,7 − 1,3) / 1000 ≈ 3,4 mA."
+      }
+    },
+    "q-brownout": {
+      "reset": {
+        "q": "La Nano se reinicia cada vez que arranca el motor. ¿Cuál es la causa más probable?",
+        "options": {
+          "1": "El sketch tiene un error en setup()",
+          "2": "El motor funciona con los 5 V de la placa y su corriente de arranque hunde la línea",
+          "3": "El diodo de protección es demasiado grande"
+        },
+        "why": "Un motor que arranca consume más de 1 A. A través del polifusible y el diodo del USB, la línea de 5 V cae por debajo del nivel de caída de tensión de 2,7 V y el chip se reinicia."
+      },
+      "cure": {
+        "q": "¿Qué lo soluciona?",
+        "options": {
+          "1": "Un delay() más largo en setup()",
+          "2": "Una resistencia de base mayor",
+          "3": "Una alimentación aparte para el motor que comparta solo la tierra"
+        },
+        "why": "Así la corriente del motor nunca pasa por la línea de 5 V de la Nano. Un arranque suave y un condensador de reserva también ayudan, pero la alimentación aparte es la solución de verdad."
+      }
+    },
+    "q-end": {
+      "drop": {
+        "q": "La batería da 6 V. ¿Más o menos cuánto llega al motor a través de un TIP120 encendido del todo?",
+        "options": {
+          "1": "6 V: un interruptor no tiene caída",
+          "2": "3 V: la mitad se pierde en el transistor",
+          "3": "Unos 5,2 V: un Darlington tiene una caída de unos 0,8 V incluso saturado"
+        },
+        "why": "El transistor de salida de un Darlington no puede saturarse por debajo de la tensión base-emisor del transistor que lo excita, así que tiene una caída de 0,7-1 V con estas corrientes. Un MOSFET de nivel lógico tiene mucha menos caída."
+      },
+      "gain": {
+        "q": "Corriente de base de 3,4 mA, corriente del motor de 160 mA. ¿Qué ganancia estás usando?",
+        "options": {
+          "1": "Unos 47, muy por debajo de los 1000 del TIP120: está saturado, es un interruptor",
+          "2": "Unos 1000, la ganancia de la hoja de datos",
+          "3": "Unos 160"
+        },
+        "why": "160 / 3,4 ≈ 47. Pedir mucho menos de lo que podría dar la ganancia enciende el transistor a fondo, lo que mantiene bajos su caída y su calor."
+      },
+      "pinout": {
+        "q": "Con la cara impresa hacia ti y las patas hacia abajo, ¿qué son las patas del TIP120 de izquierda a derecha?",
+        "options": {
+          "1": "Emisor, base, colector",
+          "2": "Base, colector, emisor (la pestaña es el colector)",
+          "3": "Colector, emisor, base"
+        },
+        "why": "B, C, E, con la pestaña unida al colector. Al revés, la base y el emisor se intercambian y el transistor nunca se enciende."
+      },
+      "stall": {
+        "q": "¿Qué limita la corriente de un motor bloqueado?",
+        "options": {
+          "1": "La reductora",
+          "2": "El diodo de protección",
+          "3": "Solo la resistencia del bobinado: no hay tensión inversa cuando no gira"
+        },
+        "why": "Un motor que gira genera una tensión inversa que se opone a la alimentación. Parado, solo limitan la corriente unos pocos ohmios de cobre y la resistencia interna de la batería."
+      },
+      "mosfet": {
+        "q": "¿Qué usarías en lugar del TIP120 en un diseño nuevo?",
+        "options": {
+          "1": "Un MOSFET de canal N de nivel lógico, que tiene una caída de una fracción de voltio",
+          "2": "Un relé para el PWM",
+          "3": "Un segundo pin de Arduino en paralelo"
+        },
+        "why": "Un MOSFET de nivel lógico (IRLZ44N, IRLB8721) se enciende del todo desde un pin de 5 V casi sin corriente de puerta y tiene una caída de una fracción de voltio, así que al motor le llega más de la batería."
+      }
+    }
+  }
+}
