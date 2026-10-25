@@ -119,7 +119,7 @@ export function StoryCard({ lab, itemId, log, t, locale, image }: StoryCardProps
               {t("story.make")}
             </Button>
           ) : (
-            <p className="rounded-ink border-2 border-dashed border-rule bg-surface p-3 text-sm">{t("story.empty")}</p>
+            <p className="text-sm text-muted">{t("story.empty")}</p>
           )}
         </>
       ) : null}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useMemo } from "react";
-import { Button, Callout, Card, cx } from "@/components/ui";
+import { Button, Callout, cx } from "@/components/ui";
 import { useLocale } from "@/i18n/client";
 import { createTranslator } from "@/i18n/translate";
 import type { LiveResponse } from "@/lib/telemetry/responses";
@@ -29,9 +29,9 @@ export function LiveCounter({ messages, className }: LiveCounterProps) {
   const live = feed.data;
 
   return (
-    <Card as="section" aria-labelledby={headingId} padding="sm" className={cx("flex flex-col gap-3", className)}>
+    <section aria-labelledby={headingId} className={cx("flex flex-col gap-3", className)}>
       <header className="flex items-center justify-between gap-2">
-        <h2 id={headingId} className="font-ui text-base font-extrabold uppercase tracking-wide">
+        <h2 id={headingId} className="font-head text-lg leading-tight">
           {t("title")}
         </h2>
         {feed.status === "ready" ? (
@@ -52,8 +52,8 @@ export function LiveCounter({ messages, className }: LiveCounterProps) {
       ) : null}
 
       {feed.status === "off" ? (
-        <Callout tone="note" title={t("offTitle")}>
-          {t("offBody")}
+        <Callout variant="quiet" title={t("offTitle")}>
+          <span className="mt-0.5 block">{t("offBody")}</span>
         </Callout>
       ) : null}
 
@@ -83,7 +83,7 @@ export function LiveCounter({ messages, className }: LiveCounterProps) {
           )}
         </>
       ) : null}
-    </Card>
+    </section>
   );
 }
 

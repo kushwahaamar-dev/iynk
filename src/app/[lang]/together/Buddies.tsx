@@ -102,7 +102,7 @@ export function Buddies({ t, titles }: { t: TogetherT; titles: Map<string, strin
       </div>
       <FeatureGate t={t} state={features} needs={["db", "ai"]} notSetUp={t("lobby.buddies.notSetUp")} onRetry={reloadFeatures}>
         <form onSubmit={submit} className="grid gap-3 sm:grid-cols-2" noValidate>
-          <label className="flex flex-col gap-1 text-sm font-bold" htmlFor={`${id}-name`}>
+          <label className="flex flex-col gap-1 text-sm font-semibold" htmlFor={`${id}-name`}>
             {t("lobby.buddies.name")}
             <input
               id={`${id}-name`}
@@ -110,23 +110,23 @@ export function Buddies({ t, titles }: { t: TogetherT; titles: Map<string, strin
               onChange={(event) => setName(event.target.value)}
               maxLength={24}
               autoComplete="nickname"
-              className="min-h-11 rounded-ink-sm border-2 border-line bg-surface px-3 font-body text-base font-normal text-ink"
+              className="ink-field w-full font-normal"
             />
           </label>
-          <label className="flex flex-col gap-1 text-sm font-bold" htmlFor={`${id}-interests`}>
+          <label className="flex flex-col gap-1 text-sm font-semibold" htmlFor={`${id}-interests`}>
             {t("lobby.buddies.interests")}
             <input
               id={`${id}-interests`}
               value={interests}
               onChange={(event) => setInterests(event.target.value)}
               aria-describedby={`${id}-interests-hint`}
-              className="min-h-11 rounded-ink-sm border-2 border-line bg-surface px-3 font-body text-base font-normal text-ink"
+              className="ink-field w-full font-normal"
             />
             <span id={`${id}-interests-hint`} className="text-xs font-normal text-muted">
               {t("lobby.buddies.interestsHint")}
             </span>
           </label>
-          <label className="flex flex-col gap-1 text-sm font-bold sm:col-span-2" htmlFor={`${id}-wants`}>
+          <label className="flex flex-col gap-1 text-sm font-semibold sm:col-span-2" htmlFor={`${id}-wants`}>
             {t("lobby.buddies.wants")}
             <textarea
               id={`${id}-wants`}
@@ -161,7 +161,7 @@ export function Buddies({ t, titles }: { t: TogetherT; titles: Map<string, strin
                   const project = titles.get(`${match.suggestedProject.lab}:${match.suggestedProject.id}`);
                   if (!buddy) return null;
                   return (
-                    <li key={match.id} className="flex flex-col gap-2 rounded-ink border-2 border-line bg-sunken p-3">
+                    <li key={match.id} className="flex flex-col gap-2 rounded-ink bg-sunken p-3">
                       <p className="flex flex-wrap items-center gap-2">
                         <span className="font-head text-base font-bold">{buddy.name}</span>
                         <Chip tone="mint">{t("lobby.buddies.score", { score: match.score })}</Chip>

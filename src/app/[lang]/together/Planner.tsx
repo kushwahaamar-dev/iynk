@@ -18,7 +18,8 @@ type Plan = { title: string; item: { lab: LabKind; id: string }; why: string; ro
 
 const LEVELS: Level[] = ["new", "some", "lots"];
 const MAX_PEOPLE = 8;
-const field = "min-h-11 rounded-ink-sm border-2 border-line bg-surface px-2 font-body text-base font-normal text-ink";
+const field = "ink-field w-full font-normal";
+const area = "rounded-ink-sm border-2 border-line bg-surface px-3 py-2 font-body text-base font-normal text-ink";
 
 type State = { kind: "idle" } | { kind: "missing" } | { kind: "busy" } | { kind: "error" } | { kind: "unknown" } | { kind: "done"; plan: Plan };
 
@@ -75,16 +76,16 @@ export function Planner({ t, titles }: { t: TogetherT; titles: Map<string, strin
         ) : (
           <form onSubmit={submit} className="flex flex-col gap-3" noValidate>
             <fieldset className="flex flex-col gap-3">
-              <legend className="mb-1 text-sm font-bold">{t("lobby.plan.people")}</legend>
+              <legend className="mb-1 text-sm font-semibold">{t("lobby.plan.people")}</legend>
               {rows.map((person, index) => {
                 const label = person.name.trim() || t("lobby.plan.person", { n: index + 1 });
                 return (
-                  <div key={person.key} role="group" aria-label={label} className="grid gap-2 rounded-ink-sm border-2 border-line bg-sunken p-3 sm:grid-cols-[1fr_auto_auto_auto]">
-                    <label className="flex flex-col gap-1 text-xs font-bold">
+                  <div key={person.key} role="group" aria-label={label} className="grid gap-2 rounded-ink-sm bg-sunken p-3 sm:grid-cols-[1fr_auto_auto_auto]">
+                    <label className="flex flex-col gap-1 text-xs font-semibold">
                       {t("lobby.plan.name")}
                       <input value={person.name} maxLength={24} onChange={(e) => update(person.key, { name: e.target.value })} className={field} />
                     </label>
-                    <label className="flex flex-col gap-1 text-xs font-bold">
+                    <label className="flex flex-col gap-1 text-xs font-semibold">
                       {t("lobby.plan.lang")}
                       <select value={person.lang} onChange={(e) => update(person.key, { lang: e.target.value as Locale })} className={field}>
                         {LOCALES.map((code) => (
@@ -94,7 +95,7 @@ export function Planner({ t, titles }: { t: TogetherT; titles: Map<string, strin
                         ))}
                       </select>
                     </label>
-                    <label className="flex flex-col gap-1 text-xs font-bold">
+                    <label className="flex flex-col gap-1 text-xs font-semibold">
                       {t("lobby.plan.level")}
                       <select value={person.level} onChange={(e) => update(person.key, { level: e.target.value as Level })} className={field}>
                         {LEVELS.map((level) => (
@@ -112,9 +113,9 @@ export function Planner({ t, titles }: { t: TogetherT; titles: Map<string, strin
                         onClick={() => setPeople((list) => list.filter((p) => p.key !== person.key))}
                       />
                     </div>
-                    <label className="flex flex-col gap-1 text-xs font-bold sm:col-span-4">
+                    <label className="flex flex-col gap-1 text-xs font-semibold sm:col-span-4">
                       {t("lobby.plan.wants")}
-                      <textarea value={person.wants} maxLength={300} rows={2} onChange={(e) => update(person.key, { wants: e.target.value })} className={`${field} py-2`} />
+                      <textarea value={person.wants} maxLength={300} rows={2} onChange={(e) => update(person.key, { wants: e.target.value })} className={area} />
                     </label>
                   </div>
                 );
@@ -151,7 +152,7 @@ function PlanCard({ plan, item, t, onStart, onAgain }: { plan: Plan; item: strin
   return (
     <article aria-labelledby={`${id}-plan`} className="flex flex-col gap-4 rounded-ink border-2 border-line bg-mustard p-4 text-ink-fixed shadow-ink">
       <header>
-        <p className="font-ui text-xs font-bold uppercase">{item}</p>
+        <p className="ink-kicker">{item}</p>
         <h3 id={`${id}-plan`} className="text-xl text-ink-fixed">
           {plan.title}
         </h3>

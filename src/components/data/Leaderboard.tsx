@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useMemo, useSyncExternalStore } from "react";
-import { Button, Callout, Card, Chip, cx } from "@/components/ui";
+import { Button, Callout, Chip, cx } from "@/components/ui";
 import { useLocale } from "@/i18n/client";
 import type { Locale } from "@/i18n/config";
 import { createTranslator, type Translate } from "@/i18n/translate";
@@ -51,10 +51,10 @@ export function Leaderboard({ course, courseLabel, messages, limit = 10, classNa
   const ownBelow = board?.you && !board.rows.some((r) => r.you) ? board.you : null;
 
   return (
-    <Card as="section" aria-labelledby={headingId} padding="sm" className={cx("flex flex-col gap-3", className)}>
+    <section aria-labelledby={headingId} className={cx("flex flex-col gap-3", className)}>
       <header className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <h2 id={headingId} className="font-ui text-base font-extrabold uppercase tracking-wide">
+          <h2 id={headingId} className="font-head text-lg leading-tight">
             {t("title")}
           </h2>
           <p className="text-sm text-muted">{t("caption", { course: courseLabel })}</p>
@@ -76,8 +76,8 @@ export function Leaderboard({ course, courseLabel, messages, limit = 10, classNa
       ) : null}
 
       {feed.status === "off" ? (
-        <Callout tone="note" title={t("offTitle")}>
-          {t("offBody")}
+        <Callout variant="quiet" title={t("offTitle")}>
+          <span className="mt-0.5 block">{t("offBody")}</span>
         </Callout>
       ) : null}
 
@@ -86,7 +86,7 @@ export function Leaderboard({ course, courseLabel, messages, limit = 10, classNa
       ) : null}
 
       {feed.status === "ready" && board && board.rows.length === 0 ? (
-        <p role="status" className="rounded-ink-sm border-2 border-dashed border-line bg-sunken p-3 text-sm">
+        <p role="status" className="text-sm text-muted">
           {t("empty")}
         </p>
       ) : null}
@@ -133,7 +133,7 @@ export function Leaderboard({ course, courseLabel, messages, limit = 10, classNa
           </p>
         </>
       ) : null}
-    </Card>
+    </section>
   );
 }
 

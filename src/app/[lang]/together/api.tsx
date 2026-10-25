@@ -41,7 +41,7 @@ export function FeatureGate({
   onRetry: () => void;
   children: ReactNode;
 }) {
-  if (state.status === "loading") return <div aria-busy="true" className="h-32 animate-pulse rounded-ink border-2 border-line bg-sunken" />;
+  if (state.status === "loading") return <div aria-busy="true" className="h-32 animate-pulse rounded-ink bg-sunken motion-reduce:animate-none" />;
   if (state.status === "error") {
     return (
       <Callout tone="warn" live>
@@ -56,8 +56,8 @@ export function FeatureGate({
   }
   if (!needs.every((feature) => state.features[feature])) {
     return (
-      <Callout tone="note" title={t("lobby.notSetUp")}>
-        {notSetUp}
+      <Callout variant="quiet" title={t("lobby.notSetUp")}>
+        <span className="mt-0.5 block">{notSetUp}</span>
       </Callout>
     );
   }
