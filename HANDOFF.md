@@ -83,169 +83,54 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-25 05:07 CDT (machine clock).
+- **Updated:** 2026-10-25 06:18 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session). Amar is asleep
-  since 22:20 and gave full autonomy for every remaining build phase except Solana and hardware (CONTEXT.md §5) The Mac is kept awake by `caffeinate -dimsu -t 54000` (pid 28721, from 23:08, until about 14:08).
+  since 22:20 and gave full autonomy for every remaining build phase except Solana and hardware, then at 02:02 a final
+  pass on every page (CONTEXT.md §5). The Mac is kept awake by `caffeinate -dimsu -t 54000` (pid 28721, from 23:08,
+  until about 14:08).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Do not build in
   `/Users/amar/Codes/sim`.
-- **Phase:** 2 and 3 at once. Phase 1 done, gate 1 green (19:21). Wave A done (21:27). Since 22:30 wave B
-  (`wf_7b610548-7fb`) and phase 3's prose wave T1 (`wf_0e06f30a-c43`, `scripts/workflows/phase3.md`) are running.
-- **Plan:** `docs/hacktx/BUILD-PLAN.md`, written from the six audits in `docs/audit/` (boards, robotics, drones,
-  platform, sponsor-layer, history). Phases 1–3 build for Best Overall, SerpApi, Most Entertaining and Meta.
-  Solana and Best Hardware Hack were phase 4, only if time is left after gate 3 (Amar, 16:15); at 22:20 Amar said
-  to leave them aside, so phase 4 is skipped.
-- **Checks after wave A (21:30–22:30, driver):** `npm run typecheck` exit 0. `npx eslint . --quiet` exit 0.
-  `npm run content:check` exit 0 (every item with a data module has English prose). Full vitest on a quiet machine:
-  1759 passed, 4 skipped (TimescaleDB, no database), 0 failed (`0b71e59` set one 30 s test timeout: the web-server
-  lessons took 2-3 s alone and passed 5 s under load). Production build with typecheck on: exit 0. Route crawl, 606
-  pages at 390 px: 0 failed, 163 clean, 341 with known later-phase problems only (figure strings phase 3; pi5-ros2's
-  missing pages, P2-pi), 102 expected 404s (wave B's items). Playwright: 71 passed, 5 skipped (agrihex, swarm, vtol,
-  tricopter, octo: no content yet). `cfbuild.py --all` (`6576766`): 55 pages, `cfshoot` on the 50 that changed: 44
-  OK, 6 part pages fail on overlapping labels (4 already did at 17:30), filed for P2-engine-b
-  (`docs/requests/driver-to-P2-engine-b-figure-layout.md`, also bench stats over the art).
-- **Local smoke (18:24, `docs/hacktx/DEPLOY.md`):** `/` 307 to `/en`. `/en`, `/en/boards/uno-r3`,
-  `/en/boards/uno-r3/blink`, `/en/drones/quad5`, `/en/drones/quad5/fly`, `/en/together` and
-  `/figures/boards/uno-r3.html` are 200. `/api/mcp` POST `initialize` and `tools/list` 200 (7 tools).
-  `/es/boards/uno-r3` was 404 then; since `3defc3d`–`6da9aac` it is 200 with the English prose under a "Aún sin
-  traducir" note (BUILD-PLAN §3.2 item 5, ARCHITECTURE.md v1.4). The Uno board and Blink pages fit a 390 px
-  screen in all six languages (`6f51a80`). Since `06ac3f0` no page in the route crawl scrolls sideways at 390 px.
-- **Decided:** D1 (tracks, above). Amar: "Everything else looks fine."
-- **Decided by Jagrati (16:13):** D2 confirmed (the plan's default). D4: API keys stay placeholders for now;
-  `.env.local` on Jagrati's Mac is `.env.example` with empty values. Vultr, Vercel env upload and Tiger are not
-  approved yet, so gate 1 runs without live Meta/SerpApi and rooms use the one-browser fallback until keys arrive.
-  D3 (devnet SOL) is asked only when phase 4 starts.
-- **Wave A (`wf_bde0e200-6a3`, 20:17–21:27, all 9 done, every commit pushed):**
-
-  | Label | Done | Left, and who has it now |
-  |---|---|---|
-  | P2-engine | nodal circuit solver (`e61a5b8`), straps, callouts under the stats panel, mat parts, drone step resets, Nano MPU-6050, FIGURES-BENCH v7, every wave-A engine request answered (`4b4a878`…`0f105ba`) | `P2-engine-gaps.md` → P2-engine-b |
-  | P2-uno-r4 | content, prose, quizzes on all 7 lessons, tests on both variants (`5aeca4c`…`76ec621`) | DAC: driver did it (`e8ce4d3`); `dac-wave` jumper → P2-engine-b; Minima strap fault → phase 3 idea |
-  | P2-modules | MPU-6050 part, HC-SR04 and MPU-6050 modules, every pico/nodemcu/uno-r4 circuit part drawn, sensor inputs tested (`0333b12`…`c18c4ba`) | – |
-  | P2-drone-prose | prose, tests and prompts for whoop, cinewhoop, longrange, wing (`cc7eda4`…`9dd8687`) | – |
-  | P2-drones-fpv | racer, gpscam, delivery content, prose, tests, figures (`0fc1a5c`…`83c627f`) | racer 55 A ESC: driver (`7f1f0db`); parcel mass and AUTO descent → P2-fun |
-  | P2-flight | flight registry, every craft flies from its content, demo and medal times, fly e2e (`c97623c`…`9f0feca`) | wave B crafts fly once their content lands |
-  | P2-rob-uno | uno-r3-build (25 steps, 13 faults) and led-resistor (19 steps, 8 faults) benches (`29a2d4b`…`cf2a732`) | content-index heuristic: driver (`f2ee57b`) |
-  | P2-rob-motor | transistor-switch, tb6612fng, l298n benches on the model hook, TT motor, AA holder, 2S LiPo (`bc79f7c`…`7c3e84d`) | wiring faults on the breadboard → P2-engine-b |
-  | P2-social | room sync and baton in every lab store, Web Audio sound, telemetry on AI calls, failure patch (`8d42b08`…`246bb90`) | telemetry opt-out, kinds, privacy copy → P2-fun; FigureReadout: driver (`73acdd8`) |
-
-- **Running since 22:30 (don't touch their files, never SendMessage their agents):**
-  - Wave B, run `wf_7b610548-7fb` from `scripts/workflows/phase2-wave-b.js` (`10b6951`), no args: P2-engine-b,
-    P2-microbit, P2-nucleo, P2-pi, P2-fpga, P2-rob-sensors, P2-rob-power, P2-drones-heavy, P2-drones-vtol, P2-fun.
-  - Prose T1, run `wf_0e06f30a-c43` (`88b7db2`): **done at 23:40.** All 21 items in es, fr, de, zh, hi (105 files
-    under `src/i18n/content/<lang>/`), each pushed and passing `src/i18n/content.test.ts`. Kept in English on purpose:
-    serial output the checks match, firmware and OSD messages, mode names, third-party UI names. One English
-    inconsistency they found is fixed (`9458186`, gpscam ESC note).
-  - Phase 3 T2a, run `wf_07ad23ac-e47`: **done at 00:05.** Figure dictionaries `src/i18n/figures/{es,fr,de,zh,hi}.json`
-    for the 1866 keys then listed, each passing `figure-strings.test.ts`; 13 prompt records (parts and modules that
-    share an id share one). Their reports showed the collector missed strings that reach T() through tables and
-    fields; the acorn-based collector (`a516233`) finds 1291 more (wave B's figures included), for T2 to add.
-    Bugs they found are in `docs/verify/sweep.md`.
-  - Wave B at 00:17: 7 of 10 reported (P2-nucleo, -microbit, -fun, -drones-heavy, -rob-sensors, -pi, -rob-power);
-    P2-engine-b, P2-fpga and P2-drones-vtol (the octo next) still running.
-  - Wave B tail, run `wf_759ed985-c9a`: **done at 00:38.** P2-req-interp: onboard sensor inputs (`3f92443`), PCA9685
-    channels in the trace and the knob task's pulse checks (`f71771e`, `9215470`). P2-req-host: lesson props follow
-    the world inputs (`8aa908e`), the WHEEL callout folded into STP1 in six languages (`59d76ef`), the micro:bit kit
-    (`4e8d5e8`). P2-req-drone: `readOnly` (`7af326b`), Crazyflie checks and Betaflight `servo`/`smix` (`faa07c4`,
-    `4deaf4e`), tricopter 40 A and `hoverLimit` (`8c71183`). The driver then did the follow-ups: the tri's reversed
-    servo in the sim and the mixer reversal (`6bd22e6`), the ticks pulse check (`3ef8999`), ARCHITECTURE v1.8.
-    Still for the driver: the octo's `hoverLimit: 0.7` once `octo.ts` exists, and the tri's servo prose
-    (`docs/requests/P2-req-drone-to-P2-drones-vtol-tri-servo-prose.md`) if P2-drones-vtol leaves it.
-  - Wave B at 01:23: 9 of 10 reported; P2-engine-b is still fixing figures (it took up `docs/verify/sweep.md` 1-8).
-  - Prose T2 `wf_788dd7a3-f68`: **done at 01:52.** All 38 items have prose in all six languages (190 translated
-    files). The driver then fixed the Spanish spelling of Break it (Averíala, `3c40104`) and the German bench word,
-    Place a part and Serial hello (`a5ac72b`).
-  - **Gate 2 (English, BUILD-PLAN §6), 02:28:** content:check, typecheck, eslint clean; vitest 2719 passed, 5 skipped;
-    relay 39 passed and its typecheck clean; lesson table 102/102 references pass, every starter fails
-    (`docs/verify/gate2-lessons.md`); build with typecheck on; crawl 786 pages, 780 clean, 6 expected 404, 0 failed
-    (`docs/verify/gate2-routes.md`, after fixing two sideways scrolls); Playwright 77 passed, 2 skipped. Still to
-    write: `docs/verify/gate2.md` with the figure probes and cfshoot, which run after the key list.
-  - Wave D done (`wf_d61de94b-466`, 02:20): README, DECISIONS "Build night", JUDGE-QA (new), PITCH, VIDEO,
-    DEVPOST-WRITEUP; two prompt records. Their open points are in `docs/verify/sweep.md`.
-  - **Final pass, run `wf_c95e5cdf-cda` (`final-polish.js`, brief `scripts/workflows/final.md`), since 02:28:**
-    Amar's 02:02 ask. Look (F-research on Fable, F-audit-shell/-boards/-robotics/-drones/-panels, F-fresh-eyes) on
-    the production server `.next-final` at http://127.0.0.1:3430 (started by the driver; stop it and delete the
-    folder after phase 2), then F-direction writes `docs/design/POLISH-SPEC.md`, F-build-shell, then F-build-boards,
-    -robotics, -drones, -panels (dev servers 3441-3445), then F-review. Gate 3 runs after it, on the final UI.
-  - Review fixes, run `wf_62976d4a-988` (`phase3-wave.js`, brief `review-fixes.md`), since 04:47, due 06:20:
-    F-fix-boards (B1 sideways scroll on every board page, U1, U2, U3, N2, N5, N7, N8, the pre-Run story),
-    F-fix-robotics (U3 the phone bench, N3, N10), F-fix-drones (U5, U6, the empty-mat card, N4, N6, N16, N17),
-    F-fix-shell (U4, U7, N1, N13, N14, N12). The final pass (`wf_c95e5cdf-cda`) finished at 04:45 with F-review's
-    `docs/verify/ui-review.md`. The driver keeps N11 (Solana RPC on ordinary pages), N15 (crawl `--out`), the
-    figure-string collector's variants, and the chrome change (`87315a4`).
-  - Fourth figure-string delta, run `wf_0e7f6757-d55` (`P3-figs-delta4-<lang>`), 05:00-05:04, **done**: the 65 keys
-    the collector finds now that it also opens each figure's variants (`266610e`, 4087 keys); `2226b14` es, `085983f`
-    fr, `919c6f6` de, `997c1ff` zh, `a94ac1c` hi. `src/i18n` 441 of 441. Driver since 04:47: server-side Config
-    account check (`4ed0e42`, N11), crawl `--out` (`1f60ea9`, N15), breadboard labels clear of each other and the R4's
-    dead matrix note dropped (`32eb174`, 13 of 13 probes, cfshoot OK), `FigureFrame` `poster` (`87c6077`) for a live
-    figure on the landing page once F-fix-shell is done with `page.tsx`.
-  - Third figure-string delta, run `wf_4259a342-6a9` (`phase3-wave.js`, `P3-figs-delta3-<lang>`), since 04:33, due
-    05:15: the 71 keys the collector now finds once it waits for See-through to finish fading (`5e2f2c9`, 4022 keys:
-    board and module notes, part see-through labels, 'ON LED', 'PLUGGED IN', 'UNPLUGGED'), and 'ON' dropped. The
-    second delta (`wf_f8a79fd5-c38`, 04:22) translated the 241 before it; the driver then gave the ON LED its own key
-    and the HUD its own battery words (`ff67740`) and matched the figure's status words to the UI's (`d6993c8`).
-  - Figure sweep, run `wf_7513ba0c-9cb` (`phase3-wave.js`, brief `sweep.md`), 03:06-03:37, **done**: S-engine
-    (`9cc83eb` chrome message, `1475355` sheet fit, `bd87219` honest build toast, `b339c53` axe, `520557c` templated
-    button labels, `78498dd`, `b6d3efa`), S-figures (`ce835c2`, `8cd13bd`: strings the collector couldn't key). The
-    driver then: swarm's toast (`a4eaa1c`), every page rebuilt (`e509a55`), micro:bit LOUD/QUIET (`d4c4734`), figure
-    tests' settle time (`5c17ac6`). quad5's failsafe test is written and tested but parked as
-    `<scratchpad>/quad5-failsafe.patch` (`git apply` it) until F-build-drones is done: `e2e/dronelab.spec.ts`, its
-    file, expects three test rows.
-  - Figure-string delta, run `wf_7bcff872-581` (`phase3-wave.js`, `P3-figs-delta-<lang>`), 02:31-02:50, **done**:
-    the 1964 new keys of `figure-keys.json` in es fr de zh hi (`226b8a3`, `c51e6a6`, `c53dde0`, `581cef4`,
-    `ea8f1a3`, `090a62a`, `21dcfb0`, `22f3bf5`, `90f2064`); `figure-strings.test.ts` 11 of 11 at 02:55. Then the
-    collector learned to read bench models (`2f9402a`): 96 more status and stat strings, collected into
-    `figure-keys.json` and sent as a second small delta. Left on purpose, kept entries the agents were told not to
-    change: es/de wiring-sheet sub-lines past ~20 characters, fr octo LANDING GEAR (20), es bench OFF (shared key).
-  - Quiz side job, run `wf_78186578-fbd` (brief `final.md`), 02:34-02:54, **done**: F-quiz-pico (`65086eb`, six
-    lessons), F-quiz-esp (`aaf8024`, `8ee60df`, `3a1f7cf`, eight lessons plus a third question on five short ones).
-    Every board lesson now has a three-question quiz in all six languages. Its NodeMCU D0 PWM note fixed in `c3a79ef`.
-  - Gate 2 figures, 02:35-02:52, **done**: 13 of 13 bench probes, 79 of 79 figures through cfshoot. Write-up:
-    `docs/verify/gate2.md` (`a4c47e1`).
-  - Phase 3 D, run `wf_d61de94b-466` (`phase3-wave.js`), since 01:54: P3-docs-repo (README, missing prompt records,
-    DECISIONS) and P3-docs-pitch (PITCH, DEVPOST-WRITEUP, DEVPOST, VIDEO, JUDGE-QA), started before gate 2: they check
-    each claim against the repo and list what the driver must recheck after gate 3.
-  - Phase 3 T2 started early at 01:23, because every prose-writing agent is done: prose run `wf_788dd7a3-f68`
-    (`phase3-prose.js`, 17 wave-B items, 2 agents a language, `P3-prose-<lang>-1|2`) and UI strings run
-    `wf_c44031b5-93f` (`phase3-wave.js`, `P3-ui-<lang>`, jobs 1 and 3 only), **done at 01:41**: leaves still equal to
-    English per language fell from 736-1231 to 138-212, each left one a name, unit or code; all pushed. The figure-string delta (job 2) waits
-    for P2-engine-b: then `node scripts/figure-strings.mjs`, commit the key list, and run it as its own small wave.
-  - If this session dies: `git log` shows what each label pushed. Relaunch a run's unfinished labels from its
-    committed script (`final-polish.js` takes `finish` times; a phase whose report file is committed is done), the
-    delta with the languages whose `figure-strings.test.ts` still fails, the quiz job with the boards still missing
-    quizzes. Stop the audit server on port 3430 (`pkill -f "next start -H 127.0.0.1 -p 3430"`) and delete
-    `.next-final` once phase 2 of the final pass is done.
-- **Next step:** wait for the final pass (`wf_c95e5cdf-cda`) and the figure sweep (`wf_7513ba0c-9cb`); record each
-  report here. Then, in this order (each item's files are free only once its owner is done):
-  1. After F-review: fix or relaunch what `docs/verify/ui-review.md` lists.
-  2. After the sweep: `python3 -I figures/tools/cfbuild.py --all`, commit `public/figures`; quad5 gets the racer's
-     Betaflight failsafe test (button in `figures/drones/quad5.js`, `tests` entry in `src/content/drones/quad5.ts`,
-     prose in six languages; sweep item 34).
-  3. After F-build-panels and F-build-shell: `FigureFrame` sends the figure `{ type: 'chrome', hide: [...] }` with the
-     button ids S-engine lists per page kind (`docs/FIGURES.md`); `ai.json` `unavailableBody` names Gemini as well as
-     Meta, in six languages.
-  4. `node scripts/figure-strings.mjs`, commit the key list, one figure-string delta (`phase3-wave.js`,
-     `P3-figs-delta-<lang>`) for every key not yet translated; HUD "ON"/"OFF" can be translated once silkscreen no
-     longer goes through `CF_T` (sweep item 11).
-  5. Gate 3 (BUILD-PLAN §6 in all six languages): the gate-2 commands, `src/i18n/figure-strings.test.ts` with 0
-     missing, `node scripts/figure-langs.mjs <base> <dir>` (figures in every language, laptop and phone). Clean
-     `tsconfig.json` by parsing it, never with a regex, and `AGENTS.md`, and the `.next-*` folders agents leave.
-  6. Recheck the docs against the final UI: VIDEO and PITCH click labels, BUILD-PLAN §1 step 1 (now `led-backwards`
-     exists), JUDGE-QA counts and Q22, DEVPOST-WRITEUP.
-  7. Amar's morning list: keys into `.env.local`, his OK for the Vercel env upload and deploy, the relay host, video
-     08:30-10:00, Devpost by 10:30 (he submits).
-- **Agents:** P1-checks `1e6f87c4-b1ea-4a31-9425-b1de6de9a88f` done (`39cca43`, `c168147`). P1-health
-  `d393e1cb-35bc-4db4-bc0b-37c02c1b8e14` done (`28d8564`). P1-voice `b337455f-1b6d-45d5-93d8-51efb828d421` done
-  (`b1e5308`). P1-engine `1a0582c2-ec24-42ab-8b3c-e2ac162b8e48` done (`f104e10`, `a45ec96`, `03eaab0`, `9d49d45`,
-  `af98853`, `a45e9c7`, `8ac4249`). P1-dock `b44c4546-65c6-4e1b-a979-d542a595b6e2` done (`0878815`). P1-uno
-  `ba4b1927-c019-44ae-9e2a-ed6bc9d344fa` done (`eae2b0c`, `24e19bb`, `0415fcc`). Four powered-fault drawings still
-  need an engine change (`docs/requests/P1-uno-to-P1-engine-assembly.md`). P1-deploy
-  `99124c0b-fd27-4276-b13f-a2038f8c3767` files done (`544e92f`). The driver ran the smoke at 18:24 (`b62ebc0`). No
-  phase-1 label is running.
-- **Stopped (17:12):** an earlier wave in `/Users/amar/Codes/sim` was told to stop and not push. P1-checks
-  `69f24d0b-22ca-48fe-9759-b3b2f8a29256` had already stood down. Also stopped: P1-checks
-  `97b4fdff-0cfe-4a33-9392-efba74f27b24`, P1-uno `7bff6780-5777-4fc4-88ee-63de088785f4`, P1-health
-  `233830a7-6774-4110-8784-e26b174ad48f` and `6c1a39de-53e3-4ed0-8e7d-b80eac4294e4`. That clone is ahead by unpushed
-  `c3c61a7` and has uncommitted files. Leave both. Do not push them.
+- **Phase:** every build phase is done and **gate 3 is green** (05:46-06:11 at `569b205`, all six languages,
+  `docs/verify/gate3.md`). Phase 4 (Solana, Best Hardware Hack) is skipped (Amar, 22:20). What is left needs Amar:
+  keys, deploy, video and Devpost ("Next step").
+- **Plan:** `docs/hacktx/BUILD-PLAN.md`, written from the six audits in `docs/audit/`. Phases 1-3 build for Best
+  Overall, SerpApi, Most Entertaining and Meta.
+- **Gate 3:** typecheck, eslint and content:check clean; build with typecheck on, 826 pages; vitest 2788 passed, 5
+  skipped (no database; no language missing prose); relay 39 of 39; figure strings 11 of 11 (4087 keys in every
+  language); lesson table 102 of 102 (`docs/verify/gate3-lessons.md`); drone calculator 445 of 445; 13 of 13 bench
+  probes; 79 of 79 figures through cfshoot; 120 figure views in six languages at laptop and phone size, none with
+  overflowing text or English fallbacks; crawl 786 pages, 0 failed (`docs/verify/gate3-routes.md`); Playwright 114
+  passed, 2 skipped (the untranslated-board pair, which has nothing left to show).
+- **Since gate 3 (driver):** the Lab tools drawer no longer squeezes a lesson's code on a wide screen (`f43d420`,
+  dock e2e at 1440 and 1920); PITCH, VIDEO, JUDGE-QA and DEVPOST-WRITEUP checked against the pages at 1920 x 1080 and
+  given the gate-3 numbers (`b015738`); the catalogue cards show each board, bench and drone as its figure
+  (`7f72ce5`, `scripts/figure-thumbs.mjs`, axe clean on the three index pages in light and dark). Before the gate:
+  the live Uno on the landing page (`ada2a24`), phone-sized figures without legend-less badges (`9898660`), the fly
+  range's notes clear of the touch sticks (`569b205`), the drone workshop's progress label (`257daa0`).
+- **Decided:** D1 (tracks). Amar: "Everything else looks fine." Jagrati (16:13): D2 confirmed; D4 keys stay
+  placeholders until the morning; Vultr, the Vercel env upload and Tiger not approved yet; D3 (devnet SOL) only with
+  phase 4, now skipped.
+- **Runs, all done** (scripts in `scripts/workflows/`, `git log` shows what each label pushed): phase 1 (gate 1
+  green at 19:21), wave A `wf_bde0e200-6a3` (9 labels, 20:17-21:27), wave B `wf_7b610548-7fb` (10 labels, from
+  22:30), its tail `wf_759ed985-c9a`, prose T1 `wf_0e06f30a-c43`, figure dictionaries T2a `wf_07ad23ac-e47`, prose T2
+  `wf_788dd7a3-f68` and UI strings `wf_c44031b5-93f` (every item in six languages), docs D `wf_d61de94b-466`, quizzes
+  `wf_78186578-fbd`, figure sweep `wf_7513ba0c-9cb`, the final pass `wf_c95e5cdf-cda` (Fable research, audits,
+  `docs/design/POLISH-SPEC.md`, builds, F-review's `docs/verify/ui-review.md`), review fixes `wf_62976d4a-988`, and
+  four figure-string deltas (`wf_7bcff872-581`, `wf_f8a79fd5-c38`, `wf_4259a342-6a9`, `wf_0e7f6757-d55`). Gate 2
+  02:20 (`docs/verify/gate2.md`), gate 3 06:11. No agent or workflow is running.
+- **Next step (Amar, when awake):**
+  1. Keys into `.env.local` (never committed): `META_API_KEY`, `SERPAPI_KEY`, optionally `DATABASE_URL` (Tiger, for
+     the leaderboard) and `NEXT_PUBLIC_REALTIME_URL` (the relay; `ws://127.0.0.1:43117/ws` for a local recording).
+  2. His OK for: the Vercel env upload and deploy, a relay host (Vultr) or the laptop relay, the Tiger database.
+  3. On the deployed (or local) build: `/api/status`, `node scripts/smoke-ai.mjs`, `node scripts/smoke-search.mjs`,
+     then JUDGE-QA's "Recheck before judging" and PITCH's "Confirm before pitching".
+  4. Video 08:30-10:00 from `docs/hacktx/VIDEO.md` (setup, shot list, clicks checked at gate 3). Devpost by 10:30
+     from `docs/hacktx/DEVPOST-WRITEUP.md`, filling its [BRACKETS]; Amar submits.
+  Optional, small, if someone has time: the robotics HUD verdict is English only (`benchStatus` fills English), the fr
+  and es level-shifter wording differs between figure and prose, the Pico's flash label style, the live HackTX
+  counter (`LiveCounter`) is not on a page, and a drone's bench empties on reload.
+- **Stopped (17:12):** an earlier wave in `/Users/amar/Codes/sim` was told to stop and not push. That clone is ahead
+  by unpushed `c3c61a7` and has uncommitted files. Leave both. Do not push them.
 
 ### Claims (only when both people work at the same time)
 
@@ -254,6 +139,9 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-25 06:18 CDT (Amar's session): gate 3 green in six languages (`d6a74aa`); drawer fix, docs checked
+  against the pages, catalogue pictures; next is Amar's morning list.
 
 - 2026-10-25 00:17 CDT (Amar's session): T2a done; collector rebuilt on acorn (`a516233`); R4 test and ids.ts fixed;
   wave B tail (driver requests, `wf_759ed985-c9a`) launched beside wave B's last three agents.
