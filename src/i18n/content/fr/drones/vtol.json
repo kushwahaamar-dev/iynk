@@ -1,0 +1,373 @@
+{
+  "title": "VTOL à rotors basculants",
+  "tagline": "Un QuadPlane à rotors basculants sous ArduPilot : il décolle comme un drone, bascule ses rotors avant vers l'avant et vole sur son aile, puis redescend en vol stationnaire pour se poser.",
+  "sub": "QuadPlane ArduPlane, tri à rotors basculants",
+  "hint": "Montez-le, testez les servos de basculement, puis volez le long de la côte et passez la main à l'aile",
+  "noun": "VTOL",
+  "overview": "Un avion VTOL (décollage et atterrissage verticaux) décolle et se pose comme un multirotor et vole comme un avion. Celui-ci est un QuadPlane tricoptère à rotors basculants : deux moteurs avant sont montés sur des nacelles qui basculent de la verticale, pour le vol stationnaire, à l'horizontale, pour la croisière, et un troisième moteur sur la poutre de queue ne sert qu'à porter. Une fois que l'aile porte le poids, les moteurs ne font plus que vaincre la traînée : il croise donc avec environ 5 A, là où le stationnaire en demande 15, soit plus d'une heure en l'air au lieu de 20 minutes. Le plus délicat, c'est la transition, ces quelques secondes où l'aile est encore trop lente pour porter alors que les rotors pointent déjà en partie vers l'avant. ArduPlane 4.7.2 s'en charge : il bascule les rotors à 45°, tient l'altitude sur eux jusqu'à ce que le capteur de vitesse air lise 12 m/s, puis passe la main à l'aile. C'est une cellule en mousse de 1,2 m sur une Matek H743-WING avec GPS, capteur de vitesse air et FPV analogique, environ 1,6 kg avec une batterie Li-ion de 8000 mAh. Les appareils de ce genre cartographient des champs et inspectent des côtes et des lignes électriques depuis des endroits sans piste. Choisissez les pièces et regardez les chiffres, montez-le, faites les vérifications au banc, puis volez le long de la côte.",
+  "practice": "Commencez en QHOVER et QLOITER : décollez, tenez le stationnaire, posez-vous sur la plateforme. Puis, en altitude et bien à l'écart de tout, passez en FBWA gaz en haut et regardez la vitesse air dépasser 12 m/s pendant que les rotors basculent et que l'aile prend le relais ; repassez en QHOVER pour ralentir et revenir en stationnaire. Volez ainsi le parcours de la côte, et laissez AUTO voler le relevé. Sur une vraie construction : un smoke stopper au premier branchement, le test des servos de basculement et la vérification du sens des moteurs sans hélices, le calibrage de l'accéléromètre et de la boussole, la vérification de la vitesse air, et chaque message de pré-armement lu. Faites la première transition à 30 m ou plus, face au vent, le pouce sur l'interrupteur pour revenir en QHOVER.",
+  "design": {
+    "fixed": {
+      "FRAME": "Fuselage en mousse, poutre de queue en carbone et patins d'atterrissage",
+      "WING": "Aile en mousse sur un longeron en carbone",
+      "TAIL": "Empennage en V et deux servos de ruddervators",
+      "TILT": "Deux servos de basculement à pignons métal et les nacelles",
+      "ESC": "Trois ESC de 40 A (AM32)",
+      "FC": "Contrôleur de vol Matek H743-WING et récepteur ELRS",
+      "GPS": "GPS M10 et boussole sur un mât",
+      "ARSPD": "Capteur de vitesse air ASPD-4525 et tube de Pitot",
+      "CAM": "Caméra FPV analogique et VTX de 800 mW",
+      "XT60": "Câble XT60 et condensateur de 1000 µF 35 V"
+    },
+    "verdict": {
+      "ok": "Les pièces vont ensemble : un rapport poussée/poids de {tw}:1 pour le décollage et l'atterrissage, environ 15 A en stationnaire et environ 5 A en croisière, une fois que l'aile porte le poids. Le temps de stationnaire suppose qu'il ne quitte jamais le stationnaire ; le temps de croisière, c'est ce que donne l'aile. Une vraie mission ne reste en stationnaire qu'une minute ou deux à chaque bout.",
+      "weak": "Un rapport poussée/poids de {tw}:1 est trop faible pour tenir le stationnaire en sécurité : un VTOL veut environ 2:1, 1,6:1 est le strict minimum, et le vent en demande davantage. Un moteur adapté à la batterie ou des hélices plus grandes règlent le problème.",
+      "over": "{kv} KV en {cells}S font tourner des hélices de cette taille bien trop vite : le moteur et son ESC de 40 A sont en surcharge et grillent en quelques secondes. Les moteurs de sustentation d'un VTOL sont gros et lents, environ 1000 KV en 4S ou 700 KV en 6S."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Fuselage en mousse, poutre et patins",
+      "what": "Une nacelle en mousse de 370 x 90 x 80 mm avec une trappe sur la soute avant, une poutre en carbone jusqu'à la queue et des patins en fil d'acier pour se poser. Le support du moteur de sustentation arrière se serre sur la poutre à 475 mm derrière les pivots de basculement avant, assez loin pour équilibrer la paire avant autour du CG."
+    },
+    "TAIL": {
+      "name": "Empennage en V",
+      "what": "Deux dérives à 35° au-dessus de l'horizontale, chacune avec un ruddervator sur son propre servo (S7, S8). Ensemble, ils font cabrer ou piquer l'avion ; en sens opposés, ils le font lacer ; ArduPilot mélange les deux. Ils ne pilotent qu'en vol vers l'avant : en stationnaire, ce sont les rotors qui pilotent."
+    },
+    "FC": {
+      "name": "Contrôleur de vol Matek H743-WING",
+      "what": "Une carte H743 de 54 x 36 mm sur un plateau dans la soute avant, flèche vers le nez, sous ArduPlane 4.7.2. Elle a 13 sorties, un capteur de courant, un OSD analogique et un BEC de 8 A pour les six servos. Le récepteur ELRS est posé à côté sur USART1, son antenne sortant par le flanc de la nacelle."
+    },
+    "XT60": {
+      "name": "Câble XT60 et condensateur",
+      "what": "Le câble de batterie va aux pastilles de batterie de la carte, rouge sur le plus, avec un condensateur low-ESR de 1000 µF 35 V entre elles, bande côté moins. Matek en demande un : le capteur de courant de la carte est sensible au bruit de découpage des ESC."
+    },
+    "GPS": {
+      "name": "GPS et boussole sur un mât",
+      "what": "Un GPS M10 avec boussole, sur un mât de 50 mm sur la poutre derrière l'aile, loin des courants de la batterie et des ESC qui fausseraient la boussole. QLOITER, QRTL et AUTO en ont tous besoin."
+    },
+    "CAM": {
+      "name": "Caméra FPV et VTX",
+      "what": "Une caméra analogique dans le nez, inclinée de 8° vers le haut, son image passant par l'OSD de la carte vers un VTX de 800 mW sur le pont arrière avec une antenne sucette. Un avion croise le nez à l'horizontale : il lui faut donc bien moins d'inclinaison qu'à un quad de course."
+    },
+    "WING": {
+      "name": "Aile",
+      "what": "1200 mm d'envergure et 195 mm de corde : 0,234 m² de mousse sur un longeron en carbone, avec un aileron sur chaque panneau extérieur (S9, S10). Il lui faut tout cela : une aile de 840 x 150 mm portant 1,6 kg décrocherait à 13 ou 14 m/s. Les repères de CG sont dessous, au quart de la corde en partant de l'avant."
+    },
+    "ARSPD": {
+      "name": "Capteur de vitesse air et Pitot",
+      "what": "Un tube de Pitot sous l'aile droite, sa pointe en avant du bord d'attaque et hors du souffle du rotor droit, relié par deux tubes en silicone à une carte MS4525DO en I2C. L'aile vole sur la vitesse air, pas sur la vitesse sol : ArduPilot s'en sert pour savoir quand l'aile peut porter le poids."
+    },
+    "TILT": {
+      "name": "Servos de basculement et nacelles",
+      "what": "Un servo à pignons métal sur chaque nacelle avant fait pivoter son moteur de la verticale (stationnaire) à l'horizontale (croisière), sur S1 et S2. Avec Q_TILT_TYPE 2, ils basculent aussi jusqu'à 10° en sens opposés pour le lacet en stationnaire : ce tri n'a donc pas besoin de servo de queue. Les deux se font face : l'un d'eux est donc inversé dans les paramètres."
+    },
+    "MOTORS": {
+      "name": "Trois moteurs 2810",
+      "what": "1000 KV en 4S. Le tri d'ArduPilot les appelle M1 avant droit, M2 avant gauche et M4 arrière ; il n'y a pas de M3. Vu de dessus, M1 tourne en sens horaire et M2 en sens antihoraire : la paire avant doit tourner en sens opposés, sinon chaque correction de roulis et de tangage le ferait aussi lacer. M4 pointe vers le haut, ne bascule jamais et s'arrête en croisière."
+    },
+    "ESC": {
+      "name": "Trois ESC de 40 A",
+      "what": "Un par moteur : deux sur les nacelles, un sur la poutre près du moteur arrière, en DShot600 depuis S3, S4 et S5. Les ESC 32 bits récents tournent sous AM32 (BLHeli_32 s'est arrêté en juin 2024). À plein gaz, le calculateur donne environ 39 A par moteur, juste sous la valeur nominale."
+    },
+    "WIRES": {
+      "name": "Fils des moteurs",
+      "what": "Les trois fils de phase de chaque moteur vont à son ESC. Sur les nacelles, ils traversent le pivot de basculement en formant une boucle lâche, pour plier sur une longueur et non en un seul point : une boucle serrée casse après quelques centaines de transitions et le moteur s'arrête en vol."
+    },
+    "BATT": {
+      "name": "Batterie Li-ion 4S2P",
+      "what": "Huit éléments 21700, 8000 mAh et 560 g, sur un tapis antidérapant sous une sangle, centrés sur les repères de CG. Le Li-ion stocke plus d'énergie par gramme que la LiPo mais fournit moins de courant et chute davantage : idéal pour un avion qui croise une heure, mauvais pour un drone de course."
+    },
+    "HATCH": {
+      "name": "Trappe avant",
+      "what": "Un couvercle en mousse avec un loquet sur la soute avant, où logent le contrôleur de vol, la carte de vitesse air et la batterie. Fermez-la avant de monter les hélices."
+    },
+    "PROPS": {
+      "name": "Hélices",
+      "what": "Des hélices bipales 9x5 : la paire avant tourne en sens opposés (M1 horaire, M2 antihoraire vu de dessus) et l'arrière correspond à M4. Elles se montent en dernier, après le smoke stopper, la vérification du sens des moteurs et le test de basculement."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Préparez le fuselage",
+      "body": "Collez la poutre dans la nacelle, posez les patins, le support de queue et le support du moteur arrière sur la poutre."
+    },
+    "tail": {
+      "title": "Posez l'empennage en V",
+      "body": "Glissez les deux dérives au bout de la poutre et reliez chaque ruddervator à son servo.",
+      "refusal": "L'empennage en V se pose au bout de la poutre : préparez d'abord le fuselage."
+    },
+    "fc": {
+      "title": "Montez le contrôleur de vol",
+      "body": "Sur le plateau de la soute avant, flèche vers le nez. Le récepteur ELRS se pose à côté, son antenne sortant par le flanc de la nacelle.",
+      "refusal": "Le contrôleur de vol va dans le fuselage : préparez-le d'abord."
+    },
+    "xt60": {
+      "title": "Soudez le XT60 et le condensateur",
+      "body": "Le câble de batterie sur les pastilles de batterie de la carte, rouge sur le plus, et le condensateur sur les mêmes pastilles, bande côté moins. La prise se retrouve derrière la soute de la batterie.",
+      "refusal": "Le câble de batterie se soude sur les pastilles du contrôleur de vol : montez-le d'abord."
+    },
+    "gps": {
+      "title": "Posez le mât du GPS",
+      "body": "Sur la poutre derrière l'aile, flèche vers l'avant. Son câble entre par l'arrière de la nacelle jusqu'au port GPS et aux pastilles I2C de la carte.",
+      "refusal": "Le GPS se câble sur le contrôleur de vol : montez-le d'abord."
+    },
+    "cam": {
+      "title": "Posez la caméra et le VTX",
+      "body": "La caméra dans le nez, inclinée de 8° vers le haut, le VTX sur le pont arrière, antenne vers le haut. La vidéo entre dans la carte, puis en ressort avec l'OSD vers le VTX.",
+      "refusal": "La caméra et le VTX se câblent sur le contrôleur de vol : montez-le d'abord."
+    },
+    "wing": {
+      "title": "Boulonnez l'aile",
+      "body": "Sur le dessus de la nacelle, d'équerre avec la poutre. Ses servos d'ailerons se branchent sur S9 et S10.",
+      "refusal": "L'aile se boulonne sur le fuselage : préparez-le d'abord."
+    },
+    "arspd": {
+      "title": "Posez le capteur de vitesse air",
+      "body": "Le Pitot sous l'aile droite, sa pointe en avant du bord d'attaque, hors du souffle du rotor droit. Ses deux tubes entrent dans la nacelle jusqu'à la carte 4525, et la carte va sur le bus I2C.",
+      "refusal": "Le Pitot pend sous l'aile et sa carte se câble sur le contrôleur de vol : posez d'abord les deux."
+    },
+    "tilt": {
+      "title": "Posez les servos de basculement",
+      "body": "Un sur chaque nacelle sous l'aile, son palonnier relié au support moteur. Branchez-les sur S1 et S2.",
+      "refusal": "Les nacelles pendent sous l'aile : boulonnez d'abord l'aile."
+    },
+    "motors": {
+      "title": "Montez les trois moteurs",
+      "body": "M1 avant droit et M2 avant gauche sur les supports basculants, M4 sur la poutre. La paire avant tourne en sens opposés : M1 horaire, M2 antihoraire vu de dessus.",
+      "refusal": "Les moteurs avant se boulonnent sur les supports basculants : posez d'abord les servos de basculement."
+    },
+    "esc": {
+      "title": "Posez les trois ESC",
+      "body": "Un à l'extérieur de chaque nacelle et un sur la poutre près du moteur arrière. L'alimentation vient des pastilles de batterie de la carte, les signaux de S3, S4 et S5.",
+      "refusal": "Deux des ESC sont montés sur les nacelles : posez d'abord les servos de basculement."
+    },
+    "wires": {
+      "title": "Soudez les fils des moteurs",
+      "body": "Chaque moteur à son ESC. Sur les nacelles, laissez une boucle lâche à travers le pivot, pour que les fils plient sur une longueur et non en un seul point.",
+      "refusal": "Posez les moteurs et les ESC avant les fils qui les relient."
+    },
+    "batt": {
+      "title": "Sanglez la batterie",
+      "body": "Sur un tapis antidérapant dans la soute sous l'aile, sous une sangle, centrée sur les repères de CG. Une fois l'appareil complet, il doit tenir à plat sur le bout de vos doigts posés sur les repères.",
+      "refusal": "La batterie se branche sur le XT60 : soudez-le d'abord."
+    },
+    "hatch": {
+      "title": "Fermez la trappe",
+      "body": "La trappe en mousse sur la soute avant, verrouillée, avec la batterie et la carte de vitesse air à l'intérieur.",
+      "refusal": "La trappe se ferme sur la batterie et la carte de vitesse air : posez d'abord les deux."
+    },
+    "props": {
+      "title": "Les hélices, en dernier",
+      "body": "La paire avant tourne en sens opposés, M1 horaire et M2 antihoraire, et l'hélice arrière correspond au sens horaire de M4. Seulement après le smoke stopper, la vérification du sens des moteurs et le test de basculement.",
+      "refusal": "Les hélices se montent sur les moteurs, après les servos de basculement et avec la trappe fermée : posez-les d'abord."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "Le XT60 de la batterie s'emboîte dans celui de l'appareil. Il a un détrompeur et n'entre donc que dans un sens, et c'est la batterie qui porte la prise femelle : une batterie débranchée ne peut pas faire de court-circuit.",
+    "XT60-ESC": "Les pastilles de batterie du contrôleur de vol alimentent les câbles des trois ESC : deux partent sous l'aile vers les nacelles, un repart le long de la poutre. Le condensateur est sur les mêmes pastilles.",
+    "ESC-MOTORS": "Trois fils de phase par moteur, en boucle lâche à travers chaque pivot de basculement. Leur ordre n'est pas une question de sécurité : en inverser deux inverse le moteur.",
+    "FC-ESC": "DShot600 sur S3, S4 et S5, un groupe de sorties qui ne fait que du DShot : Motor1 avant droit, Motor2 avant gauche, Motor4 sur la poutre.",
+    "FC-TILT": "Les servos de basculement sur S1 et S2, alimentés par le BEC servos de 8 A de la carte. Ils ont leur propre groupe de sorties : ils peuvent donc tourner à une fréquence de servo pendant que S3 à S6 font du DShot.",
+    "FC-TAIL": "Les deux servos de ruddervators sur S7 et S8 ; ArduPilot y mélange le tangage et le lacet.",
+    "FC-WING": "Les deux servos d'ailerons sur S9 et S10, tous deux réglés sur Aileron (fonction 4). Inversez-en un s'il bouge dans le mauvais sens.",
+    "GPS-FC": "Le GPS sur USART2, le port GPS de la carte, et sa boussole sur le bus I2C.",
+    "ARSPD-FC": "La carte de vitesse air 4525 en I2C (ARSPD_TYPE 1). Les deux tubes du Pitot vont sur ses deux ports : inversés, il lit 0 ou moins.",
+    "CAM-FC": "La vidéo de la caméra entre dans la carte, qui y superpose l'OSD, puis ressort vers le VTX sur le pont arrière, alimenté par le BEC 9/12 V. SmartAudio sur UART4 TX permet à l'OSD de changer de canal et de puissance."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Test au smoke stopper",
+      "pass": "La lampe n'a fait que clignoter : pas de court-circuit entre plus et moins. Vous pouvez brancher la batterie directement.",
+      "fail": "La lampe est restée allumée : quelque chose est en court-circuit. Ici, le condensateur est à l'envers ; retournez-le, bande côté moins, avant de brancher une batterie."
+    },
+    "motors": {
+      "title": "Vérification du sens des moteurs (sans hélices)",
+      "pass": "ArduPilot a fait tourner chaque moteur à son tour à bas régime : M1 avant droit en sens horaire, M2 avant gauche en sens antihoraire, M4 sur la poutre en sens horaire. L'ordre et les sens sont bons.",
+      "fail": "Un moteur a tourné dans le mauvais sens. Inversez deux de ses trois fils, ou inversez-le dans l'ESC (SERVO_BLH_RVMASK). La paire avant doit tourner en sens opposés."
+    },
+    "calibrate": {
+      "title": "Calibrage de l'accéléromètre",
+      "pass": "Six positions, puis à niveau, aile horizontale et fuselage dans son attitude de vol. QHOVER sait maintenant où est le haut.",
+      "fail": "Posez d'abord le contrôleur de vol. Si sa flèche pointe vers l'arrière, retournez-le ou réglez AHRS_ORIENTATION 4."
+    },
+    "tilt": {
+      "title": "Test des servos de basculement (sans hélices)",
+      "pass": "MANUAL a basculé les deux rotors vers l'avant, QSTABILIZE les a remis à la verticale à 25°/s, et un lacet à droite a envoyé le rotor gauche vers l'avant et le droit vers l'arrière. Les servos sont dans le bon sens.",
+      "fail": "Posez les servos de basculement et le contrôleur de vol, retirez les hélices et branchez d'abord. Si MANUAL bascule un rotor vers l'arrière, ce servo est inversé : changez son SERVOn_REVERSED, sinon la première transition fait cabrer le nez et le retourne par-dessus sa queue."
+    },
+    "airspeed": {
+      "title": "Vérification de la vitesse air",
+      "pass": "Souffler doucement dans le Pitot a fait monter la vitesse air, puis elle est retombée vers 0 : le capteur lit et les tubes sont sur les bons ports. Couvrez le Pitot pendant le démarrage de la carte : c'est à ce moment qu'elle met le capteur à zéro.",
+      "fail": "Posez le capteur de vitesse air et le contrôleur de vol et branchez d'abord. Avec les tubes inversés, il lit 0 ou moins ; un tube bouché ne lit rien du tout."
+    },
+    "prearm": {
+      "title": "Vérifications de pré-armement (sans hélices)",
+      "pass": "Toutes les vérifications sont passées et il s'est armé au banc, les moteurs au ralenti à Q_M_SPIN_ARM. Ne sautez jamais une vérification avec ARMING_SKIPCHK.",
+      "fail": "Posez le contrôleur de vol, le GPS et le capteur de vitesse air, hélices retirées, batterie branchée. Puis lisez chaque message PreArm : « 3D Accel calibration needed » signifie qu'il faut d'abord calibrer, « Q_ASSIST_SPEED is not set » signifie qu'il vaut 0."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "QuadPlane et rotors basculants",
+      "explain": "Q_ENABLE fait d'ArduPlane un QuadPlane, Q_FRAME_CLASS 7 fait de ses moteurs de sustentation un tri et Q_TILT_ENABLE ajoute le code des rotors basculants. Redémarrez après ces trois-là, sinon le pré-armement indique « tiltrotor setup not complete, reboot ». Q_TILT_TYPE 2, le lacet vectoriel, est ce qui permet à ce tri de lacer sans servo de queue. Attention aux noms des vitesses de basculement, faciles à intervertir : RATE_DN va du stationnaire à l'avant, RATE_UP de l'avant au stationnaire."
+    },
+    "outputs": {
+      "title": "Sorties",
+      "explain": "La H743-WING regroupe ses sorties, et toutes les sorties d'un groupe tournent à la même fréquence : les servos de basculement sur S1 et S2, les trois moteurs de sustentation sur S3 à S5 en DShot600, les ruddervators et les ailerons sur S7 à S10. Le tri d'ArduPilot utilise les moteurs 1, 2 et 4. Réglez l'inversion au banc, pour que MANUAL pointe les rotors vers l'avant et QSTABILIZE vers le haut."
+    },
+    "sensors": {
+      "title": "Carte, radio, GPS et vitesse air",
+      "explain": "Flèche vers le nez ; l'ELRS sur un UART complet en CRSF à 420 kbauds ; le GPS sur USART2 ; la carte de vitesse air 4525 en I2C, utilisée en vol ; et le capteur de courant de la carte elle-même, avec l'échelle que donne Matek pour la WING V3."
+    },
+    "speeds": {
+      "title": "Vitesses air et transition",
+      "explain": "Tout en m/s depuis la 4.5. AIRSPEED_MIN se place environ 20 % au-dessus du décrochage, et Q_ASSIST_SPEED 3 m/s en dessous, pour que les rotors rattrapent un virage lent avant le décrochage ; à 0, il refuse de s'armer. Si une transition n'a pas atteint AIRSPEED_MIN au bout de 15 s, elle est annulée et l'appareil rentre en QRTL."
+    },
+    "failsafe": {
+      "title": "Failsafes",
+      "explain": "Une liaison perdue pendant 5 s dans un mode avion déclenche le RTL, qui se termine par un atterrissage vertical près du point de départ ; dans les modes Q, une liaison perdue déclenche aussitôt le QLAND. Deux paliers de batterie : RTL à 3,3 V par élément et QLAND à 3,1 V. Le Li-ion descend plus bas que la LiPo : ces seuils sont donc plus bas que sur un appareil à LiPo."
+    },
+    "osd": {
+      "title": "OSD et VTX",
+      "explain": "L'OSD intégré superpose la batterie, la vitesse air et le mode à l'image de la caméra. Le VTX démarre à 25 mW au banc ; n'augmentez VTX_POWER que là où la loi le permet."
+    },
+    "qhover": {
+      "title": "QHOVER",
+      "explain": "Stationnaire avec maintien d'altitude : gaz au centre, il garde son altitude, le manche droit l'incline jusqu'à 30°. Il dérive avec le vent. Chaque vol commence et finit ici."
+    },
+    "qloiter": {
+      "title": "QLOITER",
+      "explain": "QHOVER plus le maintien de position GPS : lâchez les manches et il s'arrête là où il est. Utilisez-le pour les premiers stationnaires et pour vous aligner avant un atterrissage."
+    },
+    "fbwa": {
+      "title": "La transition : FBWA",
+      "explain": "Passez d'un mode Q à FBWA et la transition commence : les rotors basculent à 45° et il accélère porté par eux ; au-delà d'AIRSPEED_MIN, l'aile prend le poids, les rotors finissent de basculer et le moteur arrière s'arrête. Ensuite, les manches inclinent et font cabrer ou piquer l'avion, jusqu'à 45° et 20°, et les gaz règlent la vitesse. Passez dans un mode Q pour revenir en stationnaire."
+    },
+    "qrtl": {
+      "title": "QRTL",
+      "explain": "QRTL rentre au point de départ à Q_RTL_ALT et se pose verticalement. Avec Q_RTL_MODE 1, un simple RTL rentre en avion et se transforme en QRTL près du point de départ. RTL_AUTOLAND doit alors rester à 0, sinon la carte refuse de s'armer."
+    },
+    "auto": {
+      "title": "AUTO : le relevé de la côte",
+      "explain": "AUTO vole la mission téléversée : un décollage vertical, les trois points photo et un atterrissage vertical sur la plateforme du village. Un DO_VTOL_TRANSITION 3 après le décollage garde les étapes photo en vol VTOL pour qu'il puisse s'arrêter au-dessus de chaque point ; sans lui, Plane ferait la transition et volerait les waypoints sur l'aile. Armez dans un mode Q, puis passez en AUTO."
+    }
+  },
+  "flight": {
+    "modes": {
+      "qhover": {
+        "title": "QHOVER",
+        "hint": "Stationnaire avec maintien d'altitude, inclinaison jusqu'à 30°. Commencez ici."
+      },
+      "qloiter": {
+        "title": "QLOITER",
+        "hint": "Stationnaire avec maintien de position GPS : lâchez et il s'arrête."
+      },
+      "fbwa": {
+        "title": "FBWA (transition)",
+        "hint": "Depuis le stationnaire, les rotors basculent vers l'avant et il accélère ; au-delà de 12 m/s, l'aile prend le relais. Gardez les gaz en haut : en FBWA, ils règlent la vitesse. Passez dans un mode Q pour revenir en stationnaire."
+      },
+      "qrtl": {
+        "title": "QRTL",
+        "hint": "Rentre à 15 m et se pose verticalement sur la plateforme."
+      },
+      "auto": {
+        "title": "AUTO (relevé de la côte)",
+        "hint": "Vole le relevé tout seul : décollage, trois points photo, atterrissage sur la plateforme du village."
+      }
+    },
+    "failsafes": {
+      "rx-loss-q": "Liaison perdue dans un mode Q : il se pose là où il est (QLAND).",
+      "rx-loss": "Liaison perdue pendant 5 s dans un mode avion : RTL, retour en avion, puis descente en multirotor (QRTL).",
+      "transition": "Pas d'AIRSPEED_MIN 15 s après le début d'une transition : il abandonne et rentre en QRTL.",
+      "low-battery": "Sous 13,2 V (3,3 V par élément) : RTL.",
+      "battery-critical": "Sous 12,4 V (3,1 V par élément) : QLAND là où il est."
+    },
+    "controls": "Clavier : Espace arme et désarme, W et S (Z et S en AZERTY) font monter et descendre dans les modes Q et règlent les gaz en FBWA, les flèches l'inclinent (en FBWA, elles inclinent l'avion et le font cabrer ou piquer), A et D (Q et D en AZERTY) pour le lacet, V passe en vue FPV, R le replace sur la plateforme. Sur téléphone, le manche gauche gère les gaz et le lacet, le manche droit le tangage et le roulis. Une manette fonctionne en Mode 2."
+  },
+  "courses": {
+    "coast": {
+      "title": "Parcours de la côte",
+      "brief": "Décollez de la plateforme du champ, contournez le phare côté mer, passez au-dessus de la bouée, passez au nord de l'antenne radio sur la colline, puis posez-vous sur la plateforme de la place du village. QHOVER suffit pour faire le tour ; le plus rapide est une transition en FBWA pour les longues étapes et un retour en QHOVER avant la plateforme.",
+      "goals": {
+        "1": "Le phare, côté mer",
+        "2": "Au-dessus de la bouée",
+        "3": "L'antenne radio, côté nord",
+        "4": "Posez-vous sur la plateforme du village"
+      }
+    },
+    "survey": {
+      "title": "Relevé de la côte (AUTO)",
+      "brief": "La même côte en mission : un décollage vertical à 12 m, un arrêt photo de 2 s au phare, à la bouée et à l'antenne radio, puis un atterrissage vertical sur la plateforme du village. Passez en AUTO et regardez, ou volez-le vous-même et battez le pilote automatique.",
+      "goals": {
+        "1": "Décollez à 12 m",
+        "2": "Photo : le phare",
+        "3": "Photo : la bouée",
+        "4": "Photo : l'antenne radio",
+        "5": "Posez-vous sur la plateforme du village"
+      }
+    }
+  },
+  "quizzes": {
+    "tilt": {
+      "manual": {
+        "q": "Au banc, dans quel sens MANUAL et QSTABILIZE doivent-ils pointer les rotors ?",
+        "options": {
+          "1": "Tous les deux vers le haut : les rotors ne bougent qu'en vol",
+          "2": "MANUAL vers l'avant, QSTABILIZE vers le haut",
+          "3": "MANUAL vers le haut, QSTABILIZE vers l'avant"
+        },
+        "why": "MANUAL est un mode avion : les rotors basculent donc vers l'avant ; QSTABILIZE est un mode stationnaire : ils pointent donc vers le haut. Si MANUAL bascule un rotor vers l'arrière, ce servo est inversé, et la première transition retournerait l'appareil par-dessus sa queue."
+      },
+      "yaw": {
+        "q": "Ce tri n'a pas de servo de queue. Comment tourne-t-il le nez en stationnaire ?",
+        "options": {
+          "1": "Le couple du moteur arrière le fait tourner",
+          "2": "Les ruddervators le dirigent dans le souffle des hélices",
+          "3": "Les rotors avant basculent un peu en sens opposés"
+        },
+        "why": "Q_TILT_TYPE 2, le lacet vectoriel : un rotor avant bascule vers l'avant et l'autre vers l'arrière, jusqu'à Q_TILT_YAW_ANGLE, et la paire fait pivoter le nez. Le moteur arrière ne fait que porter, et les gouvernes de queue ne dirigent qu'une fois qu'il vole assez vite."
+      }
+    },
+    "airspeed": {
+      "why": {
+        "q": "Pourquoi un QuadPlane a-t-il besoin d'un capteur de vitesse air alors qu'il a un GPS ?",
+        "options": {
+          "1": "L'aile porte grâce à l'air qui passe sur elle, ce que le GPS ne voit pas quand il y a du vent",
+          "2": "Le GPS ne peut pas mesurer la vitesse",
+          "3": "Seulement pour afficher la vitesse sur l'OSD"
+        },
+        "why": "Le GPS donne la vitesse par rapport au sol. Face à un vent de 6 m/s, 6 m/s par rapport au sol font 12 m/s d'air sur l'aile ; vent arrière, cela ne fait rien du tout. ArduPilot termine une transition d'après la vitesse air : une mesure fausse passe la main à une aile qui décroche, ou ne passe jamais la main."
+      }
+    },
+    "fly": {
+      "transition": {
+        "q": "Vous passez de QHOVER à FBWA. Quand les rotors finissent-ils de basculer vers l'avant ?",
+        "options": {
+          "1": "Tout de suite, d'un seul coup",
+          "2": "Une fois que la vitesse air dépasse AIRSPEED_MIN",
+          "3": "Au bout de 5 secondes fixes"
+        },
+        "why": "Ils basculent à Q_TILT_MAX (45°) et y restent, en portant toujours, pendant qu'il accélère. Ce n'est que quand la vitesse air atteint AIRSPEED_MIN que leur portance diminue progressivement sur Q_TRANSITION_MS pendant qu'ils finissent de basculer. MANUAL fait exception : il les bascule vers l'avant d'un coup, ce qui fait décrocher un appareil lent."
+      },
+      "assist": {
+        "q": "Que fait Q_ASSIST_SPEED 9 ?",
+        "options": {
+          "1": "Sous 9 m/s de vitesse air dans un mode avion, les moteurs de sustentation aident l'aile",
+          "2": "Il limite la vitesse en stationnaire à 9 m/s",
+          "3": "Il règle la rapidité de la transition"
+        },
+        "why": "C'est le filet de sécurité pour un virage lent ou une rafale : sous 9 m/s, les moteurs VTOL accélèrent et soutiennent l'appareil. Réglez-le 3 m/s sous AIRSPEED_MIN ; à 0, le pré-armement refuse avec « Q_ASSIST_SPEED is not set »."
+      },
+      "motorout": {
+        "q": "Un moteur avant s'arrête en stationnaire. Que se passe-t-il ?",
+        "options": {
+          "1": "Les deux autres le gardent à plat et il se pose",
+          "2": "Il passe en mode avion et plane",
+          "3": "Il tombe : un tri n'a pas de moteur de réserve en stationnaire"
+        },
+        "why": "Avec trois moteurs, chacun est nécessaire pour équilibrer le roulis, le tangage et le lacet. En croisière, l'aile le porte : il peut donc planer ou voler sur l'autre moteur avant, mais en stationnaire, il n'y a pas de parade. Restez en stationnaire le moins possible, et vérifiez les fils aux pivots."
+      }
+    }
+  }
+}
