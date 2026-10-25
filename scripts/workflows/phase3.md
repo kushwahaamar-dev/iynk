@@ -71,7 +71,7 @@ share a file). Three jobs, the T1 translation rules apply to all:
    entry as it is. Same rules as T2a (the notes at the top of your file's commit history): placeholders in braces
    stay, a part reference before the dot stays (`R18 · …`), silkscreen text printed on a board stays as printed,
    CLI and log lines keep their commands and values, button names match your prose.
-3. **Consistency.** Where T2a's report noted that a UI string and the figure name the same control differently
+3. **Consistency.** `docs/requests/P3-figs-notes.md` has T2a's notes for your language. that a UI string and the figure name the same control differently
    (e.g. es "Móntalo por mí" in the figure, English in `dronelab.json`), make the UI match the figure and the prose.
 
 Done when `npx vitest run src/i18n` passes and no leaf of yours equals English unless it should.
