@@ -47,8 +47,9 @@ export function ScrollRow({ label, className, children, "data-testid": testId }:
       data-more={more || undefined}
       data-testid={testId}
       className={cx(
-        // The fade would mask the focus ring, so a focused row drops it.
-        "flex shrink-0 flex-nowrap items-center gap-1.5 overflow-x-auto [scrollbar-width:none] data-more:not-focus-visible:[mask-image:linear-gradient(to_right,#000_calc(100%-3rem),transparent)] [&::-webkit-scrollbar]:hidden",
+        // Positioned, so its visually hidden labels (absolute) sit inside it and don't widen the page by the
+        // scrolled-off width. The fade would mask the focus ring, so a focused row drops it.
+        "relative flex shrink-0 flex-nowrap items-center gap-1.5 overflow-x-auto [scrollbar-width:none] data-more:not-focus-visible:[mask-image:linear-gradient(to_right,#000_calc(100%-3rem),transparent)] [&::-webkit-scrollbar]:hidden",
         className,
       )}
     >

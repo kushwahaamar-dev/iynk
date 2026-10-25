@@ -163,6 +163,26 @@ test.describe("Board Lab", () => {
     await expectNoAxeViolations(page);
   });
 
+  test.describe("on a phone", () => {
+    test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+
+    // The stage rows scroll sideways inside themselves; their visually hidden labels must not widen the page.
+    test("the board page and a lesson don't scroll sideways", async ({ page }) => {
+      for (const path of ["/en/boards/uno-r3", "/en/boards/uno-r3/blink"]) {
+        await page.goto(path);
+        await expect(main(page).getByTestId("figure-readout")).toBeVisible({ timeout: 15_000 });
+        const { sw, cw } = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
+        expect(sw, path).toBe(cw);
+      }
+    });
+
+    test("the serial monitor's resize handle is a 44 px target", async ({ page }) => {
+      await openBlink(page);
+      const box = await main(page).getByRole("button", { name: boardlab.serial.resize }).boundingBox();
+      expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+    });
+  });
+
   test("an unknown board or lesson is a 404", async ({ page }) => {
     const board = await page.goto("/en/boards/not-a-board");
     expect(board?.status()).toBe(404);

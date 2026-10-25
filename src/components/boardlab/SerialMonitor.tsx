@@ -174,10 +174,10 @@ export function SerialMonitor({ store, onStop }: { store: BoardLabStore; onStop:
           ))
         )}
       </div>
-      {/* A 24 px bar with a 44 px hit area around it (the ::before). */}
+      {/* A small bar in a 44 px tall button; the negative margins give back the section's gaps around it. */}
       <button
         type="button"
-        className="relative -my-1 flex h-6 w-full shrink-0 cursor-ns-resize touch-none items-center justify-center before:absolute before:inset-x-0 before:-inset-y-2.5 lg:hidden"
+        className="-my-2 flex h-11 w-full shrink-0 cursor-ns-resize touch-none items-center justify-center lg:hidden"
         aria-label={t("serial.resize")}
         title={t("serial.resize")}
         onKeyDown={onGripKey}
