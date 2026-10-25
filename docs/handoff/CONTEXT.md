@@ -170,6 +170,8 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   the 8–10 guideline after the 14:19 usage-limit stop. Wave A holds what wave B builds on (engine requests, sensor
   module figures, the flight registry, the mat parts). Every shared file has one owner per wave; new UI keys carry
   English in the other locales and are listed for phase 3. Asked Amar for the go and the wave size before launching.
+- **10-24 19:29, Amar.** Phase 2 start: "Launch wave A, 9 agents (Recommended)". Wave A runs as a workflow from
+  `scripts/workflows/phase2-wave-a.js`; wave B waits for his next go.
 
 ## 6. Lessons learned (apply them)
 
