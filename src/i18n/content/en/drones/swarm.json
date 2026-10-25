@@ -1,7 +1,7 @@
 {
   "title": "Crazyflie swarm drone",
   "tagline": "A 29 g Crazyflie you program in Python: Lighthouse and Flow decks, one Crazyradio, and three more like it flying a light-show star.",
-  "sub": "Crazyflie 2.1+ + cflib + Lighthouse",
+  "sub": "Crazyflie 2.1+, cflib and Lighthouse",
   "hint": "Build a Crazyflie, check its decks and its radio link, then fly a four-drone light show",
   "noun": "Crazyflie",
   "overview": "A Crazyflie is a 29 g quadcopter you program rather than fly. Its 92 mm circuit board is the frame and the flight controller in one, with four coreless motors switched straight from the board and two pin headers for expansion decks. A Flow deck underneath watches the floor and measures the height; a Lighthouse deck on top times the laser sweeps of two base stations and knows where the drone is in the room to a few centimetres. A Python script on a laptop talks to it through a Crazyradio with cflib, and the same radio talks to a whole swarm, each drone on its own address. This one leads four drones through a light show: a five-point star at 0.8 m/s, each drone in its own corner of a 0.6 m square, its LEDs changing colour at every point. Pick the parts, build it, check the motors, the radio link, the decks and the link-loss failsafe, then fly the show by hand or let the high-level commander fly it.",
@@ -290,7 +290,7 @@
           "2": "It doesn't fit the Molex socket",
           "3": "The radio range drops"
         },
-        "why": "The cell adds 5.4 g over the 250 mAh one and the motors make no more thrust. Below about 1.65:1 the controller runs out of room to correct, and drones drift out of formation. Bitcraze doesn't make a 450 mAh pack, and a generic one barely fits between the headers."
+        "why": "The cell adds 5.4 g over the 250 mAh one and the motors make no more thrust. Below about 1.65:1 the controller runs out of room to correct, and drones drift out of formation. Bitcraze doesn't make a 450 mAh pack, and a generic one may not fit between the headers."
       }
     }
   }
