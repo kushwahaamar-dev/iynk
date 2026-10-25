@@ -1,0 +1,721 @@
+{
+  "title": "ESP32-S3-DevKitC-1",
+  "tagline": "Wi-Fi、低功耗蓝牙和两个 240 MHz 核心，装在一块 3.3 V 的面包板开发板上",
+  "overview": "乐鑫官方的 ESP32-S3 开发板：一块 ESP32-S3-WROOM-1 模组（240 MHz 的双核 Xtensa LX7、512 KB SRAM、8 MB 闪存、8 MB PSRAM、Wi-Fi 和低功耗蓝牙 5）装在一块 25.4 x 62.7 mm、带两个 Micro-USB 口的板子上。UART 口经过一颗 CP2102N 桥接到 UART0，默认情况下上传和 Serial 都走这里；USB 口则是芯片自己在 GPIO19/20 上的全速 USB。一颗 SGM2212 稳压器从 USB 产生 3.3 V，红色的 D5 表示 3.3 V 已经建立，一颗可寻址 RGB LED 接在 GPIO38 上（老款 v1.0 上是 GPIO48）。所有 GPIO 都只能用 3.3 V：千万不要给它 5 V。",
+  "variants": {
+    "v1-1": "当前版本（PCB 2022-04）。RGB LED 的数据线是 GPIO38，丝印写着 RGB@IO38。Arduino 的通用 \"ESP32S3 Dev Module\" 仍然把 RGB_BUILTIN 映射到 GPIO48，所以要自己写 38 号引脚。",
+    "v1-0": "第一版（2021）。RGB LED 的数据线是 GPIO48（丝印 RGB@IO48）。在使用 1.8 V PSRAM 的模组上，GPIO48 工作在 1.8 V，对 LED 来说太低了，所以乐鑫在 v1.1 里把它挪到了 GPIO38。其他都一样。"
+  },
+  "mcu": {
+    "cp2102n": "UART 口后面的芯科（Silicon Labs）USB 转 UART 桥。它是 Serial 和 ROM 引导程序使用的 UART0，它的 DTR/RTS 线在每次上传时把芯片复位到下载模式。"
+  },
+  "power": {
+    "uart": {
+      "protection": "来自 USB 主机的 5 V 经过 1N5819 肖特基二极管 D1（约 0.35 V 压降），VBUS 上还有一颗 ESD 二极管。Micro-USB 插头有防呆设计，插不反。板上没有保险丝：靠主机端口自己的限流（USB 2.0 上为 500 mA）来保护。"
+    },
+    "usb": {
+      "protection": "和 UART 口一样，经过 D7。两根线可以同时插上：两颗肖特基二极管分担负载，永远不会让一台电脑给另一台供电。"
+    },
+    "pin5": {
+      "protection": "没有保护。5V 引脚位于肖特基二极管之后，所以接反的电源会让稳压器的输入变成负电压并把它烧掉。SGM2212 能承受最高 20 V，但高于 5 V 时它会把差值变成热量。千万不要同时从 5V 引脚和 3V3 引脚供电。"
+    },
+    "pin3": {
+      "protection": "没有保护。3V3 引脚经过 0 Ω 的 R24 直接连到模组，并会反灌稳压器的输出。让它保持在 3.0 到 3.6 V 之间：这里接 5 V 会毁掉 ESP32-S3。"
+    },
+    "rails": {
+      "5v": "VCC_5V：USB 的 5 V 减去肖特基二极管压降，约 4.6 V。它给稳压器和 5V 引脚供电。",
+      "vcc-3v3": "稳压器的 3.3 V 输出：CP2102N、RGB LED 和红色的 D5 都由它供电。",
+      "3v3": "模组和两个 3V3 引脚，通过 0 Ω 的 R24 连到稳压器。"
+    },
+    "io": "所有 GPIO 都是 3.3 V 的，没有一个能承受 5 V。在默认驱动强度下，一个引脚能输出约 20 mA，最多 40 mA；整块板子受限于 800 mA 的稳压器和 USB 口。"
+  },
+  "pins": {
+    "j1": {
+      "1": "稳压器输出的 3.3 V（最多约 800 mA 减去板子自身的用量），或者在没有 USB 时作为 3.3 V 输入。",
+      "3": "EN（CHIP_PU）。由 R5（10 kΩ）上拉，C6 上有 1 µF 的延时电容。把它拉低会让芯片保持复位；RESET 按钮的作用一样。",
+      "4": "课程里用来接 LED（配 330 Ω）。ADC1 通道，Wi-Fi 打开时也能用，还是一个触摸焊盘。",
+      "12": "Arduino 默认的 I2C SDA（Wire.begin(8, 9)）。",
+      "13": "启动配置引脚（JTAG 信号源选择）。复位时让它悬空。",
+      "14": "启动配置引脚。要进入下载模式，复位时它必须为低；上传时千万不要把它拉高。",
+      "21": "VCC_5V：经过肖特基二极管后由 USB 输出约 4.6 V，或者作为没有保护的 5 V 输入。"
+    },
+    "j3": {
+      "2": "UART0 TX，连到 CP2102N。Serial 的打印从这里出来；别占用它。",
+      "3": "来自 CP2102N 的 UART0 RX。上传从这里进来；别占用它。",
+      "10": "在 v1.1 上驱动 RGB LED（WS2812 数据）。可以当 GPIO 用，但 LED 会有反应。",
+      "11": "排针上印着 GPIO37，但在这块 N8R8 模组上它连到了八线 PSRAM。使用它会让板子崩溃。",
+      "12": "排针上印着 GPIO36，但在这块 N8R8 模组上它连到了八线 PSRAM。使用它会让板子崩溃。",
+      "13": "排针上印着 GPIO35，但在这块 N8R8 模组上它连到了八线 PSRAM。使用它会让板子崩溃。",
+      "14": "启动配置引脚，BOOT 按钮把它接到 GND。复位时为高会启动你的程序，为低则进入下载模式。启动后可以放心地当按钮读取。",
+      "15": "启动配置引脚（闪存电压选择）。复位时让它保持为低或悬空。",
+      "16": "仅在 v1.0 板上是 RGB LED 的数据线。在使用 1.8 V PSRAM 的模组上工作在 1.8 V。",
+      "17": "在使用 1.8 V PSRAM 的模组上工作在 1.8 V；在这块 N8R8 上是 3.3 V。",
+      "19": "USB 口的 USB D+。把它当 GPIO 用会断掉原生 USB 连接。",
+      "20": "USB 口的 USB D−。把它当 GPIO 用会断掉原生 USB 连接。"
+    }
+  },
+  "leds": {
+    "D5": "红色电源灯，经过 5.1 kΩ（约 0.25 mA）接在 3.3 V 电源轨上。只要 3.3 V 建立它就亮，任何代码都关不掉它。",
+    "D6": "SK68XXMINI-HS 可寻址 RGB LED（WS2812 协议，一根数据线传 24 位颜色），经过 0 Ω 的 R17 接在 GPIO38 上。用 rgbLedWrite(38, r, g, b) 驱动它。",
+    "D6-v1-0": "SK68XXMINI-HS 可寻址 RGB LED，经过 R17 接在 GPIO48 上（v1.0）。用 rgbLedWrite(48, r, g, b) 驱动它。"
+  },
+  "controls": {
+    "SW1": "BOOT 把 GPIO0 拉到 GND。按住它的同时按下并松开 RESET，就能进入 ROM 下载模式；启动之后它是一个普通按钮，按下时读到 LOW。",
+    "SW2": "RESET 把 EN 拉低。松开后芯片从 ROM 重新启动：启动日志再次打印，setup() 从头运行。"
+  },
+  "parts": {
+    "U4": {
+      "name": "ESP32-S3-WROOM-1-N8R8 模组",
+      "what": "一个屏蔽罩下的整台电脑：ESP32-S3（两个 LX7 核心、Wi-Fi、BLE），同一封装里有 8 MB 八线 PSRAM，另有一颗 8 MB 闪存芯片和一颗 40 MHz 晶振。锯齿形天线伸出板边：让金属和手指远离它。"
+    },
+    "U3": {
+      "name": "CP2102N USB 转 UART 桥",
+      "what": "把 UART 口的 USB 变成 UART0 的串口，并驱动 Q1/Q2，让 esptool 能把芯片复位到下载模式。没有它，电脑在 UART 接口上看不到任何串口。"
+    },
+    "U2": {
+      "name": "SGM2212 3.3 V 稳压器",
+      "what": "SOT-223 封装的低压差稳压器：输入 5 V，输出 3.3 V，最大 800 mA，输入最高 20 V。约 350 mA 的 Wi-Fi 突发电流都从它这里过。"
+    },
+    "D6": {
+      "name": "SK68XXMINI-HS RGB LED",
+      "what": "3.5 mm 封装里有三颗 LED 芯片和一颗驱动 IC。一根数据线就能设定任何颜色；机器人上整条状态灯带用的也是同样的协议。"
+    },
+    "D5": {
+      "name": "红色电源灯 D5",
+      "what": "硬连线到 3.3 V。即使在深度睡眠时它也要耗掉零点几毫安；在电池供电的机器人上，大家会把它拆掉。"
+    },
+    "SW1": {
+      "name": "BOOT 按钮 SW1",
+      "what": "GPIO0 接 GND。救砖按钮：按住 BOOT，按一下 RESET，芯片就会在下载模式中等待 esptool。"
+    },
+    "SW2": {
+      "name": "RESET 按钮 SW2",
+      "what": "EN 接 GND。重启芯片，你的程序从 setup() 重新开始。"
+    },
+    "J2": {
+      "name": "Micro-USB 口 UART",
+      "what": "连到 CP2102N。拿不准时就用它：无论你的程序对原生 USB 做了什么，上传和 Serial 都能工作。"
+    },
+    "J4": {
+      "name": "Micro-USB 口 USB",
+      "what": "ESP32-S3 自己在 GPIO19/20 上的 USB。它在电脑上显示为 USB JTAG/serial debug unit，程序还能把它变成键盘、MIDI 设备或磁盘。"
+    },
+    "J1": {
+      "name": "排针 J1",
+      "what": "左边的 22 个引脚：3V3、RST、GPIO4-18 以及 3、46、5V 和 G。从下面焊接，这样板子就能插进面包板。"
+    },
+    "J3": {
+      "name": "排针 J3",
+      "what": "右边的 22 个引脚：TX、RX、GPIO0-2、19-21、35-48 和三个地。"
+    },
+    "Q1": {
+      "name": "自动复位晶体管 Q1",
+      "what": "让 CP2102N 的 DTR 线经过 R8 把 EN 拉低。和 Q2 一起，它让上传不用动手。"
+    },
+    "Q2": {
+      "name": "自动启动晶体管 Q2",
+      "what": "让 CP2102N 的 RTS 线经过 R13 把 GPIO0 拉低，这样芯片醒来时就处于下载模式。"
+    },
+    "D1": {
+      "name": "肖特基二极管 D1",
+      "what": "1N5819：把 UART 口的 5 V 送到板子的 5 V 电源轨上，并阻止电流倒灌回那台电脑。"
+    },
+    "D7": {
+      "name": "肖特基二极管 D7",
+      "what": "1N5819：为 USB 口做同样的事。"
+    },
+    "esd": {
+      "what": "LESD5D5.0 二极管，在静电火花到达芯片之前，把 USB 线上的静电钳位到地。"
+    },
+    "D2": {
+      "name": "ESD 二极管 D2（UART VBUS）"
+    },
+    "D3": {
+      "name": "ESD 二极管 D3（UART D−）"
+    },
+    "D4": {
+      "name": "ESD 二极管 D4（UART D+）"
+    },
+    "D8": {
+      "name": "ESD 二极管 D8（USB VBUS）"
+    },
+    "D9": {
+      "name": "ESD 二极管 D9（USB D−，GPIO19）"
+    },
+    "D10": {
+      "name": "ESD 二极管 D10（USB D+，GPIO20）"
+    },
+    "C3": {
+      "name": "电容 C3，10 µF",
+      "what": "插上线或 Wi-Fi 打开时撑住 5 V 电源轨。"
+    },
+    "ldo-caps": {
+      "what": "稳压器保持稳定所需的输入和输出电容：10 µF 应对突发电流，100 nF 应对快速噪声。"
+    },
+    "C7": {
+      "name": "电容 C7，10 µF（稳压器输入）"
+    },
+    "C8": {
+      "name": "电容 C8，100 nF（稳压器输入）"
+    },
+    "C9": {
+      "name": "电容 C9，100 nF（稳压器输出）"
+    },
+    "C10": {
+      "name": "电容 C10，10 µF（稳压器输出）"
+    },
+    "C1": {
+      "name": "电容 C1，10 µF",
+      "what": "模组在 3.3 V 上的储能电容：Wi-Fi 发射时会吸取约 350 mA 的突发电流。"
+    },
+    "C2": {
+      "name": "电容 C2，100 nF",
+      "what": "紧挨着模组的 3.3 V 快速去耦。"
+    },
+    "R24": {
+      "name": "R24，0 Ω 跳线电阻",
+      "what": "把稳压器的 3.3 V 连到模组和 3V3 引脚。拆起它就能测量模组的电流；拿掉它，模组就没电了，而 D5 仍然亮着。"
+    },
+    "R5": {
+      "name": "R5，10 kΩ EN 上拉电阻",
+      "what": "让 EN 保持为高，芯片才能运行。没有它，EN 悬空，芯片无法启动。"
+    },
+    "C6": {
+      "name": "C6，1 µF EN 电容",
+      "what": "和 R5 一起把 EN 延迟约 10 ms，这样芯片在 3.3 V 稳定之后才启动。"
+    },
+    "R11": {
+      "name": "R11，5.1 kΩ",
+      "what": "把电源灯限制在约四分之一毫安。"
+    },
+    "R17": {
+      "name": "R17，接 RGB LED 的 0 Ω 跳线电阻",
+      "what": "数据引脚和 RGB LED 之间唯一的连接。拿掉这一个小元件，无论代码怎么写，LED 都不亮。"
+    },
+    "autoprog": {
+      "what": "CP2102N 的 DTR/RTS 线和 EN/GPIO0 之间那个双晶体管自动下载电路的一部分。"
+    },
+    "R8": {
+      "name": "R8，0 Ω（Q1 到 EN）"
+    },
+    "R13": {
+      "name": "R13，0 Ω（Q2 到 GPIO0）"
+    },
+    "R10": {
+      "name": "R10，10 kΩ（DTR 到 Q1 基极）"
+    },
+    "R12": {
+      "name": "R12，10 kΩ（RTS 到 Q2 基极）"
+    },
+    "uart-links": {
+      "what": "CP2102N 和 UART0 之间串口线上的 0 Ω 跳线电阻。拿掉它，通过 UART 口上传就会失败。"
+    },
+    "R7": {
+      "name": "R7，0 Ω（CP2102N TXD 到 RX）"
+    },
+    "R9": {
+      "name": "R9，0 Ω（TX 到 CP2102N RXD）"
+    },
+    "vbus-sense": {
+      "what": "告诉 CP2102N 有 USB 主机存在的分压器。"
+    },
+    "R19": {
+      "name": "R19，22.1 kΩ（VBUS 检测）"
+    },
+    "R18": {
+      "name": "R18，47.5 kΩ（VBUS 检测）"
+    },
+    "C12": {
+      "name": "C12，1 µF（VBUS 检测）"
+    },
+    "R16": {
+      "name": "R16，1 kΩ",
+      "what": "CP2102N 复位引脚上的上拉电阻。"
+    },
+    "C11": {
+      "name": "C11，10 µF",
+      "what": "CP2102N 的电源电容。"
+    }
+  },
+  "wireables": {
+    "led": {
+      "note": "任何空闲的 GPIO 经过一个 330 Ω 电阻：(3.3 − 2.0) V / 330 Ω 约为 4 mA，远在引脚默认能提供的 20 mA 之内。"
+    },
+    "push-button": {
+      "note": "按钮接在 GPIO5 和 G 之间，用 pinMode(5, INPUT_PULLUP)：按下时读到 LOW。上电时可能被按住的按钮，别接 GPIO0、3、45 和 46。"
+    },
+    "potentiometer": {
+      "note": "两端接 3V3 和 G，滑动端接 GPIO1（ADC1）。analogRead() 给出 0-4095，analogReadMilliVolts() 给出校准后的电压。",
+      "caution": "Wi-Fi 打开时用 ADC1 引脚（GPIO1-10）：无线运行时无法读取 ADC2（GPIO11-20）。两端千万不要接 5V。"
+    },
+    "ldr": {
+      "note": "光敏电阻从 3V3 接到 GPIO2，再加 10 kΩ 从 GPIO2 接到 G：光越强，读数越高。"
+    },
+    "servo-sg90": {
+      "note": "信号接 GPIO18，50 Hz（ledcAttach(18, 50, 14) 或 ESP32Servo 库）。3.3 V 的信号对 SG90 来说足够了。",
+      "caution": "只有在一个好的 USB 口上带一个小舵机时，才用 5V 引脚给它供电；它的启动电流可能让板子掉电。更大的负载需要单独的电源，并共地。"
+    },
+    "hc-sr04": {
+      "note": "TRIG 接 GPIO5，ECHO 接 GPIO6，VCC 接 5V。",
+      "caution": "ECHO 是 5 V 信号：在 GPIO6 前面加一个 1 kΩ / 2 kΩ 的分压器（约 3.3 V），或者用 HC-SR04P 这样的 3.3 V 传感器。直接接 5 V 会损坏引脚。"
+    },
+    "mpu6050": {
+      "note": "I2C 接在 SDA GPIO8 和 SCL GPIO9 上，用 Wire.begin(8, 9)；地址 0x68。模块上的稳压器用 3V3 供电完全没问题。"
+    },
+    "ssd1306": {
+      "note": "128 x 64 OLED 接在 I2C（GPIO8、GPIO9）上，地址 0x3C，由 3V3 供电。"
+    },
+    "piezo-buzzer": {
+      "note": "无源蜂鸣器接在 GPIO7 和 G 之间，用 tone(7, 440) 或 ledcWriteTone() 驱动。"
+    },
+    "tmp36": {
+      "note": "从 2.7 V 起就能工作，所以用 3V3 没问题。用 analogReadMilliVolts(1) 读取 GPIO1：°C = (mV − 500) / 10。"
+    }
+  },
+  "failures": {
+    "reverse-pin5": {
+      "title": "5V 引脚电源接反",
+      "symptom": "什么都不亮。台式电源进入限流，稳压器 U2 发烫。",
+      "explanation": "5V 引脚位于肖特基二极管之后，所以没有任何东西能挡住接反的电源。电流反向流过稳压器内部的二极管，把它烧掉。",
+      "fix": "把引线换过来，如果 U2 不再输出 3.3 V 就换掉它。外部电源要经过一颗二极管接入，或者用 USB 口。"
+    },
+    "reverse-pin3": {
+      "title": "3V3 引脚电源接反",
+      "symptom": "LED 都不亮，模组几秒内发烫。",
+      "explanation": "3V3 引脚直接连到 ESP32-S3。接反时，它的保护二极管导通全部电源电流，芯片就坏了。",
+      "fix": "把引线换过来。模组通常已经救不回来了：换板子吧。接电源之前先用万用表检查极性。"
+    },
+    "five-volts-on-3v3": {
+      "title": "3V3 引脚上接了 5 V",
+      "symptom": "模组发烫，板子停止工作，常常是永久性的。",
+      "explanation": "3.6 V 是 ESP32-S3 的绝对上限。3V3 引脚上的 5 V 还会经过 R24 倒流进 CP2102N 和 LED。",
+      "fix": "5 V 电源接 5V 引脚，永远不要接 3V3。如果模组一直发烫或者没反应，就换板子。"
+    },
+    "overvoltage-pin5": {
+      "title": "5V 引脚上接了 24 V",
+      "symptom": "U2 发出一声开裂声或一股焦味，然后就没反应了。",
+      "explanation": "SGM2212 最多只能承受 20 V。超过这个值它就会损坏，而短路损坏的稳压器会把全部输入电压加到 3.3 V 电源轨上。",
+      "fix": "5V 引脚用 5 V。7-24 V 的电源要在板子前面加一个降压模块（比如设定为 5 V 的 LM2596）。"
+    },
+    "brownout": {
+      "title": "掉电",
+      "symptom": "板子循环复位，监视器显示 Brownout detector was triggered，然后又是启动日志。",
+      "explanation": "5V 引脚上的电机，或者在弱端口或又长又细的线上约 350 mA 的 Wi-Fi 突发电流，会把电源拉低。低于约 2.7 V 时，芯片的掉电检测器会让它复位。",
+      "fix": "电机单独供电并共地，用短线和好的端口，并保留那些 10 µF 电容。"
+    },
+    "low-voltage-pin5": {
+      "title": "5V 引脚上只有 3 V",
+      "symptom": "红灯亮着，芯片却不停复位。",
+      "explanation": "稳压器需要约 0.4 V 的余量：输入 3 V 时输出远低于 3 V，低于掉电阈值。",
+      "fix": "5V 引脚用 5 V，或者在 3V3 引脚上接一路干净的 3.3 V 电源。"
+    },
+    "cold-gpio4": {
+      "title": "排针 GPIO4 虚焊",
+      "symptom": "GPIO4 上的 LED 闪烁、熄灭，碰板子时最严重。",
+      "explanation": "一个暗淡、开裂的焊点只是时不时接触。",
+      "fix": "重新加热焊点，直到焊锡绕着引脚和焊盘流开，然后检查它是否光亮。"
+    },
+    "cold-usb": {
+      "title": "UART 口虚焊",
+      "symptom": "端口连上又断开时电脑叮咚作响；线一动板子就复位。",
+      "explanation": "Micro-USB 插座的 VBUS 焊点开裂了，所以电源时有时无。",
+      "fix": "重新熔焊插座的引脚和外壳焊片，或者改用另一个端口。"
+    },
+    "missing-r17": {
+      "title": "漏装了 R17",
+      "symptom": "除了 RGB LED 一切正常，而 RGB LED 从来不亮。",
+      "explanation": "R17 是数据引脚和 LED 之间的 0 Ω 跳线电阻。没有它，无论代码怎么写，数据都到不了。",
+      "fix": "把 R17 装回去，或者用焊锡把它的两个焊盘桥接起来。"
+    },
+    "missing-r24": {
+      "title": "漏装了 R24",
+      "symptom": "红灯亮着，但没有启动日志，也没有 Wi-Fi。",
+      "explanation": "R24 把稳压器连到模组。LED 在它之前，所以模组什么都得不到时 LED 仍然亮着。",
+      "fix": "装上 R24（或者用焊锡桥接）。乐鑫用这个跳线电阻来测量模组的电流。"
+    },
+    "missing-u3": {
+      "title": "缺少 CP2102N",
+      "symptom": "插在 UART 口上板子能运行，但电脑看不到串口，上传失败。",
+      "explanation": "电源经过 D1 到达板子，但没有桥接芯片，USB 数据就无处可去。",
+      "fix": "装上 U3，或者通过 USB 口上传，它直接和 ESP32-S3 通信。"
+    },
+    "strap-gpio0": {
+      "title": "复位时 GPIO0 被拉低",
+      "symptom": "复位后什么都不运行；监视器显示 boot:0x0 (DOWNLOAD(USB/UART0)) 和 waiting for download。",
+      "explanation": "ROM 在复位时读取 GPIO0：低电平表示等待 esptool，而不是启动你的程序。按住的 BOOT 按钮或一个把 GPIO0 拉低的电路就会造成这种情况。",
+      "fix": "松开 BOOT，或者把那个电路从 GPIO0 上挪开，然后按 RESET。"
+    },
+    "five-volts-on-gpio": {
+      "title": "往 3.3 V GPIO 灌 5 V",
+      "symptom": "引脚失灵，芯片发热。",
+      "explanation": "5 V 输出（比如 HC-SR04 的 ECHO）会让电流经过引脚的保护二极管灌进 3.3 V 电源轨。这个引脚就毁了。",
+      "fix": "用分压器（1 kΩ / 2 kΩ）、电平转换器或 3.3 V 传感器。换一个新引脚；坏掉的那个不会再好了。"
+    },
+    "short-5v": {
+      "title": "5V 和 G 短路",
+      "symptom": "一切都熄灭了，电脑可能警告某个 USB 设备耗电过多。",
+      "explanation": "一根多余的导线或一个焊锡桥让 5 V 电源轨短路。板上没有保险丝，所以电脑的端口切断了电源。",
+      "fix": "断电，排除短路，然后重新插上。"
+    }
+  },
+  "assembly": {
+    "strip": {
+      "title": "拆到只剩裸 PCB",
+      "body": "从一块什么都没装的黑色两层板开始。每个元件都按照工厂的顺序装回去。",
+      "refusal": "先断开电源：永远不要在带电的板子上操作。"
+    },
+    "pick-place": {
+      "title": "贴片，然后回流焊",
+      "body": "模组、CP2102N、稳压器、两颗 LED、两个按钮、Micro-USB 口以及每一个 0402 和 0603 元件一次放好，然后一起经过回流焊炉。",
+      "refusal": "先把板子拆光，并断开电源。"
+    },
+    "first-power": {
+      "title": "装排针之前先上电",
+      "body": "把线插进 UART 口。只装了贴片元件，板子就已经能运行了：红色的 D5 亮起，RGB LED 闪烁。这就是工厂的第一项测试。"
+    },
+    "unplug": {
+      "title": "断电",
+      "body": "排针要手工焊接：先把线拔掉。"
+    },
+    "place-j1": {
+      "title": "放上排针 J1",
+      "body": "把 22 针排针从下面插进去，长针朝下，这样板子就能立在面包板上。",
+      "refusal": "先装 SMD 元件：先完成贴装和回流焊。炉子会把排针的塑料熔化。"
+    },
+    "place-j3": {
+      "title": "放上排针 J3",
+      "body": "右边的排针以同样的方式装上。两排相距 22.86 mm，正好跨过面包板中间的凹槽。"
+    },
+    "solder": {
+      "title": "焊接排针引脚",
+      "body": "44 个焊点，在正面焊接。每个都应该是一个光亮的锥形；暗淡的一颗球就是虚焊。",
+      "refusal": "还没有东西可焊：先放上排针。"
+    },
+    "plug-uart": {
+      "title": "插到 UART 口上",
+      "body": "CP2102N 出现在电脑上（VID 10C4，PID EA60），D5 亮起，3.3 V 电源轨读数为 3.3 V。",
+      "refusal": "先焊完焊点。"
+    },
+    "upload": {
+      "title": "上传一个程序",
+      "body": "esptool 切换 DTR 和 RTS，Q1 和 Q2 把 EN 和 GPIO0 拉低，芯片在下载模式中醒来，闪存被写入，然后 RTS 让它复位。不用按任何按钮。",
+      "refusal": "先插到 UART 口上：上传要通过这根线。"
+    },
+    "download-mode": {
+      "title": "手动强制进入下载模式",
+      "body": "上传提示连接不上时的救急办法：按住 BOOT，按下并松开 RESET，然后松开 BOOT。芯片会等待 esptool。"
+    },
+    "power-up-check": {
+      "title": "上电检查",
+      "body": "按 RESET。ROM 日志以 115200 波特打印，D5 亮着，3V3 读数为 3.3 V，5V 约为 4.6 V，程序从 setup() 开始运行。"
+    }
+  },
+  "lessons": {
+    "blink": {
+      "title": "Blink：一颗 LED 和 RGB LED",
+      "lede": "让 GPIO4 上的一颗 LED 和板载 RGB LED 一起闪烁，并了解为什么 RGB LED 需要 rgbLedWrite()，以及与你的板子版本对应的正确引脚。",
+      "steps": {
+        "1": "把 GPIO4（J1 第 4 脚）经过一个 330 Ω 电阻接到 LED 的长脚，短脚接 G。",
+        "2": "运行程序：LED 和 RGB LED 一起闪烁，监视器打印 on 和 off。",
+        "3": "改一下半周期选项，看闪烁速度跟着变化。",
+        "4": "在这块 v1.1 板上把 RGB 引脚选项切换成 48：RGB LED 熄灭了，因为它的数据线是 GPIO38。"
+      },
+      "hints": {
+        "1": "RGB LED 不是普通的 LED：digitalWrite() 设不了它的颜色。rgbLedWrite(pin, r, g, b) 会发送 WS2812 数据。",
+        "2": "如果 GPIO4 上的 LED 一直不亮，检查长脚（阳极）是否朝向电阻。",
+        "3": "亮度用 255 里的 64 就足够了：离得近时全亮会刺眼。"
+      },
+      "specs": {
+        "1": {
+          "label": "LED 电流",
+          "value": "(3.3 − 2.0) V / 330 Ω ≈ 4 mA"
+        },
+        "2": {
+          "label": "RGB LED 数据线",
+          "value": "v1.1 上为 GPIO38，v1.0 上为 GPIO48"
+        },
+        "3": {
+          "label": "串口",
+          "value": "UART 口上 115200 波特"
+        }
+      },
+      "pins": {
+        "GPIO4": {
+          "to": "330 Ω，再到 LED 的阳极",
+          "role": "数字输出"
+        },
+        "GPIO38": {
+          "to": "RGB LED D6（在板上）",
+          "role": "WS2812 数据"
+        },
+        "GND": {
+          "to": "LED 阴极",
+          "role": "地"
+        }
+      },
+      "callouts": {
+        "D6": "一根数据线就能设定任何颜色",
+        "R1": "330 Ω 让 LED 保持在 4 mA 左右"
+      },
+      "features": {
+        "1": "两颗 LED，两种截然不同的驱动方式",
+        "2": "一个选项在 v1.1 和 v1.0 的引脚之间切换",
+        "3": "3.3 V 逻辑：一个引脚默认提供 20 mA"
+      },
+      "params": {
+        "halfMs": {
+          "label": "半周期"
+        },
+        "rgbPin": {
+          "38": "38（v1.1）",
+          "48": "48（v1.0）",
+          "label": "RGB LED 引脚",
+          "note": "只在 v1.0 板上才对"
+        }
+      },
+      "checks": {
+        "1": "程序运行 3 秒",
+        "2": "启动时打印 blink ready",
+        "3": "GPIO4 闪烁",
+        "4": "使用 rgbLedWrite()，而不是旧的 neopixelWrite()"
+      },
+      "code": {
+        "header": "让 GPIO4 上的 LED 和 RGB LED 闪烁",
+        "led": "J1 第 4 脚，经过 330 Ω",
+        "rgb": "RGB LED 数据线：v1.1 上为 38，v1.0 上为 48",
+        "red": "红色，255 里的 64",
+        "off": "三种颜色全关"
+      }
+    },
+    "boot-button": {
+      "title": "BOOT 按钮和芯片的温度计",
+      "lede": "BOOT 在复位时是一个启动配置按钮，之后则是一个普通输入。用消抖的方式读取它，切换 LED，并打印芯片自带的温度传感器读数。",
+      "steps": {
+        "1": "保留第一节课里接在 GPIO4 上的 LED。",
+        "2": "运行程序并按 BOOT：LED 切换，监视器打印按下次数和芯片温度。",
+        "3": "把消抖选项设为 0 ms 再按：按一次可能会被计两次，因为触点会抖动。"
+      },
+      "hints": {
+        "1": "BOOT 把 GPIO0 拉到地，所以按下时读到 LOW。松开时，INPUT_PULLUP 给出 HIGH。",
+        "2": "只有在你想进入下载模式时，才在复位期间按住 BOOT；启动之后按它是安全的。",
+        "3": "temperatureRead() 是晶粒温度，比室温高几度。它是个粗略的传感器，不是测室温的温度计。"
+      },
+      "specs": {
+        "1": {
+          "label": "BOOT 按钮",
+          "value": "GPIO0 接 GND，低电平有效"
+        },
+        "2": {
+          "label": "内部上拉",
+          "value": "约 45 kΩ"
+        },
+        "3": {
+          "label": "消抖",
+          "value": "默认 30 ms"
+        }
+      },
+      "pins": {
+        "GPIO0": {
+          "to": "BOOT 按钮 SW1（在板上）",
+          "role": "带上拉的输入"
+        },
+        "GPIO4": {
+          "to": "330 Ω，再到 LED",
+          "role": "数字输出"
+        }
+      },
+      "callouts": {
+        "SW1": "按下时读到 LOW",
+        "U4": "温度传感器在芯片内部"
+      },
+      "features": {
+        "1": "一个不需要额外元件的真实输入",
+        "2": "用 millis() 消抖，绝不用 delay()",
+        "3": "GPIO0 在复位时是启动配置引脚"
+      },
+      "params": {
+        "debounceMs": {
+          "label": "消抖时间"
+        }
+      },
+      "world": {
+        "boot": "BOOT 按钮"
+      },
+      "checks": {
+        "1": "程序运行 3 秒",
+        "2": "第一次按下让 LED 亮起",
+        "3": "第二次按下让它熄灭",
+        "4": "每次按下都打印次数和芯片温度"
+      },
+      "code": {
+        "header": "BOOT 按钮切换 LED 并打印芯片温度",
+        "boot": "GPIO0 上的 BOOT 按钮（SW1）",
+        "pullup": "按下 = LOW，松开 = HIGH",
+        "edge": "读数变了：重新开始计时",
+        "low": "一次干净的按下",
+        "temp": "晶粒温度，单位 °C"
+      },
+      "quiz": {
+        "reset": {
+          "q": "你按住 BOOT 的同时按下并松开 RESET。会发生什么？",
+          "options": {
+            "1": "程序重启，BOOT 读到 LOW",
+            "2": "芯片在下载模式中等待 esptool",
+            "3": "闪存被擦除"
+          },
+          "why": "GPIO0 在复位时被采样：低电平表示进入 ROM 的下载模式。只有在松开 BOOT 的情况下复位，你的程序才会再次运行。"
+        }
+      }
+    },
+    "dimmer": {
+      "title": "用旋钮调暗 LED",
+      "lede": "GPIO1 上的电位器设定 GPIO4 上 LED 的亮度。ESP32-S3 用 12 位 ADC 读取滑动端，用 LEDC PWM 驱动 LED。",
+      "steps": {
+        "1": "接好 10 kΩ 电位器：一端接 3V3，滑动端接 GPIO1，另一端接 G。LED 仍然经过 330 Ω 接在 GPIO4 上。",
+        "2": "运行程序并转动旋钮。LED 变亮，RGB LED 从蓝色向红色过渡，监视器打印原始计数、毫伏值和占空比。",
+        "3": "改一下 PWM 频率选项。亮度保持不变，因为眼睛会把高于约 100 Hz 的闪烁平均掉。"
+      },
+      "hints": {
+        "1": "调用 analogReadResolution(12) 之后，analogRead() 返回 0 到 4095。除以 16 就映射到 8 位占空比，0 到 255。",
+        "2": "Arduino-ESP32 3.x 按引脚绑定 PWM：ledcAttach(pin, freq, bits)，然后 ledcWrite(pin, duty)。ledcSetup() 和 ledcAttachPin() 是 2.x 的 API。",
+        "3": "analogReadMilliVolts() 利用芯片的校准数据，以毫伏为单位报告同一个引脚。滑动端在 3.3 V 时读数约为 3300。"
+      },
+      "specs": {
+        "1": {
+          "label": "ADC",
+          "value": "12 位，GPIO1 上约 0–3.3 V"
+        },
+        "2": {
+          "label": "PWM",
+          "value": "8 位 LEDC，默认 5 kHz"
+        },
+        "3": {
+          "label": "换算",
+          "value": "duty = raw / 16"
+        }
+      },
+      "pins": {
+        "GPIO1": {
+          "to": "电位器滑动端",
+          "role": "模拟输入"
+        },
+        "GPIO4": {
+          "to": "330 Ω，再到 LED",
+          "role": "PWM 输出"
+        },
+        "3V3": {
+          "to": "电位器的一端",
+          "role": "3.3 V 参考"
+        }
+      },
+      "callouts": {
+        "POT1": "转动它：占空比跟着滑动端变化",
+        "LED1": "亮度跟着占空比变化"
+      },
+      "features": {
+        "1": "12 位读数变成 8 位占空比",
+        "2": "3.x 的 LEDC API，按引脚绑定",
+        "3": "以毫伏打印滑动端电压"
+      },
+      "params": {
+        "pwmHz": {
+          "label": "PWM 频率"
+        }
+      },
+      "world": {
+        "knob": "旋钮角度"
+      },
+      "checks": {
+        "1": "程序运行 3 秒",
+        "2": "转四分之一圈时，GPIO4 的占空比接近四分之一",
+        "3": "转到四分之三时，GPIO4 的占空比接近四分之三",
+        "4": "顺时针转到底时，GPIO4 完全打开",
+        "5": "打印原始计数、毫伏值和占空比",
+        "6": "使用 analogRead()、ledcAttach() 和 ledcWrite()，而不是 2.x 的 API"
+      },
+      "code": {
+        "header": "用电位器调暗 LED",
+        "pot": "10 kΩ 电位器的滑动端，GPIO1",
+        "bits": "8 位：占空比 0 到 255",
+        "adc": "12 位 ADC：原始值 0 到 4095",
+        "attach": "3.x API：按引脚绑定 PWM",
+        "raw": "旋钮一端为 0，另一端为 4095",
+        "scale": "4095 / 16 = 255，满占空比"
+      }
+    },
+    "web-server": {
+      "title": "Wi-Fi 网页服务器",
+      "lede": "连接一个 2.4 GHz 网络，打印板子的 IP 地址，然后用手机浏览器开关 LED。RGB LED 显示 Wi-Fi 状态。",
+      "steps": {
+        "1": "保留接在 GPIO4 上的 LED。",
+        "2": "运行程序：连接时 RGB LED 闪烁蓝色，然后变绿，监视器打印 IP 地址。",
+        "3": "在手机上打开 /on 和 /off：LED 跟着变化，监视器记录每一个请求。",
+        "4": "选择 HackTX 网络，密码不变，看它永远连不上。"
+      },
+      "hints": {
+        "1": "WiFi.h 和 WebServer.h 随 ESP32 核心一起提供；什么都不用安装。",
+        "2": "ESP32-S3 没有 5 GHz 无线：它只能看到 2.4 GHz 网络。",
+        "3": "这里千万不要在 loop() 里调用 delay()：server.handleClient() 必须一直运行才能应答。"
+      },
+      "specs": {
+        "1": {
+          "label": "无线",
+          "value": "2.4 GHz Wi-Fi 802.11 b/g/n，低功耗蓝牙 5"
+        },
+        "2": {
+          "label": "发射电流",
+          "value": "最高约 355 mA"
+        },
+        "3": {
+          "label": "页面",
+          "value": "端口 80 上的 /、/on、/off"
+        }
+      },
+      "pins": {
+        "GPIO4": {
+          "to": "330 Ω，再到 LED",
+          "role": "由网页开关"
+        },
+        "GPIO38": {
+          "to": "RGB LED D6",
+          "role": "Wi-Fi 状态"
+        }
+      },
+      "callouts": {
+        "U4": "天线那一端必须保持空旷",
+        "D6": "蓝色：正在连接。绿色：已联网"
+      },
+      "features": {
+        "1": "由板子提供的网页",
+        "2": "RGB LED 上的状态显示",
+        "3": "Wi-Fi 突发电流需要好的 USB 电源"
+      },
+      "params": {
+        "ssid": {
+          "label": "网络",
+          "bench-lab": "bench-lab",
+          "HackTX": "HackTX",
+          "note": "它的密码不是 robotics，所以板子会一直尝试"
+        }
+      },
+      "world": {
+        "phone": "手机请求"
+      },
+      "checks": {
+        "1": "程序运行 4.5 秒",
+        "2": "连上网络并打印它的 IP 地址",
+        "3": "打开 /on 让 LED 亮起",
+        "4": "打开 /off 让它熄灭",
+        "5": "启动 Wi-Fi，并在 loop() 里处理请求"
+      },
+      "code": {
+        "header": "用网页开关 GPIO4 上的 LED",
+        "pass": "bench-lab 网络的密码",
+        "sta": "以站点模式加入网络",
+        "blue": "连接时闪烁蓝色",
+        "green": "绿色：已连上网络",
+        "loop": "应答请求，这里绝不能阻塞"
+      }
+    }
+  }
+}
