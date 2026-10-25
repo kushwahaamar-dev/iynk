@@ -37,7 +37,7 @@ const arc = (F, cb, z, r, d0, d1, n) => { const o = []; for (let i = 0; i <= n; 
 const pos01 = p => Math.max(0, Math.min(1, +p.pos || 0));
 
 B.part('potentiometer', {
-  name: 'Potentiometer',
+  name: 'Potentiometer', fig: 'P6',
   legs: ['1', 'W', '3'],
   span: [2, 4],
   params: { pos: [0, 1], ohms: [1000, 1000000], fault: Object.keys(FAULTS) },

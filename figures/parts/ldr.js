@@ -34,7 +34,7 @@ const ohmsAt = lux => lux <= 0 ? RDARK : Math.min(RDARK, R10 * Math.pow(lux / 10
 const luxText = lux => lux >= 1000 ? (+(lux / 1000).toFixed(lux >= 10000 ? 0 : 1)) + 'k' : lux >= 10 ? String(Math.round(lux)) : String(+lux.toFixed(1));
 
 B.part('ldr', {
-  name: 'Light sensor (LDR)',
+  name: 'Light sensor (LDR)', fig: 'P7',
   legs: ['1', '2'],
   span: [1, 4],
   params: { lux: [0, 100000], fault: Object.keys(FAULTS) },

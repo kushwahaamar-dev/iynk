@@ -33,7 +33,7 @@ const xrK = ctx => ctx.k != null ? ctx.k : ease(Math.min(1, Math.max(0, (ctx.st 
 const ring = (F, a, b, z, r, n = 20) => B.circ(a, b, r, n).map(([u, v]) => F.W(u, v, z));
 
 B.part('push-button', {
-  name: 'Push button',
+  name: 'Push button', fig: 'P5',
   legs: ['1', '2', '3', '4'],
   span: [0, 3],
   params: { pressed: [0, 1], color: Object.keys(CAP), fault: Object.keys(FAULTS) },

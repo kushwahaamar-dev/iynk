@@ -34,7 +34,7 @@ const litOf = ctx => {
 };
 
 B.part('traffic-light', {
-  name: 'Traffic light module',
+  name: 'Traffic light module', fig: 'P29',
   legs: ['GND', 'R', 'Y', 'G'],
   span: [3, 3],
   show: { breadboard: 'mini', holes: ['a5', 'a6', 'a7', 'a8'] },
@@ -49,13 +49,15 @@ B.part('traffic-light', {
     if (vis(F.v)) ['GND', 'R', 'Y', 'G'].forEach((t, i) => {
       s += `<text transform="${txM(P(...W((i - 1.5) * 2.54, .82, Z0 + 1.1)), U, V)}" font-size=".9" fill="#f2f4f6" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-weight="700">${t}</text>`;
     });
-    ctx.put(B.aabb([W(-7, -1.3, 0), W(7, 1.3, Z1)]), s);
+    // the lenses stand out of the board's face: one item with the board, drawn after it when the face is toward the
+    // viewer and before it otherwise, so the depth sort can't put the tall board over a lens
+    let lenses = '';
     LEDS.forEach(([, col, z], i) => {
       const glow = lit[i], m = matOf(glow ? col : mix(col, '#2b2927', .55));
-      let t = rod(W(0, .8, z), W(0, 4.2, z), 2.5, m, toneI, .5, 2.5, 18);
-      if (glow){ const [X, Y] = P(...W(0, 4.4, z)); t += `<circle cx="${f(X)}" cy="${f(Y)}" r="5.5" fill="${col}" opacity=".35"/>`; }
-      ctx.put(B.aabb([W(-2.5, .8, z - 2.5), W(2.5, 4.4, z + 2.5)]), t);
+      lenses += rod(W(0, .8, z), W(0, 4.2, z), 2.5, m, toneI, .5, 2.5, 18);
+      if (glow){ const [X, Y] = P(...W(0, 4.4, z)); lenses += `<circle cx="${f(X)}" cy="${f(Y)}" r="5.5" fill="${col}" opacity=".35"/>`; }
     });
+    ctx.put(B.aabb([W(-7, -1.3, 0), W(7, 4.4, Z1)]), vis(F.v) ? s + lenses : lenses + s);
   },
 });
 })();

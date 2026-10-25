@@ -45,7 +45,7 @@ const sound = (p, m) => {
 };
 
 B.part('piezo-buzzer', {
-  name: 'Piezo buzzer',
+  name: 'Piezo buzzer', fig: 'P10',
   legs: ['+', '-'],
   span: [3, 3],
   params: { kind: ['passive', 'active'], freq: [0, 20000], on: [0, 1], fault: ['none', 'backwards'] },

@@ -47,7 +47,7 @@ const levelOf = c => c.state === 'ok' ? Math.min(1, Math.pow(c.i / IREF, .55)) :
 const RIM = (() => { const o = [], t0 = Math.acos(-2.45 / 2.9); for (let i = 0; i <= 20; i++){ const t = -t0 + 2 * t0 * i / 20; o.push([2.9 * Math.cos(t), 2.9 * Math.sin(t)]); } return o; })();
 
 B.part('rgb-led', {
-  name: 'RGB LED',
+  name: 'RGB LED', fig: 'P16',
   legs: ['R', 'COM', 'G', 'B'],
   span: [3, 3],
   params: { common: ['cathode', 'anode'], r: [0, 1], g: [0, 1], b: [0, 1], fault: ['none', 'no resistors', 'backwards'] },

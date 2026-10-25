@@ -15,7 +15,7 @@ const COLS = ['#f2c230', '#e2483d', '#34302c'];          // AOUT yellow, VCC red
 const RP = 11, HP = 16, ABOVE = 34;                        // pot radius and height; board standing above the soil
 
 B.part('soil-moisture', {
-  name: 'Soil moisture sensor (capacitive)',
+  name: 'Soil moisture sensor (capacitive)', fig: 'P27',
   legs: ['AOUT', 'VCC', 'GND'],
   span: [2, 2],
   params: { moisture: [0, 100] },

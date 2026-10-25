@@ -51,7 +51,7 @@ const supply = ctx => {
 };
 
 B.part('mpu6050', {
-  name: 'Accelerometer and gyroscope (MPU-6050)',
+  name: 'Accelerometer and gyroscope (MPU-6050)', fig: 'P26',
   legs: LABELS,
   span: [7, 7],
   pinZ: PIN_TOP,

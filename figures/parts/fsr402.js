@@ -42,7 +42,7 @@ const nText = F => F >= 10 ? String(Math.round(F)) : String(+F.toFixed(1));
 const disc = (F, b, zc, r, n = 28) => Array.from({ length: n }, (_, i) => { const t = i / n * 2 * Math.PI; return F.W(r * Math.cos(t), b, zc + r * Math.sin(t)); });
 
 B.part('fsr402', {
-  name: 'Force sensor (FSR 402)',
+  name: 'Force sensor (FSR 402)', fig: 'P9',
   legs: ['1', '2'],
   span: [1, 1],
   params: { force: [0, 100], fault: ['none', 'tabs melted'] },

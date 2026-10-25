@@ -38,7 +38,7 @@ const OUT = outline();
 const heatCol = c => c < 20 ? mix('#3e86d9', '#9a958c', Math.max(0, (c + 40) / 60)) : c < 60 ? mix('#9a958c', '#f2c230', (c - 20) / 40) : mix('#f2c230', '#e2483d', Math.min(1, (c - 60) / 60));
 
 B.part('tmp36', {
-  name: 'Temperature sensor (TMP36)',
+  name: 'Temperature sensor (TMP36)', fig: 'P8',
   legs: ['+VS', 'VOUT', 'GND'],
   span: [2, 2],
   params: { tempC: [-40, 150], fault: Object.keys(FAULTS) },

@@ -20,7 +20,7 @@ const frame = legs => {
 };
 
 B.part('ssd1306', {
-  name: 'OLED display (SSD1306)',
+  name: 'OLED display (SSD1306)', fig: 'P28',
   legs: ['GND', 'VCC', 'SCL', 'SDA'],
   span: [3, 3],
   show: { breadboard: 'mini', holes: ['a5', 'a6', 'a7', 'a8'] },

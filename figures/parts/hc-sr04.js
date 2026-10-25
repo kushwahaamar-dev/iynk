@@ -20,7 +20,7 @@ const frame = legs => {
 };
 
 B.part('hc-sr04', {
-  name: 'Ultrasonic distance sensor (HC-SR04)',
+  name: 'Ultrasonic distance sensor (HC-SR04)', fig: 'P17',
   legs: ['VCC', 'TRIG', 'ECHO', 'GND'],
   span: [3, 3],
   show: { breadboard: 'mini', holes: ['a5', 'a6', 'a7', 'a8'] },
