@@ -48,7 +48,7 @@
     "inputs": "Pins, die die Lektion mit einem Taster oder Sensor verbindet, werden nur gelesen und nie angesteuert."
   },
   "pins": {
-    "title": "Pins live",
+    "title": "Live-Pins",
     "caption": "Was der Sketch an jedem Pin macht und was die echte Platine gerade tut",
     "pin": "Pin",
     "sim": "Sim.",
