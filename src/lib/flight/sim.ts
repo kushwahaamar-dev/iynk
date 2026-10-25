@@ -984,14 +984,18 @@ export function frameOf(s: SimState): FlightFrame {
   };
 }
 
-/** Re-runs a recorded flight: the same inputs at the same steps give the same events. */
+/**
+ * Re-runs a recorded flight: the same inputs at the same steps give the same events. `onStep` sees the state after
+ * every step with the events that step raised (ghost laps and crash replays are cut from it).
+ */
 export function replay(
   craft: FlightCraft,
   course: Course,
   calc: CalcOutputs,
-  log: Array<{ step: number; action: FlightAction }>,
+  log: ReadonlyArray<{ step: number; action: FlightAction }>,
   steps: number,
   opts: { mode?: string; faults?: CraftFaults; windOn?: boolean } = {},
+  onStep?: (s: SimState, events: FlightEvent[]) => void,
 ): { sim: SimState; events: FlightEvent[] } {
   const s = createSim(craft, course, calc, opts);
   const events: FlightEvent[] = [];
@@ -999,7 +1003,9 @@ export function replay(
   for (let k = 0; k < steps; k++) {
     while (i < log.length && log[i].step <= k) dispatch(s, log[i++].action);
     stepSim(s);
-    events.push(...drainEvents(s));
+    const now = drainEvents(s);
+    events.push(...now);
+    onStep?.(s, now);
   }
   return { sim: s, events };
 }

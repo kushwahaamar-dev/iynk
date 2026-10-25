@@ -16,6 +16,7 @@ const S = {
   craft: { fov: 105, camTilt: 25, fpvProps: false, fpvLevel: false, look: { arms: 4, armLen: 0.11, propR: 0.06, body: [0.1, 0.05, 0.04], palette: 'tomato', isoScale: 2 } },
   frame: null,
   followers: [],
+  ghosts: [],
   fpv: false,
   paused: false,
   offscreen: false,
@@ -28,6 +29,7 @@ const isoSvg = document.getElementById('iso');
 const overlay = document.getElementById('overlay');
 const fpvSvg = document.getElementById('fpv');
 const toastEl = document.getElementById('toast');
+const badgeEl = document.getElementById('badge');
 const iso = createIso(isoSvg, overlay);
 const fpv = createFpv(fpvSvg);
 
@@ -85,7 +87,20 @@ function accept(patch) {
   if (okCraft(patch.craft)) S.craft = patch.craft;
   if (okFrame(patch.frame)) {
     S.frame = patch.frame;
+    // a crash replay in slow motion carries `replay`: the badge says so on both views
+    const replay = patch.frame.replay === true;
+    if (replay !== stage.classList.contains('replay')) {
+      badgeEl.textContent = T('replay', 'REPLAY');
+      stage.classList.toggle('replay', replay);
+    }
     S.followers = Array.isArray(patch.frame.followers) ? patch.frame.followers : [];
+    // ghosts: your best lap, the autopilot's line, friends in the room ({ x, y, z, yaw, pitch, roll, label, col })
+    S.ghosts = Array.isArray(patch.frame.ghosts)
+      ? patch.frame.ghosts
+          .filter((g) => g && ['x', 'y', 'z', 'yaw', 'pitch', 'roll'].every((k) => num(g[k])))
+          .slice(0, 12)
+          .map((g) => ({ ...g, col: /^#[0-9a-f]{3,8}$/i.test(g.col) ? g.col : '#231e16', label: typeof g.label === 'string' ? g.label.slice(0, 28) : '' }))
+      : [];
     S.demo = false;
     schedule();
   }
@@ -288,8 +303,8 @@ function loop(ts) {
   if (f && S.course) {
     const vw = stage.clientWidth || 800, vh = stage.clientHeight || 600;
     const camTilt = num(S.course.camTilt) ? S.course.camTilt : S.craft.camTilt;
-    if (S.fpv) fpv.draw(f, S.craft, camTilt, S.followers);
-    else iso.draw(f, S.craft.look, S.followers, dt, vw, vh);
+    if (S.fpv) fpv.draw(f, S.craft, camTilt, S.followers, S.ghosts);
+    else iso.draw(f, S.craft.look, S.followers, dt, vw, vh, S.ghosts);
   }
   if (S.demo || (f && f.armed) || pointers.size) schedule();
 }

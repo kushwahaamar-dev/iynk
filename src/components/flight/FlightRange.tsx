@@ -9,17 +9,30 @@ import type { Messages } from "@/i18n/namespaces";
 import { createTranslator } from "@/i18n/translate";
 import {
   buildSolids,
+  crashReplay,
   createInput,
   createSession,
   DEFAULT_PAD,
+  finishOf,
   FLIGHT_KEYS,
+  ghostAt,
+  ghostFromLog,
   isPadMapping,
+  lapClock,
+  loadGhost,
   medalFor,
   modesFor,
+  paceGhost,
   padSticks,
   readSticks,
+  saveGhost,
+  STEP,
   STICK_KEYS,
+  type BreakId,
   type CalcOutputs,
+  type CrashFix,
+  type CrashReplay,
+  type GhostTrack,
   type Course,
   type CourseText,
   type CraftFaults,
@@ -33,6 +46,12 @@ import { GamepadPanel } from "./GamepadPanel";
 import { TouchSticks } from "./TouchSticks";
 
 export type FlightStrings = Messages["flight"];
+
+/** A friend's craft in the room, as the range draws it. */
+export type PeerGhost = { x: number; y: number; z: number; yaw: number; pitch: number; roll: number; label: string; col: string };
+
+/** This craft's pose for the room: position (m), yaw, pitch, roll (deg), and the course it flies. */
+export type RangePose = { p: [number, number, number]; q: [number, number, number]; course: string };
 
 export type FlightRangeProps = {
   craft: FlightCraft;
@@ -53,6 +72,12 @@ export type FlightRangeProps = {
   onSession?: (session: FlightSession) => void;
   /** The range's FigureFrame handle (for the LabDock), or null while it is not mounted. */
   onFigure?: (handle: FigureHandle | null) => void;
+  /** Friends' crafts in the room, read every frame (keep them in a ref, not in state). */
+  peers?: () => PeerGhost[];
+  /** This craft's pose every frame while it moves, for the room to send on. */
+  onPose?: (pose: RangePose) => void;
+  /** A crash's fix that changes the build (a fault the bench or Break it put in): the page takes it out. */
+  onFix?: (fault: BreakId) => void;
   className?: string;
 };
 
@@ -80,11 +105,16 @@ const isCoarse = () => window.matchMedia(COARSE).matches;
 
 const AUTOPILOT = new Set(["rtl", "mission", "figure8", "qrtl", "rth", "swarm", "transition"]);
 
+/** The crash replay plays at a third of real speed. */
+const SLOW_MO = 1 / 3;
+const GHOST_BEST = "#3d3935";
+const GHOST_PACE = "#1c2948";
+
 // a gate course races laps in every mode; a course with no kind scores what the mode flies
 const scoresGates = (course: Course, mode: { task: string }) => course.kind === "gates" || (!course.kind && mode.task === "race");
 const scoresCheckpoints = (course: Course, mode: { task: string }) => (course.kind ? course.kind !== "gates" : mode.task === "range");
 
-export function FlightRange({ craft, course, calc, faults, t: dict, courseText, initialMode, par, onEvent, onSession, onFigure, className }: FlightRangeProps) {
+export function FlightRange({ craft, course, calc, faults, t: dict, courseText, initialMode, par, onEvent, onSession, onFigure, peers, onPose, onFix, className }: FlightRangeProps) {
   const locale = useLocale();
   const t = useMemo(() => createTranslator(locale, dict, "flight"), [locale, dict]);
   const label = useCallback((en: string) => courseText?.labels?.[en] ?? en, [courseText]);
@@ -97,11 +127,12 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
     [craft, course],
   );
   const snap = useSyncExternalStore(session.subscribe, session.getState, session.getState);
-  const calcRef = useRef(calc);
+  // the session starts from these; a later change (a fault fixed or broken, another pack) goes in as an action
+  const designRef = useRef({ calc, faults });
   useEffect(() => {
-    if (calcRef.current === calc && !faults) return;
-    calcRef.current = calc;
-    session.dispatch({ type: "design", calc, faults });
+    if (designRef.current.calc === calc && designRef.current.faults === faults) return;
+    designRef.current = { calc, faults };
+    session.dispatch({ type: "design", calc, faults: faults ?? {} });
   }, [session, calc, faults]);
   useEffect(() => {
     onSession?.(session);
@@ -246,15 +277,71 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
     setMessage(text);
     frame.current?.send("flash", { text, ms: 3200 });
   }, []);
+
+  // ghosts: your best lap (cut from a replay of this session's log, kept in this browser) and the autopilot's
+  // line on this design; friends' crafts come from the page through `peers`
+  const [ghostOn, setGhostOn] = useState({ best: true, pace: true });
+  const [bestGhost, setBestGhost] = useState<GhostTrack | null>(null);
+  const [pace, setPace] = useState<GhostTrack | null>(null);
+  const ghosts = useRef({ on: ghostOn, best: bestGhost, pace, peers, onPose });
+  useEffect(() => {
+    ghosts.current = { on: ghostOn, best: bestGhost, pace, peers, onPose };
+  }, [ghostOn, bestGhost, pace, peers, onPose]);
+  useEffect(() => {
+    // localStorage and a headless lap: browser only, after the first paint
+    const id = setTimeout(() => {
+      setBestGhost(loadGhost(craft.id, course.id));
+      setPace(paceGhost(craft, course, calc));
+    }, 0);
+    return () => clearTimeout(id);
+  }, [craft, course, calc]);
+  const keepBest = useCallback(
+    (time: number) => {
+      const steps = session.sim.step;
+      const log = session.log().slice();
+      setTimeout(() => {
+        const g = ghostFromLog(session.origin, log, steps, time);
+        if (g && saveGhost(g)) setBestGhost(g);
+      }, 0);
+    },
+    [session],
+  );
+
+  // Break it: a crash replays in slow motion from the session's log, then says why and offers the fix
+  const [crash, setCrash] = useState<CrashReplay | null>(null);
+  const [replaying, setReplaying] = useState(false);
+  const replayRef = useRef<{ r: CrashReplay; t: number } | null>(null);
+  const playCrash = useCallback((r: CrashReplay) => {
+    replayRef.current = { r, t: 0 };
+    setReplaying(true);
+  }, []);
+  const stopCrash = useCallback(() => {
+    replayRef.current = null;
+    setReplaying(false);
+  }, []);
+  const seeCrash = useCallback(() => {
+    const steps = session.sim.step;
+    const log = session.log().slice();
+    setTimeout(() => {
+      const r = crashReplay(session.origin, log, steps, ghosts.current.pace !== null);
+      if (!r) return;
+      setCrash(r);
+      playCrash(r);
+    }, 0);
+  }, [session, playCrash]);
+
   const handleEvents = useCallback(
     (events: FlightEvent[]) => {
       for (const e of events) {
         onEvent?.(e);
         const text = describe(e);
         if (text && e.type !== "takeoff") say(text);
+        const done = finishOf(e);
+        if (done?.best && !done.demo) keepBest(done.time);
+        if (e.type === "crash") seeCrash();
       }
     },
-    [describe, onEvent, say],
+    [describe, onEvent, say, keepBest, seeCrash],
   );
   const handleRef = useRef(handleEvents);
   useEffect(() => {
@@ -263,12 +350,16 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
 
   const act = useCallback(
     (a: Parameters<FlightSession["dispatch"]>[0]) => {
+      if (a.type === "reset") {
+        stopCrash();
+        setCrash(null);
+      }
       session.dispatch(a);
       handleRef.current(session.tick(0));
       if (a.type === "mode" || a.type === "reset") input.current.manualThrottle = session.sim.sticks.throttle;
       frame.current?.send("set", { state: { frame: session.frame() } });
     },
-    [session],
+    [session, stopCrash],
   );
   const toggleFpv = useCallback(() => {
     const next = !fpvRef.current;
@@ -336,7 +427,21 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
     let raf = 0;
     let last = 0;
     let lastSticks = "";
+    let lastGhosts = "";
     let idleFrames = 0;
+    const ghostFrames = (s: FlightSession["sim"], g: typeof ghosts.current): PeerGhost[] => {
+      const clock = lapClock(s) ?? 0;
+      const out: PeerGhost[] = [];
+      const at = (track: GhostTrack, label: string, col: string) => {
+        const [x, y, z, yaw, pitch, roll] = ghostAt(track, clock);
+        out.push({ x, y, z, yaw, pitch, roll, label, col });
+      };
+      if (g.on.best && g.best) at(g.best, t("ghosts.labelBest", { time: g.best.time.toFixed(1) }), GHOST_BEST);
+      // the demo flies the autopilot's own line: its ghost would sit on top of it
+      if (g.on.pace && g.pace && s.mode.task !== "demo") at(g.pace, dict.ghosts.labelPace, GHOST_PACE);
+      for (const p of g.peers?.() ?? []) out.push(p);
+      return out;
+    };
     const loop = (ts: number) => {
       const dt = last ? Math.min(0.1, (ts - last) / 1000) : 1 / 60;
       last = ts;
@@ -362,16 +467,38 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
       if (events.length) handleRef.current(events);
       const s = session.sim;
       const moving = s.armed || s.p[2] > 0.001 || Math.hypot(s.v[0], s.v[1], s.v[2]) > 0.01 || s.u > 0.001;
-      idleFrames = moving ? 0 : idleFrames + 1;
-      if (idleFrames < 3) frame.current?.send("set", { state: { frame: session.frame() } });
+      const g = ghosts.current;
+      if (moving) {
+        const f = session.frame();
+        g.onPose?.({ p: [f.x, f.y, f.z], q: [f.yaw, f.pitch, f.roll], course: course.id });
+      }
+      // the crash replay owns the picture until it ends; the live craft lies where it fell meanwhile
+      const rp = replayRef.current;
+      if (rp) {
+        rp.t += dt * SLOW_MO;
+        const i = Math.min(rp.r.frames.length - 1, Math.floor(rp.t / STEP));
+        frame.current?.send("set", { state: { frame: { ...rp.r.frames[i], replay: true } } });
+        if (i >= rp.r.frames.length - 1) {
+          replayRef.current = null;
+          setReplaying(false);
+          idleFrames = 0;
+        }
+        raf = requestAnimationFrame(loop);
+        return;
+      }
+      const list = ghostFrames(s, g);
+      const ghostKey = list.map((x) => `${x.x.toFixed(2)},${x.y.toFixed(2)},${x.z.toFixed(2)}`).join("|");
+      idleFrames = moving || ghostKey !== lastGhosts ? 0 : idleFrames + 1;
+      lastGhosts = ghostKey;
+      if (idleFrames < 3) frame.current?.send("set", { state: { frame: { ...session.frame(), ghosts: list } } });
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [session, command]);
+  }, [session, command, course.id, t, dict]);
 
   const figureStrings = useMemo(() => {
-    const s: Record<string, string> = { figureTitle: dict.figureTitle };
+    const s: Record<string, string> = { figureTitle: dict.figureTitle, replay: dict.why.badge };
     for (const [k, v] of Object.entries(dict.osd)) s[`osd.${k}`] = v;
     for (const m of modes) s[`mode.${m.id}`] = modeTitle(m.id);
     for (const cp of course.checkpoints) s[cp.label] = label(cp.label);
@@ -392,6 +519,21 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [course, craft, session, figureStrings],
   );
+
+  const fixLabel = (f: CrashFix) =>
+    f.kind === "fault" ? dict.why.fix[f.fault] : f.kind === "mode" ? t("why.fix.mode", { mode: modeTitle(f.mode) }) : f.kind === "pace" ? dict.why.fix.pace : dict.why.fix.reset;
+  const whyText = (r: CrashReplay) =>
+    t(`why.${r.cause}`, { speed: r.speed.toFixed(1), kmh: Math.round(r.speed * 3.6), what: r.hit ? dict.why.what[r.hit] : dict.why.what.obstacle });
+  // a fault the page can't take out (no onFix) still gets a fresh go
+  const crashFix: CrashFix | null = crash ? (crash.fix.kind === "fault" && !onFix ? { kind: "reset" } : crash.fix) : null;
+  const applyFix = () => {
+    if (!crashFix) return;
+    if (crashFix.kind === "fault") onFix?.(crashFix.fault);
+    if (crashFix.kind === "pace") setGhostOn((g) => ({ ...g, pace: true }));
+    act({ type: "reset" });
+    if (crashFix.kind === "mode") act({ type: "mode", mode: crashFix.mode });
+    say(t("why.fixed", { fix: fixLabel(crashFix) }));
+  };
 
   const stateText = snap.crashed ? dict.stats.crashed : snap.armed ? dict.stats.armed : dict.stats.disarmed;
   const next = session.frame().next;
@@ -472,6 +614,42 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
         {par && <Stat label={dict.stats.par} value={t("stats.parValue", { gold: par.gold, silver: par.silver, bronze: par.bronze })} unit="s" />}
         {isRace && snap.splits.length > 0 && <Stat label={dict.stats.splits} value={snap.splits.map(fmtTime).join(" · ")} unit="s" />}
       </dl>
+      {crash && crashFix && (
+        <section
+          aria-labelledby="flight-why-title"
+          className="mt-3 rounded-ink border-2 border-ink bg-surface p-3"
+          data-testid="crash-why"
+          data-cause={crash.cause}
+        >
+          <h3 id="flight-why-title" className="font-bold">
+            {dict.why.title}
+          </h3>
+          <p className="mt-1 text-sm">{whyText(crash)}</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Button variant="primary" onClick={applyFix} data-testid="crash-fix">
+              {fixLabel(crashFix)}
+            </Button>
+            <Button onClick={() => playCrash(crash)} disabled={replaying} data-testid="crash-replay" data-playing={replaying}>
+              {replaying ? dict.why.replaying : dict.why.replay}
+            </Button>
+          </div>
+        </section>
+      )}
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm" role="group" aria-labelledby="flight-ghosts-title" data-testid="ghosts">
+        <span id="flight-ghosts-title" className="font-bold">
+          {dict.ghosts.title}
+        </span>
+        <label className="inline-flex min-h-11 items-center gap-2">
+          <input type="checkbox" checked={ghostOn.best && bestGhost !== null} disabled={!bestGhost} onChange={(e) => setGhostOn((g) => ({ ...g, best: e.target.checked }))} data-testid="ghost-best" />
+          {bestGhost ? t("ghosts.best", { time: bestGhost.time.toFixed(2) }) : dict.ghosts.bestNone}
+        </label>
+        {pace && (
+          <label className="inline-flex min-h-11 items-center gap-2">
+            <input type="checkbox" checked={ghostOn.pace} onChange={(e) => setGhostOn((g) => ({ ...g, pace: e.target.checked }))} data-testid="ghost-pace" />
+            {t("ghosts.pace", { time: pace.time.toFixed(1) })}
+          </label>
+        )}
+      </div>
       {showPad && (
         <div className="mt-3">
           <GamepadPanel t={dict.gamepad} mapping={pad} onChange={setPad} />

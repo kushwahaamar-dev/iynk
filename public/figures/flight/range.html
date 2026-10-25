@@ -44,6 +44,11 @@ body {
 #iso .gdot { fill: none; stroke: var(--ink); stroke-width: 1.2; vector-effect: non-scaling-stroke; }
 #iso .spray { fill: rgba(118, 160, 226, .28); stroke: none; }
 #iso .cable { stroke-width: 1; fill: none; }
+#iso .ghostcraft path { stroke: var(--gc); fill: none; stroke-width: 1.8; stroke-dasharray: 4 3; opacity: .9; }
+#iso .ghostcraft path.arm { stroke-width: 2.4; }
+#overlay .glabel rect { fill: var(--paper); stroke: var(--gc); stroke-width: 1.5; }
+#overlay .glabel text { font: 700 11px ui-monospace, SFMono-Regular, Menlo, monospace; text-anchor: middle; fill: var(--ink); }
+#fpv .gfpv text { font: 800 22px ui-monospace, SFMono-Regular, Menlo, monospace; text-anchor: middle; stroke: #1b1712; stroke-width: 3px; paint-order: stroke; }
 #overlay .pill { fill: var(--paper); stroke: var(--ink); stroke-width: 1.5; }
 #overlay .pill.home { fill: #93d3b0; }
 #overlay .ptext { font: 700 12px ui-monospace, SFMono-Regular, Menlo, monospace; text-anchor: middle; fill: var(--ink); }
@@ -66,6 +71,8 @@ body {
 #fpv .arrow { fill: #fff; stroke: #1b1712; stroke-width: 2.5; paint-order: stroke; stroke-linejoin: round; }
 #toast { position: absolute; left: 12px; bottom: 12px; max-width: min(320px, 80%); font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; background: var(--paper); border: 1.5px solid var(--ink); border-radius: 8px; padding: 4px 9px; box-shadow: 2px 2px 0 var(--ink); opacity: 0; transition: opacity .2s; pointer-events: none; }
 #toast.on { opacity: 1; }
+#badge { position: absolute; left: 12px; top: 12px; display: none; font: 800 13px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; color: var(--paper); background: #cf5038; border: 1.5px solid var(--ink); border-radius: 8px; padding: 4px 10px; box-shadow: 2px 2px 0 var(--ink); pointer-events: none; }
+#stage.replay #badge { display: block; }
 #stage.fpv #toast { display: none; }
 @media (max-width: 560px) {
   #fpv .osd text { font-size: 40px; stroke-width: 4px; }
@@ -80,6 +87,7 @@ body {
 <svg id="overlay" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>
 <svg id="fpv" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 750" preserveAspectRatio="xMidYMid slice" role="img" aria-label="FPV goggles with the on-screen display" aria-hidden="true"></svg>
 <div id="toast" role="status" aria-live="polite"></div>
+<div id="badge" aria-hidden="true"></div>
 </main>
 <script>const DEMO = {"course":{"id":"race","kind":"gates","title":"courses.race.title","brief":"courses.race.brief","field":40,"pad":[20,6],"ground":"#dde3cc","wind":{"speed":3,"from":200,"gust":2.5},"prims":[{"type":"flat","x":20,"y":21,"w":3,"d":32,"col":"#d4cfc4"},{"type":"flat","x":30,"y":22,"w":10,"d":14,"col":"#cfc8b8"},{"type":"box","x":26.3,"y":16.3,"w":0.6,"d":0.6,"h":6.3,"col":"#bdb6a6","kind":"pillar"},{"type":"box","x":26.3,"y":27.7,"w":0.6,"d":0.6,"h":6.3,"col":"#bdb6a6","kind":"pillar"},{"type":"box","x":30,"y":16.3,"w":0.6,"d":0.6,"h":6.3,"col":"#bdb6a6","kind":"pillar"},{"type":"box","x":30,"y":27.7,"w":0.6,"d":0.6,"h":6.3,"col":"#bdb6a6","kind":"pillar"},{"type":"box","x":33.7,"y":16.3,"w":0.6,"d":0.6,"h":6.3,"col":"#bdb6a6","kind":"pillar"},{"type":"box","x":33.7,"y":27.7,"w":0.6,"d":0.6,"h":6.3,"col":"#bdb6a6","kind":"pillar"},{"type":"box","x":30,"y":22,"z":3,"w":8,"d":12,"h":0.3,"col":"#c9c2b2","kind":"building"},{"type":"box","x":30,"y":22,"z":6,"w":8,"d":12,"h":0.3,"col":"#c9c2b2","kind":"building"},{"type":"box","x":33.7,"y":22,"w":0.3,"d":11,"h":3,"col":"#b3ab9a","kind":"wall"},{"type":"box","x":15,"y":20,"w":0.4,"d":6,"h":4,"col":"#e0a26a","kind":"wall"},{"type":"box","x":16.6,"y":20,"w":0.4,"d":6,"h":4,"col":"#e0a26a","kind":"wall"},{"type":"box","x":8,"y":30,"w":3,"d":3,"h":10,"col":"#c6bfae","kind":"tower"},{"type":"box","x":8,"y":30,"z":10,"w":3.6,"d":3.6,"h":0.3,"col":"#b3ab9a","kind":"tower"},{"type":"pole","x":5,"y":37,"h":8},{"type":"pole","x":12,"y":37,"h":8},{"type":"pole","x":19,"y":37,"h":8},{"type":"pole","x":26,"y":37,"h":8},{"type":"pole","x":33,"y":37,"h":8},{"type":"tree","x":5,"y":9,"h":3.2},{"type":"tree","x":36,"y":8,"h":3.6},{"type":"tree","x":24,"y":33,"h":2.8},{"type":"tree","x":11,"y":14,"h":2.6},{"type":"tree","x":36,"y":33,"h":3},{"type":"cyl","x":23,"y":12,"r":0.5,"h":0.9,"col":"#f4b829","kind":"barrel"},{"type":"cyl","x":24.2,"y":12.4,"r":0.5,"h":0.9,"col":"#5a82c6","kind":"barrel"}],"gates":[{"x":20,"y":11,"heading":90,"w":1.6,"h":1.6,"col":"#ef6a4c"},{"x":21,"y":20.5,"heading":90,"w":1.6,"h":1.6,"col":"#f4b829"},{"x":19,"y":30,"heading":150,"w":1.6,"h":1.6,"col":"#93d3b0"},{"x":12.5,"y":22,"heading":270,"w":1.6,"h":1.6,"col":"#76a0e2"},{"x":13,"y":8,"heading":300,"w":1.6,"h":1.6,"col":"#f3a6bb"}],"checkpoints":[],"ceiling":16,"missions":[{"id":"demo","waypoints":[{"x":20,"y":6,"z":1.5,"label":"","r":0.306,"speed":4.444444444444445,"leg":0},{"x":20,"y":7,"z":0.8,"label":"","r":0.4,"speed":4.444444444444445,"leg":0},{"x":20,"y":15,"z":0.8,"label":"","r":0.4,"speed":4.444444444444445,"leg":0},{"x":21,"y":16.5,"z":0.8,"label":"","r":0.4,"speed":4.444444444444445,"leg":1},{"x":21,"y":24.5,"z":0.8,"label":"","r":0.4,"speed":4.444444444444445,"leg":1},{"x":22.464101615137753,"y":28,"z":0.8,"label":"","r":0.4,"speed":4.444444444444445,"leg":2},{"x":15.535898384862245,"y":32,"z":0.8,"label":"","r":0.4,"speed":4.444444444444445,"leg":2},{"x":12.5,"y":26,"z":0.8,"label":"","r":0.4,"speed":4.444444444444445,"leg":3},{"x":12.5,"y":18,"z":0.8,"label":"","r":0.4,"speed":4.444444444444445,"leg":3},{"x":12.644738947887792,"y":14.526706669272581,"z":0.8,"label":"","r":0.4,"speed":4.444444444444445,"leg":4},{"x":11,"y":11.464101615137753,"z":0.8,"label":"","r":0.4,"speed":4.444444444444445,"leg":4},{"x":15,"y":4.535898384862246,"z":0.8,"label":"","r":0.4,"speed":4.444444444444445,"leg":4},{"x":20,"y":7,"z":0.8,"label":"","r":0.4,"speed":4.444444444444445,"leg":0},{"x":20,"y":15,"z":0.8,"label":"","r":0.4,"speed":4.444444444444445,"leg":0}],"loopFrom":3}]},"solids":[{"k":"box","x":26.3,"y":16.3,"z0":0,"z1":6.3,"hw":0.3,"hd":0.3,"c":1,"s":0,"kind":"pillar","col":"#bdb6a6"},{"k":"box","x":26.3,"y":27.7,"z0":0,"z1":6.3,"hw":0.3,"hd":0.3,"c":1,"s":0,"kind":"pillar","col":"#bdb6a6"},{"k":"box","x":30,"y":16.3,"z0":0,"z1":6.3,"hw":0.3,"hd":0.3,"c":1,"s":0,"kind":"pillar","col":"#bdb6a6"},{"k":"box","x":30,"y":27.7,"z0":0,"z1":6.3,"hw":0.3,"hd":0.3,"c":1,"s":0,"kind":"pillar","col":"#bdb6a6"},{"k":"box","x":33.7,"y":16.3,"z0":0,"z1":6.3,"hw":0.3,"hd":0.3,"c":1,"s":0,"kind":"pillar","col":"#bdb6a6"},{"k":"box","x":33.7,"y":27.7,"z0":0,"z1":6.3,"hw":0.3,"hd":0.3,"c":1,"s":0,"kind":"pillar","col":"#bdb6a6"},{"k":"box","x":30,"y":22,"z0":3,"z1":3.3,"hw":4,"hd":6,"c":1,"s":0,"kind":"building","col":"#c9c2b2"},{"k":"box","x":30,"y":22,"z0":6,"z1":6.3,"hw":4,"hd":6,"c":1,"s":0,"kind":"building","col":"#c9c2b2"},{"k":"box","x":33.7,"y":22,"z0":0,"z1":3,"hw":0.15,"hd":5.5,"c":1,"s":0,"kind":"wall","col":"#b3ab9a"},{"k":"box","x":15,"y":20,"z0":0,"z1":4,"hw":0.2,"hd":3,"c":1,"s":0,"kind":"wall","col":"#e0a26a"},{"k":"box","x":16.6,"y":20,"z0":0,"z1":4,"hw":0.2,"hd":3,"c":1,"s":0,"kind":"wall","col":"#e0a26a"},{"k":"box","x":8,"y":30,"z0":0,"z1":10,"hw":1.5,"hd":1.5,"c":1,"s":0,"kind":"tower","col":"#c6bfae"},{"k":"box","x":8,"y":30,"z0":10,"z1":10.3,"hw":1.8,"hd":1.8,"c":1,"s":0,"kind":"tower","col":"#b3ab9a"},{"k":"cyl","x":5,"y":37,"z0":0,"z1":8,"r0":0.08,"r1":0.08,"diamond":false,"n":8,"c":1,"s":0,"kind":"pole","col":"#8a8f93"},{"k":"cyl","x":12,"y":37,"z0":0,"z1":8,"r0":0.08,"r1":0.08,"diamond":false,"n":8,"c":1,"s":0,"kind":"pole","col":"#8a8f93"},{"k":"cyl","x":19,"y":37,"z0":0,"z1":8,"r0":0.08,"r1":0.08,"diamond":false,"n":8,"c":1,"s":0,"kind":"pole","col":"#8a8f93"},{"k":"cyl","x":26,"y":37,"z0":0,"z1":8,"r0":0.08,"r1":0.08,"diamond":false,"n":8,"c":1,"s":0,"kind":"pole","col":"#8a8f93"},{"k":"cyl","x":33,"y":37,"z0":0,"z1":8,"r0":0.08,"r1":0.08,"diamond":false,"n":8,"c":1,"s":0,"kind":"pole","col":"#8a8f93"},{"k":"cyl","x":5,"y":9,"z0":0,"z1":1.1199999999999999,"r0":0.16,"r1":0.16,"diamond":false,"n":8,"c":1,"s":0,"kind":"tree","col":"#bf8a4f"},{"k":"cyl","x":5,"y":9,"z0":0.96,"z1":3.1999999999999997,"r0":0.7040000000000001,"r1":0.03,"diamond":false,"n":12,"c":1,"s":0,"kind":"tree","col":"#6aa86b"},{"k":"cyl","x":36,"y":8,"z0":0,"z1":1.26,"r0":0.16,"r1":0.16,"diamond":false,"n":8,"c":1,"s":0,"kind":"tree","col":"#bf8a4f"},{"k":"cyl","x":36,"y":8,"z0":1.08,"z1":3.6,"r0":0.792,"r1":0.03,"diamond":false,"n":12,"c":1,"s":0,"kind":"tree","col":"#6aa86b"},{"k":"cyl","x":24,"y":33,"z0":0,"z1":0.9799999999999999,"r0":0.16,"r1":0.16,"diamond":false,"n":8,"c":1,"s":0,"kind":"tree","col":"#bf8a4f"},{"k":"cyl","x":24,"y":33,"z0":0.84,"z1":2.8,"r0":0.616,"r1":0.03,"diamond":false,"n":12,"c":1,"s":0,"kind":"tree","col":"#6aa86b"},{"k":"cyl","x":11,"y":14,"z0":0,"z1":0.9099999999999999,"r0":0.16,"r1":0.16,"diamond":false,"n":8,"c":1,"s":0,"kind":"tree","col":"#bf8a4f"},{"k":"cyl","x":11,"y":14,"z0":0.78,"z1":2.5999999999999996,"r0":0.5720000000000001,"r1":0.03,"diamond":false,"n":12,"c":1,"s":0,"kind":"tree","col":"#6aa86b"},{"k":"cyl","x":36,"y":33,"z0":0,"z1":1.0499999999999998,"r0":0.16,"r1":0.16,"diamond":false,"n":8,"c":1,"s":0,"kind":"tree","col":"#bf8a4f"},{"k":"cyl","x":36,"y":33,"z0":0.8999999999999999,"z1":2.9999999999999996,"r0":0.66,"r1":0.03,"diamond":false,"n":12,"c":1,"s":0,"kind":"tree","col":"#6aa86b"},{"k":"cyl","x":23,"y":12,"z0":0,"z1":0.9,"r0":0.5,"r1":0.5,"diamond":false,"n":14,"c":1,"s":0,"kind":"barrel","col":"#f4b829"},{"k":"cyl","x":24.2,"y":12.4,"z0":0,"z1":0.9,"r0":0.5,"r1":0.5,"diamond":false,"n":14,"c":1,"s":0,"kind":"barrel","col":"#5a82c6"},{"k":"box","x":19.165,"y":11,"z0":0,"z1":1.6700000000000002,"hw":0.035,"hd":0.035,"c":6.123233995736766e-17,"s":1,"kind":"gate","col":"#ef6a4c","gate":0},{"k":"box","x":20.835,"y":11,"z0":0,"z1":1.6700000000000002,"hw":0.035,"hd":0.035,"c":6.123233995736766e-17,"s":1,"kind":"gate","col":"#ef6a4c","gate":0},{"k":"box","x":20,"y":11,"z0":1.6,"z1":1.6700000000000002,"hw":0.035,"hd":0.8700000000000001,"c":6.123233995736766e-17,"s":1,"kind":"gate","col":"#ef6a4c","gate":0},{"k":"box","x":20.165,"y":20.5,"z0":0,"z1":1.6700000000000002,"hw":0.035,"hd":0.035,"c":6.123233995736766e-17,"s":1,"kind":"gate","col":"#f4b829","gate":1},{"k":"box","x":21.835,"y":20.5,"z0":0,"z1":1.6700000000000002,"hw":0.035,"hd":0.035,"c":6.123233995736766e-17,"s":1,"kind":"gate","col":"#f4b829","gate":1},{"k":"box","x":21,"y":20.5,"z0":1.6,"z1":1.6700000000000002,"hw":0.035,"hd":0.8700000000000001,"c":6.123233995736766e-17,"s":1,"kind":"gate","col":"#f4b829","gate":1},{"k":"box","x":18.5825,"y":29.276868787839994,"z0":0,"z1":1.6700000000000002,"hw":0.035,"hd":0.035,"c":-0.8660254037844387,"s":0.49999999999999994,"kind":"gate","col":"#93d3b0","gate":2},{"k":"box","x":19.4175,"y":30.723131212160006,"z0":0,"z1":1.6700000000000002,"hw":0.035,"hd":0.035,"c":-0.8660254037844387,"s":0.49999999999999994,"kind":"gate","col":"#93d3b0","gate":2},{"k":"box","x":19,"y":30,"z0":1.6,"z1":1.6700000000000002,"hw":0.035,"hd":0.8700000000000001,"c":-0.8660254037844387,"s":0.49999999999999994,"kind":"gate","col":"#93d3b0","gate":2},{"k":"box","x":13.335,"y":22,"z0":0,"z1":1.6700000000000002,"hw":0.035,"hd":0.035,"c":-1.8369701987210297e-16,"s":-1,"kind":"gate","col":"#76a0e2","gate":3},{"k":"box","x":11.665,"y":22,"z0":0,"z1":1.6700000000000002,"hw":0.035,"hd":0.035,"c":-1.8369701987210297e-16,"s":-1,"kind":"gate","col":"#76a0e2","gate":3},{"k":"box","x":12.5,"y":22,"z0":1.6,"z1":1.6700000000000002,"hw":0.035,"hd":0.8700000000000001,"c":-1.8369701987210297e-16,"s":-1,"kind":"gate","col":"#76a0e2","gate":3},{"k":"box","x":13.723131212160006,"y":8.4175,"z0":0,"z1":1.6700000000000002,"hw":0.035,"hd":0.035,"c":0.5000000000000001,"s":-0.8660254037844386,"kind":"gate","col":"#f3a6bb","gate":4},{"k":"box","x":12.276868787839994,"y":7.5825,"z0":0,"z1":1.6700000000000002,"hw":0.035,"hd":0.035,"c":0.5000000000000001,"s":-0.8660254037844386,"kind":"gate","col":"#f3a6bb","gate":4},{"k":"box","x":13,"y":8,"z0":1.6,"z1":1.6700000000000002,"hw":0.035,"hd":0.8700000000000001,"c":0.5000000000000001,"s":-0.8660254037844386,"kind":"gate","col":"#f3a6bb","gate":4}],"craft":{"fov":105,"camTilt":30,"fpvProps":true,"fpvLevel":false,"look":{"arms":4,"armLen":0.1124,"propR":0.0635,"body":[0.112,0.046,0.04],"palette":"tomato","frame":"x","isoScale":2}}};</script>
 <script>
@@ -324,7 +332,7 @@ function createIso(svg, overlay) {
     svg.appendChild(g);
     return g;
   };
-  const gGround = layer('ground'), gShadow = layer('shadows'), gParcel = layer('parcel'), gSolids = layer('solids'), gRings = layer('rings'), gXray = layer('xray');
+  const gGround = layer('ground'), gShadow = layer('shadows'), gParcel = layer('parcel'), gSolids = layer('solids'), gRings = layer('rings'), gGhosts = layer('ghosts'), gXray = layer('xray');
   const craftG = document.createElementNS(SVGNS, 'g');
   craftG.setAttribute('id', 'craft');
   const craftShadow = document.createElementNS(SVGNS, 'g');
@@ -519,7 +527,7 @@ function createIso(svg, overlay) {
 
   let lastAz = st.az;
   /** Draws one frame. `vw`, `vh` are the view's pixel size. */
-  function draw(f, look, followers, dt, vw, vh) {
+  function draw(f, look, followers, dt, vw, vh, ghosts) {
     if (!st.course) return;
     if (lastAz !== st.az) {
       lastAz = st.az;
@@ -588,19 +596,34 @@ function createIso(svg, overlay) {
     st.cut = now;
     // and an x-ray outline on top, so the craft never vanishes
     gXray.innerHTML = now.size ? craftSvg(look, f, scale, true) : '';
+    // ghosts fly on top of everything, as dashed outlines in their own colour
+    let gh = '';
+    for (const g of ghosts || []) {
+      const pose = { x: g.x, y: g.y, z: g.z, yaw: g.yaw, pitch: g.pitch, roll: g.roll, armed: true, crashed: false, spin: 0, motorsOut: [] };
+      gh += '<g class="ghostcraft" style="--gc:' + esc(g.col || '#231e16') + '">' + craftSvg(look, pose, scale, true) + '</g>';
+    }
+    gGhosts.innerHTML = gh;
     // next gate / checkpoint highlight
     svg.querySelectorAll('.next').forEach((el) => el.classList.remove('next'));
     if (f.next && f.next.kind === 'gate') svg.querySelectorAll('.g' + (f.next.n - 1)).forEach((el) => el.classList.add('next'));
     if (f.next && f.next.kind === 'checkpoint') svg.querySelectorAll('.c' + (f.next.n - 1)).forEach((el) => el.classList.add('next'));
-    drawOverlay(f, vb, vw, vh);
+    drawOverlay(f, vb, vw, vh, ghosts, scale * (look.span ? look.span / 2 : look.armLen + look.propR));
   }
 
-  function drawOverlay(f, vb, vw, vh) {
+  function drawOverlay(f, vb, vw, vh, ghosts, reach) {
     let s = '';
     const toPx = (p) => {
       const q = proj(p);
       return [((q[0] - vb[0]) / vb[2]) * vw, ((q[1] - vb[1]) / vb[3]) * vh];
     };
+    // each ghost's name tag sits just above it
+    for (const g of ghosts || []) {
+      if (!g.label) continue;
+      const [x, y] = toPx([g.x, g.y, g.z + reach + 0.15]);
+      if (x < -40 || x > vw + 40 || y < -20 || y > vh + 20) continue;
+      const w = textWidth(g.label, 11) + 12;
+      s += '<g class="glabel" style="--gc:' + esc(g.col || '#231e16') + '" transform="translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ')"><rect x="' + (-w / 2).toFixed(1) + '" y="-19" width="' + w.toFixed(1) + '" height="17" rx="6"/><text y="-6.5">' + esc(g.label) + '</text></g>';
+    }
     if (f.next) {
       const n = f.next;
       const label = nextLabelOf(n) + '  ' + Math.round(Math.hypot(n.x - f.x, n.y - f.y, n.z - f.z)) + 'm';
@@ -783,7 +806,7 @@ function createFpv(svg) {
     return s + '</g>';
   }
 
-  function draw(f, craft, camTilt, followers) {
+  function draw(f, craft, camTilt, followers, ghosts) {
     if (!st.course) return;
     fit();
     const c = camera(f, craft, camTilt);
@@ -843,6 +866,17 @@ function createFpv(svg) {
       const p = scr(c, q);
       items.push({ z: q[2], s: '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + Math.max(2, (c.foc * 0.06) / q[2]).toFixed(1) + '" fill="#3d3935" class="fi"/>' });
     }
+    // ghosts: a ring in the ghost's colour, as big as the craft, with its name over it
+    for (const g of ghosts || []) {
+      const q = toCam(c, [g.x, g.y, g.z + 0.04]);
+      if (q[2] < NEAR) continue;
+      const p = scr(c, q);
+      const rad = Math.max(5, (c.foc * Math.max(0.08, (craft.look.span || 0) / 2 || craft.look.armLen + craft.look.propR)) / q[2]);
+      const col = esc(g.col || '#231e16');
+      let svg = '<g class="gfpv"><circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + rad.toFixed(1) + '" fill="none" stroke="' + col + '" stroke-width="4" stroke-dasharray="10 7"/>';
+      if (g.label) svg += '<text x="' + p[0].toFixed(1) + '" y="' + (p[1] - rad - 8).toFixed(1) + '" fill="' + col + '">' + esc(g.label) + '</text>';
+      items.push({ z: q[2], s: svg + '</g>' });
+    }
     items.sort((a, b) => b.z - a.z);
     for (const it of items) s += it.s;
     if (craft.fpvProps && f.armed) {
@@ -889,6 +923,7 @@ const S = {
   craft: { fov: 105, camTilt: 25, fpvProps: false, fpvLevel: false, look: { arms: 4, armLen: 0.11, propR: 0.06, body: [0.1, 0.05, 0.04], palette: 'tomato', isoScale: 2 } },
   frame: null,
   followers: [],
+  ghosts: [],
   fpv: false,
   paused: false,
   offscreen: false,
@@ -901,6 +936,7 @@ const isoSvg = document.getElementById('iso');
 const overlay = document.getElementById('overlay');
 const fpvSvg = document.getElementById('fpv');
 const toastEl = document.getElementById('toast');
+const badgeEl = document.getElementById('badge');
 const iso = createIso(isoSvg, overlay);
 const fpv = createFpv(fpvSvg);
 
@@ -958,7 +994,20 @@ function accept(patch) {
   if (okCraft(patch.craft)) S.craft = patch.craft;
   if (okFrame(patch.frame)) {
     S.frame = patch.frame;
+    // a crash replay in slow motion carries `replay`: the badge says so on both views
+    const replay = patch.frame.replay === true;
+    if (replay !== stage.classList.contains('replay')) {
+      badgeEl.textContent = T('replay', 'REPLAY');
+      stage.classList.toggle('replay', replay);
+    }
     S.followers = Array.isArray(patch.frame.followers) ? patch.frame.followers : [];
+    // ghosts: your best lap, the autopilot's line, friends in the room ({ x, y, z, yaw, pitch, roll, label, col })
+    S.ghosts = Array.isArray(patch.frame.ghosts)
+      ? patch.frame.ghosts
+          .filter((g) => g && ['x', 'y', 'z', 'yaw', 'pitch', 'roll'].every((k) => num(g[k])))
+          .slice(0, 12)
+          .map((g) => ({ ...g, col: /^#[0-9a-f]{3,8}$/i.test(g.col) ? g.col : '#231e16', label: typeof g.label === 'string' ? g.label.slice(0, 28) : '' }))
+      : [];
     S.demo = false;
     schedule();
   }
@@ -1161,8 +1210,8 @@ function loop(ts) {
   if (f && S.course) {
     const vw = stage.clientWidth || 800, vh = stage.clientHeight || 600;
     const camTilt = num(S.course.camTilt) ? S.course.camTilt : S.craft.camTilt;
-    if (S.fpv) fpv.draw(f, S.craft, camTilt, S.followers);
-    else iso.draw(f, S.craft.look, S.followers, dt, vw, vh);
+    if (S.fpv) fpv.draw(f, S.craft, camTilt, S.followers, S.ghosts);
+    else iso.draw(f, S.craft.look, S.followers, dt, vw, vh, S.ghosts);
   }
   if (S.demo || (f && f.armed) || pointers.size) schedule();
 }

@@ -137,7 +137,7 @@ function createFpv(svg) {
     return s + '</g>';
   }
 
-  function draw(f, craft, camTilt, followers) {
+  function draw(f, craft, camTilt, followers, ghosts) {
     if (!st.course) return;
     fit();
     const c = camera(f, craft, camTilt);
@@ -196,6 +196,17 @@ function createFpv(svg) {
       if (q[2] < NEAR) continue;
       const p = scr(c, q);
       items.push({ z: q[2], s: '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + Math.max(2, (c.foc * 0.06) / q[2]).toFixed(1) + '" fill="#3d3935" class="fi"/>' });
+    }
+    // ghosts: a ring in the ghost's colour, as big as the craft, with its name over it
+    for (const g of ghosts || []) {
+      const q = toCam(c, [g.x, g.y, g.z + 0.04]);
+      if (q[2] < NEAR) continue;
+      const p = scr(c, q);
+      const rad = Math.max(5, (c.foc * Math.max(0.08, (craft.look.span || 0) / 2 || craft.look.armLen + craft.look.propR)) / q[2]);
+      const col = esc(g.col || '#231e16');
+      let svg = '<g class="gfpv"><circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + rad.toFixed(1) + '" fill="none" stroke="' + col + '" stroke-width="4" stroke-dasharray="10 7"/>';
+      if (g.label) svg += '<text x="' + p[0].toFixed(1) + '" y="' + (p[1] - rad - 8).toFixed(1) + '" fill="' + col + '">' + esc(g.label) + '</text>';
+      items.push({ z: q[2], s: svg + '</g>' });
     }
     items.sort((a, b) => b.z - a.z);
     for (const it of items) s += it.s;

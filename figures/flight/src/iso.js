@@ -42,7 +42,7 @@ function createIso(svg, overlay) {
     svg.appendChild(g);
     return g;
   };
-  const gGround = layer('ground'), gShadow = layer('shadows'), gParcel = layer('parcel'), gSolids = layer('solids'), gRings = layer('rings'), gXray = layer('xray');
+  const gGround = layer('ground'), gShadow = layer('shadows'), gParcel = layer('parcel'), gSolids = layer('solids'), gRings = layer('rings'), gGhosts = layer('ghosts'), gXray = layer('xray');
   const craftG = document.createElementNS(SVGNS, 'g');
   craftG.setAttribute('id', 'craft');
   const craftShadow = document.createElementNS(SVGNS, 'g');
@@ -237,7 +237,7 @@ function createIso(svg, overlay) {
 
   let lastAz = st.az;
   /** Draws one frame. `vw`, `vh` are the view's pixel size. */
-  function draw(f, look, followers, dt, vw, vh) {
+  function draw(f, look, followers, dt, vw, vh, ghosts) {
     if (!st.course) return;
     if (lastAz !== st.az) {
       lastAz = st.az;
@@ -306,19 +306,34 @@ function createIso(svg, overlay) {
     st.cut = now;
     // and an x-ray outline on top, so the craft never vanishes
     gXray.innerHTML = now.size ? craftSvg(look, f, scale, true) : '';
+    // ghosts fly on top of everything, as dashed outlines in their own colour
+    let gh = '';
+    for (const g of ghosts || []) {
+      const pose = { x: g.x, y: g.y, z: g.z, yaw: g.yaw, pitch: g.pitch, roll: g.roll, armed: true, crashed: false, spin: 0, motorsOut: [] };
+      gh += '<g class="ghostcraft" style="--gc:' + esc(g.col || '#231e16') + '">' + craftSvg(look, pose, scale, true) + '</g>';
+    }
+    gGhosts.innerHTML = gh;
     // next gate / checkpoint highlight
     svg.querySelectorAll('.next').forEach((el) => el.classList.remove('next'));
     if (f.next && f.next.kind === 'gate') svg.querySelectorAll('.g' + (f.next.n - 1)).forEach((el) => el.classList.add('next'));
     if (f.next && f.next.kind === 'checkpoint') svg.querySelectorAll('.c' + (f.next.n - 1)).forEach((el) => el.classList.add('next'));
-    drawOverlay(f, vb, vw, vh);
+    drawOverlay(f, vb, vw, vh, ghosts, scale * (look.span ? look.span / 2 : look.armLen + look.propR));
   }
 
-  function drawOverlay(f, vb, vw, vh) {
+  function drawOverlay(f, vb, vw, vh, ghosts, reach) {
     let s = '';
     const toPx = (p) => {
       const q = proj(p);
       return [((q[0] - vb[0]) / vb[2]) * vw, ((q[1] - vb[1]) / vb[3]) * vh];
     };
+    // each ghost's name tag sits just above it
+    for (const g of ghosts || []) {
+      if (!g.label) continue;
+      const [x, y] = toPx([g.x, g.y, g.z + reach + 0.15]);
+      if (x < -40 || x > vw + 40 || y < -20 || y > vh + 20) continue;
+      const w = textWidth(g.label, 11) + 12;
+      s += '<g class="glabel" style="--gc:' + esc(g.col || '#231e16') + '" transform="translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ')"><rect x="' + (-w / 2).toFixed(1) + '" y="-19" width="' + w.toFixed(1) + '" height="17" rx="6"/><text y="-6.5">' + esc(g.label) + '</text></g>';
+    }
     if (f.next) {
       const n = f.next;
       const label = nextLabelOf(n) + '  ' + Math.round(Math.hypot(n.x - f.x, n.y - f.y, n.z - f.z)) + 'm';

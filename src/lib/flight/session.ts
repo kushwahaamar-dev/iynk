@@ -29,6 +29,14 @@ export interface FlightSnapshot {
   splits: number[];
 }
 
+/** What a session started from: replaying its log from here gives the same flight. */
+export interface FlightOrigin {
+  craft: FlightCraft;
+  course: Course;
+  calc: CalcOutputs;
+  opts: { mode?: string; faults?: CraftFaults; windOn?: boolean };
+}
+
 export interface FlightSession {
   getState(): FlightSnapshot;
   subscribe(listener: () => void): () => void;
@@ -38,6 +46,7 @@ export interface FlightSession {
   frame(): FlightFrame;
   /** Every action with the physics step it landed on: replay it to verify a run. */
   log(): ReadonlyArray<{ step: number; action: FlightAction }>;
+  origin: FlightOrigin;
   sim: SimState;
 }
 
@@ -101,6 +110,7 @@ export function createSession(
   };
   return {
     sim,
+    origin: { craft, course, calc, opts: { ...opts } },
     getState: () => snap,
     subscribe(listener) {
       listeners.add(listener);
