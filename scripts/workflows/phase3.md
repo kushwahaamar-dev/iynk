@@ -72,6 +72,22 @@ share a file). Two jobs, the T1 translation rules apply to both:
 
 Done when `npx vitest run src/i18n` passes and no leaf of yours equals English unless it should.
 
+### P3-figs-<lang> (wave T2a, beside wave B)
+
+Job 2 of P3-ui-<lang> on its own, run early because `src/i18n/figures/<lang>.json` is a new file no wave-B agent
+touches: one entry for every key in `src/i18n/figure-keys.json` as it is now (1866 strings). Wave B's new figures add
+keys later; P3-ui-<lang> adds that delta after gate 2. Owns only `src/i18n/figures/<lang>.json`. Done when
+`npx vitest run src/i18n/figure-strings.test.ts` passes for your language and the file is pushed.
+
+### P3-prompts (wave T2a, beside wave B)
+
+Owns `figures/prompts/<id>.md` for the figures that have none and that no wave-B agent is building: boards
+`esp32-s3-devkitc-1`, `nano`, `nodemcu`, `pico`; robotics `esp32-s3-build`; parts `breadboard`, `led`, `resistor`,
+`soil-moisture`, `ssd1306`, `traffic-light`, `wire`; modules `soil-moisture`, `ssd1306`, `traffic-light`, `uln2003`.
+Each in the format of `figures/prompts/rgb-led.md`: read the figure source and look at its built page
+(`python3 -I figures/tools/cfshoot.py <kind>/<id> --out <your scratchpad>`), then describe what it draws and does, as
+built (no feature the figure doesn't have). Commit each record as you finish it.
+
 ### P3-prose-<lang>-<n>
 
 Wave B's items' prose and whatever T1 left, through `scripts/workflows/phase3-prose.js` with the same rules as T1.
