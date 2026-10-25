@@ -30,8 +30,8 @@ Amar said yes at 08:10. Project `simlab-hacktx` in scope `kushwahaamar2ak5-7403s
 Production variables (encrypted, uploaded from `.env.local` through stdin, values trimmed): `META_API_KEY`,
 `META_API_BASE`, `META_MODEL`, `META_IMAGE_MODEL`, `META_TRANSCRIBE_MODEL`, `GEMINI_API_KEY`, `GEMINI_MODEL`,
 `SERPAPI_KEY`, `SERPAPI_MONTHLY_BUDGET`, `NEXT_PUBLIC_SITE_URL=https://simlab-hacktx.vercel.app`. Not uploaded: the
-Solana values (phase 4 skipped), `DATABASE_URL` (no Tiger), `NEXT_PUBLIC_REALTIME_URL` (waits for the Vultr relay;
-the laptop's `ws://127.0.0.1` address can't work from an https page).
+Solana values (phase 4 skipped) and `DATABASE_URL` (no Tiger). `NEXT_PUBLIC_REALTIME_URL` was added at 08:34, once
+the Vultr relay let the site in (below); the laptop's `ws://127.0.0.1` address can't work from an https page.
 
 Two failures on the way: the first upload got an HTML error page from `api.vercel.com/v2/files` (transient; the retry
 uploaded), then the build failed its typecheck because `src/content/drones/_checks.ts`, a test helper without
@@ -41,12 +41,31 @@ leaves out that helper and `src/lib/server/ai/__test__/`, the only two test help
 
 | Check on https://simlab-hacktx.vercel.app | Result |
 |---|---|
-| `/api/status` | `ai`, `image`, `voice`, `search`, `gemini` true; `realtime`, `db`, `solana` false |
+| `/api/status` | `ai`, `image`, `voice`, `search`, `gemini` true; `db`, `solana` false; `realtime` false until the 08:38 redeploy, true since |
 | `node scripts/smoke-search.mjs --base …` | 5 of 5 (offers best USD 28.09, web, nearby, events, videos) |
 | `POST /api/ai/chat` (board, uno-r3, en) | streamed answer from Meta |
 | `POST /api/mcp` `initialize` | 200, `websiteUrl` is the public origin |
 | `/`, `/en`, Uno R3, en and es Blink, robotics, quad5, fly, together, `/figures/boards/uno-r3.html`, `/api/openapi.json` | 307 to `/en`, the rest 200 |
 | Chromium on the 8 demo pages | no page errors, console errors or failed requests; each lab page has its figure frame |
+
+### The room relay on Vultr (08:34)
+
+VM `simlab-realtime`, id `b2a815bf-8b1b-4c2c-90d2-33e3542c379e`, 216.128.138.203, `vc2-1c-1gb` in `dfw`, Ubuntu
+24.04. It was created at 07:58 CDT by `scripts/realtime-vultr-create.sh` from another machine or session (its
+Vultr SSH key `simlab-realtime-deploy` isn't on Amar's Mac), and that run's relay allowed only localhost pages. Amar
+added this Mac's `~/.ssh/id_ed25519.pub` with `ssh-copy-id` at 08:33. A checksum dry run of `rsync` showed the
+VM's `server/realtime` and `deploy/realtime` match the repo, so the redeploy only changed the origins:
+
+```bash
+REALTIME_ALLOWED_ORIGINS="https://simlab-hacktx.vercel.app,http://localhost:3000,http://127.0.0.1:3000,http://localhost:4317,http://127.0.0.1:4317" \
+  VULTR_HOST=216.128.138.203 bash scripts/realtime-deploy.sh
+```
+
+`https://216-128-138-203.sslip.io/healthz` answers `{"ok":true}` with a Let's Encrypt certificate. A WebSocket from
+the Vercel origin and from `http://localhost:3000` opens; one from another origin gets 403. Vercel production has
+`NEXT_PUBLIC_REALTIME_URL=wss://216-128-138-203.sslip.io/ws`, and production was redeployed for it (08:38). Then
+`/api/status` has `realtime` true, and two separate Chromium profiles (en and es Blink, `?room=`) on the live site
+join one room over that relay: status "Live", each sees the other with their language, no console errors.
 
 The first visit to a page after a deploy is slow (quad5 took 24 s to go quiet once, then 1.9 s), so open the demo
 pages once before judging.

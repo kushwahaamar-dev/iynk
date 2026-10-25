@@ -215,8 +215,12 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   Relay: "Vultr server" (a paid VM with HTTPS for rooms on the live site and the Vultr track). Tiger: "Skip it", so
   no leaderboard and no Tiger Data track. Bug hunt: "No, freeze the app", so the pages stay as they are for the
   video and judging; the audit is not relaunched.
+- **10-25 08:13 to 08:34, Amar (Vultr).** Added `VULTR_API_KEY` to `.env.local` himself. The create script found a
+  `simlab-realtime` VM already made at 07:58 from another machine or session, with an SSH key this Mac doesn't have
+  and a relay that let in only localhost pages. Asked who set it up and how to go on, Amar answered "how to do step 2
+  step by step" (add this Mac's key), then "done all step 6": he ran `ssh-copy-id` with the root password from the
+  Vultr dashboard. Decision: keep that VM (no second one), keep its localhost origins and add the Vercel origin.
 
-## 6. Lessons learned (apply them)
 
 - **Never SendMessage a running Workflow agent by its id.** It starts a duplicate copy working on the same files
   instead of reaching the live agent. Talk to running agents through files they re-read, or through their follow-up

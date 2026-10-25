@@ -139,9 +139,10 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
      `.env.local` (asked 08:13); then `scripts/realtime-vultr-create.sh`, `REALTIME_ALLOWED_ORIGINS=https://simlab-hacktx.vercel.app
      VULTR_HOST=<ip> scripts/realtime-deploy.sh`, set `NEXT_PUBLIC_REALTIME_URL=wss://<ip-with-dashes>.sslip.io/ws`
      on Vercel and redeploy.
-  3. Done locally 07:51 (see "Keys smoke") and on **https://simlab-hacktx.vercel.app** at 08:20 (deployed 08:20;
-     `docs/hacktx/DEPLOY.md` "Production on Vercel"): everything on but realtime, db and solana. Still to do before
-     judging: JUDGE-QA's "Recheck before judging" and PITCH's "Confirm before pitching".
+  3. Done locally 07:51 (see "Keys smoke") and on **https://simlab-hacktx.vercel.app** (`docs/hacktx/DEPLOY.md`
+     "Production on Vercel"): everything on but db and solana. Rooms on the live site run through the Vultr relay
+     `wss://216-128-138-203.sslip.io/ws` since the 08:38 redeploy, checked with two browser profiles. Still to do
+     before judging: JUDGE-QA's "Recheck before judging" and PITCH's "Confirm before pitching".
   4. Video 08:30-10:00 from `docs/hacktx/VIDEO.md` (setup, shot list, clicks checked at gate 3). Devpost by 10:30
      from `docs/hacktx/DEVPOST-WRITEUP.md`, filling its [BRACKETS]; Amar submits.
   Optional, small, if someone has time: the robotics HUD verdict is English only (`benchStatus` fills English), the fr
@@ -157,6 +158,10 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-25 08:39 CDT (Amar): Amar added this Mac's SSH key to the Vultr VM; the relay now also lets in
+  https://simlab-hacktx.vercel.app (localhost origins kept), Vercel has `NEXT_PUBLIC_REALTIME_URL` and was
+  redeployed. Live rooms checked across two profiles. Next: Amar's video and Devpost; the app stays frozen.
 
 - 2026-10-25 08:26 CDT (Amar): Vultr already has `simlab-realtime` (216.128.138.203, vc2-1c-1gb, dfw), created
   07:58 CDT by `scripts/realtime-vultr-create.sh` from somewhere else, with an SSH key `simlab-realtime-deploy` that
