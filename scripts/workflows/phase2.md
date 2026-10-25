@@ -5,6 +5,9 @@ Planned by Amar's session on 2026-10-24 at 19:26 CDT, after gate 1 went green ap
 working tree (`/Users/amar/Codes/ak/simlab`) and owns the files listed in its section. If a session dies, the next
 driver relaunches only the unfinished labels with this file as the brief.
 
+Wave A ran 19:29–21:27 CDT with a pause (`wf_bde0e200-6a3`): all 9 labels done, every commit pushed. Wave B runs
+under Amar's 22:20 full-autonomy go; its sections below carry wave A's leftovers.
+
 Phase 2's goal is §4's bar for all 38 items in English: no item is a placeholder or a 404. Two waves, so no more than
 10 agents run at once (the 14:19 usage-limit stop happened with 56). Wave B starts after the driver closes wave A.
 
@@ -54,7 +57,9 @@ Wave A goes first because it holds what wave B builds on: the engine requests, t
    `docs/requests/<your-label>-to-phase3-strings.md` so phase 3 translates them. Item prose is English only
    (`src/i18n/content/en/...`); the fallback shows it in every language with a notice.
 7. **Other agents' half-done work will show up** in typecheck, eslint and tests. Judge your work by errors in your own
-   files and by your own tests; mention others' failures in your report, don't fix them.
+   files and by your own tests; mention others' failures in your report, don't fix them. Vitest's timeout is 30 s for
+   the whole suite (`vitest.config.mts`); don't add per-test budgets. A test that times out while ten agents share the
+   machine is rerun alone before you call it failed.
 8. **Git, carefully.** Never `git add -A`/`.`, `git stash`, `git checkout -- <path>`, `git reset`, `git pull` or
    `git rebase`: in a shared tree they would grab or destroy other agents' work. Commit small steps with only your
    paths: `git add <your paths> && git commit -m "<what and why>" -- <your paths>` (retry after a few seconds if
@@ -185,11 +190,19 @@ approved); sound off by default and audible when on; e2e for both; no console er
 
 ### P2-engine-b
 
-Same ownership as P2-engine. Answers wave B's engine requests (sensor benches, motor drivers, new boards' assembly) and
-rebuilds the figures no other wave-B agent owns. Also takes wave A's leftovers: `docs/requests/P2-engine-gaps.md` and
-`docs/requests/driver-to-P2-engine-b-figure-layout.md` (part-page label overlaps, bench stats over the art).
-Done when: every wave-B request is answered, the six part pages in the layout request pass `cfshoot.py`, and the engine
-tests and existing probes pass.
+Same ownership as P2-engine, plus every existing figure source and built page under
+`figures/{boards,robotics,modules,parts,drones}/` that no other wave-B label owns (wave A's owners are gone). Answers
+wave B's engine requests (sensor benches, motor drivers, new boards' assembly) first, since other agents wait on them.
+Then wave A's leftovers, in this order:
+1. `docs/requests/driver-to-P2-engine-b-figure-layout.md`: the six part pages with overlapping labels, bench stats over
+   the art, tb6612fng's framing. Judges see these first.
+2. Circuit-part faults (`P2-engine-gaps.md`, `parts-inputs.md` §1.7), then use them so the transistor-switch
+   breadboard redraws its wiring faults (`P2-rob-motor-gaps.md` first item).
+3. The UNO R4 `dac-wave` circuit drops its A0 → A1 jumper and its "read back on A1" title (`P2-uno-r4-gaps.md` 2).
+4. The rest of `P2-engine-gaps.md` as time allows (props, ULN2003 breadboard part and stepper coils, part pages
+   framed on the part, NPN overdrive, whoop-scale motors). Figure string dictionaries are phase 3's.
+Done when: every wave-B request is answered, the six part pages pass `cfshoot.py`, the benches' stats clear the art,
+and the engine tests and existing probes pass.
 
 ### P2-microbit, P2-nucleo
 
@@ -236,14 +249,14 @@ Done when: §4's bench bar for both.
 Audits: `drones.md`. Owns crafts `agrihex` and `swarm` (content, prose, figures, prompts, their flight params and
 courses).
 Do: figures in their own palettes; the brief's agricultural spray and nano/Crazyflie swarm; missions (spray coverage,
-light show).
+light show). How a craft's content flies: `docs/requests/P2-flight-to-drone-content-flying.md`.
 Done when: §4's drone bar, flying through P2-flight's registry.
 
 ### P2-drones-vtol
 
 Audits: `drones.md`. Owns crafts `vtol`, `tricopter`, `octo` (as above) and `src/content/schema.ts` (this wave).
 Do: VTOL transition, tricopter tail servo, octo motor-out (the sim supports all three); default builds that don't open
-on a warning.
+on a warning. How a craft's content flies: `docs/requests/P2-flight-to-drone-content-flying.md`.
 Done when: §4's drone bar for all three.
 
 ### P2-fun
@@ -253,7 +266,15 @@ wave), the dronelab and common message files, `/api/leaderboard` callers, the wo
 Do: §3.2 item 8 ghosts (your best-lap ghost from `replay()`; others' poses through the room adapter, BroadcastChannel
 until the relay is approved); Break it slow-mo replay with "here's why" and one-click fix; daily challenge share link
 and leaderboard (degrades cleanly without `DATABASE_URL`); flight-lap telemetry.
-Done when: e2e: a ghost flies a lap beside you, a crash replays, a challenge link opens the right course.
+Also owns this wave `e2e/fly.spec.ts`, `src/lib/telemetry/**`, `src/lib/sound/**`, `src/lib/search/client.ts` and
+`src/i18n/messages/*/shell.json`, and takes wave A's leftovers in them:
+- `docs/requests/P2-social-to-driver-telemetry.md` §1–4: the client honours the usage opt-out, the `step.done` and
+  `search.call` kinds with their two calls, the privacy copy that replaces "no tracking", the ARCHITECTURE §0 line.
+- `docs/requests/P2-flight-gaps.md`: wing and delivery now have content and prose, so their fly e2e must run and pass.
+- `docs/requests/P2-drones-fpv-gaps.md` 3–4: the delivery drop takes the parcel's mass off, and AUTO flies to a land
+  goal level before it descends.
+Done when: e2e: a ghost flies a lap beside you, a crash replays, a challenge link opens the right course; every craft
+with content passes `e2e/fly.spec.ts`; unticking usage sharing stops every telemetry send (a unit test).
 
 ## Between and after the waves (the driver)
 
