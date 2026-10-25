@@ -10,8 +10,8 @@ the Uno board page.
 Screenshots are in
 `/private/tmp/claude-501/-Users-amar-Codes-ak-simlab/5990e040-4ffc-48cb-ba35-923d41b56efe/scratchpad/F-audit-boards/shots/`
 (named `<lang>_boards_<board>_<lesson>-<d|w|p>-<light|dark>.png`, with `-full.png` for the whole page; `int-*` and
-`int2-*` are after clicks). The scripts that took them, and `metrics.json` with every measurement below, are in the
-folder above `shots/`.
+`int2-*`, `int3-*` are after clicks). The scripts that took them, `metrics.json` with every measurement below, and
+`crops/` (cut-outs of the full-page shots) are in the folder above `shots/`.
 
 ## The numbers
 
@@ -50,6 +50,10 @@ index, the Uno page and the Blink lesson, light and dark; every focusable elemen
   ("LTC3633 dual buck regulator … burned"), and the opened row explains What you see / Why / Fix in plain words.
   Repair works. This is the most memorable thing on the page.
 - **Keyboard**: X, C, B, Space, Q/E/R all work; the "?" dialog lists them.
+- **Assembly teaches the order**: "Do it" on step 10 before step 3 doesn't advance and says why ("Not yet. Low parts
+  first: with tall parts in, the board rocks…"); done steps turn green with a tick, "Start over" resets.
+- **Inspect LED** (Wire it in) opens a clean dialog with the part's own figure (five LEDs on a breadboard, Colour
+  menu, See-through, Labels) (`int3-inspect-led.png`).
 - **Quiz** gives a reason with every answer ("One full cycle is 500 ms on plus 500 ms off: one second").
 - **Copy**: board taglines, power limits, pin notes and fault explanations are specific and human. Keep every word.
 - **Dark mode** is coherent: the figure stays a paper plate, the ink cards invert cleanly, the cobalt language chip
@@ -77,6 +81,9 @@ the right-hand pane ("Serial · Checks · Break it"), so Trigger and the figure 
 goes in the column next to the figure. Rows become compact one-liners (kind chip, title, a small outlined
 "Trigger" button), the opened row keeps What you see / Why / Fix. On the phone, Trigger scrolls the figure into view
 (`figure.scrollIntoView({block:"start"})`) before sending the fault.
+The same happens to **Assembly** on the board page: pressing "Do it" on step 1 (y 2297 at 1440) animates a figure
+that is then 2,247 px above the top of the screen (measured: iframe `y = -2247`). Assembly belongs in the pane beside
+the figure too (U2), or "Do it" scrolls the figure into view first.
 
 ### B2. The phone figure is a thumbnail under a pile of chrome (blocker on a phone)
 
@@ -128,13 +135,17 @@ Why it matters: a judge who lands on `/en/boards/uno-r3` (the pitch's first tab)
 the screen, a fact table and no way to start a lesson without scrolling twice.
 Screenshots: `en_boards_uno-r3-d-light.png`, `en_boards_uno-r3-d-light-full.png`, `en_boards_basys3-w-light.png`.
 Proposal:
-1. Hero = workspace frame like U1: figure pane left (about 62 %, full height of the viewport minus the top bar),
-   right column: kicker, h1 (40 px), tagline, progress, one primary button **Start: Meet the Uno** (or
-   **Continue: lesson n** once begun), a secondary "Assemble it" that scrolls to Assembly, then Key facts as a
-   compact two-column `dl` with no filled boxes.
+1. Hero = workspace frame like U1: figure pane left (about 62 %, full height of the viewport minus the top bar).
+   Right pane: kicker, h1 (40 px), tagline, progress, one primary button **Start: Meet the Uno** (or
+   **Continue: lesson n** once begun), then tabs **Key facts · Assembly · Break it · On-board controls**, so every
+   control that moves the figure sits next to it (B1). Key facts as a compact two-column `dl` with no filled boxes.
 2. Lessons directly under the hero as a dense 4-column list at ≥ 1440 (number, title, level; no card per row).
-3. Then a sticky in-page tab bar: **Assembly · Break it · On-board controls · Pinout · Wire it in · Power and
-   limits · Sources**, one panel at a time. Page height drops to about 2 screens; nothing is removed.
+3. Then a sticky in-page tab bar for the reference material: **Pinout · Wire it in · Power and limits · Sources**,
+   one panel at a time. Page height drops to about 2 to 3 screens; nothing is removed.
+
+Also on the board page: on the four boards with variants (UNO R4, Pico, ESP32-S3, Pi) the variant switch is a
+1,232 px wide pill holding two to four short labels, an empty bar that pushes the figure down another 68 px
+(`crops/boards-grid.png`). Put it in the figure toolbar as a compact segmented control or a select.
 
 ### U3. Two copies of the same controls on screen (ugly)
 
