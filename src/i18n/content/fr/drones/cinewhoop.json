@@ -1,0 +1,424 @@
+{
+  "title": "Cinewhoop 3 pouces",
+  "tagline": "La plateforme caméra carénée : des plans en une seule prise, fluides, à travers les maisons, près des gens.",
+  "sub": "Plateforme caméra HD carénée",
+  "hint": "Montez-le, passez les vérifications au banc, puis filmez une visite de la maison en une seule prise",
+  "noun": "cinewhoop",
+  "overview": "Un cinewhoop est une plateforme caméra, pas un acrobate. Chaque hélice de 3 pouces tourne dans un carénage, un anneau qui la protège, si bien que le quad peut voler à travers des maisons, des boutiques et des salles, près des gens, et survivre à un choc contre un mur. Celui-ci est un châssis carbone true-X de 147 mm avec une stack 20 x 20 (un ESC 4-en-1 de 35 A et un contrôleur de vol F722 sous Betaflight), un air unit DJI O3 pour le retour vidéo HD, un récepteur ExpressLRS et, sur le dessus, une caméra d'action nue qui enregistre les images. Les carénages, les deux caméras et les petites hélices coûtent du temps de vol : comptez 5 à 6 minutes sur une 4S 1100. Choisissez la batterie, les moteurs et les hélices et regardez les chiffres changer, montez-le pièce par pièce, passez les vérifications au banc sans hélices, puis faites une prise fluide à travers la maison.",
+  "practice": "Volez d'abord la course de portes du jardin, puis la prise pour l'agence immobilière : entrez par la porte d'entrée, descendez le couloir, sortez par la baie vitrée, passez au-dessus de la piscine, montez au-dessus du toit et redescendez jusqu'à la plateforme, lentement et en douceur. Sur un vrai cinewhoop : tournez chaque hélice à la main dans son carénage avant chaque vol, vérifiez l'OSD et la liaison sans hélices, testez le failsafe, et volez avec le profil ciné et des gestes doux aux manches. Descendez lentement ou en avançant, sinon le quad oscille dans son propre souffle d'hélices, et posez-vous vers 3,5 V par cellule.",
+  "design": {
+    "fixed": {
+      "FRAME": "Châssis et plaques carbone 3 pouces",
+      "DUCTS": "Carénages imprimés et pare-chocs en TPU (à imprimer vous-même)",
+      "ESC": "ESC 4-en-1 de 35 A, 20 x 20",
+      "FC": "Contrôleur de vol F722, 20 x 20",
+      "VTX": "Air unit et caméra DJI O3",
+      "RX": "Récepteur ExpressLRS 2,4 GHz",
+      "XT60": "Câble XT60 et condensateur à faible ESR",
+      "TOP": "Plaque supérieure et entretoises",
+      "STRAP": "Sangle de batterie et patin antidérapant",
+      "GOPRO": "Caméra d'action nue, cale en TPU et BEC"
+    },
+    "verdict": {
+      "ok": "Les pièces vont ensemble. Assez fluide et stable pour filmer.",
+      "weak": "Rapport poussée/poids de {tw}:1 : trop peu pour porter deux caméras et les carénages. Il s'enfonce dans les virages et ne peut pas sortir de son propre souffle d'hélices. Visez au moins 3:1.",
+      "over": "{kv} KV en {cells}S font tourner une hélice de 3 pouces plus vite que ce pour quoi ces moteurs sont faits : ils chauffent et peuvent désynchroniser. Les cinewhoops 6S utilisent des moteurs d'environ 1700 à 2150 KV."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Plaque inférieure carbone, bras et rayons des carénages",
+      "what": "Une plaque inférieure en carbone de 3 mm en forme de true-X, avec les moteurs à 147 mm l'un de l'autre en diagonale (52 mm vers l'avant ou l'arrière et 52 mm de chaque côté du centre). Des bras courts et deux rayons par coin tiennent chaque anneau de carénage. Au milieu se trouvent les trous de 20 x 20 mm de la stack, et à l'avant les plaques latérales de la caméra O3. Le jeu de plaques pèse environ 62 g."
+    },
+    "DUCTS": {
+      "name": "Carénages (protections d'hélices) avec pare-chocs en TPU",
+      "what": "Un anneau autour de chaque hélice, de 79 mm de diamètre intérieur et 24 mm de haut, avec une bande pare-chocs en TPU souple à l'extérieur. Une hélice de 3 pouces fait 76,2 mm de diamètre : les bouts passent donc à 1,4 mm de la paroi. Les carénages tiennent les hélices loin des murs, des meubles et des gens. Un jeu serré en bout de pale donne un peu de poussée en plus à basse vitesse, mais les carénages ajoutent environ 52 g et de la traînée, ce qui coûte du temps de vol et rend le quad sensible au vent."
+    },
+    "MOTORS": {
+      "name": "4 moteurs brushless 2004",
+      "what": "Des moteurs à cage tournante avec un stator de 20 mm sur 4 mm de haut, 12 bobines et 14 aimants (12N14P) : le motor_poles de Betaflight reste donc à 14. Environ 19 g chacun avec les fils, chacun vissé sur la plaque inférieure au milieu de son carénage. Les 3000 KV par défaut sont faits pour la 4S. L'option 1404 est plus légère mais plus faible, et a 12 aimants (9N12P) : elle demande donc motor_poles = 12."
+    },
+    "ESC": {
+      "name": "ESC 4-en-1 de 35 A, 20 x 20 (AM32)",
+      "what": "Quatre pilotes de moteur de 35 A sur une seule carte de 26 mm, sur des entretoises courtes au bas de la stack, avec les pastilles de batterie à l'arrière. Une puce AT32 fait tourner le firmware AM32 (BLHeli_32 est mort depuis que son développeur a arrêté en 2024). Il reçoit le DShot300 du contrôleur de vol et, étant bidirectionnel, renvoie les rpm de chaque moteur pour le filtre RPM."
+    },
+    "WIRES": {
+      "name": "Fils de phase des moteurs soudés à l'ESC",
+      "what": "Trois fils par moteur, coupés à longueur et soudés sur les trois pastilles de ce coin de l'ESC. N'importe quel ordre fait tourner le moteur ; inverser deux fils, ou inverser le sens dans le firmware de l'ESC, le fait tourner dans l'autre sens. C'est la vérification des moteurs sans hélices qui montre quel coin tourne dans quel sens."
+    },
+    "FC": {
+      "name": "Contrôleur de vol F722, 20 x 20 (Betaflight)",
+      "what": "Un STM32F722 fait tourner Betaflight 2026.6.2 et lit un gyroscope ICM-42688-P. Il est monté sur silentblocs au-dessus de l'ESC, relié à lui par un faisceau 8 broches (tension batterie, masse, capteur de courant et les quatre signaux moteur). L'air unit DJI est câblé sur l'UART1 et le récepteur sur l'UART2. La flèche imprimée dessus doit pointer vers le nez : à l'envers, chaque correction part dans le mauvais sens et il se retourne au décollage."
+    },
+    "XT60": {
+      "name": "Câble XT60 et condensateur 470 µF 35 V",
+      "what": "Un câble en 14 AWG avec la prise XT60 jaune, soudé sur les pastilles de batterie de l'ESC, et un condensateur à faible ESR de 470 µF 35 V sur ces mêmes pastilles, pattes coupées court, bande sur la patte moins. Le condensateur absorbe les pics de tension que produisent les ESC quand ils freinent les moteurs, et qui atteindraient sinon le gyroscope et la vidéo. 35 V laissent de la marge sur une batterie 6S (25,2 V pleine). Monté à l'envers, il dégaze au premier branchement."
+    },
+    "CAM": {
+      "name": "Module caméra DJI O3, uptilt de 15°",
+      "what": "La caméra de l'O3, de 21,2 x 20 x 19,5 mm avec un objectif de 155 degrés, tenue entre deux plaques latérales au nez. Elle n'est inclinée vers le haut que de 15 degrés : un cinewhoop vole lentement et presque à plat, il lui faut donc peu d'inclinaison. Un câble coaxial amène l'image à l'air unit, qui l'envoie au masque et l'enregistre en même temps."
+    },
+    "VTX": {
+      "name": "Air unit DJI O3 (émetteur vidéo HD)",
+      "what": "L'émetteur vidéo numérique, de 32,5 x 30,5 x 14,5 mm et 36,4 g avec sa caméra, en haut de la stack. Il est alimenté directement par la batterie (7,4 à 26,4 V, 2S à 6S) et envoie du 1080p à 100 images par seconde au masque avec environ 30 ms de latence. Son câble 3-en-1 porte l'alimentation, la masse et l'UART1, par lequel Betaflight envoie l'OSD (MSP DisplayPort) que le masque dessine. Ses deux antennes sortent entre les carénages arrière. Ne l'alimentez jamais sans elles."
+    },
+    "RX": {
+      "name": "Récepteur ExpressLRS 2,4 GHz (CRSF)",
+      "what": "Un récepteur ELRS nano à l'arrière de la plaque inférieure, sur l'UART2 avec le protocole CRSF, son antenne ramenée vers l'arrière entre les carénages. C'est une liaison distincte de la vidéo : en intérieur, les murs peuvent figer l'image HD alors qu'ELRS garde le contrôle, ce qui est une des raisons d'avoir un récepteur séparé."
+    },
+    "TOP": {
+      "name": "Plaque supérieure et entretoises de 31 mm",
+      "what": "Une plaque carbone de 2,5 mm sur quatre entretoises, au-dessus du haut des carénages et loin des hélices. Elle ferme la stack et porte la batterie et la caméra d'action. Elle se pose une fois le contrôleur de vol, les caméras et le récepteur en place, car elle les recouvre."
+    },
+    "GOPRO": {
+      "name": "Caméra d'action nue, cale en TPU et BEC 5 V",
+      "what": "Une caméra d'action débarrassée de son boîtier et de sa batterie, environ 36 g, sur une cale en TPU inclinée à 14 degrés. Un petit BEC transforme la tension de la batterie en 5 V pour elle (3S à 6S en entrée, 5 V 3 A en sortie) ; les cartes Hero 10 et 11 ont besoin du firmware GoPro Labs pour démarrer sans batterie. Elle n'a aucune liaison de données avec le contrôleur de vol : elle enregistre les images que voit le client, avec les données gyroscopiques pour que Gyroflow ou ReelSteady puissent les stabiliser ensuite."
+    },
+    "BATT": {
+      "name": "Batterie LiPo, sangle et patin antidérapant",
+      "what": "La batterie sur la plaque supérieure derrière la caméra d'action, sur un patin antidérapant sous une sangle, centrée au-dessus du milieu des quatre moteurs pour que le quad soit équilibré. La 4S 1100 mAh par défaut fait 66 x 34 x 28 mm et 128 g. Une cellule LiPo fait 4,2 V pleine et 3,7 V en nominal ; posez-vous vers 3,5 V par cellule et stockez à 3,8 V."
+    },
+    "PROPS": {
+      "name": "Hélices carénées 3 pouces, 2 CW + 2 CCW",
+      "what": "Quatre hélices de 76 mm aux bouts larges et carrés, faites pour les carénages. Deux tournent en sens horaire et deux en sens antihoraire (props in) : les couples des moteurs s'annulent et le lacet vient de l'accélération d'une paire en diagonale. Le sélecteur propose une tripale (3x3x3), une pentapale au son plus doux mais un peu moins efficace (3x2x5) et une tripale à grand pas plus nerveuse (3x3.5x3). Elles se montent en dernier."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Commencez par la plaque inférieure",
+      "body": "Cherchez les fissures et le délaminage du carbone au niveau des rayons, et limez toute arête de carbone tranchante près du passage des fils : le carbone conduit et coupe les isolants."
+    },
+    "ducts": {
+      "title": "Boulonnez les carénages",
+      "body": "Chaque anneau sur son bras et ses deux rayons, la bande pare-chocs à l'extérieur. Vérifiez que chaque carénage est bien rond et d'équerre avec la plaque : c'est sur un carénage voilé qu'une hélice va frotter.",
+      "refusal": "Les carénages se boulonnent sur les rayons de la plaque inférieure : posez d'abord le châssis."
+    },
+    "motors": {
+      "title": "Vissez les quatre moteurs",
+      "body": "Au milieu de chaque carénage, fils tournés vers la stack. Utilisez les vis fournies avec les moteurs : une vis trop longue atteint les bobinages et met le moteur en court-circuit.",
+      "refusal": "Les moteurs se vissent sur la plaque inférieure : posez d'abord le châssis."
+    },
+    "esc": {
+      "title": "Montez l'ESC 4-en-1",
+      "body": "Sur les trous de 20 x 20, sur des entretoises courtes, avec les pastilles de batterie à l'arrière. Rien sous lui ne doit toucher le carbone.",
+      "refusal": "L'ESC se pose sur les trous de stack de la plaque inférieure : posez d'abord le châssis."
+    },
+    "wires": {
+      "title": "Soudez les fils des moteurs",
+      "body": "Coupez à longueur les trois fils de chaque moteur et soudez-les sur les pastilles de son coin de l'ESC. N'importe quel ordre fait tourner le moteur ; la vérification sans hélices montre dans quel sens.",
+      "refusal": "Les fils vont des moteurs à l'ESC : posez d'abord les deux."
+    },
+    "fc": {
+      "title": "Empilez le contrôleur de vol, flèche vers l'avant",
+      "body": "Sur silentblocs au-dessus de l'ESC, flèche imprimée vers le nez, avec le faisceau 8 broches branché. S'il doit être monté dans un autre sens, réglez align_board_yaw en conséquence.",
+      "refusal": "Le contrôleur de vol s'empile au-dessus de l'ESC : posez d'abord l'ESC."
+    },
+    "xt60": {
+      "title": "Soudez le XT60 et le condensateur",
+      "body": "Le câble rouge sur + et noir sur - des pastilles de batterie de l'ESC, et le condensateur de 470 µF sur ces mêmes pastilles avec sa bande côté moins, pattes coupées court. Vérifiez au multimètre qu'il n'y a pas de court-circuit entre + et -.",
+      "refusal": "Le XT60 et son condensateur se soudent sur les pastilles de batterie de l'ESC : posez d'abord l'ESC."
+    },
+    "cam": {
+      "title": "Posez la caméra O3",
+      "body": "Entre les deux plaques latérales au nez, inclinée de 15 degrés vers le haut, coaxial ramené vers la stack.",
+      "refusal": "La caméra se pose entre les plaques latérales du châssis : posez d'abord le châssis."
+    },
+    "vtx": {
+      "title": "Montez l'air unit O3",
+      "body": "En haut de la stack, avec le coaxial de la caméra clipsé, le câble 3-en-1 sur l'UART1 et la tension batterie du contrôleur de vol, et les deux antennes sorties entre les carénages arrière.",
+      "refusal": "L'air unit a besoin du contrôleur de vol en dessous et de la caméra pour se brancher : posez d'abord les deux."
+    },
+    "rx": {
+      "title": "Posez le récepteur ELRS",
+      "body": "À l'arrière de la plaque inférieure, son TX sur RX2 et son RX sur TX2 du contrôleur de vol, plus le 5 V et la masse. Ramenez l'antenne vers l'arrière entre les carénages, loin du carbone et des antennes vidéo.",
+      "refusal": "Le récepteur est câblé sur l'UART2 du contrôleur de vol : posez d'abord le contrôleur de vol."
+    },
+    "top": {
+      "title": "Posez la plaque supérieure",
+      "body": "Sur ses quatre entretoises, au-dessus du haut des carénages. Rien ne doit être pincé dessous, et aucun fil ne doit pénétrer dans un carénage.",
+      "refusal": "La plaque supérieure ferme la stack : posez d'abord le contrôleur de vol, la caméra, l'air unit et le récepteur."
+    },
+    "gopro": {
+      "title": "Montez la caméra d'action nue",
+      "body": "Sur sa cale en TPU à l'avant de la plaque supérieure, avec le câble du BEC sur l'alimentation de la batterie. Vérifiez que les carénages et les hélices sont hors de son image.",
+      "refusal": "La caméra d'action se monte sur la plaque supérieure : posez d'abord la plaque supérieure."
+    },
+    "batt": {
+      "title": "Sanglez la batterie",
+      "body": "Sur le patin antidérapant derrière la caméra d'action, centrée pour que le quad soit équilibré sur le milieu des quatre moteurs. Ne la branchez pas encore.",
+      "refusal": "La batterie se pose sur la plaque supérieure et se branche sur le XT60 : posez d'abord les deux."
+    },
+    "props": {
+      "title": "Montez les hélices, en dernier",
+      "body": "Seulement après le test au smoke stopper et la vérification du sens des moteurs, batterie débranchée. Les hélices horaires sur M1 et M4, les antihoraires sur M2 et M3, puis tournez chacune à la main : elle ne doit pas toucher son carénage.",
+      "refusal": "Les hélices se montent en dernier, dans les carénages et sous la plaque supérieure : passez d'abord le test au smoke stopper et la vérification du sens des moteurs."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "La batterie se branche sur le XT60. Une batterie 4S fait 16,8 V pleine et 14,8 V en nominal ; une 6S fait 25,2 V pleine.",
+    "XT60-ESC": "Des fils en 14 AWG vers les pastilles de batterie de l'ESC, avec le condensateur à faible ESR de 470 µF 35 V branché entre elles pour absorber les pics dus au freinage des moteurs.",
+    "ESC-MOTORS": "Trois fils de phase par moteur. N'importe quel ordre le fait tourner ; en inverser deux, ou l'inverser dans le firmware de l'ESC, le fait tourner dans l'autre sens.",
+    "FC-ESC": "Le faisceau 8 broches : les quatre signaux moteur en DShot300 (bidirectionnel, pour que l'ESC renvoie les rpm), plus la tension batterie, la masse et le capteur de courant pour l'OSD.",
+    "RX-FC": "ExpressLRS sur l'UART2 : le TX du récepteur sur le RX2 du contrôleur de vol et son RX sur TX2, plus le 5 V et la masse. Betaflight le règle en serial RX avec le protocole CRSF.",
+    "VTX-FC": "Le câble 3-en-1 de l'air unit : la tension batterie (7,4 à 26,4 V) et la masse, et l'UART1 pour le MSP DisplayPort, qui transporte l'OSD et les données de vol jusqu'au masque.",
+    "CAM-VTX": "Le coaxial de la caméra O3 dans l'air unit. L'air unit envoie le retour vidéo et l'enregistre en même temps.",
+    "XT60-GOPRO": "La caméra d'action nue n'a pas de batterie : un petit BEC branché sur l'alimentation de la batterie lui donne 5 V jusqu'à 3 A. Il n'y a pas de liaison de données ; elle enregistre de son côté."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Test au smoke stopper",
+      "pass": "La lampe n'a fait que clignoter : rien n'est en court-circuit et le condensateur est dans le bon sens. Vous pouvez brancher la batterie directement.",
+      "fail": "La lampe est restée allumée : quelque chose est en court-circuit, ici un condensateur monté bande côté plus. Reposez-le bande côté moins et refaites le test avant de brancher pour de bon."
+    },
+    "motors": {
+      "title": "Vérification du sens des moteurs (sans hélices)",
+      "pass": "Les quatre tournent dans le sens qu'attend le mixeur : M1 et M4 en horaire, M2 et M3 en antihoraire (props in). Les hélices peuvent maintenant être montées.",
+      "fail": "Un moteur a tourné dans le mauvais sens (sa flèche passe au rouge). La vérification l'inverse dans les réglages de l'ESC, comme vous le feriez dans ESC Configurator, au lieu de ressouder. Avec les hélices montées, il aurait retourné le quad au décollage."
+    },
+    "calibrate": {
+      "title": "Calibrage de l'accéléromètre",
+      "pass": "Calibré sur une surface plane : le mode angle, le maintien d'altitude et l'horizon de l'OSD savent maintenant où est l'horizontale, et le blocage d'armement NO_ACC_CAL de Betaflight a disparu.",
+      "fail": "Montez d'abord le contrôleur de vol et posez le quad sur une surface plane. Si la flèche pointe vers l'arrière, le calibrage n'y changera rien : tournez la carte ou faites set align_board_yaw = 180."
+    },
+    "clearance": {
+      "title": "Vérification du jeu des hélices (batterie retirée)",
+      "pass": "Chaque hélice a tourné à la main dans son carénage : un jeu régulier de 1,4 mm avec la paroi tout autour, aucun frottement et aucun bout ébréché. Un frottement ferait vibrer la caméra et donnerait de l'effet jello dans les images.",
+      "fail": "Débranchez la batterie, montez les carénages et les hélices, puis tournez chaque hélice à la main. Une hélice qui frotte le carénage, ou un bout ébréché ou tordu, se remplace avant le vol."
+    },
+    "arm": {
+      "title": "Vérification avant armement",
+      "pass": "La commande status ne liste aucun drapeau d'armement : le quad s'armerait. Cette vérification ne peut pas voir une carte montée à l'envers : regardez donc vous-même la flèche du contrôleur de vol avant le premier vol.",
+      "fail": "L'armement est bloqué, et status dit pourquoi : RXLOSS signifie aucune liaison avec le récepteur (posez le récepteur), NO_ACC_CAL signifie qu'il faut d'abord calibrer l'accéléromètre. Il faut le contrôleur de vol, le récepteur et la batterie, branchée."
+    },
+    "osd": {
+      "title": "Vérification de l'OSD et de la liaison (sans hélices)",
+      "pass": "Dans le masque : l'image HD avec l'OSD de Betaflight par-dessus (batterie, qualité de liaison, chrono). L'UART1 porte MSP et VTX_MSP (131073), et osd_displayport_device vaut MSP.",
+      "fail": "Posez le contrôleur de vol, la caméra et l'air unit O3 et le récepteur, puis branchez : l'air unit fonctionne sur la tension batterie, pas sur l'USB. Sur un vrai montage, une image sans OSD signifie en général qu'il manque le bit VTX_MSP sur l'UART1, que TX et RX sont inversés, ou qu'osd_displayport_device ne vaut pas MSP."
+    },
+    "failsafe": {
+      "title": "Test de failsafe (sans hélices)",
+      "pass": "Armé au banc sans hélices, radio coupée : RXLOSS, 1,5 s sur les dernières positions sûres des manches, puis DROP a arrêté les moteurs et désarmé. C'est le bon choix pour un quad caréné qui vole au-dessus des gens en intérieur.",
+      "fail": "Retirez les hélices, posez le récepteur, branchez une batterie et calibrez l'accéléromètre pour qu'il puisse s'armer, puis coupez la radio et surveillez les moteurs."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Premier réglage après le flashage",
+      "explain": "Règle le mixeur, l'orientation de la carte et le protocole moteur : DShot300 avec télémétrie bidirectionnelle, pour que chaque ESC renvoie les rpm. motor_poles vaut 14 pour ces moteurs 12N14P. L'O3 est sur l'UART1 avec la fonction 131073, MSP (1) plus VTX_MSP (131072), ce qui est depuis Betaflight 4.4 la façon dont un module DJI reçoit l'OSD ; l'ancien displayport_msp_serial a disparu. vcd_video_system = HD dispose l'OSD sur la grille HD de 53 x 20. ExpressLRS est en serial RX (64) sur l'UART2 avec CRSF."
+    },
+    "rpm": {
+      "title": "Filtre RPM : pas de jello",
+      "explain": "Les petits moteurs rapides secouent le gyroscope, et ça se voit en jello, une ondulation qui roule dans les images. Avec les rpm de chaque moteur, Betaflight place des filtres notch exactement sur le bruit de chaque moteur et sur ses harmoniques. Il faut le DShot bidirectionnel et le bon motor_poles ; les autres valeurs sont celles par défaut de Betaflight, listées avec leurs plages."
+    },
+    "switches": {
+      "title": "Interrupteurs et failsafe",
+      "explain": "aux prend le numéro du mode : 0 ARM, 1 ANGLE, 3 ALTHOLD, 35 FLIP OVER AFTER CRASH (turtle). Le canal se compte à partir de 0 = AUX1, et la plage est en microsecondes. Il n'y a pas de mode ACRO à activer : l'acro, c'est ce qui vole quand le mode angle et le maintien d'altitude sont coupés. Le failsafe DROP arrête les moteurs après 1,5 s sans liaison : en intérieur, près des gens, tomber dans ses carénages est plus sûr que de continuer à voler."
+    },
+    "alt": {
+      "title": "Maintien d'altitude",
+      "explain": "L'ALTHOLD de Betaflight (depuis 2025.12) tient la hauteur grâce au baromètre du contrôleur de vol : vérifiez donc que votre carte en a un. Avec ANGLE et ALTHOLD actifs ensemble, des gaz au centre tiennent la hauteur ; la zone morte, ce sont les 20 % de course autour du centre qui comptent comme centrés, et le manche à fond fait monter ou descendre à 1,5 m/s (15 dixièmes). L'inclinaison est plafonnée à 30 degrés."
+    },
+    "cine": {
+      "title": "Rates ciné sur un interrupteur",
+      "explain": "Le ciné n'est pas un mode de vol Betaflight mais un second profil de rates aux réglages doux : avec les rates ACTUAL, le manche à fond vaut le plus grand de rc_rate et srate multiplié par 10, soit 150 degrés par seconde en roulis et en tangage et 100 en lacet. rateprofile se compte à partir de 0 : 1 est donc le Rateprofile 2 du Configurator. La ligne adjrange avec la fonction 12 permet à un interrupteur sur AUX5 de choisir le profil. Plus de lissage rc et de lissage du feedforward arrondissent les gestes aux manches, au prix d'un peu de latence."
+    },
+    "angle": {
+      "title": "Mode angle",
+      "explain": "Le contrôleur de vol remet le quad à plat quand vous lâchez et ne l'incline jamais au-delà d'angle_limit : 30 degrés ici au lieu des 60 par défaut, ce qui garde le plan stable et la vitesse basse. angle_p_gain règle la force de la remise à plat ; les anciennes versions de Betaflight l'appelaient p_level."
+    },
+    "acro": {
+      "title": "Rates acro douces",
+      "explain": "L'acro, c'est ce qui vole quand le mode angle et le maintien d'altitude sont coupés : les manches règlent la vitesse de rotation et rien ne le remet à plat. 7 et 40 donnent 70 degrés par seconde autour du centre et 400 manche à fond, en douceur pour un quad caréné de 440 g (la valeur par défaut de Betaflight est 670). Le lacet s'arrête à 270."
+    },
+    "race": {
+      "title": "Chrono des portes sur l'OSD HD",
+      "explain": "osd_tim1 regroupe la source du chrono et sa précision en un seul nombre : 2 (depuis le dernier armement) plus 1 x 16 (centièmes) donne 18. La position vaut 2048 (profil OSD 1) plus la colonne plus 32 par ligne : colonne 23, ligne 1, près du haut et du milieu du canevas HD."
+    },
+    "range": {
+      "title": "Une seule prise à travers la maison",
+      "explain": "Volez la prise avec le profil ciné, les gaz réduits à 80 % dans ce profil pour qu'un manche à fond ne vous propulse jamais à travers une pièce. Réglez la caméra d'action en 4K à 60 images par seconde avec une vitesse d'obturation d'environ 1/120 s (le double de la cadence) pour un flou de mouvement naturel, avec un filtre ND en plein jour, et activez les données gyroscopiques pour la stabilisation ultérieure."
+    }
+  },
+  "flight": {
+    "modes": {
+      "alt": {
+        "title": "Maintien d'altitude (facile)",
+        "hint": "Le mode angle plus le maintien d'altitude de Betaflight : W et S font monter et descendre jusqu'à 1,5 m/s, et il tient sa hauteur quand vous lâchez. Les flèches l'inclinent jusqu'à 30 degrés, A et D pivotent en lacet, Espace arme."
+      },
+      "cine": {
+        "title": "Ciné (fluide)",
+        "hint": "Le maintien d'altitude avec les rates ciné douces : 150 degrés par seconde au plus, 100 en lacet. Des gestes lents et réguliers aux manches font les plans fluides qu'un client paie."
+      },
+      "angle": {
+        "title": "Mode angle",
+        "hint": "Auto-stabilisé jusqu'à 30 degrés. Les gaz restent là où vous les laissez : tenez donc la hauteur avec W et S."
+      },
+      "acro": {
+        "title": "Mode acro (rate)",
+        "hint": "Les manches règlent la vitesse de rotation, jusqu'à 400 degrés par seconde, et rien ne le remet à plat. Lâchez et il garde son angle."
+      },
+      "race": {
+        "title": "Passage de portes",
+        "hint": "Cinq portes autour de la cour avant et du jardin, dans l'ordre. Le chrono démarre à la porte 1 ; le temps de référence est de 50 secondes."
+      },
+      "range": {
+        "title": "Terrain : visite immobilière",
+        "hint": "Entrée par la porte d'entrée, le couloir, sortie par la baie vitrée, au-dessus de la piscine et du toit, puis retour à la plateforme. Le temps de référence est de 75 secondes."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Liaison radio perdue : pendant 1,5 s, les manches gardent leurs valeurs sûres, puis DROP arrête les moteurs et le quad tombe. Les carénages rendent la chute supportable.",
+      "video-loss": "L'image HD se fige ou se morcelle derrière les murs, mais la liaison ELRS tient : rien ne se passe tout seul, montez donc ou revenez vers l'endroit où vous vous tenez jusqu'à ce que l'image revienne.",
+      "low-battery": "Sous 3,5 V par cellule, l'OSD affiche l'alerte LOW BATTERY : terminez le plan et posez-vous.",
+      "battery-empty": "Sous environ 3,2 V par cellule, la batterie est vide : posez-vous immédiatement. Elle chute encore à chaque coup de gaz, et le contrôleur de vol ou l'air unit peuvent subir un brown-out."
+    },
+    "controls": "Clavier : Espace arme et désarme, W et S pour les gaz, les flèches pour le tangage et le roulis, A et D pour le lacet, V passe en vue FPV, R replace le quad sur la plateforme. Sur téléphone, le manche gauche gère les gaz et le lacet, le manche droit le tangage et le roulis. Une manette fonctionne en Mode 2."
+  },
+  "courses": {
+    "race": {
+      "title": "Course de portes dans le jardin",
+      "brief": "Cinq portes de 1,6 m autour de la cour avant et du jardin, à l'écart de la maison : passez-les dans l'ordre. Le chrono démarre à la porte 1."
+    },
+    "realestate": {
+      "title": "Visite immobilière",
+      "brief": "La visite de la maison en une seule prise : entrée par la porte d'entrée, descente du couloir, sortie par la baie vitrée, passage au-dessus de la piscine, montée au-dessus du toit et retour à la plateforme. Les portes du jardin sont aussi sur le terrain : contournez-les.",
+      "goals": {
+        "1": "PORTE D'ENTRÉE",
+        "2": "COULOIR",
+        "3": "BAIE VITRÉE",
+        "4": "AU-DESSUS DE LA PISCINE",
+        "5": "AU-DESSUS DU TOIT",
+        "6": "RETOUR À LA PLATEFORME"
+      }
+    }
+  },
+  "quizzes": {
+    "ducts": {
+      "purpose": {
+        "q": "À quoi servent les carénages d'un cinewhoop ?",
+        "options": {
+          "1": "À la vitesse de pointe",
+          "2": "Ils protègent les hélices, pour qu'il puisse voler près des gens et en intérieur, et heurter un mur sans rien couper",
+          "3": "Ils tiennent la batterie"
+        },
+        "why": "Un cinewhoop filme là où un quad aux hélices nues ne doit pas aller : à travers les maisons, les boutiques et les foules. Les carénages tiennent les hélices loin des murs, des meubles et des gens. Ils coûtent de la masse, de la traînée et du temps de vol : voilà pourquoi les quads à hélices libres volent plus vite et plus longtemps."
+      },
+      "gap": {
+        "q": "Une hélice de 3 pouces (76,2 mm) tourne dans un carénage de 79 mm de diamètre. Pourquoi garder ce jeu petit, mais jamais nul ?",
+        "options": {
+          "1": "Un grand jeu rend mieux à l'image",
+          "2": "Le jeu ne change rien",
+          "3": "Un jeu serré (1,4 mm ici) donne un peu de poussée en plus, mais une hélice qui touche la paroi s'ébrèche et secoue la caméra"
+        },
+        "why": "L'air fuit autour des bouts de pales. Un carénage serré limite une partie de cette fuite et ajoute un peu de poussée à basse vitesse. Si l'hélice touche, elle bourdonne, ébrèche ses bouts et fait vibrer les images : tournez donc chaque hélice à la main dans son carénage avant de voler."
+      }
+    },
+    "power": {
+      "cap": {
+        "q": "À quoi sert le condensateur de 470 µF sur les pastilles de batterie ?",
+        "options": {
+          "1": "Il absorbe les pics de tension dus au freinage des moteurs par les ESC, avant qu'ils n'atteignent le gyroscope et la vidéo",
+          "2": "Il fait voler le quad une fois la batterie débranchée",
+          "3": "Il augmente la tension de la batterie"
+        },
+        "why": "Chaque fois qu'un ESC freine un moteur, il renvoie un pic dans les fils de batterie. Un condensateur à faible ESR placé directement sur les pastilles l'absorbe. Sans lui, vous avez une vidéo parasitée, du bruit sur le gyroscope et, au pire, un ESC ou un contrôleur de vol mort."
+      },
+      "smoke": {
+        "q": "Le condensateur a été monté bande côté plus. Qu'est-ce qui le détecte avant que quelque chose ne brûle ?",
+        "options": {
+          "1": "Le contrôleur de vol refuse de démarrer",
+          "2": "Un smoke stopper au premier branchement : sa lampe reste allumée et limite le courant",
+          "3": "Rien : la polarité d'un condensateur n'a pas d'importance"
+        },
+        "why": "Un condensateur électrolytique monté à l'envers laisse passer le courant et dégaze. Un smoke stopper place une lampe ou un fusible limiteur de courant sur le fil de batterie pour la première mise sous tension : un court-circuit allume la lampe au lieu de brûler le composant."
+      }
+    },
+    "video": {
+      "twocams": {
+        "q": "Pourquoi ce cinewhoop porte-t-il deux caméras ?",
+        "options": {
+          "1": "L'une sert de rechange si l'autre tombe en panne",
+          "2": "La caméra O3 donne au pilote le retour vidéo ; la caméra d'action nue enregistre les images que reçoit le client",
+          "3": "L'une regarde vers l'avant et l'autre vers l'arrière"
+        },
+        "why": "Le pilote vole avec le retour vidéo à faible latence de l'O3 (qui enregistre aussi). La caméra d'action enregistre les images de haute qualité avec les données gyroscopiques, pour qu'elles puissent être stabilisées ensuite dans Gyroflow ou ReelSteady."
+      },
+      "osd": {
+        "q": "Le masque affiche l'image HD mais pas d'OSD. Quelle est la cause la plus probable ?",
+        "options": {
+          "1": "Il manque le bit VTX_MSP sur l'UART1 (131073 = MSP + VTX_MSP), ou osd_displayport_device ne vaut pas MSP",
+          "2": "L'objectif de la caméra est sale",
+          "3": "Les hélices sont montées à l'envers"
+        },
+        "why": "Sur un module DJI, Betaflight envoie l'OSD sous forme de messages MSP DisplayPort par l'UART de l'air unit, et le masque le dessine. Si le port n'a pas VTX_MSP, si le périphérique n'est pas MSP, ou si TX et RX sont inversés, la vidéo fonctionne toujours mais l'OSD n'arrive jamais."
+      },
+      "cost": {
+        "q": "Sur le montage par défaut, où passe la plus grosse part de l'argent ?",
+        "options": {
+          "1": "Le châssis carbone",
+          "2": "Les deux caméras : l'air unit O3 et la caméra d'action",
+          "3": "Les hélices"
+        },
+        "why": "Dans le calculateur, l'O3 coûte $229 et la caméra d'action $199 : $428 sur un montage à $712. Le châssis, les carénages et les hélices réunis coûtent moins que l'une ou l'autre caméra : c'est pourquoi les carénages d'un cinewhoop protègent autant les caméras que les gens."
+      }
+    },
+    "props": {
+      "last": {
+        "q": "Pourquoi les hélices se montent-elles en dernier ?",
+        "options": {
+          "1": "Ce sont les pièces les plus légères",
+          "2": "Pour que le smoke stopper et les tests moteur se fassent sans rien qui puisse couper quelqu'un ou projeter le quad hors de l'établi",
+          "3": "Les carénages ne rentreraient plus ensuite"
+        },
+        "why": "Un moteur qui démarre de façon inattendue sur l'établi, ou dans le mauvais sens, est sans danger sans hélice. Les vérifications au banc se font sans hélices, et les hélices se montent une fois les deux réussies."
+      },
+      "spin": {
+        "q": "Props in, numérotation Betaflight : dans quel sens tourne M1, le moteur arrière droit, vu de dessus ?",
+        "options": {
+          "1": "Horaire",
+          "2": "Antihoraire",
+          "3": "Ça dépend de la batterie"
+        },
+        "why": "Dans le QUAD X de Betaflight, props in, M1 (arrière droit) et M4 (avant gauche) tournent en sens horaire, M2 et M3 en antihoraire. Les paires en diagonale tournent dans le même sens : les couples des moteurs s'annulent, et le quad pivote en lacet en accélérant une paire."
+      }
+    },
+    "flight": {
+      "efficiency": {
+        "q": "Pourquoi ce cinewhoop ne vole-t-il qu'environ 5 à 6 minutes ?",
+        "options": {
+          "1": "De petites hélices carénées donnent moins de poussée par watt, et il porte les carénages et deux caméras",
+          "2": "L'air unit vide l'essentiel de la batterie",
+          "3": "Betaflight limite le temps de vol"
+        },
+        "why": "De petites hélices doivent tourner vite pour soulever un quad lourd, et des hélices rapides gaspillent plus de puissance. Les carénages, l'O3 et une seconde caméra ajoutent environ 125 g. Le calculateur donne 6 minutes en stationnaire et environ 5 en croisière, proche des 5 à 8 minutes que volent les vrais cinewhoops."
+      },
+      "cine": {
+        "q": "Qu'est-ce que le « mode ciné » dans Betaflight ?",
+        "options": {
+          "1": "Un mode de vol appelé CINE qu'on active avec aux",
+          "2": "Un réglage de caméra dans le masque",
+          "3": "Pas un mode du tout : un profil de rates aux réglages doux et lissés, choisi avec un interrupteur"
+        },
+        "why": "Betaflight n'a pas de mode ciné. Les pilotes gardent un second profil de rates avec des rates basses et plus de lissage, le choisissent avec un interrupteur (adjrange fonction 12), puis le volent en mode angle ou en acro."
+      },
+      "failsafe": {
+        "q": "La liaison coupe pendant un tournage dans une maison. Que fait le failsafe DROP ?",
+        "options": {
+          "1": "Après 1,5 s sans liaison, il arrête les moteurs, et le quad tombe dans ses carénages",
+          "2": "Il rentre au point de départ par GPS",
+          "3": "Il reste en stationnaire jusqu'à ce que la batterie soit vide"
+        },
+        "why": "L'étape 1 tient des valeurs de manches sûres pendant failsafe_delay (1,5 s) au cas où la liaison revienne. L'étape 2 DROP arrête les moteurs. En intérieur et près des gens, c'est le choix sûr ; GPS Rescue demande un GPS que ce quad n'a pas, et ne fonctionnerait de toute façon pas dans une maison."
+      },
+      "jello": {
+        "q": "Les images ondulent comme de la gelée. Que vérifiez-vous en premier ?",
+        "options": {
+          "1": "La tension de la batterie",
+          "2": "Une hélice qui frotte son carénage ou ébréchée, et que le filtre RPM fonctionne (DShot bidirectionnel, le bon motor_poles)",
+          "3": "La luminosité du masque"
+        },
+        "why": "Le jello, ce sont des vibrations qui atteignent l'obturateur roulant de la caméra. Une hélice ébréchée ou qui frotte secoue le châssis ; sans filtre RPM, le bruit des moteurs atteint le gyroscope et les moteurs tressautent. Tournez chaque hélice à la main dans son carénage et vérifiez que les ESC renvoient les rpm."
+      }
+    }
+  }
+}
