@@ -47,14 +47,14 @@
       }
     },
     "sound": {
-      "label": "Sound",
-      "turnOn": "Turn sound on",
-      "turnOff": "Turn sound off"
+      "label": "Ton",
+      "turnOn": "Ton einschalten",
+      "turnOff": "Ton ausschalten"
     },
     "usage": {
-      "label": "Anonymous usage counts",
-      "body": "SimLab counts what happens in the labs (a lesson passed, a step built, a fault tried) for the live counters and leaderboards. Each event carries a random id for this browser, never your name or your code.",
-      "toggle": "Share anonymous usage counts"
+      "label": "Anonyme Nutzungszahlen",
+      "body": "SimLab zählt, was in den Laboren passiert (eine bestandene Lektion, ein gebauter Schritt, ein ausprobierter Fehler), für die Live-Zähler und Bestenlisten. Jedes Ereignis trägt eine zufällige ID für diesen Browser, nie deinen Namen oder deinen Code.",
+      "toggle": "Anonyme Nutzungszahlen teilen"
     }
   }
 }

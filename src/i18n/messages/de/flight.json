@@ -27,7 +27,7 @@
     "figure8": "Acht-Flugbahn",
     "yaw": "Gier-Demo mit Heckservo",
     "motorfail": "Motorausfall-Test",
-    "demo": "Demo: the autopilot flies it"
+    "demo": "Demo: Der Autopilot fliegt"
   },
   "buttons": {
     "arm": "Scharf schalten",
@@ -60,7 +60,7 @@
     "gate": "Tor {n}/{total}",
     "checkpoint": "{label} ({n}/{total})",
     "home": "Start",
-    "par": "Medal times",
+    "par": "Medaillenzeiten",
     "parValue": "{gold} / {silver} / {bronze}"
   },
   "osd": {
@@ -114,13 +114,13 @@
     "fpvOn": "FPV-Brille auf",
     "fpvOff": "Verfolgeransicht",
     "armBlockedAcc": "Scharfschalten gesperrt: Beschleunigungssensor nicht kalibriert. Führe auf der Werkbank Beschleunigungssensor kalibrieren aus",
-    "hintDemo": "The autopilot is flying the course: switch mode to take over",
-    "demoTime": "Demo done in {time} s: the autopilot's time does not count",
-    "missionTime": "Mission complete: {time} s",
-    "missionBest": "Mission complete: {time} s (best!)",
-    "medal": "{line}. {medal} medal!",
-    "noMedal": "{line}. Bronze is {s} s",
-    "drop": "Parcel released: {kg} kg off, so it flies home on less throttle"
+    "hintDemo": "Der Autopilot fliegt den Parcours: Wechsle den Modus, um zu übernehmen",
+    "demoTime": "Demo geschafft in {time} s: Die Zeit des Autopiloten zählt nicht",
+    "missionTime": "Mission abgeschlossen: {time} s",
+    "missionBest": "Mission abgeschlossen: {time} s (Bestzeit!)",
+    "medal": "{line}. {medal}medaille!",
+    "noMedal": "{line}. Bronze: {s} s",
+    "drop": "Paket abgeworfen: {kg} kg weniger, also fliegt sie mit weniger Gas nach Hause"
   },
   "dirs": [
     "Osten",
@@ -205,124 +205,124 @@
     "flipMotor": "Beim Start überschlagen: Die Drehrichtung der Motoren wurde nie geprüft (Werkbank: Motordrehrichtung prüfen)",
     "flipServo": "Beim Start ausgedreht: Das Heckservo arbeitet verkehrt herum"
   },
-  "demoHint": "The autopilot flies this course's line with the same physics you fly. Watch it, then beat it: its times never count.",
+  "demoHint": "Der Autopilot fliegt die Linie dieses Parcours mit derselben Physik, mit der du fliegst. Schau zu und schlag ihn dann: Seine Zeiten zählen nie.",
   "medals": {
     "gold": "Gold",
-    "silver": "Silver",
+    "silver": "Silber",
     "bronze": "Bronze"
   },
   "ghosts": {
-    "title": "Ghosts",
-    "best": "Your best lap ({time} s)",
-    "bestNone": "Your best lap (fly one to race it)",
-    "pace": "The autopilot's line ({time} s)",
-    "labelBest": "BEST {time} s",
+    "title": "Geister",
+    "best": "Deine beste Runde ({time} s)",
+    "bestNone": "Deine beste Runde (flieg eine, um gegen sie anzutreten)",
+    "pace": "Die Linie des Autopiloten ({time} s)",
+    "labelBest": "BESTZEIT {time} s",
     "labelPace": "AUTOPILOT"
   },
   "why": {
-    "title": "Here's why",
-    "badge": "REPLAY ×⅓",
-    "replay": "Watch the slow-motion replay",
-    "replaying": "Replaying in slow motion…",
-    "flipFc": "The flight controller was mounted backwards. It read every tilt the wrong way round, so each correction pushed the craft further over until it flipped. On a real build, turn the board so its arrow points forward, or set align_board_yaw = 180 in the CLI.",
-    "flipProps": "The props were on the wrong motors. A prop on a motor that spins the other way blows air up, so that corner pushed down instead of lifting and the craft rolled over on take-off. Each prop goes on the motor whose spin matches its direction.",
-    "flipMotor": "One motor spun the wrong way, because nobody checked the motor direction with the props off. Its torque fought the others and the craft flipped as soon as it lifted. On the bench, run Check motor direction and reverse the odd one out.",
-    "flipServo": "The tail servo was reversed. Every yaw correction turned the tail the wrong way, so the spin grew instead of stopping until the tricopter pirouetted out of control and tipped over. On a real build, turn the servo round or reverse it in the CLI (smix reverse 5 2 r), and check its direction by hand before every flight.",
-    "desync": "The motors ran past their rating: this pack's voltage times the motors' KV spins them faster than the ESCs can follow. An ESC lost sync, the motor stuttered and the craft fell. Pick motors or a pack within the rating.",
-    "battery": "The pack hit its cut-off voltage and the ESCs stopped the motors, so it fell. Land when LOW BATTERY shows, and never run a LiPo flat.",
-    "servos": "The elevons moved the wrong way: a command to lift the nose pushed it down, and the wing dived into the ground. Reverse the servos in the flight controller and check them by hand before every launch.",
-    "tailHeavy": "The centre of gravity was behind the mark, so the nose kept pitching up until the wing stalled and dropped. Move the pack forward until the wing balances on its CG mark.",
-    "propBackwards": "The pusher prop was on backwards. It gives less than half its thrust, so the wing never reached flying speed and sank into the grass. The printed side of the prop faces forward.",
-    "hardLanding": "It hit the ground at {speed} m/s, and the frame and props take about 3 m/s. With a manual throttle you catch the fall yourself: ease the throttle up before the ground, not after.",
-    "wingLanding": "It touched down too fast, too steep or banked. A wing lands level, slow and into the wind: let return-to-home bring it round, or line up long and flare just above the grass.",
-    "hit": "It flew into {what} at {kmh} km/h. Distance is hard to judge in the chase view: the FPV goggles (V) show what is ahead, and the autopilot's ghost flies a line that clears everything.",
+    "title": "Darum ist es passiert",
+    "badge": "ZEITLUPE ×⅓",
+    "replay": "Zeitlupe ansehen",
+    "replaying": "Wiederholung in Zeitlupe …",
+    "flipFc": "Der Flugcontroller war verkehrt herum montiert. Er hat jede Neigung falsch herum gelesen, also hat jede Korrektur die Drohne weiter gekippt, bis sie sich überschlug. Dreh beim echten Bau das Board so, dass sein Pfeil nach vorn zeigt, oder setze in der CLI align_board_yaw = 180.",
+    "flipProps": "Die Propeller saßen auf den falschen Motoren. Ein Propeller auf einem Motor, der andersherum dreht, bläst die Luft nach oben, also hat diese Ecke nach unten gedrückt statt zu heben, und die Drohne hat sich beim Start überschlagen. Jeder Propeller gehört auf den Motor, dessen Drehrichtung zu ihm passt.",
+    "flipMotor": "Ein Motor hat sich falsch herum gedreht, weil niemand die Drehrichtung ohne Propeller geprüft hat. Sein Drehmoment hat gegen die anderen gearbeitet, und die Drohne hat sich überschlagen, sobald sie abhob. Führe auf der Werkbank „Motordrehrichtung prüfen“ aus und dreh den einen falschen um.",
+    "flipServo": "Das Heckservo war umgekehrt. Jede Gierkorrektur hat das Heck in die falsche Richtung gedreht, also wurde die Drehung größer statt kleiner, bis der Tricopter außer Kontrolle Pirouetten drehte und umkippte. Dreh beim echten Bau das Servo um oder kehre es in der CLI um (smix reverse 5 2 r), und prüf vor jedem Flug von Hand seine Richtung.",
+    "desync": "Die Motoren liefen über ihrer Grenze: Die Spannung dieses Akkus mal die KV der Motoren dreht sie schneller, als die ESCs folgen können. Ein ESC hat den Takt verloren, der Motor hat gestottert und die Drohne ist abgestürzt. Wähle Motoren oder einen Akku innerhalb der Grenze.",
+    "battery": "Der Akku hat seine Abschaltspannung erreicht, die ESCs haben die Motoren gestoppt, und die Drohne ist abgestürzt. Lande, sobald AKKU LEER erscheint, und fahr einen LiPo nie leer.",
+    "servos": "Die Elevons haben sich falsch herum bewegt: Ein Befehl, die Nase zu heben, hat sie nach unten gedrückt, und der Flügel ist in den Boden getaucht. Kehre die Servos im Flugcontroller um und prüf sie vor jedem Start von Hand.",
+    "tailHeavy": "Der Schwerpunkt lag hinter der Markierung, also hat sich die Nase immer weiter gehoben, bis die Strömung am Flügel abriss und er absackte. Schieb den Akku nach vorn, bis der Flügel auf seiner Schwerpunktmarke ausbalanciert ist.",
+    "propBackwards": "Der Druckpropeller war verkehrt herum montiert. Er liefert weniger als die Hälfte seines Schubs, also hat der Flügel nie Fluggeschwindigkeit erreicht und ist ins Gras gesunken. Die bedruckte Seite des Propellers zeigt nach vorn.",
+    "hardLanding": "Mit {speed} m/s auf dem Boden aufgeschlagen, und Rahmen und Propeller halten etwa 3 m/s aus. Mit manuellem Gas fängst du den Fall selbst ab: Gib vor dem Boden langsam Gas, nicht danach.",
+    "wingLanding": "Der Flügel hat zu schnell, zu steil oder in Schräglage aufgesetzt. Ein Flügel landet waagerecht, langsam und gegen den Wind: Lass ihn mit Rückkehr nach Hause zurückkommen, oder flieg einen langen Anflug und fang ihn knapp über dem Gras ab.",
+    "hit": "Mit {kmh} km/h gegen {what} geflogen. In der Verfolgeransicht sind Abstände schwer zu schätzen: Die FPV-Brille (V) zeigt, was vor dir liegt, und der Geist des Autopiloten fliegt eine Linie, die an allem vorbeiführt.",
     "what": {
-      "tree": "a tree",
-      "roof": "a roof",
-      "wall": "a wall",
-      "pole": "a power pole",
-      "gate": "a gate post",
-      "building": "a building",
-      "pillar": "a pillar",
-      "tower": "the tower",
-      "barrel": "a barrel",
-      "obstacle": "an obstacle"
+      "tree": "einen Baum",
+      "roof": "ein Dach",
+      "wall": "eine Wand",
+      "pole": "einen Strommast",
+      "gate": "einen Torpfosten",
+      "building": "ein Gebäude",
+      "pillar": "eine Säule",
+      "tower": "den Turm",
+      "barrel": "ein Fass",
+      "obstacle": "ein Hindernis"
     },
     "fix": {
-      "fcReversed": "Turn the flight controller round",
-      "propsSwapped": "Put the props on the right motors",
-      "motorDirUnchecked": "Check the motor direction",
-      "accUncalibrated": "Calibrate the accelerometer",
-      "overKv": "Fit motors and a pack within their rating",
-      "servosReversed": "Reverse the servos",
-      "tailHeavy": "Move the pack forward to the CG mark",
-      "propBackwards": "Turn the prop round",
-      "mode": "Switch to {mode} and go again",
-      "pace": "Show the autopilot's line and go again",
-      "reset": "Fresh pack, back on the pad"
+      "fcReversed": "Flugcontroller umdrehen",
+      "propsSwapped": "Propeller auf die richtigen Motoren setzen",
+      "motorDirUnchecked": "Motordrehrichtung prüfen",
+      "accUncalibrated": "Beschleunigungssensor kalibrieren",
+      "overKv": "Motoren und Akku innerhalb ihrer Grenze wählen",
+      "servosReversed": "Servos umkehren",
+      "tailHeavy": "Akku nach vorn auf die Schwerpunktmarke schieben",
+      "propBackwards": "Propeller umdrehen",
+      "mode": "Auf {mode} wechseln und noch einmal",
+      "pace": "Linie des Autopiloten zeigen und noch einmal",
+      "reset": "Voller Akku, zurück aufs Landefeld"
     },
-    "fixed": "Fixed: {fix}. Arm and fly again"
+    "fixed": "Behoben: {fix}. Scharf schalten und noch einmal fliegen"
   },
   "breakIt": {
-    "title": "Break it",
-    "lede": "Put a real build mistake in, even mid-flight, and watch what it does. A crash replays in slow motion and says why.",
-    "reset": "Undo my changes",
-    "noBoard": "Laps flown with something broken don't go on the leaderboards.",
+    "title": "Kaputt machen",
+    "lede": "Bau einen echten Baufehler ein, auch mitten im Flug, und sieh, was er bewirkt. Ein Absturz läuft in Zeitlupe noch einmal ab und sagt dir, warum.",
+    "reset": "Meine Änderungen zurücknehmen",
+    "noBoard": "Runden, die mit etwas Kaputtem geflogen werden, kommen nicht in die Bestenlisten.",
     "items": {
       "fcReversed": {
-        "label": "Mount the flight controller backwards",
-        "what": "Its arrow points at the tail, so it reads every tilt the wrong way round."
+        "label": "Flugcontroller verkehrt herum montieren",
+        "what": "Sein Pfeil zeigt zum Heck, also liest er jede Neigung falsch herum."
       },
       "propsSwapped": {
-        "label": "Swap the props round",
-        "what": "Each prop sits on a motor that spins it the wrong way: that corner pushes down."
+        "label": "Propeller vertauschen",
+        "what": "Jeder Propeller sitzt auf einem Motor, der ihn falsch herum dreht: Diese Ecke drückt nach unten."
       },
       "motorDirUnchecked": {
-        "label": "Skip the motor direction check",
-        "what": "One motor spins the wrong way, and nobody looked with the props off."
+        "label": "Prüfung der Motordrehrichtung überspringen",
+        "what": "Ein Motor dreht falsch herum, und niemand hat ohne Propeller nachgesehen."
       },
       "accUncalibrated": {
-        "label": "Skip the accelerometer calibration",
-        "what": "The flight controller doesn't know which way is level, so it won't arm."
+        "label": "Kalibrierung des Beschleunigungssensors überspringen",
+        "what": "Der Flugcontroller weiß nicht, wo waagerecht ist, und lässt sich deshalb nicht scharf schalten."
       },
       "overKv": {
-        "label": "Run the motors over their rating",
-        "what": "Too many volts for these motors' KV: the ESCs lose sync at full throttle."
+        "label": "Motoren über ihrer Grenze betreiben",
+        "what": "Zu viel Spannung für die KV dieser Motoren: Die ESCs verlieren bei Vollgas den Takt."
       },
       "servosReversed": {
-        "label": "Reverse the servos",
-        "what": "The servos move the wrong way: every correction makes it worse."
+        "label": "Servos umkehren",
+        "what": "Die Servos bewegen sich falsch herum: Jede Korrektur macht es schlimmer."
       },
       "tailHeavy": {
-        "label": "Put the pack too far back",
-        "what": "The centre of gravity sits behind the mark, so the nose keeps pitching up."
+        "label": "Akku zu weit nach hinten setzen",
+        "what": "Der Schwerpunkt liegt hinter der Markierung, also hebt sich die Nase immer weiter."
       },
       "propBackwards": {
-        "label": "Fit the prop backwards",
-        "what": "The pusher prop gives less than half its thrust."
+        "label": "Propeller verkehrt herum montieren",
+        "what": "Der Druckpropeller liefert weniger als die Hälfte seines Schubs."
       }
     }
   },
   "challenge": {
-    "title": "Daily challenge",
-    "day": "{date}, the same for everyone (UTC)",
-    "what": "{craft} on {course}, with the {pack} pack",
-    "windOn": "Wind on",
-    "windOff": "No wind",
-    "fly": "Fly the challenge",
-    "flyThere": "Fly it with the {craft}",
-    "flying": "You're flying the challenge: the factory build, this pack and this wind, like everyone else today.",
-    "stop": "Back to free flight",
-    "best": "Your best: {time} s",
-    "none": "No time yet: a finished lap or run counts.",
-    "beat": "{by} flew it in {time} s. Beat that.",
-    "beatAnon": "A friend flew it in {time} s. Beat that.",
-    "share": "Share the challenge",
-    "copied": "Link copied",
-    "copyFailed": "Couldn't copy: here is the link",
-    "link": "Challenge link",
-    "shareText": "SimLab daily drone challenge: {craft} on {course}.",
-    "shareBeat": "SimLab daily drone challenge: {craft} on {course}. Can you beat {time} s?",
-    "board": "{course}, challenge of {date}"
+    "title": "Tages-Challenge",
+    "day": "{date}, für alle gleich (UTC)",
+    "what": "{craft} auf {course}, mit dem Akku {pack}",
+    "windOn": "Mit Wind",
+    "windOff": "Kein Wind",
+    "fly": "Challenge fliegen",
+    "flyThere": "Mit {craft} fliegen",
+    "flying": "Du fliegst die Challenge: der Werksaufbau, dieser Akku und dieser Wind, wie bei allen anderen heute.",
+    "stop": "Zurück zum freien Flug",
+    "best": "Deine Bestzeit: {time} s",
+    "none": "Noch keine Zeit: Eine fertige Runde oder ein fertiger Durchgang zählt.",
+    "beat": "{by} ist sie in {time} s geflogen. Schlag das.",
+    "beatAnon": "Ein Freund ist sie in {time} s geflogen. Schlag das.",
+    "share": "Challenge teilen",
+    "copied": "Link kopiert",
+    "copyFailed": "Kopieren ging nicht: Hier ist der Link",
+    "link": "Challenge-Link",
+    "shareText": "SimLab-Drohnen-Challenge des Tages: {craft} auf {course}.",
+    "shareBeat": "SimLab-Drohnen-Challenge des Tages: {craft} auf {course}. Kannst du {time} s schlagen?",
+    "board": "{course}, Challenge vom {date}"
   }
 }
