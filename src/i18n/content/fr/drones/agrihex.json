@@ -1,0 +1,396 @@
+{
+  "title": "Hexacoptère agricole de pulvérisation",
+  "tagline": "Un hexacoptère de 1800 mm qui emporte 10 L de bouillie : le RTK et le cap GPS à deux antennes le tiennent sur les rangs, un radar le maintient à 2,5 m au-dessus de la culture, et ArduPilot pilote la pompe.",
+  "sub": "ArduCopter + Cube Orange+ + RTK",
+  "hint": "Montez un drone de pulvérisation de 10 L, testez sa pompe et son cap GPS, puis traitez six rangs d'un champ",
+  "noun": "drone de pulvérisation",
+  "overview": "Un drone agricole de pulvérisation n'a qu'un travail : déposer une dose mesurée de liquide sur chaque mètre carré d'un champ, et nulle part ailleurs. Celui-ci emporte 10 L. Six hélices de 30 pouces sur des bras de 900 mm soulèvent 33 kg au décollage, et un Cube Orange+ fait tourner ArduCopter, qui vole les rangs d'une grille de relevé en AUTO. Deux récepteurs RTK le positionnent à environ 2 cm près et tirent le cap de la ligne entre leurs antennes : les rangs sont exactement à une largeur de passage l'un de l'autre, et aucun hangar en acier ne peut dérégler une boussole. Un radar sous le nez le maintient à 2,5 m au-dessus de la culture quand le terrain monte et descend. Le pulvérisateur d'ArduPilot fait tourner la pompe en proportion de la vitesse sol : la dose reste la même quand il ralentit pour un virage, et la mission l'allume au début de chaque rang et l'éteint à la fin. Avec six moteurs, le mixeur peut le tenir à plat sur cinq assez longtemps pour se poser, s'il reste de la poussée en réserve. Choisissez les pièces, montez-le, passez les vérifications au banc (dont un test de la pompe), puis volez les rangs à la main ou laissez AUTO traiter le champ.",
+  "practice": "Volez d'abord le champ en Loiter : décollez à 5 m, descendez à 2,5 m au bout ouest du premier rang, volez-le vers l'est à environ 4 m/s, décalez-vous de 4 m vers le nord au bout et revenez. Le drone est lourd et lent à s'arrêter (25° d'inclinaison, accélérations douces) : commencez donc chaque virage tôt. Restez à l'écart des arbres du côté ouest et de la ligne électrique du côté est, puis ramenez-le et posez-le. Passez ensuite en AUTO et regardez la pompe s'allumer et s'éteindre aux bouts des rangs. Sur un vrai montage : smoke stopper au premier branchement, test moteur sans hélices (A à l'avant droit, puis dans le sens horaire), calibrage de l'accéléromètre, test de la pompe à l'eau claire pour mesurer le débit, fix RTK et vérification du cap GPS en extérieur, chaque message PreArm résolu, et un premier vol stationnaire bas au-dessus d'un terrain dégagé, sans personne près des hélices.",
+  "design": {
+    "fixed": {
+      "FRAME": "Moyeu carbone de 1,8 m et six bras repliables de 35 mm",
+      "SKIDS": "Jambes et patins d'atterrissage",
+      "ESC": "6 ESC FOC de 80 A (dans les nacelles moteur X8, PWM)",
+      "FC": "Autopilote Cube Orange+ et carte porteuse",
+      "RTK": "GNSS RTK à deux antennes (2 × u-blox F9P)",
+      "RADAR": "Radar vers le bas, 0,5-50 m (classe Ainstein US-D1)",
+      "RX": "Radio de télémétrie 900 MHz et récepteur RC",
+      "XT60": "Câble anti-étincelle AS150U, module d'alimentation, condensateurs 63 V",
+      "TANK": "Réservoir de pulvérisation de 10 L",
+      "PUMP": "Pompe à membrane et son pilote",
+      "BOOM": "Rampe de 1,64 m à quatre buses"
+    },
+    "verdict": {
+      "over": "{kv} KV en {cells}S fait tourner des hélices de 30 pouces beaucoup trop vite : les moteurs surchauffent et les ESC se désynchronisent avec un réservoir plein. Un moteur de 180 KV va avec des hélices de 22 à 24 pouces ; des hélices de 30 pouces demandent environ 100 KV en 12S.",
+      "weak": "Rapport poussée/poids de {tw}:1 avec 10 L à bord. Un drone de pulvérisation a besoin d'environ 1,6:1 ou plus (1,8:1 c'est mieux) pour rester contrôlable dans une rafale quand il est plein, et pour monter au-dessus d'une rangée d'arbres au bout d'un rang.",
+      "ok": "Les pièces s'accordent : {tw}:1 avec 10 L à bord, assez de marge pour lutter contre une rafale à pleine charge. Les gaz de vol stationnaire du calculateur sont pessimistes pour ces grandes hélices lentes : Hobbywing a mesuré 57 % à cette charge, et ArduCopter apprend sa propre valeur de stationnaire (MOT_THST_HOVER). Quand le réservoir se vide, le drone s'allège de 10 kg et les gaz de stationnaire baissent."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Moyeu carbone, six bras repliables, jambes et patins",
+      "what": "Un moyeu en sandwich carbone de 480 × 420 mm avec six bras en tube carbone de 35 mm, les moteurs à 900 mm du centre (1800 mm d'envergure). Chaque bras se replie à 300 mm du moyeu pour que le drone tienne sur une remorque, et se verrouille par un manchon : un manchon non verrouillé laisse le bras se replier sous la poussée, et le drone se retourne. Quatre jambes portent deux patins de 940 mm, pour que la rampe reste au-dessus de la culture."
+    },
+    "MOTORS": {
+      "name": "6 moteurs 8120 de 100 KV",
+      "what": "De gros moteurs lents et étanches : des stators de 81 mm, 100 rpm par volt. En 12S, ils font tourner une hélice de 30 pouces à environ 2400 rpm en stationnaire, et chacun peut soulever jusqu'à 15 kg. Le X8 de Hobbywing réunit le moteur, l'ESC et la fixation d'hélice en une seule unité, vendue en version CW et CCW."
+    },
+    "ESC": {
+      "name": "6 ESC FOC de 80 A",
+      "what": "Des ESC à commande vectorielle (FOC) dans la nacelle à ailettes sous chaque moteur, refroidis par le souffle de l'hélice. Ils reçoivent du simple PWM (1100 à 1940 µs) du Cube, pas du DShot, et n'ont pas besoin de calibrage des gaz. 80 A, c'est le pic sur 3 s. Ils n'ont pas de BEC : le Cube a donc sa propre alimentation."
+    },
+    "WIRES": {
+      "name": "Câbles d'alimentation des bras et câbles de signal des ESC",
+      "what": "Une paire rouge et noire en 12 AWG descend chaque bras depuis la carte d'alimentation jusqu'à son ESC : environ 13 A chacune en stationnaire, 80 A au pic. À côté, un fin câble de signal (masse et PWM) revient vers les sorties MAIN du Cube, dans l'ordre des numéros de moteur."
+    },
+    "XT60": {
+      "name": "Distribution d'alimentation : câble AS150U, module d'alimentation, condensateurs 63 V",
+      "what": "La batterie se branche sur un connecteur anti-étincelle AS150U : une résistance précharge les condensateurs des ESC pour que la prise ne fasse pas d'arc à 50 V. La carte d'alimentation alimente les six bras et la pompe, des condensateurs low-ESR de 63 V absorbent les pics de commutation, et un module d'alimentation donne au Cube un 5 V propre et mesure la tension et le courant."
+    },
+    "FC": {
+      "name": "Autopilote Cube Orange+",
+      "what": "Un STM32H757 sous ArduCopter 4.7.2, avec trois IMU, deux baromètres et un cœur amorti contre les vibrations, sur une carte porteuse à l'avant du moyeu, sa flèche vers le nez. Il fait voler le drone, exécute l'estimateur EKF3 avec le RTK et le cap GPS, suit la hauteur du radar et commande la pompe."
+    },
+    "RX": {
+      "name": "Radio de télémétrie 900 MHz et récepteur RC",
+      "what": "La radio de télémétrie est la liaison de la station sol à travers le champ : le MAVLink sort, les corrections RTK entrent. Le récepteur RC permet au pilote de reprendre la main à tout moment ; si les deux liaisons se taisent, les failsafes ramènent le drone."
+    },
+    "RADAR": {
+      "name": "Radar vers le bas (classe US-D1)",
+      "what": "Un radar 24 GHz sous le nez qui mesure la hauteur au-dessus de la culture, de 0,5 à 50 m, à travers la poussière et le brouillard de pulvérisation qui aveuglent un lidar. Il ne lit rien sous 0,5 m : il ne peut donc pas aider sur le dernier demi-mètre d'un atterrissage."
+    },
+    "TOP": {
+      "name": "Capot et caméra FPV",
+      "what": "Un capot moulé qui protège le Cube, la radio et la carte d'alimentation de la pulvérisation, avec une petite caméra FPV dans le nez, inclinée de 10° vers le bas pour que le pilote voie le rang devant lui."
+    },
+    "GPS": {
+      "name": "GNSS RTK à deux antennes",
+      "what": "Deux récepteurs u-blox F9P avec des antennes sur des mâts à 340 mm l'un de l'autre dans l'axe du drone. Avec les corrections d'une station de base, ils positionnent le drone à environ 2 cm près, pour que les rangs ne s'écartent pas, et la ligne entre les deux antennes donne le cap (cap GPS en base mobile, moving baseline) : aucune boussole n'est nécessaire. GPS1 doit être celui de l'avant."
+    },
+    "TANK": {
+      "name": "Réservoir de pulvérisation de 10 L",
+      "what": "Suspendu sous le moyeu, dans l'axe du drone : l'équilibre change à peine quand il se vide. Une bande transparente sur le côté montre le niveau. Plein, il ajoute 10 kg : près d'un tiers de la masse au décollage."
+    },
+    "PUMP": {
+      "name": "Pompe à membrane et son pilote",
+      "what": "Elle aspire dans le réservoir et pousse le liquide vers la rampe. Son pilote est alimenté par le bus 12S et reçoit un signal PWM de l'AUX 1 du Cube. Le pulvérisateur d'ArduPilot règle la vitesse de la pompe en proportion de la vitesse sol : chaque mètre carré reçoit la même dose."
+    },
+    "BOOM": {
+      "name": "Rampe de pulvérisation à quatre buses",
+      "what": "1,64 m de large, sous le réservoir, avec des buses à jet plat à 300 et 720 mm de part et d'autre du centre. Le souffle des hélices pousse les gouttelettes vers le bas dans la culture et les étale sur une bande d'environ 4 m de large."
+    },
+    "BATT": {
+      "name": "Batterie intelligente 12S 22000 mAh",
+      "what": "Posée sur le dessus, au-dessus du centre de gravité, avec une poignée pour un échange rapide à chaque remplissage. Douze cellules : 50,4 V pleine, 44,4 V nominale, et environ 12 minutes de stationnaire avec un réservoir plein."
+    },
+    "PROPS": {
+      "name": "Hélices repliables de 30 pouces, 3 CW et 3 CCW",
+      "what": "Des hélices bipales en carbone qui se replient pour le transport et se déploient en tournant. Une hélice CW va sur un moteur CW : sur le mauvais moteur, elle pousse l'air vers le haut et le drone se retourne au décollage. Les bouts de pales voisins passent à 138 mm les uns des autres."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Déplier et verrouiller le châssis",
+      "body": "Posez le moyeu sur ses patins, dépliez les six bras et enfoncez chaque manchon de verrouillage jusqu'au clic. Tirez sur le bout de chaque bras pour vérifier l'articulation."
+    },
+    "motors": {
+      "title": "Monter les six moteurs",
+      "body": "Serrez un moteur au bout de chaque bras, CW et CCW en alternance autour de l'anneau : M5 avant droit CCW, M1 droit CW, M4 arrière droit CCW, M6 arrière gauche CW, M2 gauche CCW, M3 avant gauche CW.",
+      "refusal": "Les moteurs se serrent au bout des bras : dépliez et verrouillez d'abord le châssis."
+    },
+    "esc": {
+      "title": "Poser les nacelles d'ESC",
+      "body": "Chaque ESC se loge dans la nacelle à ailettes sous son moteur, où le souffle de l'hélice le refroidit. Les trois fils de phase du moteur sont déjà à l'intérieur.",
+      "refusal": "Les nacelles d'ESC se serrent au bout des bras : dépliez d'abord le châssis."
+    },
+    "wires": {
+      "title": "Tirer les câbles des bras",
+      "body": "Faites courir une paire 12 AWG et un câble de signal le long de chaque bras, attachez-les au tube tous les 100 mm pour qu'ils ne puissent pas battre dans une hélice, et laissez une boucle à l'articulation pour que le pliage ne tire pas dessus.",
+      "refusal": "Les câbles aboutissent aux moteurs et aux nacelles d'ESC : posez-les d'abord."
+    },
+    "power": {
+      "title": "Poser la distribution d'alimentation",
+      "body": "Posez la carte d'alimentation à l'arrière du moyeu, soudez-y les six paires des bras, l'alimentation de la pompe et le câble AS150U, et posez les condensateurs 63 V avec la bande blanche côté moins. Le câble du module d'alimentation ira au Cube plus tard.",
+      "refusal": "La carte d'alimentation alimente les ESC : posez d'abord les nacelles d'ESC."
+    },
+    "fc": {
+      "title": "Monter le Cube Orange+",
+      "body": "Montez la carte porteuse sur sa plaque amortie à l'avant du moyeu, la flèche vers le nez. Branchez le module d'alimentation sur POWER1 et les six câbles de signal des ESC sur MAIN 1 à 6 selon le numéro de moteur.",
+      "refusal": "Le Cube est alimenté par la carte d'alimentation : posez d'abord la carte d'alimentation."
+    },
+    "rx": {
+      "title": "Poser la radio",
+      "body": "Posez la radio de télémétrie 900 MHz sur TELEM1 et le récepteur RC sur RCIN, l'antenne pendant sous le moyeu, loin du carbone et des câbles d'alimentation.",
+      "refusal": "La radio se branche sur le Cube : montez d'abord le Cube."
+    },
+    "radar": {
+      "title": "Poser le radar",
+      "body": "Boulonnez le radar sous le nez, tourné droit vers le bas, sans rien dans son faisceau : ni une jambe, ni la rampe. Branchez-le sur TELEM2.",
+      "refusal": "Le radar se branche sur le TELEM2 du Cube : montez d'abord le Cube."
+    },
+    "top": {
+      "title": "Poser le capot",
+      "body": "Posez le capot sur le Cube, la radio et la carte d'alimentation et verrouillez-le : le brouillard de pulvérisation est corrosif, et l'électronique mouillée fait des courts-circuits.",
+      "refusal": "Ce qui va sous le capot se pose en premier : posez le Cube et la radio."
+    },
+    "gps": {
+      "title": "Poser les mâts RTK",
+      "body": "Boulonnez les deux mâts sur le capot, à 340 mm l'un de l'autre dans l'axe du drone : GPS1 (la base mobile) à l'avant, GPS2 derrière. Branchez GPS1 sur le port GPS1 du Cube et GPS2 sur GPS2. Dans l'autre sens, le cap sort faux de 180°.",
+      "refusal": "Les mâts se boulonnent sur le capot : posez d'abord le capot."
+    },
+    "tank": {
+      "title": "Suspendre le réservoir",
+      "body": "Sanglez le réservoir de 10 L sous le moyeu, dans l'axe, le bouchon de remplissage accessible et la bande de niveau tournée vers l'extérieur.",
+      "refusal": "Le réservoir est suspendu au moyeu : dépliez d'abord le châssis."
+    },
+    "pump": {
+      "title": "Poser la pompe",
+      "body": "Montez la pompe et son pilote derrière le réservoir. Raccordez le tuyau de la sortie du réservoir, l'alimentation 12S depuis la carte d'alimentation et le câble PWM vers l'AUX 1 du Cube.",
+      "refusal": "La pompe aspire dans le réservoir : suspendez d'abord le réservoir."
+    },
+    "boom": {
+      "title": "Poser la rampe",
+      "body": "Serrez la rampe sous le réservoir, perpendiculaire au drone, et tirez le tuyau de la sortie de la pompe jusqu'aux quatre buses. Les buses extérieures sont sous les hélices latérales, là où le souffle est le plus fort.",
+      "refusal": "La rampe est alimentée par la pompe : posez d'abord la pompe."
+    },
+    "batt": {
+      "title": "Poser la batterie",
+      "body": "Glissez la batterie 12S sur son plateau au-dessus du capot, au-dessus du centre de gravité, et sanglez-la. Laissez-la débranchée jusqu'au test au smoke stopper.",
+      "refusal": "La batterie se pose sur le capot et se branche sur la carte d'alimentation : posez d'abord les deux."
+    },
+    "props": {
+      "title": "Poser les hélices (en dernier)",
+      "body": "Seulement après le test au smoke stopper, le test moteur et le calibrage. Les hélices CW sur les moteurs CW (M1, M3, M6), les CCW sur les CCW (M2, M4, M5) ; vérifiez que chaque pale se déploie librement.",
+      "refusal": "Les hélices se posent en dernier, avec les moteurs montés et le capot en place : posez-les d'abord."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "La prise anti-étincelle AS150U de la batterie sur le câble de la carte d'alimentation. Sa résistance de précharge remplit les condensateurs des ESC avant que les broches principales ne se touchent : les 50 V ne font donc pas d'arc dans la prise et ne piquent pas les contacts.",
+    "XT60-ESC": "Une paire rouge et noire en 12 AWG par bras, soudée aux pastilles de la carte d'alimentation : environ 13 A chacune en stationnaire, 80 A au pic.",
+    "ESC-MOTORS": "Les trois fils de phase restent à l'intérieur de chaque nacelle X8. Un moteur qui tourne dans le mauvais sens se corrige en inversant deux d'entre eux, ou en posant l'unité de l'autre sens : l'autopilote ne peut pas inverser un ESC en PWM.",
+    "XT60-FC": "Les ESC X8 n'ont pas de BEC : un module d'alimentation abaisse donc le bus 12S à un 5 V propre pour le Cube et rapporte la tension et le courant de la batterie sur POWER1 (BATT_MONITOR 4).",
+    "XT60-PUMP": "Le pilote de la pompe prend son alimentation directement sur le bus 12S, à travers son propre fusible.",
+    "FC-ESC": "MAIN 1 à 6 portent un signal PWM par moteur (SERVO1 à 6 réglés sur Motor1 à 6). MOT_PWM_MIN 1050 et MOT_PWM_MAX 1950 correspondent à la plage du X8.",
+    "FC-PUMP": "AUX 1 (SERVO9) est SprayerPump : la largeur d'impulsion indique au pilote à quelle vitesse faire tourner la pompe.",
+    "RX-FC": "La radio de télémétrie sur TELEM1 (SERIAL1, MAVLink2) porte les commandes de la station sol et les corrections RTK ; le SBUS du récepteur RC va sur RCIN.",
+    "GPS-FC": "GPS1, l'antenne avant et la base mobile, sur le port GPS1 (SERIAL3) ; GPS2, le rover, sur GPS2 (SERIAL4). La base envoie ses corrections au rover, qui en déduit le cap.",
+    "RADAR-FC": "Le radar sur TELEM2 (SERIAL2 protocole 9, Rangefinder, 115200 bauds) rapporte la hauteur au-dessus de la culture de nombreuses fois par seconde."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Test au smoke stopper",
+      "pass": "La lampe n'a fait que clignoter : pas de court-circuit entre le plus et le moins sur le bus 12S. Le premier branchement d'un drone de 50 V passe par un limiteur de courant prévu pour cette tension ; ensuite, la précharge de l'AS150U empêche la prise de faire des étincelles.",
+      "fail": "La lampe est restée allumée : quelque chose est en court-circuit. Ici, un condensateur est monté à l'envers ; retournez-le (bande côté moins) et refaites le test."
+    },
+    "motors": {
+      "title": "Test moteur (sans hélices)",
+      "pass": "Le test moteur de Mission Planner les a fait tourner de A à F, de l'avant droit dans le sens horaire : A est M5, B est M1, C est M4, D est M6, E est M2, F est M3, en alternant CCW et CW. Les hélices peuvent être montées.",
+      "fail": "Un moteur a tourné dans le mauvais sens, ou c'est le mauvais bras qui a bougé. Inversez deux des fils de phase de ce moteur (ou posez l'unité X8 de l'autre sens) et vérifiez l'ordre des câbles MAIN : avec les hélices montées, il partirait en toupie ou se retournerait au décollage."
+    },
+    "calibrate": {
+      "title": "Calibrage de l'accéléromètre",
+      "pass": "Calibré dans six positions (à plat, sur chaque côté, nez en bas, nez en haut, sur le dos), puis Calibrate Level sur les patins. Un drone aussi grand se retourne sur l'établi avant de poser les bras, ou avec un aide. Le blocage pre-arm « 3D Accel calibration needed » a disparu.",
+      "fail": "Posez d'abord le Cube. Si sa flèche pointe vers l'arrière, tournez-le ou réglez AHRS_ORIENTATION sur 4 (Yaw180), redémarrez et recalibrez."
+    },
+    "pump": {
+      "title": "Test de la pompe (désarmé)",
+      "pass": "Drone désarmé et interrupteur du pulvérisateur en haut, la pompe a tourné à SPRAY_PUMP_RATE, le débit pour 1 m/s, et les quatre buses ont pulvérisé. Recueillez une minute de pulvérisation dans un broc : les litres par minute servent à calibrer la dose. Armer annule le test.",
+      "fail": "Posez le Cube, le réservoir, la pompe et la rampe, et branchez la batterie : le pilote de la pompe est alimenté par le bus 12S. Une buse qui ne pulvérise pas est bouchée, et sa bande de culture reste non traitée."
+    },
+    "gpsyaw": {
+      "title": "Fix RTK et cap GPS",
+      "pass": "Les deux récepteurs annoncent RTK Fixed avec les corrections de la station de base, et le cap donné par les deux antennes correspond au nez. EKF3 prend son lacet du GPS (EK3_SRC1_YAW 2) : il n'a donc besoin d'aucune boussole.",
+      "fail": "Posez le Cube, les mâts et la radio, et branchez la batterie. Avec GPS1 à l'arrière, le cap est faux de 180° et le pre-arm affiche « EKF3 Yaw inconsistent » : inversez les mâts pour que GPS1 soit à l'avant, là où GPS1_POS_X 0.17 dit qu'il est."
+    },
+    "prearm": {
+      "title": "Vérifications pre-arm",
+      "pass": "Toutes les vérifications passent (ARMING_SKIPCHK 0) : fix RTK et cap GPS, données du radar, accéléromètres calibrés, batterie au-dessus de BATT_ARM_VOLT. Le Cube va s'armer.",
+      "fail": "Un message PreArm bloque l'armement : « Rangefinder 1: No Data » (posez le radar), « GPS 1: Need 3D Fix » ou « EKF3 Yaw inconsistent » (faites la vérification RTK et cap GPS), « 3D Accel calibration needed » (calibrez). Résolvez-les un par un ; ne coupez jamais les vérifications."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Châssis, sorties moteur et alimentation",
+      "explain": "Dans ArduCopter 4.7.2, on règle des paramètres, et MAVProxy enregistre aussitôt chaque param set. Châssis Hexa X, les six moteurs sur MAIN 1 à 6 selon leur numéro. L'ESC intégré du X8 reçoit du simple PWM entre 1050 et 1950 µs : MOT_PWM_TYPE reste donc sur Normal. Le filtre notch harmonique suit les gaz et se place sur la fréquence de passage des pales : deux pales à environ 2400 rpm bourdonnent à 80 Hz. MOT_HOVER_LEARN 2 lui laisse apprendre ses propres gaz de stationnaire, qui baissent à mesure que le réservoir se vide."
+    },
+    "links": {
+      "title": "Radio, radar et RTK",
+      "explain": "La radio 900 MHz sur TELEM1 porte le MAVLink et les corrections RTK, et le radar parle à TELEM2. GPS1_TYPE 17 et GPS2_TYPE 18 font des deux F9P une paire en base mobile : le rover mesure sa position par rapport à la base, et cette ligne donne le cap. Les positions des antennes sont en mètres depuis le centre de gravité, avec y vers la droite. Avec EK3_SRC1_YAW 2, la boussole est mise de côté, loin des hangars en acier et des 450 A des câbles d'alimentation."
+    },
+    "spray": {
+      "title": "Le pulvérisateur",
+      "explain": "Le pulvérisateur d'ArduPilot fait tourner la pompe en proportion de la vitesse sol : SPRAY_PUMP_RATE 10 signifie 10 % par m/s, donc 40 % à 4 m/s et 70 % à 7 m/s, et la dose par mètre carré reste la même. Sous SPRAY_SPEED_MIN (1 m/s, toujours écrit en cm/s), il s'arrête : il ne fait donc jamais de flaque en stationnaire. L'interrupteur sur la voie 7 autorise la pulvérisation ; basculé en haut pendant que le drone est désarmé, il lance le test de la pompe."
+    },
+    "failsafe": {
+      "title": "Failsafes, geofence et vérifications pre-arm",
+      "explain": "Radio perdue, ou station sol muette pendant 5 s : RTL. Le seuil de batterie faible est de 3,5 V par cellule ou 30 % restants, puis RTL ; au seuil critique de 3,4 V par cellule, il se pose là où il est. La geofence le garde sous 30 m et à moins de 300 m du point de départ. La 4.7 nomme les vérifications d'armement à l'inverse : ARMING_SKIPCHK liste les vérifications à sauter, et 0 n'en saute aucune."
+    },
+    "stabilize": {
+      "title": "Stabilize",
+      "explain": "Le Cube remet le drone à plat quand les manches sont au centre, mais les gaz, c'est la puissance des moteurs : rien ne tient la hauteur ni la position. Sur un drone de 33 kg avec de l'eau qui ballotte dedans, c'est le mode pour quand le GPS ou le radar a lâché. ATC_ANGLE_MAX 25 limite l'inclinaison dans tous les modes."
+    },
+    "althold": {
+      "title": "AltHold",
+      "explain": "Le manche des gaz demande une montée ou une descente, jusqu'à PILOT_SPD_UP 2.5 m/s, et au centre il tient la hauteur. Avec SURFTRAK_MODE 1 et le radar, c'est la hauteur au-dessus de la culture plutôt qu'au-dessus du point de décollage : il monte et descend donc avec le terrain. Rien ne tient la position : le vent le pousse."
+    },
+    "loiter": {
+      "title": "Loiter",
+      "explain": "Tient la hauteur, la position et le cap avec les manches au centre, à quelques centimètres près avec le RTK. Manche à fond, il vole à LOIT_SPEED_MS 8 m/s, et LOIT_ACC_MAX_M 3 garde les départs et les arrêts doux, pour que l'eau du réservoir ne ballotte pas le drone dans tous les sens."
+    },
+    "rtl": {
+      "title": "Retour au point de départ",
+      "explain": "Monte à RTL_ALT_M 12 m, au-dessus des arbres de 10 m et de la ligne électrique de 9 m, rentre à 6 m/s et se pose. Le pulvérisateur ne fait pas partie du mode : la bibliothèque du pulvérisateur d'ArduPilot garde la pompe autorisée à travers un changement de mode. Une mission termine donc chaque rang par DO_SPRAYER 0, et un pilote coupe l'interrupteur du pulvérisateur avant de reprendre la main. Sinon, il pulvérise la cour sur le chemin du retour."
+    },
+    "auto": {
+      "title": "AUTO : la mission de pulvérisation",
+      "explain": "La mission est planifiée comme une grille de relevé : des rangs espacés d'une largeur de passage (4 m), reliés aux bouts. Chaque rang commence par DO_SPRAYER 1 et finit par DO_SPRAYER 0 : la pompe ne tourne donc qu'au-dessus de la culture. WP_RFND_USE 1 et des waypoints dans le repère Terrain le gardent à 2,5 m au-dessus de la culture grâce au radar. Quand il revient d'un remplissage, DO_SET_RESUME_REPEAT_DIST lui fait rejoindre le rang un peu avant l'endroit où il s'est arrêté, pour qu'aucune bande ne soit oubliée. AUTO ne peut pas armer : armez en Loiter, puis basculez."
+    }
+  },
+  "flight": {
+    "modes": {
+      "loiter": {
+        "title": "Loiter",
+        "hint": "Maintien de position RTK : les manches règlent une vitesse jusqu'à 8 m/s, et le drone s'arrête quand vous lâchez. Le mode pour voler les rangs à la main."
+      },
+      "althold": {
+        "title": "AltHold",
+        "hint": "Tient la hauteur, mais rien ne tient la position : même un drone de 33 kg dérive avec le vent."
+      },
+      "stabilize": {
+        "title": "Stabilize",
+        "hint": "Remise à plat automatique avec une inclinaison limitée à 25° ; les gaz sont à vous. Lourd et lent à répondre : faites de petites commandes."
+      },
+      "rtl": {
+        "title": "RTL",
+        "hint": "Monte à 12 m au-dessus des arbres et de la ligne électrique, rentre et se pose sur la plateforme."
+      },
+      "auto": {
+        "title": "AUTO pulvérisation",
+        "hint": "Vole seul la mission de pulvérisation : six rangs à 2,5 m avec la pompe en marche le long de chacun, puis retour pour se poser."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Radio du pilote perdue : RTL, en montant d'abord à 12 m au-dessus des arbres et de la ligne électrique.",
+      "gcs-loss": "Plus de heartbeat de la station sol pendant 5 s : RTL.",
+      "low-battery": "Sous 42 V (3,5 V par cellule) ou 6600 mAh restants : RTL. Au champ, c'est le moment où il revient pour une batterie neuve et un remplissage.",
+      "battery-critical": "Sous 40,8 V : il se pose là où il est, même dans la culture, plutôt que de risquer le vol du retour.",
+      "ekf": "L'estimateur ne fait plus confiance à sa position (RTK perdu, cap GPS incohérent) : il se pose, parce qu'il ne sait plus où il va.",
+      "fence": "Au-dessus de 30 m ou à plus de 300 m du point de départ : RTL."
+    },
+    "controls": "Clavier : Espace arme et désarme, W et S pour monter et descendre, les flèches pour voler en avant, en arrière et sur les côtés, A et D pour le lacet, V passe à la caméra du nez, R replace le drone sur la plateforme. En Loiter, il s'arrête quand vous lâchez. Sur téléphone, le manche gauche gère les gaz et le lacet, le manche droit le tangage et le roulis. Une manette fonctionne en Mode 2."
+  },
+  "courses": {
+    "spray": {
+      "title": "Traiter le champ nord",
+      "brief": "Décollez de la cour, pulvérisez six rangs de 36 m de la parcelle, à 2,5 m au-dessus et à 4 m d'écart, pompe en marche le long de chaque rang et coupée dans les virages, puis rentrez vous poser sur la plateforme. Volez-le vous-même en Loiter contre les temps de référence, en surveillant les arbres du côté ouest et la ligne électrique à l'est, ou passez en AUTO et regardez la grille de relevé se voler toute seule.",
+      "goals": {
+        "1": "DÉCOLLAGE : montée à 5 m au-dessus de la plateforme",
+        "2": "RANG 1 : descente au bout ouest, pompe en marche",
+        "3": "RANG 1 : pulvérisation jusqu'au bout est, pompe coupée",
+        "4": "RANG 2 : décalage de 4 m vers le nord, pompe en marche",
+        "5": "RANG 2 : pulvérisation vers l'ouest, pompe coupée",
+        "6": "RANG 3 : décalage vers le nord, pompe en marche",
+        "7": "RANG 3 : pulvérisation vers l'est, pompe coupée",
+        "8": "RANG 4 : décalage vers le nord, pompe en marche",
+        "9": "RANG 4 : pulvérisation vers l'ouest, pompe coupée",
+        "10": "RANG 5 : décalage vers le nord, pompe en marche",
+        "11": "RANG 5 : pulvérisation vers l'est, pompe coupée",
+        "12": "RANG 6 : décalage vers le nord, pompe en marche",
+        "13": "RANG 6 : pulvérisation vers l'ouest, pompe coupée",
+        "14": "RETOUR : au-dessus de la cour à 5 m",
+        "15": "ATTERRISSAGE : sur la plateforme"
+      }
+    }
+  },
+  "quizzes": {
+    "power": {
+      "caps": {
+        "q": "Pourquoi la carte d'alimentation porte-t-elle des condensateurs low-ESR de 63 V ?",
+        "options": {
+          "1": "Ils stockent de l'énergie pour la pompe",
+          "2": "Ils absorbent les pics de tension de six ESC qui commutent jusqu'à 80 A chacun, et qui sinon tueraient des ESC et provoqueraient des désynchronisations",
+          "3": "Ils filtrent le bruit de la radio"
+        },
+        "why": "Les longs câbles de batterie ont une inductance, et un ESC qui y commute des dizaines d'ampères crée des pics bien au-dessus de la tension de la batterie. Les condensateurs low-ESR sur la carte d'alimentation les absorbent. Des modèles 63 V conviennent sur une batterie 12S de 50,4 V, mais pas sur une 14S de 58,8 V : il faut alors des modèles de 80 à 100 V."
+      },
+      "brick": {
+        "q": "Les ESC du X8 n'ont pas de BEC. Qu'est-ce qui alimente le Cube ?",
+        "options": {
+          "1": "Les câbles de signal des ESC",
+          "2": "Les récepteurs RTK",
+          "3": "Un module d'alimentation depuis le bus 12S vers POWER1"
+        },
+        "why": "Sans BEC dans les ESC, le 5 V de l'autopilote vient d'un module d'alimentation (le power brick), qui mesure aussi la tension et le courant de la batterie pour les failsafes. Une alimentation faible qui fait un brown-out quand 450 A font chuter la batterie redémarre le Cube en plein vol."
+      }
+    },
+    "gps": {
+      "baseline": {
+        "q": "Pourquoi deux antennes GPS à 340 mm l'une de l'autre ?",
+        "options": {
+          "1": "La ligne entre elles donne le cap : le drone n'a donc pas besoin de boussole près des hangars en acier et des câbles à fort courant",
+          "2": "Deux antennes voient deux fois plus de satellites",
+          "3": "L'une est une réserve au cas où l'autre lâcherait"
+        },
+        "why": "Dans une paire en base mobile, le rover mesure sa position par rapport à la base à environ un centimètre près, ce qui donne la direction de la ligne entre les deux : le cap. ArduPilot veut les antennes à au moins 30 cm l'une de l'autre."
+      },
+      "swap": {
+        "q": "GPS1 se retrouve sur le mât arrière et GPS2 sur le mât avant. Que se passe-t-il ?",
+        "options": {
+          "1": "Rien : les deux sens fonctionnent",
+          "2": "Le fix RTK est perdu",
+          "3": "Le cap sort faux de 180° et le pre-arm affiche EKF3 Yaw inconsistent"
+        },
+        "why": "GPS1_POS_X indique que l'antenne de la base est 0,17 m en avant. Si elle est en réalité derrière, la ligne mesurée pointe vers l'arrière et le cap GPS est en désaccord de 180° avec tout le reste. Remettez les mâts dans le bon sens (ou inversez les types et les décalages) au sol ; ne le découvrez pas en vol."
+      }
+    },
+    "boom": {
+      "rate": {
+        "q": "SPRAY_PUMP_RATE vaut 10. À quel régime la pompe tourne-t-elle à 4 m/s ?",
+        "options": {
+          "1": "10 %",
+          "2": "40 %",
+          "3": "100 %"
+        },
+        "why": "Le débit se compte par m/s de vitesse sol : 10 % × 4 = 40 %. À 10 m/s, il atteint 100 %, et au-delà la dose commence à baisser."
+      },
+      "dose": {
+        "q": "Vous volez les rangs à 7 m/s au lieu de 4 m/s. Que deviennent les litres par hectare ?",
+        "options": {
+          "1": "Rien : la pompe tourne à 70 % au lieu de 40 %, et chaque mètre carré reçoit donc la même chose",
+          "2": "Ils tombent à environ 57 %",
+          "3": "Ils doublent"
+        },
+        "why": "Le débit monte avec la vitesse sol, et la surface couverte chaque seconde aussi : la vitesse s'annule donc. L/ha = plein débit × RATE/100 ÷ largeur de passage × 10000. Une pompe de 3 L/min sur une largeur de 4 m donne 12,5 L/ha à n'importe quelle vitesse jusqu'à 10 m/s. Seule une pompe qui sature, ou une pompe à débit fixe, change la dose."
+      }
+    },
+    "fly": {
+      "pump": {
+        "q": "À mi-chemin d'un rang, la batterie devient faible et il passe en RTL. Que fait la pompe ?",
+        "options": {
+          "1": "Elle s'arrête d'elle-même au changement de mode",
+          "2": "Elle continue de tourner tant que le drone va plus vite que SPRAY_SPEED_MIN, sauf si un DO_SPRAYER 0 ou l'interrupteur l'a coupée",
+          "3": "Elle tourne à plein régime"
+        },
+        "why": "Le pulvérisateur d'ArduPilot ne regarde pas le mode de vol. La pulvérisation reste autorisée jusqu'à un DO_SPRAYER 0, l'interrupteur qui passe en bas, ou la vitesse qui tombe sous 1 m/s. C'est pour ça que chaque rang se termine par DO_SPRAYER 0, et qu'un pilote coupe l'interrupteur du pulvérisateur avant de reprendre la main."
+      },
+      "resume": {
+        "q": "Après un remplissage, vous armez et repassez en AUTO ; le Cube est resté alimenté. Où va-t-il ?",
+        "options": {
+          "1": "Au premier rang",
+          "2": "Il se pose",
+          "3": "Au rang où il était, en le rejoignant quelques mètres avant l'endroit où il s'est arrêté"
+        },
+        "why": "MIS_RESTART 0 reprend la mission au lieu de la recommencer, et DO_SET_RESUME_REPEAT_DIST lui fait rejoindre la trajectoire à cette distance en arrière, pour qu'aucune bande ne soit oubliée. Le point de reprise ne vit qu'en RAM : si l'échange de batterie éteint le Cube, AUTO repart du premier élément."
+      },
+      "kv": {
+        "q": "Pourquoi les moteurs 10025 de 80 KV en 12S avec des hélices de 30 pouces sont-ils jugés trop faibles ?",
+        "options": {
+          "1": "80 KV sur 44,4 V font tourner une hélice de 30 pouces trop lentement : 1,20:1 avec un réservoir plein",
+          "2": "Ils sont trop lourds pour les bras",
+          "3": "Ils tirent trop de courant"
+        },
+        "why": "La poussée suit le carré des rpm, et les rpm valent le KV fois les volts. Un moteur de 80 KV est fait pour de plus grandes hélices ou une batterie 14S : en 12S avec des hélices de 30 pouces, il donne 6,9 kg par moteur contre 10,8 kg pour celui de 100 KV, trop peu de marge pour une rafale avec 10 L à bord."
+      }
+    }
+  }
+}
