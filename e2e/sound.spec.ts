@@ -59,7 +59,8 @@ test("sound is off by default; on, the cue and the drone figure's build sounds p
   await expect(toggle(page)).toHaveAccessibleName(common.client.sound.label);
 
   await main(page).getByRole("tab", { name: dronelab.workspace.tabs.build, exact: true }).click();
-  const buildForMe = main(page).getByRole("button", { name: dronelab.build.buildForMe });
+  // the empty mat offers Build it for me too; this is the Build tab's
+  const buildForMe = main(page).getByRole("tabpanel").getByRole("button", { name: dronelab.build.buildForMe });
   await expect(buildForMe).toBeEnabled({ timeout: 20_000 });
   await buildForMe.click();
   await expect(main(page).getByTestId("build-count")).toHaveText(/^Parts (\d+)\/\1$/, { timeout: 20_000 });

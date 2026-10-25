@@ -51,6 +51,8 @@ async function seedIdentity(context: BrowserContext) {
 }
 
 const failure = (page: Page, id: string) => main(page).locator(`[data-failure="${id}"]`);
+// A lesson's faults sit in its rail's Break it tab; each screen opens its own tab.
+const breakItTab = (page: Page) => main(page).getByRole("tab", { name: new RegExp(`^${boardlab.failures.title}`) }).click();
 const view = (page: Page, name: string) => main(page).getByRole("radio", { name, exact: true });
 
 test("two tabs in one room share the build, and only the keyboard holder changes it", async ({ context }) => {
@@ -63,6 +65,7 @@ test("two tabs in one room share the build, and only the keyboard holder changes
   const dockA = await startRoom(a);
 
   // Before anyone joins, the host breaks the board: the joiner gets it from the host's snapshot.
+  await breakItTab(a);
   await failure(a, "short-5v").getByRole("button", { name: boardlab.failures.trigger }).click();
   await expect(failure(a, "short-5v")).toContainText(boardlab.failures.active);
 
@@ -70,6 +73,7 @@ test("two tabs in one room share the build, and only the keyboard holder changes
   const errorsB = watchErrors(b);
   await openLesson(b, a.url());
   const dockB = await joinRoom(b, ANA.name);
+  await breakItTab(b);
   await expect(failure(b, "short-5v")).toContainText(boardlab.failures.active);
 
   // A view change is free for everyone; it travels both ways.
