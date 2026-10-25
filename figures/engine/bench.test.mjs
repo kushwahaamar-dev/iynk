@@ -54,6 +54,14 @@ describe('missing:<part> faults (B3)', () => {
     expect(r.status).toBe('running');
   });
 
+  it('report a key the bench does not know, and still apply the rest', async () => {
+    page = await espPage();
+    const B = page.bench;
+    // a board's variant is picked by ?variant= at load: a host that patches it is told so
+    expect(B.accept({ variant: 'wifi', fault: 'missing:R17' })).toBe('unknown key variant');
+    expect(B.report().faults).toEqual(['missing:R17']);
+  });
+
   it('come from ?fault= too', async () => {
     page = await espPage('fault=missing:R17');
     expect(page.bench.report().faults).toEqual(['missing:R17']);

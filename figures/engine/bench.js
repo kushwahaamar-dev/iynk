@@ -1178,9 +1178,14 @@ B.accept = p => accept(st, p);
 // One patch is one moment on the bench: unplug first, then change the board (build, parts, fault, mat, controls), then
 // plug in, so { power: 'usb', fault: 'missing:Y2' } shows the powered board without Y2 and { power: null, build: 'bare' }
 // unplugs before it strips. A host fault replaces the one before it (the host shows one failure at a time).
+// A key the bench does not read is reported (the rest still apply): a host patching what a figure only takes at load
+// (?variant=) otherwise fails silently.
+const ACCEPT_KEYS = new Set(['power', 'pins', 'mode', 'exploded', 'build', 'remove', 'restore', 'fault', 'matStep', 'circuit',
+  'params', 'tones', 'inputs', 'press', 'view', 'select', 'serial']);
 const accept = (s, p) => {
   let ok = true;
   const bad = m => { ok = m; };
+  for (const k of Object.keys(p)) if (!ACCEPT_KEYS.has(k)) bad('unknown key ' + k);
   const powerOk = own(p, 'power') && (p.power === null || own(MD.power.sources, p.power));
   if (own(p, 'power') && !powerOk) bad('unknown power source');
   if (own(p, 'pins')){ if (p.pins && typeof p.pins === 'object') A.setPins(p.pins); else bad('pins must be an object'); }
