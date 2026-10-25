@@ -16,7 +16,9 @@ Changes after the first publication are additive only. Every change is logged he
   upload leaves the Pico's UF2 boot (it reboots into the program), and so does unplugging; it leaves an ESP's ROM
   download mode too. Scenario sources get no Break it voltage choices. A circuit may name its `mode` (§7): picking
   the circuit on the figure page runs that program, unless the host drives the pins or the same patch names a mode.
-  A `banner` may be a function of the state.
+  A `banner` may be a function of the state. A host `serial` line hands the board to the host as `pins` does, so a
+  sketch that only reads and prints no longer leaves the built-in Blink on the HUD. Silkscreen text is never
+  translated.
 - v12 (02:10 Oct 25, P2-engine-b): the obstacle prop stays on the mat and off the breadboard over 2-450 cm (prop
   `travel`, `ctx.breadboard`, §9.1).
 - v11 (01:30 Oct 25, P2-engine-b, for the FPGA boards): a feed takes `onlyIf: ['ctl:SW16', '==', 1]` (a condition on
@@ -199,7 +201,7 @@ board `uno-r3`; `modules/<id>.html` → module, `robotics/<id>.html` → bench, 
 | `pcb` | object | yes | `{ w, h, thick:1.6, r:corner radius, color:'#rrggbb' solder-mask colour, silk:'#rrggbb', outline?, standoff:4 }` |
 | `mat` | object | no | `{ front:8, back:8, left:14, right:8 }` mm of cutting mat round the board (room for cables) |
 | `holes` | `[[x,y,d]]` | yes | mounting holes, centre and drill diameter (3.2 for M3) |
-| `silk` | `[[x,y,text,size,rot?]]` | no | silkscreen text, `size` = cap height mm, `rot` deg CCW |
+| `silk` | `[[x,y,text,size,rot?]]` | no | silkscreen text, `size` = cap height mm, `rot` deg CCW; printed as written, never translated |
 | `traces` | `[[[x,y],…]]` | no | decorative copper traces (drawn under the mask, slightly darker) |
 | `parts` | `Part[]` | yes | section 4 |
 | `power` | object | yes | section 6 |
@@ -778,7 +780,7 @@ unplugs before it strips. Send `power` with every `fault` whose consequence need
 | `build` | `'bare'\|'assembled'` | jump the build state |
 | `remove`, `restore` | part id | take a part off / put it back |
 | `press` | `{id, down}` | press or release an on-board control |
-| `serial` | string | the host printed a line: TX LED blips |
+| `serial` | string | the host printed a line: TX LED blips, and the host now runs the board as `pins` does (built-in program off, Program reads "your sketch") |
 | `inputs` | `{net: 0\|1}` or `{partId: 0\|1\|position}` | host-side inputs mirrored on the drawing: keyed by an input control's `net`, the level that net reads (the part shows pressed when it is the control's `active` level); keyed by part id, the control's state as `controls` reports it |
 | `tones` | `{net: Hz}` | pins the sketch drives with `tone()`; a net left out or 0 is silent; send `{}` when the last stops |
 

@@ -840,3 +840,30 @@ describe('a circuit picks the program that drives it (sweep 9)', () => {
     expect(page.notes()).toEqual([]);
   });
 });
+
+describe('the host runs the board (sweep 14)', () => {
+  it('a serial line from the host stops the built-in program, as pins do', async () => {
+    page = await loadFigure(buildFigure('boards/uno-r3'), { path: '/figures/boards/uno-r3.html' });
+    const B = page.bench;
+    B.accept({ power: 'usb' }); B.advance(.5);
+    const prog = () => page.win.document.querySelector('.stats').textContent;
+    expect(prog()).toMatch(/Blink/);
+    B.accept({ serial: 'light=512' }); B.advance(1.2);
+    expect(prog()).toMatch(/your sketch/);
+    expect(Object.values(B.st.o.pins).every((v) => !v)).toBe(true);
+    B.actions.upload('blink'); B.advance(B.st.upDur + .3);
+    expect(prog()).toMatch(/Blink/);
+    expect(page.notes()).toEqual([]);
+  });
+});
+
+describe('silkscreen (sweep 11)', () => {
+  it('prints the board\'s text as written in every language', async () => {
+    page = await loadFigure(buildFigure('modules/tb6612fng'), { path: '/figures/modules/tb6612fng.html' });
+    page.win.CF_SETLOCALE('fr', { MOTOR: 'MOTEUR', 'See-through': 'Vue interne' });
+    const html = page.win.document.body.innerHTML;
+    expect(html).toMatch(/Vue interne/);
+    expect(html).toMatch(/>MOTOR</);
+    expect(html).not.toMatch(/MOTEUR/);
+  });
+});

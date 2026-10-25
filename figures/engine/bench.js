@@ -689,10 +689,11 @@ function drawPCB(k){
     s += fill(pd(circ(x, y, d / 2 + 1.1).map(([u, v]) => BP(u, v, .03))), M.tin.l) + ink(pd(circ(x, y, d / 2 + 1.1).map(([u, v]) => BP(u, v, .03))), .5);
     s += fill(pd(circ(x, y, d / 2).map(([u, v]) => BP(u, v, .04))), M.hole);
   }
-  // silkscreen
+  // silkscreen: printed on the board, so it reads the same in every language (never through T, whose keys it would
+  // share with on-screen labels such as "ON" and "POWER")
   for (const [x, y, str, size = 1.6, rot = 0] of MD.def.silk || []){
     const r = rot * Math.PI / 180;
-    s += B.flatText(BP(x, y, .05), Math.cos(r), Math.sin(r), T(str), size * 1.3, pcb.silk, 800);
+    s += B.flatText(BP(x, y, .05), Math.cos(r), Math.sin(r), String(str), size * 1.3, pcb.silk, 800);
   }
   // footprints of parts that are off the board: pads and a silk outline
   for (const p of MD.parts){
@@ -1186,7 +1187,9 @@ const accept = (s, p) => {
   if (powerOk && p.power !== null) A.power(p.power);
   if (own(p, 'view')){ if (!A.view(p.view)) bad('unknown view'); }
   if (own(p, 'select')) A.select(typeof p.select === 'string' ? p.select : null);
-  if (own(p, 'serial') && typeof p.serial === 'string'){ st.txT = .09; kick(); }
+  // a line from the host's program means the host runs the board, even before it has sent any pin levels (a sketch
+  // that only reads and prints): the built-in program stops and the Program stat says so
+  if (own(p, 'serial') && typeof p.serial === 'string'){ st.txT = .09; if (!st.ext && !st.up){ st.ext = true; refresh(); } kick(); }
   return ok;
 };
 

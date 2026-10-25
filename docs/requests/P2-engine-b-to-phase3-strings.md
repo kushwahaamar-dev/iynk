@@ -64,3 +64,9 @@ Added ~03:10: two built-in programs on the NodeMCU and the ESP32-S3 DevKitC (the
 |---|
 | Knob dimmer |
 | Web LED switch |
+
+Changed ~03:30 (sweep 11): board silkscreen (`silk` in a figure source) no longer goes through `CF_T`; it is printed
+text and reads the same in every language. When `figure-keys.json` is next regenerated, keys that only silkscreen used
+(e.g. "MOTOR" on the TB6612FNG module) drop out, and the dictionaries' "translates nothing else" test will list them
+as extra: delete them from `src/i18n/figures/<lang>.json`. "ON", "OFF" and "POWER" can now be translated where they
+are on-screen labels, without changing what the boards say.
