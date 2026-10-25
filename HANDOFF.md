@@ -169,7 +169,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   - Review fixes, run `wf_62976d4a-988` (`phase3-wave.js`, brief `review-fixes.md`), since 04:47, due 06:20:
     F-fix-boards (B1 sideways scroll on every board page, U1, U2, U3, N2, N5, N7, N8, the pre-Run story),
     F-fix-robotics (U3 the phone bench, N3, N10), F-fix-drones (U5, U6, the empty-mat card, N4, N6, N16, N17),
-    F-fix-shell (U4, U7, N1, N13, N14, N12). The final pass (`wf_c95e5cdf-cda`) finished at 05:05 with F-review's
+    F-fix-shell (U4, U7, N1, N13, N14, N12). The final pass (`wf_c95e5cdf-cda`) finished at 04:45 with F-review's
     `docs/verify/ui-review.md`. The driver keeps N11 (Solana RPC on ordinary pages), N15 (crawl `--out`), the
     figure-string collector's variants, and the chrome change (`87315a4`).
   - Third figure-string delta, run `wf_4259a342-6a9` (`phase3-wave.js`, `P3-figs-delta3-<lang>`), since 04:33, due

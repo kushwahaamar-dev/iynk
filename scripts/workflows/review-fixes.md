@@ -1,4 +1,4 @@
-# Review fixes (after the final pass, 2026-10-25 05:15)
+# Review fixes (after the final pass, 2026-10-25 04:47)
 
 F-review walked the final pass against POLISH-SPEC and wrote `docs/verify/ui-review.md`: one blocker (B1), seven
 ugly findings (U1-U7) and seventeen nits (N1-N17), each with its cause and fix. The builders are done, so four agents

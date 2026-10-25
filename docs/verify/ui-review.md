@@ -1,4 +1,4 @@
-# UI review: the final pass checked against POLISH-SPEC (F-review, 2026-10-25 05:00 CDT)
+# UI review: the final pass checked against POLISH-SPEC (F-review, 2026-10-25 04:40 CDT)
 
 Phase 5 of `scripts/workflows/final.md`. One production build of the tree at `665db61` (04:16), which also held the
 driver's uncommitted figure and engine work (`figures/**`, `public/figures/**`, `src/i18n/figures/*.json`), served
