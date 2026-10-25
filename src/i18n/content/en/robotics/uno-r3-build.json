@@ -3,10 +3,6 @@
   "sub": "From the bare PCB to Blink",
   "hint": "Strip it, place and reflow the SMD parts, fit the through-hole parts low to tall, solder, chip in, plug in, upload, then break it",
   "overview": "The Uno is a microcontroller board built around the ATmega328P, and it is where robotics starts: digitalWrite(), PWM, interrupts and serial debugging all show up here first. Build it the way a factory does: a machine places the surface-mount parts and the reflow oven solders them all at once, then the through-hole parts go in from the lowest to the tallest and get soldered, and the chip goes into its socket last, cold. Plug in, upload a sketch, then break the board on purpose: a chip in backwards, a missing fuse, a reversed supply, a motor on the 5V pin, a cold joint. Each fault shows what it really does, and how to fix it.",
-  "leds": {
-    "L": "L LED",
-    "ON": "ON LED"
-  },
   "power": {
     "label": "Plug in USB",
     "ok": "Powered: the ON LED is lit"

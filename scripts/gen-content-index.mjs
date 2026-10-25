@@ -113,6 +113,8 @@ function textKeys(node, path = [], acc = []) {
     node.forEach((v, i) => textKeys(v, [...path, i], acc));
   } else if (node && typeof node === 'object') {
     for (const [k, v] of Object.entries(node)) {
+      // A status field's `key` is a path into the figure's state (`leds.L`), never a text key.
+      if (k === 'key') continue;
       if (typeof v === 'string' && (k === 'source' || k === 'solution' || k === 'code')) {
         for (const m of v.matchAll(/\{\{t:([^}]+)\}\}/g)) acc.push({ at: [...path, k].join('.'), key: m[1] });
       } else textKeys(v, [...path, k], acc);
