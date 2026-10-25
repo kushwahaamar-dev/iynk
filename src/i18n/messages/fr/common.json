@@ -35,7 +35,6 @@
     },
     "dock": {
       "label": "Outils du labo",
-      "hint": "Partenaire, amis et vraies pièces pour ce labo",
       "open": "Ouvrir les outils",
       "close": "Fermer les outils",
       "tabs": {

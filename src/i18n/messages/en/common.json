@@ -35,7 +35,6 @@
     },
     "dock": {
       "label": "Lab tools",
-      "hint": "Partner, friends and real parts for this lab",
       "open": "Open lab tools",
       "close": "Close lab tools",
       "tabs": {

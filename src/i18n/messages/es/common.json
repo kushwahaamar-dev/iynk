@@ -35,7 +35,6 @@
     },
     "dock": {
       "label": "Herramientas del laboratorio",
-      "hint": "Compañero, amigos y piezas reales para este laboratorio",
       "open": "Abrir herramientas",
       "close": "Cerrar herramientas",
       "tabs": {
