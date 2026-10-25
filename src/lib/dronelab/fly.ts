@@ -124,8 +124,9 @@ const FAULT_KEYS = [
 
 /**
  * The bench mistakes that change how the craft flies (none for the factory build), with the saved CLI
- * settings on top: a fault the content's CLI effects name, and `boardYaw` 180, which turns the FC's
- * orientation round (a backwards FC with align_board_yaw = 180 flies right; a forward one then flips).
+ * settings on top: a fault the content's CLI effects name, `boardYaw` 180, which turns the FC's
+ * orientation round (a backwards FC with align_board_yaw = 180 flies right; a forward one then flips), and
+ * `tailReverse`, a tail servo reversed in the mixer, which cancels or causes a backwards servo the same way.
  */
 export function flightFaults(content: DroneContent, s: Pick<FlyState, "source" | "bench" | "breaks">): CraftFaults | undefined {
   const own = benchFaults(content, s);
@@ -152,6 +153,7 @@ function benchFaults(content: DroneContent, s: Pick<FlyState, "source" | "bench"
   };
   for (const key of FAULT_KEYS) if (typeof cli[key] === "boolean") faults[key] = cli[key] as boolean;
   if (cli.boardYaw === 180) faults.fcReversed = !faults.fcReversed;
+  if (cli.tailReverse === true) faults.servosReversed = !faults.servosReversed;
   return faults;
 }
 

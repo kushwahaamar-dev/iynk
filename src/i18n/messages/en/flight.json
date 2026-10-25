@@ -202,7 +202,8 @@
     "obstacle": "Hit an obstacle",
     "flipFc": "Flipped on take-off: the flight controller is mounted the wrong way round",
     "flipProps": "Flipped on take-off: the props are on the wrong motors",
-    "flipMotor": "Flipped on take-off: motor direction was never checked (bench: Check motor direction)"
+    "flipMotor": "Flipped on take-off: motor direction was never checked (bench: Check motor direction)",
+    "flipServo": "Spun out on take-off: the tail servo is reversed"
   },
   "demoHint": "The autopilot flies this course's line with the same physics you fly. Watch it, then beat it: its times never count.",
   "medals": {
@@ -226,6 +227,7 @@
     "flipFc": "The flight controller was mounted backwards. It read every tilt the wrong way round, so each correction pushed the craft further over until it flipped. On a real build, turn the board so its arrow points forward, or set align_board_yaw = 180 in the CLI.",
     "flipProps": "The props were on the wrong motors. A prop on a motor that spins the other way blows air up, so that corner pushed down instead of lifting and the craft rolled over on take-off. Each prop goes on the motor whose spin matches its direction.",
     "flipMotor": "One motor spun the wrong way, because nobody checked the motor direction with the props off. Its torque fought the others and the craft flipped as soon as it lifted. On the bench, run Check motor direction and reverse the odd one out.",
+    "flipServo": "The tail servo was reversed. Every yaw correction turned the tail the wrong way, so the spin grew instead of stopping until the tricopter pirouetted out of control and tipped over. On a real build, turn the servo round or reverse it in the CLI (smix reverse 5 2 r), and check its direction by hand before every flight.",
     "desync": "The motors ran past their rating: this pack's voltage times the motors' KV spins them faster than the ESCs can follow. An ESC lost sync, the motor stuttered and the craft fell. Pick motors or a pack within the rating.",
     "battery": "The pack hit its cut-off voltage and the ESCs stopped the motors, so it fell. Land when LOW BATTERY shows, and never run a LiPo flat.",
     "servos": "The elevons moved the wrong way: a command to lift the nose pushed it down, and the wing dived into the ground. Reverse the servos in the flight controller and check them by hand before every launch.",
@@ -289,7 +291,7 @@
       },
       "servosReversed": {
         "label": "Reverse the servos",
-        "what": "The control surfaces move the wrong way: up is down."
+        "what": "The servos move the wrong way: every correction makes it worse."
       },
       "tailHeavy": {
         "label": "Put the pack too far back",

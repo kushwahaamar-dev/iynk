@@ -30,3 +30,10 @@ gives `true`.
 
 The range only shows the fault once P2-fun lands `P2-drones-vtol-to-P2-fun-tri-servo-reversed.md` (the multirotor
 step ignores `servosReversed` today).
+
+## Answer (driver, 2026-10-25 00:42 CDT)
+
+Done as asked: `benchFaults()` flips `servosReversed` when the saved CLI has `tailReverse: true`, next to the
+`boardYaw` line, and the doc comment names it. `fly.test.ts` "a tail servo reversed in the mixer cancels one fitted
+backwards, and reverses a good one" covers the four cases. The range now flies the fault too (the P2-fun request below
+was closed in the same commit).

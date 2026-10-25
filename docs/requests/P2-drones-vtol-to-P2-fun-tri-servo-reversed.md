@@ -40,3 +40,15 @@ leaves the ground.
    every yaw correction made the spin worse. Turn the servo round, or `smix reverse 5 2 r`." in all six locales.
 
 The tricopter content needs nothing more: its mistake id, fault mapping and tests are in place.
+
+## Answer (driver, 2026-10-25 00:42 CDT; P2-fun finished before it reached this)
+
+Done. In `sim.ts` a reversed tail servo, once the craft is off the ground, runs to its stop the way it already leans,
+so the tri pirouettes at full yaw rate; after 1.5 s airborne it goes over (`flipWhy: "flipServo"`, as hard as the
+other flips, since angle and althold level anything gentler) and crashes. `crash.ts`: the cause `flipServo`, its fix
+`{ kind: "fault", fault: "servosReversed" }`, and `BREAKS.tricopter` offers `servosReversed`. `types.ts` comment
+updated. `flight.json` in all six languages: `hit.flipServo` (translated) and `why.flipServo` (English in every
+locale, like the rest of `why`, for phase 3 to translate); Break it's `servosReversed.what` now reads "The servos
+move the wrong way: every correction makes it worse." so it fits a tri's tail as well as a wing's elevons.
+`crash.test.ts`: the default tri at 70 % throttle flies 4 s clean, and with the fault crashes with cause `flipServo`
+and the servo fix.

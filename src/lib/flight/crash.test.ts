@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import quad5 from "@/content/drones/quad5";
+import tricopter from "@/content/drones/tricopter";
 import { flightCalc } from "@/lib/dronelab/fly";
-import { causeOf, crashReplay, fixFor } from "./crash";
+import { BREAKS, causeOf, crashReplay, fixFor } from "./crash";
 import { flightOf } from "./registry";
 import { createSession, type FlightSession } from "./session";
 import type { Course, CraftFaults, FlightEvent, Sticks } from "./types";
@@ -34,6 +35,29 @@ describe("the crash replay", () => {
     expect(r.frames[r.at].crashed).toBe(true);
     expect(r.frames[r.at - 1].crashed).toBe(false);
     expect(r.frames.length - r.at).toBeGreaterThan(90);
+  });
+
+  it("a tricopter with its tail servo reversed pirouettes, tips over and is offered the servo fix", () => {
+    const tri = flightOf(tricopter)!;
+    const triCalc = flightCalc(tricopter, tricopter.design.default);
+    const mode = tri.craft.modes[0].id;
+    const fly = (faults: CraftFaults) => {
+      const s = createSession(tri.craft, open, triCalc, { mode, faults });
+      s.dispatch({ type: "arm" });
+      sticks(s, { throttle: 0.7 });
+      return s;
+    };
+    const good = fly({});
+    const events: FlightEvent[] = [];
+    while (good.sim.step < 400) events.push(...good.tick(0.05));
+    expect(events.some((e) => e.type === "crash"), "the good tri flies").toBe(false);
+
+    const bad = fly({ servosReversed: true });
+    flyUntilCrash(bad, 10);
+    const r = crashReplay(bad.origin, bad.log(), bad.sim.step, true)!;
+    expect(r.cause).toBe("flipServo");
+    expect(r.fix).toEqual({ kind: "fault", fault: "servosReversed" });
+    expect(BREAKS.tricopter).toContain("servosReversed");
   });
 
   it("calls a drop from height a hard landing, and offers altitude hold to a manual throttle", () => {

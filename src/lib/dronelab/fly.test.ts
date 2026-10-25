@@ -61,6 +61,18 @@ describe("fly page store", () => {
     expect(craftPatch({ angleLimit: 38, drag: 0.045 }, s)).toEqual({ angleLimit: 60, drag: 0.045 });
   });
 
+  test("a tail servo reversed in the mixer cancels one fitted backwards, and reverses a good one", () => {
+    const servo = (mistakes: string[], cli: BenchSummary["cli"]) =>
+      flightFaults(content, reduceFly(content, initialFly(content), {
+        type: "bench/loaded",
+        bench: { ...ready, flight: { ...ready.flight!, mistakes }, cli },
+      }))?.servosReversed;
+    expect(servo(["servo-reversed"], {})).toBe(true);
+    expect(servo(["servo-reversed"], { tailReverse: true })).toBe(false);
+    expect(servo([], { tailReverse: true })).toBe(true);
+    expect(servo([], { tailReverse: false })).toBe(false);
+  });
+
   test("the course picks only a course the craft has", () => {
     const s = initialFly(content);
     expect(s.course).toBe(content.courses[0].id);

@@ -25,7 +25,7 @@ export interface CraftFaults {
   propsSwapped?: boolean;
   motorDirUnchecked?: boolean;
   accUncalibrated?: boolean;
-  servosReversed?: boolean; // wing / VTOL elevons
+  servosReversed?: boolean; // wing / VTOL elevons, tricopter tail servo
   tailHeavy?: boolean; // wing CG behind the mark
   propBackwards?: boolean; // wing pusher
 }
@@ -264,7 +264,7 @@ export type FlightEvent = { t: number } & (
   | { type: "blocked"; why: BlockReason }
   | { type: "takeoff" }
   | { type: "landed"; mah: number; belly?: boolean }
-  | { type: "crash"; why: HitKind | "ground" | "groundWing" | "flipFc" | "flipProps" | "flipMotor" }
+  | { type: "crash"; why: HitKind | "ground" | "groundWing" | "flipFc" | "flipProps" | "flipMotor" | "flipServo" }
   | { type: "gate"; index: number; total: number; split: number | null }
   | { type: "lap"; time: number; best: boolean; splits: number[]; demo?: boolean }
   | { type: "checkpoint"; index: number; total: number; label: string }

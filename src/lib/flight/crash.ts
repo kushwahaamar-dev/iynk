@@ -11,7 +11,7 @@ export type BreakId = keyof Required<CraftFaults> | "overKv";
 
 export const BREAKS: Record<CraftClass, BreakId[]> = {
   multirotor: ["fcReversed", "propsSwapped", "motorDirUnchecked", "accUncalibrated", "overKv"],
-  tricopter: ["fcReversed", "propsSwapped", "motorDirUnchecked", "accUncalibrated", "overKv"],
+  tricopter: ["fcReversed", "propsSwapped", "motorDirUnchecked", "accUncalibrated", "servosReversed", "overKv"],
   swarm: ["fcReversed", "propsSwapped", "accUncalibrated"],
   vtol: ["fcReversed", "propsSwapped", "accUncalibrated", "servosReversed"],
   wing: ["servosReversed", "tailHeavy", "propBackwards"],
@@ -21,6 +21,7 @@ export type CrashCause =
   | "flipFc"
   | "flipProps"
   | "flipMotor"
+  | "flipServo"
   | "desync"
   | "battery"
   | "servos"
@@ -46,14 +47,14 @@ export interface CrashReplay {
 
 type CrashWhy = Extract<FlightEvent, { type: "crash" }>["why"];
 
-type Flip = "flipFc" | "flipProps" | "flipMotor";
+type Flip = "flipFc" | "flipProps" | "flipMotor" | "flipServo";
 
 /**
  * Why it crashed, from what it hit, the faults that were on and what happened in the seconds before. A craft that
  * was already flipping over (`flip`) crashed because of that, whatever it then hit.
  */
 export function causeOf(why: CrashWhy, faults: CraftFaults, recent: FlightEvent[], flip: Flip | null = null): CrashCause {
-  if (why === "flipFc" || why === "flipProps" || why === "flipMotor") return why;
+  if (why === "flipFc" || why === "flipProps" || why === "flipMotor" || why === "flipServo") return why;
   if (flip) return flip;
   if (recent.some((e) => e.type === "battery" && e.level === "empty")) return "battery";
   if (recent.some((e) => e.type === "desync")) return "desync";
@@ -75,6 +76,8 @@ export function fixFor(cause: CrashCause, faults: CraftFaults, modes: FlightMode
       return { kind: "fault", fault: "propsSwapped" };
     case "flipMotor":
       return { kind: "fault", fault: "motorDirUnchecked" };
+    case "flipServo":
+      return { kind: "fault", fault: "servosReversed" };
     case "desync":
       return { kind: "fault", fault: "overKv" };
     case "servos":

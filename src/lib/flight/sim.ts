@@ -49,7 +49,8 @@ export interface SimState {
   heat: number;
   desyncT: number;
   motorsOut: number[];
-  flipWhy: "flipFc" | "flipProps" | "flipMotor" | null;
+  flipWhy: "flipFc" | "flipProps" | "flipMotor" | "flipServo" | null;
+  pirouette: number; // s airborne with the tail servo hard over the wrong way
   tumble: number;
   spin: number;
   sticks: Sticks;
@@ -145,6 +146,7 @@ export function resetFlight(s: SimState) {
   s.desyncT = 0;
   s.motorsOut = [];
   s.flipWhy = null;
+  s.pirouette = 0;
   s.tumble = 0;
   s.spin = 0;
   s.sticks = { ...ZERO_STICKS, throttle: isClimbMode(s.mode) ? 0.5 : 0 };
@@ -533,7 +535,10 @@ function multirotorStep(s: SimState, dt: number) {
   // expo shapes roll and pitch only: the CLIs set yaw with no expo (quad5: yaw_rc_rate = yaw_srate = 20)
   const yawCmd = auto.yawRate !== null ? -auto.yawRate / (c.yawRate * (m.rateScale ?? 1)) : st.yaw;
   if (c.tailServo) {
-    const target = clamp(yawCmd, -1, 1) * c.tailServo.maxDeg;
+    // Reversed (fitted backwards, or reversed in the mixer): each yaw correction adds to the turn, so in the air the
+    // servo runs to its stop the way it is already leaning and the tri pirouettes.
+    const want = s.faults.servosReversed && !grounded ? Math.sign(s.servo || yawCmd || 1) : clamp(yawCmd, -1, 1);
+    const target = want * c.tailServo.maxDeg;
     const stepMax = c.tailServo.rateDegS * dt;
     s.servo += clamp(target - s.servo, -stepMax, stepMax);
     if (!grounded) s.yaw += -(s.servo / c.tailServo.maxDeg) * c.yawRate * (m.rateScale ?? 1) * dt;
@@ -567,6 +572,16 @@ function multirotorStep(s: SimState, dt: number) {
       s.flipWhy = flip;
       s.roll += 900 * dt * (flip === "flipFc" ? 1 : -1);
       s.pitch += 500 * dt;
+    }
+  }
+  // a pirouette the stick cannot stop: after about 1.5 s at full yaw the tri loses its level and goes over, as hard
+  // as a flip (the self-levelling of angle and althold would hold anything gentler)
+  if (live && c.tailServo && s.faults.servosReversed && s.airborne) {
+    s.pirouette += dt;
+    if (s.pirouette > 1.5) {
+      s.flipWhy = "flipServo";
+      s.roll += 900 * dt;
+      s.pitch += 300 * dt;
     }
   }
   if (calc.overKv && live) {
