@@ -49,7 +49,8 @@ index, the Uno page and the Blink lesson, light and dark; every focusable elemen
 - **Break it is real**: Trigger changes the board status to "No power" or "Fault", the figure reports what burned
   ("LTC3633 dual buck regulator … burned"), and the opened row explains What you see / Why / Fix in plain words.
   Repair works. This is the most memorable thing on the page.
-- **Keyboard**: X, C, B, Space, Q/E/R all work; the "?" dialog lists them.
+- **Keyboard**: X, C, B, Space, Q/E/R all work; the "?" dialog lists them in a calm two-column table with key caps
+  and tells you shortcuts pause while you type (`int-en_boards_uno-r3_blink-keys.png`). Keep it as is.
 - **Assembly teaches the order**: "Do it" on step 10 before step 3 doesn't advance and says why ("Not yet. Low parts
   first: with tall parts in, the board rocks…"); done steps turn green with a tick, "Start over" resets.
 - **Inspect LED** (Wire it in) opens a clean dialog with the part's own figure (five LEDs on a breadboard, Colour
@@ -288,7 +289,14 @@ Screenshot: `int-en_boards_uno-r3_blink-quiz.png`.
 Proposal: each option a full-width 44 px row (`label` wrapping the radio) with `accent-color: var(--color-ink)`;
 right / wrong shown with the good / bad fills the Checks panel already uses.
 
-### U18. Ten type sizes and mono everywhere (nit, for F-direction)
+### U18. Lesson info tabs are cut on the phone (nit)
+
+Where: `uno-r3/blink` 390 × 844: the tab row "OVERVIEW · PINS · HOW THE CODE WOR…" scrolls sideways with the third
+tab cut and no hint that three more (Specifications, Hints, Quick quiz) exist (`crops/blink-phone-strip.png`).
+Proposal: on `< sm` the tabs become a select ("Section: Overview ▾") or wrap into two rows of pills; the quiz, the
+one interactive tab, gets its own heading below the info instead of hiding in the sixth tab.
+
+### U19. Ten type sizes and mono everywhere (nit, for F-direction)
 
 Ten font sizes on one lesson (9.92 to 36 px), and 12 px bold mono on every button, tab, kicker, chip and the figure
 chips. Proposal for the spec: four UI sizes (12 kicker, 14 UI and body-small, 16 body, 24/28 titles) plus the
