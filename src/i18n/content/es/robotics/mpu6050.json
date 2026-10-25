@@ -1,0 +1,385 @@
+{
+  "title": "Alarma de inclinación MPU-6050",
+  "sub": "un giroscopio y un acelerómetro en dos cables",
+  "hint": "monta la GY-521, despiértala y luego haz que avise cuando el robot se incline",
+  "overview": "Un robot necesita saber dónde está el suelo. El MPU-6050 de esta pequeña placa azul GY-521 mide la aceleración en tres ejes, gravedad incluida, y la velocidad de giro en otros tres, y lo entrega todo por I2C en la dirección 0x68. Tumbado en plano marca 1 g en Z; inclinado, parte de ese 1 g pasa a Y, y atan2(ay, az) da el ángulo. Monta la placa, léela desde una Nano con llamadas simples a Wire y luego haz que suene un zumbador cuando el robot se incline más de 20°. Después avérialo: aliméntalo al revés o desde una LiPo, deja sin poner el condensador que necesita el giroscopio, pierde el pull-down de la dirección, deja una soldadura fría en SDA y pon el tántalo al revés.",
+  "parts": {
+    "IC1": {
+      "name": "Sensor de movimiento de 6 ejes MPU-6050",
+      "what": "Un QFN de 4 x 4 mm con dos chips dentro: uno MEMS con masas diminutas que se mueven y uno CMOS que las mide. En los rangos por defecto, el acelerómetro da 16384 cuentas por g (±2 g) y el giroscopio 131 cuentas por °/s (±250 °/s). Arranca dormido: todas las lecturas son 0 hasta que el host escribe 0 en PWR_MGMT_1 (0x6B)."
+    },
+    "U2": {
+      "name": "Regulador de 3,3 V 662K (XC6206)",
+      "what": "Convierte VCC (3,5-5,5 V; lo mejor es 5 V) en los 3,3 V con los que funcionan el chip, el LED y los pull-ups. Aguanta 6 V como mucho: una LiPo 2S o el VIN de la Nano lo queman."
+    },
+    "C10": {
+      "name": "Tántalo de 10 µF en 3,3 V",
+      "what": "Suaviza la salida del regulador. Los condensadores de tántalo tienen polaridad y fallan calentándose si se ponen al revés: la franja marca el +."
+    },
+    "C14": {
+      "name": "2,2 nF en CPOUT",
+      "what": "El giroscopio mueve sus masas de medida con una bomba de carga, y este condensador es el de la bomba. Sin él, el giroscopio solo lee ruido."
+    },
+    "R4": {
+      "name": "Pull-ups I2C de 4,7 kΩ (R4 en SDA, R5 en SCL)",
+      "what": "Llevan SDA y SCL a los 3,3 V de la placa, así que el bus reposa a 3,3 V incluso con una Nano de 5 V. La Nano lee 3,3 V como HIGH."
+    },
+    "R6": {
+      "name": "Pull-down de 4,7 kΩ en AD0",
+      "what": "Mantiene AD0 en bajo, lo que da la dirección 0x68. Con AD0 en alto (o al aire), el chip responde en 0x69, así que dos pueden compartir un bus."
+    },
+    "D1": {
+      "name": "LED de alimentación",
+      "what": "Encendido desde 3,3 V a través de 1 kΩ: unos 1,3 mA. Dice que el regulador funciona, no que el chip esté despierto."
+    },
+    "H1": {
+      "name": "Tira de 8 pines: VCC GND SCL SDA XDA XCL AD0 INT",
+      "what": "La sueldas tú, con los pines hacia abajo para que la placa se pueda poner de pie en una protoboard. Aquí solo hacen falta cuatro: VCC, GND, SCL y SDA."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "Lee el sensor por I2C en A4 (SDA) y A5 (SCL), calcula la inclinación y controla el zumbador en D8 y su propio LED en D13. Su pin de 5V alimenta la GY-521."
+    },
+    "BUZ": {
+      "name": "Zumbador piezoeléctrico en D8",
+      "what": "Un piezo pasivo: tone(8, 2000) lo hace sonar a 2 kHz. Unos pocos mA, así que va directamente a un pin."
+    }
+  },
+  "power": {
+    "label": "Alimenta el banco",
+    "ok": "La Nano por USB: VCC a 5 V, el regulador genera 3,3 V y el chip está listo"
+  },
+  "modes": {
+    "flat": {
+      "title": "Lecturas en bruto"
+    },
+    "tilt": {
+      "title": "Alarma de inclinación"
+    },
+    "asleep": {
+      "title": "Nunca despertado"
+    },
+    "scan": {
+      "title": "Escaneo I2C"
+    },
+    "code": {
+      "title": "MPU-6050: lecturas I2C en bruto, sin librería",
+      "address": "AD0 en bajo: dirección 0x68",
+      "pwr": "PWR_MGMT_1: escribe 0 para despertar el chip (arranca dormido)",
+      "from": "ACCEL_XOUT_H: los 14 bytes desde aquí son acelerómetro X, Y, Z, temperatura, giroscopio X, Y, Z",
+      "temp": "la temperatura: se salta",
+      "g": "16384 cuentas = 1 g a ±2 g",
+      "dps": "131 cuentas = 1 °/s a ±250 °/s",
+      "noWake": "sin wake(): el chip sigue dormido y todos los registros leen 0",
+      "roll": "alabeo alrededor de X: cuánto de la gravedad ha pasado de Z a Y",
+      "beep": "un tono de 2 kHz en el zumbador mientras esté demasiado inclinado",
+      "scanTitle": "Escáner I2C: ¿quién responde en el bus?",
+      "ack": "0 = un dispositivo ha confirmado su dirección"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Déjala en la PCB desnuda",
+      "body": "Quita todas las piezas de la placa azul. Las volverás a poner tal como se fabrica: primero el chip, el regulador y las piezas pequeñas, y luego la tira de pines.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    },
+    "smd": {
+      "title": "Coloca las piezas SMD y haz el reflujo",
+      "body": "El MPU-6050, el regulador 662K, el tántalo, las resistencias, los condensadores y el LED en una sola pasada. La placa viene así de fábrica; la tira de pines va suelta en la bolsa.",
+      "refusal": "Las piezas SMD van primero, en una placa desnuda"
+    },
+    "header": {
+      "title": "Pon la tira de 8 pines",
+      "body": "Con los pines hacia abajo, desde la cara de abajo, para que la placa se pueda apoyar en ellos. VCC, GND, SCL, SDA, XDA, XCL, AD0, INT.",
+      "refusal": "Primero las piezas SMD: haz la colocación automática y el reflujo. El horno fundiría el plástico de la tira"
+    },
+    "solder": {
+      "title": "Suelda la tira de pines",
+      "body": "Ocho soldaduras. Una mate en SDA o SCL hace que el bus vaya y venga: la razón más habitual por la que una GY-521 funciona \"a veces\".",
+      "refusal": "Todavía no hay nada que soldar: primero coloca la tira"
+    },
+    "wire-nano": {
+      "title": "Conecta la Nano",
+      "body": "VCC a 5V, GND a GND, SCL a A5, SDA a A4. En una Nano los pines I2C son fijos: A4 y A5.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    },
+    "wire-buzzer": {
+      "title": "Conecta el zumbador",
+      "body": "+ a D8, - a GND. Es el aviso del robot cuando se inclina.",
+      "refusal": "Primero desconecta la alimentación, y conecta antes la Nano"
+    },
+    "plug": {
+      "title": "Alimenta el banco",
+      "body": "El USB a la Nano. Se enciende el LED rojo: el regulador funciona. El chip sigue dormido.",
+      "refusal": "Primero termina el montaje: todas las piezas puestas, la tira soldada, y la Nano y el zumbador conectados"
+    },
+    "flat": {
+      "title": "Carga Lecturas en bruto",
+      "body": "wake() escribe 0 en PWR_MGMT_1, y luego cada segundo el sketch lee 14 bytes desde 0x3B. Tumbada en plano: unos 1,00 g en Z, 0 en X y en Y, y un giroscopio que marca unos pocos °/s aunque nada gire. Ese es su offset de velocidad cero.",
+      "refusal": "Primero alimenta el banco"
+    },
+    "tilt": {
+      "title": "Carga Alarma de inclinación",
+      "body": "Balancea la placa alrededor de X. roll = atan2(ay, az) convierte el reparto de la gravedad entre Y y Z en un ángulo; a partir de 20° hacia cualquier lado suena el zumbador y se enciende D13. Mira la flecha sobre el chip: es la gravedad tal como la ve el acelerómetro.",
+      "refusal": "Primero alimenta el banco"
+    },
+    "asleep": {
+      "title": "Carga Nunca despertado",
+      "body": "Las mismas lecturas sin wake(). El chip responde en el bus, pero todas las lecturas son 0: arrancó dormido y nadie lo despertó.",
+      "refusal": "Primero alimenta el banco"
+    },
+    "scan": {
+      "title": "Carga Escaneo I2C",
+      "body": "El escáner llama a todas las direcciones y lista las que responden: 0x68.",
+      "refusal": "Primero alimenta el banco"
+    },
+    "reverse-vcc": {
+      "title": "Conecta VCC y GND al revés",
+      "body": "5 V en GND y GND en VCC. La placa no tiene diodo ni fusible."
+    },
+    "lipo-on-vcc": {
+      "title": "Alimenta VCC desde una LiPo 2S",
+      "body": "7,4 V en VCC, como si vinieran de la batería del robot. El 662K aguanta 6 V como mucho."
+    },
+    "no-c14": {
+      "title": "Deja sin poner C14",
+      "body": "El condensador de 2,2 nF en CPOUT. Mira gx."
+    },
+    "no-r6": {
+      "title": "Deja sin poner R6",
+      "body": "El pull-down de AD0. AD0 queda al aire, y en esta placa flota hacia arriba. Ejecuta la alarma de inclinación con el robot quieto."
+    },
+    "cold-sda": {
+      "title": "Deja una soldadura fría en SDA",
+      "body": "Una soldadura mate y agrietada en el pin SDA de la tira. Ejecuta la alarma de inclinación."
+    },
+    "c10-backwards": {
+      "title": "Pon C10 al revés",
+      "body": "La franja del tántalo lejos del +, y luego da alimentación."
+    },
+    "exploded": {
+      "title": "Vista despiezada",
+      "body": "Desconecta y levanta las piezas por grupos de montaje: primero las piezas SMD y luego la tira de pines.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    }
+  },
+  "faults": {
+    "reverse-vcc": {
+      "title": "VCC invertida",
+      "symptom": "El LED sigue apagado y el regulador se calienta; después, puede que la placa no lea nada.",
+      "explanation": "Nada en la GY-521 bloquea una alimentación invertida. La corriente pasa hacia atrás por los diodos de protección del regulador y del chip, limitada solo por el USB de la Nano. Unos pocos segundos pueden matar el 662K y, a veces, el MPU-6050.",
+      "fix": "Desconecta enseguida, conecta VCC a 5V y GND a GND, y cambia el regulador si se ha calentado."
+    },
+    "lipo-on-vcc": {
+      "title": "7,4 V en VCC",
+      "symptom": "El regulador se quema: huele y el encapsulado cambia de color. Después, nada responde en el bus.",
+      "explanation": "El 662K (XC6206) admite 6 V de entrada. Una LiPo 2S da 7,4-8,4 V. Si el regulador falla en cortocircuito, la tensión de la batería llega también al MPU-6050, que aguanta 3,46 V.",
+      "fix": "Alimenta VCC desde el 5V de la Nano, nunca desde la batería del robot ni desde VIN."
+    },
+    "no-c14": {
+      "title": "Sin condensador en CPOUT",
+      "symptom": "gx salta decenas de °/s mientras la placa está quieta. El acelerómetro va bien.",
+      "explanation": "La bomba de carga del giroscopio necesita su condensador para generar la tensión que mueve las masas de medida. Sin él, la salida del giroscopio es ruido. El Arduino Playground avisa de esto: un condensador equivocado da un nivel de ruido alto.",
+      "fix": "Pon C14 (2,2 nF) y haz el reflujo."
+    },
+    "no-r6": {
+      "title": "Sin pull-down en AD0",
+      "symptom": "El zumbador suena con el robot quieto: el sketch imprime roll -135° y ALARM.",
+      "explanation": "Con AD0 flotando hacia arriba, el chip responde en 0x69. El sketch pregunta a 0x68, nadie responde y Wire.read() devuelve -1 para cada byte. Todos los valores leen -1 cuenta, y atan2(-1, -1) es -135°.",
+      "fix": "Pon R6, o cambia MPU a 0x69 en el sketch. Mejor aún: comprueba que requestFrom() ha recibido sus 14 bytes antes de usarlos."
+    },
+    "cold-sda": {
+      "title": "Soldadura fría en SDA",
+      "symptom": "Falsas alarmas cortas: de vez en cuando una lectura vuelve como roll -135°.",
+      "explanation": "A través de una soldadura que hace y deshace contacto, algunas lecturas no reciben respuesta y vuelven con -1 en todo. Una alarma que se fía de una sola lectura pita con cada una de ellas.",
+      "fix": "Vuelve a calentar la soldadura con estaño nuevo hasta que fluya y forme un cono brillante. En el sketch, ignora las lecturas que hayan fallado."
+    },
+    "c10-reversed": {
+      "title": "C10 al revés",
+      "symptom": "El tántalo se calienta en cuanto se alimenta la placa, y puede agrietarse o echar humo.",
+      "explanation": "La capa de óxido de un condensador de tántalo solo bloquea la corriente en un sentido. Al revés, conduce, se calienta y puede fallar en cortocircuito.",
+      "fix": "Desconecta y pon uno nuevo con la franja (+) en el lado de 3,3 V, como indica la serigrafía."
+    }
+  },
+  "status": {
+    "status": "Estado",
+    "powered": "Alimentación del banco",
+    "mode": "Sketch",
+    "roll": "Alabeo (roll)",
+    "az": "Aceleración en Z (g)",
+    "gx": "Giro en X (°/s)",
+    "address": "Dirección I2C",
+    "alarm": "Alarma",
+    "vcc": "VCC",
+    "v33": "Línea de 3,3 V",
+    "usb": "Corriente del USB"
+  },
+  "current": {
+    "usb": "USB de la Nano (polifusible de 500 mA)",
+    "nano": "Nano en marcha",
+    "board": "GY-521: chip, regulador y LED",
+    "buzzer": "Zumbador sonando"
+  },
+  "tasks": {
+    "imu": "Inclinación de la placa alrededor de X",
+    "alarm": {
+      "title": "Haz sonar la alarma a partir de 20°",
+      "brief": "El código de partida lee la inclinación y la imprime, pero nada avisa a nadie. Cuando el alabeo pase de 20° hacia cualquier lado, pon D13 en HIGH y toca un tono de 2 kHz en el zumbador (D8); si no, D13 en LOW y noTone(). Al principio la placa está nivelada, a los 2 s se inclina 35°, a los 3,5 s vuelve a -10° y a los 5 s se inclina -40°.",
+      "hints": {
+        "1": "abs(roll) > 20 detecta los dos sentidos.",
+        "2": "tone(BUZZER, 2000) sigue sonando hasta noTone(BUZZER).",
+        "3": "digitalWrite(13, alarm ? HIGH : LOW); fija el LED en una línea."
+      },
+      "checks": {
+        "1": "Se ejecuta",
+        "2": "Nivelada: D13 en LOW",
+        "3": "Inclinada 35°: D13 en HIGH",
+        "4": "Inclinada 35°: el zumbador suena a unos 2 kHz",
+        "5": "De vuelta a -10°: D13 otra vez en LOW",
+        "6": "Inclinada -40°: D13 en HIGH",
+        "7": "Inclinada -40°: el zumbador suena"
+      },
+      "code": {
+        "goal": "Avisa con D13 y el zumbador cuando el robot se incline más de 20°",
+        "todo": "a partir de 20° hacia cualquier lado: D13 en HIGH y un tono de 2 kHz; si no, D13 en LOW y noTone()"
+      }
+    },
+    "calibrate": {
+      "title": "Calibra el giroscopio",
+      "brief": "La placa está quieta y aun así gx marca unos 0,6 °/s: el offset de velocidad cero del giroscopio, de hasta ±20 °/s en este chip. Intégralo y el ángulo se va alejando. En setup(), lee gx 200 veces, promedia las cuentas en offset e imprímelo como \"calibrated: offset N counts\". loop() ya lo resta.",
+      "hints": {
+        "1": "long sum = 0; for (int i = 0; i < 200; i++) { sum += readGx(); delay(2); }",
+        "2": "offset = sum / 200; lo deja en cuentas, como las lecturas.",
+        "3": "Mantén la placa quieta mientras se calibra: cualquier giro pasa a formar parte del offset."
+      },
+      "checks": {
+        "1": "Se ejecuta",
+        "2": "Imprime el offset que ha medido, unas 79 cuentas",
+        "3": "Después de calibrar, gx marca 0,00 °/s en reposo"
+      },
+      "code": {
+        "goal": "Mide el offset del giroscopio en reposo y réstalo de cada lectura",
+        "todo": "promedia 200 lecturas de gx en offset e imprime \"calibrated: offset N counts\"",
+        "gyro": "GYRO_XOUT_H: 2 bytes de giro en X"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "regulator": {
+        "q": "¿Por qué un chip de 3,3 V puede ir en una Nano de 5 V sin sufrir daños?",
+        "options": {
+          "1": "El MPU-6050 admite 5 V",
+          "2": "El regulador 662K de la placa genera 3,3 V, y los pull-ups I2C van a 3,3 V",
+          "3": "La Nano pasa sola a 3,3 V"
+        },
+        "why": "VCC solo alimenta el regulador. El chip, el LED y los pull-ups funcionan con sus 3,3 V, así que SDA y SCL nunca pasan de 3,3 V."
+      },
+      "pullups": {
+        "q": "¿Qué hacen R4 y R5?",
+        "options": {
+          "1": "Llevan SDA y SCL a nivel alto: los dispositivos I2C solo bajan las líneas",
+          "2": "Limitan la corriente del LED",
+          "3": "Fijan la dirección"
+        },
+        "why": "I2C es de drenador abierto. Las resistencias vuelven a subir cada línea cuando nadie la mantiene en bajo."
+      },
+      "address": {
+        "q": "¿Qué fija la dirección en 0x68?",
+        "options": {
+          "1": "El sketch de la Nano",
+          "2": "El regulador",
+          "3": "AD0, mantenido en bajo por R6"
+        },
+        "why": "La dirección es 0b110100 más AD0. En bajo: 0x68; en alto: 0x69."
+      }
+    },
+    "read": {
+      "asleep": {
+        "q": "Todas las lecturas son 0, pero el escáner encuentra 0x68. ¿Qué pasa?",
+        "options": {
+          "1": "El chip está roto",
+          "2": "Faltan los pull-ups",
+          "3": "Nadie lo ha despertado: PWR_MGMT_1 sigue en 0x40, dormido"
+        },
+        "why": "El MPU-6050 arranca dormido. Responde en el bus, pero no mide nada hasta que se escribe 0 en 0x6B."
+      },
+      "counts": {
+        "q": "az marca 16384 cuentas. ¿Cuánto es eso?",
+        "options": {
+          "1": "1 g: la placa está tumbada en plano",
+          "2": "16 g",
+          "3": "16384 °/s"
+        },
+        "why": "A ±2 g, un g son 16384 cuentas. Tumbada en plano, toda la gravedad está en Z."
+      },
+      "roll": {
+        "q": "ay = 0,5 g y az = 0,87 g. ¿Cuánto está inclinada la placa?",
+        "options": {
+          "1": "50°",
+          "2": "Unos 30°",
+          "3": "87°"
+        },
+        "why": "atan2(0.5, 0.87) es 30°: sen 30° = 0,5 y cos 30° = 0,87."
+      }
+    },
+    "faults": {
+      "minus-one": {
+        "q": "Sin R6, ¿por qué el sketch imprime exactamente -135°?",
+        "options": {
+          "1": "El chip está bocabajo",
+          "2": "Nadie responde en 0x68, cada byte lee -1, y atan2(-1, -1) es -135°",
+          "3": "El regulador está apagado"
+        },
+        "why": "Wire.read() devuelve -1 cuando no hay nada que leer. Dos bytes de -1 dan una cuenta de -1 en todos los ejes."
+      },
+      "lipo": {
+        "q": "¿Por qué VCC no puede venir de una LiPo 2S?",
+        "options": {
+          "1": "El regulador 662K admite 6 V de entrada, y 7,4-8,4 V lo queman",
+          "2": "Las LiPo dan corriente alterna",
+          "3": "El chip va demasiado rápido"
+        },
+        "why": "El regulador es lo único que hay entre VCC y el chip. Por encima de 6 V falla, y si falla en cortocircuito, el chip recibe la tensión de la batería."
+      },
+      "noise": {
+        "q": "El giroscopio lee ruido, pero el acelerómetro va bien. ¿Qué pieza compruebas primero?",
+        "options": {
+          "1": "Los pull-ups",
+          "2": "La resistencia del LED",
+          "3": "C14, el condensador de la bomba de carga en CPOUT"
+        },
+        "why": "Solo el giroscopio usa la bomba de carga. Sin su condensador, el giroscopio no tiene excitación y da ruido."
+      }
+    },
+    "end": {
+      "rate": {
+        "q": "¿Qué mide el giroscopio?",
+        "options": {
+          "1": "Lo rápido que gira la placa, en °/s, no su ángulo",
+          "2": "El ángulo directamente",
+          "3": "La gravedad"
+        },
+        "why": "Un giroscopio da velocidad. Para obtener un ángulo, sumas velocidad x tiempo, lo que también suma cualquier offset."
+      },
+      "drift": {
+        "q": "¿Por qué un ángulo sacado solo del giroscopio deriva aunque el robot esté quieto?",
+        "options": {
+          "1": "El acelerómetro tira de él",
+          "2": "La gravedad cambia",
+          "3": "El offset de velocidad cero (hasta ±20 °/s) se integra junto con todo lo demás"
+        },
+        "why": "0,6 °/s de offset se convierten en 36° en un minuto. Elimina el offset calibrando, y corrige con el ángulo del acelerómetro, lento pero sin deriva."
+      },
+      "vibration": {
+        "q": "En un robot con motores, el ángulo del acelerómetro tiembla. ¿Por qué?",
+        "options": {
+          "1": "Los motores cambian la gravedad",
+          "2": "No distingue la vibración de la inclinación: cualquier aceleración se suma a la gravedad",
+          "3": "El giroscopio interfiere"
+        },
+        "why": "Un acelerómetro mide toda la aceleración. Fíltrala (el paso bajo del chip, un filtro complementario con el giroscopio) y monta la placa sobre algo blando."
+      }
+    }
+  }
+}
