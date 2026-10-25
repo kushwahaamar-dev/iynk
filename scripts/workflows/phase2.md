@@ -276,6 +276,52 @@ Also owns this wave `e2e/fly.spec.ts`, `src/lib/telemetry/**`, `src/lib/sound/**
 Done when: e2e: a ghost flies a lap beside you, a crash replays, a challenge link opens the right course; every craft
 with content passes `e2e/fly.spec.ts`; unticking usage sharing stops every telemetry send (a unit test).
 
+## Wave B tail: the driver's requests (launched 2026-10-25 00:20 CDT)
+
+Requests wave A and B filed to the driver, for files no running label owns. Each agent owns the files its section
+names; the request file says exactly what to change and how to check it. Append an `## Answer` to each request you
+close (time from `date`). P2-engine-b, P2-fpga and P2-drones-vtol are still running: never edit their files
+(FIGURES-BENCH, `figures/engine/**`, the FPGA boards, `octo`, `vtol`), and run vitest only on the files you touch.
+
+### P2-req-interp
+
+Owns `src/lib/interp/**` outside `verilog/` (`world.ts`, `lesson-world.ts`, `headless.ts`, `python/**`) and
+`src/content/robotics/pca9685.ts`, `src/content/robotics/pca9685.test.ts`.
+1. `docs/requests/P2-pi-to-driver-onboard-inputs.md`: onboard sensor inputs reach the run (`World.onboard`), and the
+   Pico's `ADC(4)`, `microbit.temperature()`, compass heading and microphone level read them; the test it names.
+2. `docs/requests/P2-rob-sensors-to-driver-pca9685-trace.md`: the PCA9685 channels in the headless trace as
+   `PCA<addr>.<ch>` pseudo-pins; then the servo checks it proposes in `pca9685.ts`, with a test that each task's
+   starter still fails and its solution passes.
+Done when both requests are answered and `npx vitest run src/lib/interp src/content` passes.
+
+### P2-req-host
+
+Owns `src/lib/boardlab/**`, `src/components/boardlab/**`, `src/lib/search/bom.ts` (and its test),
+`src/content/boards/uno-r3.ts` and `src/i18n/content/*/boards/uno-r3.json` (only the keys the WHEEL callout needs).
+1. `docs/requests/P2-engine-b-to-driver-prop-values.md`: `figureState` sends each world input's value to its prop,
+   with a unit test on `figureState`; then the stepper lesson's `WHEEL` callout: point it at `STP1` (keep its text
+   key, so the six prose files stay valid) unless STP1 already has a callout, in which case fold the text in and
+   remove the key from all six languages.
+2. `docs/requests/P2-microbit-to-driver-bom-kit.md`: the micro:bit kit (no new query key).
+Done when both requests are answered and `npx vitest run src/lib/boardlab src/components/boardlab src/lib/search
+src/content/boards/uno-r3.test.ts src/i18n` passes.
+
+### P2-req-drone
+
+Owns `src/content/drones/_checks.ts`, `src/lib/dronelab/cli.ts` (and its tests), `src/lib/drone/calc.ts`,
+`src/lib/drone/__fixtures__/models.ts`, `src/content/drones/{swarm,tricopter}.ts` and their tests, and the one
+`CliEmulator.readOnly?: string[]` field in `src/content/schema.ts` (P2-drones-vtol owns the schema this wave: re-read
+it right before that one edit and commit it at once).
+1. `docs/requests/P2-drones-heavy-to-driver-checks-cflib.md`: `noSmoke` and the cflib rules in `_checks.ts`, then
+   `swarm.test.ts` uses `checkCraft` and drops its copies; `readOnly` in the schema, the cflib console and `swarm.ts`.
+2. `docs/requests/P2-drones-vtol-to-driver-cli-servo.md`: Betaflight `servo` and `smix` in the CLI, then the
+   tricopter's commands and snippet lines become real (its test changes with them).
+3. `docs/requests/P2-drones-vtol-to-driver-calc-defaults.md`: the tricopter's 40 A ESCs (fixture and content in one
+   commit) and the optional `hoverLimit` in `calc.ts` with a unit test. Leave the octo's `hoverLimit: 0.7` value to
+   the driver (its content is still being written): say so in the answer.
+Done when the three requests are answered and `npx vitest run src/lib/dronelab src/lib/drone src/content/drones`
+passes.
+
 ## Between and after the waves (the driver)
 
 After each wave: `npm run content` and commit the index; `python3 -I figures/tools/cfbuild.py --all` and commit the

@@ -1,13 +1,14 @@
 export const meta = {
   name: 'simlab-phase3-wave',
-  description: 'SimLab phase 3: one agent per job, each following its section of scripts/workflows/phase3.md',
+  description: 'SimLab: one agent per job, each following its section of a workflow brief (phase3.md unless args.brief)',
   whenToUse: 'Launched by the SimLab driver for waves T2 (UI and figure strings) and D (docs); pass { wave, jobs }',
   phases: [{ title: 'Phase 3', detail: 'one agent per job, each owning the files its section lists' }],
 }
 
-// args: { wave: 'T2', jobs: [{ label: 'P3-ui-es', section: 'P3-ui-<lang> (es, fr, de, zh, hi)', note?: 'Your language is Spanish (es).' }] }
+// args: { wave: 'T2', brief?: 'scripts/workflows/phase2.md', jobs: [{ label: 'P3-ui-es', section: 'P3-ui-<lang> (es, fr, de, zh, hi)', note?: 'Your language is Spanish (es).' }] }
 const wave = args?.wave ?? 'T2'
 const jobs = args?.jobs ?? []
+const brief = args?.brief ?? 'scripts/workflows/phase3.md'
 if (!jobs.length) throw new Error('phase3-wave: pass args.jobs')
 
 const REPORT = {
@@ -24,10 +25,10 @@ const REPORT = {
   required: ['label', 'changed', 'commits', 'verified', 'notDone', 'notes', 'pushed'],
 }
 
-const brief = (job) => `You are ${job.label}, one of ${jobs.length} agents in SimLab's phase-3 wave ${wave} (HackTX 2026),
+const prompt = (job) => `You are ${job.label}, one of ${jobs.length} agents in SimLab's ${wave} wave (HackTX 2026),
 all working at once in the same git working tree, /Users/amar/Codes/ak/simlab.
 
-Your brief is scripts/workflows/phase3.md: follow its "Shared rules" and the section "### ${job.section}" exactly.${job.note ? ` ${job.note}` : ''}
+Your brief is ${brief}: follow its "Shared rules" and the section "### ${job.section}" exactly.${job.note ? ` ${job.note}` : ''}
 Everything you may edit is listed there; anything else goes into your report's notes for the driver.
 
 How this differs from the CLAUDE.md files you were given:
@@ -40,6 +41,6 @@ How this differs from the CLAUDE.md files you were given:
 Finish with the structured report.`
 
 phase('Phase 3')
-log(`Phase 3 wave ${wave}: ${jobs.map((j) => j.label).join(', ')}`)
-const results = await parallel(jobs.map((job) => () => agent(brief(job), { label: job.label, phase: 'Phase 3', schema: REPORT })))
+log(`Wave ${wave}: ${jobs.map((j) => j.label).join(', ')}`)
+const results = await parallel(jobs.map((job) => () => agent(prompt(job), { label: job.label, phase: 'Phase 3', schema: REPORT })))
 return jobs.map((job, i) => results[i] ?? { label: job.label, failed: true })
