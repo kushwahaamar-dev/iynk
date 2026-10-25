@@ -242,7 +242,7 @@
       "motor-direction": "Propeller ab, Akku dran: Lass im Reiter Motors jeden Motor einzeln drehen und vergleich seine Richtung mit dem Rahmendiagramm. Ein falscher wird im ESC-Konfigurator umgekehrt, nie nach Gefühl.",
       "accel-calibration": "Stell das Fluggerät auf eine ebene Fläche und kalibrier den Beschleunigungssensor, damit die selbstnivellierenden Modi wissen, wo unten ist.",
       "compass-calibration": "Dreh das Fluggerät um jede Achse, bis die Kompasskalibrierung fertig ist, weit weg von Stahl und Stromkabeln.",
-      "airspeed-calibration": "Deck das Staurohr gegen den Wind ab und setz den Fahrtmesser vor dem Flug auf null.",
+      "airspeed-calibration": "Deck das Staurohr gegen den Wind ab und setz den Fluggeschwindigkeitssensor vor dem Flug auf null.",
       "cg-check": "Balancier die Zelle an der markierten Schwerpunktstelle auf deinen Fingerspitzen: Sie sollte waagerecht oder ganz leicht kopflastig liegen.",
       "elevon-check": "Kipp den Flügel und beweg die Knüppel: Jedes Elevon muss sich im manuellen und in den stabilisierten Modi in die richtige Richtung bewegen.",
       "servo-test": "Fahr das Servo über seinen ganzen Weg und prüf die Mitte, die Endpunkte und die Richtung.",

@@ -48,7 +48,7 @@
     },
     "l298n": {
       "name": "Treiber L298N",
-      "teaches": "Das klassische Modul und warum du es meiden solltest: Seine bipolaren Schalter verlieren rund 2 V und machen sie zu Wärme, und die Enable-Jumper sind wichtig."
+      "teaches": "Das klassische Modul und warum du es meiden solltest: An seinen bipolaren Schaltern fallen rund 2 V ab, die zu Wärme werden, und die Enable-Jumper zählen."
     },
     "a4988": {
       "name": "Schrittmotortreiber A4988",

@@ -171,7 +171,7 @@
     "invert": "Umkehren",
     "live": "Live",
     "listen": "Knüppel bewegen",
-    "listening": "Bewege jetzt den Knüppel für {channel}…",
+    "listening": "Bewege jetzt den Knüppel für {channel} …",
     "armButton": "Taste zum Armen",
     "fpvButton": "FPV-Taste",
     "resetButton": "Reset-Taste",
@@ -228,7 +228,7 @@
     "flipProps": "Die Propeller saßen auf den falschen Motoren. Ein Propeller auf einem Motor, der andersherum dreht, bläst die Luft nach oben, also hat diese Ecke nach unten gedrückt statt zu heben, und die Drohne hat sich beim Start überschlagen. Jeder Propeller gehört auf den Motor, dessen Drehrichtung zu ihm passt.",
     "flipMotor": "Ein Motor hat sich falsch herum gedreht, weil niemand die Drehrichtung ohne Propeller geprüft hat. Sein Drehmoment hat gegen die anderen gearbeitet, und die Drohne hat sich überschlagen, sobald sie abhob. Führe auf der Werkbank „Motordrehrichtung prüfen“ aus und dreh den einen falschen um.",
     "flipServo": "Das Heckservo war umgekehrt. Jede Gierkorrektur hat das Heck in die falsche Richtung gedreht, also wurde die Drehung größer statt kleiner, bis der Tricopter außer Kontrolle Pirouetten drehte und umkippte. Dreh beim echten Bau das Servo um oder kehre es in der CLI um (smix reverse 5 2 r), und prüf vor jedem Flug von Hand seine Richtung.",
-    "desync": "Die Motoren liefen über ihrer Grenze: Die Spannung dieses Akkus mal die KV der Motoren dreht sie schneller, als die ESCs folgen können. Ein ESC hat den Takt verloren, der Motor hat gestottert und die Drohne ist abgestürzt. Wähle Motoren oder einen Akku innerhalb der Grenze.",
+    "desync": "Die Motoren liefen über ihrer Grenze: Die Spannung dieses Akkus mal die KV der Motoren dreht sie schneller, als die ESCs folgen können. Ein ESC hat die Synchronisation verloren, der Motor hat gestottert und die Drohne ist abgestürzt. Wähl Motoren oder einen Akku innerhalb der Grenze.",
     "battery": "Der Akku hat seine Abschaltspannung erreicht, die ESCs haben die Motoren gestoppt, und die Drohne ist abgestürzt. Lande, sobald AKKU LEER erscheint, und fahr einen LiPo nie leer.",
     "servos": "Die Elevons haben sich falsch herum bewegt: Ein Befehl, die Nase zu heben, hat sie nach unten gedrückt, und der Flügel ist in den Boden getaucht. Kehre die Servos im Flugcontroller um und prüf sie vor jedem Start von Hand.",
     "tailHeavy": "Der Schwerpunkt lag hinter der Markierung, also hat sich die Nase immer weiter gehoben, bis die Strömung am Flügel abriss und er absackte. Schieb den Akku nach vorn, bis der Flügel auf seiner Schwerpunktmarke ausbalanciert ist.",
@@ -287,7 +287,7 @@
       },
       "overKv": {
         "label": "Motoren über ihrer Grenze betreiben",
-        "what": "Zu viel Spannung für die KV dieser Motoren: Die ESCs verlieren bei Vollgas den Takt."
+        "what": "Zu viel Spannung für die KV dieser Motoren: Die ESCs verlieren bei Vollgas die Synchronisation."
       },
       "servosReversed": {
         "label": "Servos umkehren",
