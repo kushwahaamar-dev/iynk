@@ -183,7 +183,8 @@ B.bench({
     W('H2.2', 'NANO.5V', 'red', 'nano'), W('H2.1', 'NANO.GND', 'black', 'nano'),
     W('H2.8', 'BATT.+', 'red', 'battery'), W('H2.7', 'BATT.-', 'black', 'battery'),
   ],
-  faults: [['unplug-live', 'Unplug the motor while it runs'], ['coils-mixed', 'Mix up the coil pairs'], ['limit-too-high', 'Turn the limit up to 1.68 A']],
+  faults: [['wrong-voltage:bench:7.4', 'Run on a tired pack (7.4 V)'], ['unplug-live', 'Unplug the motor while it runs'], ['coils-mixed', 'Mix up the coil pairs'],
+    ['limit-too-high', 'Turn the limit up to 1.68 A']],
   model,
 });
 })();

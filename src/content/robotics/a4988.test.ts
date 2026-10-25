@@ -62,9 +62,9 @@ describe('a4988 content', () => {
       if (s.action?.type === 'set' && f.figure.type === 'set') expect(s.action.state).toMatchObject(f.figure.state);
       expect(s.done).toMatchObject({ power: 'bench', status: 'running' });
       const id = engineFaultId(f);
-      // engine faults (supply, polar parts, missing parts) need no list; the bench's own are in its faults list
+      // the engine offers reverse polarity on a supply with a pin and reversed:<part> for a polar part; the rest are listed
       if (id.startsWith('reversed:')) expect(moduleFig).toMatch(new RegExp(`id: '${id.slice(9)}'[^}]*polar:`));
-      else if (/^(reverse-polarity|wrong-voltage):/.test(id)) expect(id.split(':')[1]).toBe(bench.power.source);
+      else if (id.startsWith('reverse-polarity:')) expect(moduleFig).toMatch(new RegExp(`${id.slice(17)}: \\{[^}]*pin: '`));
       else expect(benchFig.includes(`['${id}', '`) || moduleFig.includes(`'${id}'`)).toBe(true);
     }
   });
