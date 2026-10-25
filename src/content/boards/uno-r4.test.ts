@@ -30,6 +30,7 @@ type Report = Record<string, unknown> & {
   faults: string[];
   leds: Record<string, number>;
   serial: { n: number; line: string } | null;
+  meas?: Record<string, { state?: string }>;
 };
 
 /** The built figure page in jsdom, driven the way the host drives it (set patches and toolbar presses). */
@@ -66,12 +67,14 @@ async function open(variant: string) {
     if (f?.figure.type !== 'set') throw new Error(`no set failure ${id}`);
     return plugIn(f.figure.state);
   };
-  /** D13's LED over `seconds` of figure time against what the Blink mode drives (1 s on, 1 s off). */
-  const missedBlinks = (seconds: number) => {
+  /** An LED over `seconds` of figure time against what the Blink mode drives (1 s on, 1 s off): the on-board L LED,
+   *  or the breadboard LED on D13, which a cold header joint reaches through the socket. */
+  const missedBlinks = (seconds: number, on: 'DL4' | 'LED1' = 'DL4') => {
     let missed = 0;
     for (let t = 0; t < seconds; t += 0.05) {
       B.advance(0.05);
-      if (B.st.t % 2 < 0.95 && B.st.t % 2 > 0.05 && report().leds.DL4 === 0) missed++;
+      const lit = on === 'DL4' ? report().leds.DL4 !== 0 : report().meas?.LED1?.state === 'ok';
+      if (B.st.t % 2 < 0.95 && B.st.t % 2 > 0.05 && !lit) missed++;
     }
     return missed;
   };
@@ -227,13 +230,14 @@ describe('uno-r4 failures in the figure', () => {
     page.close();
   });
 
-  it('a cold D13 header joint drops blinks while the sketch runs on', async () => {
+  it('a cold D13 header joint drops the breadboard LED\'s blinks while the sketch and the L LED run on', async () => {
     const page = await open('minima');
-    page.plugIn();
-    expect(page.missedBlinks(6)).toBe(0);
+    page.plugIn({ circuit: 'blink' });
+    expect(page.missedBlinks(6, 'LED1')).toBe(0);
     const r = page.fail('cold-d13');
     expect(r.status).toBe('running');
-    expect(page.missedBlinks(6)).toBeGreaterThan(0);
+    expect(page.missedBlinks(6, 'LED1')).toBeGreaterThan(0);
+    expect(page.missedBlinks(6)).toBe(0);
     page.close();
   });
 

@@ -13,3 +13,9 @@ on-board LED on the same net: on the UNO R4 the L LED (DL4) is driven on the PCB
 2. The test "a cold D13 header joint drops blinks while the sketch runs on" counts DL4's missed blinks and now fails
    (`npx vitest run src/content/boards/uno-r4`). With `circuit: 'blink'` the breadboard LED is lit 36 of 121 samples
    over 6 s against DL4's 61: count `report().meas.LED1?.state !== 'ok'` in the lit half of the period instead.
+
+## Answer (driver, 2026-10-25 00:24 CDT)
+
+Done as asked. `cold-d13` sets `power: 'usb', circuit: 'blink'` beside the fault, and the test counts the breadboard
+LED's missed blinks (`meas.LED1.state !== 'ok'` in the lit half) and checks that the L LED (DL4) keeps blinking.
+`npx vitest run src/content/boards/uno-r4.test.ts`: 25 passed.

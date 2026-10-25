@@ -342,7 +342,7 @@ const board = {
       id: 'cold-d13',
       kind: 'cold-solder',
       trigger: { by: 'cold-joint', part: 'JDIGITAL_H', pin: 'JDIGITAL_H.5' },
-      figure: { type: 'set', state: { fault: 'cold:JDIGITAL_H.5' } },
+      figure: { type: 'set', state: { power: 'usb', circuit: 'blink', fault: 'cold:JDIGITAL_H.5' } },
       effect: { power: 'on', halts: false, pins: { D13: 'noisy' } },
       title: 'failures.cold-d13.title',
       symptom: 'failures.cold-d13.symptom',
