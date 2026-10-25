@@ -182,9 +182,9 @@ stay English on purpose, as they do on a real board.
 ### 23. What do you store about people?
 
 No accounts. Progress and settings stay in the browser. With a database, the labs send anonymous counts (a lesson
-passed, a fault tried, a lap time) with a random browser id, never a name or code, and "Share anonymous usage counts"
-at the bottom of every lab page turns them off (`src/lib/telemetry/client.ts`). Tiger Data keeps them 30 days, and
-buddy profiles expire after 24 hours (`db/migrations/`).
+passed, a fault tried, a lap time) with a random browser id, never a name or code. "Share anonymous usage counts" at
+the bottom of the board, lesson, bench and drone pages turns them off everywhere (`src/lib/telemetry/client.ts`).
+Tiger Data keeps them 30 days, and buddy profiles expire after 24 hours (`db/migrations/`).
 
 ## How it was built
 
