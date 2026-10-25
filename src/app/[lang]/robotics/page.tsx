@@ -8,7 +8,7 @@ import { ROBOTICS, ROBOTICS_IDS, type RoboticsId } from "@/content/ids";
 import { isLocale, type Locale } from "@/i18n/config";
 import { alternatesFor } from "@/i18n/seo";
 import { getT } from "@/i18n/server";
-import { benchesByMonth, benchKeys, boardProduct } from "@/lib/robotics/catalog";
+import { benchesByMonth, benchKeys, boardProduct, type BenchKeys } from "@/lib/robotics/catalog";
 import { loadBench } from "@/lib/robotics/load";
 
 type Props = PageProps<"/[lang]/robotics">;
@@ -31,95 +31,135 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function RoboticsIndexPage({ params }: Props) {
   return (
-    <Suspense fallback={<div className="mx-auto min-h-[70vh] max-w-6xl px-4 sm:px-6" aria-busy="true" />}>
+    <Suspense fallback={<div className="frame min-h-[70vh]" aria-busy="true" />}>
       <RoboticsIndex params={params} />
     </Suspense>
   );
 }
 
-async function benchKeysFor(lang: Locale, id: RoboticsId): Promise<string[] | null> {
+async function benchKeysFor(lang: Locale, id: RoboticsId): Promise<BenchKeys | null> {
   const loaded = await loadBench(lang, id);
-  if (!loaded) return null;
-  const keys = benchKeys(loaded.bench);
-  return [...keys.steps, ...keys.tasks, ...keys.quizzes];
+  return loaded ? benchKeys(loaded.bench) : null;
+}
+
+const allKeys = (keys: BenchKeys) => [...keys.steps, ...keys.tasks, ...keys.quizzes];
+
+// "Month 1 · electronics" is a kicker and a title; "Start here" is a title alone.
+function monthParts(label: string): { kicker: string | null; title: string } {
+  const at = label.indexOf(" · ");
+  if (at === -1) return { kicker: null, title: label };
+  const title = label.slice(at + 3);
+  return { kicker: label.slice(0, at), title: title.charAt(0).toLocaleUpperCase() + title.slice(1) };
 }
 
 async function RoboticsIndex({ params }: Pick<Props, "params">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
   const t = await getT(lang, "robotics");
-  const ready = new Map<RoboticsId, string[] | null>(
+  const ready = new Map<RoboticsId, BenchKeys | null>(
     await Promise.all(ROBOTICS_IDS.map(async (id) => [id, await benchKeysFor(lang, id)] as const)),
   );
+  const progress = {
+    label: t("index.progressName"),
+    countTemplate: t("index.progress", { done: "{done}", total: "{total}" }),
+    valueTemplate: t("index.progressLabel", { done: "{done}", total: "{total}" }),
+  };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
-      <header className="max-w-3xl">
+    <div className="frame pb-16 pt-8 sm:pt-12">
+      <header>
         <p className="ink-kicker">{t("index.kicker")}</p>
         <h1 className="mt-3">{t("index.title")}</h1>
-        <p className="mt-5 text-lg leading-relaxed">{t("index.lede")}</p>
+        <p className="mt-5 max-w-[68ch] text-lg leading-relaxed">{t("index.lede")}</p>
       </header>
 
-      {benchesByMonth().map(({ month, ids }) => (
-        <section key={month} aria-labelledby={`robotics-month-${month}`} className="mt-12">
-          <h2 id={`robotics-month-${month}`} className="ink-kicker text-base">
-            {t(`index.months.m${month}`)}
-          </h2>
-          <ul className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {ids.map((id) => {
-              const meta = ROBOTICS[id];
-              const name = t(`benches.${id}.name`);
-              const board = boardProduct(id);
-              const keys = ready.get(id) ?? null;
-              const href = `/${lang}/robotics/${id}`;
-              return (
-                <li key={id}>
-                  <article
-                    data-bench={id}
-                    className="ink-card relative flex h-full flex-col overflow-hidden p-0 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-ink"
-                  >
-                    <div className={`h-3 border-b-2 border-line ${BAND[meta.palette] ?? "bg-mono-300"}`} aria-hidden="true" />
-                    <div className="flex flex-1 flex-col gap-3 p-5">
-                      <p className="ink-kicker tabular">{t("index.fig", { n: String(meta.fig).padStart(2, "0") })}</p>
-                      <h3 className="text-xl">
-                        {keys ? (
-                          <Link
-                            href={href}
-                            aria-label={t("index.open", { name })}
-                            className="no-underline after:absolute after:inset-0 after:content-[''] focus-visible:outline-none"
-                          >
-                            {name}
-                          </Link>
-                        ) : (
-                          name
-                        )}
-                      </h3>
-                      <p className="flex-1 text-[0.95rem] leading-relaxed">{t(`benches.${id}.teaches`)}</p>
-                      <p className="text-sm text-muted">{board ? t("index.onMat", { board }) : t("index.ownSupply")}</p>
-                      <ul className="flex flex-wrap gap-1.5" aria-label={t("index.tagsLabel")}>
-                        {meta.tags.map((tag) => (
-                          <li key={tag}>
-                            <Chip>{t(`tags.${tag as TagKey}`)}</Chip>
-                          </li>
-                        ))}
-                      </ul>
-                      {keys ? (
-                        <BenchProgress
-                          keys={keys}
-                          label={t("index.progressName")}
-                          countTemplate={t("index.progress", { done: "{done}", total: "{total}" })}
-                          valueTemplate={t("index.progressLabel", { done: "{done}", total: "{total}" })}
-                          className="relative mt-1"
-                        />
-                      ) : null}
-                    </div>
-                  </article>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      ))}
+      <div className="mt-10 lg:mt-14">
+        {benchesByMonth().map(({ month, ids }) => {
+          const { kicker, title } = monthParts(t(`index.months.m${month}`));
+          const monthKeys = ids.flatMap((id) => {
+            const keys = ready.get(id);
+            return keys ? allKeys(keys) : [];
+          });
+          return (
+            <section
+              key={month}
+              aria-labelledby={`robotics-month-${month}`}
+              className="grid grid-cols-1 gap-x-8 gap-y-4 border-t-[1.5px] border-rule py-8 lg:grid-cols-[13.75rem_minmax(0,1fr)] lg:py-10"
+            >
+              <div className="flex flex-col gap-3 lg:sticky lg:top-[calc(var(--header-h)+1.5rem)] lg:self-start">
+                <h2 id={`robotics-month-${month}`} className="font-head text-2xl leading-tight">
+                  {kicker ? <span className="ink-kicker mb-1 block">{kicker}</span> : null}
+                  {title}
+                </h2>
+                {monthKeys.length > 0 ? <BenchProgress keys={monthKeys} {...progress} idle={null} className="max-w-56" /> : null}
+              </div>
+              <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {ids.map((id) => {
+                  const meta = ROBOTICS[id];
+                  const name = t(`benches.${id}.name`);
+                  const board = boardProduct(id);
+                  const keys = ready.get(id) ?? null;
+                  const href = `/${lang}/robotics/${id}`;
+                  return (
+                    <li key={id}>
+                      <article
+                        data-bench={id}
+                        className="ink-card relative flex h-full flex-col overflow-hidden p-0 transition-transform duration-150 focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-ink has-[a:hover]:-translate-y-0.5"
+                      >
+                        <div className={`h-2 border-b-[1.5px] border-line ${BAND[meta.palette] ?? "bg-mono-300"}`} aria-hidden="true" />
+                        <div className="flex flex-1 flex-col gap-2.5 p-5">
+                          <p className="ink-kicker tabular">{t("index.fig", { n: String(meta.fig).padStart(2, "0") })}</p>
+                          <h3 className="text-xl leading-snug">
+                            {keys ? (
+                              <Link
+                                href={href}
+                                aria-label={t("index.open", { name })}
+                                className="no-underline after:absolute after:inset-0 after:content-[''] focus-visible:outline-none"
+                              >
+                                {name}
+                              </Link>
+                            ) : (
+                              name
+                            )}
+                          </h3>
+                          <p className="flex-1 text-sm leading-relaxed">{t(`benches.${id}.teaches`)}</p>
+                          <p className="text-sm text-muted">{board ? t("index.onMat", { board }) : t("index.ownSupply")}</p>
+                          <ul className="flex flex-wrap gap-1.5" aria-label={t("index.tagsLabel")}>
+                            {meta.tags.map((tag) => (
+                              <li key={tag}>
+                                <Chip>{t(`tags.${tag as TagKey}`)}</Chip>
+                              </li>
+                            ))}
+                          </ul>
+                          {keys ? (
+                            <div className="relative mt-1 min-h-6 border-t-[1.5px] border-rule pt-3">
+                              <BenchProgress
+                                keys={allKeys(keys)}
+                                {...progress}
+                                idle={
+                                  <p className="tabular text-sm text-muted">
+                                    {[
+                                      keys.steps.length > 0 ? t("index.steps", { count: keys.steps.length }) : null,
+                                      keys.tasks.length > 0 ? t("index.tasks", { count: keys.tasks.length }) : null,
+                                      keys.quizzes.length > 0 ? t("index.quizzes", { count: keys.quizzes.length }) : null,
+                                    ]
+                                      .filter(Boolean)
+                                      .join(" · ")}
+                                  </p>
+                                }
+                              />
+                            </div>
+                          ) : null}
+                        </div>
+                      </article>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          );
+        })}
+      </div>
     </div>
   );
 }

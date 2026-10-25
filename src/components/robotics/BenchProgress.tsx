@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { ProgressBadge } from "@/components/ui/ProgressBadge";
 import { useSaved } from "@/lib/progress/hooks";
 import type { Saved } from "@/lib/progress/storage";
@@ -23,14 +24,17 @@ type Props = {
   valueTemplate: string;
   /** xs: the thin bar and count of a workspace bar. */
   size?: "xs" | "sm" | "md";
+  /** Shown instead of the bar while nothing is done yet (an empty bar says nothing). */
+  idle?: ReactNode;
   className?: string;
 };
 
 /** "done/total" for a bench: its steps, tasks and quizzes. */
-export function BenchProgress({ keys, label, countTemplate, valueTemplate, size = "sm", className }: Props) {
+export function BenchProgress({ keys, label, countTemplate, valueTemplate, size = "sm", idle, className }: Props) {
   const saved = useSaved();
   const done = countBench(saved, keys);
   const total = keys.length;
+  if (done === 0 && idle !== undefined) return idle;
   return (
     <ProgressBadge
       done={done}
