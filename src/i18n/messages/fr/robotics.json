@@ -136,9 +136,9 @@
     "done": "Fait",
     "current": "À suivre",
     "kinds": {
-      "build": "Montage",
-      "break": "Casse",
-      "test": "Test"
+      "build": "Monter",
+      "break": "Casser",
+      "test": "Tester"
     },
     "faultSeen": "Panne constatée. Maintenant, réparez-la : {fix}",
     "outOfOrder": "Terminez d'abord l'étape précédente : {step}",

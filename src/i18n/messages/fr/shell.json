@@ -50,7 +50,7 @@
     "lede": "{boards} cartes de développement, {benches} bancs de robotique et {drones} drones, chacun une figure 3D encrée à la main. Faites-la tourner, regardez à l’intérieur, câblez-la, lancez du vrai code, cassez-la exprès et comprenez pourquoi.",
     "start": "Commencer avec l’Arduino Uno R3",
     "browse": "Parcourir les cartes",
-    "heroAlt": "Un dessin à l’encre d’une carte à microcontrôleur et d’un pilote de moteurs sur l’établi, avec un quadricoptère en vol stationnaire au-dessus.",
+    "heroAlt": "Un dessin à l’encre d’une carte à microcontrôleur et d’un driver de moteurs sur l’établi, avec un quadricoptère en vol stationnaire au-dessus.",
     "labsTitle": "Les trois labos",
     "open": "Ouvrir le {lab}",
     "board": {
@@ -59,7 +59,7 @@
       "progress": "Leçons et assemblages"
     },
     "robotics": {
-      "text": "Pilotes de moteurs, capteurs et étages d’alimentation, montés pièce par pièce sur le banc, avec des exercices pratiques, un quiz après chaque étape, l’état en direct et le courant consommé.",
+      "text": "Drivers de moteurs, capteurs et étages d’alimentation, montés pièce par pièce sur le banc, avec des exercices pratiques, un quiz après chaque étape, l’état en direct et le courant consommé.",
       "count": "{count} bancs",
       "progress": "Étapes, exercices et quiz"
     },
@@ -128,7 +128,7 @@
       },
       "robotics": {
         "name": "Robotics Engineer",
-        "text": "Treize bancs interactifs : cartes, pilotes de moteurs, capteurs et étages d’alimentation, avec un déroulé de montage, des pannes et des quiz."
+        "text": "Treize bancs interactifs : cartes, drivers de moteurs, capteurs et étages d’alimentation, avec un déroulé de montage, des pannes et des quiz."
       },
       "drones": {
         "name": "Drone Engineer",
