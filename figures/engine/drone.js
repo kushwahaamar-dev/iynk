@@ -119,14 +119,18 @@ window.SL = window.SL || {};
   SD.powered = powered;
 
   function sfx(st, name){ st.sfx = { n: (st.sfx ? st.sfx.n : 0) + 1, name }; }
+  // a craft may reword any engine message or log line by its key: craft.messages.pop, craft.logs.capNew (a whoop has
+  // a soldered battery lead where a 5-inch quad has a capacitor)
+  const MSG_KEY = new Map(Object.entries(MSG).map(([k, v]) => [v, k])), LOG_KEY = new Map(Object.entries(LOG).map(([k, v]) => [v, k]));
+  const reword = (own, keys, text) => { const k = keys.get(text); return k && own && typeof own[k] === 'string' ? own[k] : text; };
   function log(st, key, vars){
-    const text = T(key, vars);
+    const text = T(reword(craft && craft.logs, LOG_KEY, key), vars);
     st.log.lines.push(text); if (st.log.lines.length > 10) st.log.lines.shift();
     st.log.n++;
   }
   function say(st, key, vars, ms, sound){
     if (sound) sfx(st, sound);
-    const text = T(key, vars);
+    const text = T(reword(craft && craft.messages, MSG_KEY, key), vars);
     st.msg = text;
     if (ui) ui.flash(text, ms || 2200);
   }
@@ -255,7 +259,7 @@ window.SL = window.SL || {};
         log(st, LOG.pop);
         say(st, MSG.pop, null, 4200, 'pop');
       } else {
-        say(st, craft.messages && craft.messages.powered || MSG.powered, null, 2200, 'power');
+        say(st, MSG.powered, null, 2200, 'power');
       }
       kick();
     },
@@ -547,7 +551,7 @@ window.SL = window.SL || {};
       });
       if (pl.t >= 1 && !pl.leave){
         const anchor = part.tag && part.tag.at ? SD.W(...part.tag.at) : its.length ? topOf(its[0].box) : null;
-        if (anchor) ctx.tags.push({ id: part.id, at: anchor, dx: part.tag ? part.tag.dx || 0 : 0, dy: part.tag ? part.tag.dy || -26 : -26, text: part.short });
+        if (anchor && part.tag !== false) ctx.tags.push({ id: part.id, at: anchor, dx: part.tag ? part.tag.dx || 0 : 0, dy: part.tag ? part.tag.dy || -26 : -26, text: part.short });
         for (const c of part.xr || []) ctx.callouts.push({ at: SD.W(...c.at), text: c.text, on: st.sel === part.id });
       }
     }

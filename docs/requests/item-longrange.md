@@ -21,3 +21,10 @@ mast) is drawn tomato on a mint craft, and the COLOUR swatches change nothing. T
 palette to `scene(st, m)` and keeps its key in `st.pal`; setting `SD.G.pal = s.pal || craft.palette` at the top
 of `scene(s)` fixes both.
 Why: Fig. 04 is mint (ids.ts DRONES.longrange.palette); the screenshots show tomato bells.
+
+## Answer from P2-engine (2026-10-24 ~21:50 CDT)
+
+1. **Done** (`9d49d45`): `state.extra` merges `craft.report(st)`; `craft.reset(st, why)` gets `'strip'`, `'build'`, a
+   part id when one is placed, removed or turned round, and (from `18d1ed7`) the same ids from a `step`, `'strip'`
+   for a step back to nothing.
+2. **Done** (`9d49d45`): `G.pal` follows `st.pal`.

@@ -13,14 +13,16 @@
   SD.WIRE_KINDS = KIND;
   const BW = 150, BH = 56;
 
-  function route(A, B){
+  // an elbow from the side centre of block A to that of block B; pa / pb (an edge's own `a` / `b`) replace the ends, so
+  // a block with many ports gives each its own point along the side
+  function route(A, B, pa, pb){
     const ac = [A.at[0] + BW / 2, A.at[1] + BH / 2], bc = [B.at[0] + BW / 2, B.at[1] + BH / 2];
     const dx = bc[0] - ac[0], dy = bc[1] - ac[1];
     if (Math.abs(dx) >= BW * .9){
-      const s = Math.sign(dx), a = [ac[0] + s * BW / 2, ac[1]], b = [bc[0] - s * BW / 2, bc[1]], mx = (a[0] + b[0]) / 2;
+      const s = Math.sign(dx), a = pa || [ac[0] + s * BW / 2, ac[1]], b = pb || [bc[0] - s * BW / 2, bc[1]], mx = (a[0] + b[0]) / 2;
       return Math.abs(a[1] - b[1]) < 1 ? [a, b] : [a, [mx, a[1]], [mx, b[1]], b];
     }
-    const s = Math.sign(dy) || 1, a = [ac[0], ac[1] + s * BH / 2], b = [bc[0], bc[1] - s * BH / 2], my = (a[1] + b[1]) / 2;
+    const s = Math.sign(dy) || 1, a = pa || [ac[0], ac[1] + s * BH / 2], b = pb || [bc[0], bc[1] - s * BH / 2], my = (a[1] + b[1]) / 2;
     return Math.abs(a[0] - b[0]) < 1 ? [a, b] : [a, [a[0], my], [b[0], my], b];
   }
   const offsetPath = (pts, o) => pts.map((p, i) => {
@@ -34,7 +36,11 @@
     // leave the figure's own button column free when it is shown (standalone or embedded without bare=1)
     const btns = document.getElementById('btns'), html = document.documentElement;
     const left = btns && !html.classList.contains('cf-bare') && getComputedStyle(btns).display !== 'none' && innerWidth > 560 ? vw * .24 : 0;
-    const sc = Math.min((vw - left) * .95 / 780, vh * .9 / 380), ox = left + (vw - left - 760 * sc) / 2, oy = (vh - 360 * sc) / 2;
+    // and the stats panel (parts, checks, battery) on the right
+    const stE = document.getElementById('stats'), frameBox = svgEl && svgEl.getBoundingClientRect();
+    const right = stE && frameBox && frameBox.width && getComputedStyle(stE).display !== 'none' && innerWidth > 560
+      ? Math.max(0, frameBox.right - stE.getBoundingClientRect().left) * vw / frameBox.width : 0;
+    const room = vw - left - right, sc = Math.min(room * .95 / 780, vh * .9 / 380), ox = left + (room - 760 * sc) / 2, oy = (vh - 360 * sc) / 2;
     const X = x => f(ox + x * sc), Y = y => f(oy + y * sc), sw = w => (w * sc / INK_K).toFixed(2), fs = v => f(v * sc);
     const d = SD.resolved(st), V = st.calc && st.calc.V ? st.calc.V : d.batt.cells * 3.7, on = SD.powered(st);
     const t = st.test, spinning = t && t.kind === 'motors' ? t.cur : -1;
@@ -45,7 +51,7 @@
     for (const e of Wr.edges){
       const A = Wr.nodes[e.from], B = Wr.nodes[e.to], k = KIND[e.kind] || KIND.signal;
       used.add(e.kind in KIND ? e.kind : 'signal');
-      const base = e.via ? [route(A, { at: [e.via[0][0] - BW / 2, e.via[0][1] - BH / 2] })[0], ...e.via, route(B, { at: [e.via[e.via.length - 1][0] - BW / 2, e.via[e.via.length - 1][1] - BH / 2] })[0]] : route(A, B);
+      const base = e.via ? [e.a || route(A, { at: [e.via[0][0] - BW / 2, e.via[0][1] - BH / 2] })[0], ...e.via, e.b || route(B, { at: [e.via[e.via.length - 1][0] - BW / 2, e.via[e.via.length - 1][1] - BH / 2] })[0]] : route(A, B, e.a, e.b);
       const n = e.n || 1, fitted = SD.isOn(st, e.from) && SD.isOn(st, e.to);
       for (let i = 0; i < n; i++){
         const pts = offsetPath(base, (i - (n - 1) / 2) * 3.4), dd = 'M' + pts.map(p => `${X(p[0])} ${Y(p[1])}`).join('L');

@@ -209,9 +209,9 @@
 
   K.xt60 = (pc, ctx) => {
     const items = [], [x, y, z] = pc.at, ax = pc.dir || [-1, 0, 0], st = ctx.st, rev = ctx.orient === 1, fault = st.fault === 'XT60';
-    // XT60: about 16 mm long, 15.5 mm wide, 8 mm thick
-    const hx = Math.abs(ax[0]) > .5 ? 8 : 7.8, hy = Math.abs(ax[0]) > .5 ? 7.8 : 8;
-    items.push(g.box(x - hx, y - hy, z - 4, x + hx, y + hy, z + 4, 'yellow', .9));
+    // XT60: about 16 mm long, 15.5 mm wide, 8 mm thick; pc.size [l, w, h] for another housing (an XT90 is 21 x 26 x 11)
+    const [sl, sw, sh] = pc.size || [16, 15.5, 8], hx = Math.abs(ax[0]) > .5 ? sl / 2 : sw / 2, hy = Math.abs(ax[0]) > .5 ? sw / 2 : sl / 2;
+    items.push(g.box(x - hx, y - hy, z - sh / 2, x + hx, y + hy, z + sh / 2, 'yellow', .9));
     const lead = pc.lead || [];
     if (lead.length > 1){
       const a = lead[0], b = lead[lead.length - 1], dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1, ox = -dy / L * 2.6, oy = dx / L * 2.6;
@@ -220,7 +220,7 @@
       ctx.flows.push({ kind: 'power', pts: plus.slice().reverse().map(p => W(...p)) }, { kind: 'power', pts: minus.map(p => W(...p)) });
       ctx.leadPlus = plus; ctx.leadMinus = minus;
     }
-    ctx.xt60At = [x, y, z];
+    ctx.xt60At = [x, y, z]; ctx.xt60Size = [sl, sw, sh];
     if (pc.cap){
       const c = pc.cap, d = SD.normd(c.dir || [1, 0, 0]), r = c.r || 5, L = c.l || 20;
       const a = c.at, b = [a[0] + d[0] * L, a[1] + d[1] * L, a[2] + d[2] * L];
@@ -272,10 +272,11 @@
       items.push(g.box(x - sw / 2, y - w / 2 - 1.2, zp + h * .55, x + sw / 2, y - w / 2 - .2, zp + h + .9, tab, .6));
     }
     if (ctx.st.plugged && ctx.xt60At){
-      const t = ctx.xt60At, from = [x - l / 2 - 1, y + 3, zp + h * .7];
-      const mid = [Math.min(from[0], t[0]) - 6, (from[1] + t[1]) / 2, (from[2] + t[2]) / 2 + 4], plug = [t[0] - 10, t[1], t[2]];
-      items.push(...g.wire([from, mid, [plug[0] - 6, plug[1] + 2.6, plug[2]]], '#d8473a', 3), ...g.wire([[from[0], from[1] - 5, from[2]], [mid[0], mid[1] - 5, mid[2]], [plug[0] - 6, plug[1] - 2.6, plug[2]]], '#2c2926', 3));
-      items.push(g.box(plug[0] - 6, plug[1] - 7.8, plug[2] - 4, plug[0] + 2, plug[1] + 7.8, plug[2] + 4, 'yellow', .9));
+      // the pack's own plug mates with the craft's connector, so it takes that housing's size (k = 1 for an XT60)
+      const t = ctx.xt60At, [, cw, ch] = ctx.xt60Size || [16, 15.5, 8], k = cw / 15.5, from = [x - l / 2 - 1, y + 3, zp + h * .7];
+      const mid = [Math.min(from[0], t[0]) - 6, (from[1] + t[1]) / 2, (from[2] + t[2]) / 2 + 4], plug = [t[0] - 10 * k, t[1], t[2]];
+      items.push(...g.wire([from, mid, [plug[0] - 6 * k, plug[1] + 2.6 * k, plug[2]]], '#d8473a', 3), ...g.wire([[from[0], from[1] - 5, from[2]], [mid[0], mid[1] - 5, mid[2]], [plug[0] - 6 * k, plug[1] - 2.6 * k, plug[2]]], '#2c2926', 3));
+      items.push(g.box(plug[0] - 6 * k, plug[1] - cw / 2, plug[2] - ch / 2, plug[0] + 2 * k, plug[1] + cw / 2, plug[2] + ch / 2, pc.plugColor || 'yellow', .9));
     }
     ctx.shadows.push([[x - l / 2, y - w / 2], [x + l / 2, y - w / 2], [x + l / 2, y + w / 2], [x - l / 2, y + w / 2]].map(([a, bb]) => W(a, bb, zp + h)));
     return items;

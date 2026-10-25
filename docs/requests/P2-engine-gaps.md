@@ -14,3 +14,11 @@ Written 2026-10-24 ~21:00 CDT by P2-engine, for P2-engine-b (wave B) and the dri
   `missing:<circuit part id>`. No content sends them yet.
 - **NPN `overdrive`** (pin wired to the collector, the load on the base) is not detected; such a circuit reads as the
   physics gives it (usually `off` or `linear`).
+- **Whoop-scale motors and props** (`item-whoop.md` 1): opt-in `motor.shaft: [d, l]`, `motor.base: h`,
+  `prop.hub: [d, h, nutD]` in `drone-pieces.js` (`K.motors`, `tiltedMotor`, `K.props`, `motorH`), today's 5-inch sizes
+  as defaults. The whoop draws custom pieces meanwhile.
+- **Drone wiring sheet beside a long button column**: the sheet leaves 24 % of the width for the buttons; the
+  delivery quad's widest buttons reach further. Measuring `#btns` would shrink the sheet a lot; shorter labels or a
+  sheet that opens over the buttons are the options.
+- **Figure string dictionaries** (`engine-bench.md` 1): `src/i18n/figures/<lang>.json` does not exist, so `CF_T`
+  returns English in every locale. Phase 3 (`P2-engine-to-phase3-strings.md`).

@@ -50,6 +50,21 @@ describe('drone craft hooks', () => {
     expect(resets.at(-1)).toBe('strip');
   });
 
+  it('a craft rewords any engine message and log line by its key', async () => {
+    page = await quad();
+    const SD = page.drone, craft = SD.craft(), st = SD.api.st, n = craft.parts.length;
+    craft.messages = { plugNeeds: 'Solder the pigtail first', powered: 'Beep' };
+    craft.logs = { plugged: 'pack in' };
+    SD.actions.step(st, 0);
+    SD.actions.plugIn(st);
+    expect(st.msg).toBe('Solder the pigtail first');
+    SD.actions.step(st, n);
+    for (const pl of Object.values(st.placed)) pl.t = 1;   // the parts have landed
+    SD.actions.plugIn(st);
+    expect(st.msg).toBe('Beep');
+    expect(st.log.lines).toContain('pack in');
+  });
+
   it('notes a throwing craft.report once and keeps the passes', async () => {
     page = await quad();
     const SD = page.drone;

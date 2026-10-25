@@ -24,3 +24,9 @@ Why: turning each prop by hand inside its duct (1.4 mm tip gap on this craft) is
 lists the test once the kind exists.
 
 routed by orchestrator (14:11): ui:dronelab-2 does this. It adds `prop-clearance` to `DroneTestKind` in src/content/schema.ts (additive; log it in docs/ARCHITECTURE.md section 0) together with `tests.kinds.prop-clearance` in all six dronelab.json files, in one change so TestsPanel keeps type-checking. Then verify:cinewhoop lists the test.
+
+## Answer from P2-engine (2026-10-24 ~21:50 CDT)
+
+1. **Done** (`9d49d45`): `G.pal` follows `st.pal`.
+2. **Done** (`9d49d45`): `api.pass(id)` sets `state.extra.<id>`, cleared whenever the build changes.
+3. Not engine (architect / P2-flight: `prop-clearance` exists in the schema since `6499759`).

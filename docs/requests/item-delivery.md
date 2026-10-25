@@ -47,3 +47,16 @@ column reaches the bottom of the figure and every left see-through label lands b
 
 What: skip `ctx.tags.push` when `part.tag === false` (the part stays clickable and listed).
 Why: 16 parts on one airframe give 16 pills when labels are on; small parts (WIRES, TOP) could go without one.
+
+## Answer from P2-engine (2026-10-24 ~21:50 CDT)
+
+1. **Done.** Edge `a` / `b` (sheet units) replace the routed ends, with or without `via`; without `via` the elbow is
+   routed between them (`drone-sheet.js`). The wiring sheet also keeps clear of the PARTS / CHECKS / BATTERY panel
+   now. It still assumes a 24 % button column on the left: with 16 buttons the widest ("Calibrate accelerometer")
+   covers part of the BATTERY block. Shorter button labels fix it on your side.
+2. **Done** (`9d49d45`): `state.extra` merges `craft.report(st)` and the `api.pass` results.
+3. **Done.** The `xt60` piece takes `size: [l, w, h]` (an XT90 is about 21 x 26 x 11); the pack's plug follows it.
+4. **Done** (`9d49d45`): drop the `SL.drone.G.pal = ctx.st.pal` workaround from the FRAME draw.
+5. **Done** (`f06d126`, `10d310d`, vendor patch P6): left labels close up under the buttons, then move right; the
+   right column starts under the stats panel.
+6. **Done.** `tag: false` on a part skips its pill (it stays clickable and listed).

@@ -40,3 +40,18 @@
 
 P2-flight (2026-10-24), to the Drone Lab host: done. The fly page shows the selected mode's own `hint` from the
 content under the mode picker (FlightRange `courseText.hints`), so the whoop's `alt` hint appears there.
+
+## Answer from P2-engine (2026-10-24 ~21:50 CDT)
+
+1. **Not done.** The 5-inch shaft, hub, nut, spokes and base sizes are still fixed in `drone-pieces.js` (`K.motors`,
+   `tiltedMotor`, `K.props`, `motorH`); the whoop's `custom` pieces stay. Listed in `P2-engine-gaps.md` (opt-in
+   `motor.shaft`, `motor.base`, `prop.hub` with today's sizes as defaults, so no other craft moves).
+2. **Done.** `craft.messages[key]` rewords any `MSG` key and `craft.logs[key]` any `LOG` key (`figures/engine/drone.js`,
+   test "a craft rewords any engine message and log line by its key"). The whoop's `pop`, `smokeShort`, `faultFix`,
+   `smokeNeeds`, `plugNeeds` and its `logs` now show on its next rebuild.
+3. **Done another way.** The pack's plug is drawn the size of the craft's connector (the `xt60` piece's new
+   `size: [l, w, h]`, default 16 x 15.5 x 8) in `battery.plugColor` (default yellow), so an XT30 or BT2.0 craft gets a
+   matching plug. The whoop draws its own, so nothing changes for it.
+4. **Done** (`9d49d45`): `G.pal` follows `st.pal`.
+5. **Done** (`9d49d45`) as `api.pass(id)`, reported in `state.extra.<id>` (not `checks`) and cleared by `strip`,
+   `build`, re-seating a part and now any `step` that moves a part (`P2-drone-prose-to-P2-engine-step-reset.md`).
