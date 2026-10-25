@@ -1,0 +1,452 @@
+{
+  "title": "L298N driver",
+  "sub": "why not to use it",
+  "hint": "power it, pick a direction, feel the heat",
+  "overview": "The L298N is the motor driver in nearly every starter kit: a red 43 mm square board with a black heatsink, two blue motor terminals and a 2S LiPo on its power terminal. Inside the chip are two H-bridges built from bipolar transistors, a 1990s design. IN1 and IN2 pick motor A's direction, IN3 and IN4 motor B's, and ENA and ENB switch each bridge on; as the module ships, two jumper caps tie both enables to +5V, so the motors run at full speed. A 78M05 regulator behind the 5V-EN cap makes the chip's 5 V logic supply from the battery. The catch is the drop: two bipolar switches sit in series with every motor and lose 1.4 + 1.15 x I volts between them, about 1.6 V with a free-running TT motor and 2.7 V with the wheel held, and all of it turns into heat. Build the module, wire the Nano, the motors and the pack, drive it in every direction, then hold the wheels and watch the heatsink climb until the chip cuts out. The TB6612FNG on the bench before this one does the same job and loses about 0.1 V.",
+  "parts": {
+    "U1": {
+      "name": "L298N dual H-bridge on its heatsink",
+      "what": "ST's L298N in a 15-lead Multiwatt package, bolted to a finned heatsink. Two bridges of four bipolar switches, 2 A per channel, motor supply up to 46 V, logic thresholds 1.5 V and 2.3 V so 3.3 V controllers can drive it. The two conducting switches lose about 1.6 V at 0.16 A and 2.5 V at 1 A, and there is no current limit: only an overtemperature cut-out protects it."
+    },
+    "U2": {
+      "name": "78M05 5 V regulator",
+      "what": "Makes the L298N's 5 V logic supply from the battery while the 5V-EN cap is on, and brings it out on the third screw of the power terminal. It needs about 2 V of headroom: a 2S pack (7.4 V) is fine, a 6 V pack is not. Above 12 V it runs hot, which is why sellers say to pull the cap and feed 5 V yourself."
+    },
+    "D1": {
+      "name": "Flyback diodes D1-D8",
+      "what": "Eight small rectifiers, two per motor lead: one to +12V and one from GND. When a bridge switches off, the motor's winding keeps pushing current; the diodes give it a path back to the supply instead of letting the voltage spike. The L298N has none inside, so the module needs these."
+    },
+    "C1": {
+      "name": "220 µF capacitor on +12V",
+      "what": "The bulk capacitor on the motor supply, 35 V rated. It hands the bridges the bursts of current they switch and soaks up the spikes. Polarised: the stripe marks minus and faces the front edge. Fitted backwards it heats, bulges and can vent."
+    },
+    "C2": {
+      "name": "220 µF capacitor on +5V",
+      "what": "Smooths the 5 V logic rail after the 78M05. Polarised like C1."
+    },
+    "J1": {
+      "name": "Power terminal: +12V, GND, +5V",
+      "what": "Three screw clamps. +12V takes the motor supply (here the 2S LiPo; really 7 to 35 V with the 5V-EN cap on), GND is the common ground the Nano must share, and +5V is the regulator's output, or an input when the 5V-EN cap is off. No fuse and no reverse-polarity protection."
+    },
+    "J2": {
+      "name": "Motor A terminal (OUT1, OUT2)",
+      "what": "Two screw clamps on the left edge for motor A. Swapping its two leads reverses the motor, exactly like swapping IN1 and IN2 in the sketch."
+    },
+    "J3": {
+      "name": "Motor B terminal (OUT3, OUT4)",
+      "what": "Two screw clamps on the right edge for motor B, driven by IN3 and IN4."
+    },
+    "J4": {
+      "name": "Control header IN1-IN4",
+      "what": "Four pins for the direction inputs: IN1 and IN2 for motor A, IN3 and IN4 for motor B. HIGH and LOW drives one way, LOW and HIGH the other, two equal levels brake. There are no pull resistors: an unconnected input floats."
+    },
+    "JPA": {
+      "name": "ENA jumper cap",
+      "what": "Ties ENA to +5V, so bridge A is always enabled and runs at full speed. For speed control, pull it and drive ENA from a PWM pin. Never drive ENA with the cap still on: the cap shorts the pin to 5 V."
+    },
+    "JPB": {
+      "name": "ENB jumper cap",
+      "what": "The same for bridge B: on, motor B is always enabled at full speed."
+    },
+    "JP5": {
+      "name": "5V-EN jumper cap",
+      "what": "Connects +12V to the 78M05's input. On, the module makes its own 5 V logic supply; off, the L298N has no logic supply unless you feed 5 V into the +5V screw, and nothing runs."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "The controller, on USB. D8 drives IN1, D7 IN2, D5 IN3 and D4 IN4, and its GND is wired to the module's GND so both agree on what LOW means. Its sketches also write D9 and D3 for ENA and ENB, but those stay unwired while the caps are on."
+    },
+    "MOTA": {
+      "name": "Motor A (TT gear motor)",
+      "what": "A 1:48 yellow gear motor on OUT1 and OUT2, its wheel turning in the air. About 160 mA turning freely; held still it takes over an amp. Through the L298N it gets about 5.8 V of the pack's 7.4 V."
+    },
+    "MOTB": {
+      "name": "Motor B (TT gear motor)",
+      "what": "The second gear motor, on OUT3 and OUT4."
+    },
+    "BATT": {
+      "name": "2S LiPo battery, 7.4 V",
+      "what": "Two lithium-polymer cells in series: 8.4 V full, 7.4 V nominal, about 6.4 V when it needs a charge. Red to +12V, black to GND. Plugged in backwards it is shorted through the flyback diodes."
+    }
+  },
+  "power": {
+    "label": "Power the bench",
+    "ok": "Nano on USB, LiPo on +12V: the power LED is on and the bridges run"
+  },
+  "modes": {
+    "fwd": { "title": "Forward" },
+    "rev": { "title": "Reverse" },
+    "spin": { "title": "Spin on the spot" },
+    "brake": { "title": "Brake" },
+    "half": { "title": "Half speed (caps on)" },
+    "code": {
+      "title": "L298N: IN1 and IN2 pick motor A's direction, IN3 and IN4 motor B's",
+      "motorA": "motor A: enable and the two direction inputs",
+      "motorB": "motor B",
+      "full": "full speed (the cap holds ENA at 5 V anyway)",
+      "half": "half duty: ignored while the cap ties ENA to 5 V",
+      "fwd": "both forward",
+      "rev": "both reverse",
+      "spin": "A forward, B backwards: the robot turns on the spot",
+      "brake": "equal inputs: both motor leads on the same rail, a fast stop"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Strip to the bare PCB",
+      "body": "Take every part off the red board. You will put it back the way a factory would: SMD parts first, then the low through-hole parts, the tall ones, the solder joints and the jumper caps last.",
+      "refusal": "Unplug the power first: never work on a live board"
+    },
+    "smd": {
+      "title": "Pick and place the SMD parts, then reflow",
+      "body": "The 78M05, the eight flyback diodes, the power LED and its resistor and the small capacitors go on in one pass, and the oven melts the paste under every pad.",
+      "refusal": "The SMD parts go on first, on a bare board"
+    },
+    "low": {
+      "title": "Fit the low through-hole parts",
+      "body": "The two 220 µF capacitors (stripe to the front) and the pin headers: IN1-IN4, ENA, ENB and 5V-EN.",
+      "refusal": "SMD parts first: run pick and place and reflow. The oven would melt plastic parts"
+    },
+    "tall": {
+      "title": "Fit the tall parts",
+      "body": "The L298N on its heatsink, its 15 leads in two staggered rows, and the three blue screw terminals.",
+      "refusal": "Low parts first, so the tall ones do not get in the way"
+    },
+    "solder": {
+      "title": "Solder the through-hole joints",
+      "body": "Every lead of the L298N and the terminals carries motor current, so each joint must be shiny and concave, wetting both the lead and the pad.",
+      "refusal": "Nothing to solder yet: place a part first"
+    },
+    "caps": {
+      "title": "Put the jumper caps on",
+      "body": "5V-EN turns the regulator on; ENA and ENB tie both enables to +5V. This is how the module ships: both bridges always enabled, full speed.",
+      "refusal": "Solder the joints first: the caps go on last"
+    },
+    "wire-nano": {
+      "title": "Wire the Nano to IN1-IN4 and GND",
+      "body": "Set the Nano on the mat and run four jumpers: D8 to IN1, D7 to IN2, D5 to IN3, D4 to IN4. Then one more from the Nano's GND to the GND screw on the power terminal. Without that wire the inputs have no common reference.",
+      "refusal": "Unplug the power first: never work on a live board"
+    },
+    "wire-motors": {
+      "title": "Wire the two motors",
+      "body": "Motor A into OUT1 and OUT2 on the left, motor B into OUT3 and OUT4 on the right. Which lead goes where only sets which way the wheel turns.",
+      "refusal": "Unplug the power first, and wire the Nano before the motors"
+    },
+    "wire-battery": {
+      "title": "Wire the LiPo to +12V and GND",
+      "body": "Red to +12V, black to GND. There is no reverse-polarity protection on this board: check twice before the plug goes in. The Nano keeps its own USB power.",
+      "refusal": "Unplug the power first, and wire the motors before the LiPo"
+    },
+    "plug": {
+      "title": "Power the bench",
+      "body": "USB into the Nano, the LiPo on the module. The power LED lights, the Nano starts with Forward and both wheels turn.",
+      "refusal": "Finish the build first: every part on, every joint soldered and everything on the mat wired"
+    },
+    "fwd": {
+      "title": "Upload Forward",
+      "body": "IN1 HIGH, IN2 LOW, IN3 HIGH, IN4 LOW: both wheels turn forward. The pack gives 7.4 V and each motor gets about 5.8 V: the other 1.6 V is lost in the bridge.",
+      "refusal": "Power the bench first"
+    },
+    "rev": {
+      "title": "Upload Reverse",
+      "body": "Swap each pair: IN1 LOW, IN2 HIGH and the same for B. The same 1.6 V is lost the other way round.",
+      "refusal": "Power the bench first"
+    },
+    "spin": {
+      "title": "Upload Spin on the spot",
+      "body": "Motor A forward, motor B reverse. On a robot this turns it on the spot.",
+      "refusal": "Power the bench first"
+    },
+    "brake": {
+      "title": "Upload Brake",
+      "body": "IN1 = IN2 and IN3 = IN4 with the enables HIGH: both leads of each motor sit on the same rail, so the motor's own voltage drives a current that stops it hard. Nothing comes from the battery.",
+      "refusal": "Power the bench first"
+    },
+    "half": {
+      "title": "Upload Half speed",
+      "body": "The sketch writes 128 to ENA and ENB, but nothing changes: the caps hold both enables at 5 V and D9 and D3 are not even wired. Speed control needs the cap off and ENA on a PWM pin; the soft-start task does it.",
+      "refusal": "Power the bench first"
+    },
+    "lipo-backwards": {
+      "title": "Put the LiPo on backwards",
+      "body": "Black on +12V, red on GND. The flyback diodes now point the easy way across the pack and short it through two diode drops. Repair it and power up again."
+    },
+    "c1-backwards": {
+      "title": "Fit C1 backwards",
+      "body": "The motor supply's 220 µF capacitor with its stripe to the back. Reverse voltage breaks down its oxide layer: it leaks, heats and vents. Repair it and power up again."
+    },
+    "four-aa": {
+      "title": "Power it from 4 x AA",
+      "body": "A 6 V pack instead of the LiPo. The 78M05 needs about 2 V of headroom, so its 5 V rail sinks to about 4 V, under the L298N's 4.5 V minimum. Repair it and power up again."
+    },
+    "thirty-six-volts": {
+      "title": "Power it from 36 V",
+      "body": "A 36 V supply on +12V with the 5V-EN cap on. The L298N would take 46 V, but the 78M05 and the 35 V capacitors do not. Repair it and power up again."
+    },
+    "cold-motor-a": {
+      "title": "Leave a cold joint on motor A's terminal",
+      "body": "A dull, cracked joint on J2. Motor A cuts out and comes back as the joint makes and breaks contact. Repair it and power up again."
+    },
+    "no-5v-jumper": {
+      "title": "Leave the 5V-EN cap off",
+      "body": "The regulator's input is disconnected, so the L298N gets no logic supply: the power LED stays dark and the inputs do nothing, though the pack is on. Put the cap back and power up again."
+    },
+    "no-ground": {
+      "title": "Leave out the GND wire",
+      "body": "The Nano and the module share no ground. Its HIGH and LOW have no common reference at the L298N, so the inputs wander and the motors twitch at random. Put the wire back and power up again."
+    },
+    "hold-wheels": {
+      "title": "Hold both wheels",
+      "body": "With both motors driven, stop the wheels by hand. Each draws about 1.1 A and the bridge loses about 2.7 V on it: some 6 W of heat. The heatsink climbs past 100 °C, the chip cuts out at its limit, cools and tries again, and the motors stutter. Let go, repair and power up again."
+    },
+    "exploded": {
+      "title": "Exploded view",
+      "body": "Unplug and lift the parts by build group: the SMD parts, the low parts, the tall parts and the caps.",
+      "refusal": "Unplug the power first: never work on a live board"
+    }
+  },
+  "faults": {
+    "reverse-polarity": {
+      "title": "LiPo on backwards",
+      "symptom": "The power LED stays dark, nothing turns, the diodes and C1 get hot within seconds and the battery leads warm up.",
+      "explanation": "There is no protection diode or fuse. Reversed, the eight flyback diodes conduct from GND through the outputs to +12V and put two diode drops, about 2 V, straight across the pack. Several amps flow through 1 A diodes and C1 sees reverse voltage.",
+      "fix": "Unplug at once, check the diodes and C1 for damage, and put red on +12V. A connector that only fits one way prevents it."
+    },
+    "c1-reversed": {
+      "title": "C1 in backwards",
+      "symptom": "A hiss and a pop when the pack goes on, a bulging can, a fishy smell.",
+      "explanation": "An aluminium electrolytic only holds voltage one way. Backwards, its oxide layer breaks down, it conducts, heats and the electrolyte boils until the vent opens.",
+      "fix": "Replace C1 with the stripe (minus) toward the front edge, as printed."
+    },
+    "four-aa": {
+      "title": "6 V is too little with 5V-EN on",
+      "symptom": "The power LED glows dimly, the motors twitch or do nothing and the logic keeps dropping out.",
+      "explanation": "The 78M05 needs about 2 V more at its input than it puts out. From 6 V it manages about 4 V, below the 4.5 V the L298N's logic needs. And the motors would only see about 4.4 V after the bridge's drop anyway.",
+      "fix": "Use a 2S LiPo (7.4 V) or more. On a 6 V pack, pull the 5V-EN cap and feed the +5V screw from the Nano's 5 V."
+    },
+    "over-voltage": {
+      "title": "36 V on +12V",
+      "symptom": "A pop from the regulator or C1, the power LED dies, and the 5 V screw may carry the full supply.",
+      "explanation": "The L298N is rated to 46 V, but the module's 220 µF capacitors are 35 V parts and the 78M05 takes 35 V at most. When a regulator fails it often fails short and passes the full supply to everything on +5V.",
+      "fix": "Stay at 12 V or less with the 5V-EN cap on. Above that, pull the cap and feed 5 V yourself, and keep under 35 V on this board."
+    },
+    "cold-motor-a": {
+      "title": "Cold joint on motor A's terminal",
+      "symptom": "Motor A stutters, cuts out on bumps or runs only one way; the terminal pin gets warm.",
+      "explanation": "The terminal pins carry the full motor current. A dull, grainy joint makes contact only part of the time and its resistance turns current into heat.",
+      "fix": "Reheat the joint with fresh solder until it flows into a shiny cone around the pin."
+    },
+    "no-5v-jumper": {
+      "title": "5V-EN cap missing",
+      "symptom": "The pack is connected but the power LED is dark and no command does anything.",
+      "explanation": "The cap connects +12V to the 78M05. Without it the regulator is off, the +5V rail is dead and the L298N's logic has no supply, so its switches never turn on.",
+      "fix": "Put the cap back, or with supplies over 12 V feed 5 V into the +5V screw from the controller."
+    },
+    "no-ground": {
+      "title": "No common ground",
+      "symptom": "The motors twitch, run the wrong way or ignore the sketch, and touching a wire changes what they do.",
+      "explanation": "A logic level is a voltage between two points. With no wire between the Nano's GND and the module's GND, the L298N measures the Nano's pins against nothing: the inputs float and drift with every bit of noise.",
+      "fix": "Run a wire from the Nano's GND to the GND screw on the power terminal."
+    },
+    "stall": {
+      "title": "Both wheels stalled",
+      "symptom": "The heatsink gets too hot to touch, then the motors stutter: they stop, start again a few seconds later and stop again.",
+      "explanation": "A held TT motor draws about 1.1 A from 7.4 V. The two conducting switches lose about 2.7 V at that current, about 3 W per bridge, 6 W for both. The L298N has no current limit; only its overtemperature cut-out stops it, and it restarts as soon as it has cooled a little.",
+      "fix": "Free the wheels and cut the power to a stalled motor in the sketch. Better: a MOSFET driver like the TB6612FNG, which loses a tenth of the power."
+    }
+  },
+  "status": {
+    "status": "Status",
+    "powered": "Bench power",
+    "mode": "Sketch",
+    "in1": "IN1",
+    "in2": "IN2",
+    "ena": "ENA",
+    "vs": "+12V (motor supply)",
+    "logic": "+5V (logic)",
+    "motor": "Motor A voltage",
+    "rpm": "Motor A speed",
+    "drop": "Lost in the bridge",
+    "heatsink": "Heatsink (°C)",
+    "battery": "Battery current",
+    "usb": "USB current"
+  },
+  "current": {
+    "usb": "Nano USB (500 mA polyfuse)",
+    "lipo": "2S LiPo on +12V (2 A per bridge)",
+    "nano": "Nano running",
+    "logic": "L298N quiescent, 78M05 and power LED",
+    "motors": "Two TT motors turning freely",
+    "stall": "Both wheels held (stall)",
+    "c1short": "C1 conducting backwards",
+    "reverse": "Reversed pack through the flyback diodes"
+  },
+  "tasks": {
+    "soft-start": {
+      "title": "Soft start on ENA",
+      "brief": "Pull the ENA cap and wire ENA to D9. Drive motor A forward (IN1 on D8 HIGH, IN2 on D7 LOW) and ramp ENA from 0 to 255, one step every 10 ms, so it reaches full speed in about 2.5 s. Hold full speed for 2 s, then brake by taking IN2 HIGH and print \"stopped\".",
+      "hints": {
+        "1": "Set the direction once, before the ramp: digitalWrite(IN1, HIGH); digitalWrite(IN2, LOW);",
+        "2": "A for loop from 0 to 255 with analogWrite(ENA, duty) and delay(10) inside gives the ramp.",
+        "3": "Brake is IN1 = IN2 with the bridge enabled: IN1 is already HIGH, so set IN2 HIGH too."
+      },
+      "checks": {
+        "1": "Runs for 5.5 s",
+        "2": "IN1 (D8) is HIGH",
+        "3": "IN2 (D7) is LOW while driving",
+        "4": "At 0.25 s ENA (D9) is at about 10%",
+        "5": "At 1 s ENA is at about 40%",
+        "6": "At 3.5 s ENA is at full duty",
+        "7": "At 5 s IN2 is HIGH: braking",
+        "8": "Prints \"stopped\""
+      },
+      "code": {
+        "goal": "Ramp motor A from stop to full speed in about 2.5 s, run 2 s, then brake",
+        "jump": "full speed at once: replace this with a ramp, then add the brake"
+      }
+    },
+    "square": {
+      "title": "Drive a square",
+      "brief": "Make a two-wheeled robot drive a square: four times, both motors forward for 1 s, then pivot for 0.5 s (motor A forward, motor B reverse) and print \"corner\" with the count. After the fourth corner, brake both motors. IN1 is D8, IN2 D7, IN3 D5, IN4 D4; the enable caps stay on.",
+      "hints": {
+        "1": "A helper drive(in1, in2, in3, in4) that writes all four inputs keeps each move to one line.",
+        "2": "for (int side = 1; side <= 4; side++) { ... } in setup() runs the square once; loop() can stay empty.",
+        "3": "Brake both: drive(HIGH, HIGH, HIGH, HIGH)."
+      },
+      "checks": {
+        "1": "Runs for 6.5 s",
+        "2": "First side: IN3 (D5) is HIGH",
+        "3": "First side: IN4 (D4) is LOW",
+        "4": "First corner: IN3 is LOW",
+        "5": "First corner: IN4 is HIGH, motor B reverses",
+        "6": "First corner: IN1 (D8) stays HIGH, motor A forward",
+        "7": "Second side: IN3 is HIGH again",
+        "8": "Prints \"corner 4\" by 6.2 s",
+        "9": "At the end IN2 (D7) is HIGH: motor A braking",
+        "10": "At the end IN3 is HIGH: motor B braking"
+      },
+      "code": {
+        "goal": "Drive a square: forward 1 s, pivot 0.5 s, four times, then brake",
+        "start": "this drives the first side only: add the pivots, the other three sides and the brake"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "reflow-first": {
+        "q": "Why do the SMD diodes and the 78M05 go on before the terminals and the L298N?",
+        "options": {
+          "1": "The reflow oven would melt the plastic terminals and headers",
+          "2": "The L298N must go on last because it is sensitive to static",
+          "3": "SMD parts are cheaper, so they go first"
+        },
+        "why": "Reflow heats the whole board to about 245 °C. Through-hole plastic parts would not survive it, so they go on afterwards and are soldered joint by joint."
+      },
+      "caps-job": {
+        "q": "What do the ENA and ENB caps do as the module ships?",
+        "options": {
+          "1": "They tie each enable to +5V, so both bridges always run at full speed",
+          "2": "They pick forward or reverse",
+          "3": "They connect the motor supply to the regulator"
+        },
+        "why": "An enable switches its whole bridge on or off. Tied to 5 V by the cap it is always on; for speed control you pull the cap and drive it with PWM."
+      },
+      "jp5": {
+        "q": "What does the 5V-EN cap connect?",
+        "options": {
+          "1": "The board's 5 V output to the motors",
+          "2": "The +12V input to the 78M05, which then makes the logic 5 V",
+          "3": "The two motor channels in parallel"
+        },
+        "why": "With it on, the module makes its own logic supply from the battery. Above 12 V sellers say to pull it, because the 78M05 would have too much to burn off."
+      }
+    },
+    "drive": {
+      "brake": {
+        "q": "IN1 and IN2 are both HIGH with ENA HIGH. What does motor A do?",
+        "options": {
+          "1": "Runs at half speed",
+          "2": "Stops fast: both its leads sit on the same rail",
+          "3": "Spins down freely"
+        },
+        "why": "Both upper switches are on, so the motor is shorted through them. Its own back-EMF drives a current that brakes it. Spinning down freely (coast) is ENA LOW."
+      },
+      "swap": {
+        "q": "Motor A turns the wrong way on Forward. The quickest fix?",
+        "options": {
+          "1": "Swap its two leads in the terminal, or swap IN1 and IN2 in the sketch",
+          "2": "Turn the battery round",
+          "3": "Pull the ENA cap"
+        },
+        "why": "Direction is only which lead is positive. Swapping the leads and swapping the inputs do the same thing. Turning the battery round shorts it through the diodes."
+      },
+      "drop": {
+        "q": "The pack gives 7.4 V. About how much reaches a free-running TT motor through the L298N?",
+        "options": {
+          "1": "7.4 V",
+          "2": "About 5.8 V: about 1.6 V is lost in two bipolar switches",
+          "3": "3.3 V"
+        },
+        "why": "Each conducting pair drops about 1.4 V plus 1.15 V per amp: 1.6 V at 0.16 A, 2.5 V at 1 A. A MOSFET bridge like the TB6612FNG loses about 0.1 V at this current."
+      }
+    },
+    "faults": {
+      "backwards": {
+        "q": "The LiPo goes onto +12V and GND the wrong way round. What happens?",
+        "options": {
+          "1": "Nothing: the module has a protection diode",
+          "2": "The flyback diodes conduct and short the pack: they and C1 heat up fast",
+          "3": "The motors run backwards"
+        },
+        "why": "There is no protection at all. Reversed, the flyback diodes form a path straight across the battery, and several amps flow through 1 A parts."
+      },
+      "four-aa": {
+        "q": "Why does a 6 V pack (4 x AA) leave the L298N dead with the 5V-EN cap on?",
+        "options": {
+          "1": "The 78M05 needs about 2 V of headroom: 6 V in gives about 4 V out, under the 4.5 V the logic needs",
+          "2": "AA cells cannot give enough current for the logic",
+          "3": "The L298N needs at least 12 V on +12V"
+        },
+        "why": "A linear regulator can only drop voltage, and the 78M05 needs about 2 V across it to regulate. From 6 V the logic rail sags to about 4 V."
+      },
+      "stall-heat": {
+        "q": "Both wheels are held. Where does the power go?",
+        "options": {
+          "1": "Into the motors only",
+          "2": "About 2.7 V x 1.1 A per bridge turns into heat in the L298N, until its cut-out trips",
+          "3": "Back into the battery"
+        },
+        "why": "A held motor turns nothing into motion: its current only heats its winding and the bridge. The L298N has no current limit, only an overtemperature cut-out."
+      }
+    },
+    "end": {
+      "vs-tb6612": {
+        "q": "Same pack, same motors: why does the TB6612FNG run them faster and cooler?",
+        "options": {
+          "1": "Its MOSFET switches drop about 0.1 V at this current instead of about 1.6 V",
+          "2": "It has a bigger heatsink",
+          "3": "It runs the motors from 12 V"
+        },
+        "why": "A MOSFET that is on behaves like a small resistor, 0.5 Ω for a TB6612FNG bridge: 0.08 V at 0.16 A. Bipolar switches never drop below about 1.4 V together."
+      },
+      "ground": {
+        "q": "The Nano and the module share no GND wire. What do the motors do?",
+        "options": {
+          "1": "Run normally: the signals are only 5 V",
+          "2": "Twitch or ignore the sketch: IN1-IN4 have no common reference",
+          "3": "Run backwards"
+        },
+        "why": "A HIGH is 5 V above the Nano's GND. If the module's GND is not that same point, the inputs float and drift."
+      },
+      "half": {
+        "q": "The half-speed sketch writes 128 to ENA, but the motors still run flat out. Why?",
+        "options": {
+          "1": "The cap ties ENA to +5V: pull it and wire ENA to D9",
+          "2": "analogWrite does not work on pin 9",
+          "3": "The L298N ignores PWM above 490 Hz"
+        },
+        "why": "With the cap on, ENA is always 5 V whatever D9 does. And never wire D9 to ENA with the cap on: each LOW would short the pin to 5 V."
+      }
+    }
+  }
+}
