@@ -1,0 +1,385 @@
+{
+  "title": "Kippalarm mit MPU-6050",
+  "sub": "ein Gyro und ein Beschleunigungssensor an zwei Drähten",
+  "hint": "Bau das GY-521 auf, weck es auf und lass es dann warnen, wenn der Roboter kippt",
+  "overview": "Ein Roboter muss wissen, wo unten ist. Der MPU-6050 auf diesem kleinen blauen GY-521-Board misst die Beschleunigung auf drei Achsen, die Schwerkraft eingeschlossen, und die Drehrate auf drei weiteren und liefert alles über I2C an Adresse 0x68. Flach liegend misst er 1 g auf Z; gekippt wandert ein Teil dieses 1 g nach Y, und atan2(ay, az) ergibt den Winkel. Bau das Board auf, lies es von einem Nano aus mit einfachen Wire-Aufrufen und lass dann einen Summer ertönen, wenn der Roboter über 20° kippt. Dann mach es kaputt: versorg es verpolt oder aus einem LiPo, lass den Kondensator weg, den das Gyro braucht, verlier den Pull-down der Adresse, lass eine kalte Lötstelle an SDA und setz den Tantal verkehrt herum ein.",
+  "parts": {
+    "IC1": {
+      "name": "6-Achsen-Bewegungssensor MPU-6050",
+      "what": "Ein 4 x 4 mm großes QFN mit zwei Dies: einem MEMS-Die mit winzigen beweglichen Massen und einem CMOS-Die, der sie misst. In den Standardbereichen liefert der Beschleunigungssensor 16384 Counts pro g (±2 g) und das Gyro 131 Counts pro °/s (±250 °/s). Er startet im Schlaf: Jeder Messwert ist 0, bis der Host eine 0 in PWR_MGMT_1 (0x6B) schreibt."
+    },
+    "U2": {
+      "name": "3,3-V-Regler 662K (XC6206)",
+      "what": "Macht aus VCC (3,5 bis 5,5 V; 5 V ist am besten) die 3,3 V, mit denen der Chip, die LED und die Pull-ups laufen. 6 V ist das Höchste, was er verträgt: Ein 2S-LiPo oder VIN des Nano brennt ihn durch."
+    },
+    "C10": {
+      "name": "10-µF-Tantal an 3,3 V",
+      "what": "Glättet den Ausgang des Reglers. Tantalkondensatoren sind gepolt und versagen verpolt heiß: Der Streifen markiert +."
+    },
+    "C14": {
+      "name": "2,2 nF an CPOUT",
+      "what": "Das Gyro treibt seine Messmassen aus einer Ladungspumpe, und dieser Kondensator gehört zur Pumpe. Ohne ihn misst das Gyro Rauschen."
+    },
+    "R4": {
+      "name": "4,7-kΩ-I2C-Pull-ups (R4 SDA, R5 SCL)",
+      "what": "Ziehen SDA und SCL auf die 3,3 V des Boards, also liegt der Bus im Ruhezustand auch an einem 5-V-Nano auf 3,3 V. Der Nano liest 3,3 V als HIGH."
+    },
+    "R6": {
+      "name": "4,7-kΩ-Pull-down an AD0",
+      "what": "Hält AD0 auf LOW, was die Adresse 0x68 ergibt. Auf HIGH gezogen (oder offen gelassen) antwortet der Chip an 0x69, also können sich zwei einen Bus teilen."
+    },
+    "D1": {
+      "name": "Power-LED",
+      "what": "Leuchtet aus 3,3 V über 1 kΩ: etwa 1,3 mA. Sie sagt, dass der Regler funktioniert, nicht, dass der Chip wach ist."
+    },
+    "H1": {
+      "name": "8-polige Stiftleiste: VCC GND SCL SDA XDA XCL AD0 INT",
+      "what": "Von dir gelötet, Stifte nach unten, damit das Board in einem Steckbrett stehen kann. Hier werden nur vier gebraucht: VCC, GND, SCL und SDA."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "Liest den Sensor über I2C an A4 (SDA) und A5 (SCL), berechnet die Neigung und treibt den Summer an D8 und seine eigene LED an D13. Sein 5V-Pin versorgt das GY-521."
+    },
+    "BUZ": {
+      "name": "Piezo-Summer an D8",
+      "what": "Ein passiver Piezo: tone(8, 2000) lässt ihn mit 2 kHz tönen. Ein paar mA, also kommt er direkt an einen Pin."
+    }
+  },
+  "power": {
+    "label": "Den Prüfstand mit Strom versorgen",
+    "ok": "Nano an USB: VCC 5 V, der Regler macht 3,3 V, der Chip ist bereit"
+  },
+  "modes": {
+    "flat": {
+      "title": "Rohwerte"
+    },
+    "tilt": {
+      "title": "Kippalarm"
+    },
+    "asleep": {
+      "title": "Nie aufgeweckt"
+    },
+    "scan": {
+      "title": "I2C-Scan"
+    },
+    "code": {
+      "title": "MPU-6050: rohe I2C-Lesezugriffe, keine Bibliothek",
+      "address": "AD0 auf LOW: Adresse 0x68",
+      "pwr": "PWR_MGMT_1: 0 schreiben, um den Chip aufzuwecken (er startet im Schlaf)",
+      "from": "ACCEL_XOUT_H: 14 Bytes ab hier sind Beschleunigung X, Y, Z, Temperatur, Gyro X, Y, Z",
+      "temp": "die Temperatur: übersprungen",
+      "g": "16384 Counts = 1 g bei ±2 g",
+      "dps": "131 Counts = 1 °/s bei ±250 °/s",
+      "noWake": "kein wake(): Der Chip bleibt im Schlaf, und jedes Register liest sich als 0",
+      "roll": "Rollen um X: wie viel der Schwerkraft von Z nach Y gewandert ist",
+      "beep": "ein 2-kHz-Ton am Summer, solange es zu weit gekippt ist",
+      "scanTitle": "I2C-Scanner: Wer antwortet auf dem Bus?",
+      "ack": "0 = ein Gerät hat seine Adresse bestätigt"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Bis auf die nackte Platine zerlegen",
+      "body": "Nimm jedes Bauteil von der blauen Platine. Du setzt sie so wieder zusammen, wie sie hergestellt wird: zuerst der Chip, der Regler und die kleinen Bauteile, dann die Stiftleiste.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einer Platine unter Spannung"
+    },
+    "smd": {
+      "title": "Die SMD-Bauteile bestücken, dann reflowlöten",
+      "body": "Der MPU-6050, der 662K-Regler, der Tantal, die Widerstände, die Kondensatoren und die LED in einem Durchgang. So wird das Board ausgeliefert; die Stiftleiste liegt lose in der Tüte.",
+      "refusal": "Die SMD-Bauteile kommen zuerst drauf, auf eine nackte Platine"
+    },
+    "header": {
+      "title": "Die 8-polige Stiftleiste einsetzen",
+      "body": "Stifte nach unten, von der Unterseite, damit das Board darauf stehen kann. VCC, GND, SCL, SDA, XDA, XCL, AD0, INT.",
+      "refusal": "Zuerst die SMD-Bauteile: Bestücken und reflowlöten. Der Ofen würde die Kunststoff-Stiftleiste schmelzen"
+    },
+    "solder": {
+      "title": "Die Stiftleiste löten",
+      "body": "Acht Lötstellen. Eine matte an SDA oder SCL lässt den Bus kommen und gehen: der häufigste Grund, warum ein GY-521 „manchmal“ funktioniert.",
+      "refusal": "Noch nichts zu löten: Setz zuerst die Stiftleiste ein"
+    },
+    "wire-nano": {
+      "title": "Den Nano verdrahten",
+      "body": "VCC an 5V, GND an GND, SCL an A5, SDA an A4. Am Nano sind die I2C-Pins fest: A4 und A5.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einer Platine unter Spannung"
+    },
+    "wire-buzzer": {
+      "title": "Den Summer verdrahten",
+      "body": "+ an D8, - an GND. Er ist die Warnung des Roboters, wenn er kippt.",
+      "refusal": "Zieh zuerst den Strom ab und verdrahte zuerst den Nano"
+    },
+    "plug": {
+      "title": "Den Prüfstand mit Strom versorgen",
+      "body": "USB in den Nano. Die rote LED leuchtet: Der Regler funktioniert. Der Chip schläft noch.",
+      "refusal": "Schließ zuerst den Aufbau ab: Jedes Bauteil drauf, die Stiftleiste gelötet, Nano und Summer verdrahtet"
+    },
+    "flat": {
+      "title": "„Rohwerte“ hochladen",
+      "body": "wake() schreibt 0 in PWR_MGMT_1, dann liest der Sketch jede Sekunde 14 Bytes ab 0x3B. Flach liegend: etwa 1.00 g auf Z, 0 auf X und Y und ein Gyro, das ein paar °/s misst, obwohl sich nichts dreht. Das ist sein Nullpunktfehler.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "tilt": {
+      "title": "„Kippalarm“ hochladen",
+      "body": "Schaukel das Board um X. roll = atan2(ay, az) macht aus der Aufteilung der Schwerkraft zwischen Y und Z einen Winkel; über 20° in eine der beiden Richtungen ertönt der Summer, und D13 leuchtet. Achte auf den Pfeil über dem Chip: Das ist die Schwerkraft, wie der Beschleunigungssensor sie sieht.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "asleep": {
+      "title": "„Nie aufgeweckt“ hochladen",
+      "body": "Dieselben Lesezugriffe ohne wake(). Der Chip antwortet auf dem Bus, aber jeder Messwert ist 0: Er ist im Schlaf gestartet, und niemand hat ihn aufgeweckt.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "scan": {
+      "title": "„I2C-Scan“ hochladen",
+      "body": "Der Scanner ruft jede Adresse an und listet die auf, die antworten: 0x68.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "reverse-vcc": {
+      "title": "VCC und GND vertauscht anschließen",
+      "body": "5 V an GND und GND an VCC. Das Board hat keine Diode und keine Sicherung."
+    },
+    "lipo-on-vcc": {
+      "title": "VCC aus einem 2S-LiPo versorgen",
+      "body": "7,4 V an VCC, wie aus dem Akku des Roboters. Der 662K verträgt höchstens 6 V."
+    },
+    "no-c14": {
+      "title": "C14 weglassen",
+      "body": "Der 2,2-nF-Kondensator an CPOUT. Achte auf gx."
+    },
+    "no-r6": {
+      "title": "R6 weglassen",
+      "body": "Der Pull-down an AD0. AD0 ist offen, und auf diesem Board treibt es nach HIGH. Lass den Kippalarm laufen, während der Roboter stillsteht."
+    },
+    "cold-sda": {
+      "title": "Eine kalte Lötstelle an SDA lassen",
+      "body": "Eine matte, rissige Lötstelle am SDA-Pin der Stiftleiste. Lass den Kippalarm laufen."
+    },
+    "c10-backwards": {
+      "title": "C10 verkehrt herum einsetzen",
+      "body": "Den Streifen des Tantals weg von +, dann einschalten."
+    },
+    "exploded": {
+      "title": "Explosionsansicht",
+      "body": "Zieh den Strom ab und heb die Bauteile nach Baugruppen ab: zuerst die SMD-Bauteile, dann die Stiftleiste.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einer Platine unter Spannung"
+    }
+  },
+  "faults": {
+    "reverse-vcc": {
+      "title": "VCC verpolt",
+      "symptom": "Die LED bleibt dunkel, und der Regler wird heiß; danach misst das Board vielleicht gar nichts mehr.",
+      "explanation": "Nichts auf dem GY-521 blockiert eine verpolte Versorgung. Strom fließt rückwärts durch die Schutzdioden des Reglers und des Chips, nur vom USB des Nano begrenzt. Ein paar Sekunden können den 662K und manchmal den MPU-6050 töten.",
+      "fix": "Sofort abstecken, VCC an 5V und GND an GND anschließen und den Regler ersetzen, wenn er heiß geworden ist."
+    },
+    "lipo-on-vcc": {
+      "title": "7,4 V an VCC",
+      "symptom": "Der Regler brennt durch: Geruch, ein verfärbtes Gehäuse. Dann antwortet nichts mehr auf dem Bus.",
+      "explanation": "Der 662K (XC6206) ist für 6 V Eingangsspannung ausgelegt. Ein 2S-LiPo liefert 7,4 bis 8,4 V. Fällt der Regler als Kurzschluss aus, erreicht die Akkuspannung auch den MPU-6050, der 3,46 V verträgt.",
+      "fix": "Versorg VCC aus 5V des Nano, nie aus dem Akku des Roboters oder aus VIN."
+    },
+    "no-c14": {
+      "title": "Kein CPOUT-Kondensator",
+      "symptom": "gx springt um Dutzende °/s, während das Board still liegt. Der Beschleunigungssensor ist in Ordnung.",
+      "explanation": "Die Ladungspumpe des Gyros braucht ihren Kondensator, um die Spannung zu erzeugen, die die Messmassen antreibt. Ohne ihn ist die Ausgabe des Gyros Rauschen. Der Arduino Playground warnt davor: Ein falscher Kondensator ergibt einen hohen Rauschpegel.",
+      "fix": "Setz C14 (2,2 nF) ein und löte ihn im Reflow-Ofen."
+    },
+    "no-r6": {
+      "title": "Kein Pull-down an AD0",
+      "symptom": "Der Summer ertönt an einem stillstehenden Roboter: Der Sketch gibt roll -135° und ALARM aus.",
+      "explanation": "Mit AD0 offen auf HIGH antwortet der Chip an 0x69. Der Sketch fragt 0x68, niemand antwortet, und Wire.read() gibt für jedes Byte -1 zurück. Jeder Wert ist -1 Count, und atan2(-1, -1) ist -135°.",
+      "fix": "Setz R6 ein oder setz MPU im Sketch auf 0x69. Besser: Prüf, dass requestFrom() seine 14 Bytes bekommen hat, bevor du sie benutzt."
+    },
+    "cold-sda": {
+      "title": "Kalte Lötstelle an SDA",
+      "symptom": "Kurze Fehlalarme: Ab und zu kommt ein Lesezugriff als roll -135° zurück.",
+      "explanation": "Über eine Lötstelle, die mal Kontakt hat und mal nicht, bekommen manche Lesezugriffe keine Antwort und kommen überall als -1 zurück. Ein Alarm, der einem einzelnen Lesezugriff vertraut, piept bei jedem davon.",
+      "fix": "Erhitz die Lötstelle mit frischem Lötzinn neu, bis es zu einem glänzenden Kegel verläuft. Ignorier im Sketch einen fehlgeschlagenen Lesezugriff."
+    },
+    "c10-reversed": {
+      "title": "C10 verkehrt herum",
+      "symptom": "Der Tantal wird heiß, sobald das Board Strom bekommt, und kann reißen oder rauchen.",
+      "explanation": "Die Oxidschicht eines Tantalkondensators sperrt Strom nur in einer Richtung. Verpolt leitet er, wird heiß und kann als Kurzschluss ausfallen.",
+      "fix": "Abstecken und einen neuen einsetzen, mit dem Streifen (+) auf der 3,3-V-Seite, wie aufgedruckt."
+    }
+  },
+  "status": {
+    "status": "Status",
+    "powered": "Strom am Prüfstand",
+    "mode": "Sketch",
+    "roll": "Rollen",
+    "az": "Z-Beschleunigung (g)",
+    "gx": "X-Drehung (°/s)",
+    "address": "I2C-Adresse",
+    "alarm": "Alarm",
+    "vcc": "VCC",
+    "v33": "3,3-V-Schiene",
+    "usb": "USB-Strom"
+  },
+  "current": {
+    "usb": "USB des Nano (500-mA-Polyfuse)",
+    "nano": "Nano in Betrieb",
+    "board": "GY-521: Chip, Regler und LED",
+    "buzzer": "Summer tönt"
+  },
+  "tasks": {
+    "imu": "Neigung des Boards um X",
+    "alarm": {
+      "title": "Über 20° Alarm schlagen",
+      "brief": "Der Starter liest die Neigung und gibt sie aus, aber nichts warnt irgendwen. Ist das Rollen über 20° in eine der beiden Richtungen, setz D13 auf HIGH und spiel einen 2-kHz-Ton auf dem Summer (D8); sonst D13 auf LOW und noTone(). Das Board ist zuerst waagerecht, bei 2 s um 35° gekippt, bei 3,5 s zurück auf -10° und bei 5 s um -40° gekippt.",
+      "hints": {
+        "1": "abs(roll) > 20 erfasst beide Richtungen.",
+        "2": "tone(BUZZER, 2000) spielt weiter bis noTone(BUZZER).",
+        "3": "digitalWrite(13, alarm ? HIGH : LOW); setzt die LED in einer Zeile."
+      },
+      "checks": {
+        "1": "Läuft",
+        "2": "Waagerecht: D13 LOW",
+        "3": "Um 35° gekippt: D13 HIGH",
+        "4": "Um 35° gekippt: Der Summer tönt mit etwa 2 kHz",
+        "5": "Zurück auf -10°: D13 wieder LOW",
+        "6": "Um -40° gekippt: D13 HIGH",
+        "7": "Um -40° gekippt: Der Summer tönt"
+      },
+      "code": {
+        "goal": "Mit D13 und dem Summer warnen, wenn der Roboter über 20° kippt",
+        "todo": "über 20° in eine der beiden Richtungen: D13 HIGH und ein 2-kHz-Ton; sonst D13 LOW und noTone()"
+      }
+    },
+    "calibrate": {
+      "title": "Das Gyro kalibrieren",
+      "brief": "Das Board liegt still, und trotzdem misst gx etwa 0,6 °/s: der Nullpunktfehler des Gyros, bei diesem Chip bis zu ±20 °/s. Integrier das, und der Winkel driftet davon. Lies in setup() gx 200-mal, mittle die Counts in offset und gib es als \"calibrated: offset N counts\" aus. loop() zieht es schon ab.",
+      "hints": {
+        "1": "long sum = 0; for (int i = 0; i < 200; i++) { sum += readGx(); delay(2); }",
+        "2": "offset = sum / 200; behält es in Counts, wie die Lesezugriffe.",
+        "3": "Halte das Board still, während es kalibriert: Jede Drehung wird Teil des Offsets."
+      },
+      "checks": {
+        "1": "Läuft",
+        "2": "Gibt den gemessenen Offset aus, etwa 79 Counts",
+        "3": "Nach dem Kalibrieren misst gx in Ruhe 0.00 °/s"
+      },
+      "code": {
+        "goal": "Den Offset des Gyros in Ruhe messen und von jedem Lesezugriff abziehen",
+        "todo": "200 Lesezugriffe von gx in offset mitteln und \"calibrated: offset N counts\" ausgeben",
+        "gyro": "GYRO_XOUT_H: 2 Bytes X-Drehung"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "regulator": {
+        "q": "Warum kann ein 3,3-V-Chip ohne Schaden an einem 5-V-Nano hängen?",
+        "options": {
+          "1": "Der MPU-6050 verträgt 5 V",
+          "2": "Der 662K-Regler des Boards macht 3,3 V, und die I2C-Pull-ups gehen an 3,3 V",
+          "3": "Der Nano schaltet von selbst auf 3,3 V"
+        },
+        "why": "VCC speist nur den Regler. Der Chip, die LED und die Pull-ups laufen alle mit seinen 3,3 V, also gehen SDA und SCL nie über 3,3 V."
+      },
+      "pullups": {
+        "q": "Was machen R4 und R5?",
+        "options": {
+          "1": "Sie ziehen SDA und SCL hoch: I2C-Geräte ziehen die Leitungen immer nur nach LOW",
+          "2": "Sie begrenzen den LED-Strom",
+          "3": "Sie legen die Adresse fest"
+        },
+        "why": "I2C ist Open-Drain. Die Widerstände holen jede Leitung wieder hoch, wenn niemand sie auf LOW hält."
+      },
+      "address": {
+        "q": "Was legt die Adresse auf 0x68 fest?",
+        "options": {
+          "1": "Der Sketch des Nano",
+          "2": "Der Regler",
+          "3": "AD0, von R6 auf LOW gehalten"
+        },
+        "why": "Die Adresse ist 0b110100 plus AD0. LOW: 0x68; HIGH: 0x69."
+      }
+    },
+    "read": {
+      "asleep": {
+        "q": "Jeder Messwert ist 0, aber der Scanner findet 0x68. Was ist falsch?",
+        "options": {
+          "1": "Der Chip ist kaputt",
+          "2": "Die Pull-ups fehlen",
+          "3": "Niemand hat ihn aufgeweckt: PWR_MGMT_1 enthält noch 0x40, Schlaf"
+        },
+        "why": "Der MPU-6050 startet im Schlaf. Er antwortet auf dem Bus, misst aber nichts, bis eine 0 in 0x6B geschrieben wird."
+      },
+      "counts": {
+        "q": "az zeigt 16384 Counts. Wie viel ist das?",
+        "options": {
+          "1": "1 g: Das Board liegt flach",
+          "2": "16 g",
+          "3": "16384 °/s"
+        },
+        "why": "Bei ±2 g ist ein g 16384 Counts. Flach liegend ist die ganze Schwerkraft auf Z."
+      },
+      "roll": {
+        "q": "ay = 0,5 g und az = 0,87 g. Wie weit ist das Board gekippt?",
+        "options": {
+          "1": "50°",
+          "2": "Etwa 30°",
+          "3": "87°"
+        },
+        "why": "atan2(0.5, 0.87) ist 30°: sin 30° = 0,5 und cos 30° = 0,87."
+      }
+    },
+    "faults": {
+      "minus-one": {
+        "q": "Warum gibt der Sketch ohne R6 genau -135° aus?",
+        "options": {
+          "1": "Der Chip steht auf dem Kopf",
+          "2": "Niemand antwortet an 0x68, jedes Byte liest sich als -1, und atan2(-1, -1) ist -135°",
+          "3": "Der Regler ist aus"
+        },
+        "why": "Wire.read() gibt -1 zurück, wenn es nichts zu lesen gibt. Zwei Bytes mit -1 ergeben auf jeder Achse den Count -1."
+      },
+      "lipo": {
+        "q": "Warum darf VCC nicht aus einem 2S-LiPo kommen?",
+        "options": {
+          "1": "Der 662K-Regler ist für 6 V Eingangsspannung ausgelegt, und 7,4 bis 8,4 V brennen ihn durch",
+          "2": "LiPos liefern Wechselstrom",
+          "3": "Der Chip läuft zu schnell"
+        },
+        "why": "Der Regler ist das Einzige zwischen VCC und dem Chip. Über 6 V fällt er aus, und fällt er als Kurzschluss aus, bekommt der Chip die Akkuspannung."
+      },
+      "noise": {
+        "q": "Das Gyro misst Rauschen, aber der Beschleunigungssensor ist in Ordnung. Welches Bauteil prüfst du zuerst?",
+        "options": {
+          "1": "Die Pull-ups",
+          "2": "Den LED-Widerstand",
+          "3": "C14, den Ladungspumpenkondensator an CPOUT"
+        },
+        "why": "Nur das Gyro nutzt die Ladungspumpe. Ohne ihren Kondensator hat das Gyro keinen Antrieb und gibt Rauschen aus."
+      }
+    },
+    "end": {
+      "rate": {
+        "q": "Was misst das Gyro?",
+        "options": {
+          "1": "Wie schnell sich das Board dreht, in °/s, nicht seinen Winkel",
+          "2": "Direkt den Winkel",
+          "3": "Die Schwerkraft"
+        },
+        "why": "Ein Gyro liefert eine Rate. Um einen Winkel zu bekommen, summierst du Rate x Zeit auf, und damit summiert sich auch jeder Offset auf."
+      },
+      "drift": {
+        "q": "Warum driftet ein Winkel allein aus dem Gyro, selbst wenn der Roboter stillsteht?",
+        "options": {
+          "1": "Der Beschleunigungssensor zieht ihn",
+          "2": "Die Schwerkraft ändert sich",
+          "3": "Der Nullpunktfehler (bis zu ±20 °/s) wird mit allem anderen integriert"
+        },
+        "why": "0,6 °/s Offset werden in einer Minute zu 36°. Kalibrier den Offset weg und korrigier mit dem langsamen, aber driftfreien Winkel des Beschleunigungssensors."
+      },
+      "vibration": {
+        "q": "An einem Roboter mit Motoren zittert der Winkel des Beschleunigungssensors. Warum?",
+        "options": {
+          "1": "Die Motoren ändern die Schwerkraft",
+          "2": "Er kann Vibration nicht von Neigung unterscheiden: Jede Beschleunigung kommt zur Schwerkraft hinzu",
+          "3": "Das Gyro stört"
+        },
+        "why": "Ein Beschleunigungssensor misst jede Beschleunigung. Filter sie (der Tiefpass des Chips, ein Komplementärfilter mit dem Gyro) und lager das Board weich."
+      }
+    }
+  }
+}
