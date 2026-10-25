@@ -129,7 +129,7 @@ function model(st){
   if (live && st.ev.status === 'fault') status = 'Fault: unplug and repair';
   else if (live && !run) status = 'Powered, chip asleep';
   else if (run && pca.asleep) status = addrOf(st) !== 0x40 ? 'No answer at 0x40: the board is at 0x41' : 'Asleep: every output LOW';
-  else if (run) status = `${Math.round(frameHz(pca.hz) * 10) / 10} Hz frame, ch0 ${Math.round(pca.us[0])} µs`;
+  else if (run) status = ['{hz} Hz frame, ch0 {us} µs', { hz: Math.round(frameHz(pca.hz) * 10) / 10, us: Math.round(pca.us[0]) }];
   return {
     status,
     stats: live && run && !pca.asleep ? [['Frame', (1000 / frameHz(pca.hz)).toFixed(2) + ' ms'], ['Ch 0', Math.round(pca.us[0]) + ' µs · ' + ticksOf(pca.us[0], pca.hz) + ' ticks']] : [],

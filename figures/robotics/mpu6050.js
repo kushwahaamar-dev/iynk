@@ -56,13 +56,13 @@ function model(st){
   if (st.power && ev.status === 'no-power') status = 'No power: set out the Nano';
   else if (st.power && ev.status === 'fault') status = 'Fault: unplug and repair';
   else if (st.power && !run) status = 'Powered, nothing running';
-  else if (st.mode === 'scan') status = dropped(st, st.t) ? 'I2C scan: nothing answered this time' : `I2C scan: 0x${addr.toString(16)} answers`;
+  else if (st.mode === 'scan') status = dropped(st, st.t) ? 'I2C scan: nothing answered this time' : ['I2C scan: 0x{addr} answers', { addr: addr.toString(16) }];
   else if (wrongAddr) status = 'No answer at 0x68: AD0 floats, the chip is at 0x69';
   else if (!s.ok) status = 'I2C read failed: every byte reads -1';
   else if (st.mode === 'asleep') status = 'Asleep: every reading is 0';
   else if (!B.isSet('C14')) status = 'Gyro noise: no CPOUT capacitor';
-  else if (st.mode === 'tilt') status = alarm ? `Roll ${Math.round(roll)}°: ALARM` : `Roll ${Math.round(roll)}°: level enough`;
-  else status = `Level: az ${s.az.toFixed(2)} g, gx ${s.gx.toFixed(1)} °/s`;
+  else if (st.mode === 'tilt') status = [alarm ? 'Roll {deg}°: ALARM' : 'Roll {deg}°: level enough', { deg: Math.round(roll) }];
+  else status = ['Level: az {az} g, gx {gx} °/s', { az: s.az.toFixed(2), gx: s.gx.toFixed(1) }];
   // the rows stay while the bench is powered, so the stats column keeps its narrow, wrapping layout in a fault too
   const shown = v => (run ? v : '–');
   const stats = [['Roll', shown(Math.round(roll) + '°')], ['az', shown(s.az.toFixed(2) + ' g')], ['gx', shown(s.gx.toFixed(1) + ' °/s')], ['Address', '0x' + addr.toString(16)]];

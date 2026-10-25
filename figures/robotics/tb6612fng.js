@@ -55,7 +55,7 @@ function model(st){
   else if (st.power && !run) status = ev.status === 'brownout' ? 'Brown-out loop' : ev.status === 'no-power' ? 'No power: the supply is off' : 'Powered, motors idle';
   else if (run && !levels.STBY) status = 'Standby: outputs off';
   else if (run){ const na = name(a), nb = name(b);
-    status = na === nb ? { forward: 'Both forward', reverse: 'Both reverse', brake: 'Short brake', coast: 'Coast' }[na] : 'A ' + na + ', B ' + nb; }
+    status = na === nb ? { forward: 'Both forward', reverse: 'Both reverse', brake: 'Short brake', coast: 'Coast' }[na] : ['A {a}, B {b}', { a: B.T(na), b: B.T(nb) }]; }
   const stats = st.power ? [
     ['Motor A', a.m.v + ' V · ' + Math.abs(a.m.rpm) + ' rpm'], ['Motor B', b.m.v + ' V · ' + Math.abs(b.m.rpm) + ' rpm'],
     ['Battery', batt.v + ' V · ' + batt.i_mA + ' mA'],

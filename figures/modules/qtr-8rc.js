@@ -153,7 +153,7 @@ function model(st){
   let status = 'Unpowered';
   if (st.power && st.ev.status === 'fault') status = 'Fault: unplug and repair';
   else if (st.power && !run) status = 'Powered, nothing reading it';
-  else if (run) status = r.lit.every(x => !x) ? 'No IR: every sensor reads black' : p.lost ? 'Line lost' : 'Line at ' + p.pos;
+  else if (run) status = r.lit.every(x => !x) ? 'No IR: every sensor reads black' : p.lost ? 'Line lost' : ['Line at {pos}', { pos: p.pos }];
   return {
     status,
     stats: run ? [['VCC', vcc.toFixed(1) + ' V · ' + mA + ' mA'], ['Sensor 1', r.us[0] + ' µs']] : [],

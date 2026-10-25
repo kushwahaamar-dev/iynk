@@ -202,14 +202,14 @@ function model(st, dt){
   else if (st.power && !run) status = 'Powered, nothing running';
   else if (run && !pack) status = 'No servo power: set out the pack';
   else if (run && has('pack-reversed')) status = 'Pack reversed: Q1 blocks it, the servos are limp';
-  else if (run && arm.st.includes('burnt')) status = vNoLoad.toFixed(1) + ' V on V+: the servos burnt out';
-  else if (run && over) status = vNoLoad.toFixed(1) + ' V on V+: the servos buzz hot';
-  else if (run && st.mode === 'scan') status = `I2C scan: 0x${P9.addrOf(st).toString(16)} and 0x70 answer`;
+  else if (run && arm.st.includes('burnt')) status = ['{v} V on V+: the servos burnt out', { v: vNoLoad.toFixed(1) }];
+  else if (run && over) status = ['{v} V on V+: the servos buzz hot', { v: vNoLoad.toFixed(1) }];
+  else if (run && st.mode === 'scan') status = ['I2C scan: 0x{addr} and 0x70 answer', { addr: P9.addrOf(st).toString(16) }];
   else if (run && !addrOk) status = 'No answer at 0x40: the board is at 0x41';
-  else if (run && !pulses && !pca.asleep) status = Math.round(frame) + ' Hz frame: the servos twitch';
-  else if (run && arm.st[2] === 'stop') status = 'Gripper stalled on the cube: ' + ma + ' mA';
-  else if (run && st.mode === 'pick') status = (c.held ? 'Carrying the cube: pose ' : 'Pick and place: pose ') + (Math.floor(st.t) % 8 + 1);
-  else if (run && st.mode === 'sweep') status = 'Base at ' + deg + '°';
+  else if (run && !pulses && !pca.asleep) status = ['{hz} Hz frame: the servos twitch', { hz: Math.round(frame) }];
+  else if (run && arm.st[2] === 'stop') status = ['Gripper stalled on the cube: {ma} mA', { ma }];
+  else if (run && st.mode === 'pick') status = [c.held ? 'Carrying the cube: pose {n}' : 'Pick and place: pose {n}', { n: Math.floor(st.t) % 8 + 1 }];
+  else if (run && st.mode === 'sweep') status = ['Base at {deg}°', { deg }];
   else if (run) status = 'Servos centred: 1500 µs';
   const live = st.power && run;
   // the rows stay while the bench is powered, so the stats column keeps its narrow, wrapping layout in a fault too

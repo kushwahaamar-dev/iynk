@@ -94,7 +94,7 @@ function model(st, dt){
   else if (run && p.cal.every(v => v > 200)) status = 'Every sensor sees black';
   else if (follow && lost) status = has('motors-swapped') ? 'Lost the line: it steers away' : 'Lost the line';
   else if (follow) status = Math.abs(err) < 400 ? 'On the line' : err < 0 ? 'Line on the left: turning left' : 'Line on the right: turning right';
-  else if (run) status = lost ? 'No line under the array' : 'Line at ' + p.pos;
+  else if (run) status = lost ? 'No line under the array' : ['Line at {pos}', { pos: p.pos }];
   const stats = st.power ? [
     ['Position', run ? String(p.pos) : '-'], ['Sensor 1', run ? r.us[0] + ' µs' : '-'],
     ...(follow ? [['Wheels', 'L ' + s.L + ' · R ' + s.R]] : []),

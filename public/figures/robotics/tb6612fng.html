@@ -1531,11 +1531,19 @@ const emit = line => { st.serial = { n: (st.serial ? st.serial.n : 0) + 1, line 
    change); st.o.pins, st.ev.rails, st.meas, st.t, st.mode and st.matStep are its inputs. It returns
      { readings: {…}, status: 'text', stats: [[label, value]], meas: {partId: {…}}, report: {key: value},
        flow: {net: bool}, accent: [partId] }   (every field optional)
+   a status or stat value with a live number in it is [template, vars] (['Line at {pos}', { pos }]), so one dictionary
+   entry translates every reading; a value that is only numbers and units ('120 µs', 'L 80 · R 75') is not translated
    readings go out as state.readings (numbers rounded) and to mat parts as their m; status as state.benchStatus and on
    the stats panel; stats on the stats panel while powered; meas merges over the breadboard solver's state.meas;
    report adds top-level state keys (state.levels…) the engine does not use itself; flow lights xr.flow paths and
    mat wires on those nets; accent rings those parts */
 const modelErrs = new Set();
+const isText = v => typeof v === 'string' || (Array.isArray(v) && typeof v[0] === 'string' && obj(v[1]));
+const fillEn = v => typeof v === 'string' ? v : v[0].replace(/\{(\w+)\}/g, (m, k) => Object.prototype.hasOwnProperty.call(v[1], k) ? String(v[1][k]) : m);
+const UNITS = /(^|[\s·(])(?:mA|mV|mW|kHz|MHz|Hz|kΩ|MΩ|cm|mm|ms|rpm|lux|dB)(?=$|[\s·)])/g;
+const plainValue = s => !/[A-Za-z]{2,}/.test(s.replace(UNITS, '$1'));
+// what the stats panel shows for a model's status or stat value
+const statText = v => typeof v === 'number' ? String(+v.toFixed(2)) : Array.isArray(v) ? T(v[0], v[1]) : plainValue(String(v)) ? String(v) : T(String(v));
 const modelNote = m => { if (!modelErrs.has(m)){ modelErrs.add(m); note('model: ' + m); } };
 const obj = v => v && typeof v === 'object' && !Array.isArray(v) ? v : null;
 function runModel(dt){
@@ -1544,7 +1552,8 @@ function runModel(dt){
   let r = null;
   try { r = fn(st, dt); } catch (e) { modelNote(e.message); }
   st.readings = (r && obj(r.readings)) || {};
-  st.benchStatus = r && typeof r.status === 'string' ? r.status : null;
+  st.benchStatusT = r && isText(r.status) ? r.status : null;
+  st.benchStatus = st.benchStatusT && fillEn(st.benchStatusT);
   st.modelStats = r && Array.isArray(r.stats) ? r.stats.filter(x => Array.isArray(x) && x.length === 2) : [];
   st.modelReport = (r && obj(r.report)) || {};
   st.flow = (r && obj(r.flow)) || {};
@@ -1943,10 +1952,10 @@ function partButtons(){
 let ctlFolded = {};
 const ctlWork = p => () => { A.press(p.id, true); if (p.control.type !== 'slide') setTimeout(() => A.press(p.id, false), 260); };
 const keepFolded = () => {
-  const box = document.createElement('div'); box.hidden = true; box.id = 'ctlkeep';
+  const keep = document.createElement('div'); keep.hidden = true; keep.id = 'ctlkeep';
   for (const [cid, p] of Object.entries(ctlFolded)){ const b = document.createElement('button'); b.className = 'act'; b.dataset.id = cid; b.tabIndex = -1;
-    b.textContent = p.short || p.id; b.onclick = () => { ctlWork(p)(); ui.render(); }; box.appendChild(b); }
-  if (box.children.length) document.body.appendChild(box);
+    b.textContent = p.short || p.id; b.onclick = () => { ctlWork(p)(); ui.render(); }; keep.appendChild(b); }
+  if (keep.children.length) document.body.appendChild(keep);
 };
 function buttons(){
   if (MD.def.noBoard) return MD.def.partPage ? partButtons() : [];
@@ -2048,8 +2057,8 @@ function stats(){
   const mcu = MD.power.mcu;
   if (mcu && st.power) out.push({ label: mcu.rail, value: (st.ev.rails[mcu.rail] || 0).toFixed(1) + ' V', small: true });
   if (st.ev.status === 'running' && MD.modes[st.mode]) out.push({ label: T((MD.def.modesLabel && MD.def.modesLabel.stat) || 'Program'), value: st.ext ? T('your sketch') : T(MD.modes[st.mode].title), small: true });
-  if (st.benchStatus) out.push({ label: T('Bench'), value: T(st.benchStatus), small: true });
-  if (st.power) for (const [label, value] of st.modelStats || []) out.push({ label: T(String(label)), value: typeof value === 'number' ? String(+value.toFixed(2)) : T(String(value)), small: true });
+  if (st.benchStatusT) out.push({ label: T('Bench'), value: statText(st.benchStatusT), small: true });
+  if (st.power) for (const [label, value] of st.modelStats || []) out.push({ label: T(String(label)), value: statText(value), small: true });
   document.documentElement.classList.toggle('bstats-long', out.length > 4);
   return out;
 }
@@ -2192,7 +2201,7 @@ function start(pick){
     view: 'board', exploded: false, exK: 0, placed: {}, left: {}, drop: {}, reflowT: null, solderQ: null, solderT: 0,
     power: null, supply: {}, faults: [], mode: def.mode || Object.keys(MD.modes)[0] || null, ext: false, pins: {}, t: 0, on: 0, down: null, serialN: -1,
     up: null, upT: 0, upDur: 2.2, ctl: {}, boot: null, sel: null, serial: null, txT: 0, circuit: def.circuit || null, meas: {}, sfx: null, tones: {}, strap: null,
-    matStep: MAT.steps.length - 1, readings: {}, benchStatus: null, volts: {}, sound: null, sag: null,
+    matStep: MAT.steps.length - 1, readings: {}, benchStatus: null, benchStatusT: null, volts: {}, sound: null, sag: null,
   };
   for (const p of MD.parts) st.placed[p.id] = { orient: 0, sold: true };
   // a slide starts at control.start (a power switch that ships ON), else position 0
@@ -4426,7 +4435,7 @@ function model(st){
   else if (st.power && !run) status = ev.status === 'brownout' ? 'Brown-out loop' : ev.status === 'no-power' ? 'No power: the supply is off' : 'Powered, motors idle';
   else if (run && !levels.STBY) status = 'Standby: outputs off';
   else if (run){ const na = name(a), nb = name(b);
-    status = na === nb ? { forward: 'Both forward', reverse: 'Both reverse', brake: 'Short brake', coast: 'Coast' }[na] : 'A ' + na + ', B ' + nb; }
+    status = na === nb ? { forward: 'Both forward', reverse: 'Both reverse', brake: 'Short brake', coast: 'Coast' }[na] : ['A {a}, B {b}', { a: B.T(na), b: B.T(nb) }]; }
   const stats = st.power ? [
     ['Motor A', a.m.v + ' V · ' + Math.abs(a.m.rpm) + ' rpm'], ['Motor B', b.m.v + ' V · ' + Math.abs(b.m.rpm) + ' rpm'],
     ['Battery', batt.v + ' V · ' + batt.i_mA + ' mA'],

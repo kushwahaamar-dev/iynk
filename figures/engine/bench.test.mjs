@@ -377,6 +377,22 @@ describe('model hook outputs', () => {
   });
 });
 
+describe('model status and stats in other languages', () => {
+  it('translates a status template once for every reading, and leaves numbers and units alone', async () => {
+    page = await fixture('fixture-mat', MAT.replace(
+      "return { readings: { motor: { volts: vm, turns: st.spin } }, status: vm > 7 ? 'motor running' : 'motor stopped' };",
+      "return { readings: {}, status: ['Line at {pos}', { pos: 3500 }], stats: [['Sensor 1', '133 µs'], ['Wheels', 'L 80 · R 75'], ['Dir', 'forward'], ['Trim', ['{n} turns', { n: 2.5 }]]] };"));
+    expect(page.bench.report().benchStatus).toBe('Line at 3500');
+    page.win.CF_SETLOCALE('fr', { 'Line at {pos}': 'Ligne à {pos}', forward: 'avant', '{n} turns': '{n} tours', '133 µs': 'NOPE', 'L 80 · R 75': 'NOPE' });
+    page.bench.refresh();
+    const shown = page.win.document.querySelector('.stats').textContent;
+    for (const text of ['Ligne à 3500', '133 µs', 'L 80 · R 75', 'avant', '2.5 tours']) expect(shown).toContain(text);
+    expect(shown).not.toContain('NOPE');
+    expect(page.bench.report().benchStatus).toBe('Line at 3500');
+    expect(page.notes()).toEqual([]);
+  });
+});
+
 const STRAPS = `
 SL.bench.bench({ id: 'fixture-strap', name: 'Straps', board: 'esp32-s3-devkitc-1', view: 'board', circuits: {}, circuit: null,
   modes: { hello: { title: 'Hello', banner: 'ready', out: (st, t) => ({ GPIO38: t % 1 < .5 ? 1 : 0 }), serial: (k) => 'tick ' + k } }, mode: 'hello',

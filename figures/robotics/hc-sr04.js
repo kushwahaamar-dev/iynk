@@ -52,13 +52,13 @@ function model(st){
   if (st.power && ev.status === 'no-power') status = faults.includes('short:VCC:GND') ? 'Short on VCC: the Nano\'s USB fuse trips' : 'No power: set out the Nano';
   else if (st.power && ev.status === 'fault') status = 'Fault: unplug and repair';
   else if (st.power && !run) status = ev.why || 'Powered, nothing running';
-  else if (vcc < 4.5) status = `VCC at ${vcc.toFixed(1)} V: the burst is too weak, no echo`;
+  else if (vcc < 4.5) status = ['VCC at {v} V: the burst is too weak, no echo', { v: vcc.toFixed(1) }];
   else if (!B.isSet('R')) status = 'No receiver: the burst goes out, nothing hears it';
-  else if (faults.includes('cold:J1.3')) status = cm == null ? 'Echo lost at the cold joint' : `${cm.toFixed(1)} cm, when the Echo joint makes contact`;
+  else if (faults.includes('cold:J1.3')) status = cm == null ? 'Echo lost at the cold joint' : ['{cm} cm, when the Echo joint makes contact', { cm: cm.toFixed(1) }];
   else if (noTimeout(st) && cm == null) status = 'No timeout: the board\'s own 38 ms reads as 655 cm';
-  else if (st.mode === 'wall') status = cm == null ? 'Wall: no echo this time' : `Wall at ${cm.toFixed(1)} cm`;
-  else if (st.mode === 'approach') status = cm == null ? 'Nothing in range: quiet' : cm < 10 ? `Hand at ${Math.round(cm)} cm: STOP` : cm <= 100 ? `Hand at ${Math.round(cm)} cm: beep every ${Math.floor(cm * 10)} ms` : `Hand at ${Math.round(cm)} cm: quiet`;
-  else if (st.mode === 'cushion') status = cm == null ? 'Cushion: the sound soaks in, no echo' : `Cushion: an echo from the wall behind, ${Math.round(cm)} cm`;
+  else if (st.mode === 'wall') status = cm == null ? 'Wall: no echo this time' : ['Wall at {cm} cm', { cm: cm.toFixed(1) }];
+  else if (st.mode === 'approach') status = cm == null ? 'Nothing in range: quiet' : cm < 10 ? ['Hand at {cm} cm: STOP', { cm: Math.round(cm) }] : cm <= 100 ? ['Hand at {cm} cm: beep every {ms} ms', { cm: Math.round(cm), ms: Math.floor(cm * 10) }] : ['Hand at {cm} cm: quiet', { cm: Math.round(cm) }];
+  else if (st.mode === 'cushion') status = cm == null ? 'Cushion: the sound soaks in, no echo' : ['Cushion: an echo from the wall behind, {cm} cm', { cm: Math.round(cm) }];
   else status = 'Nothing in range: every ping times out';
   const us = cm != null ? Math.round(cm * 58) : NO_ECHO_US;
   // the rows stay while the bench is powered, so the stats column keeps its narrow, wrapping layout in a fault too
