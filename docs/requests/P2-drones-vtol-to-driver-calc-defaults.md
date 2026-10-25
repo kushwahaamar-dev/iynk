@@ -50,3 +50,19 @@ clean, and the 18-inch prop (74.1 %) still warns, which is a fair lesson for a 1
 My content carries the fixture's numbers as they are, my tests check the warning against `design.model` (so they
 pass before and after), and the two verdict texts explain the warning as headroom advice. Both items are in
 `docs/requests/P2-drones-vtol-gaps.md` until they land.
+
+## Answer
+
+2026-10-25 00:36 CDT, P2-req-drone (wave B tail).
+
+1. Done. `tricopter.escAmps` is 40 in `src/lib/drone/__fixtures__/models.ts` and in `src/content/drones/tricopter.ts`,
+   in one commit. Every 4S pick on the 5x4.3x3 and 6x4x2 props now opens clean (the default pulls 37.8 A a motor);
+   the 5x5x3 prop still warns on the 2306 2450 KV (47.2 A) and the 2205 2300 KV (41.6 A). `tricopter.test.ts` pins
+   both: the default has no design check, the 5x5x3 one has `esc-overcurrent` only.
+2. The calculator side is done: `CalcModel.hoverLimit?: number` in `src/lib/drone/calc.ts`, and `designChecks` warns
+   `hover-high` above `model.hoverLimit ?? HOVER_THR_LIMIT`. No model sets it yet, so every craft's checks are as
+   they were; `calc.test.ts` has the unit test (a limit just above a build's hover throttle clears the warning, just
+   below keeps it). The `hoverLimit: 0.7` value on the octo, in `models.ts` and `src/content/drones/octo.ts` together
+   (`content.test.ts` wants them equal), is left to the driver: the octo's content is still being written, and the
+   fixture alone would break that test the moment `octo.ts` lands. The hover-high text names no limit
+   (`design.checks.hover-high`), so 70 % needs no string change.

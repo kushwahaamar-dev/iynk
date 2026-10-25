@@ -188,6 +188,14 @@ describe('design checks', () => {
     expect(codes('quad5', '6s1100', '2306-1750', '5x4.3x3')).not.toContain('hover-high');
   });
 
+  it('takes a model’s own hover limit in place of the 60 % one', () => {
+    const base = input('delivery', '6s10000', '4114-400', '15x5.5');
+    const { hoverThr } = calc(base);
+    const at = (hoverLimit: number) => designChecks({ ...base, model: { ...base.model, hoverLimit } }).map((c) => c.code);
+    expect(at(hoverThr + 0.01)).not.toContain('hover-high');
+    expect(at(hoverThr - 0.01)).toContain('hover-high');
+  });
+
   it('compares full-throttle current with the Li-ion pack and with the ESC rating', () => {
     expect(codes('longrange', '6s1p4000', '2807-1700', '7.5x3.7x2')).toContain('battery-overcurrent');
     expect(codes('longrange', '6s1800', '2807-1300', '7.5x3.7x2')).not.toContain('battery-overcurrent');

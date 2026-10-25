@@ -96,6 +96,8 @@ export type CalcModel = {
   armRadiusMm?: number;
   /** Continuous rating of each motor's ESC, for the over-current check. */
   escAmps?: number;
+  /** Hover throttle above which the hover-high check warns, when the craft's motor data allows more than 60 %. */
+  hoverLimit?: number;
 };
 
 export type CalcInput = {
@@ -264,7 +266,7 @@ export type DesignCheck =
 
 export type CheckLevel = 'danger' | 'warn' | 'info';
 
-/** Hover throttle above this leaves too little headroom to correct and climb. */
+/** Hover throttle above this leaves too little headroom to correct and climb (a model's hoverLimit overrides it). */
 export const HOVER_THR_LIMIT = 0.6;
 /** Highest current a 21700 Li-ion cell gives without sagging hard, per parallel cell. */
 export const LIION_CELL_A = 45;
@@ -313,7 +315,8 @@ export function designChecks(input: CalcInput, r: CalcResult = calc(input)): Des
   }
   const limit = batteryLimitA(b);
   if (limit !== undefined && r.maxA > limit) checks.push({ code: 'battery-overcurrent', maxA: r.maxA, limitA: limit });
-  if (hovers && r.tw >= 1 && r.hoverThr > HOVER_THR_LIMIT) checks.push({ code: 'hover-high', hoverThr: r.hoverThr });
+  const hoverLimit = model.hoverLimit ?? HOVER_THR_LIMIT;
+  if (hovers && r.tw >= 1 && r.hoverThr > hoverLimit) checks.push({ code: 'hover-high', hoverThr: r.hoverThr });
   if (model.flight.kind === 'wing' && b.cg === 'tail') checks.push({ code: 'tail-heavy' });
   if (r.flyMin < SHORT_FLIGHT_MIN) checks.push({ code: 'short-flight', flyMin: r.flyMin });
   return checks;

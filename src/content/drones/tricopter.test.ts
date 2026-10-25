@@ -39,6 +39,12 @@ describe('tricopter design', () => {
     // the aggressive prop pulls the most, so it is the one that warns first
     expect(at({ prop: '5x5x3' }).r.maxA).toBeGreaterThan(at({}).r.maxA);
   });
+
+  it('opens on a default with no warning, on 40 A ESCs; the aggressive prop still warns on them', () => {
+    expect(tricopter.design.model.escAmps).toBe(40);
+    expect(at({}).checks).toEqual([]);
+    expect(at({ prop: '5x5x3' }).checks).toEqual(['esc-overcurrent']);
+  });
 });
 
 describe('tricopter frame', () => {

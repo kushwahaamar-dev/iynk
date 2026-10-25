@@ -69,7 +69,7 @@ const tricopter: DroneContent = {
       minTW: 3.5,
       over: { kind: 'kvCells', max: 1750 * 6 * 1.15 },
       propPrice: 'pair',
-      escAmps: 30,
+      escAmps: 40,
     },
     fixed: [
       { id: 'FRAME', g: 190, price: 45, category: 'Mechanical', name: 'design.fixed.FRAME' },
