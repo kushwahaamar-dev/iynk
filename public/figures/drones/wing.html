@@ -2535,12 +2535,13 @@ window.SL = window.SL || {};
       ready: elevonOk && cgOk };
   }
 
-  // the engine calls this when a part is re-seated or removed, or the wing is rebuilt or stripped (why = the part id,
-  // 'build' or 'strip'): a check only counts for the parts it ran on
+  // the engine calls this when a part is re-seated or removed (why = the part id) or the wing is rebuilt or stripped
+  // (why = 'build', 'strip'; anything that is not one part clears every check): a check only counts for its parts
   function wingReset(st, why){
     const w = st.wing;
     if (!w) return;
-    const hit = needs => why === 'build' || why === 'strip' || needs.includes(why);
+    const all = !SD.craft().byId[why];
+    const hit = needs => all || needs.includes(why);
     if (w.elev && hit(['SERVOS', 'FC', 'RX'])) w.elev = null;
     if (w.cg && hit(['BATT'])) w.cg = null;
     for (const id of Object.keys(SIMPLE)) if (w[id] && hit(SIMPLE[id].needs)) w[id] = false;
