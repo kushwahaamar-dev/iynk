@@ -1,0 +1,439 @@
+{
+  "title": "Brazo de servos con PCA9685",
+  "sub": "dieciséis pulsos de servo con dos cables I2C",
+  "hint": "monta el driver, centra el brazo y luego recoge y coloca",
+  "overview": "Un servo quiere un pulso cada 20 ms, de 600 a 2400 µs de largo, y gira hasta el ángulo que representa esa duración. La placa PCA9685 de Adafruit genera esos pulsos para dieciséis servos a la vez: la Nano escribe los números de cada canal por dos cables I2C, y el chip los sigue enviando con su propio reloj de 25 MHz sin ayuda de la Nano. La alimentación de los servos entra por separado, por la borna azul V+, a través de un MOSFET que bloquea una batería invertida. Monta la placa, conecta una Nano, un portapilas de 4 x AA y un pequeño brazo de tres servos, y luego haz que coja un cubo de espuma y lo deje al otro lado. Después avérialo: la batería al revés, celdas de iones de litio, los servos en los 5 V de la Nano, sin setPWMFreq(50), la dirección equivocada, el condensador de reserva al revés, una soldadura fría en SDA y una pinza que aprieta demasiado.",
+  "parts": {
+    "U1": {
+      "name": "Controlador PWM PCA9685 de 16 canales y 12 bits",
+      "what": "Dieciséis contadores que funcionan con un solo oscilador de 25 MHz. setPWMFreq(50) pone el preescalador a 121: una trama de 19,99 ms de 4096 ticks, de 4,88 µs cada uno. Cada canal guarda en ticks dónde empieza y dónde termina su pulso, así que 1500 µs son 307 ticks. Arranca dormido, con todas las salidas en LOW, hasta que begin() lo despierta."
+    },
+    "Q1": {
+      "name": "P-MOSFET AOD417: protección contra la polaridad inversa",
+      "what": "Va entre la borna V+ y los servos, con la puerta unida a GND. Con la batería bien puesta, primero conduce su diodo interno y luego el canal se abre del todo. Al revés, se queda cortado y no llega nada a los servos. Solo protege la borna: el pin V+ del conector lateral va después de él."
+    },
+    "J1": {
+      "name": "Borna de tornillo V+ / GND",
+      "what": "Por donde entra la alimentación de los servos: 4 x AA (6 V) aquí, o una fuente de 5 V de 2 A o más. La serigrafía dice 6 V como máximo. V+ va a la fila central de cada columna de servos; no está conectado a VCC."
+    },
+    "C2": {
+      "name": "Condensador de 470 µF en V+",
+      "what": "No viene en el kit: Adafruit pide unos 100 µF por servo, así que pones uno. Mantiene V+ cuando arrancan varios servos a la vez. Está polarizado: la franja (negativo) va a la izquierda y la pata + hacia Q1."
+    },
+    "JP3": {
+      "name": "Conector I2C: V+, VCC, SDA, SCL, OE, GND",
+      "what": "Aquí se conecta la Nano: 5V a VCC (alimentación solo para el chip), GND, A4 a SDA y A5 a SCL. OE tiene una pull-down en la placa, lo que activa todas las salidas. No metas la alimentación de los servos por su pin V+: se salta Q1."
+    },
+    "JP2": {
+      "name": "Conector de servos, canales 0-3",
+      "what": "Cada columna es un canal: PWM la más cercana al chip, V+ en el centro, GND en el borde, así que un conector de servo va con el marrón a GND. El brazo usa el canal 0 (base), el 1 (hombro) y el 2 (pinza)."
+    },
+    "R13": {
+      "name": "220 Ω en cada salida",
+      "what": "Una red de resistencias en serie con las salidas 0-3 (y tres más para el resto). Así, un conector de servo puesto al revés o un pin en cortocircuito consume 23 mA como mucho, dentro del límite de 25 mA del chip."
+    },
+    "R2": {
+      "name": "Pull-ups I2C de 10 kΩ",
+      "what": "Suben SDA y SCL a VCC, así que el bus reposa a los 5 V de la Nano. Las dos líneas son de drenador abierto: los dispositivos solo las ponen a nivel bajo."
+    },
+    "SJ_A0": {
+      "name": "Puente de dirección A0",
+      "what": "Seis puentes suman 1, 2, 4, 8, 16 o 32 a la dirección 0x40. Puentea A0 y la placa responde en 0x41, así que una segunda placa puede compartir el bus. Todas las placas responden además en 0x70, la dirección All Call."
+    },
+    "LED1": {
+      "name": "LED verde de alimentación",
+      "what": "Se enciende desde VCC a través de 470 Ω. Indica que el chip tiene alimentación lógica y no dice nada de V+: con la batería invertida o sin ella, sigue encendido."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "Ejecuta el sketch y habla I2C por A4 (SDA) y A5 (SCL). Sus 5 V alimentan la lógica del PCA9685, unos pocos mA. Los servos nunca consumen de ella."
+    },
+    "ARM": {
+      "name": "Brazo de sobremesa de tres servos",
+      "what": "Tres micro servos SG90: la base gira una plataforma (canal 0), el hombro levanta un brazo de 70 mm (canal 1) y la pinza abre dos dedos (canal 2). Un SG90 gira 60° en 0,1 s y consume unos 10 mA quieto, 100-250 mA en movimiento y hasta unos 360-550 mA bloqueado. Un cubo de espuma de 16 mm espera en la alfombrilla."
+    },
+    "PACK": {
+      "name": "Portapilas de 4 x AA",
+      "what": "Cuatro pilas alcalinas en serie: 6 V, con unos 0,6 Ω de resistencia interna, así que cae un poco cuando se mueven los servos. Su cable rojo va a V+ y el negro a GND en la borna."
+    }
+  },
+  "power": {
+    "label": "Alimenta el banco",
+    "ok": "Nano por USB, la batería en V+: el chip tiene alimentación y los servos también"
+  },
+  "modes": {
+    "centre": {
+      "title": "Centrar el brazo"
+    },
+    "sweep": {
+      "title": "Barrido de la base"
+    },
+    "pick": {
+      "title": "Recoger y colocar"
+    },
+    "scan": {
+      "title": "Escaneo I2C"
+    },
+    "code": {
+      "title": "PCA9685: pulsos de servo por I2C",
+      "address": "la placa en su dirección por defecto, 0x40",
+      "servoDeg": "0-180° como 600-2400 µs, el rango de las librerías de servos",
+      "begin": "despierta el chip (arranca dormido, con todas las salidas en LOW)",
+      "freq": "una trama de 20 ms: preescala 121, 4096 ticks de 4.88 µs",
+      "centre": "1500 µs = 307 ticks: todos los servos a 90°",
+      "idle": "nada que hacer: el chip sigue enviando los pulsos por sí solo",
+      "sweep": "un grado cada 16 ms: 3 s en cada sentido",
+      "poses": "una postura por segundo: donde está el cubo, abajo, coger, arriba, al otro lado, abajo, soltar",
+      "ease": "cada articulación grado a grado, 8 ms por paso, para que el brazo no lance el cubo",
+      "mirror": "una de cada dos rondas va en espejo, así que el cubo vuelve otra vez",
+      "scanTitle": "Escáner I2C: ¿quién responde en el bus?",
+      "ack": "0 = un dispositivo ha reconocido su dirección"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Deja la PCB desnuda",
+      "body": "Quita todas las piezas de la placa azul. Las volverás a poner en el orden de fábrica: primero el chip, el MOSFET y las piezas pequeñas, y luego los conectores, la borna y el condensador.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    },
+    "smd": {
+      "title": "Colocación automática de los componentes SMD y luego reflujo",
+      "body": "El PCA9685, Q1, C1, el LED y las redes de resistencias se colocan de una pasada y van al horno. Así es como sale la placa de fábrica; las piezas sueltas del kit van después.",
+      "refusal": "Los componentes SMD van primero, sobre la placa desnuda"
+    },
+    "headers": {
+      "title": "Coloca el conector I2C y los cuatro bloques de servos",
+      "body": "La tira de 1 x 6 en el borde izquierdo y cuatro bloques de 3 x 4 a lo largo del borde inferior: una columna por canal, PWM, V+ y GND. Primero las piezas bajas, para que la placa quede plana cuando le des la vuelta para soldar.",
+      "refusal": "Primero los componentes SMD: haz la colocación automática y el reflujo. El horno fundiría los conectores de plástico"
+    },
+    "terminal": {
+      "title": "Coloca la borna V+",
+      "body": "La borna de tornillo azul, con las entradas de cable hacia fuera. La alimentación de los servos entra por aquí, a través de Q1.",
+      "refusal": "Primero los conectores: las piezas bajas antes que las altas"
+    },
+    "cap": {
+      "title": "Coloca C2, de 470 µF, en el sentido correcto",
+      "body": "Unos 100 µF por servo, según Adafruit, y el kit no trae ninguno. La franja (negativo) a la izquierda y la pata + hacia Q1: está polarizado.",
+      "refusal": "Primero coloca la borna"
+    },
+    "solder": {
+      "title": "Suelda los componentes de inserción",
+      "body": "Cada pin de los conectores, la borna y C2. Los pines SDA y SCL del conector I2C llevan todos los comandos, así que una soldadura mate ahí hace que el brazo vaya a trompicones.",
+      "refusal": "Todavía no hay nada que soldar: primero coloca las piezas"
+    },
+    "wire-nano": {
+      "title": "Conecta la Nano",
+      "body": "5V a VCC, GND a GND, A4 a SDA y A5 a SCL. VCC es solo la alimentación lógica del chip, unos pocos mA.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    },
+    "wire-arm": {
+      "title": "Conecta los servos del brazo a los canales 0-2",
+      "body": "La base en el canal 0, el hombro en el 1, la pinza en el 2. El marrón a GND, en el borde de la placa, y el naranja (señal) hacia el chip.",
+      "refusal": "Primero desconecta la alimentación, y conecta la Nano antes que el brazo"
+    },
+    "wire-pack": {
+      "title": "Atornilla la batería en la borna V+",
+      "body": "El rojo a V+ y el negro a GND. Cuatro pilas AA alcalinas dan 6 V, lo máximo que admiten los servos.",
+      "refusal": "Primero desconecta la alimentación, y conecta el brazo antes que la batería"
+    },
+    "plug": {
+      "title": "Alimenta el banco",
+      "body": "El USB a la Nano y la batería encendida. El LED verde se enciende desde VCC; los servos se quedan sin fuerza hasta que un sketch inicia el chip.",
+      "refusal": "Primero termina el montaje: todas las piezas puestas, todas las soldaduras hechas, todo lo de la alfombrilla conectado"
+    },
+    "centre": {
+      "title": "Carga Centrar el brazo",
+      "body": "begin() despierta el chip, setPWMFreq(50) fija la trama de 20 ms y writeMicroseconds(ch, 1500) pone 307 ticks en los canales 0-2: todos los servos a 90°. Luego loop() no hace nada, y los servos siguen sujetando: el chip sigue enviando.",
+      "refusal": "Primero alimenta el banco"
+    },
+    "sweep": {
+      "title": "Carga Barrido de la base",
+      "body": "Un grado cada 16 ms: la base gira de 0 a 180° en 3 s y vuelve. Cada paso es una escritura I2C corta; los pulsos de entre medias no le cuestan nada a la Nano.",
+      "refusal": "Primero alimenta el banco"
+    },
+    "pick": {
+      "title": "Carga Recoger y colocar",
+      "body": "Ocho posturas por ronda, una por segundo: girar hacia el cubo, abrir, bajar, cerrar, subir, girar, bajar, soltar. Cada articulación se mueve grado a grado para que el cubo no salga volando. La ronda siguiente va en espejo y lo devuelve.",
+      "refusal": "Primero alimenta el banco"
+    },
+    "scan": {
+      "title": "Carga Escaneo I2C",
+      "body": "El escáner llama a todas las direcciones de 1 a 126 y lista las que responden: 0x40, la placa, y 0x70, la dirección All Call a la que responden todos los PCA9685. Los servos se quedan sin fuerza: nada arranca el chip.",
+      "refusal": "Primero alimenta el banco"
+    },
+    "reverse-pack": {
+      "title": "Atornilla la batería al revés",
+      "body": "El rojo en GND y el negro en V+. Mira el LED verde y los servos."
+    },
+    "li-ion-cells": {
+      "title": "Llena el portapilas con celdas de iones de litio 14500",
+      "body": "Las celdas 14500 tienen el tamaño de una AA pero dan 3,7-4,2 V cada una: cuatro hacen 16,8 V en V+."
+    },
+    "servos-on-5v": {
+      "title": "Alimenta los servos con los 5 V de la Nano",
+      "body": "Un cable de puente del 5V de la Nano al pin V+ en lugar de la batería. Ejecuta el barrido."
+    },
+    "forget-freq": {
+      "title": "Quita setPWMFreq(50)",
+      "body": "El mismo sketch sin la línea de la frecuencia. begin() deja el chip a unos 1000 Hz."
+    },
+    "bridge-a0": {
+      "title": "Puentea el jumper A0",
+      "body": "Una gota de estaño sobre SJ_A0. El sketch sigue hablando con 0x40."
+    },
+    "c2-backwards": {
+      "title": "Coloca C2 al revés",
+      "body": "La franja hacia Q1, y luego enciende. Apártate."
+    },
+    "cold-sda": {
+      "title": "Deja una soldadura fría en SDA",
+      "body": "Una soldadura mate y agrietada en el pin SDA del conector I2C. Ejecuta Recoger y colocar."
+    },
+    "squeeze": {
+      "title": "Cierra la pinza del todo sobre el cubo",
+      "body": "Cambia el ángulo de agarre de 70 a 0. Los dedos tocan el cubo a unos 72° y no pueden ir más allá."
+    },
+    "exploded": {
+      "title": "Vista despiezada",
+      "body": "Desconecta y separa las piezas por grupos de montaje: los componentes SMD, los conectores, y luego la borna y C2.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    }
+  },
+  "faults": {
+    "pack-reversed": {
+      "title": "Batería atornillada al revés",
+      "symptom": "No se mueve nada y nada se calienta; el LED verde sigue encendido.",
+      "explanation": "Q1 es un P-MOSFET con la puerta en GND. Con V+ negativo, su diodo interno queda polarizado en inversa y la tensión de su puerta va en el sentido contrario al que lo haría conducir, así que no llega corriente a los servos. El LED se alimenta de VCC, los 5 V de la Nano, así que no dice nada de V+.",
+      "fix": "Intercambia los cables: el rojo a V+ y el negro a GND. El pin V+ del conector lateral no tiene esa protección."
+    },
+    "li-ion": {
+      "title": "16,8 V en V+",
+      "symptom": "Los servos zumban, se calientan y se paran para siempre. El chip y la Nano están bien.",
+      "explanation": "Un SG90 está hecho para 4,8 V y admite 6 V como mucho. Cuatro celdas de iones de litio 14500 dan 16,8 V: el motor y su driver se recalientan en segundos. Q1 (30 V) los deja pasar, solo está ahí por la polaridad. C2, de 10 V, también se pasa de lo que admite.",
+      "fix": "Usa pilas AA alcalinas (6 V) o NiMH (4,8 V), o una fuente de 5 V de 2 A o más. Sustituye los servos, y C2 si se ha hinchado."
+    },
+    "brownout": {
+      "title": "Servos en los 5 V de la Nano",
+      "symptom": "Los servos dan tirones, la Nano se reinicia una y otra vez y el brazo nunca termina un movimiento.",
+      "explanation": "Los SG90 en movimiento consumen unos cientos de mA cada uno, más al arrancar. A través del USB y del fusible de 500 mA de la Nano, eso hunde los 5 V hasta que el detector de caída de tensión del ATmega (unos 2,7 V) lo reinicia. Los servos se paran, la tensión se recupera y el sketch vuelve a empezar.",
+      "fix": "Dales a los servos su propia fuente en la borna V+. El VCC de la Nano es solo para la lógica del chip."
+    },
+    "no-freq": {
+      "title": "Sin setPWMFreq(50)",
+      "symptom": "Los servos dan tirones, no hacen caso a sus órdenes y se calientan.",
+      "explanation": "begin() deja el chip a unos 1000 Hz: una trama de algo menos de 1 ms. Un pulso de 1,5 ms no cabe en ella, así que las salidas se quedan en alto casi todo el tiempo y los servos nunca ven una duración de pulso que entiendan.",
+      "fix": "Llama a pwm.setPWMFreq(50) después de begin(). Una sola frecuencia sirve para los dieciséis canales."
+    },
+    "addr-a0": {
+      "title": "Placa en 0x41",
+      "symptom": "Los servos se quedan sin fuerza; el sketch funciona e imprime como si todo fuera bien.",
+      "explanation": "El puente A0 soldado suma 1 a la dirección. La librería escribe a 0x40, nadie responde con un acuse, y el chip de 0x41 nunca se despierta. Un escaneo I2C muestra 0x41 y 0x70.",
+      "fix": "Quita el puente, o crea el driver con Adafruit_PWMServoDriver(0x41)."
+    },
+    "c2-reversed": {
+      "title": "C2 al revés",
+      "symptom": "C2 se hincha, sisea y revienta en cuanto llega V+.",
+      "explanation": "Un condensador electrolítico guarda su carga en una fina capa de óxido que solo funciona en un sentido. Al revés, conduce, se calienta y revienta.",
+      "fix": "Desconecta y pon un condensador nuevo con la franja (negativo) a la izquierda, lejos de Q1."
+    },
+    "cold-sda": {
+      "title": "Soldadura fría en SDA",
+      "symptom": "El brazo va a trompicones: algunos movimientos llegan tarde y otros no llegan.",
+      "explanation": "Todos los comandos van por SDA. A través de una soldadura que hace y pierde contacto, algunas escrituras nunca llegan, y el chip sigue enviando el pulso anterior hasta que pasa el siguiente.",
+      "fix": "Vuelve a calentar la soldadura con estaño nuevo hasta que fluya en un cono brillante alrededor del pin."
+    },
+    "gripper-stall": {
+      "title": "Pinza bloqueada sobre el cubo",
+      "symptom": "La pinza zumba, se calienta y la corriente de la batería sube unos 450 mA.",
+      "explanation": "Al servo se le pide 0°, pero el cubo para los dedos a unos 72°. Su potenciómetro le dice que está lejos de donde debería, así que empuja con todo lo que tiene: un SG90 bloqueado consume unos 360-550 mA. Los engranajes de plástico se pueden pasar.",
+      "fix": "Cierra solo hasta que los dedos toquen (70° aquí). Un servo sujeta mejor unos grados más allá del contacto, no al final de su recorrido."
+    }
+  },
+  "status": {
+    "status": "Estado",
+    "powered": "Alimentación del banco",
+    "mode": "Sketch",
+    "frame": "Frecuencia del PWM",
+    "ch0": "Pulso del canal 0 (µs)",
+    "base": "Base",
+    "shoulder": "Hombro",
+    "grip": "Pinza",
+    "vplus": "Alimentación de los servos (V+)",
+    "vcc": "Alimentación lógica (VCC)",
+    "servos": "Corriente de los servos",
+    "pack": "Corriente de la batería",
+    "usb": "Corriente USB"
+  },
+  "current": {
+    "usb": "USB de la Nano (fusible rearmable de 500 mA)",
+    "pack": "Portapilas de 4 x AA en V+",
+    "nano": "Nano en marcha",
+    "logic": "PCA9685 y su LED en VCC",
+    "idle": "Tres servos sujetando",
+    "moving": "Servos en movimiento (recoger y colocar)",
+    "stall": "Pinza bloqueada sobre el cubo"
+  },
+  "tasks": {
+    "ticks": {
+      "title": "Los microsegundos no son ticks",
+      "brief": "setPWM(ch, on, off) recibe ticks, no microsegundos: a 50 Hz, un tick son 20000 / 4096 µs. El código de partida envía 1500 como si fueran µs, y además se olvida de setPWMFreq(50). Escribe ticksFor() para que 1500 µs pasen a ser unos 307 ticks, 600 unos 123 y 2400 unos 492, y pon la trama a 50 Hz.",
+      "hints": {
+        "1": "ticks = us x 4096 / 20000. Multiplica primero y divide después, o se pierde la fracción.",
+        "2": "1500 x 4096 pasa de 6 millones, demasiado para un int en una Nano: conviértelo antes a uint32_t.",
+        "3": "pwm.setPWMFreq(50); va justo después de pwm.begin();"
+      },
+      "checks": {
+        "1": "Funciona",
+        "2": "Pone la trama a 50 Hz con setPWMFreq(50)",
+        "3": "1500 µs salen como 306-308 ticks",
+        "4": "600 µs salen como 122-124 ticks",
+        "5": "2400 µs salen como 490-493 ticks",
+        "6": "El canal 0 envía un pulso de 1500 µs en una trama de 50 Hz"
+      },
+      "code": {
+        "goal": "Convierte los microsegundos en ticks del chip",
+        "todo": "esto devuelve microsegundos; devuelve en su lugar ticks de una trama de 20 ms",
+        "setPWM": "se enciende en el tick 0 y se apaga en el tick off"
+      }
+    },
+    "knob": {
+      "title": "Gira la base con un potenciómetro",
+      "world": "Potenciómetro en A0",
+      "brief": "Añade un potenciómetro de 10 kΩ en A0 y haz que dirija la base: el mando abajo del todo es 0°, a medio camino 90°, arriba del todo 180°. El código de partida siempre envía 90°. Lee el potenciómetro, convierte 0-1023 en 0-180° con map y envía eso.",
+      "hints": {
+        "1": "int deg = map(analogRead(A0), 0, 1023, 0, 180);",
+        "2": "La línea siguiente ya convierte los grados en 600-2400 µs.",
+        "3": "report() solo imprime cuando cambia el ángulo, así el monitor serie se puede leer."
+      },
+      "checks": {
+        "1": "Funciona",
+        "2": "Lee el potenciómetro con analogRead(A0)",
+        "3": "Mando a medio camino: la base a unos 90°",
+        "4": "Mando abajo: 0° = 600 µs",
+        "5": "Mando arriba: 180° = 2400 µs"
+      },
+      "code": {
+        "goal": "Dirige el servo de la base con un potenciómetro en A0",
+        "todo": "lee el potenciómetro en lugar de un 90 fijo"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "two-supplies": {
+        "q": "¿Por qué tiene la placa VCC y V+ como alimentaciones separadas?",
+        "options": {
+          "1": "VCC es una reserva de V+",
+          "2": "VCC solo alimenta el chip; V+ lleva los cientos de mA de los servos desde su propia fuente",
+          "3": "V+ son los 3,3 V del chip"
+        },
+        "why": "El chip necesita unos pocos mA, los servos cientos. Separadas, un servo que arranca puede hundir V+ sin tocar la lógica, y la Nano nunca lleva corriente de los servos."
+      },
+      "cap": {
+        "q": "¿Qué tamaño de condensador sugiere Adafruit en V+ para tres servos?",
+        "options": {
+          "1": "Unos 300 µF: más o menos 100 µF por servo",
+          "2": "Nunca hace falta ninguno",
+          "3": "1 µF"
+        },
+        "why": "La regla de Adafruit es n x 100 µF. Mantiene V+ en el momento en que arrancan varios servos a la vez. Este banco lleva 470 µF."
+      },
+      "kit": {
+        "q": "¿Qué piezas sueldas tú en esta placa?",
+        "options": {
+          "1": "Solo el chip",
+          "2": "Las resistencias y el MOSFET",
+          "3": "Los conectores, la borna y el condensador que añades"
+        },
+        "why": "Los componentes de montaje superficial vienen puestos. El kit añade una tira de 6 pines, cuatro bloques de 3 x 4 y la borna; el condensador lo pones tú."
+      }
+    },
+    "pulses": {
+      "ticks": {
+        "q": "A 50 Hz, ¿cuántos ticks son un pulso de 1500 µs?",
+        "options": {
+          "1": "1500",
+          "2": "4096",
+          "3": "Unos 307"
+        },
+        "why": "Una trama son 4096 ticks en unos 20 ms: 4,88 µs por tick. 1500 / 4,88 = 307."
+      },
+      "frame": {
+        "q": "¿Qué cambia realmente setPWMFreq(50)?",
+        "options": {
+          "1": "El preescalador, para que el contador de 4096 ticks tarde 20 ms por vuelta",
+          "2": "La velocidad del I2C",
+          "3": "La velocidad propia del servo"
+        },
+        "why": "El chip divide su reloj de 25 MHz entre prescale + 1 = 122. Entonces 4096 ticks tardan 19,99 ms: 50 Hz."
+      },
+      "cpu": {
+        "q": "loop() está vacío en Centrar el brazo. ¿Por qué los servos siguen manteniendo su ángulo?",
+        "options": {
+          "1": "Los servos lo recuerdan",
+          "2": "El PCA9685 sigue enviando los pulsos que le dieron, sin ayuda de la Nano",
+          "3": "La Nano los envía desde setup()"
+        },
+        "why": "Para eso sirve el chip: los ticks de inicio y fin de cada canal están en sus registros y el contador los repite en cada trama."
+      }
+    },
+    "faults": {
+      "led-on": {
+        "q": "La batería está invertida. ¿Por qué sigue encendido el LED verde?",
+        "options": {
+          "1": "Lo enciende Q1",
+          "2": "Se alimenta de VCC, los 5 V de la Nano, no de V+",
+          "3": "La batería sigue dando energía"
+        },
+        "why": "El LED indica que el chip tiene alimentación lógica. La alimentación de los servos es una fuente aparte, y Q1 la ha cortado."
+      },
+      "stall": {
+        "q": "¿Por qué una pinza a la que se le pide cerrar hasta 0° consume tanta corriente sobre un cubo?",
+        "options": {
+          "1": "Los pulsos son demasiado cortos",
+          "2": "El cubo conduce",
+          "3": "El cubo la para antes de 0°, así que empuja con toda la fuerza que puede: está bloqueada"
+        },
+        "why": "Un servo mueve su motor hasta que su potenciómetro coincide con el pulso. Si nunca lo consigue, se queda a pleno esfuerzo, un SG90 a unos 360-550 mA."
+      },
+      "brownout": {
+        "q": "Los servos están en los 5 V de la Nano y la Nano no para de reiniciarse. ¿Qué la reinicia?",
+        "options": {
+          "1": "Su detector de caída de tensión: la línea de 5 V cae por debajo de unos 2,7 V",
+          "2": "El PCA9685 envía un reinicio",
+          "3": "Las señales de los servos"
+        },
+        "why": "La corriente de los servos hunde los 5 V del USB a través del fusible y del cable hasta que salta el detector de caída de tensión del ATmega."
+      }
+    },
+    "end": {
+      "address": {
+        "q": "Necesitas 24 servos. ¿Qué haces?",
+        "options": {
+          "1": "Encadenar una segunda placa y puentear su jumper A0 para que responda en 0x41",
+          "2": "Usar los canales 16-23 de la misma placa",
+          "3": "Conectar dos placas a la misma dirección"
+        },
+        "why": "Seis puentes dan 62 direcciones utilizables en un bus. Dos placas en la misma dirección obedecerían las dos todos los comandos."
+      },
+      "one-frequency": {
+        "q": "¿Puede el canal 0 mover un servo a 50 Hz mientras el canal 1 regula un LED a 1000 Hz?",
+        "options": {
+          "1": "Sí, cada canal tiene su propia frecuencia",
+          "2": "Solo en los canales 8-15",
+          "3": "No: el preescalador es compartido, así que los dieciséis van a una sola frecuencia"
+        },
+        "why": "Hay un solo oscilador y un solo preescalador. El LED se puede seguir regulando a 50 Hz cambiando la duración de su pulso."
+      },
+      "six-volts": {
+        "q": "¿Qué protege el \"V+: 6V Max\" de la serigrafía?",
+        "options": {
+          "1": "El chip PCA9685",
+          "2": "Los servos: la placa en sí deja pasar hasta los 30 V de Q1",
+          "3": "La Nano"
+        },
+        "why": "V+ solo va a los conectores de servo y a C2. El límite es para servos de la clase del SG90, hechos para 4,8-6 V."
+      }
+    }
+  }
+}
