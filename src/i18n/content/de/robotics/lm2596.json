@@ -1,0 +1,511 @@
+{
+  "title": "Abwärtswandler LM2596",
+  "sub": "stell die Spannung ein, bevor du ihn belastest",
+  "hint": "bau ihn, stell mit einem Messgerät 5 V ein, lass einen Motor laufen, mach ihn kaputt",
+  "overview": "Batterien haben die falsche Spannung. Ein 2S-LiPo liefert voll 8,4 V und fast leer 6,6 V; ein TT-Motor, der 5V-Pin eines Nano oder ein Servo wollen 5 V. Ein Abwärtswandler senkt die Spannung, ohne die Differenz als Wärme zu verheizen: Der LM2596 schaltet den Eingang 150.000-mal pro Sekunde ein und aus, eine 33-µH-Drossel und ein Kondensator glätten die zerhackte Spannung, und eine Schottky-Diode führt den Strom der Drossel, solange der Schalter aus ist. Ein Trimmer mit 25 Umdrehungen stellt den Ausgang über die Formel Vout = 1,23 x (1 + R2 / 330) ein. Hier baust du das blaue Modul, stellst mit einem Messgerät 5 V ein, bevor irgendetwas am Ausgang hängt, schließt einen Motor an, verlangst 12 V, um zu sehen, dass ein Abwärtswandler nur heruntersetzt, und machst ihn dann auf sieben Arten kaputt. Er hat keinen Verpolungsschutz, keine Sicherung und keine Unterspannungsabschaltung, und jedes davon zeigt sich.",
+  "power": {
+    "label": "Den Prüfstand mit Strom versorgen",
+    "ok": "Akku an IN+ und IN-: Die Anzeige leuchtet mit der Eingangsspannung, und der Wandler schaltet"
+  },
+  "parts": {
+    "U1": {
+      "name": "Abwärtsregler LM2596S-ADJ (TO-263-5)",
+      "what": "Der Schalter, der 150-kHz-Oszillator, eine 1,23-V-Referenz und der Fehlerverstärker in einem fünfpoligen Gehäuse. Er vergleicht FB mit 1,23 V und ändert, wie lange sein Schalter in jedem Zyklus an bleibt, bis beide übereinstimmen. Die Kühlfahne ist Pin 3, Masse, und auf Kupfer gelötet, das die Wärme verteilt."
+    },
+    "L1": {
+      "name": "Geschirmte 33-µH-Drossel",
+      "what": "Bedruckt mit 330: 33 gefolgt von 0 Nullen, in µH. Solange der Schalter an ist, steigt der Strom durch sie, und sie speichert Energie; solange der Schalter aus ist, hält sie den Strom über die Diode in den Ausgang am Fließen."
+    },
+    "D1": {
+      "name": "Schottky-Freilaufdiode SS34",
+      "what": "Führt den Strom der Drossel, solange der Schalter aus ist: bei 5 V am Ausgang etwa ein Drittel jedes Zyklus. Eine Schottky-Diode lässt nur etwa 0,4 V abfallen, also verschwendet sie wenig. Sie ist für 3 A und 40 V ausgelegt, weniger als das Modul ihr bei kurzgeschlossenem Ausgang oder 44 V am Eingang abverlangen kann."
+    },
+    "C1": {
+      "name": "Eingangskondensator 220 µF 50 V",
+      "what": "Liefert die scharfen Strompulse, die der Schalter zieht, sodass die Batteriekabel nur den Mittelwert tragen. Gepolt: Der Streifen markiert Minus."
+    },
+    "C2": {
+      "name": "Ausgangskondensator 220 µF 50 V",
+      "what": "Glättet den Ausgang zusammen mit der Drossel; übrig bleibt eine Restwelligkeit von einigen zehn Millivolt bei 150 kHz. Gepolt wie C1."
+    },
+    "RV1": {
+      "name": "10-kΩ-Trimmer mit 25 Umdrehungen (3296W)",
+      "what": "R2 in der Formel: 400 Ω pro Umdrehung. Im Uhrzeigersinn steigt der Ausgang. Meist kommt er am oberen Anschlag an, der 38,5 V verlangt, also ändern die ersten zwanzig Umdrehungen nichts, was du sehen kannst."
+    },
+    "R7": {
+      "name": "Rückkopplungswiderstand am Trimmer",
+      "what": "Teil des Spannungsteilernetzes rund um den Trimmer, das FB speist."
+    },
+    "C5": {
+      "name": "Rückkopplungskondensator",
+      "what": "Ein kleiner Keramikkondensator im Rückkopplungsnetz."
+    },
+    "J1": {
+      "name": "Eingangsklemme (IN+, IN-)",
+      "what": "Zwei Schraubklemmen im 5-mm-Raster für die Batteriekabel. Nichts dahinter prüft, wie herum sie angeschlossen sind."
+    },
+    "J2": {
+      "name": "Ausgangsklemme (OUT-, OUT+)",
+      "what": "Schraubklemmen für die Last. OUT- und IN- sind dieselbe Masse."
+    },
+    "DS1": {
+      "name": "Dreistellige rote Voltmeteranzeige",
+      "what": "Zeigt den Eingang oder den Ausgang: x.xx unter 10 V, xx.x darüber. Die Händler geben sie mit ±0,1 V an, und diese hier zeigt 0,03 V zu viel, und deshalb stellst du eine Spannung mit einem Messgerät ein."
+    },
+    "U2": {
+      "name": "Regler des Voltmeters",
+      "what": "Versorgt die kleine Messschaltung aus dem Eingang, sodass die Anzeige auch bei kurzgeschlossenem Ausgang funktioniert. Er braucht etwa 4 V: Darunter wird die Anzeige dunkel."
+    },
+    "BITS": {
+      "name": "Voltmeterschaltung",
+      "what": "Teilerwiderstände, Abblockkondensatoren und zwei kleine Transistoren rund um den Mikrocontroller der Anzeige."
+    },
+    "SW1": {
+      "name": "Taster für die Anzeigeauswahl",
+      "what": "Jeder Druck schaltet die Anzeige zwischen IN und OUT um."
+    },
+    "LED_IN": {
+      "name": "IN-Anzeige",
+      "what": "Leuchtet, solange die Anzeige die Eingangsspannung zeigt."
+    },
+    "LED_OUT": {
+      "name": "OUT-Anzeige",
+      "what": "Leuchtet, solange die Anzeige die Ausgangsspannung zeigt."
+    },
+    "X1": {
+      "name": "Kleines schwarzes Bauteil mit zwei Anschlüssen am Eingang",
+      "what": "Auf den Fotos nicht identifiziert; es sitzt in der Ecke der Messschaltung."
+    },
+    "BATT": {
+      "name": "2S-LiPo, 1000 mAh",
+      "what": "Zwei Zellen in Reihe: voll 8,4 V, nominal 7,4 V, leer 6,0 V (3,0 V pro Zelle, die Untergrenze). In einen Kurzschluss kann er zig Ampere liefern."
+    },
+    "MM": {
+      "name": "Taschenmultimeter auf 20 V DC",
+      "what": "Rote Messspitze an OUT+, schwarze an OUT-. Nach dieser Zahl stellst du den Trimmer ein."
+    },
+    "MOT": {
+      "name": "TT-Getriebemotor",
+      "what": "Ein kleiner Bürstenmotor mit einem Getriebe 1:48, gebaut für 3 bis 6 V. Bei 5 V etwa 0,15 A im Freilauf, etwa 1,25 A festgehalten."
+    }
+  },
+  "modes": {
+    "found": {
+      "title": "Trimmer wie geliefert",
+      "code": {
+        "what": "Der Trimmer, wie er ankommt: am oberen Anschlag seiner 25 Umdrehungen",
+        "top": "die vollen 10 kΩ",
+        "empty": "mit nichts an OUT",
+        "verdict": "der Ausgang folgt dem Eingang, ein Volt darunter: 7,6 V würden einen 6-V-Motor übersteuern"
+      }
+    },
+    "set5": {
+      "title": "Den Trimmer auf 5 V drehen",
+      "code": {
+        "what": "5 V für den Motor (oder den 5V-Pin eines Nano)",
+        "verdict": "hier etwa 74 % Wirkungsgrad; ein Linearregler käme bestenfalls auf 5,0 / 8,4 = 60 %"
+      }
+    },
+    "set33": {
+      "title": "Den Trimmer auf 3,3 V drehen",
+      "code": {
+        "what": "3,3 V, die Spannung, die ein ESP32 oder die meisten Sensoren wollen",
+        "verdict": "der Schalter ist weniger als die halbe Zeit an; die festen Verluste wiegen schwerer, also sinkt der Wirkungsgrad"
+      }
+    },
+    "set12": {
+      "title": "Den Trimmer auf 12 V drehen",
+      "code": {
+        "what": "12 V von einem 8,4-V-Akku verlangt",
+        "verdict": "ein Abwärtswandler setzt nur herunter: Er gibt, was er kann, und der Motor bekommt 7,6 V"
+      }
+    },
+    "code": {
+      "vref": "der LM2596 hält FB auf 1,23 V",
+      "r1": "von FB nach Masse",
+      "turn": "der 10-kΩ-Trimmer ist R2, verteilt auf 25 Umdrehungen",
+      "vin": "ein voller 2S-LiPo",
+      "above": "Vset ist größer als Vin: Der Schalter bleibt die ganze Zeit an (100 % Tastgrad)",
+      "from": "vom unteren Anschlag aus",
+      "duty": "der Anteil jedes Zyklus, in dem der Schalter an ist",
+      "meter": "die 15 mA der Anzeige eingerechnet"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Bis auf die nackte Platine zerlegen",
+      "body": "Eine blaue Platine von 66 x 34 mm mit vier M3-Löchern. Eingang am linken Rand, Ausgang am rechten, beide mit der Plusklemme oben. Das große Pad links von der Mitte ist für die Kühlfahne des Reglers: Es ist Masse und Kühlkörper.",
+      "refusal": "Zieh zuerst den Strom am Prüfstand ab"
+    },
+    "smd": {
+      "title": "Die SMD-Bauteile bestücken und reflowlöten",
+      "body": "Der LM2596 mit seiner Kühlfahne auf dem großen Pad, die SS34 unter seinen Anschlüssen, die 33-µH-Drossel daneben, dann die Messschaltung, die beiden LEDs und der Taster. Schalter, Diode, Drossel und Ausgangskondensator bilden eine enge Schleife; je kürzer diese Schleife, desto weniger strahlt die Platine bei 150 kHz ab.",
+      "refusal": "Zerleg zuerst die Platine"
+    },
+    "trimmer-display": {
+      "title": "Den Trimmer und die Anzeige einsetzen",
+      "body": "Der blaue Trimmer mit 25 Umdrehungen entlang der Oberkante, mit seiner Messingschraube links, und die dreistellige Anzeige entlang der Unterkante.",
+      "refusal": "Löte zuerst die SMD-Bauteile im Reflow-Ofen"
+    },
+    "caps-terminals": {
+      "title": "Die Kondensatoren und Klemmen einsetzen",
+      "body": "C1 am Eingang, C2 am Ausgang, jeweils mit dem Streifen (Minus) zum Platinenrand, wie der Siebdruck zeigt. Dann die beiden Schraubklemmen, mit den Kabeleinführungen nach außen.",
+      "refusal": "Setz zuerst den Trimmer und die Anzeige ein"
+    },
+    "solder": {
+      "title": "Die bedrahteten Lötstellen löten",
+      "body": "Die Kondensatorbeine tragen den vollen Schaltstrom in Pulsen: Gib ihnen eine ordentliche Lötstelle. Die drei Pins des Trimmers zählen genauso viel, wie eine der Störungen später zeigt.",
+      "refusal": "Setz zuerst jedes Bauteil ein"
+    },
+    "wire-battery": {
+      "title": "Den Akku an IN+ und IN- anschließen",
+      "body": "Rot an IN+ (oben links), Schwarz an IN- (unten links). Prüf zweimal: Das Modul hat nichts, was einen verpolten Akku aufhält.",
+      "refusal": "Löte zuerst das Modul fertig"
+    },
+    "wire-meter": {
+      "title": "Das Messgerät an den Ausgang legen",
+      "body": "Drehschalter auf 20 V DC, rote Messspitze an OUT+, schwarze an OUT-. Sonst noch nichts am Ausgang: Du stellst zuerst die Spannung ein und schließt die Last danach an.",
+      "refusal": "Schließ zuerst den Akku an"
+    },
+    "plug": {
+      "title": "Den Akku einschalten",
+      "body": "Die Anzeige leuchtet und zeigt den Eingang, 8,4 V, mit der IN-LED an. Das Messgerät zeigt 7,65 V. Das ist kein Fehler: Der Trimmer kam am oberen Anschlag an und verlangt 38,5 V, und ein Abwärtswandler, von dem mehr verlangt wird, als er hat, gibt seinen Eingang abzüglich etwa einem Volt aus.",
+      "refusal": "Leg zuerst den Akku und das Messgerät auf die Matte"
+    },
+    "show-out": {
+      "title": "Die Anzeige auf OUT schalten",
+      "body": "Drück den Taster: Die OUT-LED leuchtet, und die Anzeige zeigt den Ausgang. Hier stimmt sie bis auf wenige Hundertstel mit dem Messgerät überein, aber die Anzeige ist nur auf ±0,1 V genau, also hat das Messgerät das letzte Wort.",
+      "refusal": "Schalte zuerst den Akku ein"
+    },
+    "set5": {
+      "title": "Den Trimmer auf 5 V herunterdrehen",
+      "body": "Gegen den Uhrzeigersinn sinkt die Spannung. Etwa zwanzig Umdrehungen lang passiert nichts, weil jede Einstellung über 7,6 V dieselben 7,6 V ergibt. Dann beginnt der Messwert zu fallen. Hör auf, wenn das Messgerät 5,00 V zeigt, 2,53 Umdrehungen vom unteren Anschlag: R2 = 330 x (5,00 / 1,23 - 1) = 1011 Ω.",
+      "refusal": "Schalte zuerst den Akku ein und leg das Messgerät an"
+    },
+    "wire-motor": {
+      "title": "Ausschalten, dann den Motor anschließen",
+      "body": "Zuerst den Akku aus. Rotes Motorkabel an OUT+, schwarzes an OUT-. Das Messgerät bleibt dran, damit du siehst, was die Last mit dem Ausgang macht.",
+      "refusal": "Stell zuerst den Ausgang auf 5 V ein"
+    },
+    "load": {
+      "title": "Den Motor versorgen",
+      "body": "Der Motor dreht an 5 V mit etwa 180 U/min und zieht 155 mA aus dem Ausgang. Der Akku liefert nur etwa 125 mA: Der Wandler tauscht Spannung gegen Strom, 0,78 W heraus für 1,05 W hinein. Die 5,00 V am Messgerät bewegen sich nicht.",
+      "refusal": "Schließ zuerst den Motor an"
+    },
+    "set33": {
+      "title": "Auf 3,3 V herunterdrehen",
+      "body": "1,39 Umdrehungen vom unteren Anschlag: R2 = 555 Ω. Der Motor wird langsamer, etwa 110 U/min. Der Tastgrad fällt auf 45 % und der Wirkungsgrad mit ihm, weil die Anzeige und die Schaltverluste gleich bleiben, während die abgegebene Leistung sinkt.",
+      "refusal": "Lass den Motor zuerst an 5 V laufen"
+    },
+    "set12": {
+      "title": "12 V verlangen",
+      "body": "7,22 Umdrehungen: R2 = 2890 Ω würde aus einem 13-V-Eingang 12 V machen. Aus 8,4 V geht das nicht: Der Schalter bleibt an, der Tastgrad zeigt 100 %, und der Ausgang bleibt bei 7,6 V, dem Eingang abzüglich der Sättigung des Schalters und des Kupfers der Drossel. Ein Abwärtswandler setzt nur herunter; für 12 V aus diesem Akku brauchst du einen Aufwärtswandler.",
+      "refusal": "Lass den Motor zuerst an 3,3 V laufen"
+    },
+    "lipo-backwards": {
+      "title": "Kaputt machen: Akku verkehrt herum",
+      "body": "Vertausch die Kabel des Akkus am Eingang. Nichts auf dem Modul blockiert das. Dann reparier es und stell wieder 5 V ein."
+    },
+    "cap-backwards": {
+      "title": "Kaputt machen: C1 verkehrt herum",
+      "body": "Setz den Eingangskondensator mit dem Streifen falsch herum ein und schalte ein. Dann reparier es."
+    },
+    "wiper-open": {
+      "title": "Kaputt machen: kalte Lötstelle am Trimmer",
+      "body": "Eine matte, gerissene Lötstelle am Schleiferpin des Trimmers. Schalte mit angeschlossenem Motor ein und beobachte das Messgerät."
+    },
+    "flat-pack": {
+      "title": "Kaputt machen: den Akku bis 5,5 V leeren",
+      "body": "Lass den Akku auf 5,5 V absacken, weit unter seine Untergrenze von 6,0 V, und beobachte den Ausgang und die Anzeige."
+    },
+    "stall": {
+      "title": "Kaputt machen: das Rad festhalten",
+      "body": "Halt das Rad des Motors fest, sodass es sich nicht drehen kann, und beobachte das Messgerät, den Akkustrom und die Temperatur des Chips."
+    },
+    "short-out": {
+      "title": "Kaputt machen: OUT+ mit OUT- kurzschließen",
+      "body": "Eine verirrte Litze über der Ausgangsklemme. Beobachte das Messgerät, die Anzeige und die Diode."
+    },
+    "ten-s-pack": {
+      "title": "Kaputt machen: 44 V am Eingang",
+      "body": "Ein 10S-Akku, voll 42 V, oder ein Labornetzteil mit 44 V am Eingang: innerhalb der 45 V, für die der LM2596 ausgelegt ist, außerhalb der Werte der Diode."
+    },
+    "exploded": {
+      "title": "Explosionsansicht",
+      "body": "Die Schichten auseinander: die Platine, die SMD-Leistungsbauteile, Trimmer und Anzeige, die Kondensatoren und Klemmen.",
+      "refusal": "Mach es zuerst auf jede Art kaputt und reparier es"
+    }
+  },
+  "faults": {
+    "reverse-polarity": {
+      "title": "Akku verkehrt herum angeschlossen",
+      "symptom": "Die Anzeige bleibt dunkel, der Ausgang ist tot, der Regler wird schnell heiß, und C1 zischt vielleicht. Oft fällt der LM2596 als Kurzschluss aus, also ist das Modul hinüber, auch wenn die Kabel wieder richtig herum sind.",
+      "explanation": "Mit Minus an IN+ leiten die Schutzdioden im LM2596 und im Regler der Anzeige direkt über den Akku, und C1 liegt in Sperrrichtung. Ein LiPo kann zig Ampere dadurch drücken. Auf diesem Modul gibt es keine Diode, Sicherung oder MOSFET, die das aufhalten.",
+      "fix": "Vertausch die Kabel. Beim nächsten Mal ein verdrehsicherer Stecker (XT30) am Akkukabel oder ein P-Kanal-MOSFET oder eine Schottky-Diode in Reihe vor dem Modul."
+    },
+    "cap-reversed": {
+      "title": "Eingangskondensator verkehrt herum",
+      "symptom": "C1 wird warm, zischt vielleicht und bläst dann über das Kreuz auf seiner Oberseite ab. Die Schaltpulse kommen jetzt aus den Batteriekabeln.",
+      "explanation": "Ein Aluminium-Elektrolytkondensator funktioniert nur in einer Richtung: Verkehrt herum bricht seine Oxidschicht durch, er leitet, erhitzt sich und baut Druck auf, bis das Sicherheitsventil aufgeht.",
+      "fix": "Ersetz C1 (ein abgeblasener Kondensator wird nie wiederverwendet), mit dem Streifen zum Platinenrand."
+    },
+    "wiper-open": {
+      "title": "Schleifer des Trimmers offen",
+      "symptom": "Das Messgerät springt von 5,00 V auf 7,6 V: Der Ausgang folgt dem Eingang. Der Motor läuft schnell und heiß. Am Trimmer zu drehen bewirkt nichts.",
+      "explanation": "Mit abgetrenntem Schleifer sieht FB nur R1 nach Masse: 0 V. Der LM2596 hält den Ausgang für viel zu niedrig und schaltet seinen Schalter voll durch. Das ist der gefährliche Ausfall: Was auch immer am Ausgang hängt, bekommt die Akkuspannung.",
+      "fix": "Löte die Pins des Trimmers nach. Für alles, was die Eingangsspannung nicht verträgt, setz eine Z-Diode oder eine Crowbar an den Ausgang."
+    },
+    "flat-pack": {
+      "title": "Akku leergefahren",
+      "symptom": "Der Ausgang sackt mit dem Akku ab: 4,7 V aus 5,5 V am Eingang. Der Motor wird langsamer. Die Anzeige arbeitet bis etwa 4 V weiter, der Wandler bis etwa 3,6 V. Nichts warnt dich.",
+      "explanation": "Unter Vout plus der Dropout-Spannung (hier etwa 0,8 V) bleibt der Schalter an, und der Ausgang ist der Eingang abzüglich des Dropouts. Das Modul hat keine Unterspannungssperre, also entlädt es einen 2S-Akku weiter, weit unter 6,0 V, den Punkt, an dem die Zellen Schaden nehmen.",
+      "fix": "Lade den Akku. An einem Roboter bau eine Abschaltung ein: einen LiPo-Alarm oder einen Nano, der den Akku über einen Spannungsteiler liest und die Last bei 3,3 V pro Zelle abschaltet (die Aufgabe zur Abschaltung)."
+    },
+    "stall": {
+      "title": "Motor festgehalten",
+      "symptom": "Der Motorstrom springt auf 1,25 A und der Akkustrom auf etwa 0,9 A. Das Messgerät zeigt weiter 5,00 V. Der LM2596 erwärmt sich auf etwa 70 °C.",
+      "explanation": "Ein festgehaltener Motor hat keine Gegen-EMK: Er ist nur seine 4-Ω-Wicklung, 1,25 A bei 5 V. Das liegt weit unter den 4,2 A, die der Wandler liefern kann, also hält der Ausgang. Ein kleiner Motor bringt diese Schiene nicht zum Einbruch; ein großer oder zwei parallel würden die Strombegrenzung erreichen und den Ausgang nach unten ziehen.",
+      "fix": "Lass los. In einem Roboter stopp den Motor im Code, wenn er blockiert (der Strom steigt, der Encoder steht), bevor das Getriebe oder das Modul überhitzt."
+    },
+    "short-out": {
+      "title": "Ausgang kurzgeschlossen",
+      "symptom": "Das Messgerät zeigt 0,00 V. Die Anzeige, auf IN, zeigt weiter den Eingang, weil die Messschaltung aus dem Eingang läuft. Die SS34 wird heiß; nach ein paar Sekunden fällt sie aus, und der Ausgang bleibt tot.",
+      "explanation": "Der LM2596 begrenzt seinen Schalter auf Spitzen von etwa 4,5 A, im Mittel 4,2 A. In einen Kurzschluss liegt der Ausgang nahe 0 V, also ist der Schalter weniger als ein Zehntel jedes Zyklus an, und die Diode trägt den Strom den Rest der Zeit. TI verlangt eine Diode, die mindestens für die Strombegrenzung ausgelegt ist; die SS34 ist für 3 A ausgelegt und überhitzt.",
+      "fix": "Entfern den Kurzschluss und ersetz D1. Setz eine Sicherung an den Ausgang oder eine Diode für 5 A (SS54), wenn Kurzschlüsse wahrscheinlich sind."
+    },
+    "ten-s-pack": {
+      "title": "Eingang über 40 V",
+      "symptom": "Die Diode überhitzt und fällt aus; oft nimmt sie den Regler mit, und ein Regler, der als Kurzschluss ausfällt, gibt den vollen Eingang an den Ausgang weiter.",
+      "explanation": "Solange der Schalter an ist, sieht die Diode die ganze Eingangsspannung in Sperrrichtung. Die SS34 ist ein 40-V-Bauteil, und TI will das 1,25-Fache des höchsten Eingangs. Das Modul wird für 4 bis 40 V verkauft, was schon keine Reserve lässt; 44 V liegen darüber.",
+      "fix": "Bleib mit dieser Diode unter etwa 32 V, oder setz eine für 60 V ein (SS36 oder SS56)."
+    }
+  },
+  "status": {
+    "status": "Status",
+    "powered": "Strom am Prüfstand",
+    "mode": "Trimmereinstellung",
+    "vin": "Eingang (IN)",
+    "vout": "Ausgang (Messgerät)",
+    "display": "Anzeige des Moduls",
+    "shows": "Anzeige zeigt",
+    "trimmer": "Trimmer (Umdrehungen)",
+    "duty": "Tastgrad",
+    "efficiency": "Wirkungsgrad",
+    "chip": "LM2596 (°C)",
+    "motor": "Motordrehzahl",
+    "motorCurrent": "Motorstrom",
+    "battery": "Akkustrom"
+  },
+  "current": {
+    "lipo": "2S-LiPo, 1000 mAh 20C",
+    "meter": "Voltmeterschaltung",
+    "quiescent": "Ruhestrom des LM2596",
+    "motor5": "TT-Motor an 5 V (155 mA heraus)",
+    "motor33": "TT-Motor an 3,3 V (145 mA heraus)",
+    "motorFlat": "TT-Motor an 7,6 V, 100 % Tastgrad",
+    "wiperOpen": "TT-Motor am vollen Eingang (Schleifer offen)",
+    "flatPack": "TT-Motor aus einem 5,5-V-Akku",
+    "stall": "TT-Motor festgehalten (1,25 A heraus)",
+    "short": "Ausgang kurzgeschlossen, bis die Diode ausfällt",
+    "capReversed": "C1 leitet in Sperrrichtung",
+    "reverse": "Verpolter Akku über U1 und den Regler der Anzeige"
+  },
+  "tasks": {
+    "set-points": {
+      "title": "Wohin der Trimmer gedreht werden muss",
+      "brief": "Berechne R2 und die Trimmerumdrehungen für 3,3 V, 5,0 V und 12,0 V und gib jede Zeile im Format \"5.0 V: R2 = 1011 ohm, 2.5 turns\" aus. Markier jede Spannung, die ein voller 2S-Akku (8,4 V, abzüglich etwa 1 V Dropout) nicht liefern kann, mit einer Zeile \"needs a 3S pack\".",
+      "hints": {
+        "1": "Vout = 1,23 x (1 + R2 / R1). Nach R2 aufgelöst: R2 = R1 x (Vout / 1,23 - 1).",
+        "2": "Der Startcode vergisst das - 1: Bei 5 V nennt er 1341 Ω, was 6,25 V ergäbe.",
+        "3": "Ein Abwärtswandler setzt nur herunter: Alles über 8,4 - 1,0 = 7,4 V braucht einen größeren Akku."
+      },
+      "checks": {
+        "1": "Gibt die Zeile für 3,3 V aus: R2 = 555 ohm, 1.4 turns",
+        "2": "Gibt die Zeile für 5,0 V aus: R2 = 1011 ohm, 2.5 turns",
+        "3": "Gibt die Zeile für 12,0 V aus: R2 = 2890 ohm, 7.2 turns",
+        "4": "Meldet, dass 12 V einen 3S-Akku brauchen (needs a 3S pack)"
+      },
+      "code": {
+        "goal": "R2 und die Trimmerumdrehungen für 3,3 V, 5,0 V und 12,0 V ausgeben",
+        "vref": "FB wird auf 1,23 V gehalten",
+        "r1": "R1, von FB nach Masse",
+        "turn": "10 kΩ über 25 Umdrehungen",
+        "wrong": "nicht ganz: Prüf die Formel"
+      }
+    },
+    "cut-off": {
+      "title": "Die Abschaltung, die das Modul nicht hat",
+      "brief": "Der Akku geht über einen Spannungsteiler aus 20 kΩ / 10 kΩ (ein Drittel davon) in A0; D7 treibt den MOSFET, der den Motor schaltet. Gib alle 250 ms Messwerte im Stil \"pack 8.4\" aus, und wenn der Akku unter 6,6 V (3,3 V pro Zelle) fällt, schalte D7 auf LOW und gib \"cut-off\" aus. Lass ihn aus: Sobald die Last weg ist, springt die Spannung des Akkus wieder hoch.",
+      "hints": {
+        "1": "analogRead liefert 0 bis 1023 für 0 bis 5 V; der Spannungsteiler teilt durch 3, also multiplizier zurück: counts x 5.0 / 1023 x 3.",
+        "2": "Vergleich mit 6.6 und schalte D7 auf LOW, wenn der Akku darunter liegt.",
+        "3": "Nimm ein bool, das sich die Abschaltung merkt: Ein Akku, der sich ohne Last auf 6,9 V erholt, ist trotzdem leer."
+      },
+      "checks": {
+        "1": "Läuft 3,5 s lang",
+        "2": "Der erste Messwert gibt \"pack 8.4\" aus",
+        "3": "Der Motor bleibt bei 6,8 V an",
+        "4": "Gibt \"cut-off\" aus, sobald der Akku unter 6,6 V liegt",
+        "5": "D7 geht bei der Abschaltung auf LOW",
+        "6": "D7 bleibt LOW, wenn der Akku auf 6,9 V zurückspringt"
+      },
+      "code": {
+        "goal": "Den Akku lesen, den Motor unter 6,6 V abschalten und aus lassen",
+        "divider": "der Akku über 20 kΩ / 10 kΩ: ein Drittel davon",
+        "load": "HIGH: Der MOSFET des Motors ist an",
+        "scale": "das ist die Spannung an A0, nicht die des Akkus",
+        "todo": "D7 unter 6,6 V abschalten und aus lassen"
+      },
+      "world": {
+        "pack": "Akkuspannung"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "diode": {
+        "q": "Was macht die SS34, solange der Schalter des LM2596 aus ist?",
+        "options": {
+          "1": "Nichts: Sie schützt nur gegen einen verpolten Akku",
+          "2": "Sie führt den Strom der Drossel in den Ausgang",
+          "3": "Sie hält FB auf 1,23 V"
+        },
+        "why": "Der Strom einer Drossel kann nicht sofort aufhören. Wenn der Schalter öffnet, drückt die Drossel weiter Strom durch die Diode, von Masse in den Ausgang. Deshalb heißt sie Freilaufdiode, und deshalb wird sie heiß, wenn der Ausgang kurzgeschlossen ist."
+      },
+      "inductor": {
+        "q": "Die Drossel ist mit 330 bedruckt. Was ist sie?",
+        "options": {
+          "1": "33 µH",
+          "2": "330 µH",
+          "3": "330 Ω"
+        },
+        "why": "Wie bei Widerstandscodes: zwei Ziffern und ein Multiplikator, in µH. 33 gefolgt von keiner Null sind 33 µH."
+      },
+      "caps": {
+        "q": "Warum sitzt C1 direkt neben dem Regler?",
+        "options": {
+          "1": "Um das Flackern der Anzeige zu filtern",
+          "2": "Er legt die Schaltfrequenz fest",
+          "3": "Er liefert die Strompulse des Schalters, sodass die Batteriekabel nur den Mittelwert tragen"
+        },
+        "why": "Der Schalter zieht 1 A oder mehr in Pulsen mit 150 kHz. Lange Batteriekabel haben Induktivität und würden schwingen; ein Kondensator direkt am Chip liefert die Pulse und wird vom gleichmäßigen Batteriestrom nachgefüllt."
+      }
+    },
+    "load": {
+      "order": {
+        "q": "Warum stellst du den Ausgang ein, bevor du den Motor anschließt?",
+        "options": {
+          "1": "Der Trimmer dreht sich nur ohne Last",
+          "2": "Die Anzeige muss zuerst kalibriert werden",
+          "3": "Der Trimmer steht vielleicht am oberen Anschlag, und der Motor bekäme den Eingang abzüglich eines Volts"
+        },
+        "why": "Ein neues Modul kommt meist mit hoch gedrehtem Trimmer an. Hier sind das 7,6 V an einem Motor für 6 V; mit einem 3S-Akku wären es 11 V an allem, was du anschließt. Stell ihn ohne Last ein, schalte aus und schließ dann an."
+      },
+      "current": {
+        "q": "Der Motor zieht bei 5 V 155 mA. Warum liefert der Akku nur etwa 125 mA?",
+        "options": {
+          "1": "Eingangsleistung ist Ausgangsleistung plus Verluste, und der Akku hat eine höhere Spannung",
+          "2": "Die Anzeige nimmt den Rest",
+          "3": "Der Ausgangskondensator liefert die Differenz"
+        },
+        "why": "0,78 W heraus bei etwa 74 % Wirkungsgrad sind 1,05 W hinein; bei 8,4 V sind das 125 mA. Ein Abwärtswandler tauscht Spannung gegen Strom. Ein Linearregler würde die vollen 155 mA aus dem Akku ziehen und die Differenz verheizen."
+      },
+      "meter": {
+        "q": "Die Anzeige zeigt 5,03 V, das Messgerät 5,00 V. Wem vertraust du?",
+        "options": {
+          "1": "Der Anzeige: Sie ist ins Modul eingebaut",
+          "2": "Dem Messgerät: Die Anzeige ist nur auf ±0,1 V genau",
+          "3": "Keinem: dem Mittelwert"
+        },
+        "why": "Das Voltmeter des Moduls ist ein billiger Spannungsteiler an einem kleinen Chip, laut Händlern ±0,1 V. Gut für einen schnellen Blick, nicht für ein 3,3-V-Bauteil mit einem absoluten Maximum von 3,6 V."
+      }
+    },
+    "limits": {
+      "step-down": {
+        "q": "Du verlangst 12 V von einem 8,4-V-Akku. Was bekommst du?",
+        "options": {
+          "1": "12 V, aber der Akku leert sich schneller",
+          "2": "Etwa 7,6 V: Der Schalter bleibt an, und der Ausgang ist der Eingang abzüglich des Dropouts",
+          "3": "Nichts: Er schaltet ab"
+        },
+        "why": "Ein Abwärtswandler kann nur eine niedrigere Spannung erzeugen. Verlangt man mehr, schaltet er seinen Schalter voll durch und reicht den Eingang weiter, abzüglich der Sättigung des Schalters und des Widerstands der Drossel."
+      },
+      "turns": {
+        "q": "Der Trimmer beginnt am oberen Anschlag. Warum passiert in den ersten zwanzig Umdrehungen nach unten nichts?",
+        "options": {
+          "1": "Jede Einstellung über etwa 7,6 V ergibt aus diesem Akku dieselben 7,6 V",
+          "2": "Der Trimmer hat eine tote Zone",
+          "3": "Die Anzeige aktualisiert sich nicht, während du drehst"
+        },
+        "why": "25 Umdrehungen verlangen 38,5 V. Der Ausgang folgt dem Trimmer erst, wenn die Einstellung unter das fällt, was der Eingang liefern kann, hier etwa 4,3 Umdrehungen vom unteren Anschlag."
+      },
+      "efficiency": {
+        "q": "Warum ist der Wandler mit demselben Motor bei 3,3 V weniger effizient als bei 5 V?",
+        "options": {
+          "1": "Die Drossel geht bei niedriger Spannung in Sättigung",
+          "2": "Die Diode ist bei 3,3 V verpolt",
+          "3": "Die festen Verluste (die Anzeige, das Schalten) machen einen größeren Anteil an einer kleineren Ausgangsleistung aus"
+        },
+        "why": "0,48 W heraus bei 3,3 V gegenüber 0,78 W bei 5 V, während sich die 15 mA der Anzeige und die Schaltverluste kaum ändern. Außerdem leitet die Diode bei niedrigerem Tastgrad einen größeren Teil jedes Zyklus."
+      }
+    },
+    "faults": {
+      "short": {
+        "q": "Mit kurzgeschlossenem OUT zeigt die Anzeige des Moduls weiter 8,4 V. Warum?",
+        "options": {
+          "1": "Sie zeigt IN, und die Messschaltung läuft aus dem Eingang",
+          "2": "Der Kurzschluss ist noch nicht passiert",
+          "3": "Die Anzeige hält ihren letzten Messwert"
+        },
+        "why": "Die Anzeige hat einen eigenen Regler am Eingang. Schalte sie auf OUT, und sie zeigt 0.00, wie das Multimeter."
+      },
+      "stall": {
+        "q": "Der Motor wird festgehalten und zieht 1,25 A, aber der Ausgang bleibt bei 5,00 V. Warum?",
+        "options": {
+          "1": "Das Getriebe des Motors begrenzt den Strom",
+          "2": "Das Messgerät ist zu langsam, um den Einbruch zu zeigen",
+          "3": "1,25 A liegen weit unter der Grenze des Wandlers von 4,2 A, also liefert er einfach mehr"
+        },
+        "why": "Ein Regler hält seine Spannung, bis er an eine Grenze kommt. Nur eine Last über etwa 4,2 A zieht diesen Ausgang nach unten."
+      },
+      "wiper": {
+        "q": "Eine kalte Lötstelle am Schleifer des Trimmers. Was macht der Ausgang?",
+        "options": {
+          "1": "Fällt auf 1,23 V",
+          "2": "Springt auf den Eingang abzüglich des Dropouts",
+          "3": "Bleibt, wo er war"
+        },
+        "why": "FB sieht über R1 0 V, also hält der Regler den Ausgang für viel zu niedrig und schaltet voll durch. Alles am Ausgang bekommt die Akkuspannung: der gefährlichste Ausfall auf dieser Platine."
+      }
+    },
+    "end": {
+      "vs-7805": {
+        "q": "5 V bei 2 A aus einem 3S-Akku mit 11,1 V. Wie viel Wärme erzeugen ungefähr ein 7805 und dieser Abwärtswandler?",
+        "options": {
+          "1": "Etwa gleich viel, je 2 W",
+          "2": "Etwa 12 W gegenüber 2,5 W",
+          "3": "Etwa 2,5 W gegenüber 12 W"
+        },
+        "why": "Ein Linearregler verheizt (11,1 - 5) x 2 = 12,2 W. Der Abwärtswandler mit 80 % verheizt 10 / 0,8 - 10 = 2,5 W. Deshalb nutzen Roboter Schaltregler."
+      },
+      "cut-off": {
+        "q": "Warum braucht ein Roboter an diesem Modul eine eigene Abschaltung bei niedrigem Akkustand?",
+        "options": {
+          "1": "Das Modul schaltet zu früh ab",
+          "2": "Die Anzeige des Moduls leert den Akku",
+          "3": "Das Modul läuft weiter bis etwa 3,6 V am Eingang, weit unter der sicheren Untergrenze eines LiPo"
+        },
+        "why": "Es hat keine Unterspannungssperre. Ein 2S-Akku nimmt unter 6,0 V Schaden; der Wandler läuft munter weiter, also muss etwas anderes den Akku überwachen."
+      },
+      "first": {
+        "q": "Ein neues Modul, ein 3S-Akku und ein ESP32 (3,3 V, absolutes Maximum 3,6 V). Was machst du zuerst?",
+        "options": {
+          "1": "Akku dran, nichts am Ausgang, den Trimmer nach dem Messgerät auf 3,30 V drehen",
+          "2": "Den ESP32 anschließen und den Trimmer drehen, bis er bootet",
+          "3": "Der Anzeige vertrauen und anschließen"
+        },
+        "why": "Der Trimmer steht vielleicht am oberen Anschlag: 11 V an einem 3,6-V-Bauteil. Stell ihn ohne Last ein, lies ihn mit einem Messgerät ab, schalte aus und schließ dann an."
+      }
+    }
+  }
+}
