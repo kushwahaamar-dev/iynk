@@ -1,0 +1,736 @@
+{
+  "title": "Arduino Nano",
+  "tagline": "Le cerveau de l'Uno sur une carte de la taille d'un chewing-gum, faite pour s'enficher dans une platine d'essai.",
+  "overview": "La Nano (A000005, révision 3.3) a le même ATmega328P à 16 MHz et la même logique 5 V que l'Uno, sur une carte de 43,18 × 17,78 mm avec deux rangées de 15 broches espacées de 0,6 pouce, pour qu'elle enjambe le milieu d'une platine d'essai. L'USB arrive sur une prise Mini-B et passe par une puce USB-série FTDI FT232RNL, qui réinitialise aussi le 328P pour les téléversements. Vous disposez de 14 broches numériques (dont 6 en PWM), de 8 entrées analogiques (A6 et A7 sont uniquement analogiques), de 32 KB de flash dont 30 720 octets libres pour votre sketch, de 2 KB de RAM et de 1 KB d'EEPROM. Il n'y a pas de prise jack : alimentez-la par l'USB, en 7-12 V sur VIN, ou avec un 5 V régulé sur la broche 5V.",
+  "mcu": {
+    "ft232rnl": "Pont USB-série (FTDI FT232RNL, successeur direct du FT232RL) : il apparaît sous le nom « FT232R USB UART » (VID:PID 0403:6001), pilote les LED TX et RX, fabrique le 3,3 V de la broche 3.3V, et sa ligne DTR réinitialise le 328P à travers un condensateur de 100 nF pour que les téléversements démarrent tout seuls."
+  },
+  "power": {
+    "usb": {
+      "protection": "Un polyfusible de 500 mA (F1, disjoncte à 1 A), puis une diode Schottky (D1). La diode empêche une Nano alimentée par VIN d'alimenter votre ordinateur, et coûte environ 0,35 V : le rail 5V est donc vers 4,65 V sur l'USB. La fiche Mini-B a un détrompeur, elle ne peut pas entrer à l'envers."
+    },
+    "vin": {
+      "protection": "Rien d'autre que le régulateur : il n'y a pas de diode contre l'inversion de polarité sur VIN. Le régulateur 5 V (un LD1117 sur les cartes fabriquées aujourd'hui) limite le courant et se coupe quand il chauffe, mais la plage à utiliser est 7-12 V et 15 V le détruisent. Chaque volt au-dessus de 5 se transforme en chaleur : à 12 V, chaque tranche de 100 mA de charge coûte 0,7 W dans un minuscule SOT-223."
+    },
+    "pin5": {
+      "protection": "Aucune. La broche 5V, c'est le rail 5 V lui-même : injectez-y un 4,75-5,25 V propre et régulé, et vous contournez le régulateur et la diode. Au-dessus de 6 V, l'ATmega328P dépasse son maximum absolu, et une alimentation inversée va droit dans les puces. Ne l'alimentez pas quand VIN est aussi alimenté."
+    },
+    "rails": {
+      "vusb": "Le 5 V de l'USB après le polyfusible. Il n'atteint le rail 5V qu'à travers la diode Schottky D1.",
+      "5v": "Le rail principal de la carte : le microcontrôleur, le FT232 et la LED ON en sont alimentés. Il vaut 5,0 V depuis le régulateur quand VIN est alimenté, environ 4,65 V depuis l'USB, ou ce que vous injectez sur la broche 5V. La source la plus haute l'emporte, car la diode se bloque quand la sortie du régulateur dépasse l'USB moins sa chute.",
+      "3v3": "3,3 V fournis par le petit régulateur propre au FT232, 50 mA au maximum. C'est une sortie : assez pour un capteur, pas pour un ESP8266 ou une radio nRF24L01."
+    },
+    "io": "Chaque broche peut fournir ou absorber 20 mA sans risque et 40 mA au maximum absolu ; toutes les broches ensemble, 200 mA à travers les broches d'alimentation de la puce. Une sortie HIGH fait 5 V : elle peut abîmer des composants 3,3 V sans pont diviseur ni convertisseur de niveau. Un signal 3,3 V entrant dans la Nano se lit HIGH, avec peu de marge (HIGH commence à 3,0 V). La carte consomme environ 27 mA à elle seule : environ 9 mA pour le 328P à 16 MHz, 15 mA pour le FT232 et 3 mA pour la LED ON."
+  },
+  "pins": {
+    "j1": {
+      "1": "TX série. Va aussi au FT232 à travers une résistance de 1 kΩ : le moniteur série voit tout ce qui est envoyé ici.",
+      "2": "RX série, piloté par le FT232 à travers 1 kΩ. Tout ce qui est câblé ici (un module Bluetooth ou GPS) peut bloquer les téléversements.",
+      "3": "RESET, actif à l'état bas, avec un pull-up de 1 kΩ vers le 5 V. Même net que l'autre broche RST et que le bouton RESET.",
+      "6": "PWM du Timer2. tone() utilise aussi le Timer2, ce qui arrête le PWM sur D3 et D11.",
+      "8": "PWM du Timer0 à 977 Hz. Le Timer0 compte aussi millis() : ne touchez pas à ses réglages.",
+      "9": "PWM du Timer0 à 977 Hz.",
+      "12": "PWM du Timer1 à 490 Hz. La bibliothèque Servo prend le Timer1, ce qui arrête le PWM sur D9 et D10.",
+      "13": "PWM du Timer1. En tant que SS du SPI, elle doit rester une sortie tant que la Nano est le contrôleur SPI.",
+      "14": "PWM du Timer2, et MOSI (COPI) du SPI. Aussi sur la pastille ICSP 4."
+    },
+    "j2": {
+      "1": "Entrée du régulateur 5 V : 7-12 V, 15 V au maximum absolu. Aucune protection contre l'inversion de polarité.",
+      "3": "Le même net RESET que la broche 3 de J1.",
+      "4": "Le rail 5 V : une sortie sur l'USB (environ 4,65 V) ou VIN (5,0 V), ou une entrée 5 V régulée.",
+      "5": "Entrée analogique seulement (ADC7) : pas d'E/S numérique ni de pull-up, donc digitalRead(A7) ne fonctionne pas.",
+      "6": "Entrée analogique seulement (ADC6) : pas d'E/S numérique ni de pull-up, donc digitalRead(A6) ne fonctionne pas.",
+      "7": "SCL de l'I2C pour la bibliothèque Wire. La carte n'a pas de pull-ups I2C ; la plupart des modules ont les leurs.",
+      "8": "SDA de l'I2C pour la bibliothèque Wire.",
+      "13": "Référence du CAN, découplée par 100 nF sur la carte. N'y injectez jamais de tension tant qu'analogReference(DEFAULT) est actif.",
+      "14": "Sortie 3,3 V du FT232, 50 mA au maximum. N'y injectez jamais 5 V.",
+      "15": "Pilote la LED L à travers 1 kΩ (environ 3 mA), sans tampon. À cause de cette charge, INPUT_PULLUP sur D13 ne lit pas HIGH de façon fiable. C'est aussi SCK du SPI, donc L scintille pendant les transferts SPI."
+    },
+    "j4": {
+      "icsp": "Pastille ICSP. Les six pastilles restent nues sur la Nano : appuyez dessus les pointes à ressort d'un programmateur, ou un connecteur, pour graver le bootloader."
+    }
+  },
+  "leds": {
+    "L": "Jaune, sur D13 à travers 1 kΩ : allumée quand D13 est à HIGH. Le bootloader la fait clignoter après un reset.",
+    "TX": "Verte, pilotée par le FT232 : clignote quand la Nano envoie des données série à l'ordinateur.",
+    "RX": "Rouge, pilotée par le FT232 : clignote quand l'ordinateur envoie des données à la Nano, y compris pendant les téléversements.",
+    "PWR": "Verte, marquée ON : allumée dès que le rail 5 V est présent."
+  },
+  "controls": {
+    "SW1": "Tire RESET à l'état bas tant qu'on appuie. Au relâchement, le 328P redémarre : le bootloader fait clignoter L et écoute pendant environ une seconde, puis votre sketch repart de setup() et affiche son message de démarrage."
+  },
+  "parts": {
+    "IC3": {
+      "name": "Microcontrôleur ATmega328P",
+      "what": "Le cerveau : un AVR 8 bits à 16 MHz avec 32 KB de flash, 2 KB de RAM, 1 KB d'EEPROM, un CAN 10 bits, trois timers, UART, SPI et I2C. Sur la carte d'origine révision 3.3, c'est le boîtier QFN de 5 × 5 mm (ATmega328P-MU), tourné de 45° pour former un losange ; les Nano plus anciennes et la plupart des clones utilisent le TQFP, plus grand."
+    },
+    "Y1": {
+      "name": "Résonateur céramique 16 MHz",
+      "what": "Fixe l'horloge de 16 MHz. C'est un résonateur céramique avec ses condensateurs de charge intégrés, pas un quartz : il n'est précis qu'à environ 0,5 %, et millis() dérive de quelques secondes par heure. Sans lui, le 328P ne tourne pas du tout."
+    },
+    "SW1": {
+      "name": "Bouton RESET",
+      "what": "Un minuscule bouton-poussoir CMS entre RESET et GND. Appuyez pour redémarrer le sketch ; le bootloader attend d'abord un téléversement pendant environ une seconde."
+    },
+    "TX": {
+      "name": "LED TX",
+      "what": "Clignote quand la Nano envoie des données série par l'USB. Elle montre le trafic du FT232 : elle reste éteinte quand D1 parle à un autre appareil sans l'ordinateur."
+    },
+    "RX": {
+      "name": "LED RX",
+      "what": "Clignote quand l'ordinateur envoie des données, par exemple pendant un téléversement."
+    },
+    "PWR": {
+      "name": "LED ON",
+      "what": "LED d'alimentation verte sur le rail 5 V à travers 1 kΩ. Si elle est éteinte, la carte n'a pas de 5 V."
+    },
+    "L": {
+      "name": "LED L (broche 13)",
+      "what": "La LED intégrée, LED_BUILTIN = 13. D13 la pilote directement à travers 1 kΩ, sans le tampon à ampli op de l'Uno R3."
+    },
+    "J3": {
+      "name": "Prise USB Mini-B",
+      "what": "L'alimentation et les données de l'ordinateur. C'est du Mini-B, pas du Micro-B : la fiche a la même largeur mais fait environ 3 mm d'épaisseur. La prise tient surtout par ses soudures : ne faites pas levier sur le câble de côté."
+    },
+    "J4": {
+      "name": "Pastilles ICSP",
+      "what": "Six pastilles nues pour un programmateur in-circuit (MISO, 5V, SCK, MOSI, RESET, GND). Elles servent à graver le bootloader et les fusibles."
+    },
+    "J1": {
+      "name": "Connecteur J1",
+      "what": "Quinze broches le long du bord supérieur : TX1, RX0, RST, GND et D2-D12. Le plastique est sous la carte et les broches pointent vers le bas, dans la platine d'essai."
+    },
+    "J2": {
+      "name": "Connecteur J2",
+      "what": "Quinze broches le long du bord inférieur : D13, 3.3V, REF, A0-A7, 5V, RST, GND et VIN. La broche 1 (VIN) a la pastille carrée."
+    },
+    "IC1": {
+      "name": "Puce USB-série FT232RNL",
+      "what": "Sur la face inférieure. Elle transforme l'USB en port série du 328P, produit la sortie 3,3 V, pilote les LED TX et RX et envoie l'impulsion DTR de l'auto-reset. Elle n'a pas besoin de quartz : son horloge de 12 MHz est intégrée."
+    },
+    "IC2": {
+      "name": "Régulateur 5 V",
+      "what": "Sur la face inférieure : un régulateur à faible chute LD1117 en SOT-223 qui produit 5,0 V à partir de VIN. Il a besoin d'environ 1,1 V de marge, donc VIN sous environ 6,5 V fait chuter la sortie, et sa languette sert à la fois de sortie et de dissipateur."
+    },
+    "D1": {
+      "name": "Diode Schottky",
+      "what": "Une SS1P3L (1 A, 30 V) de l'USB vers le rail 5 V. Elle empêche une alimentation sur VIN de remonter dans votre ordinateur et fait chuter environ 0,35 V."
+    },
+    "F1": {
+      "name": "Polyfusible USB",
+      "what": "Un fusible réarmable : il tient 500 mA et disjoncte à 1 A, puis refroidit et se réarme une fois débranché."
+    },
+    "C2": {
+      "name": "Condensateur tantale 4,7 µF (USB)",
+      "what": "Condensateur de réserve sur l'alimentation USB. Le tantale est polarisé : la bande marque la borne +."
+    },
+    "C5": {
+      "name": "Condensateur tantale 4,7 µF (5 V)",
+      "what": "Condensateur de réserve sur le rail 5 V. Inversé, un condensateur tantale peut se mettre en court-circuit, se fendre ou fumer."
+    },
+    "C1": {
+      "name": "Condensateur 100 nF sur AREF",
+      "what": "Lisse la référence du CAN."
+    },
+    "C3": {
+      "name": "Condensateur de découplage 1 µF",
+      "what": "À côté des broches d'alimentation du 328P : il couvre les pics de courant des commutations de la puce."
+    },
+    "C4": {
+      "name": "Condensateur d'auto-reset 100 nF",
+      "what": "Transmet l'impulsion DTR du FT232 à RESET, pour que le 328P redémarre dans le bootloader au début d'un téléversement. Sans lui, chaque téléversement échoue, sauf si vous appuyez sur RESET au bon moment."
+    },
+    "C6": {
+      "name": "Condensateur 100 nF sur la sortie 3,3 V",
+      "what": "Garde stable le régulateur 3,3 V interne du FT232."
+    },
+    "C7": {
+      "name": "Condensateur 1 µF en sortie du régulateur",
+      "what": "Le régulateur 5 V a besoin d'un condensateur en sortie pour rester stable."
+    },
+    "C8": {
+      "name": "Condensateur 1 µF sur le 5 V",
+      "what": "Du découplage supplémentaire sur le rail 5 V."
+    },
+    "C9": {
+      "name": "Condensateur 100 nF sur VUSB",
+      "what": "Découple l'alimentation USB après le polyfusible."
+    },
+    "RP1": {
+      "name": "Réseau de résistances 1 kΩ RP1",
+      "what": "Quatre résistances de 1 kΩ en un seul composant : D0 et D1 vers le FT232, la LED ON et le pull-up de RESET. Les résistances sur D0 et D1 permettent à un module câblé à cet endroit de dominer le FT232 : voilà pourquoi il peut bloquer les téléversements."
+    },
+    "RP2": {
+      "name": "Réseau de résistances 1 kΩ RP2",
+      "what": "Les résistances série des LED L, TX et RX (la quatrième est inutilisée)."
+    }
+  },
+  "wireables": {
+    "led": {
+      "note": "Une LED de 5 mm sur une broche PWM à travers une résistance de 220 Ω : environ 12 mA sur l'USB, lumineuse et sans danger.",
+      "caution": "Jamais sans la résistance : une LED branchée directement sur une broche tire bien plus que le maximum de 40 mA et tue la broche ou la LED."
+    },
+    "push-button": {
+      "note": "Entre D2 et GND avec pinMode(2, INPUT_PULLUP) : un appui se lit LOW, sans résistance. D2 est aussi l'interruption INT0."
+    },
+    "potentiometer": {
+      "note": "Un potentiomètre de 10 kΩ en pont diviseur : extrémités à GND et 5V, curseur à A0. analogRead donne 0-1023."
+    },
+    "ldr": {
+      "note": "Une photorésistance du 5V vers A0 plus une résistance de 10 kΩ de A0 vers GND : plus de lumière, lecture plus haute."
+    },
+    "tmp36": {
+      "note": "Capteur de température analogique : 0,5 V à 0 °C plus 10 mV par °C. Lisez-le sur A1 et gardez des fils courts."
+    },
+    "piezo-buzzer": {
+      "note": "Un buzzer passif sur D8 joue tone(8, 440).",
+      "caution": "tone() prend le Timer2, donc le PWM sur D3 et D11 s'arrête pendant qu'une note joue."
+    },
+    "servo-sg90": {
+      "note": "Signal sur D9 avec la bibliothèque Servo (elle prend le Timer1, donc le PWM sur D10 s'arrête aussi).",
+      "caution": "Alimentez le fil rouge par une alimentation 5 V séparée dont le GND rejoint celui de la Nano. Un servo qui force tire environ 1 A, ce qui provoque un brown-out de la Nano sur l'USB et fait disjoncter le polyfusible."
+    },
+    "hc-sr04": {
+      "note": "Capteur de distance à ultrasons, 5 V : Trig sur D9, Echo sur D10, distance = écho en µs / 58 cm. Une carte 5 V n'a pas besoin d'adapter le niveau de son écho."
+    },
+    "mpu6050": {
+      "note": "Module GY-521 avec un MPU-6050 à l'adresse I2C 0x68 (0x69 avec AD0 à l'état haut). Son propre régulateur lui permet de fonctionner sur le 5V ; SDA va à A4 et SCL à A5.",
+      "caution": "La puce elle-même est en 3,3 V. Le module tire SDA et SCL vers son 3,3 V, et Wire.begin() active aussi les faibles pull-ups du 328P vers le 5 V : le bus repose donc un peu au-dessus de 3,3 V. Ça marche en pratique ; un convertisseur de niveau est la solution propre."
+    },
+    "ssd1306": {
+      "note": "OLED 0,96 pouce 128 × 64 à l'adresse I2C 0x3C, sur A4 (SDA) et A5 (SCL).",
+      "caution": "Lisez l'ordre des broches sur la sérigraphie : certains modules sont GND VCC, d'autres VCC GND, et les inverser tue l'écran. Sa mémoire d'image de 1 KB prend la moitié de la RAM de la Nano : gardez le texte en flash avec F(\"...\")."
+    }
+  },
+  "failures": {
+    "reverse-vin": {
+      "title": "Polarité inversée sur VIN",
+      "symptom": "Rien ne s'allume, le régulateur sous la carte chauffe vite et sent l'époxy chaud.",
+      "explanation": "La Nano n'a pas de diode contre l'inversion de polarité sur VIN. Une alimentation inversée fait passer le courant à l'envers dans le régulateur 5 V, qui lâche en général ; certains claquent en court-circuit et laissent ensuite passer VIN directement sur le rail 5 V, ce qui tue alors le 328P et le FT232.",
+      "fix": "Débranchez immédiatement et inversez les fils. Vérifiez le régulateur avant de refaire confiance à la carte, et ajoutez une diode série sur votre propre alimentation."
+    },
+    "reverse-5v": {
+      "title": "Polarité inversée sur la broche 5V",
+      "symptom": "Les puces chauffent, le tantale C5 peut se fendre ou fumer, et si l'USB est aussi branché, l'ordinateur signale une surtension USB.",
+      "explanation": "La broche 5V, c'est le rail lui-même, sans rien devant. Un 5 V inversé force le courant à travers les diodes de protection internes de l'ATmega328P et du FT232 et polarise C5 en inverse. Avec l'USB branché, D1 conduit et le polyfusible disjoncte.",
+      "fix": "Débranchez, inversez les fils, et remplacez le 328P et C5 s'ils ont chauffé."
+    },
+    "brownout": {
+      "title": "Brown-out : un servo sur la broche 5V",
+      "symptom": "La carte redémarre sans cesse : L clignote, le message de démarrage s'affiche encore et encore, et le servo tressaute.",
+      "explanation": "Sur l'USB, le rail 5 V n'est qu'à environ 4,65 V derrière un polyfusible de 500 mA. Un servo qui démarre ou qui force tire environ 1 A : le rail plonge sous le seuil de brown-out de 2,7 V du 328P et la puce redémarre ; si ça dure assez, le polyfusible disjoncte aussi.",
+      "fix": "Alimentez moteurs et servos avec leur propre alimentation et ne reliez que les masses."
+    },
+    "vin-overvoltage": {
+      "title": "19 V sur VIN",
+      "symptom": "Le régulateur grille : la LED ON s'éteint, ou pire, VIN atteint le rail 5 V et tue les puces.",
+      "explanation": "Le LD1117 monté sur les Nano fabriquées aujourd'hui accepte au plus 15 V. Un chargeur d'ordinateur portable de 19 V sur VIN dépasse cette limite, et même 12 V le font chauffer en charge.",
+      "fix": "Mettez 7-12 V sur VIN, ou un 5 V régulé sur la broche 5V."
+    },
+    "vin-too-low": {
+      "title": "3,5 V sur VIN",
+      "symptom": "La LED ON est faible et la carte redémarre encore et encore.",
+      "explanation": "Le régulateur a besoin d'environ 1,1 V de plus que sa sortie de 5 V. À partir de 3,5 V, il donne environ 2,4 V, sous le seuil de brown-out de 2,7 V du 328P : la puce reste en reset. Entre environ 2,7 V et 4,5 V, elle tourne, mais hors spécifications à 16 MHz.",
+      "fix": "Donnez au moins 7 V à VIN, ou injectez un 5 V régulé sur la broche 5V."
+    },
+    "5v-overvoltage": {
+      "title": "Une alimentation 9-10 V sur la broche 5V",
+      "symptom": "La LED ON flashe fort et la carte meurt ; le 328P et le FT232 tiédissent et ne répondent plus.",
+      "explanation": "La broche 5V contourne le régulateur. La tension d'alimentation maximale absolue de l'ATmega328P est de 6,0 V et rien ne l'écrête : 10 V le détruisent, ainsi que le FT232 sur le même rail. D1 évite au moins que ça remonte dans l'ordinateur.",
+      "fix": "Les blocs de piles et les adaptateurs secteur au-dessus de 5,5 V vont sur VIN, jamais sur la broche 5V."
+    },
+    "3v3-backfeed": {
+      "title": "5 V dans la broche 3.3V",
+      "symptom": "Le FT232 tiédit et le port USB peut cesser de fonctionner.",
+      "explanation": "La broche 3.3V est la sortie du régulateur interne du FT232. Y pousser 5 V alimente ce régulateur à l'envers. C'est la version Nano de l'erreur classique qui consiste à mettre 5 V sur une broche 3,3 V.",
+      "fix": "N'utilisez la broche 3.3V que comme sortie pour de petits composants 3,3 V (50 mA au maximum), et ne la reliez jamais au 5 V."
+    },
+    "short-5v": {
+      "title": "Court-circuit entre 5V et GND",
+      "symptom": "La LED ON s'éteint, la Nano disparaît de la liste des ports et l'ordinateur peut se plaindre du port USB.",
+      "explanation": "Sur l'USB, le polyfusible F1 disjoncte en quelques millisecondes et protège l'ordinateur. Sur VIN, le régulateur limite le courant vers 1,2 A, puis chauffe énormément et se coupe par intermittence en protection thermique.",
+      "fix": "Trouvez et supprimez le court-circuit (un fil de liaison égaré sur les rails, un pont de soudure), puis attendez une minute que le polyfusible refroidisse."
+    },
+    "cold-usb": {
+      "title": "Soudure froide sur la prise USB",
+      "symptom": "La Nano disparaît du port USB quand le câble bouge : « USB device not recognized », la LED ON vacille.",
+      "explanation": "La prise Mini-B tient surtout par ses soudures. Une soudure froide ou fissurée sur ses broches ou ses pattes de blindage ne fait contact que de temps en temps.",
+      "fix": "Refaites les soudures des broches de la prise et des quatre pattes de blindage, et soutenez le câble pour qu'il ne puisse pas faire levier sur la prise."
+    },
+    "cold-resonator": {
+      "title": "Soudure froide sur le résonateur",
+      "symptom": "La LED ON est allumée, mais le sketch s'arrête et repart, et les téléversements échouent avec « not in sync ».",
+      "explanation": "Sans horloge stable de 16 MHz, le 328P s'arrête chaque fois que la soudure du résonateur s'ouvre.",
+      "fix": "Refaites les soudures des trois pastilles du résonateur."
+    },
+    "cold-d9": {
+      "title": "Soudure froide sur la broche D9 du connecteur",
+      "symptom": "La LED qui fait un fondu vacille ou s'éteint, et fonctionne quand vous appuyez sur la carte.",
+      "explanation": "La soudure de la broche sur sa pastille est très résistante ou ouverte : le sketch est bon, c'est le signal qui n'arrive pas à chaque fois jusqu'à la platine d'essai.",
+      "fix": "Refaites la soudure de cette broche jusqu'à ce que l'étain mouille la broche et la pastille en formant un petit cône."
+    },
+    "missing-resonator": {
+      "title": "Résonateur absent",
+      "symptom": "La LED ON est allumée mais rien ne tourne : pas de clignotement, rien en série, les téléversements expirent.",
+      "explanation": "Les fusibles de configuration disent au 328P de tourner sur un résonateur externe de 16 MHz. Sans Y1, pas d'horloge : la puce reste immobile.",
+      "fix": "Placez le résonateur 16 MHz Y1."
+    },
+    "missing-c4": {
+      "title": "Condensateur d'auto-reset absent",
+      "symptom": "Le sketch continue de tourner, mais chaque téléversement échoue avec « programmer is not responding ».",
+      "explanation": "C4 est un minuscule condensateur CMS de 100 nF. Il transforme l'impulsion DTR du FT232 en reset, pour que le bootloader écoute quand avrdude démarre. Sans lui, le 328P n'entend jamais le téléversement.",
+      "fix": "Remettez C4. En attendant, appuyez sur RESET au moment où le téléversement démarre."
+    },
+    "missing-d1": {
+      "title": "Diode USB absente",
+      "symptom": "Sur l'USB, rien ne s'allume. Sur VIN, la carte fonctionne normalement.",
+      "explanation": "L'alimentation USB n'atteint le rail 5 V qu'à travers la diode Schottky D1. Sans elle, l'USB n'apporte rien au rail, alors que le régulateur l'alimente toujours depuis VIN.",
+      "fix": "Placez D1 avec sa bande (la cathode) du côté 5 V."
+    },
+    "reversed-c5": {
+      "title": "Condensateur tantale monté à l'envers",
+      "symptom": "À la mise sous tension, C5 se met en court-circuit, chauffe et peut se fendre ou fumer ; le rail 5 V s'effondre.",
+      "explanation": "Les condensateurs tantale sont polarisés. Inversée, la fine couche d'oxyde cède et le condensateur devient un quasi-court-circuit sur le rail.",
+      "fix": "Débranchez et posez un condensateur neuf, bande (la borne +) dans le bon sens."
+    }
+  },
+  "assembly": {
+    "unplug": {
+      "title": "Débranchez la Nano",
+      "body": "Ne travaillez jamais sur une carte sous tension. Retirez le câble USB et tout ce qui est branché sur VIN ou 5V avant de toucher un composant."
+    },
+    "strip": {
+      "title": "Démontez jusqu'au circuit nu",
+      "body": "Retirez tous les composants. Il reste le circuit imprimé bleu-vert à deux couches, avec les pastilles ICSP nues.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension."
+    },
+    "reflow": {
+      "title": "Placement automatique, puis refusion",
+      "body": "Tous les composants sauf les connecteurs sont des CMS, sur les deux faces : le 328P, le résonateur, le bouton, les LED et la prise USB dessus, le FT232, le régulateur, la diode, le polyfusible, les condensateurs et les réseaux de résistances dessous. Une machine les pose sur la pâte à braser et la carte passe au four de refusion.",
+      "refusal": "Démontez d'abord la carte, alimentation coupée."
+    },
+    "header-j1": {
+      "title": "Posez le connecteur J1",
+      "body": "Enfoncez le connecteur 15 broches par le dessous : plastique en bas, broches vers le bas, pour que la Nano s'enfiche dans une platine d'essai.",
+      "refusal": "Les composants CMS d'abord : lancez le placement puis la refusion. Le four ferait fondre le plastique du connecteur."
+    },
+    "header-j2": {
+      "title": "Posez le connecteur J2",
+      "body": "Le second connecteur 15 broches se pose de la même façon, le long du bord avec VIN et D13. Les rangées se retrouvent à 15,24 mm (0,6 pouce) l'une de l'autre.",
+      "refusal": "Les composants CMS d'abord : lancez le placement puis la refusion."
+    },
+    "solder": {
+      "title": "Soudez les 30 broches des connecteurs",
+      "body": "Soudez chaque broche par le dessus : chauffez ensemble la pastille et la broche, et apportez l'étain jusqu'à ce qu'il coule en un petit cône brillant. Une boule terne est une soudure froide.",
+      "refusal": "Rien à souder pour l'instant : posez d'abord les connecteurs."
+    },
+    "power-up": {
+      "title": "Mettez sous tension par l'USB",
+      "body": "Branchez le câble Mini-B. La LED ON s'allume aussitôt et le FT232 apparaît sous le nom « FT232R USB UART ». Mesurez : la broche 5V affiche environ 4,65 V (l'USB moins la diode) et la broche 3.3V 3,3 V."
+    },
+    "factory-blink": {
+      "title": "Vérifiez le Blink d'usine",
+      "body": "Les Nano sont livrées avec Blink : après la mise sous tension, L clignote une fois par seconde. TX et RX restent éteintes tant qu'il n'y a pas de trafic série."
+    },
+    "upload-hello": {
+      "title": "Téléversez un sketch série",
+      "body": "Téléversez « Serial hello ». DTR réinitialise le 328P, RX scintille pendant que les octets entrent à 115 200 bauds, puis le sketch affiche « Nano ready » et TX clignote une fois par seconde à chaque ligne.",
+      "refusal": "Branchez d'abord l'USB : les téléversements passent par le câble."
+    }
+  },
+  "lessons": {
+    "blink": {
+      "title": "Blink",
+      "lede": "Votre première sortie : D13 allume et éteint la LED L jaune de la carte et une LED sur la platine d'essai, avec une pause après chaque changement.",
+      "steps": {
+        "1": "pinMode() met D13 en sortie.",
+        "2": "digitalWrite() la passe à 5 V (HIGH) ou à 0 V (LOW) ; les deux LED suivent.",
+        "3": "Les deux valeurs de delay() fixent combien de temps elle reste allumée et éteinte. Modifiez-les et appuyez sur Exécuter."
+      },
+      "hints": {
+        "1": "Sur la Nano, LED_BUILTIN n'est que le nombre 13.",
+        "2": "Essayez une résistance de 10 kΩ : la LED de la platine d'essai devient très faible, la LED L ne change pas."
+      },
+      "specs": {
+        "1": {
+          "label": "Courant de la LED",
+          "value": "(4,65 V − 2,0 V) ÷ 220 Ω ≈ 12 mA sur l'USB"
+        },
+        "2": {
+          "label": "Limite par broche",
+          "value": "20 mA sans risque, 40 mA au maximum absolu"
+        },
+        "3": {
+          "label": "Résistance",
+          "value": "220 Ω : rouge, rouge, marron, or"
+        },
+        "4": {
+          "label": "LED L",
+          "value": "D13 → 1 kΩ → LED, environ 3 mA"
+        }
+      },
+      "pins": {
+        "D13": {
+          "to": "Résistance → anode (+) de la LED",
+          "role": "Le sketch la passe à HIGH et à LOW ; L la suit sur la carte."
+        },
+        "GND": {
+          "to": "Cathode (−) de la LED",
+          "role": "Le courant revient ici."
+        }
+      },
+      "callouts": {
+        "L": "L reproduit D13 sur la carte.",
+        "R1": "Maintient le courant de la LED vers 12 mA.",
+        "LED1": "La patte longue est l'anode (+)."
+      },
+      "features": {
+        "1": "Sortie numérique avec digitalWrite()",
+        "2": "Changez de résistance et regardez la luminosité",
+        "3": "Modifiez le rythme dans le code et lancez-le"
+      },
+      "params": {
+        "on": {
+          "label": "Allumée pendant"
+        },
+        "off": {
+          "label": "Éteinte pendant"
+        },
+        "resistor": {
+          "220": "220 Ω",
+          "label": "Résistance",
+          "220-note": "Environ 12 mA : lumineuse et sans danger.",
+          "1k": "1 kΩ",
+          "1k-note": "Environ 2,6 mA : nettement plus faible.",
+          "10k": "10 kΩ",
+          "10k-note": "Environ 0,3 mA : à peine une lueur."
+        }
+      },
+      "checks": {
+        "1": "Le sketch tourne 6 secondes sans erreur",
+        "2": "D13 clignote (un cycle entre 0,1 et 4 s)",
+        "3": "Il utilise pinMode, digitalWrite et delay"
+      },
+      "code": {
+        "intro": "Blink : allumer et éteindre D13.",
+        "resistor": "résistance de la LED sur la platine d'essai :",
+        "pin": "LED de la carte, plus la LED de la platine d'essai"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Pourquoi la LED de la platine d'essai a-t-elle besoin d'une résistance ?",
+          "options": {
+            "1": "Pour clignoter plus vite",
+            "2": "Pour limiter le courant à une valeur sûre",
+            "3": "Pour transformer le 5 V en 3,3 V"
+          },
+          "why": "Une LED fait chuter environ 2 V puis conduit presque librement ; c'est la résistance qui fixe le courant, (4,65 − 2,0) ÷ 220 ≈ 12 mA."
+        },
+        "q2": {
+          "q": "Quelle broche est LED_BUILTIN sur la Nano ?",
+          "options": {
+            "1": "D13",
+            "2": "D2",
+            "3": "A0"
+          },
+          "why": "La LED L est reliée à D13 à travers 1 kΩ : LED_BUILTIN vaut donc 13, comme sur l'Uno."
+        }
+      }
+    },
+    "button-sensor": {
+      "title": "Un bouton et un potentiomètre",
+      "lede": "Les entrées permettent à la Nano de sentir le monde : un bouton sur D2 qui lit LOW quand on appuie, et un potentiomètre sur A0 qui lit de 0 à 1023. La LED L montre le bouton et le moniteur série montre les deux.",
+      "steps": {
+        "1": "INPUT_PULLUP active le pull-up interne du 328P : D2 lit HIGH jusqu'à ce que le bouton la relie à GND.",
+        "2": "analogRead(A0) transforme les 0-5 V du potentiomètre en un nombre de 0 à 1023.",
+        "3": "Appuyez sur le bouton et tournez le potentiomètre pendant que ça tourne, et regardez le moniteur série à 9600 bauds."
+      },
+      "hints": {
+        "1": "Un appui se lit LOW : voilà pourquoi le code compare avec LOW.",
+        "2": "Sur l'USB, le rail 5V est vers 4,65 V : les volts affichés sont donc un peu trop hauts ; le nombre brut, lui, montre ce que fait vraiment le potentiomètre.",
+        "3": "N'utilisez pas A6 ou A7 pour le bouton : ce sont uniquement des entrées analogiques."
+      },
+      "specs": {
+        "1": {
+          "label": "Pull-up",
+          "value": "Interne, 20-50 kΩ vers le 5 V"
+        },
+        "2": {
+          "label": "Niveaux logiques",
+          "value": "LOW sous 1,5 V, HIGH au-dessus de 3,0 V"
+        },
+        "3": {
+          "label": "CAN",
+          "value": "10 bits : 0-1023, environ 112 µs par lecture"
+        },
+        "4": {
+          "label": "Rebonds",
+          "value": "Les contacts crépitent jusqu'à 5 ms"
+        }
+      },
+      "pins": {
+        "D2": {
+          "to": "Bouton",
+          "role": "Lit LOW tant que le bouton est enfoncé."
+        },
+        "A0": {
+          "to": "Curseur du potentiomètre",
+          "role": "Lit la tension du potentiomètre sous forme de 0-1023."
+        },
+        "5V": {
+          "to": "Une extrémité du potentiomètre",
+          "role": "Le haut du pont diviseur."
+        },
+        "GND": {
+          "to": "Bouton et l'autre extrémité du potentiomètre",
+          "role": "Le bas du pont diviseur et le retour du bouton."
+        }
+      },
+      "callouts": {
+        "SW2": "Un appui relie D2 à GND.",
+        "RV1": "Son curseur glisse entre 0 V et 5 V.",
+        "L": "S'allume tant que le bouton est enfoncé."
+      },
+      "features": {
+        "1": "Appuyez sur le bouton et tournez le potentiomètre pendant que le code tourne",
+        "2": "digitalRead() et analogRead() côte à côte",
+        "3": "Des mesures en direct dans le moniteur série"
+      },
+      "params": {
+        "period": {
+          "label": "Afficher toutes les"
+        }
+      },
+      "world": {
+        "button": "Bouton sur D2",
+        "knob": "Potentiomètre sur A0"
+      },
+      "checks": {
+        "1": "Le sketch tourne 4 secondes sans erreur",
+        "2": "Il affiche les lectures de A0 et D2",
+        "3": "L s'allume moins d'une seconde après l'appui sur le bouton",
+        "4": "Le moniteur série affiche D2=LOW tant que le bouton est enfoncé",
+        "5": "Tourné à fond, le potentiomètre lit plus de 1000"
+      },
+      "code": {
+        "intro": "Lire un bouton et un potentiomètre, et afficher les deux.",
+        "button": "bouton vers GND, pas besoin de résistance",
+        "sensor": "curseur du potentiomètre",
+        "low": "INPUT_PULLUP : un appui se lit LOW"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Avec INPUT_PULLUP, que lit D2 pendant que le bouton est enfoncé ?",
+          "options": {
+            "1": "HIGH",
+            "2": "Ça change au hasard",
+            "3": "LOW"
+          },
+          "why": "Le pull-up maintient la broche à 5 V ; le bouton enfoncé la relie directement à GND, elle lit donc LOW."
+        },
+        "q2": {
+          "q": "Quelles broches de la Nano ne peuvent pas servir pour un bouton ?",
+          "options": {
+            "1": "D2 et D3",
+            "2": "A6 et A7",
+            "3": "A4 et A5"
+          },
+          "why": "A6 et A7 sont des entrées uniquement analogiques, sans tampon numérique ni pull-up."
+        }
+      }
+    },
+    "fade": {
+      "title": "Un fondu au potentiomètre",
+      "lede": "Le PWM imite une sortie analogique : D9 s'allume et s'éteint 490 fois par seconde, et la part du temps où elle est allumée fixe la luminosité de la LED. Le potentiomètre sur A0 choisit cette part.",
+      "steps": {
+        "1": "analogRead(A0) donne 0-1023 à partir du potentiomètre.",
+        "2": "map() le ramène à 0-255, la plage qu'attend analogWrite().",
+        "3": "analogWrite(9, duty) règle le rapport cyclique PWM : 0 est éteint, 255 complètement allumé."
+      },
+      "hints": {
+        "1": "Seules D3, D5, D6, D9, D10 et D11 ont du PWM (marquées * sur la carte).",
+        "2": "Sur toute autre broche, analogWrite ne donne que LOW en dessous de 128 et HIGH à partir de 128."
+      },
+      "specs": {
+        "1": {
+          "label": "PWM sur D9",
+          "value": "Timer1, 490 Hz, 8 bits (0-255)"
+        },
+        "2": {
+          "label": "Rapport cyclique à 63",
+          "value": "63 ÷ 255 ≈ 25 % du temps allumée"
+        },
+        "3": {
+          "label": "Courant moyen",
+          "value": "Environ 12 mA × rapport cyclique"
+        }
+      },
+      "pins": {
+        "D9": {
+          "to": "Résistance → anode (+) de la LED",
+          "role": "Transporte le signal PWM."
+        },
+        "A0": {
+          "to": "Curseur du potentiomètre",
+          "role": "Règle la luminosité."
+        },
+        "5V": {
+          "to": "Une extrémité du potentiomètre",
+          "role": "Le haut du pont diviseur."
+        },
+        "GND": {
+          "to": "Cathode de la LED et potentiomètre",
+          "role": "Le retour commun."
+        }
+      },
+      "callouts": {
+        "LED1": "Sa luminosité suit le rapport cyclique.",
+        "RV1": "Tournez-le pour faire varier la LED.",
+        "R1": "220 Ω, comme dans Blink."
+      },
+      "features": {
+        "1": "analogWrite() sur une broche PWM",
+        "2": "map() de 0-1023 vers 0-255",
+        "3": "Pourquoi certaines broches ne savent pas faire de fondu"
+      },
+      "params": {
+        "period": {
+          "label": "Mettre à jour toutes les"
+        }
+      },
+      "world": {
+        "knob": "Potentiomètre sur A0"
+      },
+      "checks": {
+        "1": "Le sketch tourne 4,5 secondes sans erreur",
+        "2": "Un quart de tour donne environ 25 % de rapport cyclique sur D9",
+        "3": "Tourné à fond, D9 est complètement allumée",
+        "4": "Ramené à 0, la LED est éteinte"
+      },
+      "code": {
+        "intro": "Faire varier une LED sur D9 avec un potentiomètre sur A0.",
+        "pin": "D9 a du PWM (Timer1)",
+        "map": "0..1023 devient 0..255"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Que fait analogWrite(9, 128) sur une Nano ?",
+          "options": {
+            "1": "D9 est à HIGH environ la moitié de chaque cycle de 2 ms",
+            "2": "D9 sort un 2,5 V continu",
+            "3": "D9 lit la tension de la broche 128"
+          },
+          "why": "Le 328P n'a pas de CNA : analogWrite fait du PWM, donc 128/255 veut dire allumée environ 50 % de chaque cycle à 490 Hz."
+        },
+        "q2": {
+          "q": "Vous attachez un servo avec la bibliothèque Servo. Quelles broches perdent le PWM ?",
+          "options": {
+            "1": "D3 et D11",
+            "2": "D5 et D6",
+            "3": "D9 et D10"
+          },
+          "why": "La bibliothèque Servo prend le Timer1, qui produit le PWM de D9 et D10."
+        }
+      }
+    },
+    "i2c": {
+      "title": "Parler I2C avec un MPU-6050",
+      "lede": "L'I2C est un bus à deux fils : SDA sur A4 porte les données, SCL sur A5 l'horloge, et chaque appareil a une adresse. Scannez le bus, trouvez le MPU-6050 en 0x68, puis demandez-lui qui il est.",
+      "steps": {
+        "1": "Wire.begin() fait de la Nano le contrôleur du bus sur A4 et A5.",
+        "2": "Le scan appelle chaque adresse de 1 à 126 ; endTransmission() renvoie 0 quand un appareil répond.",
+        "3": "Écrire le registre 0x75 puis relire un octet donne WHO_AM_I, qui vaut 0x68 sur un MPU-6050."
+      },
+      "hints": {
+        "1": "Aucun appareil trouvé ? Vérifiez SDA sur A4 et SCL sur A5 ; des fils inversés sont la cause habituelle.",
+        "2": "Mettez la broche AD0 du module à l'état haut et il répond plutôt en 0x69.",
+        "3": "La Nano n'a pas de pull-ups I2C ; le module GY-521 a les siens."
+      },
+      "specs": {
+        "1": {
+          "label": "Adresse",
+          "value": "0x68 (0x69 avec AD0 à l'état haut)"
+        },
+        "2": {
+          "label": "Vitesse du bus",
+          "value": "100 kHz par défaut (Wire)"
+        },
+        "3": {
+          "label": "Broches",
+          "value": "SDA = A4, SCL = A5"
+        },
+        "4": {
+          "label": "Alimentation du module",
+          "value": "5 V vers le régulateur 3,3 V propre au GY-521"
+        }
+      },
+      "pins": {
+        "A4": {
+          "to": "SDA",
+          "role": "Données I2C."
+        },
+        "A5": {
+          "to": "SCL",
+          "role": "Horloge I2C."
+        },
+        "5V": {
+          "to": "VCC",
+          "role": "Alimente le module."
+        },
+        "GND": {
+          "to": "GND",
+          "role": "Masse commune."
+        }
+      },
+      "callouts": {
+        "M1": "Répond à l'adresse 0x68.",
+        "IC3": "L'unité TWI du 328P pilote le bus."
+      },
+      "features": {
+        "1": "Scanner le bus I2C",
+        "2": "Lire un registre avec un repeated start",
+        "3": "Afficher des octets en HEX"
+      },
+      "params": {
+        "blink": {
+          "label": "Battement de cœur"
+        }
+      },
+      "world": {
+        "imu": "Inclinaison du MPU-6050"
+      },
+      "checks": {
+        "1": "Le sketch tourne 3 secondes sans erreur",
+        "2": "Le scan trouve un appareil en 0x68",
+        "3": "WHO_AM_I lit 0x68",
+        "4": "Il utilise Wire.begin, beginTransmission et endTransmission"
+      },
+      "code": {
+        "intro": "Scanner le bus I2C, puis lire le registre WHO_AM_I du MPU-6050.",
+        "addr": "AD0 à l'état bas : 0x68",
+        "restart": "garder le bus : repeated start",
+        "alive": "battement de cœur sur L"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Quelles broches de la Nano portent l'I2C ?",
+          "options": {
+            "1": "D0 et D1",
+            "2": "A4 (SDA) et A5 (SCL)",
+            "3": "D11 et D13"
+          },
+          "why": "L'unité TWI du 328P est sur PC4 et PC5, que la Nano étiquette A4 et A5."
+        },
+        "q2": {
+          "q": "Que renvoie Wire.endTransmission() quand un appareil répond ?",
+          "options": {
+            "1": "0",
+            "2": "L'adresse de l'appareil",
+            "3": "1"
+          },
+          "why": "0 signifie que l'appareil a acquitté ; 2 signifie qu'il n'y a pas de réponse à cette adresse."
+        }
+      }
+    }
+  }
+}
