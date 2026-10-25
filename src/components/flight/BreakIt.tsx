@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Button, Card, Toggle } from "@/components/ui";
+import { Button, Toggle } from "@/components/ui";
 import { useLocale } from "@/i18n/client";
 import { createTranslator } from "@/i18n/translate";
 import { BREAKS, type BreakId, type CraftClass } from "@/lib/flight";
@@ -24,22 +24,37 @@ export function BreakIt({ craftClass, isOn, changed, broken, onToggle, onReset, 
   const locale = useLocale();
   const t = useMemo(() => createTranslator(locale, dict, "flight"), [locale, dict]);
   return (
-    <Card as="section" aria-labelledby="break-it-title" padding="sm" className="space-y-2" data-testid="break-it">
-      <h2 id="break-it-title" className="font-ui text-base font-extrabold uppercase tracking-wide">
-        {dict.breakIt.title}
-      </h2>
+    <section aria-labelledby="break-it-title" className="space-y-2" data-testid="break-it">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 id="break-it-title" className="font-head text-lg">
+          {dict.breakIt.title}
+        </h2>
+        <Button size="sm" variant="ghost" onClick={onReset} disabled={!changed} data-testid="break-reset">
+          {dict.breakIt.reset}
+        </Button>
+      </div>
       <p className="text-sm text-muted">{dict.breakIt.lede}</p>
-      <div className="divide-y divide-line">
+      <div className="divide-y divide-rule">
         {BREAKS[craftClass].map((id) => (
-          <div key={id} data-break={id} data-on={isOn(id)}>
+          // the whole row switches it, not only the switch at its end
+          <div
+            key={id}
+            data-break={id}
+            data-on={isOn(id)}
+            className="-mx-2 cursor-pointer rounded-ink-sm px-2 py-1 hover:bg-sunken"
+            onClick={(e) => {
+              if (!(e.target as HTMLElement).closest('[role="switch"]')) onToggle(id, !isOn(id));
+            }}
+          >
             <Toggle checked={isOn(id)} onChange={(on) => onToggle(id, on)} label={t(`breakIt.items.${id}.label`)} description={t(`breakIt.items.${id}.what`)} />
           </div>
         ))}
       </div>
-      {broken ? <p className="text-sm font-bold">{dict.breakIt.noBoard}</p> : null}
-      <Button size="sm" onClick={onReset} disabled={!changed} data-testid="break-reset">
-        {dict.breakIt.reset}
-      </Button>
-    </Card>
+      {broken ? (
+        <p className="border-s-4 border-tomato ps-3 text-sm font-semibold" role="status">
+          {dict.breakIt.noBoard}
+        </p>
+      ) : null}
+    </section>
   );
 }

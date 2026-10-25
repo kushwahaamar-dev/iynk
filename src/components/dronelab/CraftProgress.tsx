@@ -28,7 +28,7 @@ export function CraftProgress({
   countTemplate: string;
   /** "{done} of {total} done" */
   valueTemplate: string;
-  size?: "sm" | "md";
+  size?: "xs" | "sm" | "md";
   className?: string;
 }) {
   const saved = useSaved();

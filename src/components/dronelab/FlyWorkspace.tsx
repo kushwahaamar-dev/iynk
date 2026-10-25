@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { useCallback, useEffect, useMemo, useReducer, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useState, useSyncExternalStore, type ReactNode } from "react";
 import type { DroneContent } from "@/content/schema";
 import { Leaderboard, type DataMessages } from "@/components/data";
 import { LabDock } from "@/components/dock/LabDock";
@@ -11,8 +10,11 @@ import { challengeWords, DailyChallengeCard, type ChallengeEntry } from "@/compo
 import { FlightRange } from "@/components/flight/FlightRange";
 import { useRoomGhosts } from "@/components/flight/room-ghosts";
 import { SoundToggle } from "@/components/settings";
+import { WorkspaceBar, WorkspaceFrame } from "@/components/shell/workspace";
 import { Chip } from "@/components/ui/Chip";
+import { Panel } from "@/components/ui/Panel";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import { StatStrip } from "@/components/ui/Stat";
 import type { Locale } from "@/i18n/config";
 import type { Messages } from "@/i18n/namespaces";
 import { createTranslator } from "@/i18n/translate";
@@ -42,6 +44,8 @@ type Props = {
   /** Every craft that flies, for the daily challenge. */
   pool: ChallengeEntry[];
   board: DataMessages["leaderboard"];
+  /** The untranslated chip, from the server page. */
+  notice?: ReactNode;
 };
 
 const noSubscribe = () => () => {};
@@ -50,7 +54,7 @@ const noSearch = () => "";
 /** The leaderboard takes 1 s to 1 h (the ingest's bounds). */
 const onBoard = (ms: number) => ms >= 1000 && ms <= 3_600_000;
 
-export function FlyWorkspace({ lang, content, text, messages, flight, pool, board }: Props) {
+export function FlyWorkspace({ lang, content, text, messages, flight, pool, board, notice }: Props) {
   const room = useRoom();
   const t = useMemo(() => droneLabT(lang, messages), [lang, messages]);
   const ct = useMemo(() => contentT(lang, content.id, text), [lang, content.id, text]);
@@ -132,139 +136,143 @@ export function FlyWorkspace({ lang, content, text, messages, flight, pool, boar
     ...(state.bench ? [{ value: "bench" as const, label: t("fly.benchBuild") }] : []),
   ];
 
-  return (
-    <div className="mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6">
-      <nav aria-label={t("workspace.crumbs")} className="font-ui text-xs font-bold uppercase tracking-wider">
-        <Link href={withRoom(`/${lang}/drones/${id}`, room?.id)} className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">
-          {t("fly.back")}
-        </Link>
-      </nav>
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div className="min-w-0">
-          <p className="ink-kicker">
-            {t("workspace.fig", { n: String(content.fig).padStart(2, "0") })} · {content.firmware.version}
-          </p>
-          <h1 className="mt-2">{t("fly.title", { title: ct(content.title) })}</h1>
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <CraftProgress
-            keys={keys}
-            label={t("workspace.progress")}
-            countTemplate={messages.index.progressValue}
-            valueTemplate={messages.workspace.progressLabel}
-          />
-          <SoundToggle />
-          <KeyboardHelp t={t} flight />
-        </div>
-      </header>
-
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-        <section aria-label={t("fly.title", { title: ct(content.title) })} className="min-w-0">
-          {craft && flightCourse ? (
-            <FlightRange
-              key={`${state.source}-${flightCourse.id}-${challenge?.date ?? "free"}`}
-              craft={craft}
-              course={flightCourse}
-              calc={outputs}
-              faults={faults}
-              wind={challenge?.wind}
-              t={flight}
-              courseText={courseText}
-              initialMode={startMode(content, flightCourse.id)}
-              par={par}
-              onEvent={onEvent}
-              onFigure={setFigure}
-              onFix={onFix}
-              peers={ghosts.peers}
-              onPose={ghosts.onPose}
-            />
-          ) : (
-            <p className="rounded-ink border-2 border-dashed border-line bg-sunken p-6">{t("fly.missing")}</p>
-          )}
-        </section>
-
-        <aside className="space-y-6">
-          <DailyChallengeCard
-            lang={lang}
-            craftId={id}
-            pool={pool}
-            active={challenge}
-            link={link}
-            best={challengeBest}
-            onFly={(c) => store.dispatch({ type: "challenge", challenge: c })}
-            onStop={() => store.dispatch({ type: "challenge", challenge: null })}
-            t={flight}
-          />
-          <section aria-labelledby={`fly-source-${id}`} className="space-y-3">
-            <h2 id={`fly-source-${id}`} className="text-lg">
-              {t("fly.designTitle")}
-            </h2>
-            {sourceOptions.length > 1 ? (
-              <SegmentedControl
-                label={t("fly.designTitle")}
-                value={state.source}
-                options={sourceOptions}
-                onChange={(source) => store.dispatch({ type: "source", source })}
-                size="sm"
+  const title = t("fly.title", { title: ct(content.title) });
+  const rail = (
+    <Panel className="h-full" bodyClassName="overflow-y-auto divide-y divide-rule px-4 [&>*]:py-4">
+      {content.courses.length > 0 ? (
+        <section aria-labelledby={`fly-courses-${id}`}>
+          <h2 id={`fly-courses-${id}`} className="font-head text-lg">
+            {t("fly.courses")}
+          </h2>
+          <ul className="mt-2 divide-y divide-rule">
+            {content.courses.map((c) => (
+              <CourseRow
+                key={c.id}
+                content={content}
+                courseId={c.id}
+                lang={lang}
+                t={t}
+                ct={ct}
+                medals={flight.medals}
+                active={c.id === state.course}
+                onFly={range ? () => store.dispatch({ type: "course", id: c.id }) : undefined}
               />
-            ) : (
-              <p className="text-sm text-muted">{t("fly.designFactory")}</p>
-            )}
-            {state.source === "factory" ? <p className="text-sm">{t("fly.factoryNote")}</p> : null}
-            <DesignSummary content={content} pick={pick} lang={lang} t={t} />
-          </section>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+      {range ? (
+        <BreakIt
+          craftClass={range.craft.class}
+          isOn={isOn}
+          changed={Object.keys(breaks).length > 0}
+          broken={broken}
+          onToggle={(b, on) => store.dispatch({ type: "break", id: b, on })}
+          onReset={() => store.dispatch({ type: "break/reset" })}
+          t={flight}
+        />
+      ) : null}
+      <section aria-labelledby={`fly-source-${id}`} className="space-y-3">
+        <h2 id={`fly-source-${id}`} className="font-head text-lg">
+          {t("fly.designTitle")}
+        </h2>
+        {sourceOptions.length > 1 ? (
+          <SegmentedControl
+            label={t("fly.designTitle")}
+            value={state.source}
+            options={sourceOptions}
+            onChange={(source) => store.dispatch({ type: "source", source })}
+            size="sm"
+          />
+        ) : (
+          <p className="text-sm text-muted">{t("fly.designFactory")}</p>
+        )}
+        {state.source === "factory" && sourceOptions.length > 1 ? <p className="text-sm text-muted">{t("fly.factoryNote")}</p> : null}
+        <DesignSummary content={content} pick={pick} lang={lang} t={t} />
+        <ArmingRules rules={rules} t={t} />
+      </section>
+      <DailyChallengeCard
+        lang={lang}
+        craftId={id}
+        pool={pool}
+        active={challenge}
+        link={link}
+        best={challengeBest}
+        onFly={(c) => store.dispatch({ type: "challenge", challenge: c })}
+        onStop={() => store.dispatch({ type: "challenge", challenge: null })}
+        t={flight}
+      />
+      {flightCourse && course ? (
+        <Leaderboard
+          key={challenge?.board ?? flightCourse.id}
+          course={challenge?.board ?? `${id}-${flightCourse.id}`}
+          courseLabel={
+            challenge ? ft("challenge.board", { course: challengeWords(pool, challenge).course, date: challenge.date }) : ct(course.title)
+          }
+          messages={board}
+        />
+      ) : null}
+    </Panel>
+  );
 
-          <ArmingRules rules={rules} t={t} />
-
-          {content.courses.length > 0 ? (
-            <section aria-labelledby={`fly-courses-${id}`} className="space-y-2">
-              <h2 id={`fly-courses-${id}`} className="text-lg">
-                {t("fly.courses")}
-              </h2>
-              <ul className="space-y-2">
-                {content.courses.map((c) => (
-                  <CourseRow
-                    key={c.id}
-                    content={content}
-                    courseId={c.id}
-                    lang={lang}
-                    t={t}
-                    ct={ct}
-                    medals={flight.medals}
-                    active={c.id === state.course}
-                    onFly={range ? () => store.dispatch({ type: "course", id: c.id }) : undefined}
-                  />
-                ))}
-              </ul>
-            </section>
-          ) : null}
-          {range ? (
-            <BreakIt
-              craftClass={range.craft.class}
-              isOn={isOn}
-              changed={Object.keys(breaks).length > 0}
-              broken={broken}
-              onToggle={(b, on) => store.dispatch({ type: "break", id: b, on })}
-              onReset={() => store.dispatch({ type: "break/reset" })}
-              t={flight}
-            />
-          ) : null}
-          {flightCourse && course ? (
-            <Leaderboard
-              key={challenge?.board ?? flightCourse.id}
-              course={challenge?.board ?? `${id}-${flightCourse.id}`}
-              courseLabel={
-                challenge
-                  ? ft("challenge.board", { course: challengeWords(pool, challenge).course, date: challenge.date })
-                  : ct(course.title)
-              }
-              messages={board}
-            />
-          ) : null}
-          <LabDock lab="drone" itemId={id} store={store} figure={figure} />
-        </aside>
-      </div>
-    </div>
+  return (
+    <WorkspaceFrame
+      phoneStage="full"
+      // on a phone the bar takes two rows: the range fills what is left of the first screen
+      className="max-lg:[&>.ws>.ws-stage]:h-[calc(100svh-var(--header-h)-7rem)]"
+      bar={
+        <WorkspaceBar
+          back={{ href: withRoom(`/${lang}/drones/${id}`, room?.id), label: t("fly.back") }}
+          kicker={`${t("workspace.fig", { n: String(content.fig).padStart(2, "0") })} · ${content.firmware.version}`}
+          title={title}
+          tone="tomato"
+          status={
+            <>
+              {notice}
+              <CraftProgress
+                keys={keys}
+                label={t("workspace.progress")}
+                countTemplate={messages.index.progressValue}
+                valueTemplate={messages.workspace.progressLabel}
+                size="xs"
+              />
+            </>
+          }
+          actions={
+            <>
+              <SoundToggle compact />
+              <KeyboardHelp t={t} flight />
+              <LabDock lab="drone" itemId={id} store={store} figure={figure} />
+            </>
+          }
+        />
+      }
+      stage={
+        craft && flightCourse ? (
+          <FlightRange
+            key={`${state.source}-${flightCourse.id}-${challenge?.date ?? "free"}`}
+            craft={craft}
+            course={flightCourse}
+            calc={outputs}
+            faults={faults}
+            wind={challenge?.wind}
+            t={flight}
+            courseText={courseText}
+            initialMode={startMode(content, flightCourse.id)}
+            par={par}
+            onEvent={onEvent}
+            onFigure={setFigure}
+            onFix={onFix}
+            peers={ghosts.peers}
+            onPose={ghosts.onPose}
+            className="h-full"
+          />
+        ) : (
+          <p className="grid h-full place-items-center rounded-ink border-2 border-dashed border-line bg-sunken p-6">{t("fly.missing")}</p>
+        )
+      }
+      rail={rail}
+    />
   );
 }
 
@@ -283,51 +291,62 @@ function DesignSummary({
   const n = (v: number, d: number) => formatNumber(lang, v, d);
   return (
     <>
-      <p className="font-ui text-xs">
-        {content.design.batts[pick.batt].label} · {content.design.motors[pick.motor].label} ·{" "}
-        {content.design.props[pick.prop].label}
+      <p className="font-ui text-xs text-muted">
+        {content.design.batts[pick.batt].label} · {content.design.motors[pick.motor].label} · {content.design.props[pick.prop].label}
       </p>
-      <dl className="grid grid-cols-2 gap-2 text-sm">
-        <div>
-          <dt className="ink-kicker text-[0.65rem]">{t("design.tiles.auw")}</dt>
-          <dd className="font-ui font-bold">{t("design.units.g", { value: n(r.auw, 0) })}</dd>
-        </div>
-        <div>
-          <dt className="ink-kicker text-[0.65rem]">{t("design.tiles.tw")}</dt>
-          <dd className="font-ui font-bold">{t("design.units.tw", { value: n(r.tw, 1) })}</dd>
-        </div>
-        <div>
-          <dt className="ink-kicker text-[0.65rem]">{t("design.tiles.hoverThr")}</dt>
-          <dd className="font-ui font-bold">{t("design.units.pct", { value: n(r.hoverThr * 100, 0) })}</dd>
-        </div>
-        <div>
-          <dt className="ink-kicker text-[0.65rem]">{t("design.tiles.flyMin")}</dt>
-          <dd className="font-ui font-bold">{t("design.units.min", { value: n(r.flyMin, 1) })}</dd>
-        </div>
-      </dl>
+      <StatStrip
+        className="gap-x-5"
+        stats={[
+          { id: "auw", label: t("design.tiles.auw"), value: t("design.units.g", { value: n(r.auw, 0) }) },
+          { id: "tw", label: t("design.tiles.tw"), value: t("design.units.tw", { value: n(r.tw, 1) }) },
+          { id: "hover", label: t("design.tiles.hoverThr"), value: t("design.units.pct", { value: n(r.hoverThr * 100, 0) }) },
+          { id: "fly", label: t("design.tiles.flyMin"), value: t("design.units.min", { value: n(r.flyMin, 1) }) },
+        ]}
+      />
     </>
   );
 }
 
 function ArmingRules({ rules, t }: { rules: ArmRule[]; t: DroneLabT }) {
   const ok = canArm(rules);
+  const passed = rules.filter((r) => r.ok).length;
+  // all clear, the list folds to one line; anything wrong keeps it open
+  const [open, setOpen] = useState(false);
+  const shown = open || !ok;
   return (
-    <section aria-labelledby="fly-arming" className="space-y-2">
-      <h2 id="fly-arming" className="text-lg">
-        {t("fly.preflight")}
-      </h2>
-      <p className="text-sm text-muted">{t("fly.preflightLede")}</p>
-      <ul className="space-y-1.5" data-testid="arming-rules" data-can-arm={ok}>
-        {rules.map((rule, i) => (
-          <li key={`${rule.id}-${i}`} className="flex items-start gap-2 text-sm" data-rule={rule.id} data-ok={rule.ok}>
-            <Chip tone={rule.ok ? "mint" : rule.level === "block" ? "tomato" : "mustard"}>
-              {rule.ok ? t("fly.ok") : rule.level === "block" ? t("fly.blocked") : t("fly.warning")}
-            </Chip>
-            <span>{rule.id === "mistakes" ? t("fly.rules.mistakes", { code: rule.code ?? "" }) : t(`fly.rules.${rule.id}`)}</span>
-          </li>
-        ))}
-      </ul>
-    </section>
+    <div className="space-y-2">
+      <button
+        type="button"
+        aria-expanded={shown}
+        aria-controls="fly-arming-list"
+        onClick={() => setOpen((v) => !v)}
+        disabled={!ok}
+        className="flex min-h-11 w-full items-center gap-3 rounded-ink-sm text-start hover:bg-sunken disabled:cursor-default disabled:hover:bg-transparent"
+      >
+        <span id="fly-arming" className="font-body text-sm font-semibold">
+          {t("fly.preflight")}
+        </span>
+        <Chip tone={ok ? "mint" : "tomato"}>{ok ? `${passed}/${rules.length} ${t("fly.ok")}` : t("fly.blocked")}</Chip>
+        {ok ? (
+          <svg aria-hidden="true" width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className={`ms-auto transition-transform ${shown ? "rotate-180" : ""}`}>
+            <path d="M5.5 9.5L12 16l6.5-6.5" />
+          </svg>
+        ) : null}
+      </button>
+      <div id="fly-arming-list" hidden={!shown} className="space-y-2">
+        <p className="text-sm text-muted">{t("fly.preflightLede")}</p>
+        <ul className="space-y-1.5" aria-labelledby="fly-arming" data-testid="arming-rules" data-can-arm={ok}>
+          {rules.map((rule, i) => (
+            <li key={`${rule.id}-${i}`} className="flex items-start gap-2 text-sm" data-rule={rule.id} data-ok={rule.ok}>
+              <Chip tone={rule.ok ? "mint" : rule.level === "block" ? "tomato" : "mustard"} className="shrink-0">
+                {rule.ok ? t("fly.ok") : rule.level === "block" ? t("fly.blocked") : t("fly.warning")}
+              </Chip>
+              <span>{rule.id === "mistakes" ? t("fly.rules.mistakes", { code: rule.code ?? "" }) : t(`fly.rules.${rule.id}`)}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 }
 
@@ -356,18 +375,19 @@ function CourseRow({
   const medal = best !== undefined ? medalFor(best, par) : null;
   const s = (v: number) => formatNumber(lang, v, v % 1 ? 1 : 0);
   return (
-    <li className={`rounded-ink border-2 bg-surface p-3 ${active ? "border-ink" : "border-line"}`}>
-      <div className="flex flex-wrap items-center justify-between gap-2">
+    <li className={`relative -mx-2 rounded-ink-sm px-2 py-2.5 ${active ? "bg-sunken" : ""}`}>
+      {active ? <span aria-hidden="true" className="absolute inset-y-2 start-0 w-1 rounded-full bg-ink" /> : null}
+      <div className="flex flex-wrap items-center justify-between gap-x-3">
         <button
           type="button"
-          className="min-h-11 text-start font-bold underline-offset-4 hover:underline"
+          className="min-h-11 min-w-0 text-start font-body font-semibold underline-offset-4 hover:underline aria-pressed:no-underline"
           onClick={onFly}
           aria-pressed={active}
           disabled={!onFly}
         >
           {ct(course.title)}
         </button>
-        <span className="font-ui text-xs font-bold" data-testid={`best-${course.id}`}>
+        <span className="tabular font-ui text-xs font-semibold" data-testid={`best-${course.id}`}>
           {best === undefined
             ? t("fly.noBest")
             : medal
@@ -375,10 +395,8 @@ function CourseRow({
               : t("fly.best", { s: formatNumber(lang, best, 2) })}
         </span>
       </div>
-      <p className="mt-1 text-sm text-muted">{ct(course.brief)}</p>
-      {par ? (
-        <p className="mt-1 font-ui text-xs text-muted">{t("fly.medalTimes", { gold: s(par.gold), silver: s(par.silver), bronze: s(par.bronze) })}</p>
-      ) : null}
+      <p className="text-sm text-muted">{ct(course.brief)}</p>
+      {par ? <p className="mt-1 font-ui text-xs text-muted">{t("fly.medalTimes", { gold: s(par.gold), silver: s(par.silver), bronze: s(par.bronze) })}</p> : null}
     </li>
   );
 }

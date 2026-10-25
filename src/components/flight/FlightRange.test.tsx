@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { I18nProvider } from "@/i18n/client";
@@ -114,8 +114,8 @@ test("the craft's own mode names and hints show, and the demo explains itself", 
 });
 
 test("a finished lap names its medal, and the demo's lap never counts", () => {
+  // the medal times themselves are on the page's course rows; the range names the medal a lap earned
   const { session } = setup(race, { initialMode: "race", par: { gold: 10, silver: 14, bronze: 20 } });
-  expect(screen.getByText(flight.stats.par)).toBeTruthy();
   act(() => session().sim.events.push({ t: 1, type: "lap", time: 12.5, best: true, splits: [] }));
   act(() => session().dispatch({ type: "sticks", sticks: { throttle: 0, yaw: 0, pitch: 0, roll: 0 } }));
   fireEvent.click(screen.getByRole("button", { name: flight.buttons.reset }));
@@ -144,10 +144,10 @@ test("a crash replays in slow motion, says why and fixes the build in one click"
 
 test("the ghosts: the autopilot's line is on, your best waits for a lap", async () => {
   setup(race, { initialMode: "race" });
-  const pace = (await screen.findByTestId("ghost-pace", undefined, { timeout: 3000 })) as HTMLInputElement;
-  expect(pace.checked).toBe(true);
-  expect((screen.getByTestId("ghost-best") as HTMLInputElement).disabled).toBe(true);
-  expect(screen.getByText(flight.ghosts.bestNone)).toBeTruthy();
+  const pace = within(await screen.findByTestId("ghost-pace", undefined, { timeout: 3000 })).getByRole("switch");
+  expect(pace.getAttribute("aria-checked")).toBe("true");
+  const best = within(screen.getByTestId("ghost-best")).getByRole("switch", { name: flight.ghosts.bestNone });
+  expect((best as HTMLButtonElement).disabled).toBe(true);
   fireEvent.click(pace);
-  expect(pace.checked).toBe(false);
+  expect(pace.getAttribute("aria-checked")).toBe("false");
 });

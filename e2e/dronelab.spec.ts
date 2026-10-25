@@ -133,6 +133,8 @@ test.describe("quad5 workshop", () => {
     await main(page).getByTestId("fly-link").click();
     await expect(page).toHaveURL("/en/drones/quad5/fly");
     await expect(main(page).getByRole("heading", { level: 1 })).toContainText("Fly the");
+    // all clear, the rules fold to one line that opens
+    await main(page).getByRole("button", { name: new RegExp(dronelab.fly.preflight) }).click();
     await expect(main(page).getByTestId("arming-rules")).toBeVisible();
     const range = main(page).locator('iframe[src*="/figures/flight/range.html"]');
     await expect(range).toBeVisible({ timeout: 20_000 });

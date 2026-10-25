@@ -59,12 +59,13 @@ function Stick({ label, short, springY, restY, onChange, side }: StickProps) {
       onPointerUp={end}
       onPointerCancel={end}
     >
-      <div className="absolute inset-0 rounded-full border-2 border-[var(--ink,#231e16)] bg-[rgba(242,239,231,.72)] shadow-[2px_2px_0_var(--ink,#231e16)]" />
+      {/* a ring, not a disc: the range stays visible under the thumbs */}
+      <div className="absolute inset-0 rounded-full border-2 border-black/25" />
       <div
-        className="absolute rounded-full border-2 border-[var(--ink,#231e16)] bg-[#ef6a4c]"
+        className="absolute rounded-full border-2 border-black/80 bg-tomato/85"
         style={{ width: 38, height: 38, left: SIZE / 2 - 19 + shown.x * TRAVEL, top: SIZE / 2 - 19 - shown.y * TRAVEL }}
       />
-      <span aria-hidden className="absolute -top-5 left-0 right-0 text-center text-[10px] font-bold tracking-wider">
+      <span aria-hidden className="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-paper/90 px-2 py-0.5 font-ui text-xs font-semibold text-ink">
         {short}
       </span>
     </div>

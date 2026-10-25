@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useSyncExternalStore } from "react";
-import { Button, ButtonLink, Card, Chip } from "@/components/ui";
+import { Button, ButtonLink, Chip } from "@/components/ui";
 import { useLocale } from "@/i18n/client";
 import type { Locale } from "@/i18n/config";
 import { createTranslator } from "@/i18n/translate";
@@ -73,27 +73,33 @@ export function DailyChallengeCard({ lang, craftId, pool, active, link, best, on
     }
   };
 
+  const data = { "data-testid": "daily-challenge", "data-craft": c.craft, "data-course": c.course, "data-date": c.date, "data-active": !!active };
+
+  // the day's challenge is on another craft: one line that goes there, not a card that sends you away
+  if (!active && !here) {
+    return (
+      <section aria-labelledby="daily-challenge-title" className="space-y-1.5" {...data}>
+        <h2 id="daily-challenge-title" className="ink-kicker">
+          {dict.challenge.title}
+        </h2>
+        <p className="text-sm">{t("challenge.what", words)}</p>
+        <ButtonLink href={challengeLink(lang, c)} variant="secondary" size="sm" data-testid="challenge-go">
+          {t("challenge.flyThere", { craft: words.craft })}
+        </ButtonLink>
+      </section>
+    );
+  }
+
   return (
-    <Card
-      as="section"
-      aria-labelledby="daily-challenge-title"
-      padding="sm"
-      tone="sunken"
-      className="space-y-2"
-      data-testid="daily-challenge"
-      data-craft={c.craft}
-      data-course={c.course}
-      data-date={c.date}
-      data-active={!!active}
-    >
+    <section aria-labelledby="daily-challenge-title" className="space-y-2" {...data}>
       <header className="flex flex-wrap items-center justify-between gap-2">
-        <h2 id="daily-challenge-title" className="font-ui text-base font-extrabold uppercase tracking-wide">
+        <h2 id="daily-challenge-title" className="font-head text-lg">
           {dict.challenge.title}
         </h2>
         <Chip tone={c.wind ? "cobalt" : "mint"}>{c.wind ? dict.challenge.windOn : dict.challenge.windOff}</Chip>
       </header>
-      <p className="text-sm text-muted">{t("challenge.day", { date: c.date })}</p>
-      <p className="font-bold">{t("challenge.what", words)}</p>
+      <p className="text-xs text-muted">{t("challenge.day", { date: c.date })}</p>
+      <p className="font-semibold">{t("challenge.what", words)}</p>
       {link?.beat && link.date === c.date ? (
         <p className="text-sm" data-testid="challenge-beat">
           {link.by ? t("challenge.beat", { by: link.by, time: link.beat.toFixed(2) }) : t("challenge.beatAnon", { time: link.beat.toFixed(2) })}
@@ -102,7 +108,7 @@ export function DailyChallengeCard({ lang, craftId, pool, active, link, best, on
       {active ? (
         <>
           <p className="text-sm">{dict.challenge.flying}</p>
-          <p className="text-sm font-bold" data-testid="challenge-best">
+          <p className="tabular text-sm font-semibold" data-testid="challenge-best">
             {best !== null ? t("challenge.best", { time: best.toFixed(2) }) : dict.challenge.none}
           </p>
           <div className="flex flex-wrap items-center gap-2">
@@ -120,15 +126,11 @@ export function DailyChallengeCard({ lang, craftId, pool, active, link, best, on
             {dict.challenge.link}
           </a>
         </>
-      ) : here ? (
+      ) : (
         <Button variant="primary" size="sm" onClick={() => onFly(c)} data-testid="challenge-fly">
           {dict.challenge.fly}
         </Button>
-      ) : (
-        <ButtonLink href={challengeLink(lang, c)} variant="primary" size="sm" data-testid="challenge-go">
-          {t("challenge.flyThere", { craft: words.craft })}
-        </ButtonLink>
       )}
-    </Card>
+    </section>
   );
 }

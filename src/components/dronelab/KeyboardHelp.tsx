@@ -58,12 +58,13 @@ export function KeyboardHelp({ t, flight = false }: { t: DroneLabT; flight?: boo
   return (
     <>
       <IconButton
-        icon="info"
+        icon="keyboard"
         label={t("keys.open")}
-        variant="raised"
+        shortcut="?"
         onClick={() => setOpen(true)}
         aria-keyshortcuts="?"
         data-testid="keys-open"
+        className="[@media(pointer:coarse)]:hidden"
       />
       <Dialog open={open} onClose={() => setOpen(false)} title={t("keys.title")} closeLabel={t("keys.close")}>
         <div className="space-y-5">

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
 import { FigureFrame, type FigureEvent, type FigureHandle } from "@/components/figure";
-import { Button, Kbd, Stat } from "@/components/ui";
+import { Button, cx, Kbd, Select, Stat, Toggle } from "@/components/ui";
 import type { ParTimes } from "@/content/schema";
 import { useLocale } from "@/i18n/client";
 import type { Messages } from "@/i18n/namespaces";
@@ -153,8 +153,8 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
   // toggleFpv reads this so it can post to the figure outside a state updater
   const fpvRef = useRef(false);
   const [message, setMessage] = useState("");
-  const [showPad, setShowPad] = useState(false);
-  const [showLegend, setShowLegend] = useState(false);
+  // one panel over the range at a time: the gamepad mapping or the controls legend
+  const [panel, setPanel] = useState<"pad" | "legend" | null>(null);
   const coarse = useSyncExternalStore(subscribeCoarse, isCoarse, () => false);
   // the panel that shows the mapping starts closed, so the server's default never meets the saved one on screen
   const [pad, setPadState] = useState<PadMapping>(() => (typeof window === "undefined" ? DEFAULT_PAD : loadPad()));
@@ -547,54 +547,128 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
         : dict.stats.home;
   const isRace = scoresGates(course, mode);
   const best = isRace ? snap.bestLap : snap.bestRun;
+  const bestText = best === null ? dict.stats.noBest : isRace ? fmtTime(best) : best.toFixed(1);
+  const telemetry = [
+    { id: "state", label: dict.stats.state, value: stateText, tone: snap.crashed ? ("bad" as const) : undefined },
+    { id: "battery", label: dict.stats.battery, value: t("stats.perCell", { v: snap.perCell.toFixed(2) }), tone: snap.low ? ("bad" as const) : undefined },
+    { id: "alt", label: dict.stats.altitude, value: snap.alt.toFixed(1), unit: "m" },
+    { id: "speed", label: dict.stats.speed, value: String(snap.speed), unit: "km/h" },
+    { id: "throttle", label: dict.stats.throttle, value: String(Math.round(snap.throttle * 100)), unit: "%", wide: true },
+    { id: "current", label: dict.stats.current, value: snap.amps.toFixed(1), unit: "A", wide: true },
+    { id: "used", label: dict.stats.used, value: String(snap.mah), unit: "mAh", wide: true },
+    { id: "next", label: dict.stats.next, value: nextText },
+    { id: "best", label: dict.stats.best, value: bestText, unit: best === null ? undefined : "s", wide: true },
+    { id: "crashes", label: dict.stats.crashes, value: String(snap.crashes), wide: true },
+  ];
+  const toggle = (which: "pad" | "legend") => setPanel((p) => (p === which ? null : which));
+  const crashCard = crash && crashFix && (
+    <section
+      aria-labelledby="flight-why-title"
+      className="pointer-events-auto w-full max-w-[26rem] rounded-ink-sm border-2 border-line bg-surface p-3 shadow-ink"
+      data-testid="crash-why"
+      data-cause={crash.cause}
+    >
+      {crash.hit && crash.cause !== "hit" ? <p className="ink-label">{dict.hit[crash.hit]}</p> : null}
+      <h3 id="flight-why-title" className="font-head text-lg leading-tight">
+        {dict.why.title}
+      </h3>
+      <p className="mt-1 text-sm">{whyText(crash)}</p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Button variant="primary" size="sm" onClick={applyFix} data-testid="crash-fix">
+          {fixLabel(crashFix)}
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => playCrash(crash)} disabled={replaying} data-testid="crash-replay" data-playing={replaying}>
+          {replaying ? dict.why.replaying : dict.why.replay}
+        </Button>
+      </div>
+    </section>
+  );
+  const strip = (
+    <div
+      className={cx(
+        "pointer-events-auto w-full rounded-ink-sm border-[1.5px] border-rule bg-paper/90 px-3 py-1.5 shadow-ink-sm",
+        coarse ? "grid grid-cols-[repeat(3,auto)] justify-between gap-x-3 gap-y-1 [&_.tabular]:text-base" : "flex flex-wrap gap-x-4 gap-y-1",
+      )}
+      data-testid="flight-telemetry"
+    >
+      {telemetry
+        .filter((s) => !coarse || !s.wide)
+        .map(({ id, wide: _wide, ...stat }) => (
+          <Stat key={id} size="sm" className="shrink-0" {...stat} />
+        ))}
+    </div>
+  );
 
   return (
     <div
-      className={className}
+      className={cx("flex min-h-0 min-w-0 flex-col gap-2", className)}
       data-testid="flight-range"
       data-course={course.id}
       onKeyDown={onKeyDown}
       onKeyUp={onKeyUp}
       onBlur={(e) => !e.currentTarget.contains(e.relatedTarget) && input.current.keys.clear()}
     >
-      <div className="mb-2 flex flex-wrap items-end gap-2">
-        <label className="flex flex-col text-xs font-bold">
-          {dict.mode}
-          <select
-            value={snap.mode}
-            onChange={(e) => act({ type: "mode", mode: e.target.value })}
-            className="rounded-lg border-2 border-[var(--ink,#231e16)] bg-[var(--paper,#f2efe7)] px-2 py-1 text-sm font-normal"
-          >
-            {modes.map((m) => (
-              <option key={m.id} value={m.id}>
-                {modeTitle(m.id)}
-              </option>
-            ))}
-          </select>
-        </label>
-        <Button variant={snap.armed ? "danger" : "primary"} aria-keyshortcuts="Space" onClick={() => act({ type: "toggleArm" })}>
+      <div className="flex shrink-0 items-center gap-1.5 overflow-x-auto [scrollbar-width:none] sm:gap-2">
+        <Select
+          label={dict.mode}
+          hideLabel
+          value={snap.mode}
+          onChange={(e) => act({ type: "mode", mode: e.target.value })}
+          className="w-auto min-w-[9rem] max-w-[16rem] max-sm:max-w-[11rem]"
+        >
+          {modes.map((m) => (
+            <option key={m.id} value={m.id}>
+              {modeTitle(m.id)}
+            </option>
+          ))}
+        </Select>
+        <Button
+          variant={snap.armed ? "danger" : "primary"}
+          aria-keyshortcuts="Space"
+          onClick={() => act({ type: "toggleArm" })}
+          className="shrink-0 whitespace-nowrap"
+        >
           {snap.armed ? dict.buttons.disarm : dict.buttons.arm}
         </Button>
-        <Button aria-keyshortcuts="R" onClick={() => act({ type: "reset" })}>
-          {dict.buttons.reset}
-        </Button>
-        <Button aria-pressed={fpv} aria-keyshortcuts="V" onClick={toggleFpv}>
-          {dict.buttons.fpv}
-        </Button>
-        <Button aria-pressed={snap.windOn} onClick={toggleWind}>
-          {dict.buttons.wind}
-        </Button>
-        <Button variant="ghost" aria-expanded={showPad} onClick={() => setShowPad((v) => !v)}>
-          {dict.buttons.gamepad}
-        </Button>
-        <Button variant="ghost" aria-expanded={showLegend} onClick={() => setShowLegend((v) => !v)}>
-          {dict.buttons.legend}
-        </Button>
+        {coarse ? (
+          <>
+            <CockpitIcon glyph="reset" label={dict.buttons.reset} onClick={() => act({ type: "reset" })} />
+            <CockpitIcon glyph="fpv" label={dict.buttons.fpv} pressed={fpv} onClick={toggleFpv} />
+            <CockpitIcon glyph="wind" label={dict.buttons.wind} pressed={snap.windOn} onClick={toggleWind} />
+          </>
+        ) : (
+          <>
+            <Button aria-keyshortcuts="R" onClick={() => act({ type: "reset" })} className="shrink-0 whitespace-nowrap">
+              {dict.buttons.reset}
+            </Button>
+            <Button aria-pressed={fpv} aria-keyshortcuts="V" onClick={toggleFpv} className="shrink-0 whitespace-nowrap">
+              {dict.buttons.fpv}
+            </Button>
+            <Button aria-pressed={snap.windOn} onClick={toggleWind} className="shrink-0 whitespace-nowrap">
+              {dict.buttons.wind}
+            </Button>
+            <span className="ms-auto" />
+            <Button variant="ghost" size="sm" aria-expanded={panel === "pad"} onClick={() => toggle("pad")} className="shrink-0 whitespace-nowrap">
+              {dict.buttons.gamepad}
+            </Button>
+            <Button variant="ghost" size="sm" aria-expanded={panel === "legend"} onClick={() => toggle("legend")} className="shrink-0 whitespace-nowrap">
+              {dict.buttons.legend}
+            </Button>
+          </>
+        )}
       </div>
-      {modeHint && <p className="mb-2 text-sm text-muted">{modeHint}</p>}
-      {snap.pendingDesign && <p className="mb-2 text-sm">{dict.pendingDesign}</p>}
-      <div className="relative">
-        <FigureFrame ref={setFrame} src="/figures/flight/range.html" title={dict.figureTitle} initial={initial} onEvent={onFigureEvent} strings={figureStrings} controls={false} />
+      <div className="relative min-h-0 flex-1">
+        <FigureFrame
+          ref={setFrame}
+          src="/figures/flight/range.html"
+          title={dict.figureTitle}
+          initial={initial}
+          onEvent={onFigureEvent}
+          strings={figureStrings}
+          controls={false}
+          fill
+          className="h-full"
+        />
         {coarse && (
           <TouchSticks
             climb={climb}
@@ -604,86 +678,114 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
             onRight={(v) => (input.current.right = v)}
           />
         )}
-      </div>
-      <p role="status" aria-live="polite" className="mt-2 min-h-[1.5em] text-sm font-bold" data-testid="flight-message">
-        {message}
-      </p>
-      {crash && crashFix && (
-        <section
-          aria-labelledby="flight-why-title"
-          className="mt-3 rounded-ink border-2 border-ink bg-surface p-3"
-          data-testid="crash-why"
-          data-cause={crash.cause}
-        >
-          <h3 id="flight-why-title" className="font-bold">
-            {dict.why.title}
-          </h3>
-          <p className="mt-1 text-sm">{whyText(crash)}</p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <Button variant="primary" onClick={applyFix} data-testid="crash-fix">
-              {fixLabel(crashFix)}
-            </Button>
-            <Button onClick={() => playCrash(crash)} disabled={replaying} data-testid="crash-replay" data-playing={replaying}>
-              {replaying ? dict.why.replaying : dict.why.replay}
-            </Button>
-          </div>
-        </section>
-      )}
-      <dl className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <Stat label={dict.stats.state} value={stateText} />
-        <Stat label={dict.stats.battery} value={t("stats.perCell", { v: snap.perCell.toFixed(2) })} tone={snap.low ? "bad" : "ink"} />
-        <Stat label={dict.stats.altitude} value={snap.alt.toFixed(1)} unit="m" />
-        <Stat label={dict.stats.speed} value={String(snap.speed)} unit="km/h" />
-        <Stat label={dict.stats.throttle} value={String(Math.round(snap.throttle * 100))} unit="%" />
-        <Stat label={dict.stats.current} value={snap.amps.toFixed(1)} unit="A" />
-        <Stat label={dict.stats.used} value={String(snap.mah)} unit="mAh" />
-        <Stat label={dict.stats.next} value={nextText} />
-        <Stat label={dict.stats.best} value={best === null ? dict.stats.noBest : isRace ? fmtTime(best) : best.toFixed(1)} unit={best === null ? undefined : "s"} />
-        <Stat label={dict.stats.laps} value={String(snap.laps)} />
-        <Stat label={dict.stats.crashes} value={String(snap.crashes)} />
-        {par && <Stat label={dict.stats.par} value={t("stats.parValue", { gold: par.gold, silver: par.silver, bronze: par.bronze })} unit="s" />}
-        {isRace && snap.splits.length > 0 && <Stat label={dict.stats.splits} value={snap.splits.map(fmtTime).join(" · ")} unit="s" />}
-      </dl>
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm" role="group" aria-labelledby="flight-ghosts-title" data-testid="ghosts">
-        <span id="flight-ghosts-title" className="font-bold">
-          {dict.ghosts.title}
-        </span>
-        <label className="inline-flex min-h-11 items-center gap-2">
-          <input type="checkbox" checked={ghostOn.best && bestGhost !== null} disabled={!bestGhost} onChange={(e) => setGhostOn((g) => ({ ...g, best: e.target.checked }))} data-testid="ghost-best" />
-          {bestGhost ? t("ghosts.best", { time: bestGhost.time.toFixed(2) }) : dict.ghosts.bestNone}
-        </label>
-        {pace && (
-          <label className="inline-flex min-h-11 items-center gap-2">
-            <input type="checkbox" checked={ghostOn.pace} onChange={(e) => setGhostOn((g) => ({ ...g, pace: e.target.checked }))} data-testid="ghost-pace" />
-            {t("ghosts.pace", { time: pace.time.toFixed(1) })}
-          </label>
-        )}
-      </div>
-      {showPad && (
-        <div className="mt-3">
-          <GamepadPanel t={dict.gamepad} mapping={pad} onChange={setPad} />
+        <div className={cx("pointer-events-none absolute inset-x-2 flex flex-col items-start gap-2", coarse ? "top-2" : "bottom-2 justify-end")}>
+          {coarse ? strip : null}
+          {modeHint || snap.pendingDesign ? (
+            <div className="max-w-[min(32rem,100%)] rounded-ink-sm bg-paper/85 px-2.5 py-1 text-xs text-ink shadow-ink-sm max-sm:line-clamp-3">
+              {modeHint ? <p>{modeHint}</p> : null}
+              {snap.pendingDesign ? <p className="font-semibold">{dict.pendingDesign}</p> : null}
+            </div>
+          ) : null}
+          {crashCard}
+          {coarse ? null : strip}
         </div>
-      )}
-      {showLegend && (
-        <section aria-labelledby="flight-legend-title" className="mt-3 rounded-xl border-2 border-[var(--ink,#231e16)] p-3 text-sm">
-          <h3 id="flight-legend-title" className="mb-2 font-bold">
-            {dict.legend.title}
-          </h3>
-          <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
-            {(["throttle", "yaw", "pitch", "roll", "arm", "fpv", "reset"] as const).map((k) => (
-              <div key={k} className="contents">
-                <dt>
-                  <Kbd>{dict.legend.keys[k]}</Kbd>
-                </dt>
-                <dd>{dict.legend[k]}</dd>
-              </div>
-            ))}
-          </dl>
-          <p className="mt-2">{climb ? dict.legend.throttleAlt : dict.legend.throttleManual}</p>
-          <p className="mt-1">{mode.attitude === "acro" ? dict.legend.acroNote : dict.legend.angleNote}</p>
-          <p className="mt-1">{dict.legend.focusNote}</p>
-        </section>
-      )}
+        {panel ? (
+          <div
+            className="absolute end-2 top-2 z-20 max-h-[calc(100%-1rem)] w-[min(26rem,calc(100%-1rem))] overflow-y-auto rounded-ink-sm border-2 border-line bg-surface p-3 text-sm shadow-ink-lg animate-ink-fade"
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                e.stopPropagation();
+                setPanel(null);
+              }
+            }}
+          >
+            {panel === "pad" ? (
+              <GamepadPanel t={dict.gamepad} mapping={pad} onChange={setPad} />
+            ) : (
+              <section aria-labelledby="flight-legend-title">
+                <h3 id="flight-legend-title" className="mb-2 font-head text-lg">
+                  {dict.legend.title}
+                </h3>
+                <dl className="divide-y divide-rule">
+                  {(["throttle", "yaw", "pitch", "roll", "arm", "fpv", "reset"] as const).map((k) => (
+                    <div key={k} className="flex items-center justify-between gap-4 py-1.5">
+                      <dt>
+                        <Kbd>{dict.legend.keys[k]}</Kbd>
+                      </dt>
+                      <dd className="text-end">{dict.legend[k]}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <div className="mt-2 space-y-1 text-muted">
+                  <p>{climb ? dict.legend.throttleAlt : dict.legend.throttleManual}</p>
+                  <p>{mode.attitude === "acro" ? dict.legend.acroNote : dict.legend.angleNote}</p>
+                  <p>{dict.legend.focusNote}</p>
+                </div>
+              </section>
+            )}
+          </div>
+        ) : null}
+      </div>
+      <div className="flex shrink-0 flex-wrap items-center gap-x-4 gap-y-0">
+        <p role="status" aria-live="polite" className="min-h-6 min-w-0 flex-1 basis-60 truncate text-sm font-semibold" data-testid="flight-message">
+          {message}
+        </p>
+        <div
+          className="flex max-w-full items-center gap-x-4 overflow-x-auto [scrollbar-width:none]"
+          role="group"
+          aria-labelledby="flight-ghosts-title"
+          data-testid="ghosts"
+        >
+          <span id="flight-ghosts-title" className="ink-kicker shrink-0">
+            {dict.ghosts.title}
+          </span>
+          <div data-testid="ghost-best" data-on={ghostOn.best && bestGhost !== null} className="shrink-0 whitespace-nowrap">
+            <Toggle
+              checked={ghostOn.best && bestGhost !== null}
+              disabled={!bestGhost}
+              onChange={(on) => setGhostOn((g) => ({ ...g, best: on }))}
+              label={bestGhost ? t("ghosts.best", { time: bestGhost.time.toFixed(2) }) : dict.ghosts.bestNone}
+              className="!gap-2"
+            />
+          </div>
+          {pace && (
+            <div data-testid="ghost-pace" data-on={ghostOn.pace} className="shrink-0 whitespace-nowrap">
+              <Toggle
+                checked={ghostOn.pace}
+                onChange={(on) => setGhostOn((g) => ({ ...g, pace: on }))}
+                label={t("ghosts.pace", { time: pace.time.toFixed(1) })}
+                className="!gap-2"
+              />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
+  );
+}
+
+const GLYPHS = {
+  // a loop back to the start
+  reset: "M5 9.2A7.6 7.6 0 1 1 6.3 17M5 4.2v5h5",
+  // goggles: two lenses on a strap
+  fpv: "M3 9.5h18v6h-6.5l-2.5-2-2.5 2H3zM3 12H1.5M21 12h1.5",
+  // wind: three gusts
+  wind: "M3 8.5h10.5a2.5 2.5 0 1 0-2.5-2.5M3 12.5h15a2.5 2.5 0 1 1-2.5 2.5M3 16.5h7",
+};
+
+/** A 44 px cockpit button with a glyph, for the phone's one row (its name stays the full label). */
+function CockpitIcon({ glyph, label, pressed, onClick }: { glyph: keyof typeof GLYPHS; label: string; pressed?: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      aria-pressed={pressed}
+      onClick={onClick}
+      className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border-2 border-line bg-surface text-ink aria-pressed:bg-ink aria-pressed:text-paper"
+    >
+      <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d={GLYPHS[glyph]} />
+      </svg>
+    </button>
   );
 }

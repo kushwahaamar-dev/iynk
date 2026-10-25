@@ -1,4 +1,5 @@
 import { existsSync } from "node:fs";
+import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import flight from "../src/i18n/messages/en/flight.json";
 
@@ -61,6 +62,17 @@ test("every course is listed with its medal times, and picking one flies it", as
     await courses.getByRole("button", { name: /bando/i }).click();
     await expect(mode).toHaveValue("range", { timeout: 1000 });
   }).toPass({ timeout: 30_000 });
-  await expect(main(page).getByText(flight.stats.par)).toBeVisible();
+  // the medal times sit on each course row; the picked course is the pressed one
+  await expect(courses.getByRole("button", { name: /bando/i })).toHaveAttribute("aria-pressed", "true");
+  expect(errors).toEqual([]);
+});
+
+test("the cockpit passes axe", async ({ page }) => {
+  const errors = watchErrors(page);
+  await page.goto("/en/drones/quad5/fly");
+  await expect(main(page).locator('iframe[src*="/figures/flight/range.html"]')).toBeVisible({ timeout: 20_000 });
+  await expect(main(page).getByTestId("flight-telemetry")).toBeVisible();
+  const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
+  expect(results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`)).toEqual([]);
   expect(errors).toEqual([]);
 });
