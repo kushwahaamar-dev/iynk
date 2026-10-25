@@ -1,0 +1,451 @@
+{
+  "title": "LM2596 buck converter",
+  "sub": "set the voltage before you load it",
+  "hint": "build it, set 5 V with a meter, run a motor, break it",
+  "overview": "Batteries come in the wrong voltage. A 2S LiPo gives 8.4 V full and 6.6 V nearly flat; a TT motor, a Nano's 5V pin or a servo wants 5 V. A buck converter steps the voltage down without burning the difference as heat: the LM2596 switches the input on and off 150 000 times a second, a 33 µH inductor and a capacitor smooth the chopped voltage, and a Schottky diode carries the inductor's current while the switch is off. A 25-turn trimmer sets the output through the formula Vout = 1.23 x (1 + R2 / 330). Here you build the blue module, set 5 V with a meter before anything is on the output, put a motor on it, ask it for 12 V to see that a buck only steps down, then break it seven ways. It has no reverse protection, no fuse and no low-battery cut-off, and every one of those shows up.",
+  "power": {
+    "label": "Power the bench",
+    "ok": "Pack on IN+ and IN-: the display lights with the input voltage and the converter switches"
+  },
+  "parts": {
+    "U1": { "name": "LM2596S-ADJ buck regulator (TO-263-5)", "what": "The switch, the 150 kHz oscillator, a 1.23 V reference and the error amplifier in one five-pin package. It compares FB with 1.23 V and changes how long its switch stays on each cycle until they match. The tab is pin 3, ground, and soldered to copper that spreads the heat." },
+    "L1": { "name": "33 µH shielded inductor", "what": "Printed 330: 33 followed by 0 zeros, in µH. While the switch is on, current through it rises and it stores energy; while the switch is off, it keeps the current flowing through the diode into the output." },
+    "D1": { "name": "SS34 Schottky catch diode", "what": "Carries the inductor's current while the switch is off: about a third of each cycle at 5 V out. A Schottky drops only about 0.4 V, so it wastes little. It is rated 3 A and 40 V, which is less than the module can ask of it with a shorted output or a 44 V input." },
+    "C1": { "name": "220 µF 50 V input capacitor", "what": "Supplies the sharp pulses of current the switch draws, so the battery wires only carry the average. Polarised: the stripe marks minus." },
+    "C2": { "name": "220 µF 50 V output capacitor", "what": "Smooths the output with the inductor; what is left is a ripple of tens of millivolts at 150 kHz. Polarised like C1." },
+    "RV1": { "name": "10 kΩ 25-turn trimmer (3296W)", "what": "R2 in the formula: 400 Ω a turn. Clockwise raises the output. It usually arrives at the top, which asks for 38.5 V, so the first twenty turns change nothing you can see." },
+    "R7": { "name": "Feedback resistor by the trimmer", "what": "Part of the divider network around the trimmer that feeds FB." },
+    "C5": { "name": "Feedback capacitor", "what": "A small ceramic in the feedback network." },
+    "J1": { "name": "Input terminal (IN+, IN-)", "what": "Two screw clamps on 5 mm pitch for the battery wires. Nothing behind them checks which way round they are." },
+    "J2": { "name": "Output terminal (OUT-, OUT+)", "what": "Screw clamps for the load. OUT- and IN- are the same ground." },
+    "DS1": { "name": "3-digit red voltmeter display", "what": "Shows the input or the output: x.xx under 10 V, xx.x above. The vendors give it ±0.1 V, and this one reads 0.03 V high, which is why you set a voltage with a meter." },
+    "U2": { "name": "Voltmeter regulator", "what": "Powers the little meter circuit from the input, so the display works even when the output is shorted. It needs about 4 V: below that the display goes dark." },
+    "BITS": { "name": "Voltmeter circuit", "what": "Divider resistors, decoupling and two small transistors around the meter's microcontroller." },
+    "SW1": { "name": "Display select button", "what": "Each press swaps the display between IN and OUT." },
+    "LED_IN": { "name": "IN indicator", "what": "Lit while the display shows the input voltage." },
+    "LED_OUT": { "name": "OUT indicator", "what": "Lit while the display shows the output voltage." },
+    "X1": { "name": "Small black two-terminal part by the input", "what": "Not identified from the photos; it sits in the meter circuit's corner." },
+    "BATT": { "name": "2S LiPo, 1000 mAh", "what": "Two cells in series: 8.4 V full, 7.4 V nominal, 6.0 V empty (3.0 V a cell, the floor). It can give tens of amps into a short." },
+    "MM": { "name": "Pocket multimeter on 20 V DC", "what": "Red probe on OUT+, black on OUT-. The number you set the trimmer by." },
+    "MOT": { "name": "TT gear motor", "what": "A small brushed motor with a 1:48 gearbox, made for 3 to 6 V. About 0.15 A turning freely at 5 V, about 1.25 A held still." }
+  },
+  "modes": {
+    "found": {
+      "title": "Trimmer as delivered",
+      "code": {
+        "what": "The trimmer as it arrives: at the top of its 25 turns",
+        "top": "all of the 10 kΩ",
+        "empty": "with nothing on OUT",
+        "verdict": "the output follows the input, a volt under it: 7.6 V would overdrive a 6 V motor"
+      }
+    },
+    "set5": {
+      "title": "Turn the trimmer to 5 V",
+      "code": {
+        "what": "5 V for the motor (or a Nano's 5V pin)",
+        "verdict": "about 74 % efficient here; a linear regulator would be 5.0 / 8.4 = 60 % at best"
+      }
+    },
+    "set33": {
+      "title": "Turn the trimmer to 3.3 V",
+      "code": {
+        "what": "3.3 V, the voltage an ESP32 or most sensors want",
+        "verdict": "the switch is on less than half the time; the fixed losses matter more, so the efficiency drops"
+      }
+    },
+    "set12": {
+      "title": "Turn the trimmer to 12 V",
+      "code": {
+        "what": "12 V asked from an 8.4 V pack",
+        "verdict": "a buck only steps down: it gives what it can, and the motor gets 7.6 V"
+      }
+    },
+    "code": {
+      "vref": "the LM2596 holds FB at 1.23 V",
+      "r1": "from FB to ground",
+      "turn": "the 10 kΩ trimmer is R2, spread over 25 turns",
+      "vin": "a full 2S LiPo",
+      "above": "Vset is more than Vin: the switch stays on all the time (100 % duty)",
+      "from": "up from the bottom",
+      "duty": "the fraction of each cycle the switch is on",
+      "meter": "the display's 15 mA included"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Strip to the bare board",
+      "body": "A blue 66 x 34 mm board with four M3 holes. Input on the left edge, output on the right, both with the plus terminal at the top. The big pad in the middle-left is for the regulator's tab: it is ground and the heatsink.",
+      "refusal": "Unplug the bench first"
+    },
+    "smd": {
+      "title": "Place and reflow the SMD parts",
+      "body": "The LM2596 with its tab on the big pad, the SS34 under its leads, the 33 µH inductor beside it, then the meter circuit, the two LEDs and the button. The switch, the diode, the inductor and the output capacitor make a tight loop; the shorter that loop, the less the board radiates at 150 kHz.",
+      "refusal": "Strip the board first"
+    },
+    "trimmer-display": {
+      "title": "Fit the trimmer and the display",
+      "body": "The blue 25-turn trimmer along the top edge with its brass screw on the left, and the 3-digit display along the bottom.",
+      "refusal": "Reflow the SMD parts first"
+    },
+    "caps-terminals": {
+      "title": "Fit the capacitors and terminals",
+      "body": "C1 by the input, C2 by the output, each with its stripe (minus) toward the board edge as the silkscreen shows. Then the two screw terminals, wire entries facing out.",
+      "refusal": "Fit the trimmer and the display first"
+    },
+    "solder": {
+      "title": "Solder the through-hole joints",
+      "body": "The capacitor legs carry the full switching current in pulses: give them a proper joint. The trimmer's three pins matter just as much, as one of the breaks later shows.",
+      "refusal": "Fit every part first"
+    },
+    "wire-battery": {
+      "title": "Wire the pack to IN+ and IN-",
+      "body": "Red to IN+ (top left), black to IN- (bottom left). Check twice: the module has nothing that stops a reversed pack.",
+      "refusal": "Finish soldering the module first"
+    },
+    "wire-meter": {
+      "title": "Put the meter on the output",
+      "body": "Dial on 20 V DC, red probe on OUT+, black on OUT-. Nothing else on the output yet: you set the voltage first and connect the load afterwards.",
+      "refusal": "Wire the pack first"
+    },
+    "plug": {
+      "title": "Switch the pack on",
+      "body": "The display lights showing the input, 8.4 V, with the IN LED on. The meter reads 7.65 V. That is not a fault: the trimmer arrived at the top, asking for 38.5 V, and a buck that is asked for more than it has gives its input less about a volt.",
+      "refusal": "Put the pack and the meter on the mat first"
+    },
+    "show-out": {
+      "title": "Switch the display to OUT",
+      "body": "Press the button: the OUT LED lights and the display shows the output. It agrees with the meter to within a few hundredths here, but the display is only good to ±0.1 V, so the meter has the last word.",
+      "refusal": "Switch the pack on first"
+    },
+    "set5": {
+      "title": "Turn the trimmer down to 5 V",
+      "body": "Counter-clockwise lowers it. For about twenty turns nothing happens, because every setting above 7.6 V gives the same 7.6 V. Then the reading starts to fall. Stop when the meter reads 5.00 V, 2.53 turns from the bottom: R2 = 330 x (5.00 / 1.23 - 1) = 1011 Ω.",
+      "refusal": "Switch the pack on and put the meter on first"
+    },
+    "wire-motor": {
+      "title": "Power off, then wire the motor",
+      "body": "Pack off first. Red motor lead to OUT+, black to OUT-. The meter stays on so you can see what the load does to the output.",
+      "refusal": "Set the output to 5 V first"
+    },
+    "load": {
+      "title": "Power the motor",
+      "body": "The motor spins at about 180 rpm on 5 V and draws 155 mA from the output. The pack only gives about 125 mA: the converter trades voltage for current, 0.78 W out for 1.05 W in. The 5.00 V on the meter does not move.",
+      "refusal": "Wire the motor first"
+    },
+    "set33": {
+      "title": "Turn it down to 3.3 V",
+      "body": "1.39 turns from the bottom: R2 = 555 Ω. The motor slows to about 110 rpm. The duty cycle drops to 45 % and the efficiency with it, because the meter and the switching losses stay the same while the power out falls.",
+      "refusal": "Run the motor at 5 V first"
+    },
+    "set12": {
+      "title": "Ask it for 12 V",
+      "body": "7.22 turns: R2 = 2890 Ω would give 12 V from a 13 V input. From 8.4 V it cannot: the switch stays on, the duty reads 100 % and the output sits at 7.6 V, the input less the switch's saturation and the inductor's copper. A buck only steps down; for 12 V from this pack you need a boost converter.",
+      "refusal": "Run the motor at 3.3 V first"
+    },
+    "lipo-backwards": {
+      "title": "Break it: pack backwards",
+      "body": "Swap the pack's leads on the input. Nothing on the module blocks it. Then repair and set 5 V again."
+    },
+    "cap-backwards": {
+      "title": "Break it: C1 in backwards",
+      "body": "Fit the input capacitor with its stripe the wrong way and power up. Then repair it."
+    },
+    "wiper-open": {
+      "title": "Break it: cold joint on the trimmer",
+      "body": "One dull, cracked joint on the trimmer's wiper pin. Power up with the motor on and watch the meter."
+    },
+    "flat-pack": {
+      "title": "Break it: run the pack down to 5.5 V",
+      "body": "Let the pack sag to 5.5 V, far below its 6.0 V floor, and watch the output and the display."
+    },
+    "stall": {
+      "title": "Break it: hold the wheel",
+      "body": "Grip the motor's wheel so it cannot turn, and watch the meter, the battery current and the chip's temperature."
+    },
+    "short-out": {
+      "title": "Break it: short OUT+ to OUT-",
+      "body": "A stray strand across the output terminal. Watch the meter, the display and the diode."
+    },
+    "ten-s-pack": {
+      "title": "Break it: a 44 V input",
+      "body": "A 10S pack, 42 V full, or a 44 V lab supply on the input: inside the LM2596's 45 V rating, outside the diode's."
+    },
+    "exploded": {
+      "title": "Exploded view",
+      "body": "The layers apart: the board, the SMD power parts, the trimmer and display, the capacitors and terminals.",
+      "refusal": "Break and repair it every way first"
+    }
+  },
+  "faults": {
+    "reverse-polarity": {
+      "title": "Pack connected backwards",
+      "symptom": "The display stays dark, the output is dead, the regulator gets hot fast and C1 may hiss. Often the LM2596 fails as a short, so the module is gone even after the leads are swapped back.",
+      "explanation": "With minus on IN+, the protection diodes inside the LM2596 and the meter's regulator conduct straight across the pack, and C1 is reverse-biased. A LiPo can push tens of amps through that. There is no diode, fuse or MOSFET on this module to stop it.",
+      "fix": "Swap the leads. Next time, a keyed connector (XT30) on the pack lead, or a P-channel MOSFET or a series Schottky in front of the module."
+    },
+    "cap-reversed": {
+      "title": "Input capacitor in backwards",
+      "symptom": "C1 warms, may hiss, then vents through the cross on its top. The switching pulses now come from the battery wires.",
+      "explanation": "An aluminium electrolytic only works one way round: reversed, its oxide layer breaks down, it conducts, heats and builds pressure until the vent opens.",
+      "fix": "Replace C1 (a vented capacitor is never reused) with the stripe toward the board edge."
+    },
+    "wiper-open": {
+      "title": "Trimmer wiper open",
+      "symptom": "The meter jumps from 5.00 V to 7.6 V: the output follows the input. The motor runs fast and hot. Turning the trimmer does nothing.",
+      "explanation": "With the wiper disconnected, FB sees only R1 to ground: 0 V. The LM2596 thinks the output is far too low and turns its switch fully on. This is the dangerous failure: whatever is on the output gets the battery voltage.",
+      "fix": "Reflow the trimmer's pins. For anything that cannot take the input voltage, add a zener or a crowbar on the output."
+    },
+    "flat-pack": {
+      "title": "Pack run flat",
+      "symptom": "The output sags with the pack: 4.7 V from 5.5 V in. The motor slows. The display keeps working down to about 4 V, the converter to about 3.6 V. Nothing warns you.",
+      "explanation": "Below Vout plus the dropout (about 0.8 V here) the switch stays on and the output is the input less the dropout. The module has no under-voltage lock-out, so it keeps draining a 2S pack far below 6.0 V, the point where the cells are damaged.",
+      "fix": "Charge the pack. On a robot, add a cut-off: a LiPo alarm, or a Nano that reads the pack through a divider and switches the load off at 3.3 V a cell (the cut-off task)."
+    },
+    "stall": {
+      "title": "Motor held",
+      "symptom": "The motor current jumps to 1.25 A and the pack current to about 0.9 A. The meter still reads 5.00 V. The LM2596 warms to about 70 °C.",
+      "explanation": "A held motor has no back-EMF: it is just its 4 Ω winding, 1.25 A at 5 V. That is far under the 4.2 A the converter can give, so the output holds. A small motor does not collapse this rail; a big one, or two in parallel, would hit the current limit and pull the output down.",
+      "fix": "Let go. In a robot, stop the motor in code when it stalls (the current rises, the encoder stops) before the gearbox or the module overheats."
+    },
+    "short-out": {
+      "title": "Output shorted",
+      "symptom": "The meter reads 0.00 V. The display, on IN, still reads the input, because the meter circuit runs from the input. The SS34 heats; after a few seconds it fails and the output stays dead.",
+      "explanation": "The LM2596 limits its switch to about 4.5 A peaks, 4.2 A on average. Into a short the output is near 0 V, so the switch is on less than a tenth of each cycle and the diode carries the current the rest of the time. TI asks for a diode rated at least the current limit; the SS34 is rated 3 A, and it overheats.",
+      "fix": "Remove the short and replace D1. Fit a fuse on the output, or a diode rated 5 A (SS54) if shorts are likely."
+    },
+    "ten-s-pack": {
+      "title": "Input over 40 V",
+      "symptom": "The diode overheats and fails; often it takes the regulator with it, and a regulator that fails short passes the full input to the output.",
+      "explanation": "While the switch is on, the diode sees the whole input voltage in reverse. The SS34 is a 40 V part, and TI wants 1.25 times the highest input. The module is sold as 4 to 40 V, which already leaves no margin; 44 V is past it.",
+      "fix": "Stay under about 32 V with this diode, or fit a 60 V one (SS36 or SS56)."
+    }
+  },
+  "status": {
+    "status": "Status",
+    "powered": "Bench power",
+    "mode": "Trimmer setting",
+    "vin": "Input (IN)",
+    "vout": "Output (meter)",
+    "display": "Module display",
+    "shows": "Display shows",
+    "trimmer": "Trimmer (turns)",
+    "duty": "Duty cycle",
+    "efficiency": "Efficiency",
+    "chip": "LM2596 (°C)",
+    "motor": "Motor speed",
+    "motorCurrent": "Motor current",
+    "battery": "Pack current"
+  },
+  "current": {
+    "lipo": "2S LiPo, 1000 mAh 20C",
+    "meter": "Voltmeter circuit",
+    "quiescent": "LM2596 quiescent current",
+    "motor5": "TT motor at 5 V (155 mA out)",
+    "motor33": "TT motor at 3.3 V (145 mA out)",
+    "motorFlat": "TT motor at 7.6 V, 100 % duty",
+    "wiperOpen": "TT motor on the full input (wiper open)",
+    "flatPack": "TT motor from a 5.5 V pack",
+    "stall": "TT motor held (1.25 A out)",
+    "short": "Output shorted, until the diode fails",
+    "capReversed": "C1 conducting backwards",
+    "reverse": "Reversed pack through U1 and the meter regulator"
+  },
+  "tasks": {
+    "set-points": {
+      "title": "Where to turn the trimmer",
+      "brief": "Work out R2 and the trimmer turns for 3.3 V, 5.0 V and 12.0 V, and print each as \"5.0 V: R2 = 1011 ohm, 2.5 turns\". Flag any voltage a full 2S pack (8.4 V, less about 1 V of dropout) cannot give with a line saying \"needs a 3S pack\".",
+      "hints": {
+        "1": "Vout = 1.23 x (1 + R2 / R1). Solve for R2: R2 = R1 x (Vout / 1.23 - 1).",
+        "2": "The starter forgets the - 1: at 5 V it says 1341 Ω, which would give 6.25 V.",
+        "3": "A buck only steps down: anything above 8.4 - 1.0 = 7.4 V needs a bigger pack."
+      },
+      "checks": {
+        "1": "Prints the 3.3 V line: R2 = 555 ohm, 1.4 turns",
+        "2": "Prints the 5.0 V line: R2 = 1011 ohm, 2.5 turns",
+        "3": "Prints the 12.0 V line: R2 = 2890 ohm, 7.2 turns",
+        "4": "Says 12 V needs a 3S pack"
+      },
+      "code": {
+        "goal": "Print R2 and the trimmer turns for 3.3, 5.0 and 12.0 V",
+        "vref": "FB is held at 1.23 V",
+        "r1": "R1, FB to ground",
+        "turn": "10 kΩ over 25 turns",
+        "wrong": "not quite: check the formula"
+      }
+    },
+    "cut-off": {
+      "title": "The cut-off the module does not have",
+      "brief": "The pack goes through a 20 kΩ / 10 kΩ divider (a third of it) into A0; D7 drives the MOSFET that switches the motor. Print \"pack 8.4\" style readings every 250 ms, and when the pack falls under 6.6 V (3.3 V a cell) switch D7 LOW and print \"cut-off\". Keep it off: once the load is gone, the pack's voltage bounces back up.",
+      "hints": {
+        "1": "analogRead gives 0 to 1023 for 0 to 5 V; the divider divides by 3, so multiply back: counts x 5.0 / 1023 x 3.",
+        "2": "Compare with 6.6 and switch D7 LOW when the pack is under it.",
+        "3": "Use a bool that remembers the cut: a pack that recovers to 6.9 V with no load is still flat."
+      },
+      "checks": {
+        "1": "Runs for 3.5 s",
+        "2": "First reading prints \"pack 8.4\"",
+        "3": "The motor stays on at 6.8 V",
+        "4": "Prints \"cut-off\" once the pack is under 6.6 V",
+        "5": "D7 goes LOW at the cut-off",
+        "6": "D7 stays LOW when the pack bounces back to 6.9 V"
+      },
+      "code": {
+        "goal": "Read the pack, switch the motor off under 6.6 V, and keep it off",
+        "divider": "the pack through 20 kΩ / 10 kΩ: a third of it",
+        "load": "HIGH: the motor's MOSFET is on",
+        "scale": "this is the voltage at A0, not the pack",
+        "todo": "switch D7 off under 6.6 V and keep it off"
+      },
+      "world": {
+        "pack": "Pack voltage"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "diode": {
+        "q": "What does the SS34 do while the LM2596's switch is off?",
+        "options": {
+          "1": "Nothing: it only protects against a reversed pack",
+          "2": "It carries the inductor's current into the output",
+          "3": "It holds FB at 1.23 V"
+        },
+        "why": "An inductor's current cannot stop at once. When the switch opens, the inductor keeps pushing current through the diode, from ground into the output. That is why it is called the catch diode, and why it heats when the output is shorted."
+      },
+      "inductor": {
+        "q": "The inductor is printed 330. What is it?",
+        "options": {
+          "1": "33 µH",
+          "2": "330 µH",
+          "3": "330 Ω"
+        },
+        "why": "Like resistor codes: two digits and a multiplier, in µH. 33 followed by no zeros is 33 µH."
+      },
+      "caps": {
+        "q": "Why is C1 right next to the regulator?",
+        "options": {
+          "1": "To filter the display's flicker",
+          "2": "It sets the switching frequency",
+          "3": "It supplies the switch's current pulses, so the battery wires only carry the average"
+        },
+        "why": "The switch draws 1 A or more in 150 kHz pulses. Long battery wires have inductance and would ring; a capacitor right at the chip delivers the pulses and is topped up by the steady battery current."
+      }
+    },
+    "load": {
+      "order": {
+        "q": "Why set the output before you connect the motor?",
+        "options": {
+          "1": "The trimmer only turns with no load",
+          "2": "The display needs calibrating first",
+          "3": "The trimmer may be at the top, and the motor would get the input less a volt"
+        },
+        "why": "A new module usually arrives with the trimmer high. Here that is 7.6 V on a motor made for 6; with a 3S pack it would be 11 V into whatever you connect. Set it with nothing on it, power off, then connect."
+      },
+      "current": {
+        "q": "The motor draws 155 mA at 5 V. Why does the pack give only about 125 mA?",
+        "options": {
+          "1": "Power in is power out plus losses, and the pack is at a higher voltage",
+          "2": "The meter takes the rest",
+          "3": "The output capacitor supplies the difference"
+        },
+        "why": "0.78 W out at about 74 % efficiency is 1.05 W in; at 8.4 V that is 125 mA. A buck trades voltage for current. A linear regulator would draw the full 155 mA from the pack and burn the difference."
+      },
+      "meter": {
+        "q": "The display reads 5.03 V, the meter 5.00 V. Which do you trust?",
+        "options": {
+          "1": "The display: it is built into the module",
+          "2": "The meter: the display is only good to ±0.1 V",
+          "3": "Neither: the average"
+        },
+        "why": "The module's voltmeter is a cheap divider into a small chip, ±0.1 V by the vendors. Fine for a glance, not for a 3.3 V part with a 3.6 V absolute maximum."
+      }
+    },
+    "limits": {
+      "step-down": {
+        "q": "You ask for 12 V from an 8.4 V pack. What do you get?",
+        "options": {
+          "1": "12 V, but the pack drains faster",
+          "2": "About 7.6 V: the switch stays on and the output is the input less the dropout",
+          "3": "Nothing: it shuts down"
+        },
+        "why": "A buck can only make a lower voltage. Asked for more, it turns its switch fully on and passes the input through, less the switch's saturation and the inductor's resistance."
+      },
+      "turns": {
+        "q": "The trimmer starts at the top. Why does nothing happen for the first twenty turns down?",
+        "options": {
+          "1": "Every setting above about 7.6 V gives the same 7.6 V from this pack",
+          "2": "The trimmer has a dead zone",
+          "3": "The display does not update while you turn"
+        },
+        "why": "25 turns asks for 38.5 V. The output only starts to follow the trimmer once the setting falls under what the input can give, about 4.3 turns from the bottom here."
+      },
+      "efficiency": {
+        "q": "Why is the converter less efficient at 3.3 V than at 5 V with the same motor?",
+        "options": {
+          "1": "The inductor saturates at low voltage",
+          "2": "The diode is reversed at 3.3 V",
+          "3": "The fixed losses (the meter, the switching) are a bigger share of a smaller output"
+        },
+        "why": "0.48 W out at 3.3 V against 0.78 W at 5 V, while the meter's 15 mA and the switching losses hardly change. The diode also conducts for more of each cycle at a lower duty."
+      }
+    },
+    "faults": {
+      "short": {
+        "q": "With OUT shorted, the module's display still reads 8.4 V. Why?",
+        "options": {
+          "1": "It is showing IN, and the meter circuit runs from the input",
+          "2": "The short has not happened yet",
+          "3": "The display holds its last reading"
+        },
+        "why": "The meter has its own regulator on the input. Switch it to OUT and it reads 0.00, like the multimeter."
+      },
+      "stall": {
+        "q": "The motor is held and draws 1.25 A, but the output stays at 5.00 V. Why?",
+        "options": {
+          "1": "The motor's gearbox limits the current",
+          "2": "The meter is too slow to show the sag",
+          "3": "1.25 A is far under the converter's 4.2 A limit, so it simply supplies more"
+        },
+        "why": "A regulator holds its voltage until it reaches a limit. Only a load past about 4.2 A pulls this output down."
+      },
+      "wiper": {
+        "q": "A cold joint on the trimmer's wiper. What does the output do?",
+        "options": {
+          "1": "Drops to 1.23 V",
+          "2": "Jumps to the input less the dropout",
+          "3": "Stays where it was"
+        },
+        "why": "FB sees 0 V through R1, so the regulator thinks the output is far too low and turns fully on. Everything on the output gets the battery voltage: the most dangerous failure on this board."
+      }
+    },
+    "end": {
+      "vs-7805": {
+        "q": "5 V at 2 A from a 3S pack at 11.1 V. Roughly how much heat do a 7805 and this buck make?",
+        "options": {
+          "1": "About the same, 2 W each",
+          "2": "About 12 W against 2.5 W",
+          "3": "About 2.5 W against 12 W"
+        },
+        "why": "A linear regulator burns (11.1 - 5) x 2 = 12.2 W. The buck at 80 % burns 10 / 0.8 - 10 = 2.5 W. That is why robots use switchers."
+      },
+      "cut-off": {
+        "q": "Why does a robot on this module need its own low-battery cut-off?",
+        "options": {
+          "1": "The module cuts off too early",
+          "2": "The module's display drains the pack",
+          "3": "The module keeps running down to about 3.6 V input, far below a LiPo's safe floor"
+        },
+        "why": "It has no under-voltage lock-out. A 2S pack is damaged below 6.0 V; the converter happily runs on, so something else has to watch the pack."
+      },
+      "first": {
+        "q": "A new module, a 3S pack and an ESP32 (3.3 V, 3.6 V absolute maximum). What do you do first?",
+        "options": {
+          "1": "Pack on, nothing on the output, turn the trimmer to 3.30 V by the meter",
+          "2": "Connect the ESP32 and turn the trimmer until it boots",
+          "3": "Trust the display and connect"
+        },
+        "why": "The trimmer may be at the top: 11 V on a 3.6 V part. Set it with nothing connected, read it with a meter, power off, then connect."
+      }
+    }
+  }
+}
