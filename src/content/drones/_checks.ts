@@ -355,7 +355,7 @@ export async function openFigure(id: string) {
     !!st().test ||
     st().queue.length > 0 ||
     Object.values(st().placed as Record<string, { t: number; leave: boolean }>).some((p) => p.leave || p.t < 1);
-  const settle = async (ms = 25000) => {
+  const settle = async (ms = 50000) => {
     const end = Date.now() + ms;
     await new Promise((r) => setTimeout(r, 30));
     while (busy() && Date.now() < end) await new Promise((r) => setTimeout(r, 25));
