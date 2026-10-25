@@ -1,0 +1,340 @@
+{
+  "title": "Tricopter",
+  "tagline": "Three motors in a Y and a servo that tilts the tail motor to steer: yaw by thrust vectoring, on Betaflight.",
+  "sub": "Betaflight TRI mixer + tail servo",
+  "hint": "Build a Y frame with a tilting tail, test the servo, then fly the town park",
+  "noun": "tricopter",
+  "overview": "A tricopter has three motors in a Y: two out front and one on a tail boom. Three props can't cancel each other's torque the way four can, so the tail motor sits on a hinge and a servo tilts it a few degrees left or right. That sideways push swings the tail round and turns the nose: yaw by thrust vectoring, which makes a tri lean into its turns like a small plane. This one is a 5-inch build on 4S: three 2306 motors on single ESCs, an F405 flight controller with its own power board, a metal-gear tail servo and analog FPV, about 655 g with a 2200 mAh pack and 5:1 thrust to weight. The servo is the part that makes a tri a tri, and the part that breaks: test it before the props go on. Pick the parts here and watch the numbers, build it, run the safety tests, then fly the town park.",
+  "practice": "Hover in altitude hold first and watch the tail: it holds a few degrees of tilt even when you don't touch the yaw stick, cancelling the tail prop's torque. Then weave the lamp posts in the town park and circle the fountain; tight yaw is where a tri feels different from a quad. Race the park laps in angle mode once that is easy, and try acro last. On a real build: a smoke stopper on the first plug, the servo test with the props off (yaw right must tilt the tail thrust left), the motor direction check and the failsafe with the radio off. Make the first hover low and trim the servo centre if the tri creeps round. Land at about 3.5 V per cell.",
+  "design": {
+    "fixed": {
+      "FRAME": "Y frame: centre plate, two front arms, tail boom",
+      "ESC": "3 single ESCs (Bluejay), one per arm",
+      "FC": "F405 flight controller with power board, 30.5 mm",
+      "TAILSERVO": "Metal-gear digital tail servo and tilt mechanism",
+      "CAM": "Micro analog FPV camera",
+      "VTX": "5.8 GHz VTX (SmartAudio) and antenna",
+      "RX": "ExpressLRS 2.4 GHz receiver",
+      "XT60": "XT60 lead and 1000 µF 35 V low-ESR capacitor",
+      "TOP": "Top plate, 30 mm standoffs and screws",
+      "STRAP": "Battery strap and grip pad"
+    },
+    "verdict": {
+      "ok": "A good all-round tri: {tw}:1 thrust to weight. If the ESC check below speaks up, one motor's full-throttle current is over its ESC's rating: a gentler prop or bigger ESCs fix it."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Y frame with tail boom and tilt mount",
+      "what": "A 3 mm carbon centre plate with two front arms on the 60° diagonals (the front motors 208 mm apart) and a tail boom to the tail motor 150 mm behind the centre. At the end of the boom a hinge block carries the 30 x 30 mm motor plate, which rocks about the boom's axis."
+    },
+    "MOTORS": {
+      "name": "Three 2306 brushless motors",
+      "what": "Seen from above, M1 on the tail spins counter-clockwise, M2 front right clockwise and M3 front left counter-clockwise. Betaflight's TRI mixer never uses motor speed for yaw, but the two front props must counter-rotate so their torques cancel."
+    },
+    "ESC": {
+      "name": "Three single ESCs",
+      "what": "One small ESC on each arm, running Bluejay for bidirectional DShot. A 4-in-1 board is a poor fit on a tri: one channel would sit idle and the tail motor's wires would run back along the boom anyway. Each ESC carries one motor's current, and the calculator compares that with the ESC's rating."
+    },
+    "TAILSERVO": {
+      "name": "Tail servo",
+      "what": "A digital metal-gear micro servo on the boom that drives the motor plate through a horn and a short pushrod. It has to be digital because it gets 333 Hz pulses; an analog servo at that rate overheats. Fitted the wrong way round it tilts the tail the wrong way, and the tri pirouettes from take-off."
+    },
+    "WIRES": {
+      "name": "Motor wires",
+      "what": "Three phase wires from each motor to its ESC, cut short and soldered. Swapping any two reverses that motor, though reversing it in the ESC firmware is easier."
+    },
+    "FC": {
+      "name": "F405 flight controller with power board",
+      "what": "A 30.5 mm F405 board with its own power board: battery pads, three ESC pad pairs and 5 V and 9 V regulators. Its SERVO 1 output (the S9 pad on a SpeedyBee F405 V4) is on a timer no motor uses, because the servo wants 333 Hz PWM while the motors take DShot. The arrow points to the nose."
+    },
+    "XT60": {
+      "name": "XT60 lead and capacitor",
+      "what": "The battery plug, and a 1000 µF 35 V low-ESR capacitor across the battery pads that soaks up the voltage spikes from three ESCs switching. Its stripe marks minus."
+    },
+    "CAM": {
+      "name": "Micro FPV camera",
+      "what": "An analog camera between the nose plates at 20° uptilt. A tri flies a little nose-down when it moves, and the uptilt keeps the horizon in view."
+    },
+    "RX": {
+      "name": "ExpressLRS receiver",
+      "what": "A 2.4 GHz ELRS receiver on UART2 with the CRSF protocol. Its antenna points back and up, away from the carbon."
+    },
+    "VTX": {
+      "name": "5.8 GHz video transmitter",
+      "what": "An analog VTX with SmartAudio on UART1, so the OSD can change its channel and power. 25 mW: in most countries that is all you may use without an amateur radio licence."
+    },
+    "TOP": {
+      "name": "Top plate",
+      "what": "A 94 x 56 mm carbon plate on four 30 mm standoffs. It protects the stack and carries the battery."
+    },
+    "BATT": {
+      "name": "4S LiPo battery",
+      "what": "It sits on the top plate under a strap. Slide it until the tri hovers level hands-off: a tri's centre of gravity belongs about 10 mm behind the frame centre, where the three motors' thrust balances."
+    },
+    "PROPS": {
+      "name": "Propellers",
+      "what": "Two CCW props (tail and front left) and one CW prop (front right). They go on last, after the smoke stopper, the motor check and the servo test."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Lay out the Y frame",
+      "body": "Bolt the two front arms and the tail boom to the centre plate, and fit the hinge block and the motor plate at the end of the boom. The plate should rock freely about the boom with no play."
+    },
+    "motors": {
+      "title": "Mount the three motors",
+      "body": "The front left and tail motors spin counter-clockwise, the front right clockwise. Use short screws: one that reaches the windings shorts the motor.",
+      "refusal": "The motors bolt to the arms: lay out the frame first."
+    },
+    "esc": {
+      "title": "Fit the three ESCs",
+      "body": "One single ESC on each arm, near its motor, held with a zip tie over heat-shrink. Their power leads run in along the arms to the ESC pads on the power board.",
+      "refusal": "The ESCs sit on the arms: lay out the frame first."
+    },
+    "servo": {
+      "title": "Fit the tail servo",
+      "body": "Screw the servo to the side of the boom with its horn towards the tail, and link the horn to the motor plate with the pushrod. Centre the servo before you fit the horn, so the plate sits level at 1500 µs. The brown wire is ground, red is 5 V and orange is the signal.",
+      "refusal": "The servo mounts on the tail boom: lay out the frame first."
+    },
+    "wires": {
+      "title": "Solder the motor wires",
+      "body": "Cut each motor's three wires to length and solder them to its ESC. Keep them short and clear of the props.",
+      "refusal": "Fit the motors and the ESCs before the wires that join them."
+    },
+    "fc": {
+      "title": "Mount the flight controller",
+      "body": "On soft-mount grommets on the 30.5 mm stack, arrow to the nose. Plug in the three ESC signal wires (M1 tail, M2 front right, M3 front left) and the servo lead on the servo output.",
+      "refusal": "The flight controller goes on the frame: lay out the frame first."
+    },
+    "xt60": {
+      "title": "Solder the XT60 and the capacitor",
+      "body": "The battery lead goes to the power board's battery pads, red to plus. The capacitor goes on the same pads with its stripe to minus. A capacitor in backwards vents the first time it sees the pack.",
+      "refusal": "The battery lead solders to the power board on the flight controller: mount that first."
+    },
+    "cam": {
+      "title": "Mount the camera",
+      "body": "Between the nose plates at 20° uptilt, with its video lead to the flight controller's CAM pad.",
+      "refusal": "The camera mounts between the frame's nose plates: lay out the frame first."
+    },
+    "rx": {
+      "title": "Fit the receiver",
+      "body": "The ELRS receiver goes on UART2 (its TX to the board's RX, RX to TX, plus 5 V and ground), with its antenna out the back, away from the carbon.",
+      "refusal": "The receiver wires to the flight controller: mount that first."
+    },
+    "vtx": {
+      "title": "Fit the VTX",
+      "body": "Video in from the flight controller, which adds the OSD; SmartAudio to UART1 TX; antenna out the back. Never power a VTX without its antenna.",
+      "refusal": "The VTX wires to the flight controller: mount that first."
+    },
+    "top": {
+      "title": "Close the top plate",
+      "body": "Four 30 mm standoffs and the top plate over the stack. Nothing may touch the tail linkage.",
+      "refusal": "The top plate closes over the flight controller, the camera, the receiver and the VTX: fit those first."
+    },
+    "batt": {
+      "title": "Strap the battery on",
+      "body": "On the top plate with a grip pad and a strap. Slide it to balance the tri about 10 mm behind the frame centre.",
+      "refusal": "The battery straps to the top plate and plugs into the XT60: fit both first."
+    },
+    "props": {
+      "title": "Props on, last",
+      "body": "Two CCW props on the tail and front left motors, the CW prop on the front right. Only after the smoke stopper, the motor check and the tail servo test, with the battery unplugged.",
+      "refusal": "Props go on the motors, over the top plate and after the tail servo is in: fit those first, then run the smoke stopper and the motor check."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "The pack's XT60 mates with the craft's. It is keyed, so it only goes in one way.",
+    "XT60-ESC": "The power board feeds the battery to all three ESCs through its pads. The capacitor sits across the same pads, stripe to minus.",
+    "ESC-MOTORS": "Three phase wires per motor. Their order is not a safety matter: swapping any two reverses the motor.",
+    "FC-ESC": "DShot600 signals for M1 (tail), M2 (front right) and M3 (front left). M4 stays unused.",
+    "FC-TAILSERVO": "The servo's own output, on a timer no motor uses: the servo wants PWM at 333 Hz, the motors DShot. Red is 5 V from the board's regulator, which needs current to spare for when the servo stalls.",
+    "RX-FC": "ELRS on UART2 with the CRSF protocol, powered from 5 V.",
+    "CAM-FC": "Analog video into the flight controller, which lays the OSD over it.",
+    "FC-VTX": "Video with the OSD out to the VTX, 9 V power, and SmartAudio on UART1 TX so the OSD can change channel and power."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke stopper test",
+      "pass": "The lamp only blinked: no short between plus and minus. Safe to plug the pack in directly.",
+      "fail": "The lamp stayed lit: something is shorted. Here the capacitor is in backwards; turn it round (stripe to minus) and test again before you plug in."
+    },
+    "motors": {
+      "title": "Motor direction check (props off)",
+      "pass": "M1 on the tail and M3 front left spin counter-clockwise, M2 front right clockwise. The front pair cancel each other's torque; the servo trims out the tail's.",
+      "fail": "One motor spun the wrong way. Reverse it in the ESC firmware (ESC Configurator). Two front props spinning the same way twist the frame harder than the servo can trim out."
+    },
+    "calibrate": {
+      "title": "Accelerometer calibration",
+      "pass": "Level calibrated with the frame flat (the frame, not the tilted tail): angle mode and altitude hold now know where level is.",
+      "fail": "Fit the flight controller and set the frame flat first. If the arrow points backwards, turn the board round or set align_board_yaw = 180."
+    },
+    "servo": {
+      "title": "Tail servo test (props off)",
+      "pass": "Yaw right tilted the tail motor's thrust to the left: the tail swings left and the nose right. Turn the frame nose-right by hand and the tail tilts the other way, fighting the turn.",
+      "fail": "Fit the tail servo and the flight controller, take the props off and plug in first. If yaw right tilts the tail the wrong way, the servo is reversed and the tri would spin faster and faster from take-off: mount it the right way round, or reverse it with smix reverse 5 2 r."
+    },
+    "failsafe": {
+      "title": "Failsafe test (props off, radio off)",
+      "pass": "Radio off: after 1.5 s the motors stopped and the tri disarmed (DROP). The tail servo still moves while disarmed; that is tri_unarmed_servo, and harmless.",
+      "fail": "Fit the receiver and the flight controller, take the props off and plug the pack in first. A tri that holds its last throttle when the link drops flies away."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "First setup",
+      "explain": "Betaflight still flies tricopters, but servo support is a build option that is off in the default cloud build: tick Servos when you flash, or the TRI mixer has no yaw at all. Then the TRI mixer, the board's arrow forward, DShot600 with telemetry for the RPM filter, and the two serial ports: ELRS on UART2 and SmartAudio on UART1."
+    },
+    "servo": {
+      "title": "The tail servo",
+      "explain": "333 Hz suits a digital servo; an analog one stays at 50 Hz or it burns. With tri_unarmed_servo on, the tail follows the yaw stick while disarmed, so you can test it with the props off. Centre, travel and direction are set with the servo and smix commands or in the Servos tab; this lab's CLI doesn't take those two commands, so they are shown as comments."
+    },
+    "failsafe": {
+      "title": "Failsafe: drop",
+      "explain": "If the radio link is lost for 1.5 s, stop the motors. Without GPS a tri has no way home, and dropping into the park beats flying away."
+    },
+    "althold": {
+      "title": "Altitude hold",
+      "explain": "ALTHOLD (mode id 3) on AUX3, on top of ANGLE on AUX2. With the throttle stick in the middle 15 % the tri holds its height on the barometer; push it up or down to climb or sink. The easiest way to learn how the tail feels."
+    },
+    "angle": {
+      "title": "Angle mode",
+      "explain": "Self-levelling with the tilt capped at 60°: let go of the right stick and it levels. You fly the height on the throttle."
+    },
+    "acro": {
+      "title": "Acro rates",
+      "explain": "With ANGLE and ALTHOLD both off the sticks set rotation rates: 540°/s roll and pitch at full stick, and 400°/s yaw, because the servo has to swing the tail. More P and I on yaw than a quad's defaults help the tail hold its heading when the tail motor's torque changes with the throttle."
+    },
+    "race": {
+      "title": "Race laps",
+      "explain": "Angle mode for the gates and the race timer on the OSD: osd_tim1 = 18 counts from the last arm in hundredths, and 2103 puts it near the top right of the screen in OSD profile 1."
+    },
+    "park": {
+      "title": "Park run",
+      "explain": "The park run in altitude hold, with the same timer as the race. The stick climbs and sinks and holds the height when centred, so your attention can go on the yaw round the posts."
+    }
+  },
+  "flight": {
+    "modes": {
+      "althold": {
+        "title": "Altitude hold",
+        "hint": "Self-levelling and height hold: centre the throttle and it stays put. Start here."
+      },
+      "angle": {
+        "title": "Angle",
+        "hint": "Self-levelling, tilt capped at 60°. You fly the height on the throttle."
+      },
+      "acro": {
+        "title": "Acro",
+        "hint": "No self-levelling: the sticks set rotation rates, 540°/s roll and pitch and 400°/s yaw. Watch the tail lag behind a fast yaw."
+      },
+      "race": {
+        "title": "Race (angle)",
+        "hint": "The six park gates in order, timed lap by lap."
+      },
+      "park": {
+        "title": "Park run (altitude hold)",
+        "hint": "The lamp posts, the fountain and the gazebo in order, then land on the pad. The clock stops when you touch down."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Radio link lost for 1.5 s: the motors stop and the tri drops.",
+      "low-battery": "Below 3.5 V per cell: the OSD warns. Fly back and land.",
+      "battery-empty": "Below 3.2 V per cell: the pack sags so far that the ESCs cut out, and the tri falls."
+    },
+    "controls": "Keyboard: Space arms and disarms, W and S throttle, the arrows pitch and roll, A and D yaw (the tail servo turns it, so it lags a little), V switches to FPV, R puts the tri back on the pad. On a phone the left stick is throttle and yaw and the right stick is pitch and roll. A gamepad works in Mode 2."
+  },
+  "courses": {
+    "park": {
+      "title": "Town park",
+      "brief": "Weave the four lamp posts on the path, passing them on alternate sides, circle the fountain anticlockwise, fly through the gazebo from the east, then land on the pad. Altitude hold keeps your height while you steer.",
+      "goals": {
+        "1": "Lamp 1, south side",
+        "2": "Lamp 2, north side",
+        "3": "Lamp 3, south side",
+        "4": "Lamp 4, north side",
+        "5": "Fountain, south",
+        "6": "Fountain, east",
+        "7": "Fountain, north",
+        "8": "Fountain, west",
+        "9": "Through the gazebo, westbound",
+        "10": "Land on the pad"
+      }
+    },
+    "laps": {
+      "title": "Park laps",
+      "brief": "Six 1.6 m gates round the edge of the park, flown clockwise from the gate in front of the pad: up the west side past the pond, along the north fence, down the east side past the fountain and back along the south path. Fly the gates in order; the lap clock starts at the first one."
+    }
+  },
+  "quizzes": {
+    "tail": {
+      "yaw": {
+        "q": "How does a tricopter turn its nose (yaw)?",
+        "options": {
+          "1": "It speeds up the motors that spin one way, like a quad",
+          "2": "A servo tilts the tail motor, so part of its thrust pushes the tail sideways",
+          "3": "A rudder sits in the tail prop's wash"
+        },
+        "why": "Betaflight's TRI mixer gives the motors no yaw at all; yaw comes from the servo. Yaw right tilts the tail motor's thrust to the left, so the tail swings left and the nose swings right."
+      },
+      "front": {
+        "q": "Why do the two front props spin opposite ways?",
+        "options": {
+          "1": "So the camera never sees a prop",
+          "2": "It makes no difference on a tri",
+          "3": "So their torques cancel, leaving only the tail motor's torque for the servo to trim out"
+        },
+        "why": "Betaflight doesn't care which way they spin, but the frame does: two front props turning the same way twist it all the time. The tail prop's own torque is left over, and the servo holds a few degrees of tilt to cancel it."
+      }
+    },
+    "power": {
+      "esc": {
+        "q": "What sets the current one ESC on this tri has to carry?",
+        "options": {
+          "1": "Its own motor at full throttle: about a third of the battery current",
+          "2": "The whole battery current, because all three share one pack",
+          "3": "Only the hover current"
+        },
+        "why": "Each single ESC drives one motor, so it carries that motor's share. The calculator's ESC check compares one motor's full-throttle current with the ESC's rating, and a punchy prop can push it over."
+      },
+      "bec": {
+        "q": "Where does the tail servo get its power?",
+        "options": {
+          "1": "Straight from the 4S battery",
+          "2": "From a 5 V regulator with current to spare, through the red wire of its lead",
+          "3": "From the receiver"
+        },
+        "why": "A servo is a 5 or 6 V part, and 16.8 V from the pack would kill it. It pulls amps when it stalls, so the regulator needs headroom: a servo that drags the 5 V rail down can reboot the flight controller in the air."
+      }
+    },
+    "fly": {
+      "pirouette": {
+        "q": "Right after take-off the tri starts spinning, faster and faster. What is the likely cause?",
+        "options": {
+          "1": "The tail servo is reversed, so every yaw correction pushes the wrong way",
+          "2": "The battery is too small",
+          "3": "The camera tilt is wrong"
+        },
+        "why": "A reversed servo turns the yaw loop into positive feedback: the more it spins, the harder the tail pushes it on. Betaflight has no pre-arm check for it, which is why the servo test with the props off comes first."
+      },
+      "motorout": {
+        "q": "A front motor quits in the air. What happens?",
+        "options": {
+          "1": "It flies on with two motors",
+          "2": "The tail servo makes up for it",
+          "3": "It rolls towards that side and falls: a tricopter has no spare motor"
+        },
+        "why": "With three motors every one is needed for lift and balance. Lose the tail motor and the tail drops and it flips backwards. An octocopter can lose a motor; a tri, like a quad, comes down."
+      },
+      "servos": {
+        "q": "You flashed Betaflight's default cloud build and the tail doesn't move. Why?",
+        "options": {
+          "1": "Tricopters need INAV",
+          "2": "Servo support is off in the default cloud build: tick Servos and flash again",
+          "3": "The servo needs a 50 Hz rate"
+        },
+        "why": "Betaflight 2026.6.2 still flies tricopters, but servo support (USE_SERVOS) is a build option that is off by default. Without it there is no servo output and the TRI mixer has no yaw at all: don't fly it."
+      }
+    }
+  }
+}
