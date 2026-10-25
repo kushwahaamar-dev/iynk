@@ -1,0 +1,340 @@
+{
+  "title": "Tricoptère",
+  "tagline": "Trois moteurs en Y et un servo qui incline le moteur arrière pour diriger : le lacet par vectorisation de poussée, sous Betaflight.",
+  "sub": "Mixeur TRI de Betaflight + servo de queue",
+  "hint": "Montez un châssis en Y à queue inclinable, testez le servo, puis volez dans le parc de la ville",
+  "noun": "tricoptère",
+  "overview": "Un tricoptère a trois moteurs en Y : deux à l'avant et un sur une poutre de queue. Trois hélices ne peuvent pas annuler leurs couples comme le font quatre : le moteur arrière est donc monté sur une charnière, et un servo l'incline de quelques degrés à gauche ou à droite. Cette poussée latérale fait pivoter la queue et tourne le nez : c'est le lacet par vectorisation de poussée, qui fait pencher un tri dans ses virages comme un petit avion. Celui-ci est un montage 5 pouces en 4S : trois moteurs 2306 sur des ESC simples, un contrôleur de vol F405 avec sa propre carte d'alimentation, un servo de queue à pignons métal et du FPV analogique, environ 655 g avec une batterie de 2200 mAh et un rapport poussée/poids de 5:1. Le servo est la pièce qui fait d'un tri un tri, et la pièce qui casse : testez-le avant de monter les hélices. Choisissez ici les pièces et regardez les chiffres, montez-le, passez les tests de sécurité, puis volez dans le parc de la ville.",
+  "practice": "Faites d'abord un stationnaire en maintien d'altitude et regardez la queue : elle garde quelques degrés d'inclinaison même quand vous ne touchez pas au manche de lacet, pour annuler le couple de l'hélice arrière. Puis faites du slalom entre les lampadaires du parc et tournez autour de la fontaine ; c'est dans le lacet serré qu'un tri se distingue d'un quad. Faites les tours de course du parc en mode angle une fois que c'est facile, et essayez l'acro en dernier. Sur un vrai montage : smoke stopper au premier branchement, test du servo sans hélices (un lacet à droite doit incliner la poussée de la queue vers la gauche), vérification du sens des moteurs et failsafe radio éteinte. Faites le premier stationnaire bas et ajustez le centre du servo si le tri pivote tout seul. Posez-vous vers 3,5 V par cellule.",
+  "design": {
+    "fixed": {
+      "FRAME": "Châssis en Y : plaque centrale, deux bras avant, poutre de queue",
+      "ESC": "3 ESC simples (Bluejay), un par bras",
+      "FC": "Contrôleur de vol F405 avec carte d'alimentation, 30,5 mm",
+      "TAILSERVO": "Servo de queue numérique à pignons métal et mécanisme d'inclinaison",
+      "CAM": "Micro caméra FPV analogique",
+      "VTX": "VTX 5,8 GHz (SmartAudio) et antenne",
+      "RX": "Récepteur ExpressLRS 2,4 GHz",
+      "XT60": "Câble XT60 et condensateur low-ESR 1000 µF 35 V",
+      "TOP": "Plaque supérieure, entretoises de 30 mm et vis",
+      "STRAP": "Strap et tapis de batterie"
+    },
+    "verdict": {
+      "ok": "Un bon tri polyvalent : rapport poussée/poids de {tw}:1. Si la vérification des ESC ci-dessous se manifeste, le courant à plein gaz d'un moteur dépasse ce que supporte son ESC : une hélice plus douce ou des ESC plus gros règlent le problème."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Châssis en Y avec poutre de queue et support inclinable",
+      "what": "Une plaque centrale en carbone de 3 mm avec deux bras avant sur les diagonales à 60° (les moteurs avant à 208 mm l'un de l'autre) et une poutre de queue jusqu'au moteur arrière, 150 mm derrière le centre. Au bout de la poutre, un bloc charnière porte la plaque moteur de 30 x 30 mm, qui bascule autour de l'axe de la poutre."
+    },
+    "MOTORS": {
+      "name": "Trois moteurs brushless 2306",
+      "what": "Vu de dessus, M1 à l'arrière tourne en sens antihoraire, M2 à l'avant droit en sens horaire et M3 à l'avant gauche en sens antihoraire. Le mixeur TRI de Betaflight n'utilise jamais la vitesse des moteurs pour le lacet, mais les deux hélices avant doivent tourner en sens contraire pour que leurs couples s'annulent."
+    },
+    "ESC": {
+      "name": "Trois ESC simples",
+      "what": "Un petit ESC sur chaque bras, sous Bluejay pour le DShot bidirectionnel. Une carte 4-en-1 convient mal à un tri : un canal resterait inutilisé et les fils du moteur arrière longeraient de toute façon la poutre. Chaque ESC porte le courant d'un seul moteur, et le calculateur compare ce courant à ce que supporte l'ESC."
+    },
+    "TAILSERVO": {
+      "name": "Servo de queue",
+      "what": "Un micro servo numérique à pignons métal sur la poutre, qui entraîne la plaque moteur par un palonnier et une courte tringlerie. Il doit être numérique parce qu'il reçoit des impulsions à 333 Hz ; un servo analogique à cette fréquence surchauffe. Monté à l'envers, il incline la queue du mauvais côté, et le tri pirouette dès le décollage."
+    },
+    "WIRES": {
+      "name": "Fils des moteurs",
+      "what": "Trois fils de phase de chaque moteur vers son ESC, coupés court et soudés. Inverser deux d'entre eux inverse ce moteur, mais l'inverser dans le firmware de l'ESC est plus simple."
+    },
+    "FC": {
+      "name": "Contrôleur de vol F405 avec carte d'alimentation",
+      "what": "Une carte F405 de 30,5 mm avec sa propre carte d'alimentation : pastilles de batterie, trois paires de pastilles d'ESC et régulateurs 5 V et 9 V. Sa sortie SERVO 1 (la pastille S9 sur une SpeedyBee F405 V4) est sur un timer qu'aucun moteur n'utilise, parce que le servo veut du PWM à 333 Hz alors que les moteurs reçoivent du DShot. La flèche pointe vers le nez."
+    },
+    "XT60": {
+      "name": "Câble XT60 et condensateur",
+      "what": "La prise de batterie, et un condensateur low-ESR de 1000 µF 35 V aux bornes des pastilles batterie, qui absorbe les pics de tension de trois ESC qui commutent. Sa bande marque le moins."
+    },
+    "CAM": {
+      "name": "Micro caméra FPV",
+      "what": "Une caméra analogique entre les plaques avant, inclinée de 20° vers le haut. Un tri vole un peu nez en bas quand il avance, et l'inclinaison garde l'horizon dans l'image."
+    },
+    "RX": {
+      "name": "Récepteur ExpressLRS",
+      "what": "Un récepteur ELRS 2,4 GHz sur UART2 avec le protocole CRSF. Son antenne pointe vers l'arrière et vers le haut, loin du carbone."
+    },
+    "VTX": {
+      "name": "Émetteur vidéo 5,8 GHz",
+      "what": "Un VTX analogique avec SmartAudio sur UART1, pour que l'OSD puisse changer son canal et sa puissance. 25 mW : dans la plupart des pays, c'est tout ce que l'on peut utiliser sans licence de radioamateur."
+    },
+    "TOP": {
+      "name": "Plaque supérieure",
+      "what": "Une plaque en carbone de 94 x 56 mm sur quatre entretoises de 30 mm. Elle protège la stack et porte la batterie."
+    },
+    "BATT": {
+      "name": "Batterie LiPo 4S",
+      "what": "Elle repose sur la plaque supérieure sous un strap. Faites-la glisser jusqu'à ce que le tri tienne un stationnaire à plat sans les mains : le centre de gravité d'un tri se place environ 10 mm derrière le centre du châssis, là où la poussée des trois moteurs s'équilibre."
+    },
+    "PROPS": {
+      "name": "Hélices",
+      "what": "Deux hélices CCW (arrière et avant gauche) et une hélice CW (avant droit). Elles se posent en dernier, après le smoke stopper, la vérification des moteurs et le test du servo."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Assemblez le châssis en Y",
+      "body": "Boulonnez les deux bras avant et la poutre de queue sur la plaque centrale, et posez le bloc charnière et la plaque moteur au bout de la poutre. La plaque doit basculer librement autour de la poutre, sans jeu."
+    },
+    "motors": {
+      "title": "Montez les trois moteurs",
+      "body": "Les moteurs avant gauche et arrière tournent en sens antihoraire, l'avant droit en sens horaire. Utilisez des vis courtes : une vis qui atteint les enroulements met le moteur en court-circuit.",
+      "refusal": "Les moteurs se boulonnent sur les bras : assemblez d'abord le châssis."
+    },
+    "esc": {
+      "title": "Posez les trois ESC",
+      "body": "Un ESC simple sur chaque bras, près de son moteur, tenu par un collier sur la gaine thermorétractable. Leurs câbles d'alimentation longent les bras jusqu'aux pastilles d'ESC de la carte d'alimentation.",
+      "refusal": "Les ESC se posent sur les bras : assemblez d'abord le châssis."
+    },
+    "servo": {
+      "title": "Posez le servo de queue",
+      "body": "Vissez le servo sur le côté de la poutre, palonnier vers la queue, et reliez le palonnier à la plaque moteur par la tringlerie. Centrez le servo avant de poser le palonnier, pour que la plaque soit à plat à 1500 µs. Le fil marron est la masse, le rouge le 5 V et l'orange le signal.",
+      "refusal": "Le servo se monte sur la poutre de queue : assemblez d'abord le châssis."
+    },
+    "wires": {
+      "title": "Soudez les fils des moteurs",
+      "body": "Coupez les trois fils de chaque moteur à la bonne longueur et soudez-les à son ESC. Gardez-les courts et à l'écart des hélices.",
+      "refusal": "Posez les moteurs et les ESC avant les fils qui les relient."
+    },
+    "fc": {
+      "title": "Montez le contrôleur de vol",
+      "body": "Sur des silentblocs sur la stack de 30,5 mm, flèche vers le nez. Branchez les trois fils de signal des ESC (M1 arrière, M2 avant droit, M3 avant gauche) et le câble du servo sur la sortie servo.",
+      "refusal": "Le contrôleur de vol se pose sur le châssis : assemblez d'abord le châssis."
+    },
+    "xt60": {
+      "title": "Soudez la XT60 et le condensateur",
+      "body": "Le câble de batterie va sur les pastilles batterie de la carte d'alimentation, rouge sur le plus. Le condensateur va sur les mêmes pastilles, bande côté moins. Un condensateur monté à l'envers dégaze dès qu'il voit la batterie.",
+      "refusal": "Le câble de batterie se soude sur la carte d'alimentation du contrôleur de vol : montez-le d'abord."
+    },
+    "cam": {
+      "title": "Montez la caméra",
+      "body": "Entre les plaques avant, inclinée de 20° vers le haut, son câble vidéo sur la pastille CAM du contrôleur de vol.",
+      "refusal": "La caméra se monte entre les plaques avant du châssis : assemblez d'abord le châssis."
+    },
+    "rx": {
+      "title": "Posez le récepteur",
+      "body": "Le récepteur ELRS va sur UART2 (son TX sur le RX de la carte, RX sur TX, plus le 5 V et la masse), antenne vers l'arrière, loin du carbone.",
+      "refusal": "Le récepteur se câble sur le contrôleur de vol : montez-le d'abord."
+    },
+    "vtx": {
+      "title": "Posez le VTX",
+      "body": "La vidéo arrive du contrôleur de vol, qui ajoute l'OSD ; SmartAudio sur le TX de l'UART1 ; antenne vers l'arrière. N'alimentez jamais un VTX sans son antenne.",
+      "refusal": "Le VTX se câble sur le contrôleur de vol : montez-le d'abord."
+    },
+    "top": {
+      "title": "Fermez la plaque supérieure",
+      "body": "Quatre entretoises de 30 mm et la plaque supérieure au-dessus de la stack. Rien ne doit toucher la tringlerie de la queue.",
+      "refusal": "La plaque supérieure se ferme sur le contrôleur de vol, la caméra, le récepteur et le VTX : posez-les d'abord."
+    },
+    "batt": {
+      "title": "Sanglez la batterie",
+      "body": "Sur la plaque supérieure avec un tapis antidérapant et un strap. Faites-la glisser pour équilibrer le tri environ 10 mm derrière le centre du châssis.",
+      "refusal": "La batterie se sangle sur la plaque supérieure et se branche sur la XT60 : posez d'abord les deux."
+    },
+    "props": {
+      "title": "Les hélices, en dernier",
+      "body": "Deux hélices CCW sur les moteurs arrière et avant gauche, l'hélice CW sur l'avant droit. Seulement après le smoke stopper, la vérification des moteurs et le test du servo de queue, batterie débranchée.",
+      "refusal": "Les hélices vont sur les moteurs, au-dessus de la plaque supérieure et après la pose du servo de queue : posez-les d'abord, puis faites le smoke stopper et la vérification des moteurs."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "La XT60 de la batterie se connecte à celle de l'appareil. Elle a un détrompeur : elle ne rentre que dans un sens.",
+    "XT60-ESC": "La carte d'alimentation amène la batterie aux trois ESC par ses pastilles. Le condensateur est aux bornes des mêmes pastilles, bande côté moins.",
+    "ESC-MOTORS": "Trois fils de phase par moteur. Leur ordre n'est pas une question de sécurité : inverser deux d'entre eux inverse le moteur.",
+    "FC-ESC": "Les signaux DShot600 pour M1 (arrière), M2 (avant droit) et M3 (avant gauche). M4 reste inutilisé.",
+    "FC-TAILSERVO": "La sortie propre du servo, sur un timer qu'aucun moteur n'utilise : le servo veut du PWM à 333 Hz, les moteurs du DShot. Le rouge est le 5 V du régulateur de la carte, qui doit avoir du courant en réserve pour quand le servo force.",
+    "RX-FC": "ELRS sur UART2 avec le protocole CRSF, alimenté en 5 V.",
+    "CAM-FC": "La vidéo analogique entre dans le contrôleur de vol, qui y superpose l'OSD.",
+    "FC-VTX": "La vidéo avec l'OSD sort vers le VTX, l'alimentation 9 V, et SmartAudio sur le TX de l'UART1 pour que l'OSD puisse changer le canal et la puissance."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Test au smoke stopper",
+      "pass": "La lampe n'a fait que clignoter : pas de court-circuit entre le plus et le moins. Vous pouvez brancher la batterie directement.",
+      "fail": "La lampe est restée allumée : quelque chose est en court-circuit. Ici, le condensateur est monté à l'envers ; retournez-le (bande côté moins) et refaites le test avant de brancher."
+    },
+    "motors": {
+      "title": "Vérification du sens des moteurs (sans hélices)",
+      "pass": "M1 à l'arrière et M3 à l'avant gauche tournent en sens antihoraire, M2 à l'avant droit en sens horaire. La paire avant annule ses couples ; le servo compense celui de la queue.",
+      "fail": "Un moteur a tourné dans le mauvais sens. Inversez-le dans le firmware de l'ESC (ESC Configurator). Deux hélices avant qui tournent dans le même sens tordent le châssis plus fort que ce que le servo peut compenser."
+    },
+    "calibrate": {
+      "title": "Calibrage de l'accéléromètre",
+      "pass": "Niveau calibré avec le châssis à plat (le châssis, pas la queue inclinée) : le mode angle et le maintien d'altitude savent maintenant où est l'horizontale.",
+      "fail": "Posez d'abord le contrôleur de vol et mettez le châssis à plat. Si la flèche pointe vers l'arrière, tournez la carte ou réglez align_board_yaw = 180."
+    },
+    "servo": {
+      "title": "Test du servo de queue (sans hélices)",
+      "pass": "Un lacet à droite a incliné la poussée du moteur arrière vers la gauche : la queue part à gauche et le nez à droite. Tournez le châssis nez à droite à la main et la queue s'incline dans l'autre sens, contre le mouvement.",
+      "fail": "Posez d'abord le servo de queue et le contrôleur de vol, retirez les hélices et branchez. Si un lacet à droite incline la queue du mauvais côté, le servo est inversé et le tri tournerait de plus en plus vite dès le décollage : montez-le dans le bon sens, ou inversez-le avec smix reverse 5 2 r."
+    },
+    "failsafe": {
+      "title": "Test du failsafe (sans hélices, radio éteinte)",
+      "pass": "Radio éteinte : au bout de 1,5 s, les moteurs se sont arrêtés et le tri s'est désarmé (DROP). Le servo de queue bouge encore une fois désarmé ; c'est tri_unarmed_servo, et c'est sans danger.",
+      "fail": "Posez d'abord le récepteur et le contrôleur de vol, retirez les hélices et branchez la batterie. Un tri qui garde ses derniers gaz quand la liaison tombe s'envole."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Premier réglage",
+      "explain": "Betaflight fait encore voler les tricoptères, mais la prise en charge des servos est une option de compilation désactivée dans la compilation cloud par défaut : cochez Servos au moment de flasher, sinon le mixeur TRI n'a aucun lacet. Ensuite, le mixeur TRI, la flèche de la carte vers l'avant, le DShot600 avec télémétrie pour le filtre RPM, et les deux ports série : ELRS sur UART2 et SmartAudio sur UART1."
+    },
+    "servo": {
+      "title": "Le servo de queue",
+      "explain": "333 Hz convient à un servo numérique ; un servo analogique reste à 50 Hz, sinon il grille. Avec tri_unarmed_servo activé, la queue suit le manche de lacet même désarmé : vous pouvez donc la tester sans hélices. Le centre et la course se règlent avec la commande servo ou dans l'onglet Servos. Vérifiez ensuite le sens avec le test du servo de queue : un lacet à droite doit incliner la poussée de la queue vers la gauche. Si elle part à droite, tapez smix reverse 5 2 r et enregistrez, ou retournez le servo."
+    },
+    "failsafe": {
+      "title": "Failsafe : drop",
+      "explain": "Si la liaison radio est perdue pendant 1,5 s, arrêter les moteurs. Sans GPS, un tri n'a aucun moyen de rentrer, et tomber dans le parc vaut mieux que s'envoler."
+    },
+    "althold": {
+      "title": "Maintien d'altitude",
+      "explain": "ALTHOLD (mode numéro 3) sur AUX3, par-dessus ANGLE sur AUX2. Avec le manche des gaz dans les 15 % du milieu, le tri tient sa hauteur grâce au baromètre ; poussez-le vers le haut ou vers le bas pour monter ou descendre. La façon la plus simple d'apprendre comment se comporte la queue."
+    },
+    "angle": {
+      "title": "Mode angle",
+      "explain": "Auto-stabilisé avec l'inclinaison plafonnée à 60° : lâchez le manche droit et il se remet à plat. Vous gérez la hauteur avec les gaz."
+    },
+    "acro": {
+      "title": "Rates acro",
+      "explain": "Avec ANGLE et ALTHOLD coupés, les manches règlent des vitesses de rotation : 540°/s en roulis et en tangage manche à fond, et 400°/s en lacet, parce que le servo doit faire pivoter la queue. Plus de P et de I en lacet que les valeurs par défaut d'un quad aident la queue à tenir son cap quand le couple du moteur arrière change avec les gaz."
+    },
+    "race": {
+      "title": "Tours de course",
+      "explain": "Le mode angle pour les portes et le chrono de course dans l'OSD : osd_tim1 = 18 compte depuis le dernier armement en centièmes, et 2103 le place près du coin supérieur droit de l'écran dans le profil OSD 1."
+    },
+    "park": {
+      "title": "Parcours du parc",
+      "explain": "Le parcours du parc en maintien d'altitude, avec le même chrono que la course. Le manche fait monter et descendre et tient la hauteur au centre : votre attention peut aller au lacet autour des lampadaires."
+    }
+  },
+  "flight": {
+    "modes": {
+      "althold": {
+        "title": "Maintien d'altitude",
+        "hint": "Auto-stabilisation et maintien de la hauteur : mettez les gaz au centre et il reste en place. Commencez ici."
+      },
+      "angle": {
+        "title": "Angle",
+        "hint": "Auto-stabilisé, inclinaison plafonnée à 60°. Vous gérez la hauteur avec les gaz."
+      },
+      "acro": {
+        "title": "Acro",
+        "hint": "Pas d'auto-stabilisation : les manches règlent des vitesses de rotation, 540°/s en roulis et en tangage et 400°/s en lacet. Regardez la queue traîner derrière un lacet rapide."
+      },
+      "race": {
+        "title": "Course (angle)",
+        "hint": "Les six portes du parc dans l'ordre, chronométrées tour par tour."
+      },
+      "park": {
+        "title": "Parcours du parc (maintien d'altitude)",
+        "hint": "Les lampadaires, la fontaine et le kiosque dans l'ordre, puis posez-vous sur la plateforme. Le chrono s'arrête quand vous touchez le sol."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Liaison radio perdue pendant 1,5 s : les moteurs s'arrêtent et le tri tombe.",
+      "low-battery": "Sous 3,5 V par cellule : l'OSD prévient. Revenez et posez-vous.",
+      "battery-empty": "Sous 3,2 V par cellule : la batterie s'effondre au point que les ESC coupent, et le tri tombe."
+    },
+    "controls": "Clavier : Espace arme et désarme, W et S pour les gaz, les flèches pour le tangage et le roulis, A et D pour le lacet (c'est le servo de queue qui tourne, il y a donc un léger retard), V passe en vue FPV, R replace le tri sur la plateforme. Sur téléphone, le manche gauche gère les gaz et le lacet, le manche droit le tangage et le roulis. Une manette fonctionne en Mode 2."
+  },
+  "courses": {
+    "park": {
+      "title": "Parc de la ville",
+      "brief": "Faites le slalom entre les quatre lampadaires du chemin en les passant d'un côté puis de l'autre, tournez autour de la fontaine dans le sens antihoraire, traversez le kiosque depuis l'est, puis posez-vous sur la plateforme. Le maintien d'altitude garde votre hauteur pendant que vous dirigez.",
+      "goals": {
+        "1": "Lampadaire 1, côté sud",
+        "2": "Lampadaire 2, côté nord",
+        "3": "Lampadaire 3, côté sud",
+        "4": "Lampadaire 4, côté nord",
+        "5": "Fontaine, sud",
+        "6": "Fontaine, est",
+        "7": "Fontaine, nord",
+        "8": "Fontaine, ouest",
+        "9": "À travers le kiosque, vers l'ouest",
+        "10": "Posez-vous sur la plateforme"
+      }
+    },
+    "laps": {
+      "title": "Tours du parc",
+      "brief": "Six portes de 1,6 m autour du parc, volées dans le sens horaire depuis la porte devant la plateforme : le long du côté ouest devant l'étang, le long de la clôture nord, le long du côté est devant la fontaine et retour par le chemin sud. Passez les portes dans l'ordre ; le chrono du tour démarre à la première."
+    }
+  },
+  "quizzes": {
+    "tail": {
+      "yaw": {
+        "q": "Comment un tricoptère tourne-t-il son nez (lacet) ?",
+        "options": {
+          "1": "Il accélère les moteurs qui tournent dans un sens, comme un quad",
+          "2": "Un servo incline le moteur arrière : une partie de sa poussée pousse la queue de côté",
+          "3": "Une gouverne est placée dans le souffle de l'hélice arrière"
+        },
+        "why": "Le mixeur TRI de Betaflight ne donne aucun lacet aux moteurs ; le lacet vient du servo. Un lacet à droite incline la poussée du moteur arrière vers la gauche : la queue part à gauche et le nez à droite."
+      },
+      "front": {
+        "q": "Pourquoi les deux hélices avant tournent-elles en sens contraire ?",
+        "options": {
+          "1": "Pour que la caméra ne voie jamais d'hélice",
+          "2": "Ça ne change rien sur un tri",
+          "3": "Pour que leurs couples s'annulent, et qu'il ne reste que le couple du moteur arrière à compenser par le servo"
+        },
+        "why": "Betaflight se moque de leur sens, mais pas le châssis : deux hélices avant qui tournent dans le même sens le tordent en permanence. Il reste le couple propre de l'hélice arrière, et le servo garde quelques degrés d'inclinaison pour l'annuler."
+      }
+    },
+    "power": {
+      "esc": {
+        "q": "Qu'est-ce qui fixe le courant que doit porter un ESC sur ce tri ?",
+        "options": {
+          "1": "Son propre moteur à plein gaz : environ un tiers du courant de la batterie",
+          "2": "Tout le courant de la batterie, parce que les trois partagent une seule batterie",
+          "3": "Seulement le courant en stationnaire"
+        },
+        "why": "Chaque ESC simple pilote un seul moteur : il porte donc la part de ce moteur. La vérification des ESC du calculateur compare le courant à plein gaz d'un moteur à ce que supporte l'ESC, et une hélice nerveuse peut le faire dépasser."
+      },
+      "bec": {
+        "q": "D'où le servo de queue tire-t-il son alimentation ?",
+        "options": {
+          "1": "Directement de la batterie 4S",
+          "2": "D'un régulateur 5 V qui a du courant en réserve, par le fil rouge de son câble",
+          "3": "Du récepteur"
+        },
+        "why": "Un servo est un composant 5 ou 6 V, et les 16,8 V de la batterie le tueraient. Il tire des ampères quand il force : le régulateur a donc besoin de marge. Un servo qui fait chuter le rail 5 V peut faire redémarrer le contrôleur de vol en plein vol."
+      }
+    },
+    "fly": {
+      "pirouette": {
+        "q": "Juste après le décollage, le tri se met à tourner, de plus en plus vite. Quelle est la cause probable ?",
+        "options": {
+          "1": "Le servo de queue est inversé : chaque correction de lacet pousse du mauvais côté",
+          "2": "La batterie est trop petite",
+          "3": "L'inclinaison de la caméra est mauvaise"
+        },
+        "why": "Un servo inversé transforme la boucle de lacet en rétroaction positive : plus il tourne, plus la queue le pousse. Betaflight n'a aucune vérification pre-arm pour ça : c'est pour ça que le test du servo sans hélices passe en premier."
+      },
+      "motorout": {
+        "q": "Un moteur avant lâche en vol. Que se passe-t-il ?",
+        "options": {
+          "1": "Il continue de voler sur deux moteurs",
+          "2": "Le servo de queue compense",
+          "3": "Il bascule de ce côté et tombe : un tricoptère n'a pas de moteur de réserve"
+        },
+        "why": "Avec trois moteurs, chacun est indispensable à la portance et à l'équilibre. Perdez le moteur arrière et la queue tombe, et il se retourne en arrière. Un octocoptère peut perdre un moteur ; un tri, comme un quad, tombe."
+      },
+      "servos": {
+        "q": "Vous avez flashé la compilation cloud par défaut de Betaflight et la queue ne bouge pas. Pourquoi ?",
+        "options": {
+          "1": "Les tricoptères demandent INAV",
+          "2": "La prise en charge des servos est désactivée dans la compilation cloud par défaut : cochez Servos et flashez de nouveau",
+          "3": "Le servo a besoin d'une fréquence de 50 Hz"
+        },
+        "why": "Betaflight 2026.6.2 fait encore voler les tricoptères, mais la prise en charge des servos (USE_SERVOS) est une option de compilation désactivée par défaut. Sans elle, il n'y a pas de sortie servo et le mixeur TRI n'a aucun lacet : ne le faites pas voler."
+      }
+    }
+  }
+}
