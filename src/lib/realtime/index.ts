@@ -1,7 +1,7 @@
 // SimLab Together on the client (HX-CONTRACT H7.1). Import from here only.
 
 export { RoomProvider, useIdentity, useRoom, useTogether, type Together } from "./provider";
-export { createRoom, parseRoomInput, roomLink, transportKind } from "./config";
+export { createRoom, parseRoomInput, roomLink, transportKind, withRoom } from "./config";
 export { probeRoom, type ProbeResult } from "./probe";
 export { isHydrating } from "./store-sync";
 export { isRoomId, MAX_CHAT_LENGTH, MAX_NAME_LENGTH, ROLES } from "./protocol";

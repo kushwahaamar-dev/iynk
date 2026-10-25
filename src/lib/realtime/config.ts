@@ -61,6 +61,11 @@ export function pageLink(roomId: string): string {
   return url.toString();
 }
 
+/** A same-site link that keeps the room you're in (the room lives in ?room=, so a plain link would leave it). */
+export function withRoom(path: string, roomId: string | null | undefined): string {
+  return roomId ? `${path}?${ROOM_PARAM}=${encodeURIComponent(roomId)}` : path;
+}
+
 /** H7.1: a link to a fresh room on one lab item. */
 export function createRoom(lab: LabKind, itemId: string, locale?: Locale): string {
   return roomLink(newRoomId(), lab, itemId, locale);

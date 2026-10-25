@@ -19,6 +19,7 @@ import { readBenchSummary, writeBenchSummary } from "@/lib/dronelab/session";
 import { benchSummary, createDroneLabStore, figureInitial, type DroneLabState, type DroneTab } from "@/lib/dronelab/store";
 import { progressKey } from "@/lib/progress/keys";
 import { markDone } from "@/lib/progress/progress";
+import { useRoom, withRoom } from "@/lib/realtime";
 import { droneMoments } from "@/lib/sound/moments";
 import { useFigureSound, useLabMoments } from "@/lib/sound/react";
 import { BuildPanel } from "./BuildPanel";
@@ -51,6 +52,7 @@ type Props = {
 };
 
 export function DroneWorkspace({ lang, content, text, messages }: Props) {
+  const room = useRoom();
   const t = useMemo(() => droneLabT(lang, messages), [lang, messages]);
   const ct = useMemo(() => contentT(lang, content.id, text), [lang, content.id, text]);
   const [store] = useState(() => createDroneLabStore(content));
@@ -223,7 +225,7 @@ export function DroneWorkspace({ lang, content, text, messages }: Props) {
           <SoundToggle />
           <KeyboardHelp t={t} />
           <ButtonLink
-            href={`/${lang}/drones/${id}/fly`}
+            href={withRoom(`/${lang}/drones/${id}/fly`, room?.id)}
             variant="primary"
             data-testid="fly-link"
             aria-describedby={`fly-note-${id}`}

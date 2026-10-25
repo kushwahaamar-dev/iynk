@@ -26,6 +26,7 @@ import { dailyChallenge, loadChallengeBest, readChallengeQuery, saveChallengeBes
 import { useBest } from "@/lib/progress/hooks";
 import { progressKey } from "@/lib/progress/keys";
 import { markDone, recordBest } from "@/lib/progress/progress";
+import { useRoom, withRoom } from "@/lib/realtime";
 import { playSound } from "@/lib/sound";
 import { track } from "@/lib/telemetry";
 import { CraftProgress } from "./CraftProgress";
@@ -50,6 +51,7 @@ const noSearch = () => "";
 const onBoard = (ms: number) => ms >= 1000 && ms <= 3_600_000;
 
 export function FlyWorkspace({ lang, content, text, messages, flight, pool, board }: Props) {
+  const room = useRoom();
   const t = useMemo(() => droneLabT(lang, messages), [lang, messages]);
   const ct = useMemo(() => contentT(lang, content.id, text), [lang, content.id, text]);
   const ft = useMemo(() => createTranslator(lang, flight, "flight"), [lang, flight]);
@@ -133,7 +135,7 @@ export function FlyWorkspace({ lang, content, text, messages, flight, pool, boar
   return (
     <div className="mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6">
       <nav aria-label={t("workspace.crumbs")} className="font-ui text-xs font-bold uppercase tracking-wider">
-        <Link href={`/${lang}/drones/${id}`} className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">
+        <Link href={withRoom(`/${lang}/drones/${id}`, room?.id)} className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">
           {t("fly.back")}
         </Link>
       </nav>
