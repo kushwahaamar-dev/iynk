@@ -1,0 +1,373 @@
+{
+  "title": "VTOL-Kipprotor",
+  "tagline": "Ein Kipprotor-QuadPlane mit ArduPilot: Es startet wie eine Drohne, kippt seine vorderen Rotoren nach vorn, fliegt auf seinem Flügel und schwebt dann zur Landung herunter.",
+  "sub": "ArduPlane QuadPlane, Kipp-Tricopter",
+  "hint": "Bau es, teste die Kippservos, dann flieg die Küste und übergib an den Flügel",
+  "noun": "VTOL",
+  "overview": "Ein VTOL-Flugzeug (vertical take-off and landing, Senkrechtstart und -landung) startet und landet wie ein Multicopter und fliegt wie ein Flugzeug. Dieses ist ein Kipp-Tricopter-QuadPlane: Zwei vordere Motoren sitzen auf Gondeln, die von senkrecht nach oben, zum Schweben, bis gerade nach vorn kippen, für den Reiseflug, und ein dritter Motor am Heckausleger liefert nur Auftrieb. Sobald der Flügel das Gewicht trägt, drücken die Motoren nur noch gegen den Luftwiderstand, also fliegt es im Reiseflug mit etwa 5 A, wo das Schweben 15 braucht: über eine Stunde in der Luft statt 20 Minuten. Der schwierige Teil ist die Transition, die paar Sekunden, in denen der Flügel noch zu langsam für Auftrieb ist und die Rotoren schon teilweise nach vorn zeigen. ArduPlane 4.7.2 übernimmt sie: Es kippt die Rotoren auf 45°, hält die Höhe mit ihnen, bis der Fahrtmesser 12 m/s zeigt, und übergibt dann an den Flügel. Das ist eine 1,2-m-Zelle aus Schaum auf einem Matek H743-WING mit GPS, einem Fahrtmesser und analogem FPV, etwa 1,6 kg mit einem Li-Ionen-Akku mit 8000 mAh. Fluggeräte wie dieses kartieren Felder und inspizieren Küsten und Stromleitungen von Orten ohne Startbahn aus. Wähl die Teile und beobachte die Zahlen, bau es, mach die Prüfungen auf der Werkbank, dann flieg die Küste.",
+  "practice": "Fang mit QHOVER und QLOITER an: starten, schweben, auf dem Landeplatz landen. Dann, hoch und weit weg von allem, schalte mit hochgezogenem Gas auf FBWA und beobachte, wie die Fluggeschwindigkeit über 12 m/s steigt, während die Rotoren kippen und der Flügel übernimmt; schalte zurück auf QHOVER, um langsamer zu werden und wieder zu schweben. Flieg so den Küstenflug und lass AUTO die Vermessung fliegen. Bei einem echten Aufbau: ein Smoke-Stopper beim ersten Einstecken, der Test der Kippservos und die Prüfung der Motordrehrichtung ohne Propeller, die Kalibrierung von Beschleunigungssensor und Kompass, die Prüfung des Fahrtmessers und jede Pre-Arm-Meldung gelesen. Mach die erste Transition in 30 m Höhe oder mehr, gegen den Wind, mit dem Daumen am Schalter zurück auf QHOVER.",
+  "design": {
+    "fixed": {
+      "FRAME": "Rumpf aus Schaum, Heckausleger aus Carbon und Landekufen",
+      "WING": "Flügel aus Schaum auf einem Carbonholm",
+      "TAIL": "V-Leitwerk und zwei Servos für die Ruddervators",
+      "TILT": "Zwei Kippservos mit Metallgetriebe und die Gondeln",
+      "ESC": "Drei 40-A-ESCs (AM32)",
+      "FC": "Flugcontroller Matek H743-WING und ELRS-Empfänger",
+      "GPS": "M10-GPS und Kompass auf einem Mast",
+      "ARSPD": "Fahrtmesser ASPD-4525 und Pitotrohr",
+      "CAM": "Analoge FPV-Kamera und 800-mW-VTX",
+      "XT60": "XT60-Kabel und Kondensator 1000 µF 35 V"
+    },
+    "verdict": {
+      "ok": "Die Teile passen zusammen: {tw}:1 Schub zu Gewicht für Start und Landung, etwa 15 A im Schwebeflug und etwa 5 A im Reiseflug, sobald der Flügel das Gewicht trägt. Die Schwebezeit nimmt an, dass es den Schwebeflug nie verlässt; die Reiseflugzeit ist das, was der Flügel hergibt. Eine echte Mission schwebt nur an jedem Ende ein, zwei Minuten.",
+      "weak": "Schub zu Gewicht {tw}:1 ist zu wenig, um sicher zu schweben: Ein VTOL will etwa 2:1, 1,6:1 ist das absolute Minimum, und Wind verlangt mehr. Ein zum Akku passender Motor oder größere Propeller beheben das.",
+      "over": "{kv} KV an {cells}S drehen Propeller dieser Größe viel zu schnell: Der Motor und sein 40-A-ESC werden überlastet und brennen in Sekunden durch. VTOL-Hubmotoren sind groß und langsam, etwa 1000 KV an 4S oder 700 KV an 6S."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Rumpf aus Schaum, Ausleger und Kufen",
+      "what": "Eine 370 x 90 x 80 mm große Rumpfgondel aus Schaum mit einer Klappe über dem Bugfach, ein Carbonausleger bis zum Heck und Drahtkufen zum Landen. Der Träger des hinteren Hubmotors ist 475 mm hinter den vorderen Kippachsen auf den Ausleger geklemmt, weit genug hinten, um das vordere Paar um den Schwerpunkt auszubalancieren."
+    },
+    "TAIL": {
+      "name": "V-Leitwerk",
+      "what": "Zwei Flossen 35° über der Waagerechten, jede mit einem Ruddervator an einem eigenen Servo (S7, S8). Gemeinsam bewegt nicken sie das Flugzeug, gegeneinander bewegt gieren sie es; ArduPilot mischt die beiden. Sie steuern nur im Vorwärtsflug: Im Schwebeflug tun das die Rotoren."
+    },
+    "FC": {
+      "name": "Flugcontroller Matek H743-WING",
+      "what": "Ein 54 x 36 mm großes H743-Board auf einem Träger im Bugfach, Pfeil zur Nase, mit ArduPlane 4.7.2. Es hat 13 Ausgänge, einen Stromsensor, ein analoges OSD und ein 8-A-BEC für die sechs Servos. Der ELRS-Empfänger sitzt daneben an USART1, seine Antenne durch die Seite der Gondel nach außen geführt."
+    },
+    "XT60": {
+      "name": "XT60-Kabel und Kondensator",
+      "what": "Das Akkukabel geht an die Batteriepads des Boards, Rot an Plus, mit einem Low-ESR-Kondensator 1000 µF 35 V darüber, Streifen zu Minus. Matek verlangt einen: Der Stromsensor des Boards ist empfindlich für das Schaltrauschen der ESCs."
+    },
+    "GPS": {
+      "name": "GPS und Kompass auf einem Mast",
+      "what": "Ein M10-GPS mit Kompass auf einem 50-mm-Mast am Ausleger hinter dem Flügel, weg von den Strömen von Akku und ESCs, die den Kompass verfälschen würden. QLOITER, QRTL und AUTO brauchen es alle."
+    },
+    "CAM": {
+      "name": "FPV-Kamera und VTX",
+      "what": "Eine analoge Kamera in der Nase, um 8° nach oben geneigt, ihr Bild über das OSD des Boards an einen 800-mW-VTX auf dem hinteren Deck mit Lollipop-Antenne. Ein Flugzeug fliegt im Reiseflug mit waagerechter Nase, also braucht es viel weniger Neigung als ein Renn-Quad."
+    },
+    "WING": {
+      "name": "Flügel",
+      "what": "1200 mm Spannweite und 195 mm Flügeltiefe: 0,234 m² Schaum auf einem Carbonholm, mit einem Querruder an jedem Außenflügel (S9, S10). So viel braucht es: Ein Flügel mit 840 x 150 mm, der 1,6 kg trägt, hätte bei 13 bis 14 m/s einen Strömungsabriss. Die Schwerpunktmarken sitzen darunter, ein Viertel der Flügeltiefe hinter der Vorderkante."
+    },
+    "ARSPD": {
+      "name": "Fahrtmesser und Pitotrohr",
+      "what": "Ein Pitotrohr unter dem rechten Flügel, seine Spitze vor der Vorderkante und außerhalb des Abwinds des rechten Rotors, über zwei Silikonschläuche mit einem MS4525DO-Board an I2C verbunden. Der Flügel fliegt nach Fluggeschwindigkeit, nicht nach Geschwindigkeit über Grund: ArduPilot erkennt daran, wann der Flügel das Gewicht tragen kann."
+    },
+    "TILT": {
+      "name": "Kippservos und Gondeln",
+      "what": "Ein Servo mit Metallgetriebe an jeder vorderen Gondel schwenkt ihren Motor von senkrecht nach oben (Schweben) bis gerade nach vorn (Reiseflug), an S1 und S2. Mit Q_TILT_TYPE 2 kippen sie außerdem bis zu 10° gegenläufig, um im Schwebeflug zu gieren, also braucht dieser Tricopter kein Heckservo. Die beiden sind einander zugewandt, also ist einer von ihnen in den Parametern umgekehrt."
+    },
+    "MOTORS": {
+      "name": "Drei 2810-Motoren",
+      "what": "1000 KV an 4S. Der Tricopter von ArduPilot nennt sie M1 vorne rechts, M2 vorne links und M4 hinten; ein M3 gibt es nicht. Von oben gesehen dreht M1 im Uhrzeigersinn und M2 gegen den Uhrzeigersinn: Das vordere Paar muss gegenläufig drehen, sonst würde jede Roll- und Nickkorrektur es auch gieren lassen. M4 zeigt nach oben, kippt nie und steht im Reiseflug still."
+    },
+    "ESC": {
+      "name": "Drei 40-A-ESCs",
+      "what": "Einer pro Motor: zwei an den Gondeln, einer am Ausleger beim hinteren Motor, mit DShot600 von S3, S4 und S5. Neue 32-Bit-ESCs laufen mit AM32 (BLHeli_32 endete im Juni 2024). Bei Vollgas rechnet der Rechner mit etwa 39 A pro Motor, knapp unter dem Nennwert."
+    },
+    "WIRES": {
+      "name": "Motorkabel",
+      "what": "Die drei Phasenkabel jedes Motors laufen zu seinem ESC. An den Gondeln führen sie in einer lockeren Schlaufe über die Kippachse, damit sie sich über eine Länge biegen und nicht an einem Punkt: Eine enge Schlaufe bricht nach ein paar hundert Transitionen, und der Motor bleibt in der Luft stehen."
+    },
+    "BATT": {
+      "name": "4S2P-Li-Ionen-Akku",
+      "what": "Acht 21700-Zellen, 8000 mAh und 560 g, auf einer Antirutschmatte unter einem Gurt, mittig auf den Schwerpunktmarken. Li-Ionen speichert pro Gramm mehr Energie als LiPo, liefert aber weniger Strom und bricht stärker ein: richtig für ein Flugzeug, das eine Stunde lang reist, falsch für einen Racer."
+    },
+    "HATCH": {
+      "name": "Bugklappe",
+      "what": "Ein Schaumdeckel mit Verschluss über dem Bugfach, in dem der Flugcontroller, das Fahrtmesser-Board und der Akku wohnen. Schließ ihn, bevor die Propeller draufkommen."
+    },
+    "PROPS": {
+      "name": "Propeller",
+      "what": "Zweiblättrige 9x5-Propeller: Das vordere Paar dreht gegenläufig (von oben M1 im Uhrzeigersinn, M2 gegen den Uhrzeigersinn), und der hintere passt zu M4. Sie kommen zuletzt drauf, nach dem Smoke-Stopper, der Prüfung der Motordrehrichtung und dem Kipptest."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Den Rumpf auslegen",
+      "body": "Kleb den Ausleger in die Rumpfgondel, setz die Kufen, den Heckständer und den Träger des hinteren Motors auf den Ausleger."
+    },
+    "tail": {
+      "title": "Das V-Leitwerk einsetzen",
+      "body": "Schieb die beiden Flossen auf das Ende des Auslegers und verbinde jeden Ruddervator mit seinem Servo.",
+      "refusal": "Das V-Leitwerk kommt an das Ende des Auslegers: Leg zuerst den Rumpf aus."
+    },
+    "fc": {
+      "title": "Den Flugcontroller montieren",
+      "body": "Auf den Träger im Bugfach, Pfeil zur Nase. Der ELRS-Empfänger kommt daneben, seine Antenne durch die Seite der Gondel nach außen.",
+      "refusal": "Der Flugcontroller kommt in den Rumpf: Leg den zuerst aus."
+    },
+    "xt60": {
+      "title": "XT60 und Kondensator anlöten",
+      "body": "Das Akkukabel an die Batteriepads des Boards, Rot an Plus, und den Kondensator über dieselben Pads mit dem Streifen zu Minus. Der Stecker landet hinter dem Akkufach.",
+      "refusal": "Das Akkukabel wird an die Pads des Flugcontrollers gelötet: Montier den zuerst."
+    },
+    "gps": {
+      "title": "Den GPS-Mast montieren",
+      "body": "Auf den Ausleger hinter dem Flügel, Pfeil nach vorn. Sein Kabel läuft durch das Heck der Gondel zum GPS-Port und zu den I2C-Pads des Boards.",
+      "refusal": "Das GPS hängt am Flugcontroller: Montier den zuerst."
+    },
+    "cam": {
+      "title": "Kamera und VTX einsetzen",
+      "body": "Die Kamera in die Nase, um 8° nach oben geneigt, den VTX auf das hintere Deck mit der Antenne nach oben. Das Video geht ins Board und mit dem OSD wieder hinaus zum VTX.",
+      "refusal": "Kamera und VTX hängen am Flugcontroller: Montier den zuerst."
+    },
+    "wing": {
+      "title": "Den Flügel anschrauben",
+      "body": "Oben auf die Rumpfgondel, rechtwinklig zum Ausleger. Seine Querruderservos werden an S9 und S10 gesteckt.",
+      "refusal": "Der Flügel wird an den Rumpf geschraubt: Leg den zuerst aus."
+    },
+    "arspd": {
+      "title": "Den Fahrtmesser einsetzen",
+      "body": "Das Pitotrohr unter den rechten Flügel, mit der Spitze vor der Vorderkante, außerhalb des Abwinds des rechten Rotors. Seine beiden Schläuche laufen in die Gondel zum 4525-Board, und das Board kommt an den I2C-Bus.",
+      "refusal": "Das Pitotrohr hängt unter dem Flügel, und sein Board hängt am Flugcontroller: Setz zuerst beide ein."
+    },
+    "tilt": {
+      "title": "Die Kippservos einsetzen",
+      "body": "Einen an jede Gondel unter dem Flügel, sein Ruderhorn mit dem Motorträger verbunden. Steck sie an S1 und S2.",
+      "refusal": "Die Gondeln hängen unter dem Flügel: Schraub zuerst den Flügel an."
+    },
+    "motors": {
+      "title": "Die drei Motoren montieren",
+      "body": "M1 vorne rechts und M2 vorne links auf die kippbaren Träger, M4 auf den Ausleger. Das vordere Paar dreht gegenläufig: von oben M1 im Uhrzeigersinn, M2 gegen den Uhrzeigersinn.",
+      "refusal": "Die vorderen Motoren werden an die Kippträger geschraubt: Setz zuerst die Kippservos ein."
+    },
+    "esc": {
+      "title": "Die drei ESCs einsetzen",
+      "body": "Einen außen an jede Gondel und einen an den Ausleger beim hinteren Motor. Strom von den Batteriepads des Boards, Signale von S3, S4 und S5.",
+      "refusal": "Zwei der ESCs sitzen auf den Gondeln: Setz zuerst die Kippservos ein."
+    },
+    "wires": {
+      "title": "Die Motorkabel anlöten",
+      "body": "Jeden Motor an seinen ESC. An den Gondeln lass eine lockere Schlaufe über die Kippachse, damit sich die Kabel über eine Länge biegen und nicht an einem Punkt.",
+      "refusal": "Setz die Motoren und die ESCs ein, bevor du die Kabel dazwischen anschließt."
+    },
+    "batt": {
+      "title": "Den Akku festschnallen",
+      "body": "Auf eine Antirutschmatte im Fach unter dem Flügel, unter einem Gurt, mittig auf den Schwerpunktmarken. Wenn alles fertig ist, sollte es an den Marken waagerecht auf deinen Fingerspitzen balancieren.",
+      "refusal": "Der Akku wird in den XT60 gesteckt: Löte den zuerst an."
+    },
+    "hatch": {
+      "title": "Die Klappe schließen",
+      "body": "Die Schaumklappe über dem Bugfach, eingerastet, mit Akku und Fahrtmesser-Board darin.",
+      "refusal": "Die Klappe schließt über Akku und Fahrtmesser-Board: Setz zuerst beide ein."
+    },
+    "props": {
+      "title": "Propeller drauf, zuletzt",
+      "body": "Das vordere Paar dreht gegenläufig, M1 im Uhrzeigersinn und M2 gegen den Uhrzeigersinn, und der hintere Propeller passt zur Drehung von M4 im Uhrzeigersinn. Erst nach dem Smoke-Stopper, der Prüfung der Motordrehrichtung und dem Kipptest.",
+      "refusal": "Die Propeller kommen auf die Motoren, nach den Kippservos und bei geschlossener Klappe: Setz die zuerst ein."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "Der XT60 des Akkus passt in den des Fluggeräts. Er ist codiert, also geht er nur in einer Richtung hinein, und der Akku trägt den weiblichen Stecker, damit ein loser Akku keinen Kurzschluss machen kann.",
+    "XT60-ESC": "Die Batteriepads des Flugcontrollers speisen die drei ESC-Kabel: zwei unter dem Flügel hinaus zu den Gondeln, eines den Ausleger entlang nach hinten. Der Kondensator sitzt über denselben Pads.",
+    "ESC-MOTORS": "Drei Phasenkabel pro Motor, in einer lockeren Schlaufe über jede Kippachse. Ihre Reihenfolge ist keine Sicherheitsfrage: Das Tauschen zweier beliebiger kehrt den Motor um.",
+    "FC-ESC": "DShot600 an S3, S4 und S5, einer Ausgangsgruppe, die nichts als DShot ausführt: Motor1 vorne rechts, Motor2 vorne links, Motor4 am Ausleger.",
+    "FC-TILT": "Die Kippservos an S1 und S2, versorgt vom 8-A-Servo-BEC des Boards. Sie haben eine eigene Ausgangsgruppe, damit sie mit Servofrequenz laufen können, während S3 bis S6 DShot ausführen.",
+    "FC-TAIL": "Die beiden Ruddervator-Servos an S7 und S8; ArduPilot mischt Nicken und Gieren hinein.",
+    "FC-WING": "Die beiden Querruderservos an S9 und S10, beide auf Aileron gesetzt (Funktion 4). Kehr einen um, wenn er sich in die falsche Richtung bewegt.",
+    "GPS-FC": "Das GPS an USART2, dem GPS-Port des Boards, und sein Kompass am I2C-Bus.",
+    "ARSPD-FC": "Das 4525-Fahrtmesser-Board an I2C (ARSPD_TYPE 1). Die beiden Schläuche des Pitotrohrs gehen an seine beiden Anschlüsse: Vertauscht liest es 0 oder weniger.",
+    "CAM-FC": "Das Video der Kamera geht ins Board, das das OSD darüberlegt, und hinaus zum VTX auf dem hinteren Deck, versorgt vom 9/12-V-BEC. SmartAudio an UART4 TX lässt das OSD Kanal und Leistung ändern."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke-Stopper-Test",
+      "pass": "Die Lampe hat nur kurz aufgeblinkt: kein Kurzschluss zwischen Plus und Minus. Der Akku kann gefahrlos direkt eingesteckt werden.",
+      "fail": "Die Lampe blieb an: Irgendwo ist ein Kurzschluss. Hier ist der Kondensator verkehrt herum; dreh ihn um, Streifen zu Minus, bevor ein Akku eingesteckt wird."
+    },
+    "motors": {
+      "title": "Prüfung der Motordrehrichtung (ohne Propeller)",
+      "pass": "ArduPilot hat jeden Motor nacheinander mit wenig Gas drehen lassen: M1 vorne rechts im Uhrzeigersinn, M2 vorne links gegen den Uhrzeigersinn, M4 am Ausleger im Uhrzeigersinn. Reihenfolge und Drehrichtungen stimmen.",
+      "fail": "Ein Motor hat sich falsch herum gedreht. Tausch zwei beliebige seiner drei Kabel oder kehr ihn im ESC um (SERVO_BLH_RVMASK). Das vordere Paar muss gegenläufig drehen."
+    },
+    "calibrate": {
+      "title": "Kalibrierung des Beschleunigungssensors",
+      "pass": "Sechs Lagen, dann waagerecht mit waagerechtem Flügel und dem Rumpf in seiner Fluglage. QHOVER weiß jetzt, wo oben ist.",
+      "fail": "Setz zuerst den Flugcontroller ein. Zeigt sein Pfeil nach hinten, dreh ihn um oder setz AHRS_ORIENTATION 4."
+    },
+    "tilt": {
+      "title": "Test der Kippservos (ohne Propeller)",
+      "pass": "MANUAL hat beide Rotoren nach vorn geschwenkt, QSTABILIZE hat sie mit 25°/s wieder aufgerichtet, und Gieren nach rechts hat den linken Rotor nach vorn und den rechten nach hinten geschickt. Die Servos sind richtig herum.",
+      "fail": "Setz zuerst die Kippservos und den Flugcontroller ein, nimm die Propeller ab und steck den Akku ein. Kippt MANUAL einen Rotor nach hinten, ist dieses Servo umgekehrt: Dreh sein SERVOn_REVERSED um, sonst nickt die erste Transition die Nase hoch und überschlägt es über das Heck."
+    },
+    "airspeed": {
+      "title": "Prüfung des Fahrtmessers",
+      "pass": "Sanftes Pusten in das Pitotrohr hat die Fluggeschwindigkeit steigen lassen, und sie ist auf etwa 0 zurückgefallen: Der Sensor misst, und die Schläuche stecken an den richtigen Anschlüssen. Deck das Pitotrohr ab, während das Board bootet: Dann nullt es den Sensor.",
+      "fail": "Setz zuerst den Fahrtmesser und den Flugcontroller ein und steck den Akku ein. Mit vertauschten Schläuchen liest er 0 oder weniger; ein verstopfter Schlauch liest gar nichts."
+    },
+    "prearm": {
+      "title": "Pre-Arm-Prüfungen (ohne Propeller)",
+      "pass": "Jede Prüfung bestanden, und es hat auf der Werkbank scharfgeschaltet, die Motoren im Leerlauf mit Q_M_SPIN_ARM. Überspring nie eine Prüfung mit ARMING_SKIPCHK.",
+      "fail": "Setz den Flugcontroller, das GPS und den Fahrtmesser ein, Propeller ab, Akku drin. Dann lies jede PreArm-Meldung: „3D Accel calibration needed“ heißt, zuerst kalibrieren, „Q_ASSIST_SPEED is not set“ heißt, der Wert ist 0."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "QuadPlane und Kipprotor",
+      "explain": "Q_ENABLE macht ArduPlane zum QuadPlane, Q_FRAME_CLASS 7 macht seine Hubmotoren zum Tricopter, und Q_TILT_ENABLE fügt den Kipprotor-Code hinzu. Starte nach diesen drei neu, sonst meldet Pre-Arm „tiltrotor setup not complete, reboot“. Q_TILT_TYPE 2, Vektor-Gieren, lässt diesen Tricopter ohne Heckservo gieren. Pass bei den Ratennamen auf, sie lassen sich leicht vertauschen: RATE_DN ist vom Schweben nach vorn, RATE_UP von vorn zurück zum Schweben."
+    },
+    "outputs": {
+      "title": "Ausgänge",
+      "explain": "Das H743-WING fasst seine Ausgänge zu Gruppen zusammen, und jeder Ausgang einer Gruppe läuft mit derselben Frequenz: die Kippservos an S1 und S2, die drei Hubmotoren an S3 bis S5 mit DShot600, die Ruddervators und Querruder an S7 bis S10. Der Tricopter von ArduPilot benutzt die Motoren 1, 2 und 4. Stell die Umkehrungen auf der Werkbank ein, sodass MANUAL die Rotoren nach vorn und QSTABILIZE gerade nach oben richtet."
+    },
+    "sensors": {
+      "title": "Board, Funk, GPS und Fahrtmesser",
+      "explain": "Pfeil zur Nase; ELRS an einem vollwertigen UART mit CRSF bei 420 kBaud; das GPS an USART2; das 4525-Fahrtmesser-Board an I2C, im Flug genutzt; und der eigene Stromsensor des Boards, mit der Skalierung, die Matek für das WING V3 angibt."
+    },
+    "speeds": {
+      "title": "Fluggeschwindigkeiten und die Transition",
+      "explain": "Seit 4.5 alles in m/s. AIRSPEED_MIN liegt etwa 20 % über der Abrissgeschwindigkeit und Q_ASSIST_SPEED 3 m/s darunter, damit die Rotoren eine langsame Kurve auffangen, bevor sie abreißt; bei 0 verweigert es das Scharfschalten. Hat eine Transition nach 15 s AIRSPEED_MIN nicht erreicht, wird sie abgebrochen, und das Fluggerät kommt in QRTL nach Hause."
+    },
+    "failsafe": {
+      "title": "Failsafes",
+      "explain": "Eine Verbindung, die in einem Flugzeugmodus 5 s lang verloren ist, bedeutet RTL, das in der Nähe von zu Hause in eine senkrechte Landung übergeht; in den Q-Modi bedeutet eine verlorene Verbindung sofort QLAND. Zwei Akkustufen: RTL bei 3,3 V pro Zelle und QLAND bei 3,1 V. Li-Ionen läuft tiefer als LiPo, also liegen diese niedriger als bei einem Fluggerät mit LiPo."
+    },
+    "osd": {
+      "title": "OSD und VTX",
+      "explain": "Das eingebaute OSD legt Akku, Fluggeschwindigkeit und Modus über das Bild der Kamera. Der VTX startet auf der Werkbank mit 25 mW; erhöh VTX_POWER nur dort, wo das Gesetz es erlaubt."
+    },
+    "qhover": {
+      "title": "QHOVER",
+      "explain": "Schweben mit Höhenhaltung: Gas in der Mitte, und es hält seine Höhe, der rechte Knüppel neigt es bis zu 30°. Es driftet mit dem Wind. Jeder Flug beginnt und endet hier."
+    },
+    "qloiter": {
+      "title": "QLOITER",
+      "explain": "QHOVER plus GPS-Positionshaltung: Lass die Knüppel los, und es bleibt, wo es ist. Nimm es für die ersten Schwebeflüge und um eine Landung auszurichten."
+    },
+    "fbwa": {
+      "title": "Die Transition: FBWA",
+      "explain": "Schalte von einem Q-Modus auf FBWA, und die Transition beginnt: Die Rotoren kippen auf 45°, und es beschleunigt mit ihnen; jenseits von AIRSPEED_MIN übernimmt der Flügel das Gewicht, die Rotoren kippen fertig, und der hintere Motor stoppt. Dann legen die Knüppel das Flugzeug in die Kurve und nicken es, bis 45° und 20°, und das Gas bestimmt die Geschwindigkeit. Schalte auf einen Q-Modus, um wieder zu schweben."
+    },
+    "qrtl": {
+      "title": "QRTL",
+      "explain": "QRTL fliegt in Q_RTL_ALT nach Hause und landet senkrecht. Mit Q_RTL_MODE 1 fliegt ein einfaches RTL als Flugzeug nach Hause und geht in der Nähe von zu Hause in QRTL über. RTL_AUTOLAND muss dabei 0 bleiben, sonst verweigert das Board das Scharfschalten."
+    },
+    "auto": {
+      "title": "AUTO: die Küstenvermessung",
+      "explain": "AUTO fliegt die hochgeladene Mission: ein senkrechter Start, die drei Fotopunkte und eine senkrechte Landung auf dem Landeplatz im Dorf. Ein DO_VTOL_TRANSITION 3 nach dem Start hält die Fotoabschnitte im VTOL-Flug, damit es über jedem Punkt anhalten kann; ohne ihn würde Plane die Transition machen und die Wegpunkte auf dem Flügel fliegen. Schalte in einem Q-Modus scharf und dann auf AUTO."
+    }
+  },
+  "flight": {
+    "modes": {
+      "qhover": {
+        "title": "QHOVER",
+        "hint": "Schweben mit Höhenhaltung, Neigung bis 30°. Fang hier an."
+      },
+      "qloiter": {
+        "title": "QLOITER",
+        "hint": "Schweben mit GPS-Positionshaltung: Lass los, und es bleibt stehen."
+      },
+      "fbwa": {
+        "title": "FBWA (Transition)",
+        "hint": "Aus dem Schweben kippen die Rotoren nach vorn, und es beschleunigt; über 12 m/s übernimmt der Flügel. Lass das Gas oben: In FBWA bestimmt es die Geschwindigkeit. Schalte auf einen Q-Modus, um wieder zu schweben."
+      },
+      "qrtl": {
+        "title": "QRTL",
+        "hint": "Kommt in 15 m Höhe nach Hause und landet senkrecht auf dem Landeplatz."
+      },
+      "auto": {
+        "title": "AUTO (Küstenvermessung)",
+        "hint": "Fliegt die Vermessung selbstständig: Start, drei Fotopunkte, eine Landung auf dem Landeplatz im Dorf."
+      }
+    },
+    "failsafes": {
+      "rx-loss-q": "Verbindung in einem Q-Modus verloren: Es landet, wo es ist (QLAND).",
+      "rx-loss": "Verbindung in einem Flugzeugmodus 5 s lang verloren: RTL, als Flugzeug nach Hause, dann als Multicopter hinunter (QRTL).",
+      "transition": "Kein AIRSPEED_MIN 15 s nach Beginn einer Transition: Es gibt auf und kommt in QRTL nach Hause.",
+      "low-battery": "Unter 13,2 V (3,3 V pro Zelle): RTL.",
+      "battery-critical": "Unter 12,4 V (3,1 V pro Zelle): QLAND, wo es ist."
+    },
+    "controls": "Tastatur: Leertaste armt und disarmt, W und S steigen und sinken in den Q-Modi und geben in FBWA Gas, die Pfeiltasten neigen es (in FBWA legen sie das Flugzeug in die Kurve und nicken es), A und D gieren, V schaltet auf FPV, R setzt es zurück auf den Landeplatz. Auf dem Handy ist der linke Knüppel Gas und Gieren und der rechte Nicken und Rollen. Ein Gamepad funktioniert in Mode 2."
+  },
+  "courses": {
+    "coast": {
+      "title": "Küstenflug",
+      "brief": "Start vom Landeplatz auf dem Feld, umrunde den Leuchtturm auf der Seeseite, flieg über die Boje, passier den Funkmast auf dem Hügel auf seiner Nordseite und lande dann auf dem Landeplatz auf der Dorfwiese. Mit QHOVER kommst du herum; schneller geht es mit einer Transition auf FBWA für die langen Abschnitte und zurück auf QHOVER vor dem Landeplatz.",
+      "goals": {
+        "1": "Leuchtturm, Seeseite",
+        "2": "Über die Boje",
+        "3": "Funkmast, Nordseite",
+        "4": "Auf dem Landeplatz im Dorf landen"
+      }
+    },
+    "survey": {
+      "title": "Küstenvermessung (AUTO)",
+      "brief": "Dieselbe Küste als Mission: ein senkrechter Start auf 12 m, ein Fotostopp von 2 s am Leuchtturm, an der Boje und am Funkmast, dann eine senkrechte Landung auf dem Landeplatz im Dorf. Schalte auf AUTO und sieh zu, oder flieg es selbst und schlag den Autopiloten.",
+      "goals": {
+        "1": "Start auf 12 m",
+        "2": "Foto: der Leuchtturm",
+        "3": "Foto: die Boje",
+        "4": "Foto: der Funkmast",
+        "5": "Auf dem Landeplatz im Dorf landen"
+      }
+    }
+  },
+  "quizzes": {
+    "tilt": {
+      "manual": {
+        "q": "Wohin sollten MANUAL und QSTABILIZE die Rotoren auf der Werkbank richten?",
+        "options": {
+          "1": "Beide gerade nach oben: Die Rotoren bewegen sich nur im Flug",
+          "2": "MANUAL nach vorn, QSTABILIZE gerade nach oben",
+          "3": "MANUAL gerade nach oben, QSTABILIZE nach vorn"
+        },
+        "why": "MANUAL ist ein Flugzeugmodus, also schwenken die Rotoren nach vorn; QSTABILIZE ist ein Schwebemodus, also zeigen sie nach oben. Kippt MANUAL einen Rotor nach hinten, ist dieses Servo umgekehrt, und die erste Transition würde das Fluggerät über das Heck überschlagen."
+      },
+      "yaw": {
+        "q": "Dieser Tricopter hat kein Heckservo. Wie dreht er im Schwebeflug seine Nase?",
+        "options": {
+          "1": "Das Drehmoment des hinteren Motors dreht ihn",
+          "2": "Die Ruddervators steuern ihn im Propellerstrahl",
+          "3": "Die vorderen Rotoren kippen ein wenig gegenläufig"
+        },
+        "why": "Q_TILT_TYPE 2, Vektor-Gieren: Ein vorderer Rotor kippt nach vorn und der andere nach hinten, bis zu Q_TILT_YAW_ANGLE, und das Paar dreht die Nase herum. Der hintere Motor liefert nur Auftrieb, und die Heckflächen steuern erst, wenn es schnell genug fliegt."
+      }
+    },
+    "airspeed": {
+      "why": {
+        "q": "Warum braucht ein QuadPlane einen Fahrtmesser, wenn es GPS hat?",
+        "options": {
+          "1": "Der Flügel erzeugt Auftrieb aus der vorbeiströmenden Luft, die GPS bei Wind nicht sehen kann",
+          "2": "GPS kann keine Geschwindigkeit messen",
+          "3": "Nur um die Geschwindigkeit im OSD anzuzeigen"
+        },
+        "why": "GPS liefert die Geschwindigkeit über Grund. Bei 6 m/s Gegenwind sind 6 m/s über Grund 12 m/s Luft über dem Flügel; mit dem Wind sind es null. ArduPilot beendet eine Transition anhand der Fluggeschwindigkeit, also übergibt ein falscher Messwert an einen Flügel, der abreißt, oder übergibt gar nicht."
+      }
+    },
+    "fly": {
+      "transition": {
+        "q": "Du schaltest von QHOVER auf FBWA. Wann kippen die Rotoren fertig nach vorn?",
+        "options": {
+          "1": "Sofort, in einem Zug",
+          "2": "Sobald die Fluggeschwindigkeit AIRSPEED_MIN überschreitet",
+          "3": "Nach festen 5 Sekunden"
+        },
+        "why": "Sie kippen auf Q_TILT_MAX (45°) und bleiben dort, weiterhin mit Auftrieb, während es beschleunigt. Erst wenn die Fluggeschwindigkeit AIRSPEED_MIN erreicht, blendet ihr Auftrieb über Q_TRANSITION_MS aus, während sie fertig kippen. MANUAL ist die Ausnahme: Es schwenkt sie sofort nach vorn, was ein langsames Fluggerät abreißen lässt."
+      },
+      "assist": {
+        "q": "Was macht Q_ASSIST_SPEED 9?",
+        "options": {
+          "1": "Unter 9 m/s Fluggeschwindigkeit in einem Flugzeugmodus helfen die Hubmotoren dem Flügel",
+          "2": "Es begrenzt die Schwebegeschwindigkeit auf 9 m/s",
+          "3": "Es legt fest, wie schnell die Transition abläuft"
+        },
+        "why": "Es ist das Sicherheitsnetz für eine langsame Kurve oder eine Böe: Unter 9 m/s drehen die VTOL-Motoren hoch und halten das Fluggerät oben. Stell es 3 m/s unter AIRSPEED_MIN ein; bei 0 verweigert Pre-Arm mit „Q_ASSIST_SPEED is not set“."
+      },
+      "motorout": {
+        "q": "Ein vorderer Motor bleibt im Schwebeflug stehen. Was passiert?",
+        "options": {
+          "1": "Die anderen beiden halten es waagerecht, und es landet",
+          "2": "Es schaltet in den Flugzeugmodus und gleitet",
+          "3": "Es stürzt ab: Ein Tricopter hat im Schwebeflug keinen Ersatzmotor"
+        },
+        "why": "Mit drei Motoren wird jeder gebraucht, um Rollen, Nicken und Gieren auszugleichen. Im Reiseflug trägt es der Flügel, also kann es gleiten oder mit dem anderen vorderen Motor fliegen, aber im Schwebeflug gibt es keinen Ausweg. Schwebe so wenig wie möglich und prüf die Kabel an den Kippachsen."
+      }
+    }
+  }
+}
