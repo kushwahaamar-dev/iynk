@@ -306,10 +306,8 @@ B.board({
       for (let d = 0; d < 4; d++) Object.assign(out, digitNets(d, (v >> (4 * d)) & 15));
       return out; } },
   },
-  model: st => {
-    syncFromHost(st);
-    return { report: { inputs: Object.fromEntries(INPUTS.map(id => [id, level(st, id)])) } };
-  },
+  // the engine reports every input control's level as state.inputs; the model only moves levers the host changed
+  model: st => { syncFromHost(st); return {}; },
   faults: [
     ['reverse-polarity:ext', 'EXT header wired backwards (J6 has no reverse diode)'],
     ['wrong-voltage:ext:12', '12 V on the EXT header'],
