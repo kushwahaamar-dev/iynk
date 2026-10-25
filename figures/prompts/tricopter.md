@@ -34,10 +34,10 @@ What it does:
 - **Smoke stopper test**, **Check motor direction** (props off) and **Calibrate accelerometer** are the engine's three
   safety tests.
 - **Tail servo test** needs the servo and the FC fitted, the props off and the pack in. The servo horn swings, the
-  pushrod rocks the tail plate, and a green arrow and a "TAIL TILT 25° LEFT / RIGHT" pill show which way the tail
-  motor's thrust points as the yaw stick goes right, then left. A correct servo passes ("yaw right tilts the thrust
-  left, the nose swings right"); a reversed one turns the pill red and fails, and the mistake goes on to the flying
-  range as a tri that pirouettes on take-off.
+  pushrod rocks the tail plate and the tail motor with it, and a green arrow along the motor's shaft and a "TAIL TILT
+  25° LEFT / RIGHT" pill show which way its thrust points as the yaw stick goes right, then left. A correct servo
+  passes ("yaw right tilts the thrust left, the nose swings right"); a reversed one turns the pill red and fails, and
+  the mistake goes on to the flying range as a tri that pirouettes on take-off.
 - **Failsafe test (radio off)** needs the receiver and FC, the props off and the pack in: after 1.5 s the motors stop
   and the tri disarms (DROP).
 - **Wiring sheet**: battery → XT60 + cap → ESCs (VBAT) → motors (3-phase x3), FC → ESCs (DShot600), FC → tail servo

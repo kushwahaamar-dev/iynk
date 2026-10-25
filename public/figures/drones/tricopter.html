@@ -1069,12 +1069,19 @@ window.SL = window.SL || {};
 
   /* ---------- actions (the only way the build state changes) ---------- */
   function busy(st){ return !!st.test || st.queue.length > 0; }
+  let settled = [];
   function kick(){
     if (looping || !ui) return;
     looping = true;
-    ui.animate(dt => { const more = step(ui.st, dt); if (!more) looping = false; return more; });
+    ui.animate(dt => {
+      const more = step(ui.st, dt);
+      if (!more){ looping = false; const done = settled; settled = []; done.forEach(f => f()); }
+      return more;
+    });
   }
   SD.kick = kick;
+  // resolves once the figure stops animating: placements, tests, a craft's own motion (craft.animating) all done
+  SD.settle = () => looping ? new Promise(r => settled.push(r)) : Promise.resolve();
 
   function wrongIndex(st){ const n = motorsList().length; return n ? (2 + 3 * st.wireJobs) % n : null; }
 
@@ -1330,8 +1337,13 @@ window.SL = window.SL || {};
     if (st.smoke.length){ more = true; for (const s of st.smoke) s.age += dt; st.smoke = st.smoke.filter(s => s.age < 1.1); }
     if ((st.xr || 0) > 0.05 && (powered(st) || (st.test && st.test.kind === 'motors'))) more = true;
     if (st.test && st.test.kind === 'smoke') more = true;
+    // a craft's own motion (a servo sweep, a tilt-rotor transition) keeps the figure animating while it runs
+    if (typeof craft.animating === 'function'){
+      try { if (craft.animating(st)) more = true; } catch (e) { if (!animErr){ animErr = true; note('animating: ' + e.message); } }
+    }
     return more;
   }
+  let animErr = false;
 
   /* ---------- report and accept (the bridge contract, docs/FIGURES-DRONE.md §10) ---------- */
   function report(st){
@@ -1458,7 +1470,8 @@ window.SL = window.SL || {};
     if (st.sheet && SD.sheet) return SD.sheet(st);
     const M = craft.mat, MT = 4, G = SD.G, k = ease(st.xr || 0);
     G.ox = M / 2; G.oy = M / 2; G.oz = MT; G.dz = 0;
-    const ctx = { st, craft, design: resolved(st), t: st.t, k, powered: powered(st), spin: st.spin, rpm: st.rpm, mat: M,
+    const pose = posesNow(st);
+    const ctx = { st, craft, design: resolved(st), t: st.t, k, powered: powered(st), spin: st.spin, rpm: st.rpm, mat: M, pose,
       flows: [], shadows: [], tags: [], callouts: [], testing: st.test ? st.test.kind : null };
     const items = [];
     for (const part of craft.parts){
@@ -1501,6 +1514,23 @@ window.SL = window.SL || {};
     return out;
   }
   const topOf = b => [(b[0][0] + b[1][0]) / 2, (b[0][1] + b[1][1]) / 2, b[1][2]];
+
+  // each motor's pose this frame: its listed tilt and no bank, unless craft.motorPose(st, i, mo) moves it. Kept by
+  // motor so every motorFrame call in the frame (the engine's pieces and a craft's own) draws the same pose.
+  let POSE = new Map(), poseErr = false;
+  const finite = (v, d) => typeof v === 'number' && Number.isFinite(v) ? v : d;
+  function posesNow(st){
+    const out = craft.motors.map((mo, i) => {
+      const base = { tilt: mo.tilt || 0, bank: 0 };
+      if (typeof craft.motorPose !== 'function') return base;
+      let r = null;
+      try { r = craft.motorPose(st, i, mo); } catch (e) { if (!poseErr){ poseErr = true; note('motorPose: ' + e.message); } }
+      return r && typeof r === 'object' ? { tilt: finite(r.tilt, base.tilt), bank: finite(r.bank, 0) } : base;
+    });
+    POSE = new Map(craft.motors.map((mo, i) => [mo, out[i]]));
+    return out;
+  }
+  SD.poseOf = mo => POSE.get(mo) || { tilt: mo.tilt || 0, bank: 0 };
   function selTag(tg, on){
     const s = tag(tg.at, tg.dx, tg.dy, tg.text, on);
     return on ? s.replace('class="tag on"', 'class="tag on dsel"') : s;
@@ -1916,12 +1946,16 @@ window.SL = window.SL || {};
   SD.motorZ = frameTop;
   const motorH = d => 3 + d.motor.bell[1];
   // a motor's own frame: offsets (a, b) across the shaft and h along it, from the mount face. tilt (deg) turns the
-  // shaft from straight up towards the nose: 90 is a tractor motor, -90 a pusher, in between a tilt-rotor.
+  // shaft from straight up towards the nose: 90 is a tractor motor, -90 a pusher, in between a tilt-rotor. bank (deg)
+  // then rocks it about the craft's x axis through the mount, + tipping the top of the shaft to the left (+y), as a
+  // tricopter's tail servo does. Both come from this frame's pose (SD.poseOf), so a craft can move them while it runs.
   const motorFrame = (mo, z0) => {
-    const t = (mo.tilt || 0) * Math.PI / 180, c = Math.cos(t), s = Math.sin(t), zm = mo.z != null ? mo.z : z0;
-    return (a, b, h) => [mo.x + a * c + h * s, mo.y + b, zm - a * s + h * c];
+    const q = SD.poseOf(mo), t = q.tilt * Math.PI / 180, c = Math.cos(t), s = Math.sin(t), zm = mo.z != null ? mo.z : z0;
+    const r = q.bank * Math.PI / 180, cb = Math.cos(r), sb = Math.sin(r);
+    return (a, b, h) => { const lz = -a * s + h * c; return [mo.x + a * c + h * s, mo.y + b * cb + lz * sb, zm - b * sb + lz * cb]; };
   };
   SD.motorFrame = motorFrame;
+  const upright = mo => { const q = SD.poseOf(mo); return !q.tilt && !q.bank; };
 
   function tiltedMotor(mo, i, ctx, z0, bell, base, propsOn){
     const d = ctx.design, R = d.motor.bell[0] / 2, hb = d.motor.bell[1], Mf = motorFrame(mo, z0), k = ctx.k, out = [];
@@ -1946,7 +1980,7 @@ window.SL = window.SL || {};
     const k = ctx.k, bell = SD.mat(pc.color || 'pal'), base = SD.mat(pc.base || 'dark');
     const propsOn = SD.isOn(ctx.st, 'PROPS') || (ctx.st.placed.PROPS && !ctx.st.placed.PROPS.leave);
     ctx.craft.motors.forEach((mo, i) => {
-      if (mo.tilt) { items.push(...tiltedMotor(mo, i, ctx, z0, bell, base, propsOn)); return; }
+      if (!upright(mo)) { items.push(...tiltedMotor(mo, i, ctx, z0, bell, base, propsOn)); return; }
       if (mo.z != null) z0 = mo.z; else z0 = zMount;
       let s = g.cyl(mo.x, mo.y, z0, z0 + 3, R - .8, base, 18).svg;
       if (k > 0){
@@ -1992,7 +2026,7 @@ window.SL = window.SL || {};
         }
       }
       const hubCol = d.prop.color && /^#/.test(d.prop.color) ? d.prop.color : 'cobalt';
-      if (mo.tilt) items.push(...g.rod(Mf(0, 0, hp), Mf(0, 0, hp + 5.5), 6, hubCol, 99, 14), ...g.rod(Mf(0, 0, hp + 5.5), Mf(0, 0, hp + 10), 4.2, 'metal', 99, 6));
+      if (!upright(mo)) items.push(...g.rod(Mf(0, 0, hp), Mf(0, 0, hp + 5.5), 6, hubCol, 99, 14), ...g.rod(Mf(0, 0, hp + 5.5), Mf(0, 0, hp + 10), 4.2, 'metal', 99, 6));
       else {
         const zp = Mf(0, 0, hp)[2], hub = g.cyl(mo.x, mo.y, zp, zp + 5.5, 6, hubCol, 14);
         hub.svg += g.cyl(mo.x, mo.y, zp + 5.5, zp + 10, 4.2, 'metal', 6, .8).svg;
@@ -2466,12 +2500,17 @@ window.SL = window.SL || {};
   };
 
   /* ---------- pieces ---------- */
-  // the tail mount is frame hardware: a hinge block on the boom end, the pin along the boom, the 30 x 30 motor plate
-  const tailMount = () => [
-    g.box(TAIL_X - 12, -8, ARM_T, TAIL_X + 12, 8, HINGE_Z - 1.6, 'dark', .8),
-    ...g.rod([TAIL_X - 15, 0, HINGE_Z], [TAIL_X + 15, 0, HINGE_Z], 1.6, 'metal', 30, 8),
-    g.box(TAIL_X - 15, -15, HINGE_Z + 1.6, TAIL_X + 15, 15, TAIL_Z, 'pal', .9),
-  ];
+  // the tail mount is frame hardware: a hinge block on the boom end, the pin along the boom, and the 30 x 30 motor
+  // plate, which rocks with the tail motor (the motor's own frame this frame, so the two never part)
+  const tailFrame = ctx => SD.motorFrame(ctx.craft.motors[0], TAIL_Z);
+  const tailMount = ctx => {
+    const Mf = tailFrame(ctx), o = Mf(0, 0, 0), ax = (a, b, h) => Mf(a, b, h).map((v, i) => v - o[i]), ht = (TAIL_Z - HINGE_Z - 1.6) / 2;
+    return [
+      g.box(TAIL_X - 12, -8, ARM_T, TAIL_X + 12, 8, HINGE_Z - 1.6, 'dark', .8),
+      ...g.rod([TAIL_X - 15, 0, HINGE_Z], [TAIL_X + 15, 0, HINGE_Z], 1.6, 'metal', 30, 8),
+      g.oblock(Mf(0, 0, -ht), ax(1, 0, 0), ax(0, 1, 0), ax(0, 0, 1), 15, 15, ht, 'pal', .9),
+    ];
+  };
 
   // one single ESC on each arm; red and black leads run in along the arm to the power-board pads under the FC
   const escs = ctx => {
@@ -2502,17 +2541,17 @@ window.SL = window.SL || {};
     const tip = [shaft[0] - 1.2, sy + side * 8 * Math.cos(hornA), shaft[2] + 8 * Math.sin(hornA)];
     out.push(g.box(SERVO_X - 13.5, sy - 2.2, ARM_T + 11, SERVO_X - 11, sy + 2.2, ARM_T + 15, 'white', .6));
     out.push(...g.rod(shaft, tip, 1.2, 'white', 10, 6));
-    out.push(...g.wire([tip, [TAIL_X + 14, side * 12, TAIL_Z - .6]], 'metal', .9));
+    out.push(...g.wire([tip, tailFrame(ctx)(14, side * 12, -.6)], 'metal', .9));
     const lead = [[SERVO_X + 11, sy, ARM_T + 4], [SERVO_X + 24, side * 6.6, ARM_T + 1.4], [-30, side * 6.6, ARM_T + 1.4], [-20, side * 8, FC_Z + 1.8], [-14, side * 9, FC_Z + 2.4]];
     [['#6b4a32', -1], ['#d8473a', 0], ['#f08a2b', 1]].forEach(([col, o]) => out.push(...g.wire(lead.map(p => [p[0], p[1] + o * .9, p[2]]), col, .6)));
     ctx.flows.push({ kind: 'signal', pts: lead.slice().reverse().map(p => W(...p)) });
-    // during the servo test: the thrust direction over the tail motor and a tilt readout (the engine can't bank a
-    // motor about x yet: docs/requests/P2-drones-vtol-to-P2-engine-b-motor-pose.md)
-    if (sweeping(ctx.st)) out.push(tiltReadout(a, rev));
+    // during the servo test the tail motor banks with the plate (motorPose below); an arrow along its shaft shows
+    // which way the thrust points, and a pill reads the angle
+    if (sweeping(ctx.st)) out.push(tiltReadout(tailFrame(ctx), a, rev));
     return out;
   };
-  function tiltReadout(a, rev){
-    const L = 56, base = [TAIL_X, 0, TAIL_Z + 30], tipT = [TAIL_X, Math.sin(a) * L, TAIL_Z + 30 + Math.cos(a) * L];
+  function tiltReadout(Mf, a, rev){
+    const L = 56, base = Mf(0, 0, 30), tipT = Mf(0, 0, 30 + L);
     const [X0, Y0] = SD.Pb(...base), [X1, Y1] = SD.Pb(...tipT), ang = Math.atan2(Y1 - Y0, X1 - X0), hs = 9;
     const head = [0, 2.4, -2.4].map(d => `${f(X1 + Math.cos(ang + d) * hs)} ${f(Y1 + Math.sin(ang + d) * hs)}`).join('L');
     const deg = Math.round(Math.abs(a * 180 / Math.PI)), dir = deg < 1 ? '' : ' ' + (a > 0 ? CF_T('LEFT') : CF_T('RIGHT'));
@@ -2662,6 +2701,9 @@ window.SL = window.SL || {};
     ],
     report,
     reset,
+    // the tail motor (M1) banks with the servo during the sweep; the loop keeps drawing until the sweep ends
+    motorPose: (st, i) => i === 0 ? { bank: tailTilt(st) } : null,
+    animating: sweeping,
     wiring: {
       nodes: {
         BATT: { at: [10, 22], title: 'BATTERY', sub: 'batt', color: 'tomato' },

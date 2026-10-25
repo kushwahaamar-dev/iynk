@@ -80,12 +80,17 @@
   };
 
   /* ---------- pieces ---------- */
-  // the tail mount is frame hardware: a hinge block on the boom end, the pin along the boom, the 30 x 30 motor plate
-  const tailMount = () => [
-    g.box(TAIL_X - 12, -8, ARM_T, TAIL_X + 12, 8, HINGE_Z - 1.6, 'dark', .8),
-    ...g.rod([TAIL_X - 15, 0, HINGE_Z], [TAIL_X + 15, 0, HINGE_Z], 1.6, 'metal', 30, 8),
-    g.box(TAIL_X - 15, -15, HINGE_Z + 1.6, TAIL_X + 15, 15, TAIL_Z, 'pal', .9),
-  ];
+  // the tail mount is frame hardware: a hinge block on the boom end, the pin along the boom, and the 30 x 30 motor
+  // plate, which rocks with the tail motor (the motor's own frame this frame, so the two never part)
+  const tailFrame = ctx => SD.motorFrame(ctx.craft.motors[0], TAIL_Z);
+  const tailMount = ctx => {
+    const Mf = tailFrame(ctx), o = Mf(0, 0, 0), ax = (a, b, h) => Mf(a, b, h).map((v, i) => v - o[i]), ht = (TAIL_Z - HINGE_Z - 1.6) / 2;
+    return [
+      g.box(TAIL_X - 12, -8, ARM_T, TAIL_X + 12, 8, HINGE_Z - 1.6, 'dark', .8),
+      ...g.rod([TAIL_X - 15, 0, HINGE_Z], [TAIL_X + 15, 0, HINGE_Z], 1.6, 'metal', 30, 8),
+      g.oblock(Mf(0, 0, -ht), ax(1, 0, 0), ax(0, 1, 0), ax(0, 0, 1), 15, 15, ht, 'pal', .9),
+    ];
+  };
 
   // one single ESC on each arm; red and black leads run in along the arm to the power-board pads under the FC
   const escs = ctx => {
@@ -116,17 +121,17 @@
     const tip = [shaft[0] - 1.2, sy + side * 8 * Math.cos(hornA), shaft[2] + 8 * Math.sin(hornA)];
     out.push(g.box(SERVO_X - 13.5, sy - 2.2, ARM_T + 11, SERVO_X - 11, sy + 2.2, ARM_T + 15, 'white', .6));
     out.push(...g.rod(shaft, tip, 1.2, 'white', 10, 6));
-    out.push(...g.wire([tip, [TAIL_X + 14, side * 12, TAIL_Z - .6]], 'metal', .9));
+    out.push(...g.wire([tip, tailFrame(ctx)(14, side * 12, -.6)], 'metal', .9));
     const lead = [[SERVO_X + 11, sy, ARM_T + 4], [SERVO_X + 24, side * 6.6, ARM_T + 1.4], [-30, side * 6.6, ARM_T + 1.4], [-20, side * 8, FC_Z + 1.8], [-14, side * 9, FC_Z + 2.4]];
     [['#6b4a32', -1], ['#d8473a', 0], ['#f08a2b', 1]].forEach(([col, o]) => out.push(...g.wire(lead.map(p => [p[0], p[1] + o * .9, p[2]]), col, .6)));
     ctx.flows.push({ kind: 'signal', pts: lead.slice().reverse().map(p => W(...p)) });
-    // during the servo test: the thrust direction over the tail motor and a tilt readout (the engine can't bank a
-    // motor about x yet: docs/requests/P2-drones-vtol-to-P2-engine-b-motor-pose.md)
-    if (sweeping(ctx.st)) out.push(tiltReadout(a, rev));
+    // during the servo test the tail motor banks with the plate (motorPose below); an arrow along its shaft shows
+    // which way the thrust points, and a pill reads the angle
+    if (sweeping(ctx.st)) out.push(tiltReadout(tailFrame(ctx), a, rev));
     return out;
   };
-  function tiltReadout(a, rev){
-    const L = 56, base = [TAIL_X, 0, TAIL_Z + 30], tipT = [TAIL_X, Math.sin(a) * L, TAIL_Z + 30 + Math.cos(a) * L];
+  function tiltReadout(Mf, a, rev){
+    const L = 56, base = Mf(0, 0, 30), tipT = Mf(0, 0, 30 + L);
     const [X0, Y0] = SD.Pb(...base), [X1, Y1] = SD.Pb(...tipT), ang = Math.atan2(Y1 - Y0, X1 - X0), hs = 9;
     const head = [0, 2.4, -2.4].map(d => `${f(X1 + Math.cos(ang + d) * hs)} ${f(Y1 + Math.sin(ang + d) * hs)}`).join('L');
     const deg = Math.round(Math.abs(a * 180 / Math.PI)), dir = deg < 1 ? '' : ' ' + (a > 0 ? CF_T('LEFT') : CF_T('RIGHT'));
@@ -276,6 +281,9 @@
     ],
     report,
     reset,
+    // the tail motor (M1) banks with the servo during the sweep; the loop keeps drawing until the sweep ends
+    motorPose: (st, i) => i === 0 ? { bank: tailTilt(st) } : null,
+    animating: sweeping,
     wiring: {
       nodes: {
         BATT: { at: [10, 22], title: 'BATTERY', sub: 'batt', color: 'tomato' },
