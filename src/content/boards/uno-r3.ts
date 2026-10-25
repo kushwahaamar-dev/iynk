@@ -1474,7 +1474,6 @@ void loop() {
       { part: 'STP1', text: 'lessons.stepper.callouts.STP1' },
       { part: 'DRV1', text: 'lessons.stepper.callouts.DRV1' },
       { part: 'BTN1', text: 'lessons.stepper.callouts.BTN1' },
-      { part: 'WHEEL', text: 'lessons.stepper.callouts.WHEEL' },
     ],
     specs: [
       { label: 'lessons.stepper.specs.1.label', value: 'lessons.stepper.specs.1.value' },

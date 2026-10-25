@@ -1933,10 +1933,9 @@
         }
       },
       "callouts": {
-        "STP1": "28BYJ-48 : 5 V, réduction 64:1.",
+        "STP1": "28BYJ-48 : 5 V, réduction 64:1. La roue sur son axe porte huit lots, 45° chacun.",
         "DRV1": "Carte driver ULN2003 : quatre transistors pour les quatre bobines.",
-        "BTN1": "Appuyez pour lancer.",
-        "WHEEL": "Huit lots, 45° chacun."
+        "BTN1": "Appuyez pour lancer."
       },
       "specs": {
         "1": {

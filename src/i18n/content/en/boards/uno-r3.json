@@ -1933,10 +1933,9 @@
         }
       },
       "callouts": {
-        "STP1": "28BYJ-48: 5 V, geared down 64:1.",
+        "STP1": "28BYJ-48: 5 V, geared down 64:1. The prize wheel on its shaft has eight prizes, 45° each.",
         "DRV1": "ULN2003 driver board: four transistors for the four coils.",
-        "BTN1": "Press to spin.",
-        "WHEEL": "Eight prizes, 45° each."
+        "BTN1": "Press to spin."
       },
       "specs": {
         "1": {

@@ -1933,10 +1933,9 @@
         }
       },
       "callouts": {
-        "STP1": "28BYJ-48: 5 V, con una reductora de 64:1.",
+        "STP1": "28BYJ-48: 5 V, con una reductora de 64:1. La ruleta de su eje tiene ocho premios, de 45° cada uno.",
         "DRV1": "Placa del driver ULN2003: cuatro transistores para las cuatro bobinas.",
-        "BTN1": "Púlsalo para girar.",
-        "WHEEL": "Ocho premios, de 45° cada uno."
+        "BTN1": "Púlsalo para girar."
       },
       "specs": {
         "1": {

@@ -1933,10 +1933,9 @@
         }
       },
       "callouts": {
-        "STP1": "28BYJ-48: 5 V, mit 64:1 untersetzt.",
+        "STP1": "28BYJ-48: 5 V, mit 64:1 untersetzt. Das Glücksrad auf der Welle hat acht Preise, je 45°.",
         "DRV1": "ULN2003-Treiberplatine: vier Transistoren für die vier Spulen.",
-        "BTN1": "Drücken, um zu drehen.",
-        "WHEEL": "Acht Preise, je 45°."
+        "BTN1": "Drücken, um zu drehen."
       },
       "specs": {
         "1": {
