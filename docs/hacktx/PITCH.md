@@ -166,9 +166,10 @@ of this was written in the last 24 hours."
 
 ### Changes from the BUILD-PLAN demo path
 
-- The broken LED is "LED with no resistor". The Uno's Blink lesson has no "LED in backwards" failure (that one is on
-  the LED trainer bench, `/en/robotics/led-resistor`), and "5V shorted to GND" turns the board dark rather than
-  smoking. For smoke, "5 V capacitor fitted backwards" pops and smokes; use it in the 60-second version.
+- The broken LED is "LED with no resistor": it flashes and burns out, which reads better on stage than a dark LED.
+  Blink also has "LED in backwards" now (BUILD-PLAN step 1, `144053e`): the sketch runs and the LED stays dark,
+  nothing burns. "5V shorted to GND" turns the board dark rather than smoking. For smoke, "5 V capacitor fitted
+  backwards" pops and smokes; use it in the 60-second version.
 - The budget is not "under $150": quad5's parts cost $330 to $370 at catalogue prices. Pick [BUDGET] from the warm run.
 - The MCP beat (Muse asking SimLab what we built) is left out: no tool answers that question. Show the connector to a
   Meta judge at the table instead, once it's been tried from Muse.

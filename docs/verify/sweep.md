@@ -89,8 +89,9 @@ where, what a user sees, and the cause where known. Struck through when fixed, w
     `1fa6979`, with `e2e/redirects.spec.ts`.
 33. Blink passes on the first Run without an edit (FE nit 1). Left: board lessons are worked examples whose param chips
     are the edit (BUILD-PLAN asks a failing starter only of bench tasks).
-34. quad5, the demo drone, has only the three safety tests and no craft test (BUILD-PLAN: at least one per drone).
-    Needs a figure button in `figures/drones/quad5.js`; after the figure sweep, which owns that file until then.
+34. ~~quad5, the demo drone, has only the three safety tests and no craft test (BUILD-PLAN: at least one per drone).
+    Needs a figure button in `figures/drones/quad5.js`; after the figure sweep, which owns that file until then.~~
+    Done in `e017541`: a failsafe test (the figure's `failsafe` button), red before the build, green after.
 35. es: the bench status "OFF" stays English because the key is shared with the drone battery readout and the slide
     switch positions (P3-figs-delta-es). Left: OFF reads fine in Spanish next to the switch that says OFF.
 36. Figure sweep (`scripts/workflows/sweep.md`, run `wf_7513ba0c-9cb`, 03:06-03:37): S-engine and S-figures found items
