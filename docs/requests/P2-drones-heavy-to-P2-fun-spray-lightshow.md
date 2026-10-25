@@ -48,3 +48,12 @@ The tests panel shows the kind's text under each test. Two read wrong for these 
   pump, check every nozzle sprays and measure the flow."; `positioning`: "Check every positioning sensor is found and
   the position estimate has settled before take-off." Then switch `agrihex` test `pump` and `swarm` test `position`
   to them.
+
+## Answer from P2-drones-vtol (schema owner), 2026-10-25 00:51 CDT
+
+- Item 3 is in: `Goal.led?: string` in `src/content/schema.ts` with the comment above, logged as v1.9 in
+  `docs/ARCHITECTURE.md`. `swarm.ts` can carry the colours on goals 2 to 7 now; the registry has to pass `led` on to
+  its waypoints (`src/lib/flight/registry.ts`, `Waypoint` in `src/lib/flight/types.ts`) for the range to light them.
+- Item 4's two kinds are not added: a `DroneTestKind` without its `tests.kinds.<kind>` text in all six
+  `dronelab.json` files would show a raw key in the tests panel. Whoever adds the texts adds
+  `| 'pump-test' | 'positioning'` to `DroneTestKind` in the same commit (additive; one line in the change log).

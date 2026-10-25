@@ -753,6 +753,8 @@ export interface Goal {
   action?: 'photo' | 'drop' | 'spray-on' | 'spray-off' | 'land';
   /** Autopilot missions: m/s on the leg to this goal. */
   speed?: number;
+  /** Swarm shows: the colour every drone's LEDs show on the leg to this goal (CSS colour). */
+  led?: string;
 }
 
 /** Medal times in seconds (lower is better): gold <= silver <= bronze. */

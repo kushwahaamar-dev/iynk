@@ -7,6 +7,11 @@ docs/DECISIONS.md.
 
 ## 0. Change log (newest first; after 14:00 CDT Oct 24 schema and id changes are additive only)
 
+- v1.9 00:51 CDT Oct 25 (P2-drones-vtol, schema owner in wave B): additive. `schema.ts`: `Goal.led?: string`, the
+  CSS colour every drone's LEDs show on the leg to that goal in a swarm show (asked in
+  `docs/requests/P2-drones-heavy-to-P2-fun-spray-lightshow.md` item 3). Nothing reads it yet: the registry's
+  waypoints and the range's LEDs are `src/lib/flight/**`, and the swarm's goal colours are `swarm.ts`.
+
 - v1.8 00:43 CDT Oct 25 (driver, wave B tail): additive. `schema.ts`: `CliEmulator.readOnly?: string[]`, the cflib
   parameters the firmware only reports (the console answers `AttributeError: <name> is read-only!`). Interpreter:
   `World.onboard`, a map from sensor name to value, set by a world input with `device: { kind: 'onboard', sensor }`
