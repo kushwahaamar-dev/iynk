@@ -1,0 +1,385 @@
+{
+  "title": "Alarme d'inclinaison MPU-6050",
+  "sub": "un gyroscope et un accéléromètre sur deux fils",
+  "hint": "montez la GY-521, réveillez-la, puis faites-la avertir quand le robot bascule",
+  "overview": "Un robot a besoin de savoir où est le bas. Le MPU-6050 de cette petite carte bleue GY-521 mesure l'accélération sur trois axes, gravité comprise, et la vitesse de rotation sur trois autres, et transmet le tout en I2C à l'adresse 0x68. À plat, il lit 1 g sur Z ; incliné, une partie de ce 1 g passe sur Y, et atan2(ay, az) donne l'angle. Montez la carte, lisez-la depuis un Nano avec de simples appels Wire, puis faites sonner un buzzer quand le robot bascule au-delà de 20°. Ensuite, cassez-la : alimentez-la à l'envers ou depuis une LiPo, oubliez le condensateur dont le gyroscope a besoin, perdez le pull-down d'adresse, laissez une soudure froide sur SDA et posez le condensateur tantale à l'envers.",
+  "parts": {
+    "IC1": {
+      "name": "Capteur de mouvement 6 axes MPU-6050",
+      "what": "Un boîtier QFN de 4 x 4 mm qui contient deux puces : une puce MEMS avec de minuscules masses mobiles et une puce CMOS qui les mesure. Aux plages par défaut, l'accéléromètre donne 16384 points par g (±2 g) et le gyroscope 131 points par °/s (±250 °/s). Il démarre endormi : chaque mesure vaut 0 tant que l'hôte n'a pas écrit 0 dans PWR_MGMT_1 (0x6B)."
+    },
+    "U2": {
+      "name": "Régulateur 3,3 V 662K (XC6206)",
+      "what": "Transforme VCC (3,5-5,5 V ; 5 V, c'est le mieux) en 3,3 V pour la puce, la LED et les pull-ups. Il accepte 6 V au maximum : une LiPo 2S ou la broche VIN du Nano le grille."
+    },
+    "C10": {
+      "name": "Condensateur tantale de 10 µF sur le 3,3 V",
+      "what": "Lisse la sortie du régulateur. Les condensateurs tantale sont polarisés et chauffent en lâchant quand ils sont inversés : la bande marque le +."
+    },
+    "C14": {
+      "name": "2,2 nF sur CPOUT",
+      "what": "Le gyroscope fait vibrer ses masses de mesure grâce à une pompe de charge, et ce condensateur est celui de la pompe. Sans lui, le gyroscope ne lit que du bruit."
+    },
+    "R4": {
+      "name": "Pull-ups I2C de 4,7 kΩ (R4 SDA, R5 SCL)",
+      "what": "Tirent SDA et SCL vers le 3,3 V de la carte : le bus reste au repos à 3,3 V, même sur un Nano en 5 V. Le Nano lit 3,3 V comme HIGH."
+    },
+    "R6": {
+      "name": "Pull-down AD0 de 4,7 kΩ",
+      "what": "Maintient AD0 à l'état bas, ce qui donne l'adresse 0x68. Tirée à l'état haut (ou laissée en l'air), la puce répond à 0x69 : deux capteurs peuvent donc partager un bus."
+    },
+    "D1": {
+      "name": "LED d'alimentation",
+      "what": "Alimentée en 3,3 V à travers 1 kΩ : environ 1,3 mA. Elle indique que le régulateur fonctionne, pas que la puce est réveillée."
+    },
+    "H1": {
+      "name": "Connecteur 8 broches : VCC GND SCL SDA XDA XCL AD0 INT",
+      "what": "C'est vous qui le soudez, broches vers le bas pour que la carte tienne dans une platine d'essai. Seules quatre servent ici : VCC, GND, SCL et SDA."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "Lit le capteur en I2C sur A4 (SDA) et A5 (SCL), calcule l'inclinaison et pilote le buzzer sur D8 et sa propre LED sur D13. Sa broche 5V alimente la GY-521."
+    },
+    "BUZ": {
+      "name": "Buzzer piézo sur D8",
+      "what": "Un piézo passif : tone(8, 2000) le fait sonner à 2 kHz. Quelques mA : il se branche donc directement sur une broche."
+    }
+  },
+  "power": {
+    "label": "Mettez le banc sous tension",
+    "ok": "Nano sur l'USB : VCC à 5 V, le régulateur produit le 3,3 V, la puce est prête"
+  },
+  "modes": {
+    "flat": {
+      "title": "Mesures brutes"
+    },
+    "tilt": {
+      "title": "Alarme d'inclinaison"
+    },
+    "asleep": {
+      "title": "Jamais réveillée"
+    },
+    "scan": {
+      "title": "Scan I2C"
+    },
+    "code": {
+      "title": "MPU-6050 : lectures I2C brutes, sans bibliothèque",
+      "address": "AD0 à l'état bas : adresse 0x68",
+      "pwr": "PWR_MGMT_1 : écrire 0 pour réveiller la puce (elle démarre endormie)",
+      "from": "ACCEL_XOUT_H : les 14 octets à partir d'ici sont l'accélération X, Y, Z, la température, le gyroscope X, Y, Z",
+      "temp": "la température : ignorée",
+      "g": "16384 points = 1 g à ±2 g",
+      "dps": "131 points = 1 °/s à ±250 °/s",
+      "noWake": "pas de wake() : la puce reste endormie et chaque registre lit 0",
+      "roll": "roulis autour de X : quelle part de la gravité est passée de Z à Y",
+      "beep": "une tonalité de 2 kHz sur le buzzer tant qu'il est trop incliné",
+      "scanTitle": "Scanner I2C : qui répond sur le bus ?",
+      "ack": "0 = un périphérique a acquitté son adresse"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Démontez jusqu'au circuit nu",
+      "body": "Retirez tous les composants de la carte bleue. Vous allez la remonter comme elle est fabriquée : la puce, le régulateur et les petits composants d'abord, puis le connecteur.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    },
+    "smd": {
+      "title": "Placement automatique des composants CMS, puis refusion",
+      "body": "Le MPU-6050, le régulateur 662K, le condensateur tantale, les résistances, les condensateurs et la LED en un seul passage. La carte est livrée ainsi ; le connecteur est fourni à part dans le sachet.",
+      "refusal": "Les composants CMS se posent en premier, sur une carte nue"
+    },
+    "header": {
+      "title": "Posez le connecteur 8 broches",
+      "body": "Broches vers le bas, par le dessous, pour que la carte puisse tenir dessus. VCC, GND, SCL, SDA, XDA, XCL, AD0, INT.",
+      "refusal": "Les composants CMS d'abord : lancez le placement automatique et la refusion. Le four ferait fondre le plastique du connecteur"
+    },
+    "solder": {
+      "title": "Soudez le connecteur",
+      "body": "Huit soudures. Une soudure terne sur SDA ou SCL et le bus va et vient : c'est la raison la plus courante pour laquelle une GY-521 marche « parfois ».",
+      "refusal": "Rien à souder pour l'instant : posez d'abord le connecteur"
+    },
+    "wire-nano": {
+      "title": "Câblez le Nano",
+      "body": "VCC sur 5V, GND sur GND, SCL sur A5, SDA sur A4. Sur un Nano, les broches I2C sont fixes : A4 et A5.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    },
+    "wire-buzzer": {
+      "title": "Câblez le buzzer",
+      "body": "+ sur D8, - sur GND. C'est l'avertissement du robot quand il bascule.",
+      "refusal": "Coupez d'abord l'alimentation, et câblez d'abord le Nano"
+    },
+    "plug": {
+      "title": "Mettez le banc sous tension",
+      "body": "L'USB dans le Nano. La LED rouge s'allume : le régulateur fonctionne. La puce est encore endormie.",
+      "refusal": "Terminez d'abord le montage : chaque composant posé, le connecteur soudé, le Nano et le buzzer câblés"
+    },
+    "flat": {
+      "title": "Téléversez « Mesures brutes »",
+      "body": "wake() écrit 0 dans PWR_MGMT_1, puis chaque seconde le sketch lit 14 octets à partir de 0x3B. À plat : environ 1,00 g sur Z, 0 sur X et Y, et un gyroscope qui lit quelques °/s alors que rien ne tourne. C'est son décalage à vitesse nulle.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "tilt": {
+      "title": "Téléversez « Alarme d'inclinaison »",
+      "body": "Faites basculer la carte autour de X. roll = atan2(ay, az) transforme la répartition de la gravité entre Y et Z en angle ; au-delà de 20° d'un côté ou de l'autre, le buzzer sonne et D13 s'allume. Regardez la flèche au-dessus de la puce : c'est la gravité telle que la voit l'accéléromètre.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "asleep": {
+      "title": "Téléversez « Jamais réveillée »",
+      "body": "Les mêmes lectures sans wake(). La puce répond sur le bus, mais chaque mesure vaut 0 : elle a démarré endormie et personne ne l'a réveillée.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "scan": {
+      "title": "Téléversez « Scan I2C »",
+      "body": "Le scanner appelle chaque adresse et liste celles qui répondent : 0x68.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "reverse-vcc": {
+      "title": "Câblez VCC et GND à l'envers",
+      "body": "Le 5 V sur GND et GND sur VCC. La carte n'a ni diode ni fusible."
+    },
+    "lipo-on-vcc": {
+      "title": "Alimentez VCC depuis une LiPo 2S",
+      "body": "7,4 V sur VCC, comme depuis la batterie du robot. Le 662K accepte 6 V au maximum."
+    },
+    "no-c14": {
+      "title": "Oubliez C14",
+      "body": "Le condensateur de 2,2 nF sur CPOUT. Regardez gx."
+    },
+    "no-r6": {
+      "title": "Oubliez R6",
+      "body": "Le pull-down d'AD0. AD0 est en l'air, et sur cette carte il flotte à l'état haut. Lancez l'alarme d'inclinaison avec le robot immobile."
+    },
+    "cold-sda": {
+      "title": "Laissez une soudure froide sur SDA",
+      "body": "Une soudure terne et fissurée sur la broche SDA du connecteur. Lancez l'alarme d'inclinaison."
+    },
+    "c10-backwards": {
+      "title": "Posez C10 à l'envers",
+      "body": "La bande du condensateur tantale à l'opposé du +, puis mettez sous tension."
+    },
+    "exploded": {
+      "title": "Vue éclatée",
+      "body": "Débranchez et soulevez les pièces par groupe de montage : les composants CMS d'abord, puis le connecteur.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    }
+  },
+  "faults": {
+    "reverse-vcc": {
+      "title": "VCC inversé",
+      "symptom": "La LED reste éteinte et le régulateur chauffe ; ensuite, la carte peut ne plus rien lire.",
+      "explanation": "Rien sur la GY-521 ne bloque une alimentation inversée. Le courant traverse à l'envers les diodes de protection du régulateur et de la puce, limité seulement par l'USB du Nano. Quelques secondes peuvent tuer le 662K, et parfois le MPU-6050.",
+      "fix": "Débranchez immédiatement, câblez VCC sur 5V et GND sur GND, et remplacez le régulateur s'il a chauffé."
+    },
+    "lipo-on-vcc": {
+      "title": "7,4 V sur VCC",
+      "symptom": "Le régulateur grille : une odeur, un boîtier décoloré. Ensuite, plus rien ne répond sur le bus.",
+      "explanation": "Le 662K (XC6206) est prévu pour 6 V en entrée. Une LiPo 2S donne 7,4-8,4 V. Si le régulateur lâche en court-circuit, la tension de la batterie atteint aussi le MPU-6050, qui supporte 3,46 V.",
+      "fix": "Alimentez VCC depuis le 5V du Nano, jamais depuis la batterie du robot ni depuis VIN."
+    },
+    "no-c14": {
+      "title": "Pas de condensateur sur CPOUT",
+      "symptom": "gx saute de dizaines de °/s alors que la carte est posée immobile. L'accéléromètre va bien.",
+      "explanation": "La pompe de charge du gyroscope a besoin de son condensateur pour produire la tension qui fait vibrer les masses de mesure. Sans lui, la sortie du gyroscope n'est que du bruit. L'Arduino Playground le signale : un mauvais condensateur donne un niveau de bruit élevé.",
+      "fix": "Posez C14 (2,2 nF) et refaites la refusion."
+    },
+    "no-r6": {
+      "title": "Pas de pull-down sur AD0",
+      "symptom": "Le buzzer sonne sur un robot immobile : le sketch affiche roll -135° et ALARM.",
+      "explanation": "Avec AD0 qui flotte à l'état haut, la puce répond à 0x69. Le sketch interroge 0x68, personne ne répond, et Wire.read() renvoie -1 pour chaque octet. Chaque valeur lit -1 point, et atan2(-1, -1) vaut -135°.",
+      "fix": "Posez R6, ou mettez MPU à 0x69 dans le sketch. Mieux : vérifiez que requestFrom() a bien reçu ses 14 octets avant de les utiliser."
+    },
+    "cold-sda": {
+      "title": "Soudure froide sur SDA",
+      "symptom": "De brèves fausses alarmes : de temps en temps, une lecture revient avec roll -135°.",
+      "explanation": "À travers une soudure qui fait et défait le contact, certaines lectures ne reçoivent pas de réponse et reviennent avec -1 partout. Une alarme qui se fie à une seule lecture bipe à chacune d'elles.",
+      "fix": "Réchauffez la soudure avec de la soudure neuve jusqu'à ce qu'elle coule en un cône brillant. Dans le sketch, ignorez une lecture qui a échoué."
+    },
+    "c10-reversed": {
+      "title": "C10 posé à l'envers",
+      "symptom": "Le condensateur tantale chauffe dès la mise sous tension de la carte, et peut se fissurer ou fumer.",
+      "explanation": "La couche d'oxyde d'un condensateur tantale ne bloque le courant que dans un sens. Inversé, il conduit, chauffe et peut lâcher en court-circuit.",
+      "fix": "Débranchez, posez-en un neuf avec la bande (+) du côté du 3,3 V, comme indiqué sur la sérigraphie."
+    }
+  },
+  "status": {
+    "status": "État",
+    "powered": "Alimentation du banc",
+    "mode": "Sketch",
+    "roll": "Roulis",
+    "az": "Accélération Z (g)",
+    "gx": "Rotation X (°/s)",
+    "address": "Adresse I2C",
+    "alarm": "Alarme",
+    "vcc": "VCC",
+    "v33": "Rail 3,3 V",
+    "usb": "Courant USB"
+  },
+  "current": {
+    "usb": "USB du Nano (polyfusible de 500 mA)",
+    "nano": "Nano en fonctionnement",
+    "board": "GY-521 : puce, régulateur et LED",
+    "buzzer": "Buzzer qui sonne"
+  },
+  "tasks": {
+    "imu": "Inclinaison de la carte autour de X",
+    "alarm": {
+      "title": "Déclenchez l'alarme au-delà de 20°",
+      "brief": "Le code de départ lit l'inclinaison et l'affiche, mais rien n'avertit personne. Quand le roulis dépasse 20° d'un côté ou de l'autre, mettez D13 à HIGH et jouez une tonalité de 2 kHz sur le buzzer (D8) ; sinon, D13 à LOW et noTone(). La carte est d'abord à plat, inclinée de 35° à 2 s, revenue à -10° à 3,5 s et inclinée de -40° à 5 s.",
+      "hints": {
+        "1": "abs(roll) > 20 couvre les deux sens.",
+        "2": "tone(BUZZER, 2000) continue de jouer jusqu'à noTone(BUZZER).",
+        "3": "digitalWrite(13, alarm ? HIGH : LOW); règle la LED en une ligne."
+      },
+      "checks": {
+        "1": "Tourne",
+        "2": "À plat : D13 à LOW",
+        "3": "Inclinée de 35° : D13 à HIGH",
+        "4": "Inclinée de 35° : le buzzer sonne à environ 2 kHz",
+        "5": "Revenue à -10° : D13 de nouveau à LOW",
+        "6": "Inclinée de -40° : D13 à HIGH",
+        "7": "Inclinée de -40° : le buzzer sonne"
+      },
+      "code": {
+        "goal": "Avertir avec D13 et le buzzer quand le robot bascule au-delà de 20°",
+        "todo": "au-delà de 20° d'un côté ou de l'autre : D13 à HIGH et une tonalité de 2 kHz ; sinon, D13 à LOW et noTone()"
+      }
+    },
+    "calibrate": {
+      "title": "Calibrez le gyroscope",
+      "brief": "La carte est posée immobile, et pourtant gx lit environ 0,6 °/s : c'est le décalage à vitesse nulle du gyroscope, jusqu'à ±20 °/s sur cette puce. Intégrez-le et l'angle dérive. Dans setup(), lisez gx 200 fois, faites la moyenne des points dans offset et affichez-la sous la forme \"calibrated: offset N counts\". loop() la soustrait déjà.",
+      "hints": {
+        "1": "long sum = 0; for (int i = 0; i < 200; i++) { sum += readGx(); delay(2); }",
+        "2": "offset = sum / 200; la garde en points, comme les lectures.",
+        "3": "Gardez la carte immobile pendant le calibrage : toute rotation s'ajoute au décalage."
+      },
+      "checks": {
+        "1": "Tourne",
+        "2": "Affiche le décalage mesuré, environ 79 points",
+        "3": "Après le calibrage, gx lit 0,00 °/s au repos"
+      },
+      "code": {
+        "goal": "Mesurer le décalage du gyroscope au repos et le retirer de chaque lecture",
+        "todo": "faire la moyenne de 200 lectures de gx dans offset et afficher \"calibrated: offset N counts\"",
+        "gyro": "GYRO_XOUT_H : 2 octets de rotation X"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "regulator": {
+        "q": "Pourquoi une puce 3,3 V peut-elle se brancher sans dommage sur un Nano en 5 V ?",
+        "options": {
+          "1": "Le MPU-6050 supporte le 5 V",
+          "2": "Le régulateur 662K de la carte produit le 3,3 V, et les pull-ups I2C vont au 3,3 V",
+          "3": "Le Nano passe tout seul en 3,3 V"
+        },
+        "why": "VCC n'alimente que le régulateur. La puce, la LED et les pull-ups tournent tous sur son 3,3 V : SDA et SCL ne dépassent donc jamais 3,3 V."
+      },
+      "pullups": {
+        "q": "À quoi servent R4 et R5 ?",
+        "options": {
+          "1": "Elles tirent SDA et SCL vers le haut : les périphériques I2C ne font jamais que tirer les lignes vers le bas",
+          "2": "Elles limitent le courant de la LED",
+          "3": "Elles règlent l'adresse"
+        },
+        "why": "L'I2C est à drain ouvert. Les résistances ramènent chaque ligne à l'état haut quand personne ne la maintient à l'état bas."
+      },
+      "address": {
+        "q": "Qu'est-ce qui fixe l'adresse à 0x68 ?",
+        "options": {
+          "1": "Le sketch du Nano",
+          "2": "Le régulateur",
+          "3": "AD0 maintenue à l'état bas par R6"
+        },
+        "why": "L'adresse vaut 0b110100 plus AD0. À l'état bas : 0x68 ; à l'état haut : 0x69."
+      }
+    },
+    "read": {
+      "asleep": {
+        "q": "Chaque mesure vaut 0, mais le scanner trouve 0x68. Qu'est-ce qui ne va pas ?",
+        "options": {
+          "1": "La puce est cassée",
+          "2": "Les pull-ups manquent",
+          "3": "Personne ne l'a réveillée : PWR_MGMT_1 contient encore 0x40, le mode veille"
+        },
+        "why": "Le MPU-6050 démarre endormi. Il répond sur le bus mais ne mesure rien tant que 0 n'a pas été écrit dans 0x6B."
+      },
+      "counts": {
+        "q": "az lit 16384 points. Combien cela fait-il ?",
+        "options": {
+          "1": "1 g : la carte est posée à plat",
+          "2": "16 g",
+          "3": "16384 °/s"
+        },
+        "why": "À ±2 g, un g vaut 16384 points. À plat, toute la gravité est sur Z."
+      },
+      "roll": {
+        "q": "ay = 0,5 g et az = 0,87 g. De combien la carte est-elle inclinée ?",
+        "options": {
+          "1": "50°",
+          "2": "Environ 30°",
+          "3": "87°"
+        },
+        "why": "atan2(0.5, 0.87) vaut 30° : sin 30° = 0,5 et cos 30° = 0,87."
+      }
+    },
+    "faults": {
+      "minus-one": {
+        "q": "Sans R6, pourquoi le sketch affiche-t-il exactement -135° ?",
+        "options": {
+          "1": "La puce est à l'envers",
+          "2": "Personne ne répond à 0x68, chaque octet lit -1, et atan2(-1, -1) vaut -135°",
+          "3": "Le régulateur est coupé"
+        },
+        "why": "Wire.read() renvoie -1 quand il n'y a rien à lire. Deux octets à -1 donnent -1 point sur chaque axe."
+      },
+      "lipo": {
+        "q": "Pourquoi VCC ne doit-il pas venir d'une LiPo 2S ?",
+        "options": {
+          "1": "Le régulateur 662K est prévu pour 6 V en entrée, et 7,4-8,4 V le grillent",
+          "2": "Les LiPo donnent du courant alternatif",
+          "3": "La puce tourne trop vite"
+        },
+        "why": "Le régulateur est la seule chose entre VCC et la puce. Au-delà de 6 V, il lâche, et s'il lâche en court-circuit, la puce reçoit la tension de la batterie."
+      },
+      "noise": {
+        "q": "Le gyroscope lit du bruit mais l'accéléromètre va bien. Quel composant vérifiez-vous d'abord ?",
+        "options": {
+          "1": "Les pull-ups",
+          "2": "La résistance de la LED",
+          "3": "C14, le condensateur de la pompe de charge sur CPOUT"
+        },
+        "why": "Seul le gyroscope utilise la pompe de charge. Sans son condensateur, le gyroscope n'est pas excité et ne sort que du bruit."
+      }
+    },
+    "end": {
+      "rate": {
+        "q": "Que mesure le gyroscope ?",
+        "options": {
+          "1": "La vitesse à laquelle la carte tourne, en °/s, pas son angle",
+          "2": "L'angle directement",
+          "3": "La gravité"
+        },
+        "why": "Un gyroscope donne une vitesse. Pour obtenir un angle, on additionne vitesse x temps, ce qui additionne aussi tout décalage."
+      },
+      "drift": {
+        "q": "Pourquoi un angle tiré du seul gyroscope dérive-t-il même quand le robot est immobile ?",
+        "options": {
+          "1": "L'accéléromètre le tire",
+          "2": "La gravité change",
+          "3": "Le décalage à vitesse nulle (jusqu'à ±20 °/s) est intégré avec tout le reste"
+        },
+        "why": "0,6 °/s de décalage deviennent 36° en une minute. Retirez le décalage par calibrage, et corrigez avec l'angle de l'accéléromètre, lent mais sans dérive."
+      },
+      "vibration": {
+        "q": "Sur un robot à moteurs, l'angle de l'accéléromètre tremble. Pourquoi ?",
+        "options": {
+          "1": "Les moteurs modifient la gravité",
+          "2": "Il ne sait pas distinguer une vibration d'une inclinaison : toute accélération s'ajoute à la gravité",
+          "3": "Le gyroscope fait des interférences"
+        },
+        "why": "Un accéléromètre mesure toutes les accélérations. Filtrez-le (le filtre passe-bas de la puce, un filtre complémentaire avec le gyroscope) et montez la carte sur un support souple."
+      }
+    }
+  }
+}
