@@ -1,10 +1,11 @@
-// The micro:bit V2 MicroPython runtime: display, buttons, pins, accelerometer and music.
+// The micro:bit V2 MicroPython runtime: display, buttons, pins, accelerometer, compass, microphone, speaker, the
+// edge-connector I2C bus, music and radio.
 
 import { Mpu6050 } from '../devices';
 import { charPixels, scrollColumns, scrollFrame } from '../font5x5';
 import type { Gen } from '../exec';
 import { mod, nat, natGen, nclass, sleepGen } from './native';
-import { PyInstance, PyList, PyRt, PyTuple, I, pyErr, toBig, toNum, truthy } from './runtime';
+import { I, PyBytes, PyInstance, PyList, PyModule, PyRt, PyTuple, pyErr, toBig, toNum, truthy, type PyValue } from './runtime';
 
 // micro:bit images: 5 rows of brightness digits 0-9.
 const IMAGES: Record<string, string> = {
@@ -129,17 +130,52 @@ export function installMicrobit(rt: PyRt): void {
       get_presses: () => { const n = presses; presses = 0; return BigInt(n); },
     }));
   };
-  const pinObj = (n: number) => new PyInstance(nclass(`MicroBitPin${n}`, {
-    read_digital: () => BigInt(w.level(n)),
-    write_digital: (_s, [v]) => { w.setMode(n, 'output'); w.digitalWrite(n, truthy(v) ? 1 : 0); return null; },
-    read_analog: () => {
+  // Pins PWM at 50 Hz until set_analog_period changes it (CODAL's default 20 ms period).
+  const MicroBitPin = nclass('MicroBitPin', {
+    read_digital: (self) => BigInt(w.level(self.native.pin)),
+    write_digital: (self, [v]) => {
+      const n = self.native.pin;
+      self.native.duty = null;
+      w.setMode(n, 'output');
+      w.digitalWrite(n, truthy(v) ? 1 : 0);
+      return null;
+    },
+    read_analog: (self) => {
+      const n = self.native.pin;
       if (!w.profile.analogPins.includes(n)) throw pyErr('ValueError', `pin${n} has no analog input`);
       return BigInt(w.analogRead(n, 10));
     },
-    write_analog: (_s, [v]) => { w.analogWrite(n, Number(toBig(typeof v === 'number' ? I(v) : v)), 1023, 50); return null; },
-    is_touched: () => w.level(n) === 0,
-    set_pull: (_s, [p]) => { w.setMode(n, toBig(p) === 0n ? 'input_pullup' : toBig(p) === 1n ? 'input_pulldown' : 'input'); return null; },
-  }, {}, { PULL_UP: 0n, PULL_DOWN: 1n, NO_PULL: 2n }));
+    write_analog: (self, [v]) => {
+      const duty = Number(toBig(typeof v === 'number' ? I(v) : v));
+      if (duty < 0 || duty > 1023) throw pyErr('ValueError', 'value must be between 0 and 1023');
+      self.native.duty = duty;
+      w.analogWrite(self.native.pin, duty, 1023, 1e6 / self.native.periodUs);
+      return null;
+    },
+    set_analog_period: (self, [period]) => setPeriod(self, toNum(period) * 1000),
+    set_analog_period_microseconds: (self, [period]) => setPeriod(self, toNum(period)),
+    get_analog_period_microseconds: (self) => BigInt(self.native.periodUs),
+    is_touched: (self) => w.level(self.native.pin) === 0,
+    set_pull: (self, [p]) => { w.setMode(self.native.pin, toBig(p) === 0n ? 'input_pullup' : toBig(p) === 1n ? 'input_pulldown' : 'input'); return null; },
+  }, {}, { PULL_UP: 0n, PULL_DOWN: 1n, NO_PULL: 2n });
+  const setPeriod = (self: PyInstance, us: number) => {
+    if (us < 256) throw pyErr('ValueError', 'invalid period: the shortest is 256 µs (set_analog_period takes at least 1 ms)');
+    self.native.periodUs = Math.round(us);
+    if (self.native.duty !== null) w.analogWrite(self.native.pin, self.native.duty, 1023, 1e6 / self.native.periodUs);
+    return null;
+  };
+  const pinObj = (n: number) => {
+    const p = new PyInstance(MicroBitPin);
+    p.native = { pin: n, periodUs: 20_000, duty: null };
+    return p;
+  };
+
+  // The LSM303AGR's accelerometer answers at 0x19 on the internal bus. It exists from power-on, so a starting tilt the
+  // World panel sets before the program's first read lands on it.
+  const found = w.i2c.get(0x19);
+  const imu = found instanceof Mpu6050 ? found : new Mpu6050(0x19);
+  if (imu !== found) w.addDevice(imu);
+  const accel = () => imu.accel;
   const accelerometer = new PyInstance(nclass('MicroBitAccelerometer', {
     get_x: () => BigInt(Math.round(accel().x * 1000)),
     get_y: () => BigInt(Math.round(accel().y * 1000)),
@@ -149,14 +185,6 @@ export function installMicrobit(rt: PyRt): void {
     was_gesture: (_s, [g]) => gesture() === String(g),
     is_gesture: (_s, [g]) => gesture() === String(g),
   }));
-  let imu = [...w.i2c.values()].find((d) => d.kind === 'mpu6050') as Mpu6050 | undefined;
-  const accel = () => {
-    if (!imu) {
-      imu = new Mpu6050(0x19);
-      w.addDevice(imu);
-    }
-    return imu.accel;
-  };
   const gesture = () => {
     const a = accel();
     if (a.z > 0.8) return 'face up';
@@ -167,40 +195,93 @@ export function installMicrobit(rt: PyRt): void {
     if (a.y < -0.5) return 'up';
     return 'shake';
   };
-  const music = mod('music', {
-    play: natGen('play', function* ([tune], kw) {
-      const notes = tune instanceof PyList || tune instanceof PyTuple ? tune.items.map(String) : [String(tune)];
-      for (const n of notes) {
-        const hz = noteHz(n);
-        const st = w.pin(0);
-        st.toneHz = hz;
-        w.touch();
-        if (kw.wait !== false) yield* rt.sleepUntil(w.now + 500_000 / 4 * noteLen(n));
-      }
-      w.pin(0).toneHz = 0;
-      w.touch();
-      return null;
-    }),
-    pitch: natGen('pitch', function* ([hz, dur], kw) {
-      const st = w.pin(0);
-      st.toneHz = Number(toBig(hz));
-      w.touch();
-      const d = dur === undefined ? -1 : toNum(dur);
-      if (d > 0 && kw.wait !== false) {
-        yield* rt.sleepUntil(w.now + d * 1000);
-        st.toneHz = 0;
-        w.touch();
+
+  // The edge connector's I2C bus (P20 SDA, P19 SCL). On V2 the motion sensor sits on a separate internal bus, so
+  // the program never sees it here.
+  const external = (addr: number) => {
+    const d = w.i2c.get(addr);
+    return d !== undefined && d !== imu;
+  };
+  const bytesOf = (b: PyValue): number[] => (b instanceof PyBytes ? b.data : [...rt.iter(b)].map((x) => Number(toBig(x)) & 255));
+  const i2c = new PyInstance(nclass('MicroBitI2C', {
+    init: (_s, [freq], kw) => {
+      const hz = toNum(freq ?? kw.freq ?? 100_000n);
+      if (hz <= 0) throw pyErr('ValueError', 'freq must be positive');
+      for (const k of ['sda', 'scl']) {
+        if (kw[k] !== undefined && !(kw[k] instanceof PyInstance && kw[k].cls === MicroBitPin)) throw pyErr('TypeError', `${k} must be a pin`);
       }
       return null;
-    }),
-    stop: nat('stop', () => { w.pin(0).toneHz = 0; w.touch(); return null; }),
-    set_tempo: nat('set_tempo', () => null),
-    BA_DING: new PyList(['b5:1', 'e6:3']), POWER_UP: new PyList(['g4:1', 'c5', 'e5', 'g5:2', 'e5:1', 'g5:3']), JUMP_UP: new PyList(['c5:1', 'd5', 'e5', 'f5', 'g5']),
-  });
+    },
+    scan: () => new PyList([...w.i2c.keys()].filter(external).sort((a, b) => a - b).map((a) => BigInt(a))),
+    read: (_s, [addr, n]) => {
+      const a = Number(toBig(addr));
+      if (!external(a)) throw pyErr('OSError', '[Errno 5] EIO');
+      return new PyBytes(w.i2cRead(a, Number(toBig(n))));
+    },
+    write: (_s, [addr, buf]) => {
+      const a = Number(toBig(addr));
+      if (!external(a) || !w.i2cWrite(a, bytesOf(buf))) throw pyErr('OSError', '[Errno 5] EIO');
+      return null;
+    },
+  }));
+
+  // The LSM303AGR's magnetometer. The simulated board lies flat with its top edge pointing at magnetic north, in a
+  // field like the Earth's at mid-northern latitudes (48 µT, dipping 60°).
+  let calibrated = false;
+  const compass = new PyInstance(nclass('MicroBitCompass', {
+    calibrate: () => { calibrated = true; return null; },
+    is_calibrated: () => calibrated,
+    clear_calibration: () => { calibrated = false; return null; },
+    heading: () => { calibrated = true; return 0n; },
+    get_field_strength: () => 48_000n,
+  }));
+
+  // The microphone takes its power from RUN_MIC (nRF P0.20, here pin 202), which also lights the red D70 beside it.
+  // The simulated room is quiet: no sound reaches the program yet.
+  const RUN_MIC = 202;
+  const micOn = () => {
+    w.setMode(RUN_MIC, 'output');
+    w.digitalWrite(RUN_MIC, 1);
+  };
+  const SoundEvent = nclass('SoundEvent', {});
+  const soundEvent = (name: string) => {
+    const e = new PyInstance(SoundEvent);
+    e.native = { repr: () => `SoundEvent('${name}')` };
+    return e;
+  };
+  const LOUD = soundEvent('loud');
+  const QUIET = soundEvent('quiet');
+  SoundEvent.dict.set('LOUD', LOUD);
+  SoundEvent.dict.set('QUIET', QUIET);
+  const microphone = new PyInstance(nclass('MicroBitMicrophone', {
+    sound_level: () => { micOn(); return 0n; },
+    current_event: () => { micOn(); return null; },
+    was_event: () => { micOn(); return false; },
+    is_event: () => { micOn(); return false; },
+    get_events: () => { micOn(); return new PyTuple([]); },
+    set_threshold: (_s, [event, value]) => {
+      const v = Number(toBig(value));
+      if (event !== LOUD && event !== QUIET) throw pyErr('TypeError', 'expecting SoundEvent.LOUD or SoundEvent.QUIET');
+      if (v < 0 || v > 255) throw pyErr('ValueError', 'threshold must be 0-255');
+      micOn();
+      return null;
+    },
+  }));
+
+  // speaker.off() silences the built-in speaker; the sound still comes out of pin 0.
+  let speakerOn = true;
+  const speaker = new PyInstance(nclass('MicroBitSpeaker', {
+    on: () => { speakerOn = true; return null; },
+    off: () => { speakerOn = false; return null; },
+    is_on: () => speakerOn,
+  }));
+
+  const music = installMusic(rt);
+  const radio = installRadio();
   const pins: Record<string, PyInstance> = {};
   for (const n of [0, 1, 2, 3, 4, 8, 9, 10, 12, 13, 14, 15, 16, 19, 20]) pins[`pin${n}`] = pinObj(n);
   const exports = {
-    display, Image, music,
+    display, Image, music, i2c, compass, microphone, speaker, SoundEvent,
     button_a: button(5, 'A'), button_b: button(11, 'B'),
     pin_logo: new PyInstance(nclass('MicroBitTouchPin', { is_touched: () => w.level(201) === 0 })),
     accelerometer,
@@ -213,17 +294,177 @@ export function installMicrobit(rt: PyRt): void {
   };
   rt.modules.set('microbit', () => mod('microbit', exports));
   rt.modules.set('music', () => music);
+  rt.modules.set('radio', () => radio);
 }
 
-function noteHz(n: string): number {
-  const m = /^([a-gA-GrR])(#|b)?(\d)?/.exec(n);
-  if (!m || m[1].toLowerCase() === 'r') return 0;
-  const semis: Record<string, number> = { c: -9, d: -7, e: -5, f: -4, g: -2, a: 0, b: 2 };
-  let s = semis[m[1].toLowerCase()] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0);
-  s += (Number(m[3] ?? 4) - 4) * 12;
-  return Math.round(440 * 2 ** (s / 12));
+// music: a note is NAME[#|b][octave][:ticks]. A note without an octave or a length keeps the previous note's, and
+// both carry over between calls until music.reset(), as in MicroPython. One tick lasts 60 s / bpm / ticks-per-beat.
+const SEMITONES_FROM_A: Record<string, number> = { c: -9, d: -7, e: -5, f: -4, g: -2, a: 0, b: 2 };
+
+interface MusicState {
+  octave: number;
+  length: number;
+  ticks: number;
+  bpm: number;
 }
-function noteLen(n: string): number {
-  const m = /:(\d+)$/.exec(n);
-  return m ? Number(m[1]) : 4;
+const MUSIC_DEFAULTS: MusicState = { octave: 4, length: 4, ticks: 4, bpm: 120 };
+
+/** One note's frequency (0 for a rest) and length in ticks; updates the carried octave and length. */
+function readNote(note: string, st: MusicState): { hz: number; ticks: number } {
+  const m = /^([a-gr])(#|b)?(\d)?(?::(\d+))?/i.exec(note.trim());
+  if (!m) return { hz: 0, ticks: st.length };
+  if (m[3] !== undefined) st.octave = Number(m[3]);
+  if (m[4] !== undefined) st.length = Number(m[4]);
+  const name = m[1].toLowerCase();
+  if (name === 'r') return { hz: 0, ticks: st.length };
+  const semis = SEMITONES_FROM_A[name] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0) + (st.octave - 4) * 12;
+  return { hz: Math.round(440 * 2 ** (semis / 12)), ticks: st.length };
+}
+
+// The short built-in tunes.
+const TUNES: Record<string, string[]> = {
+  DADADADUM: ['r4:2', 'g', 'g', 'g', 'eb:8', 'r:2', 'f', 'f', 'f', 'd:8'],
+  ENTERTAINER: ['d4:1', 'd#', 'e', 'c5:2', 'e4:1', 'c5:2', 'e4:1', 'c5:3', 'c:1', 'd', 'd#', 'e', 'c', 'd', 'e:2', 'b4:1', 'd5:2', 'c:4'],
+  ODE: ['e4', 'e', 'f', 'g', 'g', 'f', 'e', 'd', 'c', 'c', 'd', 'e', 'e:6', 'd:2', 'd:8', 'e:4', 'e', 'f', 'g', 'g', 'f', 'e', 'd', 'c', 'c', 'd', 'e', 'd:6', 'c:2', 'c:8'],
+  BIRTHDAY: ['c4:3', 'c:1', 'd:4', 'c:4', 'f', 'e:8', 'c:3', 'c:1', 'd:4', 'c:4', 'g', 'f:8', 'c:3', 'c:1', 'c5:4', 'a4', 'f', 'e', 'd', 'a#:3', 'a#:1', 'a:4', 'f', 'g', 'f:8'],
+  PUNCHLINE: ['c4:3', 'g3:1', 'f#', 'g', 'g#:3', 'g', 'r', 'b', 'c4'],
+  BADDY: ['c3:3', 'r', 'd:2', 'd#', 'r', 'c', 'r', 'f#:8'],
+  BA_DING: ['b5:1', 'e6:3'],
+  WAWAWAWAA: ['e3:3', 'r:1', 'd#:3', 'r:1', 'd:4', 'r:1', 'c#:8'],
+  JUMP_UP: ['c5:1', 'd', 'e', 'f', 'g'],
+  JUMP_DOWN: ['g5:1', 'f', 'e', 'd', 'c'],
+  POWER_UP: ['g4:1', 'c5', 'e', 'g:2', 'e:1', 'g:3'],
+  POWER_DOWN: ['g5:1', 'd#', 'c', 'g4:2', 'b:1', 'c5:3'],
+};
+
+function installMusic(rt: PyRt): PyModule {
+  const w = rt.world;
+  const st: MusicState = { ...MUSIC_DEFAULTS };
+  const tickUs = () => 60e6 / st.bpm / st.ticks;
+  let timers: Array<() => void> = [];
+  let sounding: number | null = null;
+  // Like Arduino's tone(), a sounding pin is an output carrying a square wave.
+  const tone = (pin: number | null, hz: number) => {
+    if (pin === null) return;
+    const p = w.pin(pin);
+    if (hz > 0) {
+      w.setMode(pin, 'output');
+      p.duty = null;
+    }
+    p.toneHz = hz;
+    sounding = hz > 0 ? pin : null;
+    w.touch();
+  };
+  const silence = () => {
+    for (const cancel of timers) cancel();
+    timers = [];
+    if (sounding !== null) tone(sounding, 0);
+  };
+  /** The pin a call sounds on: pin0 by default, none for pin=None. */
+  const outPin = (v: PyValue | undefined): number | null => {
+    if (v === undefined) return 0;
+    if (v === null) return null;
+    if (v instanceof PyInstance && typeof v.native?.pin === 'number') return v.native.pin;
+    throw pyErr('TypeError', 'expecting a pin');
+  };
+  const notesOf = (tune: PyValue) => (tune instanceof PyList || tune instanceof PyTuple ? tune.items.map((n) => rt.str(n)) : [rt.str(tune)]);
+  // wait=False: the tune plays on while the program runs, until the next music call.
+  const background = (pin: number | null, notes: string[], loop: boolean) => {
+    timers = [];
+    let at = w.now;
+    for (const n of notes) {
+      const { hz, ticks } = readNote(n, st);
+      timers.push(w.clock.at(at, () => tone(pin, hz)));
+      at += ticks * tickUs();
+    }
+    timers.push(w.clock.at(at, () => (loop ? background(pin, notes, loop) : tone(pin, 0))));
+  };
+  const entries: Record<string, PyValue> = {
+    play: natGen('play', function* ([tune, pinArg, waitArg, loopArg], kw) {
+      silence();
+      const pin = outPin(pinArg !== undefined ? pinArg : kw.pin);
+      const notes = notesOf(tune ?? kw.music);
+      const loop = truthy(loopArg ?? kw.loop ?? false);
+      if (!truthy(waitArg ?? kw.wait ?? true)) {
+        background(pin, notes, loop);
+        return null;
+      }
+      do {
+        for (const n of notes) {
+          const { hz, ticks } = readNote(n, st);
+          tone(pin, hz);
+          yield* rt.sleepUntil(w.now + ticks * tickUs());
+        }
+      } while (loop);
+      tone(pin, 0);
+      return null;
+    }),
+    pitch: natGen('pitch', function* ([hzArg, durArg, pinArg, waitArg], kw) {
+      silence();
+      const pin = outPin(pinArg !== undefined ? pinArg : kw.pin);
+      const ms = toNum(durArg ?? kw.duration ?? -1n);
+      tone(pin, Math.trunc(toNum(hzArg ?? kw.frequency)));
+      // A negative duration sounds until music.stop().
+      if (ms < 0) return null;
+      if (truthy(waitArg ?? kw.wait ?? true)) {
+        yield* rt.sleepUntil(w.now + ms * 1000);
+        tone(pin, 0);
+      } else timers.push(w.clock.after(ms * 1000, () => tone(pin, 0)));
+      return null;
+    }),
+    stop: nat('stop', ([pinArg], kw) => {
+      silence();
+      tone(outPin(pinArg !== undefined ? pinArg : kw.pin), 0);
+      return null;
+    }),
+    set_tempo: nat('set_tempo', (_a, kw) => {
+      const ticks = kw.ticks === undefined ? st.ticks : toNum(kw.ticks);
+      const bpm = kw.bpm === undefined ? st.bpm : toNum(kw.bpm);
+      if (ticks <= 0 || bpm <= 0) throw pyErr('ValueError', 'ticks and bpm must be positive');
+      st.ticks = ticks;
+      st.bpm = bpm;
+      return null;
+    }),
+    get_tempo: nat('get_tempo', () => new PyTuple([BigInt(Math.round(st.ticks)), BigInt(Math.round(st.bpm))])),
+    reset: nat('reset', () => {
+      Object.assign(st, MUSIC_DEFAULTS);
+      return null;
+    }),
+  };
+  for (const [name, notes] of Object.entries(TUNES)) entries[name] = new PyList([...notes]);
+  return mod('music', entries);
+}
+
+// radio: the micro:bit radio protocol's on/off state and settings. No other micro:bit is in range yet, so sends go
+// nowhere and nothing arrives.
+const RADIO_LIMITS: Record<string, [number, number]> = {
+  length: [1, 251], queue: [1, 254], channel: [0, 83], power: [0, 7], address: [0, 0xffffffff], group: [0, 255], data_rate: [0, 1],
+};
+
+function installRadio(): PyModule {
+  let on = false;
+  const live = () => {
+    if (!on) throw pyErr('ValueError', 'radio is not enabled');
+  };
+  return mod('radio', {
+    RATE_1MBIT: 0n,
+    RATE_2MBIT: 1n,
+    on: nat('on', () => { on = true; return null; }),
+    off: nat('off', () => { on = false; return null; }),
+    reset: nat('reset', () => null),
+    config: nat('config', (_a, kw) => {
+      for (const [k, v] of Object.entries(kw)) {
+        const range = Object.hasOwn(RADIO_LIMITS, k) ? RADIO_LIMITS[k] : null;
+        if (!range) throw pyErr('TypeError', `unexpected keyword argument '${k}'`);
+        const n = Number(toBig(v));
+        if (n < range[0] || n > range[1]) throw pyErr('ValueError', `value out of range for argument '${k}'`);
+      }
+      return null;
+    }),
+    send: nat('send', () => { live(); return null; }),
+    send_bytes: nat('send_bytes', () => { live(); return null; }),
+    receive: nat('receive', () => { live(); return null; }),
+    receive_bytes: nat('receive_bytes', () => { live(); return null; }),
+    receive_full: nat('receive_full', () => { live(); return null; }),
+  });
 }
