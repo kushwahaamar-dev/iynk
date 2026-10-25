@@ -123,3 +123,23 @@ Owns `docs/hacktx/{PITCH,DEVPOST-WRITEUP,DEVPOST,VIDEO}.md` and a new `docs/hack
   failures are accurate, the AI parts, SerpApi's role, Meta's role, what isn't done and why), each answered in 2–4
   sentences with the file or page that shows it.
 - `VIDEO.md`: a 3-minute shot list over the BUILD-PLAN §1 demo path as it works locally, with the exact clicks.
+
+## After gate 3
+
+### P3-fresh-eyes
+
+A judge who has never seen SimLab and has ten minutes. The driver starts a production server and puts its address in
+your note; you only read the repo for the demo path (`docs/hacktx/BUILD-PLAN.md` §1), never the code. Owns only
+`docs/verify/fresh-eyes.md` and your scratchpad.
+
+Walk it with Playwright from a script in your scratchpad, and look at every screenshot you take (Read the PNG): first on
+a laptop (1440 × 900), then on a phone (390 × 844, touch), in English and then in Spanish. The landing page and the
+dashboard as a first impression; demo path steps 1, 3 and 4 as written (step 2's second device and step 5's Muse
+need keys and the relay, so note only what a judge would see without them); one bench (`/robotics/esp32-s3-build`),
+Break it on a board and on the fly page, a drone's Build it for real, a lesson in German or Hindi. Click what a new
+user would click, read what they would read.
+
+Write each friction as one entry: where (URL, viewport, language), what you tried, what you expected, what happened,
+how bad (**blocker**: a judge gets stuck or sees an error; **ugly**: works but looks broken or reads wrong;
+**nit**), and the screenshot path. Order by how bad. Don't fix anything, and don't soften it: "looks fine" is only
+worth writing when it is true for the whole page.
