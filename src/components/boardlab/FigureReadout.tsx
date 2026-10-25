@@ -5,7 +5,7 @@ import type { BoardLabStore } from "@/lib/boardlab/store";
 import { useText } from "./text";
 import { useLab } from "./useLab";
 
-type Meas = Record<string, { i_mA?: number; state?: string }>;
+type Meas = Record<string, { kind?: string; i_mA?: number; state?: string }>;
 
 // The bench's per-LED measurement states (FIGURES-BENCH §13).
 const MEAS_STATES = ["ok", "off", "burnt", "reverse", "open"];
@@ -20,7 +20,8 @@ export function FigureReadout({ store, leds }: { store: BoardLabStore; leds: { i
   const reported = useLab(store, (s) => s.figure.leds) as Record<string, number> | undefined;
   const meas = useLab(store, (s) => s.figure.meas) as Meas | undefined;
   const ledItems = leds.filter((l) => reported && l.id in reported);
-  const measItems = Object.entries(meas ?? {});
+  // The circuit solver measures every part (motors, transistors, diodes...); the LED lines are the ones this reads.
+  const measItems = Object.entries(meas ?? {}).filter(([, m]) => !m.kind || m.kind === "led");
   if (ledItems.length === 0 && measItems.length === 0) return null;
   return (
     <ul aria-label={t("readout.label")} className="flex flex-wrap gap-2 text-sm" data-testid="figure-readout">
