@@ -52,3 +52,53 @@ If the English file changes under you (another agent fixes it), the content test
 
 **Done when:** every file in your list is translated, passes the content test and is pushed; or, if the run is cut
 short, every file you did is, and your report lists the ones left.
+
+## Wave T2 (after gate 2)
+
+### P3-ui-<lang> (es, fr, de, zh, hi)
+
+Owns `src/i18n/messages/<lang>/*.json` and `src/i18n/figures/<lang>.json` for its one language (the five agents never
+share a file). Two jobs, the T1 translation rules apply to both:
+
+1. **UI strings.** Every leaf in `src/i18n/messages/<lang>/<namespace>.json` that still carries the English text is
+   translated (find them by comparing with `src/i18n/messages/en/`; the `*-to-phase3-strings.md` requests in
+   `docs/requests/` list the keys added in phase 2). Keys stay exactly as they are (`src/i18n/messages.test.ts`).
+   Short labels that are the same word in your language, product names and units may stay.
+2. **Figure strings.** Write `src/i18n/figures/<lang>.json`: one entry for every key in `src/i18n/figure-keys.json`
+   (the English text the figures show, with the figures that use it), value the translation. Placeholders in braces
+   stay as they are. A part reference before the dot stays (`R18 · 47.5 kΩ VBUS sense resistor` → `R18 · …`).
+   Button names the prose tells a learner to press must read the same as in your prose translations in
+   `src/i18n/content/<lang>/`: check a few with `grep`. `npx vitest run src/i18n/figure-strings.test.ts` checks it.
+
+Done when `npx vitest run src/i18n` passes and no leaf of yours equals English unless it should.
+
+### P3-prose-<lang>-<n>
+
+Wave B's items' prose and whatever T1 left, through `scripts/workflows/phase3-prose.js` with the same rules as T1.
+
+## Wave D (after gate 2)
+
+### P3-docs-repo
+
+Owns `README.md`, `figures/prompts/**` (only the records that don't exist yet), `docs/DECISIONS.md`.
+- `README.md` rewritten for a judge and a new developer: what SimLab is (one paragraph), the 38 items and 6 languages
+  as they really are, run and test (`npm run dev`, `npm run check`, vitest, Playwright, `cfbuild.py`/`cfshoot.py`),
+  deploy (`docs/hacktx/DEPLOY.md`), the sponsor map (BUILD-PLAN §1, only what is live or degrades cleanly), how
+  figures are made (Colorfigures, `figures/prompts/`), and the pre-event disclosure (HANDOFF "Hackathon rule": the
+  research and prototypes before 11:30 Oct 24 are knowledge, every line of code was written during the event).
+- A prompt record (`figures/prompts/<id>.md`, the format of `figures/prompts/rgb-led.md`) for every figure that has
+  none: read the figure source and its built page (`cfshoot.py`), describe what it draws and does, as built.
+- `docs/DECISIONS.md`: a "Build night" section with the scope decisions of phases 1–3 (D1 tracks, D2 translation
+  tiers, the model hook, the 55 A racer ESC, telemetry wording, phase 4 skipped), one line each with why, from
+  HANDOFF, CONTEXT §5, BUILD-PLAN and `docs/requests/*-gaps.md`.
+
+### P3-docs-pitch
+
+Owns `docs/hacktx/{PITCH,DEVPOST-WRITEUP,DEVPOST,VIDEO}.md` and a new `docs/hacktx/JUDGE-QA.md`.
+- Every claim matches what is live on this tree at gate 2 (`docs/verify/gate2.md`): counts, languages, what works
+  without keys, what needs the relay or keys (say so plainly). Solana and Best Hardware Hack are not claimed (phase 4
+  skipped). Remove anything that overclaims (BUILD-PLAN §2 "Docs").
+- `JUDGE-QA.md`: the 25 questions judges are likely to ask (how the sim works, what is real vs modelled, why the
+  failures are accurate, the AI parts, SerpApi's role, Meta's role, what isn't done and why), each answered in 2–4
+  sentences with the file or page that shows it.
+- `VIDEO.md`: a 3-minute shot list over the BUILD-PLAN §1 demo path as it works locally, with the exact clicks.
