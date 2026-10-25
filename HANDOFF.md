@@ -117,8 +117,8 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 - **Running:** interaction audit `wf_e0b543cb-6eb` (`scripts/workflows/interaction-audit.js`, from 07:19): labels
   find:boards, find:robotics, find:drones, find:fly, find:shell, each with a verify step; read-only against the build
   served at http://127.0.0.1:3000 (`.next-tags`). Its confirmed findings come back to the driver to fix.
-- **Runs before it, all done** (scripts in `scripts/workflows/`, `git log` shows what each label pushed): phase 1 (gate 1
-  green at 19:21), wave A `wf_bde0e200-6a3` (9 labels, 20:17-21:27), wave B `wf_7b610548-7fb` (10 labels, from
+- **Runs before it, all done** (scripts in `scripts/workflows/`, `git log` shows what each label pushed): phase 1
+  (gate 1 green at 19:21), wave A `wf_bde0e200-6a3` (9 labels, 20:17-21:27), wave B `wf_7b610548-7fb` (10 labels, from
   22:30), its tail `wf_759ed985-c9a`, prose T1 `wf_0e06f30a-c43`, figure dictionaries T2a `wf_07ad23ac-e47`, prose T2
   `wf_788dd7a3-f68` and UI strings `wf_c44031b5-93f` (every item in six languages), docs D `wf_d61de94b-466`, quizzes
   `wf_78186578-fbd`, figure sweep `wf_7513ba0c-9cb`, the final pass `wf_c95e5cdf-cda` (Fable research, audits,
