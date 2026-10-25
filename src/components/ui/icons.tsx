@@ -19,7 +19,21 @@ export type IconName =
   | "robot"
   | "drone"
   | "play"
-  | "external";
+  | "external"
+  | "chevron-left"
+  | "keyboard"
+  | "settings"
+  | "tools"
+  | "sound-on"
+  | "sound-off"
+  | "rotate-left"
+  | "rotate-right"
+  | "target"
+  | "reset"
+  | "expand"
+  | "lock"
+  | "undo"
+  | "panel-right";
 
 // Line icons on a 24 grid, drawn with round ink strokes to match the figures.
 const PATHS: Record<IconName, string> = {
@@ -42,6 +56,21 @@ const PATHS: Record<IconName, string> = {
   drone: "M9 10h6v4H9zM9 10L6 7M15 10l3-3M9 14l-3 3M15 14l3 3M3 7h6M15 7h6M3 17h6M15 17h6",
   play: "M8 5.5v13l10.5-6.5z",
   external: "M14 4h6v6M20 4l-9 9M18 14v6H4V6h6",
+  "chevron-left": "M14.5 5.5L8 12l6.5 6.5",
+  keyboard: "M3 6.5h18v11H3zM7 10.5h.01M10.5 10.5h.01M14 10.5h.01M17.5 10.5h.01M8 14.2h8",
+  settings:
+    "M12 5.5a6.5 6.5 0 1 0 0 13a6.5 6.5 0 1 0 0-13zM12 9.6a2.4 2.4 0 1 0 0 4.8a2.4 2.4 0 1 0 0-4.8zM12 2.8v2.7M12 18.5v2.7M2.8 12h2.7M18.5 12h2.7M5.5 5.5l1.9 1.9M16.6 16.6l1.9 1.9M5.5 18.5l1.9-1.9M16.6 7.4l1.9-1.9",
+  tools: "M14.8 3.6a4.8 4.8 0 0 0-4.6 6.3L3.8 16.3a1.9 1.9 0 0 0 2.7 2.7l6.4-6.4a4.8 4.8 0 0 0 6.3-4.6l-2.9 2.1-2.6-.9-.9-2.6z",
+  "sound-on": "M4 9.5h3.5L12 5.5v13l-4.5-4H4zM15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11",
+  "sound-off": "M4 9.5h3.5L12 5.5v13l-4.5-4H4zM16 9.5l5 5M21 9.5l-5 5",
+  "rotate-left": "M5 9.2A7.6 7.6 0 1 1 6.3 17M5 4.2v5h5",
+  "rotate-right": "M19 9.2A7.6 7.6 0 1 0 17.7 17M19 4.2v5h-5",
+  target: "M12 4.5a7.5 7.5 0 1 0 0 15a7.5 7.5 0 1 0 0-15zM12 9.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 1 0 0-5zM12 1.8v2.7M12 19.5v2.7M1.8 12h2.7M19.5 12h2.7",
+  reset: "M12 3.5v4M12 16.5v4M3.5 12h4M16.5 12h4M12 10a2 2 0 1 0 0 4a2 2 0 1 0 0-4z",
+  expand: "M14 4h6v6M10 20H4v-6M20 4l-6.5 6.5M4 20l6.5-6.5",
+  lock: "M6 10.5h12v10H6zM8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3M12 14.3v2.6",
+  undo: "M9 6.5L4.5 11L9 15.5M4.5 11h10a5 5 0 0 1 0 10h-3",
+  "panel-right": "M3.5 4.5h17v15h-17zM14.5 4.5v15",
 };
 
 export function Icon({ name, size = 20, ...rest }: { name: IconName; size?: number } & SVGProps<SVGSVGElement>) {

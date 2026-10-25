@@ -45,9 +45,9 @@ export function Dialog({ open, onClose, title, description, closeLabel, children
         aria-describedby={description ? `${id}-d` : undefined}
         tabIndex={-1}
         onKeyDown={onKeyDown}
-        className={cx("ink-card flex max-h-[90dvh] w-full flex-col shadow-ink-lg outline-none animate-ink-rise", widths[size])}
+        className={cx("ink-card flex max-h-[90dvh] w-full flex-col border-line shadow-ink-lg outline-none animate-ink-rise", widths[size])}
       >
-        <div className="flex items-start gap-3 border-b-2 border-line p-4 sm:px-5">
+        <div className="flex items-start gap-3 border-b-[1.5px] border-rule p-4 sm:px-5">
           <div className="min-w-0 flex-1 pt-1.5">
             <h2 id={`${id}-t`} className="text-xl">
               {title}
@@ -61,7 +61,7 @@ export function Dialog({ open, onClose, title, description, closeLabel, children
           <IconButton icon="close" label={closeLabel} onClick={onClose} />
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-5">{children}</div>
-        {footer ? <div className="flex flex-wrap justify-end gap-2 border-t-2 border-line p-4 sm:px-5">{footer}</div> : null}
+        {footer ? <div className="flex flex-wrap justify-end gap-2 border-t-[1.5px] border-rule p-4 sm:px-5">{footer}</div> : null}
       </div>
     </div>,
     document.body,

@@ -14,7 +14,7 @@ type MeterProps = {
   className?: string;
 };
 
-/** A labelled gauge (role="meter"): current draw, throttle, battery. */
+/** A labelled gauge (role="meter"): current draw, throttle, battery. The label may hold a unit, so it is never uppercased. */
 export function Meter({ label, value, min = 0, max, valueText, warn, danger, className }: MeterProps) {
   const id = useId();
   const span = max - min || 1;
@@ -24,10 +24,10 @@ export function Meter({ label, value, min = 0, max, valueText, warn, danger, cla
   return (
     <div className={cx("min-w-0", className)}>
       <div className="mb-1 flex items-baseline justify-between gap-3">
-        <span id={id} className="ink-kicker">
+        <span id={id} className="ink-label">
           {label}
         </span>
-        <span className="tabular font-ui text-sm font-bold">{text}</span>
+        <span className="tabular whitespace-nowrap font-ui text-sm font-bold">{text}</span>
       </div>
       <div
         role="meter"
@@ -36,11 +36,11 @@ export function Meter({ label, value, min = 0, max, valueText, warn, danger, cla
         aria-valuemax={max}
         aria-valuenow={value}
         aria-valuetext={text}
-        className="relative h-3.5 overflow-hidden rounded-full border-2 border-line bg-sunken"
+        className="relative h-2.5 overflow-hidden rounded-full border-[1.5px] border-line bg-sunken"
       >
         <div
           className={cx(
-            "h-full border-e-2 border-line transition-[width] duration-300",
+            "h-full border-e-[1.5px] border-line transition-[width] duration-300",
             level === "danger" ? "bg-tomato" : level === "warn" ? "bg-mustard" : "bg-mint",
             pct === 0 && "border-e-0",
           )}

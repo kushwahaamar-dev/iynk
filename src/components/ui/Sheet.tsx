@@ -13,6 +13,8 @@ type SheetProps = {
   closeLabel: string;
   /** Which edge it slides from. Bottom suits phones; start/end suit menus. */
   side?: "bottom" | "start" | "end";
+  /** A bottom sheet's height: as tall as its content (up to 85 %), or always 85 % so tabs switch in place. */
+  height?: "auto" | "full";
   children?: ReactNode;
   className?: string;
 };
@@ -24,7 +26,7 @@ const placement = {
 };
 
 /** A drawer for phones: a modal panel along one edge of the screen. */
-export function Sheet({ open, onClose, title, closeLabel, side = "bottom", children, className }: SheetProps) {
+export function Sheet({ open, onClose, title, closeLabel, side = "bottom", height = "auto", children, className }: SheetProps) {
   const id = useId();
   const layerRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -48,10 +50,16 @@ export function Sheet({ open, onClose, title, closeLabel, side = "bottom", child
         aria-labelledby={`${id}-t`}
         tabIndex={-1}
         onKeyDown={onKeyDown}
-        className={cx("ink-card fixed flex flex-col overflow-hidden outline-none", placement[side], className)}
+        className={cx(
+          "ink-card fixed flex flex-col overflow-hidden border-line shadow-ink-lg outline-none",
+          placement[side],
+          side === "bottom" && height === "full" && "h-[85dvh]",
+          className,
+        )}
       >
-        <div className="flex items-center gap-3 border-b-2 border-line py-2 ps-4 pe-2">
-          <h2 id={`${id}-t`} className="min-w-0 flex-1 font-ui text-sm font-extrabold uppercase tracking-wider">
+        {side === "bottom" ? <span aria-hidden="true" className="mx-auto mt-2 h-1 w-9 shrink-0 rounded-full bg-rule" /> : null}
+        <div className="flex items-center gap-3 border-b-[1.5px] border-rule py-1.5 ps-4 pe-2">
+          <h2 id={`${id}-t`} className="min-w-0 flex-1 font-body text-base font-semibold">
             {title}
           </h2>
           <IconButton icon="close" label={closeLabel} onClick={onClose} />

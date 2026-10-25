@@ -13,14 +13,17 @@ type SegmentedControlProps<V extends string> = {
   /** Show only the icons; the labels stay as accessible names. */
   iconOnly?: boolean;
   size?: "sm" | "md";
+  /** Equal-width segments across the full width of the parent. */
+  stretch?: boolean;
   className?: string;
 };
 
 /**
  * One choice out of a few (role="radiogroup"). Arrow keys move the choice,
  * Home and End jump to the ends; only the chosen option is in the tab order.
+ * It never wraps: a row too long for its box scrolls sideways.
  */
-export function SegmentedControl<V extends string>({ label, options, value, onChange, iconOnly, size = "md", className }: SegmentedControlProps<V>) {
+export function SegmentedControl<V extends string>({ label, options, value, onChange, iconOnly, size = "md", stretch, className }: SegmentedControlProps<V>) {
   const refs = useRef<Array<HTMLButtonElement | null>>([]);
   const current = Math.max(0, options.findIndex((o) => o.value === value));
 
@@ -45,14 +48,16 @@ export function SegmentedControl<V extends string>({ label, options, value, onCh
     }
   }
 
-  // Long labels (four Pico boards) wrap onto a second row rather than widen a phone page. 26px is half the tallest
-  // single row, so one row still draws as a pill and two rows get rounded corners.
   return (
     <div
       role="radiogroup"
       aria-label={label}
       onKeyDown={onKeyDown}
-      className={cx("inline-flex max-w-full flex-wrap rounded-[26px] border-2 border-line bg-surface p-0.5", className)}
+      className={cx(
+        "max-w-full flex-nowrap overflow-x-auto rounded-full border-2 border-line bg-surface p-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+        stretch ? "flex w-full" : "inline-flex",
+        className,
+      )}
     >
       {options.map((option, i) => {
         const checked = i === current;
@@ -70,12 +75,16 @@ export function SegmentedControl<V extends string>({ label, options, value, onCh
             tabIndex={checked ? 0 : -1}
             onClick={() => onChange(option.value)}
             className={cx(
-              "inline-flex items-center justify-center gap-1.5 rounded-full font-ui font-bold transition-colors",
-              size === "sm" ? "min-h-9 px-2.5 text-xs" : "min-h-10 px-3.5 text-sm",
-              iconOnly && (size === "sm" ? "min-w-9 px-0" : "min-w-10 px-0"),
+              "inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full font-body font-semibold transition-colors",
+              size === "sm" ? "min-h-8 px-2.5 text-sm" : "min-h-10 px-3.5 text-sm",
+              stretch && "min-w-0 flex-1",
+              iconOnly && (size === "sm" ? "min-w-8 px-0" : "min-w-10 px-0"),
               "[@media(pointer:coarse)]:min-h-11",
               iconOnly && "[@media(pointer:coarse)]:min-w-11",
-              checked ? "bg-ink text-paper" : "text-ink hover:bg-sunken",
+              // The row may scroll, which would clip a ring drawn outside the option, so the ring is drawn inside it:
+              // paper on the ink fill of the checked option, ink on the others.
+              "focus-visible:outline-2 focus-visible:outline-offset-[-5px] focus-visible:shadow-none",
+              checked ? "bg-ink text-paper focus-visible:outline-(--paper)" : "text-ink hover:bg-sunken focus-visible:outline-(--ink)",
             )}
           >
             {option.icon}

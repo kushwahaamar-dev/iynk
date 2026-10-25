@@ -29,7 +29,7 @@ export function Stepper({ label, steps, statusText, onSelect, orientation = "ver
           <span
             aria-hidden="true"
             className={cx(
-              "flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-line font-ui text-sm font-extrabold",
+              "flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-line font-ui text-sm font-bold",
               step.status === "done" && "bg-mint text-on-color",
               step.status === "current" && "bg-mustard text-on-color shadow-ink-sm",
               step.status === "todo" && "bg-surface text-muted",
@@ -40,7 +40,7 @@ export function Stepper({ label, steps, statusText, onSelect, orientation = "ver
         );
         const text = (
           <span className="min-w-0 text-start">
-            <span className={cx("block font-ui text-sm", step.status === "current" ? "font-extrabold" : "font-bold")}>
+            <span className={cx("block font-body text-sm", step.status === "current" ? "font-bold" : "font-semibold")}>
               {step.label}
               {step.status !== "todo" ? <span className="sr-only">, {statusText[step.status]}</span> : null}
             </span>

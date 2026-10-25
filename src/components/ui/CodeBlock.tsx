@@ -43,17 +43,17 @@ export function CodeBlock({ code, lang = "text", title, label, copyLabel, copied
   return (
     <figure className={cx("overflow-hidden rounded-ink border-2 border-line bg-[var(--code-bg)] text-[var(--code-fg)] shadow-ink-sm", className)}>
       <figcaption className="flex min-h-11 items-center gap-2 border-b-2 border-line bg-sunken py-1 ps-3.5 pe-1">
-        <span className="min-w-0 flex-1 truncate font-ui text-xs font-bold uppercase tracking-wider text-muted">{title}</span>
+        <span className="min-w-0 flex-1 truncate ink-kicker">{title}</span>
         <button
           type="button"
           onClick={copy}
-          className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 font-ui text-xs font-bold text-ink hover:bg-surface"
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 font-body text-sm font-semibold text-ink hover:bg-surface"
         >
           <Icon name={copied ? "check" : "copy"} size={16} />
           <span aria-live="polite">{copied ? copiedLabel : copyLabel}</span>
         </button>
       </figcaption>
-      <pre tabIndex={0} aria-label={label} className="overflow-x-auto py-3 font-ui text-[0.85rem] leading-6">
+      <pre tabIndex={0} aria-label={label} className="overflow-x-auto py-3 font-ui text-sm leading-6">
         <code className="block min-w-max">
           {lines.map((tokens, index) => (
             <span

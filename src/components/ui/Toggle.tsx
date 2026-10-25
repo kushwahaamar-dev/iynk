@@ -18,7 +18,7 @@ export function Toggle({ checked, onChange, label, description, disabled, classN
   return (
     <div className={cx("flex min-h-11 items-center justify-between gap-4", className)}>
       <span className="min-w-0">
-        <span id={`${id}-l`} className="block font-ui text-sm font-bold">
+        <span id={`${id}-l`} className="block font-body text-sm font-semibold">
           {label}
         </span>
         {description ? (
