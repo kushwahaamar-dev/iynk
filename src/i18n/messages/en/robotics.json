@@ -263,6 +263,8 @@
     "runningNow": "Running…",
     "resetCode": "Back to the starter code",
     "solution": "Load the reference solution",
+    "solutionLoaded": "Reference solution loaded",
+    "undo": "Undo",
     "hints": "Hints",
     "checks": "Checks",
     "passed": "All {total} checks pass. Task done.",

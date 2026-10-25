@@ -61,7 +61,7 @@ export function SerialPanel({ kind, lines, onClear, open, onOpenChange, height, 
           variant="ghost"
           onClick={onClear}
           disabled={lines.length === 0}
-          className="absolute end-2 top-1.5 text-console-ink hover:bg-console-well disabled:border-transparent disabled:bg-transparent disabled:text-console-muted"
+          className="absolute end-2 top-1.5 !text-console-ink hover:!bg-console-well disabled:!border-transparent disabled:!bg-transparent disabled:!text-console-muted"
         >
           {t("serial.clear")}
         </Button>

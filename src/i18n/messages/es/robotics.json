@@ -263,6 +263,8 @@
     "runningNow": "Ejecutando…",
     "resetCode": "Volver al código inicial",
     "solution": "Cargar la solución de referencia",
+    "solutionLoaded": "Solución de referencia cargada",
+    "undo": "Deshacer",
     "hints": "Pistas",
     "checks": "Comprobaciones",
     "passed": "Pasan las {total} comprobaciones. Tarea hecha.",

@@ -263,6 +263,8 @@
     "runningNow": "正在运行…",
     "resetCode": "恢复初始代码",
     "solution": "载入参考答案",
+    "solutionLoaded": "已载入参考答案",
+    "undo": "撤销",
     "hints": "提示",
     "checks": "检查",
     "passed": "全部 {total} 项检查通过。任务完成。",

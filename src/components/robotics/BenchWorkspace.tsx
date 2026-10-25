@@ -516,7 +516,7 @@ export function BenchWorkspace({ setup, messages, notice: untranslated, walk }: 
               <ul className="mt-1 flex flex-col text-sm">
                 {bench.sources.map((source) => (
                   <li key={source.url}>
-                    <a href={source.url} rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-1.5">
+                    <a href={source.url} rel="noopener noreferrer" className="inline-flex min-h-8 items-center gap-1.5 [@media(pointer:coarse)]:min-h-11">
                       {source.title}
                       <Icon name="external" size={14} className="shrink-0 text-muted" />
                     </a>

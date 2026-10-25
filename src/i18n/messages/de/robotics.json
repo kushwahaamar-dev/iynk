@@ -263,6 +263,8 @@
     "runningNow": "Läuft …",
     "resetCode": "Zurück zum Startcode",
     "solution": "Musterlösung laden",
+    "solutionLoaded": "Musterlösung geladen",
+    "undo": "Rückgängig",
     "hints": "Tipps",
     "checks": "Prüfungen",
     "passed": "Alle {total} Prüfungen bestanden. Aufgabe erledigt.",

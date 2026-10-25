@@ -263,6 +263,8 @@
     "runningNow": "En cours…",
     "resetCode": "Revenir au code de départ",
     "solution": "Charger la solution de référence",
+    "solutionLoaded": "Solution de référence chargée",
+    "undo": "Annuler",
     "hints": "Indices",
     "checks": "Vérifications",
     "passed": "Les {total} vérifications passent. Exercice terminé.",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useId } from "react";
+import { useId, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
 import { Chip } from "@/components/ui/Chip";
@@ -57,6 +57,9 @@ function TaskCard({ task, session, done, t, tx, dispatch }: CardProps) {
   const result = session?.result ?? null;
   const running = session?.running ?? false;
   const passed = result?.status === "ok" ? result.checks.filter((check) => check.pass).length : 0;
+  // What the editor held before the reference solution replaced it, until it is restored or edited again.
+  const [before, setBefore] = useState<string | null>(null);
+  const code = session?.code ?? "";
 
   return (
     <article aria-labelledby={`${id}-title`} data-task={task.id} className="ink-card p-4 sm:p-5">
@@ -79,8 +82,11 @@ function TaskCard({ task, session, done, t, tx, dispatch }: CardProps) {
       </label>
       <textarea
         id={`${id}-code`}
-        value={session?.code ?? ""}
-        onChange={(event) => dispatch({ type: "task/edit", task: task.id, code: event.target.value })}
+        value={code}
+        onChange={(event) => {
+          setBefore(null);
+          dispatch({ type: "task/edit", task: task.id, code: event.target.value });
+        }}
         onKeyDown={(event) => {
           if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
             event.preventDefault();
@@ -90,7 +96,7 @@ function TaskCard({ task, session, done, t, tx, dispatch }: CardProps) {
         spellCheck={false}
         autoCapitalize="off"
         autoCorrect="off"
-        rows={Math.min(24, Math.max(8, (session?.code ?? "").split("\n").length + 1))}
+        rows={Math.min(24, Math.max(8, code.split("\n").length + 1))}
         className="mt-1 w-full resize-y rounded-ink-sm border-2 border-line bg-surface p-3 font-ui text-sm leading-relaxed text-ink"
         data-task-editor
       />
@@ -100,13 +106,44 @@ function TaskCard({ task, session, done, t, tx, dispatch }: CardProps) {
           <Icon name="play" size={16} aria-hidden="true" />
           {running ? t("tasks.runningNow") : t("tasks.run")}
         </Button>
-        <Button size="sm" variant="secondary" onClick={() => dispatch({ type: "task/reset", task: task.id })}>
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={() => {
+            setBefore(null);
+            dispatch({ type: "task/reset", task: task.id });
+          }}
+        >
           {t("tasks.resetCode")}
         </Button>
-        <Button size="sm" variant="ghost" onClick={() => dispatch({ type: "task/solution", task: task.id })}>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => {
+            if (code !== task.solution) setBefore(code);
+            dispatch({ type: "task/solution", task: task.id });
+          }}
+        >
           {t("tasks.solution")}
         </Button>
       </div>
+      {before !== null ? (
+        <p role="status" className="mt-2 flex flex-wrap items-center gap-x-2 text-sm text-muted">
+          {t("tasks.solutionLoaded")}
+          <Button
+            size="sm"
+            variant="ghost"
+            className="-ms-1"
+            onClick={() => {
+              dispatch({ type: "task/edit", task: task.id, code: before });
+              setBefore(null);
+            }}
+          >
+            <Icon name="undo" size={16} />
+            {t("tasks.undo")}
+          </Button>
+        </p>
+      ) : null}
 
       <div id={`${id}-result`} aria-live="polite" className="mt-3">
         {result?.status === "error" ? (
