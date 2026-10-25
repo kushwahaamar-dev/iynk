@@ -63,7 +63,7 @@ function model(st, dt){
   else if (c.sat) status = 'Vset > Vin: 100 % duty';
   else if (LM.TARGET[st.mode] != null && !s.set) status = 'Turning the trimmer';
   else if (held && motor) status = 'Motor held: the rail holds';
-  else status = 'Regulating ' + vout.toFixed(2) + ' V';
+  else status = 'Regulating';                  // the voltage is in the stats; the status stays one translatable string
   const stats = st.power ? [
     ['IN', vin.toFixed(2) + ' V · ' + batt.i_mA + ' mA'], ['OUT', vout.toFixed(2) + ' V · ' + u1.iout_mA + ' mA'],
     ['Duty', Math.round(c.d * 100) + ' %'], ['Efficiency', Math.round(c.eff * 100) + ' %'], ['LM2596', u1.tj + ' °C'], ['Trimmer', s.turns.toFixed(1) + ' turns'],
