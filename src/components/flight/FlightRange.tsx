@@ -681,8 +681,8 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
         <div className={cx("pointer-events-none absolute inset-x-2 flex flex-col items-start gap-2", coarse ? "top-2" : "bottom-2 justify-end")}>
           {coarse ? strip : null}
           {modeHint || snap.pendingDesign ? (
-            <div className="max-w-[min(32rem,100%)] rounded-ink-sm bg-paper/85 px-2.5 py-1 text-xs text-ink shadow-ink-sm max-sm:line-clamp-3">
-              {modeHint ? <p>{modeHint}</p> : null}
+            <div className="max-w-[min(32rem,100%)] rounded-ink-sm bg-paper/85 px-2.5 py-1 text-xs text-ink shadow-ink-sm">
+              {modeHint ? <p className="max-sm:line-clamp-3">{modeHint}</p> : null}
               {snap.pendingDesign ? <p className="font-semibold">{dict.pendingDesign}</p> : null}
             </div>
           ) : null}
@@ -731,7 +731,7 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
           {message}
         </p>
         <div
-          className="flex max-w-full items-center gap-x-4 overflow-x-auto [scrollbar-width:none]"
+          className="flex max-w-full flex-wrap items-center gap-x-4 gap-y-1"
           role="group"
           aria-labelledby="flight-ghosts-title"
           data-testid="ghosts"
@@ -739,7 +739,7 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
           <span id="flight-ghosts-title" className="ink-kicker shrink-0">
             {dict.ghosts.title}
           </span>
-          <div data-testid="ghost-best" data-on={ghostOn.best && bestGhost !== null} className="shrink-0 whitespace-nowrap">
+          <div data-testid="ghost-best" data-on={ghostOn.best && bestGhost !== null} className="min-w-0 max-sm:basis-full sm:whitespace-nowrap">
             <Toggle
               checked={ghostOn.best && bestGhost !== null}
               disabled={!bestGhost}
@@ -749,7 +749,7 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
             />
           </div>
           {pace && (
-            <div data-testid="ghost-pace" data-on={ghostOn.pace} className="shrink-0 whitespace-nowrap">
+            <div data-testid="ghost-pace" data-on={ghostOn.pace} className="min-w-0 max-sm:basis-full sm:whitespace-nowrap">
               <Toggle
                 checked={ghostOn.pace}
                 onChange={(on) => setGhostOn((g) => ({ ...g, pace: on }))}

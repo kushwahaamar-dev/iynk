@@ -17,10 +17,10 @@ const CODE_LANG: Record<DroneContent["firmware"]["emulator"]["kind"], CodeLang> 
 };
 
 const LINE_CLASS: Record<CliLine["kind"], string> = {
-  in: "text-[#f2c230]",
-  out: "text-[#d8f5e2]",
-  ok: "text-[#8af0ae]",
-  err: "text-[#ff8f7a]",
+  in: "text-console-warn",
+  out: "text-console-ink",
+  ok: "text-console-accent",
+  err: "text-console-err",
 };
 
 /**
@@ -112,7 +112,7 @@ export function CliConsole({ content, cli, t, ct, dispatch }: Props) {
           aria-label={t("cli.output")}
           aria-live="polite"
           tabIndex={0}
-          className="h-72 overflow-y-auto bg-[#1d2a26] p-3 font-ui text-[0.8rem] leading-relaxed"
+          className="h-72 overflow-y-auto bg-console p-3 font-ui text-sm leading-relaxed"
           data-testid="cli-output"
         >
           {cli.lines.map((line, i) => (
@@ -122,7 +122,7 @@ export function CliConsole({ content, cli, t, ct, dispatch }: Props) {
           ))}
         </div>
         <form
-          className="flex items-center gap-2 border-t-2 border-line bg-[#14201c] p-2"
+          className="flex items-center gap-2 border-t-2 border-line bg-console-well p-2"
           onSubmit={(e) => {
             e.preventDefault();
             run(draft);
@@ -131,7 +131,7 @@ export function CliConsole({ content, cli, t, ct, dispatch }: Props) {
           <label htmlFor={`${base}-cmd`} className="sr-only">
             {t("cli.input")}
           </label>
-          <span aria-hidden="true" className="font-ui text-sm text-[#f2c230]">
+          <span aria-hidden="true" className="font-ui text-sm text-console-warn">
             {firmware.emulator.prompt.trim() || ">"}
           </span>
           <input
@@ -147,7 +147,7 @@ export function CliConsole({ content, cli, t, ct, dispatch }: Props) {
             autoCapitalize="off"
             spellCheck={false}
             aria-describedby={`${base}-hint`}
-            className="min-h-11 min-w-0 flex-1 bg-transparent font-ui text-sm text-[#d8f5e2] outline-none placeholder:text-[#8aa59a]"
+            className="min-h-11 min-w-0 flex-1 bg-transparent font-ui text-sm text-console-ink outline-none placeholder:text-console-muted"
             data-testid="cli-input"
           />
           <Button type="submit" size="sm" variant="primary">

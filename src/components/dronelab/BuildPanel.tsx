@@ -3,6 +3,7 @@
 import { useId } from "react";
 import type { DroneContent, FigureState } from "@/content/schema";
 import { Button } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
 import { Callout } from "@/components/ui/Callout";
 import { Chip, type ChipTone } from "@/components/ui/Chip";
 import { stepStatus, type StepStatus } from "@/lib/dronelab/bench";
@@ -74,7 +75,7 @@ export function BuildPanel({ content, figure, ready, sel, t, ct, dispatch }: Pro
         </Button>
       </div>
 
-      <ol className="space-y-2" aria-label={t("build.title")}>
+      <ol className="divide-y divide-rule" aria-label={t("build.title")}>
         {content.build.map((step, i) => {
           const status = stepStatus(step, figure);
           const part = partOf(step.part);
@@ -82,24 +83,24 @@ export function BuildPanel({ content, figure, ready, sel, t, ct, dispatch }: Pro
           return (
             <li
               key={step.id}
-              className="rounded-ink border-2 border-line bg-surface px-3 py-2"
+              className="py-2"
               data-step={step.id}
               data-status={status}
             >
               <div className="flex flex-wrap items-center gap-2">
-                <span className="font-ui text-xs font-bold text-muted">{i + 1}.</span>
-                <span className="font-bold">{ct(step.title)}</span>
+                <span className="tabular font-ui text-xs font-semibold text-muted">{i + 1}.</span>
+                <span className="font-semibold">{ct(step.title)}</span>
                 <Chip tone={STATUS_TONE[status]}>{statusText[status]}</Chip>
                 <span className="ms-auto flex gap-1.5">
                   {fitted ? (
-                    <Button
+                    <IconButton
+                      icon="close"
                       size="sm"
-                      variant="ghost"
+                      label={t("build.remove", { short: part?.short ?? step.part })}
+                      tooltipSide="top"
                       disabled={!ready}
                       onClick={() => dispatch({ type: "bench/remove", id: step.part })}
-                    >
-                      {t("build.remove", { short: part?.short ?? step.part })}
-                    </Button>
+                    />
                   ) : (
                     <Button size="sm" disabled={!ready} onClick={() => dispatch({ type: "bench/add", id: step.part, orient: 0 })}>
                       {t("build.fit", { short: part?.short ?? step.part })}

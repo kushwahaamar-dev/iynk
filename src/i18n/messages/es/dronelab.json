@@ -10,7 +10,6 @@
   "index": {
     "title": "Laboratorio de drones",
     "lede": "Drones entintados a mano que diseñas, montas y luego vuelas.",
-    "how": "Diséñalo, cabléalo, móntalo, pruébalo con el smoke stopper y luego vuélalo en el simulador.",
     "fig": "Fig. {n}",
     "progress": "Progreso",
     "progressValue": "{done}/{total}",

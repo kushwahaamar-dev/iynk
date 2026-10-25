@@ -10,7 +10,6 @@
   "index": {
     "title": "Drone Lab",
     "lede": "Hand-inked drones you design, build and then fly.",
-    "how": "Design it, wire it, build it, smoke-test it, then fly it in the simulator.",
     "fig": "Fig. {n}",
     "progress": "Progress",
     "progressValue": "{done}/{total}",

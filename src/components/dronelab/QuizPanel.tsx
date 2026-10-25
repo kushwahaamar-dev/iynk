@@ -57,9 +57,9 @@ function QuizBlock({ quizId, content, state, t, ct, dispatch }: Props & { quizId
           const solved = chosen.includes(question.answer);
           const lastWrong = !solved && chosen.length > 0;
           return (
-            <li key={question.id} className="rounded-ink border-2 border-line bg-surface p-3">
+            <li key={question.id} className="border-t border-rule pt-4">
               <fieldset>
-                <legend className="font-bold">{t("quiz.question", { n: qi + 1, q: ct(question.q) })}</legend>
+                <legend className="font-semibold">{t("quiz.question", { n: qi + 1, q: ct(question.q) })}</legend>
                 <div className="mt-2 flex flex-col gap-2">
                   {question.options.map((option, oi) => {
                     const picked = chosen.includes(oi);

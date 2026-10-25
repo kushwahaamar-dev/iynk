@@ -29,7 +29,6 @@ export type CraftCard = {
   id: DroneId;
   fig: number;
   palette: (typeof DRONES)[DroneId]["palette"];
-  tags: string[];
   firmware: (typeof DRONES)[DroneId]["firmware"];
   motors: number;
   craft: {
@@ -59,7 +58,7 @@ export async function loadCards(lang: Locale): Promise<CraftCard[]> {
     ids.map(async (id): Promise<CraftCard> => {
       const meta = DRONES[id];
       const loaded = await loadCraft(lang, id);
-      const base = { id, fig: meta.fig, palette: meta.palette, tags: meta.tags, firmware: meta.firmware, motors: meta.motors };
+      const base = { id, fig: meta.fig, palette: meta.palette, firmware: meta.firmware, motors: meta.motors };
       if (!loaded) return { ...base, craft: null };
       const { content, text } = loaded;
       const r = calc(designInput(content.design, content.design.default));

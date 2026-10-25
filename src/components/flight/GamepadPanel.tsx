@@ -63,21 +63,21 @@ export function GamepadPanel({ t, mapping, onChange }: { t: T; mapping: PadMappi
   const axisOptions = Array.from({ length: Math.max(4, pad?.axes.length ?? 4) }, (_, i) => i);
 
   return (
-    <section aria-labelledby="flight-gp-title" className="rounded-xl border-2 border-[var(--ink,#231e16)] p-3 text-sm">
-      <h3 id="flight-gp-title" className="mb-2 font-bold">
+    <section aria-labelledby="flight-gp-title" className="text-sm">
+      <h3 id="flight-gp-title" className="mb-2 font-head text-lg">
         {t.title}
       </h3>
       <p aria-live="polite" className="mb-2">
         {pad ? fill(t.found, { name: pad.name }) : t.none}
       </p>
       {learn && (
-        <p role="status" className="mb-2 font-bold">
+        <p role="status" className="mb-2 font-semibold">
           {learn.kind === "axis" ? fill(t.listening, { channel: t.channels[learn.channel] }) : t.pressButton}
         </p>
       )}
-      <table className="w-full border-collapse text-left">
+      <table className="w-full border-collapse text-start">
         <thead>
-          <tr>
+          <tr className="border-b-[1.5px] border-rule text-xs text-muted">
             <th scope="col">{t.channel}</th>
             <th scope="col">{t.axis}</th>
             <th scope="col">{t.invert}</th>
@@ -91,8 +91,8 @@ export function GamepadPanel({ t, mapping, onChange }: { t: T; mapping: PadMappi
           {CHANNELS.map((c) => {
             const v = sticks ? (c === "throttle" ? sticks.throttle : (sticks[c] + 1) / 2) : 0.5;
             return (
-              <tr key={c}>
-                <th scope="row" className="pr-2">
+              <tr key={c} className="border-b border-rule">
+                <th scope="row" className="pe-2 text-start font-semibold">
                   {t.channels[c]}
                 </th>
                 <td>
@@ -100,7 +100,7 @@ export function GamepadPanel({ t, mapping, onChange }: { t: T; mapping: PadMappi
                     aria-label={`${t.channels[c]}: ${t.axis}`}
                     value={mapping.axes[c].axis}
                     onChange={(e) => onChange({ ...mapping, axes: { ...mapping.axes, [c]: { ...mapping.axes[c], axis: Number(e.target.value) } } })}
-                    className="rounded border border-current bg-transparent px-1"
+                    className="ink-field !min-h-9 !w-auto py-0 text-sm"
                   >
                     {axisOptions.map((i) => (
                       <option key={i} value={i}>
@@ -112,6 +112,7 @@ export function GamepadPanel({ t, mapping, onChange }: { t: T; mapping: PadMappi
                 <td>
                   <input
                     type="checkbox"
+                    className="size-5 accent-tomato"
                     aria-label={`${t.channels[c]}: ${t.invert}`}
                     checked={mapping.axes[c].invert}
                     onChange={(e) => onChange({ ...mapping, axes: { ...mapping.axes, [c]: { ...mapping.axes[c], invert: e.target.checked } } })}
@@ -136,7 +137,7 @@ export function GamepadPanel({ t, mapping, onChange }: { t: T; mapping: PadMappi
             {t[`${w}Button`]}: {fill(t.buttonN, { n: mapping[w] })}
           </Button>
         ))}
-        <label className="flex items-center gap-2">
+        <label className="flex min-h-11 items-center gap-2">
           {t.deadband}
           <input
             type="range"
@@ -145,8 +146,9 @@ export function GamepadPanel({ t, mapping, onChange }: { t: T; mapping: PadMappi
             step={0.01}
             value={mapping.deadband}
             onChange={(e) => onChange({ ...mapping, deadband: Number(e.target.value) })}
+            className="w-28 accent-tomato"
           />
-          <output>{mapping.deadband.toFixed(2)}</output>
+          <output className="tabular font-ui">{mapping.deadband.toFixed(2)}</output>
         </label>
         <Button size="sm" variant="ghost" onClick={() => onChange(DEFAULT_PAD)}>
           {t.resetMap}

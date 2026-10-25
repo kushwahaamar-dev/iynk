@@ -10,7 +10,6 @@
   "index": {
     "title": "Labo des drones",
     "lede": "Des drones dessinés à l'encre, que vous concevez, montez puis pilotez.",
-    "how": "Concevez-le, câblez-le, montez-le, testez-le au smoke stopper, puis pilotez-le dans le simulateur.",
     "fig": "Fig. {n}",
     "progress": "Progression",
     "progressValue": "{done}/{total}",
