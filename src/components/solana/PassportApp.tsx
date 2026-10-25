@@ -3,7 +3,7 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
-import { Button, Callout, Card, Icon } from "@/components/ui";
+import { Button, ButtonLink, Callout, Card, Icon } from "@/components/ui";
 import { useLocale } from "@/i18n/client";
 import { reloadFeatures, useFeatures } from "@/lib/features";
 import { PROGRAM_ID } from "@/lib/solana/config";
@@ -94,12 +94,7 @@ function Passport() {
         </Button>
       </Callout>
     );
-  if (!features.solana || !PROGRAM_ID)
-    return (
-      <Callout tone="note" title={t("notSetUp.title")}>
-        {t("notSetUp.body")}
-      </Callout>
-    );
+  if (!features.solana || !PROGRAM_ID) return <NotSetUp />;
   return (
     <div className="grid gap-12">
       <section aria-labelledby="passport-wallet" className="grid gap-4">
@@ -120,5 +115,21 @@ export function PassportApp() {
     <SolanaProvider>
       <Passport />
     </SolanaProvider>
+  );
+}
+
+/** The page without Solana: say so once and give the way back, so it doesn't end in empty paper. */
+function NotSetUp() {
+  const t = useSolanaT();
+  const lang = useLocale();
+  return (
+    <div className="flex max-w-[68ch] flex-col items-start gap-5">
+      <Callout tone="note" title={t("notSetUp.title")}>
+        {t("notSetUp.body")}
+      </Callout>
+      <ButtonLink href={`/${lang}`} variant="secondary">
+        {t("notSetUp.back")}
+      </ButtonLink>
+    </div>
   );
 }

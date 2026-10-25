@@ -9,7 +9,8 @@
   "sol": "{amount} SOL",
   "notSetUp": {
     "title": "Proof of Build n’est pas configuré sur ce déploiement",
-    "body": "Cette copie de SimLab n’a ni programme Solana ni clé d’émission : elle ne peut donc pas écrire de certificats. Tout le reste du labo fonctionne."
+    "body": "Cette copie de SimLab n’a ni programme Solana ni clé d’émission : elle ne peut donc pas écrire de certificats. Tout le reste du labo fonctionne.",
+    "back": "Retour aux labos"
   },
   "statusError": "Impossible de joindre l’état de ce déploiement.",
   "wallet": {

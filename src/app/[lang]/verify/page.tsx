@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function VerifyPage({ params }: Props) {
   return (
-    <Suspense fallback={<div className="mx-auto min-h-[70vh] max-w-5xl px-4 sm:px-6" aria-busy="true" />}>
+    <Suspense fallback={<div className="frame min-h-[70vh]" aria-busy="true" />}>
       <Verify params={params} />
     </Suspense>
   );
@@ -31,11 +31,11 @@ async function Verify({ params }: Props) {
   const t = solanaTranslator(lang, messages);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
+    <div className="frame pt-8 sm:pt-12">
       <header className="mb-10">
         <p className="ink-kicker">{t("verify.kicker")}</p>
         <h1 className="mt-3">{t("verify.title")}</h1>
-        <p className="mt-5 max-w-2xl text-lg leading-relaxed">{t("verify.lede")}</p>
+        <p className="mt-5 max-w-[68ch] text-lg leading-relaxed">{t("verify.lede")}</p>
       </header>
       <SolanaTextProvider locale={lang} messages={messages}>
         {/* ?learner= and ?credential= are read on the client, so the page stays static. */}

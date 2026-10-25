@@ -3,7 +3,8 @@
 import { PublicKey } from "@solana/web3.js";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useId, useState, type FormEvent, type ReactNode } from "react";
-import { Button, Callout, Card, Icon } from "@/components/ui";
+import { Button, ButtonLink, Callout, Card, Icon } from "@/components/ui";
+import { useLocale } from "@/i18n/client";
 import { reloadFeatures, useFeatures } from "@/lib/features";
 import { PROGRAM_ID, explorerUrl, isAddress, shortAddress } from "@/lib/solana/config";
 import { SolanaProvider } from "@/lib/solana/provider";
@@ -75,12 +76,7 @@ function Verify() {
         </Button>
       </Callout>
     );
-  if (!features.solana || !PROGRAM_ID)
-    return (
-      <Callout tone="note" title={t("notSetUp.title")}>
-        {t("notSetUp.body")}
-      </Callout>
-    );
+  if (!features.solana || !PROGRAM_ID) return <NotSetUp />;
 
   function submit(event: FormEvent) {
     event.preventDefault();
@@ -148,5 +144,21 @@ export function VerifyApp() {
     <SolanaProvider>
       <Verify />
     </SolanaProvider>
+  );
+}
+
+/** The page without Solana: say so once and give the way back, so it doesn't end in empty paper. */
+function NotSetUp() {
+  const t = useSolanaT();
+  const lang = useLocale();
+  return (
+    <div className="flex max-w-[68ch] flex-col items-start gap-5">
+      <Callout tone="note" title={t("notSetUp.title")}>
+        {t("notSetUp.body")}
+      </Callout>
+      <ButtonLink href={`/${lang}`} variant="secondary">
+        {t("notSetUp.back")}
+      </ButtonLink>
+    </div>
   );
 }

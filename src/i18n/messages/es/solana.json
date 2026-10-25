@@ -9,7 +9,8 @@
   "sol": "{amount} SOL",
   "notSetUp": {
     "title": "Proof of Build no está configurado en este despliegue",
-    "body": "Esta copia de SimLab no tiene programa de Solana ni clave emisora, así que no puede escribir credenciales. Todo lo demás del laboratorio funciona."
+    "body": "Esta copia de SimLab no tiene programa de Solana ni clave emisora, así que no puede escribir credenciales. Todo lo demás del laboratorio funciona.",
+    "back": "Volver a los laboratorios"
   },
   "statusError": "No se pudo consultar el estado de este despliegue.",
   "wallet": {

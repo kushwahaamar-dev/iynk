@@ -9,7 +9,8 @@
   "sol": "{amount} SOL",
   "notSetUp": {
     "title": "此部署未启用 Proof of Build",
-    "body": "这份 SimLab 没有 Solana 程序和签发密钥，因此无法写入凭证。实验室的其他功能都能正常使用。"
+    "body": "这份 SimLab 没有 Solana 程序和签发密钥，因此无法写入凭证。实验室的其他功能都能正常使用。",
+    "back": "返回实验室"
   },
   "statusError": "无法获取此部署的状态。",
   "wallet": {

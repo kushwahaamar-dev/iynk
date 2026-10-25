@@ -9,7 +9,8 @@
   "sol": "{amount} SOL",
   "notSetUp": {
     "title": "Proof of Build ist auf dieser Installation nicht eingerichtet",
-    "body": "Diese SimLab-Kopie hat kein Solana-Programm und keinen Aussteller-Schlüssel und kann daher keine Nachweise schreiben. Alles andere im Labor funktioniert."
+    "body": "Diese SimLab-Kopie hat kein Solana-Programm und keinen Aussteller-Schlüssel und kann daher keine Nachweise schreiben. Alles andere im Labor funktioniert.",
+    "back": "Zurück zu den Laboren"
   },
   "statusError": "Der Status dieser Installation war nicht erreichbar.",
   "wallet": {
