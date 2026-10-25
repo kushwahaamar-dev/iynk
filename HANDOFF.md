@@ -85,7 +85,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 - **Updated:** 2026-10-24 22:40 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session). Amar is asleep
-  since 22:20 and gave full autonomy for every remaining build phase except Solana and hardware (CONTEXT.md §5).
+  since 22:20 and gave full autonomy for every remaining build phase except Solana and hardware (CONTEXT.md §5) The Mac is kept awake by `caffeinate -dimsu -t 54000` (pid 28721, from 23:08, until about 14:08).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Do not build in
   `/Users/amar/Codes/sim`.
 - **Phase:** 2 and 3 at once. Phase 1 done, gate 1 green (19:21). Wave A done (21:27). Since 22:30 wave B

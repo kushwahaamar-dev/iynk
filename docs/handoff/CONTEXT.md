@@ -183,6 +183,9 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   for a go (wave B and later waves included), tests everything, and skips the hardware and Solana rows. Still not
   covered, so still waiting for Amar: Vercel env upload, Vultr, spending money, moving devnet SOL, Devpost
   submission, force-push.
+- **10-24 23:08, Amar.** "make sure it never sleeps like caffinate and im going to sleep i want this to go an till
+  fully built our like u have full control full autnoy demon time". The driver started `caffeinate -dimsu -t 54000`
+  (pid 28721, on AC power, until about 14:08 on 10-25) and keeps building to the end without stopping.
 
 ## 6. Lessons learned (apply them)
 
@@ -200,4 +203,5 @@ Short entries: who, when, what was asked or decided, in the user's words where i
 - A grid with no column template sizes its one phone column to the widest item's min-content (a long `<select>`
   option is enough). Start phone grids with `grid-cols-1`. `cx` doesn't merge Tailwind classes, so overriding a
   component's base class (Button's `whitespace-nowrap`) needs `!`.
+- Stamp HANDOFF and request times from `date`, never from a guess: the driver once wrote 23:05 for a 22:30 launch.
 - Under Playwright, `src/` loads as CommonJS: a dynamic `import()` of a content module gives `{ default: module }`.
