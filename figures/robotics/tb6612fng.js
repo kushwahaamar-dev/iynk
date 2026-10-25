@@ -52,7 +52,7 @@ function model(st){
   const name = ch => !ch.dir ? (ch.brake ? 'brake' : 'coast') : ch.dir > 0 ? 'forward' : 'reverse';
   let status = 'Unpowered';
   if (st.power && ev.status === 'fault') status = 'Fault: unplug and repair';
-  else if (st.power && !run) status = ev.status === 'brownout' ? 'Brown-out loop' : 'Powered, motors idle';
+  else if (st.power && !run) status = ev.status === 'brownout' ? 'Brown-out loop' : ev.status === 'no-power' ? 'No power: the supply is off' : 'Powered, motors idle';
   else if (run && !levels.STBY) status = 'Standby: outputs off';
   else if (run){ const na = name(a), nb = name(b);
     status = na === nb ? { forward: 'Both forward', reverse: 'Both reverse', brake: 'Short brake', coast: 'Coast' }[na] : 'A ' + na + ', B ' + nb; }

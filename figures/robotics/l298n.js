@@ -78,6 +78,7 @@ function model(st, dt){
   let status = 'Unpowered';
   if (st.power && ev.status === 'fault') status = 'Fault: unplug and repair';
   else if (st.power && ev.status === 'brownout') status = 'Logic supply too low';
+  else if (st.power && ev.status === 'no-power') status = 'No power: the supply is off';
   else if (st.power && !run) status = B.isSet('JP5') ? 'Powered, bridges idle' : 'No 5 V: logic off';
   else if (run && s.trip) status = 'Too hot: outputs cut';
   else if (run && noGround) status = 'No common ground: twitching';

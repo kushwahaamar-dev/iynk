@@ -44,3 +44,9 @@ when it has more than four of a type, and the status line for a board whose powe
 | Flip a switch |
 | Press a button |
 | Powered, but nothing loads at power-up: {name} is missing |
+
+Added ~01:45: the L298N and TB6612FNG benches' status line while a short has tripped the supply.
+
+| English |
+|---|
+| No power: the supply is off |
