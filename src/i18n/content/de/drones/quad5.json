@@ -160,6 +160,11 @@
       "title": "Kalibrierung des Beschleunigungssensors",
       "pass": "Auf einer ebenen Fläche waagerecht kalibriert: Angle-Modus, Höhe halten und der OSD-Horizont wissen jetzt, wo waagerecht ist, und die Arming-Sperre NO_ACC_CAL von Betaflight ist weg.",
       "fail": "Montier zuerst den Flugcontroller und stell den Quad auf eine ebene Fläche. Wenn der Pfeil nach hinten zeigt, hilft Kalibrieren nicht: Dreh die Platine um oder setz align_board_yaw = 180."
+    },
+    "failsafe": {
+      "title": "Failsafe-Test (ohne Propeller, Fernsteuerung aus)",
+      "pass": "Fernsteuerung aus: Nach 1,5 s haben die Motoren gestoppt, und der Quad hat disarmt (DROP). Ein Quad, der dort fällt, wo er die Verbindung verloren hat, kostet einen Propeller; einer, der sein letztes Gas hält, fliegt über jeden hinweg, der in der Nähe steht.",
+      "fail": "Setz zuerst Empfänger und Flugcontroller ein, nimm die Propeller ab und steck den Akku ein. Teste das vor dem ersten Flug, nicht nach der ersten verlorenen Verbindung."
     }
   },
   "firmware": {

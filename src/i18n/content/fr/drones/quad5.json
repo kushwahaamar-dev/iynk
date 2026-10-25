@@ -160,6 +160,11 @@
       "title": "Calibrage de l'accéléromètre",
       "pass": "Calibré à plat sur une surface plane : le mode angle, le maintien d'altitude et l'horizon de l'OSD savent maintenant où est l'horizontale, et le blocage d'armement NO_ACC_CAL de Betaflight a disparu.",
       "fail": "Montez d'abord le contrôleur de vol et posez le quad sur une surface plane. Si la flèche pointe vers l'arrière, le calibrage n'y changera rien : tournez la carte ou faites set align_board_yaw = 180."
+    },
+    "failsafe": {
+      "title": "Test de failsafe (sans hélices, radio coupée)",
+      "pass": "Radio coupée : au bout de 1,5 s, les moteurs se sont arrêtés et le quad s'est désarmé (DROP). Un quad qui tombe là où il a perdu la liaison coûte une hélice ; un quad qui garde ses derniers gaz s'envole au-dessus de ceux qui sont à côté.",
+      "fail": "Installez d'abord le récepteur et le contrôleur de vol, retirez les hélices et branchez la batterie. Testez-le avant le premier vol, pas après la première liaison perdue."
     }
   },
   "firmware": {

@@ -77,10 +77,10 @@ test.describe("quad5 workshop", () => {
     await expect(main(page).getByRole("button", { name: fill(dronelab.build.fit, { short: "PROPS" }), exact: true })).toBeVisible();
 
     await tab(page, dronelab.workspace.tabs.tests).click();
-    // quad5's three: smoke stopper, motor direction (props off), accelerometer calibration.
+    // quad5's four: smoke stopper, motor direction (props off), accelerometer calibration, and its own failsafe test.
     const rows = main(page).locator("[data-test]");
-    await expect(rows).toHaveCount(3);
-    for (let i = 0; i < 3; i++) {
+    await expect(rows).toHaveCount(4);
+    for (let i = 0; i < 4; i++) {
       const row = rows.nth(i);
       await row.getByRole("button").click();
       await expect(row).toHaveAttribute("data-status", "passed", { timeout: 20_000 });

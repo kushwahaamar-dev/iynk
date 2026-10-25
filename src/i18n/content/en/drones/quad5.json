@@ -160,6 +160,11 @@
       "title": "Accelerometer calibration",
       "pass": "Level calibrated on a flat surface: angle mode, altitude hold and the OSD horizon now know where level is, and Betaflight's NO_ACC_CAL arming block is gone.",
       "fail": "Mount the flight controller and set the quad on a flat surface first. If the arrow points backwards, calibrating will not fix it: turn the board round or set align_board_yaw = 180."
+    },
+    "failsafe": {
+      "title": "Failsafe test (props off, radio off)",
+      "pass": "Radio off: after 1.5 s the motors stopped and the quad disarmed (DROP). A quad that drops where it lost the link costs a prop; one that holds its last throttle flies off over whoever is nearby.",
+      "fail": "Fit the receiver and the flight controller, take the props off and plug the battery in first. Test this before the first flight, not after the first lost link."
     }
   },
   "firmware": {

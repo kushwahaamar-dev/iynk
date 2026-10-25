@@ -2528,6 +2528,18 @@ window.SL = window.SL || {};
     ctx.flows.push({ kind: 'signal', pts: [[-14, -15.2, 18.3], [-21.6, -15.2, 18.3], [-21.6, -15.2, 11.4], [-15, -15.2, 11.4]].map(p => SL.drone.W(...p)) });
     return out;
   };
+  // Betaflight's failsafe on the bench (docs/facts/quad5.md §5.8: failsafe_delay 15 = 1.5 s, then DROP); a pass
+  // reports state.extra.failsafe until a part is re-seated or the quad is stripped
+  const failsafeTest = api => {
+    if (!api.isOn('RX') || !api.isOn('FC')) return api.say('Fit the receiver and the flight controller first', 2600, 'buzz');
+    if (api.isOn('PROPS')) return api.say('PROPS OFF! Never spin motors on the bench with props on', 2600, 'buzz');
+    if (!api.st || !api.st.plugged || api.st.fault) return api.say('Plug in the battery for the failsafe test (props off)', 2600, 'buzz');
+    api.log('$ props off, arm on the bench, switch the radio off');
+    api.log('RXLOSS: failsafe stage 1 for failsafe_delay = 15 (1.5 s)');
+    api.log('failsafe stage 2: DROP, motors stopped, disarmed');
+    api.say('Radio off: after 1.5 s the motors stopped and the quad disarmed (DROP). Failsafe works', 3600, 'ding');
+    api.pass('failsafe');
+  };
   // the camera's 3-wire lead (video, 5 V, ground) to the FC's camera pads; the video then goes on to the VTX
   const camLead = ctx => {
     const out = [];
@@ -2638,6 +2650,9 @@ window.SL = window.SL || {};
       calibrate: { needs: ['FC'] },
       plug: { needs: ['BATT', 'XT60'] },
     },
+    buttons: [
+      { id: 'failsafe', label: 'Failsafe test (radio off)', onClick: failsafeTest },
+    ],
     inside: [{ at: [-21.6, -15.2, 14.5], text: 'ESC HARNESS 8-PIN', part: 'FC' }],
     wiring: {
       nodes: {

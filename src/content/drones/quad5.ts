@@ -219,6 +219,7 @@ const quad5: DroneContent = {
     { id: 'smoke', kind: 'smoke-stopper', button: 'smoke', done: { smokeOk: true }, title: 'tests.smoke.title', pass: 'tests.smoke.pass', fail: 'tests.smoke.fail' },
     { id: 'motors', kind: 'motor-direction', button: 'motors', done: { motorOk: true }, title: 'tests.motors.title', pass: 'tests.motors.pass', fail: 'tests.motors.fail' },
     { id: 'calibrate', kind: 'accel-calibration', button: 'calibrate', done: { accOk: true }, title: 'tests.calibrate.title', pass: 'tests.calibrate.pass', fail: 'tests.calibrate.fail' },
+    { id: 'failsafe', kind: 'failsafe', button: 'failsafe', done: { 'extra.failsafe': true }, title: 'tests.failsafe.title', pass: 'tests.failsafe.pass', fail: 'tests.failsafe.fail' },
   ],
 
   firmware: {

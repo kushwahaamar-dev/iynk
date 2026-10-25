@@ -7,6 +7,7 @@ import { calc, type CalcResult } from '@/lib/drone/calc';
 import { designInput } from '@/lib/drone/design';
 import { flightOf } from '@/lib/flight/registry';
 import type { DesignPick } from '@/content/schema';
+import { openFigure } from './_checks';
 import quad5 from './quad5';
 
 type Golden = {
@@ -129,13 +130,38 @@ describe('quad5 frame and figure', () => {
     for (const w of quad5.wiring) expect(w.note).toBe(`wiring.${w.from}-${w.to}`);
   });
 
-  it('only runs tests the figure has buttons for', () => {
+  it('runs the engine’s three safety tests and its own failsafe test, each on a button the figure has', () => {
     const done = { smoke: 'smokeOk', motors: 'motorOk', calibrate: 'accOk' } as const;
-    expect(quad5.tests.map((t) => t.button)).toEqual(['smoke', 'motors', 'calibrate']);
+    const engine = quad5.tests.filter((t) => t.button in done);
+    expect(engine.map((t) => t.button)).toEqual(['smoke', 'motors', 'calibrate']);
     const figureTests = figureSource.slice(figureSource.indexOf('tests: {'), figureSource.indexOf('wiring: {'));
-    for (const t of quad5.tests) expect(figureTests, t.button).toMatch(new RegExp(`\\b${t.button}: \\{ needs`));
-    for (const t of quad5.tests) expect(t.done).toEqual({ [done[t.button as keyof typeof done]]: true });
+    for (const t of engine) expect(figureTests, t.button).toMatch(new RegExp(`\\b${t.button}: \\{ needs`));
+    for (const t of engine) expect(t.done).toEqual({ [done[t.button as keyof typeof done]]: true });
+    const own = quad5.tests.filter((t) => !(t.button in done));
+    expect(own.map((t) => [t.kind, t.button])).toEqual([['failsafe', 'failsafe']]);
+    const buttons = [...figureSource.matchAll(/\{ id: '(\w+)', label: '/g)].map((m) => m[1]);
+    for (const t of own) expect(buttons, t.button).toContain(t.button);
+    for (const t of own) expect(t.done).toEqual({ [`extra.${t.button}`]: true });
   });
+
+  it('passes the failsafe test only built, props off and on battery', async () => {
+    const f = await openFigure('quad5');
+    const test = quad5.tests.find((t) => t.id === 'failsafe')!;
+    await f.press('failsafe');
+    expect(f.status(test)).toBe('failed');
+    await f.run('build');
+    await f.run('plugIn');
+    await f.press('failsafe');
+    expect((f.state().extra as Record<string, unknown>).failsafe).not.toBe(true);
+    expect(f.st().msg).toMatch(/PROPS OFF/);
+    await f.run('unplug');
+    await f.remove('PROPS');
+    await f.run('plugIn');
+    await f.press('failsafe');
+    expect((f.state().extra as Record<string, unknown>).failsafe).toBe(true);
+    expect(f.status(test)).toBe('passed');
+    f.close();
+  }, 120_000);
 });
 
 describe('quad5 flight', () => {

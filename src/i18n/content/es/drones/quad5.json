@@ -160,6 +160,11 @@
       "title": "Calibración del acelerómetro",
       "pass": "Nivel calibrado sobre una superficie plana: el modo ángulo, el mantener altitud y el horizonte del OSD ya saben dónde está la horizontal, y ha desaparecido el bloqueo de armado NO_ACC_CAL de Betaflight.",
       "fail": "Primero monta la controladora y pon el quad sobre una superficie plana. Si la flecha apunta hacia atrás, calibrar no lo arregla: gira la placa o pon align_board_yaw = 180."
+    },
+    "failsafe": {
+      "title": "Prueba de failsafe (sin hélices, emisora apagada)",
+      "pass": "Emisora apagada: a los 1,5 s los motores se han parado y el quad se ha desarmado (DROP). Un quad que cae donde perdió el enlace cuesta una hélice; uno que mantiene su último acelerador se va volando por encima de quien esté cerca.",
+      "fail": "Primero coloca el receptor y la controladora, quita las hélices y conecta la batería. Pruébalo antes del primer vuelo, no después del primer enlace perdido."
     }
   },
   "firmware": {
