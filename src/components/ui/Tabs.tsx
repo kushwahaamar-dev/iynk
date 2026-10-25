@@ -133,7 +133,10 @@ export function Tabs({ label, tabs, value, defaultValue, onChange, className, pa
             >
               {tab.label}
               {tab.badge !== undefined && tab.badge !== null ? (
-                <span className="tabular ms-1.5 rounded-full bg-sunken px-1.5 font-ui text-xs font-semibold">{tab.badge}</span>
+                <>
+                  {/* a space, so the name reads "Steps 0/17"; it collapses at the label's end, the margin draws the gap */}{" "}
+                  <span className="tabular ms-1.5 rounded-full bg-sunken px-1.5 font-ui text-xs font-semibold">{tab.badge}</span>
+                </>
               ) : null}
             </button>
           );

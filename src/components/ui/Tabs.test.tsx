@@ -51,6 +51,11 @@ describe("Tabs", () => {
     expect(onChange.mock.calls.map(([id]) => id)).toEqual(["pinout", "specs", "overview", "specs", "overview"]);
   });
 
+  it("gives a tab with a badge a name with a space before the badge", () => {
+    render(<Tabs label="Bench" tabs={[{ id: "steps", label: "Steps", badge: "0/17", content: <p>Steps body</p> }]} />);
+    expect(screen.getByRole("tab", { name: "Steps 0/17" })).toBeTruthy();
+  });
+
   it("keeps what was typed in a hidden panel", () => {
     render(<Tabs label="Board info" tabs={tabs} defaultValue="specs" />);
     const input = screen.getByRole("textbox", { name: "Notes" }) as HTMLInputElement;
