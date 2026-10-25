@@ -128,9 +128,10 @@ added on the morning of the 25th.
 ### 16. Can Muse use SimLab?
 
 SimLab is an MCP server at `/api/mcp` with seven tools: `search_catalog`, `get_item`, `drone_calc`, `price_parts`,
-`plan_build_night`, `create_room` and `get_passport` (`src/lib/server/mcp/`). It answers `initialize` and
-`tools/list` locally (`docs/hacktx/DEPLOY.md`). It has not yet been tried from Muse itself, which needs the public
-HTTPS URL (`docs/hacktx/MUSE-CONNECTOR.md`, "What is unverified").
+`plan_build_night`, `create_room` and `get_passport`, the last of which says Proof of Build is not set up while Solana
+is off (`src/lib/server/mcp/tools/`). It answers `initialize` and `tools/list` locally (`docs/hacktx/DEPLOY.md`). It
+has not yet been tried from Muse itself, which needs the public HTTPS URL (`docs/hacktx/MUSE-CONNECTOR.md`, "What is
+unverified").
 
 ## SerpApi
 
