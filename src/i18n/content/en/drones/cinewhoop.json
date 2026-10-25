@@ -180,6 +180,11 @@
       "pass": "Calibrated on a level surface: angle mode, altitude hold and the OSD horizon now know where level is, and Betaflight's NO_ACC_CAL arming block is gone.",
       "fail": "Fit the flight controller and set the quad on a level surface first. If the arrow points backwards, calibrating will not fix it: turn the board round or set align_board_yaw = 180."
     },
+    "clearance": {
+      "title": "Prop clearance check (battery out)",
+      "pass": "Every prop turned by hand inside its duct: an even 1.4 mm gap to the wall all round, no rub and no chipped tips. A rub would shake the camera and show as jello in the footage.",
+      "fail": "Unplug the battery and fit the ducts and the props, then turn each prop by hand. A prop that rubs the duct, or a chipped or bent tip, gets replaced before the flight."
+    },
     "arm": {
       "title": "Pre-arm check",
       "pass": "The status command lists no arming flags: the quad would arm. This check cannot see a backwards board, so look at the flight controller's arrow yourself before the first flight.",

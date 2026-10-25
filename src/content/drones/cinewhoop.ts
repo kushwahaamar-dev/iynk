@@ -226,12 +226,13 @@ const cinewhoop: DroneContent = {
     { from: 'XT60', to: 'GOPRO', kind: 'power', label: 'BEC 3-6S in · 5 V 3 A out', note: 'wiring.XT60-GOPRO' },
   ],
 
-  // The engine's three checks plus three of the craft's own buttons. `extra.*` is the craft's report hook
+  // The engine's three checks plus the craft's four buttons. `extra.*` is the craft's report hook
   // (docs/requests/item-cinewhoop.md §2).
   tests: [
     { id: 'smoke', kind: 'smoke-stopper', button: 'smoke', done: { smokeOk: true }, title: 'tests.smoke.title', pass: 'tests.smoke.pass', fail: 'tests.smoke.fail' },
     { id: 'motors', kind: 'motor-direction', button: 'motors', done: { motorOk: true }, title: 'tests.motors.title', pass: 'tests.motors.pass', fail: 'tests.motors.fail' },
     { id: 'calibrate', kind: 'accel-calibration', button: 'calibrate', done: { accOk: true }, title: 'tests.calibrate.title', pass: 'tests.calibrate.pass', fail: 'tests.calibrate.fail' },
+    { id: 'clearance', kind: 'prop-clearance', button: 'clearance', done: { 'extra.clearanceOk': true }, title: 'tests.clearance.title', pass: 'tests.clearance.pass', fail: 'tests.clearance.fail' },
     { id: 'arm', kind: 'arming-checks', button: 'arm', done: { 'extra.armOk': true }, title: 'tests.arm.title', pass: 'tests.arm.pass', fail: 'tests.arm.fail' },
     { id: 'osd', kind: 'radio-link', button: 'osd', done: { 'extra.osdOk': true }, title: 'tests.osd.title', pass: 'tests.osd.pass', fail: 'tests.osd.fail' },
     { id: 'failsafe', kind: 'failsafe', button: 'failsafe', done: { 'extra.failsafeOk': true }, title: 'tests.failsafe.title', pass: 'tests.failsafe.pass', fail: 'tests.failsafe.fail' },

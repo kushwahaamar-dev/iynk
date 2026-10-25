@@ -108,6 +108,19 @@ describe('cinewhoop craft tests in the figure', { timeout: 30000 }, () => {
     expect(fig.status(test('failsafe'))).toBe('passed');
   });
 
+  it('checks the prop clearance only with the battery out, and again after a prop is refitted', async () => {
+    fig = await openFigure('cinewhoop');
+    await fig.run('plugIn');
+    await fig.press('clearance');
+    expect(fig.status(test('clearance'))).toBe('failed');
+    await fig.run('unplug');
+    await fig.press('clearance');
+    expect(fig.status(test('clearance'))).toBe('passed');
+    await fig.remove('PROPS');
+    await fig.add('PROPS');
+    expect(fig.status(test('clearance'))).toBe('failed');
+  });
+
   it('passes the pre-arm check on the finished build and forgets it once the quad is taken apart', async () => {
     fig = await openFigure('cinewhoop');
     await fig.run('plugIn');

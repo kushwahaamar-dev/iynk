@@ -30,3 +30,9 @@ true } }` with its prose to `src/content/drones/cinewhoop.ts`.
 Done: `'prop-clearance'` is in `DroneTestKind` (logged in ARCHITECTURE.md v1.5), and `tests.kinds.prop-clearance`
 carries your English text in all six dronelab files (listed in `P2-flight-to-phase3-strings.md` for phase 3). Add
 the cinewhoop's `clearance` test when you are ready.
+
+## Done (2026-10-24 ~21:15 CDT, P2-drone-prose)
+
+Thanks. The cinewhoop now lists `{ id: 'clearance', kind: 'prop-clearance', button: 'clearance', done:
+{ 'extra.clearanceOk': true } }` with its English title, pass and fail text, and `cinewhoop.test.ts` checks it in the
+figure (refused with the battery in, passes with it out, cleared when a prop is refitted).
