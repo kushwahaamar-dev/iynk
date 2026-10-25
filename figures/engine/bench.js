@@ -768,11 +768,22 @@ function drawSupply(){
 function drawTags(k){
   let s = '';
   if (k > .6) return s;
-  for (const [id, dx, dy] of MD.def.tags || []){
+  // parts close together would stack their pills (the Uno's crystal over its power jack): each pill moves on along
+  // its own direction past the ones already placed (sizes as tag() draws them: a numbered badge on a phone)
+  const placed = [];
+  const u = window.LBL_U ? LBL_U() : 0, fs = u ? 10 * u : 8.6 * INK_K, h = u ? 17 * u : fs * 1.8;
+  const hits = b => placed.some(o => b.x0 < o.x1 + 2 && o.x0 - 2 < b.x1 && b.y0 < o.y1 + 2 && o.y0 - 2 < b.y1);
+  for (const [id, dx, dy0] of MD.def.tags || []){
     const p = MD.byId[id]; if (!p || !isIn(id)) continue;
     const { ctx } = partCtx(p, st, { lift: (LIFT[p.group] || 0) * ease(clamp(st.exK, 0, 1)) });
     const working = (st.o.leds[id] || 0) > .5 || (st.ev.status === 'running' && MD.power.mcu && MD.power.mcu.part === id) || st.sel === id;
-    s += tag(ctx.W(0, 0, p.h), dx, dy, p.short || p.name, working);
+    const at = ctx.W(0, 0, p.h), [X, Y] = P(...at), txt = p.short || p.name, w = u ? h * 1.3 : CF_TW(CF_T(txt), fs) + fs * 1.5;
+    const pill = dy => ({ x0: X + dx * INK_K - w / 2, x1: X + dx * INK_K + w / 2, y0: Y + dy * INK_K - h / 2, y1: Y + dy * INK_K + h / 2 });
+    const step = (dy0 < 0 ? -1 : 1) * (h / INK_K + 3);
+    let dy = dy0;
+    for (let n = 0; n < 6 && hits(pill(dy)); n++) dy += step;
+    placed.push(pill(dy));
+    s += tag(at, dx, dy, txt, working);
   }
   return s;
 }
