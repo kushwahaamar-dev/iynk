@@ -1,4 +1,4 @@
-# Breadboard (Colorfigures prompt)
+# Fig. P1 — Breadboard (Colorfigures prompt)
 
 Make a colourful, hand-inked isometric figure of an empty **half-size solderless breadboard** lying on a pale green
 cutting mat with a 10 mm grid (`figures/parts/breadboard.js`, drawn by the Board Bench engine; every lesson circuit

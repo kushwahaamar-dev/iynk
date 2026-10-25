@@ -1,4 +1,4 @@
-# Jumper wire (Colorfigures prompt)
+# Fig. P4 — Jumper wire (Colorfigures prompt)
 
 Make a colourful, hand-inked isometric figure of **three male-to-male jumper wires** arcing over a white mini
 breadboard (17 columns, rows a-j, no power rails) on a pale green cutting mat (`figures/parts/wire.js`, drawn by the

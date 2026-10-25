@@ -1,4 +1,4 @@
-# Resistor (Colorfigures prompt)
+# Fig. P3 — Resistor (Colorfigures prompt)
 
 Make a colourful, hand-inked isometric figure of **four 1/4 W axial through-hole resistors** lying in a white mini
 breadboard (17 columns, rows a-j, no power rails) on a pale green cutting mat (`figures/parts/resistor.js`, drawn by

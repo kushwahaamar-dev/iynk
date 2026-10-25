@@ -1,4 +1,4 @@
-# LED (Colorfigures prompt)
+# Fig. P2 — LED (Colorfigures prompt)
 
 Make a colourful, hand-inked isometric figure of **five 5 mm through-hole LEDs**, red, yellow, green, blue and white,
 standing in a row in a white mini breadboard (17 columns, rows a-j, no power rails) on a pale green cutting mat
