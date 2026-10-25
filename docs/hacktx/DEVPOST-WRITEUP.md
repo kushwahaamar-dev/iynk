@@ -175,7 +175,7 @@ The idea for SimLab and our hardware research predate HackTX. Before 11:30 a.m. 
 
 ## Confirm before submitting
 
-- Filled 08:45: the site (https://simlab-hacktx.vercel.app) and the repo (https://github.com/kushwahaamar-dev/sim, public). Still open: [VIDEO_URL]. No .tech domain, so no [DOMAIN].
+- Filled 08:39: the site (https://simlab-hacktx.vercel.app) and the repo (https://github.com/kushwahaamar-dev/sim, public). Still open: [VIDEO_URL]. No .tech domain, so no [DOMAIN].
 - `/api/status` on the production deployment: `ai`, `image`, `voice`, `search`, `realtime` and `db` true (`solana` stays false). Soften or cut any paragraph whose flag is false, and drop the Vultr, Tiger Data and .Tech tracks if their part isn't live.
 - Meta model ids: `.env.example` has `muse-spark-1.1`, `muse-image-1.0` and `muse-voice-transcribe-1.0`; check them against `docs/hacktx/AI.md`. Fill in the Muse connector bracket (a custom connector in Muse, or an MCP client only): at 02:00 it had not been tried from Muse (`docs/hacktx/MUSE-CONNECTOR.md`). Confirm Facebook's share dialog opens from a story.
 - The partner calling `ask_peer` with a real key, voice transcription, chat translation and the story cover, each tried once on the deployed site.
@@ -183,7 +183,7 @@ The idea for SimLab and our hardware research predate HackTX. Before 11:30 a.m. 
 - Content counts at gate 3 (05:53): 12 boards, 13 benches, 13 drones, 71 board lessons (16 on the Uno R3), 144 board failures, 272 bench steps, 106 bench faults, 31 bench tasks, 78 drone bench tests, 22 courses, 80 figure pages, six languages. If anything changes after that, change the numbers here and in PITCH.md, VIDEO.md and JUDGE-QA.md.
 - "Every lesson, step, quiz and screen is written in six languages, down to the labels inside the figures": true at gate 3 for prose, the UI and all 4087 figure strings (`npx vitest run src/i18n/figure-strings.test.ts`). Names, units, code, serial output and CLI commands stay as they are on a real board.
 - [342] reference builds: `npx vitest run src/lib/drone` passed 445 of 445 at 05:53, and the fixtures hold 342 rows. 102 of 102: the lesson table at gate 3 (`docs/verify/gate3-lessons.md`).
-- Agents (filled 08:45): 253 agent transcripts on Amar's Mac start between 11:30 on 10-24 and 07:19 on 10-25 (141 in the first build, 6 in the 16:57 session, 106 in the 18:22 session), plus the teammate's phase-1 agents on her Mac; hence "more than 250".
+- Agents (filled 08:39): 253 agent transcripts on Amar's Mac start between 11:30 on 10-24 and 07:19 on 10-25 (141 in the first build, 6 in the 16:57 session, 106 in the 18:22 session), plus the teammate's phase-1 agents on her Mac; hence "more than 250".
 - Vultr (confirmed 08:39): the relay runs on a `vc2-1c-1gb` VM in Dallas, in Docker behind Caddy with a Let's Encrypt certificate, and the live site's rooms use it.
 - The organizers' answers: are pre-event research notes allowed, and how many prize tracks can one project enter.
 - Credit lines: the authors of Robotics Engineer and Drone Engineer, if you can confirm them.
