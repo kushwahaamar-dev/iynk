@@ -177,6 +177,12 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   untouched with a backup outside the repo, and made the script relaunch each label with a note to continue from its
   own work. Resume only when Amar says so.
 - **10-24 20:17, Amar.** "resume". Wave A relaunched with all 9 labels, each continuing from its own work.
+- **10-24 22:20, Amar.** "resume go demon time, i will go on to take a good sleep i want you to lock in andd complete
+  all the build pahse perfectly test and all leave aside th hardawre and solana thingy but else demon time full
+  autonomy we need to win!!!" Read as: the driver takes every remaining build phase to its gate without stopping
+  for a go (wave B and later waves included), tests everything, and skips the hardware and Solana rows. Still not
+  covered, so still waiting for Amar: Vercel env upload, Vultr, spending money, moving devnet SOL, Devpost
+  submission, force-push.
 
 ## 6. Lessons learned (apply them)
 
