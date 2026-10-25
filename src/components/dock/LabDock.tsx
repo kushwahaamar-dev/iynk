@@ -93,6 +93,12 @@ function TabBody({ tab, ...lab }: LabDockProps & { tab: DockTab }) {
  * workspace bar) as a "Lab tools" button: on a desk it opens a drawer along
  * the right edge that leaves the figure in view, on a phone a bottom sheet.
  */
+// Where the screen has room, the open drawer pushes the page over instead of covering the rail, so in a room you can
+// work the steps or the code and still see the keyboard and the chat. Narrower desks keep the overlay.
+const PUSH_PAGE = `@media (width >= 80rem) {
+  body:has(> [data-testid="lab-dock"][data-layout="desk"]:not([hidden])) > :is(main, footer) { padding-inline-end: 26rem; }
+}`;
+
 export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>) {
   const t = useCommonT();
   const { features } = useFeatures();
@@ -261,24 +267,27 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
       {trigger}
       {isClient
         ? createPortal(
-            <aside
-              ref={drawerRef}
-              id={drawerId}
-              aria-label={t("dock.label")}
-              data-testid="lab-dock"
-              data-ready="true"
-              data-layout="desk"
-              hidden={!isOpen}
-              onKeyDown={onDrawerKey}
-              className="fixed end-0 top-(--header-h) bottom-0 z-30 flex w-[min(26rem,calc(100vw-3rem))] flex-col border-s-2 border-line bg-surface shadow-[-4px_0_0_var(--shadow-c)] animate-ink-from-end"
-            >
-              <div className="flex min-h-14 shrink-0 items-center gap-2 border-b-[1.5px] border-rule ps-4 pe-2">
-                <Icon name="tools" size={18} className="text-muted" />
-                <h2 className="min-w-0 flex-1 font-head text-lg">{t("dock.label")}</h2>
-                <IconButton icon="close" size="sm" label={t("dock.close")} onClick={close} />
-              </div>
-              <div className="min-h-0 flex-1">{tabList}</div>
-            </aside>,
+            <>
+              <aside
+                ref={drawerRef}
+                id={drawerId}
+                aria-label={t("dock.label")}
+                data-testid="lab-dock"
+                data-ready="true"
+                data-layout="desk"
+                hidden={!isOpen}
+                onKeyDown={onDrawerKey}
+                className="fixed end-0 top-(--header-h) bottom-0 z-30 flex w-[min(26rem,calc(100vw-3rem))] flex-col border-s-2 border-line bg-surface shadow-[-4px_0_0_var(--shadow-c)] animate-ink-from-end"
+              >
+                <div className="flex min-h-14 shrink-0 items-center gap-2 border-b-[1.5px] border-rule ps-4 pe-2">
+                  <Icon name="tools" size={18} className="text-muted" />
+                  <h2 className="min-w-0 flex-1 font-head text-lg">{t("dock.label")}</h2>
+                  <IconButton icon="close" size="sm" label={t("dock.close")} onClick={close} />
+                </div>
+                <div className="min-h-0 flex-1">{tabList}</div>
+              </aside>
+              <style>{PUSH_PAGE}</style>
+            </>,
             document.body,
           )
         : null}
