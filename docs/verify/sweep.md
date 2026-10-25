@@ -44,6 +44,13 @@ where, what a user sees, and the cause where known. Struck through when fixed, w
     "POWER", "ON", "OFF" stay English everywhere because of it). A separate silkscreen path that never translates
     would fix it.
 
+17. de prose: `robotics/l298n.json` and `robotics/tb6612fng.json` call the bench "Prüfstand" (about 19 times); the UI,
+    the figure and the other German prose say "Werkbank". de `boards/nano.json` and `boards/uno-r4.json` say "Serial
+    hello" where the figure says "Serielles Hallo", and "Place a part" is still English in the de figure and three
+    prose quotes. Fix once the P3-prose-de agents are done with `src/i18n/content/de/`. (P3-ui-de)
+18. fr register: `ai.json` (the lab partner) says tu, the rest of the site vous. Left as the partner's own voice;
+    change it only if the whole site should say vous. (P3-ui-fr)
+
 ## Docs
 
 12. ~~`figures/prompts/uno-r3-build.md` has a stray line break ("the\n  iron solders").~~ Fixed in the commit that struck this.

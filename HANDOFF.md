@@ -83,7 +83,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-25 01:23 CDT (machine clock).
+- **Updated:** 2026-10-25 01:41 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session). Amar is asleep
   since 22:20 and gave full autonomy for every remaining build phase except Solana and hardware (CONTEXT.md §5) The Mac is kept awake by `caffeinate -dimsu -t 54000` (pid 28721, from 23:08, until about 14:08).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Do not build in
@@ -153,7 +153,8 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   - Wave B at 01:23: 9 of 10 reported; P2-engine-b is still fixing figures (it took up `docs/verify/sweep.md` 1-8).
   - Phase 3 T2 started early at 01:23, because every prose-writing agent is done: prose run `wf_788dd7a3-f68`
     (`phase3-prose.js`, 17 wave-B items, 2 agents a language, `P3-prose-<lang>-1|2`) and UI strings run
-    `wf_c44031b5-93f` (`phase3-wave.js`, `P3-ui-<lang>`, jobs 1 and 3 only). The figure-string delta (job 2) waits
+    `wf_c44031b5-93f` (`phase3-wave.js`, `P3-ui-<lang>`, jobs 1 and 3 only), **done at 01:41**: leaves still equal to
+    English per language fell from 736-1231 to 138-212, each left one a name, unit or code; all pushed. The figure-string delta (job 2) waits
     for P2-engine-b: then `node scripts/figure-strings.mjs`, commit the key list, and run it as its own small wave.
   - If this session dies: `git log` shows what each label pushed. Relaunch the unfinished wave-B labels with
     `args: { labels: [...], resume: { stoppedAt, since: "88b7db2", backup } }` after backing up the uncommitted files,
