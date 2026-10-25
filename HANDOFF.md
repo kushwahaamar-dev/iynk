@@ -83,7 +83,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 22:40 CDT (machine clock).
+- **Updated:** 2026-10-24 23:41 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session). Amar is asleep
   since 22:20 and gave full autonomy for every remaining build phase except Solana and hardware (CONTEXT.md §5) The Mac is kept awake by `caffeinate -dimsu -t 54000` (pid 28721, from 23:08, until about 14:08).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Do not build in
@@ -131,12 +131,13 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 - **Running since 22:30 (don't touch their files, never SendMessage their agents):**
   - Wave B, run `wf_7b610548-7fb` from `scripts/workflows/phase2-wave-b.js` (`10b6951`), no args: P2-engine-b,
     P2-microbit, P2-nucleo, P2-pi, P2-fpga, P2-rob-sensors, P2-rob-power, P2-drones-heavy, P2-drones-vtol, P2-fun.
-  - Prose T1, run `wf_0e06f30a-c43` from `scripts/workflows/phase3-prose.js` (`88b7db2`): P3-prose-es, -fr, -de, -zh,
-    -hi, each through the same 21 items in order: `boards/uno-r3`, `drones/quad5`, `robotics/esp32-s3-build`,
-    `robotics/uno-r3-build`, `drones/racer`, `drones/whoop`, `boards/nano`, `boards/esp32-devkitc`, `boards/pico`,
-    `boards/esp32-s3-devkitc-1`, `boards/nodemcu`, `boards/uno-r4`, `drones/cinewhoop`, `drones/longrange`,
-    `drones/wing`, `drones/gpscam`, `drones/delivery`, `robotics/led-resistor`, `robotics/transistor-switch`,
-    `robotics/tb6612fng`, `robotics/l298n`.
+  - Prose T1, run `wf_0e06f30a-c43` (`88b7db2`): **done at 23:40.** All 21 items in es, fr, de, zh, hi (105 files
+    under `src/i18n/content/<lang>/`), each pushed and passing `src/i18n/content.test.ts`. Kept in English on purpose:
+    serial output the checks match, firmware and OSD messages, mode names, third-party UI names. One English
+    inconsistency they found is fixed (`9458186`, gpscam ESC note).
+  - Phase 3 T2a, run `wf_07ad23ac-e47` from `scripts/workflows/phase3-wave.js` (`dee5aca`), since 23:41:
+    P3-figs-es, -fr, -de, -zh, -hi (figure dictionaries `src/i18n/figures/<lang>.json` for the 1866 keys in
+    `src/i18n/figure-keys.json`) and P3-prompts (16 missing prompt records), sections in `phase3.md`.
   - If this session dies: `git log` shows what each label pushed. Relaunch the unfinished wave-B labels with
     `args: { labels: [...], resume: { stoppedAt, since: "88b7db2", backup } }` after backing up the uncommitted files,
     and the prose wave with the items not yet in `src/i18n/content/<lang>/`.
@@ -164,6 +165,9 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 23:41 CDT (Amar's session): prose T1 done (105 translated files). T2a launched beside wave B:
+  figure dictionaries for 5 languages and the missing prompt records (`wf_07ad23ac-e47`).
 
 - 2026-10-24 22:30 CDT (Amar's session): wave B launched (`wf_7b610548-7fb`, 10 agents) and phase 3 prose T1 beside
   it (`wf_0e06f30a-c43`, 5 agents, judge path first), under Amar's 22:20 full-autonomy go.
