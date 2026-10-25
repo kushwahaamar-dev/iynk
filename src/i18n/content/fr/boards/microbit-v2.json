@@ -1,0 +1,822 @@
+{
+  "title": "BBC micro:bit V2",
+  "tagline": "Un ordinateur de poche avec 25 LED, deux boutons, un logo tactile, un capteur de mouvement, un haut-parleur et un microphone",
+  "overview": "La micro:bit est la carte que les écoles distribuent en premier. La face avant porte une grille de 5 x 5 LED rouges, les boutons A et B, un logo doré que l'on peut toucher et un connecteur de bord doré avec cinq grands anneaux (0, 1, 2, 3V et GND) où accrocher des pinces crocodile. Au dos se trouvent le nRF52833 qui exécute votre programme, une seconde puce nRF52 qui transforme l'USB en un lecteur nommé MICROBIT et en un port série, un régulateur 3,3 V, un capteur de mouvement, un haut-parleur et un microphone. Vous écrivez du MicroPython, vous faites glisser le fichier sur le lecteur, et la carte redémarre avec votre programme. Tout fonctionne en 3,3 V, et aucune broche n'accepte le 5 V.",
+  "mcu": {
+    "nrf52820": "Puce d'interface : elle fait tourner DAPLink, qui présente le lecteur MICROBIT, copie votre programme dans le nRF52833 et transmet le série par l'USB",
+    "lsm303agr": "Capteur de mouvement : accéléromètre à l'adresse I²C 0x19 et boussole à 0x1E, sur le bus I²C propre à la carte",
+    "ncp114": "Régulateur 3,3 V (300 mA, avec limitation de courant et coupure thermique) qui alimente toute la carte"
+  },
+  "power": {
+    "usb": {
+      "protection": "La diode Schottky BAT60J D51 fait passer le 5 V de l'USB sur VCOMBINED et empêche une batterie de renvoyer du courant dans l'ordinateur. Le régulateur NCP114 produit ensuite le 3,3 V."
+    },
+    "battery": {
+      "protection": "Deux diodes BAT60A en série (D59, puis D57 en réserve) bloquent un boîtier de piles inversé : un boîtier câblé à l'envers ne fait donc rien. La prise a un détrompeur. Utilisez 2 piles AAA ou 2 piles AA (3 V)."
+    },
+    "ring3v": {
+      "protection": "Rien. Une alimentation injectée dans l'anneau 3V ou sur les pastilles de pile au dos arrive directement sur le rail 3,3 V, en contournant le régulateur et toutes les diodes. Utilisez une alimentation régulée de 1,8 à 3,6 V avec une diode en série, jamais une LiPo ni du 5 V."
+    },
+    "rails": {
+      "vbus": "Le 5 V de l'USB venant de la prise micro-USB, avant toute protection",
+      "vcombined": "Le 5 V de l'USB moins la chute de D51 (environ 4,7 V), ou la batterie moins deux chutes de diode : la plus haute des deux alimente le régulateur",
+      "3v": "Le rail 3,3 V du NCP114 : les deux puces nRF52, les capteurs, les LED et l'anneau 3V. 300 mA au total, dont jusqu'à 190 mA peuvent sortir par le connecteur de bord."
+    },
+    "io": "Les broches fonctionnent en 3,3 V et ne tolèrent pas le 5 V. En sortie standard, une broche donne de 1 à 4 mA : mettez une résistance devant une LED et un transistor devant tout ce qui est plus gros. Le connecteur de bord dans son ensemble peut fournir 190 mA depuis l'anneau 3V."
+  },
+  "pins": {
+    "ring": {
+      "p0": "Le son sort aussi ici : la musique et le haut-parleur jouent sur la broche 0 en même temps. Toucher résistif (pull-up de 10 MΩ) : touchez donc GND de l'autre main.",
+      "3v": "Sortie 3,3 V, jusqu'à 190 mA. Vous pouvez aussi alimenter la carte ici, mais rien ne protège cet anneau : une polarité inversée ou plus de 3,6 V endommagent les puces."
+    },
+    "edge": {
+      "column": "L'une des cinq colonnes de la matrice de LED. Éteignez l'affichage avant de vous en servir pour autre chose.",
+      "button": "Reliée à un bouton de la face avant avec une pull-up de 10 kΩ. Elle lit LOW quand le bouton est enfoncé ; laissez-la au bouton.",
+      "p9": "Partage la broche d'antenne NFC du nRF52833. Elle fonctionne en GPIO, mais choisissez une autre broche si vous le pouvez.",
+      "p12": "Réservée aux périphériques d'accessibilité. Elle fonctionne en GPIO pour des essais, mais laissez-la libre dans vos projets.",
+      "i2c": "Le bus I²C externe (P19 est SCL, P20 est SDA) avec des pull-up de 4,7 kΩ sur la carte. C'est un bus distinct de celui qu'utilise le capteur de mouvement.",
+      "guard": "Bande 3V étroite à côté de l'anneau 3V : même net, mêmes limites"
+    }
+  },
+  "leds": {
+    "D60": "Rouge, au dos. Pleine luminosité sur l'USB, plus faible sur piles ; elle s'éteint progressivement quand vous maintenez RESET pour éteindre la carte.",
+    "D61": "Jaune, au dos. Allumée tant qu'un ordinateur est connecté ; elle scintille pendant la copie d'un programme.",
+    "D70": "Rouge, au dos à côté du microphone. Elle s'allume dès que le microphone est activé : vous voyez quand la carte écoute."
+  },
+  "controls": {
+    "SW2": "Le bouton A de la face avant. Lit LOW sur P5 tant qu'il est enfoncé.",
+    "SW3": "Le bouton B de la face avant. Lit LOW sur P11 tant qu'il est enfoncé.",
+    "LOGO": "Touchez le logo doré : pin_logo.is_touched() passe à True tant que votre doigt est dessus.",
+    "SW1": "RESET, au dos. Un appui bref redémarre votre programme ; maintenez-le environ 4 secondes pour éteindre la carte."
+  },
+  "displays": {
+    "LEDS": "25 LED rouges en cinq rangées et cinq colonnes. Les rangées s'allument depuis des broches propres au nRF52833 ; les colonnes P3, P4, P6, P7 et P10 absorbent le courant. MicroPython les balaie assez vite pour que vous voyiez une image stable avec dix niveaux de luminosité."
+  },
+  "parts": {
+    "U2": {
+      "name": "Processeur nRF52833",
+      "what": "Exécute votre programme : un Arm Cortex-M4F à 64 MHz avec 512 KB de flash, 128 KB de RAM et une radio 2,4 GHz pour le Bluetooth et la radio micro:bit, le tout sur une seule puce."
+    },
+    "X1": {
+      "name": "Quartz 32 MHz",
+      "what": "Garde l'horloge et la radio du nRF52833 sur la bonne fréquence. Sans lui, le processeur ne démarre jamais."
+    },
+    "U5": {
+      "name": "Puce d'interface nRF52820",
+      "what": "Parle l'USB. Elle présente le lecteur MICROBIT, écrit dans le nRF52833 le fichier que vous y déposez, transmet le série à 115200 bauds et pilote la LED USB jaune."
+    },
+    "U3": {
+      "name": "Régulateur 3,3 V NCP114",
+      "what": "Transforme l'alimentation de l'USB ou des piles en rail 3,3 V. Il peut fournir 300 mA et limite son propre courant quand quelque chose court-circuite le rail."
+    },
+    "D51": {
+      "name": "Diode USB BAT60J",
+      "what": "Laisse passer le 5 V de l'USB sur VCOMBINED et empêche les piles de renvoyer du courant dans l'ordinateur."
+    },
+    "D59": {
+      "name": "Diodes de pile BAT60A",
+      "what": "D59 et D57 en série sur l'entrée des piles : un boîtier câblé à l'envers ne peut pas faire entrer de courant dans la carte."
+    },
+    "D1": {
+      "name": "Diode BAT54T",
+      "what": "Empêche la sortie du régulateur de monter au-dessus de son entrée quand l'alimentation arrive par l'anneau 3V."
+    },
+    "L5": {
+      "name": "Self de mode commun USB",
+      "what": "Filtre le bruit sur la paire de données USB avant qu'il n'atteigne la puce d'interface."
+    },
+    "D62": {
+      "name": "Protection ESD de l'USB",
+      "what": "Écrête les décharges électrostatiques sur les lignes de données USB."
+    },
+    "J3": {
+      "name": "Prise micro-USB",
+      "what": "L'alimentation, le lecteur MICROBIT et le série, le tout sur un seul câble."
+    },
+    "J2": {
+      "name": "Prise de piles",
+      "what": "Prise deux broches au pas de 2,0 mm pour un boîtier de 2 piles AAA. Elle a un détrompeur : la fiche n'entre que dans un sens."
+    },
+    "SW1": {
+      "name": "Bouton reset",
+      "what": "Un appui bref redémarre votre programme. Maintenez-le jusqu'à ce que la LED rouge s'éteigne pour éteindre la carte."
+    },
+    "SW2": {
+      "name": "Bouton A",
+      "what": "Bouton de la face avant sur P5 avec une pull-up de 10 kΩ ; lit LOW quand il est enfoncé."
+    },
+    "SW3": {
+      "name": "Bouton B",
+      "what": "Bouton de la face avant sur P11 avec une pull-up de 10 kΩ ; lit LOW quand il est enfoncé."
+    },
+    "LOGO": {
+      "name": "Logo tactile",
+      "what": "Une pastille dorée sur la P1.04 du nRF52833 qui détecte votre doigt par capacité."
+    },
+    "LEDS": {
+      "name": "Matrice de LED 5 x 5",
+      "what": "25 LED rouges 0603, de D2 à D50, balayées rangée par rangée. Utilisées à l'envers, elles servent aussi de capteur de lumière approximatif."
+    },
+    "D60": {
+      "name": "LED d'alimentation rouge",
+      "what": "Montre que la carte est alimentée : vive sur l'USB, plus faible sur piles."
+    },
+    "D61": {
+      "name": "LED USB jaune",
+      "what": "Allumée tant que l'USB est connecté à un ordinateur ; scintille pendant la copie d'un programme."
+    },
+    "D70": {
+      "name": "LED du microphone",
+      "what": "S'allume depuis la même broche qui alimente le microphone."
+    },
+    "U6": {
+      "name": "Capteur de mouvement LSM303AGR",
+      "what": "Accéléromètre et boussole dans un seul boîtier de 2 x 2 mm, sur le bus I²C interne à 0x19 et 0x1E."
+    },
+    "U4": {
+      "name": "Microphone MEMS",
+      "what": "Entend à travers un petit trou dans la carte. Alimenté seulement pendant que votre programme l'utilise."
+    },
+    "SP1": {
+      "name": "Haut-parleur magnétique",
+      "what": "Une bobine, un aimant et un disque d'acier, au plus fort vers 2,7 kHz. Le programme le pilote depuis P0.00 à travers T2."
+    },
+    "T2": {
+      "name": "MOSFET du haut-parleur",
+      "what": "Commute le courant du haut-parleur pour que la broche du processeur n'ait pas à le porter."
+    },
+    "D5": {
+      "name": "Diode de roue libre du haut-parleur",
+      "what": "Absorbe le pic de tension de la bobine du haut-parleur chaque fois que T2 se coupe."
+    },
+    "ANT": {
+      "name": "Antenne imprimée",
+      "what": "Une piste de cuivre dans le coin de la carte qui émet et reçoit le Bluetooth et la radio micro:bit."
+    },
+    "RF": {
+      "name": "Composants d'adaptation de l'antenne",
+      "what": "L3, L7 et C11 adaptent la sortie de la radio à la piste d'antenne."
+    },
+    "RLED": {
+      "name": "Résistances des LED d'état",
+      "what": "R38 et R39, 220 Ω chacune, fixent le courant des LED rouge et jaune."
+    },
+    "TVS": {
+      "name": "Diodes ESD du connecteur de bord",
+      "what": "D71 à D74 écrêtent l'électricité statique sur les anneaux que vous touchez et où vous accrochez des pinces."
+    },
+    "TR": {
+      "name": "Petits transistors",
+      "what": "Des transistors numériques qui détectent d'où vient l'alimentation et font passer des signaux entre les deux puces."
+    },
+    "RING0": {
+      "name": "Anneau 0",
+      "what": "P0 : entrée analogique, toucher, PWM. Le son est joué ici en plus du haut-parleur."
+    },
+    "RING1": {
+      "name": "Anneau 1",
+      "what": "P1 : entrée analogique, toucher, PWM. Les leçons pilotent leur LED depuis ici."
+    },
+    "RING2": {
+      "name": "Anneau 2",
+      "what": "P2 : entrée analogique, toucher, PWM. La leçon du variateur y lit son bouton rotatif."
+    },
+    "RING3V": {
+      "name": "Anneau 3V",
+      "what": "Sortie 3,3 V pour vos circuits, jusqu'à 190 mA. Une alimentation injectée ici contourne toutes les protections de la carte."
+    },
+    "RINGGND": {
+      "name": "Anneau GND",
+      "what": "La masse de tout ce que vous branchez."
+    },
+    "EDGE": {
+      "name": "Connecteur de bord",
+      "what": "Les étroites bandes dorées au pas de 1,27 mm portent les autres broches (P3 à P16, P19, P20, 3V et GND). Branchez la carte dans un adaptateur de connecteur de bord pour y accéder."
+    }
+  },
+  "wireables": {
+    "led": {
+      "note": "Reliez l'anneau 1 à la patte longue de la LED à travers une résistance de 470 Ω, et la patte courte à GND : environ 3 mA.",
+      "caution": "Une broche de la V2 ne donne que 1 à 4 mA. Ne branchez jamais une LED sans résistance."
+    },
+    "push-button": {
+      "note": "Utilisez P8 et activez la pull-up interne avec pin8.set_pull(pin8.PULL_UP) ; la broche lit 0 tant que le bouton est enfoncé."
+    },
+    "potentiometer": {
+      "note": "Les extrémités sur 3V et GND, le curseur sur l'anneau 2 : pin2.read_analog() donne 0 à 1023."
+    },
+    "ldr": {
+      "note": "Faites un pont diviseur avec une résistance de 10 kΩ de l'anneau 0 vers GND, et lisez-le avec pin0.read_analog()."
+    },
+    "piezo-buzzer": {
+      "note": "Anneau 0 et GND : la musique est déjà jouée sur la broche 0, il bipe donc en même temps que le haut-parleur."
+    },
+    "servo-sg90": {
+      "note": "Signal sur l'anneau 1 : pin1.set_analog_period(20), puis de pin1.write_analog(51) à pin1.write_analog(102) pour des impulsions de 1 à 2 ms.",
+      "caution": "Un SG90 peut tirer des centaines de mA au démarrage. Alimenté depuis l'anneau 3V, il provoque un brown-out de la carte ; donnez-lui sa propre alimentation de 4 à 6 V et reliez les masses."
+    },
+    "mpu6050": {
+      "note": "P19 sur SCL et P20 sur SDA à travers un adaptateur de connecteur de bord ; l'objet i2c de MicroPython utilise ce bus externe à 100 kHz."
+    },
+    "ssd1306": {
+      "note": "Le même bus I²C externe que n'importe quel autre capteur : P19 SCL, P20 SDA, 3V et GND."
+    },
+    "hc-sr04": {
+      "note": "TRIG sur P13 et ECHO sur P14 à travers un adaptateur de connecteur de bord.",
+      "caution": "Le HC-SR04 classique a besoin de 5 V et renvoie un écho de 5 V, qu'aucune broche de la micro:bit ne supporte. Utilisez une version 3,3 V, ou alimentez-le en 5 V et ramenez l'écho à 3,3 V avec un pont diviseur."
+    }
+  },
+  "failures": {
+    "reverse-ring3v": {
+      "title": "Pile à l'envers sur l'anneau 3V",
+      "symptom": "Rien ne s'allume, les puces chauffent vite et la carte peut sentir le brûlé.",
+      "explanation": "L'anneau 3V est relié directement au rail 3,3 V. Il n'y a pas de diode sur ce chemin : une alimentation inversée fait passer le courant à l'envers à travers les diodes de protection internes de chaque puce.",
+      "fix": "Débranchez immédiatement. Alimentez par la prise de piles ou par l'USB, ou ajoutez une diode en série si vous devez alimenter par l'anneau 3V."
+    },
+    "reverse-battery": {
+      "title": "Boîtier de piles câblé à l'envers",
+      "symptom": "Il ne se passe rien du tout : pas de LED rouge, pas d'image, pas de dégât.",
+      "explanation": "D59 et D57 sont en série sur l'entrée des piles et ne conduisent que dans un sens : un boîtier inversé ne peut faire entrer aucun courant dans la carte.",
+      "fix": "Recâblez la fiche du boîtier (le rouge sur +) ou utilisez un boîtier fait pour la micro:bit."
+    },
+    "lipo-on-3v": {
+      "title": "Une LiPo de 4,2 V sur l'anneau 3V",
+      "symptom": "La carte peut tourner un instant, puis l'accéléromètre et la boussole ne répondent plus.",
+      "explanation": "L'anneau 3V contourne le régulateur : le rail se retrouve donc à 4,2 V. Le maximum absolu du LSM303AGR est de 3,6 V et celui des nRF52 de 3,9 V.",
+      "fix": "Faites fonctionner la carte avec 2 piles AAA dans la prise de piles, ou par l'USB. N'alimentez l'anneau 3V qu'avec une alimentation 3,3 V régulée."
+    },
+    "flat-battery": {
+      "title": "Piles à plat",
+      "symptom": "L'image est faible, le programme redémarre sans cesse et jouer un son réinitialise la carte.",
+      "explanation": "Deux piles AAA fatiguées donnent moins de 2 V après les diodes. Le nRF52833 se réinitialise vers 1,7 V : chaque pic de consommation (les LED, le haut-parleur) le fait passer en dessous.",
+      "fix": "Mettez des piles neuves, ou branchez l'USB."
+    },
+    "overload-3v": {
+      "title": "Trop de charge sur l'anneau 3V",
+      "symptom": "L'affichage scintille et le programme redémarre chaque fois que le moteur ou le ruban de LED tire du courant.",
+      "explanation": "Le régulateur donne 300 mA, dont seulement 190 mA sont prévus pour le connecteur de bord. Un moteur ou un ruban de NeoPixels en demande davantage, le rail s'affaisse et le processeur se réinitialise.",
+      "fix": "Alimentez moteurs et rubans de LED avec leur propre alimentation et ne reliez que les masses et le signal à la micro:bit."
+    },
+    "short-3v": {
+      "title": "3V en court-circuit avec GND",
+      "symptom": "Tout s'éteint, le lecteur MICROBIT disparaît et le régulateur chauffe.",
+      "explanation": "Une pince crocodile mal placée relie les anneaux 3V et GND. L'alimentation de l'USB comme celle des piles atteint le rail à travers le NCP114, qui limite son courant et se coupe quand il devient trop chaud.",
+      "fix": "Débranchez, trouvez la pince ou le fil égaré, et remettez sous tension. La carte s'en remet."
+    },
+    "five-volt-pin": {
+      "title": "5 V sur une broche",
+      "symptom": "Les choses fonctionnent bizarrement, puis le capteur de mouvement lâche et le processeur peut ne plus jamais redémarrer.",
+      "explanation": "Un signal de 5 V, comme l'écho d'un HC-SR04, dépasse la limite de 3,6 V de la broche. Le courant traverse la diode de protection de la broche vers le rail 3,3 V et pousse tout le rail au-dessus de ce que supportent les capteurs.",
+      "fix": "Ne branchez jamais de signaux 5 V. Utilisez un pont diviseur ou un adaptateur de niveau, ou une version 3,3 V du module."
+    },
+    "loose-clip": {
+      "title": "Pince crocodile lâche sur l'anneau 1",
+      "symptom": "La LED de la broche 1 scintille ou rate des clignotements, et les mesures sautent.",
+      "explanation": "Une pince qui ne serre l'anneau qu'à moitié établit et coupe le contact chaque fois que la carte bouge.",
+      "fix": "Pincez droit à travers le trou de l'anneau pour que les mâchoires serrent les deux faces, ou fixez le fil avec une vis M3."
+    },
+    "no-crystal": {
+      "title": "Pas de quartz 32 MHz",
+      "symptom": "La LED rouge est allumée et le lecteur apparaît, mais votre programme ne tourne jamais.",
+      "explanation": "Le nRF52833 a besoin de X1 pour démarrer son horloge et sa radio. La puce d'interface a son propre quartz : l'USB fonctionne donc toujours.",
+      "fix": "Montez un quartz de 32 MHz en X1."
+    },
+    "no-regulator": {
+      "title": "Régulateur absent",
+      "symptom": "L'USB est branché mais rien ne s'allume : pas même la LED rouge.",
+      "explanation": "Toutes les sources sauf l'anneau 3V atteignent les puces à travers U3. Sans lui, le rail 3,3 V reste à 0 V.",
+      "fix": "Montez le NCP114 en U3."
+    }
+  },
+  "assembly": {
+    "unplug": {
+      "title": "Débranchez la carte",
+      "body": "Retirez le câble USB et les piles avant de travailler sur la carte."
+    },
+    "strip": {
+      "title": "Partez du circuit nu",
+      "body": "Démontez-la jusqu'à la carte noire à deux couches : le connecteur de bord doré, les cinq trous d'anneau métallisés, la pastille du logo tactile et la piste d'antenne.",
+      "refusal": "Débranchez d'abord la carte."
+    },
+    "pick-place": {
+      "title": "Posez et refondez tous les composants",
+      "body": "Tous les composants sont montés en surface. La machine de placement automatique pose les LED et les boutons sur la face avant et tout le reste au dos : les deux puces nRF52, le quartz, le régulateur, les capteurs, le haut-parleur et les prises. Puis la carte passe dans le four de refusion, où la pâte à souder fond et chaque soudure se forme.",
+      "refusal": "Démontez d'abord la carte."
+    },
+    "plug-usb": {
+      "title": "Branchez l'USB",
+      "body": "La LED rouge s'allume, la jaune suit quand l'ordinateur voit la carte, et le cœur d'usine bat sur la matrice."
+    },
+    "rails": {
+      "title": "Vérifiez l'alimentation",
+      "body": "Dans la vue de l'alimentation, VCOMBINED doit lire environ 4,7 V (l'USB moins une diode) et le rail 3V 3,3 V."
+    },
+    "flash-blink": {
+      "title": "Flashez un programme",
+      "body": "Déposez le programme de clignotement sur MICROBIT. La LED jaune scintille pendant la copie, puis la LED du centre et la broche 1 clignotent une fois par seconde.",
+      "refusal": "Branchez d'abord l'USB."
+    },
+    "buttons": {
+      "title": "Essayez les boutons",
+      "body": "Flashez le programme des boutons, puis appuyez sur A pour un visage content et sur B pour un visage triste."
+    },
+    "battery": {
+      "title": "Faites-la tourner sur piles",
+      "body": "Débranchez l'USB et branchez le boîtier de piles AAA. La LED rouge faiblit, la jaune s'éteint et le rail descend à environ 3 V, ce qui reste largement suffisant."
+    },
+    "serial": {
+      "title": "Lisez le port série",
+      "body": "Flashez le programme de température et ouvrez le moniteur série à 115200 bauds : une ligne arrive chaque seconde."
+    },
+    "exploded": {
+      "title": "Regardez à l'intérieur",
+      "body": "Débranchez et éclatez la carte pour voir les deux faces séparées : l'avant avec ses LED et ses boutons, l'arrière avec les puces.",
+      "refusal": "Débranchez d'abord la carte."
+    }
+  },
+  "lessons": {
+    "blink": {
+      "title": "Faire clignoter une LED",
+      "lede": "Allumez ensemble le centre de la matrice et une LED sur l'anneau 1, puis éteignez-les, une fois par seconde.",
+      "code": {
+        "top": "Fait clignoter la LED du milieu et une LED sur la broche 1",
+        "pixel": "x, y depuis le coin supérieur gauche ; luminosité 0-9",
+        "pin": "3,3 V sur l'anneau 1"
+      },
+      "params": {
+        "ms": {
+          "label": "Durée allumée et éteinte"
+        }
+      },
+      "checks": {
+        "1": "Le programme tourne 3 secondes",
+        "2": "La broche 1 clignote une fois par seconde",
+        "3": "Utilise display.set_pixel et pin1.write_digital"
+      },
+      "pins": {
+        "P1": {
+          "to": "Patte longue de la LED, à travers 470 Ω",
+          "role": "Pilote la LED"
+        },
+        "GND": {
+          "to": "Patte courte de la LED",
+          "role": "Masse"
+        }
+      },
+      "callouts": {
+        "LEDS": "La LED du centre est x = 2, y = 2",
+        "LED1": "Patte longue côté résistance",
+        "R1": "470 Ω la maintiennent vers 3 mA"
+      },
+      "specs": {
+        "1": {
+          "label": "Période",
+          "value": "1 s"
+        },
+        "2": {
+          "label": "Courant de la LED",
+          "value": "Environ 3 mA"
+        },
+        "3": {
+          "label": "Broches",
+          "value": "P1, GND"
+        }
+      },
+      "features": {
+        "1": "Un pixel sur la matrice",
+        "2": "Une LED sur l'anneau 1",
+        "3": "La temporisation avec sleep()"
+      },
+      "steps": {
+        "1": "Reliez l'anneau 1 à la résistance de 470 Ω, et la résistance à la patte longue de la LED.",
+        "2": "Reliez la patte courte de la LED à l'anneau GND.",
+        "3": "Lancez le programme et regardez le milieu de la matrice et la LED.",
+        "4": "Changez la valeur de durée modifiable et voyez à quelle vitesse elle clignote."
+      },
+      "hints": {
+        "1": "Rien sur la platine d'essai ? La LED est peut-être à l'envers : la patte longue va vers la résistance.",
+        "2": "set_pixel prend x d'abord, puis y, tous deux de 0 à 4.",
+        "3": "Chaque sleep() fait une pause de ce nombre de millisecondes."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Pourquoi y a-t-il une résistance de 470 Ω devant la LED ?",
+          "options": {
+            "1": "Pour la faire clignoter plus vite",
+            "2": "Pour garder le courant vers 3 mA, ce qu'une broche de micro:bit peut fournir",
+            "3": "Parce que la LED a besoin de 5 V"
+          },
+          "why": "(3,3 V − 2 V) / 470 Ω font environ 2,8 mA. Une broche de la V2 donne 1 à 4 mA : une LED seule lui en demanderait trop."
+        },
+        "q2": {
+          "q": "Que fait display.set_pixel(2, 2, 9) ?",
+          "options": {
+            "1": "Allume la LED du milieu à pleine luminosité",
+            "2": "Allume deux LED à la luminosité 2",
+            "3": "Met 9 V sur la broche 2"
+          },
+          "why": "x et y comptent de 0 à 4 depuis le coin supérieur gauche : (2, 2) est donc le milieu ; la luminosité va de 0 à 9."
+        },
+        "q3": {
+          "q": "Avec deux sleep(500) dans la boucle, combien dure un clignotement complet ?",
+          "options": {
+            "1": "500 ms",
+            "2": "250 ms",
+            "3": "1000 ms"
+          },
+          "why": "500 ms allumée plus 500 ms éteinte : un clignotement par seconde."
+        }
+      }
+    },
+    "buttons": {
+      "title": "Les boutons A et B",
+      "lede": "Comptez les appuis sur A avec was_pressed(), et maintenez B pour allumer la LED de la broche 1.",
+      "code": {
+        "top": "Compte les appuis sur A, maintenir B allume la broche 1",
+        "was": "True une fois après chaque appui",
+        "is": "True tant que B est maintenu"
+      },
+      "params": {
+        "poll": {
+          "label": "Vérifier toutes les"
+        }
+      },
+      "checks": {
+        "1": "Affiche A pressed 2 après deux appuis sur A",
+        "2": "La broche 1 passe à l'état haut moins de 50 ms après l'appui sur B",
+        "3": "La broche 1 repasse à l'état bas une fois B relâché",
+        "4": "Utilise button_a.was_pressed() et button_b.is_pressed()"
+      },
+      "world": {
+        "a": "Bouton A",
+        "b": "Bouton B"
+      },
+      "pins": {
+        "P5": {
+          "to": "Le bouton A de la carte",
+          "role": "Lit LOW quand il est enfoncé"
+        },
+        "P11": {
+          "to": "Le bouton B de la carte",
+          "role": "Lit LOW quand il est enfoncé"
+        },
+        "P1": {
+          "to": "Patte longue de la LED, à travers 470 Ω",
+          "role": "Allumée tant que B est maintenu"
+        },
+        "GND": {
+          "to": "Patte courte de la LED",
+          "role": "Masse"
+        }
+      },
+      "callouts": {
+        "SW2": "Bouton A : compte les appuis",
+        "SW3": "Bouton B : maintenez-le pour allumer la LED"
+      },
+      "specs": {
+        "1": {
+          "label": "Boutons",
+          "value": "A sur P5, B sur P11"
+        },
+        "2": {
+          "label": "Pull-up",
+          "value": "10 kΩ sur la carte"
+        },
+        "3": {
+          "label": "Série",
+          "value": "115200 bauds"
+        }
+      },
+      "features": {
+        "1": "was_pressed() pour les appuis simples",
+        "2": "print() vers le moniteur série",
+        "3": "is_pressed() pour le maintien"
+      },
+      "steps": {
+        "1": "Gardez la LED sur l'anneau 1 de la leçon du clignotement.",
+        "2": "Lancez le programme et appuyez deux fois sur A : le visage sourit et le compte augmente.",
+        "3": "Maintenez B : le visage devient triste et la LED s'allume.",
+        "4": "Relâchez B et la LED s'éteint."
+      },
+      "hints": {
+        "1": "Pas de compte dans le moniteur série ? Ouvrez-le à 115200 bauds.",
+        "2": "was_pressed() oublie l'appui une fois qu'il a répondu True : appelez-le donc une fois par tour de boucle.",
+        "3": "Les boutons ont déjà des pull-up : aucun câblage n'est nécessaire pour eux."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Quelle broche du connecteur de bord correspond au bouton A ?",
+          "options": {
+            "1": "P0",
+            "2": "P11",
+            "3": "P5"
+          },
+          "why": "A est sur P5 et B sur P11, chacun avec une pull-up de 10 kΩ : ils lisent donc LOW quand ils sont enfoncés. Gardez ces broches pour les boutons."
+        },
+        "q2": {
+          "q": "Vous appuyez deux fois sur A entre deux vérifications. Que répond was_pressed() ?",
+          "options": {
+            "1": "False, les appuis étaient trop rapides",
+            "2": "True une fois, puis False à l'appel suivant",
+            "3": "True deux fois de suite"
+          },
+          "why": "was_pressed() retient qu'un appui a eu lieu depuis la dernière question, puis se remet à zéro. get_presses() donne le nombre."
+        },
+        "q3": {
+          "q": "Pourquoi B utilise-t-il is_pressed() ici ?",
+          "options": {
+            "1": "La LED ne doit rester allumée que tant que vous maintenez B",
+            "2": "is_pressed() compte les appuis",
+            "3": "B ne peut pas utiliser was_pressed()"
+          },
+          "why": "is_pressed() lit le bouton à l'instant même, ce dont a besoin un « maintenir pour allumer »."
+        }
+      }
+    },
+    "dimmer": {
+      "title": "Un bouton rotatif qui fait varier une LED",
+      "lede": "Lisez un potentiomètre sur l'anneau 2, réglez d'après lui la luminosité de la LED sur l'anneau 1, et dessinez une barre sur la rangée du bas.",
+      "code": {
+        "top": "Le potentiomètre sur la broche 2 règle la luminosité de la LED sur la broche 1",
+        "read": "0 à 1023",
+        "write": "rapport cyclique PWM 0 à 1023",
+        "bars": "0 à 5 LED allumées sur la rangée du bas"
+      },
+      "params": {
+        "every": {
+          "label": "Lire toutes les"
+        }
+      },
+      "checks": {
+        "1": "À mi-course, la LED reçoit la moitié du rapport cyclique",
+        "2": "Tourné à fond, la LED est pleinement allumée",
+        "3": "Affiche raw et volts au moins 4 fois",
+        "4": "Utilise pin2.read_analog() et pin1.write_analog()"
+      },
+      "world": {
+        "pot": "Bouton rotatif sur l'anneau 2"
+      },
+      "pins": {
+        "P2": {
+          "to": "Patte du milieu du potentiomètre",
+          "role": "Entrée analogique"
+        },
+        "3V": {
+          "to": "Patte extérieure du potentiomètre",
+          "role": "Le haut de la piste"
+        },
+        "GND": {
+          "to": "L'autre patte du potentiomètre et la LED",
+          "role": "Masse"
+        },
+        "P1": {
+          "to": "Patte longue de la LED, à travers 470 Ω",
+          "role": "Sortie PWM"
+        }
+      },
+      "callouts": {
+        "POT1": "Tournez-le : 0 à 3,3 V sur l'anneau 2",
+        "LED1": "La luminosité suit le bouton rotatif"
+      },
+      "specs": {
+        "1": {
+          "label": "CAN",
+          "value": "10 bits, 0 à 1023"
+        },
+        "2": {
+          "label": "Période de la PWM",
+          "value": "20 ms"
+        },
+        "3": {
+          "label": "Broches analogiques",
+          "value": "P0, P1, P2, P3, P4, P10"
+        }
+      },
+      "features": {
+        "1": "Lire une tension",
+        "2": "Faire varier avec la PWM",
+        "3": "Un bargraphe sur la matrice"
+      },
+      "steps": {
+        "1": "Placez le potentiomètre sur la platine d'essai et reliez ses pattes extérieures à 3V et GND.",
+        "2": "Reliez sa patte du milieu à l'anneau 2.",
+        "3": "Lancez le programme et tournez le bouton : la LED et la rangée du bas suivent.",
+        "4": "Regardez le moniteur série : raw va de 0 à 1023 quand volts va de 0 à 3,3."
+      },
+      "hints": {
+        "1": "Bloqué à 0 ou à 1023 ? Vérifiez que c'est la patte du milieu, et non une extrémité, qui va à l'anneau 2.",
+        "2": "write_analog() allume et éteint la broche très vite ; votre œil voit la moyenne.",
+        "3": "La LED paraît pleinement allumée bien avant 1023 : l'œil n'est pas linéaire."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Quelle plage renvoie pin2.read_analog() ?",
+          "options": {
+            "1": "0 à 1023",
+            "2": "0 à 3,3",
+            "3": "0 à 255"
+          },
+          "why": "MicroPython lit le CAN sur 10 bits : 0 correspond à 0 V et 1023 au rail 3,3 V."
+        },
+        "q2": {
+          "q": "Quelles broches peuvent lire une tension analogique ?",
+          "options": {
+            "1": "Toutes les broches",
+            "2": "Seulement les trois anneaux",
+            "3": "P0, P1, P2, P3, P4 et P10"
+          },
+          "why": "Six broches arrivent au CAN. P3, P4 et P10 sont aussi des colonnes de LED : les anneaux sont donc le choix facile."
+        },
+        "q3": {
+          "q": "Que fait pin1.write_analog(512) sur la broche 1 ?",
+          "options": {
+            "1": "La maintient à 1,65 V",
+            "2": "L'allume complètement environ la moitié du temps",
+            "3": "L'éteint"
+          },
+          "why": "Il n'y a pas de CNA. write_analog règle le rapport cyclique de la PWM, avec une période de 20 ms par défaut."
+        }
+      }
+    },
+    "tilt": {
+      "title": "L'inclinaison et le capteur de mouvement",
+      "lede": "Lisez l'accéléromètre et faites pointer une flèche vers l'extrémité de la carte qui est la plus basse.",
+      "code": {
+        "top": "Affiche une flèche qui pointe vers l'extrémité la plus basse",
+        "dead": "Ignorer les inclinaisons plus petites que ceci, en milli-g",
+        "read": "Milli-g le long de la carte, venant du LSM303AGR par l'I²C"
+      },
+      "params": {
+        "dead": {
+          "label": "Zone morte"
+        }
+      },
+      "checks": {
+        "1": "Affiche y 0 level à plat",
+        "2": "Affiche y 500 logo down incliné de 30° vers le logo",
+        "3": "Affiche y -707 pins down incliné de 45° dans l'autre sens",
+        "4": "Utilise accelerometer.get_y()"
+      },
+      "world": {
+        "tilt": "Inclinez la carte"
+      },
+      "callouts": {
+        "U6": "LSM303AGR à l'adresse I²C 0x19",
+        "LEDS": "La flèche pointe vers l'extrémité la plus basse"
+      },
+      "specs": {
+        "1": {
+          "label": "Capteur",
+          "value": "LSM303AGR"
+        },
+        "2": {
+          "label": "Bus",
+          "value": "I²C interne, 0x19"
+        },
+        "3": {
+          "label": "Unités",
+          "value": "Milli-g, 1000 = 1 g"
+        }
+      },
+      "features": {
+        "1": "Mesurer l'inclinaison",
+        "2": "Un capteur I²C sur la carte",
+        "3": "Des flèches sur la matrice"
+      },
+      "steps": {
+        "1": "Lancez le programme avec la carte à plat : un point au milieu et y proche de 0.",
+        "2": "Penchez l'extrémité du logo vers le bas : une flèche pointe vers le haut de la matrice, vers le logo.",
+        "3": "Penchez l'extrémité des broches vers le bas : la flèche pointe vers les broches.",
+        "4": "Changez la zone morte et trouvez la plus petite inclinaison qui fait encore bouger la flèche."
+      },
+      "hints": {
+        "1": "y vaut environ 1000 fois le sinus de l'angle d'inclinaison : 30° donnent 500.",
+        "2": "Aucun câblage n'est nécessaire : le capteur est au dos de la carte.",
+        "3": "Une zone morte plus petite réagit plus tôt mais scintille quand la carte est presque à plat."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Comment le programme accède-t-il à l'accéléromètre ?",
+          "options": {
+            "1": "Par l'anneau 0",
+            "2": "Par le bus I²C propre à la carte, à l'adresse 0x19",
+            "3": "Par la liaison série USB"
+          },
+          "why": "Le LSM303AGR est sur un bus I²C interne, distinct de P19 et P20, à 0x19 (accéléromètre) et 0x1E (boussole). MicroPython le lit pour vous."
+        },
+        "q2": {
+          "q": "À plat, face vers le haut, que donne accelerometer.get_z() ?",
+          "options": {
+            "1": "0",
+            "2": "Environ +1000",
+            "3": "Environ -1000"
+          },
+          "why": "Les valeurs sont en milli-g. À plat et face vers le haut, la gravité tire droit à travers la carte et z lit environ -1000."
+        },
+        "q3": {
+          "q": "À quoi sert DEAD ?",
+          "options": {
+            "1": "À ignorer les petites inclinaisons pour que la flèche ne scintille pas près du niveau",
+            "2": "À régler la vitesse de l'I²C",
+            "3": "À éteindre le capteur"
+          },
+          "why": "Toute mesure entre -DEAD et DEAD compte comme à niveau, ce qui masque le tremblement de votre main."
+        }
+      }
+    },
+    "touch-tune": {
+      "title": "Compteur de notes au logo tactile",
+      "lede": "Un petit projet : touchez le logo pour jouer une note et la compter, appuyez sur A pour afficher le compte avec la température.",
+      "code": {
+        "top": "Toucher le logo joue une note ; A affiche le compte",
+        "touch": "True tant qu'un doigt est sur le logo",
+        "pitch": "Haut-parleur et broche 0, pendant 200 ms",
+        "wait": "Un toucher ne compte qu'une fois"
+      },
+      "params": {
+        "hz": {
+          "label": "Note"
+        }
+      },
+      "checks": {
+        "1": "Compte le premier toucher",
+        "2": "Compte le deuxième toucher",
+        "3": "A affiche touches 2 et la température",
+        "4": "Utilise pin_logo.is_touched(), music.pitch() et temperature()"
+      },
+      "world": {
+        "logo": "Touchez le logo",
+        "a": "Bouton A"
+      },
+      "pins": {
+        "P0": {
+          "to": "Un buzzer ou des écouteurs (facultatif)",
+          "role": "La note est jouée ici aussi"
+        }
+      },
+      "callouts": {
+        "LOGO": "Capacitif : il suffit de le toucher",
+        "SP1": "La note sort d'ici"
+      },
+      "specs": {
+        "1": {
+          "label": "Toucher",
+          "value": "Capacitif, sur P1.04"
+        },
+        "2": {
+          "label": "Son",
+          "value": "Haut-parleur et broche 0"
+        },
+        "3": {
+          "label": "Température",
+          "value": "Sur la puce du processeur, ±5 °C"
+        }
+      },
+      "features": {
+        "1": "Le logo tactile",
+        "2": "Des notes sur le haut-parleur",
+        "3": "Le thermomètre intégré"
+      },
+      "steps": {
+        "1": "Lancez le programme et touchez le logo : une note est jouée et une croche s'affiche.",
+        "2": "Touchez-le à nouveau et regardez le compte dans le moniteur série.",
+        "3": "Appuyez sur A pour afficher le compte et la température.",
+        "4": "Changez la valeur de note modifiable et écoutez."
+      },
+      "hints": {
+        "1": "Vous n'entendez rien sur une vraie carte ? Quelque chose a peut-être appelé speaker.off() ; la note est toujours jouée sur la broche 0.",
+        "2": "temperature() lit le capteur propre au processeur : il indique donc un peu plus chaud.",
+        "3": "Sans la boucle d'attente, maintenir le doigt sur le logo compterait de nombreuses fois."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Comment le logo sait-il que vous l'avez touché ?",
+          "options": {
+            "1": "C'est un bouton poussoir",
+            "2": "Il mesure la lumière",
+            "3": "Il détecte la capacité de votre doigt"
+          },
+          "why": "Le logo est une pastille capacitive sur P1.04 : vous n'avez pas besoin de tenir GND. Les anneaux 0 à 2 utilisent le toucher résistif et en ont besoin."
+        },
+        "q2": {
+          "q": "Où music.pitch() envoie-t-il le son ?",
+          "options": {
+            "1": "Au haut-parleur au dos et à l'anneau 0",
+            "2": "Seulement au haut-parleur",
+            "3": "À l'anneau 2"
+          },
+          "why": "Par défaut, le son est joué sur le haut-parleur et sur la broche 0 : un buzzer ou des écouteurs sur l'anneau 0 l'entendent aussi."
+        },
+        "q3": {
+          "q": "Pourquoi le programme attend-il tant que le logo est encore touché ?",
+          "options": {
+            "1": "Pour économiser l'énergie",
+            "2": "Pour qu'un long toucher ne compte qu'une fois",
+            "3": "Parce que le haut-parleur en a besoin"
+          },
+          "why": "La boucle tourne toutes les 20 ms. Sans l'attente, un toucher d'une demi-seconde compterait environ 25 fois."
+        }
+      }
+    }
+  }
+}
