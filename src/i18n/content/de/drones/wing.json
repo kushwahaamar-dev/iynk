@@ -379,7 +379,7 @@
           "2": "Weil INAV in Fuß zählt",
           "3": "Ein Flügel kann nicht schweben: Bei 15 m/s und 35 Grad Querneigung ist sein engster Kreis etwa 33 m, also lässt sich ein 22-m-Kreis nicht fliegen"
         },
-        "why": "Der Kurvenradius ist die Geschwindigkeit zum Quadrat geteilt durch g mal den Tangens der Querneigung: 15² / (9.81 x tan 35°) ergibt etwa 33 m. Verlangst du einen kleineren Kreis, fliegt der Flügel einen wackligen größeren. Der Standard von INAV ist 75 m, und 30 bis 75 m ist der sinnvolle Bereich."
+        "why": "Der Kurvenradius ist die Geschwindigkeit zum Quadrat geteilt durch g mal den Tangens der Querneigung: 15² / (9,81 x tan 35°) ergibt etwa 33 m. Verlangst du einen kleineren Kreis, fliegt der Flügel einen wackligen größeren. Der Standard von INAV ist 75 m, und 30 bis 75 m ist der sinnvolle Bereich."
       },
       "failsafe": {
         "q": "Weit draußen bricht die Verbindung für eine Sekunde ab. Was macht dieser Flügel?",
