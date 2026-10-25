@@ -295,15 +295,25 @@ function evaluate(){
   const mcu = pw.mcu;
   if (mcu){
     const v = ev.rails[mcu.rail] || 0;
+    if (v < .5){ ev.status = 'no-power'; ev.why = T('No power on {rail}: nothing reaches the chip', { rail: mcu.rail }); return ev; }
     if (v < (mcu.min || 0)){ ev.status = 'brownout'; ev.why = T('Brown-out: {rail} is at {v} V, the chip keeps resetting', { rail: mcu.rail, v: v.toFixed(1) }); return ev; }
     const miss = (mcu.needs || []).find(id => !isSet(id) || coldOff(id));
     if (miss){ ev.why = T('Powered, but nothing runs: {name} is missing', { name: nameOf(miss) }); return ev; }
     if (st.ctl && Object.entries(st.ctl).some(([id, v]) => v && MD.byId[id] && MD.byId[id].control && MD.byId[id].control.action === 'reset')){ ev.status = 'reset'; return ev; }
     ev.status = 'running';
+    // a strap latched at the last restart that keeps the sketch from starting (ROM boot mode)
+    if (st.strap && st.strap.halts){ ev.status = 'fault'; ev.fault = { id: st.strap.fault, kind: 'boot', part: st.strap.part || mcu.part, msg: T(st.strap.msg || 'Boot strap'), fix: T(st.strap.fix || 'Free the pin and press RESET') }; }
   }
   return ev;
 }
 B.evaluate = () => evaluate();
+
+/* boot straps (def.straps: [{ fault, boot, halts?, part?, blocks?: ['upload', 'serial'], msg, fix }]): the chip reads its
+   mode pins when the program (re)starts (power on, RESET released, an upload done), so a strap fault in force then is
+   latched until the next restart. halts: the sketch never starts (status fault, kind boot); blocks: it runs, but
+   uploads are refused with msg and its Serial lines stop. state.boot reports the latched strap's boot. */
+const sampleStraps = () => { st.strap = (MD.def.straps || []).find(x => x && typeof x.fault === 'string' && st.faults.includes(x.fault)) || null; };
+const strapBlocks = what => !!(st.strap && (st.strap.blocks || []).includes(what));
 
 /* ---------- outputs: pin levels and LEDs ---------- */
 function outputs(){
@@ -402,11 +412,11 @@ A.build = what => {
 };
 A.flip = id => { const p = MD.byId[id]; if (!p || !p.polar || !isIn(id)) return; if (!guard()) return; st.placed[id].orient ^= 1; say(st.placed[id].orient ? '{name} turned the wrong way round' : '{name} turned the right way round', { name: nameOf(id) }); refresh(); };
 A.power = key => {
-  if (key == null || key === 'off'){ if (!st.power) return; st.power = null; st.up = null; st.ext = st.ext && false; sfx('unplug'); refresh(); return; }
+  if (key == null || key === 'off'){ if (!st.power) return; st.power = null; st.up = null; st.strap = null; st.ext = st.ext && false; sfx('unplug'); refresh(); return; }
   const src = (MD.power.sources || {})[key]; if (!src) return say('No supply {name} on this board', { name: key });
   if (st.exploded) return say(MSG.exploded);
   // plugging in the cable that is already in changes nothing (the sketch keeps its clock)
-  if (st.power !== key){ st.power = key; st.t = 0; st.serialN = -1; sfx('plug'); }
+  if (st.power !== key){ st.power = key; st.t = 0; st.serialN = -1; sfx('plug'); sampleStraps(); }
   refresh(true);
 };
 A.upload = key => {
@@ -415,6 +425,7 @@ A.upload = key => {
   const ups = MD.power.upload || {};
   if (md.instant){ st.mode = key; st.ext = false; st.t = 0; st.serialN = -1; say('{name} running', { name: T(md.title) }); refresh(); return; }
   if (!st.power || (ups.source && st.power !== ups.source)) return say(MSG.plugFirst);
+  if (strapBlocks('upload')) return say(st.strap.msg || 'Upload failed');
   if (st.ev.status === 'fault') return say(MSG.faulted);
   // the bootloader runs on the MCU: with its clock or socket out, avrdude never gets in sync
   const miss = [...(ups.needs || []), ...((MD.power.mcu && MD.power.mcu.needs) || [])].find(id => !isSet(id) || coldOff(id));
@@ -430,7 +441,7 @@ A.press = (id, down) => {
   const c = p.control, was = st.ctl[id] || 0;
   if (c.type === 'slide'){ if (down) st.ctl[id] = (was + 1) % ((c.positions || [0, 1]).length); }
   else st.ctl[id] = down ? 1 : 0;
-  if (c.action === 'reset' && was && !down){ st.t = MD.def.bootloader ? -(MD.def.bootloader.wait || 1) : 0; st.serialN = -1;
+  if (c.action === 'reset' && was && !down){ st.t = MD.def.bootloader ? -(MD.def.bootloader.wait || 1) : 0; st.serialN = -1; sampleStraps();
     if (st.ctlBoot) st.boot = 'download'; else if (st.boot === 'download') st.boot = null; }
   if (c.action === 'boot') st.ctlBoot = !!down;
   if (c.action === 'bootsel' && down && !st.power) st.boot = 'uf2';
@@ -461,6 +472,7 @@ A.fault = id => {
   if (kind === 'wrong-voltage'){ const v = +b; if (!(MD.power.sources || {})[a] || !Number.isFinite(v)) return say('Unknown supply {name}', { name: a }); st.supply[a] = v; }
   if (kind === 'reverse-polarity' && !(MD.power.sources || {})[a]) return say('Unknown supply {name}', { name: a });
   if (!st.faults.includes(id)) st.faults.push(id);
+  if (st.power && (MD.def.straps || []).some(x => x && x.fault === id)){ st.t = 0; st.serialN = -1; sampleStraps(); }
   refresh(true);
   // a fault the sketch survives (a 3V3 short) still says what it did
   if (st.power && st.ev.status === 'running' && st.ev.why) say(st.ev.why, null, 3200);
@@ -507,12 +519,12 @@ function step(dt){
   // the program clock
   if (st.power){
     st.t += dt;
-    if (st.up){ st.upT += dt; if (st.upT >= st.upDur){ const key = st.up; st.up = null; st.mode = key; st.t = 0; st.serialN = -1;
+    if (st.up){ st.upT += dt; if (st.upT >= st.upDur){ const key = st.up; st.up = null; st.mode = key; st.t = 0; st.serialN = -1; sampleStraps();
         say('Done uploading: {name} is running', { name: T(MD.modes[key].title) }); sfx('ding'); } }
     st.ev = evaluate();
     if (st.ev.status === 'brownout' && Math.floor(st.t / .6) !== st.boN){ st.boN = Math.floor(st.t / .6); st.serialN = -1; }
     const md = MD.modes[st.mode];
-    if (st.ev.status === 'running' && !st.up && !st.ext && md){
+    if (st.ev.status === 'running' && !st.up && !st.ext && md && !strapBlocks('serial')){
       const k = Math.floor(st.t);
       if (st.t >= 0 && k !== st.serialN){
         if (st.serialN < 0 && md.banner){ emit(String(md.banner)); }
@@ -568,7 +580,7 @@ function refresh(newPower){
   runModel(0);
   if (newPower && st.power){
     const ev = st.ev;
-    if (ev.status === 'fault' && prev !== 'fault'){ const fk = ev.fault.kind; sfx(fk === 'pop' ? 'pop' : 'sizzle'); say(ev.fault.msg, null, 3200); }
+    if (ev.status === 'fault' && prev !== 'fault'){ const fk = ev.fault.kind; if (fk !== 'boot') sfx(fk === 'pop' ? 'pop' : 'sizzle'); say(ev.fault.msg, null, 3200); }
     else if (ev.status === 'running' && prev !== 'running'){ const md = MD.modes[st.mode]; say(md && md.powerMsg ? md.powerMsg : 'Powered: {name} starts', { name: md ? T(md.title) : '' }); }
     else if (ev.why && ev.status !== prev) say(ev.why, null, 3000);
   }
@@ -666,7 +678,7 @@ function drawParts(o, k){
     }
     // the soldering iron visits the part being soldered
     if (st.solderQ && st.solderQ[0] === p.id){ const tp = ctx.W(0, 0, p.h + 2); items.push({ box: [[tp[0] - 1, tp[1] - 1, tp[2]], [tp[0] + 1, tp[1] + 1, tp[2] + 30]], svg: ironSvg(tp) }); }
-    if (fault && st.power) items.push({ box: [ctx.W(0, 0, p.h + 1), ctx.W(0, 0, p.h + 1)].map((q, i) => i ? q.map(v => v + 1) : q), svg: smokeSvg(ctx, p) });
+    if ((fault === 'hot' || fault === 'pop') && st.power) items.push({ box: [ctx.W(0, 0, p.h + 1), ctx.W(0, 0, p.h + 1)].map((q, i) => i ? q.map(v => v + 1) : q), svg: smokeSvg(ctx, p) });
   }
   return items;
 }
@@ -1000,7 +1012,7 @@ const report = () => {
   const ev = st.ev;
   const r0 = { id: MD.id, view: st.view, exploded: st.exploded, build, power: st.power, status: st.up ? 'uploading' : ev.status,
     mode: st.mode, ext: st.ext, rails: r, fault: ev.fault, faults: faultsNow(), missing: MD.parts.filter(p => !isIn(p.id)).map(p => p.id),
-    selected: st.sel, controls: Object.assign({}, st.ctl), boot: st.boot, leds, circuit: st.circuit, meas: st.meas || {}, serial: st.serial, sfx: st.sfx,
+    selected: st.sel, controls: Object.assign({}, st.ctl), boot: st.strap ? (st.strap.boot || null) : st.boot, leds, circuit: st.circuit, meas: st.meas || {}, serial: st.serial, sfx: st.sfx,
     why: ev.why || null, tasks: taskState(),
     ...(MAT.steps.length ? { matStep: st.matStep >= 0 ? MAT.steps[st.matStep].id : null } : {}),
     ...(typeof MD.def.model === 'function' ? { readings: roundDeep(st.readings || {}), benchStatus: st.benchStatus || null } : {}) };
@@ -1106,7 +1118,7 @@ function start(pick){
   st = B.st = {
     view: 'board', exploded: false, exK: 0, placed: {}, left: {}, drop: {}, reflowT: null, solderQ: null, solderT: 0,
     power: null, supply: {}, faults: [], mode: def.mode || Object.keys(MD.modes)[0] || null, ext: false, pins: {}, t: 0, serialN: -1,
-    up: null, upT: 0, upDur: 2.2, ctl: {}, boot: null, sel: null, serial: null, txT: 0, circuit: def.circuit || null, meas: {}, sfx: null, tones: {},
+    up: null, upT: 0, upDur: 2.2, ctl: {}, boot: null, sel: null, serial: null, txT: 0, circuit: def.circuit || null, meas: {}, sfx: null, tones: {}, strap: null,
     matStep: MAT.steps.length - 1, readings: {}, benchStatus: null,
   };
   for (const p of MD.parts) st.placed[p.id] = { orient: 0, sold: true };
@@ -1127,6 +1139,7 @@ function start(pick){
   if (q.get('power') && own(MD.power.sources, q.get('power'))) { st.power = q.get('power'); }
   else if (q.get('power') !== '0' && q.get('build') !== 'bare' && MD.power.default && !q.get('fault')) st.power = MD.power.default;
   else if (q.get('fault') && q.get('power') !== '0' && MD.power.default) st.power = MD.power.default;
+  if (st.power) sampleStraps();
   checkChoices();
   // the core frames the box [0,W] x [0,D] x [0,H]: shift the world so the mount view's bounds start at 0
   let vb = VIEWS[B.mountView].bounds(); G.ox -= vb[0]; G.oy -= vb[1]; vb = VIEWS[B.mountView].bounds();

@@ -20,7 +20,8 @@ Changes after the first publication are additive only. Every change is logged he
   translated). Pick and place takes at most about 3 s. `faults` entries may be `[id, label]`; listed faults without a
   label get one from their kind ("Short from 5V to GND", "Leave out C5") (§6.4). The model hook returns `stats`,
   `meas`, `report`, `flow` and `accent` as well (§11). `cfshoot.py --set '<json>'` sends a patch through the bridge and
-  records the state (§14).
+  records the state (§14). Boards declare boot `straps`, latched when the program (re)starts (§6.3). An MCU rail at
+  0 V reports `no-power` ("No power on 5V"), not a brown-out.
 - v5 (14:15): part files may name their pickers with `paramNames: { tempC: 'Temperature' }` (§8; default: the
   param key with a capital). The standalone page now has keyboard access to every drawn part: an off-screen group
   of buttons, one per part, where focus selects the part and Enter or Space holds a control (§14); inside the host
@@ -370,6 +371,19 @@ list) and reports its state:
 | `boot` | ESP32 BOOT: held while `reset` is released → "download mode" (`st.boot = 'download'`) |
 | `bootsel` | Pico BOOTSEL: held while USB is plugged in → mass-storage mode (`st.boot = 'uf2'`) |
 | `input` | a user input (buttons A/B, Basys 3 switches): its `net` level goes to the host as `inputs.<net>` |
+
+Boot straps are data, not controls: `straps: [{ fault, boot, halts?, part?, blocks?: ['upload', 'serial'], msg,
+fix }]`. When the program (re)starts (plugged in, RESET released, an upload done, or that strap's fault set on a live
+board) the engine latches the first strap whose `fault` is in force, until the next restart. `state.boot` reports its
+`boot`. `halts`: the sketch never starts (status `fault`, `fault: { id, kind: 'boot', part, msg, fix }`, no smoke).
+`blocks`: the sketch runs, but `upload` is refused with `msg` and its Serial lines stop. Example (Uno R4):
+
+```js
+straps: [
+  { fault: 'short:MD:GND', boot: 'rom', halts: true, msg: 'BOOT (MD) was low at reset: …', fix: 'Free the BOOT pin and press RESET' },
+  { fault: 'short:ESP_DOWNLOAD:GND', boot: 'esp-download', part: 'M1', blocks: ['upload', 'serial'], msg: '…', fix: '…' },
+],
+```
 
 ### 6.4 Faults
 

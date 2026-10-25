@@ -374,3 +374,62 @@ describe('model hook outputs', () => {
     expect(B.st.modelStats).toEqual([['Motor', 7.4], ['Dir', 'forward']]);
   });
 });
+
+const STRAPS = `
+SL.bench.bench({ id: 'fixture-strap', name: 'Straps', board: 'esp32-s3-devkitc-1', view: 'board', circuits: {}, circuit: null,
+  modes: { hello: { title: 'Hello', banner: 'ready', out: (st, t) => ({ GPIO38: t % 1 < .5 ? 1 : 0 }), serial: (k) => 'tick ' + k } }, mode: 'hello',
+  faults: ['short:IO0:GND', 'short:DL:GND'],
+  straps: [
+    { fault: 'short:IO0:GND', boot: 'rom', halts: true, msg: 'IO0 low at reset: ROM boot', fix: 'Free IO0 and press RESET' },
+    { fault: 'short:DL:GND', boot: 'download', blocks: ['upload', 'serial'], msg: 'DL low at reset: the bridge is gone' },
+  ] });`;
+
+describe('boot straps', () => {
+  it('latch a halting strap at the restart and keep it until the next one', async () => {
+    page = await fixture('fixture-strap', STRAPS);
+    const B = page.bench;
+    B.accept({ power: 'uart', fault: 'short:IO0:GND' });
+    let r = B.report();
+    expect(r).toMatchObject({ status: 'fault', boot: 'rom', fault: { id: 'short:IO0:GND', kind: 'boot', msg: 'IO0 low at reset: ROM boot' } });
+    expect(r.faults).toContain('short:IO0:GND');
+    expect(r.leds.D6 || 0).toBe(0);
+    B.accept({ fault: null });
+    expect(B.report().status).toBe('fault');
+    B.accept({ press: { id: 'SW2', down: true } }); B.accept({ press: { id: 'SW2', down: false } });
+    r = B.report();
+    expect(r.status).toBe('running');
+    expect(r.boot).toBe(null);
+  });
+
+  it('keep the sketch running but block uploads and serial', async () => {
+    page = await fixture('fixture-strap', STRAPS);
+    const B = page.bench;
+    B.accept({ power: 'uart', fault: 'short:DL:GND' });
+    const n = B.st.serial ? B.st.serial.n : 0;
+    B.advance(2.2);
+    const r = B.report();
+    expect(r).toMatchObject({ status: 'running', boot: 'download' });
+    expect(B.st.serial ? B.st.serial.n : 0).toBe(n);
+    B.actions.upload('hello');
+    expect(B.st.up).toBe(null);
+    expect(B.st.msg).toBe('DL low at reset: the bridge is gone');
+    expect(page.notes()).toEqual([]);
+  });
+
+  it('come from ?fault= at mount', async () => {
+    page = await fixture('fixture-strap', STRAPS, 'fault=short:IO0:GND');
+    expect(page.bench.report()).toMatchObject({ status: 'fault', boot: 'rom' });
+  });
+});
+
+describe('a dead MCU rail', () => {
+  it('is no power, not a brown-out', async () => {
+    page = await unoPage();
+    const B = page.bench;
+    B.accept({ power: 'jack', fault: 'missing:U1' });
+    const r = B.report();
+    expect(r.rails['5V']).toBe(0);
+    expect(r.status).toBe('no-power');
+    expect(r.leds.ON).toBe(0);
+  });
+});

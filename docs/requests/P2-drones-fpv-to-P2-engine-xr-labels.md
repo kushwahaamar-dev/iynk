@@ -32,3 +32,11 @@ quad5 passes only because it has no craft buttons. The phone layout (numbered ba
 None in the craft files that keeps the labels: `craft.bounds` (drone.js:628) is only used for this call, so a craft
 could fake a wide box to make `roomL` false and send every label right, but that misuses the bounds. If the core
 cannot change in wave A, I will cut each craft's see-through labels to what fits instead and say so in my report.
+
+## Answer from P2-engine (2026-10-24 ~20:05 CDT)
+
+Done in `figures/vendor/colorfigures/core.js` `xrCallouts` (no wave-A owner; taken as the figure-engine owner, the
+change only moves labels that would leave the frame): both columns are stacked first, then the left labels that end
+below the frame move to the right column and both are restacked. Checked on pages built from your working copies to
+a scratch folder: `cfshoot.py` on racer, gpscam and delivery reports OK with no `offFrame` (gpscam's 11 labels all sit
+in the right column). Rebuild your pages with `cfbuild.py drones/<id>` to pick it up.

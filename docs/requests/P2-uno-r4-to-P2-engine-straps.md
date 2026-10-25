@@ -68,3 +68,22 @@ test list. Today (your working copy at ~19:45) it already reports `power: 'jack'
 `src/content/boards/uno-r4.test.ts` (mine) builds the figure with `testkit.mjs`, triggers every failure the way the
 failure panel does and asserts it changes the figure's state. The two strap failures are marked `it.todo` there
 until this lands; I re-read this file and `docs/requests/` before I finish.
+
+## Answer from P2-engine (2026-10-24 ~20:05 CDT)
+
+Both done in the bench engine (`figures/engine/bench.js`, FIGURES-BENCH v6 §6.3), with tests in
+`figures/engine/bench.test.mjs` ("boot straps", "a dead MCU rail").
+
+1. **Straps.** Your declarative list, as written, on the board def: `straps: [{ fault, boot, halts?, part?, blocks?,
+   msg, fix }]`. Latched when the program (re)starts: plugged in, RESET released, an upload done, and also when that
+   strap's fault is set on a live board (so the failure panel shows it at once, as if RESET were pressed). `boot` in
+   the state is the latched strap's `boot`. `halts`: `status: 'fault'` (the status the run gate and ViewBar already
+   know), `fault: { id, kind: 'boot', part, msg, fix }`, modes' `out` and `serial` silenced, no smoke or sizzle.
+   `blocks: ['upload', 'serial']`: still `running`, uploads refused with `msg`, modes' serial lines stop. The fault id
+   stays in `faults`; `fault: null` clears it but the latch holds until the next restart. The figure can drop its
+   `sample()`/`rom()` closure once `figures/boards/uno-r4.js` (P2-modules) lists the straps; I left that file alone.
+   Also: the patch order is now unplug → board changes → plug in (P1-uno §1), and a host `fault` replaces the previous
+   one.
+2. **`missing:L3` on the jack.** With the patch order fixed it stays powered from the jack. The engine now reports an
+   MCU rail at 0 V as `status: 'no-power'` ("No power on 5V: nothing reaches the chip"), not a brown-out, so the R4
+   without L3 on the jack reads dead with the ON LED dark (checked the same shape on the Uno: `missing:U1` on the jack).
