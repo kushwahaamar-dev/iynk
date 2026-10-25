@@ -418,6 +418,12 @@
       "symptom": "La LED flashe très fort une fois, puis reste éteinte pour de bon. D13 peut être plus faible ensuite.",
       "explanation": "Sans résistance, seul le driver interne de la broche limite le courant : environ (5 − 2) V ÷ 26 Ω ≈ 115 mA, bien au-delà des 20 mA de la LED et des 40 mA maximum de la broche.",
       "fix": "Mettez une résistance de 220 Ω en série avec chaque LED et remplacez celle qui a grillé. Choisissez de nouveau 220 Ω pour effacer la panne ici."
+    },
+    "led-backwards": {
+      "title": "LED à l'envers",
+      "symptom": "Le sketch tourne et D13 commute comme avant, mais la LED ne s'allume jamais. Rien ne chauffe.",
+      "explanation": "Une LED est une diode : le courant ne passe que de l'anode (la patte longue) vers la cathode (le côté plat, la patte courte). À l'envers, elle bloque et aucun courant ne circule. 5 V ne l'abîment pas : une LED supporte environ 5 V en inverse.",
+      "fix": "Débranchez, puis retournez la LED : la patte longue (anode) vers la résistance, le côté plat (cathode) vers GND."
     }
   },
   "assembly": {

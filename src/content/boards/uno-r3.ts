@@ -2268,6 +2268,17 @@ const board: BoardContent = {
       explanation: 'failures.led-no-resistor.explanation',
       fix: 'failures.led-no-resistor.fix',
     },
+    {
+      id: 'led-backwards',
+      kind: 'reversed-part',
+      trigger: { by: 'reverse-part', part: 'LED1' },
+      figure: { type: 'set', state: { circuit: 'blink', fault: 'reversed:LED1' } },
+      effect: { power: 'on', halts: false },
+      title: 'failures.led-backwards.title',
+      symptom: 'failures.led-backwards.symptom',
+      explanation: 'failures.led-backwards.explanation',
+      fix: 'failures.led-backwards.fix',
+    },
   ],
   assembly: [
     { id: 'unplug', kind: 'build', action: { type: 'set', state: { power: null } }, done: { power: null }, major: false, title: 'assembly.unplug.title', body: 'assembly.unplug.body' },

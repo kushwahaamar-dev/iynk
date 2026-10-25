@@ -10,11 +10,16 @@ import en from '@/i18n/content/en/boards/uno-r3.json';
 import type { Lesson } from '@/content/schema';
 import { defaultParams, renderTemplate, resolveText } from '@/lib/boardlab/template';
 import { lessonJob, runChecks } from '@/lib/interp';
+import { buildFigure, loadFigure } from '../../../figures/engine/testkit.mjs';
 
 const figure = readFileSync(join(process.cwd(), 'figures/boards/uno-r3.js'), 'utf8');
 const figureKinds = new Map([...figure.matchAll(/\{ id: '([A-Z0-9-]+)', kind: '([a-z0-9-]+)'/g)].map((m) => [m[1], m[2]]));
 const figureCircuits = new Set([...figure.matchAll(/\n {4}'?([a-z0-9-]+)'?: \{\n {6}title: /g)].map((m) => m[1]));
 const figureSources = ['usb', 'jack', 'vin', 'pin5'];
+const circuitParts = (circuit: unknown): string[] => {
+  const m = typeof circuit === 'string' ? new RegExp(`\n {4}'?${circuit}'?: \\{\n {6}title: [^]*?\n {4}\\},`).exec(figure) : null;
+  return m ? [...m[0].matchAll(/\{ id: '([A-Z0-9]+)', part: /g)].map((x) => x[1]) : [];
+};
 const THROUGH_HOLE = new Set(['socket', 'xtal', 'male', 'tact', 'female', 'usb-b', 'barrel']);
 
 // The figure lists each header's pins left to right as drawn; IOH and IOL are numbered from the other end.
@@ -65,7 +70,8 @@ describe('uno-r3 content', () => {
       if (state.fault != null) {
         const [kind, a] = String(state.fault).split(':');
         expect(['reversed', 'missing', 'cold', 'reverse-polarity', 'wrong-voltage', 'short', 'brownout'], f.id).toContain(kind);
-        if (kind === 'reversed' || kind === 'missing') expect([...figureKinds.keys()], f.id).toContain(a);
+        // a part of the board, or a breadboard part of the circuit the failure wires
+        if (kind === 'reversed' || kind === 'missing') expect([...figureKinds.keys(), ...circuitParts(state.circuit)], f.id).toContain(a);
         if (kind === 'cold') expect([...figureKinds.keys()], f.id).toContain(a.split('.')[0]);
         if (kind === 'reverse-polarity' || kind === 'wrong-voltage') expect(figureSources, f.id).toContain(a);
       }
@@ -73,6 +79,25 @@ describe('uno-r3 content', () => {
       if (state.circuit != null) expect(figureCircuits, f.id).toContain(state.circuit);
     }
   });
+
+  it('turns the Blink LED round: the sketch still drives D13, the LED stays dark until it is turned back', async () => {
+    const f = uno.failures.find((x) => x.id === 'led-backwards');
+    if (f?.figure.type !== 'set') throw new Error('no set failure led-backwards');
+    const page = await loadFigure(buildFigure('boards/uno-r3'), { path: '/figures/boards/uno-r3.html' });
+    const B = page.bench;
+    const led = () => (B.report() as { meas?: Record<string, { state?: string }> }).meas?.LED1?.state;
+    const lit = (state: Record<string, unknown> = {}) => {
+      B.accept(state);
+      B.accept({ pins: { D13: 1 } });
+      B.advance(0.5);
+      return led();
+    };
+    B.accept({ power: 'usb', circuit: 'blink' });
+    expect(lit()).toBe('ok');
+    expect(lit(f.figure.state)).toBe('reverse');
+    expect(lit({ fault: null })).toBe('ok');
+    page.close();
+  }, 60_000);
 
   it('unplugs before stripping, then places every through-hole part once', () => {
     const steps = uno.assembly ?? [];

@@ -418,6 +418,12 @@
       "symptom": "El LED da un destello muy fuerte y se queda apagado para siempre. Después D13 puede quedar más débil.",
       "explanation": "Sin resistencia, solo el propio driver del pin limita la corriente: unos (5 − 2) V ÷ 26 Ω ≈ 115 mA, muy por encima de los 20 mA del LED y del máximo de 40 mA del pin.",
       "fix": "Pon una resistencia de 220 Ω en serie con cada LED y cambia el que se ha fundido. Elige otra vez 220 Ω para quitar la avería aquí."
+    },
+    "led-backwards": {
+      "title": "LED al revés",
+      "symptom": "El sketch funciona y D13 conmuta como antes, pero el LED no se enciende nunca. Nada se calienta.",
+      "explanation": "Un LED es un diodo: la corriente solo pasa del ánodo (la pata larga) al cátodo (el lado plano, la pata corta). Al revés, bloquea y no circula ninguna corriente. 5 V no lo dañan: los LED aguantan unos 5 V en sentido inverso.",
+      "fix": "Desconecta y gira el LED: la pata larga (ánodo) hacia la resistencia, el lado plano (cátodo) a GND."
     }
   },
   "assembly": {

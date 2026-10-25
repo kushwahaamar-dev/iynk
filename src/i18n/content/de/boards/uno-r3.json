@@ -418,6 +418,12 @@
       "symptom": "Die LED blitzt einmal sehr hell auf und bleibt dann für immer dunkel. D13 ist danach vielleicht schwächer.",
       "explanation": "Ohne Widerstand begrenzt nur der Treiber des Pins selbst den Strom: etwa (5 − 2) V ÷ 26 Ω ≈ 115 mA, weit über den 20 mA der LED und dem Maximum des Pins von 40 mA.",
       "fix": "Setz in Reihe zu jeder LED einen 220-Ω-Widerstand und ersetze die durchgebrannte. Wähl hier wieder 220 Ω, um den Fehler zu beheben."
+    },
+    "led-backwards": {
+      "title": "LED falsch herum",
+      "symptom": "Der Sketch läuft und D13 schaltet wie vorher, aber die LED leuchtet nie. Nichts wird warm.",
+      "explanation": "Eine LED ist eine Diode: Strom fließt nur von der Anode (dem langen Bein) zur Kathode (der flachen Seite, dem kurzen Bein). Falsch herum sperrt sie, es fließt gar kein Strom. 5 V schaden ihr nicht: LEDs vertragen in Sperrrichtung etwa 5 V.",
+      "fix": "Zieh den Stecker und dreh die LED um: das lange Bein (Anode) zum Widerstand, die flache Seite (Kathode) an GND."
     }
   },
   "assembly": {

@@ -418,6 +418,12 @@
       "symptom": "The LED flashes very bright once, then stays dark for good. D13 may be weaker afterwards.",
       "explanation": "Without a resistor, only the pin's own driver limits the current: about (5 − 2) V ÷ 26 Ω ≈ 115 mA, far past the LED's 20 mA and the pin's 40 mA maximum.",
       "fix": "Put a 220 Ω resistor in series with every LED and replace the burnt one. Pick 220 Ω again to clear it here."
+    },
+    "led-backwards": {
+      "title": "LED in backwards",
+      "symptom": "The sketch runs and D13 switches as before, but the LED never lights. Nothing gets warm.",
+      "explanation": "An LED is a diode: current only flows from the anode (the long leg) to the cathode (the flat side, the short leg). Turned round, it blocks, so no current flows at all. 5 V doesn't harm it: LEDs take about 5 V the wrong way.",
+      "fix": "Unplug and turn the LED round: the long leg (anode) to the resistor, the flat side (cathode) to GND."
     }
   },
   "assembly": {
