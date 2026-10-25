@@ -83,22 +83,26 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 20:17 CDT (machine clock).
-- **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session).
-- **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Fast-forwarded to
-  `94d3caa`. Do not build in `/Users/amar/Codes/sim`.
-- **Phase:** 2, wave A running again since 20:17 (paused 19:45–20:17). Phase 1 done. All seven labels from `scripts/workflows/phase1.md` are done and none is running. Gate 1 reran
-  locally at 19:21 and is green apart from phase-2 prose (below). Jagrati's session should not resume its own copies.
+- **Updated:** 2026-10-24 23:00 CDT (machine clock).
+- **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session). Amar is asleep
+  since 22:20 and gave full autonomy for every remaining build phase except Solana and hardware (CONTEXT.md §5).
+- **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Do not build in
+  `/Users/amar/Codes/sim`.
+- **Phase:** 2. Phase 1 done, gate 1 green (19:21). Wave A done (21:27). Wave B next, with phase 3's prose wave T1
+  beside it (`scripts/workflows/phase3.md`).
 - **Plan:** `docs/hacktx/BUILD-PLAN.md`, written from the six audits in `docs/audit/` (boards, robotics, drones,
   platform, sponsor-layer, history). Phases 1–3 build for Best Overall, SerpApi, Most Entertaining and Meta.
-  Solana and Best Hardware Hack are phase 4, only if time is left after gate 3 (Amar, 16:15). Don't start them
-  earlier.
-- **Checks on this tree (19:21, `06ac3f0`):** `npm run typecheck` exit 0. `npx eslint . --quiet` exit 0. Full
-  vitest: 1347 passed, 4 skipped (TimescaleDB integration, no database), 8 todo, 0 failed. `npm run build` with
-  typecheck on exits 0, 645 of 645 pages, one warning (`src/i18n/figures/<locale>.json` missing). Playwright 57/57.
-  **`npm run content:check` exits 1:** `uno-r4` and drones `whoop`, `cinewhoop`, `longrange`, `wing` have data
-  modules but no English prose, so they 404 in every language (phase-2 rows). Do not run `npm ci` here (a fresh
-  install in `/Users/amar/Codes/sim` showed `PageProps` errors this install does not have).
+  Solana and Best Hardware Hack were phase 4, only if time is left after gate 3 (Amar, 16:15); at 22:20 Amar said
+  to leave them aside, so phase 4 is skipped.
+- **Checks after wave A (22:15–23:00, driver):** `npm run typecheck` exit 0. `npx eslint . --quiet` exit 0.
+  `npm run content:check` exit 0 (every item with a data module has English prose). Full vitest on a quiet machine:
+  1759 passed, 4 skipped (TimescaleDB, no database), 0 failed (`0b71e59` set one 30 s test timeout: the web-server
+  lessons took 2-3 s alone and passed 5 s under load). Production build with typecheck on: exit 0. Route crawl, 606
+  pages at 390 px: 0 failed, 163 clean, 341 with known later-phase problems only (figure strings phase 3; pi5-ros2's
+  missing pages, P2-pi), 102 expected 404s (wave B's items). Playwright: 71 passed, 5 skipped (agrihex, swarm, vtol,
+  tricopter, octo: no content yet). `cfbuild.py --all` (`6576766`): 55 pages, `cfshoot` on the 50 that changed: 44
+  OK, 6 part pages fail on overlapping labels (4 already did at 17:30), filed for P2-engine-b
+  (`docs/requests/driver-to-P2-engine-b-figure-layout.md`, also bench stats over the art).
 - **Local smoke (18:24, `docs/hacktx/DEPLOY.md`):** `/` 307 to `/en`. `/en`, `/en/boards/uno-r3`,
   `/en/boards/uno-r3/blink`, `/en/drones/quad5`, `/en/drones/quad5/fly`, `/en/together` and
   `/figures/boards/uno-r3.html` are 200. `/api/mcp` POST `initialize` and `tools/list` 200 (7 tools).
@@ -110,35 +114,24 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   `.env.local` on Jagrati's Mac is `.env.example` with empty values. Vultr, Vercel env upload and Tiger are not
   approved yet, so gate 1 runs without live Meta/SerpApi and rooms use the one-browser fallback until keys arrive.
   D3 (devnet SOL) is asked only when phase 4 starts.
-- **Gate 1 (19:21 rerun, local, `docs/verify/gate1.md`): green apart from phase-2 prose.** Typecheck, eslint,
-  build, vitest 1347/0, app-path 59/59, bench probe 17/17, cfshoot uno-r3 and quad5, Playwright 57/57, route crawl
-  606 pages with 0 failed. Still red: `content:check` (uno-r4, whoop, cinewhoop, longrange, wing have no English
-  prose), which phase 2 writes. The first run's reds and their fixes are in the report.
-- **Paused (19:45 until the resume, Amar: "Pause this simply. We will resume after one hour").** Wave A (`wf_72d15e74-60a`) was
-  stopped with TaskStop after about 12 minutes; no agent had finished, no process or `.git/index.lock` was left. Its 7
-  commits are on `origin/main` (`23c6c80`…`29a2d4b`). Uncommitted work stays in the tree on purpose (don't commit,
-  stash or revert it), with a copy in `~/simlab-scratch-backup/wave-a-pause-1945/` (`tracked.patch`, `untracked.tgz`,
-  `status.txt`, `HEAD.txt` = `29a2d4b`). Per label:
+- **Wave A (`wf_bde0e200-6a3`, 20:17–21:27, all 9 done, every commit pushed):**
 
-  | Label | Committed | Uncommitted in the tree |
+  | Label | Done | Left, and who has it now |
   |---|---|---|
-  | P2-engine | `4b4a878` one `set` patch unplugs, changes, plugs in; reversed parts in `state.faults`. `f06d126` boot straps latched, dead MCU rail reads no-power, xr labels stay in frame (also 7 lines in `figures/vendor/colorfigures/core.js`, now in its ownership; every figure changes on rebuild, so check `cfshoot` after `cfbuild --all`) | – |
-  | P2-uno-r4 | `25044c1` requests to P2-engine (straps) and P2-modules (figure) | `src/content/boards/uno-r4.ts`, `uno-r4.test.ts` (new), `docs/requests/P2-uno-r4-to-P2-modules-r4-dac.md` (new) |
-  | P2-modules | – | – (was still reading) |
-  | P2-drone-prose | `cc7eda4` whoop prose, content tests, `drones/_checks.ts` | – |
-  | P2-drones-fpv | `23c6c80`, `f0a99fd` requests to P2-flight and P2-engine | `src/content/drones/racer.ts`, `src/i18n/content/en/drones/racer.json` (new) |
-  | P2-flight | – | `src/content/schema.ts`, `src/content/drones/quad5.ts` (range numbers move into content), `src/lib/flight/{sim,types,world}.ts`, new `registry.ts`, `route.ts`, `demo-debug.test.ts`, `demo-probe.test.ts` |
-  | P2-rob-uno | `29a2d4b` uno-r3-build content, test, built figure (prose existed) | – |
-  | P2-rob-motor | – | `figures/parts/{aa-holder-4,lipo-2s,tt-motor}.js` and their `public/figures/parts/*.html` (new) |
-  | P2-social | – | `src/lib/{boardlab,dronelab,robotics}/store.ts` and tests (boardlab test new), `src/lib/realtime/{config.ts,provider.tsx,shared-actions.ts,store-sync.ts}` and 3 tests |
-  | driver | – | `src/content/index.generated.ts` (regenerated by an agent; the driver commits it after the wave) |
+  | P2-engine | nodal circuit solver (`e61a5b8`), straps, callouts under the stats panel, mat parts, drone step resets, Nano MPU-6050, FIGURES-BENCH v7, every wave-A engine request answered (`4b4a878`…`0f105ba`) | `P2-engine-gaps.md` → P2-engine-b |
+  | P2-uno-r4 | content, prose, quizzes on all 7 lessons, tests on both variants (`5aeca4c`…`76ec621`) | DAC: driver did it (`e8ce4d3`); `dac-wave` jumper → P2-engine-b; Minima strap fault → phase 3 idea |
+  | P2-modules | MPU-6050 part, HC-SR04 and MPU-6050 modules, every pico/nodemcu/uno-r4 circuit part drawn, sensor inputs tested (`0333b12`…`c18c4ba`) | – |
+  | P2-drone-prose | prose, tests and prompts for whoop, cinewhoop, longrange, wing (`cc7eda4`…`9dd8687`) | – |
+  | P2-drones-fpv | racer, gpscam, delivery content, prose, tests, figures (`0fc1a5c`…`83c627f`) | racer 55 A ESC: driver (`7f1f0db`); parcel mass and AUTO descent → P2-fun |
+  | P2-flight | flight registry, every craft flies from its content, demo and medal times, fly e2e (`c97623c`…`9f0feca`) | wave B crafts fly once their content lands |
+  | P2-rob-uno | uno-r3-build (25 steps, 13 faults) and led-resistor (19 steps, 8 faults) benches (`29a2d4b`…`cf2a732`) | content-index heuristic: driver (`f2ee57b`) |
+  | P2-rob-motor | transistor-switch, tb6612fng, l298n benches on the model hook, TT motor, AA holder, 2S LiPo (`bc79f7c`…`7c3e84d`) | wiring faults on the breadboard → P2-engine-b |
+  | P2-social | room sync and baton in every lab store, Web Audio sound, telemetry on AI calls, failure patch (`8d42b08`…`246bb90`) | telemetry opt-out, kinds, privacy copy → P2-fun; FigureReadout: driver (`73acdd8`) |
 
-- **Next step:** wave A resumed at 20:17 as workflow `wf_bde0e200-6a3` (all 9 labels, each told to carry on from
-  its own commits and the uncommitted files in the table above). Don't touch wave-A files while it runs and never
-  SendMessage its agents. When it finishes, record each label's report here, do "Between and after the waves" in
-  `phase2.md` (content index, `cfbuild.py --all` and a `cfshoot` check of the core.js label change, gate checks),
-  then ask Amar for the go on wave B. If this session dies, relaunch the unfinished labels the same way with
-  `since: "bf45524"`.
+- **Next step:** launch wave B (`scripts/workflows/phase2-wave-b.js`, 10 agents, 2.5–3 h) and phase 3's T1 prose wave
+  beside it, record their run ids here, then wait. When wave B finishes: its reports here, "Between and after the
+  waves" in `phase2.md` (content index, `cfbuild.py --all` with `cfshoot`, gate checks, `docs/verify/gate2.md`), then
+  phase 3 waves T2 and D (planned at gate 2 in `phase3.md`).
 - **Agents:** P1-checks `1e6f87c4-b1ea-4a31-9425-b1de6de9a88f` done (`39cca43`, `c168147`). P1-health
   `d393e1cb-35bc-4db4-bc0b-37c02c1b8e14` done (`28d8564`). P1-voice `b337455f-1b6d-45d5-93d8-51efb828d421` done
   (`b1e5308`). P1-engine `1a0582c2-ec24-42ab-8b3c-e2ac162b8e48` done (`f104e10`, `a45ec96`, `03eaab0`, `9d49d45`,
@@ -160,6 +153,12 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 23:00 CDT (Amar's session): wave A done at 21:27, all 9 labels pushed. Driver closed it: content index
+  (`baa671a`), every figure rebuilt (`6576766`) and shot, layout problems filed for P2-engine-b (`a4c7e9f`), suite
+  timeout (`0b71e59`), driver requests done (FigureReadout `73acdd8`, R4 DAC `e8ce4d3`, racer ESC `7f1f0db`,
+  content-index heuristic `f2ee57b`), translated-prose test (`a2b8b9b`). Gate checks after wave A green (Current
+  status). Amar went to sleep at 22:20 with full autonomy; wave B's script (`10b6951`) and phase 3's plan are next.
 
 - 2026-10-24 20:17 CDT (Amar): Amar said "resume". Remote, tree and backup unchanged since the pause, nothing
   running. Wave A relaunched as `wf_bde0e200-6a3` with all 9 labels and the resume note.
