@@ -1,0 +1,297 @@
+{
+  "title": "Dron de enjambre Crazyflie",
+  "tagline": "Un Crazyflie de 29 g que se programa en Python: decks Lighthouse y Flow, una Crazyradio y tres más como él volando una estrella en un espectáculo de luces.",
+  "sub": "Crazyflie 2.1+, cflib y Lighthouse",
+  "hint": "Monta un Crazyflie, comprueba sus decks y su enlace de radio, y luego vuela un espectáculo de luces con cuatro drones",
+  "noun": "Crazyflie",
+  "overview": "Un Crazyflie es un cuadricóptero de 29 g que se programa en lugar de pilotarse. Su placa de circuito de 92 mm es a la vez el chasis y la controladora de vuelo, con cuatro motores sin núcleo (coreless) conmutados directamente desde la placa y dos tiras de pines para los decks de expansión. Un Flow deck por debajo mira el suelo y mide la altura; un Lighthouse deck por arriba mide los tiempos de los barridos láser de dos estaciones base y sabe dónde está el dron en la sala con unos pocos centímetros de precisión. Un script de Python en un portátil habla con él a través de una Crazyradio con cflib, y la misma radio habla con todo un enjambre, cada dron en su propia dirección. Este guía a cuatro drones en un espectáculo de luces: una estrella de cinco puntas a 0,8 m/s, cada dron en su propia esquina de un cuadrado de 0,6 m y con sus LED cambiando de color en cada punta. Elige las piezas, móntalo, comprueba los motores, el enlace de radio, los decks y el failsafe por pérdida de enlace, y luego vuela el espectáculo a mano o deja que lo vuele el high-level commander.",
+  "practice": "Vuela primero en Hover: despega hasta 1 m sobre la plataforma y luego vuela la estrella de punta en punta a mano, despacio. Las palancas piden como mucho 1 m/s y 20° de inclinación. Mira cómo los otros tres mantienen sus posiciones a tu lado y detrás de ti, y luego aterriza en la plataforma. Después cambia a Show y deja que lo vuele el high-level commander. En un enjambre real: da a cada dron su propia dirección, mantenlos quietos y nivelados mientras se encienden, comprueba que los dos decks marcan 1, haz la comprobación de los motores y la prueba de pérdida de enlace sin hélices y la prueba de las hélices con ellas puestas, y vuela el primer espectáculo bajo, sobre una red, con una orden de aterrizaje preparada en tu script.",
+  "design": {
+    "fixed": {
+      "FRAME": "Placa Crazyflie 2.1+ y soportes de los motores (el chasis)",
+      "FLOW": "Flow deck v2",
+      "DECKL": "Deck de posicionamiento Lighthouse",
+      "HDR": "Tiras de pines largos",
+      "RADIO": "Crazyradio 2.0 (en el portátil, así que aquí no pesa nada)",
+      "STRAP": "Almohadilla de espuma para la batería (la \"cinta\" del original: un Crazyflie no lleva)"
+    },
+    "verdict": {
+      "ok": "Las piezas encajan: {tw}:1, margen suficiente para mantener una formación cerrada en interiores. La calculadora conserva las masas de las piezas del original; el dron real con los dos decks pesa unos 34 g, así que su margen es un poco menor.",
+      "over": "Los motores de 8,5 x 20 mm no caben en los soportes de motor de 7 mm del Crazyflie, y su peso se come el empuje que añaden: {tw}:1. Quédate con motores de 7 mm; la mejora de empuje de la propia Bitcraze es un motor de 7 x 20 mm.",
+      "weak": "Relación empuje/peso de {tw}:1: demasiado pesado para cuatro motores de 7 x 16. Se mantiene en estacionario cerca del gas a tope, con poco margen para corregir una deriva, así que no puede mantener su posición en la formación. Pon una celda más ligera o las hélices 47-17."
+    }
+  },
+  "parts": {
+    "MOTORS": {
+      "name": "4 motores sin núcleo de 7 x 16 mm en sus soportes",
+      "what": "Motores de corriente continua con escobillas de 7 mm de diámetro y 16 mm de largo, 14000 rpm por voltio, metidos a presión en soportes de plástico que se enganchan en las puntas de los brazos y además hacen de patas. Un rotor sin núcleo no lleva hierro, así que el motor es diminuto y acelera rápido, pero las escobillas se gastan: un motor cansado se nota como una deriva lenta hacia su esquina. Los cuatro son la misma pieza."
+    },
+    "FC": {
+      "name": "Placa Crazyflie 2.1+",
+      "what": "Todo el chasis es esta placa de circuito de 92 mm en forma de X. Un STM32F405 ejecuta el estimador y los controladores, un nRF51822 se ocupa de la radio y la alimentación, un BMI088 mide la rotación y la aceleración y un BMP388 la presión del aire. El saliente de la antena marca la parte delantera y los LED azules están detrás. No hay brújula, ni ESC, ni alineación de la placa que ajustar."
+    },
+    "WIRES": {
+      "name": "Conectores de los motores (Molex PicoBlade)",
+      "what": "Cada motor tiene dos cables cortos que terminan en un conector PicoBlade de 2 pines, que va en un zócalo de su brazo. El conector tiene forma, y la polaridad de cada zócalo fija hacia qué lado gira su motor."
+    },
+    "HDR": {
+      "name": "Tiras de pines largos",
+      "what": "Dos tiras de diez pines con un paso de 2 mm: 19 mm por encima de un separador de plástico de 2 mm y 4 mm por debajo, para que un deck vaya arriba y otro debajo. Llevan 3,0 V, tierra, la tensión de la batería, I²C, SPI, dos UART y la línea 1-wire por la que responde el chip de identificación de cada deck."
+    },
+    "FLOW": {
+      "name": "Flow deck v2",
+      "what": "Un sensor de flujo óptico PMW3901 mira cómo se desliza el suelo y un sensor de tiempo de vuelo VL53L1x mide la altura. Juntos mantienen la posición sin nada en la sala, de 0,2 a unos 3 m sobre un suelo mate y con textura. Nombre en el firmware: bcFlow2."
+    },
+    "BATT": {
+      "name": "LiPo 1S de 250 mAh",
+      "what": "Una celda, 3,7 V, 7,1 g, con conector Molex 51005 y su propia placa de protección. Va sobre una almohadilla de espuma entre las filas de pines, debajo del deck de arriba, y se carga por el conector USB de la placa. Unos 7 minutos de vuelo estacionario con el dron sin nada, menos con dos decks."
+    },
+    "DECKL": {
+      "name": "Deck de posicionamiento Lighthouse",
+      "what": "Cuatro receptores infrarrojos TS4231 miden los tiempos de los barridos láser de las estaciones base Lighthouse V2, y una FPGA ICE40 convierte esos tiempos en ángulos para el filtro de Kalman. Mejor de 10 cm en absoluto en una sala de 5 x 5 m, y menos de un milímetro de un instante al siguiente. Cada dron calcula su propia posición, así que cualquier número de drones puede compartir las mismas estaciones. Nombre en el firmware: bcLighthouse4."
+    },
+    "RADIO": {
+      "name": "Crazyradio 2.0",
+      "what": "Una llave USB en el portátil con un nRF52840, un amplificador de 20 dBm y una antena de 2 dBi en un conector RP-SMA. Una sola radio sirve para todo el enjambre: todos los drones están en el mismo canal, cada uno en su propia dirección."
+    },
+    "PROPS": {
+      "name": "Hélices bipala, 2 CW y 2 CCW",
+      "what": "En ejes de 0,8 mm. El 2.1+ viene con hélices 47-17 (47 mm, 17 mm de paso): la 47-17 gira en sentido antihorario y la 47-17R en sentido horario. Las hélices antiguas de 45 mm van marcadas B (sentido antihorario) y A (sentido horario). La cara convexa va hacia arriba. Una hélice en el motor equivocado voltea el dron al despegar, y la comprobación de vuelco corta los motores."
+    }
+  },
+  "build": {
+    "motors": {
+      "title": "Los motores en sus soportes",
+      "body": "Mete a presión cada motor en un soporte de plástico con los cables saliendo por la ranura. Los cuatro motores de 7 x 16 son la misma pieza: la placa decide hacia qué lado gira cada uno, así que da igual cuál va dónde."
+    },
+    "board": {
+      "title": "Engancha la placa en los soportes",
+      "body": "Apoya la placa sobre los cuatro soportes con el saliente de la antena delante y empuja cada punta de brazo en el clip de su soporte hasta que quede plana. La placa es el chasis: no hay nada que atornillar.",
+      "refusal": "Las puntas de los brazos de la placa se enganchan en los soportes de los motores: primero coloca los motores."
+    },
+    "plugs": {
+      "title": "Conecta los motores",
+      "body": "Mete el conector PicoBlade de cada motor en el zócalo de su brazo y deja los cables a lo largo del brazo, lejos de la hélice.",
+      "refusal": "Los conectores van en los zócalos de la placa: primero coloca los motores y la placa."
+    },
+    "pins": {
+      "title": "Pon los pines largos",
+      "body": "Mete las dos tiras de pines largos por los agujeros desde arriba, con el separador de plástico plano sobre la placa: quedan 19 mm por arriba para el Lighthouse deck y salen 4 mm por debajo para el Flow deck.",
+      "refusal": "Los pines van por los agujeros de la placa: primero coloca la placa."
+    },
+    "flow": {
+      "title": "Pon el Flow deck por debajo",
+      "body": "Encaja el Flow deck en los pines por debajo de la placa, con su cámara y su sensor de distancia mirando al suelo y su serigrafía en el sentido correcto.",
+      "refusal": "El Flow deck va colgado de los pines largos: primero ponlos."
+    },
+    "batt": {
+      "title": "Coloca la batería",
+      "body": "Pon una almohadilla de espuma sobre la placa entre las filas de pines y apoya en ella la celda, con el cable hacia atrás. Déjala desconectada hasta que estén puestos los decks.",
+      "refusal": "La celda va sobre la placa entre las filas de pines: primero coloca la placa."
+    },
+    "lighthouse": {
+      "title": "Pon el Lighthouse deck por arriba",
+      "body": "Baja el Lighthouse deck por los pines largos sobre la batería, en el sentido correcto: girado, su chip de identificación toca los pines equivocados y el firmware nunca lo ve. Sus cuatro receptores necesitan ver bien las estaciones base.",
+      "refusal": "El deck va sobre los pines largos: primero ponlos."
+    },
+    "radio": {
+      "title": "Prepara la Crazyradio",
+      "body": "Enrosca la antena en la Crazyradio 2.0 y conéctala al portátil. En cfclient (Connect, Configure 2.x) da a cada dron su propia dirección en el mismo canal: de E7E7E7E701 a E7E7E7E704 en el canal 80.",
+      "refusal": "La Crazyradio habla con la placa: primero coloca la placa."
+    },
+    "props": {
+      "title": "Pon las hélices (las últimas)",
+      "body": "Solo después de la comprobación de los motores y de la calibración. 47-17 (sentido antihorario) en M1 y M3, 47-17R (sentido horario) en M2 y M4; con las hélices antiguas de 45 mm, la B va en M1 y M3 y la A en M2 y M4. La cara convexa hacia arriba, metidas hasta el fondo del eje.",
+      "refusal": "Las hélices van las últimas, con los motores y la placa puestos: primero coloca todo eso."
+    }
+  },
+  "wiring": {
+    "BATT-FC": "La celda 1S se conecta al zócalo Molex 51005 de la placa. El nRF51 conmuta la alimentación y carga la celda desde el USB, y unos reguladores generan los 3,0 V con los que funciona la electrónica.",
+    "FC-WIRES": "Cuatro MOSFET de la placa conmutan los motores con un PWM de 8 bits de los temporizadores del STM32, unas 328 000 veces por segundo. No hay ESC ni nada que configurar: a un motor con escobillas solo hay que cambiarle la tensión media.",
+    "WIRES-MOTORS": "Dos cables por motor. La polaridad de cada zócalo fija el giro: M1 y M3 en sentido antihorario, M2 y M4 en sentido horario, vistos desde arriba.",
+    "DECKL-FC": "A través de los pines largos: la FPGA envía los tiempos de los barridos por un UART, y el chip de identificación del deck le dice al firmware que está ahí.",
+    "FLOW-FC": "A través de los extremos de abajo de los pines: el sensor de flujo por SPI y el sensor de distancia por I²C.",
+    "RADIO-FC": "El protocolo de radio de 2 Mbit/s de Nordic en 2,4 GHz, canal 80. Las consignas, los parámetros y los logs van todos por ahí; con consignas transmitidas de forma continua, un hueco de 0,5 s nivela el dron y uno de 2 s para sus motores."
+  },
+  "tests": {
+    "motors": {
+      "title": "Comprobación de los motores (sin hélices)",
+      "pass": "Cada motor ha girado por separado con motorPowerSet y sin hélices: M1 (delante a la derecha) y M3 han girado en sentido antihorario vistos desde arriba, y M2 y M4 en sentido horario. Los cuatro motores son la misma pieza y los zócalos fijan el sentido, así que esta comprobación encuentra un motor muerto, un conector suelto o uno mal crimpado. La autoprueba del encendido también da un toque a cada motor.",
+      "fail": "Un motor ha girado al revés o no ha girado: su conector no está metido del todo, o sus cables están crimpados al revés. Vuelve a encajar el conector o pon un motor bueno. Nada en el firmware invierte un motor con escobillas."
+    },
+    "calibrate": {
+      "title": "Calibración de los sensores (mantenlo quieto)",
+      "pass": "El firmware ha calibrado el giroscopio él solo mientras el dron estaba quieto y nivelado al encenderse, y LED1 ha pasado de un parpadeo lento a dos parpadeos rojos por segundo. No hay brújula que calibrar ni alineación de la placa que ajustar: la IMU está soldada al chasis.",
+      "fail": "Primero coloca la placa. Si LED1 sigue parpadeando despacio, algo lo está moviendo: ponlo en una superficie quieta y nivelada y vuelve a encenderlo."
+    },
+    "link": {
+      "title": "Enlace de la Crazyradio",
+      "pass": "Conectado en radio://0/80/2M/E7E7E7E701 con un 100 % de calidad de enlace. Cada dron del enjambre tiene su propia dirección (de E7E7E7E701 a 04), todos en el canal 80, así que una Crazyradio habla con los cuatro.",
+      "fail": "Coloca la placa y la Crazyradio y conecta la batería. Sin la antena puesta, la Crazyradio pierde paquetes (el banco marca un 23 %): enróscala antes de confiarle un enjambre."
+    },
+    "position": {
+      "title": "Decks y posicionamiento",
+      "pass": "deck.bcFlow2 y deck.bcLighthouse4 marcan 1, el filtro de Kalman ha recibido los barridos del Lighthouse y se ha estabilizado, y swarm.reset_estimators() ha vuelto. Ahora todos los drones saben dónde están en el mismo sistema de referencia.",
+      "fail": "Un deck marca 0 (el Lighthouse deck girado, los pines largos mal asentados, falta el Flow deck) o los sensores todavía no están calibrados. Sin una posición compartida, el enjambre no puede mantener una formación, y reset_estimators() nunca vuelve."
+    },
+    "failsafe": {
+      "title": "Prueba de pérdida de enlace (sin hélices)",
+      "pass": "Con las consignas transmitiéndose y la Crazyradio desenchufada, se ha nivelado y ha mantenido el empuje después de 0,5 s, y ha parado los motores después de 2 s. Un go_to del high-level commander habría seguido volando hasta el final: planifica el espectáculo para que un dron que pierda el enlace esté en un sitio seguro para quedarse en estacionario.",
+      "fail": "Coloca los motores, sus conectores, la placa y la Crazyradio, conéctate primero y quita las hélices."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Estimador, controlador, Lighthouse y límites",
+      "explain": "Los parámetros de un Crazyflie se ajustan desde Python por radio: cf.param.set_value('group.name', value) de cflib, o la pestaña Parameters de cfclient. Cualquiera de los dos decks obliga a usar el filtro de Kalman, y PID es el controlador por defecto; aquí las estaciones base son Lighthouse V2. Los límites de posCtlPid acotan lo que puede pedir el controlador de posición, 20° de inclinación y 1 m/s, y esas son las cifras con las que vuela el campo de pruebas."
+    },
+    "decks": {
+      "title": "¿Están los decks?",
+      "explain": "Cada deck se anuncia al encenderse a través de su chip de identificación 1-wire, y el firmware fija un parámetro de solo lectura por cada deck que encuentra. get_value devuelve el valor como texto, así que un script lo compara con '1'."
+    },
+    "motortest": {
+      "title": "Comprobación de los motores, de uno en uno",
+      "explain": "Sin hélices, motorPowerSet pasa un valor de 0 a 65535 directamente al PWM de cada motor. Hazlos girar de uno en uno y mira el giro desde arriba. El ajuste manual solo actúa mientras el supervisor deja funcionar los motores, y un 2.1+ se arma solo; cuando acabes, vuelve a poner enable a 0."
+    },
+    "health": {
+      "title": "Prueba de las hélices",
+      "explain": "health.startPropTest hace girar cada motor por turnos mientras el acelerómetro mide la vibración. Una hélice mellada o un motor cansado vibra más que los otros tres. Hazla con las hélices puestas, sobre un suelo plano."
+    },
+    "lights": {
+      "title": "Los LED para el espectáculo",
+      "explain": "El bit 7 de led.bitmask le quita al firmware los cuatro LED para sus parpadeos de estado, y los otros bits eligen cuáles se encienden: 138 son los dos verdes, 148 los dos rojos, 129 el azul de la izquierda. En el espectáculo, cada dron fija su propio valor en cada punta de la estrella. 0 devuelve los LED al firmware. Mientras el bitmask está activo, LED1 no puede avisarte de que la batería está baja."
+    },
+    "hover": {
+      "title": "Hover: MotionCommander",
+      "explain": "MotionCommander convierte distancias en consignas de velocidad y las transmite cada 0,2 s: forward(0.6, velocity=0.4) vuela 0,6 m a 0,4 m/s, medidos por el Flow deck. Al entrar en el bloque with despega hasta default_height y al salir aterriza. El script comprueba primero que está el Flow deck, porque sin él nada mantendría la posición."
+    },
+    "althold": {
+      "title": "Mantener la altura: consignas zdistance",
+      "explain": "send_zdistance_setpoint recibe el alabeo y el cabeceo en grados, una velocidad de guiñada y una altura en metros: el sensor de distancia del Flow deck mantiene la altura mientras tú fijas la inclinación. Sigue enviando a 10 Hz o más, y termina con send_notify_setpoint_stop para que el high-level commander pueda tomar el control."
+    },
+    "stabilize": {
+      "title": "Ángulos y empuje en bruto",
+      "explain": "send_setpoint es alabeo, cabeceo, velocidad de guiñada y empuje en bruto, 60000 como mucho. El firmware ignora el empuje hasta que ha visto una consigna con empuje 0, así que un script empieza con una. Nada mantiene la altura: el empuje que envías es todo lo que recibe."
+    },
+    "show": {
+      "title": "El espectáculo de luces para cuatro",
+      "explain": "Swarm abre un enlace con cada dron, reset_estimators() espera a que todos los filtros de Kalman se hayan estabilizado, y parallel_safe ejecuta show() en los cuatro a la vez, cada uno con el desplazamiento de su posición. El high-level commander planifica cada go_to en el propio dron, así que un dron que pierde el enlace termina el tramo y se queda ahí en lugar de caer. Cada tramo fija led.bitmask: verde, rojo, verde, rojo, verde, y luego azul para cerrar la estrella."
+    }
+  },
+  "flight": {
+    "modes": {
+      "hover": {
+        "title": "Hover",
+        "hint": "Mantiene la posición con el Flow deck y el Lighthouse, como MotionCommander: las palancas piden hasta 1 m/s y se para cuando las sueltas. Los otros tres mantienen sus posiciones a tu alrededor."
+      },
+      "althold": {
+        "title": "Mantener la altura",
+        "hint": "Consignas zdistance: tú fijas la inclinación y el sensor de distancia mantiene la altura. Nada mantiene la posición, así que cada inclinación se convierte en una deriva."
+      },
+      "stabilize": {
+        "title": "Ángulo",
+        "hint": "Consignas simples: ángulos y empuje en bruto. Nada mantiene la altura ni la posición, así que haz movimientos pequeños y vuela bajo."
+      },
+      "show": {
+        "title": "Show",
+        "hint": "El espectáculo de luces: el high-level commander vuela la estrella de punta en punta a 0,8 m/s con los otros tres en formación, y luego aterriza en la plataforma."
+      }
+    },
+    "failsafes": {
+      "setpoint-500": "Ninguna consigna transmitida (MotionCommander, send_setpoint) durante 0,5 s: el supervisor lo nivela y mantiene el empuje.",
+      "setpoint-2000": "Ninguna consigna durante 2 s: motores apagados, y cae desde donde estaba. Por eso los enjambres de interior vuelan bajo o sobre una red.",
+      "high-level": "Un despegue, go_to o aterrizaje del high-level commander se ejecuta en el dron: si se pierde el enlace, termina esa orden y mantiene la última consigna. No aterriza solo.",
+      "tumble": "Bocabajo o estrellado (supervisor.tmblChckEn 1): motores apagados, y no se vuelve a armar hasta que recibe una petición de recuperación tras el choque.",
+      "low-battery": "Por debajo de 3,2 V durante 5 s (pm.lowVoltage): LED1 se queda en rojo fijo. Nada lo aterriza por ti, así que aterriza el enjambre desde tu script."
+    },
+    "controls": "Teclado: Espacio arma y desarma, W y S suben y bajan, las flechas lo mueven hacia delante, hacia atrás y de lado, A y D guiñada, V cambia a la vista desde el dron (un Crazyflie no tiene cámara salvo que le añadas una en un deck), R vuelve a ponerlo en la plataforma. En Hover se para cuando sueltas y los otros tres mantienen sus posiciones. En un móvil, la palanca izquierda es el gas y la guiñada, y la derecha es cabeceo y alabeo. Un mando funciona en Modo 2."
+  },
+  "courses": {
+    "show": {
+      "title": "Espectáculo de luces: una estrella para cuatro",
+      "brief": "Cuatro Crazyflies esperan en la plataforma en un cuadrado de 0,6 m, con dos estaciones base Lighthouse en lo alto de las esquinas. Despega hasta 1 m y vuela una estrella de cinco puntas a 1,5 m del centro del recinto, con sus puntas a 1,5 m y 1,2 m de altura, y quédate un segundo en la punta de arriba al empezarla y al cerrarla. Luego vuelve sobre la plataforma y aterriza. Los otros tres vuelan la misma estrella desde sus posiciones.",
+      "goals": {
+        "1": "DESPEGA: 1 m sobre la plataforma",
+        "2": "PUNTA DE ARRIBA: 1,5 m, quédate un segundo (verde)",
+        "3": "PUNTA DE ABAJO A LA IZQUIERDA: 1,2 m (rojo)",
+        "4": "PUNTA DE LA DERECHA: 1,5 m (verde)",
+        "5": "PUNTA DE LA IZQUIERDA: 1,5 m (rojo)",
+        "6": "PUNTA DE ABAJO A LA DERECHA: 1,2 m (verde)",
+        "7": "PUNTA DE ARRIBA: cierra la estrella y quédate (azul)",
+        "8": "VUELVE sobre la plataforma a 1 m",
+        "9": "ATERRIZA en la plataforma"
+      }
+    }
+  },
+  "quizzes": {
+    "plugs": {
+      "esc": {
+        "q": "¿Dónde está el ESC del Crazyflie?",
+        "options": {
+          "1": "Debajo de cada motor",
+          "2": "En una placa 4 en 1 debajo de la controladora de vuelo",
+          "3": "No hay: unos MOSFET de la placa conmutan los motores con escobillas"
+        },
+        "why": "A un motor con escobillas solo hay que variarle la tensión, así que basta con un MOSFET por motor y un PWM rápido (unos 328 kHz). Sin firmware de ESC, sin DShot y sin ajuste del sentido de los motores."
+      },
+      "spin": {
+        "q": "En la comprobación de los motores, M2 gira en sentido antihorario. ¿Qué haces?",
+        "options": {
+          "1": "Pon un motor bueno: el zócalo fija el sentido, así que los cables de este están crimpados al revés",
+          "2": "Invierte M2 en el firmware",
+          "3": "Cambia su hélice por la del otro tipo"
+        },
+        "why": "Todos los motores de 7 x 16 son la misma pieza y los zócalos de la placa fijan el giro. El firmware no puede invertir un motor con escobillas, y con la otra hélice puesta, tres hélices giran hacia el mismo lado: despega, pero gira sobre sí mismo."
+      }
+    },
+    "lighthouse": {
+      "how": {
+        "q": "¿Cómo sabe el Lighthouse deck dónde está el dron?",
+        "options": {
+          "1": "Una cámara en la pared lo vigila",
+          "2": "Sus receptores miden los tiempos de los planos láser que barren las estaciones base, y esos tiempos son ángulos hacia cada estación",
+          "3": "Por GPS"
+        },
+        "why": "Cada estación base barre la sala con planos infrarrojos. Los cuatro receptores del deck miden cuándo les llega un barrido; esos tiempos son ángulos, y el filtro de Kalman convierte los ángulos de estaciones conocidas en una posición. El dron lo calcula a bordo, así que cualquier número de drones puede usar las mismas estaciones."
+      },
+      "flow": {
+        "q": "Con el Lighthouse deck puesto, ¿qué sigue aportando el Flow deck?",
+        "options": {
+          "1": "Una altura directa sobre el suelo y medidas rápidas del movimiento entre barridos",
+          "2": "Nada: solo hace falta para armar",
+          "3": "Una segunda radio"
+        },
+        "why": "Los dos decks alimentan el mismo filtro de Kalman: el Lighthouse da la posición en la sala, y la cámara de flujo y el sensor de distancia añaden medidas locales rápidas. Un dron de espectáculo suele llevar solo el Lighthouse deck, lo que ahorra unos 2 g; el Flow deck permite a un dron solo quedarse en estacionario sin ninguna estación base."
+      }
+    },
+    "fly": {
+      "linkloss": {
+        "q": "En pleno espectáculo, un dron pierde el enlace a mitad de un go_to. ¿Qué hace?",
+        "options": {
+          "1": "Aterriza enseguida",
+          "2": "Termina el go_to a bordo y se queda en estacionario al final",
+          "3": "Para los motores después de 2 s"
+        },
+        "why": "El high-level commander se ejecuta en el dron y va renovando su propia consigna, así que el watchdog nunca salta: vuela hasta el final del tramo y se queda ahí. Las consignas transmitidas son distintas: 0,5 s sin ninguna y se nivela, 2 s y los motores se paran."
+      },
+      "slots": {
+        "q": "¿Por qué cada dron vuela la estrella desde su propia esquina de un cuadrado de 0,6 m?",
+        "options": {
+          "1": "Para que la radio pueda distinguirlos",
+          "2": "Para que la estrella parezca más grande",
+          "3": "Para que ninguno vuele en la corriente descendente de otro, ni choque con él"
+        },
+        "why": "Un dron que está debajo de otro recibe el empuje hacia abajo del aire de sus hélices y se tambalea. Cada uno vuela la misma estrella desplazada según su posición, así que nunca comparten una columna de aire y la forma sigue siendo la misma."
+      },
+      "heavy": {
+        "q": "¿Por qué la celda de 450 mAh es una mala elección para un dron de espectáculo?",
+        "options": {
+          "1": "La relación empuje/peso baja a unos 1,6:1, así que se mantiene en estacionario cerca del gas a tope, con poco margen para mantener su posición",
+          "2": "No cabe en el zócalo Molex",
+          "3": "Baja el alcance de la radio"
+        },
+        "why": "La celda añade 5,4 g respecto a la de 250 mAh y los motores no dan más empuje. Por debajo de unos 1,65:1, el controlador se queda sin margen para corregir y los drones se salen de la formación. Bitcraze no fabrica una batería de 450 mAh, y una genérica puede no caber entre las tiras de pines."
+      }
+    }
+  }
+}
