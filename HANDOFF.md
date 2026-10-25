@@ -163,6 +163,15 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Checkpoint log (newest first)
 
+- 2026-10-25 11:09 CDT (Amar): iynk.tech is live (Namify DNS: apex A 216.198.79.1 and 64.29.17.1, www CNAME to
+  Vercel, rt A 216.128.138.203). Vercel production has NEXT_PUBLIC_SITE_URL=https://iynk.tech and
+  NEXT_PUBLIC_REALTIME_URL=wss://rt.iynk.tech/ws (Amar's ask); the relay's Caddy serves rt.iynk.tech and the sslip.io
+  name and allows https://iynk.tech, www, iynk.vercel.app and the localhost origins; rooms checked on iynk.tech. Another
+  session (simlab-5d) made light the default theme (`2f8a614`) and cut its own 1:04 video
+  (~/Desktop/iynk-demo.mp4). Demo videos from this session: /Users/amar/Codes/ak/iynk-studio/videos/v1/v1.mp4 (1:58)
+  and videos/v2/v2.mp4 (one board, one bench, one drone, about 70 s; ElevenLabs Creator key in the studio's
+  .env.eleven, never committed: rotate it, it was pasted in chat).
+
 - 2026-10-25 10:07 CDT (Amar): Solana credential flow checked live (a drone's bench safety run mints; board lessons
   don't earn credentials yet). Fixed `8f92122`: the wallet provider rebuilt its Connection on every render (170 devnet
   calls in 15 s on quad5, 160 refused; now 1). Devpost story in `docs/hacktx/DEVPOST-STORY.md`.
