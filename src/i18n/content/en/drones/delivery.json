@@ -1,0 +1,410 @@
+{
+  "title": "Autonomous delivery quad",
+  "tagline": "A 690 mm heavy-lift quad with two computers: ArduPilot flies it, a Raspberry Pi plans the delivery, and a winch lowers the parcel on a line.",
+  "sub": "ArduCopter + Pixhawk 6C + Raspberry Pi 5",
+  "hint": "Build a delivery drone, test its winch and failsafes, then fly a parcel to a back garden",
+  "noun": "delivery drone",
+  "overview": "Two computers share this airframe. The Pixhawk 6C runs ArduCopter: the attitude loop, the EKF3 estimator, GPS navigation, the mission and every failsafe. The Raspberry Pi 5 does the slow thinking: the delivery logic (a MAVSDK script), turning the depth camera's picture into obstacle distances for the Pixhawk, and a 4G link to the ground station. They talk MAVLink2 over one 921600-baud serial cable. On a delivery it takes off from the depot, climbs above the roofs and the power line, flies to the address, comes down to a hover 3.5 m up, winches the parcel to the ground and lets it go, reels the line back in and flies home. Lowering on a line keeps the 15-inch props, which cut to the bone, far from people, pets and fences; Wing, Flytrex and Manna deliver the same way. Pick the parts and watch the numbers, build it, run the bench checks, then fly the delivery by hand or let AUTO fly it.",
+  "practice": "Fly the delivery in Loiter first: climb to 12 m over the pad, fly to the garden, come down slowly to 3.5 m over the red drop disc, climb back out and bring it home to land. It is heavy: it climbs at 1.5 m/s and leans no more than 30°, so plan ahead. Try AltHold to feel the wind push a 5 kg drone about, then let AUTO fly the whole mission and watch it hold over the garden while the parcel goes down. On a real build: smoke stopper on the first plug, motor test with the props off (A front right, then clockwise), accelerometer and compass calibration, a GPS lock outdoors, the winch test, both failsafe tests with the props off, and read every PreArm message before the first flight.",
+  "design": {
+    "fixed": {
+      "FRAME": "690 mm folding carbon frame and landing skids",
+      "ESC": "4 × 40 A ESCs (DShot)",
+      "FC": "Pixhawk 6C flight controller",
+      "COMP": "Raspberry Pi 5 8 GB with active cooler",
+      "DEPTH": "Stereo depth camera (RealSense D435i class)",
+      "GPS": "M10 GPS + compass on a mast",
+      "LTE": "4G/LTE USB modem and antennas",
+      "RX": "ExpressLRS backup receiver",
+      "TEL": "SiK telemetry radio",
+      "XT60": "Power board: XT90-S, power module, capacitor, BECs",
+      "TOP": "Top plate, standoffs and battery straps",
+      "CARGO": "Servo winch, release hook and cargo cage",
+      "PARCEL": "The parcel (1 kg)"
+    },
+    "verdict": {
+      "over": "{kv} KV on {cells}S spins 15-inch props far too fast: the motors overheat and the ESCs desync. Big props want low KV, 300 to 450 KV on 6S.",
+      "weak": "Thrust to weight {tw}:1 with the 1 kg parcel. Below about 1.6:1 a heavy-lift drone can't climb out of a gust or ride out a sagging battery, and below 1:1 it doesn't leave the ground.",
+      "ok": "Parts match: {tw}:1 with the parcel aboard, enough to climb out of a gust and land on a tired pack. The calculator's hover throttle is pessimistic for big props: on this build ArduPilot learns a hover near 50 % (MOT_THST_HOVER), and the real full-throttle current is nearer 75 A than the calculator's figure."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "690 mm folding carbon frame",
+      "what": "A carbon hub with four 25 mm carbon-tube arms that fold back for transport, and two landing skids that hold the hub 21 cm up so the cargo cage fits underneath. Each arm locks with a latch at its hinge: an arm that is not clicked home folds under thrust on take-off and the drone flips."
+    },
+    "MOTORS": {
+      "name": "4 × 4114 400 KV motors",
+      "what": "Big, low-KV outrunners: 400 rpm per volt, so about 8900 rpm unloaded on a 22.2 V 6S pack, the right speed for 15-inch props. On 15-inch carbon props each makes about 2.6 kg flat out and about 1.3 kg at half throttle on 6 A, which is why it hovers for 20 minutes with a parcel."
+    },
+    "ESC": {
+      "name": "4 × 40 A ESCs on the arms",
+      "what": "One ESC per motor, halfway out each arm, where the prop wash cools it and the motor wires stay short. Each takes the battery straight from the power board and a DShot600 signal from the Pixhawk. Flat out a motor draws about 19 A, so 40 A leaves plenty of margin."
+    },
+    "WIRES": {
+      "name": "Motor phase wires and ESC power leads",
+      "what": "Three phase wires from each ESC to its motor (swap any two and the motor runs backwards), and a red and black lead from the power-board pads along the arm to each ESC. On a 6S drone this size the main leads are 10 to 12 AWG."
+    },
+    "XT60": {
+      "name": "Power board, power module and capacitor",
+      "what": "The battery lead (an XT90-S anti-spark plug: a 10 Ah 6S pack is too much for an XT60), a power module that measures voltage and current for the Pixhawk on POWER1, a 1000 µF low-ESR capacitor across the battery pads (stripe to minus) to soak up voltage spikes, and two BECs: 5 V 5 A for the Pi and 6 V for the winch servo."
+    },
+    "FC": {
+      "name": "Pixhawk 6C flight controller",
+      "what": "An STM32H743 running ArduCopter, with two IMUs (an ICM-42688-P and a BMI055 or BMI088), a barometer and 16 outputs. It sits on a vibration-damping plate in the middle of the hub with its arrow to the nose. It flies the drone on its own: the Pi only asks it for things."
+    },
+    "RX": {
+      "name": "ExpressLRS backup receiver",
+      "what": "A human must always be able to take over. The ELRS receiver on TELEM3 brings the safety pilot's transmitter: flick to Loiter and the sticks fly it, whatever the mission was doing. If the radio link drops, the RC failsafe flies RTL."
+    },
+    "TEL": {
+      "name": "SiK telemetry radio",
+      "what": "A long-range serial radio pair: one on TELEM1, one on the ground station's USB, MAVLink2 at 57600 baud over a few kilometres. Pick the band for your country: 915 MHz in the USA, 433 MHz in Europe."
+    },
+    "DEPTH": {
+      "name": "Stereo depth camera",
+      "what": "A RealSense D435i-class camera on the nose: two infrared cameras measure how far away everything in front is, across about 87°. The Pi turns each depth picture into up to 72 obstacle distances and sends them to the Pixhawk ten times a second. It only looks forward: nothing beside, behind or below the drone is seen."
+    },
+    "TOP": {
+      "name": "Top plate and battery straps",
+      "what": "A carbon plate on 40 mm standoffs over the Pixhawk. It carries the Pi, the LTE modem, the GPS mast and the battery, and keeps the power wiring and the flight controller out of the weather."
+    },
+    "COMP": {
+      "name": "Raspberry Pi 5 companion computer",
+      "what": "The second computer: it runs the delivery script (MAVSDK), the depth-camera pipeline and mavlink-router, which shares its one MAVLink link to the Pixhawk with the local programs and with the ground station over 4G. Three wires to TELEM2 (TX, RX, ground; both sides are 3.3 V). It is powered by its own 5 V 5 A BEC, never from the Pixhawk's TELEM port."
+    },
+    "LTE": {
+      "name": "4G/LTE modem",
+      "what": "A USB modem on the Pi with two antennas. It carries MAVLink to a ground station anywhere with mobile coverage, over a VPN because mobile networks don't accept incoming connections. Flying beyond line of sight on it needs permission from the aviation authority."
+    },
+    "GPS": {
+      "name": "M10 GPS + compass on a mast",
+      "what": "A u-blox M10 receiver with its compass, 13 cm above the top plate on a carbon mast, as far as it can get from the 20 to 75 A in the power wires that would bend a compass reading. Its arrow points at the nose. Its LED flashes blue without a fix and green with a 3D fix."
+    },
+    "CARGO": {
+      "name": "Winch, release hook and cargo cage",
+      "what": "A continuous-rotation servo turns a drum under the hub: its PWM sets how fast the line goes out or in. The 1 kg parcel rides in an open-bottom cage, hangs on a hook that opens when the line goes slack on the ground, and goes down on the line while the drone hovers 3.5 m up. The winch has no encoder: ArduPilot estimates the line length from the speed it asked for."
+    },
+    "BATT": {
+      "name": "6S 10000 mAh LiPo",
+      "what": "22.2 V nominal, 25.2 V full, about 1.35 kg, strapped to the top plate over the centre of gravity. It gives about 20 minutes of hover with the parcel, 15 to 17 minutes of delivery flying, and the failsafes keep 30 % back for the trip home."
+    },
+    "PROPS": {
+      "name": "15-inch carbon props",
+      "what": "15 × 5.5 inch two-blade carbon props: counter-clockwise on M1 and M2, clockwise on M3 and M4. Carbon is stiff and efficient, and sharp: a 15-inch prop at 6000 rpm cuts to the bone, which is why the parcel goes down on a line instead of the drone landing in a garden."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Unfold the frame",
+      "body": "Stand the frame on its skids and unfold the four arms until each latch clicks. Check every latch: an arm that isn't locked folds under thrust."
+    },
+    "motors": {
+      "title": "Mount the four motors",
+      "body": "One 4114 motor on each arm end, four screws into the 52 mm mount. ArduPilot numbers them M1 front right, M2 rear left, M3 front left, M4 rear right.",
+      "refusal": "The motors bolt to the arm ends: unfold the frame first."
+    },
+    "esc": {
+      "title": "Fit the ESCs on the arms",
+      "body": "Zip-tie one 40 A ESC halfway out each arm, under the prop, so the prop wash cools it.",
+      "refusal": "The ESCs ride on the arms: unfold the frame first."
+    },
+    "wires": {
+      "title": "Wire the motors and ESC power",
+      "body": "Solder each motor's three phase wires to its ESC, and run the red and black leads from the ESCs along the arms to the hub.",
+      "refusal": "This wiring joins the motors to the ESCs: fit both first."
+    },
+    "power": {
+      "title": "Fit the power board",
+      "body": "Mount the power board on the hub: battery lead with its XT90-S out the back, the power module, the two BECs, and the 1000 µF capacitor across the battery pads with its stripe to minus.",
+      "refusal": "The ESC leads end on the power board: fit the ESCs first."
+    },
+    "fc": {
+      "title": "Mount the Pixhawk 6C",
+      "body": "Stick the Pixhawk on its damping plate in the middle of the hub, arrow to the nose. Plug the power module into POWER1 and the four ESC signal leads into AUX 1 to 4.",
+      "refusal": "The Pixhawk is powered from the power board: fit the power board first."
+    },
+    "rx": {
+      "title": "Fit the backup receiver",
+      "body": "Mount the ELRS receiver on the right of the hub, antenna out past the arm, and plug it into TELEM3.",
+      "refusal": "The receiver plugs into the Pixhawk: fit the Pixhawk first."
+    },
+    "tel": {
+      "title": "Fit the telemetry radio",
+      "body": "Mount the SiK radio on the left of the hub with its antenna angled up and out, and plug it into TELEM1.",
+      "refusal": "The telemetry radio plugs into the Pixhawk: fit the Pixhawk first."
+    },
+    "depth": {
+      "title": "Mount the depth camera",
+      "body": "Bolt the depth camera to the nose of the hub, level and looking straight ahead: ArduPilot's depth-camera support expects it facing forward.",
+      "refusal": "The depth camera bolts to the hub: unfold the frame first."
+    },
+    "top": {
+      "title": "Close up with the top plate",
+      "body": "Screw the top plate onto its four 40 mm standoffs over the Pixhawk, the receiver and the radio, with the battery straps threaded through.",
+      "refusal": "The top plate covers the Pixhawk, the receiver and the telemetry radio: fit all three first."
+    },
+    "comp": {
+      "title": "Fit the Raspberry Pi 5",
+      "body": "Mount the Pi on the top plate. Wire its UART to TELEM2: Pi TX to Pixhawk RX, Pi RX to Pixhawk TX, ground to ground, and leave the TELEM 5 V pin unconnected. Feed it from the 5 V 5 A BEC, and plug the depth camera into a blue USB 3 port.",
+      "refusal": "The Pi sits on the top plate: fit the top plate first."
+    },
+    "lte": {
+      "title": "Add the LTE modem",
+      "body": "Plug the 4G modem into one of the Pi's USB ports and stand its two antennas up, clear of the GPS mast.",
+      "refusal": "The modem plugs into the Pi: fit the Pi first."
+    },
+    "gps": {
+      "title": "Stand the GPS mast",
+      "body": "Fold the GPS mast up at the rear of the top plate, puck arrow to the nose, and plug its 10-pin lead into GPS1.",
+      "refusal": "The GPS mast mounts on the top plate: fit the top plate first."
+    },
+    "cargo": {
+      "title": "Hang the winch and cargo cage",
+      "body": "Bolt the winch and its cage under the hub, plug the winch servo into AUX 5, thread the line and clip the parcel onto the release hook.",
+      "refusal": "The winch hangs from the hub: unfold the frame first."
+    },
+    "batt": {
+      "title": "Strap the battery on",
+      "body": "Strap the 6S pack along the top plate over the centre of the drone. Leave it unplugged until the bench checks.",
+      "refusal": "The battery straps to the top plate and plugs into the power board: fit both first."
+    },
+    "props": {
+      "title": "Fit the props, last of all",
+      "body": "Counter-clockwise props on M1 and M2, clockwise props on M3 and M4. Do this only after the motor test, with the battery unplugged.",
+      "refusal": "The props go on the motors, and only once the top plate is on: fit both first."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "The 6S pack's XT90-S plug into the power board's lead. The anti-spark plug stops the big capacitor's inrush from pitting the contacts.",
+    "XT60-ESC": "Battery voltage from the power-board pads to each ESC, a red and a black lead along every arm.",
+    "ESC-MOTORS": "Three phase wires per motor. The order of the three sets the spin direction.",
+    "XT60-FC": "The power module's 6-pin lead into POWER1: a clean 5 V supply for the Pixhawk, plus the voltage and current readings the battery failsafes need.",
+    "XT60-COMP": "5 V from a 5 A BEC into the Pi's header (pins 2 or 4, and ground on pin 6). The Pi 5 with a depth camera and a modem on its USB needs it; the Pixhawk's TELEM port can't supply it.",
+    "COMP-FC": "MAVLink2 at 921600 baud on TELEM2: three wires, TX to RX, RX to TX, ground. Both sides are 3.3 V, so no level shifter, and the 5 V pin stays unconnected.",
+    "TEL-FC": "The SiK radio on TELEM1: MAVLink2 at 57600 baud to the ground station.",
+    "RX-FC": "The ELRS receiver on TELEM3: CRSF needs a full UART, so it goes on a TELEM port, not the RCIN pin.",
+    "GPS-FC": "One 10-pin lead into GPS1: the GPS's serial data, the compass on I²C, the LED, buzzer and safety-switch lines, and 5 V.",
+    "FC-ESC": "DShot600 on AUX 1 to 4 (SERVO9 to 12 set to Motor1 to Motor4). The Pixhawk's own FMU outputs do DShot without any extra setting.",
+    "FC-CARGO": "The winch servo on AUX 5 (SERVO13, Winch), powered from the 6 V BEC on the servo rail: a big servo on the Pixhawk's own 5 V could brown it out.",
+    "DEPTH-COMP": "The depth camera on a USB 3 port of the Pi: the depth pictures the avoidance pipeline turns into obstacle distances.",
+    "LTE-COMP": "The 4G modem on a USB port of the Pi, carrying MAVLink to the ground station."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke stopper test",
+      "pass": "The lamp only blinked: no short between plus and minus. On a 6S drone use a stopper rated for 6S, then take it out before arming: the motors can't draw flight current through it.",
+      "fail": "The lamp stayed lit: something is shorted. Here the capacitor is in backwards; turn it round (stripe to minus) and test again."
+    },
+    "motors": {
+      "title": "Motor test (props off)",
+      "pass": "Mission Planner's motor test spun them A to D, from the front right going clockwise: A is M1, B is M4, C is M2, D is M3. M1 and M2 counter-clockwise, M3 and M4 clockwise. The props can go on.",
+      "fail": "One motor spun the wrong way or at the wrong corner. Swap two of its phase wires (or reverse it in the ESC) and check the AUX lead order: with the props on it would flip on take-off."
+    },
+    "calibrate": {
+      "title": "Accelerometer calibration",
+      "pass": "Calibrated in the six positions (level, both sides, nose down, nose up, on its back), then Calibrate Level on the skids. The \"3D Accel calibration needed\" pre-arm block is gone.",
+      "fail": "Fit the Pixhawk first. If its arrow points backwards, turn it round or set AHRS_ORIENTATION to 4 (Yaw180), reboot and calibrate again."
+    },
+    "compass": {
+      "title": "Compass calibration",
+      "pass": "The onboard calibration sampled every side, saved the offsets and asked for a reboot. With the puck arrow forward, compass and GPS agree and Loiter holds still instead of circling.",
+      "fail": "Fit the Pixhawk and the GPS mast, and take the props off: you turn the drone over in your hands (on a drone this big, Large Vehicle MagCal does it from a known heading instead). Re-seating the puck means calibrating again."
+    },
+    "gps": {
+      "title": "GPS lock",
+      "pass": "3D fix with 18 satellites and HDOP 0.7: EKF3 is using the GPS, the LED flashes green, and Loiter, RTL and AUTO are allowed.",
+      "fail": "Fit the Pixhawk and the GPS mast, and plug the pack in: the GPS needs power and open sky. Without a 3D fix the pre-arm says \"GPS 1: Bad fix\" and AUTO won't start."
+    },
+    "winch": {
+      "title": "Winch test",
+      "pass": "A DO_WINCH from the ground station paid out 3 cm, held and reeled back in, the right way round. The length is only an estimate from the commanded speed, so re-zero it every time the line is fully in.",
+      "fail": "Fit the Pixhawk and the winch, and plug the pack in: the winch servo runs from the 6 V BEC on the servo rail. A winch that reels the wrong way would wind the hook into the drum."
+    },
+    "failsafe": {
+      "title": "Radio failsafe (props off)",
+      "pass": "Armed on the bench, transmitter off: on the ground it disarms at once. In the air FS_THR_ENABLE 1 would fly RTL, and FS_GCS_ENABLE 1 does the same if telemetry and 4G both go quiet for 5 s.",
+      "fail": "Take the props off, fit the Pixhawk, the receiver and the telemetry radio, and plug the pack in. A drone with no failsafe keeps doing the last thing it was told, wherever that takes it."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Frame, motor outputs and power",
+      "explain": "In ArduCopter 4.7.2 you set parameters, not commands: in MAVProxy each param set is stored at once. Quad X frame, the four motors on AUX 1 to 4 with DShot600 (AUX 5 and 6 are another timer group, so the winch on AUX 5 can stay PWM), thrust linearisation for 15-inch props, the 6S pack's full and empty voltage, a lower gyro filter for slow big props, and the power module as an analog battery monitor."
+    },
+    "links": {
+      "title": "Radio, companion and GPS ports",
+      "explain": "Every serial port gets a protocol. TELEM1 is MAVLink2 to the SiK radio at 57600, TELEM2 is MAVLink2 to the Pi at 921600 (the fast link the depth data needs), TELEM3 (SERIAL5) is RCIN for the ELRS receiver at 420 kbaud, and GPS1 is the GPS."
+    },
+    "winch": {
+      "title": "The winch on AUX 5",
+      "explain": "A PWM winch is a continuous-rotation servo: the pulse width sets the line speed. ArduPilot drives it up to WINCH_RATE_MAX and works out the line length by adding up the speed it asked for, so the length drifts. The mission's DO_WINCH asks for a length; RC8_OPTION 45 puts the winch on a knob for the safety pilot."
+    },
+    "avoid": {
+      "title": "Obstacle avoidance with the depth camera",
+      "explain": "The Pi sends the depth camera's obstacle distances as a MAVLink proximity sensor (PRX1_TYPE 2). In Loiter, simple avoidance stops 1.5 m short of anything ahead (AVOID_*); in AUTO, BendyRuler (OA_TYPE 1) steers the route round obstacles it has seen. The camera looks forward only, so it can't see a wire beside or a tree behind."
+    },
+    "failsafe": {
+      "title": "Failsafes and fence",
+      "explain": "Radio lost: RTL. Ground station lost for 5 s (both the SiK and the 4G link): RTL. Battery low (3.5 V a cell or 3000 mAh left, a 30 % reserve): RTL. Critical (3.3 V a cell): land where it is. A pack below 23.4 V won't arm. The fence caps it at 30 m up and 300 m from home. ARMING_SKIPCHK 0 runs every pre-arm check: 4.7 replaced ARMING_CHECK, which listed the checks to run, with a list of checks to skip."
+    },
+    "stabilize": {
+      "title": "Stabilize",
+      "explain": "The drone levels itself and the throttle stick drives the motors directly, so the pilot holds the height. It needs no GPS and no barometer, which makes it the safety pilot's last resort. ATC_ANGLE_MAX caps the lean in every mode, in degrees since 4.7."
+    },
+    "althold": {
+      "title": "AltHold",
+      "explain": "The barometer holds the height; the throttle stick asks for a climb or descent, up to PILOT_SPD_UP. With 5 kg aboard, 1.5 m/s is plenty. Nothing holds the position, so the wind pushes it along."
+    },
+    "loiter": {
+      "title": "Loiter",
+      "explain": "GPS and compass hold the position as well: let go and it brakes and stops. LOIT_SPEED_MS caps the speed and LOIT_ACC_MAX_M the acceleration, kept low so a parcel on the line doesn't start swinging. 4.7 renamed these to SI units: LOIT_SPEED 500 (cm/s) is now LOIT_SPEED_MS 5."
+    },
+    "rtl": {
+      "title": "Return to launch",
+      "explain": "It climbs to RTL_ALT_M (or stays higher), flies home at RTL_SPEED_MS, hovers over home for RTL_LOIT_TIME and lands at LAND_SPD_MS. Here 12 m clears the 7 m roofs and the 9 m power line. RTL works from any mode once it has a position and a home, but it is not a mode you can arm in: arm in Loiter, take off, then switch."
+    },
+    "auto": {
+      "title": "AUTO: the delivery",
+      "explain": "The Pi uploads the mission: take off to 12 m, fly to the garden, down to 3.5 m, DO_WINCH pays out 3.4 m of line while a 4 s loiter holds the drone still, the hook opens on the ground, DO_WINCH reels it in during a second loiter, then RTL. DO commands don't hold the drone, so the loiters are what keep it in place while the line moves. Arm in Loiter, then switch to AUTO."
+    }
+  },
+  "flight": {
+    "modes": {
+      "loiter": {
+        "title": "Loiter",
+        "hint": "GPS position hold: the sticks set a speed up to 5 m/s, and the drone stops when you let go."
+      },
+      "althold": {
+        "title": "AltHold",
+        "hint": "The barometer holds the height, but nothing holds the position: a 5 kg drone still drifts with the wind."
+      },
+      "stabilize": {
+        "title": "Stabilize",
+        "hint": "Self-levelling with a 30° lean limit; the throttle is yours, so you hold the height."
+      },
+      "rtl": {
+        "title": "RTL",
+        "hint": "Climbs to 12 m, flies home and lands on the pad by itself."
+      },
+      "auto": {
+        "title": "AUTO delivery",
+        "hint": "Flies the delivery on its own: to the garden at 12 m, down to 3.5 m, 8 s on the winch, then home to land."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Safety pilot's radio lost: RTL, climbing to 12 m to come home.",
+      "gcs-loss": "No heartbeat from the ground station for 5 s, SiK and 4G both: RTL.",
+      "low-battery": "Below 21.0 V or 3000 mAh left: RTL, with a 30 % reserve for the trip home.",
+      "battery-critical": "Below 19.8 V or 1500 mAh: it lands where it is rather than risk the flight home.",
+      "ekf": "The estimator stops trusting its position (a GPS glitch between houses, a disturbed compass): it lands.",
+      "fence": "Above 30 m or more than 300 m from home: RTL."
+    },
+    "controls": "Keyboard: Space arms and disarms, W and S climb and descend, the arrows fly forward, back and sideways, A and D yaw, V switches to the depth camera's view, R puts the drone back on the pad. In Loiter it stops when you let go. On a phone the left stick is throttle and yaw and the right stick is pitch and roll. A gamepad works in Mode 2."
+  },
+  "courses": {
+    "delivery": {
+      "title": "Back-garden drop",
+      "brief": "Take off from the depot, climb to 12 m over the roofs and the power line, fly to the back garden, come down to 3.5 m over the red disc for the parcel, climb out and land back on the pad. Fly it yourself in Loiter against the par times, or switch to AUTO and watch it fly the mission.",
+      "goals": {
+        "1": "TAKE OFF: climb to 12 m over the pad",
+        "2": "CRUISE: to the garden at 12 m",
+        "3": "DROP: hover at 3.5 m over the red disc",
+        "4": "CLIMB: back up to 12 m",
+        "5": "HOME: over the depot at 12 m",
+        "6": "LAND: on the pad"
+      }
+    }
+  },
+  "quizzes": {
+    "power": {
+      "module": {
+        "q": "Why does this drone need a power module on POWER1?",
+        "options": {
+          "1": "To charge the battery between deliveries",
+          "2": "So the Pixhawk knows the voltage and the current drawn, which the battery failsafes need",
+          "3": "To drive the winch"
+        },
+        "why": "Without it ArduPilot can't tell how much charge is left, so the low-battery RTL never fires. The power module also gives the Pixhawk its own clean 5 V supply."
+      },
+      "bec": {
+        "q": "Where does the Raspberry Pi 5 get its power?",
+        "options": {
+          "1": "From the Pixhawk's TELEM2 port",
+          "2": "From a USB power bank",
+          "3": "From its own 5 V 5 A BEC on the power board"
+        },
+        "why": "A Pi 5 with a depth camera and a modem on its USB draws far more than a TELEM port's 5 V pin should give, and a sagging supply would reboot it mid-delivery. It gets its own BEC; the TELEM cable carries only TX, RX and ground."
+      }
+    },
+    "comp": {
+      "split": {
+        "q": "Which computer keeps the drone in the air?",
+        "options": {
+          "1": "The Pixhawk: it runs the attitude loop, the estimator and the failsafes, whatever the Pi does",
+          "2": "The Raspberry Pi: it is the faster computer",
+          "3": "Both share the job equally"
+        },
+        "why": "The Pixhawk does the real-time flying. The Pi only asks for things over MAVLink (a mission, a speed, an obstacle list); if it crashes, the Pixhawk carries on and the ground-station failsafe brings the drone home."
+      },
+      "uart": {
+        "q": "How is the Pi's serial port wired to TELEM2?",
+        "options": {
+          "1": "TX to TX and RX to RX, with 5 V",
+          "2": "Through a 5 V level shifter",
+          "3": "Pi TX to Pixhawk RX, Pi RX to Pixhawk TX, and ground"
+        },
+        "why": "A serial link crosses over: what one side sends, the other receives. Both boards use 3.3 V logic, so no level shifter, and the TELEM 5 V pin is left unconnected."
+      }
+    },
+    "cargo": {
+      "line": {
+        "q": "Why lower the parcel on a line instead of landing in the garden?",
+        "options": {
+          "1": "The winch is faster than landing",
+          "2": "It keeps the 15-inch props high above people, pets and fences",
+          "3": "Landing would use too much battery"
+        },
+        "why": "Spinning carbon props this size cut to the bone. Hovering 3.5 m up while the parcel goes down on a line keeps them out of reach, which is how commercial delivery drones work."
+      },
+      "length": {
+        "q": "How does ArduPilot know how much line a PWM winch has paid out?",
+        "options": {
+          "1": "It estimates it by adding up the speed it asked for, so the length drifts",
+          "2": "An encoder on the drum counts the turns",
+          "3": "The depth camera measures it"
+        },
+        "why": "A PWM winch has no sensor: the pulse width only sets a speed, and ArduPilot integrates that speed into a length. Re-zero it every time the line is fully in."
+      }
+    },
+    "fly": {
+      "rtl": {
+        "q": "You armed in Loiter and you're flying. You flick the switch to RTL. What happens?",
+        "options": {
+          "1": "Nothing: RTL only works if you armed in RTL",
+          "2": "It lands where it is",
+          "3": "It climbs to RTL_ALT_M, flies home and lands"
+        },
+        "why": "RTL engages from any mode once the drone has a position and a home. What you can't do is arm in RTL: it is not an armable mode."
+      },
+      "gcs": {
+        "q": "In AUTO the Pi crashes and the 4G link goes silent. What does FS_GCS_ENABLE 1 do?",
+        "options": {
+          "1": "After FS_GCS_TIMEOUT (5 s) with no ground-station heartbeat, it flies RTL",
+          "2": "It finishes the mission first",
+          "3": "It stops the motors"
+        },
+        "why": "With the default FS_OPTIONS a lost ground station in AUTO means RTL. Setting FS_OPTIONS bit 1 would let it finish the mission instead."
+      },
+      "fourS": {
+        "q": "Why can't a 4S 10000 mAh pack fly this drone with the 400 KV motors?",
+        "options": {
+          "1": "4S packs are too heavy",
+          "2": "At 14.8 V the motors turn too slowly: thrust to weight drops below 1, so it never leaves the ground",
+          "3": "The Pixhawk can't run on 4S"
+        },
+        "why": "Thrust rises with the square of rpm, and rpm is KV times volts. Going from 6S to 4S cuts the thrust by more than half: 0.95:1 with the parcel, so full throttle can't lift it."
+      }
+    }
+  }
+}

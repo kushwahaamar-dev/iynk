@@ -141,7 +141,6 @@
   /* ---------- drawings ---------- */
   function frame(ctx){
     const out = [];
-    SD.G.pal = ctx.st.pal || 'mustard';   // the engine's 'pal' colour follows the chosen palette (docs/requests/item-delivery.md #4)
     out.push(gg.plate(SD.rrect(240, 220, 14), HUB0, HUB1 - HUB0, 'carbon'));
     for (const mo of ctx.craft.motors){
       const sx = Math.sign(mo.x), sy = Math.sign(mo.y), r0 = 80 * Math.SQRT2, end = mo.r - 22;

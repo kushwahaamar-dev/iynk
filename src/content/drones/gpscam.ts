@@ -532,6 +532,7 @@ const gpscam: DroneContent = {
         { x: 22, y: 30, z: 12, r: 2, hold: 2, action: 'photo', speed: 4, label: 'courses.inspection.goals.5' },
         { x: 10, y: 10, z: 0, r: 2, land: true, speed: 4, label: 'courses.inspection.goals.6' },
       ],
+      // AUTO flies it in about 37 s with the four 2 s photo stops (silver); gold means beating the autopilot by hand
       parS: 45,
       par: { gold: 35, silver: 45, bronze: 60 },
     },
