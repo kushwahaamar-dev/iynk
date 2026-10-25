@@ -199,6 +199,16 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   and while he sleeps, a final pass: re-test everything, research what the best maker and lab UIs do, and polish
   every page (full-width layouts that use the viewport, minimal and consistent), then gate again. Same limits as
   before: no keys, no Vercel, no Vultr, no spending, no Devpost; the hackathon rule holds.
+- **10-25 06:38 to 07:32, Amar (awake).** Two screenshots of pages, then "update??", "Can you run what's there locally
+  now?" (the driver started the 06:56 build on port 3000) and "now explain every single thing that i need to do"
+  (the driver listed keys, his OKs for Vercel, relay host, Tiger and a .tech domain, the video setup, Devpost). At
+  07:32: "check .env.local now i have put everything i had and i trust you". The driver added
+  `NEXT_PUBLIC_REALTIME_URL`, started the relay and built `.next-keys`, then the session hit its weekly usage limit
+  at 07:35 before reporting. Keys set: Meta, Gemini, SerpApi, the relay URL. No `DATABASE_URL`, so no Tiger.
+- **10-25 07:47, Amar, new session.** Same instructions as 18:22: open `/Users/amar/Codes/ak/simlab`, read CLAUDE.md,
+  run `scripts/handoff-status.sh`, follow HANDOFF.md exactly, take over as driver under his own git identity and
+  continue from "Next step". Commit and push after every step and log his instructions and decisions here. Ask
+  before anything HANDOFF.md says needs a user's OK. On "I'm stopping", hand over.
 
 ## 6. Lessons learned (apply them)
 

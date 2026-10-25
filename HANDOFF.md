@@ -83,11 +83,10 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-25 07:19 CDT (machine clock).
-- **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session). Amar is asleep
-  since 22:20 and gave full autonomy for every remaining build phase except Solana and hardware, then at 02:02 a final
-  pass on every page (CONTEXT.md §5). The Mac is kept awake by `caffeinate -dimsu -t 54000` (pid 28721, from 23:08,
-  until about 14:08).
+- **Updated:** 2026-10-25 07:47 CDT (machine clock).
+- **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-25 07:47 CDT (new session; the 18:22 session
+  hit its weekly usage limit at 07:35). Amar is awake: his keys are in `.env.local` (07:32). The Mac is kept awake by
+  `caffeinate -dimsu -t 54000` (pid 28721, from 23:08, until about 14:08).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Do not build in
   `/Users/amar/Codes/sim`.
 - **Phase:** every build phase is done and **gate 3 is green** (05:46-06:11 at `569b205`, all six languages,
@@ -114,9 +113,11 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 - **Decided:** D1 (tracks). Amar: "Everything else looks fine." Jagrati (16:13): D2 confirmed; D4 keys stay
   placeholders until the morning; Vultr, the Vercel env upload and Tiger not approved yet; D3 (devnet SOL) only with
   phase 4, now skipped.
-- **Running:** interaction audit `wf_e0b543cb-6eb` (`scripts/workflows/interaction-audit.js`, from 07:19): labels
-  find:boards, find:robotics, find:drones, find:fly, find:shell, each with a verify step; read-only against the build
-  served at http://127.0.0.1:3000 (`.next-tags`). Its confirmed findings come back to the driver to fix.
+- **Interaction audit** `wf_e0b543cb-6eb` (`scripts/workflows/interaction-audit.js`, 07:19-07:40): all five find
+  labels (boards, robotics, drones, fly, shell) died on the old session's usage limit, so it reported nothing. Not
+  relaunched yet. Their leftover `scripts/.tmp-audit-*.mjs` were moved out of the repo.
+- **Servers (old session's, still up):** `next start` on http://127.0.0.1:3000 from `.next-tags` (no keys) and the
+  relay `server/realtime` on port 43117. `.next-keys` is a build made at 07:33 with Amar's keys, not started yet.
 - **Runs before it, all done** (scripts in `scripts/workflows/`, `git log` shows what each label pushed): phase 1
   (gate 1 green at 19:21), wave A `wf_bde0e200-6a3` (9 labels, 20:17-21:27), wave B `wf_7b610548-7fb` (10 labels, from
   22:30), its tail `wf_759ed985-c9a`, prose T1 `wf_0e06f30a-c43`, figure dictionaries T2a `wf_07ad23ac-e47`, prose T2
@@ -146,6 +147,10 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-25 07:47 CDT (Amar): Amar takes over in a new session on Amars-MacBook-Pro.local after the old one hit
+  its weekly limit. Tree clean at `136467c` once the build lines in `tsconfig.json` were reverted. Next: start the
+  keys build, run `/api/status` and the Meta and SerpApi smokes, and ask Amar for the deploy OKs.
 
 - 2026-10-25 06:18 CDT (Amar's session): gate 3 green in six languages (`d6a74aa`); drawer fix, docs checked
   against the pages, catalogue pictures; next is Amar's morning list.
