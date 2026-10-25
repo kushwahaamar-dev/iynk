@@ -116,8 +116,11 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 - **Interaction audit** `wf_e0b543cb-6eb` (`scripts/workflows/interaction-audit.js`, 07:19-07:40): all five find
   labels (boards, robotics, drones, fly, shell) died on the old session's usage limit, so it reported nothing. Not
   relaunched yet. Their leftover `scripts/.tmp-audit-*.mjs` were moved out of the repo.
-- **Servers (old session's, still up):** `next start` on http://127.0.0.1:3000 from `.next-tags` (no keys) and the
-  relay `server/realtime` on port 43117. `.next-keys` is a build made at 07:33 with Amar's keys, not started yet.
+- **Servers (this session's background tasks):** `next start` on http://127.0.0.1:3000 from `.next-keys` (Amar's
+  keys, built 07:33) and the relay `server/realtime` on port 43117. `.next-tags` (no keys) was deleted.
+- **Keys smoke (07:51, `docs/hacktx/DEPLOY.md`):** `/api/status` has ai, image, voice, search, realtime and gemini on
+  (solana and db off); Meta 7 of 7, SerpApi 5 of 5, the partner answers in the app, and two browser profiles share a
+  room through the relay in en and es with no console errors.
 - **Runs before it, all done** (scripts in `scripts/workflows/`, `git log` shows what each label pushed): phase 1
   (gate 1 green at 19:21), wave A `wf_bde0e200-6a3` (9 labels, 20:17-21:27), wave B `wf_7b610548-7fb` (10 labels, from
   22:30), its tail `wf_759ed985-c9a`, prose T1 `wf_0e06f30a-c43`, figure dictionaries T2a `wf_07ad23ac-e47`, prose T2
@@ -126,12 +129,12 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   `docs/design/POLISH-SPEC.md`, builds, F-review's `docs/verify/ui-review.md`), review fixes `wf_62976d4a-988`, and
   four figure-string deltas (`wf_7bcff872-581`, `wf_f8a79fd5-c38`, `wf_4259a342-6a9`, `wf_0e7f6757-d55`). Gate 2
   02:20 (`docs/verify/gate2.md`), gate 3 06:11. No agent or workflow is running.
-- **Next step (Amar, when awake):**
-  1. Keys into `.env.local` (never committed): `META_API_KEY`, `SERPAPI_KEY`, optionally `DATABASE_URL` (Tiger, for
-     the leaderboard) and `NEXT_PUBLIC_REALTIME_URL` (the relay; `ws://127.0.0.1:43117/ws` for a local recording).
-  2. His OK for: the Vercel env upload and deploy, a relay host (Vultr) or the laptop relay, the Tiger database.
-  3. On the deployed (or local) build: `/api/status`, `node scripts/smoke-ai.mjs`, `node scripts/smoke-search.mjs`,
-     then JUDGE-QA's "Recheck before judging" and PITCH's "Confirm before pitching".
+- **Next step (Amar):**
+  1. Done 07:32: keys in `.env.local` (Meta, Gemini, SerpApi, relay URL). No `DATABASE_URL`, so no leaderboard.
+  2. His OK for: the Vercel env upload and deploy (the CLI is logged in as `kushwahaamar2ak5-7403`), a relay host
+     (Vultr) or the laptop relay, the Tiger database. Asked at 07:52.
+  3. Done locally 07:51 (see "Keys smoke"). After a deploy, rerun on the real URL, then JUDGE-QA's "Recheck before
+     judging" and PITCH's "Confirm before pitching".
   4. Video 08:30-10:00 from `docs/hacktx/VIDEO.md` (setup, shot list, clicks checked at gate 3). Devpost by 10:30
      from `docs/hacktx/DEVPOST-WRITEUP.md`, filling its [BRACKETS]; Amar submits.
   Optional, small, if someone has time: the robotics HUD verdict is English only (`benchStatus` fills English), the fr
@@ -147,6 +150,9 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-25 07:51 CDT (Amar): keys smoke green locally (Meta 7/7, SerpApi 5/5, in-app partner, relay rooms across
+  two profiles). The keys build serves on port 3000 with the relay, both from this session. Next: Amar's deploy OKs.
 
 - 2026-10-25 07:47 CDT (Amar): Amar takes over in a new session on Amars-MacBook-Pro.local after the old one hit
   its weekly limit. Tree clean at `136467c` once the build lines in `tsconfig.json` were reverted. Next: start the

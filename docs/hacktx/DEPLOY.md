@@ -20,6 +20,22 @@ curl -s https://<the site>/api/status                    # which features the de
 Both scripts read the keys from the environment or `.env.local`, never print them, and say SKIP without one.
 `smoke-search.mjs` spends at most one SerpApi search per route (web up to three); a cached answer spends none.
 
+## Local smoke with keys, 2026-10-25 07:51 CDT
+
+Amar's keys are in `.env.local` (Meta, Gemini, SerpApi, `NEXT_PUBLIC_REALTIME_URL=ws://127.0.0.1:43117/ws`; no
+`DATABASE_URL`). Build `.next-keys` from 07:33 (same code as `0974475`), served at http://127.0.0.1:3000, with the
+relay `server/realtime` on port 43117.
+
+| Check | Result |
+|---|---|
+| `curl /api/status` | `ai`, `image`, `voice`, `search`, `realtime`, `gemini` true; `solana` and `db` false |
+| `node scripts/smoke-ai.mjs` | 7 of 7: models, chat, streaming, tool call, translate, image (490 KB webp), transcribe |
+| `node scripts/smoke-search.mjs --base http://127.0.0.1:3001` | 5 of 5: offers (best USD 28.09), web, nearby, events, videos, 8 results each |
+| `POST /api/ai/chat` (board, uno-r3, en) | streamed answer from Meta, 2682 in / 291 out tokens |
+| `/healthz` on 43117 | `{"ok":true}` |
+| Two browser profiles in one room (Playwright, `/en` and `/es` Blink, `?room=`) | both on `ws://127.0.0.1:43117/ws`, status "Live", each sees the other with their language, no console errors |
+| Demo routes (`/en`, en and es Blink, quad5, fly, together) | 200 |
+
 ## What is already set
 
 | File | State |
