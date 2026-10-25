@@ -47,3 +47,21 @@ next-env.d.ts
 
 # Python bytecode from the figure tools
 __pycache__/
+
+# Internal notes and agent working files: kept locally, not published
+/HANDOFF.md
+/CLAUDE.md
+/AGENTS.md
+/.audit/
+/docs/handoff/
+/docs/hacktx/
+/docs/audit/
+/docs/requests/
+/docs/verify/
+/docs/research/
+/docs/design/
+/docs/ARCHITECTURE.md
+/docs/DECISIONS.md
+/docs/SPEC.md
+/scripts/workflows/
+/scripts/handoff-status.sh

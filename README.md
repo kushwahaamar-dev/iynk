@@ -1,229 +1,157 @@
 # iynk
 
-iynk is a hardware lab in the browser. You pick a real board, a robotics bench or a drone, and it is drawn as a
-hand-inked figure you can turn all the way round and look inside. Then you build it part by part, write the code and
-run it, break it on purpose and watch what really happens (magic smoke, a motor spinning backwards, a quad that flips
-on take-off), and, for drones, size the parts with real numbers and fly it. The code runs in interpreters inside the
-page (Arduino C++, MicroPython and Python, Verilog), lessons and tasks pass only when that run meets their checks, and
-it all works in six languages, alone or with friends in a live room. It was built for HackTX 2026.
+**A free hardware lab in your browser.** Wire, code, break and fly real boards, robots and drones, without buying a
+single part, in your own language, and never alone.
 
-Everything below was checked against this tree at 02:00 CDT on 25 October 2026. The gate reports in `docs/verify/`
-have the latest machine results.
+**Live:** [iynk.tech](https://iynk.tech) · no account, nothing to install
 
-## What's in it
+![The iynk landing page](docs/media/landing.jpg)
 
-38 items: 12 boards, 13 robotics benches and 13 drones. Every one has a figure, English prose, its own page in all six
-languages, and a "Build it for real" parts list. Every board lesson and bench task has reference code that passes the
-app's own check path while the starter (or an empty program) fails it: 102 of 102 in
-`docs/verify/gate2-lessons.md` (71 lessons, 31 tasks).
+## Why
 
-### Boards (`/boards`)
+Learning hardware is mostly experimenting, and experimenting means breaking things. Every mistake costs a part: a
+board, a sensor, a motor driver, a battery. Far from a lab, a makerspace or a well-stocked shop, that cost is where a
+lot of people stop. iynk moves the experimenting into a lab that behaves like the real hardware, so the only thing you
+ever have to buy is the final prototype.
 
-Each board has board, breadboard, schematic and power views, an assembly sequence from the bare PCB, failures that
-change the figure, a pinout, lessons with a serial monitor, and a quiz on most lessons.
+## What it does
 
-| Board | Code | Lessons | Lessons with a quiz | Failures |
-|---|---|---|---|---|
-| Arduino Uno R3 | Arduino C++ | 16 | 16 | 14 |
-| Arduino Nano | Arduino C++ | 4 | 4 | 15 |
-| Arduino UNO R4 (Minima, WiFi) | Arduino C++ | 7 | 7 | 11 |
-| ESP32-DevKitC V4 | Arduino C++ | 5 | 2 | 13 |
-| ESP32-S3-DevKitC-1 (v1.1, v1.0) | Arduino C++ | 4 | 1 | 14 |
-| NodeMCU (ESP8266) | Arduino C++ | 4 | 2 | 13 |
-| Raspberry Pi Pico (Pico, Pico W, Pico 2, Pico 2 W) | MicroPython, Arduino C++ | 6 | 0 | 12 |
-| STM32 Nucleo-F401RE | Arduino C++ | 5 | 5 | 14 |
-| BBC micro:bit V2 | MicroPython | 5 | 5 | 10 |
-| Raspberry Pi 5 / Pi 4 | Python (gpiozero, rclpy) | 5 | 5 | 10 |
-| Digilent Basys 3 | Verilog | 5 | 5 | 9 |
-| Terasic DE10-Lite | Verilog | 5 | 5 | 8 |
+### Three labs, 38 real items
 
-The FPGA boards simulate the Verilog you write, read the switches and light the LEDs and digits from it; they don't
-synthesise a bitstream.
+| Lab | Items |
+|---|---|
+| **Board Lab** | Arduino Uno R3, Arduino Nano, Arduino UNO R4 (Minima, WiFi), ESP32-DevKitC V4, ESP32-S3-DevKitC-1, NodeMCU (ESP8266), Raspberry Pi Pico (W, 2), STM32 Nucleo-F401RE, BBC micro:bit V2, Raspberry Pi 5 / Pi 4, Digilent Basys 3, Terasic DE10-Lite |
+| **Robotics Lab** | Build an Arduino Uno R3, LED + resistor, transistor motor switch, build an ESP32-S3-DevKitC-1, TB6612FNG driver, L298N driver, A4988 stepper driver, PCA9685 servo arm, MPU-6050 tilt alarm, HC-SR04 parking sensor, QTR-8RC line follower, LM2596 buck converter, Raspberry Pi 5 ROS 2 brain |
+| **Drone Lab** | 5-inch freestyle quad, Tiny Whoop 65 mm, 3-inch cinewhoop, 7-inch long-range quad, 5-inch racing quad, GPS camera drone, autonomous delivery quad, agricultural spray hexacopter, 900 mm FPV flying wing, VTOL tiltrotor, Crazyflie swarm drone, tricopter, heavy-lift octocopter |
 
-### Robotics benches (`/robotics`)
+Every item is a hand-inked 3D figure you can turn all the way round, see through and take apart.
 
-A bench is a build on the cutting mat: every step in a fixed order, faults you can switch on that change the readings
-and the figure, practice tasks with code, and a quiz after the major steps. Benches describe their electrical
-behaviour with small models (transistor saturation, H-bridge levels, buck output, stepper current), and breadboard
-circuits go through the figure engine's nodal solver.
+![A Board Lab lesson: Blink on the Arduino Uno R3](docs/media/lab.jpg)
 
-| Bench | Controller | Steps | Faults | Tasks | Quizzes |
-|---|---|---|---|---|---|
-| Build an Arduino Uno R3 | Uno R3 | 25 | 13 | 2 | 5 |
-| LED + resistor | – | 19 | 8 | 2 | 5 |
-| Transistor motor switch | Nano | 22 | 11 | 4 | 8 |
-| Build an ESP32-S3-DevKitC-1 | ESP32-S3 | 17 | 6 | 4 | 6 |
-| TB6612FNG driver | Nano | 22 | 7 | 2 | 4 |
-| L298N driver | Nano | 24 | 8 | 2 | 4 |
-| A4988 stepper driver | Nano | 22 | 7 | 2 | 5 |
-| PCA9685 servo arm | Nano | 23 | 8 | 2 | 4 |
-| MPU-6050 tilt alarm | Nano | 18 | 6 | 2 | 4 |
-| HC-SR04 parking sensor | Nano | 19 | 6 | 2 | 4 |
-| QTR-8RC line follower | Nano | 22 | 8 | 2 | 5 |
-| LM2596 buck converter | – | 22 | 7 | 2 | 5 |
-| Raspberry Pi 5 ROS 2 brain | Pi 5 | 17 | 11 | 3 | 7 |
+- **Real code, really run.** Write Arduino C++, MicroPython, Python (with gpiozero and rclpy on the Pi) or Verilog on
+  the FPGA boards and press Run. Interpreters inside the page drive the pins, the serial monitor and the figure on a
+  deterministic clock. 71 board lessons and 31 bench tasks pass only when your run meets their checks.
+- **Break it on purpose.** 144 board failures and 106 bench faults, decided by a circuit solver: leave the resistor off
+  an LED and it flashes once and burns out (113 mA through a part rated for 20), fit a capacitor backwards and it
+  smokes, put a motor on the 5 V pin and the board browns out. Each one explains what happened and how to fix it.
+- **Build part by part.** Benches go together step by step (272 steps) with live status and current draw. Drones are
+  assembled on a bench, sized with a drone calculator (thrust to weight, hover throttle, flight time, current) and
+  checked with safety tests before the first flight.
+- **Fly it.** A flight sim with gate races and freestyle courses in angle or acro mode, third person or FPV, against
+  your best lap, the autopilot and your friends' ghosts. Break the drone on purpose (flight controller mounted
+  backwards, props swapped round) and a slow-motion replay shows why it flipped.
 
-### Drones (`/drones`)
+![The flight sim: a gate race on the 5-inch freestyle quad](docs/media/fly.jpg)
 
-Each craft has a design calculator (342 golden rows across the 13 crafts), a build in figure order that refuses
-wrong steps, a wiring sheet, bench tests, a CLI emulator for its firmware with real snippets, quizzes, and a flight
-range where it flies with its own parameters on its own courses (gates, checkpoints, or an autopilot mission on eight
-of the crafts), each with gold, silver and bronze par times.
+### Never alone
 
-| Craft | Firmware | Bench tests | Courses |
-|---|---|---|---|
-| 5-inch freestyle quad | Betaflight | 3 | 2 |
-| Tiny Whoop 65 mm | Betaflight | 5 | 2 |
-| 3-inch cinewhoop | Betaflight | 7 | 2 |
-| 7-inch long-range quad | Betaflight | 6 | 3 |
-| 5-inch racing quad | Betaflight | 5 | 1 |
-| GPS camera drone | ArduCopter | 8 | 1 |
-| Autonomous delivery quad | ArduCopter | 7 | 1 |
-| Agricultural spray hexacopter | ArduCopter | 6 | 1 |
-| 900 mm FPV flying wing | INAV | 8 | 2 |
-| VTOL tiltrotor | ArduPlane (QuadPlane) | 6 | 2 |
-| Crazyflie swarm drone | crazyflie-firmware, cflib (Python) | 5 | 1 |
-| Tricopter | Betaflight | 5 | 2 |
-| Heavy-lift octocopter | ArduCopter | 6 | 2 |
+- **Rooms.** Share a link and up to eight people build on the same bench in real time, on any device. Every shared
+  action is put in one order for everyone.
+- **A lab partner that finds you a friend.** The AI partner (Meta Muse Spark with tool calling) reads your bench,
+  points at the broken part in the figure and gives hints before answers. If someone in your room has already passed
+  that lesson, it asks them first, with a question that makes them explain it.
+- **Any language.** The whole app is in English, Spanish, French, German, Chinese and Hindi, down to the labels inside
+  the figures. Room chat and voice messages (Muse Voice Transcribe) are translated into each reader's language.
+- **Build Night, Build Buddies, Build Stories.** Plan one project for a group with a role for each person, find people
+  whose skills complement yours, and turn a session into a short story with an illustrated cover (Muse Image).
 
-The bench tests are the smoke stopper (every craft but the Crazyflie), motor direction and accelerometer calibration,
-plus the craft's own checks: radio link, failsafe, compass, GPS lock, servos, airspeed, CG, prop clearance, pre-arm.
-The flight sim covers multirotors, fixed wings, the tiltrotor's transition, the tricopter's tail servo and the swarm;
-fly with the keyboard (WASD and the arrows), the on-screen sticks on a phone, or a gamepad.
+### For real
 
-## Languages
+- **Build it for real.** Every parts list is priced live across Google Shopping, Amazon and eBay (SerpApi). On a drone,
+  a budget optimiser re-runs the drone maths on every battery, motor and prop combination at today's prices and picks
+  the build that still flies within your budget. It also finds makerspaces, electronics shops and flying fields near
+  you, and tutorials on YouTube.
+- **Proof of Build.** Pass a drone's bench safety checks and the server re-runs your exact run before an Anchor program
+  on Solana devnet writes a credential to your wallet. Anyone can verify it straight from the chain, and sponsors can
+  lock bounties that pay out in the same transaction.
+- **Leaderboards.** Laps and lesson passes land in Postgres with TimescaleDB (Tiger Data), where real-time continuous
+  aggregates drive the flight leaderboards.
+- **An MCP server.** AI assistants can search the catalogue, run the drone calculator, price parts, plan a build night
+  and open a room through `/api/mcp`.
 
-English, Spanish, French, German, Simplified Chinese and Hindi, at `/en`, `/es`, `/fr`, `/de`, `/zh` and `/hi`.
+## How it works
 
-- **Lesson and item prose:** all 38 items in all six languages (`src/i18n/content/<lang>/`, 228 files).
-- **Interface:** 11 namespaces, 2021 strings, in every language (`src/i18n/messages/<lang>/`). Between 138 (Chinese)
-  and 212 (German) of them stay identical to English on purpose: product names, units and code.
-- **Figure text** (button names, labels, status lines inside the drawings): the 1866 strings in
-  `src/i18n/figure-keys.json` are translated in every language (`src/i18n/figures/<lang>.json`). The figures built in
-  the last wave added more: `node scripts/figure-strings.mjs --static` lists 1391 strings that aren't in the key list
-  yet, and those show in English until it is regenerated and translated.
-- **Kept in English everywhere:** code, pin names, part numbers, CLI commands, the serial output a check matches,
-  firmware and OSD messages, flight mode names, and the names of third-party menus.
+```mermaid
+flowchart LR
+  B["Browser<br/>Next.js app, figures,<br/>interpreters, flight sim"] -->|"/api/ai, /api/search,<br/>/api/solana, /api/mcp"| V["Vercel functions"]
+  B <-->|WebSocket| R["Room relay<br/>Node + ws, Docker, Caddy"]
+  V --> M["Meta Model API<br/>Muse Spark, Image, Voice"]
+  V --> G["Gemini<br/>fallback"]
+  V --> S["SerpApi"]
+  V --> T["Tiger Data<br/>Postgres + TimescaleDB"]
+  V --> SOL["Solana devnet<br/>iynk_passport"]
+```
 
-`npx vitest run src/i18n` checks that every language has exactly the English keys and placeholders, and that prose
-is really translated.
+- **Frontend:** Next.js 16 (App Router), React, TypeScript, Tailwind CSS, CodeMirror. Figures are SVG drawn with
+  [Colorfigures](figures/vendor/colorfigures/LICENSE), with our own engines for boards, benches and drones
+  ([figures](docs/FIGURES.md), [bench engine](docs/FIGURES-BENCH.md), [drone engine](docs/FIGURES-DRONE.md)).
+- **Simulation:** interpreters for an Arduino C++ subset, MicroPython, Python and a Verilog subset; a circuit solver;
+  a drone calculator; a flight model. All in the browser.
+- **Server:** Vercel functions for AI, search, data and Solana. API keys stay on the server, every call is
+  rate-limited, and Gemini takes over when Meta is busy.
+- **Realtime:** a small Node WebSocket relay (`server/realtime`), run in Docker behind Caddy.
+- **Data:** Postgres with TimescaleDB (`db/migrations`): an events hypertable, continuous aggregates and opt-in buddy
+  profiles.
+- **Chain:** an Anchor program (`solana/programs/iynk_passport`), tested on a local validator.
 
-## Run it
+## Run it locally
 
-Node 24 (`.nvmrc`, `engines`), then:
+Needs Node 24 and npm.
 
 ```bash
 npm ci
-npm run dev        # http://localhost:3000, which redirects to /en
+cp .env.example .env.local   # every key is optional; a feature without its key says it isn't set up
+npm run dev                  # http://localhost:3000
 ```
 
-No environment variables are needed: every sponsor feature says "not set up on this deployment" and the labs work
-without it. To turn features on, copy `.env.example` to `.env.local` and fill in the keys you have (never commit it).
-A production build is `npm run build` then `npm start`. Both `dev` and `build` regenerate the content index
-(`src/content/index.generated.ts`) first. Progress lives in this browser's `localStorage` under `iynk:v1`; there are
-no accounts.
+The labs, the figures, the interpreters and the flight sim work with no keys at all. The optional keys in
+`.env.example` turn on the rest:
 
-## Test it
-
-```bash
-npm run content:check   # every item has a data module and complete English prose
-npm run typecheck       # next typegen, then tsc
-npm run lint            # eslint --quiet
-npm test                # vitest: unit, content, interpreter, figure-engine and script tests
-npm run e2e             # Playwright against a production build (.next-e2e, random port)
-npm run check           # all five, in that order
-```
-
-Playwright needs `npx playwright install chromium` once. `npm run e2e` builds the app itself; `E2E_SKIP_BUILD=1` serves
-a build that already exists. The checks that go through the app's own paths, as the gates run them:
-
-```bash
-IYNK_LESSON_TABLE=/tmp/lessons.md npx vitest run src/lib/interp/lessons.test.ts   # every lesson and task: reference passes, starter fails
-node figures/engine/probe.mjs tb6612fng          # plays a bench's steps in order through the figure bridge
-python3 -I figures/tools/cfbuild.py drones/quad5  # builds one figure into public/figures/
-python3 -I figures/tools/cfshoot.py drones/quad5  # shoots it from 7 angles, see-through, exploded, phone, inside an iframe; exit 1 on errors
-node scripts/crawl-routes.mjs --base http://127.0.0.1:3420 --dist .next   # every page in 6 languages at 390 px, on a running production build
-(cd server/realtime && npm test)                  # the room relay
-```
-
-`docs/verify/` holds the gate reports, the lesson table and the route crawl.
-
-## How the figures are made
-
-Every figure is one self-contained HTML page in the Colorfigures style: warm paper, heavy ink outlines, flat light, mid
-and dark bands, a flat blue cast shadow. The Colorfigures core is
-third-party (MIT, April Zhu); it is vendored in `figures/vendor/colorfigures/` with iynk's patches listed in
-`PATCHES.md` (translation, the embed mode, the dark host).
-
-- Sources are `figures/<kind>/<id>.js` (boards, parts, modules, robotics, drones), drawn on two engines of our own:
-  `figures/engine/bench.js` and its circuit solver for boards, parts, modules and benches, and
-  `figures/engine/drone.js` for the crafts. The flight range is `figures/flight/`, built by `node figures/flight/build.mjs`.
-- `cfbuild.py` builds each source into `public/figures/<kind>/<id>.html` (80 pages, checked in and served as static
-  files); `cfshoot.py` shoots and checks a built page.
-- The app shows a figure in an iframe (`FigureFrame`) and drives it over `postMessage` through `figures/engine/embed.js`:
-  presses, state patches, faults, pause and resume, and the state the lesson checks. `docs/FIGURES.md`,
-  `docs/FIGURES-BENCH.md` and `docs/FIGURES-DRONE.md` are the contracts.
-- Every figure was made from a written prompt: `figures/prompts/<id>.md`, 69 records for the 79 figure pages (a part
-  and a module with the same id, or a bench and its module, share one unless the drawings differ: `-part` and
-  `-bench` records), and `figures/flight/PROMPT.md` for the flight range.
-
-## Sponsor tracks
-
-What each track's judges can see, and what it does on a deployment with no keys. Solana and Best Hardware Hack are not
-entered: that work (phase 4) was skipped, so their code stays in the repo but off.
-
-| Track | In iynk | With no keys | Turned on by |
-|---|---|---|---|
-| Best Overall | The whole lab: 38 items, three interpreters behind one check path (run in a Web Worker), the circuit solver, the flight sim, six languages | All of it | – |
-| SerpApi | **Build it for real** on every board, bench and drone: the parts list priced from Google Shopping, Amazon and eBay with the cheapest total; for drones a budget optimiser that swaps cells, motors and props and re-runs the calculator; nearby makerspaces, shops and flying fields (Google Maps), maker events, tutorial videos; the partner's datasheet search (Google and Extract); the MCP tool `price_parts`. Cached 6 h, with a search budget | The parts list (drones priced from their catalogue, boards and benches unpriced) and the drone optimiser on catalogue prices, under "Live prices aren't set up on this deployment" | `SERPAPI_KEY` |
-| Most Entertaining | **Break it** on every board and bench (in the figure and the failure panel) and on every drone's fly page; the crash replay in slow motion with "here's why" and a one-click fix; par times and medals; your best-lap ghost and your friends' ghosts in a room; a daily challenge; sound (off by default) | All of it except the leaderboards, which say they aren't set up | `DATABASE_URL` (Tiger Data) for leaderboards and live counters |
-| Meta | **iynk Together**: live rooms on every lab page and `/together` (cursors, chat, presence, a baton so one person builds at a time); Muse Spark translates chat and voice notes; the lab partner (Muse Spark with tools, and one that points you to a person in the room first); the Build Night planner; Build Stories with a Muse Image cover; buddy matching; the MCP connector at `/api/mcp` (7 tools, `/api/openapi.json`) so Muse can call iynk | Rooms work between tabs of one browser, and chat shows messages as written; the partner, translation, voice, images and the planner say they aren't set up; the MCP tools `search_catalog`, `get_item`, `drone_calc` and `create_room` answer, the others return `not_configured` | `META_API_KEY` (`GEMINI_API_KEY` stands in for text only), `NEXT_PUBLIC_REALTIME_URL` for rooms across devices, `DATABASE_URL` for buddies |
-
-Not entered, and hidden: the Solana Proof of Build program (`solana/`, Anchor, devnet, never deployed) with its
-Passport tab and nav entries, which appear only once the program's config account exists (`/passport` and `/verify`
-say "not set up"); and the Hardware tab (Web Serial to a real Uno), which stays off. Usage telemetry is anonymous,
-needs `DATABASE_URL`, and can be turned off at the bottom of any lab page.
-
-## Deploy
-
-Nothing is deployed yet. `docs/hacktx/DEPLOY.md` is the runbook: Vercel with Node 24 from `package.json`, which
-variables to set (`NEXT_PUBLIC_SITE_URL` before the build), what `.vercelignore` leaves out, and a local production
-build and smoke. The room relay (`server/realtime/`, Node and `ws`) ships as Docker plus Caddy from `deploy/realtime/`
-with `scripts/realtime-deploy.sh` (`docs/hacktx/REALTIME.md`); the database tables are `db/migrations/`, applied by
-`node scripts/db-migrate.mjs`.
-
-## Where things are
-
-| Path | What |
+| Variable | Turns on |
 |---|---|
-| `src/app/[lang]/` | Pages: dashboard, the three labs, item and lesson pages, `/drones/<id>/fly`, `/together`, `/about` |
-| `src/app/api/` | AI (Muse Spark, Image, Voice), search (SerpApi), telemetry, leaderboard, buddies, MCP, status |
-| `src/content/` | One typed data module per item (`ids.ts`, `schema.ts`); the text lives in `src/i18n/content/` |
-| `src/lib/interp/` | The interpreters (`arduino/`, `python/`, `verilog/`) and the one check path (`runHeadless`, `evaluateChecks`) |
-| `src/lib/drone/`, `src/lib/flight/` | The design calculator and the flight sim |
-| `figures/` | Figure sources, engines, tools, prompts |
-| `server/realtime/`, `db/`, `solana/` | The room relay, the Tiger Data migrations, the (undeployed) Solana program |
-| `docs/` | `SPEC.md` (the brief), `ARCHITECTURE.md` (contracts and owners), `DECISIONS.md`, `hacktx/` (plan, pitch, deploy), `facts/` (datasheet fact sheets), `verify/` (gate reports) |
+| `META_API_KEY` | the lab partner, translation, voice, story covers, Build Night and Build Buddies matching |
+| `GEMINI_API_KEY` | the fallback model when Meta is busy |
+| `SERPAPI_KEY` | live prices, places, events, videos and datasheet answers |
+| `DATABASE_URL` | leaderboards and Build Buddies (run `node scripts/db-migrate.mjs` once) |
+| `NEXT_PUBLIC_REALTIME_URL` | rooms across devices (without it, rooms work between tabs of one browser) |
+| `SOLANA_ISSUER_KEYPAIR`, `NEXT_PUBLIC_SOLANA_PROGRAM_ID` | Proof of Build on devnet |
 
-## Built during HackTX 2026
+Rooms across devices need the relay:
 
-HackTX 2026 requires every line of project code to be written during the hacking period, 11:30 CDT on 24 October to
-11:30 CDT on 25 October. Before 11:30 on 24 October we had the product brief (`docs/SPEC.md`), research notes
-(`docs/research/`), the first datasheet fact sheets (`docs/facts/`) and an earlier iynk prototype. Those were used as
-knowledge only. The prototype is not in this repository's history, and nothing from it, from the morning's
-prototypes or from the code blocks in `docs/research/` was copied. Every line of code here was written during the
-event, by Claude Code agents that the two of us drove. The history starts at 15:30 on 24 October, when the build moved
-to this repository; `docs/audit/history.md` has the timeline before that. Third-party code is the npm dependencies and
-the vendored Colorfigures core (MIT), credited on the About page. `HANDOFF.md` and `docs/handoff/CONTEXT.md` log every
-step, decision and request since.
+```bash
+cd server/realtime && npm ci && node server.js --port 43117
+# then NEXT_PUBLIC_REALTIME_URL=ws://127.0.0.1:43117/ws in .env.local
+```
 
-## Known gaps
+## Tests
 
-Scope decisions are in `docs/DECISIONS.md` ("Build night"). What each part of the build left undone is in
-`docs/requests/*-gaps.md`. The ones a judge might notice:
+```bash
+npm run typecheck   # TypeScript
+npm run lint        # ESLint
+npm test            # Vitest: about 2,800 unit tests, including every lesson's reference and starter code
+npm run e2e         # Playwright end-to-end tests with axe accessibility checks
+cd solana && npm test   # the Anchor program on a local validator
+```
 
-- 14 board lessons have no quiz yet (Pico 6, ESP32-DevKitC 3, ESP32-S3 3, NodeMCU 2), and the 5-inch freestyle quad
-  has only the three safety tests, no craft test of its own.
-- Some figure text still shows in English in the other five languages (see Languages).
-- The Verilog simulator has no `inout`, UART or ADC; the micro:bit's radio has no peer to talk to.
-- Rooms across two devices, live prices, the AI partner and leaderboards need the relay and the keys above.
+## Project layout
+
+```
+src/app            pages and API routes (one page per lab item, in six languages)
+src/components     lab UIs, the dock (partner, rooms, parts), shell
+src/content        boards, benches and drones: lessons, steps, faults, checks
+src/lib            interpreters, circuit solver, drone calculator, flight model, realtime, AI, search, Solana
+src/i18n           messages and lesson prose in six languages
+figures            figure sources and engines (built into public/figures)
+server/realtime    the room relay
+solana             the Anchor program, its tests and deploy scripts
+db/migrations      the TimescaleDB schema
+e2e                Playwright tests
+docs/facts         sourced fact sheets for every board and drone
+```
+
+## Credits
+
+- [Colorfigures](figures/vendor/colorfigures/LICENSE) by April Zhu (MIT), built on iso-glow by April Zhu and
+  iso-figure by Tolga Cohce. Our changes are in `figures/vendor/colorfigures/PATCHES.md`.
+- Learn Arduino by Dilum Sanjaya, Robotics Engineer and Drone Engineer showed how good an interactive hardware lesson
+  can be and shaped our lesson structure. We reused facts (pinouts, formulas, constants), not their code.

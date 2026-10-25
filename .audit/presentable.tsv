@@ -1,7 +1,0 @@
-ts	phase	decision	why	evidence	result
-2026-10-24T06:12:16Z	frame	The public site fails if a stranger cannot name the board from the picture	The live page was a mint rectangle. The original Learn Arduino page is a blue Uno with headers, a DIP, USB-B and a barrel jack.	https://learn-arduino-red.vercel.app	open
-2026-10-24T06:12:16Z	uno	Drew the Uno as a blue board with female headers, a DIP, USB-B and a barrel jack	Recognition comes from that silhouette, not from the title.	public/figures/board.html	screenshot uno-zoomed
-2026-10-24T06:12:16Z	boards	Gave ESP32 a module can, Pico one RP2040, Nucleo its own board	Those pages were the same Uno shape with different silk.	figures/src/board.html	screenshots esp32 and pico
-2026-10-24T06:12:16Z	drone	Open the freestyle page on a built quad with props off	Step 0 was an empty plate. Props stay off until a test puts them on.	src/components/DroneLab.tsx	built starts at 11
-2026-10-24T06:17:38Z	boards	Nano still uses the Uno body. Only the bridge silk now follows the board.	The earlier boards row read as if that shared body was gone. It is not.	figures/src/board.html slbCollect	supersedes boards row
-2026-10-24T06:17:38Z	drone	Props stay off. No test turns them on.	The earlier why said a test puts the props on. The smoke and motor tests refuse to run if props are on.	src/components/DroneLab.tsx	supersedes drone row
