@@ -47,6 +47,12 @@ export type FigureFrameProps = {
   strings?: Record<string, string>;
   /** Show the list of the figure's pressable parts under it (default true). */
   controls?: boolean;
+  /**
+   * Ids of the figure's own buttons to hide because the host draws the same
+   * control (See-through, Labels, zoom and the HUD can't be hidden). Sent as
+   * `chrome` after every `ready` and whenever the list changes.
+   */
+  hideChrome?: readonly string[];
   className?: string;
   /** Overrides the iframe's sizing (default: 4:3, about 10:11 on phones). */
   frameClassName?: string;
@@ -82,6 +88,7 @@ export function FigureFrame({
   onEvent,
   strings,
   controls = true,
+  hideChrome,
   className,
   frameClassName,
   fill = false,
@@ -100,6 +107,7 @@ export function FigureFrame({
   // What the host has told this figure about its state, replayed after each ready.
   const stateRef = useRef<{ src: string; state: Record<string, unknown> } | null>(null);
   const initialJson = initial ? JSON.stringify(initial) : "";
+  const hideKey = hideChrome?.join("\n") ?? "";
 
   const [info, setInfo] = useState<FigureMessages["ready"] | null>(null);
   // The pressable parts can change as the figure's state changes (a build step adds a part).
@@ -168,6 +176,7 @@ export function FigureFrame({
     post({ type: "theme", mode: theme });
     post({ type: "locale", lang: locale, ...(figureStrings ? { strings: figureStrings } : {}) });
     post({ type: "labels", on: labels });
+    if (hideKey) post({ type: "chrome", hide: hideKey.split("\n") });
     const state = stateRef.current?.state;
     if (state && Object.keys(state).length > 0) post({ type: "set", state });
     for (const command of queueRef.current.drain()) post(command);
@@ -242,6 +251,9 @@ export function FigureFrame({
     if (readyRef.current) post({ type: "labels", on: labels });
   }, [post, labels]);
   useEffect(() => {
+    if (readyRef.current) post({ type: "chrome", hide: hideKey ? hideKey.split("\n") : [] });
+  }, [post, hideKey]);
+  useEffect(() => {
     if (readyRef.current && figureStrings) post({ type: "locale", lang: locale, strings: figureStrings });
   }, [post, locale, figureStrings]);
 
@@ -276,7 +288,8 @@ export function FigureFrame({
     return () => window.clearTimeout(timer);
   }, [loads, attempt]);
 
-  const buttons = info?.buttons ?? [];
+  // A button the host hid draws as the host's own control already; the list would be a second copy.
+  const buttons = (info?.buttons ?? []).filter((button) => !button.hidden);
   const switches = info?.switches ?? [];
   const count = buttons.length + switches.length + parts.length;
   const hasControls = controls && count > 0;

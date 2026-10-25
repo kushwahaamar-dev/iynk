@@ -20,6 +20,8 @@ export type HostMessages = {
   resume: Empty;
   /** Click a figure button by its stable id; `choice` picks a picker chip. */
   press: { id: string; choice?: string };
+  /** Hide the figure's own buttons with these ids because the host draws them; replaces the last list. */
+  chrome: { hide: string[] };
   /** Run one of the figure's acts on the part whose data-* match `data`. */
   act: { name: string; data?: Record<string, string | number> };
   /** A state patch, validated by the figure's `embed.accept`. */
@@ -37,7 +39,8 @@ export type HostMessages = {
 
 export type HostMessageType = keyof HostMessages;
 
-export type FigureButton = { id: string; label: string; en?: string; picker: boolean };
+/** `hidden`: the host hid it with `chrome` (it still answers `press`). */
+export type FigureButton = { id: string; label: string; en?: string; picker: boolean; hidden?: boolean };
 export type FigureSwitch = { id: string; label: string; on: boolean };
 /** A pressable part of the drawing, driven with `act`. */
 export type FigurePart = { act: string; id: string | null; label: string; en?: string };
@@ -157,7 +160,13 @@ function list<T>(value: unknown, read: (item: Record<string, unknown>) => T | nu
 const parseButtons = (value: unknown) =>
   list<FigureButton>(value, (item) =>
     isString(item.id) && item.id
-      ? { id: item.id, label: isString(item.label) && item.label ? item.label : item.id, en: optString(item.en), picker: item.picker === true }
+      ? {
+          id: item.id,
+          label: isString(item.label) && item.label ? item.label : item.id,
+          en: optString(item.en),
+          picker: item.picker === true,
+          ...(item.hidden === true ? { hidden: true } : {}),
+        }
       : null,
   );
 

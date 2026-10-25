@@ -267,3 +267,15 @@ test("shows the plate with the figure's name while it loads, reloads a silent fi
     vi.useRealTimers();
   }
 });
+
+test("hides the figure's buttons the host draws itself after every ready, and leaves them out of the controls list", () => {
+  const { view } = mount({ hideChrome: ["reset"] });
+  fromFigure("ready", { ...ready, buttons: [{ id: "reset", label: "RESET", hidden: true }] });
+  expect(posted.map((entry) => entry.message)).toContainEqual({ source: "simlab", v: 1, type: "chrome", hide: ["reset"] });
+  expect(screen.queryByRole("button", { name: "RESET" })).toBeNull();
+  expect(screen.getByRole("button", { name: "See-through" })).toBeTruthy();
+
+  posted = [];
+  view.rerender(<FigureFrame src="/figures/boards/uno-r3.html" title="Arduino Uno R3" hideChrome={[]} />);
+  expect(posted.map((entry) => entry.message)).toEqual([{ source: "simlab", v: 1, type: "chrome", hide: [] }]);
+});
