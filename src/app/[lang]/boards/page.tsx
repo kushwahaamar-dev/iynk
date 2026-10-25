@@ -64,7 +64,7 @@ async function Boards({ params }: Pick<Props, "params">) {
           ].filter(Boolean);
           const tags = meta.tags.filter((tag) => !meta.languages.some((l) => t(`lang.${l}`) === t(`tags.${tag}` as Parameters<typeof t>[0])));
           return (
-            <li key={id} className="ink-card relative flex flex-col gap-3 p-5 transition-transform hover:-translate-y-0.5 has-[a:focus-visible]:outline-[2.5px] has-[a:focus-visible]:outline-offset-3 has-[a:focus-visible]:outline-(--focus) motion-reduce:hover:translate-y-0" data-board={id}>
+            <li key={id} className="ink-card relative row-span-6 grid grid-rows-subgrid gap-y-3 p-5 transition-transform hover:-translate-y-0.5 has-[a:focus-visible]:outline-[2.5px] has-[a:focus-visible]:outline-offset-3 has-[a:focus-visible]:outline-(--focus) motion-reduce:hover:translate-y-0" data-board={id}>
               <p className="ink-label truncate">{board.maker}</p>
               <h2 className="text-2xl leading-tight">
                 <Link
@@ -76,14 +76,16 @@ async function Boards({ params }: Pick<Props, "params">) {
                 </Link>
               </h2>
               <p className="text-sm leading-relaxed">{tc(board.tagline)}</p>
-              <p className="tabular font-ui text-xs leading-relaxed text-muted">
-                {specs.map((spec, i) => (
-                  <span key={i} className="whitespace-nowrap">
-                    {i > 0 ? " · " : ""}
-                    {spec}
-                  </span>
-                ))}
-              </p>
+              {/* Each spec brings its own dot; the list sits one dot to the left and clips, so no line starts with one. */}
+              <div className="overflow-hidden">
+                <ul className="tabular -ms-4 flex flex-wrap font-ui text-xs leading-relaxed text-muted">
+                  {specs.map((spec, i) => (
+                    <li key={i} className="whitespace-nowrap before:inline-block before:w-4 before:text-center before:content-['·']">
+                      {spec}
+                    </li>
+                  ))}
+                </ul>
+              </div>
               <ul className="flex flex-wrap gap-1.5" aria-label={t("index.languages")}>
                 {meta.languages.map((l) => (
                   <li key={l}>
@@ -96,7 +98,7 @@ async function Boards({ params }: Pick<Props, "params">) {
                   </li>
                 ))}
               </ul>
-              <div className="relative z-10 mt-auto border-t-[1.5px] border-rule pt-3">
+              <div className="relative z-10 self-end border-t-[1.5px] border-rule pt-3">
                 <BoardProgress board={id} total={board.lessons.length} hasAssembly={board.assembly.length > 0} labels={labels} size="sm" />
               </div>
             </li>

@@ -194,7 +194,7 @@ export function SerialMonitor({ store, onStop }: { store: BoardLabStore; onStop:
         </label>
         <input
           id={`${id}-input`}
-          className="ink-field h-11 min-w-0 flex-1 pe-4 font-mono text-sm"
+          className="ink-field h-11 min-w-0 flex-1 text-ellipsis pe-4 font-mono text-sm"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder={t("serial.inputPlaceholder")}
