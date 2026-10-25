@@ -197,6 +197,20 @@
     return false;
   }
 
+  // what the checks say when they finish, in one table the figure-string collector reads (start passes it on)
+  const MSG = {
+    compassBack: 'Compass calibrated, but the GPS arrow points backwards: compass and GPS disagree by 180°. Turn the puck round and calibrate again',
+    compassOk: 'Compass calibrated: offsets saved. Reboot the autopilot',
+    gpsOk: 'GPS 1: 3D fix, 14 satellites, HDOP 0.8. EKF3 is using GPS',
+    failsafeOk: 'Radio failsafe: landed, so it disarms. In the air FS_THR_ENABLE 1 makes it fly RTL',
+    gimbalOk: 'Gimbal ok: pitch from -90° (straight down) to +25°, roll held level',
+    noAcc: 'PreArm: 3D Accel calibration needed',
+    noCompass: 'PreArm: Compass not calibrated',
+    compassBad: 'PreArm: Compasses inconsistent',
+    noRc: 'PreArm: RC not found',
+    badFix: 'PreArm: GPS 1: Bad fix',
+  };
+
   const buttons = [
     { id: 'compass', label: 'Calibrate compass', onClick: api => {
       const st = api.st, x = extra(st);
@@ -206,9 +220,7 @@
       x.compassBack = api.orient('GPS') === 1;
       x.preArmOk = false;
       api.log('$ onboard mag calibration: turn each side to the ground');
-      x.compassAt = start(api, 'compass', 4, x.compassBack
-        ? 'Compass calibrated, but the GPS arrow points backwards: compass and GPS disagree by 180°. Turn the puck round and calibrate again'
-        : 'Compass calibrated: offsets saved. Reboot the autopilot');
+      x.compassAt = start(api, 'compass', 4, x.compassBack ? MSG.compassBack : MSG.compassOk);
       api.sfx('tick');
     } },
     { id: 'gps', label: 'Wait for GPS lock', onClick: api => {
@@ -218,7 +230,7 @@
       if (!SD.powered(st)) return api.say('Plug in the battery: the GPS needs the Pixhawk powered', 2600, 'buzz');
       if (done(st, x.gpsAt)) return api.say('GPS 1: 3D fix, 14 satellites, HDOP 0.8', 2200, 'tick');
       api.log('GPS 1: detected as u-blox at 230400 baud');
-      x.gpsAt = start(api, 'gps', 6, 'GPS 1: 3D fix, 14 satellites, HDOP 0.8. EKF3 is using GPS');
+      x.gpsAt = start(api, 'gps', 6, MSG.gpsOk);
     } },
     { id: 'failsafe', label: 'Failsafe test (props off)', onClick: api => {
       const st = api.st, x = extra(st);
@@ -228,7 +240,7 @@
       if (!SD.powered(st)) return api.say('Plug in the battery: the ESCs need power to arm', 2600, 'buzz');
       api.log('$ armed on the bench in Stabilize, props off');
       api.log('$ transmitter off: no RC frames');
-      x.failsafeAt = start(api, 'failsafe', 2.5, 'Radio failsafe: landed, so it disarms. In the air FS_THR_ENABLE 1 makes it fly RTL', 'unplug');
+      x.failsafeAt = start(api, 'failsafe', 2.5, MSG.failsafeOk, 'unplug');
     } },
     { id: 'gimbal', label: 'Gimbal test', onClick: api => {
       const st = api.st, x = extra(st);
@@ -237,7 +249,7 @@
       if (!SD.powered(st)) return api.say('Plug in the battery: the gimbal controller runs from it', 2600, 'buzz');
       x.gimbalT0 = st.t;
       api.log('$ RC6 tilt knob: pitch to -90°, then +25°');
-      x.gimbalAt = start(api, 'gimbal', 3.2, 'Gimbal ok: pitch from -90° (straight down) to +25°, roll held level');
+      x.gimbalAt = start(api, 'gimbal', 3.2, MSG.gimbalOk);
       api.sfx('spin');
     } },
     { id: 'prearm', label: 'Pre-arm checks', onClick: api => {
@@ -245,11 +257,11 @@
       if (blocked(api)) return;
       if (!api.isOn('FC')) return api.say('Mount the flight controller first', 2600, 'buzz');
       if (!SD.powered(st)) return api.say('Plug in the battery: the pre-arm checks read the battery monitor', 2600, 'buzz');
-      const fail = !st.accOk ? 'PreArm: 3D Accel calibration needed'
-        : !done(st, x.compassAt) && !x.compassOk ? 'PreArm: Compass not calibrated'
-        : api.orient('GPS') === 1 || x.compassBack ? 'PreArm: Compasses inconsistent'
-        : !api.isOn('RX') ? 'PreArm: RC not found'
-        : !done(st, x.gpsAt) ? 'PreArm: GPS 1: Bad fix'
+      const fail = !st.accOk ? MSG.noAcc
+        : !done(st, x.compassAt) && !x.compassOk ? MSG.noCompass
+        : api.orient('GPS') === 1 || x.compassBack ? MSG.compassBad
+        : !api.isOn('RX') ? MSG.noRc
+        : !done(st, x.gpsAt) ? MSG.badFix
         : null;
       x.preArmOk = !fail;
       if (fail) { api.log(fail); api.say(fail, 3200, 'buzz'); }

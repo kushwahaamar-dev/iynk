@@ -134,8 +134,9 @@
     const L = 56, base = Mf(0, 0, 30), tipT = Mf(0, 0, 30 + L);
     const [X0, Y0] = SD.Pb(...base), [X1, Y1] = SD.Pb(...tipT), ang = Math.atan2(Y1 - Y0, X1 - X0), hs = 9;
     const head = [0, 2.4, -2.4].map(d => `${f(X1 + Math.cos(ang + d) * hs)} ${f(Y1 + Math.sin(ang + d) * hs)}`).join('L');
-    const deg = Math.round(Math.abs(a * 180 / Math.PI)), dir = deg < 1 ? '' : ' ' + (a > 0 ? CF_T('LEFT') : CF_T('RIGHT'));
-    const label = CF_T('TAIL TILT {n}°', { n: deg }) + dir, fs = 8.6 * INK_K, h = fs * 1.8, w = CF_TW(label, fs) + fs * 1.5;
+    const deg = Math.round(Math.abs(a * 180 / Math.PI));
+    const label = CF_T(deg < 1 ? 'TAIL TILT {n}°' : a > 0 ? 'TAIL TILT {n}° LEFT' : 'TAIL TILT {n}° RIGHT', { n: deg });
+    const fs = 8.6 * INK_K, h = fs * 1.8, w = CF_TW(label, fs) + fs * 1.5;
     const [PX, PY] = SD.Pb(TAIL_X, 0, TAIL_Z + 102);
     return { box: SD.bbox([W(TAIL_X, -L, TAIL_Z + 28), W(TAIL_X, L, TAIL_Z + 108)]),
       svg: `<path d="M${f(X0)} ${f(Y0)}L${f(X1)} ${f(Y1)}" stroke="${INK}" stroke-width="5" stroke-linecap="round" fill="none"/>`

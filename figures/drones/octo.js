@@ -41,6 +41,25 @@
         + `<text x="${f(X)}" y="${f(Y + fs * .36)}" font-size="${f(fs)}" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-weight="800" fill="${ink}">${CF_ESC(t)}</text></g>` };
   }
 
+  // what the checks show on their pills and log, in one table the figure-string collector reads (pillAt and the
+  // delayed messages pass text on to CF_T)
+  const MSG = {
+    noAcc: 'PreArm: 3D Accel calibration needed',
+    noFix: 'PreArm: GPS 1: Bad fix',
+    // the red pill of a failed run, in the capitals every pill uses
+    noAccPill: 'PREARM: 3D ACCEL CALIBRATION NEEDED',
+    noFixPill: 'PREARM: GPS 1: BAD FIX',
+    stand: 'ON THE STAND, DISARMED',
+    gearUp: 'GEAR SWITCH HIGH: RETRACTING',
+    gearClear: 'GEAR UP: THE CAMERA PANS 360°',
+    gearDown: 'GEAR SWITCH LOW: DEPLOYING',
+    gearDone: 'GEAR DOWN AND LOCKED',
+    checking: 'PRE-ARM CHECKS…',
+    armed: 'ARMED: MOTORS IDLE',
+    gpsSats: 'GPS 1: {a} SATS · GPS 2: {b} SATS',
+    gpsFix: 'GPS 1 + GPS 2: 3D FIX, HDOP 0.7',
+  };
+
   /* ---------- the craft's own bench checks: landing gear, dual GPS, pre-arm ---------- */
   const GEAR_T = 7, GPS_T = 4.6, PRE_T = 2.4;
   // the legs' angle this frame (0 = down, GEAR_MAX = folded up) and the switch position the test is at
@@ -90,14 +109,14 @@
     if (!api.isOn('FC') || !api.isOn('GPS') || !api.isOn('RX')) return api.say('Fit the Pixhawk, the GPS masts and the receiver first', 2600, 'buzz');
     if (api.isOn('PROPS')) return api.say('Props off: once the checks pass it arms, and eight 20-inch props start turning at MOT_SPIN_ARM', 3000, 'buzz');
     if (!SD.powered(st)) return api.say('Plug in the packs first', 2200, 'buzz');
-    const fail = !st.accOk ? 'PreArm: 3D Accel calibration needed' : !(st.passes && st.passes.gps) ? 'PreArm: GPS 1: Bad fix' : null;
+    const fail = !st.accOk ? MSG.noAcc : !(st.passes && st.passes.gps) ? MSG.noFix : null;
     st.test = { kind: 'prearm', t: 0, dur: PRE_T, fail };
     api.log('$ arm throttle (LOITER, props off, ARMING_SKIPCHK 0)');
     if (fail){
       // a run that fails takes back an earlier pass: the checks hold only for the craft as it is now
       if (st.passes.prearm) st.passes = Object.assign({}, st.passes, { prearm: false });
       api.log(fail);
-      st.later.push({ t: PRE_T, sfx: 'buzz', say: fail === 'PreArm: GPS 1: Bad fix' ? 'PreArm: GPS 1: Bad fix. Run the GPS check and wait for both receivers to lock, then try again' : 'PreArm: 3D Accel calibration needed. Calibrate the accelerometer, then try again' });
+      st.later.push({ t: PRE_T, sfx: 'buzz', say: fail === MSG.noFix ? 'PreArm: GPS 1: Bad fix. Run the GPS check and wait for both receivers to lock, then try again' : 'PreArm: 3D Accel calibration needed. Calibrate the accelerometer, then try again' });
       api.sfx('click');
       return;
     }
@@ -152,8 +171,8 @@
     }
     const p = gearPose(ctx.st);
     if (p.phase){
-      const text = p.phase === 'stand' ? 'ON THE STAND, DISARMED' : p.phase === 'up' ? 'GEAR SWITCH HIGH: RETRACTING'
-        : p.phase === 'clear' ? 'GEAR UP: THE CAMERA PANS 360°' : p.phase === 'down' ? 'GEAR SWITCH LOW: DEPLOYING' : 'GEAR DOWN AND LOCKED';
+      const text = p.phase === 'stand' ? MSG.stand : p.phase === 'up' ? MSG.gearUp
+        : p.phase === 'clear' ? MSG.gearClear : p.phase === 'down' ? MSG.gearDown : MSG.gearDone;
       items.push(pillAt([0, 0, 840], text, '#fff4d6'));
     }
     return items;
@@ -196,8 +215,8 @@
     const t = ctx.st.test;
     if (!t || t.kind !== 'prearm') return [];
     const done = t.t > t.dur * .55, at = [0, 0, 840];
-    return [!done ? pillAt(at, 'PRE-ARM CHECKS…', '#fff4d6') : !t.fail ? pillAt(at, 'ARMED: MOTORS IDLE', '#d6f0dc')
-      : pillAt(at, t.fail.toUpperCase(), '#e2483d', '#ffffff')];
+    return [!done ? pillAt(at, MSG.checking, '#fff4d6') : !t.fail ? pillAt(at, MSG.armed, '#d6f0dc')
+      : pillAt(at, t.fail === MSG.noFix ? MSG.noFixPill : MSG.noAccPill, '#e2483d', '#ffffff')];
   }
 
   /* ---------- RX: the ELRS receiver and the 900 MHz telemetry radio under the bottom plate, antennas down ---------- */
@@ -229,7 +248,7 @@
     });
     if (t && t.kind === 'gps'){
       const u = Math.min(1, t.t / t.dur), n1 = Math.round(16 * u), n2 = Math.round(15 * Math.max(0, u * 1.1 - .1));
-      const text = u < .85 ? { key: 'GPS 1: {a} SATS · GPS 2: {b} SATS', vars: { a: n1, b: n2 } } : 'GPS 1 + GPS 2: 3D FIX, HDOP 0.7';
+      const text = u < .85 ? { key: MSG.gpsSats, vars: { a: n1, b: n2 } } : MSG.gpsFix;
       items.push(pillAt([MAST_X, 0, PUCK_Z + 130], text, u < .85 ? '#fff4d6' : '#d6f0dc'));
     }
     return items;

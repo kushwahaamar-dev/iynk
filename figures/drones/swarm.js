@@ -21,7 +21,6 @@
   const DECK_Z = TOP + 11;                    // Lighthouse deck underside, over the battery
   const FLOW_Z = PCB_Z - 5;                   // Flow deck v2 underneath, on the pins' bottom 4 mm
   const RADIO = { x: -8, y: -64 };            // the Crazyradio 2.0 on the mat (on the laptop's USB in real life)
-  const RIGHT = 'radio://0/80/2M/E7E7E7E701';
 
   const flow = (ctx, kind, pts) => ctx.flows.push({ kind, pts: pts.map(p => Wp(...p)) });
   const dirOf = mo => [Math.cos(mo.ang), Math.sin(mo.ang)];
@@ -65,54 +64,76 @@
   const live = (api, text) => { if (SD.powered(api.st)) return false; api.say(text, 2600, 'buzz'); return true; };
   const linked = (api, text) => { if (passed(api.st, 'link')) return false; api.say(text, 2600, 'buzz'); return true; };
 
+  // what the checks say and log, in one table the figure-string collector reads (the helpers pass text on to api.say)
+  const MSG = {
+    linkNeeds: 'Fit the board and the Crazyradio first',
+    linkLive: 'Plug in the battery: the radio chip on the board runs from it',
+    noAntenna: 'Link quality 23 %: the Crazyradio’s antenna is not screwed on. Fit it and connect again',
+    linkOk: 'Connected to radio://0/80/2M/E7E7E7E701: link quality 100 %. Every drone in the swarm gets its own address on the same channel',
+    pinsNeeds: 'Fit the long pins and the Crazyradio first',
+    batteryFirst: 'Plug in the battery first',
+    decksLink: 'Connect over the Crazyradio first: cflib reads the decks and the position over the link',
+    // a failed check logs the part before the colon and says the whole line
+    lighthouseLog: 'deck.bcLighthouse4 = 0',
+    flowLog: 'deck.bcFlow2 = 0',
+    ledLog: 'LED1 still blinks slowly',
+    noLighthouse: 'deck.bcLighthouse4 = 0: no Lighthouse deck, so no shared position for the swarm',
+    lighthouseBack: 'deck.bcLighthouse4 = 0: the Lighthouse deck is on backwards and its ID chip was not found. Turn it round',
+    noFlow: 'deck.bcFlow2 = 0: no Flow deck under the board. The hover script stops without it',
+    notCalibrated: 'LED1 still blinks slowly: the sensors are not calibrated. Keep it still and level first',
+    positionOk: 'Both decks found and the Kalman filter settled at x 0.00, y 0.00, z 0.03 m. reset_estimators() returns: ready to arm',
+    failsafeNeeds: 'Fit the motors, their plugs, the board and the Crazyradio first',
+    failsafeLink: 'Connect over the Crazyradio first: there has to be a link to lose',
+    failsafeOk: 'Link lost: after 0.5 s it levelled and held its thrust, after 2 s the motors stopped. A go_to from the high-level commander would have flown on to its setpoint instead',
+    lightsLink: 'Connect over the Crazyradio first: the LEDs are set over the link',
+    lightsOk: 'led.bitmask set back to 0: the status blinks are back. In the show every drone does this on its own cue',
+  };
+
   const buttons = [
     { id: 'link', label: 'Crazyradio link', onClick: api => {
-      if (blocked(api) || need(api, NEEDS.link, 'Fit the board and the Crazyradio first')) return;
-      if (live(api, 'Plug in the battery: the radio chip on the board runs from it')) return;
+      if (blocked(api) || need(api, NEEDS.link, MSG.linkNeeds)) return;
+      if (live(api, MSG.linkLive)) return;
       const bad = noAntenna(api.st);
       api.log('$ cfclient: Connect, Configure 2.x: channel 80, 2M, address E7E7E7E701');
       api.log(bad ? 'link quality 23 %: packets lost' : 'connected: crazyflie-firmware 2026.08, link quality 100 %');
-      begin(api, 'link', 2, bad
-        ? 'Link quality 23 %: the Crazyradio’s antenna is not screwed on. Fit it and connect again'
-        : `Connected to ${RIGHT}: link quality 100 %. Every drone in the swarm gets its own address on the same channel`,
-      !bad, bad ? 'buzz' : 'ding');
+      begin(api, 'link', 2, bad ? MSG.noAntenna : MSG.linkOk, !bad, bad ? 'buzz' : 'ding');
       api.sfx('click');
     } },
     { id: 'position', label: 'Decks + positioning', onClick: api => {
-      if (blocked(api) || need(api, ['FC', 'HDR', 'RADIO'], 'Fit the long pins and the Crazyradio first')) return;
-      if (live(api, 'Plug in the battery first')) return;
-      if (linked(api, 'Connect over the Crazyradio first: cflib reads the decks and the position over the link')) return;
+      if (blocked(api) || need(api, ['FC', 'HDR', 'RADIO'], MSG.pinsNeeds)) return;
+      if (live(api, MSG.batteryFirst)) return;
+      if (linked(api, MSG.decksLink)) return;
       const st = api.st;
-      const fail = !api.isOn('DECKL') ? 'deck.bcLighthouse4 = 0: no Lighthouse deck, so no shared position for the swarm'
-        : api.orient('DECKL') === 1 ? 'deck.bcLighthouse4 = 0: the Lighthouse deck is on backwards and its ID chip was not found. Turn it round'
-        : !api.isOn('FLOW') ? 'deck.bcFlow2 = 0: no Flow deck under the board. The hover script stops without it'
-        : !st.accOk ? 'LED1 still blinks slowly: the sensors are not calibrated. Keep it still and level first'
+      const fail = !api.isOn('DECKL') ? [MSG.lighthouseLog, MSG.noLighthouse]
+        : api.orient('DECKL') === 1 ? [MSG.lighthouseLog, MSG.lighthouseBack]
+        : !api.isOn('FLOW') ? [MSG.flowLog, MSG.noFlow]
+        : !st.accOk ? [MSG.ledLog, MSG.notCalibrated]
         : null;
       api.log('$ print(cf.param.get_value(\'deck.bcLighthouse4\'))');
-      if (fail) { api.log(fail.split(':')[0]); return api.say(fail, 3200, 'buzz'); }
+      if (fail) { api.log(fail[0]); return api.say(fail[1], 3200, 'buzz'); }
       api.log('deck.bcFlow2 = 1, deck.bcLighthouse4 = 1');
       api.log('$ swarm.reset_estimators(): waiting for kalman.varPX/PY/PZ to settle');
-      begin(api, 'position', 4, 'Both decks found and the Kalman filter settled at x 0.00, y 0.00, z 0.03 m. reset_estimators() returns: ready to arm');
+      begin(api, 'position', 4, MSG.positionOk);
       api.sfx('click');
     } },
     { id: 'failsafe', label: 'Link-loss (props off)', onClick: api => {
-      if (blocked(api) || need(api, NEEDS.failsafe, 'Fit the motors, their plugs, the board and the Crazyradio first')) return;
+      if (blocked(api) || need(api, NEEDS.failsafe, MSG.failsafeNeeds)) return;
       if (api.st.placed.PROPS && !api.st.placed.PROPS.leave) return api.say('PROPS OFF! Never spin motors on the bench with props on', 2800, 'buzz');
-      if (live(api, 'Plug in the battery first')) return;
-      if (linked(api, 'Connect over the Crazyradio first: there has to be a link to lose')) return;
+      if (live(api, MSG.batteryFirst)) return;
+      if (linked(api, MSG.failsafeLink)) return;
       api.log('$ streaming setpoints at 10 Hz, then the Crazyradio pulled out');
       api.log('supervisor: no setpoint for 500 ms, level and hold thrust');
       api.log('supervisor: no setpoint for 2000 ms, motors off');
-      begin(api, 'failsafe', 2.6, 'Link lost: after 0.5 s it levelled and held its thrust, after 2 s the motors stopped. A go_to from the high-level commander would have flown on to its setpoint instead');
+      begin(api, 'failsafe', 2.6, MSG.failsafeOk);
       api.sfx('spin');
     } },
     { id: 'lights', label: 'Light-show LEDs', onClick: api => {
-      if (blocked(api) || need(api, NEEDS.lights, 'Fit the board and the Crazyradio first')) return;
-      if (live(api, 'Plug in the battery first')) return;
-      if (linked(api, 'Connect over the Crazyradio first: the LEDs are set over the link')) return;
+      if (blocked(api) || need(api, NEEDS.lights, MSG.linkNeeds)) return;
+      if (live(api, MSG.batteryFirst)) return;
+      if (linked(api, MSG.lightsLink)) return;
       api.log('$ cf.param.set_value(\'led.bitmask\', 138): both green');
       api.log('$ ... 148: both red, 129: the left blue, then 0');
-      begin(api, 'lights', 3, 'led.bitmask set back to 0: the status blinks are back. In the show every drone does this on its own cue');
+      begin(api, 'lights', 3, MSG.lightsOk);
       api.sfx('click');
     } },
   ];

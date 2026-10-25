@@ -78,20 +78,30 @@
   const need = (api, ids, text) => { if (ids.every(id => api.isOn(id))) return false; api.say(text, 2600, 'buzz'); return true; };
   const live = (api, text) => { if (SD.powered(api.st)) return false; api.say(text, 2600, 'buzz'); return true; };
 
+  // what the checks say, in one table the figure-string collector reads (the helpers pass text on to api.say)
+  const MSG = {
+    mastNeeds: 'Fit the Pixhawk and the GPS mast first: the compass is in the GPS puck',
+    compassBack: 'Compass calibrated. It found the puck turned 180° and set COMPASS_ORIENT 4 (auto-rotation). Better: mount it arrow forward',
+    compassOk: 'Compass calibrated: offsets saved, orientation matches. Reboot the autopilot',
+    winchNeeds: 'Fit the Pixhawk and the winch first',
+    winchLive: 'Plug in the battery: the winch servo runs from the 6 V BEC on the servo rail',
+    winchOk: 'Winch ok: 3 cm out, held, reeled back in. The length is estimated, so re-zero it at every retract',
+    failsafeNeeds: 'Fit the Pixhawk, the receiver and the telemetry radio first',
+    failsafeOk: 'Radio failsafe: on the ground it disarms at once. In the air FS_THR_ENABLE 1 flies RTL, and FS_GCS_ENABLE does the same when telemetry drops',
+  };
+
   const buttons = [
     { id: 'compass', label: 'Calibrate compass', onClick: api => {
-      if (blocked(api) || need(api, NEEDS.compass, 'Fit the Pixhawk and the GPS mast first: the compass is in the GPS puck')) return;
+      if (blocked(api) || need(api, NEEDS.compass, MSG.mastNeeds)) return;
       if (api.isOn('PROPS')) return api.say('Props off for the compass dance: you turn the drone over in your hands', 3000, 'buzz');
       const x = xs(api.st), back = api.orient('GPS') === 1;
       x.rot = back ? 4 : 0;
       api.log('$ onboard compass calibration: rotate the drone through every side');
-      begin(api, 'compass', 4, back
-        ? 'Compass calibrated. It found the puck turned 180° and set COMPASS_ORIENT 4 (auto-rotation). Better: mount it arrow forward'
-        : 'Compass calibrated: offsets saved, orientation matches. Reboot the autopilot');
+      begin(api, 'compass', 4, back ? MSG.compassBack : MSG.compassOk);
       api.sfx('tick');
     } },
     { id: 'gps', label: 'Wait for GPS lock', onClick: api => {
-      if (blocked(api) || need(api, NEEDS.gps, 'Fit the Pixhawk and the GPS mast first: the compass is in the GPS puck')) return;
+      if (blocked(api) || need(api, NEEDS.gps, MSG.mastNeeds)) return;
       if (live(api, 'Plug in the battery: the GPS needs the Pixhawk powered')) return;
       if (passed(api.st, 'gps')) return api.say('GPS 1: 3D fix, 18 satellites, HDOP 0.7. EKF3 is using GPS', 2200, 'tick');
       api.log('GPS 1: u-blox detected on GPS1 (SERIAL3)');
@@ -99,22 +109,22 @@
       api.sfx('click');
     } },
     { id: 'winch', label: 'Winch test', onClick: api => {
-      if (blocked(api) || need(api, NEEDS.winch, 'Fit the Pixhawk and the winch first')) return;
-      if (live(api, 'Plug in the battery: the winch servo runs from the 6 V BEC on the servo rail')) return;
+      if (blocked(api) || need(api, NEEDS.winch, MSG.winchNeeds)) return;
+      if (live(api, MSG.winchLive)) return;
       api.log('$ MAV_CMD_DO_WINCH: relative length 0.03 m, then back to 0');
       api.log('winch: PWM sets the line speed; line length is an estimate (no encoder)');
-      begin(api, 'winch', 3, 'Winch ok: 3 cm out, held, reeled back in. The length is estimated, so re-zero it at every retract');
+      begin(api, 'winch', 3, MSG.winchOk);
       api.sfx('spin');
     } },
     { id: 'failsafe', label: 'Failsafe test (props off)', onClick: api => {
       if (blocked(api)) return;
       if (api.isOn('PROPS')) return api.say('PROPS OFF! Never spin motors on the bench with props on', 3000, 'buzz');
-      if (need(api, NEEDS.failsafe, 'Fit the Pixhawk, the receiver and the telemetry radio first')) return;
+      if (need(api, NEEDS.failsafe, MSG.failsafeNeeds)) return;
       if (live(api, 'Plug in the battery: the ESCs need power to arm')) return;
       const st = api.st, ui = SD.ui();
       api.log('$ armed on the bench in Stabilize, props off: motors idle');
       api.log('$ transmitter off: no RC frames');
-      begin(api, 'failsafe', 2.6, 'Radio failsafe: on the ground it disarms at once. In the air FS_THR_ENABLE 1 flies RTL, and FS_GCS_ENABLE does the same when telemetry drops', 'unplug');
+      begin(api, 'failsafe', 2.6, MSG.failsafeOk, 'unplug');
       if (ui) ui.animate(dt => {
         const r = running(st), idle = r && r.kind === 'failsafe' && st.t - r.t0 < 1.4 ? .3 : 0;
         motorsIdle(st, idle, dt);

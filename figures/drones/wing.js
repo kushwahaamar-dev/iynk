@@ -80,10 +80,39 @@
     if (ph === 1) return [REFLEX - srv * a, REFLEX + srv * a];                         // stick right: right up, left down
     return [REFLEX + srv * fc * a * .8, REFLEX - srv * fc * a * .8];                   // right wing pushed down: right elevon down
   }
-  const PHASES = ['STICK BACK', 'STICK RIGHT', 'TILT RIGHT WING DOWN'];
-  const CGS = { ok: 'Balanced: it hangs level on two fingertips at the CG marks (15-20 % of the mean chord)',
-    nose: 'Slightly nose-heavy: the nose dips a little. That is the safe side: stable, it just needs a bit more speed',
-    tail: 'Tail-heavy: the tail drops when you balance it on two fingertips at the CG marks. It will pitch up and stall. Move the pack forward or add nose weight' };
+  // what the checks show, say and log, in one table the figure-string collector reads (the pills, the tables below and
+  // the delayed messages pass text on to CF_T and api.say)
+  const MSG = {
+    stickBack: 'STICK BACK',
+    stickRight: 'STICK RIGHT',
+    tiltRight: 'TILT RIGHT WING DOWN',
+    cgOk: 'Balanced: it hangs level on two fingertips at the CG marks (15-20 % of the mean chord)',
+    cgNose: 'Slightly nose-heavy: the nose dips a little. That is the safe side: stable, it just needs a bit more speed',
+    cgTail: 'Tail-heavy: the tail drops when you balance it on two fingertips at the CG marks. It will pitch up and stall. Move the pack forward or add nose weight',
+    servosReversed: 'Stick back should lift BOTH elevons. Yours went DOWN: servos reversed. Fix it: Add next part, SERVOS: direction checked',
+    fcReversed: 'The sticks move the elevons the right way, but the stabiliser pushes the wrong way: the FC arrow points backwards. Fix it: Add next part, FLIGHT CTRL: arrow to the nose',
+    elevonsOk: 'Stick back: both elevons up. Stick right: right elevon up, left down. Right wing pushed down: the right elevon went down to lift it. Correct',
+    gpsFcNeeds: 'Fit the GPS and the flight controller first',
+    compassPill: 'ROTATE IT THROUGH EVERY AXIS',
+    compassLog: '$ Calibration tab: compass, 30 s, every axis',
+    compassLogDone: 'compass calibrated (QMC5883 on I2C1)',
+    compassOk: 'Compass calibrated: turned through every axis, away from the ESC and the battery leads. Check the heading against a real compass',
+    airspeedPill: 'AIRSPEED FROM GPS + WIND',
+    airspeedLog: '$ set pitot_hardware = VIRTUAL',
+    airspeedLogDone: 'virtual airspeed: GPS speed corrected for the wind estimate',
+    airspeedOk: 'Virtual airspeed on: INAV estimates airspeed from GPS speed and the wind (pitot_hardware = VIRTUAL). A real pitot tube would need zeroing with the tube covered',
+    failsafeNeeds: 'Fit the receiver and the flight controller first',
+    failsafePill: 'RADIO OFF: FAILSAFE, THEN RTH',
+    failsafeLog: '$ radio off with the prop off: watch the OSD',
+    failsafeLogDone: 'FAILSAFE after 0.5 s: failsafe_procedure = RTH',
+    failsafeOk: 'Radio off: FAILSAFE after 0.5 s, then RTH climbs and flies home. Radio back on: you get control back once the sticks move',
+    tailDrops: 'TAIL DROPS',
+    noseDips: 'NOSE DIPS A LITTLE',
+    hangsLevel: 'HANGS LEVEL',
+  };
+
+  const PHASES = [MSG.stickBack, MSG.stickRight, MSG.tiltRight];
+  const CGS = { ok: MSG.cgOk, nose: MSG.cgNose, tail: MSG.cgTail };
 
   function wingState(st){ return st.wing || (st.wing = { elev: null, cg: null }); }
   const powered = st => SD.powered(st);
@@ -97,9 +126,7 @@
     if (!powered(st)) return api.say('Plug in the battery: the servos run from the FC’s servo BEC', 2600, 'buzz');
     const srv = api.orient('SERVOS'), fc = api.orient('FC');
     const ok = srv === 0 && fc === 0;
-    const msg = srv === 1 ? 'Stick back should lift BOTH elevons. Yours went DOWN: servos reversed. Fix it: Add next part, SERVOS: direction checked'
-      : fc === 1 ? 'The sticks move the elevons the right way, but the stabiliser pushes the wrong way: the FC arrow points backwards. Fix it: Add next part, FLIGHT CTRL: arrow to the nose'
-        : 'Stick back: both elevons up. Stick right: right elevon up, left down. Right wing pushed down: the right elevon went down to lift it. Correct';
+    const msg = srv === 1 ? MSG.servosReversed : fc === 1 ? MSG.fcReversed : MSG.elevonsOk;
     st.test = { kind: 'elevons', t: 0, dur: ELEV_T };
     st.later.push({ t: ELEV_T, say: msg, sfx: ok ? 'ding' : 'buzz' });
     wingState(st).elev = { ok, srv, fc };
@@ -125,15 +152,12 @@
 
   // compass, virtual airspeed and failsafe: short bench checks with their own prerequisites
   const SIMPLE = {
-    compass: { needs: ['GPS', 'FC'], needMsg: 'Fit the GPS and the flight controller first', dur: 2.4, pill: 'ROTATE IT THROUGH EVERY AXIS',
-      log: ['$ Calibration tab: compass, 30 s, every axis', 'compass calibrated (QMC5883 on I2C1)'],
-      done: 'Compass calibrated: turned through every axis, away from the ESC and the battery leads. Check the heading against a real compass' },
-    airspeed: { needs: ['GPS', 'FC'], needMsg: 'Fit the GPS and the flight controller first', dur: 1.6, pill: 'AIRSPEED FROM GPS + WIND',
-      log: ['$ set pitot_hardware = VIRTUAL', 'virtual airspeed: GPS speed corrected for the wind estimate'],
-      done: 'Virtual airspeed on: INAV estimates airspeed from GPS speed and the wind (pitot_hardware = VIRTUAL). A real pitot tube would need zeroing with the tube covered' },
-    failsafe: { needs: ['RX', 'FC'], needMsg: 'Fit the receiver and the flight controller first', dur: 3, pill: 'RADIO OFF: FAILSAFE, THEN RTH', props: true,
-      log: ['$ radio off with the prop off: watch the OSD', 'FAILSAFE after 0.5 s: failsafe_procedure = RTH'],
-      done: 'Radio off: FAILSAFE after 0.5 s, then RTH climbs and flies home. Radio back on: you get control back once the sticks move' },
+    compass: { needs: ['GPS', 'FC'], needMsg: MSG.gpsFcNeeds, dur: 2.4, pill: MSG.compassPill,
+      log: [MSG.compassLog, MSG.compassLogDone], done: MSG.compassOk },
+    airspeed: { needs: ['GPS', 'FC'], needMsg: MSG.gpsFcNeeds, dur: 1.6, pill: MSG.airspeedPill,
+      log: [MSG.airspeedLog, MSG.airspeedLogDone], done: MSG.airspeedOk },
+    failsafe: { needs: ['RX', 'FC'], needMsg: MSG.failsafeNeeds, dur: 3, pill: MSG.failsafePill, props: true,
+      log: [MSG.failsafeLog, MSG.failsafeLogDone], done: MSG.failsafeOk },
   };
   function simpleCheck(id){
     const c = SIMPLE[id];
@@ -240,7 +264,7 @@
     }
     if (st.test && SIMPLE[st.test.kind]) items.push({ box: [W(150, -6, 140), W(162, 6, 142)], svg: pillAt([40, 0, 150], SIMPLE[st.test.kind].pill, '#fff4d6') });
     if (st.test && st.test.kind === 'cg'){
-      const cg = st.test.cg, text = cg === 'tail' ? 'TAIL DROPS' : cg === 'nose' ? 'NOSE DIPS A LITTLE' : 'HANGS LEVEL';
+      const cg = st.test.cg, text = cg === 'tail' ? MSG.tailDrops : cg === 'nose' ? MSG.noseDips : MSG.hangsLevel;
       items.push({ box: [W(150, -6, 140), W(162, 6, 142)], svg: pillAt([CG_X, 0, 150], text, cg === 'tail' ? '#f6b2a8' : '#d6f0dc') });
     }
     return items;

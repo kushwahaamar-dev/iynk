@@ -71,37 +71,53 @@
   const need = (api, ids, text) => { if (ids.every(id => api.isOn(id))) return false; api.say(text, 2600, 'buzz'); return true; };
   const live = (api, text) => { if (SD.powered(api.st)) return false; api.say(text, 2600, 'buzz'); return true; };
 
+  // what the checks say, in one table the figure-string collector reads (the helpers pass text on to api.say)
+  const MSG = {
+    pumpNeeds: 'Fit the Cube, the tank, the pump and the boom first',
+    pumpLive: 'Plug in the battery: the pump driver runs from the 12S bus',
+    pumpOk: 'Pump ok: all four nozzles spray at the 1 m/s rate. Catch it in a jug for a minute to calibrate the dose',
+    yawNeeds: 'Fit the Cube, the RTK masts and the radio first: the RTK corrections come over the radio',
+    yawLive: 'Plug in the battery: the GPS receivers need the Cube powered',
+    yawBack: 'GPS yaw reads 180° from the nose: the base antenna is at the back. EKF3 Yaw inconsistent. Swap the masts so GPS1 is in front, as GPS1_POS_X says',
+    yawOk: 'GPS 1 and GPS 2: RTK Fixed. GPS yaw matches the nose heading, so no compass is needed',
+    armNeeds: 'Fit the Cube first: it runs the pre-arm checks',
+    armLive: 'Plug in the battery: the pre-arm checks run on a powered autopilot',
+    noRadar: 'PreArm: Rangefinder 1: No Data',
+    yawBad: 'PreArm: EKF3 Yaw inconsistent',
+    noFix: 'PreArm: GPS 1: Need 3D Fix',
+    noAcc: 'PreArm: 3D Accel calibration needed',
+    armOk: 'Pre-arm checks pass: RTK fixed, GPS yaw good, radar reading, accelerometers calibrated. Ready to arm',
+  };
+
   const buttons = [
     { id: 'pump', label: 'Pump test (disarmed)', onClick: api => {
-      if (blocked(api) || need(api, NEEDS.pump, 'Fit the Cube, the tank, the pump and the boom first')) return;
-      if (live(api, 'Plug in the battery: the pump driver runs from the 12S bus')) return;
+      if (blocked(api) || need(api, NEEDS.pump, MSG.pumpNeeds)) return;
+      if (live(api, MSG.pumpLive)) return;
       api.log('$ sprayer switch (RC7) high while disarmed: pump test');
       api.log('pump at SPRAY_PUMP_RATE 10 %, the 1 m/s rate: 0.3 L/min of clean water');
-      begin(api, 'pump', 4, 'Pump ok: all four nozzles spray at the 1 m/s rate. Catch it in a jug for a minute to calibrate the dose');
+      begin(api, 'pump', 4, MSG.pumpOk);
       api.sfx('spin');
     } },
     { id: 'gpsyaw', label: 'RTK fix and GPS yaw', onClick: api => {
-      if (blocked(api) || need(api, NEEDS.gpsyaw, 'Fit the Cube, the RTK masts and the radio first: the RTK corrections come over the radio')) return;
-      if (live(api, 'Plug in the battery: the GPS receivers need the Cube powered')) return;
+      if (blocked(api) || need(api, NEEDS.gpsyaw, MSG.yawNeeds)) return;
+      if (live(api, MSG.yawLive)) return;
       const bad = swapped(api.st);
       api.log('GPS 1: u-blox F9P on GPS1, moving-baseline base');
       api.log('GPS 2: u-blox F9P on GPS2, moving-baseline rover');
-      begin(api, 'gpsyaw', 5, bad
-        ? 'GPS yaw reads 180° from the nose: the base antenna is at the back. EKF3 Yaw inconsistent. Swap the masts so GPS1 is in front, as GPS1_POS_X says'
-        : 'GPS 1 and GPS 2: RTK Fixed. GPS yaw matches the nose heading, so no compass is needed', !bad, bad ? 'buzz' : 'ding');
+      begin(api, 'gpsyaw', 5, bad ? MSG.yawBack : MSG.yawOk, !bad, bad ? 'buzz' : 'ding');
       api.sfx('click');
     } },
     { id: 'prearm', label: 'Pre-arm checks', onClick: api => {
-      if (blocked(api) || need(api, ['FC'], 'Fit the Cube first: it runs the pre-arm checks')) return;
-      if (live(api, 'Plug in the battery: the pre-arm checks run on a powered autopilot')) return;
+      if (blocked(api) || need(api, ['FC'], MSG.armNeeds)) return;
+      if (live(api, MSG.armLive)) return;
       const st = api.st;
-      const fail = !api.isOn('RADAR') ? 'PreArm: Rangefinder 1: No Data'
-        : !api.isOn('GPS') || !api.isOn('RX') || !passed(st, 'gpsyaw') ? (swapped(st) ? 'PreArm: EKF3 Yaw inconsistent' : 'PreArm: GPS 1: Need 3D Fix')
-        : !st.accOk ? 'PreArm: 3D Accel calibration needed'
+      const fail = !api.isOn('RADAR') ? MSG.noRadar
+        : !api.isOn('GPS') || !api.isOn('RX') || !passed(st, 'gpsyaw') ? (swapped(st) ? MSG.yawBad : MSG.noFix)
+        : !st.accOk ? MSG.noAcc
         : null;
       api.log('$ arm throttle: running the pre-arm checks (ARMING_SKIPCHK 0)');
       if (fail) { api.log(fail); return api.say(fail, 3000, 'buzz'); }
-      begin(api, 'prearm', 1.5, 'Pre-arm checks pass: RTK fixed, GPS yaw good, radar reading, accelerometers calibrated. Ready to arm');
+      begin(api, 'prearm', 1.5, MSG.armOk);
     } },
   ];
 

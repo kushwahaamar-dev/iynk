@@ -63,6 +63,19 @@
   // a point on the wing's top skin
   const skin = (x, y) => [x, y, topZ((LE - x) / C)];
 
+  // what the checks show on their pills, in one table the figure-string collector reads (pillAt passes text on to CF_T)
+  const MSG = {
+    checking: 'PRE-ARM CHECKS…',
+    armed: 'ARMED: MOTORS IDLE',
+    noAcc: 'PREARM: 3D ACCEL CALIBRATION NEEDED',
+    airspeed: 'AIRSPEED {v} M/S',
+    rotorsUp: 'QSTABILIZE: ROTORS UP',
+    manualTilt: 'MANUAL: TILT {n}°',
+    backTilt: 'QSTABILIZE: TILT {n}°',
+    yawRight: 'YAW RIGHT: LEFT ROTOR FORWARD, RIGHT BACK',
+    revTilt: 'MANUAL: TILT {n}° BACKWARDS',
+  };
+
   /* ---------- the craft's own bench checks: the tilt servos, the airspeed sensor, the pre-arm checks ---------- */
   const fresh = (() => { try { return /[?&]fresh=1(&|$)/.test(location.search); } catch (e) { return false; } })();
   const vt = st => st.vt || (st.vt = { t0: null, end: null, rev: false, done: !fresh });
@@ -230,8 +243,8 @@
     const t = ctx.st.test;
     if (t && t.kind === 'prearm'){
       const done = t.t > t.dur * .55;
-      items.push(!done ? pillAt([172, 0, 320], 'PRE-ARM CHECKS…', '#fff4d6')
-        : t.ok ? pillAt([172, 0, 320], 'ARMED: MOTORS IDLE', '#d6f0dc') : pillAt([172, 0, 320], 'PREARM: 3D ACCEL CALIBRATION NEEDED', '#e2483d', '#ffffff'));
+      items.push(!done ? pillAt([172, 0, 320], MSG.checking, '#fff4d6')
+        : t.ok ? pillAt([172, 0, 320], MSG.armed, '#d6f0dc') : pillAt([172, 0, 320], MSG.noAcc, '#e2483d', '#ffffff'));
     }
     return items;
   }
@@ -314,7 +327,7 @@
         const k = (t.t * 1.6 + i / 4) % 1, x = 250 - 60 * k, r = 2.4 + 2 * (1 - k);
         items.push({ box: SD.bbox([W(x - r, y - r, z - r), W(x + r, y + r, z + r)]), svg: `<circle cx="${f(SD.Pb(x, y, z)[0])}" cy="${f(SD.Pb(x, y, z)[1])}" r="${f(r * 1.6)}" fill="#d9e6f2" opacity="${(.85 * (1 - k)).toFixed(2)}" stroke="${INK}" stroke-width=".5"/>` });
       }
-      items.push(pillAt([180, y, WZ + 130], { key: 'AIRSPEED {v} M/S', vars: { v: v.toFixed(1) } }, '#fff4d6'));
+      items.push(pillAt([180, y, WZ + 130], { key: MSG.airspeed, vars: { v: v.toFixed(1) } }, '#fff4d6'));
     }
     return items;
   }
@@ -354,9 +367,9 @@
     if (n.phase){
       for (const mo of ctx.craft.motors.slice(0, 2)) items.push(thrustArrow(SD.motorFrame(mo, PIV_Z), n.phase === 'rev'));
       const deg = Math.round(Math.abs(n.tilt));
-      const text = n.phase === 'up' ? 'QSTABILIZE: ROTORS UP' : n.phase === 'manual' ? { key: 'MANUAL: TILT {n}°', vars: { n: deg } }
-        : n.phase === 'back' ? { key: 'QSTABILIZE: TILT {n}°', vars: { n: deg } } : n.phase === 'yaw' ? 'YAW RIGHT: LEFT ROTOR FORWARD, RIGHT BACK'
-          : { key: 'MANUAL: TILT {n}° BACKWARDS', vars: { n: deg } };
+      const text = n.phase === 'up' ? MSG.rotorsUp : n.phase === 'manual' ? { key: MSG.manualTilt, vars: { n: deg } }
+        : n.phase === 'back' ? { key: MSG.backTilt, vars: { n: deg } } : n.phase === 'yaw' ? MSG.yawRight
+          : { key: MSG.revTilt, vars: { n: deg } };
       items.push(n.phase === 'rev' ? pillAt([PIV_X, 0, 320], text, '#e2483d', '#ffffff') : pillAt([PIV_X, 0, 320], text, '#fff4d6'));
     }
     return items;
