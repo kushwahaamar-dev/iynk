@@ -4,7 +4,9 @@ import { useRouter } from "next/navigation";
 import { useId, useMemo, useState, type FormEvent } from "react";
 import type { LabKind } from "@/components/dock/types";
 import { useTogetherT, type TogetherT } from "@/components/realtime/messages";
-import { Button, Callout, Card, SegmentedControl, Select, TextInput } from "@/components/ui";
+import { Note, eyebrow, sectionTitle } from "@/components/editorial/Editorial";
+import { Button, Callout, SegmentedControl, Select, TextInput } from "@/components/ui";
+import { cx } from "@/components/ui/cx";
 import { useLocale } from "@/i18n/client";
 import { useFeatures } from "@/lib/features";
 import { createRoom, parseRoomInput, probeRoom, roomLink, type ProbeResult } from "@/lib/realtime";
@@ -54,7 +56,7 @@ function StartRoom({ items, t }: { items: LobbyItem[]; t: TogetherT }) {
           </option>
         ))}
       </Select>
-      <Button type="submit" variant="primary" className="mt-auto self-start" disabled={!chosen}>
+      <Button type="submit" variant="primary" size="lg" className="mt-auto self-start" disabled={!chosen}>
         {t("lobby.create.go")}
       </Button>
     </form>
@@ -118,7 +120,7 @@ function JoinRoom({ t }: { t: TogetherT }) {
       <div aria-live="polite" className="empty:hidden">
         {message ? <Callout tone={message.tone}>{message.text}</Callout> : null}
       </div>
-      <Button type="submit" className="mt-auto self-start" disabled={state.kind === "looking"}>
+      <Button type="submit" size="lg" className="mt-auto self-start" disabled={state.kind === "looking"}>
         {t("lobby.join.go")}
       </Button>
     </form>
@@ -145,36 +147,45 @@ export function Lobby({ items }: { items: LobbyItem[] }) {
   const aiOff = useAiOff();
 
   return (
-    <div className="mt-10 flex flex-col gap-10 lg:mt-12 lg:gap-12">
+    <>
       {/* grid-cols-1 keeps the one phone column at the page width; an implicit column grows to the widest select option. */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-6">
-        <Card as="section" aria-labelledby="together-start" className="flex flex-col gap-4">
-          <div>
-            <h2 id="together-start" className="text-2xl">
-              {t("lobby.create.title")}
-            </h2>
-            <p className="mt-1 text-sm text-muted">{t("lobby.create.hint")}</p>
-          </div>
+      <div className="mt-[clamp(72px,10vw,160px)] grid grid-cols-1 border-t border-rule md:grid-cols-2">
+        <section aria-labelledby="together-start" className="flex flex-col gap-6 pt-6 pb-10 sm:pt-8 md:pe-[clamp(24px,4vw,64px)]">
+          <RoomHead id="together-start" index="01" title={t("lobby.create.title")} hint={t("lobby.create.hint")} />
           <StartRoom items={items} t={t} />
-        </Card>
-        <Card as="section" aria-labelledby="together-join" className="flex flex-col gap-4">
-          <div>
-            <h2 id="together-join" className="text-2xl">
-              {t("lobby.join.title")}
-            </h2>
-            <p className="mt-1 text-sm text-muted">{t("lobby.join.hint")}</p>
-          </div>
+        </section>
+        <section
+          aria-labelledby="together-join"
+          className="flex flex-col gap-6 border-t border-rule pt-6 pb-10 sm:pt-8 md:border-t-0 md:border-s md:ps-[clamp(24px,4vw,64px)]"
+        >
+          <RoomHead id="together-join" index="02" title={t("lobby.join.title")} hint={t("lobby.join.hint")} />
           <JoinRoom t={t} />
-        </Card>
+        </section>
       </div>
       {aiOff ? (
-        <Callout variant="quiet">{t("lobby.aiOff")}</Callout>
-      ) : (
-        <div className="grid grid-cols-1 gap-4 lg:gap-6 xl:grid-cols-2">
-          <Buddies t={t} titles={titles} />
-          <Planner t={t} titles={titles} />
+        <div className="mt-10">
+          <Note>{t("lobby.aiOff")}</Note>
         </div>
+      ) : (
+        <>
+          <Buddies t={t} titles={titles} index="03" />
+          <Planner t={t} titles={titles} index="04" />
+        </>
       )}
+    </>
+  );
+}
+
+function RoomHead({ id, index, title, hint }: { id: string; index: string; title: string; hint: string }) {
+  return (
+    <div>
+      <p className={cx(eyebrow, "tabular")} aria-hidden="true">
+        {index}
+      </p>
+      <h2 id={id} className={cx(sectionTitle, "mt-4")}>
+        {title}
+      </h2>
+      <p className="mt-3 max-w-[46ch] text-muted">{hint}</p>
     </div>
   );
 }

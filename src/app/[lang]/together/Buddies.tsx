@@ -5,7 +5,9 @@ import { useId, useMemo, useState, type FormEvent } from "react";
 import type { LabKind } from "@/components/dock/types";
 import { InviteDialog } from "@/components/realtime/InviteDialog";
 import type { TogetherT } from "@/components/realtime/messages";
-import { Button, Callout, Card, Chip } from "@/components/ui";
+import { Note, Section, eyebrow } from "@/components/editorial/Editorial";
+import { Button, Callout } from "@/components/ui";
+import { cx } from "@/components/ui/cx";
 import { useLocale } from "@/i18n/client";
 import type { Locale } from "@/i18n/config";
 import { reloadFeatures, useFeatures } from "@/lib/features";
@@ -18,6 +20,9 @@ type Profile = { id: string; name: string; lang: Locale; interests: string[]; bu
 type Match = { id: string; score: number; why: string; sharedInterest: string; suggestedProject: { lab: LabKind; id: string } };
 
 const KEY = "iynk:buddies:v1";
+const label = cx(eyebrow, "flex flex-col gap-2");
+const field = "ink-field w-full font-normal normal-case tracking-normal";
+const area = "min-h-24 rounded-[22px] border-[1.5px] border-line bg-surface px-4 py-3 font-body text-base font-normal normal-case tracking-normal text-ink";
 
 /** This browser's buddy-pool id and the token that proves it owns it. */
 function credentials(): { id: string; token: string } {
@@ -54,7 +59,7 @@ type State =
   | { kind: "error" }
   | { kind: "done"; matches: Match[]; pool: Map<string, Profile> };
 
-export function Buddies({ t, titles }: { t: TogetherT; titles: Map<string, string> }) {
+export function Buddies({ t, titles, index }: { t: TogetherT; titles: Map<string, string>; index?: string }) {
   const id = useId();
   const router = useRouter();
   const locale = useLocale();
@@ -93,16 +98,11 @@ export function Buddies({ t, titles }: { t: TogetherT; titles: Map<string, strin
   };
 
   return (
-    <Card as="section" aria-labelledby={`${id}-title`} className="flex flex-col gap-4">
-      <div>
-        <h2 id={`${id}-title`} className="text-xl">
-          {t("lobby.buddies.title")}
-        </h2>
-        <p className="mt-1 max-w-2xl text-sm">{t("lobby.buddies.lede")}</p>
-      </div>
+    <Section id={`${id}-title`} index={index} title={t("lobby.buddies.title")} lede={t("lobby.buddies.lede")}>
+      <div className="flex flex-col gap-8">
       <FeatureGate t={t} state={features} needs={["db", "ai"]} notSetUp={t("lobby.buddies.notSetUp")} onRetry={reloadFeatures}>
-        <form onSubmit={submit} className="grid gap-3 sm:grid-cols-2" noValidate>
-          <label className="flex flex-col gap-1 text-sm font-semibold" htmlFor={`${id}-name`}>
+        <form onSubmit={submit} className="grid gap-x-5 gap-y-6 sm:grid-cols-2" noValidate>
+          <label className={label} htmlFor={`${id}-name`}>
             {t("lobby.buddies.name")}
             <input
               id={`${id}-name`}
@@ -110,70 +110,70 @@ export function Buddies({ t, titles }: { t: TogetherT; titles: Map<string, strin
               onChange={(event) => setName(event.target.value)}
               maxLength={24}
               autoComplete="nickname"
-              className="ink-field w-full font-normal"
+              className={field}
             />
           </label>
-          <label className="flex flex-col gap-1 text-sm font-semibold" htmlFor={`${id}-interests`}>
+          <label className={label} htmlFor={`${id}-interests`}>
             {t("lobby.buddies.interests")}
             <input
               id={`${id}-interests`}
               value={interests}
               onChange={(event) => setInterests(event.target.value)}
               aria-describedby={`${id}-interests-hint`}
-              className="ink-field w-full font-normal"
+              className={field}
             />
-            <span id={`${id}-interests-hint`} className="text-xs font-normal text-muted">
+            <span id={`${id}-interests-hint`} className="font-body text-xs font-normal tracking-normal normal-case text-muted">
               {t("lobby.buddies.interestsHint")}
             </span>
           </label>
-          <label className="flex flex-col gap-1 text-sm font-semibold sm:col-span-2" htmlFor={`${id}-wants`}>
+          <label className={cx(label, "sm:col-span-2")} htmlFor={`${id}-wants`}>
             {t("lobby.buddies.wants")}
             <textarea
               id={`${id}-wants`}
               value={wants}
               onChange={(event) => setWants(event.target.value)}
               maxLength={280}
-              rows={2}
-              className="rounded-ink-sm border-2 border-line bg-surface px-3 py-2 font-body text-base font-normal text-ink"
+              rows={3}
+              className={area}
             />
           </label>
-          <p className="text-xs text-muted sm:col-span-2">
+          <p className="max-w-[62ch] text-sm text-muted sm:col-span-2">
             {t("lobby.buddies.privacy")}
             {built.length > 0 ? ` ${t("lobby.buddies.builtNote", { count: built.length })}` : ""}
           </p>
           <div className="sm:col-span-2">
-            <Button type="submit" variant="primary" disabled={state.kind === "busy"}>
+            <Button type="submit" variant="primary" size="lg" disabled={state.kind === "busy"}>
               {state.kind === "busy" ? t("lobby.buddies.finding") : t("lobby.buddies.submit")}
             </Button>
           </div>
         </form>
-        <div aria-live="polite" className="flex flex-col gap-3">
+        <div aria-live="polite" className="flex flex-col gap-4 empty:hidden">
           {state.kind === "missing" ? <Callout tone="warn">{t("lobby.buddies.missing")}</Callout> : null}
           {state.kind === "error" ? <Callout tone="danger">{t("lobby.buddies.failed")}</Callout> : null}
-          {state.kind === "done" && state.pool.size === 0 ? <Callout tone="note">{t("lobby.buddies.alone")}</Callout> : null}
-          {state.kind === "done" && state.pool.size > 0 && state.matches.length === 0 ? <Callout tone="note">{t("lobby.buddies.none")}</Callout> : null}
+          {state.kind === "done" && state.pool.size === 0 ? <Note>{t("lobby.buddies.alone")}</Note> : null}
+          {state.kind === "done" && state.pool.size > 0 && state.matches.length === 0 ? <Note>{t("lobby.buddies.none")}</Note> : null}
           {state.kind === "done" && state.matches.length > 0 ? (
             <>
-              <h3 className="text-lg">{t("lobby.buddies.matches")}</h3>
-              <ul className="grid gap-3 sm:grid-cols-2">
+              <h3 className={eyebrow}>{t("lobby.buddies.matches")}</h3>
+              <ul className="grid grid-cols-1 border-t border-rule md:grid-cols-2 md:gap-x-10">
                 {state.matches.map((match) => {
                   const buddy = state.pool.get(match.id);
                   const project = titles.get(`${match.suggestedProject.lab}:${match.suggestedProject.id}`);
                   if (!buddy) return null;
                   return (
-                    <li key={match.id} className="flex flex-col gap-2 rounded-ink bg-sunken p-3">
-                      <p className="flex flex-wrap items-center gap-2">
-                        <span className="font-head text-base font-bold">{buddy.name}</span>
-                        <Chip tone="mint">{t("lobby.buddies.score", { score: match.score })}</Chip>
+                    <li key={match.id} className="flex flex-col gap-2 border-b border-rule py-6">
+                      <p className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                        <span className="text-2xl font-semibold tracking-[-0.02em]">{buddy.name}</span>
+                        <span className="font-ui text-sm tabular text-muted">{t("lobby.buddies.score", { score: match.score })}</span>
                       </p>
-                      <p className="text-sm">{match.why}</p>
+                      <p className="max-w-[56ch]">{match.why}</p>
                       <p className="text-sm text-muted">{t("lobby.buddies.shared", { interest: match.sharedInterest })}</p>
                       {project ? (
                         <>
-                          <p className="text-sm font-bold">{t("lobby.buddies.project", { item: project })}</p>
+                          <p className="mt-2 text-sm font-semibold">{t("lobby.buddies.project", { item: project })}</p>
                           <Button
                             size="sm"
-                            className="self-start"
+                            className="mt-1 self-start"
                             onClick={() =>
                               setInviting({ match, name: buddy.name, link: createRoom(match.suggestedProject.lab, match.suggestedProject.id, locale) })
                             }
@@ -190,6 +190,7 @@ export function Buddies({ t, titles }: { t: TogetherT; titles: Map<string, strin
           ) : null}
         </div>
       </FeatureGate>
+      </div>
       {inviting ? (
         <InviteDialog
           open
@@ -208,6 +209,6 @@ export function Buddies({ t, titles }: { t: TogetherT; titles: Map<string, strin
           t={t}
         />
       ) : null}
-    </Card>
+    </Section>
   );
 }

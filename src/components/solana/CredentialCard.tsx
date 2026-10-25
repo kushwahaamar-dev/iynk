@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Card, Chip, Icon } from "@/components/ui";
+import { eyebrow } from "@/components/editorial/Editorial";
+import { Chip, Icon } from "@/components/ui";
 import { useLocale } from "@/i18n/client";
 import { htmlLang } from "@/i18n/config";
 import { explorerUrl, shortAddress } from "@/lib/solana/config";
@@ -41,24 +42,27 @@ export function CredentialCard({ credential, issuer }: { credential: Credential;
   const titleId = `cred-${credential.address}`;
 
   return (
-    <Card as="article" padding="none" aria-labelledby={titleId} className="overflow-hidden">
-      <div className={`h-3 border-b-2 border-line ${skill ? BAND[skill.lab] : "bg-blush"}`} aria-hidden="true" />
-      <div className="grid gap-3 p-4">
-        <div className="flex flex-wrap items-start justify-between gap-2">
-          <h3 id={titleId} className="text-lg">
-            {skillTitle(t, credential.skillId)}
-          </h3>
-          <Chip tone="ink">
-            {t("credential.score")} {t("panel.scoreValue", { score: credential.score })}
-          </Chip>
-        </div>
-        <p className="font-ui text-xs text-muted">{t("credential.issued", { date })}</p>
-        <dl className="grid gap-2 font-ui text-xs">
-          <div>
+    <article aria-labelledby={titleId} className="flex h-full flex-col overflow-hidden rounded-[4px] border border-rule bg-surface">
+      <div className={`h-1 ${skill ? BAND[skill.lab] : "bg-blush"}`} aria-hidden="true" />
+      <div className="grid gap-6 p-5 sm:p-7">
+        <header className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
+          <div className="min-w-0 flex-1 basis-56">
+            <p className={eyebrow}>{t("credential.issued", { date })}</p>
+            <h3 id={titleId} className="mt-3 text-[clamp(22px,2.2vw,28px)] leading-tight font-semibold tracking-[-0.02em]">
+              {skillTitle(t, credential.skillId)}
+            </h3>
+          </div>
+          <p className="text-end">
+            <span className={eyebrow}>{t("credential.score")}</span>
+            <span className="mt-1 block font-ui text-3xl leading-none tabular">{t("panel.scoreValue", { score: credential.score })}</span>
+          </p>
+        </header>
+        <dl className="border-t border-rule font-ui text-xs">
+          <div className="grid gap-1 border-b border-rule py-3 sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-4">
             <dt className="text-muted">{t("credential.learner")}</dt>
             <dd translate="no">{shortAddress(credential.learner)}</dd>
           </div>
-          <div>
+          <div className="grid gap-1 border-b border-rule py-3 sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-4">
             <dt className="text-muted">{t("credential.issuer")}</dt>
             <dd className="flex flex-wrap items-center gap-2">
               <span translate="no">{shortAddress(credential.issuer)}</span>
@@ -69,31 +73,31 @@ export function CredentialCard({ credential, issuer }: { credential: Credential;
               ) : null}
             </dd>
           </div>
-          <div>
+          <div className="grid gap-1 border-b border-rule py-3 sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-4">
             <dt className="text-muted">{t("credential.replayHash")}</dt>
             <dd className="break-all" translate="no">
               {credential.replayHash}
             </dd>
           </div>
-          <div>
+          <div className="grid gap-1 border-b border-rule py-3 sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-4">
             <dt className="text-muted">{t("credential.account")}</dt>
             <dd className="break-all" translate="no">
               {credential.address}
             </dd>
           </div>
         </dl>
-        <p className="text-xs text-muted">{t("credential.soulbound")}</p>
-        <div className="flex flex-wrap gap-x-4 font-ui text-sm font-bold">
-          <a href={explorerUrl("address", credential.address)} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-1">
+        <p className="text-sm text-muted">{t("credential.soulbound")}</p>
+        <div className="-my-2 flex flex-wrap gap-x-6 font-body text-sm font-semibold">
+          <a href={explorerUrl("address", credential.address)} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-1.5">
             {t("credential.explorer")}
             <Icon name="external" size={16} />
           </a>
-          <Link href={`/${locale}/verify?credential=${credential.address}`} className="inline-flex min-h-11 items-center gap-1">
+          <Link href={`/${locale}/verify?credential=${credential.address}`} className="inline-flex min-h-11 items-center gap-1.5">
             {t("credential.verifyLink")}
             <Icon name="chevron-right" size={16} />
           </Link>
         </div>
       </div>
-    </Card>
+    </article>
   );
 }

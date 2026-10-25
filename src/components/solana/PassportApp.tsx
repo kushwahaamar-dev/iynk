@@ -3,7 +3,8 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
-import { Button, ButtonLink, Callout, Card, Icon } from "@/components/ui";
+import { Note, Section } from "@/components/editorial/Editorial";
+import { Button, ButtonLink, Callout, Icon } from "@/components/ui";
 import { useLocale } from "@/i18n/client";
 import { reloadFeatures, useFeatures } from "@/lib/features";
 import { PROGRAM_ID } from "@/lib/solana/config";
@@ -37,17 +38,20 @@ function Credentials() {
     );
   else if (read.data.length === 0)
     body = (
-      <Card tone="sunken" className="grid gap-3">
-        <p>{t("passport.credentialsEmpty")}</p>
-        <Link href={`/${locale}/drones`} className="inline-flex min-h-11 items-center gap-1 font-ui text-sm font-bold">
-          {t("passport.goDrones")}
-          <Icon name="chevron-right" size={16} />
-        </Link>
-      </Card>
+      <Note
+        action={
+          <Link href={`/${locale}/drones`} className="inline-flex min-h-11 items-center gap-1 font-body text-sm font-semibold">
+            {t("passport.goDrones")}
+            <Icon name="chevron-right" size={16} />
+          </Link>
+        }
+      >
+        {t("passport.credentialsEmpty")}
+      </Note>
     );
   else
     body = (
-      <ul className="grid gap-4 md:grid-cols-2">
+      <ul className="grid gap-6 xl:grid-cols-2">
         {read.data.map((credential) => (
           <li key={credential.address}>
             <CredentialCard credential={credential} issuer={issuer} />
@@ -57,10 +61,9 @@ function Credentials() {
     );
 
   return (
-    <section aria-labelledby="passport-credentials" className="grid gap-4">
-      <h2 id="passport-credentials">{t("passport.credentialsTitle")}</h2>
+    <Section id="passport-credentials" index="02" title={t("passport.credentialsTitle")}>
       <div aria-live="polite">{body}</div>
-    </section>
+    </Section>
   );
 }
 
@@ -68,44 +71,43 @@ function Bounties() {
   const t = useSolanaT();
   const [created, setCreated] = useState(0);
   return (
-    <section aria-labelledby="passport-bounties" className="grid gap-4">
-      <h2 id="passport-bounties">{t("bounties.formTitle")}</h2>
-      <p className="max-w-2xl">{t("bounties.formLede")}</p>
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <BountyForm onCreated={() => setCreated((n) => n + 1)} />
-        </Card>
-        <SponsoredBounties refresh={created} />
+    <Section id="passport-bounties" index="03" title={t("bounties.formTitle")} lede={<p>{t("bounties.formLede")}</p>}>
+      <div className="grid gap-x-10 gap-y-12 xl:grid-cols-2">
+        <BountyForm onCreated={() => setCreated((n) => n + 1)} />
+        <div className="border-t border-rule pt-6 xl:border-t-0 xl:border-s xl:ps-10 xl:pt-0">
+          <SponsoredBounties refresh={created} />
+        </div>
       </div>
-    </section>
+    </Section>
   );
 }
 
 function Passport() {
   const t = useSolanaT();
   const { status, features } = useFeatures();
-  if (status === "loading") return <div className="h-48 animate-pulse rounded-ink bg-sunken" aria-busy="true" />;
+  if (status === "loading") return <div className="mt-[clamp(72px,10vw,160px)] h-48 animate-pulse border-t border-rule bg-sunken/50 motion-reduce:animate-none" aria-busy="true" />;
   if (status === "error")
     return (
-      <Callout tone="warn">
-        <p>{t("statusError")}</p>
-        <Button size="sm" variant="secondary" className="mt-2" onClick={reloadFeatures}>
-          {t("retry")}
-        </Button>
-      </Callout>
+      <div className="mt-[clamp(48px,6vw,96px)]">
+        <Callout tone="warn">
+          <p>{t("statusError")}</p>
+          <Button size="sm" variant="secondary" className="mt-2" onClick={reloadFeatures}>
+            {t("retry")}
+          </Button>
+        </Callout>
+      </div>
     );
   if (!features.solana || !PROGRAM_ID) return <NotSetUp />;
   return (
-    <div className="grid gap-12">
-      <section aria-labelledby="passport-wallet" className="grid gap-4">
-        <h2 id="passport-wallet">{t("wallet.title")}</h2>
-        <Card className="max-w-xl">
+    <>
+      <Section id="passport-wallet" index="01" title={t("wallet.title")}>
+        <div className="max-w-xl">
           <WalletBar />
-        </Card>
-      </section>
+        </div>
+      </Section>
       <Credentials />
       <Bounties />
-    </div>
+    </>
   );
 }
 
@@ -123,13 +125,17 @@ function NotSetUp() {
   const t = useSolanaT();
   const lang = useLocale();
   return (
-    <div className="flex max-w-[68ch] flex-col items-start gap-5">
-      <Callout tone="note" title={t("notSetUp.title")}>
+    <div className="mt-[clamp(48px,6vw,96px)] border-t border-rule pt-8">
+      <Note
+        title={t("notSetUp.title")}
+        action={
+          <ButtonLink href={`/${lang}`} variant="secondary" size="lg">
+            {t("notSetUp.back")}
+          </ButtonLink>
+        }
+      >
         {t("notSetUp.body")}
-      </Callout>
-      <ButtonLink href={`/${lang}`} variant="secondary">
-        {t("notSetUp.back")}
-      </ButtonLink>
+      </Note>
     </div>
   );
 }

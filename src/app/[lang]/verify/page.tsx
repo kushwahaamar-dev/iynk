@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { PageHead, page } from "@/components/editorial/Editorial";
 import { SolanaTextProvider } from "@/components/solana/SolanaText";
 import { VerifyApp } from "@/components/solana/VerifyApp";
+import { cx } from "@/components/ui/cx";
 import { isLocale } from "@/i18n/config";
 import { alternatesFor } from "@/i18n/seo";
 import { loadSolanaMessages, solanaTranslator } from "@/lib/solana/messages";
@@ -18,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function VerifyPage({ params }: Props) {
   return (
-    <Suspense fallback={<div className="frame min-h-[70vh]" aria-busy="true" />}>
+    <Suspense fallback={<div className={cx(page, "min-h-[70vh]")} aria-busy="true" />}>
       <Verify params={params} />
     </Suspense>
   );
@@ -31,12 +33,8 @@ async function Verify({ params }: Props) {
   const t = solanaTranslator(lang, messages);
 
   return (
-    <div className="frame pt-8 sm:pt-12">
-      <header className="mb-10">
-        <p className="ink-kicker">{t("verify.kicker")}</p>
-        <h1 className="mt-3">{t("verify.title")}</h1>
-        <p className="mt-5 max-w-[68ch] text-lg leading-relaxed">{t("verify.lede")}</p>
-      </header>
+    <div className={cx(page, "pb-[clamp(72px,10vw,160px)]")}>
+      <PageHead label={t("verify.kicker")} title={t("verify.title")} lede={<p>{t("verify.lede")}</p>} />
       <SolanaTextProvider locale={lang} messages={messages}>
         {/* ?learner= and ?credential= are read on the client, so the page stays static. */}
         <Suspense fallback={<div className="min-h-40" aria-busy="true" />}>
