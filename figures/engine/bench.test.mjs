@@ -553,3 +553,19 @@ describe('lesson props', () => {
     expect(page.notes()).toEqual([]);
   });
 });
+
+describe('circuit params from the host', () => {
+  it('a patch with nothing the part takes leaves a burnt part burnt; a real change replaces it', async () => {
+    page = await loadFigure(buildFigure('boards/uno-r3'), { path: '/figures/boards/uno-r3.html' });
+    const B = page.bench;
+    B.accept({ view: 'breadboard', circuit: 'blink', power: 'usb', params: { RES1: { ohms: 1 } } });
+    B.advance(1.5);
+    expect(B.st.meas.LED1.state).toBe('burnt');
+    B.accept({ params: { LED1: { value: 300 }, RES1: { ohms: 220 } } });
+    B.advance(1.5);
+    expect(B.st.meas.LED1.state).toBe('burnt');
+    B.accept({ params: { LED1: { color: 'green' } } });
+    B.advance(1.5);
+    expect(B.st.meas.LED1.state).toBe('ok');
+  });
+});

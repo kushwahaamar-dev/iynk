@@ -141,6 +141,7 @@ B.bbParams = (st, params) => {
       const spec = allowed[k];
       if (B.paramRange(spec) ? typeof v === 'number' && v >= spec[0] && v <= spec[1] : spec.includes(v)) out[k] = v;
     }
+    if (!Object.keys(out).length) continue;
     st.cparams[id] = Object.assign(st.cparams[id] || {}, out);
     if (st.burnt) delete st.burnt[id];
   }
