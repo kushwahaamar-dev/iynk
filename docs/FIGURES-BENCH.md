@@ -10,7 +10,10 @@ Changes after the first publication are additive only. Every change is logged he
 
 - v8 (22:40, P2-engine-b): breadboard and mat parts label their insides with `ctx.label(at, text, on)` (§8), not
   `tag()`; the scene lays those labels and the board's see-through notes out together, last, in two columns
-  (`xrCallouts`) outside any view scaling.
+  (`xrCallouts`) outside any view scaling. A stats panel with more than four entries is set smaller and wraps a
+  value at its spaces (a three-column grid on a phone), so a motor bench's numbers stay clear of the drawing. The
+  board view's frame holds the tallest thing on the mat (a periph part's `foot[2]` or `height`, a periph board's
+  height), so a TT motor's wheel no longer runs into the title row.
 - v7 (21:00, P2-engine): the breadboard solver is a DC circuit solver (`figures/engine/bench-solve.js`, §9): node
   voltages per PWM time slice, averaged over the period, for every `elec` type in the §8 table (not yet the
   stepper). Every `meas` entry carries `kind` (§9 table); host readouts that only know LEDs should filter on

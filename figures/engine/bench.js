@@ -851,6 +851,16 @@ const matBox = () => {
   return box;
 };
 
+// the tallest thing on the mat, in board z: the board, or a periph standing higher (a TT motor's wheel, a module on
+// its standoffs), so the frame holds it at every step of the mat
+const matTop = () => {
+  let h = MD.height;
+  for (const it of MAT.items){
+    if (it.kind === 'board') h = Math.max(h, G.matH + it.md.pcb.standoff + it.md.pcb.thick + it.md.height - G.top);
+    else { const ft = Array.isArray(it.def.foot) ? it.def.foot[2] : +it.def.height; if (ft > 0) h = Math.max(h, G.matH - G.top + ft); }
+  }
+  return h;
+};
 /* the board view (also the base of the breadboard view) */
 B.boardItems = (o, k) => [...drawParts(o, k), ...drawSupply()];
 B.drawBoardBase = k => drawPCB(k);
@@ -887,7 +897,7 @@ function viewFit(name, corners){
 B.boxCorners = ([x0, y0, z0, x1, y1, z1]) => { const c = []; for (const x of [x0, x1]) for (const y of [y0, y1]) for (const z of [z0, z1]) c.push([x, y, z]); return c; };
 const strokeDiv = (svg, s) => s === 1 ? svg : svg.replace(/stroke-width="([\d.]+)"/g, (m, w) => `stroke-width="${(+w / s).toFixed(3)}"`).replace(/r="([\d.]+)"/g, (m, r) => m);
 B.viewDef('board', {
-  bounds: () => { const [x0, y0, x1, y1] = matBox(), a = BP(x0, y0, -G.top), b = BP(x1, y1, MD.height); return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), 0, Math.max(a[0], b[0]), Math.max(a[1], b[1]), G.top + MD.height]; },
+  bounds: () => { const [x0, y0, x1, y1] = matBox(), h = matTop(), a = BP(x0, y0, -G.top), b = BP(x1, y1, h); return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), 0, Math.max(a[0], b[0]), Math.max(a[1], b[1]), G.top + h]; },
   scene: k => sceneBoard(k),
 });
 
@@ -1027,6 +1037,7 @@ function stats(){
   if (st.ev.status === 'running' && MD.modes[st.mode]) out.push({ label: T((MD.def.modesLabel && MD.def.modesLabel.stat) || 'Program'), value: st.ext ? T('your sketch') : T(MD.modes[st.mode].title), small: true });
   if (st.benchStatus) out.push({ label: T('Bench'), value: T(st.benchStatus), small: true });
   if (st.power) for (const [label, value] of st.modelStats || []) out.push({ label: T(String(label)), value: typeof value === 'number' ? String(+value.toFixed(2)) : T(String(value)), small: true });
+  document.documentElement.classList.toggle('bstats-long', out.length > 4);
   return out;
 }
 
@@ -1196,7 +1207,14 @@ function start(pick){
   const defs = document.getElementById('fdefs') || document.querySelector('#fig defs');
   if (defs) defs.insertAdjacentHTML('beforeend', '<filter id="bhot"><feColorMatrix type="matrix" values="1 .25 .1 0 .12  .1 .45 .05 0 0  .05 .05 .35 0 0  0 0 0 1 0"/></filter>');
   const css = document.createElement('style');
-  css.textContent = '#fig .bsel > *{filter:drop-shadow(0 0 1.6px var(--accent,#f4b829)) drop-shadow(0 0 1.6px var(--accent,#f4b829))}#fig [data-act]{cursor:pointer}';
+  // a bench's long stats column (battery, motors, heat…) is set smaller and wraps a value at its spaces, so it stays a
+  // narrow strip at the right edge instead of running over the drawing
+  css.textContent = '#fig .bsel > *{filter:drop-shadow(0 0 1.6px var(--accent,#f4b829)) drop-shadow(0 0 1.6px var(--accent,#f4b829))}#fig [data-act]{cursor:pointer}'
+    + 'html.bstats-long .stats{gap:5px}html.bstats-long .stat .k{font-size:9.5px}html.bstats-long .stat .v{font-size:24px}'
+    + 'html.bstats-long .stat.small .v{font-size:14px;line-height:1.15;max-width:7.5em;text-wrap:balance}'
+    // on a phone the core sets the stats in one row, which runs off the left edge with this many: a three-column grid
+    + '@media (max-width:560px){html.bstats-long .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 12px;text-align:left}'
+    + 'html.bstats-long .stat .v,html.bstats-long .stat.small .v{font-size:14px;max-width:none}}';
   document.head.appendChild(css);
   if (!CF_EMBED) keyList();
   if (st.power) refresh(true); else kick();
