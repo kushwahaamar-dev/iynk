@@ -45,7 +45,10 @@ const CF_T = (s, vars) => {
   if (vars && typeof t === 'string') t = t.replace(/\{(\w+)\}/g, (m, k) => Object.prototype.hasOwnProperty.call(vars, k) ? String(vars[k]) : m);
   return t; };
 const CF_ESC = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const CF_L = s => `<span data-cft="${CF_ESC(s)}">${CF_ESC(CF_T(s))}</span>`;   // a translatable piece of chrome
+// a translatable piece of chrome: English, or [template, vars] for one with a live value (['Press {name}', { name }]),
+// which keeps its template and values so a new dictionary relabels it
+const CF_L = s => { const [k, v] = Array.isArray(s) ? s : [s, null];
+  return `<span data-cft="${CF_ESC(k)}"${v ? ` data-cftv="${CF_ESC(JSON.stringify(v))}"` : ''}>${CF_ESC(CF_T(k, v))}</span>`; };
 const CF_SLUG = s => String(s).toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'button';
 // P1: label pills are sized from the real text width in the pill's font (cached per string at 100 px), not from
 // text.length, which overflows CJK and doubles Devanagari (combining marks count as characters)
@@ -81,7 +84,7 @@ function CF_SETLOCALE(lang, strings){
   CF_STR = strings && typeof strings === 'object' && !Array.isArray(strings) ? strings : {};
   document.documentElement.lang = CF_LANG === 'zh' ? 'zh-Hans' : CF_LANG;
   for (const el of document.querySelectorAll('.zchip button[aria-label]:not([data-cft-aria])')) el.dataset.cftAria = el.getAttribute('aria-label');
-  for (const el of document.querySelectorAll('[data-cft]')) el.textContent = CF_T(el.dataset.cft);
+  for (const el of document.querySelectorAll('[data-cft]')) el.textContent = CF_T(el.dataset.cft, el.dataset.cftv ? JSON.parse(el.dataset.cftv) : null);
   for (const el of document.querySelectorAll('[data-cft-aria]')) el.setAttribute('aria-label', CF_T(el.dataset.cftAria));
   if (CF_CFG) document.title = CF_T(CF_CFG.title);
   if (CF_UI) CF_UI.render();
@@ -536,7 +539,7 @@ function mountFigure(cfg){
   if (btns) cfg.buttons.forEach((b, i) => {
     const wrap = document.createElement('div'); wrap.className = 'stepwrap';
     const el = document.createElement('button'); el.className = 'act';
-    el.dataset.id = b.id || CF_SLUG(b.label); el.innerHTML = `${CF_L(b.label)}${b.choices ? '<span class="car" aria-hidden="true">▾</span>' : ''}`;
+    el.dataset.id = b.id || CF_SLUG(Array.isArray(b.label) ? b.label[0] : b.label); el.innerHTML = `${CF_L(b.label)}${b.choices ? '<span class="car" aria-hidden="true">▾</span>' : ''}`;
     wrap.appendChild(el); btns.appendChild(wrap); stepEls.push(el);
     if (!b.choices){ el.onclick = () => { closeChips(); b.onClick(st, ui); ui.render(); }; return; }
     const chips = document.createElement('div'); chips.className = 'chips'; wrap.appendChild(chips);
@@ -788,7 +791,10 @@ function mountKeypad(spec){
   });
 
   const labelOf = el => { const s = el.querySelector('[data-cft]'); return (s ? s.textContent : el.textContent).replace('▾', '').trim(); };
-  const enOf = el => { const s = el.querySelector('[data-cft]'); return s ? s.dataset.cft : labelOf(el); };
+  // the English label; a label with a live value keeps its template and values (core CF_L) and is filled in here
+  const enOf = el => { const s = el.querySelector('[data-cft]'); if (!s) return labelOf(el);
+    const v = s.dataset.cftv ? JSON.parse(s.dataset.cftv) : null;
+    return v ? s.dataset.cft.replace(/\{(\w+)\}/g, (m, k) => own(v, k) ? String(v[k]) : m) : s.dataset.cft; };
   const readout = () => { if (typeof cfg.readout !== 'function') return '';
     try { return String(CF_T(cfg.readout(ui.st)) ?? ''); } catch (e) { return ''; } };
   const report = () => { if (!cfg.embed || typeof cfg.embed.report !== 'function') return null;
@@ -805,8 +811,19 @@ function mountKeypad(spec){
     for (const g of document.querySelectorAll('#fig .tag[data-t]')){ const n = +g.dataset.n;
       if (!m.has(n)) m.set(n, { n, text: g.dataset.t, en: g.dataset.en ?? g.dataset.t, on: g.classList.contains('on') }); }
     return [...m.values()].sort((a, b) => a.n - b.n); };
+  // the figure's own buttons the host hides because it draws them itself (chrome); press still reaches them
+  let hidden = new Set();
   const buttons = () => [...document.querySelectorAll('#btns .act[data-id]')]
-    .map(b => ({ id: b.dataset.id, label: labelOf(b), en: enOf(b), picker: !!b.querySelector('.car') }));
+    .map(b => ({ id: b.dataset.id, label: labelOf(b), en: enOf(b), picker: !!b.querySelector('.car'), ...(hidden.has(b.dataset.id) ? { hidden: true } : {}) }));
+  const chrome = hide => {
+    if (!Array.isArray(hide) || hide.some(id => typeof id !== 'string')) return err('chrome: hide must be a list of button ids');
+    const all = [...document.querySelectorAll('#btns .act[data-id]')], ids = new Set(all.map(b => b.dataset.id));
+    hidden = new Set(hide.filter(id => ids.has(id)));
+    for (const b of all) (b.closest('.stepwrap') || b).toggleAttribute('data-cf-hidden', hidden.has(b.dataset.id));
+    ui.render();
+    const unknown = hide.filter(id => !ids.has(id));
+    if (unknown.length) err(`chrome: no button "${unknown.join('", "')}"`);
+  };
   const switches = () => [...document.querySelectorAll('.vset .act[data-id]')]
     .map(b => ({ id: b.dataset.id, label: labelOf(b), on: b.getAttribute('aria-pressed') === 'true' }));
 
@@ -870,6 +887,7 @@ function mountKeypad(spec){
     pause: () => { hostPaused = true; },
     resume: () => { hostPaused = false; wake(); },
     press: m => press(m.id, m.choice),
+    chrome: m => chrome(m.hide),
     act: m => runAct(m.name, m.data),
     set: m => setState(m.state),
     view: m => { const y = num(m.yaw, -720, 720, null); if (y == null) return err('view: yaw must be a number');
@@ -905,6 +923,9 @@ function mountKeypad(spec){
     cfg = c; ui = u;
     const fig = document.getElementById('fig');
     fig.setAttribute('tabindex', '0');
+    const css = document.createElement('style');
+    css.textContent = '#btns .stepwrap[data-cf-hidden]{display:none!important}';
+    document.head.appendChild(css);
     // parts: report the press before the figure acts on it, so 'part' arrives ahead of the 'state' it causes
     fig.addEventListener('pointerdown', e => { if (e.button) return; const a = e.target.closest && e.target.closest('[data-act]');
       if (a && own(cfg.acts, a.dataset.act)) send('part', { act: a.dataset.act, id: a.dataset.id ?? null, data: { ...a.dataset }, by: 'user' }); }, true);
@@ -953,7 +974,8 @@ window.SL = window.SL || {};
     off: '{short} is off',
     built: 'Already built',
     box: 'Already a box of parts',
-    buildDone: 'Built: every part on, smoke test, motor check and calibration done',
+    // the build sets the checks as passed but runs no test: the host counts only the tests the learner runs
+    buildDone: 'Built: every part on the right way round, the checks marked passed (not run)',
     plugNeeds: 'Mount the battery and its power lead first',
     pop: 'POP: the capacitor was in backwards and vented. A smoke stopper would have caught it. Unplug, replace it',
     powered: 'Beep beep beep: ESCs armed-ready, FC and VTX on',
@@ -985,7 +1007,7 @@ window.SL = window.SL || {};
     reversed: '{m} direction reversed in ESC config',
     calBack: 'acc calibrated (but board_align is wrong!)',
     calOk: '$ calibrate accelerometer: done, level = 0.0 / 0.0',
-    auto: '$ build it for me: smoke stopper, motor check and calibration done',
+    auto: '$ build it for me: every part on, checks marked passed (not run)',
     capNew: 'new capacitor fitted',
   };
   const ENGINE_IDS = ['FRAME', 'MOTORS', 'ESC', 'WIRES', 'FC', 'XT60', 'CAM', 'RX', 'VTX', 'TOP', 'BATT', 'PROPS'];
@@ -1486,11 +1508,12 @@ window.SL = window.SL || {};
       if (G.dz > 0.5) ctx.shadows.length = before;       // lifted parts drop their shadow
       let op = pl.leave ? Math.max(0, pl.t) : 1;
       if (part.cover && k > 0) op *= 1 - 0.72 * k;
-      const lbl = CF_ESC(T(part.name || part.short));
+      // data-label is the English name the host lists (and translates); aria-label is what a screen reader reads here
+      const en = CF_ESC(part.name || part.short), lbl = CF_ESC(T(part.name || part.short));
       its.forEach((it, j) => {
         // one tab stop per part, on its first item; Enter or Space presses it (see define)
         const a11y = j === 0 ? ` tabindex="0" role="button" aria-label="${lbl}" aria-pressed="${st.sel === part.id}"` : '';
-        let svg = act('part', it.svg, `data-id="${part.id}" data-label="${lbl}"${a11y}`);
+        let svg = act('part', it.svg, `data-id="${part.id}" data-label="${en}"${a11y}`);
         if (op < 0.999) svg = `<g opacity="${op.toFixed(3)}">${svg}</g>`;
         items.push({ box: it.box, at: it.at, svg });
       });
@@ -1649,6 +1672,9 @@ window.SL = window.SL || {};
     });
     xrMount(() => ui, () => T(craft.xrCaption || 'See-through: the covers fade so the insides, the power path and the signals show.'));
     const fig = document.getElementById('fig');
+    // the drawing holds pressable parts (one tab stop each), so it is a group: the core's role="img" makes its
+    // children presentational, and axe reports every part as an interactive control nested inside it
+    if (fig) fig.setAttribute('role', 'group');
     if (fig) fig.addEventListener('keydown', e => {
       if (e.key !== 'Enter' && e.key !== ' ') return;
       const el = e.target.closest && e.target.closest('[data-act="part"][tabindex]');
@@ -2359,26 +2385,67 @@ window.SL = window.SL || {};
     return [p[0] - dy / L * o, p[1] + dx / L * o];
   });
 
+  // where the sheet goes: the biggest copy of its canvas (CW x CH sheet units) that fits the frame (vw x vh) without
+  // touching any of the figure's own controls drawn over it (boxes [x0, y0, x1, y1] in frame units). Its edges are
+  // tried at the frame's edges and at the boxes' edges, and it is centred in the room it gets; of the places within 4 %
+  // of the biggest, the one nearest the middle of the frame wins. Returns the canvas box.
+  const CW = 784, CH = 392, X0 = -12, Y0 = -26;
+  SD.sheetFit = (vw, vh, boxes) => {
+    const m = Math.min(vw, vh) * .015, pad = Math.min(vw, vh) * .012;
+    const bs = boxes.map(([x0, y0, x1, y1]) => [x0 - pad, y0 - pad, x1 + pad, y1 + pad]).filter(b => b[2] > m && b[3] > m && b[0] < vw - m && b[1] < vh - m);
+    const inX = v => v >= m && v <= vw - m, inY = v => v >= m && v <= vh - m;
+    const ls = [m, ...bs.map(b => b[2]).filter(inX)], rs = [vw - m, ...bs.map(b => b[0]).filter(inX)];
+    const ts = [m, ...bs.map(b => b[3]).filter(inY)], bts = [vh - m, ...bs.map(b => b[1]).filter(inY)];
+    const places = floor => {
+      const out = [];
+      for (const l of ls) for (const r of rs){
+        if (r - l <= 0 || (r - l) / CW < floor) continue;
+        for (const t of ts) for (const b of bts){
+          const s = Math.min((r - l) / CW, (b - t) / CH);
+          if (b - t <= 0 || s < floor) continue;
+          if (bs.some(q => q[0] < r && l < q[2] && q[1] < b && t < q[3])) continue;
+          const w = CW * s, h = CH * s;
+          out.push({ s, x: (l + r - w) / 2, y: (t + b - h) / 2, w, h });
+          if (floor === 0) floor = s;
+        }
+      }
+      return out;
+    };
+    const all = places(0), top = all.reduce((a, p) => Math.max(a, p.s), 0);
+    if (!top){ const s = Math.min((vw - 2 * m) / CW, (vh - 2 * m) / CH); return { x: (vw - CW * s) / 2, y: (vh - CH * s) / 2, w: CW * s, h: CH * s }; }
+    const off = p => Math.hypot(p.x + p.w / 2 - vw / 2, p.y + p.h / 2 - vh / 2);
+    const { x, y, w, h } = places(top * .96).reduce((a, p) => off(p) < off(a) ? p : a);
+    return { x, y, w, h };
+  };
+  let fitKey = '', fitBox = null;
+
   SD.sheet = st => {
     const c = SD.craft(), Wr = c.wiring, svgEl = document.getElementById('fig'), vb = svgEl && svgEl.viewBox && svgEl.viewBox.baseVal;
     const vw = vb && vb.width ? vb.width : 585, vh = vb && vb.height ? vb.height : 440;
-    // leave the figure's own button column free when it is shown (standalone or embedded without bare=1): a quarter of
-    // the frame, or up to its widest button when that reaches further ("Calibrate accelerometer" on the delivery quad)
-    const btns = document.getElementById('btns'), html = document.documentElement, frameBox = svgEl && svgEl.getBoundingClientRect();
-    const btnsShown = btns && !html.classList.contains('cf-bare') && getComputedStyle(btns).display !== 'none' && innerWidth > 560;
-    const btnRight = btnsShown && frameBox && frameBox.width ? Math.max(0, ...[...btns.children].map(el => el.getBoundingClientRect().right)) : 0;
-    const left = btnsShown ? Math.max(vw * .24, btnRight ? (btnRight - frameBox.left) * vw / frameBox.width + 6 : 0) : 0;
-    // and the stats panel (parts, checks, battery) on the right
-    const stE = document.getElementById('stats');
-    const right = stE && frameBox && frameBox.width && getComputedStyle(stE).display !== 'none' && innerWidth > 560
-      ? Math.max(0, frameBox.right - stE.getBoundingClientRect().left) * vw / frameBox.width : 0;
-    const room = vw - left - right, sc = Math.min(room * .95 / 780, vh * .9 / 380), ox = left + (room - 760 * sc) / 2, oy = (vh - 360 * sc) / 2;
-    const X = x => f(ox + x * sc), Y = y => f(oy + y * sc), sw = w => (w * sc / INK_K).toFixed(2), fs = v => f(v * sc);
+    // the figure's own controls over the frame: the buttons the host has not hidden, the switches, the stats panel
+    // (parts, checks, battery) and the zoom chip; on a phone they sit above and below the frame, so it gets it all
+    // (screen px to frame units through the SVG's own transform: a short frame letterboxes the drawing)
+    const ctm = svgEl && svgEl.getScreenCTM ? svgEl.getScreenCTM() : null, px = ctm && ctm.a > 0 ? ctm.a : 0, boxes = [];
+    const vx = vb ? vb.x : 0, vy = vb ? vb.y : 0;
+    if (px) for (const el of document.querySelectorAll('#btns > *, .vset, #stats, .zchip')){
+      const r = el.getBoundingClientRect();
+      if (r.width && r.height) boxes.push([(r.left - ctm.e) / px - vx, (r.top - ctm.f) / px - vy, (r.right - ctm.e) / px - vx, (r.bottom - ctm.f) / px - vy].map(v => Math.round(v)));
+    }
+    const key = [vw, vh, ...boxes.flat()].map(v => Math.round(v)).join(' ');
+    // the controls settle after the first draw (the zoom chip comes in after mount, fonts load, a host hides buttons):
+    // a new layout draws once more on the next frame, until it holds
+    if (key !== fitKey){ fitKey = key; fitBox = SD.sheetFit(vw, vh, boxes); const u = SD.ui(); if (u && px) requestAnimationFrame(() => u.render()); }
+    const sc = fitBox.w / CW, ox = vx + fitBox.x - X0 * sc, oy = vy + fitBox.y - Y0 * sc;
+    // on a small frame the text grows (up to 1.6 times) so a block title reads at about 10 px; a title or a line that
+    // would then overrun its block shrinks back to fit
+    const tf = Math.min(1.6, Math.max(1, 10 / (12.5 * sc * (px || 1))));
+    const X = x => f(ox + x * sc), Y = y => f(oy + y * sc), sw = w => (w * sc / INK_K).toFixed(2), fs = v => f(v * sc), ft = v => f(v * sc * tf);
+    const fit = (text, size, room) => f(Math.min(size * tf, room / Math.max(1, [...String(text)].length * .62)) * sc);
     const d = SD.resolved(st), V = st.calc && st.calc.V ? st.calc.V : d.batt.cells * 3.7, on = SD.powered(st);
     const t = st.test, spinning = t && t.kind === 'motors' ? t.cur : -1;
-    let s = `<rect x="${X(-12)}" y="${Y(-26)}" width="${f(784 * sc)}" height="${f(392 * sc)}" rx="${fs(8)}" fill="#fbf8f0" stroke="${INK}" stroke-width="${sw(1.4)}"/>`;
-    s += `<text x="${X(0)}" y="${Y(-8)}" font-size="${fs(11)}" font-family="ui-monospace,Menlo,monospace" font-weight="800" fill="${INK}">${CF_ESC(CF_T('WIRING'))} · ${CF_ESC(CF_T(c.title))}</text>`;
-    s += `<text x="${X(748)}" y="${Y(-8)}" font-size="${fs(9.5)}" text-anchor="end" font-family="ui-monospace,Menlo,monospace" fill="#857d6e">${CF_ESC(CF_T('click a block'))}</text>`;
+    let s = `<rect x="${X(X0)}" y="${Y(Y0)}" width="${f(CW * sc)}" height="${f(CH * sc)}" rx="${fs(8)}" fill="#fbf8f0" stroke="${INK}" stroke-width="${sw(1.4)}"/>`;
+    s += `<text x="${X(0)}" y="${Y(-8)}" font-size="${ft(11)}" font-family="ui-monospace,Menlo,monospace" font-weight="800" fill="${INK}">${CF_ESC(CF_T('WIRING'))} · ${CF_ESC(CF_T(c.title))}</text>`;
+    s += `<text x="${X(748)}" y="${Y(-8)}" font-size="${ft(9.5)}" text-anchor="end" font-family="ui-monospace,Menlo,monospace" fill="#857d6e">${CF_ESC(CF_T('click a block'))}</text>`;
     const used = new Set();
     for (const e of Wr.edges){
       const A = Wr.nodes[e.from], B = Wr.nodes[e.to], k = KIND[e.kind] || KIND.signal;
@@ -2405,7 +2472,7 @@ window.SL = window.SL || {};
         const txt = e.label === 'V' ? CF_T('{v} V', { v: V.toFixed(1) }) : CF_T(e.label);
         const mid = base.length === 2 ? [(base[0][0] + base[1][0]) / 2, (base[0][1] + base[1][1]) / 2] : [(base[1][0] + base[2][0]) / 2, (base[1][1] + base[2][1]) / 2];
         const lx = mid[0] + (e.labelAt ? e.labelAt[0] : 0), ly = mid[1] + (e.labelAt ? e.labelAt[1] : -6);
-        s += `<text x="${X(lx)}" y="${Y(ly)}" font-size="${fs(9.5)}" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" fill="#5c564b" paint-order="stroke" stroke="#fbf8f0" stroke-width="${sw(3)}">${CF_ESC(txt)}</text>`;
+        s += `<text x="${X(lx)}" y="${Y(ly)}" font-size="${ft(9.5)}" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" fill="#5c564b" paint-order="stroke" stroke="#fbf8f0" stroke-width="${sw(3)}">${CF_ESC(txt)}</text>`;
       }
     }
     for (const [id, nd] of Object.entries(Wr.nodes)){
@@ -2414,19 +2481,26 @@ window.SL = window.SL || {};
       const subText = nd.sub === 'batt' ? d.batt.label : nd.sub === 'motor' ? d.motor.label : nd.sub === 'prop' ? (d.prop.label || st.design.prop) : CF_T(nd.sub || '');
       let b = `<rect x="${X(x)}" y="${Y(y)}" width="${fs(BW)}" height="${fs(BH)}" rx="${fs(10)}" fill="${sel ? 'var(--accent,#f4b829)' : '#fbf8f0'}" stroke="${INK}" stroke-width="${sw(1.6)}"${fitted ? '' : ` stroke-dasharray="${f(5 * sc)} ${f(3 * sc)}"`}/>`;
       b += `<path d="M${X(x + 10)} ${Y(y + .8)}L${X(x + 8)} ${Y(y + .8)}Q${X(x + .8)} ${Y(y + .8)} ${X(x + .8)} ${Y(y + 10)}L${X(x + .8)} ${Y(y + BH - 10)}Q${X(x + .8)} ${Y(y + BH - .8)} ${X(x + 8)} ${Y(y + BH - .8)}L${X(x + 10)} ${Y(y + BH - .8)}Z" fill="${bar}"/>`;
-      b += `<text x="${X(x + 18)}" y="${Y(y + 23)}" font-size="${fs(12.5)}" font-weight="800" font-family="ui-monospace,Menlo,monospace" fill="${INK}">${CF_ESC(CF_T(nd.title))}</text>`;
-      b += `<text x="${X(x + 18)}" y="${Y(y + 41)}" font-size="${fs(10.5)}" font-family="ui-monospace,Menlo,monospace" fill="#5c564b">${CF_ESC(subText)}</text>`;
-      if (!fitted) b += `<text x="${X(x + BW - 8)}" y="${Y(y + 13)}" font-size="${fs(8)}" text-anchor="end" font-family="ui-monospace,Menlo,monospace" fill="#857d6e">${CF_ESC(CF_T('not fitted'))}</text>`;
+      // with the text grown, "not fitted" takes the second line instead of the corner, where the title would cover it
+      const title = CF_T(nd.title), corner = !fitted && tf < 1.05, line2 = fitted || corner ? subText : CF_T('not fitted');
+      b += `<text x="${X(x + 18)}" y="${Y(y + 23)}" font-size="${fit(title, 12.5, BW - 26)}" font-weight="800" font-family="ui-monospace,Menlo,monospace" fill="${INK}">${CF_ESC(title)}</text>`;
+      b += `<text x="${X(x + 18)}" y="${Y(y + 41)}" font-size="${fit(line2, 10.5, BW - 26)}" font-family="ui-monospace,Menlo,monospace" fill="${line2 === subText ? '#5c564b' : '#857d6e'}">${CF_ESC(line2)}</text>`;
+      if (corner) b += `<text x="${X(x + BW - 8)}" y="${Y(y + 13)}" font-size="${fs(8)}" text-anchor="end" font-family="ui-monospace,Menlo,monospace" fill="#857d6e">${CF_ESC(CF_T('not fitted'))}</text>`;
       if (fitted && on && nd.led) b += `<circle cx="${X(x + BW - 12)}" cy="${Y(y + 12)}" r="${fs(4)}" fill="${SD.colOf(nd.led)}" stroke="${INK}" stroke-width="${sw(.8)}"/>`;
-      const part = c.byId[id];
-      const lbl = CF_ESC(CF_T(part.name || part.short));
-      s += act('part', `<g opacity="${fitted ? 1 : .6}">${b}</g>`, `data-id="${id}" data-label="${lbl}" tabindex="0" role="button" aria-label="${lbl}" aria-pressed="${sel}"`);
+      // data-label is the English name the host lists (and translates); aria-label is what a screen reader reads here
+      const part = c.byId[id], en = part.name || part.short;
+      s += act('part', `<g opacity="${fitted ? 1 : .6}">${b}</g>`, `data-id="${id}" data-label="${CF_ESC(en)}" tabindex="0" role="button" aria-label="${CF_ESC(CF_T(en))}" aria-pressed="${sel}"`);
     }
     const legend = Wr.legend || ['power', 'signal', 'video', 'phase', ...['rf', 'ground'].filter(k => used.has(k))];
+    // the legend runs along the bottom, each entry as wide as its name, at a size that keeps the row inside the sheet
+    const names = legend.map(k => CF_T((KIND[k] || KIND.signal).name)), chars = names.reduce((n, t) => n + [...t].length, 0);
+    const lf = Math.min(10 * tf, (752 - legend.length * 44) / Math.max(1, chars * .62));
+    let lx = 4;
     legend.forEach((k, i) => {
-      const kk = KIND[k] || KIND.signal, lx = 4 + i * 150, ly = 342;
+      const kk = KIND[k] || KIND.signal, ly = 342;
       s += `<path d="M${X(lx)} ${Y(ly)}L${X(lx + 22)} ${Y(ly)}" stroke="${kk.col}" stroke-width="${sw(4)}"${kk.dash ? ` stroke-dasharray="${f(kk.dash[0] * sc)} ${f(kk.dash[1] * sc)}"` : ''}/>`;
-      s += `<text x="${X(lx + 28)}" y="${Y(ly + 3.5)}" font-size="${fs(10)}" font-family="ui-monospace,Menlo,monospace" fill="#5c564b">${CF_ESC(CF_T(kk.name))}</text>`;
+      s += `<text x="${X(lx + 28)}" y="${Y(ly + 3.5)}" font-size="${f(lf * sc)}" font-family="ui-monospace,Menlo,monospace" fill="#5c564b">${CF_ESC(names[i])}</text>`;
+      lx += Math.max(150, 44 + [...names[i]].length * .62 * lf);
     });
     return s;
   };
@@ -2457,7 +2531,6 @@ window.SL = window.SL || {};
   const DECK_Z = TOP + 11;                    // Lighthouse deck underside, over the battery
   const FLOW_Z = PCB_Z - 5;                   // Flow deck v2 underneath, on the pins' bottom 4 mm
   const RADIO = { x: -8, y: -64 };            // the Crazyradio 2.0 on the mat (on the laptop's USB in real life)
-  const RIGHT = 'radio://0/80/2M/E7E7E7E701';
 
   const flow = (ctx, kind, pts) => ctx.flows.push({ kind, pts: pts.map(p => Wp(...p)) });
   const dirOf = mo => [Math.cos(mo.ang), Math.sin(mo.ang)];
@@ -2501,54 +2574,76 @@ window.SL = window.SL || {};
   const live = (api, text) => { if (SD.powered(api.st)) return false; api.say(text, 2600, 'buzz'); return true; };
   const linked = (api, text) => { if (passed(api.st, 'link')) return false; api.say(text, 2600, 'buzz'); return true; };
 
+  // what the checks say and log, in one table the figure-string collector reads (the helpers pass text on to api.say)
+  const MSG = {
+    linkNeeds: 'Fit the board and the Crazyradio first',
+    linkLive: 'Plug in the battery: the radio chip on the board runs from it',
+    noAntenna: 'Link quality 23 %: the Crazyradio’s antenna is not screwed on. Fit it and connect again',
+    linkOk: 'Connected to radio://0/80/2M/E7E7E7E701: link quality 100 %. Every drone in the swarm gets its own address on the same channel',
+    pinsNeeds: 'Fit the long pins and the Crazyradio first',
+    batteryFirst: 'Plug in the battery first',
+    decksLink: 'Connect over the Crazyradio first: cflib reads the decks and the position over the link',
+    // a failed check logs the part before the colon and says the whole line
+    lighthouseLog: 'deck.bcLighthouse4 = 0',
+    flowLog: 'deck.bcFlow2 = 0',
+    ledLog: 'LED1 still blinks slowly',
+    noLighthouse: 'deck.bcLighthouse4 = 0: no Lighthouse deck, so no shared position for the swarm',
+    lighthouseBack: 'deck.bcLighthouse4 = 0: the Lighthouse deck is on backwards and its ID chip was not found. Turn it round',
+    noFlow: 'deck.bcFlow2 = 0: no Flow deck under the board. The hover script stops without it',
+    notCalibrated: 'LED1 still blinks slowly: the sensors are not calibrated. Keep it still and level first',
+    positionOk: 'Both decks found and the Kalman filter settled at x 0.00, y 0.00, z 0.03 m. reset_estimators() returns: ready to arm',
+    failsafeNeeds: 'Fit the motors, their plugs, the board and the Crazyradio first',
+    failsafeLink: 'Connect over the Crazyradio first: there has to be a link to lose',
+    failsafeOk: 'Link lost: after 0.5 s it levelled and held its thrust, after 2 s the motors stopped. A go_to from the high-level commander would have flown on to its setpoint instead',
+    lightsLink: 'Connect over the Crazyradio first: the LEDs are set over the link',
+    lightsOk: 'led.bitmask set back to 0: the status blinks are back. In the show every drone does this on its own cue',
+  };
+
   const buttons = [
     { id: 'link', label: 'Crazyradio link', onClick: api => {
-      if (blocked(api) || need(api, NEEDS.link, 'Fit the board and the Crazyradio first')) return;
-      if (live(api, 'Plug in the battery: the radio chip on the board runs from it')) return;
+      if (blocked(api) || need(api, NEEDS.link, MSG.linkNeeds)) return;
+      if (live(api, MSG.linkLive)) return;
       const bad = noAntenna(api.st);
       api.log('$ cfclient: Connect, Configure 2.x: channel 80, 2M, address E7E7E7E701');
       api.log(bad ? 'link quality 23 %: packets lost' : 'connected: crazyflie-firmware 2026.08, link quality 100 %');
-      begin(api, 'link', 2, bad
-        ? 'Link quality 23 %: the Crazyradio’s antenna is not screwed on. Fit it and connect again'
-        : `Connected to ${RIGHT}: link quality 100 %. Every drone in the swarm gets its own address on the same channel`,
-      !bad, bad ? 'buzz' : 'ding');
+      begin(api, 'link', 2, bad ? MSG.noAntenna : MSG.linkOk, !bad, bad ? 'buzz' : 'ding');
       api.sfx('click');
     } },
     { id: 'position', label: 'Decks + positioning', onClick: api => {
-      if (blocked(api) || need(api, ['FC', 'HDR', 'RADIO'], 'Fit the long pins and the Crazyradio first')) return;
-      if (live(api, 'Plug in the battery first')) return;
-      if (linked(api, 'Connect over the Crazyradio first: cflib reads the decks and the position over the link')) return;
+      if (blocked(api) || need(api, ['FC', 'HDR', 'RADIO'], MSG.pinsNeeds)) return;
+      if (live(api, MSG.batteryFirst)) return;
+      if (linked(api, MSG.decksLink)) return;
       const st = api.st;
-      const fail = !api.isOn('DECKL') ? 'deck.bcLighthouse4 = 0: no Lighthouse deck, so no shared position for the swarm'
-        : api.orient('DECKL') === 1 ? 'deck.bcLighthouse4 = 0: the Lighthouse deck is on backwards and its ID chip was not found. Turn it round'
-        : !api.isOn('FLOW') ? 'deck.bcFlow2 = 0: no Flow deck under the board. The hover script stops without it'
-        : !st.accOk ? 'LED1 still blinks slowly: the sensors are not calibrated. Keep it still and level first'
+      const fail = !api.isOn('DECKL') ? [MSG.lighthouseLog, MSG.noLighthouse]
+        : api.orient('DECKL') === 1 ? [MSG.lighthouseLog, MSG.lighthouseBack]
+        : !api.isOn('FLOW') ? [MSG.flowLog, MSG.noFlow]
+        : !st.accOk ? [MSG.ledLog, MSG.notCalibrated]
         : null;
       api.log('$ print(cf.param.get_value(\'deck.bcLighthouse4\'))');
-      if (fail) { api.log(fail.split(':')[0]); return api.say(fail, 3200, 'buzz'); }
+      if (fail) { api.log(fail[0]); return api.say(fail[1], 3200, 'buzz'); }
       api.log('deck.bcFlow2 = 1, deck.bcLighthouse4 = 1');
       api.log('$ swarm.reset_estimators(): waiting for kalman.varPX/PY/PZ to settle');
-      begin(api, 'position', 4, 'Both decks found and the Kalman filter settled at x 0.00, y 0.00, z 0.03 m. reset_estimators() returns: ready to arm');
+      begin(api, 'position', 4, MSG.positionOk);
       api.sfx('click');
     } },
     { id: 'failsafe', label: 'Link-loss (props off)', onClick: api => {
-      if (blocked(api) || need(api, NEEDS.failsafe, 'Fit the motors, their plugs, the board and the Crazyradio first')) return;
+      if (blocked(api) || need(api, NEEDS.failsafe, MSG.failsafeNeeds)) return;
       if (api.st.placed.PROPS && !api.st.placed.PROPS.leave) return api.say('PROPS OFF! Never spin motors on the bench with props on', 2800, 'buzz');
-      if (live(api, 'Plug in the battery first')) return;
-      if (linked(api, 'Connect over the Crazyradio first: there has to be a link to lose')) return;
+      if (live(api, MSG.batteryFirst)) return;
+      if (linked(api, MSG.failsafeLink)) return;
       api.log('$ streaming setpoints at 10 Hz, then the Crazyradio pulled out');
       api.log('supervisor: no setpoint for 500 ms, level and hold thrust');
       api.log('supervisor: no setpoint for 2000 ms, motors off');
-      begin(api, 'failsafe', 2.6, 'Link lost: after 0.5 s it levelled and held its thrust, after 2 s the motors stopped. A go_to from the high-level commander would have flown on to its setpoint instead');
+      begin(api, 'failsafe', 2.6, MSG.failsafeOk);
       api.sfx('spin');
     } },
     { id: 'lights', label: 'Light-show LEDs', onClick: api => {
-      if (blocked(api) || need(api, NEEDS.lights, 'Fit the board and the Crazyradio first')) return;
-      if (live(api, 'Plug in the battery first')) return;
-      if (linked(api, 'Connect over the Crazyradio first: the LEDs are set over the link')) return;
+      if (blocked(api) || need(api, NEEDS.lights, MSG.linkNeeds)) return;
+      if (live(api, MSG.batteryFirst)) return;
+      if (linked(api, MSG.lightsLink)) return;
       api.log('$ cf.param.set_value(\'led.bitmask\', 138): both green');
       api.log('$ ... 148: both red, 129: the left blue, then 0');
-      begin(api, 'lights', 3, 'led.bitmask set back to 0: the status blinks are back. In the show every drone does this on its own cue');
+      begin(api, 'lights', 3, MSG.lightsOk);
       api.sfx('click');
     } },
   ];
@@ -2791,7 +2886,6 @@ window.SL = window.SL || {};
     messages: {
       live: 'Unplug the battery first: never work on a powered Crazyflie',
       propsLast: 'Props go on LAST: run the motor direction check first',
-      buildDone: 'Built: every part on, motor check and sensor calibration done',
       plugNeeds: 'Fit the battery first',
       powered: 'Self-test: each motor ticks in turn and the rear blue LEDs light. Keep it still and level while LED1 blinks slowly',
       motorNeeds: 'Plug the motors into the board first',
@@ -2803,7 +2897,6 @@ window.SL = window.SL || {};
       motors: '$ motorPowerSet.enable = 1, then {list} one at a time, props off',
       reversed: '{m}: leads crimped the wrong way round',
       calOk: 'gyro bias found: sensors calibrated',
-      auto: '$ build it for me: motor check and sensor calibration done',
     },
     frame: {
       layout: 'cf2', wheelbase: 92, numbering: 'crazyflie',

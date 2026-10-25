@@ -45,7 +45,10 @@ const CF_T = (s, vars) => {
   if (vars && typeof t === 'string') t = t.replace(/\{(\w+)\}/g, (m, k) => Object.prototype.hasOwnProperty.call(vars, k) ? String(vars[k]) : m);
   return t; };
 const CF_ESC = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const CF_L = s => `<span data-cft="${CF_ESC(s)}">${CF_ESC(CF_T(s))}</span>`;   // a translatable piece of chrome
+// a translatable piece of chrome: English, or [template, vars] for one with a live value (['Press {name}', { name }]),
+// which keeps its template and values so a new dictionary relabels it
+const CF_L = s => { const [k, v] = Array.isArray(s) ? s : [s, null];
+  return `<span data-cft="${CF_ESC(k)}"${v ? ` data-cftv="${CF_ESC(JSON.stringify(v))}"` : ''}>${CF_ESC(CF_T(k, v))}</span>`; };
 const CF_SLUG = s => String(s).toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'button';
 // P1: label pills are sized from the real text width in the pill's font (cached per string at 100 px), not from
 // text.length, which overflows CJK and doubles Devanagari (combining marks count as characters)
@@ -81,7 +84,7 @@ function CF_SETLOCALE(lang, strings){
   CF_STR = strings && typeof strings === 'object' && !Array.isArray(strings) ? strings : {};
   document.documentElement.lang = CF_LANG === 'zh' ? 'zh-Hans' : CF_LANG;
   for (const el of document.querySelectorAll('.zchip button[aria-label]:not([data-cft-aria])')) el.dataset.cftAria = el.getAttribute('aria-label');
-  for (const el of document.querySelectorAll('[data-cft]')) el.textContent = CF_T(el.dataset.cft);
+  for (const el of document.querySelectorAll('[data-cft]')) el.textContent = CF_T(el.dataset.cft, el.dataset.cftv ? JSON.parse(el.dataset.cftv) : null);
   for (const el of document.querySelectorAll('[data-cft-aria]')) el.setAttribute('aria-label', CF_T(el.dataset.cftAria));
   if (CF_CFG) document.title = CF_T(CF_CFG.title);
   if (CF_UI) CF_UI.render();
@@ -536,7 +539,7 @@ function mountFigure(cfg){
   if (btns) cfg.buttons.forEach((b, i) => {
     const wrap = document.createElement('div'); wrap.className = 'stepwrap';
     const el = document.createElement('button'); el.className = 'act';
-    el.dataset.id = b.id || CF_SLUG(b.label); el.innerHTML = `${CF_L(b.label)}${b.choices ? '<span class="car" aria-hidden="true">▾</span>' : ''}`;
+    el.dataset.id = b.id || CF_SLUG(Array.isArray(b.label) ? b.label[0] : b.label); el.innerHTML = `${CF_L(b.label)}${b.choices ? '<span class="car" aria-hidden="true">▾</span>' : ''}`;
     wrap.appendChild(el); btns.appendChild(wrap); stepEls.push(el);
     if (!b.choices){ el.onclick = () => { closeChips(); b.onClick(st, ui); ui.render(); }; return; }
     const chips = document.createElement('div'); chips.className = 'chips'; wrap.appendChild(chips);
@@ -788,7 +791,10 @@ function mountKeypad(spec){
   });
 
   const labelOf = el => { const s = el.querySelector('[data-cft]'); return (s ? s.textContent : el.textContent).replace('▾', '').trim(); };
-  const enOf = el => { const s = el.querySelector('[data-cft]'); return s ? s.dataset.cft : labelOf(el); };
+  // the English label; a label with a live value keeps its template and values (core CF_L) and is filled in here
+  const enOf = el => { const s = el.querySelector('[data-cft]'); if (!s) return labelOf(el);
+    const v = s.dataset.cftv ? JSON.parse(s.dataset.cftv) : null;
+    return v ? s.dataset.cft.replace(/\{(\w+)\}/g, (m, k) => own(v, k) ? String(v[k]) : m) : s.dataset.cft; };
   const readout = () => { if (typeof cfg.readout !== 'function') return '';
     try { return String(CF_T(cfg.readout(ui.st)) ?? ''); } catch (e) { return ''; } };
   const report = () => { if (!cfg.embed || typeof cfg.embed.report !== 'function') return null;
@@ -805,8 +811,19 @@ function mountKeypad(spec){
     for (const g of document.querySelectorAll('#fig .tag[data-t]')){ const n = +g.dataset.n;
       if (!m.has(n)) m.set(n, { n, text: g.dataset.t, en: g.dataset.en ?? g.dataset.t, on: g.classList.contains('on') }); }
     return [...m.values()].sort((a, b) => a.n - b.n); };
+  // the figure's own buttons the host hides because it draws them itself (chrome); press still reaches them
+  let hidden = new Set();
   const buttons = () => [...document.querySelectorAll('#btns .act[data-id]')]
-    .map(b => ({ id: b.dataset.id, label: labelOf(b), en: enOf(b), picker: !!b.querySelector('.car') }));
+    .map(b => ({ id: b.dataset.id, label: labelOf(b), en: enOf(b), picker: !!b.querySelector('.car'), ...(hidden.has(b.dataset.id) ? { hidden: true } : {}) }));
+  const chrome = hide => {
+    if (!Array.isArray(hide) || hide.some(id => typeof id !== 'string')) return err('chrome: hide must be a list of button ids');
+    const all = [...document.querySelectorAll('#btns .act[data-id]')], ids = new Set(all.map(b => b.dataset.id));
+    hidden = new Set(hide.filter(id => ids.has(id)));
+    for (const b of all) (b.closest('.stepwrap') || b).toggleAttribute('data-cf-hidden', hidden.has(b.dataset.id));
+    ui.render();
+    const unknown = hide.filter(id => !ids.has(id));
+    if (unknown.length) err(`chrome: no button "${unknown.join('", "')}"`);
+  };
   const switches = () => [...document.querySelectorAll('.vset .act[data-id]')]
     .map(b => ({ id: b.dataset.id, label: labelOf(b), on: b.getAttribute('aria-pressed') === 'true' }));
 
@@ -870,6 +887,7 @@ function mountKeypad(spec){
     pause: () => { hostPaused = true; },
     resume: () => { hostPaused = false; wake(); },
     press: m => press(m.id, m.choice),
+    chrome: m => chrome(m.hide),
     act: m => runAct(m.name, m.data),
     set: m => setState(m.state),
     view: m => { const y = num(m.yaw, -720, 720, null); if (y == null) return err('view: yaw must be a number');
@@ -905,6 +923,9 @@ function mountKeypad(spec){
     cfg = c; ui = u;
     const fig = document.getElementById('fig');
     fig.setAttribute('tabindex', '0');
+    const css = document.createElement('style');
+    css.textContent = '#btns .stepwrap[data-cf-hidden]{display:none!important}';
+    document.head.appendChild(css);
     // parts: report the press before the figure acts on it, so 'part' arrives ahead of the 'state' it causes
     fig.addEventListener('pointerdown', e => { if (e.button) return; const a = e.target.closest && e.target.closest('[data-act]');
       if (a && own(cfg.acts, a.dataset.act)) send('part', { act: a.dataset.act, id: a.dataset.id ?? null, data: { ...a.dataset }, by: 'user' }); }, true);
@@ -1967,9 +1988,10 @@ function buttons(){
   const modes = Object.entries(MD.modes);
   // a bench whose modes are positions, not sketches, names the picker: modesLabel { button: 'Move jumper', stat: 'Jumper' }
   if (modes.length) bt.push({ id: 'upload', label: (MD.def.modesLabel && MD.def.modesLabel.button) || 'Upload sketch', choices: () => modes.map(([key, md]) => ({ id: key, label: md.title || key, current: st.mode === key && !st.ext, onClick: () => A.upload(key) })) });
-  // a control is a button of its own, ctl-<id>; more than four of a type fold into one picker (an FPGA board's 16
-  // switches), each choice still ctl-<id>, and each keeps a hidden ctl-<id> button too (keepFolded), so a host or a
-  // content step that presses ctl-sw0 still reaches it
+  // a control is a button of its own, ctl-<id>, labelled with a template and its value (['Press {name}', { name }]) so
+  // the label follows the dictionary ("RESET दबाएँ") while the name, printed on the board, stays. More than four of a
+  // type fold into one picker (an FPGA board's 16 switches), each choice still ctl-<id>, and each keeps a hidden
+  // ctl-<id> button too (keepFolded), so a host or a content step that presses ctl-sw0 still reaches it
   const ctls = MD.parts.filter(p => p.control), slide = p => p.control.type === 'slide';
   ctlFolded = {};
   for (const [kind, label] of [['slide', T('Flip a switch')], ['press', T('Press a button')]]){
@@ -1977,7 +1999,7 @@ function buttons(){
     if (group.length > 4){
       for (const p of group) ctlFolded['ctl-' + p.id.toLowerCase()] = p;
       bt.push({ id: 'ctl-' + kind, label, choices: () => group.map(p => ({ id: 'ctl-' + p.id.toLowerCase(), label: p.short || p.id, onClick: ctlWork(p) })) });
-    } else for (const p of group) bt.push({ id: 'ctl-' + p.id.toLowerCase(), label: slide(p) ? T('Flip {name}', { name: p.short || p.id }) : T('Press {name}', { name: p.short || p.id }), onClick: ctlWork(p) });
+    } else for (const p of group) bt.push({ id: 'ctl-' + p.id.toLowerCase(), label: slide(p) ? ['Flip {name}', { name: p.short || p.id }] : ['Press {name}', { name: p.short || p.id }], onClick: ctlWork(p) });
   }
   bt.push({ id: 'strip', label: 'Strip to bare PCB', onClick: () => A.strip() });
   if (partsIn('smd').length) bt.push({ id: 'pnp', label: 'Pick & place SMD', onClick: () => A.pnp() });
@@ -2056,7 +2078,9 @@ function stats(){
   const out = [{ label: T('Status'), value: statusText() }];
   const mcu = MD.power.mcu;
   if (mcu && st.power) out.push({ label: mcu.rail, value: (st.ev.rails[mcu.rail] || 0).toFixed(1) + ' V', small: true });
-  if (st.ev.status === 'running' && MD.modes[st.mode]) out.push({ label: T((MD.def.modesLabel && MD.def.modesLabel.stat) || 'Program'), value: st.ext ? T('your sketch') : T(MD.modes[st.mode].title), small: true });
+  // BOOT (FLASH) held through a reset leaves the chip in its ROM's download mode: the sketch does not run
+  if (st.ev.status === 'running' && MD.modes[st.mode]) out.push({ label: T((MD.def.modesLabel && MD.def.modesLabel.stat) || 'Program'),
+    value: st.ext ? T('your sketch') : st.boot === 'download' ? T('ROM download mode') : T(MD.modes[st.mode].title), small: true });
   if (st.benchStatusT) out.push({ label: T('Bench'), value: statText(st.benchStatusT), small: true });
   if (st.power) for (const [label, value] of st.modelStats || []) out.push({ label: T(String(label)), value: statText(value), small: true });
   document.documentElement.classList.toggle('bstats-long', out.length > 4);
