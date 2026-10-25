@@ -1,0 +1,733 @@
+{
+  "title": "Raspberry Pi Pico",
+  "tagline": "RP2040 o RP2350 en una tira de 21 x 51 mm: MicroPython, PIO y, en las placas W, Wi-Fi",
+  "overview": "Las placas de microcontrolador de la propia Raspberry Pi. La Pico lleva un RP2040 (dos núcleos Arm Cortex-M0+ a hasta 133 MHz, 264 KB de SRAM) con 2 MB de flash QSPI; la Pico 2 lleva un RP2350 (dos núcleos Cortex-M33 o dos RISC-V Hazard3 a 150 MHz, 520 KB de SRAM) con 4 MB. Las versiones W añaden una radio Wi-Fi y Bluetooth Infineon CYW43439 bajo una tapa metálica, con una antena impresa en el extremo opuesto. Las cuatro comparten el mismo contorno de 21 x 51 mm con 40 pines almenados en una rejilla de 2,54 mm, un conector micro-USB que va directo al chip (no hay puente USB-serie), un botón BOOTSEL y un único LED verde. Un regulador reductor-elevador genera 3,3 V a partir de cualquier tensión entre 1,8 y 5,5 V en VSYS. Todos los GPIO funcionan a 3,3 V; solo los pines digitales del RP2350 toleran 5 V, y solo mientras la placa tiene alimentación. No hay botón de reinicio ni LED de alimentación: una placa con la flash vacía no enciende nada y aparece como una unidad USB.",
+  "variants": {
+    "pico": "Raspberry Pi Pico (Rev3): RP2040, flash W25Q16JV de 2 MB, reductor-elevador RT6150B. El LED está en GP25, así que funcionan tanto Pin(25) como Pin(\"LED\"). Los pads de depuración SWD están en el borde de abajo.",
+    "pico-w": "Raspberry Pi Pico W: el mismo RP2040 más una radio CYW43439 (Wi-Fi 4 de 2,4 GHz y Bluetooth 5.2). El LED cuelga del WL_GPIO0 de la radio, así que Pin(25) no hace nada: usa Pin(\"LED\") en MicroPython o LED_BUILTIN en Arduino. GP23, GP24, GP25 y GP29 son el bus SPI de la radio y no están libres. La tapa de RF y la antena ocupan la mitad de abajo, y los agujeros de depuración suben al centro de la placa.",
+    "pico2": "Raspberry Pi Pico 2: RP2350 (doble Cortex-M33 o RISC-V Hazard3 a 150 MHz, 520 KB de SRAM), 4 MB de flash y el LED otra vez en GP25. De GP0 a GP22 toleran 5 V mientras la placa tiene alimentación; los pines del ADC, de GP26 a GP28, no. Las primeras placas con la revisión A2 tienen la errata E9: un pin con solo la pull-down interna puede quedarse flotando en alto, así que conecta los botones a GND con Pin.PULL_UP.",
+    "pico2-w": "Raspberry Pi Pico 2 W: el RP2350 de la Pico 2 con la radio CYW43439 de la Pico W. El LED vuelve a estar en WL_GPIO0, GP23, GP24, GP25 y GP29 son de la radio, y la tolerancia a 5 V de GP0 a GP22 solo vale mientras la placa tiene alimentación."
+  },
+  "mcu": {
+    "w25q16jv": "Flash NOR QSPI de Winbond, 2 MB (16 Mbit). El chip ejecuta tu programa directamente desde ella (ejecución en el sitio a través de una caché de 16 KB). BOOTSEL funciona llevando a nivel bajo la línea de selección de este chip.",
+    "w25q32rv": "Flash NOR QSPI de Winbond, 4 MB (32 Mbit), en las placas con RP2350. Los programas se ejecutan desde ella en el sitio a través de la caché de 16 KB.",
+    "rt6150b": "Regulador reductor-elevador de Richtek: mantiene estable la línea de 3,3 V con cualquier VSYS de 1,8 a 5,5 V, así que una celda de iones de litio o dos o tres pilas AA pueden alimentar la placa directamente.",
+    "rt6154a": "Regulador reductor-elevador de Richtek en las placas W; hace el mismo trabajo que el RT6150 con más corriente de salida para la radio.",
+    "cyw43439": "Radio Wi-Fi 4 (802.11b/g/n de 2,4 GHz) y Bluetooth 5.2 de Infineon, conectada al MCU por un SPI de tres hilos en GP23 (WL_ON), GP24 (datos), GP25 (chip select) y GP29 (reloj). También tiene tres GPIO propios: WL_GPIO0 controla el LED de usuario, WL_GPIO1 el pin de ahorro de energía del regulador y WL_GPIO2 detecta VBUS."
+  },
+  "power": {
+    "usb": {
+      "protection": "El conector micro-USB trae 5 V del ordenador sin fusible y sin protección ESD. El Schottky D1 los pasa a VSYS (unos 0,3 V menos) e impide que una batería en VSYS devuelva corriente al ordenador. El límite propio del puerto del ordenador (500 mA en USB 2.0) es el único límite de corriente."
+    },
+    "vbus": {
+      "protection": "El pin 40 es la misma red VBUS que el conector USB. 5 V metidos aquí llegan a VSYS a través de D1, así que una fuente conectada al revés queda bloqueada por D1 y el regulador nunca ve la tensión negativa."
+    },
+    "vsys": {
+      "protection": "El pin 39 alimenta directamente el reductor-elevador: de 1,8 a 5,5 V. Nada lo protege. Conectado al revés, los diodos de protección del regulador y del chip conducen y se queman; por encima de unos 6 V el regulador falla, a menudo en cortocircuito, y pasa VSYS directamente a la línea de 3,3 V. Para alimentarla con USB y una batería a la vez, añade un Schottky o un diodo ideal con un P-MOSFET en VSYS."
+    },
+    "rails": {
+      "vbus": "Los 5 V del USB desde el conector, también en el pin 40. Marca 0 V cuando la placa funciona solo con VSYS.",
+      "vsys": "Entrada principal del regulador: VBUS menos la caída de D1 (unos 4,7 V con USB), o la batería que llegue al pin 39. El chip puede medirla como VSYS / 3 en el ADC3 (GPIO29).",
+      "3v3": "La línea con la que funcionan el chip y todos los GPIO, generada por el reductor-elevador. El pin 36 puede alimentar sensores; mantén la carga por debajo de 300 mA. Llevar 3V3_EN (pin 37) a GND la apaga, y el chip con ella."
+    },
+    "io": "Los GPIO son de 3,3 V. La fuerza de salida se programa a 2, 4, 8 o 12 mA (4 mA por defecto); por encima, la tensión de salida cae. En el RP2040, todos los pines juntos pueden dar o absorber 50 mA como mucho. Los pines del RP2040 no toleran 5 V en absoluto; los GPIO0 a GPIO22 del RP2350 toleran 5,5 V solo mientras la placa tiene alimentación, y los pines del ADC nunca."
+  },
+  "pins": {
+    "edge": {
+      "gp0": "TX del UART0 por defecto: el UART(0) de MicroPython y el stdio del SDK de C usan GP0 y GP1.",
+      "gp1": "RX del UART0 por defecto.",
+      "gp4": "SDA del I2C0 en los pines por defecto del SDK; lo usa la lección de I2C.",
+      "gp5": "SCL del I2C0 en los pines por defecto del SDK.",
+      "gp14": "El botón de las lecciones: conectado a GND con la pull-up interna, pulsado lee 0.",
+      "gp15": "El LED externo de las lecciones, a través de 330 Ω a GND. Cualquier GPIO puede generar PWM; este es el slice 7 del PWM, canal B.",
+      "gp26": "ADC0. Los pines de entrada analógica tienen un diodo a 3,3 V y tienen que quedarse por debajo de unos 3,6 V en todas las placas, también en las del RP2350.",
+      "gp27": "ADC1. 12 bits, leído como 0-65535 con read_u16() en MicroPython.",
+      "gp28": "ADC2.",
+      "run": "Habilitación del chip con una pull-up interna de unos 50 kΩ. Ponlo en cortocircuito con GND para reiniciar el chip: la placa no tiene botón de reinicio, así que conecta un pulsador de RUN a GND.",
+      "agnd": "Tierra analógica para los pines del ADC: devuelve aquí un potenciómetro o un sensor para lecturas más limpias.",
+      "adc-vref": "Referencia del ADC: la línea de 3,3 V a través de un filtro de 200 Ω y 2,2 µF. Tiene ruido; aquí se puede poner una referencia externa de 3,0 V.",
+      "3v3": "Salida de 3,3 V del reductor-elevador para sensores y módulos, por debajo de 300 mA. Nunca metas 5 V por aquí.",
+      "3v3-en": "Habilitación del regulador de 3,3 V, con una pull-up a VSYS de 100 kΩ. Únelo a GND y se apaga toda la placa.",
+      "vsys": "Entrada de 1,8 a 5,5 V (una batería) o salida de unos 4,7 V cuando la placa funciona con USB. Sin protección contra la inversión.",
+      "vbus": "Salida de los 5 V del USB cuando el cable está conectado, 0 V si no. Una fuente de 5 V conectada aquí alimenta la placa a través de D1."
+    },
+    "debug": {
+      "swclk": "Pads de Serial Wire Debug (SWCLK, GND, SWDIO): aquí se conecta una Raspberry Pi Debug Probe o una segunda Pico con debugprobe para poner puntos de ruptura. Son pines dedicados a la depuración, no GPIO."
+    }
+  },
+  "leds": {
+    "D2": "El único LED de la placa, verde, en GP25 a través de 470 Ω, activo a nivel alto. Al encender no se ilumina nada: la Pico no tiene LED de alimentación.",
+    "D2-w": "El único LED, verde, controlado por el WL_GPIO0 de la radio CYW43439, no por el MCU. Pin(\"LED\") y LED_BUILTIN llegan a él a través del driver de la radio; Pin(25), en cambio, cambia el chip-select de la radio."
+  },
+  "controls": {
+    "SW1": "Lleva a nivel bajo la línea de selección del chip de flash. Si lo mantienes mientras conectas el USB (o mientras das un pulso bajo a RUN), la ROM de arranque se salta tu programa y muestra la unidad RPI-RP2 (RP2350 en la Pico 2) para un archivo .uf2. Con un programa en marcha, rp2.bootsel_button() en MicroPython o BOOTSEL en Arduino lo leen como una entrada."
+  },
+  "parts": {
+    "U1": {
+      "name": "Microcontrolador RP2040 o RP2350",
+      "what": "El chip en sí: dos núcleos, la SRAM, el USB, el ADC, el PWM y las máquinas de estados PIO, que pueden generar por software casi cualquier protocolo. Arranca desde su ROM de máscara y ejecuta tu programa desde la flash externa."
+    },
+    "U3": {
+      "name": "Flash QSPI",
+      "what": "Guarda tu programa y el sistema de archivos de MicroPython: 2 MB en las placas RP2040 y 4 MB en las RP2350. Sin ella, el chip solo puede mostrar su unidad USB de arranque."
+    },
+    "X1": {
+      "name": "Cristal de 12 MHz",
+      "what": "El reloj que los PLL del chip multiplican hasta el reloj del sistema y los 48 MHz que necesita el USB. Quítalo y la placa se enciende pero no funciona nada."
+    },
+    "U2": {
+      "name": "Regulador reductor-elevador",
+      "what": "Genera 3,3 V a partir de 1,8 a 5,5 V en VSYS: reduce desde el USB y eleva desde una batería baja. RT6150B en la Pico y la Pico 2, RT6154A en las placas W."
+    },
+    "L1": {
+      "name": "Bobina de 2,2 µH",
+      "what": "El almacén de energía del regulador: se carga y se descarga cerca de un millón de veces por segundo para subir o bajar la tensión."
+    },
+    "C1": {
+      "name": "Condensador de entrada de 47 µF",
+      "what": "Suaviza VSYS en la entrada del regulador."
+    },
+    "C2": {
+      "name": "Condensador de salida de 47 µF",
+      "what": "Suaviza la línea de 3,3 V. Sin él, la salida del regulador oscila y el chip se reinicia."
+    },
+    "C3": {
+      "name": "Condensador de 47 µF (placas W)",
+      "what": "Capacidad de reserva extra en la línea de 3,3 V de la Pico W y la Pico 2 W para las ráfagas de corriente de la radio."
+    },
+    "D1": {
+      "name": "Diodo Schottky MBR120",
+      "what": "Une VBUS con VSYS: el USB puede alimentar la placa, una batería en VSYS no puede devolver corriente al ordenador y una fuente invertida en VBUS queda bloqueada."
+    },
+    "Q1": {
+      "name": "MOSFET DMG1012T",
+      "what": "Desconecta el divisor VSYS / 3 de GPIO29 cuando la placa está apagada, para que el diodo de protección del pin ADC3 no pueda dejar pasar corriente a la línea de 3,3 V."
+    },
+    "J1": {
+      "name": "Conector micro-USB",
+      "what": "Alimentación y datos USB en uno. Las líneas de datos pasan por resistencias de 27 Ω directas al chip: el serie USB, el REPL y la unidad BOOTSEL son todos el USB propio del chip."
+    },
+    "SW1": {
+      "name": "Botón BOOTSEL",
+      "what": "Mantenlo mientras conectas la placa para obtener la unidad USB y copiar un archivo .uf2 nuevo. Pulsado más tarde, es solo una entrada que tu programa puede leer."
+    },
+    "D2": {
+      "name": "LED de usuario",
+      "what": "LED SMD verde en GP25 (Pico, Pico 2) o en el WL_GPIO0 de la radio (placas W)."
+    },
+    "PINS1": {
+      "name": "Pines almenados 1-20",
+      "what": "Agujeros metalizados cortados por la mitad en el borde izquierdo: de GP0 a GP15, con una tierra cada cinco pines. Suelda en ellos una tira de pines, o suelda la placa entera en plano sobre una placa base."
+    },
+    "PINS2": {
+      "name": "Pines almenados 21-40",
+      "what": "El borde derecho: de GP16 a GP22, RUN, los tres pines del ADC con AGND y ADC_VREF, y luego 3V3, 3V3_EN, VSYS y VBUS en el extremo del USB."
+    },
+    "H1": {
+      "name": "Tira de 20 pines (pines 1-20)",
+      "what": "La tira que sueldas por debajo para que la Pico se enchufe en una protoboard. Los nombres de los pines solo están impresos en la cara de abajo."
+    },
+    "H2": {
+      "name": "Tira de 20 pines (pines 21-40)",
+      "what": "La segunda tira. Suelda las dos con la placa puesta en una protoboard para que queden rectas."
+    },
+    "J2": {
+      "name": "Conexión de depuración SWD",
+      "what": "SWCLK, GND y SWDIO para una sonda de depuración: pads almenados en el borde de abajo de la Pico y la Pico 2, y tres agujeros en el centro de las placas W."
+    },
+    "TP1": {
+      "name": "Pad de prueba TP1",
+      "what": "Pad de prueba de tierra en la cara de abajo, usado en las pruebas de fábrica."
+    },
+    "TP2": {
+      "name": "Pads de prueba TP2 y TP3",
+      "what": "D- y D+ del USB en la cara de abajo, para que una placa base pueda llegar al USB sin el conector."
+    },
+    "TP4": {
+      "name": "Pads de prueba TP4 a TP6",
+      "what": "Pads de la cara de abajo para GPIO23 (ahorro de energía del regulador), GPIO25 (LED) y BOOTSEL, para que una placa base pueda pulsar BOOTSEL."
+    },
+    "SH1": {
+      "name": "Radio CYW43439 bajo su blindaje de RF",
+      "what": "El chip de Wi-Fi y Bluetooth, su cristal y su red de adaptación, cubiertos por una tapa de acero soldada (solo en las placas W)."
+    },
+    "ANT": {
+      "name": "Antena impresa",
+      "what": "Una antena de pista de cobre en el extremo opuesto al USB (solo en las placas W). Mantén lejos el metal, los planos de tierra y los dedos."
+    }
+  },
+  "wireables": {
+    "led": {
+      "note": "Un LED de 5 mm desde GP15 a través de una resistencia de 330 Ω a GND: (3,3 - 2,0) / 330 ≈ 4 mA para un LED rojo, dentro de los 4 mA de salida por defecto del pin.",
+      "caution": "No quites nunca la resistencia: el pin intentaría dar mucho más de 12 mA."
+    },
+    "push-button": {
+      "note": "Un botón de 6 x 6 mm de GP14 a GND con Pin.PULL_UP: lee 0 mientras está pulsado. Ponlo a caballo sobre el canal central de la protoboard.",
+      "caution": "En las primeras placas Pico 2 (RP2350 A2) no te fíes de la pull-down interna: la errata E9 deja que el pin flote en alto."
+    },
+    "potentiometer": {
+      "note": "Un potenciómetro de 10 kΩ: un extremo a 3V3 (pin 36), el otro a AGND (pin 33) y el cursor a GP26 / ADC0.",
+      "caution": "Nunca pongas 5 V en los extremos: los pines del ADC admiten 3,3 V como mucho en todas las Pico."
+    },
+    "ldr": {
+      "note": "Una fotorresistencia de 3V3 a GP27 con una resistencia de 10 kΩ de GP27 a GND: más luz, lectura más alta."
+    },
+    "tmp36": {
+      "note": "El TMP36 funciona desde 2,7 V, así que 3V3 va bien: Vout en GP28 marca 0,75 V a 25 °C, 10 mV por grado."
+    },
+    "piezo-buzzer": {
+      "note": "Un piezo pasivo en GP18 y GND, controlado con PWM: pwm.freq(440) toca un la."
+    },
+    "servo-sg90": {
+      "note": "Señal del SG90 en GP16 con PWM a 50 Hz (un pulso de 0,5 a 2,4 ms), alimentación desde VBUS (5 V del USB) y GND compartido.",
+      "caution": "Nunca alimentes un servo desde 3V3: su corriente de bloqueo hunde la línea de 3,3 V y la Pico se reinicia. Usa VBUS con USB o una fuente de 5 V aparte con la tierra común."
+    },
+    "mpu6050": {
+      "note": "Una placa GY-521 con MPU-6050 en el I2C0: SDA a GP4, SCL a GP5, VCC a 3V3. Su dirección es 0x68 (0x69 con AD0 en alto)."
+    },
+    "ssd1306": {
+      "note": "Una OLED SSD1306 de 0,96 pulgadas en el I2C0 (GP4 y GP5) en la dirección 0x3C, alimentada desde 3V3. MicroPython necesita el driver ssd1306 de micropython-lib (mip.install(\"ssd1306\")).",
+      "caution": "Lee la serigrafía de la tira: unos módulos son GND VCC SCL SDA y otros VCC GND SCL SDA."
+    },
+    "hc-sr04": {
+      "note": "El HC-SR04 necesita 5 V: VCC a VBUS, TRIG a GP16 (3,3 V bastan para dispararlo), ECHO a GP17 a través de un divisor (1 kΩ en serie, 2 kΩ a GND) para que el eco de 5 V llegue como 3,3 V.",
+      "caution": "ECHO es una salida de 5 V. Directa a un pin del RP2040, mete corriente por el diodo de protección del pin hacia la línea de 3,3 V y daña el chip. Los GPIO del RP2350 lo toleran con la placa alimentada, pero mantén el divisor."
+    }
+  },
+  "failures": {
+    "reverse-vsys": {
+      "title": "Batería al revés en VSYS",
+      "symptom": "No se enciende nada, la placa se calienta en segundos y puede oler a quemado.",
+      "explanation": "VSYS va directo al reductor-elevador sin protección. Invertida, los diodos internos del regulador y del chip conducen una corriente grande y se queman.",
+      "fix": "Desconecta enseguida y cambia los cables. El rojo va a VSYS (pin 39) y el negro a GND (pin 38). Una placa que se ha calentado suele tener que sustituirse."
+    },
+    "reverse-vbus": {
+      "title": "Fuente de 5 V al revés en VBUS",
+      "symptom": "No pasa nada en absoluto.",
+      "explanation": "El pin 40 solo llega a VSYS a través del Schottky D1. Invertida, D1 la bloquea, así que el regulador y el chip nunca ven la tensión negativa.",
+      "fix": "Cambia los cables: +5 V a VBUS (pin 40), 0 V a GND."
+    },
+    "overvolt-vsys": {
+      "title": "9 V en VSYS",
+      "symptom": "Un chasquido o un regulador caliente, y luego nada, o una placa muerta para siempre.",
+      "explanation": "El reductor-elevador admite 5,5 V de entrada y falla justo por encima de 6 V, a menudo en cortocircuito, pasando VSYS directamente a la línea de 3,3 V y matando el chip.",
+      "fix": "Alimenta VSYS solo con 1,8 a 5,5 V: una celda de iones de litio, tres pilas AA o 5 V. Para cualquier cosa más alta, usa un regulador reductor."
+    },
+    "flat-battery": {
+      "title": "Batería descargada en VSYS",
+      "symptom": "La placa desaparece del USB y se reinicia una y otra vez, o se queda apagada.",
+      "explanation": "Por debajo de unos 1,8 V el reductor-elevador no puede mantener 3,3 V, así que el chip pierde la alimentación, vuelve y se reinicia cada vez que la batería se recupera un poco.",
+      "fix": "Carga o cambia la batería, o alimenta la placa por USB."
+    },
+    "brownout-servo": {
+      "title": "Servo en el pin 3V3",
+      "symptom": "La Pico se reinicia cada vez que el servo se mueve y el puerto serie se desconecta.",
+      "explanation": "Un servo tira de varios cientos de miliamperios al arrancar. En el pin 3V3 eso supera el presupuesto de 300 mA, la línea cae y el chip sufre una caída de tensión.",
+      "fix": "Alimenta el servo desde VBUS (5 V con USB) o con su propia fuente, y une las tierras."
+    },
+    "cold-header": {
+      "title": "Soldadura fría en el pin 20 (GP15)",
+      "symptom": "El LED externo parpadea o se para cuando tocas la placa.",
+      "explanation": "Una soldadura mate en forma de bola que nunca llegó a mojar el almenado solo hace contacto de vez en cuando, así que GP15 llega a la protoboard a ratos.",
+      "fix": "Vuelve a calentar la soldadura con flux nuevo y un poco de estaño hasta que fluya alrededor del pin y dentro del medio agujero."
+    },
+    "no-crystal": {
+      "title": "Falta el cristal de 12 MHz",
+      "symptom": "La placa recibe alimentación, pero no se ejecuta ningún programa y no aparece ningún dispositivo USB.",
+      "explanation": "El chip arranca con su oscilador de anillo interno, pero el código de arranque y el del USB necesitan el cristal para los PLL: sin él, el reloj nunca llega a estabilizarse.",
+      "fix": "Coloca el cristal de 12 MHz X1."
+    },
+    "no-output-cap": {
+      "title": "Falta el condensador de salida de 3,3 V",
+      "symptom": "La placa se reinicia al azar o no arranca nunca.",
+      "explanation": "El reductor-elevador necesita su condensador de salida de 47 µF para mantenerse estable. Sin él, la línea de 3,3 V oscila y cae, y el chip no para de reiniciarse.",
+      "fix": "Coloca C2, el condensador de 47 µF del lado de 3,3 V del regulador."
+    },
+    "diode-backwards": {
+      "title": "D1 colocado al revés",
+      "symptom": "No llega alimentación del USB, aunque una batería en VSYS sigue funcionando.",
+      "explanation": "D1 tiene que apuntar de VBUS a VSYS. Al revés, bloquea por completo la alimentación del USB.",
+      "fix": "Dale la vuelta a D1: la franja del cátodo mira hacia VSYS."
+    },
+    "bootsel-held": {
+      "title": "BOOTSEL pulsado al encender",
+      "symptom": "Tu programa no arranca: aparece una unidad llamada RPI-RP2 (RP2350 en la Pico 2) y el LED sigue apagado.",
+      "explanation": "La ROM de arranque lee BOOTSEL en el reinicio. Si está pulsado, se salta la flash y arranca el cargador USB, esperando un archivo .uf2.",
+      "fix": "Suelta BOOTSEL y desconecta y vuelve a conectar el USB (o da un pulso a RUN hacia GND). Copia un archivo .uf2 en la unidad si lo que querías era actualizar el firmware."
+    },
+    "short-3v3": {
+      "title": "3V3 en cortocircuito con GND",
+      "symptom": "No funciona nada, el regulador se templa y el ordenador puede avisar de que un dispositivo USB consume demasiada energía.",
+      "explanation": "Un puente de soldadura o un cable suelto del pin 36 a GND hace que el reductor-elevador llegue a su límite de corriente. La placa no tiene fusible.",
+      "fix": "Desconecta, busca y quita el puente, y comprueba el pin 3V3 con un multímetro antes de volver a encender."
+    },
+    "five-volt-echo": {
+      "title": "5 V en un pin de 3,3 V",
+      "symptom": "En una Pico o una Pico W el chip se templa, la línea de 3,3 V marca más de 4 V y puede que la placa no vuelva a funcionar.",
+      "explanation": "La salida de eco de un HC-SR04 es de 5 V. Los pines del RP2040 tienen un diodo de protección a 3,3 V: la corriente pasa por él y arrastra toda la línea de 3,3 V por encima del límite de 3,63 V del chip. Los GPIO0 a GPIO22 del RP2350 toleran 5 V con la placa alimentada, así que una Pico 2 sobrevive, pero sus pines del ADC no.",
+      "fix": "Pon un divisor en ECHO (1 kΩ en serie, 2 kΩ a GND) o usa un adaptador de niveles."
+    }
+  },
+  "assembly": {
+    "strip": {
+      "title": "Empieza por una placa desnuda",
+      "body": "Una Pico es una placa de una sola cara: todas las piezas están en la cara de arriba y se sueldan por reflujo en la fábrica. Desmóntala hasta la PCB desnuda para ver el cobre, el borde almenado y las huellas.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión."
+    },
+    "pick-place": {
+      "title": "Colocación automática y luego reflujo",
+      "body": "La máquina coloca sobre la pasta de soldar el RP2040, la flash, el cristal, el regulador con su bobina y sus condensadores, el diodo, el LED, BOOTSEL y el conector micro-USB, y luego el horno funde la pasta de una sola pasada.",
+      "refusal": "La placa no está desnuda: desmóntala primero, o coloca solo las piezas que faltan."
+    },
+    "headers": {
+      "title": "Coloca las dos tiras de pines",
+      "body": "Coloca las dos tiras de 20 pines (H1 y H2 en Coloca una pieza) por debajo, con los pines largos hacia abajo. Clávalas primero en una protoboard y pon la Pico encima: la protoboard las mantiene rectas mientras sueldas.",
+      "refusal": "Primero las piezas SMD: haz la colocación automática y el reflujo antes de cualquier pieza de inserción."
+    },
+    "solder": {
+      "title": "Suelda las 40 soldaduras",
+      "body": "Suelda cada pin desde arriba para que la soldadura llene el medio agujero: brillante y cóncava, nunca una bola mate. Dos pines vecinos unidos por estaño ponen en cortocircuito dos señales.",
+      "refusal": "Todavía no hay nada que soldar: primero coloca las tiras de pines."
+    },
+    "plug-blank": {
+      "title": "Conecta el USB con la flash vacía",
+      "body": "Una Pico nueva no tiene nada en su flash. Conecta el USB: no se enciende nada, porque no hay LED de alimentación, y el ordenador muestra una unidad llamada RPI-RP2 (RP2350 en una Pico 2) con INFO_UF2.TXT e INDEX.HTM dentro."
+    },
+    "rails": {
+      "title": "Mide las líneas de alimentación",
+      "body": "Abre la vista de alimentación, o toca con un multímetro los pines 39 y 36: VSYS marca unos 4,7 V (el USB menos la caída de D1) y 3V3 marca 3,3 V."
+    },
+    "flash-blink": {
+      "title": "Instala MicroPython y ejecuta Blink",
+      "body": "Copia en la unidad el .uf2 de MicroPython de tu placa exacta (RPI_PICO, RPI_PICO_W, RPI_PICO2 o RPI_PICO2_W). La unidad desaparece, la placa se reinicia con MicroPython y arranca el main.py de Blink.",
+      "refusal": "Primero conecta el USB: el archivo .uf2 va por el cable."
+    },
+    "led": {
+      "title": "Mira el LED",
+      "body": "El LED verde junto al conector USB parpadea ahora una vez por segundo. En una Pico W o una Pico 2 W se controla a través de la radio, así que solo funciona con la versión W de MicroPython."
+    },
+    "serial": {
+      "title": "Abre el monitor serie",
+      "body": "Ejecuta el programa de temperatura: la placa imprime cada segundo la temperatura del chip por el serie USB. El REPL y print() usan el USB propio del chip, así que el ajuste de baudios da igual."
+    },
+    "exploded": {
+      "title": "Mira por dentro: vista despiezada",
+      "body": "Desconecta y abre la vista despiezada: las piezas SMD se levantan de la placa, las tiras de pines bajan por debajo, y la vista transparente muestra el chip de silicio dentro del RP2040, el cuarzo del cristal y la corriente que va del USB al LED.",
+      "refusal": "Primero desconecta la alimentación: la vista despiezada desmonta la placa."
+    }
+  },
+  "lessons": {
+    "blink": {
+      "title": "Haz parpadear el LED",
+      "lede": "Pin(\"LED\") encuentra el LED propio de la placa en las cuatro placas, y un segundo LED en GP15 parpadea con él en la protoboard.",
+      "steps": {
+        "1": "Conecta GP15 (pin 20) a través de una resistencia de 330 Ω a la pata larga de un LED rojo, y su pata corta a GND.",
+        "2": "Ejecuta el programa: los dos LED cambian cada medio segundo.",
+        "3": "Cambia el botón del retardo y vuelve a ejecutarlo: con retardos más cortos parpadea más rápido.",
+        "4": "Cambia la variante a Pico W: Pin(\"LED\") sigue funcionando, mientras que Pin(25) no funcionaría."
+      },
+      "hints": {
+        "1": "¿No pasa nada en la protoboard? Comprueba que la pata larga del LED (el ánodo) mira hacia la resistencia.",
+        "2": "led.toggle() invierte el pin; led.value(1) y led.value(0) lo fijan.",
+        "3": "En las placas W, GP25 es el chip select de la radio, y por eso el código usa el nombre \"LED\"."
+      },
+      "specs": {
+        "1": {
+          "label": "Corriente del LED",
+          "value": "(3,3 V - 2,0 V) / 330 Ω ≈ 4 mA"
+        },
+        "2": {
+          "label": "Periodo del parpadeo",
+          "value": "2 x el retardo: 1 s con 500 ms"
+        },
+        "3": {
+          "label": "LED de la placa",
+          "value": "GP25, o WL_GPIO0 en las placas W"
+        }
+      },
+      "features": {
+        "1": "El LED de la placa y uno externo a la vez",
+        "2": "El mismo código en las cuatro placas",
+        "3": "Un retardo que puedes cambiar en directo"
+      },
+      "checks": {
+        "1": "El programa funciona durante 3 segundos",
+        "2": "GP15 cambia una vez por segundo",
+        "3": "Usa Pin(\"LED\"), no Pin(25)"
+      },
+      "params": {
+        "ms": {
+          "label": "Retardo"
+        }
+      },
+      "pins": {
+        "GP15": {
+          "to": "Resistencia de 330 Ω y luego el ánodo del LED",
+          "role": "Salida digital"
+        },
+        "GND": {
+          "to": "Cátodo del LED",
+          "role": "Retorno"
+        }
+      },
+      "callouts": {
+        "D2": "El LED propio de la placa",
+        "R1": "330 Ω fijan unos 4 mA"
+      },
+      "code": {
+        "top": "Haz parpadear el LED de la placa y un LED en GP15",
+        "led": "el LED de la placa, en cualquier Pico",
+        "ext": "el LED de la protoboard"
+      }
+    },
+    "button": {
+      "title": "Botón y temperatura",
+      "lede": "Lee un botón con la pull-up interna y el sensor de temperatura propio del RP2040, e imprime los dos cada segundo.",
+      "steps": {
+        "1": "Pon un botón a caballo sobre el canal central de la protoboard, con un lado a GP14 (pin 19) y el otro a GND.",
+        "2": "Deja el LED en GP15 de la lección Blink.",
+        "3": "Ejecuta y pulsa el botón: el LED se enciende mientras lo mantienes.",
+        "4": "Mira el monitor serie: cada segundo imprime el estado del botón y la temperatura del chip."
+      },
+      "hints": {
+        "1": "Con Pin.PULL_UP el pin lee 1 suelto y 0 pulsado.",
+        "2": "ADC(4) es el sensor interno: 0,706 V a 27 °C, y baja 1,721 mV por grado.",
+        "3": "El sensor mide el chip, que está un poco más caliente que la habitación."
+      },
+      "specs": {
+        "1": {
+          "label": "Pull-up",
+          "value": "interna, unos 50 kΩ a 3,3 V"
+        },
+        "2": {
+          "label": "Fórmula de la temperatura",
+          "value": "T = 27 - (V - 0,706) / 0,001721"
+        },
+        "3": {
+          "label": "Rebote del botón",
+          "value": "hasta 5 ms"
+        }
+      },
+      "features": {
+        "1": "Pull-up interna, sin resistencia",
+        "2": "El termómetro propio del chip",
+        "3": "Impresiones a intervalos con ticks_ms()"
+      },
+      "checks": {
+        "1": "El LED se enciende menos de 50 ms después de pulsar",
+        "2": "El LED vuelve a apagarse al soltar",
+        "3": "Imprime la temperatura al menos tres veces",
+        "4": "Usa Pin.PULL_UP y ADC(4)"
+      },
+      "params": {
+        "every": {
+          "label": "Imprimir cada"
+        }
+      },
+      "world": {
+        "btn": "Botón en GP14",
+        "chip": "Temperatura del chip"
+      },
+      "pins": {
+        "GP14": {
+          "to": "Botón, el otro lado a GND",
+          "role": "Entrada digital con pull-up"
+        },
+        "GP15": {
+          "to": "Resistencia de 330 Ω y LED",
+          "role": "Salida digital"
+        },
+        "GND": {
+          "to": "Botón y cátodo del LED",
+          "role": "Retorno"
+        }
+      },
+      "callouts": {
+        "BTN1": "Pulsado, conecta GP14 a GND",
+        "U1": "El sensor de temperatura está dentro del chip"
+      },
+      "code": {
+        "top": "Un botón enciende el LED; la temperatura del chip cada segundo",
+        "pullup": "suelto = 1, pulsado = 0",
+        "sensor": "canal 4 del ADC: el sensor del chip",
+        "pressed": "bajo significa pulsado"
+      }
+    },
+    "fade": {
+      "title": "Potenciómetro y PWM",
+      "lede": "Gira un potenciómetro y el LED lo sigue: la lectura de 12 bits del ADC va directa a un ciclo de trabajo de PWM de 16 bits.",
+      "steps": {
+        "1": "Conecta el potenciómetro: un extremo a 3V3 (pin 36), el otro a AGND (pin 33) y el cursor a GP26 (pin 31).",
+        "2": "Deja el LED en GP15.",
+        "3": "Ejecuta y gira el mando: el LED se atenúa y se aviva, y el monitor serie muestra la lectura y la tensión.",
+        "4": "Prueba el botón de la frecuencia del PWM: a 100 Hz un LED en movimiento parpadea, a 20 kHz nadie lo nota."
+      },
+      "hints": {
+        "1": "read_u16() siempre devuelve de 0 a 65535, aunque el ADC en sí tenga 12 bits.",
+        "2": "duty_u16() acepta el mismo rango de 0 a 65535, así que la lectura entra directamente.",
+        "3": "Devuelve el potenciómetro a AGND, no a una tierra digital con ruido, para lecturas más estables."
+      },
+      "specs": {
+        "1": {
+          "label": "ADC",
+          "value": "12 bits, de 0 a 3,3 V, 500 ksps"
+        },
+        "2": {
+          "label": "PWM",
+          "value": "cualquier GPIO, ciclo de trabajo de 16 bits"
+        },
+        "3": {
+          "label": "GP15",
+          "value": "slice 7 del PWM, canal B"
+        }
+      },
+      "features": {
+        "1": "Un divisor de tensión de verdad",
+        "2": "PWM en cualquier pin",
+        "3": "Lecturas en el monitor serie"
+      },
+      "checks": {
+        "1": "Media vuelta: ciclo de trabajo de cerca del 50 %",
+        "2": "Vuelta completa: ciclo de trabajo cerca del 100 %",
+        "3": "Imprime la lectura al menos cuatro veces"
+      },
+      "params": {
+        "freq": {
+          "100": "100 Hz",
+          "1000": "1 kHz",
+          "20000": "20 kHz",
+          "label": "Frecuencia del PWM"
+        }
+      },
+      "world": {
+        "pot": "Cursor del potenciómetro"
+      },
+      "pins": {
+        "GP26": {
+          "to": "Cursor del potenciómetro",
+          "role": "Entrada ADC0"
+        },
+        "3V3": {
+          "to": "Extremo del potenciómetro",
+          "role": "Alimentación de 3,3 V"
+        },
+        "AGND": {
+          "to": "Extremo del potenciómetro",
+          "role": "Tierra analógica"
+        },
+        "GP15": {
+          "to": "Resistencia de 330 Ω y LED",
+          "role": "Salida PWM"
+        }
+      },
+      "callouts": {
+        "POT1": "El cursor fija una tensión entre 0 y 3,3 V",
+        "LED1": "El brillo sigue al ciclo de trabajo"
+      },
+      "code": {
+        "top": "El potenciómetro fija el brillo del LED",
+        "pot": "ADC0 en GP26",
+        "freq": "frecuencia del PWM en Hz",
+        "raw": "de 0 a 65535"
+      }
+    },
+    "i2c-mpu6050": {
+      "title": "I2C: habla con un MPU-6050",
+      "lede": "Explora el bus I2C, despierta el MPU-6050 y lee su acelerómetro registro a registro: sin librería, solo el protocolo.",
+      "steps": {
+        "1": "Conecta la placa del MPU-6050: VCC a 3V3, GND a GND, SDA a GP4 (pin 6) y SCL a GP5 (pin 7).",
+        "2": "Ejecuta: i2c.scan() da la lista de direcciones que responden, 104 (0x68) para el MPU-6050.",
+        "3": "El sensor arranca dormido: escribir 0 en el registro 0x6B lo despierta, y el registro 0x75 responde 0x68.",
+        "4": "Inclina el sensor y mira cómo cambia la aceleración en Z desde 1 g en plano."
+      },
+      "hints": {
+        "1": "Una lista vacía de scan() indica un problema de cableado: comprueba que SDA y SCL no estén cambiados.",
+        "2": "GP4 y GP5 son una pareja válida del I2C0; una pareja del controlador equivocado lanza ValueError: bad SDA pin.",
+        "3": "El valor en bruto es un número de 16 bits con signo: 16384 significa 1 g en el rango por defecto de ±2 g."
+      },
+      "specs": {
+        "1": {
+          "label": "Dirección",
+          "value": "0x68 (0x69 con AD0 en alto)"
+        },
+        "2": {
+          "label": "Velocidad del bus",
+          "value": "100 o 400 kHz"
+        },
+        "3": {
+          "label": "Escala",
+          "value": "16384 cuentas por g con ±2 g"
+        }
+      },
+      "features": {
+        "1": "Una exploración real del bus",
+        "2": "Registros leídos a mano",
+        "3": "Cálculos con 16 bits con signo"
+      },
+      "checks": {
+        "1": "La exploración encuentra el sensor en 104 (0x68)",
+        "2": "WHO_AM_I responde 0x68",
+        "3": "Lee cerca de 1 g en Z al menos dos veces"
+      },
+      "params": {
+        "freq": {
+          "100000": "100 kHz",
+          "400000": "400 kHz",
+          "label": "Reloj del I2C"
+        }
+      },
+      "world": {
+        "tilt": "Inclinación del sensor"
+      },
+      "pins": {
+        "GP4": {
+          "to": "SDA del MPU-6050",
+          "role": "Datos del I2C0"
+        },
+        "GP5": {
+          "to": "SCL del MPU-6050",
+          "role": "Reloj del I2C0"
+        },
+        "3V3": {
+          "to": "VCC del MPU-6050",
+          "role": "Alimentación de 3,3 V"
+        },
+        "GND": {
+          "to": "GND del MPU-6050",
+          "role": "Retorno"
+        }
+      },
+      "callouts": {
+        "IMU1": "MPU-6050 en la dirección 0x68"
+      },
+      "code": {
+        "top": "Explora el bus y lee el MPU-6050 a mano",
+        "scan": "direcciones que responden",
+        "wake": "borra el bit de sueño de PWR_MGMT_1",
+        "read": "ACCEL_ZOUT_H y ACCEL_ZOUT_L"
+      }
+    },
+    "wifi": {
+      "title": "Wi-Fi: conéctate y descarga",
+      "lede": "En una Pico W o una Pico 2 W, únete a una red, haz parpadear el LED mientras se conecta y luego descarga una página por HTTP.",
+      "steps": {
+        "1": "Elige la variante Pico W o Pico 2 W: las placas normales no tienen radio.",
+        "2": "Ejecuta: el LED parpadea rápido mientras la placa se une a la red HackTX.",
+        "3": "Una vez conectada, el LED se queda encendido y el monitor serie imprime la dirección IP de la placa.",
+        "4": "Después la placa pide la hora a una API web e imprime la respuesta."
+      },
+      "hints": {
+        "1": "wlan.active(True) enciende la radio antes de connect().",
+        "2": "El LED es el WL_GPIO0 de la radio, y por eso necesita Pin(\"LED\").",
+        "3": "Mantén el extremo de la antena lejos del metal y de tus dedos para tener mejor señal."
+      },
+      "specs": {
+        "1": {
+          "label": "Radio",
+          "value": "CYW43439, 802.11n a 2,4 GHz"
+        },
+        "2": {
+          "label": "Red",
+          "value": "HackTX (WPA2), DHCP"
+        },
+        "3": {
+          "label": "Enlace con el MCU",
+          "value": "SPI en GP23, GP24, GP25 y GP29"
+        }
+      },
+      "features": {
+        "1": "Únete a una red Wi-Fi",
+        "2": "Un GET de HTTP",
+        "3": "Estado en el LED a través de la radio"
+      },
+      "checks": {
+        "1": "Imprime la dirección IP después de conectarse",
+        "2": "Imprime la respuesta web",
+        "3": "Usa Pin(\"LED\") y network.WLAN"
+      },
+      "world": {
+        "net": "Red Wi-Fi HackTX"
+      },
+      "pins": {
+        "WL_GPIO0": {
+          "to": "LED de la placa",
+          "role": "GPIO de la radio"
+        }
+      },
+      "callouts": {
+        "SH1": "La radio bajo su blindaje",
+        "ANT": "La antena impresa",
+        "D2": "Controlado por la radio"
+      },
+      "code": {
+        "top": "Únete al Wi-Fi y descarga una página (Pico W, Pico 2 W)",
+        "led": "el LED cuelga de la radio",
+        "wait": "parpadea mientras se conecta",
+        "get": "un GET de HTTP sencillo"
+      }
+    },
+    "blink-cpp": {
+      "title": "C++ de Arduino: parpadeo sin delay",
+      "lede": "La misma placa en C++ de Arduino con el núcleo arduino-pico: tiempos con millis(), LED_BUILTIN y Serial por el USB propio del chip.",
+      "steps": {
+        "1": "Deja el LED en GP15 de la primera lección.",
+        "2": "Ejecuta: los dos LED cambian cada 500 ms y el monitor serie imprime el tiempo encendido.",
+        "3": "Cambia el botón del intervalo: los tiempos con millis() dejan loop() libre para otras tareas.",
+        "4": "Fíjate en que int tiene 32 bits en el RP2040, así que guarda valores de millis() que desbordarían el int de 16 bits de una Arduino Uno."
+      },
+      "hints": {
+        "1": "LED_BUILTIN es GP25 en la Pico y la Pico 2; en las placas W el núcleo lo lleva al LED de la radio.",
+        "2": "now - last sigue siendo correcto incluso cuando millis() da la vuelta, a los 49 días más o menos, porque los dos son unsigned long.",
+        "3": "Serial es el USB del chip, así que se ignoran los baudios de Serial.begin()."
+      },
+      "specs": {
+        "1": {
+          "label": "Núcleo",
+          "value": "arduino-pico (Earle Philhower)"
+        },
+        "2": {
+          "label": "Tamaño de int",
+          "value": "32 bits"
+        },
+        "3": {
+          "label": "Carga",
+          "value": "UF2 por USB"
+        }
+      },
+      "features": {
+        "1": "Tiempos sin bloqueo",
+        "2": "LED_BUILTIN en todas las variantes",
+        "3": "Serie por USB"
+      },
+      "checks": {
+        "1": "GP15 cambia una vez por segundo",
+        "2": "Imprime el tiempo encendido al menos cuatro veces",
+        "3": "Usa millis() y ningún delay()"
+      },
+      "params": {
+        "ms": {
+          "label": "Intervalo"
+        }
+      },
+      "pins": {
+        "GP15": {
+          "to": "Resistencia de 330 Ω y luego el ánodo del LED",
+          "role": "Salida digital"
+        },
+        "GND": {
+          "to": "Cátodo del LED",
+          "role": "Retorno"
+        }
+      },
+      "callouts": {
+        "D2": "LED_BUILTIN"
+      },
+      "code": {
+        "top": "Parpadeo sin delay en la Raspberry Pi Pico (núcleo arduino-pico)",
+        "builtin": "GP25, o el LED de la radio en las placas W",
+        "serial": "serie por USB: los baudios se ignoran",
+        "nodelay": "ha pasado el tiempo, sin esperar"
+      }
+    }
+  }
+}
