@@ -30,8 +30,6 @@ const frame = (legs, i0, i1) => {
     bx: (a0, b0, z0, a1, b1, z1) => B.aabb([W(a0, b0, z0), W(a1, b1, z1), W(a0, b1, z0), W(a1, b0, z1)]) };
 };
 const xrK = ctx => ctx.k != null ? ctx.k : ease(Math.min(1, Math.max(0, (ctx.st && ctx.st.xr) || 0)));
-// a label pill on the side of the part its anchor is on, as seen now, so pills don't cross when it turns
-const pill = (F, pt, dx, dy, text, on) => { const X = P(...pt)[0], Xc = P(...F.o)[0]; return tag(pt, (X < Xc - .5 ? -1 : X > Xc + .5 ? 1 : Math.sign(dx) || 1) * Math.abs(dx), dy, text, on); };
 const ring = (F, a, b, z, r, n = 20) => B.circ(a, b, r, n).map(([u, v]) => F.W(u, v, z));
 
 B.part('push-button', {
@@ -75,8 +73,9 @@ B.part('push-button', {
     body += cyl(c0[0], c0[1], c0[2], c0[2] + plH, 1.75, capM, toneI, .6, 18);
     s += k > .02 ? `<g opacity="${f(1 - .68 * k)}">${body}</g>` : body;
     if ((ctx.solo || (B.md && B.md.def && B.md.def.partPage)) && k > .5){
-      s += pill(F, F.W(0, 0, 1.6), 46, -46, T('Snap dome'), down) + pill(F, F.W(-2.3, -3, .8), -52, 16, T('Ring: pins 1–2'), flowing)
-        + pill(F, F.W(2.3, 3, .8), 54, 50, T('Centre: pins 3–4'), flowing);
+      ctx.label(F.W(0, 0, 1.6), 'Snap dome', down);
+      ctx.label(F.W(-2.3, -3, .8), 'Ring: pins 1–2', flowing);
+      ctx.label(F.W(2.3, 3, .8), 'Centre: pins 3–4', flowing);
     }
     ctx.put(F.bx(-4.2, -4.2, -.3, 4.2, 4.2, zt + 1.4), s);
   },

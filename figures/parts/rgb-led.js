@@ -26,8 +26,6 @@ const frame = (legs, i0, i1) => {
     bx: (a0, b0, z0, a1, b1, z1) => B.aabb([W(a0, b0, z0), W(a1, b1, z1), W(a0, b1, z0), W(a1, b0, z1)]) };
 };
 const xrK = ctx => ctx.k != null ? ctx.k : ease(Math.min(1, Math.max(0, (ctx.st && ctx.st.xr) || 0)));
-// a label pill on the side of the part its anchor is on, as seen now, so pills don't cross when it turns
-const pill = (F, pt, dx, dy, text, on) => { const X = P(...pt)[0], Xc = P(...F.o)[0]; return tag(pt, (X < Xc - .5 ? -1 : X > Xc + .5 ? 1 : Math.sign(dx) || 1) * Math.abs(dx), dy, text, on); };
 const ring = (F, a, b, z, r, n = 24) => B.circ(a, b, r, n).map(([u, v]) => F.W(u, v, z));
 const duty = v => Math.max(0, Math.min(1, +v || 0));
 // per colour: the solver's result when the LED is in a circuit, else the duty params through 220 Ohm (its own page)
@@ -105,8 +103,8 @@ B.part('rgb-led', {
       s += `<circle cx="${f(X)}" cy="${f(Y)}" r="${f(5 + 9 * glow)}" fill="${mixCol}" opacity="${f(.28 * glow)}"/><circle cx="${f(X)}" cy="${f(Y)}" r="${f(2 + 2 * glow)}" fill="#fffbe8" opacity="${f(.7 * glow)}"/>`; }
     if (burnt){ const [X, Y] = P(...F.W(0, 0, zt + .6)); s += `<circle cx="${f(X)}" cy="${f(Y - 4)}" r="3" fill="#8a847a" opacity=".45"/>`; }
     if ((ctx.solo || (B.md && B.md.def && B.md.def.partPage)) && k > .5){
-      s += pill(F, F.W(-.64, 0, zl + 3.32), 40, -60, T('Red, green and blue dies'))
-        + pill(F, F.W(-.64, 0, zl + 2.6), 58, 30, T((p.common === 'anode') ? 'Common anode cup' : 'Common cathode cup'));
+      ctx.label(F.W(-.64, 0, zl + 3.32), 'Red, green and blue dies');
+      ctx.label(F.W(-.64, 0, zl + 2.6), (p.common === 'anode') ? 'Common anode cup' : 'Common cathode cup');
     }
     ctx.put(F.bx(-4.2, -3.2, -.3, 4.2, 3.2, zt + .4), s);
   },

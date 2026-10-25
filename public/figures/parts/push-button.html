@@ -1398,6 +1398,9 @@ A.fault = id => {
   }
   if (typeof id !== 'string') return;
   const [kind, a, b] = id.split(':');
+  // a part of the breadboard circuit (an id the board itself does not have): the circuit redraws without it, or turned
+  // round, while the fault is on (bench-bb.js circuitNow)
+  if ((kind === 'reversed' || kind === 'missing') && !MD.byId[a] && B.bbPart && B.bbPart(a)){ if (!st.faults.includes(id)) st.faults.push(id); refresh(true); return; }
   if (kind === 'reversed'){ const p = MD.byId[a]; if (!p || !p.polar) return say('{name} has no wrong way round', { name: a }); if (st.power) A.power(null); st.placed[a] = { orient: 1, sold: true }; refresh(); return; }
   if (kind === 'missing'){
     const p = MD.byId[a]; if (!p || p.fixed) return say('No part {name} on this board', { name: a });
@@ -1685,8 +1688,21 @@ function xrNotes(k){
   if (!items.length) return '';
   items.splice(8);
   const pc = [BP(0, 0, 0), BP(MD.pcb.w, MD.pcb.h, MD.height)];
-  return xrCallouts(items, [Math.min(pc[0][0], pc[1][0]), Math.max(pc[0][0], pc[1][0]), Math.min(pc[0][1], pc[1][1]), Math.max(pc[0][1], pc[1][1]), G.top, G.top + 10]);
+  LBL.items.push(...items);
+  LBL.box = growBox(LBL.box, [[Math.min(pc[0][0], pc[1][0]), Math.min(pc[0][1], pc[1][1]), G.top], [Math.max(pc[0][0], pc[1][0]), Math.max(pc[0][1], pc[1][1]), G.top + 10]]);
+  return '';
 }
+/* callouts: the board's notes (xrNotes) and the see-through labels of breadboard and mat parts, whose draw calls
+   ctx.label(at, text, on). scene() lays them all out last, in two columns beside what they label (xrCallouts), outside
+   any view scaling, so pills never overlap each other or sit under the drawing */
+const LBL = { items: [], box: null };
+const growBox = (box, b) => box ? [box[0].map((v, i) => Math.min(v, b[0][i])), box[1].map((v, i) => Math.max(v, b[1][i]))] : [b[0].slice(), b[1].slice()];
+// one part's labeller: label() queues its callouts, done(boxes) adds them with the part's drawn boxes as their bounds
+B.labeller = () => {
+  const mine = [];
+  return { label: (at, text, on) => { if (Array.isArray(at) && at.length === 3 && text) mine.push({ at, text, on: !!on }); },
+    done: boxes => { if (!mine.length) return; LBL.items.push(...mine); for (const b of boxes) if (b) LBL.box = growBox(LBL.box, b); } };
+};
 
 /* things on the mat: a periph board is drawn in its own frame (G and B.md swapped while it draws) */
 function inFrame(it, fn){
@@ -1726,8 +1742,10 @@ function periphPart(it, k, live){
   const p = Object.assign({ id: it.id, part: it.q.part }, it.def.example || {}, it.q.params || {});
   const pl = { at: (x, y, zz = z) => BP(it.at[0] + x, it.at[1] + y, zz), zTop: z, geo: null };
   const put = (bx, svg) => { if (svg) items.push({ box: bx, svg: act('periph', sel ? `<g class="bsel">${svg}</g>` : svg, periphData(it)) }); };
-  try { it.def.draw({ p, st, legs, holes: [], origin: BP(it.at[0] + it.w / 2, it.at[1] + it.h / 2, z), pl, m: (st.readings || {})[it.id] || {}, lit: live ? 1 : 0, sel, k, put }); }
+  const lb = B.labeller();
+  try { it.def.draw({ p, st, legs, holes: [], origin: BP(it.at[0] + it.w / 2, it.at[1] + it.h / 2, z), pl, m: (st.readings || {})[it.id] || {}, lit: live ? 1 : 0, sel, k, put, label: lb.label }); }
   catch (e) { matNote(`periph ${it.id} (${it.q.part}): ${e.message}`); }
+  lb.done(items.map(x => x.box));
   return items;
 }
 // a wire end in world coordinates, and the base net it sits on (for the live colour)
@@ -1768,6 +1786,16 @@ const matBox = () => {
   return box;
 };
 
+// the tallest thing on the mat, in board z: the board, or a periph standing higher (a TT motor's wheel, a module on
+// its standoffs), so the frame holds it at every step of the mat
+const matTop = () => {
+  let h = MD.height;
+  for (const it of MAT.items){
+    if (it.kind === 'board') h = Math.max(h, G.matH + it.md.pcb.standoff + it.md.pcb.thick + it.md.height - G.top);
+    else { const ft = Array.isArray(it.def.foot) ? it.def.foot[2] : +it.def.height; if (ft > 0) h = Math.max(h, G.matH - G.top + ft); }
+  }
+  return h;
+};
 /* the board view (also the base of the breadboard view) */
 B.boardItems = (o, k) => [...drawParts(o, k), ...drawSupply()];
 B.drawBoardBase = k => drawPCB(k);
@@ -1804,10 +1832,17 @@ function viewFit(name, corners){
 B.boxCorners = ([x0, y0, z0, x1, y1, z1]) => { const c = []; for (const x of [x0, x1]) for (const y of [y0, y1]) for (const z of [z0, z1]) c.push([x, y, z]); return c; };
 const strokeDiv = (svg, s) => s === 1 ? svg : svg.replace(/stroke-width="([\d.]+)"/g, (m, w) => `stroke-width="${(+w / s).toFixed(3)}"`).replace(/r="([\d.]+)"/g, (m, r) => m);
 B.viewDef('board', {
-  bounds: () => { const [x0, y0, x1, y1] = matBox(), a = BP(x0, y0, -G.top), b = BP(x1, y1, MD.height); return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), 0, Math.max(a[0], b[0]), Math.max(a[1], b[1]), G.top + MD.height]; },
+  bounds: () => { const [x0, y0, x1, y1] = matBox(), h = matTop(), a = BP(x0, y0, -G.top), b = BP(x1, y1, h); return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), 0, Math.max(a[0], b[0]), Math.max(a[1], b[1]), G.top + h]; },
   scene: k => sceneBoard(k),
 });
 
+const fadeToFrame = svg => {
+  const el = document.getElementById('fig'), vb = el && el.viewBox && el.viewBox.baseVal;
+  if (!vb || !vb.width) return svg;
+  const r = `x="${f(vb.x)}" y="${f(vb.y)}" width="${f(vb.width)}" height="${f(vb.height)}"`;
+  return `<defs><radialGradient id="bpfade" cx=".5" cy=".5" r=".5"><stop offset=".68" stop-color="#fff"/><stop offset="1" stop-color="#000"/></radialGradient>`
+    + `<mask id="bpmask" maskUnits="userSpaceOnUse" ${r}><rect ${r} fill="url(#bpfade)"/></mask></defs><g mask="url(#bpmask)">${svg}</g>`;
+};
 function scene(stt){
   const k = ease(stt.xr || 0);
   const v = VIEWS[stt.view] ? stt.view : 'board';
@@ -1816,10 +1851,19 @@ function scene(stt){
   const bnd = vd.bounds(), corners = B.boxCorners(bnd);
   // the breadboard view is fitted per circuit: a motor on the mat needs a wider frame than a blinking LED
   const sc = v === (B.mountView || 'board') ? 1 : viewFit(v === 'breadboard' ? v + ':' + stt.circuit : v, corners);
-  let svg = vd.scene(k);
+  LBL.items = []; LBL.box = null;
+  let svg = vd.scene(k), map = w => w;
   if (sc !== 1){
     const c3 = [(bnd[0] + bnd[3]) / 2, (bnd[1] + bnd[4]) / 2, (bnd[2] + bnd[5]) / 2], pc = P(...c3), rc = P(RC[0], RC[1], RCZ);
     svg = `<g transform="translate(${f(rc[0])} ${f(rc[1])}) scale(${sc.toFixed(4)}) translate(${f(-pc[0])} ${f(-pc[1])})">${strokeDiv(svg, sc)}</g>`;
+    // P is affine, so the world point RC + sc·(w − c3) lands where the scaled drawing put w
+    map = w => [RC[0] + sc * (w[0] - c3[0]), RC[1] + sc * (w[1] - c3[1]), RCZ + sc * (w[2] - c3[2])];
+  }
+  // a part page is framed on its part (bench-bb.js partFrame): the breadboard and mat round it fade out at the frame
+  if (MD.def.partPage) svg = fadeToFrame(svg);
+  if (LBL.items.length && LBL.box){
+    const a = map(LBL.box[0]), b = map(LBL.box[1]);
+    svg += xrCallouts(LBL.items.map(it => Object.assign({}, it, { at: map(it.at) })), [a[0], b[0], a[1], b[1], a[2], b[2]]);
   }
   return svg;
 }
@@ -1937,6 +1981,7 @@ function stats(){
   if (st.ev.status === 'running' && MD.modes[st.mode]) out.push({ label: T((MD.def.modesLabel && MD.def.modesLabel.stat) || 'Program'), value: st.ext ? T('your sketch') : T(MD.modes[st.mode].title), small: true });
   if (st.benchStatus) out.push({ label: T('Bench'), value: T(st.benchStatus), small: true });
   if (st.power) for (const [label, value] of st.modelStats || []) out.push({ label: T(String(label)), value: typeof value === 'number' ? String(+value.toFixed(2)) : T(String(value)), small: true });
+  document.documentElement.classList.toggle('bstats-long', out.length > 4);
   return out;
 }
 
@@ -2083,8 +2128,9 @@ function start(pick){
   checkChoices();
   // the core frames the box [0,W] x [0,D] x [0,H]: shift the world so the mount view's bounds start at 0
   let vb = VIEWS[B.mountView].bounds(); G.ox -= vb[0]; G.oy -= vb[1]; vb = VIEWS[B.mountView].bounds();
+  const z0 = Math.max(0, vb[2] || 0);
   ui = mountFigure({
-    fig: def.fig || '', title: def.name, turn: 'full', size: [vb[3] - vb[0], vb[4] - vb[1], vb[5]], center: [(vb[0] + vb[3]) / 2, (vb[1] + vb[4]) / 2],
+    fig: def.fig || '', title: def.name, turn: 'full', size: [vb[3] - vb[0], vb[4] - vb[1], vb[5] - z0], center: [(vb[0] + vb[3]) / 2, (vb[1] + vb[4]) / 2],
     palette: def.pal || 'cobalt', state: st, scene: (s) => scene(s), buttons: buttons(), stats: () => stats(),
     acts: {
       part: (s, el) => { const id = el.dataset.id; A.select(st.sel === id ? null : id); },
@@ -2101,12 +2147,22 @@ function start(pick){
   addEventListener('pointerup', () => { if (heldBb){ const id = heldBb; heldBb = null; B.bbPress(id, false); } if (held){ const id = held; held = null; const p = MD.byId[id]; if (p && p.control && p.control.type !== 'slide') A.press(id, false); } });
   addEventListener('keyup', e => { if (e.key !== 'Enter' && e.key !== ' ') return;
     if (held){ const id = held; held = null; A.press(id, false); } if (heldBb){ const id = heldBb; heldBb = null; B.bbPress(id, false); } });
+  // the core frames z from 0; bounds that start higher (a part page framed on its part) move the world down by z0:
+  // P is affine, so raising the rotation centre and the screen offset by z0 maps z0 to where the core put 0, at any angle
+  if (z0){ RCZ += z0; OY += z0; ui.render(); }
   if (typeof xrMount === 'function') xrMount(() => ui, s => s.xr > .5 ? T('See-through: the chips show their silicon, copper shows where current flows') : '');
   // a hot part gets a red tint filter
   const defs = document.getElementById('fdefs') || document.querySelector('#fig defs');
   if (defs) defs.insertAdjacentHTML('beforeend', '<filter id="bhot"><feColorMatrix type="matrix" values="1 .25 .1 0 .12  .1 .45 .05 0 0  .05 .05 .35 0 0  0 0 0 1 0"/></filter>');
   const css = document.createElement('style');
-  css.textContent = '#fig .bsel > *{filter:drop-shadow(0 0 1.6px var(--accent,#f4b829)) drop-shadow(0 0 1.6px var(--accent,#f4b829))}#fig [data-act]{cursor:pointer}';
+  // a bench's long stats column (battery, motors, heat…) is set smaller and wraps a value at its spaces, so it stays a
+  // narrow strip at the right edge instead of running over the drawing
+  css.textContent = '#fig .bsel > *{filter:drop-shadow(0 0 1.6px var(--accent,#f4b829)) drop-shadow(0 0 1.6px var(--accent,#f4b829))}#fig [data-act]{cursor:pointer}'
+    + 'html.bstats-long .stats{gap:5px}html.bstats-long .stat .k{font-size:9.5px}html.bstats-long .stat .v{font-size:24px}'
+    + 'html.bstats-long .stat.small .v{font-size:14px;line-height:1.15;max-width:7.5em;text-wrap:balance}'
+    // on a phone the core sets the stats in one row, which runs off the left edge with this many: a three-column grid
+    + '@media (max-width:560px){html.bstats-long .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 12px;text-align:left}'
+    + 'html.bstats-long .stat .v,html.bstats-long .stat.small .v{font-size:14px;max-width:none}}';
   document.head.appendChild(css);
   if (!CF_EMBED) keyList();
   if (st.power) refresh(true); else kick();
@@ -2137,7 +2193,7 @@ function keyList(){
 }
 function syncKeys(){
   if (!keysBox) return;
-  const c = st.circuit && MD.circuits[st.circuit];
+  const c = st.circuit && B.circuitNow ? B.circuitNow() : null;
   const items = MD.parts.filter(p => isIn(p.id)).map(p => [p.id, T(p.name), !!p.control]);
   if (c && st.view !== 'board') for (const q of c.parts || []) items.push([q.id, q.id + ' · ' + T((B.parts[q.part] || {}).name || q.part), false, typeof (B.parts[q.part] || {}).press === 'function']);
   const key = items.map(i => i[0]).join(' ');
@@ -2559,9 +2615,52 @@ B.hole = (geo, ref) => {
   return null;
 };
 
+/* circuit faults: a fault can change what is on the breadboard. `missing:<id>` leaves a circuit part out, with the
+   wires that end on its legs; `reversed:<id>` turns it round (its `reversed` param when the part has one, else its
+   holes in the other order). Ids the board itself has stay board faults. A listed fault [id, label, edit] does the
+   same for its own id: edit = { missing: [ids], reversed: [ids], cut: [[from, to]] (wires left out), wires: [extra
+   wires], holes: { id: [holes] } (parts moved) }, each applied where the circuit has it. The solver, the drawing and
+   the schematic all read the changed circuit. */
+let faulted = { key: null, md: null, c: null };
+const circuitNow = () => {
+  const md = B.md, st = B.st, c = md.circuits[st.circuit]; if (!c) return null;
+  const fs = st.faults || []; if (!fs.length) return c;
+  const key = st.circuit + '|' + fs.join(',');
+  if (faulted.key === key && faulted.md === md) return faulted.c;
+  const missing = new Set(), reversed = new Set(), cut = [], add = [], holes = {};
+  const inCircuit = id => (c.parts || []).some(p => p.id === id);
+  for (const f of fs){
+    const m = /^(missing|reversed):(.+)$/.exec(f);
+    if (m && inCircuit(m[2]) && !md.byId[m[2]]) (m[1] === 'missing' ? missing : reversed).add(m[2]);
+    const fd = (md.def.faults || []).find(x => Array.isArray(x) && x[0] === f && x[2] && typeof x[2] === 'object');
+    if (!fd) continue;
+    const e = fd[2];
+    for (const id of e.missing || []) if (inCircuit(id)) missing.add(id);
+    for (const id of e.reversed || []) if (inCircuit(id)) reversed.add(id);
+    for (const w of e.cut || []) if (Array.isArray(w) && w.length === 2) cut.push(w);
+    for (const w of e.wires || []) if (w && typeof w.from === 'string' && typeof w.to === 'string') add.push(w);
+    for (const [id, hs] of Object.entries(e.holes || {})) if (inCircuit(id) && Array.isArray(hs)) holes[id] = hs;
+  }
+  let out = c;
+  if (missing.size || reversed.size || cut.length || add.length || Object.keys(holes).length){
+    const owner = ref => { const m = /^([A-Za-z_][\w-]*)\./.exec(ref); return m ? m[1] : null; };
+    const isCut = w => cut.some(([a, b]) => (w.from === a && w.to === b) || (w.from === b && w.to === a));
+    const parts = (c.parts || []).filter(p => !missing.has(p.id)).map(p => {
+      let q = holes[p.id] ? Object.assign({}, p, { holes: holes[p.id].slice() }) : p;
+      if (reversed.has(p.id)){ const def = B.parts[p.part];
+        q = def && def.params && def.params.reversed ? Object.assign({}, q, { reversed: true }) : Object.assign({}, q, { holes: (q.holes || []).slice().reverse() }); }
+      return q; });
+    const wires = (c.wires || []).filter(w => !missing.has(owner(w.from)) && !missing.has(owner(w.to)) && !isCut(w)).concat(add);
+    out = Object.assign({}, c, { parts, wires });
+  }
+  faulted = { key, md, c: out };
+  return out;
+};
+B.circuitNow = circuitNow;
+
 /* placement in board coordinates: the breadboard sits right of the board (or behind it) */
 const place = () => {
-  const md = B.md, c = md.circuits[B.st.circuit]; if (!c) return null;
+  const md = B.md, c = circuitNow(); if (!c) return null;
   const geo = B.bbGeom(c.breadboard || 'half');
   const behind = c.board === 'back';
   const ox = md.def.noBoard ? 0 : behind ? (md.pcb.w - geo.w) / 2 : md.pcb.w + 14, oy = md.def.noBoard ? 0 : behind ? md.pcb.h + 12 : (md.pcb.h - geo.h) / 2;
@@ -2634,7 +2733,7 @@ B.bbParams = (st, params) => {
 const own2 = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 // a param spec is either a list of allowed values or a numeric range [min, max]
 B.paramRange = spec => Array.isArray(spec) && spec.length === 2 && spec.every(v => typeof v === 'number') && spec[1] > spec[0];
-B.bbPart = id => { const c = B.md.circuits[B.st.circuit]; return c && (c.parts || []).find(p => p.id === id); };
+B.bbPart = id => { const c = circuitNow(); return c && (c.parts || []).find(p => p.id === id); };
 
 /* ---------- scene ---------- */
 // the breadboard view's mat in board mm: the board, the breadboard and every circuit part lying on the mat (its `at`
@@ -2662,8 +2761,32 @@ const matLeg = (c, ref) => {
   const p = Object.assign({}, q, (B.st.cparams || {})[q.id] || {});
   try { return def.legAt(p, B.BP(q.at[0], q.at[1], B.G.matH - B.G.top), i); } catch (e) { B.note(`${q.id} legAt: ${e.message}`); return null; }
 };
+// one circuit part's drawing: its items (world box + svg) and its labeller; null when it can't be drawn
+const drawCircuitPart = (pl, q, k) => {
+  const md = B.md, st = B.st, p = Object.assign({}, q, (st.cparams || {})[q.id] || {}), def = B.parts[p.part];
+  if (!def){ unknownPart(p); return null; }
+  const holes = (p.holes || []).map(h => B.hole(pl.geo, h)).filter(Boolean);
+  if (holes.length !== (p.holes || []).length){ B.note(`circuit part ${p.id}: bad hole in ${p.holes}`); return null; }
+  const legs = holes.map(h => pl.at(h.x, h.y));
+  const origin = Array.isArray(p.at) ? B.BP(p.at[0], p.at[1], B.G.matH - B.G.top) : legs[0] || pl.at(0, 0);
+  const mm = (st.meas || {})[p.id] || {}, sel = st.sel === p.id;
+  const items = [], lb = B.labeller();
+  try { def.draw({ p, st, legs, holes, origin, pl, m: mm, lit: mm.state === 'ok' ? Math.min(1, Math.pow(Math.max(0, mm.i_mA) / 13.6, .55)) : 0, sel, k,
+    solo: !!md.def.partPage, label: lb.label, put: (bx, svg) => { if (svg) items.push({ box: bx, svg }); } }); } catch (e) { B.note(`${p.id}: ${e.message}`); }
+  return { p, def, sel, items, lb };
+};
+// a part page frames its part, not the whole breadboard: the parts' drawn box plus 10 mm of breadboard round it
+const PART_MARGIN = 10;
+const partFrame = () => {
+  const pl = place(); if (!pl || !(pl.c.parts || []).length) return null;
+  let bx = null;
+  for (const q of pl.c.parts){ const d = drawCircuitPart(pl, q, 0); if (!d) continue;
+    for (const it of d.items) bx = bx ? [bx[0].map((v, i) => Math.min(v, it.box[0][i])), bx[1].map((v, i) => Math.max(v, it.box[1][i]))] : [it.box[0].slice(), it.box[1].slice()]; }
+  return bx && [bx[0][0] - PART_MARGIN, bx[0][1] - PART_MARGIN, Math.max(0, bx[0][2] - 3), bx[1][0] + PART_MARGIN, bx[1][1] + PART_MARGIN, bx[1][2] + 2];
+};
 B.viewDef('breadboard', {
   bounds: () => {
+    const pf = B.md.def.partPage ? partFrame() : null; if (pf) return pf;
     const { box: [x0, y0, x1, y1], h } = extent(), a = B.BP(x0, y0, -B.G.top), b = B.BP(x1, y1, h);
     return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), 0, Math.max(a[0], b[0]), Math.max(a[1], b[1]), B.G.top + h];
   },
@@ -2682,19 +2805,11 @@ B.viewDef('breadboard', {
       const bbDef = B.parts.breadboard;
       const ctx = { pl, st, put: (bx, svg) => { if (svg) items.push({ box: bx, svg }); } };
       if (bbDef) bbDef.draw(Object.assign({ p: { id: 'BB', kind: pl.geo.kind } }, ctx));
-      const meas = st.meas || {};
       for (const q of pl.c.parts || []){
-        const p = Object.assign({}, q, (st.cparams || {})[q.id] || {}), def = B.parts[p.part];
-        if (!def){ unknownPart(p); continue; }
-        const holes = (p.holes || []).map(h => B.hole(pl.geo, h)).filter(Boolean);
-        if (holes.length !== (p.holes || []).length){ B.note(`circuit part ${p.id}: bad hole in ${p.holes}`); continue; }
-        const legs = holes.map(h => pl.at(h.x, h.y));
-        const origin = Array.isArray(p.at) ? B.BP(p.at[0], p.at[1], B.G.matH - B.G.top) : legs[0] || pl.at(0, 0);
-        const mm = meas[p.id] || {}, sel = st.sel === p.id;
-        const subItems = [];
-        try { def.draw({ p, st, legs, holes, origin, pl, m: mm, lit: mm.state === 'ok' ? Math.min(1, Math.pow(Math.max(0, mm.i_mA) / 13.6, .55)) : 0, sel, k,
-          solo: !!md.def.partPage, put: (bx, svg) => { if (svg) subItems.push({ box: bx, svg }); } }); } catch (e) { B.note(`${p.id}: ${e.message}`); }
-        for (const it of subItems) items.push({ box: it.box, svg: act('bb', sel ? `<g class="bsel">${it.svg}</g>` : it.svg, `data-id="${CF_ESC(p.id)}" data-label="${CF_ESC(T(def.name || p.part) + ' ' + p.id)}"`) });
+        const d = drawCircuitPart(pl, q, k); if (!d) continue;
+        const { p, def, sel } = d;
+        d.lb.done(d.items.map(it => it.box));
+        for (const it of d.items) items.push({ box: it.box, svg: act('bb', sel ? `<g class="bsel">${it.svg}</g>` : it.svg, `data-id="${CF_ESC(p.id)}" data-label="${CF_ESC(T(def.name || p.part) + ' ' + p.id)}"`) });
       }
       const wire = B.parts.wire;
       if (wire) for (const w of pl.c.wires || []){
@@ -3153,7 +3268,7 @@ const accent = 'var(--accent,#f4b829)';
 /* ---------- schematic ---------- */
 // series chains found by the solver: board pin -> resistors -> LED -> resistors -> GND
 function chains(){
-  const md = B.md, st = B.st, c = md.circuits[st.circuit]; if (!c) return [];
+  const st = B.st, c = B.circuitNow(); if (!c) return [];
   const pl = B.bbPlace(); if (!pl) return [];
   const geo = pl.geo, par = {}, find = a => { while (par[a] && par[a] !== a) a = par[a]; return a; };
   const node = ref => { const h = B.hole(geo, ref); if (h) return h.node; const pin = B.pinOf(ref); return pin ? 'N:' + pin.net : null; };
@@ -3181,7 +3296,7 @@ const ledSym = (x, y, s, lit, col, sel) => {
   return g; };
 const gndSym = (x, y, s) => ln([[x - s * .5, y], [x + s * .5, y]], 1.3) + ln([[x - s * .32, y + s * .2], [x + s * .32, y + s * .2]], 1.1) + ln([[x - s * .14, y + s * .4], [x + s * .14, y + s * .4]], 1);
 B.viewDef('schematic', { flat: true, scene: () => {
-  const v = sheetBox(), md = B.md, st = B.st, c = md.circuits[st.circuit];
+  const v = sheetBox(), md = B.md, st = B.st, c = B.circuitNow();
   let s = plate(v, T('Schematic · {name}', { name: c ? T(c.title || st.circuit) : T(md.name) }));
   const u = v.width / 100, x0 = v.x + 12 * u, y0 = v.y + 20 * u;
   if (!c){ return s + txt(v.x + v.width / 2, v.y + v.height / 2, T('No circuit on the breadboard'), 3.2 * u, '#857d6e'); }
@@ -3429,8 +3544,6 @@ const frame = (legs, i0, i1) => {
     bx: (a0, b0, z0, a1, b1, z1) => B.aabb([W(a0, b0, z0), W(a1, b1, z1), W(a0, b1, z0), W(a1, b0, z1)]) };
 };
 const xrK = ctx => ctx.k != null ? ctx.k : ease(Math.min(1, Math.max(0, (ctx.st && ctx.st.xr) || 0)));
-// a label pill on the side of the part its anchor is on, as seen now, so pills don't cross when it turns
-const pill = (F, pt, dx, dy, text, on) => { const X = P(...pt)[0], Xc = P(...F.o)[0]; return tag(pt, (X < Xc - .5 ? -1 : X > Xc + .5 ? 1 : Math.sign(dx) || 1) * Math.abs(dx), dy, text, on); };
 const ring = (F, a, b, z, r, n = 20) => B.circ(a, b, r, n).map(([u, v]) => F.W(u, v, z));
 
 B.part('push-button', {
@@ -3474,8 +3587,9 @@ B.part('push-button', {
     body += cyl(c0[0], c0[1], c0[2], c0[2] + plH, 1.75, capM, toneI, .6, 18);
     s += k > .02 ? `<g opacity="${f(1 - .68 * k)}">${body}</g>` : body;
     if ((ctx.solo || (B.md && B.md.def && B.md.def.partPage)) && k > .5){
-      s += pill(F, F.W(0, 0, 1.6), 46, -46, T('Snap dome'), down) + pill(F, F.W(-2.3, -3, .8), -52, 16, T('Ring: pins 1–2'), flowing)
-        + pill(F, F.W(2.3, 3, .8), 54, 50, T('Centre: pins 3–4'), flowing);
+      ctx.label(F.W(0, 0, 1.6), 'Snap dome', down);
+      ctx.label(F.W(-2.3, -3, .8), 'Ring: pins 1–2', flowing);
+      ctx.label(F.W(2.3, 3, .8), 'Centre: pins 3–4', flowing);
     }
     ctx.put(F.bx(-4.2, -4.2, -.3, 4.2, 4.2, zt + 1.4), s);
   },

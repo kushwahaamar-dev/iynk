@@ -904,6 +904,13 @@ B.viewDef('board', {
   scene: k => sceneBoard(k),
 });
 
+const fadeToFrame = svg => {
+  const el = document.getElementById('fig'), vb = el && el.viewBox && el.viewBox.baseVal;
+  if (!vb || !vb.width) return svg;
+  const r = `x="${f(vb.x)}" y="${f(vb.y)}" width="${f(vb.width)}" height="${f(vb.height)}"`;
+  return `<defs><radialGradient id="bpfade" cx=".5" cy=".5" r=".5"><stop offset=".68" stop-color="#fff"/><stop offset="1" stop-color="#000"/></radialGradient>`
+    + `<mask id="bpmask" maskUnits="userSpaceOnUse" ${r}><rect ${r} fill="url(#bpfade)"/></mask></defs><g mask="url(#bpmask)">${svg}</g>`;
+};
 function scene(stt){
   const k = ease(stt.xr || 0);
   const v = VIEWS[stt.view] ? stt.view : 'board';
@@ -920,6 +927,8 @@ function scene(stt){
     // P is affine, so the world point RC + sc·(w − c3) lands where the scaled drawing put w
     map = w => [RC[0] + sc * (w[0] - c3[0]), RC[1] + sc * (w[1] - c3[1]), RCZ + sc * (w[2] - c3[2])];
   }
+  // a part page is framed on its part (bench-bb.js partFrame): the breadboard and mat round it fade out at the frame
+  if (MD.def.partPage) svg = fadeToFrame(svg);
   if (LBL.items.length && LBL.box){
     const a = map(LBL.box[0]), b = map(LBL.box[1]);
     svg += xrCallouts(LBL.items.map(it => Object.assign({}, it, { at: map(it.at) })), [a[0], b[0], a[1], b[1], a[2], b[2]]);
@@ -1187,8 +1196,9 @@ function start(pick){
   checkChoices();
   // the core frames the box [0,W] x [0,D] x [0,H]: shift the world so the mount view's bounds start at 0
   let vb = VIEWS[B.mountView].bounds(); G.ox -= vb[0]; G.oy -= vb[1]; vb = VIEWS[B.mountView].bounds();
+  const z0 = Math.max(0, vb[2] || 0);
   ui = mountFigure({
-    fig: def.fig || '', title: def.name, turn: 'full', size: [vb[3] - vb[0], vb[4] - vb[1], vb[5]], center: [(vb[0] + vb[3]) / 2, (vb[1] + vb[4]) / 2],
+    fig: def.fig || '', title: def.name, turn: 'full', size: [vb[3] - vb[0], vb[4] - vb[1], vb[5] - z0], center: [(vb[0] + vb[3]) / 2, (vb[1] + vb[4]) / 2],
     palette: def.pal || 'cobalt', state: st, scene: (s) => scene(s), buttons: buttons(), stats: () => stats(),
     acts: {
       part: (s, el) => { const id = el.dataset.id; A.select(st.sel === id ? null : id); },
@@ -1205,6 +1215,9 @@ function start(pick){
   addEventListener('pointerup', () => { if (heldBb){ const id = heldBb; heldBb = null; B.bbPress(id, false); } if (held){ const id = held; held = null; const p = MD.byId[id]; if (p && p.control && p.control.type !== 'slide') A.press(id, false); } });
   addEventListener('keyup', e => { if (e.key !== 'Enter' && e.key !== ' ') return;
     if (held){ const id = held; held = null; A.press(id, false); } if (heldBb){ const id = heldBb; heldBb = null; B.bbPress(id, false); } });
+  // the core frames z from 0; bounds that start higher (a part page framed on its part) move the world down by z0:
+  // P is affine, so raising the rotation centre and the screen offset by z0 maps z0 to where the core put 0, at any angle
+  if (z0){ RCZ += z0; OY += z0; ui.render(); }
   if (typeof xrMount === 'function') xrMount(() => ui, s => s.xr > .5 ? T('See-through: the chips show their silicon, copper shows where current flows') : '');
   // a hot part gets a red tint filter
   const defs = document.getElementById('fdefs') || document.querySelector('#fig defs');

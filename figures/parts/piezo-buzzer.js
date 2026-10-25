@@ -27,8 +27,6 @@ const frame = (legs, i0, i1) => {
     bx: (a0, b0, z0, a1, b1, z1) => B.aabb([W(a0, b0, z0), W(a1, b1, z1), W(a0, b1, z0), W(a1, b0, z1)]) };
 };
 const xrK = ctx => ctx.k != null ? ctx.k : ease(Math.min(1, Math.max(0, (ctx.st && ctx.st.xr) || 0)));
-// a label pill on the side of the part its anchor is on, as seen now, so pills don't cross when it turns
-const pill = (F, pt, dx, dy, text, on) => { const X = P(...pt)[0], Xc = P(...F.o)[0]; return tag(pt, (X < Xc - .5 ? -1 : X > Xc + .5 ? 1 : Math.sign(dx) || 1) * Math.abs(dx), dy, text, on); };
 const ring = (F, a, b, z, r, n = 28) => B.circ(a, b, r, n).map(([u, v]) => F.W(u, v, z));
 const noteOf = hz => { if (!(hz > 0)) return ''; const n = Math.round(12 * Math.log2(hz / 440)) + 57, cents = 1200 * Math.log2(hz / (440 * Math.pow(2, (n - 57) / 12)));
   return Math.abs(cents) <= 20 && n >= 0 ? NOTES[n % 12] + Math.floor(n / 12) : ''; };
@@ -108,8 +106,10 @@ B.part('piezo-buzzer', {
       const [X, Y] = P(...F.W(0, 0, zt + 2.5)); s += `<path d="M${f(X - 3)} ${f(Y)}L${f(X + 3)} ${f(Y)}M${f(X)} ${f(Y - 3)}L${f(X)} ${f(Y + 3)}" stroke="#3e86d9" stroke-width=".9" opacity=".6"/>`;
     }
     if ((ctx.solo || (B.md && B.md.def && B.md.def.partPage)) && k > .5){
-      s += pill(F, F.W(4.6, 0, 6.3), 52, -30, T('Brass disc')) + pill(F, F.W(-2.6, 0, 6.9), -56, 10, T('Piezo ceramic')) + pill(F, F.W(0, 0, zt), 20, -66, T('Sound hole'));
-      if (active) s += pill(F, F.W(-4, 0, 2), -58, 46, T('Oscillator'));
+      ctx.label(F.W(4.6, 0, 6.3), 'Brass disc');
+      ctx.label(F.W(-2.6, 0, 6.9), 'Piezo ceramic');
+      ctx.label(F.W(0, 0, zt), 'Sound hole');
+      if (active) ctx.label(F.W(-4, 0, 2), 'Oscillator');
     }
     ctx.put(F.bx(-R - .3, -R - .3, -.3, R + .3, R + .3, zt + .3), s);
   },

@@ -29,8 +29,6 @@ const frame = (legs, i0, i1) => {
     bx: (a0, b0, z0, a1, b1, z1) => B.aabb([W(a0, b0, z0), W(a1, b1, z1), W(a0, b1, z0), W(a1, b0, z1)]) };
 };
 const xrK = ctx => ctx.k != null ? ctx.k : ease(Math.min(1, Math.max(0, (ctx.st && ctx.st.xr) || 0)));
-// a label pill on the side of the part its anchor is on, as seen now, so pills don't cross when it turns
-const pill = (F, pt, dx, dy, text, on) => { const X = P(...pt)[0], Xc = P(...F.o)[0]; return tag(pt, (X < Xc - .5 ? -1 : X > Xc + .5 ? 1 : Math.sign(dx) || 1) * Math.abs(dx), dy, text, on); };
 const forceOf = p => Math.max(0, Math.min(100, +p.force || 0));
 // log-log interpolation through the table; open below the actuation force
 const ohmsAt = F => {
@@ -109,8 +107,9 @@ B.part('fsr402', {
         + `<ellipse cx="${f(X - 1)}" cy="${f(Y - 1)}" rx="1.8" ry="1.1" fill="#f6dcc8" opacity=".9"/>`;
     }
     if ((ctx.solo || (B.md && B.md.def && B.md.def.partPage)) && k > .5){
-      s += pill(F, F.W(3, gap, zc + 3), 56, -6, T('Silver fingers')) + pill(F, F.W(ACT + 1.2, 0, zc - 2), 60, 30, T('Spacer, air vent'))
-        + pill(F, F.W(-2, -gap, zc - 2), -62, 22, T('Force-sensing ink'));
+      ctx.label(F.W(3, gap, zc + 3), 'Silver fingers');
+      ctx.label(F.W(ACT + 1.2, 0, zc - 2), 'Spacer, air vent');
+      ctx.label(F.W(-2, -gap, zc - 2), 'Force-sensing ink');
     }
     ctx.put(F.bx(-HEAD - .3, -1.4, -.3, HEAD + .3, 1.4, zc + HEAD + .3), s);
   },

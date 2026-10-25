@@ -118,10 +118,9 @@ B.part('mpu6050', {
       s += `<circle cx="${f(X)}" cy="${f(Y)}" r="${f(mm * (1 + 1.2 * lit))}" fill="#ff5a4a" opacity="${f(.35 * lit)}"/><circle cx="${f(X)}" cy="${f(Y)}" r="${f(mm * .55)}" fill="#fff1e6" opacity="${f(.7 * lit)}"/>`;
     }
     if ((ctx.solo || (B.md && B.md.def && B.md.def.partPage)) && k > .5){
-      // each pill goes out on the side its anchor is on, as seen now, so the pills never cross as the part turns
-      const Xc = P(...W(W0 / 2, H0 / 2, ZT))[0], pill = (pt, dx, dy, text, on) => { const X = P(...pt)[0]; return tag(pt, (X < Xc ? -1 : 1) * dx, dy, text, on); };
-      s += pill(W(8.5, 10.7, ZT + .6), 30, -58, T('MEMS die on the CMOS chip')) + pill(W(7.6, 18.9, ZT + 1.1), 64, -6, T('3.3 V regulator (662K)'))
-        + pill(W(6.7, 3.6, ZT + .6), 60, 34, T('Power LED'), lit > 0);
+      ctx.label(W(8.5, 10.7, ZT + .6), 'MEMS die on the CMOS chip');
+      ctx.label(W(7.6, 18.9, ZT + 1.1), '3.3 V regulator (662K)');
+      ctx.label(W(6.7, 3.6, ZT + .6), 'Power LED', lit > 0);
     }
     ctx.put(B.aabb([W(0, 0, 0), W(W0, H0, 0), W(0, H0, PIN_TOP), W(W0, 0, PIN_TOP)]), s);
   },

@@ -30,8 +30,6 @@ const frame = (legs, i0, i1) => {
     bx: (a0, b0, z0, a1, b1, z1) => B.aabb([W(a0, b0, z0), W(a1, b1, z1), W(a0, b1, z0), W(a1, b0, z1)]) };
 };
 const xrK = ctx => ctx.k != null ? ctx.k : ease(Math.min(1, Math.max(0, (ctx.st && ctx.st.xr) || 0)));
-// a label pill on the side of the part its anchor is on, as seen now, so pills don't cross when it turns
-const pill = (F, pt, dx, dy, text, on) => { const X = P(...pt)[0], Xc = P(...F.o)[0]; return tag(pt, (X < Xc - .5 ? -1 : X > Xc + .5 ? 1 : Math.sign(dx) || 1) * Math.abs(dx), dy, text, on); };
 const ring = (F, a, b, z, r, n = 24) => B.circ(a, b, r, n).map(([u, v]) => F.W(u, v, z));
 // clockwise angle from 12 o'clock (away from the legs), seen from above: direction in the part's (a, b) plane
 const dirOf = deg => { const r = deg * Math.PI / 180; return [Math.sin(r), -Math.cos(r)]; };
@@ -105,8 +103,9 @@ B.part('potentiometer', {
     if (hot || burnt){ const [X, Y] = P(...F.W(0, cb, zk1 + 2)); s += `<circle cx="${f(X)}" cy="${f(Y - 6)}" r="4" fill="#8a847a" opacity=".4"/><circle cx="${f(X + 3)}" cy="${f(Y - 12)}" r="3" fill="#8a847a" opacity=".3"/>`; }
     if ((ctx.solo || (B.md && B.md.def && B.md.def.partPage)) && k > .5){
       const [wx, wy] = dirOf(ang);
-      s += pill(F, F.W(-3.3, cb, 3.4), -58, -24, T('Carbon track')) + pill(F, F.W(wx * 3.3, cb + wy * 3.3, 3.6), 52, -62, T('Wiper'), true)
-        + pill(F, F.W(0, cb + 1.5, 3.4), 40, 34, T('Ring to pin W'));
+      ctx.label(F.W(-3.3, cb, 3.4), 'Carbon track');
+      ctx.label(F.W(wx * 3.3, cb + wy * 3.3, 3.6), 'Wiper', true);
+      ctx.label(F.W(0, cb + 1.5, 3.4), 'Ring to pin W');
     }
     ctx.put(F.bx(-5.2, cb - 5.2, -.3, 5.2, cb + 5.2, zk1 + .2), s);
   },

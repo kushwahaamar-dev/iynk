@@ -26,8 +26,6 @@ const frame = (legs, i0, i1) => {
     bx: (a0, b0, z0, a1, b1, z1) => B.aabb([W(a0, b0, z0), W(a1, b1, z1), W(a0, b1, z0), W(a1, b0, z1)]) };
 };
 const xrK = ctx => ctx.k != null ? ctx.k : ease(Math.min(1, Math.max(0, (ctx.st && ctx.st.xr) || 0)));
-// a label pill on the side of the part its anchor is on, as seen now, so pills don't cross when it turns
-const pill = (F, pt, dx, dy, text, on) => { const X = P(...pt)[0], Xc = P(...F.o)[0]; return tag(pt, (X < Xc - .5 ? -1 : X > Xc + .5 ? 1 : Math.sign(dx) || 1) * Math.abs(dx), dy, text, on); };
 const tempOf = p => Math.max(-40, Math.min(150, +p.tempC || 0));
 const voutAt = c => .5 + .01 * c;
 // TO-92 outline in the part's (a, b) plane: the flat face at b = BF, straight sides 1.3 mm, a half round back
@@ -96,7 +94,9 @@ B.part('tmp36', {
       s += w; }
     if (dead){ const [X, Y] = P(...F.W(0, 0, z1 + 1)); s += `<circle cx="${f(X)}" cy="${f(Y - 5)}" r="3.5" fill="#8a847a" opacity=".45"/><circle cx="${f(X + 2.5)}" cy="${f(Y - 10)}" r="2.6" fill="#8a847a" opacity=".3"/>`; }
     if ((ctx.solo || (B.md && B.md.def && B.md.def.partPage)) && k > .5){
-      s += pill(F, F.W(0, .4, 5.9), 50, -44, T('Silicon die')) + pill(F, F.W(.9, .7, 6.9), 54, 6, T('Gold bond wires')) + pill(F, F.W(-1.27, 0, 4.0), -56, 44, T('Lead frame'));
+      ctx.label(F.W(0, .4, 5.9), 'Silicon die');
+      ctx.label(F.W(.9, .7, 6.9), 'Gold bond wires');
+      ctx.label(F.W(-1.27, 0, 4.0), 'Lead frame');
     }
     ctx.put(F.bx(-2.9, BF - 1.3 - RB - .1, -.3, 2.9, BF + .1, z1 + .2), s);
   },

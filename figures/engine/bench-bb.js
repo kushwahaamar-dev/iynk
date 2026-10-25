@@ -177,8 +177,32 @@ const matLeg = (c, ref) => {
   const p = Object.assign({}, q, (B.st.cparams || {})[q.id] || {});
   try { return def.legAt(p, B.BP(q.at[0], q.at[1], B.G.matH - B.G.top), i); } catch (e) { B.note(`${q.id} legAt: ${e.message}`); return null; }
 };
+// one circuit part's drawing: its items (world box + svg) and its labeller; null when it can't be drawn
+const drawCircuitPart = (pl, q, k) => {
+  const md = B.md, st = B.st, p = Object.assign({}, q, (st.cparams || {})[q.id] || {}), def = B.parts[p.part];
+  if (!def){ unknownPart(p); return null; }
+  const holes = (p.holes || []).map(h => B.hole(pl.geo, h)).filter(Boolean);
+  if (holes.length !== (p.holes || []).length){ B.note(`circuit part ${p.id}: bad hole in ${p.holes}`); return null; }
+  const legs = holes.map(h => pl.at(h.x, h.y));
+  const origin = Array.isArray(p.at) ? B.BP(p.at[0], p.at[1], B.G.matH - B.G.top) : legs[0] || pl.at(0, 0);
+  const mm = (st.meas || {})[p.id] || {}, sel = st.sel === p.id;
+  const items = [], lb = B.labeller();
+  try { def.draw({ p, st, legs, holes, origin, pl, m: mm, lit: mm.state === 'ok' ? Math.min(1, Math.pow(Math.max(0, mm.i_mA) / 13.6, .55)) : 0, sel, k,
+    solo: !!md.def.partPage, label: lb.label, put: (bx, svg) => { if (svg) items.push({ box: bx, svg }); } }); } catch (e) { B.note(`${p.id}: ${e.message}`); }
+  return { p, def, sel, items, lb };
+};
+// a part page frames its part, not the whole breadboard: the parts' drawn box plus 10 mm of breadboard round it
+const PART_MARGIN = 10;
+const partFrame = () => {
+  const pl = place(); if (!pl || !(pl.c.parts || []).length) return null;
+  let bx = null;
+  for (const q of pl.c.parts){ const d = drawCircuitPart(pl, q, 0); if (!d) continue;
+    for (const it of d.items) bx = bx ? [bx[0].map((v, i) => Math.min(v, it.box[0][i])), bx[1].map((v, i) => Math.max(v, it.box[1][i]))] : [it.box[0].slice(), it.box[1].slice()]; }
+  return bx && [bx[0][0] - PART_MARGIN, bx[0][1] - PART_MARGIN, Math.max(0, bx[0][2] - 3), bx[1][0] + PART_MARGIN, bx[1][1] + PART_MARGIN, bx[1][2] + 2];
+};
 B.viewDef('breadboard', {
   bounds: () => {
+    const pf = B.md.def.partPage ? partFrame() : null; if (pf) return pf;
     const { box: [x0, y0, x1, y1], h } = extent(), a = B.BP(x0, y0, -B.G.top), b = B.BP(x1, y1, h);
     return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), 0, Math.max(a[0], b[0]), Math.max(a[1], b[1]), B.G.top + h];
   },
@@ -197,20 +221,11 @@ B.viewDef('breadboard', {
       const bbDef = B.parts.breadboard;
       const ctx = { pl, st, put: (bx, svg) => { if (svg) items.push({ box: bx, svg }); } };
       if (bbDef) bbDef.draw(Object.assign({ p: { id: 'BB', kind: pl.geo.kind } }, ctx));
-      const meas = st.meas || {};
       for (const q of pl.c.parts || []){
-        const p = Object.assign({}, q, (st.cparams || {})[q.id] || {}), def = B.parts[p.part];
-        if (!def){ unknownPart(p); continue; }
-        const holes = (p.holes || []).map(h => B.hole(pl.geo, h)).filter(Boolean);
-        if (holes.length !== (p.holes || []).length){ B.note(`circuit part ${p.id}: bad hole in ${p.holes}`); continue; }
-        const legs = holes.map(h => pl.at(h.x, h.y));
-        const origin = Array.isArray(p.at) ? B.BP(p.at[0], p.at[1], B.G.matH - B.G.top) : legs[0] || pl.at(0, 0);
-        const mm = meas[p.id] || {}, sel = st.sel === p.id;
-        const subItems = [], lb = B.labeller();
-        try { def.draw({ p, st, legs, holes, origin, pl, m: mm, lit: mm.state === 'ok' ? Math.min(1, Math.pow(Math.max(0, mm.i_mA) / 13.6, .55)) : 0, sel, k,
-          solo: !!md.def.partPage, label: lb.label, put: (bx, svg) => { if (svg) subItems.push({ box: bx, svg }); } }); } catch (e) { B.note(`${p.id}: ${e.message}`); }
-        lb.done(subItems.map(it => it.box));
-        for (const it of subItems) items.push({ box: it.box, svg: act('bb', sel ? `<g class="bsel">${it.svg}</g>` : it.svg, `data-id="${CF_ESC(p.id)}" data-label="${CF_ESC(T(def.name || p.part) + ' ' + p.id)}"`) });
+        const d = drawCircuitPart(pl, q, k); if (!d) continue;
+        const { p, def, sel } = d;
+        d.lb.done(d.items.map(it => it.box));
+        for (const it of d.items) items.push({ box: it.box, svg: act('bb', sel ? `<g class="bsel">${it.svg}</g>` : it.svg, `data-id="${CF_ESC(p.id)}" data-label="${CF_ESC(T(def.name || p.part) + ' ' + p.id)}"`) });
       }
       const wire = B.parts.wire;
       if (wire) for (const w of pl.c.wires || []){
