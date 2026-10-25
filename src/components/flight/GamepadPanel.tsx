@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui";
+import { Button, Select } from "@/components/ui";
 import type { Messages } from "@/i18n/namespaces";
 import { CHANNELS, DEFAULT_PAD, learnAxis, padSticks, type Channel, type PadMapping } from "@/lib/flight/input";
 
@@ -96,18 +96,19 @@ export function GamepadPanel({ t, mapping, onChange }: { t: T; mapping: PadMappi
                   {t.channels[c]}
                 </th>
                 <td>
-                  <select
-                    aria-label={`${t.channels[c]}: ${t.axis}`}
+                  <Select
+                    label={`${t.channels[c]}: ${t.axis}`}
+                    hideLabel
                     value={mapping.axes[c].axis}
                     onChange={(e) => onChange({ ...mapping, axes: { ...mapping.axes, [c]: { ...mapping.axes[c], axis: Number(e.target.value) } } })}
-                    className="ink-field !min-h-9 !w-auto py-0 text-sm"
+                    className="!min-h-9 !w-auto py-0 text-sm"
                   >
                     {axisOptions.map((i) => (
                       <option key={i} value={i}>
                         {fill(t.axisN, { n: i })}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </td>
                 <td>
                   <input

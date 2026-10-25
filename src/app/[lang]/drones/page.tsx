@@ -101,11 +101,11 @@ function CraftCardView({
       className="group relative flex h-full flex-col overflow-hidden focus-within:outline-[2.5px] focus-within:outline-offset-2 focus-within:outline-(--focus)"
       aria-labelledby={titleId}
     >
-      <div className={`flex items-center justify-between gap-3 border-b-2 border-line px-4 py-2 text-on-color ${BAND[card.palette]}`}>
+      <div className={`flex items-center justify-between gap-3 border-b-2 border-line px-4 py-1.5 text-on-color sm:py-2 ${BAND[card.palette]}`}>
         <span className="font-ui text-xs font-bold uppercase tracking-wider">{t("index.fig", { n: fig })}</span>
         <span className="font-ui text-xs font-bold uppercase tracking-wider">{t(`firmware.${card.firmware}`)}</span>
       </div>
-      <div className="flex flex-1 flex-col gap-3 p-4 pb-5">
+      <div className="flex flex-1 flex-col gap-2 p-3 pb-4 sm:gap-3 sm:p-4 sm:pb-5">
         {craft ? (
           <>
             <div>
@@ -114,14 +114,14 @@ function CraftCardView({
                   {craft.title}
                 </Link>
               </h2>
-              <p className="mt-1 text-sm text-muted">{craft.sub}</p>
+              <p className="mt-1 text-sm text-muted max-sm:hidden">{craft.sub}</p>
             </div>
             <div className="flex flex-wrap gap-1.5 max-sm:hidden">
               <Chip tone={TONE[card.palette]}>{t(`classes.${craft.class}`)}</Chip>
               <Chip>{t("index.motors", { count: card.motors })}</Chip>
               <Chip>{t("index.size", { mm: craft.sizeMm })}</Chip>
             </div>
-            <dl className="mt-auto grid grid-cols-3 gap-2 border-t-[1.5px] border-rule pt-3">
+            <dl className="mt-auto grid grid-cols-3 gap-2 border-t-[1.5px] border-rule pt-2 sm:pt-3">
               <div className="min-w-0">
                 <dt className="ink-label truncate">{t("index.statAuw")}</dt>
                 <dd className="tabular font-ui text-sm font-semibold">{t("design.units.g", { value: formatNumber(lang, craft.auw, 0) })}</dd>
