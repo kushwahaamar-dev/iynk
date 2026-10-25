@@ -162,3 +162,29 @@ what, how bad, screenshot, which builder's files it is in, and the exact fix. Th
 `node scripts/crawl-routes.mjs --base http://127.0.0.1:3446 --dist .next-review --workers 3 --out
 <your scratchpad>/routes.md` and `E2E_SKIP_BUILD=1 NEXT_DIST_DIR=.next-review npx playwright test`, and report both
 results. Stop the server and delete `.next-review` when done.
+
+## Side job: the missing board quizzes (alongside phases 1-4)
+
+BUILD-PLAN §4 asks for a quiz on every board lesson. Fourteen have none: all six on `pico`, three on
+`esp32-devkitc`, three on `esp32-s3-devkitc-1`, two on `nodemcu`.
+
+### F-quiz-<n>
+
+F-quiz-pico owns `src/content/boards/pico.ts`, `pico.test.ts` and `src/i18n/content/<lang>/boards/pico.json` (all
+six languages); F-quiz-esp the same three kinds of file for `esp32-devkitc`, `esp32-s3-devkitc-1` and `nodemcu`.
+Touch nothing else in those files but the quizzes.
+
+1. For each lesson without a `quiz`, add one in the shape `nano.ts` uses (`id` = the lesson id, `afterStep: null`,
+   three questions, three options each, `answer` the index of the right one, a `why`), with its English text under
+   `lessons.<lesson>.quiz` in `src/i18n/content/en/boards/<board>.json`. Ask what the lesson teaches and what a learner
+   gets wrong on the real board, from the lesson's own prose and `docs/facts/<board>.md`: no fact the fact sheet
+   doesn't support, no trick questions, the right answer not always in the same place.
+2. Translate the new keys into the other five languages' `<board>.json` (es fr de zh hi), in the register and the
+   terms each file already uses. Keep every other key as it is. Some of these files are hand-formatted: if
+   `json.dumps(json.load(f), ensure_ascii=False, indent=2)` doesn't give back the file byte for byte, insert the new
+   keys as text instead of rewriting the file.
+3. Add a test to the board's test file: every lesson has a quiz with three questions whose answers are among their
+   options (the way `basys3.test.ts` does it).
+4. Verify: `npx vitest run src/content/boards/<board>.test.ts src/i18n/content.test.ts src/lib/interp/lessons.test.ts`,
+   `npm run content:check` (no line for your boards), `npx tsc --noEmit`, `npx eslint src/content/boards --quiet`.
+   Commit each board when it passes, with its six prose files.
