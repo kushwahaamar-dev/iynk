@@ -120,7 +120,7 @@ function host(url: string) {
 function Citations({ citations, label }: { citations: Citation[]; label: string }) {
   return (
     <div>
-      <p className="mb-1 font-ui text-[0.7rem] font-extrabold uppercase tracking-wide text-muted">{label}</p>
+      <p className="ink-kicker mb-1">{label}</p>
       <ul className="grid gap-1.5">
         {citations.map((citation, i) => (
           <li key={citation.url}>
@@ -130,12 +130,12 @@ function Citations({ citations, label }: { citations: Citation[]; label: string 
               rel="noopener noreferrer"
               className="flex gap-2 rounded-ink-sm border-2 border-line bg-paper p-2 no-underline shadow-ink-sm hover:-translate-y-px hover:shadow-ink"
             >
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full border-2 border-line bg-cobalt font-ui text-[0.7rem] font-extrabold text-on-color">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full border-2 border-line bg-cobalt font-ui text-xs font-bold text-on-color">
                 {i + 1}
               </span>
               <span className="min-w-0">
                 <span className="block truncate text-sm font-bold text-ink">{citation.title}</span>
-                <span className="block truncate font-ui text-[0.7rem] text-muted">{host(citation.url)}</span>
+                <span className="block truncate font-ui text-xs text-muted">{host(citation.url)}</span>
                 {citation.snippet ? <span className="line-clamp-2 text-xs text-muted">{citation.snippet}</span> : null}
               </span>
             </a>

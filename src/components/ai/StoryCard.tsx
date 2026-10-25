@@ -233,7 +233,7 @@ function StoryView({ story, drawing, t, onRemake }: { story: Story; drawing: boo
           <Markdown text={story.story} labels={labels} />
           {story.highlights.length ? (
             <div>
-              <p className="font-ui text-[0.7rem] font-extrabold uppercase tracking-wide text-muted">{t("story.highlights")}</p>
+              <p className="ink-kicker">{t("story.highlights")}</p>
               <ul className="mt-1 flex flex-wrap gap-1.5">
                 {story.highlights.map((item) => (
                   <li key={item}>
@@ -245,7 +245,7 @@ function StoryView({ story, drawing, t, onRemake }: { story: Story; drawing: boo
           ) : null}
           {credits.length ? (
             <div>
-              <p className="font-ui text-[0.7rem] font-extrabold uppercase tracking-wide text-muted">{t("story.builtBy")}</p>
+              <p className="ink-kicker">{t("story.builtBy")}</p>
               <ul className="mt-1 space-y-0.5 font-bold">
                 {credits.map((line) => (
                   <li key={line} className="flex items-center gap-1.5">
@@ -257,7 +257,7 @@ function StoryView({ story, drawing, t, onRemake }: { story: Story; drawing: boo
             </div>
           ) : null}
         </div>
-        <p className="border-t-2 border-dashed border-rule px-4 py-2 font-ui text-[0.7rem] text-muted">{t("story.footer")}</p>
+        <p className="border-t-2 border-dashed border-rule px-4 py-2 text-xs text-muted">{t("story.footer")}</p>
       </article>
       {story.coverFailed ? <p className="text-xs text-muted">{t("story.noCover")}</p> : null}
 

@@ -97,7 +97,7 @@ describe("RealBuildPanel", () => {
     const { store } = storeOf(null);
     renderPanel({ lab: "robotics", itemId: "l298n", store, figure: null });
 
-    expect(await screen.findByRole("heading", { name: "Build it for real" })).toBeTruthy();
+    expect(await screen.findByRole("region", { name: "Build it for real" })).toBeTruthy();
     await screen.findAllByText("Arduino Nano");
     await waitFor(() => expect(screen.getByText(/Prices checked at/)).toBeTruthy());
     // Nano 24.90 + L298N 7.00 + TT motor 3.00; the other parts have no listing and no price.
@@ -146,6 +146,39 @@ describe("RealBuildPanel", () => {
     expect(dispatch).toHaveBeenCalledWith({ type: "design/pick", key: "batt", value: "4s1500" });
     expect(dispatch).toHaveBeenCalledWith({ type: "design/pick", key: "motor", value: "2306-2450" });
     expect(await screen.findByText("The lab now uses this build.")).toBeTruthy();
+  });
+
+  it("with search off, lists a bench's parts without prices and sums a drone at catalogue prices", async () => {
+    // Fresh modules: the feature flags are a module singleton that earlier tests filled with search on.
+    vi.resetModules();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: string | URL | Request) =>
+        String(input) === "/api/status" ? Response.json({ features: { search: false } }) : new Response("not found", { status: 404 }),
+      ),
+    );
+    const { RealBuildPanel: Panel } = await import("./RealBuildPanel");
+    const { I18nProvider: Provider } = await import("@/i18n/client");
+    const show = (props: Parameters<typeof Panel>[0]) =>
+      render(
+        <Provider locale="en" messages={common.client}>
+          <Panel {...props} />
+        </Provider>,
+      );
+
+    const bench = show({ lab: "robotics", itemId: "l298n", store: storeOf(null).store, figure: null });
+    expect(await screen.findByText("Live prices aren't set up on this deployment.")).toBeTruthy();
+    expect((await screen.findAllByText("Arduino Nano")).length).toBeGreaterThan(0);
+    expect(screen.queryByText("$0.00")).toBeNull();
+    expect(screen.queryByText("No listing found")).toBeNull();
+    expect(screen.queryByText("Cheapest total")).toBeNull();
+    bench.unmount();
+
+    show({ lab: "drone", itemId: "quad5", store: storeOf(design.default).store, figure: null });
+    expect(await screen.findByText("Catalogue total")).toBeTruthy();
+    expect(screen.queryByText("Cheapest total")).toBeNull();
+    expect(screen.queryByText("Catalogue price")).toBeNull();
+    expect(screen.queryByText(/from US stores/)).toBeNull();
   });
 
   it("says when an item's parts list isn't published", async () => {

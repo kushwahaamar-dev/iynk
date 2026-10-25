@@ -17,7 +17,7 @@ import { useSearchT, type SearchT } from "@/lib/search/messages";
 import { costRange, optimize, priceLines, type Candidate, type OptimizeResult } from "@/lib/search/optimize";
 import type { Offer, OffersGap, PartOffers } from "@/lib/search/types";
 import { SourcesList } from "./SourcesList";
-import { PanelHead, PanelSkeleton, StatusError, external, useFormat, useSearchAvailability, type Format } from "./shared";
+import { PanelSkeleton, StatusError, external, useFormat, useSearchAvailability, type Format } from "./shared";
 
 /* ---------- the parts list ---------- */
 
@@ -148,7 +148,7 @@ function OfferRow({ offer, line, t, f }: { offer: Offer; line: BomLine; t: Searc
         <a href={offer.url} {...external} className="line-clamp-2 text-sm underline underline-offset-2">
           {offer.title}
         </a>
-        <div className="font-ui text-xs text-muted">
+        <div className="text-xs text-muted">
           {offer.seller && offer.seller !== store ? `${store} · ${offer.seller}` : store}
           {offer.pack ? ` · ${t("real.pack", { count: offer.pack })}` : null}
           {offer.inStock === false ? ` · ${t("real.outOfStock")}` : null}
@@ -159,40 +159,50 @@ function OfferRow({ offer, line, t, f }: { offer: Offer; line: BomLine; t: Searc
   );
 }
 
-function LineItem({ line, found, t, f }: { line: BomLine; found: PartOffers | undefined; t: SearchT; f: Format }) {
+/** One line of the parts list. `priced` is false when nothing on the list has a price: then it is a checklist. */
+function LineItem({ line, found, priced, catalogueOnly, t, f }: { line: BomLine; found: PartOffers | undefined; priced: boolean; catalogueOnly: boolean; t: SearchT; f: Format }) {
   const [open, setOpen] = useState(false);
   const id = useId();
   const best = bestOf(found);
   const name = lineName(line, t);
   const others = found?.offers ?? [];
   const needed = best ? listingsNeeded(best, line.qty, line.pack) : 0;
+  const qty = line.qty > 1 ? <span className="tabular ms-1.5 font-ui text-sm font-normal text-muted">{t("real.qty", { count: line.qty })}</span> : null;
+  if (!priced) {
+    return (
+      <li className="py-2.5 text-sm font-semibold">
+        {name}
+        {qty}
+      </li>
+    );
+  }
   return (
-    <li className="py-2">
-      <div className="flex items-start justify-between gap-2">
+    <li className="py-2.5">
+      <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <div className="font-semibold">
+          <div className="text-sm font-semibold">
             {name}
-            {line.qty > 1 ? <span className="tabular ms-1 font-ui text-sm text-muted">{t("real.qty", { count: line.qty })}</span> : null}
+            {qty}
           </div>
           {best ? (
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+            <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
               <a href={best.url} {...external} className="inline-flex items-center gap-1 underline underline-offset-2">
                 {t("real.view", { store: best.seller ?? t(`store.${best.source}`) })}
                 <Icon name="external" size={14} aria-hidden="true" />
               </a>
               {best.inStock === true ? (
-                <Chip tone="mint" className="text-xs">
+                <Chip tone="mint">
                   <Icon name="check" size={12} aria-hidden="true" />
                   {t("real.inStock")}
                 </Chip>
               ) : null}
-              {needed > 1 ? <span className="font-ui text-xs text-muted">{t("real.listings", { count: needed })}</span> : null}
+              {needed > 1 ? <span className="text-xs text-muted">{t("real.listings", { count: needed })}</span> : null}
             </div>
-          ) : (
-            <div className="font-ui text-xs text-muted">{line.estimate !== undefined ? t("real.estimate") : t("real.noOffer")}</div>
+          ) : catalogueOnly ? null : (
+            <div className="text-xs text-muted">{line.estimate !== undefined ? t("real.estimate") : t("real.noOffer")}</div>
           )}
         </div>
-        <span className={cx("tabular shrink-0 font-ui font-bold", !best && "text-muted")}>
+        <span className={cx("tabular shrink-0 font-ui font-bold", !best && !catalogueOnly && "text-muted")}>
           {best ? f.money(lineCost(best, line.qty, line.pack), best.currency) : line.estimate !== undefined ? f.money(line.estimate) : "—"}
         </span>
       </div>
@@ -203,12 +213,12 @@ function LineItem({ line, found, t, f }: { line: BomLine; found: PartOffers | un
             aria-expanded={open}
             aria-controls={id}
             onClick={() => setOpen((o) => !o)}
-            className="inline-flex min-h-8 items-center gap-1 font-ui text-xs font-bold uppercase tracking-wide text-muted hover:text-ink"
+            className="inline-flex min-h-9 items-center gap-1 text-xs font-semibold text-muted hover:text-ink [@media(pointer:coarse)]:min-h-11"
           >
             <Icon name="chevron-down" size={14} aria-hidden="true" className={cx("transition-transform motion-reduce:transition-none", open && "rotate-180")} />
             {open ? t("real.offersHide") : t("real.offersShow", { count: others.length })}
           </button>
-          <ul id={id} hidden={!open} aria-label={t("real.offersLabel", { part: name })} className="mt-1 rounded-ink border-2 border-line bg-sunken px-2">
+          <ul id={id} hidden={!open} aria-label={t("real.offersLabel", { part: name })} className="mt-1 rounded-ink-sm bg-sunken px-3">
             {others.map((offer) => (
               <OfferRow key={offer.url} offer={offer} line={line} t={t} f={f} />
             ))}
@@ -300,12 +310,12 @@ function Optimiser({
   const best = result.best;
   const now = result.current;
   return (
-    <section aria-labelledby={`${id}-title`} className="ink-card space-y-3 p-3">
+    <section aria-labelledby={`${id}-title`} className="ink-card space-y-4 p-4">
       <div>
-        <h3 id={`${id}-title`} className="font-ui text-sm font-extrabold uppercase tracking-wide">
+        <h3 id={`${id}-title`} className="font-head text-lg leading-tight">
           {t("opt.heading")}
         </h3>
-        <p className="text-sm text-muted">{t("opt.lede")}</p>
+        <p className="mt-1 text-sm text-muted">{t("opt.lede")}</p>
       </div>
 
       <div>
@@ -313,7 +323,7 @@ function Optimiser({
           <label htmlFor={`${id}-budget`} className="ink-kicker">
             {t("opt.budget")}
           </label>
-          <output htmlFor={`${id}-budget`} className="tabular font-ui text-lg font-extrabold">
+          <output htmlFor={`${id}-budget`} className="tabular font-ui text-base font-bold">
             {f.whole(budget)}
           </output>
         </div>
@@ -326,7 +336,7 @@ function Optimiser({
           value={budget}
           aria-valuetext={t("opt.budgetValue", { amount: f.whole(budget) })}
           onChange={(e) => setBudget(Number(e.target.value))}
-          className="mt-1 w-full accent-[var(--color-tomato)]"
+          className="mt-1 w-full [@media(pointer:coarse)]:h-11"
         />
         <div className="tabular flex justify-between font-ui text-xs text-muted" aria-hidden="true">
           <span>{f.whole(low)}</span>
@@ -342,7 +352,7 @@ function Optimiser({
       <div aria-live="polite" className="space-y-2">
         {best ? (
           <>
-            <h4 className="font-semibold">{t("opt.best", { amount: f.whole(budget) })}</h4>
+            <h4 className="text-sm font-semibold">{t("opt.best", { amount: f.whole(budget) })}</h4>
             {result.swaps.length === 0 ? (
               <p className="text-sm">{applied === pickKey ? t("opt.applied") : t("opt.keep")}</p>
             ) : (
@@ -367,7 +377,7 @@ function Optimiser({
               <Stat size="sm" label={t("opt.flight")} value={t("opt.minutes", { value: f.one(best.flyMin) })} hint={t("opt.was", { value: t("opt.minutes", { value: f.one(now.flyMin) }) })} />
               <Stat size="sm" label={t("opt.weight")} value={t("opt.grams", { value: f.int(best.auw) })} hint={t("opt.was", { value: t("opt.grams", { value: f.int(now.auw) }) })} />
             </div>
-            {best.estimate ? <p className="font-ui text-xs text-muted">{t("opt.estimateNote")}</p> : null}
+            {best.estimate ? <p className="text-xs text-muted">{t("opt.estimateNote")}</p> : null}
             {result.swaps.length > 0 && canApply ? (
               <Button variant="primary" size="sm" onClick={() => apply(best)}>
                 {t("opt.apply")}
@@ -390,7 +400,7 @@ function Optimiser({
               : t("opt.noneConstraints")}
           </Callout>
         )}
-        <p className="font-ui text-xs text-muted">{t("opt.checked", { count: result.considered })}</p>
+        <p className="text-xs text-muted">{t("opt.checked", { count: result.considered })}</p>
       </div>
     </section>
   );
@@ -419,29 +429,36 @@ export function RealBuildPanel({ lab, itemId, store }: LabDockProps) {
     return best ? { live: true, cost: lineCost(best, line.qty, line.pack) } : line.estimate !== undefined ? { live: false, cost: line.estimate } : null;
   });
   const total = sumMoney(costs.map((c) => c?.cost ?? 0));
+  const live = costs.filter((c) => c?.live).length;
   const estimated = costs.filter((c) => c && !c.live).length;
   const unpriced = costs.filter((c) => c === null).length;
+  // Nothing priced (search off on a board or bench): a checklist, not a column of dashes and a $0.00 total.
+  const priced = live + estimated > 0 || availability === "ready";
+  const catalogueOnly = live === 0 && availability !== "ready";
   const sources = build
     .map((line) => ({ line, best: bestOf(offers.get(line.key)) }))
     .filter((x): x is { line: BomLine; best: Offer } => x.best !== undefined)
     .map(({ line, best }) => ({ title: `${lineName(line, t)}: ${best.title}`, url: best.url }));
+  const item = (line: BomLine) => <LineItem key={line.key} line={line} found={offers.get(line.key)} priced={priced} catalogueOnly={catalogueOnly} t={t} f={f} />;
 
   return (
-    <section aria-labelledby={`${id}-title`} className="space-y-3">
-      <PanelHead id={`${id}-title`} title={t("real.title")} lede={t("real.lede")}>
-        {availability === "ready" && lines ? (
-          <Button size="sm" variant="ghost" onClick={refresh} disabled={loading}>
-            {t("real.refresh")}
-          </Button>
-        ) : null}
-      </PanelHead>
-
-      {availability === "error" ? <StatusError t={t} /> : null}
+    <section aria-label={t("real.title")} className="space-y-4">
       {availability === "off" ? (
-        <Callout tone="note" title={t("real.notSetUp")}>
+        <Callout variant="quiet" title={t("real.notSetUp")}>
           {lab === "drone" ? t("real.notSetUpDrone") : null}
         </Callout>
-      ) : null}
+      ) : (
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <p className="min-w-0 flex-1 text-sm text-muted">{t("real.lede")}</p>
+          {availability === "ready" && lines ? (
+            <Button size="sm" variant="ghost" onClick={refresh} disabled={loading} className="shrink-0">
+              {t("real.refresh")}
+            </Button>
+          ) : null}
+        </div>
+      )}
+
+      {availability === "error" ? <StatusError t={t} /> : null}
       {prices?.failure ? (
         <Callout tone="warn" title={prices.failure === "rate_limited" ? t("real.rateLimited") : t("real.failed")}>
           <Button size="sm" onClick={refresh}>
@@ -459,42 +476,42 @@ export function RealBuildPanel({ lab, itemId, store }: LabDockProps) {
           <div aria-live="polite" aria-busy={loading}>
             <div className="flex items-baseline justify-between gap-2">
               <h3 className="ink-kicker">{t("real.parts")}</h3>
-              {loading ? <span className="font-ui text-xs text-muted">{t("real.loading")}</span> : null}
-              {!loading && prices?.fetchedAt ? <span className="font-ui text-xs text-muted">{t("real.checked", { time: f.time(prices.fetchedAt) })}</span> : null}
+              {loading ? <span className="text-xs text-muted">{t("real.loading")}</span> : null}
+              {!loading && prices?.fetchedAt ? <span className="text-xs text-muted">{t("real.checked", { time: f.time(prices.fetchedAt) })}</span> : null}
             </div>
-            <ul className="divide-y divide-rule">
-              {build.map((line) => (
-                <LineItem key={line.key} line={line} found={offers.get(line.key)} t={t} f={f} />
-              ))}
-            </ul>
+            <ul className="divide-y divide-rule">{build.map(item)}</ul>
           </div>
 
-          <div className="ink-card flex items-end justify-between gap-3 p-3">
-            <Stat label={t("real.total")} value={f.money(total)} size="md" />
-            <div className="text-end font-ui text-xs text-muted">
-              {estimated === 0 && unpriced === 0 && availability === "ready" && !loading ? <div>{t("real.allLive")}</div> : null}
-              {estimated > 0 ? <div>{t("real.estimated", { count: estimated })}</div> : null}
-              {unpriced > 0 ? <div>{t("real.unpriced", { count: unpriced })}</div> : null}
+          {priced ? (
+            <div className="border-t-2 border-line pt-3">
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="text-sm font-semibold">{catalogueOnly ? t("real.totalCatalogue") : t("real.total")}</span>
+                <span className="tabular font-ui text-2xl font-extrabold">{f.money(total)}</span>
+              </div>
+              <div className="mt-1 space-y-0.5 text-end text-xs text-muted">
+                {estimated === 0 && unpriced === 0 && availability === "ready" && !loading ? <p>{t("real.allLive")}</p> : null}
+                {estimated > 0 && !catalogueOnly ? <p>{t("real.estimated", { count: estimated })}</p> : null}
+                {unpriced > 0 ? <p>{t("real.unpriced", { count: unpriced })}</p> : null}
+              </div>
             </div>
-          </div>
+          ) : null}
 
           {bom.status === "ready" && bom.drone ? (
             <Optimiser design={bom.drone.design} pick={bom.drone.pick} lines={lines} offers={offers} canApply={bom.live} store={store} t={t} f={f} />
           ) : null}
 
           {alternatives.length > 0 ? (
-            <details className="rounded-ink border-2 border-dashed border-line p-2">
-              <summary className="cursor-pointer font-ui text-sm font-bold">{t("real.alternatives")}</summary>
-              <ul className="divide-y divide-rule">
-                {alternatives.map((line) => (
-                  <LineItem key={line.key} line={line} found={offers.get(line.key)} t={t} f={f} />
-                ))}
-              </ul>
+            <details className="group border-t-[1.5px] border-rule pt-2">
+              <summary className="flex min-h-11 cursor-pointer list-none items-center gap-1.5 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+                <Icon name="chevron-right" size={16} aria-hidden="true" className="shrink-0 transition-transform group-open:rotate-90 motion-reduce:transition-none" />
+                {t("real.alternatives")}
+              </summary>
+              <ul className="divide-y divide-rule">{alternatives.map(item)}</ul>
             </details>
           ) : null}
 
           <SourcesList sources={sources} />
-          <p className="text-xs text-muted">{t("real.storesNote")}</p>
+          {live > 0 ? <p className="text-xs text-muted">{t("real.storesNote")}</p> : null}
         </>
       ) : null}
     </section>

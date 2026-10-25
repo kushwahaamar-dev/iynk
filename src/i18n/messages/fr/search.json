@@ -8,6 +8,7 @@
     "parts": "Liste des pièces",
     "alternatives": "Alternatives que l’optimiseur peut choisir",
     "total": "Total le moins cher",
+    "totalCatalogue": "Total au prix du catalogue",
     "allLive": "Toutes les pièces ont un prix en direct",
     "estimated": {
       "one": "{count} pièce au prix du catalogue",

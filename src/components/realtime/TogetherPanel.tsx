@@ -25,10 +25,10 @@ function JoinForm({ t, onJoin }: { t: TogetherT; onJoin: (id: string) => void })
 
   return (
     <form onSubmit={submit} className="flex flex-col gap-1" noValidate>
-      <label htmlFor={`${id}-code`} className="text-sm font-bold">
+      <label htmlFor={`${id}-code`} className="text-sm font-semibold">
         {t("panel.joinLabel")}
       </label>
-      <div className="flex gap-2">
+      <div className="flex max-w-[16rem] gap-2">
         <input
           id={`${id}-code`}
           value={value}
@@ -94,7 +94,7 @@ function PanelBody({ together, t }: { together: Together; t: TogetherT }) {
           {t(`panel.ended.${together.ended}`)}
         </Callout>
       ) : null}
-      <p className="text-sm">{t("panel.intro")}</p>
+      <p className="text-sm leading-relaxed">{t("panel.intro")}</p>
       <Button variant="primary" className="self-start" onClick={together.start}>
         {together.ended ? t("panel.again") : t("panel.start")}
       </Button>
@@ -118,7 +118,7 @@ function Panel({ t }: { t: TogetherT }) {
 export function TogetherPanel<S, A extends { type: string }>({ lab, itemId, store }: LabDockProps<S, A>) {
   const t = useTogetherT();
   const outer = useTogether();
-  if (!t) return <div aria-busy="true" className="h-40 animate-pulse rounded-ink border-2 border-line bg-sunken" />;
+  if (!t) return <div aria-busy="true" className="h-40 animate-pulse rounded-ink bg-sunken motion-reduce:animate-none" />;
   const body = (
     <section aria-label={t("panel.title")}>
       <Panel t={t} />

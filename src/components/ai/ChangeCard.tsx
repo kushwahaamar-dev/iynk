@@ -44,7 +44,7 @@ export function ChangeCard({
       className="overflow-hidden rounded-ink border-2 border-line bg-surface shadow-ink-sm"
     >
       <header className="flex items-center justify-between gap-2 border-b-2 border-line bg-mustard px-3 py-2 text-on-color">
-        <h3 id={titleId} className="font-ui text-xs font-extrabold uppercase tracking-wide">
+        <h3 id={titleId} className="ink-kicker text-ink">
           {t(`tools.change.${card.change.kind}`)}
         </h3>
         {card.status !== "pending" ? (

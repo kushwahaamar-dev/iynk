@@ -19,9 +19,9 @@ const DEFAULT_KIND: Record<LabKind, NearbyKind> = { drone: "flying-field", robot
 
 function PlaceItem({ place, t, f }: { place: Place; t: SearchT; f: Format }) {
   return (
-    <li className="ink-card space-y-1 p-3">
+    <li className="space-y-1 py-3">
       <div className="flex items-start justify-between gap-2">
-        <h4 className="min-w-0 font-semibold">{place.title}</h4>
+        <h4 className="min-w-0 text-sm font-semibold">{place.title}</h4>
         {place.distanceKm !== undefined ? (
           <Chip tone="plain" className="shrink-0 tabular">
             {t("nearby.distance", { km: f.one(place.distanceKm) })}
@@ -59,7 +59,7 @@ function EventItem({ event, t }: { event: MakerEvent; t: SearchT }) {
         href={event.url}
         {...external}
         aria-label={t("nearby.eventLink", { event: event.title })}
-        className="ink-card flex gap-3 p-2 hover:bg-sunken focus-visible:outline-2"
+        className="-mx-2 flex gap-3 rounded-ink-sm p-2 no-underline hover:bg-sunken"
       >
         {event.thumbnail ? (
           // eslint-disable-next-line @next/next/no-img-element -- remote thumbnail from Google's CDN
@@ -153,7 +153,6 @@ export function NearbyPanel({ lab }: LabDockProps) {
       <PanelHead id={`${id}-title`} title={t("nearby.title")} lede={t("nearby.lede")} />
       {availability === "loading" ? <PanelSkeleton /> : null}
       {availability === "error" ? <StatusError t={t} /> : null}
-      {availability === "off" ? <Callout tone="note">{t("real.notSetUp")}</Callout> : null}
       {availability === "ready" ? (
         <>
           <SegmentedControl
@@ -204,7 +203,7 @@ export function NearbyPanel({ lab }: LabDockProps) {
             ) : null}
             {placeOutcome?.ok && placeOutcome.items.length === 0 ? <p className="text-sm text-muted">{t("nearby.empty")}</p> : null}
             {placeOutcome?.ok && placeOutcome.items.length > 0 ? (
-              <ul className="grid gap-2">
+              <ul className="divide-y divide-rule">
                 {placeOutcome.items.map((place) => (
                   <PlaceItem key={place.mapsUrl} place={place} t={t} f={f} />
                 ))}

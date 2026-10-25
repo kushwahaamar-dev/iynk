@@ -8,6 +8,7 @@
     "parts": "零件清单",
     "alternatives": "优化器可替换的备选零件",
     "total": "最低总价",
+    "totalCatalogue": "目录价合计",
     "allLive": "所有零件均为实时价格",
     "estimated": {
       "one": "{count} 个零件使用目录价格",

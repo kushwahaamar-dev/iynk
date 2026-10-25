@@ -8,6 +8,7 @@
     "parts": "Parts list",
     "alternatives": "Alternatives the optimiser can swap in",
     "total": "Cheapest total",
+    "totalCatalogue": "Catalogue total",
     "allLive": "Every part priced live",
     "estimated": {
       "one": "{count} part priced from the catalogue",

@@ -50,7 +50,6 @@ export function VideoHelp({ lab, itemId }: LabDockProps) {
       <PanelHead id={`${fieldId}-title`} title={t("videos.title")} lede={t("videos.lede")} />
       {availability === "loading" ? <PanelSkeleton /> : null}
       {availability === "error" ? <StatusError t={t} /> : null}
-      {availability === "off" ? <Callout tone="note">{t("real.notSetUp")}</Callout> : null}
       {availability === "ready" ? (
         <>
           <form onSubmit={submit} className="flex gap-2" role="search">
@@ -83,7 +82,7 @@ export function VideoHelp({ lab, itemId }: LabDockProps) {
                       href={video.url}
                       {...external}
                       aria-label={t("videos.watch", { title: video.title, channel: video.channel })}
-                      className="ink-card flex gap-3 p-2 hover:bg-sunken focus-visible:outline-2"
+                      className="-mx-2 flex gap-3 rounded-ink-sm p-2 no-underline hover:bg-sunken"
                     >
                       <span className="relative shrink-0">
                         {/* Remote thumbnails from YouTube's CDN; next/image would need its domains configured. */}

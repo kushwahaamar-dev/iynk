@@ -67,7 +67,7 @@ function roomInAddress() {
 function RealTab(lab: LabDockProps) {
   const search = useSearchAvailability();
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-6 [&>*+*]:border-t-[1.5px] [&>*+*]:border-rule [&>*+*]:pt-6">
       <RealBuildPanel {...lab} />
       {search === "off" ? null : (
         <>
@@ -206,6 +206,7 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
   const trigger = (
     <Button
       ref={triggerRef}
+      data-testid="lab-dock-trigger"
       variant="secondary"
       size="sm"
       aria-label={t("dock.open")}
@@ -218,7 +219,7 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
         setDismissedRoom(false);
         setOpen(true);
       }}
-      className="relative shrink-0 whitespace-nowrap max-sm:size-11 max-sm:px-0"
+      className="relative w-fit shrink-0 whitespace-nowrap max-sm:size-11 max-sm:px-0"
     >
       <Icon name="tools" size={18} />
       <span className="max-sm:sr-only">{t("dock.label")}</span>

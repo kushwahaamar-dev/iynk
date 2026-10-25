@@ -36,27 +36,27 @@ export function PartnerPanel(props: LabDockProps) {
   const { status, features } = useFeatures();
   const log = useBuildLog(props, t ? t("story.me") : "");
 
-  if (!t) return <section aria-busy="true" className="h-full min-h-[24rem] animate-pulse rounded-ink bg-sunken" />;
+  if (!t) return <section aria-busy="true" className="h-28 animate-pulse rounded-ink bg-sunken" />;
   if (status === "ready" && features.ai) {
     return <PartnerChat {...props} t={t} locale={locale} log={log} voice={features.voice} image={features.image} />;
   }
   return (
     <Frame t={t}>
-      <div className="flex flex-1 items-center p-4">
+      <div className="pt-3">
         {status === "loading" ? (
           <p role="status" className="flex items-center gap-2 text-sm text-muted">
-            <span className="size-2 animate-ping rounded-full bg-mint" aria-hidden="true" />
+            <span className="size-2 animate-ping rounded-full bg-mint motion-reduce:animate-none" aria-hidden="true" />
             {t("status.loading")}
           </p>
         ) : status === "error" ? (
-          <Callout tone="warn" title={t("status.unreachable")} className="w-full">
+          <Callout tone="warn" title={t("status.unreachable")}>
             <Button size="sm" className="mt-2" onClick={reloadFeatures}>
               {t("status.check")}
             </Button>
           </Callout>
         ) : (
-          <Callout tone="note" title={t("status.unavailable")} className="w-full">
-            {t("status.unavailableBody")}
+          <Callout variant="quiet" title={t("status.unavailable")}>
+            <span className="mt-0.5 block">{t("status.unavailableBody")}</span>
           </Callout>
         )}
       </div>
@@ -64,22 +64,20 @@ export function PartnerPanel(props: LabDockProps) {
   );
 }
 
-function Frame({ t, actions, children }: { t: AiT; actions?: ReactNode; children: ReactNode }) {
+/** The partner's header row and what goes under it. The dock is the box, so the partner draws none of its own. */
+function Frame({ t, actions, fill, children }: { t: AiT; actions?: ReactNode; fill?: boolean; children: ReactNode }) {
   const titleId = useId();
   return (
-    <section
-      aria-labelledby={titleId}
-      className="@container flex h-full min-h-[24rem] flex-col overflow-hidden rounded-ink border-2 border-line bg-paper text-ink"
-    >
-      <header className="flex items-center gap-2 border-b-2 border-line bg-surface px-3 py-2">
+    <section aria-labelledby={titleId} className={cx("@container flex flex-col text-ink", fill && "h-full min-h-[24rem]")}>
+      <header className="flex items-center gap-2.5 border-b-[1.5px] border-rule pb-3">
         <span className="flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-line bg-mint text-on-color">
           <PartnerIcon name="spark" />
         </span>
         <div className="min-w-0 flex-1">
-          <h2 id={titleId} className="truncate font-head text-base font-extrabold leading-tight">
+          <h2 id={titleId} className="truncate font-head text-lg leading-tight">
             {t("panel.title")}
           </h2>
-          <p className="truncate font-ui text-[0.7rem] text-muted">{t("panel.byline")}</p>
+          <p className="truncate text-xs text-muted">{t("panel.byline")}</p>
         </div>
         {actions}
       </header>
@@ -202,10 +200,10 @@ function PartnerChat({ lab, itemId, store, figure, t, locale, log, voice, image 
   );
 
   return (
-    <Frame t={t} actions={actions}>
+    <Frame t={t} actions={actions} fill>
       <div onKeyDown={onPanelKey} className="flex min-h-0 flex-1 flex-col">
         {view === "story" ? (
-          <div className="min-h-0 flex-1 overflow-y-auto p-3">
+          <div className="min-h-0 flex-1 overflow-y-auto py-3">
             <StoryCard lab={lab} itemId={itemId} log={log} t={t} locale={locale} image={image} />
           </div>
         ) : (
@@ -218,12 +216,10 @@ function PartnerChat({ lab, itemId, store, figure, t, locale, log, voice, image 
                 const el = event.currentTarget;
                 pinned.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48;
               }}
-              className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-3"
+              className="-mx-1 min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-1 py-3"
             >
               {turns.length === 0 ? (
-                <p className="rounded-ink border-2 border-dashed border-rule bg-surface p-3 text-sm leading-relaxed">
-                  {t("panel.intro")}
-                </p>
+                <p className="text-sm leading-relaxed text-muted">{t("panel.intro")}</p>
               ) : (
                 turns.map((turn, index) => (
                   <TurnView
@@ -245,14 +241,14 @@ function PartnerChat({ lab, itemId, store, figure, t, locale, log, voice, image 
               )}
             </div>
 
-            <div className="space-y-2 border-t-2 border-line bg-surface p-3">
+            <div className="space-y-2 border-t-[1.5px] border-rule pt-3">
               {ideas.length || !busy ? (
                 <div
                   role="group"
                   aria-label={t("panel.suggestions")}
                   className={cx(
                     "flex items-center gap-1.5",
-                    turns.length ? "-mx-3 overflow-x-auto px-3 pb-1 [scrollbar-width:thin]" : "flex-wrap",
+                    turns.length ? "-mx-1 overflow-x-auto px-1 pb-1 [scrollbar-width:thin]" : "flex-wrap",
                   )}
                 >
                   {ideas.map((idea) => {
@@ -263,7 +259,7 @@ function PartnerChat({ lab, itemId, store, figure, t, locale, log, voice, image 
                         type="button"
                         onClick={() => send(text, "suggestion")}
                         className={cx(
-                          "rounded-full border-2 border-line bg-paper px-2.5 py-1 text-start text-xs font-bold shadow-ink-sm hover:-translate-y-px hover:shadow-ink active:translate-y-0 active:shadow-none [@media(pointer:coarse)]:min-h-11",
+                          "min-h-9 rounded-full border-[1.5px] border-line bg-surface px-3 py-1 text-start text-sm font-semibold leading-snug hover:bg-sunken [@media(pointer:coarse)]:min-h-11",
                           turns.length ? "shrink-0 whitespace-nowrap" : "max-w-full",
                         )}
                       >
@@ -283,7 +279,7 @@ function PartnerChat({ lab, itemId, store, figure, t, locale, log, voice, image 
                       </>
                     ) : busy ? null : (
                       <>
-                        <span className="font-ui text-xs text-muted">{t("hint.label")}</span>
+                        <span className="text-xs text-muted">{t("hint.label")}</span>
                         <Button size="sm" variant="ghost" onClick={() => send(t("hint.askHint"), "hint")}>
                           <PartnerIcon name="spark" size={14} />
                           {t("hint.hint")}
@@ -318,7 +314,7 @@ function PartnerChat({ lab, itemId, store, figure, t, locale, log, voice, image 
                       submit();
                     }
                   }}
-                  className="field-sizing-content max-h-32 min-h-11 min-w-0 flex-1 resize-none rounded-ink-sm border-2 border-line bg-paper px-3 py-2 text-sm placeholder:text-muted focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-cobalt"
+                  className="field-sizing-content max-h-32 min-h-11 min-w-0 flex-1 resize-none rounded-ink-sm border-2 border-line bg-paper px-3 py-2 text-sm placeholder:text-muted"
                 />
                 <MicButton t={t} voice={voice} phase={mic.phase} start={start} stop={stop} toggle={toggle} />
                 {busy ? (
