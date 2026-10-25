@@ -201,7 +201,8 @@
       "running": "Running",
       "uploading": "Uploading",
       "brownout": "Brown-out",
-      "fault": "Fault"
+      "fault": "Fault",
+      "reset": "In reset"
     },
     "on": "On",
     "off": "Off",
@@ -210,6 +211,7 @@
     "running": "Running",
     "stopped": "Stopped",
     "none": "No reading yet",
+    "rails": "Rails",
     "units": {
       "ma": "{v} mA",
       "volts": "{v} V",
@@ -227,6 +229,7 @@
     "of": "{ma} of {limit} mA",
     "supply": "{label} · {volts} V",
     "headroom": "{ma} mA to spare",
+    "limit": "Limit {limit}",
     "over": "Over the limit by {ma} mA: the supply sags and the board browns out",
     "loads": "What draws it",
     "idle": "Nothing draws current from this supply right now",

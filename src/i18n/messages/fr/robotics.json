@@ -201,7 +201,8 @@
       "running": "En marche",
       "uploading": "Téléversement",
       "brownout": "Brown-out",
-      "fault": "Panne"
+      "fault": "Panne",
+      "reset": "En reset"
     },
     "on": "Allumé",
     "off": "Éteint",
@@ -210,6 +211,7 @@
     "running": "En marche",
     "stopped": "Arrêté",
     "none": "Pas encore de mesure",
+    "rails": "Rails",
     "units": {
       "ma": "{v} mA",
       "volts": "{v} V",
@@ -227,6 +229,7 @@
     "of": "{ma} mA sur {limit} mA",
     "supply": "{label} · {volts} V",
     "headroom": "{ma} mA de marge",
+    "limit": "Limite {limit}",
     "over": "{ma} mA au-dessus de la limite : l'alimentation chute et la carte fait un brown-out",
     "loads": "Qui consomme",
     "idle": "Rien ne consomme sur cette alimentation pour l'instant",

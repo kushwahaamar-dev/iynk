@@ -201,7 +201,8 @@
       "running": "正在运行",
       "uploading": "正在上传",
       "brownout": "欠压复位",
-      "fault": "故障"
+      "fault": "故障",
+      "reset": "复位中"
     },
     "on": "开",
     "off": "关",
@@ -210,6 +211,7 @@
     "running": "正在运行",
     "stopped": "已停止",
     "none": "还没有读数",
+    "rails": "电源轨",
     "units": {
       "ma": "{v} mA",
       "volts": "{v} V",
@@ -227,6 +229,7 @@
     "of": "{ma} / {limit} mA",
     "supply": "{label} · {volts} V",
     "headroom": "还剩 {ma} mA 余量",
+    "limit": "限值 {limit}",
     "over": "超出限值 {ma} mA：电源电压下跌，开发板欠压复位",
     "loads": "谁在用电",
     "idle": "现在没有任何东西从这个电源取电",

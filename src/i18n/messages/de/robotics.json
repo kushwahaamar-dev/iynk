@@ -201,7 +201,8 @@
       "running": "Läuft",
       "uploading": "Upload läuft",
       "brownout": "Brown-out",
-      "fault": "Fehler"
+      "fault": "Fehler",
+      "reset": "Im Reset"
     },
     "on": "An",
     "off": "Aus",
@@ -210,6 +211,7 @@
     "running": "Läuft",
     "stopped": "Gestoppt",
     "none": "Noch kein Messwert",
+    "rails": "Spannungsschienen",
     "units": {
       "ma": "{v} mA",
       "volts": "{v} V",
@@ -227,6 +229,7 @@
     "of": "{ma} von {limit} mA",
     "supply": "{label} · {volts} V",
     "headroom": "{ma} mA Reserve",
+    "limit": "Grenze {limit}",
     "over": "{ma} mA über der Grenze: Die Versorgung bricht ein und das Board bekommt einen Brown-out",
     "loads": "Wer den Strom zieht",
     "idle": "Gerade zieht nichts Strom aus dieser Versorgung",

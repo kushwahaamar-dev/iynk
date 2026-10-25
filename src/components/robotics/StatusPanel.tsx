@@ -20,7 +20,7 @@ type Props = {
 
 type Tone = "ink" | "good" | "bad" | "warn";
 
-const FIGURE_STATUS = ["off", "no-power", "powered", "running", "uploading", "brownout", "fault"] as const;
+const FIGURE_STATUS = ["off", "no-power", "powered", "running", "uploading", "brownout", "fault", "reset"] as const;
 type FigureStatus = (typeof FIGURE_STATUS)[number];
 
 const isFigureStatus = (value: unknown): value is FigureStatus =>
@@ -69,6 +69,7 @@ export function Reading({ label, value, tone = "ink", compact, className, ...res
   );
 }
 
+// One word for the bench's state everywhere: the strip, the Status tab and the figure's HUD.
 function benchState(figure: FigureState, t: BenchT): { text: string; tone: Tone } {
   const status = figure.status;
   return {
@@ -111,9 +112,27 @@ function splitSupply(label: string, volts: string): { name: string; limit: strin
   return { name: `${label} · ${volts}`, limit: null };
 }
 
+// The program on the chip by its title, as the HUD and the On the bench panel name it, not its id.
+function programTitle(bench: RoboticsContent, figure: FigureState, tx: TextOf): string | null {
+  if (typeof figure.mode !== "string") return null;
+  const mode = bench.modes.find((m) => m.id === figure.mode);
+  return mode ? tx(mode.title) : figure.mode;
+}
+
+function reportedRails(figure: FigureState): [string, number][] {
+  const rails = figure.rails;
+  if (typeof rails !== "object" || rails === null) return [];
+  return Object.entries(rails).filter((entry): entry is [string, number] => typeof entry[1] === "number");
+}
+
 export function StatusPanel({ bench, figure, draw, t, tx, headingId }: Props) {
   const fault = (typeof figure.fault === "object" && figure.fault !== null ? figure.fault : null) as { msg?: unknown; fix?: unknown } | null;
   const state = benchState(figure, t);
+  const program = programTitle(bench, figure, tx);
+  const rails = reportedRails(figure);
+  // The bench's own state field gives way to the strip's reading; a bench without a program field still names it.
+  const fields = bench.status.filter((field) => field.key !== "status");
+  const programField = bench.modes.length > 0 && !fields.some((field) => field.key === "mode");
 
   return (
     <section aria-labelledby={headingId} className="flex flex-col">
@@ -127,12 +146,27 @@ export function StatusPanel({ bench, figure, draw, t, tx, headingId }: Props) {
         </Callout>
       ) : null}
 
-      <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 border-y-[1.5px] border-rule py-3 sm:grid-cols-3">
-        {bench.status.some((field) => field.key === "status") ? null : <Reading label={t("status.figure")} value={state.text} tone={state.tone} />}
-        {bench.status.map((field) => {
-          const { text, tone } = shown(readStatus(field, figure, draw), t);
-          return <Reading key={field.id} data-status={field.id} label={tx(field.label)} value={text} tone={tone} />;
-        })}
+      <div className="mt-3 border-y-[1.5px] border-rule py-3">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
+          <Reading label={t("status.figure")} value={state.text} tone={state.tone} />
+          {programField ? <Reading label={t("modes.pick")} value={program ?? t("status.none")} /> : null}
+          {fields.map((field) => {
+            const { text, tone } = field.key === "mode" && program ? { text: program, tone: "ink" as const } : shown(readStatus(field, figure, draw), t);
+            return <Reading key={field.id} data-status={field.id} label={tx(field.label)} value={text} tone={tone} />;
+          })}
+        </div>
+        {rails.length > 0 ? (
+          <Fold summary={t("status.rails")} className="mt-2 text-sm">
+            <dl className="mt-1 flex flex-wrap gap-x-5 gap-y-1">
+              {rails.map(([name, volts]) => (
+                <div key={name} className="flex items-baseline gap-1.5">
+                  <dt className="tabular font-ui text-muted">{name}</dt>
+                  <dd className="tabular font-ui font-semibold">{t("status.units.volts", { v: volts })}</dd>
+                </div>
+              ))}
+            </dl>
+          </Fold>
+        ) : null}
       </div>
 
       <div className="mt-4 flex flex-col" aria-label={t("current.heading")} role="group">
@@ -151,7 +185,7 @@ export function StatusPanel({ bench, figure, draw, t, tx, headingId }: Props) {
                   danger={supply.limitMa}
                 />
                 <p className="mt-1.5 text-sm">
-                  {limit ? <span className="text-muted">{limit} · </span> : null}
+                  {limit ? <span className="text-muted">{t("current.limit", { limit })} · </span> : null}
                   {supply.over ? (
                     <strong className="text-bad">{t("current.over", { ma: -supply.headroomMa })}</strong>
                   ) : (

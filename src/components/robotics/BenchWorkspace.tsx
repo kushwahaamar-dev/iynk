@@ -26,6 +26,7 @@ import { activeFaults, currentStepIndex } from "@/lib/robotics/steps";
 import { benchMoments } from "@/lib/sound/bench-moments";
 import { useFigureSound, useLabMoments } from "@/lib/sound/react";
 import { BenchProgress } from "./BenchProgress";
+import { benchChrome } from "./chrome";
 import { FaultsPanel } from "./FaultsPanel";
 import { KeyHelp } from "./KeyHelp";
 import { textLookup, useBenchState, useBenchT, type BenchMessages, type BenchT, type TextOf } from "./messages";
@@ -57,20 +58,21 @@ function actData(data: Record<string, unknown>): Record<string, string | number>
   return out;
 }
 
-// From 1024 px the workspace fills the screen and the serial drawer can be taller.
+// From 1024 px the workspace fills the screen and the serial drawer can be taller. Under 640 px the figure is so
+// narrow that its own buttons and HUD stack above the drawing.
 const WIDE = "(min-width: 64rem)";
-function subscribeWide(onChange: () => void) {
+const PHONE = "(max-width: 39.99rem)";
+const matches = (query: string) => typeof window.matchMedia === "function" && window.matchMedia(query).matches;
+function subscribeMedia(onChange: () => void) {
   if (typeof window.matchMedia !== "function") return () => {};
-  const query = window.matchMedia(WIDE);
-  query.addEventListener("change", onChange);
-  return () => query.removeEventListener("change", onChange);
+  const queries = [WIDE, PHONE].map((query) => window.matchMedia(query));
+  for (const query of queries) query.addEventListener("change", onChange);
+  return () => {
+    for (const query of queries) query.removeEventListener("change", onChange);
+  };
 }
-const useWide = () =>
-  useSyncExternalStore(
-    subscribeWide,
-    () => typeof window.matchMedia === "function" && window.matchMedia(WIDE).matches,
-    () => true,
-  );
+const useWide = () => useSyncExternalStore(subscribeMedia, () => matches(WIDE), () => true);
+const usePhone = () => useSyncExternalStore(subscribeMedia, () => matches(PHONE), () => false);
 
 // Item prose may start lower case ("why not to use it"); a line that stands alone starts with a capital.
 function capital(text: string, locale: string): string {
@@ -158,10 +160,6 @@ function useEffects(store: BenchStore, figure: FigureHandle | null, setup: Bench
 // a ready quiz stays until it is taken or dismissed.
 const NOTICE_MS = 7000;
 
-// The rail's Break it tab triggers and repairs the same faults, with the why and the fix, so the figure's own
-// Break it picker goes.
-const HIDE_BREAK = ["break"] as const;
-
 export function BenchWorkspace({ setup, messages, notice: untranslated, walk }: Props) {
   const { bench } = setup;
   const locale = useLocale();
@@ -171,6 +169,8 @@ export function BenchWorkspace({ setup, messages, notice: untranslated, walk }: 
   const state = useBenchState(store);
   const saved = useSaved();
   const wide = useWide();
+  const phone = usePhone();
+  const chrome = useMemo(() => benchChrome(bench, phone), [bench, phone]);
   const [figure, setFigure] = useState<FigureHandle | null>(null);
   const [help, setHelp] = useState(false);
   const [tab, setTab] = useState<RailTab>("steps");
@@ -370,7 +370,7 @@ export function BenchWorkspace({ setup, messages, notice: untranslated, walk }: 
           src={bench.figure.page}
           title={t("bench.figureTitle", { name: tx(bench.title) })}
           onEvent={onEvent}
-          hideChrome={bench.faults.length > 0 ? HIDE_BREAK : undefined}
+          hideChrome={chrome}
         />
 
         <div

@@ -201,7 +201,8 @@
       "running": "En marcha",
       "uploading": "Cargando",
       "brownout": "Caída de tensión",
-      "fault": "Avería"
+      "fault": "Avería",
+      "reset": "En reinicio"
     },
     "on": "Encendido",
     "off": "Apagado",
@@ -210,6 +211,7 @@
     "running": "En marcha",
     "stopped": "Parado",
     "none": "Aún sin lectura",
+    "rails": "Líneas de alimentación",
     "units": {
       "ma": "{v} mA",
       "volts": "{v} V",
@@ -227,6 +229,7 @@
     "of": "{ma} de {limit} mA",
     "supply": "{label} · {volts} V",
     "headroom": "Quedan {ma} mA de margen",
+    "limit": "Límite {limit}",
     "over": "Supera el límite en {ma} mA: la fuente cae y la placa sufre una caída de tensión",
     "loads": "Qué la consume",
     "idle": "Ahora mismo nada consume corriente de esta fuente",

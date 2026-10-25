@@ -128,3 +128,54 @@ test.describe("a bench page", () => {
     expect(saved.quiz[`robotics:${benchId}:quiz:${quiz.id}`].total).toBe(quiz.questions.length);
   });
 });
+
+// The rail's steps do the figure's build buttons and its Break it tab the faults, so the figure keeps only the board's
+// own buttons, Remove a part and View (F-review U3). On a phone its HUD goes too and the drawing gets the plate.
+test.describe("a bench's figure", () => {
+  test.skip(!benchId, "no robotics bench content is written yet");
+
+  const STEP_BUTTONS = ["power", "upload", "strip", "pnp", "place", "solder", "break"];
+
+  async function figureButtons(page: Page) {
+    const figure = page.frameLocator("main#main-en iframe");
+    await expect(figure.locator('#btns .act[data-id="view"]')).toBeVisible({ timeout: 15_000 });
+    return figure;
+  }
+
+  test("keeps only the buttons no step sends", async ({ page }) => {
+    await page.goto(`/en/robotics/${benchId}`);
+    const figure = await figureButtons(page);
+    for (const id of STEP_BUTTONS) await expect(figure.locator(`#btns .act[data-id="${id}"]`)).toBeHidden();
+    await expect(figure.locator('#btns .act[data-id="remove"]')).toBeVisible();
+    await expect(figure.locator("#stats")).toBeVisible();
+  });
+
+  test.describe("on a phone", () => {
+    test.use({ viewport: { width: 390, height: 844 }, hasTouch: true });
+
+    test("the drawing takes most of the plate, its readings move to the rail", async ({ page }) => {
+      await page.goto(`/en/robotics/${benchId}`);
+      const figure = await figureButtons(page);
+      for (const id of STEP_BUTTONS) await expect(figure.locator(`#btns .act[data-id="${id}"]`)).toBeHidden();
+      await expect(figure.locator("#stats")).toBeHidden();
+      // The art's box settles after the figure lays out again; at least half the plate's width (it was 29 %).
+      await expect
+        .poll(() => figure.locator("#art").evaluate((art) => art.getBoundingClientRect().width / document.documentElement.clientWidth))
+        .toBeGreaterThan(0.5);
+
+      // The Status tab names the program and every rail the HUD showed.
+      await main(page).getByRole("tab", { name: robotics.bench.tabs.status }).click();
+      const status = main(page).locator("section", { has: page.getByRole("heading", { name: robotics.status.heading }) });
+      await expect(status.getByText(robotics.modes.pick, { exact: true })).toBeVisible();
+      await expect(status.getByText(robotics.status.rails)).toBeVisible();
+    });
+
+    test("the practice tasks' Hints summary is a 44 px target", async ({ page }) => {
+      await page.goto(`/en/robotics/${benchId}`);
+      const hints = main(page).locator("summary", { hasText: robotics.tasks.hints }).first();
+      await hints.scrollIntoViewIfNeeded();
+      const box = await hints.boundingBox();
+      expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+    });
+  });
+});
