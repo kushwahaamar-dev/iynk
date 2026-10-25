@@ -132,7 +132,7 @@ function model(st){
   else if (run) status = ['{hz} Hz frame, ch0 {us} µs', { hz: Math.round(frameHz(pca.hz) * 10) / 10, us: Math.round(pca.us[0]) }];
   return {
     status,
-    stats: live && run && !pca.asleep ? [['Frame', (1000 / frameHz(pca.hz)).toFixed(2) + ' ms'], ['Ch 0', Math.round(pca.us[0]) + ' µs · ' + ticksOf(pca.us[0], pca.hz) + ' ticks']] : [],
+    stats: live && run && !pca.asleep ? [['Frame', (1000 / frameHz(pca.hz)).toFixed(2) + ' ms'], ['Ch 0', ['{us} µs · {n} ticks', { us: Math.round(pca.us[0]), n: ticksOf(pca.us[0], pca.hz) }]]] : [],
     report: { pwm: { hz: run && !pca.asleep ? Math.round(frameHz(pca.hz) * 100) / 100 : 0, us: pca.us.slice(0, 4).map(Math.round) } },
     flow: { SDA: run, SCL: run, PWM0: run && pca.us[0] > 0, PWM1: run && pca.us[1] > 0, PWM2: run && pca.us[2] > 0 },
   };

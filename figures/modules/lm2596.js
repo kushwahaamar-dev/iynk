@@ -100,7 +100,7 @@ function model(st, dt){
     meas: { U1: { vout: Math.round(c.vout * 100) / 100, vset: Math.round(r.vs * 100) / 100, duty: Math.round(c.d * 100) / 100, turns: Math.round(s.turns * 100) / 100,
       set: s.set, sat: c.sat, limited: c.limited, tj: Math.round(s.tj), trip: s.trip }, DS1: r.disp, D1: { dead: s.d1dead, tc: Math.round(s.td) } },
     status: !st.power ? 'Unpowered' : !r.run ? 'Input too low' : c.sat ? 'Vset > Vin: 100 % duty' : 'Regulating',
-    stats: st.power ? [['IN', r.vin.toFixed(2) + ' V'], ['OUT', c.vout.toFixed(2) + ' V'], ['Trimmer', s.turns.toFixed(1) + ' turns']] : [],
+    stats: st.power ? [['IN', r.vin.toFixed(2) + ' V'], ['OUT', c.vout.toFixed(2) + ' V'], ['Trimmer', ['{n} turns', { n: s.turns.toFixed(1) }]]] : [],
     flow: { VIN: r.vin > .5, SW: c.vout > .1, VOUT: c.vout > .1, FB: c.vout > .1 },
   };
 }

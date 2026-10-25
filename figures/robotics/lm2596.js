@@ -66,7 +66,7 @@ function model(st, dt){
   else status = 'Regulating';                  // the voltage is in the stats; the status stays one translatable string
   const stats = st.power ? [
     ['IN', vin.toFixed(2) + ' V · ' + batt.i_mA + ' mA'], ['OUT', vout.toFixed(2) + ' V · ' + u1.iout_mA + ' mA'],
-    ['Duty', Math.round(c.d * 100) + ' %'], ['Efficiency', Math.round(c.eff * 100) + ' %'], ['LM2596', u1.tj + ' °C'], ['Trimmer', s.turns.toFixed(1) + ' turns'],
+    ['Duty', Math.round(c.d * 100) + ' %'], ['Efficiency', Math.round(c.eff * 100) + ' %'], ['LM2596', u1.tj + ' °C'], ['Trimmer', ['{n} turns', { n: s.turns.toFixed(1) }]],
   ] : [];
   return {
     readings: { MOT: mot, BATT: batt, MM: mm },

@@ -119,6 +119,7 @@ function fromSources() {
     return first ? b : a;
   };
 
+  const isTemplate = (n) => n.type === 'ArrayExpression' && n.elements.length === 2 && n.elements[0]?.type === 'Literal' && typeof n.elements[0].value === 'string' && n.elements[1]?.type === 'ObjectExpression';
   // Follow one text expression: keep its literals, learn the properties and tables it reads.
   const text = (n, file, learn) => {
     if (!n) return;
@@ -129,6 +130,8 @@ function fromSources() {
     if (n.type === 'CallExpression' && callee(n.callee) === 'String') return text(n.arguments[0], file, learn);
     if (n.type === 'CallExpression' && callee(n.callee) === 'reword') return text(n.arguments[0], file, learn), text(n.arguments[2], file, learn);
     if (n.type === 'ObjectExpression') return values(n, file);
+    // a template with its values (['Line at {pos}', { pos }]), the shape a bench model's status and stats take
+    if (isTemplate(n)) return keep(n.elements[0].value, file);
     if (n.type !== 'MemberExpression') return;
     if (n.object.type === 'ObjectExpression') return values(n.object, file);
     if (learn) {
@@ -151,6 +154,48 @@ function fromSources() {
     found.get(s).add(file);
   };
   const propName = (q) => (q.key.type === 'Identifier' ? q.key.name : typeof q.key.value === 'string' ? q.key.value : null);
+
+  // A bench model (FIGURES-BENCH, def.model) returns { status, stats: [[label, value]] }; the engine translates the
+  // status, every label and every value with words in it, and shows a value of only numbers and units as it is.
+  const MODEL_FILES = /^figures\/(robotics|modules|boards)\//;
+  const plain = (v) => !/[A-Za-z]{2,}/.test(v.replace(/(^|[\s·(])(?:mA|mV|mW|kHz|MHz|Hz|kΩ|MΩ|cm|mm|ms|rpm|lux|dB)(?=$|[\s·)])/g, '$1'));
+  const statValue = (n, file) => {
+    if (!n) return;
+    if (n.type === 'Literal' && typeof n.value === 'string') return plain(n.value) ? undefined : keep(n.value, file);
+    if (n.type === 'ConditionalExpression') return statValue(n.consequent, file), statValue(n.alternate, file);
+    if (n.type === 'LogicalExpression') return statValue(n.left, file), statValue(n.right, file);
+    if (n.type === 'CallExpression' && callee(n.callee) === 'String') return statValue(n.arguments[0], file);
+    if (isTemplate(n)) keep(n.elements[0].value, file);
+  };
+  const statRow = (row, file) => {
+    if (row?.type === 'SpreadElement') return statRows(row.argument, file);
+    if (row?.type !== 'ArrayExpression' || row.elements.length !== 2) return;
+    text(row.elements[0], file, false);
+    statValue(row.elements[1], file);
+  };
+  const statRows = (n, file) => {
+    if (!n) return;
+    if (n.type === 'ConditionalExpression') return statRows(n.consequent, file), statRows(n.alternate, file);
+    if (n.type === 'LogicalExpression') return statRows(n.left, file), statRows(n.right, file);
+    if (n.type === 'ArrayExpression') for (const row of n.elements) statRow(row, file);
+  };
+  const model = (file, n) => {
+    if (n.type === 'VariableDeclarator' && n.id.type === 'Identifier') {
+      if (n.id.name === 'status') text(n.init, file, false);
+      else if (n.id.name === 'stats') statRows(n.init, file);
+    } else if (n.type === 'AssignmentExpression' && n.left.type === 'Identifier') {
+      if (n.left.name === 'status') text(n.right, file, false);
+      else if (n.left.name === 'stats') statRows(n.right, file);
+    } else if (n.type === 'CallExpression' && n.callee.type === 'MemberExpression' && n.callee.object.type === 'Identifier' && n.callee.object.name === 'stats' && callee(n.callee) === 'push') {
+      for (const row of n.arguments) statRow(row, file);
+    } else if (n.type === 'ObjectExpression') {
+      const named = new Map(n.properties.filter((q) => q.type === 'Property' && !q.computed).map((q) => [propName(q), q]));
+      if (!named.has('stats') && !named.has('readings')) return;
+      const status = named.get('status'), stats = named.get('stats');
+      if (status && !status.shorthand) text(status.value, file, false);
+      if (stats && !stats.shorthand) statRows(stats.value, file);
+    }
+  };
 
   const walk = (n, visit) => {
     if (!n || typeof n.type !== 'string') return;
@@ -184,6 +229,7 @@ function fromSources() {
     for (const [f, tree] of engines) pass(f, tree, true);
   }
   for (const [f, tree] of trees) pass(f, tree, false);
+  for (const [f, tree] of trees) if (MODEL_FILES.test(f)) walk(tree, (n) => model(f, n));
   // A helper that puts its first parameter in a text field (`ledCircuit = (title) => ({ title, ... })`) takes text first.
   const helpers = new Set();
   for (const [, tree] of trees)
