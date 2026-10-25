@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { I18nProvider } from "@/i18n/client";
 import common from "@/i18n/messages/en/common.json";
 import shell from "@/i18n/messages/en/shell.json";
-import { ContinueCard, LabProgress } from "./DashboardProgress";
+import { HeroActions, LabProgress } from "./DashboardProgress";
 import type { DashItem } from "./data";
 
 const items: DashItem[] = [
@@ -61,25 +61,39 @@ describe("dashboard progress", () => {
   beforeEach(() => localStorage.clear());
   afterEach(() => localStorage.clear());
 
-  it("offers the first lesson when nothing is saved", () => {
-    renderEn(<ContinueCard items={items} messages={messages} labNames={labNames} startHref="/en/boards/uno-r3/board" />);
-    expect(screen.getByText(messages.empty)).toBeTruthy();
-    expect(screen.getByRole("link", { name: "Begin the first lesson" }).getAttribute("href")).toBe("/en/boards/uno-r3/board");
+  const hero = (startHref = "/en/boards/uno-r3/board") => (
+    <HeroActions
+      items={items}
+      messages={messages}
+      progressMessages={{ progress: shell.ui.progress, progressLabel: shell.ui.progressLabel }}
+      labNames={labNames}
+      start={{ href: startHref, label: shell.dashboard.start }}
+      browse={{ href: "/en/boards", label: shell.dashboard.browse }}
+      overallLabel={shell.dashboard.overall}
+    />
+  );
+
+  it("offers the first lesson and the boards when nothing is saved", () => {
+    renderEn(hero());
+    expect(screen.getByRole("link", { name: shell.dashboard.start }).getAttribute("href")).toBe("/en/boards/uno-r3/board");
+    expect(screen.getByRole("link", { name: shell.dashboard.browse }).getAttribute("href")).toBe("/en/boards");
+    expect(screen.queryByText(/Carry on/)).toBeNull();
   });
 
   it("names the latest finished entry and links the next unfinished one", () => {
     save(["drone:quad5:build", "board:uno-r3:lesson:board"]);
-    renderEn(<ContinueCard items={items} messages={messages} labNames={labNames} startHref="/x" />);
-    expect(screen.getByText("Lesson: Meet the board")).toBeTruthy();
+    renderEn(hero("/x"));
+    expect(screen.getByText(/Lesson: Meet the board/)).toBeTruthy();
     expect(screen.getByText("Arduino Uno R3")).toBeTruthy();
-    expect(screen.getByText("Board Lab").className).toContain("bg-cobalt");
-    expect(screen.getByRole("link", { name: "Carry on" }).getAttribute("href")).toBe("/en/boards/uno-r3/blink");
+    const resume = screen.getByRole("link", { name: "Carry on: Blink an LED" });
+    expect(resume.getAttribute("href")).toBe("/en/boards/uno-r3/blink");
+    expect(screen.getByText("Overall progress: 2 of 6 done")).toBeTruthy();
   });
 
   it("moves on to the next item in the same lab once an item is complete", () => {
     save(["board:uno-r3:lesson:board", "board:uno-r3:lesson:blink", "board:uno-r3:assembly"]);
-    renderEn(<ContinueCard items={items} messages={messages} labNames={labNames} startHref="/x" />);
-    expect(screen.getByRole("link", { name: "Carry on" }).getAttribute("href")).toBe("/en/boards/nano/blink");
+    renderEn(hero("/x"));
+    expect(screen.getByRole("link", { name: /^Carry on/ }).getAttribute("href")).toBe("/en/boards/nano/blink");
   });
 
   it("counts a recorded quiz attempt as done, and ignores keys it does not know", () => {

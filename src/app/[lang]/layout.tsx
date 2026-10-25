@@ -31,11 +31,16 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
   if (!isLocale(lang)) return {};
   const t = await getT(lang, "common");
   const name = t("site.name");
+  const title = `${name} · ${t("site.tagline")}`;
+  const description = t("site.description");
   return {
     metadataBase: siteUrl(),
-    title: { template: `%s · ${name}`, default: `${name} · ${t("site.tagline")}` },
-    description: t("site.description"),
+    title: { template: `%s · ${name}`, default: title },
+    description,
     applicationName: name,
+    // A link shared in a chat or on Devpost shows the product, not a bare URL.
+    openGraph: { type: "website", siteName: name, title, description, locale: htmlLang(lang) },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 

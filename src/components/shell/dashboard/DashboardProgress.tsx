@@ -1,7 +1,6 @@
 "use client";
 
 import { ButtonLink } from "@/components/ui/Button";
-import { Chip } from "@/components/ui/Chip";
 import { ProgressBadge } from "@/components/ui/ProgressBadge";
 import { useT } from "@/i18n/client";
 import type { Messages } from "@/i18n/namespaces";
@@ -10,7 +9,6 @@ import { useSaved } from "@/lib/progress/hooks";
 import type { ProgressLab } from "@/lib/progress/keys";
 import type { Saved } from "@/lib/progress/storage";
 import type { DashEntry, DashItem } from "./data";
-import { LAB_LOOK } from "./labs";
 
 type Shell = Messages["shell"];
 export type ProgressMessages = Pick<Shell["ui"], "progress" | "progressLabel">;
@@ -21,17 +19,19 @@ function complete(saved: Saved, key: string): boolean {
   return saved.done[key] === true || saved.quiz[key] !== undefined;
 }
 
-/** "done/total" for one lab, counted from the saved keys. */
-export function LabProgress({ keys, label, messages }: { keys: readonly string[]; label: string; messages: ProgressMessages }) {
+/** "done/total" for one lab, counted from the saved keys. Renders nothing until something is done, unless `always`. */
+export function LabProgress({ keys, label, messages, always = true }: { keys: readonly string[]; label: string; messages: ProgressMessages; always?: boolean }) {
   const t = useT(messages);
   const saved = useSaved();
   const done = keys.filter((key) => complete(saved, key)).length;
   const total = keys.length;
+  if (!always && done === 0) return null;
   return (
     <ProgressBadge
       done={done}
       total={total}
       label={label}
+      size="sm"
       countText={t("progress", { done, total })}
       valueText={t("progressLabel", { label, done, total })}
     />
@@ -45,20 +45,8 @@ function describe({ entry }: Found, t: Translate<ContinueMessages>): string {
   return entry.label ? t("entry", { kind, name: entry.label }) : kind;
 }
 
-/** The last thing finished, and the next unfinished thing after it. */
-export function ContinueCard({
-  items,
-  messages,
-  labNames,
-  startHref,
-}: {
-  items: readonly DashItem[];
-  messages: ContinueMessages;
-  labNames: Record<ProgressLab, string>;
-  startHref: string;
-}) {
-  const t = useT(messages);
-  const saved = useSaved();
+/** The last thing finished, and the next unfinished thing after it in the same lab. */
+export function findContinue(items: readonly DashItem[], saved: Saved): { last: Found; next?: Found } | null {
   const byKey = new Map<string, Found>();
   for (const item of items) for (const entry of item.entries) byKey.set(entry.key, { item, entry });
 
@@ -66,52 +54,71 @@ export function ContinueCard({
   const order = [...Object.keys(saved.done).filter((key) => saved.done[key]), ...Object.keys(saved.quiz)];
   let last: Found | undefined;
   for (let i = order.length - 1; i >= 0 && !last; i--) last = byKey.get(order[i]);
-
-  if (!last) {
-    return (
-      <div className="flex flex-col gap-4">
-        <h2 className="text-2xl">{t("title")}</h2>
-        <p className="max-w-prose">{t("empty")}</p>
-        <div>
-          <ButtonLink href={startHref} variant="primary">
-            {t("begin")}
-          </ButtonLink>
-        </div>
-      </div>
-    );
-  }
+  if (!last) return null;
 
   const found = last;
   const sameLab = items.filter((item) => item.lab === found.item.lab);
   const start = sameLab.indexOf(found.item);
-  let next: Found | undefined;
-  for (let i = 0; i < sameLab.length && !next; i++) {
+  for (let i = 0; i < sameLab.length; i++) {
     const item = sameLab[(start + i) % sameLab.length];
     const entry = item.entries.find((candidate) => !complete(saved, candidate.key));
-    if (entry) next = { item, entry };
+    if (entry) return { last: found, next: { item, entry } };
+  }
+  return { last: found };
+}
+
+type HeroActionsProps = {
+  items: readonly DashItem[];
+  messages: ContinueMessages;
+  progressMessages: ProgressMessages;
+  labNames: Record<ProgressLab, string>;
+  start: { href: string; label: string };
+  browse: { href: string; label: string };
+  overallLabel: string;
+};
+
+/**
+ * The landing's calls to action. A first visit gets the Uno's first lesson and the boards;
+ * a returning learner gets "Carry on" to the next unfinished thing, what they finished last,
+ * and one quiet line of overall progress.
+ */
+export function HeroActions({ items, messages, progressMessages, labNames, start, browse, overallLabel }: HeroActionsProps) {
+  const t = useT(messages);
+  const p = useT(progressMessages);
+  const saved = useSaved();
+  const found = findContinue(items, saved);
+
+  if (!found) {
+    return (
+      <div className="flex flex-wrap gap-3">
+        <ButtonLink href={start.href} variant="primary" size="lg">
+          {start.label}
+        </ButtonLink>
+        <ButtonLink href={browse.href} size="lg">
+          {browse.label}
+        </ButtonLink>
+      </div>
+    );
   }
 
+  const target = found.next ?? found.last;
+  const keys = items.flatMap((item) => item.entries.map((entry) => entry.key));
+  const done = keys.filter((key) => complete(saved, key)).length;
   return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-2xl">{t("title")}</h2>
-      <div>
-        <div className="ink-kicker">{t("last")}</div>
-        <p className="mt-1 flex flex-wrap items-center gap-2">
-          <Chip tone={LAB_LOOK[found.item.lab].tone}>{labNames[found.item.lab]}</Chip>
-          <span className="font-bold">{found.item.title}</span>
-          <span className="text-muted">{describe(found, t)}</span>
-        </p>
-      </div>
-      <div className="flex flex-wrap items-center gap-3">
-        <ButtonLink href={(next ?? found).entry.href} variant="primary">
-          {t("resume")}
+    <div>
+      <div className="flex flex-wrap gap-3">
+        <ButtonLink href={target.entry.href} variant="primary" size="lg">
+          {t("resume")}: {target.entry.label ?? target.item.title}
         </ButtonLink>
-        {next ? (
-          <span className="text-sm text-muted">
-            {next.item.title} · {describe(next, t)}
-          </span>
-        ) : null}
+        <ButtonLink href={browse.href} size="lg">
+          {browse.label}
+        </ButtonLink>
       </div>
+      <p className="mt-4 text-sm text-muted">
+        {t("last")}: <span className="font-semibold text-ink">{found.last.item.title}</span> · {describe(found.last, t)} ·{" "}
+        {labNames[found.last.item.lab]}
+      </p>
+      <p className="mt-1 text-sm text-muted">{p("progressLabel", { label: overallLabel, done, total: keys.length })}</p>
     </div>
   );
 }

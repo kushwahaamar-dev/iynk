@@ -2,12 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { ContinueCard, LabProgress } from "@/components/shell/dashboard/DashboardProgress";
+import { HeroActions, LabProgress } from "@/components/shell/dashboard/DashboardProgress";
 import { HeroArt } from "@/components/shell/dashboard/HeroArt";
 import { loadLabs } from "@/components/shell/dashboard/data";
 import { LAB_LOOK } from "@/components/shell/dashboard/labs";
-import { ButtonLink } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/icons";
 import { BOARD_IDS, DRONE_IDS, ROBOTICS_IDS } from "@/content/ids";
 import { isLocale } from "@/i18n/config";
@@ -21,9 +19,10 @@ const counts = { boards: BOARD_IDS.length, benches: ROBOTICS_IDS.length, drones:
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang } = await params;
   if (!isLocale(lang)) return {};
-  const t = await getT(lang, "shell");
+  const [t, common] = await Promise.all([getT(lang, "shell"), getT(lang, "common")]);
   return {
-    title: t("dashboard.metaTitle"),
+    // The landing's tab reads as the product, not "Dashboard".
+    title: { absolute: `${common("site.name")} · ${common("site.tagline")}` },
     description: t("dashboard.metaDescription", counts),
     alternates: alternatesFor(lang, ""),
   };
@@ -31,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default function DashboardPage({ params }: Props) {
   return (
-    <Suspense fallback={<div className="mx-auto min-h-[70vh] max-w-7xl px-4 sm:px-6" aria-busy="true" />}>
+    <Suspense fallback={<div className="frame min-h-[70vh]" aria-busy="true" />}>
       <Dashboard params={params} />
     </Suspense>
   );
@@ -52,7 +51,6 @@ async function Dashboard({ params }: Pick<Props, "params">) {
   const items = labs.flatMap((lab) => lab.items);
   const uno = labs[0].items.find((item) => item.id === "uno-r3");
   const startHref = uno?.entries[0]?.href ?? `/${lang}/boards/uno-r3`;
-  const allKeys = items.flatMap((item) => item.entries.map((entry) => entry.key));
   const features = (["see", "code", "break", "fly"] as const).map((id) => ({
     id,
     title: t(`dashboard.features.${id}.title`),
@@ -60,85 +58,85 @@ async function Dashboard({ params }: Pick<Props, "params">) {
   }));
 
   return (
-    <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 sm:pt-12">
-      <section aria-labelledby={`dash-title-${lang}`} className="grid items-center gap-8 lg:grid-cols-[1.05fr_1fr]">
+    <div className="frame space-y-16 pt-8 sm:pt-12 lg:space-y-20">
+      <section aria-labelledby={`dash-title-${lang}`} className="grid items-center gap-8 lg:grid-cols-[5fr_7fr] lg:gap-12">
         <div>
           <p className="ink-kicker">{t("dashboard.kicker")}</p>
           <h1 id={`dash-title-${lang}`} className="mt-3">
             {t("dashboard.title")}
           </h1>
-          <p className="mt-5 max-w-xl text-lg leading-relaxed">{t("dashboard.lede", counts)}</p>
-          <div className="mt-7 flex flex-wrap gap-3">
-            <ButtonLink href={startHref} variant="primary" size="lg">
-              {t("dashboard.start")}
-            </ButtonLink>
-            <ButtonLink href={`/${lang}/boards`} size="lg">
-              {t("dashboard.browse")}
-            </ButtonLink>
+          <p className="mt-5 max-w-[34rem] text-lg leading-relaxed">{t("dashboard.lede", counts)}</p>
+          <div className="mt-8">
+            <HeroActions
+              items={items}
+              messages={messages.dashboard.continue}
+              progressMessages={progressMessages}
+              labNames={labNames}
+              start={{ href: startHref, label: t("dashboard.start") }}
+              browse={{ href: `/${lang}/boards`, label: t("dashboard.browse") }}
+              overallLabel={t("dashboard.overall")}
+            />
           </div>
         </div>
-        <Card tone="plate" padding="sm" className="overflow-hidden">
-          <HeroArt title={t("dashboard.heroAlt")} className="h-auto w-full" />
-        </Card>
+        {/* The drawing leads straight into the first lesson, like the primary button. */}
+        <Link
+          href={startHref}
+          aria-label={t("dashboard.start")}
+          className="ink-plate group flex h-[min(44svh,400px)] items-center lg:h-[min(62vh,600px)] lg:min-h-80 justify-center overflow-hidden p-4 transition-transform duration-200 hover:-translate-y-0.5 sm:p-8"
+        >
+          <HeroArt title={t("dashboard.heroAlt")} className="h-full w-auto max-w-full object-contain transition-transform duration-300 group-hover:scale-[1.02]" />
+        </Link>
       </section>
 
-      <section aria-labelledby={`labs-title-${lang}`} className="mt-14">
+      <section aria-labelledby={`labs-title-${lang}`}>
         <h2 id={`labs-title-${lang}`}>{t("dashboard.labsTitle")}</h2>
-        <ul className="mt-5 grid gap-5 md:grid-cols-3">
+        <ul className="mt-6 grid gap-4 lg:grid-cols-3 lg:gap-6">
           {labs.map((lab) => {
             const look = LAB_LOOK[lab.lab];
             const copy = labText[lab.lab];
             const keys = lab.items.flatMap((item) => item.entries.map((entry) => entry.key));
             return (
               <li key={lab.lab}>
-                <Card as="article" padding="none" className="flex h-full flex-col overflow-hidden" aria-labelledby={`lab-${lab.lab}-${lang}`}>
-                  <div className={`flex items-center gap-3 border-b-2 border-line px-5 py-4 text-on-color ${look.band}`}>
-                    <span className="flex size-11 items-center justify-center rounded-full border-2 border-[var(--color-ink-fixed)] bg-[var(--color-paper-fixed)]">
-                      <Icon name={look.icon} size={24} />
-                    </span>
-                    <div className="min-w-0">
-                      <h3 id={`lab-${lab.lab}-${lang}`} className="text-xl">
-                        {labNames[lab.lab]}
+                <article
+                  aria-labelledby={`lab-${lab.lab}-${lang}`}
+                  className="ink-card group relative flex h-full flex-col overflow-hidden transition-transform duration-200 hover:-translate-y-0.5 has-[a:focus-visible]:outline-[2.5px] has-[a:focus-visible]:outline-offset-[3px] has-[a:focus-visible]:outline-(--focus) has-[a:focus-visible]:outline-solid"
+                >
+                  <span aria-hidden="true" className={`block h-1 ${look.band}`} />
+                  <div className="flex flex-1 flex-col gap-3 p-5 sm:p-6">
+                    <div className="flex items-center justify-between gap-3">
+                      <h3 id={`lab-${lab.lab}-${lang}`} className="text-2xl">
+                        {/* One link per card; its ::after makes the whole card the target. */}
+                        <Link
+                          href={`/${lang}/${lab.path}`}
+                          className="no-underline after:absolute after:inset-0 focus-visible:shadow-none focus-visible:outline-none"
+                        >
+                          {labNames[lab.lab]}
+                        </Link>
                       </h3>
-                      <p className="font-ui text-xs font-bold uppercase tracking-wider">{copy.count}</p>
+                      <Icon name={look.icon} size={22} className="shrink-0 text-muted" />
                     </div>
-                  </div>
-                  <div className="flex flex-1 flex-col gap-4 p-5">
-                    <p className="flex-1">{copy.text}</p>
-                    {keys.length > 0 ? <LabProgress keys={keys} label={copy.progress} messages={progressMessages} /> : null}
-                    <Link
-                      href={`/${lang}/${lab.path}`}
-                      className="inline-flex min-h-11 items-center gap-1.5 self-start font-ui text-sm font-bold"
-                    >
+                    <p className="font-ui text-xs font-semibold text-muted">{copy.count}</p>
+                    <p className="flex-1 text-base leading-relaxed">{copy.text}</p>
+                    {keys.length > 0 ? <LabProgress keys={keys} label={copy.progress} messages={progressMessages} always={false} /> : null}
+                    <span aria-hidden="true" className="inline-flex items-center gap-1 font-body text-sm font-semibold">
                       {t("dashboard.open", { lab: labNames[lab.lab] })}
-                      <Icon name="chevron-right" size={18} />
-                    </Link>
+                      <Icon name="chevron-right" size={16} className="transition-transform duration-200 group-hover:translate-x-0.5" />
+                    </span>
                   </div>
-                </Card>
+                </article>
               </li>
             );
           })}
         </ul>
       </section>
 
-      <section aria-label={t("dashboard.continue.title")} className={`mt-10 grid gap-5 ${allKeys.length > 0 ? "lg:grid-cols-[1.4fr_1fr]" : ""}`}>
-        <Card padding="lg">
-          <ContinueCard items={items} labNames={labNames} startHref={startHref} messages={messages.dashboard.continue} />
-        </Card>
-        {allKeys.length > 0 ? (
-          <Card tone="sunken" padding="lg" className="flex flex-col justify-center">
-            <LabProgress keys={allKeys} label={t("dashboard.overall")} messages={progressMessages} />
-          </Card>
-        ) : null}
-      </section>
-
-      <section aria-labelledby={`features-title-${lang}`} className="mt-14">
+      <section aria-labelledby={`features-title-${lang}`}>
         <h2 id={`features-title-${lang}`}>{t("dashboard.features.title")}</h2>
-        <ul className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="mt-6 grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((feature) => (
             <li key={feature.id} className="border-t-2 border-line pt-4">
               <h3>{feature.title}</h3>
-              <p className="mt-2 text-[0.95rem] text-muted">{feature.text}</p>
+              <p className="mt-2 text-base text-muted">{feature.text}</p>
             </li>
           ))}
         </ul>
