@@ -1,0 +1,462 @@
+{
+  "title": "Driver L298N",
+  "sub": "pourquoi ne pas l'utiliser",
+  "hint": "mettez-le sous tension, choisissez un sens, sentez la chaleur",
+  "overview": "Le L298N est le driver de moteurs de presque tous les kits de démarrage : une carte rouge carrée de 43 mm avec un dissipateur noir, deux borniers moteur bleus et une LiPo 2S sur son bornier d'alimentation. Dans la puce, il y a deux ponts en H faits de transistors bipolaires, une conception des années 1990. IN1 et IN2 choisissent le sens du moteur A, IN3 et IN4 celui du moteur B, et ENA et ENB activent chaque pont ; tel que le module est livré, deux cavaliers relient les deux entrées d'activation au +5V : les moteurs tournent donc à pleine vitesse. Un régulateur 78M05 derrière le cavalier 5V-EN fabrique à partir de la batterie l'alimentation logique 5 V de la puce. Le hic, c'est la chute de tension : deux interrupteurs bipolaires sont en série avec chaque moteur et perdent à eux deux 1,4 + 1,15 x I volts, environ 1,6 V avec un moteur TT en rotation libre et 2,7 V avec la roue bloquée, et tout ça se transforme en chaleur. Montez le module, câblez le Nano, les moteurs et la batterie, faites-le tourner dans tous les sens, puis bloquez les roues et regardez le dissipateur grimper jusqu'à ce que la puce se coupe. Le TB6612FNG du banc précédent fait le même travail et perd environ 0,1 V.",
+  "parts": {
+    "U1": {
+      "name": "Double pont en H L298N sur son dissipateur",
+      "what": "Le L298N de ST en boîtier Multiwatt à 15 broches, boulonné sur un dissipateur à ailettes. Deux ponts de quatre interrupteurs bipolaires, 2 A par canal, alimentation moteur jusqu'à 46 V, seuils logiques de 1,5 V et 2,3 V, pour que des contrôleurs en 3,3 V puissent le piloter. Les deux interrupteurs passants perdent environ 1,6 V à 0,16 A et 2,5 V à 1 A, et il n'y a pas de limitation de courant : seule une coupure en surchauffe le protège."
+    },
+    "U2": {
+      "name": "Régulateur 5 V 78M05",
+      "what": "Fabrique à partir de la batterie l'alimentation logique 5 V du L298N tant que le cavalier 5V-EN est en place, et la sort sur la troisième vis du bornier d'alimentation. Il lui faut environ 2 V de marge : une batterie 2S (7,4 V) convient, une batterie de 6 V non. Au-dessus de 12 V, il chauffe : voilà pourquoi les vendeurs disent de retirer le cavalier et de fournir vous-même le 5 V."
+    },
+    "D1": {
+      "name": "Diodes de roue libre D1-D8",
+      "what": "Huit petits redresseurs, deux par fil de moteur : un vers +12V et un depuis GND. Quand un pont se bloque, le bobinage du moteur continue de pousser du courant ; les diodes lui donnent un chemin de retour vers l'alimentation au lieu de laisser la tension faire un pic. Le L298N n'en a aucune à l'intérieur : le module a donc besoin de celles-ci."
+    },
+    "C1": {
+      "name": "Condensateur de 220 µF sur +12V",
+      "what": "Le condensateur réservoir de l'alimentation des moteurs, donné pour 35 V. Il fournit aux ponts les rafales de courant qu'ils commutent et absorbe les pics. Polarisé : la bande marque le moins et fait face au bord avant. Monté à l'envers, il chauffe, gonfle et peut dégazer."
+    },
+    "C2": {
+      "name": "Condensateur de 220 µF sur +5V",
+      "what": "Lisse le rail logique 5 V après le 78M05. Polarisé comme C1."
+    },
+    "J1": {
+      "name": "Bornier d'alimentation : +12V, GND, +5V",
+      "what": "Trois bornes à vis. +12V reçoit l'alimentation des moteurs (ici la LiPo 2S ; en réalité 7 à 35 V avec le cavalier 5V-EN en place), GND est la masse commune que le Nano doit partager, et +5V est la sortie du régulateur, ou une entrée quand le cavalier 5V-EN est retiré. Pas de fusible ni de protection contre l'inversion de polarité."
+    },
+    "J2": {
+      "name": "Bornier du moteur A (OUT1, OUT2)",
+      "what": "Deux bornes à vis sur le bord gauche pour le moteur A. Inverser ses deux fils inverse le moteur, exactement comme inverser IN1 et IN2 dans le sketch."
+    },
+    "J3": {
+      "name": "Bornier du moteur B (OUT3, OUT4)",
+      "what": "Deux bornes à vis sur le bord droit pour le moteur B, piloté par IN3 et IN4."
+    },
+    "J4": {
+      "name": "Connecteur de commande IN1-IN4",
+      "what": "Quatre broches pour les entrées de sens : IN1 et IN2 pour le moteur A, IN3 et IN4 pour le moteur B. HIGH et LOW font tourner dans un sens, LOW et HIGH dans l'autre, deux niveaux égaux freinent. Il n'y a pas de résistances de tirage : une entrée non connectée flotte."
+    },
+    "JPA": {
+      "name": "Cavalier ENA",
+      "what": "Relie ENA au +5V : le pont A est donc toujours activé et tourne à pleine vitesse. Pour régler la vitesse, retirez-le et pilotez ENA depuis une broche PWM. Ne pilotez jamais ENA avec le cavalier encore en place : le cavalier court-circuite la broche au 5 V."
+    },
+    "JPB": {
+      "name": "Cavalier ENB",
+      "what": "La même chose pour le pont B : en place, le moteur B est toujours activé, à pleine vitesse."
+    },
+    "JP5": {
+      "name": "Cavalier 5V-EN",
+      "what": "Relie +12V à l'entrée du 78M05. En place, le module fabrique sa propre alimentation logique 5 V ; retiré, le L298N n'a pas d'alimentation logique, sauf si vous amenez du 5 V sur la vis +5V, et rien ne fonctionne."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "Le contrôleur, sur USB. D8 pilote IN1, D7 IN2, D5 IN3 et D4 IN4, et son GND est câblé au GND du module pour que les deux s'accordent sur ce que veut dire LOW. Ses sketches écrivent aussi D9 et D3 pour ENA et ENB, mais ces broches restent non câblées tant que les cavaliers sont en place."
+    },
+    "MOTA": {
+      "name": "Moteur A (motoréducteur TT)",
+      "what": "Un motoréducteur jaune 1:48 sur OUT1 et OUT2, sa roue tournant en l'air. Environ 160 mA en rotation libre ; bloqué, il prend plus d'un ampère. À travers le L298N, il reçoit environ 5,8 V des 7,4 V de la batterie."
+    },
+    "MOTB": {
+      "name": "Moteur B (motoréducteur TT)",
+      "what": "Le second motoréducteur, sur OUT3 et OUT4."
+    },
+    "BATT": {
+      "name": "Batterie LiPo 2S, 7,4 V",
+      "what": "Deux cellules lithium-polymère en série : 8,4 V pleine, 7,4 V en nominal, environ 6,4 V quand elle a besoin d'une charge. Le rouge sur +12V, le noir sur GND. Branchée à l'envers, elle est court-circuitée à travers les diodes de roue libre."
+    }
+  },
+  "power": {
+    "label": "Mettez le banc sous tension",
+    "ok": "Nano sur l'USB, LiPo sur +12V : la LED d'alimentation est allumée et les ponts tournent"
+  },
+  "modes": {
+    "fwd": {
+      "title": "Avant"
+    },
+    "rev": {
+      "title": "Arrière"
+    },
+    "spin": {
+      "title": "Pivot sur place"
+    },
+    "brake": {
+      "title": "Frein"
+    },
+    "half": {
+      "title": "Mi-vitesse (cavaliers en place)"
+    },
+    "code": {
+      "title": "L298N : IN1 et IN2 choisissent le sens du moteur A, IN3 et IN4 celui du moteur B",
+      "motorA": "moteur A : l'activation et les deux entrées de sens",
+      "motorB": "moteur B",
+      "full": "pleine vitesse (de toute façon, le cavalier tient ENA à 5 V)",
+      "half": "rapport cyclique de moitié : ignoré tant que le cavalier relie ENA au 5 V",
+      "fwd": "les deux en avant",
+      "rev": "les deux en arrière",
+      "spin": "A en avant, B en arrière : le robot tourne sur place",
+      "brake": "entrées égales : les deux fils du moteur sur le même rail, un arrêt rapide"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Démontez jusqu'au circuit nu",
+      "body": "Retirez tous les composants de la carte rouge. Vous allez les remettre comme le ferait une usine : les composants CMS d'abord, puis les composants traversants bas, les hauts, les soudures, et les cavaliers en dernier.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    },
+    "smd": {
+      "title": "Placement automatique des composants CMS, puis refusion",
+      "body": "Le 78M05, les huit diodes de roue libre, la LED d'alimentation et sa résistance et les petits condensateurs se posent en un seul passage, et le four fait fondre la pâte sous chaque pastille.",
+      "refusal": "Les composants CMS se posent en premier, sur une carte nue"
+    },
+    "low": {
+      "title": "Posez les composants traversants bas",
+      "body": "Les deux condensateurs de 220 µF (bande vers l'avant) et les connecteurs à broches : IN1-IN4, ENA, ENB et 5V-EN.",
+      "refusal": "Les composants CMS d'abord : lancez le placement puis la refusion. Le four ferait fondre les pièces en plastique"
+    },
+    "tall": {
+      "title": "Posez les composants hauts",
+      "body": "Le L298N sur son dissipateur, ses 15 broches en deux rangées décalées, et les trois borniers à vis bleus.",
+      "refusal": "Les composants bas d'abord, pour que les hauts ne gênent pas"
+    },
+    "solder": {
+      "title": "Soudez les composants traversants",
+      "body": "Chaque broche du L298N et des borniers porte le courant des moteurs : chaque soudure doit donc être brillante et concave, et mouiller à la fois la broche et la pastille.",
+      "refusal": "Rien à souder pour l'instant : placez d'abord un composant"
+    },
+    "caps": {
+      "title": "Posez les cavaliers",
+      "body": "5V-EN active le régulateur ; ENA et ENB relient les deux entrées d'activation au +5V. C'est ainsi que le module est livré : les deux ponts toujours activés, à pleine vitesse.",
+      "refusal": "Faites d'abord les soudures : les cavaliers se posent en dernier"
+    },
+    "wire-nano": {
+      "title": "Câblez le Nano sur IN1-IN4 et GND",
+      "body": "Posez le Nano sur le tapis et tirez quatre fils de liaison : D8 vers IN1, D7 vers IN2, D5 vers IN3, D4 vers IN4. Puis un de plus du GND du Nano vers la vis GND du bornier d'alimentation. Sans ce fil, les entrées n'ont pas de référence commune.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    },
+    "wire-motors": {
+      "title": "Câblez les deux moteurs",
+      "body": "Le moteur A dans OUT1 et OUT2 à gauche, le moteur B dans OUT3 et OUT4 à droite. Le choix du fil ne fixe que le sens de rotation de la roue.",
+      "refusal": "Coupez d'abord l'alimentation, et câblez le Nano avant les moteurs"
+    },
+    "wire-battery": {
+      "title": "Câblez la LiPo sur +12V et GND",
+      "body": "Le rouge sur +12V, le noir sur GND. Cette carte n'a pas de protection contre l'inversion de polarité : vérifiez deux fois avant de brancher. Le Nano garde sa propre alimentation USB.",
+      "refusal": "Coupez d'abord l'alimentation, et câblez les moteurs avant la LiPo"
+    },
+    "plug": {
+      "title": "Mettez le banc sous tension",
+      "body": "L'USB dans le Nano, la LiPo sur le module. La LED d'alimentation s'allume, le Nano démarre en « Avant » et les deux roues tournent.",
+      "refusal": "Terminez d'abord le montage : tous les composants posés, toutes les soudures faites et tout ce qui est sur le tapis câblé"
+    },
+    "fwd": {
+      "title": "Téléversez « Avant »",
+      "body": "IN1 à HIGH, IN2 à LOW, IN3 à HIGH, IN4 à LOW : les deux roues tournent en avant. La batterie donne 7,4 V et chaque moteur reçoit environ 5,8 V : les 1,6 V restants sont perdus dans le pont.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "rev": {
+      "title": "Téléversez « Arrière »",
+      "body": "Inversez chaque paire : IN1 à LOW, IN2 à HIGH, et la même chose pour B. Les mêmes 1,6 V sont perdus, dans l'autre sens.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "spin": {
+      "title": "Téléversez « Pivot sur place »",
+      "body": "Le moteur A en avant, le moteur B en arrière. Sur un robot, ça le fait tourner sur place.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "brake": {
+      "title": "Téléversez « Frein »",
+      "body": "IN1 = IN2 et IN3 = IN4 avec les entrées d'activation à HIGH : les deux fils de chaque moteur sont sur le même rail, la propre tension du moteur fait donc circuler un courant qui l'arrête net. Rien ne vient de la batterie.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "half": {
+      "title": "Téléversez « Mi-vitesse »",
+      "body": "Le sketch écrit 128 sur ENA et ENB, mais rien ne change : les cavaliers tiennent les deux entrées d'activation à 5 V, et D9 et D3 ne sont même pas câblées. Régler la vitesse demande de retirer le cavalier et de mettre ENA sur une broche PWM ; c'est ce que fait l'exercice du démarrage progressif.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "lipo-backwards": {
+      "title": "Branchez la LiPo à l'envers",
+      "body": "Le noir sur +12V, le rouge sur GND. Les diodes de roue libre pointent maintenant dans le sens passant aux bornes de la batterie et la court-circuitent à travers deux chutes de diode. Réparez et remettez sous tension."
+    },
+    "c1-backwards": {
+      "title": "Posez C1 à l'envers",
+      "body": "Le condensateur de 220 µF de l'alimentation des moteurs, bande vers l'arrière. La tension inverse perce sa couche d'oxyde : il fuit, chauffe et dégaze. Réparez et remettez sous tension."
+    },
+    "four-aa": {
+      "title": "Alimentez-le avec 4 piles AA",
+      "body": "Une batterie de 6 V à la place de la LiPo. Le 78M05 a besoin d'environ 2 V de marge : son rail 5 V tombe donc vers 4 V, sous les 4,5 V minimum du L298N. Réparez et remettez sous tension."
+    },
+    "thirty-six-volts": {
+      "title": "Alimentez-le en 36 V",
+      "body": "Une alimentation de 36 V sur +12V avec le cavalier 5V-EN en place. Le L298N supporterait 46 V, mais pas le 78M05 ni les condensateurs de 35 V. Réparez et remettez sous tension."
+    },
+    "cold-motor-a": {
+      "title": "Laissez une soudure froide sur le bornier du moteur A",
+      "body": "Une soudure terne et fissurée sur J2. Le moteur A se coupe et revient au gré des contacts de la soudure. Réparez et remettez sous tension."
+    },
+    "no-5v-jumper": {
+      "title": "Laissez le cavalier 5V-EN de côté",
+      "body": "L'entrée du régulateur est déconnectée : le L298N n'a donc pas d'alimentation logique. La LED d'alimentation reste éteinte et les entrées ne font rien, alors que la batterie est branchée. Remettez le cavalier et remettez sous tension."
+    },
+    "no-ground": {
+      "title": "Oubliez le fil de GND",
+      "body": "Le Nano et le module ne partagent aucune masse. Ses HIGH et ses LOW n'ont pas de référence commune au niveau du L298N : les entrées dérivent et les moteurs tressautent au hasard. Remettez le fil et remettez sous tension."
+    },
+    "hold-wheels": {
+      "title": "Bloquez les deux roues",
+      "body": "Les deux moteurs pilotés, arrêtez les roues à la main. Chacun tire environ 1,1 A et le pont perd environ 2,7 V dessus : quelque 6 W de chaleur. Le dissipateur dépasse les 100 °C, la puce se coupe à sa limite, refroidit et réessaie, et les moteurs hoquettent. Lâchez, réparez et remettez sous tension."
+    },
+    "exploded": {
+      "title": "Vue éclatée",
+      "body": "Débranchez et soulevez les composants par groupe de montage : les composants CMS, les composants bas, les composants hauts et les cavaliers.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    }
+  },
+  "faults": {
+    "reverse-polarity": {
+      "title": "LiPo à l'envers",
+      "symptom": "La LED d'alimentation reste éteinte, rien ne tourne, les diodes et C1 chauffent en quelques secondes et les fils de la batterie tiédissent.",
+      "explanation": "Il n'y a ni diode de protection ni fusible. Inversées, les huit diodes de roue libre conduisent de GND à travers les sorties jusqu'à +12V et placent deux chutes de diode, environ 2 V, directement aux bornes de la batterie. Plusieurs ampères traversent des diodes de 1 A, et C1 voit une tension inverse.",
+      "fix": "Débranchez immédiatement, vérifiez que les diodes et C1 ne sont pas abîmés, et mettez le rouge sur +12V. Un connecteur qui ne se branche que dans un sens l'empêche."
+    },
+    "c1-reversed": {
+      "title": "C1 à l'envers",
+      "symptom": "Un sifflement et un pop quand la batterie est branchée, un boîtier gonflé, une odeur de poisson.",
+      "explanation": "Un électrolytique aluminium ne tient la tension que dans un sens. À l'envers, sa couche d'oxyde cède, il conduit, chauffe, et l'électrolyte bout jusqu'à ce que l'évent s'ouvre.",
+      "fix": "Remplacez C1, bande (moins) vers le bord avant, comme imprimé."
+    },
+    "four-aa": {
+      "title": "6 V, c'est trop peu avec 5V-EN en place",
+      "symptom": "La LED d'alimentation brille faiblement, les moteurs tressautent ou ne font rien et la logique ne cesse de décrocher.",
+      "explanation": "Le 78M05 a besoin d'environ 2 V de plus à son entrée que ce qu'il fournit. À partir de 6 V, il arrive à environ 4 V, sous les 4,5 V dont a besoin la logique du L298N. Et de toute façon, les moteurs ne verraient qu'environ 4,4 V après la chute du pont.",
+      "fix": "Utilisez une LiPo 2S (7,4 V) ou plus. Sur une batterie de 6 V, retirez le cavalier 5V-EN et alimentez la vis +5V par le 5 V du Nano."
+    },
+    "over-voltage": {
+      "title": "36 V sur +12V",
+      "symptom": "Un pop du régulateur ou de C1, la LED d'alimentation s'éteint, et la vis 5 V peut porter toute la tension d'alimentation.",
+      "explanation": "Le L298N est donné pour 46 V, mais les condensateurs de 220 µF du module sont des composants de 35 V et le 78M05 accepte 35 V au plus. Quand un régulateur lâche, il claque souvent en court-circuit et transmet toute la tension d'alimentation à tout ce qui est sur +5V.",
+      "fix": "Restez à 12 V ou moins avec le cavalier 5V-EN en place. Au-delà, retirez le cavalier et fournissez vous-même le 5 V, et restez sous 35 V sur cette carte."
+    },
+    "cold-motor-a": {
+      "title": "Soudure froide sur le bornier du moteur A",
+      "symptom": "Le moteur A hoquette, se coupe sur les chocs ou ne tourne que dans un sens ; la broche du bornier tiédit.",
+      "explanation": "Les broches du bornier portent tout le courant du moteur. Une soudure terne et granuleuse ne fait contact qu'une partie du temps, et sa résistance transforme le courant en chaleur.",
+      "fix": "Refaites la soudure avec de l'étain neuf jusqu'à ce qu'il coule en un cône brillant autour de la broche."
+    },
+    "no-5v-jumper": {
+      "title": "Cavalier 5V-EN manquant",
+      "symptom": "La batterie est branchée, mais la LED d'alimentation est éteinte et aucune commande ne fait rien.",
+      "explanation": "Le cavalier relie +12V au 78M05. Sans lui, le régulateur est coupé, le rail +5V est mort et la logique du L298N n'a pas d'alimentation : ses interrupteurs ne deviennent donc jamais passants.",
+      "fix": "Remettez le cavalier ou, avec une alimentation de plus de 12 V, amenez du 5 V sur la vis +5V depuis le contrôleur."
+    },
+    "no-ground": {
+      "title": "Pas de masse commune",
+      "symptom": "Les moteurs tressautent, tournent dans le mauvais sens ou ignorent le sketch, et toucher un fil change ce qu'ils font.",
+      "explanation": "Un niveau logique est une tension entre deux points. Sans fil entre le GND du Nano et le GND du module, le L298N mesure les broches du Nano par rapport à rien : les entrées flottent et dérivent au moindre bruit.",
+      "fix": "Tirez un fil du GND du Nano vers la vis GND du bornier d'alimentation."
+    },
+    "stall": {
+      "title": "Les deux roues calées",
+      "symptom": "Le dissipateur devient trop chaud pour être touché, puis les moteurs hoquettent : ils s'arrêtent, redémarrent quelques secondes plus tard et s'arrêtent de nouveau.",
+      "explanation": "Un moteur TT bloqué tire environ 1,1 A sous 7,4 V. Les deux interrupteurs passants perdent environ 2,7 V à ce courant, environ 3 W par pont, 6 W pour les deux. Le L298N n'a pas de limitation de courant ; seule sa coupure en surchauffe l'arrête, et il redémarre dès qu'il a un peu refroidi.",
+      "fix": "Libérez les roues et coupez dans le sketch l'alimentation d'un moteur calé. Mieux : un driver à MOSFET comme le TB6612FNG, qui perd un dixième de la puissance."
+    }
+  },
+  "status": {
+    "status": "État",
+    "powered": "Alimentation du banc",
+    "mode": "Sketch",
+    "in1": "IN1",
+    "in2": "IN2",
+    "ena": "ENA",
+    "vs": "+12V (alimentation moteurs)",
+    "logic": "+5V (logique)",
+    "motor": "Tension du moteur A",
+    "rpm": "Vitesse du moteur A",
+    "drop": "Perdu dans le pont",
+    "heatsink": "Dissipateur (°C)",
+    "battery": "Courant batterie",
+    "usb": "Courant USB"
+  },
+  "current": {
+    "usb": "USB du Nano (polyfusible de 500 mA)",
+    "lipo": "LiPo 2S sur +12V (2 A par pont)",
+    "nano": "Nano en fonctionnement",
+    "logic": "Repos du L298N, 78M05 et LED d'alimentation",
+    "motors": "Deux moteurs TT en rotation libre",
+    "stall": "Les deux roues bloquées (calage)",
+    "c1short": "C1 qui conduit à l'envers",
+    "reverse": "Batterie inversée à travers les diodes de roue libre"
+  },
+  "tasks": {
+    "soft-start": {
+      "title": "Démarrage progressif sur ENA",
+      "brief": "Retirez le cavalier ENA et câblez ENA sur D9. Faites tourner le moteur A en avant (IN1 sur D8 à HIGH, IN2 sur D7 à LOW) et faites monter ENA de 0 à 255, un cran toutes les 10 ms, pour qu'il atteigne la pleine vitesse en environ 2,5 s. Tenez la pleine vitesse pendant 2 s, puis freinez en passant IN2 à HIGH et affichez « stopped ».",
+      "hints": {
+        "1": "Réglez le sens une fois, avant la rampe : digitalWrite(IN1, HIGH); digitalWrite(IN2, LOW);",
+        "2": "Une boucle for de 0 à 255 avec analogWrite(ENA, duty) et delay(10) à l'intérieur donne la rampe.",
+        "3": "Le frein, c'est IN1 = IN2 avec le pont activé : IN1 est déjà à HIGH, mettez donc aussi IN2 à HIGH."
+      },
+      "checks": {
+        "1": "Tourne pendant 5,5 s",
+        "2": "IN1 (D8) est à HIGH",
+        "3": "IN2 (D7) est à LOW pendant l'entraînement",
+        "4": "À 0,25 s, ENA (D9) est à environ 10 %",
+        "5": "À 1 s, ENA est à environ 40 %",
+        "6": "À 3,5 s, ENA est à plein rapport cyclique",
+        "7": "À 5 s, IN2 est à HIGH : freinage",
+        "8": "Affiche « stopped »"
+      },
+      "code": {
+        "goal": "Faire monter le moteur A de l'arrêt à pleine vitesse en environ 2.5 s, tourner 2 s, puis freiner",
+        "jump": "pleine vitesse d'un coup : remplacez ceci par une rampe, puis ajoutez le frein"
+      }
+    },
+    "square": {
+      "title": "Parcourez un carré",
+      "brief": "Faites parcourir un carré à un robot à deux roues : quatre fois, les deux moteurs en avant pendant 1 s, puis un pivot de 0,5 s (moteur A en avant, moteur B en arrière), et affichez « corner » suivi du compte. Après le quatrième coin, freinez les deux moteurs. IN1 est sur D8, IN2 sur D7, IN3 sur D5, IN4 sur D4 ; les cavaliers d'activation restent en place.",
+      "hints": {
+        "1": "Une fonction drive(in1, in2, in3, in4) qui écrit les quatre entrées ramène chaque mouvement à une seule ligne.",
+        "2": "for (int side = 1; side <= 4; side++) { ... } dans setup() parcourt le carré une fois ; loop() peut rester vide.",
+        "3": "Freiner les deux : drive(HIGH, HIGH, HIGH, HIGH)."
+      },
+      "checks": {
+        "1": "Tourne pendant 6,5 s",
+        "2": "Premier côté : IN3 (D5) est à HIGH",
+        "3": "Premier côté : IN4 (D4) est à LOW",
+        "4": "Premier coin : IN3 est à LOW",
+        "5": "Premier coin : IN4 est à HIGH, le moteur B tourne en arrière",
+        "6": "Premier coin : IN1 (D8) reste à HIGH, moteur A en avant",
+        "7": "Deuxième côté : IN3 est de nouveau à HIGH",
+        "8": "Affiche « corner 4 » avant 6,2 s",
+        "9": "À la fin, IN2 (D7) est à HIGH : le moteur A freine",
+        "10": "À la fin, IN3 est à HIGH : le moteur B freine"
+      },
+      "code": {
+        "goal": "Parcourir un carré : avant 1 s, pivot 0.5 s, quatre fois, puis frein",
+        "start": "ceci ne parcourt que le premier côté : ajoutez les pivots, les trois autres côtés et le frein"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "reflow-first": {
+        "q": "Pourquoi les diodes CMS et le 78M05 se posent-ils avant les borniers et le L298N ?",
+        "options": {
+          "1": "Le four de refusion ferait fondre le plastique des borniers et des connecteurs",
+          "2": "Le L298N doit se poser en dernier parce qu'il est sensible à l'électricité statique",
+          "3": "Les composants CMS sont moins chers, ils passent donc en premier"
+        },
+        "why": "La refusion chauffe toute la carte à environ 245 °C. Les composants traversants en plastique n'y survivraient pas : ils se posent donc ensuite et se soudent un par un."
+      },
+      "caps-job": {
+        "q": "Que font les cavaliers ENA et ENB tels que le module est livré ?",
+        "options": {
+          "1": "Ils relient chaque entrée d'activation au +5V : les deux ponts tournent donc toujours à pleine vitesse",
+          "2": "Ils choisissent l'avant ou l'arrière",
+          "3": "Ils relient l'alimentation des moteurs au régulateur"
+        },
+        "why": "Une entrée d'activation allume ou coupe tout son pont. Reliée au 5 V par le cavalier, elle est toujours active ; pour régler la vitesse, vous retirez le cavalier et la pilotez en PWM."
+      },
+      "jp5": {
+        "q": "Que relie le cavalier 5V-EN ?",
+        "options": {
+          "1": "La sortie 5 V de la carte aux moteurs",
+          "2": "L'entrée +12V au 78M05, qui fabrique alors le 5 V de la logique",
+          "3": "Les deux canaux moteur en parallèle"
+        },
+        "why": "Avec lui en place, le module fabrique sa propre alimentation logique à partir de la batterie. Au-dessus de 12 V, les vendeurs disent de le retirer, parce que le 78M05 aurait trop à dissiper."
+      }
+    },
+    "drive": {
+      "brake": {
+        "q": "IN1 et IN2 sont tous les deux à HIGH avec ENA à HIGH. Que fait le moteur A ?",
+        "options": {
+          "1": "Il tourne à mi-vitesse",
+          "2": "Il s'arrête vite : ses deux fils sont sur le même rail",
+          "3": "Il ralentit librement"
+        },
+        "why": "Les deux interrupteurs du haut sont passants : le moteur est donc court-circuité à travers eux. Sa propre force contre-électromotrice fait circuler un courant qui le freine. Ralentir librement (la roue libre), c'est ENA à LOW."
+      },
+      "swap": {
+        "q": "Le moteur A tourne dans le mauvais sens en « Avant ». La correction la plus rapide ?",
+        "options": {
+          "1": "Inverser ses deux fils dans le bornier, ou inverser IN1 et IN2 dans le sketch",
+          "2": "Retourner la batterie",
+          "3": "Retirer le cavalier ENA"
+        },
+        "why": "Le sens, c'est seulement quel fil est positif. Inverser les fils et inverser les entrées font la même chose. Retourner la batterie la court-circuite à travers les diodes."
+      },
+      "drop": {
+        "q": "La batterie donne 7,4 V. Combien en arrive à peu près à un moteur TT en rotation libre à travers le L298N ?",
+        "options": {
+          "1": "7,4 V",
+          "2": "Environ 5,8 V : environ 1,6 V sont perdus dans deux interrupteurs bipolaires",
+          "3": "3,3 V"
+        },
+        "why": "Chaque paire passante fait chuter environ 1,4 V plus 1,15 V par ampère : 1,6 V à 0,16 A, 2,5 V à 1 A. Un pont à MOSFET comme le TB6612FNG perd environ 0,1 V à ce courant."
+      }
+    },
+    "faults": {
+      "backwards": {
+        "q": "La LiPo est branchée sur +12V et GND dans le mauvais sens. Que se passe-t-il ?",
+        "options": {
+          "1": "Rien : le module a une diode de protection",
+          "2": "Les diodes de roue libre conduisent et court-circuitent la batterie : elles et C1 chauffent vite",
+          "3": "Les moteurs tournent à l'envers"
+        },
+        "why": "Il n'y a aucune protection. Inversées, les diodes de roue libre forment un chemin direct aux bornes de la batterie, et plusieurs ampères traversent des composants de 1 A."
+      },
+      "four-aa": {
+        "q": "Pourquoi une batterie de 6 V (4 piles AA) laisse-t-elle le L298N inerte avec le cavalier 5V-EN en place ?",
+        "options": {
+          "1": "Le 78M05 a besoin d'environ 2 V de marge : 6 V en entrée donnent environ 4 V en sortie, sous les 4,5 V dont a besoin la logique",
+          "2": "Des piles AA ne peuvent pas fournir assez de courant à la logique",
+          "3": "Le L298N a besoin d'au moins 12 V sur +12V"
+        },
+        "why": "Un régulateur linéaire ne peut que faire baisser la tension, et le 78M05 a besoin d'environ 2 V à ses bornes pour réguler. À partir de 6 V, le rail logique chute à environ 4 V."
+      },
+      "stall-heat": {
+        "q": "Les deux roues sont bloquées. Où passe la puissance ?",
+        "options": {
+          "1": "Uniquement dans les moteurs",
+          "2": "Environ 2,7 V x 1,1 A par pont se transforment en chaleur dans le L298N, jusqu'à ce que sa coupure se déclenche",
+          "3": "Elle retourne dans la batterie"
+        },
+        "why": "Un moteur bloqué ne transforme rien en mouvement : son courant ne fait que chauffer son bobinage et le pont. Le L298N n'a pas de limitation de courant, seulement une coupure en surchauffe."
+      }
+    },
+    "end": {
+      "vs-tb6612": {
+        "q": "Même batterie, mêmes moteurs : pourquoi le TB6612FNG les fait-il tourner plus vite et plus froid ?",
+        "options": {
+          "1": "Ses interrupteurs MOSFET font chuter environ 0,1 V à ce courant au lieu d'environ 1,6 V",
+          "2": "Il a un plus gros dissipateur",
+          "3": "Il alimente les moteurs en 12 V"
+        },
+        "why": "Un MOSFET passant se comporte comme une petite résistance, 0,5 Ω pour un pont du TB6612FNG : 0,08 V à 0,16 A. Des interrupteurs bipolaires ne descendent jamais sous environ 1,4 V à eux deux."
+      },
+      "ground": {
+        "q": "Le Nano et le module n'ont pas de fil de GND en commun. Que font les moteurs ?",
+        "options": {
+          "1": "Ils tournent normalement : les signaux ne font que 5 V",
+          "2": "Ils tressautent ou ignorent le sketch : IN1-IN4 n'ont pas de référence commune",
+          "3": "Ils tournent à l'envers"
+        },
+        "why": "Un HIGH, c'est 5 V au-dessus du GND du Nano. Si le GND du module n'est pas ce même point, les entrées flottent et dérivent."
+      },
+      "half": {
+        "q": "Le sketch de mi-vitesse écrit 128 sur ENA, mais les moteurs tournent toujours à fond. Pourquoi ?",
+        "options": {
+          "1": "Le cavalier relie ENA au +5V : retirez-le et câblez ENA sur D9",
+          "2": "analogWrite ne fonctionne pas sur la broche 9",
+          "3": "Le L298N ignore la PWM au-delà de 490 Hz"
+        },
+        "why": "Avec le cavalier en place, ENA est toujours à 5 V quoi que fasse D9. Et ne câblez jamais D9 sur ENA avec le cavalier en place : chaque LOW court-circuiterait la broche au 5 V."
+      }
+    }
+  }
+}
