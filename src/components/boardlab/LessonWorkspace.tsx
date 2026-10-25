@@ -13,7 +13,7 @@ import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import type { Locale } from "@/i18n/config";
 import { controlFor } from "@/lib/boardlab/inputs";
 import { LessonRunner } from "@/lib/boardlab/run";
-import { createBoardLabStore, figureState, initialState, type BoardLabState, type BoardLabStore } from "@/lib/boardlab/store";
+import { createBoardLabStore, figurePatch, figureState, initialState, type BoardLabState, type BoardLabStore } from "@/lib/boardlab/store";
 import { markDone, progressKey, useDone } from "@/lib/progress";
 import { useSettings } from "@/lib/settings/hooks";
 import { ChecksPanel } from "./ChecksPanel";
@@ -46,13 +46,6 @@ export function LessonWorkspace({ lang, model, messages, text }: Props) {
 }
 
 const prefersReducedMotion = () => typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-
-/** Keys of `next` whose values differ from `prev` (shallow JSON compare). */
-function diff(prev: Record<string, unknown>, next: Record<string, unknown>): Record<string, unknown> {
-  const out: Record<string, unknown> = {};
-  for (const [k, v] of Object.entries(next)) if (JSON.stringify(prev[k]) !== JSON.stringify(v)) out[k] = v;
-  return out;
-}
 
 function Workspace({ lang, model }: { lang: Locale; model: LessonModel }) {
   const { t, tc } = useText();
@@ -148,7 +141,7 @@ function Workspace({ lang, model }: { lang: Locale; model: LessonModel }) {
     let last = figureState(store.getState(), figureOpts);
     return store.subscribe(() => {
       const nextState = figureState(store.getState(), figureOpts);
-      const patch = diff(last, nextState);
+      const patch = figurePatch(last, nextState);
       last = nextState;
       if (Object.keys(patch).length) figureRef.current?.send("set", { state: patch });
     });

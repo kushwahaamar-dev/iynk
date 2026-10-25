@@ -10,7 +10,7 @@ import { Icon } from "@/components/ui/icons";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import type { BoardContent, PinRow } from "@/content/schema";
 import type { Locale } from "@/i18n/config";
-import { createBoardLabStore, figureState, initialState, type BoardLabStore } from "@/lib/boardlab/store";
+import { createBoardLabStore, figurePatch, figureState, initialState, type BoardLabStore } from "@/lib/boardlab/store";
 import { progressKey, useDone } from "@/lib/progress";
 import { AssemblyPanel } from "./AssemblyPanel";
 import { BoardProgress } from "./BoardProgress";
@@ -38,12 +38,6 @@ export function BoardWorkspace({ lang, data, messages, text }: Props) {
       <Overview lang={lang} data={data} />
     </BoardLabText>
   );
-}
-
-function diff(prev: Record<string, unknown>, next: Record<string, unknown>): Record<string, unknown> {
-  const out: Record<string, unknown> = {};
-  for (const [k, v] of Object.entries(next)) if (JSON.stringify(prev[k]) !== JSON.stringify(v)) out[k] = v;
-  return out;
 }
 
 function LessonCard({ lang, board, lesson }: { lang: string; board: string; lesson: LessonLink }) {
@@ -250,7 +244,7 @@ function Overview({ lang, data }: { lang: Locale; data: BoardOverview }) {
     let last = figureState(store.getState(), figureOpts);
     return store.subscribe(() => {
       const next = figureState(store.getState(), figureOpts);
-      const patch = diff(last, next);
+      const patch = figurePatch(last, next);
       last = next;
       if (Object.keys(patch).length) figureRef.current?.send("set", { state: patch });
     });
