@@ -47,7 +47,7 @@
   },
   "tools": {
     "highlight": "Schau dir {part} an",
-    "highlightOff": "Die 3D-Figur ist noch nicht geladen, deshalb ist dieses Bauteil nicht hervorgehoben.",
+    "highlightOff": "Die 3D-Abbildung ist noch nicht geladen, deshalb ist dieses Bauteil nicht hervorgehoben.",
     "showAgain": "Nochmal zeigen",
     "change": {
       "code": "Vorgeschlagene Code-Änderung",
