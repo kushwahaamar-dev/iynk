@@ -1,0 +1,404 @@
+{
+  "title": "Aile volante FPV de 900 mm",
+  "tagline": "Une aile volante en mousse sous INAV : des élevons à la place d'une queue, une hélice propulsive et un GPS pour la ramener.",
+  "sub": "Aile à élevons sous INAV avec retour au départ par GPS",
+  "hint": "Montez-la, vérifiez les élevons et l'équilibrage, puis lancez-la et volez autour des pylônes",
+  "noun": "aile volante",
+  "overview": "Une aile volante n'a pas de queue. Sa forme en flèche et ses élevons légèrement relevés la gardent stable en tangage, et les deux élevons font le travail d'une profondeur (en bougeant ensemble) et d'ailerons (en bougeant en sens opposé). Une seule hélice propulsive derrière l'aile garde les pales loin de votre main au lancer et loin du sol lors d'un atterrissage sur le ventre. Celle-ci est une aile en mousse EPP de 900 mm sur une carte F405 pour aile sous INAV 9.1, avec GPS, récepteur ExpressLRS et FPV analogique. INAV sait la remettre à plat, la lancer, tenir un cap et la ramener au départ par GPS, et elle croise avec quelques ampères : des vols d'une demi-heure sont donc normaux. Choisissez la batterie, le moteur et l'hélice et regardez l'équilibrage et le temps de vol changer, montez-la, vérifiez les élevons et le centre de gravité, puis volez sur l'aérodrome.",
+  "practice": "Volez la course de pylônes en mode angle, puis le parcours de retour au départ. Sur une vraie aile : vérifiez les élevons avant chaque premier vol (les manches et le stabilisateur), équilibrez-la sur les repères de CG avec la batterie en place, attendez un fix GPS avant d'armer, et lancez-la à plat, face au vent, à mi-gaz ou avec NAV LAUNCH. Réglez le failsafe sur RTH et testez-le sans hélice. La plupart des pays exigent que l'aile reste en vue : volez en FPV avec un observateur à côté de vous.",
+  "design": {
+    "fixed": {
+      "FRAME": "Aile EPP de 900 mm, fuselage central et longeron",
+      "ESC": "ESC de 40 A",
+      "FC": "FC pour aile F405 et carte d'alimentation",
+      "GPS": "GPS M10 + boussole",
+      "CAM": "Caméra FPV analogique",
+      "VTX": "VTX 5,8 GHz et antenne",
+      "RX": "Récepteur ELRS 2,4 GHz",
+      "SERVOS": "Deux servos de 9 g à pignons métal",
+      "XT60": "Câble XT60 et condensateur 470 µF",
+      "TOP": "Trappe, tringles et guignols",
+      "WIRES": "Fils du moteur et connecteurs bullet"
+    },
+    "verdict": {
+      "ok": "Les pièces vont ensemble : {tw} fois son poids en poussée pour le lancer et la montée, et une croisière à quelques ampères.",
+      "over": "{kv} KV, c'est un moteur de quad 5 pouces. Sur une hélice d'aile, il tire bien plus que ce que l'ESC de 40 A peut encaisser et grille en quelques secondes. Les moteurs d'aile en {cells}S font environ 1000 à 1400 KV.",
+      "weak": "Seulement {tw} fois son poids en poussée : un lancer va s'enfoncer avant de monter. Visez au moins la moitié de son poids.",
+      "tail": "Cette batterie légère rend l'aile trop centrée arrière : après le lancer, elle cabre et décroche. Avancez la batterie ou ajoutez du lest dans le nez, puis refaites la vérification du CG."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Aile volante en mousse EPP de 900 mm",
+      "what": "Une aile en flèche sans queue, en mousse EPP, de 900 mm d'un saumon à l'autre, avec un longeron carbone à l'intérieur, des winglets aux saumons et un fuselage central de 305 x 84 x 54 mm pour l'électronique. Le bord d'attaque recule de 28 degrés, d'une corde d'emplanture de 300 mm à une corde de saumon de 155 mm. L'EPP plie au lieu de casser : les atterrissages sur le ventre ne posent donc pas de problème. Les repères de CG sur le dessus sont à 15 à 20 % de la corde moyenne, environ 130 mm derrière le bord d'attaque de l'emplanture."
+    },
+    "SERVOS": {
+      "name": "Servos des élevons, guignols et tringles",
+      "what": "Deux servos de 9 g à pignons métal dans l'aile, à 175 mm de chaque côté, avec des tringles vers des guignols sur les élevons (55 mm de large, de 120 mm du centre jusqu'aux saumons). Ils se branchent sur les pastilles S3 et S4 et sont alimentés par le BEC servo de 4,9 V du FC. Un servo qui bouge dans le mauvais sens écrase l'aile juste après le lancer : vérifiez-les au banc."
+    },
+    "MOTORS": {
+      "name": "Moteur propulsif au bord de fuite",
+      "what": "Un moteur à cage tournante sur un support à l'arrière de la partie centrale, axe vers l'arrière, pour que l'hélice soit derrière l'aile. Le 2212 1400 KV par défaut pèse environ 55 g et chauffe en 4S avec une 8x6 : les vraies ailes 4S utilisent 1000 à 1200 KV avec cette hélice. Le 2810 1100 KV est le choix le plus fort et le plus calme ; le 2306 2400 KV est un moteur de quad 5 pouces."
+    },
+    "ESC": {
+      "name": "ESC de 40 A",
+      "what": "Un seul ESC de 40 A dans le fuselage, alimenté par les pastilles ESC de la carte d'alimentation. INAV le pilote en OneShot125 depuis la pastille S1. Son propre BEC 5 V n'est pas nécessaire, car le BEC servo du FC alimente les servos : laissez donc son fil rouge non connecté. INAV ne peut pas inverser un moteur : ça se fait dans l'outil propre à l'ESC ou en inversant deux fils du moteur."
+    },
+    "WIRES": {
+      "name": "Fils du moteur et connecteurs bullet",
+      "what": "Les trois fils de phase du moteur vers l'ESC par des connecteurs bullet de 3,5 mm. N'importe quel ordre fait tourner le moteur ; en inverser deux le fait tourner dans l'autre sens."
+    },
+    "FC": {
+      "name": "Contrôleur de vol F405 pour aile (INAV)",
+      "what": "Une carte F405 faite pour les ailes (comme la SpeedyBee F405 WING) sur sa propre carte d'alimentation : entrée batterie de 2 à 6S, un capteur de courant de 90 A et trois BEC, 5 V pour le FC, 9 V pour le VTX et 4,9 V pour les servos. Elle fait tourner INAV 9.1 avec un gyroscope, un baromètre et une puce OSD analogique. Elle est posée à plat dans le fuselage, flèche vers le nez."
+    },
+    "XT60": {
+      "name": "Câble XT60 et condensateur 470 µF",
+      "what": "Le câble de batterie soudé sur les pastilles BAT de la carte d'alimentation, avec un condensateur à faible ESR de 470 µF 35 V entre elles, bande sur la pastille moins. Il absorbe les pics de tension de l'ESC avant qu'ils ne réinitialisent le FC ou ne strient la vidéo."
+    },
+    "GPS": {
+      "name": "GPS M10 + boussole",
+      "what": "Un GPS u-blox M10 avec une boussole QMC5883, sur le dessus de l'aile derrière le fuselage et à au moins 5 cm de l'ESC et des fils de puissance. Le GPS est sur l'UART3 et la boussole sur l'I2C1. INAV a besoin du GPS pour le RTH, le lancer et la croisière. Sur une aile, la boussole est facultative : une fois en vol, INAV peut se diriger d'après la route GPS."
+    },
+    "RX": {
+      "name": "Récepteur ELRS 2,4 GHz",
+      "what": "Un minuscule récepteur ExpressLRS dans le fuselage sur l'UART1 (CRSF), avec son antenne en T qui sort du fuselage. Une antenne enfouie dans la mousse ou couchée le long du longeron carbone perd de la portée et provoque un failsafe précoce."
+    },
+    "CAM": {
+      "name": "Caméra FPV dans le nez",
+      "what": "Une caméra analogique dans le nez, inclinée d'environ 8 degrés vers le haut : une aile vole presque à plat, il lui faut donc peu d'uptilt. Sa vidéo entre sur la pastille CAM du FC, où l'OSD d'INAV ajoute l'altitude, la vitesse, la flèche du départ et la batterie."
+    },
+    "VTX": {
+      "name": "VTX 5,8 GHz et antenne",
+      "what": "Un émetteur vidéo analogique sur le BEC 9 V du FC, son antenne champignon dressée hors du fuselage. INAV règle la bande, le canal et la puissance par SmartAudio ; les niveaux de puissance viennent du VTX lui-même (INAV n'a pas de vtxtable). Ne l'alimentez jamais sans l'antenne."
+    },
+    "BATT": {
+      "name": "Batterie (le lest d'équilibrage)",
+      "what": "La batterie glisse dans la baie du fuselage et sert de lest pour le CG de l'aile. La LiPo 4S 2200 l'équilibre sur les repères. La Li-ion 4S 3000 la rend légèrement lourde du nez, ce qui est le côté sûr et donne de longs vols. La 3S 1300, légère, la laisse trop centrée arrière, et une aile centrée arrière n'est pas sûre à voler."
+    },
+    "TOP": {
+      "name": "Trappe",
+      "what": "La trappe en mousse au-dessus du fuselage, tenue par un loquet. Vérifiez qu'elle ferme : une trappe qui s'ouvre en vol fait tomber la batterie."
+    },
+    "PROPS": {
+      "name": "Hélice propulsive",
+      "what": "Une hélice propulsive (P) bipale, 8x6 par défaut, montée face imprimée vers l'avant. Elle tourne en sens antihoraire vue de derrière et souffle l'air vers l'arrière. Montée à l'envers, elle donne une poussée faible et des montées lentes. Une hélice de 9 pouces ne passe qu'à quelques millimètres des élevons."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Commencez par l'aile",
+      "body": "Collez les deux demi-ailes à la partie centrale avec le longeron carbone dans sa rainure, posez les winglets, et vérifiez que les élevons pivotent librement sur leurs charnières."
+    },
+    "servos": {
+      "title": "Posez les servos des élevons",
+      "body": "Enfoncez les servos dans leurs logements, centrez-les, et réglez les tringles pour que les deux élevons soient un peu relevés au neutre (le reflex) : c'est ce qui garde une aile volante stable en tangage.",
+      "refusal": "Les servos se logent dans l'aile : posez d'abord l'aile."
+    },
+    "motors": {
+      "title": "Montez le moteur propulsif",
+      "body": "Sur le support à l'arrière de la partie centrale, axe vers l'arrière. Vérifiez que les vis ne touchent pas les bobinages.",
+      "refusal": "Le moteur se visse sur le support moteur de l'aile : posez d'abord l'aile."
+    },
+    "esc": {
+      "title": "Posez l'ESC dans le fuselage",
+      "body": "Dans le fuselage, fils du moteur vers l'arrière. Rangez son fil de BEC : c'est le contrôleur de vol qui alimente les servos.",
+      "refusal": "L'ESC va dans le fuselage de l'aile : posez d'abord l'aile."
+    },
+    "wires": {
+      "title": "Branchez les fils du moteur",
+      "body": "Enfichez les trois connecteurs bullet du moteur dans ceux de l'ESC. Si le moteur tourne ensuite dans le mauvais sens, inversez-en deux.",
+      "refusal": "Les connecteurs bullet relient le moteur à l'ESC : posez d'abord les deux."
+    },
+    "fc": {
+      "title": "Posez le contrôleur de vol, flèche vers le nez",
+      "body": "À plat dans le fuselage sur sa carte d'alimentation, flèche imprimée vers le nez. Le signal de l'ESC va sur S1, les servos sur S3 et S4.",
+      "refusal": "La carte d'alimentation du contrôleur de vol alimente l'ESC : posez d'abord l'ESC."
+    },
+    "xt60": {
+      "title": "Soudez le XT60 et le condensateur",
+      "body": "Le câble de batterie sur les pastilles BAT de la carte d'alimentation, rouge sur + et noir sur -, et le condensateur de 470 µF sur ces mêmes pastilles avec sa bande côté moins. Vérifiez au multimètre qu'il n'y a pas de court-circuit entre + et -.",
+      "refusal": "Le XT60 se soude sur la carte d'alimentation du contrôleur de vol : posez d'abord le contrôleur de vol."
+    },
+    "gps": {
+      "title": "Posez le GPS sur le dessus",
+      "body": "Sur le dessus de l'aile derrière le fuselage, flèche vers le nez, à au moins 5 cm de l'ESC et des fils de puissance. Son câble va sur l'UART3 et l'I2C1.",
+      "refusal": "Le GPS est câblé au contrôleur de vol : posez d'abord le contrôleur de vol."
+    },
+    "rx": {
+      "title": "Posez le récepteur",
+      "body": "Dans le fuselage sur l'UART1 : le TX du récepteur sur RX1 et son RX sur TX1. Faites sortir son antenne en T du fuselage, loin du longeron carbone.",
+      "refusal": "Le récepteur est câblé sur l'UART1 du contrôleur de vol : posez d'abord le contrôleur de vol."
+    },
+    "cam": {
+      "title": "Posez la caméra dans le nez",
+      "body": "Dans le nez, inclinée d'environ 8 degrés vers le haut, son câble sur les pastilles CAM du contrôleur de vol.",
+      "refusal": "La caméra se loge dans le nez de l'aile : posez d'abord l'aile."
+    },
+    "vtx": {
+      "title": "Posez le VTX",
+      "body": "Dans le fuselage sur le BEC 9 V, avec l'antenne vissée avant toute mise sous tension et dressée hors du fuselage.",
+      "refusal": "Le VTX est câblé au contrôleur de vol : posez d'abord le contrôleur de vol."
+    },
+    "batt": {
+      "title": "Glissez la batterie",
+      "body": "Dans la baie, sanglée là où l'indiquent les repères de CG. Avec la 4S 2200, c'est là qu'elle s'équilibre. Ne la branchez pas encore.",
+      "refusal": "La batterie se branche sur le XT60 de la carte d'alimentation du contrôleur de vol : posez d'abord les deux."
+    },
+    "top": {
+      "title": "Fermez la trappe",
+      "body": "Au-dessus du fuselage, loquet fermé. Rien ne doit être pincé dessous.",
+      "refusal": "La trappe se ferme sur la batterie, le récepteur et le VTX : posez-les d'abord."
+    },
+    "props": {
+      "title": "Montez l'hélice propulsive, en dernier",
+      "body": "Seulement après le test au smoke stopper et la vérification du sens du moteur, batterie débranchée. Face imprimée vers l'avant, écrou serré.",
+      "refusal": "L'hélice se monte en dernier : passez d'abord le test au smoke stopper et la vérification du sens du moteur."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "La batterie se branche sur le XT60. Une 4S fait 14,8 V en nominal et 16,8 V pleine ; l'option Li-ion est aussi une 4S.",
+    "XT60-FC": "Le câble XT60 est soudé sur les pastilles BAT de la carte d'alimentation (2 à 6S), avec le condensateur à faible ESR de 470 µF 35 V entre elles, bande côté moins.",
+    "XT60-ESC": "L'ESC prend son alimentation sur les pastilles ESC de la carte d'alimentation, après le capteur de courant de 90 A : l'OSD affiche donc les ampères et les mAh consommés.",
+    "FC-ESC": "Le signal de l'ESC depuis la pastille S1 : moteur 1, en OneShot125 (la valeur par défaut d'INAV). Le fil du BEC propre à l'ESC reste non connecté.",
+    "ESC-MOTORS": "Trois fils de phase sur des bullets de 3,5 mm. Inversez-en deux pour inverser le moteur.",
+    "FC-SERVOS": "Le servo 1 sur S3 et le servo 2 sur S4, alimentés par le BEC servo en 4,9 V (6 ou 7,2 V par un cavalier, seulement si les servos le supportent). Le marron ou le noir est la masse, le rouge le plus, l'orange ou le blanc le signal.",
+    "RX-FC": "ELRS sur l'UART1 avec CRSF : le TX du récepteur sur RX1 et son RX sur TX1, plus le 5 V et la masse.",
+    "GPS-FC": "Un seul câble : le GPS sur l'UART3 (protocole u-blox), la boussole sur l'I2C1 (SCL et SDA), le 5 V et la masse.",
+    "CAM-FC": "La vidéo de la caméra sur la pastille CAM, avec le 5 V et la masse. La puce OSD d'INAV inscrit par-dessus.",
+    "FC-VTX": "La vidéo avec l'OSD sort par la pastille VTX, le 9 V vient du BEC VTX, et le SmartAudio passe par un UART libre pour qu'INAV règle la bande, le canal et la puissance."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Test au smoke stopper",
+      "pass": "La lampe n'a fait que clignoter : rien n'est en court-circuit et le condensateur est dans le bon sens. Vous pouvez brancher la batterie directement.",
+      "fail": "La lampe est restée allumée : quelque chose est en court-circuit, ici un condensateur monté bande côté plus. Reposez-le bande côté moins et refaites le test avant de brancher pour de bon."
+    },
+    "motors": {
+      "title": "Vérification du sens du moteur (sans hélice)",
+      "pass": "Le moteur tourne en sens antihoraire vu de derrière, comme l'exige une hélice propulsive : l'air sera soufflé vers l'arrière. L'hélice peut maintenant être montée.",
+      "fail": "Il a tourné dans le mauvais sens. INAV ne peut pas inverser un moteur : inversez deux fils du moteur, ou inversez-le dans l'outil propre à l'ESC, comme le fait la vérification ici. Avec l'hélice montée, il soufflerait l'air vers l'avant et volerait à peine."
+    },
+    "calibrate": {
+      "title": "Calibrage de l'accéléromètre (aile à plat)",
+      "pass": "Calibré avec l'aile à plat dans son attitude de vol : le mode ANGLE et l'horizon de l'OSD savent maintenant où est l'horizontale.",
+      "fail": "Posez le contrôleur de vol et mettez l'aile à plat, comme elle vole. Si la flèche pointe vers l'arrière, le calibrage n'y changera rien : tournez la carte ou faites set align_board_yaw = 1800."
+    },
+    "elevons": {
+      "title": "Vérification des élevons (manches et stabilisateur)",
+      "pass": "Manche vers l'arrière : les deux élevons montent. Manche à droite : l'élevon droit monte, le gauche descend. Aile droite penchée vers le bas en ANGLE : l'élevon droit descend pour la relever. Les manches et le stabilisateur poussent tous les deux dans le bon sens.",
+      "fail": "Posez les servos, le contrôleur de vol et le récepteur, et branchez. Si le manche vers l'arrière fait descendre les élevons, un servo est inversé : donnez-lui un taux négatif (servo 1 1000 2000 1500 -100) ou cochez « Reverse » dans l'onglet « Outputs ». Si les manches sont bons mais que le stabilisateur pousse dans le mauvais sens, la flèche du FC pointe vers l'arrière."
+    },
+    "cg": {
+      "title": "Vérification du CG",
+      "pass": "Elle reste à plat, ou un peu nez vers le bas, posée sur deux doigts aux repères de CG (15 à 20 % de la corde moyenne). Vous pouvez la lancer.",
+      "fail": "Mettez d'abord la batterie : dans une aile, c'est la batterie qui équilibre. Si la queue tombe, l'aile est trop centrée arrière et va cabrer et décrocher après le lancer. Avancez la batterie ou ajoutez du lest dans le nez, puis vérifiez à nouveau."
+    },
+    "compass": {
+      "title": "Calibrage de la boussole",
+      "pass": "Calibrée : tournée selon chaque axe pendant 30 s, loin de l'ESC et des fils de batterie. Comparez le cap avec une vraie boussole avant de vous y fier.",
+      "fail": "Posez le module GPS (la boussole est dedans) et le contrôleur de vol, et branchez. Sur une aile, la boussole est facultative : INAV peut se diriger d'après la route GPS une fois en vol."
+    },
+    "airspeed": {
+      "title": "Vérification de la vitesse air virtuelle",
+      "pass": "pitot_hardware = VIRTUAL : INAV estime la vitesse air à partir de la vitesse GPS et de son estimation du vent, ce qui suffit pour l'OSD et pour des virages coordonnés. Un vrai tube de Pitot demanderait une mise à zéro, tube couvert.",
+      "fail": "Posez le GPS et le contrôleur de vol et branchez : la vitesse air virtuelle vient du GPS."
+    },
+    "failsafe": {
+      "title": "Test de failsafe (sans hélice)",
+      "pass": "Radio coupée : FAILSAFE sur l'OSD après 0,5 s, puis RTH, qui en vol monte à 30 m et rentre au départ. Radio rallumée et un manche bougé : vous avez de nouveau le contrôle.",
+      "fail": "Retirez l'hélice, posez le récepteur et le contrôleur de vol, et branchez : quand le failsafe lance le RTH, le moteur monte en régime."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Premier réglage : le preset Flying Wing",
+      "explain": "Le preset Flying Wing du Configurator, tapé dans la CLI. Depuis INAV 7, le mixeur vit dans des profils de mixage, et une aile simple n'utilise que le profil 1. motorstop_on_low garde l'hélice immobile à bas régime (les anciens guides parlent de feature MOTOR_STOP, qui n'existe plus). mmix 0 donne au moteur 1, sur la pastille S1, uniquement les gaz. Chaque ligne smix s'écrit règle, servo, entrée, poids : les deux servos prennent +50 % du tangage (entrée 1), et le roulis (entrée 0) à +50 % sur l'un et -50 % sur l'autre : le tangage les fait bouger ensemble et le roulis en sens opposé. C'est ça, un élevon. Puis CRSF pour le récepteur sur l'UART1, et le GPS sur l'UART3."
+    },
+    "servos": {
+      "title": "Course des servos, sens et trim d'horizontale",
+      "explain": "servo prend la course en microsecondes (min, max, centre) et un taux : un taux négatif inverse ce servo, donnez-lui donc -100 si la vérification des élevons le montre bouger dans le mauvais sens. fw_level_pitch_trim est l'angle nez haut que le mode ANGLE tient comme horizontale ; la plupart des ailes veulent 1 à 4 degrés, et le mode AUTO LEVEL TRIM l'apprend en vol. align_board_yaw est en dixièmes de degré : 1800 si le contrôleur de vol est monté flèche vers l'arrière."
+    },
+    "switches": {
+      "title": "Interrupteurs : armement, modes de vol, lancer, RTH",
+      "explain": "L'aux d'INAV prend l'emplacement, le numéro du mode, le canal (0 = AUX1) et la plage en microsecondes. Numéros des modes : 0 ARM, 12 MANUAL, 1 ANGLE, 53 NAV CRUISE, 36 NAV LAUNCH, 10 NAV RTH. Un interrupteur trois positions sur AUX2 choisit MANUAL, ANGLE ou CRUISE ; CRUISE tient le cap et la hauteur, et les manches les modifient."
+    },
+    "launch": {
+      "title": "NAV LAUNCH",
+      "explain": "Armez, activez NAV LAUNCH (AUX3), montez les gaz (le moteur reste au ralenti) et lancez. INAV détecte le lancer, attend nav_fw_launch_motor_delay (0,5 s, pour que l'hélice soit loin de votre main), fait tourner le moteur à 1700 µs et monte à 18 degrés nez haut jusqu'à la fin du délai, 5 s, puis vous rend la main. Ce sont les valeurs par défaut d'INAV, écrites en toutes lettres pour que vous puissiez les voir et les changer."
+    },
+    "failsafe": {
+      "title": "Failsafe : rentrer au départ",
+      "explain": "Le failsafe par défaut d'INAV est LAND, qui sur une aile descend en cercles là où elle se trouve. RTH la ramène au départ à la place. failsafe_delay et failsafe_recovery_delay sont en dixièmes de seconde : 0,5 s de liaison perdue avant que le failsafe ne démarre, 0,5 s de bonne liaison avant qu'il ne puisse se terminer. failsafe_stick_threshold est la distance dont vous devez bouger un manche pour reprendre le contrôle."
+    },
+    "airspeed": {
+      "title": "Vitesse air sans tube de Pitot",
+      "explain": "VIRTUAL estime la vitesse air à partir de la vitesse GPS et du vent. fw_reference_airspeed est la vitesse air à laquelle les PID ont été réglés, 1500 cm/s (15 m/s), utilisée pour coordonner les virages. nav_fw_cruise_speed ne sert qu'au temps de vol restant sur l'OSD ; il ne règle pas la vitesse à laquelle INAV vole."
+    },
+    "angle": {
+      "title": "Mode angle",
+      "explain": "INAV remet l'aile à plat quand vous lâchez et ne l'incline jamais au-delà de max_angle_inclination_rll : 450 dixièmes de degré, soit 45 degrés. fw_level_pitch_trim reste à 0 ici ; si l'aile monte ou pique lentement sans les mains, trimez-la."
+    },
+    "manual": {
+      "title": "Manuel",
+      "explain": "MANUAL transmet les manches directement aux élevons : rien ne remet l'aile à plat ni ne la stabilise. manual_roll_rate et manual_pitch_rate sont le pourcentage de course des servos manche à fond, pas des degrés par seconde ; 100, c'est toute la course."
+    },
+    "rth": {
+      "title": "NAV RTH",
+      "explain": "NAV RTH (AUX4, ou le failsafe) monte d'abord à au moins nav_rth_altitude, 3000 cm (30 m, au-dessus des arbres), rentre au départ par GPS et tourne autour. nav_fw_loiter_radius vaut 5000 cm, soit 50 m : à 15 m/s et avec l'inclinaison de 35 degrés d'INAV, le cercle le plus serré fait environ 33 m, 50 m laissent donc de la marge. NEVER veut dire qu'elle tourne jusqu'à ce que vous repreniez la main et la posiez vous-même."
+    },
+    "stats": {
+      "title": "Statistiques de vol",
+      "explain": "INAV affiche de lui-même une page de statistiques après le désarmement (il n'y a pas de réglage osd_stats_page). osd_stats_energy_unit affiche l'énergie consommée en mAh, chaque page reste affichée 3 s, et stats = ON tient un compte à vie des vols, du temps de vol et de la distance."
+    }
+  },
+  "flight": {
+    "modes": {
+      "angle": {
+        "title": "Mode angle",
+        "hint": "INAV remet l'aile à plat quand vous lâchez et l'incline jusqu'à 45 degrés. Armez, puis montez les gaz au-delà d'un quart pour la lancer. Les flèches l'inclinent et la font cabrer ou piquer ; elle vire en s'inclinant."
+      },
+      "manual": {
+        "title": "Manuel",
+        "hint": "Les manches bougent directement les élevons et rien ne remet l'aile à plat. Lâchez en virage et elle continue de s'incliner."
+      },
+      "rth": {
+        "title": "NAV RTH",
+        "hint": "Regardez-la rentrer : elle monte à 30 m, revient par GPS et tourne autour du terrain à 50 m. Repassez en angle pour la poser vous-même."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Liaison perdue pendant 0,5 s : FAILSAFE, puis le RTH monte à 30 m, rentre au départ et tourne autour. Quand la liaison revient, bougez un manche pour reprendre la main.",
+      "stall": "Sous la vitesse de décrochage, le nez tombe et un saumon s'enfonce : baissez le nez et remettez des gaz, ne tirez jamais.",
+      "low-battery": "Sous 3,5 V par cellule, l'OSD affiche une alerte : rentrez et posez-vous.",
+      "fence": "À plus de 180 m du départ, l'alerte de distance vous prévient : faites demi-tour tant que vous voyez encore l'aile."
+    },
+    "controls": "Clavier : Espace arme et désarme, W et S pour les gaz (au-delà d'un quart des gaz, l'aile est lancée), les flèches pour le tangage et le roulis, V passe en vue FPV, R la replace sur la piste. Une aile vire en s'inclinant : elle n'a pas de dérive, A et D ne font donc rien. Sur téléphone, le manche gauche gère les gaz et le manche droit le tangage et le roulis. Une manette fonctionne en Mode 2."
+  },
+  "courses": {
+    "pylons": {
+      "title": "Course de pylônes sur l'aérodrome",
+      "brief": "Quatre pylônes orange se dressent autour de la piste dans un rectangle de 80 x 50 m. Lancez l'aile, contournez chaque pylône par l'extérieur à tour de rôle, dans le sens antihoraire, puis posez-la sur le ventre sur la piste : lentement, ailes à plat, en douceur.",
+      "prims": {
+        "pilots": "Zone pilotes",
+        "hangar": "Hangar"
+      },
+      "goals": {
+        "1": "PYLÔNE 1",
+        "2": "PYLÔNE 2",
+        "3": "PYLÔNE 3",
+        "4": "PYLÔNE 4",
+        "5": "ATTERRISSAGE SUR LE VENTRE"
+      }
+    },
+    "home": {
+      "title": "Retour au départ",
+      "brief": "Volez jusqu'au poteau rouge dans le coin opposé, à environ 100 m du départ, puis passez en NAV RTH : INAV monte à 30 m, rentre au départ et tourne autour du terrain à 50 m. Reprenez ensuite la main en mode angle et posez-la sur le ventre sur la piste.",
+      "goals": {
+        "1": "POTEAU ROUGE",
+        "2": "CERCLE RTH, 30 M DE HAUT",
+        "3": "ATTERRISSAGE SUR LE VENTRE"
+      }
+    }
+  },
+  "quizzes": {
+    "controls": {
+      "elevons": {
+        "q": "Que fait un élevon ?",
+        "options": {
+          "1": "Il dirige seulement à gauche et à droite",
+          "2": "C'est une profondeur et un aileron en un : les deux bougent ensemble pour le tangage et en sens opposé pour le roulis",
+          "3": "Il change le pas de l'hélice"
+        },
+        "why": "Une aile volante n'a pas de queue : les deux gouvernes de son bord de fuite font donc les deux travails. Le mixeur additionne les ordres de tangage et de roulis pour chacune : manche vers l'arrière, les deux montent ; manche à droite, la droite monte et la gauche descend."
+      },
+      "bench": {
+        "q": "Au banc, en mode ANGLE, vous penchez l'aile droite vers le bas. Dans quel sens l'élevon droit doit-il bouger ?",
+        "options": {
+          "1": "Vers le haut, en suivant l'inclinaison",
+          "2": "Vers le bas, pour relever cette aile",
+          "3": "Pas du tout : seuls les manches le font bouger"
+        },
+        "why": "En ANGLE, le stabilisateur s'oppose à l'inclinaison : l'élevon droit descend, ce qui ajoute de la portance à l'aile droite pour la ramener à plat. S'il monte au contraire, le contrôleur de vol est monté à l'envers ou son orientation est fausse, et l'aile se retourne dès qu'elle quitte votre main. La vérification aux manches seule ne peut pas le détecter."
+      }
+    },
+    "power": {
+      "pads": {
+        "q": "Sur cette carte F405 pour aile, quelle pastille pilote le moteur propulsif ?",
+        "options": {
+          "1": "S1 : INAV donne la première sortie au moteur 1, et les servos prennent le timer libre suivant, S3 et S4",
+          "2": "S3, après les deux servos",
+          "3": "N'importe laquelle : INAV trouve le moteur tout seul"
+        },
+        "why": "INAV distribue les sorties par timer. Le moteur 1 reçoit S1, et S2 partage son timer : elle ne peut donc piloter qu'un moteur, elle aussi. Les servos prennent le timer suivant, S3 et S4. Quel élevon est le servo 1, c'est fixé par les lignes smix et vérifié au banc."
+      },
+      "cap": {
+        "q": "Pourquoi le condensateur à faible ESR sur les pastilles de batterie de la carte d'alimentation ?",
+        "options": {
+          "1": "Pour garder les servos alimentés quand la batterie est débranchée",
+          "2": "Pour augmenter la tension de la batterie",
+          "3": "Pour absorber les pics de tension de l'ESC, qui sinon réinitialiseraient le FC ou mettraient des lignes dans la vidéo"
+        },
+        "why": "Chaque fois que l'ESC commute, les fils de batterie résonnent de pics de tension. Un condensateur à faible ESR de 470 µF placé directement sur les pastilles les absorbe. 25 V suffisent en 4S (16,8 V pleine) ; 35 V permettent d'aller jusqu'à la 6S. Bande sur la pastille moins."
+      }
+    },
+    "balance": {
+      "tail": {
+        "q": "Vous remplacez la 4S 2200 par une 3S 1300 légère au même endroit. Que se passe-t-il ?",
+        "options": {
+          "1": "Rien : l'équilibrage ne dépend pas de la batterie",
+          "2": "L'aile devient trop centrée arrière : après le lancer, elle cabre et décroche. Avancez la batterie ou ajoutez du lest dans le nez",
+          "3": "Elle devient lourde du nez et pique"
+        },
+        "why": "Dans une aile, la batterie est le lest qui place le CG sur les repères. Une batterie plus légère dans la même baie laisse le CG reculer, et une aile centrée arrière cabre, marsouine et décroche, souvent juste après le lancer. Lourde du nez, c'est le côté sûr : il lui faut un peu plus de vitesse, mais elle vole."
+      },
+      "mac": {
+        "q": "Où se place le CG sur une aile en flèche comme celle-ci ?",
+        "options": {
+          "1": "À 15 à 20 % de la corde aérodynamique moyenne : ici environ 125 à 135 mm derrière le bord d'attaque de l'emplanture",
+          "2": "À 25 % de la corde d'emplanture, 75 mm derrière le bord d'attaque",
+          "3": "À mi-chemin entre le nez et le bord de fuite"
+        },
+        "why": "Sur une aile en flèche et trapézoïdale, le CG se mesure sur la corde aérodynamique moyenne, qui se trouve plus loin sur l'envergure et plus en arrière que l'emplanture. 25 % de la corde d'emplanture serait bien trop en avant, et 25 % de la corde moyenne correspond à peu près au point neutre, trop en arrière pour voler. Équilibrez-la sur deux doigts aux repères : à plat, ou un peu nez vers le bas."
+      }
+    },
+    "flight": {
+      "stall": {
+        "q": "Juste après le lancer, l'aile ralentit, un saumon s'enfonce et le nez tombe. Que s'est-il passé, et que faites-vous ?",
+        "options": {
+          "1": "Le moteur s'est arrêté : passez en manuel",
+          "2": "Elle a décroché, trop lente ou lancée nez trop haut : baissez le nez, remettez les ailes à plat et ajoutez des gaz",
+          "3": "Le GPS a perdu son fix : attendez-le"
+        },
+        "why": "Sous sa vitesse de décrochage (environ 9 à 10 m/s pour cette aile), l'aile ne porte plus et un saumon s'enfonce. Tirer aggrave les choses. Laissez le nez descendre pour prendre de la vitesse, remettez les ailes à plat et ajoutez des gaz. Lancez-la à plat ou quelques degrés nez haut, face au vent, à mi-gaz ou plus."
+      },
+      "loiter": {
+        "q": "Pourquoi nav_fw_loiter_radius vaut-il 50 m et pas 22 m ?",
+        "options": {
+          "1": "Pour économiser la batterie",
+          "2": "Parce qu'INAV le compte en pieds",
+          "3": "Une aile ne peut pas faire de stationnaire : à 15 m/s et 35 degrés d'inclinaison, son cercle le plus serré fait environ 33 m, un cercle de 22 m est donc impossible à voler"
+        },
+        "why": "Le rayon de virage vaut la vitesse au carré divisée par g fois la tangente de l'inclinaison : 15² / (9,81 x tan 35°) donne environ 33 m. Demandez un cercle plus petit et l'aile vole un cercle plus grand et irrégulier. La valeur par défaut d'INAV est 75 m, et la plage utile va de 30 à 75 m."
+      },
+      "failsafe": {
+        "q": "Au loin, la liaison coupe une seconde. Que fait cette aile ?",
+        "options": {
+          "1": "Après 0,5 s, elle passe en failsafe et en RTH : elle monte à 30 m, rentre au départ et tourne jusqu'à ce que vous repreniez la main",
+          "2": "Elle coupe le moteur et descend en planant sur place",
+          "3": "Elle continue tout droit jusqu'à ce que la batterie soit vide"
+        },
+        "why": "failsafe_procedure = RTH remplace le LAND par défaut d'INAV, qui descend en cercles sur place. failsafe_delay = 5 vaut 0,5 s. Quand la liaison revient, bouger un manche au-delà de failsafe_stick_threshold vous rend le contrôle."
+      },
+      "motor": {
+        "q": "Pourquoi le moteur de quad 2306 2400 KV est-il un mauvais choix pour cette aile ?",
+        "options": {
+          "1": "Il est trop lourd",
+          "2": "Sur une hélice de 8 pouces en 4S, il tirerait environ 100 A, bien au-delà de l'ESC de 40 A : le moteur ou l'ESC grille en quelques secondes",
+          "3": "Il tourne dans le mauvais sens"
+        },
+        "why": "Un moteur de quad 5 pouces est bobiné pour faire tourner très vite une petite hélice. Donnez-lui une 8x6 et le courant monte avec la charge : environ 97 A selon le calculateur. Les moteurs d'aile en 4S font environ 1000 à 1400 KV avec des hélices de 8 pouces."
+      }
+    }
+  }
+}
