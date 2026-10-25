@@ -158,6 +158,12 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Checkpoint log (newest first)
 
+- 2026-10-25 08:26 CDT (Amar): Vultr already has `simlab-realtime` (216.128.138.203, vc2-1c-1gb, dfw), created
+  07:58 CDT by `scripts/realtime-vultr-create.sh` from somewhere else, with an SSH key `simlab-realtime-deploy` that
+  is not on this Mac. Its relay is healthy at `wss://216-128-138-203.sslip.io/ws` (deployed about 08:04) and accepts
+  the origin `http://localhost:3000` but refuses `https://simlab-hacktx.vercel.app` (403). This Mac can't SSH in, so
+  nothing was changed and nothing new was created. Waiting for Amar: who set it up, and adding the Vercel origin.
+
 - 2026-10-25 08:20 CDT (Amar): production live at https://simlab-hacktx.vercel.app (10 env vars; `.vercelignore`
   now leaves out two test helpers that broke the typecheck). Smokes green there. Next: the Vultr relay once
   `VULTR_API_KEY` is in `.env.local`, then `NEXT_PUBLIC_REALTIME_URL` on Vercel and a redeploy.
