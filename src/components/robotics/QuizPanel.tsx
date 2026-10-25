@@ -148,7 +148,7 @@ function QuizDialog({ quiz, bench, session, best, t, tx, dispatch }: DialogProps
                 key={option}
                 className={cx(
                   "flex min-h-11 cursor-pointer items-center gap-3 rounded-ink-sm border-2 px-3 py-2",
-                  isAnswer ? "border-line bg-good-bg" : isWrong ? "border-line bg-bad-bg" : isChosen ? "border-line bg-sunken" : "border-rule",
+                  isAnswer ? "on-fill border-line bg-good-bg" : isWrong ? "on-fill border-line bg-bad-bg" : isChosen ? "border-line bg-sunken" : "border-rule",
                   session.checked && "cursor-default",
                 )}
               >

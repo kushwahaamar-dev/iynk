@@ -135,9 +135,9 @@ export function CodePanel({ store, chipParts, onChip, onRunToggle }: Props) {
         />
       </div>
       {errorText && (
-        <p role="alert" className="rounded-md bg-bad-bg px-3 py-2 font-mono text-sm text-bad" data-testid="code-error">
+        <p role="alert" className="on-fill rounded-md bg-bad-bg px-3 py-2 font-mono text-sm" data-testid="code-error">
           {errorText}
-          {error?.hint ? <span className="mt-1 block font-sans text-ink">{error.hint}</span> : null}
+          {error?.hint ? <span className="mt-1 block font-sans">{error.hint}</span> : null}
         </p>
       )}
     </section>

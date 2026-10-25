@@ -70,8 +70,8 @@ export function ChangeCard({
               key={i}
               className={cx(
                 "flex whitespace-pre",
-                row.op === "add" && "bg-good-bg",
-                row.op === "del" && "bg-bad-bg",
+                row.op === "add" && "on-fill bg-good-bg",
+                row.op === "del" && "on-fill bg-bad-bg",
               )}
             >
               <span className="w-5 shrink-0 select-none text-center font-bold">{MARK[row.op]}</span>

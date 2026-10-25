@@ -315,6 +315,13 @@ html:lang(zh-Hans) :is(h1, h2, h3, h4) {
     box-shadow: 3px 3px 0 var(--shadow-c);
   }
 
+  /* Whatever sits on a pastel status fill (bg-good-bg, bg-bad-bg). The fills keep their colour in both themes, and
+     neither dark-mode ink nor muted text reaches 4.5:1 on them, so text there is the dark on-colour. */
+  .on-fill {
+    color: var(--on-color);
+    --muted: var(--on-color);
+  }
+
   .ink-kicker {
     font-family: var(--font-ui);
     font-size: 0.75rem;

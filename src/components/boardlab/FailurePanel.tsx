@@ -49,12 +49,12 @@ export function FailurePanel({ store, failures, figure }: { store: BoardLabStore
         {failures.map((f) => {
           const on = active === f.id;
           return (
-            <li key={f.id} className={cx("rounded-md border-2 p-3", on ? "border-bad bg-bad-bg" : "border-line")} data-failure={f.id}>
+            <li key={f.id} className={cx("rounded-md border-2 p-3", on ? "on-fill border-bad bg-bad-bg" : "border-line")} data-failure={f.id}>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs font-semibold uppercase tracking-wide text-muted">{t(`failures.kind.${f.kind}`)}</span>
                 <span className="me-auto font-semibold">{tc(f.title)}</span>
                 {on ? (
-                  <span className="text-sm font-semibold text-bad">{t("failures.active")}</span>
+                  <span className="text-sm font-semibold">{t("failures.active")}</span>
                 ) : (
                   <Button size="sm" variant="danger" onClick={() => trigger(f)}>
                     {t("failures.trigger")}

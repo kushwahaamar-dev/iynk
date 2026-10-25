@@ -92,7 +92,7 @@ export function AssemblyPanel({ store, board, steps, figure }: { store: BoardLab
           return (
             <li
               key={step.id}
-              className={cx("rounded-md border-2 p-3", isCurrent ? "border-ink" : "border-line", isDone && "bg-good-bg")}
+              className={cx("rounded-md border-2 p-3", isCurrent ? "border-ink" : "border-line", isDone && "on-fill bg-good-bg")}
               aria-current={isCurrent ? "step" : undefined}
               data-step={step.id}
               data-done={isDone ? 1 : 0}
@@ -104,7 +104,7 @@ export function AssemblyPanel({ store, board, steps, figure }: { store: BoardLab
                 <span className="text-xs font-semibold uppercase tracking-wide text-muted">{t(`assembly.${step.kind}`)}</span>
                 <span className="me-auto font-semibold">{tc(step.title)}</span>
                 {isDone ? (
-                  <span className="text-sm font-semibold text-good">{t("assembly.doneStep")}</span>
+                  <span className="text-sm font-semibold">{t("assembly.doneStep")}</span>
                 ) : step.action ? (
                   <Button size="sm" variant={isCurrent ? "primary" : "secondary"} onClick={() => doStep(step)}>
                     {t("assembly.doIt")}

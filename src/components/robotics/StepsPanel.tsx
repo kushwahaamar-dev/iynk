@@ -60,7 +60,7 @@ export function StepsPanel({ bench, session, savedDone, t, tx, dispatch, onFocus
               className={cx(
                 "rounded-ink border-2 p-3",
                 isCurrent ? "border-line bg-surface shadow-ink" : "border-rule",
-                doneNow && "border-rule bg-good-bg",
+                doneNow && "on-fill border-rule bg-good-bg",
               )}
             >
               <div className="flex flex-wrap items-center gap-2">
@@ -68,7 +68,7 @@ export function StepsPanel({ bench, session, savedDone, t, tx, dispatch, onFocus
                 <Chip tone={KIND_TONE[step.kind]}>{t(`steps.kinds.${step.kind}`)}</Chip>
                 <h3 className="min-w-0 flex-1 text-base">{title}</h3>
                 {doneNow || doneBefore ? (
-                  <span className="inline-flex items-center gap-1 font-ui text-xs font-bold text-good">
+                  <span className={cx("inline-flex items-center gap-1 font-ui text-xs font-bold", !doneNow && "text-good")}>
                     <Icon name="check" size={16} aria-hidden="true" />
                     {t("steps.done")}
                   </span>

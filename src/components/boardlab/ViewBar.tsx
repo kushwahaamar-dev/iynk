@@ -48,7 +48,7 @@ export function ViewBar({ store, board, figure, views, xr, onXr, yaw, onYaw }: P
     figure()?.send("view", { yaw: home, ms: 900 });
   };
   const statusText = typeof status === "string" && ["off", "no-power", "powered", "running", "uploading", "brownout", "fault"].includes(status) ? t(`view.status.${status}` as Parameters<typeof t>[0]) : null;
-  const statusTone = status === "running" ? "bg-good-bg text-good" : status === "fault" || status === "brownout" ? "bg-bad-bg text-bad" : "bg-sunken text-muted";
+  const statusTone = status === "running" ? "bg-good-bg on-fill" : status === "fault" || status === "brownout" ? "bg-bad-bg on-fill" : "bg-sunken text-muted";
 
   return (
     <div className="flex flex-wrap items-center gap-2" data-testid="viewbar">

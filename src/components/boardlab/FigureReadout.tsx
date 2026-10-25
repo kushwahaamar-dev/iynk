@@ -35,7 +35,7 @@ export function FigureReadout({ store, leds }: { store: BoardLabStore; leds: { i
       {measItems.map(([part, m]) => {
         const state = m.state && MEAS_STATES.includes(m.state) ? m.state : "off";
         return (
-          <li key={part} className={cx("rounded-full border-2 px-3 py-1", state === "burnt" ? "border-bad bg-bad-bg text-bad" : state === "ok" ? "border-good" : "border-line")} data-part={part} data-state={state}>
+          <li key={part} className={cx("rounded-full border-2 px-3 py-1", state === "burnt" ? "on-fill border-bad bg-bad-bg" : state === "ok" ? "border-good" : "border-line")} data-part={part} data-state={state}>
             {t(`readout.part.${state}` as Parameters<typeof t>[0], { part, ma: Math.round((m.i_mA ?? 0) * 10) / 10 })}
           </li>
         );
