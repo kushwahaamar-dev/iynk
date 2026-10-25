@@ -55,7 +55,7 @@ export function SegmentedControl<V extends string>({ label, options, value, onCh
       onKeyDown={onKeyDown}
       className={cx(
         "max-w-full flex-nowrap overflow-x-auto rounded-full border-2 border-line bg-surface p-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-        stretch ? "flex w-full" : "inline-flex",
+        stretch ? "flex w-full" : "inline-flex shrink-0",
         className,
       )}
     >

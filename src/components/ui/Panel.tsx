@@ -20,7 +20,9 @@ export function Panel({ title, titleId, actions, className, bodyClassName, child
   return (
     <section
       aria-labelledby={title && titleId ? titleId : undefined}
-      className={cx("ink-card flex min-h-0 flex-col overflow-hidden", className)}
+      // overflow-clip, not hidden: it clips the same but is no scroll container, so a sticky tab list inside still
+      // sticks to the page on a phone (ws-sticky-tabs).
+      className={cx("ink-card flex min-h-0 flex-col overflow-clip", className)}
       {...rest}
     >
       {title || actions ? (
