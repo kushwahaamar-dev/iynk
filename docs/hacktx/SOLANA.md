@@ -13,7 +13,7 @@ The iynk server re-runs a learner's deterministic lab run (`verifyRun`, hx:solan
 | Upgrade authority and admin (deployer) | `3sU7fwSukdG77nH2HciyXQ7Vsao1ZCdERXc73TmP9PZb` |
 | Issuer (server key, fee payer, faucet treasury) | `7GbNpdhX6yNqcGXSNXJxYU3aidoyrToNDsUoEe5845XR` |
 | Built and tested | yes: 34 tests on a local validator, all passing |
-| Deployed to devnet | **not yet**: the public faucet refused every airdrop today (`429: You've either reached your airdrop limit today or the airdrop faucet has run dry`) |
+| Deployed to devnet | **yes**, 2026-10-25 09:48 CDT in slot 515005280, after Amar moved 3.0 devnet SOL from his wallet (2.3 to the deployer, 0.7 to the issuer). The writes went over TPU because the public RPC was rate-limiting the Mac; `deploy-devnet.sh` uses `--use-rpc` |
 
 Explorer: [program](https://explorer.solana.com/address/BYFLDTLNi946Z8jT4JnxgE8Cpzkr9ud7tSrnThFTv31w?cluster=devnet) · [deployer](https://explorer.solana.com/address/3sU7fwSukdG77nH2HciyXQ7Vsao1ZCdERXc73TmP9PZb?cluster=devnet) · [issuer](https://explorer.solana.com/address/7GbNpdhX6yNqcGXSNXJxYU3aidoyrToNDsUoEe5845XR?cluster=devnet)
 
@@ -35,11 +35,11 @@ The same two commands were rehearsed end to end on a local validator started wit
 
 | Step | Signature |
 |---|---|
-| Deploy | pending funding |
-| IDL publish | pending funding |
-| initialize | pending funding |
-| create_bounty (smoke, reserved for a throwaway learner) | pending funding |
-| issue_credential (smoke, pays that bounty) | pending funding |
+| Deploy | `stRPrCMzctgEMjvE9h6GtLFLCsBU3Xo3Buwsun64ED9kUqpqF824rWsEevfmFDnWaearB34MSVeoJjdhs456PRQ` |
+| IDL publish | IDL account `EjaBdebJUgMoAEFf2A1mYw91sJTVu9UMNERsKyP6ZWFR` |
+| initialize | `iSK61DxqTf7tVF33Qhu17V9FbBxwH547ekuR9douivsPueL8xLph13zTe5AT2P6VMEy4nLxJJfrCWiPqKoRs6D7` |
+| create_bounty (smoke, reserved for a throwaway learner) | `5vwR1KY1cYbqfy9Lti9L659moztYzYVu6T3M4euSkHQTws1cM495TbAQ9ozTgQmm2jrEdNjSB15DYzqENfghaoC8` (bounty `hdgZP2WbNHRYSV15mi71jo4mas8yaEuwnNaiCXY9m6p`) |
+| issue_credential (smoke, pays that bounty) | `5hpwnkbSmqKFCqUDEpgWv8hh4znm8P2qtR1dGmHGuvds5UQ22nVfBPtUvQwT8FMUe8h7Yw27E43B83N9wcX5L1nP` (learner `F2vKneRRUic1ajdMZWWXU6BPWiEcow8x9qMvvqjYopwm`, credential `Bvp7uUutKW3mbNAeb74aamXmi9tuCjxdKVwuTXQD8Nqu`) |
 
 The smoke credential uses the skill id `board:uno-r3:lesson:deploy-check`, so it can never be mistaken for a real pass.
 
