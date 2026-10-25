@@ -340,7 +340,7 @@
           "2": "Die Kompassrichtung liegt um 180 Grad daneben, also fliegt die Rettung von zu Hause weg, bis die Flyaway-Prüfung sie stoppt",
           "3": "Er landet sofort an Ort und Stelle"
         },
-        "why": "Der Kompass sitzt im Modul, also legt der Pfeil des Moduls die Richtung fest, der Betaflight vertraut. Verkehrt herum ist \"Richtung Heimat\" von zu Hause weg. Nach 20 s ohne Annäherung meldet die Flyaway-Prüfung RESCUE FAIL, und er sinkt an Ort und Stelle, weit weg von dir. Vergleich die Richtung vor dem Flug mit einem Handy."
+        "why": "Der Kompass sitzt im Modul, also legt der Pfeil des Moduls die Richtung fest, der Betaflight vertraut. Verkehrt herum ist „Richtung Heimat“ von zu Hause weg. Nach 20 s ohne Annäherung meldet die Flyaway-Prüfung RESCUE FAIL, und er sinkt an Ort und Stelle, weit weg von dir. Vergleich die Richtung vor dem Flug mit einem Handy."
       },
       "mast": {
         "q": "Warum sitzt das GPS hinten auf einem Mast und wird waagerecht gehalten?",
