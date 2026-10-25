@@ -49,9 +49,9 @@ describe('chrome: the host hides the figure buttons it draws itself', () => {
 
   it('refuses ids it has no button for, and anything that is not a list of ids', async () => {
     page = await uno();
-    page.post({ type: 'chrome', hide: ['power', 'xr', 'nope', 'zoom'] });
+    page.post({ type: 'chrome', hide: ['power', 'xr', 'nope', 'teleport'] });
     expect(shown('power')).toBe(false);
-    expect(last('error').message).toMatch(/chrome: no button "nope", "zoom"/);
+    expect(last('error').message).toMatch(/chrome: no button "nope", "teleport"/);
     page.post({ type: 'chrome', hide: 'power' });
     expect(last('error').message).toMatch(/chrome: hide must be a list of button ids/);
     expect(shown('power')).toBe(false);
@@ -84,6 +84,20 @@ describe('chrome: See-through, Labels and the HUD', () => {
     expect(visible(doc().getElementById('xrb'))).toBe(true);
     expect(visible(doc().getElementById('stats'))).toBe(true);
     expect(page.sent.filter((m) => m.type === 'error')).toEqual([]);
+  });
+
+  it('hides the zoom chip and the toast for a host that shows the figure on its own (the landing page)', async () => {
+    page = await uno();
+    await tick();
+    const zoom = () => doc().querySelector('.zchip'), toast = () => doc().getElementById('toast');
+    expect(zoom()).not.toBeNull();
+    page.post({ type: 'chrome', hide: ['zoom', 'toast'] });
+    expect(visible(zoom())).toBe(false);
+    expect(visible(toast())).toBe(false);
+    expect(page.sent.filter((m) => m.type === 'error')).toEqual([]);
+    page.post({ type: 'chrome', hide: [] });
+    expect(visible(zoom())).toBe(true);
+    expect(visible(toast())).toBe(true);
   });
 });
 

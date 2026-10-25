@@ -130,6 +130,8 @@ shots is in guide §4.6.
 ## The bridge (figures/engine/embed.js)
 
 Embedded mode is on inside any iframe. `?embed=0` turns it off and `?embed=1` forces it on.
+In a frame 560 px wide or less it draws no label pills and no Labels switch: there the core draws numbered badges for
+a legend under the figure, and embedded mode hides that legend.
 
 | URL parameter | Effect |
 |---|---|
@@ -149,7 +151,7 @@ itself is ignored. Commands that arrive before the figure is ready are queued (u
 |---|---|---|
 | `hello` | | answers `ready` (idempotent, as often as you like) |
 | `press` | `id`, `choice?` | clicks a button by id. With `choice`, it opens the picker and clicks that chip by id |
-| `chrome` | `hide [id]` | hides what the host draws itself: the figure's own buttons with those ids (and their pickers), its switches (`xr` See-through, `labels`), and `stats`, the HUD's big numbers top right. Hidden buttons stay pressable through `press` and hidden switches still follow `xr` and `labels`; `ready.buttons` and `ready.switches` still list them, marked `hidden: true`. Each `chrome` replaces the last one: `hide: []` shows everything again. Zoom can't be hidden. An id with nothing to hide comes back as `error` (the others are still hidden) |
+| `chrome` | `hide [id]` | hides what the host draws itself: the figure's own buttons with those ids (and their pickers), its switches (`xr` See-through, `labels`), `stats`, the HUD's big numbers top right, and for a figure shown on its own (the landing page) `zoom`, the zoom chip, and `toast`, the figure's notes. Hidden buttons stay pressable through `press` and hidden switches still follow `xr` and `labels`; `ready.buttons` and `ready.switches` still list them, marked `hidden: true`. Each `chrome` replaces the last one: `hide: []` shows everything again. Zoom can't be hidden. An id with nothing to hide comes back as `error` (the others are still hidden) |
 | `act` | `name`, `data?` | runs `cfg.acts[name]` on the drawn part whose `data-*` match `data` (or on a stand-in) and redraws |
 | `set` | `state` | `cfg.embed.accept(st, state)`. A rejection comes back as `error` |
 | `view` | `yaw`, `pitch?`, `ms?` | eases the camera (the figure's turn limit applies) |

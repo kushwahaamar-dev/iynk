@@ -50,7 +50,7 @@ export type FigureFrameProps = {
   controls?: boolean;
   /**
    * What to hide on the figure because the host draws the same control: its
-   * buttons' ids, its switches (`xr`, `labels`) and `stats` (the HUD). Sent as
+   * buttons' ids, its switches (`xr`, `labels`), `stats` (the HUD), `zoom` (the zoom chip) and `toast`. Sent as
    * `chrome` after every `ready` and whenever the list changes.
    */
   hideChrome?: readonly string[];

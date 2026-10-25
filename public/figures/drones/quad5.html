@@ -820,11 +820,14 @@ function mountKeypad(spec){
     .map(b => ({ id: b.dataset.id, label: labelOf(b), en: enOf(b), picker: !!b.querySelector('.car'), ...mark(b.dataset.id) }));
   const chrome = hide => {
     if (!Array.isArray(hide) || hide.some(id => typeof id !== 'string')) return err('chrome: hide must be a list of button ids');
-    const all = [...document.querySelectorAll('#btns .act[data-id], .vset .act[data-id]')], stats = document.getElementById('stats');
-    const ids = new Set([...all.map(b => b.dataset.id), ...(stats ? ['stats'] : [])]);
+    // besides buttons and switches: the HUD, the zoom chip and the toast, for a host that draws its own or none
+    const all = [...document.querySelectorAll('#btns .act[data-id], .vset .act[data-id]')];
+    const panels = Object.entries({ stats: document.getElementById('stats'), zoom: document.querySelector('.zchip'), toast: document.getElementById('toast') }).filter(([, el]) => el);
+    const ids = new Set([...all.map(b => b.dataset.id), ...panels.map(([id]) => id)]);
     hidden = new Set(hide.filter(id => ids.has(id)));
     for (const b of all) (b.closest('.stepwrap') || b).toggleAttribute('data-cf-hidden', hidden.has(b.dataset.id));
-    if (stats) stats.toggleAttribute('data-cf-hidden', hidden.has('stats'));
+    // inline, because the toast's own style is display:flex!important and comes later in the page
+    for (const [id, el] of panels){ const off = hidden.has(id); el.toggleAttribute('data-cf-hidden', off); if (off) el.style.setProperty('display', 'none', 'important'); else el.style.removeProperty('display'); }
     ui.render();
     const unknown = hide.filter(id => !ids.has(id));
     if (unknown.length) err(`chrome: no button "${unknown.join('", "')}"`);
@@ -929,7 +932,9 @@ function mountKeypad(spec){
     const fig = document.getElementById('fig');
     fig.setAttribute('tabindex', '0');
     const css = document.createElement('style');
-    css.textContent = '[data-cf-hidden]{display:none!important}';
+    // a phone-sized frame draws labels as numbered badges whose legend embedding hides, so the numbers would mean
+    // nothing there: no badges, and no Labels switch (the 560 px is build.py's LBL_U threshold)
+    css.textContent = '[data-cf-hidden]{display:none!important}@media (max-width:560px){html.cf-embed #fig g.tag,html.cf-embed #lblb{display:none!important}}';
     document.head.appendChild(css);
     // parts: report the press before the figure acts on it, so 'part' arrives ahead of the 'state' it causes
     fig.addEventListener('pointerdown', e => { if (e.button) return; const a = e.target.closest && e.target.closest('[data-act]');
