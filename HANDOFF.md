@@ -83,11 +83,11 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-24 19:26 CDT (machine clock).
+- **Updated:** 2026-10-24 19:29 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Fast-forwarded to
   `94d3caa`. Do not build in `/Users/amar/Codes/sim`.
-- **Phase:** 1 done. All seven labels from `scripts/workflows/phase1.md` are done and none is running. Gate 1 reran
+- **Phase:** 2, wave A running. Phase 1 done. All seven labels from `scripts/workflows/phase1.md` are done and none is running. Gate 1 reran
   locally at 19:21 and is green apart from phase-2 prose (below). Jagrati's session should not resume its own copies.
 - **Plan:** `docs/hacktx/BUILD-PLAN.md`, written from the six audits in `docs/audit/` (boards, robotics, drones,
   platform, sponsor-layer, history). Phases 1–3 build for Best Overall, SerpApi, Most Entertaining and Meta.
@@ -114,10 +114,11 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   build, vitest 1347/0, app-path 59/59, bench probe 17/17, cfshoot uno-r3 and quad5, Playwright 57/57, route crawl
   606 pages with 0 failed. Still red: `content:check` (uno-r4, whoop, cinewhoop, longrange, wing have no English
   prose), which phase 2 writes. The first run's reds and their fixes are in the report.
-- **Next step:** phase 2 is planned in `scripts/workflows/phase2.md`: wave A (9 agents, about 2–2.5 h), then wave B
-  (10 agents, about 2.5–3 h). Waiting for Amar's go on wave A (or a smaller wave). On his go, write the Workflow
-  script for wave A's labels from that file, commit it to `scripts/workflows/`, launch it, and record the run id and
-  labels in the checkpoint log. Never SendMessage a running workflow agent.
+- **Next step:** wave A is running (workflow `wf_72d15e74-60a`, since 19:29, 9 labels below). Don't edit files a
+  wave-A label owns (`scripts/workflows/phase2.md`) and never SendMessage its agents. When it finishes, record each
+  label's report here, then do "Between and after the waves" in `phase2.md` (content index, `cfbuild.py --all`, gate
+  checks) and ask Amar for the go on wave B. If the session dies, relaunch only the unfinished labels:
+  `Workflow({scriptPath: "scripts/workflows/phase2-wave-a.js"}, args: ["<label>", ...])`.
 - **Agents:** P1-checks `1e6f87c4-b1ea-4a31-9425-b1de6de9a88f` done (`39cca43`, `c168147`). P1-health
   `d393e1cb-35bc-4db4-bc0b-37c02c1b8e14` done (`28d8564`). P1-voice `b337455f-1b6d-45d5-93d8-51efb828d421` done
   (`b1e5308`). P1-engine `1a0582c2-ec24-42ab-8b3c-e2ac162b8e48` done (`f104e10`, `a45ec96`, `03eaab0`, `9d49d45`,
@@ -139,6 +140,10 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-24 19:29 CDT (Amar): Amar said "Launch wave A, 9 agents". Workflow run `wf_72d15e74-60a` from
+  `scripts/workflows/phase2-wave-a.js` (`ea23cd2`): P2-engine, P2-uno-r4, P2-modules, P2-drone-prose, P2-drones-fpv,
+  P2-flight, P2-rob-uno, P2-rob-motor, P2-social. All running.
 
 - 2026-10-24 19:26 CDT (Amar): phase 2 planned in `scripts/workflows/phase2.md` from BUILD-PLAN §5 and the
   audits: 19 labels in two waves (A: engine, uno-r4, modules, drone prose, racer/gpscam/delivery, flight registry,
