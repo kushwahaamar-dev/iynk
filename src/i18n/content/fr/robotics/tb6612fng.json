@@ -1,0 +1,432 @@
+{
+  "title": "Driver TB6612FNG",
+  "sub": "Pont en H, PWM",
+  "hint": "mettez le banc sous tension, puis envoyez des commandes de pilotage",
+  "overview": "Une broche de Nano donne environ 20 mA sous 5 V. Un motoréducteur TT veut 150 mA rien que pour tourner et environ un ampère quand il démarre ou cale, sous 6 à 7 V. Le TB6612FNG se place entre les deux : deux ponts en H, chacun fait de quatre interrupteurs qui branchent le moteur dans un sens, dans l'autre, ou court-circuitent ses fils entre eux pour freiner. IN1 et IN2 choisissent le sens et la PWM règle la vitesse en allumant et en coupant le pont presque mille fois par seconde (977 Hz sur les broches 5 et 6). L'alimentation des moteurs (VM, 2,5 à 13,5 V, ici une LiPo 2S) et celle de la logique (VCC, 2,7 à 5,5 V, ici le 5 V du Nano) sont séparées, avec une masse commune, et STBY doit être à HIGH, sinon toute la puce dort. Ses interrupteurs MOSFET perdent environ 0,5 V à 1 A et seulement environ 0,15 V à 0,3 A, contre environ 2 V pour les interrupteurs bipolaires du L298N : c'est donc le driver à utiliser. Montez la carte, mettez-la sous tension, puis essayez le frein et la roue libre coup sur coup : le frein arrête la roue net, la roue libre la laisse ralentir toute seule.",
+  "parts": {
+    "U1": {
+      "name": "Driver double pont en H TB6612FNG",
+      "what": "Le driver de Toshiba en boîtier SSOP24 : deux ponts en H de quatre MOSFET à faible résistance chacun, la logique qui décode IN1, IN2 et PWM, un interrupteur de veille, un verrouillage de sous-tension sur VCC (coupé sous 1,9 V, rétabli au-dessus de 2,2 V) et une coupure thermique à 175 °C. Chaque canal porte 1,2 A en moyenne (1 A en usage normal) et 3,2 A en impulsion de 10 ms. Il n'y a pas de limitation de courant : seule la coupure thermique le protège."
+    },
+    "C1": {
+      "name": "Condensateur de 0,1 µF sur VM",
+      "what": "Un petit céramique juste aux broches d'alimentation des moteurs. Il absorbe les fronts rapides à chaque commutation du pont : les pics restent ainsi sur la carte au lieu de remonter les fils de la batterie."
+    },
+    "C2": {
+      "name": "Condensateur de 0,1 µF sur VCC",
+      "what": "Découple l'alimentation logique au pied de la puce, pour que le bruit des moteurs n'atteigne pas les entrées qui lisent IN1, IN2, PWM et STBY."
+    },
+    "C3": {
+      "name": "Condensateur tantale de 10 µF sur VM",
+      "what": "Le réservoir de l'alimentation des moteurs : il fournit au pont la rafale de courant que demande chaque cycle de PWM. C'est un tantale CMS, polarisé : la bande marque le +, et elle est côté VM, à gauche. Monté à l'envers, un tantale claque en court-circuit et peut brûler."
+    },
+    "JP1": {
+      "name": "Connecteur d'alimentation et des moteurs",
+      "what": "VM (batterie des moteurs, 2,5 à 13,5 V, 15 V en absolu), VCC (logique, 2,7 à 5,5 V), GND, puis les sorties moteur A01, A02, B02, B01 et une seconde GND. Deux alimentations, exprès : les moteurs peuvent tourner sur une batterie pendant que la logique suit le contrôleur. Notez le A01 de la sérigraphie avec un zéro ; Toshiba l'appelle AO1."
+    },
+    "JP2": {
+      "name": "Connecteur de commande",
+      "what": "PWMA et PWMB règlent la vitesse de chaque canal, AIN1/AIN2 et BIN1/BIN2 choisissent le sens, et STBY doit être à HIGH, sinon toutes les sorties se coupent. Chaque entrée a un pull-down de 200 kΩ à l'intérieur de la puce : une broche laissée non connectée se lit donc LOW."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "Le contrôleur, sur USB (Mini-B). D5 pilote PWMA, D7 AIN1, D8 AIN2, D9 STBY, D6 PWMB, D10 BIN1 et D11 BIN2 ; sa broche 5V alimente VCC et son GND est relié à la GND de la batterie. Les moteurs n'y puisent jamais."
+    },
+    "MOTA": {
+      "name": "Moteur A (motoréducteur TT)",
+      "what": "Un motoréducteur jaune 1:48 sur A01 et A02. Environ 150 mA en rotation libre sous 6 à 7 V, environ un ampère au démarrage ou calé. Le moyeu jaune montre sa vitesse et son sens."
+    },
+    "MOTB": {
+      "name": "Moteur B (motoréducteur TT)",
+      "what": "Le second motoréducteur, sur B01 et B02, avec sa propre vitesse et son propre sens (moyeu rouge). Sur cette carte, B02 est au-dessus de B01 sur le connecteur."
+    },
+    "BATT": {
+      "name": "Batterie LiPo 2S, 7,4 V",
+      "what": "Deux cellules lithium-polymère en série : 8,4 V pleine, 7,4 V en nominal, environ 6,4 V quand il est temps de recharger. Le rouge va sur VM, le noir sur GND. Elle n'alimente que les moteurs."
+    }
+  },
+  "power": {
+    "label": "Mettez le banc sous tension",
+    "ok": "Nano sur l'USB, LiPo sur VM : le driver est réveillé (STBY à l'état haut)"
+  },
+  "modes": {
+    "fwd50": {
+      "title": "Avant 50 %"
+    },
+    "fwd100": {
+      "title": "Avant 100 %"
+    },
+    "rev": {
+      "title": "Arrière"
+    },
+    "brake": {
+      "title": "Frein"
+    },
+    "coast": {
+      "title": "Roue libre"
+    },
+    "standby": {
+      "title": "Veille (STBY à l'état bas)"
+    },
+    "code": {
+      "title": "TB6612FNG : IN1 et IN2 choisissent le sens, PWM règle la vitesse",
+      "stby": "LOW, ou non connectée, endort toute la puce",
+      "sleep": "STBY à LOW : toutes les sorties sont coupées, quoi que disent les autres broches",
+      "fwd": "avant",
+      "rev": "arrière",
+      "brk": "frein court",
+      "cst": "roue libre",
+      "fwd50": "avant, mi-vitesse",
+      "fwd100": "avant, pleine vitesse",
+      "rev160": "arrière, rapport cyclique de 63 %",
+      "brake": "frein court : les deux fils du moteur reliés à GND, il s'arrête net",
+      "coast": "roue libre : sorties coupées (PWM tenue à HIGH), la roue ralentit toute seule",
+      "ignored": "ignoré tant que STBY est à LOW"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Démontez jusqu'au circuit nu",
+      "body": "Retirez tous les composants. Le carré rouge de 20 mm ne porte que quatre composants et deux connecteurs : vous allez les remettre dans l'ordre que suivrait une usine.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    },
+    "smd": {
+      "title": "Placement automatique des composants CMS, puis refusion",
+      "body": "La pâte, puis U1, C1, C2 et C3 se posent en un seul passage, et le four fait fondre la pâte sous chaque pastille à environ 245 °C. Attention au point de la broche 1 de U1 (en haut à gauche) et à la bande de C3 (+, côté VM).",
+      "refusal": "Les composants CMS se posent en premier, sur une carte nue"
+    },
+    "jp1": {
+      "title": "Posez JP1, le connecteur d'alimentation et des moteurs",
+      "body": "Un connecteur 1x8 le long du bord gauche : VM, VCC, GND, A01, A02, B02, B01, GND.",
+      "refusal": "Les composants CMS d'abord : lancez le placement puis la refusion. Le four ferait fondre les pièces en plastique"
+    },
+    "jp2": {
+      "title": "Posez JP2, le connecteur de commande",
+      "body": "Un connecteur 1x8 le long du bord droit : PWMA, AIN2, AIN1, STBY, BIN1, BIN2, PWMB, GND. Les deux rangées sont espacées de 0,6 pouce : la carte peut donc aussi se poser à cheval sur une platine d'essai, comme une puce large.",
+      "refusal": "Les composants CMS d'abord : lancez le placement puis la refusion. Le four ferait fondre les pièces en plastique"
+    },
+    "solder": {
+      "title": "Soudez les broches des connecteurs",
+      "body": "Seize soudures traversantes. Une bonne soudure est brillante et concave, et mouille à la fois la broche et la pastille.",
+      "refusal": "Rien à souder pour l'instant : placez d'abord un composant"
+    },
+    "wire-nano": {
+      "title": "Câblez le Nano sur JP2 et VCC",
+      "body": "Posez le Nano sur le tapis et tirez huit fils de liaison depuis JP2 : PWMA vers D5, AIN2 vers D8, AIN1 vers D7, STBY vers D9, BIN1 vers D10, BIN2 vers D11, PWMB vers D6 et GND vers GND. Un de plus de VCC vers la broche 5V du Nano : la logique du driver suit le contrôleur. D5, D6, D9, D10 et D11 sont des broches PWM ; PWMA et PWMB en demandent deux.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    },
+    "wire-motors": {
+      "title": "Câblez les deux moteurs",
+      "body": "Le moteur A sur A01 et A02, le moteur B sur B01 et B02. Le choix du fil ne fixe que le sens de rotation de la roue : si une roue tourne à l'envers en « Avant », inversez ses deux fils.",
+      "refusal": "Coupez d'abord l'alimentation, et câblez le Nano avant les moteurs"
+    },
+    "wire-battery": {
+      "title": "Câblez la LiPo sur VM et GND",
+      "body": "Le rouge sur VM, le noir sur la GND voisine. Cette carte n'a pas de protection contre l'inversion de polarité : vérifiez deux fois avant de brancher. La LiPo n'alimente que les moteurs ; le Nano garde sa propre alimentation USB.",
+      "refusal": "Coupez d'abord l'alimentation, et câblez les moteurs avant la LiPo"
+    },
+    "plug": {
+      "title": "Mettez le banc sous tension",
+      "body": "L'USB dans le Nano, la LiPo sur VM et GND. Le 5 V du Nano alimente VCC ; les masses sont reliées. Le Nano démarre en « Avant 50 % ».",
+      "refusal": "Terminez d'abord le montage : tous les composants posés et toutes les soudures faites"
+    },
+    "fwd50": {
+      "title": "Envoyez « Avant 50 % »",
+      "body": "AIN1 à HIGH, AIN2 à LOW, PWMA à 128 : les deux roues tournent en avant à environ mi-vitesse, environ 3,7 V en moyenne.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "brake": {
+      "title": "Envoyez « Frein »",
+      "body": "AIN1 et AIN2 tous les deux à HIGH : les deux interrupteurs du bas relient les fils du moteur à GND, la force contre-électromotrice du moteur lui-même s'y oppose, et il s'arrête net.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "coast": {
+      "title": "Envoyez « Roue libre »",
+      "body": "AIN1 et AIN2 tous les deux à LOW avec PWMA à HIGH : tous les interrupteurs sont ouverts, rien ne retient le moteur, et la roue ralentit toute seule. Comparez avec « Frein ».",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "rev": {
+      "title": "Envoyez « Arrière »",
+      "body": "AIN1 à LOW, AIN2 à HIGH, PWMA à 160 : c'est l'autre diagonale du pont qui conduit, le courant passe donc dans l'autre sens et les roues tournent en arrière avec un rapport cyclique de 63 %.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "fwd100": {
+      "title": "Envoyez « Avant 100 % »",
+      "body": "PWMA à 255 tient le pont passant en permanence : le moteur voit la batterie moins la chute des interrupteurs, environ 7,3 V à 150 mA.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "standby": {
+      "title": "Mettez STBY à l'état bas",
+      "body": "Le sketch met STBY à LOW : toutes les sorties se coupent et la puce consomme moins de 1 µA, alors qu'IN1, IN2 et PWM disent toujours « en avant ». Un fil de STBY qui se débranche fait la même chose, à cause du pull-down de 200 kΩ.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "c3-backwards": {
+      "title": "Cassez-la : C3 à l'envers",
+      "body": "C3 se repose avec sa bande côté GND. Mettez sous tension et regardez-le lâcher, puis débranchez, retournez-le et remettez sous tension."
+    },
+    "lipo-backwards": {
+      "title": "Cassez-la : la LiPo branchée à l'envers",
+      "body": "Le rouge sur GND, le noir sur VM. Cette carte n'a pas de protection contre l'inversion. Regardez ce qui brûle, puis réparez-la et alimentez-la dans le bon sens."
+    },
+    "four-cells": {
+      "title": "Cassez-la : une batterie 4S sur VM",
+      "body": "Une LiPo 4S pleine donne 16,8 V, au-dessus des 15 V du maximum absolu. Regardez le driver lâcher, puis revenez à la batterie 2S."
+    },
+    "motors-on-5v": {
+      "title": "Cassez-la : les moteurs sur le 5 V du Nano",
+      "body": "VM passe de la batterie à la broche 5V du Nano. Chaque démarrage des moteurs fait chuter le rail et le Nano redémarre en boucle. Réparez-la : VM de nouveau sur la LiPo."
+    },
+    "cold-stby": {
+      "title": "Cassez-la : des soudures froides sur le connecteur de commande",
+      "body": "Les soudures du connecteur de commande sont ternes et granuleuses. Quand la soudure de STBY s'ouvre, le pull-down endort la puce et les moteurs hoquettent. Refaites les soudures."
+    },
+    "no-driver": {
+      "title": "Laissez U1 de côté",
+      "body": "Retirez la puce du driver et mettez sous tension : les alimentations sont là, mais rien ne pilote les moteurs. Remettez U1 avant l'étape suivante.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    },
+    "exploded": {
+      "title": "Vue éclatée",
+      "body": "Débranchez et soulevez les composants par groupe de montage : les composants CMS, puis les connecteurs.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    }
+  },
+  "faults": {
+    "c3-reversed": {
+      "title": "C3 monté à l'envers",
+      "symptom": "Pop : C3 se fend et fume dès que la batterie est branchée, et le courant batterie bondit.",
+      "explanation": "Un condensateur au tantale est polarisé. Une tension inverse perce sa couche d'oxyde, il devient presque un court-circuit aux bornes de VM, et la batterie y pousse des ampères jusqu'à ce qu'il brûle.",
+      "fix": "Débranchez, dessoudez C3 et posez-en un neuf avec la bande (+) côté VM, à gauche."
+    },
+    "reverse-polarity": {
+      "title": "LiPo branchée à l'envers",
+      "symptom": "U1 et C3 chauffent en quelques secondes, ça sent le brûlé, et rien ne tourne.",
+      "explanation": "La carte SparkFun n'a pas de protection contre l'inversion. Le courant passe de GND à travers les diodes internes des interrupteurs du bas, puis ressort par celles du haut vers VM : deux chutes de diode aux bornes de la batterie, presque un court-circuit à travers la puce. C3 est polarisé en inverse en même temps.",
+      "fix": "Débranchez immédiatement et inversez les fils : rouge sur VM, noir sur GND. Sur une vraie carte, U1 et C3 sont en général morts ; la carte de Pololu ajoute un MOSFET de protection contre l'inversion sur VM."
+    },
+    "over-voltage": {
+      "title": "16,8 V sur VM",
+      "symptom": "Le driver lâche aussitôt : VM se met en court-circuit avec GND et les fils de la batterie tiédissent.",
+      "explanation": "VM fonctionne jusqu'à 13,5 V et survit à 15 V. Une batterie 4S pleine (16,8 V) dépasse les deux, et chaque pic de freinage en rajoute par-dessus.",
+      "fix": "Utilisez une batterie 2S (8,4 V pleine) ou au plus une 3S (12,6 V pleine, peu de marge pour les pics de freinage)."
+    },
+    "brownout": {
+      "title": "Les moteurs sur le 5 V du Nano",
+      "symptom": "Le Nano redémarre chaque fois que les moteurs démarrent : le sketch recommence, la ligne série se répète, les roues donnent des à-coups.",
+      "explanation": "Deux moteurs TT prennent environ 1,6 A un instant au démarrage. L'alimentation USB du Nano est protégée à 500 mA et passe par une diode : son rail 5 V chute donc sous le seuil de brown-out de 2,7 V de l'ATmega328P et la puce redémarre.",
+      "fix": "Alimentez VM par la batterie, gardez VCC sur le 5 V du Nano, et reliez les masses."
+    },
+    "cold-header": {
+      "title": "Soudures froides sur le connecteur de commande",
+      "symptom": "Les moteurs hoquettent, et c'est pire quand on tapote la carte ou qu'elle vibre.",
+      "explanation": "Une soudure froide est terne, granuleuse et en forme de cône : elle ne touche la broche que de temps en temps. Quand la soudure de STBY s'ouvre, le pull-down de 200 kΩ tire STBY à LOW et la puce dort jusqu'au retour du contact.",
+      "fix": "Refaites chaque soudure avec du flux neuf et un peu d'étain jusqu'à ce qu'il coule en un congé brillant et concave."
+    },
+    "stby-low": {
+      "title": "STBY à l'état bas ou non connectée",
+      "symptom": "Sous tension, le sketch tourne, IN1, IN2 et PWM semblent corrects, et rien ne tourne.",
+      "explanation": "STBY à LOW coupe toutes les sorties. Une STBY non connectée se lit LOW à cause du pull-down interne de 200 kΩ : c'est le piège le plus courant du premier jour avec cette puce.",
+      "fix": "Reliez STBY à une broche et mettez-la à HIGH dans setup(), ou reliez-la à VCC."
+    },
+    "no-driver": {
+      "title": "U1 oublié",
+      "symptom": "Les deux alimentations sont branchées, mais rien ne tourne et rien ne chauffe.",
+      "explanation": "Sans U1, il n'y a rien entre la batterie et les moteurs : la carte n'est faite que de connecteurs, de trois condensateurs et de cuivre.",
+      "fix": "Débranchez, placez U1 avec la broche 1 en haut à gauche, et soudez-le."
+    }
+  },
+  "status": {
+    "status": "État",
+    "powered": "Alimentation du banc",
+    "mode": "Commande",
+    "stby": "STBY",
+    "ain1": "AIN1",
+    "ain2": "AIN2",
+    "pwma": "Rapport cyclique PWMA",
+    "vm": "VM (alimentation moteurs)",
+    "vcc": "VCC (logique)",
+    "motors": "Courant batterie",
+    "usb": "Courant USB"
+  },
+  "current": {
+    "usb": "USB du Nano (polyfusible de 500 mA)",
+    "lipo": "LiPo 2S sur VM (limite du driver 2 x 1 A)",
+    "nano": "Nano en fonctionnement",
+    "logic": "Logique du TB6612FNG, STBY à l'état haut",
+    "motors": "Deux moteurs TT",
+    "motors5v": "Deux moteurs TT qui démarrent sur la broche 5 V",
+    "c3short": "C3 en court-circuit par tension inverse",
+    "reverse": "Batterie inversée à travers les diodes internes"
+  },
+  "tasks": {
+    "five-speeds": {
+      "title": "Cinq vitesses, dans les deux sens",
+      "brief": "Faites tourner le moteur A en avant sur cinq crans de PWM (51, 102, 153, 204, 255), une seconde chacun, freinez une demi-seconde, puis faites de même en arrière et freinez de nouveau. Gardez STBY à HIGH tout le temps.",
+      "hints": {
+        "1": "Le sens, c'est AIN1 et AIN2 ; la vitesse, c'est analogWrite(PWMA, …) : réglez le sens une fois, puis faites avancer la PWM cran par cran.",
+        "2": "51 × i pour i = 1 à 5 donne les cinq crans ; delay(1000) après chacun.",
+        "3": "Le frein, c'est AIN1 = AIN2 = HIGH. Écrivez les deux broches à chaque fois ; ne comptez jamais sur le pull-down."
+      },
+      "checks": {
+        "1": "Tourne pendant les 11 s entières",
+        "2": "STBY (D9) est à HIGH",
+        "3": "En avant : AIN1 (D7) est à HIGH",
+        "4": "En avant : AIN2 (D8) est à LOW",
+        "5": "Premier cran : PWMA à 20 %",
+        "6": "Troisième cran : PWMA à 60 %",
+        "7": "Cinquième cran : PWMA à 100 %",
+        "8": "En arrière : AIN1 (D7) est à LOW",
+        "9": "En arrière : AIN2 (D8) est à HIGH",
+        "10": "En arrière, premier cran : PWMA à 20 %",
+        "11": "En arrière, cinquième cran : PWMA à 100 %"
+      },
+      "code": {
+        "goal": "Faire passer le moteur A par cinq vitesses en avant, freiner, puis la même chose en arrière",
+        "start": "ceci n'avance qu'au premier cran : ajoutez les quatre autres, le frein et le balayage en arrière"
+      }
+    },
+    "one-turn": {
+      "title": "Exactement un tour",
+      "brief": "Un disque d'encodeur à 20 fentes sur l'axe du moteur A donne un front montant sur D2 par fente. Comptez les fronts dans une interruption et freinez le moteur A après exactement 20 fentes, un tour de roue, puis affichez le compte une fois. Comme vous vous arrêtez sur le compte et pas sur une minuterie, il fait un tour que la batterie soit pleine ou presque vide : votre première boucle fermée.",
+      "hints": {
+        "1": "L'interruption ne fait que compter : count++ dans tick(), rien d'autre. Prenez les décisions dans loop().",
+        "2": "count est un long de 32 bits sur une puce 8 bits : lisez-le entre noInterrupts() et interrupts() pour qu'il ne puisse pas changer au milieu de la lecture.",
+        "3": "AIN1 est déjà à HIGH : mettre AIN2 à HIGH donne donc le frein court. Utilisez un drapeau pour ne freiner et n'afficher qu'une fois."
+      },
+      "checks": {
+        "1": "Compte l'encodeur avec une interruption et un compteur volatile",
+        "2": "Fait tourner le moteur A en PWM 150",
+        "3": "Tourne encore après 19 fentes",
+        "4": "Freine (AIN2 à HIGH) juste après la fente 20",
+        "5": "Reste freiné",
+        "6": "Affiche « one turn: 20 slots »"
+      },
+      "code": {
+        "goal": "Faire faire au moteur A exactement un tour : 20 fentes d'encodeur",
+        "slots": "fentes du disque d'encodeur : un tour",
+        "todo": "lire count sans risque, et freiner dès qu'il atteint SLOTS"
+      },
+      "world": {
+        "enc": "Encodeur sur D2"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "reflow-first": {
+        "q": "Pourquoi les connecteurs se posent-ils après la refusion, et pas avant ?",
+        "options": {
+          "1": "Les 245 °C du four feraient fondre leur plastique",
+          "2": "Les connecteurs détourneraient la chaleur de U1",
+          "3": "La refusion ne fonctionne que sur des pastilles carrées"
+        },
+        "why": "Toute la carte passe dans le four. Les composants traversants à corps en plastique se posent ensuite et se soudent à la main, soudure par soudure."
+      },
+      "c3-way": {
+        "q": "Dans quel sens se pose C3 ?",
+        "options": {
+          "1": "Bande (+) côté VM, à gauche",
+          "2": "Dans n'importe quel sens : c'est un céramique",
+          "3": "Bande côté GND, à droite"
+        },
+        "why": "C3 est un tantale, et les tantales sont polarisés : la bande marque l'extrémité +. À l'envers, il claque en court-circuit, souvent en fumant."
+      },
+      "c3-job": {
+        "q": "À quoi sert C3 ?",
+        "options": {
+          "1": "Il fixe la fréquence de la PWM",
+          "2": "Il garde une réserve de charge sur VM pour les rafales de courant de chaque cycle de PWM",
+          "3": "Il alimente la logique quand l'USB est débranché"
+        },
+        "why": "Chaque fois que le pont devient passant, le moteur réclame du courant plus vite que les fils de la batterie ne peuvent en fournir. Le réservoir de 10 µF à côté de la puce fournit la rafale et garde VM stable."
+      }
+    },
+    "drive": {
+      "both-high": {
+        "q": "AIN1 = HIGH et AIN2 = HIGH. Que fait le moteur A ?",
+        "options": {
+          "1": "Il tourne en avant",
+          "2": "Frein court : il s'arrête net",
+          "3": "Il ralentit en roue libre jusqu'à l'arrêt"
+        },
+        "why": "Les deux entrées à HIGH rendent passants les deux interrupteurs du bas, ce qui relie les fils du moteur ensemble à GND. La force contre-électromotrice du moteur en rotation fait circuler un courant qui s'oppose à son propre mouvement : il s'arrête donc net."
+      },
+      "half-duty": {
+        "q": "PWM à 50 % de rapport cyclique sur une batterie de 7,4 V. Que voit le moteur en moyenne ?",
+        "options": {
+          "1": "7,4 V",
+          "2": "Environ 3,7 V",
+          "3": "0 V, la PWM est numérique"
+        },
+        "why": "Moyenne = rapport cyclique × (alimentation − chute du pont). À 150 mA, la chute n'est que de 0,15 A × 0,5 Ω ≈ 0,08 V : donc 0,5 × 7,3 V ≈ 3,7 V."
+      },
+      "pwm-low": {
+        "q": "AIN1 = HIGH, AIN2 = LOW. Que se passe-t-il pendant la partie LOW de chaque cycle de PWM ?",
+        "options": {
+          "1": "Les sorties s'ouvrent et le moteur est en roue libre",
+          "2": "Les deux interrupteurs du bas conduisent : un frein court",
+          "3": "La puce passe en veille"
+        },
+        "why": "Le tableau de la fiche technique : PWM à LOW avec IN1 ou IN2 à HIGH, c'est le frein court. Chaque cycle alterne entraînement et freinage : voilà pourquoi la vitesse suit de si près le rapport cyclique."
+      }
+    },
+    "faults": {
+      "resets": {
+        "q": "Le Nano redémarre chaque fois que les moteurs démarrent. Premier suspect ?",
+        "options": {
+          "1": "Un bug dans setup()",
+          "2": "Le câble USB est trop long",
+          "3": "Les moteurs font chuter le rail 5 V sous le seuil de brown-out"
+        },
+        "why": "Le courant de démarrage d'un moteur vaut plusieurs fois son courant en marche. Sur une alimentation USB de 500 mA, il fait chuter le 5 V sous le seuil de brown-out de 2,7 V de l'ATmega328P. Les moteurs ont leur place sur leur propre alimentation, VM."
+      },
+      "backwards": {
+        "q": "Sur cette carte, que se passe-t-il si la LiPo est branchée à l'envers ?",
+        "options": {
+          "1": "Rien : la carte l'empêche",
+          "2": "Le courant traverse les diodes internes du pont, et U1 et C3 surchauffent",
+          "3": "Les moteurs tournent à l'envers"
+        },
+        "why": "La carte SparkFun n'a ni diode ni MOSFET de protection. Les diodes internes conduisent aux bornes de la batterie inversée, presque un court-circuit, et le tantale est lui aussi polarisé en inverse."
+      },
+      "cells": {
+        "q": "Quelle batterie pleine est de trop pour VM ?",
+        "options": {
+          "1": "LiPo 2S, 8,4 V",
+          "2": "LiPo 3S, 12,6 V",
+          "3": "LiPo 4S, 16,8 V"
+        },
+        "why": "VM fonctionne jusqu'à 13,5 V et son maximum absolu est de 15 V. La 3S passe avec peu de marge ; la 4S dépasse la limite."
+      }
+    },
+    "end": {
+      "vs-l298n": {
+        "q": "Pourquoi utiliser le TB6612FNG plutôt que le L298N ?",
+        "options": {
+          "1": "Ses MOSFET font chuter environ 0,5 V à 1 A (0,15 V à 0,3 A) au lieu d'environ 2 V : moins de chaleur et plus de vitesse",
+          "2": "Il a plus de broches",
+          "3": "Il n'a pas besoin de PWM"
+        },
+        "why": "Les interrupteurs du TB6612FNG se comportent comme des résistances de 0,5 Ω : la perte diminue donc avec le courant. Les interrupteurs bipolaires du L298N perdent environ 2 V quel que soit le courant, et ça se transforme en chaleur et en vitesse perdue."
+      },
+      "stby-open": {
+        "q": "STBY n'est reliée à rien. Que font les moteurs ?",
+        "options": {
+          "1": "Ils tournent à pleine vitesse",
+          "2": "Rien : le pull-down interne tient STBY à LOW, la puce dort donc",
+          "3": "Ils tournent à mi-vitesse"
+        },
+        "why": "Chaque entrée du TB6612FNG a un pull-down de 200 kΩ. Une STBY flottante se lit LOW, ce qui coupe toutes les sorties."
+      },
+      "stutter": {
+        "q": "Les moteurs hoquettent quand vous tapotez la carte, et les soudures du connecteur sont ternes et granuleuses. Qu'est-ce qui règle le problème ?",
+        "options": {
+          "1": "Refaire les soudures jusqu'à ce qu'elles soient brillantes et concaves",
+          "2": "Un condensateur plus gros sur VM",
+          "3": "Une fréquence de PWM plus basse"
+        },
+        "why": "Ce sont des soudures froides : elles ne font contact que de temps en temps. Réchauffez-les avec du flux et un peu d'étain."
+      }
+    }
+  }
+}
