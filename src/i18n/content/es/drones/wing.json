@@ -1,0 +1,404 @@
+{
+  "title": "Ala volante FPV de 900 mm",
+  "tagline": "Un ala volante de espuma con INAV: elevones en lugar de cola, una hélice propulsora y GPS para traerla a casa.",
+  "sub": "Ala con elevones e INAV, con vuelta a casa por GPS",
+  "hint": "Móntala, comprueba los elevones y el equilibrio, y luego lánzala y vuela los pilones",
+  "noun": "ala volante",
+  "overview": "Un ala volante no tiene cola. Su planta en flecha y los elevones un poco levantados la mantienen estable en cabeceo, y los dos elevones hacen el trabajo de un timón de profundidad (moviéndose juntos) y de unos alerones (moviéndose en sentidos opuestos). Una sola hélice propulsora detrás del ala mantiene las palas lejos de tu mano al lanzarla y del suelo al aterrizar de panza. Esta es un ala de espuma EPP de 900 mm con una placa F405 para alas que ejecuta INAV 9.1, con GPS, un receptor ExpressLRS y FPV analógico. INAV puede nivelarla, lanzarla, mantener un rumbo y traerla a casa por GPS, y en crucero consume unos pocos amperios, así que lo normal son vuelos de media hora. Elige la batería, el motor y la hélice y mira cómo cambian el equilibrio y el tiempo de vuelo, móntala, comprueba los elevones y el CG, y luego vuela por el aeródromo.",
+  "practice": "Vuela la carrera de pilones en modo ángulo y luego el recorrido de vuelta a casa. En un ala real: comprueba los elevones antes de cada primer vuelo (las palancas y el estabilizador), equilíbrala sobre las marcas del CG con la batería puesta, espera a tener fix de GPS antes de armar y lánzala nivelada, contra el viento, a medio gas o con NAV LAUNCH. Pon el failsafe en RTH y pruébalo sin la hélice. La mayoría de los países exigen tener el ala a la vista: vuela en FPV con un observador a tu lado.",
+  "design": {
+    "fixed": {
+      "FRAME": "Ala de EPP de 900 mm, cápsula y larguero",
+      "ESC": "ESC de 40 A",
+      "FC": "Controladora de vuelo F405 para alas y placa de alimentación",
+      "GPS": "GPS M10 + brújula",
+      "CAM": "Cámara FPV analógica",
+      "VTX": "VTX de 5,8 GHz y antena",
+      "RX": "Receptor ELRS de 2,4 GHz",
+      "SERVOS": "Dos servos de 9 g con engranajes metálicos",
+      "XT60": "Cable XT60 y condensador de 470 µF",
+      "TOP": "Tapa, varillas y horns",
+      "WIRES": "Cables del motor y conectores bala"
+    },
+    "verdict": {
+      "ok": "Las piezas encajan: {tw} veces su peso en empuje para el lanzamiento y la subida, y un crucero de unos pocos amperios.",
+      "over": "{kv} KV es un motor de quad de 5 pulgadas. Con una hélice de ala tira de mucha más corriente de la que aguanta el ESC de 40 A y se quema en segundos. Los motores de ala en {cells}S tienen unos 1000 a 1400 KV.",
+      "weak": "Solo {tw} veces su peso en empuje: al lanzarla se hundirá antes de subir. Apunta a la mitad de su peso como mínimo.",
+      "tail": "Esta batería ligera deja el ala pesada de cola: después del lanzamiento encabrita y entra en pérdida. Adelanta la batería o añade peso en el morro, y luego haz la comprobación del CG."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Ala volante de espuma EPP de 900 mm",
+      "what": "Un ala en flecha sin cola de espuma EPP, de 900 mm de punta a punta, con un larguero de carbono dentro, winglets en las puntas y una cápsula de 305 x 84 x 54 mm en el centro para la electrónica. El borde de ataque va en flecha 28 grados hacia atrás, de una cuerda de 300 mm en la raíz a 155 mm en la punta. El EPP se dobla en lugar de romperse, así que los aterrizajes de panza no son un problema. Las marcas del CG de arriba están al 15 a 20 % de la cuerda media, unos 130 mm por detrás del borde de ataque en la raíz."
+    },
+    "SERVOS": {
+      "name": "Servos de los elevones, horns y varillas",
+      "what": "Dos servos de 9 g con engranajes metálicos en el ala, a 175 mm a cada lado, con varillas hasta los horns de los elevones (de 55 mm de ancho, desde 120 mm hacia fuera hasta las puntas). Se conectan a los pads S3 y S4 y funcionan con el BEC de servos de 4,9 V de la controladora. Un servo que se mueve al revés estrella el ala justo después del lanzamiento: compruébalos en el banco."
+    },
+    "MOTORS": {
+      "name": "Motor propulsor en el borde de fuga",
+      "what": "Un motor de rotor exterior en un soporte en la parte trasera de la sección central, con el eje hacia atrás, para que la hélice quede detrás del ala. El 2212 de 1400 KV por defecto pesa unos 55 g y se calienta en 4S con una 8x6: las alas reales de 4S usan de 1000 a 1200 KV con esa hélice. El 2810 de 1100 KV es la opción más fuerte y tranquila; el 2306 de 2400 KV es un motor de quad de 5 pulgadas."
+    },
+    "ESC": {
+      "name": "ESC de 40 A",
+      "what": "Un ESC de 40 A en la cápsula, alimentado desde los pads ESC de la placa de alimentación. INAV lo controla con OneShot125 desde el pad S1. Su propio BEC de 5 V no hace falta, porque el BEC de servos de la controladora alimenta los servos, así que deja su cable rojo sin conectar. INAV no puede invertir un motor: eso se hace con la herramienta propia del ESC o intercambiando dos cables del motor."
+    },
+    "WIRES": {
+      "name": "Cables del motor y conectores bala",
+      "what": "Los tres cables de fase del motor al ESC con conectores bala de 3,5 mm. En cualquier orden el motor gira; intercambiar dos cualesquiera lo hace girar al otro lado."
+    },
+    "FC": {
+      "name": "Controladora de vuelo F405 para alas (INAV)",
+      "what": "Una placa F405 hecha para alas (como la SpeedyBee F405 WING) sobre su propia placa de alimentación: entrada de batería de 2 a 6S, un sensor de corriente de 90 A y tres BEC, 5 V para la controladora, 9 V para el VTX y 4,9 V para los servos. Ejecuta INAV 9.1 con un giroscopio, un barómetro y un chip de OSD analógico. Va plana en la cápsula con la flecha hacia el morro."
+    },
+    "XT60": {
+      "name": "Cable XT60 y condensador de 470 µF",
+      "what": "El cable de batería soldado a los pads BAT de la placa de alimentación, con un condensador de baja ESR de 470 µF 35 V sobre ellos, con la franja en el pad negativo. Absorbe los picos de tensión del ESC antes de que reinicien la controladora o llenen de rayas el vídeo."
+    },
+    "GPS": {
+      "name": "GPS M10 + brújula",
+      "what": "Un GPS u-blox M10 con una brújula QMC5883, encima del ala detrás de la cápsula y a 5 cm como mínimo del ESC y de los cables de potencia. El GPS va en el UART3 y la brújula en el I2C1. INAV necesita el GPS para RTH, el lanzamiento y el crucero. En un ala la brújula es opcional: una vez en vuelo, INAV puede guiarse por el rumbo del GPS."
+    },
+    "RX": {
+      "name": "Receptor ELRS de 2,4 GHz",
+      "what": "Un receptor ExpressLRS diminuto en la cápsula, en el UART1 (CRSF), con su antena en T asomando de la cápsula. Una antena enterrada en la espuma o tumbada a lo largo del larguero de carbono pierde alcance y provoca un failsafe antes de tiempo."
+    },
+    "CAM": {
+      "name": "Cámara FPV en el morro",
+      "what": "Una cámara analógica en el morro, inclinada unos 8 grados hacia arriba: un ala vuela casi nivelada, así que necesita poca inclinación. Su vídeo entra por el pad CAM de la controladora, donde el OSD de INAV añade la altitud, la velocidad, la flecha de casa y la batería."
+    },
+    "VTX": {
+      "name": "VTX de 5,8 GHz y antena",
+      "what": "Un transmisor de vídeo analógico alimentado por el BEC de 9 V de la controladora, con su antena tipo piruleta asomando hacia arriba de la cápsula. INAV fija la banda, el canal y la potencia por SmartAudio; los niveles de potencia vienen del propio VTX (INAV no tiene vtxtable). Nunca lo alimentes sin la antena."
+    },
+    "BATT": {
+      "name": "Batería (el peso de equilibrio)",
+      "what": "La batería entra en el hueco de la cápsula y es el lastre que fija el CG del ala. La LiPo 4S 2200 la deja equilibrada sobre las marcas. La 4S de iones de litio 3000 la deja un poco pesada de morro, que es el lado seguro y da vuelos largos. La ligera 3S 1300 la deja pesada de cola, y un ala pesada de cola no es segura para volar."
+    },
+    "TOP": {
+      "name": "Tapa",
+      "what": "La tapa de espuma sobre la cápsula, sujeta con un cierre. Comprueba que cierra: una tapa que se abre en vuelo deja caer la batería."
+    },
+    "PROPS": {
+      "name": "Hélice propulsora",
+      "what": "Una hélice bipala propulsora (P), 8x6 por defecto, montada con la cara impresa hacia delante. Gira en sentido antihorario vista desde atrás y empuja el aire hacia atrás. Montada al revés da poco empuje y subidas lentas. Una hélice de 9 pulgadas solo deja unos milímetros hasta los elevones."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Empieza por el ala",
+      "body": "Pega las dos mitades del ala a la sección central con el larguero de carbono en su ranura, coloca los winglets y comprueba que los elevones se mueven libremente sobre sus bisagras."
+    },
+    "servos": {
+      "title": "Coloca los servos de los elevones",
+      "body": "Mete los servos a presión en sus huecos, céntralos y ajusta las varillas para que los dos elevones queden un poco hacia arriba en el centro (reflex): eso es lo que mantiene un ala volante estable en cabeceo.",
+      "refusal": "Los servos van en los huecos del ala: primero coloca el ala."
+    },
+    "motors": {
+      "title": "Monta el motor propulsor",
+      "body": "En el soporte de la parte trasera de la sección central, con el eje hacia atrás. Comprueba que los tornillos no toquen los bobinados.",
+      "refusal": "El motor se atornilla al soporte de motor del ala: primero coloca el ala."
+    },
+    "esc": {
+      "title": "Coloca el ESC en la cápsula",
+      "body": "En la cápsula, con los cables del motor hacia atrás. Guarda su cable de BEC: la controladora de vuelo alimenta los servos.",
+      "refusal": "El ESC va en la cápsula del ala: primero coloca el ala."
+    },
+    "wires": {
+      "title": "Conecta los cables del motor",
+      "body": "Enchufa las tres balas del motor en las del ESC. Si luego el motor gira al revés, intercambia dos cualesquiera.",
+      "refusal": "Las balas unen el motor con el ESC: primero coloca las dos cosas."
+    },
+    "fc": {
+      "title": "Coloca la controladora de vuelo, con la flecha hacia el morro",
+      "body": "Plana en la cápsula sobre su placa de alimentación, con la flecha impresa hacia el morro. La señal del ESC va a S1 y los servos a S3 y S4.",
+      "refusal": "La placa de alimentación de la controladora de vuelo alimenta el ESC: primero coloca el ESC."
+    },
+    "xt60": {
+      "title": "Suelda el XT60 y el condensador",
+      "body": "El cable de batería a los pads BAT de la placa de alimentación, el rojo al + y el negro al -, y el condensador de 470 µF sobre los mismos pads con la franja hacia el negativo. Comprueba con un multímetro que + y - no están en cortocircuito.",
+      "refusal": "El XT60 se suelda a la placa de alimentación de la controladora de vuelo: primero coloca la controladora de vuelo."
+    },
+    "gps": {
+      "title": "Coloca el GPS encima",
+      "body": "Encima del ala detrás de la cápsula, con la flecha hacia el morro, a 5 cm como mínimo del ESC y de los cables de potencia. Su cable va al UART3 y al I2C1.",
+      "refusal": "El GPS va conectado a la controladora de vuelo: primero coloca la controladora de vuelo."
+    },
+    "rx": {
+      "title": "Coloca el receptor",
+      "body": "En la cápsula, en el UART1: el TX del receptor al RX1 y su RX al TX1. Deja la antena en T asomando de la cápsula, lejos del larguero de carbono.",
+      "refusal": "El receptor va conectado al UART1 de la controladora de vuelo: primero coloca la controladora de vuelo."
+    },
+    "cam": {
+      "title": "Coloca la cámara en el morro",
+      "body": "En el morro, inclinada unos 8 grados hacia arriba, con su cable a los pads CAM de la controladora de vuelo.",
+      "refusal": "La cámara va en el morro del ala: primero coloca el ala."
+    },
+    "vtx": {
+      "title": "Coloca el VTX",
+      "body": "En la cápsula, en el BEC de 9 V, con la antena enroscada antes de que reciba alimentación por primera vez y asomando hacia arriba de la cápsula.",
+      "refusal": "El VTX va conectado a la controladora de vuelo: primero coloca la controladora de vuelo."
+    },
+    "batt": {
+      "title": "Mete la batería",
+      "body": "En el hueco y sujeta donde dicen las marcas del CG. Con la 4S 2200, ahí es donde queda equilibrada. Todavía no la conectes.",
+      "refusal": "La batería se conecta al XT60 de la placa de alimentación de la controladora de vuelo: primero coloca las dos cosas."
+    },
+    "top": {
+      "title": "Cierra la tapa",
+      "body": "Sobre la cápsula, con el cierre puesto. Nada de debajo puede quedar pellizcado.",
+      "refusal": "La tapa cierra sobre la batería, el receptor y el VTX: primero colócalos."
+    },
+    "props": {
+      "title": "Coloca la hélice propulsora, la última",
+      "body": "Solo después de la prueba del smoke stopper y de la comprobación del sentido del motor, con la batería desconectada. La cara impresa hacia delante y la tuerca bien apretada.",
+      "refusal": "La hélice va la última: primero haz la prueba del smoke stopper y la comprobación del sentido del motor."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "La batería se conecta al XT60. Una 4S da 14,8 V nominales y 16,8 V cargada; la opción de iones de litio también es 4S.",
+    "XT60-FC": "El cable XT60 va soldado a los pads BAT de la placa de alimentación (de 2 a 6S), con el condensador de baja ESR de 470 µF 35 V entre ellos, con la franja hacia el negativo.",
+    "XT60-ESC": "El ESC toma la alimentación de los pads ESC de la placa de alimentación, después del sensor de corriente de 90 A, así que el OSD muestra los amperios y los mAh consumidos.",
+    "FC-ESC": "La señal del ESC sale del pad S1: motor 1, OneShot125 (el valor por defecto de INAV). El cable del BEC propio del ESC se queda sin conectar.",
+    "ESC-MOTORS": "Tres cables de fase con balas de 3,5 mm. Intercambia dos cualesquiera para invertir el motor.",
+    "FC-SERVOS": "El servo 1 en S3 y el servo 2 en S4, alimentados por el BEC de servos a 4,9 V (6 o 7,2 V con un puente, solo si los servos lo admiten). Marrón o negro es tierra, rojo es positivo y naranja o blanco es la señal.",
+    "RX-FC": "ELRS en el UART1 con CRSF: el TX del receptor al RX1 y su RX al TX1, más 5 V y tierra.",
+    "GPS-FC": "Un solo cable: el GPS en el UART3 (protocolo u-blox), la brújula en el I2C1 (SCL y SDA), 5 V y tierra.",
+    "CAM-FC": "El vídeo de la cámara entra por el pad CAM, con 5 V y tierra. El chip de OSD de INAV escribe encima.",
+    "FC-VTX": "El vídeo con el OSD sale por el pad VTX, con 9 V del BEC del VTX y SmartAudio en un UART libre para que INAV fije la banda, el canal y la potencia."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Prueba del smoke stopper",
+      "pass": "La lámpara solo ha parpadeado: no hay nada en cortocircuito y el condensador está en el sentido correcto. Ya puedes conectar la batería directamente.",
+      "fail": "La lámpara se ha quedado encendida: hay algo en cortocircuito, aquí un condensador colocado con la franja hacia el positivo. Vuelve a colocarlo con la franja hacia el negativo y repite la prueba antes de conectar de verdad."
+    },
+    "motors": {
+      "title": "Comprobación del sentido del motor (sin hélice)",
+      "pass": "El motor gira en sentido antihorario visto desde atrás, como necesita una hélice propulsora, así que empujará el aire hacia atrás. Ya puedes poner la hélice.",
+      "fail": "Ha girado al revés. INAV no puede invertir un motor: intercambia dos cables cualesquiera del motor, o inviértelo con la herramienta propia del ESC, como hace aquí la comprobación. Con la hélice puesta, empujaría el aire hacia delante y apenas volaría."
+    },
+    "calibrate": {
+      "title": "Calibración del acelerómetro (ala nivelada)",
+      "pass": "Calibrado con el ala nivelada en su actitud de vuelo: el modo ANGLE y el horizonte del OSD ya saben dónde está la horizontal.",
+      "fail": "Coloca la controladora de vuelo y pon el ala nivelada, como vuela. Si la flecha apunta hacia atrás, calibrar no lo arregla: gira la placa o pon align_board_yaw = 1800."
+    },
+    "elevons": {
+      "title": "Comprobación de los elevones (palancas y estabilizador)",
+      "pass": "Palanca hacia atrás: los dos elevones suben. Palanca a la derecha: el elevón derecho sube y el izquierdo baja. Ala derecha inclinada hacia abajo en ANGLE: el elevón derecho baja para volver a levantarla. Las palancas y el estabilizador empujan los dos hacia el lado correcto.",
+      "fail": "Coloca los servos, la controladora de vuelo y el receptor, y conecta la batería. Si con la palanca hacia atrás los elevones bajan, hay un servo invertido: dale un rate negativo (servo 1 1000 2000 1500 -100) o marca Reverse en la pestaña Outputs. Si las palancas van bien pero el estabilizador empuja hacia el lado equivocado, la flecha de la controladora apunta hacia atrás."
+    },
+    "cg": {
+      "title": "Comprobación del CG",
+      "pass": "Queda nivelada, o un poco con el morro abajo, sobre dos yemas de los dedos en las marcas del CG (15 a 20 % de la cuerda media). Ya puedes lanzarla.",
+      "fail": "Primero mete la batería: en un ala, la batería es el equilibrio. Si la cola cae, el ala está pesada de cola y encabritará y entrará en pérdida después del lanzamiento. Adelanta la batería o añade peso en el morro, y vuelve a comprobarlo."
+    },
+    "compass": {
+      "title": "Calibración de la brújula",
+      "pass": "Calibrada: girada en todos los ejes durante 30 s, lejos del ESC y de los cables de la batería. Compara el rumbo con una brújula de verdad antes de fiarte de ella.",
+      "fail": "Coloca el módulo GPS (la brújula va dentro) y la controladora de vuelo, y conecta la batería. En un ala la brújula es opcional: una vez en vuelo, INAV puede guiarse por el rumbo del GPS."
+    },
+    "airspeed": {
+      "title": "Comprobación de la velocidad aerodinámica virtual",
+      "pass": "pitot_hardware = VIRTUAL: INAV estima la velocidad aerodinámica a partir de la velocidad del GPS y de su estimación del viento, lo bastante para el OSD y para los giros coordinados. Un tubo pitot de verdad habría que ponerlo a cero con el tubo tapado.",
+      "fail": "Coloca el GPS y la controladora de vuelo y conecta la batería: la velocidad aerodinámica virtual sale del GPS."
+    },
+    "failsafe": {
+      "title": "Prueba de failsafe (sin hélice)",
+      "pass": "Emisora apagada: FAILSAFE en el OSD tras 0,5 s, y luego RTH, que en vuelo sube a 30 m y vuelve a casa. Al volver a encender la emisora y mover una palanca, vuelves a tener el control.",
+      "fail": "Quita la hélice, coloca el receptor y la controladora de vuelo, y conecta la batería: cuando el failsafe arranca RTH, el motor acelera."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Primera configuración: el preset Flying Wing",
+      "explain": "El preset Flying Wing del Configurator, escrito en la CLI. Desde INAV 7 el mezclador vive en perfiles de mezclador, y un ala sencilla solo usa el perfil 1. motorstop_on_low mantiene la hélice quieta con el gas bajo (las guías antiguas dicen feature MOTOR_STOP, que ya no existe). mmix 0 da al motor 1, en el pad S1, solo el gas. Cada línea smix es regla, servo, entrada y peso: los dos servos reciben +50 % del cabeceo (entrada 1), y el alabeo (entrada 0) a +50 % en uno y a -50 % en el otro, así que el cabeceo los mueve juntos y el alabeo los mueve en sentidos opuestos. Eso es un elevón. Luego CRSF para el receptor en el UART1 y el GPS en el UART3."
+    },
+    "servos": {
+      "title": "Recorrido, sentido y trim de nivel de los servos",
+      "explain": "servo recibe el recorrido en microsegundos (mínimo, máximo, centro) y un rate: un rate negativo invierte ese servo, así que ponle -100 si la comprobación de los elevones muestra que se mueve al revés. fw_level_pitch_trim es el ángulo de morro arriba que el modo ANGLE mantiene como nivelado; la mayoría de las alas quieren de 1 a 4 grados, y el modo AUTO LEVEL TRIM lo aprende en vuelo. align_board_yaw va en décimas de grado: 1800 si la controladora de vuelo está montada con la flecha hacia atrás."
+    },
+    "switches": {
+      "title": "Interruptores: armado, modos de vuelo, lanzamiento, RTH",
+      "explain": "El aux de INAV recibe la posición, el número del modo, el canal (0 = AUX1) y el rango en microsegundos. Números de modo: 0 ARM, 12 MANUAL, 1 ANGLE, 53 NAV CRUISE, 36 NAV LAUNCH, 10 NAV RTH. Un interruptor de tres posiciones en AUX2 elige MANUAL, ANGLE o CRUISE; CRUISE mantiene el rumbo y la altura, y las palancas los cambian."
+    },
+    "launch": {
+      "title": "NAV LAUNCH",
+      "explain": "Arma, activa NAV LAUNCH (AUX3), sube el gas (el motor se queda al ralentí) y lánzala. INAV detecta el lanzamiento, espera nav_fw_launch_motor_delay (0,5 s, para que la hélice ya esté lejos de tu mano), pone el motor a 1700 µs y sube con 18 grados de morro arriba hasta el tiempo límite, 5 s, y luego te devuelve el control. Son los valores por defecto de INAV, escritos para que los veas y los puedas cambiar."
+    },
+    "failsafe": {
+      "title": "Failsafe: volver a casa",
+      "explain": "El failsafe por defecto de INAV es LAND, que en un ala baja en círculos donde esté. RTH la trae a casa en su lugar. failsafe_delay y failsafe_recovery_delay van en décimas de segundo: 0,5 s de enlace perdido antes de que empiece el failsafe y 0,5 s de enlace bueno antes de que pueda terminar. failsafe_stick_threshold es cuánto tienes que mover una palanca para recuperar el control."
+    },
+    "airspeed": {
+      "title": "Velocidad aerodinámica sin tubo pitot",
+      "explain": "VIRTUAL estima la velocidad aerodinámica a partir de la velocidad del GPS y del viento. fw_reference_airspeed es la velocidad aerodinámica con la que se ajustaron los PID, 1500 cm/s (15 m/s), y se usa para coordinar los giros. nav_fw_cruise_speed solo alimenta el tiempo de vuelo restante del OSD; no fija lo rápido que vuela INAV."
+    },
+    "angle": {
+      "title": "Modo ángulo",
+      "explain": "INAV nivela el ala cuando sueltas y nunca la inclina más de max_angle_inclination_rll: 450 décimas de grado, 45 grados. fw_level_pitch_trim se queda en 0 aquí; si el ala sube o baja poco a poco sin tocar las palancas, ajusta el trim."
+    },
+    "manual": {
+      "title": "Manual",
+      "explain": "MANUAL pasa las palancas directamente a los elevones: nada nivela ni estabiliza el ala. manual_roll_rate y manual_pitch_rate son el porcentaje del recorrido del servo con la palanca a tope, no grados por segundo; 100 es todo el recorrido."
+    },
+    "rth": {
+      "title": "NAV RTH",
+      "explain": "NAV RTH (AUX4, o el failsafe) primero sube hasta al menos nav_rth_altitude, 3000 cm (30 m, por encima de los árboles), vuelve a casa por GPS y da vueltas sobre ella. nav_fw_loiter_radius es 5000 cm, 50 m: a 15 m/s y con la inclinación de 35 grados de INAV, el círculo más cerrado mide unos 33 m, así que 50 m deja margen. NEVER significa que da vueltas hasta que tomes el control y la aterrices tú."
+    },
+    "stats": {
+      "title": "Estadísticas del vuelo",
+      "explain": "INAV muestra una página de estadísticas por sí solo después de desarmar (no existe ningún ajuste osd_stats_page). osd_stats_energy_unit muestra la energía consumida en mAh, cada página se queda 3 s en pantalla y stats = ON lleva la cuenta total de vuelos, tiempo de vuelo y distancia."
+    }
+  },
+  "flight": {
+    "modes": {
+      "angle": {
+        "title": "Modo ángulo",
+        "hint": "INAV nivela el ala cuando sueltas y la inclina hasta 45 grados. Arma y luego sube el gas por encima de un cuarto para lanzarla. Las flechas la inclinan y la cabecean; gira inclinándose."
+      },
+      "manual": {
+        "title": "Manual",
+        "hint": "Las palancas mueven los elevones directamente y nada nivela el ala. Si sueltas en un giro, sigue inclinándose."
+      },
+      "rth": {
+        "title": "NAV RTH",
+        "hint": "Mira cómo vuelve a casa: sube a 30 m, vuelve por GPS y da vueltas sobre el campo a 50 m. Vuelve a ángulo para aterrizarla tú."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Enlace perdido durante 0,5 s: FAILSAFE, y luego RTH sube a 30 m, vuelve a casa y da vueltas. Cuando vuelva el enlace, mueve una palanca para tomar el control.",
+      "stall": "Por debajo de la velocidad de pérdida el morro cae y se hunde una punta del ala: baja el morro y da gas, nunca tires hacia atrás.",
+      "low-battery": "Por debajo de 3,5 V por celda el OSD avisa: da la vuelta hacia casa y aterriza.",
+      "fence": "A más de 180 m de casa, el campo te avisa: da la vuelta mientras todavía puedas ver el ala."
+    },
+    "controls": "Teclado: Espacio arma y desarma, W y S gas (por encima de un cuarto de gas el ala sale lanzada), las flechas cabeceo y alabeo, V cambia a FPV, R vuelve a ponerla en la pista. Un ala gira inclinándose: no tiene timón de dirección, así que A y D no hacen nada. En un móvil, la palanca izquierda es el gas y la derecha es cabeceo y alabeo. Un mando funciona en Modo 2."
+  },
+  "courses": {
+    "pylons": {
+      "title": "Carrera de pilones en el aeródromo",
+      "brief": "Cuatro pilones naranjas rodean la pista en un rectángulo de 80 x 50 m. Lanza el ala, rodea por fuera cada pilón por orden, en sentido antihorario, y luego aterriza de panza en la pista: despacio, con las alas niveladas, bajando con suavidad.",
+      "prims": {
+        "pilots": "Zona de pilotos",
+        "hangar": "Hangar"
+      },
+      "goals": {
+        "1": "PILÓN 1",
+        "2": "PILÓN 2",
+        "3": "PILÓN 3",
+        "4": "PILÓN 4",
+        "5": "ATERRIZAJE DE PANZA"
+      }
+    },
+    "home": {
+      "title": "Vuelta a casa",
+      "brief": "Vuela hasta el poste rojo de la esquina del fondo, a unos 100 m de casa, y luego cambia a NAV RTH: INAV sube a 30 m, vuelve a casa y da vueltas sobre el campo a 50 m. Luego toma el control en modo ángulo y aterriza de panza en la pista.",
+      "goals": {
+        "1": "POSTE ROJO",
+        "2": "CÍRCULO DE RTH, A 30 M",
+        "3": "ATERRIZAJE DE PANZA"
+      }
+    }
+  },
+  "quizzes": {
+    "controls": {
+      "elevons": {
+        "q": "¿Qué hace un elevón?",
+        "options": {
+          "1": "Solo gira a izquierda y derecha",
+          "2": "Es timón de profundidad y alerón a la vez: los dos se mueven juntos para el cabeceo y en sentidos opuestos para el alabeo",
+          "3": "Cambia el paso de la hélice"
+        },
+        "why": "Un ala volante no tiene cola, así que las dos superficies de su borde de fuga hacen los dos trabajos. El mezclador suma las órdenes de cabeceo y de alabeo para cada una: palanca hacia atrás sube las dos, palanca a la derecha sube la derecha y baja la izquierda."
+      },
+      "bench": {
+        "q": "En el banco, en modo ANGLE, inclinas el ala derecha hacia abajo. ¿Hacia dónde debería moverse el elevón derecho?",
+        "options": {
+          "1": "Hacia arriba, siguiendo la inclinación",
+          "2": "Hacia abajo, para volver a levantar esa ala",
+          "3": "Nada: solo lo mueven las palancas"
+        },
+        "why": "En ANGLE el estabilizador lucha contra la inclinación: el elevón derecho baja y añade sustentación al ala derecha para devolverla a nivel. Si en cambio sube, la controladora de vuelo está montada al revés o su alineación está mal, y el ala vuelca en cuanto sale de tu mano. La comprobación de las palancas por sí sola no puede detectarlo."
+      }
+    },
+    "power": {
+      "pads": {
+        "q": "En esta placa F405 para alas, ¿qué pad controla el motor propulsor?",
+        "options": {
+          "1": "S1: INAV da la primera salida al motor 1, y los servos toman el siguiente temporizador libre, S3 y S4",
+          "2": "S3, después de los dos servos",
+          "3": "Cualquier pad: INAV encuentra el motor por sí solo"
+        },
+        "why": "INAV reparte las salidas por temporizador. El motor 1 recibe S1, y S2 comparte su temporizador, así que solo puede controlar otro motor. Los servos toman el siguiente temporizador, S3 y S4. Qué elevón es el servo 1 lo fijan las líneas smix y se comprueba en el banco."
+      },
+      "cap": {
+        "q": "¿Para qué sirve el condensador de baja ESR en los pads de batería de la placa de alimentación?",
+        "options": {
+          "1": "Para mantener alimentados los servos cuando se desconecta la batería",
+          "2": "Para subir la tensión de la batería",
+          "3": "Para absorber los picos de tensión del ESC, que si no reiniciarían la controladora o meterían rayas en el vídeo"
+        },
+        "why": "Cada vez que el ESC conmuta, los cables de la batería se llenan de picos de tensión. Un condensador de baja ESR de 470 µF justo en los pads los absorbe. 25 V bastan para 4S (16,8 V cargada); 35 V permiten hasta 6S. La franja va hacia el pad negativo."
+      }
+    },
+    "balance": {
+      "tail": {
+        "q": "Cambias la 4S 2200 por una 3S 1300 ligera en el mismo sitio. ¿Qué pasa?",
+        "options": {
+          "1": "Nada: el equilibrio no depende de la batería",
+          "2": "El ala queda pesada de cola: después del lanzamiento encabrita y entra en pérdida. Adelanta la batería o añade peso en el morro",
+          "3": "Queda pesada de morro y se lanza en picado"
+        },
+        "why": "En un ala, la batería es el lastre que pone el CG sobre las marcas. Una batería más ligera en el mismo hueco deja que el CG se vaya hacia atrás, y un ala pesada de cola encabrita, sube y baja en ondas y entra en pérdida, muchas veces justo después del lanzamiento. Pesada de morro es el lado seguro: necesita un poco más de velocidad, pero vuela."
+      },
+      "mac": {
+        "q": "¿Dónde va el CG en un ala en flecha como esta?",
+        "options": {
+          "1": "Al 15 a 20 % de la cuerda aerodinámica media: aquí, unos 125 a 135 mm por detrás del borde de ataque en la raíz",
+          "2": "Al 25 % de la cuerda en la raíz, 75 mm por detrás del borde de ataque",
+          "3": "A medio camino entre el morro y el borde de fuga"
+        },
+        "why": "En un ala en flecha y estrechada, el CG se mide sobre la cuerda aerodinámica media, que queda más hacia fuera en la envergadura y más atrás que la raíz. El 25 % de la cuerda en la raíz quedaría demasiado adelantado, y el 25 % de la cuerda media es más o menos el punto neutro, demasiado atrás para volar. Equilíbrala sobre dos yemas de los dedos en las marcas: nivelada, o un poco con el morro abajo."
+      }
+    },
+    "flight": {
+      "stall": {
+        "q": "Justo después del lanzamiento el ala pierde velocidad, se hunde una punta y cae el morro. ¿Qué ha pasado y qué haces?",
+        "options": {
+          "1": "Se ha parado el motor: cambia a manual",
+          "2": "Ha entrado en pérdida, por ir demasiado lenta o por lanzarla con el morro alto: baja el morro, nivela las alas y da gas",
+          "3": "El GPS ha perdido el fix: espera a que vuelva"
+        },
+        "why": "Por debajo de su velocidad de pérdida (unos 9 a 10 m/s en esta ala) el ala deja de sustentar y se hunde una punta. Tirar hacia atrás lo empeora. Deja bajar el morro para ganar velocidad, nivela las alas y da gas. Lánzala nivelada o con unos pocos grados de morro arriba, contra el viento, a medio gas o más."
+      },
+      "loiter": {
+        "q": "¿Por qué nav_fw_loiter_radius es 50 m y no 22 m?",
+        "options": {
+          "1": "Para ahorrar batería",
+          "2": "Porque INAV lo cuenta en pies",
+          "3": "Un ala no puede quedarse en estacionario: a 15 m/s y con 35 grados de inclinación su círculo más cerrado mide unos 33 m, así que un círculo de 22 m no se puede volar"
+        },
+        "why": "El radio de giro es la velocidad al cuadrado entre g por la tangente de la inclinación: 15² / (9,81 x tan 35°) da unos 33 m. Pide un círculo más pequeño y el ala vuela uno más grande y tambaleante. El valor por defecto de INAV es 75 m, y el rango útil va de 30 a 75 m."
+      },
+      "failsafe": {
+        "q": "Lejos, el enlace se cae durante un segundo. ¿Qué hace esta ala?",
+        "options": {
+          "1": "Tras 0,5 s pasa a failsafe y RTH: sube a 30 m, vuelve a casa y da vueltas hasta que tomes el control",
+          "2": "Corta el motor y baja planeando donde está",
+          "3": "Sigue recta hasta que se agota la batería"
+        },
+        "why": "failsafe_procedure = RTH sustituye al LAND por defecto de INAV, que baja en círculos donde esté. failsafe_delay = 5 son 0,5 s. Cuando vuelve el enlace, mover una palanca más allá de failsafe_stick_threshold te devuelve el control."
+      },
+      "motor": {
+        "q": "¿Por qué el motor de quad 2306 de 2400 KV es una mala elección para esta ala?",
+        "options": {
+          "1": "Pesa demasiado",
+          "2": "Con una hélice de 8 pulgadas en 4S tiraría de unos 100 A, muy por encima del ESC de 40 A: el motor o el ESC se queman en segundos",
+          "3": "Gira al revés"
+        },
+        "why": "Un motor de quad de 5 pulgadas está bobinado para hacer girar muy rápido una hélice pequeña. Ponle una 8x6 y la corriente sube con la carga: unos 97 A según la calculadora. Los motores de ala en 4S tienen unos 1000 a 1400 KV con hélices de 8 pulgadas."
+      }
+    }
+  }
+}
