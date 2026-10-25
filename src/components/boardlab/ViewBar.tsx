@@ -4,6 +4,7 @@ import type { FigureHandle } from "@/components/figure/protocol";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
+import type { BuildStep } from "@/content/schema";
 import type { BoardLabStore, BoardView } from "@/lib/boardlab/store";
 import type { BoardModel } from "./model";
 import { ScrollRow } from "./ScrollRow";
@@ -23,8 +24,14 @@ const HOST_DRAWN = ["power", "view", "break", "xr"];
 // A lesson's Run is the upload, and building the board is the board page's Assembly: these stay off a lesson's figure.
 const BUILD = ["strip", "pnp", "mat", "place", "solder", "remove"];
 export const LESSON_HIDDEN = [...HOST_DRAWN, "upload", ...BUILD];
-// On a board page the Assembly tab presses the build buttons; under lg they would cover most of a small plate.
-export const boardHidden = (): readonly string[] => (window.matchMedia("(max-width: 1023px)").matches ? [...HOST_DRAWN, ...BUILD] : HOST_DRAWN);
+/**
+ * On a board page, at every width: what the page draws, and each button the Assembly tab's Do it presses (strip,
+ * pick & place, place, solder, upload). A control's own button (Press RESET) and what no tab offers (Remove a part)
+ * stay on the figure.
+ */
+export const boardHidden = (assembly: readonly BuildStep[]): string[] => [
+  ...new Set([...HOST_DRAWN, ...assembly.flatMap((s) => (s.action?.type === "press" && !s.action.id.startsWith("ctl-") ? [s.action.id] : []))]),
+];
 
 /** After every `ready`: hide the figure's copies of controls this page already has, so each shows once. */
 export function hideHostDrawn(
