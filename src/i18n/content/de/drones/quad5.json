@@ -1,0 +1,371 @@
+{
+  "title": "5-Zoll-Freestyle-Quad",
+  "tagline": "Der klassische erste FPV-Bau: entwerfen, bauen, Rauchtest, fliegen.",
+  "sub": "Betaflight + FPV",
+  "hint": "Entwerfen, bauen, Rauchtest machen, dann fliegen",
+  "noun": "Freestyle-Quad",
+  "overview": "Ein 5-Zoll-Freestyle-Quad ist der übliche erste echte FPV-Bau. Vier bürstenlose Motoren sitzen auf einem True-X-Rahmen aus Carbon; ein 4-in-1-ESC und ein Betaflight-Flugcontroller teilen sich in der Mitte einen 30,5-mm-Stack; eine analoge Kamera und ein 5,8-GHz-Videosender schicken das Bild an deine Brille, und ein ExpressLRS-Empfänger überträgt die Knüppel deiner Fernsteuerung. Der PID-Regelkreis des Flugcontrollers ist dieselbe Idee wie der Linienfolger im Robotik-Labor, nur auf drei Achsen und tausende Male pro Sekunde. Wähl hier Akku, Motoren und Propeller und sieh zu, wie sich die Zahlen ändern, bau ihn Teil für Teil zusammen, mach beim ersten Einstecken den Rauchtest, prüf die Motoren ohne Propeller und flieg ihn dann mit Höhe halten, im Angle- und im Acro-Modus.",
+  "practice": "Flieg fünf Runden des Gate-Rennens im Angle-Modus, dann eine im Acro-Modus. Danach der Bando-Lauf: durch die Lücke, durch das Bando, hinauf auf die Turmspitze, den Sturzflug hinunter und sanft auf dem Landeplatz aufsetzen. Bei einem echten Bau: Setz beim ersten Einstecken einen Smoke Stopper dazwischen, prüf bei jedem Motor ohne Propeller die Drehrichtung, mach den Failsafe-Test und vergleich deine echte Flugzeit mit der des Rechners. Rechne mit weniger, als er sagt: 3 bis 5 Minuten Freestyle mit einem 6S-Akku mit 1100 mAh.",
+  "design": {
+    "fixed": {
+      "FRAME": "5-Zoll-Carbonrahmen",
+      "ESC": "45-A-4-in-1-ESC",
+      "FC": "F405-Flugcontroller",
+      "CAM": "Analoge FPV-Kamera",
+      "VTX": "5,8-GHz-VTX und Antenne",
+      "RX": "ExpressLRS-Empfänger 2,4 GHz",
+      "XT60": "XT60-Kabel und Low-ESR-Kondensator",
+      "TOP": "Deckplatte, Abstandsbolzen und Schrauben",
+      "STRAP": "Akkugurt und Pad"
+    },
+    "verdict": {
+      "over": "{kv} KV an {cells}S drehen die Propeller weit über das hinaus, was Motoren und ESC vertragen: Rechne mit heißen Motoren und einem Desync.",
+      "weak": "Ein Schub-Gewichts-Verhältnis von {tw}:1 ist für diese Art zu fliegen zu niedrig.",
+      "ok": "Die Teile passen zusammen. Ein guter Allround-Bau.",
+      "punch": "Die Teile passen zusammen. Jede Menge Punch."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Carbonrahmen: Bodenplatte und Arme",
+      "what": "Ein True-X-Rahmen: vier 5-mm-Carbonarme auf einer Bodenplatte, 225 mm von Motor zu Motor, mit einem 30,5 x 30,5 mm M3-Stack in der Mitte. Carbonfaser ist steif und leicht und leitet Strom: Ein blankes Akkukabel oder ein durchgescheuerter Draht, der den Rahmen berührt, ist ein Kurzschluss."
+    },
+    "MOTORS": {
+      "name": "4 bürstenlose Motoren (2306)",
+      "what": "Die Glocke, innen mit 14 Magneten besetzt, dreht sich um feststehende Kupferwicklungen (den Stator: beim 2306 23 mm breit und 6 mm hoch). KV ist die Drehzahl pro Volt ohne Last, also ergibt KV mal Akkuspannung die Höchstdrehzahl: 1750 KV an 6S (22,2 V) sind etwa 38.900 U/min. Jeder Motor wird mit vier M3-Schrauben im 16 x 16 mm-Lochbild festgeschraubt; eine zu lange Schraube erreicht die Wicklungen und schließt den Motor kurz."
+    },
+    "ESC": {
+      "name": "45-A-4-in-1-ESC (AM32)",
+      "what": "Vier elektronische Drehzahlregler auf einer 30,5-mm-Platine. Jeder Kanal schaltet eine Brücke aus MOSFETs, um aus dem Gleichstrom des Akkus eine dreiphasige Ansteuerung für seinen Motor zu machen, nach den DShot600-Befehlen des Flugcontrollers. Er läuft mit AM32- oder Bluejay-Firmware (BLHeli_32 wurde 2024 eingestellt) und meldet mit bidirektionalem DShot die Drehzahl jedes Motors über denselben Draht an den RPM-Filter zurück."
+    },
+    "WIRES": {
+      "name": "Phasendrähte der Motoren, an die ESC-Pads gelötet",
+      "what": "Drei Phasendrähte pro Motor, in beliebiger Reihenfolge an die Pads A, B und C seines ESC-Kanals gelötet. Vertauschst du zwei davon, dreht der Motor andersherum, aber dafür lötet niemand um: Die Drehrichtung wird später in der ESC-Firmware eingestellt. Kürz sie und halt sie von den Propellern und den Carbonkanten fern."
+    },
+    "FC": {
+      "name": "F405-Flugcontroller (Betaflight)",
+      "what": "Ein STM32F405 (168 MHz) liest sein ICM-42688-P-Gyro tausende Male pro Sekunde und führt den PID-Regelkreis von Betaflight aus, der deine Knüppelbefehle in vier Motorbefehle umsetzt. Der aufgedruckte Pfeil auf der Platine muss zur Nase zeigen: Zeigt er nach hinten, geht jede Korrektur in die falsche Richtung, und der Quad überschlägt sich, sobald er abhebt. Dreh die Platine um, oder sag es Betaflight mit set align_board_yaw = 180."
+    },
+    "XT60": {
+      "name": "XT60-Pigtail und Low-ESR-Kondensator 1000 µF 35 V",
+      "what": "Ein männlicher XT60 an roten und schwarzen 12-AWG-Kabeln (der Akku trägt den weiblichen) und ein Low-ESR-Kondensator mit 1000 µF 35 V über den Akku-Pads des ESC. Der Kondensator schluckt die Spannungsspitzen, die das Schalten des ESC erzeugt. Er ist gepolt: Der weiße Streifen markiert das Minus-Bein, und falsch herum eingelötet platzt er beim ersten Einstecken auf."
+    },
+    "CAM": {
+      "name": "19-mm-Analogkamera, 30° Uptilt",
+      "what": "Eine 19-mm-Mikrokamera zwischen den Seitenplatten, 30 Grad nach oben geneigt: Im schnellen Vorwärtsflug senkt der Quad die Nase, und der Uptilt hält den Horizont im Bild. Ihr Video geht an das CAM-Pad des Flugcontrollers, wo der OSD-Chip Akkuspannung, Timer und Warnungen darüberschreibt."
+    },
+    "RX": {
+      "name": "ExpressLRS-Empfänger 2,4 GHz (CRSF)",
+      "what": "Verbindet deine Fernsteuerung über einen vollständigen UART mit dem Flugcontroller: TX des Empfängers an RX2, RX des Empfängers an TX2, dazu 5 V und Masse, mit dem Protokoll CRSF. Montier seine Antenne weg vom Carbon und von der VTX-Antenne; bei zwei Antennen stell sie im 90-Grad-Winkel zueinander."
+    },
+    "VTX": {
+      "name": "Analoger 5,8-GHz-VTX und Antenne",
+      "what": "Sendet das Kamerabild mit dem OSD an deine Brille. Er läuft an der 9-V-Versorgung des Flugcontrollers, und Betaflight stellt über SmartAudio an TX1 sein Band, seinen Kanal und seine Leistung ein. Schalte ihn nie ohne Antenne ein: Er überhitzt und brennt seine Endstufe durch. Wie viel Sendeleistung du nutzen darfst, hängt von den Regeln deines Landes ab."
+    },
+    "TOP": {
+      "name": "Deckplatte und 27,5-mm-Abstandsbolzen",
+      "what": "Eine 2-mm-Carbonplatte auf vier 27,5 mm hohen Aluminium-Abstandsbolzen, die den Stack schließt, die Elektronik schützt und Akkupad und Gurt trägt. Zu kurze Abstandsbolzen quetschen den Stack; bei einem Crash steckt die Platte den Schlag ein, nicht der Flugcontroller."
+    },
+    "BATT": {
+      "name": "LiPo-Akku, Gurt und rutschfestes Pad",
+      "what": "Das schwerste Teil, mittig auf die Deckplatte geschnallt, damit der Quad im Gleichgewicht ist. Eine LiPo-Zelle hat voll 4,2 V und nominal 3,7 V: Lande bei etwa 3,5 V pro Zelle, geh nie unter 3,0 V, lagere bei 3,8 V, lade nur an einem Balancer-Ladegerät, das du im Auge behältst, und sortier einen aufgeblähten Akku aus."
+    },
+    "PROPS": {
+      "name": "5-Zoll-Dreiblattpropeller, 2 CW + 2 CCW",
+      "what": "Fünf-Zoll-Propeller auf M5-Wellen. Zwei drehen im Uhrzeigersinn und zwei gegen den Uhrzeigersinn (props in: Die Vorderkanten schwingen nach innen zur Kamera), sodass sich die Drehmomente der Motoren aufheben und das Gieren entsteht, indem ein diagonales Paar schneller dreht. Die Design-Auswahl bietet den Allrounder 5x4.3x3 mit drei Blättern, einen 5.1x2.5x3 mit wenig Steigung für längere Flüge und einen 5x5x3 für mehr Punch. Sie kommen ganz zum Schluss drauf, nach dem Smoke Stopper und der Prüfung der Motordrehrichtung, und kommen jedes Mal ab, wenn sich Motoren auf der Werkbank drehen."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Den Rahmen auslegen",
+      "body": "Schraub die Arme mit eingesetzten Stack-Schrauben an die Bodenplatte und prüf, dass jeder Arm fest sitzt: Ein lockerer Arm schüttelt das Gyro durch, und der Quad schwingt."
+    },
+    "motors": {
+      "title": "Die vier Motoren montieren",
+      "body": "Je vier M3-Schrauben im 16 x 16 mm-Lochbild, die Drähte zeigen zur Mitte. Nimm Schrauben, die 3 bis 4 mm greifen: Längere berühren die Wicklungen.",
+      "refusal": "Die Motoren werden an die Arme geschraubt: Leg zuerst den Rahmen aus."
+    },
+    "esc": {
+      "title": "Den 4-in-1-ESC einsetzen",
+      "body": "Auf Gummitüllen unten im Stack, mit den Akku-Pads hinten, wo das XT60-Kabel hereinkommt.",
+      "refusal": "Der ESC sitzt auf den Stack-Schrauben des Rahmens: Leg zuerst den Rahmen aus."
+    },
+    "wires": {
+      "title": "Die Motordrähte anlöten",
+      "body": "Kürz die drei Drähte jedes Motors auf Länge, verzinn sie und löte sie in beliebiger Reihenfolge an die Pads seines Kanals. Rechne damit, dass mindestens ein Motor falsch herum dreht: Die Prüfung der Motordrehrichtung findet ihn.",
+      "refusal": "Die Drähte führen von den Motoren zum ESC: Setz zuerst beide ein."
+    },
+    "fc": {
+      "title": "Den Flugcontroller montieren, Pfeil nach vorn",
+      "body": "Im Stack über dem ESC, verbunden durch den 8-poligen Kabelbaum (Akkuspannung, Masse, Strom, Telemetrie und die vier Motorsignale). Richte den aufgedruckten Pfeil auf die Nase.",
+      "refusal": "Der Flugcontroller sitzt im Stack auf dem ESC: Setz zuerst den ESC ein."
+    },
+    "xt60": {
+      "title": "XT60-Kabel und Kondensator anlöten",
+      "body": "Rot an BAT+, Schwarz an BAT-, dann den Kondensator über dieselben Pads, mit dem Streifen auf der Minusseite. Prüf mit einem Messgerät, dass Plus und Minus nicht kurzgeschlossen sind, bevor ein Akku in die Nähe kommt.",
+      "refusal": "Das Akkukabel wird an die Pads des ESC gelötet: Setz zuerst den ESC ein."
+    },
+    "cam": {
+      "title": "Die Kamera einsetzen",
+      "body": "Zwischen den Seitenplatten, 30 Grad nach oben geneigt, mit Video-, 5-V- und Massedraht an den CAM-Pads des Flugcontrollers.",
+      "refusal": "Die Kamera wird am Rahmen montiert: Leg zuerst den Rahmen aus."
+    },
+    "rx": {
+      "title": "Den Empfänger verdrahten",
+      "body": "TX des Empfängers an RX2, RX an TX2, dazu 5 V und Masse. Binde ihn an deine Fernsteuerung und führ die Antenne hinten heraus.",
+      "refusal": "Der Empfänger kommt an einen UART des Flugcontrollers: Montier zuerst den Flugcontroller."
+    },
+    "vtx": {
+      "title": "Den Videosender einsetzen",
+      "body": "Video vom VTX-Pad des Flugcontrollers, 9 V und Masse, SmartAudio an TX1. Schraub die Antenne an, bevor er jemals Strom bekommt.",
+      "refusal": "Der VTX bekommt Video und Strom vom Flugcontroller: Montier diesen zuerst."
+    },
+    "top": {
+      "title": "Den Stack mit der Deckplatte schließen",
+      "body": "Schraub die Deckplatte auf die Abstandsbolzen. Prüf, dass nichts eingeklemmt ist und kein Draht dort hängt, wo ein Propeller ihn erreichen kann.",
+      "refusal": "Setz zuerst Flugcontroller, Kamera, Empfänger und VTX ein: Die Deckplatte schließt sich darüber."
+    },
+    "batt": {
+      "title": "Den Akku festschnallen",
+      "body": "Mittig auf das Pad, damit der Quad in der Mitte ausbalanciert ist, fest anschnallen und das Kabel von den Propellern fernhalten. Noch nicht einstecken.",
+      "refusal": "Setz zuerst Deckplatte und XT60-Kabel ein: Der Akku liegt auf der einen und wird in das andere gesteckt."
+    },
+    "props": {
+      "title": "Propeller drauf, ganz zum Schluss",
+      "body": "Erst nach dem Smoke-Stopper-Test und der Prüfung der Motordrehrichtung, bei abgestecktem Akku. Propeller im Uhrzeigersinn auf die Motoren im Uhrzeigersinn (M1 und M4), die gegen den Uhrzeigersinn auf M2 und M3, Muttern fest.",
+      "refusal": "Die Propeller kommen zum Schluss drauf: Mach zuerst den Smoke-Stopper-Test und die Prüfung der Motordrehrichtung."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "Der weibliche XT60 des Akkus trifft auf den männlichen des Quads. Ein 6S-Akku hat voll 25,2 V und kann weit über 100 A liefern, also ist dies die eine Verbindung, die niemals kurzschließen darf.",
+    "XT60-ESC": "12-AWG-Kabel an die Pads BAT+ und BAT- des ESC, mit dem Low-ESR-Kondensator 1000 µF 35 V über denselben Pads, Streifen auf Minus.",
+    "ESC-MOTORS": "Drei Phasendrähte pro Motor auf den Pads A, B und C seines Kanals. In jeder Reihenfolge dreht der Motor; zwei vertauschte Drähte kehren seine Richtung um.",
+    "FC-ESC": "Ein 8-poliger Kabelbaum verbindet den Stack: Die vier DShot600-Motorsignale (M1 bis M4) gehen hinunter zum ESC, und Akkuspannung, Masse, Stromsensor und ESC-Telemetrie kommen herauf zum Flugcontroller, dessen 5-V- und 9-V-Regler daraus versorgt werden. Mit bidirektionalem DShot antwortet jeder ESC-Kanal auf seiner Signalleitung mit der Drehzahl des Motors.",
+    "RX-FC": "UART2: TX des Empfängers an RX2, RX des Empfängers an TX2, dazu 5 V und Masse. Betaflight betreibt Serial RX auf UART2 mit dem Provider CRSF.",
+    "CAM-FC": "Kameravideo ins CAM-Pad, die Kamera an der 5-V-Versorgung.",
+    "FC-VTX": "Video mit OSD aus dem VTX-Pad, 9 V Versorgung und SmartAudio an TX1, damit Betaflight Band, Kanal und Leistung einstellen kann."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke-Stopper-Test",
+      "pass": "Die Lampe hat nur kurz geblinkt: kein Kurzschluss zwischen Plus und Minus. Du kannst den Akku jetzt direkt einstecken.",
+      "fail": "Die Lampe leuchtet dauerhaft: Irgendetwas ist kurzgeschlossen. Hier ist der Kondensator falsch herum eingelötet. Dreh ihn um (Streifen auf Minus) und wiederhol den Test, bevor du einsteckst."
+    },
+    "motors": {
+      "title": "Prüfung der Motordrehrichtung (ohne Propeller)",
+      "pass": "Jeder Motor dreht so, wie der Mixer es erwartet: M1 und M4 im Uhrzeigersinn, M2 und M3 gegen den Uhrzeigersinn (props in). Jetzt können die Propeller drauf.",
+      "fail": "Ein Motor hat falsch herum gedreht (sein Pfeil wird rot). Die Prüfung kehrt ihn in der ESC-Firmware um, so wie du es im ESC Configurator tun würdest, statt umzulöten; mit Propellern hätte dieser Motor den Quad beim Start überschlagen."
+    },
+    "calibrate": {
+      "title": "Kalibrierung des Beschleunigungssensors",
+      "pass": "Auf einer ebenen Fläche waagerecht kalibriert: Angle-Modus, Höhe halten und der OSD-Horizont wissen jetzt, wo waagerecht ist, und die Arming-Sperre NO_ACC_CAL von Betaflight ist weg.",
+      "fail": "Montier zuerst den Flugcontroller und stell den Quad auf eine ebene Fläche. Wenn der Pfeil nach hinten zeigt, hilft Kalibrieren nicht: Dreh die Platine um oder setz align_board_yaw = 180."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Erste Einrichtung nach dem Flashen",
+      "explain": "Setzt den Mixer, die Ausrichtung der Platine, das Motorprotokoll und die beiden UARTs. DShot600 ist das digitale Motorprotokoll; dshot_bidir lässt die ESCs die Drehzahl melden. Die serial-Zeilen nehmen den Portnamen und eine Funktions-Bitmaske (64 = serieller Empfänger, 2048 = SmartAudio). yaw_motors_reversed sagt dem Mixer nur, in welche Richtung die Propeller drehen; an den Motoren selbst ändert es nie etwas."
+    },
+    "switches": {
+      "title": "Schalter: Arming, Angle, Höhe halten, Beeper, Turtle",
+      "explain": "aux nimmt die Nummer des Modus, nicht seinen Namen: 0 ARM, 1 ANGLE, 3 ALTHOLD, 13 BEEPER, 35 Turtle-Modus (nach einem Crash wieder umdrehen). Der Kanal zählt ab 0 = AUX1, und der Bereich ist in Mikrosekunden angegeben. Einen ACRO-Modus zum Einschalten gibt es nicht: Acro ist das, was der Quad fliegt, wenn die selbstnivellierenden Modi aus sind."
+    },
+    "rpm": {
+      "title": "RPM-Filter über bidirektionales DShot",
+      "explain": "Mit der Drehzahl jedes Motors setzt Betaflight Notch-Filter, die dem Motorrauschen genau folgen. Dazu braucht es ESC-Firmware mit bidirektionalem DShot (AM32, Bluejay); antwortet ein ESC nicht, wird das Arming mit DSHOT_TELEM gesperrt."
+    },
+    "vtx": {
+      "title": "VTX-Tabelle, Band und Kanal",
+      "explain": "Die Tabelle listet die Frequenzen und die SmartAudio-Leistungswerte, die der Sender annimmt; Band 5 Kanal 1 ist Raceband R1 auf 5658 MHz. vtx_low_power_disarm hält die Leistung auf der niedrigsten Stufe, solange du an der Werkbank bist."
+    },
+    "failsafe": {
+      "title": "Failsafe: Drop",
+      "explain": "Geht die Funkverbindung verloren, nutzt Stufe 1 für failsafe_delay (15 = 1,5 s) die Ersatzwerte (Knüppel mittig, wenig Gas), sodass ein kurzer Aussetzer vorbeigeht. Kommt die Verbindung nicht zurück, stoppt Stufe 2 DROP die Motoren: Ein fallender 5-Zöller ist sicherer als einer, der davonfliegt. GPS-RESCUE braucht ein GPS, das dieser Quad nicht hat."
+    },
+    "alt": {
+      "title": "Höhe halten",
+      "explain": "Seit 2025.12 kann Betaflight die Höhe mit dem Barometer halten. Der Gasknüppel gibt dann eine Steigrate vor: alt_hold_climb_rate = 22 sind die 2,2 m/s, mit denen du hier auf dem Flugfeld bei vollem Knüppel steigst, und das Totband um die Mitte hält die Höhe."
+    },
+    "angle": {
+      "title": "Angle-Modus",
+      "explain": "Der Flugcontroller richtet den Quad waagerecht aus, wenn du loslässt, und neigt ihn nie über angle_limit hinaus (hier 38 Grad, der Wert dieses Flugfelds). angle_p_gain ist die Stärke der Selbstnivellierung. Ältere Betaflight-Versionen nannten sie level_limit und angle_level_strength (vor 4.0 p_level); diese Namen gibt es nicht mehr."
+    },
+    "acro": {
+      "title": "Acro-Rates",
+      "explain": "Mit ACTUAL-Rates ist rc_rate die Empfindlichkeit in der Mitte geteilt durch 10 und srate die Rate bei vollem Knüppel geteilt durch 10: 200 Grad pro Sekunde um die Mitte und 670 bei vollem Knüppel, die Werte, mit denen du hier auf dem Flugfeld fliegst. Expo macht die Knüppelmitte weicher, für feine Steuerung."
+    },
+    "race": {
+      "title": "Rundenzeit im OSD",
+      "explain": "osd_tim1 packt Timerquelle, Genauigkeit und einen Alarm in eine Zahl: 2 (zuletzt gearmt) plus 1 x 16 (Hundertstel) ergibt 18. Der _pos-Wert legt die Position fest: 2048 zeigt ihn in OSD-Profil 1, plus die Spalte, plus 32 pro Zeile."
+    },
+    "raceAcro": {
+      "title": "Gate-Rennen im Acro-Modus",
+      "explain": "Racer fliegen Acro mit Air Mode (Betaflight aktiviert das Feature AIRMODE standardmäßig), sodass der PID-Regelkreis auch bei null Gas die volle Kontrolle behält und der Quad steuerbar bleibt, wenn du vor einem Gate das Gas wegnimmst. Lass den ANGLE-Schalter unten."
+    },
+    "range": {
+      "title": "Lauf auf dem Flugfeld: Höhe halten und die Höhe im OSD",
+      "explain": "Höhe halten macht den langen Steigflug zur Turmspitze einfach; das Höhenelement des OSD (osd_altitude_pos) zeigt die Barometerhöhe, damit du weißt, wann du über der 10-m-Platte bist."
+    }
+  },
+  "flight": {
+    "modes": {
+      "alt": {
+        "title": "Höhe halten (leicht)",
+        "hint": "W und S steigen und sinken, und der Quad hält seine Höhe, wenn du loslässt. Die Pfeiltasten neigen ihn, und er richtet sich wieder auf; A und D gieren. Leertaste armt."
+      },
+      "angle": {
+        "title": "Angle-Modus",
+        "hint": "Selbstnivellierend bis 38 Grad. W und S bewegen das Gas, und es bleibt, wo du es lässt; die Pfeiltasten neigen, A und D gieren."
+      },
+      "acro": {
+        "title": "Acro-Modus (Rate)",
+        "hint": "Was Freestyle-Piloten fliegen: Die Knüppel legen fest, wie schnell er sich dreht (bis zu 670 Grad pro Sekunde), und nichts richtet ihn auf. Lässt du los, behält er seinen Winkel."
+      },
+      "race": {
+        "title": "Gate-Rennen (Angle)",
+        "hint": "Fünf Gates der Reihe nach. Die Uhr startet an Gate 1, und jede Runde nach der ersten ist eine fliegende Runde."
+      },
+      "raceAcro": {
+        "title": "Gate-Rennen (Acro)",
+        "hint": "Dieselben fünf Gates im Acro-Modus, so wie Racer sie fliegen. Das Gas bleibt, wo du es lässt."
+      },
+      "range": {
+        "title": "Flugfeld: Freestyle-Bando",
+        "hint": "Fädle durch die Lücke, flieg durch das Bando, über die Turmspitze, stürz dich hinunter und lande auf dem Landeplatz. Höhe halten übernimmt den Steigflug für dich."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Funkverbindung verloren: 1,5 s lang gehen die Knüppel auf ihre Ersatzwerte (mittig, wenig Gas), dann stoppt DROP die Motoren, und der Quad fällt.",
+      "low-battery": "Unter 3,5 V pro Zelle blinkt im OSD LOW BATTERY: jetzt landen.",
+      "battery-empty": "Unter 3,2 V pro Zelle unter Last bricht der Akku ein, und die ESCs schalten ab, egal wo der Quad gerade ist."
+    },
+    "controls": "Tastatur: Leertaste armt und disarmt, W und S geben Gas, die Pfeiltasten nicken und rollen, A und D gieren, V schaltet auf FPV, R setzt den Quad zurück auf den Landeplatz. Auf dem Handy ist der linke Knüppel Gas und Gieren, der rechte Nicken und Rollen. Ein Gamepad funktioniert in Mode 2."
+  },
+  "courses": {
+    "race": {
+      "title": "Gate-Rennen",
+      "brief": "Fünf Gates auf einer Runde über das freie Gelände: der Südrasen, die alte Straße, hinten um die Lücke herum und an der Westseite zurück. Flieg sie der Reihe nach; die Uhr startet an Gate 1."
+    },
+    "bando": {
+      "title": "Freestyle-Bando",
+      "brief": "Fädle durch die Lücke zwischen den beiden Mauern, flieg durch das Erdgeschoss des Bandos, steig bis auf die Spitze des Turms, stürz dich an seiner Wand hinunter und lande sanft auf dem Landeplatz.",
+      "goals": {
+        "1": "DIE LÜCKE",
+        "2": "BANDO",
+        "3": "TURMSPITZE",
+        "4": "STURZFLUG",
+        "5": "LANDEN"
+      }
+    }
+  },
+  "quizzes": {
+    "power": {
+      "cap": {
+        "q": "Was macht der große Kondensator am XT60-Kabel?",
+        "options": {
+          "1": "Er speichert Energie für längere Flüge",
+          "2": "Er schluckt die Spannungsspitzen, die das Schalten des ESC erzeugt",
+          "3": "Er filtert nur Störungen aus dem Video"
+        },
+        "why": "Der ESC schaltet tausende Male pro Sekunde Dutzende Ampere ein und aus, und die langen Akkukabel machen daraus Spannungsspitzen. Ein Low-ESR-Kondensator direkt an den ESC-Pads fängt sie ab, bevor sie einen MOSFET zerstören oder die Elektronik zurücksetzen. 1000 µF speichern viel zu wenig Energie, um für die Flugzeit eine Rolle zu spielen."
+      },
+      "xt60": {
+        "q": "Welcher XT60 kommt an das Kabel des Quads?",
+        "options": {
+          "1": "Der männliche, mit offenen Stiften: Der Akku hat den weiblichen",
+          "2": "Der weibliche, damit die Seite des Quads abgedeckt ist",
+          "3": "Egal: Sie sind gleich"
+        },
+        "why": "Der Akku trägt immer den weiblichen XT60 mit seinen versenkten Buchsen, damit ein loser Akku in deiner Tasche nicht über seine Kontakte kurzschließen kann. Die Kabel von Quad und Ladegerät tragen den männlichen."
+      },
+      "smoke": {
+        "q": "Warum nutzt man beim ersten Einstecken einen Smoke Stopper?",
+        "options": {
+          "1": "Er lädt den Akku schonend",
+          "2": "Er begrenzt den Strom, sodass ein Kurzschluss seine Lampe leuchten lässt, statt den ESC zu verbrennen",
+          "3": "Er prüft die Drehrichtung der Motoren"
+        },
+        "why": "Ein Smoke Stopper schaltet eine Lampe oder eine Sicherung in Reihe mit dem Akku. Bei einer Lötbrücke oder einem verkehrt herum eingelöteten Teil leuchtet die Lampe, und der Strom bleibt bei ein, zwei Ampere; direkt eingesteckt hätte derselbe Kurzschluss den ganzen Akku hinter sich."
+      }
+    },
+    "stack": {
+      "arrow": {
+        "q": "Der Pfeil auf dem Flugcontroller zeigt nach hinten. Was passiert beim Start?",
+        "options": {
+          "1": "Nichts: Dem Gyro ist das egal",
+          "2": "Jede Korrektur geht in die falsche Richtung, und er überschlägt sich sofort",
+          "3": "Er fliegt nur langsamer"
+        },
+        "why": "Betaflight geht davon aus, dass der Pfeil zur Nase zeigt. Andersherum montiert liest sich eine Neigung nach links wie eine nach rechts, also drückt der PID-Regelkreis in die falsche Richtung, und der Quad überschlägt sich, sobald er abhebt. Dreh die Platine um, oder setz align_board_yaw = 180."
+      },
+      "dshot": {
+        "q": "Was schickt der Flugcontroller über jeden Motorsignaldraht?",
+        "options": {
+          "1": "Dreiphasigen Strom für den Motor",
+          "2": "Einen digitalen DShot600-Gasbefehl; mit bidirektionalem DShot kommt die Drehzahl des Motors zurück",
+          "3": "Die Akkuspannung"
+        },
+        "why": "Der Flugcontroller schickt pro Motor einen digitalen Gaswert (DShot600 läuft mit 600 kbit/s); die dreiphasige Ansteuerung erzeugt der ESC selbst. Mit dshot_bidir = ON antwortet der ESC über denselben Draht mit der Drehzahl, die in den RPM-Filter von Betaflight geht."
+      }
+    },
+    "props": {
+      "last": {
+        "q": "Warum kommen die Propeller zum Schluss drauf?",
+        "options": {
+          "1": "Sie sind zerbrechlich",
+          "2": "Ein Motortest oder ein Kurzschluss mit Propellern kann dir den Quad entgegenschleudern",
+          "3": "Sie verdecken die Kamera"
+        },
+        "why": "Ein 5-Zoll-Propeller schneidet bei voller Drehzahl tief. Jeder Werkbanktest, der die Motoren dreht, und jedes erste Einstecken, das einen Fehler finden könnte, läuft ohne Propeller; sie kommen erst drauf, wenn Smoke Stopper und Prüfung der Motordrehrichtung bestanden sind."
+      },
+      "torque": {
+        "q": "Warum drehen zwei Propeller im Uhrzeigersinn und zwei dagegen?",
+        "options": {
+          "1": "Damit sich die Drehmomente der Motoren aufheben und das Gieren entsteht, indem ein diagonales Paar schneller dreht",
+          "2": "Damit der Quad leiser ist",
+          "3": "Damit alle vier die Luft in dieselbe Richtung drücken"
+        },
+        "why": "Jeder drehende Propeller verdreht den Rahmen in die Gegenrichtung. Drehen die diagonalen Paare gegenläufig, heben sich die Verdrehungen im Schwebeflug auf; zum Gieren beschleunigt Betaflight das eine Paar und bremst das andere."
+      }
+    },
+    "flight": {
+      "acro": {
+        "q": "Du lässt im Acro-Modus die Knüppel los. Der Quad ...",
+        "options": {
+          "1": "richtet sich selbst waagerecht aus",
+          "2": "behält den Winkel, den er gerade hatte",
+          "3": "landet"
+        },
+        "why": "Im Acro-Modus geben die Knüppel eine Drehrate vor, und mittige Knüppel bedeuten „aufhören zu drehen“, also hält der Quad seine letzte Lage. Der Angle-Modus ist der, der beim Loslassen waagerecht ausrichtet, bis zu angle_limit (hier 38 Grad)."
+      },
+      "failsafe": {
+        "q": "In der Luft bricht die Funkverbindung ab, und failsafe_procedure ist DROP. Was macht der Quad?",
+        "options": {
+          "1": "Er schwebt auf der Stelle, bis die Verbindung zurückkommt",
+          "2": "Er zentriert die Knüppel und nimmt für failsafe_delay (1,5 s) das Gas weg, dann stoppt er die Motoren",
+          "3": "Er fliegt nach Hause"
+        },
+        "why": "Stufe 1 überbrückt einen kurzen Aussetzer: Für failsafe_delay (15 = 1,5 s) nutzt Betaflight die Ersatzwerte, Knüppel mittig und wenig Gas. Ist die Verbindung dann immer noch weg, disarmt Stufe 2 DROP, und der Quad fällt, was sicherer ist als einer, der davonfliegt. Nach Hause fliegen braucht ein GPS und GPS-RESCUE."
+      },
+      "lipo": {
+        "q": "Bei welcher Akkuspannung landest du?",
+        "options": {
+          "1": "Wenn das OSD etwa 3,5 V pro Zelle zeigt",
+          "2": "Wenn er 3,0 V pro Zelle erreicht",
+          "3": "Wenn sich der Quad träge anfühlt"
+        },
+        "why": "Jede Minute unter etwa 3,5 V pro Zelle unter Last lässt den Akku altern, und unter 3,0 V pro Zelle nimmt ein LiPo Schaden. Betaflight warnt standardmäßig bei 3,5 V pro Zelle (vbat_warning_cell_voltage = 350)."
+      },
+      "angle": {
+        "q": "Welche CLI-Zeile begrenzt den Angle-Modus auf 38 Grad Neigung?",
+        "options": {
+          "1": "set angle_limit = 38",
+          "2": "set level_limit = 38",
+          "3": "set p_level = 38"
+        },
+        "why": "angle_limit (10 bis 80 Grad, Standard 60) ist der aktuelle Name. level_limit hieß er bis Betaflight 4.4, und p_level war in 3.x die Stärke der Selbstnivellierung (heute angle_p_gain); beide gibt es nicht mehr."
+      }
+    }
+  }
+}
