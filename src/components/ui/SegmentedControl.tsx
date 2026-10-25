@@ -75,7 +75,7 @@ export function SegmentedControl<V extends string>({ label, options, value, onCh
             tabIndex={checked ? 0 : -1}
             onClick={() => onChange(option.value)}
             className={cx(
-              "inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full font-body font-semibold transition-colors",
+              "inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full font-body font-semibold transition-colors [&>svg]:shrink-0",
               size === "sm" ? "min-h-8 px-2.5 text-sm" : "min-h-10 px-3.5 text-sm",
               stretch && "min-w-0 flex-1",
               iconOnly && (size === "sm" ? "min-w-8 px-0" : "min-w-10 px-0"),
