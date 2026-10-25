@@ -12,8 +12,8 @@ What it does:
 - **Strip to bare PCB, Pick & place SMD, Place a part ▾, Solder joints**: the factory order with its refusals. Pick
   and place drops every SMD part in about 3 s and the board rolls through the reflow oven; then **All low parts** (the
   DIP-28 socket, the 16 MHz crystal, the two ICSP headers) and **All tall parts** (USB-B, barrel jack, the four
-  female headers); the
-  iron solders every through-hole joint; the ATmega328P goes into its socket last, cold, notch to the ICSP header.
+  female headers); the iron solders every through-hole joint; the ATmega328P goes into its socket last, cold, notch
+  to the ICSP header.
   "Unplug the power first", "SMD parts first", "Low parts first" and "Solder everything first. Never heat a chip
   sitting in its socket" stop anything out of order.
 - **Power ▾**: USB, barrel jack, VIN pin or 5V pin, through the board's real power tree.

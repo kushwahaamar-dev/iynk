@@ -37,4 +37,4 @@ where, what a user sees, and the cause where known. Struck through when fixed, w
 
 ## Docs
 
-12. `figures/prompts/uno-r3-build.md` has a stray line break ("the\n  iron solders").
+12. ~~`figures/prompts/uno-r3-build.md` has a stray line break ("the\n  iron solders").~~ Fixed in the commit that struck this.
