@@ -3,6 +3,7 @@
 // agree on what a program did. Pair it with `evaluateChecks` (./checks).
 
 import type { Language as ContentLanguage, PinMode, RunTrace, WorldInput, WorldModel } from '@/content/schema';
+import { servoDegrees } from './checks';
 import { WorldBinding, runOptionsFor, type HttpExchange } from './lesson-world';
 import { netResolver, pinNet } from './pins';
 import { getProfile, type BoardId, type BoardProfile, type Language } from './profiles';
@@ -41,9 +42,6 @@ export interface HeadlessOptions {
 
 export const LIMIT_MESSAGE = 'limit: the check run took too long';
 
-/** Arduino Servo library defaults: 544 µs = 0°, 2400 µs = 180°. */
-const servoDegrees = (us: number) => Math.round(((us - 544) / (2400 - 544)) * 180);
-
 function sample(view: PinView): { mode: PinMode; v: number } {
   if (view.servoUs) return { mode: 'servo', v: servoDegrees(view.servoUs) };
   if (view.hz) return { mode: 'tone', v: view.hz };
@@ -51,6 +49,22 @@ function sample(view: PinView): { mode: PinMode; v: number } {
   if (view.mode === 'output' || view.mode === 'open_drain') return { mode: 'out', v: view.level };
   if (view.volts !== undefined && view.volts !== null) return { mode: 'analog', v: view.volts };
   return { mode: view.mode === 'input_pullup' ? 'pullup' : 'in', v: view.level };
+}
+
+/** The trace's name for a PCA9685 channel: address in hex, then the channel ("PCA40.0"). */
+const pcaNet = (address: number, ch: number) => `PCA${address.toString(16).toUpperCase()}.${ch}`;
+
+/**
+ * A PCA9685 channel as a pin sample: a 0.5-2.5 ms pulse in a 40-60 Hz frame is a servo signal (degrees, as the Servo
+ * library maps them); anything else is PWM duty. A channel that is off, or a chip still asleep, reads as a low output,
+ * one that is fully on as a high one, like a board pin at analogWrite(0) or (255).
+ */
+function pcaSample(hz: number, duty: number): { mode: PinMode; v: number } {
+  if (duty <= 0) return { mode: 'out', v: 0 };
+  if (duty >= 1) return { mode: 'out', v: 1 };
+  const us = (duty * 1e6) / hz;
+  if (hz >= 40 && hz <= 60 && us >= 500 && us <= 2500) return { mode: 'servo', v: servoDegrees(us) };
+  return { mode: 'pwm', v: Math.round(duty * 1000) / 1000 };
 }
 
 type Action = { t: number; seq: number; input: WorldInput; value: number };
@@ -169,6 +183,12 @@ export function runHeadless(o: HeadlessOptions): RunTrace {
       push(pinNet(profile, Number(key), o.nets), t, s.v, s.mode);
     }
     if (snap.ports) for (const [net, x] of Object.entries(fpgaNets(profile, snap, o.ports))) push(net, t, x.v, x.pwm ? 'pwm' : x.input ? 'in' : 'out');
+    for (const [address, driver] of Object.entries(snap.pwmDrivers ?? {})) {
+      driver.duty.forEach((duty, ch) => {
+        const s = pcaSample(driver.hz, duty);
+        push(pcaNet(Number(address), ch), t, s.v, s.mode);
+      });
+    }
   };
 
   const clock = typeof performance !== 'undefined' ? () => performance.now() : () => Date.now();

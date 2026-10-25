@@ -1098,6 +1098,15 @@ const Ssd1306Class: LibClass = {
   },
 };
 
+/** The library's setPWMFreq(): PRE_SCALE takes a write only while the chip sleeps, so sleep, set it, wake with auto-increment. */
+function setPwmFreq(rt: ArduinoRt, addr: number, hz: number): void {
+  const f = Math.max(24, Math.min(1526, hz));
+  const pre = Math.round(25_000_000 / (4096 * f)) - 1;
+  rt.world.i2cWrite(addr, [0x00, 0x30]);
+  rt.world.i2cWrite(addr, [0xfe, pre]);
+  rt.world.i2cWrite(addr, [0x00, 0x20]);
+}
+
 const PwmDriverClass: LibClass = {
   headers: ['Adafruit_PWMServoDriver.h'],
   create: (_rt, [addr = 0x40]) => ({ addr }),
@@ -1106,21 +1115,13 @@ const PwmDriverClass: LibClass = {
       ret: 'bool',
       fn: (rt, s) => {
         if (!rt.world.i2c.has(s.addr)) rt.world.addDevice(new Pca9685(s.addr));
-        // Wake up with auto-increment, like the library's begin() + setPWMFreq(1000).
-        rt.world.i2cWrite(s.addr, [0x00, 0x20]);
+        // The library's begin() resets the chip and sets a 1 kHz frame (1017 Hz after rounding): a servo needs
+        // setPWMFreq(50) after it.
+        setPwmFreq(rt, s.addr, 1000);
         return 1;
       },
     },
-    setPWMFreq: {
-      ret: 'void',
-      fn: (rt, s, [hz]) => {
-        const f = Math.max(24, Math.min(1526, hz));
-        const pre = Math.round(25_000_000 / (4096 * f)) - 1;
-        rt.world.i2cWrite(s.addr, [0x00, 0x30]); // sleep (keep AI)
-        rt.world.i2cWrite(s.addr, [0xfe, pre]);
-        rt.world.i2cWrite(s.addr, [0x00, 0x20]); // wake
-      },
-    },
+    setPWMFreq: { ret: 'void', fn: (rt, s, [hz]) => setPwmFreq(rt, s.addr, hz) },
     setOscillatorFrequency: { ret: 'void', fn: () => undefined },
     setPWM: {
       ret: 'uint8_t',
