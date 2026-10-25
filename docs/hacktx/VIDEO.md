@@ -111,10 +111,10 @@ Each shot has what's on screen, the clicks, and the voice-over line (VO). Times 
 
 - Screen: Lab tools, tab "Build it for real".
 - Clicks: Battery back to 6S 1100 first. The parts list loads with each offer's store and the Cheapest total. Drag
-  Budget to [BUDGET]; "Best build within [BUDGET]" lists the swaps. Press "Use this build in the lab"; the Design tiles
+  Budget to $280; "Best build within $280" lists the swaps. Press "Use this build in the lab"; the Design tiles
   change.
 - VO: "Build it for real pulls live prices for every part from Google Shopping, Amazon and eBay through SerpApi. Today
-  that's [TOTAL]. With [BUDGET], the optimiser runs the drone maths on every combination and swaps [SWAPS], so it
+  that's $291.50. With $280, the optimiser runs the drone maths on every combination and swaps the 6S 1100 mAh battery for a 4S 1500, so it
   still flies."
 - On screen, small: "Prices checked [DATE, TIME]".
 
@@ -198,7 +198,7 @@ Lucía's Spanish line is recorded live in shot 6, not here.
 > Now the drone. A 5-inch freestyle quad, with the numbers live: weight, thrust to weight, hover throttle, flight time.
 >
 > Build it for real pulls live prices for every part from Google Shopping, Amazon and eBay through SerpApi. Today
-> that's [TOTAL]. With [BUDGET], the optimiser runs the drone maths on every combination and swaps [SWAPS], so it
+> that's $291.50. With $280, the optimiser runs the drone maths on every combination and swaps the 6S 1100 mAh battery for a 4S 1500, so it
 > still flies.
 >
 > SerpApi's Maps and Events searches find her a makerspace, a flying field and a meetup nearby.

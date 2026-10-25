@@ -111,12 +111,12 @@ Do: change the battery. The tiles move.
 Do: Lab tools, Build it for real. The offers and the cheapest total load.
 
 > Now, build it for real. Live prices for every part from Google Shopping, Amazon and eBay, through SerpApi.
-> Today the whole build is [TOTAL].
+> Today the whole build is $291.50.
 
-Do: drag the budget to [BUDGET]. Show "Best build within [BUDGET]", then press "Use this build in the lab".
+Do: drag the budget to $280. Show "Best build within $280", then press "Use this build in the lab".
 
-> Maya has [BUDGET]. The optimiser runs the drone maths on every battery, motor and prop at today's prices,
-> and swaps [SWAPS]. Thrust to weight stays above five, so it still flies.
+> Maya has $280. The optimiser runs the drone maths on every battery, motor and prop at today's prices,
+> and swaps the 6S 1100 mAh battery for a 4S 1500. Thrust to weight stays above five, so it still flies.
 
 Do: scroll to Near you, type "Austin, TX", Search.
 
@@ -298,9 +298,9 @@ Say one sentence and keep going. Never debug in front of judges.
 ## Confirm before pitching
 
 - [SITE], and the relay's host, once the domain is set.
-- [TOTAL], [BUDGET] and [SWAPS] from the warm run. At catalogue prices the build is $346, and $340 swaps the battery
-  (6S 1100 to 4S 1500 mAh) and the motors (1750KV to 2450KV) for $330 at thrust to weight 10.9; live prices will
-  differ. If the optimiser swaps something else, change the line.
+- [TOTAL], [BUDGET] and [SWAPS] are filled from the live run of 25 Oct, 09:13 CDT, when the panel said "Every part priced
+  live": the build was $291.50, and $280 swaps the battery (6S 1100 to 4S 1500 mAh) for $278.21 at thrust to weight
+  5.5. Live prices move: open Build it for real on quad5 just before recording and change the three if they differ.
 - The partner picks Lucía (it calls `ask_peer` only when it judges a peer can help): rehearse it three times. If it
   answers instead, say "It usually asks Lucía first" and move on.
 - "LED with no resistor" in Break it: the flash and the burnt-out readout show on the deployed build, and "5 V capacitor
