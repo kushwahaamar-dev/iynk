@@ -1,0 +1,396 @@
+{
+  "title": "Agricultural spray hexacopter",
+  "tagline": "An 1800 mm hexacopter that carries 10 L of spray: RTK and two-antenna GPS yaw keep it on the rows, a radar holds it 2.5 m over the crop, and ArduPilot runs the pump.",
+  "sub": "ArduCopter + Cube Orange+ + RTK",
+  "hint": "Build a 10 L spray drone, test its pump and GPS yaw, then spray six rows of a field",
+  "noun": "spray drone",
+  "overview": "An agricultural spray drone has one job: put a measured dose of liquid on every square metre of a field and nowhere else. This one carries 10 L. Six 30-inch props on 900 mm arms lift 33 kg at take-off, and a Cube Orange+ runs ArduCopter, which flies the rows of a survey grid in AUTO. Two RTK receivers place it to about 2 cm and take the heading from the line between their antennas, so the rows sit exactly one swath apart and no steel shed can upset a compass. A radar under the nose holds it 2.5 m above the crop as the ground rises and falls. ArduPilot's sprayer runs the pump in proportion to the ground speed, so the dose stays the same when it slows for a turn, and the mission switches it on at the start of each row and off at the end. With six motors, the mixer can hold it level on five for long enough to land, if there is thrust to spare. Pick the parts, build it, run the bench checks (a pump test among them), then fly the rows by hand or let AUTO spray the field.",
+  "practice": "Fly the field in Loiter first: take off to 5 m, come down to 2.5 m at the west end of the first row, fly it east at about 4 m/s, step 4 m north at the end and fly back. The drone is heavy and slow to stop (25° of lean, soft accelerations), so start every turn early. Keep clear of the trees on the west side and the power line on the east side, then bring it home and land. Then switch to AUTO and watch the pump go on and off at the row ends. On a real build: a smoke stopper on the first plug, the motor test with the props off (A at the front right, then clockwise), the accelerometer calibration, a pump test with clean water to measure the flow, an RTK fix and a GPS-yaw check outdoors, every PreArm message cleared, and a first hover low over open ground with nobody near the props.",
+  "design": {
+    "fixed": {
+      "FRAME": "1.8 m carbon hub and six folding 35 mm arms",
+      "SKIDS": "Landing legs and skids",
+      "ESC": "6 × 80 A FOC ESCs (in the X8 motor pods, PWM)",
+      "FC": "Cube Orange+ autopilot and carrier board",
+      "RTK": "Dual-antenna RTK GNSS (2 × u-blox F9P)",
+      "RADAR": "Downward radar, 0.5-50 m (Ainstein US-D1 class)",
+      "RX": "900 MHz telemetry radio and RC receiver",
+      "XT60": "AS150U anti-spark lead, power brick, 63 V capacitors",
+      "TANK": "10 L spray tank",
+      "PUMP": "Diaphragm pump and driver",
+      "BOOM": "1.64 m boom with four nozzles"
+    },
+    "verdict": {
+      "over": "{kv} KV on {cells}S spins 30-inch props far too fast: the motors overheat and the ESCs desync with a full tank. A 180 KV motor belongs on 22 to 24-inch props; 30-inch props want about 100 KV on 12S.",
+      "weak": "Thrust to weight {tw}:1 with 10 L aboard. A spray drone needs about 1.6:1 or more (1.8:1 is better) to stay controllable in a gust while it is full, and to climb over a tree line at the end of a row.",
+      "ok": "Parts match: {tw}:1 with 10 L aboard, enough margin to fight a gust while full. The calculator's hover throttle is pessimistic for these big slow props: Hobbywing measured 57 % at this load, and ArduCopter learns its own hover value (MOT_THST_HOVER). As the tank empties the drone gets 10 kg lighter and the hover throttle drops."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Carbon hub, six folding arms, legs and skids",
+      "what": "A 480 × 420 mm carbon sandwich hub with six 35 mm carbon-tube arms, the motors 900 mm from the centre (1800 mm across). Each arm folds 300 mm out so the drone fits on a trailer, and locks with a sleeve: an unlocked sleeve lets the arm fold under thrust, and the drone flips. Four legs carry two 940 mm skids, so the boom hangs clear of the crop."
+    },
+    "MOTORS": {
+      "name": "6 × 8120 100 KV motors",
+      "what": "Big, slow, sealed motors: 81 mm stators, 100 rpm per volt. On 12S they turn a 30-inch prop at about 2400 rpm in a hover, and each can lift up to 15 kg. Hobbywing's X8 builds the motor, the ESC and the prop mount into one unit, sold in CW and CCW versions."
+    },
+    "ESC": {
+      "name": "6 × 80 A FOC ESCs",
+      "what": "Field-oriented-control ESCs in the finned pod under each motor, cooled by the prop wash. They take plain PWM (1100 to 1940 µs) from the Cube, not DShot, and need no throttle calibration. 80 A is the peak for 3 s. They have no BEC, so the Cube gets its own supply."
+    },
+    "WIRES": {
+      "name": "Arm power leads and ESC signal leads",
+      "what": "A 12 AWG red and black pair runs down each arm from the power board to its ESC: about 13 A each in a hover, 80 A at the peak. Beside it a thin signal lead (ground and PWM) goes back to the Cube's MAIN outputs in motor-number order."
+    },
+    "XT60": {
+      "name": "Power distribution: AS150U lead, power brick, 63 V capacitors",
+      "what": "The pack plugs into an AS150U anti-spark connector: a resistor pre-charges the ESC capacitors so the plug doesn't arc at 50 V. The power board feeds the six arms and the pump, low-ESR 63 V capacitors soak up the switching spikes, and a power brick gives the Cube a clean 5 V and measures the voltage and current."
+    },
+    "FC": {
+      "name": "Cube Orange+ autopilot",
+      "what": "An STM32H757 running ArduCopter 4.7.2, with three IMUs, two barometers and a vibration-damped core, on a carrier board at the front of the hub with its arrow to the nose. It flies the drone, runs the EKF3 estimator with RTK and GPS yaw, follows the radar height and switches the pump."
+    },
+    "RX": {
+      "name": "900 MHz telemetry radio and RC receiver",
+      "what": "The telemetry radio is the ground station's link across the field: MAVLink out, RTK corrections in. The RC receiver lets the pilot take over at any moment; if both links go quiet, the failsafes bring the drone home."
+    },
+    "RADAR": {
+      "name": "Downward radar (US-D1 class)",
+      "what": "A 24 GHz radar under the nose that measures the height above the crop, 0.5 to 50 m, through the dust and spray mist that blind a lidar. It reads nothing below 0.5 m, so it can't help on the last half metre of a landing."
+    },
+    "TOP": {
+      "name": "Canopy and FPV camera",
+      "what": "A moulded cover that keeps spray off the Cube, the radio and the power board, with a small FPV camera in the nose tilted 10° down so the pilot sees the row ahead."
+    },
+    "GPS": {
+      "name": "Dual-antenna RTK GNSS",
+      "what": "Two u-blox F9P receivers with antennas on masts 340 mm apart along the body. With corrections from a base station they place the drone to about 2 cm, so the rows don't drift apart, and the line between the two antennas gives the heading (moving-baseline GPS yaw), so no compass is needed. GPS1 must be the front one."
+    },
+    "TANK": {
+      "name": "10 L spray tank",
+      "what": "Hangs under the hub on the drone's centre line, so the balance hardly changes as it empties. A sight strip on the side shows the level. Full, it adds 10 kg: nearly a third of the take-off weight."
+    },
+    "PUMP": {
+      "name": "Diaphragm pump and driver",
+      "what": "Draws from the tank and pushes the liquid to the boom. Its driver runs from the 12S bus and takes a PWM signal from the Cube's AUX 1. ArduPilot's sprayer sets the pump speed in proportion to the ground speed, so every square metre gets the same dose."
+    },
+    "BOOM": {
+      "name": "Spray boom with four nozzles",
+      "what": "1.64 m across, below the tank, with flat-fan nozzles 300 and 720 mm either side of the centre. The prop wash drives the droplets down into the crop and spreads them into a swath about 4 m wide."
+    },
+    "BATT": {
+      "name": "12S 22000 mAh smart pack",
+      "what": "Sits on top over the centre of gravity, with a handle for quick swaps at each refill. Twelve cells: 50.4 V full, 44.4 V nominal, and about 12 minutes of hover with a full tank."
+    },
+    "PROPS": {
+      "name": "30-inch folding props, 3 CW and 3 CCW",
+      "what": "Two-blade carbon props that fold for transport and swing out as they spin. A CW prop goes on a CW motor: on the wrong motor it pushes air upwards and the drone flips on take-off. Neighbouring tips pass each other 138 mm apart."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Unfold and lock the frame",
+      "body": "Stand the hub on its skids, unfold the six arms and slide every locking sleeve home until it clicks. Pull on each arm end to check the joint."
+    },
+    "motors": {
+      "title": "Mount the six motors",
+      "body": "Clamp a motor to each arm end, CW and CCW alternating round the ring: M5 front right CCW, M1 right CW, M4 rear right CCW, M6 rear left CW, M2 left CCW, M3 front left CW.",
+      "refusal": "The motors clamp onto the arm ends: unfold and lock the frame first."
+    },
+    "esc": {
+      "title": "Fit the ESC pods",
+      "body": "Each ESC sits in the finned pod under its motor, where the prop wash cools it. The motor's three phase wires are already inside.",
+      "refusal": "The ESC pods clamp to the arm ends: unfold the frame first."
+    },
+    "wires": {
+      "title": "Run the arm leads",
+      "body": "Run a 12 AWG pair and a signal lead along each arm, tie them to the tube every 100 mm so they can't flap into a prop, and leave a loop at the fold joint so folding doesn't pull on them.",
+      "refusal": "The leads end at the motors and the ESC pods: fit those first."
+    },
+    "power": {
+      "title": "Fit the power distribution",
+      "body": "Fit the power board at the back of the hub, solder on the six arm pairs, the pump feed and the AS150U lead, and fit the 63 V capacitors with the white stripe to minus. The power brick's lead goes to the Cube later.",
+      "refusal": "The power board feeds the ESCs: fit the ESC pods first."
+    },
+    "fc": {
+      "title": "Mount the Cube Orange+",
+      "body": "Mount the carrier board on its damped plate at the front of the hub, arrow to the nose. Plug the power brick into POWER1 and the six ESC signal leads into MAIN 1 to 6 by motor number.",
+      "refusal": "The Cube is powered from the power board: fit the power board first."
+    },
+    "rx": {
+      "title": "Fit the radio",
+      "body": "Fit the 900 MHz telemetry radio on TELEM1 and the RC receiver on RCIN, with the antenna hanging down below the hub, away from the carbon and the power leads.",
+      "refusal": "The radio plugs into the Cube: mount the Cube first."
+    },
+    "radar": {
+      "title": "Fit the radar",
+      "body": "Bolt the radar under the nose, looking straight down with nothing in its beam: not a leg, not the boom. Plug it into TELEM2.",
+      "refusal": "The radar plugs into the Cube's TELEM2: mount the Cube first."
+    },
+    "top": {
+      "title": "Fit the canopy",
+      "body": "Put the canopy over the Cube, the radio and the power board and latch it: spray mist is corrosive, and wet electronics short.",
+      "refusal": "What goes under the canopy goes in first: fit the Cube and the radio."
+    },
+    "gps": {
+      "title": "Fit the RTK masts",
+      "body": "Bolt the two masts on the canopy, 340 mm apart along the body: GPS1 (the moving-baseline base) at the front, GPS2 behind. Plug GPS1 into the Cube's GPS1 port and GPS2 into GPS2. The other way round, the heading comes out 180° wrong.",
+      "refusal": "The masts bolt to the canopy: fit the canopy first."
+    },
+    "tank": {
+      "title": "Hang the tank",
+      "body": "Strap the 10 L tank under the hub on the centre line, the filler cap reachable and the sight strip facing out.",
+      "refusal": "The tank hangs from the hub: unfold the frame first."
+    },
+    "pump": {
+      "title": "Fit the pump",
+      "body": "Mount the pump and its driver behind the tank. Connect the hose from the tank outlet, the 12S feed from the power board and the PWM lead to the Cube's AUX 1.",
+      "refusal": "The pump draws from the tank: hang the tank first."
+    },
+    "boom": {
+      "title": "Fit the boom",
+      "body": "Clamp the boom under the tank, square to the body, and run the hose from the pump outlet to the four nozzles. The outer nozzles sit under the side props, where the downwash is strongest.",
+      "refusal": "The boom is fed by the pump: fit the pump first."
+    },
+    "batt": {
+      "title": "Fit the battery",
+      "body": "Slide the 12S pack onto its tray on top of the canopy, over the centre of gravity, and strap it down. Leave it unplugged until the smoke stopper test.",
+      "refusal": "The pack sits on the canopy and plugs into the power board: fit both first."
+    },
+    "props": {
+      "title": "Fit the props (last)",
+      "body": "Only after the smoke stopper test, the motor test and the calibration. CW props on the CW motors (M1, M3, M6), CCW props on the CCW ones (M2, M4, M5); check that every blade swings out freely.",
+      "refusal": "Props go on last, with the motors mounted and the canopy on: fit those first."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "The pack's AS150U anti-spark plug into the power board's lead. Its pre-charge resistor fills the ESC capacitors before the main pins touch, so 50 V doesn't arc across the plug and pit the contacts.",
+    "XT60-ESC": "One 12 AWG red and black pair per arm, soldered to the power board's pads: about 13 A each in a hover, 80 A at the peak.",
+    "ESC-MOTORS": "The three phase wires stay inside each X8 pod. A motor that spins the wrong way is fixed by swapping two of them, or by fitting the other-hand unit: the autopilot can't reverse a PWM ESC.",
+    "XT60-FC": "The X8 ESCs have no BEC, so a power brick takes the 12S bus down to a clean 5 V for the Cube and reports the pack's voltage and current on POWER1 (BATT_MONITOR 4).",
+    "XT60-PUMP": "The pump driver takes its power straight from the 12S bus, through its own fuse.",
+    "FC-ESC": "MAIN 1 to 6 carry one PWM signal per motor (SERVO1 to 6 set to Motor1 to 6). MOT_PWM_MIN 1050 and MOT_PWM_MAX 1950 match the X8's range.",
+    "FC-PUMP": "AUX 1 (SERVO9) is SprayerPump: the pulse width tells the driver how fast to run the pump.",
+    "RX-FC": "The telemetry radio on TELEM1 (SERIAL1, MAVLink2) carries the ground station's commands and the RTK corrections; the RC receiver's SBUS goes into RCIN.",
+    "GPS-FC": "GPS1, the front antenna and moving-baseline base, on the GPS1 port (SERIAL3); GPS2, the rover, on GPS2 (SERIAL4). The base sends its corrections to the rover, which works out the heading from them.",
+    "RADAR-FC": "The radar on TELEM2 (SERIAL2 protocol 9, Rangefinder, 115200 baud) reports the height above the crop many times a second."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke stopper test",
+      "pass": "The lamp only blinked: no short between plus and minus on the 12S bus. A 50 V drone's first power-up goes through a current limiter rated for that voltage; after that, the AS150U's pre-charge keeps the plug from sparking.",
+      "fail": "The lamp stayed lit: something is shorted. Here a capacitor is in backwards; turn it round (stripe to minus) and test again."
+    },
+    "motors": {
+      "title": "Motor test (props off)",
+      "pass": "Mission Planner's Motor Test spun them A to F, from the front right going clockwise: A is M5, B is M1, C is M4, D is M6, E is M2, F is M3, alternating CCW and CW. The props can go on.",
+      "fail": "A motor spun the wrong way, or the wrong arm moved. Swap two of that motor's phase wires (or fit the other-hand X8 unit) and check the MAIN lead order: with the props on it would spin or flip on take-off."
+    },
+    "calibrate": {
+      "title": "Accelerometer calibration",
+      "pass": "Calibrated in six positions (level, both sides, nose down, nose up, on its back), then Calibrate Level on the skids. A drone this big is turned over on the bench before the arms go on, or with a helper. The \"3D Accel calibration needed\" pre-arm block is gone.",
+      "fail": "Fit the Cube first. If its arrow points backwards, turn it round or set AHRS_ORIENTATION to 4 (Yaw180), reboot and calibrate again."
+    },
+    "pump": {
+      "title": "Pump test (disarmed)",
+      "pass": "With the drone disarmed and the sprayer switch high, the pump ran at SPRAY_PUMP_RATE, the rate for 1 m/s, and all four nozzles sprayed. Catch a minute of it in a jug: the litres per minute calibrate the dose. Arming cancels the test.",
+      "fail": "Fit the Cube, the tank, the pump and the boom, and plug the pack in: the pump driver runs from the 12S bus. A nozzle that doesn't spray is blocked, and its strip of crop goes untreated."
+    },
+    "gpsyaw": {
+      "title": "RTK fix and GPS yaw",
+      "pass": "Both receivers report RTK Fixed with the base station's corrections, and the heading from the two antennas matches the nose. EKF3 takes its yaw from GPS (EK3_SRC1_YAW 2), so it needs no compass.",
+      "fail": "Fit the Cube, the masts and the radio, and plug the pack in. With GPS1 at the back the heading reads 180° out and the pre-arm says \"EKF3 Yaw inconsistent\": swap the masts so GPS1 is in front, where GPS1_POS_X 0.17 says it is."
+    },
+    "prearm": {
+      "title": "Pre-arm checks",
+      "pass": "Every check passes (ARMING_SKIPCHK 0): RTK fix and GPS yaw, radar data, accelerometers calibrated, the pack above BATT_ARM_VOLT. The Cube will arm.",
+      "fail": "A PreArm message blocks arming: \"Rangefinder 1: No Data\" (fit the radar), \"GPS 1: Need 3D Fix\" or \"EKF3 Yaw inconsistent\" (run the RTK and GPS yaw check), \"3D Accel calibration needed\" (calibrate). Clear each one; never switch the checks off."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Frame, motor outputs and power",
+      "explain": "In ArduCopter 4.7.2 you set parameters, and MAVProxy stores each param set at once. Hexa X frame, the six motors on MAIN 1 to 6 by motor number. The X8's integrated ESC takes plain PWM between 1050 and 1950 µs, so MOT_PWM_TYPE stays Normal. The harmonic notch follows the throttle and sits at the blade-pass frequency: two blades at about 2400 rpm hum at 80 Hz. MOT_HOVER_LEARN 2 lets it learn its own hover throttle, which falls as the tank empties."
+    },
+    "links": {
+      "title": "Radio, radar and RTK",
+      "explain": "The 900 MHz radio on TELEM1 carries MAVLink and the RTK corrections, and the radar talks to TELEM2. GPS1_TYPE 17 and GPS2_TYPE 18 make the two F9Ps a moving-baseline pair: the rover measures where it sits relative to the base, and that line is the heading. The antenna positions are in metres from the centre of gravity, with y to the right. With EK3_SRC1_YAW 2 the compass is left out, away from steel sheds and 450 A of power leads."
+    },
+    "spray": {
+      "title": "The sprayer",
+      "explain": "ArduPilot's sprayer runs the pump in proportion to the ground speed: SPRAY_PUMP_RATE 10 means 10 % per m/s, so 40 % at 4 m/s and 70 % at 7 m/s, and the dose per square metre stays the same. Below SPRAY_SPEED_MIN (1 m/s, still written in cm/s) it stops, so it never puddles in a hover. The switch on channel 7 permits spraying; flipped high while disarmed, it runs the pump test."
+    },
+    "failsafe": {
+      "title": "Failsafes, fence and pre-arm checks",
+      "explain": "Radio lost, or the ground station silent for 5 s: RTL. The low-battery level is 3.5 V per cell or 30 % left, then RTL; at the critical 3.4 V per cell it lands where it is. The fence keeps it below 30 m and within 300 m of home. 4.7 names the arming checks the other way round: ARMING_SKIPCHK lists the checks to skip, and 0 skips none."
+    },
+    "stabilize": {
+      "title": "Stabilize",
+      "explain": "The Cube levels the drone when the sticks are centred, but the throttle is the motors' power: nothing holds the height or the position. On a 33 kg drone with water sloshing in it, this is the mode for when the GPS or the radar has failed. ATC_ANGLE_MAX 25 limits the lean in every mode."
+    },
+    "althold": {
+      "title": "AltHold",
+      "explain": "The throttle stick asks for a climb or a descent, up to PILOT_SPD_UP 2.5 m/s, and centred it holds the height. With SURFTRAK_MODE 1 and the radar, that is the height above the crop rather than above the take-off point, so it rises and falls with the ground. Nothing holds the position: the wind pushes it."
+    },
+    "loiter": {
+      "title": "Loiter",
+      "explain": "Holds height, position and heading with the sticks centred, to a few centimetres with RTK. Full stick flies at LOIT_SPEED_MS 8 m/s, and LOIT_ACC_MAX_M 3 keeps the starts and stops soft, so the water in the tank doesn't slosh the drone about."
+    },
+    "rtl": {
+      "title": "Return to launch",
+      "explain": "Climbs to RTL_ALT_M 12 m, above the 10 m trees and the 9 m power line, flies home at 6 m/s and lands. The sprayer is not part of the mode: ArduPilot's sprayer library keeps the pump permitted across a mode change, so a mission ends every row with DO_SPRAYER 0, and a pilot turns the sprayer switch off before taking over. Otherwise it sprays the yard on the way home."
+    },
+    "auto": {
+      "title": "AUTO: the spray mission",
+      "explain": "The mission is planned as a survey grid: rows one swath (4 m) apart, joined at the ends. Each row starts with DO_SPRAYER 1 and ends with DO_SPRAYER 0, so the pump runs only over the crop. WP_RFND_USE 1 and waypoints in the Terrain frame keep it 2.5 m above the crop by the radar. When it comes back from a refill, DO_SET_RESUME_REPEAT_DIST makes it rejoin the row a little before where it stopped, so no strip is missed. AUTO can't arm: arm in Loiter, then switch."
+    }
+  },
+  "flight": {
+    "modes": {
+      "loiter": {
+        "title": "Loiter",
+        "hint": "RTK position hold: the sticks set a speed up to 8 m/s, and the drone stops when you let go. The mode to fly the rows by hand."
+      },
+      "althold": {
+        "title": "AltHold",
+        "hint": "Holds the height, but nothing holds the position: even a 33 kg drone drifts with the wind."
+      },
+      "stabilize": {
+        "title": "Stabilize",
+        "hint": "Self-levelling with a 25° lean limit; the throttle is yours. Heavy and slow to answer, so make small inputs."
+      },
+      "rtl": {
+        "title": "RTL",
+        "hint": "Climbs to 12 m over the trees and the power line, flies home and lands on the pad."
+      },
+      "auto": {
+        "title": "AUTO spray",
+        "hint": "Flies the spray mission on its own: six rows at 2.5 m with the pump on along each one, then home to land."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Pilot's radio lost: RTL, climbing to 12 m over the trees and the power line first.",
+      "gcs-loss": "No heartbeat from the ground station for 5 s: RTL.",
+      "low-battery": "Below 42 V (3.5 V per cell) or 6600 mAh left: RTL. In the field this is when it comes back for a fresh pack and a refill.",
+      "battery-critical": "Below 40.8 V: it lands where it is, even in the crop, rather than risk the flight home.",
+      "ekf": "The estimator stops trusting its position (RTK lost, GPS yaw disagreeing): it lands, because it no longer knows where it is going.",
+      "fence": "Above 30 m or more than 300 m from home: RTL."
+    },
+    "controls": "Keyboard: Space arms and disarms, W and S climb and descend, the arrows fly forward, back and sideways, A and D yaw, V switches to the nose camera, R puts the drone back on the pad. In Loiter it stops when you let go. On a phone the left stick is throttle and yaw and the right stick is pitch and roll. A gamepad works in Mode 2."
+  },
+  "courses": {
+    "spray": {
+      "title": "Spray the north field",
+      "brief": "Take off from the yard, spray six 36 m rows of the crop block 2.5 m above it and 4 m apart, pump on along each row and off at the turns, then come home and land on the pad. Fly it yourself in Loiter against the par times, minding the trees on the west side and the power line on the east, or switch to AUTO and watch the survey grid fly itself.",
+      "goals": {
+        "1": "TAKE OFF: climb to 5 m over the pad",
+        "2": "ROW 1: down to the west end, pump on",
+        "3": "ROW 1: spray to the east end, pump off",
+        "4": "ROW 2: step 4 m north, pump on",
+        "5": "ROW 2: spray back west, pump off",
+        "6": "ROW 3: step north, pump on",
+        "7": "ROW 3: spray east, pump off",
+        "8": "ROW 4: step north, pump on",
+        "9": "ROW 4: spray west, pump off",
+        "10": "ROW 5: step north, pump on",
+        "11": "ROW 5: spray east, pump off",
+        "12": "ROW 6: step north, pump on",
+        "13": "ROW 6: spray west, pump off",
+        "14": "HOME: back over the yard at 5 m",
+        "15": "LAND: on the pad"
+      }
+    }
+  },
+  "quizzes": {
+    "power": {
+      "caps": {
+        "q": "Why does the power board carry 63 V low-ESR capacitors?",
+        "options": {
+          "1": "They store energy for the pump",
+          "2": "They soak up the voltage spikes from six ESCs switching up to 80 A each, which would otherwise kill ESCs and cause desyncs",
+          "3": "They filter the radio's noise"
+        },
+        "why": "Long battery leads have inductance, and an ESC switching tens of amps through them makes spikes well above the pack voltage. Low-ESR capacitors at the power board absorb them. 63 V parts are fine over a 50.4 V 12S pack, but not over a 58.8 V 14S one: that needs 80 to 100 V parts."
+      },
+      "brick": {
+        "q": "The X8's ESCs have no BEC. What powers the Cube?",
+        "options": {
+          "1": "The ESC signal leads",
+          "2": "The RTK receivers",
+          "3": "A power brick from the 12S bus into POWER1"
+        },
+        "why": "With no BEC in the ESCs, the autopilot's 5 V comes from a power module (the power brick), which also measures the pack's voltage and current for the failsafes. A weak supply that browns out when 450 A sags the pack reboots the Cube in the air."
+      }
+    },
+    "gps": {
+      "baseline": {
+        "q": "Why two GPS antennas 340 mm apart?",
+        "options": {
+          "1": "The line between them gives the heading, so the drone needs no compass near steel sheds and high-current wires",
+          "2": "Two antennas see twice as many satellites",
+          "3": "One is a spare in case the other fails"
+        },
+        "why": "In a moving-baseline pair the rover measures its position relative to the base to about a centimetre, which gives the direction of the line between them: the heading. ArduPilot wants the antennas at least 30 cm apart."
+      },
+      "swap": {
+        "q": "GPS1 ends up on the rear mast and GPS2 on the front one. What happens?",
+        "options": {
+          "1": "Nothing: either way round works",
+          "2": "The RTK fix is lost",
+          "3": "The heading comes out 180° wrong and the pre-arm says EKF3 Yaw inconsistent"
+        },
+        "why": "GPS1_POS_X says the base antenna is 0.17 m forward. If it is really behind, the measured line points backwards and the GPS heading disagrees with everything else by 180°. Swap the masts back (or the types and offsets) on the ground; don't find out in the air."
+      }
+    },
+    "boom": {
+      "rate": {
+        "q": "SPRAY_PUMP_RATE is 10. How hard does the pump run at 4 m/s?",
+        "options": {
+          "1": "10 %",
+          "2": "40 %",
+          "3": "100 %"
+        },
+        "why": "The rate is per m/s of ground speed: 10 % × 4 = 40 %. At 10 m/s it reaches 100 %, and any faster the dose starts to fall."
+      },
+      "dose": {
+        "q": "You fly the rows at 7 m/s instead of 4 m/s. What happens to the litres per hectare?",
+        "options": {
+          "1": "Nothing: the pump runs at 70 % instead of 40 %, so each square metre gets the same",
+          "2": "It drops to about 57 %",
+          "3": "It doubles"
+        },
+        "why": "The flow rises with the ground speed and so does the area covered each second, so the speed cancels out: L/ha = full flow × RATE/100 ÷ swath × 10000. A 3 L/min pump over a 4 m swath gives 12.5 L/ha at any speed up to 10 m/s. Only a pump that saturates, or one with a fixed flow, changes the dose."
+      }
+    },
+    "fly": {
+      "pump": {
+        "q": "Halfway along a row the battery goes low and it switches to RTL. What does the pump do?",
+        "options": {
+          "1": "It stops by itself on the mode change",
+          "2": "It keeps running while the drone moves faster than SPRAY_SPEED_MIN, unless a DO_SPRAYER 0 or the switch has turned it off",
+          "3": "It runs at full speed"
+        },
+        "why": "ArduPilot's sprayer doesn't look at the flight mode. Spraying stays permitted until a DO_SPRAYER 0, the switch going low, or the speed falling below 1 m/s. That's why each row ends with DO_SPRAYER 0, and why a pilot flips the sprayer switch off before taking over."
+      },
+      "resume": {
+        "q": "After a refill you arm and switch back to AUTO; the Cube stayed powered. Where does it go?",
+        "options": {
+          "1": "Back to the first row",
+          "2": "It lands",
+          "3": "Back to the row it was on, joining it a couple of metres before where it stopped"
+        },
+        "why": "MIS_RESTART 0 resumes the mission instead of restarting it, and DO_SET_RESUME_REPEAT_DIST makes it rejoin the track that far back, so no strip is missed. The resume point lives only in RAM: if the battery swap powers the Cube down, AUTO starts again from the first item."
+      },
+      "kv": {
+        "q": "Why do the 10025 80 KV motors on 12S with 30-inch props come out weak?",
+        "options": {
+          "1": "80 KV on 44.4 V turns a 30-inch prop too slowly: 1.20:1 with a full tank",
+          "2": "They are too heavy for the arms",
+          "3": "They draw too much current"
+        },
+        "why": "Thrust goes with the square of the rpm, and the rpm is KV times volts. An 80 KV motor is meant for bigger props or a 14S pack: on 12S with 30-inch props it makes 6.9 kg per motor against 10.8 kg for the 100 KV one, too little margin for a gust with 10 L aboard."
+      }
+    }
+  }
+}
