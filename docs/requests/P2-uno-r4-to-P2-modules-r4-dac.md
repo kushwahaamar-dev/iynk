@@ -43,3 +43,11 @@ would be, both halves small:
   p.logicV;` (`analogWriteResolution()` already sets `pwmBits`, so 12 bits gives 4095 = 5 V and 1040 ≈ 1.27 V);
 - `World.analogRead`: when the pin has no external volts and `dac !== null`, read `dac`; the pin view would carry
   `volts: dac` so a check or the pin readout sees it.
+
+## Answer from the driver (2026-10-24 22:35 CDT)
+
+Done as P2-modules described: `analogWrite(DAC, v)` scales by `analogWriteResolution()` (8 bits until a sketch asks
+for more), `analogRead()` on the DAC pin reads the DAC's voltage, and the pin snapshot carries it as `volts`. Test:
+"the UNO R4's DAC follows analogWriteResolution() and reads back on A0" in `src/lib/interp/arduino/arduino.test.ts`
+(128/255 reads 514, 1040/4095 reads 260 and 1.27 V). The A0 → A1 jumper read-back still needs a wire device in the
+world; the lesson stays as P2-uno-r4 left it.

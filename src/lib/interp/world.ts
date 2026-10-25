@@ -315,6 +315,7 @@ export class World {
     let v = p.volts;
     if (v === null) {
       if (p.ext !== null) v = p.ext ? this.profile.adcVref : 0;
+      else if (p.dac !== null) v = p.dac;
       else if (p.mode === 'output') v = this.level(n) ? this.profile.logicV : 0;
       else if (p.mode === 'input_pullup') v = this.profile.logicV;
       else return Math.floor(this.rng.float() * max * 0.25 + max * 0.3); // floating: noise
@@ -505,6 +506,7 @@ export class World {
       if (p.toneHz) v.hz = p.toneHz;
       if (p.servoUs) v.servoUs = p.servoUs;
       if (p.volts !== null) v.volts = round3(p.volts);
+      else if (p.dac !== null) v.volts = round3(p.dac);
       if (this.coldJoints.has(n) && p.mode === 'output') v.level = 0;
       pins[n] = v;
     }

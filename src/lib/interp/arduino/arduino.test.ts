@@ -339,4 +339,21 @@ void loop() {}`);
     run.step(10);
     expect(out()).toBe('boot\nboot\n');
   });
+
+  it("the UNO R4's DAC follows analogWriteResolution() and reads back on A0", () => {
+    const { run, out, errors } = boot(`void setup() {
+  Serial.begin(9600);
+  analogWrite(DAC, 128);
+  Serial.println(analogRead(A0));
+  analogWriteResolution(12);
+  analogWrite(DAC, 1040);
+  Serial.println(analogRead(A0));
+}
+void loop() {}`, 'uno-r4');
+    run.step(10);
+    expect(errors).toEqual([]);
+    // 128 of 255 is 2.51 V, read by the 10-bit ADC as 514; 1040 of 4095 is 1.27 V, read as 260.
+    expect(out()).toBe('514\n260\n');
+    expect(run.snapshot().pins[14].volts).toBeCloseTo(1.27, 2);
+  });
 });

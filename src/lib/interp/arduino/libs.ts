@@ -273,8 +273,10 @@ export const BUILTINS: Record<string, Builtin> = {
       const n = pinArg(rt, pin);
       const p = rt.world.profile;
       if (p.id === 'uno-r4' && n === 14) {
+        // The R4's 12-bit DAC follows analogWriteResolution(), like PWM: 8 bits until a sketch asks for more.
+        const max = (1 << rt.world.pwmBits) - 1;
         const st = rt.world.pin(n);
-        st.dac = (Math.max(0, Math.min(255, v)) / 255) * p.logicV;
+        st.dac = (Math.max(0, Math.min(max, v)) / max) * p.logicV;
         st.mode = 'output';
         rt.world.touch();
         return;
