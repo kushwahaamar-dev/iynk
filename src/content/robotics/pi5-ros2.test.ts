@@ -97,9 +97,9 @@ describe('pi5-ros2 content', () => {
   });
 
   it('keeps the 27 W supply ahead of the ROS load, and the motors over the 3 A buck', () => {
-    const usbc = bench.current.supplies.find((s) => s.id === 'usbc')!;
-    const running = bench.current.loads.filter((l) => l.supply === 'usbc').reduce((a, l) => a + l.ma, 0);
-    expect(running).toBeLessThan(usbc.limitMa);
+    const usb = bench.current.supplies.find((s) => s.id === 'usb')!;
+    const running = bench.current.loads.filter((l) => l.supply === 'usb').reduce((a, l) => a + l.ma, 0);
+    expect(running).toBeLessThan(usb.limitMa);
     const buck = bench.current.supplies.find((s) => s.id === 'pin5')!;
     const onBuck = bench.current.loads.filter((l) => l.supply === 'pin5').reduce((a, l) => a + l.ma, 0);
     const motor = bench.faults.find((f) => f.id === 'motor-brownout')!;

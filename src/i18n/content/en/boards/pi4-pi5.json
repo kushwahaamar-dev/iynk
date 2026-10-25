@@ -14,7 +14,7 @@
     "cyw43455": "Infineon (Cypress) dual-band 802.11ac Wi-Fi and Bluetooth 5.0 radio under the metal can, with a chip antenna at the top-left corner."
   },
   "power": {
-    "usbc": {
+    "usb": {
       "protection": "USB-C is keyed, so it can't go in backwards. Below 4.63 V (give or take 5%) the PMIC flags under-voltage: the kernel logs it and the firmware throttles. A Pi 5 negotiates 5 A over USB PD; with a plain 5 V 3 A supply it still boots but limits the USB ports to 600 mA."
     },
     "pin5": {

@@ -2814,7 +2814,7 @@ const aimPoint = (pl, id) => {
     const def = B.parts[q.part], tall = def ? (Array.isArray(def.foot) ? def.foot[2] : +def.height) || 8 : 8;
     if (Array.isArray(q.at)) return B.BP(q.at[0], q.at[1], matZ() + tall / 2);
     const holes = (q.holes || []).map(h => B.hole(pl.geo, h)).filter(Boolean);
-    if (holes.length) return pl.at(B.mean(holes.map(h => h.x)), B.mean(holes.map(h => h.y)), pl.zTop + Math.min(tall, 14) / 2);
+    if (holes.length) return pl.at(holes.reduce((t, h) => t + h.x, 0) / holes.length, holes.reduce((t, h) => t + h.y, 0) / holes.length, pl.zTop + Math.min(tall, 14) / 2);
   }
   const pr = (pl.c.props || []).find(x => x.id === id);
   return pr && Array.isArray(pr.at) ? B.BP(pr.at[0], pr.at[1], matZ()) : null;
@@ -3917,17 +3917,17 @@ function power(v){
   const pmic = ['U4', 'L1'];
   return {
     sources: {
-      usbc: v.pi5 ? { label: '27 W USB-C PD supply (5.1 V 5 A)', part: 'J1', plug: 'usb-c', v: 5.1 } : { label: 'USB-C supply (5.1 V 3 A)', part: 'J1', plug: 'usb-c', v: 5.1 },
+      usb: v.pi5 ? { label: '27 W USB-C PD supply (5.1 V 5 A)', part: 'J1', plug: 'usb-c', v: 5.1 } : { label: 'USB-C supply (5.1 V 3 A)', part: 'J1', plug: 'usb-c', v: 5.1 },
       charger: { label: 'Phone charger (5 V 2 A)', part: 'J1', plug: 'usb-c', v: 5, range: [4.75, 5.25] },
       pin5: { label: '5 V into GPIO pins 2 and 4', pin: '5V', v: 5.1, range: [4.75, 5.25] },
       // a wiring mistake as a supply: the official supply, plus an HC-SR04's 5 V echo straight into GPIO24
       echo5: { label: 'USB-C, with a 5 V sensor output straight into GPIO24', part: 'J1', plug: 'usb-c', v: 5.1, range: [0, 3.3], scenario: true },
     },
-    default: 'usbc',
+    default: 'usb',
     rails: {
       // the header's 5 V pins sit on the input rail itself: no fuse, no diode, so a reversed or 12 V supply there
       // reaches the PMIC unopposed (docs/facts/pi4-pi5.md §3.3, §6)
-      '5V': { from: [{ src: 'usbc', via: ['J1'] }, { src: 'charger', via: ['J1'] }, { src: 'echo5', via: ['J1'] }, { src: 'pin5', burns: 'U4' }], max: 6, victim: 'U4' },
+      '5V': { from: [{ src: 'usb', via: ['J1'] }, { src: 'charger', via: ['J1'] }, { src: 'echo5', via: ['J1'] }, { src: 'pin5', burns: 'U4' }], max: 6, victim: 'U4' },
       '3V3': { from: [{ rail: '5V', via: pmic, reg: 3.3, dropout: .4, ilim: 1.5 },
         // the echo pin's protection diode conducts into the 3.3 V GPIO rail
         { src: 'echo5', via: [v.pi5 ? 'U3' : 'U1'], drop: .6 }], max: 3.6, victim: v.pi5 ? 'U3' : 'U1' },
@@ -3938,7 +3938,7 @@ function power(v){
       POWER_OK: { from: [{ rail: '3V3', via: ['U4'], drop: 0, offIf: ['5V', '<', UNDER] }] },
     },
     mcu: { part: 'U1', rail: '3V3', min: 3, needs: v.pi5 ? ['U1', 'U2', 'U3', 'CARD'] : ['U1', 'U2', 'CARD'] },
-    upload: { source: 'usbc', needs: [], tool: 'none' },
+    upload: { source: 'usb', needs: [], tool: 'none' },
   };
 }
 
@@ -4142,7 +4142,7 @@ B.bench({
   parts: [...base.parts, COOLER],
   power: Object.assign({}, base.power, {
     sources: {
-      usbc: { label: '27 W USB-C PD supply (5.1 V 5 A)', part: 'J1', plug: 'usb-c', v: 5.1 },
+      usb: { label: '27 W USB-C PD supply (5.1 V 5 A)', part: 'J1', plug: 'usb-c', v: 5.1 },
       charger: { label: 'Phone charger (5 V 2 A)', part: 'J1', plug: 'usb-c', v: 5, range: [4.75, 5.25] },
       pin5: { label: "Robot's 5 V buck on GPIO pins 2 and 4", pin: '5V', v: 5.1, range: [4.75, 5.25] },
     },

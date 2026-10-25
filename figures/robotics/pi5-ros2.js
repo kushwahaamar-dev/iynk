@@ -149,7 +149,7 @@ B.bench({
   parts: [...base.parts, COOLER],
   power: Object.assign({}, base.power, {
     sources: {
-      usbc: { label: '27 W USB-C PD supply (5.1 V 5 A)', part: 'J1', plug: 'usb-c', v: 5.1 },
+      usb: { label: '27 W USB-C PD supply (5.1 V 5 A)', part: 'J1', plug: 'usb-c', v: 5.1 },
       charger: { label: 'Phone charger (5 V 2 A)', part: 'J1', plug: 'usb-c', v: 5, range: [4.75, 5.25] },
       pin5: { label: "Robot's 5 V buck on GPIO pins 2 and 4", pin: '5V', v: 5.1, range: [4.75, 5.25] },
     },

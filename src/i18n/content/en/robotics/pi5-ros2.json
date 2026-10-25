@@ -307,7 +307,7 @@
   },
   "current": {
     "pin5": "Robot's 3 A buck on GPIO pins 2/4",
-    "usbc": "27 W USB-C supply (5 V 5 A)",
+    "usb": "27 W USB-C supply (5 V 5 A)",
     "charger": "Phone charger (5 V 2 A)",
     "pi": "Pi 5 running Linux",
     "ros": "ROS 2 load on all four cores",

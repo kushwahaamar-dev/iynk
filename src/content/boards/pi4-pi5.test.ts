@@ -54,7 +54,7 @@ async function open(variant: string) {
   const fail = (f: FailureMode) => {
     if (f.figure.type !== 'set') throw new Error(`no set failure ${f.id}`);
     B.accept({ power: null, fault: null });
-    B.accept({ power: 'usbc', ...f.figure.state });
+    B.accept({ power: 'usb', ...f.figure.state });
     B.advance(1.5);
     return report();
   };
@@ -150,7 +150,7 @@ describe('pi4-pi5 failures in the figure', () => {
       for (const f of board.failures) {
         const r = page.fail(f);
         const where = `${variant} ${f.id}: ${r.status} ${r.fault?.msg ?? ''} ${JSON.stringify(r.faults)}`;
-        expect(r.faults.length + (r.fault ? 1 : 0) + (r.power !== 'usbc' ? 1 : 0), where).toBeGreaterThan(0);
+        expect(r.faults.length + (r.fault ? 1 : 0) + (r.power !== 'usb' ? 1 : 0), where).toBeGreaterThan(0);
         if (f.effect.power === 'resetting') expect(r.status, where).toBe('brownout');
         else if (f.effect.halts && f.effect.power === 'off') expect(['no-power', 'fault'], where).toContain(r.status);
         // no card or no RAM: powered, but the SoC has nothing to boot
@@ -177,7 +177,7 @@ describe('pi4-pi5 failures in the figure', () => {
       expect([...lines], variant).toEqual(expect.arrayContaining(['throttled=0x50005', 'hwmon hwmon1: Undervoltage detected!']));
       if (variant === 'pi4') expect(page.report().leds.D3).toBe(0);
       page.B.accept({ power: null, fault: null });
-      page.B.accept({ power: 'usbc', mode: 'health' });
+      page.B.accept({ power: 'usb', mode: 'health' });
       page.B.advance(1);
       if (variant === 'pi4') expect(page.report().leds.D3).toBe(1);
       page.close();
@@ -187,7 +187,7 @@ describe('pi4-pi5 failures in the figure', () => {
   it('a cold joint on pin 11 drops GPIO17 while blink.py runs on', async () => {
     const page = await open('pi5');
     page.B.accept({ power: null, fault: null });
-    page.B.accept({ power: 'usbc', mode: 'blink' });
+    page.B.accept({ power: 'usb', mode: 'blink' });
     const dark = () => {
       let n = 0;
       for (let t = 0; t < 6; t += 0.05) {
@@ -223,7 +223,7 @@ describe('pi4-pi5 assembly', () => {
       expect(page.notes()).toEqual([]);
       expect(page.errors).toEqual([]);
       page.close();
-    }, 30_000);
+    });
   }
 });
 
@@ -267,12 +267,12 @@ describe('pi4-pi5 lessons through the app check path', () => {
         expect(failed, trace.serial.slice(0, 8).map((s) => s.text).join('\n')).toEqual([]);
         for (const sample of l.serial.sample) expect(trace.serial.map((s) => s.text), `${l.id} sample`).toContain(sample);
         expect(runChecks(lessonJob(board, l, 'pass\n', variant)).results.every((r) => r.ok)).toBe(false);
-      }, 60_000);
+      });
     }
   }
 
-  it('passes at every value each chip offers: the checks follow the code', () => {
-    for (const l of board.lessons) {
+  for (const l of board.lessons) {
+    it(`lesson ${l.id} passes at every value each chip offers: the checks follow the code`, () => {
       for (const p of l.params) {
         const values = p.kind === 'choice' ? p.options.map((o) => o.value)
           : p.kind === 'number' ? Array.from({ length: Math.round((p.max - p.min) / p.step) + 1 }, (_, i) => Math.round((p.min + i * p.step) * 100) / 100) : [];
@@ -281,8 +281,8 @@ describe('pi4-pi5 lessons through the app check path', () => {
           expect(l.checks.filter((_, i) => !results[i].ok).map((c) => text(c.label)), `${l.id} ${p.id}=${v}`).toEqual([]);
         }
       }
-    }
-  }, 120_000);
+    });
+  }
 
   it('counts every bounce as a press with bounce_time=None', () => {
     const button = board.lessons.find((l) => l.id === 'button')!;

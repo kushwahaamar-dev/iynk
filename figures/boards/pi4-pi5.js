@@ -335,17 +335,17 @@ function power(v){
   const pmic = ['U4', 'L1'];
   return {
     sources: {
-      usbc: v.pi5 ? { label: '27 W USB-C PD supply (5.1 V 5 A)', part: 'J1', plug: 'usb-c', v: 5.1 } : { label: 'USB-C supply (5.1 V 3 A)', part: 'J1', plug: 'usb-c', v: 5.1 },
+      usb: v.pi5 ? { label: '27 W USB-C PD supply (5.1 V 5 A)', part: 'J1', plug: 'usb-c', v: 5.1 } : { label: 'USB-C supply (5.1 V 3 A)', part: 'J1', plug: 'usb-c', v: 5.1 },
       charger: { label: 'Phone charger (5 V 2 A)', part: 'J1', plug: 'usb-c', v: 5, range: [4.75, 5.25] },
       pin5: { label: '5 V into GPIO pins 2 and 4', pin: '5V', v: 5.1, range: [4.75, 5.25] },
       // a wiring mistake as a supply: the official supply, plus an HC-SR04's 5 V echo straight into GPIO24
       echo5: { label: 'USB-C, with a 5 V sensor output straight into GPIO24', part: 'J1', plug: 'usb-c', v: 5.1, range: [0, 3.3], scenario: true },
     },
-    default: 'usbc',
+    default: 'usb',
     rails: {
       // the header's 5 V pins sit on the input rail itself: no fuse, no diode, so a reversed or 12 V supply there
       // reaches the PMIC unopposed (docs/facts/pi4-pi5.md §3.3, §6)
-      '5V': { from: [{ src: 'usbc', via: ['J1'] }, { src: 'charger', via: ['J1'] }, { src: 'echo5', via: ['J1'] }, { src: 'pin5', burns: 'U4' }], max: 6, victim: 'U4' },
+      '5V': { from: [{ src: 'usb', via: ['J1'] }, { src: 'charger', via: ['J1'] }, { src: 'echo5', via: ['J1'] }, { src: 'pin5', burns: 'U4' }], max: 6, victim: 'U4' },
       '3V3': { from: [{ rail: '5V', via: pmic, reg: 3.3, dropout: .4, ilim: 1.5 },
         // the echo pin's protection diode conducts into the 3.3 V GPIO rail
         { src: 'echo5', via: [v.pi5 ? 'U3' : 'U1'], drop: .6 }], max: 3.6, victim: v.pi5 ? 'U3' : 'U1' },
@@ -356,7 +356,7 @@ function power(v){
       POWER_OK: { from: [{ rail: '3V3', via: ['U4'], drop: 0, offIf: ['5V', '<', UNDER] }] },
     },
     mcu: { part: 'U1', rail: '3V3', min: 3, needs: v.pi5 ? ['U1', 'U2', 'U3', 'CARD'] : ['U1', 'U2', 'CARD'] },
-    upload: { source: 'usbc', needs: [], tool: 'none' },
+    upload: { source: 'usb', needs: [], tool: 'none' },
   };
 }
 

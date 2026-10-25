@@ -64,7 +64,7 @@ const BCM2711: Mcu = {
 
 const power = (usbMa: number, idleMa: number): BoardPower => ({
   inputs: [
-    { id: 'usbc', connector: 'usb-c', part: 'J1', volts: { min: 4.75, max: 5.25 }, maxCurrentMa: usbMa, reverseProtected: true, protection: 'power.usbc.protection' },
+    { id: 'usb', connector: 'usb-c', part: 'J1', volts: { min: 4.75, max: 5.25 }, maxCurrentMa: usbMa, reverseProtected: true, protection: 'power.usb.protection' },
     { id: 'pin5', connector: 'header-pin', part: 'J8', volts: { min: 4.75, max: 5.25 }, reverseProtected: false, protection: 'power.pin5.protection' },
   ],
   rails: [
@@ -431,7 +431,7 @@ const board = {
     { id: 'overvolt-pin5', kind: 'wrong-voltage', trigger: { by: 'power-input', input: 'pin5', volts: 12 }, figure: { type: 'set', state: { power: 'pin5', fault: 'wrong-voltage:pin5:12' } },
       effect: { power: 'off', halts: true, damages: ['U4'] },
       title: 'failures.overvolt-pin5.title', symptom: 'failures.overvolt-pin5.symptom', explanation: 'failures.overvolt-pin5.explanation', fix: 'failures.overvolt-pin5.fix' },
-    { id: 'weak-charger', kind: 'wrong-voltage', trigger: { by: 'power-input', input: 'usbc', volts: 4.6 }, figure: { type: 'set', state: { power: 'charger', fault: 'wrong-voltage:charger:4.6' } },
+    { id: 'weak-charger', kind: 'wrong-voltage', trigger: { by: 'power-input', input: 'usb', volts: 4.6 }, figure: { type: 'set', state: { power: 'charger', fault: 'wrong-voltage:charger:4.6' } },
       effect: { power: 'on', halts: false, serial: ['hwmon hwmon1: Undervoltage detected!'] },
       title: 'failures.weak-charger.title', symptom: 'failures.weak-charger.symptom', explanation: 'failures.weak-charger.explanation', fix: 'failures.weak-charger.fix' },
     { id: 'motor-brownout', kind: 'brownout', trigger: { by: 'load', rail: '5V', ma: 2500, part: 'dc-motor' }, figure: { type: 'set', state: { power: 'pin5', fault: 'brownout' } },
@@ -463,7 +463,7 @@ const board = {
     { id: 'tall', kind: 'build', action: { type: 'press', id: 'place', choice: 'group-tall' }, done: { 'tasks.tall-in': true }, major: false, title: 'assembly.tall.title', body: 'assembly.tall.body', refusal: 'assembly.tall.refusal' },
     { id: 'solder', kind: 'build', action: { type: 'press', id: 'solder' }, done: { build: 'soldered' }, major: false, title: 'assembly.solder.title', body: 'assembly.solder.body', refusal: 'assembly.solder.refusal' },
     { id: 'card', kind: 'build', action: { type: 'press', id: 'place', choice: 'card' }, done: { 'tasks.card-in': true, build: 'assembled' }, major: false, title: 'assembly.card.title', body: 'assembly.card.body', refusal: 'assembly.card.refusal' },
-    { id: 'plug', kind: 'test', action: { type: 'set', state: { mode: 'boot', power: 'usbc' } }, done: { power: 'usbc', mode: 'boot', status: 'running' }, major: false, title: 'assembly.plug.title', body: 'assembly.plug.body', refusal: 'assembly.plug.refusal' },
+    { id: 'plug', kind: 'test', action: { type: 'set', state: { mode: 'boot', power: 'usb' } }, done: { power: 'usb', mode: 'boot', status: 'running' }, major: false, title: 'assembly.plug.title', body: 'assembly.plug.body', refusal: 'assembly.plug.refusal' },
     { id: 'rails', kind: 'test', action: { type: 'set', state: { view: 'power' } }, done: { 'rails.5V': 5.1, 'rails.3V3': 3.3 }, major: false, title: 'assembly.rails.title', body: 'assembly.rails.body' },
     { id: 'blink', kind: 'test', action: { type: 'press', id: 'upload', choice: 'blink' }, done: { mode: 'blink', status: 'running' }, major: false, title: 'assembly.blink.title', body: 'assembly.blink.body' },
     { id: 'health', kind: 'test', action: { type: 'press', id: 'upload', choice: 'health' }, done: { mode: 'health', status: 'running' }, major: false, title: 'assembly.health.title', body: 'assembly.health.body' },
