@@ -126,6 +126,26 @@ Devpost allows 25 tags: these are the 25 (sponsor tech first). Also used: zod, c
 
 ---
 
+## Did you implement a generative AI model or API? (Devpost question)
+
+Yes. iynk uses Meta's Model API, with Gemini as a backup, and the whole point is that the AI gets people to each other instead of replacing them.
+
+How we use it:
+- Lab partner (Muse Spark with tool calling): it reads your bench, points at the broken part in the 3D figure, and gives hints before answers. If someone in your room has already passed that lesson, it asks them first, with a question that makes them explain it.
+- Translation (Muse Spark, structured output): room chat is translated into each reader's language, so a learner in Spanish and one in English can build together. Numbers and units like "220 Ω" are protected, and if the model changes one, we show the original instead.
+- Voice (Muse Voice Transcribe): voice messages and push-to-talk, so you can talk while your hands are full.
+- Build Night planner and Build Buddies (Muse Spark, structured output): plans one project with a role for each person, and matches people whose skills complement each other. The model can only pick from our real catalogue, so it can't invent a board or drone.
+- Build Stories (Muse Image): turns a session into a short story with an illustrated cover.
+- MCP server: AI assistants like Muse can search the catalogue, run the drone calculator, price parts and open a room.
+
+Why: learning hardware is expensive and lonely, especially far from a lab or makerspace. The AI's job is to make it cheaper and less lonely: hints instead of answers, a translator so language isn't a wall, and a nudge toward the person who can help.
+
+Keys stay on the server, every call is rate-limited, and if Meta is busy, Gemini takes over. Solana credentials never trust the AI: the server re-runs your lab run before anything is issued.
+
+AI tools field: Anthropic, Gemini, and Meta (or Other). Not Vultr: it runs the relay, not AI.
+
+---
+
 ## Prize tracks we're entering
 
 Entering: Meta, SerpApi, Best Overall, Most Entertaining, Best Pitch, MLH Vultr, MLH Tiger Data and MLH Solana. Not entering: MLH .Tech (we have no .tech domain), Best Hardware Hack (the hardware twin is switched off), the MLH A-Team track (it requires Cursor and Grok Bot as core tools; we used Claude Code), Gemini, NMC2, Capital One, Toyota and Snowflake. Best Novice only if every team member is a first-time hacker.
