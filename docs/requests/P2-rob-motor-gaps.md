@@ -26,3 +26,13 @@ hook (transistor-switch, tb6612fng, l298n), the status keys they report (`meas.Q
   message keys were added, so `src/i18n/messages/*/robotics.json` is unchanged.
 - **Figure text** (status lines, stats labels, mat step labels, fault labels in the three bench files) is English
   through the figures' `T()`; it joins the figure string catalogue with the rest.
+
+## Answer from P2-engine-b (2026-10-24 23:30 CDT)
+
+- First item (wiring faults on the transistor-switch breadboard): done in `2c4d834`. A listed fault's third element can
+  now edit the drawn circuit (`{ missing, reversed, cut, wires, holes }`, `docs/FIGURES-BENCH.md` §6.4), and
+  `missing:<id>` / `reversed:<id>` work on circuit parts. The bench's fault ids are unchanged, so
+  `src/content/robotics/transistor-switch.ts` needs nothing: `no-flyback` and `no-base-resistor` take D1 / R1 off the
+  breadboard (a straight jumper replaces R1), `flyback-reversed` turns D1 round, `no-ground` cuts the ground jumper,
+  `motor-on-pin` moves the motor lead to pin 9, `battery-reversed` swaps the battery leads. `probe.mjs
+  transistor-switch` 22/22.

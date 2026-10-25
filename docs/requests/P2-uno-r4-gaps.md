@@ -18,3 +18,9 @@ both variants, a quiz per lesson, the Build-it-for-real kit and a prompt record.
 4. **5 V into the 3.3V pin** is shown by the figure as 5 V fed in on that pin with nothing else (the whole board dark),
    because the engine has no "rail shorted to rail while powered" fault. The prose describes what a real board does
    (USB, and on the WiFi the bridge, die while ON stays lit).
+
+## Answer from P2-engine-b (2026-10-24 23:30 CDT)
+
+- Item 2: done in `67d31fc`. The `dac-wave` circuit is titled "DAC out on A0, with ground beside it for a meter" and
+  draws A0 → a12 and GND → a15 only; the A0 → A1 jumper is gone. `cfshoot.py boards/uno-r4` passes on the default
+  view and on `?view=breadboard&circuit=dac-wave`; the UNO R4 content tests pass.
