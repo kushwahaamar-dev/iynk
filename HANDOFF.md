@@ -172,7 +172,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
     F-fix-shell (U4, U7, N1, N13, N14, N12). The final pass (`wf_c95e5cdf-cda`) finished at 04:45 with F-review's
     `docs/verify/ui-review.md`. The driver keeps N11 (Solana RPC on ordinary pages), N15 (crawl `--out`), the
     figure-string collector's variants, and the chrome change (`87315a4`).
-  - Fourth figure-string delta, run `wf_0e7f6757-d55` (`P3-figs-delta4-<lang>`), 05:02-05:06, **done**: the 65 keys
+  - Fourth figure-string delta, run `wf_0e7f6757-d55` (`P3-figs-delta4-<lang>`), 05:00-05:04, **done**: the 65 keys
     the collector finds now that it also opens each figure's variants (`266610e`, 4087 keys); `2226b14` es, `085983f`
     fr, `919c6f6` de, `997c1ff` zh, `a94ac1c` hi. `src/i18n` 441 of 441. Driver since 04:47: server-side Config
     account check (`4ed0e42`, N11), crawl `--out` (`1f60ea9`, N15), breadboard labels clear of each other and the R4's
