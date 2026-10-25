@@ -3,9 +3,6 @@ import type { SVGProps } from "react";
 export type IconName =
   | "close"
   | "menu"
-  | "sun"
-  | "moon"
-  | "system"
   | "check"
   | "copy"
   | "chevron-right"
@@ -39,9 +36,6 @@ export type IconName =
 const PATHS: Record<IconName, string> = {
   close: "M6 6l12 12M18 6L6 18",
   menu: "M4 7h16M4 12h16M4 17h16",
-  sun: "M12 8.5a3.5 3.5 0 1 0 0 7a3.5 3.5 0 1 0 0-7zM12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6",
-  moon: "M19.5 14.6A7.8 7.8 0 0 1 9.4 4.5a7.8 7.8 0 1 0 10.1 10.1z",
-  system: "M3.5 5h17v11h-17zM9 20h6M12 16v4",
   check: "M5 12.5l4.2 4.2L19 7",
   copy: "M8.5 8.5h11v11h-11zM15.5 8.5v-4h-11v11h4",
   "chevron-right": "M9.5 5.5L16 12l-6.5 6.5",

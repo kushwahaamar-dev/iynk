@@ -13,6 +13,8 @@ export type StatProps = {
 };
 
 const valueSize = { sm: "text-lg", md: "text-2xl", lg: "text-4xl" };
+// A step of the type scale for each size, so a unit is never under the 12 px floor.
+const unitSize = { sm: "text-xs", md: "text-sm", lg: "text-xl" };
 const toneClass = { ink: "text-ink", good: "text-good", bad: "text-bad", warn: "text-warn" };
 
 /** A number with a small caps label, like the figures' stats. */
@@ -22,7 +24,7 @@ export function Stat({ label, value, unit, hint, size = "md", tone = "ink", clas
       <div className="ink-kicker">{label}</div>
       <div className={cx("tabular whitespace-nowrap font-ui font-bold leading-tight", valueSize[size], toneClass[tone])}>
         {value}
-        {unit ? <span className="ms-1 text-[0.6em] font-semibold text-muted">{unit}</span> : null}
+        {unit ? <span className={cx("ms-1 font-semibold text-muted", unitSize[size])}>{unit}</span> : null}
       </div>
       {hint ? <div className="text-sm text-muted">{hint}</div> : null}
     </div>

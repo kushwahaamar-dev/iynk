@@ -22,7 +22,7 @@ export function SettingsPanel({ lang, labels }: { lang: Locale; labels: Settings
     <div className="flex flex-col gap-4">
       <div>
         <div className="ink-label mb-1">{labels.theme.label}</div>
-        <ThemeControl labels={labels.theme} showText stretch />
+        <ThemeControl labels={labels.theme} />
       </div>
       <LanguagePicker lang={lang} label={labels.language} showLabel />
       <div className="divide-y divide-rule border-t-[1.5px] border-rule">

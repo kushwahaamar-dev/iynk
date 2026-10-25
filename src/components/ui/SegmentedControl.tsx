@@ -13,7 +13,7 @@ type SegmentedControlProps<V extends string> = {
   /** Show only the icons; the labels stay as accessible names. */
   iconOnly?: boolean;
   size?: "sm" | "md";
-  /** Equal-width segments across the full width of the parent. */
+  /** Equal-width segments across the full width of the parent; a label longer than its share takes what it needs. */
   stretch?: boolean;
   className?: string;
 };
@@ -55,7 +55,8 @@ export function SegmentedControl<V extends string>({ label, options, value, onCh
       onKeyDown={onKeyDown}
       className={cx(
         "max-w-full flex-nowrap overflow-x-auto rounded-full border-2 border-line bg-surface p-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-        stretch ? "flex w-full" : "inline-flex shrink-0",
+        // Grid columns of 1fr stay equal until a label needs more, then that one grows and the others share the rest.
+        stretch ? "grid w-full auto-cols-[1fr] grid-flow-col" : "inline-flex shrink-0",
         className,
       )}
     >
@@ -77,7 +78,6 @@ export function SegmentedControl<V extends string>({ label, options, value, onCh
             className={cx(
               "inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full font-body font-semibold transition-colors [&>svg]:shrink-0",
               size === "sm" ? "min-h-8 px-2.5 text-sm" : "min-h-10 px-3.5 text-sm",
-              stretch && "min-w-0 flex-1",
               iconOnly && (size === "sm" ? "min-w-8 px-0" : "min-w-10 px-0"),
               "[@media(pointer:coarse)]:min-h-11",
               iconOnly && "[@media(pointer:coarse)]:min-w-11",
