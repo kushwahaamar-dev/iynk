@@ -41,7 +41,7 @@
     },
     "ESC": {
       "name": "4 ESC separados de 30 A en los brazos",
-      "what": "Un controlador de velocidad por brazo, cada uno alimentado desde sus pads de la placa de distribución y enviando la señal trifásica a su motor. Reciben DShot600 de las salidas MAIN del Pixhawk. Un motor de la clase 2216 con una hélice de 10 pulgadas consume unos 3 A en estacionario y 16 A a tope, así que 30 A dejan mucho margen."
+      "what": "Un controlador de velocidad por brazo, cada uno alimentado desde sus pads de la placa de distribución y enviando la señal trifásica a su motor. Reciben DShot600 de las salidas MAIN del Pixhawk. Un motor de la clase 2212–2216 con una hélice de 10 pulgadas consume unos 3 A en estacionario y 16 A a tope, así que 30 A dejan mucho margen."
     },
     "WIRES": {
       "name": "Cables de fase de los motores y cables de alimentación de los ESC",

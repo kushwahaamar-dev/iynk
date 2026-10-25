@@ -41,7 +41,7 @@
     },
     "ESC": {
       "name": "4 separate 30 A ESCs on the arms",
-      "what": "One speed controller per arm, each fed from its pads on the power board and sending three-phase drive to its motor. They take DShot600 from the Pixhawk's MAIN outputs. A 2216-class motor with a 10-inch prop draws about 3 A in a hover and 16 A flat out, so 30 A leaves plenty of headroom."
+      "what": "One speed controller per arm, each fed from its pads on the power board and sending three-phase drive to its motor. They take DShot600 from the Pixhawk's MAIN outputs. A 2212–2216-class motor with a 10-inch prop draws about 3 A in a hover and 16 A flat out, so 30 A leaves plenty of headroom."
     },
     "WIRES": {
       "name": "Motor phase wires and ESC power leads",

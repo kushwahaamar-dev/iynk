@@ -41,7 +41,7 @@
     },
     "ESC": {
       "name": "4 ESC séparés de 30 A sur les bras",
-      "what": "Un variateur par bras, chacun alimenté par ses pastilles sur la carte d'alimentation et envoyant la commande triphasée à son moteur. Ils reçoivent le DShot600 des sorties MAIN du Pixhawk. Un moteur de classe 2216 avec une hélice de 10 pouces tire environ 3 A en stationnaire et 16 A à fond : 30 A laissent donc beaucoup de marge."
+      "what": "Un variateur par bras, chacun alimenté par ses pastilles sur la carte d'alimentation et envoyant la commande triphasée à son moteur. Ils reçoivent le DShot600 des sorties MAIN du Pixhawk. Un moteur de classe 2212–2216 avec une hélice de 10 pouces tire environ 3 A en stationnaire et 16 A à fond : 30 A laissent donc beaucoup de marge."
     },
     "WIRES": {
       "name": "Fils de phase des moteurs et fils d'alimentation des ESC",

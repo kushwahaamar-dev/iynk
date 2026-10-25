@@ -41,7 +41,7 @@
     },
     "ESC": {
       "name": "4 einzelne 30-A-ESCs an den Armen",
-      "what": "Ein Drehzahlsteller pro Arm, jeder von seinen Pads auf der Stromverteilung gespeist und mit dreiphasigem Antrieb für seinen Motor. Sie bekommen DShot600 von den MAIN-Ausgängen des Pixhawk. Ein Motor der 2216-Klasse mit einem 10-Zoll-Propeller zieht im Schwebeflug etwa 3 A und bei Vollgas 16 A, also lassen 30 A reichlich Reserve."
+      "what": "Ein Drehzahlsteller pro Arm, jeder von seinen Pads auf der Stromverteilung gespeist und mit dreiphasigem Antrieb für seinen Motor. Sie bekommen DShot600 von den MAIN-Ausgängen des Pixhawk. Ein Motor der 2212–2216-Klasse mit einem 10-Zoll-Propeller zieht im Schwebeflug etwa 3 A und bei Vollgas 16 A, also lassen 30 A reichlich Reserve."
     },
     "WIRES": {
       "name": "Motorphasenkabel und Stromkabel der ESCs",
