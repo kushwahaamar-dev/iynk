@@ -65,6 +65,12 @@ async function collect(browser, id) {
   };
   for (let round = 0; round < 2; round++) {
     await press('#xrb, #lblb');
+    // See-through fades in over 0.7 s and its notes and labels draw only past 0.6, while the buttons below strip the
+    // board and take the parts out from under them: wait for the fade and a drawn frame, or a busy machine misses them.
+    await page
+      .waitForFunction(() => { const s = CF_UI.st; return !s || s.xr == null || s.xr === s.xrT; }, null, { timeout: 10_000 })
+      .catch(() => {});
+    await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
     await press('.vset button');
     const buttons = await page.$$('#btns .act');
     for (let i = 0; i < buttons.length; i++) {

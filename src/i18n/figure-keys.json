@@ -441,16 +441,13 @@
     "boards/de10-lite",
     "boards/nucleo-f401re",
     "figures/engine/bench.js",
-    "modules/uln2003",
     "robotics/a4988",
-    "robotics/hc-sr04",
     "robotics/l298n",
     "robotics/pca9685",
     "robotics/qtr-8rc"
   ],
   "{name} placed the wrong way round": [
     "figures/engine/bench.js",
-    "modules/traffic-light",
     "robotics/l298n"
   ],
   "{name} removed": [
@@ -459,9 +456,6 @@
     "boards/nucleo-f401re",
     "figures/engine/bench.js",
     "modules/pca9685",
-    "modules/traffic-light",
-    "modules/uln2003",
-    "robotics/hc-sr04",
     "robotics/l298n",
     "robotics/led-resistor",
     "robotics/pca9685",
@@ -982,6 +976,7 @@
     "robotics/esp32-s3-build"
   ],
   "1.4 MM TIP GAP": [
+    "drones/cinewhoop",
     "figures/drones/cinewhoop.js"
   ],
   "1.5 µH inductor L1 (1.0 V)": [
@@ -989,6 +984,7 @@
     "figures/boards/basys3.js"
   ],
   "1/1.7\" SENSOR": [
+    "drones/cinewhoop",
     "figures/drones/cinewhoop.js"
   ],
   "1/16 step, 1/4 turn/s": [
@@ -1321,11 +1317,13 @@
     "figures/drones/octo.js"
   ],
   "1000 µF CAP": [
+    "drones/longrange",
     "drones/quad5",
     "figures/drones/longrange.js",
     "figures/drones/quad5.js"
   ],
   "1000 µF CAP: STRIPE TO MINUS": [
+    "drones/delivery",
     "figures/drones/delivery.js"
   ],
   "10000 lx": [
@@ -1424,6 +1422,7 @@
     "robotics/uno-r3-build"
   ],
   "16 PWM COUNTERS": [
+    "modules/pca9685",
     "robotics/pca9685"
   ],
   "1640 mm spray boom with four nozzles": [
@@ -1669,6 +1668,9 @@
     "boards/de10-lite",
     "figures/boards/de10-lite.js"
   ],
+  "25 LED DIES": [
+    "boards/microbit-v2"
+  ],
   "25-200 mW race VTX (SmartAudio)": [
     "drones/racer",
     "figures/drones/racer.js"
@@ -1770,6 +1772,7 @@
     "figures/drones/vtol.js"
   ],
   "3 PHASE WIRES": [
+    "drones/gpscam",
     "figures/drones/gpscam.js"
   ],
   "3 single ESCs on the arms (Bluejay)": [
@@ -1863,7 +1866,12 @@
     "figures/robotics/esp32-s3-build.js"
   ],
   "3.3 V LDO": [
+    "boards/esp32-devkitc",
+    "modules/mpu6050",
     "robotics/mpu6050"
+  ],
+  "3.3 V REGULATOR": [
+    "boards/nucleo-f401re"
   ],
   "3.3 V regulator (662K, XC6206): VCC to 3.3 V, 6 V at most": [
     "figures/modules/mpu6050.js",
@@ -1874,7 +1882,8 @@
     "figures/modules/soil-moisture.js",
     "figures/modules/ssd1306.js",
     "modules/soil-moisture",
-    "modules/ssd1306"
+    "modules/ssd1306",
+    "parts/mpu6050"
   ],
   "3.3 µH inductor L3 (1.8 V)": [
     "boards/basys3",
@@ -1903,6 +1912,7 @@
     "figures/boards/pi4-pi5.js"
   ],
   "30 A ESC ON ARM": [
+    "drones/gpscam",
     "figures/drones/gpscam.js"
   ],
   "30 A, DShot600": [
@@ -1938,6 +1948,9 @@
   "32 MHz crystal for the nRF52833": [
     "boards/microbit-v2",
     "figures/boards/microbit-v2.js"
+  ],
+  "32-step magnet rotor": [
+    "parts/stepper-28byj48"
   ],
   "32.768 kHz crystal for the real-time clock (LSE)": [
     "boards/nucleo-f401re",
@@ -2000,6 +2013,7 @@
   "3V3 LDO": [
     "boards/esp32-devkitc",
     "boards/esp32-s3-devkitc-1",
+    "boards/nodemcu",
     "figures/boards/esp32-devkitc.js",
     "figures/boards/esp32-s3-devkitc-1.js",
     "robotics/esp32-s3-build"
@@ -2118,6 +2132,7 @@
     "robotics/pca9685"
   ],
   "4 x 35 A MOSFETS": [
+    "drones/cinewhoop",
     "figures/drones/cinewhoop.js"
   ],
   "4 X 5 A ESC": [
@@ -2208,6 +2223,7 @@
     "robotics/transistor-switch"
   ],
   "40 A ESC · DSHOT600": [
+    "drones/delivery",
     "figures/drones/delivery.js"
   ],
   "40 A ESC with 5 V BEC": [
@@ -2215,6 +2231,7 @@
     "figures/drones/wing.js"
   ],
   "40 A ESC, ITS BEC LEAD UNUSED": [
+    "drones/wing",
     "figures/drones/wing.js"
   ],
   "40 A, AM32": [
@@ -2230,6 +2247,7 @@
     "figures/drones/delivery.js"
   ],
   "40 kHz BURST OUT": [
+    "modules/hc-sr04",
     "robotics/hc-sr04"
   ],
   "40 kHz ultrasonic receiver (R): a piezo disc in a 16 mm can": [
@@ -2341,9 +2359,11 @@
     "figures/drones/wing.js"
   ],
   "470 µF 35 V CAP": [
+    "drones/cinewhoop",
     "figures/drones/cinewhoop.js"
   ],
   "470 µF 35 V LOW-ESR CAP": [
+    "drones/wing",
     "figures/drones/wing.js"
   ],
   "470 Ω from CP2102 TXD to the ESP RX pin": [
@@ -2394,6 +2414,7 @@
     "figures/drones/cinewhoop.js"
   ],
   "5 V BEC POWERED": [
+    "drones/cinewhoop",
     "figures/drones/cinewhoop.js"
   ],
   "5 V from the board": [
@@ -2431,6 +2452,9 @@
   ],
   "5 V on: nothing but copper between the supply and the LED": [
     "figures/robotics/led-resistor.js"
+  ],
+  "5 V REGULATOR": [
+    "boards/nucleo-f401re"
   ],
   "5 V supply on − +": [
     "figures/modules/uln2003.js",
@@ -2494,6 +2518,7 @@
     "figures/drones/quad5.js"
   ],
   "5.8 GHZ HD LINK": [
+    "drones/cinewhoop",
     "figures/drones/cinewhoop.js"
   ],
   "5.8 GHz VTX (SmartAudio), 25 mW": [
@@ -2509,6 +2534,7 @@
     "figures/drones/whoop.js"
   ],
   "5.8 GHz VTX, SMARTAUDIO": [
+    "drones/wing",
     "figures/drones/wing.js"
   ],
   "5.8 GHz, 25 mW": [
@@ -2561,6 +2587,9 @@
     "drones/racer",
     "figures/drones/racer.js"
   ],
+  "555 OSCILLATOR ~1.5 MHZ": [
+    "modules/soil-moisture"
+  ],
   "5V IN": [
     "figures/robotics/led-resistor.js",
     "robotics/led-resistor"
@@ -2591,7 +2620,12 @@
     "robotics/uno-r3-build"
   ],
   "5V REGULATOR": [
-    "robotics/l298n"
+    "boards/nano",
+    "boards/uno-r3",
+    "modules/l298n",
+    "robotics/l298n",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
   ],
   "5V-EN": [
     "figures/modules/l298n.js"
@@ -2620,6 +2654,7 @@
     "figures/drones/agrihex.js"
   ],
   "6 CELLS, 6S": [
+    "drones/longrange",
     "figures/drones/longrange.js"
   ],
   "6010 130KV": [
@@ -2722,6 +2757,7 @@
     "figures/boards/nucleo-f401re.js"
   ],
   "8-PIN HARNESS": [
+    "drones/cinewhoop",
     "figures/drones/cinewhoop.js"
   ],
   "8-pin header: VCC GND SCL SDA XDA XCL AD0 INT": [
@@ -2744,6 +2780,7 @@
     "figures/drones/swarm.js"
   ],
   "9 G METAL-GEAR SERVO, S3 / S4": [
+    "drones/wing",
     "figures/drones/wing.js"
   ],
   "900 MHz MAVLink + RC": [
@@ -2955,10 +2992,7 @@
     "boards/de10-lite",
     "boards/nucleo-f401re",
     "figures/engine/bench.js",
-    "modules/traffic-light",
-    "modules/uln2003",
     "robotics/a4988",
-    "robotics/hc-sr04",
     "robotics/l298n",
     "robotics/led-resistor",
     "robotics/pca9685",
@@ -3048,6 +3082,7 @@
     "figures/boards/basys3.js"
   ],
   "AMPLIFIER + COMPARATOR": [
+    "modules/hc-sr04",
     "robotics/hc-sr04"
   ],
   "AMS1117": [
@@ -3387,6 +3422,7 @@
     "figures/boards/esp32-devkitc.js"
   ],
   "AUTO-RESET": [
+    "boards/nodemcu",
     "figures/boards/nano.js",
     "figures/boards/nodemcu.js",
     "figures/boards/uno-r3.js"
@@ -3484,6 +3520,9 @@
   ],
   "Base at {deg}°": [
     "figures/robotics/pca9685.js"
+  ],
+  "Base bond wire": [
+    "parts/tip120"
   ],
   "BAT": [
     "figures/boards/pi4-pi5.js"
@@ -3951,6 +3990,9 @@
     "figures/modules/l298n.js",
     "modules/l298n"
   ],
+  "Brass disc": [
+    "parts/piezo-buzzer"
+  ],
   "Breadboard": [
     "boards/basys3",
     "boards/de10-lite",
@@ -4169,6 +4211,9 @@
   ],
   "BUCK 1.0 V + 3.3 V": [
     "boards/basys3"
+  ],
+  "BUCK CONVERTER": [
+    "boards/uno-r4"
   ],
   "BUCK-BOOST": [
     "boards/pico",
@@ -4768,6 +4813,7 @@
     "figures/drones/vtol.js"
   ],
   "CAM 20° UP": [
+    "drones/longrange",
     "figures/drones/longrange.js"
   ],
   "CAM pad": [
@@ -4809,6 +4855,7 @@
     "figures/boards/pi4-pi5.js"
   ],
   "CAMERA, 20° UP": [
+    "drones/tricopter",
     "figures/drones/tricopter.js"
   ],
   "Camera/display connector 0 (22-pin, 4-lane MIPI)": [
@@ -4885,11 +4932,15 @@
     "figures/drones/agrihex.js"
   ],
   "CARBON SPAR IN THE FOAM": [
+    "drones/wing",
     "figures/drones/wing.js"
   ],
   "CARBON SPAR; AILERONS ON S9 S10": [
     "drones/vtol",
     "figures/drones/vtol.js"
+  ],
+  "Carbon track": [
+    "parts/potentiometer"
   ],
   "CARD · microSD card with the operating system": [
     "boards/pi4-pi5",
@@ -4908,6 +4959,9 @@
   ],
   "cathode": [
     "parts/rgb-led"
+  ],
+  "Cathode band": [
+    "parts/diode-1n4007"
   ],
   "CB · 100 µF electrolytic across VMOT and GND": [
     "modules/a4988",
@@ -4937,7 +4991,11 @@
     "boards/de10-lite",
     "figures/boards/de10-lite.js"
   ],
+  "CdS track": [
+    "parts/ldr"
+  ],
   "CELLS IN SERIES": [
+    "drones/cinewhoop",
     "figures/drones/cinewhoop.js"
   ],
   "Centre the arm": [
@@ -4948,6 +5006,16 @@
     "figures/modules/pca9685.js",
     "modules/pca9685"
   ],
+  "Centre: pins 3–4": [
+    "parts/push-button"
+  ],
+  "CERAMIC": [
+    "boards/nano",
+    "robotics/transistor-switch"
+  ],
+  "Ceramic base": [
+    "parts/ldr"
+  ],
   "CF2.1 BOARD": [
     "drones/swarm",
     "figures/drones/swarm.js"
@@ -4957,6 +5025,7 @@
     "figures/drones/wing.js"
   ],
   "CG MARK: 15-20 % OF THE MEAN CHORD": [
+    "drones/wing",
     "figures/drones/wing.js"
   ],
   "CG MARK: A QUARTER OF THE CHORD": [
@@ -5259,10 +5328,15 @@
     "figures/drones/cinewhoop.js"
   ],
   "Coil A: black and green": [
-    "figures/parts/nema17.js"
+    "figures/parts/nema17.js",
+    "parts/nema17"
+  ],
+  "COIL AND MAGNET": [
+    "boards/microbit-v2"
   ],
   "Coil B: red and blue": [
-    "figures/parts/nema17.js"
+    "figures/parts/nema17.js",
+    "parts/nema17"
   ],
   "coils mixed": [
     "parts/nema17"
@@ -5396,6 +5470,15 @@
     "robotics/transistor-switch",
     "robotics/uno-r3-build"
   ],
+  "Comb electrode": [
+    "parts/ldr"
+  ],
+  "Common anode cup": [
+    "parts/rgb-led"
+  ],
+  "Common cathode cup": [
+    "parts/rgb-led"
+  ],
   "Common lead": [
     "figures/parts/rgb-led.js",
     "parts/rgb-led"
@@ -5433,6 +5516,7 @@
     "figures/drones/delivery.js"
   ],
   "COMPASS FAR FROM THE AMPS": [
+    "drones/delivery",
     "figures/drones/delivery.js"
   ],
   "conducting 200 mA": [
@@ -5473,6 +5557,9 @@
   ],
   "Control a motor": [
     "figures/boards/uno-r3.js"
+  ],
+  "Control board": [
+    "parts/servo-sg90"
   ],
   "Control header (DIR, STEP, SLP, RST, MS3, MS2, MS1, EN)": [
     "figures/modules/a4988.js",
@@ -5576,6 +5663,7 @@
     "drones/swarm"
   ],
   "CRSF ON TELEM2": [
+    "drones/gpscam",
     "figures/drones/gpscam.js"
   ],
   "CUBE": [
@@ -5879,7 +5967,8 @@
   ],
   "DC motor": [
     "figures/parts/dc-motor.js",
-    "parts/dc-motor"
+    "parts/dc-motor",
+    "parts/servo-sg90"
   ],
   "DC motor MOT1": [
     "parts/dc-motor"
@@ -6069,6 +6158,10 @@
   "DRAM DIE": [
     "boards/de10-lite"
   ],
+  "DRAM DIES": [
+    "boards/pi4-pi5",
+    "robotics/pi5-ros2"
+  ],
   "DRIVER IC": [
     "figures/modules/tb6612fng.js",
     "modules/tb6612fng",
@@ -6155,6 +6248,7 @@
     "robotics/hc-sr04"
   ],
   "ECHO IN": [
+    "modules/hc-sr04",
     "robotics/hc-sr04"
   ],
   "Echo lost at the cold joint": [
@@ -6244,6 +6338,7 @@
     "figures/drones/longrange.js"
   ],
   "ELRS 900 MHZ": [
+    "drones/longrange",
     "figures/drones/longrange.js"
   ],
   "ELRS 900 MHz diversity receiver + T-antenna": [
@@ -6259,6 +6354,7 @@
     "figures/drones/whoop.js"
   ],
   "ELRS ON UART2": [
+    "drones/cinewhoop",
     "figures/drones/cinewhoop.js"
   ],
   "ELRS ON UART4 (SERIAL6 = 23)": [
@@ -6274,6 +6370,7 @@
     "figures/drones/octo.js"
   ],
   "ELRS RX ON UART1 (CRSF)": [
+    "drones/wing",
     "figures/drones/wing.js"
   ],
   "ELRS RX ON UART2": [
@@ -6281,6 +6378,7 @@
     "figures/drones/quad5.js"
   ],
   "ELRS RX, UART2 CRSF": [
+    "drones/racer",
     "figures/drones/racer.js"
   ],
   "ELRS RX, UART3": [
@@ -6292,6 +6390,7 @@
     "figures/drones/whoop.js"
   ],
   "ELRS, UART2 CRSF": [
+    "drones/tricopter",
     "figures/drones/tricopter.js"
   ],
   "EM78P153S": [
@@ -6470,6 +6569,9 @@
     "boards/nodemcu",
     "figures/boards/nodemcu.js"
   ],
+  "ESP32 + 4 MB FLASH": [
+    "boards/esp32-devkitc"
+  ],
   "ESP32 MODULE": [
     "boards/esp32-devkitc",
     "figures/boards/esp32-devkitc.js"
@@ -6480,6 +6582,10 @@
   ],
   "ESP32-S3": [
     "figures/boards/uno-r4.js"
+  ],
+  "ESP32-S3 + FLASH + 40 MHZ CRYSTAL": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
   ],
   "ESP32-S3 awake": [
     "figures/robotics/esp32-s3-build.js"
@@ -6526,6 +6632,9 @@
   "ESP32-WROOM-32E: dual-core Xtensa LX6 at 240 MHz, Wi-Fi and Bluetooth, 3.3 V logic": [
     "figures/boards/esp32-devkitc.js"
   ],
+  "ESP8266EX": [
+    "boards/nodemcu"
+  ],
   "ESP8266MOD|AI-THINKER": [
     "figures/boards/nodemcu.js"
   ],
@@ -6541,6 +6650,10 @@
   "ETHERNET": [
     "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js",
+    "robotics/pi5-ros2"
+  ],
+  "ETHERNET PHY": [
+    "boards/pi4-pi5",
     "robotics/pi5-ros2"
   ],
   "Every joint is soldered": [
@@ -6688,9 +6801,11 @@
     "figures/drones/tricopter.js"
   ],
   "F405 + PDB, TRI MIXER": [
+    "drones/tricopter",
     "figures/drones/tricopter.js"
   ],
   "F405 FC ON A PDB: 90 A SENSOR, 3 BECS": [
+    "drones/wing",
     "figures/drones/wing.js"
   ],
   "F405 flight controller (Betaflight)": [
@@ -6741,6 +6856,7 @@
     "figures/drones/cinewhoop.js"
   ],
   "F722 MCU + GYRO": [
+    "drones/racer",
     "figures/drones/racer.js"
   ],
   "F722, Betaflight": [
@@ -7029,6 +7145,9 @@
   "FLASH button and a light sensor on A0": [
     "figures/boards/nodemcu.js"
   ],
+  "FLASH MEMORY": [
+    "boards/pico"
+  ],
   "Flash, then dark: with no resistor only the LED itself and the charger's limit hold the current back, hundreds of mA against its 30 mA maximum, and it burns out": [
     "figures/robotics/led-resistor.js"
   ],
@@ -7168,6 +7287,9 @@
     "parts/fsr402"
   ],
   "Force sensor (FSR 402) P1": [
+    "parts/fsr402"
+  ],
+  "Force-sensing ink": [
     "parts/fsr402"
   ],
   "forward": [
@@ -7428,6 +7550,9 @@
   "GEAR UP: THE CAMERA PANS 360°": [
     "figures/drones/octo.js"
   ],
+  "Gears 63.68 : 1": [
+    "parts/stepper-28byj48"
+  ],
   "Gigabit Ethernet jack": [
     "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js",
@@ -7456,6 +7581,7 @@
     "figures/drones/octo.js"
   ],
   "GIMBAL MOTORS": [
+    "drones/gpscam",
     "figures/drones/gpscam.js"
   ],
   "Gimbal ok: pitch from -90° (straight down) to +25°, roll held level": [
@@ -7482,6 +7608,7 @@
     "figures/drones/cinewhoop.js"
   ],
   "Gold bond wires": [
+    "parts/npn-2n2222",
     "parts/tmp36"
   ],
   "GPIO": [
@@ -7726,12 +7853,14 @@
     "robotics/mpu6050"
   ],
   "GYRO + BARO": [
+    "drones/longrange",
     "figures/drones/longrange.js"
   ],
   "gyro bias found: sensors calibrated": [
     "figures/drones/swarm.js"
   ],
   "GYRO ICM-42688-P": [
+    "drones/cinewhoop",
     "drones/quad5",
     "figures/drones/cinewhoop.js",
     "figures/drones/quad5.js"
@@ -7796,6 +7925,9 @@
   "Half step, slowed down": [
     "figures/modules/uln2003.js",
     "modules/uln2003"
+  ],
+  "Hall sensor + driver IC": [
+    "parts/fan"
   ],
   "Hand at {cm} cm: beep every {ms} ms": [
     "figures/robotics/hc-sr04.js"
@@ -8032,6 +8164,7 @@
     "robotics/a4988"
   ],
   "HOOK OPENS ON A SLACK LINE": [
+    "drones/delivery",
     "figures/drones/delivery.js"
   ],
   "hot": [
@@ -8252,6 +8385,7 @@
     "robotics/uno-r3-build"
   ],
   "IR LED + PHOTOTRANSISTOR": [
+    "modules/qtr-8rc",
     "robotics/qtr-8rc"
   ],
   "ISL854102 buck converter (VIN to 5 V, 1.2 A)": [
@@ -9009,6 +9143,10 @@
   "LDO": [
     "figures/boards/microbit-v2.js"
   ],
+  "LDO PASS TRANSISTOR": [
+    "boards/esp32-s3-devkitc-1",
+    "robotics/esp32-s3-build"
+  ],
   "Lead frame": [
     "parts/tmp36"
   ],
@@ -9089,6 +9227,10 @@
     "boards/nodemcu",
     "figures/boards/nodemcu.js"
   ],
+  "LED DIE": [
+    "boards/esp32-devkitc",
+    "robotics/led-resistor"
+  ],
   "LED follows BOOTSEL": [
     "boards/pico",
     "figures/boards/pico.js"
@@ -9154,6 +9296,7 @@
     "robotics/qtr-8rc"
   ],
   "LED SWITCH (LEDON)": [
+    "modules/qtr-8rc",
     "robotics/qtr-8rc"
   ],
   "LED switched from a web page": [
@@ -9437,6 +9580,7 @@
     "figures/drones/quad5.js"
   ],
   "LIPO CELLS": [
+    "drones/gpscam",
     "figures/drones/gpscam.js"
   ],
   "LM2596": [
@@ -9527,13 +9671,11 @@
   "Low parts first: with tall parts on, the board rocks and loose parts fall out when you flip it to solder": [
     "boards/basys3",
     "boards/de10-lite",
-    "boards/nucleo-f401re",
     "boards/uno-r3",
     "figures/engine/bench.js",
     "robotics/l298n",
     "robotics/lm2596",
-    "robotics/pca9685",
-    "robotics/uno-r3-build"
+    "robotics/pca9685"
   ],
   "low supply": [
     "parts/servo-sg90"
@@ -9623,6 +9765,7 @@
     "figures/drones/longrange.js"
   ],
   "M10 GNSS + COMPASS, UART3 + I2C1": [
+    "drones/wing",
     "figures/drones/wing.js"
   ],
   "M10 GPS + compass": [
@@ -9630,6 +9773,7 @@
     "figures/drones/wing.js"
   ],
   "M10 GPS + COMPASS": [
+    "drones/gpscam",
     "figures/drones/gpscam.js"
   ],
   "M10 GPS + compass on a 129 mm mast": [
@@ -9741,6 +9885,10 @@
     "robotics/transistor-switch",
     "robotics/uno-r3-build"
   ],
+  "MAGNETICS": [
+    "boards/pi4-pi5",
+    "robotics/pi5-ros2"
+  ],
   "MAIN 1-4 DShot600": [
     "drones/gpscam",
     "figures/drones/gpscam.js"
@@ -9779,6 +9927,7 @@
     "figures/boards/uno-r4.js"
   ],
   "MAVLINK2 TELEM1": [
+    "drones/gpscam",
     "figures/drones/gpscam.js"
   ],
   "MAX 10 FPGA 10M50DAF484C7G (your design becomes its wiring; it keeps it in its own flash)": [
@@ -9839,8 +9988,18 @@
   "MD test point (RA4M1 boot-mode pin)": [
     "figures/boards/uno-r4.js"
   ],
+  "MEMS ACCELEROMETER": [
+    "boards/microbit-v2"
+  ],
   "MEMS DIE ON CMOS DIE": [
+    "modules/mpu6050",
     "robotics/mpu6050"
+  ],
+  "MEMS die on the CMOS chip": [
+    "parts/mpu6050"
+  ],
+  "MEMS MICROPHONE": [
+    "boards/microbit-v2"
   ],
   "MEMS microphone (sound comes in through a hole in the PCB)": [
     "boards/microbit-v2",
@@ -10006,6 +10165,7 @@
     "figures/drones/swarm.js"
   ],
   "MOSFETS x12": [
+    "drones/longrange",
     "drones/quad5",
     "figures/drones/longrange.js",
     "figures/drones/quad5.js"
@@ -10422,6 +10582,7 @@
     "figures/drones/racer.js"
   ],
   "NANO CAM, 40° UP": [
+    "drones/racer",
     "figures/drones/racer.js"
   ],
   "NANO CAMERA": [
@@ -10793,7 +10954,10 @@
     "modules/soil-moisture",
     "modules/ssd1306",
     "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
     "robotics/esp32-s3-build",
+    "robotics/hc-sr04",
     "robotics/lm2596",
     "robotics/mpu6050",
     "robotics/pi5-ros2",
@@ -10836,6 +11000,10 @@
   "NRF52840, 20 DBM": [
     "drones/swarm",
     "figures/drones/swarm.js"
+  ],
+  "Nylon gear train": [
+    "parts/servo-sg90",
+    "parts/tt-motor"
   ],
   "O3 CAMERA": [
     "drones/cinewhoop",
@@ -10905,21 +11073,7 @@
     "boards/pico",
     "boards/uno-r3",
     "boards/uno-r4",
-    "drones/agrihex",
-    "drones/cinewhoop",
-    "drones/delivery",
-    "drones/gpscam",
-    "drones/longrange",
-    "drones/octo",
-    "drones/quad5",
-    "drones/racer",
-    "drones/swarm",
-    "drones/tricopter",
-    "drones/vtol",
-    "drones/whoop",
-    "drones/wing",
     "figures/engine/bench.js",
-    "figures/engine/drone.js",
     "modules/a4988",
     "modules/hc-sr04",
     "modules/l298n",
@@ -11055,17 +11209,6 @@
     "robotics/transistor-switch",
     "robotics/uno-r3-build"
   ],
-  "ON": [
-    "boards/nano",
-    "boards/uno-r3",
-    "boards/uno-r4",
-    "figures/boards/nano.js",
-    "figures/boards/uno-r3.js",
-    "figures/boards/uno-r4.js",
-    "figures/engine/drone.js",
-    "robotics/transistor-switch",
-    "robotics/uno-r3-build"
-  ],
   "ON · ON LED (5 V)": [
     "boards/uno-r3",
     "robotics/uno-r3-build"
@@ -11073,6 +11216,16 @@
   "ON JUMPER": [
     "figures/modules/uln2003.js",
     "modules/uln2003"
+  ],
+  "ON LED": [
+    "boards/nano",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "figures/boards/nano.js",
+    "figures/boards/uno-r3.js",
+    "figures/boards/uno-r4.js",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
   ],
   "ON LED (5 V present)": [
     "boards/nano",
@@ -11135,6 +11288,9 @@
     "boards/uno-r4",
     "robotics/uno-r3-build"
   ],
+  "Oscillator": [
+    "parts/piezo-buzzer"
+  ],
   "OSD": [
     "drones/vtol",
     "drones/wing",
@@ -11175,6 +11331,7 @@
     "robotics/lm2596"
   ],
   "OUTRUNNER, SHAFT AFT": [
+    "drones/wing",
     "figures/drones/wing.js"
   ],
   "Over a white card": [
@@ -11329,6 +11486,7 @@
     "robotics/pca9685"
   ],
   "PCB POWER PLATE": [
+    "drones/gpscam",
     "figures/drones/gpscam.js"
   ],
   "PCIE": [
@@ -11397,6 +11555,7 @@
     "figures/drones/delivery.js"
   ],
   "PI 5 UART ↔ TELEM2 (3.3 V)": [
+    "drones/delivery",
     "figures/drones/delivery.js"
   ],
   "PIC24 USB host chip (reads a keyboard, a mouse or a bitstream on a stick)": [
@@ -11510,6 +11669,9 @@
     "robotics/mpu6050"
   ],
   "Piezo buzzer P1": [
+    "parts/piezo-buzzer"
+  ],
+  "Piezo ceramic": [
     "parts/piezo-buzzer"
   ],
   "Pin 9": [
@@ -11784,6 +11946,9 @@
     "drones/swarm",
     "figures/drones/swarm.js"
   ],
+  "PLUGGED IN": [
+    "figures/engine/drone.js"
+  ],
   "Plunger colour": [
     "figures/parts/push-button.js",
     "parts/push-button"
@@ -11803,6 +11968,7 @@
     "figures/drones/gpscam.js"
   ],
   "PM02 V + I SENSE": [
+    "drones/gpscam",
     "figures/drones/gpscam.js"
   ],
   "PM02, V + I, 5.2 V": [
@@ -11903,8 +12069,12 @@
     "figures/modules/a4988.js"
   ],
   "POLYFUSE": [
+    "boards/nano",
+    "boards/uno-r3",
     "figures/boards/nano.js",
-    "figures/boards/uno-r3.js"
+    "figures/boards/uno-r3.js",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
   ],
   "pop": [
     "figures/boards/uno-r3.js",
@@ -11936,6 +12106,9 @@
   "Position": [
     "figures/robotics/qtr-8rc.js",
     "robotics/qtr-8rc"
+  ],
+  "Position pot (5 kΩ)": [
+    "parts/servo-sg90"
   ],
   "Potentiometer": [
     "figures/parts/potentiometer.js",
@@ -12071,6 +12244,10 @@
     "figures/boards/pi4-pi5.js",
     "robotics/pi5-ros2"
   ],
+  "POWER CHIP": [
+    "boards/pi4-pi5",
+    "robotics/pi5-ros2"
+  ],
   "Power distribution: AS150U lead, power brick, 63 V capacitors": [
     "drones/agrihex",
     "figures/drones/agrihex.js"
@@ -12103,6 +12280,9 @@
   "Power jumper pins": [
     "figures/modules/uln2003.js",
     "modules/uln2003"
+  ],
+  "Power LED": [
+    "parts/mpu6050"
   ],
   "POWER LED": [
     "boards/esp32-s3-devkitc-1",
@@ -12143,6 +12323,7 @@
     "figures/drones/gpscam.js"
   ],
   "POWER MODULE → POWER1": [
+    "drones/delivery",
     "figures/drones/delivery.js"
   ],
   "POWER MODULE: cap stripe to minus": [
@@ -12830,6 +13011,7 @@
     "robotics/pi5-ros2"
   ],
   "PWM WINCH ON AUX5": [
+    "drones/delivery",
     "figures/drones/delivery.js"
   ],
   "PWM winch, 1 kg": [
@@ -12896,6 +13078,9 @@
     "modules/hc-sr04",
     "robotics/hc-sr04"
   ],
+  "Q1 driver transistor": [
+    "parts/tip120"
+  ],
   "Q2 · AO3415 MOSFET Q2: the over-voltage cut-off (opens above about 5.5 V)": [
     "boards/de10-lite"
   ],
@@ -12912,6 +13097,9 @@
   "Q2 · NPN comparator output to the MCU (BC847 in the schematic)": [
     "modules/hc-sr04",
     "robotics/hc-sr04"
+  ],
+  "Q2 output transistor": [
+    "parts/tip120"
   ],
   "QSTABILIZE: ROTORS UP": [
     "figures/drones/vtol.js"
@@ -12930,6 +13118,12 @@
   "Quad-SPI flash IC8 (holds the design the FPGA loads at power-up)": [
     "boards/basys3",
     "figures/boards/basys3.js"
+  ],
+  "QUARTZ": [
+    "boards/nucleo-f401re",
+    "boards/pico",
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
   ],
   "QUARTZ BLANK": [
     "boards/de10-lite"
@@ -13333,9 +13527,11 @@
     "figures/drones/racer.js"
   ],
   "RACEBAND R4, 25 MW": [
+    "drones/racer",
     "figures/drones/racer.js"
   ],
   "RACEBAND, 25 MW": [
+    "drones/tricopter",
     "figures/drones/tricopter.js"
   ],
   "RADAR": [
@@ -13580,6 +13776,9 @@
   "Red power LED (bright on USB, dimmer on battery)": [
     "boards/microbit-v2",
     "figures/boards/microbit-v2.js"
+  ],
+  "Red, green and blue dies": [
+    "parts/rgb-led"
   ],
   "Red, yellow and green 8 mm LEDs with built-in resistors, active high": [
     "figures/modules/traffic-light.js"
@@ -14090,6 +14289,7 @@
     "figures/robotics/led-resistor.js"
   ],
   "REVERSE PROTECTION": [
+    "modules/pca9685",
     "robotics/pca9685"
   ],
   "reversed": [
@@ -14154,6 +14354,12 @@
     "boards/microbit-v2",
     "figures/boards/microbit-v2.js"
   ],
+  "Ring to pin W": [
+    "parts/potentiometer"
+  ],
+  "Ring: pins 1–2": [
+    "parts/push-button"
+  ],
   "RLED · 220 Ω resistors for the power and USB LEDs (R38, R39)": [
     "boards/microbit-v2"
   ],
@@ -14217,6 +14423,10 @@
   "RP1 · 4 x 1 kΩ array: D0 and D1 to the FT232, ON LED, RESET pull-up": [
     "boards/nano",
     "robotics/transistor-switch"
+  ],
+  "RP1 I/O CHIP": [
+    "boards/pi4-pi5",
+    "robotics/pi5-ros2"
   ],
   "RP1 I/O controller (USB, Ethernet, MIPI, GPIO)": [
     "boards/pi4-pi5",
@@ -14659,20 +14869,71 @@
   "See-through: the chips show their silicon, copper shows where current flows": [
     "boards/basys3",
     "boards/de10-lite",
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/microbit-v2",
+    "boards/nano",
+    "boards/nodemcu",
     "boards/nucleo-f401re",
+    "boards/pi4-pi5",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
     "figures/engine/bench.js",
+    "modules/a4988",
+    "modules/hc-sr04",
+    "modules/l298n",
+    "modules/lm2596",
+    "modules/mpu6050",
+    "modules/pca9685",
+    "modules/qtr-8rc",
+    "modules/soil-moisture",
+    "modules/ssd1306",
+    "modules/tb6612fng",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "parts/aa-holder-4",
+    "parts/breadboard",
     "parts/dc-motor",
+    "parts/diode-1n4007",
+    "parts/fan",
+    "parts/fsr402",
+    "parts/hc-sr04",
+    "parts/ldr",
+    "parts/led",
+    "parts/lipo-2s",
+    "parts/mpu6050",
+    "parts/multimeter",
+    "parts/nema17",
+    "parts/npn-2n2222",
+    "parts/piezo-buzzer",
+    "parts/potentiometer",
+    "parts/push-button",
+    "parts/resistor",
+    "parts/rgb-led",
+    "parts/servo-sg90",
+    "parts/soil-moisture",
+    "parts/ssd1306",
+    "parts/stepper-28byj48",
+    "parts/tip120",
     "parts/tmp36",
+    "parts/traffic-light",
+    "parts/tt-motor",
     "parts/uln2003",
+    "parts/wire",
     "robotics/a4988",
+    "robotics/esp32-s3-build",
     "robotics/hc-sr04",
     "robotics/l298n",
+    "robotics/led-resistor",
     "robotics/lm2596",
     "robotics/mpu6050",
     "robotics/pca9685",
+    "robotics/pi5-ros2",
     "robotics/qtr-8rc",
     "robotics/tb6612fng",
-    "robotics/transistor-switch"
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
   ],
   "See-through: the covers fade so the insides, the power path and the signals show.": [
     "drones/agrihex",
@@ -14759,6 +15020,7 @@
     "modules/soil-moisture"
   ],
   "SERVO 5 ON THE S9 PAD": [
+    "drones/tricopter",
     "figures/drones/tricopter.js"
   ],
   "servo 5: 1000-2000 us, centre 1500 us, 333 Hz": [
@@ -14838,6 +15100,9 @@
   "Set. Now power the board to see it": [
     "figures/robotics/led-resistor.js",
     "robotics/led-resistor"
+  ],
+  "SEVEN DARLINGTON PAIRS": [
+    "modules/uln2003"
   ],
   "Seven Darlington switches with clamp diodes: an Uno pin drives a 28BYJ-48 coil": [
     "figures/modules/uln2003.js"
@@ -14956,8 +15221,30 @@
   "Silicon die": [
     "parts/tmp36"
   ],
+  "SILICON DIE": [
+    "boards/nano",
+    "boards/nucleo-f401re",
+    "boards/pi4-pi5",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "robotics/pi5-ros2",
+    "robotics/uno-r3-build"
+  ],
+  "SILICON DIE + RADIO": [
+    "boards/microbit-v2"
+  ],
+  "Silicon die on the collector lead": [
+    "parts/npn-2n2222"
+  ],
   "SILICON DIE: LOGIC CELLS": [
     "boards/basys3"
+  ],
+  "Silicon PN chip": [
+    "parts/diode-1n4007"
+  ],
+  "Silver fingers": [
+    "parts/fsr402"
   ],
   "Six 0603 capacitors: VMOT, charge pump, VDD and VREG decoupling": [
     "figures/modules/a4988.js",
@@ -15163,6 +15450,9 @@
     "boards/de10-lite",
     "figures/boards/de10-lite.js"
   ],
+  "Snap dome": [
+    "parts/push-button"
+  ],
   "Snap line: break here for a 6-sensor and a 2-sensor board": [
     "figures/modules/qtr-8rc.js",
     "modules/qtr-8rc",
@@ -15214,7 +15504,6 @@
     "figures/boards/nucleo-f401re.js"
   ],
   "Solder everything first: this part goes on last": [
-    "boards/nucleo-f401re",
     "figures/engine/bench.js",
     "modules/l298n",
     "robotics/a4988",
@@ -15281,15 +15570,15 @@
     "boards/de10-lite",
     "boards/nucleo-f401re",
     "figures/engine/bench.js",
-    "modules/traffic-light",
-    "modules/uln2003",
     "robotics/a4988",
-    "robotics/hc-sr04",
     "robotics/l298n",
     "robotics/led-resistor",
     "robotics/pca9685",
     "robotics/qtr-8rc",
     "robotics/tb6612fng"
+  ],
+  "Sound hole": [
+    "parts/piezo-buzzer"
   ],
   "Sound meter": [
     "boards/microbit-v2",
@@ -15300,6 +15589,9 @@
   ],
   "SPACE": [
     "figures/vendor/colorfigures/core.js"
+  ],
+  "Spacer, air vent": [
+    "parts/fsr402"
   ],
   "SPEAKER": [
     "figures/boards/microbit-v2.js"
@@ -15347,6 +15639,9 @@
     "modules/lm2596",
     "robotics/lm2596"
   ],
+  "SSD1306 DIE ON THE GLASS": [
+    "modules/ssd1306"
+  ],
   "SSD1306 OLED module": [
     "figures/modules/ssd1306.js",
     "modules/ssd1306"
@@ -15357,6 +15652,9 @@
   "ST-LINK": [
     "boards/nucleo-f401re",
     "figures/boards/nucleo-f401re.js"
+  ],
+  "ST-LINK/V2-1": [
+    "boards/nucleo-f401re"
   ],
   "ST1": [
     "parts/stepper-28byj48"
@@ -15382,6 +15680,9 @@
     "figures/robotics/tb6612fng.js"
   ],
   "STATOR 12N14P": [
+    "drones/cinewhoop",
+    "drones/gpscam",
+    "drones/longrange",
     "drones/quad5",
     "figures/drones/cinewhoop.js",
     "figures/drones/gpscam.js",
@@ -15389,10 +15690,15 @@
     "figures/drones/quad5.js"
   ],
   "STATOR 22 x 7 MM": [
+    "drones/racer",
     "figures/drones/racer.js"
   ],
   "STATOR 23 X 6 MM": [
+    "drones/tricopter",
     "figures/drones/tricopter.js"
+  ],
+  "Stator coils": [
+    "parts/fan"
   ],
   "Status": [
     "boards/basys3",
@@ -15455,6 +15761,7 @@
     "figures/drones/delivery.js"
   ],
   "STEREO IR DEPTH CAMERA": [
+    "drones/delivery",
     "figures/drones/delivery.js"
   ],
   "STICK BACK": [
@@ -15496,9 +15803,11 @@
     "figures/drones/swarm.js"
   ],
   "STM32H743 · 2 IMUS · EKF3": [
+    "drones/delivery",
     "figures/drones/delivery.js"
   ],
   "STM32H743 + 2 IMUS": [
+    "drones/gpscam",
     "figures/drones/gpscam.js"
   ],
   "STM32H753 · 3 IMUS · MAIN OUT 1-8 = MOTORS": [
@@ -15513,6 +15822,10 @@
     "parts/dc-motor",
     "parts/fan",
     "parts/tt-motor"
+  ],
+  "STORES ENERGY 150 000 TIMES A SECOND": [
+    "modules/lm2596",
+    "robotics/lm2596"
   ],
   "STPS2L30A Schottky diode (5 V regulator to E5V)": [
     "boards/nucleo-f401re",
@@ -15963,6 +16276,10 @@
     "figures/robotics/pca9685.js",
     "robotics/pca9685"
   ],
+  "SWITCH + 1.23 V REFERENCE": [
+    "modules/lm2596",
+    "robotics/lm2596"
+  ],
   "Switch high folded the legs up clear of the camera, switch low brought them down and locked. In the air LGR_RETRACT_ALT 4 and LGR_DEPLOY_ALT 3 (metres) do it for you": [
     "figures/drones/octo.js"
   ],
@@ -15998,6 +16315,9 @@
   ],
   "T2 · STS9P3LLH6 P-MOSFET: switches USB 5 V to the target once the PC grants 300 mA": [
     "boards/nucleo-f401re"
+  ],
+  "Tab = collector": [
+    "parts/tip120"
   ],
   "tabs melted": [
     "parts/fsr402"
@@ -16222,6 +16542,7 @@
     "figures/robotics/transistor-switch.js"
   ],
   "THE PACK IS THE CG BALLAST": [
+    "drones/wing",
     "figures/drones/wing.js"
   ],
   "THE PACK SITS ON THE CG": [
@@ -16324,6 +16645,7 @@
     "figures/modules/hc-sr04.js"
   ],
   "TIMES THE ECHO": [
+    "modules/hc-sr04",
     "robotics/hc-sr04"
   ],
   "Tiny Whoop 65 mm": [
@@ -16545,6 +16867,7 @@
     "robotics/transistor-switch"
   ],
   "TRANSLATOR + TWO H-BRIDGES": [
+    "modules/a4988",
     "robotics/a4988"
   ],
   "TRANSMITTER": [
@@ -16721,6 +17044,7 @@
     "figures/drones/octo.js"
   ],
   "TWO BIPOLAR H-BRIDGES": [
+    "modules/l298n",
     "robotics/l298n"
   ],
   "Two bipolar H-bridges: motors on +12V (5-35 V), 2 A per channel, about 2 V lost in the switches": [
@@ -16731,6 +17055,7 @@
     "figures/drones/octo.js"
   ],
   "TWO H-BRIDGES": [
+    "modules/tb6612fng",
     "robotics/tb6612fng"
   ],
   "Two long 10-pin headers (19 mm up, 4 mm down) for a deck on each side": [
@@ -17230,6 +17555,22 @@
   "Unplug, then turn it round": [
     "figures/engine/bench.js"
   ],
+  "UNPLUGGED": [
+    "drones/agrihex",
+    "drones/cinewhoop",
+    "drones/delivery",
+    "drones/gpscam",
+    "drones/longrange",
+    "drones/octo",
+    "drones/quad5",
+    "drones/racer",
+    "drones/swarm",
+    "drones/tricopter",
+    "drones/vtol",
+    "drones/whoop",
+    "drones/wing",
+    "figures/engine/drone.js"
+  ],
   "Unpowered": [
     "figures/modules/lm2596.js",
     "figures/modules/pca9685.js",
@@ -17343,7 +17684,10 @@
     "robotics/pi5-ros2"
   ],
   "USB BRIDGE": [
-    "boards/basys3"
+    "boards/basys3",
+    "boards/nano",
+    "boards/uno-r3",
+    "robotics/uno-r3-build"
   ],
   "USB cable": [
     "boards/basys3",
@@ -17387,6 +17731,9 @@
   "USB HOST": [
     "figures/boards/basys3.js"
   ],
+  "USB INTERFACE CHIP": [
+    "boards/microbit-v2"
+  ],
   "USB LED": [
     "figures/boards/microbit-v2.js"
   ],
@@ -17403,6 +17750,9 @@
     "boards/esp32-s3-devkitc-1",
     "figures/boards/esp32-s3-devkitc-1.js",
     "robotics/esp32-s3-build"
+  ],
+  "USB POWER SWITCH": [
+    "boards/nucleo-f401re"
   ],
   "USB SW": [
     "figures/boards/uno-r4.js"
@@ -17485,8 +17835,14 @@
   "USB-UART": [
     "boards/esp32-devkitc",
     "boards/esp32-s3-devkitc-1",
+    "boards/nodemcu",
     "figures/boards/esp32-devkitc.js",
     "figures/boards/esp32-s3-devkitc-1.js",
+    "robotics/esp32-s3-build"
+  ],
+  "USB-UART BRIDGE": [
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
     "robotics/esp32-s3-build"
   ],
   "USB, nRF52840": [
@@ -17565,6 +17921,7 @@
     "figures/drones/tricopter.js"
   ],
   "VBAT + UART1": [
+    "drones/cinewhoop",
     "figures/drones/cinewhoop.js"
   ],
   "VBAT ×8": [
@@ -17856,6 +18213,7 @@
     "figures/drones/wing.js"
   ],
   "VTX 1 W": [
+    "drones/longrange",
     "figures/drones/longrange.js"
   ],
   "VTX ANT": [
@@ -17978,6 +18336,10 @@
   "Wi-Fi joining": [
     "figures/robotics/esp32-s3-build.js"
   ],
+  "WI-FI RADIO": [
+    "boards/pi4-pi5",
+    "robotics/pi5-ros2"
+  ],
   "Wi-Fi server": [
     "boards/nodemcu",
     "figures/boards/nodemcu.js"
@@ -18012,6 +18374,12 @@
   "winch: PWM sets the line speed; line length is an estimate (no encoder)": [
     "figures/drones/delivery.js"
   ],
+  "Winding O–P": [
+    "parts/stepper-28byj48"
+  ],
+  "Winding Y–B": [
+    "parts/stepper-28byj48"
+  ],
   "WING": [
     "drones/vtol",
     "drones/wing",
@@ -18021,6 +18389,9 @@
   "Wing: carbon spar, ailerons, aileron servos": [
     "drones/vtol",
     "figures/drones/vtol.js"
+  ],
+  "Wiper": [
+    "parts/potentiometer"
   ],
   "Wire from {a} to {b}": [
     "boards/basys3",
@@ -18135,6 +18506,7 @@
     "figures/drones/racer.js"
   ],
   "WS2812B x8 LEDS": [
+    "drones/racer",
     "figures/drones/racer.js"
   ],
   "X1 · 12 MHz crystal": [
