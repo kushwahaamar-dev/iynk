@@ -34,17 +34,24 @@ test("a room link opens Together, and a hidden tab event does not reveal Passpor
   await expect(page.getByRole("link", { name: shell.nav.passport })).toHaveCount(0);
 });
 
-test.describe("on a 1440 px desk", () => {
-  test.use({ viewport: { width: 1440, height: 900 } });
+for (const [w, h] of [[1440, 900], [1920, 1080]]) {
+  test.describe(`on a ${w} px desk`, () => {
+    test.use({ viewport: { width: w, height: h } });
 
-  test("the open drawer takes its width from the rail before the stage", async ({ page }) => {
-    await page.goto("/en/boards/nano/blink");
-    const width = (selector: string) => page.locator(`main:visible ${selector}`).first().evaluate((el) => el.getBoundingClientRect().width);
-    const stage = await width(".ws-stage");
-    await openDock(page, false);
-    // The 416 px drawer pushes the page over; the rail drops to 22rem (352 px, its floor on a 1024 px screen) first.
-    await expect.poll(() => width(".ws-rail")).toBeLessThanOrEqual(352.5);
-    expect(await width(".ws-stage")).toBeGreaterThan(stage - 416 + 100);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
+    test("the open drawer takes its width from the stage, down to 34rem, before the rail", async ({ page }) => {
+      await page.goto("/en/boards/nano/blink");
+      const width = (selector: string) => page.locator(`main:visible ${selector}`).first().evaluate((el) => el.getBoundingClientRect().width);
+      const stage = await width(".ws-stage");
+      const rail = await width(".ws-rail");
+      await openDock(page, false);
+      // The 416 px drawer pushes the page over. At 1920 the code keeps its whole width; at 1440 the stage stops at
+      // 34rem (544 px) and the rail gives up the rest, never below 22rem (352 px).
+      await expect.poll(() => width(".ws-stage")).toBeLessThan(stage - 100);
+      expect(await width(".ws-stage")).toBeGreaterThanOrEqual(544);
+      const docked = await width(".ws-rail");
+      expect(docked).toBeGreaterThanOrEqual(352);
+      if (w >= 1920) expect(docked).toBeCloseTo(rail, 0);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
+    });
   });
-});
+}

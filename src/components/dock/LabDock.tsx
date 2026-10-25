@@ -94,11 +94,12 @@ function TabBody({ tab, ...lab }: LabDockProps & { tab: DockTab }) {
  * the right edge that leaves the figure in view, on a phone a bottom sheet.
  */
 // Where the screen has room, the open drawer pushes the page over instead of covering the rail, so in a room you can
-// work the steps or the code and still see the keyboard and the chat. Narrower desks keep the overlay. The rail gives
-// up its width first, down to 22rem (its width on a 1024 px screen), so the figure keeps as much of its room as it can.
+// work the steps or the code and still see the keyboard and the chat. Narrower desks keep the overlay. The figure gives
+// up its room first, down to about 34rem, and then the rail, down to 22rem (its width on a 1024 px screen), so a lesson's
+// code stays readable beside the drawer on a wide screen (64rem: the drawer, the figure's 34rem, the gap and padding).
 const PUSH_PAGE = `@media (width >= 80rem) {
   body:has(> [data-testid="lab-dock"][data-layout="desk"]:not([hidden])) > :is(main, footer) { padding-inline-end: 26rem; }
-  body:has(> [data-testid="lab-dock"][data-layout="desk"]:not([hidden])) .ws { grid-template-columns: minmax(0, 1fr) min(var(--rail-w), 22rem); }
+  body:has(> [data-testid="lab-dock"][data-layout="desk"]:not([hidden])) .ws { grid-template-columns: minmax(0, 1fr) min(var(--rail-w), max(22rem, 100vw - 64rem)); }
 }`;
 
 export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>) {

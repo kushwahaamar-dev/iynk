@@ -81,9 +81,10 @@ export function CodePanel({ store, chipParts, onChip, onRunToggle, expanded, onE
   return (
     <section aria-labelledby={titleId} className={cx("flex min-h-0 flex-col", className)} data-testid="code-panel">
       <div className="@container flex min-h-13 shrink-0 items-center gap-1.5 border-b-[1.5px] border-rule py-1.5 pe-2 ps-4">
-        {/* Under xl the rail is too narrow for the title beside Run, which says what the panel is; from xl the title
-            fits in every language, and "Edited" joins it where there is room for both (Reset lights up anyway). */}
-        <h2 id={titleId} className="me-auto flex min-w-0 items-baseline gap-2 font-head text-lg max-xl:sr-only">
+        {/* Under xl the rail is too narrow for the title beside Run, which says what the panel is, and so is a rail the
+            open Lab tools drawer has narrowed (under 27rem); otherwise the title fits in every language, and "Edited"
+            joins it where there is room for both (Reset lights up anyway). */}
+        <h2 id={titleId} className="me-auto flex min-w-0 items-baseline gap-2 font-head text-lg max-xl:sr-only @max-[27rem]:sr-only">
           <span className="truncate">{t("code.title")}</span>
           {edited && <span className="ink-kicker shrink-0 @max-[32rem]:sr-only">{t("code.edited")}</span>}
         </h2>
