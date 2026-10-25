@@ -348,7 +348,7 @@ const BOARD_KITS: Record<BoardId, Kit> = {
   nodemcu: { board: "NodeMCU ESP8266 V3", cable: "usb-micro-b", extras: STARTER },
   pico: { board: "Raspberry Pi Pico", cable: "usb-micro-b", extras: STARTER },
   "nucleo-f401re": { board: "STM32 NUCLEO-F401RE", cable: "usb-mini-b", extras: STARTER },
-  "microbit-v2": { board: "BBC micro:bit V2", cable: "usb-micro-b", extras: ["aaa-pack"] },
+  "microbit-v2": { board: "BBC micro:bit V2", cable: "usb-micro-b", extras: ["aaa-pack", ...STARTER, "potentiometer"] },
   "pi4-pi5": { board: "Raspberry Pi 5 4GB", cable: "pi-psu", extras: ["micro-sd", ...STARTER] },
   basys3: { board: "Digilent Basys 3 FPGA board", cable: "usb-micro-b", extras: [] },
   "de10-lite": { board: "Terasic DE10-Lite FPGA board", cable: "usb-b", extras: [] },

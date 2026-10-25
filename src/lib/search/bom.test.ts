@@ -103,4 +103,17 @@ describe("robotics and board kits", () => {
     expect(boardBom("nucleo-f401re")[1].key).toBe("part:usb-mini-b");
     expect(boardBom("esp32-s3-devkitc-1")[1].key).toBe("part:usb-micro-b");
   });
+
+  it("lists what the micro:bit lessons wire from the rings: an LED and resistor, a potentiometer, a breadboard", () => {
+    expect(boardBom("microbit-v2").map((l) => l.key)).toEqual([
+      "board:microbit-v2",
+      "part:usb-micro-b",
+      "part:aaa-pack",
+      "part:breadboard",
+      "part:jumpers",
+      "part:led",
+      "part:resistor",
+      "part:potentiometer",
+    ]);
+  });
 });
