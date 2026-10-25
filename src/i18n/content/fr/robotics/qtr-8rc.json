@@ -1,0 +1,467 @@
+{
+  "title": "Suiveur de ligne QTR-8RC",
+  "sub": "huit capteurs IR qui lisent en mesurant un temps",
+  "hint": "montez la barrette, lisez la ligne, puis dirigez",
+  "overview": "Le QTR-8RC est une barrette rouge de 75 mm avec huit capteurs infrarouges à réflexion alignés, espacés de 9,5 mm. Chaque capteur, c'est une LED IR et un phototransistor côte à côte, qui regardent le sol 3 mm plus bas. Le blanc réfléchit beaucoup d'IR, le ruban noir presque rien. La version RC lit en mesurant un temps : le Nano met chaque sortie à HIGH, la relâche et compte combien de temps la ligne met à retomber, environ 120 µs sur du blanc et au-delà du délai maximal de 2500 µs de la bibliothèque sur du noir. Ces huit temps donnent un seul nombre de 0 à 7000 : l'endroit où se trouve la ligne sous la barrette. Montez la barrette, câblez-la à un Nano avec un TB6612FNG et deux motoréducteurs, glissez une carte de test dessous et faites revenir le robot sur la ligne. Puis cassez-le : trop peu de tension, un bypass ponté, une soudure froide, le soleil, la barrette trop haute, les moteurs inversés.",
+  "parts": {
+    "U1": {
+      "name": "Capteurs à réflexion 1-8",
+      "what": "Huit capteurs de type QRE1113 sur une seule rangée, espacés de 9,525 mm : chacun est une LED IR (940 nm) et un phototransistor dans un boîtier noir de 2,8 x 3,6 mm à deux fenêtres. La LED éclaire le sol ; plus l'IR revient, plus le phototransistor tire fort sa sortie vers le bas. Le capteur 1 est à gauche, sous OUT1."
+    },
+    "Q1": {
+      "name": "Interrupteur des LED (MOSFET canal N)",
+      "what": "Commute les huit LED IR à la fois. Sa grille est LEDON, tirée vers VCC par 47 kΩ : les LED sont donc allumées tant que le Nano ne met pas LEDON à l'état bas. Les éteindre entre deux lectures économise l'essentiel des 100 mA."
+    },
+    "R3": {
+      "name": "Résistance de 47 Ω de la chaîne de LED 1+2",
+      "what": "Les LED fonctionnent en quatre paires en série : 1+2, 3+4, 5+6 et 7+8. Chaque paire a l'une de ces résistances (R3, R9, R13, R16) pour fixer son courant, environ 20 mA sous 5 V. S'il en manque une, les deux capteurs de sa paire s'éteignent."
+    },
+    "R4": {
+      "name": "Pull-up de 47 kΩ sur LEDON",
+      "what": "Tient LEDON à l'état haut : les LED s'allument même quand rien n'est câblé sur LEDON. Mettez-la à l'état bas pour les éteindre."
+    },
+    "C1": {
+      "name": "Condensateurs de temporisation de 10 nF",
+      "what": "Chaque sortie a un condensateur de 10 nF et une résistance de 220 Ω. Le Nano charge le nœud en mettant la broche à HIGH ; quand il la relâche, le phototransistor décharge le condensateur. Plus il y a de lumière, plus la chute est rapide : ce temps est la mesure."
+    },
+    "BYP": {
+      "name": "Pastilles 3.3V BYPASS",
+      "what": "Deux pastilles sur le bord du connecteur. Pontées, elles court-circuitent l'étage commun de 47 Ω pour que les LED restent lumineuses en 3,3 V. Ne les pontez jamais en 5 V : chaque chaîne de LED tire alors environ 55 mA, au-delà des 50 mA admis par les LED."
+    },
+    "PERF": {
+      "name": "Ligne de découpe",
+      "what": "Une colonne de vias entre les capteurs 6 et 7. Cassez la carte ici pour obtenir une barrette de 6 capteurs et une de 2. Le petit morceau a alors besoin de la résistance de 100 Ω du kit pour allumer ses LED, et elles restent allumées en permanence."
+    },
+    "J1": {
+      "name": "Connecteur 11 broches : GND, VCC, LEDON, OUT1-OUT8",
+      "what": "Aucun composant traversant n'est monté d'origine. Le connecteur se pose au dos, pour que ses broches pointent vers le haut, loin du sol, quand les capteurs regardent vers le bas. GND est la pastille carrée."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "Lit la barrette et pilote les roues. GND, VCC et LEDON de la barrette vont sur GND, 5V et D2 ; OUT1-OUT6 sur A0-A5 (n'importe quelle broche peut mesurer une sortie RC) ; OUT7 et OUT8 sur D11 et D12. Le driver prend D5-D10 et D4."
+    },
+    "DRV": {
+      "name": "Driver moteur TB6612FNG",
+      "what": "Le driver à MOSFET de la Fig. 05 : PWMA D5, AIN1 D7, AIN2 D8, STBY D9, BIN1 D10, BIN2 D4, PWMB D6. Sa logique est alimentée par le 5 V du Nano, les moteurs par la LiPo sur VM."
+    },
+    "MOTL": {
+      "name": "Moteur G (roue gauche)",
+      "what": "Un motoréducteur TT sur A01/A02. PWMA règle sa vitesse : le sketch « Suivre la ligne » le ralentit quand la ligne est à gauche, et le robot tourne à gauche."
+    },
+    "MOTR": {
+      "name": "Moteur D (roue droite)",
+      "what": "Le second motoréducteur TT, sur B01/B02, vitesse réglée par PWMB."
+    },
+    "BATT": {
+      "name": "Batterie LiPo 2S, 7,4 V",
+      "what": "Alimente les moteurs à travers le VM du driver. Le Nano et la barrette sont alimentés par l'USB : le courant des moteurs ne fait jamais baisser leur 5 V."
+    },
+    "TRACK": {
+      "name": "Carte de test avec ruban noir",
+      "what": "Une carte blanche traversée par un ruban isolant noir de 19 mm, glissée sous la barrette. Des repères rouges marquent l'endroit que regarde chaque capteur. Pendant que tourne « Suivre la ligne », le ruban dérive quand la piste tourne, et revient quand le robot tourne vers lui."
+    }
+  },
+  "power": {
+    "label": "Mettez le banc sous tension",
+    "ok": "Nano sur l'USB, LiPo sur VM : la barrette lit et le driver est prêt"
+  },
+  "modes": {
+    "raw": {
+      "title": "Temps RC bruts"
+    },
+    "line": {
+      "title": "Position de la ligne"
+    },
+    "follow": {
+      "title": "Suivre la ligne"
+    },
+    "code": {
+      "title": "QTR-8RC : huit capteurs RC chronométrés par le Nano",
+      "pins": "OUT1-OUT8 : n'importe quelle broche numérique peut mesurer une sortie RC",
+      "emitter": "LEDON : la bibliothèque allume les LED IR à chaque lecture",
+      "read": "huit temps de chute en µs : environ 120 sur du blanc, 2500 (le délai maximal) sur du noir",
+      "calibrate": "balayez maintenant la barrette au-dessus du ruban : chaque capteur apprend son propre blanc et son propre noir",
+      "position": "0 = la ligne sous le capteur 1, 3500 = au centre, 7000 = sous le capteur 8",
+      "motors": "les deux roues en avant, vitesse de 0 à 255",
+      "error": "à quelle distance du centre est la ligne : négatif = à gauche",
+      "kp": "Kp = 0.05 : 2500 d'écart au centre change chaque roue de 125"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Démontez jusqu'au circuit nu",
+      "body": "Retirez tous les composants de la carte rouge. Vous allez les remettre comme elle est fabriquée : les capteurs CMS, les résistances, les condensateurs et le MOSFET d'abord, puis le connecteur.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    },
+    "smd": {
+      "title": "Placement automatique des composants CMS, puis refusion",
+      "body": "Les huit capteurs, l'interrupteur des LED Q1, seize résistances 0603 et douze condensateurs se posent en une passe et passent au four. Les capteurs regardent vers le haut sur cette face : sur le robot, cette face est tournée vers le sol.",
+      "refusal": "Les composants CMS se posent en premier, sur une carte nue"
+    },
+    "header": {
+      "title": "Posez le connecteur 11 broches au dos",
+      "body": "Enfoncez le connecteur par le dos, pour que ses broches pointent loin du sol quand les capteurs regardent vers le bas. Utilisez la rangée 11 x 1 : GND, VCC, LEDON et OUT1-OUT8.",
+      "refusal": "Les CMS d'abord : lancez le placement et la refusion. Le four ferait fondre le plastique du connecteur"
+    },
+    "solder": {
+      "title": "Soudez le connecteur",
+      "body": "Onze soudures, faites côté composants. Chaque broche OUT porte la mesure de son capteur : une soudure froide ici se traduit par un capteur bloqué sur noir.",
+      "refusal": "Rien à souder pour l'instant : posez d'abord le connecteur"
+    },
+    "wire-nano": {
+      "title": "Câblez la barrette au Nano",
+      "body": "GND sur GND, VCC sur 5V, LEDON sur D2. OUT1-OUT6 sur A0-A5 et OUT7, OUT8 sur D11, D12 : la lecture RC n'a besoin que d'une broche qui peut être une sortie puis une entrée, et les broches analogiques le peuvent.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    },
+    "wire-driver": {
+      "title": "Câblez le TB6612FNG",
+      "body": "PWMA D5, AIN1 D7, AIN2 D8, STBY D9, BIN1 D10, BIN2 D4, PWMB D6, GND sur GND et VCC sur le 5V du Nano. D5 et D6 sont les broches PWM que les capteurs ont laissées libres.",
+      "refusal": "Coupez d'abord l'alimentation, et câblez la barrette avant le driver"
+    },
+    "wire-motors": {
+      "title": "Câblez les moteurs",
+      "body": "Le moteur gauche sur A01/A02, le droit sur B01/B02. Savoir lequel est à gauche compte : le sketch ralentit la roue du côté où se trouve la ligne.",
+      "refusal": "Coupez d'abord l'alimentation, et câblez le driver avant les moteurs"
+    },
+    "wire-battery": {
+      "title": "Câblez la LiPo sur VM et GND",
+      "body": "Rouge sur VM, noir sur GND. Les moteurs sont alimentés par la batterie ; le Nano et la barrette restent sur l'USB.",
+      "refusal": "Coupez d'abord l'alimentation, et câblez les moteurs avant la LiPo"
+    },
+    "card": {
+      "title": "Glissez la carte de test sous la barrette",
+      "body": "Carte blanche, ruban noir, 3 mm sous les capteurs : la distance qui marche le mieux selon Pololu. Sans rien dessous, la barrette ne voit revenir aucun IR et chaque capteur lit du noir.",
+      "refusal": "Câblez d'abord la LiPo"
+    },
+    "plug": {
+      "title": "Mettez le banc sous tension",
+      "body": "L'USB dans le Nano, la LiPo sur VM. Les LED IR sont invisibles à l'œil (l'appareil photo d'un téléphone les montre) et le Nano lance le sketch « Temps RC bruts ».",
+      "refusal": "Finissez d'abord le montage : chaque composant posé, chaque joint soudé, tout ce qui est sur le tapis câblé"
+    },
+    "raw": {
+      "title": "Téléversez « Temps RC bruts »",
+      "body": "read() mesure les huit sorties : environ 120 µs là où un capteur voit la carte blanche, 2500 là où il voit le ruban (c'est le délai maximal : un vrai noir prend environ 2,6 ms). Déplacez la carte et regardez les 2500 se déplacer.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "line": {
+      "title": "Téléversez « Position de la ligne »",
+      "body": "Cent appels à calibrate() pendant que vous balayez la barrette au-dessus du ruban laissent chaque capteur apprendre son propre blanc et son propre noir. Ensuite, readLineBlack() transforme les huit mesures en un seul nombre : 0 sous le capteur 1, 3500 au milieu, 7000 sous le capteur 8.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "follow": {
+      "title": "Téléversez « Suivre la ligne »",
+      "body": "error = position - 3500. Chaque roue reçoit 150 plus ou moins error/20 : avec la ligne à gauche, la roue gauche ralentit, le robot tourne à gauche et la ligne revient au milieu. Regardez le ruban dériver quand la piste tourne, puis revenir.",
+      "refusal": "Mettez d'abord le banc sous tension"
+    },
+    "three-volts": {
+      "title": "Alimentez la barrette en 3,3 V",
+      "body": "VCC sur la broche 3.3V du Nano au lieu de 5V. Les LED tournent sur ce qui reste après deux chutes de 1,2 V et 141 Ω : environ un tiers de leur courant. Trop peu d'IR revient, même du blanc."
+    },
+    "bridge-bypass": {
+      "title": "Pontez 3.3V BYPASS en 5 V",
+      "body": "Une goutte de soudure sur les pastilles de bypass alors que la barrette est toujours en 5 V. L'étage de résistance commun disparaît et chaque chaîne de LED tire environ 55 mA. Une paire grille."
+    },
+    "cold-out1": {
+      "title": "Laissez une soudure froide sur OUT1",
+      "body": "Une soudure terne et fissurée sur la broche OUT1 du connecteur. La mesure du capteur 1 fait et défait le contact."
+    },
+    "no-r9": {
+      "title": "Oubliez R9",
+      "body": "La résistance de 47 Ω de la chaîne de LED des capteurs 3 et 4. Sans elle, les deux LED en série n'ont pas de chemin."
+    },
+    "sunlight": {
+      "title": "Mettez le banc au soleil",
+      "body": "La lumière du soleil est pleine d'infrarouge. Les phototransistors ne peuvent pas la distinguer de la lumière de leurs propres LED."
+    },
+    "lift-array": {
+      "title": "Relevez la barrette de 10 mm",
+      "body": "Le châssis du robot tient la barrette à 10 mm du sol au lieu de 3 mm. Lancez « Suivre la ligne » et regardez les mesures."
+    },
+    "swap-motors": {
+      "title": "Inversez les moteurs gauche et droit",
+      "body": "Moteur G sur B01/B02, moteur D sur A01/A02. Le sketch ralentit toujours la roue qu'il croit du côté de la ligne."
+    },
+    "motors-on-5v": {
+      "title": "Alimentez les moteurs par le 5 V du Nano",
+      "body": "VM sur la broche 5V du Nano au lieu de la LiPo. Chaque démarrage de moteur tire des centaines de mA à travers l'USB."
+    },
+    "exploded": {
+      "title": "Vue éclatée",
+      "body": "Débranchez et soulevez les composants par groupe de montage : les CMS d'abord, puis le connecteur.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    }
+  },
+  "faults": {
+    "low-vcc": {
+      "title": "Barrette en 3,3 V sans le bypass",
+      "symptom": "Chaque capteur lit sombre, carte blanche comprise ; la position saute ou reste bloquée au milieu.",
+      "explanation": "Chaque chaîne de LED, ce sont deux LED d'environ 1,2 V et 141 Ω. Depuis 5 V, il reste 2,6 V pour les résistances : environ 18 mA. Depuis 3,3 V, seulement 0,9 V : environ 6 mA, un tiers de la lumière. Le phototransistor reçoit si peu d'IR en retour que même le blanc retombe lentement et, après un calibrage en 5 V, tout compte comme du noir.",
+      "fix": "Alimentez VCC en 5 V. Sur une carte en 3,3 V, pontez les pastilles 3.3V BYPASS pour que les LED retrouvent leur courant."
+    },
+    "bypass-5v": {
+      "title": "Bypass ponté en 5 V",
+      "symptom": "Les capteurs 5 et 6 lisent du noir sur la carte blanche et y restent ; la carte tire environ 220 mA et les LED tiédissent.",
+      "explanation": "Les pastilles de bypass court-circuitent les deux résistances de 47 Ω que partagent toutes les chaînes. En 5 V, chaque chaîne tire alors (5 - 2,4 V) / 47 Ω, environ 55 mA, au-delà des 50 mA admis par les LED. Les LED sont en paires en série : quand l'une grille et s'ouvre, sa partenaire s'éteint avec elle.",
+      "fix": "Retirez le pont de soudure et remplacez les capteurs de la paire grillée. Ne pontez le bypass qu'en 3,3 V."
+    },
+    "cold-out1": {
+      "title": "Soudure froide sur OUT1",
+      "symptom": "Le capteur 1 saute à 2500 (noir) de temps en temps, et la position bascule vers la gauche.",
+      "explanation": "La lecture RC a besoin que la broche charge le nœud puis le regarde retomber. À travers une soudure qui fait et défait le contact, le Nano ne voit parfois rien revenir et atteint le délai maximal de 2500 : la mesure d'un capteur au-dessus du noir.",
+      "fix": "Réchauffez la soudure avec de la soudure neuve jusqu'à ce qu'elle coule en un cône brillant autour de la broche."
+    },
+    "no-r9": {
+      "title": "R9 absente",
+      "symptom": "Les capteurs 3 et 4 lisent 2500 sur le blanc comme sur le noir ; la position penche vers eux.",
+      "explanation": "Les LED des capteurs 3 et 4 sont en série à travers R9. Sans elle, il n'y a pas de chemin : aucune des deux LED ne s'allume. Un capteur qui n'émet pas d'IR n'en reçoit pas en retour et lit du noir.",
+      "fix": "Posez R9 (47 Ω) et refondez-la. Deux capteurs morts ensemble, c'est en général leur chaîne de LED commune."
+    },
+    "sunlight": {
+      "title": "Soleil sur le sol",
+      "symptom": "Chaque capteur lit vite, ruban noir compris : la barrette ne trouve pas la ligne.",
+      "explanation": "La lumière du soleil porte bien plus d'infrarouge que les LED. Elle atteint chaque phototransistor quoi qu'il y ait dessous : les sorties retombent vite partout et le noir ressemble au blanc.",
+      "fix": "Mettez la barrette à l'ombre, ou lisez deux fois, LED allumées puis éteintes, et soustrayez (QTRReadMode::OnAndOff dans QTRSensors)."
+    },
+    "lifted": {
+      "title": "Barrette à 10 mm du sol",
+      "symptom": "Le blanc lit environ 780 µs au lieu de 120, le noir atteint le délai maximal ; la position erre et le robot zigzague.",
+      "explanation": "La lumière de la LED s'étale à l'aller et au retour. Pololu a mesuré 120 µs sur du blanc à 3 mm et 780 µs à 10 mm : un sixième de la lumière. Calibré à la hauteur basse, le blanc paraît maintenant gris à chaque capteur.",
+      "fix": "Montez la barrette à 3 mm du sol (la meilleure distance selon Pololu, 9,5 mm au plus) et calibrez à la hauteur où vous roulez."
+    },
+    "motors-swapped": {
+      "title": "Moteurs gauche et droit inversés",
+      "symptom": "Le robot s'éloigne de la ligne, la perd et tourne sur lui-même.",
+      "explanation": "Avec la ligne à gauche, le sketch ralentit la roue gauche. Mais cette roue est maintenant du côté droit : le robot tourne à droite et la ligne part encore plus à gauche. La correction agrandit l'erreur.",
+      "fix": "Remettez les fils des moteurs dans le bon sens, ou inversez PWMA et PWMB dans le sketch."
+    },
+    "brownout": {
+      "title": "Moteurs sur le 5 V du Nano",
+      "symptom": "Les roues donnent des à-coups, le Nano redémarre sans arrêt et le calibrage ne se termine jamais.",
+      "explanation": "Un moteur TT tire 200-300 mA en marche et plus de 1 A au démarrage. À travers l'USB et le fusible de 500 mA du Nano, cela fait tomber le 5 V sous ce dont l'ATmega a besoin : il se réinitialise, les moteurs s'arrêtent, la tension revient et tout recommence.",
+      "fix": "Alimentez VM avec la LiPo. Gardez la logique et les moteurs sur des alimentations séparées, avec une masse commune."
+    }
+  },
+  "status": {
+    "status": "État",
+    "powered": "Alimentation du banc",
+    "mode": "Sketch",
+    "position": "Position de la ligne (0-7000)",
+    "sensor1": "Capteur 1 (µs)",
+    "sensor4": "Capteur 4 (µs)",
+    "left": "Rapport cyclique roue gauche",
+    "right": "Rapport cyclique roue droite",
+    "vcc": "VCC de la barrette",
+    "rpm": "Vitesse de la roue gauche",
+    "battery": "Courant batterie",
+    "usb": "Courant USB"
+  },
+  "current": {
+    "usb": "USB du Nano (polyfusible de 500 mA)",
+    "lipo": "LiPo 2S sur VM",
+    "nano": "Nano en fonctionnement",
+    "array": "Huit LED IR (quatre chaînes d'environ 24 mA)",
+    "logic": "Logique du TB6612FNG",
+    "motors": "Deux moteurs TT qui suivent la ligne",
+    "bypass": "Chaînes de LED avec le bypass ponté"
+  },
+  "tasks": {
+    "line": "Où se trouve la ligne sous la barrette",
+    "steer": {
+      "title": "Revenir sur la ligne",
+      "brief": "Le code de départ lit la ligne mais fait tourner les deux roues à 150 quoi qu'il voie. Faites-le diriger : error = position - 3500, puis left = 150 + error / 20 et right = 150 - error / 20. Avec la ligne sous le capteur 2, la roue gauche doit ralentir et la droite accélérer ; sous le capteur 7, l'inverse ; au centre, les deux à 150.",
+      "hints": {
+        "1": "readLineBlack() renvoie un nombre non signé ; convertissez-le avant de soustraire : int error = (int)pos - 3500;",
+        "2": "error / 20 revient à error x 0.05 sans virgule flottante : c'est Kp.",
+        "3": "motors() limite déjà chaque roue à 0-255 avec constrain()."
+      },
+      "checks": {
+        "1": "Tourne pendant 4,5 s",
+        "2": "Lit la ligne avec readLineBlack()",
+        "3": "STBY (D9) est à HIGH : le driver est réveillé",
+        "4": "Au centre : la roue gauche (D5) à environ 150/255",
+        "5": "Au centre : la roue droite (D6) à environ 150/255",
+        "6": "Ligne sous le capteur 2 : la roue gauche ralentit",
+        "7": "Ligne sous le capteur 2 : la roue droite accélère",
+        "8": "Ligne sous le capteur 7 : la roue gauche accélère",
+        "9": "Ligne sous le capteur 7 : la roue droite ralentit",
+        "10": "De nouveau au centre : retour à 150"
+      },
+      "code": {
+        "goal": "Suivre la ligne : ralentir la roue du côté où se trouve la ligne",
+        "todo": "calculer l'erreur à partir de pos et diriger avec, au lieu d'aller tout droit"
+      }
+    },
+    "search": {
+      "title": "Pivoter pour retrouver la ligne",
+      "brief": "Dans un virage serré, la ligne se retrouve sous le capteur le plus extérieur et la direction seule est trop lente. Quand la position est sous 1000, pivotez à gauche sur place : roue gauche en arrière, droite en avant, les deux à 110. Au-dessus de 6000, pivotez à droite. Entre les deux, dirigez comme avant.",
+      "hints": {
+        "1": "wheel() prend une vitesse signée : une vitesse négative met IN1 à LOW et IN2 à HIGH, et la roue tourne en arrière.",
+        "2": "if (pos < 1000) { motors(-110, 110); } else if (pos > 6000) { motors(110, -110); } else { ... }",
+        "3": "Gardez la ligne de direction de la première tâche dans la dernière branche."
+      },
+      "checks": {
+        "1": "Tourne pendant 4,3 s",
+        "2": "Ligne tout à gauche : AIN1 (D7) est à LOW",
+        "3": "Ligne tout à gauche : AIN2 (D8) est à HIGH, la roue gauche tourne en arrière",
+        "4": "Ligne tout à gauche : BIN1 (D10) est à HIGH, la roue droite en avant",
+        "5": "Au centre : la roue gauche de nouveau en avant",
+        "6": "Ligne tout à droite : BIN1 (D10) est à LOW",
+        "7": "Ligne tout à droite : BIN2 (D4) est à HIGH, la roue droite en arrière",
+        "8": "Ligne tout à droite : la roue gauche en avant",
+        "9": "Pivot à gauche à 110 : le rapport cyclique de la roue gauche est d'environ 43 %",
+        "10": "Pivot à droite à 110 : le rapport cyclique de la roue droite est d'environ 43 %"
+      },
+      "code": {
+        "goal": "Pivoter sur place quand la ligne est sous un capteur d'extrémité",
+        "todo": "ajouter les deux pivots : sous 1000 pivoter à gauche, au-dessus de 6000 pivoter à droite"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "header-side": {
+        "q": "Pourquoi le connecteur se pose-t-il au dos de la carte ?",
+        "options": {
+          "1": "Le devant n'a pas de pastilles pour lui",
+          "2": "Les capteurs doivent regarder le sol : les broches doivent donc pointer vers le haut, loin de lui",
+          "3": "Le dos est la seule face que l'on peut souder"
+        },
+        "why": "La barrette fonctionne à 3 mm du sol, capteurs tournés vers le bas. Un connecteur au dos pointe vers le haut, dans le robot, là où vont les fils ; sur le devant, il toucherait le sol."
+      },
+      "pairs": {
+        "q": "Deux capteurs voisins, 3 et 4, lisent tous les deux du noir sur la carte blanche. Quelle est la cause la plus probable ?",
+        "options": {
+          "1": "Leur chaîne de LED commune : les LED sont câblées en paires en série",
+          "2": "Deux soudures froides à la fois",
+          "3": "Les broches 3 et 4 du Nano sont cassées"
+        },
+        "why": "Les huit LED IR fonctionnent en quatre paires en série, chacune à travers sa propre résistance de 47 Ω. Une LED ouverte ou une résistance absente éteint les deux capteurs de la paire."
+      },
+      "bypass": {
+        "q": "Quand pontez-vous les pastilles 3.3V BYPASS ?",
+        "options": {
+          "1": "Toujours : la barrette est plus lumineuse",
+          "2": "Quand la carte est cassée en deux",
+          "3": "Seulement quand VCC est à 3,3 V"
+        },
+        "why": "Pontées, les pastilles retirent l'étage commun de 47 Ω. En 3,3 V, cela rend aux LED leur courant ; en 5 V, cela les pousse au-delà de leur limite et grille une paire."
+      }
+    },
+    "read": {
+      "rc": {
+        "q": "Comment le Nano lit-il un capteur RC ?",
+        "options": {
+          "1": "Il met la broche à HIGH, la relâche et mesure le temps qu'elle met à retomber à LOW",
+          "2": "Il lit une tension avec analogRead()",
+          "3": "Il compte les impulsions qu'envoie le capteur"
+        },
+        "why": "Mettre la broche à HIGH laisse le condensateur de 10 nF sans rien à ses bornes. Une fois la broche relâchée, le phototransistor le décharge : beaucoup d'IR réfléchi, une chute rapide ; peu, une chute lente."
+      },
+      "timeout": {
+        "q": "Un capteur lit exactement 2500. Qu'est-ce que cela signifie ?",
+        "options": {
+          "1": "Le capteur est cassé",
+          "2": "Il a atteint le délai maximal : très peu d'IR est revenu, comme au-dessus du ruban noir",
+          "3": "Il a vu 2,5 V"
+        },
+        "why": "Par défaut, la bibliothèque arrête d'attendre au bout de 2500 µs. Le ruban noir prend en général environ 2,6 ms : le noir se lit donc comme le délai maximal."
+      },
+      "calibrate": {
+        "q": "Pourquoi balayer la barrette au-dessus du ruban pendant que calibrate() tourne ?",
+        "options": {
+          "1": "Pour faire chauffer les LED",
+          "2": "Pour charger les condensateurs",
+          "3": "Pour que chaque capteur enregistre son propre blanc et son propre noir, et que les mesures s'échelonnent de 0 à 1000 de la même façon pour les huit"
+        },
+        "why": "Il n'y a pas deux capteurs identiques. calibrate() garde le minimum et le maximum de chacun ; readLineBlack() ramène chaque mesure entre les deux, et la moyenne pondérée est donc équitable."
+      }
+    },
+    "follow": {
+      "error": {
+        "q": "readLineBlack() renvoie 1000. De quel côté le robot doit-il tourner ?",
+        "options": {
+          "1": "À droite : ralentir la roue droite",
+          "2": "À gauche : la ligne est sous le capteur 2, il faut donc ralentir la roue gauche",
+          "3": "Tout droit"
+        },
+        "why": "1000 signifie que la ligne est sous le capteur 2, à gauche du milieu (3500). Ralentir la roue gauche fait tourner le robot à gauche, de nouveau au-dessus de la ligne."
+      },
+      "kp": {
+        "q": "Le robot zigzague d'un côté à l'autre de la ligne. Qu'essayez-vous d'abord ?",
+        "options": {
+          "1": "Un Kp plus petit (diviser l'erreur par plus que 20)",
+          "2": "Un Kp plus grand",
+          "3": "Une vitesse de base plus élevée"
+        },
+        "why": "Un grand Kp tourne fort pour une petite erreur, dépasse et repart dans l'autre sens. Baissez-le jusqu'à ce que le zigzag s'arrête ; ensuite, un terme dérivé peut amortir ce qui reste."
+      },
+      "lost": {
+        "q": "La ligne sort de la barrette par la gauche. Que renvoie readLineBlack() ?",
+        "options": {
+          "1": "3500, le milieu",
+          "2": "Rien : il attend la ligne",
+          "3": "0, parce que la ligne a été vue en dernier à gauche"
+        },
+        "why": "Quand aucun capteur ne voit la ligne, la bibliothèque renvoie l'extrémité où elle a été vue en dernier : 0 ou 7000. Un régulateur P tourne alors fort de ce côté, ce qui est en général juste."
+      }
+    },
+    "faults": {
+      "three-volts": {
+        "q": "La barrette est alimentée en 3,3 V sans le bypass. Que lisent les capteurs ?",
+        "options": {
+          "1": "Exactement la même chose qu'en 5 V",
+          "2": "Du blanc partout",
+          "3": "Du sombre partout : les LED reçoivent environ un tiers de leur courant"
+        },
+        "why": "Deux LED prennent environ 2,4 V, ce qui laisse 0,9 V pour 141 Ω : 6 mA au lieu de 18. Avec si peu d'IR, même la carte blanche retombe lentement."
+      },
+      "pair": {
+        "q": "Après avoir ponté le bypass en 5 V, les capteurs 5 et 6 s'éteignent ensemble. Pourquoi les deux ?",
+        "options": {
+          "1": "Leurs LED sont en série : quand l'une grille et s'ouvre, l'autre perd aussi son courant",
+          "2": "Ils partagent une seule broche OUT",
+          "3": "Le Nano les a éteints"
+        },
+        "why": "Chaque chaîne, c'est une LED, une résistance et une LED en série. Une LED ouverte coupe le circuit pour les deux."
+      },
+      "swapped": {
+        "q": "Les moteurs sont inversés. Pourquoi le robot s'enfuit-il loin de la ligne au lieu de simplement osciller ?",
+        "options": {
+          "1": "Les moteurs tournent moins vite",
+          "2": "Chaque correction tourne du mauvais côté, et agrandit donc l'erreur",
+          "3": "Les capteurs sont inversés aussi"
+        },
+        "why": "Une boucle de rétroaction ne marche qu'avec le bon signe. Inversée, chaque correction éloigne un peu plus la ligne du centre, jusqu'à ce qu'elle sorte de la barrette."
+      }
+    },
+    "end": {
+      "why-rc": {
+        "q": "Pourquoi le QTR-8RC n'a-t-il besoin d'aucune entrée analogique ?",
+        "options": {
+          "1": "Il a son propre CAN sur la carte",
+          "2": "Il transforme la lumière en temps, et n'importe quelle broche numérique peut mesurer un temps",
+          "3": "Il envoie des messages I2C"
+        },
+        "why": "C'est le temps de chute du condensateur qui porte la mesure. Huit broches numériques peuvent être lues en parallèle, environ 1 ms pour les huit sur un sol ordinaire."
+      },
+      "height": {
+        "q": "Quelle est la meilleure distance entre les capteurs et le sol ?",
+        "options": {
+          "1": "Environ 3 mm",
+          "2": "Environ 30 mm",
+          "3": "Au contact du sol"
+        },
+        "why": "Pololu donne 3 mm (0,125 in) comme le mieux et 9,5 mm comme maximum. Plus haut, le blanc et le noir se ressemblent de plus en plus."
+      },
+      "derivative": {
+        "q": "Qu'apporte un terme dérivé (D) au suiveur de ligne ?",
+        "options": {
+          "1": "Plus de vitesse en ligne droite",
+          "2": "Rien : P suffit toujours",
+          "3": "Il réagit à la vitesse à laquelle l'erreur change : le robot arrête de tourner avant de dépasser"
+        },
+        "why": "D ajoute Kd x (erreur - erreur précédente). Quand le robot revient déjà vers la ligne, ce terme adoucit le virage, ce qui amortit le zigzag que provoque un Kp plus grand."
+      }
+    }
+  }
+}
