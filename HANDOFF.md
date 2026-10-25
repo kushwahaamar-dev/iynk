@@ -83,7 +83,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-25 03:21 CDT (machine clock).
+- **Updated:** 2026-10-25 03:45 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session). Amar is asleep
   since 22:20 and gave full autonomy for every remaining build phase except Solana and hardware (CONTEXT.md §5) The Mac is kept awake by `caffeinate -dimsu -t 54000` (pid 28721, from 23:08, until about 14:08).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Do not build in
@@ -166,11 +166,13 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
     the production server `.next-final` at http://127.0.0.1:3430 (started by the driver; stop it and delete the
     folder after phase 2), then F-direction writes `docs/design/POLISH-SPEC.md`, F-build-shell, then F-build-boards,
     -robotics, -drones, -panels (dev servers 3441-3445), then F-review. Gate 3 runs after it, on the final UI.
-  - Figure sweep, run `wf_7513ba0c-9cb` (`phase3-wave.js`, brief `scripts/workflows/sweep.md`, S-engine and
-    S-figures), since 03:06, due 04:50: the open figure items of `docs/verify/sweep.md` and POLISH-SPEC §5's engine
-    requests (a `chrome` message so hosts can hide the figure's duplicate pills, the wiring sheet fitted to its plate,
-    the build toast). They don't commit `public/figures/**` or touch `src/i18n/**`: after them the driver runs
-    `cfbuild.py --all`, the collector and one figure-string delta (the 96 bench keys of `874d761` plus theirs).
+  - Figure sweep, run `wf_7513ba0c-9cb` (`phase3-wave.js`, brief `sweep.md`), 03:06-03:37, **done**: S-engine
+    (`9cc83eb` chrome message, `1475355` sheet fit, `bd87219` honest build toast, `b339c53` axe, `520557c` templated
+    button labels, `78498dd`, `b6d3efa`), S-figures (`ce835c2`, `8cd13bd`: strings the collector couldn't key). The
+    driver then: swarm's toast (`a4eaa1c`), every page rebuilt (`e509a55`), micro:bit LOUD/QUIET (`d4c4734`), figure
+    tests' settle time (`5c17ac6`). quad5's failsafe test is written and tested but parked as
+    `<scratchpad>/quad5-failsafe.patch` (`git apply` it) until F-build-drones is done: `e2e/dronelab.spec.ts`, its
+    file, expects three test rows.
   - Figure-string delta, run `wf_7bcff872-581` (`phase3-wave.js`, `P3-figs-delta-<lang>`), 02:31-02:50, **done**:
     the 1964 new keys of `figure-keys.json` in es fr de zh hi (`226b8a3`, `c51e6a6`, `c53dde0`, `581cef4`,
     `ea8f1a3`, `090a62a`, `21dcfb0`, `22f3bf5`, `90f2064`); `figure-strings.test.ts` 11 of 11 at 02:55. Then the
