@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } fr
 import { cx } from "@/components/ui";
 import { useRoom, type CursorPoint } from "@/lib/realtime";
 import { useTogetherT } from "./messages";
+import { setPointing, usePointing } from "./pointing";
 
 const FADE_MS = 4000;
 
@@ -13,12 +14,14 @@ type Seen = CursorPoint & { at: number };
  * Others' pointers over the figure. Place it inside the figure's positioned
  * box. The figure is an iframe, so your own pointer is shared only in "point"
  * mode, which lays a pointing surface over it (arrow keys move, Esc ends).
+ * The room bar turns point mode on; the figure only shows the way out, since
+ * its corners belong to the figure's own buttons and readout.
  */
 export function PresenceCursors({ className }: { className?: string }) {
   const room = useRoom();
   const t = useTogetherT();
   const [seen, setSeen] = useState<Record<string, Seen>>({});
-  const [pointing, setPointing] = useState(false);
+  const pointing = usePointing();
   const [mine, setMine] = useState<CursorPoint>({ x: 0.5, y: 0.5 });
   const surface = useRef<HTMLDivElement>(null);
   const onCursor = room?.onCursor;
@@ -51,6 +54,9 @@ export function PresenceCursors({ className }: { className?: string }) {
     surface.current?.focus();
     return () => sendCursor?.(null);
   }, [pointing, sendCursor]);
+
+  // Leaving the room or the page ends point mode.
+  useEffect(() => () => setPointing(false), []);
 
   if (!room || !t) return null;
 
@@ -113,17 +119,18 @@ export function PresenceCursors({ className }: { className?: string }) {
           );
         })}
       </ul>
-      <button
-        type="button"
-        aria-pressed={pointing}
-        onClick={() => setPointing((v) => !v)}
-        className="pointer-events-auto absolute top-3 left-1/2 -translate-x-1/2 inline-flex min-h-9 items-center gap-1.5 rounded-full border-2 border-line bg-surface px-3 text-sm font-semibold text-ink hover:bg-sunken aria-pressed:bg-ink aria-pressed:text-paper [@media(pointer:coarse)]:min-h-11"
-      >
-        <svg aria-hidden="true" viewBox="0 0 16 16" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round">
-          <path d="M3 2l9 5-4 1-1.6 4z" />
-        </svg>
-        {pointing ? t("cursors.stop") : t("cursors.point")}
-      </button>
+      {pointing ? (
+        <button
+          type="button"
+          onClick={() => setPointing(false)}
+          className="pointer-events-auto absolute top-3 left-1/2 inline-flex min-h-9 -translate-x-1/2 items-center gap-1.5 rounded-full bg-ink px-3 text-sm font-semibold text-paper [@media(pointer:coarse)]:min-h-11"
+        >
+          <svg aria-hidden="true" viewBox="0 0 16 16" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round">
+            <path d="M3 2l9 5-4 1-1.6 4z" />
+          </svg>
+          {t("cursors.stop")}
+        </button>
+      ) : null}
     </div>
   );
 }

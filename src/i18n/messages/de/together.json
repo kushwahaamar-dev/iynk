@@ -131,7 +131,7 @@
   },
   "cursors": {
     "label": "Worauf die anderen zeigen",
-    "point": "Zeigen",
+    "point": "Auf die Abbildung zeigen",
     "stop": "Nicht mehr zeigen",
     "surface": "Zeigefläche. Fahr über die Abbildung, um den anderen zu zeigen, worauf du zeigst. Pfeiltasten bewegen, Esc beendet."
   },

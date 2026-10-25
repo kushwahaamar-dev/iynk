@@ -131,7 +131,7 @@
   },
   "cursors": {
     "label": "Where the others are pointing",
-    "point": "Point",
+    "point": "Point at the figure",
     "stop": "Stop pointing",
     "surface": "Pointing surface. Move over the figure to show the others where you point. Arrow keys move, Esc stops."
   },

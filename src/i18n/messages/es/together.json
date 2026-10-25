@@ -131,7 +131,7 @@
   },
   "cursors": {
     "label": "Dónde están señalando los demás",
-    "point": "Señalar",
+    "point": "Señalar en la figura",
     "stop": "Dejar de señalar",
     "surface": "Superficie para señalar. Muévete sobre la figura para mostrar a los demás dónde señalas. Las flechas mueven el puntero y Esc termina."
   },

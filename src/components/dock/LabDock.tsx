@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { PartnerPanel, useBuildLog } from "@/components/ai";
 import type { LabDockProps, LabKind } from "@/components/dock/types";
 import { HardwareTwinPanel } from "@/components/hw/HardwareTwinPanel";
-import { TogetherPanel } from "@/components/realtime";
+import { TogetherPanel, setPointing, usePointing } from "@/components/realtime";
 import { NearbyPanel, RealBuildPanel, VideoHelp } from "@/components/search";
 import { useSearchAvailability } from "@/components/search/shared";
 import { PassportPanel } from "@/components/solana/PassportPanel";
@@ -124,7 +124,9 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
   const fromRoom = tab === null && inRoom && shown.includes("together");
   const selected = fromRoom ? "together" : tab && shown.includes(tab) ? tab : shown.includes(preferred) ? preferred : shown[0];
   const roomOpened = inRoom && !dismissedRoom;
-  const isOpen = open || roomOpened;
+  // On a phone the sheet covers the figure, so it steps aside while you point and comes back after.
+  const pointing = usePointing();
+  const isOpen = (open || roomOpened) && !(phone && pointing);
 
   function choose(id: DockTab) {
     setTab(id);
@@ -232,6 +234,7 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
       aria-pressed={!phone && isOpen ? true : undefined}
       onClick={() => {
         if (isOpen && !phone) return close();
+        setPointing(false);
         setDismissedRoom(false);
         setOpen(true);
       }}

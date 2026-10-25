@@ -131,7 +131,7 @@
   },
   "cursors": {
     "label": "Ce que montrent les autres",
-    "point": "Montrer",
+    "point": "Montrer sur la figure",
     "stop": "Arrêter de montrer",
     "surface": "Zone de pointage. Déplacez-vous sur la figure pour montrer aux autres ce que vous désignez. Les flèches déplacent le pointeur, Échap arrête."
   },

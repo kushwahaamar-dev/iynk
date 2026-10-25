@@ -6,6 +6,7 @@ import { ROLES, type Peer, type Role, type RoomApi } from "@/lib/realtime";
 import { InviteDialog } from "./InviteDialog";
 import type { TogetherT } from "./messages";
 import { PeerAvatar } from "./PeerAvatar";
+import { setPointing, usePointing } from "./pointing";
 
 /** Who's in the room, the invite, your role, the keyboard baton, leave. */
 export function RoomBar({ room, t, onLeave, onRename }: { room: RoomApi; t: TogetherT; onLeave: () => void; onRename?: () => void }) {
@@ -13,6 +14,7 @@ export function RoomBar({ room, t, onLeave, onRename }: { room: RoomApi; t: Toge
   const [inviting, setInviting] = useState(false);
   const [removing, setRemoving] = useState<Peer | null>(null);
   const [passTo, setPassTo] = useState("");
+  const pointing = usePointing();
   // Refused edits you've already answered, per keyboard holder (the count restarts when it moves).
   const [deniedSeen, setDeniedSeen] = useState({ holder: room.batonHolder, count: 0 });
   const everyone = useMemo(() => [room.you, ...room.peers], [room.you, room.peers]);
@@ -44,7 +46,7 @@ export function RoomBar({ room, t, onLeave, onRename }: { room: RoomApi; t: Toge
         <Chip tone={room.status === "live" ? (room.transport === "ws" ? "mint" : "cobalt") : "mustard"} dot>
           {t(`bar.status.${room.status === "live" ? room.transport : room.status}`)}
         </Chip>
-        <div className="ms-auto flex flex-wrap justify-end gap-1.5">
+        <div className="flex basis-full flex-wrap gap-1.5">
           <Button size="sm" variant="primary" onClick={() => setInviting(true)}>
             {t("bar.invite")}
           </Button>
@@ -63,7 +65,17 @@ export function RoomBar({ room, t, onLeave, onRename }: { room: RoomApi; t: Toge
       {room.status === "syncing" ? <Callout tone="note" live>{t("panel.syncing")}</Callout> : null}
 
       <div>
-        <p className="mb-1 text-xs font-semibold text-muted">{t("bar.people", { count: everyone.length })}</p>
+        <div className="mb-1 flex min-h-9 items-center justify-between gap-2">
+          <p className="text-xs font-semibold text-muted">{t("bar.people", { count: everyone.length })}</p>
+          {room.peers.length > 0 ? (
+            <Button size="sm" variant="ghost" aria-pressed={pointing} onClick={() => setPointing(!pointing)} className="gap-1.5">
+              <svg aria-hidden="true" viewBox="0 0 16 16" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round">
+                <path d="M3 2l9 5-4 1-1.6 4z" />
+              </svg>
+              {t("cursors.point")}
+            </Button>
+          ) : null}
+        </div>
         <ul className="flex flex-col gap-1.5">
           {everyone.map((peer) => (
             <li key={peer.id} className="flex min-h-11 items-center gap-2">
