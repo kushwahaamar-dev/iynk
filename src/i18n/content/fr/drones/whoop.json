@@ -1,0 +1,371 @@
+{
+  "title": "Tiny Whoop 65 mm",
+  "tagline": "Le drone d'entraînement d'intérieur de 25 g : le même Betaflight, le même masque, des crashs qui ne coûtent rien.",
+  "sub": "Entraîneur d'intérieur 1S",
+  "hint": "Montez-le, testez-le sans les hélices, puis volez dans le salon",
+  "noun": "whoop",
+  "overview": "Un Tiny Whoop est le drone d'entraînement d'intérieur du FPV : un quad de 65 mm d'environ 25 g dont les carénages protègent les hélices, pour qu'il puisse heurter murs, meubles et personnes sans faire de mal. Une seule carte tout-en-un porte le contrôleur de vol, quatre ESC de 5 A, un récepteur ExpressLRS, l'OSD et un émetteur vidéo 5,8 GHz. Une caméra nano de 14 mm est logée dans la canopy et une batterie LiHV d'une seule cellule se glisse dans un support en dessous. Il tourne sous le même firmware Betaflight, avec la même boucle PID et les mêmes modes qu'un quad 5 pouces, et utilise le même masque et la même radiocommande : ce que vous apprenez ici se transpose. Choisissez la batterie, les moteurs et les hélices et regardez les chiffres changer, montez-le pièce par pièce, vérifiez les moteurs sans les hélices, puis volez dans le salon.",
+  "practice": "Faites la course des trois portes autour de la pièce, puis le parcours du salon : sous la table basse, entre les chaises de la salle à manger, devant la lampe, par-dessus le canapé et jusqu'au tapis. Sur un vrai whoop : vérifiez le sens de chaque moteur sans les hélices, faites les tests du récepteur et du failsafe, apprenez le mode turtle avant d'en avoir besoin, et posez-vous quand l'OSD affiche environ 3,3 V. Comptez environ 4 minutes de vol varié avec une batterie de 300 mAh, moins que le temps de vol stationnaire du calculateur.",
+  "design": {
+    "fixed": {
+      "FRAME": "Châssis caréné 65 mm",
+      "FC": "AIO 5-en-1 : contrôleur de vol, 4 ESC de 5 A, récepteur ELRS, VTX",
+      "CAM": "Caméra FPV nano",
+      "VTX": "Antenne VTX (le VTX est sur l'AIO)",
+      "RX": "Antenne ELRS",
+      "TOP": "Canopy",
+      "SCREWS": "Vis et silentblocs"
+    },
+    "verdict": {
+      "ok": "Les pièces s'accordent. Léger, sûr et amusant en intérieur.",
+      "punch": "Les pièces s'accordent. Du punch pour un whoop.",
+      "weak": "Rapport poussée/poids de {tw}:1 : il semble flotter et ne sortira pas d'un piqué. Visez environ 4:1.",
+      "over": "{kv} KV en {cells}S fait tourner ces moteurs 1S environ deux fois plus vite que ce pour quoi leurs bobinages sont faits : ils surchauffent vite. Les whoops 65 mm en 2S utilisent des moteurs 0802 d'environ 12000 à 14000 KV sur une carte 2S."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Châssis caréné monobloc 65 mm",
+      "what": "Une seule pièce moulée en polypropylène : quatre carénages de 34,9 mm, hauts de 14,5 mm, autour d'un plancher central, à 65 mm de moteur à moteur en diagonale. Il pèse moins de 3 g et plie au lieu de casser. Chaque moteur repose sur un support rond au fond de son carénage, quatre plots portent la carte de vol sur des silentblocs en caoutchouc, et la batterie se glisse dans des rails en dessous."
+    },
+    "MOTORS": {
+      "name": "4 moteurs brushless 0702",
+      "what": "De minuscules moteurs à rotor extérieur : un stator de 7 mm, haut de 2 mm, avec 9 bobines et 12 aimants (9N12P), un axe de 1 mm et environ 1,5 g chacun. À 25000 KV sur une cellule, ils tournent à environ 90 000 rpm à vide. Chacun se visse sur son support avec trois vis M1.4 sur un cercle de 6,6 mm et se branche sur l'AIO par une petite prise JST1.25 à 3 broches."
+    },
+    "FC": {
+      "name": "Carte AIO 5-en-1 (Betaflight)",
+      "what": "Contrôleur de vol, quatre ESC de 5 A, récepteur ELRS 2,4 GHz, OSD et émetteur vidéo 5,8 GHz sur une seule carte de 29 mm, avec des trous de fixation en 26 x 26 mm. Un STM32G473 fait tourner Betaflight (target BETAFPVG473) et lit un gyroscope ICM-42688-P ; les ESC tournent sous Bluejay. Le récepteur est câblé dans la carte sur l'UART3 et le VTX sur l'UART2. La flèche imprimée doit pointer vers la caméra : à l'envers, chaque correction part dans le mauvais sens et il se retourne dès qu'il décolle."
+    },
+    "WIRES": {
+      "name": "Prises moteur dans les connecteurs de l'AIO",
+      "what": "Les trois fils de phase de chaque moteur se terminent par une prise JST1.25 qui va dans le connecteur de son coin de l'AIO. La prise n'a pas de polarité : n'importe quel ordre fait tourner le moteur, et le sens de rotation se règle plus tard dans le firmware de l'ESC. Quel connecteur est M1, M2, M3 ou M4, c'est ce que vérifie le test moteur sans hélices."
+    },
+    "XT60": {
+      "name": "Câble batterie BT2.0, soudé aux pastilles de l'AIO",
+      "what": "Un court câble 26 AWG avec une prise BT2.0, rouge soudé sur la pastille + et noir sur la pastille -, à l'arrière de l'AIO. La BT2.0 a des contacts pleins de type banane, moins résistants que l'ancienne prise PH2.0, ce qui compte à 10 à 15 A sur une seule cellule. Il n'y a pas de gros condensateur sur un whoop 1S : ici, l'erreur à éviter est un câble soudé à l'envers, qui branche la batterie sur la carte en inversé."
+    },
+    "VTX": {
+      "name": "Antenne VTX 5,8 GHz",
+      "what": "L'émetteur vidéo est sur l'AIO ; voici son antenne. Betaflight règle la bande, le canal et la puissance en SmartAudio sur l'UART2, de 25 mW (largement assez en intérieur) jusqu'à 400 mW. N'alimentez jamais le VTX sans son antenne : l'étage de sortie n'a nulle part où envoyer sa puissance et surchauffe."
+    },
+    "RX": {
+      "name": "Antenne ExpressLRS 2,4 GHz",
+      "what": "Le récepteur est intégré à l'AIO et parle CRSF à Betaflight sur l'UART3. Seule son antenne est une pièce à part : faites-la sortir vers l'arrière, à l'écart des hélices. Pour l'appairer, allumez le whoop trois fois de suite jusqu'à ce que la LED du récepteur clignote deux fois, puis lancez l'appairage depuis votre radiocommande."
+    },
+    "TOP": {
+      "name": "Canopy",
+      "what": "Une fine coque moulée d'environ 1,5 g qui se clipse sur l'AIO, tient les doigts et les fibres de moquette loin de l'électronique, et porte la caméra dans son nez. En cas de crash, ce sont la canopy et les carénages qui encaissent."
+    },
+    "CAM": {
+      "name": "Caméra FPV nano 14 mm, uptilt de 25°",
+      "what": "Une caméra analogique de 14 x 14 mm avec un objectif grand angle de 155 à 160 degrés, inclinée de 25 degrés vers le haut dans le nez de la canopy pour que l'image reste droite quand le whoop penche vers l'avant. Trois fils vont aux pastilles CAM de l'AIO : 5 V, masse et vidéo, sur laquelle l'OSD incruste la tension, le chrono et les alertes."
+    },
+    "BATT": {
+      "name": "Batterie LiHV 1S avec prise BT2.0",
+      "what": "Une cellule lithium dans le support sous le châssis, prise à l'arrière. Une cellule LiHV fait 4,35 V chargée et 3,8 V en nominal ; une seule cellule s'affaisse fortement en charge, si bien que l'OSD peut lire 3,4 V pendant une accélération et remonter à 3,9 V quand vous relâchez. Posez-vous vers 3,3 V au repos, ne descendez jamais sous 3,0 V en charge, et stockez-la à 3,8 V."
+    },
+    "PROPS": {
+      "name": "Hélices emmanchées 31 mm, 2 CW + 2 CCW",
+      "what": "Quatre hélices de 31 mm qui s'emmanchent sur les axes de 1 mm. Deux tournent dans le sens horaire et deux dans le sens antihoraire (props in : les bords d'attaque balaient vers la caméra), pour que les couples des moteurs s'annulent ; le lacet vient de l'accélération d'une paire diagonale. Le sélecteur propose des quadripales, des tripales et une bipale efficace. Elles se montent en dernier, après le smoke stopper et la vérification du sens des moteurs."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Commencez par le châssis",
+      "body": "Vérifiez que les carénages ne sont pas fissurés et que les supports moteur n'ont pas de bavures de moulage. Un carénage fissuré fait vibrer le gyroscope et le whoop tremble."
+    },
+    "motors": {
+      "title": "Vissez les quatre moteurs",
+      "body": "Trois vis M1.4 x 3 mm chacun, dans le support au fond de chaque carénage, fils tournés vers le centre. Des vis plus longues atteignent les bobinages et mettent le moteur en court-circuit.",
+      "refusal": "Les moteurs se logent dans les carénages du châssis : commencez par le châssis."
+    },
+    "aio": {
+      "title": "Montez l'AIO, flèche vers l'avant",
+      "body": "Sur les quatre silentblocs en caoutchouc, au-dessus des plots du châssis, flèche imprimée pointée vers le côté caméra. Les silentblocs tiennent le bourdonnement des moteurs loin du gyroscope.",
+      "refusal": "L'AIO se pose sur les plots à silentblocs du châssis : installez d'abord le châssis."
+    },
+    "plugs": {
+      "title": "Branchez les moteurs",
+      "body": "La prise de chaque moteur dans le connecteur de son propre coin, fils rentrés vers le bas, hors du carénage. Les prises n'entrent que dans un sens, mais elles ne disent rien du sens de rotation : c'est le test moteur qui le vérifie.",
+      "refusal": "Les prises vont des moteurs à l'AIO : installez d'abord les deux."
+    },
+    "lead": {
+      "title": "Soudez le câble batterie BT2.0",
+      "body": "Rouge sur la pastille +, noir sur la pastille -, à l'arrière de l'AIO. Vérifiez au multimètre que + et - ne sont pas en court-circuit, et que le rouge est bien sur +, avant d'approcher une batterie.",
+      "refusal": "Le câble se soude sur les pastilles batterie de l'AIO : montez d'abord l'AIO."
+    },
+    "vtx": {
+      "title": "Installez l'antenne VTX",
+      "body": "Sur l'émetteur vidéo de l'AIO, pointée vers le haut et l'arrière. Elle se monte avant toute mise sous tension de la carte.",
+      "refusal": "L'antenne se branche sur le VTX de l'AIO : montez d'abord l'AIO."
+    },
+    "rx": {
+      "title": "Faites passer l'antenne ELRS",
+      "body": "Faites sortir l'antenne du récepteur vers l'arrière, entre les carénages arrière, là où aucune hélice ne peut l'attraper.",
+      "refusal": "L'antenne appartient au récepteur de l'AIO : montez d'abord l'AIO."
+    },
+    "canopy": {
+      "title": "Clipsez la canopy",
+      "body": "Par-dessus l'AIO, les antennes passées dans leurs fentes. Rien ne doit appuyer sur la carte ni pincer un fil.",
+      "refusal": "Installez d'abord l'AIO et les deux antennes : la canopy se referme par-dessus."
+    },
+    "cam": {
+      "title": "Installez la caméra",
+      "body": "Dans le nez de la canopy à 25 degrés, avec ses fils 5 V, masse et vidéo vers les pastilles CAM de l'AIO.",
+      "refusal": "La caméra se clipse dans la canopy : installez d'abord la canopy."
+    },
+    "batt": {
+      "title": "Glissez la batterie dans son support",
+      "body": "Sous le châssis, prise à l'arrière, centrée pour que le whoop soit équilibré. Ne la branchez pas encore.",
+      "refusal": "La batterie a besoin du support du châssis et du câble BT2.0 : installez d'abord les deux."
+    },
+    "props": {
+      "title": "Emmanchez les hélices, en dernier",
+      "body": "Seulement après le test au smoke stopper et la vérification du sens des moteurs, batterie débranchée. Hélices horaires sur M1 et M4, antihoraires sur M2 et M3, enfoncées bien droit sur l'axe.",
+      "refusal": "Les hélices se montent en dernier : faites d'abord le test au smoke stopper et la vérification du sens des moteurs."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "La prise BT2.0 de la batterie rejoint le câble. Une cellule LiHV fait 4,35 V chargée et 3,8 V en nominal ; à pleins gaz, le whoop tire 10 à 15 A à travers cette prise.",
+    "XT60-FC": "Le câble est soudé sur les pastilles + et - de l'AIO. Betaflight lit la tension de la batterie sur PA0 et le capteur de courant sur PA1 (current_meter = ADC), pour que l'OSD affiche la vraie consommation.",
+    "FC-WIRES": "Les quatre canaux d'ESC (sorties Betaflight M1 à M4 sur PB0, PB1, PB6 et PC13) pilotent les connecteurs moteur en DShot300 avec télémétrie rpm bidirectionnelle, 5 A chacun.",
+    "WIRES-MOTORS": "Trois fils de phase par moteur dans une prise JST1.25. N'importe quel ordre le fait tourner ; le sens de rotation se règle dans le firmware d'ESC Bluejay.",
+    "CAM-FC": "Le 5 V, la masse et la vidéo de la caméra entrent sur les pastilles CAM, à travers la puce OSD AT7456E qui incruste la tension, le chrono et les alertes sur l'image.",
+    "FC-RX": "Le récepteur ExpressLRS est sur l'AIO, câblé sur l'UART3 en serial RX avec le protocole CRSF (le réglage par défaut de la target).",
+    "FC-VTX": "Le VTX analogique est sur l'AIO, avec le SmartAudio 2.0 sur l'UART2 : Betaflight règle la bande, le canal et la puissance (25, 100, 200 ou 400 mW)."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Test au smoke stopper",
+      "pass": "La lampe n'a fait que clignoter : le câble BT2.0 a bien le rouge sur le plus et rien n'est en court-circuit. Vous pouvez brancher la batterie directement.",
+      "fail": "La lampe est restée allumée : le câble BT2.0 est soudé à l'envers. Ressoudez-le rouge sur + et refaites le test avant de brancher pour de bon."
+    },
+    "motors": {
+      "title": "Vérification du sens des moteurs (sans hélices)",
+      "pass": "Les quatre tournent dans le sens qu'attend le mixeur : M1 et M4 en horaire, M2 et M3 en antihoraire (props in). Les hélices peuvent maintenant être montées.",
+      "fail": "Un moteur a tourné dans le mauvais sens (sa flèche passe au rouge). La vérification l'inverse dans les réglages Bluejay, comme vous le feriez dans ESC Configurator via le passthrough de Betaflight ; avec des moteurs à prise, il n'y a rien à ressouder. Avec les hélices montées, il aurait retourné le whoop au décollage."
+    },
+    "calibrate": {
+      "title": "Calibrage de l'accéléromètre",
+      "pass": "Calibré sur une surface plane : le mode angle et l'horizon de l'OSD savent maintenant où est l'horizontale, et le blocage d'armement NO_ACC_CAL de Betaflight a disparu.",
+      "fail": "Montez d'abord l'AIO et posez le whoop sur une surface plane. Si la flèche pointe vers l'arrière, le calibrage n'y changera rien : tournez la carte ou faites set align_board_yaw = 180."
+    },
+    "rxtest": {
+      "title": "Test du récepteur",
+      "pass": "Appairé : dans l'onglet Receiver, les manches font bouger le roulis, le tangage, le lacet et les gaz, et AUX1 à AUX3 bougent aussi. AUX1 arme, AUX2 choisit le mode angle et AUX3 est le mode turtle, comme la CLI les a réglés.",
+      "fail": "Aucun canal n'a bougé. Installez l'AIO et l'antenne ELRS et branchez une batterie : le récepteur tourne sur l'AIO. Pour l'appairer, allumez-le trois fois de suite jusqu'à ce que la LED clignote deux fois, puis lancez l'appairage depuis la radiocommande."
+    },
+    "failsafe": {
+      "title": "Test de failsafe (sans hélices)",
+      "pass": "Radio coupée : l'OSD affiche RXLOSS, les moteurs s'arrêtent et le whoop se désarme (DROP). C'est le bon failsafe pour 25 g en intérieur : il tombe d'un mètre sur la moquette au lieu de s'envoler.",
+      "fail": "Retirez les hélices, installez l'antenne ELRS et branchez une batterie, puis coupez la radiocommande et surveillez l'OSD et les moteurs."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Premier réglage après le flashage",
+      "explain": "Règle le mixeur, l'orientation de la carte, le protocole moteur et les deux UART que l'AIO câble en interne. Le DShot300 suffit largement aux ESC d'un whoop, et dshot_bidir leur permet de renvoyer les rpm. La valeur par défaut de motor_poles, 14, est fausse pour les moteurs de whoop 9N12P : avec 12, chaque mesure de rpm et chaque filtre notch tombe au bon endroit. motor_idle est en centièmes de pour cent : 700 donne donc 7 %."
+    },
+    "battery": {
+      "title": "Une cellule LiHV : tensions et capteur de courant",
+      "explain": "Une cellule LiHV est pleine à 4,35 V, au-dessus du maximum par défaut de Betaflight, 4,30 V : il faut donc relever vbat_max_cell_voltage, sinon le nombre de cellules et l'OSD se trompent. Une seule cellule s'affaisse fortement en charge : l'alerte et le minimum se placent donc plus bas que sur un 5 pouces. L'AIO a un vrai capteur de courant (ADC) ; étalonnez ibata_scale d'après ce que votre chargeur remet dans la batterie. vbat_sag_compensation garde la même sensation aux manches pendant que la batterie s'affaisse."
+    },
+    "switches": {
+      "title": "Interrupteurs : armement, angle, turtle",
+      "explain": "aux prend le numéro du mode : 0 ARM, 1 ANGLE, 35 FLIP OVER AFTER CRASH (turtle). Le canal se compte à partir de 0 = AUX1 et la plage est en microsecondes. Le mode turtle a son propre interrupteur sur AUX3, pour ne jamais entrer en conflit avec le mode angle sur AUX2. Il n'y a pas de mode ACRO à activer : l'acro, c'est ce qui vole quand le mode angle est coupé."
+    },
+    "turtle": {
+      "title": "Mode turtle (flip over after crash)",
+      "explain": "Sur le dos, basculez AUX3 et armez : Betaflight saute son blocage d'armement à l'envers, demande aux ESC de tourner en sens inverse, et le manche que vous poussez soulève ce côté pour le retourner. Le mode turtle demande un protocole DShot, car la commande d'inversion est une commande DShot. Avec crashflip_auto_rearm sur OFF, le whoop se désarme quand vous coupez le mode turtle et affiche FLIP_SWITCH jusqu'à ce que vous désarmiez et réarmiez."
+    },
+    "rpm": {
+      "title": "Filtre RPM aux vitesses d'un whoop",
+      "explain": "Un moteur de whoop 1S tourne entre 60 000 et 100 000 rpm, 1 000 à 1 700 fois par seconde, bien au-dessus du bruit d'un 5 pouces. Avec les rpm de chaque moteur, Betaflight place des filtres notch exactement dessus : voilà pourquoi motor_poles doit être juste. La troisième harmonique pèse peu sur un whoop, son poids passe donc à 0."
+    },
+    "vtx": {
+      "title": "Niveaux de puissance du VTX",
+      "explain": "Collez d'abord la vtxtable d'usine tirée du manuel de l'AIO. Le SmartAudio 2.0 prend des numéros de niveau (0 à 3) pour les quatre puissances, là où le SmartAudio 2.1 prendrait des dBm. 25 mW sur Raceband 1 suffisent largement en intérieur, et vtx_low_power_disarm garde la puissance au minimum tant que le whoop est posé sur l'établi."
+    },
+    "failsafe": {
+      "title": "Failsafe : drop",
+      "explain": "Quand la liaison radio est perdue, l'étape 1 applique les valeurs de repli (manches au centre, gaz bas) pendant failsafe_delay (15 = 1,5 s), pour qu'une courte coupure passe. Si la liaison ne revient pas, l'étape 2 DROP arrête les moteurs. Pour un whoop de 25 g en intérieur, c'est le choix sûr ; GPS-RESCUE demande un GPS que cet engin n'a pas."
+    },
+    "alt": {
+      "title": "Le « maintien d'altitude » est ici une aide du simulateur",
+      "explain": "L'ALTHOLD de Betaflight (mode 3) tient l'altitude grâce à un baromètre ou un GPS, et un AIO de whoop n'a ni l'un ni l'autre. Le maintien d'altitude de SimLab facilite les premiers vols ; sur le vrai whoop, vous apprenez la même chose en mode angle, avec l'inclinaison limitée à 45 degrés pour une pièce."
+    },
+    "angle": {
+      "title": "Mode angle",
+      "explain": "Le contrôleur de vol remet le whoop à plat quand vous lâchez et ne l'incline jamais au-delà d'angle_limit : 45 degrés ici, plus doux que les 60 par défaut, ce qui convient aux meubles. angle_p_gain règle la force de la remise à plat. Les anciennes versions de Betaflight les appelaient level_limit et angle_level_strength ; ces noms n'existent plus."
+    },
+    "acro": {
+      "title": "Rates acro",
+      "explain": "Avec les rates ACTUAL, rc_rate est la sensibilité au centre et srate la vitesse manche à fond, toutes deux divisées par 10 : 70 degrés par seconde autour du centre et 670 manche à fond, les valeurs que vole le terrain. Le lacet s'arrête à 300 degrés par seconde, plus facile entre les meubles. AIRMODE garde tout le contrôle à gaz zéro, pour plonger à travers un passage."
+    },
+    "race": {
+      "title": "Chrono au tour et batterie sur l'OSD",
+      "explain": "osd_tim1 regroupe la source du chrono et sa précision en un seul nombre : 2 (depuis le dernier armement) plus 1 x 16 (centièmes) donne 18. Chaque valeur _pos vaut 2048 (profil OSD 1) plus la colonne plus 32 par ligne : le chrono en haut à droite, la tension de cellule en bas à gauche."
+    },
+    "range": {
+      "title": "Parcours du salon : qualité de liaison et alertes",
+      "explain": "Le mode angle pour le parcours, avec la qualité de liaison en haut à gauche, les alertes au centre là où vous ne pouvez pas manquer LOW BATTERY, et les mAh consommés en bas à droite. En intérieur, ce sont les murs et les meubles qui affaiblissent la liaison, pas la distance."
+    }
+  },
+  "flight": {
+    "modes": {
+      "alt": {
+        "title": "Maintien d'altitude (facile, simulateur seulement)",
+        "hint": "Une aide du simulateur : un vrai whoop n'a pas de baromètre, Betaflight ne peut donc pas tenir sa hauteur. W et S font monter et descendre et il reste en place quand vous lâchez ; les flèches l'inclinent, A et D pivotent en lacet, Espace arme."
+      },
+      "angle": {
+        "title": "Mode angle",
+        "hint": "Auto-stabilisé jusqu'à 45 degrés, comme la plupart des pilotes apprennent sur un vrai whoop. Les gaz restent là où vous les laissez : tenez le vol stationnaire avec W et S."
+      },
+      "acro": {
+        "title": "Mode acro (rate)",
+        "hint": "Les manches règlent la vitesse de rotation (jusqu'à 670 degrés par seconde) et rien ne le remet à plat. Lâchez et il garde son angle."
+      },
+      "race": {
+        "title": "Course de portes (angle)",
+        "hint": "Trois portes autour de la pièce, dans l'ordre. Le chrono démarre à la porte 1 ; le temps de référence est de 20 secondes par tour."
+      },
+      "range": {
+        "title": "Terrain : le salon",
+        "hint": "Sous la table basse, entre les chaises de la salle à manger, devant la lampe, par-dessus le canapé et jusqu'au tapis. Le temps de référence est de 45 secondes."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Liaison radio perdue : pendant 1,5 s, les manches passent à leurs valeurs de repli, puis DROP arrête les moteurs et le whoop tombe.",
+      "low-battery": "Sous 3,3 V par cellule, l'OSD fait clignoter LOW BATTERY : posez-vous maintenant.",
+      "brown-out": "Une cellule fatiguée qui s'affaisse sous environ 3,0 V lors d'une accélération peut réinitialiser la vidéo et le récepteur : l'image défile ou devient noire et le whoop tombe."
+    },
+    "controls": "Clavier : Espace arme et désarme, W et S pour les gaz, les flèches pour le tangage et le roulis, A et D pour le lacet, V passe en vue FPV, R replace le whoop sur la plateforme. Sur téléphone, le manche gauche gère les gaz et le lacet, le manche droit le tangage et le roulis. Une manette fonctionne en Mode 2."
+  },
+  "courses": {
+    "prims": {
+      "wall": "Mur en coupe",
+      "coffee": "Table basse",
+      "sofa": "Canapé",
+      "tv": "Meuble télé",
+      "dining": "Table de salle à manger",
+      "chair": "Chaise",
+      "lamp": "Lampadaire",
+      "shelf": "Bibliothèque"
+    },
+    "race": {
+      "title": "Course de portes dans le salon",
+      "brief": "Trois portes de 0,8 m sur le sol dégagé : au nord après la table basse, à l'est au-dessus du tapis, puis à l'ouest en revenant vers la plateforme près de la télé. Passez-les dans l'ordre ; le chrono démarre à la porte 1."
+    },
+    "living": {
+      "title": "Le salon",
+      "brief": "Décollez de la plateforme, glissez-vous sous la table basse, faufilez-vous entre les deux chaises de la salle à manger, contournez le lampadaire, sautez par-dessus le canapé et posez-vous sur le tapis. Les portes de course sont aussi dans la pièce.",
+      "goals": {
+        "1": "SOUS LA TABLE",
+        "2": "ENTRE LES CHAISES",
+        "3": "APRÈS LA LAMPE",
+        "4": "PAR-DESSUS LE CANAPÉ",
+        "5": "ATTERRISSAGE SUR LE TAPIS"
+      }
+    }
+  },
+  "quizzes": {
+    "aio": {
+      "combine": {
+        "q": "Que réunit la carte AIO 5-en-1 sur une seule carte ?",
+        "options": {
+          "1": "Contrôleur de vol, quatre ESC, récepteur, OSD et émetteur vidéo",
+          "2": "La batterie, les moteurs et la caméra",
+          "3": "Cinq contrôleurs de vol, au cas où l'un tomberait en panne"
+        },
+        "why": "À 25 g, il n'y a pas de place pour une stack. L'AIO du whoop porte le contrôleur de vol, quatre ESC de 5 A, un récepteur ExpressLRS sur l'UART3, la puce OSD et un VTX 5,8 GHz sur l'UART2, le tout sur une carte de 29 mm de moins de 4 g."
+      },
+      "arrow": {
+        "q": "La flèche de l'AIO pointe vers l'arrière. Que se passe-t-il au décollage ?",
+        "options": {
+          "1": "Rien : un whoop est symétrique",
+          "2": "Chaque correction part dans le mauvais sens et il se retourne aussitôt",
+          "3": "Seule l'image de la caméra est à l'envers"
+        },
+        "why": "Betaflight suppose que la flèche pointe vers l'avant. À l'envers, une inclinaison à gauche se lit comme une inclinaison à droite : la boucle PID pousse dans le mauvais sens et le whoop se retourne en décollant. Tournez la carte, ou faites set align_board_yaw = 180."
+      }
+    },
+    "power": {
+      "polarity": {
+        "q": "Le câble BT2.0 a été soudé rouge sur la pastille moins. Que se passe-t-il au branchement ?",
+        "options": {
+          "1": "Il vole en marche arrière",
+          "2": "Rien : la carte corrige la polarité",
+          "3": "La batterie alimente l'AIO à l'envers et peut griller son entrée"
+        },
+        "why": "Une polarité inversée place la cellule à l'envers sur les régulateurs et les MOSFET des ESC, et la batterie peut débiter bien plus de courant qu'ils n'en supportent. Un smoke stopper au premier branchement, ou une vérification des pastilles au multimètre, le détecte avant que quoi que ce soit ne grille."
+      },
+      "bt2": {
+        "q": "Pourquoi les whoops utilisent-ils des prises BT2.0 plutôt que l'ancienne PH2.0 ?",
+        "options": {
+          "1": "Elles sont moins chères",
+          "2": "Moins de résistance : moins de chute de tension et des vols plus longs",
+          "3": "Elles peuvent porter deux cellules"
+        },
+        "why": "À 10 à 15 A, chaque milliohm compte sur une seule cellule. BETAFPV a mesuré environ 0,2 V de chute en moins à 9 A avec la BT2.0 qu'avec la PH2.0 sur la même batterie, et un vol plus long."
+      }
+    },
+    "props": {
+      "ducts": {
+        "q": "À quoi servent les carénages autour des hélices ?",
+        "options": {
+          "1": "À la vitesse",
+          "2": "Ils protègent les hélices, pour qu'il puisse heurter murs, meubles et personnes sans faire de mal",
+          "3": "À refroidir les moteurs"
+        },
+        "why": "Un whoop est fait pour se crasher. Les carénages tiennent les hélices loin des murs, des rideaux et des doigts, et le châssis souple en PP plie au lieu de casser. C'est ce qui rend son vol sûr en intérieur, près des gens."
+      },
+      "last": {
+        "q": "Pourquoi les hélices se montent-elles en dernier ?",
+        "options": {
+          "1": "Pour que les tests moteur se fassent sans rien qui puisse couper ou être projeté",
+          "2": "Ce sont les pièces les plus lourdes",
+          "3": "Sinon, la canopy ne rentre pas"
+        },
+        "why": "Même des hélices de 31 mm à 90 000 rpm peuvent couper la peau et projeter le whoop hors de l'établi. Le smoke stopper et la vérification du sens des moteurs se font sans hélices ; elles se montent une fois les deux réussis."
+      }
+    },
+    "flight": {
+      "sag": {
+        "q": "L'OSD lit 4,1 V, tombe à 3,4 V pendant une accélération, puis remonte à 4,0 V. Que se passe-t-il ?",
+        "options": {
+          "1": "La batterie est cassée",
+          "2": "La chute de tension : la résistance de la cellule coûte des volts en charge, qui reviennent quand la charge baisse",
+          "3": "L'OSD doit être calibré"
+        },
+        "why": "À 10 à 15 A, une seule cellule, sa prise et ses fils perdent 0,4 à 1 V dans leur résistance. La tension revient quand les gaz baissent. La chute grandit à mesure que la batterie se vide, refroidit ou vieillit, et une chute profonde peut faire décrocher la vidéo et le récepteur."
+      },
+      "twos": {
+        "q": "Pourquoi ne pas faire voler ces moteurs 0702 de 25000 KV sur une batterie 2S ?",
+        "options": {
+          "1": "La 2S est interdite en intérieur",
+          "2": "Ils tourneraient environ deux fois plus vite que ce pour quoi leurs bobinages sont faits et surchaufferaient",
+          "3": "Rien ne changerait"
+        },
+        "why": "Le KV, ce sont les rpm par volt : deux fois la tension, c'est deux fois les rpm, environ 185 000 rpm à vide en 2S. Le courant et la chaleur montent bien plus vite que les rpm. Les vrais whoops 65 mm en 2S utilisent des moteurs 0802 d'environ 12000 à 14000 KV sur une carte prévue pour la 2S."
+      },
+      "turtle": {
+        "q": "Le whoop atterrit sur le dos derrière le canapé. Qu'est-ce qui le fait repartir ?",
+        "options": {
+          "1": "Armer et mettre les gaz à fond",
+          "2": "Rien : allez le retourner à la main",
+          "3": "Le mode turtle : activez-le, armez, et poussez le manche pour que les moteurs tournent à l'envers et le retournent"
+        },
+        "why": "FLIP OVER AFTER CRASH (mode 35) inverse les moteurs par une commande DShot et vous laisse armer sur le dos. Poussez le manche vers le côté qui doit se soulever. Avec crashflip_auto_rearm sur OFF, coupez le mode turtle, désarmez et réarmez pour repartir."
+      },
+      "alt": {
+        "q": "Le maintien d'altitude de SimLab fait voler ce whoop. Le vrai l'a-t-il ?",
+        "options": {
+          "1": "Non : il n'a ni baromètre ni GPS, le maintien d'altitude de Betaflight ne peut donc pas fonctionner",
+          "2": "Oui : tous les quads Betaflight l'ont",
+          "3": "Seulement sur une batterie 2S"
+        },
+        "why": "L'ALTHOLD de Betaflight a besoin d'un baromètre ou d'un GPS, et l'AIO d'un whoop n'a ni l'un ni l'autre. Dans le simulateur, c'est une aide à l'apprentissage ; sur le vrai whoop, vous tenez la hauteur avec les gaz, d'abord en mode angle."
+      }
+    }
+  }
+}
