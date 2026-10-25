@@ -70,7 +70,7 @@
     "stepsLabel": "Pruebas de seguridad en el banco",
     "stepStatus": { "done": "superada", "current": "siguiente" },
     "steps": {
-      "smoke": "Prueba con el smoke stopper",
+      "smoke": "Prueba del smoke stopper",
       "smokeHint": "Detecta un cortocircuito antes de que lo haga la batería.",
       "motors": "Sentido de los motores, sin hélices",
       "motorsHint": "Nunca hagas girar los motores en el banco con las hélices puestas.",
@@ -84,7 +84,7 @@
       "props-on": "los motores giraron con las hélices puestas",
       "inconsistent": "el registro de la sesión no cuadra"
     },
-    "fault": "El conector de la batería está quemado. Desenchufa, vuelve a colocar el XT60 en el sentido correcto y repite la prueba con el smoke stopper.",
+    "fault": "El condensador de la batería ha reventado. Desconecta, vuelve a poner el XT60 en el sentido correcto y repite la prueba del smoke stopper.",
     "score": "Puntuación de seguridad",
     "scoreValue": "{score}/100",
     "pops": { "one": "{count} chispazo al encender", "other": "{count} chispazos al encender" },
