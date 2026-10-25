@@ -51,7 +51,7 @@
     "lede": "{boards} cartes de développement, {benches} bancs de robotique et {drones} drones, chacun une figure 3D encrée à la main. Faites-la tourner, regardez à l’intérieur, câblez-la, lancez du vrai code, cassez-la exprès et comprenez pourquoi.",
     "start": "Commencer avec l’Arduino Uno R3",
     "browse": "Parcourir les cartes",
-    "heroAlt": "Un dessin à l’encre d’une carte à microcontrôleur et d’un driver de moteurs sur l’établi, avec un quadricoptère en vol stationnaire au-dessus.",
+    "heroFigure": "Arduino Uno R3 qui exécute Blink sur une platine d’essai, en direct : faites-le glisser pour le tourner",
     "labsTitle": "Les trois labos",
     "open": "Ouvrir le {lab}",
     "board": {

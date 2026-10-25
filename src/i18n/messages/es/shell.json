@@ -51,7 +51,7 @@
     "lede": "{boards} placas de desarrollo, {benches} bancos de robótica y {drones} drones, cada uno una figura 3D entintada a mano. Gírala, mira por dentro, cabléala, ejecuta código real, rómpela a propósito y descubre por qué.",
     "start": "Empieza con el Arduino Uno R3",
     "browse": "Ver las placas",
-    "heroAlt": "Un dibujo a tinta de una placa con microcontrolador y un driver de motores sobre el banco de trabajo, con un cuadricóptero suspendido en el aire encima.",
+    "heroFigure": "Arduino Uno R3 con Blink en una protoboard, en vivo: arrástralo para girarlo",
     "labsTitle": "Los tres laboratorios",
     "open": "Abrir el {lab}",
     "board": {

@@ -51,7 +51,7 @@
     "lede": "{boards} 块开发板、{benches} 个机器人实验台和 {drones} 架无人机，每一个都是手绘墨线的 3D 模型。转动它、看看里面、给它接线、运行真正的代码、故意把它弄坏，再弄明白原因。",
     "start": "从 Arduino Uno R3 开始",
     "browse": "浏览开发板",
-    "heroAlt": "一幅墨线画：工作台上放着一块单片机开发板和一个电机驱动模块，上方悬停着一架四旋翼无人机。",
+    "heroFigure": "在面包板上运行 Blink 的 Arduino Uno R3（实时）：拖动即可旋转",
     "labsTitle": "三个实验室",
     "open": "打开{lab}",
     "board": {

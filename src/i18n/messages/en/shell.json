@@ -51,7 +51,7 @@
     "lede": "{boards} dev boards, {benches} robotics benches and {drones} drones, each one a hand-inked 3D figure. Turn it round, look inside, wire it up, run real code, break it on purpose and find out why.",
     "start": "Start with the Arduino Uno R3",
     "browse": "Browse the boards",
-    "heroAlt": "An ink drawing of a microcontroller board and a motor driver on the bench, with a quadcopter hovering above them.",
+    "heroFigure": "Arduino Uno R3 running Blink on a breadboard, live: drag to turn it",
     "labsTitle": "The three labs",
     "open": "Open the {lab}",
     "board": {

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { FigureFrame } from "@/components/figure";
 import { HeroActions, LabProgress } from "@/components/shell/dashboard/DashboardProgress";
 import { HeroArt } from "@/components/shell/dashboard/HeroArt";
 import { loadLabs } from "@/components/shell/dashboard/data";
@@ -15,6 +16,8 @@ import { getMessages, getT } from "@/i18n/server";
 type Props = PageProps<"/[lang]">;
 
 const counts = { boards: BOARD_IDS.length, benches: ROBOTICS_IDS.length, drones: DRONE_IDS.length };
+// the hero figure is only to look at and turn: no zoom chip, and no notes popping up over it
+const HERO_CHROME = ["zoom", "toast"];
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang } = await params;
@@ -78,14 +81,17 @@ async function Dashboard({ params }: Pick<Props, "params">) {
             />
           </div>
         </div>
-        {/* The drawing leads straight into the first lesson, like the primary button. */}
-        <Link
-          href={startHref}
-          aria-label={t("dashboard.start")}
-          className="ink-plate group flex h-[min(44svh,400px)] items-center lg:h-[min(62vh,600px)] lg:min-h-80 justify-center overflow-hidden p-4 transition-transform duration-200 hover:-translate-y-0.5 sm:p-8"
-        >
-          <HeroArt title={t("dashboard.heroAlt")} className="h-full w-auto max-w-full object-contain transition-transform duration-300 group-hover:scale-[1.02]" />
-        </Link>
+        {/* The Uno running Blink on its breadboard, live: drag it round. The drawing stands in until it's ready. */}
+        <div className="h-[min(44svh,400px)] lg:h-[min(62vh,600px)] lg:min-h-80">
+          <FigureFrame
+            src="/figures/boards/uno-r3.html?bare=1&view=breadboard&circuit=blink"
+            title={t("dashboard.heroFigure")}
+            controls={false}
+            hideChrome={HERO_CHROME}
+            fill
+            poster={<HeroArt className="h-full w-auto max-w-full object-contain p-4 sm:p-8" />}
+          />
+        </div>
       </section>
 
       <section aria-labelledby={`labs-title-${lang}`}>

@@ -51,7 +51,7 @@
     "lede": "{boards} Entwicklungsboards, {benches} Robotik-Aufbauten und {drones} Drohnen, jedes eine von Hand getuschte 3D-Figur. Dreh sie herum, schau hinein, verkabel sie, lass echten Code laufen, mach sie absichtlich kaputt und finde heraus, warum.",
     "start": "Mit dem Arduino Uno R3 anfangen",
     "browse": "Boards ansehen",
-    "heroAlt": "Eine Tuschezeichnung eines Mikrocontroller-Boards und eines Motortreibers auf der Werkbank, über denen ein Quadrocopter schwebt.",
+    "heroFigure": "Arduino Uno R3 mit Blink auf einem Steckbrett, live: zum Drehen ziehen",
     "labsTitle": "Die drei Labore",
     "open": "{lab} öffnen",
     "board": {
