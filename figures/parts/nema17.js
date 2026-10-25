@@ -7,7 +7,7 @@
    flange. 1.8° a step (200 full steps a turn), 1.68 A rated, 1.65 Ω and 3.2 mH a coil, 36 N·cm holding torque.
    Four leads leave the rear cap through a black boot: black and green are one coil (the A4988's 2B and 2A), red and
    blue the other (1A and 1B). Legs [BLK, GRN, RED, BLU]: the four lead ends; `legZ` lifts them (mm above the mat) so a
-   bench can end them on pins that stand above the mat.
+   bench can seat their housings on header pins that stand above the mat (at the height a jumper wire's end sits).
    Inside (see-through): eight stator poles, coil A on poles 1-3-5-7 and coil B on 2-4-6-8, round a rotor of two
    50-tooth cups; 50 teeth x 4 = 200 full steps. The bench that drives it says what it does through
    m = { state, deg, ia, ib, rpm } (its model readings by part id): state 'off' (no current) | 'hold' (coils on, still) |
@@ -125,20 +125,23 @@ B.part('nema17', {
     if (m.state === 'hot'){ const [X, Y] = P(...W(0, -SQ / 2, 28));
       put(B.aabb([W(-3, -SQ / 2 - 1, 26), W(3, -SQ / 2, 34)]), `<path d="M${f(X - 3)} ${f(Y)}q2 -3 0 -6q-2 -3 0 -6M${f(X + 2)} ${f(Y - 1)}q2 -3 0 -6q-2 -3 0 -6" fill="none" stroke="#e2483d" stroke-width=".9" opacity=".75"/>`); }
 
-    // the four leads from the boot to their ends, in short pieces so they sort at every angle; unplugged, they stop
-    // short and lie on the mat
-    const lz = +p.legZ || 0, loose = m.state === 'unplugged';
+    // the four leads from the boot to their ends, in short pieces so they sort at every angle. Each ends in a female
+    // housing: lifted by legZ it sits on a header pin the way a jumper wire does; unplugged, the leads stop short and
+    // the housings lie on the mat; with the coil pairs mixed, green and red have swapped pins
+    const lz = +p.legZ || 0, loose = m.state === 'unplugged', order = m.state === 'buzz' ? [0, 2, 1, 3] : [0, 1, 2, 3];
     LEADS.forEach((col, i) => {
-      const a = W(-2.4 + i * 1.6, -SQ / 2 - 3.2, 3.6), leg = legs[i];
+      const a = W(-2.4 + i * 1.6, -SQ / 2 - 3.2, 3.6), leg = legs[order[i]], seated = !!leg && !loose && lz > 0;
       let end = leg ? [leg[0], leg[1], leg[2] + lz] : W(-12 + i * 8, -SQ / 2 - 22, 0);
-      if (loose && leg) end = [a[0] + (leg[0] - a[0]) * .7, a[1] + (leg[1] - a[1]) * .7 + (i - 1.5) * 3, o[2] + .4];
-      const top = Math.max(a[2], end[2]) + 5, pts = [];
+      if (loose && leg) end = [a[0] + (leg[0] - a[0]) * .7 + (i - 1.5) * 2.5, a[1] + (leg[1] - a[1]) * .7 - (i - 1.5) * 2.5, o[2]];
+      const dir = norm([end[0] - a[0], end[1] - a[1], 0]);
+      const head = seated ? [end[0], end[1], end[2] + 4.5] : [end[0] - dir[0] * 3.3, end[1] - dir[1] * 3.3, end[2] + 1.1];
+      const top = Math.max(a[2], head[2]) + 5, pts = [];
       for (let j = 0; j <= 14; j++){ const t = j / 14, sw = Math.sin(t * Math.PI);
-        pts.push([a[0] + (end[0] - a[0]) * t, a[1] + (end[1] - a[1]) * t, a[2] * (1 - t) + end[2] * t + (top - Math.max(a[2], end[2])) * sw * .6]); }
+        pts.push([a[0] + (head[0] - a[0]) * t, a[1] + (head[1] - a[1]) * t, a[2] * (1 - t) + head[2] * t + (top - Math.max(a[2], head[2])) * sw * .6]); }
       for (let j = 0; j < pts.length - 1; j++){ const q0 = pts[j], q1 = pts[j + 1];
         put(B.aabb([q0, q1]).map((v, h) => v.map(x => x + (h ? .45 : -.45))), rod(q0, q1, .45, matOf(col), toneI, .45)); }
-      // a female jumper housing on each end
-      put(B.aabb([end, [end[0], end[1], end[2] + 2.5]]).map((v, h) => v.map(x => x + (h ? 1.2 : -1.2))), rod(end, [end[0], end[1], end[2] + 2.5], 1.1, B.M.blackPl, toneI, .5));
+      const h0 = seated ? [end[0], end[1], end[2] + 1.2] : [end[0], end[1], end[2] + 1.1];
+      put(B.aabb([h0, head]).map((v, h) => v.map(x => x + (h ? 1.3 : -1.3))), rod(h0, head, 1.15, B.M.blackPl, toneI, .5));
     });
     for (const it of items) ctx.put(it.box, it.svg);
   },

@@ -1,0 +1,465 @@
+{
+  "title": "A4988 stepper driver",
+  "sub": "set the current limit, then step",
+  "hint": "build it, meter the pot, step a NEMA 17",
+  "overview": "A stepper motor turns in fixed steps, 200 to a turn for a NEMA 17, and holds its place with both coils on. The A4988 does the hard part: it switches the two coils through two H-bridges in the right order, one step for every pulse on STEP, in the direction DIR sets, and it limits the current in each coil with a chopper that watches the voltage on a 0.068 Ω sense resistor. You set that limit before anything turns: the voltage on the trimpot's metal rotor, VREF, gives I_MAX = VREF / (8 x 0.068 Ω), so 0.544 V on a meter means 1.0 A, about as much as the bare carrier can take without a heatsink. Build the Pololu carrier, wire a Nano, the motor and a 2S LiPo, meter the pot while a hold sketch keeps the coils on, then step the motor in full, half and 1/16 steps. The breaks are the classic ones: a pack backwards, the reset pin left floating, a tired pack under 8 V, the coil pairs mixed, the limit turned up to the motor's 1.68 A, and the motor unplugged while it runs.",
+  "power": {
+    "label": "Power the bench",
+    "ok": "Nano on USB, LiPo on VMOT: the coils are on and the shaft holds"
+  },
+  "parts": {
+    "U1": {
+      "name": "Allegro A4988 microstepping driver",
+      "what": "A 5 x 5 mm QFN-28 with an exposed pad underneath. Inside: a translator that turns STEP and DIR pulses into coil currents (full, 1/2, 1/4, 1/8 and 1/16 step), two DMOS H-bridges, and a fixed off-time chopper per coil that regulates the current against the sense resistors. Motor supply 8 to 35 V, logic 3 to 5.5 V, thermal shutdown at 165 °C, no reverse-polarity protection."
+    },
+    "RV1": {
+      "name": "Current-limit trimpot",
+      "what": "A small trimmer between VDD and GND through a resistor. Its metal rotor is the VREF node, so a meter's red probe goes straight on it. Turning it clockwise raises VREF and with it the current limit: I_MAX = VREF / (8 x 0.068 Ω)."
+    },
+    "RS1": {
+      "name": "Sense resistor, coil 1",
+      "what": "0.068 Ω, marked R068 on a white body. Coil 1's current flows through it to ground; the chopper switches the bridge off when the voltage across it reaches VREF / 8."
+    },
+    "RS2": {
+      "name": "Sense resistor, coil 2",
+      "what": "The same 0.068 Ω part for coil 2. Older carriers used 0.050 Ω resistors with green bodies, which changes the formula: check the marking before you trust a VREF table."
+    },
+    "C1": {
+      "name": "4.7 µF ceramic on VMOT",
+      "what": "A 1206 ceramic capacitor right at the chip's motor supply pins: it handles the fast edges of the chopper. It is too small to soak up the spike long supply leads ring up at plug-in, which is what the 100 µF is for."
+    },
+    "CAPS": {
+      "name": "Six 0603 capacitors",
+      "what": "Decoupling on VDD and VMOT, the charge-pump capacitors that let the chip drive its high-side switches, and the internal regulator's capacitor."
+    },
+    "RES": {
+      "name": "Four 0603 resistors",
+      "what": "SLP's pull-up, EN's pull-down (so the outputs are on by default), the off-time resistor and the top of the VREF divider."
+    },
+    "H1": {
+      "name": "Control header",
+      "what": "From the trimpot end: DIR, STEP, SLP, RST, MS3, MS2, MS1, EN. MS1 to MS3 have pull-downs on the chip, so left open they mean full step. EN is pulled low, so the outputs are on unless you drive it high."
+    },
+    "H2": {
+      "name": "Power and motor header",
+      "what": "From the trimpot end: GND, VDD, 1B, 1A, 2A, 2B, GND, VMOT. One coil goes on 1A and 1B, the other on 2A and 2B. The pin names are printed on the underside only."
+    },
+    "LINK": {
+      "name": "Jumper cap from RST to SLP",
+      "what": "The carrier pulls SLP high but leaves RST floating. This cap ties RST to SLP, so RST is held high and the driver comes out of reset."
+    },
+    "CB": {
+      "name": "100 µF electrolytic on VMOT",
+      "what": "Pololu's wiring diagram puts 100 µF across VMOT and GND, close to the board, stripe to GND. Without it the inductance of the supply leads and the small ceramic ring when power is connected, and the spike can pass 35 V even from a 12 V supply."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "Makes the pulses: STEP on D3, DIR on D4, MS1 to MS3 on D5 to D7. Its 5 V pin feeds the driver's VDD and its GND joins the driver's and the pack's."
+    },
+    "MOT": {
+      "name": "NEMA 17 stepper",
+      "what": "SY42STH38-1684A: 42.3 mm square, 38 mm long, 200 steps a turn, 1.68 A and 1.65 Ω a phase, 36 N·cm holding torque. Black and green are one coil (2B and 2A), red and blue the other (1A and 1B)."
+    },
+    "BATT": {
+      "name": "2S LiPo",
+      "what": "7.4 V nominal, 8.4 V full. The A4988 needs at least 8 V on VMOT, so a 2S pack only just works when it is fresh. A 3S pack or a 12 V supply is the better choice."
+    },
+    "MM": {
+      "name": "Pocket multimeter",
+      "what": "On the 2 V DC range, red probe on the trimpot's rotor, black on a GND pin. It reads VREF directly, which is how you set the current limit without measuring the motor current."
+    }
+  },
+  "modes": {
+    "vref": {
+      "title": "Hold, set Vref"
+    },
+    "full": {
+      "title": "Full step, 1 turn a second"
+    },
+    "half": {
+      "title": "Half step"
+    },
+    "micro": {
+      "title": "1/16 step, a quarter turn a second"
+    },
+    "code": {
+      "title": "A4988: one pulse on STEP is one step, DIR picks the way",
+      "pins": "STEP and DIR",
+      "ms": "MS1, MS2 and MS3 pick the step size",
+      "pulses": "n pulses, each one HIGH then LOW for halfUs microseconds",
+      "full": "all low: full step, 200 steps a turn",
+      "half": "MS1 high: half step, 400 steps a turn",
+      "micro": "all high: 1/16 step, 3200 steps a turn",
+      "wake": "the chip needs 1 ms after waking before the first step",
+      "hold": "no pulses: both coils stay on and the shaft holds"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Strip to the bare board",
+      "body": "Start from the bare green carrier: 15.24 x 20.32 mm, square corners, no mounting holes, sixteen plated holes along the two long edges. Everything goes back on in factory order.",
+      "refusal": "Unplug the power first: never work on a live board"
+    },
+    "smd": {
+      "title": "Place and reflow the surface-mount parts",
+      "body": "Paste, place, reflow: the A4988 in the middle, the trimpot at one end, the two R068 sense resistors along the motor side, the 4.7 µF ceramic by VMOT, and the six 0603 capacitors and four 0603 resistors around the chip. The exposed pad under the A4988 is soldered down too: it is the chip's main path for heat into the board.",
+      "refusal": "Strip the board first"
+    },
+    "headers": {
+      "title": "Put in the two headers",
+      "body": "Two 1 x 8 male headers, long pins up so female jumpers fit on top. Control on one edge (DIR, STEP, SLP, RST, MS3, MS2, MS1, EN), power and motor on the other (GND, VDD, 1B, 1A, 2A, 2B, GND, VMOT).",
+      "refusal": "Reflow the surface-mount parts first"
+    },
+    "solder": {
+      "title": "Solder the 16 header pins",
+      "body": "One joint per pin, a clean cone each. A cold joint on a motor pin is worse than it looks: every time it opens, it is the same as unplugging the motor live.",
+      "refusal": "Put both headers in first"
+    },
+    "link-cap": {
+      "title": "Fit the RST-SLP cap and the 100 µF",
+      "body": "A jumper cap across RST and SLP: RST floats on this carrier, and SLP's pull-up holds it high through the cap. Then the 100 µF electrolytic across VMOT and GND, stripe to GND, lying on the mat with its legs on the two pins.",
+      "refusal": "Solder the headers first"
+    },
+    "wire-nano": {
+      "title": "Wire the Nano",
+      "body": "D3 to STEP, D4 to DIR, D5, D6 and D7 to MS1, MS2 and MS3, the Nano's 5V to VDD and GND to GND.",
+      "refusal": "Finish the board first: both headers soldered, the cap and the 100 µF on"
+    },
+    "wire-motor": {
+      "title": "Plug in the motor",
+      "body": "The four leads in order onto 2B, 2A, 1A, 1B: black and green are one coil, red and blue the other. Do this with the power off, always.",
+      "refusal": "Wire the Nano first"
+    },
+    "wire-battery": {
+      "title": "Wire the LiPo",
+      "body": "Red to VMOT, black to the GND next to it. A full 2S pack gives 8.4 V, just above the A4988's 8 V minimum.",
+      "refusal": "Plug in the motor first"
+    },
+    "wire-meter": {
+      "title": "Put the meter on the pot",
+      "body": "Dial on 2 V DC. Red probe on the trimpot's metal rotor, black probe on a GND pin. It reads VREF as soon as VDD is on.",
+      "refusal": "Wire the LiPo first"
+    },
+    "plug": {
+      "title": "Power the bench",
+      "body": "USB into the Nano, the pack switched on. The hold sketch starts: both coils are on and the shaft holds. The meter reads about 0.30 V, a limit of 0.55 A, as the pot came.",
+      "refusal": "Finish the build first: every part on, every joint soldered and everything on the mat wired"
+    },
+    "vref": {
+      "title": "Set the current limit",
+      "body": "With the hold sketch running, turn the pot clockwise and watch the meter climb. Stop at 0.544 V: 0.544 / (8 x 0.068) = 1.0 A. Each coil then holds at 0.71 A, and the bare carrier stays well short of its thermal cut-out.",
+      "refusal": "Power the bench first"
+    },
+    "full": {
+      "title": "Full step",
+      "body": "MS1 to MS3 low. The sketch sends 200 pulses 5 ms apart, one turn in a second, then waits a second with the coils on. Each pulse moves the shaft 1.8°: you can hear each one.",
+      "refusal": "Set the current limit first"
+    },
+    "half": {
+      "title": "Half step",
+      "body": "MS1 high. The same 5 ms pulses now move 0.9° each, so 400 make a turn and the shaft goes half as fast. Every other step has one coil off and the other at the full limit.",
+      "refusal": "Run the full-step sketch first"
+    },
+    "micro": {
+      "title": "1/16 step",
+      "body": "MS1, MS2 and MS3 high: 3200 pulses to a turn, 0.1125° each. The sketch pulses every 1.25 ms (625 µs high, 625 µs low), 800 a second, a quarter turn a second. The coil currents follow a sine and cosine, and the shaft glides instead of ticking.",
+      "refusal": "Run the half-step sketch first"
+    },
+    "lipo-backwards": {
+      "title": "Put the LiPo on backwards",
+      "body": "Black on VMOT, red on GND. Nothing on this carrier blocks it: current flows backwards through the body diodes of the bridge switches, straight across the pack. Repair it and power up again."
+    },
+    "cap-backwards": {
+      "title": "Put the 100 µF in backwards",
+      "body": "Stripe toward VMOT. A reversed electrolytic conducts, heats up and vents. Repair it and power up again."
+    },
+    "no-link": {
+      "title": "Leave the RST-SLP cap off",
+      "body": "Without the cap, RST floats. The driver sits in reset: no current in the coils, the shaft turns freely by hand, and the pulses go nowhere. Put the cap back and power up again."
+    },
+    "tired-pack": {
+      "title": "Run on a tired pack",
+      "body": "The pack has run down to 7.4 V, its nominal voltage, under the A4988's 8 V minimum. Run the full-step sketch and watch the shaft fall behind. Repair it and power up again."
+    },
+    "coils-mixed": {
+      "title": "Mix up the coil pairs",
+      "body": "Green and red swapped: each output pair now drives half of one coil and half of the other. The motor buzzes in place and does not turn. Put the leads back in order and power up again."
+    },
+    "limit-too-high": {
+      "title": "Turn the limit up to 1.68 A",
+      "body": "The motor is rated 1.68 A, so why not? The meter reads 0.914 V. Run the full-step sketch and watch the chip's temperature climb past 150 °C until the thermal shutdown cuts in at 165 °C. Repair it and power up again."
+    },
+    "unplug-live": {
+      "title": "Unplug the motor while it runs",
+      "body": "Pull the motor's plug while the coils carry current. Repair it and power up again."
+    },
+    "exploded": {
+      "title": "Exploded view",
+      "body": "Take it all apart in the air: the board, the chip and its passives, the headers, the cap and the jumper, and everything on the mat.",
+      "refusal": "Break and repair everything first"
+    }
+  },
+  "faults": {
+    "reverse-polarity": {
+      "title": "LiPo connected backwards",
+      "symptom": "A pop from the chip, the pack's leads get hot, and the driver is dead afterwards.",
+      "explanation": "Pololu lists no reverse-voltage protection. Every bridge switch has a body diode that points from GND to VMOT; reversed, those diodes conduct and short the pack through the chip. A LiPo can push tens of amps, far more than the diodes survive.",
+      "fix": "Check red to VMOT before you connect, use a keyed connector, or add a series diode or a reverse-protection MOSFET on the supply."
+    },
+    "cap-reversed": {
+      "title": "100 µF electrolytic in backwards",
+      "symptom": "The capacitor gets hot, bulges and vents with a hiss.",
+      "explanation": "An electrolytic only holds voltage one way. Backwards, the oxide layer breaks down, it conducts, heats up and the pressure vent in its top opens.",
+      "fix": "Stripe (minus) to GND, the long leg to VMOT. Replace a capacitor that has been in backwards even if it looks fine."
+    },
+    "no-link": {
+      "title": "RST floating",
+      "symptom": "The power is on and the Nano sends pulses, but the coils are off: the shaft turns freely by hand.",
+      "explanation": "On this carrier RST has no pull-up of its own. Floating, it sits low or wanders, and while RST is low the translator is held at Home and the outputs are off.",
+      "fix": "Put the jumper cap back across RST and SLP, or drive RST high from a pin."
+    },
+    "tired-pack": {
+      "title": "VMOT under 8 V",
+      "symptom": "The motor stutters and falls behind the pulses: it misses steps and ends up somewhere other than where the sketch thinks it is.",
+      "explanation": "The A4988 is specified from 8 V on VMOT. A 2S pack is 8.4 V full but falls under 8 V long before it is empty. Below that the chip is out of its rating: the outputs drop out and steps are lost. A stepper has no sensor, so nothing notices.",
+      "fix": "Use a 3S pack or a 12 V supply, and stop running before the pack sags."
+    },
+    "coils-mixed": {
+      "title": "Coil pairs mixed",
+      "symptom": "The motor buzzes and shakes in place but does not turn.",
+      "explanation": "Each H-bridge has to drive both ends of one coil. With green and red swapped, each bridge drives one end of each coil, the two fields fight, and the rotor rocks between two positions.",
+      "fix": "Find the pairs with a meter: a few ohms between the two leads of one coil, open between coils. Then one pair on 1A and 1B, the other on 2A and 2B."
+    },
+    "limit-too-high": {
+      "title": "Current limit too high",
+      "symptom": "The board gets too hot to touch, then the motor stops, restarts a few seconds later and stops again.",
+      "explanation": "At 1.68 A the two coil paths burn about 1.8 W in the chip, I² times about 0.64 Ω, more as it warms. The bare carrier cannot shed that: the chip reaches 165 °C, thermal shutdown switches the outputs off, it cools 15 °C and starts again. Pololu puts the limit without a heatsink at about 1 A per coil.",
+      "fix": "Turn VREF back to 0.544 V (1.0 A). For more current, add a heatsink and airflow."
+    },
+    "unplug-live": {
+      "title": "Motor unplugged while powered",
+      "symptom": "A tiny spark at the plug, the motor goes slack, and the driver never moves it again.",
+      "explanation": "A coil's current cannot stop at once. Opening the circuit forces it to, and the coil answers with a voltage spike, L x di/dt, far past the 35 V the A4988's outputs can take. Pololu warns that this can destroy the driver, often with no visible mark.",
+      "fix": "Only plug or unplug the motor with the power off. Check motor plugs and header joints: a loose one does the same thing."
+    }
+  },
+  "status": {
+    "status": "Status",
+    "powered": "Bench power",
+    "mode": "Sketch",
+    "step": "STEP",
+    "dir": "DIR",
+    "ms1": "MS1",
+    "vref": "VREF (meter)",
+    "limit": "Current limit",
+    "coil": "Each coil",
+    "chip": "Chip (°C)",
+    "vmot": "VMOT (motor supply)",
+    "rpm": "Shaft speed",
+    "shaft": "Shaft angle",
+    "battery": "Battery current",
+    "usb": "USB current"
+  },
+  "current": {
+    "usb": "Nano USB (500 mA polyfuse)",
+    "lipo": "2S LiPo on VMOT",
+    "nano": "Nano running",
+    "logic": "A4988 logic on VDD",
+    "quiescent": "A4988 motor-side supply current",
+    "coils": "Coils at a 1.0 A limit, through the chopper",
+    "coilsHigh": "Coils at a 1.68 A limit",
+    "capShort": "100 µF conducting backwards",
+    "reverse": "Reversed pack through the bridge's body diodes"
+  },
+  "tasks": {
+    "turn-and-back": {
+      "title": "One turn and back",
+      "brief": "Full step, MS pins open. Turn the shaft exactly one turn forward (DIR on D4 HIGH, 200 pulses on D3, 2500 µs high and 2500 µs low each), print \"one turn\", wait 500 ms, then set DIR LOW and step 200 pulses back to where it started and print \"home\".",
+      "hints": {
+        "1": "200 full steps of 1.8° make 360°. Each pulse: digitalWrite(STEP, HIGH); delayMicroseconds(2500); digitalWrite(STEP, LOW); delayMicroseconds(2500);",
+        "2": "Put the pulse loop in a function, steps(int n), and call it twice.",
+        "3": "Change DIR between the two moves, before the first pulse of the way back."
+      },
+      "checks": {
+        "1": "Runs for 3 s",
+        "2": "DIR (D4) is HIGH on the way out",
+        "3": "STEP (D3) pulses every 5 ms, about 400 times",
+        "4": "Prints \"one turn\" after the first second",
+        "5": "DIR is LOW on the way back",
+        "6": "Prints \"home\""
+      },
+      "code": {
+        "goal": "One turn forward, print \"one turn\", wait 500 ms, one turn back, print \"home\"",
+        "start": "only half a turn so far, and no way back"
+      }
+    },
+    "quarter-turn": {
+      "title": "A quarter turn a second, in 1/16 steps",
+      "brief": "Set MS1, MS2 and MS3 (D5, D6, D7) HIGH for 1/16 step. Then pulse STEP at 800 pulses a second, 625 µs high and 625 µs low, so the shaft turns a quarter of a turn every second, and print \"1 turn\" after each 3200 pulses.",
+      "hints": {
+        "1": "1/16 step needs all three MS pins HIGH, set once in setup().",
+        "2": "A quarter turn is 800 microsteps; 800 a second is one every 1250 µs, so 625 µs high and 625 µs low.",
+        "3": "Count 3200 pulses in a for loop, then print. 3200 x 1.25 ms = 4 s a turn."
+      },
+      "checks": {
+        "1": "Runs for 4.3 s",
+        "2": "MS1 (D5) is HIGH",
+        "3": "MS2 (D6) is HIGH",
+        "4": "MS3 (D7) is HIGH",
+        "5": "STEP (D3) pulses every 1.25 ms, at least 3000 times",
+        "6": "Prints \"1 turn\" after 4 s"
+      },
+      "code": {
+        "goal": "1/16 step at a quarter turn a second: 3200 pulses, 1250 µs apart, then print \"1 turn\"",
+        "fast": "150 µs each way in full step: just over four turns a second, and the MS pins are never set"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "rst": {
+        "q": "What does the jumper cap across RST and SLP do?",
+        "options": {
+          "1": "It picks full-step mode",
+          "2": "It holds RST high through SLP's pull-up, so the driver comes out of reset",
+          "3": "It joins the two GND pins"
+        },
+        "why": "RST floats on this carrier. With RST low the translator is held at Home and the outputs stay off; the cap borrows SLP's pull-up to hold it high."
+      },
+      "bulk": {
+        "q": "Why does a 100 µF capacitor go across VMOT and GND?",
+        "options": {
+          "1": "To catch the spike the supply leads ring up at plug-in, which can pass 35 V even from 12 V",
+          "2": "To set the current limit",
+          "3": "To let the board run from 5 V"
+        },
+        "why": "The leads' inductance and the 4.7 µF ceramic form a resonant circuit. The electrolytic damps it and holds VMOT steady while the chopper switches."
+      },
+      "labels": {
+        "q": "Where are the pin names printed on this carrier?",
+        "options": {
+          "1": "Next to each pin on top",
+          "2": "On the chip",
+          "3": "Only on the underside"
+        },
+        "why": "The top is all parts; the names are on the bottom silkscreen. Check the pin order before the board goes in upside down or turned round."
+      }
+    },
+    "limit": {
+      "formula": {
+        "q": "The meter reads 0.544 V on the pot. What current limit is that?",
+        "options": {
+          "1": "1.0 A: 0.544 / (8 x 0.068)",
+          "2": "0.544 A: one amp per volt",
+          "3": "8 A: eight times VREF"
+        },
+        "why": "I_MAX = VREF / (8 x R_sense), and the sense resistors are 0.068 Ω, so 0.544 V is 1.0 A."
+      },
+      "coil": {
+        "q": "With a 1.0 A limit in full step, what does each coil carry while the shaft holds?",
+        "options": {
+          "1": "1.0 A each",
+          "2": "0.5 A each: the limit is shared",
+          "3": "About 0.71 A each: full step puts 70.7 % of the limit in both coils"
+        },
+        "why": "In full step both coils are on at 70.71 % of I_MAX, the 45° point of the sine table. That is why measuring one coil reads less than the limit."
+      },
+      "vdd": {
+        "q": "You set 0.544 V with the logic on 5 V, then run the logic from 3.3 V. What happens to the limit?",
+        "options": {
+          "1": "Nothing: VREF is fixed once set",
+          "2": "It drops by about a third: the pot divides VDD, so VREF falls with it",
+          "3": "It doubles"
+        },
+        "why": "VREF comes from a divider across VDD. Set it again at the VDD you will actually run."
+      }
+    },
+    "steps": {
+      "pulses": {
+        "q": "MS1, MS2 and MS3 are all HIGH. How many STEP pulses turn a 200-step motor once?",
+        "options": {
+          "1": "200",
+          "2": "3200",
+          "3": "16"
+        },
+        "why": "All three high is 1/16 step: 200 x 16 = 3200 pulses, 0.1125° each."
+      },
+      "timing": {
+        "q": "The 1/16 sketch holds STEP high 625 µs and low 625 µs. How fast does the shaft turn?",
+        "options": {
+          "1": "A quarter turn a second: 800 pulses a second, 3200 to a turn",
+          "2": "One turn a second",
+          "3": "Sixteen turns a second"
+        },
+        "why": "One pulse every 1250 µs is 800 a second. At 3200 to a turn that is 0.25 turns a second, 15 rpm."
+      },
+      "ms": {
+        "q": "Why is 1/16 step smoother than full step at the same speed?",
+        "options": {
+          "1": "The motor gets more voltage",
+          "2": "The chip switches one coil off",
+          "3": "The coil currents follow a sine in small steps, so the rotor is pulled along instead of jumping 1.8° at a time"
+        },
+        "why": "Each microstep shifts the balance between the two coil currents a little, so the magnetic field turns in small increments."
+      }
+    },
+    "faults": {
+      "unplug": {
+        "q": "Why does unplugging the motor while it runs kill the A4988?",
+        "options": {
+          "1": "The coil's current cannot stop at once; breaking it forces a voltage spike, L x di/dt, far past what the outputs survive",
+          "2": "The motor shorts VMOT to GND",
+          "3": "The Nano sends too many pulses"
+        },
+        "why": "An inductor fights any change in its current. Cut the path and the voltage rises until something conducts, and that something is the chip's output stage."
+      },
+      "hot": {
+        "q": "The limit is at the motor's 1.68 A and the carrier has no heatsink. What does the motor do?",
+        "options": {
+          "1": "Turns with more torque, as long as you like",
+          "2": "Stops at once and never runs again",
+          "3": "Runs, stops when the chip reaches 165 °C, starts again when it has cooled 15 °C: it stutters"
+        },
+        "why": "Thermal shutdown protects the chip but not your position: every pause loses steps."
+      },
+      "tired": {
+        "q": "The 2S pack has run down to 7.4 V. What goes wrong?",
+        "options": {
+          "1": "Nothing: the motor's rated voltage is only 2.8 V",
+          "2": "VMOT is under the A4988's 8 V minimum: the outputs drop out and steps are lost",
+          "3": "The Nano resets"
+        },
+        "why": "The chopper needs supply voltage well above the coil's own drop to push current in fast. Under 8 V the chip is outside its rating."
+      }
+    },
+    "end": {
+      "vs-l298n": {
+        "q": "Why drive a stepper with an A4988 rather than an L298N?",
+        "options": {
+          "1": "It is bigger and easier to solder",
+          "2": "It limits the coil current itself and does the step sequence: two pins, STEP and DIR, instead of four, and microstepping for free",
+          "3": "It needs no motor supply"
+        },
+        "why": "The L298N has no current regulation, so a low-resistance motor on a high supply overheats. The A4988 chops the current to the limit you set."
+      },
+      "lost": {
+        "q": "A stepper has no sensor. How does the Nano know where the shaft is?",
+        "options": {
+          "1": "It counts the pulses it sent; a missed step is lost for good until the machine homes again",
+          "2": "The A4988 reports the angle",
+          "3": "The motor sends pulses back"
+        },
+        "why": "That is why 3D printers and CNC machines home against a switch at start-up, and why missed steps show up as shifted layers."
+      },
+      "supply": {
+        "q": "Which supply suits this motor and driver best?",
+        "options": {
+          "1": "A 1S LiPo, 3.7 V",
+          "2": "A 2S LiPo, 7.4 V",
+          "3": "A 3S LiPo or 12 V: well inside 8 to 35 V, with headroom for speed"
+        },
+        "why": "A higher supply pushes current into the coils faster, so torque holds up at speed, and the chopper keeps the current at the limit regardless."
+      }
+    }
+  }
+}

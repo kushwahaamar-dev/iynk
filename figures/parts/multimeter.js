@@ -3,8 +3,8 @@
 /* A yellow pocket digital multimeter lying face up on the mat, 54 x 30 x 9 mm (the same pocket meter the LED trainer
    draws on its own board), with a 3½-digit LCD (shows up to 1999), a rotary range dial and three jacks: COM (black),
    V/Ω/mA (red) and 10 A. Two test leads run from COM and V to probes whose steel tips touch what is measured. Legs
-   [COM, V]: the two probe tips; `tipZ` lifts them (mm above the mat) so a bench can touch a trimpot or a screw
-   terminal that stands above the mat.
+   [COM, V]: the two probe tips; `tipZ` lifts them (mm above the mat; one number for both, or [COM, V]) so a bench
+   can touch a trimpot or a screw terminal that stands above the mat.
    Readings come from the bench that uses it, through m = { state, text, unit, range } (its model readings by part id):
    state 'ok' | 'off' (dial at OFF, blank) | 'ol' (over range: the LCD shows 1 with blank digits, as real meters do),
    text the digits as the meter shows them ('0.54', '5.02'), unit 'V' | 'mV' | 'mA' | 'A', range the dial position
@@ -79,10 +79,10 @@ B.part('multimeter', {
     put(B.aabb([W(-hx, -hy, 0), W(hx, hy, H + .4)]), s);
 
     // the probes: a lead from each jack to a probe standing on its tip, leaning back toward the meter
-    const tz = +p.tipZ || 0;
+    const tz = Array.isArray(p.tipZ) ? p.tipZ : [p.tipZ, p.tipZ];
     [['COM', BLACK], ['V', RED]].forEach(([id, mat], i) => {
       const [ja, jb] = jacks[id], jack = W(ja, jb, H + .3), leg = legs[i];
-      const tip = leg ? [leg[0], leg[1], leg[2] + tz] : W(hx + 12 + i * 8, -hy - 8, 0);
+      const tip = leg ? [leg[0], leg[1], leg[2] + (+tz[i] || 0)] : W(hx + 12 + i * 8, -hy - 8, 0);
       const back = norm([jack[0] - tip[0], jack[1] - tip[1], 0]), lean = [back[0] * 4, back[1] * 4, 0];
       const t0 = [tip[0], tip[1], tip[2] + .2], h0 = [tip[0] + lean[0] * .3, tip[1] + lean[1] * .3, tip[2] + 4], h1 = [tip[0] + lean[0], tip[1] + lean[1], tip[2] + 16];
       put(B.aabb([t0, h0]).map((v, j) => v.map(x => x + (j ? .5 : -.5))), rod(t0, h0, .35, B.M.steel, toneI, .4, .5));
