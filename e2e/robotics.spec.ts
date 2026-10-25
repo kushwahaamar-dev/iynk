@@ -1,7 +1,8 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import { ROBOTICS_IDS } from "../src/content/ids";
-import { AVAILABLE, loadRobotics } from "../src/content/index.generated";
+import { AVAILABLE, roboticsLoaders } from "../src/content/index.generated";
+import type { RoboticsContent } from "../src/content/schema";
 import { LOCALES } from "../src/i18n/config";
 import robotics from "../src/i18n/messages/en/robotics.json";
 
@@ -65,6 +66,14 @@ test.describe("on a phone", () => {
 // The bench workspace needs a written bench (src/content/robotics/<id>.ts); the first one in figure order.
 const benchId = AVAILABLE.robotics[0];
 
+// Playwright loads src/ as CommonJS, so the dynamic import's `default` is the module's exports object
+// ({ default: bench }) rather than the bench that loadRobotics would return in the app.
+async function loadBench(id: NonNullable<typeof benchId>): Promise<RoboticsContent | null> {
+  const exported = (await roboticsLoaders[id]?.())?.default as RoboticsContent | { default: RoboticsContent } | undefined;
+  if (!exported) return null;
+  return "default" in exported ? exported.default : exported;
+}
+
 test.describe("a bench page", () => {
   test.skip(!benchId, "no robotics bench content is written yet");
 
@@ -94,7 +103,7 @@ test.describe("a bench page", () => {
   });
 
   test("a quiz unlocks after its step and records the score", async ({ page }) => {
-    const bench = await loadRobotics(benchId!);
+    const bench = await loadBench(benchId!);
     test.skip(!bench || bench.quizzes.length === 0, "this bench has no quiz");
     const quiz = bench!.quizzes[0];
     const done = Object.fromEntries(bench!.steps.map((step) => [`robotics:${benchId}:step:${step.id}`, true]));
