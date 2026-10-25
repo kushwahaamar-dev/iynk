@@ -1,0 +1,511 @@
+{
+  "title": "Convertidor reductor LM2596",
+  "sub": "ajusta la tensión antes de ponerle carga",
+  "hint": "móntalo, ajusta 5 V con un multímetro, mueve un motor, avérialo",
+  "overview": "Las baterías vienen con la tensión equivocada. Una LiPo 2S da 8,4 V cargada y 6,6 V casi descargada; un motor TT, el pin 5V de una Nano o un servo quieren 5 V. Un convertidor reductor (buck) baja la tensión sin quemar la diferencia en calor: el LM2596 conecta y desconecta la entrada 150 000 veces por segundo, una bobina de 33 µH y un condensador suavizan la tensión troceada, y un diodo Schottky lleva la corriente de la bobina mientras el interruptor está abierto. Un trimmer de 25 vueltas fija la salida según la fórmula Vout = 1,23 x (1 + R2 / 330). Aquí montas el módulo azul, ajustas 5 V con un multímetro antes de poner nada en la salida, le conectas un motor, le pides 12 V para ver que un reductor solo baja la tensión, y luego lo averías de siete maneras. No tiene protección contra la inversión, ni fusible, ni corte por batería baja, y todo eso se nota.",
+  "power": {
+    "label": "Alimenta el banco",
+    "ok": "Batería en IN+ e IN-: el display se enciende con la tensión de entrada y el convertidor conmuta"
+  },
+  "parts": {
+    "U1": {
+      "name": "Regulador reductor LM2596S-ADJ (TO-263-5)",
+      "what": "El interruptor, el oscilador de 150 kHz, una referencia de 1,23 V y el amplificador de error en un encapsulado de cinco pines. Compara FB con 1,23 V y cambia cuánto tiempo se queda cerrado su interruptor en cada ciclo hasta que coinciden. La pestaña es el pin 3, tierra, y va soldada a un cobre que reparte el calor."
+    },
+    "L1": {
+      "name": "Bobina blindada de 33 µH",
+      "what": "Lleva impreso 330: 33 seguido de 0 ceros, en µH. Mientras el interruptor está cerrado, la corriente que la atraviesa sube y almacena energía; mientras está abierto, mantiene la corriente circulando por el diodo hacia la salida."
+    },
+    "D1": {
+      "name": "Diodo Schottky de libre circulación SS34",
+      "what": "Lleva la corriente de la bobina mientras el interruptor está abierto: cerca de un tercio de cada ciclo con 5 V de salida. Un Schottky solo cae unos 0,4 V, así que desperdicia poco. Es de 3 A y 40 V, menos de lo que el módulo puede exigirle con la salida en cortocircuito o con una entrada de 44 V."
+    },
+    "C1": {
+      "name": "Condensador de entrada de 220 µF 50 V",
+      "what": "Da los pulsos bruscos de corriente que pide el interruptor, para que los cables de la batería solo lleven la media. Polarizado: la franja marca el negativo."
+    },
+    "C2": {
+      "name": "Condensador de salida de 220 µF 50 V",
+      "what": "Suaviza la salida junto con la bobina; lo que queda es un rizado de decenas de milivoltios a 150 kHz. Polarizado como C1."
+    },
+    "RV1": {
+      "name": "Trimmer de 10 kΩ y 25 vueltas (3296W)",
+      "what": "La R2 de la fórmula: 400 Ω por vuelta. En sentido horario sube la salida. Suele llegar arriba del todo, lo que pide 38,5 V, así que las primeras veinte vueltas no cambian nada que se vea."
+    },
+    "R7": {
+      "name": "Resistencia de realimentación junto al trimmer",
+      "what": "Parte de la red divisora alrededor del trimmer que alimenta FB."
+    },
+    "C5": {
+      "name": "Condensador de realimentación",
+      "what": "Un pequeño cerámico en la red de realimentación."
+    },
+    "J1": {
+      "name": "Borna de entrada (IN+, IN-)",
+      "what": "Dos bornas de tornillo con paso de 5 mm para los cables de la batería. Nada detrás de ellas comprueba en qué sentido van."
+    },
+    "J2": {
+      "name": "Borna de salida (OUT-, OUT+)",
+      "what": "Bornas de tornillo para la carga. OUT- e IN- son la misma tierra."
+    },
+    "DS1": {
+      "name": "Display voltímetro rojo de 3 dígitos",
+      "what": "Muestra la entrada o la salida: x.xx por debajo de 10 V, xx.x por encima. Los vendedores le dan ±0,1 V, y este marca 0,03 V de más, por eso una tensión se ajusta con un multímetro."
+    },
+    "U2": {
+      "name": "Regulador del voltímetro",
+      "what": "Alimenta el pequeño circuito del medidor desde la entrada, así que el display funciona incluso con la salida en cortocircuito. Necesita unos 4 V: por debajo, el display se apaga."
+    },
+    "BITS": {
+      "name": "Circuito del voltímetro",
+      "what": "Resistencias divisoras, desacoplo y dos transistores pequeños alrededor del microcontrolador del medidor."
+    },
+    "SW1": {
+      "name": "Botón de selección del display",
+      "what": "Cada pulsación cambia el display entre IN y OUT."
+    },
+    "LED_IN": {
+      "name": "Indicador IN",
+      "what": "Encendido mientras el display muestra la tensión de entrada."
+    },
+    "LED_OUT": {
+      "name": "Indicador OUT",
+      "what": "Encendido mientras el display muestra la tensión de salida."
+    },
+    "X1": {
+      "name": "Pequeña pieza negra de dos terminales junto a la entrada",
+      "what": "No se ha podido identificar en las fotos; está en la esquina del circuito del medidor."
+    },
+    "BATT": {
+      "name": "LiPo 2S, 1000 mAh",
+      "what": "Dos celdas en serie: 8,4 V cargada, 7,4 V nominales, 6,0 V vacía (3,0 V por celda, el mínimo). Puede dar decenas de amperios en un cortocircuito."
+    },
+    "MM": {
+      "name": "Multímetro de bolsillo en 20 V DC",
+      "what": "Punta roja en OUT+, negra en OUT-. El número con el que se ajusta el trimmer."
+    },
+    "MOT": {
+      "name": "Motorreductor TT",
+      "what": "Un pequeño motor de escobillas con una reductora 1:48, hecho para 3 a 6 V. Unos 0,15 A girando libre a 5 V, unos 1,25 A bloqueado."
+    }
+  },
+  "modes": {
+    "found": {
+      "title": "El trimmer como viene",
+      "code": {
+        "what": "El trimmer tal como llega: arriba del todo de sus 25 vueltas",
+        "top": "los 10 kΩ enteros",
+        "empty": "sin nada en OUT",
+        "verdict": "la salida sigue a la entrada, un voltio por debajo: 7.6 V forzarían un motor de 6 V"
+      }
+    },
+    "set5": {
+      "title": "Gira el trimmer hasta 5 V",
+      "code": {
+        "what": "5 V para el motor (o el pin 5V de una Nano)",
+        "verdict": "aquí, un 74 % de rendimiento; un regulador lineal daría 5.0 / 8.4 = 60 % como mucho"
+      }
+    },
+    "set33": {
+      "title": "Gira el trimmer hasta 3,3 V",
+      "code": {
+        "what": "3.3 V, la tensión que quieren un ESP32 o la mayoría de los sensores",
+        "verdict": "el interruptor está cerrado menos de la mitad del tiempo; las pérdidas fijas pesan más, así que el rendimiento baja"
+      }
+    },
+    "set12": {
+      "title": "Gira el trimmer hasta 12 V",
+      "code": {
+        "what": "12 V pedidos a una batería de 8.4 V",
+        "verdict": "un reductor solo baja la tensión: da lo que puede, y el motor recibe 7.6 V"
+      }
+    },
+    "code": {
+      "vref": "el LM2596 mantiene FB a 1.23 V",
+      "r1": "de FB a tierra",
+      "turn": "el trimmer de 10 kΩ es R2, repartido en 25 vueltas",
+      "vin": "una LiPo 2S cargada",
+      "above": "Vset es mayor que Vin: el interruptor se queda cerrado todo el tiempo (ciclo de trabajo del 100 %)",
+      "from": "contando desde abajo",
+      "duty": "la fracción de cada ciclo en la que el interruptor está cerrado",
+      "meter": "incluidos los 15 mA del display"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Deja la placa desnuda",
+      "body": "Una placa azul de 66 x 34 mm con cuatro agujeros M3. La entrada en el borde izquierdo y la salida en el derecho, las dos con el terminal positivo arriba. El pad grande del centro a la izquierda es para la pestaña del regulador: es tierra y disipador.",
+      "refusal": "Primero desconecta el banco"
+    },
+    "smd": {
+      "title": "Coloca los componentes SMD y haz el reflujo",
+      "body": "El LM2596 con su pestaña sobre el pad grande, el SS34 bajo sus patas, la bobina de 33 µH a su lado, y luego el circuito del medidor, los dos LED y el botón. El interruptor, el diodo, la bobina y el condensador de salida forman un lazo cerrado y apretado; cuanto más corto es ese lazo, menos radia la placa a 150 kHz.",
+      "refusal": "Primero deja la placa desnuda"
+    },
+    "trimmer-display": {
+      "title": "Coloca el trimmer y el display",
+      "body": "El trimmer azul de 25 vueltas a lo largo del borde superior con su tornillo de latón a la izquierda, y el display de 3 dígitos a lo largo del inferior.",
+      "refusal": "Primero haz el reflujo de los componentes SMD"
+    },
+    "caps-terminals": {
+      "title": "Coloca los condensadores y las bornas",
+      "body": "C1 junto a la entrada y C2 junto a la salida, cada uno con su franja (negativo) hacia el borde de la placa, como indica la serigrafía. Luego las dos bornas de tornillo, con las entradas de cable hacia fuera.",
+      "refusal": "Primero coloca el trimmer y el display"
+    },
+    "solder": {
+      "title": "Suelda las uniones de inserción",
+      "body": "Las patas de los condensadores llevan toda la corriente de conmutación a pulsos: dales una buena soldadura. Los tres pines del trimmer importan igual, como demuestra después una de las averías.",
+      "refusal": "Primero coloca todas las piezas"
+    },
+    "wire-battery": {
+      "title": "Conecta la batería a IN+ e IN-",
+      "body": "El rojo a IN+ (arriba a la izquierda) y el negro a IN- (abajo a la izquierda). Compruébalo dos veces: el módulo no tiene nada que detenga una batería invertida.",
+      "refusal": "Primero termina de soldar el módulo"
+    },
+    "wire-meter": {
+      "title": "Pon el multímetro en la salida",
+      "body": "Selector en 20 V DC, punta roja en OUT+, negra en OUT-. Todavía nada más en la salida: primero ajustas la tensión y después conectas la carga.",
+      "refusal": "Primero conecta la batería"
+    },
+    "plug": {
+      "title": "Enciende la batería",
+      "body": "El display se enciende mostrando la entrada, 8,4 V, con el LED IN encendido. El multímetro marca 7,65 V. No es una avería: el trimmer llegó arriba del todo, pidiendo 38,5 V, y un reductor al que se le pide más de lo que tiene da su entrada menos un voltio más o menos.",
+      "refusal": "Primero pon la batería y el multímetro en la alfombrilla"
+    },
+    "show-out": {
+      "title": "Cambia el display a OUT",
+      "body": "Pulsa el botón: se enciende el LED OUT y el display muestra la salida. Aquí coincide con el multímetro con unas centésimas de diferencia, pero el display solo es fiable con ±0,1 V, así que el multímetro tiene la última palabra.",
+      "refusal": "Primero enciende la batería"
+    },
+    "set5": {
+      "title": "Baja el trimmer hasta 5 V",
+      "body": "En sentido antihorario baja. Durante unas veinte vueltas no pasa nada, porque cualquier ajuste por encima de 7,6 V da los mismos 7,6 V. Luego la lectura empieza a bajar. Para cuando el multímetro marque 5,00 V, a 2,53 vueltas del fondo: R2 = 330 x (5,00 / 1,23 - 1) = 1011 Ω.",
+      "refusal": "Primero enciende la batería y pon el multímetro"
+    },
+    "wire-motor": {
+      "title": "Apaga y conecta el motor",
+      "body": "Primero apaga la batería. El cable rojo del motor a OUT+ y el negro a OUT-. El multímetro se queda puesto para que veas lo que la carga le hace a la salida.",
+      "refusal": "Primero ajusta la salida a 5 V"
+    },
+    "load": {
+      "title": "Alimenta el motor",
+      "body": "El motor gira a unas 180 rpm con 5 V y consume 155 mA de la salida. La batería solo da unos 125 mA: el convertidor cambia tensión por corriente, 0,78 W de salida por 1,05 W de entrada. Los 5,00 V del multímetro no se mueven.",
+      "refusal": "Primero conecta el motor"
+    },
+    "set33": {
+      "title": "Bájalo hasta 3,3 V",
+      "body": "A 1,39 vueltas del fondo: R2 = 555 Ω. El motor baja a unas 110 rpm. El ciclo de trabajo cae al 45 % y el rendimiento con él, porque el medidor y las pérdidas de conmutación siguen igual mientras la potencia de salida baja.",
+      "refusal": "Primero mueve el motor a 5 V"
+    },
+    "set12": {
+      "title": "Pídele 12 V",
+      "body": "7,22 vueltas: R2 = 2890 Ω daría 12 V con una entrada de 13 V. Con 8,4 V no puede: el interruptor se queda cerrado, el ciclo de trabajo marca 100 % y la salida se queda en 7,6 V, la entrada menos la saturación del interruptor y el cobre de la bobina. Un reductor solo baja la tensión; para sacar 12 V de esta batería necesitas un convertidor elevador.",
+      "refusal": "Primero mueve el motor a 3,3 V"
+    },
+    "lipo-backwards": {
+      "title": "Avériala: batería al revés",
+      "body": "Intercambia los cables de la batería en la entrada. Nada en el módulo lo impide. Luego repara y vuelve a ajustar 5 V."
+    },
+    "cap-backwards": {
+      "title": "Avériala: C1 al revés",
+      "body": "Coloca el condensador de entrada con la franja en el sentido equivocado y enciende. Luego repáralo."
+    },
+    "wiper-open": {
+      "title": "Avériala: soldadura fría en el trimmer",
+      "body": "Una soldadura mate y agrietada en el pin del cursor del trimmer. Enciende con el motor puesto y mira el multímetro."
+    },
+    "flat-pack": {
+      "title": "Avériala: descarga la batería hasta 5,5 V",
+      "body": "Deja que la batería caiga hasta 5,5 V, muy por debajo de su mínimo de 6,0 V, y mira la salida y el display."
+    },
+    "stall": {
+      "title": "Avériala: sujeta la rueda",
+      "body": "Agarra la rueda del motor para que no pueda girar, y mira el multímetro, la corriente de la batería y la temperatura del chip."
+    },
+    "short-out": {
+      "title": "Avériala: cortocircuito entre OUT+ y OUT-",
+      "body": "Un hilo suelto a través de la borna de salida. Mira el multímetro, el display y el diodo."
+    },
+    "ten-s-pack": {
+      "title": "Avériala: una entrada de 44 V",
+      "body": "Una batería 10S, 42 V cargada, o una fuente de laboratorio de 44 V en la entrada: dentro de los 45 V que admite el LM2596, fuera de lo que admite el diodo."
+    },
+    "exploded": {
+      "title": "Vista despiezada",
+      "body": "Las capas por separado: la placa, los componentes SMD de potencia, el trimmer y el display, los condensadores y las bornas.",
+      "refusal": "Primero avériala y repárala de todas las maneras"
+    }
+  },
+  "faults": {
+    "reverse-polarity": {
+      "title": "Batería conectada al revés",
+      "symptom": "El display sigue apagado, la salida está muerta, el regulador se calienta muy deprisa y C1 puede sisear. A menudo el LM2596 falla en cortocircuito, así que el módulo queda inservible aunque se vuelvan a poner bien los cables.",
+      "explanation": "Con el negativo en IN+, los diodos de protección de dentro del LM2596 y del regulador del medidor conducen directamente entre los polos de la batería, y C1 queda polarizado al revés. Una LiPo puede meter decenas de amperios por ahí. En este módulo no hay diodo, fusible ni MOSFET que lo detenga.",
+      "fix": "Intercambia los cables. La próxima vez, un conector con forma única (XT30) en el cable de la batería, o un MOSFET de canal P o un Schottky en serie delante del módulo."
+    },
+    "cap-reversed": {
+      "title": "Condensador de entrada al revés",
+      "symptom": "C1 se calienta, puede sisear, y luego revienta por la cruz de su parte superior. Los pulsos de conmutación salen ahora de los cables de la batería.",
+      "explanation": "Un electrolítico de aluminio solo funciona en un sentido: al revés, su capa de óxido se rompe, conduce, se calienta y acumula presión hasta que se abre la válvula.",
+      "fix": "Sustituye C1 (un condensador reventado nunca se reutiliza) con la franja hacia el borde de la placa."
+    },
+    "wiper-open": {
+      "title": "Cursor del trimmer abierto",
+      "symptom": "El multímetro salta de 5,00 V a 7,6 V: la salida sigue a la entrada. El motor gira rápido y se calienta. Girar el trimmer no hace nada.",
+      "explanation": "Con el cursor desconectado, FB solo ve R1 a tierra: 0 V. El LM2596 cree que la salida está muy baja y cierra su interruptor del todo. Es la avería peligrosa: lo que haya en la salida recibe la tensión de la batería.",
+      "fix": "Vuelve a soldar los pines del trimmer. Para cualquier cosa que no aguante la tensión de entrada, añade un zéner o una protección crowbar en la salida."
+    },
+    "flat-pack": {
+      "title": "Batería agotada",
+      "symptom": "La salida cae con la batería: 4,7 V con 5,5 V de entrada. El motor va más lento. El display sigue funcionando hasta unos 4 V y el convertidor hasta unos 3,6 V. Nada te avisa.",
+      "explanation": "Por debajo de Vout más la caída mínima (unos 0,8 V aquí), el interruptor se queda cerrado y la salida es la entrada menos esa caída. El módulo no tiene bloqueo por subtensión, así que sigue descargando una batería 2S muy por debajo de 6,0 V, el punto en que las celdas se dañan.",
+      "fix": "Carga la batería. En un robot, añade un corte: una alarma de LiPo, o una Nano que lea la batería a través de un divisor y desconecte la carga a 3,3 V por celda (la tarea del corte)."
+    },
+    "stall": {
+      "title": "Motor bloqueado",
+      "symptom": "La corriente del motor salta a 1,25 A y la de la batería a unos 0,9 A. El multímetro sigue marcando 5,00 V. El LM2596 se calienta hasta unos 70 °C.",
+      "explanation": "Un motor bloqueado no tiene fuerza contraelectromotriz: es solo su bobinado de 4 Ω, 1,25 A a 5 V. Eso queda muy por debajo de los 4,2 A que puede dar el convertidor, así que la salida aguanta. Un motor pequeño no hunde esta línea; uno grande, o dos en paralelo, llegarían al límite de corriente y bajarían la salida.",
+      "fix": "Suelta. En un robot, para el motor desde el código cuando se bloquee (la corriente sube, el encoder se para) antes de que se recalienten la reductora o el módulo."
+    },
+    "short-out": {
+      "title": "Salida en cortocircuito",
+      "symptom": "El multímetro marca 0,00 V. El display, en IN, sigue mostrando la entrada, porque el circuito del medidor se alimenta de la entrada. El SS34 se calienta; a los pocos segundos falla y la salida se queda muerta.",
+      "explanation": "El LM2596 limita su interruptor a unos 4,5 A de pico, 4,2 A de media. En cortocircuito, la salida está cerca de 0 V, así que el interruptor está cerrado menos de una décima parte de cada ciclo y el diodo lleva la corriente el resto del tiempo. TI pide un diodo de al menos el límite de corriente; el SS34 es de 3 A, y se recalienta.",
+      "fix": "Quita el cortocircuito y sustituye D1. Pon un fusible en la salida, o un diodo de 5 A (SS54) si es probable que haya cortocircuitos."
+    },
+    "ten-s-pack": {
+      "title": "Entrada de más de 40 V",
+      "symptom": "El diodo se recalienta y falla; a menudo se lleva el regulador por delante, y un regulador que falla en cortocircuito pasa toda la entrada a la salida.",
+      "explanation": "Mientras el interruptor está cerrado, el diodo ve toda la tensión de entrada en inversa. El SS34 es de 40 V, y TI quiere 1,25 veces la entrada más alta. El módulo se vende para 4 a 40 V, lo que ya no deja margen; 44 V se pasa.",
+      "fix": "Quédate por debajo de unos 32 V con este diodo, o pon uno de 60 V (SS36 o SS56)."
+    }
+  },
+  "status": {
+    "status": "Estado",
+    "powered": "Alimentación del banco",
+    "mode": "Ajuste del trimmer",
+    "vin": "Entrada (IN)",
+    "vout": "Salida (multímetro)",
+    "display": "Display del módulo",
+    "shows": "El display muestra",
+    "trimmer": "Trimmer (vueltas)",
+    "duty": "Ciclo de trabajo",
+    "efficiency": "Rendimiento",
+    "chip": "LM2596 (°C)",
+    "motor": "Velocidad del motor",
+    "motorCurrent": "Corriente del motor",
+    "battery": "Corriente de la batería"
+  },
+  "current": {
+    "lipo": "LiPo 2S, 1000 mAh 20C",
+    "meter": "Circuito del voltímetro",
+    "quiescent": "Corriente de reposo del LM2596",
+    "motor5": "Motor TT a 5 V (155 mA de salida)",
+    "motor33": "Motor TT a 3,3 V (145 mA de salida)",
+    "motorFlat": "Motor TT a 7,6 V, ciclo de trabajo del 100 %",
+    "wiperOpen": "Motor TT con toda la entrada (cursor abierto)",
+    "flatPack": "Motor TT con una batería de 5,5 V",
+    "stall": "Motor TT bloqueado (1,25 A de salida)",
+    "short": "Salida en cortocircuito, hasta que falla el diodo",
+    "capReversed": "C1 conduciendo al revés",
+    "reverse": "Batería invertida a través de U1 y del regulador del medidor"
+  },
+  "tasks": {
+    "set-points": {
+      "title": "Dónde girar el trimmer",
+      "brief": "Calcula R2 y las vueltas del trimmer para 3,3 V, 5,0 V y 12,0 V, e imprime cada una como \"5.0 V: R2 = 1011 ohm, 2.5 turns\". Marca cualquier tensión que una batería 2S cargada (8,4 V, menos 1 V de caída más o menos) no pueda dar con una línea que diga \"needs a 3S pack\".",
+      "hints": {
+        "1": "Vout = 1.23 x (1 + R2 / R1). Despeja R2: R2 = R1 x (Vout / 1.23 - 1).",
+        "2": "El código de partida se olvida del - 1: a 5 V dice 1341 Ω, que daría 6.25 V.",
+        "3": "Un reductor solo baja la tensión: cualquier cosa por encima de 8.4 - 1.0 = 7.4 V necesita una batería mayor."
+      },
+      "checks": {
+        "1": "Imprime la línea de 3.3 V: R2 = 555 ohm, 1.4 turns",
+        "2": "Imprime la línea de 5.0 V: R2 = 1011 ohm, 2.5 turns",
+        "3": "Imprime la línea de 12.0 V: R2 = 2890 ohm, 7.2 turns",
+        "4": "Indica \"needs a 3S pack\" para 12 V"
+      },
+      "code": {
+        "goal": "Imprime R2 y las vueltas del trimmer para 3.3, 5.0 y 12.0 V",
+        "vref": "FB se mantiene a 1.23 V",
+        "r1": "R1, de FB a tierra",
+        "turn": "10 kΩ en 25 vueltas",
+        "wrong": "no del todo: revisa la fórmula"
+      }
+    },
+    "cut-off": {
+      "title": "El corte que el módulo no tiene",
+      "brief": "La batería pasa por un divisor de 20 kΩ / 10 kΩ (un tercio de su tensión) hasta A0; D7 controla el MOSFET que conmuta el motor. Imprime lecturas del estilo \"pack 8.4\" cada 250 ms, y cuando la batería baje de 6,6 V (3,3 V por celda) pon D7 en LOW e imprime \"cut-off\". Mantenlo apagado: en cuanto desaparece la carga, la tensión de la batería vuelve a subir.",
+      "hints": {
+        "1": "analogRead da de 0 a 1023 para 0 a 5 V; el divisor divide entre 3, así que vuelve a multiplicar: counts x 5.0 / 1023 x 3.",
+        "2": "Compara con 6.6 y pon D7 en LOW cuando la batería esté por debajo.",
+        "3": "Usa un bool que recuerde el corte: una batería que se recupera hasta 6.9 V sin carga sigue estando descargada."
+      },
+      "checks": {
+        "1": "Funciona durante 3,5 s",
+        "2": "La primera lectura imprime \"pack 8.4\"",
+        "3": "El motor sigue encendido a 6,8 V",
+        "4": "Imprime \"cut-off\" cuando la batería baja de 6,6 V",
+        "5": "D7 pasa a LOW en el corte",
+        "6": "D7 sigue en LOW cuando la batería vuelve a subir a 6,9 V"
+      },
+      "code": {
+        "goal": "Lee la batería, apaga el motor por debajo de 6.6 V y mantenlo apagado",
+        "divider": "la batería a través de 20 kΩ / 10 kΩ: un tercio",
+        "load": "HIGH: el MOSFET del motor conduce",
+        "scale": "esta es la tensión en A0, no la de la batería",
+        "todo": "apaga D7 por debajo de 6.6 V y mantenlo apagado"
+      },
+      "world": {
+        "pack": "Tensión de la batería"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "diode": {
+        "q": "¿Qué hace el SS34 mientras el interruptor del LM2596 está abierto?",
+        "options": {
+          "1": "Nada: solo protege contra una batería invertida",
+          "2": "Lleva la corriente de la bobina hacia la salida",
+          "3": "Mantiene FB a 1,23 V"
+        },
+        "why": "La corriente de una bobina no puede pararse de golpe. Cuando el interruptor se abre, la bobina sigue empujando corriente por el diodo, de tierra a la salida. Por eso se llama diodo de libre circulación, y por eso se calienta cuando la salida está en cortocircuito."
+      },
+      "inductor": {
+        "q": "La bobina lleva impreso 330. ¿Qué es?",
+        "options": {
+          "1": "33 µH",
+          "2": "330 µH",
+          "3": "330 Ω"
+        },
+        "why": "Como los códigos de las resistencias: dos cifras y un multiplicador, en µH. 33 seguido de ningún cero son 33 µH."
+      },
+      "caps": {
+        "q": "¿Por qué está C1 justo al lado del regulador?",
+        "options": {
+          "1": "Para filtrar el parpadeo del display",
+          "2": "Fija la frecuencia de conmutación",
+          "3": "Da los pulsos de corriente del interruptor, para que los cables de la batería solo lleven la media"
+        },
+        "why": "El interruptor pide 1 A o más en pulsos de 150 kHz. Los cables largos de la batería tienen inductancia y oscilarían; un condensador justo al lado del chip entrega los pulsos y se recarga con la corriente constante de la batería."
+      }
+    },
+    "load": {
+      "order": {
+        "q": "¿Por qué ajustar la salida antes de conectar el motor?",
+        "options": {
+          "1": "El trimmer solo gira sin carga",
+          "2": "Primero hay que calibrar el display",
+          "3": "El trimmer puede estar arriba del todo, y el motor recibiría la entrada menos un voltio"
+        },
+        "why": "Un módulo nuevo suele llegar con el trimmer alto. Aquí eso son 7,6 V en un motor hecho para 6; con una batería 3S serían 11 V en lo que conectes. Ajústalo sin nada conectado, apaga y luego conecta."
+      },
+      "current": {
+        "q": "El motor consume 155 mA a 5 V. ¿Por qué la batería solo da unos 125 mA?",
+        "options": {
+          "1": "La potencia de entrada es la de salida más las pérdidas, y la batería está a más tensión",
+          "2": "El medidor se lleva el resto",
+          "3": "El condensador de salida pone la diferencia"
+        },
+        "why": "0,78 W de salida con un rendimiento de un 74 % son 1,05 W de entrada; a 8,4 V eso son 125 mA. Un reductor cambia tensión por corriente. Un regulador lineal sacaría los 155 mA enteros de la batería y quemaría la diferencia."
+      },
+      "meter": {
+        "q": "El display marca 5,03 V y el multímetro 5,00 V. ¿De cuál te fías?",
+        "options": {
+          "1": "Del display: va integrado en el módulo",
+          "2": "Del multímetro: el display solo es fiable con ±0,1 V",
+          "3": "De ninguno: de la media"
+        },
+        "why": "El voltímetro del módulo es un divisor barato hacia un chip pequeño, ±0,1 V según los vendedores. Vale para echar un vistazo, no para una pieza de 3,3 V con un máximo absoluto de 3,6 V."
+      }
+    },
+    "limits": {
+      "step-down": {
+        "q": "Pides 12 V a una batería de 8,4 V. ¿Qué obtienes?",
+        "options": {
+          "1": "12 V, pero la batería se descarga más rápido",
+          "2": "Unos 7,6 V: el interruptor se queda cerrado y la salida es la entrada menos la caída mínima",
+          "3": "Nada: se apaga"
+        },
+        "why": "Un reductor solo puede dar una tensión más baja. Si se le pide más, cierra su interruptor del todo y deja pasar la entrada, menos la saturación del interruptor y la resistencia de la bobina."
+      },
+      "turns": {
+        "q": "El trimmer empieza arriba del todo. ¿Por qué no pasa nada durante las primeras veinte vueltas hacia abajo?",
+        "options": {
+          "1": "Cualquier ajuste por encima de unos 7,6 V da los mismos 7,6 V con esta batería",
+          "2": "El trimmer tiene una zona muerta",
+          "3": "El display no se actualiza mientras giras"
+        },
+        "why": "25 vueltas piden 38,5 V. La salida solo empieza a seguir al trimmer cuando el ajuste baja de lo que puede dar la entrada, aquí a unas 4,3 vueltas del fondo."
+      },
+      "efficiency": {
+        "q": "¿Por qué el convertidor rinde menos a 3,3 V que a 5 V con el mismo motor?",
+        "options": {
+          "1": "La bobina se satura a baja tensión",
+          "2": "El diodo está al revés a 3,3 V",
+          "3": "Las pérdidas fijas (el medidor, la conmutación) son una parte mayor de una salida más pequeña"
+        },
+        "why": "0,48 W de salida a 3,3 V frente a 0,78 W a 5 V, mientras los 15 mA del medidor y las pérdidas de conmutación apenas cambian. El diodo además conduce durante más parte de cada ciclo con un ciclo de trabajo menor."
+      }
+    },
+    "faults": {
+      "short": {
+        "q": "Con OUT en cortocircuito, el display del módulo sigue marcando 8,4 V. ¿Por qué?",
+        "options": {
+          "1": "Está mostrando IN, y el circuito del medidor se alimenta de la entrada",
+          "2": "El cortocircuito todavía no ha ocurrido",
+          "3": "El display mantiene su última lectura"
+        },
+        "why": "El medidor tiene su propio regulador en la entrada. Cámbialo a OUT y marca 0.00, como el multímetro."
+      },
+      "stall": {
+        "q": "El motor está bloqueado y consume 1,25 A, pero la salida se queda en 5,00 V. ¿Por qué?",
+        "options": {
+          "1": "La reductora del motor limita la corriente",
+          "2": "El multímetro es demasiado lento para mostrar la caída",
+          "3": "1,25 A quedan muy por debajo del límite de 4,2 A del convertidor, así que simplemente da más"
+        },
+        "why": "Un regulador mantiene su tensión hasta que llega a un límite. Solo una carga de más de unos 4,2 A baja esta salida."
+      },
+      "wiper": {
+        "q": "Una soldadura fría en el cursor del trimmer. ¿Qué hace la salida?",
+        "options": {
+          "1": "Baja a 1,23 V",
+          "2": "Salta a la entrada menos la caída mínima",
+          "3": "Se queda donde estaba"
+        },
+        "why": "FB ve 0 V a través de R1, así que el regulador cree que la salida está muy baja y se pone a tope. Todo lo que hay en la salida recibe la tensión de la batería: la avería más peligrosa de esta placa."
+      }
+    },
+    "end": {
+      "vs-7805": {
+        "q": "5 V a 2 A desde una batería 3S de 11,1 V. ¿Cuánto calor generan, más o menos, un 7805 y este reductor?",
+        "options": {
+          "1": "Más o menos lo mismo, 2 W cada uno",
+          "2": "Unos 12 W frente a 2,5 W",
+          "3": "Unos 2,5 W frente a 12 W"
+        },
+        "why": "Un regulador lineal quema (11,1 - 5) x 2 = 12,2 W. El reductor, con un 80 %, quema 10 / 0,8 - 10 = 2,5 W. Por eso los robots usan conmutados."
+      },
+      "cut-off": {
+        "q": "¿Por qué un robot con este módulo necesita su propio corte por batería baja?",
+        "options": {
+          "1": "El módulo corta demasiado pronto",
+          "2": "El display del módulo descarga la batería",
+          "3": "El módulo sigue funcionando hasta unos 3,6 V de entrada, muy por debajo del mínimo seguro de una LiPo"
+        },
+        "why": "No tiene bloqueo por subtensión. Una batería 2S se daña por debajo de 6,0 V; el convertidor sigue tan tranquilo, así que otra cosa tiene que vigilar la batería."
+      },
+      "first": {
+        "q": "Un módulo nuevo, una batería 3S y un ESP32 (3,3 V, 3,6 V de máximo absoluto). ¿Qué haces primero?",
+        "options": {
+          "1": "Batería puesta, nada en la salida, girar el trimmer hasta 3,30 V según el multímetro",
+          "2": "Conectar el ESP32 y girar el trimmer hasta que arranque",
+          "3": "Fiarme del display y conectar"
+        },
+        "why": "El trimmer puede estar arriba del todo: 11 V en una pieza de 3,6 V. Ajústalo sin nada conectado, léelo con un multímetro, apaga y luego conecta."
+      }
+    }
+  }
+}
