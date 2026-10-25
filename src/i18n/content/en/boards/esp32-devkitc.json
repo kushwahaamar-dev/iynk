@@ -299,6 +299,15 @@
             "3": "About 40 mA"
           },
           "why": "(3.3 − 2.0) ÷ 220 is about 5.9 mA. The 14 mA figure belongs to a 5 V Arduino."
+        },
+        "q3": {
+          "q": "You paste an Uno blink sketch that uses LED_BUILTIN. What happens on the DevKitC?",
+          "options": {
+            "1": "The red LED blinks instead",
+            "2": "An LED on GPIO2 blinks",
+            "3": "It doesn't compile"
+          },
+          "why": "The DevKitC has no LED your code can drive, so LED_BUILTIN isn't defined for it, and the red LED only shows that 5 V is there. Name the pin you wired: const int LED_PIN = 23;"
         }
       }
     },
@@ -347,6 +356,35 @@
       "code": {
         "intro": "Boot is GPIO0: it reads LOW while pressed",
         "bounce": "The contacts bounce: wait until the reading stops changing"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Your sketch sets GPIO0 to INPUT_PULLUP. What does digitalRead(0) return while you hold Boot down?",
+          "options": {
+            "1": "HIGH",
+            "2": "LOW",
+            "3": "Either, at random: the pin floats"
+          },
+          "why": "The pull-up holds GPIO0 HIGH, and the button connects it to GND, so pressed reads LOW."
+        },
+        "q2": {
+          "q": "You hold Boot and tap EN. What happens next?",
+          "options": {
+            "1": "The LED toggles once",
+            "2": "The sketch starts again",
+            "3": "The chip waits for an upload"
+          },
+          "why": "GPIO0 is a strapping pin: LOW at reset selects download mode. Release Boot and tap EN again to run your sketch."
+        },
+        "q3": {
+          "q": "Without the debounce, one press sometimes counts two or three times. Why?",
+          "options": {
+            "1": "The contacts bounce as they close",
+            "2": "The pull-up is too weak",
+            "3": "GPIO0 is a strapping pin"
+          },
+          "why": "Metal contacts chatter for a few milliseconds as they close. The sketch only counts a change once the reading has held still for 30 ms, timed with millis()."
+        }
       }
     },
     "touch": {
@@ -392,6 +430,35 @@
       "code": {
         "intro": "T0 is GPIO4: touchRead() drops when a finger is near",
         "lower": "A lower reading means a touch"
+      },
+      "quiz": {
+        "q1": {
+          "q": "What happens to touchRead(T0) when you touch the wire on GPIO4?",
+          "options": {
+            "1": "The number drops",
+            "2": "The number rises toward 4095",
+            "3": "It switches from 0 to 1"
+          },
+          "why": "touchRead() measures the pin's capacitance, and the number falls while a finger is on the wire: here from about 72 to about 12."
+        },
+        "q2": {
+          "q": "Untouched, the wire reads about 72; touched, about 12. Which threshold works best?",
+          "options": {
+            "1": "70",
+            "2": "5",
+            "3": "40"
+          },
+          "why": "Halfway leaves room on both sides. At 70 a small drift lights the LED with nobody touching it, and a touch never reads below 5."
+        },
+        "q3": {
+          "q": "You want touch channel T0 on the real board. Which header pin do you wire the bare wire to?",
+          "options": {
+            "1": "The pin printed 0",
+            "2": "The pin printed 4",
+            "3": "The pin printed 23"
+          },
+          "why": "T0 is GPIO4. The touch numbers don't follow the GPIO numbers: GPIO0, next to it on the header, is T1 and also the Boot button."
+        }
       }
     },
     "fade": {
@@ -445,6 +512,35 @@
       },
       "code": {
         "intro": "LEDC makes the PWM: attach it to the pin, then write a duty"
+      },
+      "quiz": {
+        "q1": {
+          "q": "RESOLUTION is set to 10 bits. Which ledcWrite() value gives full brightness?",
+          "options": {
+            "1": "255",
+            "2": "4095",
+            "3": "1023"
+          },
+          "why": "Full duty is 2^bits − 1: 255 at 8 bits, 1023 at 10 and 4095 at 12. That is why the sketch works out maxDuty from RESOLUTION."
+        },
+        "q2": {
+          "q": "A tutorial calls ledcSetup(0, 5000, 8) and ledcAttachPin(23, 0), and it won't compile on core 3.x. What replaces the two calls?",
+          "options": {
+            "1": "ledcAttach(23, 5000, 8)",
+            "2": "analogWrite(23, 5000)",
+            "3": "pinMode(23, OUTPUT)"
+          },
+          "why": "Core 3.x attaches LEDC by pin: ledcAttach(pin, freq, bits) picks a channel for you, and ledcWrite(pin, duty) then takes the pin, not a channel."
+        },
+        "q3": {
+          "q": "Why can't the fade run at 20 kHz with 12 bits?",
+          "options": {
+            "1": "12 bits only works at 1 kHz",
+            "2": "20 kHz × 4096 is over 80 MHz",
+            "3": "GPIO23 can't switch above 10 kHz"
+          },
+          "why": "LEDC counts the steps of each period on an 80 MHz clock, so frequency × 2^bits must stay under 80 MHz. Drop to 10 bits or to 10 kHz."
+        }
       }
     },
     "web-switch": {
@@ -518,6 +614,15 @@
             "3": "Move the LED to GPIO2"
           },
           "why": "Radio bursts of a few hundred milliamps sag a weak supply below the 2.43 V brown-out level."
+        },
+        "q3": {
+          "q": "After \"Connecting to bench-lab\" the monitor prints dots and never an IP address. What is the most likely cause?",
+          "options": {
+            "1": "The Wi-Fi password is wrong",
+            "2": "The LED is the wrong way round",
+            "3": "The baud rate is too low"
+          },
+          "why": "The while loop waits for WL_CONNECTED and prints a dot every 250 ms. A wrong password, or a network the 2.4 GHz radio can't see, keeps it there for ever."
         }
       }
     }

@@ -418,6 +418,15 @@
             "3": "Environ 40 mA"
           },
           "why": "(3,3 − 2,0) ÷ 220 font environ 5,9 mA. Le chiffre de 14 mA est celui d'un Arduino 5 V."
+        },
+        "q3": {
+          "q": "Vous collez un sketch de clignotement pour Uno qui utilise LED_BUILTIN. Que se passe-t-il sur la DevKitC ?",
+          "options": {
+            "1": "La LED rouge clignote à la place",
+            "2": "Une LED sur GPIO2 clignote",
+            "3": "Il ne compile pas"
+          },
+          "why": "La DevKitC n'a aucune LED que votre code puisse piloter : LED_BUILTIN n'y est donc pas défini, et la LED rouge indique seulement que le 5 V est présent. Nommez la broche que vous avez câblée : const int LED_PIN = 23;"
         }
       }
     },
@@ -483,6 +492,35 @@
       "code": {
         "intro": "Boot est GPIO0 : il lit LOW tant qu'on appuie",
         "bounce": "Les contacts rebondissent : attendez que la lecture cesse de changer"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Votre sketch configure GPIO0 en INPUT_PULLUP. Que renvoie digitalRead(0) tant que vous maintenez Boot ?",
+          "options": {
+            "1": "HIGH",
+            "2": "LOW",
+            "3": "L'un ou l'autre, au hasard : la broche est flottante"
+          },
+          "why": "Le pull-up maintient GPIO0 à HIGH et le bouton le relie à GND : un appui se lit donc LOW."
+        },
+        "q2": {
+          "q": "Vous maintenez Boot et appuyez brièvement sur EN. Que se passe-t-il ensuite ?",
+          "options": {
+            "1": "La LED bascule une fois",
+            "2": "Le sketch redémarre",
+            "3": "La puce attend un téléversement"
+          },
+          "why": "GPIO0 est une broche de strapping : LOW au reset sélectionne le mode téléchargement. Relâchez Boot et appuyez de nouveau sur EN pour lancer votre sketch."
+        },
+        "q3": {
+          "q": "Sans l'anti-rebond, un appui compte parfois deux ou trois fois. Pourquoi ?",
+          "options": {
+            "1": "Les contacts rebondissent en se fermant",
+            "2": "Le pull-up est trop faible",
+            "3": "GPIO0 est une broche de strapping"
+          },
+          "why": "Des contacts métalliques vibrent pendant quelques millisecondes en se fermant. Le sketch ne compte un changement qu'une fois la lecture stable pendant 30 ms, mesurées avec millis()."
+        }
       }
     },
     "touch": {
@@ -545,6 +583,35 @@
       "code": {
         "intro": "T0 est GPIO4 : touchRead() baisse quand un doigt approche",
         "lower": "Une lecture plus basse signifie un toucher"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Que devient touchRead(T0) quand vous touchez le fil sur GPIO4 ?",
+          "options": {
+            "1": "Le nombre baisse",
+            "2": "Le nombre monte vers 4095",
+            "3": "Il passe de 0 à 1"
+          },
+          "why": "touchRead() mesure la capacité de la broche, et le nombre baisse tant qu'un doigt est sur le fil : ici, d'environ 72 à environ 12."
+        },
+        "q2": {
+          "q": "Sans toucher, le fil lit environ 72 ; touché, environ 12. Quel seuil marche le mieux ?",
+          "options": {
+            "1": "70",
+            "2": "5",
+            "3": "40"
+          },
+          "why": "À mi-chemin, il reste de la marge des deux côtés. À 70, une petite dérive allume la LED sans que personne ne touche, et un toucher ne descend jamais sous 5."
+        },
+        "q3": {
+          "q": "Vous voulez le canal tactile T0 sur la vraie carte. Sur quelle broche du connecteur câblez-vous le fil nu ?",
+          "options": {
+            "1": "La broche marquée 0",
+            "2": "La broche marquée 4",
+            "3": "La broche marquée 23"
+          },
+          "why": "T0, c'est GPIO4. Les numéros tactiles ne suivent pas les numéros de GPIO : GPIO0, juste à côté sur le connecteur, est T1 et aussi le bouton Boot."
+        }
       }
     },
     "fade": {
@@ -613,6 +680,35 @@
       },
       "code": {
         "intro": "LEDC produit le PWM : attachez-le à la broche, puis écrivez un rapport cyclique"
+      },
+      "quiz": {
+        "q1": {
+          "q": "RESOLUTION vaut 10 bits. Quelle valeur de ledcWrite() donne la pleine luminosité ?",
+          "options": {
+            "1": "255",
+            "2": "4095",
+            "3": "1023"
+          },
+          "why": "Le rapport cyclique maximal vaut 2^bits − 1 : 255 en 8 bits, 1023 en 10 et 4095 en 12. C'est pour cela que le sketch calcule maxDuty à partir de RESOLUTION."
+        },
+        "q2": {
+          "q": "Un tutoriel appelle ledcSetup(0, 5000, 8) et ledcAttachPin(23, 0), et il ne compile pas avec le core 3.x. Qu'est-ce qui remplace ces deux appels ?",
+          "options": {
+            "1": "ledcAttach(23, 5000, 8)",
+            "2": "analogWrite(23, 5000)",
+            "3": "pinMode(23, OUTPUT)"
+          },
+          "why": "Le core 3.x attache le LEDC par broche : ledcAttach(pin, freq, bits) choisit un canal pour vous, puis ledcWrite(pin, duty) prend la broche, pas un canal."
+        },
+        "q3": {
+          "q": "Pourquoi le fondu ne peut-il pas tourner à 20 kHz en 12 bits ?",
+          "options": {
+            "1": "12 bits ne marche qu'à 1 kHz",
+            "2": "20 kHz × 4096 dépasse 80 MHz",
+            "3": "GPIO23 ne commute pas au-delà de 10 kHz"
+          },
+          "why": "LEDC compte les pas de chaque période sur une horloge de 80 MHz : fréquence × 2^bits doit donc rester sous 80 MHz. Passez à 10 bits ou à 10 kHz."
+        }
       }
     },
     "web-switch": {
@@ -701,6 +797,15 @@
             "3": "Déplacer la LED sur GPIO2"
           },
           "why": "Des rafales radio de quelques centaines de milliampères font descendre une alimentation faible sous le seuil de brown-out de 2,43 V."
+        },
+        "q3": {
+          "q": "Après « Connecting to bench-lab », le moniteur affiche des points et jamais d'adresse IP. Quelle est la cause la plus probable ?",
+          "options": {
+            "1": "Le mot de passe Wi-Fi est faux",
+            "2": "La LED est à l'envers",
+            "3": "Le débit en bauds est trop bas"
+          },
+          "why": "La boucle while attend WL_CONNECTED et affiche un point toutes les 250 ms. Un mauvais mot de passe, ou un réseau que la radio 2,4 GHz ne voit pas, l'y laisse indéfiniment."
         }
       }
     }

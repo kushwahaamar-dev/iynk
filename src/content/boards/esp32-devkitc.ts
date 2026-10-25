@@ -331,6 +331,7 @@ const board = {
         questions: [
           { id: 'q1', q: 'lessons.blink.quiz.q1.q', options: ['lessons.blink.quiz.q1.options.1', 'lessons.blink.quiz.q1.options.2', 'lessons.blink.quiz.q1.options.3'], answer: 1, why: 'lessons.blink.quiz.q1.why' },
           { id: 'q2', q: 'lessons.blink.quiz.q2.q', options: ['lessons.blink.quiz.q2.options.1', 'lessons.blink.quiz.q2.options.2', 'lessons.blink.quiz.q2.options.3'], answer: 0, why: 'lessons.blink.quiz.q2.why' },
+          { id: 'q3', q: 'lessons.blink.quiz.q3.q', options: ['lessons.blink.quiz.q3.options.1', 'lessons.blink.quiz.q3.options.2', 'lessons.blink.quiz.q3.options.3'], answer: 2, why: 'lessons.blink.quiz.q3.why' },
         ],
       },
     },
@@ -421,6 +422,14 @@ const board = {
       title: 'lessons.boot-button.title', lede: 'lessons.boot-button.lede',
       steps: ['lessons.boot-button.steps.1', 'lessons.boot-button.steps.2', 'lessons.boot-button.steps.3'],
       hints: ['lessons.boot-button.hints.1', 'lessons.boot-button.hints.2'],
+      quiz: {
+        id: 'boot-button', afterStep: null,
+        questions: [
+          { id: 'q1', q: 'lessons.boot-button.quiz.q1.q', options: ['lessons.boot-button.quiz.q1.options.1', 'lessons.boot-button.quiz.q1.options.2', 'lessons.boot-button.quiz.q1.options.3'], answer: 1, why: 'lessons.boot-button.quiz.q1.why' },
+          { id: 'q2', q: 'lessons.boot-button.quiz.q2.q', options: ['lessons.boot-button.quiz.q2.options.1', 'lessons.boot-button.quiz.q2.options.2', 'lessons.boot-button.quiz.q2.options.3'], answer: 2, why: 'lessons.boot-button.quiz.q2.why' },
+          { id: 'q3', q: 'lessons.boot-button.quiz.q3.q', options: ['lessons.boot-button.quiz.q3.options.1', 'lessons.boot-button.quiz.q3.options.2', 'lessons.boot-button.quiz.q3.options.3'], answer: 0, why: 'lessons.boot-button.quiz.q3.why' },
+        ],
+      },
     },
     {
       id: 'touch', n: 3, level: 'input', language: 'arduino-cpp',
@@ -486,6 +495,14 @@ const board = {
       title: 'lessons.touch.title', lede: 'lessons.touch.lede',
       steps: ['lessons.touch.steps.1', 'lessons.touch.steps.2', 'lessons.touch.steps.3'],
       hints: ['lessons.touch.hints.1', 'lessons.touch.hints.2'],
+      quiz: {
+        id: 'touch', afterStep: null,
+        questions: [
+          { id: 'q1', q: 'lessons.touch.quiz.q1.q', options: ['lessons.touch.quiz.q1.options.1', 'lessons.touch.quiz.q1.options.2', 'lessons.touch.quiz.q1.options.3'], answer: 0, why: 'lessons.touch.quiz.q1.why' },
+          { id: 'q2', q: 'lessons.touch.quiz.q2.q', options: ['lessons.touch.quiz.q2.options.1', 'lessons.touch.quiz.q2.options.2', 'lessons.touch.quiz.q2.options.3'], answer: 2, why: 'lessons.touch.quiz.q2.why' },
+          { id: 'q3', q: 'lessons.touch.quiz.q3.q', options: ['lessons.touch.quiz.q3.options.1', 'lessons.touch.quiz.q3.options.2', 'lessons.touch.quiz.q3.options.3'], answer: 1, why: 'lessons.touch.quiz.q3.why' },
+        ],
+      },
     },
     {
       id: 'fade', n: 4, level: 'analog', language: 'arduino-cpp',
@@ -564,6 +581,14 @@ const board = {
       title: 'lessons.fade.title', lede: 'lessons.fade.lede',
       steps: ['lessons.fade.steps.1', 'lessons.fade.steps.2', 'lessons.fade.steps.3'],
       hints: ['lessons.fade.hints.1', 'lessons.fade.hints.2'],
+      quiz: {
+        id: 'fade', afterStep: null,
+        questions: [
+          { id: 'q1', q: 'lessons.fade.quiz.q1.q', options: ['lessons.fade.quiz.q1.options.1', 'lessons.fade.quiz.q1.options.2', 'lessons.fade.quiz.q1.options.3'], answer: 2, why: 'lessons.fade.quiz.q1.why' },
+          { id: 'q2', q: 'lessons.fade.quiz.q2.q', options: ['lessons.fade.quiz.q2.options.1', 'lessons.fade.quiz.q2.options.2', 'lessons.fade.quiz.q2.options.3'], answer: 0, why: 'lessons.fade.quiz.q2.why' },
+          { id: 'q3', q: 'lessons.fade.quiz.q3.q', options: ['lessons.fade.quiz.q3.options.1', 'lessons.fade.quiz.q3.options.2', 'lessons.fade.quiz.q3.options.3'], answer: 1, why: 'lessons.fade.quiz.q3.why' },
+        ],
+      },
     },
     {
       id: 'web-switch', n: 5, level: 'wireless', language: 'arduino-cpp',
@@ -667,6 +692,7 @@ const board = {
         questions: [
           { id: 'q1', q: 'lessons.web-switch.quiz.q1.q', options: ['lessons.web-switch.quiz.q1.options.1', 'lessons.web-switch.quiz.q1.options.2', 'lessons.web-switch.quiz.q1.options.3'], answer: 2, why: 'lessons.web-switch.quiz.q1.why' },
           { id: 'q2', q: 'lessons.web-switch.quiz.q2.q', options: ['lessons.web-switch.quiz.q2.options.1', 'lessons.web-switch.quiz.q2.options.2', 'lessons.web-switch.quiz.q2.options.3'], answer: 1, why: 'lessons.web-switch.quiz.q2.why' },
+          { id: 'q3', q: 'lessons.web-switch.quiz.q3.q', options: ['lessons.web-switch.quiz.q3.options.1', 'lessons.web-switch.quiz.q3.options.2', 'lessons.web-switch.quiz.q3.options.3'], answer: 0, why: 'lessons.web-switch.quiz.q3.why' },
         ],
       },
     },

@@ -69,6 +69,16 @@ describe('esp32-devkitc content', () => {
     expect(failing(fade, render(fade).replace(/ledcWrite\(LED_PIN, maxDuty \* i \/ 50\)/g, 'ledcWrite(LED_PIN, maxDuty)'))).toContain('lessons.fade.checks.1');
   });
 
+  it('gives every lesson a three-question quiz whose answers are among its options', () => {
+    for (const l of board.lessons) {
+      expect(l.quiz?.questions, l.id).toHaveLength(3);
+      for (const q of l.quiz!.questions) {
+        expect(q.answer, `${l.id} ${q.id}`).toBeLessThan(q.options.length);
+        for (const key of [q.q, q.why, ...q.options]) expect(text(key).length, key).toBeGreaterThan(0);
+      }
+    }
+  });
+
   for (const lesson of board.lessons) {
     it(`lesson ${lesson.n} ${lesson.id}: the code passes every check and prints its sample lines`, () => {
       const { trace, results } = runChecks(lessonJob(board, lesson, render(lesson)));

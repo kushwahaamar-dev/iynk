@@ -418,6 +418,15 @@
             "3": "Etwa 40 mA"
           },
           "why": "(3,3 − 2,0) ÷ 220 sind etwa 5,9 mA. Der Wert von 14 mA gehört zu einem 5-V-Arduino."
+        },
+        "q3": {
+          "q": "Du fügst einen Blink-Sketch für den Uno ein, der LED_BUILTIN nutzt. Was passiert auf dem DevKitC?",
+          "options": {
+            "1": "Stattdessen blinkt die rote LED",
+            "2": "Eine LED an GPIO2 blinkt",
+            "3": "Er lässt sich nicht kompilieren"
+          },
+          "why": "Das DevKitC hat keine LED, die dein Code steuern kann, deshalb ist LED_BUILTIN dafür nicht definiert, und die rote LED zeigt nur, dass 5 V anliegen. Benenn den Pin, den du verdrahtet hast: const int LED_PIN = 23;"
         }
       }
     },
@@ -483,6 +492,35 @@
       "code": {
         "intro": "Boot ist GPIO0: Er liest LOW, solange er gedrückt ist",
         "bounce": "Die Kontakte prellen: Warte, bis sich der Messwert nicht mehr ändert"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Dein Sketch setzt GPIO0 auf INPUT_PULLUP. Was liefert digitalRead(0), solange du Boot gedrückt hältst?",
+          "options": {
+            "1": "HIGH",
+            "2": "LOW",
+            "3": "Zufällig eins von beiden: Der Pin ist offen"
+          },
+          "why": "Der Pull-up hält GPIO0 auf HIGH, und der Taster verbindet ihn mit GND, also liest gedrückt LOW."
+        },
+        "q2": {
+          "q": "Du hältst Boot gedrückt und tippst kurz auf EN. Was passiert dann?",
+          "options": {
+            "1": "Die LED schaltet einmal um",
+            "2": "Der Sketch startet neu",
+            "3": "Der Chip wartet auf einen Upload"
+          },
+          "why": "GPIO0 ist ein Strapping-Pin: LOW beim Reset wählt den Download-Modus. Lass Boot los und tipp noch einmal auf EN, damit dein Sketch läuft."
+        },
+        "q3": {
+          "q": "Ohne Entprellung zählt ein Druck manchmal zwei- oder dreimal. Warum?",
+          "options": {
+            "1": "Die Kontakte prellen beim Schließen",
+            "2": "Der Pull-up ist zu schwach",
+            "3": "GPIO0 ist ein Strapping-Pin"
+          },
+          "why": "Metallkontakte flattern beim Schließen ein paar Millisekunden lang. Der Sketch zählt eine Änderung erst, wenn der Messwert 30 ms lang still steht, gemessen mit millis()."
+        }
       }
     },
     "touch": {
@@ -545,6 +583,35 @@
       "code": {
         "intro": "T0 ist GPIO4: touchRead() sinkt, wenn ein Finger in der Nähe ist",
         "lower": "Ein niedrigerer Messwert bedeutet eine Berührung"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Was passiert mit touchRead(T0), wenn du den Draht an GPIO4 berührst?",
+          "options": {
+            "1": "Die Zahl sinkt",
+            "2": "Die Zahl steigt Richtung 4095",
+            "3": "Sie springt von 0 auf 1"
+          },
+          "why": "touchRead() misst die Kapazität des Pins, und die Zahl sinkt, solange ein Finger am Draht ist: hier von etwa 72 auf etwa 12."
+        },
+        "q2": {
+          "q": "Unberührt liest der Draht etwa 72, berührt etwa 12. Welche Schwelle passt am besten?",
+          "options": {
+            "1": "70",
+            "2": "5",
+            "3": "40"
+          },
+          "why": "Die Mitte lässt auf beiden Seiten Luft. Bei 70 lässt schon eine kleine Drift die LED leuchten, ohne dass jemand den Draht berührt, und eine Berührung kommt nie unter 5."
+        },
+        "q3": {
+          "q": "Du willst auf dem echten Board den Touch-Kanal T0. An welchen Pin der Stiftleiste schließt du den blanken Draht an?",
+          "options": {
+            "1": "Den Pin mit der Aufschrift 0",
+            "2": "Den Pin mit der Aufschrift 4",
+            "3": "Den Pin mit der Aufschrift 23"
+          },
+          "why": "T0 ist GPIO4. Die Touch-Nummern folgen nicht den GPIO-Nummern: GPIO0 direkt daneben auf der Stiftleiste ist T1 und zugleich der Boot-Taster."
+        }
       }
     },
     "fade": {
@@ -613,6 +680,35 @@
       },
       "code": {
         "intro": "LEDC erzeugt die PWM: an den Pin hängen, dann ein Tastverhältnis schreiben"
+      },
+      "quiz": {
+        "q1": {
+          "q": "RESOLUTION steht auf 10 Bit. Welcher ledcWrite()-Wert ergibt volle Helligkeit?",
+          "options": {
+            "1": "255",
+            "2": "4095",
+            "3": "1023"
+          },
+          "why": "Das volle Tastverhältnis ist 2^bits − 1: 255 bei 8 Bit, 1023 bei 10 und 4095 bei 12. Deshalb berechnet der Sketch maxDuty aus RESOLUTION."
+        },
+        "q2": {
+          "q": "Eine Anleitung ruft ledcSetup(0, 5000, 8) und ledcAttachPin(23, 0) auf und lässt sich mit dem Core 3.x nicht kompilieren. Was ersetzt die beiden Aufrufe?",
+          "options": {
+            "1": "ledcAttach(23, 5000, 8)",
+            "2": "analogWrite(23, 5000)",
+            "3": "pinMode(23, OUTPUT)"
+          },
+          "why": "Der Core 3.x hängt LEDC an den Pin: ledcAttach(pin, freq, bits) sucht dir einen Kanal aus, und ledcWrite(pin, duty) nimmt danach den Pin, keinen Kanal."
+        },
+        "q3": {
+          "q": "Warum kann das Dimmen nicht mit 20 kHz bei 12 Bit laufen?",
+          "options": {
+            "1": "12 Bit gehen nur bei 1 kHz",
+            "2": "20 kHz × 4096 liegt über 80 MHz",
+            "3": "GPIO23 schaltet nicht schneller als 10 kHz"
+          },
+          "why": "LEDC zählt die Schritte jeder Periode mit einem 80-MHz-Takt, also muss Frequenz × 2^bits unter 80 MHz bleiben. Geh auf 10 Bit oder auf 10 kHz herunter."
+        }
       }
     },
     "web-switch": {
@@ -701,6 +797,15 @@
             "3": "Die LED auf GPIO2 legen"
           },
           "why": "Funkstöße von einigen hundert Milliampere ziehen eine schwache Versorgung unter die Brown-out-Schwelle von 2,43 V."
+        },
+        "q3": {
+          "q": "Nach \"Connecting to bench-lab\" gibt der Monitor Punkte aus und nie eine IP-Adresse. Was ist die wahrscheinlichste Ursache?",
+          "options": {
+            "1": "Das WLAN-Passwort ist falsch",
+            "2": "Die LED steckt falsch herum",
+            "3": "Die Baudrate ist zu niedrig"
+          },
+          "why": "Die while-Schleife wartet auf WL_CONNECTED und gibt alle 250 ms einen Punkt aus. Ein falsches Passwort oder ein Netz, das das 2,4-GHz-Funkteil nicht sieht, hält sie dort für immer fest."
         }
       }
     }

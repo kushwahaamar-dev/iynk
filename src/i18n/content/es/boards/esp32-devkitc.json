@@ -418,6 +418,15 @@
             "3": "Unos 40 mA"
           },
           "why": "(3,3 − 2,0) ÷ 220 son unos 5,9 mA. Los 14 mA son lo que da un Arduino de 5 V."
+        },
+        "q3": {
+          "q": "Pegas un sketch de parpadeo de la Uno que usa LED_BUILTIN. ¿Qué pasa en la DevKitC?",
+          "options": {
+            "1": "Parpadea el LED rojo",
+            "2": "Parpadea un LED en GPIO2",
+            "3": "No compila"
+          },
+          "why": "La DevKitC no tiene ningún LED que tu código pueda controlar, así que LED_BUILTIN no está definido para ella, y el LED rojo solo indica que hay 5 V. Ponle nombre al pin que has cableado: const int LED_PIN = 23;"
         }
       }
     },
@@ -483,6 +492,35 @@
       "code": {
         "intro": "Boot es GPIO0: lee LOW mientras está pulsado",
         "bounce": "Los contactos rebotan: espera a que la lectura deje de cambiar"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Tu sketch pone GPIO0 en INPUT_PULLUP. ¿Qué devuelve digitalRead(0) mientras mantienes pulsado Boot?",
+          "options": {
+            "1": "HIGH",
+            "2": "LOW",
+            "3": "Cualquiera, al azar: el pin está al aire"
+          },
+          "why": "La pull-up mantiene GPIO0 en HIGH, y el botón lo conecta a GND, así que pulsado lee LOW."
+        },
+        "q2": {
+          "q": "Mantienes Boot y das un toque a EN. ¿Qué pasa después?",
+          "options": {
+            "1": "El LED cambia una vez",
+            "2": "El sketch vuelve a empezar",
+            "3": "El chip espera una carga"
+          },
+          "why": "GPIO0 es un pin de arranque: LOW en el reinicio elige el modo de descarga. Suelta Boot y vuelve a tocar EN para ejecutar tu sketch."
+        },
+        "q3": {
+          "q": "Sin el antirrebote, una pulsación a veces cuenta dos o tres veces. ¿Por qué?",
+          "options": {
+            "1": "Los contactos rebotan al cerrarse",
+            "2": "La pull-up es demasiado débil",
+            "3": "GPIO0 es un pin de arranque"
+          },
+          "why": "Los contactos metálicos vibran unos milisegundos al cerrarse. El sketch solo cuenta un cambio cuando la lectura lleva 30 ms quieta, medidos con millis()."
+        }
       }
     },
     "touch": {
@@ -545,6 +583,35 @@
       "code": {
         "intro": "T0 es GPIO4: touchRead() baja cuando hay un dedo cerca",
         "lower": "Una lectura más baja significa un toque"
+      },
+      "quiz": {
+        "q1": {
+          "q": "¿Qué le pasa a touchRead(T0) cuando tocas el cable de GPIO4?",
+          "options": {
+            "1": "El número baja",
+            "2": "El número sube hacia 4095",
+            "3": "Pasa de 0 a 1"
+          },
+          "why": "touchRead() mide la capacidad del pin, y el número baja mientras hay un dedo en el cable: aquí, de unos 72 a unos 12."
+        },
+        "q2": {
+          "q": "Sin tocar, el cable marca unos 72; al tocarlo, unos 12. ¿Qué umbral funciona mejor?",
+          "options": {
+            "1": "70",
+            "2": "5",
+            "3": "40"
+          },
+          "why": "A medio camino queda margen por los dos lados. Con 70, una pequeña deriva enciende el LED sin que nadie lo toque, y un toque nunca baja de 5."
+        },
+        "q3": {
+          "q": "Quieres el canal táctil T0 en la placa real. ¿A qué pin de la tira conectas el cable desnudo?",
+          "options": {
+            "1": "Al pin rotulado 0",
+            "2": "Al pin rotulado 4",
+            "3": "Al pin rotulado 23"
+          },
+          "why": "T0 es GPIO4. Los números táctiles no siguen los números de GPIO: GPIO0, a su lado en la tira, es T1 y además el botón Boot."
+        }
       }
     },
     "fade": {
@@ -613,6 +680,35 @@
       },
       "code": {
         "intro": "El LEDC genera el PWM: únelo al pin y luego escribe un ciclo de trabajo"
+      },
+      "quiz": {
+        "q1": {
+          "q": "RESOLUTION está en 10 bits. ¿Qué valor de ledcWrite() da el brillo máximo?",
+          "options": {
+            "1": "255",
+            "2": "4095",
+            "3": "1023"
+          },
+          "why": "El ciclo de trabajo máximo es 2^bits − 1: 255 con 8 bits, 1023 con 10 y 4095 con 12. Por eso el sketch calcula maxDuty a partir de RESOLUTION."
+        },
+        "q2": {
+          "q": "Un tutorial llama a ledcSetup(0, 5000, 8) y ledcAttachPin(23, 0), y no compila con el núcleo 3.x. ¿Qué sustituye a las dos llamadas?",
+          "options": {
+            "1": "ledcAttach(23, 5000, 8)",
+            "2": "analogWrite(23, 5000)",
+            "3": "pinMode(23, OUTPUT)"
+          },
+          "why": "El núcleo 3.x une el LEDC por pin: ledcAttach(pin, freq, bits) elige un canal por ti, y luego ledcWrite(pin, duty) recibe el pin, no un canal."
+        },
+        "q3": {
+          "q": "¿Por qué el fundido no puede ir a 20 kHz con 12 bits?",
+          "options": {
+            "1": "12 bits solo funciona a 1 kHz",
+            "2": "20 kHz × 4096 supera los 80 MHz",
+            "3": "GPIO23 no conmuta por encima de 10 kHz"
+          },
+          "why": "El LEDC cuenta los pasos de cada periodo con un reloj de 80 MHz, así que frecuencia × 2^bits tiene que quedarse por debajo de 80 MHz. Baja a 10 bits o a 10 kHz."
+        }
       }
     },
     "web-switch": {
@@ -701,6 +797,15 @@
             "3": "Pasar el LED a GPIO2"
           },
           "why": "Las ráfagas de la radio, de unos cientos de miliamperios, hunden una fuente débil por debajo del nivel de caída de tensión de 2,43 V."
+        },
+        "q3": {
+          "q": "Después de \"Connecting to bench-lab\", el monitor imprime puntos y nunca una dirección IP. ¿Cuál es la causa más probable?",
+          "options": {
+            "1": "La contraseña del Wi-Fi está mal",
+            "2": "El LED está al revés",
+            "3": "La velocidad en baudios es demasiado baja"
+          },
+          "why": "El bucle while espera a WL_CONNECTED e imprime un punto cada 250 ms. Una contraseña equivocada, o una red que la radio de 2,4 GHz no ve, lo deja ahí para siempre."
         }
       }
     }
