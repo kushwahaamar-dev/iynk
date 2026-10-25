@@ -13,7 +13,7 @@
    above 30 A: it fails short, then open). */
 (() => {
 const B = SL.bench, T = B.T;
-const callouts = ctx => !!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage);
+const callouts = ctx => typeof ctx.label === 'function' && (!!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage));
 const IS = 7.03e-9, NVT = 1.808 * 0.025852, RS = 0.0342;
 const VRRM = { '1N4001': 50, '1N4002': 100, '1N4003': 200, '1N4004': 400, '1N4005': 600, '1N4006': 800, '1N4007': 1000 };
 // forward drop at a current (A), and the current at a drop (V), from the fit above
@@ -58,7 +58,10 @@ B.part('diode-1n4007', {
       const ins = rod(at(-half + .1), at(-.25), .62, B.M.tin, toneI, .5) + rod(at(.25), at(half - .1), .62, B.M.tin, toneI, .5)
         + rod(at(-.25), at(.25), .78, SI, toneI, .5) + (m.state === 'ok' || m.state === 'clamp' ? `<circle cx="${f(P(...mid)[0])}" cy="${f(P(...mid)[1])}" r="2.2" fill="#ffd34d" opacity=".55"/>` : '');
       body = `<g opacity="${f(1 - .65 * k)}">${body}</g>` + `<g opacity="${f(k)}">${ins}</g>`;
-      if (k > .5 && callouts(ctx)) body += tag(mid, 26, -30, 'Silicon PN chip', m.state === 'ok' || m.state === 'clamp') + tag(at(half + .4), 30, 18, 'Cathode band');
+      if (k > .5 && callouts(ctx)){
+        ctx.label(mid, 'Silicon PN chip', m.state === 'ok' || m.state === 'clamp');
+        ctx.label(at(half + .4), 'Cathode band');
+      }
     }
     s += body;
     if (burnt){ const [X, Y] = P(mid[0], mid[1], mid[2] + 2); s += `<circle cx="${f(X)}" cy="${f(Y - 4)}" r="3" fill="#8a847a" opacity=".45"/><circle cx="${f(X + 3)}" cy="${f(Y - 8)}" r="2.2" fill="#8a847a" opacity=".3"/>`; }

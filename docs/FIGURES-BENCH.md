@@ -8,6 +8,9 @@ nothing else. The engine (`figures/engine/bench*.js`, `figures/engine/sheets*.js
 
 Changes after the first publication are additive only. Every change is logged here, newest first.
 
+- v8 (22:40, P2-engine-b): breadboard and mat parts label their insides with `ctx.label(at, text, on)` (§8), not
+  `tag()`; the scene lays those labels and the board's see-through notes out together, last, in two columns
+  (`xrCallouts`) outside any view scaling.
 - v7 (21:00, P2-engine): the breadboard solver is a DC circuit solver (`figures/engine/bench-solve.js`, §9): node
   voltages per PWM time slice, averaged over the period, for every `elec` type in the §8 table (not yet the
   stepper). Every `meas` entry carries `kind` (§9 table); host readouts that only know LEDs should filter on
@@ -490,6 +493,10 @@ world points of its holes (top of the breadboard), `holes` the parsed holes, `or
 (mat mm in board coordinates, for things that sit on the mat, not in holes) or the first leg, `pl` the placement
 (`pl.at(x, y, z)` breadboard mm → world, `pl.zTop`), `m` the solver result for this part (§9), `k` the see-through
 ease (0..1) and `solo` (true on the part's own page).
+`ctx.label(at, text, on)` queues a see-through label on the world point `at` (`text` the English `CF_T` key, `on`
+the accent colour): the engine lays every label of the frame out last, in two columns beside the parts that asked,
+so pills never overlap or sit under the drawing. Call it instead of the core's `tag()` (whose fixed offsets
+overlapped on part pages); a part only labels while selected or on its own page, with `k > .5`.
 
 Part pages (`public/figures/parts/<id>.html`, built from `figures/parts/<id>.js`): `fig: 'P2'` is the figure number
 in the title; `show: { breadboard, parts, wires }` is the circuit the page shows, or `show: { breadboard, holes,

@@ -12,7 +12,7 @@
    from + to - (negative turns it backwards), rpm at the wheel. */
 (() => {
 const B = SL.bench, T = B.T;
-const callouts = ctx => !!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage);
+const callouts = ctx => typeof ctx.label === 'function' && (!!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage));
 const RPM_AT_6V = 220, WHEEL_R = 32.5, WHEEL_W = 26, ZS = 34.5;
 // steady state at an average voltage v (benches call it through B.parts['tt-motor'].model): winding 4 Ω, so a held
 // wheel draws 1.5 A at 6 V; back-EMF 24.4 mV per wheel rpm and a running current of 130-160 mA (gear friction rises
@@ -99,7 +99,7 @@ B.part('tt-motor', {
       let gears = '';
       for (const [gx, gr] of [[-24, 7], [-12, 9], [0, 6.5]]) gears += rod(W(gx, -4, ZS), W(gx, 4, ZS), gr, matOf('#f4f1e6'), toneI, .5, gr, 20);
       gb = ghost(gb) + `<g opacity="${f(k)}">${gears}</g>`;
-      if (k > .5 && callouts(ctx)) gb += tag(W(-12, 0, ZS), -34, 18, 'Nylon gear train', Math.abs(rpm) > 5);
+      if (k > .5 && callouts(ctx)){ ctx.label(W(-12, 0, ZS), 'Nylon gear train', Math.abs(rpm) > 5); }
     }
     put(B.aabb([W(-34.4, -9.4, z0), W(11, 9.4, z1)]), gb);
 

@@ -16,7 +16,7 @@
    and `drop`, default 0.9 V) makes the fan follow that pin through a low-side switch, the lesson 11 circuit. */
 (() => {
 const B = SL.bench, T = B.T;
-const callouts = ctx => !!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage);
+const callouts = ctx => typeof ctx.label === 'function' && (!!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage));
 const VNOM = 5, INOM = .10, RPM = 6000, VSTALL = 2.5, VRUN = 1.8, VMAX = 6.5;
 const steady = v => { if (v < VRUN) return { rpm: 0, i: 0 }; const x = Math.min(VMAX, v); return { rpm: RPM * (x - VRUN) / (VNOM - VRUN), i: INOM * (.35 + .65 * x / VNOM) }; };
 const FRAME = { l: '#57524c', m: '#3f3b37', d: '#292624' }, BLADE = { l: '#4c4843', m: '#38342f', d: '#24211e' };
@@ -104,7 +104,10 @@ B.part('fan', {
       for (let i = 0; i < 4; i++){ const q = i * Math.PI / 2; ins += rod(W(-2.5, 4.4 * Math.cos(q), zc + 4.4 * Math.sin(q)), W(2.5, 4.4 * Math.cos(q), zc + 4.4 * Math.sin(q)), 1.7, { l: '#f0a46b', m: '#d4834a', d: '#8f5226' }, toneI, .4); }
       ins += shape(circ(-3.2, 8, 18), '#2f7d4a', .5) + B.slabW(W, -3.6, -2, -3.2, 1, zc - 6.5, zc - 4.3, matOf('#2a2725'), toneI, .3);
       inner = `<g opacity="${f(1 - .7 * k)}">${inner}</g><g opacity="${f(k)}">${ins}</g>`;
-      if (k > .5 && callouts(ctx)) inner += tag(W(0, 4.4, zc + 4.4), 34, -36, 'Stator coils', spinning) + tag(W(-3.4, 0, zc - 5.4), -36, 20, 'Hall sensor + driver IC', spinning);
+      if (k > .5 && callouts(ctx)){
+        ctx.label(W(0, 4.4, zc + 4.4), 'Stator coils', spinning);
+        ctx.label(W(-3.4, 0, zc - 5.4), 'Hall sensor + driver IC', spinning);
+      }
     }
     const back = faceAt(-5, nb), front = faceAt(5, ax);
     const body = fwd ? back + duct + inner + front : front + duct + inner + back;

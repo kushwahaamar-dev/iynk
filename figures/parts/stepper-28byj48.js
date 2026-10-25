@@ -22,7 +22,7 @@
    ULN2003 (input high = coil on). Reports m-like state 'ok' | 'off' | 'stall' | 'jitter'. */
 (() => {
 const B = SL.bench, T = B.T;
-const callouts = ctx => !!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage);
+const callouts = ctx => typeof ctx.label === 'function' && (!!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage));
 const RATIO = 567424 / 8910, FULL = 32 * RATIO, HALF = 64 * RATIO;          // 63.68395, 2037.8864, 4075.7728
 const MAXRATE = { full: 510, half: 1000, wave: 400 };                        // steps/s before it stalls (approximate)
 const SEQ = { O: 0, OY: 1, Y: 2, PY: 3, P: 4, BP: 5, B: 6, BO: 7 };
@@ -110,8 +110,12 @@ B.part('stepper-28byj48', {
         for (let i = 0; i < 10; i++){ const q = rot + i / 10 * 2 * Math.PI; sv += line([W(x + rr * .75 * Math.cos(q), y + rr * .75 * Math.sin(q), z + 1.02), W(x + rr * Math.cos(q), y + rr * Math.sin(q), z + 1.02)], .3); } return sv; };
       ins += gear(0, 0, 3, zt - 5, ra) + gear(-4, 6, 6.5, zt - 4, -a * 8) + gear(3, -5, 5.5, zt - 3, a * 2.5) + gear(sx, 0, 7.5, zt - 2.2, a);
       body = `<g opacity="${f(1 - .72 * k)}">${body}</g><g opacity="${f(k)}">${ins}</g>`;
-      if (k > .5 && callouts(ctx)) body += tag(W(-12.5, 0, zb + 3.5), -40, -10, 'Winding O–P', !!coilOn[0][0]) + tag(W(12.5, 0, zb + 9), 40, 6, 'Winding Y–B', !!coilOn[1][0])
-        + tag(W(0, 0, zb + 12), -36, -44, '32-step magnet rotor') + tag(W(sx, 0, zt - 1.2), 40, -36, 'Gears 63.68 : 1');
+      if (k > .5 && callouts(ctx)){
+        ctx.label(W(-12.5, 0, zb + 3.5), 'Winding O–P', !!coilOn[0][0]);
+        ctx.label(W(12.5, 0, zb + 9), 'Winding Y–B', !!coilOn[1][0]);
+        ctx.label(W(0, 0, zb + 12), '32-step magnet rotor');
+        ctx.label(W(sx, 0, zt - 1.2), 'Gears 63.68 : 1');
+      }
     }
     items.push({ box: B.aabb([W(-21, -14, zb), W(21, 14, zt)]), svg: body });
     // boss, shaft with its flats, and the pointer or the prize wheel

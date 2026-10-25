@@ -753,8 +753,21 @@ function xrNotes(k){
   if (!items.length) return '';
   items.splice(8);
   const pc = [BP(0, 0, 0), BP(MD.pcb.w, MD.pcb.h, MD.height)];
-  return xrCallouts(items, [Math.min(pc[0][0], pc[1][0]), Math.max(pc[0][0], pc[1][0]), Math.min(pc[0][1], pc[1][1]), Math.max(pc[0][1], pc[1][1]), G.top, G.top + 10]);
+  LBL.items.push(...items);
+  LBL.box = growBox(LBL.box, [[Math.min(pc[0][0], pc[1][0]), Math.min(pc[0][1], pc[1][1]), G.top], [Math.max(pc[0][0], pc[1][0]), Math.max(pc[0][1], pc[1][1]), G.top + 10]]);
+  return '';
 }
+/* callouts: the board's notes (xrNotes) and the see-through labels of breadboard and mat parts, whose draw calls
+   ctx.label(at, text, on). scene() lays them all out last, in two columns beside what they label (xrCallouts), outside
+   any view scaling, so pills never overlap each other or sit under the drawing */
+const LBL = { items: [], box: null };
+const growBox = (box, b) => box ? [box[0].map((v, i) => Math.min(v, b[0][i])), box[1].map((v, i) => Math.max(v, b[1][i]))] : [b[0].slice(), b[1].slice()];
+// one part's labeller: label() queues its callouts, done(boxes) adds them with the part's drawn boxes as their bounds
+B.labeller = () => {
+  const mine = [];
+  return { label: (at, text, on) => { if (Array.isArray(at) && at.length === 3 && text) mine.push({ at, text, on: !!on }); },
+    done: boxes => { if (!mine.length) return; LBL.items.push(...mine); for (const b of boxes) if (b) LBL.box = growBox(LBL.box, b); } };
+};
 
 /* things on the mat: a periph board is drawn in its own frame (G and B.md swapped while it draws) */
 function inFrame(it, fn){
@@ -794,8 +807,10 @@ function periphPart(it, k, live){
   const p = Object.assign({ id: it.id, part: it.q.part }, it.def.example || {}, it.q.params || {});
   const pl = { at: (x, y, zz = z) => BP(it.at[0] + x, it.at[1] + y, zz), zTop: z, geo: null };
   const put = (bx, svg) => { if (svg) items.push({ box: bx, svg: act('periph', sel ? `<g class="bsel">${svg}</g>` : svg, periphData(it)) }); };
-  try { it.def.draw({ p, st, legs, holes: [], origin: BP(it.at[0] + it.w / 2, it.at[1] + it.h / 2, z), pl, m: (st.readings || {})[it.id] || {}, lit: live ? 1 : 0, sel, k, put }); }
+  const lb = B.labeller();
+  try { it.def.draw({ p, st, legs, holes: [], origin: BP(it.at[0] + it.w / 2, it.at[1] + it.h / 2, z), pl, m: (st.readings || {})[it.id] || {}, lit: live ? 1 : 0, sel, k, put, label: lb.label }); }
   catch (e) { matNote(`periph ${it.id} (${it.q.part}): ${e.message}`); }
+  lb.done(items.map(x => x.box));
   return items;
 }
 // a wire end in world coordinates, and the base net it sits on (for the live colour)
@@ -884,10 +899,17 @@ function scene(stt){
   const bnd = vd.bounds(), corners = B.boxCorners(bnd);
   // the breadboard view is fitted per circuit: a motor on the mat needs a wider frame than a blinking LED
   const sc = v === (B.mountView || 'board') ? 1 : viewFit(v === 'breadboard' ? v + ':' + stt.circuit : v, corners);
-  let svg = vd.scene(k);
+  LBL.items = []; LBL.box = null;
+  let svg = vd.scene(k), map = w => w;
   if (sc !== 1){
     const c3 = [(bnd[0] + bnd[3]) / 2, (bnd[1] + bnd[4]) / 2, (bnd[2] + bnd[5]) / 2], pc = P(...c3), rc = P(RC[0], RC[1], RCZ);
     svg = `<g transform="translate(${f(rc[0])} ${f(rc[1])}) scale(${sc.toFixed(4)}) translate(${f(-pc[0])} ${f(-pc[1])})">${strokeDiv(svg, sc)}</g>`;
+    // P is affine, so the world point RC + sc·(w − c3) lands where the scaled drawing put w
+    map = w => [RC[0] + sc * (w[0] - c3[0]), RC[1] + sc * (w[1] - c3[1]), RCZ + sc * (w[2] - c3[2])];
+  }
+  if (LBL.items.length && LBL.box){
+    const a = map(LBL.box[0]), b = map(LBL.box[1]);
+    svg += xrCallouts(LBL.items.map(it => Object.assign({}, it, { at: map(it.at) })), [a[0], b[0], a[1], b[1], a[2], b[2]]);
   }
   return svg;
 }

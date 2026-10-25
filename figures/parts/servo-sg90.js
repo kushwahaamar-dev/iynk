@@ -20,7 +20,7 @@
    'off' (no pulses: limp) | 'over' (above 6 V) | 'burnt'. */
 (() => {
 const B = SL.bench, T = B.T;
-const callouts = ctx => !!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage);
+const callouts = ctx => typeof ctx.label === 'function' && (!!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage));
 const US0 = 500, US1 = 2400, SPEED = 600, DEAD = 10;          // us for 0 and 180 deg, deg/s at 4.8 V, dead band us
 const angleOf = us => (us - US0) / (US1 - US0) * 180;
 const usOf = a => US0 + a / 180 * (US1 - US0);
@@ -99,8 +99,12 @@ B.part('servo-sg90', {
       const wp = W(sx + 2.6 * Math.cos(arm), 2.6 * Math.sin(arm), 8.1);
       ins += `<path d="M${P(...W(sx, 0, 8.1)).map(f).join(' ')}L${P(...wp).map(f).join(' ')}" stroke="#7a5a2a" stroke-width="1" fill="none"/>`;
       body = `<g opacity="${f(1 - .72 * k)}">${body}</g><g opacity="${f(k)}">${ins}</g>`;
-      if (k > .5 && callouts(ctx)) body += tag(W(-6, 0, 12), -40, -26, 'DC motor', moving) + tag(W(-1, 0, 18.2), -30, -46, 'Nylon gear train', moving)
-        + tag(W(sx, 0, 6), 40, 10, 'Position pot (5 kΩ)', moving) + tag(W(0, -5.4, 1.8), -30, 30, 'Control board');
+      if (k > .5 && callouts(ctx)){
+        ctx.label(W(-6, 0, 12), 'DC motor', moving);
+        ctx.label(W(-1, 0, 18.2), 'Nylon gear train', moving);
+        ctx.label(W(sx, 0, 6), 'Position pot (5 kΩ)', moving);
+        ctx.label(W(0, -5.4, 1.8), 'Control board');
+      }
     }
     // the horn: a hub and one arm to 16 mm, turning with the output shaft (0 deg points along -x)
     const hz = 31, hc = W(sx, 0, hz), tip = 16;

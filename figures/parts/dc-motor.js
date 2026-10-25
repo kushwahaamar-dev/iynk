@@ -19,7 +19,7 @@
    follow that pin's PWM through a low-side switch, the lesson 10 circuit. */
 (() => {
 const B = SL.bench, T = B.T;
-const callouts = ctx => !!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage);
+const callouts = ctx => typeof ctx.label === 'function' && (!!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage));
 const R = 1.43, KE = 3.06e-4, I0 = .12, IPROP = .08, VSTART = 1.0, VSTOP = .6, VMAX = 9;
 // steady state at an average voltage v: rpm and current, with the propeller load rising as speed squared
 const steady = (v, load = 'prop') => {
@@ -127,7 +127,11 @@ B.part('dc-motor', {
         ins += rod(W(-4, 0, zc), W(-4, y, zc + z), .8, B.M.steel, toneI, .4) + rod(W(-6, y, zc + z), W(9, y, zc + z), 2, COPPER, toneI, .5); }
       ins += rod(W(-11, 0, zc), W(-8, 0, zc), 1.6, COPPER, toneI, .5) + B.slabW(W, -10.6, 1.4, -9.6, 3.4, zc - .4, zc + .4, B.M.tin, toneI, .3) + B.slabW(W, -10.6, -3.4, -9.6, -1.4, zc - .4, zc + .4, B.M.tin, toneI, .3);
       can = `<g opacity="${f(1 - .72 * k)}">${can}</g><g opacity="${f(k)}">${ins}</g>`;
-      if (k > .5 && callouts(ctx)) can += tag(W(2, 7.6, zc + 5), 30, -34, 'Ferrite magnet') + tag(W(4, 0, zc + 4.2), -30, -40, 'Armature coils', run) + tag(W(-10, 2.4, zc), -40, 16, 'Brushes on the commutator', run);
+      if (k > .5 && callouts(ctx)){
+        ctx.label(W(2, 7.6, zc + 5), 'Ferrite magnet');
+        ctx.label(W(4, 0, zc + 4.2), 'Armature coils', run);
+        ctx.label(W(-10, 2.4, zc), 'Brushes on the commutator', run);
+      }
     }
     if (m.state === 'stall' || m.state === 'over'){ const [X, Y] = P(...W(-11, 0, zc + 8)); can += `<path d="M${f(X - 3)} ${f(Y)}q2 -3 0 -6q-2 -3 0 -6M${f(X + 2)} ${f(Y - 1)}q2 -3 0 -6q-2 -3 0 -6" fill="none" stroke="#e2483d" stroke-width=".9" opacity=".75"/>`; }
     if (burnt){ const [X, Y] = P(...W(-11, 0, zc + 8)); can += `<circle cx="${f(X)}" cy="${f(Y - 6)}" r="4" fill="#8a847a" opacity=".45"/><circle cx="${f(X + 4)}" cy="${f(Y - 12)}" r="2.6" fill="#8a847a" opacity=".3"/>`; }

@@ -16,7 +16,7 @@
    short). */
 (() => {
 const B = SL.bench, T = B.T;
-const callouts = ctx => !!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage);
+const callouts = ctx => typeof ctx.label === 'function' && (!!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage));
 const HFE = 100, THETA = 200;
 const log10 = Math.log10;
 // typical curves, approximate (inside the sheet's limits above)
@@ -85,7 +85,10 @@ B.part('npn-2n2222', {
       ins += wire(xb) + wire(xe);
       if (on){ const [X, Y] = P(...W(xc, .3, z0 + 2.9)); ins += `<circle cx="${f(X)}" cy="${f(Y)}" r="2" fill="#ffd34d" opacity=".6"/>`; }
       body = `<g opacity="${f(1 - .7 * k)}">${body}</g><g opacity="${f(k)}">${ins}</g>`;
-      if (k > .5 && callouts(ctx)) body += tag(W(xc, .3, z0 + 2.9), 30, -30, 'Silicon die on the collector lead', on) + tag(W((xb + xe) / 2, .8, z0 + 3.4), -36, -22, 'Gold bond wires');
+      if (k > .5 && callouts(ctx)){
+        ctx.label(W(xc, .3, z0 + 2.9), 'Silicon die on the collector lead', on);
+        ctx.label(W((xb + xe) / 2, .8, z0 + 3.4), 'Gold bond wires');
+      }
     }
     if (burnt){ const [X, Y] = P(...W(0, 0, z1)); body += `<circle cx="${f(X)}" cy="${f(Y - 4)}" r="2.8" fill="#8a847a" opacity=".45"/>`; }
     ctx.put(B.aabb([W(-2.8, -.4, 0), W(2.8, .4, z0)]), leads);

@@ -16,7 +16,7 @@
    'hot' (above 1.5 W in free air) or 'burnt' (junction past 150 °C: it fails short C-E). */
 (() => {
 const B = SL.bench, T = B.T;
-const callouts = ctx => !!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage);
+const callouts = ctx => typeof ctx.label === 'function' && (!!ctx.sel || !!(B.md && B.md.def && B.md.def.partPage));
 const HFE = 1000, THETA = 62.5;                          // free-air °C/W: 2 W lifts the junction from 25 to 150 °C
 const log10 = Math.log10;
 // typical curves, approximate (fits through the points named above)
@@ -98,8 +98,12 @@ B.part('tip120', {
       if (on){ const q = (t * 1.6) % 1, pe = W(.9 + (2.54 - .9) * q, yd + .6, dz - 1.45 - (dz - 1.45 - z0) * q), [X, Y] = P(...pe);
         ins += `<circle cx="${f(X)}" cy="${f(Y)}" r="1.1" fill="#ffd34d"/>`; }
       body = `<g opacity="${f(1 - .7 * k)}">${body}</g><g opacity="${f(k)}">${ins}</g>`;
-      if (k > .5 && callouts(ctx)) body += tag(W(-.85, yt + .4, dz + .2), -34, -30, 'Q1 driver transistor', on) + tag(W(.85, yt + .4, dz + .2), 34, -40, 'Q2 output transistor', on)
-        + tag(W(0, yb, zt - 1), 30, -22, 'Tab = collector') + tag(W(-1.8, .6, z0 + 1.5), -40, 16, 'Base bond wire');
+      if (k > .5 && callouts(ctx)){
+        ctx.label(W(-.85, yt + .4, dz + .2), 'Q1 driver transistor', on);
+        ctx.label(W(.85, yt + .4, dz + .2), 'Q2 output transistor', on);
+        ctx.label(W(0, yb, zt - 1), 'Tab = collector');
+        ctx.label(W(-1.8, .6, z0 + 1.5), 'Base bond wire');
+      }
     }
     if (hot && !burnt){ const [X, Y] = P(...W(0, yf, zb + 1)); body += `<path d="M${f(X - 3)} ${f(Y)}q2 -3 0 -6q-2 -3 0 -6M${f(X + 2)} ${f(Y - 1)}q2 -3 0 -6q-2 -3 0 -6" fill="none" stroke="#e2483d" stroke-width=".8" opacity=".7"/>`; }
     if (burnt){ const [X, Y] = P(...W(0, yf, zt)); body += `<circle cx="${f(X)}" cy="${f(Y - 5)}" r="3.4" fill="#8a847a" opacity=".45"/><circle cx="${f(X + 3)}" cy="${f(Y - 10)}" r="2.4" fill="#8a847a" opacity=".3"/>`; }
