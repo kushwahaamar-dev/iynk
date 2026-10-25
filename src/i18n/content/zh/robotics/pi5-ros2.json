@@ -1,0 +1,539 @@
+{
+  "title": "Raspberry Pi 5",
+  "sub": "ROS 2 大脑",
+  "hint": "组装好它，存储卡和散热器最后装，然后用真正的 5 A 电源给它供电",
+  "overview": "Raspberry Pi 5 是机器人的大脑，而不是它的脊髓：一台 2.4 GHz 四核 Linux 电脑，运行 ROS 2、SLAM Toolbox、Nav2 和摄像头处理流程。Linux 不是实时系统，所以电机和平衡控制回路放在一块 ESP32 或 Nano 上，它通过 USB 串口和 Pi 通信，和微雪 UGV Rover 的分工一样。从裸板开始一步步装起来，给它装上 microSD 卡和 Active Cooler 主动散热器，接上真正的 5 V 5 A 电源，然后看着终端。这里的热量变化大约比真实板子快十倍，所以台面上要几分钟才能看到的现象，在这里几秒钟就能看到。",
+  "power": {
+    "label": "插上 / 拔下 27 W USB-C 电源",
+    "ok": "已通电：Linux 启动时 LED 由红变绿"
+  },
+  "parts": {
+    "U1": {
+      "name": "BCM2712 SoC",
+      "what": "四个 2.4 GHz 的 Cortex-A76 核心和一个 VideoCore VII GPU，倒装芯片封装在金属散热盖下面。它运行 Linux、ROS 2、SLAM 和视觉处理，速度快但不是实时的。"
+    },
+    "U2": {
+      "name": "LPDDR4X 内存",
+      "what": "1 到 16 GB 的 LPDDR4X-4267，紧挨着 SoC：在这样的速度下，内存走线必须很短。"
+    },
+    "U3": {
+      "name": "RP1 I/O 控制器",
+      "what": "树莓派自己的芯片，负责 USB、以太网、摄像头和 GPIO 排针，通过四通道 PCIe 2.0 连到 SoC。板上的每一个接口都来自它。"
+    },
+    "U4": {
+      "name": "电源管理芯片（Renesas DA9091）",
+      "what": "用 5 V 输入产生所有电源轨（内核、内存、1.8 V、3.3 V），维持实时时钟，处理电源按钮，并在电压低于 4.63 V 时发出欠压标志。"
+    },
+    "U5": {
+      "name": "Wi-Fi 和蓝牙模块",
+      "what": "金属屏蔽罩下的双频 802.11ac Wi-Fi 和蓝牙 5.0。用来 SSH 和 Foxglove 没问题；机器人的控制数据走网线更安全。"
+    },
+    "U6": {
+      "name": "千兆以太网 PHY",
+      "what": "把 RP1 的以太网信号转换成网线上的电压；它斜 45 度放在网口旁边。"
+    },
+    "L1": {
+      "name": "PMIC 功率电感",
+      "what": "PMIC 旁边的四个灰色方块，为它的开关稳压器储存能量。"
+    },
+    "RC": {
+      "name": "去耦电容和电阻",
+      "what": "几百个微小的元件：每颗高速芯片都需要在电源引脚旁边有一个本地储能。"
+    },
+    "LED1": {
+      "name": "电源和状态 LED（红/绿）",
+      "what": "通电时为红色，固件启动后变绿，读取 SD 卡时会闪灭。启动错误以长短绿色闪烁码表示。"
+    },
+    "SW1": {
+      "name": "电源按钮",
+      "what": "Pi 5 新增的。第一次上电会自动启动；之后按一下会干净地关机，停机状态下再按一下会重新启动，长按则切断电源。"
+    },
+    "J1": {
+      "name": "USB-C 电源输入",
+      "what": "5 V 输入。官方 27 W 电源通过 USB PD 告诉 Pi 它能提供 5 A；5 V 3 A 的电源也能启动它，但会把 USB 口限制在 600 mA。"
+    },
+    "J20": {
+      "name": "PCIe 接口",
+      "what": "16 针 0.5 mm 排线接口，带一条 PCIe 2.0 通道，用于 NVMe 硬盘或 AI 加速 HAT。"
+    },
+    "J3": {
+      "name": "摄像头/显示屏接口 0",
+      "what": "22 针 0.5 mm 排线，四条 MIPI 通道，用于摄像头或 DSI 显示屏。两个摄像头可以组成双目：先用棋盘格分别标定每一个。"
+    },
+    "J4": {
+      "name": "摄像头/显示屏接口 1",
+      "what": "第二个 4 通道 MIPI 接口。Pi 4 的摄像头排线是 15 针 1 mm 的，需要一根转接线。"
+    },
+    "J5": {
+      "name": "RTC 电池接口",
+      "what": "2 针 JST-SH 接口，接一节小电池，拔掉电源时让时钟继续走，这样日志和 bag 的时间戳才会正确。"
+    },
+    "UART": {
+      "name": "UART 调试接口",
+      "what": "3 针 JST-SH 串口控制台（第 1 脚 RX，第 2 脚 GND，第 3 脚 TX），115200 波特，在 Linux 里是 /dev/ttyAMA10。"
+    },
+    "FAN": {
+      "name": "风扇接口",
+      "what": "4 针 JST-SH PWM 风扇插座：SoC 越热，固件让风扇转得越快。"
+    },
+    "MICROSD": {
+      "name": "microSD 卡座",
+      "what": "背面的一个按压弹出式卡座。Pi 自己没有存放程序的闪存：Raspberry Pi OS、你的 ROS 2 工作空间和所有日志都存在插在里面的卡上。"
+    },
+    "J6": {
+      "name": "Micro-HDMI 0",
+      "what": "最高 4K 60 Hz。在机器人上它主要用于第一次启动。"
+    },
+    "J13": {
+      "name": "Micro-HDMI 1",
+      "what": "第二个 4K60 显示器：一块屏幕放 RViz，另一块放终端。"
+    },
+    "J8": {
+      "name": "40 针 GPIO 排针",
+      "what": "3.3 V 逻辑，带 I2C、SPI、UART 和 PWM。千万不要给引脚加 5 V，电机要接到微控制器上，而不是这里。第 2 和第 4 脚直接连到 5 V 输入。"
+    },
+    "J14": {
+      "name": "PoE+ 排针",
+      "what": "四个引脚，通过 PoE+ HAT 从网线取电。"
+    },
+    "J10": {
+      "name": "千兆以太网口",
+      "what": "传输话题和摄像头画面的可靠方式。绿灯 = 连接，琥珀色灯 = 数据传输。"
+    },
+    "J12": {
+      "name": "USB 3.0 接口（蓝色）",
+      "what": "两个 5 Gbit/s 接口，同时使用时都能全速工作：深度摄像头、激光雷达、SSD。"
+    },
+    "J11": {
+      "name": "USB 2.0 接口（黑色）",
+      "what": "键盘、遥控手柄，以及连接 Nano 或 ESP32 的 USB 串口线。"
+    },
+    "CARD": {
+      "name": "microSD 卡",
+      "what": "操作系统。用 Raspberry Pi Imager 把 Raspberry Pi OS 或 Ubuntu 写进去；32 GB 以上的 A2 级卡能让 ROS 2 编译和 bag 文件都保持快速。写入时拔掉电源可能会损坏它。"
+    },
+    "COOLER": {
+      "name": "Active Cooler 主动散热器",
+      "what": "铝制散热片和鼓风扇，用两根弹簧销固定，SoC 上垫着导热垫，还有一根线接到风扇接口。没有它，ROS 2 的负载会让 SoC 超过 80 °C，固件就会降低时钟频率。"
+    }
+  },
+  "modes": {
+    "boot": {
+      "title": "启动并检查",
+      "code": {
+        "what": "boot_check.py：第一次启动后运行它，确认 Pi 一切正常",
+        "first": "在全新的 SD 卡上，先更新：",
+        "throttled": "throttled=0x0：电源从未跌落过",
+        "temp": "CPU 温度",
+        "clock": "Arm 时钟：全速时为 2400000000 Hz"
+      }
+    },
+    "teleop": {
+      "title": "ROS 2 驱动节点",
+      "code": {
+        "what": "drive.py：一个驱动机器人的 ROS 2 节点（Ubuntu 26.04 上的 ROS 2 Lyrical）",
+        "rate": "10 Hz",
+        "heat": "每 5 s 检查一次 SoC 温度",
+        "linear": "m/s 前进",
+        "angular": "rad/s 转向",
+        "publish": "ESP32 把它变成电机 PWM"
+      }
+    },
+    "health": {
+      "title": "电源和温度检查",
+      "code": {
+        "what": "health.py：逐位解析 vcgencmd get_throttled",
+        "charger": "手机充电器在负载下会掉压：随机重启、SD 卡损坏、USB 设备掉线",
+        "fix": "解决办法：官方 5 V 5 A（27 W）USB-C 电源"
+      }
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "拆到只剩裸 PCB",
+      "body": "拔掉电源，然后拆下所有零件。Pi 5 和任何现代电路板一样组装：先装贴片元件，再从矮到高装直插接口，最后装 microSD 卡和 Active Cooler。",
+      "refusal": "先断开电源：永远不要在带电的板子上操作"
+    },
+    "smd": {
+      "title": "贴装 SMD 元件，然后回流焊",
+      "body": "机器把 BCM2712、内存、RP1、PMIC 和它的电感、Wi-Fi 屏蔽罩、以太网 PHY 以及每一个小电容和电阻放到锡膏上，同时放上的还有贴片接口：USB-C、PCIe 和摄像头排线插座、RTC、UART 和风扇接口、microSD 卡座、LED 和电源按钮。回流炉在约 245 °C 下熔化每个焊盘下的锡膏。",
+      "refusal": "SMD 元件已经在板上了"
+    },
+    "low": {
+      "title": "装上矮的直插零件",
+      "body": "两个 micro-HDMI 插座。矮的零件先装，这样翻过来焊接时板子能平放在它们上面。",
+      "refusal": "先装 SMD 元件：先完成贴装和回流焊。炉子会把塑料件熔化"
+    },
+    "tall": {
+      "title": "装上高的接口",
+      "body": "40 针 GPIO 排针、PoE+ 排针、以太网口和两组 USB 接口。",
+      "refusal": "先装矮的零件：装上高的零件后，翻过来焊接时板子会晃，松动的零件会掉出来"
+    },
+    "solder": {
+      "title": "焊接直插焊点",
+      "body": "每个焊点都应该发亮、呈内凹状，GPIO 引脚之间不能有连锡。",
+      "refusal": "还没有东西可焊：先放一个零件"
+    },
+    "card": {
+      "title": "插入 microSD 卡",
+      "body": "卡里装着操作系统，所以要等所有焊点都焊好之后再插。它咔嗒一声插进板子背面的卡座，触点朝上对着板子。",
+      "refusal": "先把所有东西焊好：卡最后插"
+    },
+    "cooler": {
+      "title": "装上 Active Cooler",
+      "body": "把它的两根弹簧销压进 SoC 旁边的孔里，让导热垫贴在 SoC 上，然后把它的线插到 4 针风扇接口上。",
+      "refusal": "先把所有东西焊好：这个零件最后装"
+    },
+    "plug": {
+      "title": "插上 27 W USB-C 电源",
+      "body": "官方电源通过 USB PD 提供 5 V 5 A。LED 先亮红色，固件启动时变绿，Linux 启动期间随着读取 SD 卡而闪灭，然后 boot_check.py 打印出电源标志、温度和时钟。",
+      "refusal": "没有地方可插：先把 J1 装回去"
+    },
+    "teleop": {
+      "title": "运行 ROS 2 驱动节点",
+      "body": "节点每秒十次在 /cmd_vel 上发布一个 Twist。在真实的机器人上，一块 ESP32 或 Nano 通过 USB 串口读取它，并把它变成电机 PWM。"
+    },
+    "health": {
+      "title": "检查电源和温度",
+      "body": "vcgencmd get_throttled 把电源和温度的历史打包成一个数字。0x0 表示自这次启动以来，电源从未跌落，时钟也从未被降频。"
+    },
+    "charger": {
+      "title": "弄坏它：用 5 V 2 A 手机充电器供电",
+      "body": "在负载下，充电器和它那根细线会掉到 4.6 V，低于 4.63 V 的下限。观察电源、时钟和 throttled 标志，然后换回 27 W 电源。"
+    },
+    "no-cooler": {
+      "title": "弄坏它：不装 Active Cooler 运行",
+      "body": "取下散热器，让驱动节点在裸露的 SoC 上运行。温度每秒上升几度，超过 80 °C 后时钟降低，节点发出警告。然后修好它：装回散热器，板子就会冷却下来。"
+    },
+    "cold-fan": {
+      "title": "弄坏它：风扇插座虚焊",
+      "body": "风扇接口的一个引脚和焊盘只是勉强接触，所以风扇时转时停，SoC 运行得更热。重新焊好这个焊点（“全部修好”）就能修复。"
+    },
+    "motors": {
+      "title": "弄坏它：电机接在 Pi 的 5 V 上",
+      "body": "用机器人的 3 A 降压模块通过 GPIO 第 2 和第 4 脚给 Pi 供电，同一条电源轨上还接着两个 TT 驱动电机。电机的启动电流把电源轨拉低，Pi 就复位了。修好后，给 Pi 配上它自己的 27 W 电源。"
+    },
+    "reverse": {
+      "title": "弄坏它：机器人的 5 V 接反了",
+      "body": "把 GPIO 第 2 和第 6 脚上的两根线对调。排针的 5 V 电源轨上没有任何东西能挡住接反的电源。修好后，重新通过 USB-C 供电。"
+    },
+    "overvolt": {
+      "title": "弄坏它：5 V 引脚上接 12 V",
+      "body": "把一块 3S 电池直接接到第 2 脚，而不是经过 5 V 降压模块。修好后，重新通过 USB-C 供电。"
+    },
+    "exploded": {
+      "title": "爆炸视图",
+      "body": "断开电源，按组装分组把零件抬起来，看看散热器下面有什么。",
+      "refusal": "先断开电源：永远不要在带电的板子上操作"
+    }
+  },
+  "faults": {
+    "undervoltage": {
+      "title": "手机充电器导致欠压",
+      "symptom": "电源读数为 4.6 V，时钟降到 1.5 GHz，get_throttled 显示 0x50005，内核日志记录 'Undervoltage detected!'。",
+      "explanation": "Pi 5 在电压低于 4.63 V（±5 %）时发出欠压标志。5 V 2 A 的手机充电器和一根细线在 Pi 的负载下会掉压，于是固件限制时钟频率。电源太弱还会导致随机重启、SD 卡损坏和 USB 设备掉线。",
+      "fix": "使用官方 5 V 5 A（27 W）USB-C 电源。"
+    },
+    "no-cooler": {
+      "title": "没有装 Active Cooler",
+      "symptom": "CPU 温度升到 80 °C 以上，时钟从 2.4 GHz 向 1.5 GHz 下降，get_throttled 显示 0x40004，驱动节点发出过热警告。",
+      "explanation": "固件从 80 °C 开始逐级给 Arm 核心降频，到 85 °C 时 GPU 也降频。在 ROS 2 负载下，裸露的 BCM2712 很快就会到达这个温度，而 1.5 GHz 只有全速的 62.5 %。",
+      "fix": "断开电源，重新装上 Active Cooler，并把它的线插到风扇接口上。"
+    },
+    "cold-fan": {
+      "title": "风扇接口虚焊",
+      "symptom": "风扇时停时转，它的占空比在 0 和曲线值之间跳动，CPU 运行得更热。",
+      "explanation": "虚焊是一团从未润湿焊盘的暗淡、粗糙的焊锡，所以它只是时有时无地接触。每一次振动，风扇的电源或 PWM 引脚都会断开。",
+      "fix": "重新焊好这个焊点：同时加热焊盘和引脚，加一点新焊锡，让它凝固成一个发亮的内凹焊角。"
+    },
+    "motor-brownout": {
+      "title": "欠压：电机接在 Pi 的 5 V 电源轨上",
+      "symptom": "电源跌落，LED 熄灭后又亮起，终端反复打印启动日志：每次电机启动，Pi 都会复位。",
+      "explanation": "一个 TT 减速电机在启动或堵转时要拉 1.2-1.5 A。两个电机加上 Pi 的 0.8 A，超过了机器人 3 A 降压模块能提供的电流，所以 5 V 崩溃，板子复位。",
+      "fix": "电机由电池经过一个受 ESP32 控制的电机驱动器供电，并给 Pi 配上它自己的 5 V 5 A 电源。"
+    },
+    "reverse-gpio": {
+      "title": "GPIO 5 V 引脚电源接反",
+      "symptom": "什么都启动不了，电源进入限流状态，PMIC 发烫。",
+      "explanation": "USB-C 有防呆设计，插不反，但排针上的 5 V 引脚直接连到 5 V 输入电源轨，没有任何保护。接反时，电流反向流过 PMIC，把它烧毁。",
+      "fix": "把两根线对调：5 V 接第 2 或第 4 脚，地接第 6 脚。更好的办法是通过 USB-C 给 Pi 供电。"
+    },
+    "gpio-12v": {
+      "title": "5 V 引脚上接 12 V",
+      "symptom": "PMIC 立刻烧毁，板子再也没有反应。",
+      "explanation": "5 V 引脚绕过了所有稳压器：你给它们加什么电压，就直接到达 PMIC 的输入端。一块 3S 电池（11.1-12.6 V）是 PMIC 设计电压的两倍还多。",
+      "fix": "5 V 引脚只能由稳压的 5 V 电源供电，例如设为 5.1 V 的降压模块，或者改用 USB-C。"
+    },
+    "no-card": {
+      "title": "没有 microSD 卡",
+      "symptom": "LED 一直是红色：板子有电，但没有出现启动日志。",
+      "explanation": "Pi 5 自己没有操作系统。它 SPI 闪存里的引导程序会在卡上寻找操作系统（如果你设置了启动顺序，接着找 USB 和网络），结果什么也没找到。",
+      "fix": "断开电源，插入一张用 Raspberry Pi Imager 写好的卡，再重新通电。"
+    },
+    "no-pmic": {
+      "title": "没有装 PMIC",
+      "symptom": "一点光都没有：板上什么都没有通电。",
+      "explanation": "DA9091 用 5 V 输入产生所有电源轨。没有它，任何芯片都得不到电。",
+      "fix": "把 U4 装回去并回流焊。"
+    },
+    "no-soc": {
+      "title": "没有装 BCM2712",
+      "symptom": "LED 一直是红色：电源轨建立了，但没有启动日志，也没有绿灯。",
+      "explanation": "BCM2712 就是这台电脑本身：四个 Arm 核心、GPU 和内存控制器。电源轨建立了，但没有东西来运行引导程序。",
+      "fix": "把 U1 装回去并回流焊。"
+    },
+    "no-ram": {
+      "title": "没有装内存",
+      "symptom": "LED 一遍又一遍地闪八下短促的绿光，启动停止。",
+      "explanation": "引导程序找不到任何 SDRAM，于是显示文档中记载的闪烁码 0L8S：零次长闪和八次短闪，表示 'SDRAM failure'。",
+      "fix": "把 U2 装回去并回流焊。"
+    },
+    "no-rp1": {
+      "title": "没有装 RP1",
+      "symptom": "LED 闪四长三短，没有 USB、没有以太网，也没有 GPIO。",
+      "explanation": "Pi 5 上的每个接口都来自 RP1。固件找不到它，就显示文档中记载的闪烁码 4L3S，表示 'RP1 not found'。",
+      "fix": "把 U3 装回去并回流焊。"
+    }
+  },
+  "status": {
+    "run": "Linux",
+    "powered": "已通电",
+    "supply": "电源（5 V 电源轨）",
+    "cpu": "CPU 温度（°C）",
+    "clock": "Arm 时钟（GHz）",
+    "throttled": "get_throttled",
+    "fan": "散热风扇占空比",
+    "current": "耗电电流"
+  },
+  "current": {
+    "pin5": "GPIO 第 2/4 脚上机器人的 3 A 降压模块",
+    "usb": "27 W USB-C 电源（5 V 5 A）",
+    "charger": "手机充电器（5 V 2 A）",
+    "pi": "运行 Linux 的 Pi 5",
+    "ros": "四个核心上的 ROS 2 负载",
+    "camera": "USB 3 深度摄像头",
+    "fan": "Active Cooler 风扇"
+  },
+  "tasks": {
+    "cmd-vel-10hz": {
+      "title": "用定时器以 10 Hz 发布 /cmd_vel",
+      "brief": "初始代码用一个带 time.sleep(0.1) 的 while 循环来驱动机器人。这会阻塞节点，rclpy 永远没法运行它的回调，而且周期会随着每次发布所花的时间而漂移。用 ROS 2 的方式重写它：一个 0.1 s 的定时器，发布 Twist（前进 0.2 m/s，转向 0.5 rad/s）并记录发送的内容，然后调用 rclpy.spin()。",
+      "hints": {
+        "1": "节点开始 spin 后，self.create_timer(0.1, self.tick) 会每 0.1 s 调用一次 tick。",
+        "2": "用 self.get_logger().info(f'linear.x={msg.linear.x:.2f} angular.z={msg.angular.z:.2f}') 记录每条消息。",
+        "3": "把 Drive().run() 换成 node = Drive() 和 rclpy.spin(node)。"
+      },
+      "checks": {
+        "1": "使用 0.1 s 定时器和 rclpy.spin，没有 sleep 循环",
+        "2": "每秒十次发布 0.20 m/s 和 0.50 rad/s",
+        "3": "运行 2 秒没有出错"
+      },
+      "code": {
+        "goal": "任务：用 ROS 2 的方式以 10 Hz 发布同一个 Twist",
+        "loop": "阻塞循环：rclpy 永远不会运行回调，周期也会漂移",
+        "timer": "每 0.1 s：10 Hz"
+      }
+    },
+    "diff-drive": {
+      "title": "把 /cmd_vel 变成轮速",
+      "brief": "ESP32 驱动两个轮子，所以 Pi 要把每个 Twist 拆成左轮和右轮的速度：left = v − ω·b/2，right = v + ω·b/2，其中 b 是两轮之间的距离。完成底盘节点：声明一个 wheel_base 参数（0.16 m），订阅 cmd_vel，并记录两个速度。",
+      "hints": {
+        "1": "self.declare_parameter('wheel_base', 0.16)，然后用 self.get_parameter('wheel_base').value 读取它。",
+        "2": "self.create_subscription(Twist, 'cmd_vel', self.on_cmd, 10) 会对每条消息调用 on_cmd。",
+        "3": "v = 0.2 m/s、ω = 0.5 rad/s、b = 0.16 m 时，得到 left = 0.16 m/s 和 right = 0.24 m/s。记录 f'left={left:.2f} right={right:.2f} m/s'。"
+      },
+      "checks": {
+        "1": "声明了 wheel_base 并订阅了 cmd_vel",
+        "2": "每条消息都记录 left=0.16 right=0.24 m/s"
+      },
+      "code": {
+        "goal": "任务：底盘节点把每个 Twist 变成左右轮速",
+        "param": "在这里声明 wheel_base 参数（单位：米）",
+        "sub": "订阅 cmd_vel，以 on_cmd 作为回调",
+        "math": "left = v - w*b/2，right = v + w*b/2，然后把两者都记录下来",
+        "metres": "两个轮子中心之间的距离（米）"
+      }
+    },
+    "range-pipeline": {
+      "title": "三个节点：传感器、滤波、安全停车",
+      "brief": "一个不需要机器人的多节点系统。传感器节点发布一个逐渐逼近墙壁的距离（2.0 m、1.9 m、1.8 m……频率 10 Hz）。写一个滤波节点，对最近 window 个读数（一个参数，4）求平均并发布 range_avg；再写一个安全节点，当平均值低于 stop_m（一个参数，0.5 m）时在 cmd_vel 上发布一个零 Twist，并只警告一次。在真实的 Pi 上还可以更进一步：你自己的 .msg 和 .srv 类型、一个带参数的 Python launch 文件，然后用 ros2 bag record 录制并回放。",
+      "hints": {
+        "1": "滤波：维护一个列表，追加每个读数，长度超过窗口时 pop(0)，然后发布 sum / len。",
+        "2": "安全：记住你已经停下来了，这样警告只打印一次。",
+        "3": "窗口为 4 时，平均值第一次低于 0.5 m 是在 0.45 m：记录 f'obstacle at {msg.data:.2f} m: stop'。",
+        "4": "在 Pi 上：ros2 pkg create --build-type ament_python my_robot，一个带 DeclareLaunchArgument 的 launch 文件，然后 ros2 bag record -a 和 ros2 bag play。"
+      },
+      "checks": {
+        "1": "声明了 window 和 stop_m 并订阅了 range",
+        "2": "滤波节点对每个读数都记录一个平均值",
+        "3": "安全节点在 2 秒内于 0.45 m 处停车"
+      },
+      "code": {
+        "goal": "任务：在滤波节点里对距离求平均，在安全节点里让机器人停下",
+        "approach": "机器人以 1 m/s 驶向墙壁：每 0.1 s 靠近 0.1 m",
+        "filter": "声明 'window'，在 range_avg 上发布滑动平均值并记录它",
+        "safety": "声明 'stop_m'，订阅 range_avg，一旦低于阈值就发布 Twist()"
+      }
+    }
+  },
+  "quizzes": {
+    "smd": {
+      "reflow": {
+        "q": "为什么 SMD 元件要在所有接口之前装？",
+        "options": {
+          "1": "回流炉把整块板加热到约 245 °C，会熔化塑料接口",
+          "2": "SMD 元件耗电最多，所以必须最先连接",
+          "3": "在机器组装的板子上，顺序无所谓"
+        },
+        "why": "回流焊通过加热整块板，一次熔化所有焊盘下的锡膏。接口有塑料外壳，所以要之后再装、单独焊接。"
+      },
+      "pmic": {
+        "q": "USB-C 插座旁边的 PMIC 是做什么的？",
+        "options": {
+          "1": "把 USB 数据转换成串口给 SoC",
+          "2": "用 5 V 输入产生所有电源轨，通过 USB PD 协商 5 A，并发出欠压标志",
+          "3": "存放引导程序"
+        },
+        "why": "Pi 5 没有 USB 转串口芯片。DA9091 PMIC 把 5 V 变成内核、内存、1.8 V 和 3.3 V 电源轨，维持实时时钟，处理电源按钮并报告欠压。引导程序存放在一块单独的 SPI 闪存里。"
+      }
+    },
+    "solder": {
+      "order": {
+        "q": "为什么矮的零件要在高的之前装？",
+        "options": {
+          "1": "矮的零件需要更热的烙铁",
+          "2": "高的零件会挡住丝印",
+          "3": "装上高的零件后，翻过来时板子会在它们上面晃，矮的零件就会掉出来"
+        },
+        "why": "你要把板子翻过来从下面焊。只装矮的零件时，板子能平放在它们上面；高的零件之后再装。"
+      },
+      "last": {
+        "q": "为什么 Active Cooler 要最后装？",
+        "options": {
+          "1": "它盖住 SoC 并插到风扇接口上，所以它下面的所有东西都必须先焊好",
+          "2": "它只能装在通电的板子上",
+          "3": "它的导热垫要用烙铁加热"
+        },
+        "why": "散热器卡进 SoC 旁边的两个孔，罩在 SoC 上面。装上之后，它下面的东西就碰不到了，而且它的线需要接到风扇接口上。"
+      }
+    },
+    "plug": {
+      "five-amps": {
+        "q": "为什么 Pi 5 需要 27 W 电源，而不是 5 V 3 A 的电源？",
+        "options": {
+          "1": "CPU 只有在 27 W 下才能达到 2.4 GHz",
+          "2": "在 5 A 下 USB 口总共可以拉 1.6 A；用 3 A 电源时它们被限制在 600 mA",
+          "3": "3 A 电源根本启动不了它"
+        },
+        "why": "5 V 3 A 的电源能启动 Pi 5，但固件会把 USB 口总电流限制在 600 mA。27 W 电源通过 USB PD 告诉 Pi 它能提供 5 A，于是限制提高到 1.6 A：足够带一个深度摄像头或激光雷达。"
+      },
+      "led": {
+        "q": "你插上电源。Pi 5 的 LED 会怎样？",
+        "options": {
+          "1": "先是红色，固件启动后变绿，读取 SD 卡时闪灭",
+          "2": "先是绿色，Linux 启动后变红",
+          "3": "一直不亮，直到你按下电源按钮"
+        },
+        "why": "Pi 5 在电源按钮旁有一颗红/绿 LED。红色表示有电但固件还没启动，绿色表示正在运行，读取 SD 卡时会闪灭。第一次上电不用按按钮就会启动，正常关机后 LED 又会变成红色。"
+      }
+    },
+    "teleop": {
+      "realtime": {
+        "q": "为什么 Pi 运行 ROS 2，而电机控制回路由 ESP32 运行？",
+        "options": {
+          "1": "Linux 不是实时系统：调度器可能会暂停你的循环",
+          "2": "Pi 没有 PWM 引脚",
+          "3": "ROS 2 只能在 Arm 上运行"
+        },
+        "why": "一个 Linux 线程可能会被其他进程、中断或 SD 卡耽搁好几毫秒：对平衡或速度控制回路来说抖动太大了。Pi 其实有 PWM（GPIO 12、13、18 和 19），ROS 2 也能在 x86 上运行；这样分工是为了时序。"
+      },
+      "rate": {
+        "q": "节点调用了 create_timer(0.1, self.tick)。它多久在 /cmd_vel 上发布一次？",
+        "options": {
+          "1": "每 0.1 ms 一次",
+          "2": "发布一次，然后等待回复",
+          "3": "每秒十次"
+        },
+        "why": "周期的单位是秒，所以 0.1 s 就是 10 Hz，ros2 topic hz /cmd_vel 报告的平均频率是 10.000。话题是单向的：发布者从不等待它的订阅者。"
+      }
+    },
+    "charger": {
+      "fix": {
+        "q": "用手机充电器时出现 'Undervoltage detected!'。怎么解决？",
+        "options": {
+          "1": "在软件里降低 CPU 时钟",
+          "2": "换一个 5 V 5 A（27 W）USB-C 电源",
+          "3": "换一个更大的散热片"
+        },
+        "why": "电源在负载下跌到 4.63 V 以下。降低 CPU 速度只是掩盖了症状，SD 卡和 USB 设备依然会遇到电压跌落，而散热片对电压毫无帮助。"
+      },
+      "bits": {
+        "q": "vcgencmd get_throttled 打印出 throttled=0x50005。哪些标志被置位了？",
+        "options": {
+          "1": "当前欠压、当前降频、曾经欠压、曾经降频",
+          "2": "只有当前欠压",
+          "3": "过温和软温度限制"
+        },
+        "why": "0x50005 是第 0、2、16 和 18 位：0x1 当前欠压，0x4 当前降频，0x10000 启动以来发生过欠压，0x40000 启动以来发生过降频。"
+      }
+    },
+    "heat": {
+      "throttle": {
+        "q": "没有 Active Cooler 时，SoC 在 ROS 2 负载下超过了 80 °C。会发生什么？",
+        "options": {
+          "1": "Pi 立即关机以保护 SD 卡",
+          "2": "固件从 80 °C 开始降低 Arm 时钟，到 85 °C 时 GPU 也降频",
+          "3": "什么也不会发生：BCM2712 在 105 °C 以下都保持 2.4 GHz"
+        },
+        "why": "降频在 80 到 85 °C 之间逐级进行。这里时钟最低降到 1.5 GHz，即 2.4 GHz 的 62.5 %，ROS 2 节点就跟不上了：在一台正常工作的机器人上，散热器不是可有可无的。"
+      },
+      "fan": {
+        "q": "固件是怎样驱动 Active Cooler 的风扇的？",
+        "options": {
+          "1": "通过 4 针风扇接口，SoC 越热转得越快：50 °C 以下停转，75 °C 起全速",
+          "2": "只要 Pi 开着就全速运转",
+          "3": "由一个需要你的程序来翻转的 GPIO 引脚驱动"
+        },
+        "why": "默认的风扇曲线是 50 °C 时 30 %、60 °C 时 50 %、67.5 °C 时 70 %、75 °C 时 100 %，降温时有 5 °C 的回差。你可以在 config.txt 里用 fan_temp 参数调整它。"
+      }
+    },
+    "end": {
+      "distro": {
+        "q": "2026 年底的一台新的 Pi 5 机器人：应该从哪个 ROS 2 版本开始？",
+        "options": {
+          "1": "Noetic Ninjemys（ROS 1）",
+          "2": "Lyrical Luth，2026 年的 LTS 版本",
+          "3": "Kilted Kaiju"
+        },
+        "why": "Lyrical Luth 于 2026 年 5 月发布，支持到 2031 年 5 月，Ubuntu 26.04 是它的一级支持平台，所以要在 Pi 上装 Ubuntu 或使用 Docker。如果你用的软件包还没移植，2024 年的 LTS 版本 Jazzy Jalisco 支持到 2029 年。Noetic 是 ROS 1，已于 2025 年停止支持；Kilted Kaiju 是 2025 年的短期支持版本。"
+      },
+      "gpio": {
+        "q": "HC-SR04 的 echo 引脚输出 5 V。它能直接接到 Pi 的 GPIO 引脚上吗？",
+        "options": {
+          "1": "能，这些引脚耐 5 V",
+          "2": "能，串联一个 1 kΩ 电阻就行",
+          "3": "不能：GPIO 只能用 3.3 V，所以要用分压器（1 kΩ 在上、2 kΩ 在下）或电平转换器"
+        },
+        "why": "Pi 的 GPIO 引脚不耐 5 V：超过约 3.6 V 时，焊盘的保护二极管会向 3.3 V 电源轨导通，可能毁掉引脚或 RP1。一个 1 kΩ 和 2 kΩ 的分压器能把 5 V 变成 3.3 V。"
+      },
+      "battery": {
+        "q": "用机器人的电池给 Pi 供电，安全的做法是什么？",
+        "options": {
+          "1": "用一个能提供 5 A 的 5 V 降压模块，接到 USB-C 或 5 V 引脚",
+          "2": "电池直接接到 5 V 引脚：PMIC 会稳压",
+          "3": "和电机共用同一个 5 V 稳压器"
+        },
+        "why": "5 V 引脚绕过了所有保护，所以需要干净、稳压的 5 V。降压模块按 5 A 选型，电机用单独的电源；通过排针供电时，用 PSU_MAX_CURRENT=5000 告诉引导程序。"
+      },
+      "motors": {
+        "q": "驱动电机的 PWM 应该从哪里来？",
+        "options": {
+          "1": "直接来自 Pi 的 GPIO 引脚",
+          "2": "来自一个由 ESP32 或 Nano 控制的电机驱动器，ESP32 或 Nano 通过 USB 串口从 Pi 读取 /cmd_vel",
+          "3": "来自 Pi 的 5 V 引脚，经过一个三极管"
+        },
+        "why": "GPIO 引脚只能提供几毫安电流，而且 Linux 的时序有抖动。微控制器能准时地运行速度控制回路，并驱动 TB6612FNG 之类的 H 桥；Pi 只发送目标速度。"
+      }
+    }
+  }
+}
