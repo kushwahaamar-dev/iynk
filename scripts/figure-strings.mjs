@@ -46,11 +46,13 @@ function withoutFilledTemplates(keys) {
   return keys.filter((k) => hole.test(k) || !templates.some((r) => r.test(k)));
 }
 
-async function collect(browser, id) {
+// A page's variants (the Uno R4 WiFi, the Pi 4) draw parts and notes of their own: the first load lists them and each
+// gets a load of its own.
+async function collect(browser, id, variant) {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.goto(`file://${join(ROOT, 'public/figures', id)}.html?embed=0`);
+  await page.goto(`file://${join(ROOT, 'public/figures', id)}.html?embed=0${variant ? `&variant=${encodeURIComponent(variant)}` : ''}`);
   await page.waitForFunction(() => typeof CF_SETLOCALE === 'function' && typeof CF_UI !== 'undefined' && CF_UI !== null, null, { timeout: 20_000 });
   await page.evaluate(() => {
     window.__cfKeys = new Set();
@@ -90,8 +92,9 @@ async function collect(browser, id) {
     }
   }
   const keys = await page.evaluate(() => [...window.__cfKeys]);
+  const variants = variant ? [] : await page.evaluate(() => Object.keys(globalThis.SL?.bench?.md?.def?.variants ?? {}));
   await page.close();
-  return { keys, errors };
+  return { keys, errors, variants };
 }
 
 // The static pass reads the figure sources with acorn and follows the text into T the way the engines do. Text is a
@@ -262,16 +265,18 @@ const add = (key, from) => {
   where.get(key).add(from);
 };
 const browser = quick ? null : await chromium.launch();
-const queue = quick ? [] : [...pages];
+const queue = quick ? [] : pages.map((id) => ({ id }));
 await Promise.all(Array.from({ length: 3 }, async () => {
-  for (let id = queue.shift(); id; id = queue.shift()) {
+  for (let job = queue.shift(); job; job = queue.shift()) {
+    const { id, variant } = job, at = variant ? `${id}?variant=${variant}` : id;
     try {
-      const { keys, errors } = await collect(browser, id);
+      const { keys, errors, variants } = await collect(browser, id, variant);
       keys.forEach((k) => add(k, id));
-      if (errors.length) failures.push(`${id}: page errors: ${errors.slice(0, 3).join(' | ')}`);
-      process.stderr.write(`${id}: ${keys.length}\n`);
+      queue.push(...variants.map((v) => ({ id, variant: v })));
+      if (errors.length) failures.push(`${at}: page errors: ${errors.slice(0, 3).join(' | ')}`);
+      process.stderr.write(`${at}: ${keys.length}\n`);
     } catch (e) {
-      failures.push(`${id}: ${e.message.split('\n')[0]}`);
+      failures.push(`${at}: ${e.message.split('\n')[0]}`);
     }
   }
 }));

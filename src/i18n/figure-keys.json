@@ -760,6 +760,7 @@
     "figures/drones/cinewhoop.js"
   ],
   "$ props off, arm on the bench, switch the radio off": [
+    "figures/drones/quad5.js",
     "figures/drones/racer.js",
     "figures/drones/tricopter.js"
   ],
@@ -1136,6 +1137,9 @@
     "boards/nodemcu",
     "figures/boards/nodemcu.js"
   ],
+  "100 kΩ pull-up on the OFF pin (keeps the buck on)": [
+    "boards/uno-r4"
+  ],
   "100 lx": [
     "parts/ldr"
   ],
@@ -1365,6 +1369,7 @@
     "figures/boards/pico.js"
   ],
   "12 x 8 red LED matrix (96 LEDs, charlieplexed on 11 pins)": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
   "12S BATTERY": [
@@ -1728,12 +1733,15 @@
     "parts/npn-2n2222"
   ],
   "2N7002 MOSFET: drives the L LED from D13": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
   "2N7002 MOSFET: Qwiic SCL level shift": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
   "2N7002 MOSFET: Qwiic SDA level shift": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
   "2S LiPo": [
@@ -1871,7 +1879,8 @@
     "robotics/mpu6050"
   ],
   "3.3 V REGULATOR": [
-    "boards/nucleo-f401re"
+    "boards/nucleo-f401re",
+    "boards/uno-r4"
   ],
   "3.3 V regulator (662K, XC6206): VCC to 3.3 V, 6 V at most": [
     "figures/modules/mpu6050.js",
@@ -1909,6 +1918,7 @@
     "robotics/transistor-switch"
   ],
   "3.5 mm A/V jack (stereo audio and composite video)": [
+    "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js"
   ],
   "30 A ESC ON ARM": [
@@ -2173,6 +2183,12 @@
   "4-pin header (GND VCC SCL SDA)": [
     "modules/ssd1306"
   ],
+  "4-pin header (R Y G GND)": [
+    "modules/traffic-light"
+  ],
+  "4-pin header (VCC GND SCL SDA)": [
+    "modules/ssd1306"
+  ],
   "4-pin right-angle header: Vcc, Trig, Echo, Gnd": [
     "figures/modules/hc-sr04.js",
     "modules/hc-sr04",
@@ -2288,6 +2304,7 @@
     "figures/boards/uno-r3.js"
   ],
   "47 µF capacitor (3.3 V rail)": [
+    "boards/pico",
     "figures/boards/pico.js"
   ],
   "47 µF capacitor (3.3 V side of the buck-boost)": [
@@ -2492,6 +2509,12 @@
     "figures/robotics/led-resistor.js",
     "robotics/led-resistor"
   ],
+  "5.1 kΩ Qwiic SCL pull-up (3.3 V)": [
+    "boards/uno-r4"
+  ],
+  "5.1 kΩ Qwiic SDA pull-up (3.3 V)": [
+    "boards/uno-r4"
+  ],
   "5.1 kΩ RESET pull-up": [
     "boards/uno-r4"
   ],
@@ -2560,6 +2583,7 @@
     "figures/drones/longrange.js"
   ],
   "500 mA resettable fuse on the Qwiic 3.3 V": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
   "500 mA resettable polyfuse": [
@@ -2875,6 +2899,7 @@
     "figures/boards/pi4-pi5.js"
   ],
   "ACT LED (green, SD-card activity)": [
+    "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js"
   ],
   "ACTION CAM": [
@@ -3155,6 +3180,9 @@
   "anode": [
     "parts/rgb-led"
   ],
+  "ANT · Wi-Fi antenna": [
+    "boards/pi4-pi5"
+  ],
   "ANTENNA": [
     "figures/boards/microbit-v2.js",
     "figures/boards/pi4-pi5.js",
@@ -3239,6 +3267,7 @@
     "figures/boards/uno-r4.js"
   ],
   "Arduino UNO R4 WiFi": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
   "Arm": [
@@ -3673,6 +3702,7 @@
     "figures/boards/microbit-v2.js"
   ],
   "BCM2711 SoC (four Cortex-A72 at 1.8 GHz, VideoCore VI)": [
+    "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js"
   ],
   "BCM2711, four Cortex-A72 cores at 1.8 GHz, VL805 USB 3 controller, 5 V 3 A over USB-C, 3.3 V GPIO": [
@@ -3736,6 +3766,7 @@
     "parts/push-button"
   ],
   "Blank flash (factory): the RP2350 drive": [
+    "boards/pico",
     "figures/boards/pico.js"
   ],
   "Blank flash (factory): the RPI-RP2 drive": [
@@ -4614,6 +4645,9 @@
     "modules/mpu6050",
     "robotics/mpu6050"
   ],
+  "C3 · 47 µF capacitor (3.3 V rail)": [
+    "boards/pico"
+  ],
   "C3 · Regulator output capacitor (22 µF)": [
     "boards/esp32-devkitc"
   ],
@@ -4852,6 +4886,7 @@
     "figures/drones/vtol.js"
   ],
   "Camera connector (15-pin 1 mm, 2-lane CSI-2)": [
+    "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js"
   ],
   "CAMERA, 20° UP": [
@@ -5714,6 +5749,7 @@
     "figures/drones/octo.js"
   ],
   "CYW43439 Wi-Fi and Bluetooth radio under its RF shield": [
+    "boards/pico",
     "figures/boards/pico.js"
   ],
   "D1 · 1N5819 Schottky diode: UART port VBUS to 5 V": [
@@ -5739,6 +5775,9 @@
   ],
   "D1 · MBR120 Schottky diode (VBUS to VSYS)": [
     "boards/pico"
+  ],
+  "D1 · PMEG6020 Schottky: VIN reverse-polarity guard": [
+    "boards/uno-r4"
   ],
   "D1 · Power LED (red)": [
     "modules/mpu6050",
@@ -5800,12 +5839,18 @@
     "modules/l298n",
     "robotics/l298n"
   ],
+  "D2 · PMEG6020 Schottky: USB VBUS to 5 V": [
+    "boards/uno-r4"
+  ],
   "D2 · PMEG6020 Schottky: VIN reverse-polarity guard": [
     "boards/uno-r4"
   ],
   "D2 · Reset clamp diode (328P)": [
     "boards/uno-r3",
     "robotics/uno-r3-build"
+  ],
+  "D2 · User LED (driven by the radio, WL_GPIO0)": [
+    "boards/pico"
   ],
   "D2 · User LED (GP25)": [
     "boards/pico"
@@ -5826,6 +5871,12 @@
   ],
   "D3 · PMEG6020 Schottky: USB VBUS to 5 V": [
     "boards/uno-r4"
+  ],
+  "D3 · PRTR5V0U2X USB ESD protection": [
+    "boards/uno-r4"
+  ],
+  "D3 · PWR LED (red, on while the supply is good)": [
+    "boards/pi4-pi5"
   ],
   "D3 · Reset clamp diode (16U2)": [
     "boards/uno-r3",
@@ -5854,6 +5905,9 @@
   "D435i class, USB 3": [
     "drones/delivery",
     "figures/drones/delivery.js"
+  ],
+  "D5 · ACT LED (green, SD-card activity)": [
+    "boards/pi4-pi5"
   ],
   "D5 · BAS16 flyback diode across the speaker coil": [
     "boards/microbit-v2"
@@ -6098,6 +6152,7 @@
     "robotics/lm2596"
   ],
   "Display connector (15-pin 1 mm, 2-lane DSI)": [
+    "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js"
   ],
   "Display off": [
@@ -6553,6 +6608,7 @@
     "figures/boards/uno-r4.js"
   ],
   "ESP header 2 x 3 (ESP32-S3 pins, 3.3 V only)": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
   "ESP_DOWNLOAD was low at reset: the ESP32-S3 waits in ROM download mode, so USB and Serial are gone": [
@@ -6581,7 +6637,11 @@
     "figures/boards/esp32-devkitc.js"
   ],
   "ESP32-S3": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
+  ],
+  "ESP32-S3 + 8 MB FLASH + 40 MHZ CRYSTAL": [
+    "boards/uno-r4"
   ],
   "ESP32-S3 + FLASH + 40 MHZ CRYSTAL": [
     "boards/esp32-s3-devkitc-1",
@@ -6605,6 +6665,7 @@
     "robotics/esp32-s3-build"
   ],
   "ESP32-S3-DevKitC-1 v1.0": [
+    "boards/esp32-s3-devkitc-1",
     "figures/boards/esp32-s3-devkitc-1.js"
   ],
   "ESP32-S3-DevKitC-1 v1.1": [
@@ -6615,6 +6676,7 @@
     "figures/boards/uno-r4.js"
   ],
   "ESP32-S3-MINI-1 Wi-Fi and Bluetooth module (USB bridge)": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
   "ESP32-S3-WROOM-1-N8R8 module": [
@@ -6788,6 +6850,9 @@
     "boards/basys3",
     "figures/boards/basys3.js"
   ],
+  "F1 · 500 mA resettable fuse on the Qwiic 3.3 V": [
+    "boards/uno-r4"
+  ],
   "F1 · 500 mA resettable polyfuse": [
     "boards/uno-r3",
     "robotics/uno-r3-build"
@@ -6892,6 +6957,7 @@
   ],
   "failsafe stage 2: DROP, motors stopped, disarmed": [
     "figures/drones/cinewhoop.js",
+    "figures/drones/quad5.js",
     "figures/drones/racer.js",
     "figures/drones/tricopter.js"
   ],
@@ -6912,8 +6978,10 @@
     "figures/drones/longrange.js"
   ],
   "Failsafe test (radio off)": [
+    "drones/quad5",
     "drones/racer",
     "drones/tricopter",
+    "figures/drones/quad5.js",
     "figures/drones/racer.js",
     "figures/drones/tricopter.js"
   ],
@@ -7098,8 +7166,10 @@
     "figures/drones/agrihex.js"
   ],
   "Fit the receiver and the flight controller first": [
+    "drones/quad5",
     "drones/racer",
     "drones/wing",
+    "figures/drones/quad5.js",
     "figures/drones/racer.js",
     "figures/drones/tricopter.js",
     "figures/drones/wing.js"
@@ -7564,6 +7634,7 @@
     "robotics/pi5-ros2"
   ],
   "Gigabit Ethernet PHY (BCM54213PE)": [
+    "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js"
   ],
   "GIMBAL": [
@@ -8402,6 +8473,9 @@
   "J1 · 4-pin header (GND VCC SCL SDA)": [
     "modules/ssd1306"
   ],
+  "J1 · 4-pin header (VCC GND SCL SDA)": [
+    "modules/ssd1306"
+  ],
   "J1 · 4-pin right-angle header: Vcc, Trig, Echo, Gnd": [
     "modules/hc-sr04",
     "robotics/hc-sr04"
@@ -8437,12 +8511,18 @@
   "J1 · Sensor socket (JST-PH, AOUT VCC GND)": [
     "modules/soil-moisture"
   ],
+  "J1 · USB-C power input (5 V 3 A)": [
+    "boards/pi4-pi5"
+  ],
   "J1 · USB-C power input (5 V, 5 A with USB PD)": [
     "boards/pi4-pi5",
     "robotics/pi5-ros2"
   ],
   "J1 · USB-C power jack (power-only receptacle)": [
     "robotics/led-resistor"
+  ],
+  "J1 · USB-C socket (5 V sink, no Power Delivery)": [
+    "boards/uno-r4"
   ],
   "J1 · V+ / GND screw terminal: servo power, reverse protected": [
     "modules/pca9685",
@@ -8466,6 +8546,9 @@
   "J13 · Micro-HDMI 1": [
     "boards/pi4-pi5",
     "robotics/pi5-ros2"
+  ],
+  "J14 · PoE header (Ethernet centre taps)": [
+    "boards/pi4-pi5"
   ],
   "J14 · PoE+ header (Ethernet centre taps)": [
     "boards/pi4-pi5",
@@ -8493,6 +8576,9 @@
     "modules/lm2596",
     "robotics/lm2596"
   ],
+  "J2 · Qwiic connector (I2C on Wire1, 3.3 V)": [
+    "boards/uno-r4"
+  ],
   "J2 · Right header: D0-D8, RX, TX, 3V3": [
     "boards/nodemcu"
   ],
@@ -8509,12 +8595,18 @@
     "boards/pi4-pi5",
     "robotics/pi5-ros2"
   ],
+  "J3 · Camera connector (15-pin 1 mm, 2-lane CSI-2)": [
+    "boards/pi4-pi5"
+  ],
   "J3 · Camera/display connector 0 (22-pin, 4-lane MIPI)": [
     "boards/pi4-pi5",
     "robotics/pi5-ros2"
   ],
   "J3 · Header J3 (right side, 19 pins)": [
     "boards/esp32-devkitc"
+  ],
+  "J3 · ICSP header (SPI: CIPO, SCK, COPI, RESET)": [
+    "boards/uno-r4"
   ],
   "J3 · Micro-USB socket (power, the MICROBIT drive and serial)": [
     "boards/microbit-v2"
@@ -8548,6 +8640,9 @@
     "modules/l298n",
     "robotics/l298n"
   ],
+  "J4 · Display connector (15-pin 1 mm, 2-lane DSI)": [
+    "boards/pi4-pi5"
+  ],
   "J4 · Micro-USB port \"USB\" (native ESP32-S3 USB)": [
     "boards/esp32-s3-devkitc-1",
     "robotics/esp32-s3-build"
@@ -8555,9 +8650,15 @@
   "J4 · Micro-USB socket J4 (power, programming and the USB-UART)": [
     "boards/basys3"
   ],
+  "J5 · 2.1 mm barrel jack, centre positive, 6-24 V": [
+    "boards/uno-r4"
+  ],
   "J5 · RTC battery connector (2-pin JST-SH)": [
     "boards/pi4-pi5",
     "robotics/pi5-ros2"
+  ],
+  "J6 · ESP header 2 x 3 (ESP32-S3 pins, 3.3 V only)": [
+    "boards/uno-r4"
   ],
   "J6 · External power header J6 (4.5-5.5 V only, no reverse protection)": [
     "boards/basys3"
@@ -8565,6 +8666,9 @@
   "J6 · Micro-HDMI 0": [
     "boards/pi4-pi5",
     "robotics/pi5-ros2"
+  ],
+  "J7 · 3.5 mm A/V jack (stereo audio and composite video)": [
+    "boards/pi4-pi5"
   ],
   "J8 · 40-pin GPIO header (3.3 V logic)": [
     "boards/pi4-pi5",
@@ -8615,6 +8719,9 @@
   ],
   "JL1 · Wire link (no resistor)": [
     "robotics/led-resistor"
+  ],
+  "JOFF · OFF / GND / VRTC header (OFF to GND stops the buck)": [
+    "boards/uno-r4"
   ],
   "JP · Power jumper pins": [
     "modules/uln2003"
@@ -8865,6 +8972,9 @@
   ],
   "L1 · Ferrite bead: VDD to the analog supply (VDDA)": [
     "boards/nucleo-f401re"
+  ],
+  "L1 · PMIC power inductor": [
+    "boards/pi4-pi5"
   ],
   "L1 · PMIC power inductors (four)": [
     "boards/pi4-pi5",
@@ -9266,6 +9376,7 @@
     "parts/led"
   ],
   "LED MATRIX": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
   "LED on = coil on": [
@@ -9475,6 +9586,9 @@
   "LEVEL SHIFT": [
     "figures/boards/uno-r4.js"
   ],
+  "LEVEL SHIFTER": [
+    "boards/uno-r4"
+  ],
   "Level: az {az} g, gx {gx} °/s": [
     "figures/robotics/mpu6050.js",
     "robotics/mpu6050"
@@ -9671,7 +9785,6 @@
   "Low parts first: with tall parts on, the board rocks and loose parts fall out when you flip it to solder": [
     "boards/basys3",
     "boards/de10-lite",
-    "boards/uno-r3",
     "figures/engine/bench.js",
     "robotics/l298n",
     "robotics/lm2596",
@@ -9689,6 +9802,7 @@
     "figures/boards/pi4-pi5.js"
   ],
   "LPDDR4 SDRAM": [
+    "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js"
   ],
   "LPDDR4X": [
@@ -9747,6 +9861,9 @@
   ],
   "M1 · 203 rpm": [
     "robotics/transistor-switch"
+  ],
+  "M1 · ESP32-S3-MINI-1 Wi-Fi and Bluetooth module (USB bridge)": [
+    "boards/uno-r4"
   ],
   "M1 FRONT RIGHT, M2 FRONT LEFT, M4 REAR: NO M3": [
     "drones/vtol",
@@ -9921,9 +10038,11 @@
     "figures/drones/vtol.js"
   ],
   "Matrix heart": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
   "Matrix scan": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
   "MAVLINK2 TELEM1": [
@@ -9986,6 +10105,7 @@
     "figures/drones/quad5.js"
   ],
   "MD test point (RA4M1 boot-mode pin)": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
   "MEMS ACCELEROMETER": [
@@ -10555,6 +10675,7 @@
     "figures/boards/pi4-pi5.js"
   ],
   "MxL7704 power management IC": [
+    "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js"
   ],
   "N-MOSFET: switches all eight IR LEDs (gate = LEDON, 47 kΩ pull-up)": [
@@ -10629,10 +10750,12 @@
     "figures/boards/microbit-v2.js"
   ],
   "NE555": [
-    "figures/modules/soil-moisture.js"
+    "figures/modules/soil-moisture.js",
+    "modules/soil-moisture"
   ],
   "NE555 bipolar timer (needs 4.5 V)": [
-    "figures/modules/soil-moisture.js"
+    "figures/modules/soil-moisture.js",
+    "modules/soil-moisture"
   ],
   "NE555 clone (stuck)": [
     "figures/modules/soil-moisture.js"
@@ -10668,9 +10791,11 @@
     "modules/traffic-light"
   ],
   "NLASB3157 USB data switch (D-)": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
   "NLASB3157 USB data switch (D+)": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
   "no": [
@@ -11101,6 +11226,7 @@
     "robotics/uno-r3-build"
   ],
   "OFF / GND / VRTC header (OFF to GND stops the buck)": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
   "OFF VRTC": [
@@ -11444,6 +11570,9 @@
   "PASSIVES · Small 0402 resistors and capacitors around the buck and the MCU": [
     "boards/uno-r4"
   ],
+  "PASSIVES · Small 0402 resistors and capacitors around the regulators, the MCU and the matrix": [
+    "boards/uno-r4"
+  ],
   "PASSIVES · Small 0603 resistors and capacitors around the MCU and the regulators": [
     "boards/nucleo-f401re"
   ],
@@ -11706,6 +11835,9 @@
   "PINS · 4-pin header (GND R Y G)": [
     "modules/traffic-light"
   ],
+  "PINS · 4-pin header (R Y G GND)": [
+    "modules/traffic-light"
+  ],
   "PINS 1-20": [
     "figures/boards/pico.js"
   ],
@@ -11865,6 +11997,7 @@
     "figures/drones/vtol.js"
   ],
   "Plug in the battery for the failsafe test (props off)": [
+    "figures/drones/quad5.js",
     "figures/drones/racer.js",
     "figures/drones/tricopter.js"
   ],
@@ -12002,6 +12135,7 @@
     "robotics/pi5-ros2"
   ],
   "PMIC power inductor": [
+    "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js"
   ],
   "PMIC power inductors (four)": [
@@ -12052,6 +12186,7 @@
     "figures/boards/pi4-pi5.js"
   ],
   "PoE header (Ethernet centre taps)": [
+    "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js"
   ],
   "POE+": [
@@ -12595,6 +12730,7 @@
     "figures/boards/microbit-v2.js"
   ],
   "Printed 2.4 GHz antenna (keep metal away)": [
+    "boards/pico",
     "figures/boards/pico.js"
   ],
   "printed side forward": [
@@ -12764,6 +12900,7 @@
     "figures/drones/delivery.js",
     "figures/drones/gpscam.js",
     "figures/drones/longrange.js",
+    "figures/drones/quad5.js",
     "figures/drones/racer.js",
     "figures/drones/swarm.js",
     "figures/drones/tricopter.js",
@@ -13019,6 +13156,7 @@
     "figures/drones/delivery.js"
   ],
   "PWR": [
+    "boards/pi4-pi5",
     "figures/boards/microbit-v2.js",
     "figures/boards/pi4-pi5.js"
   ],
@@ -13035,6 +13173,7 @@
     "figures/modules/l298n.js"
   ],
   "PWR LED (red, on while the supply is good)": [
+    "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js"
   ],
   "Q_TILT_RATE_UP 25 deg/s back to hover; Q_TILT_YAW_ANGLE 10": [
@@ -13052,6 +13191,9 @@
   ],
   "Q1 · 200 mA": [
     "parts/tip120"
+  ],
+  "Q1 · 2N7002 MOSFET: Qwiic SDA level shift": [
+    "boards/uno-r4"
   ],
   "Q1 · AOD417 P-channel MOSFET: reverse-polarity protection on V+": [
     "modules/pca9685",
@@ -13081,6 +13223,9 @@
   "Q1 driver transistor": [
     "parts/tip120"
   ],
+  "Q2 · 2N7002 MOSFET: Qwiic SCL level shift": [
+    "boards/uno-r4"
+  ],
   "Q2 · AO3415 MOSFET Q2: the over-voltage cut-off (opens above about 5.5 V)": [
     "boards/de10-lite"
   ],
@@ -13100,6 +13245,9 @@
   ],
   "Q2 output transistor": [
     "parts/tip120"
+  ],
+  "Q3 · 2N7002 MOSFET: drives the L LED from D13": [
+    "boards/uno-r4"
   ],
   "QSTABILIZE: ROTORS UP": [
     "figures/drones/vtol.js"
@@ -13129,14 +13277,19 @@
     "boards/de10-lite"
   ],
   "QWIIC": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
   "Qwiic connector (I2C on Wire1, 3.3 V)": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
   "R · 40 kHz ultrasonic receiver (R): a piezo disc in a 16 mm can": [
     "modules/hc-sr04",
     "robotics/hc-sr04"
+  ],
+  "R Y G GND": [
+    "modules/traffic-light"
   ],
   "R_A · 1 kΩ resistor for LED A": [
     "modules/uln2003"
@@ -13239,6 +13392,9 @@
   ],
   "R11 · 470 Ω in series with the RST button": [
     "boards/nodemcu"
+  ],
+  "R11 · 5.1 kΩ Qwiic SCL pull-up (3.3 V)": [
+    "boards/uno-r4"
   ],
   "R11 · 5.1 kΩ resistor for the power LED": [
     "boards/esp32-s3-devkitc-1",
@@ -13356,6 +13512,9 @@
   "R2 · Power LED resistor (2 kΩ)": [
     "boards/esp32-devkitc"
   ],
+  "R20 · 330 Ω resistor for the RX LED": [
+    "boards/uno-r4"
+  ],
   "R201 · 1 kΩ resistor for the power LED": [
     "modules/mpu6050",
     "robotics/mpu6050"
@@ -13363,14 +13522,23 @@
   "R21 · Auto-program base resistor (DTR)": [
     "boards/esp32-devkitc"
   ],
+  "R22 · 330 Ω resistor for the TX LED": [
+    "boards/uno-r4"
+  ],
   "R22 · Auto-program base resistor (RTS)": [
     "boards/esp32-devkitc"
   ],
   "R23 · 1 MΩ shield bleed resistor": [
     "boards/uno-r4"
   ],
+  "R23 · 330 Ω resistor for the RX LED": [
+    "boards/uno-r4"
+  ],
   "R24 · 2 kΩ resistor (CP2102N side)": [
     "boards/esp32-devkitc"
+  ],
+  "R24 · 330 Ω resistor for the ON LED": [
+    "boards/uno-r4"
   ],
   "R24 · 5.1 kΩ USB-C CC1 pull-down (asks for 5 V)": [
     "boards/uno-r4"
@@ -13385,6 +13553,9 @@
   ],
   "R25 · 22.1 kΩ VBUS sense resistor": [
     "boards/esp32-devkitc"
+  ],
+  "R25 · 330 Ω resistor for the L LED": [
+    "boards/uno-r4"
   ],
   "R25 · 5.1 kΩ USB-C CC2 pull-down (asks for 5 V)": [
     "boards/uno-r4"
@@ -13422,6 +13593,9 @@
   ],
   "R32 · 1 kΩ resistor for LD3": [
     "boards/nucleo-f401re"
+  ],
+  "R35 · 100 kΩ pull-up on the OFF pin (keeps the buck on)": [
+    "boards/uno-r4"
   ],
   "R4 · 10 kΩ": [
     "parts/resistor"
@@ -13461,6 +13635,12 @@
   ],
   "R5 · GPIO15 pull-down R5 (12 kΩ)": [
     "boards/nodemcu"
+  ],
+  "R50 · 5.1 kΩ USB-C CC1 pull-down (asks for 5 V)": [
+    "boards/uno-r4"
+  ],
+  "R51 · 5.1 kΩ USB-C CC2 pull-down (asks for 5 V)": [
+    "boards/uno-r4"
   ],
   "R6 · 220 Ω in series with an output": [
     "modules/qtr-8rc",
@@ -13514,6 +13694,9 @@
   "R9 · 470 Ω in series with LED1": [
     "boards/nodemcu"
   ],
+  "R9 · 5.1 kΩ Qwiic SDA pull-up (3.3 V)": [
+    "boards/uno-r4"
+  ],
   "Race LiPo + strap and grip pad": [
     "drones/racer",
     "figures/drones/racer.js"
@@ -13556,6 +13739,7 @@
     "figures/drones/cinewhoop.js"
   ],
   "Radio off: after 1.5 s the motors stopped and the quad disarmed (DROP). Failsafe works": [
+    "figures/drones/quad5.js",
     "figures/drones/racer.js"
   ],
   "Radio off: after 1.5 s the motors stopped and the tri disarmed (DROP). Failsafe works": [
@@ -13583,6 +13767,7 @@
     "figures/boards/pi4-pi5.js"
   ],
   "Raspberry Pi 4 Model B": [
+    "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js"
   ],
   "Raspberry Pi 5": [
@@ -13606,12 +13791,15 @@
     "figures/boards/pico.js"
   ],
   "Raspberry Pi Pico 2": [
+    "boards/pico",
     "figures/boards/pico.js"
   ],
   "Raspberry Pi Pico 2 W": [
+    "boards/pico",
     "figures/boards/pico.js"
   ],
   "Raspberry Pi Pico W": [
+    "boards/pico",
     "figures/boards/pico.js"
   ],
   "Raw RC times": [
@@ -14458,6 +14646,7 @@
     "figures/boards/pico.js"
   ],
   "RP2350": [
+    "boards/pico",
     "figures/boards/pico.js"
   ],
   "RP2350 at 150 MHz with a CYW43439 Wi-Fi and Bluetooth radio, 3.3 V logic": [
@@ -14467,6 +14656,7 @@
     "figures/boards/pico.js"
   ],
   "RP2350A microcontroller (dual Cortex-M33 / Hazard3, 520 KB SRAM)": [
+    "boards/pico",
     "figures/boards/pico.js"
   ],
   "RP2350A0A2": [
@@ -14499,6 +14689,7 @@
     "figures/boards/pico.js"
   ],
   "RT6154A buck-boost regulator (VSYS to 3.3 V)": [
+    "boards/pico",
     "figures/boards/pico.js"
   ],
   "RTC battery connector (2-pin JST-SH)": [
@@ -14532,6 +14723,7 @@
     "figures/boards/pi4-pi5.js"
   ],
   "RUN / GLOBAL_EN pads (not fitted)": [
+    "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js"
   ],
   "Run a program": [
@@ -14633,6 +14825,7 @@
     "figures/boards/basys3.js"
   ],
   "RXLOSS: failsafe stage 1 for failsafe_delay = 15 (1.5 s)": [
+    "figures/drones/quad5.js",
     "figures/drones/racer.js",
     "figures/drones/tricopter.js"
   ],
@@ -15115,6 +15308,7 @@
     "parts/servo-sg90"
   ],
   "SGM2205 3.3 V regulator (800 mA)": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
   "SGM2212": [
@@ -15124,6 +15318,9 @@
     "boards/esp32-s3-devkitc-1",
     "figures/boards/esp32-s3-devkitc-1.js",
     "robotics/esp32-s3-build"
+  ],
+  "SH1 · CYW43439 Wi-Fi and Bluetooth radio under its RF shield": [
+    "boards/pico"
   ],
   "Shaft": [
     "figures/robotics/a4988.js",
@@ -15255,6 +15452,7 @@
     "figures/modules/pca9685.js"
   ],
   "SJ1 solder jumper on the bottom, open: bridge it to wire USB straight to the RA4M1": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
   "SK1 · DIP-28 socket": [
@@ -15371,6 +15569,7 @@
     "figures/boards/uno-r4.js"
   ],
   "Small 0402 resistors and capacitors around the regulators, the MCU and the matrix": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
   "Small 0603 resistors and capacitors around the MCU and the regulators": [
@@ -15504,6 +15703,7 @@
     "figures/boards/nucleo-f401re.js"
   ],
   "Solder everything first: this part goes on last": [
+    "boards/nucleo-f401re",
     "figures/engine/bench.js",
     "modules/l298n",
     "robotics/a4988",
@@ -16255,6 +16455,7 @@
     "figures/boards/uno-r4.js"
   ],
   "SWD debug holes (SWCLK, GND, SWDIO)": [
+    "boards/pico",
     "figures/boards/pico.js"
   ],
   "SWD debug pads (SWCLK, GND, SWDIO)": [
@@ -16629,6 +16830,9 @@
   ],
   "TILT SERVOS: servos reversed": [
     "drones/vtol"
+  ],
+  "TIMER · NE555 bipolar timer (needs 4.5 V)": [
+    "modules/soil-moisture"
   ],
   "TIMER · TLC555 CMOS timer (runs from 2 V)": [
     "modules/soil-moisture"
@@ -17109,6 +17313,7 @@
     "figures/boards/basys3.js"
   ],
   "TXB0108 level shifter (5 V RA4M1 to 3.3 V ESP32-S3)": [
+    "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
   "Type": [
@@ -17117,6 +17322,9 @@
     "parts/diode-1n4007",
     "parts/piezo-buzzer"
   ],
+  "U_LEDMATRIX · 12 x 8 red LED matrix (96 LEDs, charlieplexed on 11 pins)": [
+    "boards/uno-r4"
+  ],
   "u-blox M10, mast": [
     "drones/delivery",
     "figures/drones/delivery.js"
@@ -17124,6 +17332,9 @@
   "U1 · Allegro A4988 microstepping driver (QFN-28)": [
     "modules/a4988",
     "robotics/a4988"
+  ],
+  "U1 · BCM2711 SoC (four Cortex-A72 at 1.8 GHz, VideoCore VI)": [
+    "boards/pi4-pi5"
   ],
   "U1 · BCM2712 SoC (four Cortex-A76 at 2.4 GHz, VideoCore VII)": [
     "boards/pi4-pi5",
@@ -17169,6 +17380,9 @@
     "boards/uno-r4"
   ],
   "U1 · RP2040 microcontroller (dual Cortex-M0+, 264 KB SRAM)": [
+    "boards/pico"
+  ],
+  "U1 · RP2350A microcontroller (dual Cortex-M33 / Hazard3, 520 KB SRAM)": [
     "boards/pico"
   ],
   "U1 · TB6612FNG dual H-bridge driver": [
@@ -17223,6 +17437,9 @@
     "boards/uno-r3",
     "robotics/uno-r3-build"
   ],
+  "U2 · LPDDR4 SDRAM": [
+    "boards/pi4-pi5"
+  ],
   "U2 · LPDDR4X SDRAM": [
     "boards/pi4-pi5",
     "robotics/pi5-ros2"
@@ -17230,6 +17447,9 @@
   "U2 · MAX3232 transmit driver: drives T in antiphase from its charge pump": [
     "modules/hc-sr04",
     "robotics/hc-sr04"
+  ],
+  "U2 · NLASB3157 USB data switch (D+)": [
+    "boards/uno-r4"
   ],
   "U2 · nRF52833 processor (runs your program, Bluetooth radio)": [
     "boards/microbit-v2"
@@ -17243,6 +17463,9 @@
     "robotics/lm2596"
   ],
   "U2 · RT6150B buck-boost regulator (VSYS to 3.3 V)": [
+    "boards/pico"
+  ],
+  "U2 · RT6154A buck-boost regulator (VSYS to 3.3 V)": [
     "boards/pico"
   ],
   "U2 · SGM2212 3.3 V regulator (LDO)": [
@@ -17266,6 +17489,9 @@
   "U3 · ESP32-WROOM-32E module": [
     "boards/esp32-devkitc"
   ],
+  "U3 · ISL854102 buck converter (VIN to 5 V, 1.2 A)": [
+    "boards/uno-r4"
+  ],
   "U3 · LD1117 5 V regulator (VIN to E5V)": [
     "boards/nucleo-f401re"
   ],
@@ -17287,7 +17513,13 @@
     "boards/pi4-pi5",
     "robotics/pi5-ros2"
   ],
+  "U3 · VL805 USB 3.0 host controller (on PCIe)": [
+    "boards/pi4-pi5"
+  ],
   "U3 · W25Q16JV 2 MB QSPI flash": [
+    "boards/pico"
+  ],
+  "U3 · W25Q32RV 4 MB QSPI flash": [
     "boards/pico"
   ],
   "U4 · 64 MB SDRAM (32M x 16)": [
@@ -17310,9 +17542,15 @@
   "U4 · MEMS microphone (sound comes in through a hole in the PCB)": [
     "boards/microbit-v2"
   ],
+  "U4 · MxL7704 power management IC": [
+    "boards/pi4-pi5"
+  ],
   "U4 · Reflectance sensor 4: IR LED and phototransistor (QRE1113 type)": [
     "modules/qtr-8rc",
     "robotics/qtr-8rc"
+  ],
+  "U4 · TXB0108 level shifter (5 V RA4M1 to 3.3 V ESP32-S3)": [
+    "boards/uno-r4"
   ],
   "U5 · LMV358 op-amp: USB/VIN switch and L buffer": [
     "boards/uno-r3",
@@ -17328,8 +17566,14 @@
     "modules/qtr-8rc",
     "robotics/qtr-8rc"
   ],
+  "U5 · SGM2205 3.3 V regulator (800 mA)": [
+    "boards/uno-r4"
+  ],
   "U5 · STM32F401RE microcontroller (Cortex-M4F, 84 MHz, 512 KB flash)": [
     "boards/nucleo-f401re"
+  ],
+  "U5 · Wi-Fi and Bluetooth module (CYW43455) under its RF can": [
+    "boards/pi4-pi5"
   ],
   "U5 · Wi-Fi and Bluetooth module under its RF can": [
     "boards/pi4-pi5",
@@ -17339,11 +17583,17 @@
     "boards/pi4-pi5",
     "robotics/pi5-ros2"
   ],
+  "U6 · Gigabit Ethernet PHY (BCM54213PE)": [
+    "boards/pi4-pi5"
+  ],
   "U6 · LSM303AGR motion sensor (accelerometer and compass)": [
     "boards/microbit-v2"
   ],
   "U6 · LTC3612 buck regulator U6: 1.2 V for the FPGA core": [
     "boards/de10-lite"
+  ],
+  "U6 · NLASB3157 USB data switch (D-)": [
+    "boards/uno-r4"
   ],
   "U6 · Reflectance sensor 6: IR LED and phototransistor (QRE1113 type)": [
     "modules/qtr-8rc",
@@ -17678,6 +17928,10 @@
     "figures/drones/delivery.js",
     "robotics/pi5-ros2"
   ],
+  "USB 3 CHIP": [
+    "boards/pi4-pi5",
+    "robotics/pi5-ros2"
+  ],
   "USB 3.0 ports (two, blue)": [
     "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js",
@@ -17801,6 +18055,7 @@
     "robotics/led-resistor"
   ],
   "USB-C power input (5 V 3 A)": [
+    "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js"
   ],
   "USB-C power input (5 V, 5 A with USB PD)": [
@@ -17817,6 +18072,7 @@
     "figures/boards/uno-r4.js"
   ],
   "USB-C supply (5.1 V 3 A)": [
+    "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js"
   ],
   "USB-C, with a 5 V sensor output straight into GPIO24": [
@@ -17861,6 +18117,7 @@
     "figures/robotics/led-resistor.js"
   ],
   "User LED (driven by the radio, WL_GPIO0)": [
+    "boards/pico",
     "figures/boards/pico.js"
   ],
   "User LED (GP25)": [
@@ -17961,6 +18218,9 @@
   "VCC at {v} V: the burst is too weak, no echo": [
     "figures/robotics/hc-sr04.js",
     "robotics/hc-sr04"
+  ],
+  "VCC GND SCL SDA": [
+    "modules/ssd1306"
   ],
   "Vcc on the Nano's 3V3 pin": [
     "robotics/hc-sr04"
@@ -18144,9 +18404,11 @@
     "figures/drones/wing.js"
   ],
   "VL805": [
+    "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js"
   ],
   "VL805 USB 3.0 host controller (on PCIe)": [
+    "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js"
   ],
   "VMOT": [
@@ -18241,6 +18503,7 @@
     "figures/boards/pico.js"
   ],
   "W25Q32RV 4 MB QSPI flash": [
+    "boards/pico",
     "figures/boards/pico.js"
   ],
   "Wait for GPS lock": [
@@ -18313,10 +18576,12 @@
     "parts/push-button"
   ],
   "WI-FI": [
+    "boards/pico",
     "figures/boards/pi4-pi5.js",
     "figures/boards/pico.js"
   ],
   "Wi-Fi and Bluetooth module (CYW43455) under its RF can": [
+    "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js"
   ],
   "Wi-Fi and Bluetooth module under its RF can": [
@@ -18325,9 +18590,11 @@
     "robotics/pi5-ros2"
   ],
   "Wi-Fi antenna": [
+    "boards/pi4-pi5",
     "figures/boards/pi4-pi5.js"
   ],
   "Wi-Fi connect": [
+    "boards/pico",
     "figures/boards/pico.js"
   ],
   "Wi-Fi connected": [
@@ -18338,6 +18605,7 @@
   ],
   "WI-FI RADIO": [
     "boards/pi4-pi5",
+    "boards/pico",
     "robotics/pi5-ros2"
   ],
   "Wi-Fi server": [
