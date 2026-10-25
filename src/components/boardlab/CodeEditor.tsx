@@ -129,7 +129,8 @@ export function CodeEditor({ code, language, chips, errorLine, selectedChips, la
           theme,
           marks,
           wrap.of(wrapFor(phone.matches)),
-          EditorView.contentAttributes.of({ "aria-label": label, "aria-multiline": "true" }),
+          // A contenteditable is in the tab order already; the explicit tabindex tells axe the scrolling editor holds a focus stop.
+          EditorView.contentAttributes.of({ "aria-label": label, "aria-multiline": "true", tabindex: "0" }),
           keymap.of([
             { key: "Mod-Enter", run: () => (handlers.current.onRun(), true) },
             { key: "Escape", run: (ev) => (ev.contentDOM.blur(), true) },

@@ -1,12 +1,12 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
 import type { FigureHandle } from "@/components/figure/protocol";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import type { BoardLabStore, BoardView } from "@/lib/boardlab/store";
 import type { BoardModel } from "./model";
+import { ScrollRow } from "./ScrollRow";
 import { useText } from "./text";
 import { useLab } from "./useLab";
 
@@ -60,23 +60,6 @@ export function ViewBar({ store, board, figure, views, variants, xr, onXr, yaw, 
   const power = useLab(store, (s) => s.power);
   const variant = useLab(store, (s) => s.variant);
   const status = useLab(store, (s) => s.figure.status);
-  const rowRef = useRef<HTMLDivElement>(null);
-  const [overflow, setOverflow] = useState(false);
-
-  // A row too long for the stage (German, a phone) scrolls; a fade at the end says there is more.
-  useLayoutEffect(() => {
-    const row = rowRef.current;
-    if (!row) return;
-    const measure = () => setOverflow(row.scrollLeft + row.clientWidth < row.scrollWidth - 2);
-    measure();
-    const observer = new ResizeObserver(measure);
-    observer.observe(row);
-    row.addEventListener("scroll", measure, { passive: true });
-    return () => {
-      observer.disconnect();
-      row.removeEventListener("scroll", measure);
-    };
-  }, []);
 
   const turn = (deg: number) => {
     const next = yaw + deg;
@@ -91,12 +74,7 @@ export function ViewBar({ store, board, figure, views, variants, xr, onXr, yaw, 
   const statusText = typeof status === "string" && ["off", "no-power", "powered", "running", "uploading", "brownout", "fault"].includes(status) ? t(`view.status.${status}` as Parameters<typeof t>[0]) : null;
 
   return (
-    <div
-      ref={rowRef}
-      data-overflow={overflow || undefined}
-      className="-mx-1 flex shrink-0 flex-nowrap items-center gap-1.5 overflow-x-auto px-1 py-0.5 [scrollbar-width:none] data-overflow:[mask-image:linear-gradient(to_right,#000_calc(100%-3rem),transparent)] [&::-webkit-scrollbar]:hidden"
-      data-testid="viewbar"
-    >
+    <ScrollRow className="-mx-1 px-1 py-0.5" data-testid="viewbar">
       <SegmentedControl
         label={t("view.label")}
         size="sm"
@@ -162,6 +140,6 @@ export function ViewBar({ store, board, figure, views, variants, xr, onXr, yaw, 
       <span role="status" aria-label={t("view.statusLabel")} className="sr-only" data-testid="board-status">
         {statusText}
       </span>
-    </div>
+    </ScrollRow>
   );
 }

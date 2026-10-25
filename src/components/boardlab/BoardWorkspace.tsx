@@ -24,6 +24,7 @@ import { FailurePanel } from "./FailurePanel";
 import { FigureReadout } from "./FigureReadout";
 import type { BoardModel, LessonLink } from "./model";
 import { PinoutTable } from "./PinoutTable";
+import { ScrollRow } from "./ScrollRow";
 import { BoardLabText, useText, type BoardLabMessages } from "./text";
 import { useLab } from "./useLab";
 import { ViewBar, boardHidden, hideHostDrawn, homeYaw } from "./ViewBar";
@@ -201,7 +202,7 @@ function OnBoard({ board, figure }: { board: BoardOverview["board"]; figure: () 
                   {t("board.press", { label: c.label })}
                 </Button>
                 <span className="min-w-0 flex-1">
-                  {c.pin ? <span className="me-1.5 font-mono text-muted">{c.pin}</span> : null}
+                  {c.pin && c.pin !== c.label ? <span className="me-1.5 font-mono text-muted">{c.pin}</span> : null}
                   {tc(c.effect)}
                 </span>
               </li>
@@ -395,9 +396,9 @@ function Overview({ lang, data, notice }: { lang: Locale; data: BoardOverview; n
         <>
           <ViewBar store={store} board={model} figure={getFigure} views={["board", "power"]} variants={model.variants} xr={xr} onXr={setXr} yaw={yaw} onYaw={setYaw} />
           <FigureFrame fill ref={attachFigure} src={model.figurePage} title={model.name} initial={initial} onEvent={onEvent} />
-          <div className="flex min-h-8 shrink-0 flex-nowrap items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <ScrollRow label={t("readout.label")} className="min-h-8">
             <FigureReadout store={store} leds={model.leds} />
-          </div>
+          </ScrollRow>
         </>
       }
       rail={

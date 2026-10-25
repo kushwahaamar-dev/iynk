@@ -29,6 +29,7 @@ import { LessonPicker } from "./LessonPicker";
 import type { LessonModel } from "./model";
 import { ParamPanel } from "./ParamPanel";
 import { PinReadout } from "./PinReadout";
+import { ScrollRow } from "./ScrollRow";
 import { SerialMonitor } from "./SerialMonitor";
 import { shortcutFor, typingTarget } from "./shortcuts";
 import { ShortcutsDialog } from "./ShortcutsDialog";
@@ -359,10 +360,10 @@ function Workspace({ lang, model, notice }: { lang: Locale; model: LessonModel; 
         <>
           <ViewBar store={store} board={board} figure={getFigure} views={views} variants={variants} xr={xr} onXr={setXr} yaw={yaw} onYaw={setYaw} />
           <FigureFrame fill ref={attachFigure} src={board.figurePage} title={`${board.name}: ${tc(lesson.title)}`} initial={initial} onEvent={onEvent} />
-          <div className="flex min-h-8 shrink-0 flex-nowrap items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <ScrollRow label={t("readout.label")} className="min-h-8">
             <FigureReadout store={store} leds={board.leds} />
             <PinReadout store={store} />
-          </div>
+          </ScrollRow>
         </>
       }
       rail={

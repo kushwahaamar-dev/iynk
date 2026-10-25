@@ -86,8 +86,8 @@ export function FailurePanel({ store, failures, figure, circuit = null }: { stor
       </h3>
       <p className="text-sm text-muted">{t("failures.lede")}</p>
       {reported?.msg && (
-        <Callout tone="danger" title={t("failures.figureFault", { msg: reported.msg })} live>
-          {reported.fix ? <p>{reported.fix}</p> : null}
+        <Callout tone="danger" variant="quiet" title={t("failures.figureFault", { msg: reported.msg })} live>
+          {reported.fix ?? null}
         </Callout>
       )}
       <ul className="divide-y-[1.5px] divide-rule">{rows(mine.length ? mine : rest)}</ul>
