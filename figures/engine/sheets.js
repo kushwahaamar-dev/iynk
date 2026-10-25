@@ -24,7 +24,7 @@ const accent = 'var(--accent,#f4b829)';
 /* ---------- schematic ---------- */
 // series chains found by the solver: board pin -> resistors -> LED -> resistors -> GND
 function chains(){
-  const md = B.md, st = B.st, c = md.circuits[st.circuit]; if (!c) return [];
+  const st = B.st, c = B.circuitNow(); if (!c) return [];
   const pl = B.bbPlace(); if (!pl) return [];
   const geo = pl.geo, par = {}, find = a => { while (par[a] && par[a] !== a) a = par[a]; return a; };
   const node = ref => { const h = B.hole(geo, ref); if (h) return h.node; const pin = B.pinOf(ref); return pin ? 'N:' + pin.net : null; };
@@ -52,7 +52,7 @@ const ledSym = (x, y, s, lit, col, sel) => {
   return g; };
 const gndSym = (x, y, s) => ln([[x - s * .5, y], [x + s * .5, y]], 1.3) + ln([[x - s * .32, y + s * .2], [x + s * .32, y + s * .2]], 1.1) + ln([[x - s * .14, y + s * .4], [x + s * .14, y + s * .4]], 1);
 B.viewDef('schematic', { flat: true, scene: () => {
-  const v = sheetBox(), md = B.md, st = B.st, c = md.circuits[st.circuit];
+  const v = sheetBox(), md = B.md, st = B.st, c = B.circuitNow();
   let s = plate(v, T('Schematic · {name}', { name: c ? T(c.title || st.circuit) : T(md.name) }));
   const u = v.width / 100, x0 = v.x + 12 * u, y0 = v.y + 20 * u;
   if (!c){ return s + txt(v.x + v.width / 2, v.y + v.height / 2, T('No circuit on the breadboard'), 3.2 * u, '#857d6e'); }

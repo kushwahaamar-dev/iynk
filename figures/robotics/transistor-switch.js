@@ -42,7 +42,7 @@ const DRIVE_WIRES = [
   { from: 'a13', to: 'T-13', color: 'black' },       // emitter to the ground rail
 ];
 // the motor behind the breadboard (wheel up, can end toward the breadboard), the battery holder beside it
-const MOTOR_AT = [38, 62.5], BATT_AT = [116, 68.2];
+const MOTOR_AT = [38, 62.5], BATT_AT = [134, 68.2];
 const MOTOR = [
   { id: 'D1', part: 'diode-1n4007', holes: ['b12', 'b16'] },
   { id: 'M1', part: 'tt-motor', at: MOTOR_AT, rot: 90, holes: ['d16', 'd12'] },
@@ -216,10 +216,17 @@ B.bench({
     { id: 'M1', part: 'tt-motor', at: [MOTOR_AT[0] - 45.25, MOTOR_AT[1] - 23.2], params: { rot: 90 }, name: 'TT gear motor' },
     { id: 'BT1', part: 'aa-holder-4', at: [BATT_AT[0] - 31, BATT_AT[1] - 29], size: [62, 58], params: { rot: 0 }, name: '4 x AA battery holder' },
   ],
+  // the wiring faults redraw the breadboard (FIGURES-BENCH §6.4 circuit edits); the model above plays what they do
   faults: [
-    ['no-flyback', 'Leave out the flyback diode'], ['flyback-reversed', 'Flyback diode in backwards'],
-    ['tip120-reversed', 'TIP120 in backwards'], ['no-ground', 'No common ground'], ['no-base-resistor', 'No base resistor'],
-    ['motor-on-pin', 'Motor straight on pin 9'], ['battery-reversed', 'Battery leads swapped'],
+    ['no-flyback', 'Leave out the flyback diode', { missing: ['D1'] }],
+    ['flyback-reversed', 'Flyback diode in backwards', { reversed: ['D1'] }],
+    ['tip120-reversed', 'TIP120 in backwards'],
+    ['no-ground', 'No common ground', { cut: [['J1.4', 'T-3']] }],
+    // a jumper where R1 was: pin 9 straight into the base
+    ['no-base-resistor', 'No base resistor', { missing: ['R1'], wires: [{ from: 'c7', to: 'c11', color: 'orange' }] }],
+    // the motor's leads moved from the TIP120's collector and the plus rail to pin 9's column and the ground rail
+    ['motor-on-pin', 'Motor straight on pin 9', { holes: { M1: ['d7', 'T-9'] } }],
+    ['battery-reversed', 'Battery leads swapped', { reversed: ['BT1'] }],
     ['li-ion-cells', 'Li-ion cells in the AA holder'], ['cold:M1', 'Cold joint on the motor tab'], ['stall', 'Hold the wheel'],
   ],
   model,

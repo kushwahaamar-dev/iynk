@@ -14,6 +14,8 @@ Changes after the first publication are additive only. Every change is logged he
   value at its spaces (a three-column grid on a phone), so a motor bench's numbers stay clear of the drawing. The
   board view's frame holds the tallest thing on the mat (a periph part's `foot[2]` or `height`, a periph board's
   height), so a TT motor's wheel no longer runs into the title row.
+  Circuit faults (§6.4): `missing:`/`reversed:` on a breadboard-circuit part, and a listed fault's circuit edit
+  (`missing`, `reversed`, `cut`, `wires`, `holes`); `SL.bench.circuitNow()` is the circuit with the faults in force.
 - v7 (21:00, P2-engine): the breadboard solver is a DC circuit solver (`figures/engine/bench-solve.js`, §9): node
   voltages per PWM time slice, averaged over the period, for every `elec` type in the §8 table (not yet the
   stepper). Every `meas` entry carries `kind` (§9 table); host readouts that only know LEDs should filter on
@@ -423,6 +425,24 @@ Fault ids (strings; the host sets them with `set {fault}`; the figure's "Break i
 while a polar part sits backwards. A board's or bench's own `faults` list may give labels for Break it:
 `faults: [['short:5V:GND', 'Solder bridge from 5V to GND'], 'short:3V3:GND']`; an id without one is labelled from its
 kind ("Short from 3V3 to GND", "Leave out C5", "9 V on Barrel jack", "Wrong level on GPIO12 at reset").
+
+**Circuit faults** (v8). `missing:<id>` and `reversed:<id>` also act on a part of the breadboard circuit when the board
+itself has no part with that id: the circuit is drawn, solved and drawn as a schematic without it (and without the
+wires that end on its legs), or turned round (its `reversed` param when the part has one, else its holes in the other
+order). A listed fault may carry a third element that edits the circuit while it is on:
+
+```js
+faults: [
+  ['no-flyback', 'Leave out the flyback diode', { missing: ['D1'] }],
+  ['no-ground', 'No common ground', { cut: [['J1.4', 'T-3']] }],            // wires left out, by their two ends
+  ['no-base-resistor', 'No base resistor', { missing: ['R1'], wires: [{ from: 'c7', to: 'c11', color: 'orange' }] }],
+  ['motor-on-pin', 'Motor straight on pin 9', { holes: { M1: ['d7', 'T-9'] } }],   // a part moved
+  ['battery-reversed', 'Battery leads swapped', { reversed: ['BT1'] }],
+]
+```
+
+Each edit applies where the current circuit has that part or wire, so one fault serves every stage of a bench. What
+the fault does electrically is still the bench model's (§11); the edit is what the learner sees on the breadboard.
 
 
 ## 7. Modes (built-in demo programs)

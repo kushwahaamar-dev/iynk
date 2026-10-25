@@ -466,6 +466,9 @@ A.fault = id => {
   }
   if (typeof id !== 'string') return;
   const [kind, a, b] = id.split(':');
+  // a part of the breadboard circuit (an id the board itself does not have): the circuit redraws without it, or turned
+  // round, while the fault is on (bench-bb.js circuitNow)
+  if ((kind === 'reversed' || kind === 'missing') && !MD.byId[a] && B.bbPart && B.bbPart(a)){ if (!st.faults.includes(id)) st.faults.push(id); refresh(true); return; }
   if (kind === 'reversed'){ const p = MD.byId[a]; if (!p || !p.polar) return say('{name} has no wrong way round', { name: a }); if (st.power) A.power(null); st.placed[a] = { orient: 1, sold: true }; refresh(); return; }
   if (kind === 'missing'){
     const p = MD.byId[a]; if (!p || p.fixed) return say('No part {name} on this board', { name: a });
@@ -1245,7 +1248,7 @@ function keyList(){
 }
 function syncKeys(){
   if (!keysBox) return;
-  const c = st.circuit && MD.circuits[st.circuit];
+  const c = st.circuit && B.circuitNow ? B.circuitNow() : null;
   const items = MD.parts.filter(p => isIn(p.id)).map(p => [p.id, T(p.name), !!p.control]);
   if (c && st.view !== 'board') for (const q of c.parts || []) items.push([q.id, q.id + ' · ' + T((B.parts[q.part] || {}).name || q.part), false, typeof (B.parts[q.part] || {}).press === 'function']);
   const key = items.map(i => i[0]).join(' ');

@@ -31,9 +31,52 @@ B.hole = (geo, ref) => {
   return null;
 };
 
+/* circuit faults: a fault can change what is on the breadboard. `missing:<id>` leaves a circuit part out, with the
+   wires that end on its legs; `reversed:<id>` turns it round (its `reversed` param when the part has one, else its
+   holes in the other order). Ids the board itself has stay board faults. A listed fault [id, label, edit] does the
+   same for its own id: edit = { missing: [ids], reversed: [ids], cut: [[from, to]] (wires left out), wires: [extra
+   wires], holes: { id: [holes] } (parts moved) }, each applied where the circuit has it. The solver, the drawing and
+   the schematic all read the changed circuit. */
+let faulted = { key: null, md: null, c: null };
+const circuitNow = () => {
+  const md = B.md, st = B.st, c = md.circuits[st.circuit]; if (!c) return null;
+  const fs = st.faults || []; if (!fs.length) return c;
+  const key = st.circuit + '|' + fs.join(',');
+  if (faulted.key === key && faulted.md === md) return faulted.c;
+  const missing = new Set(), reversed = new Set(), cut = [], add = [], holes = {};
+  const inCircuit = id => (c.parts || []).some(p => p.id === id);
+  for (const f of fs){
+    const m = /^(missing|reversed):(.+)$/.exec(f);
+    if (m && inCircuit(m[2]) && !md.byId[m[2]]) (m[1] === 'missing' ? missing : reversed).add(m[2]);
+    const fd = (md.def.faults || []).find(x => Array.isArray(x) && x[0] === f && x[2] && typeof x[2] === 'object');
+    if (!fd) continue;
+    const e = fd[2];
+    for (const id of e.missing || []) if (inCircuit(id)) missing.add(id);
+    for (const id of e.reversed || []) if (inCircuit(id)) reversed.add(id);
+    for (const w of e.cut || []) if (Array.isArray(w) && w.length === 2) cut.push(w);
+    for (const w of e.wires || []) if (w && typeof w.from === 'string' && typeof w.to === 'string') add.push(w);
+    for (const [id, hs] of Object.entries(e.holes || {})) if (inCircuit(id) && Array.isArray(hs)) holes[id] = hs;
+  }
+  let out = c;
+  if (missing.size || reversed.size || cut.length || add.length || Object.keys(holes).length){
+    const owner = ref => { const m = /^([A-Za-z_][\w-]*)\./.exec(ref); return m ? m[1] : null; };
+    const isCut = w => cut.some(([a, b]) => (w.from === a && w.to === b) || (w.from === b && w.to === a));
+    const parts = (c.parts || []).filter(p => !missing.has(p.id)).map(p => {
+      let q = holes[p.id] ? Object.assign({}, p, { holes: holes[p.id].slice() }) : p;
+      if (reversed.has(p.id)){ const def = B.parts[p.part];
+        q = def && def.params && def.params.reversed ? Object.assign({}, q, { reversed: true }) : Object.assign({}, q, { holes: (q.holes || []).slice().reverse() }); }
+      return q; });
+    const wires = (c.wires || []).filter(w => !missing.has(owner(w.from)) && !missing.has(owner(w.to)) && !isCut(w)).concat(add);
+    out = Object.assign({}, c, { parts, wires });
+  }
+  faulted = { key, md, c: out };
+  return out;
+};
+B.circuitNow = circuitNow;
+
 /* placement in board coordinates: the breadboard sits right of the board (or behind it) */
 const place = () => {
-  const md = B.md, c = md.circuits[B.st.circuit]; if (!c) return null;
+  const md = B.md, c = circuitNow(); if (!c) return null;
   const geo = B.bbGeom(c.breadboard || 'half');
   const behind = c.board === 'back';
   const ox = md.def.noBoard ? 0 : behind ? (md.pcb.w - geo.w) / 2 : md.pcb.w + 14, oy = md.def.noBoard ? 0 : behind ? md.pcb.h + 12 : (md.pcb.h - geo.h) / 2;
@@ -106,7 +149,7 @@ B.bbParams = (st, params) => {
 const own2 = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 // a param spec is either a list of allowed values or a numeric range [min, max]
 B.paramRange = spec => Array.isArray(spec) && spec.length === 2 && spec.every(v => typeof v === 'number') && spec[1] > spec[0];
-B.bbPart = id => { const c = B.md.circuits[B.st.circuit]; return c && (c.parts || []).find(p => p.id === id); };
+B.bbPart = id => { const c = circuitNow(); return c && (c.parts || []).find(p => p.id === id); };
 
 /* ---------- scene ---------- */
 // the breadboard view's mat in board mm: the board, the breadboard and every circuit part lying on the mat (its `at`

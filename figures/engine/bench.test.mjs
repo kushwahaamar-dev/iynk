@@ -433,3 +433,57 @@ describe('a dead MCU rail', () => {
     expect(r.leds.ON).toBe(0);
   });
 });
+
+const TSW = 'robotics/transistor-switch';
+const tswPage = (query = '') => loadFigure(buildFigure(TSW), { path: '/figures/robotics/transistor-switch.html', query });
+const ids = (c) => c.parts.map((p) => p.id);
+const hasWire = (c, a, b) => c.wires.some((w) => (w.from === a && w.to === b) || (w.from === b && w.to === a));
+
+describe('circuit faults', () => {
+  it('a listed fault redraws the breadboard: part left out, turned round, wire cut, part moved', async () => {
+    page = await tswPage();
+    const B = page.bench;
+    const base = B.circuitNow();
+    expect(ids(base)).toContain('D1');
+    B.accept({ fault: 'no-flyback' });
+    expect(ids(B.circuitNow())).not.toContain('D1');
+    expect(B.report().faults).toEqual(['no-flyback']);
+    B.accept({ fault: 'flyback-reversed' });
+    expect(B.circuitNow().parts.find((p) => p.id === 'D1').holes).toEqual(['b16', 'b12']);
+    B.accept({ fault: 'no-ground' });
+    expect(hasWire(base, 'J1.4', 'T-3')).toBe(true);
+    expect(hasWire(B.circuitNow(), 'J1.4', 'T-3')).toBe(false);
+    B.accept({ fault: 'no-base-resistor' });
+    expect(ids(B.circuitNow())).not.toContain('R1');
+    expect(hasWire(B.circuitNow(), 'c7', 'c11')).toBe(true);
+    B.accept({ fault: 'motor-on-pin' });
+    expect(B.circuitNow().parts.find((p) => p.id === 'M1').holes).toEqual(['d7', 'T-9']);
+    B.accept({ fault: null });
+    expect(B.circuitNow()).toBe(base);
+    expect(page.notes()).toEqual([]);
+  });
+
+  it('missing:<id> and reversed:<id> act on a circuit part the board does not have', async () => {
+    page = await tswPage();
+    const B = page.bench;
+    B.actions.fault('missing:R2');
+    expect(ids(B.circuitNow())).not.toContain('R2');
+    expect(B.report().faults).toEqual(['missing:R2']);
+    expect(B.st.meas.R2).toBeUndefined();
+    // a part with its own `reversed` param turns round through it; the board's D1 stays a board fault
+    B.actions.fault('reversed:Q1');
+    expect(B.circuitNow().parts.find((p) => p.id === 'Q1').reversed).toBe(true);
+    B.actions.fault('missing:D1');
+    expect(ids(B.circuitNow())).toContain('D1');
+    expect(B.report().missing).toContain('D1');
+    B.actions.fault(null);
+    expect(ids(B.circuitNow())).toEqual(ids(B.md.circuits[B.st.circuit]));
+    expect(B.report().faults).toEqual([]);
+  });
+
+  it('come from ?fault= at mount', async () => {
+    page = await tswPage('fault=battery-reversed');
+    expect(page.bench.circuitNow().parts.find((p) => p.id === 'BT1').holes).toEqual(['T-28', 'T+26']);
+    expect(page.notes()).toEqual([]);
+  });
+});
