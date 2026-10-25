@@ -896,3 +896,20 @@ describe('button labels with a live value translate (figure strings)', () => {
     expect(ctl()).toEqual(expect.arrayContaining(['Press RESET', 'Press BOOT']));
   });
 });
+
+describe('ROM download mode on the HUD (sweep 6)', () => {
+  it('NodeMCU: with FLASH held through a reset the Program stat says download mode, not the sketch', async () => {
+    page = await loadFigure(buildFigure('boards/nodemcu'), { path: '/figures/boards/nodemcu.html' });
+    const B = page.bench, A = B.actions, doc = page.win.document;
+    const flash = B.md.parts.find((p) => p.control && p.control.action === 'boot').id;
+    const rst = B.md.parts.find((p) => p.control && p.control.action === 'reset').id;
+    B.accept({ power: 'usb' }); B.advance(1);
+    const title = B.md.modes[B.st.mode].title;
+    expect(doc.querySelector('.stats').textContent).toContain(title);
+    A.press(flash, true); A.press(rst, true); A.press(rst, false); A.press(flash, false); B.advance(.5);
+    expect(doc.querySelector('.stats').textContent).toContain('ROM download mode');
+    expect(doc.querySelector('.stats').textContent).not.toContain(title);
+    A.press(rst, true); A.press(rst, false); B.advance(.5);
+    expect(doc.querySelector('.stats').textContent).toContain(title);
+  });
+});

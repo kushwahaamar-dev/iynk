@@ -1125,7 +1125,9 @@ function stats(){
   const out = [{ label: T('Status'), value: statusText() }];
   const mcu = MD.power.mcu;
   if (mcu && st.power) out.push({ label: mcu.rail, value: (st.ev.rails[mcu.rail] || 0).toFixed(1) + ' V', small: true });
-  if (st.ev.status === 'running' && MD.modes[st.mode]) out.push({ label: T((MD.def.modesLabel && MD.def.modesLabel.stat) || 'Program'), value: st.ext ? T('your sketch') : T(MD.modes[st.mode].title), small: true });
+  // BOOT (FLASH) held through a reset leaves the chip in its ROM's download mode: the sketch does not run
+  if (st.ev.status === 'running' && MD.modes[st.mode]) out.push({ label: T((MD.def.modesLabel && MD.def.modesLabel.stat) || 'Program'),
+    value: st.ext ? T('your sketch') : st.boot === 'download' ? T('ROM download mode') : T(MD.modes[st.mode].title), small: true });
   if (st.benchStatusT) out.push({ label: T('Bench'), value: statText(st.benchStatusT), small: true });
   if (st.power) for (const [label, value] of st.modelStats || []) out.push({ label: T(String(label)), value: statText(value), small: true });
   document.documentElement.classList.toggle('bstats-long', out.length > 4);
