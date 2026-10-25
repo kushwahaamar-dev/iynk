@@ -1,0 +1,653 @@
+{
+  "title": "Monta una Arduino Uno R3",
+  "sub": "De la PCB desnuda al Blink",
+  "hint": "Desmóntala, coloca y refluye las piezas SMD, pon las piezas de inserción de la más baja a la más alta, suelda, mete el chip, conecta, carga un sketch y luego avériala",
+  "overview": "La Uno es una placa con microcontrolador construida alrededor del ATmega328P, y es donde empieza la robótica: digitalWrite(), el PWM, las interrupciones y la depuración por serie aparecen aquí por primera vez. Móntala como lo hace una fábrica: una máquina coloca las piezas de montaje superficial y el horno de reflujo las suelda todas a la vez, luego las piezas de inserción entran de la más baja a la más alta y se sueldan, y el chip va a su zócalo el último, en frío. Conéctala, carga un sketch y luego avería la placa a propósito: un chip al revés, un fusible que falta, una alimentación invertida, un motor en el pin 5V, una soldadura fría. Cada avería muestra lo que hace de verdad y cómo arreglarla.",
+  "power": {
+    "label": "Conecta el USB",
+    "ok": "Alimentada: el LED ON está encendido"
+  },
+  "parts": {
+    "ZU4": {
+      "name": "Microcontrolador ATmega328P",
+      "what": "El cerebro: un AVR de 8 bits a 16 MHz con 32 KB de flash (512 bytes guardan el bootloader Optiboot), 2 KB de RAM y 1 KB de EEPROM. Ejecuta tu sketch: setup() una vez y loop() para siempre. Va en un zócalo, con la muesca hacia el conector ICSP y el pin 1 junto a la muesca."
+    },
+    "SK1": {
+      "name": "Zócalo DIP-28",
+      "what": "Sujeta el ATmega328P sin soldadura, así que el soldador nunca calienta el chip y un chip muerto se cambia en segundos. Se suelda con las demás piezas de inserción bajas."
+    },
+    "U3": {
+      "name": "Puente USB-serie ATmega16U2",
+      "what": "Un segundo AVR con firmware USB. Convierte el USB de tu portátil en el puerto serie del 328P, para que funcionen las cargas y Serial.print(), y da un pulso en el RESET del 328P a través de C5 cuando se abre el puerto, que es como empieza una carga."
+    },
+    "Y1": {
+      "name": "Cristal de 16 MHz para el 16U2",
+      "what": "Reloj de cuarzo para el chip USB. El USB de velocidad completa necesita una precisión de unos ±0,25 %, y eso solo lo da un cristal de cuarzo."
+    },
+    "Y2": {
+      "name": "Resonador cerámico de 16 MHz para el 328P",
+      "what": "Reloj del ATmega328P, con sus dos condensadores de carga integrados (tres pads; el del centro es tierra). Unos ±0,5 %: vale para un sketch y el puerto serie, no para el USB. Los fusibles del 328P cuentan con él: sin él no funciona nada."
+    },
+    "U1": {
+      "name": "Regulador de 5 V NCP1117",
+      "what": "Regulador lineal que convierte la tensión del conector de barril en 5 V. Necesita un margen de unos 1,1 V y quema la diferencia en forma de calor, (VIN − 5 V) × corriente: 12 V a 300 mA son 2,1 W, suficiente para que entre en apagado térmico. De ahí los 7-12 V en el conector."
+    },
+    "U2": {
+      "name": "Regulador de 3,3 V LP2985",
+      "what": "Genera el pin 3.3V a partir de 5 V, 150 mA como mucho: suficiente para un sensor, no para un módulo Wi-Fi ni un servo."
+    },
+    "U5": {
+      "name": "Amplificador operacional LMV358: conmutador USB/VIN y buffer de L",
+      "what": "Dos amplificadores operacionales en un solo encapsulado. Uno compara VIN/2 con 3,3 V y desconecta la alimentación USB en cuanto VIN supera 6,6 V. El otro hace de buffer del pin 13 para el LED L, así que el LED nunca carga el pin."
+    },
+    "T1": {
+      "name": "MOSFET FDN340P: interruptor de la alimentación USB",
+      "what": "MOSFET de canal P entre los 5 V del USB y la línea de 5 V de la placa. El amplificador operacional lo apaga cuando toma el relevo una alimentación por el conector de más de 6,6 V."
+    },
+    "F1": {
+      "name": "Polifusible rearmable de 500 mA",
+      "what": "Fusible PTC en la línea de 5 V del USB: aguanta 0,5 A y salta hacia 1 A. Si cortocircuitas 5 V con GND se calienta, su resistencia se dispara y el puerto de tu portátil sobrevive; se rearma cuando se enfría."
+    },
+    "D1": {
+      "name": "Diodo M7: protección contra inversión de polaridad",
+      "what": "Un diodo de 1 A y 1000 V en serie con el conector de barril. Una alimentación conectada al revés lo encuentra en inversa y no pasa nada de corriente. El precio es una caída de unos 0,7-1 V."
+    },
+    "D2": {
+      "name": "Diodo limitador del reinicio (328P)",
+      "what": "Limita la línea RESET del 328P a 5 V, para que el pulso de reinicio automático a través de C5 no pueda llevar RESET por encima de la alimentación."
+    },
+    "D3": {
+      "name": "Diodo limitador del reinicio (16U2)",
+      "what": "El mismo limitador para la línea de reinicio del 16U2."
+    },
+    "PC1": {
+      "name": "Condensador de 47 µF en VIN",
+      "what": "Condensador electrolítico de reserva en VIN, antes del regulador de 5 V. Tiene polaridad: la franja oscura marca el negativo. Al revés en una línea con tensión, pierde, se calienta y revienta."
+    },
+    "PC2": {
+      "name": "Condensador de 47 µF en 5 V",
+      "what": "Condensador de reserva en la línea de 5 V: cubre las caídas cuando se enciende una carga. Tiene polaridad, como PC1."
+    },
+    "L2": {
+      "name": "Bobina de 10 µH: filtro de AVCC",
+      "what": "Filtra los 5 V que van a AVCC, la alimentación del ADC del 328P, para que el ruido digital no llegue a analogRead()."
+    },
+    "L1": {
+      "name": "Ferrita en el blindaje USB",
+      "what": "Une el blindaje del cable USB con la tierra del USB a través de una ferrita, que absorbe el ruido de alta frecuencia."
+    },
+    "C1": {
+      "name": "Condensador de 100 nF (entrada del regulador de 3,3 V)",
+      "what": "Desacopla la línea de 5 V justo en la entrada del LP2985."
+    },
+    "C2": {
+      "name": "Condensador de 100 nF (alimentación USB)",
+      "what": "Desacopla la línea de 5 V donde entra la alimentación USB."
+    },
+    "C3": {
+      "name": "Condensador de 1 µF (salida de 3,3 V)",
+      "what": "El condensador de salida que necesita el LP2985 para mantenerse estable."
+    },
+    "C4": {
+      "name": "Condensador de 100 nF en AREF",
+      "what": "Filtra AREF, el pin de referencia del ADC."
+    },
+    "C5": {
+      "name": "Condensador de 100 nF del reinicio automático (de DTR a RESET)",
+      "what": "Convierte el flanco de DTR del 16U2 en un pulso bajo y corto en el RESET del 328P cuando se abre el puerto serie: la placa se reinicia, Optiboot escucha y empieza la carga. Sin él tendrías que pulsar RESET a mano en el momento justo."
+    },
+    "C6": {
+      "name": "Condensador de desacoplo de 100 nF (328P)",
+      "what": "Una pequeña reserva de energía local en los pines de alimentación del 328P: absorbe los picos de corriente cuando conmuta la lógica."
+    },
+    "C7": {
+      "name": "Condensador de desacoplo de 100 nF (16U2)",
+      "what": "Desacoplo local en los pines de alimentación del 16U2."
+    },
+    "C8": {
+      "name": "Condensador de 1 µF (UCAP del 16U2)",
+      "what": "Estabiliza el regulador USB interno de 3,3 V del 16U2 en su pin UCAP."
+    },
+    "C9": {
+      "name": "Condensador de 22 pF del cristal",
+      "what": "Condensador de carga del cristal Y1: junto con C11 fija la frecuencia a la que oscila el cuarzo."
+    },
+    "C10": {
+      "name": "Condensador de 100 nF (AVCC)",
+      "what": "Desacopla AVCC después del filtro L2."
+    },
+    "C11": {
+      "name": "Condensador de 22 pF del cristal",
+      "what": "El segundo condensador de carga del cristal Y1."
+    },
+    "R1": {
+      "name": "Resistencia de 1 MΩ en paralelo con el cristal",
+      "what": "Polariza el oscilador del 16U2 para que arranque el cristal."
+    },
+    "R2": {
+      "name": "Resistencia de 1 MΩ en paralelo con el resonador",
+      "what": "Polariza el oscilador del 328P para que arranque el resonador."
+    },
+    "RN1": {
+      "name": "Red de resistencias de 10 kΩ (pull-up de reinicio)",
+      "what": "Cuatro resistencias de 10 kΩ en un solo chip: las pull-up que mantienen a nivel alto las dos líneas RESET, y el divisor que da VIN/2 al comparador. Sin la pull-up, RESET queda flotando y el 328P nunca sale del reinicio."
+    },
+    "RN2": {
+      "name": "Red de resistencias de 1 kΩ (LED L, TX y RX)",
+      "what": "Resistencias limitadoras de corriente para los LED L, TX y RX, unos 3 mA cada uno. Quítala y esos tres LED se apagan mientras el sketch sigue funcionando."
+    },
+    "RN3": {
+      "name": "Red de resistencias de 22 Ω (líneas de datos USB)",
+      "what": "Resistencias en serie en D+ y D− del USB, como pide la especificación USB. Sin ellas el ordenador no puede hablar con el 16U2."
+    },
+    "RN4": {
+      "name": "Red de resistencias de 1 kΩ (LED ON)",
+      "what": "Dos de sus resistencias en paralelo alimentan el LED ON (unos 6 mA); las otras dos van en serie con D0 y D1, para que un shield pueda controlar esos pines sin pelearse con el 16U2."
+    },
+    "Z1": {
+      "name": "Varistor: protección ESD en D+ del USB",
+      "what": "Desvía al blindaje las descargas de electricidad estática de la línea D+ del USB antes de que lleguen al 16U2."
+    },
+    "Z2": {
+      "name": "Varistor: protección ESD en D− del USB",
+      "what": "Desvía al blindaje las descargas de electricidad estática de la línea D− del USB antes de que lleguen al 16U2."
+    },
+    "L": {
+      "name": "LED L (pin 13)",
+      "what": "LED_BUILTIN: el pin 13 lo controla a través del buffer del amplificador operacional y una resistencia de 1 kΩ, y HIGH lo enciende. La primera salida que controla todo ingeniero de robótica."
+    },
+    "TX": {
+      "name": "LED TX",
+      "what": "El 16U2 lo enciende mientras van bytes de la placa al ordenador: Serial.print() y el final de una carga."
+    },
+    "RX": {
+      "name": "LED RX",
+      "what": "El 16U2 lo enciende mientras llegan bytes del ordenador a la placa, que es casi toda una carga."
+    },
+    "ON": {
+      "name": "LED ON (5 V)",
+      "what": "Encendido siempre que la línea de 5 V tiene tensión. Si brilla poco o parpadea, sospecha de la alimentación antes que del código."
+    },
+    "RESET": {
+      "name": "Botón RESET",
+      "what": "Lleva RESET a nivel bajo. Al soltarlo, Optiboot hace parpadear L tres veces, espera una carga durante más o menos un segundo y luego tu sketch vuelve a empezar desde setup(). No borra nada."
+    },
+    "JP2": {
+      "name": "Pines libres PB4-PB7 del 16U2 (sin tira de pines)",
+      "what": "Cuatro agujeros metalizados para los pines libres del puerto del 16U2. De fábrica no llevan tira de pines."
+    },
+    "RESET-EN": {
+      "name": "Puente de soldadura RESET-EN (córtalo para quitar el reinicio automático)",
+      "what": "Una pista fina en el camino de DTR a RESET. Si la cortas, abrir el puerto serie ya no reinicia la placa; entonces las cargas necesitan pulsar RESET en el momento justo."
+    },
+    "ICSP1": {
+      "name": "Conector ICSP del 16U2",
+      "what": "Conector de programación del chip USB: se usa en fábrica y para rescatar un 16U2 con el firmware estropeado."
+    },
+    "ICSP": {
+      "name": "Conector ICSP del 328P",
+      "what": "Conector de programación SPI del 328P: graba el bootloader con un programador externo, sin USB. También lleva D11-D13 para los shields."
+    },
+    "X2": {
+      "name": "Conector USB-B",
+      "what": "Alimentación (5 V, hasta 500 mA a través de F1) y datos para las cargas y el monitor serie."
+    },
+    "X1": {
+      "name": "Conector de barril de 2,1 mm, centro positivo, 7-12 V",
+      "what": "Alimenta VIN a través de D1 hasta el regulador de 5 V. La hoja de datos admite 6-20 V; con 7-12 V, U1 sigue regulando y no se calienta demasiado."
+    },
+    "IOH": {
+      "name": "Conector digital D8-D13, GND, AREF, SDA, SCL",
+      "what": "D8-D13 más GND, AREF y una segunda copia de SDA y SCL (los mismos pines que A4 y A5). D13 es el LED L; ~9, ~10 y ~11 hacen PWM."
+    },
+    "IOL": {
+      "name": "Conector digital D0-D7",
+      "what": "D0-D7: ~3, ~5 y ~6 hacen PWM, D2 y D3 admiten interrupciones. D0 y D1 son el puerto serie compartido con el USB: déjalos libres mientras cargas."
+    },
+    "POWER": {
+      "name": "Conector de alimentación",
+      "what": "IOREF, RESET, 3.3V, 5V, GND, GND y VIN. Vale para sensores, nunca para motores: un motor que se bloquea hunde los 5 V y el chip se reinicia (caída de tensión)."
+    },
+    "AD": {
+      "name": "Conector analógico A0-A5",
+      "what": "A0-A5 entran al ADC de 10 bits: analogRead() da 0-1023 para 0-5 V. A4 y A5 también son SDA y SCL del I2C."
+    },
+    "R3": {
+      "name": "Resistencia de 220 Ω",
+      "what": "Fija la corriente del LED: (5 V − 2 V) / 220 Ω ≈ 14 mA."
+    },
+    "LED1": {
+      "name": "LED rojo",
+      "what": "Se enciende cuando su pin pasa a HIGH. La pata larga (ánodo) mira hacia la resistencia y la corta va a GND."
+    },
+    "SW1": {
+      "name": "Pulsador",
+      "what": "Une D2 con GND mientras está pulsado. Con INPUT_PULLUP el pin lee HIGH en reposo y LOW mientras está pulsado; los contactos rebotan durante unos milisegundos."
+    }
+  },
+  "modes": {
+    "blink": {
+      "title": "Blink",
+      "code": {
+        "what": "Blink: el LED L encendido 1 s y apagado 1 s",
+        "pin": "pin 13 = el LED L",
+        "blocks": "bloquea: no se ejecuta nada más durante 1 s"
+      }
+    },
+    "fast": {
+      "title": "Blink sin delay()",
+      "code": {
+        "what": "Blink sin delay(): cambia cada 200 ms mirando el reloj",
+        "check": "sin bloquear: ¿han pasado ya 200 ms?",
+        "free": "loop() queda libre para leer sensores, botones y el serie"
+      }
+    },
+    "fade13": {
+      "title": "analogWrite en el pin 13 (ahí no hay PWM)",
+      "code": {
+        "what": "Un fundido en el pin 13, que no tiene PWM",
+        "nopwm": "el pin 13 no tiene temporizador PWM:",
+        "half": "0-127 escribe LOW, 128-255 escribe HIGH",
+        "fix": "haz el fundido en un pin con ~: 3, 5, 6, 9, 10 u 11"
+      }
+    },
+    "hello": {
+      "title": "Hola por serie",
+      "code": {
+        "what": "Hola por serie: una línea por segundo por USB",
+        "int": "en la Uno un int tiene 16 bits: después de 32767 viene -32768",
+        "baud": "el monitor serie también tiene que estar a 9600 baudios"
+      }
+    }
+  },
+  "steps": {
+    "unplug": {
+      "title": "Desconecta el cable USB",
+      "body": "El banco empieza como una placa nueva: conectada y ejecutando el Blink de fábrica. Nunca trabajes en una placa con tensión, así que primero desconéctala."
+    },
+    "strip": {
+      "title": "Desmóntala hasta dejar la PCB desnuda",
+      "body": "Quita todas las piezas. Lo que queda es la placa desnuda: cobre, máscara de soldadura y serigrafía. El ATmega328P va en un zócalo, así que sale en frío y conserva su programa.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    },
+    "pick-place": {
+      "title": "Coloca las piezas SMD con la máquina",
+      "body": "Una máquina pone cada pieza de montaje superficial sobre sus pads con pasta de soldar: el 16U2, los reguladores, el amplificador operacional, el MOSFET, los diodos, las redes de resistencias, los condensadores, los LED, el polifusible, el resonador y el botón de reinicio. Quedan sobre la pasta húmeda, todavía sin soldar.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    },
+    "reflow": {
+      "title": "Refluye las soldaduras SMD",
+      "body": "La placa pasa por el horno de reflujo. La pasta se funde, todas las soldaduras SMD se forman a la vez y la tensión superficial endereza las piezas que estaban un poco torcidas. Por eso las piezas SMD van primero: el horno fundiría el plástico de las piezas de inserción. El horno arranca solo después de la colocación."
+    },
+    "low-tht": {
+      "title": "Coloca las piezas de inserción bajas",
+      "body": "Las piezas de inserción entran de la más baja a la más alta. Primero las bajas: el zócalo DIP-28 SK1 y los dos conectores ICSP de 2x3. Las bajas primero, para que la placa quede plana cuando le des la vuelta para soldar. Usa Coloca una pieza para cada una.",
+      "refusal": "Primero las piezas SMD: haz la colocación automática y el reflujo. El horno fundiría las piezas de plástico"
+    },
+    "tall-tht": {
+      "title": "Coloca las piezas de inserción altas",
+      "body": "Ahora las altas: el conector USB-B X2, el conector de barril X1 y los cuatro conectores hembra (D8-D13, D0-D7, POWER y A0-A5).",
+      "refusal": "Primero las piezas bajas: con las altas puestas, la placa se tambalea y las piezas sueltas se caen al darle la vuelta para soldar"
+    },
+    "solder": {
+      "title": "Suelda las piezas de inserción",
+      "body": "Dale la vuelta a la placa y suelda todos los pines de inserción: calienta el pad y el pin a la vez durante 2-3 s, añade estaño y busca un cono brillante. Una gota mate y granulosa es una soldadura fría.",
+      "refusal": "Todavía no hay nada que soldar: primero coloca una pieza"
+    },
+    "chip": {
+      "title": "Encaja el ATmega328P en su zócalo",
+      "body": "El último grupo: el chip entra en el zócalo ya soldado, con la muesca hacia el conector ICSP y el pin 1 junto a la muesca. El soldador nunca lo ha tocado.",
+      "refusal": "Primero suéldalo todo. Nunca calientes un chip que está en su zócalo"
+    },
+    "plug": {
+      "title": "Conecta el USB",
+      "body": "El LED ON se enciende al instante. El chip ha conservado su programa en la flash durante todo el desmontaje, así que el Blink vuelve a arrancar: L encendido un segundo y apagado un segundo."
+    },
+    "upload": {
+      "title": "Carga Hola por serie",
+      "body": "Carga un sketch nuevo. El 16U2 cambia DTR, C5 lo convierte en un pulso de reinicio, Optiboot hace parpadear L y recibe la carga a 115200 baudios mientras parpadean RX y TX. Luego el sketch imprime una línea por segundo: mira cómo parpadea TX y lee el monitor serie a 9600 baudios.",
+      "refusal": "Primero conecta el USB: las cargas van por el cable"
+    },
+    "exploded": {
+      "title": "Abre la vista despiezada",
+      "body": "Desconecta y separa las capas: las piezas SMD, las piezas de inserción bajas y altas y el chip encima, en el orden en que se pusieron.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    },
+    "chip-backwards": {
+      "title": "Avérialo: el chip al revés",
+      "body": "Hacerlo cierra la vista despiezada, gira el ATmega328P en su zócalo y conecta el USB. Mira el estado y luego arréglalo."
+    },
+    "cap-backwards": {
+      "title": "Avérialo: un condensador al revés",
+      "body": "Hacerlo desconecta la placa, suelda al revés PC2, el condensador de 47 µF de 5 V, y vuelve a conectar el USB. Obsérvalo y luego arréglalo."
+    },
+    "chip-missing": {
+      "title": "Avérialo: sin chip en el zócalo",
+      "body": "Hacerlo desconecta la placa, saca el ATmega328P y vuelve a conectar el USB. Mira los LED e intenta una carga, y luego vuelve a poner el chip."
+    },
+    "resonator-missing": {
+      "title": "Avérialo: sin el resonador",
+      "body": "Hacerlo desconecta la placa, quita Y2, el resonador de 16 MHz (una diminuta pieza SMD), y vuelve a conectar el USB. Mira qué sigue funcionando."
+    },
+    "fuse-missing": {
+      "title": "Avérialo: sin el polifusible",
+      "body": "Hacerlo desconecta la placa, quita F1 y vuelve a conectar el USB. Mira los LED."
+    },
+    "bridge-missing": {
+      "title": "Avérialo: sin el puente USB",
+      "body": "Hacerlo desconecta la placa, quita el ATmega16U2 y vuelve a conectar el USB. Mira qué sigue funcionando e intenta una carga."
+    },
+    "reverse-jack": {
+      "title": "Avérialo: alimentación invertida en el conector",
+      "body": "Hacerlo conecta al conector de barril un adaptador de 9 V con la polaridad cambiada. Mira lo que pasa y lo que no pasa."
+    },
+    "reverse-vin": {
+      "title": "Avérialo: alimentación invertida en VIN",
+      "body": "Hacerlo conecta al revés una pila de 9 V al pin VIN. Compáralo con el conector de barril."
+    },
+    "jack-too-high": {
+      "title": "Avérialo: 24 V en el conector de barril",
+      "body": "Hacerlo conecta al conector un adaptador de 24 V, el doble del máximo del rango de 7-12 V."
+    },
+    "jack-too-low": {
+      "title": "Avérialo: 4 V en el conector de barril",
+      "body": "Hacerlo conecta al conector una alimentación de 4 V, muy por debajo del mínimo de 7 V."
+    },
+    "motor-brownout": {
+      "title": "Avérialo: un motor en el pin 5V",
+      "body": "Hacerlo alimenta un pequeño motor de CC directamente desde los pines 5V y GND de la Uno, con alimentación USB. Mira el LED ON, el estado y el monitor serie."
+    },
+    "cold-usb": {
+      "title": "Avérialo: una soldadura fría en el conector USB",
+      "body": "Hacerlo deja el pin de 5 V del conector USB con una soldadura fría. Mira un rato el LED ON y el estado."
+    },
+    "solder-bridge": {
+      "title": "Avérialo: un puente de soldadura de 5V a GND",
+      "body": "Hacerlo deja caer una gota de estaño entre los pines vecinos 5V y GND del conector de alimentación. Mira lo que hace el polifusible."
+    },
+    "blink": {
+      "title": "Termina con el Blink",
+      "body": "Todas las averías están arregladas. Carga el Blink: la placa que has montado hace parpadear L una vez por segundo, tal como salió de fábrica.",
+      "refusal": "Primero conecta el USB: las cargas van por el cable"
+    }
+  },
+  "faults": {
+    "chip-backwards": {
+      "title": "ATmega328P al revés",
+      "symptom": "AVERÍA: el chip se calienta, el polifusible se templa y no funciona nada.",
+      "explanation": "Girado, el pin de 5 V del zócalo (7) coincide con el pin de tierra del chip (22), y la tierra del zócalo con el VCC del chip: la alimentación circula al revés por los diodos de protección del chip. Unos segundos suele aguantarlos; si lo dejas alimentado, el chip se cuece.",
+      "fix": "Desconecta enseguida, saca el chip, gíralo para que su muesca mire hacia el conector ICSP y vuelve a encajarlo."
+    },
+    "cap-backwards": {
+      "title": "Condensador de 47 µF al revés",
+      "symptom": "¡Pum!: PC2, en la línea de 5 V, revienta y echa humo.",
+      "explanation": "Un electrolítico de aluminio solo funciona en un sentido. Al revés, su capa de óxido se rompe, pasa corriente, el electrolito hierve y la cápsula revienta.",
+      "fix": "Desconecta, quita PC2 con aire caliente y pon uno nuevo con la franja del negativo donde indica la serigrafía: un condensador reventado ya no sirve."
+    },
+    "chip-missing": {
+      "title": "Sin ATmega328P en el zócalo",
+      "symptom": "ON se enciende, pero L sigue apagado y no funciona nada. Una carga falla.",
+      "explanation": "La alimentación llega a todas las líneas, pero no hay procesador que ejecute un sketch. avrdude no recibe respuesta y se para con stk500_getsync(): not in sync.",
+      "fix": "Desconecta, encaja el chip en su zócalo con la muesca hacia el conector ICSP y vuelve a conectar."
+    },
+    "resonator-missing": {
+      "title": "Sin el resonador de 16 MHz",
+      "symptom": "ON se enciende, L sigue apagado y no funciona nada.",
+      "explanation": "Los fusibles del 328P le dicen que funcione con un reloj externo de 16 MHz. Sin Y2 no hay reloj, así que el procesador nunca ejecuta una instrucción, ni siquiera el bootloader, y las cargas también fallan.",
+      "fix": "Desconecta y vuelve a soldar Y2 con aire caliente: es una pieza SMD de tres pads."
+    },
+    "fuse-missing": {
+      "title": "Sin el polifusible F1",
+      "symptom": "El USB está conectado, pero no se enciende nada: ni el LED ON ni el parpadeo.",
+      "explanation": "F1 va en serie entre los 5 V del USB y la placa. Sin él, el camino está abierto, así que no llega corriente del USB a la placa. Una alimentación por el conector de barril seguiría funcionando.",
+      "fix": "Desconecta y vuelve a soldar F1 con aire caliente."
+    },
+    "bridge-missing": {
+      "title": "Sin el ATmega16U2",
+      "symptom": "La placa se enciende y el sketch guardado funciona, pero el ordenador no ve ninguna placa y todas las cargas fallan.",
+      "explanation": "La alimentación USB pasa por F1 y T1, no por el 16U2, así que la placa sigue funcionando. El 16U2 es el que convierte el USB en serie: sin él no hay puerto al que cargar ni Serial.print() en el ordenador.",
+      "fix": "Desconecta y vuelve a soldar el 16U2 (en fábrica su firmware se graba por ICSP1), y luego vuelve a cargar."
+    },
+    "reverse-jack": {
+      "title": "Alimentación del conector de barril al revés",
+      "symptom": "No se enciende nada y nada se calienta.",
+      "explanation": "D1 va en serie con el conector. Una alimentación invertida lo deja en inversa, así que no circula corriente y VIN se queda a 0 V: la protección haciendo su trabajo.",
+      "fix": "Usa un adaptador de 7-12 V con el centro positivo (o cambia los cables) y vuelve a conectar."
+    },
+    "reverse-vin": {
+      "title": "Alimentación invertida en el pin VIN",
+      "symptom": "AVERÍA: el regulador de 5 V se calienta y la placa se daña.",
+      "explanation": "El pin VIN del conector se une a la placa después de D1, así que ahí nada bloquea una alimentación invertida: llega directamente a PC1 y al regulador NCP1117.",
+      "fix": "Desconecta y sustituye el regulador dañado y PC1. Conecta el cable positivo a VIN y el negativo a GND o, mejor, usa el conector de barril, que tiene D1."
+    },
+    "jack-too-high": {
+      "title": "24 V en el conector de barril",
+      "symptom": "AVERÍA: el regulador de 5 V se ha dañado.",
+      "explanation": "El NCP1117 admite 20 V como mucho. A 24 V se estropea, y un regulador que falla en cortocircuito pone toda la entrada en la línea de 5 V y mata los dos AVR.",
+      "fix": "Desconecta, sustituye U1 y usa una alimentación de 7-12 V."
+    },
+    "jack-too-low": {
+      "title": "4 V en el conector de barril",
+      "symptom": "ON brilla poco, la placa no para de reiniciarse y no funciona nada.",
+      "explanation": "D1 deja caer unos 0,7 V y el NCP1117 necesita un margen de unos 1,1 V, así que con 4 V de entrada quedan unos 2,2 V en la línea de 5 V. Eso está por debajo del nivel de caída de tensión de 2,7 V del 328P, así que se queda en reinicio.",
+      "fix": "Usa una alimentación de 7-12 V en el conector, o alimenta la placa por USB."
+    },
+    "motor-brownout": {
+      "title": "Motor en el pin 5V: caída de tensión",
+      "symptom": "La placa se reinicia una y otra vez: L vuelve a empezar y el mensaje de inicio del serie se repite.",
+      "explanation": "Un pequeño motor de CC consume cerca de 1 A al arrancar o al bloquearse, mucho más de lo que pueden dar el USB y el polifusible de 500 mA. La línea de 5 V cae por debajo del nivel de caída de tensión de 2,7 V, el 328P se reinicia, la línea se recupera y el sketch vuelve a arrancar el motor: un bucle de reinicios.",
+      "fix": "Alimenta los motores con su propia fuente a través de un driver (Fig. 03, 05 y 06) y une solo las tierras."
+    },
+    "cold-usb": {
+      "title": "Soldadura fría en el conector USB",
+      "symptom": "El LED ON parpadea y la placa se reinicia al azar, peor cuando se mueve el cable.",
+      "explanation": "Una soldadura fría es una gota mate y granulosa que nunca mojó el pad. Su contacto va y viene, así que los 5 V del USB llegan a la placa a trompicones.",
+      "fix": "Vuelve a fundir la soldadura: calienta el pad y el pin a la vez, añade un poco de estaño nuevo con flux y comprueba que queda un cono brillante."
+    },
+    "solder-bridge": {
+      "title": "Puente de soldadura de 5V a GND",
+      "symptom": "Al conectarla todo sigue apagado y el polifusible se calienta.",
+      "explanation": "En el conector de alimentación, los pines 5V y GND están uno al lado del otro, a 2,54 mm. Una gota de estaño entre ellos cortocircuita la alimentación; F1 salta hacia 1 A y protege el puerto del portátil.",
+      "fix": "Desconecta, quita el puente con malla desoldadora, comprueba con un multímetro que 5V y GND ya no están unidos y vuelve a conectar: F1 se rearma cuando se enfría."
+    }
+  },
+  "status": {
+    "status": "Estado",
+    "powered": "Alimentada (LED ON)",
+    "pin13": "Pin 13 (LED L)",
+    "rail-5v": "Línea de 5 V",
+    "rail-3v3": "Línea de 3,3 V",
+    "rail-vin": "VIN",
+    "current": "Consumo de corriente"
+  },
+  "current": {
+    "usb": "USB, 5 V: 500 mA a través del polifusible",
+    "jack": "Conector de barril, 9 V: unos 300 mA antes de que se sobrecaliente el regulador de 5 V",
+    "vin": "Pin VIN, 9 V: unos 300 mA antes de que se sobrecaliente el regulador de 5 V",
+    "board": "16U2, reguladores, amplificador operacional y el LED ON",
+    "mcu": "ATmega328P funcionando a 16 MHz",
+    "led-l": "LED L",
+    "led-ext": "LED de la protoboard"
+  },
+  "tasks": {
+    "reaction-timer": {
+      "title": "Medidor de reflejos",
+      "brief": "Construye un juego de reflejos en la placa que acabas de montar. El LED del pin 13 se enciende tras una espera al azar de 1 a 3 s; el jugador pulsa lo más rápido que pueda el botón de D2 (conectado a GND), y el tiempo desde el LED hasta la pulsación se imprime como, por ejemplo, Reaction: 312 ms. Una pulsación antes del LED imprime Too soon!. Después de cada pulsación el LED se apaga y empieza una ronda nueva. Captura la pulsación con una interrupción en D2, quítale los rebotes y mide todo con millis(), nunca con delay().",
+      "hints": {
+        "1": "attachInterrupt(digitalPinToInterrupt(2), onFall, FALLING) ejecuta onFall en el instante en que D2 baja. Haz corta la rutina de interrupción: apunta millis() en una variable volatile y activa una bandera.",
+        "2": "Los contactos rebotan durante unos milisegundos al pulsar y otra vez al soltar. Cuenta un flanco solo si el pin sigue leyendo LOW 20 ms después.",
+        "3": "Sin delay(): guarda cuándo debe encenderse el LED, millis() + random(1000, 3001), y compara en loop() con (long)(millis() - goAt) >= 0, que sobrevive al desbordamiento de millis().",
+        "4": "Copia lo que escribe la interrupción con las interrupciones desactivadas (noInterrupts() … interrupts()): un unsigned long ocupa 4 bytes, y el AVR lo lee byte a byte."
+      },
+      "checks": {
+        "1": "Usa attachInterrupt, INPUT_PULLUP y millis(), y nunca delay()",
+        "2": "Al principio el LED sigue apagado",
+        "3": "El LED se enciende en menos de 3 s",
+        "4": "Una pulsación apaga el LED al instante y empieza una ronda nueva",
+        "5": "Imprime el tiempo de reacción, por ejemplo Reaction: 312 ms",
+        "6": "Una pulsación antes del LED imprime Too soon!"
+      },
+      "code": {
+        "starter": "Esto funciona, pero está ciego: delay() y un bucle de sondeo se pierden pulsaciones",
+        "blocks": "bloquea: ahora una pulsación pasa desapercibida",
+        "poll": "sondeo: espera aquí, sin interrupción",
+        "pins": "pin 13: el LED L y el LED de la protoboard; D2: botón a GND",
+        "isr": "haz corta una interrupción: apunta la hora y activa una bandera",
+        "bounce": "antirrebote: cuenta el flanco solo si el botón sigue pulsado 20 ms después",
+        "seed": "A0 está al aire, así que cada partida es distinta"
+      },
+      "world": {
+        "button": "Botón en D2"
+      }
+    },
+    "fade-pwm": {
+      "title": "Haz que el fundido sea de verdad",
+      "brief": "El pin 13 no tiene temporizador PWM, así que el sketch del fundido solo lo hace parpadear. Pasa el LED al pin ~9 (el circuito de la protoboard ya lo tiene ahí) y haz un fundido de verdad: sube el ciclo de trabajo de 0 a 255 y vuelve a bajarlo a 0, un paso cada 4 ms, para que una respiración completa dure unos 2 s.",
+      "hints": {
+        "1": "analogWrite(9, v) fija el ciclo de trabajo: 0 es apagado y 255 encendido del todo. El pin 9 conmuta a unos 490 Hz, demasiado rápido para verlo.",
+        "2": "Dos bucles for: v de 0 a 255 con delay(4) después de cada paso, y luego de 255 a 0.",
+        "3": "analogWrite() convierte el pin en salida por sí mismo, pero pinMode(9, OUTPUT) en setup() deja claro lo que quieres."
+      },
+      "checks": {
+        "1": "Usa analogWrite() y no toca el pin 13",
+        "2": "Brilla a medias al medio segundo",
+        "3": "Brilla casi del todo a 1 s",
+        "4": "Vuelve a estar casi apagado a 2 s"
+      },
+      "code": {
+        "starter": "El fundido del pin 13: pásalo a un pin con ~ para que se funda de verdad",
+        "up": "subida: 256 pasos de 4 ms",
+        "down": "y otra vez abajo"
+      }
+    }
+  },
+  "quizzes": {
+    "reflow": {
+      "smd-first": {
+        "q": "¿Por qué van las piezas SMD antes que cualquier pieza de inserción?",
+        "options": {
+          "1": "El horno de reflujo fundiría el plástico de los zócalos, las tiras de pines y los conectores",
+          "2": "Las piezas SMD son las más importantes",
+          "3": "Las piezas de inserción necesitan que antes se seque la pasta de soldar"
+        },
+        "why": "El reflujo calienta toda la placa por encima del punto de fusión del estaño, hasta unos 240 °C. Los zócalos, las tiras de pines y el conector USB son de plástico, así que van después, soldados pin a pin."
+      },
+      "self-align": {
+        "q": "En el horno, una resistencia queda un poco torcida sobre sus pads. ¿Qué pasa?",
+        "options": {
+          "1": "Se queda torcida y hay que rehacerla",
+          "2": "La tensión superficial del estaño fundido la endereza",
+          "3": "Se cae de la placa"
+        },
+        "why": "La pasta al fundirse moja los dos pads y su tensión superficial centra la pieza. Este autoalineado es una de las razones por las que el reflujo funciona tan bien."
+      }
+    },
+    "socket": {
+      "socket-first": {
+        "q": "¿Por qué soldar el zócalo DIP antes de meter el ATmega328P?",
+        "options": {
+          "1": "El chip solo se programa después de soldarlo",
+          "2": "Así el soldador nunca calienta el chip",
+          "3": "Los zócalos calientes sujetan mejor el chip"
+        },
+        "why": "El calor se lo lleva el zócalo. El chip entra después en frío y sigue siendo intercambiable: uno muerto se cambia en segundos."
+      },
+      "notch": {
+        "q": "¿En qué sentido va el ATmega328P?",
+        "options": {
+          "1": "En cualquiera: los pines son simétricos",
+          "2": "Con la muesca hacia el conector USB",
+          "3": "Con la muesca hacia el conector ICSP y el pin 1 junto a la muesca"
+        },
+        "why": "El pin 1 está junto a la muesca, y la placa muestra la muesca hacia el conector ICSP. Al revés, los 5 V caen en el pin de tierra del chip."
+      }
+    },
+    "usb": {
+      "bridge": {
+        "q": "¿Qué chip convierte el USB en serie para las cargas?",
+        "options": {
+          "1": "ATmega16U2",
+          "2": "NCP1117",
+          "3": "LMV358"
+        },
+        "why": "El 16U2 ejecuta un firmware USB y habla UART con el 328P. El NCP1117 es el regulador de 5 V y el LMV358 es el amplificador operacional."
+      },
+      "auto-reset": {
+        "q": "¿Cómo empieza una carga sin que nadie pulse RESET?",
+        "options": {
+          "1": "El 328P vigila las líneas USB",
+          "2": "El 16U2 cambia DTR, y C5 convierte ese flanco en un pulso de reinicio",
+          "3": "avrdude borra primero el chip"
+        },
+        "why": "Al abrir el puerto cambia DTR. A través de C5, el RESET del 328P baja un instante, Optiboot arranca, hace parpadear L y escucha durante más o menos un segundo."
+      },
+      "d0d1": {
+        "q": "Las cargas fallan con \"not in sync\" mientras hay un módulo conectado a D0 y D1. ¿Por qué?",
+        "options": {
+          "1": "D0 y D1 son las líneas serie que usa la carga, y el módulo se pelea con ellas",
+          "2": "El módulo consume demasiada corriente",
+          "3": "D0 y D1 no tienen resistencias pull-up"
+        },
+        "why": "El 16U2 llega al 328P por D0 y D1, con 1 kΩ en serie. Cualquier cosa que controle esos pines estropea la carga: desconéctala mientras cargas."
+      }
+    },
+    "brownout": {
+      "motor": {
+        "q": "La Uno se reinicia cada vez que arranca un motor. ¿Primer sospechoso?",
+        "options": {
+          "1": "Un error en setup()",
+          "2": "El cable USB es demasiado largo",
+          "3": "La corriente del motor hunde la línea de 5 V (caída de tensión)"
+        },
+        "why": "El pico de arranque del motor baja los 5 V por debajo del nivel de caída de tensión y el chip se reinicia. Alimenta los motores con su propia fuente a través de un driver."
+      },
+      "bod": {
+        "q": "¿Con qué tensión se mantiene en reinicio el ATmega328P de la Uno?",
+        "options": {
+          "1": "Por debajo de unos 2,7 V",
+          "2": "Por debajo de 4,5 V",
+          "3": "Nunca: no tiene detector de caída de tensión"
+        },
+        "why": "Los fusibles de la Uno ajustan el detector de caída de tensión a 2,7 V (fusible extendido 0xFD). Por debajo de eso el chip se queda en reinicio; cuando la alimentación se recupera, el sketch vuelve a empezar desde setup()."
+      }
+    },
+    "end": {
+      "pwm13": {
+        "q": "Haces un fundido con analogWrite() en el pin 13 y el LED L solo se enciende y se apaga de golpe. ¿Por qué?",
+        "options": {
+          "1": "El pin 13 no tiene hardware PWM",
+          "2": "El LED está fundido",
+          "3": "delay(8) es demasiado corto"
+        },
+        "why": "Solo el 3, 5, 6, 9, 10 y 11 tienen temporizadores PWM. En cualquier otro pin, analogWrite() escribe LOW por debajo de 128 y HIGH desde 128, así que el fundido se convierte en una onda cuadrada."
+      },
+      "jack-reverse": {
+        "q": "Un adaptador de 9 V entra en el conector de barril con la polaridad cambiada. ¿Qué pasa?",
+        "options": {
+          "1": "Nada: D1 lo bloquea y la placa sigue apagada",
+          "2": "El regulador de 5 V se quema",
+          "3": "La placa funciona, pero al revés"
+        },
+        "why": "D1 va en serie con el conector. En inversa no deja pasar corriente, así que nada se daña. El pin VIN no tiene ese diodo."
+      },
+      "two-clocks": {
+        "q": "¿Por qué tiene la Uno un cristal de cuarzo y un resonador cerámico?",
+        "options": {
+          "1": "Uno es el repuesto del otro",
+          "2": "El USB necesita la precisión del cristal; al 328P le basta con el resonador, más barato",
+          "3": "El resonador da el reloj al regulador de 3,3 V"
+        },
+        "why": "El USB de velocidad completa necesita una precisión de unos ±0,25 %, así que el 16U2 se queda con el cristal Y1. El resonador Y2 (unos ±0,5 %) es suficiente para el 328P."
+      },
+      "int16": {
+        "q": "En la Uno, int n = 32767; n++; ¿en qué valor deja n?",
+        "options": {
+          "1": "32768",
+          "2": "-32768",
+          "3": "0"
+        },
+        "why": "En el AVR de 8 bits un int tiene 16 bits, así que 32767 es el valor más grande y uno más da la vuelta a -32768. Usa long, o unsigned long para millis()."
+      }
+    }
+  }
+}
