@@ -181,12 +181,18 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
     `wf_c44031b5-93f` (`phase3-wave.js`, `P3-ui-<lang>`, jobs 1 and 3 only), **done at 01:41**: leaves still equal to
     English per language fell from 736-1231 to 138-212, each left one a name, unit or code; all pushed. The figure-string delta (job 2) waits
     for P2-engine-b: then `node scripts/figure-strings.mjs`, commit the key list, and run it as its own small wave.
-  - If this session dies: `git log` shows what each label pushed. Relaunch the unfinished wave-B labels with
-    `args: { labels: [...], resume: { stoppedAt, since: "88b7db2", backup } }` after backing up the uncommitted files,
-    and the prose wave with the items not yet in `src/i18n/content/<lang>/`.
-- **Next step:** wait for both. When wave B finishes: its reports here, "Between and after the waves" in `phase2.md`
-  (content index, `cfbuild.py --all` with `cfshoot`, gate checks, `docs/verify/gate2.md`), then plan and launch phase
-  3's T2 (UI strings, figure dictionaries, wave B's prose) and D (docs) in `phase3.md`.
+  - If this session dies: `git log` shows what each label pushed. Relaunch a run's unfinished labels from its
+    committed script (`final-polish.js` takes `finish` times; a phase whose report file is committed is done), the
+    delta with the languages whose `figure-strings.test.ts` still fails, the quiz job with the boards still missing
+    quizzes. Stop the audit server on port 3430 (`pkill -f "next start -H 127.0.0.1 -p 3430"`) and delete
+    `.next-final` once phase 2 of the final pass is done.
+- **Next step:** wait for the three runs (final pass, figure delta, quizzes) and the gate 2 figure run. Write
+  `docs/verify/gate2.md` from the gate 2 results above. As each final-pass phase reports, record it here; after
+  F-review, fix or relaunch what `docs/verify/ui-review.md` lists, then run gate 3 locally (BUILD-PLAN §6 in all six
+  languages: the gate-2 commands plus the crawl and Playwright on the final UI), and recheck the claims wave D listed
+  (counts, the figure-string caveat in JUDGE-QA Q22, VIDEO and DEVPOST-WRITEUP, the click labels). Then prepare
+  Amar's morning list: keys into `.env.local`, his OK for Vercel env and deploy, the relay host, video 08:30-10:00,
+  Devpost by 10:30 (he submits).
 - **Agents:** P1-checks `1e6f87c4-b1ea-4a31-9425-b1de6de9a88f` done (`39cca43`, `c168147`). P1-health
   `d393e1cb-35bc-4db4-bc0b-37c02c1b8e14` done (`28d8564`). P1-voice `b337455f-1b6d-45d5-93d8-51efb828d421` done
   (`b1e5308`). P1-engine `1a0582c2-ec24-42ab-8b3c-e2ac162b8e48` done (`f104e10`, `a45ec96`, `03eaab0`, `9d49d45`,
