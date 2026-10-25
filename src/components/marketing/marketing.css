@@ -1,0 +1,85 @@
+/* Type and motion for the editorial pages (mk- for marketing). Layout lives in Tailwind classes; these are the parts
+   Tailwind can't say cleanly: per-script headline tuning and the enter animation. */
+
+.mk-display {
+  font-family: var(--font-body);
+  font-size: clamp(44px, 7vw, 104px);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.mk-title {
+  font-family: var(--font-body);
+  font-size: clamp(28px, 3.4vw, 48px);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* Devanagari matras and Han glyphs need air and no negative tracking; Han takes the sans face, not the serif. */
+.mk-display.mk-display:is(:lang(hi), :lang(zh-Hans)),
+.mk-title.mk-title:is(:lang(hi), :lang(zh-Hans)) {
+  letter-spacing: -0.005em;
+  line-height: 1.2;
+}
+.mk-display.mk-display:lang(zh-Hans),
+.mk-title.mk-title:lang(zh-Hans) {
+  font-family: var(--font-sans, ui-sans-serif), var(--font-cjk), sans-serif;
+}
+.mk-display.mk-display:lang(hi),
+.mk-title.mk-title:lang(hi) {
+  font-family: var(--font-body);
+}
+
+.mk-accent {
+  font-family: var(--font-display, Georgia), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+/* Neither script has an italic: there the accent word stays upright in the headline's own face. */
+.mk-accent:is(:lang(hi), :lang(zh-Hans)) {
+  font-family: inherit;
+  font-style: normal;
+  font-weight: inherit;
+}
+
+.mk-eyebrow {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.mk-eyebrow:is(:lang(hi), :lang(zh-Hans)) {
+  font-family: var(--font-body);
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.mk-rise {
+  animation: mk-rise 520ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: var(--rise-delay, 0ms);
+}
+
+@keyframes mk-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mk-rise {
+    animation: none;
+  }
+}
+:root[data-reduce-motion="true"] .mk-rise {
+  animation: none;
+}

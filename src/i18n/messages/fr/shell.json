@@ -47,8 +47,8 @@
     "metaTitle": "Tableau de bord",
     "metaDescription": "Assembler, câbler, programmer, casser et voler : {boards} cartes, {benches} bancs de robotique et {drones} drones, dessinés à l’encre et entièrement interactifs.",
     "kicker": "Explorer · Comprendre · Construire",
-    "title": "Apprendre l’électronique en la construisant",
-    "lede": "{boards} cartes de développement, {benches} bancs de robotique et {drones} drones, chacun une figure 3D encrée à la main. Faites-la tourner, regardez à l’intérieur, câblez-la, lancez du vrai code, cassez-la exprès et comprenez pourquoi.",
+    "title": "Apprendre l’électronique en la *construisant*",
+    "lede": "{boards} cartes, {benches} bancs de robotique et {drones} drones, chacun une figure 3D encrée à la main que vous pouvez tourner, câbler, programmer et casser exprès.",
     "start": "Commencer avec l’Arduino Uno R3",
     "browse": "Parcourir les cartes",
     "heroFigure": "Arduino Uno R3 qui exécute Blink sur une platine d’essai, en direct : faites-le glisser pour le tourner",
@@ -56,17 +56,17 @@
     "open": "Ouvrir le {lab}",
     "board": {
       "text": "De l’Arduino Uno R3 à deux cartes FPGA : des leçons, un éditeur de code en direct, des vues schéma et platine d’essai, un moniteur série et des pannes qui se produisent vraiment.",
-      "count": "{count} cartes",
+      "unit": "cartes",
       "progress": "Leçons et assemblages"
     },
     "robotics": {
       "text": "Drivers de moteurs, capteurs et étages d’alimentation, montés pièce par pièce sur le banc, avec des exercices pratiques, un quiz après chaque étape, l’état en direct et le courant consommé.",
-      "count": "{count} bancs",
+      "unit": "bancs",
       "progress": "Étapes, exercices et quiz"
     },
     "drones": {
       "text": "Du Tiny Whoop à l’octocoptère : un montage pièce par pièce, le poids et la poussée calculés en direct, des tests de sécurité, de vrais réglages Betaflight et ArduPilot, et un terrain de vol.",
-      "count": "{count} drones",
+      "unit": "drones",
       "progress": "Montages, tests et parcours"
     },
     "continue": {
@@ -106,6 +106,24 @@
         "title": "Armer et voler",
         "text": "Montez un drone, vérifiez ses chiffres, passez le smoke stopper et les tests moteurs, puis franchissez des portes en mode angle ou acro."
       }
+    },
+    "together": {
+      "rooms": {
+        "title": "Salons partagés",
+        "text": "Ouvrez un salon sur n’importe quelle carte, robot ou drone et envoyez le lien. Jusqu’à huit personnes partagent un même banc, une seule au clavier."
+      },
+      "partner": {
+        "title": "Un partenaire de labo",
+        "text": "Muse Spark vous trouve un partenaire dont les compétences complètent les vôtres, puis prépare une soirée de construction qui plaira à tous."
+      },
+      "languages": {
+        "title": "Six langues",
+        "text": "Chaque page, leçon et étiquette de figure, dans votre langue. Choisissez-en une ci-dessous."
+      }
+    },
+    "closing": {
+      "title": "L’établi est *prêt*.",
+      "text": "Gratuit, sans compte, rien à installer."
     }
   },
   "about": {

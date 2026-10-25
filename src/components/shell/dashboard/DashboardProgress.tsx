@@ -1,6 +1,6 @@
 "use client";
 
-import { ButtonLink } from "@/components/ui/Button";
+import { ArrowLink, CtaLink } from "@/components/marketing";
 import { ProgressBadge } from "@/components/ui/ProgressBadge";
 import { useT } from "@/i18n/client";
 import type { Messages } from "@/i18n/namespaces";
@@ -90,13 +90,9 @@ export function HeroActions({ items, messages, progressMessages, labNames, start
 
   if (!found) {
     return (
-      <div className="flex flex-wrap gap-3">
-        <ButtonLink href={start.href} variant="primary" size="lg">
-          {start.label}
-        </ButtonLink>
-        <ButtonLink href={browse.href} size="lg">
-          {browse.label}
-        </ButtonLink>
+      <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+        <CtaLink href={start.href}>{start.label}</CtaLink>
+        <ArrowLink href={browse.href}>{browse.label}</ArrowLink>
       </div>
     );
   }
@@ -106,19 +102,17 @@ export function HeroActions({ items, messages, progressMessages, labNames, start
   const done = keys.filter((key) => complete(saved, key)).length;
   return (
     <div>
-      <div className="flex flex-wrap gap-3">
-        <ButtonLink href={target.entry.href} variant="primary" size="lg">
+      <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+        <CtaLink href={target.entry.href}>
           {t("resume")}: {target.entry.label ?? target.item.title}
-        </ButtonLink>
-        <ButtonLink href={browse.href} size="lg">
-          {browse.label}
-        </ButtonLink>
+        </CtaLink>
+        <ArrowLink href={browse.href}>{browse.label}</ArrowLink>
       </div>
-      <p className="mt-4 text-sm text-muted">
-        {t("last")}: <span className="font-semibold text-ink">{found.last.item.title}</span> · {describe(found.last, t)} ·{" "}
+      <p className="mt-6 text-sm text-muted">
+        {t("last")}: <span className="font-medium text-ink">{found.last.item.title}</span> · {describe(found.last, t)} ·{" "}
         {labNames[found.last.item.lab]}
       </p>
-      <p className="mt-1 text-sm text-muted">{p("progressLabel", { label: overallLabel, done, total: keys.length })}</p>
+      <p className="mt-1 text-sm text-muted tabular">{p("progressLabel", { label: overallLabel, done, total: keys.length })}</p>
     </div>
   );
 }

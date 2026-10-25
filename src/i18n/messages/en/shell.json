@@ -47,8 +47,8 @@
     "metaTitle": "Dashboard",
     "metaDescription": "Build, wire, code, break and fly: {boards} boards, {benches} robotics benches and {drones} drones, drawn in ink and fully interactive.",
     "kicker": "Explore · Understand · Build",
-    "title": "Learn hardware by building it",
-    "lede": "{boards} dev boards, {benches} robotics benches and {drones} drones, each one a hand-inked 3D figure. Turn it round, look inside, wire it up, run real code, break it on purpose and find out why.",
+    "title": "Learn hardware by *building* it",
+    "lede": "{boards} boards, {benches} robotics benches and {drones} drones, each a hand-inked 3D figure you can turn, wire, code and break on purpose.",
     "start": "Start with the Arduino Uno R3",
     "browse": "Browse the boards",
     "heroFigure": "Arduino Uno R3 running Blink on a breadboard, live: drag to turn it",
@@ -56,17 +56,17 @@
     "open": "Open the {lab}",
     "board": {
       "text": "From the Arduino Uno R3 to two FPGA boards: lessons, a live code editor, schematic and breadboard views, a serial monitor and failures that really trigger.",
-      "count": "{count} boards",
+      "unit": "boards",
       "progress": "Lessons and assemblies"
     },
     "robotics": {
       "text": "Motor drivers, sensors and power stages, built part by part on the bench, with practice tasks, quizzes after each step, live status and current draw.",
-      "count": "{count} benches",
+      "unit": "benches",
       "progress": "Steps, tasks and quizzes"
     },
     "drones": {
       "text": "From a Tiny Whoop to an octocopter: a part-by-part build, live weight and thrust maths, safety tests, real Betaflight and ArduPilot settings, and a flying range.",
-      "count": "{count} drones",
+      "unit": "drones",
       "progress": "Builds, tests and courses"
     },
     "continue": {
@@ -106,6 +106,24 @@
         "title": "Arm and fly",
         "text": "Build a drone, check its numbers, run the smoke stopper and motor tests, then fly gates in angle or acro mode."
       }
+    },
+    "together": {
+      "rooms": {
+        "title": "Shared rooms",
+        "text": "Open a room on any board, robot or drone and send the link. Up to eight people share one bench, one at the keyboard."
+      },
+      "partner": {
+        "title": "A lab partner",
+        "text": "Muse Spark finds you a build buddy whose skills fit yours, then plans a build night you'll all enjoy."
+      },
+      "languages": {
+        "title": "Six languages",
+        "text": "Every page, lesson and figure label, in your language. Pick one below."
+      }
+    },
+    "closing": {
+      "title": "The bench is *ready*.",
+      "text": "Free, no account, nothing to install."
     }
   },
   "about": {

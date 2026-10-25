@@ -47,8 +47,8 @@
     "metaTitle": "Panel",
     "metaDescription": "Monta, cablea, programa, rompe y vuela: {boards} placas, {benches} bancos de robótica y {drones} drones, dibujados a tinta y totalmente interactivos.",
     "kicker": "Explora · Comprende · Construye",
-    "title": "Aprende hardware construyéndolo",
-    "lede": "{boards} placas de desarrollo, {benches} bancos de robótica y {drones} drones, cada uno una figura 3D entintada a mano. Gírala, mira por dentro, cabléala, ejecuta código real, rómpela a propósito y descubre por qué.",
+    "title": "Aprende hardware *construyéndolo*",
+    "lede": "{boards} placas, {benches} bancos de robótica y {drones} drones, cada uno una figura 3D entintada a mano que puedes girar, cablear, programar y romper a propósito.",
     "start": "Empieza con el Arduino Uno R3",
     "browse": "Ver las placas",
     "heroFigure": "Arduino Uno R3 con Blink en una protoboard, en vivo: arrástralo para girarlo",
@@ -56,17 +56,17 @@
     "open": "Abrir el {lab}",
     "board": {
       "text": "Del Arduino Uno R3 a dos placas FPGA: lecciones, un editor de código en vivo, vistas de esquema y de protoboard, un monitor serie y fallos que se producen de verdad.",
-      "count": "{count} placas",
+      "unit": "placas",
       "progress": "Lecciones y montajes"
     },
     "robotics": {
       "text": "Drivers de motores, sensores y etapas de alimentación, montados pieza a pieza en el banco, con tareas prácticas, cuestionarios tras cada paso, estado en vivo y consumo de corriente.",
-      "count": "{count} bancos",
+      "unit": "bancos",
       "progress": "Pasos, tareas y cuestionarios"
     },
     "drones": {
       "text": "De un Tiny Whoop a un octocóptero: montaje pieza a pieza, cálculo en vivo de peso y empuje, pruebas de seguridad, ajustes reales de Betaflight y ArduPilot, y un campo de vuelo.",
-      "count": "{count} drones",
+      "unit": "drones",
       "progress": "Montajes, pruebas y circuitos"
     },
     "continue": {
@@ -106,6 +106,24 @@
         "title": "Arma y vuela",
         "text": "Monta un dron, comprueba sus números, pasa el smoke stopper y las pruebas de motores, y luego vuela entre puertas en modo angle o acro."
       }
+    },
+    "together": {
+      "rooms": {
+        "title": "Salas compartidas",
+        "text": "Abre una sala en cualquier placa, robot o dron y envía el enlace. Hasta ocho personas comparten un banco, una al teclado."
+      },
+      "partner": {
+        "title": "Un compañero de laboratorio",
+        "text": "Muse Spark te encuentra un compañero cuyas habilidades encajan con las tuyas y planea una noche de montaje que os guste a todos."
+      },
+      "languages": {
+        "title": "Seis idiomas",
+        "text": "Cada página, lección y etiqueta de figura, en tu idioma. Elige uno abajo."
+      }
+    },
+    "closing": {
+      "title": "El banco está *listo*.",
+      "text": "Gratis, sin cuenta y sin nada que instalar."
     }
   },
   "about": {
