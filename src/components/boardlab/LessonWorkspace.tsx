@@ -8,6 +8,7 @@ import { SoundToggle } from "@/components/settings";
 import type { FigureEvent, FigureHandle } from "@/components/figure/protocol";
 import { WorkspaceBar, WorkspaceFrame } from "@/components/shell/workspace";
 import { ButtonLink } from "@/components/ui/Button";
+import { cx } from "@/components/ui/cx";
 import { Icon } from "@/components/ui/icons";
 import { IconButton } from "@/components/ui/IconButton";
 import { Panel } from "@/components/ui/Panel";
@@ -377,7 +378,7 @@ function Workspace({ lang, model, notice }: { lang: Locale; model: LessonModel; 
             onExpand={setExpanded}
             className="lg:min-h-56 lg:flex-1"
           />
-          <div className="flex min-h-0 flex-col border-t-[1.5px] border-rule lg:h-[46%] lg:shrink-0">
+          <div className={cx("flex min-h-0 flex-col border-t-[1.5px] border-rule lg:shrink-0", expanded ? "lg:h-[36%]" : "lg:h-[46%]")}>
             <Tabs
               fill
               phoneGrid

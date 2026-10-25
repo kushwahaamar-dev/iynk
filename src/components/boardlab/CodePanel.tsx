@@ -115,7 +115,15 @@ export function CodePanel({ store, chipParts, onChip, onRunToggle, expanded, onE
             }
           }}
         />
-        <IconButton icon="expand" size="sm" label={expanded ? t("code.collapse") : t("code.expand")} aria-pressed={expanded} onClick={() => onExpand(!expanded)} />
+        {/* A toggle keeps one name and says pressed; the tooltip says what the next press does. */}
+        <IconButton
+          icon="expand"
+          size="sm"
+          label={t("code.expand")}
+          title={expanded ? t("code.collapse") : undefined}
+          aria-pressed={expanded}
+          onClick={() => onExpand(!expanded)}
+        />
       </div>
       {!runnable && (
         <p className="on-fill shrink-0 bg-warn-bg px-4 py-2 text-sm" role="note">
