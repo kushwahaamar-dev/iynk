@@ -83,7 +83,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-25 01:54 CDT (machine clock).
+- **Updated:** 2026-10-25 02:28 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session). Amar is asleep
   since 22:20 and gave full autonomy for every remaining build phase except Solana and hardware (CONTEXT.md §5) The Mac is kept awake by `caffeinate -dimsu -t 54000` (pid 28721, from 23:08, until about 14:08).
 - **Working tree:** `/Users/amar/Codes/ak/simlab`. It already had `node_modules` and `.env.local`. Do not build in
@@ -154,6 +154,18 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   - Prose T2 `wf_788dd7a3-f68`: **done at 01:52.** All 38 items have prose in all six languages (190 translated
     files). The driver then fixed the Spanish spelling of Break it (Averíala, `3c40104`) and the German bench word,
     Place a part and Serial hello (`a5ac72b`).
+  - **Gate 2 (English, BUILD-PLAN §6), 02:28:** content:check, typecheck, eslint clean; vitest 2719 passed, 5 skipped;
+    relay 39 passed and its typecheck clean; lesson table 102/102 references pass, every starter fails
+    (`docs/verify/gate2-lessons.md`); build with typecheck on; crawl 786 pages, 780 clean, 6 expected 404, 0 failed
+    (`docs/verify/gate2-routes.md`, after fixing two sideways scrolls); Playwright 77 passed, 2 skipped. Still to
+    write: `docs/verify/gate2.md` with the figure probes and cfshoot, which run after the key list.
+  - Wave D done (`wf_d61de94b-466`, 02:20): README, DECISIONS "Build night", JUDGE-QA (new), PITCH, VIDEO,
+    DEVPOST-WRITEUP; two prompt records. Their open points are in `docs/verify/sweep.md`.
+  - **Final pass, run `wf_c95e5cdf-cda` (`final-polish.js`, brief `scripts/workflows/final.md`), since 02:28:**
+    Amar's 02:02 ask. Look (F-research on Fable, F-audit-shell/-boards/-robotics/-drones/-panels, F-fresh-eyes) on
+    the production server `.next-final` at http://127.0.0.1:3430 (started by the driver; stop it and delete the
+    folder after phase 2), then F-direction writes `docs/design/POLISH-SPEC.md`, F-build-shell, then F-build-boards,
+    -robotics, -drones, -panels (dev servers 3441-3445), then F-review. Gate 3 runs after it, on the final UI.
   - Phase 3 D, run `wf_d61de94b-466` (`phase3-wave.js`), since 01:54: P3-docs-repo (README, missing prompt records,
     DECISIONS) and P3-docs-pitch (PITCH, DEVPOST-WRITEUP, DEVPOST, VIDEO, JUDGE-QA), started before gate 2: they check
     each claim against the repo and list what the driver must recheck after gate 3.
