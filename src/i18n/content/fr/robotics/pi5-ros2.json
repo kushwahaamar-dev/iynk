@@ -1,0 +1,539 @@
+{
+  "title": "Raspberry Pi 5",
+  "sub": "Cerveau ROS 2",
+  "hint": "Montez-le, la carte microSD et le refroidisseur en dernier, puis alimentez-le avec une vraie alimentation de 5 A",
+  "overview": "Le Raspberry Pi 5 est le cerveau du robot, pas sa moelle épinière : un ordinateur Linux quatre cœurs à 2,4 GHz qui fait tourner ROS 2, SLAM Toolbox, Nav2 et la chaîne de traitement de la caméra. Linux n'est pas temps réel : les boucles des moteurs et de l'équilibre vivent donc sur un ESP32 ou un Nano qui parle au Pi par une liaison série USB, la même répartition que l'UGV Rover de Waveshare. Montez-le à partir de la carte nue, donnez-lui sa carte microSD et l'Active Cooler, alimentez-le avec une vraie alimentation 5 V 5 A et regardez le terminal. La chaleur évolue ici environ dix fois plus vite que sur une vraie carte : vous voyez en quelques secondes ce qui prend des minutes sur l'établi.",
+  "power": {
+    "label": "Branchez / débranchez l'alimentation USB-C de 27 W",
+    "ok": "Sous tension : la LED passe du rouge au vert pendant que Linux démarre"
+  },
+  "parts": {
+    "U1": {
+      "name": "SoC BCM2712",
+      "what": "Quatre cœurs Cortex-A76 à 2,4 GHz et un GPU VideoCore VII sur une puce flip-chip sous un dissipateur métallique. Il fait tourner Linux, ROS 2, le SLAM et la vision, vite mais pas en temps réel."
+    },
+    "U2": {
+      "name": "RAM LPDDR4X",
+      "what": "1 à 16 GB de LPDDR4X-4267 juste à côté du SoC : à ces vitesses, les pistes de la mémoire doivent être courtes."
+    },
+    "U3": {
+      "name": "Contrôleur d'E/S RP1",
+      "what": "La puce maison de Raspberry Pi pour l'USB, l'Ethernet, les caméras et le connecteur GPIO, reliée au SoC par quatre voies PCIe 2.0. Chaque port de la carte vient d'elle."
+    },
+    "U4": {
+      "name": "Circuit de gestion de l'alimentation (Renesas DA9091)",
+      "what": "Produit tous les rails (cœur, mémoire, 1,8 V, 3,3 V) à partir de l'entrée 5 V, entretient l'horloge temps réel, gère le bouton d'alimentation et signale une sous-tension sous 4,63 V."
+    },
+    "U5": {
+      "name": "Module Wi-Fi et Bluetooth",
+      "what": "Wi-Fi 802.11ac bibande et Bluetooth 5.0 sous un capot métallique. Très bien pour SSH et Foxglove ; le trafic de commande du robot est plus sûr sur un câble."
+    },
+    "U6": {
+      "name": "PHY Ethernet Gigabit",
+      "what": "Transforme les signaux Ethernet du RP1 en tensions sur le câble ; il est posé à 45 degrés à côté de la prise."
+    },
+    "L1": {
+      "name": "Inductances d'alimentation du PMIC",
+      "what": "Les quatre blocs gris à côté du PMIC stockent l'énergie pour ses régulateurs à découpage."
+    },
+    "RC": {
+      "name": "Condensateurs de découplage et résistances",
+      "what": "Des centaines de minuscules composants : chaque puce rapide a besoin d'une réserve d'énergie locale, juste à ses broches d'alimentation."
+    },
+    "LED1": {
+      "name": "LED d'alimentation et d'état (rouge/verte)",
+      "what": "Rouge quand le courant arrive, verte une fois le firmware démarré, s'éteignant brièvement pendant les lectures de la carte SD. Les erreurs de démarrage s'affichent en codes de clignotements verts longs et courts."
+    },
+    "SW1": {
+      "name": "Bouton d'alimentation",
+      "what": "Nouveau sur le Pi 5. La première mise sous tension démarre toute seule ; ensuite, un appui éteint proprement, un appui à l'arrêt redémarre, un long maintien coupe l'alimentation."
+    },
+    "J1": {
+      "name": "Entrée d'alimentation USB-C",
+      "what": "Entrée 5 V. L'alimentation officielle de 27 W indique au Pi par l'USB PD qu'elle peut fournir 5 A ; une alimentation 5 V 3 A le fait démarrer mais limite les ports USB à 600 mA."
+    },
+    "J20": {
+      "name": "Connecteur PCIe",
+      "what": "Connecteur de nappe 16 broches au pas de 0,5 mm avec une voie PCIe 2.0, pour un SSD NVMe ou un HAT accélérateur d'IA."
+    },
+    "J3": {
+      "name": "Connecteur caméra/écran 0",
+      "what": "Nappe 22 broches au pas de 0,5 mm, quatre voies MIPI, pour une caméra ou un écran DSI. Deux caméras forment une paire stéréo : calibrez d'abord chacune avec un damier."
+    },
+    "J4": {
+      "name": "Connecteur caméra/écran 1",
+      "what": "Le second connecteur MIPI à 4 voies. Les nappes de caméra du Pi 4 sont en 15 broches au pas de 1 mm et demandent un câble adaptateur."
+    },
+    "J5": {
+      "name": "Connecteur de pile RTC",
+      "what": "JST-SH 2 broches pour une petite pile qui fait tourner l'horloge quand le Pi est débranché : les horodatages des journaux et des bags restent justes."
+    },
+    "UART": {
+      "name": "Connecteur UART de débogage",
+      "what": "Console série JST-SH 3 broches (broche 1 RX, 2 GND, 3 TX) à 115200 bauds, /dev/ttyAMA10 sous Linux."
+    },
+    "FAN": {
+      "name": "Connecteur de ventilateur",
+      "what": "Connecteur de ventilateur PWM JST-SH 4 broches : le firmware accélère le ventilateur à mesure que le SoC chauffe."
+    },
+    "MICROSD": {
+      "name": "Support de carte microSD",
+      "what": "Un support push-push sur la face inférieure. Le Pi n'a pas de flash à lui pour les programmes : Raspberry Pi OS, votre espace de travail ROS 2 et tous les journaux vivent sur la carte qui y est insérée."
+    },
+    "J6": {
+      "name": "Micro-HDMI 0",
+      "what": "Jusqu'à la 4K à 60 Hz. Sur un robot, il sert surtout au premier démarrage."
+    },
+    "J13": {
+      "name": "Micro-HDMI 1",
+      "what": "Un second écran 4K60 : RViz sur un écran, les terminaux sur l'autre."
+    },
+    "J8": {
+      "name": "Connecteur GPIO 40 broches",
+      "what": "Logique 3,3 V avec I2C, SPI, UART et PWM. Jamais de 5 V sur une broche, et les moteurs vont sur un microcontrôleur, pas ici. Les broches 2 et 4 sont reliées directement à l'entrée 5 V."
+    },
+    "J14": {
+      "name": "Connecteur PoE+",
+      "what": "Quatre broches qui prennent l'alimentation du câble Ethernet à travers le HAT PoE+."
+    },
+    "J10": {
+      "name": "Prise Ethernet Gigabit",
+      "what": "Le moyen fiable de diffuser les topics et les images de la caméra. LED verte = liaison, orange = trafic."
+    },
+    "J12": {
+      "name": "Ports USB 3.0 (bleus)",
+      "what": "Deux ports à 5 Gbit/s qui fonctionnent à pleine vitesse en même temps : caméras de profondeur, lidar, SSD."
+    },
+    "J11": {
+      "name": "Ports USB 2.0 (noirs)",
+      "what": "Clavier, manette de téléopération et la liaison série USB vers le Nano ou l'ESP32."
+    },
+    "CARD": {
+      "name": "Carte microSD",
+      "what": "Le système d'exploitation. Écrivez-y Raspberry Pi OS ou Ubuntu avec Raspberry Pi Imager ; une carte de classe A2 de 32 GB ou plus garde les compilations ROS 2 et les fichiers bag rapides. Débrancher pendant une écriture peut la corrompre."
+    },
+    "COOLER": {
+      "name": "Active Cooler",
+      "what": "Dissipateur en aluminium et ventilateur radial sur deux goupilles à ressort, avec des pads thermiques sur le SoC, et un câble vers le connecteur de ventilateur. Sans lui, la charge de ROS 2 pousse le SoC au-delà de 80 °C et le firmware baisse l'horloge."
+    }
+  },
+  "modes": {
+    "boot": {
+      "title": "Démarrage et vérification",
+      "code": {
+        "what": "boot_check.py : lancez-le après le premier démarrage pour vérifier que le Pi est en bonne santé",
+        "first": "sur une carte SD neuve, mettez d'abord à jour :",
+        "throttled": "throttled=0x0 : l'alimentation n'a jamais faibli",
+        "temp": "température du CPU",
+        "clock": "horloge Arm : 2400000000 Hz à pleine vitesse"
+      }
+    },
+    "teleop": {
+      "title": "Nœud de conduite ROS 2",
+      "code": {
+        "what": "drive.py : un nœud ROS 2 qui fait rouler le robot (ROS 2 Lyrical sur Ubuntu 26.04)",
+        "rate": "10 Hz",
+        "heat": "vérifie la température du SoC toutes les 5 s",
+        "linear": "m/s en avant",
+        "angular": "rad/s en rotation",
+        "publish": "l'ESP32 transforme ceci en PWM pour les moteurs"
+      }
+    },
+    "health": {
+      "title": "Vérification de l'alimentation et de la chaleur",
+      "code": {
+        "what": "health.py : décode vcgencmd get_throttled bit par bit",
+        "charger": "un chargeur de téléphone faiblit sous la charge : redémarrages aléatoires, cartes SD corrompues, périphériques USB qui décrochent",
+        "fix": "solution : l'alimentation USB-C officielle 5 V 5 A (27 W)"
+      }
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Démontez-le jusqu'au circuit nu",
+      "body": "Débranchez l'alimentation, puis retirez tous les composants. Le Pi 5 se monte comme n'importe quelle carte moderne : les composants montés en surface d'abord, puis les connecteurs traversants du plus bas au plus haut, et la carte microSD et l'Active Cooler en dernier.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    },
+    "smd": {
+      "title": "Placement automatique des composants CMS, puis refusion",
+      "body": "La machine pose sur la pâte à souder le BCM2712, la RAM, le RP1, le PMIC et ses inductances, le capot Wi-Fi, le PHY Ethernet et chaque petit condensateur et résistance, et avec eux les connecteurs montés en surface : l'USB-C, les connecteurs de nappe PCIe et caméra, les connecteurs RTC, UART et ventilateur, le support microSD, la LED et le bouton d'alimentation. Le four de refusion fait fondre la pâte sous chaque pastille à environ 245 °C.",
+      "refusal": "Les composants CMS sont déjà sur la carte"
+    },
+    "low": {
+      "title": "Posez les composants traversants bas",
+      "body": "Les deux prises micro-HDMI. Les composants bas se posent en premier pour que la carte repose à plat sur eux quand vous la retournez pour souder.",
+      "refusal": "Les composants CMS d'abord : lancez le placement puis la refusion. Le four ferait fondre les pièces en plastique"
+    },
+    "tall": {
+      "title": "Posez les connecteurs hauts",
+      "body": "Le connecteur GPIO 40 broches, le connecteur PoE+, la prise Ethernet et les deux blocs USB.",
+      "refusal": "Les composants bas d'abord : avec les composants hauts en place, la carte bascule et les pièces non soudées tombent quand vous la retournez pour souder"
+    },
+    "solder": {
+      "title": "Soudez les composants traversants",
+      "body": "Chaque soudure doit être brillante et concave, sans pont entre les broches du GPIO.",
+      "refusal": "Rien à souder pour l'instant : posez d'abord un composant"
+    },
+    "card": {
+      "title": "Insérez la carte microSD",
+      "body": "La carte contient le système d'exploitation : elle ne s'insère donc qu'une fois toutes les soudures faites. Elle s'enclenche dans le support sous la carte, contacts tournés vers la carte.",
+      "refusal": "Soudez d'abord tout le reste : la carte s'insère en dernier"
+    },
+    "cooler": {
+      "title": "Posez l'Active Cooler",
+      "body": "Enfoncez ses deux goupilles à ressort dans les trous à côté du SoC pour que le pad thermique repose sur le SoC, puis branchez son câble sur le connecteur de ventilateur 4 broches.",
+      "refusal": "Soudez d'abord tout le reste : cette pièce se pose en dernier"
+    },
+    "plug": {
+      "title": "Branchez l'alimentation USB-C de 27 W",
+      "body": "L'alimentation officielle propose 5 V sous 5 A par l'USB PD. La LED s'allume en rouge, passe au vert quand le firmware démarre et s'éteint brièvement à chaque lecture de la carte SD pendant que Linux démarre ; puis boot_check.py affiche les indicateurs d'alimentation, la température et l'horloge.",
+      "refusal": "Il n'y a rien où brancher le câble : remettez d'abord J1"
+    },
+    "teleop": {
+      "title": "Lancez le nœud de conduite ROS 2",
+      "body": "Le nœud publie un Twist sur /cmd_vel dix fois par seconde. Sur un vrai robot, un ESP32 ou un Nano le lit par la liaison série USB et le transforme en PWM pour les moteurs."
+    },
+    "health": {
+      "title": "Vérifiez l'alimentation et la chaleur",
+      "body": "vcgencmd get_throttled regroupe l'historique de l'alimentation et de la température en un seul nombre. 0x0 signifie que l'alimentation n'a jamais faibli et que l'horloge n'a jamais été réduite depuis ce démarrage."
+    },
+    "charger": {
+      "title": "Cassez-le : alimentez-le avec un chargeur de téléphone 5 V 2 A",
+      "body": "Sous la charge, le chargeur et son câble fin tombent à 4,6 V, sous la limite de 4,63 V. Surveillez l'alimentation, l'horloge et les indicateurs throttled, puis revenez à l'alimentation de 27 W."
+    },
+    "no-cooler": {
+      "title": "Cassez-le : faites-le tourner sans l'Active Cooler",
+      "body": "Le refroidisseur est retiré et le nœud de conduite tourne sur un SoC nu. La température monte de quelques degrés par seconde, l'horloge baisse au-delà de 80 °C et le nœud avertit. Réparez ensuite : le refroidisseur reprend sa place et la carte refroidit."
+    },
+    "cold-fan": {
+      "title": "Cassez-le : une soudure froide sur le connecteur du ventilateur",
+      "body": "Une broche du connecteur de ventilateur touche à peine sa pastille : le ventilateur hoquette et le SoC chauffe davantage. Refaites la soudure (Tout réparer) pour corriger."
+    },
+    "motors": {
+      "title": "Cassez-le : des moteurs de propulsion sur le 5 V du Pi",
+      "body": "Alimentez le Pi par les broches GPIO 2 et 4 depuis le convertisseur buck de 3 A du robot, avec deux moteurs TT de propulsion sur le même rail. Leur courant de démarrage fait chuter le rail et le Pi se réinitialise. Réparez, puis donnez au Pi sa propre alimentation de 27 W."
+    },
+    "reverse": {
+      "title": "Cassez-le : le 5 V du robot câblé à l'envers",
+      "body": "Inversez les fils sur les broches GPIO 2 et 6. Rien sur le rail 5 V du connecteur ne bloque une alimentation inversée. Réparez, puis alimentez-le à nouveau par l'USB-C."
+    },
+    "overvolt": {
+      "title": "Cassez-le : 12 V sur les broches 5 V",
+      "body": "Câblez une batterie 3S directement sur la broche 2 au lieu de passer par un convertisseur buck 5 V. Réparez, puis alimentez-le à nouveau par l'USB-C."
+    },
+    "exploded": {
+      "title": "Vue éclatée",
+      "body": "Débranchez et soulevez les pièces par groupe de montage pour voir ce qui se cache sous le refroidisseur.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    }
+  },
+  "faults": {
+    "undervoltage": {
+      "title": "Sous-tension due à un chargeur de téléphone",
+      "symptom": "L'alimentation lit 4,6 V, l'horloge tombe à 1,5 GHz, get_throttled affiche 0x50005 et le noyau écrit 'Undervoltage detected!' dans son journal.",
+      "explanation": "Le Pi 5 signale une sous-tension sous 4,63 V (±5 %). Un chargeur de téléphone 5 V 2 A et un câble fin faiblissent sous la charge du Pi : le firmware limite donc l'horloge. Les alimentations faibles causent aussi des redémarrages aléatoires, des cartes SD corrompues et des périphériques USB qui décrochent.",
+      "fix": "Utilisez l'alimentation USB-C officielle 5 V 5 A (27 W)."
+    },
+    "no-cooler": {
+      "title": "Pas d'Active Cooler",
+      "symptom": "La température du CPU dépasse 80 °C, l'horloge descend de 2,4 GHz vers 1,5 GHz, get_throttled affiche 0x40004 et le nœud de conduite avertit de la chaleur.",
+      "explanation": "Le firmware réduit la fréquence des cœurs Arm par paliers dès 80 °C, et celle du GPU aussi à 85 °C. Sous la charge de ROS 2, un BCM2712 nu y arrive vite, et 1,5 GHz ne représente que 62,5 % de la pleine vitesse.",
+      "fix": "Débranchez, remettez l'Active Cooler et branchez son câble sur le connecteur de ventilateur."
+    },
+    "cold-fan": {
+      "title": "Soudure froide sur le connecteur de ventilateur",
+      "symptom": "Le ventilateur s'arrête et repart, son rapport cyclique saute entre 0 et la valeur de la courbe, et le CPU chauffe davantage.",
+      "explanation": "Une soudure froide est une goutte terne et granuleuse qui n'a jamais mouillé la pastille : elle ne fait contact qu'une partie du temps. La broche d'alimentation ou de PWM du ventilateur décroche à chaque vibration.",
+      "fix": "Refaites la soudure : chauffez la pastille et la broche ensemble, ajoutez un peu de soudure neuve et laissez-la prendre en un congé brillant et concave."
+    },
+    "motor-brownout": {
+      "title": "Brown-out : des moteurs sur le rail 5 V du Pi",
+      "symptom": "L'alimentation chute, la LED s'éteint et revient, et le terminal répète le journal de démarrage : le Pi se réinitialise chaque fois que les moteurs démarrent.",
+      "explanation": "Un motoréducteur TT tire 1,2-1,5 A quand il démarre ou cale. Deux moteurs plus les 0,8 A du Pi, c'est plus que ce que peut donner le buck de 3 A du robot : le 5 V s'effondre et la carte se réinitialise.",
+      "fix": "Alimentez les moteurs depuis la batterie à travers un driver de moteurs commandé par l'ESP32, et donnez au Pi sa propre alimentation 5 V 5 A."
+    },
+    "reverse-gpio": {
+      "title": "Polarité inversée sur les broches 5 V du GPIO",
+      "symptom": "Rien ne démarre, l'alimentation passe en limitation de courant et le PMIC chauffe.",
+      "explanation": "L'USB-C a un détrompeur et ne peut pas se brancher à l'envers, mais les broches 5 V du connecteur vont directement au rail d'entrée 5 V, sans aucune protection. Inversé, le courant traverse le PMIC dans le mauvais sens et le brûle.",
+      "fix": "Inversez les fils : le 5 V sur la broche 2 ou 4, la masse sur la broche 6. Mieux encore, alimentez le Pi par l'USB-C."
+    },
+    "gpio-12v": {
+      "title": "12 V sur les broches 5 V",
+      "symptom": "Le PMIC grille aussitôt et la carte reste morte.",
+      "explanation": "Les broches 5 V contournent tous les régulateurs : ce que vous y injectez arrive directement à l'entrée du PMIC. Une batterie 3S (11,1-12,6 V), c'est plus du double de ce pour quoi le PMIC est conçu.",
+      "fix": "N'alimentez les broches 5 V qu'avec une alimentation 5 V régulée, comme un convertisseur buck réglé sur 5,1 V, ou utilisez l'USB-C."
+    },
+    "no-card": {
+      "title": "Pas de carte microSD",
+      "symptom": "La LED reste rouge : la carte est alimentée, mais aucun journal de démarrage n'apparaît.",
+      "explanation": "Le Pi 5 n'a pas de système d'exploitation à lui. Le bootloader dans sa flash SPI en cherche un sur la carte (puis sur l'USB et le réseau, si vous réglez l'ordre de démarrage) et ne trouve rien à charger.",
+      "fix": "Débranchez, insérez une carte écrite avec Raspberry Pi Imager, et remettez sous tension."
+    },
+    "no-pmic": {
+      "title": "PMIC oublié",
+      "symptom": "Aucune lumière : rien ne s'allume sur la carte.",
+      "explanation": "Le DA9091 produit tous les rails à partir de l'entrée 5 V. Sans lui, aucune puce n'est alimentée.",
+      "fix": "Remettez U4 et faites sa refusion."
+    },
+    "no-soc": {
+      "title": "BCM2712 oublié",
+      "symptom": "La LED reste rouge : les rails s'établissent, mais pas de journal de démarrage ni de lumière verte.",
+      "explanation": "Le BCM2712, c'est l'ordinateur : les quatre cœurs Arm, le GPU et le contrôleur mémoire. Les rails s'établissent, mais rien n'exécute le bootloader.",
+      "fix": "Remettez U1 et faites sa refusion."
+    },
+    "no-ram": {
+      "title": "RAM oubliée",
+      "symptom": "La LED fait huit courts clignotements verts, encore et encore, et le démarrage s'arrête.",
+      "explanation": "Le bootloader ne trouve aucune SDRAM et affiche le code de clignotement documenté 0L8S : zéro clignotement long et huit courts, « SDRAM failure ».",
+      "fix": "Remettez U2 et faites sa refusion."
+    },
+    "no-rp1": {
+      "title": "RP1 oublié",
+      "symptom": "La LED fait quatre clignotements longs et trois courts, et il n'y a ni USB, ni Ethernet, ni GPIO.",
+      "explanation": "Chaque port du Pi 5 vient du RP1. Le firmware ne le trouve pas et affiche le code de clignotement documenté 4L3S, « RP1 not found ».",
+      "fix": "Remettez U3 et faites sa refusion."
+    }
+  },
+  "status": {
+    "run": "Linux",
+    "powered": "Sous tension",
+    "supply": "Alimentation (rail 5 V)",
+    "cpu": "Température du CPU (°C)",
+    "clock": "Horloge Arm (GHz)",
+    "throttled": "get_throttled",
+    "fan": "Rapport cyclique du ventilateur",
+    "current": "Courant consommé"
+  },
+  "current": {
+    "pin5": "Buck de 3 A du robot sur les broches GPIO 2/4",
+    "usb": "Alimentation USB-C de 27 W (5 V 5 A)",
+    "charger": "Chargeur de téléphone (5 V 2 A)",
+    "pi": "Pi 5 sous Linux",
+    "ros": "Charge ROS 2 sur les quatre cœurs",
+    "camera": "Caméra de profondeur USB 3",
+    "fan": "Ventilateur de l'Active Cooler"
+  },
+  "tasks": {
+    "cmd-vel-10hz": {
+      "title": "Publier /cmd_vel à 10 Hz avec un timer",
+      "brief": "Le code de départ fait rouler le robot depuis une boucle while avec time.sleep(0.1). Cela bloque le nœud : rclpy ne peut jamais exécuter ses callbacks, et la période dérive de la durée de chaque publication. Réécrivez-le à la manière de ROS 2 : un timer de 0,1 s qui publie le Twist (0,2 m/s en avant, 0,5 rad/s en rotation) et journalise ce qu'il a envoyé, puis rclpy.spin().",
+      "hints": {
+        "1": "self.create_timer(0.1, self.tick) appelle tick toutes les 0,1 s une fois que le nœud tourne.",
+        "2": "Journalisez chaque message avec self.get_logger().info(f'linear.x={msg.linear.x:.2f} angular.z={msg.angular.z:.2f}').",
+        "3": "Remplacez Drive().run() par node = Drive() et rclpy.spin(node)."
+      },
+      "checks": {
+        "1": "Utilise un timer de 0,1 s et rclpy.spin, sans boucle avec sleep",
+        "2": "Publie 0,20 m/s et 0,50 rad/s dix fois par seconde",
+        "3": "Tourne 2 secondes sans erreur"
+      },
+      "code": {
+        "goal": "Tâche : publier le même Twist à 10 Hz, à la manière de ROS 2",
+        "loop": "une boucle bloquante : rclpy n'exécute jamais de callback et la période dérive",
+        "timer": "toutes les 0,1 s : 10 Hz"
+      }
+    },
+    "diff-drive": {
+      "title": "Transformer /cmd_vel en vitesses de roues",
+      "brief": "L'ESP32 pilote deux roues : le Pi découpe donc chaque Twist en une vitesse de roue gauche et une droite, left = v − ω·b/2 et right = v + ω·b/2, où b est la distance entre les roues. Terminez le nœud de base : déclarez un paramètre wheel_base (0,16 m), abonnez-vous à cmd_vel et journalisez les deux vitesses.",
+      "hints": {
+        "1": "self.declare_parameter('wheel_base', 0.16), puis lisez-le avec self.get_parameter('wheel_base').value.",
+        "2": "self.create_subscription(Twist, 'cmd_vel', self.on_cmd, 10) appelle on_cmd pour chaque message.",
+        "3": "Avec v = 0,2 m/s, ω = 0,5 rad/s et b = 0,16 m, vous obtenez left = 0,16 m/s et right = 0,24 m/s. Journalisez f'left={left:.2f} right={right:.2f} m/s'."
+      },
+      "checks": {
+        "1": "Déclare wheel_base et s'abonne à cmd_vel",
+        "2": "Journalise left=0.16 right=0.24 m/s pour chaque message"
+      },
+      "code": {
+        "goal": "Tâche : le nœud de base transforme chaque Twist en vitesses de roue gauche et droite",
+        "param": "déclarez ici le paramètre wheel_base (en mètres)",
+        "sub": "abonnez-vous à cmd_vel avec on_cmd comme callback",
+        "math": "left = v - w*b/2, right = v + w*b/2, puis journalisez les deux",
+        "metres": "mètres entre les centres des roues"
+      }
+    },
+    "range-pipeline": {
+      "title": "Trois nœuds : capteur, filtre, arrêt de sécurité",
+      "brief": "Un système à plusieurs nœuds, sans robot. Le nœud capteur publie une distance qui se rapproche d'un mur (2,0 m, 1,9 m, 1,8 m … à 10 Hz). Écrivez un nœud filtre qui fait la moyenne des window dernières mesures (un paramètre, 4) et publie range_avg, et un nœud de sécurité qui publie un Twist nul sur cmd_vel et avertit une seule fois quand la moyenne passe sous stop_m (un paramètre, 0,5 m). Sur un vrai Pi, allez plus loin : vos propres types .msg et .srv, un fichier de lancement Python avec arguments, puis ros2 bag record et la relecture.",
+      "hints": {
+        "1": "Filtre : gardez une liste, ajoutez-y chaque mesure, faites pop(0) quand elle dépasse la fenêtre, et publiez sum / len.",
+        "2": "Sécurité : retenez que vous vous êtes arrêté, pour que l'avertissement ne s'affiche qu'une fois.",
+        "3": "Avec une fenêtre de 4, la moyenne passe pour la première fois sous 0,5 m à 0,45 m : journalisez f'obstacle at {msg.data:.2f} m: stop'.",
+        "4": "Sur un Pi : ros2 pkg create --build-type ament_python my_robot, un fichier de lancement avec DeclareLaunchArgument, puis ros2 bag record -a et ros2 bag play."
+      },
+      "checks": {
+        "1": "Déclare window et stop_m et s'abonne à range",
+        "2": "Le filtre journalise une moyenne pour chaque mesure",
+        "3": "Le nœud de sécurité s'arrête à 0,45 m en moins de 2 secondes"
+      },
+      "code": {
+        "goal": "Tâche : faire la moyenne de la distance dans un nœud filtre et arrêter le robot dans un nœud de sécurité",
+        "approach": "le robot roule vers un mur à 1 m/s : 0,1 m plus près toutes les 0,1 s",
+        "filter": "déclarez 'window', publiez la moyenne glissante sur range_avg et journalisez-la",
+        "safety": "déclarez 'stop_m', abonnez-vous à range_avg et publiez Twist() une fois qu'elle passe en dessous"
+      }
+    }
+  },
+  "quizzes": {
+    "smd": {
+      "reflow": {
+        "q": "Pourquoi les composants CMS se posent-ils avant tout connecteur ?",
+        "options": {
+          "1": "Le four de refusion chauffe toute la carte à environ 245 °C, ce qui ferait fondre les connecteurs en plastique",
+          "2": "Les composants CMS consomment le plus de courant : ils doivent donc être connectés en premier",
+          "3": "L'ordre n'a pas d'importance sur une carte montée par une machine"
+        },
+        "why": "La refusion fait fondre d'un coup la pâte à souder sous chaque pastille en chauffant toute la carte. Les connecteurs ont un corps en plastique : ils se posent donc après et se soudent à part."
+      },
+      "pmic": {
+        "q": "Que fait le PMIC à côté de la prise USB-C ?",
+        "options": {
+          "1": "Il convertit les données USB en série pour le SoC",
+          "2": "Il produit tous les rails à partir de l'entrée 5 V, négocie 5 A par l'USB PD et signale les sous-tensions",
+          "3": "Il stocke le bootloader"
+        },
+        "why": "Le Pi 5 n'a pas de puce USB-série. Le PMIC DA9091 transforme le 5 V en rails du cœur, de la mémoire, 1,8 V et 3,3 V, entretient l'horloge temps réel, gère le bouton d'alimentation et signale les sous-tensions. Le bootloader vit dans une flash SPI séparée."
+      }
+    },
+    "solder": {
+      "order": {
+        "q": "Pourquoi les composants bas se posent-ils avant les hauts ?",
+        "options": {
+          "1": "Les composants bas demandent un fer plus chaud",
+          "2": "Les composants hauts cacheraient la sérigraphie",
+          "3": "Avec les composants hauts en place, la carte bascule sur eux quand vous la retournez, et les composants bas tombent"
+        },
+        "why": "Vous retournez la carte pour souder par-dessous. Avec seulement les composants bas en place, elle repose à plat sur eux ; les composants hauts viennent après."
+      },
+      "last": {
+        "q": "Pourquoi l'Active Cooler se pose-t-il en dernier ?",
+        "options": {
+          "1": "Il recouvre le SoC et se branche sur le connecteur de ventilateur : tout ce qui est dessous doit donc être soudé avant",
+          "2": "Il ne tient que sur une carte sous tension",
+          "3": "Ses pads thermiques doivent être chauffés au fer"
+        },
+        "why": "Le refroidisseur s'enclipse dans les deux trous à côté du SoC et le recouvre. Une fois en place, plus rien en dessous n'est accessible, et son câble a besoin du connecteur de ventilateur."
+      }
+    },
+    "plug": {
+      "five-amps": {
+        "q": "Pourquoi le Pi 5 veut-il l'alimentation de 27 W plutôt qu'une 5 V 3 A ?",
+        "options": {
+          "1": "Le CPU n'atteint 2,4 GHz qu'à 27 W",
+          "2": "À 5 A, les ports USB peuvent tirer 1,6 A au total ; sur une alimentation de 3 A, ils sont limités à 600 mA",
+          "3": "Une alimentation de 3 A ne peut pas du tout le faire démarrer"
+        },
+        "why": "Une alimentation 5 V 3 A fait démarrer le Pi 5, mais le firmware limite alors les ports USB à 600 mA au total. L'alimentation de 27 W indique au Pi par l'USB PD qu'elle peut fournir 5 A, ce qui relève la limite à 1,6 A : assez pour une caméra de profondeur ou un lidar."
+      },
+      "led": {
+        "q": "Vous branchez l'alimentation. Que fait la LED du Pi 5 ?",
+        "options": {
+          "1": "Rouge d'abord, verte une fois le firmware démarré, s'éteignant brièvement pendant les lectures de la carte SD",
+          "2": "Verte d'abord, puis rouge une fois Linux démarré",
+          "3": "Elle reste éteinte jusqu'à ce que vous appuyiez sur le bouton d'alimentation"
+        },
+        "why": "Le Pi 5 a une seule LED rouge/verte à côté du bouton d'alimentation. Rouge signifie alimenté mais sans firmware encore, verte signifie qu'il tourne, et elle s'éteint brièvement pendant les lectures SD. La première mise sous tension démarre sans appui sur le bouton, et après un arrêt propre la LED redevient rouge."
+      }
+    },
+    "teleop": {
+      "realtime": {
+        "q": "Pourquoi le Pi fait-il tourner ROS 2 alors qu'un ESP32 fait tourner la boucle des moteurs ?",
+        "options": {
+          "1": "Linux n'est pas temps réel : l'ordonnanceur peut mettre votre boucle en pause",
+          "2": "Le Pi n'a pas de broches PWM",
+          "3": "ROS 2 ne tourne que sur Arm"
+        },
+        "why": "Un thread Linux peut être retardé de plusieurs millisecondes par d'autres processus, des interruptions ou la carte SD : trop de gigue pour une boucle d'équilibre ou de vitesse. Le Pi a bien de la PWM (GPIO 12, 13, 18 et 19) et ROS 2 tourne aussi sur x86 ; la répartition est une question de timing."
+      },
+      "rate": {
+        "q": "Le nœud appelle create_timer(0.1, self.tick). À quelle fréquence publie-t-il sur /cmd_vel ?",
+        "options": {
+          "1": "Une fois toutes les 0,1 ms",
+          "2": "Une fois, puis il attend une réponse",
+          "3": "Dix fois par seconde"
+        },
+        "why": "La période est en secondes : 0,1 s font donc 10 Hz, et ros2 topic hz /cmd_vel indique une fréquence moyenne de 10.000. Les topics sont à sens unique : un publisher n'attend jamais ses abonnés."
+      }
+    },
+    "charger": {
+      "fix": {
+        "q": "« Undervoltage detected! » avec un chargeur de téléphone. La solution ?",
+        "options": {
+          "1": "Baisser l'horloge du CPU par logiciel",
+          "2": "Une alimentation USB-C 5 V 5 A (27 W)",
+          "3": "Un plus gros dissipateur"
+        },
+        "why": "L'alimentation tombe sous 4,63 V sous la charge. Un CPU plus lent masque le symptôme, mais la carte SD et les périphériques USB voient toujours les chutes, et un dissipateur ne fait rien pour les volts."
+      },
+      "bits": {
+        "q": "vcgencmd get_throttled affiche throttled=0x50005. Quels indicateurs sont levés ?",
+        "options": {
+          "1": "Sous-tension maintenant, bridage maintenant, une sous-tension a eu lieu et un bridage a eu lieu",
+          "2": "Seulement une sous-tension maintenant",
+          "3": "Surchauffe et limite de température douce"
+        },
+        "why": "0x50005, ce sont les bits 0, 2, 16 et 18 : 0x1 sous-tension maintenant, 0x4 bridage maintenant, 0x10000 sous-tension depuis le démarrage et 0x40000 bridage depuis le démarrage."
+      }
+    },
+    "heat": {
+      "throttle": {
+        "q": "Sans l'Active Cooler, le SoC dépasse 80 °C sous la charge de ROS 2. Que se passe-t-il ?",
+        "options": {
+          "1": "Le Pi s'éteint aussitôt pour protéger la carte SD",
+          "2": "Le firmware baisse l'horloge Arm dès 80 °C, et celle du GPU aussi à 85 °C",
+          "3": "Rien : le BCM2712 garde 2,4 GHz jusqu'à 105 °C"
+        },
+        "why": "Le bridage est progressif entre 80 et 85 °C. Ici, l'horloge descend jusqu'à 1,5 GHz, 62,5 % de 2,4 GHz, et les nœuds ROS 2 prennent du retard : sur un robot en service, le refroidisseur n'est pas facultatif."
+      },
+      "fan": {
+        "q": "Comment le firmware pilote-t-il le ventilateur de l'Active Cooler ?",
+        "options": {
+          "1": "Par le connecteur de ventilateur 4 broches, plus vite à mesure que le SoC chauffe : arrêté sous 50 °C, à pleine vitesse dès 75 °C",
+          "2": "À pleine vitesse dès que le Pi est allumé",
+          "3": "Depuis une broche GPIO que votre programme doit basculer"
+        },
+        "why": "La courbe par défaut du ventilateur est de 30 % à 50 °C, 50 % à 60 °C, 70 % à 67,5 °C et 100 % à 75 °C, avec 5 °C d'hystérésis à la descente. Vous pouvez l'ajuster avec les paramètres fan_temp de config.txt."
+      }
+    },
+    "end": {
+      "distro": {
+        "q": "Un nouveau robot Pi 5 fin 2026 : sur quelle version de ROS 2 doit-il démarrer ?",
+        "options": {
+          "1": "Noetic Ninjemys (ROS 1)",
+          "2": "Lyrical Luth, la LTS de 2026",
+          "3": "Kilted Kaiju"
+        },
+        "why": "Lyrical Luth est sortie en mai 2026 et est prise en charge jusqu'en mai 2031, avec Ubuntu 26.04 comme plateforme Tier 1 : installez donc Ubuntu sur le Pi ou utilisez Docker. Jazzy Jalisco, la LTS de 2024, est prise en charge jusqu'en 2029 si vos paquets ne sont pas encore portés. Noetic, c'est ROS 1, en fin de vie depuis 2025 ; Kilted Kaiju est une version de 2025 à support court."
+      },
+      "gpio": {
+        "q": "La broche echo d'un HC-SR04 donne 5 V. Peut-elle entrer directement dans une broche GPIO du Pi ?",
+        "options": {
+          "1": "Oui, les broches tolèrent le 5 V",
+          "2": "Oui, avec une résistance de 1 kΩ en série",
+          "3": "Non : le GPIO est en 3,3 V seulement, utilisez donc un pont diviseur (1 kΩ au-dessus de 2 kΩ) ou un adaptateur de niveau"
+        },
+        "why": "Les broches GPIO du Pi ne tolèrent pas le 5 V : au-dessus d'environ 3,6 V, la diode de protection de la broche conduit vers le rail 3,3 V et peut détruire la broche ou le RP1. Un pont diviseur de 1 kΩ et 2 kΩ transforme 5 V en 3,3 V."
+      },
+      "battery": {
+        "q": "Quelle est la façon sûre d'alimenter le Pi depuis la batterie du robot ?",
+        "options": {
+          "1": "Un convertisseur buck 5 V capable de fournir 5 A, vers l'USB-C ou les broches 5 V",
+          "2": "La batterie directement sur les broches 5 V : le PMIC la régule",
+          "3": "Le même régulateur 5 V que les moteurs"
+        },
+        "why": "Les broches 5 V contournent toute protection : elles ont donc besoin d'un 5 V propre et régulé. Dimensionnez le buck pour 5 A, gardez les moteurs sur leur propre alimentation et, quand vous alimentez par le connecteur, indiquez-le au bootloader avec PSU_MAX_CURRENT=5000."
+      },
+      "motors": {
+        "q": "D'où doit venir la PWM des moteurs de propulsion ?",
+        "options": {
+          "1": "Directement des broches GPIO du Pi",
+          "2": "D'un driver de moteurs commandé par l'ESP32 ou le Nano, qui lit /cmd_vel depuis le Pi par la liaison série USB",
+          "3": "Des broches 5 V du Pi à travers un transistor"
+        },
+        "why": "Une broche GPIO donne quelques milliampères et le timing de Linux fluctue. Un microcontrôleur fait tourner la boucle de vitesse à l'heure et pilote un pont en H comme le TB6612FNG ; le Pi n'envoie que des consignes de vitesse."
+      }
+    }
+  }
+}
