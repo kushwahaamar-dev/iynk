@@ -1365,7 +1365,9 @@ A.build = what => {
 };
 A.flip = id => { const p = MD.byId[id]; if (!p || !p.polar || !isIn(id)) return; if (!guard()) return; st.placed[id].orient ^= 1; say(st.placed[id].orient ? '{name} turned the wrong way round' : '{name} turned the right way round', { name: nameOf(id) }); refresh(); };
 A.power = key => {
-  if (key == null || key === 'off'){ if (!st.power) return; st.power = null; st.up = null; st.strap = null; st.sag = null; st.ext = st.ext && false; st.loaded = false; sfx('unplug'); refresh(); return; }
+  // unplugged, a Pico forgets the BOOTSEL boot: it boots into mass storage again only with BOOTSEL held at plug-in
+  if (key == null || key === 'off'){ if (!st.power) return; st.power = null; st.up = null; st.strap = null; st.sag = null; st.ext = st.ext && false; st.loaded = false;
+    if (st.boot === 'uf2') st.boot = null; sfx('unplug'); refresh(); return; }
   const src = (MD.power.sources || {})[key]; if (!src) return say('No supply {name} on this board', { name: key });
   if (st.exploded) return say(MSG.exploded);
   // plugging in the cable that is already in changes nothing (the sketch keeps its clock)
@@ -1401,6 +1403,13 @@ A.press = (id, down) => {
   if (c.action === 'bootsel' && down && !st.power) st.boot = 'uf2';
   if (down) sfx('click');
   refresh(true);
+};
+// a circuit may name the built-in program that drives it (circuit.mode), so the figure page alone shows it working;
+// switching to it changes nothing while the host drives the pins, or when the same patch names a mode
+const pickCircuit = (id, keepMode) => {
+  st.circuit = id;
+  const c = id && MD.circuits[id];
+  if (c && c.mode && MD.modes[c.mode] && !keepMode && !st.ext && !st.up && st.mode !== c.mode){ st.mode = c.mode; st.t = 0; st.serialN = -1; }
 };
 // a part left out by a fault stays in st.faults as missing:<id> until it is back on the board
 const backOn = id => { st.faults = st.faults.filter(f => f !== 'missing:' + id); };
@@ -1477,7 +1486,9 @@ function step(dt){
   // the program clock
   if (st.power){
     st.t += dt; st.on += dt;
-    if (st.up){ st.upT += dt; if (st.upT >= st.upDur){ const key = st.up; st.up = null; st.mode = key; st.t = 0; st.serialN = -1; st.loaded = true; sampleStraps();
+    // a UF2 copied to the mass-storage drive reboots the chip into it, and esptool hard-resets out of ROM download mode
+    if (st.up){ st.upT += dt; if (st.upT >= st.upDur){ const key = st.up; st.up = null; st.mode = key; st.t = 0; st.serialN = -1; st.loaded = true;
+        if (st.boot === 'uf2' || st.boot === 'download') st.boot = null; sampleStraps();
         say('Done uploading: {name} is running', { name: T(MD.modes[key].title) }); sfx('ding'); } }
     st.ev = evaluate();
     // the supply dropping out under the chip (a brown-out, a cold joint on the connector, a short cleared) resets it:
@@ -1494,7 +1505,9 @@ function step(dt){
       const k = Math.floor(st.t);
       if (st.t >= 0 && k !== st.serialN){
         // state.serial carries one line per report: the banner goes out on its own frame (serialN -2), then line k
-        if (st.serialN === -1 && md.banner){ emit(String(md.banner)); st.serialN = -2; }
+        // a banner may depend on the state (none in a ROM download mode): md.banner(st)
+        const banner = st.serialN === -1 ? (typeof md.banner === 'function' ? md.banner(st) : md.banner) : null;
+        if (banner){ emit(String(banner)); st.serialN = -2; }
         else {
           st.serialN = k;
           if (md.serial){ let line = null; try { line = md.serial(k, st); } catch (e) { note('serial: ' + e.message); } if (line != null) emit(String(line)); }
@@ -1995,6 +2008,8 @@ function faultChoices(){
   const out = [['', '']]; out.length = 0;
   const srcs = MD.power.sources || {};
   for (const [key, s] of Object.entries(srcs)){
+    // a scenario source (a sensor's 5 V output on a pin, set up by a lesson) is not a supply to get wrong
+    if (s.scenario) continue;
     if (s.plug === 'barrel' || s.pin) out.push(['reverse-polarity:' + key, T('Reverse polarity on {src}', { src: T(s.label || key) })]);
     if (s.range){ out.push([`wrong-voltage:${key}:${s.max != null ? s.max + 4 : s.range[1] * 2}`, T('Too high a voltage on {src}', { src: T(s.label || key) })]);
       out.push([`wrong-voltage:${key}:${Math.max(1, +(s.range[0] * .7).toFixed(1))}`, T('Too low a voltage on {src}', { src: T(s.label || key) })]); }
@@ -2089,7 +2104,7 @@ const accept = (s, p) => {
     else bad('fault must be a string or null');
   }
   if (own(p, 'matStep')){ if (p.matStep === null || MAT.steps.some(s => s.id === p.matStep)){ if (A.matStep(p.matStep) !== true) bad('mat step refused'); } else bad('unknown mat step'); }
-  if (own(p, 'circuit')){ if (p.circuit === null || own(MD.circuits, p.circuit)){ st.circuit = p.circuit; refresh(); } else bad('unknown circuit'); }
+  if (own(p, 'circuit')){ if (p.circuit === null || own(MD.circuits, p.circuit)){ pickCircuit(p.circuit, own(p, 'mode')); refresh(); } else bad('unknown circuit'); }
   if (own(p, 'params') && p.params && typeof p.params === 'object' && B.bbParams) B.bbParams(st, p.params);
   if (own(p, 'tones')){ if (p.tones && typeof p.tones === 'object') A.setTones(p.tones); else bad('tones must be an object'); }
   // keyed by net, a value is the level the net reads (as report() gives it); keyed by part id, it is the control's state
@@ -2188,6 +2203,7 @@ function start(pick){
   if (q.get('view') && VIEWS[q.get('view')]) st.view = q.get('view');
   B.mountView = VIEWS[st.view] && !VIEWS[st.view].flat ? st.view : 'board';
   if (q.get('circuit') && own(MD.circuits, q.get('circuit'))) st.circuit = q.get('circuit');
+  pickCircuit(st.circuit);
   if (q.get('exploded') === '1' || q.get('ex') === '1'){ st.exploded = true; st.exK = 1; }
   if (q.get('mode') && MD.modes[q.get('mode')]) st.mode = q.get('mode');
   if (q.get('sel')) st.sel = q.get('sel');
@@ -3779,6 +3795,9 @@ const ROM = 'ESP-ROM:esp32s3-20210327';
 const bootLine = (k, st) => k === 0 ? (download(st) ? 'rst:0x1 (POWERON),boot:0x0 (DOWNLOAD(USB/UART0))' : 'rst:0x1 (POWERON),boot:0x8 (SPI_FAST_FLASH_BOOT)')
   : download(st) ? (k === 1 ? 'waiting for download' : null) : undefined;
 const gpioDead = (st, net) => st.faults.includes('gpio5v:' + net);
+// the knob on GPIO1 as analogRead gives it at 12 bits over 0-3.3 V
+const knob = st => Math.round(Math.max(0, Math.min(1, ((st.volts || {}).GPIO1 || 0) / 3.3)) * 4095);
+const phoneOn = t => t >= 5 && Math.floor((t - 5) / 3) % 2 === 0;
 // one RGB pixel on the data pin: level 1 lights the drawing, net.rgb carries the colour
 // level .6: the demos write 64 of 255 per channel (RGB_BRIGHTNESS), dimmer than full drive
 const rgb = (net, col) => col ? { [net]: .6, [net + '.rgb']: col } : { [net]: 0 };
@@ -3800,6 +3819,20 @@ const modesFor = net => ({
       if (k === 1) return 'Connecting to bench-lab'; if (k === 2) return '....';
       if (k === 3) return 'WiFi connected, IP 192.168.4.42';
       return k % 3 === 0 ? 'GET / from 192.168.4.17 200 OK' : null; } },
+  // the dimmer lesson's sketch: the knob on GPIO1 (12-bit) sets GPIO4's duty (raw / 16) and tints the RGB LED
+  dimmer: { title: 'Knob dimmer', bytes: 291344, banner: ROM,
+    out: st => { if (download(st)) return {}; const raw = knob(st), duty = raw >> 4;
+      return Object.assign(rgb(net, duty >= 4 ? hexOf(duty / 4, 0, (255 - duty) / 4) : null), { GPIO4: gpioDead(st, 'GPIO4') ? 0 : duty / 255 }); },
+    serial: (k, st) => { const b = bootLine(k, st); if (b !== undefined) return b;
+      const raw = knob(st); return 'pot ' + raw + ' (' + Math.round(raw / 4095 * 3300) + ' mV) -> duty ' + (raw >> 4); } },
+  // the web server lesson's sketch: after joining, a phone opens /on and /off in turn every 3 s
+  'web-led': { title: 'Web LED switch', bytes: 852016, banner: ROM,
+    out: (st, t) => { if (download(st)) return {}; const on = phoneOn(t);
+      return Object.assign(rgb(net, t < 2.6 ? (t % .5 < .25 ? '#3e86d9' : '#1d2a4a') : null), { GPIO4: on && !gpioDead(st, 'GPIO4') ? 1 : 0 }); },
+    serial: (k, st) => { const b = bootLine(k, st); if (b !== undefined) return b;
+      if (k === 1) return 'Connecting to bench-lab'; if (k === 2) return '....';
+      if (k === 3) return 'Connected, IP 192.168.4.42';
+      return k >= 5 && (k - 5) % 3 === 0 ? (phoneOn(k) ? 'GET /on' : 'GET /off') : null; } },
   'deep-sleep': { title: 'Deep sleep', bytes: 271856, banner: ROM,
     out: (st, t) => download(st) ? {} : rgb(net, t % 12 < 2 ? '#cfe4ff' : null),
     serial: (k, st) => { const b = bootLine(k, st); if (b !== undefined) return b;
@@ -3898,8 +3931,9 @@ const silkFor = rgbSilk => [
 ];
 
 /* ---------- lesson circuits: the LED on GPIO4 (J1-4) through 330 Ω, the board left of the breadboard ---------- */
-const ledCircuit = (title, extra) => ({
-  title, breadboard: 'half',
+// mode: the built-in program the circuit runs on the figure page alone (its lesson's sketch)
+const ledCircuit = (title, mode, extra) => ({
+  title, breadboard: 'half', mode,
   parts: [
     { id: 'R1', part: 'resistor', ohms: 330, holes: ['b10', 'b14'] },
     { id: 'LED1', part: 'led', color: 'red', holes: ['c14', 'c15'] },
@@ -3968,10 +4002,10 @@ function build(variant){
     tags: [['U4', 46, -34], ['U3', 46, 6], ['U2', -46, 14], ['D6', -48, -6], ['SW1', -40, 26], ['SW2', 40, 24], ['J2', -40, 34], ['J4', 36, 38], ['D5', 44, -14]],
     circuit: 'blink',
     circuits: {
-      blink: ledCircuit('Blink an LED on GPIO4'),
-      'boot-button': ledCircuit('BOOT button toggles the LED'),
-      dimmer: ledCircuit('Potentiometer dims the LED with PWM', POT),
-      'web-server': ledCircuit('LED switched from a web page'),
+      blink: ledCircuit('Blink an LED on GPIO4', 'blink-rgb'),
+      'boot-button': ledCircuit('BOOT button toggles the LED', 'boot-button'),
+      dimmer: ledCircuit('Potentiometer dims the LED with PWM', 'dimmer', POT),
+      'web-server': ledCircuit('LED switched from a web page', 'web-led'),
     },
     variants: {
       'v1.1': { name: 'v1.1: RGB LED on GPIO38', patch: () => build('v1.1') },

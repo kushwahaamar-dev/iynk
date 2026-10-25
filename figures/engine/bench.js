@@ -472,6 +472,13 @@ A.press = (id, down) => {
   if (down) sfx('click');
   refresh(true);
 };
+// a circuit may name the built-in program that drives it (circuit.mode), so the figure page alone shows it working;
+// switching to it changes nothing while the host drives the pins, or when the same patch names a mode
+const pickCircuit = (id, keepMode) => {
+  st.circuit = id;
+  const c = id && MD.circuits[id];
+  if (c && c.mode && MD.modes[c.mode] && !keepMode && !st.ext && !st.up && st.mode !== c.mode){ st.mode = c.mode; st.t = 0; st.serialN = -1; }
+};
 // a part left out by a fault stays in st.faults as missing:<id> until it is back on the board
 const backOn = id => { st.faults = st.faults.filter(f => f !== 'missing:' + id); };
 // polar parts sitting backwards: reported as reversed:<id> in state.faults for as long as they are
@@ -547,8 +554,9 @@ function step(dt){
   // the program clock
   if (st.power){
     st.t += dt; st.on += dt;
-    // a UF2 copied to the mass-storage drive reboots the chip into it
-    if (st.up){ st.upT += dt; if (st.upT >= st.upDur){ const key = st.up; st.up = null; st.mode = key; st.t = 0; st.serialN = -1; st.loaded = true; if (st.boot === 'uf2') st.boot = null; sampleStraps();
+    // a UF2 copied to the mass-storage drive reboots the chip into it, and esptool hard-resets out of ROM download mode
+    if (st.up){ st.upT += dt; if (st.upT >= st.upDur){ const key = st.up; st.up = null; st.mode = key; st.t = 0; st.serialN = -1; st.loaded = true;
+        if (st.boot === 'uf2' || st.boot === 'download') st.boot = null; sampleStraps();
         say('Done uploading: {name} is running', { name: T(MD.modes[key].title) }); sfx('ding'); } }
     st.ev = evaluate();
     // the supply dropping out under the chip (a brown-out, a cold joint on the connector, a short cleared) resets it:
@@ -565,7 +573,9 @@ function step(dt){
       const k = Math.floor(st.t);
       if (st.t >= 0 && k !== st.serialN){
         // state.serial carries one line per report: the banner goes out on its own frame (serialN -2), then line k
-        if (st.serialN === -1 && md.banner){ emit(String(md.banner)); st.serialN = -2; }
+        // a banner may depend on the state (none in a ROM download mode): md.banner(st)
+        const banner = st.serialN === -1 ? (typeof md.banner === 'function' ? md.banner(st) : md.banner) : null;
+        if (banner){ emit(String(banner)); st.serialN = -2; }
         else {
           st.serialN = k;
           if (md.serial){ let line = null; try { line = md.serial(k, st); } catch (e) { note('serial: ' + e.message); } if (line != null) emit(String(line)); }
@@ -1162,7 +1172,7 @@ const accept = (s, p) => {
     else bad('fault must be a string or null');
   }
   if (own(p, 'matStep')){ if (p.matStep === null || MAT.steps.some(s => s.id === p.matStep)){ if (A.matStep(p.matStep) !== true) bad('mat step refused'); } else bad('unknown mat step'); }
-  if (own(p, 'circuit')){ if (p.circuit === null || own(MD.circuits, p.circuit)){ st.circuit = p.circuit; refresh(); } else bad('unknown circuit'); }
+  if (own(p, 'circuit')){ if (p.circuit === null || own(MD.circuits, p.circuit)){ pickCircuit(p.circuit, own(p, 'mode')); refresh(); } else bad('unknown circuit'); }
   if (own(p, 'params') && p.params && typeof p.params === 'object' && B.bbParams) B.bbParams(st, p.params);
   if (own(p, 'tones')){ if (p.tones && typeof p.tones === 'object') A.setTones(p.tones); else bad('tones must be an object'); }
   // keyed by net, a value is the level the net reads (as report() gives it); keyed by part id, it is the control's state
@@ -1261,6 +1271,7 @@ function start(pick){
   if (q.get('view') && VIEWS[q.get('view')]) st.view = q.get('view');
   B.mountView = VIEWS[st.view] && !VIEWS[st.view].flat ? st.view : 'board';
   if (q.get('circuit') && own(MD.circuits, q.get('circuit'))) st.circuit = q.get('circuit');
+  pickCircuit(st.circuit);
   if (q.get('exploded') === '1' || q.get('ex') === '1'){ st.exploded = true; st.exK = 1; }
   if (q.get('mode') && MD.modes[q.get('mode')]) st.mode = q.get('mode');
   if (q.get('sel')) st.sel = q.get('sel');

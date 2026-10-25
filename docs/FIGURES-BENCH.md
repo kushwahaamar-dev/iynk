@@ -13,8 +13,10 @@ Changes after the first publication are additive only. Every change is logged he
   short) and comes back, the program starts again from t = 0 with its banner, after the board's `brownoutLine` for
   a brown-out. Cold-joint and brown-out patterns run on `st.on` (time since the supply went in), not the program
   clock. A mode's banner goes out on its own frame, so `state.serial` no longer drops it behind line 0. A finished
-  upload leaves the Pico's UF2 boot (it reboots into the program), and so does unplugging. Scenario sources get no
-  Break it voltage choices.
+  upload leaves the Pico's UF2 boot (it reboots into the program), and so does unplugging; it leaves an ESP's ROM
+  download mode too. Scenario sources get no Break it voltage choices. A circuit may name its `mode` (§7): picking
+  the circuit on the figure page runs that program, unless the host drives the pins or the same patch names a mode.
+  A `banner` may be a function of the state.
 - v12 (02:10 Oct 25, P2-engine-b): the obstacle prop stays on the mat and off the breadboard over 2-450 cm (prop
   `travel`, `ctx.breadboard`, §9.1).
 - v11 (01:30 Oct 25, P2-engine-b, for the FPGA boards): a feed takes `onlyIf: ['ctl:SW16', '==', 1]` (a condition on
@@ -512,8 +514,9 @@ mode: 'blink',
 
 `out(st, t)` returns pin levels by net (`0`/`1`, or `0..1` for PWM duty), `t` in seconds since the program started
 (virtual, deterministic). `serial(k, st)` is called once per whole second `k` and returns a line or null. `banner`
-is printed at every (re)start. When the host drives pins (`set {pins}`) built-in modes pause until it sends
-`set {mode}`.
+is printed at every (re)start; it may be a function `banner(st)` returning the line or null (none in a ROM download
+mode). When the host drives pins (`set {pins}`) built-in modes pause until it sends `set {mode}`. A finished upload
+leaves a `download` or `uf2` boot: esptool hard-resets the chip and a UF2 copy reboots it into the program.
 
 A bench whose modes are positions rather than sketches (jumper or switch settings) names its picker:
 `modesLabel: { button: 'Move jumper', stat: 'Jumper' }` replaces "Upload sketch" and the "Program" stat. The
@@ -602,6 +605,7 @@ Module parts (a sensor or driver board that plugs into the breadboard) list `leg
 circuits: {
   blink: {
     title: 'Blink an LED',
+    mode: 'blink',                             // optional: the built-in mode that runs this circuit's lesson sketch
     breadboard: 'half',                        // 'half' 30 columns + rails | 'full' 63 | 'mini' 17, no rails | null
     parts: [
       { id: 'R1', part: 'resistor', ohms: 220, holes: ['b10', 'b14'] },

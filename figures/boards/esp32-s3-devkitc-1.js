@@ -26,6 +26,9 @@ const ROM = 'ESP-ROM:esp32s3-20210327';
 const bootLine = (k, st) => k === 0 ? (download(st) ? 'rst:0x1 (POWERON),boot:0x0 (DOWNLOAD(USB/UART0))' : 'rst:0x1 (POWERON),boot:0x8 (SPI_FAST_FLASH_BOOT)')
   : download(st) ? (k === 1 ? 'waiting for download' : null) : undefined;
 const gpioDead = (st, net) => st.faults.includes('gpio5v:' + net);
+// the knob on GPIO1 as analogRead gives it at 12 bits over 0-3.3 V
+const knob = st => Math.round(Math.max(0, Math.min(1, ((st.volts || {}).GPIO1 || 0) / 3.3)) * 4095);
+const phoneOn = t => t >= 5 && Math.floor((t - 5) / 3) % 2 === 0;
 // one RGB pixel on the data pin: level 1 lights the drawing, net.rgb carries the colour
 // level .6: the demos write 64 of 255 per channel (RGB_BRIGHTNESS), dimmer than full drive
 const rgb = (net, col) => col ? { [net]: .6, [net + '.rgb']: col } : { [net]: 0 };
@@ -47,6 +50,20 @@ const modesFor = net => ({
       if (k === 1) return 'Connecting to bench-lab'; if (k === 2) return '....';
       if (k === 3) return 'WiFi connected, IP 192.168.4.42';
       return k % 3 === 0 ? 'GET / from 192.168.4.17 200 OK' : null; } },
+  // the dimmer lesson's sketch: the knob on GPIO1 (12-bit) sets GPIO4's duty (raw / 16) and tints the RGB LED
+  dimmer: { title: 'Knob dimmer', bytes: 291344, banner: ROM,
+    out: st => { if (download(st)) return {}; const raw = knob(st), duty = raw >> 4;
+      return Object.assign(rgb(net, duty >= 4 ? hexOf(duty / 4, 0, (255 - duty) / 4) : null), { GPIO4: gpioDead(st, 'GPIO4') ? 0 : duty / 255 }); },
+    serial: (k, st) => { const b = bootLine(k, st); if (b !== undefined) return b;
+      const raw = knob(st); return 'pot ' + raw + ' (' + Math.round(raw / 4095 * 3300) + ' mV) -> duty ' + (raw >> 4); } },
+  // the web server lesson's sketch: after joining, a phone opens /on and /off in turn every 3 s
+  'web-led': { title: 'Web LED switch', bytes: 852016, banner: ROM,
+    out: (st, t) => { if (download(st)) return {}; const on = phoneOn(t);
+      return Object.assign(rgb(net, t < 2.6 ? (t % .5 < .25 ? '#3e86d9' : '#1d2a4a') : null), { GPIO4: on && !gpioDead(st, 'GPIO4') ? 1 : 0 }); },
+    serial: (k, st) => { const b = bootLine(k, st); if (b !== undefined) return b;
+      if (k === 1) return 'Connecting to bench-lab'; if (k === 2) return '....';
+      if (k === 3) return 'Connected, IP 192.168.4.42';
+      return k >= 5 && (k - 5) % 3 === 0 ? (phoneOn(k) ? 'GET /on' : 'GET /off') : null; } },
   'deep-sleep': { title: 'Deep sleep', bytes: 271856, banner: ROM,
     out: (st, t) => download(st) ? {} : rgb(net, t % 12 < 2 ? '#cfe4ff' : null),
     serial: (k, st) => { const b = bootLine(k, st); if (b !== undefined) return b;
@@ -145,8 +162,9 @@ const silkFor = rgbSilk => [
 ];
 
 /* ---------- lesson circuits: the LED on GPIO4 (J1-4) through 330 Ω, the board left of the breadboard ---------- */
-const ledCircuit = (title, extra) => ({
-  title, breadboard: 'half',
+// mode: the built-in program the circuit runs on the figure page alone (its lesson's sketch)
+const ledCircuit = (title, mode, extra) => ({
+  title, breadboard: 'half', mode,
   parts: [
     { id: 'R1', part: 'resistor', ohms: 330, holes: ['b10', 'b14'] },
     { id: 'LED1', part: 'led', color: 'red', holes: ['c14', 'c15'] },
@@ -215,10 +233,10 @@ function build(variant){
     tags: [['U4', 46, -34], ['U3', 46, 6], ['U2', -46, 14], ['D6', -48, -6], ['SW1', -40, 26], ['SW2', 40, 24], ['J2', -40, 34], ['J4', 36, 38], ['D5', 44, -14]],
     circuit: 'blink',
     circuits: {
-      blink: ledCircuit('Blink an LED on GPIO4'),
-      'boot-button': ledCircuit('BOOT button toggles the LED'),
-      dimmer: ledCircuit('Potentiometer dims the LED with PWM', POT),
-      'web-server': ledCircuit('LED switched from a web page'),
+      blink: ledCircuit('Blink an LED on GPIO4', 'blink-rgb'),
+      'boot-button': ledCircuit('BOOT button toggles the LED', 'boot-button'),
+      dimmer: ledCircuit('Potentiometer dims the LED with PWM', 'dimmer', POT),
+      'web-server': ledCircuit('LED switched from a web page', 'web-led'),
     },
     variants: {
       'v1.1': { name: 'v1.1: RGB LED on GPIO38', patch: () => build('v1.1') },

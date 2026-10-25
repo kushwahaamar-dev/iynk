@@ -16,6 +16,19 @@
 (() => {
 const B = SL.bench;
 const half = (t, s) => Math.floor(t / s) % 2;   // 0 in the first half of each 2*s period
+// FLASH held while RST is released: the ROM's UART download mode. The sketch never starts (both LEDs off) and the
+// ROM prints its boot line and waits for esptool
+const download = st => st.boot === 'download';
+const ROM_DL = ['ets Jan  8 2013,rst cause:2, boot mode:(1,6)', 'waiting for host'];
+const rom = md => Object.assign({}, md, {
+  out: (st, t) => download(st) ? { D4: 1, D0: 1 } : md.out(st, t),
+  serial: (k, st) => download(st) ? (ROM_DL[k] ?? null) : md.serial ? md.serial(k, st) : null,
+  banner: st => download(st) ? null : md.banner || null,
+});
+// the knob on A0: analogRead 0..1023 over the board's 0-3.3 V range (its divider feeds the ESP8266's 1 V ADC)
+const knob = st => Math.round(Math.max(0, Math.min(1, ((st.volts || {}).A0 || 0) / 3.3)) * 1023);
+// the web server lesson: a phone on the network opens /on, then /off, every 3 s once the board has joined
+const phoneOn = t => t >= 5 && Math.floor((t - 5) / 3) % 2 === 0;
 const BLUE = '#3f86e8';
 const R0402 = { kind: 'chip', size: [1, .5], h: .35 };
 const C0402 = { kind: 'chip', size: [1, .5], h: .35, cap: true };
@@ -113,13 +126,20 @@ B.board({
     upload: { source: 'usb', needs: ['U2', 'VT1', 'VT2', 'R6', 'U1'], tool: 'esptool' },
   },
   mode: 'blink',
-  modes: {
-    blink: { title: 'Blink', bytes: 265584, out: (st, t) => ({ D4: half(t, 1), D0: 1 }) },
+  // blink drives the lesson's LED on D1 with the blue LED (on together: D4 is active low); dimmer and web are the
+  // dimmer and web server lessons' sketches, picked by their circuits (circuit.mode)
+  modes: Object.fromEntries(Object.entries({
+    blink: { title: 'Blink', bytes: 265584, out: (st, t) => ({ D4: half(t, 1), D0: 1, D1: 1 - half(t, 1) }) },
     both: { title: 'Both LEDs', out: (st, t) => ({ D4: half(t, .5), D0: 1 - half(t, .5) }) },
     hello: { title: 'Serial hello', banner: 'NodeMCU ready', out: () => ({ D4: 1, D0: 1 }), serial: k => 'hello from the ESP8266 #' + k },
     wifi: { title: 'Wi-Fi server', banner: 'Connecting to simlab', out: (st, t) => ({ D4: t < 2 ? half(t, .25) : 0, D0: 1 }),
       serial: k => k === 2 ? 'IP address: 192.168.1.42' : null },
-  },
+    dimmer: { title: 'Knob dimmer', bytes: 266112, out: st => ({ D5: knob(st) / 1023, D4: 1, D0: 1 }),
+      serial: (k, st) => { const raw = knob(st); return 'knob=' + raw + ' duty=' + Math.round(raw * 255 / 1023); } },
+    web: { title: 'Web LED switch', bytes: 301936, banner: 'Connecting....',
+      out: (st, t) => { const on = phoneOn(t); return { D1: on ? 1 : 0, D4: on ? 0 : 1, D0: 1 }; },
+      serial: k => k === 3 ? 'IP address: 192.168.1.42' : k === 4 ? 'HTTP server started' : null },
+  }).map(([k, md]) => [k, rom(md)])),
   faults: ['short:3V3:GND', 'short:VIN:GND', 'missing:R3', 'missing:R5', 'cold:U3', 'cold:J2.2'],
   xr: {
     flow: [
@@ -138,7 +158,7 @@ B.board({
   circuit: 'blink',
   circuits: {
     blink: {
-      title: 'An LED on D1 and the blue LED on D4', breadboard: 'half',
+      title: 'An LED on D1 and the blue LED on D4', breadboard: 'half', mode: 'blink',
       parts: [
         { id: 'R101', part: 'resistor', ohms: 220, holes: ['b10', 'b14'] },
         { id: 'LED101', part: 'led', color: 'red', holes: ['c14', 'c15'] },
@@ -161,7 +181,7 @@ B.board({
       ],
     },
     dimmer: {
-      title: 'A knob on A0 dims an LED on D5', breadboard: 'half',
+      title: 'A knob on A0 dims an LED on D5', breadboard: 'half', mode: 'dimmer',
       parts: [
         { id: 'R101', part: 'resistor', ohms: 220, holes: ['b5', 'b9'] },
         { id: 'LED101', part: 'led', color: 'green', holes: ['c9', 'c10'] },
@@ -176,7 +196,7 @@ B.board({
       ],
     },
     webserver: {
-      title: 'Wi-Fi web server switching an LED on D1', breadboard: 'half',
+      title: 'Wi-Fi web server switching an LED on D1', breadboard: 'half', mode: 'web',
       parts: [
         { id: 'R101', part: 'resistor', ohms: 220, holes: ['b10', 'b14'] },
         { id: 'LED101', part: 'led', color: 'yellow', holes: ['c14', 'c15'] },

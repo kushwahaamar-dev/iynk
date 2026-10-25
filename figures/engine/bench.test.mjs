@@ -790,3 +790,53 @@ describe('the Pico (sweep)', () => {
     expect(page.bench.faultChoices().map(([id]) => id).filter((id) => id && id.includes('echo5'))).toEqual([]);
   });
 });
+
+describe('a circuit picks the program that drives it (sweep 9)', () => {
+  it('NodeMCU: the dimmer circuit runs the knob sketch, an explicit mode wins, and the host\'s pins keep theirs', async () => {
+    page = await loadFigure(buildFigure('boards/nodemcu'), { path: '/figures/boards/nodemcu.html' });
+    const B = page.bench;
+    B.accept({ power: 'usb', view: 'breadboard', circuit: 'dimmer', params: { POT101: { pos: .25 } } }); B.advance(.5);
+    expect(B.st.mode).toBe('dimmer');
+    expect(B.st.o.pins.D5).toBeGreaterThan(.5);
+    expect(B.report().meas.LED101.state).toBe('ok');
+    B.accept({ circuit: 'webserver', mode: 'hello' });
+    expect(B.st.mode).toBe('hello');
+    B.accept({ pins: { D1: 0 } });
+    B.accept({ circuit: 'blink' });
+    expect(B.st.mode).toBe('hello');
+    expect(page.notes()).toEqual([]);
+  });
+
+  it('NodeMCU: FLASH held through a reset stops the sketch in ROM download mode, an upload resets out of it', async () => {
+    page = await loadFigure(buildFigure('boards/nodemcu'), { path: '/figures/boards/nodemcu.html' });
+    const B = page.bench, A = B.actions, flash = B.md.parts.find((p) => p.control && p.control.action === 'boot').id;
+    const rst = B.md.parts.find((p) => p.control && p.control.action === 'reset').id;
+    B.accept({ power: 'usb' }); B.advance(1);
+    A.press(flash, true); A.press(rst, true); A.press(rst, false); A.press(flash, false);
+    const lines = [];
+    let n = B.st.serial ? B.st.serial.n : 0;
+    for (let i = 0; i < 90; i++) { B.advance(1 / 30); if (B.st.serial && B.st.serial.n !== n) { n = B.st.serial.n; lines.push(B.st.serial.line); } }
+    expect(B.report().boot).toBe('download');
+    expect(lines).toEqual(['ets Jan  8 2013,rst cause:2, boot mode:(1,6)', 'waiting for host']);
+    expect(B.report().leds.LED_MOD).toBe(0);
+    A.upload('hello'); B.advance(B.st.upDur + 1.2);
+    expect(B.report().boot).toBeNull();
+    expect(B.st.serial.line).toMatch(/hello from the ESP8266/);
+  });
+
+  it('ESP32-S3: the web-server circuit switches GPIO4 from the phone, the dimmer follows the knob', async () => {
+    page = await loadFigure(buildFigure('boards/esp32-s3-devkitc-1'), { path: '/figures/boards/esp32-s3-devkitc-1.html' });
+    const B = page.bench;
+    B.accept({ power: 'uart', view: 'breadboard', circuit: 'web-server' }); B.advance(5.5);
+    expect(B.st.mode).toBe('web-led');
+    expect(B.st.o.pins.GPIO4).toBe(1);
+    B.advance(3);
+    expect(B.st.o.pins.GPIO4).toBe(0);
+    B.accept({ circuit: 'dimmer', params: { POT1: { pos: 1 } } }); B.advance(.5);
+    expect(B.st.mode).toBe('dimmer');
+    const hi = B.st.o.pins.GPIO4;
+    B.accept({ params: { POT1: { pos: 0 } } }); B.advance(.5);
+    expect(B.st.o.pins.GPIO4).not.toBe(hi);
+    expect(page.notes()).toEqual([]);
+  });
+});
