@@ -1,0 +1,996 @@
+{
+  "title": "Arduino UNO R4",
+  "tagline": "Das UNO wird 32-bittig: ein Arm-Chip mit 48 MHz, einem echten DAC und einem 14-Bit-ADC, dieselben 5-V-Pins und derselbe Shield-Footprint, dazu USB-C. Die WiFi-Version ergänzt ein ESP32-S3-Funkteil und eine LED-Matrix mit 12 x 8.",
+  "overview": "Das UNO R4 behält den Umriss, die Positionen der Buchsenleisten und die 5-V-Logik des UNO R3, sodass die meisten Shields weiterhin passen, tauscht aber den 8-Bit-ATmega328P gegen einen Renesas RA4M1: einen Arm Cortex-M4F mit 48 MHz, 256 KB Flash, 32 KB RAM und 8 KB Daten-Flash für den EEPROM. Er bringt einen 12-Bit-DAC an A0, einen 14-Bit-ADC, einen Operationsverstärker an A1-A3 und einen CAN-Controller mit und läuft mit seinem internen Oszillator (auf dem Board gibt es keinen Quarz). Strom kommt über USB-C mit 5 V, oder mit 6-24 V an der Hohlbuchse oder VIN über einen Abwärtswandler, der kühl bleibt, wo der Linearregler des R3 heiß wurde. Es gibt zwei Versionen. Das Minima ist das nackte Board, mit nativem USB und einer SWD-Debug-Stiftleiste. Das WiFi ergänzt ein Modul ESP32-S3, das zugleich USB-Brücke und Funkteil für WLAN und Bluetooth ist, eine rote LED-Matrix mit 12 x 8 und einen 3,3-V-Qwiic-Anschluss. Eine Regel ändert sich gegenüber dem R3: Jeder Pin ist für 8 mA gut, nicht für 20.",
+  "variants": {
+    "minima": "UNO R4 Minima (ABX00080): das nackte Board. Der RA4M1 spricht selbst USB, also ist Serial natives USB, und eine 10-polige SWD-Stiftleiste oben rechts nimmt einen Debug-Probe auf. Der 3.3V-Pin kommt vom eigenen USB-Regler des RA4M1 und ist für höchstens einige zehn mA gut. CAN liegt an D4 (TX) und D5 (RX).",
+    "wifi": "UNO R4 WiFi (ABX00087): ergänzt ein Modul ESP32-S3-MINI-1, das die USB-Seriell-Brücke, der Programmer für den RA4M1 und das Funkteil für 2,4-GHz-WLAN und Bluetooth LE ist. Außerdem hat es eine rote LED-Matrix mit 12 x 8, einen Qwiic-Anschluss an Wire1 mit 3,3 V, eine ESP-Stiftleiste, eine Stiftleiste OFF/VRTC und einen eigenen 3,3-V-Regler. Mehrere Pins wandern auf andere Ports des RA4M1: D13 ist P102, und CAN liegt an D10 (TX) und D13 (RX)."
+  },
+  "mcu": {
+    "esp32-s3-mini-1-n8": "Modul von Espressif mit einem ESP32-S3, 8 MB Flash und einem 40-MHz-Quarz unter seiner Metallhaube, und einer Platinenantenne, die zur linken Kante des Boards zeigt. Es läuft mit der Brücken-Firmware von Arduino: USB-Seriell und Programmer für den RA4M1, und das Funkteil für WLAN und Bluetooth, mit dem die Bibliothek WiFiS3 spricht."
+  },
+  "power": {
+    "usb": {
+      "protection": "Eine Schottky-Diode PMEG6020 (D3 beim Minima, D2 beim WiFi) lässt die 5 V von USB auf die 5-V-Schiene und verhindert, dass etwas vom Board zurück in deinen Computer fließt. An ihr fallen etwa 0,3 V ab, also läuft das Board an USB mit etwa 4,7 V. Eine Polyfuse gibt es nicht: Einen Kurzschluss begrenzt nur der eigene Port des Computers."
+    },
+    "jack": {
+      "protection": "Eine zweite Schottky-Diode (D2 beim Minima, D1 beim WiFi, 60 V 2 A) sperrt ein verpoltes Netzteil. Danach macht der Abwärtswandler ISL854102 aus 6-24 V 5 V. Die Eingangskondensatoren sind für 25 V ausgelegt, daher kommt die Grenze von 24 V."
+    },
+    "vin": {
+      "protection": "VIN ist derselbe Knoten wie der Mittelpin der Hohlbuchse, vor der Schottky-Diode, hat also denselben Verpolungsschutz und denselben Bereich von 6-24 V."
+    },
+    "pin5": {
+      "protection": "Keiner. Der 5V-Pin sitzt direkt an der 5-V-Schiene, hinter beiden Dioden und dem Abwärtswandler: Eine Versorgung hier muss saubere 5 V liefern, richtig herum."
+    },
+    "rails": {
+      "5v": "Vom Abwärtswandler, wenn 6-24 V an der Hohlbuchse oder VIN liegen (höchstens 1,2 A), oder von USB über die Schottky-Diode (etwa 4,7 V).",
+      "3v3": "Minima: der interne USB-Regler des RA4M1 (VCC_USB), nicht der Abwärtswandler, also häng nur einen kleinen Sensor daran. WiFi: ein Regler SGM2205 (800 mA), der auch den ESP32-S3 speist, dessen WLAN-Stöße etwa 350 mA ziehen.",
+      "ioref": "Mit 5 V verbunden. Er sagt einem Shield, dass die Pins dieses Boards mit 5 V arbeiten.",
+      "3v3-i2c": "Nur WiFi: die 3,3 V des Qwiic-Anschlusses, hinter einer selbstrückstellenden 500-mA-Sicherung (F1)."
+    },
+    "io": "8 mA pro Pin ist die sichere Grenze von Arduino für den RA4M1, nicht die 20 mA des UNO R3. Treib alles, was größer als eine Anzeige-LED ist, über einen Transistor."
+  },
+  "pins": {
+    "janalog": {
+      "1": "BOOT: der MD-Pin des RA4M1, wo das UNO R3 NC hatte. Beim Reset auf LOW gehalten, startet der Chip seinen ROM-Boot-Modus statt deines Sketches. Lass ihn unverbunden.",
+      "2": "IOREF: mit 5 V verbunden, damit ein Shield den Logikpegel kennt.",
+      "4": "3,3 V Ausgang. Schwach beim Minima (der eigene USB-Regler des RA4M1); beim WiFi teilt er sich einen Regler mit dem ESP32-S3.",
+      "5": "Die 5-V-Schiene: Ausgang zu deinen Schaltungen oder Eingang für saubere 5 V, ganz ohne Schutz.",
+      "8": "6-24 V Eingang, derselbe Knoten wie der Mittelpin der Hohlbuchse.",
+      "9": "Analoger Eingang und der Ausgang des 12-Bit-DAC des RA4M1. DAC ist ein anderer Name für A0."
+    },
+    "jdigital": {
+      "1": "Serial1 RX (P301). Beim R4 ist Serial USB, also sind D0 und D1 für ein anderes Gerät frei und kommen einem Upload nie in die Quere.",
+      "14": "D13 (P111): LED_BUILTIN, der Pin der L-LED, und SPI SCK.",
+      "16": "AREF: eine externe Referenz für analogRead() nach analogReference(AR_EXTERNAL).",
+      "17": "SDA: derselbe Draht wie A4. Auf dem Board gibt es keine Pull-up-Widerstände, also muss ein I²C-Modul eigene mitbringen.",
+      "14-wifi": "D13 ist beim WiFi P102: LED_BUILTIN, SPI SCK und CAN RX. Die L-LED hängt an einem MOSFET, belastet den Pin also nicht."
+    },
+    "swd": {
+      "1": "Die Zielspannung der Debug-Stiftleiste ist 5 V, nicht 3,3 V: Nimm einen Probe, der das verträgt.",
+      "10": "RESET. Das Datenblatt sagt NC, aber die eigenen Design-Dateien von Arduino verbinden ihn mit RESET, wie es die übliche 10-polige Cortex-Debug-Belegung vorsieht."
+    },
+    "esp": {
+      "1": "Pins des ESP32-S3, nur 3,3 V. Verbinde sie nie mit einem 5-V-Pin des RA4M1.",
+      "4": "DOWNLOAD (GPIO0 des ESP32-S3). Beim Reset an GND gehalten, wartet der ESP32-S3 in seinem ROM-Download-Modus auf esptool, und USB-Brücke und Serial sind weg."
+    },
+    "joff": {
+      "1": "OFF: Verbinde ihn mit GND, um den Abwärtswandler abzuschalten. Das trennt nur die Versorgung von VIN und der Hohlbuchse; USB betreibt das Board weiter.",
+      "3": "VRTC: eine Notversorgung, etwa eine Knopfzelle, für die Echtzeituhr des RA4M1. Nur die Uhr läuft daraus weiter."
+    },
+    "qwiic": {
+      "2": "3,3 V für das Qwiic-Gerät, über eine selbstrückstellende 500-mA-Sicherung.",
+      "3": "SDA von Wire1 (P401), von einem MOSFET auf 3,3 V umgesetzt. Ein Qwiic-Sensor kommt an Wire1, nicht an Wire."
+    }
+  },
+  "leds": {
+    "DL4": "L: an D13 (P111) über einen 330-Ω-Widerstand, leuchtet, wenn D13 HIGH ist. Das Blink aus der Fabrik lässt sie beim Minima blinken.",
+    "DL4-wifi": "L: von einem MOSFET 2N7002 (Q3) geschaltet, dessen Gate D13 (P102) ist, also zieht die LED keinen Strom aus dem Pin. Leuchtet, wenn D13 HIGH ist.",
+    "DL1": "TX: flackert, wenn das Board serielle Daten an den Computer sendet.",
+    "DL1-wifi": "TX: an der seriellen Verbindung des RA4M1 zur ESP32-S3-Brücke (P109), flackert also, wenn dein Sketch Daten über Serial sendet.",
+    "DL2": "RX: flackert, wenn der Computer an das Board sendet, auch während eines Uploads.",
+    "DL2-wifi": "RX: am seriellen Ausgang des ESP32-S3, flackert also, wenn die Brücke Daten vom Computer an den RA4M1 weitergibt.",
+    "DL3": "ON: grün, leuchtet, sobald die 5-V-Schiene Spannung hat, von USB oder vom Abwärtswandler."
+  },
+  "displays": {
+    "U_LEDMATRIX": "96 rote LEDs in 12 Spalten und 8 Zeilen, per Charlieplexing an 11 Pins des RA4M1 (P003, P004, P011, P012, P013, P015, P204, P205, P206, P212, P213). Es leuchtet immer nur eine LED; ein Timer-Interrupt tastet sie so schnell ab, dass du ein Bild siehst. Die Bibliothek Arduino_LED_Matrix steuert sie an."
+  },
+  "controls": {
+    "PB1": "Startet den RA4M1 und deinen Sketch neu. Drück ihn zweimal schnell hintereinander, und das Board wartet stattdessen in seinem Bootloader; so rettest du ein Board, dessen Sketch USB lahmgelegt hat."
+  },
+  "parts": {
+    "U1": {
+      "name": "Mikrocontroller Renesas RA4M1",
+      "what": "Hier läuft dein Sketch: ein Arm Cortex-M4F mit Gleitkommaeinheit bei 48 MHz, 256 KB Flash, 32 KB RAM und 8 KB Daten-Flash für den EEPROM. Er läuft mit 5 V, hat einen 14-Bit-ADC, einen 12-Bit-DAC, einen Operationsverstärker und CAN und taktet sich aus einem internen Oszillator."
+    },
+    "M1": {
+      "name": "Modul ESP32-S3-MINI-1 (WiFi)",
+      "what": "Der zweite Prozessor des WiFi: USB-Seriell-Brücke und Programmer für den RA4M1, und das Funkteil für 2,4-GHz-WLAN und Bluetooth LE. Seine Antenne ist das freie Ende des Moduls an der Kante des Boards. Seine Pins arbeiten mit 3,3 V."
+    },
+    "U2": {
+      "name": "Abwärtswandler (Minima) oder USB-Umschalter (WiFi)",
+      "what": "Beim Minima ist U2 der Abwärtswandler ISL854102, der aus 6-24 V 5 V macht. Beim WiFi ist U2 einer der beiden Umschalter NLASB3157, die die Datenleitungen von USB zum ESP32-S3 oder zum RA4M1 leiten."
+    },
+    "U3": {
+      "name": "Abwärtswandler ISL854102 (WiFi)",
+      "what": "Macht aus 6-24 V von der Hohlbuchse oder VIN 5 V, bis zu 1,2 A. Er schaltet, statt die Differenz als Wärme zu verheizen, bleibt also bei 12 V kühl, wo der Regler des UNO R3 es nicht täte. Beim Minima ist derselbe Chip U2."
+    },
+    "L3": {
+      "name": "10-µH-Spule des Abwärtswandlers",
+      "what": "Der Energiespeicher des Abwärtswandlers: Der Wandler schaltet seinen Eingang mit hoher Geschwindigkeit ein und aus, und L3 glättet die Impulse zu einem gleichmäßigen Strom. Ohne sie können Hohlbuchse und VIN keine 5 V erzeugen."
+    },
+    "U5": {
+      "name": "3,3-V-Regler SGM2205 (WiFi)",
+      "what": "Macht aus 5 V 3,3 V für den ESP32-S3, den 3.3V-Pin und den Qwiic-Anschluss, bis zu 800 mA."
+    },
+    "U4": {
+      "name": "Pegelwandler TXB0108 (WiFi)",
+      "what": "Acht bidirektionale Kanäle zwischen dem 5-V-RA4M1 und dem 3,3-V-ESP32-S3. Uploads, Serial und jeder Befehl von WiFiS3 gehen durch ihn."
+    },
+    "U6": {
+      "name": "USB-Umschalter NLASB3157 (WiFi)",
+      "what": "Leitet zusammen mit U2 die Datenleitungen von USB zum ESP32-S3 (der Standard) oder direkt zum RA4M1, wenn ein Sketch Pin 21 auf HIGH setzt."
+    },
+    "D1": {
+      "name": "Schottky-Diode PMEG6020, Schutz für VIN (WiFi)",
+      "what": "Sperrt eine verpolte Versorgung an der Hohlbuchse oder VIN, sodass nichts fließt und nichts beschädigt wird. Beim Minima übernimmt D2 diese Aufgabe."
+    },
+    "D2": {
+      "name": "Schottky-Diode PMEG6020",
+      "what": "Minima: sperrt eine verpolte Versorgung an der Hohlbuchse oder VIN. WiFi: lässt die 5 V von USB auf die 5-V-Schiene und verhindert, dass sie zurück in den Computer fließen."
+    },
+    "D3": {
+      "name": "Schottky-Diode (Minima) oder USB-ESD-Schutz (WiFi)",
+      "what": "Minima: lässt die 5 V von USB auf die 5-V-Schiene, mit etwa 0,3 V Spannungsabfall. WiFi: der PRTR5V0U2X, der statische Ladungen auf den USB-Leitungen ableitet."
+    },
+    "D4": {
+      "name": "USB-ESD-Schutz PRTR5V0U2X (Minima)",
+      "what": "Leitet statische Entladungen an D+, D- und VBUS von USB ab, bevor sie den RA4M1 erreichen."
+    },
+    "F1": {
+      "name": "Selbstrückstellende 500-mA-Sicherung (WiFi)",
+      "what": "Schützt die 3,3 V des Qwiic-Anschlusses. Ein Kurzschluss dort heizt sie auf, bis sie abschaltet; sie erholt sich, sobald sie abkühlt."
+    },
+    "Q3": {
+      "name": "MOSFET 2N7002 für die L-LED (WiFi)",
+      "what": "Schaltet die L-LED von D13 aus, sodass der Strom der LED nie aus dem Pin kommt."
+    },
+    "DL4": {
+      "name": "L-LED (gelb)",
+      "what": "Folgt D13: leuchtet, wenn D13 HIGH ist."
+    },
+    "DL1": {
+      "name": "TX-LED (gelb)",
+      "what": "Flackert, wenn das Board serielle Daten sendet."
+    },
+    "DL2": {
+      "name": "RX-LED (gelb)",
+      "what": "Flackert, wenn Daten vom Computer hereinkommen."
+    },
+    "DL3": {
+      "name": "ON-LED (grün)",
+      "what": "Leuchtet, sobald die 5-V-Schiene Spannung hat. Beim WiFi sitzt sie schräg nahe der rechten Kante."
+    },
+    "U_LEDMATRIX": {
+      "name": "LED-Matrix 12 x 8 (WiFi)",
+      "what": "96 rote LEDs per Charlieplexing an 11 Pins: eine nach der anderen beleuchtet, schnell genug, dass es wie ein Bild aussieht."
+    },
+    "PB1": {
+      "name": "RESET-Taster",
+      "what": "Startet den Sketch neu. Ein schneller Doppeldruck hält das Board in seinem Bootloader."
+    },
+    "J1": {
+      "name": "ICSP-Stiftleiste (Minima) oder USB-C (WiFi)",
+      "what": "Minima: die SPI-Stiftleiste mit 2 x 3 (CIPO, 5V, SCK, COPI, RESET, GND). WiFi: die USB-C-Buchse."
+    },
+    "J2": {
+      "name": "SWD-Stiftleiste (Minima) oder Qwiic (WiFi)",
+      "what": "Minima: eine Debug-Stiftleiste mit 2 x 5 im Raster 1,27 mm für einen SWD-Probe. WiFi: der Qwiic-Anschluss, eine 4-polige Buchse für 3,3-V-I²C-Sensoren an Wire1."
+    },
+    "J3": {
+      "name": "USB-C (Minima) oder ICSP-Stiftleiste (WiFi)",
+      "what": "Minima: die USB-C-Buchse, eine einfache 5-V-Senke ohne Power Delivery. WiFi: die ICSP-Stiftleiste mit 2 x 3."
+    },
+    "J4": {
+      "name": "Hohlbuchse (Minima)",
+      "what": "2,1 mm, Plus in der Mitte, 6-24 V. Mit 7-12 V bleibt alles kühl."
+    },
+    "J5": {
+      "name": "Hohlbuchse (WiFi)",
+      "what": "2,1 mm, Plus in der Mitte, 6-24 V. Dieselbe Buchse wie J4 beim Minima."
+    },
+    "J6": {
+      "name": "ESP-Stiftleiste (WiFi)",
+      "what": "Sechs Pins direkt zum ESP32-S3: IO42, IO41, TXD0, DOWNLOAD, RXD0 und GND. Nur 3,3 V."
+    },
+    "JOFF": {
+      "name": "Stiftleiste OFF / GND / VRTC (WiFi)",
+      "what": "OFF an GND stoppt den Abwärtswandler; VRTC nimmt eine Notzelle für die Echtzeituhr auf."
+    },
+    "JDIGITAL_H": {
+      "name": "Digitale Buchsenleiste D8-D13, GND, AREF, SDA, SCL",
+      "what": "Zehn Buchsen entlang der Oberkante, wo das UNO R3 sie hat."
+    },
+    "JDIGITAL_L": {
+      "name": "Digitale Buchsenleiste D0-D7",
+      "what": "Acht Buchsen. Die ungleichmäßige Lücke zwischen den beiden oberen Leisten sorgt dafür, dass ein Shield nur in einer Richtung passt."
+    },
+    "JANALOG_P": {
+      "name": "Versorgungsleiste",
+      "what": "BOOT, IOREF, RESET, 3.3V, 5V, GND, GND und VIN."
+    },
+    "JANALOG_A": {
+      "name": "Analoge Buchsenleiste A0-A5",
+      "what": "A0 ist zugleich der DAC-Ausgang; A4 und A5 sind zugleich SDA und SCL."
+    },
+    "Y1": {
+      "name": "Leerer Quarz-Footprint (Minima)",
+      "what": "Pads für einen 16-MHz-Quarz, den Arduino nie bestückt: Der RA4M1 läuft mit seinem internen 48-MHz-Oszillator. Ganz ohne Quarz driftet die Echtzeituhr stärker, als es eine Quarzuhr täte."
+    },
+    "SJ1": {
+      "name": "Lötbrücke SJ1 (WiFi, Unterseite)",
+      "what": "Ab Werk offen. Überbrückt leitet sie USB dauerhaft direkt zum RA4M1, am ESP32-S3 vorbei."
+    },
+    "PASSIVES": {
+      "name": "Kleine Widerstände und Kondensatoren",
+      "what": "Die winzigen Entkoppelkondensatoren und Widerstände der Bauform 0402 rund um den RA4M1 und die Regler, als eine Gruppe gezeichnet."
+    }
+  },
+  "wireables": {
+    "led": {
+      "note": "Langes Bein (Anode) über einen 1-kΩ-Widerstand an D13, kurzes Bein an GND. 1 kΩ ergeben etwa 3 mA, weit innerhalb der 8 mA pro Pin des R4.",
+      "caution": "Niemals ohne Widerstand: Ein Pin des R4 ist für 8 mA gut, und eine nackte LED würde versuchen, weit mehr zu ziehen."
+    },
+    "push-button": {
+      "note": "Zwischen D2 und GND mit pinMode(2, INPUT_PULLUP): Er liest LOW, solange er gedrückt ist. D2 und D3 nehmen auch attachInterrupt() an."
+    },
+    "potentiometer": {
+      "note": "Enden an GND und 5V, das mittlere Bein (Schleifer) an A1. analogRead(A1) reicht standardmäßig von 0 bis 1023, oder bis 16383 nach analogReadResolution(14)."
+    },
+    "servo-sg90": {
+      "note": "Braun an GND, Rot an 5V, Orange an D9. Servo.attach(9), dann write(0..180).",
+      "caution": "Ein anlaufender Servo kann mehrere hundert mA ziehen. An USB kommt das direkt aus dem Port des Computers, ohne Sicherung auf dem Board. Mehr als ein Servo braucht eine eigene 5-V-Versorgung, mit verbundenen Massen."
+    },
+    "hc-sr04": {
+      "note": "VCC an 5V, GND an GND, Trig an D7, Echo an D6. Die Pins des R4 arbeiten mit 5 V, lesen das 5-V-Echo also direkt."
+    },
+    "mpu6050": {
+      "note": "VCC an 5V, GND an GND, SDA an SDA, SCL an SCL. Er antwortet auf 0x68 (0x69, wenn AD0 HIGH ist). Die eigenen Pull-up-Widerstände des Breakouts sind hier wichtig: Auf dem R4 sind keine bestückt.",
+      "caution": "Nimm ein Breakout mit Regler (das verbreitete GY-521 hat einen); der nackte Chip verträgt nur 3,3 V."
+    }
+  },
+  "failures": {
+    "reverse-jack": {
+      "title": "Netzteil mit falscher Polarität",
+      "symptom": "Gar nichts: ON bleibt dunkel, und nichts wird warm.",
+      "explanation": "Die Hohlbuchse geht vor dem Abwärtswandler durch eine Schottky-Diode (D2 beim Minima, D1 beim WiFi). Verpolt sperrt die Diode, also fließt kein Strom, und nichts wird beschädigt. Genau dafür ist die Diode da.",
+      "fix": "Nimm ein Netzteil mit Plus in der Mitte (das Symbol auf seinem Etikett zeigt + in der Mitte). Das Board funktioniert sofort; nichts muss ersetzt werden."
+    },
+    "reverse-5v-pin": {
+      "title": "Verpolte Versorgung am 5V-Pin",
+      "symptom": "Das Board ist tot, der RA4M1 wird heiß, und dein Labornetzteil läuft in seine Strombegrenzung.",
+      "explanation": "Der 5V-Pin ist die 5-V-Schiene selbst, hinter beiden Dioden. Verpolt strömt Strom rückwärts durch die Schutzdioden des RA4M1 (beim WiFi auch durch den Regler und den ESP32-S3), und der Chip brennt durch.",
+      "fix": "Sofort abklemmen. Der RA4M1 ist fest aufgelötet, also bedeutet ein durchgebrannter meist ein neues Board. Speise stattdessen über USB, die Hohlbuchse oder VIN, wo eine Diode das Board schützt."
+    },
+    "brownout": {
+      "title": "Motor am 5V-Pin",
+      "symptom": "Der Sketch startet immer wieder neu, solange der Motor läuft, und der Computer trennt vielleicht den USB-Port.",
+      "explanation": "Ein anlaufender Motor zieht deutlich über ein Ampere. An USB gibt es beim R4 keine Polyfuse, also begrenzen nur das Kabel und der Port des Computers den Strom, und die USB-Spannung am Board sackt auf etwa 2 V ab. Die 5-V-Schiene fällt unter das, womit der RA4M1 laufen kann, und er setzt sich immer wieder zurück.",
+      "fix": "Gib dem Motor eine eigene Versorgung, schalte ihn mit einem Transistor oder einem Motortreiber und verbinde die Massen. Betreib nie einen Motor am 5V-Pin."
+    },
+    "nine-volts-on-5v": {
+      "title": "9 V am 5V-Pin",
+      "symptom": "ON leuchtet weiter, aber nichts läuft, und der RA4M1 wird heiß. Ein heißer Geruch folgt.",
+      "explanation": "Der 5V-Pin umgeht den Abwärtswandler und beide Dioden und landet auf der 5-V-Schiene. Der RA4M1 ist für höchstens 5,5 V gemacht, also beschädigen ihn 9 V, und beim WiFi auch den Regler und den ESP32-S3 dahinter.",
+      "fix": "Leg 6-24 V an VIN oder die Hohlbuchse, niemals an 5V. Der RA4M1 ist fest aufgelötet, also bedeutet ein beschädigter ein neues Board."
+    },
+    "jack-48v": {
+      "title": "48 V an der Hohlbuchse",
+      "symptom": "Das Board stirbt, vielleicht mit einem Knacken oder einem Rauchwölkchen aus den Eingangskondensatoren. ON leuchtet nie.",
+      "explanation": "Der Abwärtswandler ist für 40 V ausgelegt und die 22-µF-Eingangskondensatoren daneben für 25 V, deshalb nennt Arduino 24 V als Grenze. 48 V liegen über beidem: Der Abwärtswandler fällt aus, und die 5-V-Schiene bleibt tot.",
+      "fix": "Nimm an der Hohlbuchse 6-24 V, am besten 7-12 V. Eine 48-V-Versorgung gehört zu E-Bikes und Netzwerk-Switches, nicht zu einem UNO."
+    },
+    "five-volts-into-3v3": {
+      "title": "5 V in den 3.3V-Pin",
+      "symptom": "Minima: USB funktioniert nicht mehr. WiFi: USB, Serial und WLAN sind alle weg, weil die Brücke der ESP32-S3 ist.",
+      "explanation": "Der 3.3V-Pin ist ein Ausgang. Beim Minima ist er der eigene USB-Regler des RA4M1, und hineingedrückte 5 V erreichen den USB-Block des Chips. Beim WiFi ist er die 3,3-V-Schiene des ESP32-S3, der für höchstens 3,6 V ausgelegt ist.",
+      "fix": "Speise nie in den 3.3V-Pin. Ein 3,3-V-Modul bezieht seinen Strom daraus; eine 5-V-Versorgung gehört an 5V oder, besser, an VIN."
+    },
+    "cold-d13": {
+      "title": "Kalte Lötstelle am Pin D13 der Buchsenleiste",
+      "symptom": "Die LED an Pin 13 lässt ab und zu ein Blinken aus und verhält sich wieder normal, wenn du auf die Buchsenleiste drückst.",
+      "explanation": "Die Lötstelle der Buchse D13 hat das Pad nie benetzt: ein matter, körniger Klumpen mit einem Riss darunter. Sie hat nur manchmal Kontakt, also kommt und geht das Signal durch die Buchsenleiste, während der Sketch ganz normal weiterläuft.",
+      "fix": "Löte die Stelle mit frischem Flussmittel nach, bis sie ein glänzender Kegel ist, und prüf dann, ob die LED ruhig bleibt, während du an der Steckbrücke wackelst."
+    },
+    "missing-inductor": {
+      "title": "Keine Spule am Abwärtswandler (L3)",
+      "symptom": "An der Hohlbuchse ist das Board tot, und ON bleibt dunkel. An USB läuft es, als wäre nichts.",
+      "explanation": "Der Abwärtswandler schaltet seinen Eingang mit hoher Geschwindigkeit ein und aus, und L3 macht aus diesen Impulsen einen gleichmäßigen Strom. Ohne sie erreicht von der Hohlbuchse oder VIN nichts die 5-V-Schiene. USB nutzt den Abwärtswandler nicht: Es erreicht die 5 V über seine eigene Schottky-Diode.",
+      "fix": "Abklemmen, an L3 eine geschirmte 10-µH-Spule setzen und anlöten."
+    },
+    "boot-strap": {
+      "title": "BOOT (MD) beim Reset auf LOW",
+      "symptom": "ON leuchtet, aber der Sketch startet nie: L bleibt dunkel (und beim WiFi die Matrix leer), Serial ist stumm, und Uploads scheitern.",
+      "explanation": "Der RA4M1 liest seinen MD-Pin, wenn er den Reset verlässt. LOW bedeutet Boot-Modus: Er startet die Programmierroutine der Fabrik in seinem ROM, die auf einen Programmer wartet und deinen Sketch nie ausführt. Das UNO R3 hatte an dieser Stelle eine freie NC-Buchse, also kann ein altes Shield oder eine verirrte Steckbrücke sie auf Masse legen.",
+      "fix": "Mach den BOOT-Pin frei (die Buchse ganz links in der Versorgungsleiste) und drück dann RESET."
+    },
+    "esp-download-strap": {
+      "title": "ESP_DOWNLOAD auf LOW gehalten (UNO R4 WiFi)",
+      "symptom": "Der Sketch läuft weiter, und die Matrix zeigt weiterhin ihr Bild, aber Serial wird stumm, und Uploads scheitern: Der Computer findet den Port des UNO nicht mehr.",
+      "explanation": "Pin 4 der ESP-Stiftleiste ist der GPIO0-Strap des ESP32-S3. LOW beim Reset, und der ESP32-S3 überspringt die Brücken-Firmware von Arduino und wartet in seinem ROM-Download-Modus auf esptool. Der RA4M1 ist in Ordnung und macht weiter, aber seine USB-Verbindung und Serial laufen über die Brücke, also sind sie weg. Nur das WiFi hat diesen Pin.",
+      "fix": "Mach Pin 4 der ESP-Stiftleiste frei und drück RESET. Ihn absichtlich auf Masse zu legen, ist der Weg, die Brücken-Firmware mit esptool neu zu flashen."
+    },
+    "short-5v-gnd": {
+      "title": "5V mit GND kurzgeschlossen",
+      "symptom": "Das Board wird sofort dunkel, und dein Computer meldet vielleicht, dass das USB-Gerät zu viel Strom zieht.",
+      "explanation": "Anders als das UNO R3 hat das R4 an USB keine Polyfuse, also stoppt nur die eigene Strombegrenzung des Ports am Computer den Kurzschluss. An der Hohlbuchse begrenzt der Abwärtswandler seinen Strom und schaltet ab.",
+      "fix": "Abklemmen und den Kurzschluss suchen: Eine Steckbrücke quer über die Schienen des Steckbretts ist der übliche. Auf dem Board muss nichts ersetzt werden, aber verlass dich nicht darauf, dass sich jeder Port eines Computers selbst schützt."
+    }
+  },
+  "assembly": {
+    "unplug": {
+      "title": "Abklemmen",
+      "body": "Zieh das USB-C-Kabel und das Netzteil ab. Bau oder repariere nie ein Board unter Spannung."
+    },
+    "strip": {
+      "title": "Bis auf die nackte Platine zerlegen",
+      "body": "Nimm jedes Bauteil ab. Übrig bleibt die petrolfarbene Platine mit ihren Pads, ihrem Bestückungsdruck und den Pads, die Arduino nie bestückt (der Quarz Y1 beim Minima).",
+      "refusal": "Trenn zuerst die Stromversorgung: Arbeite nie an einem Board unter Spannung."
+    },
+    "smd": {
+      "title": "Bestücken, dann Reflow-Löten",
+      "body": "Eine Maschine trägt Lotpaste auf die Pads auf und setzt jedes SMD-Bauteil: den RA4M1, den Abwärtswandler und seine Spule, die Dioden, die LEDs, die USB-C-Buchse und den RESET-Taster, und beim WiFi auch das Modul ESP32-S3, den 3,3-V-Regler, den Pegelwandler und die 96 LEDs der Matrix. Dann fährt die Platine durch einen Reflow-Ofen, der die Paste schmilzt.",
+      "refusal": "Zerleg zuerst das Board: Das Reflow-Löten beginnt mit nackten Pads."
+    },
+    "low": {
+      "title": "Die niedrigen Stiftleisten einsetzen",
+      "body": "Die ICSP-Stiftleiste kommt zuerst hinein, beim Minima mit der SWD-Stiftleiste, beim WiFi mit der ESP- und der OFF/VRTC-Stiftleiste. Niedrige Bauteile zuerst, damit das Board beim Löten flach liegt.",
+      "refusal": "SMD-Bauteile und das Reflow-Löten kommen zuerst: Der Ofen würde den Kunststoff der Stiftleisten schmelzen."
+    },
+    "tall": {
+      "title": "Die hohen Bauteile einsetzen",
+      "body": "Dann die Hohlbuchse und die vier schwarzen Shield-Buchsenleisten, beim WiFi auch die Qwiic-Buchse. Mit den niedrigen Bauteilen schon drin liegt das Board weiterhin eben.",
+      "refusal": "Niedrige Bauteile zuerst: Mit den hohen Bauteilen drin kippelt das Board, und die niedrigen fallen heraus, wenn du es umdrehst."
+    },
+    "solder": {
+      "title": "Die Durchsteck-Lötstellen löten",
+      "body": "Dreh das Board um und löte jeden Pin. Eine gute Lötstelle ist ein glänzender Kegel, der Pad und Pin benetzt.",
+      "refusal": "Setz zuerst die bedrahteten Bauteile ein: Es gibt noch nichts zu löten."
+    },
+    "power-up": {
+      "title": "USB-C einstecken",
+      "body": "ON leuchtet sofort grün, und der Sketch, der schon auf dem RA4M1 ist, startet: Blink beim Minima, das Herz in der Matrix beim WiFi. Das Minima erscheint auf deinem Computer als \"UNO R4 Minima\"; beim WiFi bootet der ESP32-S3 zuerst die Brücken-Firmware.",
+      "refusal": "Bau das Board zuerst fertig."
+    },
+    "rails": {
+      "title": "Die Schienen prüfen",
+      "body": "Mit einem Messgerät: 5V zeigt an USB etwa 4,7 V (an der Schottky-Diode fallen 0,3 V ab), und 3.3V zeigt 3,3 V. An der Hohlbuchse liefert der Abwärtswandler volle 5,0 V."
+    },
+    "upload": {
+      "title": "Einen Sketch hochladen",
+      "body": "Lade Serial hello hoch. Das Minima nimmt ihn über sein eigenes USB mit dfu-util an. Beim WiFi öffnet die IDE den Port mit 1200 Baud, der ESP32-S3 setzt den RA4M1 in seinen Bootloader zurück, und bossac beschreibt den Flash. Dann gibt der serielle Monitor bei 115200 Baud eine Bereit-Zeile und jede Sekunde ein Hallo aus.",
+      "refusal": "Steck zuerst USB ein: Uploads laufen über das Kabel."
+    },
+    "reset": {
+      "title": "RESET drücken",
+      "body": "Der Sketch hält an, solange du den Taster gedrückt hältst, und startet beim Loslassen wieder von vorn, also erscheint die Bereit-Zeile erneut. Drück zweimal schnell hintereinander, und das Board wartet stattdessen in seinem Bootloader."
+    }
+  },
+  "lessons": {
+    "blink": {
+      "title": "Eine LED blinken lassen",
+      "lede": "Eine LED und ein Widerstand an D13, demselben Pin wie die L-LED des Boards. Ändere die Verzögerung und den Widerstand und sieh, warum ein Pin des R4 einen größeren Widerstand will als ein Pin des R3.",
+      "code": {
+        "header": "Eine LED an Pin 13 blinken lassen (die L-LED blinkt mit)",
+        "resistor": "LED-Strom = (5 V - 2 V) / R1, und ein Pin des R4 erlaubt 8 mA",
+        "pin": "die L-LED hängt auch an Pin 13",
+        "setup": "Pin 13 treibt die LED"
+      },
+      "params": {
+        "wait": {
+          "label": "An und aus für"
+        },
+        "ohms": {
+          "220": "220 Ω",
+          "470": "470 Ω",
+          "1000": "1 kΩ",
+          "label": "Widerstand",
+          "220-note": "Etwa 14 mA: in Ordnung bei einem UNO R3, aber mehr als die 8 mA, die Arduino einem Pin des R4 erlaubt."
+        }
+      },
+      "checks": {
+        "1": "D13 blinkt mindestens zweimal, 0,2 bis 2 s pro An-Aus-Zyklus",
+        "2": "Pin 13 ist ein Ausgang, und der Code schaltet ihn mit digitalWrite()"
+      },
+      "pins": {
+        "D13": {
+          "to": "Der Widerstand, dann das lange Bein der LED",
+          "role": "Schaltet die LED: HIGH lässt sie leuchten."
+        },
+        "GND": {
+          "to": "Das kurze Bein der LED",
+          "role": "Hierhin fließt der Strom zurück."
+        }
+      },
+      "callouts": {
+        "R1": "Begrenzt den Strom: 1 kΩ halten ihn bei etwa 3 mA.",
+        "DL4": "Die L-LED blinkt mit: Sie hängt auch an D13."
+      },
+      "specs": {
+        "1": {
+          "label": "Strom mit 1 kΩ",
+          "value": "(5 − 2) ÷ 1000 ≈ 3 mA"
+        },
+        "2": {
+          "label": "Grenze eines R4-Pins",
+          "value": "8 mA (das UNO R3 erlaubt 20 mA)"
+        },
+        "3": {
+          "label": "Blinkperiode",
+          "value": "2 × WAIT_MS: 1 s bei 500 ms"
+        }
+      },
+      "features": {
+        "1": "Die L-LED auf dem Board blinkt mit deiner",
+        "2": "8 mA pro Pin: Wähl den Widerstand mit Bedacht",
+        "3": "Ändere die Verzögerung und sieh zu, wie die Periode folgt"
+      },
+      "steps": {
+        "1": "Verbinde D13 über den 1-kΩ-Widerstand mit dem langen Bein der LED und das kurze Bein mit GND.",
+        "2": "Drück auf „Ausführen“: Deine LED und die L-LED des Boards blinken zusammen, für WAIT_MS an und für WAIT_MS aus.",
+        "3": "Ändere die Verzögerung und führ es erneut aus. Wähl dann 220 Ω und lies, warum das für einen Pin des R4 zu viel ist."
+      },
+      "hints": {
+        "1": "LED_BUILTIN ist auf beiden R4-Boards 13, also lässt digitalWrite(LED_BUILTIN, HIGH) L leuchten.",
+        "2": "Ein ganzes Blinken dauert zweimal WAIT_MS: einmal an, einmal aus."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Wie viel Strom erlaubt Arduino einem Pin des UNO R4?",
+          "options": {
+            "1": "20 mA, wie beim UNO R3",
+            "2": "8 mA",
+            "3": "100 mA"
+          },
+          "why": "Arduino gibt die Pins des RA4M1 mit 8 mA an, also sind die beim R3 üblichen 220 Ω (etwa 14 mA) zu viel für einen Pin des R4."
+        },
+        "q2": {
+          "q": "WAIT_MS ist 500. Wie lange dauert ein ganzes Blinken?",
+          "options": {
+            "1": "1 Sekunde",
+            "2": "0,5 Sekunden",
+            "3": "2 Sekunden"
+          },
+          "why": "Die LED ist 500 ms an und dann 500 ms aus: Ein An-Aus-Zyklus dauert 1 s."
+        },
+        "q3": {
+          "q": "Warum blinkt die L-LED des Boards mit deiner mit?",
+          "options": {
+            "1": "Sie ist mit GND verbunden",
+            "2": "Sie kopiert die LED auf dem Steckbrett über den Widerstand",
+            "3": "Sie wird ebenfalls von D13 getrieben"
+          },
+          "why": "L hängt am selben Signal D13 (beim WiFi über einen MOSFET), folgt also allem, was der Pin tut."
+        }
+      }
+    },
+    "button": {
+      "title": "Ein Taster mit Interrupt",
+      "lede": "Ein Taster an D2 zählt Drücke mit attachInterrupt() und schaltet eine LED an D13 um. Durch den internen Pull-up braucht der Taster keinen Widerstand, und eine Entprellzeit verbirgt das Prellen seiner Kontakte.",
+      "code": {
+        "header": "Tasterdrücke mit einem Interrupt zählen; jeder Druck schaltet die LED um",
+        "isr": "läuft bei jeder Flanke an D2, auch während loop() beschäftigt ist",
+        "pullup": "losgelassen = HIGH, gedrückt = LOW"
+      },
+      "params": {
+        "debounce": {
+          "label": "Prellen ignorieren für"
+        }
+      },
+      "world": {
+        "button": "Taster an D2"
+      },
+      "checks": {
+        "1": "Die LED schaltet innerhalb von 50 ms nach dem ersten Druck ein",
+        "2": "Der serielle Monitor zeigt nach dem zweiten Druck \"presses: 2\"",
+        "3": "Nutzt attachInterrupt() und INPUT_PULLUP"
+      },
+      "pins": {
+        "D2": {
+          "to": "Eine Seite des Tasters",
+          "role": "Eingang mit dem internen Pull-up und ein Interrupt-Pin."
+        },
+        "D13": {
+          "to": "1-kΩ-Widerstand, dann die LED",
+          "role": "Ausgang: bei jedem Druck umgeschaltet."
+        },
+        "GND": {
+          "to": "Die andere Seite des Tasters und das kurze Bein der LED",
+          "role": "Gedrückt zieht der Taster D2 auf GND herunter."
+        }
+      },
+      "callouts": {
+        "SW1": "Gedrückt verbindet er D2 mit GND.",
+        "R1": "1 kΩ für die LED: etwa 3 mA."
+      },
+      "specs": {
+        "1": {
+          "label": "Interrupt-Pins",
+          "value": "D2 und D3"
+        },
+        "2": {
+          "label": "Kontaktprellen",
+          "value": "ein paar ms Flattern bei jedem Drücken und Loslassen"
+        }
+      },
+      "features": {
+        "1": "Für den Taster ist kein Widerstand nötig",
+        "2": "Drück ihn in der Abbildung, oder lass das Skript zweimal drücken",
+        "3": "Der Interrupt erwischt einen Druck, auch während loop() beschäftigt ist"
+      },
+      "steps": {
+        "1": "Setz den Taster über die Mittelrille des Steckbretts: eine Seite an D2, die andere an GND.",
+        "2": "Verbinde D13 über 1 kΩ mit dem langen Bein der LED, kurzes Bein an GND.",
+        "3": "Führ es aus und drück: Die LED schaltet um, und der serielle Monitor zählt jeden Druck."
+      },
+      "hints": {
+        "1": "Eine Variable, die ein Interrupt ändert, muss volatile sein, sonst sieht loop() die Änderung vielleicht nie.",
+        "2": "Ohne die Entprellprüfung kann ein Druck zwei- oder dreimal zählen."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Was liest D2 mit INPUT_PULLUP, solange der Taster gedrückt ist?",
+          "options": {
+            "1": "HIGH",
+            "2": "Nichts: Er hängt in der Luft",
+            "3": "LOW"
+          },
+          "why": "Der Pull-up hält D2 auf HIGH; der gedrückte Taster verbindet ihn mit GND, also liest er LOW."
+        },
+        "q2": {
+          "q": "Warum ist pressed als volatile deklariert?",
+          "options": {
+            "1": "Der Interrupt ändert sie hinter dem Rücken von loop()",
+            "2": "Es macht die Variable schneller",
+            "3": "Interrupts können nur volatile-Variablen nutzen"
+          },
+          "why": "volatile lässt den Compiler die Variable jedes Mal aus dem Speicher lesen, sodass loop() die Änderung sieht, die der Interrupt gemacht hat."
+        },
+        "q3": {
+          "q": "Was bewirkt die Entprellzeit?",
+          "options": {
+            "1": "Sie verlangsamt den Interrupt",
+            "2": "Sie ignoriert das Flattern der Kontakte direkt nach einer Änderung",
+            "3": "Sie hält die LED länger an"
+          },
+          "why": "Die Kontakte eines Tasters prellen ein paar Millisekunden lang. Flanken, die näher beieinanderliegen als DEBOUNCE_MS, zählen nicht als neue Drücke."
+        }
+      }
+    },
+    "pot-pwm": {
+      "title": "Potentiometer und PWM",
+      "lede": "Lies ein Potentiometer an A1 mit dem 14-Bit-ADC des R4 und stell die Helligkeit einer LED mit PWM an ~9 ein. Wähl die Auflösung und sieh dieselbe Spannung als 0-1023 oder als 0-16383.",
+      "code": {
+        "header": "Ein Drehknopf an A1 stellt die Helligkeit der LED an Pin 9 ein",
+        "pwm": "ein ~-Pin, also erzeugt analogWrite() hier PWM",
+        "bits": "10 ist der Standard; der ADC des R4 schafft bis zu 14"
+      },
+      "params": {
+        "bits": {
+          "10": "10 Bit (0-1023, wie beim UNO R3)",
+          "12": "12 Bit (0-4095)",
+          "14": "14 Bit (0-16383)",
+          "label": "ADC-Auflösung"
+        }
+      },
+      "world": {
+        "knob": "Potentiometer an A1"
+      },
+      "checks": {
+        "1": "Gibt den Messwert und die Spannung in 2 s mindestens viermal aus",
+        "2": "Mit dem Knopf auf drei Vierteln liegt das Tastverhältnis von D9 bei 70-80 %",
+        "3": "Mit dem Knopf auf einem Viertel liegt das Tastverhältnis von D9 bei 20-30 %",
+        "4": "Nutzt analogReadResolution() und analogWrite()"
+      },
+      "pins": {
+        "A1": {
+          "to": "Das mittlere Bein des Potentiometers (Schleifer)",
+          "role": "Analoger Eingang, 0-5 V."
+        },
+        "D9": {
+          "to": "1-kΩ-Widerstand, dann die LED",
+          "role": "PWM-Ausgang mit 490 Hz."
+        },
+        "5V": {
+          "to": "Ein Ende des Potentiometers",
+          "role": "Das obere Ende des Teilers."
+        },
+        "GND": {
+          "to": "Das andere Ende und das kurze Bein der LED",
+          "role": "Das untere Ende des Teilers."
+        }
+      },
+      "callouts": {
+        "POT1": "Drehen bewegt den Schleifer zwischen GND und 5 V.",
+        "LED1": "Die Helligkeit folgt dem Knopf: Der Pin schaltet 490-mal pro Sekunde."
+      },
+      "specs": {
+        "1": {
+          "label": "ADC",
+          "value": "14 Bit in Hardware, standardmäßig 10 Bit"
+        },
+        "2": {
+          "label": "PWM-Pins",
+          "value": "~3, ~5, ~6, ~9, ~10, ~11"
+        },
+        "3": {
+          "label": "PWM-Frequenz",
+          "value": "490 Hz"
+        }
+      },
+      "features": {
+        "1": "Dreh den Knopf in der Abbildung",
+        "2": "Eine Spannung, drei Auflösungen",
+        "3": "map() macht aus jedem Messwert ein Tastverhältnis von 0-255"
+      },
+      "steps": {
+        "1": "Schließ das Potentiometer an: seine Enden an GND und 5V, den Schleifer an A1.",
+        "2": "Verbinde ~9 über 1 kΩ mit dem langen Bein der LED, kurzes Bein an GND.",
+        "3": "Führ es aus und dreh am Knopf: Die LED folgt, und der serielle Monitor gibt den Messwert und die Volt aus. Ändere die Auflösung und führ es erneut aus."
+      },
+      "hints": {
+        "1": "analogReadResolution() ändert nur die Skala: 1,25 V lesen bei 10 Bit 256 und bei 14 Bit 4096.",
+        "2": "map(raw, 0, top, 0, 255) macht aus dem Messwert bei jeder Auflösung ein Tastverhältnis."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Welchen Bereich liefert analogRead() auf einem R4, wenn du analogReadResolution() nie aufrufst?",
+          "options": {
+            "1": "0-1023 (10 Bit)",
+            "2": "0-16383 (14 Bit)",
+            "3": "0-255 (8 Bit)"
+          },
+          "why": "Der Core startet mit 10 Bit, damit Sketches für das UNO R3 weiter funktionieren; analogReadResolution(14) liefert den vollen Bereich."
+        },
+        "q2": {
+          "q": "Der Schleifer steht bei 1,25 V, und die Auflösung ist 14 Bit. Was gibt der Sketch aus?",
+          "options": {
+            "1": "256",
+            "2": "1023",
+            "3": "4096"
+          },
+          "why": "1,25 V sind ein Viertel von 5 V, und ein Viertel von 16384 ist 4096."
+        },
+        "q3": {
+          "q": "Wie macht PWM die LED dunkler?",
+          "options": {
+            "1": "Es senkt die Spannung des Pins",
+            "2": "Es schaltet den Pin schnell ein und aus, in jedem Zyklus für einen Teil der Zeit an",
+            "3": "Es ändert die Farbe der LED"
+          },
+          "why": "Bei 490 Hz mittelt dein Auge die Impulse: In jedem Zyklus ein Viertel der Zeit an, wirkt etwa ein Viertel so hell."
+        }
+      }
+    },
+    "dac-wave": {
+      "title": "Ein echter analoger Ausgang: der DAC",
+      "lede": "Das R4 hat, was das R3 nie hatte: einen 12-Bit-DAC an A0, der eine echte Spannung ausgibt, keine PWM-Impulse. Fahr ihn als Rampe von 0 bis 5 V hoch und gib unterwegs die Stufen aus.",
+      "code": {
+        "header": "Eine Rampe am DAC: A0 steigt immer wieder von 0 auf 5 V",
+        "res": "12 Bit: Stufen 0-4095",
+        "dac": "DAC ist ein anderer Name für A0"
+      },
+      "params": {
+        "steps": {
+          "16": "16 (grobe Treppe)",
+          "64": "64",
+          "256": "256 (glatt, langsamer)",
+          "label": "Schritte pro Rampe"
+        }
+      },
+      "checks": {
+        "1": "Gibt innerhalb von 3 s mindestens vier Stufen mit ihrer Spannung aus",
+        "2": "Die Rampe beginnt innerhalb von 0,7 s bei 0 V",
+        "3": "Setzt analogWriteResolution(12) und schreibt auf DAC"
+      },
+      "pins": {
+        "A0": {
+          "to": "Eine Steckbrücke zum Steckbrett, wo ein Messgerät oder ein Oszilloskop messen kann",
+          "role": "DAC-Ausgang: 0 bis etwa 5 V."
+        }
+      },
+      "callouts": {
+        "U1": "Der DAC sitzt im RA4M1: kein zusätzlicher Chip nötig."
+      },
+      "specs": {
+        "1": {
+          "label": "DAC",
+          "value": "12 Bit an A0: Stufen 0-4095"
+        },
+        "2": {
+          "label": "Ein Schritt",
+          "value": "5 V ÷ 4095 ≈ 1,2 mV"
+        }
+      },
+      "features": {
+        "1": "Eine echte Spannung an A0",
+        "2": "Treppe oder glatte Rampe: Wähl die Schritte",
+        "3": "Der DAC liefert eine Spannung, keine Leistung: Ein Lautsprecher braucht einen Verstärker"
+      },
+      "steps": {
+        "1": "Drück auf „Ausführen“: Der DAC steigt von 0 auf 5 V und beginnt von vorn, und der serielle Monitor gibt nach jedem Viertel des Wegs die Stufe aus.",
+        "2": "Ändere die Schritte: 16 ergeben eine grobe Treppe, die sich schnell wiederholt, 256 eine glatte Rampe, die 2,6 s dauert.",
+        "3": "Halt auf einem echten Board ein Messgerät zwischen A0 und GND: Es zeigt die Spannung, die der Sketch ausgibt."
+      },
+      "hints": {
+        "1": "level × 5.0 / 4095 macht aus einer DAC-Stufe Volt.",
+        "2": "analogWrite() geht von 8 Bit (0-255) aus, bis analogWriteResolution(12) ihm sagt, dass 4095 der Vollausschlag ist."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Was liefert dir der DAC, was PWM nicht kann?",
+          "options": {
+            "1": "Mehr Strom",
+            "2": "Eine gleichmäßige Spannung irgendwo zwischen 0 und 5 V",
+            "3": "Schnelleres Blinken"
+          },
+          "why": "PWM schaltet zwischen 0 und 5 V und erreicht die Stufe nur im Mittel; der DAC hält eine echte Spannung an A0."
+        },
+        "q2": {
+          "q": "Welche Stufe ergibt mit analogWriteResolution(12) etwa 2,5 V?",
+          "options": {
+            "1": "127",
+            "2": "1023",
+            "3": "2048"
+          },
+          "why": "4095 ist der Vollausschlag (5 V), also liegt die Hälfte bei etwa 2048."
+        },
+        "q3": {
+          "q": "An welchem Pin liegt der DAC?",
+          "options": {
+            "1": "A0",
+            "2": "D9",
+            "3": "A5"
+          },
+          "why": "Der DAC-Ausgang des RA4M1 ist P014, der Pin A0; DAC ist ein anderer Name dafür."
+        }
+      }
+    },
+    "i2c-scan": {
+      "title": "I²C: den MPU-6050 finden",
+      "lede": "Durchsuch den I²C-Bus nach Geräten und frag dann einen Bewegungssensor MPU-6050, wer er ist. I²C sind zwei Drähte, die sich viele Chips teilen, jeder mit seiner eigenen Adresse.",
+      "code": {
+        "header": "Den I2C-Bus durchsuchen, dann das Register WHO_AM_I des MPU-6050 lesen",
+        "begin": "SDA und SCL: dieselben Pins wie A4 und A5",
+        "whoami": "Register 0x75 enthält die Kennung des Chips"
+      },
+      "params": {
+        "address": {
+          "label": "Abgefragte Adresse",
+          "0x68": "0x68 (AD0 LOW)",
+          "0x69": "0x69 (AD0 HIGH)",
+          "0x69-note": "AD0 des Moduls ist heruntergezogen, also antwortet es auf 0x68: Eine Anfrage an 0x69 bekommt keine Antwort."
+        }
+      },
+      "world": {
+        "imu": "Neigung des MPU-6050"
+      },
+      "checks": {
+        "1": "Der Scan findet innerhalb von 1 s ein Gerät auf 0x68",
+        "2": "WHO_AM_I liest mindestens zweimal 0x68",
+        "3": "Nutzt Wire.begin(), beginTransmission() und requestFrom()"
+      },
+      "pins": {
+        "SDA": {
+          "to": "SDA des Moduls",
+          "role": "I²C-Daten, derselbe Pin wie A4."
+        },
+        "SCL": {
+          "to": "SCL des Moduls",
+          "role": "I²C-Takt, derselbe Pin wie A5."
+        },
+        "5V": {
+          "to": "VCC des Moduls",
+          "role": "Sein Regler macht 3,3 V für den Chip."
+        },
+        "GND": {
+          "to": "GND des Moduls",
+          "role": "Die gemeinsame Masse."
+        }
+      },
+      "callouts": {
+        "MPU1": "Das GY-521-Breakout: ein MPU-6050 mit eigenem 3,3-V-Regler und eigenen Pull-ups. AD0 bleibt offen, also antwortet es auf 0x68.",
+        "JDIGITAL_H": "SDA und SCL sind die beiden Buchsen am linken Ende der oberen Buchsenleiste."
+      },
+      "specs": {
+        "1": {
+          "label": "Adresse des MPU-6050",
+          "value": "0x68, oder 0x69, wenn AD0 HIGH ist"
+        },
+        "2": {
+          "label": "Pull-ups",
+          "value": "keine auf dem R4: Das Modul bringt eigene mit"
+        }
+      },
+      "features": {
+        "1": "Ein MPU-6050 am Bus",
+        "2": "127 Adressen auf einem Drahtpaar",
+        "3": "Beim WiFi kommt ein Qwiic-Sensor an Wire1, nicht an Wire"
+      },
+      "steps": {
+        "1": "Schließ das Modul an: VCC an 5V, GND an GND, SDA an SDA, SCL an SCL.",
+        "2": "Drück auf „Ausführen“: Der Scan gibt jede Adresse aus, die antwortet, dann liest der Sketch einmal pro Sekunde WHO_AM_I.",
+        "3": "Stell die Adresse auf 0x69 und führ es erneut aus, um zu sehen, wie ein fehlendes Gerät aussieht."
+      },
+      "hints": {
+        "1": "endTransmission() liefert 0, wenn ein Gerät seine Adresse bestätigt hat.",
+        "2": "Das WHO_AM_I eines MPU-6050 ist 0x68, genau wie seine Standardadresse."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Wie viele Signaldrähte nutzt I²C, außer Versorgung und Masse?",
+          "options": {
+            "1": "Einen",
+            "2": "Vier",
+            "3": "Zwei: SDA und SCL"
+          },
+          "why": "Daten (SDA) und Takt (SCL) teilen sich alle Geräte am Bus; die Adresse unterscheidet sie."
+        },
+        "q2": {
+          "q": "Der Scan findet 0x68, aber die Anfrage an 0x69 ergibt \"No answer\". Warum?",
+          "options": {
+            "1": "Das R4 kann die Adresse 0x69 nicht nutzen",
+            "2": "AD0 des Moduls ist LOW, also antwortet es nur auf 0x68",
+            "3": "Der Bus ist kaputt"
+          },
+          "why": "AD0 legt das letzte Bit der Adresse fest: LOW ist 0x68, HIGH ist 0x69. Hier sitzt nichts auf 0x69."
+        },
+        "q3": {
+          "q": "Warum funktioniert der Bus, obwohl das R4 keine I²C-Widerstände auf dem Board hat?",
+          "options": {
+            "1": "Das Modul bringt eigene Pull-ups mit",
+            "2": "Der RA4M1 braucht keine",
+            "3": "I²C funktioniert ohne Pull-ups"
+          },
+          "why": "I²C-Leitungen ziehen nur auf LOW, also muss sie etwas auf HIGH ziehen. Das R4 hat Pads für Pull-ups, aber keine bestückt; die eigenen Widerstände des Breakouts erledigen das."
+        }
+      }
+    },
+    "wifi": {
+      "title": "Mit einem WLAN-Netz verbinden",
+      "lede": "Nur UNO R4 WiFi: Der ESP32-S3 verbindet sich für den RA4M1 mit einem Netz, und der RA4M1 spricht über die Bibliothek WiFiS3 mit ihm. Verbinde dich und gib dann die Adresse des Boards und die Signalstärke aus.",
+      "code": {
+        "header": "Über den ESP32-S3 mit WLAN verbinden und die IP-Adresse und das Signal ausgeben",
+        "pass": "in einem echten Sketch gehören Passwörter in arduino_secrets.h"
+      },
+      "params": {
+        "ssid": {
+          "label": "Netz",
+          "SimLab": "SimLab (2,4 GHz)",
+          "Workshop-5G": "Workshop-5G (nur 5 GHz)",
+          "Workshop-5G-note": "Der ESP32-S3 hat nur ein 2,4-GHz-Funkteil, also taucht ein 5-GHz-Netz nie auf, und der Sketch gibt immer weiter Punkte aus."
+        }
+      },
+      "world": {
+        "ap": "Zugangspunkt SimLab"
+      },
+      "checks": {
+        "1": "Gibt innerhalb von 4 s \"Connected, IP 192.168.4.x\" aus",
+        "2": "Gibt die Signalstärke in dBm aus",
+        "3": "Bindet WiFiS3.h ein, ruft WiFi.begin() auf und wartet auf WL_CONNECTED"
+      },
+      "callouts": {
+        "M1": "Der ESP32-S3 enthält das Funkteil; die Antenne ist das freie Ende des Moduls.",
+        "U4": "Der Pegelwandler zwischen dem 5-V-RA4M1 und dem 3,3-V-ESP32-S3: Jeder Befehl von WiFiS3 geht durch ihn."
+      },
+      "specs": {
+        "1": {
+          "label": "Funkteil",
+          "value": "2,4-GHz-WLAN 4 (802.11b/g/n) und Bluetooth LE 5"
+        },
+        "2": {
+          "label": "Bibliothek",
+          "value": "WiFiS3, im Core des UNO R4 enthalten"
+        }
+      },
+      "features": {
+        "1": "Verbindet sich mit einem simulierten Zugangspunkt",
+        "2": "Der RA4M1 fragt, der ESP32-S3 erledigt die Funkarbeit",
+        "3": "Wähl das 5-GHz-Netz, um eine Verbindung scheitern zu sehen"
+      },
+      "steps": {
+        "1": "Wähl das Netz und drück auf „Ausführen“.",
+        "2": "Punkte erscheinen, während sich der ESP32-S3 verbindet, dann die Adresse, die der Zugangspunkt dem Board gegeben hat, und das Signal.",
+        "3": "Wähl Workshop-5G und führ es erneut aus: Die Punkte laufen weiter, weil das R4 WiFi kein 5 GHz sieht."
+      },
+      "hints": {
+        "1": "RSSI ist in dBm: −50 ist stark, −80 ist schwach.",
+        "2": "Der Sketch gibt nach 10 s auf, hängt also nie endlos."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Welcher Chip betreibt beim UNO R4 WiFi das WLAN-Funkteil?",
+          "options": {
+            "1": "Das Modul ESP32-S3",
+            "2": "Der RA4M1",
+            "3": "Der Pegelwandler TXB0108"
+          },
+          "why": "Der RA4M1 führt deinen Sketch aus und schickt Befehle; der ESP32-S3 enthält das Funkteil und verbindet sich mit dem Netz."
+        },
+        "q2": {
+          "q": "Warum kann sich das Board nicht mit Workshop-5G verbinden?",
+          "options": {
+            "1": "Das Passwort ist falsch",
+            "2": "Das Netz ist zu weit weg",
+            "3": "Der ESP32-S3 hat kein 5-GHz-Funkteil"
+          },
+          "why": "Der ESP32-S3 arbeitet nur mit 2,4 GHz, also ist ein 5-GHz-Netz für ihn unsichtbar."
+        },
+        "q3": {
+          "q": "Das Signal zeigt −55 dBm. Ist das gut?",
+          "options": {
+            "1": "Nein: Ein gutes Signal ist positiv",
+            "2": "Ja: Es ist ein starkes Signal",
+            "3": "Es bedeutet, dass es kein Signal gibt"
+          },
+          "why": "Die WLAN-Signalstärke ist negativ, und näher an 0 ist stärker: −55 dBm sind eine solide Verbindung, −80 dBm eine schwache."
+        }
+      }
+    },
+    "matrix": {
+      "title": "Auf die LED-Matrix zeichnen",
+      "lede": "Nur UNO R4 WiFi: 96 rote LEDs in einem Raster von 12 x 8. Zeichne ein Herz als Array von 8 x 12 aus Nullen und Einsen und lass es schlagen.",
+      "code": {
+        "header": "Ein Herz auf die Matrix mit 12 x 8 zeichnen und schlagen lassen",
+        "begin": "startet den Timer, der die LEDs abtastet",
+        "render": "8 Zeilen zu 12 Spalten: 1 ist an"
+      },
+      "params": {
+        "beat": {
+          "label": "Herzschlag"
+        }
+      },
+      "checks": {
+        "1": "Gibt innerhalb von 0,5 s \"Matrix ready\" aus",
+        "2": "Läuft 2 s ohne Fehler",
+        "3": "Ruft matrix.begin() und renderBitmap() auf"
+      },
+      "callouts": {
+        "U_LEDMATRIX": "96 LEDs an 11 Pins: Charlieplexing lässt eine nach der anderen leuchten, schneller, als du sehen kannst."
+      },
+      "specs": {
+        "1": {
+          "label": "Matrix",
+          "value": "12 x 8 rote LEDs, insgesamt 96"
+        },
+        "2": {
+          "label": "Pins",
+          "value": "11 Pins des RA4M1, per Charlieplexing"
+        }
+      },
+      "features": {
+        "1": "Das Herz schlägt auf dem Board in der Abbildung",
+        "2": "Bearbeite das Array, um dein eigenes Bild zu zeichnen",
+        "3": "Ändere den Herzschlag und führ es erneut aus"
+      },
+      "steps": {
+        "1": "Drück auf „Ausführen“: Das Herz erscheint, verschwindet und erscheint wieder.",
+        "2": "Ändere den Herzschlag, um ihn zu beschleunigen oder zu verlangsamen.",
+        "3": "Bearbeite eine Zeile des Arrays: Jede 1 lässt eine LED leuchten, gezählt von der oberen linken Ecke."
+      },
+      "hints": {
+        "1": "Das Array ist heart[row][column]: 8 Zeilen zu 12.",
+        "2": "Beim Charlieplexing kann jeder Pin HIGH, LOW oder abgeschaltet sein, also könnten 11 Pins 110 LEDs erreichen."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Wie viele LEDs hat die Matrix?",
+          "options": {
+            "1": "64 (8 x 8)",
+            "2": "96 (12 x 8)",
+            "3": "128 (16 x 8)"
+          },
+          "why": "12 Spalten mal 8 Zeilen: 96 rote LEDs."
+        },
+        "q2": {
+          "q": "Wie treiben 11 Pins 96 LEDs?",
+          "options": {
+            "1": "Charlieplexing: eine LED nach der anderen, schnell abgetastet",
+            "2": "Ein Schieberegister unter der Matrix",
+            "3": "Jeder Pin treibt neun LEDs auf einmal"
+          },
+          "why": "Jede LED sitzt zwischen zwei Pins. Die Bibliothek lässt sie so schnell nacheinander leuchten, dass du das ganze Bild siehst."
+        },
+        "q3": {
+          "q": "Was bedeutet in renderBitmap(heart, 8, 12) eine 1 im Array?",
+          "options": {
+            "1": "Halbe Helligkeit",
+            "2": "Diese LED blinken lassen",
+            "3": "Diese LED ist an"
+          },
+          "why": "Das Array ist ein Bild: 1 schaltet eine LED ein, 0 lässt sie aus."
+        }
+      }
+    }
+  }
+}
