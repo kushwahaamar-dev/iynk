@@ -1,0 +1,539 @@
+{
+  "title": "Raspberry Pi 5",
+  "sub": "cerebro con ROS 2",
+  "hint": "Móntala, con la tarjeta y el disipador al final, y aliméntala con una fuente de 5 A de verdad",
+  "overview": "La Raspberry Pi 5 es el cerebro del robot, no su médula espinal: un ordenador Linux de cuatro núcleos a 2,4 GHz que ejecuta ROS 2, SLAM Toolbox, Nav2 y el procesado de la cámara. Linux no es de tiempo real, así que los bucles de los motores y del equilibrio viven en una ESP32 o una Nano que habla con la Pi por USB serie, el mismo reparto que en el UGV Rover de Waveshare. Móntala desde la placa desnuda, ponle su tarjeta microSD y el Active Cooler, aliméntala con una fuente de 5 V y 5 A de verdad y mira el terminal. Aquí el calor avanza unas diez veces más rápido que en una placa real, así que ves en segundos lo que en el banco tarda minutos.",
+  "power": {
+    "label": "Conecta / desconecta la fuente USB-C de 27 W",
+    "ok": "Con alimentación: el LED pasa de rojo a verde mientras arranca Linux"
+  },
+  "parts": {
+    "U1": {
+      "name": "SoC BCM2712",
+      "what": "Cuatro núcleos Cortex-A76 a 2,4 GHz y una GPU VideoCore VII en un chip flip-chip bajo un difusor de calor metálico. Ejecuta Linux, ROS 2, SLAM y visión, rápido pero no en tiempo real."
+    },
+    "U2": {
+      "name": "RAM LPDDR4X",
+      "what": "De 1 a 16 GB de LPDDR4X-4267 justo al lado del SoC: a estas velocidades las pistas de la memoria tienen que ser cortas."
+    },
+    "U3": {
+      "name": "Controlador de E/S RP1",
+      "what": "El chip propio de Raspberry Pi para el USB, el Ethernet, las cámaras y el conector GPIO, unido al SoC por cuatro carriles de PCIe 2.0. Todos los puertos de la placa salen de él."
+    },
+    "U4": {
+      "name": "Circuito de gestión de energía (Renesas DA9091)",
+      "what": "Genera todas las líneas (núcleo, memoria, 1,8 V, 3,3 V) a partir de la entrada de 5 V, mantiene el reloj de tiempo real, gestiona el botón de encendido y avisa de subtensión por debajo de 4,63 V."
+    },
+    "U5": {
+      "name": "Módulo Wi-Fi y Bluetooth",
+      "what": "Wi-Fi 802.11ac de doble banda y Bluetooth 5.0 bajo un blindaje metálico. Va bien para SSH y Foxglove; el tráfico de control del robot es más seguro por cable."
+    },
+    "U6": {
+      "name": "PHY Gigabit Ethernet",
+      "what": "Convierte las señales Ethernet del RP1 en las tensiones del cable; está girado 45 grados al lado del conector."
+    },
+    "L1": {
+      "name": "Bobinas de potencia del PMIC",
+      "what": "Los cuatro bloques grises junto al PMIC guardan energía para sus reguladores conmutados."
+    },
+    "RC": {
+      "name": "Condensadores de desacoplo y resistencias",
+      "what": "Cientos de piezas diminutas: cada chip rápido necesita una reserva de energía local justo en sus pines de alimentación."
+    },
+    "LED1": {
+      "name": "LED de alimentación y estado (rojo/verde)",
+      "what": "Rojo cuando llega la alimentación, verde en cuanto arranca el firmware, y se apaga un instante con cada lectura de la tarjeta SD. Los errores de arranque se muestran como códigos de destellos verdes largos y cortos."
+    },
+    "SW1": {
+      "name": "Botón de encendido",
+      "what": "Nuevo en la Pi 5. El primer encendido arranca solo; luego una pulsación la apaga de forma ordenada, una pulsación con ella detenida la vuelve a arrancar y una pulsación larga corta la alimentación."
+    },
+    "J1": {
+      "name": "Entrada de alimentación USB-C",
+      "what": "Entrada de 5 V. La fuente oficial de 27 W le dice a la Pi por USB PD que puede dar 5 A; una fuente de 5 V y 3 A la arranca, pero limita los puertos USB a 600 mA."
+    },
+    "J20": {
+      "name": "Conector PCIe",
+      "what": "Conector de cinta plana de 16 pines y 0,5 mm con un carril de PCIe 2.0, para un disco NVMe o un HAT acelerador de IA."
+    },
+    "J3": {
+      "name": "Conector de cámara/pantalla 0",
+      "what": "Cinta plana de 22 pines y 0,5 mm, cuatro carriles MIPI, para una cámara o una pantalla DSI. Dos cámaras forman un par estéreo: calibra antes cada una con un tablero de ajedrez."
+    },
+    "J4": {
+      "name": "Conector de cámara/pantalla 1",
+      "what": "El segundo conector MIPI de 4 carriles. Los cables de cámara de la Pi 4 son de 15 pines y 1 mm y necesitan un cable adaptador."
+    },
+    "J5": {
+      "name": "Conector de la batería del RTC",
+      "what": "JST-SH de 2 pines para una pequeña pila que mantiene el reloj en marcha mientras está desconectada, para que las marcas de tiempo de los logs y de los bags sean correctas."
+    },
+    "UART": {
+      "name": "Conector UART de depuración",
+      "what": "Consola serie JST-SH de 3 pines (pin 1 RX, 2 GND, 3 TX) a 115200 baudios, /dev/ttyAMA10 en Linux."
+    },
+    "FAN": {
+      "name": "Conector del ventilador",
+      "what": "Conector JST-SH de 4 pines para un ventilador PWM: el firmware acelera el ventilador a medida que se calienta el SoC."
+    },
+    "MICROSD": {
+      "name": "Zócalo de la tarjeta microSD",
+      "what": "Un zócalo push-push en la cara inferior. La Pi no tiene flash propia para los programas: Raspberry Pi OS, tu espacio de trabajo de ROS 2 y todos los logs viven en la tarjeta que lleva dentro."
+    },
+    "J6": {
+      "name": "Micro-HDMI 0",
+      "what": "Hasta 4K a 60 Hz. En un robot sirve sobre todo para el primer arranque."
+    },
+    "J13": {
+      "name": "Micro-HDMI 1",
+      "what": "Una segunda pantalla 4K60: RViz en una pantalla y los terminales en la otra."
+    },
+    "J8": {
+      "name": "Conector GPIO de 40 pines",
+      "what": "Lógica de 3,3 V con I2C, SPI, UART y PWM. Nunca metas 5 V en un pin, y los motores van a un microcontrolador, no aquí. Los pines 2 y 4 están conectados directamente a la entrada de 5 V."
+    },
+    "J14": {
+      "name": "Conector PoE+",
+      "what": "Cuatro pines que toman la alimentación del cable Ethernet a través del HAT PoE+."
+    },
+    "J10": {
+      "name": "Conector Gigabit Ethernet",
+      "what": "La forma fiable de transmitir topics e imágenes de la cámara. LED verde = enlace, ámbar = tráfico."
+    },
+    "J12": {
+      "name": "Puertos USB 3.0 (azules)",
+      "what": "Dos puertos de 5 Gbit/s que funcionan a la vez a toda velocidad: cámaras de profundidad, lidar, SSD."
+    },
+    "J11": {
+      "name": "Puertos USB 2.0 (negros)",
+      "what": "Teclado, mando de teleoperación y el enlace USB serie con la Nano o la ESP32."
+    },
+    "CARD": {
+      "name": "Tarjeta microSD",
+      "what": "El sistema operativo. Graba en ella Raspberry Pi OS o Ubuntu con Raspberry Pi Imager; una tarjeta de clase A2 de 32 GB o más hace que las compilaciones de ROS 2 y los archivos bag vayan rápidos. Desconectar la alimentación mientras escribe puede corromperla."
+    },
+    "COOLER": {
+      "name": "Active Cooler",
+      "what": "Disipador de aluminio y ventilador centrífugo sobre dos pasadores de muelle, con almohadillas térmicas sobre el SoC y un cable al conector del ventilador. Sin él, la carga de ROS 2 lleva el SoC por encima de 80 °C y el firmware baja el reloj."
+    }
+  },
+  "modes": {
+    "boot": {
+      "title": "Arranque y comprobación",
+      "code": {
+        "what": "boot_check.py: ejecútalo después del primer arranque para ver que la Pi está bien",
+        "first": "en una tarjeta SD recién grabada, actualiza primero:",
+        "throttled": "throttled=0x0: la alimentación nunca ha caído",
+        "temp": "temperatura de la CPU",
+        "clock": "reloj Arm: 2400000000 Hz a toda velocidad"
+      }
+    },
+    "teleop": {
+      "title": "Nodo de conducción de ROS 2",
+      "code": {
+        "what": "drive.py: un nodo de ROS 2 que conduce el robot (ROS 2 Lyrical en Ubuntu 26.04)",
+        "rate": "10 Hz",
+        "heat": "comprueba la temperatura del SoC cada 5 s",
+        "linear": "m/s hacia delante",
+        "angular": "rad/s de giro",
+        "publish": "la ESP32 convierte esto en el PWM de los motores"
+      }
+    },
+    "health": {
+      "title": "Comprobación de alimentación y calor",
+      "code": {
+        "what": "health.py: decodifica vcgencmd get_throttled bit a bit",
+        "charger": "un cargador de móvil cae con carga: reinicios aleatorios, tarjetas SD corruptas, dispositivos USB que se desconectan",
+        "fix": "solución: la fuente USB-C oficial de 5 V y 5 A (27 W)"
+      }
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Déjala en la PCB desnuda",
+      "body": "Desconecta la fuente y luego quita todas las piezas. La Pi 5 se monta como cualquier placa moderna: primero las piezas de montaje superficial, luego los conectores de agujero pasante de los más bajos a los más altos, y la tarjeta microSD y el Active Cooler al final.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    },
+    "smd": {
+      "title": "Colocación automática de las piezas SMD, y luego reflujo",
+      "body": "La máquina coloca sobre la pasta de soldar el BCM2712, la RAM, el RP1, el PMIC y sus bobinas, el blindaje del Wi-Fi, el PHY de Ethernet y todos los condensadores y resistencias pequeños, y con ellos los conectores de montaje superficial: el USB-C, los zócalos de cinta plana del PCIe y de las cámaras, los conectores del RTC, del UART y del ventilador, el zócalo microSD, el LED y el botón de encendido. El horno de reflujo funde la pasta de debajo de cada pad a unos 245 °C.",
+      "refusal": "Las piezas SMD ya están en la placa"
+    },
+    "low": {
+      "title": "Coloca las piezas bajas de agujero pasante",
+      "body": "Los dos conectores micro-HDMI. Las piezas bajas van primero para que la placa se apoye plana sobre ellas cuando le das la vuelta para soldar.",
+      "refusal": "Primero las piezas SMD: haz la colocación automática y el reflujo. El horno fundiría las piezas de plástico"
+    },
+    "tall": {
+      "title": "Coloca los conectores altos",
+      "body": "El conector GPIO de 40 pines, el conector PoE+, el conector Ethernet y las dos torres USB.",
+      "refusal": "Primero las piezas bajas: con las piezas altas puestas, la placa se tambalea y las piezas sueltas se caen cuando le das la vuelta para soldar"
+    },
+    "solder": {
+      "title": "Suelda las uniones de agujero pasante",
+      "body": "Cada soldadura tiene que ser brillante y cóncava, sin puentes entre los pines del GPIO.",
+      "refusal": "Todavía no hay nada que soldar: primero coloca una pieza"
+    },
+    "card": {
+      "title": "Mete la tarjeta microSD",
+      "body": "La tarjeta lleva el sistema operativo, así que solo entra cuando todas las uniones están soldadas. Encaja con un clic en el zócalo de debajo de la placa, con los contactos hacia arriba, hacia la placa.",
+      "refusal": "Primero suéldalo todo: la tarjeta va la última"
+    },
+    "cooler": {
+      "title": "Coloca el Active Cooler",
+      "body": "Mete sus dos pasadores de muelle en los agujeros junto al SoC para que la almohadilla térmica quede sobre el SoC, y luego enchufa su cable en el conector de 4 pines del ventilador.",
+      "refusal": "Primero suéldalo todo: esta pieza va la última"
+    },
+    "plug": {
+      "title": "Conecta la fuente USB-C de 27 W",
+      "body": "La fuente oficial ofrece 5 V a 5 A por USB PD. El LED se enciende en rojo, pasa a verde cuando arranca el firmware y se apaga un instante con las lecturas de la tarjeta SD mientras arranca Linux; luego boot_check.py imprime los indicadores de la alimentación, la temperatura y el reloj.",
+      "refusal": "No hay dónde conectarla: primero vuelve a poner J1"
+    },
+    "teleop": {
+      "title": "Ejecuta el nodo de conducción de ROS 2",
+      "body": "El nodo publica un Twist en /cmd_vel diez veces por segundo. En un robot real, una ESP32 o una Nano lo lee por USB serie y lo convierte en el PWM de los motores."
+    },
+    "health": {
+      "title": "Comprueba la alimentación y el calor",
+      "body": "vcgencmd get_throttled guarda el historial de la alimentación y de la temperatura en un solo número. 0x0 significa que desde este arranque la alimentación nunca ha caído y el reloj nunca se ha reducido."
+    },
+    "charger": {
+      "title": "Avériala: aliméntala con un cargador de móvil de 5 V y 2 A",
+      "body": "Con carga, el cargador y su cable fino caen a 4,6 V, por debajo del límite de 4,63 V. Mira la alimentación, el reloj y los indicadores de throttled, y luego vuelve a la fuente de 27 W."
+    },
+    "no-cooler": {
+      "title": "Avériala: hazla funcionar sin el Active Cooler",
+      "body": "Se quita el disipador y el nodo de conducción funciona con el SoC al aire. La temperatura sube unos grados por segundo, el reloj baja al pasar de 80 °C y el nodo avisa. Luego repárala: el disipador vuelve a su sitio y la placa se enfría."
+    },
+    "cold-fan": {
+      "title": "Avériala: una soldadura fría en el conector del ventilador",
+      "body": "Un pin del conector del ventilador apenas toca su pad, así que el ventilador va a trompicones y el SoC se calienta más. Vuelve a fundir la soldadura (Repáralo todo) para arreglarlo."
+    },
+    "motors": {
+      "title": "Avériala: motores de tracción en los 5 V de la Pi",
+      "body": "Alimenta la Pi desde el convertidor buck de 3 A del robot por los pines 2 y 4 del GPIO, con dos motores TT de tracción en la misma línea. Su corriente de arranque hunde la línea y la Pi se reinicia. Repara, y luego dale a la Pi su propia fuente de 27 W."
+    },
+    "reverse": {
+      "title": "Avériala: los 5 V del robot conectados al revés",
+      "body": "Intercambia los cables de los pines 2 y 6 del GPIO. Nada en la línea de 5 V del conector bloquea una alimentación invertida. Repara, y luego vuelve a alimentarla por USB-C."
+    },
+    "overvolt": {
+      "title": "Avériala: 12 V en los pines de 5 V",
+      "body": "Conecta una batería 3S directamente al pin 2 en lugar de a través de un convertidor buck de 5 V. Repara, y luego vuelve a alimentarla por USB-C."
+    },
+    "exploded": {
+      "title": "Vista despiezada",
+      "body": "Desconecta y levanta las piezas por grupos de montaje para ver lo que hay bajo el disipador.",
+      "refusal": "Primero desconecta la alimentación: nunca trabajes en una placa con tensión"
+    }
+  },
+  "faults": {
+    "undervoltage": {
+      "title": "Subtensión con un cargador de móvil",
+      "symptom": "La alimentación marca 4,6 V, el reloj baja a 1,5 GHz, get_throttled muestra 0x50005 y el kernel registra 'Undervoltage detected!'.",
+      "explanation": "La Pi 5 avisa de subtensión por debajo de 4,63 V (±5 %). Un cargador de móvil de 5 V y 2 A con un cable fino cae con la carga de la Pi, así que el firmware limita el reloj. Las fuentes débiles también provocan reinicios aleatorios, tarjetas SD corruptas y dispositivos USB que se desconectan.",
+      "fix": "Usa la fuente USB-C oficial de 5 V y 5 A (27 W)."
+    },
+    "no-cooler": {
+      "title": "Sin Active Cooler",
+      "symptom": "La temperatura de la CPU pasa de 80 °C, el reloj baja de 2,4 GHz hacia 1,5 GHz, get_throttled muestra 0x40004 y el nodo de conducción avisa del calor.",
+      "explanation": "El firmware reduce paso a paso el reloj de los núcleos Arm a partir de 80 °C, y también el de la GPU a 85 °C. Con la carga de ROS 2, un BCM2712 sin disipador llega ahí enseguida, y 1,5 GHz es solo el 62,5 % de la velocidad máxima.",
+      "fix": "Desconecta, vuelve a colocar el Active Cooler y enchufa su cable en el conector del ventilador."
+    },
+    "cold-fan": {
+      "title": "Soldadura fría en el conector del ventilador",
+      "symptom": "El ventilador se para y arranca, su ciclo de trabajo salta entre 0 y el valor de la curva, y la CPU se calienta más.",
+      "explanation": "Una soldadura fría es una gota mate y granulosa que nunca mojó el pad, así que solo hace contacto a ratos. El pin de alimentación o de PWM del ventilador se corta con cada vibración.",
+      "fix": "Vuelve a fundir la soldadura: calienta a la vez el pad y el pin, añade un poco de estaño nuevo y deja que se solidifique en un menisco brillante y cóncavo."
+    },
+    "motor-brownout": {
+      "title": "Caída de tensión: motores en la línea de 5 V de la Pi",
+      "symptom": "La alimentación cae, el LED se apaga y vuelve, y el terminal repite el registro de arranque: la Pi se reinicia cada vez que arrancan los motores.",
+      "explanation": "Un motorreductor TT consume 1,2-1,5 A al arrancar o bloqueado. Dos de ellos más los 0,8 A de la Pi son más de lo que puede dar el convertidor buck de 3 A del robot, así que los 5 V se hunden y la placa se reinicia.",
+      "fix": "Alimenta los motores desde la batería a través de un driver de motores controlado por la ESP32, y dale a la Pi su propia fuente de 5 V y 5 A."
+    },
+    "reverse-gpio": {
+      "title": "Polaridad invertida en los pines de 5 V del GPIO",
+      "symptom": "No arranca nada, la fuente entra en limitación de corriente y el PMIC se calienta.",
+      "explanation": "El USB-C tiene forma y no se puede conectar al revés, pero los pines de 5 V del conector van directos a la línea de entrada de 5 V sin ninguna protección. Al revés, la corriente atraviesa el PMIC en el sentido equivocado y lo quema.",
+      "fix": "Intercambia los cables: 5 V al pin 2 o 4, tierra al pin 6. Mejor aún, alimenta la Pi por USB-C."
+    },
+    "gpio-12v": {
+      "title": "12 V en los pines de 5 V",
+      "symptom": "El PMIC se quema al instante y la placa se queda muerta.",
+      "explanation": "Los pines de 5 V se saltan todos los reguladores: lo que les metas llega directamente a la entrada del PMIC. Una batería 3S (11,1-12,6 V) es más del doble de aquello para lo que está hecho el PMIC.",
+      "fix": "Alimenta los pines de 5 V solo con una fuente regulada de 5 V, como un convertidor buck ajustado a 5,1 V, o usa el USB-C."
+    },
+    "no-card": {
+      "title": "Sin tarjeta microSD",
+      "symptom": "El LED se queda en rojo: la placa tiene alimentación, pero no aparece ningún registro de arranque.",
+      "explanation": "La Pi 5 no tiene sistema operativo propio. El bootloader de su flash SPI busca uno en la tarjeta (y luego en USB y en la red, si configuras el orden de arranque) y no encuentra nada que cargar.",
+      "fix": "Desconecta, mete una tarjeta grabada con Raspberry Pi Imager y vuelve a encenderla."
+    },
+    "no-pmic": {
+      "title": "Falta el PMIC",
+      "symptom": "Ninguna luz: no se enciende nada en la placa.",
+      "explanation": "El DA9091 genera todas las líneas a partir de la entrada de 5 V. Sin él, ningún chip recibe alimentación.",
+      "fix": "Vuelve a poner U4 y haz el reflujo."
+    },
+    "no-soc": {
+      "title": "Falta el BCM2712",
+      "symptom": "El LED se queda en rojo: las líneas de alimentación suben, pero no hay registro de arranque ni luz verde.",
+      "explanation": "El BCM2712 es el ordenador: los cuatro núcleos Arm, la GPU y el controlador de memoria. Las líneas suben, pero nada ejecuta el bootloader.",
+      "fix": "Vuelve a poner U1 y haz el reflujo."
+    },
+    "no-ram": {
+      "title": "Falta la RAM",
+      "symptom": "El LED da ocho destellos verdes cortos, una y otra vez, y el arranque se para.",
+      "explanation": "El bootloader no encuentra ninguna SDRAM y muestra el código de destellos documentado 0L8S: cero destellos largos y ocho cortos, 'SDRAM failure'.",
+      "fix": "Vuelve a poner U2 y haz el reflujo."
+    },
+    "no-rp1": {
+      "title": "Falta el RP1",
+      "symptom": "El LED da cuatro destellos largos y tres cortos, y no hay USB, ni Ethernet, ni GPIO.",
+      "explanation": "Todos los puertos de la Pi 5 salen del RP1. El firmware no lo encuentra y muestra el código de destellos documentado 4L3S, 'RP1 not found'.",
+      "fix": "Vuelve a poner U3 y haz el reflujo."
+    }
+  },
+  "status": {
+    "run": "Linux",
+    "powered": "Con alimentación",
+    "supply": "Alimentación (línea de 5 V)",
+    "cpu": "Temperatura de la CPU (°C)",
+    "clock": "Reloj Arm (GHz)",
+    "throttled": "get_throttled",
+    "fan": "Ciclo de trabajo del ventilador",
+    "current": "Consumo de corriente"
+  },
+  "current": {
+    "pin5": "Convertidor buck de 3 A del robot en los pines 2/4 del GPIO",
+    "usb": "Fuente USB-C de 27 W (5 V 5 A)",
+    "charger": "Cargador de móvil (5 V 2 A)",
+    "pi": "Pi 5 con Linux en marcha",
+    "ros": "Carga de ROS 2 en los cuatro núcleos",
+    "camera": "Cámara de profundidad USB 3",
+    "fan": "Ventilador del Active Cooler"
+  },
+  "tasks": {
+    "cmd-vel-10hz": {
+      "title": "Publica /cmd_vel a 10 Hz con un temporizador",
+      "brief": "El código de partida conduce el robot desde un bucle while con time.sleep(0.1). Eso bloquea el nodo, así que rclpy nunca puede ejecutar sus callbacks, y el periodo se desvía lo que tarde cada publicación. Reescríbelo a la manera de ROS 2: un temporizador de 0,1 s que publica el Twist (0,2 m/s hacia delante, 0,5 rad/s de giro) y registra lo que ha enviado, y luego rclpy.spin().",
+      "hints": {
+        "1": "self.create_timer(0.1, self.tick) llama a tick cada 0,1 s en cuanto el nodo hace spin.",
+        "2": "Registra cada mensaje con self.get_logger().info(f'linear.x={msg.linear.x:.2f} angular.z={msg.angular.z:.2f}').",
+        "3": "Cambia Drive().run() por node = Drive() y rclpy.spin(node)."
+      },
+      "checks": {
+        "1": "Usa un temporizador de 0,1 s y rclpy.spin, sin bucle con sleep",
+        "2": "Publica 0,20 m/s y 0,50 rad/s diez veces por segundo",
+        "3": "Funciona durante 2 segundos sin errores"
+      },
+      "code": {
+        "goal": "Tarea: publica el mismo Twist a 10 Hz, a la manera de ROS 2",
+        "loop": "un bucle que bloquea: rclpy nunca ejecuta un callback y el periodo se desvía",
+        "timer": "cada 0,1 s: 10 Hz"
+      }
+    },
+    "diff-drive": {
+      "title": "Convierte /cmd_vel en velocidades de las ruedas",
+      "brief": "La ESP32 mueve dos ruedas, así que la Pi divide cada Twist en una velocidad para la rueda izquierda y otra para la derecha: left = v − ω·b/2 y right = v + ω·b/2, donde b es la distancia entre las ruedas. Termina el nodo de la base: declara un parámetro wheel_base (0,16 m), suscríbete a cmd_vel y registra las dos velocidades.",
+      "hints": {
+        "1": "self.declare_parameter('wheel_base', 0.16), y luego léelo con self.get_parameter('wheel_base').value.",
+        "2": "self.create_subscription(Twist, 'cmd_vel', self.on_cmd, 10) llama a on_cmd con cada mensaje.",
+        "3": "Con v = 0,2 m/s, ω = 0,5 rad/s y b = 0,16 m sale left = 0,16 m/s y right = 0,24 m/s. Registra f'left={left:.2f} right={right:.2f} m/s'."
+      },
+      "checks": {
+        "1": "Declara wheel_base y se suscribe a cmd_vel",
+        "2": "Registra left=0.16 right=0.24 m/s con cada mensaje"
+      },
+      "code": {
+        "goal": "Tarea: el nodo de la base convierte cada Twist en velocidades de las ruedas izquierda y derecha",
+        "param": "declara aquí el parámetro wheel_base (metros)",
+        "sub": "suscríbete a cmd_vel con on_cmd como callback",
+        "math": "left = v - w*b/2, right = v + w*b/2, y luego registra las dos",
+        "metres": "metros entre los centros de las ruedas"
+      }
+    },
+    "range-pipeline": {
+      "title": "Tres nodos: sensor, filtro y parada de seguridad",
+      "brief": "Un sistema de varios nodos sin robot. El nodo del sensor publica una distancia que se acerca a una pared (2,0 m, 1,9 m, 1,8 m … a 10 Hz). Escribe un nodo de filtro que promedie las últimas window lecturas (un parámetro, 4) y publique range_avg, y un nodo de seguridad que publique un Twist a cero en cmd_vel y avise una sola vez cuando la media baje de stop_m (un parámetro, 0,5 m). En una Pi real, llévalo más lejos: tus propios tipos .msg y .srv, un archivo de lanzamiento en Python con argumentos, y luego ros2 bag record y su reproducción.",
+      "hints": {
+        "1": "Filtro: guarda una lista, añade cada lectura, haz pop(0) cuando sea más larga que la ventana y publica sum / len.",
+        "2": "Seguridad: recuerda que ya has parado, para que el aviso se imprima una sola vez.",
+        "3": "Con una ventana de 4, la media baja de 0,5 m por primera vez a 0,45 m: registra f'obstacle at {msg.data:.2f} m: stop'.",
+        "4": "En una Pi: ros2 pkg create --build-type ament_python my_robot, un archivo de lanzamiento con DeclareLaunchArgument, y luego ros2 bag record -a y ros2 bag play."
+      },
+      "checks": {
+        "1": "Declara window y stop_m y se suscribe a range",
+        "2": "El filtro registra una media con cada lectura",
+        "3": "El nodo de seguridad para a 0,45 m antes de 2 segundos"
+      },
+      "code": {
+        "goal": "Tarea: promedia la distancia en un nodo de filtro y para el robot en un nodo de seguridad",
+        "approach": "el robot avanza hacia una pared a 1 m/s: 0,1 m más cerca cada 0,1 s",
+        "filter": "declara 'window', publica la media móvil en range_avg y regístrala",
+        "safety": "declara 'stop_m', suscríbete a range_avg y publica Twist() en cuanto baje de ese valor"
+      }
+    }
+  },
+  "quizzes": {
+    "smd": {
+      "reflow": {
+        "q": "¿Por qué las piezas SMD van antes que cualquier conector?",
+        "options": {
+          "1": "El horno de reflujo calienta toda la placa a unos 245 °C, lo que fundiría los conectores de plástico",
+          "2": "Las piezas SMD consumen más corriente, así que hay que conectarlas primero",
+          "3": "En una placa montada a máquina el orden no importa"
+        },
+        "why": "El reflujo funde a la vez la pasta de soldar de debajo de cada pad calentando toda la placa. Los conectores tienen el cuerpo de plástico, así que van después y se sueldan aparte."
+      },
+      "pmic": {
+        "q": "¿Qué hace el PMIC que está junto al conector USB-C?",
+        "options": {
+          "1": "Convierte los datos USB en serie para el SoC",
+          "2": "Genera todas las líneas a partir de la entrada de 5 V, negocia 5 A por USB PD y avisa de subtensión",
+          "3": "Guarda el bootloader"
+        },
+        "why": "La Pi 5 no tiene chip USB-serie. El PMIC DA9091 convierte los 5 V en las líneas del núcleo, de la memoria, de 1,8 V y de 3,3 V, mantiene el reloj de tiempo real, gestiona el botón de encendido y avisa de subtensión. El bootloader vive en una flash SPI aparte."
+      }
+    },
+    "solder": {
+      "order": {
+        "q": "¿Por qué las piezas bajas van antes que las altas?",
+        "options": {
+          "1": "Las piezas bajas necesitan un soldador más caliente",
+          "2": "Las piezas altas taparían la serigrafía",
+          "3": "Con las piezas altas puestas, la placa se tambalea sobre ellas al darle la vuelta, y las piezas bajas se caen"
+        },
+        "why": "Le das la vuelta a la placa para soldar por debajo. Con solo las piezas bajas puestas, se apoya plana sobre ellas; las altas van después."
+      },
+      "last": {
+        "q": "¿Por qué el Active Cooler va el último?",
+        "options": {
+          "1": "Cubre el SoC y se enchufa al conector del ventilador, así que todo lo que queda debajo tiene que estar soldado antes",
+          "2": "Solo encaja en una placa con alimentación",
+          "3": "Sus almohadillas térmicas hay que calentarlas con el soldador"
+        },
+        "why": "El disipador se engancha en los dos agujeros junto al SoC y queda encima de él. Una vez puesto, no se puede llegar a nada de lo que hay debajo, y su cable necesita el conector del ventilador."
+      }
+    },
+    "plug": {
+      "five-amps": {
+        "q": "¿Por qué la Pi 5 quiere la fuente de 27 W y no una de 5 V y 3 A?",
+        "options": {
+          "1": "La CPU solo llega a 2,4 GHz con 27 W",
+          "2": "Con 5 A los puertos USB pueden consumir 1,6 A en total; con una fuente de 3 A se limitan a 600 mA",
+          "3": "Una fuente de 3 A no puede arrancarla"
+        },
+        "why": "Una fuente de 5 V y 3 A arranca la Pi 5, pero entonces el firmware limita los puertos USB a 600 mA en total. La fuente de 27 W le dice a la Pi por USB PD que puede dar 5 A, lo que sube el límite a 1,6 A: suficiente para una cámara de profundidad o un lidar."
+      },
+      "led": {
+        "q": "Conectas la fuente. ¿Qué hace el LED de la Pi 5?",
+        "options": {
+          "1": "Rojo al principio, verde en cuanto arranca el firmware, y se apaga un instante con las lecturas de la tarjeta SD",
+          "2": "Verde al principio y luego rojo cuando Linux está en marcha",
+          "3": "Se queda apagado hasta que pulsas el botón de encendido"
+        },
+        "why": "La Pi 5 tiene un LED rojo/verde junto al botón de encendido. Rojo significa que hay alimentación pero todavía no firmware, verde que está funcionando, y se apaga un instante con las lecturas de la SD. El primer encendido arranca sin pulsar el botón y, después de un apagado ordenado, el LED vuelve a ponerse rojo."
+      }
+    },
+    "teleop": {
+      "realtime": {
+        "q": "¿Por qué la Pi ejecuta ROS 2 mientras una ESP32 lleva el bucle de los motores?",
+        "options": {
+          "1": "Linux no es de tiempo real: el planificador puede pausar tu bucle",
+          "2": "La Pi no tiene pines PWM",
+          "3": "ROS 2 solo funciona en Arm"
+        },
+        "why": "Otros procesos, las interrupciones o la tarjeta SD pueden retener un hilo de Linux durante milisegundos: demasiada fluctuación para un bucle de equilibrio o de velocidad. La Pi sí tiene PWM (GPIO 12, 13, 18 y 19) y ROS 2 también funciona en x86; el reparto es una cuestión de tiempos."
+      },
+      "rate": {
+        "q": "El nodo llama a create_timer(0.1, self.tick). ¿Con qué frecuencia publica en /cmd_vel?",
+        "options": {
+          "1": "Una vez cada 0,1 ms",
+          "2": "Una vez, y luego espera una respuesta",
+          "3": "Diez veces por segundo"
+        },
+        "why": "El periodo está en segundos, así que 0,1 s son 10 Hz, y ros2 topic hz /cmd_vel muestra average rate: 10.000. Los topics son de un solo sentido: quien publica nunca espera a sus suscriptores."
+      }
+    },
+    "charger": {
+      "fix": {
+        "q": "'Undervoltage detected!' con un cargador de móvil. ¿La solución?",
+        "options": {
+          "1": "Bajar el reloj de la CPU por software",
+          "2": "Una fuente USB-C de 5 V y 5 A (27 W)",
+          "3": "Un disipador más grande"
+        },
+        "why": "La alimentación cae por debajo de 4,63 V con carga. Una CPU más lenta oculta el síntoma, pero la tarjeta SD y los dispositivos USB siguen notando las caídas, y un disipador no hace nada por los voltios."
+      },
+      "bits": {
+        "q": "vcgencmd get_throttled imprime throttled=0x50005. ¿Qué indicadores están activos?",
+        "options": {
+          "1": "Subtensión ahora, reloj reducido ahora, ha habido subtensión y ha habido reducción del reloj",
+          "2": "Solo subtensión ahora",
+          "3": "Sobretemperatura y el límite suave de temperatura"
+        },
+        "why": "0x50005 son los bits 0, 2, 16 y 18: 0x1 subtensión ahora, 0x4 reloj reducido ahora, 0x10000 subtensión desde el arranque y 0x40000 reducción del reloj desde el arranque."
+      }
+    },
+    "heat": {
+      "throttle": {
+        "q": "Sin el Active Cooler, el SoC pasa de 80 °C con la carga de ROS 2. ¿Qué ocurre?",
+        "options": {
+          "1": "La Pi se apaga al instante para proteger la tarjeta SD",
+          "2": "El firmware baja el reloj Arm a partir de 80 °C, y también el de la GPU a 85 °C",
+          "3": "Nada: el BCM2712 mantiene los 2,4 GHz hasta 105 °C"
+        },
+        "why": "La reducción es progresiva entre 80 y 85 °C. Aquí el reloj toca fondo en 1,5 GHz, el 62,5 % de 2,4 GHz, y los nodos de ROS 2 se quedan atrás: en un robot que trabaja, el disipador no es opcional."
+      },
+      "fan": {
+        "q": "¿Cómo controla el firmware el ventilador del Active Cooler?",
+        "options": {
+          "1": "A través del conector de 4 pines del ventilador, más rápido a medida que se calienta el SoC: apagado por debajo de 50 °C y a toda velocidad desde 75 °C",
+          "2": "A toda velocidad siempre que la Pi está encendida",
+          "3": "Desde un pin GPIO que tu programa tiene que ir cambiando"
+        },
+        "why": "La curva por defecto del ventilador es 30 % a 50 °C, 50 % a 60 °C, 70 % a 67,5 °C y 100 % a 75 °C, con 5 °C de histéresis al bajar. Puedes ajustarla con los parámetros fan_temp de config.txt."
+      }
+    },
+    "end": {
+      "distro": {
+        "q": "Un robot nuevo con Pi 5 a finales de 2026: ¿con qué versión de ROS 2 debería empezar?",
+        "options": {
+          "1": "Noetic Ninjemys (ROS 1)",
+          "2": "Lyrical Luth, la LTS de 2026",
+          "3": "Kilted Kaiju"
+        },
+        "why": "Lyrical Luth salió en mayo de 2026 y tiene soporte hasta mayo de 2031, con Ubuntu 26.04 como plataforma Tier 1, así que instala Ubuntu en la Pi o usa Docker. Jazzy Jalisco, la LTS de 2024, tiene soporte hasta 2029 si tus paquetes todavía no se han portado. Noetic es ROS 1 y llegó al final de su vida en 2025; Kilted Kaiju es una versión de 2025 con soporte corto."
+      },
+      "gpio": {
+        "q": "El pin de eco de un HC-SR04 da 5 V. ¿Puede ir directamente a un pin GPIO de la Pi?",
+        "options": {
+          "1": "Sí, los pines toleran 5 V",
+          "2": "Sí, con una resistencia de 1 kΩ en serie",
+          "3": "No: el GPIO es solo de 3,3 V, así que usa un divisor (1 kΩ sobre 2 kΩ) o un adaptador de niveles"
+        },
+        "why": "Los pines GPIO de la Pi no toleran 5 V: por encima de unos 3,6 V, el diodo de protección del pad conduce hacia la línea de 3,3 V y puede destruir el pin o el RP1. Un divisor de 1 kΩ y 2 kΩ convierte 5 V en 3,3 V."
+      },
+      "battery": {
+        "q": "¿Cuál es la forma segura de alimentar la Pi con la batería del robot?",
+        "options": {
+          "1": "Un convertidor buck de 5 V que pueda dar 5 A, al USB-C o a los pines de 5 V",
+          "2": "La batería directamente a los pines de 5 V: el PMIC la regula",
+          "3": "El mismo regulador de 5 V que los motores"
+        },
+        "why": "Los pines de 5 V se saltan toda la protección, así que necesitan 5 V limpios y regulados. Dimensiona el convertidor buck para 5 A, deja los motores en su propia alimentación y, cuando alimentes por el conector, díselo al bootloader con PSU_MAX_CURRENT=5000."
+      },
+      "motors": {
+        "q": "¿De dónde debe salir el PWM de los motores de tracción?",
+        "options": {
+          "1": "Directamente de los pines GPIO de la Pi",
+          "2": "De un driver de motores controlado por la ESP32 o la Nano, que lee /cmd_vel de la Pi por USB serie",
+          "3": "De los pines de 5 V de la Pi a través de un transistor"
+        },
+        "why": "Un pin GPIO da unos pocos miliamperios y los tiempos de Linux fluctúan. Un microcontrolador ejecuta el bucle de velocidad a tiempo y controla un puente H como el TB6612FNG; la Pi solo envía las velocidades objetivo."
+      }
+    }
+  }
+}
