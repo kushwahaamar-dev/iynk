@@ -345,6 +345,10 @@
     "figures/drones/agrihex.js",
     "figures/drones/octo.js"
   ],
+  "{n} GHz": [
+    "figures/robotics/pi5-ros2.js",
+    "robotics/pi5-ros2"
+  ],
   "{n} mA": [
     "figures/engine/sheets.js"
   ],
@@ -437,13 +441,16 @@
     "boards/de10-lite",
     "boards/nucleo-f401re",
     "figures/engine/bench.js",
+    "modules/uln2003",
     "robotics/a4988",
+    "robotics/hc-sr04",
     "robotics/l298n",
     "robotics/pca9685",
     "robotics/qtr-8rc"
   ],
   "{name} placed the wrong way round": [
     "figures/engine/bench.js",
+    "modules/traffic-light",
     "robotics/l298n"
   ],
   "{name} removed": [
@@ -452,6 +459,9 @@
     "boards/nucleo-f401re",
     "figures/engine/bench.js",
     "modules/pca9685",
+    "modules/traffic-light",
+    "modules/uln2003",
+    "robotics/hc-sr04",
     "robotics/l298n",
     "robotics/led-resistor",
     "robotics/pca9685",
@@ -676,11 +686,7 @@
   "$ blow gently into the pitot tube": [
     "figures/drones/vtol.js"
   ],
-  "$ build it for me: motor check and sensor calibration done": [
-    "drones/swarm",
-    "figures/drones/swarm.js"
-  ],
-  "$ build it for me: smoke stopper, motor check and calibration done": [
+  "$ build it for me: every part on, checks marked passed (not run)": [
     "drones/agrihex",
     "drones/cinewhoop",
     "drones/delivery",
@@ -689,6 +695,7 @@
     "drones/octo",
     "drones/quad5",
     "drones/racer",
+    "drones/swarm",
     "drones/tricopter",
     "drones/vtol",
     "drones/whoop",
@@ -700,6 +707,9 @@
   ],
   "$ calibrate magnetometer: turn the quad through every axis for 30 s": [
     "figures/drones/longrange.js"
+  ],
+  "$ Calibration tab: compass, 30 s, every axis": [
+    "figures/drones/wing.js"
   ],
   "$ cf.param.set_value('led.bitmask', 138): both green": [
     "figures/drones/swarm.js"
@@ -768,6 +778,9 @@
   "$ props off: mode MANUAL, then QSTABILIZE, then yaw right": [
     "figures/drones/vtol.js"
   ],
+  "$ radio off with the prop off: watch the OSD": [
+    "figures/drones/wing.js"
+  ],
   "$ radio off: RXLOSS, failsafe stage 2: DROP": [
     "figures/drones/whoop.js"
   ],
@@ -782,6 +795,9 @@
   ],
   "$ serial UART1 131073 115200 57600 0 115200": [
     "figures/drones/cinewhoop.js"
+  ],
+  "$ set pitot_hardware = VIRTUAL": [
+    "figures/drones/wing.js"
   ],
   "$ smoke stopper between battery and quad...": [
     "figures/engine/drone.js"
@@ -1305,6 +1321,7 @@
     "figures/drones/octo.js"
   ],
   "1000 µF CAP": [
+    "drones/quad5",
     "figures/drones/longrange.js",
     "figures/drones/quad5.js"
   ],
@@ -1519,9 +1536,6 @@
   "2.2 µH inductor L2 (3.3 V)": [
     "boards/basys3",
     "figures/boards/basys3.js"
-  ],
-  "2.4 GHz": [
-    "robotics/pi5-ros2"
   ],
   "2.4 GHz, ch 80": [
     "drones/swarm",
@@ -1848,6 +1862,9 @@
   "3.3 V is up: the RGB LED turns round the colour wheel": [
     "figures/robotics/esp32-s3-build.js"
   ],
+  "3.3 V LDO": [
+    "robotics/mpu6050"
+  ],
   "3.3 V regulator (662K, XC6206): VCC to 3.3 V, 6 V at most": [
     "figures/modules/mpu6050.js",
     "modules/mpu6050",
@@ -2035,6 +2052,7 @@
     "figures/drones/quad5.js"
   ],
   "4 IR RECEIVERS TIME THE SWEEPS": [
+    "drones/swarm",
     "figures/drones/swarm.js"
   ],
   "4 low-KV outrunner motors (4114 class)": [
@@ -2103,6 +2121,7 @@
     "figures/drones/cinewhoop.js"
   ],
   "4 X 5 A ESC": [
+    "drones/whoop",
     "figures/drones/whoop.js"
   ],
   "4 x AA battery holder": [
@@ -2209,6 +2228,9 @@
   "40 A, DShot600": [
     "drones/delivery",
     "figures/drones/delivery.js"
+  ],
+  "40 kHz BURST OUT": [
+    "robotics/hc-sr04"
   ],
   "40 kHz ultrasonic receiver (R): a piezo disc in a 16 mm can": [
     "figures/modules/hc-sr04.js",
@@ -2633,6 +2655,7 @@
     "figures/drones/longrange.js"
   ],
   "7 MM STATOR 9N12P": [
+    "drones/whoop",
     "figures/drones/whoop.js"
   ],
   "7-inch bi-blade props": [
@@ -2921,12 +2944,21 @@
     "drones/vtol",
     "figures/drones/vtol.js"
   ],
+  "AIRSPEED {v} M/S": [
+    "figures/drones/vtol.js"
+  ],
+  "AIRSPEED FROM GPS + WIND": [
+    "figures/drones/wing.js"
+  ],
   "All joints soldered": [
     "boards/basys3",
     "boards/de10-lite",
     "boards/nucleo-f401re",
     "figures/engine/bench.js",
+    "modules/traffic-light",
+    "modules/uln2003",
     "robotics/a4988",
+    "robotics/hc-sr04",
     "robotics/l298n",
     "robotics/led-resistor",
     "robotics/pca9685",
@@ -3014,6 +3046,9 @@
   ],
   "AMD Artix-7 XC7A35T FPGA, 100 MHz clock, 3.3 V I/O, programmed over USB": [
     "figures/boards/basys3.js"
+  ],
+  "AMPLIFIER + COMPARATOR": [
+    "robotics/hc-sr04"
   ],
   "AMS1117": [
     "figures/boards/esp32-devkitc.js"
@@ -3182,6 +3217,13 @@
   "ARM|STM32F401|RET6U": [
     "figures/boards/nucleo-f401re.js"
   ],
+  "Armature coils": [
+    "parts/dc-motor"
+  ],
+  "ARMED: MOTORS IDLE": [
+    "figures/drones/octo.js",
+    "figures/drones/vtol.js"
+  ],
   "ARMED: motors idle at MOT_SPIN_ARM 0.1; disarm": [
     "figures/drones/octo.js"
   ],
@@ -3275,6 +3317,9 @@
   "AS150U, power brick": [
     "drones/agrihex",
     "figures/drones/agrihex.js"
+  ],
+  "Asked for {v} V from {vin} V: a buck only steps down": [
+    "figures/robotics/lm2596.js"
   ],
   "Asleep: every output LOW": [
     "figures/modules/pca9685.js"
@@ -3410,11 +3455,17 @@
     "drones/octo",
     "figures/drones/octo.js"
   ],
+  "Balanced: it hangs level on two fingertips at the CG marks (15-20 % of the mean chord)": [
+    "figures/drones/wing.js"
+  ],
   "Bare PCB to a ROS 2 node: SMD parts, connectors, the card and the cooler, then a weak charger, heat and the 5 V pins": [
     "figures/robotics/pi5-ros2.js"
   ],
   "Bare PCB to Blink: SMD parts and the reflow oven, through-hole parts low to tall, the iron, then the chip": [
     "figures/robotics/uno-r3-build.js"
+  ],
+  "barely glowing": [
+    "figures/robotics/led-resistor.js"
   ],
   "Barrel jack": [
     "boards/uno-r3",
@@ -3758,6 +3809,7 @@
     "figures/boards/nodemcu.js"
   ],
   "BMI088 IMU": [
+    "drones/swarm",
     "figures/drones/swarm.js"
   ],
   "Board": [
@@ -3864,6 +3916,9 @@
     "figures/modules/l298n.js",
     "modules/l298n"
   ],
+  "Both decks found and the Kalman filter settled at x 0.00, y 0.00, z 0.03 m. reset_estimators() returns: ready to arm": [
+    "figures/drones/swarm.js"
+  ],
   "Both forward": [
     "figures/robotics/l298n.js",
     "figures/robotics/tb6612fng.js",
@@ -3880,6 +3935,10 @@
   ],
   "Bound: sticks move roll, pitch, yaw and throttle; AUX1 arms, AUX2 picks Angle, AUX3 turtle": [
     "figures/drones/whoop.js"
+  ],
+  "brake": [
+    "figures/robotics/l298n.js",
+    "figures/robotics/tb6612fng.js"
   ],
   "Brake": [
     "figures/modules/tb6612fng.js",
@@ -4002,6 +4061,7 @@
     "robotics/pca9685"
   ],
   "bright, safe": [
+    "figures/robotics/led-resistor.js",
     "robotics/led-resistor"
   ],
   "BROADCOM|BCM2711": [
@@ -4036,6 +4096,9 @@
   "brushed, 2 wires": [
     "drones/swarm",
     "figures/drones/swarm.js"
+  ],
+  "Brushes on the commutator": [
+    "parts/dc-motor"
   ],
   "BSS816NW MOSFET that drives the speaker": [
     "boards/microbit-v2",
@@ -4104,6 +4167,9 @@
     "boards/uno-r4",
     "figures/boards/uno-r4.js"
   ],
+  "BUCK 1.0 V + 3.3 V": [
+    "boards/basys3"
+  ],
   "BUCK-BOOST": [
     "boards/pico",
     "figures/boards/pico.js"
@@ -4159,10 +4225,7 @@
   "Build the servo driver, wire a Nano, a 4 x AA pack and a three-servo arm, then make it pick and place": [
     "figures/robotics/pca9685.js"
   ],
-  "Built: every part on, motor check and sensor calibration done": [
-    "figures/drones/swarm.js"
-  ],
-  "Built: every part on, smoke test, motor check and calibration done": [
+  "Built: every part on the right way round, the checks marked passed (not run)": [
     "figures/engine/drone.js"
   ],
   "burnt": [
@@ -4832,6 +4895,9 @@
     "boards/pi4-pi5",
     "robotics/pi5-ros2"
   ],
+  "Carrying the cube: pose {n}": [
+    "figures/robotics/pca9685.js"
+  ],
   "Castellated pins 1-20 (GP0-GP15)": [
     "boards/pico",
     "figures/boards/pico.js"
@@ -5179,6 +5245,9 @@
     "boards/nucleo-f401re",
     "figures/boards/nucleo-f401re.js"
   ],
+  "coast": [
+    "figures/robotics/tb6612fng.js"
+  ],
   "Coast": [
     "figures/modules/tb6612fng.js",
     "figures/robotics/tb6612fng.js",
@@ -5339,11 +5408,29 @@
     "drones/delivery",
     "figures/drones/delivery.js"
   ],
+  "compass calibrated (QMC5883 on I2C1)": [
+    "figures/drones/wing.js"
+  ],
+  "Compass calibrated, but the GPS arrow points backwards: compass and GPS disagree by 180°. Turn the puck round and calibrate again": [
+    "figures/drones/gpscam.js"
+  ],
   "Compass calibrated, but the heading reads 180° off: the GPS arrow points backwards. Turn the module round before you trust it": [
     "figures/drones/longrange.js"
   ],
+  "Compass calibrated: offsets saved, orientation matches. Reboot the autopilot": [
+    "figures/drones/delivery.js"
+  ],
+  "Compass calibrated: offsets saved. Reboot the autopilot": [
+    "figures/drones/gpscam.js"
+  ],
+  "Compass calibrated: turned through every axis, away from the ESC and the battery leads. Check the heading against a real compass": [
+    "figures/drones/wing.js"
+  ],
   "Compass calibrated. Heading checked against a phone compass: N, E, S and W agree within 10°": [
     "figures/drones/longrange.js"
+  ],
+  "Compass calibrated. It found the puck turned 180° and set COMPASS_ORIENT 4 (auto-rotation). Better: mount it arrow forward": [
+    "figures/drones/delivery.js"
   ],
   "COMPASS FAR FROM THE AMPS": [
     "figures/drones/delivery.js"
@@ -5357,6 +5444,18 @@
   "CONF LED D2 (the FPGA has loaded its design)": [
     "boards/de10-lite",
     "figures/boards/de10-lite.js"
+  ],
+  "Connect over the Crazyradio first: cflib reads the decks and the position over the link": [
+    "figures/drones/swarm.js"
+  ],
+  "Connect over the Crazyradio first: the LEDs are set over the link": [
+    "figures/drones/swarm.js"
+  ],
+  "Connect over the Crazyradio first: there has to be a link to lose": [
+    "figures/drones/swarm.js"
+  ],
+  "Connected to radio://0/80/2M/E7E7E7E701: link quality 100 %. Every drone in the swarm gets its own address on the same channel": [
+    "figures/drones/swarm.js"
   ],
   "connected: crazyflie-firmware 2026.08, link quality 100 %": [
     "figures/drones/swarm.js"
@@ -5413,6 +5512,7 @@
     "parts/fan"
   ],
   "CORELESS BRUSHED: NO ESC": [
+    "drones/swarm",
     "figures/drones/swarm.js"
   ],
   "COUT · Output hold capacitor": [
@@ -5790,7 +5890,22 @@
   "DEBUG": [
     "figures/boards/pico.js"
   ],
+  "deck.bcFlow2 = 0": [
+    "figures/drones/swarm.js"
+  ],
+  "deck.bcFlow2 = 0: no Flow deck under the board. The hover script stops without it": [
+    "figures/drones/swarm.js"
+  ],
   "deck.bcFlow2 = 1, deck.bcLighthouse4 = 1": [
+    "figures/drones/swarm.js"
+  ],
+  "deck.bcLighthouse4 = 0": [
+    "figures/drones/swarm.js"
+  ],
+  "deck.bcLighthouse4 = 0: no Lighthouse deck, so no shared position for the swarm": [
+    "figures/drones/swarm.js"
+  ],
+  "deck.bcLighthouse4 = 0: the Lighthouse deck is on backwards and its ID chip was not found. Turn it round": [
     "figures/drones/swarm.js"
   ],
   "Decks + positioning": [
@@ -5861,6 +5976,9 @@
   ],
   "Digital transistors for power-path sensing and interrupts (T1, T3, T4, T5, T7)": [
     "boards/microbit-v2"
+  ],
+  "dim": [
+    "figures/robotics/led-resistor.js"
   ],
   "DIODE": [
     "figures/boards/nano.js",
@@ -5948,6 +6066,9 @@
     "drones/agrihex",
     "figures/drones/agrihex.js"
   ],
+  "DRAM DIE": [
+    "boards/de10-lite"
+  ],
   "DRIVER IC": [
     "figures/modules/tb6612fng.js",
     "modules/tb6612fng",
@@ -6031,6 +6152,9 @@
   ],
   "Echo": [
     "figures/robotics/hc-sr04.js",
+    "robotics/hc-sr04"
+  ],
+  "ECHO IN": [
     "robotics/hc-sr04"
   ],
   "Echo lost at the cold joint": [
@@ -6153,12 +6277,14 @@
     "figures/drones/wing.js"
   ],
   "ELRS RX ON UART2": [
+    "drones/quad5",
     "figures/drones/quad5.js"
   ],
   "ELRS RX, UART2 CRSF": [
     "figures/drones/racer.js"
   ],
   "ELRS RX, UART3": [
+    "drones/whoop",
     "figures/drones/whoop.js"
   ],
   "ELRS UART3 CRSF": [
@@ -6248,6 +6374,7 @@
     "figures/drones/wing.js"
   ],
   "ESC HARNESS 8-PIN": [
+    "drones/quad5",
     "figures/drones/quad5.js"
   ],
   "ESC M1-M4": [
@@ -6644,6 +6771,9 @@
   "fade.py": [
     "boards/pi4-pi5"
   ],
+  "FAILSAFE after 0.5 s: failsafe_procedure = RTH": [
+    "figures/drones/wing.js"
+  ],
   "failsafe stage 2: DROP, motors stopped, disarmed": [
     "figures/drones/cinewhoop.js",
     "figures/drones/racer.js",
@@ -6743,6 +6873,9 @@
     "boards/nucleo-f401re",
     "figures/boards/nucleo-f401re.js"
   ],
+  "Ferrite magnet": [
+    "parts/dc-motor"
+  ],
   "Fit the {part} first": [
     "figures/drones/cinewhoop.js"
   ],
@@ -6765,12 +6898,24 @@
     "drones/whoop",
     "figures/drones/whoop.js"
   ],
+  "Fit the board and the Crazyradio first": [
+    "figures/drones/swarm.js"
+  ],
   "Fit the board first": [
     "drones/swarm",
     "figures/drones/swarm.js"
   ],
   "Fit the Cube first": [
     "drones/agrihex",
+    "figures/drones/agrihex.js"
+  ],
+  "Fit the Cube first: it runs the pre-arm checks": [
+    "figures/drones/agrihex.js"
+  ],
+  "Fit the Cube, the RTK masts and the radio first: the RTK corrections come over the radio": [
+    "figures/drones/agrihex.js"
+  ],
+  "Fit the Cube, the tank, the pump and the boom first": [
     "figures/drones/agrihex.js"
   ],
   "Fit the ELRS antenna first": [
@@ -6786,17 +6931,33 @@
   "Fit the GPS + compass module first: the compass is inside it": [
     "figures/drones/longrange.js"
   ],
+  "Fit the GPS and the flight controller first": [
+    "drones/wing",
+    "figures/drones/wing.js"
+  ],
   "Fit the GPS masts and the Pixhawk first": [
     "figures/drones/octo.js"
   ],
   "Fit the landing gear, the Pixhawk and the receiver first: the gear switch is on the transmitter": [
     "figures/drones/octo.js"
   ],
+  "Fit the long pins and the Crazyradio first": [
+    "figures/drones/swarm.js"
+  ],
+  "Fit the motors, their plugs, the board and the Crazyradio first": [
+    "figures/drones/swarm.js"
+  ],
   "Fit the Pixhawk and the GPS + compass first": [
     "figures/drones/gpscam.js"
   ],
+  "Fit the Pixhawk and the GPS mast first: the compass is in the GPS puck": [
+    "figures/drones/delivery.js"
+  ],
   "Fit the Pixhawk and the receiver first": [
     "figures/drones/gpscam.js"
+  ],
+  "Fit the Pixhawk and the winch first": [
+    "figures/drones/delivery.js"
   ],
   "Fit the Pixhawk first": [
     "drones/octo",
@@ -6804,6 +6965,9 @@
   ],
   "Fit the Pixhawk, the GPS masts and the receiver first": [
     "figures/drones/octo.js"
+  ],
+  "Fit the Pixhawk, the receiver and the telemetry radio first": [
+    "figures/drones/delivery.js"
   ],
   "Fit the power board and put the packs on the tray first": [
     "drones/octo",
@@ -6821,7 +6985,8 @@
     "drones/racer",
     "drones/wing",
     "figures/drones/racer.js",
-    "figures/drones/tricopter.js"
+    "figures/drones/tricopter.js",
+    "figures/drones/wing.js"
   ],
   "Fit the receiver and the GPS first": [
     "figures/drones/longrange.js"
@@ -6866,6 +7031,9 @@
   ],
   "Flash, then dark: with no resistor only the LED itself and the charger's limit hold the current back, hundreds of mA against its 30 mA maximum, and it burns out": [
     "figures/robotics/led-resistor.js"
+  ],
+  "FLASH: THE DESIGN": [
+    "boards/basys3"
   ],
   "flat side to the left (backwards)": [
     "modules/traffic-light"
@@ -6912,7 +7080,8 @@
     "drones/wing"
   ],
   "Flip {name}": [
-    "figures/engine/bench.js"
+    "figures/engine/bench.js",
+    "robotics/led-resistor"
   ],
   "Flip a switch": [
     "boards/basys3",
@@ -6920,6 +7089,7 @@
     "figures/engine/bench.js"
   ],
   "FLOW + RANGE, LOOKING DOWN": [
+    "drones/swarm",
     "figures/drones/swarm.js"
   ],
   "FLOW DECK": [
@@ -6999,6 +7169,10 @@
   ],
   "Force sensor (FSR 402) P1": [
     "parts/fsr402"
+  ],
+  "forward": [
+    "figures/robotics/l298n.js",
+    "figures/robotics/tb6612fng.js"
   ],
   "Forward": [
     "figures/modules/l298n.js",
@@ -7239,7 +7413,20 @@
     "figures/drones/whoop.js"
   ],
   "G473 MCU + GYRO": [
+    "drones/whoop",
     "figures/drones/whoop.js"
+  ],
+  "GEAR DOWN AND LOCKED": [
+    "figures/drones/octo.js"
+  ],
+  "GEAR SWITCH HIGH: RETRACTING": [
+    "figures/drones/octo.js"
+  ],
+  "GEAR SWITCH LOW: DEPLOYING": [
+    "figures/drones/octo.js"
+  ],
+  "GEAR UP: THE CAMERA PANS 360°": [
+    "figures/drones/octo.js"
   ],
   "Gigabit Ethernet jack": [
     "boards/pi4-pi5",
@@ -7271,6 +7458,9 @@
   "GIMBAL MOTORS": [
     "figures/drones/gpscam.js"
   ],
+  "Gimbal ok: pitch from -90° (straight down) to +25°, roll held level": [
+    "figures/drones/gpscam.js"
+  ],
   "Gimbal test": [
     "drones/gpscam",
     "figures/drones/gpscam.js"
@@ -7290,6 +7480,9 @@
   ],
   "Goggles: HD picture with the OSD (battery, link quality, timer). UART1 carries MSP + VTX_MSP": [
     "figures/drones/cinewhoop.js"
+  ],
+  "Gold bond wires": [
+    "parts/tmp36"
   ],
   "GPIO": [
     "boards/de10-lite",
@@ -7341,13 +7534,25 @@
   "GPS + COMPASS: arrow forward": [
     "drones/gpscam"
   ],
+  "GPS 1 + GPS 2: 3D FIX, HDOP 0.7": [
+    "figures/drones/octo.js"
+  ],
   "GPS 1 and GPS 2: 3D fix, 16 and 15 satellites, the two positions within a metre and both compasses agree. Loiter can hold the camera on its mark": [
     "figures/drones/octo.js"
+  ],
+  "GPS 1 and GPS 2: RTK Fixed. GPS yaw matches the nose heading, so no compass is needed": [
+    "figures/drones/agrihex.js"
   ],
   "GPS 1 on GPS1 (SERIAL3), GPS 2 on GPS2 (SERIAL4): 3D fix, HDOP under 1": [
     "figures/drones/octo.js"
   ],
+  "GPS 1: {a} SATS · GPS 2: {b} SATS": [
+    "figures/drones/octo.js"
+  ],
   "GPS 1: 3D fix, 14 satellites, HDOP 0.8": [
+    "figures/drones/gpscam.js"
+  ],
+  "GPS 1: 3D fix, 14 satellites, HDOP 0.8. EKF3 is using GPS": [
     "figures/drones/gpscam.js"
   ],
   "GPS 1: 3D fix, 18 satellites, HDOP 0.7. EKF3 is using GPS": [
@@ -7393,6 +7598,9 @@
   "GPS MASTS": [
     "drones/octo",
     "figures/drones/octo.js"
+  ],
+  "GPS yaw reads 180° from the nose: the base antenna is at the back. EKF3 Yaw inconsistent. Swap the masts so GPS1 is in front, as GPS1_POS_X says": [
+    "figures/drones/agrihex.js"
   ],
   "GPS: arrow backward": [
     "drones/longrange"
@@ -7524,6 +7732,7 @@
     "figures/drones/swarm.js"
   ],
   "GYRO ICM-42688-P": [
+    "drones/quad5",
     "figures/drones/cinewhoop.js",
     "figures/drones/quad5.js"
   ],
@@ -7682,6 +7891,9 @@
     "robotics/tb6612fng",
     "robotics/transistor-switch",
     "robotics/uno-r3-build"
+  ],
+  "HANGS LEVEL": [
+    "figures/drones/wing.js"
   ],
   "Hatch": [
     "drones/wing",
@@ -7989,6 +8201,9 @@
   "IN1-IN4": [
     "figures/modules/uln2003.js",
     "modules/uln2003"
+  ],
+  "IN1-IN4 from the board": [
+    "parts/uln2003"
   ],
   "INDUCTOR": [
     "figures/boards/pi4-pi5.js",
@@ -8399,6 +8614,7 @@
     "robotics/l298n"
   ],
   "JST1.25 PLUGS": [
+    "drones/whoop",
     "figures/drones/whoop.js"
   ],
   "JST1.25 x4": [
@@ -8793,6 +9009,9 @@
   "LDO": [
     "figures/boards/microbit-v2.js"
   ],
+  "Lead frame": [
+    "parts/tmp36"
+  ],
   "Leave out {name}": [
     "boards/esp32-s3-devkitc-1",
     "boards/microbit-v2",
@@ -8907,6 +9126,9 @@
   "LED MATRIX": [
     "figures/boards/uno-r4.js"
   ],
+  "LED on = coil on": [
+    "parts/uln2003"
+  ],
   "LED only, no motor yet": [
     "figures/robotics/transistor-switch.js"
   ],
@@ -8984,6 +9206,9 @@
   "LED_Y · Yellow LED · flat side to the right, as printed": [
     "modules/traffic-light"
   ],
+  "led.bitmask set back to 0: the status blinks are back. In the show every drone does this on its own cue": [
+    "figures/drones/swarm.js"
+  ],
   "LED1": [
     "boards/basys3",
     "boards/de10-lite",
@@ -9016,6 +9241,12 @@
   "LED1 · Power LED (+5V)": [
     "modules/l298n",
     "robotics/l298n"
+  ],
+  "LED1 still blinks slowly": [
+    "figures/drones/swarm.js"
+  ],
+  "LED1 still blinks slowly: the sensors are not calibrated. Keep it still and level first": [
+    "figures/drones/swarm.js"
   ],
   "LED101": [
     "boards/nodemcu"
@@ -9071,9 +9302,6 @@
   ],
   "LEDS · 5 x 5 red LED matrix (D2-D50), rows and columns driven by the nRF52833": [
     "boards/microbit-v2"
-  ],
-  "LEFT": [
-    "figures/drones/tricopter.js"
   ],
   "Left and right motors swapped": [
     "robotics/qtr-8rc"
@@ -9147,6 +9375,7 @@
     "figures/drones/swarm.js"
   ],
   "LIHV CELL 4.35 V": [
+    "drones/whoop",
     "figures/drones/whoop.js"
   ],
   "Limit": [
@@ -9184,7 +9413,13 @@
     "modules/a4988",
     "robotics/a4988"
   ],
+  "Link lost: after 0.5 s it levelled and held its thrust, after 2 s the motors stopped. A go_to from the high-level commander would have flown on to its setpoint instead": [
+    "figures/drones/swarm.js"
+  ],
   "link quality 23 %: packets lost": [
+    "figures/drones/swarm.js"
+  ],
+  "Link quality 23 %: the Crazyradio’s antenna is not screwed on. Fit it and connect again": [
     "figures/drones/swarm.js"
   ],
   "Link-loss (props off)": [
@@ -9292,10 +9527,13 @@
   "Low parts first: with tall parts on, the board rocks and loose parts fall out when you flip it to solder": [
     "boards/basys3",
     "boards/de10-lite",
+    "boards/nucleo-f401re",
+    "boards/uno-r3",
     "figures/engine/bench.js",
     "robotics/l298n",
     "robotics/lm2596",
-    "robotics/pca9685"
+    "robotics/pca9685",
+    "robotics/uno-r3-build"
   ],
   "low supply": [
     "parts/servo-sg90"
@@ -9524,6 +9762,12 @@
   "MANUAL tilted the rotors BACK: the tilt servos are reversed. In the first transition the nose would pitch up and flip it over its tail. Reverse SERVO1 and SERVO2 or turn the servos round": [
     "figures/drones/vtol.js"
   ],
+  "MANUAL: TILT {n}°": [
+    "figures/drones/vtol.js"
+  ],
+  "MANUAL: TILT {n}° BACKWARDS": [
+    "figures/drones/vtol.js"
+  ],
   "Matek H743-WING + ELRS receiver": [
     "drones/vtol",
     "figures/drones/vtol.js"
@@ -9589,14 +9833,24 @@
     "robotics/uno-r3-build"
   ],
   "MCU STM32F405": [
+    "drones/quad5",
     "figures/drones/quad5.js"
   ],
   "MD test point (RA4M1 boot-mode pin)": [
     "figures/boards/uno-r4.js"
   ],
+  "MEMS DIE ON CMOS DIE": [
+    "robotics/mpu6050"
+  ],
   "MEMS microphone (sound comes in through a hole in the PCB)": [
     "boards/microbit-v2",
     "figures/boards/microbit-v2.js"
+  ],
+  "MEMS PROOF MASS": [
+    "boards/de10-lite"
+  ],
+  "MEMS RESONATOR, NO QUARTZ": [
+    "boards/basys3"
   ],
   "metal gear, 5 V": [
     "drones/tricopter",
@@ -9748,9 +10002,11 @@
     "figures/drones/swarm.js"
   ],
   "MOSFET PWM, 328 KHZ": [
+    "drones/swarm",
     "figures/drones/swarm.js"
   ],
   "MOSFETS x12": [
+    "drones/quad5",
     "figures/drones/longrange.js",
     "figures/drones/quad5.js"
   ],
@@ -9838,6 +10094,9 @@
   ],
   "MOTOR CABLE": [
     "figures/modules/uln2003.js"
+  ],
+  "Motor held: {n} mA, and the rail holds": [
+    "figures/robotics/lm2596.js"
   ],
   "Motor held: the rail holds": [
     "figures/robotics/lm2596.js"
@@ -9955,6 +10214,9 @@
   "Motor socket (JST-XH, 5 pins)": [
     "figures/modules/uln2003.js",
     "modules/uln2003"
+  ],
+  "Motor socket, red = +": [
+    "parts/uln2003"
   ],
   "Motor straight on pin 9": [
     "robotics/transistor-switch"
@@ -10442,6 +10704,9 @@
     "parts/tmp36",
     "robotics/led-resistor"
   ],
+  "NOSE DIPS A LITTLE": [
+    "figures/drones/wing.js"
+  ],
   "Nose hatch": [
     "drones/vtol",
     "figures/drones/vtol.js"
@@ -10528,10 +10793,7 @@
     "modules/soil-moisture",
     "modules/ssd1306",
     "modules/tb6612fng",
-    "modules/traffic-light",
-    "modules/uln2003",
     "robotics/esp32-s3-build",
-    "robotics/hc-sr04",
     "robotics/lm2596",
     "robotics/mpu6050",
     "robotics/pi5-ros2",
@@ -10557,6 +10819,7 @@
     "drones/swarm"
   ],
   "NRF51822: RADIO + POWER": [
+    "drones/swarm",
     "figures/drones/swarm.js"
   ],
   "nRF52820 USB interface chip (the MICROBIT drive and serial)": [
@@ -10571,6 +10834,7 @@
     "figures/boards/microbit-v2.js"
   ],
   "NRF52840, 20 DBM": [
+    "drones/swarm",
     "figures/drones/swarm.js"
   ],
   "O3 CAMERA": [
@@ -10594,6 +10858,7 @@
     "boards/uno-r3",
     "boards/uno-r4",
     "figures/engine/sheets.js",
+    "figures/robotics/l298n.js",
     "modules/a4988",
     "modules/hc-sr04",
     "modules/l298n",
@@ -10688,6 +10953,9 @@
     "figures/boards/uno-r4.js"
   ],
   "Ohm's law on a 5 V LED trainer: pick the resistor with the jumper, read the current on the meter": [
+    "figures/robotics/led-resistor.js"
+  ],
+  "OL": [
     "figures/robotics/led-resistor.js"
   ],
   "OLED display (SSD1306)": [
@@ -10831,9 +11099,15 @@
     "figures/parts/stepper-28byj48.js",
     "parts/stepper-28byj48"
   ],
+  "ON THE STAND, DISARMED": [
+    "figures/drones/octo.js"
+  ],
   "On-chip temperature": [
     "boards/pico",
     "figures/boards/pico.js"
+  ],
+  "ONE DIE: LOGIC, RAM, ADC AND FLASH": [
+    "boards/de10-lite"
   ],
   "one per arm, Bluejay": [
     "drones/tricopter",
@@ -10884,6 +11158,9 @@
     "figures/modules/lm2596.js",
     "modules/lm2596",
     "robotics/lm2596"
+  ],
+  "OUT shorted: the LM2596 holds 4.2 A, the SS34 carries it": [
+    "figures/robotics/lm2596.js"
   ],
   "Output hold capacitor": [
     "figures/modules/soil-moisture.js",
@@ -11211,6 +11488,9 @@
     "robotics/transistor-switch",
     "robotics/uno-r3-build"
   ],
+  "Pick and place: pose {n}": [
+    "figures/robotics/pca9685.js"
+  ],
   "PicoBlade 2-pin ×4": [
     "drones/swarm",
     "figures/drones/swarm.js"
@@ -11412,6 +11692,7 @@
     "figures/drones/whoop.js"
   ],
   "Plug in the battery first": [
+    "figures/drones/swarm.js",
     "figures/drones/vtol.js",
     "figures/drones/wing.js"
   ],
@@ -11440,8 +11721,20 @@
   "Plug in the battery: the GPS needs the Pixhawk powered": [
     "figures/drones/gpscam.js"
   ],
+  "Plug in the battery: the GPS receivers need the Cube powered": [
+    "figures/drones/agrihex.js"
+  ],
   "Plug in the battery: the pre-arm checks read the battery monitor": [
     "figures/drones/gpscam.js"
+  ],
+  "Plug in the battery: the pre-arm checks run on a powered autopilot": [
+    "figures/drones/agrihex.js"
+  ],
+  "Plug in the battery: the pump driver runs from the 12S bus": [
+    "figures/drones/agrihex.js"
+  ],
+  "Plug in the battery: the radio chip on the board runs from it": [
+    "figures/drones/swarm.js"
   ],
   "Plug in the battery: the servo runs from the 5 V regulator": [
     "figures/drones/tricopter.js"
@@ -11451,6 +11744,9 @@
   ],
   "Plug in the battery: the tilt servos run from the 8 A servo BEC": [
     "figures/drones/vtol.js"
+  ],
+  "Plug in the battery: the winch servo runs from the 6 V BEC on the servo rail": [
+    "figures/drones/delivery.js"
   ],
   "Plug in the packs first": [
     "figures/drones/octo.js"
@@ -12024,11 +12320,18 @@
     "figures/drones/octo.js",
     "figures/drones/vtol.js"
   ],
+  "Pre-arm checks pass: RTK fixed, GPS yaw good, radar reading, accelerometers calibrated. Ready to arm": [
+    "figures/drones/agrihex.js"
+  ],
   "pre-arm checks passed": [
     "figures/drones/gpscam.js"
   ],
   "Pre-arm checks passed: ready to arm in Loiter": [
     "figures/drones/gpscam.js"
+  ],
+  "PRE-ARM CHECKS…": [
+    "figures/drones/octo.js",
+    "figures/drones/vtol.js"
   ],
   "pre-arm: accels and gyros calibrated, GPS 1 and 2 fixed, compasses consistent, battery above BATT_LOW_VOLT": [
     "figures/drones/octo.js"
@@ -12037,17 +12340,66 @@
     "figures/drones/vtol.js"
   ],
   "PreArm: 3D Accel calibration needed": [
+    "figures/drones/agrihex.js",
+    "figures/drones/gpscam.js",
+    "figures/drones/octo.js",
+    "figures/drones/vtol.js"
+  ],
+  "PREARM: 3D ACCEL CALIBRATION NEEDED": [
+    "figures/drones/octo.js",
     "figures/drones/vtol.js"
   ],
   "PreArm: 3D Accel calibration needed. Calibrate the accelerometer, then try again": [
     "figures/drones/octo.js",
     "figures/drones/vtol.js"
   ],
+  "PreArm: Compass not calibrated": [
+    "figures/drones/gpscam.js"
+  ],
+  "PreArm: Compasses inconsistent": [
+    "figures/drones/gpscam.js"
+  ],
+  "PreArm: EKF3 Yaw inconsistent": [
+    "figures/drones/agrihex.js"
+  ],
+  "PreArm: GPS 1: Bad fix": [
+    "figures/drones/gpscam.js",
+    "figures/drones/octo.js"
+  ],
+  "PREARM: GPS 1: BAD FIX": [
+    "figures/drones/octo.js"
+  ],
   "PreArm: GPS 1: Bad fix. Run the GPS check and wait for both receivers to lock, then try again": [
     "figures/drones/octo.js"
   ],
+  "PreArm: GPS 1: Need 3D Fix": [
+    "figures/drones/agrihex.js"
+  ],
+  "PreArm: Rangefinder 1: No Data": [
+    "figures/drones/agrihex.js"
+  ],
+  "PreArm: RC not found": [
+    "figures/drones/gpscam.js"
+  ],
   "Press {name}": [
-    "figures/engine/bench.js"
+    "boards/de10-lite",
+    "boards/esp32-devkitc",
+    "boards/esp32-s3-devkitc-1",
+    "boards/microbit-v2",
+    "boards/nano",
+    "boards/nodemcu",
+    "boards/nucleo-f401re",
+    "boards/pi4-pi5",
+    "boards/pico",
+    "boards/uno-r3",
+    "boards/uno-r4",
+    "figures/engine/bench.js",
+    "modules/lm2596",
+    "robotics/esp32-s3-build",
+    "robotics/lm2596",
+    "robotics/pi5-ros2",
+    "robotics/transistor-switch",
+    "robotics/uno-r3-build"
   ],
   "Press a button": [
     "boards/basys3",
@@ -12314,6 +12666,9 @@
   "pump at SPRAY_PUMP_RATE 10 %, the 1 m/s rate: 0.3 L/min of clean water": [
     "figures/drones/agrihex.js"
   ],
+  "Pump ok: all four nozzles spray at the 1 m/s rate. Catch it in a jug for a minute to calibrate the dose": [
+    "figures/drones/agrihex.js"
+  ],
   "Pump test (disarmed)": [
     "drones/agrihex",
     "figures/drones/agrihex.js"
@@ -12558,6 +12913,12 @@
     "modules/hc-sr04",
     "robotics/hc-sr04"
   ],
+  "QSTABILIZE: ROTORS UP": [
+    "figures/drones/vtol.js"
+  ],
+  "QSTABILIZE: TILT {n}°": [
+    "figures/drones/vtol.js"
+  ],
   "QTR-8RC line follower": [
     "figures/robotics/qtr-8rc.js",
     "robotics/qtr-8rc"
@@ -12569,6 +12930,9 @@
   "Quad-SPI flash IC8 (holds the design the FPGA loads at power-up)": [
     "boards/basys3",
     "figures/boards/basys3.js"
+  ],
+  "QUARTZ BLANK": [
+    "boards/de10-lite"
   ],
   "QWIIC": [
     "figures/boards/uno-r4.js"
@@ -12986,6 +13350,12 @@
     "drones/agrihex",
     "figures/drones/agrihex.js"
   ],
+  "Radio failsafe: landed, so it disarms. In the air FS_THR_ENABLE 1 makes it fly RTL": [
+    "figures/drones/gpscam.js"
+  ],
+  "Radio failsafe: on the ground it disarms at once. In the air FS_THR_ENABLE 1 flies RTL, and FS_GCS_ENABLE does the same when telemetry drops": [
+    "figures/drones/delivery.js"
+  ],
   "Radio off: after 1.5 s the motors stopped and it disarmed (failsafe_procedure = DROP)": [
     "figures/drones/cinewhoop.js"
   ],
@@ -12995,8 +13365,14 @@
   "Radio off: after 1.5 s the motors stopped and the tri disarmed (DROP). Failsafe works": [
     "figures/drones/tricopter.js"
   ],
+  "Radio off: FAILSAFE after 0.5 s, then RTH climbs and flies home. Radio back on: you get control back once the sticks move": [
+    "figures/drones/wing.js"
+  ],
   "Radio off: failsafe, GPS RESCUE, but the OSD home arrow points away from home: the compass is reversed. Turn the GPS module round": [
     "figures/drones/longrange.js"
+  ],
+  "RADIO OFF: FAILSAFE, THEN RTH": [
+    "figures/drones/wing.js"
   ],
   "Radio off: RXLOSS, then after 1.5 s failsafe stage 2: GPS RESCUE on the OSD, motors spool up, SOS beeps. Radio back on and sticks moved: control is yours again": [
     "figures/drones/longrange.js"
@@ -13650,6 +14026,10 @@
     "drones/octo",
     "figures/drones/octo.js"
   ],
+  "reverse": [
+    "figures/robotics/l298n.js",
+    "figures/robotics/tb6612fng.js"
+  ],
   "Reverse": [
     "figures/modules/l298n.js",
     "figures/modules/tb6612fng.js",
@@ -13750,9 +14130,6 @@
     "boards/esp32-s3-devkitc-1",
     "figures/boards/esp32-s3-devkitc-1.js"
   ],
-  "RIGHT": [
-    "figures/drones/tricopter.js"
-  ],
   "RIGHT HEADER": [
     "figures/boards/nodemcu.js"
   ],
@@ -13808,12 +14185,24 @@
     "figures/robotics/mpu6050.js",
     "robotics/mpu6050"
   ],
+  "Roll {deg}°: ALARM": [
+    "figures/robotics/mpu6050.js"
+  ],
+  "Roll {deg}°: level enough": [
+    "figures/robotics/mpu6050.js"
+  ],
   "roll, pitch, yaw 1000-1500-2000 us, throttle 1000 us at low stick": [
     "figures/drones/racer.js"
+  ],
+  "ROM download mode": [
+    "figures/engine/bench.js"
   ],
   "ROS 2 drive node": [
     "figures/robotics/pi5-ros2.js",
     "robotics/pi5-ros2"
+  ],
+  "ROTATE IT THROUGH EVERY AXIS": [
+    "figures/drones/wing.js"
   ],
   "Row B pads (for an 8 x 2 header), left empty": [
     "figures/modules/qtr-8rc.js",
@@ -14268,9 +14657,18 @@
     "figures/drones/octo.js"
   ],
   "See-through: the chips show their silicon, copper shows where current flows": [
+    "boards/basys3",
+    "boards/de10-lite",
+    "boards/nucleo-f401re",
     "figures/engine/bench.js",
+    "parts/dc-motor",
+    "parts/tmp36",
+    "parts/uln2003",
     "robotics/a4988",
+    "robotics/hc-sr04",
     "robotics/l298n",
+    "robotics/lm2596",
+    "robotics/mpu6050",
     "robotics/pca9685",
     "robotics/qtr-8rc",
     "robotics/tb6612fng",
@@ -14555,6 +14953,12 @@
   "SILABS|CP2102": [
     "figures/boards/nodemcu.js"
   ],
+  "Silicon die": [
+    "parts/tmp36"
+  ],
+  "SILICON DIE: LOGIC CELLS": [
+    "boards/basys3"
+  ],
   "Six 0603 capacitors: VMOT, charge pump, VDD and VREG decoupling": [
     "figures/modules/a4988.js",
     "modules/a4988",
@@ -14671,6 +15075,9 @@
   "Slide the test card under the array": [
     "figures/robotics/qtr-8rc.js",
     "robotics/qtr-8rc"
+  ],
+  "Slightly nose-heavy: the nose dips a little. That is the safe side: stable, it just needs a bit more speed": [
+    "figures/drones/wing.js"
   ],
   "Small 0402 resistors and capacitors around the buck and the MCU": [
     "boards/uno-r4",
@@ -14874,7 +15281,10 @@
     "boards/de10-lite",
     "boards/nucleo-f401re",
     "figures/engine/bench.js",
+    "modules/traffic-light",
+    "modules/uln2003",
     "robotics/a4988",
+    "robotics/hc-sr04",
     "robotics/l298n",
     "robotics/led-resistor",
     "robotics/pca9685",
@@ -14972,6 +15382,7 @@
     "figures/robotics/tb6612fng.js"
   ],
   "STATOR 12N14P": [
+    "drones/quad5",
     "figures/drones/cinewhoop.js",
     "figures/drones/gpscam.js",
     "figures/drones/longrange.js",
@@ -15046,6 +15457,18 @@
   "STEREO IR DEPTH CAMERA": [
     "figures/drones/delivery.js"
   ],
+  "STICK BACK": [
+    "figures/drones/wing.js"
+  ],
+  "Stick back should lift BOTH elevons. Yours went DOWN: servos reversed. Fix it: Add next part, SERVOS: direction checked": [
+    "figures/drones/wing.js"
+  ],
+  "Stick back: both elevons up. Stick right: right elevon up, left down. Right wing pushed down: the right elevon went down to lift it. Correct": [
+    "figures/drones/wing.js"
+  ],
+  "STICK RIGHT": [
+    "figures/drones/wing.js"
+  ],
   "STM32 Nucleo-F401RE": [
     "boards/nucleo-f401re",
     "figures/boards/nucleo-f401re.js"
@@ -15069,6 +15492,7 @@
     "figures/drones/swarm.js"
   ],
   "STM32F405: ESTIMATOR + CONTROL": [
+    "drones/swarm",
     "figures/drones/swarm.js"
   ],
   "STM32H743 · 2 IMUS · EKF3": [
@@ -15578,6 +16002,9 @@
   "tabs melted": [
     "parts/fsr402"
   ],
+  "TAIL DROPS": [
+    "figures/drones/wing.js"
+  ],
   "TAIL SERVO": [
     "drones/tricopter",
     "figures/drones/tricopter.js"
@@ -15594,6 +16021,15 @@
   ],
   "TAIL TILT {n}°": [
     "figures/drones/tricopter.js"
+  ],
+  "TAIL TILT {n}° LEFT": [
+    "figures/drones/tricopter.js"
+  ],
+  "TAIL TILT {n}° RIGHT": [
+    "figures/drones/tricopter.js"
+  ],
+  "Tail-heavy: the tail drops when you balance it on two fingertips at the CG marks. It will pitch up and stall. Move the pack forward or add nose weight": [
+    "figures/drones/wing.js"
   ],
   "Take it apart": [
     "drones/agrihex",
@@ -15773,6 +16209,12 @@
     "boards/basys3",
     "figures/boards/basys3.js"
   ],
+  "The coil's spike went through the A4988": [
+    "figures/robotics/a4988.js"
+  ],
+  "The meter reads {v} V": [
+    "figures/robotics/lm2596.js"
+  ],
   "The motor and its flyback diode": [
     "figures/robotics/transistor-switch.js"
   ],
@@ -15805,16 +16247,28 @@
   "The smoke stopper lamp lit up: the BT2.0 lead is soldered the wrong way round. Re-solder it red to + before you plug in for real": [
     "figures/drones/whoop.js"
   ],
+  "The SS34 burned out": [
+    "figures/robotics/lm2596.js"
+  ],
+  "The sticks move the elevons the right way, but the stabiliser pushes the wrong way: the FC arrow points backwards. Fix it: Add next part, FLIGHT CTRL: arrow to the nose": [
+    "figures/drones/wing.js"
+  ],
   "The TIP120 failed short: the motor runs flat out": [
     "figures/robotics/transistor-switch.js"
   ],
   "The TIP120, its base resistor and the pin 9 LED": [
     "figures/robotics/transistor-switch.js"
   ],
+  "The trimmer's wiper is off: FB sees 0 V and the output jumps to the input": [
+    "figures/robotics/lm2596.js"
+  ],
   "Thermal shutdown": [
     "figures/robotics/lm2596.js"
   ],
   "Thermal shutdown (165 °C)": [
+    "figures/robotics/a4988.js"
+  ],
+  "Thermal shutdown: the chip reached 165 °C": [
     "figures/robotics/a4988.js"
   ],
   "Thin top plate + 20 mm standoffs": [
@@ -15837,6 +16291,9 @@
   "Tilt alarm": [
     "figures/robotics/mpu6050.js",
     "robotics/mpu6050"
+  ],
+  "TILT RIGHT WING DOWN": [
+    "figures/drones/wing.js"
   ],
   "Tilt servo test": [
     "drones/vtol",
@@ -15865,6 +16322,9 @@
   ],
   "Times a 40 kHz ping to the target and back: 58 µs per cm, 2 cm to 4 m, on 5 V": [
     "figures/modules/hc-sr04.js"
+  ],
+  "TIMES THE ECHO": [
+    "robotics/hc-sr04"
   ],
   "Tiny Whoop 65 mm": [
     "drones/whoop",
@@ -15983,6 +16443,9 @@
     "robotics/tb6612fng",
     "robotics/transistor-switch",
     "robotics/uno-r3-build"
+  ],
+  "too much: the LED overheats": [
+    "figures/robotics/led-resistor.js"
   ],
   "TOP PLATE": [
     "drones/cinewhoop",
@@ -16658,6 +17121,9 @@
     "figures/modules/uln2003.js",
     "modules/uln2003"
   ],
+  "ULN2003: Darlington switches": [
+    "parts/uln2003"
+  ],
   "ULN2003APG": [
     "figures/modules/uln2003.js"
   ],
@@ -16876,6 +17342,9 @@
     "figures/boards/pi4-pi5.js",
     "robotics/pi5-ros2"
   ],
+  "USB BRIDGE": [
+    "boards/basys3"
+  ],
   "USB cable": [
     "boards/basys3",
     "boards/de10-lite",
@@ -16962,6 +17431,9 @@
   "USB-B socket J3 (power and the USB-Blaster)": [
     "boards/de10-lite",
     "figures/boards/de10-lite.js"
+  ],
+  "USB-BLASTER: JTAG": [
+    "boards/de10-lite"
   ],
   "USB-C": [
     "boards/pi4-pi5",
@@ -17100,6 +17572,7 @@
     "figures/drones/octo.js"
   ],
   "VBAT 1S, 26 AWG": [
+    "drones/whoop",
     "figures/drones/whoop.js"
   ],
   "VBAT 2-6S": [
@@ -17307,6 +17780,12 @@
     "robotics/transistor-switch",
     "robotics/uno-r3-build"
   ],
+  "Virtual airspeed on: INAV estimates airspeed from GPS speed and the wind (pitot_hardware = VIRTUAL). A real pitot tube would need zeroing with the tube covered": [
+    "figures/drones/wing.js"
+  ],
+  "virtual airspeed: GPS speed corrected for the wind estimate": [
+    "figures/drones/wing.js"
+  ],
   "VL805": [
     "figures/boards/pi4-pi5.js"
   ],
@@ -17315,6 +17794,9 @@
   ],
   "VMOT": [
     "figures/modules/a4988.js"
+  ],
+  "VMOT {v} V: under the A4988's 8 V minimum": [
+    "figures/robotics/a4988.js"
   ],
   "VMOT and VDD on, RST tied to SLP: the A4988 holds the motor at its Home step": [
     "modules/a4988"
@@ -17333,6 +17815,10 @@
   ],
   "VREF": [
     "figures/boards/de10-lite.js"
+  ],
+  "Vref 0.544 V on the meter: the limit is 1.0 A": [
+    "figures/robotics/a4988.js",
+    "robotics/a4988"
   ],
   "VREF POT": [
     "figures/modules/a4988.js",
@@ -17385,6 +17871,7 @@
     "figures/drones/whoop.js"
   ],
   "VTX, SMARTAUDIO": [
+    "drones/whoop",
     "figures/drones/whoop.js"
   ],
   "VTX: 25 MW ON THE BENCH, 800 MW MAX": [
@@ -17513,6 +18000,9 @@
   ],
   "WINCH + HOOK": [
     "drones/delivery",
+    "figures/drones/delivery.js"
+  ],
+  "Winch ok: 3 cm out, held, reeled back in. The length is estimated, so re-zero it at every retract": [
     "figures/drones/delivery.js"
   ],
   "Winch test": [
@@ -17770,6 +18260,9 @@
   ],
   "Yaw right tilts the tail motor’s thrust to the left: that pushes the tail left and swings the nose right. Servo correct": [
     "figures/drones/tricopter.js"
+  ],
+  "YAW RIGHT: LEFT ROTOR FORWARD, RIGHT BACK": [
+    "figures/drones/vtol.js"
   ],
   "yellow": [
     "parts/led",
