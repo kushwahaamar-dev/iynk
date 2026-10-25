@@ -85,12 +85,8 @@
     return items;
   };
 
-  // extra bench checks; the engine reports state.checks.<id> once it exposes api.pass (docs/requests/item-racer.md)
-  const pass = (api, id) => {
-    if (typeof api.pass === 'function') api.pass(id);
-    else if (api.st) api.st.checks = Object.assign({}, api.st.checks, { [id]: true });
-    api.render();
-  };
+  // the craft's own bench checks: api.pass(id) reports state.extra.<id> until a part is re-seated or the quad is stripped
+  const pass = (api, id) => api.pass(id);
   const failsafeTest = api => {
     if (!api.isOn('RX') || !api.isOn('FC')) return api.say('Fit the receiver and the flight controller first', 2600, 'buzz');
     if (api.isOn('PROPS')) return api.say('PROPS OFF! Never spin motors on the bench with props on', 2600, 'buzz');

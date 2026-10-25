@@ -1,0 +1,346 @@
+{
+  "title": "5-inch racing quad",
+  "tagline": "A stretched-X gate racer on 4S: light, fast, flown in acro on Raceband at 25 mW.",
+  "sub": "Betaflight + race VTX",
+  "hint": "Build a gate racer, set its channel, then race the club track",
+  "noun": "racing quad",
+  "overview": "A race quad is a 5-inch FPV quad stripped down to do one thing: get round a gate track faster than everyone else in the heat. It weighs about 440 g with a 4S 1300 mAh pack and has a thrust-to-weight ratio near 14:1, so it spends most of a lap pitched hard forward at full throttle. The frame is a stretched X, longer than it is wide, so the rear props bite clean air at speed. The pilot flies in acro from analog goggles, because analog video has the lowest delay and every pilot shares Raceband. The VTX runs at 25 mW on the channel race control hands out, so four to eight quads can fly together. LED strips in the pilot's colour let spotters and timers tell the quads apart. Pick the parts here and watch the numbers, build it, run the safety tests, then race the club track.",
+  "practice": "Learn the club track in race mode (angle) until you clear all six gates cleanly, then switch to acro race and chase three laps in a row under par, the way a MultiGP qualifier counts them. On a real build: put a smoke stopper on the first plug, check motor direction with the props off, test the receiver and the failsafe (props off, radio off: the motors must stop), and set your VTX to your assigned channel at 25 mW before you plug in at the pits. Land at about 3.5 V per cell; a race pack lasts two to three minutes at race pace.",
+  "design": {
+    "fixed": {
+      "FRAME": "Stretched-X race frame, 4 mm arms",
+      "ESC": "45 A 4-in-1 ESC (AM32)",
+      "FC": "F7 flight controller, 20 x 20 mm",
+      "CAM": "Nano low-latency camera",
+      "VTX": "25-200 mW race VTX",
+      "RX": "ExpressLRS 2.4 GHz receiver",
+      "LED": "WS2812B LED strips",
+      "XT60": "XT60 lead and low-ESR capacitor",
+      "TOP": "Top plate, standoffs and screws",
+      "STRAP": "Battery strap and grip pad"
+    },
+    "verdict": {
+      "over": "{kv} KV on {cells}S spins the props far past what the motors and ESC survive. Race 4S with about 2500 KV, or 6S with about 1950 KV.",
+      "weak": "Thrust to weight {tw}:1 is too soft for racing (aim for 12:1 or more). A 6S motor on 4S feels like flying through syrup.",
+      "ok": "Race-ready: {tw}:1 thrust to weight. If the ESC check below speaks up, that is full-throttle headroom: a smoother prop or a bigger ESC fixes it."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Stretched-X carbon race frame",
+      "what": "Four 4 mm carbon arms on a narrow centre plate, with the motors on a rectangle 172 mm long and 140 mm wide (221.8 mm motor to motor). Stretching the X puts the rear props further behind the front ones, so at a steep forward pitch they eat less of the front props' wash and the quad tracks straight at speed. Carbon conducts: keep bare wires off it."
+    },
+    "MOTORS": {
+      "name": "4 race motors (2207, 2500 KV)",
+      "what": "Brushless outrunners with a 22 mm wide, 7 mm tall stator and 14 magnets in the bell. 2500 KV on a 4S pack (14.8 V nominal) gives about 37,000 rpm unloaded, which is what pulls a 5-inch prop hard enough for 14:1 thrust to weight. The same motor on 6S would spin the props far past what they and the ESC survive."
+    },
+    "ESC": {
+      "name": "45 A 4-in-1 ESC (AM32), 20 x 20 mm",
+      "what": "Four speed controllers on one small board, each switching MOSFETs to turn the pack's DC into three-phase drive for its motor, following the DShot600 commands from the flight controller. It runs AM32 firmware and, with bidirectional DShot, reports each motor's rpm on the same wire for the RPM filter. A race ESC is sized for the punch-outs: the calculator compares each motor's full-throttle current with the 45 A rating."
+    },
+    "WIRES": {
+      "name": "Motor wires, cut short and soldered",
+      "what": "Three phase wires per motor, cut to length along the arm and soldered to that motor's pads on the ESC. Short wires save weight and are less likely to snag in a crash. Any order of the three spins the motor; swapping two of them reverses it."
+    },
+    "XT60": {
+      "name": "XT60 pigtail + 1000 µF 35 V low-ESR capacitor",
+      "what": "The battery lead (14 AWG, male XT60 on the quad) and a low-ESR electrolytic capacitor across the ESC's battery pads. The capacitor soaks up the voltage spikes from hard punches and braking that would otherwise kill MOSFETs and put noise on the gyro and video. Its white stripe marks the negative leg: in backwards, it vents or bursts on the first plug."
+    },
+    "FC": {
+      "name": "F7 flight controller, 20 x 20 mm",
+      "what": "An STM32F722 with a gyro, an analog OSD chip and 5 V and 9 V regulators, running Betaflight. It reads the sticks from the receiver, runs the PID loop thousands of times a second and sends DShot600 to the ESC. The printed arrow must point at the nose, or the board alignment setting must say otherwise; a race quad has no GPS or barometer, so it has no altitude hold."
+    },
+    "VTX": {
+      "name": "25-200 mW race VTX (SmartAudio)",
+      "what": "The 5.8 GHz analog video transmitter on top of the stack. It sends the camera picture with the OSD laid over it to your goggles. The flight controller sets its band, channel and power over SmartAudio, so race control can put every pilot on a separate Raceband channel at 25 mW. Pit mode drops it to almost nothing while you plug in at the pits."
+    },
+    "CAM": {
+      "name": "Nano low-latency camera, 40° uptilt",
+      "what": "A 14 mm analog camera between two side plates at the nose, tilted up 40°. A race quad flies nose-down at speed, so the camera has to look up to see the next gate; the more speed, the more uptilt. Analog video gets from lens to goggles with a few milliseconds of delay, which matters more than picture quality at 100 km/h."
+    },
+    "RX": {
+      "name": "ELRS 2.4 GHz receiver (CRSF)",
+      "what": "An ExpressLRS receiver on UART2, speaking CRSF to the flight controller. Its T antenna rides on the rear-right arm, away from the carbon and the VTX. Racers run it at a high packet rate (500 Hz or F1000) so the sticks reach the quad with as little delay as the video leaves it."
+    },
+    "LED": {
+      "name": "LED strips on the rear arms",
+      "what": "Eight WS2812B addressable LEDs, four on each rear arm, in one chain from the flight controller's LED pad. Betaflight's RACE profile lights them all in one race colour, the pilot's colour for the heat, so spotters and timers can tell the quads apart; set the colour to BLACK and it follows the VTX channel instead."
+    },
+    "TOP": {
+      "name": "Thin top plate + 20 mm standoffs",
+      "what": "A 2 mm carbon plate on four aluminium standoffs that closes the stack and carries the battery. Thin and light, because every gram on a race quad costs acceleration."
+    },
+    "BATT": {
+      "name": "Race LiPo + strap and grip pad",
+      "what": "A 4S 1300 mAh high-discharge pack (about 150 g, 72 x 38 x 25 mm) on a grip pad, held by a strap. It can deliver over 200 A for a second. Slide it forward or back to put the centre of gravity between the motors."
+    },
+    "PROPS": {
+      "name": "Race propellers, 2 CW + 2 CCW",
+      "what": "Stiff 5-inch tri-blades. Higher pitch (4.8 to 5.2 inch) pulls harder at speed and draws more current; a low-pitch prop is smoother and more efficient but slower. Props in: M1 and M4 turn clockwise, M2 and M3 counter-clockwise, each blade's raised edge leading."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Lay out the stretched-X frame",
+      "body": "Bolt the four arms between the bottom plates and check them for cracks. The long side points forward: the nose is where the camera plates go."
+    },
+    "motors": {
+      "title": "Mount the four race motors",
+      "body": "Four short M3 screws each, wires pointing to the middle. A screw that is too long touches the windings and burns the motor out.",
+      "refusal": "The motors bolt to the arms: lay out the frame first."
+    },
+    "esc": {
+      "title": "Fit the 4-in-1 ESC on the 20 x 20 stack",
+      "body": "On rubber grommets at the bottom of the stack, battery pads to the rear where the XT60 lead comes in.",
+      "refusal": "The ESC sits on the frame's stack screws: lay out the frame first."
+    },
+    "wires": {
+      "title": "Cut and solder the motor wires",
+      "body": "Run each motor's three wires along its arm, cut them to length and solder them to that motor's pads. Short and tidy, with no bare copper near the carbon.",
+      "refusal": "The wires join the motors to the ESC: fit both first."
+    },
+    "xt60": {
+      "title": "Solder the XT60 lead and the capacitor",
+      "body": "14 AWG red to BAT+, black to BAT-, and the 1000 µF capacitor across the same pads with its stripe on the minus side. This is the joint a smoke stopper tests.",
+      "refusal": "The battery lead goes on the ESC's pads: fit the ESC first."
+    },
+    "fc": {
+      "title": "Stack the flight controller, arrow forward",
+      "body": "On grommets above the ESC, joined by the 8-pin harness (battery voltage, ground, current, telemetry and the four motor signals). Point the printed arrow at the nose.",
+      "refusal": "The flight controller stacks on the ESC: fit the ESC first."
+    },
+    "vtx": {
+      "title": "Fit the race VTX on top of the stack",
+      "body": "Video and OSD from the FC's VTX pad, 9 V from its regulator and the SmartAudio wire on UART1 TX. Screw the antenna on before it ever gets power: a VTX with no antenna overheats.",
+      "refusal": "The VTX stacks on the flight controller: fit the flight controller first."
+    },
+    "cam": {
+      "title": "Mount the nano camera at 40° uptilt",
+      "body": "Between the side plates at the nose, tilted up 40°. Its video, 5 V and ground go back to the CAM pads on the flight controller.",
+      "refusal": "The camera plates bolt to the frame: lay out the frame first."
+    },
+    "rx": {
+      "title": "Wire the ELRS receiver to UART2",
+      "body": "5 V, ground, and TX to RX, RX to TX on UART2. Zip-tie the antenna along the rear-right arm, clear of the props and the carbon.",
+      "refusal": "The receiver wires to the flight controller: fit the flight controller first."
+    },
+    "led": {
+      "title": "Stick on the LED strips",
+      "body": "Four LEDs on each rear arm, data in from the FC's LED pad at the rear-left end, chained across to the rear-right strip. 5 V and ground come from the flight controller.",
+      "refusal": "The LED strips run from the flight controller's LED pad: fit the flight controller first."
+    },
+    "top": {
+      "title": "Close the stack with the top plate",
+      "body": "Four standoffs and the thin carbon plate. Check no wire is pinched between the plates before you tighten the screws.",
+      "refusal": "The top plate closes over the stack: fit the flight controller, VTX, camera and receiver first."
+    },
+    "batt": {
+      "title": "Strap on the race pack",
+      "body": "Grip pad, pack, strap, with the lead out of the back to the XT60. Balance the quad on two fingers under the arms and slide the pack until it sits level.",
+      "refusal": "The pack sits on the top plate and plugs into the XT60: fit both first."
+    },
+    "props": {
+      "title": "Props on last, props in",
+      "body": "Only after the smoke test and the motor check. Clockwise props on M1 and M4, counter-clockwise on M2 and M3, raised edge leading, nuts tight.",
+      "refusal": "Props go on last: fit the motors and the top plate, then run the smoke stopper test and the motor direction check."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "The pack's female XT60 meets the quad's male one. A 4S race pack is 16.8 V full and can push over 200 A in a punch, so this joint must never short.",
+    "XT60-ESC": "14 AWG leads to the ESC's BAT+ and BAT- pads, with the 1000 µF 35 V low-ESR capacitor across the same pads, stripe to minus.",
+    "ESC-MOTORS": "Three phase wires per motor on its channel's pads. Any order spins the motor; swapping two reverses it, which the ESC firmware can also do for you.",
+    "FC-ESC": "One 8-pin harness joins the stack: the four DShot600 motor signals go down to the ESC, and battery voltage, ground, the current sensor and ESC telemetry come up. With bidirectional DShot each ESC channel answers with its motor's rpm on the same wire.",
+    "CAM-FC": "The camera's analog video, 5 V and ground to the CAM pads. The flight controller's OSD chip draws battery, timer and warnings over the picture.",
+    "FC-VTX": "Video with the OSD on it, and 9 V, from the VTX pads; the SmartAudio wire on UART1 TX lets Betaflight set the band, channel, power and pit mode.",
+    "RX-FC": "The ELRS receiver on UART2 at 5 V: its TX to the FC's RX and its RX to the FC's TX, CRSF in both directions so link quality shows on the OSD.",
+    "FC-LED": "WS2812 data from the FC's LED pad (with 5 V and ground) into the first LED; each LED passes the data on to the next, eight in one chain."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke stopper test",
+      "pass": "The lamp only blinked: no short between plus and minus. Safe to plug the pack in directly.",
+      "fail": "The lamp stayed lit: something is shorted. Here the capacitor is in backwards; turn it round (stripe to minus) and test again before you plug in."
+    },
+    "motors": {
+      "title": "Motor direction check (props off)",
+      "pass": "Every motor spins the way the mixer expects: M1 and M4 clockwise, M2 and M3 counter-clockwise (props in). The props can go on.",
+      "fail": "One motor spun the wrong way. Reverse it in the ESC firmware (ESC Configurator) rather than re-soldering; with props on, it would flip the quad on the start line."
+    },
+    "calibrate": {
+      "title": "Accelerometer calibration",
+      "pass": "Level calibrated on a flat surface: angle mode and launch control's tilt limit now know where level is, and the NO_ACC_CAL arming block is gone.",
+      "fail": "Fit the flight controller and set the quad on a flat surface first. If the arrow points backwards, turn the board round or set align_board_yaw = 180."
+    },
+    "rx": {
+      "title": "Receiver test",
+      "pass": "Bound: in the receiver tab every channel moves the right way between 1000 and 2000 µs, throttle sits at 1000 µs with the stick down, and the arm switch is on AUX1.",
+      "fail": "Fit the receiver and the flight controller first. On a real quad, a channel moving backwards or the arm switch on the wrong AUX shows up here, not on the start line."
+    },
+    "failsafe": {
+      "title": "Failsafe test (props off, radio off)",
+      "pass": "Radio off: after 1.5 s the motors stopped and the quad disarmed (DROP). Inside a netted track that is what race control wants.",
+      "fail": "Fit the receiver and flight controller, take the props off and plug the pack in first. A quad that holds its last throttle when the link drops flies away into the crowd."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "First setup",
+      "explain": "QUAD X mixer, the board's arrow forward, DShot600 with bidirectional telemetry for the RPM filter, props in, and the two serial ports: the ELRS receiver on UART2 and the VTX's SmartAudio on UART1."
+    },
+    "switches": {
+      "title": "Race switches",
+      "explain": "Arm on AUX1, angle on AUX2, VTX pit mode on AUX3, and launch control and the lost-quad beeper on the two ends of AUX4. aux takes Betaflight's numeric mode ids: 0 arm, 1 angle, 39 pit mode, 49 launch control, 13 beeper."
+    },
+    "vtx": {
+      "title": "Raceband, your channel, 25 mW",
+      "explain": "The VTX table tells Betaflight which bands and power levels the transmitter has (channels first, or the band lines fail). Band 5 is Raceband; channel 4 is 5769 MHz. Power index 1 is the lowest real level, 25 mW, the power for racing next to other pilots. Low power while disarmed and a pit-mode frequency off the race band keep you from wiping out someone's video at the pits."
+    },
+    "leds": {
+      "title": "Race colour LEDs",
+      "explain": "The layout is one led line per LED: grid position, no directions, function C (solid colour) and colour 6 (GREEN); the Configurator’s LED Strip tab writes the same lines. This lab’s CLI doesn’t take led lines, so they are shown as comments. The two set lines pick the RACE profile, which lights the whole strip in ledstrip_race_color: a colour name, not a number."
+    },
+    "failsafe": {
+      "title": "Failsafe: drop",
+      "explain": "If the radio link is lost for 1.5 s, stop the motors. On a race track inside nets, dropping is safer than any attempt to fly home, and a race quad has no GPS to fly home with."
+    },
+    "angle": {
+      "title": "Angle mode for learning the track",
+      "explain": "Self-levelling with the tilt capped at 45°: let go of the stick and it levels out. Good for learning the gate order; too slow to race, because the cap also limits how hard it can pitch forward."
+    },
+    "acro": {
+      "title": "Race rates",
+      "explain": "Acro is what the quad flies with no self-level mode on. With ACTUAL rates the centre is soft (70°/s) for small line corrections and full stick turns at 670°/s for flicks round a gate; yaw tops out at 450°/s."
+    },
+    "race": {
+      "title": "Race timer and launch control",
+      "explain": "The OSD timer counts in hundredths from the last arm, so a pilot sees the heat time in the goggles; the lap times themselves come from the race timer listening to each VTX. Launch control holds the quad on the grid until the throttle passes 20 %, for a clean start on the tone."
+    },
+    "raceAcro": {
+      "title": "Racing in acro",
+      "explain": "Angle off, air mode on so the quad still steers at zero throttle over the top of a dive, launch control for the start and the race timer on the OSD."
+    }
+  },
+  "flight": {
+    "modes": {
+      "angle": {
+        "title": "Angle",
+        "hint": "Self-levelling, tilt capped at 45°: fly the track freely and learn the lines."
+      },
+      "acro": {
+        "title": "Acro",
+        "hint": "No self-levelling: the sticks set rotation rates, up to 670°/s. The quad holds whatever angle you leave it at."
+      },
+      "race": {
+        "title": "Race (angle)",
+        "hint": "The six gates in order, timed lap by lap, with angle mode's safety net."
+      },
+      "raceAcro": {
+        "title": "Race (acro)",
+        "hint": "The six gates in acro, as racers fly them. Three clean laps in a row is what a qualifier counts."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Radio link lost for 1.5 s: the motors stop and the quad drops inside the nets.",
+      "low-battery": "Below 3.5 V per cell: the OSD warns. Finish the lap and land.",
+      "battery-empty": "Below 3.2 V per cell: the pack sags so far the ESCs cut out, and the quad falls."
+    },
+    "controls": "Keyboard: Space arms and disarms, W and S throttle, the arrows pitch and roll, A and D yaw, V switches to FPV, R puts the quad back on the pad. On a phone the left stick is throttle and yaw and the right stick is pitch and roll. A gamepad works in Mode 2."
+  },
+  "courses": {
+    "track": {
+      "title": "Club track",
+      "brief": "Six 1.6 m gates, flown anticlockwise from the start/finish gate in front of the pad, with a hurdle on the back straight and the timing tower in the infield. A missed gate has to be flown again. Your lap time starts at the start/finish gate; beat par on three laps in a row."
+    }
+  },
+  "quizzes": {
+    "frame": {
+      "stretch": {
+        "q": "Why is a race frame stretched (longer than it is wide)?",
+        "options": {
+          "1": "So it fits a bigger battery",
+          "2": "So the rear props get cleaner air when the quad flies fast and nose-down",
+          "3": "So the camera can tilt further up"
+        },
+        "why": "At a steep forward pitch the rear props fly through the front props' wash. Moving them further back means they bite cleaner air, so the quad tracks straight at speed."
+      },
+      "kv": {
+        "q": "The racer runs 2500 KV motors on 4S. What happens with the same motors on a 6S pack?",
+        "options": {
+          "1": "It flies the same, just for longer",
+          "2": "It gets slower because the pack is heavier",
+          "3": "The props spin far faster than the motors and ESC can survive"
+        },
+        "why": "KV is rpm per volt: 2500 KV at 25 V wants over 60,000 rpm. The current goes up with it, the motors overheat and the ESC desyncs. 6S racers use about 1950 KV."
+      }
+    },
+    "power": {
+      "cap": {
+        "q": "What does the capacitor across the ESC's battery pads do?",
+        "options": {
+          "1": "It absorbs voltage spikes from hard punches and braking",
+          "2": "It stores energy for an extra lap",
+          "3": "It filters the video signal"
+        },
+        "why": "Every hard throttle change throws a voltage spike back onto the battery leads. The low-ESR capacitor soaks it up before it kills MOSFETs or shows as noise on the gyro and video."
+      },
+      "esc": {
+        "q": "The calculator says one motor pulls more current at full throttle than the ESC is rated for. What is the sensible fix?",
+        "options": {
+          "1": "Ignore it: full throttle never happens in a race",
+          "2": "Fit a lower-pitch prop or a higher-rated ESC",
+          "3": "Use a bigger battery"
+        },
+        "why": "A race is mostly full throttle, so the ESC sees that current every straight. A smoother, lower-pitch prop draws less, or an ESC rated higher gives the headroom; a bigger pack only adds weight."
+      }
+    },
+    "video": {
+      "power": {
+        "q": "Why does a race VTX run at 25 mW?",
+        "options": {
+          "1": "So every pilot in the heat can fly at once without swamping each other's video",
+          "2": "Because the battery is too small for more",
+          "3": "Because 25 mW reaches further"
+        },
+        "why": "Up to eight quads fly a heat on separate Raceband channels a few dozen metres apart. At high power one VTX bleeds into its neighbours' channels and breaks their video."
+      },
+      "analog": {
+        "q": "Why do most racers still fly analog video?",
+        "options": {
+          "1": "It has the sharpest picture",
+          "2": "It uses the least power",
+          "3": "It has the lowest delay, and every pilot shares Raceband"
+        },
+        "why": "At 100 km/h a few extra milliseconds of delay is half a metre. Analog gets the picture to the goggles fastest, and race timers listen for each pilot's analog VTX."
+      }
+    },
+    "race": {
+      "acro": {
+        "q": "Why do racers fly in acro instead of angle mode?",
+        "options": {
+          "1": "Acro uses less battery",
+          "2": "Angle mode caps the tilt, and racing needs steep, quick changes of angle",
+          "3": "Acro has GPS hold"
+        },
+        "why": "Angle mode limits how far the quad can pitch forward, which limits its speed, and it levels itself when you'd rather it didn't. Acro holds any angle you set and rotates as fast as your rates allow."
+      },
+      "failsafe": {
+        "q": "On a netted race track, what should the quad do when it loses the radio link?",
+        "options": {
+          "1": "Stop the motors and drop",
+          "2": "Fly home on GPS",
+          "3": "Keep its last stick positions"
+        },
+        "why": "A race quad has no GPS, and keeping the last throttle is how quads fly away. Dropping inside the nets is the safe choice, which is Betaflight's default DROP procedure."
+      },
+      "laps": {
+        "q": "How does a MultiGP qualifier rank pilots?",
+        "options": {
+          "1": "By their single fastest lap",
+          "2": "By the total number of laps in two minutes",
+          "3": "By their fastest three consecutive laps"
+        },
+        "why": "One lucky lap doesn't count: the global qualifier takes your best three laps in a row inside a fixed two-minute round, so consistency wins."
+      }
+    }
+  }
+}

@@ -607,11 +607,17 @@ function xrCallouts(items, B){
   let top = { [-1]: fs, [1]: fs + 30*k };
   if (btn && svgEl.getScreenCTM()){ const r = btn.getBoundingClientRect(), q = new DOMPoint(r.right, r.bottom + 50).matrixTransform(svgEl.getScreenCTM().inverse());
     if (q.y > 0) top[-1] = q.y + hgt; }
-  for (const [col, side] of [[L, -1], [R, 1]]){
+  const stack = (col, side) => {
     col.sort((a, b) => a.Y - b.Y);
     let y = -1e9; for (const c of col){ c.py = Math.max(c.Y, y + gap, top[side]); y = c.py; }
     const shift = col.length ? Math.max(0, col.reduce((a, c) => a + c.py - c.Y, 0) / col.length) : 0;
     const room = col.length ? col[0].py - top[side] : 0; for (const c of col) c.py -= Math.min(shift, room);
+  };
+  stack(L, -1); stack(R, 1);
+  // a tall button column pushes the left labels down: the ones that would leave the frame move to the right column
+  const bottom = vb.y + vb.height - hgt/2 - 2*k;
+  if (roomR && L.some(c => c.py > bottom)){ while (L.length && L[L.length - 1].py > bottom) R.push(L.pop()); stack(L, -1); stack(R, 1); }
+  for (const [col, side] of [[L, -1], [R, 1]]){
     for (const c of col){
       c.n = ((window.__ln || (window.__ln = {}))[c.text] || (__ln[c.text] = Object.keys(__ln).length + 1)); const ct = CF_T(c.text), w = u ? hgt*(c.n > 9 ? 1.3 : 1) : CF_TW(ct, fs) + fs*1.5;
       let px = side < 0 ? xmin - 10*k - w/2 : xmax + 10*k + w/2; px = Math.max(vb.x + w/2 + 2*k, Math.min(vb.x + vb.width - w/2 - 2*k, px));
@@ -2440,12 +2446,8 @@ window.SL = window.SL || {};
     return items;
   };
 
-  // extra bench checks; the engine reports state.checks.<id> once it exposes api.pass (docs/requests/item-racer.md)
-  const pass = (api, id) => {
-    if (typeof api.pass === 'function') api.pass(id);
-    else if (api.st) api.st.checks = Object.assign({}, api.st.checks, { [id]: true });
-    api.render();
-  };
+  // the craft's own bench checks: api.pass(id) reports state.extra.<id> until a part is re-seated or the quad is stripped
+  const pass = (api, id) => api.pass(id);
   const failsafeTest = api => {
     if (!api.isOn('RX') || !api.isOn('FC')) return api.say('Fit the receiver and the flight controller first', 2600, 'buzz');
     if (api.isOn('PROPS')) return api.say('PROPS OFF! Never spin motors on the bench with props on', 2600, 'buzz');
