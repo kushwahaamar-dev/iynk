@@ -172,6 +172,54 @@ sleep(10)
     expect(edges).toEqual([0, 250, 500, 750, 1000]);
   });
 
+  it('gpiozero DistanceSensor ranges an HC-SR04 through its trigger and echo pins', () => {
+    const { run, out, errors } = boot(`from gpiozero import DistanceSensor
+from time import sleep
+
+sensor = DistanceSensor(echo=24, trigger=23, max_distance=2)
+print('ready')
+while True:
+    print(round(sensor.distance * 100), 'cm')
+    sleep(0.5)
+`, 'pi4-pi5');
+    const sonar = run.attachUltrasonic('GPIO23', 'GPIO24');
+    sonar.distanceCm = 42;
+    advance(run, 1000);
+    expect(errors).toEqual([]);
+    // nine pings 60 ms apart fill the queue before the constructor returns
+    const lines = out().split('\n');
+    expect(lines[0]).toBe('ready');
+    expect(lines[1]).toBe('42 cm');
+    const triggers = run.world.trace.filter((e) => e[1] === 23 && e[2] === 1).map((e) => Math.round(e[0] / 1000));
+    expect(triggers.slice(0, 4)).toEqual([0, 60, 120, 180]);
+    sonar.distanceCm = 500;
+    advance(run, 1500);
+    expect(out().trim().split('\n').at(-1)).toBe('200 cm');
+  });
+
+  it('gpiozero DistanceSensor reads max_distance with nothing on its pins, and fires when_in_range', () => {
+    const { run, out, errors } = boot(`from gpiozero import DistanceSensor, LED
+from signal import pause
+
+sensor = DistanceSensor(24, 23, threshold_distance=0.2, queue_len=3)
+led = LED(17)
+sensor.when_in_range = led.on
+sensor.when_out_of_range = led.off
+print(sensor.distance, sensor.in_range)
+pause()
+`, 'pi4-pi5');
+    advance(run, 400);
+    expect(errors).toEqual([]);
+    expect(out()).toBe('1.0 False\n');
+    const sonar = run.attachUltrasonic('GPIO23', 'GPIO24');
+    sonar.distanceCm = 10;
+    advance(run, 400);
+    expect(run.snapshot().pins[17].level).toBe(1);
+    sonar.distanceCm = 80;
+    advance(run, 400);
+    expect(run.snapshot().pins[17].level).toBe(0);
+  });
+
   it('rclpy teleop node publishes Twist on a 10 Hz timer', () => {
     const { run, out, ros, errors } = boot(`import rclpy
 from rclpy.node import Node

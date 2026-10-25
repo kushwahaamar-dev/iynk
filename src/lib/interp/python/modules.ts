@@ -999,23 +999,95 @@ function installGpiozero(rt: PyRt): void {
     w.analogWrite(self.native.f, Math.round(Math.max(0, v) * 255), 255, 100);
     w.analogWrite(self.native.b, Math.round(Math.max(0, -v) * 255), 255, 100);
   };
+  // DistanceSensor ranges for real: like gpiozero's background thread it sends a 10 µs trigger pulse every 60 ms, times
+  // the echo pulse the HC-SR04 sends back (343 m/s, there and back) and keeps the last queue_len readings; distance is
+  // their median in metres, capped at max_distance, which is also what a missing echo reads. With partial=False (the
+  // default) the first reading waits for a full queue, so the constructor returns after queue_len pings.
+  type Sonar = {
+    e: number; t: number; max: number; threshold: number; len: number; queue: number[]; live: boolean; rise: number; heard: boolean;
+    near: boolean | null; when_in_range: PyValue; when_out_of_range: PyValue;
+  };
+  const sonar = (self: PyInstance) => self.native as Sonar;
+  const median = (q: number[]) => {
+    const s = [...q].sort((a, b) => a - b), m = s.length >> 1;
+    return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+  };
+  const rangeOf = (self: PyInstance) => {
+    const n = sonar(self);
+    return n.queue.length ? median(n.queue) : n.max;
+  };
+  const reading = (self: PyInstance, metres: number) => {
+    const n = sonar(self);
+    n.queue.push(Math.min(n.max, metres));
+    if (n.queue.length > n.len) n.queue.shift();
+    if (n.queue.length < n.len) return;
+    const near = rangeOf(self) < n.threshold;
+    if (n.near !== null && near !== n.near) {
+      const cb = near ? n.when_in_range : n.when_out_of_range;
+      if (cb) rt.softQueue.push(() => rt.call(cb, cbArgs(cb, self), {}, rt.line));
+    }
+    n.near = near;
+  };
   const DistanceSensor = nclass('DistanceSensor', {
-    __init__: (self, [echo, trig], kw) => {
-      const e = gpio(echo ?? kw.echo);
-      const t = gpio(trig ?? kw.trigger);
-      claim(e, 'DistanceSensor');
-      claim(t, 'DistanceSensor');
-      self.native = { e, t, max: toNum(kw.max_distance ?? 1n) };
-      w.setMode(t, 'output');
-      w.setMode(e, 'input');
+    close: (self) => {
+      const n = sonar(self);
+      n.live = false;
+      used.delete(n.e);
+      used.delete(n.t);
       return null;
     },
   }, {
-    distance: new PyProp((self) => {
-      const cm = (w as unknown as { distanceCm?: Record<number, number> }).distanceCm?.[self.native.e] ?? 25;
-      return Math.min(self.native.max, cm / 100);
-    }),
+    distance: new PyProp((self) => rangeOf(self)),
+    value: new PyProp((self) => rangeOf(self) / sonar(self).max),
+    in_range: new PyProp((self) => rangeOf(self) < sonar(self).threshold),
+    max_distance: new PyProp((self) => sonar(self).max, (self, v) => (sonar(self).max = toNum(v))),
+    threshold_distance: new PyProp((self) => sonar(self).threshold, (self, v) => (sonar(self).threshold = toNum(v))),
+    when_in_range: new PyProp((self) => sonar(self).when_in_range, (self, v) => (sonar(self).when_in_range = v)),
+    when_out_of_range: new PyProp((self) => sonar(self).when_out_of_range, (self, v) => (sonar(self).when_out_of_range = v)),
   });
+  DistanceSensor.dict.set('__init__', natGen('__init__', function* ([self, echo, trig], kw) {
+    if (!(self instanceof PyInstance)) throw pyErr('TypeError', 'DistanceSensor.__init__ needs an instance');
+    const e = gpio(echo ?? kw.echo);
+    const t = gpio(trig ?? kw.trigger);
+    claim(e, 'DistanceSensor');
+    claim(t, 'DistanceSensor');
+    const partial = kw.partial !== undefined && truthy(kw.partial);
+    const n: Sonar = {
+      e, t, max: toNum(kw.max_distance ?? 1n), threshold: toNum(kw.threshold_distance ?? 0.3), len: Math.max(1, Number(toBig(kw.queue_len ?? 9n))),
+      queue: [], live: true, rise: -1, heard: true, near: null, when_in_range: null, when_out_of_range: null,
+    };
+    self.native = n;
+    w.setMode(t, 'output');
+    w.setMode(e, 'input');
+    w.onPinWrite((pin, level) => {
+      if (!n.live || pin !== e) return;
+      if (level === 1) n.rise = w.now;
+      else if (n.rise >= 0) {
+        reading(self, ((w.now - n.rise) * 343) / 2 / 1e6);
+        n.rise = -1;
+        n.heard = true;
+      }
+    });
+    const ping = () => {
+      if (!n.live) return;
+      if (!n.heard) reading(self, n.max);
+      n.heard = false;
+      w.digitalWrite(t, 1);
+      w.clock.after(10, () => w.digitalWrite(t, 0));
+      w.clock.after(60_000, ping);
+    };
+    ping();
+    while (!partial && n.live && n.queue.length < n.len) yield w.now + 1000;
+    return null;
+  }));
+  for (const [name, near] of [['wait_for_in_range', true], ['wait_for_out_of_range', false]] as const) {
+    DistanceSensor.dict.set(name, natGen(name, function* ([self, timeout]) {
+      const s = self as PyInstance;
+      const deadline = timeout === undefined || timeout === null ? Infinity : w.now + toNum(timeout) * 1e6;
+      while ((rangeOf(s) < sonar(s).threshold) !== near && w.now < deadline) yield Math.min(deadline, w.now + 1000);
+      return (rangeOf(s) < sonar(s).threshold) === near;
+    }));
+  }
   const RGBLED = nclass('RGBLED', {
     __init__: (self, [r, g, b], kw) => {
       const pins = [gpio(r ?? kw.red), gpio(g ?? kw.green), gpio(b ?? kw.blue)];
