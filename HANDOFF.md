@@ -113,6 +113,10 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 - **Decided:** D1 (tracks). Amar: "Everything else looks fine." Jagrati (16:13): D2 confirmed; D4 keys stay
   placeholders until the morning; Vultr, the Vercel env upload and Tiger not approved yet; D3 (devnet SOL) only with
   phase 4, now skipped.
+- **Running:** live claim check `wf_791f52ba-b58` (`scripts/workflows/live-claims.js`, from 08:57, this session):
+  labels check:partner-room, check:voice, check:drone-serpapi, check:break-fly, check:mcp-counts, and a recheck for
+  each failed claim. Read-only against https://simlab-hacktx.vercel.app; its results go into DEVPOST-WRITEUP, PITCH
+  and JUDGE-QA. A relaunch from another session runs the committed script with the same args (base, scratch).
 - **Interaction audit** `wf_e0b543cb-6eb` (`scripts/workflows/interaction-audit.js`, 07:19-07:40): all five find
   labels (boards, robotics, drones, fly, shell) died on the old session's usage limit, so it reported nothing. Not
   relaunched yet. Their leftover `scripts/.tmp-audit-*.mjs` were moved out of the repo.
@@ -159,6 +163,9 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 | – | – | – | – |
 
 ## Checkpoint log (newest first)
+
+- 2026-10-25 08:57 CDT (Amar): write-up filled (site, repo, more than 250 agents, Vultr in Dallas; Vultr and Tiger
+  Data entered, .Tech dropped). Live claim check `wf_791f52ba-b58` launched (5 labels, read-only).
 
 - 2026-10-25 08:54 CDT (Amar): Tiger on in production (`DATABASE_URL` from Amar's Tiger file). Fixed and deployed
   `951ef39`: concurrent first writes on a fresh instance failed with "malformed array literal" (postgres.js
