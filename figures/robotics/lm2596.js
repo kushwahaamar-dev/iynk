@@ -38,16 +38,18 @@ function model(st, dt){
   const u1 = { vout: r2(vout), vset: r2(r.vs), duty: r2(c.d), turns: r2(s.turns), set: s.set, sat: c.sat, limited: c.limited, eff: r2(c.eff),
     iout_mA: Math.round(c.i * 1000), iin_mA: Math.round(c.iin * 1000), loss: r2(c.pU1 + c.pD1 + c.pL1), tj: Math.round(s.tj), trip: s.trip };
 
-  // sound and a toast, once each time a condition starts
+  // sound and a toast, once each time a condition starts. The toast is a B.say call written out at each cue, so the
+  // figure-string collector sees its text and the dictionary can translate it
   const said = s.said || (s.said = {});
-  const cue = (key, on, name, msg, v) => { if (on && !said[key]){ said[key] = true; B.sfx(name); if (msg) B.say(msg, v, 3400); } else if (!on) said[key] = false; };
-  cue('set', live && s.set && st.mode !== 'set12', 'ding', 'The meter reads {v} V', { v: vout.toFixed(2) });
-  cue('sat', live && c.sat && !fbOpen && st.mode !== 'found' && (st.mode !== 'set12' || s.set), 'buzz', 'Asked for {v} V from {vin} V: a buck only steps down', { v: Math.min(r.vs, 99).toFixed(1), vin: vin.toFixed(1) });
-  cue('fb', live && fbOpen, 'pop', 'The trimmer\'s wiper is off: FB sees 0 V and the output jumps to the input');
-  cue('short', live && short, 'sizzle', 'OUT shorted: the LM2596 holds 4.2 A, the SS34 carries it');
-  cue('d1', s.d1dead, 'pop', 'The SS34 burned out');
-  cue('trip', s.trip, 'sizzle', 'Thermal shutdown');
-  cue('stall', live && held && motor, 'buzz', 'Motor held: {n} mA, and the rail holds', { n: mot.i_mA });
+  const cue = (key, on, name, toast) => { if (on && !said[key]){ said[key] = true; B.sfx(name); toast(); } else if (!on) said[key] = false; };
+  cue('set', live && s.set && st.mode !== 'set12', 'ding', () => B.say('The meter reads {v} V', { v: vout.toFixed(2) }, 3400));
+  cue('sat', live && c.sat && !fbOpen && st.mode !== 'found' && (st.mode !== 'set12' || s.set), 'buzz',
+    () => B.say('Asked for {v} V from {vin} V: a buck only steps down', { v: Math.min(r.vs, 99).toFixed(1), vin: vin.toFixed(1) }, 3400));
+  cue('fb', live && fbOpen, 'pop', () => B.say('The trimmer\'s wiper is off: FB sees 0 V and the output jumps to the input', null, 3400));
+  cue('short', live && short, 'sizzle', () => B.say('OUT shorted: the LM2596 holds 4.2 A, the SS34 carries it', null, 3400));
+  cue('d1', s.d1dead, 'pop', () => B.say('The SS34 burned out', null, 3400));
+  cue('trip', s.trip, 'sizzle', () => B.say('Thermal shutdown', null, 3400));
+  cue('stall', live && held && motor, 'buzz', () => B.say('Motor held: {n} mA, and the rail holds', { n: mot.i_mA }, 3400));
   const whole = Math.floor(s.turns + 1e-6);
   if (dt > 0 && s.lastWhole != null && whole !== s.lastWhole && live) B.sfx('tick');
   s.lastWhole = whole;

@@ -208,7 +208,7 @@ function model(st, dt){
   else if (run && !addrOk) status = 'No answer at 0x40: the board is at 0x41';
   else if (run && !pulses && !pca.asleep) status = ['{hz} Hz frame: the servos twitch', { hz: Math.round(frame) }];
   else if (run && arm.st[2] === 'stop') status = ['Gripper stalled on the cube: {ma} mA', { ma }];
-  else if (run && st.mode === 'pick') status = [c.held ? 'Carrying the cube: pose {n}' : 'Pick and place: pose {n}', { n: Math.floor(st.t) % 8 + 1 }];
+  else if (run && st.mode === 'pick') { const n = Math.floor(st.t) % 8 + 1; status = c.held ? ['Carrying the cube: pose {n}', { n }] : ['Pick and place: pose {n}', { n }]; }
   else if (run && st.mode === 'sweep') status = ['Base at {deg}°', { deg }];
   else if (run) status = 'Servos centred: 1500 µs';
   const live = st.power && run;

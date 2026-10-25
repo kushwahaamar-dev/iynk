@@ -57,7 +57,7 @@ function model(st, dt){
   return {
     meas: { U1: { kind: 'soc', c, ghz: +heat.ghz.toFixed(2) }, U4: { kind: 'pmic', throttled: throttled(), v: +v5.toFixed(2) },
       COOLER: { kind: 'fan', duty: heat.duty, state: !cooler ? 'missing' : cold ? 'stutter' : heat.duty ? 'on' : 'off' } },
-    stats: run ? [['SoC', c.toFixed(1) + ' °C'], ['Arm clock', heat.ghz.toFixed(1) + ' GHz']] : [],
+    stats: run ? [['SoC', c.toFixed(1) + ' °C'], ['Arm clock', ['{n} GHz', { n: heat.ghz.toFixed(1) }]]] : [],
     status,
     flow: { '5V': v5 > .5, CORE: run, '3V3': run },
     accent: uv ? ['J1'] : hot ? ['U1'] : cold && run ? ['FAN'] : [],

@@ -75,6 +75,8 @@ function model(st, dt){
   const u1 = { drop: r2(drop), w: r2(w), sinkC: Math.round(25 + (s.tj - 25) * RSA / (RSA + RJC + RCS)), tj: Math.round(s.tj), trip: s.trip };
 
   const name = ch => ch.dir > 0 ? 'forward' : ch.dir < 0 ? 'reverse' : ch.brake ? 'brake' : 'off';
+  // the channel's word in the status template, written out where the figure-string collector reads it
+  const word = ch => B.T({ forward: 'forward', reverse: 'reverse', brake: 'brake', off: 'off' }[name(ch)]);
   let status = 'Unpowered';
   if (st.power && ev.status === 'fault') status = 'Fault: unplug and repair';
   else if (st.power && ev.status === 'brownout') status = 'Logic supply too low';
@@ -84,7 +86,7 @@ function model(st, dt){
   else if (run && noGround) status = 'No common ground: twitching';
   else if (run){ const na = name(a), nb = name(b);
     status = na === nb ? { forward: 'Both forward', reverse: 'Both reverse', brake: 'Brake', off: 'Motors off' }[na]
-      : a.dir && b.dir ? 'Pivoting' : 'A ' + na + ', B ' + nb;
+      : a.dir && b.dir ? 'Pivoting' : ['A {a}, B {b}', { a: word(a), b: word(b) }];
     if (held) status = 'Wheels held: heating'; }
   const stats = st.power ? [
     ['Battery', batt.v + ' V · ' + batt.i_mA + ' mA'],

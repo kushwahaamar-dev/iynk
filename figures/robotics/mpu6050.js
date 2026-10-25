@@ -61,7 +61,7 @@ function model(st){
   else if (!s.ok) status = 'I2C read failed: every byte reads -1';
   else if (st.mode === 'asleep') status = 'Asleep: every reading is 0';
   else if (!B.isSet('C14')) status = 'Gyro noise: no CPOUT capacitor';
-  else if (st.mode === 'tilt') status = [alarm ? 'Roll {deg}°: ALARM' : 'Roll {deg}°: level enough', { deg: Math.round(roll) }];
+  else if (st.mode === 'tilt') status = alarm ? ['Roll {deg}°: ALARM', { deg: Math.round(roll) }] : ['Roll {deg}°: level enough', { deg: Math.round(roll) }];
   else status = ['Level: az {az} g, gx {gx} °/s', { az: s.az.toFixed(2), gx: s.gx.toFixed(1) }];
   // the rows stay while the bench is powered, so the stats column keeps its narrow, wrapping layout in a fault too
   const shown = v => (run ? v : '–');

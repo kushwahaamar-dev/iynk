@@ -96,13 +96,14 @@ function model(st, dt){
   const u1 = { vref: r3(vref), pot: r3(pot), set: s.set, imax: r3(imax), limit_mA: Math.round(imax * 1000), coil_mA: live ? Math.round(imax * 707.1) : 0,
     tj: Math.round(s.tj), trip: s.trip, dead, ia: r3(ia), ib: r3(ib) };
 
-  // sound and a toast, once each time a condition starts (the host plays the sfx)
+  // sound and a toast, once each time a condition starts (the host plays the sfx). The toast is a B.say call written
+  // out at each cue, so the figure-string collector sees its text and the dictionary can translate it
   const said = s.said || (s.said = {});
-  const cue = (key, on, name, msg, v) => { if (on && !said[key]){ said[key] = true; B.sfx(name); if (msg) B.say(msg, v, 3200); } else if (!on) said[key] = false; };
-  cue('set', s.set, 'ding', 'Vref 0.544 V on the meter: the limit is 1.0 A');
-  cue('trip', s.trip, 'sizzle', 'Thermal shutdown: the chip reached 165 °C');
-  cue('dead', st.power && dead, 'pop', 'The coil\'s spike went through the A4988');
-  cue('low', run && low, 'buzz', 'VMOT {v} V: under the A4988\'s 8 V minimum', { v: r1(vmot0) });
+  const cue = (key, on, name, toast) => { if (on && !said[key]){ said[key] = true; B.sfx(name); toast(); } else if (!on) said[key] = false; };
+  cue('set', s.set, 'ding', () => B.say('Vref 0.544 V on the meter: the limit is 1.0 A', null, 3200));
+  cue('trip', s.trip, 'sizzle', () => B.say('Thermal shutdown: the chip reached 165 °C', null, 3200));
+  cue('dead', st.power && dead, 'pop', () => B.say('The coil\'s spike went through the A4988', null, 3200));
+  cue('low', run && low, 'buzz', () => B.say('VMOT {v} V: under the A4988\'s 8 V minimum', { v: r1(vmot0) }, 3200));
   if (dt > 0 && mixed && live && Math.floor(st.t * 2) !== s.buzzN){ s.buzzN = Math.floor(st.t * 2); B.sfx('buzz'); }
   // a tick each time the shaft completes a turn
   const turns = Math.floor((asked + 1e-6) / 360);

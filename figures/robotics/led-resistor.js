@@ -153,7 +153,6 @@ const burst = (id, t) => { const k = Math.floor(t * 3), x = Math.sin((k + 1) * 1
 const fmt = mA => mA >= 200 ? 'OL' : mA < 1 ? mA.toFixed(2) : mA.toFixed(1);
 const clampV = B.clamp;
 const brightness = mA => mA > 0 ? clampV(Math.log10(10 * mA) / Math.log10(200), .06, 1) : 0;
-const verdict = mA => mA > LED_MAX * 1000 ? 'too much: the LED overheats' : mA >= 5 ? 'bright, safe' : mA >= 1 ? 'dim' : 'barely glowing';
 const ohmsTxt = ohms => ohms < 1 ? '0' : String(ohms);
 const fresh = () => ({ dead: {}, over: 0, flash: null, sn: -1, hot: null, banner: false, said: {} });
 const announce = (lr, key, msg, name) => { if (lr.said[key]) return; lr.said[key] = true; B.sfx(name || 'pop'); B.say(msg, null, 3600); };
@@ -250,11 +249,13 @@ function model(st, dt){
   st.ev = ev; st.o.ev = ev;
   st.o.leds.D1 = led === 'ok' ? brightness(mA) : 0;
   const lit = ev.status === 'running' && led === 'ok';
+  // the verdict on the current: the bench status and the end of each notes line
+  const status = mA > LED_MAX * 1000 ? 'too much: the LED overheats' : mA >= 5 ? 'bright, safe' : mA >= 1 ? 'dim' : 'barely glowing';
   // bench notes: the paper calculation for the live numbers, every 4 s while current flows
   if (lit && st.t >= 0){
     if (!lr.banner){ lr.banner = true; serial(st, T('-- bench notes --')); }
     const k = Math.floor(st.t / 4);
-    if (k !== lr.sn){ lr.sn = k; serial(st, T('I = {v} V / {r} = {ma} mA  {verdict}', { v: (vcc - VF).toFixed(1), r: ohmsTxt(row.ohms), ma: fmt(mA), verdict: T(verdict(mA)) })); }
+    if (k !== lr.sn){ lr.sn = k; serial(st, T('I = {v} V / {r} = {ma} mA  {verdict}', { v: (vcc - VF).toFixed(1), r: ohmsTxt(row.ohms), ma: fmt(mA), verdict: T(status) })); }
   }
   const flowing = mA > 0;
   return {
@@ -263,8 +264,8 @@ function model(st, dt){
       MM1: { i_mA: Math.round(mA * 100) / 100, text },
       JP1: { row: st.mode, part: row.part, ohms: row.part === 'JL1' ? 0 : row.ohms, mW: Math.round(watts * 10000) / 10 },
     },
-    status: lit ? verdict(mA) : null,
-    stats: [['Current', text + ' mA'], ['Resistor', row.part === 'JL1' ? T('none') : MOVES[st.mode]]],
+    status: lit ? status : null,
+    stats: [['Current', text === 'OL' ? 'OL' : text + ' mA'], ['Resistor', row.part === 'JL1' ? T('none') : MOVES[st.mode]]],
     // the loop the meter reads: TP2, the resistor bus, the row the jumper picks, the LED
     flow: { LOOP: flowing, LED_A: flowing, LED_K: flowing, [row.net]: flowing },
   };

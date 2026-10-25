@@ -50,12 +50,14 @@ function model(st){
     a.m = Object.assign({}, a.m, { state: 'stall', i_mA: 800, rpm: 0 }); b.m = Object.assign({}, b.m, { state: 'stall', i_mA: 800, rpm: 0 });
   }
   const name = ch => !ch.dir ? (ch.brake ? 'brake' : 'coast') : ch.dir > 0 ? 'forward' : 'reverse';
+  // the channel's word in the status template, written out where the figure-string collector reads it
+  const word = ch => B.T({ forward: 'forward', reverse: 'reverse', brake: 'brake', coast: 'coast' }[name(ch)]);
   let status = 'Unpowered';
   if (st.power && ev.status === 'fault') status = 'Fault: unplug and repair';
   else if (st.power && !run) status = ev.status === 'brownout' ? 'Brown-out loop' : ev.status === 'no-power' ? 'No power: the supply is off' : 'Powered, motors idle';
   else if (run && !levels.STBY) status = 'Standby: outputs off';
   else if (run){ const na = name(a), nb = name(b);
-    status = na === nb ? { forward: 'Both forward', reverse: 'Both reverse', brake: 'Short brake', coast: 'Coast' }[na] : ['A {a}, B {b}', { a: B.T(na), b: B.T(nb) }]; }
+    status = na === nb ? { forward: 'Both forward', reverse: 'Both reverse', brake: 'Short brake', coast: 'Coast' }[na] : ['A {a}, B {b}', { a: word(a), b: word(b) }]; }
   const stats = st.power ? [
     ['Motor A', a.m.v + ' V · ' + Math.abs(a.m.rpm) + ' rpm'], ['Motor B', b.m.v + ' V · ' + Math.abs(b.m.rpm) + ' rpm'],
     ['Battery', batt.v + ' V · ' + batt.i_mA + ' mA'],
