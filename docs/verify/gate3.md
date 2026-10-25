@@ -62,6 +62,14 @@ whose boxes are sized to their text.
 | With Lab tools open, a lesson's code panel was 352 px wide at any desk size, so even at 1920 "Try it yourself" was cut off, the Serial status wrapped to four lines and the last rail tab was clipped | the drawer's push rule shrank the rail to 22rem before the figure gave up anything | The figure gives up its room first, down to 34rem, then the rail, down to 22rem: 608 px of code at 1920, 416 at 1440. The code title hides where the drawer narrows the rail under 27rem. `e2e/dock.spec.ts` checks 1440 and 1920 (`f43d420`; dock, phone dock, Board Lab and shell specs 53 passed on that build) |
 | The pitch and the video said "the dock", "scroll to Break it" and "the Sound switch in the workspace header", and filmed quad5 on an empty mat | the final pass moved the dock into Lab tools and Break it into a tab under the code; the drone bench starts empty on every load | Every click re-read against the pages at 1920 × 1080; "Build it for me" goes in just before the drone beat (`b015738`) |
 
+## Found after gate 3, in the polish pass
+
+| Finding | Cause | Fix |
+|---|---|---|
+| Picking a variant (Uno R4 WiFi, Pico W, Pico 2, Pi 4, ESP32-S3 v1.0) changed the pin table and the simulator but the figure kept drawing the default board, so the R4's LED matrix and Wi-Fi lessons showed the Minima | the app sent `variant` in a `set` patch, but a figure builds its board once, from `?variant=`, and the engine dropped keys it doesn't read without a word | The figure page loads with the variant (`figureSrc`, `6f52be5`) and the engine reports a key it doesn't read (`d851653`). An e2e test switches the R4 and opens the matrix lesson. All 493 `set` states in the content use known keys; the 12 board pages and 71 lessons load with no figure notes; 13 of 13 probes, 0 bridge errors |
+| On the Uno, "16 MHz CRYSTAL" covered "POWER JACK" | board labels sat at fixed offsets | A label steps past the ones already placed (`c33432c`). No overlaps or clipped labels on 12 boards, 13 benches and 12 modules at 1296 and 390 px, nor in fr and es |
+| The fr and es figures said "adaptateur de niveau" and "adaptador de nivel" where the prose says "convertisseur de niveau" and "adaptador de niveles" | two translation passes chose different words | The figures follow the prose (`00139d6`) |
+
 ## Fixed between gate 2 and gate 3
 
 183 commits, all after gate 2's rerun at `926cc6b`. The main ones:
