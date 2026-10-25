@@ -473,6 +473,27 @@ describe("the autopilot demo", () => {
     }
   }
 
+  // a mission course flown by the craft's own AUTO mode, the way the learner would fly it on the real craft
+  for (const content of crafts) {
+    const flight = flightOf(content);
+    for (const course of flight?.courses.filter((c) => c.kind === "mission") ?? []) {
+      const auto = flight!.craft.modes.find((m) => m.task === "mission" && course.missions?.some((x) => x.id === m.missionId));
+      if (!auto) continue;
+      it(`flies ${content.id}/${course.id} in ${auto.id} from take-off to the last goal`, () => {
+        const s = createSim(flight!.craft, course, flightCalc(content, content.design.default), { mode: auto.id });
+        dispatch(s, { type: "arm" });
+        const events: FlightEvent[] = [];
+        for (let i = 0; i < 240 * 100 && !s.crashed && !events.some((e) => e.type === "missionDone"); i++) {
+          stepSim(s);
+          events.push(...drainEvents(s));
+        }
+        expect(events.find((e) => e.type === "crash"), "crash").toBeUndefined();
+        expect(events.filter((e) => e.type === "checkpoint")).toHaveLength(course.checkpoints.length);
+        expect(events.find((e) => e.type === "missionDone")).toMatchObject({ best: true });
+      });
+    }
+  }
+
   it("is not offered on a course it has no route for", () => {
     const blocked: Course = { ...quad5Course, missions: [] };
     expect(modesFor(quad5Craft, blocked).map((m) => m.id)).not.toContain("demo");
