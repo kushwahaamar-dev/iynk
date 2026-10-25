@@ -36,12 +36,22 @@ test("sound starts off; pressing it turns sound on and plays the cue, pressing a
   expect(button.getAttribute("aria-pressed")).toBe("false");
 });
 
+test("the compact sound button keeps its name and test id", () => {
+  inEnglish(<SoundToggle compact />);
+  const button = screen.getByTestId("sound-toggle");
+  expect(button.getAttribute("aria-label")).toBe(common.client.sound.label);
+  expect(button.getAttribute("aria-pressed")).toBe("false");
+  fireEvent.click(button);
+  expect(getSettings().sound).toBe(true);
+  expect(button.getAttribute("aria-pressed")).toBe("true");
+});
+
 test("usage counts are disclosed and on until the learner opts out", () => {
   inEnglish(<UsageToggle />);
   expect(screen.getByText(common.client.usage.body)).toBeTruthy();
-  const box = screen.getByRole<HTMLInputElement>("checkbox", { name: common.client.usage.toggle });
-  expect(box.checked).toBe(true);
+  const box = screen.getByRole("switch", { name: common.client.usage.toggle });
+  expect(box.getAttribute("aria-checked")).toBe("true");
   fireEvent.click(box);
   expect(getSettings().telemetry).toBe(false);
-  expect(box.checked).toBe(false);
+  expect(box.getAttribute("aria-checked")).toBe("false");
 });

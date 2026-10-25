@@ -51,6 +51,9 @@
       "turnOn": "Activar el sonido",
       "turnOff": "Desactivar el sonido"
     },
+    "motion": {
+      "label": "Reducir el movimiento"
+    },
     "usage": {
       "label": "Recuentos de uso anónimos",
       "body": "SimLab cuenta lo que pasa en los laboratorios (una lección superada, un paso montado, un fallo probado) para los contadores en directo y las clasificaciones. Cada evento lleva un identificador aleatorio de este navegador, nunca tu nombre ni tu código.",

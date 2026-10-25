@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
 import { useCommonT } from "@/i18n/client";
 import { setSetting } from "@/lib/settings/settings";
 import { useSettings } from "@/lib/settings/hooks";
@@ -15,10 +16,35 @@ function Speaker({ on }: { on: boolean }) {
   );
 }
 
-/** The sound setting as one button: figure sounds and lab cues, off until pressed. */
-export function SoundToggle({ className }: { className?: string }) {
+/**
+ * The sound setting as one button: figure sounds and lab cues, off until pressed.
+ * `compact` is the icon-only form for a workspace bar.
+ */
+export function SoundToggle({ className, compact = false }: { className?: string; compact?: boolean }) {
   const t = useCommonT();
   const { sound } = useSettings();
+  const toggle = () => {
+    setSetting("sound", !sound);
+    // This click is the gesture the browser needs before it lets a page make sound.
+    if (sound) silence();
+    else startSound();
+  };
+
+  if (compact) {
+    return (
+      <IconButton
+        icon={sound ? "sound-on" : "sound-off"}
+        label={t("sound.label")}
+        title={t(sound ? "sound.turnOff" : "sound.turnOn")}
+        size="sm"
+        className={className}
+        aria-pressed={sound}
+        data-testid="sound-toggle"
+        onClick={toggle}
+      />
+    );
+  }
+
   return (
     <Button
       size="sm"
@@ -27,12 +53,7 @@ export function SoundToggle({ className }: { className?: string }) {
       aria-pressed={sound}
       title={t(sound ? "sound.turnOff" : "sound.turnOn")}
       data-testid="sound-toggle"
-      onClick={() => {
-        setSetting("sound", !sound);
-        // This click is the gesture the browser needs before it lets a page make sound.
-        if (sound) silence();
-        else startSound();
-      }}
+      onClick={toggle}
     >
       <Speaker on={sound} />
       <span>{t("sound.label")}</span>

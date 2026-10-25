@@ -19,7 +19,7 @@ export function NavLinks({ lang, labels, layout, onNavigate }: NavLinksProps) {
   const { features } = useFeatures();
   const entries = NAV.filter((entry) => showNavEntry(entry, features, layout));
   return (
-    <ul className={layout === "bar" ? "flex items-center gap-1" : "flex flex-col gap-2"}>
+    <ul className={layout === "bar" ? "flex items-center gap-0.5" : "flex flex-col gap-1"}>
       {entries.map((entry) => {
         const active = isActive(entry, lang, pathname);
         return (
@@ -29,9 +29,9 @@ export function NavLinks({ lang, labels, layout, onNavigate }: NavLinksProps) {
               aria-current={active ? "page" : undefined}
               onClick={onNavigate}
               className={cx(
-                "flex min-h-11 items-center rounded-full border-2 font-ui font-bold no-underline transition-colors",
-                layout === "bar" ? "px-3.5 text-sm" : "px-4 text-base",
-                active ? "border-line bg-ink text-paper" : "border-transparent text-ink hover:border-line",
+                "flex min-h-11 items-center whitespace-nowrap rounded-full font-body font-semibold no-underline transition-colors",
+                layout === "bar" ? "px-3 text-sm" : "px-4 text-base",
+                active ? "bg-ink text-paper" : "text-ink hover:bg-sunken",
               )}
             >
               {labels[entry.id]}

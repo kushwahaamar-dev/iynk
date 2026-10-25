@@ -4,10 +4,10 @@ import { Icon } from "@/components/ui/icons";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { setSetting, useSettings, type ThemeSetting } from "@/lib/settings";
 
-type ThemeLabels = { label: string; system: string; light: string; dark: string };
+export type ThemeLabels = { label: string; system: string; light: string; dark: string };
 
 /** Light, dark or follow the system. The label stays the same; the checked option says which. */
-export function ThemeControl({ labels, showText = false }: { labels: ThemeLabels; showText?: boolean }) {
+export function ThemeControl({ labels, showText = false, stretch = false }: { labels: ThemeLabels; showText?: boolean; stretch?: boolean }) {
   const { theme } = useSettings();
   const options = [
     { value: "system", label: labels.system, icon: <Icon name="system" size={18} /> },
@@ -21,6 +21,7 @@ export function ThemeControl({ labels, showText = false }: { labels: ThemeLabels
       value={theme}
       onChange={(value) => setSetting("theme", value)}
       iconOnly={!showText}
+      stretch={stretch}
     />
   );
 }

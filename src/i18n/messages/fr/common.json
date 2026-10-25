@@ -51,6 +51,9 @@
       "turnOn": "Activer le son",
       "turnOff": "Couper le son"
     },
+    "motion": {
+      "label": "Réduire les animations"
+    },
     "usage": {
       "label": "Statistiques d’usage anonymes",
       "body": "SimLab compte ce qui se passe dans les labos (une leçon réussie, une étape montée, une panne essayée) pour les compteurs en direct et les classements. Chaque événement porte un identifiant aléatoire propre à ce navigateur, jamais votre nom ni votre code.",

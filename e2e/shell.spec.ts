@@ -22,6 +22,16 @@ function watchErrors(page: Page) {
 // Activity keeps hidden copies of earlier pages, so look only at what shows.
 const visibleHeader = (page: Page) => page.locator("header:visible").first();
 
+// Theme, language, sound, motion and usage counts sit in the header's Settings popover.
+async function openSettings(page: Page) {
+  const button = visibleHeader(page).getByRole("button", { name: shell.settings.label });
+  await button.click();
+  await expect(button).toHaveAttribute("aria-expanded", "true");
+  const panel = visibleHeader(page).getByRole("dialog", { name: shell.settings.label });
+  await expect(panel).toBeVisible();
+  return panel;
+}
+
 async function expectNoAxeViolations(page: Page) {
   const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
   const summary = results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`);
@@ -77,10 +87,11 @@ test.describe("the / redirect", () => {
 test("switching language keeps the path, saves the choice and keeps the theme", async ({ page, context }) => {
   const errors = watchErrors(page);
   await page.goto("/en/no/such/page");
-  await visibleHeader(page).getByRole("radio", { name: shell.theme.dark }).click();
+  const settings = await openSettings(page);
+  await settings.getByRole("radio", { name: shell.theme.dark }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 
-  await visibleHeader(page).getByRole("combobox", { name: shell.language.label }).selectOption("fr");
+  await settings.getByRole("combobox", { name: shell.language.label }).selectOption("fr");
   await expect(page).toHaveURL("/fr/no/such/page");
   await expect(page.locator("html")).toHaveAttribute("lang", "fr");
   // The new layout's <html> starts without data-theme; SettingsSync restores it.
@@ -95,7 +106,7 @@ test("switching language keeps the path, saves the choice and keeps the theme", 
 
 test("the theme choice persists and is applied before the first paint", async ({ page }) => {
   await page.goto("/en");
-  await visibleHeader(page).getByRole("radio", { name: shell.theme.dark }).click();
+  await (await openSettings(page)).getByRole("radio", { name: shell.theme.dark }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("simlab:v1") ?? "{}").settings?.theme)).toBe("dark");
 
@@ -107,9 +118,10 @@ test("the theme choice persists and is applied before the first paint", async ({
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   expect(await page.evaluate(() => (window as Window & { firstFrameTheme?: string | null }).firstFrameTheme)).toBe("dark");
-  await expect(visibleHeader(page).getByRole("radio", { name: shell.theme.dark })).toHaveAttribute("aria-checked", "true");
+  const settings = await openSettings(page);
+  await expect(settings.getByRole("radio", { name: shell.theme.dark })).toHaveAttribute("aria-checked", "true");
 
-  await visibleHeader(page).getByRole("radio", { name: shell.theme.system }).click();
+  await settings.getByRole("radio", { name: shell.theme.system }).click();
   await expect(page.locator("html")).not.toHaveAttribute("data-theme", /.+/);
 });
 
@@ -135,6 +147,20 @@ test.describe("on a phone", () => {
       expect(overflow).toBeLessThanOrEqual(0);
     });
   }
+});
+
+test("Settings opens from the header, closes with Escape and hands focus back", async ({ page }) => {
+  await page.goto("/en");
+  const panel = await openSettings(page);
+  await expect(panel.getByRole("switch", { name: common.client.sound.label })).toBeVisible();
+  await expect(panel.getByRole("switch", { name: common.client.motion.label })).toBeVisible();
+  await expect(panel.getByTestId("usage-toggle")).toBeVisible();
+  await panel.getByRole("switch", { name: common.client.motion.label }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-reduce-motion", "true");
+  await expectNoAxeViolations(page);
+  await page.keyboard.press("Escape");
+  await expect(panel).toBeHidden();
+  await expect(visibleHeader(page).getByRole("button", { name: shell.settings.label })).toBeFocused();
 });
 
 test("the dashboard and the 404 page pass axe", async ({ page }) => {

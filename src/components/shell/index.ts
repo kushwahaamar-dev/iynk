@@ -3,5 +3,8 @@ export { Logo } from "./Logo";
 export { NAV, isActive, showNavEntry, type NavEntry, type NavId } from "./nav";
 export { SiteFooter } from "./SiteFooter";
 export { SiteHeader } from "./SiteHeader";
+export { StageDrawer } from "./StageDrawer";
 export { ThemeControl } from "./ThemeControl";
 export { UntranslatedNotice } from "./UntranslatedNotice";
+export { WorkspaceBar } from "./WorkspaceBar";
+export { WorkspaceFrame } from "./WorkspaceFrame";

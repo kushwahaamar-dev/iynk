@@ -51,6 +51,9 @@
       "turnOn": "Ton einschalten",
       "turnOff": "Ton ausschalten"
     },
+    "motion": {
+      "label": "Bewegung reduzieren"
+    },
     "usage": {
       "label": "Anonyme Nutzungszahlen",
       "body": "SimLab zählt, was in den Laboren passiert (eine bestandene Lektion, ein gebauter Schritt, ein ausprobierter Fehler), für die Live-Zähler und Bestenlisten. Jedes Ereignis trägt eine zufällige ID für diesen Browser, nie deinen Namen oder deinen Code.",
