@@ -50,12 +50,25 @@ host control (the dialog close button uses a mustard ring instead, see nits).
   results are fine (they show beside the button).
 - **Why it matters:** "Build it, break it, fix it" is the robotics pitch (`PITCH.md` names the LED trainer's faults).
   A judge who clicks Trigger sees nothing happen and concludes it is broken.
-- **Proposal:** the workspace layout in finding 2: faults move into the right rail next to the figure, so the figure
+- **Proposal:** the workspace layout in finding 3: faults move into the right rail next to the figure, so the figure
   and the trigger are on one screen; the notice becomes an overlay inside the bottom edge of the figure frame
   (`absolute inset-x-3 bottom-3`, same `role="status"`, `data-notice` kept). On a phone the figure becomes sticky
-  (finding 3).
+  (finding 4).
 
-### 2. ugly: the bench page is a long article, not a workspace
+### 2. blocker: current-draw labels say "MA" (mega-amps)
+- **Where:** Live status → Current draw, every bench with a supply; `shots/uno-1440-part1.png`
+  ("USB, 5 V: 500 MA THROUGH THE POLYFUSE · 5 V", "ABOUT 300 MA BEFORE THE 5 V REGULATOR OVERHEATS").
+- **What:** `Meter` (`src/components/ui/Meter.tsx`, line 27) draws its label with `ink-kicker`, which is
+  `text-transform: uppercase`; the supply labels carry units, so mA becomes MA. The labels also wrap to two lines and
+  push "50 of 500 mA" onto two lines.
+- **Why:** a hardware judge reads 500 MA as wrong engineering; it undercuts the precision the benches are built on.
+- **Proposal:** F-build-shell: `Meter` label without uppercase (`font-ui text-xs font-bold text-muted`, no letter
+  spacing) or a `labelCase="none"` prop. F-build-robotics: shorten the meter label to the supply name ("USB · 5 V")
+  and move the limit sentence ("500 mA through the polyfuse") into the line under the bar, which already holds
+  "450 mA to spare". Check every `ink-kicker` that can hold a unit or a part number (Stat labels hold "5 V RAIL",
+  "3.3 V RAIL": V is fine, but "mA", "kΩ", "µF" are not).
+
+### 3. ugly: the bench page is a long article, not a workspace
 - **Where:** all 13 benches at 1440 and 1920; `shots/b-*-1440.png`, `shots/uno-1440-full.png` (+ `uno-1440-part0..5.png`),
   `shots/uno-1920-light.png`, `shots/led-1920-dark.png`.
 - **What:** `max-w-7xl` column; a 480–580 px reading header (52 px h1, sub, hint, a 6–9 line overview) before the
@@ -91,7 +104,7 @@ host control (the dialog close button uses a mustard ring instead, see nits).
     (`data-selected-part` kept on it; render an empty `data-selected-part` element when nothing is selected if a test
     needs it).
 
-### 3. ugly: on a phone the figure is never on screen with what you do
+### 4. ugly: on a phone the figure is never on screen with what you do
 - **Where:** 390 × 844, all benches; `shots/uno-390-part0..2.png`, `shots/a4988-390-de-part0..1.png`,
   `shots/pi5-390-hi-full.png`.
 - **What:** the figure starts at y 782–1 200, below the first screen. Steps are a 5 500 px list of 25 open cards (each
@@ -103,19 +116,6 @@ host control (the dialog close button uses a mustard ring instead, see nits).
   so steps, faults and status scroll underneath it; (c) the same tabs as the desktop rail as a segmented control
   directly under the sticky figure; (d) Steps collapsed: done steps one line (number, title, check), the current step
   open, the next ones title-only and tappable. That brings the phone page from 18 screens to about 5.
-
-### 4. blocker: current-draw labels say "MA" (mega-amps)
-- **Where:** Live status → Current draw, every bench with a supply; `shots/uno-1440-part1.png`
-  ("USB, 5 V: 500 MA THROUGH THE POLYFUSE · 5 V", "ABOUT 300 MA BEFORE THE 5 V REGULATOR OVERHEATS").
-- **What:** `Meter` (`src/components/ui/Meter.tsx`, line 27) draws its label with `ink-kicker`, which is
-  `text-transform: uppercase`; the supply labels carry units, so mA becomes MA. The labels also wrap to two lines and
-  push "50 of 500 mA" onto two lines.
-- **Why:** a hardware judge reads 500 MA as wrong engineering; it undercuts the precision the benches are built on.
-- **Proposal:** F-build-shell: `Meter` label without uppercase (`font-ui text-xs font-bold text-muted`, no letter
-  spacing) or a `labelCase="none"` prop. F-build-robotics: shorten the meter label to the supply name ("USB · 5 V")
-  and move the limit sentence ("500 mA through the polyfuse") into the line under the bar, which already holds
-  "450 mA to spare". Check every `ink-kicker` that can hold a unit or a part number (Stat labels hold "5 V RAIL",
-  "3.3 V RAIL": V is fine, but "mA", "kΩ", "µF" are not).
 
 ### 5. ugly: boxes inside boxes, and fourteen button looks
 - **Where:** Steps, Break it on purpose, Check yourself; `shots/uno-1440-part2.png`, `uno-1440-part3.png`.
@@ -192,7 +192,7 @@ host control (the dialog close button uses a mustard ring instead, see nits).
 - Locked "Take the quiz" buttons (five on `uno-r3-build`) render at 50 % opacity in a column; the row already says
   "Unlocks after: …". Show a lock icon and the unlock text instead of five grey buttons.
 - The steps list scrolls inside a 36 rem box at `lg` while the page scrolls too: two scrollbars on one screen. The
-  workspace rail in finding 2 makes the inner scroll the only one.
+  workspace rail in finding 3 makes the inner scroll the only one.
 - On a desktop window narrower than `sm` the step buttons are 36 px tall; on a touch device they are 44 px (checked
   with `isMobile`/`hasTouch`), so phones are fine.
 
