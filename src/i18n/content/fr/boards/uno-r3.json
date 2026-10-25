@@ -1,0 +1,2366 @@
+{
+  "title": "Arduino Uno R3",
+  "tagline": "La carte sur laquelle la plupart des gens apprennent : un ATmega328P sur support, des broches 5 V difficiles à abîmer et un câble USB qui fait tout.",
+  "overview": "L'Uno R3 (A000066) fait tourner un ATmega328P à 16 MHz, en logique 5 V. La puce est posée sur un support DIP-28 : si vous la grillez, elle se remplace en une minute. Une deuxième puce, l'ATmega16U2, sert de pont USB-série : elle apparaît comme un port série sur votre ordinateur et réinitialise le 328P au début de chaque téléversement. Vous disposez de 14 broches numériques (dont 6 en PWM, marquées ~), de 6 entrées analogiques, de 32 KB de flash (32 256 octets libres pour votre sketch après le bootloader Optiboot), de 2 KB de RAM et de 1 KB d'EEPROM. Alimentez-la par l'USB, par la prise jack en 7-12 V ou par VIN ; la carte passe d'elle-même sur le jack quand VIN dépasse environ 6,6 V.",
+  "mcu": {
+    "atmega16u2-mu": "Pont USB-série. Elle exécute le firmware USB d'Arduino, fait passer Serial dans les deux sens et envoie une impulsion sur le reset du 328P à travers C5 au début d'un téléversement."
+  },
+  "power": {
+    "usb": {
+      "protection": "F1, un polyfusible réarmable de 500 mA, se trouve entre l'USB et la carte. Un court-circuit le fait disjoncter ; il refroidit et se réarme tout seul."
+    },
+    "jack": {
+      "protection": "D1 (une diode M7) bloque un adaptateur branché à l'envers, et fait chuter la tension d'environ 0,7 V sur le chemin de VIN."
+    },
+    "vin": {
+      "protection": "Aucune. La broche VIN est après D1 : une alimentation inversée ici va droit dans le régulateur et son condensateur."
+    },
+    "pin5": {
+      "protection": "Aucune. Alimenter par la broche 5V court-circuite le régulateur, le polyfusible et toutes les protections de la carte : il faut un 5 V propre."
+    },
+    "rails": {
+      "5v": "Produit par U1 (NCP1117) à partir de VIN, ou transmis depuis l'USB par T1 quand VIN est sous environ 6,6 V.",
+      "3v3": "Produit par U2 (LP2985) à partir du 5 V. 150 mA au maximum, pour de petits capteurs seulement.",
+      "vin": "La tension du jack moins la chute de D1 : environ 8,3 V avec un adaptateur 9 V.",
+      "usbvcc": "Le 5 V de l'USB après le polyfusible. Il alimente le 16U2 et, à travers T1, le rail 5 V."
+    },
+    "io": "20 mA par broche est une limite de conception sûre, et 40 mA le maximum absolu. Toutes les broches ensemble doivent rester sous 200 mA."
+  },
+  "pins": {
+    "iol": {
+      "1": "RX. Aussi reliée au 16U2 par une résistance de 1 kΩ : tout ce qui est branché sur D0 peut bloquer les téléversements.",
+      "2": "TX. Serial.print() envoie ses octets par ici, et le 16U2 les transmet à l'USB.",
+      "3": "Interruption externe 0 : attachInterrupt() ne fonctionne que sur D2 et D3.",
+      "4": "PWM à 490 Hz et interruption externe 1. tone() emprunte le même timer, donc le PWM s'arrête ici pendant qu'une note joue.",
+      "8": "La dernière broche du connecteur de gauche ; vient ensuite l'écart qui fait qu'un shield Uno ne s'enfiche que dans un sens."
+    },
+    "ioh": {
+      "2": "PWM à 490 Hz. La bibliothèque Servo prend ce timer pour elle, donc analogWrite() sur D9 et D10 ne marche plus dès qu'un servo est attaché.",
+      "3": "PWM, et SS du SPI. Elle doit rester une sortie tant que l'Uno est le maître SPI.",
+      "6": "Broche de la LED intégrée (LED_BUILTIN). La LED L y est reliée par un tampon, elle ne charge donc pas la broche.",
+      "8": "Référence pour analogRead(). N'y touchez pas, sauf si vous appelez d'abord analogReference(EXTERNAL).",
+      "9": "Données I²C. Le même fil que A4 : utilisez l'un ou l'autre.",
+      "10": "Horloge I²C. Le même fil que A5."
+    },
+    "power": {
+      "1": "Non connectée : gardée libre pour les futurs shields.",
+      "2": "Indique à un shield la tension des E/S de la carte : 5 V sur l'Uno.",
+      "3": "Tirez-la à GND pour réinitialiser le 328P, comme avec le bouton RESET.",
+      "4": "Sortie 3,3 V, 150 mA au maximum.",
+      "5": "Sortie 5 V de la carte. Vous pouvez aussi y injecter un 5 V propre, mais rien ne protège la carte si vous vous trompez.",
+      "8": "La tension du jack après D1, ou une entrée 7-12 V qui contourne la protection de D1."
+    },
+    "ad": {
+      "1": "Entrée analogique 0. Comme A1-A5, elle fonctionne aussi en broche numérique (D14).",
+      "5": "Entrée analogique 4 et SDA de l'I²C : la même broche que SDA sur le connecteur du haut.",
+      "6": "Entrée analogique 5 et SCL de l'I²C : la même broche que SCL sur le connecteur du haut."
+    },
+    "icsp": {
+      "5": "La ligne de reset du 328P, pour un programmateur in-circuit."
+    },
+    "icsp1": {
+      "5": "Le reset du 16U2. Le relier brièvement à GND (broche 6) met le 16U2 dans son bootloader DFU."
+    }
+  },
+  "leds": {
+    "ON": "Allumée dès que le rail 5 V est présent.",
+    "L": "Suit D13 : allumée quand D13 est à HIGH. Elle clignote trois fois quand le bootloader démarre après un reset.",
+    "TX": "Scintille quand la carte envoie des données série à l'ordinateur.",
+    "RX": "Scintille quand l'ordinateur envoie des données à la carte, y compris pendant un téléversement."
+  },
+  "controls": {
+    "RESET": "Redémarre le 328P. Le bootloader fait clignoter L trois fois, attend environ une seconde un éventuel téléversement, puis lance votre sketch depuis le début."
+  },
+  "parts": {
+    "ZU4": {
+      "name": "Microcontrôleur ATmega328P",
+      "what": "La puce qui exécute votre sketch : AVR 8 bits, 16 MHz, 32 KB de flash, 2 KB de RAM. Elle est posée sur un support, encoche tournée vers le connecteur ICSP."
+    },
+    "SK1": {
+      "name": "Support DIP-28",
+      "what": "Tient le 328P sans soudure : une puce abîmée sort, une neuve prend sa place."
+    },
+    "U3": {
+      "name": "Pont USB-série ATmega16U2",
+      "what": "Un second microcontrôleur qui parle l'USB. Il relie le port série de votre ordinateur aux RX et TX du 328P, et réinitialise le 328P pour les téléversements."
+    },
+    "Y1": {
+      "name": "Quartz 16 MHz",
+      "what": "L'horloge du 16U2. L'USB demande une horloge précise, celle-ci est donc à quartz."
+    },
+    "Y2": {
+      "name": "Résonateur céramique 16 MHz",
+      "what": "L'horloge du 328P. Moins précis qu'un quartz mais largement suffisant pour un sketch ; sans lui, le 328P ne tourne pas du tout."
+    },
+    "U1": {
+      "name": "Régulateur 5 V NCP1117",
+      "what": "Transforme les 7-12 V du jack ou de VIN en 5 V. Avec 12 V en entrée et une grosse charge sur le 5 V, il chauffe beaucoup."
+    },
+    "U2": {
+      "name": "Régulateur 3,3 V LP2985",
+      "what": "Fabrique les 3,3 V de la broche 3V3 à partir du 5 V, 150 mA au maximum."
+    },
+    "U5": {
+      "name": "Double ampli op LMV358",
+      "what": "Une moitié compare VIN à 3,3 V pour choisir entre l'USB et le jack ; l'autre moitié sert de tampon à D13 pour la LED L."
+    },
+    "T1": {
+      "name": "MOSFET FDN340P",
+      "what": "L'interrupteur d'alimentation USB. Il laisse passer le 5 V de l'USB vers la carte jusqu'à ce que VIN dépasse environ 6,6 V."
+    },
+    "F1": {
+      "name": "Polyfusible 500 mA",
+      "what": "Un fusible réarmable sur le 5 V de l'USB. Un court-circuit le fait chauffer et monter en résistance ; il se rétablit une fois refroidi."
+    },
+    "D1": {
+      "name": "Diode de protection M7",
+      "what": "Ne laisse entrer le courant du jack que dans un sens : un adaptateur inversé ne fait rien."
+    },
+    "D2": {
+      "name": "Diode d'écrêtage du reset du 328P",
+      "what": "Empêche l'impulsion d'auto-reset de pousser la broche RESET au-dessus de 5 V."
+    },
+    "D3": {
+      "name": "Diode d'écrêtage du reset du 16U2",
+      "what": "Le même écrêtage, sur la ligne de reset du 16U2."
+    },
+    "PC1": {
+      "name": "Condensateur 47 µF sur VIN",
+      "what": "Lisse l'alimentation d'entrée. Il est polarisé : la bande noire marque la borne négative."
+    },
+    "PC2": {
+      "name": "Condensateur 47 µF sur le 5 V",
+      "what": "Garde le rail 5 V stable quand la charge varie brusquement. Polarisé, comme PC1."
+    },
+    "L1": {
+      "name": "Perle de ferrite",
+      "what": "Relie le blindage métallique de la prise USB à la masse et bloque le bruit haute fréquence."
+    },
+    "L2": {
+      "name": "Inductance 10 µH",
+      "what": "Filtre le 5 V qui alimente la partie analogique du 328P (AVCC), pour des valeurs d'analogRead() plus calmes."
+    },
+    "C1": {
+      "name": "Condensateur 100 nF",
+      "what": "Découple l'entrée du régulateur 3,3 V."
+    },
+    "C2": {
+      "name": "Condensateur 100 nF",
+      "what": "Découple le 5 V de l'USB."
+    },
+    "C3": {
+      "name": "Condensateur 1 µF",
+      "what": "Le condensateur de sortie du régulateur 3,3 V ; il en a besoin pour rester stable."
+    },
+    "C4": {
+      "name": "Condensateur 100 nF",
+      "what": "Fait partie du circuit de reset du 16U2."
+    },
+    "C5": {
+      "name": "Condensateur d'auto-reset 100 nF",
+      "what": "Transforme le signal DTR du 16U2 en une courte impulsion de reset pour le 328P. C'est lui qui permet de téléverser en un clic."
+    },
+    "C6": {
+      "name": "Condensateur 100 nF",
+      "what": "Découple les broches d'alimentation du 328P, juste à côté de la puce."
+    },
+    "C7": {
+      "name": "Condensateur 100 nF",
+      "what": "Découple l'alimentation du 16U2."
+    },
+    "C8": {
+      "name": "Condensateur 1 µF",
+      "what": "Stabilise le régulateur USB interne du 16U2 (sa broche UCAP)."
+    },
+    "C9": {
+      "name": "Condensateur 22 pF",
+      "what": "L'un des deux condensateurs de charge du quartz."
+    },
+    "C10": {
+      "name": "Condensateur 100 nF",
+      "what": "Découple AVCC, l'alimentation analogique du 328P."
+    },
+    "C11": {
+      "name": "Condensateur 22 pF",
+      "what": "L'autre condensateur de charge du quartz."
+    },
+    "R1": {
+      "name": "Résistance 1 MΩ",
+      "what": "En parallèle sur le quartz Y1, pour aider l'oscillateur à démarrer."
+    },
+    "R2": {
+      "name": "Résistance 1 MΩ",
+      "what": "En parallèle sur le résonateur Y2, pour la même raison."
+    },
+    "RN1": {
+      "name": "Réseau de résistances 10 kΩ",
+      "what": "Quatre résistances en un seul composant : les pull-ups des resets et le diviseur qui indique à U5 la valeur de VIN."
+    },
+    "RN2": {
+      "name": "Réseau de résistances 1 kΩ",
+      "what": "Limite le courant des LED L, TX et RX."
+    },
+    "RN3": {
+      "name": "Réseau de résistances 22 Ω",
+      "what": "Résistances série sur les lignes de données USB, comme l'exige la norme USB."
+    },
+    "RN4": {
+      "name": "Réseau de résistances 1 kΩ",
+      "what": "Alimente la LED ON et relie les lignes série du 16U2 à D0 et D1, pour qu'un shield puisse encore utiliser ces broches."
+    },
+    "Z1": {
+      "name": "Varistance sur D+",
+      "what": "Absorbe les décharges électrostatiques sur la ligne de données USB."
+    },
+    "Z2": {
+      "name": "Varistance sur D−",
+      "what": "La même protection sur l'autre ligne de données."
+    },
+    "L": {
+      "name": "LED L",
+      "what": "La LED intégrée sur la broche 13, à travers un tampon pour ne jamais charger la broche."
+    },
+    "TX": {
+      "name": "LED TX",
+      "what": "Scintille pendant que la carte envoie des données série à l'ordinateur."
+    },
+    "RX": {
+      "name": "LED RX",
+      "what": "Scintille pendant que l'ordinateur envoie des données à la carte."
+    },
+    "ON": {
+      "name": "LED ON",
+      "what": "Verte, allumée dès que le rail 5 V est présent."
+    },
+    "RESET": {
+      "name": "Bouton RESET",
+      "what": "Tire le reset du 328P à l'état bas tant que vous le maintenez. Relâchez-le : le bootloader s'exécute, puis votre sketch."
+    },
+    "JP2": {
+      "name": "Broches libres du 16U2",
+      "what": "Quatre broches inutilisées du 16U2 sorties sur des pastilles. Aucun connecteur n'est soudé."
+    },
+    "RESET-EN": {
+      "name": "Cavalier RESET-EN",
+      "what": "Une piste entre deux pastilles. Coupez-la et l'ouverture du port série ne réinitialise plus la carte (il faut alors appuyer sur RESET au bon moment pour téléverser)."
+    },
+    "ICSP1": {
+      "name": "Connecteur ICSP du 16U2",
+      "what": "Six broches pour programmer directement la puce du pont USB."
+    },
+    "ICSP": {
+      "name": "Connecteur ICSP du 328P",
+      "what": "Six broches qui portent le SPI (D11, D12, D13), le 5 V, GND et RESET, pour un programmateur ou un shield SPI."
+    },
+    "X2": {
+      "name": "Prise USB-B",
+      "what": "L'alimentation et les données de votre ordinateur, par un seul câble."
+    },
+    "X1": {
+      "name": "Prise jack",
+      "what": "2,1 mm, positif au centre, pour un adaptateur 7-12 V ou un bloc de piles."
+    },
+    "IOH": {
+      "name": "Connecteur numérique D8-D13",
+      "what": "D8-D13, GND, AREF et les broches I²C SDA et SCL."
+    },
+    "IOL": {
+      "name": "Connecteur numérique D0-D7",
+      "what": "D0-D7. D0 et D1 sont les broches série que le pont USB utilise aussi."
+    },
+    "POWER": {
+      "name": "Connecteur d'alimentation",
+      "what": "IOREF, RESET, 3.3V, 5V, deux GND et VIN."
+    },
+    "AD": {
+      "name": "Connecteur analogique A0-A5",
+      "what": "Six entrées analogiques, lues avec analogRead() entre 0 et 1023."
+    }
+  },
+  "wireables": {
+    "led": {
+      "note": "Anode (patte longue) vers la broche, cathode vers GND, avec une résistance de 220 Ω à 1 kΩ en série.",
+      "caution": "Jamais sans la résistance : la broche essaierait de faire passer plus de 100 mA dans la LED."
+    },
+    "push-button": {
+      "note": "Entre D2 et GND avec pinMode(2, INPUT_PULLUP) : lit LOW tant qu'il est enfoncé. Avec un pull-down externe vers GND et le bouton relié au 5 V, il lit au contraire HIGH tant qu'il est enfoncé."
+    },
+    "potentiometer": {
+      "note": "Les extrémités à GND et à 5V, la patte du milieu (le curseur) à A0. analogRead(A0) va alors de 0 à 1023 quand vous le tournez."
+    },
+    "ldr": {
+      "note": "Du 5V vers A0, avec une résistance de 10 kΩ de A0 vers GND. Plus de lumière, moins de résistance, une lecture plus haute."
+    },
+    "piezo-buzzer": {
+      "note": "+ sur une broche, − sur GND. tone(pin, frequency) joue une note ; un piézo ne consomme que quelques mA, aucune résistance n'est donc nécessaire."
+    },
+    "tmp36": {
+      "note": "Face plate vers vous : patte gauche au 5V, patte du milieu à A0, patte droite à GND. Degrés C = (volts − 0,5) × 100."
+    },
+    "servo-sg90": {
+      "note": "Marron à GND, rouge au 5V, orange sur une broche (D9). Ensuite Servo.attach(9) puis write(0..180).",
+      "caution": "Un servo en mouvement peut tirer 250 mA, et un servo bloqué 700 mA. Dès qu'il y a plus d'un servo, il leur faut une alimentation 5 V à part, masses reliées."
+    },
+    "tip120": {
+      "note": "Base sur une broche PWM à travers une résistance de 1 kΩ, émetteur à GND, la charge entre le 5 V (ou sa propre alimentation) et le collecteur.",
+      "caution": "Un moteur ou un ventilateur a besoin d'une diode 1N4007 en parallèle, bague vers le + de l'alimentation, sinon le couper envoie une pointe de tension dans le transistor."
+    },
+    "hc-sr04": {
+      "note": "VCC au 5V, GND à GND, TRIG à D9, ECHO à D10. Une impulsion de 10 µs sur TRIG lance un ping ; la durée de l'impulsion sur ECHO correspond à l'aller-retour."
+    },
+    "ssd1306": {
+      "note": "GND, VCC au 3V3, SCL à SCL, SDA à SDA. L'écran répond à l'adresse I²C 0x3C.",
+      "caution": "Vérifiez votre module : beaucoup de cartes SSD1306 n'acceptent que 3,3 V. Celles qui ont un régulateur intégré acceptent aussi le 5 V."
+    },
+    "uln2003": {
+      "note": "IN1-IN4 à D8-D11, − à GND, + au 5V ; la fiche à 5 fils du moteur pas à pas va dans la prise blanche.",
+      "caution": "Le moteur pas à pas tire jusqu'à 160 mA avec deux bobines alimentées. Ça passe sur l'USB pour un petit moteur ; pour plus gros, donnez-lui sa propre alimentation."
+    },
+    "soil-moisture": {
+      "note": "AOUT à A0, VCC au 5V, GND à GND. La valeur lue baisse à mesure que la terre devient plus humide."
+    },
+    "traffic-light": {
+      "note": "GND à GND, R à D4, Y à D3, G à D2. Le module a ses propres résistances, les broches le pilotent donc directement."
+    },
+    "fsr402": {
+      "note": "Une patte au 5V, l'autre à A0, avec un pull-down de 10 kΩ de A0 vers GND. Appuyez plus fort, la valeur monte."
+    },
+    "mpu6050": {
+      "note": "VCC, GND, SCL à SCL, SDA à SDA. Il répond à l'adresse 0x68 (0x69 avec AD0 à l'état haut).",
+      "caution": "Prenez un module avec régulateur (le GY-521 courant en a un) ; la puce seule n'accepte que 3,3 V."
+    },
+    "pca9685": {
+      "note": "VCC au 5V pour sa logique, GND, SCL et SDA. Il pilote jusqu'à 16 servos à l'adresse 0x40.",
+      "caution": "Alimentez les servos par la borne V+ de la carte, depuis leur propre alimentation 5-6 V, jamais par la broche 5V de l'Uno."
+    }
+  },
+  "failures": {
+    "reverse-jack": {
+      "title": "Adaptateur à la mauvaise polarité",
+      "symptom": "Rien du tout : la LED ON reste éteinte et rien ne chauffe.",
+      "explanation": "La prise jack passe par D1 avant tout le reste. Inversée, la diode bloque : aucun courant ne circule et rien n'est abîmé. C'est exactement le rôle de D1.",
+      "fix": "Utilisez un adaptateur positif au centre (le symbole sur son étiquette montre le + au milieu). La carte fonctionne aussitôt ; rien n'est à remplacer."
+    },
+    "reverse-vin": {
+      "title": "Alimentation inversée sur la broche VIN",
+      "symptom": "Rien ne tourne, et le régulateur près du jack chauffe. Le condensateur à côté peut gonfler ou sentir le brûlé.",
+      "explanation": "La broche VIN est après D1 : elle n'a aucune protection. Une batterie inversée fait passer le courant à l'envers dans le NCP1117 (U1) et dans le condensateur de 47 µF PC1, qui lâchent tous les deux.",
+      "fix": "Débranchez immédiatement. Remplacez U1 et PC1, ou alimentez la carte par l'USB si U1 est resté ouvert. Alimentez ensuite VIN par la prise jack, où D1 le protège."
+    },
+    "brownout": {
+      "title": "Moteur sur la broche 5V",
+      "symptom": "Le sketch redémarre sans cesse : la LED L refait le clignotement du bootloader encore et encore, et le moniteur série réaffiche le message de démarrage en boucle.",
+      "explanation": "Un moteur qui démarre tire près d'un ampère. Le polyfusible de l'USB et le câble ne peuvent pas fournir ça, alors le rail 5 V tombe sous 2,7 V et le détecteur de sous-tension (brown-out) du 328P le maintient en reset jusqu'à ce que la tension remonte.",
+      "fix": "Donnez au moteur sa propre alimentation, commutez-le avec un transistor et reliez les masses. Ne faites jamais tourner un moteur sur la broche 5V."
+    },
+    "overvoltage": {
+      "title": "24 V sur la prise jack",
+      "symptom": "La carte meurt et le régulateur devient trop chaud pour être touché. Si le régulateur claque en court-circuit, la LED ON peut briller fort un instant avant que tout s'arrête.",
+      "explanation": "Le NCP1117 accepte au plus 20 V en entrée. À 24 V il lâche, et un régulateur qui claque en court-circuit envoie l'entrée directement sur le rail 5 V, ce qui emporte le 328P et le 16U2 avec lui.",
+      "fix": "Mettez 7-12 V sur le jack. 9 V est idéal : le régulateur a de la marge et ne chauffe pas."
+    },
+    "undervoltage": {
+      "title": "Piles presque vides",
+      "symptom": "La carte se réinitialise sans arrêt et la LED ON est faible. Hier, avec des piles neuves, tout marchait.",
+      "explanation": "Quatre piles AA donnent 6 V neuves, mais environ 4,4 V presque vides. Après les 0,7 V de D1 et les 1,1 V de chute du régulateur, il n'arrive qu'environ 2,6 V sur le rail 5 V : sous le seuil de brown-out de 2,7 V du 328P, qui reste donc en reset.",
+      "fix": "Mettez des piles neuves ou 6 piles AA (9 V), ou alimentez-la par l'USB. Le jack a besoin d'au moins 7 V pour un 5 V stable."
+    },
+    "pin5-overvoltage": {
+      "title": "9 V sur la broche 5V",
+      "symptom": "Une odeur de chaud, et la carte est morte. Le 328P peut être brûlant au toucher.",
+      "explanation": "La broche 5V, c'est le rail 5 V lui-même. 9 V à cet endroit contournent le régulateur et arrivent sur toutes les puces de la carte ; le 328P et le 16U2 acceptent 6 V au maximum.",
+      "fix": "Mettez 7-12 V sur VIN ou sur le jack, jamais sur 5V. Le 328P est sur support, remplacez-le ; un 16U2 mort demande de dessouder."
+    },
+    "cold-usb": {
+      "title": "Soudure froide sur la prise USB",
+      "symptom": "La carte se réinitialise quand vous touchez le câble, la LED ON vacille et le port série apparaît puis disparaît.",
+      "explanation": "Une soudure qui n'a jamais bien mouillé forme une boule terne et granuleuse, avec une fissure dessous. Le contact se fait par moments seulement, donc le 5 V de l'USB va et vient.",
+      "fix": "Refaites les soudures des broches de la prise avec du flux neuf jusqu'à ce que chacune forme un cône brillant, puis vérifiez que la carte reste allumée quand vous bougez le câble."
+    },
+    "missing-resonator": {
+      "title": "Pas de résonateur pour le 328P",
+      "symptom": "La LED ON s'allume, mais rien ne tourne : L reste éteinte et chaque téléversement échoue avec « not in sync ».",
+      "explanation": "Le 328P est réglé pour tourner sur une horloge externe de 16 MHz. Sans Y2, il n'a aucune horloge : il n'exécute jamais la moindre instruction, pas même le bootloader.",
+      "fix": "Débranchez, placez un résonateur 16 MHz en Y2 et soudez-le."
+    },
+    "missing-autoreset": {
+      "title": "Pas de condensateur d'auto-reset",
+      "symptom": "Le sketch tourne, mais les téléversements échouent avec « not in sync », sauf si vous appuyez sur RESET pile au bon moment.",
+      "explanation": "C5 transforme le signal DTR du 16U2 en une courte impulsion de reset. Sans lui, ouvrir le port ne redémarre plus le 328P, et le bootloader n'a jamais l'occasion d'attendre le téléversement.",
+      "fix": "Placez un condensateur de 100 nF en C5. En attendant, appuyez sur RESET au moment où l'IDE affiche « Uploading »."
+    },
+    "chip-backwards": {
+      "title": "Le 328P monté à l'envers sur son support",
+      "symptom": "Rien ne tourne, la puce chauffe en quelques secondes et le port USB peut se plaindre d'un courant trop élevé.",
+      "explanation": "Retournée, la puce a ses broches d'alimentation sur les mauvais rails : le 5 V arrive sur des broches qui devraient être à GND. Le courant se déverse dans les diodes de protection de la puce, qui surchauffe.",
+      "fix": "Débranchez immédiatement. Remettez la puce encoche tournée vers le connecteur ICSP, comme l'encoche imprimée sur la carte. Si elle a chauffé, essayez-en une neuve."
+    },
+    "cap-backwards": {
+      "title": "Condensateur du 5 V monté à l'envers",
+      "symptom": "Un claquement, une odeur de poisson et un condensateur gonflé. Ensuite, la carte peut encore tourner, mais elle se réinitialise facilement en charge.",
+      "explanation": "Un condensateur électrolytique ne fonctionne que dans un sens. Inversé, la couche d'oxyde à l'intérieur cède, il chauffe et son évent se fend.",
+      "fix": "Débranchez, remplacez PC2 en mettant la bande noire du côté marqué − sur la carte, et nettoyez l'électrolyte éventuel."
+    },
+    "short-5v": {
+      "title": "5V en court-circuit avec GND",
+      "symptom": "La carte s'éteint d'un coup et le polyfusible tiédit. Votre ordinateur peut avertir que le périphérique USB consomme trop.",
+      "explanation": "Un fil ou un pont de soudure entre 5V et GND tire tout le courant que l'USB peut donner. Le polyfusible F1 chauffe et monte en résistance, ce qui coupe l'alimentation pour protéger le port de votre ordinateur.",
+      "fix": "Débranchez et trouvez le court-circuit (un fil de liaison égaré sur les rails de la platine d'essai, en général). F1 se rétablit seul au bout d'une minute."
+    },
+    "short-3v3": {
+      "title": "3V3 en court-circuit avec GND",
+      "symptom": "Tout ce qui est sur 3V3 s'arrête. Sur une vraie Uno, le reste de la carte continue de tourner ; le modèle de cette figure coupe plutôt toute l'alimentation.",
+      "explanation": "Le LP2985 limite son propre courant et se coupe quand il chauffe trop : un court-circuit sur 3V3 neutralise la broche 3,3 V mais laisse le rail 5 V tranquille.",
+      "fix": "Supprimez le court-circuit. Le régulateur repart tout seul une fois refroidi."
+    },
+    "led-no-resistor": {
+      "title": "LED sans résistance",
+      "symptom": "La LED flashe très fort une fois, puis reste éteinte pour de bon. D13 peut être plus faible ensuite.",
+      "explanation": "Sans résistance, seul le driver interne de la broche limite le courant : environ (5 − 2) V ÷ 26 Ω ≈ 115 mA, bien au-delà des 20 mA de la LED et des 40 mA maximum de la broche.",
+      "fix": "Mettez une résistance de 220 Ω en série avec chaque LED et remplacez celle qui a grillé. Choisissez de nouveau 220 Ω pour effacer la panne ici."
+    }
+  },
+  "assembly": {
+    "unplug": {
+      "title": "Débranchez",
+      "body": "Retirez le câble USB et l'adaptateur. Ne montez ni ne réparez jamais une carte sous tension."
+    },
+    "strip": {
+      "title": "Démontez jusqu'au circuit nu",
+      "body": "Retirez tous les composants. Il reste le circuit imprimé nu, bleu-vert, avec ses pastilles, sa sérigraphie et ses deux cavaliers à souder.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension."
+    },
+    "pick-place": {
+      "title": "Placement automatique, puis refusion",
+      "body": "Une machine dépose de la pâte à braser sur les pastilles, pose chaque composant CMS (le 16U2, les régulateurs, résistances, condensateurs, LED, le résonateur et le bouton RESET), puis la carte passe dans un four de refusion qui fait fondre la pâte.",
+      "refusal": "Les composants CMS passent en premier, avant tout élément en plastique que le four ferait fondre."
+    },
+    "place-sk1": {
+      "title": "Le support DIP-28",
+      "body": "Le support est le premier des composants traversants. Son encoche correspond à celle imprimée sur la carte, vers le connecteur ICSP."
+    },
+    "place-low": {
+      "refusal": "Les composants CMS et la refusion passent d'abord."
+    },
+    "place-y1": {
+      "title": "Le quartz 16 MHz",
+      "body": "Y1 est un quartz traversant HC-49/S pour le 16U2 : il se pose maintenant avec les autres composants bas, pas avec ceux passés au four."
+    },
+    "place-icsp": {
+      "title": "Le connecteur ICSP du 328P",
+      "body": "Six broches sur deux rangées, près du bord droit."
+    },
+    "place-icsp1": {
+      "title": "Le connecteur ICSP du 16U2",
+      "body": "Six broches à côté de la prise USB, pour flasher la puce du pont."
+    },
+    "place-x2": {
+      "title": "La prise USB-B",
+      "body": "Les composants hauts se posent après les bas, pour que la carte reste à plat pendant que vous soudez."
+    },
+    "place-tall": {
+      "refusal": "Les composants bas d'abord : avec les hauts en place, la carte bascule et les bas tombent quand vous la retournez pour souder."
+    },
+    "place-x1": {
+      "title": "La prise jack",
+      "body": "Ses trois languettes passent dans des fentes de la carte."
+    },
+    "place-power": {
+      "title": "Le connecteur d'alimentation",
+      "body": "Huit connecteurs femelles : NC, IOREF, RESET, 3.3V, 5V, GND, GND, VIN."
+    },
+    "place-ad": {
+      "title": "Le connecteur analogique",
+      "body": "Six connecteurs femelles, de A0 à A5."
+    },
+    "place-ioh": {
+      "title": "Le connecteur D8-D13",
+      "body": "Dix connecteurs femelles : D8-D13, GND, AREF, SDA et SCL."
+    },
+    "place-iol": {
+      "title": "Le connecteur D0-D7",
+      "body": "Huit connecteurs femelles. L'écart entre les deux connecteurs du haut fait qu'un shield ne s'enfiche que dans un sens."
+    },
+    "solder": {
+      "title": "Soudez les composants traversants",
+      "body": "Retournez la carte et soudez chaque broche. Une bonne soudure est un cône brillant qui mouille à la fois la pastille et la broche.",
+      "refusal": "Placez d'abord un composant : il n'y a encore rien à souder."
+    },
+    "chip": {
+      "title": "Enfoncez l'ATmega328P",
+      "body": "En tout dernier, la puce va dans son support, encoche vers le connecteur ICSP. Les soudures sont finies : la puce ne voit jamais le fer.",
+      "refusal": "Soudez tout d'abord. Ne chauffez jamais une puce posée sur son support."
+    },
+    "plug": {
+      "title": "Branchez l'USB",
+      "body": "La LED ON s'allume aussitôt. Votre ordinateur trouve un nouveau port série nommé « Arduino Uno », et le sketch enregistré démarre.",
+      "refusal": "Terminez d'abord le montage."
+    },
+    "upload": {
+      "title": "Téléversez un sketch",
+      "body": "Le 16U2 envoie une impulsion sur DTR, C5 réinitialise le 328P, le bootloader fait clignoter L trois fois et reçoit le nouveau programme. RX et TX scintillent pendant le transfert.",
+      "refusal": "Branchez d'abord l'USB : les téléversements passent par le câble."
+    },
+    "power-check": {
+      "title": "Vérifiez l'alimentation",
+      "body": "ON est allumée, la broche 5V mesure 5,0 V et la broche 3V3 3,3 V. Le moniteur série à 9600 bauds affiche « hello from the Uno » une fois par seconde."
+    },
+    "break-chip": {
+      "title": "Cassez-la : puce à l'envers",
+      "body": "Débranchez, puis retournez le 328P dans son support."
+    },
+    "power-chip": {
+      "title": "Branchez et observez",
+      "body": "En quelques secondes la puce est brûlante et rien ne tourne. Sur une vraie carte, débranchez vite."
+    },
+    "fix-chip": {
+      "title": "Remettez-la dans le bon sens",
+      "body": "Débranchez et retournez la puce, encoche vers le connecteur ICSP."
+    },
+    "break-resonator": {
+      "title": "Cassez-la : retirez le résonateur",
+      "body": "Débranchez, puis retirez Y2 à l'air chaud."
+    },
+    "power-resonator": {
+      "title": "Branchez et observez",
+      "body": "La LED ON s'allume, mais L reste éteinte : sans horloge, le 328P n'exécute jamais une seule instruction."
+    },
+    "fix-resonator": {
+      "title": "Remettez le résonateur",
+      "body": "Débranchez et replacez Y2."
+    },
+    "break-brownout": {
+      "title": "Cassez-la : un moteur sur 5V",
+      "body": "Un moteur sur la broche 5V fait chuter le rail à chaque démarrage. Regardez l'état passer en brown-out et le sketch redémarrer."
+    },
+    "exploded": {
+      "title": "Vue éclatée",
+      "body": "Débranchez, puis écartez chaque couche : composants CMS, composants bas, composants hauts et la puce sur son support.",
+      "refusal": "Coupez d'abord l'alimentation."
+    }
+  },
+  "lessons": {
+    "board": {
+      "title": "Découvrez l'Uno",
+      "lede": "Avant tout câblage, faites connaissance avec la carte : par où arrive l'alimentation, à quoi sert chaque broche, et la petite LED L sur la broche 13 que votre premier sketch va allumer.",
+      "code": {
+        "output": "la broche 13 pilote la LED L",
+        "high": "HIGH = 5 V : L s'allume"
+      },
+      "params": {
+        "blink": {
+          "label": "La rééteindre (clignotement)"
+        }
+      },
+      "checks": {
+        "1": "Le sketch tourne 3 secondes sans erreur",
+        "2": "D13 est à HIGH au bout d'une demi-seconde, donc L est allumée",
+        "3": "la broche 13 est réglée en sortie avec pinMode()"
+      },
+      "pins": {
+        "D0-D13": {
+          "to": "Broches numériques",
+          "role": "HIGH (5 V) ou LOW (0 V), en entrée ou en sortie. Celles marquées ~ font aussi du PWM."
+        },
+        "A0-A5": {
+          "to": "Entrées analogiques",
+          "role": "analogRead() convertit 0-5 V en 0-1023."
+        },
+        "5V-3V3": {
+          "to": "Sorties d'alimentation",
+          "role": "5 V et 3,3 V pour les capteurs et les modules."
+        },
+        "GND": {
+          "to": "Masse",
+          "role": "Le 0 V vers lequel revient chaque circuit. Toutes les broches GND sont reliées."
+        },
+        "VIN": {
+          "to": "Entrée d'alimentation",
+          "role": "Entrée 7-12 V, ou sortie de la tension du jack."
+        },
+        "RESET": {
+          "to": "Reset",
+          "role": "Mettez-la à LOW pour redémarrer le sketch."
+        }
+      },
+      "callouts": {
+        "X2": "USB : alimentation et téléversements par un seul câble.",
+        "ZU4": "L'ATmega328P : c'est ici que tourne votre sketch.",
+        "IOL": "Broches numériques 0-7. 0 et 1 sont les broches série.",
+        "X1": "Prise jack pour un adaptateur 7-12 V.",
+        "POWER": "5V, 3.3V, GND et VIN pour vos circuits.",
+        "AD": "Entrées analogiques A0-A5."
+      },
+      "specs": {
+        "1": {
+          "label": "Microcontrôleur",
+          "value": "ATmega328P, AVR 8 bits"
+        },
+        "2": {
+          "label": "Horloge",
+          "value": "16 MHz"
+        },
+        "3": {
+          "label": "Logique",
+          "value": "5 V"
+        },
+        "4": {
+          "label": "Broches numériques",
+          "value": "14, dont 6 en PWM (~3, ~5, ~6, ~9, ~10, ~11)"
+        },
+        "5": {
+          "label": "Entrées analogiques",
+          "value": "6, sur 10 bits (0-1023)"
+        },
+        "6": {
+          "label": "Flash",
+          "value": "32 KB (32 256 octets pour votre sketch)"
+        },
+        "7": {
+          "label": "RAM",
+          "value": "2 KB"
+        },
+        "8": {
+          "label": "Alimentation",
+          "value": "USB 5 V, ou 7-12 V sur le jack ou VIN"
+        },
+        "9": {
+          "label": "Courant par broche",
+          "value": "20 mA sans risque, 40 mA au maximum absolu"
+        }
+      },
+      "features": {
+        "1": "Cliquez sur n'importe quelle partie de la carte pour voir à quoi elle sert",
+        "2": "Chaque broche, étiquetée comme sur la sérigraphie",
+        "3": "Basculez la pastille pour faire clignoter L, puis Exécuter"
+      },
+      "steps": {
+        "1": "Repérez la prise USB et la prise jack à gauche : ce sont les deux entrées d'alimentation.",
+        "2": "La longue puce noire sur son support est l'ATmega328P. C'est là que tourne votre code.",
+        "3": "Le long du bord supérieur se trouvent les broches numériques ; le long du bord inférieur, l'alimentation et les entrées analogiques.",
+        "4": "Appuyez sur Exécuter. setup() met la broche 13 en sortie et loop() la passe à HIGH : la LED L à côté de la broche 13 s'allume.",
+        "5": "Activez la pastille de clignotement et relancez : maintenant loop() éteint aussi L, une fois par seconde."
+      },
+      "hints": {
+        "1": "Sur l'Uno, LED_BUILTIN n'est qu'un autre nom pour 13.",
+        "2": "Sans delay() après LOW, la LED ne serait éteinte que quelques microsecondes : trop peu pour le voir."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Quelle puce exécute votre sketch ?",
+          "options": {
+            "1": "L'ATmega328P sur son support",
+            "2": "L'ATmega16U2 près de la prise USB",
+            "3": "Le régulateur 5 V"
+          },
+          "why": "C'est le 328P qui exécute le sketch. Le 16U2 n'est que le pont USB-série."
+        },
+        "q2": {
+          "q": "Quelle tension une broche numérique à HIGH fournit-elle sur l'Uno ?",
+          "options": {
+            "1": "3,3 V",
+            "2": "5 V",
+            "3": "12 V"
+          },
+          "why": "L'Uno est une carte 5 V : HIGH vaut 5 V, LOW vaut 0 V."
+        },
+        "q3": {
+          "q": "Quelles broches peuvent faire du PWM avec analogWrite() ?",
+          "options": {
+            "1": "Toutes les broches numériques",
+            "2": "A0-A5",
+            "3": "Celles marquées ~"
+          },
+          "why": "Seules 3, 5, 6, 9, 10 et 11 ont une sortie de timer derrière elles ; la sérigraphie les marque d'un ~."
+        },
+        "q4": {
+          "q": "Que se passe-t-il si vous branchez un adaptateur à la mauvaise polarité sur la prise jack ?",
+          "options": {
+            "1": "Rien : la diode D1 le bloque",
+            "2": "Le 328P grille",
+            "3": "La carte fonctionne à l'envers"
+          },
+          "why": "Le jack passe par une diode de protection, D1, qui bloque une alimentation inversée. La broche VIN n'a pas cette protection."
+        }
+      }
+    },
+    "blink": {
+      "title": "Faire clignoter une LED",
+      "lede": "Votre premier circuit : une LED et une résistance sur la platine d'essai, pilotées par la broche 13. Changez le rythme et la résistance, et voyez l'effet de chacun.",
+      "code": {
+        "on": "combien de temps elle reste allumée",
+        "off": "combien de temps elle reste éteinte"
+      },
+      "params": {
+        "on": {
+          "label": "Allumée pendant"
+        },
+        "off": {
+          "label": "Éteinte pendant"
+        },
+        "resistor": {
+          "220": "220 Ω",
+          "1000": "1 kΩ",
+          "10000": "10 kΩ",
+          "label": "Résistance",
+          "220-note": "Environ 14 mA : lumineuse, et sans danger pour la LED et la broche.",
+          "1000-note": "Environ 3 mA : plus faible, mais encore bien visible.",
+          "10000-note": "Moins de 0,3 mA : à peine une lueur."
+        },
+        "color": {
+          "label": "Couleur de la LED",
+          "red": "Rouge",
+          "yellow": "Jaune",
+          "green": "Verte",
+          "blue": "Bleue",
+          "white": "Blanche"
+        }
+      },
+      "checks": {
+        "1": "Le sketch tourne 8 secondes sans erreur",
+        "2": "D13 s'allume et s'éteint au moins deux fois, de 50 ms à 2 s par cycle",
+        "3": "LED_PIN est une sortie et le code la rééteint"
+      },
+      "pins": {
+        "D13": {
+          "to": "La résistance, puis la patte longue de la LED",
+          "role": "Commute la LED : HIGH l'allume."
+        },
+        "GND": {
+          "to": "La patte courte de la LED",
+          "role": "Là où le courant revient."
+        }
+      },
+      "callouts": {
+        "LED1": "Patte longue (anode) vers la résistance, patte courte vers GND.",
+        "IOH": "D13 et le GND juste à côté.",
+        "RES1": "Limite le courant. Sans elle, la LED grille.",
+        "L": "La LED intégrée clignote en même temps : elle est aussi sur la broche 13."
+      },
+      "specs": {
+        "1": {
+          "label": "Tension directe de la LED",
+          "value": "Environ 2 V (rouge), 3 V (bleue, blanche)"
+        },
+        "2": {
+          "label": "Courant avec 220 Ω",
+          "value": "(5 − 2) ÷ 220 ≈ 14 mA"
+        },
+        "3": {
+          "label": "Maximum de la LED",
+          "value": "20 mA"
+        },
+        "4": {
+          "label": "Maximum de la broche",
+          "value": "40 mA en absolu, 20 mA en conception"
+        },
+        "5": {
+          "label": "delay()",
+          "value": "Attend un certain nombre de millisecondes"
+        }
+      },
+      "features": {
+        "1": "Lancez-le et regardez les deux LED clignoter",
+        "2": "Changez de résistance et voyez la luminosité varier",
+        "3": "Cassez-le : retirez la résistance dans Casser"
+      },
+      "steps": {
+        "1": "Suivez le fil de D13 jusqu'à la platine d'essai : il atteint la résistance, puis la patte longue de la LED.",
+        "2": "Appuyez sur Exécuter. La LED de la platine et L clignotent ensemble, une demi-seconde allumées, une demi-seconde éteintes.",
+        "3": "Modifiez « Allumée pendant » et « Éteinte pendant », puis relancez. Essayez 100 ms allumée, 900 ms éteinte.",
+        "4": "Choisissez 10 kΩ : la LED est à peine allumée. Moins de courant, moins de lumière."
+      },
+      "hints": {
+        "1": "Une LED ne fonctionne que dans un sens. Si elle reste éteinte, retournez-la.",
+        "2": "En dessous d'environ 20 ms par clignotement, votre œil voit une lueur continue au lieu d'un clignotement.",
+        "3": "Les cinq trous d'une colonne de la platine d'essai sont reliés par-dessous ; c'est ainsi que la résistance et la LED se rejoignent."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Pourquoi la LED a-t-elle besoin d'une résistance ?",
+          "options": {
+            "1": "Pour la faire clignoter",
+            "2": "Pour limiter le courant",
+            "3": "Pour changer sa couleur"
+          },
+          "why": "Une fois allumée, une LED n'a presque plus de résistance propre. C'est la résistance qui fixe le courant : environ 14 mA avec 220 Ω."
+        },
+        "q2": {
+          "q": "Avec delay(500) après HIGH et delay(500) après LOW, à quel rythme la LED clignote-t-elle ?",
+          "options": {
+            "1": "Deux fois par seconde",
+            "2": "Toutes les 500 ms",
+            "3": "Une fois par seconde"
+          },
+          "why": "Un cycle complet, c'est 500 ms allumée plus 500 ms éteinte : une seconde."
+        }
+      }
+    },
+    "button": {
+      "title": "Appuyer sur un bouton",
+      "lede": "Enfin une entrée : un bouton-poussoir sur D2 décide quand la LED de D13 s'allume. Maintenez-le pour allumer la LED, ou modifiez le code pour que chaque appui l'inverse.",
+      "code": {
+        "last": "la lecture du tour de boucle précédent",
+        "lit": "la LED est-elle allumée ? (mode bascule)",
+        "input": "le pull-down de 10 kΩ maintient D2 à LOW"
+      },
+      "params": {
+        "logic": {
+          "label": "Le bouton",
+          "hold": "Allume tant qu'on appuie",
+          "hold-note": "La LED copie le bouton : allumée tant que vous appuyez.",
+          "toggle": "Bascule à chaque appui",
+          "toggle-note": "Chaque nouvel appui inverse la LED. L'attente de 30 ms laisse passer les rebonds du contact."
+        },
+        "color": {
+          "label": "Couleur de la LED",
+          "red": "Rouge",
+          "yellow": "Jaune",
+          "green": "Verte",
+          "blue": "Bleue",
+          "white": "Blanche"
+        }
+      },
+      "world": {
+        "button": "Bouton sur D2"
+      },
+      "checks": {
+        "1": "D13 passe à HIGH moins de 60 ms après le premier appui",
+        "2": "La LED est allumée tant que le bouton est maintenu",
+        "3": "La LED est de nouveau éteinte à la fin",
+        "4": "Le code lit le bouton avec digitalRead()"
+      },
+      "pins": {
+        "5V": {
+          "to": "Un côté du bouton",
+          "role": "Un appui le relie à D2."
+        },
+        "D2": {
+          "to": "L'autre côté du bouton, et le pull-down de 10 kΩ",
+          "role": "Lit HIGH quand on appuie, LOW sinon."
+        },
+        "GND": {
+          "to": "Pull-down et LED",
+          "role": "Maintient D2 à LOW quand le bouton est relâché, et reçoit le courant de retour de la LED."
+        },
+        "D13": {
+          "to": "Résistance de 220 Ω et LED",
+          "role": "Allume la LED."
+        }
+      },
+      "callouts": {
+        "BTN1": "Un appui relie la colonne 8 (5 V) à la colonne 10 (D2).",
+        "RES1": "Pull-down : sans elle, D2 flotte et lit n'importe quoi.",
+        "LED1": "Allumée par D13.",
+        "IOL": "D2 est sur le connecteur de droite."
+      },
+      "specs": {
+        "1": {
+          "label": "Pull-down",
+          "value": "10 kΩ de D2 à GND"
+        },
+        "2": {
+          "label": "Seuil HIGH",
+          "value": "Au-dessus de 3,0 V"
+        },
+        "3": {
+          "label": "Seuil LOW",
+          "value": "En dessous de 1,5 V"
+        },
+        "4": {
+          "label": "Rebond du contact",
+          "value": "Jusqu'à 5 ms de crépitement"
+        },
+        "5": {
+          "label": "Courant dans le bouton",
+          "value": "5 V ÷ 10 kΩ = 0,5 mA"
+        }
+      },
+      "features": {
+        "1": "Appuyez sur le bouton dans la figure pendant que le code tourne",
+        "2": "Pourquoi une entrée flottante lit n'importe quoi",
+        "3": "Maintien ou bascule : une pastille change la logique"
+      },
+      "steps": {
+        "1": "Suivez le 5V jusqu'à un côté du bouton, et D2 jusqu'à l'autre. La résistance de 10 kΩ relie D2 à GND.",
+        "2": "Appuyez sur Exécuter, puis maintenez le bouton enfoncé : la LED s'allume tant que vous le tenez.",
+        "3": "Passez « Le bouton » sur « Bascule à chaque appui » et relancez : maintenant chaque appui inverse la LED.",
+        "4": "Regardez le code : la bascule n'a lieu que quand la lecture passe de LOW à HIGH, donc maintenir le bouton ne fait rien de plus."
+      },
+      "hints": {
+        "1": "Retirez le pull-down et D2 capte le bruit de votre doigt : la LED vacille toute seule.",
+        "2": "Les contacts rebondissent pendant quelques ms. Sans l'attente de 30 ms, un seul appui peut inverser la LED plusieurs fois.",
+        "3": "INPUT_PULLUP vous éviterait la résistance, mais alors un appui se lit LOW."
+      },
+      "quiz": {
+        "q1": {
+          "q": "À quoi sert la résistance de 10 kΩ ?",
+          "options": {
+            "1": "Elle maintient D2 à LOW quand le bouton est relâché",
+            "2": "Elle protège la LED",
+            "3": "Elle ralentit le bouton"
+          },
+          "why": "C'est un pull-down. Sans elle, D2 n'est relié à rien quand le bouton est relâché, et une entrée non connectée lit au hasard."
+        },
+        "q2": {
+          "q": "En mode bascule, pourquoi le code compare-t-il now et last ?",
+          "options": {
+            "1": "Pour économiser de l'énergie",
+            "2": "Pour lire le bouton plus vite",
+            "3": "Pour ne réagir qu'au moment de l'appui"
+          },
+          "why": "now == HIGH et last == LOW n'est vrai que dans le tour de boucle où l'appui commence : un bouton maintenu ne bascule donc qu'une fois."
+        }
+      }
+    },
+    "knob": {
+      "title": "Tourner un bouton",
+      "lede": "Un potentiomètre transforme sa position en tension, analogRead() la convertit en 0-1023, et analogWrite() règle la luminosité de la LED en conséquence.",
+      "params": {
+        "every": {
+          "label": "Lire toutes les"
+        },
+        "color": {
+          "label": "Couleur de la LED",
+          "red": "Rouge",
+          "yellow": "Jaune",
+          "green": "Verte",
+          "blue": "Bleue",
+          "white": "Blanche"
+        }
+      },
+      "world": {
+        "knob": "Potentiomètre sur A0"
+      },
+      "checks": {
+        "1": "Il affiche la lecture de départ, 620, au moins 5 fois pendant la première seconde",
+        "2": "À 620, le rapport cyclique PWM de la LED est d'environ 61 %",
+        "3": "Tourné à fond dans le sens horaire (1023), D9 est complètement allumée",
+        "4": "Tourné à fond dans le sens antihoraire (0), D9 est éteinte",
+        "5": "À 300, le rapport cyclique est d'environ 29 %"
+      },
+      "pins": {
+        "5V": {
+          "to": "La patte droite du potentiomètre",
+          "role": "Le haut du pont diviseur."
+        },
+        "A0": {
+          "to": "La patte du milieu du potentiomètre (curseur)",
+          "role": "Lit 0-1023 pendant que vous tournez."
+        },
+        "GND1": {
+          "to": "La patte gauche du potentiomètre",
+          "role": "Le bas du pont diviseur."
+        },
+        "D9": {
+          "to": "Résistance de 220 Ω et LED",
+          "role": "Le PWM règle la luminosité."
+        }
+      },
+      "callouts": {
+        "POT1": "Le curseur glisse sur une piste de carbone entre 0 V et 5 V.",
+        "AD": "A0 lit la tension du curseur.",
+        "LED1": "La luminosité suit le potentiomètre.",
+        "IOH": "D9 est une broche ~, elle peut donc faire du PWM."
+      },
+      "specs": {
+        "1": {
+          "label": "Potentiomètre",
+          "value": "10 kΩ, linéaire"
+        },
+        "2": {
+          "label": "analogRead()",
+          "value": "0-1023 pour 0-5 V, environ 4,9 mV par pas"
+        },
+        "3": {
+          "label": "analogWrite()",
+          "value": "0-255 : divisez donc la lecture par 4"
+        },
+        "4": {
+          "label": "PWM sur D9",
+          "value": "490 Hz"
+        },
+        "5": {
+          "label": "Série",
+          "value": "9600 bauds"
+        }
+      },
+      "features": {
+        "1": "Tournez le potentiomètre dans la figure pendant que le code tourne",
+        "2": "Le même nombre dans le moniteur série et sur la LED",
+        "3": "Pourquoi 1023 devient 255"
+      },
+      "steps": {
+        "1": "Les pattes extérieures du potentiomètre vont à 5V et à GND ; sa patte du milieu va à A0.",
+        "2": "Appuyez sur Exécuter et ouvrez le moniteur série : il affiche 620, la position de départ du potentiomètre.",
+        "3": "Tournez le potentiomètre dans le sens horaire : le nombre monte vers 1023 et la LED s'éclaire.",
+        "4": "Passez « Lire toutes les » à 500 ms : les lectures arrivent plus lentement, et la LED réagit plus lentement aussi."
+      },
+      "hints": {
+        "1": "analogWrite() ne produit pas une vraie tension analogique : il allume et éteint la broche 490 fois par seconde, et le rapport cyclique fixe la luminosité.",
+        "2": "Si tourner dans le sens horaire fait baisser la lecture, les pattes 5V et GND sont inversées. Les deux montages sont bons ; le code lit simplement dans l'autre sens."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Pourquoi le code divise-t-il la lecture par 4 ?",
+          "options": {
+            "1": "Pour aller plus vite",
+            "2": "analogRead() donne 0-1023, mais analogWrite() attend 0-255",
+            "3": "Parce que la LED a besoin d'un quart du courant"
+          },
+          "why": "Le CAN a 10 bits et le PWM 8. 1023 ÷ 4 ≈ 255."
+        },
+        "q2": {
+          "q": "Quelle broche ne pourrait pas remplacer D9 pour régler la luminosité de la LED ?",
+          "options": {
+            "1": "D8",
+            "2": "D10",
+            "3": "D11"
+          },
+          "why": "D8 n'a pas de ~ : analogWrite() ne peut que l'allumer ou l'éteindre complètement."
+        }
+      }
+    },
+    "rgb": {
+      "title": "Mélanger des couleurs",
+      "lede": "Une LED RVB, ce sont trois LED en une : rouge, verte et bleue. Donnez à chacune sa broche PWM et composez n'importe quelle couleur avec trois nombres.",
+      "params": {
+        "red": {
+          "label": "Rouge"
+        },
+        "green": {
+          "label": "Vert"
+        },
+        "blue": {
+          "label": "Bleu"
+        }
+      },
+      "checks": {
+        "1": "Le rouge sur D9 tourne à 170 sur 255, environ 67 %",
+        "2": "Le vert sur D10 est éteint",
+        "3": "Le bleu sur D11 est complètement allumé"
+      },
+      "pins": {
+        "D9": {
+          "to": "Résistance, puis la patte rouge",
+          "role": "Luminosité du rouge, 0-255."
+        },
+        "D10": {
+          "to": "Résistance, puis la patte verte",
+          "role": "Luminosité du vert, 0-255."
+        },
+        "D11": {
+          "to": "Résistance, puis la patte bleue",
+          "role": "Luminosité du bleu, 0-255."
+        },
+        "GND": {
+          "to": "La longue patte commune",
+          "role": "Cathode commune : les trois couleurs reviennent ici."
+        }
+      },
+      "callouts": {
+        "LED1": "Cathode commune : la patte la plus longue va à GND.",
+        "IOH": "D9, D10 et D11 sont toutes des broches ~.",
+        "RES1": "Chaque couleur a sa propre résistance."
+      },
+      "specs": {
+        "1": {
+          "label": "Type de LED",
+          "value": "Cathode commune"
+        },
+        "2": {
+          "label": "Tension directe",
+          "value": "Rouge environ 2 V, vert et bleu environ 3 V"
+        },
+        "3": {
+          "label": "Niveaux par couleur",
+          "value": "256 (0-255)"
+        },
+        "4": {
+          "label": "Couleurs",
+          "value": "256³, environ 16,7 millions"
+        },
+        "5": {
+          "label": "PWM",
+          "value": "Environ 490 Hz sur les trois broches"
+        }
+      },
+      "features": {
+        "1": "Trois curseurs, une couleur",
+        "2": "Pourquoi chaque patte a besoin de sa propre résistance",
+        "3": "Lancez-le et lisez la couleur sur la LED"
+      },
+      "steps": {
+        "1": "Repérez la patte la plus longue de la LED RVB : elle va à GND. Les trois autres sont le rouge, le vert et le bleu.",
+        "2": "Appuyez sur Exécuter : le rouge à 170 et le bleu à 255 donnent du violet.",
+        "3": "Mettez les trois à 255 pour du blanc, ou tous à 0 pour éteindre.",
+        "4": "Essayez rouge 255, vert 80, bleu 0 pour de l'orange."
+      },
+      "hints": {
+        "1": "Si les couleurs sont inversées, vous avez une LED à anode commune : sa patte commune va au 5V et 255 signifie éteint.",
+        "2": "À valeur égale, le vert paraît plus lumineux que le rouge : votre œil est plus sensible au vert."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Rouge 255, vert 255, bleu 0. Quelle couleur obtient-on ?",
+          "options": {
+            "1": "Blanc",
+            "2": "Violet",
+            "3": "Jaune"
+          },
+          "why": "La lumière se mélange par addition : rouge plus vert donne jaune."
+        },
+        "q2": {
+          "q": "Pourquoi la LED RVB ne peut-elle pas partager une seule résistance entre ses trois couleurs ?",
+          "options": {
+            "1": "Les couleurs ont des tensions directes différentes, l'une accaparerait donc le courant",
+            "2": "Elle serait trop lumineuse",
+            "3": "Le PWM a besoin de trois résistances"
+          },
+          "why": "Le rouge s'allume vers 2 V, le vert et le bleu vers 3 V. Sur une résistance partagée, le rouge prend la plus grande partie du courant."
+        }
+      }
+    },
+    "light": {
+      "title": "Détecter la lumière",
+      "lede": "Une photorésistance et une résistance de 10 kΩ forment un pont diviseur de tension. Quand la pièce devient sombre, la lecture baisse et la LED s'allume, comme une veilleuse.",
+      "code": {
+        "higher": "plus c'est lumineux, plus la valeur est haute",
+        "dark": "trop sombre : on allume la LED"
+      },
+      "params": {
+        "dark": {
+          "label": "Sombre en dessous de"
+        },
+        "color": {
+          "label": "Couleur de la LED",
+          "red": "Rouge",
+          "yellow": "Jaune",
+          "green": "Verte",
+          "blue": "Bleue",
+          "white": "Blanche"
+        }
+      },
+      "world": {
+        "light": "Lumière sur le capteur"
+      },
+      "checks": {
+        "1": "Il affiche une lecture au moins 10 fois",
+        "2": "Avec la lumière de départ, la LED est éteinte",
+        "3": "Couvrez le capteur et la LED s'allume en moins de 150 ms",
+        "4": "Une fois la lampe rallumée, la LED s'éteint de nouveau"
+      },
+      "pins": {
+        "5V": {
+          "to": "Une patte de la photorésistance",
+          "role": "Le haut du pont diviseur."
+        },
+        "A0": {
+          "to": "Entre la photorésistance et la résistance de 10 kΩ",
+          "role": "Lit plus haut quand la lumière augmente."
+        },
+        "GND1": {
+          "to": "La résistance de 10 kΩ",
+          "role": "Le bas du pont diviseur."
+        },
+        "D9": {
+          "to": "Résistance, puis la LED",
+          "role": "Allume la LED quand il fait sombre."
+        },
+        "GND": {
+          "to": "La patte courte de la LED",
+          "role": "Reçoit le courant de retour de la LED."
+        }
+      },
+      "callouts": {
+        "LED1": "La veilleuse.",
+        "LDR1": "Sa résistance baisse quand la lumière l'éclaire : environ 1 MΩ dans le noir, quelques kΩ en plein jour.",
+        "AD": "A0 lit le pont diviseur.",
+        "LAMP": "Changez le niveau de lumière ici."
+      },
+      "specs": {
+        "1": {
+          "label": "Photorésistance",
+          "value": "Type GL5528, environ 10 kΩ à 10 lux"
+        },
+        "2": {
+          "label": "Résistance fixe",
+          "value": "10 kΩ vers GND"
+        },
+        "3": {
+          "label": "Temps de réponse",
+          "value": "Quelques dizaines de millisecondes"
+        },
+        "4": {
+          "label": "Seuil",
+          "value": "Réglé avec « Sombre en dessous de », 50-1000"
+        },
+        "5": {
+          "label": "Série",
+          "value": "9600 bauds"
+        }
+      },
+      "features": {
+        "1": "Comment un pont diviseur transforme une résistance en lecture",
+        "2": "Baissez la lampe et regardez la LED s'allumer",
+        "3": "Réglez le seuil pour votre pièce"
+      },
+      "steps": {
+        "1": "La photorésistance va du 5V à A0 ; la résistance de 10 kΩ va de A0 à GND.",
+        "2": "Appuyez sur Exécuter et ouvrez le moniteur série : en lumière normale, il lit autour de 770.",
+        "3": "Baissez la lampe presque à zéro : la lecture passe sous 400 et la LED s'allume.",
+        "4": "Déplacez « Sombre en dessous de » pour changer le moment où la LED s'allume."
+      },
+      "hints": {
+        "1": "Si la lecture baisse quand la lumière augmente, la photorésistance et la résistance ont échangé leurs places.",
+        "2": "Près du seuil, la LED peut vaciller. Deux seuils, un pour allumer et un plus haut pour éteindre, règlent le problème."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Pourquoi la résistance de 10 kΩ est-elle là ?",
+          "options": {
+            "1": "Elle forme un pont diviseur avec la photorésistance, pour que A0 voie une tension qui varie",
+            "2": "Elle protège la photorésistance",
+            "3": "Elle règle la luminosité de la LED"
+          },
+          "why": "analogRead() mesure une tension, pas une résistance. Le pont diviseur transforme la résistance variable de la photorésistance en tension variable."
+        },
+        "q2": {
+          "q": "La pièce s'assombrit. Que devient la lecture ?",
+          "options": {
+            "1": "Elle monte",
+            "2": "Elle baisse",
+            "3": "Elle ne change pas"
+          },
+          "why": "Dans le noir, la résistance de la photorésistance augmente, donc une plus petite part des 5 V arrive sur A0."
+        }
+      }
+    },
+    "distance": {
+      "title": "Mesurer une distance",
+      "lede": "Le HC-SR04 envoie une salve d'ultrasons et chronomètre l'écho. Le son parcourt environ 1 cm toutes les 29 µs : l'aller-retour en microsecondes ÷ 58 donne des centimètres.",
+      "code": {
+        "ping": "une impulsion de 10 µs lance une mesure",
+        "echo": "durée de l'écho en µs ÷ 58 = distance en cm"
+      },
+      "params": {
+        "every": {
+          "label": "Mesurer toutes les"
+        },
+        "obstacle": {
+          "label": "Obstacle",
+          "car": "Petite voiture",
+          "car-note": "Dure et plate à l'avant : un écho net.",
+          "box": "Carton",
+          "box-note": "Une grande face plate : la cible la plus facile.",
+          "ball": "Ballon",
+          "ball-note": "Arrondi, donc une grande partie du son rebondit ailleurs.",
+          "wall": "Mur",
+          "wall-note": "Toujours là : pratique pour vérifier la portée."
+        }
+      },
+      "world": {
+        "distance": "Distance jusqu'à l'obstacle"
+      },
+      "checks": {
+        "1": "Au départ, il lit 30 cm au moins 5 fois en une seconde",
+        "2": "Placez l'obstacle à 12 cm et il lit 12 cm",
+        "3": "À 45 cm, il lit 45 cm",
+        "4": "Hors de portée, l'écho expire et il affiche 0 cm",
+        "5": "Le code chronomètre l'écho avec pulseIn()"
+      },
+      "pins": {
+        "5V": {
+          "to": "VCC",
+          "role": "Alimente le capteur (15 mA)."
+        },
+        "GND1": {
+          "to": "GND",
+          "role": "Masse."
+        },
+        "D9": {
+          "to": "TRIG",
+          "role": "Une impulsion HIGH de 10 µs lance un ping."
+        },
+        "D10": {
+          "to": "ECHO",
+          "role": "Reste à HIGH tant que le son voyage."
+        }
+      },
+      "callouts": {
+        "US1": "Un transducteur émet, l'autre écoute.",
+        "IOH": "TRIG sur D9, ECHO sur D10.",
+        "POWER": "5V et GND pour le capteur.",
+        "OBST": "Déplacez-le pour changer la distance."
+      },
+      "specs": {
+        "1": {
+          "label": "Portée",
+          "value": "De 2 cm à environ 4 m"
+        },
+        "2": {
+          "label": "Fréquence",
+          "value": "40 kHz"
+        },
+        "3": {
+          "label": "Résolution",
+          "value": "Environ 3 mm"
+        },
+        "4": {
+          "label": "Faisceau",
+          "value": "Environ 15°"
+        },
+        "5": {
+          "label": "Formule",
+          "value": "cm = écho en µs ÷ 58"
+        }
+      },
+      "features": {
+        "1": "D'où vient le 58",
+        "2": "Ce que pulseIn() renvoie quand rien ne fait écho",
+        "3": "Déplacez l'obstacle pendant la mesure"
+      },
+      "steps": {
+        "1": "Reliez VCC au 5V, GND à GND, TRIG à D9 et ECHO à D10.",
+        "2": "Appuyez sur Exécuter et ouvrez le moniteur série : il lit 30 cm.",
+        "3": "Rapprochez et éloignez l'obstacle : les nombres suivent.",
+        "4": "Sortez-le de la portée : pulseIn() abandonne au bout de 30 ms et renvoie 0."
+      },
+      "hints": {
+        "1": "Le son parcourt 1 cm en environ 29 µs ; l'aller-retour fait 58 µs par cm.",
+        "2": "Les objets mous ou inclinés, comme les rideaux et les ballons, dispersent le son et se mesurent mal.",
+        "3": "Attendez au moins 60 ms entre deux pings pour que le dernier écho se soit éteint."
+      },
+      "quiz": {
+        "q1": {
+          "q": "L'impulsion d'écho dure 1160 µs. À quelle distance est l'obstacle ?",
+          "options": {
+            "1": "10 cm",
+            "2": "20 cm",
+            "3": "58 cm"
+          },
+          "why": "1160 ÷ 58 = 20 cm."
+        },
+        "q2": {
+          "q": "Pourquoi le code affiche-t-il 0 cm quand il n'y a rien devant ?",
+          "options": {
+            "1": "pulseIn() expire au bout de 30 ms et renvoie 0",
+            "2": "Le capteur envoie 0",
+            "3": "L'Uno ne sait pas compter aussi loin"
+          },
+          "why": "Le troisième argument, 30000, est un délai d'attente en µs. Sans écho, pulseIn() renvoie 0."
+        }
+      }
+    },
+    "sound": {
+      "title": "Jouer un air",
+      "lede": "tone() produit un signal carré à n'importe quelle fréquence sur n'importe quelle broche. Mettez un buzzer piézo sur D8, donnez-lui une liste de notes, et il joue un air.",
+      "code": {
+        "count": "combien de notes contient la liste",
+        "gap": "un court silence pour que les notes répétées restent distinctes"
+      },
+      "params": {
+        "tune": {
+          "label": "Air",
+          "scale": "Gamme de do majeur",
+          "scale-note": "Du do central (C4) au do suivant (C5), huit notes.",
+          "twinkle": "Ah ! vous dirai-je, maman",
+          "twinkle-note": "La première phrase, en partant du do central.",
+          "ode": "Hymne à la joie",
+          "ode-note": "Le début du thème de Beethoven."
+        },
+        "note": {
+          "label": "Durée des notes"
+        },
+        "volume": {
+          "label": "Volume"
+        }
+      },
+      "checks": {
+        "1": "La première note est le do central, 262 Hz",
+        "2": "La troisième note est un sol, 392 Hz",
+        "3": "Le code joue les notes avec tone()"
+      },
+      "pins": {
+        "D8": {
+          "to": "La patte + du buzzer",
+          "role": "tone() le pilote avec un signal carré."
+        },
+        "GND": {
+          "to": "La patte − du buzzer",
+          "role": "Masse."
+        }
+      },
+      "callouts": {
+        "BUZ1": "Un piézo passif : il ne sonne que si on le pilote avec une fréquence.",
+        "IOH": "Le GND à côté de D13.",
+        "ZU4": "Le timer 2 du 328P produit la note."
+      },
+      "specs": {
+        "1": {
+          "label": "Do central",
+          "value": "262 Hz"
+        },
+        "2": {
+          "label": "La au-dessus du do central",
+          "value": "440 Hz"
+        },
+        "3": {
+          "label": "Une octave plus haut",
+          "value": "Fréquence doublée"
+        },
+        "4": {
+          "label": "Plage de tone()",
+          "value": "À partir de 31 Hz"
+        },
+        "5": {
+          "label": "Timer",
+          "value": "tone() utilise le timer 2, qui gère aussi le PWM de D3 et D11"
+        }
+      },
+      "features": {
+        "1": "Choisissez un air et écoutez-le",
+        "2": "Pourquoi chaque note double à l'octave",
+        "3": "Écrivez votre propre mélodie"
+      },
+      "steps": {
+        "1": "Reliez la patte + du buzzer à D8 et sa patte − à GND.",
+        "2": "Appuyez sur Exécuter : « Ah ! vous dirai-je, maman » se joue, puis une pause d'une seconde, puis ça recommence.",
+        "3": "Passez « Air » sur « Hymne à la joie », et modifiez « Durée des notes » pour accélérer.",
+        "4": "Modifiez les nombres de melody[] : 523 est le do une octave au-dessus de 262."
+      },
+      "hints": {
+        "1": "Pendant que tone() joue, analogWrite() sur D3 et D11 ne fonctionne plus : ils partagent le timer 2.",
+        "2": "Sans les 50 ms en plus, deux notes identiques à la suite se fondraient en une seule note longue."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Le do central est à 262 Hz. Quelle est la fréquence du do une octave plus haut ?",
+          "options": {
+            "1": "131 Hz",
+            "2": "393 Hz",
+            "3": "524 Hz"
+          },
+          "why": "Chaque octave double la fréquence : 262 × 2 = 524 Hz. L'air utilise 523, la valeur exacte."
+        },
+        "q2": {
+          "q": "Que donne sizeof(melody) / sizeof(int) ?",
+          "options": {
+            "1": "La durée de l'air en ms",
+            "2": "Le nombre de notes de la liste",
+            "3": "La note la plus aiguë"
+          },
+          "why": "sizeof(melody) est la taille du tableau en octets ; en la divisant par la taille d'un int, on obtient le nombre d'éléments."
+        }
+      }
+    },
+    "piano": {
+      "title": "Construire un piano",
+      "lede": "Huit boutons sur D2-D9, un buzzer sur D10. Les pull-ups internes économisent huit résistances, et le sketch joue la touche enfoncée, quelle qu'elle soit.",
+      "code": {
+        "playing": "quelle touche sonne ; −1 veut dire aucune",
+        "pullup": "le pull-up interne du 328P : pas besoin de résistance",
+        "down": "avec un pull-up, un appui se lit LOW"
+      },
+      "params": {
+        "octave": {
+          "label": "Octave",
+          "c4": "C4 à C5 (à partir du do central)",
+          "c5": "C5 à C6",
+          "c5-note": "Une octave plus haut : toutes les fréquences doublées."
+        },
+        "names": {
+          "label": "Noms des notes",
+          "solfege": "Do Ré Mi",
+          "letters": "C D E"
+        }
+      },
+      "world": {
+        "key1": "Touche 1 (do / C)",
+        "key2": "Touche 2 (ré / D)",
+        "key3": "Touche 3 (mi / E)",
+        "key4": "Touche 4 (fa / F)",
+        "key5": "Touche 5 (sol / G)",
+        "key6": "Touche 6 (la / A)",
+        "key7": "Touche 7 (si / B)",
+        "key8": "Touche 8 (do / C, aigu)"
+      },
+      "checks": {
+        "1": "Appuyer sur la touche 5 affiche Sol (ou G)",
+        "2": "La touche 5 joue 392 Hz sur D10",
+        "3": "Appuyer sur la touche 1 affiche Do (ou C)",
+        "4": "La touche 1 joue 262 Hz",
+        "5": "Les touches utilisent INPUT_PULLUP et le buzzer s'arrête avec noTone()"
+      },
+      "pins": {
+        "D2-D9": {
+          "to": "Un côté de chaque touche",
+          "role": "Tirée vers le haut dans la puce ; un appui tire la broche vers GND."
+        },
+        "D10": {
+          "to": "La patte + du buzzer",
+          "role": "Joue la note avec tone()."
+        },
+        "GND": {
+          "to": "L'autre côté de chaque touche, et le buzzer",
+          "role": "Le rail de masse en haut de la platine d'essai."
+        }
+      },
+      "callouts": {
+        "KEY1": "La note la plus grave. Chaque touche relie sa broche à GND.",
+        "BUZ1": "Un seul buzzer : une seule note à la fois.",
+        "IOL": "D2-D7 ici, D8 et D9 sur le connecteur suivant."
+      },
+      "specs": {
+        "1": {
+          "label": "Touches",
+          "value": "8, une octave"
+        },
+        "2": {
+          "label": "Pull-up interne",
+          "value": "20-50 kΩ vers le 5 V"
+        },
+        "3": {
+          "label": "Un appui se lit",
+          "value": "LOW"
+        },
+        "4": {
+          "label": "Notes simultanées",
+          "value": "1 : tone() pilote une seule broche à la fois"
+        },
+        "5": {
+          "label": "Série",
+          "value": "9600 bauds, affiche le nom de chaque note"
+        }
+      },
+      "features": {
+        "1": "Jouez-en depuis la figure",
+        "2": "Les pull-ups mettent la logique à l'envers",
+        "3": "Pourquoi une seule note sonne à la fois"
+      },
+      "steps": {
+        "1": "Chaque touche enjambe la tranchée centrale de la platine d'essai : un côté vers une broche de D2 à D9, l'autre vers le rail GND.",
+        "2": "Appuyez sur Exécuter et cliquez sur les touches : le buzzer joue et le moniteur série affiche la note.",
+        "3": "Passez « Octave » sur « C5 à C6 » : les mêmes touches, une octave plus haut.",
+        "4": "Maintenez deux touches : la plus aiguë l'emporte, car la boucle garde la dernière touche enfoncée qu'elle trouve."
+      },
+      "hints": {
+        "1": "Si toutes les touches sonnent en permanence, les broches sont en INPUT au lieu d'INPUT_PULLUP : elles flottent.",
+        "2": "Le sketch n'appelle tone() que quand la touche change. L'appeler à chaque tour de boucle relance la note et la fait grésiller."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Avec INPUT_PULLUP, que lit une touche non enfoncée ?",
+          "options": {
+            "1": "LOW",
+            "2": "HIGH",
+            "3": "Elle flotte"
+          },
+          "why": "La résistance interne tire la broche vers le 5 V. Seul un appui la ramène à LOW."
+        },
+        "q2": {
+          "q": "Pourquoi les touches n'ont-elles pas besoin de leurs propres résistances ?",
+          "options": {
+            "1": "Les boutons n'ont pas de résistance",
+            "2": "Le buzzer limite le courant",
+            "3": "Le 328P a des résistances de pull-up intégrées"
+          },
+          "why": "INPUT_PULLUP active pour chaque broche une résistance de 20-50 kΩ à l'intérieur de la puce."
+        }
+      }
+    },
+    "motor": {
+      "title": "Piloter un moteur",
+      "lede": "Un moteur demande bien plus de courant qu'une broche ne peut en fournir. Un transistor TIP120 fait le gros du travail, le PWM sur D6 règle la vitesse, et une diode absorbe la pointe de tension quand le moteur s'arrête.",
+      "code": {
+        "pin": "D6 est une broche ~, elle peut donc faire du PWM",
+        "speed": "0 = arrêt, 255 = pleine vitesse"
+      },
+      "params": {
+        "top": {
+          "label": "Vitesse maximale"
+        },
+        "step": {
+          "label": "Pas d'accélération"
+        }
+      },
+      "checks": {
+        "1": "Au bout d'une seconde, le moteur tourne à environ mi-vitesse",
+        "2": "À 2,6 s, il tourne à pleine vitesse",
+        "3": "À 4 s, il est arrêté"
+      },
+      "pins": {
+        "D6": {
+          "to": "Résistance de 1 kΩ, puis la base du transistor",
+          "role": "Le PWM règle la vitesse."
+        },
+        "5V": {
+          "to": "Le fil + du moteur et la diode",
+          "role": "L'alimentation du moteur."
+        },
+        "GND": {
+          "to": "L'émetteur du transistor",
+          "role": "Le courant du moteur revient ici."
+        }
+      },
+      "callouts": {
+        "Q1": "Darlington TIP120 : quelques mA sur sa base commutent jusqu'à 5 A.",
+        "RES1": "1 kΩ : limite le courant de base à environ 3 mA.",
+        "DIO1": "Diode de roue libre : absorbe la pointe de tension quand le moteur se coupe.",
+        "MOT1": "Un petit moteur à courant continu : sa vitesse suit le rapport cyclique PWM."
+      },
+      "specs": {
+        "1": {
+          "label": "Transistor",
+          "value": "Darlington NPN TIP120, 5 A"
+        },
+        "2": {
+          "label": "Résistance de base",
+          "value": "1 kΩ"
+        },
+        "3": {
+          "label": "Diode",
+          "value": "1N4007, en parallèle sur le moteur"
+        },
+        "4": {
+          "label": "Courant du moteur",
+          "value": "100-500 mA, bien au-delà des 20 mA d'une broche"
+        },
+        "5": {
+          "label": "PWM sur D6",
+          "value": "Environ 980 Hz"
+        }
+      },
+      "features": {
+        "1": "Regardez-le accélérer, tourner puis s'arrêter",
+        "2": "Comment un petit courant en commute un gros",
+        "3": "Sans la diode, la pointe de tension peut tuer le transistor"
+      },
+      "steps": {
+        "1": "D6 passe par la résistance de 1 kΩ jusqu'à la base du TIP120. Le moteur est entre le 5V et le collecteur ; l'émetteur va à GND.",
+        "2": "La diode est en parallèle sur le moteur, orientée vers le 5V.",
+        "3": "Appuyez sur Exécuter : le moteur accélère pendant environ deux secondes, tourne à pleine vitesse, puis s'arrête.",
+        "4": "Baissez « Vitesse maximale » ou augmentez « Pas d'accélération », puis relancez."
+      },
+      "hints": {
+        "1": "En dessous d'environ 30 % de rapport cyclique, un petit moteur peut bourdonner sans tourner : il lui faut un coup de pouce pour vaincre les frottements.",
+        "2": "Un vrai moteur devrait avoir sa propre alimentation et ne partager que GND avec l'Uno. Les 500 mA de l'USB s'épuisent vite."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Pourquoi ne pas brancher le moteur directement sur D6 ?",
+          "options": {
+            "1": "Il demande bien plus de courant qu'une broche ne peut en fournir",
+            "2": "Les moteurs ne tournent qu'en courant alternatif",
+            "3": "D6 ne sait pas faire de PWM"
+          },
+          "why": "Une broche supporte 20 mA sans risque ; un petit moteur en tire des centaines. Le transistor commute le courant du moteur."
+        },
+        "q2": {
+          "q": "À quoi sert la diode en parallèle sur le moteur ?",
+          "options": {
+            "1": "À le faire tourner dans un seul sens",
+            "2": "À réduire sa vitesse",
+            "3": "À absorber la pointe de tension quand il se coupe"
+          },
+          "why": "La bobine d'un moteur continue de faire circuler du courant un instant après la coupure. La diode lui offre un chemin, au lieu d'une pointe de haute tension."
+        }
+      }
+    },
+    "heat": {
+      "title": "Garder au frais",
+      "lede": "Un TMP36 transforme la température en tension. Le sketch la convertit en degrés et met en marche un ventilateur à travers un transistor quand il fait trop chaud.",
+      "code": {
+        "fan": "le ventilateur passe par le TIP120, comme le moteur",
+        "limit": "le ventilateur démarre au-dessus de cette valeur",
+        "volts": "0-1023 reconverti en 0-5 V",
+        "degrees": "TMP36: 0.5 V à 0 °C, plus 10 mV par °C"
+      },
+      "params": {
+        "limit": {
+          "label": "Ventilateur au-dessus de"
+        },
+        "mode": {
+          "label": "Commande du ventilateur",
+          "onoff": "Marche ou arrêt",
+          "onoff-note": "Pleine vitesse au-dessus de la limite, arrêt en dessous.",
+          "ramp": "Vitesse selon la chaleur",
+          "ramp-note": "Démarre à la limite et atteint la pleine vitesse 8 °C au-dessus."
+        }
+      },
+      "world": {
+        "temp": "Température de l'air"
+      },
+      "checks": {
+        "1": "Au départ, il affiche environ 21,8 °C",
+        "2": "À température ambiante, le ventilateur est arrêté",
+        "3": "Chauffez à 34 °C et le ventilateur tourne",
+        "4": "Redescendu à 26 °C, le ventilateur s'arrête"
+      },
+      "pins": {
+        "5V": {
+          "to": "La patte +VS du TMP36",
+          "role": "Alimente le capteur, et le ventilateur."
+        },
+        "A0": {
+          "to": "La patte du milieu du TMP36 (VOUT)",
+          "role": "Lit la température sous forme de tension."
+        },
+        "GND1": {
+          "to": "La patte GND du TMP36",
+          "role": "Masse."
+        },
+        "D6": {
+          "to": "Résistance de 1 kΩ, puis la base du transistor",
+          "role": "Commute le ventilateur."
+        }
+      },
+      "callouts": {
+        "TMP1": "Face plate vers vous : +VS à gauche, VOUT au milieu, GND à droite.",
+        "FAN1": "Un ventilateur 5 V, commuté comme le moteur.",
+        "Q1": "TIP120 : la broche le commute, il commute le ventilateur.",
+        "DRYER": "Soufflez de l'air chaud sur le capteur ici."
+      },
+      "specs": {
+        "1": {
+          "label": "Capteur",
+          "value": "TMP36"
+        },
+        "2": {
+          "label": "Plage",
+          "value": "De −40 à 125 °C"
+        },
+        "3": {
+          "label": "Sortie",
+          "value": "750 mV à 25 °C, 10 mV par °C"
+        },
+        "4": {
+          "label": "Précision",
+          "value": "±2 °C"
+        },
+        "5": {
+          "label": "Résolution ici",
+          "value": "Environ 0,5 °C par pas du CAN"
+        }
+      },
+      "features": {
+        "1": "De la lecture du CAN aux degrés en deux lignes",
+        "2": "Chauffez le capteur et le ventilateur se déclenche",
+        "3": "Marche-arrêt ou vitesse selon la chaleur"
+      },
+      "steps": {
+        "1": "Le TMP36 a trois pattes : 5V, A0 et GND. Branché à l'envers, il chauffe.",
+        "2": "Appuyez sur Exécuter et ouvrez le moniteur série : environ 21,8 °C.",
+        "3": "Dirigez le sèche-cheveux vers le capteur : au-dessus de 30 °C, le ventilateur démarre.",
+        "4": "Passez « Commande du ventilateur » sur « Vitesse selon la chaleur » et regardez le ventilateur suivre la température."
+      },
+      "hints": {
+        "1": "S'il lit plus de 100 °C ou moins de −40 °C, vérifiez que VOUT va bien à A0.",
+        "2": "Près de la limite, un ventilateur en marche-arrêt peut s'allumer et s'éteindre sans cesse. L'arrêter un ou deux degrés plus bas règle le problème."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Le TMP36 sort 0,75 V. Quelle température cela fait-il ?",
+          "options": {
+            "1": "7,5 °C",
+            "2": "25 °C",
+            "3": "75 °C"
+          },
+          "why": "(0,75 − 0,5) × 100 = 25 °C."
+        },
+        "q2": {
+          "q": "Pourquoi le ventilateur passe-t-il par un transistor ?",
+          "options": {
+            "1": "Une broche ne peut pas fournir le courant du ventilateur",
+            "2": "Pour lire sa vitesse",
+            "3": "Pour refroidir le transistor"
+          },
+          "why": "Un ventilateur tire plus de 100 mA ; une broche ne supporte sans risque que 20 mA."
+        }
+      }
+    },
+    "servo": {
+      "title": "Balayer avec un servo",
+      "lede": "Un servo tourne jusqu'à l'angle demandé et le tient. La bibliothèque Servo envoie une impulsion toutes les 20 ms : 1 ms de large pour 0°, 2 ms pour 180°.",
+      "code": {
+        "attach": "le fil de signal du servo est sur D9",
+        "write": "tourne jusqu'à cet angle, 0-180°"
+      },
+      "params": {
+        "from": {
+          "label": "De"
+        },
+        "to": {
+          "label": "À"
+        },
+        "wait": {
+          "label": "Attente par degré"
+        }
+      },
+      "checks": {
+        "1": "Vers 1,1 s, le bras est proche de 90° en montant",
+        "2": "Il atteint 180°",
+        "3": "Au retour, il repasse par 90°"
+      },
+      "pins": {
+        "GND2": {
+          "to": "Le fil marron",
+          "role": "Masse."
+        },
+        "5V": {
+          "to": "Le fil rouge",
+          "role": "L'alimentation du moteur."
+        },
+        "D9": {
+          "to": "Le fil orange",
+          "role": "L'impulsion de position."
+        }
+      },
+      "callouts": {
+        "SRV1": "SG90 : un moteur, des engrenages et un capteur de position dans un seul boîtier.",
+        "IOH": "Le signal va sur D9.",
+        "POWER": "5V et GND pour le servo."
+      },
+      "specs": {
+        "1": {
+          "label": "Servo",
+          "value": "Micro-servo SG90"
+        },
+        "2": {
+          "label": "Course",
+          "value": "0-180°"
+        },
+        "3": {
+          "label": "Impulsion",
+          "value": "1-2 ms, toutes les 20 ms"
+        },
+        "4": {
+          "label": "Vitesse",
+          "value": "Environ 0,1 s pour 60°"
+        },
+        "5": {
+          "label": "Courant",
+          "value": "Jusqu'à environ 700 mA quand il est bloqué"
+        }
+      },
+      "features": {
+        "1": "Regardez le bras balayer",
+        "2": "Ce que signifie la largeur d'impulsion",
+        "3": "Changez la course et la vitesse"
+      },
+      "steps": {
+        "1": "Marron à GND, rouge au 5V, orange à D9.",
+        "2": "Appuyez sur Exécuter : le bras balaie de 0° à 180°, puis revient.",
+        "3": "Mettez « De » à 45 et « À » à 135 pour un balayage plus étroit.",
+        "4": "Augmentez « Attente par degré » pour le ralentir."
+      },
+      "hints": {
+        "1": "Si la carte se réinitialise quand le servo bouge, le servo tire trop de courant sur l'USB. Donnez-lui sa propre alimentation.",
+        "2": "Beaucoup de servos bon marché n'atteignent pas tout à fait 0° ou 180° et grésillent en butée. Restez quelques degrés en deçà."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Qu'est-ce qui indique au servo à quel angle aller ?",
+          "options": {
+            "1": "La tension sur le fil rouge",
+            "2": "Le nombre d'impulsions qu'il reçoit",
+            "3": "La largeur de chaque impulsion"
+          },
+          "why": "La largeur d'impulsion fixe l'angle : environ 1 ms pour 0°, 1,5 ms pour 90°, 2 ms pour 180°."
+        },
+        "q2": {
+          "q": "Que fait arm.write(90) si le bras est déjà à 90° ?",
+          "options": {
+            "1": "Il le maintient là",
+            "2": "Il tourne encore de 90°",
+            "3": "Il le coupe"
+          },
+          "why": "write() fixe une position, pas un mouvement. Le servo tient l'angle qu'on lui donne, quel qu'il soit."
+        }
+      }
+    },
+    "stepper": {
+      "title": "Faire tourner une roue de la fortune",
+      "lede": "Un moteur pas à pas 28BYJ-48 avance par pas exacts : le sketch sait donc où la roue s'arrête. Appuyez sur le bouton : elle tourne, ralentit et s'arrête sur un lot au hasard.",
+      "code": {
+        "steps": "pas par tour : 32 pas × un réducteur 63.68:1",
+        "dir": "1 = sens horaire, −1 = sens antihoraire",
+        "pins": "IN1-IN4 du driver sur D8-D11, donnés dans l'ordre 8, 10, 9, 11 pour que les bobines s'activent dans l'ordre",
+        "at": "le segment actuellement sous le pointeur",
+        "moved": "segments parcourus depuis la mise sous tension",
+        "speed": "tours par minute → pas par seconde",
+        "press": "Appuyez sur le bouton pour lancer la roue !",
+        "target": "un seul arrondi, sur le total cumulé, pour que l'erreur ne s'accumule jamais",
+        "run": "bloque jusqu'à l'arrêt de la roue",
+        "landed": "Résultat :"
+      },
+      "params": {
+        "rpm": {
+          "label": "Vitesse maximale"
+        },
+        "accel": {
+          "label": "Accélération"
+        },
+        "turns": {
+          "label": "Tours complets en plus"
+        },
+        "dir": {
+          "label": "Sens",
+          "cw": "Horaire",
+          "ccw": "Antihoraire"
+        }
+      },
+      "world": {
+        "button": "Bouton de lancement sur D2"
+      },
+      "checks": {
+        "1": "Après un appui, il affiche le lot sur lequel la roue s'est arrêtée",
+        "2": "D8 fait au moins 50 pas pendant que la roue tourne",
+        "3": "Le moteur pas à pas est configuré en FULL4WIRE sur 8, 10, 9, 11"
+      },
+      "pins": {
+        "D8-D11": {
+          "to": "IN1-IN4 du driver ULN2003",
+          "role": "Activent les quatre bobines tour à tour."
+        },
+        "5V": {
+          "to": "Le + de la carte driver et le bouton",
+          "role": "Alimente les bobines du moteur."
+        },
+        "D2": {
+          "to": "Le bouton, avec un pull-down de 10 kΩ",
+          "role": "HIGH lance la roue."
+        }
+      },
+      "callouts": {
+        "STP1": "28BYJ-48 : 5 V, réduction 64:1.",
+        "DRV1": "Carte driver ULN2003 : quatre transistors pour les quatre bobines.",
+        "BTN1": "Appuyez pour lancer.",
+        "WHEEL": "Huit lots, 45° chacun."
+      },
+      "specs": {
+        "1": {
+          "label": "Moteur",
+          "value": "28BYJ-48, unipolaire 5 V"
+        },
+        "2": {
+          "label": "Pas par tour",
+          "value": "Environ 2038 en mode pas entier"
+        },
+        "3": {
+          "label": "Vitesse maximale",
+          "value": "Environ 15 RPM de façon fiable"
+        },
+        "4": {
+          "label": "Driver",
+          "value": "ULN2003"
+        },
+        "5": {
+          "label": "Courant",
+          "value": "Environ 240 mA avec deux bobines alimentées"
+        }
+      },
+      "features": {
+        "1": "Pourquoi un moteur pas à pas sait toujours où il est",
+        "2": "Réglez vitesse et accélération pour un arrêt en douceur",
+        "3": "Appuyez et voyez où elle s'arrête"
+      },
+      "steps": {
+        "1": "IN1-IN4 du driver vont à D8-D11, son + et son − au 5V et à GND. Le moteur se branche sur le driver.",
+        "2": "Appuyez sur Exécuter, puis sur le bouton : la roue accélère, tourne et ralentit jusqu'à un lot.",
+        "3": "Augmentez « Tours complets en plus » pour un tour plus long, ou baissez « Accélération » pour une montée plus lente.",
+        "4": "Poussez « Vitesse maximale » au-delà d'environ 20 RPM : le moteur commence à rater des pas et la roue s'arrête au mauvais endroit."
+      },
+      "hints": {
+        "1": "Si le moteur ne fait que bourdonner, les quatre broches sont dans le mauvais ordre. La bibliothèque veut 8, 10, 9, 11.",
+        "2": "2038 pas par tour ne donne pas un nombre entier de pas par segment. Arrondir à partir du total cumulé garde la roue alignée sur de nombreux tours.",
+        "3": "random() donne toujours la même suite après un reset ; randomSeed() avec une broche analogique flottante la mélange."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Pourquoi le sketch peut-il connaître la position de la roue sans capteur ?",
+          "options": {
+            "1": "Le moteur la lui renvoie",
+            "2": "Chaque pas la fait tourner du même petit angle : il compte les pas",
+            "3": "Il la devine à partir du temps"
+          },
+          "why": "Un moteur pas à pas tourne d'un angle fixe à chaque pas. Tant qu'aucun pas n'est raté, les compter donne la position."
+        },
+        "q2": {
+          "q": "Que se passe-t-il si vous demandez plus de vitesse que le moteur ne peut en donner ?",
+          "options": {
+            "1": "Il rate des pas et perd sa position",
+            "2": "Il tourne plus vite",
+            "3": "L'Uno se réinitialise"
+          },
+          "why": "Au-delà de sa limite, le rotor ne suit plus les bobines. Des pas sont perdus et le compte ne correspond plus à la roue."
+        }
+      }
+    },
+    "plant": {
+      "title": "Surveiller une plante",
+      "lede": "Une sonde indique l'humidité de la terre ; un écran OLED l'affiche en pourcentage et sous forme de barre, et vous dit quand arroser.",
+      "code": {
+        "dry": "la lecture à l'air sec",
+        "wet": "la lecture dans un verre d'eau",
+        "address": "0x3C est l'adresse I²C de l'écran",
+        "map": "convertit la lecture en 0-100 %",
+        "font": "texte plus petit pour le message"
+      },
+      "params": {
+        "dry": {
+          "label": "Lecture à sec"
+        },
+        "wet": {
+          "label": "Lecture dans l'eau"
+        },
+        "thirsty": {
+          "label": "Arroser en dessous de"
+        },
+        "soggy": {
+          "label": "Trop humide au-dessus de"
+        }
+      },
+      "world": {
+        "soil": "Humidité de la terre"
+      },
+      "checks": {
+        "1": "Au départ, il affiche 40 %",
+        "2": "Quand la terre sèche jusqu'à 20 %, il affiche 20",
+        "3": "Après l'arrosage, il affiche 90",
+        "4": "L'écran démarre à l'adresse 0x3C et le sketch dessine dessus"
+      },
+      "pins": {
+        "5V": {
+          "to": "Le VCC de la sonde",
+          "role": "Alimente la sonde."
+        },
+        "A0": {
+          "to": "L'AOUT de la sonde",
+          "role": "Une tension plus basse veut dire une terre plus humide."
+        },
+        "3V3": {
+          "to": "Le VCC de l'OLED",
+          "role": "Alimente l'écran."
+        },
+        "SCL-SDA": {
+          "to": "SCL et SDA de l'OLED",
+          "role": "I²C : horloge et données sur deux fils."
+        }
+      },
+      "callouts": {
+        "OLED1": "OLED 128 × 64 pixels en I²C.",
+        "SOIL1": "Sonde capacitive : aucun métal nu dans la terre, elle ne rouille donc pas.",
+        "CAN": "Arrosez la plante ici.",
+        "AD": "La sonde se lit sur A0."
+      },
+      "specs": {
+        "1": {
+          "label": "Écran",
+          "value": "SSD1306, 128 × 64, I²C à 0x3C"
+        },
+        "2": {
+          "label": "Sonde",
+          "value": "Capacitive, 3,3-5,5 V"
+        },
+        "3": {
+          "label": "Sortie de la sonde",
+          "value": "Environ 2,5 V à sec, 1,3 V dans l'eau"
+        },
+        "4": {
+          "label": "Mémoire de l'écran",
+          "value": "1 KB sur les 2 KB de RAM de l'Uno"
+        },
+        "5": {
+          "label": "Broches I²C",
+          "value": "SDA = A4, SCL = A5 (aussi à côté d'AREF)"
+        }
+      },
+      "features": {
+        "1": "Étalonnez avec une lecture à sec et une dans l'eau",
+        "2": "Deux fils transportent tout jusqu'à l'écran",
+        "3": "Arrosez et regardez la barre se remplir"
+      },
+      "steps": {
+        "1": "L'écran a besoin de quatre fils : GND, 3V3, SCL et SDA.",
+        "2": "La sonde en a besoin de trois : 5V, GND et sa sortie vers A0.",
+        "3": "Appuyez sur Exécuter : l'écran affiche 40 % et Happy :).",
+        "4": "Laissez sécher la terre : en dessous de 30 %, l'écran réclame de l'eau.",
+        "5": "Réglez « Lecture à sec » et « Lecture dans l'eau » d'après votre propre sonde : tenez-la en l'air, puis dans l'eau, et notez les nombres."
+      },
+      "hints": {
+        "1": "Si l'écran reste vide, essayez l'adresse 0x3D : certaines cartes l'utilisent.",
+        "2": "La sonde lit plus bas quand c'est plus humide, donc DRY est le plus grand nombre. map() gère la plage inversée."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Comment l'Uno communique-t-il avec l'OLED ?",
+          "options": {
+            "1": "En I²C, sur SDA et SCL",
+            "2": "Par l'USB",
+            "3": "Avec analogWrite()"
+          },
+          "why": "L'I²C envoie les données sur SDA, cadencées par SCL. Chaque appareil du bus a une adresse ; l'écran est en 0x3C."
+        },
+        "q2": {
+          "q": "La lecture vaut 390, à mi-chemin entre sec (520) et humide (260). Qu'affiche l'écran ?",
+          "options": {
+            "1": "0 %",
+            "2": "50 %",
+            "3": "100 %"
+          },
+          "why": "map(390, 520, 260, 0, 100) = 50."
+        }
+      }
+    },
+    "force": {
+      "title": "Testeur de force",
+      "lede": "Frappez le capteur : une résistance sensible à la force mesure la puissance du coup, une aiguille de servo pivote pour l'afficher et garde le meilleur coup, et une cloche sonne si vous frappez assez fort.",
+      "code": {
+        "pulldown": "doit correspondre à la résistance de la platine d'essai",
+        "best": "le coup le plus fort jusqu'ici",
+        "bestAt": "le moment où il a eu lieu",
+        "read": "appui plus fort, lecture plus haute",
+        "hold": "garde un instant le meilleur coup, puis suit de nouveau le capteur",
+        "ding": "G6 pendant 400 ms",
+        "ohms": "remonte du pont diviseur à la résistance du capteur"
+      },
+      "params": {
+        "pulldown": {
+          "1000": "1 kΩ",
+          "10000": "10 kΩ",
+          "100000": "100 kΩ",
+          "label": "Résistance de pull-down",
+          "1000-note": "Seuls les coups forts comptent : bien pour les grandes forces.",
+          "10000-note": "Le choix habituel : d'un effleurement à un appui ferme.",
+          "100000-note": "Très sensible : une petite tape lit presque au maximum."
+        },
+        "hold": {
+          "label": "Garder le meilleur pendant"
+        },
+        "bell": {
+          "label": "La cloche sonne au-dessus de"
+        }
+      },
+      "world": {
+        "force": "Force sur le capteur"
+      },
+      "checks": {
+        "1": "Un appui léger lit 682, environ 5000 Ω",
+        "2": "L'aiguille est à environ 120°",
+        "3": "Un coup fort fait sonner la cloche à 1568 Hz",
+        "4": "L'aiguille monte presque au maximum",
+        "5": "Après le temps de maintien, elle retombe à 0°"
+      },
+      "pins": {
+        "5V": {
+          "to": "Une patte du FSR",
+          "role": "Le haut du pont diviseur."
+        },
+        "A0": {
+          "to": "Entre le FSR et la résistance de 10 kΩ",
+          "role": "Lit d'autant plus haut que vous appuyez fort."
+        },
+        "GND1": {
+          "to": "La résistance de 10 kΩ",
+          "role": "Le bas du pont diviseur."
+        },
+        "D9": {
+          "to": "Le fil de signal du servo",
+          "role": "Fait bouger l'aiguille."
+        },
+        "D8": {
+          "to": "Le buzzer",
+          "role": "Fait sonner la cloche."
+        }
+      },
+      "callouts": {
+        "METER": "L'aiguille montre le meilleur coup.",
+        "BUZ1": "La cloche.",
+        "FSR1": "FSR 402 : sans appui, plus de 1 MΩ ; avec un appui fort, quelques centaines d'Ω.",
+        "WEIGHTS": "Appuyez avec différents poids ici.",
+        "AD": "Le FSR se lit sur A0."
+      },
+      "specs": {
+        "1": {
+          "label": "Capteur",
+          "value": "FSR 402, pastille de 12,7 mm"
+        },
+        "2": {
+          "label": "Plage de force",
+          "value": "D'environ 0,2 N à 20 N"
+        },
+        "3": {
+          "label": "Pull-down",
+          "value": "10 kΩ vers GND"
+        },
+        "4": {
+          "label": "Cloche",
+          "value": "1568 Hz (G6) pendant 400 ms"
+        },
+        "5": {
+          "label": "Aiguille",
+          "value": "Servo, 0-180° pour 0-1023"
+        }
+      },
+      "features": {
+        "1": "Frappez et regardez l'aiguille",
+        "2": "Comment le pont diviseur vous donne la résistance du capteur",
+        "3": "Choisissez un pull-down pour régler la sensibilité",
+        "4": "Un maintien du maximum, comme un testeur de force de fête foraine"
+      },
+      "steps": {
+        "1": "Le FSR va du 5V à A0, la résistance de 10 kΩ de A0 à GND. Le servo est sur D9 et le buzzer sur D8.",
+        "2": "Appuyez sur Exécuter, puis appuyez légèrement : l'aiguille monte et le moniteur série affiche la lecture et la résistance du capteur.",
+        "3": "Frappez fort : l'aiguille monte presque au maximum et la cloche sonne.",
+        "4": "Relâchez : l'aiguille garde le meilleur coup pendant 1,5 s, puis retombe."
+      },
+      "hints": {
+        "1": "Un FSR sert à dire « plus fort ou moins fort », pas à peser : deux capteurs peuvent différer de 25 %.",
+        "2": "Ne changez « Résistance de pull-down » dans le code que si vous changez aussi la vraie résistance, sinon les ohms sont faux."
+      },
+      "quiz": {
+        "q1": {
+          "q": "Que devient la résistance du FSR quand vous appuyez plus fort ?",
+          "options": {
+            "1": "Elle augmente",
+            "2": "Elle ne change pas",
+            "3": "Elle baisse"
+          },
+          "why": "Appuyer rapproche davantage de particules conductrices : de plus de 1 MΩ au repos à quelques centaines d'Ω."
+        },
+        "q2": {
+          "q": "À quoi sert la variable rung ?",
+          "options": {
+            "1": "À sonner plus fort",
+            "2": "À sonner une fois par coup, pas à chaque tour de boucle",
+            "3": "À changer de note"
+          },
+          "why": "Sans rung, la cloche recommencerait toutes les 20 ms tant que l'aiguille reste haute. Elle se réarme quand le meilleur coup retombe 100 en dessous du seuil de la cloche."
+        }
+      }
+    },
+    "parking": {
+      "title": "Radar de recul",
+      "lede": "Associez le capteur de distance et un feu tricolore : vert quand il y a de la place, orange quand ça se rapproche, rouge quand il faut s'arrêter.",
+      "code": {
+        "noecho": "0 quand aucun écho ne revient",
+        "lights": "un seul feu allumé à la fois"
+      },
+      "params": {
+        "far": {
+          "label": "Vert au-dessus de"
+        },
+        "near": {
+          "label": "Rouge à partir de"
+        },
+        "obstacle": {
+          "label": "Obstacle",
+          "car": "Petite voiture",
+          "car-note": "Dure et plate à l'avant : un écho net.",
+          "box": "Carton",
+          "box-note": "Une grande face plate : la cible la plus facile.",
+          "ball": "Ballon",
+          "ball-note": "Arrondi, donc une grande partie du son rebondit ailleurs.",
+          "wall": "Mur",
+          "wall-note": "Toujours là : pratique pour vérifier la portée."
+        }
+      },
+      "world": {
+        "distance": "Distance jusqu'à la voiture"
+      },
+      "checks": {
+        "1": "À 40 cm, le feu vert est allumé",
+        "2": "À 20 cm, le feu orange est allumé",
+        "3": "À 8 cm, le feu rouge est allumé",
+        "4": "et le feu vert est éteint",
+        "5": "Il affiche 40 cm au départ"
+      },
+      "pins": {
+        "5V-GND": {
+          "to": "VCC et GND du capteur, et GND du feu",
+          "role": "Alimentation."
+        },
+        "D9-D10": {
+          "to": "TRIG et ECHO du capteur",
+          "role": "Le ping part, l'écho revient."
+        },
+        "D4": {
+          "to": "Le R du feu",
+          "role": "Rouge : stop."
+        },
+        "D3": {
+          "to": "Le Y du feu",
+          "role": "Orange : ralentissez."
+        },
+        "D2": {
+          "to": "Le G du feu",
+          "role": "Vert : continuez."
+        }
+      },
+      "callouts": {
+        "US1": "Mesure la distance.",
+        "TL1": "Module feu tricolore avec ses propres résistances.",
+        "ZU4": "Décide quel feu afficher.",
+        "OBST": "Rapprochez la voiture ici."
+      },
+      "specs": {
+        "1": {
+          "label": "Vert",
+          "value": "Plus de 30 cm"
+        },
+        "2": {
+          "label": "Orange",
+          "value": "16-30 cm"
+        },
+        "3": {
+          "label": "Rouge",
+          "value": "15 cm ou moins"
+        },
+        "4": {
+          "label": "Mises à jour",
+          "value": "Environ 15 par seconde"
+        },
+        "5": {
+          "label": "Capteur",
+          "value": "HC-SR04, 2-400 cm"
+        }
+      },
+      "features": {
+        "1": "Réglez les distances pour votre garage",
+        "2": "Pourquoi l'absence d'écho donne du rouge",
+        "3": "Faites entrer la voiture et regardez les feux"
+      },
+      "steps": {
+        "1": "Le capteur est câblé comme dans « Mesurer une distance » : TRIG sur D9, ECHO sur D10.",
+        "2": "Les R, Y et G du feu vont à D4, D3 et D2.",
+        "3": "Appuyez sur Exécuter et déplacez la voiture : vert, puis orange sous 30 cm, puis rouge à 15 cm.",
+        "4": "Modifiez « Vert au-dessus de » et « Rouge à partir de » pour les adapter à votre espace."
+      },
+      "hints": {
+        "1": "Une comparaison comme cm > 30 est vraie ou fausse : 1 ou 0. C'est pour ça qu'elle peut aller directement dans digitalWrite().",
+        "2": "Hors de portée, pulseIn() renvoie 0, et 0 est sous « Rouge à partir de » : une allée vide affiche rouge. Traitez 0 comme « très loin » pour corriger ça."
+      },
+      "quiz": {
+        "q1": {
+          "q": "La voiture est à 30 cm. Quel feu est allumé ?",
+          "options": {
+            "1": "Orange",
+            "2": "Vert",
+            "3": "Rouge"
+          },
+          "why": "Le vert demande plus de 30. 30 est au-dessus de 15 et au plus 30 : orange."
+        },
+        "q2": {
+          "q": "Pourquoi le module n'a-t-il besoin d'aucune résistance sur la platine d'essai ?",
+          "options": {
+            "1": "Ses LED n'en ont pas besoin",
+            "2": "L'Uno limite le courant",
+            "3": "Elles sont déjà sur le module"
+          },
+          "why": "La carte du feu tricolore a une résistance pour chaque LED : ses broches se branchent donc directement sur D2-D4."
+        }
+      }
+    }
+  }
+}
