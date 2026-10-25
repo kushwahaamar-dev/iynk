@@ -74,6 +74,8 @@ body {
 #badge { position: absolute; left: 12px; top: 12px; display: none; font: 800 13px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; color: var(--paper); background: #cf5038; border: 1.5px solid var(--ink); border-radius: 8px; padding: 4px 10px; box-shadow: 2px 2px 0 var(--ink); pointer-events: none; }
 #stage.replay #badge { display: block; }
 #stage.fpv #toast { display: none; }
+/* on a touch screen the sticks sit in the bottom corners, so the notes go to the top */
+@media (pointer: coarse) { #toast { left: 50%; bottom: auto; top: 12px; transform: translateX(-50%); text-align: center; } }
 @media (max-width: 560px) {
   #fpv .osd text { font-size: 40px; stroke-width: 4px; }
   #fpv .osd .sm { font-size: 30px; }
