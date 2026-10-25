@@ -120,7 +120,9 @@ We also learned to cut. A hardware twin for a real Uno was started and left swit
 
 ## Built with
 
-next.js, react, typescript, tailwindcss, codemirror, zod, colorfigures, svg, javascript, python, node.js, websockets, ws, vercel, vultr, docker, caddy, meta-model-api, muse-spark, muse-image, muse-voice-transcribe, model-context-protocol, facebook-share-dialog, serpapi, tiger-data, timescaledb, postgresql, solana, anchor, rust, vitest, playwright, axe-core, claude-code
+next.js, react, typescript, tailwindcss, node.js, websockets, vercel, vultr, docker, caddy, meta-model-api, muse-spark, muse-image, muse-voice-transcribe, facebook, serpapi, tiger-data, timescaledb, postgresql, solana, anchor, rust, model-context-protocol, gemini, claude-code
+
+Devpost allows 25 tags: these are the 25 (sponsor tech first). Also used: zod, codemirror, colorfigures, svg, python, ws, vitest, playwright, axe-core.
 
 ---
 
