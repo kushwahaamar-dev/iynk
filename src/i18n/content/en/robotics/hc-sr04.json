@@ -1,0 +1,373 @@
+{
+  "title": "HC-SR04 parking sensor",
+  "sub": "distance from an echo you can time",
+  "hint": "build the sonar board, ping it, then make a buzzer beep faster as a hand comes closer",
+  "overview": "A robot that drives into walls needs to know how far away they are. The HC-SR04 shouts a burst of 40 kHz sound from one can and listens for the echo with the other; its Echo pin stays HIGH for the round trip. Sound covers a centimetre and back in 58 µs, so a 1740 µs pulse means a wall 30 cm away. Build the board, ping it from a Nano, then make a buzzer beep faster as a hand comes closer, like a car's parking sensor. Then break it: power it backwards or from 3.3 V, pull the receiver, leave a cold joint on Echo, forget pulseIn()'s timeout and short its supply.",
+  "parts": {
+    "T": {
+      "name": "Transmitter T: a 40 kHz piezo in a 16 mm can",
+      "what": "A piezo disc on a small cone, tuned to 40 kHz, above anything you can hear. The MAX3232 drives it from both ends for eight cycles: one ping."
+    },
+    "R": {
+      "name": "Receiver R: the same transducer, listening",
+      "what": "The echo makes its disc ring and gives a few millivolts. The LM324 behind it amplifies, filters and compares that until the MCU can see it."
+    },
+    "U1": {
+      "name": "EM78P153S microcontroller (on the back)",
+      "what": "Waits for a HIGH of at least 10 µs on Trig, sends the burst, raises Echo and drops it when the receiver hears the echo, or after about 38 ms when nothing comes back."
+    },
+    "U2": {
+      "name": "MAX3232 transmit driver (on the back)",
+      "what": "An RS-232 chip used for its charge pump: it makes about ±10 V from 5 V and drives T from both ends, so the can sees about 20 V swings. That is what makes the ping loud enough."
+    },
+    "U3": {
+      "name": "LM324 quad op-amp (on the back)",
+      "what": "Three stages of gain and filtering and a comparator turn the receiver's millivolts into a clean edge for the MCU."
+    },
+    "Y1": {
+      "name": "4 MHz crystal",
+      "what": "The MCU's clock: it times the 40 kHz burst and the echo. Without it nothing on the board runs."
+    },
+    "J1": {
+      "name": "4-pin right-angle header: Vcc, Trig, Echo, Gnd",
+      "what": "Its body sits on the back and the pins run past the bottom edge, so the board stands up in a breadboard facing forward."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "Sends the 10 µs pulse on D9, times Echo on D10 with pulseIn() and divides by 58. Its 5V pin powers the sensor; the buzzer is on D8."
+    },
+    "BUZ": {
+      "name": "Piezo buzzer on D8",
+      "what": "A passive piezo: tone(8, 2000) makes it sound at 2 kHz. A few mA, so it goes straight on a pin."
+    }
+  },
+  "power": {
+    "label": "Power the bench",
+    "ok": "Nano on USB: Vcc 5 V, straight onto every chip on the board"
+  },
+  "modes": {
+    "wall": { "title": "Ping and print" },
+    "approach": { "title": "Parking beeper" },
+    "cushion": { "title": "Ping a cushion" },
+    "open": { "title": "Nothing in range" },
+    "code": {
+      "wall": "Ping and print: a wall 30 cm in front",
+      "cushion": "Ping and print, pointed at a cushion 40 cm away",
+      "open": "Ping and print, pointed at an empty room",
+      "park": "Parking sensor: beeps faster as a hand comes closer",
+      "trig": "a HIGH of at least 10 µs starts one ping",
+      "timeout": "give up after 30 ms (about 5 m): 0 means no echo",
+      "cm": "58 µs of round trip per cm",
+      "noEcho": "0 is not \"very close\": nothing came back",
+      "gap": "at least 60 ms between pings, so the last echo has died away",
+      "stop": "under 10 cm: one long tone",
+      "rate": "a 50 ms beep every cm x 10 ms: faster as it gets closer"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Strip to the bare PCB",
+      "body": "Take every part off the blue board. You will put it back the way it is made: the chips on the back first, then the crystal and the header, then the two cans.",
+      "refusal": "Unplug the power first: never work on a live board"
+    },
+    "smd": {
+      "title": "Pick and place the SMD parts, then reflow",
+      "body": "Every chip is on the back: the EM78P153S, the MAX3232, the LM324, two transistors and about thirty resistors and capacitors. The front keeps only the cans, the crystal and the header joints.",
+      "refusal": "The SMD parts go on first, on a bare board"
+    },
+    "low": {
+      "title": "Fit the crystal and the header",
+      "body": "The low parts first: the 4 MHz crystal between the can footprints, and the right-angle header with its body on the back.",
+      "refusal": "SMD parts first: run pick and place and reflow"
+    },
+    "cans": {
+      "title": "Fit the two cans",
+      "body": "T on the left, R on the right. They look the same, and on most boards they are; the silkscreen letter says which is which.",
+      "refusal": "Low parts first: with the cans on, the board rocks when you flip it to solder"
+    },
+    "solder": {
+      "title": "Solder the through-hole parts",
+      "body": "From the back: two leads per can, two for the crystal, four for the header. A cold joint on a can lead and the board goes deaf; on Echo, readings come and go.",
+      "refusal": "Nothing to solder yet: place the parts first"
+    },
+    "wire-nano": {
+      "title": "Wire the Nano",
+      "body": "Vcc to 5V, Trig to D9, Echo to D10, Gnd to GND. Echo is a 5 V output: fine on a Nano, too much for a 3.3 V board without a divider.",
+      "refusal": "Unplug the power first: never work on a live board"
+    },
+    "wire-buzzer": {
+      "title": "Wire the buzzer",
+      "body": "+ to D8, - to GND. It is the parking sensor's voice.",
+      "refusal": "Unplug the power first, and wire the Nano first"
+    },
+    "plug": {
+      "title": "Power the bench",
+      "body": "USB into the Nano. Nothing lights on the HC-SR04: it has no power LED. It waits for a pulse on Trig.",
+      "refusal": "Finish the build first: every part on and soldered, the Nano and the buzzer wired"
+    },
+    "wall": {
+      "title": "Upload Ping and print",
+      "body": "Once a second: a 10 µs pulse on Trig, then pulseIn() times Echo. A wall 30 cm away gives about 1740 µs, 30 cm. Watch the rings leave T and come back down onto R.",
+      "refusal": "Power the bench first"
+    },
+    "approach": {
+      "title": "Upload Parking beeper",
+      "body": "A hand comes from 1 m to 5 cm. The sketch pings every 60 ms and beeps once every distance x 10 ms: every second at 1 m, every 300 ms at 30 cm, one long tone under 10 cm.",
+      "refusal": "Power the bench first"
+    },
+    "cushion": {
+      "title": "Upload Ping a cushion",
+      "body": "The same sketch, pointed at a cushion 40 cm away. Soft cloth soaks the sound up: most pings read no echo, and now and then the wall behind answers at 183 cm.",
+      "refusal": "Power the bench first"
+    },
+    "open": {
+      "title": "Upload Nothing in range",
+      "body": "Pointed at an empty room. The board waits about 38 ms, drops Echo and every ping reads no echo: pulseIn() gave up after 30 ms and returned 0.",
+      "refusal": "Power the bench first"
+    },
+    "reverse-vcc": {
+      "title": "Wire Vcc and Gnd the wrong way round",
+      "body": "5 V on Gnd and GND on Vcc. The board has no diode, no fuse and no regulator."
+    },
+    "vcc-on-3v3": {
+      "title": "Power Vcc from the Nano's 3V3 pin",
+      "body": "The wire one pin over, on 3V3. The chips still run. Watch the rings and the readings."
+    },
+    "no-receiver": {
+      "title": "Pull the receiver",
+      "body": "Take R off the board and ping the wall."
+    },
+    "cold-echo": {
+      "title": "Leave a cold joint on Echo",
+      "body": "A dull, cracked joint on the header's Echo pin. Ping the wall."
+    },
+    "no-timeout": {
+      "title": "Forget pulseIn()'s timeout",
+      "body": "pulseIn(ECHO, HIGH) with no third argument and no check for \"no echo\", pointed at the empty room."
+    },
+    "short-vcc": {
+      "title": "Short Vcc to Gnd",
+      "body": "A stray wire across the header's outer pins."
+    },
+    "exploded": {
+      "title": "Exploded view",
+      "body": "Unplug and lift the parts by build group: the chips on the back, the crystal and header, then the cans.",
+      "refusal": "Unplug the power first: never work on a live board"
+    }
+  },
+  "faults": {
+    "reverse-vcc": {
+      "title": "Vcc reversed",
+      "symptom": "The chips get hot within seconds and the Nano's USB may drop out. Afterwards the board often reads nothing.",
+      "explanation": "Nothing on the HC-SR04 blocks a reversed supply: current flows backwards through the protection diodes inside every chip. The MAX3232 and the MCU usually die.",
+      "fix": "Unplug at once, wire Vcc to 5V and Gnd to GND. Connect Gnd first, as the datasheets say."
+    },
+    "vcc-on-3v3": {
+      "title": "Only 3.3 V on Vcc",
+      "symptom": "Every ping reads no echo. The burst rings go out faint and nothing comes back.",
+      "explanation": "The MCU runs on 3.3 V, but the MAX3232's drive and the LM324's gain need 4.5-5.5 V. The burst is too weak and the receiver too deaf to hear it come back.",
+      "fix": "Power Vcc from 5V. On a 3.3 V board use the HC-SR04P, which runs from 3.0 V."
+    },
+    "no-receiver": {
+      "title": "No receiver",
+      "symptom": "Every ping reads no echo, although the burst goes out.",
+      "explanation": "With R gone nothing hears the echo, so the MCU waits its 38 ms and drops Echo. A cold joint on a can lead does the same.",
+      "fix": "Fit R and solder both leads."
+    },
+    "cold-echo": {
+      "title": "Cold joint on Echo",
+      "symptom": "Readings come and go: a good distance, then no echo, then a good one again. Touching the board changes it.",
+      "explanation": "Through a joint that makes and breaks, the Echo pulse sometimes never reaches the Nano, and pulseIn() times out.",
+      "fix": "Reheat the joint with fresh solder until it flows into a shiny cone."
+    },
+    "no-timeout": {
+      "title": "pulseIn() with no timeout",
+      "symptom": "An empty room reads 655 cm, beyond the sensor's 4 m, and each ping takes longer.",
+      "explanation": "With nothing to echo, the board holds Echo HIGH for its own timeout, about 38 ms, and drops it. pulseIn() with no timeout waits up to a second, measures that 38 ms pulse and the sketch prints it as 38000 / 58 = 655 cm.",
+      "fix": "Pass a timeout, pulseIn(ECHO, HIGH, 30000UL), and treat 0 as \"no echo\", not as a distance."
+    },
+    "short-vcc": {
+      "title": "Vcc shorted to Gnd",
+      "symptom": "Everything goes dark: the Nano resets or its USB drops out, and its polyfuse gets warm.",
+      "explanation": "The board has no fuse of its own. The short pulls the Nano's 5 V down until its USB polyfuse limits the current.",
+      "fix": "Unplug, remove the stray wire and check the header pins for a solder bridge."
+    }
+  },
+  "status": {
+    "status": "Status",
+    "powered": "Bench power",
+    "mode": "Sketch",
+    "distance": "Distance",
+    "echo": "Echo pulse (µs)",
+    "beep": "Beeping",
+    "vcc": "Vcc",
+    "usb": "USB current"
+  },
+  "current": {
+    "usb": "Nano USB (500 mA polyfuse)",
+    "nano": "Nano running",
+    "board": "HC-SR04 ranging",
+    "buzzer": "Buzzer sounding"
+  },
+  "tasks": {
+    "sonar": "Distance to what is in front of the sensor",
+    "brake": {
+      "title": "Don't brake in an empty room",
+      "brief": "This robot's bumper sketch lights the brake (D13) when something is closer than 20 cm. It works against a wall, but in an open room it brakes too: when nothing echoes, pulseIn() returns 0 and 0 cm is \"closer than 20\". Brake only when there really was an echo under 20 cm. The wall is 80 cm off, 15 cm at 1.5 s, gone at 3 s and 8 cm away at 4.5 s.",
+      "hints": {
+        "1": "ping() returns 0 when nothing came back. 0 is not a distance.",
+        "2": "Both must be true: there was an echo, and it was close.",
+        "3": "bool brake = cm > 0 && cm < 20;"
+      },
+      "checks": {
+        "1": "Runs",
+        "2": "Wall at 80 cm: no brake",
+        "3": "Wall at 15 cm: brake",
+        "4": "Empty room: no brake",
+        "5": "Wall at 8 cm: brake"
+      },
+      "code": {
+        "goal": "Brake under 20 cm, but not when nothing echoes",
+        "todo": "0 means no echo: this brakes in an empty room too",
+        "zero": "0 when nothing came back within 30 ms"
+      }
+    },
+    "speed": {
+      "title": "How fast is it coming?",
+      "brief": "A robot needs to know not just how far but how fast. The sketch pings every 500 ms. Work out the closing speed from this distance, the last one and the time between them, and add \", approaching at N cm/s\", \", moving away at N cm/s\" or \", holding\" (within 2 cm/s) to each line. A hand comes from 1 m to 30 cm at 20 cm/s, holds, then backs off.",
+      "hints": {
+        "1": "speed = (last - cm) / seconds between the pings: positive when it comes closer.",
+        "2": "Keep last and lastAt from the previous ping; skip the speed when either reading is no echo.",
+        "3": "Serial.print(speed, 0) prints it with no decimals."
+      },
+      "checks": {
+        "1": "Runs",
+        "2": "Says it is approaching at about 20 cm/s",
+        "3": "Says holding when the hand stops at 30 cm",
+        "4": "Says moving away at about 20 cm/s"
+      },
+      "code": {
+        "goal": "Print the closing speed after each distance",
+        "todo": "compare with the last reading: approaching at N cm/s, moving away at N cm/s or holding"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "crystal": {
+        "q": "What does the 4 MHz crystal do?",
+        "options": {
+          "1": "Clocks the MCU that makes the burst and times the echo",
+          "2": "Amplifies the echo",
+          "3": "Regulates the 5 V"
+        },
+        "why": "The EM78P153S counts out the 40 kHz burst and the echo from its clock. Take the crystal out and nothing runs."
+      },
+      "cans": {
+        "q": "T and R are the same kind of can. What makes one the transmitter?",
+        "options": {
+          "1": "T is bigger",
+          "2": "What it is wired to: T to the MAX3232 that drives it, R to the LM324 that listens",
+          "3": "R has no piezo"
+        },
+        "why": "A piezo turns voltage into movement and movement into voltage. Driven hard, it sends; wired to an amplifier, it listens."
+      },
+      "protection": {
+        "q": "What protects the HC-SR04 from a wrong supply?",
+        "options": {
+          "1": "A regulator",
+          "2": "A reverse-polarity diode",
+          "3": "Nothing: Vcc goes straight to every chip"
+        },
+        "why": "The classic board has no regulator, no diode and no fuse. Get Vcc right before you plug in."
+      }
+    },
+    "ping": {
+      "formula": {
+        "q": "Echo is HIGH for 1740 µs. How far away is the wall?",
+        "options": {
+          "1": "17.4 cm",
+          "2": "30 cm",
+          "3": "58 cm"
+        },
+        "why": "1740 / 58 = 30. The pulse is the round trip, and 58 µs is one centimetre there and back."
+      },
+      "why58": {
+        "q": "Why 58 µs per cm?",
+        "options": {
+          "1": "Sound covers a centimetre in 29 µs at 343 m/s, and it has to go there and back",
+          "2": "The crystal divides by 58",
+          "3": "The sensor's datasheet chose it"
+        },
+        "why": "1 cm / 34 300 cm/s = 29 µs one way, 58 µs for the round trip. It changes a little with temperature."
+      },
+      "zero": {
+        "q": "pulseIn(ECHO, HIGH, 30000UL) returns 0. What does it mean?",
+        "options": {
+          "1": "Something is touching the sensor",
+          "2": "The sensor is broken",
+          "3": "No echo started within 30 ms"
+        },
+        "why": "0 is pulseIn()'s way of saying it gave up. It is not a distance."
+      }
+    },
+    "faults": {
+      "low-vcc": {
+        "q": "On 3.3 V the board runs but reads no echo. Why?",
+        "options": {
+          "1": "The MCU stops",
+          "2": "The transmit drive and the receiver's gain need 4.5-5.5 V",
+          "3": "Echo goes too high"
+        },
+        "why": "The MAX3232 makes its ±10 V from Vcc and the LM324's gain drops with it. The burst goes out weak and nothing is heard."
+      },
+      "soft": {
+        "q": "Why does a cushion read no echo?",
+        "options": {
+          "1": "It is too close",
+          "2": "It is too warm",
+          "3": "Soft cloth soaks the sound up instead of bouncing it back"
+        },
+        "why": "Hard, flat targets echo best. Cloth, foam and fur swallow most of the burst; angled surfaces bounce it away."
+      },
+      "timeout": {
+        "q": "With no timeout, why does an empty room read 655 cm?",
+        "options": {
+          "1": "pulseIn() measures the board's own 38 ms timeout pulse, and 38000 / 58 = 655",
+          "2": "The room is 6.5 m long",
+          "3": "The Nano's clock is wrong"
+        },
+        "why": "With nothing to echo, the board still raises Echo and drops it after about 38 ms. Without a shorter timeout the sketch takes that as a distance."
+      }
+    },
+    "end": {
+      "cone": {
+        "q": "The sensor hears in a cone of about 15°. What does that mean for a robot?",
+        "options": {
+          "1": "A thin chair leg off to one side can be missed",
+          "2": "It sees behind itself",
+          "3": "It sees through walls"
+        },
+        "why": "Anything outside the cone, or too thin to echo, is invisible. Robots often turn the sensor on a servo, or use two."
+      },
+      "two": {
+        "q": "Two robots ping close together. What goes wrong?",
+        "options": {
+          "1": "Nothing",
+          "2": "Each can hear the other's burst and read a false distance",
+          "3": "They both read further"
+        },
+        "why": "Every HC-SR04 uses 40 kHz. Take turns, or ignore readings that jump."
+      },
+      "gap": {
+        "q": "Why wait at least 60 ms between pings?",
+        "options": {
+          "1": "The chip overheats",
+          "2": "Serial needs the time",
+          "3": "So the last ping's echoes have died away before the next burst"
+        },
+        "why": "Sound still bouncing round the room from the last ping can be heard as the echo of the next one."
+      }
+    }
+  }
+}

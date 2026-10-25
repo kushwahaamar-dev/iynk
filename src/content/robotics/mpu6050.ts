@@ -286,7 +286,7 @@ const mpu6050 = {
     page: '/figures/robotics/mpu6050.html',
     parts: [
       { id: 'IC1', short: 'MPU-6050', role: 'sensor', name: 'parts.IC1.name', what: 'parts.IC1.what' },
-      { id: 'U2', short: '3V3 REG', role: 'other', name: 'parts.U2.name', what: 'parts.U2.what' },
+      { id: 'U2', short: '3V3 REG', role: 'regulator', name: 'parts.U2.name', what: 'parts.U2.what' },
       { id: 'C10', short: '10 µF', role: 'passive', name: 'parts.C10.name', what: 'parts.C10.what' },
       { id: 'C14', short: 'CPOUT', role: 'passive', name: 'parts.C14.name', what: 'parts.C14.what' },
       { id: 'R4', short: 'SDA PULL-UP', role: 'passive', name: 'parts.R4.name', what: 'parts.R4.what' },
