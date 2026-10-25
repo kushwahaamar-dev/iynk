@@ -119,13 +119,17 @@ export function ChatPanel({ room, t, locale }: { room: RoomApi; t: TogetherT; lo
   };
 
   const translateReady = status === "ready" && features.ai;
+  const voiceReady = status === "ready" && features.voice;
+  // What isn't set up, said once: not one line above the chat and another under it.
+  const offNote =
+    status !== "ready" ? null : !features.ai && !features.voice ? t("chat.offBoth") : !features.ai ? t("chat.translateOff") : !features.voice ? t("chat.voice.off") : null;
 
   return (
     <section aria-labelledby={`${id}-title`} className="flex min-h-0 flex-col gap-2">
       <h3 id={`${id}-title`} className="font-head text-base font-bold">
         {t("chat.title")}
       </h3>
-      {status === "ready" && !features.ai ? <p className="text-xs text-muted">{t("chat.translateOff")}</p> : null}
+      {offNote ? <p className="text-xs text-muted">{offNote}</p> : null}
       <ol
         ref={list}
         role="log"
@@ -136,7 +140,7 @@ export function ChatPanel({ room, t, locale }: { room: RoomApi; t: TogetherT; lo
           const el = event.currentTarget;
           pinned.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48;
         }}
-        className="flex max-h-80 min-h-32 flex-col gap-3 overflow-y-auto rounded-ink-sm border-2 border-line bg-sunken p-2.5 focus-visible:outline-2 focus-visible:outline-cobalt"
+        className="flex max-h-80 min-h-32 flex-col gap-3 overflow-y-auto rounded-ink-sm bg-sunken p-3"
       >
         {count === 0 ? <li className="m-auto max-w-56 text-center text-sm text-muted">{t("chat.empty")}</li> : null}
         {room.messages.map((msg) =>
@@ -159,7 +163,7 @@ export function ChatPanel({ room, t, locale }: { room: RoomApi; t: TogetherT; lo
         )}
       </ol>
       <form onSubmit={send} className="flex items-end gap-2">
-        <VoiceButton t={t} lang={locale} enabled={status === "ready" && features.voice} onText={(text, lang) => room.chat(text, "voice", { lang })} />
+        {voiceReady ? <VoiceButton t={t} lang={locale} enabled onText={(text, lang) => room.chat(text, "voice", { lang })} /> : null}
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <label htmlFor={`${id}-draft`} className="sr-only">
             {t("chat.label")}
@@ -182,7 +186,6 @@ export function ChatPanel({ room, t, locale }: { room: RoomApi; t: TogetherT; lo
           {t("chat.send")}
         </Button>
       </form>
-      {status === "ready" && !features.voice ? <p className="text-xs text-muted">{t("chat.voice.off")}</p> : null}
     </section>
   );
 }

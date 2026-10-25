@@ -63,6 +63,7 @@
     "apply": "Diesen Aufbau im Labor verwenden",
     "applied": "Das Labor verwendet jetzt diesen Aufbau.",
     "upgrade": "Für {amount} mehr: Schub-Gewicht {tw} und {minutes} min Flugzeit.",
+    "upgradeCurrent": "Dein aktueller Aufbau schafft Schub-Gewicht {tw} und {minutes} min Flugzeit für {amount} mehr.",
     "noneBudget": "Bis {amount} erfüllt nichts deine Grenzen. Der günstigste passende Aufbau kostet {cheapest}.",
     "noneConstraints": "Keine Kombination dieser Teile erfüllt deine Grenzen. Senke ein Minimum, um einen Aufbau zu sehen.",
     "tw": "S:G",
@@ -73,7 +74,8 @@
     "estimateNote": "Enthält Katalogpreise",
     "checked": "Der Rechner hat {count} Kombinationen geprüft.",
     "was": "Dein Aufbau: {value}",
-    "budgetValue": "Budget {amount}"
+    "budgetValue": "Budget {amount}",
+    "floor": "Günstigster sicherer Aufbau: {amount}"
   },
   "nearby": {
     "title": "In deiner Nähe",

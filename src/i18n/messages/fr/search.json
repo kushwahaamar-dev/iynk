@@ -63,6 +63,7 @@
     "apply": "Utiliser ce montage dans le labo",
     "applied": "Le labo utilise maintenant ce montage.",
     "upgrade": "Pour {amount} de plus : poussée/poids {tw} et {minutes} min de vol.",
+    "upgradeCurrent": "Votre montage actuel donne poussée/poids {tw} et {minutes} min de vol pour {amount} de plus.",
     "noneBudget": "Rien ne respecte vos limites pour {amount} maximum. Le montage le moins cher qui les respecte coûte {cheapest}.",
     "noneConstraints": "Aucune combinaison de ces pièces ne respecte vos limites. Baissez un minimum pour voir un montage.",
     "tw": "P:P",
@@ -73,7 +74,8 @@
     "estimateNote": "Inclut des prix du catalogue",
     "checked": "Le calculateur a testé {count} combinaisons.",
     "was": "Votre montage : {value}",
-    "budgetValue": "Budget {amount}"
+    "budgetValue": "Budget {amount}",
+    "floor": "Montage sûr le moins cher : {amount}"
   },
   "nearby": {
     "title": "Près de chez vous",

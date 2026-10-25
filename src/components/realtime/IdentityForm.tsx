@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, type FormEvent } from "react";
+import { useId, useRef, useState, type FormEvent } from "react";
 import { Button, cx } from "@/components/ui";
 import { MAX_NAME_LENGTH, PEER_COLORS, saveIdentity, type Identity } from "@/lib/realtime";
 import type { TogetherT } from "./messages";
@@ -22,37 +22,54 @@ export function IdentityForm({
   const id = useId();
   const [name, setName] = useState(initial?.name ?? "");
   const [color, setColor] = useState<string>(initial?.color ?? PEER_COLORS[0].hex);
+  const [missing, setMissing] = useState(false);
+  const nameRef = useRef<HTMLInputElement>(null);
   const clean = name.trim();
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    if (!clean) return;
+    if (!clean) {
+      setMissing(true);
+      nameRef.current?.focus();
+      return;
+    }
     saveIdentity({ name: clean, color });
     onDone?.();
   };
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-3" aria-labelledby={`${id}-title`}>
+    <form onSubmit={submit} className="flex flex-col gap-3" aria-labelledby={`${id}-title`} noValidate>
       <div>
         <h3 id={`${id}-title`} className="font-head text-base font-bold">
           {t("identity.title")}
         </h3>
         <p className="text-sm text-muted">{t("identity.hint")}</p>
       </div>
-      <label className="flex flex-col gap-1 text-sm font-bold" htmlFor={`${id}-name`}>
+      <label className="flex flex-col gap-1 text-sm font-semibold" htmlFor={`${id}-name`}>
         {t("identity.name")}
         <input
+          ref={nameRef}
           id={`${id}-name`}
           value={name}
-          onChange={(event) => setName(event.target.value)}
+          onChange={(event) => {
+            setName(event.target.value);
+            if (event.target.value.trim()) setMissing(false);
+          }}
           maxLength={MAX_NAME_LENGTH}
           autoComplete="nickname"
           required
-          className="min-h-11 rounded-ink-sm border-2 border-line bg-surface px-3 font-body text-base font-normal text-ink"
+          aria-invalid={missing}
+          aria-describedby={missing ? `${id}-missing` : undefined}
+          className="min-h-11 rounded-ink-sm border-2 border-line bg-surface px-3 font-body text-base font-normal text-ink aria-invalid:border-bad"
         />
       </label>
+      {missing ? (
+        <p id={`${id}-missing`} className="-mt-1 text-sm text-bad">
+          {t("identity.missing")}
+        </p>
+      ) : null}
       <fieldset className="flex flex-col gap-1">
-        <legend className="mb-1 text-sm font-bold">{t("identity.color")}</legend>
+        <legend className="mb-1 text-sm font-semibold">{t("identity.color")}</legend>
         <div className="flex flex-wrap gap-2">
           {PEER_COLORS.map((swatch) => (
             <label
@@ -82,7 +99,7 @@ export function IdentityForm({
         </div>
       </fieldset>
       <div className="flex flex-wrap gap-2">
-        <Button type="submit" variant="primary" disabled={!clean}>
+        <Button type="submit" variant="primary">
           {submitLabel}
         </Button>
         {onCancel ? (

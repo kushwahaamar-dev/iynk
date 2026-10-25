@@ -171,18 +171,28 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
     return () => window.removeEventListener(DOCK_TAB_EVENT, onDockTab);
   }, [features]);
 
-  // On a desk the drawer takes focus when it opens: the name field when a room link brought you here, else the tab.
+  // On a desk the drawer takes focus when you open it, or when a room link needs your name; a room link that
+  // opens it for someone already named leaves focus where it is.
   const wantsName = roomOpened && together?.identity === null;
+  const takesFocus = open || wantsName;
   useEffect(() => {
-    if (phone || !isOpen) return;
-    const frame = requestAnimationFrame(() => {
+    if (phone || !isOpen || !takesFocus) return;
+    // The Together strings load on demand, so the name field can take a few frames to appear.
+    let frame = 0;
+    let tries = 0;
+    const place = () => {
       const drawer = drawerRef.current;
       if (!drawer || drawer.contains(document.activeElement)) return;
       const name = wantsName ? drawer.querySelector<HTMLInputElement>('input[autocomplete="nickname"]') : null;
+      if (wantsName && !name && tries++ < 120) {
+        frame = requestAnimationFrame(place);
+        return;
+      }
       (name ?? drawer.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]'))?.focus();
-    });
+    };
+    frame = requestAnimationFrame(place);
     return () => cancelAnimationFrame(frame);
-  }, [phone, isOpen, wantsName]);
+  }, [phone, isOpen, takesFocus, wantsName]);
 
   const tabs = shown.map((id) => ({
     id,

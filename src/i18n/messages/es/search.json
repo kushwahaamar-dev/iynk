@@ -63,6 +63,7 @@
     "apply": "Usar este montaje en el laboratorio",
     "applied": "El laboratorio ya usa este montaje.",
     "upgrade": "Por {amount} más: empuje/peso {tw} y {minutes} min de vuelo.",
+    "upgradeCurrent": "Tu montaje actual da empuje/peso {tw} y {minutes} min de vuelo por {amount} más.",
     "noneBudget": "Nada cumple tus límites por {amount} o menos. El montaje más barato que los cumple cuesta {cheapest}.",
     "noneConstraints": "Ninguna combinación de estas piezas cumple tus límites. Baja algún mínimo para ver un montaje.",
     "tw": "E:P",
@@ -73,7 +74,8 @@
     "estimateNote": "Incluye precios del catálogo",
     "checked": "La calculadora probó {count} combinaciones.",
     "was": "Tu montaje: {value}",
-    "budgetValue": "Presupuesto {amount}"
+    "budgetValue": "Presupuesto {amount}",
+    "floor": "Montaje seguro más barato: {amount}"
   },
   "nearby": {
     "title": "Cerca de ti",

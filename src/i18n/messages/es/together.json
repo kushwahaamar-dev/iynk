@@ -2,6 +2,7 @@
   "panel": {
     "title": "Juntos",
     "intro": "Constrúyelo con amigos. Todos ven el mismo banco de trabajo y el chat se traduce al idioma de cada persona.",
+    "introPlain": "Constrúyelo con amigos. Todos ven el mismo banco de trabajo y escribe una persona a la vez.",
     "start": "Abrir una sala",
     "joinLabel": "Código de sala o enlace de invitación",
     "joinPlaceholder": "p. ej. k7m2qx",
@@ -25,6 +26,7 @@
     "title": "¿Quién eres?",
     "hint": "Las personas de la sala ven este nombre. Se queda en este dispositivo.",
     "name": "Tu nombre",
+    "missing": "Escribe el nombre que verán las personas de la sala.",
     "color": "Tu color",
     "save": "Entrar en la sala",
     "saveOnly": "Guardar",
@@ -99,6 +101,7 @@
     "showTranslation": "Ver traducción",
     "translating": "Traduciendo…",
     "translateOff": "La traducción no está configurada en esta instalación, así que los mensajes se ven tal como se escribieron.",
+    "offBoth": "La traducción y los mensajes de voz no están configurados en esta instalación, así que los mensajes se ven tal como se escribieron.",
     "translateFailed": "No se pudo traducir este mensaje.",
     "sending": "Enviando…",
     "kind": {

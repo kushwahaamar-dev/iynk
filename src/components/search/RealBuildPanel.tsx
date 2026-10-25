@@ -236,6 +236,8 @@ function slotLabel(design: DroneDesign, slot: Slot, option: string): string {
   return table[option]?.label ?? option;
 }
 
+const samePick = (a: DesignPick, b: DesignPick) => a.batt === b.batt && a.motor === b.motor && a.prop === b.prop;
+
 function NumberField({ id, label, value, onChange, step, max }: { id: string; label: string; value: number; onChange: (v: number) => void; step: number; max: number }) {
   return (
     <div className="min-w-0">
@@ -287,10 +289,14 @@ function Optimiser({
   const [minFlightMin, setMinFlight] = useState(SHORT_FLIGHT_MIN);
   const [applied, setApplied] = useState<string | null>(null);
 
-  const step = range.max - range.min > 200 ? 10 : 5;
-  const low = Math.floor(range.min / step) * step;
-  const high = Math.max(low + step, Math.ceil(range.max / step) * step);
-  const currentCost = useMemo(() => optimize({ design, ...priced, budget: Infinity, constraints: { minTW: 0, minFlightMin: 0 }, current: pick }).current.cost, [design, priced, pick]);
+  // The slider runs from the cheapest build the calculator passes as safe to about half as much again as yours.
+  const open = useMemo(() => optimize({ design, ...priced, budget: Infinity, constraints: { minTW: 0, minFlightMin: 0 }, current: pick }), [design, priced, pick]);
+  const currentCost = open.current.cost;
+  const floor = open.cheapest?.cost ?? range.min;
+  const top = Math.max(range.max, currentCost * 1.5);
+  const step = top - floor > 200 ? 10 : 5;
+  const low = Math.floor(floor / step) * step;
+  const high = Math.max(low + step, Math.ceil(top / step) * step);
   const budget = Math.min(high, Math.max(low, chosenBudget ?? Math.ceil(currentCost / step) * step));
 
   const result: OptimizeResult = useMemo(
@@ -338,9 +344,11 @@ function Optimiser({
           onChange={(e) => setBudget(Number(e.target.value))}
           className="mt-1 w-full [@media(pointer:coarse)]:h-11"
         />
-        <div className="tabular flex justify-between font-ui text-xs text-muted" aria-hidden="true">
-          <span>{f.whole(low)}</span>
-          <span>{f.whole(high)}</span>
+        <div className="flex justify-between gap-3 text-xs text-muted">
+          <span>{t("opt.floor", { amount: f.money(floor) })}</span>
+          <span className="tabular font-ui" aria-hidden="true">
+            {f.whole(high)}
+          </span>
         </div>
       </div>
 
@@ -385,7 +393,7 @@ function Optimiser({
             ) : null}
             {result.upgrade ? (
               <p className="text-sm text-muted">
-                {t("opt.upgrade", {
+                {t(samePick(result.upgrade.pick, pick) ? "opt.upgradeCurrent" : "opt.upgrade", {
                   amount: f.money(sumMoney([result.upgrade.cost, -best.cost])),
                   tw: f.one(result.upgrade.tw),
                   minutes: f.one(result.upgrade.flyMin),

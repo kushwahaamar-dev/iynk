@@ -106,7 +106,7 @@ export function PresenceCursors({ className }: { className?: string }) {
               <svg aria-hidden="true" viewBox="0 0 16 16" className="size-5 drop-shadow-[1px_1px_0_var(--shadow-c)]">
                 <path d="M2 1.5l11 6.2-4.7 1.2-2 4.6z" fill={peer.color} stroke="var(--color-ink-fixed)" strokeWidth="1.4" strokeLinejoin="round" />
               </svg>
-              <span className="ml-3 inline-block -translate-y-1 rounded-full border-2 border-line px-1.5 text-[11px] leading-4 font-bold text-ink-fixed" style={{ backgroundColor: peer.color }}>
+              <span className="ml-3 inline-block -translate-y-1 rounded-full border-2 border-line px-1.5 text-xs leading-4 font-bold text-ink-fixed" style={{ backgroundColor: peer.color }}>
                 {peer.name}
               </span>
             </li>
@@ -117,7 +117,7 @@ export function PresenceCursors({ className }: { className?: string }) {
         type="button"
         aria-pressed={pointing}
         onClick={() => setPointing((v) => !v)}
-        className="pointer-events-auto absolute top-2 right-2 inline-flex min-h-11 items-center gap-1.5 rounded-full border-2 border-line bg-surface px-3 text-xs font-bold text-ink shadow-ink-sm aria-pressed:bg-ink aria-pressed:text-paper"
+        className="pointer-events-auto absolute top-3 left-1/2 -translate-x-1/2 inline-flex min-h-9 items-center gap-1.5 rounded-full border-2 border-line bg-surface px-3 text-sm font-semibold text-ink hover:bg-sunken aria-pressed:bg-ink aria-pressed:text-paper [@media(pointer:coarse)]:min-h-11"
       >
         <svg aria-hidden="true" viewBox="0 0 16 16" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round">
           <path d="M3 2l9 5-4 1-1.6 4z" />

@@ -2,6 +2,7 @@
   "panel": {
     "title": "Ensemble",
     "intro": "Construisez-le entre amis. Tout le monde voit le même établi, et le chat est traduit dans la langue de chacun.",
+    "introPlain": "Construisez-le entre amis. Tout le monde voit le même établi, et une seule personne tape à la fois.",
     "start": "Ouvrir un salon",
     "joinLabel": "Code du salon ou lien d'invitation",
     "joinPlaceholder": "p. ex. k7m2qx",
@@ -25,6 +26,7 @@
     "title": "Qui êtes-vous ?",
     "hint": "Les personnes du salon voient ce nom. Il reste sur cet appareil.",
     "name": "Votre nom",
+    "missing": "Tapez le nom que verront les personnes du salon.",
     "color": "Votre couleur",
     "save": "Entrer dans le salon",
     "saveOnly": "Enregistrer",
@@ -99,6 +101,7 @@
     "showTranslation": "Voir la traduction",
     "translating": "Traduction…",
     "translateOff": "La traduction n'est pas configurée sur ce déploiement : les messages s'affichent tels qu'ils ont été écrits.",
+    "offBoth": "La traduction et les messages vocaux ne sont pas configurés sur ce déploiement : les messages s'affichent tels qu'ils ont été écrits.",
     "translateFailed": "Impossible de traduire ce message.",
     "sending": "Envoi…",
     "kind": {

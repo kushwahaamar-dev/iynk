@@ -2,6 +2,7 @@
   "panel": {
     "title": "一起",
     "intro": "和朋友一起组装。每个人看到的是同一个实验台，聊天内容会翻译成每个人自己的语言。",
+    "introPlain": "和朋友一起组装。每个人看到的是同一个实验台，每次由一个人输入。",
     "start": "开一个房间",
     "joinLabel": "房间代码或邀请链接",
     "joinPlaceholder": "例如 k7m2qx",
@@ -25,6 +26,7 @@
     "title": "你是谁？",
     "hint": "房间里的人会看到这个名字。它只保存在这台设备上。",
     "name": "你的名字",
+    "missing": "请输入房间里其他人会看到的名字。",
     "color": "你的颜色",
     "save": "加入房间",
     "saveOnly": "保存",
@@ -99,6 +101,7 @@
     "showTranslation": "显示译文",
     "translating": "正在翻译…",
     "translateOff": "此部署尚未设置翻译，所以消息按原文显示。",
+    "offBoth": "此部署尚未设置翻译和语音消息，所以消息按原文显示。",
     "translateFailed": "这条消息无法翻译。",
     "sending": "正在发送…",
     "kind": {

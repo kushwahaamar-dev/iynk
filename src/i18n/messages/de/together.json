@@ -2,6 +2,7 @@
   "panel": {
     "title": "Gemeinsam",
     "intro": "Bau das mit Freunden. Alle sehen dieselbe Werkbank, und der Chat wird in die Sprache jeder Person übersetzt.",
+    "introPlain": "Bau das mit Freunden. Alle sehen dieselbe Werkbank, und es tippt immer eine Person.",
     "start": "Raum öffnen",
     "joinLabel": "Raumcode oder Einladungslink",
     "joinPlaceholder": "z. B. k7m2qx",
@@ -25,6 +26,7 @@
     "title": "Wer bist du?",
     "hint": "Die Leute im Raum sehen diesen Namen. Er bleibt auf diesem Gerät.",
     "name": "Dein Name",
+    "missing": "Gib den Namen ein, den die anderen im Raum sehen.",
     "color": "Deine Farbe",
     "save": "Raum betreten",
     "saveOnly": "Speichern",
@@ -99,6 +101,7 @@
     "showTranslation": "Übersetzung zeigen",
     "translating": "Wird übersetzt …",
     "translateOff": "Auf dieser Installation ist keine Übersetzung eingerichtet, deshalb erscheinen Nachrichten so, wie sie geschrieben wurden.",
+    "offBoth": "Auf dieser Installation sind weder Übersetzung noch Sprachnachrichten eingerichtet, deshalb erscheinen Nachrichten so, wie sie geschrieben wurden.",
     "translateFailed": "Diese Nachricht ließ sich nicht übersetzen.",
     "sending": "Wird gesendet …",
     "kind": {

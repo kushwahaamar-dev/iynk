@@ -4,6 +4,7 @@ import { useId, useState, type FormEvent } from "react";
 import type { LabDockProps } from "@/components/dock/types";
 import { Button, Callout } from "@/components/ui";
 import { useLocale } from "@/i18n/client";
+import { useFeatures } from "@/lib/features";
 import { parseRoomInput, RoomProvider, useTogether, type Together } from "@/lib/realtime";
 import { ChatPanel } from "./ChatPanel";
 import { IdentityForm } from "./IdentityForm";
@@ -56,6 +57,9 @@ function PanelBody({ together, t }: { together: Together; t: TogetherT }) {
   const locale = useLocale();
   const [renaming, setRenaming] = useState(false);
   const { room, roomId, identity, transport } = together;
+  const { status, features } = useFeatures();
+  // Chat translation runs on the AI service; without it the intro doesn't promise it.
+  const translates = status !== "ready" || features.ai;
 
   if (transport === null) return <Callout tone="warn">{t("panel.unavailable")}</Callout>;
 
@@ -78,11 +82,8 @@ function PanelBody({ together, t }: { together: Together; t: TogetherT }) {
     }
     return (
       <div className="flex flex-col gap-4">
-        <RoomBar room={room} t={t} onLeave={together.leave} />
+        <RoomBar room={room} t={t} onLeave={together.leave} onRename={() => setRenaming(true)} />
         <ChatPanel room={room} t={t} locale={locale} />
-        <Button size="sm" variant="ghost" className="self-start" onClick={() => setRenaming(true)}>
-          {t("identity.rename")}
-        </Button>
       </div>
     );
   }
@@ -94,7 +95,7 @@ function PanelBody({ together, t }: { together: Together; t: TogetherT }) {
           {t(`panel.ended.${together.ended}`)}
         </Callout>
       ) : null}
-      <p className="text-sm leading-relaxed">{t("panel.intro")}</p>
+      <p className="text-sm leading-relaxed">{translates ? t("panel.intro") : t("panel.introPlain")}</p>
       <Button variant="primary" className="self-start" onClick={together.start}>
         {together.ended ? t("panel.again") : t("panel.start")}
       </Button>

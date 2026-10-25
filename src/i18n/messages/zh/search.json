@@ -63,6 +63,7 @@
     "apply": "在实验室中使用此方案",
     "applied": "实验室已改用此方案。",
     "upgrade": "多花 {amount}：推重比 {tw}，可飞 {minutes} 分钟。",
+    "upgradeCurrent": "你当前的方案多花 {amount}：推重比 {tw}，可飞 {minutes} 分钟。",
     "noneBudget": "{amount} 以内没有满足下限的方案。满足下限的最便宜方案需要 {cheapest}。",
     "noneConstraints": "这些零件的任何组合都无法满足你的下限。请调低某个下限再看。",
     "tw": "推重比",
@@ -73,7 +74,8 @@
     "estimateNote": "包含目录价格",
     "checked": "计算器检查了 {count} 种组合。",
     "was": "你的方案：{value}",
-    "budgetValue": "预算 {amount}"
+    "budgetValue": "预算 {amount}",
+    "floor": "最便宜的安全方案：{amount}"
   },
   "nearby": {
     "title": "你附近",

@@ -2,6 +2,7 @@
   "panel": {
     "title": "Together",
     "intro": "Build this with friends. Everyone sees the same bench, and the chat is translated into each person's language.",
+    "introPlain": "Build this with friends. Everyone sees the same bench, and one person types at a time.",
     "start": "Start a room",
     "joinLabel": "Room code or invite link",
     "joinPlaceholder": "e.g. k7m2qx",
@@ -25,6 +26,7 @@
     "title": "Who are you?",
     "hint": "People in the room see this name. It stays on this device.",
     "name": "Your name",
+    "missing": "Type the name people in the room will see.",
     "color": "Your colour",
     "save": "Join the room",
     "saveOnly": "Save",
@@ -99,6 +101,7 @@
     "showTranslation": "Show translation",
     "translating": "Translating…",
     "translateOff": "Translation isn't set up on this deployment, so messages show as written.",
+    "offBoth": "Translation and voice messages aren't set up on this deployment, so messages show as written.",
     "translateFailed": "Couldn't translate this message.",
     "sending": "Sending…",
     "kind": {

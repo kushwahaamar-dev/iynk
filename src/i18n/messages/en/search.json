@@ -63,6 +63,7 @@
     "apply": "Use this build in the lab",
     "applied": "The lab now uses this build.",
     "upgrade": "For {amount} more: thrust-to-weight {tw} and {minutes} min of flight.",
+    "upgradeCurrent": "Your current build gives thrust-to-weight {tw} and {minutes} min of flight for {amount} more.",
     "noneBudget": "Nothing meets your limits within {amount}. The cheapest build that does costs {cheapest}.",
     "noneConstraints": "No combination of these parts meets your limits. Lower a minimum to see a build.",
     "tw": "T:W",
@@ -73,7 +74,8 @@
     "estimateNote": "Includes catalogue prices",
     "checked": "The calculator checked {count} combinations.",
     "was": "Your build: {value}",
-    "budgetValue": "Budget {amount}"
+    "budgetValue": "Budget {amount}",
+    "floor": "Cheapest safe build: {amount}"
   },
   "nearby": {
     "title": "Near you",
