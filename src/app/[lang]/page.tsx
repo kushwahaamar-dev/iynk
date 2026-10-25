@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { FigureFrame } from "@/components/figure";
+import { FigureFrame, FigureStill } from "@/components/figure";
 import { HeroActions, LabProgress } from "@/components/shell/dashboard/DashboardProgress";
 import { HeroArt } from "@/components/shell/dashboard/HeroArt";
 import { loadLabs } from "@/components/shell/dashboard/data";
@@ -109,6 +109,7 @@ async function Dashboard({ params }: Pick<Props, "params">) {
                 >
                   <span aria-hidden="true" className={`block h-1 ${look.band}`} />
                   <div className="flex flex-1 flex-col gap-3 p-5 sm:p-6">
+                    <FigureStill item={look.still} className="-mx-1 -mt-1 mb-1" />
                     <div className="flex items-center justify-between gap-3">
                       <h3 id={`lab-${lab.lab}-${lang}`} className="text-2xl">
                         {/* One link per card; its ::after makes the whole card the target. */}

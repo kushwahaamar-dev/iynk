@@ -13,8 +13,9 @@ type FigureStillProps = {
  */
 export function FigureStill({ item, className }: FigureStillProps) {
   return (
-    // shallower on a phone, where the cards stack in one column and the list would otherwise be mostly pictures
-    <div aria-hidden="true" className={cx("pointer-events-none flex aspect-[2/1] items-center justify-center sm:aspect-[8/5]", className)}>
+    // Shallower on a phone, where the cards stack in one column and the list would otherwise be mostly pictures.
+    // min-h-0: in a flex column a taller picture would otherwise stretch the box past its ratio.
+    <div aria-hidden="true" className={cx("pointer-events-none flex aspect-[2/1] min-h-0 items-center justify-center sm:aspect-[8/5]", className)}>
       {/* Already a WebP at twice the widest card: the image optimizer would add a request and nothing else. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
