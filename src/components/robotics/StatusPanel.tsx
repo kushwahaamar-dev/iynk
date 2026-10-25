@@ -63,7 +63,8 @@ export function Reading({ label, value, tone = "ink", compact, className, ...res
   return (
     <div className={cx("min-w-0", className)} title={compact ? `${label}: ${value}` : undefined} {...rest}>
       <div className={cx("ink-label", compact && "truncate")}>{label}</div>
-      <div className={cx("tabular font-ui font-bold leading-snug", compact ? "truncate text-base" : "break-words text-base", TONE[tone])}>{value}</div>
+      {/* tabular-nums, not .tabular: in Hindi and Chinese a word like "Running" then takes the body face. */}
+      <div className={cx("font-ui font-bold leading-snug tabular-nums", compact ? "truncate text-base" : "break-words text-base", TONE[tone])}>{value}</div>
     </div>
   );
 }
@@ -89,7 +90,8 @@ export function LiveStrip({ bench, figure, draw, t, tx }: Omit<Props, "headingId
   const state = benchState(figure, t);
   const field = mainField(bench);
   const main = field ? shown(readStatus(field, figure, draw), t) : null;
-  const supply = draw.supplies[0];
+  // The supply in use: a bench lists every input it could run from, most of them idle.
+  const supply = draw.supplies.reduce<(typeof draw.supplies)[number] | undefined>((most, next) => (!most || next.ma > most.ma ? next : most), undefined);
   return (
     <div className="grid shrink-0 grid-cols-3 gap-3 border-b-[1.5px] border-rule px-4 py-2.5" data-live-strip>
       <Reading compact label={t("status.figure")} value={state.text} tone={state.tone} />
