@@ -101,7 +101,7 @@ function intFrom(value, name, fallback, min, max) {
 }
 
 /**
- * REALTIME_ALLOWED_ORIGINS: a comma list of origins (https://simlab.tech), `https://*.example.com`
+ * REALTIME_ALLOWED_ORIGINS: a comma list of origins (https://iynk.tech), `https://*.example.com`
  * for subdomains, or `*` for any. Unset means local development: http(s)://localhost and 127.0.0.1.
  * @param {string | undefined} value
  * @returns {OriginPolicy}
@@ -132,7 +132,7 @@ export function parseOrigins(value) {
     try {
       url = new URL(entry);
     } catch {
-      throw new Error(`REALTIME_ALLOWED_ORIGINS: "${entry}" is not an origin like https://simlab.tech.`);
+      throw new Error(`REALTIME_ALLOWED_ORIGINS: "${entry}" is not an origin like https://iynk.tech.`);
     }
     if (!/^https?:$/.test(url.protocol) || url.pathname !== "/" || url.search || url.hash) {
       throw new Error(`REALTIME_ALLOWED_ORIGINS: "${entry}" must be scheme://host[:port] with nothing after it.`);

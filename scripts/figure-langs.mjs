@@ -50,7 +50,7 @@ for (const size of SIZES) {
       if (only && !only.some((o) => (p.name ?? p.path).includes(o))) continue;
       const page = await context.newPage();
       const notes = [];
-      page.on('console', (m) => { if (/SimLab i18n/.test(m.text())) notes.push(m.text().slice(0, 160)); });
+      page.on('console', (m) => { if (/iynk i18n/.test(m.text())) notes.push(m.text().slice(0, 160)); });
       page.on('pageerror', (e) => notes.push('pageerror: ' + e.message.slice(0, 160)));
       const name = `${p.name ?? p.path.replace(/\//g, '-')}-${lang}-${size.name}`;
       try {
@@ -70,7 +70,7 @@ for (const size of SIZES) {
         if (p.state) {
           await page.evaluate((state) => {
             const f = [...document.querySelectorAll('iframe')].find((x) => x.offsetParent !== null);
-            f.contentWindow.postMessage({ source: 'simlab', v: 1, type: 'set', state }, location.origin);
+            f.contentWindow.postMessage({ source: 'iynk', v: 1, type: 'set', state }, location.origin);
           }, p.state);
         }
         await page.waitForTimeout(1500);

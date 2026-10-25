@@ -3,7 +3,7 @@
 `next build` prerenders `/en/boards/uno-r3/button` and exits:
 
 ```
-SimLab i18n: no string "lessons.blink.params.color.red" in en/boards.
+iynk i18n: no string "lessons.blink.params.color.red" in en/boards.
 ```
 
 The throw is `ParamPanel` → `translate.ts`. The button lesson's color options

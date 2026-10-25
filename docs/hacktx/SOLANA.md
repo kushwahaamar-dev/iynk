@@ -1,8 +1,8 @@
-# simlab_passport: the Proof of Build program (hx:solana-program)
+# iynk_passport: the Proof of Build program (hx:solana-program)
 
-An Anchor program on Solana devnet that records verified SimLab skills as credentials and pays sponsor bounties in the same instruction. It implements HX-CONTRACT H6; the additive changes are in the changelog at the bottom. Everything here was written on 2026-10-24 during the hacking period.
+An Anchor program on Solana devnet that records verified iynk skills as credentials and pays sponsor bounties in the same instruction. It implements HX-CONTRACT H6; the additive changes are in the changelog at the bottom. Everything here was written on 2026-10-24 during the hacking period.
 
-The SimLab server re-runs a learner's deterministic lab run (`verifyRun`, hx:solana-app) and, when it passes, the issuer key sends `issue_credential`. The program never trusts the client: only the configured issuer can issue, every credential is one per learner and skill, and a bounty can only be paid once, to the right learner, for the right skill.
+The iynk server re-runs a learner's deterministic lab run (`verifyRun`, hx:solana-app) and, when it passes, the issuer key sends `issue_credential`. The program never trusts the client: only the configured issuer can issue, every credential is one per learner and skill, and a bounty can only be paid once, to the right learner, for the right skill.
 
 ## Status
 
@@ -118,7 +118,7 @@ Anchor's own errors also show up: `AccountNotSigner` (3010), `ConstraintSeeds` (
 - **How many bounties fit.** Measured on a local validator: 18,024 compute units with no bounty, 53,451 with ten (about 3,500 each). The default 200,000-unit budget fits about 20; the 1,232-byte transaction limit fits about 23 with a 64-byte skill id. Ten in one transaction are covered by the tests; send at most ten.
 - **Bounty amounts** below 890,880 lamports are refused (`BountyTooSmall`); show that minimum in the form.
 - **Anchor TS clients:** the 0.31 account resolver fills an unset signer account (here `issuer`) with the provider's wallet before it reads `has_one` relations. Pass `issuer` explicitly with `accountsPartial`, or use a provider whose wallet is the issuer.
-- The IDL and its TypeScript type are exported to `src/lib/solana/idl/simlab_passport.json` and `.ts` after every build (`node scripts/export-idl.mjs`, which `npm test` and `npm run build` run).
+- The IDL and its TypeScript type are exported to `src/lib/solana/idl/iynk_passport.json` and `.ts` after every build (`node scripts/export-idl.mjs`, which `npm test` and `npm run build` run).
 
 ## Build, test and redeploy
 
@@ -136,19 +136,19 @@ npm run setup:devnet        # initialize if needed; add --fund-issuer <SOL> and/
 - `Anchor.toml` points the provider at devnet, so **never run a bare `anchor test`**: it would deploy to devnet. `npm test` overrides the cluster, and the suite refuses to run against anything but localhost.
 - The local validator listens on 127.0.0.1:43711 (faucet 43714, gossip 43716, dynamic ports 43720-43850). `[test] upgradeable = true` loads the program with the provider wallet as upgrade authority, which `initialize` requires. A second copy at `4pmj4wWv8sYtMht4bwXG9YVCyRDxQy7om4FkksE68bDR` is loaded so the suite can show that `initialize` rejects another program's ProgramData.
 - Tests are TypeScript run by Node's built-in test runner (`node --test`, type stripping). They import only Node built-ins and Anchor, so the repo's root `tsc` and ESLint check them without the `solana/node_modules` install.
-- **Costs.** The program data account holds about 1.994 SOL of rent. Deploys write the binary into a buffer first (`~/.config/solana/simlab/deploy-buffer.json`, so a failed deploy can resume). On the first deploy the loader moves the buffer's lamports into the program data account, so that rent is paid once. An upgrade writes a fresh buffer while the old program data stays funded, so the deployer needs about 2 SOL more until the loader closes the buffer and refunds it. The deploy script checks the balance first and says how much is missing.
+- **Costs.** The program data account holds about 1.994 SOL of rent. Deploys write the binary into a buffer first (`~/.config/solana/iynk/deploy-buffer.json`, so a failed deploy can resume). On the first deploy the loader moves the buffer's lamports into the program data account, so that rent is paid once. An upgrade writes a fresh buffer while the old program data stays funded, so the deployer needs about 2 SOL more until the loader closes the buffer and refunds it. The deploy script checks the balance first and says how much is missing.
 - **SBPF version.** The binary is SBPF v0, the default of cargo-build-sbf 4.2.2. Devnet still accepts v0 deployments: `SIMD-0500: Disable deployment of SBPF v0, v1 and v2 programs` (`B8JJXCy5amZyWG9r7EnUYLwzXSXTxG7GZ1qZ1qggo83g`) was inactive on devnet at 14:12 CDT. A plain `solana-test-validator` activates every feature, so it refuses v0 deploys; rehearse with `--clone-feature-set --url devnet`. If SIMD-0500 activates on devnet, the deployed program keeps running, but upgrades need `cargo build-sbf --arch v3` and a new test pass.
 - `cargo build-sbf` prints "overflows the maximum allowed frame space" for `crypto_common` serializers. Those functions come from a dependency and are never called by the program. The one remaining compiler warning (`AccountInfo::realloc` is deprecated) comes from code Anchor 0.31.1's `#[program]` macro generates for its IDL instructions.
 
 ## Keys
 
-All keys live outside the repository in `~/.config/solana/simlab/` (directory mode 700, files mode 600) and are never printed or committed:
+All keys live outside the repository in `~/.config/solana/iynk/` (directory mode 700, files mode 600) and are never printed or committed:
 
 | File | Public key | Role |
 |---|---|---|
 | deployer.json | `3sU7fwSukdG77nH2HciyXQ7Vsao1ZCdERXc73TmP9PZb` | upgrade authority, config admin, IDL authority, Anchor provider wallet |
 | issuer.json | `7GbNpdhX6yNqcGXSNXJxYU3aidoyrToNDsUoEe5845XR` | `config.issuer`; also `SOLANA_ISSUER_KEYPAIR` in `.env.local` (server fee payer and faucet treasury) |
-| simlab_passport-keypair.json | `BYFLDTLNi946Z8jT4JnxgE8Cpzkr9ud7tSrnThFTv31w` | program address; only needed for the first deploy. `solana/target/deploy/simlab_passport-keypair.json` is a symlink to it so Anchor finds it |
+| iynk_passport-keypair.json | `BYFLDTLNi946Z8jT4JnxgE8Cpzkr9ud7tSrnThFTv31w` | program address; only needed for the first deploy. `solana/target/deploy/iynk_passport-keypair.json` is a symlink to it so Anchor finds it |
 | deploy-buffer.json | created on first deploy | buffer address for deploys and upgrades |
 
 `.env.local` has `NEXT_PUBLIC_SOLANA_PROGRAM_ID`, `SOLANA_ISSUER_KEYPAIR` and `NEXT_PUBLIC_SOLANA_CLUSTER=devnet`. To rotate the issuer: generate a key, run `set_issuer` with the deployer, update `SOLANA_ISSUER_KEYPAIR`.

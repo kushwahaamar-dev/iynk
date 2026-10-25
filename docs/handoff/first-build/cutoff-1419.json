@@ -1,10 +1,10 @@
 {
   "stoppedAt": "2026-10-24T14:19:59-05:00",
   "scriptsDir": "/Users/amar/.claude/projects/-Users-amar-Codes-ak-simlab/327c458a-8849-435d-a3e9-20eb9855a68f/workflows/scripts",
-  "note": "interrupted = a label that started but has no result in the journal; the orchestrator stopped every run at the usage limit. prevMerged = the transcripts already passed in args.prev for that key, then every transcript of that label in this run, oldest first. For simlab-facts-gm.js, args.prev is keyed by item id (label without its facts:/check: prefix).",
+  "note": "interrupted = a label that started but has no result in the journal; the orchestrator stopped every run at the usage limit. prevMerged = the transcripts already passed in args.prev for that key, then every transcript of that label in this run, oldest first. For iynk-facts-gm.js, args.prev is keyed by item id (label without its facts:/check: prefix).",
   "runs": {
     "wf_7983fdc6-21a": {
-      "script": "simlab-gm-core2.js",
+      "script": "iynk-gm-core2.js",
       "argsUsed": {
         "root": "/Users/amar/Codes/ak/simlab",
         "scratch": "/private/tmp/claude-501/-Users-amar-Codes-ak-simlab/327c458a-8849-435d-a3e9-20eb9855a68f/scratchpad"
@@ -92,7 +92,7 @@
       ]
     },
     "wf_249d2581-74d": {
-      "script": "simlab-hx1.js",
+      "script": "iynk-hx1.js",
       "argsUsed": {
         "root": "/Users/amar/Codes/ak/simlab",
         "scratch": "/private/tmp/claude-501/-Users-amar-Codes-ak-simlab/327c458a-8849-435d-a3e9-20eb9855a68f/scratchpad"
@@ -202,7 +202,7 @@
       ]
     },
     "wf_3b43775c-716": {
-      "script": "simlab-stage2.js",
+      "script": "iynk-stage2.js",
       "argsUsed": {
         "root": "/Users/amar/Codes/ak/simlab",
         "scratch": "/private/tmp/claude-501/-Users-amar-Codes-ak-simlab/327c458a-8849-435d-a3e9-20eb9855a68f/scratchpad",
@@ -225,7 +225,7 @@
       ]
     },
     "wf_a01431e2-07d": {
-      "script": "simlab-stage2.js",
+      "script": "iynk-stage2.js",
       "argsUsed": {
         "root": "/Users/amar/Codes/ak/simlab",
         "scratch": "/private/tmp/claude-501/-Users-amar-Codes-ak-simlab/327c458a-8849-435d-a3e9-20eb9855a68f/scratchpad",
@@ -248,7 +248,7 @@
       ]
     },
     "wf_828c7092-26b": {
-      "script": "simlab-items.js",
+      "script": "iynk-items.js",
       "argsUsed": {
         "root": "/Users/amar/Codes/ak/simlab",
         "scratch": "/private/tmp/claude-501/-Users-amar-Codes-ak-simlab/327c458a-8849-435d-a3e9-20eb9855a68f/scratchpad",
@@ -555,7 +555,7 @@
       ]
     },
     "wf_6e44fd79-4d1": {
-      "script": "simlab-items.js",
+      "script": "iynk-items.js",
       "argsUsed": {
         "root": "/Users/amar/Codes/ak/simlab",
         "scratch": "/private/tmp/claude-501/-Users-amar-Codes-ak-simlab/327c458a-8849-435d-a3e9-20eb9855a68f/scratchpad",
@@ -877,7 +877,7 @@
       ]
     },
     "wf_797d6f20-21d": {
-      "script": "simlab-items.js",
+      "script": "iynk-items.js",
       "argsUsed": {
         "root": "/Users/amar/Codes/ak/simlab",
         "scratch": "/private/tmp/claude-501/-Users-amar-Codes-ak-simlab/327c458a-8849-435d-a3e9-20eb9855a68f/scratchpad",
@@ -1098,7 +1098,7 @@
       ]
     },
     "wf_6ace19e7-573": {
-      "script": "simlab-facts-gm.js",
+      "script": "iynk-facts-gm.js",
       "argsUsed": {
         "root": "/Users/amar/Codes/ak/simlab",
         "scratch": "/private/tmp/claude-501/-Users-amar-Codes-ak-simlab/327c458a-8849-435d-a3e9-20eb9855a68f/scratchpad",

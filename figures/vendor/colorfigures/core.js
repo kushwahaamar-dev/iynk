@@ -1,5 +1,5 @@
-/* Colorfigures core.js, vendored for SimLab from the Colorfigures skill (MIT, see LICENSE in this folder).
-   Upstream sha256 a78aab94ab7396b99080bf72673d5d4d689d771764d76cb08f1a0d28033f7fc3. SimLab patches: PATCHES.md. Regenerate with vendor.py, never edit by hand. */
+/* Colorfigures core.js, vendored for iynk from the Colorfigures skill (MIT, see LICENSE in this folder).
+   Upstream sha256 a78aab94ab7396b99080bf72673d5d4d689d771764d76cb08f1a0d28033f7fc3. iynk patches: PATCHES.md. Regenerate with vendor.py, never edit by hand. */
 /* ============================================================
    Colorfigures core: projection, shapes, shading, ink, labels, page shell.
    A figure page includes this file (scripts/build.py inlines it), then calls mountFigure({...}).
@@ -23,7 +23,7 @@ const DARK    = { l:'#55504a', m:'#3d3935', d:'#272421' };
 const INK = '#231e16';
 const SHADOW = '#41538f';
 
-/* ---------- SimLab patches (see figures/vendor/colorfigures/PATCHES.md) ---------- */
+/* ---------- iynk patches (see figures/vendor/colorfigures/PATCHES.md) ---------- */
 // P3 embedded mode: on inside any iframe or with ?embed=1; ?embed=0 forces it off. ?bare=1 also hides the figure's
 // own buttons, stats, switches and keypad. ?theme=dark dims the paper (P4). ?lang=xx is the first language (P2).
 const CF_Q = new URLSearchParams(location.search);

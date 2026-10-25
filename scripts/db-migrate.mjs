@@ -86,7 +86,7 @@ async function main() {
     console.log("db-migrate: DATABASE_URL is not set (environment or .env.local); nothing to do.");
     return;
   }
-  const sql = postgres(url, { max: 1, onnotice: () => {}, connect_timeout: 15, connection: { application_name: "simlab-migrate" } });
+  const sql = postgres(url, { max: 1, onnotice: () => {}, connect_timeout: 15, connection: { application_name: "iynk-migrate" } });
   try {
     const migrations = listMigrations();
     console.log(`db-migrate: ${migrations.length} migration file(s)${statusOnly ? " (status only)" : ""}`);

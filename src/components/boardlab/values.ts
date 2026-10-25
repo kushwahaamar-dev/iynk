@@ -1,10 +1,10 @@
 // Per-lesson chip values, a per-viewer convenience kept in this browser only
-// (progress itself lives in "simlab:v1"). Every access is guarded: storage can
+// (progress itself lives in "iynk:v1"). Every access is guarded: storage can
 // be missing, full or blocked.
 
 import type { ParamValues } from "@/lib/boardlab/template";
 
-const KEY = "simlab:boardlab:values";
+const KEY = "iynk:boardlab:values";
 
 function readAll(): Record<string, ParamValues> {
   try {

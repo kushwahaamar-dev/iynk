@@ -1,5 +1,5 @@
 /**
- * SimLab's mark: an inked isometric chip on its blue cast shadow (the same drawing as src/app/icon.svg). The ink
+ * iynk's mark: an inked isometric chip on its blue cast shadow (the same drawing as src/app/icon.svg). The ink
  * follows the theme's line colour, so in dark mode the chip keeps its outline instead of losing it in the page.
  */
 export function Logo({ size = 36, className }: { size?: number; className?: string }) {

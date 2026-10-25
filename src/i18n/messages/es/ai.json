@@ -126,11 +126,11 @@
     "copyLink": "Copiar enlace",
     "copied": "Enlace copiado",
     "facebook": "Compartir en Facebook",
-    "shareText": "{title}, una historia de construcción de SimLab",
+    "shareText": "{title}, una historia de construcción de iynk",
     "unavailable": "Las historias de construcción no están configuradas en este despliegue.",
     "failed": "No se pudo escribir la historia. Inténtalo de nuevo.",
     "noCover": "Esta vez no se pudo dibujar la portada, así que la historia no tiene.",
-    "footer": "Hecho en equipo en SimLab",
+    "footer": "Hecho en equipo en iynk",
     "me": "Yo"
   }
 }

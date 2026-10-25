@@ -1,4 +1,4 @@
-// SimLab's sound (BUILD-PLAN §3.1): figure sound effects and lab cues on Web Audio,
+// iynk's sound (BUILD-PLAN §3.1): figure sound effects and lab cues on Web Audio,
 // off until the learner turns `settings.sound` on. Every call is cheap, synchronous
 // and safe on the server; with sound off or no Web Audio it does nothing.
 

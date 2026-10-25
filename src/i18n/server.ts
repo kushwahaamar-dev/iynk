@@ -14,7 +14,7 @@ const loadNamespace = cache(async (locale: Locale, ns: Namespace): Promise<unkno
     return mod.default;
   } catch (error) {
     throw new Error(
-      `SimLab i18n: missing UI strings src/i18n/messages/${locale}/${ns}.json. ` +
+      `iynk i18n: missing UI strings src/i18n/messages/${locale}/${ns}.json. ` +
         `Every namespace (${NAMESPACES.join(", ")}) needs a file in every language.`,
       { cause: error },
     );
@@ -43,7 +43,7 @@ const loadContent = cache(async (locale: Locale, lab: ContentLab, id: string): P
     return mod.default;
   } catch (error) {
     throw new Error(
-      `SimLab i18n: missing content text src/i18n/content/${locale}/${lab}/${id}.json. ` +
+      `iynk i18n: missing content text src/i18n/content/${locale}/${lab}/${id}.json. ` +
         `Every board, bench and drone needs its prose in every language.`,
       { cause: error },
     );

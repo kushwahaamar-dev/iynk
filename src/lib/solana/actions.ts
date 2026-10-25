@@ -22,12 +22,12 @@ export class WalletRequiredError extends Error {
 
 export function tipMemo(roomId: string): string {
   if (!ROOM_ID.test(roomId)) throw new RangeError("Not a room id.");
-  return `simlab:tip:${roomId}`;
+  return `iynk:tip:${roomId}`;
 }
 
-/** Reads a tip memo back; null when the memo is not a SimLab tip. */
+/** Reads a tip memo back; null when the memo is not a iynk tip. */
 export function roomOfTip(memo: string): string | null {
-  const m = /^simlab:tip:([23456789abcdefghjkmnpqrstuvwxyz]{6})$/.exec(memo);
+  const m = /^iynk:tip:([23456789abcdefghjkmnpqrstuvwxyz]{6})$/.exec(memo);
   return m ? m[1] : null;
 }
 

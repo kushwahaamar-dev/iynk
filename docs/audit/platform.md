@@ -51,7 +51,7 @@ Figure strings: `src/i18n/figures/` missing (build warning; non-en figures stay 
 
 - Design system done (21 components, tokens, palettes, ink classes). Theme system/light/dark done, no flash.
 - Reduce motion: CSS exists, no toggle. **Sound/lofi: absent** (no src/lib/sound, src/components/sound).
-- Progress `simlab:v1` done per D7. Keyboard/ARIA good on the shell; axe on lab pages unverified.
+- Progress `iynk:v1` done per D7. Keyboard/ARIA good on the shell; axe on lab pages unverified.
 - Mobile: shell drawer only; no phone spec; touch rotate and lab pages untested on a phone.
 - FigureFrame done; **embed.js has no pause/resume** (hidden figures keep animating).
 - LabDock stub; nav lacks hackathon pages.

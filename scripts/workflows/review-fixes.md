@@ -22,7 +22,7 @@ take them by area. Run with `scripts/workflows/phase3-wave.js` (brief `review-fi
    green.
 6. **Done means:** `npx tsc --noEmit` and `npx eslint . --quiet` are clean; `npx vitest run` for the folders you
    touched passes; one production build of your own (`NEXT_DIST_DIR=.next-<your label>
-   SIMLAB_BUILD_SKIP_TYPECHECK=1 npm run build`, then `E2E_SKIP_BUILD=1 NEXT_DIST_DIR=.next-<your label> npx
+   IYNK_BUILD_SKIP_TYPECHECK=1 npm run build`, then `E2E_SKIP_BUILD=1 NEXT_DIST_DIR=.next-<your label> npx
    playwright test <your specs>`) passes; you looked at what you changed at 1440 x 900 and 390 x 844 (and in German
    where text length matters) in screenshots you read. Then delete `.next-<your label>` and remove its two lines from
    `tsconfig.json` with `python3 -I

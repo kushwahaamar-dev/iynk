@@ -50,9 +50,9 @@ execFileSync('python3', ['-I', join(ROOT, 'figures/tools/cfbuild.py'), `robotics
 writeFileSync(join(dir, 'host.html'), `<!doctype html><meta charset="utf-8"><title>probe host</title>
 <iframe id="fr" src="${pagePath}?lang=en" style="width:900px;height:640px;border:0"></iframe><script>
 window.msgs = [];
-addEventListener('message', (e) => { if (e.source === fr.contentWindow && e.data && e.data.source === 'simlab-figure') msgs.push(e.data); });
-fr.addEventListener('load', () => fr.contentWindow.postMessage({ source: 'simlab', v: 1, type: 'hello' }, location.origin));
-window.cmd = (m) => fr.contentWindow.postMessage({ source: 'simlab', v: 1, ...m }, location.origin);
+addEventListener('message', (e) => { if (e.source === fr.contentWindow && e.data && e.data.source === 'iynk-figure') msgs.push(e.data); });
+fr.addEventListener('load', () => fr.contentWindow.postMessage({ source: 'iynk', v: 1, type: 'hello' }, location.origin));
+window.cmd = (m) => fr.contentWindow.postMessage({ source: 'iynk', v: 1, ...m }, location.origin);
 </script>`);
 const server = createServer((req, res) => {
   const file = normalize(join(dir, decodeURIComponent(new URL(req.url, 'http://x').pathname)));

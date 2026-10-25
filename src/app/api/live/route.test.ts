@@ -7,7 +7,7 @@ vi.mock("next/server", () => ({ connection: async () => {} }));
 const getLiveCounters = vi.fn();
 vi.mock("@/lib/server/db/queries", () => ({ getLiveCounters: (...args: unknown[]) => getLiveCounters(...args) }));
 
-const DB = "postgres://simlab:pw@localhost:5432/simlab";
+const DB = "postgres://iynk:pw@localhost:5432/iynk";
 
 async function load(vars: Record<string, string>) {
   vi.resetModules();

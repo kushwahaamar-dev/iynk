@@ -3,7 +3,7 @@
 //
 //   node scripts/devnet-setup.ts [--fund-issuer <SOL>] [--smoke]
 //
-// Keys come from ~/.config/solana/simlab (deployer = upgrade authority and
+// Keys come from ~/.config/solana/iynk (deployer = upgrade authority and
 // admin, issuer = the server's key). Only public keys and signatures are printed.
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
@@ -15,7 +15,7 @@ import { parseArgs } from "node:util";
 import type * as AnchorModule from "@coral-xyz/anchor";
 import type { Keypair } from "@solana/web3.js";
 
-import type { SimlabPassport } from "../../src/lib/solana/idl/simlab_passport";
+import type { IynkPassport } from "../../src/lib/solana/idl/iynk_passport";
 
 const anchor = createRequire(import.meta.url)("@coral-xyz/anchor") as typeof AnchorModule;
 const { BN, web3 } = anchor;
@@ -26,7 +26,7 @@ const { values: flags } = parseArgs({
 
 const SMOKE_SKILL = "board:uno-r3:lesson:deploy-check";
 const url = process.env.SOLANA_RPC_URL ?? "https://api.devnet.solana.com";
-const keys = join(homedir(), ".config", "solana", "simlab");
+const keys = join(homedir(), ".config", "solana", "iynk");
 
 function keypair(name: string): Keypair {
   return web3.Keypair.fromSecretKey(Uint8Array.from(JSON.parse(readFileSync(join(keys, name), "utf8"))));
@@ -44,8 +44,8 @@ const deployer = keypair("deployer.json");
 const issuer = keypair("issuer.json");
 const connection = new web3.Connection(url, "confirmed");
 const provider = new anchor.AnchorProvider(connection, new anchor.Wallet(deployer), { commitment: "confirmed" });
-const idl = JSON.parse(readFileSync(new URL("../target/idl/simlab_passport.json", import.meta.url), "utf8"));
-const program = new anchor.Program<SimlabPassport>(idl, provider);
+const idl = JSON.parse(readFileSync(new URL("../target/idl/iynk_passport.json", import.meta.url), "utf8"));
+const program = new anchor.Program<IynkPassport>(idl, provider);
 const [configAddress] = web3.PublicKey.findProgramAddressSync([Buffer.from("config")], program.programId);
 
 const record: Record<string, string> = {

@@ -1,4 +1,4 @@
-/* SimLab drone figure engine (engine:drone): registry, state, build flow, safety tests, scene and the bridge.
+/* iynk drone figure engine (engine:drone): registry, state, build flow, safety tests, scene and the bridge.
    Data format: docs/FIGURES-DRONE.md. Helpers live in drone-geo.js, layouts in drone-frames.js, piece drawings in
    drone-pieces.js and the wiring sheet in drone-sheet.js. Built on the Colorfigures core (MIT). */
 window.SL = window.SL || {};

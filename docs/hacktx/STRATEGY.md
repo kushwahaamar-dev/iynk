@@ -1,4 +1,4 @@
-# SimLab at HackTX 2026: how we try to win
+# iynk at HackTX 2026: how we try to win
 
 Written 2026-10-24, 13:40 CDT. Sources: the Devpost overview the user pasted (docs/hacktx/DEVPOST.md), Meta's Model API launch post (dev.meta.ai), SerpApi's API index (serpapi.com/llms.txt), and the local toolchain (Solana CLI 4.2.2, Anchor 0.31.1, Rust 1.91, Docker, Vercel CLI and gh are installed and signed in).
 
@@ -17,7 +17,7 @@ The strategy is **one product, one story, three sponsor tracks that are essentia
 
 | Rule (from the Devpost page) | What we do |
 |---|---|
-| "All projects must be built during the hacking period from 11:30 am on October 24th to 11:30 am on October 25th" | All code is written fresh by the build agents after 11:30 today. The old SimLab app (git baseline `245763f`) and this morning's prototypes are walled off. Agents are told never to copy them; the half-ported interpreter written at 13:00 was moved out of the repo. The research notes in docs/research predate the event (idea and hardware research). **Disclose that in the Devpost write-up**, and ask the organizers (Freetail help desk or Discord) whether pre-event research notes are fine. If in doubt, keep docs/research out of the public submission repo. HackTX is an MLH partner event, and MLH's rule is that you may have the idea beforehand but not start the work. |
+| "All projects must be built during the hacking period from 11:30 am on October 24th to 11:30 am on October 25th" | All code is written fresh by the build agents after 11:30 today. The old iynk app (git baseline `245763f`) and this morning's prototypes are walled off. Agents are told never to copy them; the half-ported interpreter written at 13:00 was moved out of the repo. The research notes in docs/research predate the event (idea and hardware research). **Disclose that in the Devpost write-up**, and ask the organizers (Freetail help desk or Discord) whether pre-event research notes are fine. If in doubt, keep docs/research out of the public submission repo. HackTX is an MLH partner event, and MLH's rule is that you may have the idea beforehand but not start the work. |
 | Team members must be present in person during judging | You must be at UT Austin for judging tomorrow, and able to explain how every part works. I'll write a judge Q&A sheet. |
 | A demo video must be on Devpost by the deadline | Record it tomorrow morning (08:30–10:00). Submit by 10:30, not 11:29. |
 | Team size 1–4; 18+, college students, US only | Your call. Muse Spark's API is also US-developer only, so the key must come from a US account. |
@@ -27,11 +27,11 @@ The strategy is **one product, one story, three sponsor tracks that are essentia
 
 ## 3. Track-by-track decision
 
-Fit means how naturally SimLab earns the prize. Cost is extra build time on top of the core.
+Fit means how naturally iynk earns the prize. Cost is extra build time on top of the core.
 
 | Track | Prize | Fit | What we build for it | Cost | Decision |
 |---|---|---|---|---|---|
-| Meta: Bringing People Closer Together with AI (3 winners, Round 2 at Menlo Park) | trip + swag | High once the social layer exists | **SimLab Together:** live build rooms, a Muse Spark lab partner that routes questions to people, live translation across 6 languages, a Build Night planner, Build Stories with Muse Image covers, buddy matching, and a Muse connector (MCP) | Large | **Core** |
+| Meta: Bringing People Closer Together with AI (3 winners, Round 2 at Menlo Park) | trip + swag | High once the social layer exists | **iynk Together:** live build rooms, a Muse Spark lab partner that routes questions to people, live translation across 6 languages, a Build Night planner, Build Stories with Muse Image covers, buddy matching, and a Muse connector (MCP) | Large | **Core** |
 | SerpApi: Best Use of SerpApi | portable monitors | High | **Build it for real:** live parts prices for every drone/robot/board kit (Google Shopping, Amazon, eBay), a budget optimizer that changes the engineering design, datasheet-grounded answers (Google + Extract API) with citations, makerspaces, shops and flying fields nearby (Maps), maker events (Events), tutorial videos (YouTube) | Medium | **Core** |
 | MLH: Best Use of Solana | hardware wallets | Medium-high | **Proof of Build:** our own Anchor program on devnet. The server re-runs your deterministic lab run before it issues a credential PDA. Sponsor bounties held in escrow pay out in the same transaction the credential is issued. Instant peer tips in rooms. A public /verify page. A one-click devnet wallet so judges need no Phantom. | Medium | **Core** |
 | Best Overall | MacBook Pro each | High | The whole thing, polished | — | **Target** |
@@ -48,11 +48,11 @@ Fit means how naturally SimLab earns the prize. Cost is extra build time on top 
 
 ## 4. The story
 
-**One line:** SimLab is the hardware lab everyone can afford, and nobody has to build alone.
+**One line:** iynk is the hardware lab everyone can afford, and nobody has to build alone.
 
 **Problem:** learning hardware costs money (boards, parts, the drone you crash), it's scary (magic smoke, LiPo fires), and it's lonely: tutorials talk at you, and at 2 a.m. nobody is there to tell you the LED is in backwards.
 
-**What SimLab does:**
+**What iynk does:**
 1. **Practice for free.** Wire, code, break and fly 12 boards, 13 drones and 13 robotics benches in the browser. The figures react to your code, and failures really happen.
 2. **Build together.** Open a room, and your friend joins from a phone in another language. Muse Spark translates, plans the build with you, and sends you to each other before it answers itself. Every session becomes a shared story.
 3. **Go real.** Live prices and stock turn the sim build into a real shopping list under your budget. Nearby makerspaces, shops, fields and meetups take you from online to offline.
@@ -77,7 +77,7 @@ Browser: static Next.js 16 on Vercel (works offline; every feature below degrade
  Vercel route handlers /api/*                 Realtime relay (Node + ws) on a Vultr VM
   ├─ ai/*        -> Meta Model API: Muse Spark (chat, tools, vision, audio), Muse Image, Voice Transcribe
   ├─ search/*    -> SerpApi: Shopping, Amazon, eBay, Maps, Events, YouTube, Google, Extract
-  ├─ solana/*    -> Solana devnet: simlab_passport program (issuer key on the server)
+  ├─ solana/*    -> Solana devnet: iynk_passport program (issuer key on the server)
   ├─ telemetry, leaderboard, buddies, live -> Tiger Data (Postgres + Timescale)
   └─ mcp         <- Muse personal agent (custom connector) or any MCP client
 ```
@@ -121,7 +121,7 @@ Browser: static Next.js 16 on Vercel (works offline; every feature below degrade
 - **Build Stories:** Muse Spark writes the session up as a short shared story (who did what, what broke, who helped) and Muse Image draws the cover.
 - **Buddy matching:** from what you've built and what you want to build next, it suggests complementary partners and explains why. At HackTX the pool is everyone who opens the app, so a judge can be matched live.
 - **Muse connector:**
-  - SimLab exposes an MCP server at `/api/mcp`, plus an OpenAPI spec, so Meta's personal agent can call it: "plan a drone night with my cousins".
+  - iynk exposes an MCP server at `/api/mcp`, plus an OpenAPI spec, so Meta's personal agent can call it: "plan a drone night with my cousins".
   - Meta's directory is waitlisted. Third-party reports say a single user can add a custom connector without review; we verify that tonight.
   - Either way, the endpoint works with any MCP client.
 - **Facebook:** the share dialog for stories. Facebook Login needs app review before strangers can use it, so we skip it rather than demo something judges can't try.
@@ -141,7 +141,7 @@ Browser: static Next.js 16 on Vercel (works offline; every feature below degrade
 
 ### Solana (MLH: innovate with Solana; fast, cheap, real-world)
 
-- `simlab_passport`, an Anchor program on devnet:
+- `iynk_passport`, an Anchor program on devnet:
   - Config, Credential and Bounty PDAs
   - `issue_credential` with bounty payout through remaining accounts
   - `create_bounty` and `cancel_bounty`

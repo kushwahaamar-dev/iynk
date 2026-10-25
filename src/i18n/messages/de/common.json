@@ -1,6 +1,6 @@
 {
   "site": {
-    "name": "SimLab",
+    "name": "iynk",
     "tagline": "Entdecken · Verstehen · Bauen",
     "description": "Ein praktisches Hardware-Labor im Browser: Boards, Roboter und Drohnen bauen, verdrahten, programmieren, kaputt machen und fliegen."
   },
@@ -55,7 +55,7 @@
     },
     "usage": {
       "label": "Anonyme Nutzungszahlen",
-      "body": "SimLab zählt, was in den Laboren passiert (eine bestandene Lektion, ein gebauter Schritt, ein ausprobierter Fehler), für die Live-Zähler und Bestenlisten. Jedes Ereignis trägt eine zufällige ID für diesen Browser, nie deinen Namen oder deinen Code.",
+      "body": "iynk zählt, was in den Laboren passiert (eine bestandene Lektion, ein gebauter Schritt, ein ausprobierter Fehler), für die Live-Zähler und Bestenlisten. Jedes Ereignis trägt eine zufällige ID für diesen Browser, nie deinen Namen oder deinen Code.",
       "toggle": "Anonyme Nutzungszahlen teilen"
     }
   }

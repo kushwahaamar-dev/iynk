@@ -3,7 +3,7 @@
 // (runHeadless + evaluateChecks): the reference must pass every check and the starter must not.
 // A board lesson's reference is its code with the default chips; its starter is an empty program.
 // A practice task's reference is its solution; its starter is the task's starter code.
-// SIMLAB_LESSON_TABLE=<path> writes the results as a Markdown table.
+// IYNK_LESSON_TABLE=<path> writes the results as a Markdown table.
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
@@ -87,7 +87,7 @@ describe('every lesson through runHeadless + evaluateChecks', async () => {
 });
 
 afterAll(() => {
-  const out = process.env.SIMLAB_LESSON_TABLE;
+  const out = process.env.IYNK_LESSON_TABLE;
   if (!out) return;
   const pass = (r: CheckResult[]) => r.length > 0 && r.every((x) => x.ok);
   const lines = rows
@@ -102,7 +102,7 @@ afterAll(() => {
   const header = [
     '# Every lesson and task through the app check path',
     '',
-    `Generated ${new Date().toISOString().slice(0, 10)} by \`SIMLAB_LESSON_TABLE=${out} npx vitest run src/lib/interp/lessons.test.ts\`.`,
+    `Generated ${new Date().toISOString().slice(0, 10)} by \`IYNK_LESSON_TABLE=${out} npx vitest run src/lib/interp/lessons.test.ts\`.`,
     'Each row runs `runChecks` (runHeadless + evaluateChecks, the same code the Board Lab and Robotics workers run) on the',
     "reference code and on the starter (board lessons have no starter, so the empty program stands in). Variant is the lesson's first variant.",
     '',

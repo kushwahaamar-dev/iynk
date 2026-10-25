@@ -23,7 +23,7 @@ JSON string the API streams) and the typed `ToolCall` / `ProposedChange` results
 
 ## For hx:dock (wave 2)
 
-- `open_panel(tab)` dispatches `window` event `simlab:dock-tab` with `detail: { tab }`
+- `open_panel(tab)` dispatches `window` event `iynk:dock-tab` with `detail: { tab }`
   (`tab` in `DOCK_TABS` from `src/lib/ai/tools.ts`). Listen for it in LabDock and switch tabs.
 - Mount `<PartnerPanel {...labDockProps} />` from `src/components/ai`.
 

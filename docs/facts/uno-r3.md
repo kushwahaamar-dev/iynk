@@ -30,7 +30,7 @@ LDO (LP2985-33, 150 mA) feeds the 3V3 header pin only. It exposes 14 digital I/O
 9. Arduino-usbserial (LUFA) 16U2 firmware source, ArduinoCore-avr `firmwares/atmegaxxu2/` — TX/RX LED handling.
 10. Arduino store product photos — https://store.arduino.cc/cdn/shop/files/A000066_03.front_1200x900.jpg . Colours, production silkscreen (only where noted).
 11. Arduino forum topic 1187241 (avrdude 6.3 verbose log from an Uno upload) — https://forum.arduino.cc/t/1187241 . Real-world console output.
-12. SimLab research notes: `docs/research/learn-arduino.md` §2 (27 parts, 6 callouts) and `docs/research/robotics-bench-a.md` §3 (Fig. 01, 24 parts).
+12. iynk research notes: `docs/research/learn-arduino.md` §2 (27 parts, 6 callouts) and `docs/research/robotics-bench-a.md` §3 (Fig. 01, 24 parts).
 13. element14 product page for Bourns MF-MSMF050-2 — https://sg.element14.com/bourns/mf-msmf050-2/fuse-ptc-reset-15v-500ma-1812/dp/2128216 (and nz/au mirrors). Hold/trip/voltage/time-to-trip.
 14. element14 product page for onsemi NCP1117ST50T3G — https://sg.element14.com/onsemi/ncp1117st50t3g/ana-sot223-800ma-ldo/dp/2441623 . Dropout 1.07 V typ, 1.2 V max at 800 mA, 20 V input.
 

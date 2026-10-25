@@ -77,11 +77,11 @@ The first two just before the first run, the third after the figure checks.
 ## How to rerun
 
 ```bash
-env -u SIMLAB_BUILD_SKIP_TYPECHECK NEXT_DIST_DIR=.next-gate2 npm run build
+env -u IYNK_BUILD_SKIP_TYPECHECK NEXT_DIST_DIR=.next-gate2 npm run build
 NEXT_DIST_DIR=.next-gate2 npx next start -H 127.0.0.1 -p 3420 &
 node scripts/crawl-routes.mjs --base http://127.0.0.1:3420 --dist .next-gate2 --workers 3 --out docs/verify/gate2-routes.md
 E2E_SKIP_BUILD=1 NEXT_DIST_DIR=.next-gate2 npx playwright test
-SIMLAB_LESSON_TABLE=docs/verify/gate2-lessons.md npx vitest run src/lib/interp/lessons.test.ts
+IYNK_LESSON_TABLE=docs/verify/gate2-lessons.md npx vitest run src/lib/interp/lessons.test.ts
 for b in $(ls src/content/robotics/*.ts | grep -v -e test -e '/_' | xargs -n1 basename | sed 's/\.ts$//'); do node figures/engine/probe.mjs $b; done
 python3 -I figures/tools/cfshoot.py boards/uno-r3   # and each other page under public/figures
 ```

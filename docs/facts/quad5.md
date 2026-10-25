@@ -545,7 +545,7 @@ with those modes active). The `status` CLI command and the Setup tab list the ac
 | `set osd_timer_1 = ON` | no such setting; timers are packed numbers | `set osd_tim1 = 18` + `set osd_tim_1_pos = 2103` |
 | `set osd_stat_max_spd = ON` | no such setting | OR bit 3 (value 8) into `osd_stat_bitmask` |
 | `serial 1 64 115200 57600 0 115200` | accepted (legacy id) | `serial UART2 64 115200 57600 0 115200` |
-| `set mini_quad = ON` (current SimLab, audit DR-08) | not a Betaflight setting | `mixer QUADX` |
+| `set mini_quad = ON` (current iynk, audit DR-08) | not a Betaflight setting | `mixer QUADX` |
 | `set align_board_yaw = 0`, `set motor_pwm_protocol = DSHOT600`, `set yaw_motors_reversed = OFF`, `resource`, `save` | valid | keep |
 
 ## 6. Safety tests

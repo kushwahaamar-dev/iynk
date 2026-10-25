@@ -1,4 +1,4 @@
-# SimLab: judge Q&A
+# iynk: judge Q&A
 
 The 25 questions judges are most likely to ask, each with a short answer and the page or file that shows it. Read it
 once before judging, and open the file a question names if a judge wants to see the code.
@@ -10,7 +10,7 @@ morning's keys and deploy is marked, and "Recheck before judging" at the end lis
 
 ## The product
 
-### 1. What is SimLab, and who is it for?
+### 1. What is iynk, and who is it for?
 
 A hardware lab in the browser for students who can't afford parts, are scared of frying them, or have nobody to ask.
 You build, wire, code, break and fly 12 dev boards, 13 robotics benches and 13 drones, each a hand-inked 3D figure,
@@ -125,9 +125,9 @@ transcription takes 16 or 24 kHz mono WAV only, so the browser converts every re
 (`src/lib/ai/voice-wav.ts`; the gateway is described in `docs/hacktx/AI.md`). All three need `META_API_KEY`, which is
 added on the morning of the 25th.
 
-### 16. Can Muse use SimLab?
+### 16. Can Muse use iynk?
 
-SimLab is an MCP server at `/api/mcp` with seven tools: `search_catalog`, `get_item`, `drone_calc`, `price_parts`,
+iynk is an MCP server at `/api/mcp` with seven tools: `search_catalog`, `get_item`, `drone_calc`, `price_parts`,
 `plan_build_night`, `create_room` and `get_passport`, the last of which says Proof of Build is not set up while Solana
 is off (`src/lib/server/mcp/tools/`). It answers `initialize` and `tools/list` locally (`docs/hacktx/DEPLOY.md`). It
 has not yet been tried from Muse itself, which needs the public HTTPS URL (`docs/hacktx/MUSE-CONNECTOR.md`, "What is

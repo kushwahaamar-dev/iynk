@@ -52,6 +52,6 @@ export const ROOM_PATTERN = /^[23456789abcdefghjkmnpqrstuvwxyz]{6}$/;
 export const ITEM_PATTERN = /^[a-z0-9][a-z0-9:._-]{0,63}$/;
 export const COURSE_PATTERN = /^[a-z0-9][a-z0-9-]{0,47}$/;
 
-/** Lap times outside this range are not real laps of any SimLab course. */
+/** Lap times outside this range are not real laps of any iynk course. */
 export const LAP_MS = { min: 1_000, max: 60 * 60 * 1000 } as const;
 export const NAME_MAX = 24;

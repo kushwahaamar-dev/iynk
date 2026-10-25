@@ -475,17 +475,17 @@ void loop() {
     },
     params: [
       {
-        id: 'ssid', kind: 'choice', label: 'lessons.webserver.params.ssid.label', default: 'simlab-guest',
+        id: 'ssid', kind: 'choice', label: 'lessons.webserver.params.ssid.label', default: 'iynk-guest',
         options: [
-          { value: 'simlab-guest', code: 'simlab-guest', label: 'lessons.webserver.params.ssid.simlab-guest' },
-          { value: 'simlab-5g', code: 'simlab-5G', label: 'lessons.webserver.params.ssid.simlab-5g', note: 'lessons.webserver.params.ssid.note5g' },
+          { value: 'iynk-guest', code: 'iynk-guest', label: 'lessons.webserver.params.ssid.iynk-guest' },
+          { value: 'iynk-5g', code: 'iynk-5G', label: 'lessons.webserver.params.ssid.iynk-5g', note: 'lessons.webserver.params.ssid.note5g' },
         ],
       },
     ],
     circuit: 'webserver',
     world: {
       inputs: [
-        { id: 'phone', quantity: 'request', device: { kind: 'network', ssid: 'simlab-guest', ip: '192.168.4.1', requests: ['GET /on', 'GET /off', 'GET /'] }, pins: [], part: 'U1', min: 0, max: 2, step: 1, default: 2, gesture: 'tap', label: 'lessons.webserver.world.phone' },
+        { id: 'phone', quantity: 'request', device: { kind: 'network', ssid: 'iynk-guest', ip: '192.168.4.1', requests: ['GET /on', 'GET /off', 'GET /'] }, pins: [], part: 'U1', min: 0, max: 2, step: 1, default: 2, gesture: 'tap', label: 'lessons.webserver.world.phone' },
       ],
       script: [
         { t: 4000, input: 'phone', value: 0 },

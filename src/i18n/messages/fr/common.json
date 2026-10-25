@@ -1,6 +1,6 @@
 {
   "site": {
-    "name": "SimLab",
+    "name": "iynk",
     "tagline": "Explorer · Comprendre · Construire",
     "description": "Un labo d’électronique pratique dans le navigateur : assemblez, câblez, programmez, cassez et faites voler cartes, robots et drones."
   },
@@ -55,7 +55,7 @@
     },
     "usage": {
       "label": "Statistiques d’usage anonymes",
-      "body": "SimLab compte ce qui se passe dans les labos (une leçon réussie, une étape montée, une panne essayée) pour les compteurs en direct et les classements. Chaque événement porte un identifiant aléatoire propre à ce navigateur, jamais votre nom ni votre code.",
+      "body": "iynk compte ce qui se passe dans les labos (une leçon réussie, une étape montée, une panne essayée) pour les compteurs en direct et les classements. Chaque événement porte un identifiant aléatoire propre à ce navigateur, jamais votre nom ni votre code.",
       "toggle": "Partager les statistiques d’usage anonymes"
     }
   }

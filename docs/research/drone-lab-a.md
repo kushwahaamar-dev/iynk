@@ -1,6 +1,6 @@
 # Drone Lab (original), part A: engine, flying range, Figs 01 to 04
 
-Research for the SimLab rebuild. This covers the original Drone Lab at https://drone-engineer.vercel.app:
+Research for the iynk rebuild. This covers the original Drone Lab at https://drone-engineer.vercel.app:
 the shared engine (`defineDrone` API, design calculator, bench build, safety tests, wiring diagram, lesson
 panels, flight model), the flying range (world, collisions, checkpoints, race gates, third-person iso view, FPV
 view with OSD), and the first four crafts: Fig. 01 5-inch freestyle quad, Fig. 02 Tiny Whoop, Fig. 03 3-inch

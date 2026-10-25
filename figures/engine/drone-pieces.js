@@ -1,4 +1,4 @@
-/* SimLab drone engine: piece drawings (docs/FIGURES-DRONE.md §7), the bench mat, the smoke stopper and the
+/* iynk drone engine: piece drawings (docs/FIGURES-DRONE.md §7), the bench mat, the smoke stopper and the
    overlays (motor-test arrows, smoke, see-through current flow). Craft-local millimetres through SL.drone.g. */
 (() => {
   const SD = SL.drone, g = SD.g, W = SD.W, K = SD.kinds;

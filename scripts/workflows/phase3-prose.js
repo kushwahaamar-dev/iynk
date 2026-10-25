@@ -1,7 +1,7 @@
 export const meta = {
-  name: 'simlab-phase3-prose',
-  description: 'SimLab phase 3 prose translation: one agent per language translates item prose from scripts/workflows/phase3.md',
-  whenToUse: 'Launched by the SimLab driver; pass { wave, items, locales?, chunks? } to translate other items or relaunch',
+  name: 'iynk-phase3-prose',
+  description: 'iynk phase 3 prose translation: one agent per language translates item prose from scripts/workflows/phase3.md',
+  whenToUse: 'Launched by the iynk driver; pass { wave, items, locales?, chunks? } to translate other items or relaunch',
   phases: [{ title: 'Prose', detail: 'one agent per language (or per language and chunk), each owning its language folder' }],
 }
 
@@ -37,7 +37,7 @@ const REPORT = {
   required: ['label', 'translated', 'left', 'commits', 'verified', 'notes', 'pushed'],
 }
 
-const brief = (job) => `You are ${job.label}, a translator in SimLab's phase-3 wave ${wave} (HackTX 2026). Other agents work in
+const brief = (job) => `You are ${job.label}, a translator in iynk's phase-3 wave ${wave} (HackTX 2026). Other agents work in
 the same git working tree, /Users/amar/Codes/ak/simlab, at the same time.
 
 Your brief is scripts/workflows/phase3.md: follow its "Shared rules" and the section "Wave T1: P3-prose-<lang>"

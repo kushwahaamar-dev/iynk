@@ -846,13 +846,13 @@
       "params": {
         "ssid": {
           "label": "Network",
-          "SimLab": "SimLab (2.4 GHz)",
+          "iynk": "iynk (2.4 GHz)",
           "Workshop-5G": "Workshop-5G (5 GHz only)",
           "Workshop-5G-note": "The ESP32-S3 has only a 2.4 GHz radio, so a 5 GHz network never shows up and the sketch keeps printing dots."
         }
       },
       "world": {
-        "ap": "SimLab access point"
+        "ap": "iynk access point"
       },
       "checks": {
         "1": "Prints \"Connected, IP 192.168.4.x\" within 4 s",

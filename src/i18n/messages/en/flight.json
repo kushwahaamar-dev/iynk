@@ -321,8 +321,8 @@
     "copied": "Link copied",
     "copyFailed": "Couldn't copy: here is the link",
     "link": "Challenge link",
-    "shareText": "SimLab daily drone challenge: {craft} on {course}.",
-    "shareBeat": "SimLab daily drone challenge: {craft} on {course}. Can you beat {time} s?",
+    "shareText": "iynk daily drone challenge: {craft} on {course}.",
+    "shareBeat": "iynk daily drone challenge: {craft} on {course}. Can you beat {time} s?",
     "board": "{course}, challenge of {date}"
   }
 }

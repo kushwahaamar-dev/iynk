@@ -192,7 +192,7 @@ export class World {
     this.supplyV = profile.logicV;
     this.networks = opts.networks ?? [
       { ssid: 'bench-lab', password: 'robotics', rssi: -48, channel: 6 },
-      { ssid: 'simlab-guest', password: null, rssi: -67, channel: 11 },
+      { ssid: 'iynk-guest', password: null, rssi: -67, channel: 11 },
       { ssid: 'HackTX', password: 'hackathon', rssi: -71, channel: 1 },
     ];
     this.web = opts.web ?? {

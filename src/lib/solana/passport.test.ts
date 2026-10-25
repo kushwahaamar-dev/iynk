@@ -79,14 +79,14 @@ test("decodes a credential and its events", () => {
 });
 
 test("tip memos carry the room id", () => {
-  expect(tipMemo("ab3dkq")).toBe("simlab:tip:ab3dkq");
-  expect(roomOfTip("simlab:tip:ab3dkq")).toBe("ab3dkq");
+  expect(tipMemo("ab3dkq")).toBe("iynk:tip:ab3dkq");
+  expect(roomOfTip("iynk:tip:ab3dkq")).toBe("ab3dkq");
   expect(() => tipMemo("ABC")).toThrow();
   expect(roomOfTip("hello")).toBeNull();
 });
 
 // The exported IDL (hx:solana-program) is the program's own description; the codec must agree with it.
-const idlPath = join(process.cwd(), "src/lib/solana/idl/simlab_passport.json");
+const idlPath = join(process.cwd(), "src/lib/solana/idl/iynk_passport.json");
 
 describe.runIf(existsSync(idlPath))("agrees with the exported IDL", () => {
   type IdlField = { name: string; type: unknown };

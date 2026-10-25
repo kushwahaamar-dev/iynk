@@ -881,7 +881,7 @@ void loop() {
         source: `#include "WiFiS3.h"
 // {{t:lessons.wifi.code.header}}
 const char SSID[] = "{{p:ssid}}";
-const char PASS[] = "simlab-demo";    // {{t:lessons.wifi.code.pass}}
+const char PASS[] = "iynk-demo";    // {{t:lessons.wifi.code.pass}}
 
 void setup() {
   Serial.begin(115200);
@@ -915,9 +915,9 @@ void loop() {
           id: 'ssid',
           kind: 'choice',
           label: 'lessons.wifi.params.ssid.label',
-          default: 'SimLab',
+          default: 'iynk',
           options: [
-            { value: 'SimLab', code: 'SimLab', label: 'lessons.wifi.params.ssid.SimLab' },
+            { value: 'iynk', code: 'iynk', label: 'lessons.wifi.params.ssid.iynk' },
             { value: 'Workshop-5G', code: 'Workshop-5G', label: 'lessons.wifi.params.ssid.Workshop-5G', note: 'lessons.wifi.params.ssid.Workshop-5G-note' },
           ],
         },
@@ -928,7 +928,7 @@ void loop() {
           {
             id: 'ap',
             quantity: 'request',
-            device: { kind: 'network', ssid: 'SimLab', ip: '192.168.4.1', requests: [] },
+            device: { kind: 'network', ssid: 'iynk', ip: '192.168.4.1', requests: [] },
             pins: [],
             part: 'M1',
             min: 0,
@@ -941,7 +941,7 @@ void loop() {
         ],
         script: [],
       },
-      serial: { baud: 115200, sample: ['Connecting to SimLab', '...', 'Connected, IP 192.168.4.166', 'Signal -55 dBm'] },
+      serial: { baud: 115200, sample: ['Connecting to iynk', '...', 'Connected, IP 192.168.4.166', 'Signal -55 dBm'] },
       runMs: 4000,
       checks: [
         { kind: 'serial', match: '^Connected, IP 192\\.168\\.4\\.\\d+$', regex: true, minCount: 1, byMs: 4000, label: 'lessons.wifi.checks.1' },

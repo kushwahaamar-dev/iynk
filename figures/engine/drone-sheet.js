@@ -1,4 +1,4 @@
-/* SimLab drone engine: the wiring sheet, a flat hand-inked sheet drawn from craft.wiring (docs/FIGURES-DRONE.md §9).
+/* iynk drone engine: the wiring sheet, a flat hand-inked sheet drawn from craft.wiring (docs/FIGURES-DRONE.md §9).
    Canvas 760 x 340 units, blocks 150 x 56. Block ids are part ids, so a click selects the same part as the 3D view. */
 (() => {
   const SD = SL.drone;

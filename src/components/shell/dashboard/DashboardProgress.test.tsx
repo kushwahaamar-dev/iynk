@@ -43,7 +43,7 @@ const labNames = { board: "Board Lab", robotics: "Robotics Lab", drone: "Drone L
 
 function save(done: string[], quiz: Record<string, { score: number; total: number }> = {}) {
   localStorage.setItem(
-    "simlab:v1",
+    "iynk:v1",
     JSON.stringify({ v: 1, done: Object.fromEntries(done.map((key) => [key, true])), quiz, best: {}, settings: { theme: "system", sound: true, lofi: false, labels: true, reduceMotion: false } }),
   );
 }

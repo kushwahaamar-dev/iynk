@@ -448,7 +448,7 @@ roughly 40-70 mOhm of resistance (unverified estimate). BETAFPV's own test shows
 **0.2 V at 9 A** (PH2.0 vs BT2.0) [2]. At 10-15 A the sag is therefore about **0.4-1.0 V**: a fresh 4.35 V LiHV pack
 reads about 3.4-3.9 V during a punch and springs back when the throttle comes off. Sag grows as the pack empties,
 gets cold or ages. That is why the original's quiz ("4.1 V to 3.4 V, then recovers") is right and its simulation
-is wrong: it modelled 0.002 V/A, then halved it again, giving 0.017 V of sag at full throttle [21]. For SimLab:
+is wrong: it modelled 0.002 V/A, then halved it again, giving 0.017 V of sag at full throttle [21]. For iynk:
 V = OCV(state of charge) - I x R with R about 0.05 Ohm (unverified), R rising as the pack drains, and a brown-out
 when V under load falls below about 3.0 V (unverified threshold).
 

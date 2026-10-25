@@ -49,7 +49,7 @@
     "copied": "Enlace copiado",
     "copyFailed": "No se pudo copiar. Selecciona el enlace y cópialo tú.",
     "share": "Compartir",
-    "shareText": "Construye conmigo en SimLab, sala {code}",
+    "shareText": "Construye conmigo en iynk, sala {code}",
     "qr": "Código QR del enlace de invitación a la sala {code}",
     "qrError": "No se pudo dibujar el código QR. Copia el enlace.",
     "close": "Cerrar",
@@ -114,7 +114,7 @@
       "recording": "Grabando… {seconds} s",
       "transcribing": "Pasando tu voz a texto…",
       "off": "Los mensajes de voz no están configurados en esta instalación.",
-      "denied": "SimLab no puede usar el micrófono. Permítelo en el navegador para enviar mensajes de voz.",
+      "denied": "iynk no puede usar el micrófono. Permítelo en el navegador para enviar mensajes de voz.",
       "failed": "No se pudo transcribir. Inténtalo de nuevo o escríbelo.",
       "unsupported": "Este navegador no puede grabar audio.",
       "tooLong": "Los mensajes de voz se detienen a los 60 segundos."
@@ -151,7 +151,7 @@
   "lobby": {
     "metaTitle": "Construir juntos",
     "metaDescription": "Abre una sala de construcción en vivo para cualquier placa, robot o dron, encuentra un compañero de construcción y planea una noche de construcción con Muse Spark.",
-    "eyebrow": "SimLab Juntos",
+    "eyebrow": "iynk Juntos",
     "title": "Nadie tiene que construir solo",
     "lede": "Abre una sala para cualquier placa, robot o dron y envía el enlace. Todos ven el mismo banco de trabajo, una persona escribe a la vez y el chat muestra cada mensaje en tu propio idioma.",
     "ledePlain": "Abre una sala para cualquier placa, robot o dron y envía el enlace. Todos ven el mismo banco de trabajo y una persona escribe a la vez.",
@@ -186,8 +186,8 @@
       "interests": "Intereses",
       "interestsHint": "Sepáralos con comas, p. ej. drones, LED, seguidores de línea",
       "builtNote": {
-        "one": "Tu perfil también incluye la {count} lección o prueba que terminaste en SimLab.",
-        "other": "Tu perfil también incluye las {count} lecciones y pruebas que terminaste en SimLab."
+        "one": "Tu perfil también incluye la {count} lección o prueba que terminaste en iynk.",
+        "other": "Tu perfil también incluye las {count} lecciones y pruebas que terminaste en iynk."
       },
       "wants": "Qué quieres construir después",
       "submit": "Buscar compañeros",
@@ -232,7 +232,7 @@
       "notSetUp": "El planificador necesita el servicio de IA, que no está configurado en esta instalación.",
       "failed": "Ahora mismo no se pudo hacer un plan.",
       "missing": "Pon un nombre a cada persona y di qué le gustaría hacer.",
-      "unknownItem": "El plan eligió algo que SimLab todavía no tiene. Planea de nuevo."
+      "unknownItem": "El plan eligió algo que iynk todavía no tiene. Planea de nuevo."
     }
   }
 }

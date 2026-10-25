@@ -45,7 +45,7 @@ What it does:
   matches the nose; with the masts swapped, the heading reads 180° out ("EKF3 Yaw inconsistent").
 - **Pre-arm checks** (powered), 1.5 s: refuses with the real PreArm line for a missing radar, no GPS yaw or an
   uncalibrated accelerometer, and passes when they are all done.
-- A check stays passed until a part it ran on is taken off, re-seated or turned round. The SimLab host loads the
+- A check stays passed until a part it ran on is taken off, re-seated or turned round. The iynk host loads the
   figure with `?fresh=1`, so every check starts unrun there.
 - **Wiring sheet**: battery → power board (AS150U) → ESCs → motors; power board → Cube (POWER1) and → pump (12S);
   Cube → ESCs (MAIN 1-6 PWM) and → pump (AUX1 SprayerPump); radio → TELEM1 + RCIN; RTK pair → GPS1 + GPS2;
@@ -57,4 +57,4 @@ What it does:
   compass), the pump on AUX1 (SERVO9 = 22) and the nozzle positions.
 
 Look: Colorfigures palette, mint by default (the 'pal' pieces follow the swatch the viewer picks), warm paper, heavy
-ink silhouette, finer inner lines. It works on a phone (numbered badges and a label list) and inside the SimLab host.
+ink silhouette, finer inner lines. It works on a phone (numbered badges and a label list) and inside the iynk host.

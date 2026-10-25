@@ -1,6 +1,6 @@
-# Current SimLab build: audit against the spec and the originals
+# Current iynk build: audit against the spec and the originals
 
-Audit date 2026-10-24. Build under test: `/Users/amar/Codes/ak/simlab` at commit `245763f` ("Baseline: SimLab state before the rebuild audit"), Next.js 16.4.3, React 19.3.0, served by `next start -p 3311`.
+Audit date 2026-10-24. Build under test: `/Users/amar/Codes/ak/simlab` at commit `245763f` ("Baseline: iynk state before the rebuild audit"), Next.js 16.4.3, React 19.3.0, served by `next start -p 3311`.
 
 ## Contents
 
@@ -32,7 +32,7 @@ Audit date 2026-10-24. Build under test: `/Users/amar/Codes/ak/simlab` at commit
 `npm run build` (exit 0, about 6 s):
 
 ```
-> simlab@0.1.0 build
+> iynk@0.1.0 build
 > next build
 
 ▲ Next.js 16.4.3 (Turbopack)
@@ -112,8 +112,8 @@ Columns: ID, severity, where, what is wrong (with evidence), what correct looks 
 | P-02 | M | `FigureFrame.tsx:75-77` | `onLoad` sets `ready.current = false`. Today load (≈65 ms) precedes ready (≈95 ms), so it works by timing alone; any reordering disconnects the figure. | Track readiness per load (generation counter); never clear after a ready for the current load. |
 | P-03 | M | `FigureFrame.tsx:35-40` and `65-67`; patch built inline every render in `BoardLab.tsx:60-73,140-149`, `DroneLab.tsx:60-70`, `RoboticsLab.tsx:225,294,321,362`, `HomeDash.tsx:23-27` | Two effects post the same patch, so every render posts twice, and every render is a new patch object. Measured **244 patches/s** into the drone figure while armed (`audit/drone_probe.py`); each patch triggers a full SVG rebuild (`art.innerHTML = ...`, 60–240 KB). | One effect, memoised patch, send only changed keys, coalesce to one message per animation frame. |
 | P-04 | L | `FigureFrame.tsx:38,47`; `board.html:781-805`; `drone.html:251-266` | `postMessage(..., "*")` and the figure accepts any sender (no `ev.source`/`ev.origin` check). | Target `location.origin`; figure checks `ev.source === parent`. |
-| P-05 | M | `src/app/boards/[slug]/page.tsx:5-19`, `src/app/drones/[slug]/page.tsx:5-19`, `src/app/robotics/[slug]/page.tsx:5-20` | No `dynamicParams = false`. The first request for an unknown slug returns **HTTP 200** (PPR shell, title "SimLab"); later ones 404. Observed: `/drones/zzz` 200 then 404; Playwright got 200 for `/boards/nope` and `/robotics/nope`. | `export const dynamicParams = false` (all slugs are known at build time). |
-| P-06 | L | `src/app/robotics/[slug]/page.tsx:11-14`; index pages | Titles are raw slugs ("uno-build — SimLab robotics", "tb6612 — SimLab robotics"); `/boards`, `/robotics`, `/drones` are all "SimLab"; one description for every page; no og/canonical/hreflang. | Human titles and descriptions per page; per-language alternates. |
+| P-05 | M | `src/app/boards/[slug]/page.tsx:5-19`, `src/app/drones/[slug]/page.tsx:5-19`, `src/app/robotics/[slug]/page.tsx:5-20` | No `dynamicParams = false`. The first request for an unknown slug returns **HTTP 200** (PPR shell, title "iynk"); later ones 404. Observed: `/drones/zzz` 200 then 404; Playwright got 200 for `/boards/nope` and `/robotics/nope`. | `export const dynamicParams = false` (all slugs are known at build time). |
+| P-06 | L | `src/app/robotics/[slug]/page.tsx:11-14`; index pages | Titles are raw slugs ("uno-build — iynk robotics", "tb6612 — iynk robotics"); `/boards`, `/robotics`, `/drones` are all "iynk"; one description for every page; no og/canonical/hreflang. | Human titles and descriptions per page; per-language alternates. |
 | P-07 | L | `src/lib/i18n.tsx:262-277`, `src/components/Shell.tsx:12-15,31`, `src/lib/progress.tsx:30-33` | `localStorage` used without try/catch inside `useSyncExternalStore` snapshots and setters; a throwing storage (blocked site data, some embedded or private contexts) crashes the app. The boot script in `layout.tsx:28` is guarded, the React code is not. | Guard every access; fall back to memory. |
 | P-08 | L | Next client router (cacheComponents) | Visited routes stay mounted but hidden: after `/` then `/boards` then `/boards/nano`, the home page's Uno iframe was still in the DOM (`visible=false`) and running (`audit/race3.py`). Figures and spin loops accumulate. | Pause or unmount figures when their route is hidden (visibility/Activity cleanup). |
 
@@ -195,7 +195,7 @@ Columns: ID, severity, where, what is wrong (with evidence), what correct looks 
 
 | ID | Sev | Where | What is wrong (evidence) | What correct looks like |
 |---|---|---|---|---|
-| E-01 | H | `BoardLab.tsx:277`, `78`; `figures/src/board.html:651` | Electronics: on the Uno R3 the barrel feeds VIN through a series reverse-protection diode (D1, M7), so a reversed plug just doesn't power the board. The 500 mA polyfuse F1 is on the **USB** 5 V line and never sees barrel current, and USB power keeps working. SimLab says the polyfuse opened and kills USB too. | "D1 blocks the reversed barrel; the board stays dark on the jack; USB still powers it." |
+| E-01 | H | `BoardLab.tsx:277`, `78`; `figures/src/board.html:651` | Electronics: on the Uno R3 the barrel feeds VIN through a series reverse-protection diode (D1, M7), so a reversed plug just doesn't power the board. The 500 mA polyfuse F1 is on the **USB** 5 V line and never sees barrel current, and USB power keeps working. iynk says the polyfuse opened and kills USB too. | "D1 blocks the reversed barrel; the board stays dark on the jack; USB still powers it." |
 | E-02 | M | `boards.ts:621` | Uno R3 "Y1 16.000 MHz — MCU clock, with C1 and C2". On Rev3 the HC-49 16 MHz crystal clocks the ATmega16U2; the ATmega328P runs from a 16 MHz ceramic resonator. Verify against the Rev3 schematic before writing copy. | Two clock parts with the right jobs. |
 | E-03 | L | `boards.ts:619,623` | "L LED: Pin 13, through a resistor": on Rev3 the L LED is buffered by half of the LMV358; the other half switches the USB/VIN power MOSFET. | Say so. |
 | E-04 | H | `boards.ts:108` (+`50-61`) | ESP32 and NodeMCU (`led: "2"`): the button lesson sets `pinMode(2, OUTPUT)` and `pinMode(2, INPUT_PULLUP)`, the same pin. Observed oscillation at rest ("open","pressed","open",…). GPIO2 is also a boot strapping pin. | A separate button pin per board (BOOT/GPIO0 or GPIO4). |
@@ -212,7 +212,7 @@ Columns: ID, severity, where, what is wrong (with evidence), what correct looks 
 | E-15 | M | `boards.ts:318-335` | "Mini piano" text: "Five buttons, five notes"; the sketch has one button (pin 2) and one note (523 Hz). | Five pins and notes (the original offers tunes, octave and note-name options). |
 | E-16 | M | `boards.ts:338-361` | Motor sketch drives `analogWrite(5, …)` with no TB6612 AIN1/AIN2/PWMA/STBY, though the text says to use a TB6612. | Driver sketch. |
 | E-17 | M | `boards.ts:362-385,428-449,451-500` | Heat on A2, plant and force reuse the generic slider and the wrong sensor art. The soil "probe is a resistor" (the original used a capacitive v1.2 sensor and an SSD1306 OLED at 0x3C). "Build a project" is a button counter (the original: HC-SR04 parking sensor with a traffic light). | Restore the original designs (see `learn-arduino.md` §3). |
-| E-18 | M | `boards.ts:240-503` vs original | Dropped original lessons: "Read a sensor" (HC-SR04, obstacle Car/Box/Ball/Wall, distance 5–50 cm, "Drive back and forth while running") and "Spin the wheel" as a 28BYJ-48 stepper on a ULN2003 (2048 steps, 8 × 256-step prize wheel). The SimLab title "Spin the wheel" is reused for a pot→servo; "Talk over serial" was added instead. | Restore both. |
+| E-18 | M | `boards.ts:240-503` vs original | Dropped original lessons: "Read a sensor" (HC-SR04, obstacle Car/Box/Ball/Wall, distance 5–50 cm, "Drive back and forth while running") and "Spin the wheel" as a 28BYJ-48 stepper on a ULN2003 (2048 steps, 8 × 256-step prize wheel). The iynk title "Spin the wheel" is reused for a pot→servo; "Talk over serial" was added instead. | Restore both. |
 | E-19 | M | `boards.ts:640,964,992` | Only the Uno has quizzes (4); the other 11 boards have none. | Per-board quizzes. |
 | E-20 | L | `boards.ts:937-939` | Chaser `led <= {led[14:0], 1'b1}` fills with ones (all on after 16 clocks) at 100 MHz (invisible). | `{led[14:0], led[15]}` with init `16'h0001` and a ~24-bit clock divider. |
 | E-21 | L | `boards.ts:914-924` | The Buttons text says "two flip-flops"; the sketch has one. | A 2-FF synchronizer. |
@@ -357,8 +357,8 @@ Status: **done**, **partial**, **missing**, **broken**. "README" = the in-repo s
 | 3 | No runtime errors | broken | F-01, F-02 throw; R-07 freezes the tab. |
 | 4 | Six languages: en, es, fr, de, zh, hi (README) | partial | I-01 to I-03 (about 170 strings, figure UI English). |
 | 5 | Language coverage at least the original's 13, with RTL and locale URLs (orig) | missing | I-04. |
-| 6 | Light and dark theme (README, task) | partial | DK-01 to DK-04; the toggle persists (`simlab-theme`). |
-| 7 | Progress stored under `simlab.v1` (README) | partial | PG-01, PG-02, B-01, B-02. |
+| 6 | Light and dark theme (README, task) | partial | DK-01 to DK-04; the toggle persists (`iynk-theme`). |
+| 7 | Progress stored under `iynk.v1` (README) | partial | PG-01, PG-02, B-01, B-02. |
 | 8 | Works at phone width | partial | No page overflow at load; MB-01 to MB-05. |
 | 9 | Figures built with Colorfigures: full turn, see-through, labels, zoom, phone layout (task, skill) | partial | Turn/zoom/labels switch work; see-through generic (F-11); F-03 sorting; F-16 drag. |
 | 10 | Each figure looks like the real object (task) | partial | Section 7: 4 of 12 boards and 3 of 10 drones pass. |
@@ -438,15 +438,15 @@ Desktop 1280×900, production server, every route (`audit/crawl.py`, results in 
 
 | Route | Status | Title | Figure | Page height |
 |---|---|---|---|---|
-| `/` | 200 | SimLab | board uno-r3 | 2250 |
-| `/boards` | 200 | SimLab | none | 1183 |
-| `/boards/uno-r3` | 200 | Arduino Uno R3 — SimLab | uno-r3 | 3070 |
-| `/boards/uno-r4` | 200 | Arduino Uno R4 WiFi — SimLab | uno-r4&variant=wifi | 2127 |
-| `/boards/nano`, `esp32`, `esp32-s3`, `nodemcu`, `pico`, `nucleo-f401`, `microbit`, `pi5`, `basys3`, `de10-lite` | 200 | "<board name> — SimLab" | matching id (+variant) | ≈2100 |
-| `/robotics` | 200 | SimLab | none | 900 |
-| `/robotics/uno-build`, `reaction`, `line`, `arm`, `tb6612`, `l298n`, `a4988`, `pca9685`, `mpu6050`, `hcsr04`, `qtr8rc`, `lm2596` | 200 | "<slug> — SimLab robotics" | uno-r3 (+module) | 1390–2118 |
-| `/drones` | 200 | SimLab | none | 900 |
-| `/drones/<10 slugs>` | 200 | "<drone name> — SimLab" | drone id | ≈2700 |
+| `/` | 200 | iynk | board uno-r3 | 2250 |
+| `/boards` | 200 | iynk | none | 1183 |
+| `/boards/uno-r3` | 200 | Arduino Uno R3 — iynk | uno-r3 | 3070 |
+| `/boards/uno-r4` | 200 | Arduino Uno R4 WiFi — iynk | uno-r4&variant=wifi | 2127 |
+| `/boards/nano`, `esp32`, `esp32-s3`, `nodemcu`, `pico`, `nucleo-f401`, `microbit`, `pi5`, `basys3`, `de10-lite` | 200 | "<board name> — iynk" | matching id (+variant) | ≈2100 |
+| `/robotics` | 200 | iynk | none | 900 |
+| `/robotics/uno-build`, `reaction`, `line`, `arm`, `tb6612`, `l298n`, `a4988`, `pca9685`, `mpu6050`, `hcsr04`, `qtr8rc`, `lm2596` | 200 | "<slug> — iynk robotics" | uno-r3 (+module) | 1390–2118 |
+| `/drones` | 200 | iynk | none | 900 |
+| `/drones/<10 slugs>` | 200 | "<drone name> — iynk" | drone id | ≈2700 |
 | `/boards/nope`, `/robotics/nope` | 200 on first hit, 404 later | 404: This page could not be found. | none | 1075 |
 
 Phone 390×844: `/`, `/boards`, `/boards/uno-r3`, `/boards/basys3`, `/robotics`, `/robotics/uno-build`, `/robotics/line`, `/robotics/arm`, `/robotics/tb6612`, `/drones`, `/drones/freestyle-5`, `/drones/wing`: no horizontal overflow at load (scrollWidth 390). The overflow appears after choosing a lesson with long code lines (MB-01).

@@ -1,7 +1,7 @@
 export const meta = {
-  name: 'simlab-interaction-audit',
-  description: 'SimLab after gate 3: drive every surface of the running app, find controls whose effect does not match, reproduce each finding independently; no code changes',
-  whenToUse: 'Launched by the SimLab driver with { base, scratch } once a production build is serving; read-only',
+  name: 'iynk-interaction-audit',
+  description: 'iynk after gate 3: drive every surface of the running app, find controls whose effect does not match, reproduce each finding independently; no code changes',
+  whenToUse: 'Launched by the iynk driver with { base, scratch } once a production build is serving; read-only',
   phases: [
     { title: 'Find', detail: 'one agent per surface drives the app and reports what it reproduced' },
     { title: 'Verify', detail: 'a second agent reproduces each finding from scratch and looks for the cause' },
@@ -12,7 +12,7 @@ const base = args?.base ?? 'http://127.0.0.1:3000'
 const scratch = args?.scratch
 
 const RULES = `
-You are auditing SimLab, a hackathon web app (Next.js 16) whose production build is already serving at ${base}.
+You are auditing iynk, a hackathon web app (Next.js 16) whose production build is already serving at ${base}.
 Repo: /Users/amar/Codes/ak/simlab. You change nothing: do not edit, create or delete tracked files, run no git command
 that changes anything, no builds, no npm install, and never stop or restart the server (if it is down, say so and stop).
 

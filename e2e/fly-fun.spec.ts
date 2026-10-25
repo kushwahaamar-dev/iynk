@@ -26,7 +26,7 @@ function watchErrors(page: Page) {
 
 async function seedIdentity(context: BrowserContext) {
   await context.addInitScript((identity) => {
-    if (!localStorage.getItem("simlab:together:v1")) localStorage.setItem("simlab:together:v1", JSON.stringify(identity));
+    if (!localStorage.getItem("iynk:together:v1")) localStorage.setItem("iynk:together:v1", JSON.stringify(identity));
   }, ANA);
 }
 

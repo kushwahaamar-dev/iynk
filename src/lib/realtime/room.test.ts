@@ -79,7 +79,7 @@ function join<S>(
   const transport = relay.connect(latency);
   const room = new RoomClient({
     id: "abc234",
-    link: `https://simlab.test/en/drones/${itemId}?room=abc234`,
+    link: `https://iynk.test/en/drones/${itemId}?room=abc234`,
     me: { id: name, name, color: "#ef6a4c", lang: "en", done: [] },
     lab,
     itemId,

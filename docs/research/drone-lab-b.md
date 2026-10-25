@@ -1,6 +1,6 @@
 # Drone Lab (original), part B: the nine drones of Figs 05 to 13
 
-Research notes for the SimLab rebuild. This file covers the original Drone Lab's figures 05 to 13
+Research notes for the iynk rebuild. This file covers the original Drone Lab's figures 05 to 13
 (source scripts `09-*.js` to `17-*.js`). The engine (`03-*.js`) and the flying range (`04-.js`) are
 documented by another agent; this file only describes the engine where a figure depends on it.
 

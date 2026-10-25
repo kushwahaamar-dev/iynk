@@ -61,4 +61,4 @@ What it does:
   CP2102N). Labels: ESP32-S3 + FLASH + 40 MHZ CRYSTAL, USB-UART BRIDGE, LDO PASS TRANSISTOR, R, G, B DIES + DRIVER.
 
 Look: Colorfigures palette (mustard accent), warm paper, heavy ink silhouette, finer inner lines, hand-drawn wobble,
-paper grain. Works on a phone and inside the SimLab host (embedded, bare). Upload byte counts are illustrative.
+paper grain. Works on a phone and inside the iynk host (embedded, bare). Upload byte counts are illustrative.

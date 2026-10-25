@@ -154,7 +154,7 @@ export function createBroadcastTransport(roomId: string, options: BroadcastOptio
     start(makeJoin) {
       const join = makeJoin();
       item = { lab: join.lab, itemId: join.itemId };
-      channel = new Impl(`simlab-room-${roomId}`);
+      channel = new Impl(`iynk-room-${roomId}`);
       channel.onmessage = (event: MessageEvent<Frame>) => onFrame(event.data);
       me = { peer: join.peer, since: now(), seen: now(), ...item };
       members.set(join.peer.id, me);

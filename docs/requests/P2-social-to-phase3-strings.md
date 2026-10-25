@@ -9,7 +9,7 @@ English text for now; please translate them.
 | `client.sound.turnOn` | Turn sound on |
 | `client.sound.turnOff` | Turn sound off |
 | `client.usage.label` | Anonymous usage counts |
-| `client.usage.body` | SimLab counts what happens in the labs (a lesson passed, a step built, a fault tried) for the live counters and leaderboards. Each event carries a random id for this browser, never your name or your code. |
+| `client.usage.body` | iynk counts what happens in the labs (a lesson passed, a step built, a fault tried) for the live counters and leaderboards. Each event carries a random id for this browser, never your name or your code. |
 | `client.usage.toggle` | Share anonymous usage counts |
 
 Where they show: the sound toggle (`src/components/settings/SoundToggle.tsx`) in the header row of the board, lesson,

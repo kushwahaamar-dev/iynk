@@ -12,6 +12,6 @@ describe("withRoom", () => {
 
   test("the link it makes reads back as the same room", () => {
     const id = newRoomId();
-    expect(parseRoomInput(`https://simlab.example${withRoom("/en/drones/quad5/fly", id)}`)).toBe(id);
+    expect(parseRoomInput(`https://iynk.example${withRoom("/en/drones/quad5/fly", id)}`)).toBe(id);
   });
 });

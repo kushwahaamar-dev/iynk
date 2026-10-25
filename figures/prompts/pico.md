@@ -55,4 +55,4 @@ What it does:
   FLASH MEMORY, QUARTZ, BUCK-BOOST, and WI-FI RADIO on the W boards.
 
 Look: Colorfigures palette (mint accent), warm paper, heavy ink silhouette, finer inner lines, hand-drawn wobble,
-paper grain. Works on a phone and inside the SimLab host (embedded, bare).
+paper grain. Works on a phone and inside the iynk host (embedded, bare).

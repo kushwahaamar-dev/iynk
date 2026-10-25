@@ -124,7 +124,7 @@ test("the theme choice persists and is applied before the first paint", async ({
   await page.goto("/en");
   await (await openSettings(page)).getByRole("radio", { name: shell.theme.dark }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("simlab:v1") ?? "{}").settings?.theme)).toBe("dark");
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("iynk:v1") ?? "{}").settings?.theme)).toBe("dark");
 
   await page.addInitScript(() => {
     requestAnimationFrame(() => {

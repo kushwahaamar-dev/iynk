@@ -42,7 +42,7 @@ What it does:
 - **Winch test** (powered, Pixhawk and winch fitted), 3 s: the parcel drops 3 cm on the line and comes back up.
 - **Failsafe test (props off)** (Pixhawk, receiver and telemetry fitted, powered), 2.6 s: the motors idle armed, the
   transmitter goes off, it disarms on the ground; in the air it would RTL.
-- A check stays passed until a part it ran on is taken off, re-seated or turned round. The SimLab host loads the
+- A check stays passed until a part it ran on is taken off, re-seated or turned round. The iynk host loads the
   figure with `?fresh=1`, so every check starts unrun there.
 - **Wiring sheet**: battery → power board → ESCs → motors; power board → Pixhawk (POWER1) and → Pi (5 V 5 A); Pi →
   Pixhawk TELEM2 (921600); SiK → TELEM1; receiver → TELEM3; GPS → GPS1 (UART + I²C); Pixhawk → ESCs (AUX 1-4
@@ -55,4 +55,4 @@ What it does:
   PWM winch on AUX5 and the hook that opens on a slack line.
 
 Look: Colorfigures palette (mustard accent; the 'pal' pieces follow the swatch the viewer picks), warm paper, heavy ink
-silhouette, finer inner lines. It works on a phone (numbered badges and a label list) and inside the SimLab host.
+silhouette, finer inner lines. It works on a phone (numbered badges and a label list) and inside the iynk host.

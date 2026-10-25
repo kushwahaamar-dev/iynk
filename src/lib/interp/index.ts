@@ -1,5 +1,5 @@
 /**
- * SimLab interpreters: an Arduino C++ subset, a MicroPython/Python subset and a
+ * iynk interpreters: an Arduino C++ subset, a MicroPython/Python subset and a
  * Verilog subset, all on one deterministic virtual clock.
  *
  * ```ts

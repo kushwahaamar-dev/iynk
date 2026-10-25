@@ -4,7 +4,7 @@
 `/en/boards/esp32-devkitc/touch`:
 
 ```
-SimLab i18n: no string "lessons.blink.pins.GPIO23.to" in en/boards.
+iynk i18n: no string "lessons.blink.pins.GPIO23.to" in en/boards.
 ```
 
 That `tc` is created in `src/components/boardlab/text.tsx` over the lesson page's prose.

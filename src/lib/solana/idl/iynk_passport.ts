@@ -2,15 +2,15 @@
  * Program IDL in camelCase format in order to be used in JS/TS.
  *
  * Note that this is only a type helper and is not the actual IDL. The original
- * IDL can be found at `target/idl/simlab_passport.json`.
+ * IDL can be found at `target/idl/iynk_passport.json`.
  */
-export type SimlabPassport = {
+export type IynkPassport = {
   "address": "BYFLDTLNi946Z8jT4JnxgE8Cpzkr9ud7tSrnThFTv31w",
   "metadata": {
-    "name": "simlabPassport",
+    "name": "iynkPassport",
     "version": "0.1.0",
     "spec": "0.1.0",
-    "description": "SimLab Proof of Build: verified skill credentials and escrowed sponsor bounties"
+    "description": "iynk Proof of Build: verified skill credentials and escrowed sponsor bounties"
   },
   "instructions": [
     {

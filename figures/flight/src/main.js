@@ -1,5 +1,5 @@
 // The range page: draws what the host's flight sim sends (src/lib/flight), forwards the flight keys,
-// and speaks the SimLab figure bridge (colorfigures-guide 2.3, D6). Standalone it flies a demo lap.
+// and speaks the iynk figure bridge (colorfigures-guide 2.3, D6). Standalone it flies a demo lap.
 const EMBED = window.parent !== window || /[?&]embed=1\b/.test(location.search);
 const ORIGIN = location.protocol === 'file:' || location.origin === 'null' ? '*' : location.origin;
 const FLIGHT_KEYS = new Set(['KeyW', 'KeyS', 'KeyA', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'KeyR', 'KeyV']);
@@ -35,7 +35,7 @@ const fpv = createFpv(fpvSvg);
 
 function post(type, payload) {
   if (!EMBED || window.parent === window) return;
-  window.parent.postMessage(Object.assign({ source: 'simlab-figure', v: 1, type }, payload || {}), ORIGIN);
+  window.parent.postMessage(Object.assign({ source: 'iynk-figure', v: 1, type }, payload || {}), ORIGIN);
 }
 // the host drives these with `act {name}`; the protocol carries act names only
 const ACTS = ['fpv', 'chase', 'turn-left', 'turn-right', 'zoom-in', 'zoom-out', 'view-reset'];
@@ -152,7 +152,7 @@ window.addEventListener('message', (e) => {
   if (window.parent === window || e.source !== window.parent) return;
   if (ORIGIN !== '*' && e.origin !== location.origin) return;
   const m = e.data;
-  if (!m || typeof m !== 'object' || m.source !== 'simlab' || m.v !== 1) return;
+  if (!m || typeof m !== 'object' || m.source !== 'iynk' || m.v !== 1) return;
   switch (m.type) {
     case 'hello':
       sendReady();

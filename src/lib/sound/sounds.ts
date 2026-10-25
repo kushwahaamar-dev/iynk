@@ -1,4 +1,4 @@
-// Every sound SimLab plays, synthesized with Web Audio (no audio files to load).
+// Every sound iynk plays, synthesized with Web Audio (no audio files to load).
 // Figures name theirs in `sfx` events and state reports (docs/FIGURES.md, S10);
 // the lab adds a few cues of its own for moments the figure doesn't draw.
 

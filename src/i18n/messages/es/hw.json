@@ -3,9 +3,9 @@
   "intro": "Ejecuta esta lección en un Arduino real: tu sketch conmuta los pines reales, y los botones y potenciómetros de la placa real mueven la simulación.",
   "support": {
     "unsupportedTitle": "Este navegador no llega a placas USB",
-    "unsupported": "El gemelo habla con la placa mediante Web Serial, que este navegador no ofrece. Abre SimLab en una versión reciente de Chrome, Edge u Opera en un ordenador para conectar una placa. Todo lo demás de SimLab funciona aquí.",
+    "unsupported": "El gemelo habla con la placa mediante Web Serial, que este navegador no ofrece. Abre iynk en una versión reciente de Chrome, Edge u Opera en un ordenador para conectar una placa. Todo lo demás de iynk funciona aquí.",
     "insecureTitle": "Necesita una página segura",
-    "insecure": "Web Serial solo funciona en páginas https y en localhost. Abre SimLab por https para conectar una placa."
+    "insecure": "Web Serial solo funciona en páginas https y en localhost. Abre iynk por https para conectar una placa."
   },
   "lab": {
     "unsupportedTitle": "Aquí no hay nada que reflejar",

@@ -5,7 +5,7 @@
     "craftTitle": "{title} · Drone Lab",
     "craftDescription": "{title}: pick the parts with live calculations, build it part by part, run the safety tests, configure it in the {cli} and fly it.",
     "flyTitle": "Fly the {title}",
-    "flyDescription": "Fly the {title} you designed on the SimLab range: chase view or FPV goggles, keyboard, touch sticks or a gamepad."
+    "flyDescription": "Fly the {title} you designed on the iynk range: chase view or FPV goggles, keyboard, touch sticks or a gamepad."
   },
   "index": {
     "title": "Drone Lab",

@@ -20,7 +20,7 @@ const GLASS = [26.7, 19.26, 1.45], AA = [21.74, 10.86];
 const PCBW = 27.3, PCBH = 27.8, GLASS_AT = [13.65, 13.03], AA_TOP = 2.4;    // AA top edge 2.4 mm below the glass top
 const COLORS = { white: ['#eef6ff', '#eef6ff'], blue: ['#7fd4ff', '#7fd4ff'], 'yellow-blue': ['#ffd84a', '#7fd4ff'] };
 
-/* ---------- 5 x 7 font, drawn for SimLab: one row of five pixels per token ---------- */
+/* ---------- 5 x 7 font, drawn for iynk: one row of five pixels per token ---------- */
 const GLYPHS = `
 SP ..... ..... ..... ..... ..... ..... .....
 !  ..#.. ..#.. ..#.. ..#.. ..#.. ..... ..#..
@@ -119,7 +119,7 @@ const FRAMES = {
   moisture: t => { const g = gfx(), pct = moisturePct(t);
     g.text(0, 0, pct + '%', 3); g.rect(0, 28, 128, 8); g.fillRect(0, 28, Math.floor(pct * 128 / 100), 8);
     g.text(0, 46, pct < 30 ? 'Water me!' : pct > 85 ? 'Too wet!' : 'Happy :)', 2); return g.fb; },
-  hello: () => { const g = gfx(); g.rect(0, 0, 128, 64); g.text(4, 4, 'Hello, world!', 1); g.text(4, 20, 'SimLab', 2); g.text(4, 44, '128 x 64 at 0x3C', 1); return g.fb; },
+  hello: () => { const g = gfx(); g.rect(0, 0, 128, 64); g.text(4, 4, 'Hello, world!', 1); g.text(4, 20, 'iynk', 2); g.text(4, 44, '128 x 64 at 0x3C', 1); return g.fb; },
   pixels: t => { const g = gfx(), k = Math.floor(t * 2) % 2;
     for (let y = 0; y < H; y++) for (let x = 0; x < FBW; x++) if (y < 16 ? ((x >> 3) + (y >> 3) + k) % 2 === 0 : (x === y * 2 || x === 127 - y * 2 || x % 16 === 0 || y % 16 === 15)) g.px(x, y);
     return g.fb; },

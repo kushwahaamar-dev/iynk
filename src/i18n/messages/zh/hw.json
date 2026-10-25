@@ -3,9 +3,9 @@
   "intro": "在真正的 Arduino 上运行这节课：你的程序控制真实的引脚，真实开发板上的按钮和旋钮也会带动模拟。",
   "support": {
     "unsupportedTitle": "此浏览器无法连接 USB 开发板",
-    "unsupported": "硬件孪生通过 Web Serial 与开发板通信，而此浏览器不提供该功能。请在电脑上用较新版本的 Chrome、Edge 或 Opera 打开 SimLab 来连接开发板。SimLab 的其他功能在这里都能正常使用。",
+    "unsupported": "硬件孪生通过 Web Serial 与开发板通信，而此浏览器不提供该功能。请在电脑上用较新版本的 Chrome、Edge 或 Opera 打开 iynk 来连接开发板。iynk 的其他功能在这里都能正常使用。",
     "insecureTitle": "需要安全页面",
-    "insecure": "Web Serial 只能在 https 页面和 localhost 上使用。请通过 https 打开 SimLab 来连接开发板。"
+    "insecure": "Web Serial 只能在 https 页面和 localhost 上使用。请通过 https 打开 iynk 来连接开发板。"
   },
   "lab": {
     "unsupportedTitle": "这里没有可镜像的内容",

@@ -321,8 +321,8 @@
     "copied": "Enlace copiado",
     "copyFailed": "No se pudo copiar: aquí tienes el enlace",
     "link": "Enlace del reto",
-    "shareText": "Reto diario de drones de SimLab: {craft} en {course}.",
-    "shareBeat": "Reto diario de drones de SimLab: {craft} en {course}. ¿Puedes bajar de {time} s?",
+    "shareText": "Reto diario de drones de iynk: {craft} en {course}.",
+    "shareBeat": "Reto diario de drones de iynk: {craft} en {course}. ¿Puedes bajar de {time} s?",
     "board": "{course}, reto del {date}"
   }
 }

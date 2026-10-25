@@ -45,7 +45,7 @@ What it does:
   `extra.failsafeOk`, `extra.rescue`) and hold only while the parts they ran on stay seated the same way.
 - **Wiring sheet**: battery → XT60 + cap → 4-in-1 ESC → motors (3-phase x4), FC → ESC (DShot600 x4), receiver → FC
   (UART2 CRSF), GPS + compass → FC (UART3 + I2C), camera → FC (video in) and FC → VTX (video + SmartAudio).
-- **Options** from the SimLab calculator: the three packs; 2807 1300 KV, 3008 1100 KV or 2807 1700 KV motors; and
+- **Options** from the iynk calculator: the three packs; 2807 1300 KV, 3008 1100 KV or 2807 1700 KV motors; and
   7x3.5 bi-blade, 7.5x3.7 bi-blade or 7x4 tri-blade props, each in its own colour.
 - **Exploded view** lifts each part by its stack level.
 - **See-through** fades the top plate and the battery and names what is inside: STATOR 12N14P, MOSFETS x12,
@@ -54,4 +54,4 @@ What it does:
 
 Look: Colorfigures palette (mint craft colour, chosen with the colour swatches), warm paper, heavy ink silhouette,
 finer inner lines, hand-drawn wobble, paper grain. It works on a phone (numbered badges and a label list) and inside
-the SimLab host, embedded and bare.
+the iynk host, embedded and bare.

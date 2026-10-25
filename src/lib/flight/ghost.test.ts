@@ -54,7 +54,7 @@ describe("your best-lap ghost", () => {
     expect(saveGhost(track(12.5))).toBe(true);
     expect(loadGhost("quad5", race.id)?.time).toBe(12.5);
     expect(loadGhost("quad5", "other")).toBeNull();
-    localStorage.setItem(`simlab:ghost:v1:quad5:${race.id}`, JSON.stringify({ v: 1, craft: "quad5", course: race.id, time: 3, dt: GHOST_DT, poses: [[1, 2]] }));
+    localStorage.setItem(`iynk:ghost:v1:quad5:${race.id}`, JSON.stringify({ v: 1, craft: "quad5", course: race.id, time: 3, dt: GHOST_DT, poses: [[1, 2]] }));
     expect(loadGhost("quad5", race.id)).toBeNull();
     expect(isGhostTrack(null)).toBe(false);
   });

@@ -95,12 +95,12 @@ whose boxes are sized to their text.
 ## How to rerun
 
 ```bash
-env -u SIMLAB_BUILD_SKIP_TYPECHECK NEXT_DIST_DIR=.next-gate3 npm run build
+env -u IYNK_BUILD_SKIP_TYPECHECK NEXT_DIST_DIR=.next-gate3 npm run build
 NEXT_DIST_DIR=.next-gate3 npx next start -H 127.0.0.1 -p 3420 &
 node scripts/crawl-routes.mjs --base http://127.0.0.1:3420 --dist .next-gate3 --workers 3 --out docs/verify/gate3-routes.md
 E2E_SKIP_BUILD=1 NEXT_DIST_DIR=.next-gate3 npx playwright test
 node scripts/figure-langs.mjs http://127.0.0.1:3420 <out dir>
-SIMLAB_LESSON_TABLE=docs/verify/gate3-lessons.md npx vitest run
+IYNK_LESSON_TABLE=docs/verify/gate3-lessons.md npx vitest run
 (cd server/realtime && npm test && npm run typecheck)
 for b in $(ls src/content/robotics/*.ts | grep -v -e test -e '/_' | xargs -n1 basename | sed 's/\.ts$//'); do node figures/engine/probe.mjs $b; done
 python3 -I figures/tools/cfshoot.py boards/uno-r3   # and each other page under public/figures

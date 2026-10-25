@@ -5,7 +5,7 @@
     "craftTitle": "{title} · 无人机实验室",
     "craftDescription": "{title}：用实时计算挑选零件，一个零件一个零件地组装，做安全测试，在 {cli} 里配置，然后飞起来。",
     "flyTitle": "试飞 {title}",
-    "flyDescription": "在 SimLab 飞行场上试飞你设计的 {title}：追踪视角或 FPV 眼镜，键盘、触摸摇杆或手柄。"
+    "flyDescription": "在 iynk 飞行场上试飞你设计的 {title}：追踪视角或 FPV 眼镜，键盘、触摸摇杆或手柄。"
   },
   "index": {
     "title": "无人机实验室",

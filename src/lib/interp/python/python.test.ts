@@ -388,7 +388,7 @@ wlan.connect("bench-lab", "robotics")
 while not wlan.isconnected():
     time.sleep(0.2)
 print(wlan.ifconfig()[0])
-r = urequests.get("http://simlab.local/hello")
+r = urequests.get("http://iynk.local/hello")
 print(r.status_code)
 r.close()
 `, 'pico', { variant: 'pico-w' });

@@ -1,7 +1,7 @@
 export const meta = {
-  name: 'simlab-phase2-wave-a',
-  description: 'SimLab phase 2 wave A: 9 agents build BUILD-PLAN §5 phase-2 rows from scripts/workflows/phase2.md',
-  whenToUse: 'Launched by the SimLab driver after gate 1; relaunch only unfinished labels by passing them as args',
+  name: 'iynk-phase2-wave-a',
+  description: 'iynk phase 2 wave A: 9 agents build BUILD-PLAN §5 phase-2 rows from scripts/workflows/phase2.md',
+  whenToUse: 'Launched by the iynk driver after gate 1; relaunch only unfinished labels by passing them as args',
   phases: [{ title: 'Wave A', detail: 'one agent per label, each owning the files in its phase2.md section' }],
 }
 
@@ -46,7 +46,7 @@ const REPORT = {
   required: ['label', 'changed', 'commits', 'verified', 'notDone', 'requests', 'pushed'],
 }
 
-const brief = (label) => `You are ${label}, one of ${labels.length} agents in SimLab's phase-2 wave A, all working at once in
+const brief = (label) => `You are ${label}, one of ${labels.length} agents in iynk's phase-2 wave A, all working at once in
 the same git working tree, /Users/amar/Codes/ak/simlab (HackTX 2026).
 
 Your brief is scripts/workflows/phase2.md: follow its "Shared rules" and your own section "### ${label}" exactly.

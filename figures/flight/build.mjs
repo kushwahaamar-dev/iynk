@@ -16,7 +16,7 @@ const out = join(root, 'public/figures/flight/range.html');
 
 // transpile the modules the demo needs into a temp tree laid out like src/, fixing the import specifiers
 // ("./math" and "@/content/ids" become relative .mjs paths; type-only imports vanish in the transpile)
-const tmp = mkdtempSync(join(tmpdir(), 'simlab-range-'));
+const tmp = mkdtempSync(join(tmpdir(), 'iynk-range-'));
 const mods = ['lib/flight/math', 'lib/flight/world', 'lib/flight/types', 'lib/flight/route', 'lib/flight/registry', 'content/ids', 'content/drones/quad5'];
 for (const m of mods) {
   const code = readFileSync(join(src, m + '.ts'), 'utf8');

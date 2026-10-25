@@ -1,6 +1,6 @@
-# SimLab
+# iynk
 
-SimLab is a hardware lab in the browser. You pick a real board, a robotics bench or a drone, and it is drawn as a
+iynk is a hardware lab in the browser. You pick a real board, a robotics bench or a drone, and it is drawn as a
 hand-inked figure you can turn all the way round and look inside. Then you build it part by part, write the code and
 run it, break it on purpose and watch what really happens (magic smoke, a motor spinning backwards, a quad that flips
 on take-off), and, for drones, size the parts with real numbers and fly it. The code runs in interpreters inside the
@@ -120,7 +120,7 @@ npm run dev        # http://localhost:3000, which redirects to /en
 No environment variables are needed: every sponsor feature says "not set up on this deployment" and the labs work
 without it. To turn features on, copy `.env.example` to `.env.local` and fill in the keys you have (never commit it).
 A production build is `npm run build` then `npm start`. Both `dev` and `build` regenerate the content index
-(`src/content/index.generated.ts`) first. Progress lives in this browser's `localStorage` under `simlab:v1`; there are
+(`src/content/index.generated.ts`) first. Progress lives in this browser's `localStorage` under `iynk:v1`; there are
 no accounts.
 
 ## Test it
@@ -138,7 +138,7 @@ Playwright needs `npx playwright install chromium` once. `npm run e2e` builds th
 a build that already exists. The checks that go through the app's own paths, as the gates run them:
 
 ```bash
-SIMLAB_LESSON_TABLE=/tmp/lessons.md npx vitest run src/lib/interp/lessons.test.ts   # every lesson and task: reference passes, starter fails
+IYNK_LESSON_TABLE=/tmp/lessons.md npx vitest run src/lib/interp/lessons.test.ts   # every lesson and task: reference passes, starter fails
 node figures/engine/probe.mjs tb6612fng          # plays a bench's steps in order through the figure bridge
 python3 -I figures/tools/cfbuild.py drones/quad5  # builds one figure into public/figures/
 python3 -I figures/tools/cfshoot.py drones/quad5  # shoots it from 7 angles, see-through, exploded, phone, inside an iframe; exit 1 on errors
@@ -152,7 +152,7 @@ node scripts/crawl-routes.mjs --base http://127.0.0.1:3420 --dist .next   # ever
 
 Every figure is one self-contained HTML page in the Colorfigures style: warm paper, heavy ink outlines, flat light, mid
 and dark bands, a flat blue cast shadow. The Colorfigures core is
-third-party (MIT, April Zhu); it is vendored in `figures/vendor/colorfigures/` with SimLab's patches listed in
+third-party (MIT, April Zhu); it is vendored in `figures/vendor/colorfigures/` with iynk's patches listed in
 `PATCHES.md` (translation, the embed mode, the dark host).
 
 - Sources are `figures/<kind>/<id>.js` (boards, parts, modules, robotics, drones), drawn on two engines of our own:
@@ -172,12 +172,12 @@ third-party (MIT, April Zhu); it is vendored in `figures/vendor/colorfigures/` w
 What each track's judges can see, and what it does on a deployment with no keys. Solana and Best Hardware Hack are not
 entered: that work (phase 4) was skipped, so their code stays in the repo but off.
 
-| Track | In SimLab | With no keys | Turned on by |
+| Track | In iynk | With no keys | Turned on by |
 |---|---|---|---|
 | Best Overall | The whole lab: 38 items, three interpreters behind one check path (run in a Web Worker), the circuit solver, the flight sim, six languages | All of it | – |
 | SerpApi | **Build it for real** on every board, bench and drone: the parts list priced from Google Shopping, Amazon and eBay with the cheapest total; for drones a budget optimiser that swaps cells, motors and props and re-runs the calculator; nearby makerspaces, shops and flying fields (Google Maps), maker events, tutorial videos; the partner's datasheet search (Google and Extract); the MCP tool `price_parts`. Cached 6 h, with a search budget | The parts list (drones priced from their catalogue, boards and benches unpriced) and the drone optimiser on catalogue prices, under "Live prices aren't set up on this deployment" | `SERPAPI_KEY` |
 | Most Entertaining | **Break it** on every board and bench (in the figure and the failure panel) and on every drone's fly page; the crash replay in slow motion with "here's why" and a one-click fix; par times and medals; your best-lap ghost and your friends' ghosts in a room; a daily challenge; sound (off by default) | All of it except the leaderboards, which say they aren't set up | `DATABASE_URL` (Tiger Data) for leaderboards and live counters |
-| Meta | **SimLab Together**: live rooms on every lab page and `/together` (cursors, chat, presence, a baton so one person builds at a time); Muse Spark translates chat and voice notes; the lab partner (Muse Spark with tools, and one that points you to a person in the room first); the Build Night planner; Build Stories with a Muse Image cover; buddy matching; the MCP connector at `/api/mcp` (7 tools, `/api/openapi.json`) so Muse can call SimLab | Rooms work between tabs of one browser, and chat shows messages as written; the partner, translation, voice, images and the planner say they aren't set up; the MCP tools `search_catalog`, `get_item`, `drone_calc` and `create_room` answer, the others return `not_configured` | `META_API_KEY` (`GEMINI_API_KEY` stands in for text only), `NEXT_PUBLIC_REALTIME_URL` for rooms across devices, `DATABASE_URL` for buddies |
+| Meta | **iynk Together**: live rooms on every lab page and `/together` (cursors, chat, presence, a baton so one person builds at a time); Muse Spark translates chat and voice notes; the lab partner (Muse Spark with tools, and one that points you to a person in the room first); the Build Night planner; Build Stories with a Muse Image cover; buddy matching; the MCP connector at `/api/mcp` (7 tools, `/api/openapi.json`) so Muse can call iynk | Rooms work between tabs of one browser, and chat shows messages as written; the partner, translation, voice, images and the planner say they aren't set up; the MCP tools `search_catalog`, `get_item`, `drone_calc` and `create_room` answer, the others return `not_configured` | `META_API_KEY` (`GEMINI_API_KEY` stands in for text only), `NEXT_PUBLIC_REALTIME_URL` for rooms across devices, `DATABASE_URL` for buddies |
 
 Not entered, and hidden: the Solana Proof of Build program (`solana/`, Anchor, devnet, never deployed) with its
 Passport tab and nav entries, which appear only once the program's config account exists (`/passport` and `/verify`
@@ -209,7 +209,7 @@ with `scripts/realtime-deploy.sh` (`docs/hacktx/REALTIME.md`); the database tabl
 
 HackTX 2026 requires every line of project code to be written during the hacking period, 11:30 CDT on 24 October to
 11:30 CDT on 25 October. Before 11:30 on 24 October we had the product brief (`docs/SPEC.md`), research notes
-(`docs/research/`), the first datasheet fact sheets (`docs/facts/`) and an earlier SimLab prototype. Those were used as
+(`docs/research/`), the first datasheet fact sheets (`docs/facts/`) and an earlier iynk prototype. Those were used as
 knowledge only. The prototype is not in this repository's history, and nothing from it, from the morning's
 prototypes or from the code blocks in `docs/research/` was copied. Every line of code here was written during the
 event, by Claude Code agents that the two of us drove. The history starts at 15:30 on 24 October, when the build moved

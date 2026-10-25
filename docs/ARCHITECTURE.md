@@ -1,4 +1,4 @@
-# SimLab architecture: the binding contract
+# iynk architecture: the binding contract
 
 Owner: architect. Read this, `src/content/schema.ts` and `src/content/ids.ts` before writing any item. The fixed
 decisions D1-D14 (docs/hacktx/BASE_ARCHITECTURE.md) win over anything here; the figure formats are
@@ -27,8 +27,8 @@ docs/DECISIONS.md.
   `BREAKS.tricopter` offers `servosReversed`.
 
 - v1.7 Oct 24 (P2-fun): additive, no schema.ts change. Fly page fun (§3.2 item 8): two localStorage keys,
-  `simlab:ghost:v1:<craft>:<course>` (your fastest lap as a ghost track, cut from a replay of the session log) and
-  `simlab:challenge:v1:<yyyy-mm-dd>` (your best time on that day's challenge). Leaderboard course ids are
+  `iynk:ghost:v1:<craft>:<course>` (your fastest lap as a ghost track, cut from a replay of the session log) and
+  `iynk:challenge:v1:<yyyy-mm-dd>` (your best time on that day's challenge). Leaderboard course ids are
   `<craft>-<course>` and `daily-<yyyymmdd>`; `flight.lap` is sent only for non-demo laps flown with nothing broken on
   purpose, `flight.start` on each take-off. Room poses on the fly page are `{ p: [x, y, z], q: [yaw, pitch, roll, 0],
   gate: <course id> }` (degrees). The fly store ignores `sync/hydrate`: each pilot in a room keeps their own build.
@@ -232,7 +232,7 @@ Text may hold `{name}` placeholders that the UI fills (`{pin}`, `{ma}`); no HTML
 
 ## 6. Progress (D7)
 
-One localStorage key `simlab:v1` = `{ v:1, done, quiz, best, settings }` (store and hooks: src/lib/progress).
+One localStorage key `iynk:v1` = `{ v:1, done, quiz, best, settings }` (store and hooks: src/lib/progress).
 
 | Key | Set when |
 |---|---|
@@ -251,8 +251,8 @@ dashboard sums the three labs.
 
 ## 7. Figure ↔ host contract
 
-Envelope and handshake: colorfigures-guide §2.3 (host → figure `{source:'simlab', v:1, type, …}`, figure → host
-`{source:'simlab-figure', v:1, type, …}`), FigureFrame (D11) does hello/ready, origin and source checks, pause on
+Envelope and handshake: colorfigures-guide §2.3 (host → figure `{source:'iynk', v:1, type, …}`, figure → host
+`{source:'iynk-figure', v:1, type, …}`), FigureFrame (D11) does hello/ready, origin and source checks, pause on
 hide, re-hello on show, theme and locale. `initial` is sent as `set` after every `ready`; the lab store keeps the
 full figure state so a re-`ready` gets it all again. Every message goes through `handle.send` (D14b). `set` patches
 at most 30 Hz.

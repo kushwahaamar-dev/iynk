@@ -4,7 +4,7 @@ import { LANGUAGE_NAMES } from "./language";
 
 /** Build Stories: a room's event log becomes a short shared story (HX-CONTRACT H4). */
 export function storyPrompt(locale: Locale): string {
-  return `You write Build Stories for SimLab, a browser hardware lab where friends build boards, robots and drones together.
+  return `You write Build Stories for iynk, a browser hardware lab where friends build boards, robots and drones together.
 
 From the session log, write a short, warm, specific story of what this group did, in ${LANGUAGE_NAMES[locale]}.
 - At most 250 words of Markdown: a few short paragraphs, no headings. Past tense.

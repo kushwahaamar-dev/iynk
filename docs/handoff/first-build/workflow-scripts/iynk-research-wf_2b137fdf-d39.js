@@ -1,8 +1,8 @@
 export const meta = {
-  name: 'simlab-research',
-  description: 'Deep inventory of the three original sites, the current SimLab, and the Colorfigures engine',
+  name: 'iynk-research',
+  description: 'Deep inventory of the three original sites, the current iynk, and the Colorfigures engine',
   phases: [
-    { title: 'Research', detail: 'one agent per original-site slice, plus current-SimLab audit and Colorfigures guide' },
+    { title: 'Research', detail: 'one agent per original-site slice, plus current-iynk audit and Colorfigures guide' },
   ],
 }
 
@@ -12,7 +12,7 @@ const ORIG = SP + '/orig'
 const DOCS = ROOT + '/docs/research'
 
 const COMMON = `
-Context: We are rebuilding "SimLab", one Next.js (App Router) app with three modules: Board Lab, Robotics Lab, Drone Lab.
+Context: We are rebuilding "iynk", one Next.js (App Router) app with three modules: Board Lab, Robotics Lab, Drone Lab.
 It must be strictly better than three original websites combined. Visuals are built with the Colorfigures skill
 (~/.claude/skills/colorfigures: hand-inked isometric SVG figures, core.js engine, build.py). The project lives at ${ROOT}
 (Next.js 16.4.3 / React 19.3; read ${ROOT}/AGENTS.md). Downloaded copies of the originals are in ${ORIG}:
@@ -148,7 +148,7 @@ Crazyflie), lesson text summary, quiz questions with answers.` },
 
   { key: 'current-audit', prompt: `${COMMON}
 
-Your slice: audit the CURRENT SimLab build in ${ROOT} against the pasted spec and against the originals. Steps:
+Your slice: audit the CURRENT iynk build in ${ROOT} against the pasted spec and against the originals. Steps:
 1. cd ${ROOT}; run "npm run build" (report errors verbatim), "npx tsc --noEmit", "npx eslint . --quiet". Then start it with
    "npx next start -p 3311" in the background (and kill it when you finish).
 2. With Playwright visit every route: /, /boards, /boards/<slug> for every board in src/lib/boards.ts, /robotics and every
@@ -167,7 +167,7 @@ Your slice: audit the CURRENT SimLab build in ${ROOT} against the pasted spec an
    not compile on real hardware, lessons whose sketch fails in the in-browser runner (e.g. type keywords the translator does
    not handle, undefined pin names like LD2/matrix/ACT), placeholder content (canned Serial strings instead of real logic),
    untranslated strings, a11y problems, mobile problems, missing features versus the spec.
-Write ${DOCS}/current-simlab-audit.md: a table of every defect (file:line, severity, what is wrong, what correct looks like),
+Write ${DOCS}/current-iynk-audit.md: a table of every defect (file:line, severity, what is wrong, what correct looks like),
 then a spec-coverage matrix (each spec requirement -> status: done / partial / missing / broken, with evidence).` },
 
   { key: 'colorfigures-guide', prompt: `${COMMON}
@@ -184,7 +184,7 @@ startBench) and ${ORIG}/drone/01-*.js, 02-*.js, 03-*.js, 04-.js (Drone Lab engin
    which parts of the shell to hide, how to size to the iframe, how to accept commands from the parent via postMessage and
    report events (part clicked, button pressed, pin changes), how to localise button labels, how to support dark mode.
 3. The engine pattern the originals used to share one engine across many figures (registries, part KINDS, state machines,
-   per-figure scripts), what it does well, and a recommended design for SimLab's own engines: a Board Bench engine
+   per-figure scripts), what it does well, and a recommended design for iynk's own engines: a Board Bench engine
    (boards + modules + breadboard components + build flow + failure modes + see-through + schematic/breadboard sheets) and a
    Drone engine (frame/arms/motors/props/stack/battery + build steps + wiring sheet + safety tests). Be concrete: the API
    shape, the file layout, how a new board is added in ~200-400 lines.

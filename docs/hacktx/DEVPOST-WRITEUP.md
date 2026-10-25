@@ -1,4 +1,4 @@
-# SimLab: Devpost write-up
+# iynk: Devpost write-up
 
 Paste each section into the matching Devpost field; each paragraph is one line so it pastes cleanly. Values in [BRACKETS], and every sentence that depends on the morning's keys and deploy, are listed in "Confirm before submitting" at the end. Submit by 10:30, not 11:29.
 
@@ -6,7 +6,7 @@ Checked against the repo at gate 3, on 2026-10-25 at 05:53 CDT (commit `569b205`
 
 ## Project name
 
-SimLab
+iynk
 
 ## Elevator pitch (Devpost's short tagline)
 
@@ -17,8 +17,8 @@ Pick one:
 
 ## Links
 
-- Try it: https://simlab-hacktx.vercel.app
-- Code: https://github.com/kushwahaamar-dev/sim
+- Try it: https://iynk.vercel.app
+- Code: https://github.com/kushwahaamar-dev/iynk
 - Video: [VIDEO_URL]
 
 ---
@@ -31,7 +31,7 @@ Three small free sites showed us how good a hardware lesson can feel: Learn Ardu
 
 ## What it does
 
-SimLab is a hardware lab that runs in the browser. It does three things.
+iynk is a hardware lab that runs in the browser. It does three things.
 
 ### Practice for free
 
@@ -47,7 +47,7 @@ Open a room and share the link or QR code. There are no accounts. Up to eight pe
 
 The lab partner runs on Muse Spark. It reads your bench (the circuit, your code, the serial output, any active faults) and acts on it: it points at the part that's wrong in the 3D figure, gives a hint before it gives the answer, proposes a fix as a diff you accept or reject, and answers datasheet questions with citations. When someone in the room has passed the lesson you're stuck on, it asks them first, with a teach-back question. Chat and the partner's questions appear in each person's own language, and push-to-talk and voice messages go through Muse Voice Transcribe, so you can ask with your hands full of parts.
 
-The Build Night planner takes what everyone wants to build and proposes one project, with a role and a first task for each person, steps and a parts list. Build Stories turn a session into a short story (what broke, who helped) with a Muse Image cover you can download or share. Build Buddies suggests people with complementary skills and says why. In the flight sim you race your own best lap, the autopilot's line, and your friends' ghosts with their names on them. SimLab also runs an MCP server, so an MCP client such as Muse can search the catalogue, run the drone calculator, price parts, plan a build night or open a room.
+The Build Night planner takes what everyone wants to build and proposes one project, with a role and a first task for each person, steps and a parts list. Build Stories turn a session into a short story (what broke, who helped) with a Muse Image cover you can download or share. Build Buddies suggests people with complementary skills and says why. In the flight sim you race your own best lap, the autopilot's line, and your friends' ghosts with their names on them. iynk also runs an MCP server, so an MCP client such as Muse can search the catalogue, run the drone calculator, price parts, plan a build night or open a room.
 
 ### Go real
 
@@ -57,11 +57,11 @@ The core lab works with every API key missing. Each sponsor feature checks wheth
 
 ### Try it as a judge
 
-Open https://simlab-hacktx.vercel.app on a phone or laptop. No account needed. Board Lab, Robotics Lab and Drone Lab are in the top menu; "Start with the Arduino Uno R3" on the first page is the quickest way in. Together opens a room you can share with the person next to you.
+Open https://iynk.vercel.app on a phone or laptop. No account needed. Board Lab, Robotics Lab and Drone Lab are in the top menu; "Start with the Arduino Uno R3" on the first page is the quickest way in. Together opens a room you can share with the person next to you.
 
 ## How we built it
 
-SimLab is a Next.js 16 app (React 19, TypeScript, Tailwind) on Vercel, with all six languages prerendered. The lab pages never need a server. The hackathon features are route handlers under /api, plus one small WebSocket relay.
+iynk is a Next.js 16 app (React 19, TypeScript, Tailwind) on Vercel, with all six languages prerendered. The lab pages never need a server. The hackathon features are route handlers under /api, plus one small WebSocket relay.
 
 **Figures.** Every board, part, bench and drone is a self-contained HTML page built with Colorfigures, April Zhu's MIT-licensed toolkit for hand-inked isometric figures: 80 figure pages in all. We vendored its core and patched it: real text measurement so Chinese and Hindi labels fit, a translation hook, an embedded mode and a dark mode. On top of it we wrote two engines, Board Bench (boards and robotics benches, with a DC nodal circuit solver) and a drone engine, plus a Python build step and a screenshot checker that runs against every figure. The app embeds each figure in an iframe and talks to it through one postMessage bridge.
 
@@ -110,11 +110,11 @@ We also learned how much of a hardware lesson is facts. Every board and drone go
 
 We also learned to cut. Proof of Build on Solana and a hardware twin for a real Uno were both started and both left switched off, because the night ran out and a half-working feature on stage is worse than none.
 
-## What's next for SimLab
+## What's next for iynk
 
 - Finish Proof of Build on Solana and the real-Uno hardware twin, both built partway and switched off for this demo.
-- Photograph a real breadboard and have SimLab rebuild it in the sim, identifying parts through SerpApi's Google Lens API.
-- List SimLab in Meta's Muse connector directory when it opens, and add Facebook Login after app review so stories can go to groups.
+- Photograph a real breadboard and have iynk rebuild it in the sim, identifying parts through SerpApi's Google Lens API.
+- List iynk in Meta's Muse connector directory when it opens, and add Facebook Login after app review so stories can go to groups.
 - Translate the newest figure labels, and fill the Verilog gaps (functions, tasks, generate, a UART).
 - Try it with a real class or club, with chat moderation and teacher-run rooms in place first.
 
@@ -130,7 +130,7 @@ Entering: Meta, SerpApi, Best Overall, Most Entertaining, Best Pitch, MLH Vultr 
 
 ### [Title Sponsor: Meta/Facebook] Bringing People Closer Together with AI
 
-SimLab's AI exists to get people to each other. The lab partner (Muse Spark with tool calling) reads your bench, points at the wrong part in the 3D figure, and gives hints before answers; when someone in your room has passed that lesson, it asks them first, with a teach-back question. Everyone reads the room in their own language, and push-to-talk and voice messages go through Muse Voice Transcribe, so you can talk while holding a breadboard. Meta's three examples are three of our features. The Build Night planner turns a group's wishes into one project with a role for each person. Build Stories turn a session's scattered events into a shared story with a Muse Image cover, shared through Facebook's share dialog. Build Buddies suggests partners with complementary skills and explains why; at HackTX the pool is everyone who opts in on the site. SimLab also exposes an MCP server, so Muse can plan a build night or open a room [tested as a custom connector in Muse / tested with an MCP client only].
+iynk's AI exists to get people to each other. The lab partner (Muse Spark with tool calling) reads your bench, points at the wrong part in the 3D figure, and gives hints before answers; when someone in your room has passed that lesson, it asks them first, with a teach-back question. Everyone reads the room in their own language, and push-to-talk and voice messages go through Muse Voice Transcribe, so you can talk while holding a breadboard. Meta's three examples are three of our features. The Build Night planner turns a group's wishes into one project with a role for each person. Build Stories turn a session's scattered events into a shared story with a Muse Image cover, shared through Facebook's share dialog. Build Buddies suggests partners with complementary skills and explains why; at HackTX the pool is everyone who opts in on the site. iynk also exposes an MCP server, so Muse can plan a build night or open a room [tested as a custom connector in Muse / tested with an MCP client only].
 
 ### [SerpApi] Best Use of SerpApi
 
@@ -138,38 +138,38 @@ SerpApi is what turns the simulator into a real build. Every board, robotics ben
 
 ### [Best Overall] Cinderella's Castle
 
-SimLab is one product with one job: make hardware affordable to learn, and never lonely. Underneath are 80 hand-inked 3D figures for 12 boards, 13 robotics benches and 13 drones; interpreters for Arduino C++, MicroPython, Python and Verilog on a deterministic clock; a circuit solver that decides what breaks; a drone calculator and a flight sim; six languages; real-time rooms with a total order; an AI partner whose tools act on the bench; and live parts data that changes the design. It's one visual system, and every sponsor feature has a job in the same story. The part we didn't know we needed until we built it is an AI that sends you to a person.
+iynk is one product with one job: make hardware affordable to learn, and never lonely. Underneath are 80 hand-inked 3D figures for 12 boards, 13 robotics benches and 13 drones; interpreters for Arduino C++, MicroPython, Python and Verilog on a deterministic clock; a circuit solver that decides what breaks; a drone calculator and a flight sim; six languages; real-time rooms with a total order; an AI partner whose tools act on the bench; and live parts data that changes the design. It's one visual system, and every sponsor feature has a job in the same story. The part we didn't know we needed until we built it is an AI that sends you to a person.
 
 ### [Most Entertaining] Jester's Court
 
-SimLab is built to be broken. Leave the resistor off an LED and watch it flash once and die, fit a capacitor backwards and hear it pop, put a motor on the 5 V pin and brown the board out, then find out why and how to fix it. Then fly what you built: through gates in third person or FPV, in angle or acro mode, against your own best lap, the autopilot and your friends' ghosts. Break the drone on purpose (flight controller mounted backwards, props swapped round), watch it flip, and watch the crash again at a third of the speed with the reason on screen. Every course has gold, silver and bronze times, and there's a daily challenge with a link to send your friends.
+iynk is built to be broken. Leave the resistor off an LED and watch it flash once and die, fit a capacitor backwards and hear it pop, put a motor on the 5 V pin and brown the board out, then find out why and how to fix it. Then fly what you built: through gates in third person or FPV, in angle or acro mode, against your own best lap, the autopilot and your friends' ghosts. Break the drone on purpose (flight controller mounted backwards, props swapped round), watch it flip, and watch the crash again at a third of the speed with the reason on screen. Every course has gold, silver and bronze times, and there's a daily challenge with a link to send your friends.
 
 ### [MLH] Best Use of Vultr
 
-Vercel functions can't hold WebSockets, so SimLab's realtime relay runs on a Vultr VM in Dallas. It's a small Node 24 server built on `ws`, running in Docker behind Caddy. It stamps every shared lab action with a sequence number so every screen applies them in the same order, relays chat, cursors, presence and flight ghosts, hands late joiners a snapshot, and keeps an empty room alive for 30 minutes in case people come back. Every multiplayer moment in our demo goes through it.
+Vercel functions can't hold WebSockets, so iynk's realtime relay runs on a Vultr VM in Dallas. It's a small Node 24 server built on `ws`, running in Docker behind Caddy. It stamps every shared lab action with a sequence number so every screen applies them in the same order, relays chat, cursors, presence and flight ghosts, hands late joiners a snapshot, and keeps an empty room alive for 30 minutes in case people come back. Every multiplayer moment in our demo goes through it.
 
 ### [MLH] Best Use of Tiger Data
 
-SimLab's anonymous usage counts live in Tiger Data. One events hypertable in one-day chunks, compressed to the columnstore after a day and kept 30 days, holds flight samples, laps, lesson attempts and passes, faults, room actions and AI and search calls. A real-time continuous aggregate of the best lap per course per day drives the flight leaderboard, so it reads precomputed rows instead of scanning raw events, and a second aggregate counts activity per minute. Opt-in buddy profiles sit in a regular table in the same database and expire after 24 hours.
+iynk's anonymous usage counts live in Tiger Data. One events hypertable in one-day chunks, compressed to the columnstore after a day and kept 30 days, holds flight samples, laps, lesson attempts and passes, faults, room actions and AI and search calls. A real-time continuous aggregate of the best lap per course per day drives the flight leaderboard, so it reads precomputed rows instead of scanning raw events, and a second aggregate counts activity per minute. Opt-in buddy profiles sit in a regular table in the same database and expire after 24 hours.
 
 ### [Best Pitch] A Bard's Tale
 
-We tell SimLab through one person, Maya, who wants to build a drone, and we demo it live with a second person on a phone, in Spanish. An LED with no resistor flashes once and dies, the partner asks Lucía, her voice answer arrives translated, the drone is priced to Maya's budget, she races Lucía's ghost and crashes on purpose, and the night ends as a shared story. It takes three minutes, and the last line is the product: nobody builds alone.
+We tell iynk through one person, Maya, who wants to build a drone, and we demo it live with a second person on a phone, in Spanish. An LED with no resistor flashes once and dies, the partner asks Lucía, her voice answer arrives translated, the drone is priced to Maya's budget, she races Lucía's ghost and crashes on purpose, and the night ends as a shared story. It takes three minutes, and the last line is the product: nobody builds alone.
 
 ---
 
 ## Before the event
 
-The idea for SimLab and our hardware research predate HackTX. Before 11:30 a.m. on October 24 we had the product brief (`docs/SPEC.md`), research notes on how the three sites named above teach (lesson structure, calculator tables, interactions), on the Colorfigures toolkit and on Next.js 16 (`docs/research/`), the first datasheet fact sheets (finished during the event), and an earlier SimLab prototype. Those were used as knowledge only. The prototype is not in this repository, and nothing from it or from the code blocks in the research notes was copied. All of SimLab's code, figures, content and tests were written during the hacking period, between 11:30 a.m. on October 24 and 11:30 a.m. on October 25, by Claude Code agents working from contracts we wrote at the start of the event. The repository's history starts at 15:30 on October 24, when the build moved to it; the timeline before that is in `docs/audit/history.md`. Colorfigures is a third-party MIT-licensed library; our changes to it are listed in `figures/vendor/colorfigures/PATCHES.md`. [We asked the organizers about the pre-event notes, and they said: ___.]
+The idea for iynk and our hardware research predate HackTX. Before 11:30 a.m. on October 24 we had the product brief (`docs/SPEC.md`), research notes on how the three sites named above teach (lesson structure, calculator tables, interactions), on the Colorfigures toolkit and on Next.js 16 (`docs/research/`), the first datasheet fact sheets (finished during the event), and an earlier iynk prototype. Those were used as knowledge only. The prototype is not in this repository, and nothing from it or from the code blocks in the research notes was copied. All of iynk's code, figures, content and tests were written during the hacking period, between 11:30 a.m. on October 24 and 11:30 a.m. on October 25, by Claude Code agents working from contracts we wrote at the start of the event. The repository's history starts at 15:30 on October 24, when the build moved to it; the timeline before that is in `docs/audit/history.md`. Colorfigures is a third-party MIT-licensed library; our changes to it are listed in `figures/vendor/colorfigures/PATCHES.md`. [We asked the organizers about the pre-event notes, and they said: ___.]
 
 ## Credits
 
-- Colorfigures by April Zhu (MIT), built on iso-glow by April Zhu and iso-figure by Tolga Cohce. Credited on SimLab's About page.
+- Colorfigures by April Zhu (MIT), built on iso-glow by April Zhu and iso-figure by Tolga Cohce. Credited on iynk's About page.
 - Learn Arduino by Dilum Sanjaya, and the Robotics Engineer and Drone Engineer sites, which shaped our lesson structure. We reused facts (pinouts, formulas, constants), not their source code.
 
 ## Confirm before submitting
 
-- Filled 08:39: the site (https://simlab-hacktx.vercel.app) and the repo (https://github.com/kushwahaamar-dev/sim, public). Still open: [VIDEO_URL]. No .tech domain, so no [DOMAIN].
+- Filled 08:39: the site (https://iynk.vercel.app) and the repo (https://github.com/kushwahaamar-dev/iynk, public). Still open: [VIDEO_URL]. No .tech domain, so no [DOMAIN].
 - `/api/status` on production (checked 08:54): `ai`, `image`, `voice`, `search`, `realtime`, `db` and `gemini` true, `solana` false. Vultr and Tiger Data are entered; .Tech is not (no domain), and its section is gone.
 - Meta model ids: `.env.example` has `muse-spark-1.1`, `muse-image-1.0` and `muse-voice-transcribe-1.0`; check them against `docs/hacktx/AI.md`. Fill in the Muse connector bracket (a custom connector in Muse, or an MCP client only): at 02:00 it had not been tried from Muse (`docs/hacktx/MUSE-CONNECTOR.md`). Confirm Facebook's share dialog opens from a story.
 - The partner calling `ask_peer` with a real key, voice transcription, chat translation and the story cover, each tried once on the deployed site.

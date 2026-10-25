@@ -42,7 +42,7 @@ language. Phase 2 writes them (boards and drones prose rows).
 
 ## Known, owned by a later phase (counted, not failed)
 
-- Figure strings: every non-English page with a figure logs `SimLab i18n: missing figure strings
+- Figure strings: every non-English page with a figure logs `iynk i18n: missing figure strings
   src/i18n/figures/<lang>.json` and the figure stays English (250 pages). Phase 3.
 - `transistor-switch`, `tb6612fng`, `pi5-ros2` bench pages render, but `/figures/robotics/<id>.html` is not built (18
   pages), and `pi5-ros2` links to `/<lang>/boards/pi4-pi5`, which is not built (6 pages). Phase 2 (robotics rows).
@@ -62,7 +62,7 @@ language. Phase 2 writes them (boards and drones prose rows).
 ## How to rerun
 
 ```bash
-env -u SIMLAB_BUILD_SKIP_TYPECHECK NEXT_DIST_DIR=.next-gate1 npm run build
+env -u IYNK_BUILD_SKIP_TYPECHECK NEXT_DIST_DIR=.next-gate1 npm run build
 NEXT_DIST_DIR=.next-gate1 npx next start -H 127.0.0.1 -p 3420 &
 node scripts/crawl-routes.mjs --base http://127.0.0.1:3420 --dist .next-gate1 --workers 3 --out docs/verify/gate1-routes.md
 E2E_SKIP_BUILD=1 NEXT_DIST_DIR=.next-gate1 npx playwright test

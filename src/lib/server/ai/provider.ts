@@ -111,7 +111,7 @@ function chatTargets(): Target[] {
 
 /** A privacy-preserving end-user id for Meta's safety_identifier: a salted hash, never the raw value. */
 export function safetyId(value: string): string {
-  return createHash("sha256").update(`simlab:${value}`).digest("hex").slice(0, 32);
+  return createHash("sha256").update(`iynk:${value}`).digest("hex").slice(0, 32);
 }
 
 function log(provider: string, what: string) {
@@ -473,7 +473,7 @@ export async function generateImage(opts: {
 }
 
 function multipart(parts: Array<{ name: string; type: string; filename?: string; data: Uint8Array | string }>) {
-  const boundary = `----simlab${createHash("sha256").update(String(Math.random())).digest("hex").slice(0, 24)}`;
+  const boundary = `----iynk${createHash("sha256").update(String(Math.random())).digest("hex").slice(0, 24)}`;
   const chunks: Uint8Array[] = [];
   const text = (s: string) => chunks.push(new TextEncoder().encode(s));
   for (const part of parts) {

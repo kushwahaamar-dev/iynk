@@ -17,7 +17,7 @@ import { FeatureGate, postJson, roomPath } from "./api";
 type Profile = { id: string; name: string; lang: Locale; interests: string[]; built: string[]; wants: string };
 type Match = { id: string; score: number; why: string; sharedInterest: string; suggestedProject: { lab: LabKind; id: string } };
 
-const KEY = "simlab:buddies:v1";
+const KEY = "iynk:buddies:v1";
 
 /** This browser's buddy-pool id and the token that proves it owns it. */
 function credentials(): { id: string; token: string } {

@@ -9,7 +9,7 @@ type ReadyOptions = {
 };
 
 /**
- * True only when the simlab_passport Config account is on the cluster.
+ * True only when the iynk_passport Config account is on the cluster.
  * A program id in the environment is not enough: until that account exists
  * the program is not deployed, and Proof of Build stays off. Any failed
  * read counts as "not there", so the UI stays hidden.

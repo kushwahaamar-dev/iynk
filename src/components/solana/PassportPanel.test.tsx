@@ -100,7 +100,7 @@ test("follows the bench live, then mints through the server", async () => {
   expect(mint().disabled).toBe(true);
   expect(screen.getByText("Connect a wallet to mint.")).toBeTruthy();
 
-  fireEvent.click(screen.getByRole("button", { name: "Use a SimLab devnet wallet" }));
+  fireEvent.click(screen.getByRole("button", { name: "Use a iynk devnet wallet" }));
   await waitFor(() => expect(mint().disabled).toBe(false));
   fireEvent.click(mint());
 

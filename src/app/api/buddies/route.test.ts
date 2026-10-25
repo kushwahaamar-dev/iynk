@@ -12,7 +12,7 @@ vi.mock("@/lib/server/db/queries", () => ({
   deleteProfile: (...args: unknown[]) => deleteProfile(...args),
 }));
 
-const DB = "postgres://simlab:pw@localhost:5432/simlab";
+const DB = "postgres://iynk:pw@localhost:5432/iynk";
 const id = "b1d2c3e4-0000-4000-8000-123456789abc";
 const token = "t0k3n-0123456789abcdef";
 

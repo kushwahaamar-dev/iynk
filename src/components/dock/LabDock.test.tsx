@@ -148,12 +148,12 @@ describe("LabDock", () => {
   test("a dock-tab event opens the drawer on that tab and ignores a hidden one", () => {
     renderDock();
     act(() => {
-      window.dispatchEvent(new CustomEvent("simlab:dock-tab", { detail: { tab: "real" } }));
+      window.dispatchEvent(new CustomEvent("iynk:dock-tab", { detail: { tab: "real" } }));
     });
     expect(drawer()).toBeTruthy();
     expect(screen.getByRole("tab", { name: dock.tabs.real }).getAttribute("aria-selected")).toBe("true");
     act(() => {
-      window.dispatchEvent(new CustomEvent("simlab:dock-tab", { detail: { tab: "passport" } }));
+      window.dispatchEvent(new CustomEvent("iynk:dock-tab", { detail: { tab: "passport" } }));
     });
     expect(screen.queryByRole("tab", { name: dock.tabs.passport })).toBeNull();
     expect(screen.getByRole("tab", { name: dock.tabs.real }).getAttribute("aria-selected")).toBe("true");

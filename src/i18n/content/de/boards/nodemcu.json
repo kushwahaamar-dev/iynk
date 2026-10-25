@@ -764,8 +764,8 @@
       "params": {
         "ssid": {
           "label": "Netz",
-          "simlab-guest": "simlab-guest (2,4 GHz, offen)",
-          "simlab-5g": "simlab-5G (5 GHz)",
+          "iynk-guest": "iynk-guest (2,4 GHz, offen)",
+          "iynk-5g": "iynk-5G (5 GHz)",
           "note5g": "Der ESP8266 sieht keine 5-GHz-Netze: Er gibt immer weiter Punkte aus."
         }
       },

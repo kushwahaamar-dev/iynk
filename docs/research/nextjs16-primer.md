@@ -1,20 +1,20 @@
-# Next.js 16.4.3 primer for SimLab
+# Next.js 16.4.3 primer for iynk
 
-Written on 2026-10-24 for whoever rebuilds SimLab, people and agents alike. It covers only the Next.js patterns SimLab needs. Every code block below was compiled with `next build`, served with `next start` (or `next dev` where it says so) and checked in headless Chromium through Playwright. Anything I did not try is marked as not tried.
+Written on 2026-10-24 for whoever rebuilds iynk, people and agents alike. It covers only the Next.js patterns iynk needs. Every code block below was compiled with `next build`, served with `next start` (or `next dev` where it says so) and checked in headless Chromium through Playwright. Anything I did not try is marked as not tried.
 
-**Test bed.** A throwaway app with SimLab's own `package.json`, `next.config.ts`, `tsconfig.json`, `eslint.config.mjs` and `globals.css`, plus: 13 languages, 12 boards with 4 lessons each (11 for the scale test), 10 drone pages, one JSON dictionary per language with real translations, and `public/figures/probe.html`, a stand-in for a Colorfigures figure that counts timer ticks and animation frames and talks to its host over `postMessage`. Versions: next 16.4.3 (Turbopack), react 19.3.0, typescript 5.9.3, eslint 9.39.5 with eslint-config-next 16.4.3, tailwindcss 4.3.3. Machine: Apple M4 Pro (14 cores), macOS 27.0.1, Node 24.8.0, npm 11.6.0, Chromium revision 1248. The app lived in the session scratchpad and is not in the repo, so the code that matters is copied here verbatim, with its path in the app above each block.
+**Test bed.** A throwaway app with iynk's own `package.json`, `next.config.ts`, `tsconfig.json`, `eslint.config.mjs` and `globals.css`, plus: 13 languages, 12 boards with 4 lessons each (11 for the scale test), 10 drone pages, one JSON dictionary per language with real translations, and `public/figures/probe.html`, a stand-in for a Colorfigures figure that counts timer ticks and animation frames and talks to its host over `postMessage`. Versions: next 16.4.3 (Turbopack), react 19.3.0, typescript 5.9.3, eslint 9.39.5 with eslint-config-next 16.4.3, tailwindcss 4.3.3. Machine: Apple M4 Pro (14 cores), macOS 27.0.1, Node 24.8.0, npm 11.6.0, Chromium revision 1248. The app lived in the session scratchpad and is not in the repo, so the code that matters is copied here verbatim, with its path in the app above each block.
 
 The bundled docs that back this up, all under `node_modules/next/dist/docs/01-app/`: `03-api-reference/03-file-conventions/02-route-segment-config/ensureStatic.md` and `instant.md`, `02-guides/preserving-ui-state.md`, `02-guides/preventing-flash-before-hydration.md`, `02-guides/internationalization.md`, `03-api-reference/04-functions/next-root-params.md`, `03-api-reference/04-functions/generate-static-params.md`, `02-guides/testing/vitest.md` and `playwright.md`.
 
-## Rules for SimLab implementers
+## Rules for iynk implementers
 
 1. One root layout: `src/app/[lang]/layout.tsx`. It renders `<html lang dir>`, returns all 13 locales from `generateStaticParams` and exports `ensureStatic = "navigation"`. There is no `app/layout.tsx` and no `app/page.tsx`.
 2. Everything under that layout is static. `cookies()`, `headers()`, `Date.now()`, `new Date()`, `Math.random()` and uncached async I/O in a Server Component fail the build, even inside `<Suspense>`. Read content files with `readFileSync`, `import()`, or inside a `"use cache"` function.
 3. A page with its own params keeps its default export synchronous and awaits `params` in an async child inside `<Suspense>`. Only the root param `lang` may be awaited at the top level.
 4. Never export `dynamicParams` or `revalidate`, and never return `[]` from `generateStaticParams`. Unknown slugs call `notFound()`; under `ensureStatic` the first request is already a 404.
 5. The language comes from the URL and nothing else. Theme and progress live in `localStorage` and are read with `useSyncExternalStore` and a server snapshot that means "nothing saved".
-6. `/` is redirected by `redirects()` in `next.config.ts`: cookie `simlab-lang`, then `Accept-Language`, then `/en`. No proxy, no page at `/`.
-7. The language picker writes the `simlab-lang` cookie and calls `router.push`. Its `<select>` is controlled (`value`, not `defaultValue`).
+6. `/` is redirected by `redirects()` in `next.config.ts`: cookie `iynk-lang`, then `Accept-Language`, then `/en`. No proxy, no page at `/`.
+7. The language picker writes the `iynk-lang` cookie and calls `router.push`. Its `<select>` is controlled (`value`, not `defaultValue`).
 8. The theme is set before paint by an inline script rendered through `InlineScript`, which must be a Client Component, with `suppressHydrationWarning` on `<html>`. `ThemeToggle` re-applies it in a `useLayoutEffect`, because switching language resets the attributes on `<html>`.
 9. Treat every page the user leaves as still mounted. Activity keeps up to three routes in the DOM under `display: none !important`: effects clean up and run again, form controls keep what the user typed, ids and test selectors see duplicates, and iframes keep running or reload while hidden.
 10. Figures: the host pauses the iframe on hide, posts `hello` on every show and sends its full state when the figure answers `ready`. The figure pauses itself when its own IntersectionObserver says it is off screen and treats every `ready` as a cold start. Post to `location.origin`, never `"*"`, and check `event.source`.
@@ -53,11 +53,11 @@ export function generateStaticParams() {
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://simlab.example"),
-  title: { template: "%s · SimLab", default: "SimLab" },
+  metadataBase: new URL("https://iynk.example"),
+  title: { template: "%s · iynk", default: "iynk" },
 };
 
-const themeBoot = `try{var t=localStorage.getItem("simlab-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}`;
+const themeBoot = `try{var t=localStorage.getItem("iynk-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}`;
 
 export default async function LangLayout({ children, params }: LayoutProps<"/[lang]">) {
   const { lang } = await params;
@@ -264,7 +264,7 @@ What failed:
    }
    ```
 
-   Without `ensureStatic`, `cookies()` inside `<Suspense>` does build: the page becomes partly dynamic, which SimLab has no use for.
+   Without `ensureStatic`, `cookies()` inside `<Suspense>` does build: the page becomes partly dynamic, which iynk has no use for.
 
 ## (b) Sending `/` to the right language
 
@@ -307,7 +307,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/",
-        has: [{ type: "cookie", key: "simlab-lang", value: `(?<lang>${codes})` }],
+        has: [{ type: "cookie", key: "iynk-lang", value: `(?<lang>${codes})` }],
         destination: "/:lang",
         permanent: false,
       },
@@ -329,7 +329,7 @@ export default nextConfig;
 
 How it behaved, in `next start` and `next dev`:
 
-- The `simlab-lang` cookie wins; otherwise the first supported language in `Accept-Language`; otherwise `/en`. All three are 307s, so browsers do not cache them.
+- The `iynk-lang` cookie wins; otherwise the first supported language in `Accept-Language`; otherwise `/en`. All three are 307s, so browsers do not cache them.
 - The query string survives: `/?ref=x` from a `de-DE` browser lands on `/de?ref=x` (Playwright test in (i)).
 - About 1.5 ms of server time per redirect locally. No function, nothing in the build output except the routes manifest.
 - A `<Link href="/">` inside the app follows the redirect as a soft navigation, with no document request.
@@ -350,7 +350,7 @@ Next builds a `has` matcher as ``new RegExp(`^${hasItem.value}$`)`` (`node_modul
 | `en;q=0.1, fr;q=0.9` | `/en` |
 | `ES-es` | `/en` (no match, last rule) |
 
-The last rows show the limits: the leftmost supported tag wins whatever its q-value, matching is case-sensitive, and the legacy `iw` code for Hebrew is not mapped. Browsers list languages in preference order with lowercase primary tags, so this is fine in practice. If exact negotiation ever matters, use the proxy below. Note that `zh-TW` lands on `/zh`, which SimLab renders as Simplified Chinese.
+The last rows show the limits: the leftmost supported tag wins whatever its q-value, matching is case-sensitive, and the legacy `iw` code for Hebrew is not mapped. Browsers list languages in preference order with lowercase primary tags, so this is fine in practice. If exact negotiation ever matters, use the proxy below. Note that `zh-TW` lands on `/zh`, which iynk renders as Simplified Chinese.
 
 The cookie is written by the language picker in (d). The redirect cannot see `localStorage`, so the picker writes both.
 
@@ -364,7 +364,7 @@ import { isLocale, parseAcceptLanguage, pickLocale } from "@/lib/i18n/config";
 
 // Only "/" reaches this function; every other URL is served statically.
 export function proxy(request: NextRequest) {
-  const saved = request.cookies.get("simlab-lang")?.value;
+  const saved = request.cookies.get("iynk-lang")?.value;
   const lang = isLocale(saved) ? saved : pickLocale(parseAcceptLanguage(request.headers.get("accept-language")));
   const url = request.nextUrl.clone();
   url.pathname = `/${lang}`;
@@ -387,7 +387,7 @@ import { locales } from "@/lib/i18n/config";
 
 // Saved choice first, then the first supported browser language, else English.
 // Runs in <head>, before anything in <body> can paint.
-const pickAndGo = `(function(){var l=${JSON.stringify(locales)},s=null;try{s=localStorage.getItem("simlab-lang")}catch(e){}if(l.indexOf(s)<0){s="en";var n=navigator.languages||[navigator.language];for(var i=0;i<n.length;i++){var b=String(n[i]).toLowerCase().split(/[-_]/)[0];if(b==="iw")b="he";if(l.indexOf(b)>=0){s=b;break}}}location.replace("/"+s+location.search+location.hash)})()`;
+const pickAndGo = `(function(){var l=${JSON.stringify(locales)},s=null;try{s=localStorage.getItem("iynk-lang")}catch(e){}if(l.indexOf(s)<0){s="en";var n=navigator.languages||[navigator.language];for(var i=0;i<n.length;i++){var b=String(n[i]).toLowerCase().split(/[-_]/)[0];if(b==="iw")b="he";if(l.indexOf(b)>=0){s=b;break}}}location.replace("/"+s+location.search+location.hash)})()`;
 
 export default function RedirectLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -408,8 +408,8 @@ import type { Metadata } from "next";
 import { htmlLang, locales } from "@/lib/i18n/config";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://simlab.example"),
-  title: "SimLab",
+  metadataBase: new URL("https://iynk.example"),
+  title: "iynk",
   alternates: {
     canonical: "/",
     languages: Object.fromEntries([...locales.map((l) => [htmlLang[l], `/${l}`]), ["x-default", "/"]]),
@@ -511,7 +511,7 @@ Progress:
 // useSyncExternalStore gets the same object back until the raw string changes.
 export type Progress = { done: string[] };
 
-const KEY = "simlab.v1";
+const KEY = "iynk.v1";
 const EMPTY: Progress = { done: [] };
 const listeners = new Set<() => void>();
 
@@ -624,7 +624,7 @@ export function InlineScript({ html }: { html: string }) {
 import { useLayoutEffect, useSyncExternalStore } from "react";
 
 type Theme = "light" | "dark";
-const KEY = "simlab-theme";
+const KEY = "iynk-theme";
 const listeners = new Set<() => void>();
 
 function readTheme(): Theme | null {
@@ -714,10 +714,10 @@ export function LanguageSelect({ current, label }: { current: Locale; label: str
         onChange={(event) => {
           const next = event.currentTarget.value;
           try {
-            localStorage.setItem("simlab-lang", next);
+            localStorage.setItem("iynk-lang", next);
           } catch {}
           // The cookie is what the "/" redirect reads.
-          document.cookie = `simlab-lang=${next}; path=/; max-age=31536000; samesite=lax`;
+          document.cookie = `iynk-lang=${next}; path=/; max-age=31536000; samesite=lax`;
           const rest = location.pathname.replace(/^\/[^/]+/, "");
           router.push(`/${next}${rest}${location.search}${location.hash}`);
         }}
@@ -958,11 +958,11 @@ export async function generateMetadata({ params }: PageProps<"/[lang]">): Promis
   const { lang } = await params;
   if (!isLocale(lang)) return {};
   const dict = await getDictionary(lang);
-  return { title: { absolute: `SimLab · ${dict.tagline}` }, alternates: alternatesFor(lang, "") };
+  return { title: { absolute: `iynk · ${dict.tagline}` }, alternates: alternatesFor(lang, "") };
 }
 ```
 
-Results on `/he`: 13 `<link rel="alternate" hreflang>` tags plus `x-default`, all absolute through `metadataBase` (for example `hreflang="zh-Hans"` pointing at `https://simlab.example/zh`, and `x-default` at `https://simlab.example/en`), `<link rel="canonical" href="https://simlab.example/he">`, and the title `SimLab · <tagline>`. Pages that return a plain `title` get the layout's template, for example `uno-r3 · lesson-1 · SimLab`.
+Results on `/he`: 13 `<link rel="alternate" hreflang>` tags plus `x-default`, all absolute through `metadataBase` (for example `hreflang="zh-Hans"` pointing at `https://iynk.example/zh`, and `x-default` at `https://iynk.example/en`), `<link rel="canonical" href="https://iynk.example/he">`, and the title `iynk · <tagline>`. Pages that return a plain `title` get the layout's template, for example `uno-r3 · lesson-1 · iynk`.
 
 ## (h) Figures in `public/figures` and their headers
 
@@ -1083,7 +1083,7 @@ import { ProgressBadge } from "./progress-badge";
 const badge = <ProgressBadge prefix="uno-r3/" total={4} template="{done} of {total}" />;
 
 beforeEach(() => {
-  localStorage.setItem("simlab.v1", JSON.stringify({ done: ["uno-r3/lesson-1", "nano/lesson-1"] }));
+  localStorage.setItem("iynk.v1", JSON.stringify({ done: ["uno-r3/lesson-1", "nano/lesson-1"] }));
 });
 afterEach(() => localStorage.clear());
 
@@ -1175,7 +1175,7 @@ test.describe("German browser", () => {
   });
 
   test("a saved language cookie beats the browser language", async ({ page, context, baseURL }) => {
-    await context.addCookies([{ name: "simlab-lang", value: "ja", url: baseURL! }]);
+    await context.addCookies([{ name: "iynk-lang", value: "ja", url: baseURL! }]);
     await page.goto("/");
     await expect(page).toHaveURL("/ja");
   });
@@ -1193,8 +1193,8 @@ test("Hebrew renders rtl and hydrates without errors", async ({ page }) => {
 test("saved theme and progress survive a reload without a mismatch", async ({ page }) => {
   const errors = collectErrors(page);
   await page.addInitScript(() => {
-    localStorage.setItem("simlab-theme", "dark");
-    localStorage.setItem("simlab.v1", JSON.stringify({ done: ["uno-r3/lesson-1"] }));
+    localStorage.setItem("iynk-theme", "dark");
+    localStorage.setItem("iynk.v1", JSON.stringify({ done: ["uno-r3/lesson-1"] }));
   });
   await page.goto("/en");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
@@ -1257,7 +1257,7 @@ test("switching language keeps the page and the window", async ({ page, context 
   // every locator here is scoped to the visible header.
   const header = page.locator("header.top:visible");
 
-  await page.addInitScript(() => localStorage.setItem("simlab-theme", "dark"));
+  await page.addInitScript(() => localStorage.setItem("iynk-theme", "dark"));
   await page.goto("/en/boards/uno-r3");
   await page.evaluate(() => ((window as Window & { marker?: number }).marker = 1));
 
@@ -1270,7 +1270,7 @@ test("switching language keeps the page and the window", async ({ page, context 
   await expect(header.getByTestId("lang")).toHaveValue("fr");
   // Soft navigation: same window, no document load.
   expect(await page.evaluate(() => (window as Window & { marker?: number }).marker)).toBe(1);
-  expect((await context.cookies()).find((c) => c.name === "simlab-lang")?.value).toBe("fr");
+  expect((await context.cookies()).find((c) => c.name === "iynk-lang")?.value).toBe("fr");
 
   await page.goBack();
   await expect(page).toHaveURL("/en/boards/uno-r3");
@@ -1374,7 +1374,7 @@ What failed:
 
 **Generated types.** `PageProps<"/[lang]/boards/[board]">` and `LayoutProps<"/[lang]">` are global types generated into `.next/types`, and the repo's `.gitignore` excludes both `.next/` and `next-env.d.ts`. On a fresh checkout `tsc --noEmit` failed with `Cannot find name 'PageProps'` (six errors). `next typegen` (0.2 s) recreated `next-env.d.ts` and the types, and `tsc` passed. After a route was deleted, the stale `.next/types/validator.ts` broke `tsc` with `Cannot find module '../../src/app/[lang]/x/mr/page.js'` until `next typegen` ran again. So the type-check command is `next typegen && tsc --noEmit`.
 
-**Localized 404s.** Without a catch-all, `/en/no/such/route` got Next's built-in, unstyled English 404 with no `lang` and none of SimLab's layout. With this file:
+**Localized 404s.** Without a catch-all, `/en/no/such/route` got Next's built-in, unstyled English 404 with no `lang` and none of iynk's layout. With this file:
 
 `src/app/[lang]/[...rest]/page.tsx`
 
@@ -1419,7 +1419,7 @@ export default async function NotFound() {
 
 | URL | status | what the browser shows |
 |---|---|---|
-| `/en/no/such/route` | 404 | the SimLab layout in English with the 404 page, `lang="en"`, `noindex` |
+| `/en/no/such/route` | 404 | the iynk layout in English with the 404 page, `lang="en"`, `noindex` |
 | `/fr/board/uno-r3` (typo) | 404 | the same in French |
 | `/en/boards` (no index page) | 404 | the same in English |
 | `/xx`, `/foo/bar/baz` | 404 | Next's built-in "404: This page could not be found.", no `lang` |

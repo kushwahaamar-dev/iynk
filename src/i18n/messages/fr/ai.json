@@ -126,11 +126,11 @@
     "copyLink": "Copier le lien",
     "copied": "Lien copié",
     "facebook": "Partager sur Facebook",
-    "shareText": "{title}, un récit de construction SimLab",
+    "shareText": "{title}, un récit de construction iynk",
     "unavailable": "Les récits de construction ne sont pas configurés sur ce déploiement.",
     "failed": "Le récit n’a pas pu être écrit. Réessaie.",
     "noCover": "La couverture n’a pas pu être dessinée cette fois, le récit n’en a donc pas.",
-    "footer": "Fait ensemble dans SimLab",
+    "footer": "Fait ensemble dans iynk",
     "me": "Moi"
   }
 }

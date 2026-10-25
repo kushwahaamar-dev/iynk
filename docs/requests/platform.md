@@ -2,7 +2,7 @@
 
 1. **shell-app, `src/components/figure` (FigureFrame).** Implement the host side exactly as "What the host must
    do" in `docs/FIGURES.md`. Three things are easy to get wrong:
-   - Figure-to-host messages carry `source: 'simlab-figure'`; host-to-figure messages carry `source: 'simlab'`. Both
+   - Figure-to-host messages carry `source: 'iynk-figure'`; host-to-figure messages carry `source: 'iynk'`. Both
      have `v: 1`.
    - Never reset readiness in `onLoad`. Post `hello` on `load`, queue commands until `ready`, and expect `ready` more
      than once.

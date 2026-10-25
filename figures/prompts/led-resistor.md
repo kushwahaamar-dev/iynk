@@ -36,4 +36,4 @@ State the host reads: `status`, `power`, `mode`, `fault`, `faults`, `rails.VIN`,
 is `src/content/robotics/led-resistor.ts`; the facts are `docs/facts/trainers.md`.
 
 Look: Colorfigures palette, warm paper, heavy ink silhouette, finer inner lines, hand-drawn wobble, paper grain. Works
-on a phone and inside the SimLab host (embedded, bare).
+on a phone and inside the iynk host (embedded, bare).

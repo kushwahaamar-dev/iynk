@@ -7,7 +7,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { DELETE, GET, POST } from "@/app/api/mcp/route";
 
 vi.mock("@/lib/server/env", () => ({
-  env: { NEXT_PUBLIC_SITE_URL: "https://simlab.test" },
+  env: { NEXT_PUBLIC_SITE_URL: "https://iynk.test" },
   features: { ai: false, image: false, voice: false, search: false, solana: false, db: false, realtime: true, gemini: false },
 }));
 vi.mock("next/server", () => ({ connection: async () => undefined }));
@@ -36,8 +36,8 @@ afterEach(async () => {
 });
 
 async function connect() {
-  client = new Client({ name: "simlab-e2e", version: "1.0.0" });
-  const transport = new StreamableHTTPClientTransport(new URL("https://simlab.test/api/mcp"), { fetch: routeHandler });
+  client = new Client({ name: "iynk-e2e", version: "1.0.0" });
+  const transport = new StreamableHTTPClientTransport(new URL("https://iynk.test/api/mcp"), { fetch: routeHandler });
   await client.connect(transport);
   return client;
 }
@@ -45,7 +45,7 @@ async function connect() {
 describe("SDK client against /api/mcp", () => {
   it("initializes and reads the server's identity and instructions", async () => {
     const c = await connect();
-    expect(c.getServerVersion()).toMatchObject({ name: "simlab", title: "SimLab", version: "1.0.0" });
+    expect(c.getServerVersion()).toMatchObject({ name: "iynk", title: "iynk", version: "1.0.0" });
     expect(c.getServerCapabilities()).toMatchObject({ tools: { listChanged: false } });
     expect(c.getInstructions()).toMatch(/plan_build_night/);
     await expect(c.ping()).resolves.toEqual({});
@@ -64,7 +64,7 @@ describe("SDK client against /api/mcp", () => {
     const found = await c.callTool({ name: "search_catalog", arguments: { query: "line sensor", locale: "de" } });
     expect(found.isError).toBeFalsy();
     const [first] = (found.structuredContent as { results: unknown[] }).results;
-    expect(first).toMatchObject({ lab: "robotics", id: "qtr-8rc", url: "https://simlab.test/de/robotics/qtr-8rc" });
+    expect(first).toMatchObject({ lab: "robotics", id: "qtr-8rc", url: "https://iynk.test/de/robotics/qtr-8rc" });
 
     const room = await c.callTool({ name: "create_room", arguments: { lab: "robotics", id: "qtr-8rc" } });
     expect(room.structuredContent).toMatchObject({ lab: "robotics", id: "qtr-8rc", room: expect.stringMatching(/^[a-z2-9]{6}$/) });

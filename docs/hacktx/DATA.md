@@ -1,4 +1,4 @@
-# SimLab on Tiger Data (hx:data)
+# iynk on Tiger Data (hx:data)
 
 Telemetry, leaderboards, live counters and the buddy pool, on Tiger Data (Postgres + TimescaleDB). Written 2026-10-24 by hx:data. Contract: HX-CONTRACT H8, with H2 for the route conventions and H11 for privacy.
 
@@ -72,7 +72,7 @@ tally("led.blink", 1);                                                  // summe
 - Before the first send, the client asks `/api/status` once (it is HTTP-cached for 60 s). Without the db feature, or after a 503, the client drops its queue and `track()` returns at once for the rest of the page's life. It does nothing on the server.
 - After a 429 or 5xx, or offline, events stay queued (at most 1000) and are retried later.
 - `onFlushed(kinds => …)` fires once a batch is stored. The leaderboard uses it to refresh after your own lap.
-- Privacy (H11): the session id is random (`crypto.randomUUID`) and kept in localStorage `simlab:telemetry:v1`. It is never tied to an account, because SimLab has none. There is no IP or user agent in the table, and nothing personal in the payloads; names are self-chosen.
+- Privacy (H11): the session id is random (`crypto.randomUUID`) and kept in localStorage `iynk:telemetry:v1`. It is never tied to an account, because iynk has none. There is no IP or user agent in the table, and nothing personal in the payloads; names are self-chosen.
 
 Kinds: the contract's ten (`flight.sample`, `flight.lap`, `lesson.attempt`, `lesson.pass`, `fault`, `room.join`, `room.action`, `ai.call`, `hw.connect`, `credential.issued`), plus two additive kinds: `flight.start` (counted as "drones flown") and `led.blink` (counted as "LEDs blinked").
 
@@ -94,7 +94,7 @@ const m = await getDataMessages(lang);
 ## Verification (2026-10-24)
 
 - Unit and route tests: `npx vitest run src/lib/server/db src/lib/telemetry src/components/data src/app/api/telemetry src/app/api/leaderboard src/app/api/live src/app/api/buddies`.
-- `src/lib/server/db/timescale.test.ts` runs the migrations, runs every file a second time, then runs every query against a real TimescaleDB. It uses `SIMLAB_TEST_DATABASE_URL` (a throwaway database) or starts `timescale/timescaledb:latest-pg17` in Docker on a random port, and skips when neither is available. **The Docker daemon was not running during this session, so the TimescaleDB DDL has not run on a real server yet.** Run it the moment Docker or a Tiger service is available.
+- `src/lib/server/db/timescale.test.ts` runs the migrations, runs every file a second time, then runs every query against a real TimescaleDB. It uses `IYNK_TEST_DATABASE_URL` (a throwaway database) or starts `timescale/timescaledb:latest-pg17` in Docker on a random port, and skips when neither is available. **The Docker daemon was not running during this session, so the TimescaleDB DDL has not run on a real server yet.** Run it the moment Docker or a Tiger service is available.
 - The queries (unnest insert with nulls, quotes and unicode; the ranking and own-row logic; the live counters; profile upsert, expiry and deletion) were run against real Postgres 17 semantics: PGlite 0.5.11 over its socket server, from a scratch harness outside the repo, with the aggregates replaced by plain views of the same SELECTs and `time_bucket` replaced by `date_bin`. All passed.
 
 ## Docs relied on (read 2026-10-24)

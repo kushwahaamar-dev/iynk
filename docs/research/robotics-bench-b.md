@@ -1,6 +1,6 @@
 # Robotics Bench (original), part B: Fig. 07 to Fig. 13
 
-Research input for the SimLab rebuild (Robotics Lab module). It covers the last seven figures of the original
+Research input for the iynk rebuild (Robotics Lab module). It covers the last seven figures of the original
 Robotics Bench (https://robotics-engineer.vercel.app): the A4988 stepper driver, the PCA9685 servo board, the MPU-6050 IMU,
 the HC-SR04 rangefinder, the QTR-8RC line sensor, the LM2596 buck module and the Raspberry Pi 5.
 

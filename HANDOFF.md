@@ -1,4 +1,4 @@
-# SimLab handoff
+# iynk handoff
 
 This file is the single place where the build's live state is kept. Two people (Amar and his teammate) take turns
 driving the build, each with their own Claude sessions, and any session can die mid-step (context or usage limit).
@@ -72,7 +72,7 @@ on from exactly where the last one stopped. Background, the users' own words and
 
 | What | Where | In git? |
 |---|---|---|
-| Code, docs, this file, the plan, audits | this repo (`origin` = github.com/kushwahaamar-dev/sim) | yes |
+| Code, docs, this file, the plan, audits | this repo (`origin` = github.com/kushwahaamar-dev/iynk) | yes |
 | The users' requests, decisions, lessons, conversation log | `docs/handoff/CONTEXT.md` | yes |
 | First build's resume notes, cut-off state, workflow scripts | `docs/handoff/first-build/` | yes |
 | Secrets (`.env.local`: Solana program id and issuer keypair, later Meta/SerpApi/Tiger keys) | Amar's Mac | no: sent privately |
@@ -115,7 +115,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   phase 4, now skipped.
 - **Running:** live claim check `wf_791f52ba-b58` (`scripts/workflows/live-claims.js`, from 08:57, this session):
   labels check:partner-room, check:voice, check:drone-serpapi, check:break-fly, check:mcp-counts, and a recheck for
-  each failed claim. Read-only against https://simlab-hacktx.vercel.app; its results go into DEVPOST-WRITEUP, PITCH
+  each failed claim. Read-only against https://iynk.vercel.app; its results go into DEVPOST-WRITEUP, PITCH
   and JUDGE-QA. A relaunch from another session runs the committed script with the same args (base, scratch).
 - **Interaction audit** `wf_e0b543cb-6eb` (`scripts/workflows/interaction-audit.js`, 07:19-07:40): all five find
   labels (boards, robotics, drones, fly, shell) died on the old session's usage limit, so it reported nothing. Not
@@ -138,12 +138,12 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   2. Answered 08:10: Vercel yes, relay on Vultr, no Tiger, app frozen (CONTEXT.md §3). Vercel project
      `simlab-hacktx` (scope `kushwahaamar2ak5-7403s-projects`, linked 08:12, GitHub repo connected, so every push to
      `main` builds production) has 10 production variables: the five `META_*`, `GEMINI_API_KEY`, `GEMINI_MODEL`,
-     `SERPAPI_KEY`, `SERPAPI_MONTHLY_BUDGET`, `NEXT_PUBLIC_SITE_URL=https://simlab-hacktx.vercel.app`. Upload script
+     `SERPAPI_KEY`, `SERPAPI_MONTHLY_BUDGET`, `NEXT_PUBLIC_SITE_URL=https://iynk.vercel.app`. Upload script
      trims whitespace (two keys have a space after `=` in `.env.local`). Vultr waits for `VULTR_API_KEY` in
-     `.env.local` (asked 08:13); then `scripts/realtime-vultr-create.sh`, `REALTIME_ALLOWED_ORIGINS=https://simlab-hacktx.vercel.app
+     `.env.local` (asked 08:13); then `scripts/realtime-vultr-create.sh`, `REALTIME_ALLOWED_ORIGINS=https://iynk.vercel.app
      VULTR_HOST=<ip> scripts/realtime-deploy.sh`, set `NEXT_PUBLIC_REALTIME_URL=wss://<ip-with-dashes>.sslip.io/ws`
      on Vercel and redeploy.
-  3. Done locally 07:51 (see "Keys smoke") and on **https://simlab-hacktx.vercel.app** (`docs/hacktx/DEPLOY.md`
+  3. Done locally 07:51 (see "Keys smoke") and on **https://iynk.vercel.app** (`docs/hacktx/DEPLOY.md`
      "Production on Vercel"): everything on but solana. Rooms on the live site run through the Vultr relay
      `wss://216-128-138-203.sslip.io/ws` since the 08:38 redeploy, checked with two browser profiles. Tiger is on
      since 08:49 (`DATABASE_URL` added; Build Buddies and leaderboards work), with the array fix `951ef39`. Still to
@@ -173,16 +173,16 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
   db, buddies, telemetry and leaderboard tests 34 passed, 4 skipped (no Docker). Next: Devpost write-up for Tiger.
 
 - 2026-10-25 08:39 CDT (Amar): Amar added this Mac's SSH key to the Vultr VM; the relay now also lets in
-  https://simlab-hacktx.vercel.app (localhost origins kept), Vercel has `NEXT_PUBLIC_REALTIME_URL` and was
+  https://iynk.vercel.app (localhost origins kept), Vercel has `NEXT_PUBLIC_REALTIME_URL` and was
   redeployed. Live rooms checked across two profiles. Next: Amar's video and Devpost; the app stays frozen.
 
-- 2026-10-25 08:26 CDT (Amar): Vultr already has `simlab-realtime` (216.128.138.203, vc2-1c-1gb, dfw), created
+- 2026-10-25 08:26 CDT (Amar): Vultr already has `iynk-realtime` (216.128.138.203, vc2-1c-1gb, dfw), created
   07:58 CDT by `scripts/realtime-vultr-create.sh` from somewhere else, with an SSH key `simlab-realtime-deploy` that
   is not on this Mac. Its relay is healthy at `wss://216-128-138-203.sslip.io/ws` (deployed about 08:04) and accepts
-  the origin `http://localhost:3000` but refuses `https://simlab-hacktx.vercel.app` (403). This Mac can't SSH in, so
+  the origin `http://localhost:3000` but refuses `https://iynk.vercel.app` (403). This Mac can't SSH in, so
   nothing was changed and nothing new was created. Waiting for Amar: who set it up, and adding the Vercel origin.
 
-- 2026-10-25 08:20 CDT (Amar): production live at https://simlab-hacktx.vercel.app (10 env vars; `.vercelignore`
+- 2026-10-25 08:20 CDT (Amar): production live at https://iynk.vercel.app (10 env vars; `.vercelignore`
   now leaves out two test helpers that broke the typecheck). Smokes green there. Next: the Vultr relay once
   `VULTR_API_KEY` is in `.env.local`, then `NEXT_PUBLIC_REALTIME_URL` on Vercel and a redeploy.
 
@@ -254,7 +254,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 - 2026-10-24 18:28 CDT (Amar): local `next start` smoke done and written into `docs/hacktx/DEPLOY.md` (`b62ebc0`).
   Build exit 0 with typecheck on, 645 of 645 pages. Every English demo route is 200. `/` redirects to `/en`.
   `/api/mcp` answers `initialize` and `tools/list` over POST (GET is 405 by design). `/es/boards/uno-r3` is 404
-  because there is no Spanish prose and no English fallback. Also noted: the `/en` title lacks "· SimLab" (a
+  because there is no Spanish prose and no English fallback. Also noted: the `/en` title lacks "· iynk" (a
   layout's title template skips its own page). `npm run typecheck` and eslint exit 0. `.next-deploy` deleted and
   `tsconfig.json` reverted. Vercel stays unlinked. Next is gate 1, with the user's OK asked first.
 
@@ -303,7 +303,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 - 2026-10-24 17:12 CDT (Amar): a second P1-checks in `/Users/amar/Codes/sim` stood down (`69f24d0b`, local note
   `c3c61a7`, not pushed). It reported 56 of 59 lessons passing on that clone at `94d3caa`. The 3 failures were
-  pi5-ros2. That number is not a simlab result. The simlab P1-checks (`1e6f87c4`) keeps the label. The earlier
+  pi5-ros2. That number is not a iynk result. The iynk P1-checks (`1e6f87c4`) keeps the label. The earlier
   clone wave was told to stop and not push. P1-engine has a local commit `f104e10` (esp32-s3-build check types)
   that this checkpoint pushes with the handoff update.
 
@@ -354,7 +354,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 - 2026-10-24 15:50 CDT (Amar): all six audits saved in `docs/audit/`; `docs/hacktx/BUILD-PLAN.md` written and
   waiting for approval.
 
-- 2026-10-24 15:31 CDT (Amar): the repo moved to github.com/kushwahaamar-dev/sim at Amar's request, with a fresh
+- 2026-10-24 15:31 CDT (Amar): the repo moved to github.com/kushwahaamar-dev/iynk at Amar's request, with a fresh
   history that starts now: today's three commits were rebuilt from their identical trees. The pre-event baseline
   `245763f` is not in this history. The old history is kept only as Amar's local branch `backup/simlab-history`
   (never push it). Never force-push `main` again unless a user asks.

@@ -239,7 +239,7 @@
     "quizRight": "Correcto.",
     "quizWrong": "No exactamente.",
     "quizScore": "{score} de {total} correctas",
-    "fpgaNote": "SimLab ejecuta tu Verilog como un modelo de comportamiento, ciclo a ciclo con el reloj de la placa. No sintetiza, no coloca ni enruta: no hay tiempos ni recuento de LUT.",
+    "fpgaNote": "iynk ejecuta tu Verilog como un modelo de comportamiento, ciclo a ciclo con el reloj de la placa. No sintetiza, no coloca ni enruta: no hay tiempos ni recuento de LUT.",
     "completed": "Lección completada. Buen trabajo.",
     "nextCta": "Siguiente: {title}"
   },

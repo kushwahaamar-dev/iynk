@@ -7,8 +7,8 @@ import { fileURLToPath } from "node:url";
 const workspace = join(dirname(fileURLToPath(import.meta.url)), "..");
 const outDir = join(workspace, "..", "src", "lib", "solana", "idl");
 const files = [
-  ["target/idl/simlab_passport.json", "simlab_passport.json"],
-  ["target/types/simlab_passport.ts", "simlab_passport.ts"],
+  ["target/idl/iynk_passport.json", "iynk_passport.json"],
+  ["target/types/iynk_passport.ts", "iynk_passport.ts"],
 ];
 
 mkdirSync(outDir, { recursive: true });

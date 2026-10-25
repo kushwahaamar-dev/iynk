@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { envelope, parseFigureMessage } from "./protocol";
 import { CommandQueue } from "./queue";
 
-const from = (type: string, payload: Record<string, unknown> = {}) => ({ source: "simlab-figure", v: 1, type, ...payload });
+const from = (type: string, payload: Record<string, unknown> = {}) => ({ source: "iynk-figure", v: 1, type, ...payload });
 
 describe("parseFigureMessage", () => {
   test("reads a ready message and normalises its parts", () => {
@@ -75,7 +75,7 @@ describe("parseFigureMessage", () => {
     expect(parseFigureMessage(null)).toBeNull();
     expect(parseFigureMessage("ready")).toBeNull();
     expect(parseFigureMessage({ source: "probe", v: 1, type: "ready" })).toBeNull();
-    expect(parseFigureMessage({ source: "simlab-figure", v: 2, type: "ready" })).toBeNull();
+    expect(parseFigureMessage({ source: "iynk-figure", v: 2, type: "ready" })).toBeNull();
     expect(parseFigureMessage(from("custom", { name: "spoof" }))).toBeNull();
     expect(parseFigureMessage(from("sfx"))).toBeNull();
     expect(parseFigureMessage(from("part"))).toBeNull();
@@ -85,10 +85,10 @@ describe("parseFigureMessage", () => {
 });
 
 test("envelope stamps the host source and version", () => {
-  expect(envelope({ type: "press", id: "reset" })).toEqual({ source: "simlab", v: 1, type: "press", id: "reset" });
+  expect(envelope({ type: "press", id: "reset" })).toEqual({ source: "iynk", v: 1, type: "press", id: "reset" });
   // A custom command goes out under its own name; its payload cannot override the envelope.
   expect(envelope({ type: "custom", name: "bump", payload: { by: 2, type: "x", source: "y" } })).toEqual({
-    source: "simlab",
+    source: "iynk",
     v: 1,
     type: "bump",
     by: 2,

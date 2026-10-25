@@ -1,6 +1,6 @@
-# SimLab coverage checklist, part B: Drone Lab and figures
+# iynk coverage checklist, part B: Drone Lab and figures
 
-This is the second half of SimLab's master coverage checklist: one row for every behaviour, value, message, defect
+This is the second half of iynk's master coverage checklist: one row for every behaviour, value, message, defect
 fix and figure rule that the Drone Lab research and the Colorfigures research found. Every later phase checks its
 work against these rows. An item counts as covered only when its verify method has passed.
 
@@ -21,7 +21,7 @@ in part A. They are repeated here only where they bind a figure or the Drone Lab
 ## How to read a row
 
 - **id**: prefix plus a three-digit number, numbered in table order within each prefix.
-- **statement**: one testable sentence saying what SimLab must or must not do. Text in quotes (labels, messages,
+- **statement**: one testable sentence saying what iynk must or must not do. Text in quotes (labels, messages,
   CLI lines) and the numbers given (constants, timings, colours, sizes) are kept exactly, unless
   `docs/DECISIONS.md` records a correction.
   - "must not copy: …" marks a defect in an original site or in the current baseline. The rest of the sentence
@@ -69,7 +69,7 @@ Line numbers (`L…`) and sections (`§…`, `Fig …`, `Appendix …`) refer to
 | drone-lab-b-calc-matrix.md | `docs/research/drone-lab-b-calc-matrix.md` | 309 | `5e636765b8a7` |
 | colorfigures-guide.md | `docs/research/colorfigures-guide.md` | 1523 | `540a43e83193` |
 | robotics-bench-a.md | `docs/research/robotics-bench-a.md` | 1424 | `6e4dcde46d4a` |
-| current-simlab-audit.md | `docs/research/current-simlab-audit.md` | 618 | `6da9f8760aef` |
+| current-iynk-audit.md | `docs/research/current-iynk-audit.md` | 618 | `6da9f8760aef` |
 | SKILL.md | `~/.claude/skills/colorfigures/SKILL.md` | 190 | `5bf7e80eb4d3` |
 | ~/.claude/skills/colorfigures/README.md | `~/.claude/skills/colorfigures/README.md` | 49 | `2d65d7701f90` |
 | ~/.claude/skills/colorfigures/LICENSE | `~/.claude/skills/colorfigures/LICENSE` | 23 | `bc54cadb5799` |
@@ -132,7 +132,7 @@ Line numbers (`L…`) and sections (`§…`, `Fig …`, `Appendix …`) refer to
 | DLA-003 | The current craft's navigator entry must carry `aria-current` and a visibly distinct (inverted) style. | drone-lab-a.md §1.1 L73 | must | e2e |
 | DLA-004 | Every craft must have its own URL keyed by the craft key (quad5, whoop, cinewhoop, longrange, racer, gpscam, delivery, agrihex, wing, vtol, swarm, tricopter, octo), and loading that URL must open that craft directly. | drone-lab-a.md §1.1 L75-76; drone-lab-b.md §2 L130-140 | must | e2e |
 | DLA-005 | Opening the Drone Lab with no craft key must land on a working page (the original mounts Fig. 01, the first craft by figure number); it must never render empty. | drone-lab-a.md §1.1 L75-76 | must | e2e |
-| DLA-006 | Switching to another craft must start it from a clean session state (default design, build as the URL asks, tests reset, no flight, FPV off) while keeping the progress SimLab persists on purpose (quiz results, best laps, completion). | drone-lab-a.md §1.1 L76-77; drone-lab-a.md §10 defect 20 | must | e2e |
+| DLA-006 | Switching to another craft must start it from a clean session state (default design, build as the URL asks, tests reset, no flight, FPV off) while keeping the progress iynk persists on purpose (quiz results, best laps, completion). | drone-lab-a.md §1.1 L76-77; drone-lab-a.md §10 defect 20 | must | e2e |
 | DLA-007 | The figure header must read "Fig. NN — {name}" followed by the craft's hint (default hint "design it, build it, then fly it"). | drone-lab-a.md §1.1 L53; §2 L189 | must | e2e |
 | DLA-008 | The bench button column should carry the caption "Workshop" (hidden in flight). | drone-lab-a.md §1.1 L54; §1.4 L121-122 | should | e2e |
 | DLA-009 | Bench and flight toasts must be announced to assistive technology (role=status or an equivalent polite live region). | drone-lab-a.md §1.1 L54-55; §1.5 L138; SPEC.md L129 | must | e2e |
@@ -220,7 +220,7 @@ Line numbers (`L…`) and sections (`§…`, `Fig …`, `Appendix …`) refer to
 | DLA-086 | Electrical cost must be the fixed Electrical prices + n × motor price + battery price. | drone-lab-a.md §3.1 L270 | must | unit |
 | DLA-087 | Mechanical cost must be the fixed Mechanical prices + prop price × ceil(n/2), because a prop price is per pair. | drone-lab-a.md §3.1 L271 | must | unit |
 | DLA-088 | Hover throttle must be sqrt(AUW / (n × thrust)), that is sqrt(1/T:W), because thrust scales with throttle squared. | drone-lab-a.md §3.1 L272 | must | unit |
-| DLA-089 | Catalogue data that no code reads (the motors' forCells) should either drive a real check or be dropped; SimLab should not carry dead catalogue fields. | drone-lab-a.md §3.1 L275 | should | review |
+| DLA-089 | Catalogue data that no code reads (the motors' forCells) should either drive a real check or be dropped; iynk should not carry dead catalogue fields. | drone-lab-a.md §3.1 L275 | should | review |
 | DLA-090 | The cinewhoop calculator must use thrust = 0.24 × prop pf × motor sz × krpm² and hover power AUW / (3.4 × prop eff), with n = 4. | drone-lab-a.md §3.2 L277-281 | must | unit |
 | DLA-091 | The cinewhoop calculator must use aggressive time = hover time × 0.85 and max current = n × thrust / (1.7 × prop eff) / V. | drone-lab-a.md §3.2 L279-280 | must | unit |
 | DLA-092 | The cinewhoop calculator must flag over when cells > the motor's maxCells, flag weak when T:W < 3, and cost props at price × 2. | drone-lab-a.md §3.2 L280-281 | must | unit |
@@ -238,7 +238,7 @@ Line numbers (`L…`) and sections (`§…`, `Fig …`, `Appendix …`) refer to
 | DLA-104 | Golden data: the cinewhoop calculator must reproduce all 27 rows of drone-lab-a.md Appendix A cinewhoop exactly, except rows changed by a correction recorded in docs/DECISIONS.md. | drone-lab-a.md Appendix A L1361-1391 | must | unit |
 | DLA-105 | Golden data: the long-range calculator must reproduce all 27 rows of drone-lab-a.md Appendix A longrange exactly, except rows changed by a correction recorded in docs/DECISIONS.md. | drone-lab-a.md Appendix A L1393-1423 | must | unit |
 | DLA-106 | The default designs must be quad5 6s1100 / 2306-1750 / 5x4.3x3, whoop 1s300 / 0702-25000 / 31mm-4, cinewhoop 4s1100 / 2004-3000 / 3x3x3, longrange 6s1p4000 / 2807-1300 / 7x3.5x2. | drone-lab-a.md Appendix A L1297, L1329, L1361, L1393 | must | unit |
-| DLA-107 | Every golden row whose expected value SimLab changes on purpose (new label, new check, corrected constant) must be listed with its old and new value in the golden test table and in docs/DECISIONS.md. | drone-lab-a.md Appendix A L1293-1295; SPEC.md L153 | must | review |
+| DLA-107 | Every golden row whose expected value iynk changes on purpose (new label, new check, corrected constant) must be listed with its old and new value in the golden test table and in docs/DECISIONS.md. | drone-lab-a.md Appendix A L1293-1295; SPEC.md L153 | must | review |
 
 ## DLA · Bench build, plug-in and safety tests
 
@@ -384,10 +384,10 @@ Line numbers (`L…`) and sections (`§…`, `Fig …`, `Appendix …`) refer to
 | DLA-235 | Falling below 3.5 V per cell must show "LOW BATTERY: land now (3.5 V per cell)" once, with the error effect. | drone-lab-a.md §7.4 L590-591 | must | e2e |
 | DLA-236 | Falling below 3.2 V per cell must disarm with "Battery empty: the ESCs cut out. Never fly a LiPo this low" and the unplug effect. | drone-lab-a.md §7.4 L591 | must | e2e |
 | DLA-237 | Flight keys must work only in flight and never while the learner is typing in an input, select or textarea. | drone-lab-a.md §7.5 L597 | must | e2e |
-| DLA-238 | Flight keys (W S A D, arrows, Space, R, V) must call preventDefault only while flying, so Space still presses a focused button and arrows still scroll the page otherwise. | drone-lab-a.md §7.5 L597-598; current-simlab-audit.md §3.8 FS-02 | must | e2e |
-| DLA-239 | Space (ignoring key repeat) must arm and disarm, R must reset to the pad and V must toggle FPV, each acting on the keydown event itself. | drone-lab-a.md §7.5 L599; current-simlab-audit.md §3.8 FS-03 | must | e2e |
+| DLA-238 | Flight keys (W S A D, arrows, Space, R, V) must call preventDefault only while flying, so Space still presses a focused button and arrows still scroll the page otherwise. | drone-lab-a.md §7.5 L597-598; current-iynk-audit.md §3.8 FS-02 | must | e2e |
+| DLA-239 | Space (ignoring key repeat) must arm and disarm, R must reset to the pad and V must toggle FPV, each acting on the keydown event itself. | drone-lab-a.md §7.5 L599; current-iynk-audit.md §3.8 FS-03 | must | e2e |
 | DLA-240 | Held keys must map yaw = D − A, pitch = Up − Down, roll = Left − Right (left arrow banks left), each smoothed toward its target at min(1, 10·dt) per frame. | drone-lab-a.md §7.5 L600-601 | must | unit |
-| DLA-241 | Arrow Up (forward pitch) must move the craft forward along its nose. | drone-lab-a.md §7.3 L559; current-simlab-audit.md §3.8 FS-01 | must | e2e |
+| DLA-241 | Arrow Up (forward pitch) must move the craft forward along its nose. | drone-lab-a.md §7.3 L559; current-iynk-audit.md §3.8 FS-01 | must | e2e |
 | DLA-242 | Virtual-stick values must override the keyboard while a stick is held. | drone-lab-a.md §7.5 L601 | must | unit |
 | DLA-243 | In altitude-hold modes W/S must set the climb command directly and spring to 0 on release; in manual modes they must move the throttle at 0.32 per second (0 to 100 % in about 3.1 s) and leave it where it is. | drone-lab-a.md §7.5 L602-603 | must | unit |
 | DLA-244 | While an autopilot flies, the stick inputs it owns must come from the autopilot, not the keys. | drone-lab-a.md §7.5 L604 | must | unit |
@@ -396,7 +396,7 @@ Line numbers (`L…`) and sections (`§…`, `Fig …`, `Appendix …`) refer to
 | DLA-247 | Arming while disarmed in the air (z > 0.05 m) must be ignored. | drone-lab-a.md §7.5 L608 | must | e2e |
 | DLA-248 | A successful arm must reset the flight clock, play power, log "ARMED  mode: {mode title}" and show the mode's arming hint. | drone-lab-a.md §7.5 L609; §4.7 L444 | must | e2e |
 | DLA-249 | Two virtual sticks of 118 px must show only in flight, left "THROTTLE · YAW" and right "PITCH · ROLL", with a 38 px knob travelling 40 px clamped to the unit circle. | drone-lab-a.md §7.5 L611-612; SPEC.md L117 | must | e2e |
-| DLA-250 | Each virtual stick must capture its own pointer by id and release on pointerup, pointercancel or loss of capture. | drone-lab-a.md §7.5 L612; current-simlab-audit.md §3.8 FS-07 | must | e2e |
+| DLA-250 | Each virtual stick must capture its own pointer by id and release on pointerup, pointercancel or loss of capture. | drone-lab-a.md §7.5 L612; current-iynk-audit.md §3.8 FS-07 | must | e2e |
 | DLA-251 | The left stick's x must be yaw; its y must be the climb command (spring back) in altitude-hold modes and absolute throttle (y+1)/2 with no spring in manual modes, the touch starting from the knob's current place. | drone-lab-a.md §7.5 L612-614 | must | e2e |
 | DLA-252 | The right stick must set roll = −x and pitch = y and spring back to centre. | drone-lab-a.md §7.5 L614 | must | e2e |
 | DLA-253 | Parking must centre both knobs, except a manual-mode throttle knob, which parks at the bottom (zero). | drone-lab-a.md §7.5 L614-615 | must | e2e |
@@ -457,7 +457,7 @@ Line numbers (`L…`) and sections (`§…`, `Fig …`, `Appendix …`) refer to
 | DLA-303 | "Lofi" must play a 74 bpm loop Dm9 - G13 - Cmaj9 - Am9 (rhodes-like chords, bass, kick, soft snare, hats, sparse melody, vinyl crackle) that fades in and out, and must be off by default. | drone-lab-a.md §8 L711-712; SPEC.md L55 | must | e2e |
 | DLA-304 | "Effects" must be on by default. | drone-lab-a.md §8 L713 | must | e2e |
 | DLA-305 | Each effect must fire on the original's events: tick (buttons, selections), place (part lands), whoosh (add, strip, build, explode, fly, bench, reset), click (select change, FPV, smoke test start, wind), plug, power, unplug, pop + sizzle (cap vents, crash), pop (desync), buzz (short, wrong answer, compass warning), ding (test passed, lap, run done, landed), chime (gate, checkpoint, right answer), error (refusals, low battery, link lost). | drone-lab-a.md §8 L714-718 | must | e2e |
-| DLA-306 | SimLab should not send usage-tracking beacons or keep a visitor id (the original posted board, btn, pick, part, quiz, fault and mastered events to /api/track). | drone-lab-a.md §8 L720-723; colorfigures-guide.md §3.1 L596, L628 | should | review |
+| DLA-306 | iynk should not send usage-tracking beacons or keep a visitor id (the original posted board, btn, pick, part, quiz, fault and mastered events to /api/track). | drone-lab-a.md §8 L720-723; colorfigures-guide.md §3.1 L596, L628 | should | review |
 | DLA-307 | Per-craft progress must persist in localStorage: build finished, tests passed, quiz answers, best lap and best run per course, crash count, and the "mastered" events (lap, range run, rescue landing). | drone-lab-a.md §8 L723-726; SPEC.md L66, L126 | must | e2e |
 
 ## DLA · Fig. 01 quad5, 5-inch freestyle quad
@@ -812,7 +812,7 @@ Line numbers (`L…`) and sections (`§…`, `Fig …`, `Appendix …`) refer to
 | DLB-111 | Loiter must brake to a stop within about 1 s of releasing full forward stick and then hold within about 0.25 m. | drone-lab-b.md Fig 06 L726 | must | unit |
 | DLB-112 | In mission mode the field must draw the dashed route pad, WP1 to WP4 and back, with a 0.26 m numbered ring and short post at each waypoint, the current one filled with the accent colour. | drone-lab-b.md Fig 06 L731-732 | must | screenshot |
 | DLB-113 | gpscam flight stats must add "Waypoint" n/4 (or "takeoff") in the mission and "Home" x.x m in RTL. | drone-lab-b.md Fig 06 L733-734 | must | e2e |
-| DLB-114 | must not copy: the constant "GPS" "3D fix, 14 sats" stat; SimLab must model GPS fix and satellite count (with the possibility of losing fix) and show the live values. | drone-lab-b.md Fig 06 L733-734, L818 | must | e2e |
+| DLB-114 | must not copy: the constant "GPS" "3D fix, 14 sats" stat; iynk must model GPS fix and satellite count (with the possibility of losing fix) and show the live values. | drone-lab-b.md Fig 06 L733-734, L818 | must | e2e |
 | DLB-115 | A compass fault should be simulated (the reading bent by current in the power wires, as the GPS part text and quiz 2 teach), and Loiter should show its effect, since the EKF fuses the compass into its one position. | drone-lab-b.md Fig 06 L611, L613, L812; §4 L3350-3352 | should | e2e |
 | DLB-116 | The gpscam range "Roof + tower inspection" must have brief "Photograph the roof from 4 sides, check the tower antennas, come home", a 60 m field, pad (15, 15), ground #dde3cc, altitude-hold sticks and the camera 20° down. | drone-lab-b.md Fig 06 L736-739 | must | unit |
 | DLB-117 | The inspection range must hold the road and driveway, the house at (36, 32) (10 × 8 × 6 m, 3 m roof, porch), the red barn at (48, 14), the cell tower at (18, 46) (concrete pad, 18 m lattice pole, four antenna panels at 15.2-17 m, shed), the parking lot with four cars, the three-row solar array and seven trees, with the mission square and pad clear of every solid. | drone-lab-b.md Fig 06 L739-743 | must | unit |
@@ -1014,7 +1014,7 @@ Line numbers (`L…`) and sections (`§…`, `Fig …`, `Appendix …`) refer to
 | DLB-298 | Wing lift must be min(1, (S / vmin)²), with the sink rate easing toward (1 − lift) · 6 m/s plus S · (1 − cos roll) · 0.15 in manual, velocity = nose · S + wind − sink, and wind (2 sin 0.4t, 1.2 cos 0.3t, 0) when on. | drone-lab-b.md Fig 09 L1785-1787 | must | unit |
 | DLB-299 | A touchdown below 13.5 m/s with less than 25° bank, pitch between −30° and 25° and vz above −3.5 m/s must be a belly landing ("Belly landing on the grass. Press R to go again", place sound, log "landed, {mAh} mAh used", disarmed, back in the hand); anything else must crash with "Hit the ground too fast or too steep". | drone-lab-b.md Fig 09 L1788-1790 | must | e2e |
 | DLB-300 | More than 90 m from the pad the wing must say "A long way out: switch to RTH, or R to reset" once per excursion. | drone-lab-b.md Fig 09 L1791-1792 | must | e2e |
-| DLB-301 | must not copy: a wing with no field boundary that flies a kilometre away; SimLab must keep the wing's flight within its 200 m field. | drone-lab-b.md Fig 09 L1791-1792, L1797, L1887 | must | e2e |
+| DLB-301 | must not copy: a wing with no field boundary that flies a kilometre away; iynk must keep the wing's flight within its 200 m field. | drone-lab-b.md Fig 09 L1791-1792, L1797, L1887 | must | e2e |
 | DLB-302 | Wing angle mode at 60 % throttle must reproduce the original within tolerance: launch at 0.2 s, 10.5 → 22.9 m/s (82 km/h) climbing 1.2 m/s on the trim at 13.8 A; after a throttle cut at 30 s, STALL at 37.6 s (8.3 m/s) and a stable mush at 7.7 m/s sinking 2.3 m/s. | drone-lab-b.md Fig 09 L1795-1797 | must | unit |
 | DLB-303 | Full up elevator with the throttle cut at 10 s must zoom to about 27 m, stall at about 12.4 s, fall at 6 m/s and crash at about 18.4 s; manual mode with 0.3 roll for 2 s must spiral in. | drone-lab-b.md Fig 09 L1798-1800 | must | unit |
 | DLB-304 | Wing RTH armed on the pad must launch itself, climb to 15 m and orbit at about 18 m/s on about 45 % throttle (6.8 A); RTH switched on 226 m out must turn back, cross the pad and settle into the same orbit. | drone-lab-b.md Fig 09 L1801-1803 | must | e2e |
@@ -1315,7 +1315,7 @@ Line numbers (`L…`) and sections (`§…`, `Fig …`, `Appendix …`) refer to
 | DLB-574 | The firmware values recorded as correct must be kept as written: Betaflight motor_pwm_protocol = DSHOT600, dshot_bidir, align_board_yaw, ACTUAL rates (roll_rc_rate 7 = 70°/s centre, roll_srate 67 = 670°/s), Raceband 5658-5917 MHz, led 0 0,0::C:6, mixer TRI, smix reverse 5 2 r, tri_unarmed_servo. | drone-lab-b.md §3 L3299-3302 | must | review |
 | DLB-575 | The ArduPilot values recorded as correct must be kept: FLTMODE 5 / 2 / 6, LOIT_*, RTL_ALT in cm, FS_THR_ENABLE 1, BATT_FS_LOW_ACT 2, FRAME_CLASS 1 / 2 / 3 with FRAME_TYPE 1, SERVOn_FUNCTION 33-36, 88, 22, 29, 75 / 76, MOT_PWM_TYPE 6, SERIAL2_PROTOCOL 2 / SERIAL2_BAUD 921, Q_FRAME_CLASS 7, Q_TILT_*, Q_ASSIST_SPEED, ARSPD_TYPE 1, EK3_SRC1_POSXY 3, EK3_SRC1_YAW 2, the SPRAY_* params, RNGFND1_ORIENT 25 and QGC command ids 16, 20, 22. | drone-lab-b.md §3 L3302-3307 | must | review |
 | DLB-576 | The INAV, cflib and MAVSDK calls recorded as correct must be kept: platform_type = AIRPLANE, mmix, smix with a trailing condition, servo ... -100, nav_rth_*, nav_fw_loiter_radius, failsafe_procedure = RTH; MotionCommander, SyncCrazyflie, Swarm, CachedCfFactory, high_level_commander takeoff / go_to / start_trajectory / land; MAVSDK connect(system_address="serial:///dev/ttyAMA0:921600"), set_takeoff_altitude, goto_location, return_to_launch. | drone-lab-b.md §3 L3308-3311 | must | review |
-| DLB-577 | Every firmware snippet must be corrected where drone-lab-b lists it as wrong, keeping the comment style, and the corrections must be checked against the firmware documentation for the version SimLab names. | drone-lab-b.md §3 L3313-3320; §4 L3348-3349 | must | review |
+| DLB-577 | Every firmware snippet must be corrected where drone-lab-b lists it as wrong, keeping the comment style, and the corrections must be checked against the firmware documentation for the version iynk names. | drone-lab-b.md §3 L3313-3320; §4 L3348-3349 | must | review |
 | DLB-578 | The behaviour constants the summary lists must be kept: wing hand launch, belly-landing envelope, trims, rates, RTH 15 m and the 90 m warning; VTOL tilt timing, plane thresholds and Q_ASSIST below 9 m/s; delivery winch speeds, release delay, cruise and drop heights; spray height, speeds, lane tolerance and RTL; Fig 06 mission heights and brake lead; swarm and figure-8 timings; tricopter servo limits and pirouette; octo failure timing. | drone-lab-b.md §3 L3322-3332 | must | unit |
 | DLB-579 | The moving parts must animate: Fig 05 green LED strips; Fig 06 level gimbal and numbered mission rings; Fig 07 winch line, hanging and dropped parcel, drop-zone target; Fig 08 tank sight window, sprayed strips, mist cones; Fig 09 hinged elevons, pusher prop, clouds; Fig 10 tilting nacelles, stopped rear prop in cruise, turbine blades; Fig 11 four LEDs, three wingmates, dashed figure-8; Fig 12 tilting tail motor with its readout; Fig 13 retracting legs, level gimbal with a record LED, brown dead motor. | drone-lab-b.md §3 L3336-3340 | must | screenshot |
 | DLB-580 | Figs 05-13 must play chime (waypoint or row done), ding (mission complete, landed, good test), snap (parcel released), pop (motor or ESC failure, crash, vented cap), error (stall, tank empty, bad CG, reversed elevons), buzz (reversed tilt or tail servo, pirouette), click (T transition, RTL leg), whoosh (hand launch, mode change), place (belly landing) and unplug (landed and disarmed on Fig 06), plus the motor hum. | drone-lab-b.md §3 L3341-3344 | must | e2e |
@@ -1424,7 +1424,7 @@ Line numbers (`L…`) and sections (`§…`, `Fig …`, `Appendix …`) refer to
 | CF-073 | The builder should prove, with a --check run, that a core-only page comes out byte-identical to build.py's output. | colorfigures-guide.md §4.2 L925-934 | should | unit |
 | CF-074 | Every figure page must load its scripts in the order core.js, lib/embed.js (which must wrap mountFigure before anything calls it), lib/sl.js, the engine files, the figure file, then the one line that starts it. | colorfigures-guide.md §3.3 L674-675 | must | unit |
 | CF-075 | The engine should be a vendored copy of the skill (figures/vendor/colorfigures with core.js, build.py, VERSION holding the skill date and sha256, LICENSE and PATCHES.md), and every change to the vendored core should be recorded in PATCHES.md. | colorfigures-guide.md §3.3 L652; §2.3 L546-547 | should | review |
-| CF-076 | SimLab must keep the Colorfigures MIT licence with its copyright lines (April Zhu for Colorfigures and iso-glow, Tolga Cohce for iso-figure) in the vendored copy. | SPEC.md L155; colorfigures-guide.md §2.2 L428-429; ~/.claude/skills/colorfigures/LICENSE | must | review |
+| CF-076 | iynk must keep the Colorfigures MIT licence with its copyright lines (April Zhu for Colorfigures and iso-glow, Tolga Cohce for iso-figure) in the vendored copy. | SPEC.md L155; colorfigures-guide.md §2.2 L428-429; ~/.claude/skills/colorfigures/LICENSE | must | review |
 | CF-077 | Because embedded mode hides the figure's "Made with Colorfigures ↗" footer, an About page must credit Colorfigures by April Zhu with a link to https://april-zhu.com/colorfigures, plus the skill's own credits (ISO-GLOW by April Zhu, iso-figure by Tolga Cohce, the see-through method of Anatomy by Ryan, all MIT). | SPEC.md L155; colorfigures-guide.md §2.2 L428-429, §2.3 L447; ~/.claude/skills/colorfigures/README.md L39-43 | must | e2e |
 | CF-078 | Each board and each craft should be its own built page (about 150 kB: core, build extras, engine, figure), loaded with a `?v=<build hash>` cache buster. | colorfigures-guide.md §3.3 L678-680 | should | unit |
 | CF-079 | Built figure pages must be served same-origin by Next.js from public/figures/, without X-Frame-Options DENY or a frame-ancestors 'none' policy on that path. | colorfigures-guide.md §2.3 L520, L526-528 | must | e2e |
@@ -1447,7 +1447,7 @@ Line numbers (`L…`) and sections (`§…`, `Fig …`, `Appendix …`) refer to
 | CF-091 | Every interesting figure state must be reachable from URL params (id, module, sheet, xr=1, labels=1, yaw, pitch and the figure's own params keys), so a lesson link or a screenshot can open it. | colorfigures-guide.md §2.3 L445; SKILL.md L155 | must | e2e |
 | CF-092 | In embedded mode the SVG must fill the iframe (width and height 100 %, beating fit()) and the figure page must not scroll. | colorfigures-guide.md §2.3 L451-452, L460-465 | must | screenshot |
 | CF-093 | The host must give each figure iframe a definite box (aspect-ratio 4 / 3 on desktop, about 10 / 11 on phones, max-height about 80vh), and the bridge must set FIG_A to clamp(innerHeight / innerWidth, .7501, 1.4) before mount so the frame matches the iframe. | colorfigures-guide.md §2.3 L452-455; §5 L1030 | must | screenshot |
-| CF-094 | Host-to-figure messages must use the envelope {source: 'simlab', v: 1, type, …} and figure-to-host messages {source: 'simlab-figure', v: 1, type, …}; messages with any other source or version must be ignored. | colorfigures-guide.md §2.3 L474-475; Appendix D L1454-1455, L1491-1492 | must | unit |
+| CF-094 | Host-to-figure messages must use the envelope {source: 'iynk', v: 1, type, …} and figure-to-host messages {source: 'iynk-figure', v: 1, type, …}; messages with any other source or version must be ignored. | colorfigures-guide.md §2.3 L474-475; Appendix D L1454-1455, L1491-1492 | must | unit |
 | CF-095 | The figure must answer every hello with ready, idempotently. | colorfigures-guide.md §2.3 L479, L515-516 | must | e2e |
 | CF-096 | press {id, choice?} must click a figure button by its stable id (by default a slug of the English label, such as push-the-lever) and pick a picker chip by id, in any language. | colorfigures-guide.md §2.3 L480, L538-539 | must | e2e |
 | CF-097 | act {name, data?} must run cfg.acts[name] exactly as if that part had been pressed. | colorfigures-guide.md §2.3 L481 | must | e2e |
@@ -1500,7 +1500,7 @@ Line numbers (`L…`) and sections (`§…`, `Fig …`, `Appendix …`) refer to
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| CF-137 | Before any SimLab figure is built, the vendored engine and the shot suite must be proven on the skill's toaster reference (25 shots, 0 errors, 9 see-through labels with no overlaps and none off-frame at every angle). | SPEC.md L133; colorfigures-guide.md §4.3 L938-943, L961-962 | must | screenshot |
+| CF-137 | Before any iynk figure is built, the vendored engine and the shot suite must be proven on the skill's toaster reference (25 shots, 0 errors, 9 see-through labels with no overlaps and none off-frame at every angle). | SPEC.md L133; colorfigures-guide.md §4.3 L938-943, L961-962 | must | screenshot |
 | CF-138 | Every figure must be iterated until its see-through internals, labels, animations and interactions are correct; the brief's "iterate until correct" overrides the skill's three-round cap. | SPEC.md L141; SKILL.md L34 | must | review |
 | CF-139 | Every figure must be shot at the seven angles free=1 with yaw=45, 110, 170, 230, 300, yaw=20&pitch=62 and yaw=200&pitch=70, closed. | SKILL.md L173-180; colorfigures-guide.md §4.3 L950 | must | screenshot |
 | CF-140 | Every figure must be shot at the same seven angles with &xr=1&labels=1. | SKILL.md L178; colorfigures-guide.md §4.3 L951 | must | screenshot |
@@ -1584,7 +1584,7 @@ Line numbers (`L…`) and sections (`§…`, `Fig …`, `Appendix …`) refer to
 | CF-208 | must not copy: a fixed reversed motor in the drone engine's test config (the guide's sketch motors: {needs: ['WIRES', 'FC'], wrong: 2} would keep defect 27, M3 always reversed); which motor is reversed must vary per wiring job. | colorfigures-guide.md §3.5 L857; drone-lab-a.md §10 L1264 | must | unit |
 | CF-209 | The drone wiring diagram should be drawn by the host from the craft's wiring data, with selection kept in sync with the figure through part events and set {sel}. | colorfigures-guide.md §3.5 L859, L894-898 | should | e2e |
 | CF-210 | must not copy: claw.html's see-through, which passes the mechanism through an xrWrap option that does not exist (over) with mech: () => '', so only the ghost and labels pointing at nothing show; every see-through must draw its mechanism, checked by the mechanism's colours appearing in #art. | colorfigures-guide.md Appendix E L1514, §1.12 L320 | must | unit |
-| CF-211 | must not copy: SKILL.md's reserved-name list, which misses CAM_K and _clipN and lists camTo, which is not a global; SimLab's name rules must use the complete list taken from core.js. | colorfigures-guide.md Appendix E L1515, §1.14 L351 | must | review |
+| CF-211 | must not copy: SKILL.md's reserved-name list, which misses CAM_K and _clipN and lists camTo, which is not a global; iynk's name rules must use the complete list taken from core.js. | colorfigures-guide.md Appendix E L1515, §1.14 L351 | must | review |
 | CF-212 | must not copy: build.py's docstring, which promises a lighter filter while the figure moves on touch screens while the code removes the filter on narrow or touch screens at all times; the vendored builder must document what it actually does. | colorfigures-guide.md Appendix E L1516, §2.1 L394 | must | review |
 | CF-213 | must not copy: text placed in readout, hint, idea or buttonsLabel (toaster, lamp and claw use them), which the skill core never shows; such text belongs on buttons, labels and stats or in the host lesson. | colorfigures-guide.md Appendix E L1517, §1.10 L248-251, §3.2 L640 | must | review |
 | CF-214 | must not copy: the baseline FigureFrame setting ready to false in onLoad (FigureFrame.tsx:75-77), which drops every later patch when the figure's ready arrives first; readiness must be set only by ready events. | colorfigures-guide.md Appendix E L1518, §2.3 L515-519 | must | e2e |

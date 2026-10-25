@@ -1,5 +1,5 @@
 // The engine itself: pages load it through engine/bench.list (// @cf use engine/bench.list).
-/* SimLab Board Bench engine. Boards, modules and benches are data (docs/FIGURES-BENCH.md); this file turns one of
+/* iynk Board Bench engine. Boards, modules and benches are data (docs/FIGURES-BENCH.md); this file turns one of
    them into a Colorfigures figure: the board on its cutting mat, the build flow with its refusals, the power tree
    and faults, built-in programs on a virtual clock, on-board controls, see-through, exploded view, the views
    (board / breadboard / schematic / power) and the bridge traffic (accept / report).
@@ -1392,7 +1392,7 @@ function clearStats(){
 
 // standalone page: the SVG re-renders all the time, so keyboard and screen-reader access to the parts drawn in it is a
 // group of real buttons kept off-screen (the focused one shows as a chip). Focus selects the part, Enter or Space
-// presses a control for as long as the key is held. Inside the SimLab host the host's own part list does this.
+// presses a control for as long as the key is held. Inside the iynk host the host's own part list does this.
 let keysBox = null, keysKey = '';
 function keyList(){
   keysBox = document.createElement('div'); keysBox.className = 'bkeys'; keysBox.setAttribute('role', 'group'); keysBox.setAttribute('aria-label', T('Parts'));

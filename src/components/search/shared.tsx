@@ -84,5 +84,5 @@ export function siteOf(url: string): string {
   }
 }
 
-/** Shared props for links that leave SimLab. */
+/** Shared props for links that leave iynk. */
 export const external = { target: "_blank", rel: "noopener noreferrer" } as const;

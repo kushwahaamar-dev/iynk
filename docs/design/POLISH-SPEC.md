@@ -8,7 +8,7 @@ Built from the seven phase-1 reports: `docs/design/research.md`, `docs/verify/fr
 The whole design in one sentence: **lab pages become full-viewport workspaces (a slim title bar, the figure as the
 largest cell, one tabbed rail beside it, nothing important below the fold), reading pages share one frame and one
 measure, and the chrome gets calmer: sans for UI text, mono only for code and numbers, one box per pane, one primary
-per area.** The look stays SimLab's: paper, grain, ink lines, the five palettes, hand-cut corners, Newsreader titles.
+per area.** The look stays iynk's: paper, grain, ink lines, the five palettes, hand-cut corners, Newsreader titles.
 
 How to use this file:
 
@@ -309,7 +309,7 @@ Order matters: S1–S4 are what the surface builders start from. Commit after ea
    Reduce motion toggle. [SH B1 U6 U12 U15 N2, FE U2]
 5. **P1 S5 Footer** (§1.7). [SH U13 N3]
 6. **P1 S6 Landing** (`[lang]/page.tsx`, `dashboard/*`) [SH U1 U2 U7 U8 B2, FE U15]:
-   - `title: { absolute: "SimLab · <tagline>" }` from the messages; `openGraph` and `twitter` (`summary_large_image`,
+   - `title: { absolute: "iynk · <tagline>" }` from the messages; `openGraph` and `twitter` (`summary_large_image`,
      title, description) in the layout's `generateMetadata`. A share image only if it fits (P2).
    - Hero columns about 5 : 7. The live quad5 figure (`FigureFrame` on `/figures/drones/quad5.html`, mounted after
      first paint, `hero.svg` as the poster until `ready` and the fallback for reduced motion and no JS) at

@@ -1,6 +1,6 @@
-# SimLab figures: platform guide
+# iynk figures: platform guide
 
-Every 3D figure in SimLab (boards, parts, modules, robotics benches, drones) is a self-contained Colorfigures page
+Every 3D figure in iynk (boards, parts, modules, robotics benches, drones) is a self-contained Colorfigures page
 built into `public/figures/<kind>/<id>.html`. The React host embeds the page in an iframe and drives it through a
 postMessage bridge. This file covers the layout, the build and shoot commands, the bridge protocol and the rules
 every figure follows. Background reading is `docs/research/colorfigures-guide.md`, cited below as "guide §n".
@@ -145,8 +145,8 @@ a legend under the figure, and embedded mode hides that legend.
 | `theme=dark` | dimmed paper |
 | `origin=https://…` | the host origin, when the figure is served from another origin |
 
-**Envelope.** Host to figure: `{ source: 'simlab', v: 1, type, …payload }`. Figure to host:
-`{ source: 'simlab-figure', v: 1, type, …payload }`. The figure accepts a message only when `event.source` is its
+**Envelope.** Host to figure: `{ source: 'iynk', v: 1, type, …payload }`. Figure to host:
+`{ source: 'iynk-figure', v: 1, type, …payload }`. The figure accepts a message only when `event.source` is its
 parent window and `event.origin` is the host origin. That is `location.origin` for same-origin hosting under
 `/figures/`, and `'null'` or `'file://'` under `file://`, where it also posts to `'*'`. A message the iframe posts to
 itself is ignored. Commands that arrive before the figure is ready are queued (up to 200), then run in order after
@@ -185,7 +185,7 @@ itself is ignored. Commands that arrive before the figure is ready are queued (u
 - Post `hello` on the iframe's `load` event, and again when the iframe is shown again.
 - Queue commands until `ready`. Never reset readiness in `onLoad`: under CPU load, `ready` arrives before `load`
   (guide §2.3).
-- Check `event.source === iframe.contentWindow`, `event.origin`, `source === 'simlab-figure'` and `v === 1`.
+- Check `event.source === iframe.contentWindow`, `event.origin`, `source === 'iynk-figure'` and `v === 1`.
 - Post to `location.origin`, never `'*'`.
 - Send `theme` and `locale` after every `ready`. Put `?lang=` in `src` so the first paint is not English.
 - Send `chrome` after every `ready` too when the host draws some of the figure's buttons itself: a reloaded page
@@ -233,7 +233,7 @@ Never declare these at the top level, and don't shadow the helpers you call. The
   CAM_LIM setCam P P0 Dv f pd sp on PX PY PZ vis facing tone toneI mix matOf ease ink fill face shape line loft hull
   box extrude cyl cylX rod tx txY castShadow board act tag clipTo _clipN INK_K mountFigure xrCallouts xrGhost xrMount
   xrWrap mountKeypad` (and the rest of §1.14).
-- **SimLab patch names:** `CF_Q CF_EMBED CF_NOTE CF_LANG CF_STR CF_T CF_ESC CF_L CF_SLUG CF_TW CF_MAT CF_OPTS
+- **iynk patch names:** `CF_Q CF_EMBED CF_NOTE CF_LANG CF_STR CF_T CF_ESC CF_L CF_SLUG CF_TW CF_MAT CF_OPTS
   CF_FRAME_A CF_MOVE_T CF_MOVED CF_MOUNT_HOOKS CF_UI CF_CFG CF_SETLOCALE CF_THEME CF_CSS`.
 - **Globals:** `window.__st`, `window.__ln`, `FIG_A`, `LBL_U`, `GAME_KEYS`.
 - **Element ids:** `fig art fdefs hand wob btns stats toast readout wb pals vreset vspin lblctl lbl xrb lblb`. Clip

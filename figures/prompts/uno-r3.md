@@ -36,4 +36,4 @@ What it does:
   copper paths with moving dots where current flows (USB, 5 V, VIN, D13). **Labels** names the main parts.
 
 Look: Colorfigures palette (cobalt accent), warm paper, heavy ink silhouette, finer inner lines, hand-drawn wobble,
-paper grain. Works on a phone (badges and a label list) and inside the SimLab host (embedded, bare).
+paper grain. Works on a phone (badges and a label list) and inside the iynk host (embedded, bare).

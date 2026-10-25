@@ -58,10 +58,10 @@ What it does:
 - **Wiring sheet**: battery → XT60 + cap → ESCs (VBAT x3) → motors (3-phase x3); FC → ESCs (DShot600 S3-S5), FC → tilt
   servos (S1 S2), FC → V-tail (S7 S8), FC → ailerons (S9 S10), GPS → FC (UART + I2C), airspeed → FC (I2C), camera + VTX
   → FC (video).
-- **Options** from the SimLab calculator change the drawing: battery 4S2P Li-ion 8000, 4S LiPo 5000 or 6S LiPo 4000;
+- **Options** from the iynk calculator change the drawing: battery 4S2P Li-ion 8000, 4S LiPo 5000 or 6S LiPo 4000;
   motors 2810 1000 KV, 2814 700 KV or 2306 2400 KV (racing); props 9x5, 10x5 or 7x4, each with its own size or colour.
 - **See-through** fades the pod's walls, the wing and the hatch and labels what is inside: the FC's output map, the
   cap's rating, the airspeed board on I2C, the pack on the CG.
 
 Look: Colorfigures palette (cobalt accent), warm paper, heavy ink silhouette, finer inner lines. It works on a phone
-(numbered badges and a label list) and inside the SimLab host, which sets the design options and runs the tests.
+(numbered badges and a label list) and inside the iynk host, which sets the design options and runs the tests.

@@ -13,9 +13,9 @@ const LIMIT = { limit: 60, windowMs: 60_000 };
 const METHODS = "POST, OPTIONS";
 
 async function handle(req: Request, name: string): Promise<Response> {
-  if (!originAllowed(req)) return fail(403, "forbidden_origin", "Browsers may call this endpoint only at SimLab's own address.");
+  if (!originAllowed(req)) return fail(403, "forbidden_origin", "Browsers may call this endpoint only at iynk's own address.");
   const tool = toolNamed(name);
-  if (!tool) return fail(404, "unknown_tool", `SimLab has no tool called "${name.slice(0, 64)}". The list is in /api/openapi.json.`);
+  if (!tool) return fail(404, "unknown_tool", `iynk has no tool called "${name.slice(0, 64)}". The list is in /api/openapi.json.`);
   const limited = rateLimit(`mcp-rest:${clientIp(req)}`, LIMIT);
   if (!limited.ok) return tooManyRequests(limited);
   const body = await parseBody(req, z.unknown(), { maxBytes: 64 * 1024 });

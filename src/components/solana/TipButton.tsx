@@ -106,7 +106,7 @@ function Tip(props: TipButtonProps) {
   );
 }
 
-/** A devnet SOL tip for a helper in a room: a transfer plus the memo simlab:tip:<roomId> (H6). */
+/** A devnet SOL tip for a helper in a room: a transfer plus the memo iynk:tip:<roomId> (H6). */
 export function TipButton(props: TipButtonProps) {
   return (
     <SolanaProvider>

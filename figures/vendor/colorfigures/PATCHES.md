@@ -1,4 +1,4 @@
-# Vendored Colorfigures core: SimLab patches
+# Vendored Colorfigures core: iynk patches
 
 `core.js` here is the Colorfigures skill's `assets/core.js` (MIT, April Zhu; see `LICENSE`) with the patches below.
 `build.py` is the skill's `scripts/build.py`, copied unchanged; `figures/tools/cfbuild.py` reads its `HEAD` and `TAIL`
@@ -23,7 +23,7 @@ Section numbers refer to `docs/research/colorfigures-guide.md`.
 
 | Id | What | Why (guide) |
 |---|---|---|
-| P0 | One SimLab block after the colour constants. It defines every `CF_*` name below. | n/a |
+| P0 | One iynk block after the colour constants. It defines every `CF_*` name below. | n/a |
 | P1 | `CF_TW(text, fs)` measures label text with `CanvasRenderingContext2D.measureText` in the pill's own font (`800 ui-monospace,Menlo,monospace`), adds the `.04em` letter-spacing per grapheme and caches each string. It replaces `text.length*fs*.62` in `tag()` and in both width computations of `xrCallouts()`. | 2.3 Localisation: Chinese pills overflowed and Hindi pills came out twice too wide |
 | P2 | `CF_T(english, vars?)` looks a string up in the current dictionary (the keys are English, so a missing entry still reads) and fills `{name}` placeholders. `CF_SETLOCALE(lang, strings)` swaps the dictionary, sets `<html lang>` (`zh` becomes `zh-Hans`), relabels every `[data-cft]` / `[data-cft-aria]` element and redraws. Translated: label pills and their `data-t` (`data-en` keeps the English), see-through callouts, the title (document, header, SVG `aria-label`), buttons, picker chips, the "— already set" / "isn't possible right now" notices (now the keys `{label} — already set` and `{label} isn't possible right now`), every `ui.flash` text, the See-through and Labels switches, the caption, the controls row, the On/Off switch, the credit, and the keypad's names and `SPACE`. Text that goes into SVG or attributes is escaped (`CF_ESC`). Buttons and chips get stable `data-id`s (`b.id` or a slug of the English label); the switches are `xr` and `labels`. A button label with a live value is `[template, vars]` (`['Press {name}', { name: 'RESET' }]`): `CF_L` keeps the template in `data-cft` and the values in `data-cftv`, so a new dictionary relabels it with its values. | 2.3 Localisation, Messages (`press` by id) |
 | P3 | Embedded mode: `CF_EMBED` is on inside any iframe or with `?embed=1`, off with `?embed=0`; it sets `html.cf-embed` (and `html.cf-bare` with `?bare=1`). `CF_CSS` hides the header, controls row, credit, phone legend and caption, lets the SVG fill the iframe (beating build.py's `fit()`), and keeps the zoom chip and toast. The frame shape follows the iframe (`CF_FRAME_A`, `clamp(innerHeight/innerWidth, .7501, 1.4)`). `CF_MOUNT_HOOKS` run at the end of `mountFigure(cfg)` with `(cfg, ui)`; `figures/engine/embed.js` uses it. `?lang=xx` sets the first language. | 2.3 URL contract, CSS, Size |
@@ -40,7 +40,7 @@ Section numbers refer to `docs/research/colorfigures-guide.md`.
 
 ## Handled outside the core
 
-These Appendix E defects are fixed in the SimLab bridge and host, not in `core.js`:
+These Appendix E defects are fixed in the iynk bridge and host, not in `core.js`:
 
 - `ready` came from a 40-60 ms timer and raced the iframe's `load` event. `embed.js` sends `ready` at
   `DOMContentLoaded` after mount and answers every `hello`. The host must never reset readiness on `load` (FigureFrame).

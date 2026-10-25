@@ -5,7 +5,7 @@
     "craftTitle": "{title} · Laboratorio de drones",
     "craftDescription": "{title}: elige las piezas con cálculos en vivo, móntalo pieza a pieza, haz las pruebas de seguridad, configúralo en {cli} y vuélalo.",
     "flyTitle": "Vuela el {title}",
-    "flyDescription": "Vuela el {title} que has diseñado en el campo de vuelo de SimLab: vista de persecución o gafas FPV, con teclado, palancas táctiles o mando."
+    "flyDescription": "Vuela el {title} que has diseñado en el campo de vuelo de iynk: vista de persecución o gafas FPV, con teclado, palancas táctiles o mando."
   },
   "index": {
     "title": "Laboratorio de drones",

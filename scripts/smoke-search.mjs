@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Smoke test for the SerpApi features (BUILD-PLAN §6 step 7): one call per /api/search/* route of a running SimLab,
+// Smoke test for the SerpApi features (BUILD-PLAN §6 step 7): one call per /api/search/* route of a running iynk,
 // so the app's own path is tested (origin check, budget guard, cache, normalisers), not a private client.
 // Each route costs at most one SerpApi search (web with extract up to three); a cached answer costs none.
 // Reads SERPAPI_KEY from the environment or .env.local only to decide whether to run, and never prints it.

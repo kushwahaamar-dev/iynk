@@ -132,7 +132,7 @@ describe('nodemcu lessons pass their checks through the app check path', () => {
 
   it('the 5 GHz network never connects (2.4 GHz radio only)', () => {
     const lesson = board.lessons.find((l) => l.id === 'webserver')!;
-    const source = reference(lesson).replace('"simlab-guest"', '"simlab-5G"');
+    const source = reference(lesson).replace('"iynk-guest"', '"iynk-5G"');
     const { trace } = runChecks(lessonJob(board, lesson, source));
     expect(trace.serial.some((l) => l.text.startsWith('IP address'))).toBe(false);
   });

@@ -8,7 +8,7 @@ import { getContentProse, getContentText, getMessages, getT } from "./server";
 test("loads the common strings of every language", async () => {
   for (const locale of LOCALES) {
     const common = await getMessages(locale, "common");
-    expect(common.site.name).toBe("SimLab");
+    expect(common.site.name).toBe("iynk");
   }
   const de = await getT("de", "common");
   expect(de("progress.label", { done: 2, total: 16 })).toBe("2 von 16 erledigt");

@@ -239,7 +239,7 @@
     "quizRight": "答对了。",
     "quizWrong": "不太对。",
     "quizScore": "答对 {score}/{total}",
-    "fpgaNote": "SimLab 把你的 Verilog 当作行为模型来运行，按开发板时钟一个周期一个周期地执行。它不做综合、布局或布线：没有时序，也没有 LUT 数量。",
+    "fpgaNote": "iynk 把你的 Verilog 当作行为模型来运行，按开发板时钟一个周期一个周期地执行。它不做综合、布局或布线：没有时序，也没有 LUT 数量。",
     "completed": "课程完成，做得好。",
     "nextCta": "下一课：{title}"
   },

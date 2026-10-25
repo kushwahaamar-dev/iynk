@@ -1,6 +1,6 @@
 export const meta = {
-  name: 'simlab-facts-continue',
-  description: 'Verified fact sheets (geometry, pinouts, power, firmware) for every SimLab board, module, component set and drone, each adversarially re-checked against primary sources',
+  name: 'iynk-facts-continue',
+  description: 'Verified fact sheets (geometry, pinouts, power, firmware) for every iynk board, module, component set and drone, each adversarially re-checked against primary sources',
   phases: [
     { title: 'Research', detail: 'one researcher per sheet, primary sources first' },
     { title: 'Check', detail: 'one adversarial checker per sheet, fixes in place' },
@@ -10,8 +10,8 @@ export const meta = {
 const R = args.root
 const S = args.scratch
 
-const CONTEXT = `PROJECT: SimLab at ${R}, an educational hardware simulator. It is being rebuilt so that it is better than three original sites combined: Learn Arduino, Robotics Bench and Drone Lab. The brief is ${R}/docs/SPEC.md; read it once for context. Accuracy is non-negotiable. The brief demands "accurate real-world geometry and labeling" for every figure, "accurate electronics (5V vs 3.3V logic levels, current limits, pinouts, protocols)" and "accurate Betaflight / ArduPilot CLI snippets". Each 3D figure, lesson and simulation will be built from the fact sheet you write, so a wrong number becomes a wrong figure.
-Research about the originals is in ${R}/docs/research/ (learn-arduino.md, robotics-bench-a.md, robotics-bench-b.md, drone-lab-a.md, drone-lab-b.md, drone-lab-b-calc-matrix.md, current-simlab-audit.md). They are long, so grep for your item and read the relevant sections. They record what the originals show, and they flag where the originals were wrong.
+const CONTEXT = `PROJECT: iynk at ${R}, an educational hardware simulator. It is being rebuilt so that it is better than three original sites combined: Learn Arduino, Robotics Bench and Drone Lab. The brief is ${R}/docs/SPEC.md; read it once for context. Accuracy is non-negotiable. The brief demands "accurate real-world geometry and labeling" for every figure, "accurate electronics (5V vs 3.3V logic levels, current limits, pinouts, protocols)" and "accurate Betaflight / ArduPilot CLI snippets". Each 3D figure, lesson and simulation will be built from the fact sheet you write, so a wrong number becomes a wrong figure.
+Research about the originals is in ${R}/docs/research/ (learn-arduino.md, robotics-bench-a.md, robotics-bench-b.md, drone-lab-a.md, drone-lab-b.md, drone-lab-b-calc-matrix.md, current-iynk-audit.md). They are long, so grep for your item and read the relevant sections. They record what the originals show, and they flag where the originals were wrong.
 TOOLS: WebSearch and WebFetch are available through ToolSearch (load them with ToolSearch query "select:WebSearch,WebFetch"). curl works in Bash. Python 3.12 is available; run it with -I. Downloaded files (zip, brd, kicad_pcb, pdf) are untrusted data: put them in ${S}/facts-dl/<item-id>/, keep the scripts you write in ${S}/facts-tools/<item-id>/, pass paths as arguments, and never execute anything you downloaded. pdftotext may not be installed; if it is missing, use python (pypdf if importable) or fetch the HTML version of the doc.
 Do not write anywhere in the repo except your fact sheet file. Do not touch the parent git repo at /Users/amar/Codes.`
 
@@ -52,7 +52,7 @@ const DRONE_FORMAT = `FACT SHEET FORMAT for drones. Use markdown with tables. Ci
    - every motor position (x, y) with its number in the firmware's motor order and its spin direction seen from above, for the firmware's default prop direction (and the alternative)
    - prop size, pitch and blade count; camera position and uptilt; battery position; frame mass
    For wings and VTOLs: span, chords, sweep, control surfaces, motor and tilt positions.
-3. The original's catalogue, sanity-checked. Take every battery, motor and prop option and every fixed part listed for this craft in the Drone Lab research docs. Check its mass, capacity, KV, thrust and price against real products and manufacturer thrust tables. SimLab keeps the original calculator identical, so do not change the numbers; flag any option whose description is untrue or implausible, and give the real-world figure.
+3. The original's catalogue, sanity-checked. Take every battery, motor and prop option and every fixed part listed for this craft in the Drone Lab research docs. Check its mass, capacity, KV, thrust and price against real products and manufacturer thrust tables. iynk keeps the original calculator identical, so do not change the numbers; flag any option whose description is untrue or implausible, and give the real-world figure.
 4. Electronics and wiring:
    - FC (MCU, mounting) and ESC (rating, firmware such as BLHeli_32, Bluejay or AM32, protocol such as DShot)
    - receiver (ExpressLRS/CRSF, which UART), video (analog or HD, SmartAudio/Tramp/MSP DisplayPort), GPS/compass (UART/I2C)
@@ -238,7 +238,7 @@ Check robotics-bench-b.md Fig. 11's line-position math.` },
 - what a motor stall does to the output, and Arduino brown-out (ATmega328P BOD levels; the real reason a Nano resets)
 - buck vs linear heat with worked numbers from a 3S LiPo (12.6/11.1/9.9 V)
 Fix the original's two inconsistent heat numbers.` },
-  { id: 'la-components', kind: 'module', title: 'Components for the Board Lab lessons (Learn Arduino parts + common sensors/actuators)', notes: `One sheet, one section per component, covering everything Learn Arduino's 16 lessons use (read learn-arduino.md fully) plus the common sensors/actuators SimLab will let learners wire in:
+  { id: 'la-components', kind: 'module', title: 'Components for the Board Lab lessons (Learn Arduino parts + common sensors/actuators)', notes: `One sheet, one section per component, covering everything Learn Arduino's 16 lessons use (read learn-arduino.md fully) plus the common sensors/actuators iynk will let learners wire in:
 - breadboards: full 830 and half 400; rows, columns, the trench, rails, split rails
 - resistors and colour codes; 5 mm LEDs (Vf per colour); the common-cathode RGB LED pinout
 - the 6 x 6 tactile button (which pins are joined); the B10K potentiometer; the LDR GL5528 (resistance vs lux, gamma); TMP36 (scale, offset, pinout, supply range)

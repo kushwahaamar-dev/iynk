@@ -1,8 +1,8 @@
 export const meta = {
-  name: 'simlab-design',
-  description: 'Ground the SimLab rebuild (Next 16 primer, coverage checklist, interpreter + flight spikes), write the architecture/plan/decisions, cross-check them with four critics, revise',
+  name: 'iynk-design-continue',
+  description: 'Continue the paused iynk design: finish checklist-a, interpreter and flight-render groundwork from their partial work, then architecture/plan/decisions, four critics, revise',
   phases: [
-    { title: 'Ground', detail: 'Next 16 primer, master coverage checklist (2 halves), interpreter spike, flight-render spike' },
+    { title: 'Ground', detail: 'finish checklist-a, interpreter spike, flight-render spike (primer and checklist-b already done)' },
     { title: 'Architect', detail: 'ARCHITECTURE.md, PLAN.md, DECISIONS.md' },
     { title: 'Critique', detail: 'coverage, feasibility, plan, accuracy' },
     { title: 'Revise', detail: 'apply every critique, record resolutions' },
@@ -12,7 +12,7 @@ export const meta = {
 const R = args.root
 const S = args.scratch
 
-const CONTEXT = `PROJECT: SimLab at ${R} (Next.js 16.4.3 App Router, React 19.3, Tailwind v4, TypeScript). It is its own local git repo (branch main). Do NOT touch the parent git repo at /Users/amar/Codes. Read ${R}/AGENTS.md first: this Next.js has breaking changes versus what you know, so read the relevant guide in ${R}/node_modules/next/dist/docs before relying on any Next API.
+const CONTEXT = `PROJECT: iynk at ${R} (Next.js 16.4.3 App Router, React 19.3, Tailwind v4, TypeScript). It is its own local git repo (branch main). Do NOT touch the parent git repo at /Users/amar/Codes. Read ${R}/AGENTS.md first: this Next.js has breaking changes versus what you know, so read the relevant guide in ${R}/node_modules/next/dist/docs before relying on any Next API.
 
 THE BRIEF (the spec): ${R}/docs/SPEC.md. It holds the user's brief verbatim, their own instruction ("A lot of things are wrong here. See everything, cross-reference, cross-check everything, go on a long run. Make sure it is what I want.") and interpretation notes. Read it in full.
 
@@ -22,8 +22,8 @@ RESEARCH (long files: read with offset/limit in chunks; read what your task need
 - ${R}/docs/research/robotics-bench-b.md : Robotics Bench Fig 07-13 + practice tasks
 - ${R}/docs/research/drone-lab-a.md : Drone Lab engine, flying range + FPV/OSD, Fig 01-04, Appendix A golden calc table
 - ${R}/docs/research/drone-lab-b.md and drone-lab-b-calc-matrix.md : Fig 05-13, golden calc matrix
-- ${R}/docs/research/colorfigures-guide.md : core.js API, embedded mode + postMessage bridge (tested), engine pattern for SimLab (sections 3.3-3.5), verification recipe, top-25 pitfalls; Appendices A-E hold tested cfshoot.py, cfbuild.py, embed.js and host code
-- ${R}/docs/research/current-simlab-audit.md : audit of the current SimLab code. It may not exist yet; if it is missing, inspect ${R}/src and ${R}/figures yourself for what you need.
+- ${R}/docs/research/colorfigures-guide.md : core.js API, embedded mode + postMessage bridge (tested), engine pattern for iynk (sections 3.3-3.5), verification recipe, top-25 pitfalls; Appendices A-E hold tested cfshoot.py, cfbuild.py, embed.js and host code
+- ${R}/docs/research/current-iynk-audit.md : audit of the current iynk code. It may not exist yet; if it is missing, inspect ${R}/src and ${R}/figures yourself for what you need.
 ORIGINAL SOURCES (downloaded copies, verified identical to the live sites; the live drone site now blocks headless browsers): ${S}/orig/robotics/*.js, ${S}/orig/drone/*.js, ${S}/orig/arduino/*.js
 COLORFIGURES SKILL: ~/.claude/skills/colorfigures (SKILL.md, README.md, assets/core.js, scripts/build.py, assets/examples/*.html)
 SCRATCH: ${S}. Put throwaway files only in your own subfolder of it (named in your task). Never write into the repo except the files your task names.
@@ -93,18 +93,18 @@ YOUR TASK: write ${R}/docs/research/nextjs16-primer.md, a verified primer of the
    (i) Vitest working with this TS/ESM setup (install in the scratch app only; report exact versions), and the Playwright test runner config;
    (j) build time and output for about 2000 static pages: 13 languages x ~150 dummy pages. Measure it and say whether the real app should prerender every language or only some.
    (k) any other gotcha you hit: async params typing (PageProps/LayoutProps global helpers), cookies/headers under cacheComponents, next/font with many scripts (CJK, Devanagari, Hebrew fonts), anything else.
-3. Write the primer: for each topic, the verified snippet, what failed and why, and a short "rules for SimLab implementers" list at the top.
+3. Write the primer: for each topic, the verified snippet, what failed and why, and a short "rules for iynk implementers" list at the top.
 
 Do not modify the repo except writing the primer file.`
 
 const CHECK_COMMON = `The master checklist is a requirements traceability list that every later phase will verify against, so it must be complete, atomic and testable. Every item has:
 - id: the prefix given below, then a 3-digit number
-- statement: one testable sentence, saying what SimLab must do or must not do
+- statement: one testable sentence, saying what iynk must do or must not do
 - source: file plus section heading or line numbers; list every source when items merge
 - priority: must or should. Brief items and original features are must; nice-to-haves are should.
 - verify: one of unit / e2e / screenshot / review
 Use one markdown table per area, with a count summary at the top.
-- Keep the originals' exact teaching messages, constants and timings as requirements only where SimLab should keep them.
+- Keep the originals' exact teaching messages, constants and timings as requirements only where iynk should keep them.
 - For every defect the research lists in an original, write a must-not item ("must not copy: ...") together with the corrected behaviour.
 - For every accuracy correction, write the correct fact as a requirement.
 - Do not invent features. If you notice something the brief needs but no source covers, list it in a final "gaps" section.`
@@ -115,7 +115,7 @@ YOUR TASK: write ${R}/docs/research/coverage-checklist-a.md, the first half of t
 (1) every requirement in ${R}/docs/SPEC.md: global requirements, Board Lab, Robotics Lab, Drone Lab and execution order, split into atomic items with id prefix SPEC-;
 (2) everything in learn-arduino.md (prefix LA-): every lesson's circuit, parameters, interactions, simulation constants and serial behaviour; the UI (sidebar, progress card, callouts, info card tabs, code card, serial monitor, lessons strip, inspector, schematic panel, flow overlay, viewbar, minimap, settings, shortcuts, loader, phone layout); i18n; persistence; accuracy corrections. Read the whole doc.
 (3) everything in robotics-bench-a.md (prefix RBA-) and robotics-bench-b.md (prefix RBB-): the engine (build flow and every refusal message, faults, power evaluation, upload, exploded view, strip, status precedence, stats, serial, quiz, mastery, nav, sound/lofi/motor hum, labels, palettes, URL test hooks, mobile), every figure's parts, modes, stats, faults, quiz and practice task, every defect and accuracy note. Read both docs fully.
-(4) if ${R}/docs/research/current-simlab-audit.md exists, its defects (prefix AUD-), as must-not items.
+(4) if ${R}/docs/research/current-iynk-audit.md exists, its defects (prefix AUD-), as must-not items.
 ${CHECK_COMMON}
 Expect several hundred items. Keep your own notes in ${S}/checklist-a if you need any.`
 
@@ -142,7 +142,7 @@ const INTERP = `${CONTEXT}
 
 ${SEEDS}
 
-YOUR TASK: settle how SimLab runs learners' code, prove it with prototypes, and write ${R}/docs/research/interpreters.md. Work in ${S}/interp.
+YOUR TASK: settle how iynk runs learners' code, prove it with prototypes, and write ${R}/docs/research/interpreters.md. Work in ${S}/interp.
 
 1. Requirements. Collect them from the brief and the research: every lesson sketch in learn-arduino.md, every mode or sketch in robotics-bench-a/b.md, and what each Board Lab board needs (Uno R3/R4, Nano, ESP32, ESP32-S3, NodeMCU, Pico family, Nucleo-F401RE, micro:bit V2, Pi 4/5, Basys 3, DE10-Lite).
    (a) Arduino C++ subset:
@@ -202,15 +202,30 @@ YOUR TASK: settle how the flight simulator renders and runs, prove it with a pro
    - performance budgets, and phone and accessibility notes (keyboard-only play, reduced motion)
    Keep the prototype in ${S}/flight for implementers and list its paths.`
 
+const RESUME = paths => `CONTINUATION: an earlier run of exactly this task was interrupted part-way. The machine was paused; the work itself did not fail. Its partial work is on disk and is yours to reuse: ${paths}.
+Start by inspecting it. Read what it produced, keep what is good, re-check anything you are unsure of, then finish the task. The final deliverable must be complete and meet every requirement below, as if written in one go.
+
+`
+
 const ground = await parallel([
-  () => agent(PRIMER, { label: 'ground:nextjs16-primer', phase: 'Ground', schema: GROUND_SCHEMA }),
-  () => agent(CHECK_A, { label: 'ground:checklist-a', phase: 'Ground', schema: GROUND_SCHEMA }),
-  () => agent(CHECK_B, { label: 'ground:checklist-b', phase: 'Ground', schema: GROUND_SCHEMA }),
-  () => agent(INTERP, { label: 'ground:interpreters', phase: 'Ground', schema: GROUND_SCHEMA }),
-  () => agent(FLIGHT, { label: 'ground:flight-render', phase: 'Ground', schema: GROUND_SCHEMA }),
+  () => agent(RESUME(`${S}/checklist-a/. items/*.txt holds the section items written so far, 01-spec through 54-aud; build.py and merge_sources.py assemble them; there are also header.md, gaps.md and preview.md. The final file ${R}/docs/research/coverage-checklist-a.md does not exist yet`) + CHECK_A, { label: 'ground:checklist-a', phase: 'Ground', schema: GROUND_SCHEMA }),
+  () => agent(RESUME(`${S}/interp/. survey-scripts/ and survey/ hold the library survey tests (JSCPP, Skulpt, Brython, the MicroPython wasm port, Pyodide, picoc, avr8js, verilator/yosys); sizes/ holds minified sizes; proto/ holds the recommended prototype with src/, test/ and bench/; patches/ holds edit notes. The doc ${R}/docs/research/interpreters.md does not exist yet`) + INTERP, { label: 'ground:interpreters', phase: 'Ground', schema: GROUND_SCHEMA }),
+  () => agent(RESUME(`${S}/flight/ and ${S}/shots/flight-spike/ (26 screenshots). In flight/: src/ holds the prototype modules (physics, course, world, iso-svg, iso-canvas, fpv, osd, input, gamepad-panel, loop, calc, pilot, battery); test/ holds unit tests; tools/ holds the bench, shots, e2e and filter-region probes; results/ holds the bench logs and the filter-region study; dist/range.html is the built page. The doc ${R}/docs/research/flight-render.md does not exist yet`) + FLIGHT, { label: 'ground:flight-render', phase: 'Ground', schema: GROUND_SCHEMA }),
 ])
-const groundOk = ground.filter(Boolean)
-log(`Ground: ${groundOk.length}/5 docs returned`)
+const DONE_GROUND = [
+  { doc_path: `${R}/docs/research/nextjs16-primer.md`, summary: `Verified Next.js 16.4.3 patterns, built and run in a scratch app. Its "Rules for iynk implementers" section at the top is binding:
+- one root layout at src/app/[lang]/layout.tsx with ensureStatic, and all 13 locales prerendered (about 2000 pages built in about 11 s)
+- / redirected by redirects(): the iynk-lang cookie, then Accept-Language
+- localStorage state read through useSyncExternalStore
+- Activity keeps up to 3 routes hidden, and their iframes keep running or reload while hidden, so the host pauses on hide and sends hello on every show
+- per-language dictionaries loaded on the server, plus an hreflang helper, the fonts plan, Vitest 5 + Playwright Test setup, and typegen before tsc`, open_risks: ['iframes can reload while hidden when Activity reorders hidden routes', 'a soft language switch keeps up to three languages mounted'] },
+  { doc_path: `${R}/docs/research/coverage-checklist-b.md`, summary: `The second half of the master coverage checklist (1656 lines):
+- DLA-: the Drone Lab engine, flying range, Fig 01-04, and the Appendix A golden table
+- DLB-: Fig 05-13, the calc matrix, autopilots, missions and corrected firmware params
+- CF-: the Colorfigures requirements, the embed contract, the 25 pitfalls as must-nots, and the Appendix E defects`, open_risks: ['the golden data and live-run artefacts it cites live in the session scratch directory, backed up to /Users/amar/simlab-scratch-backup'] },
+]
+const groundOk = [...DONE_GROUND, ...ground.filter(Boolean)]
+log(`Ground: ${groundOk.length}/5 docs available`)
 const groundList = groundOk.map(g => `- ${g.doc_path}\n  ${g.summary.split('\n').join('\n  ')}\n  risks: ${g.open_risks.join(' | ')}`).join('\n')
 
 phase('Architect')
@@ -223,7 +238,7 @@ GROUNDWORK DOCS written for you (read them fully):
 ${groundList}
 (Also check ${R}/docs/research/ for nextjs16-primer.md, coverage-checklist-a.md, coverage-checklist-b.md, interpreters.md and flight-render.md even if they are missing from the list above.)
 
-YOUR TASK: you are the architect of the SimLab rebuild. Write three documents in ${R}/docs: ARCHITECTURE.md, PLAN.md and DECISIONS.md. Implementation agents will work from them in parallel without talking to each other, so the contracts must be exact, and nothing from the brief or the research may be lost. Read SPEC.md, the colorfigures guide (fully), the groundwork docs (fully), both coverage checklists, and enough of the other research docs to design every feature. Look at the current code under ${R}/src and ${R}/figures to decide what to keep and what to delete.
+YOUR TASK: you are the architect of the iynk rebuild. Write three documents in ${R}/docs: ARCHITECTURE.md, PLAN.md and DECISIONS.md. Implementation agents will work from them in parallel without talking to each other, so the contracts must be exact, and nothing from the brief or the research may be lost. Read SPEC.md, the colorfigures guide (fully), the groundwork docs (fully), both coverage checklists, and enough of the other research docs to design every feature. Look at the current code under ${R}/src and ${R}/figures to decide what to keep and what to delete.
 
 ARCHITECTURE.md must cover:
 1. The system overview (ASCII diagram) and the boundaries between modules.
@@ -340,7 +355,7 @@ const REVISE = `${CONTEXT}
 
 ${SEEDS}
 
-YOUR TASK: you are the architect, revising the SimLab design after review. The design: ${R}/docs/ARCHITECTURE.md, PLAN.md and DECISIONS.md. The critiques are in ${R}/docs/review/: design-critique-coverage.md, design-critique-feasibility.md, design-critique-plan.md and design-critique-accuracy.md. Read all of them fully, and re-read the design docs before editing.
+YOUR TASK: you are the architect, revising the iynk design after review. The design: ${R}/docs/ARCHITECTURE.md, PLAN.md and DECISIONS.md. The critiques are in ${R}/docs/review/: design-critique-coverage.md, design-critique-feasibility.md, design-critique-plan.md and design-critique-accuracy.md. Read all of them fully, and re-read the design docs before editing.
 
 For every finding, either fix the design or reject the finding with a concrete reason (evidence, not opinion). Blockers and majors must be resolved. Edit the three design docs in place, so they end up complete and self-consistent, as if written in one go: no "changed after review" notes inside them. Then write ${R}/docs/review/design-resolution.md, a table of every finding id with its resolution (fixed: where; or rejected: why). Finally, re-check that PLAN.md's work packages still have disjoint ownership and cite checklist ids, and that every SPEC.md line maps to a work package.`
 

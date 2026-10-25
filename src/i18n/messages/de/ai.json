@@ -126,11 +126,11 @@
     "copyLink": "Link kopieren",
     "copied": "Link kopiert",
     "facebook": "Auf Facebook teilen",
-    "shareText": "{title}, eine Bau-Geschichte aus SimLab",
+    "shareText": "{title}, eine Bau-Geschichte aus iynk",
     "unavailable": "Bau-Geschichten sind in dieser Installation nicht eingerichtet.",
     "failed": "Die Geschichte konnte nicht geschrieben werden. Versuche es erneut.",
     "noCover": "Das Titelbild konnte diesmal nicht gezeichnet werden, deshalb hat die Geschichte keins.",
-    "footer": "Gemeinsam gebaut in SimLab",
+    "footer": "Gemeinsam gebaut in iynk",
     "me": "Ich"
   }
 }

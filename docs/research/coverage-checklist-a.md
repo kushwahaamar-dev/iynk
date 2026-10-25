@@ -1,6 +1,6 @@
-# SimLab coverage checklist, part A: the brief, Learn Arduino, Robotics Bench and the current build
+# iynk coverage checklist, part A: the brief, Learn Arduino, Robotics Bench and the current build
 
-This is the first half of SimLab's master coverage checklist: one row for every requirement, behaviour, value,
+This is the first half of iynk's master coverage checklist: one row for every requirement, behaviour, value,
 message, defect fix and accuracy correction that the brief, the Learn Arduino and Robotics Bench research and the
 audit of the current build found. Every later phase checks its work against these rows. An item counts as covered
 only when its verify method has passed.
@@ -28,7 +28,7 @@ and CF). This part covers:
   real-world model, parts, mat, signal or electrical model, modes, code, serial output, stats, pills, failure
   modes, build, lesson text, quiz, practice task and accuracy notes; the practice tasks across the site; and the 11
   quirks and bugs.
-- **AUD**: every defect in `current-simlab-audit.md` (all 173 defect ids, P-01 to HY-05), and the build, crawl,
+- **AUD**: every defect in `current-iynk-audit.md` (all 173 defect ids, P-01 to HY-05), and the build, crawl,
   interaction, coverage-matrix, figure-fidelity and gap-list findings that no defect id already covers.
 
 The brief's global items (languages, accessibility, the home dashboard, deploy and the README of Colorfigures
@@ -37,13 +37,13 @@ prompts) live in this part. Part B repeats them only where they bind a figure or
 ## How to read a row
 
 - **id**: prefix plus a three-digit number, numbered in table order within each prefix.
-- **statement**: one testable sentence saying what SimLab must or must not do. Text in quotes (labels, toasts,
+- **statement**: one testable sentence saying what iynk must or must not do. Text in quotes (labels, toasts,
   refusal messages, serial lines, code lines and comments, quiz questions and answers) and the numbers given
   (constants, timings, colours, sizes, byte counts) are kept exactly, unless `docs/DECISIONS.md` records a
   correction. Braces mark a live value: `{mode}`, `{cm}`, `{pos}`.
   - "must not copy: …" marks a defect in an original site (Learn Arduino or the Robotics Bench). The rest of the
     sentence gives the corrected behaviour.
-  - "must not: …" marks a defect in the current SimLab build at commit `245763f`. Every AUD row has this form. The
+  - "must not: …" marks a defect in the current iynk build at commit `245763f`. Every AUD row has this form. The
     rest of the sentence gives what correct looks like.
   - Where an original teaches a wrong fact, the row states the correct fact as a requirement, following the
     research's accuracy notes.
@@ -69,7 +69,7 @@ prompts) live in this part. Part B repeats them only where they bind a figure or
   section.
 
 - **Golden values.** Where a row gives an original's live values (serial lines, stats, meter readings, quiz
-  arithmetic), SimLab must reproduce them at their display precision for the same inputs. A value may differ only
+  arithmetic), iynk must reproduce them at their display precision for the same inputs. A value may differ only
   where a row corrects the model behind it (for example the Fig. 11 line width or the Fig. 12 stall model) and
   `docs/DECISIONS.md` records the new values.
 - **Fixed, not copied.** The originals' defects and the current build's defects are fixed, never reproduced for
@@ -96,7 +96,7 @@ Line numbers (`L…`) and sections (`§…`) refer to these files as they stood 
 | learn-arduino.md | `docs/research/learn-arduino.md` | 1317 | `51af819c9e56` |
 | robotics-bench-a.md | `docs/research/robotics-bench-a.md` | 1424 | `6e4dcde46d4a` |
 | robotics-bench-b.md | `docs/research/robotics-bench-b.md` | 1436 | `d26070cfc0cc` |
-| current-simlab-audit.md | `docs/research/current-simlab-audit.md` | 618 | `6da9f8760aef` |
+| current-iynk-audit.md | `docs/research/current-iynk-audit.md` | 618 | `6da9f8760aef` |
 | BASE_ARCHITECTURE.md | `docs/hacktx/BASE_ARCHITECTURE.md` (decisions D1 to D14) | 19 | `7b6ba3f7b172` |
 
 ## Counts
@@ -109,7 +109,7 @@ Line numbers (`L…`) and sections (`§…`) refer to these files as they stood 
 | LA | learn-arduino.md: shell, 16 lessons, simulator, design, languages, persistence, accuracy notes | 498 | 452 | 46 | 21 | 0 | 52 | 379 | 29 | 38 |
 | RBA | robotics-bench-a.md: bench engine, sound, Figs 01-06, 20 defects, rebuild notes | 376 | 347 | 29 | 32 | 0 | 22 | 310 | 27 | 17 |
 | RBB | robotics-bench-b.md: Figs 07-13, practice tasks, 11 quirks | 280 | 254 | 26 | 24 | 0 | 22 | 210 | 14 | 34 |
-| AUD | current-simlab-audit.md: every defect and finding in the current build | 199 | 199 | 0 | 0 | 199 | 28 | 105 | 30 | 36 |
+| AUD | current-iynk-audit.md: every defect and finding in the current build | 199 | 199 | 0 | 0 | 199 | 28 | 105 | 30 | 36 |
 | all | | 1532 | 1430 | 102 | 77 | 199 | 124 | 1139 | 107 | 162 |
 
 ### Tables
@@ -158,7 +158,7 @@ Line numbers (`L…`) and sections (`§…`) refer to these files as they stood 
 | [LA · Languages](#la--languages) | LA-465 to LA-474 | 10 | 9 | 1 |
 | [LA · Progress and persistence](#la--progress-and-persistence) | LA-475 to LA-487 | 13 | 9 | 4 |
 | [LA · Accuracy facts and the original's missing failure modes](#la--accuracy-facts-and-the-originals-missing-failure-modes) | LA-488 to LA-498 | 11 | 9 | 2 |
-| [RBA · What the original lacks and SimLab must add](#rba--what-the-original-lacks-and-simlab-must-add) | RBA-001 to RBA-009 | 9 | 6 | 3 |
+| [RBA · What the original lacks and iynk must add](#rba--what-the-original-lacks-and-iynk-must-add) | RBA-001 to RBA-009 | 9 | 6 | 3 |
 | [RBA · Page shell, layout and navigation](#rba--page-shell-layout-and-navigation) | RBA-010 to RBA-037 | 28 | 23 | 5 |
 | [RBA · Engine: board model, part library and scene](#rba--engine-board-model-part-library-and-scene) | RBA-038 to RBA-070 | 33 | 30 | 3 |
 | [RBA · Engine: build flow and its messages](#rba--engine-build-flow-and-its-messages) | RBA-071 to RBA-117 | 47 | 46 | 1 |
@@ -204,8 +204,8 @@ The non-negotiables in the brief that apply to the whole app.
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| SPEC-001 | SimLab must be one Next.js App Router application that holds all three modules (Board Lab, Robotics Lab, Drone Lab); no module may be a separate site or app. | SPEC.md L7, L66, L121 | must | review |
-| SPEC-002 | SimLab must have a home dashboard from which each of the three modules can be opened. | SPEC.md L66, L134 | must | e2e |
+| SPEC-001 | iynk must be one Next.js App Router application that holds all three modules (Board Lab, Robotics Lab, Drone Lab); no module may be a separate site or app. | SPEC.md L7, L66, L121 | must | review |
+| SPEC-002 | iynk must have a home dashboard from which each of the three modules can be opened. | SPEC.md L66, L134 | must | e2e |
 | SPEC-003 | A shared navigation must reach the home dashboard and each of the three modules from every page of the app. | SPEC.md L66, L134 | must | e2e |
 | SPEC-004 | The dashboard and all three modules must use one shared design system (the same tokens, type, controls and panels), not three styles. | SPEC.md L66, L134 | must | review |
 | SPEC-005 | The three modules must be interconnected: wherever a board or part appears in more than one module, each appearance must link to the others (for example the Robotics Lab's Uno R3, ESP32-S3 and Raspberry Pi 5 to their Board Lab pages). | SPEC.md L66, L100, L125 | must | e2e |
@@ -218,20 +218,20 @@ The non-negotiables in the brief that apply to the whole app.
 | SPEC-012 | Every visual must be generated with the Colorfigures skill; a hand-drawn SVG is allowed only where the skill demonstrably fails, and each such exception must be recorded in docs/DECISIONS.md. | SPEC.md L16, L122 | must | review |
 | SPEC-013 | No page may show placeholder text ("coming soon", "TODO", "soon", lorem ipsum, empty cards or stub lessons). | SPEC.md L123, L141 | must | e2e |
 | SPEC-014 | Every interactive control on every page must work: no dead buttons, no control that does nothing, no interaction that throws. | SPEC.md L123 | must | e2e |
-| SPEC-015 | Every feature of the three originals documented in docs/research must be present in SimLab, matched or exceeded, unless docs/DECISIONS.md records a justified exception. | SPEC.md L123, L141, L153 | must | review |
-| SPEC-016 | Every board, part and lesson must state the correct logic level (5 V or 3.3 V), and SimLab must never present a 3.3 V part as 5 V tolerant (or the reverse) unless it really is. | SPEC.md L124 | must | review |
-| SPEC-017 | Every current limit SimLab states (pin, port, regulator, driver, battery) must match the part's datasheet. | SPEC.md L124 | must | review |
-| SPEC-018 | Every pinout SimLab shows must match the real board's documentation pin for pin. | SPEC.md L124 | must | review |
-| SPEC-019 | Every protocol SimLab teaches (UART, I2C, SPI, PWM, Wi-Fi, BLE and the rest) must be described with correct facts (addresses, voltages, timings, pin roles). | SPEC.md L124 | must | review |
+| SPEC-015 | Every feature of the three originals documented in docs/research must be present in iynk, matched or exceeded, unless docs/DECISIONS.md records a justified exception. | SPEC.md L123, L141, L153 | must | review |
+| SPEC-016 | Every board, part and lesson must state the correct logic level (5 V or 3.3 V), and iynk must never present a 3.3 V part as 5 V tolerant (or the reverse) unless it really is. | SPEC.md L124 | must | review |
+| SPEC-017 | Every current limit iynk states (pin, port, regulator, driver, battery) must match the part's datasheet. | SPEC.md L124 | must | review |
+| SPEC-018 | Every pinout iynk shows must match the real board's documentation pin for pin. | SPEC.md L124 | must | review |
+| SPEC-019 | Every protocol iynk teaches (UART, I2C, SPI, PWM, Wi-Fi, BLE and the rest) must be described with correct facts (addresses, voltages, timings, pin roles). | SPEC.md L124 | must | review |
 | SPEC-020 | Each board or part must have one figure in a shared component library, and every module must reuse that same figure (the Arduino, ESP32 and Pico figures are the same everywhere). | SPEC.md L100, L125 | must | review |
 | SPEC-021 | On a touch screen every figure must rotate by dragging with a finger. | SPEC.md L128 | must | e2e |
 | SPEC-022 | On a phone the app must use a simplified control layout that fits the screen without horizontal scrolling. | SPEC.md L128 | must | e2e |
 | SPEC-023 | Every control in the app must be reachable and operable from the keyboard alone, with a visible focus ring. | SPEC.md L129 | must | e2e |
 | SPEC-024 | Interactive elements must carry correct ARIA roles, names and states (pressed, current, expanded, live regions for changing status). | SPEC.md L129 | must | review |
 | SPEC-025 | The README must list every Colorfigures prompt used to make the figures. | SPEC.md L130 | must | review |
-| SPEC-026 | The README must give exact, working steps to deploy SimLab to Vercel. | SPEC.md L130 | must | review |
-| SPEC-027 | SimLab must be visibly and functionally better than the three originals combined: more complete, more accurate, more interactive and more educational. | SPEC.md L7, L13, L141 | must | review |
-| SPEC-028 | SimLab must reproduce every interaction, visual style, lesson structure, calculation, failure mode and UI pattern of the three originals, as recorded in docs/research. | SPEC.md L13 | must | review |
+| SPEC-026 | The README must give exact, working steps to deploy iynk to Vercel. | SPEC.md L130 | must | review |
+| SPEC-027 | iynk must be visibly and functionally better than the three originals combined: more complete, more accurate, more interactive and more educational. | SPEC.md L7, L13, L141 | must | review |
+| SPEC-028 | iynk must reproduce every interaction, visual style, lesson structure, calculation, failure mode and UI pattern of the three originals, as recorded in docs/research. | SPEC.md L13 | must | review |
 
 ## SPEC · Visual engine
 
@@ -240,7 +240,7 @@ What every Colorfigures figure must be.
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
 | SPEC-029 | The Colorfigures skill must be installed from the URL in the brief and checked with a test figure before any figure work starts. | SPEC.md L18-19, L133 | must | review |
-| SPEC-030 | Every board and every component in SimLab must be a Colorfigures figure. | SPEC.md L16 | must | review |
+| SPEC-030 | Every board and every component in iynk must be a Colorfigures figure. | SPEC.md L16 | must | review |
 | SPEC-031 | Every schematic, breadboard view and wiring diagram must use the Colorfigures hand-inked look (ink filter, wobble, paper grain, the five palettes) and must be generated from the same data as the 3D figure it describes. | SPEC.md L16, L154 | must | review |
 | SPEC-032 | Every figure (board, component and drone) must offer an exploded view. | SPEC.md L16, L24 | must | e2e |
 | SPEC-033 | Every drone must be a Colorfigures figure. | SPEC.md L16 | must | review |
@@ -261,7 +261,7 @@ What every Colorfigures figure must be.
 
 ## SPEC · Learn Arduino baseline
 
-The brief's own list of what Learn Arduino has and SimLab must match.
+The brief's own list of what Learn Arduino has and iynk must match.
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
@@ -372,7 +372,7 @@ Module 1. Boards, per-board features and FPGA.
 | SPEC-131 | Every board's lessons must include one protocol (I2C, SPI, UART) or Wi-Fi lesson. | SPEC.md L93 | must | e2e |
 | SPEC-132 | Every board must show its lesson progress in the done/total form of the original "0/16". | SPEC.md L94 | must | e2e |
 | SPEC-133 | The FPGA boards must run a Verilog-style LED chaser or a switch-to-LED mapping that visibly updates the figure. | SPEC.md L96 | must | e2e |
-| SPEC-134 | The FPGA lessons should say that SimLab does not do full synthesis and runs the Verilog as a behavioural model. | SPEC.md L96 | should | review |
+| SPEC-134 | The FPGA lessons should say that iynk does not do full synthesis and runs the Verilog as a behavioural model. | SPEC.md L96 | should | review |
 
 ## SPEC · Robotics Lab
 
@@ -434,29 +434,29 @@ The execution order, the user's instruction and the interpretation notes.
 | SPEC-172 | The finished work must be deployed to Vercel, and the live URL and the full source must be handed back. | SPEC.md L139 | must | review |
 | SPEC-173 | No feature present in the three originals may be skipped, and no placeholder may be shipped. | SPEC.md L141 | must | review |
 | SPEC-174 | Every requirement must be cross-checked against the originals and the brief before it is called done. | SPEC.md L147 | must | review |
-| SPEC-175 | A bug or inaccuracy found in an original must be fixed in SimLab, never copied. | SPEC.md L153 | must | review |
+| SPEC-175 | A bug or inaccuracy found in an original must be fixed in iynk, never copied. | SPEC.md L153 | must | review |
 | SPEC-176 | Any deliberate departure from an original's feature must be recorded with its reason in docs/DECISIONS.md. | SPEC.md L153 | must | review |
-| SPEC-177 | SimLab must not contain any of the originals' source files or code copied from them; their facts, formulas, constants, timings and teaching messages may be reused in SimLab's own code. | SPEC.md L155 | must | review |
-| SPEC-178 | SimLab must not show the originals' author watermarks or credits. | SPEC.md L155 | must | review |
-| SPEC-179 | SimLab must keep the Colorfigures MIT licence and its credit. | SPEC.md L155 | must | review |
+| SPEC-177 | iynk must not contain any of the originals' source files or code copied from them; their facts, formulas, constants, timings and teaching messages may be reused in iynk's own code. | SPEC.md L155 | must | review |
+| SPEC-178 | iynk must not show the originals' author watermarks or credits. | SPEC.md L155 | must | review |
+| SPEC-179 | iynk must keep the Colorfigures MIT licence and its credit. | SPEC.md L155 | must | review |
 
 ## LA · Page shell, meta and loader
 
-Learn Arduino's HTML shell and start-up. SimLab draws figures with Colorfigures, not three.js, so the WebGL items are restated for SimLab's own figure engine.
+Learn Arduino's HTML shell and start-up. iynk draws figures with Colorfigures, not three.js, so the WebGL items are restated for iynk's own figure engine.
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| LA-001 | SimLab should not expose a global debug object (the original ships `window.__app` with stage, run, stop, state and setParam) in production; any test hook must be documented and harmless. | learn-arduino.md §0.1 L43 | should | review |
+| LA-001 | iynk should not expose a global debug object (the original ships `window.__app` with stage, run, stop, state and setParam) in production; any test hook must be documented and harmless. | learn-arduino.md §0.1 L43 | should | review |
 | LA-002 | Each Board Lab lesson page must set a document title naming the lesson and the module (the original uses "{Lesson title} · Learn Arduino"). | learn-arduino.md §1.1 L75; §7 L1246-1260 | must | e2e |
-| LA-003 | Every SimLab page must carry a meta description that says what the page teaches (the original: wire LEDs, buttons, sensors, motors and servos, run the code and watch it work, 16 free beginner lessons). | learn-arduino.md §1.1 L75 | must | review |
-| LA-004 | SimLab must ship a web app manifest (name, short name, standalone display, theme and background colour, 192, 512, maskable and SVG icons) and a matching theme-color meta. | learn-arduino.md §1.1 L76 | must | review |
-| LA-005 | SimLab must ship Open Graph and Twitter card images (1200×630) with descriptive alt text, one per language. | learn-arduino.md §1.1 L77 | must | review |
+| LA-003 | Every iynk page must carry a meta description that says what the page teaches (the original: wire LEDs, buttons, sensors, motors and servos, run the code and watch it work, 16 free beginner lessons). | learn-arduino.md §1.1 L75 | must | review |
+| LA-004 | iynk must ship a web app manifest (name, short name, standalone display, theme and background colour, 192, 512, maskable and SVG icons) and a matching theme-color meta. | learn-arduino.md §1.1 L76 | must | review |
+| LA-005 | iynk must ship Open Graph and Twitter card images (1200×630) with descriptive alt text, one per language. | learn-arduino.md §1.1 L77 | must | review |
 | LA-006 | Every page must declare hreflang alternates for all its languages plus x-default, and a canonical URL per language. | learn-arduino.md §1.1 L78 | must | review |
 | LA-007 | The Board Lab must publish JSON-LD typed WebApplication and LearningResource, with teaches set to its lesson titles, isAccessibleForFree and educationalLevel Beginner. | learn-arduino.md §1.1 L79 | must | review |
 | LA-008 | With JavaScript turned off a lesson page must still show a one-line description of the course and every lesson as "N. Title" followed by the first sentence of its lede (the original: "An interactive 3D course in your browser. Turn on JavaScript to start."). | learn-arduino.md §1.1 L80 | must | e2e |
 | LA-009 | The display fonts should be self-hosted and preloaded so the first paint uses them. | learn-arduino.md §1.1 L81 | should | review |
-| LA-010 | If SimLab shows a loading screen, the content behind it must be inert (not focusable, not clickable) until loading finishes. | learn-arduino.md §1.1 L82; §5.7 L1225-1230 | must | e2e |
-| LA-011 | If SimLab shows a loading screen it should show a progress bar and a label naming the real step being done (the original: "Loading", "Loading fonts", "Loading the 3D view", "Building the board", "Drawing the lessons · {n} / {total}", "Ready"), then fade out over about 0.5 s. | learn-arduino.md §1.2 L86-88 | should | e2e |
+| LA-010 | If iynk shows a loading screen, the content behind it must be inert (not focusable, not clickable) until loading finishes. | learn-arduino.md §1.1 L82; §5.7 L1225-1230 | must | e2e |
+| LA-011 | If iynk shows a loading screen it should show a progress bar and a label naming the real step being done (the original: "Loading", "Loading fonts", "Loading the 3D view", "Building the board", "Drawing the lessons · {n} / {total}", "Ready"), then fade out over about 0.5 s. | learn-arduino.md §1.2 L86-88 | should | e2e |
 | LA-012 | A loading screen must never hang: a failsafe (20 s in the original) must dismiss it even if a step never finishes. | learn-arduino.md §1.2 L90 | must | e2e |
 | LA-013 | If start-up fails, the page must say so in plain words ("Something went wrong while starting. Try reloading the page.") instead of hanging or going blank. | learn-arduino.md §1.2 L91 | must | e2e |
 | LA-014 | If the figure engine cannot run in the browser, the stage must show a short note saying why and how to fix it, and the lessons and their code must still work (the original's WebGL note: "3D view unavailable"). | learn-arduino.md §1.2 L92 | must | e2e |
@@ -470,7 +470,7 @@ The regions of the lesson page, the sidebar and its flyouts, and the Settings fl
 |---|---|---|---|---|
 | LA-016 | On desktop the lesson page should scale as one composition (the original scales a 1672×941 artboard by min(vw/1672, vh/941), widening it below 0.8), so every region is visible at 1280×800 without page scrolling. | learn-arduino.md §1.3 L95-106 | should | screenshot |
 | LA-017 | The lesson page must switch to a stacked, scrolling layout on phones and portrait screens (the original switches when the scale drops below 0.62 or vw/vh is below 0.95). | learn-arduino.md §1.3 L101-104; §1.13 L232-252 | must | e2e |
-| LA-018 | The lesson page background should carry decorative PCB traces (thin polylines with end circles and clusters of faint squares) anchored to the corners, drawn in SimLab's own style. | learn-arduino.md §1.3 L108 | should | screenshot |
+| LA-018 | The lesson page background should carry decorative PCB traces (thin polylines with end circles and clusters of faint squares) anchored to the corners, drawn in iynk's own style. | learn-arduino.md §1.3 L108 | should | screenshot |
 | LA-019 | The desktop lesson page should keep the original's regions: sidebar on the left, brand top-left, status top-right, the figure stage centre-left, the info card above the code card on the right, the lessons strip along the bottom, the viewbar under the stage and the minimap at the stage's bottom-left. | learn-arduino.md §1.4 L110-123 | should | screenshot |
 | LA-020 | Every sidebar link must carry an aria-label and a title; its text label shows when the sidebar is expanded. | learn-arduino.md §1.5 L127 | must | e2e |
 | LA-021 | The sidebar Home item must select lesson 1 and reset the view. | learn-arduino.md §1.5 L129 | must | e2e |
@@ -484,7 +484,7 @@ The regions of the lesson page, the sidebar and its flyouts, and the Settings fl
 | LA-029 | The sidebar must have a Language item with a badge showing the current language code (e.g. "EN"). | learn-arduino.md §1.5 L134 | must | e2e |
 | LA-030 | The Language flyout must list every language with its code (or a check mark for the current one), its native name in bold and its name in the current UI language in small text (from Intl.DisplayNames, e.g. "ESPAÑOL / Spanish"); picking one switches to that language. | learn-arduino.md §1.5 L134 | must | e2e |
 | LA-031 | A sidebar toggle ("Expand sidebar" / "Collapse sidebar") must widen the sidebar to show its labels, and any open flyout must move with it. | learn-arduino.md §1.5 L136 | must | e2e |
-| LA-032 | must not copy: the sidebar credit "Designed by / x.com/DilumSanjaya" with the X logo; SimLab shows its own mark or nothing there. | learn-arduino.md §1.5 L137; §9.2 #12 L1305 | must | review |
+| LA-032 | must not copy: the sidebar credit "Designed by / x.com/DilumSanjaya" with the X logo; iynk shows its own mark or nothing there. | learn-arduino.md §1.5 L137; §9.2 #12 L1305 | must | review |
 | LA-033 | Clicking outside an open flyout, or pressing Escape, must close it. | learn-arduino.md §1.5 L138 | must | e2e |
 | LA-034 | The Settings flyout must have the header "Settings" and a Language select described as "Lessons, labels and code comments". | learn-arduino.md §1.5.1 L142-146 | must | e2e |
 | LA-035 | Settings must have a "Callout labels" switch ("Cards and pointers around the 3D view"), on by default, that shows or hides the callout cards and tags. | learn-arduino.md §1.5.1 L147 | must | e2e |
@@ -508,7 +508,7 @@ Callout cards, tags, wire chips, readouts, tooltip, minimap, viewbar and hint.
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| LA-049 | The figure stage must carry an aria-label that says how to operate it as SimLab works, where dragging rotates (the original's reads "Interactive 3D view. Drag or use WASD to pan, Q and E to rotate, scroll to zoom."). | learn-arduino.md §1.8 L173; §5.7; SPEC.md L22 | must | review |
+| LA-049 | The figure stage must carry an aria-label that says how to operate it as iynk works, where dragging rotates (the original's reads "Interactive 3D view. Drag or use WASD to pan, Q and E to rotate, scroll to zoom."). | learn-arduino.md §1.8 L173; §5.7; SPEC.md L22 | must | review |
 | LA-050 | Each lesson must place callout cards around the figure, each with a line icon, an uppercase title and a short body, at positions set per lesson. | learn-arduino.md §1.8 L174 | must | e2e |
 | LA-051 | Each callout card must be joined to its part by a dashed leader (#1d2236, 1.6 px, dash 5 4) that leaves a chosen card edge and ends on the part's projected point, following the figure as it moves. | learn-arduino.md §1.8 L175 | must | screenshot |
 | LA-052 | Each callout should have a ring dot on the card edge and, at the anchor, a dot with a halo that pulses (2.8 s, scale .6 to 2.1, fading). | learn-arduino.md §1.8 L176-177 | should | screenshot |
@@ -528,8 +528,8 @@ Callout cards, tags, wire chips, readouts, tooltip, minimap, viewbar and hint.
 | LA-066 | The viewbar must have Turn left ("Turn left (Q)"), Turn right ("Turn right (E)"), Zoom out ("Zoom out (−)") and Zoom in ("Zoom in (+)") buttons, each with a title showing its shortcut and an aria-label. | learn-arduino.md §1.8 L189 | must | e2e |
 | LA-067 | The viewbar must have a compass button ("Reset view (R)") whose needle follows the view's rotation and which is marked as away whenever the view is not at home. | learn-arduino.md §1.8 L189 | must | e2e |
 | LA-068 | The viewbar must have a Current flow toggle ("Current flow (F)", aria "Show current flow") and a Schematic toggle ("Schematic (C)", aria "Show schematic"), both using aria-pressed and tinted when on. | learn-arduino.md §1.8 L189 | must | e2e |
-| LA-069 | A hint pill above the viewbar must name the stage's controls as they work in SimLab, where dragging rotates (the original's reads "Drag or WASD to pan · Q / E to rotate · Scroll to zoom"), and it must disappear 9 s after load or at the first pointer press on the stage. | learn-arduino.md §1.8 L190; SPEC.md L22 | must | e2e |
-| LA-070 | must not copy: the "x.com/DilumSanjaya" credit painted on the 3D floor; SimLab uses its own mark or none. | learn-arduino.md §1.8 L191; §9.2 #12 L1305 | must | review |
+| LA-069 | A hint pill above the viewbar must name the stage's controls as they work in iynk, where dragging rotates (the original's reads "Drag or WASD to pan · Q / E to rotate · Scroll to zoom"), and it must disappear 9 s after load or at the first pointer press on the stage. | learn-arduino.md §1.8 L190; SPEC.md L22 | must | e2e |
+| LA-070 | must not copy: the "x.com/DilumSanjaya" credit painted on the 3D floor; iynk uses its own mark or none. | learn-arduino.md §1.8 L191; §9.2 #12 L1305 | must | review |
 
 ## LA · Info card
 
@@ -645,7 +645,7 @@ The Uno explorer: callouts, hoverable parts, tabs, the first sketch and the boar
 | LA-148 | The Uno figure's silkscreen must read SCL SDA AREF GND 13 12 ~11 ~10 ~9 8 7 ~6 ~5 4 ~3 2 TX→1 RX←0 on the digital header and IOREF RESET 3.3V 5V GND GND VIN on the power header, with "DIGITAL (PWM~)", "POWER", "ANALOG IN", "UNO", RESET, ICSP, L/TX/RX/ON and the reference designators. | learn-arduino.md §2.5 L344 | must | review |
 | LA-149 | The Uno figure must place its parts where the real board has them: USB-B, barrel jack, reset button, DIP-28 ATmega328P, both ICSP headers, two 47 µF caps, the crystal by the 16U2, the QFN ATmega16U2 at 45°, polyfuse, SOT-223 regulator, SOIC-8 op-amp, SMA diode, three SOT-23s, the resonator by the 328P, the ferrite, amber L/TX/RX LEDs, the green ON LED and the 0603 passives. | learn-arduino.md §2.5 L345 | must | review |
 | LA-150 | The Uno figure must default to a royal-blue PCB (the cobalt palette) with black female headers, a black DIP-28, a silver USB-B and a black barrel jack, the silhouette that makes the board recognisable. | learn-arduino.md §2.5 L346 | must | screenshot |
-| LA-151 | SimLab must state that the 16 MHz resonator clocks the ATmega328P and the 16 MHz crystal clocks the ATmega16U2 USB bridge. | learn-arduino.md §9.1 L1282 | must | review |
+| LA-151 | iynk must state that the 16 MHz resonator clocks the ATmega328P and the 16 MHz crystal clocks the ATmega16U2 USB bridge. | learn-arduino.md §9.1 L1282 | must | review |
 
 ## LA · Lesson structure and shared lesson rules
 
@@ -655,7 +655,7 @@ What every Uno lesson has, the completion rule, the breadboard and the inspector
 |---|---|---|---|---|
 | LA-152 | Every Uno lesson must have a title, a card title, a heading, a lede, three or four features with icons, a pinout table, four or five example steps, five specs, its parameters, its code, its callouts and its simulation. | learn-arduino.md §3 L352 | must | review |
 | LA-153 | A lesson must count as done the first time its Run finishes uploading (compile then upload, then the simulation starts) while it is still the current lesson. | learn-arduino.md §3 L353; §4.4 | must | e2e |
-| LA-154 | SimLab should add lesson completion criteria beyond pressing Run, such as a short check or a goal the circuit must reach. | learn-arduino.md §10 L1312 | should | e2e |
+| LA-154 | iynk should add lesson completion criteria beyond pressing Run, such as a short check or a goal the circuit must reach. | learn-arduino.md §10 L1312 | should | e2e |
 | LA-155 | The default breadboard must be a half-size board with 23 columns (1–23) and rows a–e and f–j, labelled at column 1 and every fifth column, without power rails, at 2.54 mm pitch. | learn-arduino.md §3 L355 | must | review |
 | LA-156 | Wiring tables must name the Uno's top-header ground beside D13 "GND" and the two power-header grounds "GND1" and "GND2". | learn-arduino.md §3 L355 | must | review |
 | LA-157 | Jumper wires should use the palette red #d64a3a, navy #2f3547, orange #f0a53a, yellow #f0b53a, green #3fae6a, blue #3d6fc4, coral #ee7f62, purple #8a63c9 and brown #7a5034, with red for 5 V and navy for ground. | learn-arduino.md §3 L356 | should | screenshot |
@@ -784,7 +784,7 @@ Ultrasonic ranging with swappable obstacles.
 | LA-238 | must not copy: an unlabelled echo time in milliseconds; the echo pulse must be shown in µs (cm·58), and any slowed-down animation of it must be labelled as slowed. | learn-arduino.md §9.2 #8 L1301; §3.7 L598 | must | e2e |
 | LA-239 | Lesson 7 must show outgoing ultrasonic rings every 220 ms that return as echo arcs, a dashed tape measure on the floor, and a readout "{cm} cm" or "no echo" midway between sensor and obstacle. | learn-arduino.md §3.7 L599 | must | e2e |
 | LA-240 | must not copy: appending " cm" to a sketch that prints only the number; the serial monitor must print exactly what the sketch prints (change the sketch to print the unit if the unit should show). | learn-arduino.md §3.7 L600; §9.2 #1 | must | e2e |
-| LA-241 | SimLab must state the HC-SR04 facts: 40 kHz, 2–400 cm, a 10 µs trigger pulse and cm = echo µs / 58 for the round trip. | learn-arduino.md §9.1 L1286 | must | review |
+| LA-241 | iynk must state the HC-SR04 facts: 40 kHz, 2–400 cm, a 10 µs trigger pulse and cm = echo µs / 58 for the round trip. | learn-arduino.md §9.1 L1286 | must | review |
 | LA-242 | Lesson 7's callouts must read: HC-SR04 "Pings at 40 kHz and times the echo."; Trig · Echo "Pin 9 fires the ping, pin 10 hears the echo."; 5V · GND "Power for the sensor, straight from the board."; Obstacle "Click to swap it, drag to move it.". | learn-arduino.md §3.7 L601 | must | e2e |
 
 ## LA · Lesson 8, Make a sound
@@ -824,7 +824,7 @@ Eight INPUT_PULLUP keys and a buzzer on a full-size breadboard.
 | LA-264 | Lesson 9's code must set KEYS 2–9 as INPUT_PULLUP ("// HIGH until pressed"), find the pressed key (LOW: key down), and on a change tone() the key's NOTES entry and Serial.println its NAMES entry, or noTone() when released. | learn-arduino.md §3.9 L655-685 | must | e2e |
 | LA-265 | A key must count as down when the user holds it or the auto tune holds it, the highest index must win, and pins D2–D9 must read LOW while their key is down. | learn-arduino.md §3.9 L687 | must | unit |
 | LA-266 | When a key starts, lesson 9 must show a float note "♪ {name}" in the key's colour, play a continuous square tone (gain 0.06·0.5) until release, pulse rings every 240 ms, show a readout "♪ Sol · 392 Hz" and the D10 chip "{hz} Hz"; auto-played keys must visibly sink. | learn-arduino.md §3.9 L687 | must | e2e |
-| LA-267 | Lesson 9's serial monitor must print the note name the sketch prints for each new key (e.g. "Sol"); the hint "Press and hold a key to play it." (shown only with the tune off) must be shown as a SimLab note, not as serial output. | learn-arduino.md §3.9 L688 | must | e2e |
+| LA-267 | Lesson 9's serial monitor must print the note name the sketch prints for each new key (e.g. "Sol"); the hint "Press and hold a key to play it." (shown only with the tune off) must be shown as a iynk note, not as serial output. | learn-arduino.md §3.9 L688 | must | e2e |
 | LA-268 | Lesson 9's callouts must read: The − rail "One long ground strip for every key."; Passive buzzer "tone() sets the note it plays."; Keys "Hold one down to play its note."; Pins 2–9 "INPUT_PULLUP: HIGH until pressed.". | learn-arduino.md §3.9 L690 | must | e2e |
 | LA-269 | Lesson 9's schematic must show D2 to D9 each through a button to a shared "GND rail", D10 → buzzer → ground, and the note "Pulled up inside the Uno: HIGH until a key is pressed". | learn-arduino.md §3.9 L691 | must | e2e |
 
@@ -859,7 +859,7 @@ TMP36 thermostat with a fan.
 | LA-285 | The hairdryer's inspector must offer "Hairdryer distance" 5–40 cm in steps of 1 (default 14) and "Hairdryer switched on" (default on), and the user must be able to drag the hairdryer in the figure. | learn-arduino.md §3.11 L736 | must | e2e |
 | LA-286 | The TMP36's inspector must offer "Fan on above" 24–45 °C in steps of 1 (default 30), and the fan's "Fan speed" On / off ("Full speed above the limit, off below it.", default) or Ramp ("Faster the hotter it gets: full speed 8 °C over the limit."). | learn-arduino.md §3.11 L736 | must | e2e |
 | LA-287 | Lesson 11's code must convert the reading to volts and then to tempC = (volts − 0.5) · 100.0, print tempC, and in On / off mode write 255 ("// too warm: fan on") above the limit or 0, or in Ramp mode write constrain((tempC − limit) · 32, 0, 255), then delay(200). | learn-arduino.md §3.11 L737-765 | must | e2e |
-| LA-288 | must not copy: mixing /1023 and /1024; SimLab must use one ADC conversion (raw · 5.0 / 1024.0 or / 1023.0) everywhere and say which one and why. | learn-arduino.md §9.2 #9 L1302 | must | review |
+| LA-288 | must not copy: mixing /1023 and /1024; iynk must use one ADC conversion (raw · 5.0 / 1024.0 or / 1023.0) everywhere and say which one and why. | learn-arduino.md §9.2 #9 L1302 | must | review |
 | LA-289 | Lesson 11's thermal model must use heat = 34 / (1 + ((distance − 3)/12)²) °C with the dryer on (0 off), target = 22 + heat − fanSpeed/26·9, T easing to target with a 2200 ms time constant from T0 = 22 + heat·0.5. | learn-arduino.md §3.11 L767-769 | must | unit |
 | LA-290 | Every 200 ms lesson 11 must read T ± 0.15 and set pwm = clamp(trunc((T − limit)·32), 0, 255) in Ramp mode or 255/0 around the limit in On / off mode, the fan easing to pwm/255·26 (420 ms on, 1100 ms off). | learn-arduino.md §3.11 L770-771 | must | unit |
 | LA-291 | At the defaults (14 cm) lesson 11 must settle near 31.5 °C with the fan at 100% in On / off mode and near 33.4 °C at 43% in Ramp mode. | learn-arduino.md §3.11 L773 | must | unit |
@@ -904,7 +904,7 @@ SG90 on the Servo library.
 | LA-316 | While the stepper turns, the ULN2003's LEDs A–D must show the two-phase full-step sequence 1100, 0110, 0011, 1001, and the D8–D11 chips must read "STEPS". | learn-arduino.md §3.13 L863 | must | e2e |
 | LA-317 | The pointer must flick as each segment boundary passes (decaying in about 90 ms), and a readout must show "step {n} / {total}" and then "{prize}!" on landing. | learn-arduino.md §3.13 L864 | must | e2e |
 | LA-318 | The user must be able to press the button in the figure to spin while running, and presses during a spin must be ignored. | learn-arduino.md §3.13 L861, L865 | must | e2e |
-| LA-319 | Lesson 13's serial monitor must print "Landed on {prize}" as the sketch prints it (×2 printed as "x2"); "Press the button to spin the wheel!" and "Spinning to {prize}: {n} steps" must be shown as SimLab notes, not as serial output. | learn-arduino.md §3.13 L866; §9.2 #1 | must | e2e |
+| LA-319 | Lesson 13's serial monitor must print "Landed on {prize}" as the sketch prints it (×2 printed as "x2"); "Press the button to spin the wheel!" and "Spinning to {prize}: {n} steps" must be shown as iynk notes, not as serial output. | learn-arduino.md §3.13 L866; §9.2 #1 | must | e2e |
 | LA-320 | Lesson 13's callouts must read: Stepper motor with the true step count (about 2038 steps a turn, in place of the original's "Exact steps: 2048 make a turn."); ULN2003 driver "LEDs A–D light with the coils."; Push button "Press it to spin the wheel."; Pins 8–11 "One pin for each coil.". | learn-arduino.md §3.13 L867; §9.2 #4 L1297 | must | e2e |
 | LA-321 | Lesson 13's schematic must show the D2 button node (button to 5V, 10 kΩ to ground) and D8–D11 into a ULN2003 block on IN1–IN4 with + to 5V and − to GND, driving a "STEPPER" motor symbol. | learn-arduino.md §3.13 L868 | must | e2e |
 
@@ -978,7 +978,7 @@ How code, parameters and the simulation fit together, and how Run and Stop behav
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| LA-365 | must not copy: canned per-lesson simulations that ignore the code; SimLab must run the sketch the user sees (after any edit) and still reproduce every behaviour and number of the 16 original lessons. | learn-arduino.md §4.1 L1055; §9.2 #3 L1296; SPEC.md L88 | must | e2e |
+| LA-365 | must not copy: canned per-lesson simulations that ignore the code; iynk must run the sketch the user sees (after any edit) and still reproduce every behaviour and number of the 16 original lessons. | learn-arduino.md §4.1 L1055; §9.2 #3 L1296; SPEC.md L88 | must | e2e |
 | LA-366 | must not copy: the read-only code view; the sketch must be editable, while parameter chips keep selecting their parts and changing their values. | learn-arduino.md §4.3 L1070; §10 L1311; SPEC.md L88 | must | e2e |
 | LA-367 | When the code cannot run (a syntax error, an unknown function, a wrong type), Run must report the error with its line number and must not start the simulation. | learn-arduino.md §4.1 L1055; §10 L1311; SPEC.md L88 | must | e2e |
 | LA-368 | Option parameters must swap whole code blocks (e.g. lesson 3's Hold and Toggle loops) and value parameters must fill their slots, so the code always matches the inspector. | learn-arduino.md §4.1 L1053 | must | unit |
@@ -998,7 +998,7 @@ How code, parameters and the simulation fit together, and how Run and Stop behav
 | LA-382 | Stopping must reset the figure (LEDs off, readouts cleared, coils off, needles to zero) and clear any tone, flow beads and line marker. | learn-arduino.md §4.4 L1086-1087 | must | e2e |
 | LA-383 | After a stop the serial monitor must log `Stopped.` and show the "Stopped" status long enough to read it, keeping the last output visible (must not copy: the original slides the monitor shut at once, so "Stopped" is barely seen). | learn-arduino.md §4.4 L1088; SPEC.md L40 | must | e2e |
 | LA-384 | Switching lessons mid-upload must cancel that upload, and stopping during an upload must abort it without marking the lesson done. | learn-arduino.md §4.4 L1090 | must | unit |
-| LA-385 | The serial monitor must keep three kinds of line visibly apart: upload messages, what the sketch really prints, and SimLab's own pin-activity notes; sketches with no Serial calls must print no serial lines. | learn-arduino.md §4.5 L1095; §9.2 #1 L1294 | must | e2e |
+| LA-385 | The serial monitor must keep three kinds of line visibly apart: upload messages, what the sketch really prints, and iynk's own pin-activity notes; sketches with no Serial calls must print no serial lines. | learn-arduino.md §4.5 L1095; §9.2 #1 L1294 | must | e2e |
 | LA-386 | must not copy: serial throttling that hides the real print rate (a 50 ms sketch shown at one line per 300 ms); the monitor must print at the sketch's real rate or, when it thins lines for readability, say so plainly with the real rate. | learn-arduino.md §4.5 L1096; §9.2 #2 L1295 | must | e2e |
 | LA-387 | The serial monitor must be an aria-live="polite" region. | learn-arduino.md §4.5 L1097; §5.7 | must | review |
 | LA-388 | The serial monitor must offer a baud-rate selector, and output must be clean only when it matches Serial.begin. | learn-arduino.md §4.5 L1094; §10 L1311 | must | e2e |
@@ -1120,10 +1120,10 @@ The original's 13 languages cut to the six of decision D1, the locale URLs, and 
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| LA-465 | SimLab must offer exactly six locales, en, es, fr, de, zh (Simplified Chinese, html lang "zh-Hans") and hi, each complete and prerendered; the original's other seven languages (pt, it, tr, id, ja, ko, he) are not offered. | learn-arduino.md §6 L1234; SPEC.md L127, L153; BASE_ARCHITECTURE.md D1 | must | e2e |
+| LA-465 | iynk must offer exactly six locales, en, es, fr, de, zh (Simplified Chinese, html lang "zh-Hans") and hi, each complete and prerendered; the original's other seven languages (pt, it, tr, id, ja, ko, he) are not offered. | learn-arduino.md §6 L1234; SPEC.md L127, L153; BASE_ARCHITECTURE.md D1 | must | e2e |
 | LA-466 | Each locale must have its own URL prefix /{lang}/ (English at /en/, not at the root), prerendered with translated title, meta description, Open Graph and Twitter data, JSON-LD and a lesson list that works without JavaScript. | learn-arduino.md §6 L1235; BASE_ARCHITECTURE.md D1, D2 | must | review |
-| LA-467 | A visit to / must redirect to the locale stored in the simlab-lang cookie, else to the best Accept-Language match among the six locales, else to /en, keeping the query string. | learn-arduino.md §6 L1236; BASE_ARCHITECTURE.md D2 | must | e2e |
-| LA-468 | Switching language from Settings or the Language flyout must store the choice in the simlab-lang cookie and reopen the same page under the new /{lang}/ prefix, keeping the current lesson, the query and the hash. | learn-arduino.md §6 L1237; BASE_ARCHITECTURE.md D2 | must | e2e |
+| LA-467 | A visit to / must redirect to the locale stored in the iynk-lang cookie, else to the best Accept-Language match among the six locales, else to /en, keeping the query string. | learn-arduino.md §6 L1236; BASE_ARCHITECTURE.md D2 | must | e2e |
+| LA-468 | Switching language from Settings or the Language flyout must store the choice in the iynk-lang cookie and reopen the same page under the new /{lang}/ prefix, keeping the current lesson, the query and the hash. | learn-arduino.md §6 L1237; BASE_ARCHITECTURE.md D2 | must | e2e |
 | LA-469 | In code, only // comments may be translated; identifiers, string literals and code structure must stay as written. | learn-arduino.md §6 L1238 | must | e2e |
 | LA-470 | Every UI string, lesson title, lede, feature, pinout row, example step, spec, callout, inspector label and note, part name and description, tooltip, schematic label (e.g. "GND rail", SERVO, LIGHTS), upload message, readout and pin-activity note (e.g. "ECO {ms} ms", "SIN ECO", "ROJO · ¡alto!") must be translated, and dates must use Intl. | learn-arduino.md §6 L1239 | must | e2e |
 | LA-471 | C identifiers, string literals in sketches (so the OLED's "Water me!" and the "Landed on" lines stay English), pin names, units and brand names must stay untranslated, and a label that quotes a literal (“Water me!” below) must keep the literal as written. | learn-arduino.md §6 L1240 | must | review |
@@ -1138,7 +1138,7 @@ What is saved, when, and how progress counts.
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
 | LA-475 | The chosen language must be saved and used on the next visit. | learn-arduino.md §7 L1250 | must | e2e |
-| LA-476 | A lesson must be saved as completed when its first upload completes, as done["board:uno-r3:lesson:{lessonId}"] = true in the versioned localStorage key "simlab:v1". | learn-arduino.md §7 L1251; BASE_ARCHITECTURE.md D7 | must | unit |
+| LA-476 | A lesson must be saved as completed when its first upload completes, as done["board:uno-r3:lesson:{lessonId}"] = true in the versioned localStorage key "iynk:v1". | learn-arduino.md §7 L1251; BASE_ARCHITECTURE.md D7 | must | unit |
 | LA-477 | Every lesson's parameter values must be saved per lesson and restored when the lesson is reopened. | learn-arduino.md §7 L1252 | must | e2e |
 | LA-478 | The settings (callout labels, floor grid, turntable, sound, reduce motion, current flow, schematic) must be saved whenever one changes, including from the viewbar. | learn-arduino.md §7 L1253 | must | e2e |
 | LA-479 | Every lesson must have its own URL, /{lang}/boards/uno-r3/{lessonId} (the route replaces the original's #lessonId hash), and opening that URL must open that lesson. | learn-arduino.md §7 L1255; BASE_ARCHITECTURE.md D2 | must | e2e |
@@ -1146,10 +1146,10 @@ What is saved, when, and how progress counts.
 | LA-481 | Completion must persist until Settings → Reset progress, which clears completion only and keeps the parameter values and settings. | learn-arduino.md §7 L1258 | must | e2e |
 | LA-482 | All lessons must be open from the start and may be done in any order. | learn-arduino.md §7 L1259 | must | e2e |
 | LA-483 | The document title must be "{Lesson title} · {module}" in the current language after a lesson change or a deep link. | learn-arduino.md §7 L1260 | must | e2e |
-| LA-484 | SimLab should show a "next lesson" call to action when a lesson is completed. | learn-arduino.md §10 L1316 | should | e2e |
-| LA-485 | SimLab should record the time spent per lesson. | learn-arduino.md §10 L1316 | should | e2e |
-| LA-486 | SimLab should group lessons into tracks or levels beyond the single "Basics" track. | learn-arduino.md §10 L1317 | should | e2e |
-| LA-487 | SimLab should work offline after the first visit (the original has a manifest but no offline caching). | learn-arduino.md §10 L1315 | should | review |
+| LA-484 | iynk should show a "next lesson" call to action when a lesson is completed. | learn-arduino.md §10 L1316 | should | e2e |
+| LA-485 | iynk should record the time spent per lesson. | learn-arduino.md §10 L1316 | should | e2e |
+| LA-486 | iynk should group lessons into tracks or levels beyond the single "Basics" track. | learn-arduino.md §10 L1317 | should | e2e |
+| LA-487 | iynk should work offline after the first visit (the original has a manifest but no offline caching). | learn-arduino.md §10 L1315 | should | review |
 
 ## LA · Accuracy facts and the original's missing failure modes
 
@@ -1157,21 +1157,21 @@ Facts not tied to one lesson, and failure modes the original lacks but the brief
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| LA-488 | SimLab must state the Uno R3 facts: ATmega328P at 16 MHz, 5 V logic, 7–12 V recommended input, 14 digital I/O with PWM on 3, 5, 6, 9, 10 and 11, 6 analog inputs, 32 KB flash, 2 KB SRAM, 1 KB EEPROM, 68.6 × 53.4 mm, the L LED on D13 and SDA/SCL shared with A4/A5. | learn-arduino.md §9.1 L1282 | must | review |
-| LA-489 | SimLab must state that the Uno's ADC is 10-bit (0–1023 for 0–5 V, ≈ 4.9 mV per step) and that PWM is 8-bit at ≈ 490 Hz on pins 3, 9, 10 and 11 and ≈ 980 Hz on pins 5 and 6. | learn-arduino.md §9.1 L1283 | must | review |
-| LA-490 | SimLab must state the 5 V logic thresholds (LOW below 1.5 V, HIGH above 3 V) and the internal pull-ups of 20–50 kΩ. | learn-arduino.md §9.1 L1285 | must | review |
-| LA-491 | SimLab must name notes correctly: C4 262 Hz, A4 440 Hz, an octave doubles the frequency, and the bell's 1568 Hz is G6. | learn-arduino.md §9.1 L1290 | must | review |
-| LA-492 | SimLab must state that a capacitive soil sensor reads lower the wetter the soil is, and that the FSR's resistance follows R_fsr = Rpd·(1023 − reading)/reading. | learn-arduino.md §9.1 L1290 | must | review |
+| LA-488 | iynk must state the Uno R3 facts: ATmega328P at 16 MHz, 5 V logic, 7–12 V recommended input, 14 digital I/O with PWM on 3, 5, 6, 9, 10 and 11, 6 analog inputs, 32 KB flash, 2 KB SRAM, 1 KB EEPROM, 68.6 × 53.4 mm, the L LED on D13 and SDA/SCL shared with A4/A5. | learn-arduino.md §9.1 L1282 | must | review |
+| LA-489 | iynk must state that the Uno's ADC is 10-bit (0–1023 for 0–5 V, ≈ 4.9 mV per step) and that PWM is 8-bit at ≈ 490 Hz on pins 3, 9, 10 and 11 and ≈ 980 Hz on pins 5 and 6. | learn-arduino.md §9.1 L1283 | must | review |
+| LA-490 | iynk must state the 5 V logic thresholds (LOW below 1.5 V, HIGH above 3 V) and the internal pull-ups of 20–50 kΩ. | learn-arduino.md §9.1 L1285 | must | review |
+| LA-491 | iynk must name notes correctly: C4 262 Hz, A4 440 Hz, an octave doubles the frequency, and the bell's 1568 Hz is G6. | learn-arduino.md §9.1 L1290 | must | review |
+| LA-492 | iynk must state that a capacitive soil sensor reads lower the wetter the soil is, and that the FSR's resistance follows R_fsr = Rpd·(1023 − reading)/reading. | learn-arduino.md §9.1 L1290 | must | review |
 | LA-493 | An LED wired without its series resistor must visibly burn out when driven, and the lesson must explain why (5 V across a 2 V LED with nothing to limit the current). | learn-arduino.md §10 L1313; SPEC.md L92 | must | e2e |
 | LA-494 | Driving more than 20 mA through an LED, or more than 40 mA (absolute maximum) from a pin, must raise a visible warning. | learn-arduino.md §10 L1313; §3.2 L375; SPEC.md L124 | must | e2e |
 | LA-495 | A short from 5 V to GND must trip the protection (the Uno's resettable fuse on USB) and power the board down, with the reason shown. | learn-arduino.md §10 L1313; SPEC.md L92 | must | e2e |
 | LA-496 | Reversed polarity at the barrel jack must be blocked by the protection diode with no damage, and the lesson must say so; reversing a polarised part (LED, electrolytic capacitor) must have its real consequence. | learn-arduino.md §10 L1313; SPEC.md L92 | must | e2e |
 | LA-497 | The Uno lessons should add quizzes, challenges with goals the circuit must meet, and hints. | learn-arduino.md §10 L1312 | should | e2e |
-| LA-498 | SimLab should offer a free-build sandbox where the user wires parts on the breadboard themselves. | learn-arduino.md §10 L1314 | should | e2e |
+| LA-498 | iynk should offer a free-build sandbox where the user wires parts on the breadboard themselves. | learn-arduino.md §10 L1314 | should | e2e |
 
-## RBA · What the original lacks and SimLab must add
+## RBA · What the original lacks and iynk must add
 
-Gaps in Robotics Bench that the brief or the research says SimLab must close.
+Gaps in Robotics Bench that the brief or the research says iynk must close.
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
@@ -1373,7 +1373,7 @@ The serial terminal, the Selected part card, tags, wobble, colour, the lesson co
 |---|---|---|---|---|
 | RBA-155 | Each board's full quiz must be available under "Check yourself" from the start, and a quiz must also appear after each major build step. | robotics-bench-a.md §2.16 L535; SPEC.md L105 | must | e2e |
 | RBA-156 | Each question must show as "N. {question}" with its answers as chips. | robotics-bench-a.md §2.16 L535 | must | e2e |
-| RBA-157 | A wrong answer must strike its chip through and dim it, play the buzz and toast "Not quite: think about what the hardware does" (plus the explanation SimLab adds). | robotics-bench-a.md §2.16 L536; robotics-bench-b.md §1.2 L110-111 | must | e2e |
+| RBA-157 | A wrong answer must strike its chip through and dim it, play the buzz and toast "Not quite: think about what the hardware does" (plus the explanation iynk adds). | robotics-bench-a.md §2.16 L536; robotics-bench-b.md §1.2 L110-111 | must | e2e |
 | RBA-158 | A right answer must turn its chip green (#43c25c) and play the chime; answers can be changed at any time. | robotics-bench-a.md §2.16 L536-537; robotics-bench-b.md §1.2 L111 | must | e2e |
 | RBA-159 | When every question holds its right answer the quiz must show "Board mastered. Fig. NN is next." with a link to the next board, save the board as mastered and mark its nav entry "Fig. NN · done". | robotics-bench-a.md §2.16 L538-539; robotics-bench-b.md §1.2 L111-113 | must | e2e |
 | RBA-160 | The mastered flag must survive a reload. | robotics-bench-a.md §2.16 L540 | must | e2e |
@@ -1434,9 +1434,9 @@ Start-up parameters and what must not be copied.
 | RBA-201 | ?sel=ID must open the board with that part selected. | robotics-bench-a.md §2.18 L604 | must | e2e |
 | RBA-202 | ?mode=KEY must open the board in that mode (e.g. ?mode=hello prints "hello, robot #0.."). | robotics-bench-a.md §2.18 L605 | must | e2e |
 | RBA-203 | ?pal=KEY must open the board in that palette and ?labels=0 with the labels hidden. | robotics-bench-a.md §2.18 L606-607 | must | e2e |
-| RBA-204 | SimLab should keep a scripted-press test hook (the original's ?press=Label@ms,Label>Choice@ms clicks buttons by label prefix at set times and records unknown labels as errors), off in production. | robotics-bench-a.md §2.18 L608; robotics-bench-b.md §1.2 L119-120 | should | e2e |
+| RBA-204 | iynk should keep a scripted-press test hook (the original's ?press=Label@ms,Label>Choice@ms clicks buttons by label prefix at set times and records unknown labels as errors), off in production. | robotics-bench-a.md §2.18 L608; robotics-bench-b.md §1.2 L119-120 | should | e2e |
 | RBA-205 | Any state handle or error log exposed for tests (the original's window.__st and data-errors) should be off or harmless in production. | robotics-bench-a.md §2.18 L611 | should | review |
-| RBA-206 | must not copy: the original's usage tracking (a visitor id in localStorage, events beaconed to /api/track); SimLab must not collect usage data or send analytics anywhere. | robotics-bench-a.md §2.19 L615-621 | must | review |
+| RBA-206 | must not copy: the original's usage tracking (a visitor id in localStorage, events beaconed to /api/track); iynk must not collect usage data or send analytics anywhere. | robotics-bench-a.md §2.19 L615-621 | must | review |
 
 ## RBA · Fig. 01 Arduino Uno R3
 
@@ -1475,7 +1475,7 @@ The factory-style Uno build: SMD and reflow, through-hole low to tall, socket be
 | RBA-235 | On Fig. 01, an upload during a fault must say "Fix the fault first: unplug, then correct U1", an upload during an upload "Uploading: wait for it", and placing or flipping while plugged "Unplug the power first: never work on a live board". | robotics-bench-a.md §3 L770-772 | must | e2e |
 | RBA-236 | Fig. 01's "Meet the board" must explain that the Uno is built around the ATmega328P, is where digitalWrite, PWM, interrupts and serial debugging first appear, and is built here the way a factory builds it (machine-placed SMD and reflow, then through-hole low to tall, then the iron), then plugged in, uploaded, broken on purpose and fixed. | robotics-bench-a.md §3 L774-776 | must | e2e |
 | RBA-237 | Fig. 01's practice task must be the reaction-timer game: an LED lights after a random delay, a button stops the clock and the time in ms goes to serial, using an interrupt, debouncing and millis() instead of delay(), small enough to show in a 15 s video. | robotics-bench-a.md §3 L776-777; SPEC.md L53 | must | e2e |
-| RBA-238 | SimLab must let the user build and run the reaction timer in the simulator and check that it uses an interrupt, debouncing and millis() instead of delay(). | robotics-bench-a.md §3 L776-777; SPEC.md L53, L103 | must | e2e |
+| RBA-238 | iynk must let the user build and run the reaction timer in the simulator and check that it uses an interrupt, debouncing and millis() instead of delay(). | robotics-bench-a.md §3 L776-777; SPEC.md L53, L103 | must | e2e |
 | RBA-239 | Fig. 01's quiz must ask "You analogWrite() a fade to pin 13 and the L LED just snaps on and off. Why?" with "Pin 13 has no PWM hardware" (right), "The LED is burnt out" and "delay(8) is too short". | robotics-bench-a.md §9 L1340 | must | e2e |
 | RBA-240 | Fig. 01's quiz must ask "Why solder the DIP socket before the ATmega328P goes in?" with "The chip only programs after soldering", "The iron never heats the chip" (right) and "Hot sockets grip better". | robotics-bench-a.md §9 L1341 | must | e2e |
 | RBA-241 | Fig. 01's quiz must ask "The Uno resets every time a motor starts. First suspect?" with "A bug in setup()", "The USB cable is too long" and "The motor current sags the 5 V rail (brown-out)" (right). | robotics-bench-a.md §9 L1342 | must | e2e |
@@ -1512,7 +1512,7 @@ Ohm's law with a jumper-selected resistor and a series meter.
 | RBA-265 | Fig. 02's build must be: no SMD; place the low parts (J1, SW1, R1, R2, R3, JL1, TP1, TP2), then the tall parts (JP1, C1, D1); solder; plug; and the board must accept the plug as soon as J1 is soldered, the power and run checks then explaining what is missing. | robotics-bench-a.md §4 L876-877 | must | e2e |
 | RBA-266 | Fig. 02's "Meet the board" must explain the first circuit every roadmap skips: 5 V in, a red LED takes about 2 V, the resistor takes the other 3 V and sets the current (I = V / R), the jumper picks the resistor, the meter is in series, and every position should be tried, including no resistor. | robotics-bench-a.md §4 L879-881 | must | e2e |
 | RBA-267 | Fig. 02's practice task must be a divider of two 10 k resistors: predict the middle voltage by hand, check it, then swap one for 4.7 k and predict again before looking. | robotics-bench-a.md §4 L881-882 | must | e2e |
-| RBA-268 | The divider practice should be doable inside SimLab (the original sends the user to the Falstad simulator). | robotics-bench-a.md §4 L881-882 | should | e2e |
+| RBA-268 | The divider practice should be doable inside iynk (the original sends the user to the Falstad simulator). | robotics-bench-a.md §4 L881-882 | should | e2e |
 | RBA-269 | Fig. 02's quiz must ask "5 V supply, red LED (2 V), 330 ohm resistor. Current?" with "15 mA", "9 mA" (right) and "1.5 mA". | robotics-bench-a.md §9 L1344 | must | e2e |
 | RBA-270 | Fig. 02's quiz must ask "An LED in backwards does what at 5 V?" with "Explodes", "Stays dark, no damage" (right) and "Glows dimly". | robotics-bench-a.md §9 L1345 | must | e2e |
 | RBA-271 | Fig. 02's quiz must ask "Why does the LED die with no resistor?" with "Too much voltage", "Nothing limits the current, so it tries to pass amps" (right) and "The jumper shorts the supply". | robotics-bench-a.md §9 L1346 | must | e2e |
@@ -1989,313 +1989,313 @@ What §9 and §10 add beyond the per-figure items.
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| RBB-278 | Every practice task must be a checkable exercise: SimLab checks it from a deterministic run, saves a pass as done["robotics:{bench}:task:{taskId}"], and lists every task across the benches so the user can see them all. | robotics-bench-b.md §9 L1392-1394; SPEC.md L66, L103; BASE_ARCHITECTURE.md D7, D14 | must | e2e |
+| RBB-278 | Every practice task must be a checkable exercise: iynk checks it from a deterministic run, saves a pass as done["robotics:{bench}:task:{taskId}"], and lists every task across the benches so the user can see them all. | robotics-bench-b.md §9 L1392-1394; SPEC.md L66, L103; BASE_ARCHITECTURE.md D7, D14 | must | e2e |
 | RBB-279 | Every board's practice task must be present: Fig. 01 reaction timer, 02 voltage divider, 03 transistor switch and gain, 04 ESP32 web page with servo buttons, 05 five PWM speeds then one encoder revolution, 06 the same with ENA on a PWM pin, 07 one revolution in full and 1/16 step with a tape flag, 08 robot arm, 09 drift then complementary filter then Kalman, 10 distance log against a wall, a cushion and an angled bottle, 11 line follower with P then D, 12 shared-rail brown-out then a separate regulator, 13 multi-node ROS 2 system with ros2 bag. | robotics-bench-b.md §9 L1396-1415 | must | review |
 | RBB-280 | Each quirk and bug in robotics-bench-b.md §10 must be fixed as its per-figure item says, none copied (A4988 live-unplug re-fault, the stale-sketch code panel, the Pi's temperature reset, the 1/16 timing, the synthetic filter, the buck's numbers, the VL53L0X cone, the servo channels, the throttled bits, the unreachable SMD failures and the text-only failures). | robotics-bench-b.md §10 L1419-1436 | must | review |
 
 ## AUD · Build, checks, app shell and the figure bridge
 
-current-simlab-audit.md §1, §2 and §3.1.
+current-iynk-audit.md §1, §2 and §3.1.
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| AUD-001 | must not: figure sources left outside every lint and type check; figure code must be linted and type-checked, and a headless run must fail the build when a figure records data-errors. | current-simlab-audit.md §1 L83-84 | must | review |
-| AUD-002 | must not: a one-shot "ready" from the figure that races React hydration and leaves the figure disconnected; the app and the figure must handshake (the parent says hello on iframe load and when its listener attaches, the figure answers every hello, patches queue until ready), and the figure must connect on every load, including on a 6× throttled CPU. | current-simlab-audit.md §3.1 P-01 (C) L111; §2 #1 L90 | must | e2e |
-| AUD-003 | must not: clearing the figure's readiness on iframe load; readiness must be tracked per load and never cleared after a ready for the current load. | current-simlab-audit.md §3.1 P-02 (M) L112 | must | unit |
-| AUD-004 | must not: posting every patch twice and rebuilding the whole figure for each (244 patches a second while armed); the app must send one memoised patch of changed keys, at most once per animation frame. | current-simlab-audit.md §3.1 P-03 (M) L113 | must | e2e |
-| AUD-005 | must not: postMessage to "*" with a figure that accepts any sender; messages must target the app's own origin and the figure must check that they come from its parent. | current-simlab-audit.md §3.1 P-04 (L) L114 | must | review |
-| AUD-006 | must not: an unknown board, robotics or drone slug answering HTTP 200 on its first request; every unknown slug must return 404 every time. | current-simlab-audit.md §3.1 P-05 (M) L115 | must | e2e |
-| AUD-007 | must not: raw slugs as page titles ("uno-build — SimLab robotics"), plain "SimLab" on the index pages and one description for every page; each page must have a human title and its own description, with per-language alternates. | current-simlab-audit.md §3.1 P-06 (L) L116 | must | e2e |
-| AUD-008 | must not: unguarded localStorage access in snapshots and setters; every access must be guarded and fall back to memory when storage throws. | current-simlab-audit.md §3.1 P-07 (L) L117 | must | unit |
-| AUD-009 | must not: hidden routes that keep their figures mounted and animating; a figure on a hidden route must pause or unmount. | current-simlab-audit.md §3.1 P-08 (L) L118 | must | e2e |
-| AUD-010 | must not: any code, figure source or built figure carried over from the audited build at commit 245763f; its src/app, src/components and src/lib files and its figures must be replaced by new code written during the hackathon, not patched. | current-simlab-audit.md L3; BASE_ARCHITECTURE.md D13 | must | review |
+| AUD-001 | must not: figure sources left outside every lint and type check; figure code must be linted and type-checked, and a headless run must fail the build when a figure records data-errors. | current-iynk-audit.md §1 L83-84 | must | review |
+| AUD-002 | must not: a one-shot "ready" from the figure that races React hydration and leaves the figure disconnected; the app and the figure must handshake (the parent says hello on iframe load and when its listener attaches, the figure answers every hello, patches queue until ready), and the figure must connect on every load, including on a 6× throttled CPU. | current-iynk-audit.md §3.1 P-01 (C) L111; §2 #1 L90 | must | e2e |
+| AUD-003 | must not: clearing the figure's readiness on iframe load; readiness must be tracked per load and never cleared after a ready for the current load. | current-iynk-audit.md §3.1 P-02 (M) L112 | must | unit |
+| AUD-004 | must not: posting every patch twice and rebuilding the whole figure for each (244 patches a second while armed); the app must send one memoised patch of changed keys, at most once per animation frame. | current-iynk-audit.md §3.1 P-03 (M) L113 | must | e2e |
+| AUD-005 | must not: postMessage to "*" with a figure that accepts any sender; messages must target the app's own origin and the figure must check that they come from its parent. | current-iynk-audit.md §3.1 P-04 (L) L114 | must | review |
+| AUD-006 | must not: an unknown board, robotics or drone slug answering HTTP 200 on its first request; every unknown slug must return 404 every time. | current-iynk-audit.md §3.1 P-05 (M) L115 | must | e2e |
+| AUD-007 | must not: raw slugs as page titles ("uno-build — iynk robotics"), plain "iynk" on the index pages and one description for every page; each page must have a human title and its own description, with per-language alternates. | current-iynk-audit.md §3.1 P-06 (L) L116 | must | e2e |
+| AUD-008 | must not: unguarded localStorage access in snapshots and setters; every access must be guarded and fall back to memory when storage throws. | current-iynk-audit.md §3.1 P-07 (L) L117 | must | unit |
+| AUD-009 | must not: hidden routes that keep their figures mounted and animating; a figure on a hidden route must pause or unmount. | current-iynk-audit.md §3.1 P-08 (L) L118 | must | e2e |
+| AUD-010 | must not: any code, figure source or built figure carried over from the audited build at commit 245763f; its src/app, src/components and src/lib files and its figures must be replaced by new code written during the hackathon, not patched. | current-iynk-audit.md L3; BASE_ARCHITECTURE.md D13 | must | review |
 
 ## AUD · Figures: the board and drone drawings
 
-current-simlab-audit.md §3.2 (figure engine use, F-01 to F-24).
+current-iynk-audit.md §3.2 (figure engine use, F-01 to F-24).
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| AUD-011 | must not: a breadboard sheet that throws and draws nothing; the breadboard view must render on every board. | current-simlab-audit.md §3.2 F-01 (C) L124; §2 #2 L91 | must | e2e |
-| AUD-012 | must not: local names that shadow reserved Colorfigures core names (a const on in board.html, used before it is declared); figure code must never declare a reserved core name. | current-simlab-audit.md §3.2 F-01 (C) L124, F-22 (L) L145 | must | review |
-| AUD-013 | must not: a colour string passed where a material is needed, blanking the schematic on every board and freezing the figure after the "Control a motor" lesson; the schematic must render on every board and the motor lesson must run with no errors. | current-simlab-audit.md §3.2 F-02 (C) L125; §2 #2 L91 | must | e2e |
-| AUD-014 | must not: part boxes drawn up from the board's bottom so the PCB hides them (an empty micro:bit, Basys 3 and DE10-Lite showing only a USB block, Pi boards with no SoC, Nucleo without its left morpho header); every on-board part must sit on the PCB top and show from each of the skill's seven check angles. | current-simlab-audit.md §3.2 F-03 (H) L126; §2 #3 L92 | must | screenshot |
-| AUD-015 | must not: the Nano drawn as a small Uno (DIP-28 chip, Uno-style female headers); the Nano must have a TQFP-32 ATmega328P, 2 × 15 male pins along its long edges, a mini-USB at one end and its reset button in the middle. | current-simlab-audit.md §3.2 F-04 (H) L127 | must | screenshot |
-| AUD-016 | must not: an Uno R4 with no RA4M1, a 16U2 on the Minima and a 78 × 102 outline; the R4 must show the RA4M1 (LQFP-64), the ESP32-S3-MINI-1 module on the WiFi model, no 16U2, and the Uno's outline. | current-simlab-audit.md §3.2 F-05 (H) L128 | must | screenshot |
-| AUD-017 | must not: one shared yellow drawing for the ESP32 DevKit, the ESP32-S3 DevKit and the NodeMCU (cans reading "ESP32" and "ESP", female headers, 15 pins on the S3); each must have its own layout with the antenna overhang, its USB-UART chip, the AMS1117, male pins, and on the S3 the second USB port, the RGB LED and 22 pins a side. | current-simlab-audit.md §3.2 F-06 (H) L129 | must | screenshot |
-| AUD-018 | must not: the Pico's BOOTSEL drawn at the far end and "PICO" silk on the Pico 2; BOOTSEL must sit near the USB end and each variant must carry its own silk. | current-simlab-audit.md §3.2 F-07 (M) L130 | must | screenshot |
-| AUD-019 | must not: the Pico W's LED driven from GP25; on the Pico W the LED hangs off the CYW43 wireless chip and must be driven through it. | current-simlab-audit.md §3.2 F-07 (M) L130; §2 #6 L95 | must | e2e |
-| AUD-020 | must not: a mustard Pi with "GPIO 40" as one row of 20 pins, one USB-A block and no micro-HDMI, RP1, PCIe FFC or fan header; the Pi must be a green PCB with the 2 × 20 header, two stacked USB-A pairs and Ethernet, two micro-HDMI, the RP1, the PCIe FFC and, on the Pi 5, the power button. | current-simlab-audit.md §3.2 F-08 (M) L131 | must | screenshot |
-| AUD-021 | must not: five push buttons on the DE10-Lite, the Basys 3's five buttons in a row, green DE10 LEDs, and no VGA, Pmod or Arduino header; the DE10-Lite must have KEY0 and KEY1 and red LEDR, the Basys 3 its five buttons in a plus, and each board its real VGA, Pmod and Arduino headers. | current-simlab-audit.md §3.2 F-09 (M) L132 | must | screenshot |
-| AUD-022 | must not: unreadable seven-segment digits (about 4.6 × 3.4 units) with the ones digit leftmost; digits must be readable at real scale with the ones digit rightmost. | current-simlab-audit.md §3.2 F-10 (M) L133 | must | screenshot |
-| AUD-023 | must not: one generic see-through die with four bond wires and a crystal at a fixed spot on every board, and callouts (POLYFUSE, 3V3 REG, CRYSTAL, the bridge) naming parts that are not drawn; see-through internals must sit under each board's real chip, and every label must name a part that is drawn. | current-simlab-audit.md §3.2 F-11 (H) L134 | must | screenshot |
-| AUD-024 | must not: generic surface tags ("ANALOG PINS" on FPGA boards, "RESET" where none is drawn, "DIGITAL PINS" on the micro:bit); each board must tag only its own real parts. | current-simlab-audit.md §3.2 F-12 (M) L135 | must | screenshot |
-| AUD-025 | must not: robotics modules drawn as coloured slabs beside the Uno with no pins, jumpers or load, and the HC-SR04 and MPU-6050 drawn twice; each module must be a full figure with its headers, its wiring to the controller and its driven load, drawn once. | current-simlab-audit.md §3.2 F-13 (H) L136 | must | screenshot |
-| AUD-026 | must not: the wrong lesson peripheral (a TMP36 shown as an LDR, a soil probe as an LDR, an FSR as a push button, nothing at all for the RGB and tone lessons) or a DC motor that never spins on the board page; each lesson must show its own correct peripheral, and the motor must spin. | current-simlab-audit.md §3.2 F-14 (M) L137 | must | e2e |
-| AUD-027 | must not: figure buttons that fight the app (the figure's Blink killed by the next patch, its Plug USB reverted, its Reset not resetting the sketch); an embedded figure must have one owner of state, hiding its own controls or routing them to the app. | current-simlab-audit.md §3.2 F-15 (M) L138 | must | e2e |
-| AUD-028 | must not: drag-to-rotate that only works on empty paper; dragging anywhere, the object included, must turn it, with a click-or-drag threshold that keeps parts clickable. | current-simlab-audit.md §3.2 F-16 (M) L139 | must | e2e |
-| AUD-029 | must not: a fixed 100 × 100 shadow square under every drone; each craft's shadow must follow its own hull. | current-simlab-audit.md §3.2 F-17 (L) L140 | must | screenshot |
-| AUD-030 | must not: every prop spinning the same way; each motor must turn its real direction (two CW and two CCW on a quad, props-in or props-out as configured). | current-simlab-audit.md §3.2 F-18 (H) L141 | must | e2e |
-| AUD-031 | must not: 3-bladed props on every craft at about 0.27 of the motor-to-motor diagonal; each prop must have its real blade count (2-bladed on the racer, the 7-inch and the wing) and true scale (about 0.58 of the diagonal on a 5-inch quad). | current-simlab-audit.md §3.2 F-18 (H) L141 | must | screenshot |
-| AUD-032 | must not: a flying wing drawn as a flat 110 × 18 rectangle with a box pod; the wing must have a swept planform, moving elevons, winglets and a pusher prop. | current-simlab-audit.md §3.2 F-19 (H) L142 | must | screenshot |
-| AUD-033 | must not: the agricultural sprayer drawn as a quad without booms, nozzles or landing gear, legless GPS, delivery and agricultural craft and a delivery craft without a gripper; each airframe must have its own frame (hexa, octo, tri, VTOL) and part set. | current-simlab-audit.md §3.2 F-20 (H) L143 | must | screenshot |
-| AUD-034 | must not: a Crazyflie with an XT60, a capacitor, a camera, a VTX and a receiver, none of which it has; the nano craft must carry only its real parts. | current-simlab-audit.md §3.2 F-20 (H) L143 | must | review |
-| AUD-035 | must not: a wiring sheet whose blocks carry no text; every node must be labelled and the sheet must have a legend. | current-simlab-audit.md §3.2 F-21 (H) L144; §2 #9 L98 | must | screenshot |
-| AUD-036 | must not: a wiring sheet with only battery → XT60 → ESC → FC links and a video link ending at the ESC; it must draw ESC → motors, RX → FC, camera → FC/OSD and FC → VTX, with the video link ending at the VTX. | current-simlab-audit.md §3.2 F-21 (H) L144 | must | review |
-| AUD-037 | must not: per-craft data that nothing reads (the stack field); data must be used or deleted. | current-simlab-audit.md §3.2 F-23 (L) L146 | must | review |
-| AUD-038 | must not: figure sources that load a core.js that is not beside them; each source must open directly, or the build step that inlines the core must be documented. | current-simlab-audit.md §3.2 F-24 (L) L147 | must | review |
+| AUD-011 | must not: a breadboard sheet that throws and draws nothing; the breadboard view must render on every board. | current-iynk-audit.md §3.2 F-01 (C) L124; §2 #2 L91 | must | e2e |
+| AUD-012 | must not: local names that shadow reserved Colorfigures core names (a const on in board.html, used before it is declared); figure code must never declare a reserved core name. | current-iynk-audit.md §3.2 F-01 (C) L124, F-22 (L) L145 | must | review |
+| AUD-013 | must not: a colour string passed where a material is needed, blanking the schematic on every board and freezing the figure after the "Control a motor" lesson; the schematic must render on every board and the motor lesson must run with no errors. | current-iynk-audit.md §3.2 F-02 (C) L125; §2 #2 L91 | must | e2e |
+| AUD-014 | must not: part boxes drawn up from the board's bottom so the PCB hides them (an empty micro:bit, Basys 3 and DE10-Lite showing only a USB block, Pi boards with no SoC, Nucleo without its left morpho header); every on-board part must sit on the PCB top and show from each of the skill's seven check angles. | current-iynk-audit.md §3.2 F-03 (H) L126; §2 #3 L92 | must | screenshot |
+| AUD-015 | must not: the Nano drawn as a small Uno (DIP-28 chip, Uno-style female headers); the Nano must have a TQFP-32 ATmega328P, 2 × 15 male pins along its long edges, a mini-USB at one end and its reset button in the middle. | current-iynk-audit.md §3.2 F-04 (H) L127 | must | screenshot |
+| AUD-016 | must not: an Uno R4 with no RA4M1, a 16U2 on the Minima and a 78 × 102 outline; the R4 must show the RA4M1 (LQFP-64), the ESP32-S3-MINI-1 module on the WiFi model, no 16U2, and the Uno's outline. | current-iynk-audit.md §3.2 F-05 (H) L128 | must | screenshot |
+| AUD-017 | must not: one shared yellow drawing for the ESP32 DevKit, the ESP32-S3 DevKit and the NodeMCU (cans reading "ESP32" and "ESP", female headers, 15 pins on the S3); each must have its own layout with the antenna overhang, its USB-UART chip, the AMS1117, male pins, and on the S3 the second USB port, the RGB LED and 22 pins a side. | current-iynk-audit.md §3.2 F-06 (H) L129 | must | screenshot |
+| AUD-018 | must not: the Pico's BOOTSEL drawn at the far end and "PICO" silk on the Pico 2; BOOTSEL must sit near the USB end and each variant must carry its own silk. | current-iynk-audit.md §3.2 F-07 (M) L130 | must | screenshot |
+| AUD-019 | must not: the Pico W's LED driven from GP25; on the Pico W the LED hangs off the CYW43 wireless chip and must be driven through it. | current-iynk-audit.md §3.2 F-07 (M) L130; §2 #6 L95 | must | e2e |
+| AUD-020 | must not: a mustard Pi with "GPIO 40" as one row of 20 pins, one USB-A block and no micro-HDMI, RP1, PCIe FFC or fan header; the Pi must be a green PCB with the 2 × 20 header, two stacked USB-A pairs and Ethernet, two micro-HDMI, the RP1, the PCIe FFC and, on the Pi 5, the power button. | current-iynk-audit.md §3.2 F-08 (M) L131 | must | screenshot |
+| AUD-021 | must not: five push buttons on the DE10-Lite, the Basys 3's five buttons in a row, green DE10 LEDs, and no VGA, Pmod or Arduino header; the DE10-Lite must have KEY0 and KEY1 and red LEDR, the Basys 3 its five buttons in a plus, and each board its real VGA, Pmod and Arduino headers. | current-iynk-audit.md §3.2 F-09 (M) L132 | must | screenshot |
+| AUD-022 | must not: unreadable seven-segment digits (about 4.6 × 3.4 units) with the ones digit leftmost; digits must be readable at real scale with the ones digit rightmost. | current-iynk-audit.md §3.2 F-10 (M) L133 | must | screenshot |
+| AUD-023 | must not: one generic see-through die with four bond wires and a crystal at a fixed spot on every board, and callouts (POLYFUSE, 3V3 REG, CRYSTAL, the bridge) naming parts that are not drawn; see-through internals must sit under each board's real chip, and every label must name a part that is drawn. | current-iynk-audit.md §3.2 F-11 (H) L134 | must | screenshot |
+| AUD-024 | must not: generic surface tags ("ANALOG PINS" on FPGA boards, "RESET" where none is drawn, "DIGITAL PINS" on the micro:bit); each board must tag only its own real parts. | current-iynk-audit.md §3.2 F-12 (M) L135 | must | screenshot |
+| AUD-025 | must not: robotics modules drawn as coloured slabs beside the Uno with no pins, jumpers or load, and the HC-SR04 and MPU-6050 drawn twice; each module must be a full figure with its headers, its wiring to the controller and its driven load, drawn once. | current-iynk-audit.md §3.2 F-13 (H) L136 | must | screenshot |
+| AUD-026 | must not: the wrong lesson peripheral (a TMP36 shown as an LDR, a soil probe as an LDR, an FSR as a push button, nothing at all for the RGB and tone lessons) or a DC motor that never spins on the board page; each lesson must show its own correct peripheral, and the motor must spin. | current-iynk-audit.md §3.2 F-14 (M) L137 | must | e2e |
+| AUD-027 | must not: figure buttons that fight the app (the figure's Blink killed by the next patch, its Plug USB reverted, its Reset not resetting the sketch); an embedded figure must have one owner of state, hiding its own controls or routing them to the app. | current-iynk-audit.md §3.2 F-15 (M) L138 | must | e2e |
+| AUD-028 | must not: drag-to-rotate that only works on empty paper; dragging anywhere, the object included, must turn it, with a click-or-drag threshold that keeps parts clickable. | current-iynk-audit.md §3.2 F-16 (M) L139 | must | e2e |
+| AUD-029 | must not: a fixed 100 × 100 shadow square under every drone; each craft's shadow must follow its own hull. | current-iynk-audit.md §3.2 F-17 (L) L140 | must | screenshot |
+| AUD-030 | must not: every prop spinning the same way; each motor must turn its real direction (two CW and two CCW on a quad, props-in or props-out as configured). | current-iynk-audit.md §3.2 F-18 (H) L141 | must | e2e |
+| AUD-031 | must not: 3-bladed props on every craft at about 0.27 of the motor-to-motor diagonal; each prop must have its real blade count (2-bladed on the racer, the 7-inch and the wing) and true scale (about 0.58 of the diagonal on a 5-inch quad). | current-iynk-audit.md §3.2 F-18 (H) L141 | must | screenshot |
+| AUD-032 | must not: a flying wing drawn as a flat 110 × 18 rectangle with a box pod; the wing must have a swept planform, moving elevons, winglets and a pusher prop. | current-iynk-audit.md §3.2 F-19 (H) L142 | must | screenshot |
+| AUD-033 | must not: the agricultural sprayer drawn as a quad without booms, nozzles or landing gear, legless GPS, delivery and agricultural craft and a delivery craft without a gripper; each airframe must have its own frame (hexa, octo, tri, VTOL) and part set. | current-iynk-audit.md §3.2 F-20 (H) L143 | must | screenshot |
+| AUD-034 | must not: a Crazyflie with an XT60, a capacitor, a camera, a VTX and a receiver, none of which it has; the nano craft must carry only its real parts. | current-iynk-audit.md §3.2 F-20 (H) L143 | must | review |
+| AUD-035 | must not: a wiring sheet whose blocks carry no text; every node must be labelled and the sheet must have a legend. | current-iynk-audit.md §3.2 F-21 (H) L144; §2 #9 L98 | must | screenshot |
+| AUD-036 | must not: a wiring sheet with only battery → XT60 → ESC → FC links and a video link ending at the ESC; it must draw ESC → motors, RX → FC, camera → FC/OSD and FC → VTX, with the video link ending at the VTX. | current-iynk-audit.md §3.2 F-21 (H) L144 | must | review |
+| AUD-037 | must not: per-craft data that nothing reads (the stack field); data must be used or deleted. | current-iynk-audit.md §3.2 F-23 (L) L146 | must | review |
+| AUD-038 | must not: figure sources that load a core.js that is not beside them; each source must open directly, or the build step that inlines the core must be documented. | current-iynk-audit.md §3.2 F-24 (L) L147 | must | review |
 
 ## AUD · Sketch runner and translator
 
-current-simlab-audit.md §3.3 (src/lib/runner.ts, R-01 to R-20).
+current-iynk-audit.md §3.3 (src/lib/runner.ts, R-01 to R-20).
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| AUD-039 | must not: pinMode ignoring the mode so an idle INPUT_PULLUP button reads pressed ("Push a button" printing pressed at rest, "Mini piano" playing at rest); INPUT_PULLUP must idle HIGH, a press must pull it LOW, and INPUT must follow its sensor or float. | current-simlab-audit.md §3.3 R-01 (H) L153; §2 #4 L93 | must | unit |
-| AUD-040 | must not: servo.write(angle) always moving the servo to 0; the servo must go to the angle written ("Spin the wheel" about 85). | current-simlab-audit.md §3.3 R-02 (H) L154 | must | unit |
-| AUD-041 | must not: every .write( rewritten into a servo call (Serial.write(65) printing nothing); only declared Servo objects are servos, and Serial.write(65) must print "A". | current-simlab-audit.md §3.3 R-03 (H) L155 | must | unit |
-| AUD-042 | must not: Serial.print ending its own line ("A0=" and "512" on two lines); print must append to the current line until println or a newline. | current-simlab-audit.md §3.3 R-04 (H) L156 | must | unit |
-| AUD-043 | must not: Serial.println(255, HEX) failing with "HEX is not defined"; DEC, HEX, BIN and OCT bases and float digit counts must work. | current-simlab-audit.md §3.3 R-04 (H) L156 | must | unit |
-| AUD-044 | must not: "Could not compile" for float, long, String, unsigned int, arrays, non-void functions and typed parameters; the runner must accept C types (qualifiers, arrays, pointers, char, double, uint8_t, int16_t, uint32_t, casts) in declarations, parameters and return types. | current-simlab-audit.md §3.3 R-05 (H) L157 | must | unit |
-| AUD-045 | must not: dropping every # line so #define LED 13 fails; object-like #define must work and #include lines must be accepted. | current-simlab-audit.md §3.3 R-06 (H) L158 | must | unit |
-| AUD-046 | must not: while (1); or any busy loop freezing the tab; sketches must run off the main thread or yield, and a runaway loop must stop with a message while the page stays responsive. | current-simlab-audit.md §3.3 R-07 (C) L159 | must | e2e |
-| AUD-047 | must not: calls to the user's own functions that are not awaited, so delays inside helpers do not block; a helper with delay(1000) called four times must take about 4 s. | current-simlab-audit.md §3.3 R-08 (H) L160 | must | unit |
-| AUD-048 | must not: inverted interrupt edges (the reaction timer measuring the release, 1404 ms for a 500 ms press); FALLING must fire on the press and RISING on the release of a pull-up button. | current-simlab-audit.md §3.3 R-09 (M) L161 | must | unit |
-| AUD-049 | must not: a stale runner setting "Stopped" and disabling Stop while the new sketch keeps running; status from an old run must be ignored, and Stop must work whenever a sketch is running. | current-simlab-audit.md §3.3 R-10 (M) L162 | must | e2e |
-| AUD-050 | must not: missing core API; the runner must implement delayMicroseconds, micros, pulseIn, map, constrain, abs, min, max, random, randomSeed, Serial.available, Serial.read, Wire, shiftOut, bitRead, analogReadResolution, ledcWrite, rgbLedWrite or neopixelWrite, and tone with a duration, as the lessons and originals use them. | current-simlab-audit.md §3.3 R-11 (M) L163 | must | unit |
-| AUD-051 | must not: delay() silently capped at 4000 ms; delay must wait the full time asked. | current-simlab-audit.md §3.3 R-11 (M) L163 | must | unit |
-| AUD-052 | must not: numbers 14 to 19 mapped to A0–A5 on every board; pin maps must be per board (ESP32 GPIO14–19 and Pico GP14–19 are ordinary pins). | current-simlab-audit.md §3.3 R-12 (M) L164 | must | unit |
-| AUD-053 | must not: 8-bit PWM and a 10-bit ADC on every board, and only pin 13 marked non-PWM on the Uno and Nano; resolution and PWM pins must be per board (the ESP32's ADC is 12-bit; on the ATmega328P pins 0, 1, 2, 4, 7, 8, 12 and 13 have no PWM). | current-simlab-audit.md §3.3 R-13 (M) L165 | must | unit |
-| AUD-054 | must not: FPGA "Verilog" run by regex dispatch ("assign led = sw & 16'h0000" showing led = sw, the word "chaser" forcing a rotation, "led <= btn" ignored); the FPGA editor must run a small Verilog subset (assign, always @(posedge), concatenation, shifts, counters) or be locked and clearly marked illustrative. | current-simlab-audit.md §3.3 R-14 (M) L166 | must | unit |
-| AUD-055 | must not: DE10-Lite digits that never update because the runner sends four digits to a six-digit display; digit updates must use the board's own digit count. | current-simlab-audit.md §3.3 R-15 (M) L167 | must | e2e |
-| AUD-056 | must not: int a = 7 / 2 giving 3.5; arithmetic on int types must truncate as in C. | current-simlab-audit.md §3.3 R-16 (L) L168 | must | unit |
-| AUD-057 | must not: dead code in the runner (the write helper's unused prev, duplicate assignment and no-op return); unused code must be deleted. | current-simlab-audit.md §3.3 R-17 (L) L169 | must | review |
-| AUD-058 | must not: compile and runtime errors shown as JavaScript messages ("Unexpected identifier 'mv'") with no C line number; errors must name the sketch's line in plain words. | current-simlab-audit.md §3.3 R-18 (L) L170 | must | e2e |
-| AUD-059 | must not: "Serial began at …" printed on every Serial.begin with no monitor baud; the monitor must have a baud selector and show garbage when it does not match the sketch, as the IDE does. | current-simlab-audit.md §3.3 R-19 (L) L171 | must | e2e |
-| AUD-060 | must not: a highlighter that treats # inside strings as a comment and misses long, char, String, unsigned and const; highlighting must come from a tokenizer. | current-simlab-audit.md §3.3 R-20 (L) L172 | must | unit |
+| AUD-039 | must not: pinMode ignoring the mode so an idle INPUT_PULLUP button reads pressed ("Push a button" printing pressed at rest, "Mini piano" playing at rest); INPUT_PULLUP must idle HIGH, a press must pull it LOW, and INPUT must follow its sensor or float. | current-iynk-audit.md §3.3 R-01 (H) L153; §2 #4 L93 | must | unit |
+| AUD-040 | must not: servo.write(angle) always moving the servo to 0; the servo must go to the angle written ("Spin the wheel" about 85). | current-iynk-audit.md §3.3 R-02 (H) L154 | must | unit |
+| AUD-041 | must not: every .write( rewritten into a servo call (Serial.write(65) printing nothing); only declared Servo objects are servos, and Serial.write(65) must print "A". | current-iynk-audit.md §3.3 R-03 (H) L155 | must | unit |
+| AUD-042 | must not: Serial.print ending its own line ("A0=" and "512" on two lines); print must append to the current line until println or a newline. | current-iynk-audit.md §3.3 R-04 (H) L156 | must | unit |
+| AUD-043 | must not: Serial.println(255, HEX) failing with "HEX is not defined"; DEC, HEX, BIN and OCT bases and float digit counts must work. | current-iynk-audit.md §3.3 R-04 (H) L156 | must | unit |
+| AUD-044 | must not: "Could not compile" for float, long, String, unsigned int, arrays, non-void functions and typed parameters; the runner must accept C types (qualifiers, arrays, pointers, char, double, uint8_t, int16_t, uint32_t, casts) in declarations, parameters and return types. | current-iynk-audit.md §3.3 R-05 (H) L157 | must | unit |
+| AUD-045 | must not: dropping every # line so #define LED 13 fails; object-like #define must work and #include lines must be accepted. | current-iynk-audit.md §3.3 R-06 (H) L158 | must | unit |
+| AUD-046 | must not: while (1); or any busy loop freezing the tab; sketches must run off the main thread or yield, and a runaway loop must stop with a message while the page stays responsive. | current-iynk-audit.md §3.3 R-07 (C) L159 | must | e2e |
+| AUD-047 | must not: calls to the user's own functions that are not awaited, so delays inside helpers do not block; a helper with delay(1000) called four times must take about 4 s. | current-iynk-audit.md §3.3 R-08 (H) L160 | must | unit |
+| AUD-048 | must not: inverted interrupt edges (the reaction timer measuring the release, 1404 ms for a 500 ms press); FALLING must fire on the press and RISING on the release of a pull-up button. | current-iynk-audit.md §3.3 R-09 (M) L161 | must | unit |
+| AUD-049 | must not: a stale runner setting "Stopped" and disabling Stop while the new sketch keeps running; status from an old run must be ignored, and Stop must work whenever a sketch is running. | current-iynk-audit.md §3.3 R-10 (M) L162 | must | e2e |
+| AUD-050 | must not: missing core API; the runner must implement delayMicroseconds, micros, pulseIn, map, constrain, abs, min, max, random, randomSeed, Serial.available, Serial.read, Wire, shiftOut, bitRead, analogReadResolution, ledcWrite, rgbLedWrite or neopixelWrite, and tone with a duration, as the lessons and originals use them. | current-iynk-audit.md §3.3 R-11 (M) L163 | must | unit |
+| AUD-051 | must not: delay() silently capped at 4000 ms; delay must wait the full time asked. | current-iynk-audit.md §3.3 R-11 (M) L163 | must | unit |
+| AUD-052 | must not: numbers 14 to 19 mapped to A0–A5 on every board; pin maps must be per board (ESP32 GPIO14–19 and Pico GP14–19 are ordinary pins). | current-iynk-audit.md §3.3 R-12 (M) L164 | must | unit |
+| AUD-053 | must not: 8-bit PWM and a 10-bit ADC on every board, and only pin 13 marked non-PWM on the Uno and Nano; resolution and PWM pins must be per board (the ESP32's ADC is 12-bit; on the ATmega328P pins 0, 1, 2, 4, 7, 8, 12 and 13 have no PWM). | current-iynk-audit.md §3.3 R-13 (M) L165 | must | unit |
+| AUD-054 | must not: FPGA "Verilog" run by regex dispatch ("assign led = sw & 16'h0000" showing led = sw, the word "chaser" forcing a rotation, "led <= btn" ignored); the FPGA editor must run a small Verilog subset (assign, always @(posedge), concatenation, shifts, counters) or be locked and clearly marked illustrative. | current-iynk-audit.md §3.3 R-14 (M) L166 | must | unit |
+| AUD-055 | must not: DE10-Lite digits that never update because the runner sends four digits to a six-digit display; digit updates must use the board's own digit count. | current-iynk-audit.md §3.3 R-15 (M) L167 | must | e2e |
+| AUD-056 | must not: int a = 7 / 2 giving 3.5; arithmetic on int types must truncate as in C. | current-iynk-audit.md §3.3 R-16 (L) L168 | must | unit |
+| AUD-057 | must not: dead code in the runner (the write helper's unused prev, duplicate assignment and no-op return); unused code must be deleted. | current-iynk-audit.md §3.3 R-17 (L) L169 | must | review |
+| AUD-058 | must not: compile and runtime errors shown as JavaScript messages ("Unexpected identifier 'mv'") with no C line number; errors must name the sketch's line in plain words. | current-iynk-audit.md §3.3 R-18 (L) L170 | must | e2e |
+| AUD-059 | must not: "Serial began at …" printed on every Serial.begin with no monitor baud; the monitor must have a baud selector and show garbage when it does not match the sketch, as the IDE does. | current-iynk-audit.md §3.3 R-19 (L) L171 | must | e2e |
+| AUD-060 | must not: a highlighter that treats # inside strings as a comment and misses long, char, String, unsigned and const; highlighting must come from a tokenizer. | current-iynk-audit.md §3.3 R-20 (L) L172 | must | unit |
 
 ## AUD · Board Lab UI
 
-current-simlab-audit.md §3.4 (BoardLab.tsx and CodeBench.tsx, B-01 to B-15).
+current-iynk-audit.md §3.4 (BoardLab.tsx and CodeBench.tsx, B-01 to B-15).
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| AUD-061 | must not: FPGA lessons that can never be marked done (0/5 on Basys 3 and DE10-Lite after running every lesson); FPGA lessons must count toward progress like any other. | current-simlab-audit.md §3.4 B-01 (H) L178; §2 #5 L94 | must | e2e |
-| AUD-062 | must not: a lesson marked done the moment Run is pressed, even when the sketch fails to compile; a lesson is done only after it runs (setup ran and loop completed once) or the user marks it done. | current-simlab-audit.md §3.4 B-02 (M) L179 | must | e2e |
-| AUD-063 | must not: the same five failure buttons on every board ("Reverse the barrel" on boards with no barrel jack, "Motor inrush" on an FPGA); each board must offer only the failures its hardware can have. | current-simlab-audit.md §3.4 B-03 (H) L180 | must | e2e |
-| AUD-064 | must not: a reversed barrel plug that "opens the polyfuse" and kills USB; on the Uno R3 the series diode blocks the reversed barrel, the board stays dark on the jack, and USB still powers and programs it. | current-simlab-audit.md §3.4 B-04 (M) L181; §3.5 E-01 (H) L198; §2 #6 L95 | must | e2e |
-| AUD-065 | must not: a "Control a motor" lesson that always browns out with no way to fix it; the lesson must include the driver, separate motor supply and common ground step that makes the motor run. | current-simlab-audit.md §3.4 B-05 (M) L182 | must | e2e |
-| AUD-066 | must not: tone() that only prints "tone 440 Hz"; tone must sound through Web Audio, with a volume and a mute (the original's buzzer had a Sound setting). | current-simlab-audit.md §3.4 B-06 (M) L183 | must | e2e |
-| AUD-067 | must not: one "Analog A0" slider feeding A0–A3 the same value; each lesson must have its own physical controls (lamp distance, hairdryer, soil, weight on the pad) bound to the pin it reads. | current-simlab-audit.md §3.4 B-07 (M) L184 | must | e2e |
-| AUD-068 | must not: a pointer-only "Button on pin 2" fixed to pin 2; the lesson's button must work from the keyboard and click, on the pin the lesson uses. | current-simlab-audit.md §3.4 B-08 (M) L185 | must | e2e |
-| AUD-069 | must not: a selected part shown by its raw id ("Selected part: mcu"); the card must show the part's designator, name and role. | current-simlab-audit.md §3.4 B-09 (M) L186 | must | e2e |
-| AUD-070 | must not: translation keys for "Next lesson", "Mark lesson done", "Reset view" and "Continue" with no controls behind them; the controls must exist, or the keys must be deleted. | current-simlab-audit.md §3.4 B-10 (M) L187 | must | e2e |
-| AUD-071 | must not: app buttons that duplicate the figure's with different words ("Unplug USB" against "Plug USB") and an exploded view that jumps with no animation; there must be one control set, and the explode must animate. | current-simlab-audit.md §3.4 B-11 (L) L188 | must | e2e |
-| AUD-072 | must not: board variants that change only the drawing (the Minima titled "Arduino Uno R4 WiFi", Pico W and Pico 2 keeping GP25 and "133 MHz", the Pi 4 keeping the Pi 5's facts); a variant must change its title, facts and lessons too. | current-simlab-audit.md §3.4 B-12 (L) L189 | must | e2e |
-| AUD-073 | must not: a serial monitor with no clear, autoscroll, timestamps, baud or input line; the monitor must match the IDE's. | current-simlab-audit.md §3.4 B-13 (L) L190 | must | e2e |
-| AUD-074 | must not: a micro:bit whose "LED" is only the centre pixel; the micro:bit must expose its display API across the 5 × 5 matrix. | current-simlab-audit.md §3.4 B-14 (L) L191 | must | e2e |
-| AUD-075 | must not: Run disabled while a sketch runs, so editing needs Stop then Run; Run must restart the sketch. | current-simlab-audit.md §3.4 B-15 (L) L192 | must | e2e |
+| AUD-061 | must not: FPGA lessons that can never be marked done (0/5 on Basys 3 and DE10-Lite after running every lesson); FPGA lessons must count toward progress like any other. | current-iynk-audit.md §3.4 B-01 (H) L178; §2 #5 L94 | must | e2e |
+| AUD-062 | must not: a lesson marked done the moment Run is pressed, even when the sketch fails to compile; a lesson is done only after it runs (setup ran and loop completed once) or the user marks it done. | current-iynk-audit.md §3.4 B-02 (M) L179 | must | e2e |
+| AUD-063 | must not: the same five failure buttons on every board ("Reverse the barrel" on boards with no barrel jack, "Motor inrush" on an FPGA); each board must offer only the failures its hardware can have. | current-iynk-audit.md §3.4 B-03 (H) L180 | must | e2e |
+| AUD-064 | must not: a reversed barrel plug that "opens the polyfuse" and kills USB; on the Uno R3 the series diode blocks the reversed barrel, the board stays dark on the jack, and USB still powers and programs it. | current-iynk-audit.md §3.4 B-04 (M) L181; §3.5 E-01 (H) L198; §2 #6 L95 | must | e2e |
+| AUD-065 | must not: a "Control a motor" lesson that always browns out with no way to fix it; the lesson must include the driver, separate motor supply and common ground step that makes the motor run. | current-iynk-audit.md §3.4 B-05 (M) L182 | must | e2e |
+| AUD-066 | must not: tone() that only prints "tone 440 Hz"; tone must sound through Web Audio, with a volume and a mute (the original's buzzer had a Sound setting). | current-iynk-audit.md §3.4 B-06 (M) L183 | must | e2e |
+| AUD-067 | must not: one "Analog A0" slider feeding A0–A3 the same value; each lesson must have its own physical controls (lamp distance, hairdryer, soil, weight on the pad) bound to the pin it reads. | current-iynk-audit.md §3.4 B-07 (M) L184 | must | e2e |
+| AUD-068 | must not: a pointer-only "Button on pin 2" fixed to pin 2; the lesson's button must work from the keyboard and click, on the pin the lesson uses. | current-iynk-audit.md §3.4 B-08 (M) L185 | must | e2e |
+| AUD-069 | must not: a selected part shown by its raw id ("Selected part: mcu"); the card must show the part's designator, name and role. | current-iynk-audit.md §3.4 B-09 (M) L186 | must | e2e |
+| AUD-070 | must not: translation keys for "Next lesson", "Mark lesson done", "Reset view" and "Continue" with no controls behind them; the controls must exist, or the keys must be deleted. | current-iynk-audit.md §3.4 B-10 (M) L187 | must | e2e |
+| AUD-071 | must not: app buttons that duplicate the figure's with different words ("Unplug USB" against "Plug USB") and an exploded view that jumps with no animation; there must be one control set, and the explode must animate. | current-iynk-audit.md §3.4 B-11 (L) L188 | must | e2e |
+| AUD-072 | must not: board variants that change only the drawing (the Minima titled "Arduino Uno R4 WiFi", Pico W and Pico 2 keeping GP25 and "133 MHz", the Pi 4 keeping the Pi 5's facts); a variant must change its title, facts and lessons too. | current-iynk-audit.md §3.4 B-12 (L) L189 | must | e2e |
+| AUD-073 | must not: a serial monitor with no clear, autoscroll, timestamps, baud or input line; the monitor must match the IDE's. | current-iynk-audit.md §3.4 B-13 (L) L190 | must | e2e |
+| AUD-074 | must not: a micro:bit whose "LED" is only the centre pixel; the micro:bit must expose its display API across the 5 × 5 matrix. | current-iynk-audit.md §3.4 B-14 (L) L191 | must | e2e |
+| AUD-075 | must not: Run disabled while a sketch runs, so editing needs Stop then Run; Run must restart the sketch. | current-iynk-audit.md §3.4 B-15 (L) L192 | must | e2e |
 
 ## AUD · Lesson content and board facts
 
-current-simlab-audit.md §3.5 (src/lib/boards.ts and the messages that teach, E-01 to E-24).
+current-iynk-audit.md §3.5 (src/lib/boards.ts and the messages that teach, E-01 to E-24).
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| AUD-076 | must not: "Y1 16.000 MHz — MCU clock" on the Uno R3; on Rev3 the HC-49 16 MHz crystal clocks the ATmega16U2 and the ATmega328P runs from a 16 MHz ceramic resonator (checked against the Rev3 schematic before the copy is written). | current-simlab-audit.md §3.5 E-02 (M) L199 | must | review |
-| AUD-077 | must not: "L LED: Pin 13, through a resistor"; on Rev3 the L LED is buffered by half of the LMV358, whose other half switches the USB/VIN power MOSFET. | current-simlab-audit.md §3.5 E-03 (L) L200 | must | review |
-| AUD-078 | must not: the ESP32 and NodeMCU button lesson putting the button and the LED on GPIO2 (it oscillates at rest, and GPIO2 is a strapping pin); each board must use a separate button pin (BOOT/GPIO0 or GPIO4). | current-simlab-audit.md §3.5 E-04 (H) L201; §2 #5 L94 | must | e2e |
-| AUD-079 | must not: undefined LED names (LD2 on the Nucleo, matrix on the micro:bit, ACT on the Pi 5, LEDR0 on the DE10); each board's blink and button lessons must compile and run with its real API (LED_BUILTIN on PA5 for the Nucleo, the micro:bit display API, gpiozero or libgpiod on the Pi, Verilog on the FPGA). | current-simlab-audit.md §3.5 E-05 (H) L202; §2 #5 L94 | must | e2e |
-| AUD-080 | must not: Arduino C lessons (setup/loop, Serial.begin) on the Raspberry Pi 5; Pi lessons must be Python (gpiozero) or C (libgpiod) with a shell model, plus a ROS 2 node lesson. | current-simlab-audit.md §3.5 E-06 (H) L203; §2 #5 L94 | must | e2e |
-| AUD-081 | must not: C sketches and a 16-bit Verilog module on the DE10-Lite; its lessons must be FPGA-only, using its 10-bit SW[9:0] and LEDR[9:0], HEX0–HEX5 and KEY[1:0]. | current-simlab-audit.md §3.5 E-07 (H) L204 | must | e2e |
-| AUD-082 | must not: a C sketch (Serial.println("Basys 3")) as the Basys 3's "Meet the board"; FPGA lessons must use Verilog or no sketch. | current-simlab-audit.md §3.5 E-08 (M) L205 | must | e2e |
-| AUD-083 | must not: the PWM lesson on pin 9 on every board (SPI flash on the ESP32-WROOM and most ESP8266 modules) with knob/4 overflowing the ESP32's 12-bit reading; each board must use a safe PWM pin (ESP32 LEDC on GPIO25 or similar) and scale with map(). | current-simlab-audit.md §3.5 E-09 (H) L206 | must | e2e |
-| AUD-084 | must not: digitalWrite(48, HIGH) to light the ESP32-S3's RGB LED; it is a WS2812 (GPIO48 on DevKitC-1 v1.0, GPIO38 on v1.1) driven with rgbLedWrite(RGB_BUILTIN, r, g, b) or neopixelWrite. | current-simlab-audit.md §3.5 E-10 (M) L207 | must | e2e |
-| AUD-085 | must not: "The ADC pin only wants 0–1 V" on the NodeMCU; the bare ESP8266 TOUT takes 0–1 V, but NodeMCU boards add a 220 k / 100 k divider so A0 takes about 0–3.2 V, and both must be stated. | current-simlab-audit.md §3.5 E-11 (M) L208 | must | review |
-| AUD-086 | must not: the Pico W's LED on GP25, the Pico 2 at 133 MHz and "I²C and SPI are on any pin through the PIO"; the Pico W's LED is CYW43 WL_GPIO0 (arduino-pico LED_BUILTIN = 64), the Pico 2 (RP2350) runs at 150 MHz, and hardware I²C and SPI use fixed pin sets while only PIO can use any pin. | current-simlab-audit.md §3.5 E-12 (M) L209 | must | review |
-| AUD-087 | must not: placeholder sketches printing canned strings ("wifi: station idle, rssi n/a", "i2c scan: 0x68 MPU-6050 ack", "gpio: keep motors off the header"); Wi-Fi, I²C and GPIO lessons must run real code (a WiFi scan, a Wire scanner) against simulated devices. | current-simlab-audit.md §3.5 E-13 (H) L210; §2 #9 L98 | must | e2e |
-| AUD-088 | must not: servo sketches without #include <Servo.h>, Servo servo; and servo.attach(9), using knob/6; servo sketches must be complete and use map(knob, 0, 1023, 0, 180). | current-simlab-audit.md §3.5 E-14 (H) L211 | must | review |
-| AUD-089 | must not: a "Mini piano" that promises "Five buttons, five notes" with one button and one note; it must have five pins and five notes (the original also offers tunes, octave and note-name options). | current-simlab-audit.md §3.5 E-15 (M) L212 | must | e2e |
-| AUD-090 | must not: a motor sketch driving analogWrite(5, …) with no driver pins while the text says to use a TB6612; the sketch must drive the TB6612's AIN1, AIN2, PWMA and STBY. | current-simlab-audit.md §3.5 E-16 (M) L213 | must | review |
-| AUD-091 | must not: heat, plant and force lessons on the generic slider with the wrong sensor art, a soil "probe is a resistor" and a button counter as "Build a project"; the original designs must come back (capacitive soil sensor v1.2 with an SSD1306 OLED at 0x3C, the HC-SR04 parking sensor with a traffic light). | current-simlab-audit.md §3.5 E-17 (M) L214 | must | e2e |
-| AUD-092 | must not: dropping the original lessons "Read a sensor" (HC-SR04 with a Car, Box, Ball or Wall at 5–50 cm, "Drive back and forth while running") and "Spin the wheel" (a 28BYJ-48 on a ULN2003 turning an 8 × 256-step prize wheel), or reusing "Spin the wheel" for a pot-to-servo lesson; both originals must be restored under their own names. | current-simlab-audit.md §3.5 E-18 (M) L215 | must | e2e |
-| AUD-093 | must not: quizzes on the Uno only; every board must have its own quiz. | current-simlab-audit.md §3.5 E-19 (M) L216 | must | e2e |
-| AUD-094 | must not: an LED chaser that fills with ones at 100 MHz (invisible); the chaser must rotate {led[14:0], led[15]} from 16'h0001 behind a clock divider of about 24 bits so it can be seen. | current-simlab-audit.md §3.5 E-20 (L) L217 | must | e2e |
-| AUD-095 | must not: a Buttons lesson that says "two flip-flops" over a one-flip-flop sketch; the sketch must be a two-flip-flop synchroniser. | current-simlab-audit.md §3.5 E-21 (L) L218 | must | review |
-| AUD-096 | must not: a "Show a number" lesson whose code is assign led = sw; it must drive a multiplexed display with the Basys 3's active-low segments and anodes. | current-simlab-audit.md §3.5 E-22 (L) L219 | must | e2e |
-| AUD-097 | must not: "JTAG, not a UART MCU" for the Basys 3's FT2232; it gives JTAG and a USB-UART. | current-simlab-audit.md §3.5 E-23 (L) L220 | must | review |
-| AUD-098 | must not: an incomplete non-PWM pin list on the Uno and Nano; it must list 0, 1, 2, 4, 7, 8, 12 and 13. | current-simlab-audit.md §3.5 E-24 (L) L221; §3.3 R-13 (M) L165 | must | unit |
+| AUD-076 | must not: "Y1 16.000 MHz — MCU clock" on the Uno R3; on Rev3 the HC-49 16 MHz crystal clocks the ATmega16U2 and the ATmega328P runs from a 16 MHz ceramic resonator (checked against the Rev3 schematic before the copy is written). | current-iynk-audit.md §3.5 E-02 (M) L199 | must | review |
+| AUD-077 | must not: "L LED: Pin 13, through a resistor"; on Rev3 the L LED is buffered by half of the LMV358, whose other half switches the USB/VIN power MOSFET. | current-iynk-audit.md §3.5 E-03 (L) L200 | must | review |
+| AUD-078 | must not: the ESP32 and NodeMCU button lesson putting the button and the LED on GPIO2 (it oscillates at rest, and GPIO2 is a strapping pin); each board must use a separate button pin (BOOT/GPIO0 or GPIO4). | current-iynk-audit.md §3.5 E-04 (H) L201; §2 #5 L94 | must | e2e |
+| AUD-079 | must not: undefined LED names (LD2 on the Nucleo, matrix on the micro:bit, ACT on the Pi 5, LEDR0 on the DE10); each board's blink and button lessons must compile and run with its real API (LED_BUILTIN on PA5 for the Nucleo, the micro:bit display API, gpiozero or libgpiod on the Pi, Verilog on the FPGA). | current-iynk-audit.md §3.5 E-05 (H) L202; §2 #5 L94 | must | e2e |
+| AUD-080 | must not: Arduino C lessons (setup/loop, Serial.begin) on the Raspberry Pi 5; Pi lessons must be Python (gpiozero) or C (libgpiod) with a shell model, plus a ROS 2 node lesson. | current-iynk-audit.md §3.5 E-06 (H) L203; §2 #5 L94 | must | e2e |
+| AUD-081 | must not: C sketches and a 16-bit Verilog module on the DE10-Lite; its lessons must be FPGA-only, using its 10-bit SW[9:0] and LEDR[9:0], HEX0–HEX5 and KEY[1:0]. | current-iynk-audit.md §3.5 E-07 (H) L204 | must | e2e |
+| AUD-082 | must not: a C sketch (Serial.println("Basys 3")) as the Basys 3's "Meet the board"; FPGA lessons must use Verilog or no sketch. | current-iynk-audit.md §3.5 E-08 (M) L205 | must | e2e |
+| AUD-083 | must not: the PWM lesson on pin 9 on every board (SPI flash on the ESP32-WROOM and most ESP8266 modules) with knob/4 overflowing the ESP32's 12-bit reading; each board must use a safe PWM pin (ESP32 LEDC on GPIO25 or similar) and scale with map(). | current-iynk-audit.md §3.5 E-09 (H) L206 | must | e2e |
+| AUD-084 | must not: digitalWrite(48, HIGH) to light the ESP32-S3's RGB LED; it is a WS2812 (GPIO48 on DevKitC-1 v1.0, GPIO38 on v1.1) driven with rgbLedWrite(RGB_BUILTIN, r, g, b) or neopixelWrite. | current-iynk-audit.md §3.5 E-10 (M) L207 | must | e2e |
+| AUD-085 | must not: "The ADC pin only wants 0–1 V" on the NodeMCU; the bare ESP8266 TOUT takes 0–1 V, but NodeMCU boards add a 220 k / 100 k divider so A0 takes about 0–3.2 V, and both must be stated. | current-iynk-audit.md §3.5 E-11 (M) L208 | must | review |
+| AUD-086 | must not: the Pico W's LED on GP25, the Pico 2 at 133 MHz and "I²C and SPI are on any pin through the PIO"; the Pico W's LED is CYW43 WL_GPIO0 (arduino-pico LED_BUILTIN = 64), the Pico 2 (RP2350) runs at 150 MHz, and hardware I²C and SPI use fixed pin sets while only PIO can use any pin. | current-iynk-audit.md §3.5 E-12 (M) L209 | must | review |
+| AUD-087 | must not: placeholder sketches printing canned strings ("wifi: station idle, rssi n/a", "i2c scan: 0x68 MPU-6050 ack", "gpio: keep motors off the header"); Wi-Fi, I²C and GPIO lessons must run real code (a WiFi scan, a Wire scanner) against simulated devices. | current-iynk-audit.md §3.5 E-13 (H) L210; §2 #9 L98 | must | e2e |
+| AUD-088 | must not: servo sketches without #include <Servo.h>, Servo servo; and servo.attach(9), using knob/6; servo sketches must be complete and use map(knob, 0, 1023, 0, 180). | current-iynk-audit.md §3.5 E-14 (H) L211 | must | review |
+| AUD-089 | must not: a "Mini piano" that promises "Five buttons, five notes" with one button and one note; it must have five pins and five notes (the original also offers tunes, octave and note-name options). | current-iynk-audit.md §3.5 E-15 (M) L212 | must | e2e |
+| AUD-090 | must not: a motor sketch driving analogWrite(5, …) with no driver pins while the text says to use a TB6612; the sketch must drive the TB6612's AIN1, AIN2, PWMA and STBY. | current-iynk-audit.md §3.5 E-16 (M) L213 | must | review |
+| AUD-091 | must not: heat, plant and force lessons on the generic slider with the wrong sensor art, a soil "probe is a resistor" and a button counter as "Build a project"; the original designs must come back (capacitive soil sensor v1.2 with an SSD1306 OLED at 0x3C, the HC-SR04 parking sensor with a traffic light). | current-iynk-audit.md §3.5 E-17 (M) L214 | must | e2e |
+| AUD-092 | must not: dropping the original lessons "Read a sensor" (HC-SR04 with a Car, Box, Ball or Wall at 5–50 cm, "Drive back and forth while running") and "Spin the wheel" (a 28BYJ-48 on a ULN2003 turning an 8 × 256-step prize wheel), or reusing "Spin the wheel" for a pot-to-servo lesson; both originals must be restored under their own names. | current-iynk-audit.md §3.5 E-18 (M) L215 | must | e2e |
+| AUD-093 | must not: quizzes on the Uno only; every board must have its own quiz. | current-iynk-audit.md §3.5 E-19 (M) L216 | must | e2e |
+| AUD-094 | must not: an LED chaser that fills with ones at 100 MHz (invisible); the chaser must rotate {led[14:0], led[15]} from 16'h0001 behind a clock divider of about 24 bits so it can be seen. | current-iynk-audit.md §3.5 E-20 (L) L217 | must | e2e |
+| AUD-095 | must not: a Buttons lesson that says "two flip-flops" over a one-flip-flop sketch; the sketch must be a two-flip-flop synchroniser. | current-iynk-audit.md §3.5 E-21 (L) L218 | must | review |
+| AUD-096 | must not: a "Show a number" lesson whose code is assign led = sw; it must drive a multiplexed display with the Basys 3's active-low segments and anodes. | current-iynk-audit.md §3.5 E-22 (L) L219 | must | e2e |
+| AUD-097 | must not: "JTAG, not a UART MCU" for the Basys 3's FT2232; it gives JTAG and a USB-UART. | current-iynk-audit.md §3.5 E-23 (L) L220 | must | review |
+| AUD-098 | must not: an incomplete non-PWM pin list on the Uno and Nano; it must list 0, 1, 2, 4, 7, 8, 12 and 13. | current-iynk-audit.md §3.5 E-24 (L) L221; §3.3 R-13 (M) L165 | must | unit |
 
 ## AUD · Robotics Lab
 
-current-simlab-audit.md §3.6 (RoboticsLab.tsx and robotics.ts, O-01 to O-20).
+current-iynk-audit.md §3.6 (RoboticsLab.tsx and robotics.ts, O-01 to O-20).
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| AUD-099 | must not: an upload that works on a bare PCB ("Sketch uploaded. Pin 13 is toggling." with no parts fitted); power must need the supply parts, an upload must need a working chip ("No working chip: the upload times out"), and a good upload must show the RX/TX flicker. | current-simlab-audit.md §3.6 O-01 (H) L227 | must | e2e |
-| AUD-100 | must not: cooking the chip on insertion into an unsoldered socket, then "The socket can take the chip now." with the cooked chip in it; a chip in an unsoldered socket is loose, and soldering with the chip seated is what cooks it ("Solder everything first. Never heat a chip sitting in its socket"). | current-simlab-audit.md §3.6 O-02 (M) L228 | must | e2e |
-| AUD-101 | must not: an uploaded Blink that toggles once per click; once uploaded, Blink must blink on its own. | current-simlab-audit.md §3.6 O-03 (M) L229 | must | e2e |
-| AUD-102 | must not: missing guard rails ("Unplug the power first: never work on a live board", "Close the exploded view first", "Low parts first…", "No SMD parts on this board…", polarity choices with faults, "Fix the fault first") and a build for the Uno only; every one of the 13 boards must have the full bench engine and build. | current-simlab-audit.md §3.6 O-04 (M) L230 | must | e2e |
-| AUD-103 | must not: side effects inside a state updater (log lines pushed from setBuild, doubled under StrictMode); compute the next state, then log. | current-simlab-audit.md §3.6 O-05 (L) L231 | must | review |
-| AUD-104 | must not: a reaction timer that never re-arms after a success (the LED stays on and the next press says "too soon") and waits a fixed 1200 or 900 ms; it must re-arm after each report, wait random(1000, 3000) ms and time from the press. | current-simlab-audit.md §3.6 O-06 (H) L232 | must | e2e |
-| AUD-105 | must not: a reaction editor that looks editable but drops every keystroke; the editor must either take edits or be read-only with a note saying so. | current-simlab-audit.md §3.6 O-07 (M) L233 | must | e2e |
-| AUD-106 | must not: a pointer-only "Stop the clock" with no pointerleave or cancel; it must work from Space and Enter as well as click, and release when the pointer leaves. | current-simlab-audit.md §3.6 O-08 (H) L234 | must | e2e |
-| AUD-107 | must not: a static line follower (straight line, "Error 0. Steering 0." forever, Kp changing nothing) and a made-up sensor pattern sent to the figure; the follower must have a curved track, differential drive and PD control, with the real sensor values sent to the figure and the original QTR modes available. | current-simlab-audit.md §3.6 O-09 (H) L235; §2 #9 L98 | must | e2e |
-| AUD-108 | must not: an arm with forward kinematics only, an elbow that never reaches the figure and a "−40°" elbow that is not a servo angle; the arm must do 2-link IK to a draggable target and drive two PCA9685 channels in the figure, with servo angles in their real range. | current-simlab-audit.md §3.6 O-10 (M) L236 | must | e2e |
-| AUD-109 | must not: placeholder module sketches ("pca9685 0x40 ch0 pulse 1500 us", "echo pulse / 58 = cm" with delay(1) as the trigger, "qtr position -3..3", "set the pot to 5.00 V before the MCU", "L298 drop ~2V"); each module must run real code (Adafruit_PWMServoDriver over Wire, pulseIn, a QTR read, an ADC readback) against a simulated device. | current-simlab-audit.md §3.6 O-11 (H) L237; §2 #9 L98 | must | e2e |
-| AUD-110 | must not: an MPU-6050 sketch that fails to compile ("Unexpected identifier 'angle'") and uses constants instead of readings; it must compile and read a simulated gyro with bias and an accelerometer with noise. | current-simlab-audit.md §3.6 O-12 (H) L238 | must | e2e |
-| AUD-111 | must not: module pages with constant readAnalog 400 and readDigital 0 and no controls; each module must offer the original's runnable modes (TB6612 Forward 50%, Forward 100%, Reverse, Brake, Coast; L298N Forward, Reverse, Spin on the spot, Brake; A4988 Full step, 1/16 microstep, Set current limit, Unplug motor (live!); PCA9685 Sweep, Center 90, Arm wave; MPU-6050 Raw gyro (drift), Accelerometer only (noisy), Complementary filter; HC-SR04 Object at 10/25/50 cm, Soft target (fails); QTR's four modes; LM2596 Set 5.0 V, Set 3.3 V, Set 12 V (impossible), Motor stall). | current-simlab-audit.md §3.6 O-13 (M) L239 | must | e2e |
-| AUD-112 | must not: a logic-rail current that rises with motor duty under a sentence saying motor current stays on VM, shown on every module page; the logic rail must stay constant and the VM current come from a motor model, on the pages where it applies. | current-simlab-audit.md §3.6 O-14 (M) L240 | must | e2e |
-| AUD-113 | must not: missing robotics figures (the LED + resistor trainer, the transistor switch, the ESP32-S3 DevKitC-1 and the Raspberry Pi 5 as ROS 2 brain linked away to the Board Lab) and a lede counting "three practice tasks" over four; all 13 figures must be in the Robotics Lab, and every count must match what is listed. | current-simlab-audit.md §3.6 O-15 (M) L241 | must | e2e |
-| AUD-114 | must not: one quiz per module and no practice projects; the original's 39 questions (2–4 per figure, numeric ones included) and every practice task must be in the Robotics Lab. | current-simlab-audit.md §3.6 O-16 (M) L242 | must | e2e |
-| AUD-115 | must not: "Vref times a factor printed on the silkscreen is the current" for the A4988; I_max = Vref / (8 × R_cs), so with 0.068 Ω a 1.0 A limit needs Vref ≈ 0.54 V. | current-simlab-audit.md §3.6 O-17 (L) L243 | must | review |
-| AUD-116 | must not: "A 6 V motor on an L298N barely turns on a 7.4 V pack"; with about 1.8–3.2 V dropped at 1 A it sees roughly 4.2–5.6 V and turns, more slowly. | current-simlab-audit.md §3.6 O-18 (L) L244 | must | review |
-| AUD-117 | must not: a TB6612 sketch that never drives AIN2 and relies on the internal pull-down; it must write AIN2 LOW. | current-simlab-audit.md §3.6 O-19 (L) L245 | must | review |
-| AUD-118 | must not: robotics progress that is never recorded (only quiz ticks) and a header counter that ignores robotics; each robotics page must record progress, and the counter must include it. | current-simlab-audit.md §3.6 O-20 (L) L246 | must | e2e |
+| AUD-099 | must not: an upload that works on a bare PCB ("Sketch uploaded. Pin 13 is toggling." with no parts fitted); power must need the supply parts, an upload must need a working chip ("No working chip: the upload times out"), and a good upload must show the RX/TX flicker. | current-iynk-audit.md §3.6 O-01 (H) L227 | must | e2e |
+| AUD-100 | must not: cooking the chip on insertion into an unsoldered socket, then "The socket can take the chip now." with the cooked chip in it; a chip in an unsoldered socket is loose, and soldering with the chip seated is what cooks it ("Solder everything first. Never heat a chip sitting in its socket"). | current-iynk-audit.md §3.6 O-02 (M) L228 | must | e2e |
+| AUD-101 | must not: an uploaded Blink that toggles once per click; once uploaded, Blink must blink on its own. | current-iynk-audit.md §3.6 O-03 (M) L229 | must | e2e |
+| AUD-102 | must not: missing guard rails ("Unplug the power first: never work on a live board", "Close the exploded view first", "Low parts first…", "No SMD parts on this board…", polarity choices with faults, "Fix the fault first") and a build for the Uno only; every one of the 13 boards must have the full bench engine and build. | current-iynk-audit.md §3.6 O-04 (M) L230 | must | e2e |
+| AUD-103 | must not: side effects inside a state updater (log lines pushed from setBuild, doubled under StrictMode); compute the next state, then log. | current-iynk-audit.md §3.6 O-05 (L) L231 | must | review |
+| AUD-104 | must not: a reaction timer that never re-arms after a success (the LED stays on and the next press says "too soon") and waits a fixed 1200 or 900 ms; it must re-arm after each report, wait random(1000, 3000) ms and time from the press. | current-iynk-audit.md §3.6 O-06 (H) L232 | must | e2e |
+| AUD-105 | must not: a reaction editor that looks editable but drops every keystroke; the editor must either take edits or be read-only with a note saying so. | current-iynk-audit.md §3.6 O-07 (M) L233 | must | e2e |
+| AUD-106 | must not: a pointer-only "Stop the clock" with no pointerleave or cancel; it must work from Space and Enter as well as click, and release when the pointer leaves. | current-iynk-audit.md §3.6 O-08 (H) L234 | must | e2e |
+| AUD-107 | must not: a static line follower (straight line, "Error 0. Steering 0." forever, Kp changing nothing) and a made-up sensor pattern sent to the figure; the follower must have a curved track, differential drive and PD control, with the real sensor values sent to the figure and the original QTR modes available. | current-iynk-audit.md §3.6 O-09 (H) L235; §2 #9 L98 | must | e2e |
+| AUD-108 | must not: an arm with forward kinematics only, an elbow that never reaches the figure and a "−40°" elbow that is not a servo angle; the arm must do 2-link IK to a draggable target and drive two PCA9685 channels in the figure, with servo angles in their real range. | current-iynk-audit.md §3.6 O-10 (M) L236 | must | e2e |
+| AUD-109 | must not: placeholder module sketches ("pca9685 0x40 ch0 pulse 1500 us", "echo pulse / 58 = cm" with delay(1) as the trigger, "qtr position -3..3", "set the pot to 5.00 V before the MCU", "L298 drop ~2V"); each module must run real code (Adafruit_PWMServoDriver over Wire, pulseIn, a QTR read, an ADC readback) against a simulated device. | current-iynk-audit.md §3.6 O-11 (H) L237; §2 #9 L98 | must | e2e |
+| AUD-110 | must not: an MPU-6050 sketch that fails to compile ("Unexpected identifier 'angle'") and uses constants instead of readings; it must compile and read a simulated gyro with bias and an accelerometer with noise. | current-iynk-audit.md §3.6 O-12 (H) L238 | must | e2e |
+| AUD-111 | must not: module pages with constant readAnalog 400 and readDigital 0 and no controls; each module must offer the original's runnable modes (TB6612 Forward 50%, Forward 100%, Reverse, Brake, Coast; L298N Forward, Reverse, Spin on the spot, Brake; A4988 Full step, 1/16 microstep, Set current limit, Unplug motor (live!); PCA9685 Sweep, Center 90, Arm wave; MPU-6050 Raw gyro (drift), Accelerometer only (noisy), Complementary filter; HC-SR04 Object at 10/25/50 cm, Soft target (fails); QTR's four modes; LM2596 Set 5.0 V, Set 3.3 V, Set 12 V (impossible), Motor stall). | current-iynk-audit.md §3.6 O-13 (M) L239 | must | e2e |
+| AUD-112 | must not: a logic-rail current that rises with motor duty under a sentence saying motor current stays on VM, shown on every module page; the logic rail must stay constant and the VM current come from a motor model, on the pages where it applies. | current-iynk-audit.md §3.6 O-14 (M) L240 | must | e2e |
+| AUD-113 | must not: missing robotics figures (the LED + resistor trainer, the transistor switch, the ESP32-S3 DevKitC-1 and the Raspberry Pi 5 as ROS 2 brain linked away to the Board Lab) and a lede counting "three practice tasks" over four; all 13 figures must be in the Robotics Lab, and every count must match what is listed. | current-iynk-audit.md §3.6 O-15 (M) L241 | must | e2e |
+| AUD-114 | must not: one quiz per module and no practice projects; the original's 39 questions (2–4 per figure, numeric ones included) and every practice task must be in the Robotics Lab. | current-iynk-audit.md §3.6 O-16 (M) L242 | must | e2e |
+| AUD-115 | must not: "Vref times a factor printed on the silkscreen is the current" for the A4988; I_max = Vref / (8 × R_cs), so with 0.068 Ω a 1.0 A limit needs Vref ≈ 0.54 V. | current-iynk-audit.md §3.6 O-17 (L) L243 | must | review |
+| AUD-116 | must not: "A 6 V motor on an L298N barely turns on a 7.4 V pack"; with about 1.8–3.2 V dropped at 1 A it sees roughly 4.2–5.6 V and turns, more slowly. | current-iynk-audit.md §3.6 O-18 (L) L244 | must | review |
+| AUD-117 | must not: a TB6612 sketch that never drives AIN2 and relies on the internal pull-down; it must write AIN2 LOW. | current-iynk-audit.md §3.6 O-19 (L) L245 | must | review |
+| AUD-118 | must not: robotics progress that is never recorded (only quiz ticks) and a header counter that ignores robotics; each robotics page must record progress, and the counter must include it. | current-iynk-audit.md §3.6 O-20 (L) L246 | must | e2e |
 
 ## AUD · Drone Lab and calculator
 
-current-simlab-audit.md §3.7 (DroneLab.tsx and drones.ts, DR-01 to DR-17).
+current-iynk-audit.md §3.7 (DroneLab.tsx and drones.ts, DR-01 to DR-17).
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| AUD-119 | must not: a fixed 46 g added to every airframe (the Crazyflie at 66 g and T:W 0.7 while its quiz says 27 g); every craft must carry its own fixed-parts list (id, name, grams, price, Electrical or Mechanical). | current-simlab-audit.md §3.7 DR-01 (H) L252; §2 #7 L96 | must | unit |
-| AUD-120 | must not: hover throttle = clamp(8, 92, round(350 / TW)); hover throttle must be sqrt(AUW / (n × thrust)), about 49% at 4.2:1. | current-simlab-audit.md §3.7 DR-02 (H) L253; §2 #7 L96 | must | unit |
-| AUD-121 | must not: battery cells and motor KV that are filled in but never read; voltage must be cells × 3.7, krpm KV × V / 1000 and thrust 1.06 × pf × krpm² g per motor. | current-simlab-audit.md §3.7 DR-03 (H) L254; §3.13 HY-02 (L) L340 | must | unit |
-| AUD-122 | must not: a hover current that is a per-motor constant independent of AUW and voltage; hover power must be AUW / (5.4 g/W × eff), hover current hoverW / V, hover time mAh / 1000 × 0.8 / hoverA × 60, aggressive time hoverMin × 0.42 and max current n × thrust / (2 × eff) / V. | current-simlab-audit.md §3.7 DR-04 (H) L255 | must | unit |
-| AUD-123 | must not: the flying wing run through multirotor maths ("Hover throttle 92%", "may not climb" at T:W 1.7); the wing must have its own model (wing loading, stall speed, cruise current). | current-simlab-audit.md §3.7 DR-05 (H) L256 | must | unit |
-| AUD-124 | must not: "Parts match." printed with no compatibility checks; the calculator must warn on over-spin (KV × cells above 1750 × 6 × 1.15: "Desync! … the ESC lost a motor"), on T:W below the class minimum and on an under-rated ESC. | current-simlab-audit.md §3.7 DR-06 (M) L257 | must | unit |
-| AUD-125 | must not: the agricultural craft as a quad with a 12S 16000 mAh pack weighing 2200 g, no tank liquid and a delivery quad carrying no parcel mass; the agricultural craft must be the original's hexacopter on 12S 22000 mAh with a realistic pack weight (a 12S 16 Ah LiPo is roughly 4–5 kg), and payloads must be selectable. | current-simlab-audit.md §3.7 DR-07 (M) L258 | must | unit |
-| AUD-126 | must not: invalid CLI snippets (set mini_quad = ON in Betaflight, FRAME_CLASS 2 on ArduPlane, write as a MAVProxy command, GPS_TYPE where newer ArduPilot uses GPS1_TYPE, the Crazyflie's cflib under a "Betaflight CLI" heading); every snippet must be valid for its firmware, with INAV for the wing and cflib for the Crazyflie under their own headings. | current-simlab-audit.md §3.7 DR-08 (M) L259 | must | review |
-| AUD-127 | must not: one wiring list for every craft (a 4-in-1 ESC on the wing and the brushed Crazyflie, a camera and VTX on the Crazyflie, no GPS, compass, gripper, pump or servos), in English only; each craft's wiring must come from its own data and be translated. | current-simlab-audit.md §3.7 DR-09 (M) L260 | must | e2e |
-| AUD-128 | must not: a motor-direction test that passes with three parts and no ESC, FC or battery; the test must need its parts ("Wire the motors and mount the flight controller first", "Plug in a battery (USB alone can't spin motors)"), show each motor's CW/CCW, include a wrong-motor fault and be fixed by swapping two wires. | current-simlab-audit.md §3.7 DR-10 (H) L261 | must | e2e |
-| AUD-129 | must not: an accelerometer calibration that passes with no FC and never fails; it must need the FC, fail when the craft is not level, and block arming until done. | current-simlab-audit.md §3.7 DR-11 (M) L262 | must | e2e |
-| AUD-130 | must not: a smoke stopper with no polar parts (the XT60 "reversed" only a toggle); the test must include the original's fault, the capacitor in backwards ("The smoke stopper lamp lit up… The cap is in backwards"), with right and wrong orientation choices. | current-simlab-audit.md §3.7 DR-12 (M) L263 | must | e2e |
-| AUD-131 | must not: arming and flying with nothing built, props off, a failed smoke test or no calibration; arming must be blocked as in the original ("Arming blocked: ACC not calibrated", "Arming blocked: throttle not at zero", "Finish building it first", "Props go on LAST…"), and a reversed FC, props on the wrong motors or an unchecked motor direction must flip the craft on take-off. | current-simlab-audit.md §3.7 DR-13 (H) L264; §2 #8 L97 | must | e2e |
-| AUD-132 | must not: build steps shown as raw ids ("frame", "esc", "xt60"), untranslated and settable in any order, and a "Props on/off" button labelled with its state; build steps must have human labels per craft and order rules, and buttons must name their action. | current-simlab-audit.md §3.7 DR-14 (M) L265 | must | e2e |
-| AUD-133 | must not: a constant bench price that ignores the picks; the price must be computed from the chosen parts and split into Electrical and Mechanical. | current-simlab-audit.md §3.7 DR-15 (M) L266 | must | unit |
-| AUD-134 | must not: toggling the wiring sheet by changing the iframe src (a full reload that loses the rotation); the sheet must switch by patch. | current-simlab-audit.md §3.7 DR-16 (L) L267 | must | e2e |
-| AUD-135 | must not: 10 of the original 13 crafts (no VTOL tiltrotor, tricopter or heavy-lift octocopter), three quizzes per craft of which two are generic, no per-craft flight modes and no extra tests; all 13 crafts must be present with four quizzes of their own, their flight modes (GPS rescue, Loiter, RTL, auto missions, spray mission, swarm formation, figure-8, motor-failure test, VTOL transition) and their extra tests (Check elevons, Tilt servo test, Servo test). | current-simlab-audit.md §3.7 DR-17 (M) L268 | must | e2e |
+| AUD-119 | must not: a fixed 46 g added to every airframe (the Crazyflie at 66 g and T:W 0.7 while its quiz says 27 g); every craft must carry its own fixed-parts list (id, name, grams, price, Electrical or Mechanical). | current-iynk-audit.md §3.7 DR-01 (H) L252; §2 #7 L96 | must | unit |
+| AUD-120 | must not: hover throttle = clamp(8, 92, round(350 / TW)); hover throttle must be sqrt(AUW / (n × thrust)), about 49% at 4.2:1. | current-iynk-audit.md §3.7 DR-02 (H) L253; §2 #7 L96 | must | unit |
+| AUD-121 | must not: battery cells and motor KV that are filled in but never read; voltage must be cells × 3.7, krpm KV × V / 1000 and thrust 1.06 × pf × krpm² g per motor. | current-iynk-audit.md §3.7 DR-03 (H) L254; §3.13 HY-02 (L) L340 | must | unit |
+| AUD-122 | must not: a hover current that is a per-motor constant independent of AUW and voltage; hover power must be AUW / (5.4 g/W × eff), hover current hoverW / V, hover time mAh / 1000 × 0.8 / hoverA × 60, aggressive time hoverMin × 0.42 and max current n × thrust / (2 × eff) / V. | current-iynk-audit.md §3.7 DR-04 (H) L255 | must | unit |
+| AUD-123 | must not: the flying wing run through multirotor maths ("Hover throttle 92%", "may not climb" at T:W 1.7); the wing must have its own model (wing loading, stall speed, cruise current). | current-iynk-audit.md §3.7 DR-05 (H) L256 | must | unit |
+| AUD-124 | must not: "Parts match." printed with no compatibility checks; the calculator must warn on over-spin (KV × cells above 1750 × 6 × 1.15: "Desync! … the ESC lost a motor"), on T:W below the class minimum and on an under-rated ESC. | current-iynk-audit.md §3.7 DR-06 (M) L257 | must | unit |
+| AUD-125 | must not: the agricultural craft as a quad with a 12S 16000 mAh pack weighing 2200 g, no tank liquid and a delivery quad carrying no parcel mass; the agricultural craft must be the original's hexacopter on 12S 22000 mAh with a realistic pack weight (a 12S 16 Ah LiPo is roughly 4–5 kg), and payloads must be selectable. | current-iynk-audit.md §3.7 DR-07 (M) L258 | must | unit |
+| AUD-126 | must not: invalid CLI snippets (set mini_quad = ON in Betaflight, FRAME_CLASS 2 on ArduPlane, write as a MAVProxy command, GPS_TYPE where newer ArduPilot uses GPS1_TYPE, the Crazyflie's cflib under a "Betaflight CLI" heading); every snippet must be valid for its firmware, with INAV for the wing and cflib for the Crazyflie under their own headings. | current-iynk-audit.md §3.7 DR-08 (M) L259 | must | review |
+| AUD-127 | must not: one wiring list for every craft (a 4-in-1 ESC on the wing and the brushed Crazyflie, a camera and VTX on the Crazyflie, no GPS, compass, gripper, pump or servos), in English only; each craft's wiring must come from its own data and be translated. | current-iynk-audit.md §3.7 DR-09 (M) L260 | must | e2e |
+| AUD-128 | must not: a motor-direction test that passes with three parts and no ESC, FC or battery; the test must need its parts ("Wire the motors and mount the flight controller first", "Plug in a battery (USB alone can't spin motors)"), show each motor's CW/CCW, include a wrong-motor fault and be fixed by swapping two wires. | current-iynk-audit.md §3.7 DR-10 (H) L261 | must | e2e |
+| AUD-129 | must not: an accelerometer calibration that passes with no FC and never fails; it must need the FC, fail when the craft is not level, and block arming until done. | current-iynk-audit.md §3.7 DR-11 (M) L262 | must | e2e |
+| AUD-130 | must not: a smoke stopper with no polar parts (the XT60 "reversed" only a toggle); the test must include the original's fault, the capacitor in backwards ("The smoke stopper lamp lit up… The cap is in backwards"), with right and wrong orientation choices. | current-iynk-audit.md §3.7 DR-12 (M) L263 | must | e2e |
+| AUD-131 | must not: arming and flying with nothing built, props off, a failed smoke test or no calibration; arming must be blocked as in the original ("Arming blocked: ACC not calibrated", "Arming blocked: throttle not at zero", "Finish building it first", "Props go on LAST…"), and a reversed FC, props on the wrong motors or an unchecked motor direction must flip the craft on take-off. | current-iynk-audit.md §3.7 DR-13 (H) L264; §2 #8 L97 | must | e2e |
+| AUD-132 | must not: build steps shown as raw ids ("frame", "esc", "xt60"), untranslated and settable in any order, and a "Props on/off" button labelled with its state; build steps must have human labels per craft and order rules, and buttons must name their action. | current-iynk-audit.md §3.7 DR-14 (M) L265 | must | e2e |
+| AUD-133 | must not: a constant bench price that ignores the picks; the price must be computed from the chosen parts and split into Electrical and Mechanical. | current-iynk-audit.md §3.7 DR-15 (M) L266 | must | unit |
+| AUD-134 | must not: toggling the wiring sheet by changing the iframe src (a full reload that loses the rotation); the sheet must switch by patch. | current-iynk-audit.md §3.7 DR-16 (L) L267 | must | e2e |
+| AUD-135 | must not: 10 of the original 13 crafts (no VTOL tiltrotor, tricopter or heavy-lift octocopter), three quizzes per craft of which two are generic, no per-craft flight modes and no extra tests; all 13 crafts must be present with four quizzes of their own, their flight modes (GPS rescue, Loiter, RTL, auto missions, spray mission, swarm formation, figure-8, motor-failure test, VTOL transition) and their extra tests (Check elevons, Tilt servo test, Servo test). | current-iynk-audit.md §3.7 DR-17 (M) L268 | must | e2e |
 
 ## AUD · Flight simulator
 
-current-simlab-audit.md §3.8 (FlightSim.tsx, FS-01 to FS-09).
+current-iynk-audit.md §3.8 (FlightSim.tsx, FS-01 to FS-09).
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| AUD-136 | must not: forward pitch (Arrow-Up) moving the craft backwards; forward pitch must move it along its nose. | current-simlab-audit.md §3.8 FS-01 (H) L274; §2 #8 L97 | must | e2e |
-| AUD-137 | must not: a window-level key handler that swallows Space, the arrows and WASD on the whole drone page (Space cannot press a focused button and silently toggles arming; arrows cannot scroll); the sim must take keys only while it has focus. | current-simlab-audit.md §3.8 FS-02 (H) L275; §3.10 A-02 (H) L301; §2 #8 L97 | must | e2e |
-| AUD-138 | must not: toggles (Space, V, Q, R) polled once a frame so a quick tap is lost; toggles must act on the keydown event. | current-simlab-audit.md §3.8 FS-03 (M) L276 | must | e2e |
-| AUD-139 | must not: a fixed hover throttle (0.28 quad, 0.35 wing) whatever the calculator says, and a wing that can hover and stop in mid-air; thrust and mass must come from the calculator, and the wing must stall without airspeed. | current-simlab-audit.md §3.8 FS-04 (H) L277 | must | e2e |
-| AUD-140 | must not: a sim with no crash, ground contact, ceiling, field bounds, battery drain or sag, wind, lap timer or best lap and only angle and acro; the original's flight model must be ported (altitude hold, angle, acro, race and the per-craft modes). | current-simlab-audit.md §3.8 FS-05 (M) L278 | must | e2e |
-| AUD-141 | must not: an FPV view that is a tilted horizon and a box with "ARMED angle alt 11.6 laps 0" (no units) as its only text; FPV must show the gates and obstacles and the original's OSD (ALT x m, CP/GATE n/N, CRASHED, DISARMED, LOW BATTERY, HOME, a timer). | current-simlab-audit.md §3.8 FS-06 (M) L279 | must | e2e |
-| AUD-142 | must not: on-screen sticks without V, Q or R, made of digital buttons that stay held when a finger slides off; touch controls must include FPV, mode and reset, use virtual sticks and release on pointer leave. | current-simlab-audit.md §3.8 FS-07 (M) L280; §3.11 MB-04 (M) L319 | must | e2e |
-| AUD-143 | must not: five fixed rectangles as gates on one field for every craft, with laps counted but nothing timed; each craft must fly its own range, with timed laps. | current-simlab-audit.md §3.8 FS-08 (L) L281 | must | e2e |
-| AUD-144 | must not: re-rendering the whole drone view on every frame's attitude callback; the sim must send only what the figure needs, at a lower rate. | current-simlab-audit.md §3.8 FS-09 (L) L282; §3.13 PF-01 (M) L335 | must | e2e |
+| AUD-136 | must not: forward pitch (Arrow-Up) moving the craft backwards; forward pitch must move it along its nose. | current-iynk-audit.md §3.8 FS-01 (H) L274; §2 #8 L97 | must | e2e |
+| AUD-137 | must not: a window-level key handler that swallows Space, the arrows and WASD on the whole drone page (Space cannot press a focused button and silently toggles arming; arrows cannot scroll); the sim must take keys only while it has focus. | current-iynk-audit.md §3.8 FS-02 (H) L275; §3.10 A-02 (H) L301; §2 #8 L97 | must | e2e |
+| AUD-138 | must not: toggles (Space, V, Q, R) polled once a frame so a quick tap is lost; toggles must act on the keydown event. | current-iynk-audit.md §3.8 FS-03 (M) L276 | must | e2e |
+| AUD-139 | must not: a fixed hover throttle (0.28 quad, 0.35 wing) whatever the calculator says, and a wing that can hover and stop in mid-air; thrust and mass must come from the calculator, and the wing must stall without airspeed. | current-iynk-audit.md §3.8 FS-04 (H) L277 | must | e2e |
+| AUD-140 | must not: a sim with no crash, ground contact, ceiling, field bounds, battery drain or sag, wind, lap timer or best lap and only angle and acro; the original's flight model must be ported (altitude hold, angle, acro, race and the per-craft modes). | current-iynk-audit.md §3.8 FS-05 (M) L278 | must | e2e |
+| AUD-141 | must not: an FPV view that is a tilted horizon and a box with "ARMED angle alt 11.6 laps 0" (no units) as its only text; FPV must show the gates and obstacles and the original's OSD (ALT x m, CP/GATE n/N, CRASHED, DISARMED, LOW BATTERY, HOME, a timer). | current-iynk-audit.md §3.8 FS-06 (M) L279 | must | e2e |
+| AUD-142 | must not: on-screen sticks without V, Q or R, made of digital buttons that stay held when a finger slides off; touch controls must include FPV, mode and reset, use virtual sticks and release on pointer leave. | current-iynk-audit.md §3.8 FS-07 (M) L280; §3.11 MB-04 (M) L319 | must | e2e |
+| AUD-143 | must not: five fixed rectangles as gates on one field for every craft, with laps counted but nothing timed; each craft must fly its own range, with timed laps. | current-iynk-audit.md §3.8 FS-08 (L) L281 | must | e2e |
+| AUD-144 | must not: re-rendering the whole drone view on every frame's attitude callback; the sim must send only what the figure needs, at a lower rate. | current-iynk-audit.md §3.8 FS-09 (L) L282; §3.13 PF-01 (M) L335 | must | e2e |
 
 ## AUD · Languages
 
-current-simlab-audit.md §3.9 (I-01 to I-07) and §8.
+current-iynk-audit.md §3.9 (I-01 to I-07) and §8.
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| AUD-145 | must not: about 170 visible strings left in English in every other language (failure buttons and messages, "Button on pin 2", "Analog A0", part roles, facts, robotics cards, the Uno build, the reaction, line and arm copy, the drone page, home cards, "Skip to content", "Fig."); every visible string must come from the dictionaries. | current-simlab-audit.md §3.9 I-01 (H) L288; §8; §2 #10 L99 | must | e2e |
-| AUD-146 | must not: a figure UI that is always English (Plug USB, Reset, Blink, Exploded, STATUS, READY, PIN 13, See-through, Labels, Hand-drawn wobble, Colour, callouts, flash messages); the language must reach the figure and its UI must be translated. | current-simlab-audit.md §3.9 I-02 (H) L289 | must | e2e |
-| AUD-147 | must not: translations that drop content (the MPU-6050 filter formula missing in es/fr/de/hi, the TB6612 "a 6 V motor still sees almost 6 V" sentence, the PCA9685 servo-current warning, the last sentences of the I²C, Verilog, GPIO and LM2596 bodies); each translation must carry all of the English content. | current-simlab-audit.md §3.9 I-03 (M) L290 | must | review |
-| AUD-148 | must not: languages with no locale URLs (not shareable or indexable) and no browser-language detection; each of the six locales (en, es, fr, de, zh, hi) must have its own prerendered /{lang}/ URL, / must redirect by the simlab-lang cookie, then Accept-Language, then /en, and strings with live values must use {placeholder} templates. | current-simlab-audit.md §3.9 I-04 (M) L291; BASE_ARCHITECTURE.md D1, D2 | must | e2e |
-| AUD-149 | must not: a language picker showing codes ("en", "es") with no lang on its options; it must show each language's native name with its lang attribute. | current-simlab-audit.md §3.9 I-05 (L) L292 | must | e2e |
-| AUD-150 | must not: German "Start" for both home and run; run must be "Ausführen". | current-simlab-audit.md §3.9 I-06 (L) L293 | must | review |
-| AUD-151 | must not: English-only types for board facts and part roles; every taught string's type must allow translation. | current-simlab-audit.md §3.9 I-07 (L) L294 | must | review |
+| AUD-145 | must not: about 170 visible strings left in English in every other language (failure buttons and messages, "Button on pin 2", "Analog A0", part roles, facts, robotics cards, the Uno build, the reaction, line and arm copy, the drone page, home cards, "Skip to content", "Fig."); every visible string must come from the dictionaries. | current-iynk-audit.md §3.9 I-01 (H) L288; §8; §2 #10 L99 | must | e2e |
+| AUD-146 | must not: a figure UI that is always English (Plug USB, Reset, Blink, Exploded, STATUS, READY, PIN 13, See-through, Labels, Hand-drawn wobble, Colour, callouts, flash messages); the language must reach the figure and its UI must be translated. | current-iynk-audit.md §3.9 I-02 (H) L289 | must | e2e |
+| AUD-147 | must not: translations that drop content (the MPU-6050 filter formula missing in es/fr/de/hi, the TB6612 "a 6 V motor still sees almost 6 V" sentence, the PCA9685 servo-current warning, the last sentences of the I²C, Verilog, GPIO and LM2596 bodies); each translation must carry all of the English content. | current-iynk-audit.md §3.9 I-03 (M) L290 | must | review |
+| AUD-148 | must not: languages with no locale URLs (not shareable or indexable) and no browser-language detection; each of the six locales (en, es, fr, de, zh, hi) must have its own prerendered /{lang}/ URL, / must redirect by the iynk-lang cookie, then Accept-Language, then /en, and strings with live values must use {placeholder} templates. | current-iynk-audit.md §3.9 I-04 (M) L291; BASE_ARCHITECTURE.md D1, D2 | must | e2e |
+| AUD-149 | must not: a language picker showing codes ("en", "es") with no lang on its options; it must show each language's native name with its lang attribute. | current-iynk-audit.md §3.9 I-05 (L) L292 | must | e2e |
+| AUD-150 | must not: German "Start" for both home and run; run must be "Ausführen". | current-iynk-audit.md §3.9 I-06 (L) L293 | must | review |
+| AUD-151 | must not: English-only types for board facts and part roles; every taught string's type must allow translation. | current-iynk-audit.md §3.9 I-07 (L) L294 | must | review |
 
 ## AUD · Accessibility
 
-current-simlab-audit.md §3.10 (A-01 to A-11).
+current-iynk-audit.md §3.10 (A-01 to A-11).
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| AUD-152 | must not: pointer-only controls (Button on pin 2, Stop the clock, every stick button); each must work from Space and Enter, down and up. | current-simlab-audit.md §3.10 A-01 (H) L300 | must | e2e |
-| AUD-153 | must not: quiz feedback shown only by colour, with no "Correct" or "Not quite" text and no live region; feedback must use words and an icon, be announced in a live region, and meet 4.5:1 contrast in both themes (the current .bad and .good tokens reach 3.81–4.38:1). | current-simlab-audit.md §3.10 A-03 (M) L302 | must | e2e |
-| AUD-154 | must not: transparent buttons and selects with a 16% ink border (1.37:1 light, 1.53:1 dark); control boundaries must reach 3:1 (WCAG 1.4.11). | current-simlab-audit.md §3.10 A-04 (M) L303 | must | screenshot |
-| AUD-155 | must not: a 12 px mint "Done" marker at 3.4:1 (2.29:1 dark) and a white-on-mint Running pill at 4.31:1; text markers must reach 4.5:1. | current-simlab-audit.md §3.10 A-05 (M) L304 | must | screenshot |
-| AUD-156 | must not: figure parts that cannot be focused (0 of 14 clickable parts have a tabindex); every clickable part must be focusable with a button role and work with Enter and Space. | current-simlab-audit.md §3.10 A-06 (M) L305 | must | e2e |
-| AUD-157 | must not: a serial log that is an aria-live region rewritten on every line, flooding screen readers; announcements must be throttled or on demand. | current-simlab-audit.md §3.10 A-07 (M) L306 | must | e2e |
-| AUD-158 | must not: a progress count ("0/71") labelled only by an aria-label on a span; the counter must have a visible label. | current-simlab-audit.md §3.10 A-08 (L) L307 | must | e2e |
-| AUD-159 | must not: a theme toggle that changes its label and its aria-pressed together; it must keep a constant label with aria-pressed. | current-simlab-audit.md §3.10 A-09 (L) L308 | must | e2e |
-| AUD-160 | must not: ignoring prefers-reduced-motion; the app and the figures must honour it and offer a Reduce motion setting, as the original did. | current-simlab-audit.md §3.10 A-10 (L) L309 | must | e2e |
-| AUD-161 | must not: canvases with only an aria-label; the flight sim and the line follower must give a text readout (altitude, armed state, error). | current-simlab-audit.md §3.10 A-11 (L) L310 | must | e2e |
+| AUD-152 | must not: pointer-only controls (Button on pin 2, Stop the clock, every stick button); each must work from Space and Enter, down and up. | current-iynk-audit.md §3.10 A-01 (H) L300 | must | e2e |
+| AUD-153 | must not: quiz feedback shown only by colour, with no "Correct" or "Not quite" text and no live region; feedback must use words and an icon, be announced in a live region, and meet 4.5:1 contrast in both themes (the current .bad and .good tokens reach 3.81–4.38:1). | current-iynk-audit.md §3.10 A-03 (M) L302 | must | e2e |
+| AUD-154 | must not: transparent buttons and selects with a 16% ink border (1.37:1 light, 1.53:1 dark); control boundaries must reach 3:1 (WCAG 1.4.11). | current-iynk-audit.md §3.10 A-04 (M) L303 | must | screenshot |
+| AUD-155 | must not: a 12 px mint "Done" marker at 3.4:1 (2.29:1 dark) and a white-on-mint Running pill at 4.31:1; text markers must reach 4.5:1. | current-iynk-audit.md §3.10 A-05 (M) L304 | must | screenshot |
+| AUD-156 | must not: figure parts that cannot be focused (0 of 14 clickable parts have a tabindex); every clickable part must be focusable with a button role and work with Enter and Space. | current-iynk-audit.md §3.10 A-06 (M) L305 | must | e2e |
+| AUD-157 | must not: a serial log that is an aria-live region rewritten on every line, flooding screen readers; announcements must be throttled or on demand. | current-iynk-audit.md §3.10 A-07 (M) L306 | must | e2e |
+| AUD-158 | must not: a progress count ("0/71") labelled only by an aria-label on a span; the counter must have a visible label. | current-iynk-audit.md §3.10 A-08 (L) L307 | must | e2e |
+| AUD-159 | must not: a theme toggle that changes its label and its aria-pressed together; it must keep a constant label with aria-pressed. | current-iynk-audit.md §3.10 A-09 (L) L308 | must | e2e |
+| AUD-160 | must not: ignoring prefers-reduced-motion; the app and the figures must honour it and offer a Reduce motion setting, as the original did. | current-iynk-audit.md §3.10 A-10 (L) L309 | must | e2e |
+| AUD-161 | must not: canvases with only an aria-label; the flight sim and the line follower must give a text readout (altitude, armed state, error). | current-iynk-audit.md §3.10 A-11 (L) L310 | must | e2e |
 
 ## AUD · Mobile and dark mode
 
-current-simlab-audit.md §3.11 (MB-01 to MB-05) and §3.12 (DK-01 to DK-04).
+current-iynk-audit.md §3.11 (MB-01 to MB-05) and §3.12 (DK-01 to DK-04).
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| AUD-162 | must not: a code editor with white-space: pre and no overflow that widens the phone's layout viewport to 485 px; long lines must scroll inside the editor and the page must never scroll sideways. | current-simlab-audit.md §3.11 MB-01 (M) L316; §2 #10 L99 | must | e2e |
-| AUD-163 | must not: a highlighted pre and a transparent textarea that scroll separately so the caret drifts off the text; the two must scroll together, or a real editor component must be used. | current-simlab-audit.md §3.11 MB-02 (M) L317 | must | e2e |
-| AUD-164 | must not: a phone figure about 190 px wide inside a 589 px frame crowded by the figure's own buttons and stats plus a second app control row; the embedded figure must hide its chrome and give the object the frame, and dragging the object must turn it. | current-simlab-audit.md §3.11 MB-03 (M) L318; §3.11 MB-05 (L) L320; §3.2 F-16 (M) L139 | must | e2e |
-| AUD-165 | must not: a bright #f4efe4 figure panel on the dark theme; the theme must reach the figure, which must have a dark paper variant. | current-simlab-audit.md §3.12 DK-01 (M) L326 | must | screenshot |
-| AUD-166 | must not: the arm's shoulder link drawn #231e16 on the #1d1a16 dark card (1.05:1, invisible); drawn ink must use the theme's ink token. | current-simlab-audit.md §3.12 DK-02 (M) L327 | must | screenshot |
-| AUD-167 | must not: canvas colours hardcoded for the light theme; canvases must use a theme-aware palette. | current-simlab-audit.md §3.12 DK-03 (L) L328 | must | screenshot |
-| AUD-168 | must not: accent tokens (good, bad, mint, tomato, mustard, cobalt) with no dark values; each must have a dark variant that keeps its contrast. | current-simlab-audit.md §3.12 DK-04 (L) L329 | must | screenshot |
+| AUD-162 | must not: a code editor with white-space: pre and no overflow that widens the phone's layout viewport to 485 px; long lines must scroll inside the editor and the page must never scroll sideways. | current-iynk-audit.md §3.11 MB-01 (M) L316; §2 #10 L99 | must | e2e |
+| AUD-163 | must not: a highlighted pre and a transparent textarea that scroll separately so the caret drifts off the text; the two must scroll together, or a real editor component must be used. | current-iynk-audit.md §3.11 MB-02 (M) L317 | must | e2e |
+| AUD-164 | must not: a phone figure about 190 px wide inside a 589 px frame crowded by the figure's own buttons and stats plus a second app control row; the embedded figure must hide its chrome and give the object the frame, and dragging the object must turn it. | current-iynk-audit.md §3.11 MB-03 (M) L318; §3.11 MB-05 (L) L320; §3.2 F-16 (M) L139 | must | e2e |
+| AUD-165 | must not: a bright #f4efe4 figure panel on the dark theme; the theme must reach the figure, which must have a dark paper variant. | current-iynk-audit.md §3.12 DK-01 (M) L326 | must | screenshot |
+| AUD-166 | must not: the arm's shoulder link drawn #231e16 on the #1d1a16 dark card (1.05:1, invisible); drawn ink must use the theme's ink token. | current-iynk-audit.md §3.12 DK-02 (M) L327 | must | screenshot |
+| AUD-167 | must not: canvas colours hardcoded for the light theme; canvases must use a theme-aware palette. | current-iynk-audit.md §3.12 DK-03 (L) L328 | must | screenshot |
+| AUD-168 | must not: accent tokens (good, bad, mint, tomato, mustard, cobalt) with no dark values; each must have a dark variant that keeps its contrast. | current-iynk-audit.md §3.12 DK-04 (L) L329 | must | screenshot |
 
 ## AUD · Performance, progress and hygiene
 
-current-simlab-audit.md §3.13 (PF, PG and HY).
+current-iynk-audit.md §3.13 (PF, PG and HY).
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| AUD-169 | must not: a frame rate that falls from 117 to 90 fps while armed under a 4× CPU throttle because every patch rebuilds the figure; patches must be diffed and limited to one per animation frame. | current-simlab-audit.md §3.13 PF-01 (M) L335; §3.1 P-03 (M) L113 | must | e2e |
-| AUD-170 | must not: one state update, two posts and a full figure rebuild per digitalWrite (the A4988's STEP toggles every 2 ms); pin updates must be batched per frame. | current-simlab-audit.md §3.13 PF-02 (L) L336 | must | unit |
-| AUD-171 | must not: one header counter that adds drone quizzes to the board-lesson total ("2/71" with no lessons done), can exceed its total and never counts robotics; each module must have its own counter. | current-simlab-audit.md §3.13 PG-01 (M) L337 | must | e2e |
-| AUD-172 | must not: progress with no reset, no cross-tab sync and unguarded writes; there must be a "Reset progress" control, tabs must sync through the storage event, and writes must be guarded. | current-simlab-audit.md §3.13 PG-02 (L) L338 | must | e2e |
-| AUD-173 | must not: unused UI keys (10 of 39: home, reset, theme, next, powered, draw, mark, open, sensors, continue); every key must be used or deleted. | current-simlab-audit.md §3.13 HY-01 (L) L339 | must | review |
-| AUD-174 | must not: figure messages (power, usb, led, fault, name) that the app receives and never uses; each must be used or dropped. | current-simlab-audit.md §3.13 HY-03 (L) L341 | must | review |
-| AUD-175 | must not: section headings at body size and fact lists with no bullets ("Break it on purpose", "Parts" and "Check yourself" reading as body text); headings must have a scale and lists their markers. | current-simlab-audit.md §3.13 HY-04 (L) L342 | must | screenshot |
-| AUD-176 | must not: a README that claims broken or partial features (schematic and breadboard views, failure buttons that change the figure, a labelled wiring sheet); the README must describe what actually ships. | current-simlab-audit.md §3.13 HY-05 (L) L343; SPEC.md L130 | must | review |
+| AUD-169 | must not: a frame rate that falls from 117 to 90 fps while armed under a 4× CPU throttle because every patch rebuilds the figure; patches must be diffed and limited to one per animation frame. | current-iynk-audit.md §3.13 PF-01 (M) L335; §3.1 P-03 (M) L113 | must | e2e |
+| AUD-170 | must not: one state update, two posts and a full figure rebuild per digitalWrite (the A4988's STEP toggles every 2 ms); pin updates must be batched per frame. | current-iynk-audit.md §3.13 PF-02 (L) L336 | must | unit |
+| AUD-171 | must not: one header counter that adds drone quizzes to the board-lesson total ("2/71" with no lessons done), can exceed its total and never counts robotics; each module must have its own counter. | current-iynk-audit.md §3.13 PG-01 (M) L337 | must | e2e |
+| AUD-172 | must not: progress with no reset, no cross-tab sync and unguarded writes; there must be a "Reset progress" control, tabs must sync through the storage event, and writes must be guarded. | current-iynk-audit.md §3.13 PG-02 (L) L338 | must | e2e |
+| AUD-173 | must not: unused UI keys (10 of 39: home, reset, theme, next, powered, draw, mark, open, sensors, continue); every key must be used or deleted. | current-iynk-audit.md §3.13 HY-01 (L) L339 | must | review |
+| AUD-174 | must not: figure messages (power, usb, led, fault, name) that the app receives and never uses; each must be used or dropped. | current-iynk-audit.md §3.13 HY-03 (L) L341 | must | review |
+| AUD-175 | must not: section headings at body size and fact lists with no bullets ("Break it on purpose", "Parts" and "Check yourself" reading as body text); headings must have a scale and lists their markers. | current-iynk-audit.md §3.13 HY-04 (L) L342 | must | screenshot |
+| AUD-176 | must not: a README that claims broken or partial features (schematic and breadboard views, failure buttons that change the figure, a labelled wiring sheet); the README must describe what actually ships. | current-iynk-audit.md §3.13 HY-05 (L) L343; SPEC.md L130 | must | review |
 
 ## AUD · Coverage, crawl and interaction findings
 
-current-simlab-audit.md §4 to §6: rows marked missing or broken that no defect ID above already covers.
+current-iynk-audit.md §4 to §6: rows marked missing or broken that no defect ID above already covers.
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| AUD-177 | must not: a release where npm run build, npx tsc --noEmit or npx eslint . --quiet reports an error (all three are clean at 245763f and must stay clean). | current-simlab-audit.md §1 L32-82; §4.1 #2 L356; SPEC.md L7 | must | e2e |
-| AUD-178 | must not: errors on interaction; no route may log a console or page error, and no figure may record data-errors, during the full e2e run (loading, every lesson, every sheet, every failure, flight). | current-simlab-audit.md §4.1 #3 L357; §5 L437; §1 L84 | must | e2e |
-| AUD-179 | must not: NaN, undefined or Infinity anywhere in figure geometry. | current-simlab-audit.md §5 L437 | must | e2e |
-| AUD-180 | must not: a Board Lab Uno with no barrel supply; it must run from USB or a 7–12 V barrel, the USB path through the polyfuse and the barrel path through the reverse-protection diode and the regulator. | current-simlab-audit.md §4.2 #24 L383; §3.5 E-01 (H) L198 | must | e2e |
-| AUD-181 | must not: failures that leak into each other ("Cold solder on the LED" then Run answering "USB is unplugged." because the earlier barrel fault left USB off); each failure must be independent, and clearing it must restore exactly what it broke. | current-simlab-audit.md §6.2 L489 | must | e2e |
-| AUD-182 | must not: per-board fact lists in place of the original's per-lesson pinout and specification tables; every lesson must carry its pinout and spec table. | current-simlab-audit.md §4.2 #34 L393; §9 L586 | must | e2e |
-| AUD-183 | must not: missing the original's view settings; Callout labels, Current flow, Floor grid, Turntable, Sound, Reduce motion and Reset progress must all be offered. | current-simlab-audit.md §4.2 #35 L394; §9 L587 | must | e2e |
-| AUD-184 | must not: a flat card grid as the robotics home; boards must be grouped as Start here, Month 1 · electronics, Month 2 · microcontrollers, Month 3 · motors + drivers, Month 4 · sensors and Power + the ROS 2 brain. | current-simlab-audit.md §4.3 #45 L409 | must | e2e |
+| AUD-177 | must not: a release where npm run build, npx tsc --noEmit or npx eslint . --quiet reports an error (all three are clean at 245763f and must stay clean). | current-iynk-audit.md §1 L32-82; §4.1 #2 L356; SPEC.md L7 | must | e2e |
+| AUD-178 | must not: errors on interaction; no route may log a console or page error, and no figure may record data-errors, during the full e2e run (loading, every lesson, every sheet, every failure, flight). | current-iynk-audit.md §4.1 #3 L357; §5 L437; §1 L84 | must | e2e |
+| AUD-179 | must not: NaN, undefined or Infinity anywhere in figure geometry. | current-iynk-audit.md §5 L437 | must | e2e |
+| AUD-180 | must not: a Board Lab Uno with no barrel supply; it must run from USB or a 7–12 V barrel, the USB path through the polyfuse and the barrel path through the reverse-protection diode and the regulator. | current-iynk-audit.md §4.2 #24 L383; §3.5 E-01 (H) L198 | must | e2e |
+| AUD-181 | must not: failures that leak into each other ("Cold solder on the LED" then Run answering "USB is unplugged." because the earlier barrel fault left USB off); each failure must be independent, and clearing it must restore exactly what it broke. | current-iynk-audit.md §6.2 L489 | must | e2e |
+| AUD-182 | must not: per-board fact lists in place of the original's per-lesson pinout and specification tables; every lesson must carry its pinout and spec table. | current-iynk-audit.md §4.2 #34 L393; §9 L586 | must | e2e |
+| AUD-183 | must not: missing the original's view settings; Callout labels, Current flow, Floor grid, Turntable, Sound, Reduce motion and Reset progress must all be offered. | current-iynk-audit.md §4.2 #35 L394; §9 L587 | must | e2e |
+| AUD-184 | must not: a flat card grid as the robotics home; boards must be grouped as Start here, Month 1 · electronics, Month 2 · microcontrollers, Month 3 · motors + drivers, Month 4 · sensors and Power + the ROS 2 brain. | current-iynk-audit.md §4.3 #45 L409 | must | e2e |
 
 ## AUD · Figure fidelity
 
-current-simlab-audit.md §7: what each board and drone must look like, beyond the F- defects.
+current-iynk-audit.md §7: what each board and drone must look like, beyond the F- defects.
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| AUD-185 | must not: an Uno R3 without its ICSP headers; both 2 × 3 ICSP headers must be drawn. | current-simlab-audit.md §7 L539 | must | screenshot |
-| AUD-186 | must not: a yellow Nucleo with one morpho row and no buttons or Arduino headers; the Nucleo must be white with its ST-LINK section, both morpho rows, its user and reset buttons and the Arduino headers. | current-simlab-audit.md §7 L547 | must | screenshot |
-| AUD-187 | must not: a yellow micro:bit; the micro:bit must be black with its 5 × 5 LED matrix, A and B buttons and the edge connector's five ring pads visible from the front. | current-simlab-audit.md §7 L548 | must | screenshot |
-| AUD-188 | must not: the 5-inch freestyle, the racer, the 7-inch and the GPS quad drawn nearly the same; each must show its own frame, arm length, prop size and parts. | current-simlab-audit.md §7 L553 | must | screenshot |
-| AUD-189 | must not: the tiny whoop and the cinewhoop carrying a 5-inch's part set; each must carry its own parts inside its ducts. | current-simlab-audit.md §7 L554 | must | screenshot |
-| AUD-190 | must not: a delivery craft with no legs and no gripper; it must have landing legs and its gripper. | current-simlab-audit.md §7 L555 | must | screenshot |
-| AUD-191 | must not: figures that do not look like their real objects (at 245763f only 4 of 12 boards and 3 of 10 drones are recognisable); every board and drone must pass a side-by-side check against a photo of the real one. | current-simlab-audit.md §4.1 #10 L364; §7 L537-558 | must | screenshot |
+| AUD-185 | must not: an Uno R3 without its ICSP headers; both 2 × 3 ICSP headers must be drawn. | current-iynk-audit.md §7 L539 | must | screenshot |
+| AUD-186 | must not: a yellow Nucleo with one morpho row and no buttons or Arduino headers; the Nucleo must be white with its ST-LINK section, both morpho rows, its user and reset buttons and the Arduino headers. | current-iynk-audit.md §7 L547 | must | screenshot |
+| AUD-187 | must not: a yellow micro:bit; the micro:bit must be black with its 5 × 5 LED matrix, A and B buttons and the edge connector's five ring pads visible from the front. | current-iynk-audit.md §7 L548 | must | screenshot |
+| AUD-188 | must not: the 5-inch freestyle, the racer, the 7-inch and the GPS quad drawn nearly the same; each must show its own frame, arm length, prop size and parts. | current-iynk-audit.md §7 L553 | must | screenshot |
+| AUD-189 | must not: the tiny whoop and the cinewhoop carrying a 5-inch's part set; each must carry its own parts inside its ducts. | current-iynk-audit.md §7 L554 | must | screenshot |
+| AUD-190 | must not: a delivery craft with no legs and no gripper; it must have landing legs and its gripper. | current-iynk-audit.md §7 L555 | must | screenshot |
+| AUD-191 | must not: figures that do not look like their real objects (at 245763f only 4 of 12 boards and 3 of 10 drones are recognisable); every board and drone must pass a side-by-side check against a photo of the real one. | current-iynk-audit.md §4.1 #10 L364; §7 L537-558 | must | screenshot |
 
 ## AUD · Gap list against the three originals
 
-current-simlab-audit.md §9: each bullet is a gap the rebuild must close; the LA, RBA and RBB items above (and part B for drones) hold the detail.
+current-iynk-audit.md §9: each bullet is a gap the rebuild must close; the LA, RBA and RBB items above (and part B for drones) hold the detail.
 
 | id | statement | source | priority | verify |
 |---|---|---|---|---|
-| AUD-192 | must not: shipping without Learn Arduino's per-lesson parameter controls that regenerate the code (Blink On for, Off for and Resistance; Button Hold/Toggle; RGB presets and channels; Light lamp distance, lamp on and Dark below; Sound tune, note length and volume; Piano self-play, octave and note names; Motor top speed and ramp; Heat hairdryer distance, fan threshold, fan speed and on/off or ramp; Servo from, to and step delay; Stepper speed, acceleration, whole turns and direction; Plant thresholds, readings and light; Force pull-down, weight, bell threshold and hold; Project green and red distances). | current-simlab-audit.md §9 L585 | must | review |
-| AUD-193 | must not: shipping without Learn Arduino's HC-SR04 and stepper lessons, the parking-sensor project, the OLED, the fan, buzzer audio, the per-lesson specs and pinout tables, callouts and the 3D stage. | current-simlab-audit.md §9 L586 | must | review |
-| AUD-194 | must not: shipping without Learn Arduino's settings and panels (Callout labels, Current flow, Floor grid, Turntable, Sound, Reduce motion, Reset progress; the Components panel; part popovers with "Zoom to it" and "Hold it down in the scene"; the schematic overlay; collapsible code; the Uploading, Running and Stopped states). | current-simlab-audit.md §9 L587 | must | review |
-| AUD-195 | must not: shipping any of the six locales (en, es, fr, de, zh, hi) incomplete, with placeholder text or without prerendered pages; Learn Arduino's seven other languages and its right-to-left Hebrew are out of scope by decision D1. | current-simlab-audit.md §9 L588; §3.9 I-04 (M) L291; BASE_ARCHITECTURE.md D1 | must | review |
-| AUD-196 | must not: shipping without Robotics Bench's 13 figures, each with the build engine (height groups 0–3, polarity options, needs/run checks, pop/hot/dark faults, reflow, solder, upload with byte count and RX/TX flicker, guard rails), runnable modes with their serial output, 2–4 quiz questions, a practice project and the month-by-month groups. | current-simlab-audit.md §9 L591 | must | review |
-| AUD-197 | must not: shipping without the Drone Lab's 13 crafts and its physical calculator (the DR-03 and DR-04 formulas) with over-spin and T:W warnings and the Electrical/Mechanical cost split. | current-simlab-audit.md §9 L594 | must | review |
-| AUD-198 | must not: shipping without the Drone Lab's bench of real mistakes (polarity, wrong motor, FC orientation) with gated tests, wind, per-craft physics (wing, VTOL, tricopter, whoop, Crazyflie), flying ranges with obstacles, checkpoints and collisions, FPV with an OSD, lap and best-lap times, and crash, out-of-field, battery-empty and desync endings. | current-simlab-audit.md §9 L595 | must | review |
-| AUD-199 | must not: shipping without the Drone Lab's per-craft modes and CLI and log styles (Betaflight, ArduPilot, INAV, cflib) and its four quizzes per craft. | current-simlab-audit.md §9 L596 | must | review |
+| AUD-192 | must not: shipping without Learn Arduino's per-lesson parameter controls that regenerate the code (Blink On for, Off for and Resistance; Button Hold/Toggle; RGB presets and channels; Light lamp distance, lamp on and Dark below; Sound tune, note length and volume; Piano self-play, octave and note names; Motor top speed and ramp; Heat hairdryer distance, fan threshold, fan speed and on/off or ramp; Servo from, to and step delay; Stepper speed, acceleration, whole turns and direction; Plant thresholds, readings and light; Force pull-down, weight, bell threshold and hold; Project green and red distances). | current-iynk-audit.md §9 L585 | must | review |
+| AUD-193 | must not: shipping without Learn Arduino's HC-SR04 and stepper lessons, the parking-sensor project, the OLED, the fan, buzzer audio, the per-lesson specs and pinout tables, callouts and the 3D stage. | current-iynk-audit.md §9 L586 | must | review |
+| AUD-194 | must not: shipping without Learn Arduino's settings and panels (Callout labels, Current flow, Floor grid, Turntable, Sound, Reduce motion, Reset progress; the Components panel; part popovers with "Zoom to it" and "Hold it down in the scene"; the schematic overlay; collapsible code; the Uploading, Running and Stopped states). | current-iynk-audit.md §9 L587 | must | review |
+| AUD-195 | must not: shipping any of the six locales (en, es, fr, de, zh, hi) incomplete, with placeholder text or without prerendered pages; Learn Arduino's seven other languages and its right-to-left Hebrew are out of scope by decision D1. | current-iynk-audit.md §9 L588; §3.9 I-04 (M) L291; BASE_ARCHITECTURE.md D1 | must | review |
+| AUD-196 | must not: shipping without Robotics Bench's 13 figures, each with the build engine (height groups 0–3, polarity options, needs/run checks, pop/hot/dark faults, reflow, solder, upload with byte count and RX/TX flicker, guard rails), runnable modes with their serial output, 2–4 quiz questions, a practice project and the month-by-month groups. | current-iynk-audit.md §9 L591 | must | review |
+| AUD-197 | must not: shipping without the Drone Lab's 13 crafts and its physical calculator (the DR-03 and DR-04 formulas) with over-spin and T:W warnings and the Electrical/Mechanical cost split. | current-iynk-audit.md §9 L594 | must | review |
+| AUD-198 | must not: shipping without the Drone Lab's bench of real mistakes (polarity, wrong motor, FC orientation) with gated tests, wind, per-craft physics (wing, VTOL, tricopter, whoop, Crazyflie), flying ranges with obstacles, checkpoints and collisions, FPV with an OSD, lap and best-lap times, and crash, out-of-field, battery-empty and desync endings. | current-iynk-audit.md §9 L595 | must | review |
+| AUD-199 | must not: shipping without the Drone Lab's per-craft modes and CLI and log styles (Betaflight, ArduPilot, INAV, cflib) and its four quizzes per craft. | current-iynk-audit.md §9 L596 | must | review |
 
 ## Gaps, conflicts and open questions
 
@@ -2325,12 +2325,12 @@ so they never clash with part B's G ids.
 
 | conflict | sources | how the rows read now | decision needed |
 |---|---|---|---|
-| GA13 · Thirteen languages or six | learn-arduino.md §6 L1234-1241; current-simlab-audit.md §3.9 I-04 L291, §9 L588; BASE_ARCHITECTURE.md D1 | Learn Arduino ships 13 languages with right-to-left Hebrew, and the audit asks SimLab to match it. Decision D1 fixes six locales (en, es, fr, de, zh, hi). The rows follow D1: Hebrew, right-to-left layout and the Korean date form are dropped. | Record the exception in `docs/DECISIONS.md`, as SPEC.md L153 requires. |
-| GA14 · English at the root URL | learn-arduino.md §6 L1235-1236; BASE_ARCHITECTURE.md D2 | Learn Arduino serves English at the root and redirects on navigator.languages. D2 puts every locale under /{lang}/ and redirects / by the simlab-lang cookie, then Accept-Language, then /en. The rows follow D2. | None beyond recording it. |
-| GA15 · What the store keeps | learn-arduino.md §7 L1252-1253; robotics-bench-a.md §2.16 L540; BASE_ARCHITECTURE.md D7 | Learn Arduino saves every lesson's parameter values and the floor grid, turntable, current flow and schematic settings. The Robotics Bench rows ask for saved quiz answers. D7's "simlab:v1" holds only done, quiz scores, best and five settings (theme, sound, lofi, labels, reduceMotion). The rows keep the originals' must. | Extend the D7 shape (for example a per-lesson params map and the four view settings) or record that they are not saved, before the store ships. |
+| GA13 · Thirteen languages or six | learn-arduino.md §6 L1234-1241; current-iynk-audit.md §3.9 I-04 L291, §9 L588; BASE_ARCHITECTURE.md D1 | Learn Arduino ships 13 languages with right-to-left Hebrew, and the audit asks iynk to match it. Decision D1 fixes six locales (en, es, fr, de, zh, hi). The rows follow D1: Hebrew, right-to-left layout and the Korean date form are dropped. | Record the exception in `docs/DECISIONS.md`, as SPEC.md L153 requires. |
+| GA14 · English at the root URL | learn-arduino.md §6 L1235-1236; BASE_ARCHITECTURE.md D2 | Learn Arduino serves English at the root and redirects on navigator.languages. D2 puts every locale under /{lang}/ and redirects / by the iynk-lang cookie, then Accept-Language, then /en. The rows follow D2. | None beyond recording it. |
+| GA15 · What the store keeps | learn-arduino.md §7 L1252-1253; robotics-bench-a.md §2.16 L540; BASE_ARCHITECTURE.md D7 | Learn Arduino saves every lesson's parameter values and the floor grid, turntable, current flow and schematic settings. The Robotics Bench rows ask for saved quiz answers. D7's "iynk:v1" holds only done, quiz scores, best and five settings (theme, sound, lofi, labels, reduceMotion). The rows keep the originals' must. | Extend the D7 shape (for example a per-lesson params map and the four view settings) or record that they are not saved, before the store ships. |
 | GA16 · When a lesson counts as done | learn-arduino.md §7 L1251; BASE_ARCHITECTURE.md D14 | Learn Arduino marks a lesson done on its first upload. D14 c asks lesson checks to be pure functions of a deterministic run. The row keeps "first upload completes". | Keep it, or require the run to meet the lesson's goal. |
 | GA17 · Lesson links | learn-arduino.md §7 L1255; robotics-bench-a.md §2.18 L605; BASE_ARCHITECTURE.md D2, D14 | Learn Arduino names the lesson in the hash. D2 gives each lesson a route. The Robotics Bench's ?mode= start-up hook stays a query read on the client, so pages stay static. | None beyond recording it. |
-| GA18 · The ESP32-S3 board revision | robotics-bench-a.md §6 L1016, §10 #20 L1395; current-simlab-audit.md §3.5 E-10 L207 | The original models the RGB LED on GPIO48 (DevKitC-1 v1.0). The orchestrator's seed decision S13 picks v1.1, whose RGB LED is on GPIO38, and the Fig. 04 rows follow it. BASE_ARCHITECTURE.md does not record S13. | Record S13 in `docs/DECISIONS.md` so every ESP32-S3 figure, sketch and lesson uses GPIO38. |
+| GA18 · The ESP32-S3 board revision | robotics-bench-a.md §6 L1016, §10 #20 L1395; current-iynk-audit.md §3.5 E-10 L207 | The original models the RGB LED on GPIO48 (DevKitC-1 v1.0). The orchestrator's seed decision S13 picks v1.1, whose RGB LED is on GPIO38, and the Fig. 04 rows follow it. BASE_ARCHITECTURE.md does not record S13. | Record S13 in `docs/DECISIONS.md` so every ESP32-S3 figure, sketch and lesson uses GPIO38. |
 
 ### Choices the rows leave open
 
@@ -2342,4 +2342,4 @@ so they never clash with part B's G ids.
 | GA22 · The lofi chord | robotics-bench-a.md §10 #13 L1387 | The original's "Am9" is voiced as an Am7 (no B). Add the B or call it Am7. |
 | GA23 · The Fig. 12 stall model | robotics-bench-b.md §7 L1172-1177 | The original's stall maths does not match its own 2 Ω motor, and the LM2596's real switch limit is about 4.5 A typical (3.6 A minimum) rather than 3.0 A. A stock Nano's brown-out detector trips at 2.7 V, so the original's "reset below 4.3 V" is really the edge of the 16 MHz safe operating area (about 3.8 V): say it that way, or model the 4.3 V BOD option. The corrected model changes the golden values, which must go into `docs/DECISIONS.md`. |
 | GA24 · The ROS 2 release to start on | robotics-bench-b.md §8.9 L1366-1368 | The Fig. 13 quiz answers Jazzy, the May 2024 LTS. ROS 2 ships a new LTS every other May, so a 2026 LTS should exist by now. Check the current LTS before shipping and update the quiz and its explanation if needed. |
-| GA25 · The audit's scope | current-simlab-audit.md §1 L23 | The audit was written without the brief, so its coverage matrix used the README and the task text. The SPEC rows here check the brief directly; where an AUD row and a SPEC row differ, the SPEC row wins. |
+| GA25 · The audit's scope | current-iynk-audit.md §1 L23 | The audit was written without the brief, so its coverage matrix used the README and the task text. The SPEC rows here check the brief directly; where an AUD row and a SPEC row differ, the SPEC row wins. |

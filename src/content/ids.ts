@@ -1,4 +1,4 @@
-// Every item id in SimLab, with the small metadata index pages need.
+// Every item id in iynk, with the small metadata index pages need.
 // Titles and taglines are the "title" / "tagline" keys of each item's content JSON
 // (src/i18n/content/<lang>/<lab>/<id>.json); tag labels are "tags.<tag>" in the lab's UI namespace.
 // Lists are in figure order. Additive changes only; log them in docs/ARCHITECTURE.md.

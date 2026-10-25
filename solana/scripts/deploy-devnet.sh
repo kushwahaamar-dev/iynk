@@ -1,20 +1,20 @@
 #!/bin/sh
-# Deploys simlab_passport to devnet (or upgrades it in place) with the SimLab
+# Deploys iynk_passport to devnet (or upgrades it in place) with the iynk
 # deployer key, then publishes or upgrades the on-chain IDL so Solana Explorer
-# can decode its instructions. Keys stay in ~/.config/solana/simlab; this script
+# can decode its instructions. Keys stay in ~/.config/solana/iynk; this script
 # prints public keys and signatures only.
 set -eu
 cd "$(dirname "$0")/.."
 
-KEYS="$HOME/.config/solana/simlab"
+KEYS="$HOME/.config/solana/iynk"
 DEPLOYER="$KEYS/deployer.json"
-PROGRAM_KEYPAIR="$KEYS/simlab_passport-keypair.json"
+PROGRAM_KEYPAIR="$KEYS/iynk_passport-keypair.json"
 # A named buffer lets a failed deploy resume, and stops the CLI from printing
 # the seed phrase of the throwaway buffer key it would otherwise create.
 BUFFER="$KEYS/deploy-buffer.json"
 URL="${SOLANA_RPC_URL:-https://api.devnet.solana.com}"
-SO=target/deploy/simlab_passport.so
-IDL=target/idl/simlab_passport.json
+SO=target/deploy/iynk_passport.so
+IDL=target/idl/iynk_passport.json
 
 for f in "$DEPLOYER" "$PROGRAM_KEYPAIR" "$SO" "$IDL"; do
   [ -f "$f" ] || { echo "Missing $f (build with: npm run build)" >&2; exit 1; }

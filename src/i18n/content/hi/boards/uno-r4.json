@@ -846,13 +846,13 @@
       "params": {
         "ssid": {
           "label": "नेटवर्क",
-          "SimLab": "SimLab (2.4 GHz)",
+          "iynk": "iynk (2.4 GHz)",
           "Workshop-5G": "Workshop-5G (सिर्फ़ 5 GHz)",
           "Workshop-5G-note": "ESP32-S3 में सिर्फ़ 2.4 GHz रेडियो है, इसलिए 5 GHz नेटवर्क कभी नहीं दिखता और स्केच बिंदु छापता रहता है।"
         }
       },
       "world": {
-        "ap": "SimLab एक्सेस पॉइंट"
+        "ap": "iynk एक्सेस पॉइंट"
       },
       "checks": {
         "1": "4 s के अंदर \"Connected, IP 192.168.4.x\" छापता है",

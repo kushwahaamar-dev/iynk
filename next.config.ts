@@ -6,10 +6,10 @@ const nextConfig: NextConfig = {
   partialPrefetching: true,
   // Agents build side by side with NEXT_DIST_DIR=.next-<label> (D12).
   distDir: process.env.NEXT_DIST_DIR || ".next",
-  // While ~40 agents share one tree, SIMLAB_BUILD_SKIP_TYPECHECK=1 lets one of
+  // While ~40 agents share one tree, IYNK_BUILD_SKIP_TYPECHECK=1 lets one of
   // them build its routes past another's half-written file; they type-check
   // with `npm run typecheck` instead. Deploy builds always type-check.
-  typescript: { ignoreBuildErrors: process.env.SIMLAB_BUILD_SKIP_TYPECHECK === "1" && !process.env.VERCEL },
+  typescript: { ignoreBuildErrors: process.env.IYNK_BUILD_SKIP_TYPECHECK === "1" && !process.env.VERCEL },
   turbopack: {
     rules: {
       "*.css": {

@@ -47,4 +47,4 @@ What it does:
   Labels: SILICON DIE, CERAMIC, USB BRIDGE, 5V REGULATOR, POLYFUSE, SCHOTTKY.
 
 Look: Colorfigures palette (cobalt accent), warm paper, heavy ink silhouette, finer inner lines, hand-drawn wobble,
-paper grain. Works on a phone and inside the SimLab host (embedded, bare). Upload byte counts are illustrative.
+paper grain. Works on a phone and inside the iynk host (embedded, bare). Upload byte counts are illustrative.

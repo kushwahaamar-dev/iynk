@@ -108,7 +108,7 @@ export function isGhostTrack(v: unknown): v is GhostTrack {
   );
 }
 
-const keyOf = (craft: string, course: string) => `simlab:ghost:v1:${craft}:${course}`;
+const keyOf = (craft: string, course: string) => `iynk:ghost:v1:${craft}:${course}`;
 
 /** Your best lap's ghost for a craft's course, from this browser. */
 export function loadGhost(craft: string, course: string): GhostTrack | null {

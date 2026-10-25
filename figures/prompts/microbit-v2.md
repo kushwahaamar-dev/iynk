@@ -46,4 +46,4 @@ What it does:
   light the matrix pixel by pixel with nets MX0-MX24 (0-1, row by row from the top-left).
 
 Look: Colorfigures palette (blush accent), warm paper, heavy ink silhouette, finer inner lines, hand-drawn wobble,
-paper grain. Works on a phone (badges and a label list) and inside the SimLab host (embedded, bare).
+paper grain. Works on a phone (badges and a label list) and inside the iynk host (embedded, bare).

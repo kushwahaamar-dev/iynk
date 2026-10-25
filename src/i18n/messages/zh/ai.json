@@ -126,11 +126,11 @@
     "copyLink": "复制链接",
     "copied": "链接已复制",
     "facebook": "分享到 Facebook",
-    "shareText": "{title}：来自 SimLab 的搭建故事",
+    "shareText": "{title}：来自 iynk 的搭建故事",
     "unavailable": "此部署尚未设置搭建故事。",
     "failed": "故事没能写出来。请再试一次。",
     "noCover": "这次封面没能画出来，所以故事没有封面。",
-    "footer": "在 SimLab 一起完成",
+    "footer": "在 iynk 一起完成",
     "me": "我"
   }
 }

@@ -1,4 +1,4 @@
-# SimLab build plan: the last stretch of HackTX 2026
+# iynk build plan: the last stretch of HackTX 2026
 
 Written 2026-10-24 15:45 CDT, from the six audits in `docs/audit/` (boards, robotics, drones, platform, sponsor-layer,
 history). **Status: waiting for the user's approval.** Nothing in here is built until the user says go.
@@ -43,12 +43,12 @@ everything working, built in about six hours, with a 90% chance of winning.
 
 Every track's story runs through **one product** and one 4-minute demo, so no track looks bolted on.
 
-| Track | What the prize text rewards | What the judge sees in SimLab | Where it lives |
+| Track | What the prize text rewards | What the judge sees in iynk | Where it lives |
 |---|---|---|---|
 | **Best Overall** | "technically and creatively difficult", "a unique vision", design, complexity, impact | A hand-inked hardware lab in the browser: 12 boards, 13 benches, 13 drones; three real interpreters; failures that really happen; a flight sim. Everything opens, nothing 404s, in 6 languages. | the whole app |
 | **SerpApi** | "SerpApi plays a meaningful role in what your project does" | **Build it for real** on every board, bench and drone: live prices from Google Shopping/Amazon/eBay drive a **budget optimiser that changes the design** (cells, motors, props) and the calculator re-runs; datasheet answers cite Google + Extract; makerspaces, shops and flying fields nearby (Maps); maker events; tutorial videos. | `RealBuildPanel` in the dock; partner tool `search_datasheet` |
 | **Most Entertaining** | "something we won't want to put down", "keep people coming back" | **Break it and watch it fail** (magic smoke, a drone that flips because the FC is backwards, slow-mo replay, "here's why", one click to fix); **race your friends' ghosts** live in a room and your own best lap; bronze/silver/gold par times; a **daily challenge** with a leaderboard; 10+ flyable crafts with missions; sound. | fly page, Break-it panels, leaderboard |
-| **Meta** | strengthens human connection; AI essential; originality; working demo; Muse Spark/Image/Voice/Muse connector | **SimLab Together**: live build rooms across languages (Muse Spark translates chat and voice); a lab partner that **sends you to a person first** ("Maya fixed this an hour ago, ask her") and credits helpers; Build Night planner that turns a group chat into a plan; Build Stories with a Muse Image cover; buddy matching by shared builds; Muse calling SimLab as a connector over MCP. | dock tabs Partner/Together, `/together`, `/api/mcp` |
+| **Meta** | strengthens human connection; AI essential; originality; working demo; Muse Spark/Image/Voice/Muse connector | **iynk Together**: live build rooms across languages (Muse Spark translates chat and voice); a lab partner that **sends you to a person first** ("Maya fixed this an hour ago, ask her") and credits helpers; Build Night planner that turns a group chat into a plan; Build Stories with a Muse Image cover; buddy matching by shared builds; Muse calling iynk as a connector over MCP. | dock tabs Partner/Together, `/together`, `/api/mcp` |
 | **Solana** *(phase 4, if time is left)* | "instant, high-frequency transactions", identity, payments | **Proof of Build**: the server **re-runs your deterministic lab run** before issuing a non-transferable credential PDA; sponsor bounties in escrow pay out in the same transaction; **micro-tips per helpful answer** in rooms (the high-frequency part); one-click devnet wallet; public `/verify`. Every lab kind is verifiable, not only drone safety. | dock tab Passport, `/passport`, `/verify` |
 | *(Best Hardware Hack, phase 4, if time is left)* | "push beyond the screen" | Code run in the sim drives a real Uno over Web Serial + Firmata; the real board's button moves the figure. | dock tab Hardware |
 
@@ -61,7 +61,7 @@ Every track's story runs through **one product** and one 4-minute demo, so no tr
 3. Drone Lab → quad5 → Build it for real: "under $150" → the optimiser swaps the cells and motors, the calculator
    numbers change, the parts list prices are live. *(SerpApi)*
 4. Fly: the room races; the friend's ghost flies beside you; a crash replay. Leaderboard updates. *(Entertaining)*
-5. Build Story with the Muse Image cover; Muse (the agent) asks SimLab "what did we build tonight?" over MCP. *(Meta)*
+5. Build Story with the Muse Image cover; Muse (the agent) asks iynk "what did we build tonight?" over MCP. *(Meta)*
 
 Added only if phase 4 lands: after step 4, pass the safety checks → Passport: the server re-runs the check, mints the
 credential, the bounty pays, the friend tips 0.001 SOL for the help, Explorer link, `/verify` *(Solana)*; and the
@@ -85,7 +85,7 @@ sim's Blink code driving a real Uno on the table *(Hardware)*.
 
 ```
 Browser (Next.js 16 App Router on Vercel, 6 locales)
- ├─ Lab pages: Boards / Robotics / Drones / Fly            ← one shell, one progress store (simlab:v1)
+ ├─ Lab pages: Boards / Robotics / Drones / Fly            ← one shell, one progress store (iynk:v1)
  │   ├─ FigureFrame ⇄ Colorfigures iframe (public/figures/<kind>/<id>.html; embed.js message contract + pause/resume)
  │   ├─ Lab store (dispatch(action)) ── adapter ──► RoomProvider (sync/hydrate, baton)   [NEW wiring]
  │   ├─ Interpreters in a Web Worker: compile → run → trace → checks (one evaluator)     [NEW worker + plumbing]
@@ -99,7 +99,7 @@ API routes (Vercel functions, `await connection()` on every GET)
  ├─ /api/telemetry, /api/leaderboard, /api/live → Tiger Data (Timescale)
  └─ /api/mcp, /api/mcp/tools/[name], /openapi.json → Muse connector
 Realtime relay (server/realtime, Docker on a Vultr VM, Caddy TLS on 443, rooms.<domain>.tech)
-Solana program simlab_passport (Anchor 0.31.1, devnet)
+Solana program iynk_passport (Anchor 0.31.1, devnet)
 ```
 
 Every sponsor feature degrades cleanly: with a key missing the panel says why and the core lab still works
@@ -147,7 +147,7 @@ These are the root causes behind most of the audits' blockers. Each has one owne
 ### 3.3 Contracts that don't change
 
 The FigureFrame ↔ figure message contract, `dispatch(action)` stores, the content schema (`schema.ts`, additive
-changes only, logged at the top of `docs/ARCHITECTURE.md`), the HX-CONTRACT API shapes, the progress key `simlab:v1`.
+changes only, logged at the top of `docs/ARCHITECTURE.md`), the HX-CONTRACT API shapes, the progress key `iynk:v1`.
 
 ## 4. What "functional" means for each item
 

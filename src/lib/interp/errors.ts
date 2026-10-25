@@ -51,7 +51,7 @@ export function syntaxError(message: string, pos: SourcePos, hint?: string): Int
 }
 
 export function unsupported(feature: string, pos: SourcePos | null, hint?: string): InterpError {
-  return new InterpError('unsupported', `${feature} is not supported by the SimLab simulator`, pos, hint);
+  return new InterpError('unsupported', `${feature} is not supported by the iynk simulator`, pos, hint);
 }
 
 /** Levenshtein distance, used for "did you mean" hints. */

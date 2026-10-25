@@ -3,7 +3,7 @@ import { PublicKey, type Connection } from "@solana/web3.js";
 import { DISCRIMINATORS, OFFSETS, decodeBounty, decodeCredential, type Bounty, type Credential } from "./passport";
 
 // On-chain reads shared by the pages (straight from the RPC, so anyone can
-// check a credential without trusting SimLab) and the server routes.
+// check a credential without trusting iynk) and the server routes.
 
 const tag = (discriminator: readonly number[]) => ({ memcmp: { offset: 0, bytes: bs58.encode(Uint8Array.from(discriminator)) } });
 

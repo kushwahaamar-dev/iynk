@@ -97,7 +97,7 @@ describe("POST /api/ai/chat", () => {
       { type: "done", usage: { provider: "meta", inTokens: 100, outTokens: 9 } },
     ]);
     const body = calls[0].body as { messages: Array<{ role: string; content: string }>; tools: Array<{ function: { name: string } }> };
-    expect(body.messages[0].content).toContain("You are the SimLab lab partner");
+    expect(body.messages[0].content).toContain("You are the iynk lab partner");
     expect(body.messages[1].content).toContain("Spanish (es)");
     expect(body.messages[1].content).toContain("led1: anode->D13");
     expect(body.messages[2]).toEqual({ role: "user", content: "My LED stays dark." });

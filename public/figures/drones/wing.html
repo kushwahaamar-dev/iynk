@@ -6,8 +6,8 @@
 <meta name="color-scheme" content="light">
 <title>FPV flying wing on INAV</title>
 <script>
-/* Colorfigures core.js, vendored for SimLab from the Colorfigures skill (MIT, see LICENSE in this folder).
-   Upstream sha256 a78aab94ab7396b99080bf72673d5d4d689d771764d76cb08f1a0d28033f7fc3. SimLab patches: PATCHES.md. Regenerate with vendor.py, never edit by hand. */
+/* Colorfigures core.js, vendored for iynk from the Colorfigures skill (MIT, see LICENSE in this folder).
+   Upstream sha256 a78aab94ab7396b99080bf72673d5d4d689d771764d76cb08f1a0d28033f7fc3. iynk patches: PATCHES.md. Regenerate with vendor.py, never edit by hand. */
 /* ============================================================
    Colorfigures core: projection, shapes, shading, ink, labels, page shell.
    A figure page includes this file (scripts/build.py inlines it), then calls mountFigure({...}).
@@ -31,7 +31,7 @@ const DARK    = { l:'#55504a', m:'#3d3935', d:'#272421' };
 const INK = '#231e16';
 const SHADOW = '#41538f';
 
-/* ---------- SimLab patches (see figures/vendor/colorfigures/PATCHES.md) ---------- */
+/* ---------- iynk patches (see figures/vendor/colorfigures/PATCHES.md) ---------- */
 // P3 embedded mode: on inside any iframe or with ?embed=1; ?embed=0 forces it off. ?bare=1 also hides the figure's
 // own buttons, stats, switches and keypad. ?theme=dark dims the paper (P4). ?lang=xx is the first language (P2).
 const CF_Q = new URLSearchParams(location.search);
@@ -752,13 +752,13 @@ function mountKeypad(spec){
 
 </script>
 <script>/* figures/engine/embed.js */
-/* SimLab figure bridge, figure side. The protocol is in docs/FIGURES.md (after colorfigures-guide 2.3).
+/* iynk figure bridge, figure side. The protocol is in docs/FIGURES.md (after colorfigures-guide 2.3).
    It is inlined right after the vendored core.js and hooks mountFigure through CF_MOUNT_HOOKS, so any figure that
    calls mountFigure(cfg) speaks it. A figure opts in to state with
      cfg.embed = { accept(st, patch, ui) -> true | false | 'why not', report(st) -> small object of discrete values }
    Nothing else in the state can be written from outside. */
 (() => {
-  const IN = 'simlab', OUT = 'simlab-figure', V = 1;
+  const IN = 'iynk', OUT = 'iynk-figure', V = 1;
   const html = document.documentElement;
   const host = CF_EMBED && window.parent !== window ? window.parent : null;
   const fileMode = location.protocol === 'file:';
@@ -961,7 +961,7 @@ function mountKeypad(spec){
 <style>.mcap{display:none!important}@media (max-width:560px){.stat .v{font-size:20px!important}.stats{align-items:flex-end}}@media (min-width:561px){.vset{top:4px!important}#stats{top:var(--vset-h,44px)!important}}</style><style>@media (max-width:560px){body > header{display:none}}</style><script>window.FIG_A = () => innerWidth <= 560 ? 1.1 : .75;</script><script>window.LBL_U = () => { if (innerWidth > 560) return 0; const s = document.getElementById("fig"); return s && s.clientWidth && s.viewBox.baseVal.width ? s.viewBox.baseVal.width / s.clientWidth : 0; };</script></head>
 <body>
 <script>/* figures/engine/drone.js */
-/* SimLab drone figure engine (engine:drone): registry, state, build flow, safety tests, scene and the bridge.
+/* iynk drone figure engine (engine:drone): registry, state, build flow, safety tests, scene and the bridge.
    Data format: docs/FIGURES-DRONE.md. Helpers live in drone-geo.js, layouts in drone-frames.js, piece drawings in
    drone-pieces.js and the wiring sheet in drone-sheet.js. Built on the Colorfigures core (MIT). */
 window.SL = window.SL || {};
@@ -1703,7 +1703,7 @@ window.SL = window.SL || {};
 
 </script>
 <script>/* figures/engine/drone-geo.js */
-/* SimLab drone engine: craft-local geometry helpers (SL.drone.g) and materials. Craft-local millimetres,
+/* iynk drone engine: craft-local geometry helpers (SL.drone.g) and materials. Craft-local millimetres,
    x forward, y left, z up, z = 0 on the bench mat (docs/FIGURES-DRONE.md §2). Every helper returns one depth-sorted
    item { box, svg } or an array of them, in bench coordinates. */
 (() => {
@@ -1823,7 +1823,7 @@ window.SL = window.SL || {};
 
 </script>
 <script>/* figures/engine/drone-frames.js */
-/* SimLab drone engine: frame layouts, motor numbering and the FRAME drawing (docs/FIGURES-DRONE.md §4).
+/* iynk drone engine: frame layouts, motor numbering and the FRAME drawing (docs/FIGURES-DRONE.md §4).
    Motor angles in data count clockwise from the nose seen from above; positions are craft-local (x forward, y left). */
 (() => {
   const SD = SL.drone, g = SD.g, W = SD.W;
@@ -1968,7 +1968,7 @@ window.SL = window.SL || {};
 
 </script>
 <script>/* figures/engine/drone-pieces.js */
-/* SimLab drone engine: piece drawings (docs/FIGURES-DRONE.md §7), the bench mat, the smoke stopper and the
+/* iynk drone engine: piece drawings (docs/FIGURES-DRONE.md §7), the bench mat, the smoke stopper and the
    overlays (motor-test arrows, smoke, see-through current flow). Craft-local millimetres through SL.drone.g. */
 (() => {
   const SD = SL.drone, g = SD.g, W = SD.W, K = SD.kinds;
@@ -2363,7 +2363,7 @@ window.SL = window.SL || {};
 
 </script>
 <script>/* figures/engine/drone-sheet.js */
-/* SimLab drone engine: the wiring sheet, a flat hand-inked sheet drawn from craft.wiring (docs/FIGURES-DRONE.md §9).
+/* iynk drone engine: the wiring sheet, a flat hand-inked sheet drawn from craft.wiring (docs/FIGURES-DRONE.md §9).
    Canvas 760 x 340 units, blocks 150 x 56. Block ids are part ids, so a click selects the same part as the 3D view. */
 (() => {
   const SD = SL.drone;

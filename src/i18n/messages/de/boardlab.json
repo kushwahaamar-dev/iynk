@@ -239,7 +239,7 @@
     "quizRight": "Richtig.",
     "quizWrong": "Nicht ganz.",
     "quizScore": "{score} von {total} richtig",
-    "fpgaNote": "SimLab führt dein Verilog als Verhaltensmodell aus, Takt für Takt am Takt des Boards. Es wird nicht synthetisiert, platziert oder geroutet: kein Timing, keine LUT-Zahlen.",
+    "fpgaNote": "iynk führt dein Verilog als Verhaltensmodell aus, Takt für Takt am Takt des Boards. Es wird nicht synthetisiert, platziert oder geroutet: kein Timing, keine LUT-Zahlen.",
     "completed": "Lektion abgeschlossen. Gut gemacht.",
     "nextCta": "Weiter: {title}"
   },

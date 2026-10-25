@@ -1,6 +1,6 @@
-# Deploying SimLab
+# Deploying iynk
 
-P1-deploy, 2026-10-24 17:23 CDT. The local smoke was rerun by the driver at 18:24 CDT. The app is a Next.js 16.4.3 App Router project. Since 2026-10-25 08:20 it is deployed on Vercel at https://simlab-hacktx.vercel.app ("Production on Vercel" below); the older sections are kept as history.
+P1-deploy, 2026-10-24 17:23 CDT. The local smoke was rerun by the driver at 18:24 CDT. The app is a Next.js 16.4.3 App Router project. Since 2026-10-25 08:20 it is deployed on Vercel at https://iynk.vercel.app ("Production on Vercel" below); the older sections are kept as history.
 
 ## Where it stands (2026-10-25 02:45 CDT)
 
@@ -23,13 +23,13 @@ Both scripts read the keys from the environment or `.env.local`, never print the
 ## Production on Vercel, 2026-10-25 08:20 CDT
 
 Amar said yes at 08:10. Project `simlab-hacktx` in scope `kushwahaamar2ak5-7403s-projects`, linked from this repo at
-08:12 (the CLI also connected github.com/kushwahaamar-dev/sim, so a push to `main` builds production). Live at
-**https://simlab-hacktx.vercel.app**, deployed with `vercel deploy --prod --yes` from `f86c159` plus the
+08:12 (the CLI also connected github.com/kushwahaamar-dev/iynk, so a push to `main` builds production). Live at
+**https://iynk.vercel.app**, deployed with `vercel deploy --prod --yes` from `f86c159` plus the
 `.vercelignore` fix below.
 
 Production variables (encrypted, uploaded from `.env.local` through stdin, values trimmed): `META_API_KEY`,
 `META_API_BASE`, `META_MODEL`, `META_IMAGE_MODEL`, `META_TRANSCRIBE_MODEL`, `GEMINI_API_KEY`, `GEMINI_MODEL`,
-`SERPAPI_KEY`, `SERPAPI_MONTHLY_BUDGET`, `NEXT_PUBLIC_SITE_URL=https://simlab-hacktx.vercel.app`. Not uploaded: the
+`SERPAPI_KEY`, `SERPAPI_MONTHLY_BUDGET`, `NEXT_PUBLIC_SITE_URL=https://iynk.vercel.app`. Not uploaded: the
 Solana values (phase 4 skipped) and `DATABASE_URL` (no Tiger). `NEXT_PUBLIC_REALTIME_URL` was added at 08:34, once
 the Vultr relay let the site in (below); the laptop's `ws://127.0.0.1` address can't work from an https page.
 
@@ -39,7 +39,7 @@ uploaded), then the build failed its typecheck because `src/content/drones/_chec
 leaves out that helper and `src/lib/server/ai/__test__/`, the only two test helpers outside the `*.test.*` names
 (only tests import them).
 
-| Check on https://simlab-hacktx.vercel.app | Result |
+| Check on https://iynk.vercel.app | Result |
 |---|---|
 | `/api/status` | `ai`, `image`, `voice`, `search`, `gemini` true; `db`, `solana` false; `realtime` false until the 08:38 redeploy, true since |
 | `node scripts/smoke-search.mjs --base …` | 5 of 5 (offers best USD 28.09, web, nearby, events, videos) |
@@ -50,14 +50,14 @@ leaves out that helper and `src/lib/server/ai/__test__/`, the only two test help
 
 ### The room relay on Vultr (08:34)
 
-VM `simlab-realtime`, id `b2a815bf-8b1b-4c2c-90d2-33e3542c379e`, 216.128.138.203, `vc2-1c-1gb` in `dfw`, Ubuntu
+VM `iynk-realtime`, id `b2a815bf-8b1b-4c2c-90d2-33e3542c379e`, 216.128.138.203, `vc2-1c-1gb` in `dfw`, Ubuntu
 24.04. It was created at 07:58 CDT by `scripts/realtime-vultr-create.sh` from another machine or session (its
 Vultr SSH key `simlab-realtime-deploy` isn't on Amar's Mac), and that run's relay allowed only localhost pages. Amar
 added this Mac's `~/.ssh/id_ed25519.pub` with `ssh-copy-id` at 08:33. A checksum dry run of `rsync` showed the
 VM's `server/realtime` and `deploy/realtime` match the repo, so the redeploy only changed the origins:
 
 ```bash
-REALTIME_ALLOWED_ORIGINS="https://simlab-hacktx.vercel.app,http://localhost:3000,http://127.0.0.1:3000,http://localhost:4317,http://127.0.0.1:4317" \
+REALTIME_ALLOWED_ORIGINS="https://iynk.vercel.app,http://localhost:3000,http://127.0.0.1:3000,http://localhost:4317,http://127.0.0.1:4317" \
   VULTR_HOST=216.128.138.203 bash scripts/realtime-deploy.sh
 ```
 
@@ -155,13 +155,13 @@ Same script Vercel runs (`prebuild` writes the content index, then `next build`,
 
 ```bash
 cd /Users/amar/Codes/ak/simlab
-env -u SIMLAB_BUILD_SKIP_TYPECHECK NEXT_DIST_DIR=.next-deploy npm run build
+env -u IYNK_BUILD_SKIP_TYPECHECK NEXT_DIST_DIR=.next-deploy npm run build
 NEXT_DIST_DIR=.next-deploy npx next start -H 127.0.0.1 -p <free-port>
 ```
 
 `next start` only works after a finished build. `-H` and `-p` are the Next 16.4 CLI flags. Delete `.next-deploy` when the smoke is over. If the build adds `.next-deploy` lines to `tsconfig.json`, remove only those lines. `tsconfig.json` belongs to P1-health. Do not commit it, and do not revert other include lines.
 
-`SIMLAB_BUILD_SKIP_TYPECHECK=1` skips typecheck only when `VERCEL` is unset (`next.config.ts`). A deploy build always typechecks. These runs did not set the skip.
+`IYNK_BUILD_SKIP_TYPECHECK=1` skips typecheck only when `VERCEL` is unset (`next.config.ts`). A deploy build always typechecks. These runs did not set the skip.
 
 ## Smoke, 2026-10-24 18:24 CDT
 
@@ -169,7 +169,7 @@ Rerun by the driver after the build went green. Node v24.8.0, Next.js 16.4.3, `N
 
 | When (CDT) | Command | Result |
 |---|---|---|
-| 18:23 | `env -u SIMLAB_BUILD_SKIP_TYPECHECK NEXT_DIST_DIR=.next-deploy npm run build` | Exit 0 in 13 s. Compiled in 6.1s. TypeScript finished in 4.5s. 645 of 645 static pages. |
+| 18:23 | `env -u IYNK_BUILD_SKIP_TYPECHECK NEXT_DIST_DIR=.next-deploy npm run build` | Exit 0 in 13 s. Compiled in 6.1s. TypeScript finished in 4.5s. 645 of 645 static pages. |
 | 18:24 | `NEXT_DIST_DIR=.next-deploy npx next start -H 127.0.0.1 -p 3417` | Ready in 65ms. No errors in the server log. |
 
 The build still prints one warning and goes on past it: `src/i18n/figure-strings.ts` cannot resolve `src/i18n/figures/<locale>.json`. No phase-1 row owns figure strings (platform audit M4). Phase 3 adds `src/i18n/figures/`.
@@ -178,7 +178,7 @@ The two failures from 17:21 and 17:23 are gone. The fixture-preview route was de
 
 ### Demo-path routes
 
-`curl` against the local server at 18:24. Every 200 page has its own `<title>`, and none has a `NEXT_HTTP_ERROR_FALLBACK` (not-found) or `SimLab i18n` marker in its HTML. These are status codes only. No browser ran, so console errors and the figures at runtime were not checked here. Gate 1 does that.
+`curl` against the local server at 18:24. Every 200 page has its own `<title>`, and none has a `NEXT_HTTP_ERROR_FALLBACK` (not-found) or `iynk i18n` marker in its HTML. These are status codes only. No browser ran, so console errors and the figures at runtime were not checked here. Gate 1 does that.
 
 | Route | Demo step | HTTP |
 |---|---|---|
@@ -197,7 +197,7 @@ The two failures from 17:21 and 17:23 are gone. The fixture-preview route was de
 
 The MCP `initialize` answer reports `websiteUrl` as `http://localhost:3000`, because `NEXT_PUBLIC_SITE_URL` is unset. That is expected locally. Set it before a public build.
 
-Also seen: the `/en` tab title is "Dashboard", with no "· SimLab". The `%s · SimLab` template lives in `src/app/[lang]/layout.tsx`, and Next applies a layout's `title.template` only to child segments, not to the page in the same segment (`node_modules/next/dist/docs/01-app/03-api-reference/04-functions/generate-metadata.md`). Every other page in the table gets the suffix.
+Also seen: the `/en` tab title is "Dashboard", with no "· iynk". The `%s · iynk` template lives in `src/app/[lang]/layout.tsx`, and Next applies a layout's `title.template` only to child segments, not to the page in the same segment (`node_modules/next/dist/docs/01-app/03-api-reference/04-functions/generate-metadata.md`). Every other page in the table gets the suffix.
 
 ## Not done
 

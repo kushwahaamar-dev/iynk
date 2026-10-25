@@ -52,5 +52,5 @@ What it does:
   STM32H743 + 2 IMUs, M10 GPS + compass, MAVLink2 TELEM1, CRSF on TELEM2, gimbal motors and LiPo cells.
 
 Look: Colorfigures palette (cobalt accent), warm paper, heavy ink silhouette, finer inner lines. It works on a phone
-(numbered badges and a label list) and inside the SimLab host, which loads it with `?fresh=1` so every check starts
+(numbered badges and a label list) and inside the iynk host, which loads it with `?fresh=1` so every check starts
 unrun.

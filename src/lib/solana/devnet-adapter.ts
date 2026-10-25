@@ -9,7 +9,7 @@ import {
 import { PublicKey, VersionedTransaction, type TransactionVersion } from "@solana/web3.js";
 import { createDevnetKeypair, getDevnetKeypair, subscribeDevnetWallet } from "./devnet-wallet";
 
-export const DEVNET_WALLET_NAME = "SimLab devnet wallet" as WalletName<"SimLab devnet wallet">;
+export const DEVNET_WALLET_NAME = "iynk devnet wallet" as WalletName<"iynk devnet wallet">;
 
 // Ink-and-paper mark: a key on a mustard tag.
 const ICON =
@@ -20,9 +20,9 @@ const ICON =
 
 /**
  * A wallet-adapter for the in-browser devnet keypair. Connecting creates the
- * keypair on first use, so trying SimLab's Proof of Build is one click.
+ * keypair on first use, so trying iynk's Proof of Build is one click.
  */
-export class DevnetWalletAdapter extends BaseSignerWalletAdapter<"SimLab devnet wallet"> {
+export class DevnetWalletAdapter extends BaseSignerWalletAdapter<"iynk devnet wallet"> {
   name = DEVNET_WALLET_NAME;
   url = "https://explorer.solana.com/?cluster=devnet";
   icon = ICON;
@@ -47,7 +47,7 @@ export class DevnetWalletAdapter extends BaseSignerWalletAdapter<"SimLab devnet 
     this.busy = true;
     try {
       const pair = createDevnetKeypair();
-      if (!pair) throw new WalletNotReadyError("This browser does not allow SimLab to store a devnet wallet.");
+      if (!pair) throw new WalletNotReadyError("This browser does not allow iynk to store a devnet wallet.");
       this.key = pair.publicKey;
       // Forgetting the wallet (here or in another tab) disconnects it.
       this.unsubscribe = subscribeDevnetWallet(() => {

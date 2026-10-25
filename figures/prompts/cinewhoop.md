@@ -52,7 +52,7 @@ What it does:
 - **Wiring sheet**: battery → XT60 + cap → 4-in-1 ESC → motors (3-phase x4), FC → ESC (DShot300 bidir + VBAT, CUR),
   receiver → FC (UART2 CRSF + 5 V), air unit → FC (UART1 MSP + VBAT), O3 camera → air unit (coax) and XT60 → action
   camera (5 V BEC).
-- **Options** from the SimLab calculator: the three packs; 2004 3000 KV, 2004 1950 KV or 1404 4600 KV motors; and
+- **Options** from the iynk calculator: the three packs; 2004 3000 KV, 2004 1950 KV or 1404 4600 KV motors; and
   3x3x3, 3x2x5 or 3x3.5x3 props, each in its own colour.
 - **Exploded view** lifts each part by its stack level.
 - **See-through** fades the top plate, the air unit, the action camera and the battery, and names what is inside:
@@ -62,4 +62,4 @@ What it does:
 
 Look: Colorfigures palette (mint craft colour, chosen with the colour swatches), warm paper, heavy ink silhouette,
 finer inner lines, hand-drawn wobble, paper grain. It works on a phone (numbered badges and a label list) and inside
-the SimLab host, embedded and bare.
+the iynk host, embedded and bare.

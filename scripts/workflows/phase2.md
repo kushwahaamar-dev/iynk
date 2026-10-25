@@ -74,7 +74,7 @@ Wave A goes first because it holds what wave B builds on: the engine requests, t
     Tailwind classes, so override a base class with `!`. Text on a pastel fill (`bg-good-bg`, `bg-bad-bg`) takes the
     `on-fill` class.
 11. **Done means verified through the app's own path** (BUILD-PLAN §6), never a private runner:
-    - lessons and tasks: `SIMLAB_LESSON_TABLE=/tmp/<label>.md npx vitest run src/lib/interp/lessons.test.ts`
+    - lessons and tasks: `IYNK_LESSON_TABLE=/tmp/<label>.md npx vitest run src/lib/interp/lessons.test.ts`
       (reference passes, starter fails, for each of yours);
     - bench steps: `node figures/engine/probe.mjs <bench-id>` (every step in order, 0 errors);
     - figures: `python3 -I figures/tools/cfbuild.py <kind>/<id>`, then `python3 -I figures/tools/cfshoot.py <kind>/<id>`

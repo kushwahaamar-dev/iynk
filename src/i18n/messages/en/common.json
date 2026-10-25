@@ -1,6 +1,6 @@
 {
   "site": {
-    "name": "SimLab",
+    "name": "iynk",
     "tagline": "Explore · Understand · Build",
     "description": "A hands-on hardware lab in the browser: build, wire, code, break and fly boards, robots and drones."
   },
@@ -55,7 +55,7 @@
     },
     "usage": {
       "label": "Anonymous usage counts",
-      "body": "SimLab counts what happens in the labs (a lesson passed, a step built, a fault tried) for the live counters and leaderboards. Each event carries a random id for this browser, never your name or your code.",
+      "body": "iynk counts what happens in the labs (a lesson passed, a step built, a fault tried) for the live counters and leaderboards. Each event carries a random id for this browser, never your name or your code.",
       "toggle": "Share anonymous usage counts"
     }
   }

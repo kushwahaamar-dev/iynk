@@ -1,4 +1,4 @@
-# SimLab AI gateway (hx:server-ai)
+# iynk AI gateway (hx:server-ai)
 
 The server platform (env, HTTP helpers, rate limits, `/api/status`) and the Meta Model API gateway behind `/api/ai/*`, per HX-CONTRACT H1, H2 and H4. Everything here was written on 2026-10-24 during the hacking period.
 
@@ -129,7 +129,7 @@ Sources: the Markdown versions of the docs, listed at https://dev.meta.ai/llms.t
   - transcribe also uses `bad_audio`, `too_long` and `unsupported_audio`
 - **Display:** the message is a developer hint. **UIs pick their own localised text by `code`.**
 - **JSON bodies:** must be sent with `content-type: application/json` (otherwise 415). Together with `checkOrigin`, that keeps other sites from firing simple cross-origin POSTs at the AI routes (H11).
-- **Prompt caching:** the partner sends the fixed rules as the first system message and the learner's context (locale, item, peers, bench) as the second. The rules prefix stays identical for Meta's prefix cache, and the requests share `prompt_cache_key: "simlab-partner"`. `safety_identifier` is a salted SHA-256 of the caller's IP, never the IP itself.
+- **Prompt caching:** the partner sends the fixed rules as the first system message and the learner's context (locale, item, peers, bench) as the second. The rules prefix stays identical for Meta's prefix cache, and the requests share `prompt_cache_key: "iynk-partner"`. `safety_identifier` is a salted SHA-256 of the caller's IP, never the IP itself.
 
 ## The routes
 

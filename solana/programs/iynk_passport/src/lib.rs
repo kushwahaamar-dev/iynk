@@ -1,6 +1,6 @@
-//! SimLab Proof of Build.
+//! iynk Proof of Build.
 //!
-//! The SimLab server re-runs a learner's deterministic lab run and, when it
+//! The iynk server re-runs a learner's deterministic lab run and, when it
 //! passes, the issuer key records a Credential PDA for (learner, skill). Anyone
 //! can sponsor a skill by escrowing lamports in a Bounty PDA; matching bounties
 //! are paid to the learner in the same instruction that issues the credential.
@@ -18,7 +18,7 @@ use instructions::*;
 declare_id!("BYFLDTLNi946Z8jT4JnxgE8Cpzkr9ud7tSrnThFTv31w");
 
 #[program]
-pub mod simlab_passport {
+pub mod iynk_passport {
     use super::*;
 
     /// Creates the Config PDA. Only the program's upgrade authority may call it.

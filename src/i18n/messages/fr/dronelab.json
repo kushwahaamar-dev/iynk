@@ -5,7 +5,7 @@
     "craftTitle": "{title} · Labo des drones",
     "craftDescription": "{title} : choix des pièces avec calculs en direct, montage pièce par pièce, tests de sécurité, configuration dans {cli}, puis vol.",
     "flyTitle": "Pilotage : {title}",
-    "flyDescription": "Pilotez sur le terrain SimLab le drone que vous avez conçu ({title}) : vue de poursuite ou lunettes FPV, clavier, manches tactiles ou manette."
+    "flyDescription": "Pilotez sur le terrain iynk le drone que vous avez conçu ({title}) : vue de poursuite ou lunettes FPV, clavier, manches tactiles ou manette."
   },
   "index": {
     "title": "Labo des drones",

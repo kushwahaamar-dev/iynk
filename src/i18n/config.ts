@@ -1,4 +1,4 @@
-// The languages SimLab ships (D1). Everything that needs the list imports it
+// The languages iynk ships (D1). Everything that needs the list imports it
 // from here, next.config.ts included.
 
 export const LOCALES = ["en", "es", "fr", "de", "zh", "hi"] as const;
@@ -8,7 +8,7 @@ export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "en";
 
 /** The cookie the language picker writes and the "/" redirect reads. */
-export const LANG_COOKIE = "simlab-lang";
+export const LANG_COOKIE = "iynk-lang";
 
 /** Each language's own name, for the language picker. */
 export const LOCALE_NAMES: Record<Locale, string> = {

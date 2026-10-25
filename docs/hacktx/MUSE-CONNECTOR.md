@@ -1,9 +1,9 @@
-# SimLab as a Muse connector (and a tool for any MCP client)
+# iynk as a Muse connector (and a tool for any MCP client)
 
 Owner: hx:mcp. Updated 2026-10-24, 14:20 CDT. Code: `src/lib/server/mcp/**`, `src/app/api/mcp/**`,
 `src/app/api/openapi.json/route.ts`. Contract: HX-CONTRACT H10.
 
-SimLab exposes its catalogue, the drone calculator, live parts prices, the Build Night planner, room links and the
+iynk exposes its catalogue, the drone calculator, live parts prices, the Build Night planner, room links and the
 Solana passport as tools that Meta's Muse agent (or any other MCP client) can call:
 
 | Surface | URL | For |
@@ -36,11 +36,11 @@ on this deployment"); the REST twin answers `503 { error: { code: "not_configure
 as tool errors (`isError: true`) naming the field, so a model can correct itself; an unknown tool name is a JSON-RPC
 error (`-32602`).
 
-## What Muse can do with SimLab (example prompts)
+## What Muse can do with iynk (example prompts)
 
 - "Plan a drone night for me and my cousins Ana (new to this, wants to fly fast) and Ravi (knows soldering). Then
   give us a room link." → `plan_build_night`, then `create_room` on the planned item.
-- "I want to learn FPGAs. What can I practise on in SimLab, and what's the first lesson?" → `search_catalog`
+- "I want to learn FPGAs. What can I practise on in iynk, and what's the first lesson?" → `search_catalog`
   ("fpga verilog"), `get_item` (basys3).
 - "Would a 6S 1800 mAh pack with 2450 KV motors work on the 5-inch quad? Why not?" → `drone_calc` (it reports the
   over-spin check and the numbers).
@@ -50,7 +50,7 @@ error (`-32602`).
   `locale: "es"`.
 - "Has wallet 9xQe…VFin passed the drone safety tests? Send me proof I can share." → `get_passport`.
 
-## Adding SimLab to Muse
+## Adding iynk to Muse
 
 ### 1. As a custom connector, for one person (no review)
 
@@ -61,11 +61,11 @@ not take actions", when Muse asks for approval) is set in Muse's Settings.
 
 Steps (deploy first; Muse cannot reach localhost):
 
-1. In a Muse chat, send: *"Add a custom connector for SimLab. It is a remote MCP server over streamable HTTP at
+1. In a Muse chat, send: *"Add a custom connector for iynk. It is a remote MCP server over streamable HTTP at
    `https://<site>/api/mcp`, with no authentication. Its OpenAPI spec is at `https://<site>/api/openapi.json`."*
 2. Answer Muse's transport and auth questions: remote HTTP, no auth (no API key, no OAuth).
-3. Ask Muse to list SimLab's tools and to try `search_catalog` with "esp32". Seven tools should appear.
-4. In Settings, keep SimLab read-only (every tool already is).
+3. Ask Muse to list iynk's tools and to try `search_catalog` with "esp32". Seven tools should appear.
+4. In Settings, keep iynk read-only (every tool already is).
 
 Third-party guides disagree on the exact UI: anythingmcp.com describes Settings → Connectors → "Add custom connector"
 with a pasted URL and OAuth sign-in (checked by them 2026-09-25); parallel.ai (2026-09-14) says there is no "add MCP
@@ -76,15 +76,15 @@ server" setting and the setup happens in chat. Try the Settings path first, then
 Meta opened the Muse Connector Platform on 2026-09-18 (`muse.ai/platform`, which redirects to
 `platform.muse.ai`). The form has three steps:
 
-| Step | What it asks | SimLab's answer |
+| Step | What it asks | iynk's answer |
 |---|---|---|
-| Overview | connector name, product website, example prompts, icon, privacy and terms URLs | "SimLab", `<site>`, the prompts above, `<site>/icon.svg`, privacy/terms URLs (still to write, see gaps) |
+| Overview | connector name, product website, example prompts, icon, privacy and terms URLs | "iynk", `<site>`, the prompts above, `<site>/icon.svg`, privacy/terms URLs (still to write, see gaps) |
 | Technical specs | connection type **Existing MCP** (hosted endpoint + docs) or **Raw API** (API URL, optional OpenAPI URL, docs); auth: API keys, OAuth with PKCE, or Other | Existing MCP: `<site>/api/mcp`, docs: this file. Raw API alternative: `<site>`, `<site>/api/openapi.json`. Auth: none ("Other: public, read-only, rate-limited") |
 | Review | confirm and agree to the Muse Connector Terms | — |
 
 Meta then reviews "functional, security, and legal requirements" with end-to-end testing. The connector guidelines
 at `platform.muse.ai/docs` ask for factual tool descriptions, a Read / Write / Sensitive-write class per tool (all of
-SimLab's are Read), privacy and terms URLs, support and security contacts, and a test account for reviewers (SimLab has
+iynk's are Read), privacy and terms URLs, support and security contacts, and a test account for reviewers (iynk has
 no accounts, so none is needed). Review time is not published; for HackTX use path 1.
 
 ## Testing with an MCP client
@@ -113,7 +113,7 @@ REST twin: `curl -s $SITE/api/mcp/tools/search_catalog -H 'content-type: applica
 
 Other clients:
 - MCP Inspector: `npx @modelcontextprotocol/inspector`, transport "Streamable HTTP", URL `$SITE/api/mcp`.
-- Claude Code: `claude mcp add --transport http simlab $SITE/api/mcp`.
+- Claude Code: `claude mcp add --transport http iynk $SITE/api/mcp`.
 - The repo's own end-to-end test drives the route handler with the official SDK client (`Client` +
   `StreamableHTTPClientTransport`): `npx vitest run src/lib/server/mcp`.
 
@@ -132,18 +132,18 @@ Other clients:
 
 ## Auth, limits and safety
 
-- No authentication, on purpose: every tool reads public data, SimLab has no accounts (H11), and the tools hold no
+- No authentication, on purpose: every tool reads public data, iynk has no accounts (H11), and the tools hold no
   personal data. `get_passport` reads a public blockchain address the caller already knows.
 - Rate limits per IP (in-memory, per instance): 120 MCP requests/min, 60 REST tool calls/min, plus each backing
   route's own limit and SerpApi's `SERPAPI_MONTHLY_BUDGET` quota guard. `plan_build_night` spends Meta model quota and
   `price_parts` spends SerpApi searches; if a connector gets abused, the next step is an API key header (Muse's form
   supports API keys), not built today.
-- DNS rebinding (MCP transport security rule): a request with an `Origin` header must arrive under a host SimLab
+- DNS rebinding (MCP transport security rule): a request with an `Origin` header must arrive under a host iynk
   serves (`localhost`/`127.0.0.1`/`[::1]` or `NEXT_PUBLIC_SITE_URL`'s host), else 403. Agents send no Origin and are
   unaffected. CORS is open (`*`) on these three routes only, as H11 allows.
 - Upstream errors never pass through: each failure becomes a short, safe message and a code
   (`bad_input`, `not_found`, `not_configured`, `rate_limited`, `upstream`, `internal`).
-- `plan_build_night` calls SimLab's own `/api/ai/plan` on `NEXT_PUBLIC_SITE_URL` (never on the request's Host
+- `plan_build_night` calls iynk's own `/api/ai/plan` on `NEXT_PUBLIC_SITE_URL` (never on the request's Host
   header, so callers cannot redirect it).
 
 ## What is unverified or still open
@@ -158,7 +158,7 @@ Other clients:
   the real data modules of five boards, two benches and quad5; `get_passport` read devnet for real; `price_parts`, `plan_build_night` and `create_room` answered "not set up" because this machine has
   no `SERPAPI_KEY`, `META_API_KEY` or `NEXT_PUBLIC_REALTIME_URL`. Their success paths are covered by unit tests
   with mocked SerpApi and plan responses only.
-- The directory submission needs privacy and terms URLs that SimLab does not have yet.
+- The directory submission needs privacy and terms URLs that iynk does not have yet.
 - The modern-era (2026-07-28) behaviour was checked against the spec text with hand-written requests; no 2026-07-28
   client SDK was installed to cross-check it. The legacy era was checked with the official SDK client 1.32.2.
 

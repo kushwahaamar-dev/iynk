@@ -47,5 +47,5 @@ What it does:
   per segment, DIG<d>_<A..G|DP> (digit 0 rightmost, brightness averaged over the multiplexing).
 
 Look: Colorfigures palette (cobalt accent), warm paper, heavy ink silhouette, finer inner lines, hand-drawn wobble,
-paper grain. Works on a phone and inside the SimLab host (embedded, bare). Bitstream sizes are the XC7A35T's
+paper grain. Works on a phone and inside the iynk host (embedded, bare). Bitstream sizes are the XC7A35T's
 2,192,012 bytes.

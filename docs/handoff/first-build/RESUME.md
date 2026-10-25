@@ -1,8 +1,8 @@
-# SimLab: HackTX 2026 build (god mode)
+# iynk: HackTX 2026 build (god mode)
 
 Last updated: 15:08 CDT, 2026-10-24. Everything is stopped; read "Cut-off at 14:19" first.
 
-SimLab is now the user's HackTX 2026 entry.
+iynk is now the user's HackTX 2026 entry.
 - Hacking period: 11:30 Oct 24 to 11:30 Oct 25 CDT.
 - Devpost deadline: Oct 25 11:30 CDT, video required, in-person judging.
 - The user's target is a deployed, demo-ready build by 18:00 today, then overnight hardening.
@@ -57,25 +57,25 @@ Cleanup at 15:00–15:08 (session 344b2088):
 ### Resuming from a new session
 
 The Workflow tool documents `resumeFromRunId` as same-session only, and these runs belong to session 327c458a. Try it first. If it is refused, relaunch by hand, and know how the scripts actually use their args:
-- `prev` is wired into a prompt only for core2's checklist-a. `simlab-items.js` and `simlab-stage2.js` define `tails()` but never call it, so passing `prev` alone gives a relaunched agent nothing. Add `${tails(<label>)}` to the agent prompts in a copy of the script, then pass `prev` = `{label: prevMerged}` from cutoff-1419.json.
-- `simlab-items.js`: same `lab` and `limit`; `items` = the interrupted plus the never-started items.
-- `simlab-stage2.js`: `only` = `["shell-2", "engine:bench-2"]`.
-- `simlab-gm-core2.js` has no `only`, and `simlab-hx1.js` has neither `only` nor `prev`. A plain relaunch reruns finished agents such as the architect, so write a continuation copy that runs only the interrupted labels.
-- `simlab-facts-gm.js`: only the 12 checkers are left. `args.resumed` and `prev` are keyed by item id and read only by the research prompt, so the checkers need the same kind of edit.
+- `prev` is wired into a prompt only for core2's checklist-a. `iynk-items.js` and `iynk-stage2.js` define `tails()` but never call it, so passing `prev` alone gives a relaunched agent nothing. Add `${tails(<label>)}` to the agent prompts in a copy of the script, then pass `prev` = `{label: prevMerged}` from cutoff-1419.json.
+- `iynk-items.js`: same `lab` and `limit`; `items` = the interrupted plus the never-started items.
+- `iynk-stage2.js`: `only` = `["shell-2", "engine:bench-2"]`.
+- `iynk-gm-core2.js` has no `only`, and `iynk-hx1.js` has neither `only` nor `prev`. A plain relaunch reruns finished agents such as the architect, so write a continuation copy that runs only the interrupted labels.
+- `iynk-facts-gm.js`: only the 12 checkers are left. `args.resumed` and `prev` are keyed by item id and read only by the research prompt, so the checkers need the same kind of edit.
 - Each interrupted agent's own notes are in `<scratch>/gm/<label>/`, and its work is on disk in the paths it owns.
 
 ## Workflows, all stopped at 14:19:59 (scripts in `~/.claude/projects/-Users-amar-Codes-ak-simlab/327c458a-8849-435d-a3e9-20eb9855a68f/workflows/scripts/`)
 
 | Wave | Run | Script | Args |
 |---|---|---|---|
-| W1 facts | `wf_6ace19e7-573` (resumed) | `simlab-facts-gm.js` | `<scratch>/gm/w1-args.json` |
-| core2 | `wf_7983fdc6-21a` | `simlab-gm-core2.js` | root, scratch, prev.checklist-a (2 transcripts) |
-| HX wave 1 | `wf_249d2581-74d` | `simlab-hx1.js` | root, scratch |
-| items: boards + parts | `wf_828c7092-26b` | `simlab-items.js` | lab boards, limit 10, 16 items (content:uno-r3, parts:inputs/drivers/modules/mat, 11 boards) |
-| items: robotics | `wf_6e44fd79-4d1` | `simlab-items.js` | lab robotics, limit 7, the 13 benches (each owns its module) |
-| stage2: shell-2 | `wf_3b43775c-716` | `simlab-stage2.js` | only [shell-2], launched 14:16 after shell-app and design-system finished |
-| stage2: engine:bench-2 | `wf_a01431e2-07d` | `simlab-stage2.js` | only [engine:bench-2], launched 14:18 after engine:bench finished |
-| items: drones | `wf_797d6f20-21d` | `simlab-items.js` | lab drones, limit 8, 13 items (content:quad5 + 12 crafts) |
+| W1 facts | `wf_6ace19e7-573` (resumed) | `iynk-facts-gm.js` | `<scratch>/gm/w1-args.json` |
+| core2 | `wf_7983fdc6-21a` | `iynk-gm-core2.js` | root, scratch, prev.checklist-a (2 transcripts) |
+| HX wave 1 | `wf_249d2581-74d` | `iynk-hx1.js` | root, scratch |
+| items: boards + parts | `wf_828c7092-26b` | `iynk-items.js` | lab boards, limit 10, 16 items (content:uno-r3, parts:inputs/drivers/modules/mat, 11 boards) |
+| items: robotics | `wf_6e44fd79-4d1` | `iynk-items.js` | lab robotics, limit 7, the 13 benches (each owns its module) |
+| stage2: shell-2 | `wf_3b43775c-716` | `iynk-stage2.js` | only [shell-2], launched 14:16 after shell-app and design-system finished |
+| stage2: engine:bench-2 | `wf_a01431e2-07d` | `iynk-stage2.js` | only [engine:bench-2], launched 14:18 after engine:bench finished |
+| items: drones | `wf_797d6f20-21d` | `iynk-items.js` | lab drones, limit 8, 13 items (content:quad5 + 12 crafts) |
 
 What each wave covers:
 - **W1 facts:** the 12 board/drone fact sheets finished at about 13:46; the later items are still running.
@@ -141,10 +141,10 @@ All live in the workflow scripts dir. Pass `{root, scratch, ...}` as args. `only
 
 | Script | Agents | Launch when |
 |---|---|---|
-| `simlab-stage2.js` | engine:bench-2, engine:drone-2, ui:boardlab-2, ui:robotics-2, ui:dronelab-2, interp-2, shell-2 | each one when its core2 owner finishes (shell-2 needs shell-app and design-system) |
-| `simlab-hx2.js` | hx:dock, hx:landing, hx:race, hx:story, hx:fixups then hx:e2e, hx:deploy-prep | when HX wave 1 is done (hx:race also needs flight and ui:dronelab; hx:dock and hx:landing need shell-app and design-system; deploy-prep around 16:30) |
-| `simlab-verify.js` | `groups: [{items: [{lab, id, kind?, module?, modules?, facts?, notes?}], minutes?}]`, limit 8 | as stage-1 items finish (uno-r3 after engine:bench-2, quad5 after engine:drone-2) |
-| `simlab-translate.js` | `langs`, `parts` (boards, robotics, drones, figures-ui), limit 10 | first pass around 16:30, second pass after verify |
+| `iynk-stage2.js` | engine:bench-2, engine:drone-2, ui:boardlab-2, ui:robotics-2, ui:dronelab-2, interp-2, shell-2 | each one when its core2 owner finishes (shell-2 needs shell-app and design-system) |
+| `iynk-hx2.js` | hx:dock, hx:landing, hx:race, hx:story, hx:fixups then hx:e2e, hx:deploy-prep | when HX wave 1 is done (hx:race also needs flight and ui:dronelab; hx:dock and hx:landing need shell-app and design-system; deploy-prep around 16:30) |
+| `iynk-verify.js` | `groups: [{items: [{lab, id, kind?, module?, modules?, facts?, notes?}], minutes?}]`, limit 8 | as stage-1 items finish (uno-r3 after engine:bench-2, quad5 after engine:drone-2) |
+| `iynk-translate.js` | `langs`, `parts` (boards, robotics, drones, figures-ui), limit 10 | first pass around 16:30, second pass after verify |
 
 Ownership hand-offs in wave 2:
 - hx:dock owns src/i18n/namespaces.ts and the nav strings in shell.json. The orchestrator stops editing namespaces.ts once hx:dock launches.
@@ -154,7 +154,7 @@ Ownership hand-offs in wave 2:
 Status helper: `python3 -I <scratch>/gm/status.py <scratch>/gm/watch-state/runs`.
 Orchestrator did at 14:00-14:05: registered the ai namespace, un-ignored .env.example, H2 contract fix (no runtime export, connection()).
 
-- 14:16 shell-app and design-system finished, shell-2 launched. sound now starts inside core2 (chained). Staged: `simlab-release.js` (readme, rehearse, repo-fix; args.site).
+- 14:16 shell-app and design-system finished, shell-2 launched. sound now starts inside core2 (chained). Staged: `iynk-release.js` (readme, rehearse, repo-fix; args.site).
 - At deploy, check that .vercelignore exists (hx:deploy-prep writes it) before any `vercel deploy`: .env.local and keypairs must never upload.
 - 14:17 MISTAKE, contained: SendMessage to five hx agents' ids (server-ai, partner, search, realtime-server, solana-app) spawned duplicate copies resumed from their transcripts. The copies were stopped with TaskStop within a minute. Before being stopped, the solana-app copy removed `runtime` from the three solana routes. If the originals died too (their journal shows failed, or their transcripts stop advancing), relaunch them as a continuation workflow. NEVER SendMessage a workflow agent by id. Outcome: the originals did die (transcripts frozen at 14:17:48); they are in the interrupted list above.
 - 14:15 StateCond in schema.ts widened to Partial<Record<...>> (additive). It fixed the content-index loader type errors that the `satisfies` pattern causes. Logged in ARCHITECTURE section 0: TODO.

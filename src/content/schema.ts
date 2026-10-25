@@ -1,4 +1,4 @@
-// SimLab content contract. Every board, robotics bench and drone is one data module
+// iynk content contract. Every board, robotics bench and drone is one data module
 // (src/content/<lab>/<id>.ts) whose default export satisfies one of the *Content types below.
 // Rules: text fields hold keys into src/i18n/content/<lang>/<lab>/<id>.json (never prose);
 // identifiers, part numbers, pin names and code stay literal. Content modules may only

@@ -3,9 +3,9 @@
   "intro": "Lass diese Lektion auf einem echten Arduino laufen: Dein Sketch schaltet die echten Pins, und die Taster und Drehregler der echten Platine bewegen die Simulation.",
   "support": {
     "unsupportedTitle": "Dieser Browser erreicht keine USB-Platinen",
-    "unsupported": "Der Zwilling spricht über Web Serial mit der Platine, und das bietet dieser Browser nicht an. Öffne SimLab in einem aktuellen Chrome, Edge oder Opera auf dem Computer, um eine Platine zu verbinden. Alles andere in SimLab funktioniert hier.",
+    "unsupported": "Der Zwilling spricht über Web Serial mit der Platine, und das bietet dieser Browser nicht an. Öffne iynk in einem aktuellen Chrome, Edge oder Opera auf dem Computer, um eine Platine zu verbinden. Alles andere in iynk funktioniert hier.",
     "insecureTitle": "Braucht eine sichere Seite",
-    "insecure": "Web Serial funktioniert nur auf https-Seiten und auf localhost. Öffne SimLab über https, um eine Platine zu verbinden."
+    "insecure": "Web Serial funktioniert nur auf https-Seiten und auf localhost. Öffne iynk über https, um eine Platine zu verbinden."
   },
   "lab": {
     "unsupportedTitle": "Hier gibt es nichts zu spiegeln",

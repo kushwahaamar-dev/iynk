@@ -1,6 +1,6 @@
 // @vitest-environment node
 // End-to-end against a real TimescaleDB: the migrations, then every query the
-// routes run. It uses SIMLAB_TEST_DATABASE_URL when set (a throwaway database:
+// routes run. It uses IYNK_TEST_DATABASE_URL when set (a throwaway database:
 // the test writes to it), otherwise starts timescale/timescaledb:latest-pg17 in
 // Docker on a random port with a random password and stops it afterwards. With
 // neither available it is skipped.
@@ -11,7 +11,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { listMigrations, migrate } from "../../../../scripts/db-migrate.mjs";
 import { deleteProfile, getLeaderboard, getLiveCounters, insertEvents, listProfiles, upsertProfile, type EventRow } from "./queries";
 
-const external = process.env.SIMLAB_TEST_DATABASE_URL;
+const external = process.env.IYNK_TEST_DATABASE_URL;
 
 function dockerAvailable(): boolean {
   try {
@@ -23,7 +23,7 @@ function dockerAvailable(): boolean {
 }
 
 const enabled = Boolean(external) || dockerAvailable();
-if (!enabled) console.info("timescale.test: skipped (no SIMLAB_TEST_DATABASE_URL and no Docker daemon)");
+if (!enabled) console.info("timescale.test: skipped (no IYNK_TEST_DATABASE_URL and no Docker daemon)");
 
 describe.skipIf(!enabled)("TimescaleDB integration", () => {
   let container: string | null = null;

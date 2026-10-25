@@ -1,9 +1,9 @@
 {
-  "name": "simlab-passport",
+  "name": "iynk-passport",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Anchor workspace for the simlab_passport program (SimLab Proof of Build, Solana devnet)",
+  "description": "Anchor workspace for the iynk_passport program (iynk Proof of Build, Solana devnet)",
   "scripts": {
     "build": "anchor build && node scripts/export-idl.mjs",
     "test": "anchor test --provider.cluster localnet",

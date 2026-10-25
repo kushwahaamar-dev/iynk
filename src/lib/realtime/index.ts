@@ -1,4 +1,4 @@
-// SimLab Together on the client (HX-CONTRACT H7.1). Import from here only.
+// iynk Together on the client (HX-CONTRACT H7.1). Import from here only.
 
 export { RoomProvider, useIdentity, useRoom, useTogether, type Together } from "./provider";
 export { createRoom, parseRoomInput, roomLink, transportKind, withRoom } from "./config";

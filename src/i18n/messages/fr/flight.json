@@ -321,8 +321,8 @@
     "copied": "Lien copié",
     "copyFailed": "Copie impossible : voici le lien",
     "link": "Lien du défi",
-    "shareText": "Défi drone du jour SimLab : {craft} sur {course}.",
-    "shareBeat": "Défi drone du jour SimLab : {craft} sur {course}. Saurez-vous battre {time} s ?",
+    "shareText": "Défi drone du jour iynk : {craft} sur {course}.",
+    "shareBeat": "Défi drone du jour iynk : {craft} sur {course}. Saurez-vous battre {time} s ?",
     "board": "{course}, défi du {date}"
   }
 }

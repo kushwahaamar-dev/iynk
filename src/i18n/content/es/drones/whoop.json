@@ -192,7 +192,7 @@
     },
     "alt": {
       "title": "Aquí, «mantener altitud» es una ayuda del simulador",
-      "explain": "El ALTHOLD de Betaflight (modo 3) mantiene la altura con un barómetro o un GPS, y una AIO de whoop no tiene ninguna de las dos cosas. El mantener altitud de SimLab hace fáciles los primeros vuelos; en el whoop real aprendes lo mismo en modo ángulo, con la inclinación limitada a 45 grados para una habitación."
+      "explain": "El ALTHOLD de Betaflight (modo 3) mantiene la altura con un barómetro o un GPS, y una AIO de whoop no tiene ninguna de las dos cosas. El mantener altitud de iynk hace fáciles los primeros vuelos; en el whoop real aprendes lo mismo en modo ángulo, con la inclinación limitada a 45 grados para una habitación."
     },
     "angle": {
       "title": "Modo ángulo",
@@ -358,7 +358,7 @@
         "why": "FLIP OVER AFTER CRASH (modo 35) invierte los motores con una orden DShot y te deja armar boca abajo. Empuja la palanca hacia el lado que tiene que levantarse. Con crashflip_auto_rearm en OFF, desactiva la tortuga, desarma y vuelve a armar para seguir volando."
       },
       "alt": {
-        "q": "El mantener altitud de SimLab vuela este whoop. ¿Lo tiene el real?",
+        "q": "El mantener altitud de iynk vuela este whoop. ¿Lo tiene el real?",
         "options": {
           "1": "No: no tiene barómetro ni GPS, así que el mantener altitud de Betaflight no puede funcionar",
           "2": "Sí: todos los quads con Betaflight lo tienen",

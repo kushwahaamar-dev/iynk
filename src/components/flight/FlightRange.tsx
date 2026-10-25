@@ -83,7 +83,7 @@ export type FlightRangeProps = {
   className?: string;
 };
 
-const PAD_KEY = "simlab:flight-pad:v1";
+const PAD_KEY = "iynk:flight-pad:v1";
 const fmtTime = (s: number) => s.toFixed(2);
 
 function loadPad(): PadMapping {

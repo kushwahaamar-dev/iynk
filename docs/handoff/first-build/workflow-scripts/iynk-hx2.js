@@ -1,6 +1,6 @@
 export const meta = {
-  name: 'simlab-hx2',
-  description: 'HackTX layer wave 2 for SimLab: LabDock on every lab page, the landing and About pages, multiplayer drone races, Build Story sharing, wave-1 fixups then end-to-end proof of every sponsor flow, deploy prep',
+  name: 'iynk-hx2',
+  description: 'HackTX layer wave 2 for iynk: LabDock on every lab page, the landing and About pages, multiplayer drone races, Build Story sharing, wave-1 fixups then end-to-end proof of every sponsor flow, deploy prep',
   phases: [
     { title: 'Integrate', detail: 'dock, landing, race, story, fixups then e2e, deploy-prep (args.only picks a subset)' },
   ],
@@ -9,9 +9,9 @@ export const meta = {
 const R = args.root
 const S = args.scratch
 
-const CONTEXT = `PROJECT: SimLab at ${R} (Next.js 16.4.3 App Router, React 19.3, Tailwind v4, TypeScript). It is its own local git repo (branch main). Do NOT touch the parent git repo at /Users/amar/Codes. Read ${R}/AGENTS.md first: this Next.js has breaking changes versus what you know, so read the relevant guide in ${R}/node_modules/next/dist/docs (route handlers, server-only code, environment variables, streaming, caching) before relying on any Next API.
+const CONTEXT = `PROJECT: iynk at ${R} (Next.js 16.4.3 App Router, React 19.3, Tailwind v4, TypeScript). It is its own local git repo (branch main). Do NOT touch the parent git repo at /Users/amar/Codes. Read ${R}/AGENTS.md first: this Next.js has breaking changes versus what you know, so read the relevant guide in ${R}/node_modules/next/dist/docs (route handlers, server-only code, environment variables, streaming, caching) before relying on any Next API.
 
-SimLab is the user's HackTX 2026 entry. Read these in full before you design anything:
+iynk is the user's HackTX 2026 entry. Read these in full before you design anything:
 - ${R}/docs/hacktx/STRATEGY.md : why we build what we build, the tracks we target, the 3-minute demo
 - ${R}/docs/hacktx/HX-CONTRACT.md : BINDING for you: env vars, server conventions, every API shape, the realtime protocol, the Solana program interface, ownership (H12) and the dependency rule (H13)
 - ${R}/docs/hacktx/BASE_ARCHITECTURE.md : the core's fixed decisions D1-D14 (D14 are the seams you plug into)
@@ -22,7 +22,7 @@ RIGHT NOW about thirty other agents are building the core in this same tree: she
 SCRATCH: ${S}/gm/<your-label>/ for throwaway files. TOOLS: Python Playwright works (python3 -I; p.chromium.launch()); Google Chrome is not installed and Brave headless hangs. WebSearch and WebFetch are available through ToolSearch: read official docs before coding against any external API, and record what you relied on (URL + date) in your doc.`
 
 const GM = `RULES FOR TODAY:
-- HACKATHON RULE (breaking it disqualifies the entry): all project code is written during the hacking period, which began 11:30 CDT on Oct 24. Write your own code. Never copy code written before then: the old SimLab app (git baseline 245763f), the prototypes in ${S} (interp/, flight/ and the other spike folders), or code blocks in the pre-event research docs. Third-party npm packages, official SDKs and documented API examples are fine; credit non-trivial ones in your doc.
+- HACKATHON RULE (breaking it disqualifies the entry): all project code is written during the hacking period, which began 11:30 CDT on Oct 24. Write your own code. Never copy code written before then: the old iynk app (git baseline 245763f), the prototypes in ${S} (interp/, flight/ and the other spike folders), or code blocks in the pre-event research docs. Third-party npm packages, official SDKs and documented API examples are fine; credit non-trivial ones in your doc.
 - Time box: run \`date\` when you start; your task states your budget. Check \`date\` now and then. When time is nearly up, finish, make what you have consistent, and report the gaps.
 - Save as you go: create your files early and keep them updated, so a crash or a pause loses nothing.
 - Keep your context lean: never print more than ~150 lines of a file or a command at once; summarise big data with a script. Overgrown contexts make the API time out.
@@ -55,7 +55,7 @@ const REQ = `Before you start, read every file in ${R}/docs/requests/ and handle
 const DOCK = `${HEAD}${REQ}
 YOUR TASK (time box: 110 minutes; label hx:dock): put the whole hackathon layer onto every lab page through the LabDock, so the demo's four flows work end to end (STRATEGY sections 5 and 7). shell-app and design-system have finished; your task gives you src/components/dock/** and src/components/shell/nav.ts.
 Every lab page renders <LabDock lab itemId store figure/> (D14e; check the board, robotics bench, drone and fly pages). Do everything through it, so the lab pages and stores, which the lab follow-up agents own and are editing now, need no change from you:
-1. The real LabDock (src/components/dock/**): tabs Partner (src/components/ai PartnerPanel), Together (src/components/realtime TogetherPanel), Real (src/components/search RealBuildPanel and NearbyPanel), Passport (src/components/solana PassportPanel) and Hardware (src/components/hw HardwareTwinPanel; board lab only, Chromium only). It is a side panel on wide screens and a bottom sheet on phones. Tabs show badges for unread chat and new hints. The open tab is remembered per viewer (localStorage through useSyncExternalStore, wrapped in try/catch). Everything works from the keyboard. Each tab honours useFeatures() (src/lib/features.ts). The window event simlab:dock-tab switches tabs (hx:partner's open_panel tool).
+1. The real LabDock (src/components/dock/**): tabs Partner (src/components/ai PartnerPanel), Together (src/components/realtime TogetherPanel), Real (src/components/search RealBuildPanel and NearbyPanel), Passport (src/components/solana PassportPanel) and Hardware (src/components/hw HardwareTwinPanel; board lab only, Chromium only). It is a side panel on wide screens and a bottom sheet on phones. Tabs show badges for unread chat and new hints. The open tab is remembered per viewer (localStorage through useSyncExternalStore, wrapped in try/catch). Everything works from the keyboard. Each tab honours useFeatures() (src/lib/features.ts). The window event iynk:dock-tab switches tabs (hx:partner's open_panel tool).
 2. Rooms: wrap the dock in RoomProvider (src/lib/realtime). While a room is open it swaps store.dispatch, so the page's shared actions sync in server order (H7). Open the Together tab when the URL has ?room=. Render PresenceCursors over the figure through a portal into the figure's positioned box; find that box through the figure prop (read src/components/figure). Share the viewer's done keys (src/lib/progress) through presence so the partner can find helpers.
 3. Telemetry: subscribe to the store in LabDock and call track() (src/lib/telemetry, hx:data) on state transitions: lesson attempt and pass, a fault shown, room join, credential issued. Laps belong to hx:race.
 4. Navigation: add Together and Passport to src/components/shell/nav.ts (add their ids to NavId), with nav.<id> strings in src/i18n/messages/<lang>/shell.json for all six locales.
@@ -77,7 +77,7 @@ You own: the wave-1 hx agents' files per HX-CONTRACT H12, except src/components/
 const LANDING = `${HEAD}${REQ}
 YOUR TASK (time box: 90 minutes; label hx:landing): the first screen judges see. Rework the home page (src/app/[lang]/page.tsx, from design-system, which has finished) and the About page (src/app/[lang]/about/**, from shell-app) for the hackathon without losing what they do (the dashboard of progress across the three labs, D7; the credits and the originals' MIT licence).
 1. Home: a hero with a live, turnable figure (FigureFrame) and the one-line story from STRATEGY section 4; the three labs with progress ("0/16"); the four flows as clear entry points: build together (create a room: src/lib/realtime createRoom), ask the partner, build it for real, prove it (passport); the live counter (src/components/data LiveCounter) when the db feature is on. Fast: static, figures lazy, no layout shift. Colorfigures look, six locales, keyboard and ARIA, phone layout.
-2. About: what SimLab is, how it works (core plus hackathon layer, in plain words), credits for Meta Muse Spark, SerpApi, Solana, Vultr, Tiger Data, the Colorfigures skill, Next.js and every open-source package with a licence that asks for credit, plus the originals' MIT licence; privacy notes (no accounts, devnet only).
+2. About: what iynk is, how it works (core plus hackathon layer, in plain words), credits for Meta Muse Spark, SerpApi, Solana, Vultr, Tiger Data, the Colorfigures skill, Next.js and every open-source package with a licence that asks for credit, plus the originals' MIT licence; privacy notes (no accounts, devnet only).
 3. Strings go in a new home namespace, src/i18n/messages/<lang>/home.json, for all six locales. hx:dock registers it in src/i18n/namespaces.ts, so don't edit that file or shell.json. Metadata comes from alternatesFor.
 4. Verify: typecheck, the touched tests, and screenshots of both pages at desktop and phone width in light and dark mode; look at them and fix.
 You own: src/app/[lang]/page.tsx, src/app/[lang]/about/**, src/components/home/**, the strings you add.`

@@ -126,11 +126,11 @@
     "copyLink": "Copy link",
     "copied": "Link copied",
     "facebook": "Share on Facebook",
-    "shareText": "{title}, a Build Story from SimLab",
+    "shareText": "{title}, a Build Story from iynk",
     "unavailable": "Build Stories aren’t set up on this deployment.",
     "failed": "The story couldn’t be written. Try again.",
     "noCover": "The cover couldn’t be drawn this time, so the story has none.",
-    "footer": "Made together in SimLab",
+    "footer": "Made together in iynk",
     "me": "Me"
   }
 }

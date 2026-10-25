@@ -48,7 +48,7 @@ function hash(text: string): number {
 function pickFor<T>(date: string, items: T[], key: (item: T) => string): T {
   let best = items[0], top = -1;
   for (const item of items) {
-    const score = hash(`simlab:${date}:${key(item)}`);
+    const score = hash(`iynk:${date}:${key(item)}`);
     if (score > top || (score === top && key(item) < key(best))) [best, top] = [item, score];
   }
   return best;
@@ -62,7 +62,7 @@ export function dailyChallenge(date: string, pool: ChallengeCraft[]): DailyChall
   const craft = pickFor(date, crafts, (c) => c.id);
   const course = pickFor(date, craft.courses, (c) => `${craft.id}/${c.id}`);
   const batt = pickFor(date, craft.batts, (b) => `${craft.id}#${b}`);
-  const wind = (hash(`simlab:${date}:wind`) & 1) === 1;
+  const wind = (hash(`iynk:${date}:wind`) & 1) === 1;
   return { date, craft: craft.id, course: course.id, batt, wind, board: `daily-${date.replaceAll("-", "")}` };
 }
 
@@ -86,7 +86,7 @@ export function readChallengeQuery(search: string): { date: string; beat: number
   return { date, beat: Number.isFinite(beat) && beat > 0 && beat < 3600 ? beat : null, by: by || null };
 }
 
-const bestKey = (date: string) => `simlab:challenge:v1:${date}`;
+const bestKey = (date: string) => `iynk:challenge:v1:${date}`;
 
 /** This browser's best time on a day's challenge, in seconds. */
 export function loadChallengeBest(date: string): number | null {

@@ -1,4 +1,4 @@
-# SimLab room relay. Build context: server/realtime (compose.yaml sets it), so only the relay's own
+# iynk room relay. Build context: server/realtime (compose.yaml sets it), so only the relay's own
 # files reach the image; server/realtime/.dockerignore narrows it further.
 FROM node:24.22.1-alpine
 

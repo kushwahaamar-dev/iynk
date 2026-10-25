@@ -1,8 +1,8 @@
-// The one saved document (D7): localStorage["simlab:v1"] holds progress and
+// The one saved document (D7): localStorage["iynk:v1"] holds progress and
 // settings together. Reads are cached by the raw string, so React's
 // useSyncExternalStore gets the same object until something is written.
 
-export const STORAGE_KEY = "simlab:v1";
+export const STORAGE_KEY = "iynk:v1";
 export const STORAGE_VERSION = 1;
 
 export type ThemeSetting = "system" | "light" | "dark";
@@ -148,7 +148,7 @@ function notify() {
 /** Applies `change` to the latest saved document and writes it back. */
 export function updateSaved(change: (current: Saved) => Saved): Saved {
   if (typeof window === "undefined") {
-    throw new Error("SimLab progress: saved progress and settings can only change in the browser.");
+    throw new Error("iynk progress: saved progress and settings can only change in the browser.");
   }
   const current = getSaved();
   const next = change(current);

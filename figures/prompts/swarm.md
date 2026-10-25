@@ -42,7 +42,7 @@ What it does:
   0.5 s and stop at 2 s, the way the supervisor's setpoint watchdog does.
 - **Light-show LEDs** (linked), 3 s: the board's LEDs go green, red, then blue, as `led.bitmask` 138, 148 and 129 set
   them.
-- A check stays passed until a part it ran on is taken off, re-seated or turned round. The SimLab host loads the
+- A check stays passed until a part it ran on is taken off, re-seated or turned round. The iynk host loads the
   figure with `?fresh=1`, so every check starts unrun there.
 - **Wiring sheet**: battery → board (power), board → motor plugs → motors (MOSFET PWM, brushed, two wires each),
   Lighthouse deck → board (UART + I²C), Flow deck → board (SPI + I²C), Crazyradio → board (2.4 GHz, channel 80).
@@ -53,4 +53,4 @@ What it does:
   Lighthouse receivers and the Crazyradio's nRF52840.
 
 Look: Colorfigures palette, mint by default (the 'pal' pieces follow the swatch the viewer picks), warm paper, heavy
-ink silhouette, finer inner lines. It works on a phone (numbered badges and a label list) and inside the SimLab host.
+ink silhouette, finer inner lines. It works on a phone (numbered badges and a label list) and inside the iynk host.

@@ -8,7 +8,7 @@ import { applyChange } from "./bench";
 import type { DockTab, ProposedChange, ToolCall } from "./tools";
 
 /** hx:dock listens for this on window and switches to `detail.tab`. */
-export const DOCK_TAB_EVENT = "simlab:dock-tab";
+export const DOCK_TAB_EVENT = "iynk:dock-tab";
 
 export function openDockTab(tab: DockTab) {
   window.dispatchEvent(new CustomEvent(DOCK_TAB_EVENT, { detail: { tab } }));

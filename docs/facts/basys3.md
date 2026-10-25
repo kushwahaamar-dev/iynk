@@ -527,9 +527,9 @@ No Wi-Fi on this board. No Arduino/MicroPython support (it is an FPGA); soft-cor
 - The official STEP model shows the JP2 shunt on EXT; boards ship with it on **USB** [7][11].
 - Master XDC header still says "rev B board" while current boards are rev C/D [3].
 
-### Corrections to the current SimLab (from docs/research/current-simlab-audit.md)
+### Corrections to the current iynk (from docs/research/current-iynk-audit.md)
 
-None of the three originals (Learn Arduino, Robotics Bench, Drone Lab) models a Basys 3; the errors to fix are in the current SimLab build:
+None of the three originals (Learn Arduino, Robotics Bench, Drone Lab) models a Basys 3; the errors to fix are in the current iynk build:
 
 - Parts were drawn under the PCB (only a USB connector visible from the default view). Every part in 2.2 sits on the top surface (z = 0 is the top of the PCB); only the 2.3 parts are underneath.
 - The 5 buttons were drawn in a row. They form a **plus**: BTNU (90, 37), BTNL (81.5, 30), BTNC (90, 30), BTNR (98.5, 30), BTND (90, 23).

@@ -110,7 +110,7 @@ test.describe("a bench page", () => {
     const quiz = bench!.quizzes[0];
     const done = Object.fromEntries(bench!.steps.map((step) => [`robotics:${benchId}:step:${step.id}`, true]));
     await page.addInitScript((seed) => {
-      window.localStorage.setItem("simlab:v1", JSON.stringify({ v: 1, done: seed, quiz: {}, best: {} }));
+      window.localStorage.setItem("iynk:v1", JSON.stringify({ v: 1, done: seed, quiz: {}, best: {} }));
     }, done);
     await page.goto(`/en/robotics/${benchId}`);
 
@@ -124,7 +124,7 @@ test.describe("a bench page", () => {
       await dialog.getByRole("button", { name: i + 1 < quiz.questions.length ? robotics.quiz.next : robotics.quiz.finish }).click();
     }
     await expect(dialog.locator("[data-quiz-score]")).toBeVisible();
-    const saved = await page.evaluate(() => JSON.parse(window.localStorage.getItem("simlab:v1") ?? "{}"));
+    const saved = await page.evaluate(() => JSON.parse(window.localStorage.getItem("iynk:v1") ?? "{}"));
     expect(saved.quiz[`robotics:${benchId}:quiz:${quiz.id}`].total).toBe(quiz.questions.length);
   });
 });

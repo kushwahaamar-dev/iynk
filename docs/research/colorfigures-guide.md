@@ -1,8 +1,8 @@
-# Colorfigures authoring guide for SimLab
+# Colorfigures authoring guide for iynk
 
-How to build SimLab's figures with the Colorfigures skill: the engine API (every global), what `build.py` adds, how a
+How to build iynk's figures with the Colorfigures skill: the engine API (every global), what `build.py` adds, how a
 built page behaves inside an `<iframe>` and how to run it embedded in the Next.js host, how the two originals stretched
-one engine across many figures and how SimLab's Board Bench and Drone engines should be shaped, a verification recipe
+one engine across many figures and how iynk's Board Bench and Drone engines should be shaped, a verification recipe
 that works on this machine, and the 25 pitfalls that cost the most time.
 
 Everything marked **tested** was run on this machine (Playwright 1.58 with its cached Chromium 145, macOS) while writing
@@ -14,14 +14,14 @@ temporary.
 0. [Sources and conventions](#0-sources-and-conventions)
 1. [core.js API reference](#1-corejs-api-reference)
 2. [build.py, the page inside an iframe, and embedded mode](#2-buildpy-the-page-inside-an-iframe-and-embedded-mode)
-3. [Engine pattern: the originals, and SimLab's Board Bench and Drone engines](#3-engine-pattern)
+3. [Engine pattern: the originals, and iynk's Board Bench and Drone engines](#3-engine-pattern)
 4. [Verification recipe (tested here)](#4-verification-recipe-tested-on-this-machine)
 5. [Top 25 pitfalls and their fixes](#5-top-25-pitfalls-and-their-fixes)
 - Appendix A: `cfshoot.py` (screenshots and error checks)
 - Appendix B: `cfbuild.py` (multi-script builder)
-- Appendix C: `embed.js` (SimLab embed bridge)
+- Appendix C: `embed.js` (iynk embed bridge)
 - Appendix D: host-side sketch (React `FigureFrame` v2) and the plain test host
-- Appendix E: defects found in the skill examples and in the SimLab baseline
+- Appendix E: defects found in the skill examples and in the iynk baseline
 
 ---
 
@@ -35,7 +35,7 @@ temporary.
 | `toaster.html`, `lamp.html`, `claw.html` | `~/.claude/skills/colorfigures/assets/examples/` |
 | `R/…` | Robotics Bench original scripts: `/private/tmp/claude-501/-Users-amar-Codes-ak-simlab/327c458a-8849-435d-a3e9-20eb9855a68f/scratchpad/orig/robotics/` (`R/00-core.js`, `R/01-.js` engine, `R/02-…` to `R/14-…` Figs 01 to 13) |
 | `D/…` | Drone Lab original scripts, same folder `…/orig/drone/` (`D/00-core.js`, `D/01-…` shared pieces, `D/02-…` frames, `D/03-…` lab engine, `D/04-.js` range, `D/05-…` to `D/17-…` Figs 01 to 13) |
-| baseline | the current SimLab tree, e.g. `figures/src/board.html`, `src/components/FigureFrame.tsx` (commit `245763f`) |
+| baseline | the current iynk tree, e.g. `figures/src/board.html`, `src/components/FigureFrame.tsx` (commit `245763f`) |
 | sibling research | `docs/research/robotics-bench-a.md`, `robotics-bench-b.md`, `drone-lab-a.md` (content catalogues; this guide links to them instead of repeating them) |
 
 References are `file:line`. UI strings are quoted verbatim in "double quotes" or `code`.
@@ -44,7 +44,7 @@ References are `file:line`. UI strings are quoted verbatim in "double quotes" or
 `D/00-core.js` are an older core: the object turns in fixed 90° `VIEW` steps (`R/00-core.js:28-40`), there is no
 camera drag, no `camTo`, no see-through kit, no `mountKeypad`, no `bakeNoise`, `byDepth` sorts by centre point only
 (`R/00-core.js:42`), shading has hard steps (`R/00-core.js:71-72`), and `animate` is a per-call 16 ms `setTimeout`
-loop (`R/00-core.js:327-330`). SimLab builds on the skill's free-camera core, so the originals' draw order tricks
+loop (`R/00-core.js:327-330`). iynk builds on the skill's free-camera core, so the originals' draw order tricks
 (things drawn "last" because the view never turns) do not carry over. Section 3.2 lists the full difference.
 
 ---
@@ -431,7 +431,7 @@ Behaviour that matters for a host:
 
 ### 2.3 Recommended embedded mode
 
-Goal: inside SimLab the figure is a drawing the lab controls. Keep the figure's own controls only where they help.
+Goal: inside iynk the figure is a drawing the lab controls. Keep the figure's own controls only where they help.
 
 **URL contract.** Embedded mode is on inside any iframe (or with `?embed=1`; `?embed=0` forces it off):
 
@@ -471,7 +471,7 @@ html.cf-bare .actions, html.cf-bare .vset, html.cf-bare .stats, html.cf-bare .kp
 html.cf-dark { --paper: #e4ddcf; --rule: #cbc2b1; --muted: #6a6357; }
 ```
 
-**Messages.** Envelope `{ source: 'simlab', v: 1, type, … }` from host to figure and `{ source: 'simlab-figure',
+**Messages.** Envelope `{ source: 'iynk', v: 1, type, … }` from host to figure and `{ source: 'iynk-figure',
 v: 1, type, … }` back. Implemented and tested in `embed.js` (Appendix C):
 
 | Host → figure | Payload | Does |
@@ -543,7 +543,7 @@ Rules that came out of the testing:
 - **Pill widths assume Latin monospace** (`text.length·fs·.62`, `core.js:208, :513, :526`). Measured with core's own
   `tag()`: English "BIMETAL STRIP" text 37.6 in a 43.2 pill; German "BIMETALLSTREIFEN" 46.2 in 51.6; Chinese "双金属片"
   **19.1 in an 18.0 pill (overflows)**; Hindi "द्विधातु पट्टी" 21.4 in a 46.0 pill (twice too wide, because UTF-16
-  length counts combining marks). Fix in SimLab's vendored core: replace `text.length*fs*.62` with a measured width
+  length counts combining marks). Fix in iynk's vendored core: replace `text.length*fs*.62` with a measured width
   (`CanvasRenderingContext2D.measureText` in the same font, cached per string), three places.
 - Write labels in capitals only for Latin, Greek and Cyrillic scripts; escape `& < > "` (they go into SVG text and the
   `data-t` attribute).
@@ -614,9 +614,9 @@ The full field-by-field catalogues, messages, timings and sounds are in `robotic
   `auto`).
 - A template figure to copy.
 
-**What to change for SimLab**
+**What to change for iynk**
 
-| Original | Problem | SimLab |
+| Original | Problem | iynk |
 |---|---|---|
 | Old 90° core | draw order "wires last", centre-only sorting and fixed-side text only work at the front view | free-camera core; every item boxed; wires in short boxed pieces |
 | Globals `B`, `st`, `ui`, `G`, `bx`, `by`, `PART`, `DR`, `D`… | collision risk with core and between files | one namespace `SL`; figure files are IIFEs |
@@ -643,7 +643,7 @@ The full field-by-field catalogues, messages, timings and sounds are in `robotic
 | Framing | fixed 4:3; `D/00-core.js:305-309` adds `cfg.frame {fill, left}` | `FIG_A` hook; no `frame` option |
 | Extras | none | see-through kit, `mountKeypad`, `bakeNoise` |
 
-### 3.3 SimLab architecture shared by both engines
+### 3.3 iynk architecture shared by both engines
 
 **File layout** (all under `figures/`; the built pages go to `public/figures/`):
 
@@ -765,7 +765,7 @@ Refusals to keep verbatim (`R/01-.js:799, :828, :842-844`): "Unplug the power fi
 "Low parts first: with tall parts on, the board rocks and loose parts fall out when you flip it to solder", "Solder
 everything first. Never heat a chip sitting in its socket" / "Solder everything first: this part goes on last".
 
-**Faults** (engine registry; the first three come from the original, the rest from the SimLab brief in `README.md`):
+**Faults** (engine registry; the first three come from the original, the rest from the iynk brief in `README.md`):
 
 | Kind | Trigger | Shows | Fix |
 |---|---|---|---|
@@ -894,7 +894,7 @@ Worked example, Fig 01 defaults (6S 1100 mAh 178 g, 2306 1750KV 32 g, 5x4.3x3 pf
 **Wiring sheet**: the original draws it as a separate SVG under the figure (`D/03-…:463-477`): a 760 × 340 canvas,
 blocks 150 × 56 (radius 10) with an 8 px colour strip, title 12.5 px weight 800, subtitle 10.5 px, clickable to select
 the part; legend at y 330: `#e2483d` "power", `#43a35a` "data / signal", `#f2c230` "video", `#f08a2b` "motor phases".
-In SimLab render it in the host from `wiring` data (it is a diagram, not an object) and keep selection in sync with
+In iynk render it in the host from `wiring` data (it is a diagram, not an object) and keep selection in sync with
 the figure through `part` events and `set {sel}`.
 
 **Flight**: keep the simulator outside the Colorfigures page (the baseline already has `src/components/FlightSim.tsx`).
@@ -1298,7 +1298,7 @@ embed: { report: st => ({ phase: st.phase, shade: SHADES[st.shade].name, bread: 
 (`brown` is the continuous value that showed why `report` must stay discrete.)
 
 ```js
-/* SimLab embed bridge for Colorfigures pages. Load after core.js and before the figure's own script.
+/* iynk embed bridge for Colorfigures pages. Load after core.js and before the figure's own script.
 
    Always: CF_T(text) translates a string from CF_STRINGS[lang] (lang from ?lang=, default 'en'); figures pass every
    button label, label text and flash message through it. Button labels are translated by the bridge itself.
@@ -1306,10 +1306,10 @@ embed: { report: st => ({ phase: st.phase, shade: SHADES[st.shade].name, bread: 
    Embedded (inside an iframe, or ?embed=1; ?embed=0 forces it off):
      - the page chrome goes (header, wobble / colour / view controls, credit, phone label list) and the drawing fills
        the iframe; ?bare=1 also hides the figure's own buttons, stats, switches and keypad (the host draws those)
-     - commands from the parent:  { source:'simlab', v:1, type, ... }
+     - commands from the parent:  { source:'iynk', v:1, type, ... }
          hello | press {id, choice?} | act {name, data?} | set {state} | view {yaw, pitch, ms?} | xr {on} | labels {on}
          | pal {key} | locale {lang, strings?} | theme {mode:'light'|'dark'} | flash {text, ms?} | query
-     - events to the parent:      { source:'simlab-figure', v:1, type, ... }
+     - events to the parent:      { source:'iynk-figure', v:1, type, ... }
          ready {fig, title, buttons, acts, lang} | part {act, id, data} | button {id, choice?, by} | state {state, changed}
          | labels {items} | flash {text, en} | focus {on} | error {message}
    A figure opts in to state traffic with cfg.embed = { report(st) -> plain object, accept(st, patch) -> applies a
@@ -1329,7 +1329,7 @@ embed: { report: st => ({ phase: st.phase, shade: SHADES[st.shade].name, bread: 
   // but its real origin is opaque ('null'), and a message aimed at 'file://' is silently dropped, so tests use '*'
   const opaque = location.protocol === 'file:' || location.origin === 'null';
   const target = q.get('origin') || (opaque ? '*' : location.origin);
-  const send = (type, data) => { if (embedded) try { host.postMessage({ source: 'simlab-figure', v: 1, type, ...data }, target); } catch (e) {} };
+  const send = (type, data) => { if (embedded) try { host.postMessage({ source: 'iynk-figure', v: 1, type, ...data }, target); } catch (e) {} };
 
   if (embedded){
     html.classList.add('cf-embed');
@@ -1413,7 +1413,7 @@ embed: { report: st => ({ phase: st.phase, shade: SHADES[st.shade].name, bread: 
 
     addEventListener('message', ev => {
       if (ev.source !== host || (target !== '*' && ev.origin !== target)) return;
-      const m = ev.data; if (!m || m.source !== 'simlab') return;
+      const m = ev.data; if (!m || m.source !== 'iynk') return;
       const st = ui.st;
       switch (m.type){
         case 'hello': return ready();
@@ -1452,9 +1452,9 @@ must stop animating.
 <script>
 const fr = document.getElementById('fr'); window.LOG = [];
 addEventListener('message', ev => { if (ev.source !== fr.contentWindow) return; const m = ev.data;
-  if (!m || m.source !== 'simlab-figure') return; LOG.push(m); });
-fr.addEventListener('load', () => fr.contentWindow.postMessage({ source:'simlab', v:1, type:'hello' }, '*'));
-window.cmd = m => fr.contentWindow.postMessage({ source:'simlab', v:1, ...m }, '*');
+  if (!m || m.source !== 'iynk-figure') return; LOG.push(m); });
+fr.addEventListener('load', () => fr.contentWindow.postMessage({ source:'iynk', v:1, type:'hello' }, '*'));
+window.cmd = m => fr.contentWindow.postMessage({ source:'iynk', v:1, ...m }, '*');
 fr.src = 'toaster-embed.html?bare=1';
 </script>
 ```
@@ -1480,7 +1480,7 @@ export function useFigure(src: string, onEvent: (e: FigureEvent) => void) {
   const post = useCallback((cmd: FigureCommand) => {
     const win = frame.current?.contentWindow;
     if (!win || (!ready.current && cmd.type !== "hello")) { queue.current.push(cmd); return; }
-    win.postMessage({ source: "simlab", v: 1, ...cmd }, window.location.origin);
+    win.postMessage({ source: "iynk", v: 1, ...cmd }, window.location.origin);
   }, []);
 
   useEffect(() => {
@@ -1489,7 +1489,7 @@ export function useFigure(src: string, onEvent: (e: FigureEvent) => void) {
     const onMsg = (ev: MessageEvent) => {
       if (ev.source !== frame.current?.contentWindow || ev.origin !== window.location.origin) return;
       const m = ev.data as { source?: string; v?: number } & FigureEvent;
-      if (!m || m.source !== "simlab-figure" || m.v !== 1) return;
+      if (!m || m.source !== "iynk-figure" || m.v !== 1) return;
       if (m.type === "ready") {                 // every ready (first load or a reload) flushes the queue
         ready.current = true;
         for (const c of queue.current.splice(0)) post(c);

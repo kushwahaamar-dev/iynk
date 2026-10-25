@@ -21,7 +21,7 @@ export class ToolError extends Error {
 }
 
 export type ToolContext = {
-  /** Absolute site origin for the links a tool returns, e.g. https://simlab.tech. */
+  /** Absolute site origin for the links a tool returns, e.g. https://iynk.tech. */
   siteUrl: string;
 };
 
@@ -31,7 +31,7 @@ export type Tool<I extends z.ZodType = z.ZodType, O extends z.ZodType = z.ZodTyp
   description: string;
   input: I;
   output: O;
-  /** Talks to a service outside SimLab (SerpApi, Meta's model API, Solana devnet). */
+  /** Talks to a service outside iynk (SerpApi, Meta's model API, Solana devnet). */
   openWorld: boolean;
   /** Same input, same answer (no model sampling, no fresh ids, no live prices). */
   idempotent: boolean;
@@ -62,7 +62,7 @@ export function schemasOf(tool: Tool): ToolSchemas {
   return schemas;
 }
 
-/** The MCP Tool object (server/tools "Tool" data type). Every SimLab tool only reads. */
+/** The MCP Tool object (server/tools "Tool" data type). Every iynk tool only reads. */
 export function describeTool(tool: Tool) {
   return {
     name: tool.name,
@@ -97,13 +97,13 @@ export async function runTool(tool: Tool, args: unknown, ctx: ToolContext): Prom
     const checked = tool.output.safeParse(raw);
     if (!checked.success) {
       console.error(`[mcp] ${tool.name} produced output outside its schema: ${describeIssues(checked.error)}`);
-      return { ok: false, code: "internal", message: `SimLab could not put together a valid ${tool.name} result.` };
+      return { ok: false, code: "internal", message: `iynk could not put together a valid ${tool.name} result.` };
     }
     return { ok: true, data: checked.data };
   } catch (error) {
     if (error instanceof ToolError) return { ok: false, code: error.code, message: error.message };
     console.error(`[mcp] ${tool.name} failed:`, error instanceof Error ? error.name : typeof error);
-    return { ok: false, code: "internal", message: `SimLab hit an unexpected error while running ${tool.name}.` };
+    return { ok: false, code: "internal", message: `iynk hit an unexpected error while running ${tool.name}.` };
   }
 }
 

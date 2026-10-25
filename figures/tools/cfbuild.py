@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build SimLab figure pages.
+"""Build iynk figure pages.
 
     python3 -I figures/tools/cfbuild.py boards/uno-r3        one figure: figures/boards/uno-r3.js
     python3 -I figures/tools/cfbuild.py boards/uno-r3 drones/quad5
@@ -18,7 +18,7 @@ Each item is figures/<kind>/<id>.js. Directives in its leading comment lines say
 
 The page is: the vendored core (figures/vendor/colorfigures/core.js) and the bridge (figures/engine/embed.js) in the
 head, build.py's HEAD before </head>, then the used scripts, the data and the item script, then build.py's TAIL with
-the SimLab fixes (PATCHES.md, B1-B2). Output: public/figures/<kind>/<id>.html. Anything missing or unsafe fails the
+the iynk fixes (PATCHES.md, B1-B2). Output: public/figures/<kind>/<id>.html. Anything missing or unsafe fails the
 build with a message that names the file and line.
 """
 import argparse
@@ -34,7 +34,7 @@ VENDOR = os.path.join(FIG, 'vendor', 'colorfigures')
 OUT_DIR = os.path.join(ROOT, 'public', 'figures')
 KINDS = ('boards', 'parts', 'modules', 'robotics', 'drones', 'flight')
 
-# core.js globals a figure must never declare (colorfigures-guide 1.14, plus the SimLab patch names); the top-level
+# core.js globals a figure must never declare (colorfigures-guide 1.14, plus the iynk patch names); the top-level
 # declarations of the vendored core are added at run time, so a new core cannot slip past this list
 RESERVED = set("""
 PALS METAL CLEAR CERAMIC DARK INK SHADOW C S OX OY VIEW RC RCZ VIEW_NAMES TURNS YAW0 PITCH0 CAM_K YAW PITCH
@@ -51,7 +51,7 @@ CF_MOUNT_HOOKS CF_UI CF_CFG CF_SETLOCALE CF_THEME CF_CSS
 SHADOW_RISK = {'on', 'f', 'P', 'tag', 'box', 'line', 'fill', 'face', 'shape', 'ink', 'mix', 'act', 'tone', 'toneI',
                'cyl', 'rod', 'board', 'pd', 'sp', 'tx', 'txY', 'avg', 'norm', 'dot', 'sub', 'cross', 'vis', 'facing'}
 
-# B1 (Appendix E): build.py's TAIL turns the hand-drawn filter off on phones and touch screens at all times; SimLab
+# B1 (Appendix E): build.py's TAIL turns the hand-drawn filter off on phones and touch screens at all times; iynk
 # drops it only while the figure moves (html.cf-moving, core patch P5), as build.py's docstring describes
 TAIL_FILTER_OLD = '@media (max-width:560px),(pointer:coarse){#art{filter:none!important}'
 TAIL_FILTER_NEW = '@media (max-width:560px),(pointer:coarse){html.cf-moving #art{filter:none!important}'
@@ -232,7 +232,7 @@ def all_items(kinds):
 
 
 def main():
-    ap = argparse.ArgumentParser(description='Build SimLab figure pages into public/figures/<kind>/<id>.html')
+    ap = argparse.ArgumentParser(description='Build iynk figure pages into public/figures/<kind>/<id>.html')
     ap.add_argument('items', nargs='*', help='figures as <kind>/<id>, e.g. boards/uno-r3')
     ap.add_argument('--all', action='store_true', help='build every figure of every kind')
     ap.add_argument('--kind', action='append', choices=KINDS, help='build every figure of this kind')

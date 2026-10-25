@@ -16,6 +16,6 @@ plus technical monochrome, and flat blue cast shadows that fall to the lower lef
    artificial horizon whose bar moves up when the nose drops and turns with the bank, a blinking LOW BATTERY, and
    an arrow with the name and distance of the next target.
 
-The page draws what the SimLab host sends (course, collision solids, craft look, one pose frame per animation
-frame) over the SimLab figure bridge, forwards the flight keys back to the host, and flies a demo lap of the
+The page draws what the iynk host sends (course, collision solids, craft look, one pose frame per animation
+frame) over the iynk figure bridge, forwards the flight keys back to the host, and flies a demo lap of the
 5-inch gates when opened on its own. Source: figures/flight, built by `node figures/flight/build.mjs`.

@@ -23,7 +23,7 @@ The driver then fixes or relaunches what F-review lists, and runs gate 3 (BUILD-
 2. **Research is knowledge, never code.** Read any site, article or design system you like for principles, but write
    every line yourself: no CSS, markup or snippets copied from a website, a library's docs beyond ordinary API use, or
    `docs/research/`. No new npm dependencies.
-3. **The look stays SimLab's.** SPEC.md fixes it: hand-inked, paper texture, the five palettes (tomato, mustard, mint,
+3. **The look stays iynk's.** SPEC.md fixes it: hand-inked, paper texture, the five palettes (tomato, mustard, mint,
    cobalt, blush) plus technical monochrome, light and dark mode, and figures made with Colorfigures. "Chic and
    minimal" means within that: fewer borders and boxes, calmer type, more air where it helps and density where the
    work needs it, one clear action per area, and the figure (the product) as large as the screen allows. Don't
@@ -63,12 +63,12 @@ should go where, what to remove, sizes). Also note what is already good and must
 
 ### F-research
 
-Owns `docs/design/research.md`. Research what the best interfaces of 2025-26 do, for the kinds of page SimLab has:
+Owns `docs/design/research.md`. Research what the best interfaces of 2025-26 do, for the kinds of page iynk has:
 canvas-plus-panels workspaces (circuit and robotics simulators, CAD and design tools, IDEs, flight sims), learning
 products with lessons and checks, catalogue and landing pages of minimal, high-craft product sites. Use web search
-and read primary sources (design-system docs, product pages, articles by their designers). Then look at SimLab on
+and read primary sources (design-system docs, product pages, articles by their designers). Then look at iynk on
 `http://127.0.0.1:3430` (the landing page, one board lesson, one bench, one drone and its fly page, at 1440 and 390).
-Write 15-30 principles, each with its source, what it looks like in practice, and exactly where it applies in SimLab
+Write 15-30 principles, each with its source, what it looks like in practice, and exactly where it applies in iynk
 (page and component), most valuable first: layout of a full-screen workspace (resizable or collapsible panels, what
 stays visible), type scale and density, colour use on a paper-and-ink style, motion, empty and loading states,
 onboarding a first-time user in under a minute, phone layouts for a canvas app.

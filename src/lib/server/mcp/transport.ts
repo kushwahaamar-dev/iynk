@@ -39,7 +39,7 @@ type Handled = [status: number, body: JsonRpcResponse];
 async function callTool(msg: JsonRpcRequest, ctx: ToolContext, wrap: (r: Record<string, unknown>) => Record<string, unknown>): Promise<Handled> {
   const name = msg.params?.name;
   const tool = typeof name === "string" ? toolNamed(name) : undefined;
-  if (!tool) return [200, fail(msg.id, ErrorCode.invalidParams, `Unknown tool: ${String(name).slice(0, 64)}. Call tools/list for SimLab's ${TOOLS.length} tools.`)];
+  if (!tool) return [200, fail(msg.id, ErrorCode.invalidParams, `Unknown tool: ${String(name).slice(0, 64)}. Call tools/list for iynk's ${TOOLS.length} tools.`)];
   const outcome = await runTool(tool, msg.params?.arguments, ctx);
   const result = outcome.ok
     ? { content: [{ type: "text", text: JSON.stringify(outcome.data) }], structuredContent: outcome.data }
@@ -112,7 +112,7 @@ async function modern(msg: JsonRpcRequest, req: Request, ctx: ToolContext): Prom
 }
 
 async function dispatch(req: Request): Promise<Response> {
-  if (!originAllowed(req)) return apiFail(403, "forbidden_origin", "Browsers may call this endpoint only at SimLab's own address.");
+  if (!originAllowed(req)) return apiFail(403, "forbidden_origin", "Browsers may call this endpoint only at iynk's own address.");
   const limited = rateLimit(`mcp:${clientIp(req)}`, LIMIT);
   if (!limited.ok) return tooManyRequests(limited);
   const body = await parseBody(req, z.unknown(), { maxBytes: MAX_BODY_BYTES });
@@ -146,7 +146,7 @@ export async function handleMcpPost(req: Request): Promise<Response> {
 
 /** GET (the old standalone SSE stream) and DELETE (old sessions) are not offered: 405, as both eras allow. */
 export function mcpMethodNotAllowed(): Response {
-  const res = apiFail(405, "method_not_allowed", "SimLab's MCP endpoint takes JSON-RPC over POST. REST callers: see /api/openapi.json.", {
+  const res = apiFail(405, "method_not_allowed", "iynk's MCP endpoint takes JSON-RPC over POST. REST callers: see /api/openapi.json.", {
     allow: MCP_METHODS,
   });
   return withCors(res, MCP_METHODS);

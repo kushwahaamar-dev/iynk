@@ -764,8 +764,8 @@
       "params": {
         "ssid": {
           "label": "网络",
-          "simlab-guest": "simlab-guest（2.4 GHz，开放）",
-          "simlab-5g": "simlab-5G（5 GHz）",
+          "iynk-guest": "iynk-guest（2.4 GHz，开放）",
+          "iynk-5g": "iynk-5G（5 GHz）",
           "note5g": "ESP8266 看不到 5 GHz 网络：它会一直打印点。"
         }
       },

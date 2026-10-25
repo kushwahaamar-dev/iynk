@@ -51,7 +51,7 @@ What it does:
 - **Wiring sheet** is a hand-inked block diagram: battery → BT2.0 lead → AIO VBAT pads → motor plugs → motors
   (3-phase x4), camera → AIO (video + 5 V), AIO → ELRS antenna (UART3 CRSF) and AIO → VTX antenna (UART2
   SmartAudio). Clicking a block selects the same part as in the 3D view, and parts that are not fitted are dashed.
-- **Options** from the SimLab calculator change the drawing: the three packs, motors of 23000, 25000 or 27000 KV,
+- **Options** from the iynk calculator change the drawing: the three packs, motors of 23000, 25000 or 27000 KV,
   and 31 mm props with 4, 3 or 2 blades, each with its own colour.
 - **Exploded view** lifts each part by its stack level.
 - **See-through** fades the canopy and shows what is inside, with callouts: G473 MCU + GYRO, 4 X 5 A ESC, ELRS RX,
@@ -60,6 +60,6 @@ What it does:
 
 Look: Colorfigures palette (mint craft colour, chosen with the colour swatches), warm paper, heavy ink silhouette,
 finer inner lines, hand-drawn wobble, paper grain. It works on a phone (numbered badges and a label list) and inside
-the SimLab host, embedded and bare. The host can set the design options, the build step and the test to run, and it
+the iynk host, embedded and bare. The host can set the design options, the build step and the test to run, and it
 receives the build state (the two craft tests as `state.extra.rxtest` and `state.extra.failsafe`), part clicks and
 button presses.

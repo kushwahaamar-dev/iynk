@@ -6,8 +6,8 @@
 <meta name="color-scheme" content="light">
 <title>SSD1306 OLED module</title>
 <script>
-/* Colorfigures core.js, vendored for SimLab from the Colorfigures skill (MIT, see LICENSE in this folder).
-   Upstream sha256 a78aab94ab7396b99080bf72673d5d4d689d771764d76cb08f1a0d28033f7fc3. SimLab patches: PATCHES.md. Regenerate with vendor.py, never edit by hand. */
+/* Colorfigures core.js, vendored for iynk from the Colorfigures skill (MIT, see LICENSE in this folder).
+   Upstream sha256 a78aab94ab7396b99080bf72673d5d4d689d771764d76cb08f1a0d28033f7fc3. iynk patches: PATCHES.md. Regenerate with vendor.py, never edit by hand. */
 /* ============================================================
    Colorfigures core: projection, shapes, shading, ink, labels, page shell.
    A figure page includes this file (scripts/build.py inlines it), then calls mountFigure({...}).
@@ -31,7 +31,7 @@ const DARK    = { l:'#55504a', m:'#3d3935', d:'#272421' };
 const INK = '#231e16';
 const SHADOW = '#41538f';
 
-/* ---------- SimLab patches (see figures/vendor/colorfigures/PATCHES.md) ---------- */
+/* ---------- iynk patches (see figures/vendor/colorfigures/PATCHES.md) ---------- */
 // P3 embedded mode: on inside any iframe or with ?embed=1; ?embed=0 forces it off. ?bare=1 also hides the figure's
 // own buttons, stats, switches and keypad. ?theme=dark dims the paper (P4). ?lang=xx is the first language (P2).
 const CF_Q = new URLSearchParams(location.search);
@@ -752,13 +752,13 @@ function mountKeypad(spec){
 
 </script>
 <script>/* figures/engine/embed.js */
-/* SimLab figure bridge, figure side. The protocol is in docs/FIGURES.md (after colorfigures-guide 2.3).
+/* iynk figure bridge, figure side. The protocol is in docs/FIGURES.md (after colorfigures-guide 2.3).
    It is inlined right after the vendored core.js and hooks mountFigure through CF_MOUNT_HOOKS, so any figure that
    calls mountFigure(cfg) speaks it. A figure opts in to state with
      cfg.embed = { accept(st, patch, ui) -> true | false | 'why not', report(st) -> small object of discrete values }
    Nothing else in the state can be written from outside. */
 (() => {
-  const IN = 'simlab', OUT = 'simlab-figure', V = 1;
+  const IN = 'iynk', OUT = 'iynk-figure', V = 1;
   const html = document.documentElement;
   const host = CF_EMBED && window.parent !== window ? window.parent : null;
   const fileMode = location.protocol === 'file:';
@@ -962,7 +962,7 @@ function mountKeypad(spec){
 <body>
 <script>/* figures/engine/bench.js */
 // The engine itself: pages load it through engine/bench.list (// @cf use engine/bench.list).
-/* SimLab Board Bench engine. Boards, modules and benches are data (docs/FIGURES-BENCH.md); this file turns one of
+/* iynk Board Bench engine. Boards, modules and benches are data (docs/FIGURES-BENCH.md); this file turns one of
    them into a Colorfigures figure: the board on its cutting mat, the build flow with its refusals, the power tree
    and faults, built-in programs on a virtual clock, on-board controls, see-through, exploded view, the views
    (board / breadboard / schematic / power) and the bridge traffic (accept / report).
@@ -2355,7 +2355,7 @@ function clearStats(){
 
 // standalone page: the SVG re-renders all the time, so keyboard and screen-reader access to the parts drawn in it is a
 // group of real buttons kept off-screen (the focused one shows as a chip). Focus selects the part, Enter or Space
-// presses a control for as long as the key is held. Inside the SimLab host the host's own part list does this.
+// presses a control for as long as the key is held. Inside the iynk host the host's own part list does this.
 let keysBox = null, keysKey = '';
 function keyList(){
   keysBox = document.createElement('div'); keysBox.className = 'bkeys'; keysBox.setAttribute('role', 'group'); keysBox.setAttribute('aria-label', T('Parts'));
@@ -3859,7 +3859,7 @@ const GLASS = [26.7, 19.26, 1.45], AA = [21.74, 10.86];
 const PCBW = 27.3, PCBH = 27.8, GLASS_AT = [13.65, 13.03], AA_TOP = 2.4;    // AA top edge 2.4 mm below the glass top
 const COLORS = { white: ['#eef6ff', '#eef6ff'], blue: ['#7fd4ff', '#7fd4ff'], 'yellow-blue': ['#ffd84a', '#7fd4ff'] };
 
-/* ---------- 5 x 7 font, drawn for SimLab: one row of five pixels per token ---------- */
+/* ---------- 5 x 7 font, drawn for iynk: one row of five pixels per token ---------- */
 const GLYPHS = `
 SP ..... ..... ..... ..... ..... ..... .....
 !  ..#.. ..#.. ..#.. ..#.. ..#.. ..... ..#..
@@ -3958,7 +3958,7 @@ const FRAMES = {
   moisture: t => { const g = gfx(), pct = moisturePct(t);
     g.text(0, 0, pct + '%', 3); g.rect(0, 28, 128, 8); g.fillRect(0, 28, Math.floor(pct * 128 / 100), 8);
     g.text(0, 46, pct < 30 ? 'Water me!' : pct > 85 ? 'Too wet!' : 'Happy :)', 2); return g.fb; },
-  hello: () => { const g = gfx(); g.rect(0, 0, 128, 64); g.text(4, 4, 'Hello, world!', 1); g.text(4, 20, 'SimLab', 2); g.text(4, 44, '128 x 64 at 0x3C', 1); return g.fb; },
+  hello: () => { const g = gfx(); g.rect(0, 0, 128, 64); g.text(4, 4, 'Hello, world!', 1); g.text(4, 20, 'iynk', 2); g.text(4, 44, '128 x 64 at 0x3C', 1); return g.fb; },
   pixels: t => { const g = gfx(), k = Math.floor(t * 2) % 2;
     for (let y = 0; y < H; y++) for (let x = 0; x < FBW; x++) if (y < 16 ? ((x >> 3) + (y >> 3) + k) % 2 === 0 : (x === y * 2 || x === 127 - y * 2 || x % 16 === 0 || y % 16 === 15)) g.px(x, y);
     return g.fb; },

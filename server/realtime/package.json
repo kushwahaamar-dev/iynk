@@ -1,8 +1,8 @@
 {
-  "name": "simlab-realtime",
+  "name": "iynk-realtime",
   "version": "1.0.0",
   "private": true,
-  "description": "SimLab room relay: a WebSocket server that orders shared lab actions and fans out chat, cursors, presence and flight poses (HX-CONTRACT H7).",
+  "description": "iynk room relay: a WebSocket server that orders shared lab actions and fans out chat, cursors, presence and flight poses (HX-CONTRACT H7).",
   "license": "MIT",
   "type": "module",
   "main": "server.js",

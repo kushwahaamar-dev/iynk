@@ -1,12 +1,12 @@
-// The message protocol between the SimLab host and a Colorfigures figure
+// The message protocol between the iynk host and a Colorfigures figure
 // running in an iframe (colorfigures-guide 2.3, decisions D6 and D11, and the
 // bridge contract in docs/FIGURES.md). Host -> figure messages carry
-// `source: "simlab"`; the figure answers with `source: "simlab-figure"`. Both
+// `source: "iynk"`; the figure answers with `source: "iynk-figure"`. Both
 // carry `v: 1`.
 
 export const PROTOCOL_VERSION = 1;
-export const HOST_SOURCE = "simlab";
-export const FIGURE_SOURCE = "simlab-figure";
+export const HOST_SOURCE = "iynk";
+export const FIGURE_SOURCE = "iynk-figure";
 
 type Empty = Record<never, never>;
 
@@ -205,7 +205,7 @@ const RESERVED = new Set(["source", "v", "type"]);
  */
 export function parseFigureMessage(data: unknown): FigureEvent | null {
   if (!isRecord(data)) return null;
-  // D6 names "simlab" as the envelope; the bridge answers with "simlab-figure".
+  // D6 names "iynk" as the envelope; the bridge answers with "iynk-figure".
   // The window and origin checks upstream are what make this safe.
   if (data.source !== FIGURE_SOURCE && data.source !== HOST_SOURCE) return null;
   if (data.v !== PROTOCOL_VERSION || !isString(data.type) || !data.type) return null;

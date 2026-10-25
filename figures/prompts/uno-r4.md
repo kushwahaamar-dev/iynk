@@ -46,4 +46,4 @@ What it does:
   paths with moving dots where current flows (USB, 5 V, 3.3 V, VIN, D13). **Labels** names the main parts.
 
 Look: Colorfigures palette (mint accent), warm paper, heavy ink silhouette, finer inner lines, hand-drawn wobble, paper
-grain. Works on a phone (badges and a label list) and inside the SimLab host (embedded, bare).
+grain. Works on a phone (badges and a label list) and inside the iynk host (embedded, bare).

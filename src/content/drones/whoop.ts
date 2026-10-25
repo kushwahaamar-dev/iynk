@@ -341,7 +341,7 @@ const whoop: DroneContent = {
         explain: 'firmware.alt.explain',
         code: [
           '# No barometer and no GPS on a whoop: Betaflight ALTHOLD (mode 3) cannot run here.',
-          '# SimLab\'s "altitude hold" is a simulator aid. On the real whoop, learn in Angle:',
+          '# iynk\'s "altitude hold" is a simulator aid. On the real whoop, learn in Angle:',
           'aux 1 1 1 1300 2100 0 0      # ANGLE on AUX2 mid + high',
           'set angle_limit = 45',
           'save',

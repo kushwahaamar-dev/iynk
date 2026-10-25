@@ -239,7 +239,7 @@
     "quizRight": "Exact.",
     "quizWrong": "Pas tout à fait.",
     "quizScore": "{score} bonnes réponses sur {total}",
-    "fpgaNote": "SimLab exécute votre Verilog comme un modèle comportemental, cycle par cycle sur l'horloge de la carte. Il ne fait ni synthèse, ni placement, ni routage : pas de timing, pas de nombre de LUT.",
+    "fpgaNote": "iynk exécute votre Verilog comme un modèle comportemental, cycle par cycle sur l'horloge de la carte. Il ne fait ni synthèse, ni placement, ni routage : pas de timing, pas de nombre de LUT.",
     "completed": "Leçon terminée. Bien joué.",
     "nextCta": "Suite : {title}"
   },

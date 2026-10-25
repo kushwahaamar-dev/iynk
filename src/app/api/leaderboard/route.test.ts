@@ -7,7 +7,7 @@ vi.mock("next/server", () => ({ connection: async () => {} }));
 const getLeaderboard = vi.fn();
 vi.mock("@/lib/server/db/queries", () => ({ getLeaderboard: (...args: unknown[]) => getLeaderboard(...args) }));
 
-const DB = "postgres://simlab:pw@localhost:5432/simlab";
+const DB = "postgres://iynk:pw@localhost:5432/iynk";
 const session = "3f1c2d4e-5b6a-4789-9abc-def012345678";
 
 async function load(vars: Record<string, string>) {
@@ -61,7 +61,7 @@ describe("GET /api/leaderboard", () => {
   it("answers 502 when the database fails, without its message", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     const { GET } = await load({ DATABASE_URL: DB });
-    getLeaderboard.mockRejectedValueOnce(new Error("password authentication failed for user simlab"));
+    getLeaderboard.mockRejectedValueOnce(new Error("password authentication failed for user iynk"));
     const res = await GET(get("course=quad5-bando"));
     expect(res.status).toBe(502);
     expect(await res.text()).not.toContain("password");

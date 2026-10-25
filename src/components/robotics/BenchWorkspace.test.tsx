@@ -59,7 +59,7 @@ function fromFigure(type: string, payload: Record<string, unknown> = {}) {
   act(() => {
     window.dispatchEvent(
       new MessageEvent("message", {
-        data: { source: "simlab-figure", v: 1, type, ...payload },
+        data: { source: "iynk-figure", v: 1, type, ...payload },
         origin: window.location.origin,
         source: frameWindow(),
       }),

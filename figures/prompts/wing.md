@@ -52,7 +52,7 @@ What it does:
 - **Wiring sheet**: battery → XT60 + cap → FC power board (VBAT 2-6S) and → ESC (PDB ESC pads), FC → ESC (S1
   OneShot125), ESC → motor (3-phase), FC → servos (S3 S4, 4.9 V), receiver → FC (UART1 CRSF), GPS + compass → FC
   (UART3 + I2C1), camera → FC (CAM pad) and FC → VTX (video + OSD, 9 V).
-- **Options** from the SimLab calculator: the three packs; 2212 1400 KV, 2810 1100 KV or 2306 2400 KV (quad motor);
+- **Options** from the iynk calculator: the three packs; 2212 1400 KV, 2810 1100 KV or 2306 2400 KV (quad motor);
   and the three pusher props, each in its own colour.
 - **Exploded view** lifts each part by its stack level.
 - **See-through** fades the foam and names what is inside: CARBON SPAR IN THE FOAM, 9 G METAL-GEAR SERVO, S3 / S4,
@@ -63,4 +63,4 @@ What it does:
 
 Look: Colorfigures palette (blush craft colour, chosen with the colour swatches), warm paper, heavy ink silhouette,
 finer inner lines, hand-drawn wobble, paper grain. It works on a phone (numbered badges and a label list) and inside
-the SimLab host, embedded and bare.
+the iynk host, embedded and bare.

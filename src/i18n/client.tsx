@@ -32,7 +32,7 @@ export function I18nProvider({
 
 function useI18n(): I18nValue {
   const value = useContext(I18nContext);
-  if (!value) throw new Error("SimLab i18n: this component must render inside the [lang] layout's I18nProvider.");
+  if (!value) throw new Error("iynk i18n: this component must render inside the [lang] layout's I18nProvider.");
   return value;
 }
 

@@ -17,14 +17,14 @@ export const toolNamed = (name: string): Tool | undefined => byName.get(name);
 export const SERVER_VERSION = "1.0.0";
 
 export const serverInfo = (ctx: ToolContext) => ({
-  name: "simlab",
-  title: "SimLab",
+  name: "iynk",
+  title: "iynk",
   version: SERVER_VERSION,
   websiteUrl: ctx.siteUrl,
   icons: [{ src: `${ctx.siteUrl}/icon.svg`, mimeType: "image/svg+xml" }],
 });
 
 export const SERVER_INSTRUCTIONS =
-  "SimLab is a free hardware lab in the browser: 12 microcontroller and FPGA boards, 13 robotics benches and 13 drones that people wire, code, break and fly, alone or together in live rooms. " +
+  "iynk is a free hardware lab in the browser: 12 microcontroller and FPGA boards, 13 robotics benches and 13 drones that people wire, code, break and fly, alone or together in live rooms. " +
   "Find things with search_catalog and get_item, size a drone with drone_calc, turn a build into a priced shopping list with price_parts, plan a group session with plan_build_night, and hand people a room link with create_room. Where Proof of Build is set up on the deployment, get_passport checks someone's credentials; elsewhere it says it isn't. " +
-  "Every tool only reads; links open the item in SimLab. Tools answer in the locale you pass (en, es, fr, de, zh, hi).";
+  "Every tool only reads; links open the item in iynk. Tools answer in the locale you pass (en, es, fr, de, zh, hi).";

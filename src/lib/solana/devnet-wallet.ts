@@ -2,13 +2,13 @@ import { Keypair } from "@solana/web3.js";
 import bs58 from "bs58";
 import { useSyncExternalStore } from "react";
 
-// The "SimLab devnet wallet": a keypair kept in this browser so a judge can
+// The "iynk devnet wallet": a keypair kept in this browser so a judge can
 // try Proof of Build without installing a wallet. Devnet only, labelled as
 // such everywhere it shows. Storage may be missing or blocked (private
 // windows, previews), so every access is guarded and the wallet then simply
 // does not exist.
 
-export const DEVNET_WALLET_KEY = "simlab:wallet:v1";
+export const DEVNET_WALLET_KEY = "iynk:wallet:v1";
 
 type Stored = { v: 1; secretKey: string };
 

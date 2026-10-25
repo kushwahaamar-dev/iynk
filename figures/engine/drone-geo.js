@@ -1,4 +1,4 @@
-/* SimLab drone engine: craft-local geometry helpers (SL.drone.g) and materials. Craft-local millimetres,
+/* iynk drone engine: craft-local geometry helpers (SL.drone.g) and materials. Craft-local millimetres,
    x forward, y left, z up, z = 0 on the bench mat (docs/FIGURES-DRONE.md §2). Every helper returns one depth-sorted
    item { box, svg } or an array of them, in bench coordinates. */
 (() => {

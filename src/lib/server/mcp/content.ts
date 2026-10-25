@@ -6,7 +6,7 @@ import type { Locale } from "@/i18n/config";
 import type { ContentLab } from "@/i18n/namespaces";
 import { getContentText } from "@/i18n/server";
 
-/** SimLab's catalogue as the tools see it: ids and tags from src/content/ids.ts, prose from src/i18n/content. */
+/** iynk's catalogue as the tools see it: ids and tags from src/content/ids.ts, prose from src/i18n/content. */
 
 export const LABS = ["board", "robotics", "drone"] as const satisfies readonly Lab[];
 

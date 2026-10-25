@@ -764,8 +764,8 @@
       "params": {
         "ssid": {
           "label": "नेटवर्क",
-          "simlab-guest": "simlab-guest (2.4 GHz, खुला)",
-          "simlab-5g": "simlab-5G (5 GHz)",
+          "iynk-guest": "iynk-guest (2.4 GHz, खुला)",
+          "iynk-5g": "iynk-5G (5 GHz)",
           "note5g": "ESP8266 को 5 GHz नेटवर्क नहीं दिखते: यह बिंदु छापता रहता है।"
         }
       },

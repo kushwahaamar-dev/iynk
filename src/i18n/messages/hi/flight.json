@@ -321,8 +321,8 @@
     "copied": "लिंक कॉपी हो गया",
     "copyFailed": "कॉपी नहीं हो सका: यह रहा लिंक",
     "link": "चुनौती का लिंक",
-    "shareText": "SimLab की आज की ड्रोन चुनौती: {course} पर {craft}।",
-    "shareBeat": "SimLab की आज की ड्रोन चुनौती: {course} पर {craft}। क्या आप {time} s को हरा सकते हैं?",
+    "shareText": "iynk की आज की ड्रोन चुनौती: {course} पर {craft}।",
+    "shareBeat": "iynk की आज की ड्रोन चुनौती: {course} पर {craft}। क्या आप {time} s को हरा सकते हैं?",
     "board": "{course}, {date} की चुनौती"
   }
 }

@@ -56,7 +56,7 @@ export async function loadFigure(html, { path = '/figures/robotics/fixture.html'
   const notes = () => (win.document.documentElement.dataset.errors || '').split(';').map((s) => s.trim()).filter(Boolean);
   const post = (msg) => {
     const ev = new win.Event('message');
-    Object.defineProperties(ev, { data: { value: { source: 'simlab', v: 1, ...msg } }, origin: { value: win.location.origin }, source: { value: parent } });
+    Object.defineProperties(ev, { data: { value: { source: 'iynk', v: 1, ...msg } }, origin: { value: win.location.origin }, source: { value: parent } });
     win.dispatchEvent(ev);
   };
   return { win, bench: win.SL && win.SL.bench, drone: win.SL && win.SL.drone, errors, notes, sent, post, close: () => win.close() };

@@ -1,7 +1,7 @@
 export const meta = {
-  name: 'simlab-phase3-wave',
-  description: 'SimLab: one agent per job, each following its section of a workflow brief (phase3.md unless args.brief)',
-  whenToUse: 'Launched by the SimLab driver for waves T2 (UI and figure strings) and D (docs); pass { wave, jobs }',
+  name: 'iynk-phase3-wave',
+  description: 'iynk: one agent per job, each following its section of a workflow brief (phase3.md unless args.brief)',
+  whenToUse: 'Launched by the iynk driver for waves T2 (UI and figure strings) and D (docs); pass { wave, jobs }',
   phases: [{ title: 'Phase 3', detail: 'one agent per job, each owning the files its section lists' }],
 }
 
@@ -25,7 +25,7 @@ const REPORT = {
   required: ['label', 'changed', 'commits', 'verified', 'notDone', 'notes', 'pushed'],
 }
 
-const prompt = (job) => `You are ${job.label}, one of ${jobs.length} agents in SimLab's ${wave} wave (HackTX 2026),
+const prompt = (job) => `You are ${job.label}, one of ${jobs.length} agents in iynk's ${wave} wave (HackTX 2026),
 all working at once in the same git working tree, /Users/amar/Codes/ak/simlab.
 
 Your brief is ${brief}: follow its "Shared rules" and the section "### ${job.section}" exactly.${job.note ? ` ${job.note}` : ''}

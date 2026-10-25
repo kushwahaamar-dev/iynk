@@ -102,7 +102,7 @@ Wave B's items' prose and whatever T1 left, through `scripts/workflows/phase3-pr
 ### P3-docs-repo
 
 Owns `README.md`, `figures/prompts/**` (only the records that don't exist yet), `docs/DECISIONS.md`.
-- `README.md` rewritten for a judge and a new developer: what SimLab is (one paragraph), the 38 items and 6 languages
+- `README.md` rewritten for a judge and a new developer: what iynk is (one paragraph), the 38 items and 6 languages
   as they really are, run and test (`npm run dev`, `npm run check`, vitest, Playwright, `cfbuild.py`/`cfshoot.py`),
   deploy (`docs/hacktx/DEPLOY.md`), the sponsor map (BUILD-PLAN §1, only what is live or degrades cleanly), how
   figures are made (Colorfigures, `figures/prompts/`), and the pre-event disclosure (HANDOFF "Hackathon rule": the
@@ -128,7 +128,7 @@ Owns `docs/hacktx/{PITCH,DEVPOST-WRITEUP,DEVPOST,VIDEO}.md` and a new `docs/hack
 
 ### P3-fresh-eyes
 
-A judge who has never seen SimLab and has ten minutes. The driver starts a production server and puts its address in
+A judge who has never seen iynk and has ten minutes. The driver starts a production server and puts its address in
 your note; you only read the repo for the demo path (`docs/hacktx/BUILD-PLAN.md` §1), never the code. Owns only
 `docs/verify/fresh-eyes.md` and your scratchpad.
 

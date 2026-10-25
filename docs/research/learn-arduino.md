@@ -1,4 +1,4 @@
-# Learn Arduino (original), teardown for the SimLab Board Lab rebuild
+# Learn Arduino (original), teardown for the iynk Board Lab rebuild
 
 Original: https://learn-arduino-red.vercel.app, by Dilum Sanjaya (credited as "Designed by x.com/DilumSanjaya").
 It is a single-page Vite + three.js app. It teaches 16 lessons on a 3D Arduino Uno R3. Each lesson is a block of data (text, pinout table, spec grid, parameters, a code template, callout cards) plus a hand-written JavaScript simulation of that one circuit. Nothing parses or runs the C++ sketch. The code panel is read-only. You change the circuit through a per-part "inspector" panel, by dragging or pressing parts in the 3D scene, or by clicking the highlighted numbers in the code.
@@ -29,8 +29,8 @@ To regenerate the pretty copies (same line numbers):
 ```js
 // pretty.js  (run: node pretty.js <src.js> <outDir>)
 const fs = require('fs'), path = require('path');
-const parser = require('<simlab>/node_modules/@babel/parser');
-const generate = require('<simlab>/node_modules/@babel/generator').default;
+const parser = require('<iynk>/node_modules/@babel/parser');
+const generate = require('<iynk>/node_modules/@babel/generator').default;
 const [,, src, outDir] = process.argv;
 const code = fs.readFileSync(src, 'utf8');
 const ast = parser.parse(code, { sourceType: 'module', plugins: ['importMeta'], errorRecovery: true });
@@ -188,7 +188,7 @@ The logo is 91×50, then a vertical rule with a 5 px dot at each end, then:
 - **Minimap** (`#minimap`, M:3144-3279). A 176×118 canvas that appears after the view has been away from home for 300 ms, desktop only. It draws a 20-unit grid, part footprints (board #4a5d99, breadboard #efe7d6, car #e3604b, sensor #3a56a0, motor #cfc9bf, lights #2c3242, other #8e8a84), the current view rectangle (teal outline, 12% fill), the target dot and a red north arrow. Click to glide there (420 ms). Drag to pan live. "Minimap: click or drag to move the view."
 - **Viewbar** (H:, M:3119-3143). Buttons, each with a `title` (shortcut) and `aria-label`: Turn left "Turn left (Q)", Turn right "Turn right (E)", separator, Zoom out "Zoom out (−)", Zoom in "Zoom in (+)", separator, **compass** "Reset view (R)" (its needle rotates with the camera azimuth; `is-away` when not at home), separator, toggle **Current flow** "Current flow (F)" (aria "Show current flow"), toggle **Schematic** "Schematic (C)" (aria "Show schematic"). The toggles use `aria-pressed` with a teal tint when on.
 - **View hint.** A navy pill above the viewbar: "Drag or WASD to pan · Q / E to rotate · Scroll to zoom". It disappears 9 s after load or on the first pointerdown on the stage.
-- **Floor credit.** The text "x.com/DilumSanjaya" with an X logo is painted as a texture on the 3D floor (#bba78a, Barlow SC 700 84 px). It is placed in an empty floor spot that avoids parts and UI, fades to 0.8 opacity over 900 ms, and is re-placed after the camera turns more than 45° (S:12472-12523, S:13297-13366). **Do not copy.** Use SimLab's own mark or nothing.
+- **Floor credit.** The text "x.com/DilumSanjaya" with an X logo is painted as a texture on the 3D floor (#bba78a, Barlow SC 700 84 px). It is placed in an empty floor spot that avoids parts and UI, fades to 0.8 opacity over 900 ms, and is re-placed after the camera turns more than 45° (S:12472-12523, S:13297-13366). **Do not copy.** Use iynk's own mark or nothing.
 
 ### 1.9 Info card (M:2576-2643, C:883-1008)
 

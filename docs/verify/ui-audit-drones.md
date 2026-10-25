@@ -37,7 +37,7 @@ them; drones is the natural owner).
 - The FPV view: OSD with pack voltage, current, mAh, timer, gate arrow and distance, artificial horizon.
 - Ghosts (the autopilot's line, your best lap), medal times, the daily challenge with a share link.
 - Keyboard: `?` dialog, `F` into the figure and `Esc` out, Space/R/V, `aria-keyshortcuts` on the buttons.
-- The per-craft palette band on the index cards and the "Fig. 01" numbering: it is the SimLab look and reads well.
+- The per-craft palette band on the index cards and the "Fig. 01" numbering: it is the iynk look and reads well.
 - Every `data-testid` used by `e2e/dronelab.spec.ts`, `fly.spec.ts`, `fly-fun.spec.ts`, `fly.phone.spec.ts`.
 
 ## Measurements

@@ -48,4 +48,4 @@ What it does:
   on the Arduino header, and one net per segment, DIG<d>_<A..G|DP> (DIG0 = HEX0, the rightmost).
 
 Look: Colorfigures palette (tomato accent), warm paper, heavy ink silhouette, finer inner lines, hand-drawn wobble,
-paper grain. Works on a phone and inside the SimLab host (embedded, bare). Design sizes are illustrative.
+paper grain. Works on a phone and inside the iynk host (embedded, bare). Design sizes are illustrative.

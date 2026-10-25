@@ -8,7 +8,7 @@ Written 2026-10-24 by the history auditor; read-only. Rows are 0-based line inde
 - Oct 23 21:48 "hi"; 21:57 /login; 22:09 model set to Opus 5 (1M).
 - Oct 24 01:27 (row 32) the brief (now docs/SPEC.md) plus "A lot of things are wrong here. See everything,
   cross-reference, cross-check everything, go on a long run. Make sure it is what I want." Baseline commit `245763f`.
-- 01:36 research workflow (7 agents → docs/research). 01:38 first status: "the current SimLab is broken".
+- 01:36 research workflow (7 agents → docs/research). 01:38 first status: "the current iynk is broken".
 - 05:47 "wats the progress?" 05:53–05:58 SPEC.md written, design workflow started, caffeinate. 05:59 audit: 173 defects.
 - 06:40 "ETA?" → design ~10:00, first clickable ~14:00, live ~midday Sunday. 07:19 facts workflow (35 sheets).
 - 07:33 pause #1; 07:34–07:36 stopped, scratch backed up, RESUME.md. 09:38 "resume". 09:40 design and facts continued.
@@ -48,7 +48,7 @@ The brief: docs/SPEC.md (verbatim). The user's own words:
   picks Nucleo-F401RE, DE10-Lite, S3 v1.1; **13 languages incl. Hebrew RTL**; the originals' bugs fixed; every failure
   reachable; **a real RC transmitter can fly the sim**; **"No tracking"**.
 - ETAs: 10:00/14:00/Sunday (row 747); 12:30–13:00 (row 1070); "by 6pm" (row 1326).
-- Row 2227 (13:55): Meta "SimLab Together" (rooms, 6-language translation, peer-first partner, Build Night, Build
+- Row 2227 (13:55): Meta "iynk Together" (rooms, 6-language translation, peer-first partner, Build Night, Build
   Stories with Muse Image, buddy matching); SerpApi "Build it for real" (prices, optimiser, datasheet citations,
   nearby, events); Solana Proof of Build (devnet program, credential after a server re-run, bounties, tips, one-click
   wallet). Also: Overall, Entertaining, Hardware (real Uno), Vultr relay, Tiger Data, .tech, Pitch. "Nothing from

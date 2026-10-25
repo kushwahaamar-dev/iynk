@@ -36,7 +36,7 @@ function fromFigure(type: string, payload: Record<string, unknown> = {}, init: P
   act(() => {
     window.dispatchEvent(
       new MessageEvent("message", {
-        data: { source: "simlab-figure", v: 1, type, ...payload },
+        data: { source: "iynk-figure", v: 1, type, ...payload },
         origin: window.location.origin,
         source: frameWindow(),
         ...init,
@@ -88,18 +88,18 @@ test("queues commands until ready, then restores state and flushes in order", ()
   expect(ref.current?.isReady()).toBe(true);
   expect(onEvent).toHaveBeenCalledWith(expect.objectContaining({ type: "ready", fig: "uno-r3" }));
   expect(posted.map((entry) => entry.message)).toEqual([
-    { source: "simlab", v: 1, type: "theme", mode: "light" },
-    { source: "simlab", v: 1, type: "locale", lang: "en" },
-    { source: "simlab", v: 1, type: "labels", on: true },
-    { source: "simlab", v: 1, type: "set", state: { power: true, pin13: 1 } },
-    { source: "simlab", v: 1, type: "set", state: { pin13: 1 } },
-    { source: "simlab", v: 1, type: "press", id: "reset" },
+    { source: "iynk", v: 1, type: "theme", mode: "light" },
+    { source: "iynk", v: 1, type: "locale", lang: "en" },
+    { source: "iynk", v: 1, type: "labels", on: true },
+    { source: "iynk", v: 1, type: "set", state: { power: true, pin13: 1 } },
+    { source: "iynk", v: 1, type: "set", state: { pin13: 1 } },
+    { source: "iynk", v: 1, type: "press", id: "reset" },
   ]);
   expect(posted.every((entry) => entry.origin === window.location.origin)).toBe(true);
 
   posted = [];
   act(() => ref.current?.send("view", { yaw: 200, pitch: 40 }));
-  expect(posted.map((entry) => entry.message)).toEqual([{ source: "simlab", v: 1, type: "view", yaw: 200, pitch: 40 }]);
+  expect(posted.map((entry) => entry.message)).toEqual([{ source: "iynk", v: 1, type: "view", yaw: 200, pitch: 40 }]);
 });
 
 test("after a reload, replays what the host last set, not the stale initial", () => {
@@ -109,7 +109,7 @@ test("after a reload, replays what the host last set, not the stale initial", ()
   posted = [];
   fromFigure("ready", ready);
   expect(posted.map((entry) => entry.message)).toContainEqual({
-    source: "simlab",
+    source: "iynk",
     v: 1,
     type: "set",
     state: { power: false, pin13: 1 },
@@ -151,9 +151,9 @@ test("lists the figure's buttons, switches and parts as real buttons", () => {
   fireEvent.click(screen.getByRole("button", { name: "See-through" }));
   fireEvent.click(screen.getByRole("button", { name: "USB-B port" }));
   expect(posted.map((entry) => entry.message)).toEqual([
-    { source: "simlab", v: 1, type: "press", id: "reset" },
-    { source: "simlab", v: 1, type: "press", id: "xrb" },
-    { source: "simlab", v: 1, type: "act", name: "usb-port", data: { id: "usb" } },
+    { source: "iynk", v: 1, type: "press", id: "reset" },
+    { source: "iynk", v: 1, type: "press", id: "xrb" },
+    { source: "iynk", v: 1, type: "act", name: "usb-port", data: { id: "usb" } },
   ]);
 
   // A state report with new parts updates the list.
@@ -171,7 +171,7 @@ test("passes sound effects and custom events on, and sends custom commands", () 
   expect(onEvent).toHaveBeenCalledWith({ type: "custom", name: "motor", payload: { rpm: 1200 } });
   posted = [];
   act(() => ref.current?.sendCustom("bump", { by: 2 }));
-  expect(posted.map((entry) => entry.message)).toEqual([{ source: "simlab", v: 1, type: "bump", by: 2 }]);
+  expect(posted.map((entry) => entry.message)).toEqual([{ source: "iynk", v: 1, type: "bump", by: 2 }]);
 });
 
 test("does not report the bridge's answer to pause and resume as a figure error", () => {
@@ -189,8 +189,8 @@ test("forwards theme and labels changes to a ready figure", async () => {
   act(() => setSetting("theme", "dark"));
   act(() => setSetting("labels", false));
   expect(posted.map((entry) => entry.message)).toEqual([
-    { source: "simlab", v: 1, type: "theme", mode: "dark" },
-    { source: "simlab", v: 1, type: "labels", on: false },
+    { source: "iynk", v: 1, type: "theme", mode: "dark" },
+    { source: "iynk", v: 1, type: "labels", on: false },
   ]);
 });
 
@@ -307,11 +307,11 @@ test("keeps the poster, not an error plate, when the figure never gets ready", (
 test("hides the figure's buttons the host draws itself after every ready, and leaves them out of the controls list", () => {
   const { view } = mount({ hideChrome: ["reset"] });
   fromFigure("ready", { ...ready, buttons: [{ id: "reset", label: "RESET", hidden: true }] });
-  expect(posted.map((entry) => entry.message)).toContainEqual({ source: "simlab", v: 1, type: "chrome", hide: ["reset"] });
+  expect(posted.map((entry) => entry.message)).toContainEqual({ source: "iynk", v: 1, type: "chrome", hide: ["reset"] });
   expect(screen.queryByRole("button", { name: "RESET" })).toBeNull();
   expect(screen.getByRole("button", { name: "See-through" })).toBeTruthy();
 
   posted = [];
   view.rerender(<FigureFrame src="/figures/boards/uno-r3.html" title="Arduino Uno R3" hideChrome={[]} />);
-  expect(posted.map((entry) => entry.message)).toEqual([{ source: "simlab", v: 1, type: "chrome", hide: [] }]);
+  expect(posted.map((entry) => entry.message)).toEqual([{ source: "iynk", v: 1, type: "chrome", hide: [] }]);
 });

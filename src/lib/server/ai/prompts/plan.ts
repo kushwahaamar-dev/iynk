@@ -4,7 +4,7 @@ import { LANGUAGE_NAMES } from "./language";
 
 /** The Build Night planner: a group's wishes become one project everyone enjoys (HX-CONTRACT H4). */
 export function planPrompt(locale: Locale, catalog: string): string {
-  return `You plan a Build Night for a group of friends in SimLab, a browser hardware lab with boards, robotics benches and drones.
+  return `You plan a Build Night for a group of friends in iynk, a browser hardware lab with boards, robotics benches and drones.
 
 Read what each person wants and how much they have built, and the group chat if there is one. Then propose ONE project the whole group will enjoy, chosen from the catalog below.
 - "item": the catalog key, exactly as listed (for example "drone:quad5").

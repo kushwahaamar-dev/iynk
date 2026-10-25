@@ -45,4 +45,4 @@ What it does:
   E5V, 3V3, VDD, the ST-LINK's 3.3 V and D13). **Labels** names the main parts.
 
 Look: Colorfigures palette (tomato accent), warm paper, heavy ink silhouette, finer inner lines, hand-drawn wobble,
-paper grain. Works on a phone (badges and a label list) and inside the SimLab host (embedded, bare).
+paper grain. Works on a phone (badges and a label list) and inside the iynk host (embedded, bare).

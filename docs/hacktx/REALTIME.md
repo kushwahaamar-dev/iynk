@@ -1,4 +1,4 @@
-# SimLab realtime relay
+# iynk realtime relay
 
 Owner: hx:realtime-server. Code: `server/realtime/` (Node 24 + `ws`), deploy: `deploy/realtime/`, scripts: `scripts/realtime-*.sh`. The wire protocol is HX-CONTRACT H7; this page pins down everything H7 leaves open. hx:realtime-client (`src/lib/realtime/`) speaks it.
 

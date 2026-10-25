@@ -321,8 +321,8 @@
     "copied": "链接已复制",
     "copyFailed": "无法复制：链接在这里",
     "link": "挑战链接",
-    "shareText": "SimLab 每日无人机挑战：{craft}，赛道 {course}。",
-    "shareBeat": "SimLab 每日无人机挑战：{craft}，赛道 {course}。你能打败 {time} 秒吗？",
+    "shareText": "iynk 每日无人机挑战：{craft}，赛道 {course}。",
+    "shareBeat": "iynk 每日无人机挑战：{craft}，赛道 {course}。你能打败 {time} 秒吗？",
     "board": "{course}，{date} 的挑战"
   }
 }

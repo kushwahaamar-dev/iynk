@@ -54,7 +54,7 @@ export async function dripDevnetSol(ctx: IssuerContext, to: string, ip: string, 
       return { ok: false, status: 409, code: "enough_funds", message: "This wallet already has enough devnet SOL." };
     }
     if (treasury < FAUCET_LAMPORTS + TREASURY_RESERVE) {
-      return { ok: false, status: 503, code: "faucet_dry", message: "The SimLab faucet is empty right now." };
+      return { ok: false, status: 503, code: "faucet_dry", message: "The iynk faucet is empty right now." };
     }
     const { blockhash, lastValidBlockHeight } = await ctx.connection.getLatestBlockhash("confirmed");
     const tx = new Transaction({ feePayer: ctx.issuer.publicKey, blockhash, lastValidBlockHeight }).add(

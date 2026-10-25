@@ -1,7 +1,7 @@
 import "server-only";
 
 /**
- * The slice of the Model Context Protocol SimLab speaks. Two eras share one endpoint
+ * The slice of the Model Context Protocol iynk speaks. Two eras share one endpoint
  * (modelcontextprotocol.io/specification/2026-07-28/basic/versioning, read 2026-10-24):
  * - modern (2026-07-28): no handshake, every request names its version in params._meta and
  *   mirrors method and tool name into headers;

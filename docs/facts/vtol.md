@@ -12,7 +12,7 @@ controls in the original are a V-tail only (two ruddervators: pitch and yaw, `SE
 draws **no ailerons and a flat wing**, so it has no direct roll control in cruise: roll would have to come from
 rudder-roll coupling (needs wing dihedral) or from tilt vectoring of the front motors (`Q_TILT_FIX_ANGLE` /
 `Q_TILT_FIX_GAIN`, "vectoring for roll/pitch in forward flight" [3][4]). The Convergence uses elevons [8] (functions
-77/78 in its frame file). SimLab should either add ailerons (function 4) to the figure or teach tilt-vectored roll.
+77/78 in its frame file). iynk should either add ailerons (function 4) to the figure or teach tilt-vectored roll.
 
 **Real products / reference builds it represents:**
 
@@ -20,7 +20,7 @@ rudder-roll coupling (needs wing dihedral) or from tilt vectoring of the front m
 |---|---|---|
 | E-flite Convergence VTOL (EFL11050 BNF / EFL11075 PNP, discontinued) [14][8] | The classic tilt-tricopter: delta wing, two tilting front motors, fixed tail motor. ArduPilot ships a frame parameter file for it [8] | 650 mm span, 291 sq in (0.188 m²) wing, 3S 2200-3000 mAh [14]; ArduPilot file: `Q_FRAME_CLASS 7`, `Q_TILT_TYPE 2` (vectored yaw), `Q_TILT_MASK 3` [8] |
 | HEEWING T1 Ranger VTOL (PNP, ArduPilot on the HEEWING F405) [13] | Twin-motor foam V-tail FPV wing with a VTOL kit: two tilt servos on the front motors plus a rear lift motor | 730 mm span, 645 mm long, 600-750 g take-off weight, 4S 1300-3500 mAh, "over 65 min" cruise (manufacturer claim) [13]; a builder reports 730 g RTF with a DJI pod and 1500 mAh 4S [13] |
-| SimLab/Drone Lab Fig. 10 itself | 840 mm straight wing, V-tail, 4S2P Li-ion, Matek H743-WING | AUW 1585 g by the original's calculator (see section 3) |
+| iynk/Drone Lab Fig. 10 itself | 840 mm straight wing, V-tail, 4S2P Li-ion, Matek H743-WING | AUW 1585 g by the original's calculator (see section 3) |
 
 **What it is and what it is for.** A tiltrotor QuadPlane takes off and lands vertically like a multicopter (QHOVER,
 QLOITER, QLAND, QRTL), then tilts its front rotors forward and flies on the wing like an aeroplane. Once the wing
@@ -78,7 +78,7 @@ wing is too slow to lift but the rotors already point partly forward; ArduPilot 
 ## 2. Geometry (craft frame)
 
 Frame: **x forward (nose), y left, z up, mm.** The original models from the fuselage pod: origin on the fuselage
-centreline at the pod's bottom face (pod z 0 to 80). SimLab should keep that origin for this craft (a VTOL has no
+centreline at the pod's bottom face (pod z 0 to 80). iynk should keep that origin for this craft (a VTOL has no
 "bottom plate"); the CG target is given below.
 
 ### 2.1 Airframe as drawn by the original (keep for the figure) [19]
@@ -157,7 +157,7 @@ schematic. Do not teach that 840 x 150 mm carries 1.6 kg at 13 m/s.
 
 ## 3. The original's catalogue, sanity-checked
 
-SimLab keeps the original calculator identical. The numbers below are the original's; the right-hand columns give
+iynk keeps the original calculator identical. The numbers below are the original's; the right-hand columns give
 the real-world figure.
 
 ### 3.1 Batteries
@@ -234,7 +234,7 @@ The calculator uses thrust = 6.8 x pf x (KV x V / 1000)² g per motor, i.e. unlo
 **The 1.2 A vs 5 A mismatch is settled in favour of the calculator's 5 A.** The original's flight sim shows 1.2-1.3 A
 in cruise (and 16 A in hover). 1.2 A x 14.8 V = 18 W of total electrical power. Flying 15.55 N at 13 m/s with 18 W,
 of which the 800 mW VTX, camera, FC and GPS alone take about 6-10 W, would need a lift-to-drag ratio above 20 even
-with perfect propulsion: sailplane territory, not a foam VTOL with nacelles. SimLab's sim should draw about
+with perfect propulsion: sailplane territory, not a foam VTOL with nacelles. iynk's sim should draw about
 **4.5-5.5 A in level cruise at 13 m/s** (about 1/3 of hover), more in climbs and turns. The sim's own drag model
 (0.11 W at cruise, L/D ≈ 9) gives 22 W of air power, i.e. about 3-3.5 A at realistic efficiency: closer, but the
 calculator's L/D 6 is the more realistic figure for this airframe **(estimate)**.
@@ -492,7 +492,7 @@ VTX_MAX_POWER     800
 The original's "three numbers to watch in a transition" (airspeed, tilt angle, battery): airspeed (`OSD1_ASPEED_EN`), battery
 (`OSD1_BAT_VOLT_EN`, `OSD1_CURRENT_EN`, `OSD1_BATUSED_EN`) and flight mode (`OSD1_FLTMODE_EN`) are standard OSD items, but
 the 4.7.2 parameter list has **no tilt-angle OSD item** [3]. Tilt angle is written to the dataflash log (a tiltrotor
-log message in `tiltrotor.cpp` [5]); SimLab's own HUD may show it, but do not claim the real OSD does.
+log message in `tiltrotor.cpp` [5]); iynk's own HUD may show it, but do not claim the real OSD does.
 
 ### 5.8 RPM filtering (harmonic notch) [3][11]
 

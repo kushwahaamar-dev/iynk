@@ -30,7 +30,7 @@ What it does:
   2.5 V.
 - **Upload sketch ▾**: Blink (the module's LED, 1 s on / 1 s off), Both LEDs (the two blue LEDs take turns, half a
   second each), Serial hello ("NodeMCU ready", then "hello from the ESP8266 #0", "#1" … once a second), Wi-Fi server
-  ("Connecting to simlab" while the module LED flickers for two seconds, then it stays lit and the monitor prints "IP
+  ("Connecting to iynk" while the module LED flickers for two seconds, then it stays lit and the monitor prints "IP
   address: 192.168.1.42"). Uploads go over USB with esptool and fail without the CP2102, either S8050, the 470 Ω on
   RX, the module, the EN pull-up or the GPIO15 pull-down ("Upload failed: … is missing").
 - **Press RST**: the sketch stops while it is held and restarts on release. **Press FLASH** holds GPIO0 low: held
@@ -51,4 +51,4 @@ What it does:
   board LED). Labels: ESP8266EX, USB-UART, 3V3 LDO, AUTO-RESET.
 
 Look: Colorfigures palette (blush accent), warm paper, heavy ink silhouette, finer inner lines, hand-drawn wobble,
-paper grain. Works on a phone and inside the SimLab host (embedded, bare). Upload byte counts are illustrative.
+paper grain. Works on a phone and inside the iynk host (embedded, bare). Upload byte counts are illustrative.

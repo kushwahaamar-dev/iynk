@@ -1,4 +1,4 @@
-/* SimLab drone engine: frame layouts, motor numbering and the FRAME drawing (docs/FIGURES-DRONE.md §4).
+/* iynk drone engine: frame layouts, motor numbering and the FRAME drawing (docs/FIGURES-DRONE.md §4).
    Motor angles in data count clockwise from the nose seen from above; positions are craft-local (x forward, y left). */
 (() => {
   const SD = SL.drone, g = SD.g, W = SD.W;

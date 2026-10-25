@@ -30,6 +30,6 @@ export function SolanaText({ children }: { children: ReactNode }) {
 
 export function useSolanaT(): SolanaT {
   const t = useContext(Text);
-  if (!t) throw new Error("SimLab solana: render inside <SolanaText> or <SolanaTextProvider>.");
+  if (!t) throw new Error("iynk solana: render inside <SolanaText> or <SolanaTextProvider>.");
   return t;
 }

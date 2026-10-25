@@ -20,7 +20,7 @@ import {
 
 const ENDPOINT = "/api/telemetry";
 const STATUS_ENDPOINT = "/api/status";
-const SESSION_KEY = "simlab:telemetry:v1";
+const SESSION_KEY = "iynk:telemetry:v1";
 const FLUSH_MS = 10_000;
 const FLUSH_AT = 50;
 const MAX_QUEUE = 1000;

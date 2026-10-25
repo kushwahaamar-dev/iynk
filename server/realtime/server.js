@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// SimLab room relay. `node server.js --port 43117` (or PORT=43117); see docs/hacktx/REALTIME.md.
+// iynk room relay. `node server.js --port 43117` (or PORT=43117); see docs/hacktx/REALTIME.md.
 import { parseArgs } from "node:util";
 import { loadConfig } from "./src/config.js";
 import { createLogger } from "./src/log.js";

@@ -26,7 +26,7 @@ describe("the sound setting", () => {
     expect(FakeAudioContext.made).toHaveLength(made);
   });
 
-  test("on, a figure's sound plays; a name SimLab doesn't know is ignored", () => {
+  test("on, a figure's sound plays; a name iynk doesn't know is ignored", () => {
     setSetting("sound", true);
     playSound("ding");
     const ctx = latest();

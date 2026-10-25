@@ -21,7 +21,7 @@ export function openApiDocument(siteUrl: string) {
         responses: {
           "200": { description: "The result.", content: { "application/json": { schema: outputSchema } } },
           "400": errorResponse("The arguments are not valid; the message says which one and why."),
-          "403": errorResponse("A browser called from a host SimLab does not serve."),
+          "403": errorResponse("A browser called from a host iynk does not serve."),
           "404": errorResponse("The item (or the tool) does not exist."),
           "429": errorResponse("Rate limited; retry after the Retry-After header's seconds."),
           "502": errorResponse("An upstream service (SerpApi, Meta, Solana) failed."),
@@ -34,7 +34,7 @@ export function openApiDocument(siteUrl: string) {
   return {
     openapi: "3.1.0",
     info: {
-      title: "SimLab",
+      title: "iynk",
       version: SERVER_VERSION,
       summary: "A free in-browser hardware lab: boards, robotics benches and drones to learn, price, plan and build together.",
       description: `${SERVER_INSTRUCTIONS}\n\nThe same tools are served over MCP (Streamable HTTP) at ${siteUrl}/api/mcp. No authentication; every operation only reads.`,

@@ -23,7 +23,7 @@ Server-only unless the name starts with NEXT_PUBLIC_. Local values live in `.env
 | SOLANA_ISSUER_KEYPAIR | JSON array of 64 numbers: issuer, fee payer and faucet treasury | — |
 | NEXT_PUBLIC_SOLANA_CLUSTER | devnet | devnet |
 | NEXT_PUBLIC_SOLANA_RPC_URL | client RPC | https://api.devnet.solana.com |
-| NEXT_PUBLIC_SOLANA_PROGRAM_ID | simlab_passport program id | — |
+| NEXT_PUBLIC_SOLANA_PROGRAM_ID | iynk_passport program id | — |
 | DATABASE_URL | Tiger Data (Postgres + Timescale) | — |
 | NEXT_PUBLIC_REALTIME_URL | wss://…/ws of the relay | — |
 | NEXT_PUBLIC_SITE_URL | absolute site URL for links and OG | http://localhost:3000 |
@@ -130,7 +130,7 @@ The budget optimizer in `src/lib/search/optimize.ts` is pure. It takes `{ option
 
 ## H6 Solana (devnet)
 
-Program `simlab_passport` (Anchor; workspace in `solana/`; hx:solana-program). Interface (implement exactly; changes are additive and logged in docs/hacktx/SOLANA.md):
+Program `iynk_passport` (Anchor; workspace in `solana/`; hx:solana-program). Interface (implement exactly; changes are additive and logged in docs/hacktx/SOLANA.md):
 
 ```
 Config     PDA ["config"]                                   { admin: Pubkey, issuer: Pubkey, bump: u8 }
@@ -150,13 +150,13 @@ skill_hash = sha256(utf8(skill_id))
 skill_id forms: "board:<id>:lessons", "board:<id>:lesson:<lessonId>", "drone:<id>:safety", "robotics:<id>:bench", "flight:<course>:sub-<seconds>"
 ```
 
-The IDL and TS types are exported to `src/lib/solana/idl/simlab_passport.json` and `.ts` after every build. The deployed program id goes into docs/hacktx/SOLANA.md and `.env.example`.
+The IDL and TS types are exported to `src/lib/solana/idl/iynk_passport.json` and `.ts` after every build. The deployed program id goes into docs/hacktx/SOLANA.md and `.env.example`.
 
 App side (hx:solana-app):
 
 Wallets:
 - Wallet Standard, which auto-detects Phantom, Solflare and Backpack.
-- Plus "SimLab devnet wallet": a Keypair kept in localStorage `simlab:wallet:v1`, clearly labelled devnet-only, with export and forget.
+- Plus "iynk devnet wallet": a Keypair kept in localStorage `iynk:wallet:v1`, clearly labelled devnet-only, with export and forget.
 
 Routes:
 
@@ -173,7 +173,7 @@ Routes:
 
 Pages: `src/app/[lang]/passport/**` (your wallet, your credentials, mint flow, bounties you sponsor) and `src/app/[lang]/verify/**` (static page; `?learner=` or `?credential=` read on the client; shows the on-chain data and Explorer links).
 
-Tips: a SystemProgram transfer plus a Memo `simlab:tip:<roomId>`, signed by the sender's wallet. They are shown in the room and in the story.
+Tips: a SystemProgram transfer plus a Memo `iynk:tip:<roomId>`, signed by the sender's wallet. They are shown in the room and in the story.
 
 ## H7 Realtime (relay on Vultr; protocol shared by hx:realtime-server and hx:realtime-client)
 
@@ -273,7 +273,7 @@ createRoom(lab, itemId): string                            // returns a room lin
   | get_passport(learner) | solana |
 
 - `src/app/api/openapi.json/route.ts`: OpenAPI 3.1 for the same tools, for raw-API connectors.
-- docs/hacktx/MUSE-CONNECTOR.md covers how to add SimLab to Muse as a custom connector, and how to test with an MCP client. Verify Meta's current connector docs first.
+- docs/hacktx/MUSE-CONNECTOR.md covers how to add iynk to Muse as a custom connector, and how to test with an MCP client. Verify Meta's current connector docs first.
 
 ## H11 Security and privacy
 

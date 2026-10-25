@@ -1,16 +1,16 @@
 export const meta = {
   name: 'live-claims',
-  description: 'Check the pitch, Devpost and judge-QA claims on the live SimLab deployment; re-check every failure; no code changes',
+  description: 'Check the pitch, Devpost and judge-QA claims on the live iynk deployment; re-check every failure; no code changes',
   phases: [
     { title: 'Check', detail: 'one agent per surface drives the live site' },
     { title: 'Recheck', detail: 'a second agent reproduces each failed or partial claim from scratch' },
   ],
 }
 
-const base = args?.base ?? 'https://simlab-hacktx.vercel.app'
+const base = args?.base ?? 'https://iynk.vercel.app'
 const scratch = args?.scratch
 
-const RULES = `You are checking SimLab's pitch, Devpost and judge-QA claims against its live production deployment at ${base}.
+const RULES = `You are checking iynk's pitch, Devpost and judge-QA claims against its live production deployment at ${base}.
 The repo is /Users/amar/Codes/ak/simlab and you only read it.
 
 Rules:
@@ -19,7 +19,7 @@ Rules:
 - Put every script and file you make under ${scratch}/live-claims/<your label>/ and nowhere else.
 - Load Playwright from the repo in an .mjs file: import { createRequire } from "node:module"; const { chromium } = createRequire("/Users/amar/Codes/ak/simlab/package.json")("playwright").
   Two people means two separate browser contexts (separate profiles), never two tabs of one context.
-- A display name is set by seeding localStorage "simlab:together:v1" with {"v":1,"name":"<name>","color":"#ef6a4c"} through context.addInitScript before the page loads.
+- A display name is set by seeding localStorage "iynk:together:v1" with {"v":1,"name":"<name>","color":"#ef6a4c"} through context.addInitScript before the page loads.
   The dock opens from the page's "Lab tools" button ([data-testid="lab-dock"][data-ready="true"] when ready); Together starts a room; a room link carries ?room=CODE.
 - Never share to Facebook or any other site, never send email or messages. Reading a share link's URL is fine; posting is not.
 - Keys live in .env.local: never print, log or copy a value.

@@ -78,7 +78,7 @@ describe("getFeatures", () => {
     const { result } = renderHook(() => useFeatures());
     await waitFor(() => expect(result.current.status).toBe("ready"));
     expect(result.current.features).toEqual({ ...NO_FEATURES, solana: true });
-    // one request, to SimLab's own server: the browser never asks the Solana RPC
+    // one request, to iynk's own server: the browser never asks the Solana RPC
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock.mock.calls[0]).toEqual(["/api/status", expect.anything()]);
   });

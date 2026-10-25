@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Creates the relay VM on Vultr through API v2: Ubuntu 24.04 LTS x64 in Dallas (dfw) on plan vc2-1c-1gb,
-# with your SSH public key installed. Idempotent: when an instance labelled simlab-realtime exists, it
+# with your SSH public key installed. Idempotent: when an instance labelled iynk-realtime exists, it
 # prints that one and creates nothing. This SPENDS MONEY (vc2-1c-1gb is about $5 a month, or MLH credits):
 # run it only after the owner has approved it. Then deploy with scripts/realtime-deploy.sh.
 #
@@ -15,7 +15,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="$ROOT/.env.local"
 API="https://api.vultr.com/v2"
-LABEL="simlab-realtime"
+LABEL="iynk-realtime"
 OS_NAME="Ubuntu 24.04 LTS x64"
 REGION="${VULTR_REGION:-dfw}"
 PLAN="${VULTR_PLAN:-vc2-1c-1gb}"
@@ -83,7 +83,7 @@ fi
 
 BODY="$(jq -nc --arg region "$REGION" --arg plan "$PLAN" --argjson os "$OS_ID" --arg label "$LABEL" --arg key "$SSHKEY_ID" \
   '{region: $region, plan: $plan, os_id: $os, label: $label, hostname: $label, sshkey_id: [$key],
-    backups: "disabled", enable_ipv6: true, tags: ["simlab", "hacktx"]}')"
+    backups: "disabled", enable_ipv6: true, tags: ["iynk", "hacktx"]}')"
 # The create response carries the root password; only the id is kept.
 ID="$(api POST "/instances" "$BODY" | jq -r '.instance.id')"
 [[ -n "$ID" && "$ID" != "null" ]] || die "Vultr did not return an instance id."

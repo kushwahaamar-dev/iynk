@@ -132,7 +132,7 @@ B.board({
     blink: { title: 'Blink', bytes: 265584, out: (st, t) => ({ D4: half(t, 1), D0: 1, D1: 1 - half(t, 1) }) },
     both: { title: 'Both LEDs', out: (st, t) => ({ D4: half(t, .5), D0: 1 - half(t, .5) }) },
     hello: { title: 'Serial hello', banner: 'NodeMCU ready', out: () => ({ D4: 1, D0: 1 }), serial: k => 'hello from the ESP8266 #' + k },
-    wifi: { title: 'Wi-Fi server', banner: 'Connecting to simlab', out: (st, t) => ({ D4: t < 2 ? half(t, .25) : 0, D0: 1 }),
+    wifi: { title: 'Wi-Fi server', banner: 'Connecting to iynk', out: (st, t) => ({ D4: t < 2 ? half(t, .25) : 0, D0: 1 }),
       serial: k => k === 2 ? 'IP address: 192.168.1.42' : null },
     dimmer: { title: 'Knob dimmer', bytes: 266112, out: st => ({ D5: knob(st) / 1023, D4: 1, D0: 1 }),
       serial: (k, st) => { const raw = knob(st); return 'knob=' + raw + ' duty=' + Math.round(raw * 255 / 1023); } },

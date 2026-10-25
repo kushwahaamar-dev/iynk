@@ -61,16 +61,16 @@ export function createTranslator<T extends object>(locale: Locale, messages: T, 
       text = value;
     } else if (isPlural(value)) {
       const count = Number(params?.count);
-      if (!Number.isFinite(count)) throw new Error(`SimLab i18n: "${scope}:${key}" has plural forms and needs a numeric "count".`);
+      if (!Number.isFinite(count)) throw new Error(`iynk i18n: "${scope}:${key}" has plural forms and needs a numeric "count".`);
       plurals ??= new Intl.PluralRules(tag);
       text = value[plurals.select(count)] ?? value.other;
     } else {
-      throw new Error(`SimLab i18n: no string "${key}" in ${scope}.`);
+      throw new Error(`iynk i18n: no string "${key}" in ${scope}.`);
     }
 
     return text.replace(/\{(\w+)\}/g, (_, name: string) => {
       const param = params?.[name];
-      if (param === undefined) throw new Error(`SimLab i18n: "${scope}:${key}" needs the parameter "${name}".`);
+      if (param === undefined) throw new Error(`iynk i18n: "${scope}:${key}" needs the parameter "${name}".`);
       if (typeof param === "number") {
         numbers ??= new Intl.NumberFormat(tag);
         return numbers.format(param);

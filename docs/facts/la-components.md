@@ -33,7 +33,7 @@ Learn Arduino lesson to part map (from `docs/research/learn-arduino.md` §3):
 | 15 Feel the force | FSR 402, pull-down, SG90, passive buzzer |
 | 16 Parking sensor | HC-SR04, traffic-light LED module |
 
-Added for SimLab: DHT11/DHT22, HC-SR501 PIR, 16×2 I²C LCD, WS2812B, relay module, joystick module, BME280, active buzzer, 1N4001/4007.
+Added for iynk: DHT11/DHT22, HC-SR501 PIR, 16×2 I²C LCD, WS2812B, relay module, joystick module, BME280, active buzzer, 1N4001/4007.
 
 ## 1. Sources
 
@@ -96,7 +96,7 @@ Official / primary first.
 
 ### 2.3 What Learn Arduino drew (corrections)
 
-- The default "half-size breadboard" in the original has **23 columns and no rails**. No standard board looks like that: a real half board has 30 columns and four rails; a "mini 170" has 17 columns and no rails. SimLab should draw a real 400 (30 columns, 4 rails).
+- The default "half-size breadboard" in the original has **23 columns and no rails**. No standard board looks like that: a real half board has 30 columns and four rails; a "mini 170" has 17 columns and no rails. iynk should draw a real 400 (30 columns, 4 rails).
 - The piano lesson calls a board with "30 columns with + and − rails" a "full-size" breadboard. That is a **half-size 400**. A full 830 has 63 columns.
 
 ## 3. Resistors and the colour code
@@ -305,7 +305,7 @@ Official / primary first.
 - Glass panel 0.96" diagonal (active area ~21.7 × 10.9 mm, unverified), on a ~27 × 27 mm PCB (blue or black) with four 2 mm mounting holes; 4-pin 2.54 mm header. **Pin order varies by maker: most are `GND VCC SCL SDA`, some are `VCC GND SCL SDA`** — a classic way to kill one. Read the silk. Monochrome white, blue, or yellow (top 16 rows) + blue ("two colour", really two fixed colour zones).
 - Controller SSD1306 [13]: 128 × 64, I²C 7-bit address **0b011110(SA0)**: **0x3C** (SA0 = 0) default, **0x3D** (SA0 = 1). Modules print the 8-bit form "0x78" / "0x7A" next to a resistor you move to change address. The internal charge pump generates the panel voltage (7.5 V VCC from VBAT 3.3–4.2 V) when `SSD1306_SWITCHCAPVCC` is used. (Address format "0 1 1 1 1 0 SA0 R/W#" and the 7.5 V charge-pump figure confirmed in the fact-check against [13].) Note: when `begin()` is given no address, Adafruit_SSD1306 picks 0x3C for 32-row and **0x3D for 64-row** panels, so always pass 0x3C explicitly for the common 128×64 module.
 - Module supply **3.3–5 V**: an on-board 3.3 V LDO (662K / XC6206 class) feeds the SSD1306 (VDD 1.65–3.3 V). On most modules the SDA/SCL pull-ups (4.7–10 kΩ) go to the module's VCC pin (unverified, varies).
-- **The I²C 5 V vs 3V3 note (correction to the original)**: the original powers the OLED from **3V3** and implies the bus is 3.3 V. On the Uno the I²C pins are 5 V logic and the AVR `Wire` library enables the ATmega's internal pull-ups (to 5 V) in `Wire.begin()`. So the SDA/SCL lines idle near 5 V (or are pulled between the module's 3.3 V pull-ups and the Uno's weak 5 V pull-ups). The SSD1306 datasheet does not rate its I/O for 5 V, but almost all breakout modules survive it in practice. Two honest options for SimLab: (a) power the module from **5 V** (it has its own regulator) and say "this module is 5 V tolerant in practice"; (b) keep 3V3 and say the bus is still pulled toward 5 V by the Uno. Either way, do not say the bus is 3.3 V. A level shifter is the strictly correct way.
+- **The I²C 5 V vs 3V3 note (correction to the original)**: the original powers the OLED from **3V3** and implies the bus is 3.3 V. On the Uno the I²C pins are 5 V logic and the AVR `Wire` library enables the ATmega's internal pull-ups (to 5 V) in `Wire.begin()`. So the SDA/SCL lines idle near 5 V (or are pulled between the module's 3.3 V pull-ups and the Uno's weak 5 V pull-ups). The SSD1306 datasheet does not rate its I/O for 5 V, but almost all breakout modules survive it in practice. Two honest options for iynk: (a) power the module from **5 V** (it has its own regulator) and say "this module is 5 V tolerant in practice"; (b) keep 3V3 and say the bus is still pulled toward 5 V by the Uno. Either way, do not say the bus is 3.3 V. A level shifter is the strictly correct way.
 - RAM: the Adafruit library allocates a 1024-byte frame buffer at `begin()` — half the Uno's 2 KB SRAM; `begin()` returns false if malloc fails.
 - Adafruit_SSD1306 2.5.17 + Adafruit GFX 1.13.0:
   ```cpp
@@ -449,7 +449,7 @@ Official / primary first.
 - Relay [23]: coil 5 V, **~70 Ω, ~71 mA (0.36 W)**; contacts 10 A 250 VAC / 10 A 30 VDC (rating printed on the can as "10A 250VAC 10A 125VAC 10A 30VDC 10A 28VDC"); SPDT (form C). Operate time ≤ 10 ms, release ≤ 5 ms [23]. Coil data chart: 05 V, 71.4 mA, 70 Ω, about 0.36 W, pull-in 75 % max, drop-out 10 % min [23].
 - Driver circuit: an NPN transistor (S8050 / 2N3904 class) switches the coil; **a 1N4148 (or 1N4007) flyback diode across the coil** is on the board; the "with optocoupler" versions add a **PC817** opto between IN and the transistor [24], and many of those are **active LOW** ("low-level trigger": IN LOW = relay ON). High/low trigger is often selectable by a jumper on newer boards. Multi-channel boards have a **JD-VCC / VCC jumper**: remove it and feed JD-VCC separately to get real isolation (with the jumper on, the opto gives no isolation because the grounds are shared).
 - Behaviour: click when energising; relay LED lights; COM connects to NO. Current from the Uno pin into IN: ~2–5 mA (opto LED with ~1 kΩ) (unverified).
-- Traps: active-low boards switch ON at reset (pins float/INPUT → may read as LOW through the opto LED → relay chatters at boot); fix by `digitalWrite(pin, HIGH)` **before** `pinMode(pin, OUTPUT)`. Never do mains wiring in a beginner lesson; SimLab should show only low-voltage loads.
+- Traps: active-low boards switch ON at reset (pins float/INPUT → may read as LOW through the opto LED → relay chatters at boot); fix by `digitalWrite(pin, HIGH)` **before** `pinMode(pin, OUTPUT)`. Never do mains wiring in a beginner lesson; iynk should show only low-voltage loads.
 
 ## 26. Joystick module (KY-023 style)
 

@@ -846,13 +846,13 @@
       "params": {
         "ssid": {
           "label": "网络",
-          "SimLab": "SimLab（2.4 GHz）",
+          "iynk": "iynk（2.4 GHz）",
           "Workshop-5G": "Workshop-5G（仅 5 GHz）",
           "Workshop-5G-note": "ESP32-S3 只有 2.4 GHz 无线，所以 5 GHz 网络永远不会出现，程序会一直打印点。"
         }
       },
       "world": {
-        "ap": "SimLab 接入点"
+        "ap": "iynk 接入点"
       },
       "checks": {
         "1": "4 s 内打印 \"Connected, IP 192.168.4.x\"",

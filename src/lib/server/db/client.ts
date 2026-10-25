@@ -5,7 +5,7 @@ import { env } from "@/lib/server/env";
 export type Sql = postgres.Sql;
 
 // One pool per server instance, kept on globalThis so dev reloads reuse it.
-const holder = globalThis as typeof globalThis & { __simlabSql?: Sql };
+const holder = globalThis as typeof globalThis & { __iynkSql?: Sql };
 
 /**
  * The shared Tiger Data pool, or null when DATABASE_URL isn't set (features.db).
@@ -15,7 +15,7 @@ const holder = globalThis as typeof globalThis & { __simlabSql?: Sql };
  */
 export function getSql(): Sql | null {
   if (!env.DATABASE_URL) return null;
-  holder.__simlabSql ??= postgres(env.DATABASE_URL, {
+  holder.__iynkSql ??= postgres(env.DATABASE_URL, {
     max: 3,
     idle_timeout: 20,
     connect_timeout: 5,
@@ -23,10 +23,10 @@ export function getSql(): Sql | null {
     prepare: false,
     onnotice: () => {},
     connection: {
-      application_name: "simlab",
+      application_name: "iynk",
       statement_timeout: 4000,
       idle_in_transaction_session_timeout: 10000,
     },
   });
-  return holder.__simlabSql;
+  return holder.__iynkSql;
 }

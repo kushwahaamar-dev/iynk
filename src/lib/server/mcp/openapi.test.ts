@@ -4,7 +4,7 @@ import { GET } from "@/app/api/openapi.json/route";
 import { OPTIONS as TOOL_OPTIONS, POST as TOOL_POST } from "@/app/api/mcp/tools/[name]/route";
 
 vi.mock("@/lib/server/env", () => ({
-  env: { NEXT_PUBLIC_SITE_URL: "https://simlab.test" },
+  env: { NEXT_PUBLIC_SITE_URL: "https://iynk.test" },
   features: { ai: false, image: false, voice: false, search: false, solana: false, db: false, realtime: false, gemini: false },
 }));
 vi.mock("next/server", () => ({ connection: async () => undefined }));
@@ -12,7 +12,7 @@ vi.mock("next/server", () => ({ connection: async () => undefined }));
 let ip = 0;
 
 function callTool(name: string, body: unknown, headers: Record<string, string> = {}) {
-  const req = new Request(`https://simlab.test/api/mcp/tools/${name}`, {
+  const req = new Request(`https://iynk.test/api/mcp/tools/${name}`, {
     method: "POST",
     headers: { "content-type": "application/json", "x-real-ip": `10.1.0.${++ip}`, ...headers },
     body: JSON.stringify(body),
@@ -26,7 +26,7 @@ describe("GET /api/openapi.json", () => {
     expect(res.status).toBe(200);
     expect(res.headers.get("access-control-allow-origin")).toBe("*");
     const doc = await res.json();
-    expect(doc).toMatchObject({ openapi: "3.1.0", info: { title: "SimLab" }, servers: [{ url: "https://simlab.test" }] });
+    expect(doc).toMatchObject({ openapi: "3.1.0", info: { title: "iynk" }, servers: [{ url: "https://iynk.test" }] });
     type Body = { content: Record<string, { schema: { type?: string; $ref?: string } }> };
     const ops = Object.entries(doc.paths as Record<string, { post: { operationId: string; requestBody: Body; responses: Record<string, Body> } }>);
     expect(ops.map(([path]) => path)).toEqual([
@@ -75,7 +75,7 @@ describe("POST /api/mcp/tools/<name>", () => {
   });
 
   it("refuses non-JSON bodies and answers preflight", async () => {
-    const req = new Request("https://simlab.test/api/mcp/tools/search_catalog", { method: "POST", headers: { "content-type": "text/plain" }, body: "hi" });
+    const req = new Request("https://iynk.test/api/mcp/tools/search_catalog", { method: "POST", headers: { "content-type": "text/plain" }, body: "hi" });
     expect((await TOOL_POST(req, { params: Promise.resolve({ name: "search_catalog" }) })).status).toBe(415);
     const pre = TOOL_OPTIONS();
     expect(pre.status).toBe(204);

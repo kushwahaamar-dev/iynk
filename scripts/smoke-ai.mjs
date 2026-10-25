@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Smoke test for the Meta Model API calls SimLab makes (docs/hacktx/AI.md).
+// Smoke test for the Meta Model API calls iynk makes (docs/hacktx/AI.md).
 // Sends the same request shapes as src/lib/server/ai/provider.ts straight to
 // the API. Reads keys from the environment or .env.local and never prints them.
 // Usage: node scripts/smoke-ai.mjs [--no-image]
@@ -120,7 +120,7 @@ function toneWav() {
 }
 
 function multipart(parts) {
-  const boundary = `----simlabsmoke${Date.now().toString(16)}`;
+  const boundary = `----iynksmoke${Date.now().toString(16)}`;
   const chunks = [];
   for (const part of parts) {
     const file = part.filename ? `; filename="${part.filename}"` : "";

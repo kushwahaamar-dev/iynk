@@ -1,10 +1,10 @@
 {
   "address": "BYFLDTLNi946Z8jT4JnxgE8Cpzkr9ud7tSrnThFTv31w",
   "metadata": {
-    "name": "simlab_passport",
+    "name": "iynk_passport",
     "version": "0.1.0",
     "spec": "0.1.0",
-    "description": "SimLab Proof of Build: verified skill credentials and escrowed sponsor bounties"
+    "description": "iynk Proof of Build: verified skill credentials and escrowed sponsor bounties"
   },
   "instructions": [
     {

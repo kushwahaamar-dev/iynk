@@ -12,7 +12,7 @@ the contracts other owners need, plus what I need from them.
 - Metadata: `import { alternatesFor } from "@/i18n/seo"` and return
   `{ title, alternates: alternatesFor(lang, "/boards/uno-r3") }` from every `generateMetadata`
   (path = what follows the language, `""` for the dashboard). `metadataBase` and the
-  `%s · SimLab` title template are set once in the layout.
+  `%s · iynk` title template are set once in the layout.
 - Server strings: `const t = await getT(lang, "boardlab")` from `@/i18n/server` (typed keys from
   the English JSON, `{name}` placeholders, plural objects `{ "one": …, "other": … }` with `count`).
   `getMessages(lang, ns)` returns a raw namespace to pass a slice to Client Components as props;
@@ -26,7 +26,7 @@ the contracts other owners need, plus what I need from them.
   (keys follow D7: `progressKey.boardLesson(id, lessonId)`, …; `useCount(prefix, total)` /
   `useCountKeys(keys)` give `{ done, total }` for "done/total"). Settings: `useSettings()`,
   `setSetting(name, value)`, `useResolvedTheme()` from `@/lib/settings`. Never write
-  localStorage directly; everything lives in `"simlab:v1"`.
+  localStorage directly; everything lives in `"iynk:v1"`.
 - Figures: `import { FigureFrame, type FigureHandle } from "@/components/figure"`.
   `<FigureFrame ref={handleRef} src="/figures/boards/uno-r3.html" title="…" initial={figureState} onEvent={…} />`.
   After every `ready` (a figure can reload when Activity moves it) FigureFrame re-sends
@@ -44,7 +44,7 @@ the contracts other owners need, plus what I need from them.
 ## For platform (figure bridge, figures/engine/embed.js)
 
 FigureFrame follows "What the host must do" in docs/FIGURES.md: `hello` on load and on every show,
-queue until `ready` (readiness is never reset on load), source/origin/`simlab-figure`/`v` checks,
+queue until `ready` (readiness is never reset on load), source/origin/`iynk-figure`/`v` checks,
 `location.origin` as target, `theme` + `locale` (+ the user's `labels` setting) after every `ready`,
 `?lang=` in `src`, no sandbox, `color-scheme: light` on a plate background, 4:3 / 10:11 box, and the
 accessible list built from `ready.parts` / `state.parts` (driven with `act {name, data: {id}}`),
@@ -88,7 +88,7 @@ the export can simply go. (`src/app/[lang]/drones/[drone]/page.tsx` also imports
   `npm run e2e` = Playwright against a production build; `npm run check` runs all of them.
 - `next build` type-checks the whole tree, so one agent's half-written file fails everyone's build.
   While the tree is shared, build your routes with
-  `SIMLAB_BUILD_SKIP_TYPECHECK=1 NEXT_DIST_DIR=.next-<label> npx next build` and type-check with
+  `IYNK_BUILD_SKIP_TYPECHECK=1 NEXT_DIST_DIR=.next-<label> npx next build` and type-check with
   `npx tsc --noEmit -p .` (read only your errors). The flag is ignored on Vercel, so the deploy
   build always type-checks.
 - e2e against your own build: `E2E_SKIP_BUILD=1 NEXT_DIST_DIR=.next-<label> npx playwright test e2e/<yours>.spec.ts`

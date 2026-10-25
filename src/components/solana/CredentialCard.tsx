@@ -31,7 +31,7 @@ const BAND = { drone: "bg-tomato", board: "bg-cobalt", robotics: "bg-mint", flig
 
 /**
  * One on-chain credential. `issuer` is the program's configured issuer, when
- * known, so the card can say whether SimLab signed it.
+ * known, so the card can say whether iynk signed it.
  */
 export function CredentialCard({ credential, issuer }: { credential: Credential; issuer?: string | null }) {
   const t = useSolanaT();

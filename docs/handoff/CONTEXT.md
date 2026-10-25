@@ -6,7 +6,7 @@ file holds the background. Whoever drives appends to the conversation log (§5) 
 
 ## 1. The project
 
-SimLab is a hardware lab in the browser (Boards, Robotics, Drones, flight sim) entered at HackTX 2026. The brief is
+iynk is a hardware lab in the browser (Boards, Robotics, Drones, flight sim) entered at HackTX 2026. The brief is
 `docs/SPEC.md`. The plan being built is `docs/hacktx/BUILD-PLAN.md`; the audits it rests on are in `docs/audit/`.
 
 - Hacking period: 11:30 CDT 2026-10-24 to 11:30 CDT 2026-10-25. Devpost entry and demo video due by then; submit by
@@ -31,7 +31,7 @@ SimLab is a hardware lab in the browser (Boards, Robotics, Drones, flight sim) e
 - **Don't cut corners.** Every item functional to the bar in BUILD-PLAN.md §4; report real check results, failures
   included; never claim "done" without the gate checks.
 - Leave the old repo `github.com/kushwahaamar-dev/simlab` as it is. The working repo is
-  `github.com/kushwahaamar-dev/sim`.
+  `github.com/kushwahaamar-dev/iynk`.
 
 ## 3. Decisions on record, and why
 
@@ -80,8 +80,8 @@ Short entries: who, when, what was asked or decided, in the user's words where i
 - **10-24 ~15:20, Amar.** "Commit the previous things as well … The author should only be me … design the session such
   a way that I can take off through another agent and continue from exactly where you left off." → HANDOFF.md and
   CLAUDE.md created.
-- **10-24 15:31, Amar.** Move to `github.com/kushwahaamar-dev/sim` with every commit dated now. Done with a fresh
-  history (§3). "Leave the old simlab repo as it is."
+- **10-24 15:31, Amar.** Move to `github.com/kushwahaamar-dev/iynk` with every commit dated now. Done with a fresh
+  history (§3). "Leave the old iynk repo as it is."
 - **10-24 15:40, Amar.** Optimise for Best Overall, SerpApi, Most Entertaining, Meta, Solana: "Don't cut any corners
   … We want the entire thing functional. Nothing's to be missing … create a bulletproof plan … Do thorough dynamic
   check on every single end … a proper, detailed architecture … tell me how the build phases will go. Then after I say
@@ -108,7 +108,7 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   whether to relaunch fresh ones.
 - **10-24 16:46, Jagrati.** "do what's best" → relaunch all seven phase-1 agents fresh (P1-deploy included: it only
   touches local config and never deploys); each first reviews its own leftover uncommitted files.
-- **10-24 16:57, Amar.** Cloned `https://github.com/kushwahaamar-dev/sim.git`, opened it, and asked the agent to
+- **10-24 16:57, Amar.** Cloned `https://github.com/kushwahaamar-dev/iynk.git`, opened it, and asked the agent to
   follow HANDOFF.md exactly. Take over as driver under Amar's git identity. Continue from "Current status → Next
   step". Commit and push after every step. Add his instructions and decisions to this section as they happen. Ask
   before anything HANDOFF.md says needs a user's OK. When he says he is stopping, hand over. Checkpoint the step,
@@ -121,10 +121,10 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   `node_modules` and `.env.local` already in place. Fast-forwarded to `94d3caa`. A whitespace-only change in
   `docs/hacktx/STRATEGY.md` was discarded. The extra clone at `/Users/amar/Codes/sim` is not the working tree.
   Decision: do not run `npm ci` here. A fresh install on the other clone reported `PageProps` errors this tree
-  does not have. Typecheck on simlab is 24 errors in four files (see HANDOFF.md).
-- **10-24 17:06, Amar (driver decision).** Relaunch all seven unfinished labels in the simlab tree. No user message
+  does not have. Typecheck on iynk is 24 errors in four files (see HANDOFF.md).
+- **10-24 17:06, Amar (driver decision).** Relaunch all seven unfinished labels in the iynk tree. No user message
   at this minute. The next step in HANDOFF.md was the relaunch, and none of the labels were reported done.
-- **10-24 17:12, Amar (driver decision).** One P1-checks per tree. Keep `1e6f87c4` in simlab. The copy in
+- **10-24 17:12, Amar (driver decision).** One P1-checks per tree. Keep `1e6f87c4` in iynk. The copy in
   `/Users/amar/Codes/sim` (`69f24d0b`) stood down on its own. The earlier wave in that clone was told to stop
   and not push. Its uncommitted files and unpushed note `c3c61a7` stay there.
 - **10-24 17:22, Amar (driver decision).** P1-checks meets its done line. Do not relaunch it. The S3 dimmer prose
@@ -217,7 +217,7 @@ Short entries: who, when, what was asked or decided, in the user's words where i
   no leaderboard and no Tiger Data track. Bug hunt: "No, freeze the app", so the pages stay as they are for the
   video and judging; the audit is not relaunched.
 - **10-25 08:13 to 08:34, Amar (Vultr).** Added `VULTR_API_KEY` to `.env.local` himself. The create script found a
-  `simlab-realtime` VM already made at 07:58 from another machine or session, with an SSH key this Mac doesn't have
+  `iynk-realtime` VM already made at 07:58 from another machine or session, with an SSH key this Mac doesn't have
   and a relay that let in only localhost pages. Asked who set it up and how to go on, Amar answered "how to do step 2
   step by step" (add this Mac's key), then "done all step 6": he ran `ssh-copy-id` with the root password from the
   Vultr dashboard. Decision: keep that VM (no second one), keep its localhost origins and add the Vercel origin.

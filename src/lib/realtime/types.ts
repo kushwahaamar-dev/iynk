@@ -1,4 +1,4 @@
-// The client API of SimLab Together (HX-CONTRACT H7.1). Fields marked
+// The client API of iynk Together (HX-CONTRACT H7.1). Fields marked
 // "additive" go beyond H7.1 without changing anything it defines.
 
 import type { Locale } from "@/i18n/config";

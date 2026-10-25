@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Shoot and check one built SimLab figure page (colorfigures-guide 4.3, 4.6).
+"""Shoot and check one built iynk figure page (colorfigures-guide 4.3, 4.6).
 
     python3 -I figures/tools/cfshoot.py boards/uno-r3 [--press "Label@300,Picker>Choice@900" --at 1200,4000]
     python3 -I figures/tools/cfshoot.py public/figures/boards/uno-r3.html --out /some/dir
@@ -52,9 +52,9 @@ HOST = """<!doctype html><html><head><meta charset="utf-8"><title>cfshoot host</
 iframe{width:720px;height:540px;border:0;border-radius:12px;background:#e4ddcf;color-scheme:light}</style></head>
 <body><iframe id="fr" title="figure" src="SRC"></iframe><script>
 window.LOG = []; const fr = document.getElementById('fr');
-addEventListener('message', e => { const m = e.data; if (e.source === fr.contentWindow && m && m.source === 'simlab-figure' && m.v === 1) LOG.push(m); });
-fr.addEventListener('load', () => fr.contentWindow.postMessage({ source: 'simlab', v: 1, type: 'hello' }, '*'));
-window.cmd = m => fr.contentWindow.postMessage({ source: 'simlab', v: 1, ...m }, '*');
+addEventListener('message', e => { const m = e.data; if (e.source === fr.contentWindow && m && m.source === 'iynk-figure' && m.v === 1) LOG.push(m); });
+fr.addEventListener('load', () => fr.contentWindow.postMessage({ source: 'iynk', v: 1, type: 'hello' }, '*'));
+window.cmd = m => fr.contentWindow.postMessage({ source: 'iynk', v: 1, ...m }, '*');
 </script></body></html>"""
 
 

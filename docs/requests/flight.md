@@ -19,7 +19,7 @@
    landings `ding`, crashes `pop` + `sizzle`, refusals and warnings `buzz`. The original also had `chime` (gates)
    and `error` (refusals); if the engine adds them, tell me and I will switch those two.
 6. **Settings (shell-app, optional)**: the gamepad mapping is kept per viewer in
-   `localStorage["simlab:flight-pad:v1"]`, a convenience outside the D7 `simlab:v1` record. Fold it into settings if
+   `localStorage["iynk:flight-pad:v1"]`, a convenience outside the D7 `iynk:v1` record. Fold it into settings if
    you want one key; the shape is `PadMapping` in `src/lib/flight/input.ts`, validated by `isPadMapping`.
 
 P2-flight (2026-10-24): item 4 is superseded. Crafts and courses come from each craft's content module through

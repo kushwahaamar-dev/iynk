@@ -31,4 +31,4 @@ Ethernet, USB), solder, card, cooler, plug in, the drive node, the health check,
 fan joint, motors on the 5 V pins, a reversed and a 12 V supply on those pins, and the exploded view.
 
 Look: Colorfigures palette (mint accent), warm paper, heavy ink silhouette, finer inner lines, hand-drawn wobble,
-paper grain. Works on a phone and inside the SimLab host (embedded, bare).
+paper grain. Works on a phone and inside the iynk host (embedded, bare).

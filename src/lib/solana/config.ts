@@ -1,7 +1,7 @@
 import { PublicKey } from "@solana/web3.js";
 
 // Client-side Solana settings. NEXT_PUBLIC_ values are inlined at build time,
-// so they are read here by their literal names. SimLab is devnet-only (H11).
+// so they are read here by their literal names. iynk is devnet-only (H11).
 
 export const CLUSTER = "devnet";
 
@@ -16,7 +16,7 @@ function parseProgramId(raw: string | undefined): PublicKey | null {
   }
 }
 
-/** The simlab_passport program, or null when this deployment has none. */
+/** The iynk_passport program, or null when this deployment has none. */
 export const PROGRAM_ID: PublicKey | null = parseProgramId(process.env.NEXT_PUBLIC_SOLANA_PROGRAM_ID);
 
 export const LAMPORTS_PER_SOL = 1_000_000_000;

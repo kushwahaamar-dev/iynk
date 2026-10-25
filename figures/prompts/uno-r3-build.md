@@ -32,4 +32,4 @@ build-step conditions `tasks.smd-placed`, `tasks.smd-soldered`, `tasks.low-in`, 
 `tasks.chip-in`. The lesson (25 steps, 13 faults, 2 tasks, 5 quizzes) is `src/content/robotics/uno-r3-build.ts`.
 
 Look: Colorfigures palette (cobalt accent), warm paper, heavy ink silhouette, finer inner lines, hand-drawn wobble,
-paper grain. Works on a phone and inside the SimLab host (embedded, bare).
+paper grain. Works on a phone and inside the iynk host (embedded, bare).

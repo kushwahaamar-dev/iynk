@@ -192,7 +192,7 @@
     },
     "alt": {
       "title": "\"Altitude hold\" is a simulator aid here",
-      "explain": "Betaflight's ALTHOLD (mode 3) holds height with a barometer or GPS, and a whoop AIO has neither. SimLab's altitude hold makes the first flights easy; on the real whoop you learn the same thing in angle mode, with the tilt capped at 45 degrees for a room."
+      "explain": "Betaflight's ALTHOLD (mode 3) holds height with a barometer or GPS, and a whoop AIO has neither. iynk's altitude hold makes the first flights easy; on the real whoop you learn the same thing in angle mode, with the tilt capped at 45 degrees for a room."
     },
     "angle": {
       "title": "Angle mode",
@@ -358,7 +358,7 @@
         "why": "FLIP OVER AFTER CRASH (mode 35) reverses the motors with a DShot command and lets you arm upside down. Push the stick towards the side that should lift. With crashflip_auto_rearm OFF, switch turtle off, disarm and arm again to fly on."
       },
       "alt": {
-        "q": "SimLab's altitude hold flies this whoop. Does the real one have it?",
+        "q": "iynk's altitude hold flies this whoop. Does the real one have it?",
         "options": {
           "1": "No: it has no barometer or GPS, so Betaflight's altitude hold cannot run",
           "2": "Yes: every Betaflight quad has it",

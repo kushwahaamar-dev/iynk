@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { DELETE, GET, OPTIONS, POST } from "@/app/api/mcp/route";
 
 vi.mock("@/lib/server/env", () => ({
-  env: { NEXT_PUBLIC_SITE_URL: "https://simlab.test" },
+  env: { NEXT_PUBLIC_SITE_URL: "https://iynk.test" },
   features: { ai: false, image: false, voice: false, search: false, solana: false, db: false, realtime: false, gemini: false },
 }));
 vi.mock("next/server", () => ({ connection: async () => undefined }));
@@ -13,7 +13,7 @@ let ip = 0;
 /** A POST from a fresh address, so the per-IP rate limit never interferes unless a test wants it to. */
 function post(body: unknown, headers: Record<string, string> = {}, from = `10.0.0.${++ip}`) {
   return POST(
-    new Request("https://simlab.test/api/mcp", {
+    new Request("https://iynk.test/api/mcp", {
       method: "POST",
       headers: { "content-type": "application/json", accept: "application/json, text/event-stream", "x-real-ip": from, ...headers },
       body: typeof body === "string" ? body : JSON.stringify(body),
@@ -31,7 +31,7 @@ describe("legacy era (initialize handshake)", () => {
     expect(res.status).toBe(200);
     expect(res.headers.get("access-control-allow-origin")).toBe("*");
     const body = await res.json();
-    expect(body.result).toMatchObject({ protocolVersion: "2025-06-18", capabilities: { tools: { listChanged: false } }, serverInfo: { name: "simlab", title: "SimLab" } });
+    expect(body.result).toMatchObject({ protocolVersion: "2025-06-18", capabilities: { tools: { listChanged: false } }, serverInfo: { name: "iynk", title: "iynk" } });
     expect(body.result.instructions).toMatch(/search_catalog/);
     expect(res.headers.get("mcp-session-id")).toBeNull();
 
@@ -92,7 +92,7 @@ describe("modern era (2026-07-28, per-request metadata)", () => {
     expect(res.status).toBe(200);
     const { result } = await res.json();
     expect(result).toMatchObject({ resultType: "complete", supportedVersions: [MODERN, "2025-11-25", "2025-06-18", "2025-03-26"], capabilities: { tools: {} } });
-    expect(result._meta["io.modelcontextprotocol/serverInfo"]).toMatchObject({ name: "simlab" });
+    expect(result._meta["io.modelcontextprotocol/serverInfo"]).toMatchObject({ name: "iynk" });
   });
 
   it("calls tools when the headers mirror the body, including a base64 Mcp-Name", async () => {
@@ -140,7 +140,7 @@ describe("HTTP rules", () => {
     const ping = { jsonrpc: "2.0", id: 1, method: "ping" };
     expect((await post(ping, { origin: "http://evil.test", host: "evil.test:3000" })).status).toBe(403);
     expect((await post(ping, { origin: "http://localhost:6274", host: "localhost:3000" })).status).toBe(200);
-    expect((await post(ping, { origin: "https://anywhere.example", host: "simlab.test" })).status).toBe(200);
+    expect((await post(ping, { origin: "https://anywhere.example", host: "iynk.test" })).status).toBe(200);
   });
 
   it("rate-limits one caller", async () => {

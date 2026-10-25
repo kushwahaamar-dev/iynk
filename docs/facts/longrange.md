@@ -67,7 +67,7 @@ units mm.
 
 ### 2.1 Frame
 
-| Item | Original (Drone Lab) | Real reference | Use in SimLab |
+| Item | Original (Drone Lab) | Real reference | Use in iynk |
 |---|---|---|---|
 | Layout | True-X | Chimera7 Pro V2: X layout, body 270 x 199 mm [13] (exact arm geometry unverified) | True-X (square motor pattern) |
 | Wheelbase (motor-to-motor diagonal) | 315 mm [24] | Chimera7 Pro V2 327 mm [13]; 7" frames 295-330 mm (unverified range) | **315 mm** (keep the original) |
@@ -114,7 +114,7 @@ M3 rear left, M4 front left.
 
 ## 3. The original's catalogue, sanity-checked
 
-SimLab keeps the calculator identical; this table only flags descriptions. Calculator: `thrust = 1.6 * pf * krpm^2`,
+iynk keeps the calculator identical; this table only flags descriptions. Calculator: `thrust = 1.6 * pf * krpm^2`,
 `V = cells * 3.7`, hover watts `= AUW / (8 * eff)`, 80 % usable capacity, max current at 2 g/W [24].
 
 ### 3.1 Batteries
@@ -488,7 +488,7 @@ never below ~3.3 V under load; low internal resistance, 100+ A bursts. Li-ion 21
 the curve falls more steadily through the flight, usable to ~2.8-3.0 V/cell under load (datasheet discharge cut-off
 2.5 V [14][15][16]); DC internal resistance 13-16 mOhm per cell [15][16] so a 6S1P pack sags ~0.1 V/cell per 7 A
 (e.g. 45 A x 15 mOhm = 0.68 V per cell). Holding 120 A punches on a 45 A pack overheats the cells. Li-ion also
-loses capacity in the cold (unverified magnitude). In SimLab the original models all packs with the LiPo curve
+loses capacity in the cold (unverified magnitude). In iynk the original models all packs with the LiPo curve
 (3.3 + 0.9 x soc^0.7) and cuts at 3.2 V [24]: a real Li-ion pack would show ~3.3 V/cell with energy still left.
 
 ## 8. Real failure modes

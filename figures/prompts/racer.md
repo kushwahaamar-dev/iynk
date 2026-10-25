@@ -36,10 +36,10 @@ What it does:
   1.5 s, then stage 2 DROP: motors stopped, disarmed. With the props on it refuses.
 - **Wiring sheet**: battery → XT60 + cap → 4-in-1 ESC → motors (3-phase x4), FC → ESC (DShot600), camera → FC (CAM
   pad), FC → VTX (video + OSD, SmartAudio), receiver → FC (UART2 CRSF), FC → LED strips (LED pad + 5 V).
-- **Options** from the SimLab calculator change the drawing: battery 4S 1300, 4S 1500 or 6S 1000; motors 2207 2500 KV,
+- **Options** from the iynk calculator change the drawing: battery 4S 1300, 4S 1500 or 6S 1000; motors 2207 2500 KV,
   2306 2700 KV or 2207 1950 KV; props 5x4.8x3, 5.1x3.6x3 or 5x5.2x3, each with its own size or colour.
 - **See-through** fades the top plate and battery and labels what is inside: stator 22 x 7 mm, F722 MCU + gyro,
   Raceband R4 at 25 mW, nano cam at 40° up, ELRS RX on UART2 CRSF, WS2812B x8 LEDs.
 
 Look: Colorfigures palette (mustard accent), warm paper, heavy ink silhouette, finer inner lines. It works on a phone
-(numbered badges and a label list) and inside the SimLab host, which sets the design options and runs the tests.
+(numbered badges and a label list) and inside the iynk host, which sets the design options and runs the tests.

@@ -12,7 +12,7 @@ const flags = vi.hoisted(() => ({ ai: true, image: true, voice: true, search: tr
 const offers = vi.hoisted(() => vi.fn());
 const solana = vi.hoisted(() => ({ context: { connection: {}, programId: "program" } as object | null, credentialsOf: vi.fn() }));
 
-vi.mock("@/lib/server/env", () => ({ env: { NEXT_PUBLIC_SITE_URL: "https://simlab.test" }, features: flags }));
+vi.mock("@/lib/server/env", () => ({ env: { NEXT_PUBLIC_SITE_URL: "https://iynk.test" }, features: flags }));
 
 vi.mock("@/content/index.generated", async () => {
   const { quad5 } = await import("./__fixtures__/content");
@@ -49,7 +49,7 @@ vi.mock("@/lib/server/search/serpapi", () => {
 vi.mock("@/lib/server/solana/context", () => ({ readContext: () => solana.context }));
 vi.mock("@/lib/solana/reads", () => ({ credentialsOf: solana.credentialsOf }));
 
-const ctx: ToolContext = { siteUrl: "https://simlab.test" };
+const ctx: ToolContext = { siteUrl: "https://iynk.test" };
 const fetchMock = vi.fn<typeof fetch>();
 
 beforeEach(() => {
@@ -81,7 +81,7 @@ describe("search_catalog", () => {
     expect(out.ok).toBe(true);
     const data = out.ok ? (out.data as { results: { lab: string; id: string; url: string }[] }) : null;
     expect(data?.results.slice(0, 2).map((r) => r.id)).toEqual(["esp32-devkitc", "esp32-s3-devkitc-1"]);
-    expect(data?.results[0].url).toBe("https://simlab.test/en/boards/esp32-devkitc");
+    expect(data?.results[0].url).toBe("https://iynk.test/en/boards/esp32-devkitc");
   });
 
   it("reads titles from the item's prose in the asked language, falling back to English", async () => {
@@ -91,7 +91,7 @@ describe("search_catalog", () => {
       id: "quad5",
       title: "Cuadricóptero freestyle de 5 pulgadas",
       tagline: "The all-rounder everyone learns on",
-      url: "https://simlab.test/es/drones/quad5",
+      url: "https://iynk.test/es/drones/quad5",
     });
   });
 
@@ -117,7 +117,7 @@ describe("get_item", () => {
 
   it("still answers for an item whose data module is not written yet", async () => {
     const out = await runTool(getItem, { lab: "board", id: "uno-r3" }, ctx);
-    expect(out).toMatchObject({ ok: true, data: { id: "uno-r3", title: null, details: null, url: "https://simlab.test/en/boards/uno-r3" } });
+    expect(out).toMatchObject({ ok: true, data: { id: "uno-r3", title: null, details: null, url: "https://iynk.test/en/boards/uno-r3" } });
   });
 
   it("reports an unknown id as a tool error the model can act on", async () => {
@@ -177,7 +177,7 @@ describe("price_parts", () => {
     const data = dataOf(priceParts, out);
     expect(data.parts[0]).toMatchObject({ listings: 2, cost: 78, best: { price: 19.5, seller: null, inStock: null } });
     expect(data.parts[1]).toMatchObject({ best: null, cost: null });
-    expect(data).toMatchObject({ total: 78, currency: "USD", partial: null, url: "https://simlab.test/en/drones/quad5" });
+    expect(data).toMatchObject({ total: 78, currency: "USD", partial: null, url: "https://iynk.test/en/drones/quad5" });
   });
 
   it("prices a bench's own parts list from hx:search's bill of materials", async () => {
@@ -238,13 +238,13 @@ describe("plan_build_night", () => {
   it("asks the plan route and links the planned item", async () => {
     fetchMock.mockResolvedValue(reply(200, plan));
     const out = await runTool(planBuildNight, { participants, locale: "es" }, ctx);
-    expect(out).toMatchObject({ ok: true, data: { ...plan, url: "https://simlab.test/es/drones/quad5" } });
+    expect(out).toMatchObject({ ok: true, data: { ...plan, url: "https://iynk.test/es/drones/quad5" } });
     const [url, init] = fetchMock.mock.calls[0];
-    expect(String(url)).toBe("https://simlab.test/api/ai/plan");
+    expect(String(url)).toBe("https://iynk.test/api/ai/plan");
     expect(JSON.parse(String(init?.body))).toEqual({ locale: "es", participants });
   });
 
-  it("refuses a plan for an item SimLab does not have", async () => {
+  it("refuses a plan for an item iynk does not have", async () => {
     fetchMock.mockResolvedValue(reply(200, { ...plan, item: { lab: "drone", id: "blimp" } }));
     expect(await runTool(planBuildNight, { participants }, ctx)).toMatchObject({ ok: false, code: "upstream" });
   });
@@ -314,7 +314,7 @@ describe("get_passport", () => {
           explorerUrl: `https://explorer.solana.com/address/${credential.address}?cluster=devnet`,
         },
       ],
-      verifyUrl: `https://simlab.test/fr/verify?learner=${learner}`,
+      verifyUrl: `https://iynk.test/fr/verify?learner=${learner}`,
     });
     expect(String(solana.credentialsOf.mock.calls[0][2])).toBe(learner);
   });

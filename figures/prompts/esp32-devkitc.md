@@ -53,4 +53,4 @@ What it does:
   (5V from USB through D3, 3V3 from the regulator, GPIO23). **Labels** names the main parts.
 
 Look: Colorfigures palette (mustard accent), warm paper, heavy ink silhouette, finer inner lines, hand-drawn wobble,
-paper grain. Works on a phone and inside the SimLab host (embedded, bare). Upload byte counts are illustrative.
+paper grain. Works on a phone and inside the iynk host (embedded, bare). Upload byte counts are illustrative.

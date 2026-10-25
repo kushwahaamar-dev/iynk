@@ -10,6 +10,6 @@ export async function loadFigureStrings(locale: Locale): Promise<Record<string, 
     const mod = (await import(`./figures/${locale}.json`)) as { default: Record<string, string> };
     return mod.default;
   } catch (error) {
-    throw new Error(`SimLab i18n: missing figure strings src/i18n/figures/${locale}.json.`, { cause: error });
+    throw new Error(`iynk i18n: missing figure strings src/i18n/figures/${locale}.json.`, { cause: error });
   }
 }

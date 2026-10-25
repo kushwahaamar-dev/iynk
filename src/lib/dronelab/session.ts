@@ -4,7 +4,7 @@ import type { BenchSummary } from "./store";
 // The bench a learner built in this browser tab, handed from the workshop to the fly page. It is a per-tab
 // convenience (sessionStorage), never progress: a fresh tab flies the default design, factory-built.
 
-const key = (id: string) => `simlab:dronelab:${id}`;
+const key = (id: string) => `iynk:dronelab:${id}`;
 
 const isPick = (v: unknown): v is DesignPick =>
   typeof v === "object" &&

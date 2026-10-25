@@ -1,6 +1,6 @@
 # ESP32-S3-DevKitC-1 v1.1 (Espressif) - fact sheet
 
-**Product modelled:** Espressif **ESP32-S3-DevKitC-1 v1.1**, PCB design `ESP32-S3-DevKitC-1_V1.1_20220429` (Espressif task #35632, Rev 1.1, dated 2022-04-29), schematic `SCH_ESP32-S3-DevKitC-1_V1.1_20221130`. Default variant for SimLab: **ESP32-S3-DevKitC-1-N8R8** (module ESP32-S3-WROOM-1-N8R8: 8 MB quad flash + 8 MB octal PSRAM, PCB antenna) [1][3].
+**Product modelled:** Espressif **ESP32-S3-DevKitC-1 v1.1**, PCB design `ESP32-S3-DevKitC-1_V1.1_20220429` (Espressif task #35632, Rev 1.1, dated 2022-04-29), schematic `SCH_ESP32-S3-DevKitC-1_V1.1_20221130`. Default variant for iynk: **ESP32-S3-DevKitC-1-N8R8** (module ESP32-S3-WROOM-1-N8R8: 8 MB quad flash + 8 MB octal PSRAM, PCB antenna) [1][3].
 
 **What it is.** An entry-level, breadboard-friendly development board: a long narrow black PCB (25.40 mm wide) carrying one ESP32-S3-WROOM-1 (or -1U / -2) module at one end, whose PCB antenna overhangs the board edge, and two **Micro-USB** receptacles at the other end. The left one ("UART") goes through a Silicon Labs **CP2102N** USB-to-UART bridge to UART0; the right one ("USB") goes straight to the ESP32-S3's own full-speed USB (GPIO19/20, USB-Serial-JTAG or USB-OTG). Between them sit an SGM2212-3.3 LDO (5 V to 3.3 V), a red power LED, an addressable RGB LED (SK68XXMINI-HS, a WS2812-protocol part) on **GPIO38**, two auto-program transistors, and BOOT/RESET tact switches. All usable GPIOs come out on two 1x22 2.54 mm headers (J1, J3) [1][2][4].
 
@@ -398,7 +398,7 @@ entry 0x403c98..
 
 In download mode (BOOT held while RESET released, or esptool auto-reset): `rst:0x1 (POWERON),boot:0x0 (DOWNLOAD(USB/UART0))` then `waiting for download`. Pressing RESET (EN/CHIP_PU) or an esptool reset through the UART port's RTS line is a chip power-on reset, so it shows `rst:0x1 (POWERON)`; a reset issued over the native USB-Serial-JTAG port shows `rst:0x15 (USB_UART_CHIP_RESET)`; a sketch crash shows e.g. `rst:0xc (RTC_SW_CPU_RST)`. These ROM lines are the well-known ESP32-S3 ROM format; not re-verified against a live board in this run (unverified exact addresses).
 
-**LED behaviour.** Red D5 on as soon as 3.3 V is up. The RGB LED is dark until firmware drives it. **Factory firmware**: Espressif ships the boards with a test firmware (unverified content: commonly reported as the RGB LED cycling colours / a short colour test). Do not rely on it; the SimLab default program should be the Blink-RGB lesson.
+**LED behaviour.** Red D5 on as soon as 3.3 V is up. The RGB LED is dark until firmware drives it. **Factory firmware**: Espressif ships the boards with a test firmware (unverified content: commonly reported as the RGB LED cycling colours / a short colour test). Do not rely on it; the iynk default program should be the Blink-RGB lesson.
 
 ---
 

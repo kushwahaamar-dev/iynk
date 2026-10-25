@@ -53,7 +53,7 @@ export const droneCalc = defineTool({
   name: "drone_calc",
   title: "Drone design calculator",
   description:
-    "Runs SimLab's drone design calculator for one craft and one choice of battery, motor and prop: all-up weight, thrust-to-weight, hover throttle and current, hover and flight minutes, full-throttle current, parts cost, and the design problems it finds (over-spinning motors, too little thrust, ESC or battery over-current, prop clash, tail-heavy wings). Leave an option out to keep the craft's default; the answer lists every option key so you can compare builds.",
+    "Runs iynk's drone design calculator for one craft and one choice of battery, motor and prop: all-up weight, thrust-to-weight, hover throttle and current, hover and flight minutes, full-throttle current, parts cost, and the design problems it finds (over-spinning motors, too little thrust, ESC or battery over-current, prop clash, tail-heavy wings). Leave an option out to keep the craft's default; the answer lists every option key so you can compare builds.",
   input: z.object({
     drone: z.enum(DRONE_IDS).describe("Drone id, e.g. quad5 (5-inch freestyle), whoop, longrange, agrihex, wing, octo."),
     battery: optionKey.optional().describe('Battery option key from get_item or a previous answer, e.g. "6s1100".'),

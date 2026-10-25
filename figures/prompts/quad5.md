@@ -51,7 +51,7 @@ What it does:
 - **Wiring sheet** is a hand-inked block diagram: battery → XT60 + cap (22.2 V) → 4-in-1 ESC (VBAT) → motors
   (3-phase x4), FC → ESC (DShot600), receiver → FC (UART2 CRSF), and camera → FC → VTX (video). Dots run along the
   live wires. Clicking a block selects the same part as in the 3D view, and parts that are not fitted are dashed.
-- **Options** from the SimLab calculator change the drawing:
+- **Options** from the iynk calculator change the drawing:
   - battery: 6S 1100, 6S 1800 or 4S 1500, each with its own size and colour;
   - motors: 2306 1750 KV, 2207 1950 KV or 2306 2450 KV;
   - props: 5x4.3x3, 5.1x2.5x3 or 5x5x3, each with its own colour.
@@ -62,6 +62,6 @@ What it does:
 - **Labels** names the main parts.
 
 Look: Colorfigures palette (tomato accent), warm paper, heavy ink silhouette, finer inner lines, hand-drawn wobble,
-paper grain. It works on a phone (numbered badges and a label list) and inside the SimLab host, embedded and bare.
+paper grain. It works on a phone (numbered badges and a label list) and inside the iynk host, embedded and bare.
 The host can set the design options, the build step and the test to run, and it receives the build state, part
 clicks and button presses.

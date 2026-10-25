@@ -239,7 +239,7 @@
     "quizRight": "Right.",
     "quizWrong": "Not quite.",
     "quizScore": "{score} of {total} right",
-    "fpgaNote": "SimLab runs your Verilog as a behavioural model, cycle by cycle on the board clock. It does not synthesise, place or route: no timing, no LUT counts.",
+    "fpgaNote": "iynk runs your Verilog as a behavioural model, cycle by cycle on the board clock. It does not synthesise, place or route: no timing, no LUT counts.",
     "completed": "Lesson complete. Nice work.",
     "nextCta": "Next: {title}"
   },

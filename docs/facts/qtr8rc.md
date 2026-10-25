@@ -20,7 +20,7 @@ Product modelled: **Pololu QTR-8RC Reflectance Sensor Array**, Pololu item **#96
 10. Pololu QTRSensors Arduino library, v4.0.0 (latest tag, library.properties `version=4.0.0`) — https://github.com/pololu/qtr-sensors-arduino — `QTRSensors.h/.cpp` read for constants and algorithms; `examples/QTRRCExample/QTRRCExample.ino`.
 11. Pololu QTR Reflectance Sensor Application Note (docs 0J13, PDF © 2001–2022) — https://www.pololu.com/docs/pdf/0J13/QTR_application_note.pdf — measured QTR-1RC pulse widths at 1/8" and 3/8" (§3), A vs RC.
 12. Pololu category "Pololu QTR Reflectance Sensors" — https://www.pololu.com/category/123 — and QTR-MD-08RC product page https://www.pololu.com/product/4248 — current dimmable QTR/QTRX/QTRXL line.
-13. SimLab research on the original Robotics Bench Fig. 11 — docs/research/robotics-bench-b.md §6 (lines 835–995) — what the original showed; checked against [1]–[10] in §7.5 and §10.
+13. iynk research on the original Robotics Bench Fig. 11 — docs/research/robotics-bench-b.md §6 (lines 835–995) — what the original showed; checked against [1]–[10] in §7.5 and §10.
 
 ---
 
@@ -119,7 +119,7 @@ Header facing: user's choice; nothing is fitted at the factory [1]. Because the 
 
 **How extracted.** The STEP [5] is one merged solid, but every face carries a colour. A Python script (scratchpad `facts-tools/qtr8rc/step.py`) mapped STYLED_ITEM → face → COLOUR_RGB, collected each face's vertices, and clustered touching faces per colour into bounding boxes. Part types follow from colour + size: dark-grey 2.8 × 3.6 mm boxes = sensors; dark-grey 1.4 × 3.0 mm = SOT-23; orange-tan 1.0 × 0.8 mm bodies with grey 0.3 mm end caps = 0603 capacitors; black 0.85 × 0.95 mm tops with 0.45 mm silver terminals and white-tan sides = 0603 resistors. The sensor centres it gives (4.13, 13.65, 23.18, 32.70, 42.23, 51.75, 61.28, 70.80; y 9.92) match §2.3 to 0.01 mm, which validates the method. Heights are above the board top (z = 1.57 mm in the model). Component **values per position are not in the model**; assignments marked (inferred) come from the schematic [6] plus position.
 
-| SimLab id | part | package | centre x, y (mm) | long axis | footprint (mm) | height (mm) | colour | value / role |
+| iynk id | part | package | centre x, y (mm) | long axis | footprint (mm) | height (mm) | colour | value / role |
 |---|---|---|---|---|---|---|---|---|
 | Q1 | N-channel MOSFET (LED low-side switch) | SOT-23 | 14.98, 2.49 | y | body 1.4 × 3.0; one lead at (13.99, 2.49), two at (15.97, 1.57) and (15.97, 3.40) | 1.20 (body 0.10–1.20) | black, grey marking patch on top | gate = LEDON with 47 kΩ pull-up [6]; pin roles per lead (unverified) |
 | R1 | resistor | 0603 | 7.75, 3.56 | x | 1.75 × 0.95 | 0.65 | black top | 47 Ω shared LED stage (inferred: next to 3.3V BYPASS pads) |
@@ -155,7 +155,7 @@ Counts check against the schematic [6]: 12 capacitors = 8 × 10 nF + 2 × 0.1 µ
 
 The four resistors at y = 10.79 sit exactly between sensors 1–2, 3–4, 5–6 and 7–8, which is where each LED–47 Ω–LED series string would put its resistor, so the LED pairs are (1,2), (3,4), (5,6), (7,8) (inferred).
 
-Designators are SimLab's; Pololu does not publish reference designators. Photo [8] shows the same layout (red board, black resistors with light 3-digit codes, tan unmarked capacitors). The QTR-8A uses the same PCB with eight black "473" (47 kΩ) resistors where the RC version has its tan capacitors [2].
+Designators are iynk's; Pololu does not publish reference designators. Photo [8] shows the same layout (red board, black resistors with light 3-digit codes, tan unmarked capacitors). The QTR-8A uses the same PCB with eight black "473" (47 kΩ) resistors where the RC version has its tan capacitors [2].
 
 The STEP's only silkscreen geometry is a white logo patch on the **bottom** (z = 0) around (8.4, 10.0), 3.5 × 3.8 mm (the Pololu logo, (unverified)); the model does not include the text silkscreen.
 
@@ -257,7 +257,7 @@ None of the pins has strapping/boot meaning; there is no MCU. Do not enable the 
 
 ## 7. Lesson facts
 
-Host for SimLab: Arduino Nano or Uno (5 V, VCC = 5 V, bypass open). Wiring that matches the official example [10]:
+Host for iynk: Arduino Nano or Uno (5 V, VCC = 5 V, bypass open). Wiring that matches the official example [10]:
 
 | QTR pin | Arduino pin |
 |---|---|

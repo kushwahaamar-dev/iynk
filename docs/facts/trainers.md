@@ -9,7 +9,7 @@ part choice is wrong, this sheet says so and gives the corrected value (section 
 
 | | Fig. 02 "LED + resistor" | Fig. 03 "Transistor switch" |
 |---|---|---|
-| Product | LED + resistor trainer, custom (SimLab rev A, after Robotics Bench `f02`) | Low-side NPN switch board, custom (SimLab rev A, after Robotics Bench `f03`) |
+| Product | LED + resistor trainer, custom (iynk rev A, after Robotics Bench `f02`) | Low-side NPN switch board, custom (iynk rev A, after Robotics Bench `f03`) |
 | Board | 60 x 40 mm, 1.6 mm FR-4, all through-hole except the USB-C receptacle (see 0.3) | 55 x 40 mm, 1.6 mm FR-4, all through-hole |
 | Key parts | Kingbright **WP7113ID** class 5 mm red LED; 1/4 W carbon-film resistors 220 R, 1 k, 10 k (5 %); 0 R wire link; 2 x 4 jumper header; 100 uF electrolytic; slide switch; USB-C power-only receptacle; two test points | **PN2222A** NPN (TO-92, E-B-C) [5]; 1 k base resistor; **1N4007** flyback diode (DO-41) [8]; 1 k + green 5 mm LED indicator; 100 uF electrolytic; 1 x 3 logic header; two 2-way 5 mm screw terminals |
 | Off-board, on the mat | a hand-held DMM in series via TP1/TP2, USB-C cable | Arduino Nano (logic, micro/mini USB; see `nano.md`), 4 x AA holder (motor supply), TT gear motor 1:48 with wheel [13] |
@@ -59,7 +59,7 @@ speed control, shared ground and flyback protection.
 11. Energizer **NH15-2300** (NiMH AA) datasheet, form NH15-2300GL1118 — https://data.energizer.com/pdfs/nh15-2300.pdf — 1.2 V nominal, 2300 mAh, IR **30 mohm charged / 40 mohm half discharged** (+-20 %), 12 mohm at 1 kHz, 28 g.
 12. Rubycon / Panasonic / Nichicon aluminium electrolytic application notes (via search summary): reverse voltage destroys the anode oxide's blocking ability within seconds, generates heat and gas, the pressure vent opens; Panasonic FAQ0012 https://industrial.panasonic.com/sa/faq/faq0012 ; Nichicon/Rubycon technical notes https://www.mouser.com/pdfDocs/al-technical-note_en.pdf. Melcom/Felsic note: about 1.5 V reverse is tolerable only briefly.
 13. Adafruit **3777** "DC Gearbox Motor - TT Motor - 200RPM - 3 to 6VDC" — https://www.adafruit.com/product/3777 — rated 3-6 V, gear 1:48, no-load 150 mA +-10 %; measured 150 mA/120 rpm/stall 1.1 A at 3 V, 155 mA/185 rpm/1.2 A at 4.5 V, 160 mA/250 rpm/**1.5 A stall at 6 V**; stall torque 0.4 kg.cm (3 V) / 0.8 kg.cm (6 V); body 70 x 22 x 18 mm; 30.6 g.
-14. SimLab `docs/facts/nano.md` (this repo) — ATmega328P: 20 mA recommended / 40 mA abs max per pin, 200 mA VCC/GND; D9 = PB1 OC1A, 490 Hz PWM; BOD 2.7 V; Arduino AVR Boards 1.8.8, avrdude 8.0.0-arduino1.
+14. iynk `docs/facts/nano.md` (this repo) — ATmega328P: 20 mA recommended / 40 mA abs max per pin, 200 mA VCC/GND; D9 = PB1 OC1A, 490 Hz PWM; BOD 2.7 V; Arduino AVR Boards 1.8.8, avrdude 8.0.0-arduino1.
 15. Original Robotics Bench source, `03-fig02-led-resistor-trainer.js` and `04-fig03-transistor-switch.js` (session scratchpad `orig/robotics/`), and `docs/research/robotics-bench-a.md` sections 4, 5, 9, 10 — board outlines, holes, part footprints (`uv`), silkscreen, signal paths, modes, failure messages.
 
 ## 2. Geometry (board frame)
@@ -67,18 +67,18 @@ speed control, shared ground and flyback protection.
 ### 2.0 How the coordinates were obtained
 
 The original authors place everything in "uv" mm on the top view: u = distance from the board's left edge, v = distance from its
-front edge (`robotics-bench-a.md` 2.1). With the **front edge at the bottom** of the drawing, the SimLab board frame is simply
+front edge (`robotics-bench-a.md` 2.1). With the **front edge at the bottom** of the drawing, the iynk board frame is simply
 **x = u, y = v** (origin bottom-left, +x right, +y up/away from the viewer). Part centres below are the centres of the original
 `uv` footprint rectangles ((u0+u1)/2, (v0+v1)/2), footprint = (u1-u0) x (v1-v0); heights are the original `h` values, checked
 against the real part sizes (corrections noted). Pad positions are derived from those footprints and standard pitches (stated per
-part). These are the canonical layout for SimLab; there is no external design file to extract from.
+part). These are the canonical layout for iynk; there is no external design file to extract from.
 
 ### 2.1 Fig. 02 LED trainer
 
 **Outline**: 60.0 (x) x 40.0 (y) mm, corner radius 2.0 mm, 1.6 mm FR-4. Bottom edge = the front, where the meter sits and the test
 points are. USB-C enters from the **left** edge. **Mounting holes** (centres): (3, 3), (57, 3), (3, 37), (57, 37); diameter not given
 by the original: use **3.2 mm plated, for M3 on 4 mm standoffs** (standoff height 4 from the original; hole size estimated).
-**Colours**: original palette "mint" = green solder mask, white silkscreen, gold (ENIG) or tinned pads (exact hex is a SimLab style
+**Colours**: original palette "mint" = green solder mask, white silkscreen, gold (ENIG) or tinned pads (exact hex is a iynk style
 choice; use the shared figure palette).
 
 | Ref | What | Package | Centre (x, y) | Rot | Footprint w x h | Height | Colour / marking |
@@ -94,18 +94,18 @@ choice; use the shared figure palette).
 | D1 | Red 5 mm LED | T-1 3/4, 2.54 mm lead pitch | (48, 23.5) | flat (cathode) toward -x | 5 x 5 (lens 5.0, flange ~5.8) | 12 (body ~8.6 + ~3 mm standoff, estimated) | red diffused lens [1]; silk "D1" at (48, 30.5), "+" at (52.5, 20) beside the anode |
 | TP1 | Test point, meter + | 4 mm red test post / loop | (41, 8) | - | 2 x 2 | 4.0 | red |
 | TP2 | Test point, meter COM | 4 mm black test post | (46, 8) | - | 2 x 2 | 4.0 | black |
-| R4, R5 | **5.1 k CC pull-downs (added in SimLab)** | 0603 SMD or axial (if axial, place them near J1) | near J1, e.g. (8, 14) and (8, 26) (SimLab choice) | - | - | - | needed for a C-to-C cable (correction 14) |
+| R4, R5 | **5.1 k CC pull-downs (added in iynk)** | 0603 SMD or axial (if axial, place them near J1) | near J1, e.g. (8, 14) and (8, 26) (iynk choice) | - | - | - | needed for a C-to-C cable (correction 14) |
 
 LED pads (estimated from the footprint): cathode (46.73, 23.5), anode (49.27, 23.5); the "+" silk sits right of the anode.
 
 **Silkscreen text** (all white, original sizes in mm cap height): "LED TRAINER" 3.0 at (30, 37) top centre; "I = V / R" 2.6 at
-(29, 4.5); "220", "1K", "10K", "NONE" 1.8 beside the four rows; "D1" 2.0; "+" 2.4 (LED anode); "ON" 1.8 (switch). Add (SimLab):
+(29, 4.5); "220", "1K", "10K", "NONE" 1.8 beside the four rows; "D1" 2.0; "+" 2.4 (LED anode); "ON" 1.8 (switch). Add (iynk):
 "+" at C1's positive pad, "TP+" / "COM" under TP1/TP2, "5V" near J1.
 
 **Circuit** (original `sig.pwr`): J1 VBUS -> SW1 -> common bus at x = 20 feeding the left end of R1, R2, R3, JL1 -> right ends to JP1
 resistor-side pins -> cap -> JP1 common column -> D1 anode -> D1 cathode -> TP1 ... meter ... TP2 -> GND -> J1 GND. C1 across
-VBUS-GND after SW1. Design note (SimLab): without a meter the loop is open at TP1-TP2, so add a 2-pin "METER" jumper JP2 across
-TP1-TP2 (fitted = LED works without a meter; removed = meter in series). (unverified against any real product; SimLab design.)
+VBUS-GND after SW1. Design note (iynk): without a meter the loop is open at TP1-TP2, so add a 2-pin "METER" jumper JP2 across
+TP1-TP2 (fitted = LED works without a meter; removed = meter in series). (unverified against any real product; iynk design.)
 
 ### 2.2 Fig. 03 transistor switch
 
@@ -116,8 +116,8 @@ Colours as Fig. 02.
 
 | Ref | What | Package | Centre (x, y) | Rot | Footprint w x h | Height | Colour / marking |
 |---|---|---|---|---|---|---|---|
-| H1 | 1 x 3 male header: GND, 5V, IN | 2.54 mm, vertical | (9.81, 3.27) | row along x | 7.62 x 2.54 | 8.4 | black; pins at x = **7.27 GND, 9.81 5V, 12.35 IN**, y = 3.27; pin 1 = GND (square pad, SimLab choice); silk "GND 5V IN" 1.5 at (9.8, 6.4) |
-| R1 | Base resistor, 1/4 W 5 % (original 1 k; SimLab recommends **330 R**, see 3.2) | axial, 10.16 mm pitch | (21, 11) | along x | 12 x 2 | 2.6 | 1 k: brown-black-red-gold; 330 R: **orange-orange-brown-gold**; silk "1K" (or "330") at (21, 14.2) |
+| H1 | 1 x 3 male header: GND, 5V, IN | 2.54 mm, vertical | (9.81, 3.27) | row along x | 7.62 x 2.54 | 8.4 | black; pins at x = **7.27 GND, 9.81 5V, 12.35 IN**, y = 3.27; pin 1 = GND (square pad, iynk choice); silk "GND 5V IN" 1.5 at (9.8, 6.4) |
+| R1 | Base resistor, 1/4 W 5 % (original 1 k; iynk recommends **330 R**, see 3.2) | axial, 10.16 mm pitch | (21, 11) | along x | 12 x 2 | 2.6 | 1 k: brown-black-red-gold; 330 R: **orange-orange-brown-gold**; silk "1K" (or "330") at (21, 14.2) |
 | Q1 | **PN2222A** NPN | TO-92, 3 leads (1.27 mm straight or formed to 2.54 mm) | (32.5, 11.5) | flat face toward -y (front), pins left-to-right **E, B, C** seen from the flat face | 5 x 5 | 8 (body 4.6-5.3 tall + ~3 mm leads; TO-92 dims are typical, the drawing in [5] was not extracted) | pads (1.27 mm straight leads): **E (31.23, 11.5), B (32.5, 11.5), C (33.77, 11.5)** (derived; matches the original base/collector trace ends); black epoxy, laser marking "PN2222A" / logo / date code (exact marking layout unverified) |
 | D1 | 1N4007 flyback diode | DO-41 axial, 10.16 mm pitch (estimated) | (18, 23.5) | along x, **band (cathode) toward the battery + side** | 12 x 2 | 2.6 (body 2.0-2.7 dia [8]) | black body, **silver/grey band** at the cathode, white print "1N4007"; silk "1N4007" 1.5 at (18, 21.6) |
 | R2 | LED resistor 1 k, 1/4 W 5 % | axial | (22, 32) | along x | 12 x 2 | 2.6 | brown-black-red-gold; silk "1K" at (22, 36) |
@@ -127,13 +127,13 @@ Colours as Fig. 02.
 | J2 | 2-way screw terminal, motor | 5.0 mm pitch | (4.5, 25) | wire entries face **-x (left edge)** | 7 x 10 | 10 | blue; pins **y 27.5 = MOTOR + (to BATT +), y 22.5 = MOTOR - (to Q1 collector)**; silk "MOTOR" 1.9 at (4.5, 32.6) |
 
 **Silkscreen**: "NPN SWITCH" 3.2 at (27, 37); "GND 5V IN" 1.5 at (9.8, 6.4); "MOTOR" 1.9; "BATT" 1.9; "+" 2.2 at (46.4, 10) and
-(50, 21.5); "1K" 1.6 at (21, 14.2) and (22, 36); "1N4007" 1.5 at (18, 21.6). Add (SimLab): "E B C" under Q1 and the TO-92 outline
+(50, 21.5); "1K" 1.6 at (21, 14.2) and (22, 36); "1N4007" 1.5 at (18, 21.6). Add (iynk): "E B C" under Q1 and the TO-92 outline
 with its flat side; "+" next to LED1's anode; "Q1", "D1", "R1", "R2", "C1" reference designators.
 
 **Circuit** (original `sig.base`, `load`, `ret`): H1.IN -> R1 -> Q1 base. BATT + (J1) -> C1 + -> J2 MOTOR+ ; J2 MOTOR- -> Q1
 collector; Q1 emitter -> GND bus -> J1 BATT - and H1 GND (shared ground). D1 cathode to BATT + / MOTOR+, anode to MOTOR- / collector.
 LED1 + R2: BATT + -> R2 -> LED1 -> collector node, so LED1 lights when Q1 pulls the collector low (original deco ends at the collector
-side; exact LED1 return node is a SimLab design choice, unverified in the original). H1 5V is not needed by the circuit (it can feed
+side; exact LED1 return node is a iynk design choice, unverified in the original). H1 5V is not needed by the circuit (it can feed
 nothing or only an optional pull-down); keep it for the lesson on shared ground.
 
 **On the mat** (original): Arduino Nano in front of the board, USB toward the viewer; a 4 x AA holder right of the Nano (use a real
@@ -141,7 +141,7 @@ size, about 62 x 58 x 15 mm side-by-side holder, red/black leads, unverified dim
 +x (motor body 70 x 22 x 18 mm [13]; wheel about 65 mm dia x 26 mm, yellow hub with black tyre, unverified). Jumpers Nano -> H1:
 black GND, red 5V, yellow D9 -> IN.
 
-**Pulldown recommendation (SimLab, not in the original)**: a 10 k from base to emitter (or IN to GND) keeps Q1 off while the Nano is
+**Pulldown recommendation (iynk, not in the original)**: a 10 k from base to emitter (or IN to GND) keeps Q1 off while the Nano is
 in reset/bootloader (pins are high-impedance inputs then, so the base floats). Unverified as a requirement; standard practice.
 
 ## 3. Electrical
@@ -230,7 +230,7 @@ in reset/bootloader (pins are high-impedance inputs then, so the base floats). U
 |---|---|---|---|---|---|
 | J1 USB-C | VBUS (A4/A9/B4/B9) | 5V | supply in | 4.75-5.5 V | |
 | | GND (A1/A12/B1/B12) | - | ground | 0 V | |
-| | CC1 (A5), CC2 (B5) | - | 5.1 k to GND each (SimLab R4, R5) | - | without them a C-to-C cable gives no VBUS |
+| | CC1 (A5), CC2 (B5) | - | 5.1 k to GND each (iynk R4, R5) | - | without them a C-to-C cable gives no VBUS |
 | | D+/D- | - | not connected | - | power only |
 | JP1 | rows 1-4 (y 22.89, 20.35, 17.81, 15.27) | 220 / 1K / 10K / NONE | cap joins the selected resistor to the LED anode | 5 V side | exactly one cap; two caps put resistors in parallel (e.g. 220 // 1k = 180 ohm -> 16.6 mA) |
 | TP1 | - | + (TP+) | LED cathode side of the meter loop | ~0-0.05 V when the meter is in | red probe |
@@ -387,7 +387,7 @@ void loop() {
 ## 10. Uncertainties
 
 - The two boards are custom: no manufacturer layout exists. Geometry is the original Robotics Bench layout; mounting hole diameter,
-  pad positions, LED orientation, H1 pin-1 choice and the LED1 return node are SimLab design choices.
+  pad positions, LED orientation, H1 pin-1 choice and the LED1 return node are iynk design choices.
 - LED V_F at 20 mA, 3 mA and 0.3 mA was read from the shape of the WP7113ID I-V curve, not a table; generic hobby-LED specs come
   from vendor listings.
 - No-resistor LED current ("hundreds of mA") is an engineering estimate; it depends on the LED's bulk resistance, the meter, cable

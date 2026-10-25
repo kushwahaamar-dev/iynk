@@ -5,7 +5,7 @@
     "craftTitle": "{title} · Drohnen-Labor",
     "craftDescription": "{title}: Wähl die Teile mit Live-Berechnungen, bau Teil für Teil, führ die Sicherheitstests durch, konfigurier alles mit {cli} und flieg los.",
     "flyTitle": "{title} fliegen",
-    "flyDescription": "Flieg {title} so, wie du es entworfen hast, auf dem SimLab-Flugplatz: Verfolgeransicht oder FPV-Brille, Tastatur, Touch-Knüppel oder Gamepad."
+    "flyDescription": "Flieg {title} so, wie du es entworfen hast, auf dem iynk-Flugplatz: Verfolgeransicht oder FPV-Brille, Tastatur, Touch-Knüppel oder Gamepad."
   },
   "index": {
     "title": "Drohnen-Labor",

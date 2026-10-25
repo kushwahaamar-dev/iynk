@@ -1,7 +1,7 @@
 import { Buffer } from "buffer";
 import { PublicKey, SystemProgram, TransactionInstruction, type AccountMeta } from "@solana/web3.js";
 
-// The simlab_passport program's interface (HX-CONTRACT H6), encoded the way
+// The iynk_passport program's interface (HX-CONTRACT H6), encoded the way
 // Anchor lays it out: an 8-byte discriminator (sha256("global:<ix>"),
 // sha256("account:<Type>") or sha256("event:<Type>"), first 8 bytes) and then
 // the Borsh fields. passport.test.ts recomputes every discriminator and checks

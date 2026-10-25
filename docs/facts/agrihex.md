@@ -48,7 +48,7 @@ Official firmware docs, parameter lists and source code first:
 23. Gens Ace / Tattu Pro 22000 mAh 12S 25C smart pack, net weight 6300 g: https://gensace.de/products/tattu-pro-22000mah-44-4v-25c-12s1p-lipo-battery-pack-with-as150u-plug
 24. Tattu 3.0 25000 mAh 14S 25C, net weight 9600 g (the gensace.de URL returned 404 on 2026-10-24; Grepow's listing gives the same 9600 g): https://www.grepow.com/uav-battery/tattu-3-0-14s-25000mah-51-8v-25c-lipo-smart-drone-battery.html
 25. EFT E610P retail listings (retailer data, low trust): https://zbotic.in/product/eft-e610p-6-axis-agricultural-drone-frame-with-10l-tank/ and https://rcdrone.top/products/eft-e610p-agriculture-drone
-26. SimLab research doc: `docs/research/drone-lab-b.md`, section "Fig 08" (what the original shows).
+26. iynk research doc: `docs/research/drone-lab-b.md`, section "Fig 08" (what the original shows).
 27. ArduPilot docs, "Connect ESCs and Motors" (Mission Planner Motor Test order): https://ardupilot.org/copter/docs/connect-escs-and-motors.html
 28. ArduPilot docs, "Compass Calibration" (Large Vehicle MagCal): https://ardupilot.org/copter/docs/common-compass-calibration-in-mission-planner.html
 29. ArduPilot docs, "Accelerometer Calibration": https://ardupilot.org/copter/docs/common-accelerometer-calibration.html

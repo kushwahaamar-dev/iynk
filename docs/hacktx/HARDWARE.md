@@ -1,6 +1,6 @@
 # Hardware twin (HX-CONTRACT H9, Best Hardware Hack)
 
-Code running in the SimLab sim drives a real Arduino Uno over Web Serial, and the real board's inputs drive the
+Code running in the iynk sim drives a real Arduino Uno over Web Serial, and the real board's inputs drive the
 sim. The board runs the stock StandardFirmata sketch, so nothing custom is ever flashed: any Uno, Nano or Uno R4
 from the hardware lab works.
 
@@ -103,7 +103,7 @@ lab store (state.run.pins, world inputs) ──▶ TwinSim adapter (sim.ts)
 | Chrome on Android | Recent versions expose Web Serial; wired USB boards are untested here |
 
 Web Serial needs a secure context: `https://` or `http://localhost`. On a plain-http LAN address the panel says
-"Needs a secure page". Browsers without the API get a short explanation; the rest of SimLab is unaffected.
+"Needs a secure page". Browsers without the API get a short explanation; the rest of iynk is unaffected.
 
 ## 7. Troubleshooting
 
@@ -137,7 +137,7 @@ Web Serial needs a secure context: `https://` or `http://localhost`. On a plain-
 - Browser support: https://caniuse.com/web-serial and the Chromium blink-dev "Intent to Ship: Web serial over
   Bluetooth on Android".
 
-No third-party npm packages: the transport, codec and bridge are written for SimLab against the documents above.
+No third-party npm packages: the transport, codec and bridge are written for iynk against the documents above.
 
 ## 9. Tests
 

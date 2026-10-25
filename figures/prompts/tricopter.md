@@ -42,10 +42,10 @@ What it does:
   and the tri disarms (DROP).
 - **Wiring sheet**: battery → XT60 + cap → ESCs (VBAT) → motors (3-phase x3), FC → ESCs (DShot600), FC → tail servo
   (PWM + 5 V), receiver → FC (UART2 CRSF), camera → FC (CAM pad), FC → VTX (video + OSD, SmartAudio).
-- **Options** from the SimLab calculator change the drawing: battery 4S 2200, 4S 1800 or 4S 1500; motors 2306 2450 KV,
+- **Options** from the iynk calculator change the drawing: battery 4S 2200, 4S 1800 or 4S 1500; motors 2306 2450 KV,
   2207 2150 KV or 2205 2300 KV; props 5x4.3x3, 6x4x2 or 5x5x3, each with its own size or colour.
 - **See-through** fades the top plate and battery and labels what is inside: stator 23 x 6 mm, servo 5 on the S9 pad,
   F405 + PDB with the TRI mixer, camera at 20° up, ELRS on UART2 CRSF, Raceband at 25 mW.
 
 Look: Colorfigures palette (mint accent), warm paper, heavy ink silhouette, finer inner lines. It works on a phone
-(numbered badges and a label list) and inside the SimLab host, which sets the design options and runs the tests.
+(numbered badges and a label list) and inside the iynk host, which sets the design options and runs the tests.

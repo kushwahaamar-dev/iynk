@@ -4,7 +4,7 @@ import { json } from "@/lib/server/http";
 import { openApiDocument } from "@/lib/server/mcp/openapi";
 import { withCors } from "@/lib/server/mcp/http";
 
-// OpenAPI 3.1 for SimLab's tools (HX-CONTRACT H10), for connectors that take a raw API instead of MCP.
+// OpenAPI 3.1 for iynk's tools (HX-CONTRACT H10), for connectors that take a raw API instead of MCP.
 
 const METHODS = "GET, OPTIONS";
 

@@ -1,6 +1,6 @@
 {
   "brand": {
-    "home": "SimLab, zur Übersicht"
+    "home": "iynk, zur Übersicht"
   },
   "nav": {
     "label": "Labore",
@@ -11,7 +11,7 @@
     "together": "Gemeinsam",
     "passport": "Pass",
     "verify": "Prüfen",
-    "about": "Über SimLab",
+    "about": "Über iynk",
     "menu": "Menü",
     "closeMenu": "Menü schließen"
   },
@@ -109,10 +109,10 @@
     }
   },
   "about": {
-    "metaTitle": "Über SimLab und Credits",
-    "metaDescription": "Was SimLab ist, wie es funktioniert und die Credits und Lizenzen dahinter.",
-    "title": "Über SimLab",
-    "lede": "SimLab ist ein Hardware-Labor, das du im Browser öffnest. Jedes Board, Modul und jede Drohne ist eine von Hand getuschte 3D-Figur, die du drehen, öffnen und bedienen kannst, verbunden mit Lektionen, Code, der wirklich läuft, und Fehlern, die du absichtlich auslösen kannst.",
+    "metaTitle": "Über iynk und Credits",
+    "metaDescription": "Was iynk ist, wie es funktioniert und die Credits und Lizenzen dahinter.",
+    "title": "Über iynk",
+    "lede": "iynk ist ein Hardware-Labor, das du im Browser öffnest. Jedes Board, Modul und jede Drohne ist eine von Hand getuschte 3D-Figur, die du drehen, öffnen und bedienen kannst, verbunden mit Lektionen, Code, der wirklich läuft, und Fehlern, die du absichtlich auslösen kannst.",
     "howTitle": "So funktioniert es",
     "how": {
       "figures": "Jede Figur ist eine eigenständige Seite, gezeichnet mit der Colorfigures-Engine: echte 3D-Körper in flachen hellen, mittleren und dunklen Tönen mit Tuschekonturen. Die Seite spricht über eine kleine Nachrichtenbrücke mit der Figur: Ein Druck auf einen Knopf in der Lektion bewegt das Teil in der Figur und umgekehrt.",
@@ -120,7 +120,7 @@
       "privacy": "Fortschritt und Einstellungen werden im lokalen Speicher dieses Browsers gespeichert. Es gibt keine Konten. Wenn diese Installation eine Datenbank hat, senden die Labore anonyme Nutzungszahlen (eine bestandene Lektion, ein gebauter Schritt, ein ausprobierter Fehler, eine Rundenzeit) für die Live-Zähler und Bestenlisten, mit einer zufälligen ID für diesen Browser und nie mit deinem Namen oder deinem Code. Schalte „Anonyme Nutzungszahlen teilen“ in den Einstellungen (das Zahnrad oben in der Kopfzeile) aus, um sie zu stoppen."
     },
     "originalsTitle": "Die drei Originale",
-    "originalsLede": "SimLab begann als Neubau von drei Lern-Websites und soll alles können, was sie können, und mehr. Es übernimmt ihre Fakten, Formeln, Zeiten und Lektionen, schreibt seinen ganzen Code selbst und behebt die Fehler, die es in ihnen gefunden hat.",
+    "originalsLede": "iynk begann als Neubau von drei Lern-Websites und soll alles können, was sie können, und mehr. Es übernimmt ihre Fakten, Formeln, Zeiten und Lektionen, schreibt seinen ganzen Code selbst und behebt die Fehler, die es in ihnen gefunden hat.",
     "originals": {
       "arduino": {
         "name": "Learn Arduino",

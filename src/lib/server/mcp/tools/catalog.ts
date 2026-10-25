@@ -14,7 +14,7 @@ const summary = z.object({
   title: z.string().nullable().describe("Display name; null while the item's text is not written in any language yet."),
   tagline: z.string().nullable(),
   tags: z.array(z.string()),
-  url: z.string().describe("Page that opens the item in SimLab."),
+  url: z.string().describe("Page that opens the item in iynk."),
 });
 
 const words = (s: string) => s.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean);
@@ -37,9 +37,9 @@ function score(tokens: string[], entry: Entry, title: string | null, tagline: st
 
 export const searchCatalog = defineTool({
   name: "search_catalog",
-  title: "Search the SimLab catalogue",
+  title: "Search the iynk catalogue",
   description:
-    "Find boards, robotics benches and drones in SimLab, the free in-browser hardware lab (12 boards such as Arduino UNO, ESP32, Raspberry Pi Pico and FPGAs; 13 robotics benches such as motor drivers, sensors and power; 13 drones from a 1S whoop to an octocopter). Matches names, tags, chips, languages, firmware, modules and parts. Use it to pick something to learn or build, then call get_item for the details.",
+    "Find boards, robotics benches and drones in iynk, the free in-browser hardware lab (12 boards such as Arduino UNO, ESP32, Raspberry Pi Pico and FPGAs; 13 robotics benches such as motor drivers, sensors and power; 13 drones from a 1S whoop to an octocopter). Matches names, tags, chips, languages, firmware, modules and parts. Use it to pick something to learn or build, then call get_item for the details.",
   input: z.object({
     query: z.string().trim().min(1).max(200).describe('Words to look for, e.g. "esp32 wifi", "motor driver", "long range drone", "verilog".'),
     lab: labInput.optional().describe("Only search one lab."),
@@ -166,9 +166,9 @@ function details(content: ItemContent, t: Prose) {
 
 export const getItem = defineTool({
   name: "get_item",
-  title: "Get a SimLab board, bench or drone",
+  title: "Get a iynk board, bench or drone",
   description:
-    "Details of one SimLab item: what it is, its lessons, practice tasks or bench tests, a drone's battery, motor and prop options (feed them to drone_calc), sources, and the link that opens it in the browser. Ids come from search_catalog (for example board uno-r3, robotics tb6612fng, drone quad5).",
+    "Details of one iynk item: what it is, its lessons, practice tasks or bench tests, a drone's battery, motor and prop options (feed them to drone_calc), sources, and the link that opens it in the browser. Ids come from search_catalog (for example board uno-r3, robotics tb6612fng, drone quad5).",
   input: z.object({
     lab: labInput,
     id: z.string().trim().min(1).max(64).describe("Item id, e.g. uno-r3, esp32-devkitc, tb6612fng, quad5."),
@@ -192,7 +192,7 @@ export const getItem = defineTool({
   idempotent: true,
   async run({ lab, id, locale }, ctx) {
     const entry = findEntry(lab as Lab, id);
-    if (!entry) throw new ToolError("not_found", `SimLab has no ${lab} called "${id}". Use search_catalog to find the right id.`);
+    if (!entry) throw new ToolError("not_found", `iynk has no ${lab} called "${id}". Use search_catalog to find the right id.`);
     const [content, t] = await Promise.all([loadContent(lab, id), proseOf(locale, lab, id)]);
     return {
       lab,

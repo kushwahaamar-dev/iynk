@@ -192,7 +192,7 @@
     },
     "alt": {
       "title": "„Höhe halten“ ist hier eine Hilfe des Simulators",
-      "explain": "ALTHOLD von Betaflight (Modus 3) hält die Höhe mit einem Barometer oder GPS, und ein Whoop-AIO hat keins von beiden. Das Höhe halten von SimLab macht die ersten Flüge leicht; am echten Whoop lernst du dasselbe im Angle-Modus, mit einer Neigungsgrenze von 45 Grad für einen Raum."
+      "explain": "ALTHOLD von Betaflight (Modus 3) hält die Höhe mit einem Barometer oder GPS, und ein Whoop-AIO hat keins von beiden. Das Höhe halten von iynk macht die ersten Flüge leicht; am echten Whoop lernst du dasselbe im Angle-Modus, mit einer Neigungsgrenze von 45 Grad für einen Raum."
     },
     "angle": {
       "title": "Angle-Modus",
@@ -358,7 +358,7 @@
         "why": "FLIP OVER AFTER CRASH (Modus 35) kehrt die Motoren mit einem DShot-Befehl um und lässt dich in Rückenlage armen. Drück den Knüppel zu der Seite, die sich heben soll. Mit crashflip_auto_rearm OFF schaltest du Turtle aus, disarmst und armst wieder, um weiterzufliegen."
       },
       "alt": {
-        "q": "Das Höhe halten von SimLab fliegt diesen Whoop. Hat der echte das auch?",
+        "q": "Das Höhe halten von iynk fliegt diesen Whoop. Hat der echte das auch?",
         "options": {
           "1": "Nein: Er hat weder Barometer noch GPS, also kann das Höhe halten von Betaflight nicht laufen",
           "2": "Ja: Jeder Betaflight-Quad hat es",

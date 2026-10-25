@@ -101,7 +101,7 @@ arrows pitch/roll (left arrow banks left), Space arm/disarm, R reset, V FPV. Ins
 the flight keys to the host as `part {act:"key", id: code, data:{down:"1"|"0", repeat}}` (an accepted D6 type) and
 handles `[ ]` turn, `+ -` zoom, `0` reset view itself; drag turns, wheel/pinch zooms. Gamepad: Mode 2 default
 (axes 1 inv throttle, 0 yaw, 3 inv pitch, 2 inv roll; buttons 9 arm, 3 FPV, 8 reset), learnable per channel, stored
-per viewer in `localStorage["simlab:flight-pad:v1"]`. Touch sticks show on `(pointer: coarse)`: left = throttle/yaw
+per viewer in `localStorage["iynk:flight-pad:v1"]`. Touch sticks show on `(pointer: coarse)`: left = throttle/yaw
 (throttle stays put in manual modes, touches start from the knob), right = pitch/roll (springs back).
 
 ## 4. Data formats (exact)

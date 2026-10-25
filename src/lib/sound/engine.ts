@@ -10,7 +10,7 @@ const MASTER = 0.6;
 const TONE_LEVEL = 0.05;
 
 /**
- * Plays SimLab's sounds on one AudioContext, made on first use. Browsers keep a
+ * Plays iynk's sounds on one AudioContext, made on first use. Browsers keep a
  * context suspended until a user gesture; `unlock()` from a click resumes it.
  * Without Web Audio every call does nothing.
  */

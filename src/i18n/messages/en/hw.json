@@ -3,9 +3,9 @@
   "intro": "Run this lesson on a real Arduino: your sketch switches the real pins, and the real board's buttons and knobs move the sim.",
   "support": {
     "unsupportedTitle": "This browser can't reach USB boards",
-    "unsupported": "The twin talks to the board over Web Serial, which this browser doesn't offer. Open SimLab in a recent Chrome, Edge or Opera on a computer to connect a board. Everything else in SimLab works here.",
+    "unsupported": "The twin talks to the board over Web Serial, which this browser doesn't offer. Open iynk in a recent Chrome, Edge or Opera on a computer to connect a board. Everything else in iynk works here.",
     "insecureTitle": "Needs a secure page",
-    "insecure": "Web Serial only works on https pages and on localhost. Open SimLab over https to connect a board."
+    "insecure": "Web Serial only works on https pages and on localhost. Open iynk over https to connect a board."
   },
   "lab": {
     "unsupportedTitle": "Nothing to mirror here",

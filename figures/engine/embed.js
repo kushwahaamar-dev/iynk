@@ -1,10 +1,10 @@
-/* SimLab figure bridge, figure side. The protocol is in docs/FIGURES.md (after colorfigures-guide 2.3).
+/* iynk figure bridge, figure side. The protocol is in docs/FIGURES.md (after colorfigures-guide 2.3).
    It is inlined right after the vendored core.js and hooks mountFigure through CF_MOUNT_HOOKS, so any figure that
    calls mountFigure(cfg) speaks it. A figure opts in to state with
      cfg.embed = { accept(st, patch, ui) -> true | false | 'why not', report(st) -> small object of discrete values }
    Nothing else in the state can be written from outside. */
 (() => {
-  const IN = 'simlab', OUT = 'simlab-figure', V = 1;
+  const IN = 'iynk', OUT = 'iynk-figure', V = 1;
   const html = document.documentElement;
   const host = CF_EMBED && window.parent !== window ? window.parent : null;
   const fileMode = location.protocol === 'file:';

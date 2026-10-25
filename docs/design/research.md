@@ -4,7 +4,7 @@ F-research, 2026-10-25 02:30–03:10 CDT. Knowledge only: nothing here is code, 
 a site. Read with `docs/SPEC.md` (the look is fixed: hand-inked, paper, the five palettes plus monochrome) and the
 five audits in `docs/verify/`. F-direction turns this into `docs/design/POLISH-SPEC.md`.
 
-## How SimLab measures today
+## How iynk measures today
 
 Playwright on the driver's production server (`http://127.0.0.1:3430`), script and PNGs in
 `<scratchpad>/F-research/` (`shoot.mjs`, `metrics.json`, `shots/<page>-<size>-<theme>-<lang>.png`). Five pages:
@@ -33,7 +33,7 @@ serial monitor's empty line and the landing hero are already right (see "Keep" a
 
 ## Principles, most valuable first
 
-Each one: the source, what it looks like in practice in 2025–26 products, and exactly where it applies in SimLab.
+Each one: the source, what it looks like in practice in 2025–26 products, and exactly where it applies in iynk.
 
 ### 1. The product fills the viewport; chrome is the exception
 
@@ -48,7 +48,7 @@ with the workflow, a feature list on the left, the graphics area everywhere else
 (`100dvh` minus the header), with the canvas as the largest cell and the panels as columns beside it. Nothing the user
 needs for the current step is below the fold; the page itself does not scroll, the panels do.
 
-**SimLab.** `LessonWorkspace`, `BenchWorkspace`, `DroneWorkspace`, `FlyWorkspace`: drop the `max-w-7xl` container
+**iynk.** `LessonWorkspace`, `BenchWorkspace`, `DroneWorkspace`, `FlyWorkspace`: drop the `max-w-7xl` container
 and the page-level vertical stack; make the frame a `lg:` grid of `minmax(0,1fr)` for the figure and 400–460 px for
 the panel column, height `calc(100dvh - 66px)` (the sticky `SiteHeader` measures 66 px at every size). Pass
 `frameClassName` to `FigureFrame` so the iframe takes the
@@ -66,7 +66,7 @@ that is irrelevant or rarely needed."
 short meter with `n/N`, then the page's actions (Sound, shortcuts, the primary action). Long introductions move into
 the first step or a collapsible "About" in the panel.
 
-**SimLab.** The lesson header (`LessonWorkspace` lines 280–314: back link, `LESSON 2 OF 16`, 36 px `h1`, `Lessons
+**iynk.** The lesson header (`LessonWorkspace` lines 280–314: back link, `LESSON 2 OF 16`, 36 px `h1`, `Lessons
 0/16`, the card strip) spends 470 px before the figure. The bench header (`BenchWorkspace`) spends 620 px: a 52 px
 title, subtitle, tagline and a nine-line paragraph. The drone page spends 375 px. Keep the 52 px Newsreader title for
 `/en`, `/en/about` and the three catalogues only. The bench paragraph belongs in the `StepsPanel` as step 0 or behind
@@ -85,7 +85,7 @@ default)", `collapse: true` opens it collapsed.
 with a vertical label; the choice is kept in `localStorage` per workspace. Output panels open themselves the first
 time they have something to show.
 
-**SimLab.** `SerialMonitor`: collapsed under the code until the first byte arrives, then open (Wokwi's `auto`).
+**iynk.** `SerialMonitor`: collapsed under the code until the first byte arrives, then open (Wokwi's `auto`).
 `CodePanel` and `LessonInfo`: one column, collapsible. `StepsPanel`, `FaultsPanel`, `TasksPanel`, `StatusPanel` on a
 bench; `BuildPanel`, `TestsPanel`, `CliConsole` on a drone. The `LabDock` already behaves like a secondary side bar;
 keep it and give the lab panels the same chevron.
@@ -102,7 +102,7 @@ lesson text to scroll on its own so the code stays in place, which is the behavi
 **In practice.** Content that the learner uses in turn (read, then code, then check) sits in one column as tabs or as
 two stacked panes with one scroll container each. Content that belongs to one moment (code and its output) stacks.
 
-**SimLab.** A lesson becomes: left the figure, right a column with tabs `Lesson | Code | Checks | Quiz` (or Code with
+**iynk.** A lesson becomes: left the figure, right a column with tabs `Lesson | Code | Checks | Quiz` (or Code with
 the serial monitor stacked under it, and the lesson text as the first tab). Today `LessonWorkspace` line 333 puts
 checks, quiz and Break it in a second `lg:grid-cols-2` grid below, which is why the page is 7 756 px tall and
 `ChecksPanel` starts at y > 900. A bench becomes `Steps | Faults | Tasks | Stats | Serial`. `DroneWorkspace` already
@@ -119,7 +119,7 @@ every panel and the canvas stays usable.
 thin bar at the plate's edge. Actions that change the model (power, upload, place a part, break it) live in the panel
 in the order the user will need them.
 
-**SimLab.** The host's `ViewBar` (Board | Breadboard | Schematic | Power tree, Exploded view, See-through, rotate,
+**iynk.** The host's `ViewBar` (Board | Breadboard | Schematic | Power tree, Exploded view, See-through, rotate,
 power source) is two rows above the plate; make it one 40 px row inside the plate's top edge. The 10–11 pill buttons
 over the art (Power, Upload sketch, Press RESET, Strip to bare PCB …) are drawn by the figure itself (`figures/**`,
 out of scope); the host's "Figure controls (68)" `<details>` in `FigureFrame` duplicates them below as a third level
@@ -135,7 +135,7 @@ amount of time." FPV OSDs (ImmersionRC EzOSD product page) show "just the essent
 **In practice.** A 32–36 px row directly under the plate: state (Running / Stopped), power, the pin or part being
 taught, current, program name. Each is a 12 px kicker over a tabular-number value, separated by space, no cards.
 
-**SimLab.** The plate's top-right readout (`STATUS RUNNING / 5V 5.0 V / PROGRAM Blink`) is the right typography; it
+**iynk.** The plate's top-right readout (`STATUS RUNNING / 5V 5.0 V / PROGRAM Blink`) is the right typography; it
 overlaps the art and the Labels toggle. `StatusPanel` (robotics) and `DesignPanel`'s six bordered stat cards (all-up
 weight, thrust : weight, hover throttle …) become one row of `Stat` without borders. `FigureReadout` and `PinReadout`
 feed it. `FlyWorkspace` shows arm state, mode, battery, gate and lap time the same way, on the canvas (see 24).
@@ -150,7 +150,7 @@ spaces." Vercel Geist (vercel.com/geist): Geist Sans for text, Geist Mono for co
 **In practice.** Workspaces use 12 (kicker), 13–14 (UI, mono), 15–16 (body), 20–24 (panel and page titles); display
 sizes (28–52) only on reading pages. Prose columns 60–68 ch. Numbers tabular. Headings `text-wrap: balance`.
 
-**SimLab.** `globals.css` sets `h1 { clamp(2rem, …, 3.25rem) }` for every page; add a workspace title size (1.25–1.5
+**iynk.** `globals.css` sets `h1 { clamp(2rem, …, 3.25rem) }` for every page; add a workspace title size (1.25–1.5
 rem) and keep the big one for `/en`, `/en/about` and the catalogues. `.ink-prose` is already 68 ch at 1.65 line
 height: keep. The bench intro paragraph runs ~90 characters per line at 1440 (the ceiling of Butterick's range). The
 `.ink-kicker` (12 px mono, 0.12 em tracking) is good and should be the only small-caps style.
@@ -165,7 +165,7 @@ less chrome, detail on hover.
 **In practice.** Workspace: 8–12 px between panels, 16 px inside, 8 px between rows. Reading pages: 24–48 px
 between sections. A panel has one 2 px ink border; inside it, 1 px rules and indentation, never nested cards.
 
-**SimLab.** `StepsPanel` nests an ink card (step) inside an ink card (panel) with an ink-shadowed button inside that:
+**iynk.** `StepsPanel` nests an ink card (step) inside an ink card (panel) with an ink-shadowed button inside that:
 three borders and three shadows per step. `LessonStrip` is five bordered cards plus bordered chevrons. `DesignPanel`
 has six bordered stat cards; `ChecksPanel` a card per check. Reduce each to one border per panel and rules inside.
 `Card.tsx` could take a `flat` variant (no border, no shadow) for inner items.
@@ -182,7 +182,7 @@ palette with one accent.
 The lab's palette (cobalt boards, mint robotics, tomato drones) appears once per page, as a kicker, a tab underline
 or a plate edge, not as a full fill behind text.
 
-**SimLab.** Mustard primaries today: Run, Do it, Fly it, Fly the challenge, Open lab tools; keep one per area (the
+**iynk.** Mustard primaries today: Run, Do it, Fly it, Fly the challenge, Open lab tools; keep one per area (the
 fly page shows Arm and Fly the challenge at once). The mint "Running" chip and the pastel `bg-good-bg` / `bg-bad-bg`
 with `.on-fill` are right. The landing's three colour-headed cards are a catalogue and may keep their fills.
 `Button.tsx` variants: primary (mustard), secondary (ink outline), quiet (text). Nothing else.
@@ -197,7 +197,7 @@ system colours adapt.
 **In practice.** Paper → warm dark; surface a step lighter than paper; the figure's plate stays paper so ink art reads;
 status colours lighter and less saturated; the focus ring switches to a light colour.
 
-**SimLab.** `globals.css` already does all of it (`--paper #1b1813`, `--surface #26221b`, `--plate-bg #e4ddcf`, good
+**iynk.** `globals.css` already does all of it (`--paper #1b1813`, `--surface #26221b`, `--plate-bg #e4ddcf`, good
 `#93d3b0`, focus `#f4b829`). The dark lesson screenshot is clean. Keep; only check that any new flat panels (8) still
 separate from the paper by `--surface`, not by borders.
 
@@ -214,7 +214,7 @@ effects family, three speeds.
 pass) may take 500–700 ms and bounce, once. Serial lines append with no animation. Run/Stop from the keyboard
 changes state instantly.
 
-**SimLab.** `globals.css`: `ink-rise` 0.22 s and `ink-fade` 0.18 s are right; `ink-pop` 0.7 s belongs only to a
+**iynk.** `globals.css`: `ink-rise` 0.22 s and `ink-fade` 0.18 s are right; `ink-pop` 0.7 s belongs only to a
 completed step or passed check, not to hover or every click. `Sheet.tsx`, `Dialog.tsx`, `Tabs.tsx` use transform and
 opacity. The `data-reduce-motion` switch and the media query already cover the reduced path: keep both.
 
@@ -230,7 +230,7 @@ skeletons for full-page loads; progress bars over 10 s.
 to say `ready` shows a paper plate with the figure's title and a quiet "loading" line, not a spinner; a failed figure
 says so in words with a retry.
 
-**SimLab.** `FigureFrame` already has `aria-busy`, a `READY_TIMEOUT_MS` of 10 s and a `figure.failed` message; make
+**iynk.** `FigureFrame` already has `aria-busy`, a `READY_TIMEOUT_MS` of 10 s and a `figure.failed` message; make
 the loading state visible (the plate is blank today) and give the failed state a retry button. `CodePanel` Run and
 `SerialMonitor` status, `TestsPanel` smoke-stopper and motor-direction tests (seconds long: show progress inline).
 
@@ -244,7 +244,7 @@ an encouraging tone.
 **In practice.** An empty canvas is never blank: a one-line title, one sentence, one button, placed where the content
 will be.
 
-**SimLab.** `/en/drones/quad5` opens on an empty green plate with eleven pills around it (0/12 parts): put "No parts
+**iynk.** `/en/drones/quad5` opens on an empty green plate with eleven pills around it (0/12 parts): put "No parts
 fitted yet" and a single primary "Build it for me" (secondary: "Add the frame") on the plate; the `BuildPanel` list
 is the second level. `SerialMonitor`'s "Nothing printed yet. Press Run." is already right. `FaultsPanel` with no fault,
 `TasksPanel` before the first task, `ChecksPanel` before the first run, `DashboardProgress` with nothing started, the
@@ -262,7 +262,7 @@ by step with feedback as you go.
 **In practice.** No tour. The first thing on screen is step 1 with its one button. Advanced options (power source,
 baud rate, Break it, CLI) are one disclosure away. A third level is a smell.
 
-**SimLab.** `StepsPanel`'s "Next up" card is the onboarding: keep it and put it first in the viewport. The lesson's
+**iynk.** `StepsPanel`'s "Next up" card is the onboarding: keep it and put it first in the viewport. The lesson's
 first instruction should name the Run button; `CodePanel`'s Expand / Copy / Reset become icon buttons in the editor's
 corner. The `FigureFrame` "Figure controls (68)" disclosure is the third level under the figure's own pills: remove it
 or fold it into `ShortcutsDialog`. The drone page's `(i)` button next to Fly it and the "Finish the build and the
@@ -275,7 +275,7 @@ safety tests first" sentence can be one tooltip on a disabled Fly it.
 
 **In practice.** Each panel or plate has one filled button (Run, Do it, Fly it, Arm) and text buttons for the rest.
 
-**SimLab.** Lesson header today: Sound, Keyboard shortcuts, Expand code, Copy code, Reset code, Run, all at the same
+**iynk.** Lesson header today: Sound, Keyboard shortcuts, Expand code, Copy code, Reset code, Run, all at the same
 size. Keep Run filled; the rest become `IconButton`s with tooltips. Fly page: Arm filled, Reset to the pad / FPV
 goggles / Wind as outlined or icon toggles, Fly the challenge inside its own panel only.
 
@@ -289,7 +289,7 @@ in the palette with its key.
 **In practice.** The `?` affordance is an icon button with a tooltip; Run, Arm, See-through, Labels show their key in
 the tooltip; single-key shortcuts are ignored while the editor or a field has focus.
 
-**SimLab.** `ShortcutsDialog` (boards), `KeyHelp` (robotics), `KeyboardHelp` (drones) exist: keep every binding (rule
+**iynk.** `ShortcutsDialog` (boards), `KeyHelp` (robotics), `KeyboardHelp` (drones) exist: keep every binding (rule
 6). Add the key to `Tooltip.tsx` on the buttons that have one. Verify `CodeEditor` swallows R, Space and the arrows.
 
 ### 17. Phone: the canvas first, the panels as a sheet with two heights
@@ -302,7 +302,7 @@ stays at one edge of the canvas and swaps tools by device.
 **In practice.** On 390 px the figure is the top 50–60 % of the viewport and stays put; a standard (non-modal) bottom
 sheet with a grabber holds the panel tabs at a medium height (about 40 %) and drags to full; the page does not scroll.
 
-**SimLab.** Today the lesson is 11 658 px tall on a phone (bench 14 597, German 15 932) and "Open lab tools" is a
+**iynk.** Today the lesson is 11 658 px tall on a phone (bench 14 597, German 15 932) and "Open lab tools" is a
 floating pill over the art. `LessonWorkspace`, `BenchWorkspace`, `DroneWorkspace`: a sticky figure and `Sheet.tsx` with
 detents for the tabs; the dock's phone sheet (`LabDock`) is the same component. `FlyWorkspace`: full-width range on
 top, `TouchSticks` fixed at the bottom, HUD in the canvas.
@@ -316,7 +316,7 @@ the enhanced level. Apple HIG: 44×44 pt as the recommended size.
 **In practice.** Phone: 44 px minimum everywhere (`.touch-target`). Desktop dense rows: 28–32 px tall is fine if
 there is 8 px between controls.
 
-**SimLab.** Measured with `<scratchpad>/F-research/targets.mjs`. At 1440 the lesson page has 59 controls under 44
+**iynk.** Measured with `<scratchpad>/F-research/targets.mjs`. At 1440 the lesson page has 59 controls under 44
 px, but 57 of them are 36–40 px tall buttons with spacing (fine by the 24 px floor); the real offenders on every size
 are a 16×16 colour swatch ("Red") in the wire-in palette, an unlabelled 16×16 control, the 12 px-tall "Resize the
 serial monitor" handle (`SerialMonitor`), and on the fly page the two 13×13 ghost toggles (`data-testid=ghost-best`,
@@ -332,7 +332,7 @@ making elements, actions, and options visible."
 **In practice.** Sixteen lessons as sixteen 32 px numbered chips in one row (done filled, current outlined, rest
 muted), name of the current one beside the title; or a vertical list in the Lesson tab. Prev / Next as text buttons.
 
-**SimLab.** `LessonStrip` (five 240 px cards, two bordered chevrons, 110 px of the fold) and `BoardProgress`. The
+**iynk.** `LessonStrip` (five 240 px cards, two bordered chevrons, 110 px of the fold) and `BoardProgress`. The
 "0/16" count stays (SPEC baseline), as the kicker of the rail.
 
 ### 20. Checks and quizzes beside the work, re-run on every change, explained when wrong
@@ -344,7 +344,7 @@ Duolingo teardown: keep mistakes recoverable and explanations close to the answe
 change in one line. A quiz question appears inside the step it belongs to; a wrong answer shows why, then lets you try
 again.
 
-**SimLab.** `ChecksPanel` (now below the fold) into the lesson column's tabs with a count badge ("Checks 1/3");
+**iynk.** `ChecksPanel` (now below the fold) into the lesson column's tabs with a count badge ("Checks 1/3");
 `QuizPanel` (robotics and dronelab) inline after the step that unlocks it, in the same panel, not a separate card
 column.
 
@@ -356,7 +356,7 @@ page, the rest is negative space and hairlines; Carbon: more space around an ele
 **In practice.** Landing: title, one paragraph, two buttons, the art; nothing competes. Catalogues: a grid of plate
 thumbnails (the real figure, not an icon) with name and a one-line fact, 3–4 per row at 1440, 1 at 390.
 
-**SimLab.** `/en` hero is right (art 42 % of the viewport): keep. "The three labs" cards can show a small figure
+**iynk.** `/en` hero is right (art 42 % of the viewport): keep. "The three labs" cards can show a small figure
 plate each. `/en/boards`, `/en/robotics`, `/en/drones` catalogue pages and `Card.tsx`: plate thumbnails, counts as
 kickers, no paragraph per card.
 
@@ -368,7 +368,7 @@ panels docked to the edges at any width; Onshape's toolbar grows back out of its
 **In practice.** Workspaces have no max width. At ≥ 1536 px a third column appears (serial monitor or stats beside the
 code instead of under it) and the figure keeps growing. Reading pages cap at 72–80 ch.
 
-**SimLab.** The four workspaces' `max-w-7xl` (320 px of paper each side at 1920). The landing and about pages keep
+**iynk.** The four workspaces' `max-w-7xl` (320 px of paper each side at 1920). The landing and about pages keep
 their container.
 
 ### 23. Labels on by default, icons beside them, icon-only when narrow
@@ -379,7 +379,7 @@ the screen narrows.
 **In practice.** First-time judges read words: text labels stay on. Below 360 px of panel width, buttons drop to icons
 with tooltips and `aria-label`s.
 
-**SimLab.** `ViewBar`, `SegmentedControl`, `IconButton`, the fly controls row, the dock tabs.
+**iynk.** `ViewBar`, `SegmentedControl`, `IconButton`, the fly controls row, the dock tabs.
 
 ### 24. The fly page is a HUD: essentials on the canvas, the rest folded away
 
@@ -391,13 +391,13 @@ view clean; VS Code's maximize for the one thing you are doing.
 lap time as a thin OSD strip in a corner; controls as one row under the canvas; daily challenge, arming rules and the
 design summary in a collapsible panel.
 
-**SimLab.** `FlyWorkspace` (canvas top at 383 px, cut by the 900 px fold; 2 997 px page), `FlightRange`, `BreakIt`,
+**iynk.** `FlyWorkspace` (canvas top at 383 px, cut by the 900 px fold; 2 997 px page), `FlightRange`, `BreakIt`,
 `DailyChallenge` (a dashed card that outranks the canvas today), `GamepadPanel`, `TouchSticks`. Keep every key
 (WASD, arrows, Space, V) and the crash replay and ghosts.
 
 ### 25. Six languages: design for the longest word and the tallest script
 
-**Source.** SimLab's own rule 5 and the measurements: the German bench is 9 % taller than the English one on a phone;
+**Source.** iynk's own rule 5 and the measurements: the German bench is 9 % taller than the English one on a phone;
 Devanagari needs more line height (globals.css already swaps the family). Figma and Onshape both compact labels before
 they truncate.
 
@@ -405,7 +405,7 @@ they truncate.
 `min-w-0` and allow two lines at 390 (commit `282f15d` fixed the French and German cases); headings `text-wrap: balance`; panels at least 320 px wide; test de and hi in
 every layout, not only en.
 
-**SimLab.** Every new string in all six `src/i18n/messages/<lang>/*.json`; keep the strings few (rule 5). The German
+**iynk.** Every new string in all six `src/i18n/messages/<lang>/*.json`; keep the strings few (rule 5). The German
 screenshots (`bench-390-dark-de.png`, `lesson-390-dark-de.png`) wrap cleanly today; keep it that way after the
 rebuild.
 

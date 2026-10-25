@@ -1,6 +1,6 @@
 {
   "brand": {
-    "home": "SimLab, go to the dashboard"
+    "home": "iynk, go to the dashboard"
   },
   "nav": {
     "label": "Labs",
@@ -110,9 +110,9 @@
   },
   "about": {
     "metaTitle": "About and credits",
-    "metaDescription": "What SimLab is, how it works, and the credits and licences behind it.",
-    "title": "About SimLab",
-    "lede": "SimLab is a hardware lab you open in a browser. Every board, module and drone is a hand-inked 3D figure you can turn, open up and operate, wired to lessons, code that really runs, and failures you can trigger on purpose.",
+    "metaDescription": "What iynk is, how it works, and the credits and licences behind it.",
+    "title": "About iynk",
+    "lede": "iynk is a hardware lab you open in a browser. Every board, module and drone is a hand-inked 3D figure you can turn, open up and operate, wired to lessons, code that really runs, and failures you can trigger on purpose.",
     "howTitle": "How it works",
     "how": {
       "figures": "Each figure is a self-contained page drawn with the Colorfigures engine: real 3D bodies in flat light, mid and dark bands with ink outlines. The page talks to the figure through a small message bridge, so pressing a button in the lesson moves the part in the figure and the other way round.",
@@ -120,7 +120,7 @@
       "privacy": "Progress and settings are saved in this browser's local storage. There are no accounts. When this deployment has a database, the labs send anonymous usage counts (a lesson passed, a step built, a fault tried, a lap time) for the live counters and leaderboards, with a random id for this browser and never your name or your code. Turn off “Share anonymous usage counts” in Settings (the gear in the header) to stop them."
     },
     "originalsTitle": "The three originals",
-    "originalsLede": "SimLab started as a rebuild of three teaching sites and aims to do everything they do, and more. It reuses their facts, formulas, timings and lessons, writes all of its own code, and fixes the mistakes it found in them.",
+    "originalsLede": "iynk started as a rebuild of three teaching sites and aims to do everything they do, and more. It reuses their facts, formulas, timings and lessons, writes all of its own code, and fixes the mistakes it found in them.",
     "originals": {
       "arduino": {
         "name": "Learn Arduino",

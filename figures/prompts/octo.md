@@ -55,11 +55,11 @@ What it does:
 - **Wiring sheet**: packs → power board (XT90-S, 44.4 V) → ESCs (VBAT x8) → motors (3-phase x8); power board → Pixhawk
   (PM02D → POWER1); Pixhawk → ESCs (MAIN OUT 1-8, PWM), → landing gear (AUX 1), → gimbal (TELEM2, MAVLink); GPS → Pixhawk
   (GPS1 + GPS2); receiver and telemetry → Pixhawk (UART4 + TELEM1).
-- **Options** from the SimLab calculator change the drawing: two 6S 16000, two 6S 22000 (bigger, blue) or one 6S
+- **Options** from the iynk calculator change the drawing: two 6S 16000, two 6S 22000 (bigger, blue) or one 6S
   16000 pack; 6010 170 KV, 6010 130 KV or 6215 230 KV motors; 20, 18 or 22 inch props.
 - **See-through** fades the tray, the packs and the camera and labels what is inside: the fold joints, the slack
   loops, the capacitor's rating, the PM02D, the Pixhawk's outputs, the radios' ports, the gear servo's output, the
   gimbal's port, and that with a motor out the mixer spreads its lift over the other seven.
 
 Look: Colorfigures palette (cobalt accent), warm paper, heavy ink silhouette, finer inner lines. It works on a phone
-(numbered badges and a label list) and inside the SimLab host, which sets the design options and runs the tests.
+(numbered badges and a label list) and inside the iynk host, which sets the design options and runs the tests.

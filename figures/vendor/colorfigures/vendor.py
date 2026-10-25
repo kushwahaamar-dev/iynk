@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Re-vendor the Colorfigures core for SimLab.
+"""Re-vendor the Colorfigures core for iynk.
 
     python3 -I figures/vendor/colorfigures/vendor.py [path/to/skill]
 
 Reads the skill's assets/core.js (default ~/.claude/skills/colorfigures), checks it is the version recorded in
-VERSION, applies the SimLab patches listed in PATCHES.md and writes core.js next to this file. Every patch must
+VERSION, applies the iynk patches listed in PATCHES.md and writes core.js next to this file. Every patch must
 match exactly once, so a new upstream core fails here instead of silently losing a fix.
 """
 import hashlib
@@ -15,9 +15,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SKILL = sys.argv[1] if len(sys.argv) > 1 else os.path.expanduser('~/.claude/skills/colorfigures')
 UPSTREAM_SHA = 'a78aab94ab7396b99080bf72673d5d4d689d771764d76cb08f1a0d28033f7fc3'
 
-# P2/P3/P4/P5 support: the SimLab block, inserted after the colour constants (core.js:21-22)
-SIMLAB_BLOCK = r"""
-/* ---------- SimLab patches (see figures/vendor/colorfigures/PATCHES.md) ---------- */
+# P2/P3/P4/P5 support: the iynk block, inserted after the colour constants (core.js:21-22)
+IYNK_BLOCK = r"""
+/* ---------- iynk patches (see figures/vendor/colorfigures/PATCHES.md) ---------- */
 // P3 embedded mode: on inside any iframe or with ?embed=1; ?embed=0 forces it off. ?bare=1 also hides the figure's
 // own buttons, stats, switches and keypad. ?theme=dark dims the paper (P4). ?lang=xx is the first language (P2).
 const CF_Q = new URLSearchParams(location.search);
@@ -100,7 +100,7 @@ const CF_CSS = `
 
 PATCHES = [
     # (id, old, new)
-    ('P0 SimLab block', "const SHADOW = '#41538f';\n", "const SHADOW = '#41538f';\n" + SIMLAB_BLOCK),
+    ('P0 iynk block', "const SHADOW = '#41538f';\n", "const SHADOW = '#41538f';\n" + IYNK_BLOCK),
     ('P5 material strings', "const step3 = (d, hi, lo, m) => { const ss = ",
      "const step3 = (d, hi, lo, m) => { if (!m || typeof m !== 'object') m = CF_MAT(m); const ss = "),
     # tag(): translated, escaped, measured
@@ -180,8 +180,8 @@ def main():
         if n != 1:
             sys.exit(f'patch {name!r}: expected 1 match, found {n}')
         js = js.replace(old, new)
-    header = ('/* Colorfigures core.js, vendored for SimLab from the Colorfigures skill (MIT, see LICENSE in this folder).\n'
-              f'   Upstream sha256 {UPSTREAM_SHA}. SimLab patches: PATCHES.md. Regenerate with vendor.py, never edit by hand. */\n')
+    header = ('/* Colorfigures core.js, vendored for iynk from the Colorfigures skill (MIT, see LICENSE in this folder).\n'
+              f'   Upstream sha256 {UPSTREAM_SHA}. iynk patches: PATCHES.md. Regenerate with vendor.py, never edit by hand. */\n')
     out = os.path.join(HERE, 'core.js')
     with open(out, 'w', encoding='utf-8') as fh:
         fh.write(header + js)

@@ -1,4 +1,4 @@
-# SimLab pitch
+# iynk pitch
 
 Three versions of one story, plus stage notes. The 3-minute version is for the stage: the in-person judges and the "A
 Bard's Tale" audience vote. The 60-second version is for judges who stop at the table. The 20-second line is for
@@ -63,7 +63,7 @@ Do: drag it round slowly (or press E a few times). Then See-through. Then Explod
 > Picture Maya, a first-year student. She wants to build a drone.
 > Parts cost money. Batteries can catch fire.
 > And at 2 a.m., nobody's around to help.
-> This is SimLab. Let's be Maya for three minutes.
+> This is iynk. Let's be Maya for three minutes.
 
 ### 0:15 Blink, then break it
 
@@ -78,7 +78,7 @@ The figure's note says how many milliamps did it ("LED1 burned out: 113 mA is fa
 seconds), and the readout under the figure says "LED1: burnt out".
 
 > Then she does what everyone does once. No resistor.
-> One bright flash, and the LED is gone. SimLab solved the circuit and knows exactly how much current killed it.
+> One bright flash, and the LED is gone. iynk solved the circuit and knows exactly how much current killed it.
 
 ### 0:35 The partner asks a person (Meta)
 
@@ -172,14 +172,14 @@ of this was written in the last 24 hours."
   nothing burns. "5V shorted to GND" turns the board dark rather than smoking. For smoke, "5 V capacitor fitted
   backwards" pops and smokes; use it in the 60-second version.
 - The budget is not "under $150": quad5's parts cost $330 to $370 at catalogue prices. Pick [BUDGET] from the warm run.
-- The MCP beat (Muse asking SimLab what we built) is left out: no tool answers that question. Show the connector to a
+- The MCP beat (Muse asking iynk what we built) is left out: no tool answers that question. Show the connector to a
   Meta judge at the table instead, once it's been tried from Muse.
 
 ## The 60-second table version
 
 For a judge standing at the table. Laptop on the Uno figure, the phone in room A, ready to hand over.
 
-> SimLab is a hardware lab in your browser. Twelve boards, thirteen robotics benches, thirteen drones. Every one is a
+> iynk is a hardware lab in your browser. Twelve boards, thirteen robotics benches, thirteen drones. Every one is a
 > hand-drawn figure you can turn, see through and take apart.
 
 Do: turn the Uno, switch on See-through.
@@ -212,7 +212,7 @@ Then ask which track they're judging, and do the matching add-on.
 | Judge from | Show | Say |
 |---|---|---|
 | Meta | Partner: "Give me a hint", then "Show me", and accept the code change it proposes. Then the Build Night planner on `/en/together` with two people's wishes. | "Meta asked for AI that turns a group chat into a plan and a session into a story. Those are two of our features. The partner's main job is finding you a human." |
-| Meta, connector | Only if it worked from Muse on the deployed URL: Muse calling SimLab's MCP server (`docs/hacktx/MUSE-CONNECTOR.md`). | "Muse can search our catalogue, size a drone, price a build and plan a build night." |
+| Meta, connector | Only if it worked from Muse on the deployed URL: Muse calling iynk's MCP server (`docs/hacktx/MUSE-CONNECTOR.md`). | "Muse can search our catalogue, size a drone, price a build and plan a build night." |
 | SerpApi | Build it for real: offers with their sources, the optimiser's swap, then a datasheet question to the partner answered with a citation. | "The prices don't just sit there. They change the design: the optimiser picks a different drone because of them." |
 | Most Entertaining | The fly page: Break it, the slow-motion replay, the fix; then the daily challenge link. | "You can break anything on purpose and find out why. Then beat today's time." |
 | MLH Vultr, if the relay runs there | The relay's `/healthz`. | "Vercel can't hold WebSockets, so every room runs through this VM." |
@@ -221,7 +221,7 @@ Then ask which track they're judging, and do the matching add-on.
 
 ## The 20-second line
 
-> SimLab is a free hardware lab in your browser. You wire, code, break and fly twelve boards, thirteen robotics benches
+> iynk is a free hardware lab in your browser. You wire, code, break and fly twelve boards, thirteen robotics benches
 > and thirteen drones. When you're stuck, the AI partner finds you a person who's solved it, in your own language.
 > When you're ready, it prices the real parts.
 

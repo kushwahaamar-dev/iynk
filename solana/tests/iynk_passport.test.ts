@@ -7,7 +7,7 @@ import { before, describe, it } from "node:test";
 import type * as AnchorModule from "@coral-xyz/anchor";
 import type { Keypair, PublicKey } from "@solana/web3.js";
 
-import type { SimlabPassport } from "../../src/lib/solana/idl/simlab_passport";
+import type { IynkPassport } from "../../src/lib/solana/idl/iynk_passport";
 
 // Anchor ships CommonJS. Requiring it (rather than importing) keeps BN, web3
 // and the program classes from the same copy under Node's ESM loader.
@@ -27,8 +27,8 @@ const provider = new anchor.AnchorProvider(connection, new anchor.Wallet(admin),
   commitment: "confirmed",
   preflightCommitment: "confirmed",
 });
-const idl = JSON.parse(readFileSync(new URL("../target/idl/simlab_passport.json", import.meta.url), "utf8"));
-const program = new anchor.Program<SimlabPassport>(idl, provider);
+const idl = JSON.parse(readFileSync(new URL("../target/idl/iynk_passport.json", import.meta.url), "utf8"));
+const program = new anchor.Program<IynkPassport>(idl, provider);
 
 const LOADER_V3 = new web3.PublicKey("BPFLoaderUpgradeab1e11111111111111111111111");
 const DECOY_PROGRAM = new web3.PublicKey("4pmj4wWv8sYtMht4bwXG9YVCyRDxQy7om4FkksE68bDR");

@@ -1,4 +1,4 @@
-# SimLab demo video
+# iynk demo video
 
 Devpost needs a demo video before the deadline. Target length: 2:55, under three minutes. Record 08:30–10:00 on
 Sunday, upload by 10:00, submit the Devpost entry by 10:30.
@@ -60,8 +60,8 @@ Each shot has what's on screen, the clicks, and the voice-over line (VO). Times 
 - Screen: the same figure.
 - Clicks: See-through. A beat later, Exploded view. Then cut to `/en` for two seconds: the three labs and their counts.
 - VO: "Picture Maya. She wants to build a drone, but parts cost money, batteries can catch fire, and at 2 a.m. there's
-  nobody to ask. SimLab is a lab she can use tonight, free, in her browser."
-- On screen: "SimLab" in the lower left.
+  nobody to ask. iynk is a lab she can use tonight, free, in her browser."
+- On screen: "iynk" in the lower left.
 
 ### 3 · 0:18–0:28 · Blink
 
@@ -168,8 +168,8 @@ Each shot has what's on screen, the clicks, and the voice-over line (VO). Times 
 
 ### 15 · 2:50–2:55 · End card
 
-- Screen: paper background, "SimLab", [SITE], and a QR code to it.
-- VO: "SimLab. Nobody builds alone."
+- Screen: paper background, "iynk", [SITE], and a QR code to it.
+- VO: "iynk. Nobody builds alone."
 - On screen: "Built at HackTX 2026 · Muse Spark, Muse Image, Muse Voice Transcribe · SerpApi · Figures made with
   Colorfigures (MIT) · Code written during the event with Claude Code". Add Vultr and Tiger Data only if the relay and
   the leaderboard in the final cut ran on them.
@@ -182,7 +182,7 @@ Lucía's Spanish line is recorded live in shot 6, not here.
 > Hardware is the most fun you can have with a computer. It's also the most expensive, scary and lonely way to learn.
 >
 > Picture Maya. She wants to build a drone, but parts cost money, batteries can catch fire, and at 2 a.m. there's
-> nobody to ask. SimLab is a lab she can use tonight, free, in her browser.
+> nobody to ask. iynk is a lab she can use tonight, free, in her browser.
 >
 > She wires her first LED and runs Blink. That's Arduino code, on a virtual clock in her browser, and the figure
 > follows every pin.
@@ -215,7 +215,7 @@ Lucía's Spanish line is recorded live in shot 6, not here.
 >
 > Twelve boards, including FPGAs running Verilog. Thirteen robotics benches. Thirteen drones. Six languages.
 >
-> SimLab. Nobody builds alone.
+> iynk. Nobody builds alone.
 
 About 360 words: roughly two and a half minutes of relaxed voice, which leaves room for Lucía's line and a few silent
 beats.
@@ -255,7 +255,7 @@ beats.
 - DaVinci Resolve, iMovie or CapCut all work. Cut on actions, not in the middle of a still screen.
 - You can trim waiting (an AI answer arriving, prices loading). If you speed something up instead, mark it "2×" in a
   corner. Never cut around a failure to make it look like it worked.
-- Music is optional; keep it quiet and royalty-free. SimLab's own sounds are fine to leave in.
+- Music is optional; keep it quiet and royalty-free. iynk's own sounds are fine to leave in.
 
 ### Captions
 

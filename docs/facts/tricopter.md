@@ -66,7 +66,7 @@ servo test, modes, CLI) and `docs/research/drone-lab-b-calc-matrix.md`, section 
 Craft frame: **x forward (nose), y left, z up**, origin at the frame centre on top of the bottom plate, mm. Yaw
 angles positive counter-clockwise seen from above (right-hand about +z).
 
-### 2.1 Frame layout (the original's drawing, kept for the SimLab figure)
+### 2.1 Frame layout (the original's drawing, kept for the iynk figure)
 
 The original's numbers [research `16:155-241`] are self-consistent and fit real 5" tris; keep them.
 
@@ -88,7 +88,7 @@ The original's numbers [research `16:155-241`] are self-consistent and fit real 
 | Frame mass | 190 g (original); RCExplorer V4 201 g incl. FC/PDB/tilt [11]; Baby Tri 84.8 g [10] | plausible for this size |
 
 Motor and tail-hinge heights (z) are not in the original; suggested values for the figure: motor bell base at
-z = 8 mm on 4 mm motor mounts above the 3 mm arm (front), tail hinge axis at z = 12 mm (SimLab design choice,
+z = 8 mm on 4 mm motor mounts above the 3 mm arm (front), tail hinge axis at z = 12 mm (iynk design choice,
 unverified against a real frame).
 
 ### 2.2 Motor positions and firmware order (Betaflight `mixer TRI`)
@@ -185,7 +185,7 @@ Couplings the figure/sim should show:
 
 ## 3. The original's catalogue, sanity-checked
 
-SimLab keeps the calculator identical (stock `calc()` with `kThrust 0.85`, `gPerW 6.8`, `minTW 3.5`, `n = 3`).
+iynk keeps the calculator identical (stock `calc()` with `kThrust 0.85`, `gPerW 6.8`, `minTW 3.5`, `n = 3`).
 Numbers are not changed here; only flagged.
 
 ### 3.1 Batteries

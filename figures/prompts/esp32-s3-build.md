@@ -48,4 +48,4 @@ State the host reads: `build`, `power`, `status` (`uploading` during an upload),
 `src/content/robotics/esp32-s3-build.ts`; the facts are `docs/facts/esp32-s3-devkitc-1.md`.
 
 Look: Colorfigures palette (blush accent), warm paper, heavy ink silhouette, finer inner lines, hand-drawn wobble,
-paper grain. Works on a phone and inside the SimLab host (embedded, bare). Upload byte counts are illustrative.
+paper grain. Works on a phone and inside the iynk host (embedded, bare). Upload byte counts are illustrative.

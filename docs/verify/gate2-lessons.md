@@ -1,6 +1,6 @@
 # Every lesson and task through the app check path
 
-Generated 2026-10-25 by `SIMLAB_LESSON_TABLE=docs/verify/gate2-lessons.md npx vitest run src/lib/interp/lessons.test.ts`.
+Generated 2026-10-25 by `IYNK_LESSON_TABLE=docs/verify/gate2-lessons.md npx vitest run src/lib/interp/lessons.test.ts`.
 Each row runs `runChecks` (runHeadless + evaluateChecks, the same code the Board Lab and Robotics workers run) on the
 reference code and on the starter (board lessons have no starter, so the empty program stands in). Variant is the lesson's first variant.
 

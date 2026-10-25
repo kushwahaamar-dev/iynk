@@ -65,7 +65,7 @@ Manufacturer spec pages and test data:
 23. DJI newsroom, "DJI released the tuned propulsion system E300 and E600" (2013-11-28), spec table: https://www.dji.com/newsroom/news/dji-released-the-tuned-propulsion-system-e300-and-e600
 
 Research docs (what the original shows): `docs/research/drone-lab-b.md` Fig 06 section (lines 484-830),
-`docs/research/drone-lab-b-calc-matrix.md` (Fig 06 table), `docs/research/current-simlab-audit.md` DR-08.
+`docs/research/drone-lab-b-calc-matrix.md` (Fig 06 table), `docs/research/current-iynk-audit.md` DR-08.
 
 ## 2. Geometry (craft frame: x forward, y left, z up, origin = frame centre on top of the bottom plate, mm)
 

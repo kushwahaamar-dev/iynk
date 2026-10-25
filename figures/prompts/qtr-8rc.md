@@ -44,4 +44,4 @@ State the host reads: `status`, `power`, `mode`, `matStep`, `rails.VCC`, `qtr.us
 `src/content/robotics/qtr-8rc.ts`.
 
 Look: Colorfigures palette, warm paper, heavy ink silhouette, finer inner lines, hand-drawn wobble, paper grain. Works
-on a phone and inside the SimLab host (embedded, bare).
+on a phone and inside the iynk host (embedded, bare).

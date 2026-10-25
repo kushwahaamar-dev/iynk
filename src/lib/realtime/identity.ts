@@ -3,7 +3,7 @@
 
 import { MAX_NAME_LENGTH } from "./protocol";
 
-export const IDENTITY_KEY = "simlab:together:v1";
+export const IDENTITY_KEY = "iynk:together:v1";
 
 /** The Colorfigures palette, as the colours peers wear. */
 export const PEER_COLORS = [

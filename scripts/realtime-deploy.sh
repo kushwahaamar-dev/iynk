@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Deploys the SimLab room relay (server/realtime) to a VM: rsync the relay and deploy/realtime, write
+# Deploys the iynk room relay (server/realtime) to a VM: rsync the relay and deploy/realtime, write
 # deploy/realtime/.env on the VM, then `docker compose up -d --build` there and wait for
 # https://<domain>/healthz. Safe to re-run: rsync skips unchanged files and compose recreates only what changed.
 #
@@ -14,7 +14,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="$ROOT/.env.local"
-REMOTE_DIR="/opt/simlab-realtime"
+REMOTE_DIR="/opt/iynk-realtime"
 
 die() {
   echo "realtime-deploy: $*" >&2
@@ -47,7 +47,7 @@ ORIGINS="${REALTIME_ALLOWED_ORIGINS:-$(env_local REALTIME_ALLOWED_ORIGINS)}"
 if [[ -z "$ORIGINS" ]]; then
   SITE="${NEXT_PUBLIC_SITE_URL:-$(env_local NEXT_PUBLIC_SITE_URL)}"
   [[ -n "$SITE" && "$SITE" != http://localhost* ]] ||
-    die "set REALTIME_ALLOWED_ORIGINS (e.g. https://simlab.tech,https://simlab.vercel.app) or a public NEXT_PUBLIC_SITE_URL."
+    die "set REALTIME_ALLOWED_ORIGINS (e.g. https://iynk.tech,https://iynk.vercel.app) or a public NEXT_PUBLIC_SITE_URL."
   ORIGINS="${SITE%/}"
 fi
 [[ "$ORIGINS" =~ ^[A-Za-z0-9:/.,*_-]+$ ]] || die "REALTIME_ALLOWED_ORIGINS must be a comma list of origins without spaces."
@@ -70,7 +70,7 @@ systemctl enable --now docker >/dev/null
 if command -v ufw >/dev/null && ufw status | grep -q "Status: active"; then
   for rule in 22/tcp 80/tcp 443/tcp 443/udp; do ufw allow "$rule" >/dev/null; done
 fi
-mkdir -p /opt/simlab-realtime/server/realtime /opt/simlab-realtime/deploy/realtime
+mkdir -p /opt/iynk-realtime/server/realtime /opt/iynk-realtime/deploy/realtime
 BOOTSTRAP
 
 echo "==> Copying the relay"

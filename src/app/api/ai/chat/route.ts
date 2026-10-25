@@ -107,7 +107,7 @@ async function* converse(body: Body, req: Request): AsyncGenerator<ChatEvent> {
         // Hints should start streaming fast; reasoning tokens count against maxTokens.
         reasoning: "low",
         maxTokens: 6000,
-        cacheKey: "simlab-partner",
+        cacheKey: "iynk-partner",
         user: aiUser(req),
       })) {
         if (event.type === "text") {

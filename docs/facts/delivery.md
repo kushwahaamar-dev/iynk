@@ -6,7 +6,7 @@ vendor pages third.
 
 **Read this first: ArduPilot 4.7 renamed many parameters to SI units.** The original's snippets (`RTL_ALT 1200`,
 `RTL_SPEED`, `LOIT_SPEED`, `LOIT_ACC_MAX`, `PILOT_SPEED_UP`, `WPNAV_SPEED`, `ARMING_CHECK`) use the pre-4.7 names in
-centimetres. 4.7 converts old values automatically on first boot, but any snippet SimLab shows for 4.7 must use the
+centimetres. 4.7 converts old values automatically on first boot, but any snippet iynk shows for 4.7 must use the
 new names and metres. See section 5.1.
 
 ## 0. Header
@@ -124,7 +124,7 @@ the ESC) and also need a mirrored yaw mix, which only FRAME_TYPE 18 provides; so
 | LTE modem | USB modem on the Pi, two antennas (65 mm drawn) |
 | FPV / nav camera | none in the original apart from the depth camera |
 
-## 3. The original's catalogue, sanity-checked (numbers stay as they are in SimLab)
+## 3. The original's catalogue, sanity-checked (numbers stay as they are in iynk)
 
 Calculator (kept identical): `thrust = 32 * pf * (KV*V/1000)^2` g per motor; hover `AUW/(9.5*eff)/V`; max current
 `4*thrust/(3.6*eff)/V`; `hoverThr = sqrt(AUW/(4*thrust))`.
@@ -317,7 +317,7 @@ Port = 14550
   release 1100, neutral 1500, `GRIP_AUTOCLOSE` 0 s [7].
 - A winch only pays out line; something must let go of the parcel. Real designs use a self-releasing hook at the line
   end that opens when the line goes slack on the ground (unverified example products), or a gripper on the hook.
-  For SimLab: "release" = the hook opens when the parcel touches down.
+  For iynk: "release" = the hook opens when the parcel touches down.
 - RC aux switches: `RCn_OPTION 19` Gripper, `44` Winch Enable, `45` Winch Control [source: `RC_Channel.cpp`].
 
 ## 5. Firmware: ArduCopter 4.7.2 (current stable, released 2026-10-14) [1]
@@ -494,7 +494,7 @@ below `PLDP_THRESH` x hover, default 0.9), releases the gripper, waits `PLDP_DEL
 
 A delivery mission (Mission Planner, alt relative to home):
 
-| # | Command | Parameters | Phase in SimLab |
+| # | Command | Parameters | Phase in iynk |
 |---|---|---|---|
 | 0 | (home) | written by ArduPilot | |
 | 1 | NAV_TAKEOFF | alt 12 m | takeoff |

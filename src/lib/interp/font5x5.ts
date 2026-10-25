@@ -1,5 +1,5 @@
 /**
- * 5x5 LED-matrix font drawn for SimLab: five rows per glyph, bit 4 is the left
+ * 5x5 LED-matrix font drawn for iynk: five rows per glyph, bit 4 is the left
  * column. Lowercase letters use the capital shapes.
  */
 const GLYPHS: Record<string, number[]> = {

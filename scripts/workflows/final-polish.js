@@ -1,7 +1,7 @@
 export const meta = {
-  name: 'simlab-final-polish',
-  description: 'SimLab final pass: research and audit every page, one design spec, then rebuild the shell and each lab on it, then review',
-  whenToUse: 'Launched by the SimLab driver for the final pass in scripts/workflows/final.md; pass { finish: { look, decide, shell, surfaces, review } } as CDT clock times',
+  name: 'iynk-final-polish',
+  description: 'iynk final pass: research and audit every page, one design spec, then rebuild the shell and each lab on it, then review',
+  whenToUse: 'Launched by the iynk driver for the final pass in scripts/workflows/final.md; pass { finish: { look, decide, shell, surfaces, review } } as CDT clock times',
   phases: [
     { title: 'Look', detail: 'research, five surface audits and the fresh-eyes walk; no code' },
     { title: 'Decide', detail: 'F-direction writes docs/design/POLISH-SPEC.md' },
@@ -28,7 +28,7 @@ const REPORT = {
   required: ['label', 'changed', 'commits', 'verified', 'notDone', 'notes', 'pushed'],
 }
 
-const prompt = (label, section, note, by, together) => `You are ${label}, one of the agents in SimLab's final pass
+const prompt = (label, section, note, by, together) => `You are ${label}, one of the agents in iynk's final pass
 (HackTX 2026), working ${together ? 'at the same time as others ' : ''}in the git working tree /Users/amar/Codes/ak/simlab.
 
 Your brief is ${BRIEF}: follow its "Shared rules" and the section "### ${section}" exactly.${note ? ` ${note}` : ''}

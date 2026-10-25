@@ -7,7 +7,7 @@ import { RPC_URL } from "./config";
 import { DevnetWalletAdapter } from "./devnet-adapter";
 
 // Wallet Standard wallets (Phantom, Solflare, Backpack) are detected by
-// WalletProvider itself; the SimLab devnet wallet is the one adapter we add.
+// WalletProvider itself; the iynk devnet wallet is the one adapter we add.
 
 const Mounted = createContext(false);
 
@@ -46,7 +46,7 @@ function Provider({ children }: { children: ReactNode }) {
   const wallets = useMemo(() => [new DevnetWalletAdapter()], []);
   return (
     <ConnectionProvider endpoint={RPC_URL} config={{ commitment: "confirmed" }}>
-      <WalletProvider wallets={wallets} autoConnect localStorageKey="simlab:wallet-choice:v1" onError={reportWalletError}>
+      <WalletProvider wallets={wallets} autoConnect localStorageKey="iynk:wallet-choice:v1" onError={reportWalletError}>
         <Mounted.Provider value>{children}</Mounted.Provider>
       </WalletProvider>
     </ConnectionProvider>

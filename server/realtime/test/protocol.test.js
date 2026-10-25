@@ -254,17 +254,17 @@ describe("http", () => {
   });
 
   test("origins outside the allow-list are refused before the upgrade", async () => {
-    const strict = await startRelay({ origins: "https://simlab.tech, https://*.vercel.app" });
+    const strict = await startRelay({ origins: "https://iynk.tech, https://*.vercel.app" });
     try {
       await assert.rejects(Client.open(strict.url, { origin: "https://evil.example" }), /HTTP 403/);
       await assert.rejects(Client.open(strict.url, { origin: "http://localhost:3000" }), /HTTP 403/);
       await assert.rejects(Client.open(`ws://127.0.0.1:${strict.port}/other`), /HTTP 404/);
-      for (const origin of ["https://simlab.tech", "https://simlab-git-main.vercel.app", undefined]) {
+      for (const origin of ["https://iynk.tech", "https://iynk-git-main.vercel.app", undefined]) {
         const client = await Client.open(strict.url, { origin });
         await client.close();
       }
-      const cors = await fetch(`${strict.base}/healthz`, { headers: { origin: "https://simlab.tech" } });
-      assert.equal(cors.headers.get("access-control-allow-origin"), "https://simlab.tech");
+      const cors = await fetch(`${strict.base}/healthz`, { headers: { origin: "https://iynk.tech" } });
+      assert.equal(cors.headers.get("access-control-allow-origin"), "https://iynk.tech");
       const blocked = await fetch(`${strict.base}/healthz`, { headers: { origin: "https://evil.example" } });
       assert.equal(blocked.headers.get("access-control-allow-origin"), null);
     } finally {
@@ -274,7 +274,7 @@ describe("http", () => {
     try {
       const client = await Client.open(dev.url, { origin: "http://localhost:3000" });
       await client.close();
-      await assert.rejects(Client.open(dev.url, { origin: "https://simlab.tech" }), /HTTP 403/);
+      await assert.rejects(Client.open(dev.url, { origin: "https://iynk.tech" }), /HTTP 403/);
     } finally {
       await dev.relay.close();
     }

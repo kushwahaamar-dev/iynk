@@ -72,7 +72,7 @@ async function visit(context, path) {
     if (status === 200) {
       const html = await page.content();
       if (html.includes('NEXT_HTTP_ERROR_FALLBACK')) problems.push('not-found body served as 200');
-      if (html.includes('SimLab i18n:')) problems.push('missing-string error in the page');
+      if (html.includes('iynk i18n:')) problems.push('missing-string error in the page');
       const { sw, cw } = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
       if (sw > cw + 1) problems.push(`sideways scroll at 390 px (${sw} > ${cw})`);
     }

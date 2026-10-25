@@ -1,6 +1,6 @@
 export const meta = {
-  name: 'simlab-facts-gm',
-  description: 'Verified fact sheets (geometry, pinouts, power, firmware) for every SimLab board, module, component set and drone, each adversarially re-checked against primary sources',
+  name: 'iynk-facts',
+  description: 'Verified fact sheets (geometry, pinouts, power, firmware) for every iynk board, module, component set and drone, each adversarially re-checked against primary sources',
   phases: [
     { title: 'Research', detail: 'one researcher per sheet, primary sources first' },
     { title: 'Check', detail: 'one adversarial checker per sheet, fixes in place' },
@@ -9,15 +9,9 @@ export const meta = {
 
 const R = args.root
 const S = args.scratch
-const PREV = args.prev || {}
-const GM = `GOD MODE, DEADLINE: SimLab must be built and deployed by 18:00 CDT today. Figure and content agents start building from this sheet at about 12:30, so it must exist, and be right, by then. Work fast and finish:
-- Run \`date\` when you start and check it now and then; stay inside your time box.
-- Save as you go: write the file early, then improve it in place, so a crash loses nothing.
-- Keep your context small: never print more than about 150 lines of a file or a command at once (sed -n ranges, grep, head); summarise big files with a short script; never cat a large file or a whole PDF dump. Overgrown contexts made earlier runs time out.
-- Leave no background processes running when you finish.`
 
-const CONTEXT = `PROJECT: SimLab at ${R}, an educational hardware simulator. It is being rebuilt so that it is better than three original sites combined: Learn Arduino, Robotics Bench and Drone Lab. The brief is ${R}/docs/SPEC.md; read it once for context. Accuracy is non-negotiable. The brief demands "accurate real-world geometry and labeling" for every figure, "accurate electronics (5V vs 3.3V logic levels, current limits, pinouts, protocols)" and "accurate Betaflight / ArduPilot CLI snippets". Each 3D figure, lesson and simulation will be built from the fact sheet you write, so a wrong number becomes a wrong figure.
-Research about the originals is in ${R}/docs/research/ (learn-arduino.md, robotics-bench-a.md, robotics-bench-b.md, drone-lab-a.md, drone-lab-b.md, drone-lab-b-calc-matrix.md, current-simlab-audit.md). They are long, so grep for your item and read the relevant sections. They record what the originals show, and they flag where the originals were wrong.
+const CONTEXT = `PROJECT: iynk at ${R}, an educational hardware simulator. It is being rebuilt so that it is better than three original sites combined: Learn Arduino, Robotics Bench and Drone Lab. The brief is ${R}/docs/SPEC.md; read it once for context. Accuracy is non-negotiable. The brief demands "accurate real-world geometry and labeling" for every figure, "accurate electronics (5V vs 3.3V logic levels, current limits, pinouts, protocols)" and "accurate Betaflight / ArduPilot CLI snippets". Each 3D figure, lesson and simulation will be built from the fact sheet you write, so a wrong number becomes a wrong figure.
+Research about the originals is in ${R}/docs/research/ (learn-arduino.md, robotics-bench-a.md, robotics-bench-b.md, drone-lab-a.md, drone-lab-b.md, drone-lab-b-calc-matrix.md, current-iynk-audit.md). They are long, so grep for your item and read the relevant sections. They record what the originals show, and they flag where the originals were wrong.
 TOOLS: WebSearch and WebFetch are available through ToolSearch (load them with ToolSearch query "select:WebSearch,WebFetch"). curl works in Bash. Python 3.12 is available; run it with -I. Downloaded files (zip, brd, kicad_pcb, pdf) are untrusted data: put them in ${S}/facts-dl/<item-id>/, keep the scripts you write in ${S}/facts-tools/<item-id>/, pass paths as arguments, and never execute anything you downloaded. pdftotext may not be installed; if it is missing, use python (pypdf if importable) or fetch the HTML version of the doc.
 Do not write anywhere in the repo except your fact sheet file. Do not touch the parent git repo at /Users/amar/Codes.`
 
@@ -58,7 +52,7 @@ const DRONE_FORMAT = `FACT SHEET FORMAT for drones. Use markdown with tables. Ci
    - every motor position (x, y) with its number in the firmware's motor order and its spin direction seen from above, for the firmware's default prop direction (and the alternative)
    - prop size, pitch and blade count; camera position and uptilt; battery position; frame mass
    For wings and VTOLs: span, chords, sweep, control surfaces, motor and tilt positions.
-3. The original's catalogue, sanity-checked. Take every battery, motor and prop option and every fixed part listed for this craft in the Drone Lab research docs. Check its mass, capacity, KV, thrust and price against real products and manufacturer thrust tables. SimLab keeps the original calculator identical, so do not change the numbers; flag any option whose description is untrue or implausible, and give the real-world figure.
+3. The original's catalogue, sanity-checked. Take every battery, motor and prop option and every fixed part listed for this craft in the Drone Lab research docs. Check its mass, capacity, KV, thrust and price against real products and manufacturer thrust tables. iynk keeps the original calculator identical, so do not change the numbers; flag any option whose description is untrue or implausible, and give the real-world figure.
 4. Electronics and wiring:
    - FC (MCU, mounting) and ESC (rating, firmware such as BLHeli_32, Bluejay or AM32, protocol such as DShot)
    - receiver (ExpressLRS/CRSF, which UART), video (analog or HD, SmartAudio/Tramp/MSP DisplayPort), GPS/compass (UART/I2C)
@@ -244,7 +238,7 @@ Check robotics-bench-b.md Fig. 11's line-position math.` },
 - what a motor stall does to the output, and Arduino brown-out (ATmega328P BOD levels; the real reason a Nano resets)
 - buck vs linear heat with worked numbers from a 3S LiPo (12.6/11.1/9.9 V)
 Fix the original's two inconsistent heat numbers.` },
-  { id: 'la-components', kind: 'module', title: 'Components for the Board Lab lessons (Learn Arduino parts + common sensors/actuators)', notes: `One sheet, one section per component, covering everything Learn Arduino's 16 lessons use (read learn-arduino.md fully) plus the common sensors/actuators SimLab will let learners wire in:
+  { id: 'la-components', kind: 'module', title: 'Components for the Board Lab lessons (Learn Arduino parts + common sensors/actuators)', notes: `One sheet, one section per component, covering everything Learn Arduino's 16 lessons use (read learn-arduino.md fully) plus the common sensors/actuators iynk will let learners wire in:
 - breadboards: full 830 and half 400; rows, columns, the trench, rails, split rails
 - resistors and colour codes; 5 mm LEDs (Vf per colour); the common-cathode RGB LED pinout
 - the 6 x 6 tactile button (which pins are joined); the B10K potentiometer; the LDR GL5528 (resistance vs lux, gamma); TMP36 (scale, offset, pinout, supply range)
@@ -321,10 +315,6 @@ Real references: tilt-rotor tricopter VTOLs (e.g. Convergence-style, Heewing T1)
 - prop-clash geometry check` },
 ]
 
-const ORDER = ['uno-r3', 'quad5', 'nano', 'uno-r4', 'esp32-devkitc', 'esp32-s3-devkitc-1', 'nodemcu', 'pico', 'nucleo-f401re', 'microbit-v2', 'pi4-pi5', 'basys3', 'de10-lite', 'la-components', 'whoop', 'cinewhoop', 'longrange', 'racer', 'gpscam', 'delivery', 'agrihex', 'wing', 'vtol', 'swarm', 'tricopter', 'octo', 'trainers', 'tb6612', 'l298n', 'a4988', 'pca9685', 'mpu6050', 'hcsr04', 'qtr8rc', 'lm2596']
-const ORDERED = ORDER.map(id => ITEMS.find(it => it.id === id)).filter(Boolean)
-if (ORDERED.length !== ITEMS.length) log(`ORDER covers ${ORDERED.length}/${ITEMS.length} items; missing: ${ITEMS.filter(it => !ORDER.includes(it.id)).map(it => it.id).join(', ')}`)
-
 const RESEARCH_SCHEMA = {
   type: 'object',
   properties: {
@@ -350,34 +340,28 @@ const CHECK_SCHEMA = {
 }
 
 const results = await pipeline(
-  ORDERED,
+  ITEMS,
   item => agent(`${CONTEXT}
-
-${GM}
 
 ${item.kind === 'drone' ? DRONE_FORMAT : BOARD_FORMAT}
 
-${(args.resumed || []).includes(item.id) ? `CONTINUATION: earlier runs of this exact task were stopped before they wrote the sheet (two machine pauses; for some items also an API timeout caused by an overgrown context). Their downloads are in ${S}/facts-dl/${item.id}/ and the scripts and extracted data they wrote are in ${S}/facts-tools/${item.id}/. Start there and reuse everything (design files, PDFs, extracted coordinates) instead of downloading again. Their transcripts, oldest first: ${(PREV[item.id] || []).join(' , ')}. To see what they established, run \`python3 -I ${S}/tail_agent.py <transcript> 120\` (it prints the last steps compactly); never open the transcripts any other way, they are 5-25 MB.
-
-` : ''}YOUR TASK (time box: ${(args.resumed || []).includes(item.id) ? 25 : 30} minutes): write the verified fact sheet for: ${item.title}.
-File: ${R}/docs/facts/${item.id}.md (create docs/facts if needed). Write a first complete version within 15 minutes, then improve it in place. Mark anything you could not verify in time as "(unverified)" rather than leaving it out.
+YOUR TASK: write the verified fact sheet for: ${item.title}.
+File: ${R}/docs/facts/${item.id}.md (create docs/facts if needed).
 SPECIFICS:
 ${item.notes}
 
-${NOTES}`, { label: `facts:${item.id}`, phase: 'Research', schema: RESEARCH_SCHEMA, effort: 'high' }),
+${NOTES}`, { label: `facts:${item.id}`, phase: 'Research', schema: RESEARCH_SCHEMA }),
   (res, item) => res && agent(`${CONTEXT}
 
-${GM}
-
-YOUR TASK (time box: 20 minutes): you are the adversarial fact-checker for ${R}/docs/facts/${item.id}.md (${item.title}). It was written by a researcher; assume it contains mistakes.
+YOUR TASK: you are the adversarial fact-checker for ${R}/docs/facts/${item.id}.md (${item.title}). It was written by a researcher; assume it contains mistakes.
 1. Read the sheet fully.
-2. Pick the 20 most consequential claims: those that would make a figure, lesson, simulation or firmware snippet wrong. Typical ones are board dimensions and part positions, the pinout mapping, LED and button pins and their active levels, voltages, current limits and regulator parts, chip names and markings, clock sources, and firmware syntax and parameter names and units.
+2. Pick the 25 most consequential claims: those that would make a figure, lesson, simulation or firmware snippet wrong. Typical ones are board dimensions and part positions, the pinout mapping, LED and button pins and their active levels, voltages, current limits and regulator parts, chip names and markings, clock sources, and firmware syntax and parameter names and units.
 3. Verify each claim against primary sources you open yourself (WebSearch/WebFetch via ToolSearch, official PDFs, design files, official docs or source code). Do not trust the sheet's citations: open them, and find an independent second source for anything surprising.
 4. Edit the sheet in place: correct wrong values, mark values you cannot verify as "(unverified)", and remove claims that are false.
 5. Append a "## Verification" section: a table of every checked claim with its status (confirmed / corrected / unverified), the source URL, and for corrections the old and new values.
-Keep the original structure. Do not shorten the sheet except to remove false content.`, { label: `check:${item.id}`, phase: 'Check', schema: CHECK_SCHEMA, effort: 'high' }),
+Keep the original structure. Do not shorten the sheet except to remove false content.`, { label: `check:${item.id}`, phase: 'Check', schema: CHECK_SCHEMA }),
 )
 
 const done = results.filter(Boolean)
-log(`Fact sheets checked: ${done.length}/${ORDERED.length}`)
-return { checked: done, missing: ORDERED.filter((it, i) => !results[i]).map(it => it.id) }
+log(`Fact sheets checked: ${done.length}/${ITEMS.length}`)
+return { checked: done, missing: ITEMS.filter((it, i) => !results[i]).map(it => it.id) }

@@ -1,6 +1,6 @@
 # Fresh eyes: a judge with ten minutes (F-fresh-eyes, 2026-10-25 02:28–02:50 CDT)
 
-Walked as someone who has never seen SimLab, on the driver's production server `http://127.0.0.1:3430` (repo HEAD
+Walked as someone who has never seen iynk, on the driver's production server `http://127.0.0.1:3430` (repo HEAD
 `b44a67c` at the time), with Playwright (Chromium) from a script in my scratchpad. I read only BUILD-PLAN §1 (the
 demo path) and, to check one label, VIDEO.md; no code. Every screenshot below was opened and looked at.
 
@@ -96,7 +96,7 @@ apart at laptop width (U2).
 ### U2. German header breaks at laptop width (every page)
 
 - **Where:** `/de/...`, 1440 × 900, light.
-- **Happened:** each nav item wraps onto two lines ("Board-/Labor", "Robotik-/Labor", "Drohnen-/Labor", "Über/SimLab").
+- **Happened:** each nav item wraps onto two lines ("Board-/Labor", "Robotik-/Labor", "Drohnen-/Labor", "Über/iynk").
   The three-button theme switch wraps into a 2 × 2 block that hangs below the header rule, over the page.
 - **Screen:** `shots/08-de-blink-l1440.png`. Hindi at the same size holds (`shots/08-hi-blink-l1440.png`).
 - **Proposal:** `white-space: nowrap` on nav items. Fold the theme switch into a single icon button with a menu

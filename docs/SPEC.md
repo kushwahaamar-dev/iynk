@@ -1,10 +1,10 @@
-# SimLab: the brief
+# iynk: the brief
 
 This file holds the user's brief exactly as it was given, then the user's own instruction that came with it, then the few interpretation notes every phase works from. Do not edit the brief section.
 
 ## The brief (verbatim)
 
-You are building SimLab — a single, production-ready educational hardware simulator that is strictly better than the three original websites combined:
+You are building iynk — a single, production-ready educational hardware simulator that is strictly better than the three original websites combined:
 
 1. Learn Arduino → https://learn-arduino-red.vercel.app
 2. Robotics Engineer → https://robotics-engineer.vercel.app
@@ -148,8 +148,8 @@ Go.
 
 ## Interpretation notes
 
-- "Scheggled" in the Learn Arduino baseline is read as the schematic toggle: Learn Arduino has a live, auto-generated schematic panel opened with the C key (see `docs/research/learn-arduino.md`). SimLab must have it, and better.
+- "Scheggled" in the Learn Arduino baseline is read as the schematic toggle: Learn Arduino has a live, auto-generated schematic panel opened with the C key (see `docs/research/learn-arduino.md`). iynk must have it, and better.
 - "Go on a long run" means: work through every phase without stopping for approval between phases, with a verification gate at the end of each phase.
 - "Strictly better than the three originals combined" and "zero missing features" mean that every feature in the research docs under `docs/research/` is matched or exceeded, unless `docs/DECISIONS.md` records a deliberate, justified exception. Bugs in the originals are fixed, not copied.
 - "All visuals via Colorfigures" includes the schematic, breadboard and wiring views: they use the same hand-inked look (ink filter, wobble, paper grain, the five palettes) and are generated from the same data as the 3D figures.
-- The originals are someone else's work. Rebuild them: reuse facts, formulas, constants, timings and teaching messages, but write SimLab's own code. Do not copy their source files, their author watermarks or their credits. The Colorfigures skill is MIT licensed; keep its licence and credit.
+- The originals are someone else's work. Rebuild them: reuse facts, formulas, constants, timings and teaching messages, but write iynk's own code. Do not copy their source files, their author watermarks or their credits. The Colorfigures skill is MIT licensed; keep its licence and credit.

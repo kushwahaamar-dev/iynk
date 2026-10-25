@@ -12,7 +12,7 @@ export const BAUDS = [300, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 74880, 1
 const MIN_H = 92;
 const DEFAULT_H = 180;
 const MAX_H = 520;
-const HEIGHT_KEY = "simlab:boardlab:serial-height";
+const HEIGHT_KEY = "iynk:boardlab:serial-height";
 
 /** What a UART shows when the two ends disagree on the baud rate: deterministic junk of the same length. */
 export function garble(text: string, ratio: number): string {

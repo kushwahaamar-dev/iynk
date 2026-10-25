@@ -25,8 +25,8 @@ test("a room link opens Together, and a hidden tab event does not reveal Passpor
   const dock = await openDock(page, false);
   await expect(dock.getByRole("tab", { name: dockCopy.tabs.together })).toHaveAttribute("aria-selected", "true");
   await page.evaluate(() => {
-    window.dispatchEvent(new CustomEvent("simlab:dock-tab", { detail: { tab: "passport" } }));
-    window.dispatchEvent(new CustomEvent("simlab:dock-tab", { detail: { tab: "hardware" } }));
+    window.dispatchEvent(new CustomEvent("iynk:dock-tab", { detail: { tab: "passport" } }));
+    window.dispatchEvent(new CustomEvent("iynk:dock-tab", { detail: { tab: "hardware" } }));
   });
   await expect(dock.getByRole("tab", { name: dockCopy.tabs.passport })).toHaveCount(0);
   await expect(dock.getByRole("tab", { name: dockCopy.tabs.hardware })).toHaveCount(0);

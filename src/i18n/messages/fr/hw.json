@@ -3,9 +3,9 @@
   "intro": "Exécutez cette leçon sur un vrai Arduino : votre sketch commute les vraies broches, et les boutons et potentiomètres de la vraie carte font bouger la simulation.",
   "support": {
     "unsupportedTitle": "Ce navigateur n'accède pas aux cartes USB",
-    "unsupported": "Le jumeau parle à la carte via Web Serial, que ce navigateur ne propose pas. Ouvrez SimLab dans une version récente de Chrome, Edge ou Opera sur ordinateur pour connecter une carte. Tout le reste de SimLab fonctionne ici.",
+    "unsupported": "Le jumeau parle à la carte via Web Serial, que ce navigateur ne propose pas. Ouvrez iynk dans une version récente de Chrome, Edge ou Opera sur ordinateur pour connecter une carte. Tout le reste de iynk fonctionne ici.",
     "insecureTitle": "Page sécurisée requise",
-    "insecure": "Web Serial ne fonctionne que sur les pages https et sur localhost. Ouvrez SimLab en https pour connecter une carte."
+    "insecure": "Web Serial ne fonctionne que sur les pages https et sur localhost. Ouvrez iynk en https pour connecter une carte."
   },
   "lab": {
     "unsupportedTitle": "Rien à refléter ici",

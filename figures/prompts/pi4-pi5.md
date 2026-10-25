@@ -51,4 +51,4 @@ What it does:
   and GPIO17 paths.
 
 Look: Colorfigures palette (mint accent), warm paper, heavy ink silhouette, finer inner lines, hand-drawn wobble,
-paper grain. Works on a phone (badges and a label list) and inside the SimLab host (embedded, bare).
+paper grain. Works on a phone (badges and a label list) and inside the iynk host (embedded, bare).

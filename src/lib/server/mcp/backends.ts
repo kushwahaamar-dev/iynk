@@ -14,7 +14,7 @@ async function errorMessage(res: Response): Promise<string | undefined> {
 }
 
 /**
- * One of SimLab's own JSON routes as a tool calls it, so the tool inherits the route's validation, quota guard
+ * One of iynk's own JSON routes as a tool calls it, so the tool inherits the route's validation, quota guard
  * and "not set up" answer. The base URL is NEXT_PUBLIC_SITE_URL, never the request's Host header, so a caller
  * cannot point the call elsewhere. Only plan_build_night still needs this (docs/requests/hx-mcp.md).
  */
@@ -45,6 +45,6 @@ export async function postRoute<S extends z.ZodType>(name: string, path: string,
     throw new ToolError("upstream", `${name} failed (HTTP ${res.status}). Try again in a moment.`);
   }
   const parsed = schema.safeParse(await res.json().catch(() => undefined));
-  if (!parsed.success) throw new ToolError("upstream", `${name} sent an answer SimLab could not read.`);
+  if (!parsed.success) throw new ToolError("upstream", `${name} sent an answer iynk could not read.`);
   return parsed.data;
 }

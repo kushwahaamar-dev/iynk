@@ -120,7 +120,7 @@ the settings toggles, and the untranslated notice.
   with no card and no picture.
 - **Cause:** `[lang]/page.tsx` sets `title` in the same segment as the layout's `template`, which only applies to
   child segments.
-- **Proposal (F-build-shell):** `title: { absolute: "SimLab · <tagline>" }` from the messages on the landing page;
+- **Proposal (F-build-shell):** `title: { absolute: "iynk · <tagline>" }` from the messages on the landing page;
   `openGraph` and `twitter` (title, description, `summary_large_image`) in the layout's `generateMetadata`; an
   `opengraph-image` (1200 × 630 PNG made once from `hero.svg` on paper, with the wordmark).
 
@@ -128,7 +128,7 @@ the settings toggles, and the untranslated notice.
 
 - **Where:** `/en` hero, all sizes. Dragging the plate does nothing; the product (a live figure) never appears on the
   landing page. The plate is the same 557 × 537 at 1440 and 1920.
-- **Why it matters:** the first interaction a curious judge tries fails, and the strongest thing SimLab has is not
+- **Why it matters:** the first interaction a curious judge tries fails, and the strongest thing iynk has is not
   shown until the second click.
 - **Screenshots:** `shots/home-en-light-desk.png`, `shots/home-en-light-wide.png`.
 - **Proposal (F-build-shell: `page.tsx`, `dashboard/HeroArt.tsx`; uses F-build-panels' `FigureFrame`):** mount the
@@ -162,7 +162,7 @@ the settings toggles, and the untranslated notice.
 ### U5. Tracking pulls Hindi words apart, and the wordmark changes font in Hindi (ugly)
 
 - **Where:** `/hi`: the header tagline reads "खोजें · स म झें · बनाएँ", and every `ink-kicker` and `tracking-*` label
-  spaces Devanagari letters. The wordmark "SimLab" renders in Noto Sans Devanagari because `html:lang(hi)` overrides
+  spaces Devanagari letters. The wordmark "iynk" renders in Noto Sans Devanagari because `html:lang(hi)` overrides
   `--font-display`.
 - **Screenshots:** `crops/hi-tagline.png`, `shots/home-hi-light-desk.png`.
 - **Proposal (F-build-shell, `globals.css`, `Logo`/`SiteHeader`):** `letter-spacing: 0` and no `uppercase` for
@@ -255,11 +255,11 @@ the settings toggles, and the untranslated notice.
 - **Proposal (F-build-shell, `[lang]/not-found.tsx`: not in the brief's owner list, the driver should confirm it is
   F-build-shell's):** no card; h1, one line, the primary "Back to the dashboard", and the three labs as one row of
   links (or the three lab tiles from U8). Works today: localized title and text in de (`Seite nicht gefunden ·
-  SimLab`), every button goes where it says.
+  iynk`), every button goes where it says.
 
 ### U15. The tagline appears three times on the landing page (ugly)
 
-- Header subline, hero kicker and footer kicker (plus a fourth "SimLab · Explore · Understand · Build" line at the end
+- Header subline, hero kicker and footer kicker (plus a fourth "iynk · Explore · Understand · Build" line at the end
   of About). Keep it as the hero kicker only.
 
 ### U16. About: the licence dominates, three text measures, half the screen empty (ugly)
@@ -304,7 +304,7 @@ the settings toggles, and the untranslated notice.
   errors.
 - Theme: the three options switch instantly, persist across a reload (boot script, no flash), arrow keys move the
   choice, every option has a name in every language.
-- Language: keeps the path (the code also carries the query and hash), sets the `simlab-lang` cookie, and Back
+- Language: keeps the path (the code also carries the query and hash), sets the `iynk-lang` cookie, and Back
   restores both the page and the select. The `/` redirect honours cookie, then browser language, then English.
 - Phone menu: focus lands on Close, Tab is trapped inside, Escape closes and returns focus to Menu, a link navigates
   and closes the sheet, the language select works from inside it.

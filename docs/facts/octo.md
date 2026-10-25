@@ -7,7 +7,7 @@ marked "(unverified)". Firmware facts come from source code first, docs second, 
 **Read this first.**
 1. ArduCopter 4.7 renamed many parameters to SI units (metres, m/s). The original's snippets (`LOIT_SPEED 1250`,
    `LOIT_ACC_MAX`, `LOIT_BRK_ACCEL`, `PILOT_SPEED_UP 250`, `RTL_ALT 550`, `RTL_ALT_FINAL`) use pre-4.7 names in
-   centimetres. 4.7 is reported to convert old values on first boot (unverified here), but anything SimLab shows must
+   centimetres. 4.7 is reported to convert old values on first boot (unverified here), but anything iynk shows must
    use the 4.7 names (section 5.1).
 2. The original numbers its motors sequentially round the frame. ArduPilot octa X (`FRAME_TYPE 1`) does not, and every
    one of the original's spin directions is the reverse of ArduPilot octa X at that position (section 2.2).
@@ -134,7 +134,7 @@ way on an octo, use `FRAME_TYPE 13` or `14` (both have the front-right motor CCW
 counter-clockwise from the nose (toward +y, left), with even k CW. So its M1 is front-left CW and the numbering runs
 counter-clockwise. At every position, its spin is the opposite of ArduPilot octa X (ArduPilot's front-left motor M5 is
 CCW). Its spin pattern equals `DJI_X`/`CW_X` (front-right CCW), and its numbering is `DJI_X` shifted by one: original
-Mk = DJI_X M(k+1) (original M8 = DJI_X M1 at the front-right). SimLab should draw ArduPilot `FRAME_TYPE 1` (table
+Mk = DJI_X M(k+1) (original M8 = DJI_X M1 at the front-right). iynk should draw ArduPilot `FRAME_TYPE 1` (table
 above) and label motors by ArduPilot number, since its snippets say `FRAME_TYPE 1`.
 
 ### 2.3 Props, motors, mass
@@ -167,7 +167,7 @@ the same plane strike each other and shatter on spool-up.
 
 ## 3. The original's catalogue, sanity-checked
 
-SimLab keeps the original calculator identical; this section only flags untrue or implausible descriptions.
+iynk keeps the original calculator identical; this section only flags untrue or implausible descriptions.
 
 ### 3.1 Batteries
 

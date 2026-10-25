@@ -55,7 +55,7 @@ describe("db-migrate", () => {
   });
 
   it("reads DATABASE_URL from the environment first, then .env.local", () => {
-    const dir = mkdtempSync(join(tmpdir(), "simlab-migrate-"));
+    const dir = mkdtempSync(join(tmpdir(), "iynk-migrate-"));
     const file = join(dir, ".env.local");
     writeFileSync(file, 'META_API_KEY=x\nexport DATABASE_URL="postgres://u:p@h:5432/db?sslmode=require"\n');
     expect(readDatabaseUrl({}, file)).toBe("postgres://u:p@h:5432/db?sslmode=require");
