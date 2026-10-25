@@ -5,8 +5,7 @@ import en from '@/i18n/content/en/drones/quad5.json';
 import goldenA from '@/lib/drone/__fixtures__/golden-a.json';
 import { calc, type CalcResult } from '@/lib/drone/calc';
 import { designInput } from '@/lib/drone/design';
-import { quad5Course } from '@/lib/flight/courses/quad5';
-import { quad5Craft } from '@/lib/flight/crafts/quad5';
+import { flightOf } from '@/lib/flight/registry';
 import type { DesignPick } from '@/content/schema';
 import quad5 from './quad5';
 
@@ -142,13 +141,15 @@ describe('quad5 frame and figure', () => {
 describe('quad5 flight', () => {
   const p = quad5.flight.params;
   const cli = quad5.firmware.emulator.settings;
+  // the range flies this module through the registry: there is no second copy of the numbers or the field
+  const range = flightOf(quad5)!;
 
   it('flies the range’s numbers', () => {
-    const craft = quad5Craft as unknown as Record<string, unknown>;
+    const craft = range.craft as unknown as Record<string, unknown>;
     for (const [key, value] of Object.entries(p)) expect(craft[key], key).toBe(value);
-    expect(quad5.flight.modes.map((m) => m.id)).toEqual(quad5Craft.modes.map((m) => m.id));
+    expect(range.craft.modes.map((m) => m.id)).toEqual([...quad5.flight.modes.map((m) => m.id), 'demo']);
     expect(quad5.flight.modes.map((m) => m.id)).toContain(quad5.flight.defaultMode);
-    expect(quad5.flight.fpv).toEqual({ fovDeg: quad5Craft.fov, camTiltDeg: quad5Craft.camTilt, gimbal: false });
+    expect(quad5.flight.fpv).toEqual({ fovDeg: range.craft.fov, camTiltDeg: range.craft.camTilt, gimbal: false });
   });
 
   it('sets the same numbers in the CLI as the sim flies (one source of truth)', () => {
@@ -160,29 +161,23 @@ describe('quad5 flight', () => {
     expect(Number(cli.alt_hold_climb_rate) / 10).toBe(p.climbRate);
   });
 
-  it('mirrors the range’s course: gates, checkpoints, pad and scenery', () => {
+  it('flies both courses on one field: the race scores the gates, the bando run the checkpoints', () => {
     const [race, bando] = quad5.courses;
     expect([race.id, race.kind, bando.id, bando.kind]).toEqual(['race', 'gates', 'bando', 'checkpoints']);
-    const gates = quad5Course.gates.map((g) => [g.x, g.y, g.heading]);
-    for (const c of quad5.courses) {
-      expect(c.field).toEqual({ w: quad5Course.field, d: quad5Course.field });
-      expect(c.pad).toEqual(quad5Course.pad);
-      expect(c.gates).toEqual(gates);
-      expect(c.gateSize).toEqual([quad5Course.gates[0].w, quad5Course.gates[0].h]);
-      const shape = (o: object) => {
-        const { type, x, y, z = 0, w, d, h, r, col } = o as Record<string, unknown>;
-        return { type, x, y, z, w, d, h, r, col };
-      };
-      expect(c.prims.map(shape)).toEqual(quad5Course.prims.map(shape));
-    }
-    expect(bando.goals.map(({ x, y, z, r, heading }) => ({ x, y, z, r, heading }))).toEqual(
-      quad5Course.checkpoints.map(({ x, y, z, r, heading }) => ({ x, y, z, r, heading })),
+    expect(race.prims).toBe(bando.prims);
+    expect(race.gates).toEqual(bando.gates);
+    const [raceRange, bandoRange] = range.courses;
+    expect(raceRange.gates.map((g) => [g.x, g.y, g.heading])).toEqual(race.gates);
+    expect(bandoRange.checkpoints.map(({ x, y, z, r, heading }) => ({ x, y, z, r, heading }))).toEqual(
+      bando.goals.map(({ x, y, z, r, heading }) => ({ x, y, z, r, heading })),
     );
-    expect(bando.goals.map((g) => text(g.label))).toEqual(quad5Course.checkpoints.map((c) => c.label));
+    for (const g of bando.goals) expect(text(g.label), g.label).toBeTruthy();
+    // every solid names what you hit, so the crash line is never the generic one
+    for (const prim of race.prims) if (prim.type === 'box' || prim.type === 'cyl') expect(prim.kind, JSON.stringify(prim)).toBeDefined();
   });
 
   it('keeps every checkpoint below the top of altitude hold', () => {
-    const ceiling = quad5Course.ceiling ?? p.ceiling;
+    const ceiling = quad5.courses[1].ceiling ?? p.ceiling;
     for (const g of quad5.courses[1].goals) expect(g.z - g.r).toBeLessThan(ceiling - 3);
   });
 });

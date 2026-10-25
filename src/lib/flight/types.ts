@@ -110,7 +110,8 @@ export type ModeTask =
   | "transition"
   | "qrtl"
   | "rth"
-  | "yawdemo";
+  | "yawdemo"
+  | "demo"; // the autopilot flies the course's own route (src/lib/flight/route.ts); its times never count
 
 export interface FlightMode {
   id: string; // key under flight.modes in the i18n namespace
@@ -141,6 +142,7 @@ interface PrimBase {
   y: number;
   col?: string;
   kind?: HitKind; // what the crash message says
+  solid?: boolean; // false: drawn, but the craft flies through it
 }
 
 export type Prim =
@@ -182,12 +184,15 @@ export interface Waypoint {
   hold?: number; // s to wait there
   action?: "photo" | "drop" | "spray-on" | "spray-off" | "land";
   speed?: number; // m/s on the leg to this point
+  r?: number; // m, how close counts as reached (default 1)
+  leg?: number; // demo routes: the course target (gate or checkpoint index) this point leads to
 }
 
 export interface Mission {
   id: string;
   waypoints: Waypoint[];
   rtl?: boolean; // return and land at the end
+  loopFrom?: number; // set: after the last waypoint it carries on from this one (a gate race)
 }
 
 export interface WindSpec {
@@ -196,8 +201,16 @@ export interface WindSpec {
   gust: number; // m/s gust amplitude
 }
 
+/**
+ * What the course scores. Gates count laps and checkpoints count a timed run in every flight mode; a mission is a
+ * checkpoint run that ends in `missionDone`. Without a kind, gates count only in race modes and checkpoints only in
+ * range modes (one field holding both).
+ */
+export type CourseKind = "gates" | "checkpoints" | "mission";
+
 export interface Course {
   id: string;
+  kind?: CourseKind;
   title: string; // English, translated through courseText.title
   brief: string;
   field: number; // m, side of the square field
@@ -216,6 +229,10 @@ export interface Course {
 export interface CourseText {
   title?: string;
   labels?: Record<string, string>;
+  /** The craft's own flight-mode titles, by mode id (else the flight namespace's generic ones). */
+  modes?: Record<string, string>;
+  /** One line under the mode picker for each of the craft's modes, by mode id. */
+  hints?: Record<string, string>;
 }
 
 /** RC channels: throttle 0..1 (stick position), the rest -1..1. */
@@ -246,12 +263,12 @@ export type FlightEvent = { t: number } & (
   | { type: "landed"; mah: number; belly?: boolean }
   | { type: "crash"; why: HitKind | "ground" | "groundWing" | "flipFc" | "flipProps" | "flipMotor" }
   | { type: "gate"; index: number; total: number; split: number | null }
-  | { type: "lap"; time: number; best: boolean; splits: number[] }
+  | { type: "lap"; time: number; best: boolean; splits: number[]; demo?: boolean }
   | { type: "checkpoint"; index: number; total: number; label: string }
-  | { type: "run"; time: number; best: boolean }
+  | { type: "run"; time: number; best: boolean; demo?: boolean }
   | { type: "battery"; level: "low" | "empty"; chemistry: Chemistry; perCell: number }
   | { type: "missionStep"; index: number; total: number; label: string; action?: Waypoint["action"] }
-  | { type: "missionDone" }
+  | { type: "missionDone"; time?: number; best?: boolean; demo?: boolean }
   | { type: "outOfField" }
   | { type: "farOut" }
   | { type: "ceiling"; m: number }

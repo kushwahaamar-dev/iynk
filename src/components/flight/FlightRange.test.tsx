@@ -4,8 +4,13 @@ import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { I18nProvider } from "@/i18n/client";
 import en from "@/i18n/messages/en/common.json";
 import flight from "@/i18n/messages/en/flight.json";
-import { quad5Course, quad5Craft, type CalcOutputs, type FlightEvent, type FlightSession } from "@/lib/flight";
+import quad5 from "@/content/drones/quad5";
+import { flightOf, type CalcOutputs, type Course, type FlightEvent, type FlightSession } from "@/lib/flight";
 import { FlightRange } from "./FlightRange";
+
+const { craft: quad5Craft, courses } = flightOf(quad5)!;
+const bando = courses.find((c) => c.id === "bando")!;
+const race = courses.find((c) => c.id === "race")!;
 
 const calc: CalcOutputs = { auw: 513.6, thrustPerMotor: 1600, motors: 4, cells: 6, mah: 1100, hoverThrottle: Math.sqrt(513.6 / 6400), hoverAmps: 4.29, maxAmps: 144 };
 
@@ -24,12 +29,12 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllGlobals());
 
-function setup() {
+function setup(course: Course = bando, extra: Partial<Parameters<typeof FlightRange>[0]> = {}) {
   const events: FlightEvent[] = [];
   let session: FlightSession | null = null;
   render(
     <Providers>
-      <FlightRange craft={quad5Craft} course={quad5Course} calc={calc} t={flight} onEvent={(e) => events.push(e)} onSession={(s) => (session = s)} />
+      <FlightRange craft={quad5Craft} course={course} calc={calc} t={flight} onEvent={(e) => events.push(e)} onSession={(s) => (session = s)} {...extra} />
     </Providers>,
   );
   return { events, session: () => session as unknown as FlightSession };
@@ -41,7 +46,8 @@ test("Space arms and disarms, with the message in a live region", () => {
   fireEvent.keyDown(select.closest("div")!.parentElement!, { code: "Space" });
   expect(events.some((e) => e.type === "armed")).toBe(true);
   expect(screen.getByRole("button", { name: flight.buttons.disarm })).toBeTruthy();
-  expect(screen.getByText(`Armed. ${flight.msg.hintAlt}`).getAttribute("aria-live")).toBe("polite");
+  // the bando course scores its checkpoints in every mode, so arming says what to fly
+  expect(screen.getByText(`Armed. ${flight.msg.hintRange}`).getAttribute("aria-live")).toBe("polite");
   fireEvent.click(screen.getByRole("button", { name: flight.buttons.disarm }));
   expect(screen.getByRole("button", { name: flight.buttons.arm })).toBeTruthy();
 });
@@ -94,4 +100,27 @@ test("a design change while flying waits for the reset", () => {
   expect(screen.getByText(flight.pendingDesign)).toBeTruthy();
   fireEvent.click(screen.getByRole("button", { name: flight.buttons.reset }));
   expect(session().sim.calc.auw).toBe(600);
+});
+
+test("the craft's own mode names and hints show, and the demo explains itself", () => {
+  setup(race, { initialMode: "race", courseText: { modes: { race: "Five-gate race" }, hints: { race: "Manual throttle: the clock runs from gate 1" } } });
+  const select = screen.getByLabelText(flight.mode) as HTMLSelectElement;
+  expect(select.value).toBe("race");
+  expect(screen.getByRole("option", { name: "Five-gate race" })).toBeTruthy();
+  expect(screen.getByText("Manual throttle: the clock runs from gate 1")).toBeTruthy();
+  fireEvent.change(select, { target: { value: "demo" } });
+  expect(screen.getByText(flight.demoHint)).toBeTruthy();
+  expect(screen.queryByText(flight.stats.par)).toBeNull();
+});
+
+test("a finished lap names its medal, and the demo's lap never counts", () => {
+  const { session } = setup(race, { initialMode: "race", par: { gold: 10, silver: 14, bronze: 20 } });
+  expect(screen.getByText(flight.stats.par)).toBeTruthy();
+  act(() => session().sim.events.push({ t: 1, type: "lap", time: 12.5, best: true, splits: [] }));
+  act(() => session().dispatch({ type: "sticks", sticks: { throttle: 0, yaw: 0, pitch: 0, roll: 0 } }));
+  fireEvent.click(screen.getByRole("button", { name: flight.buttons.reset }));
+  expect(screen.getByText("Lap 12.50 s (best!). Silver medal!")).toBeTruthy();
+  act(() => session().sim.events.push({ t: 2, type: "lap", time: 9, best: false, splits: [], demo: true }));
+  fireEvent.click(screen.getByRole("button", { name: flight.buttons.reset }));
+  expect(screen.getByText("Demo done in 9.0 s: the autopilot's time does not count")).toBeTruthy();
 });

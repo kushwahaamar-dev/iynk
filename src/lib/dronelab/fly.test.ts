@@ -2,8 +2,6 @@
 import { describe, expect, test } from "vitest";
 import { quad5Fixture as content } from "./__fixtures__/quad5";
 import {
-  contentCourseId,
-  courseForEvent,
   craftPatch,
   flightCalc,
   flightFaults,
@@ -61,19 +59,10 @@ describe("fly page store", () => {
     expect(craftPatch({ angleLimit: 38, drag: 0.045 }, s)).toEqual({ angleLimit: 60, drag: 0.045 });
   });
 
-  test("flight course ids map to content course ids", () => {
-    expect(contentCourseId(content, "gates")).toBe("gates");
-    expect(contentCourseId(content, "quad5-gates")).toBe("gates");
-    expect(contentCourseId(content, "quad5-bando")).toBeNull();
-  });
-
-  test("a lap counts for the gate course and a range run for the checkpoint course", () => {
-    const both = {
-      ...content,
-      courses: [...content.courses, { ...content.courses[0], id: "bando", kind: "checkpoints" as const }],
-    };
-    expect(courseForEvent(both, "quad5-bando", "lap")).toBe("gates");
-    expect(courseForEvent(both, "quad5-bando", "run")).toBe("bando");
-    expect(courseForEvent(both, "quad5-bando", "missionDone")).toBeNull();
+  test("the course picks only a course the craft has", () => {
+    const s = initialFly(content);
+    expect(s.course).toBe(content.courses[0].id);
+    expect(reduceFly(content, s, { type: "course", id: "nope" })).toBe(s);
+    expect(reduceFly(content, s, { type: "course", id: content.courses[0].id }).course).toBe(content.courses[0].id);
   });
 });

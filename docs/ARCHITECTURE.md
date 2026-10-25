@@ -7,6 +7,17 @@ docs/DECISIONS.md.
 
 ## 0. Change log (newest first; after 14:00 CDT Oct 24 schema and id changes are additive only)
 
+- v1.5 Oct 24 (P2-flight): additive schema.ts change for the flight registry (`src/lib/flight/registry.ts`), which
+  flies every craft from its content module; `src/lib/flight/crafts/` and `courses/` are gone. `FlightMode` gets
+  optional `attitude`, `expo`, `angleLimit`, `rateScale` (an acro gate race is `kind: 'race', attitude: 'acro'`).
+  `FlightConfig` gets an optional `look` (`FlightLook`: body, propR, ducted, span, chord, isoScale; the rest is
+  derived from `frame` and the default prop). `RangePrim` box, house, cyl and pole get an optional `kind`
+  (`RangeHitKind`, what the crash line names). `Goal` gets optional `land` (counts only on touchdown), `hold`,
+  `action` (`photo`, `drop`, `spray-on`, `spray-off`, `land`) and `speed` for autopilot missions. `Course` gets
+  optional `par` (`ParTimes`: gold, silver, bronze seconds; without it `parOf` derives them from `parS`, which is
+  silver), `ceiling`, `ground` and `wind`. Content course ids are the range's course ids, and the course's `kind`
+  decides what scores: laps on `gates`, a timed run on `checkpoints`, `missionDone` on `mission`, in every mode.
+
 - v1.4 18:46 CDT Oct 24 (driver, BUILD-PLAN §3.2 item 5): additive, no schema.ts change. When
   `src/i18n/content/<lang>/<lab>/<id>.json` is missing, the item shows its English prose instead of a 404:
   `getContentProse` (src/i18n/server.ts) returns `{ text, lang }`, the board, bench and craft loaders expose it as

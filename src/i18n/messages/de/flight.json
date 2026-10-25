@@ -26,7 +26,8 @@
     "swarm": "Schwarm (vier Drohnen)",
     "figure8": "Acht-Flugbahn",
     "yaw": "Gier-Demo mit Heckservo",
-    "motorfail": "Motorausfall-Test"
+    "motorfail": "Motorausfall-Test",
+    "demo": "Demo: the autopilot flies it"
   },
   "buttons": {
     "arm": "Scharf schalten",
@@ -58,7 +59,9 @@
     "splits": "Zwischenzeiten",
     "gate": "Tor {n}/{total}",
     "checkpoint": "{label} ({n}/{total})",
-    "home": "Start"
+    "home": "Start",
+    "par": "Medal times",
+    "parValue": "{gold} / {silver} / {bronze}"
   },
   "osd": {
     "disarmed": "ENTSCHÄRFT",
@@ -110,7 +113,13 @@
     "windOff": "Wind aus",
     "fpvOn": "FPV-Brille auf",
     "fpvOff": "Verfolgeransicht",
-    "armBlockedAcc": "Scharfschalten gesperrt: Beschleunigungssensor nicht kalibriert. Führe auf der Werkbank Beschleunigungssensor kalibrieren aus"
+    "armBlockedAcc": "Scharfschalten gesperrt: Beschleunigungssensor nicht kalibriert. Führe auf der Werkbank Beschleunigungssensor kalibrieren aus",
+    "hintDemo": "The autopilot is flying the course: switch mode to take over",
+    "demoTime": "Demo done in {time} s: the autopilot's time does not count",
+    "missionTime": "Mission complete: {time} s",
+    "missionBest": "Mission complete: {time} s (best!)",
+    "medal": "{line}. {medal} medal!",
+    "noMedal": "{line}. Bronze is {s} s"
   },
   "dirs": [
     "Osten",
@@ -193,5 +202,11 @@
     "flipFc": "Beim Start überschlagen: Der Flugcontroller ist verkehrt herum montiert",
     "flipProps": "Beim Start überschlagen: Die Propeller sitzen auf den falschen Motoren",
     "flipMotor": "Beim Start überschlagen: Die Drehrichtung der Motoren wurde nie geprüft (Werkbank: Motordrehrichtung prüfen)"
+  },
+  "demoHint": "The autopilot flies this course's line with the same physics you fly. Watch it, then beat it: its times never count.",
+  "medals": {
+    "gold": "Gold",
+    "silver": "Silver",
+    "bronze": "Bronze"
   }
 }

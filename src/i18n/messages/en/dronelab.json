@@ -313,9 +313,10 @@
     "benchBuild": "My bench build",
     "courses": "Courses",
     "best": "Best: {s} s",
-    "par": "Par {s} s",
     "noBest": "Not flown yet",
-    "missing": "The flying range for this craft is still being built."
+    "missing": "The flying range for this craft is still being built.",
+    "medalTimes": "Gold {gold} s · silver {silver} s · bronze {bronze} s",
+    "bestMedal": "Best: {s} s, {medal}"
   },
   "keys": {
     "title": "Keyboard shortcuts",

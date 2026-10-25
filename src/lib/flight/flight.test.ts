@@ -1,17 +1,26 @@
 import { describe, expect, it } from "vitest";
+import type { DroneContent } from "@/content/schema";
+import quad5 from "@/content/drones/quad5";
+import { flightCalc } from "@/lib/dronelab/fly";
 import { calc, type CalcBattery, type CalcFixedPart, type CalcMotor, type CalcProp } from "../drone/calc";
 import catalogueData from "../drone/__fixtures__/catalogues.json";
 import { calcModels } from "../drone/__fixtures__/models";
 import { ocv, voltageFactor } from "./battery";
-import { quad5Course } from "./courses/quad5";
-import { quad5Craft } from "./crafts/quad5";
 import { fromCalc } from "./from-calc";
 import { createInput, DEFAULT_PAD, learnAxis, padSticks, readSticks } from "./input";
 import { DEG } from "./math";
 import { createSession } from "./session";
+import { flightOf, medalFor, modesFor, parOf, startMode } from "./registry";
+import { DEMO_MISSION } from "./route";
 import { createSim, dispatch, drainEvents, frameOf, hoverCommand, replay, stepSim, type SimState } from "./sim";
 import type { CalcOutputs, Course, FlightCraft, FlightEvent, Sticks } from "./types";
 import { buildSolids, collide, throughGate } from "./world";
+
+// quad5 flies from its content module through the registry, like every craft on the site
+const quad5Flight = flightOf(quad5)!;
+const quad5Craft = quad5Flight.craft;
+const quad5Race = quad5Flight.courses.find((c) => c.id === "race")!;
+const quad5Course = quad5Flight.courses.find((c) => c.id === "bando")!;
 
 type Catalogue = { batteries: Record<string, CalcBattery>; motors: Record<string, CalcMotor>; props: Record<string, CalcProp>; fixed: CalcFixedPart[] };
 const catalogues = catalogueData as unknown as Record<string, Catalogue>;
@@ -192,19 +201,19 @@ describe("multirotor physics", () => {
 });
 
 describe("the 5-inch course", () => {
-  const solids = buildSolids(quad5Course);
+  const solids = buildSolids(quad5Race);
   const r = quad5Craft.hitRadius;
 
   it("has visible, solid gates whose openings are clear", () => {
-    expect(solids.filter((o) => o.kind === "gate").length).toBe(quad5Course.gates.length * 3);
-    for (const g of quad5Course.gates) {
+    expect(solids.filter((o) => o.kind === "gate").length).toBe(quad5Race.gates.length * 3);
+    for (const g of quad5Race.gates) {
       const c = Math.cos(g.heading * DEG), s = Math.sin(g.heading * DEG);
       for (let d = -2; d <= 2; d += 0.25) expect(collide(solids, g.x + c * d, g.y + s * d, g.h / 2, r), `gate ${g.x},${g.y} at ${d}`).toBeNull();
     }
   });
 
   it("can be lapped on straight legs between the gates without hitting anything", () => {
-    const gs = quad5Course.gates;
+    const gs = quad5Race.gates;
     for (let i = 0; i < gs.length; i++) {
       const a = gs[i], b = gs[(i + 1) % gs.length];
       for (let k = 0.15; k <= 0.85; k += 0.02) {
@@ -215,7 +224,7 @@ describe("the 5-inch course", () => {
   });
 
   it("counts a pass through a gate along its heading only", () => {
-    const g = quad5Course.gates[0];
+    const g = quad5Race.gates[0];
     expect(throughGate(g, [20, 10.9, 0.8], [20, 11.1, 0.8])).toBe(true);
     expect(throughGate(g, [20, 11.1, 0.8], [20, 10.9, 0.8])).toBe(false);
     expect(throughGate(g, [21, 10.9, 0.8], [21, 11.1, 0.8])).toBe(false);
@@ -223,6 +232,7 @@ describe("the 5-inch course", () => {
 
   it("has every checkpoint reachable below the altitude-hold top", () => {
     const top = (quad5Course.ceiling ?? quad5Craft.ceiling) - 1.79;
+    const solids = buildSolids(quad5Course);
     for (const cp of quad5Course.checkpoints) {
       if (cp.heading !== undefined) {
         const c = Math.cos(cp.heading * DEG), s = Math.sin(cp.heading * DEG);
@@ -241,7 +251,7 @@ describe("the 5-inch course", () => {
 
   it("flies a lap of gate 1 in the race and starts the clock", () => {
     const c = quad5Calc();
-    const s = createSim(quad5Craft, quad5Course, c, { mode: "race" });
+    const s = createSim(quad5Craft, quad5Race, c, { mode: "race" });
     sticks(s, { throttle: 0 });
     dispatch(s, { type: "arm" });
     const ev: FlightEvent[] = [];
@@ -277,7 +287,7 @@ describe("determinism", () => {
 
 describe("other craft classes", () => {
   const base: FlightCraft = { ...quad5Craft, id: "test" };
-  const flatCourse: Course = { ...quad5Course, prims: [], gates: [], checkpoints: [], field: 200, pad: [100, 100], ceiling: 60 };
+  const flatCourse: Course = { ...quad5Course, missions: [], prims: [], gates: [], checkpoints: [], field: 200, pad: [100, 100], ceiling: 60 };
 
   it("an octocopter keeps flying with one motor out, on a higher throttle", () => {
     const octo: FlightCraft = { ...base, modes: [{ id: "althold", attitude: "angle", throttle: "climb", task: "free" }, { id: "motorfail", attitude: "angle", throttle: "climb", task: "motorfail" }] };
@@ -379,5 +389,108 @@ describe("input", () => {
     expect(s.roll).toBeLessThan(0);
     expect(learnAxis([0, 0, 0, 0], [0, 0, -0.9, 0.1])).toEqual({ axis: 2, invert: true });
     expect(learnAxis([0, 0, 0, 0], [0.2, 0, 0, 0])).toBeNull();
+  });
+});
+
+// every drone content module on the site, as it lands
+const contentModules = import.meta.glob<{ default: DroneContent }>(["../../content/drones/*.ts", "!../../content/drones/*.test.ts", "!../../content/drones/_*.ts"], { eager: true });
+const crafts = Object.values(contentModules).map((m) => m.default);
+
+describe("the flight registry", () => {
+  it("flies quad5 from its content with the numbers the range always used", () => {
+    expect(quad5Craft).toMatchObject({ id: "quad5", class: "multirotor", hitRadius: 0.16, angleLimit: 38, acroRate: 670, yawRate: 200, camTilt: 30, fov: 105, fpvProps: true });
+    expect(quad5Craft.look).toMatchObject({ arms: 4, propR: 0.0635, body: [0.112, 0.046, 0.04], palette: "tomato", frame: "x", isoScale: 2 });
+    expect(quad5Craft.look.armLen).toBeCloseTo(0.1125, 3);
+    expect(quad5Craft.modes.find((m) => m.id === "raceAcro")).toMatchObject({ attitude: "acro", throttle: "manual", task: "race", expo: 0.7 });
+    expect(quad5Craft.modes.find((m) => m.id === "range")).toMatchObject({ attitude: "angle", throttle: "climb", task: "range" });
+    expect(quad5Flight.courses.map((c) => [c.id, c.kind])).toEqual([["race", "gates"], ["bando", "checkpoints"]]);
+    expect(quad5Race.checkpoints).toEqual([]);
+    expect(quad5Course.checkpoints.at(-1)).toMatchObject({ land: true, z: 0 });
+  });
+
+  it("hands every craft the numbers its content (and its CLI snippets) set", () => {
+    expect(crafts.length).toBeGreaterThanOrEqual(2);
+    for (const content of crafts) {
+      const craft = flightOf(content)?.craft as unknown as Record<string, unknown> | undefined;
+      expect(craft, content.id).toBeDefined();
+      for (const [key, value] of Object.entries(content.flight.params)) {
+        if (typeof craft![key] === "number") expect(craft![key], `${content.id}.${key}`).toBe(value);
+      }
+      expect((craft!.modes as { id: string }[]).map((m) => m.id), content.id).toEqual([...content.flight.modes.map((m) => m.id), "demo"]);
+    }
+  });
+
+  it("opens each course in the mode that scores it", () => {
+    expect(startMode(quad5, "race")).toBe("race");
+    expect(startMode(quad5, "bando")).toBe("range");
+    for (const content of crafts) for (const c of content.courses) expect(content.flight.modes.map((m) => m.id), `${content.id}/${c.id}`).toContain(startMode(content, c.id));
+  });
+
+  it("gives every timed course bronze, silver and gold, in that order", () => {
+    expect(parOf({ parS: 20 })).toEqual({ gold: 17, silver: 20, bronze: 28 });
+    expect(parOf({ par: { gold: 10, silver: 12, bronze: 15 }, parS: 99 })).toEqual({ gold: 10, silver: 12, bronze: 15 });
+    expect(medalFor(16.9, parOf({ parS: 20 }))).toBe("gold");
+    expect(medalFor(27, parOf({ parS: 20 }))).toBe("bronze");
+    expect(medalFor(40, parOf({ parS: 20 }))).toBeNull();
+    for (const content of crafts) {
+      // a mission scores by finishing it; gates and checkpoints race the clock
+      for (const c of content.courses.filter((x) => x.kind !== "mission" || parOf(x))) {
+        const par = parOf(c);
+        expect(par, `${content.id}/${c.id} has a par time`).not.toBeNull();
+        expect(par!.gold, `${content.id}/${c.id}`).toBeLessThanOrEqual(par!.silver);
+        expect(par!.silver, `${content.id}/${c.id}`).toBeLessThanOrEqual(par!.bronze);
+      }
+    }
+  });
+});
+
+describe("the autopilot demo", () => {
+  const finish = (e: FlightEvent) => e.type === "lap" || e.type === "run" || e.type === "missionDone";
+
+  // the demo flies the course with the learner's physics: a route that crashes means the course cannot be flown
+  for (const content of crafts) {
+    const flight = flightOf(content);
+    for (const course of flight?.courses ?? []) {
+      it(`flies ${content.id}/${course.id} to the end without a crash`, () => {
+        expect(course.missions?.some((m) => m.id === DEMO_MISSION), "the planner found a route").toBe(true);
+        expect(modesFor(flight!.craft, course).map((m) => m.id)).toContain("demo");
+        const s = createSim(flight!.craft, course, flightCalc(content, content.design.default), { mode: "demo" });
+        dispatch(s, { type: "arm" });
+        const events: FlightEvent[] = [];
+        for (let i = 0; i < 240 * 100 && !s.crashed && !events.some(finish); i++) {
+          stepSim(s);
+          events.push(...drainEvents(s));
+        }
+        expect(events.find((e) => e.type === "crash"), "crash").toBeUndefined();
+        expect(events.some((e) => e.type === "takeoff" || e.type === "launch")).toBe(true);
+        const done = events.find(finish);
+        expect(done, "a lap, a run or the mission").toMatchObject({ demo: true });
+        // the demo's time never counts as the learner's best
+        expect(done && "best" in done ? done.best : false).toBe(false);
+        expect(s.bestLap).toBeNull();
+        expect(s.bestRun).toBeNull();
+      });
+    }
+  }
+
+  it("is not offered on a course it has no route for", () => {
+    const blocked: Course = { ...quad5Course, missions: [] };
+    expect(modesFor(quad5Craft, blocked).map((m) => m.id)).not.toContain("demo");
+  });
+});
+
+describe("rates", () => {
+  it("applies expo to roll and pitch only: acro yaw is the CLI's straight 200 deg/s", () => {
+    const s = createSim(quad5Craft, quad5Course, quad5Calc(), { mode: "alt" });
+    dispatch(s, { type: "arm" });
+    sticks(s, { throttle: 1 });
+    run(s, 1.5);
+    dispatch(s, { type: "mode", mode: "acro" });
+    sticks(s, { throttle: s.u, yaw: 0.5 });
+    const y0 = s.yaw;
+    run(s, 0.5);
+    // half stick for half a second: 50 deg at 200 deg/s with no expo (expo 0.7 would give about 18)
+    expect(Math.abs(s.yaw - y0)).toBeGreaterThan(40);
+    expect(Math.abs(s.yaw - y0)).toBeLessThan(55);
   });
 });

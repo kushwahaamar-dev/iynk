@@ -26,7 +26,8 @@
     "swarm": "झुंड (चार ड्रोन)",
     "figure8": "आठ के आकार का रास्ता",
     "yaw": "टेल सर्वो से यॉ का प्रदर्शन",
-    "motorfail": "मोटर फ़ेल होने की जाँच"
+    "motorfail": "मोटर फ़ेल होने की जाँच",
+    "demo": "Demo: the autopilot flies it"
   },
   "buttons": {
     "arm": "आर्म करें",
@@ -58,7 +59,9 @@
     "splits": "बीच के समय",
     "gate": "गेट {n}/{total}",
     "checkpoint": "{label} ({n}/{total})",
-    "home": "घर"
+    "home": "घर",
+    "par": "Medal times",
+    "parValue": "{gold} / {silver} / {bronze}"
   },
   "osd": {
     "disarmed": "डिसआर्म्ड",
@@ -110,7 +113,13 @@
     "windOff": "हवा बंद",
     "fpvOn": "FPV चश्मा लगाया",
     "fpvOff": "पीछा करने वाला दृश्य",
-    "armBlockedAcc": "आर्मिंग रुकी: एक्सेलेरोमीटर कैलिब्रेट नहीं है। बेंच पर एक्सेलेरोमीटर कैलिब्रेट करें चलाएँ"
+    "armBlockedAcc": "आर्मिंग रुकी: एक्सेलेरोमीटर कैलिब्रेट नहीं है। बेंच पर एक्सेलेरोमीटर कैलिब्रेट करें चलाएँ",
+    "hintDemo": "The autopilot is flying the course: switch mode to take over",
+    "demoTime": "Demo done in {time} s: the autopilot's time does not count",
+    "missionTime": "Mission complete: {time} s",
+    "missionBest": "Mission complete: {time} s (best!)",
+    "medal": "{line}. {medal} medal!",
+    "noMedal": "{line}. Bronze is {s} s"
   },
   "dirs": [
     "पूर्व",
@@ -193,5 +202,11 @@
     "flipFc": "टेक-ऑफ़ पर पलट गया: फ़्लाइट कंट्रोलर उलटा लगा है",
     "flipProps": "टेक-ऑफ़ पर पलट गया: प्रोपेलर गलत मोटरों पर लगे हैं",
     "flipMotor": "टेक-ऑफ़ पर पलट गया: मोटर की दिशा कभी जाँची ही नहीं गई (बेंच: मोटर की दिशा जाँचें)"
+  },
+  "demoHint": "The autopilot flies this course's line with the same physics you fly. Watch it, then beat it: its times never count.",
+  "medals": {
+    "gold": "Gold",
+    "silver": "Silver",
+    "bronze": "Bronze"
   }
 }

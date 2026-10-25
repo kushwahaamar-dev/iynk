@@ -1,5 +1,6 @@
 import { freshBattery, currentFor, IDLE_AMPS, LIMITS, stepBattery, voltageFactor, type BatteryState } from "./battery";
 import { bodyAxes, clamp, DEG, expo, G, wave, wrapDeg, type Vec3 } from "./math";
+import { DEMO_MISSION } from "./route";
 import { buildSolids, collide, passCheckpoint, throughGate, type Solid } from "./world";
 import type {
   CalcOutputs,
@@ -12,6 +13,7 @@ import type {
   FlightMode,
   Mission,
   Sticks,
+  Waypoint,
 } from "./types";
 
 /** Fixed physics step. Every result is a pure function of the inputs per step. */
@@ -75,7 +77,9 @@ export interface SimState {
   phase: Phase;
   wp: number;
   wpHold: number;
+  legFrom: Vec3 | null; // the demo flies the line from here to the next waypoint (null: straight at it)
   spray: boolean;
+  assisted: boolean; // the autopilot demo flew part of this lap or run: it never sets a best time
   followers: Array<{ p: Vec3; v: Vec3; yaw: number }>;
   outside: boolean;
   farOut: boolean;
@@ -159,7 +163,9 @@ export function resetFlight(s: SimState) {
   s.phase = "climb";
   s.wp = 0;
   s.wpHold = 0;
+  s.legFrom = null;
   s.spray = false;
+  s.assisted = false;
   s.outside = false;
   s.farOut = false;
   s.ceilingWarned = false;
@@ -181,6 +187,27 @@ const emit = (s: SimState, e: EventBody) => {
 
 export function ceilingOf(s: SimState) {
   return s.course.ceiling ?? s.craft.ceiling;
+}
+
+/** Whether the course's gates count laps now: on a gate course in every mode, otherwise in race modes. */
+function countsGates(s: SimState) {
+  const kind = s.course.kind;
+  return s.course.gates.length > 0 && (kind ? kind === "gates" : s.mode.task === "race");
+}
+
+/** Whether the checkpoints count a run now: on a checkpoint or mission course in every mode, else in range modes. */
+function countsCheckpoints(s: SimState) {
+  const kind = s.course.kind;
+  return s.course.checkpoints.length > 0 && (kind ? kind !== "gates" : s.mode.task === "range");
+}
+
+/** Where the demo route picks up: the first point leading to the next gate or checkpoint (the start when grounded). */
+function demoResume(s: SimState) {
+  const route = currentMission(s, "demo");
+  if (!route || !s.airborne) return 0;
+  const next = countsGates(s) ? s.gate : countsCheckpoints(s) ? s.checkpoint : 0;
+  const i = route.waypoints.findIndex((w, k) => k > 0 && (w.leg ?? 0) >= next);
+  return i < 0 ? 0 : i;
 }
 
 /** Applies one action. Physics only advances in stepSim. */
@@ -217,8 +244,9 @@ export function dispatch(s: SimState, a: FlightAction) {
       if (was.throttle === "manual" && next.throttle === "climb") s.sticks = { ...s.sticks, throttle: 0.5 };
       s.hold = null;
       s.phase = "climb";
-      s.wp = 0;
+      s.wp = next.task === "demo" ? demoResume(s) : 0;
       s.wpHold = 0;
+      s.legFrom = next.task === "demo" && s.airborne ? [s.p[0], s.p[1], s.p[2]] : null;
       if (next.task === "motorfail" && s.armed && s.motorsOut.length === 0) {
         const m = Math.min(s.calc.motors, 3);
         s.motorsOut = [m];
@@ -284,6 +312,7 @@ export function stepSim(s: SimState) {
     s.roll += 6 * dt;
   }
   if (s.armed) s.spin += dt * (6 + 60 * s.u * s.u);
+  if (s.armed && s.mode.task === "demo") s.assisted = true;
   s.t += dt;
   s.step++;
 }
@@ -314,7 +343,7 @@ function autopilot(s: SimState): Command {
   const speed = c.loiterSpeed ?? 5;
   const vd: [number, number] | null = (() => {
     if (m.task === "rtl" || m.task === "qrtl") return rtlVelocity(s, cmd, speed);
-    if (m.task === "mission" || m.task === "figure8") return missionVelocity(s, cmd, speed);
+    if (m.task === "mission" || m.task === "figure8" || m.task === "demo") return missionVelocity(s, cmd, speed);
     if (m.position) {
       const st = s.sticks;
       const fx = Math.cos(s.yaw * DEG), fy = Math.sin(s.yaw * DEG);
@@ -369,42 +398,86 @@ function rtlVelocity(s: SimState, cmd: Command, speed: number): [number, number]
   return [(hx - s.p[0]) * 0.8, (hy - s.p[1]) * 0.8];
 }
 
-function currentMission(s: SimState): Mission | null {
+function currentMission(s: SimState, task = s.mode.task): Mission | null {
   const ms = s.course.missions ?? [];
-  return ms.find((m) => m.id === s.mode.missionId) ?? ms[0] ?? null;
+  if (task === "demo") return ms.find((m) => m.id === DEMO_MISSION) ?? null;
+  const own = ms.filter((m) => m.id !== DEMO_MISSION);
+  return own.find((m) => m.id === s.mode.missionId) ?? own[0] ?? null;
 }
 
 function missionVelocity(s: SimState, cmd: Command, speed: number): [number, number] {
   const mission = currentMission(s);
   if (!mission || !s.armed) return [0, 0];
+  const rate = s.craft.climbRate;
   if (s.wp >= mission.waypoints.length) {
     if (mission.rtl) return rtlVelocity(s, cmd, speed);
-    cmd.climb = 0;
+    // after a landing it stays down; otherwise it holds where it finished
+    cmd.climb = isLanding(mission.waypoints[mission.waypoints.length - 1]) ? -0.5 / rate : 0;
     return [0, 0];
   }
+  // the demo flies a tighter line through gates and rings, and talks through the course's own events instead
+  const demo = s.mode.task === "demo";
   const w = mission.waypoints[s.wp];
   const dx = w.x - s.p[0], dy = w.y - s.p[1], dz = w.z - s.p[2];
   const d = Math.hypot(dx, dy);
-  cmd.climb = clamp((dz * 0.8) / s.craft.climbRate, -1, 1);
+  const landing = isLanding(w);
+  const line = demo ? lineVelocity(s, w, speed) : null;
+  cmd.climb = line ? clamp(line[2] / rate, -1, 1) : clamp((dz * 0.8) / rate, -1, 1);
+  // over the pad it keeps coming down at a steady 0.35 m/s instead of easing off just above the ground
+  if (landing && d < 1.5) cmd.climb = Math.min(cmd.climb, -0.35 / rate);
   if (d > 1.5) headTo(s, cmd, w.x, w.y);
-  if (Math.hypot(d, dz) < 1.0) {
+  if (landing ? d < (w.r ?? 1.0) && s.p[2] < 0.05 : Math.hypot(d, dz) < (w.r ?? 1.0)) {
     s.wpHold += STEP;
     if (s.wpHold >= (w.hold ?? 0)) {
       if (w.action === "spray-on") s.spray = true;
       if (w.action === "spray-off") s.spray = false;
-      emit(s, { type: "missionStep", index: s.wp + 1, total: mission.waypoints.length, label: w.label, action: w.action });
+      const scored = demo || s.course.kind === "mission";
+      if (!scored) emit(s, { type: "missionStep", index: s.wp + 1, total: mission.waypoints.length, label: w.label, action: w.action });
       s.wp++;
       s.wpHold = 0;
+      s.legFrom = [w.x, w.y, w.z];
       if (s.wp >= mission.waypoints.length) {
-        emit(s, { type: "missionDone" });
-        s.phase = "climb";
+        if (mission.loopFrom !== undefined) s.wp = mission.loopFrom;
+        else {
+          if (!scored) emit(s, { type: "missionDone" });
+          s.phase = "climb";
+        }
       }
     }
-    return [dx * 0.8, dy * 0.8];
+    if (!line) return [dx * 0.8, dy * 0.8];
   }
+  if (line) return [line[0], line[1]];
   const v = Math.min(w.speed ?? speed, d * 0.6) / Math.max(1e-6, d);
   return [dx * v, dy * v];
 }
+
+/**
+ * The demo's velocity: along the 3D line from the last waypoint to this one, pulled back onto it when it drifts
+ * (after a hairpin, in wind), and never faster along it than the climb rate lets the height keep up.
+ */
+function lineVelocity(s: SimState, w: Waypoint, speed: number): Vec3 {
+  const p = s.p, b: Vec3 = [w.x, w.y, w.z];
+  const toB: Vec3 = [b[0] - p[0], b[1] - p[1], b[2] - p[2]];
+  const rem = Math.hypot(toB[0], toB[1], toB[2]);
+  const a = s.legFrom;
+  const seg: Vec3 | null = a ? [b[0] - a[0], b[1] - a[1], b[2] - a[2]] : null;
+  const len = seg ? Math.hypot(seg[0], seg[1], seg[2]) : 0;
+  const along = a && seg && len > 1e-3 ? ((p[0] - a[0]) * seg[0] + (p[1] - a[1]) * seg[1] + (p[2] - a[2]) * seg[2]) / len : len;
+  if (!a || !seg || len < 1e-3 || along >= len) {
+    const k = Math.min(w.speed ?? speed, rem * 1.2 + 0.2) / Math.max(1e-6, rem);
+    return [toB[0] * k, toB[1] * k, toB[2] * k];
+  }
+  const u: Vec3 = [seg[0] / len, seg[1] / len, seg[2] / len];
+  const t = Math.max(0, along);
+  const near: Vec3 = [a[0] + u[0] * t - p[0], a[1] + u[1] * t - p[1], a[2] + u[2] * t - p[2]];
+  const climbCap = Math.abs(u[2]) > 1e-3 ? (0.85 * s.craft.climbRate) / Math.abs(u[2]) : Infinity;
+  // off the line (a hairpin before a gate) it slows down along it until the correction has pulled it back
+  const off = Math.hypot(near[0], near[1], near[2]);
+  const v = Math.min(w.speed ?? speed, rem * 1.2 + 0.2, climbCap) * clamp(1 - off / 0.6, 0.15, 1);
+  return [u[0] * v + near[0] * 2, u[1] * v + near[1] * 2, u[2] * v + near[2] * 2];
+}
+
+const isLanding = (w: Waypoint) => w.action === "land" || w.z <= 0.01;
 
 function multirotorStep(s: SimState, dt: number) {
   const c = s.craft, calc = s.calc, m = s.mode, st = s.sticks;
@@ -440,7 +513,8 @@ function multirotorStep(s: SimState, dt: number) {
   }
 
   // yaw: props' reaction torque, or the tricopter's tail servo
-  const yawCmd = auto.yawRate !== null ? -auto.yawRate / (c.yawRate * (m.rateScale ?? 1)) : expo(st.yaw, e);
+  // expo shapes roll and pitch only: the CLIs set yaw with no expo (quad5: yaw_rc_rate = yaw_srate = 20)
+  const yawCmd = auto.yawRate !== null ? -auto.yawRate / (c.yawRate * (m.rateScale ?? 1)) : st.yaw;
   if (c.tailServo) {
     const target = clamp(yawCmd, -1, 1) * c.tailServo.maxDeg;
     const stepMax = c.tailServo.rateDegS * dt;
@@ -559,8 +633,14 @@ function wingStep(s: SimState, dt: number) {
     return;
   }
   const rth = s.mode.task === "rth";
+  const demo = s.mode.task === "demo";
+  const target = demo && live ? wingTarget(s) : null;
+  const gliding = !!target && target.z < 1.5;
   let thr = live ? clamp(st.throttle, 0, 1) : 0;
   if (rth && live) thr = Math.min(0.8, 1.25 * calc.hoverThrottle + (s.p[2] < 13 ? 0.15 : 0));
+  // the demo holds a slow cruise (a tight turning circle) and climbs on throttle
+  if (demo && live) thr = clamp(calc.hoverThrottle + 0.08 * (w.vmin * 1.35 - s.airspeed) + (s.p[2] < (target?.z ?? 13) - 1 ? 0.12 : 0), 0.1, 0.85);
+  if (gliding && live) thr = s.airspeed < w.vmin * 1.15 ? 0.25 : 0;
   s.u += (thr - s.u) * Math.min(1, 8 * dt);
   if (!s.launched) {
     if (live && thr > 0.25) {
@@ -577,16 +657,18 @@ function wingStep(s: SimState, dt: number) {
     }
   }
   // attitude
-  if (rth) {
-    const [hx, hy] = s.course.pad;
+  if (rth || demo) {
+    // home: circle the pad at 22 m; the demo: steer for the route's next point, then circle home
+    const [hx, hy] = target ? [target.x, target.y] : s.course.pad;
     const R = 22;
     const d = Math.hypot(hx - s.p[0], hy - s.p[1]);
     let head = Math.atan2(hy - s.p[1], hx - s.p[0]);
-    if (d < 2.2 * R) head += Math.PI / 2 - clamp((d - R) / R, -1, 1) * (Math.PI / 3);
+    if (!target && d < 2.2 * R) head += Math.PI / 2 - clamp((d - R) / R, -1, 1) * (Math.PI / 3);
     const err = wrapDeg(head / DEG - s.yaw) * DEG;
-    const bank = clamp(1.4 * err, -0.6, 0.6) / DEG;
+    const maxBank = demo ? Math.min(w.bankLimit, 50) * DEG : 0.6;
+    const bank = clamp(1.4 * err, -maxBank, maxBank) / DEG;
     s.roll += (bank - s.roll) * Math.min(1, 3.5 * dt);
-    const pitchT = clamp(-0.05 * (15 - s.p[2]), -0.35, 0.3) / DEG;
+    const pitchT = clamp(-0.05 * ((target?.z ?? 15) - s.p[2]), -0.35, gliding ? 0.1 : 0.3) / DEG;
     s.pitch += (pitchT - s.pitch) * Math.min(1, 3 * dt);
   } else if (s.mode.attitude === "angle") {
     s.roll += (st.roll * w.bankLimit - s.roll) * Math.min(1, 3.5 * dt);
@@ -626,6 +708,20 @@ function wingStep(s: SimState, dt: number) {
   s.v = [fwd[0] * s.airspeed + wx, fwd[1] * s.airspeed + wy, fwd[2] * s.airspeed - s.sink];
   for (let i = 0; i < 3; i++) s.p[i] += s.v[i] * dt;
   groundContact(s, true);
+}
+
+/** The demo route's next point for a wing, moving on once the wing passes close by (it cannot stop there). */
+function wingTarget(s: SimState) {
+  const route = currentMission(s, "demo");
+  if (!route) return null;
+  if (s.wp >= route.waypoints.length) {
+    if (route.loopFrom === undefined) return null;
+    s.wp = route.loopFrom;
+  }
+  const w = route.waypoints[s.wp];
+  const r = w.r ?? 6;
+  if (Math.hypot(w.x - s.p[0], w.y - s.p[1]) < r && Math.abs(w.z - s.p[2]) < Math.max(3, r)) s.wp++;
+  return w;
 }
 
 function followersStep(s: SimState, dt: number) {
@@ -693,7 +789,7 @@ function worldChecks(s: SimState) {
   // take-off and landing
   if (!s.airborne && s.armed && s.p[2] > 0.3) {
     s.airborne = true;
-    if (s.runStart === null && s.mode.task === "range") s.runStart = s.t;
+    if (s.runStart === null && countsCheckpoints(s)) startRun(s);
     emit(s, { type: "takeoff" });
   }
   if (s.p[2] > 0.5) s.climbedOut = true;
@@ -715,7 +811,7 @@ function worldChecks(s: SimState) {
     }
   }
   // race gates
-  if (s.mode.task === "race" && course.gates.length && !s.crashed) {
+  if (countsGates(s) && !s.crashed) {
     const g = course.gates[s.gate];
     if (throughGate(g, prev, s.p)) {
       const n = course.gates.length;
@@ -725,12 +821,13 @@ function worldChecks(s: SimState) {
         if (s.lapStart !== null && s.splits.length === n - 1) {
           const lap = now - s.lapStart;
           s.splits.push(now - s.lastGateT);
-          const best = s.bestLap === null || lap < s.bestLap;
+          const best = !s.assisted && (s.bestLap === null || lap < s.bestLap);
           if (best) s.bestLap = lap;
           s.laps++;
-          emit(s, { type: "lap", time: lap, best, splits: s.splits.slice() });
+          emit(s, { type: "lap", time: lap, best, splits: s.splits.slice(), ...demoFlag(s) });
         }
         s.lapStart = now;
+        s.assisted = s.mode.task === "demo";
         s.splits = [];
       } else {
         split = now - s.lastGateT;
@@ -741,8 +838,8 @@ function worldChecks(s: SimState) {
       s.gate = (s.gate + 1) % n;
     }
   }
-  // range checkpoints
-  if (s.mode.task === "range" && course.checkpoints.length && !s.crashed) {
+  // range checkpoints, or the goals of a mission
+  if (countsCheckpoints(s) && !s.crashed) {
     const cp = course.checkpoints[s.checkpoint];
     if (passCheckpoint(cp, prev, s.p, speed)) {
       const n = course.checkpoints.length;
@@ -751,12 +848,14 @@ function worldChecks(s: SimState) {
       if (s.checkpoint >= n) {
         const start = s.runStart ?? 0;
         const time = s.t - start;
-        const best = s.bestRun === null || time < s.bestRun;
+        const best = !s.assisted && (s.bestRun === null || time < s.bestRun);
         if (best) s.bestRun = time;
         s.laps++;
-        emit(s, { type: "run", time, best });
+        if (course.kind === "mission") emit(s, { type: "missionDone", time, best, ...demoFlag(s) });
+        else emit(s, { type: "run", time, best, ...demoFlag(s) });
         s.checkpoint = 0;
-        s.runStart = s.airborne ? s.t : null;
+        if (s.airborne) startRun(s);
+        else s.runStart = null;
       }
     }
   }
@@ -776,6 +875,13 @@ function worldChecks(s: SimState) {
     emit(s, { type: "ceiling", m: ceil });
   } else if (s.p[2] < ceil - 4) s.ceilingWarned = false;
 }
+
+function startRun(s: SimState) {
+  s.runStart = s.t;
+  s.assisted = s.mode.task === "demo";
+}
+
+const demoFlag = (s: SimState): { demo?: true } => (s.assisted ? { demo: true } : {});
 
 function batteryStep(s: SimState, dt: number) {
   const calc = s.calc;
@@ -801,11 +907,11 @@ export function drainEvents(s: SimState): FlightEvent[] {
 
 function nextTarget(s: SimState): FlightFrame["next"] {
   const course = s.course;
-  if (s.mode.task === "race" && course.gates.length) {
+  if (countsGates(s)) {
     const g = course.gates[s.gate];
     return { x: g.x, y: g.y, z: (g.z ?? 0) + g.h / 2, kind: "gate", n: s.gate + 1, total: course.gates.length, label: "" };
   }
-  if (s.mode.task === "range" && course.checkpoints.length) {
+  if (countsCheckpoints(s)) {
     const cp = course.checkpoints[s.checkpoint];
     return { x: cp.x, y: cp.y, z: cp.z, kind: "checkpoint", n: s.checkpoint + 1, total: course.checkpoints.length, label: cp.label };
   }

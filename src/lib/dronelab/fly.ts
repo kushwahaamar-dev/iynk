@@ -119,23 +119,3 @@ export function craftPatch<C extends object>(craft: C, s: FlyState): C {
   }
   return Object.keys(patch).length ? { ...craft, ...patch } : craft;
 }
-
-/** The content course a flight course belongs to: the same id, or the craft id in front ("quad5-bando"). */
-export function contentCourseId(content: DroneContent, flightCourseId: string): string | null {
-  const hit = content.courses.find((c) => c.id === flightCourseId || `${content.id}-${c.id}` === flightCourseId);
-  return hit?.id ?? null;
-}
-
-const EVENT_KIND = { lap: "gates", run: "checkpoints", missionDone: "mission" } as const;
-
-/**
- * The content course a finished flight counts for. One range can hold the gates and the checkpoints at once,
- * so the event says which: a lap is the gate course, a range run the checkpoint course, a finished mission
- * the mission. When a craft has several of that kind, the one named like the flight course wins.
- */
-export function courseForEvent(content: DroneContent, flightCourseId: string, event: keyof typeof EVENT_KIND): string | null {
-  const kind = EVENT_KIND[event];
-  const named = contentCourseId(content, flightCourseId);
-  const sameKind = content.courses.filter((c) => c.kind === kind);
-  return (sameKind.find((c) => c.id === named) ?? sameKind[0])?.id ?? null;
-}

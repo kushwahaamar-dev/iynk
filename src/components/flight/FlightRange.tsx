@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
 import { FigureFrame, type FigureEvent, type FigureHandle } from "@/components/figure";
 import { Button, Kbd, Stat } from "@/components/ui";
+import type { ParTimes } from "@/content/schema";
 import { useLocale } from "@/i18n/client";
 import type { Messages } from "@/i18n/namespaces";
 import { createTranslator } from "@/i18n/translate";
@@ -13,6 +14,8 @@ import {
   DEFAULT_PAD,
   FLIGHT_KEYS,
   isPadMapping,
+  medalFor,
+  modesFor,
   padSticks,
   readSticks,
   STICK_KEYS,
@@ -39,9 +42,11 @@ export type FlightRangeProps = {
   faults?: CraftFaults;
   /** The flight namespace for this language (load it on the server). */
   t: FlightStrings;
-  /** Translations of the course's title and checkpoint labels. */
+  /** Translations of the course's title, checkpoint labels and the craft's own mode titles and hints. */
   courseText?: CourseText;
   initialMode?: string;
+  /** Medal times for the course: a finished lap, run or mission says which medal it earned. */
+  par?: ParTimes | null;
   /** armed, checkpoint, lap, crash, landed, battery, run (best range time), missionStep... */
   onEvent?: (event: FlightEvent) => void;
   /** The flight store, for the drone lab store and the LabDock to observe and drive. */
@@ -73,7 +78,13 @@ function subscribeCoarse(cb: () => void) {
 }
 const isCoarse = () => window.matchMedia(COARSE).matches;
 
-export function FlightRange({ craft, course, calc, faults, t: dict, courseText, initialMode, onEvent, onSession, onFigure, className }: FlightRangeProps) {
+const AUTOPILOT = new Set(["rtl", "mission", "figure8", "qrtl", "rth", "swarm", "transition"]);
+
+// a gate course races laps in every mode; a course with no kind scores what the mode flies
+const scoresGates = (course: Course, mode: { task: string }) => course.kind === "gates" || (!course.kind && mode.task === "race");
+const scoresCheckpoints = (course: Course, mode: { task: string }) => (course.kind ? course.kind !== "gates" : mode.task === "range");
+
+export function FlightRange({ craft, course, calc, faults, t: dict, courseText, initialMode, par, onEvent, onSession, onFigure, className }: FlightRangeProps) {
   const locale = useLocale();
   const t = useMemo(() => createTranslator(locale, dict, "flight"), [locale, dict]);
   const label = useCallback((en: string) => courseText?.labels?.[en] ?? en, [courseText]);
@@ -116,7 +127,8 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
   const [pad, setPadState] = useState<PadMapping>(() => (typeof window === "undefined" ? DEFAULT_PAD : loadPad()));
   const padRef = useRef(pad);
   const input = useRef(createInput());
-  const mode = craft.modes.find((m) => m.id === snap.mode) ?? craft.modes[0];
+  const modes = useMemo(() => modesFor(craft, course), [craft, course]);
+  const mode = modes.find((m) => m.id === snap.mode) ?? modes[0];
   const climb = mode.throttle === "climb";
   const climbRef = useRef(climb);
   useEffect(() => {
@@ -137,16 +149,40 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
   }, [pad]);
 
   const modeTitle = useCallback(
-    (id: string) => (id === "range" ? t("modes.range", { title: courseTitle }) : (dict.modes as Record<string, string>)[id] ?? id),
-    [t, dict, courseTitle],
+    (id: string) =>
+      courseText?.modes?.[id] ?? (id === "range" ? t("modes.range", { title: courseTitle }) : (dict.modes as Record<string, string>)[id] ?? id),
+    [t, dict, courseTitle, courseText],
+  );
+  const modeHint = mode.task === "demo" ? dict.demoHint : courseText?.hints?.[mode.id];
+
+  // the line for a finished lap, run or mission: the demo's never counts, the learner's earns a medal
+  const finished = useCallback(
+    (e: { time: number; demo?: boolean }, line: string) => {
+      if (e.demo) return t("msg.demoTime", { time: e.time.toFixed(1) });
+      if (!par) return line;
+      const medal = medalFor(e.time, par);
+      return medal ? t("msg.medal", { line, medal: dict.medals[medal] }) : t("msg.noMedal", { line, s: par.bronze });
+    },
+    [t, dict, par],
   );
 
   const describe = useCallback(
     (e: FlightEvent): string | null => {
       switch (e.type) {
         case "armed": {
-          const m = craft.modes.find((x) => x.id === e.mode) ?? mode;
-          const hint = m.task === "race" ? t("msg.hintRace") : m.task === "range" ? t("msg.hintRange") : ["rtl", "mission", "figure8", "qrtl", "rth"].includes(m.task) ? t("msg.hintAuto") : m.throttle === "climb" ? t("msg.hintAlt") : t("msg.hintManual");
+          const m = modes.find((x) => x.id === e.mode) ?? mode;
+          const hint =
+            m.task === "demo"
+              ? t("msg.hintDemo")
+              : AUTOPILOT.has(m.task)
+                ? t("msg.hintAuto")
+                : scoresGates(course, m)
+                  ? t("msg.hintRace")
+                  : scoresCheckpoints(course, m)
+                    ? t("msg.hintRange")
+                    : m.throttle === "climb"
+                      ? t("msg.hintAlt")
+                      : t("msg.hintManual");
           return t("msg.armed", { hint });
         }
         case "disarmed":
@@ -169,15 +205,16 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
         case "gate":
           return t("msg.gate", { n: e.index, total: e.total });
         case "lap":
-          return t(e.best ? "msg.lapBest" : "msg.lap", { time: fmtTime(e.time) });
+          return finished(e, t(e.best ? "msg.lapBest" : "msg.lap", { time: fmtTime(e.time) }));
         case "checkpoint":
           return t("msg.checkpoint", { label: label(e.label) });
         case "run":
-          return t(e.best ? "msg.runBest" : "msg.runDone", { title: courseTitle, time: e.time.toFixed(1) });
+          return finished(e, t(e.best ? "msg.runBest" : "msg.runDone", { title: courseTitle, time: e.time.toFixed(1) }));
         case "missionStep":
           return t("msg.missionStep", { n: e.index, total: e.total, label: label(e.label) });
         case "missionDone":
-          return t("msg.missionDone");
+          if (e.time === undefined) return t("msg.missionDone");
+          return finished({ time: e.time, demo: e.demo }, t(e.best ? "msg.missionBest" : "msg.missionTime", { time: e.time.toFixed(1) }));
         case "outOfField":
           return t("msg.outOfField");
         case "farOut":
@@ -200,7 +237,7 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
           return null;
       }
     },
-    [t, dict, craft.modes, mode, label, courseTitle, modeTitle],
+    [t, dict, modes, mode, label, courseTitle, modeTitle, finished, course],
   );
 
   const say = useCallback((text: string) => {
@@ -334,11 +371,11 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
   const figureStrings = useMemo(() => {
     const s: Record<string, string> = { figureTitle: dict.figureTitle };
     for (const [k, v] of Object.entries(dict.osd)) s[`osd.${k}`] = v;
-    for (const m of craft.modes) s[`mode.${m.id}`] = modeTitle(m.id);
+    for (const m of modes) s[`mode.${m.id}`] = modeTitle(m.id);
     for (const cp of course.checkpoints) s[cp.label] = label(cp.label);
     for (const p of course.prims) if ((p.type === "flat" || p.type === "disc") && p.label) s[p.label] = label(p.label);
     return s;
-  }, [dict, craft.modes, course, label, modeTitle]);
+  }, [dict, modes, course, label, modeTitle]);
 
   const initial = useMemo(
     () => ({
@@ -362,7 +399,7 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
       : next?.kind === "checkpoint" || next?.kind === "waypoint"
         ? t("stats.checkpoint", { label: label(next.label), n: next.n, total: next.total })
         : dict.stats.home;
-  const isRace = mode.task === "race";
+  const isRace = scoresGates(course, mode);
   const best = isRace ? snap.bestLap : snap.bestRun;
 
   return (
@@ -375,7 +412,7 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
             onChange={(e) => act({ type: "mode", mode: e.target.value })}
             className="rounded-lg border-2 border-[var(--ink,#231e16)] bg-[var(--paper,#f2efe7)] px-2 py-1 text-sm font-normal"
           >
-            {craft.modes.map((m) => (
+            {modes.map((m) => (
               <option key={m.id} value={m.id}>
                 {modeTitle(m.id)}
               </option>
@@ -401,6 +438,7 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
           {dict.buttons.legend}
         </Button>
       </div>
+      {modeHint && <p className="mb-2 text-sm text-muted">{modeHint}</p>}
       {snap.pendingDesign && <p className="mb-2 text-sm">{dict.pendingDesign}</p>}
       <div className="relative">
         <FigureFrame ref={setFrame} src="/figures/flight/range.html" title={dict.figureTitle} initial={initial} onEvent={onFigureEvent} strings={figureStrings} controls={false} />
@@ -429,6 +467,7 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
         <Stat label={dict.stats.best} value={best === null ? dict.stats.noBest : isRace ? fmtTime(best) : best.toFixed(1)} unit={best === null ? undefined : "s"} />
         <Stat label={dict.stats.laps} value={String(snap.laps)} />
         <Stat label={dict.stats.crashes} value={String(snap.crashes)} />
+        {par && <Stat label={dict.stats.par} value={t("stats.parValue", { gold: par.gold, silver: par.silver, bronze: par.bronze })} unit="s" />}
         {isRace && snap.splits.length > 0 && <Stat label={dict.stats.splits} value={snap.splits.map(fmtTime).join(" · ")} unit="s" />}
       </dl>
       {showPad && (

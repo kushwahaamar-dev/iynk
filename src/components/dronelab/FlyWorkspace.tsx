@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import type { DroneContent } from "@/content/schema";
-import type { DroneId } from "@/content/ids";
 import { LabDock } from "@/components/dock/LabDock";
 import type { FigureHandle } from "@/components/figure";
 import { FlightRange } from "@/components/flight/FlightRange";
@@ -14,30 +13,15 @@ import type { Messages } from "@/i18n/namespaces";
 import { calc } from "@/lib/drone/calc";
 import { designInput } from "@/lib/drone/design";
 import { canArm, droneProgressKeys, type ArmRule } from "@/lib/dronelab/bench";
-import {
-  contentCourseId,
-  courseForEvent,
-  craftPatch,
-  createFlyStore,
-  flightCalc,
-  flightFaults,
-  flyPick,
-  flyRules,
-  type FlySource,
-} from "@/lib/dronelab/fly";
+import { craftPatch, createFlyStore, flightCalc, flightFaults, flyPick, flyRules, type FlySource } from "@/lib/dronelab/fly";
 import { readBenchSummary } from "@/lib/dronelab/session";
-import { quad5Course, quad5Craft, type Course as FlightCourse, type FlightCraft, type FlightEvent } from "@/lib/flight";
+import { flightOf, medalFor, parOf, startMode, type CourseText, type FlightEvent } from "@/lib/flight";
 import { useBest } from "@/lib/progress/hooks";
 import { progressKey } from "@/lib/progress/keys";
 import { markDone, recordBest } from "@/lib/progress/progress";
 import { CraftProgress } from "./CraftProgress";
 import { KeyboardHelp } from "./KeyboardHelp";
 import { contentT, droneLabT, formatNumber, type ContentT, type DroneLabMessages, type DroneLabT } from "./text";
-
-// The flight data each craft flies with (src/lib/flight). Crafts appear here as the flight package adds them.
-const RANGE: Partial<Record<DroneId, { craft: FlightCraft; courses: FlightCourse[] }>> = {
-  quad5: { craft: quad5Craft, courses: [quad5Course] },
-};
 
 type Props = {
   lang: Locale;
@@ -54,9 +38,11 @@ export function FlyWorkspace({ lang, content, text, messages, flight }: Props) {
   const state = useSyncExternalStore(store.subscribe, store.getState, store.getState);
   const [figure, setFigure] = useState<FigureHandle | null>(null);
   const id = content.id;
-  const range = RANGE[id];
-  const [courseIndex, setCourseIndex] = useState(0);
-  const flightCourse = range?.courses[courseIndex];
+  // every craft flies from its content module (src/lib/flight/registry.ts); the courses keep their content ids
+  const range = useMemo(() => flightOf(content), [content]);
+  const flightCourse = range?.courses.find((c) => c.id === state.course);
+  const course = content.courses.find((c) => c.id === state.course);
+  const par = course ? parOf(course) : null;
 
   useEffect(() => {
     store.dispatch({ type: "bench/loaded", bench: readBenchSummary(id) });
@@ -68,23 +54,27 @@ export function FlyWorkspace({ lang, content, text, messages, flight }: Props) {
   const craft = useMemo(() => (range ? craftPatch(range.craft, state) : null), [range, state]);
   const rules = flyRules(state);
   const keys = useMemo(() => droneProgressKeys(content), [content]);
-  const courseText = useMemo(() => {
-    if (!flightCourse) return undefined;
-    const cid = contentCourseId(content, flightCourse.id);
-    const course = cid ? content.courses.find((c) => c.id === cid) : undefined;
-    return course ? { title: ct(course.title) } : undefined;
-  }, [content, ct, flightCourse]);
+  // the course's own words and the craft's own mode names, in the page's language (a missing key falls back)
+  const courseText = useMemo((): CourseText | undefined => {
+    if (!course) return undefined;
+    const some = (pairs: [string, string][]) => Object.fromEntries(pairs.filter(([, key]) => ct.has(key)).map(([k, key]) => [k, ct(key)]));
+    return {
+      title: ct(course.title),
+      labels: some(course.goals.map((g) => [g.label, g.label])),
+      modes: some(content.flight.modes.map((m) => [m.id, m.title])),
+      hints: some(content.flight.modes.map((m) => [m.id, m.hint])),
+    };
+  }, [content, ct, course]);
 
+  // a finished lap, run or mission counts for the course flown; the autopilot demo's never does
   const onEvent = useCallback(
     (event: FlightEvent) => {
-      if (!flightCourse || (event.type !== "lap" && event.type !== "run" && event.type !== "missionDone")) return;
-      const cid = courseForEvent(content, flightCourse.id, event.type);
-      if (!cid) return;
-      const key = progressKey.droneCourse(id, cid);
-      if (event.type !== "missionDone") recordBest(key, event.time, "lower");
+      if (!flightCourse || (event.type !== "lap" && event.type !== "run" && event.type !== "missionDone") || event.demo) return;
+      const key = progressKey.droneCourse(id, flightCourse.id);
+      if (event.time !== undefined) recordBest(key, event.time, "lower");
       markDone(key);
     },
-    [content, flightCourse, id],
+    [flightCourse, id],
   );
 
   const sourceOptions: { value: FlySource; label: string }[] = [
@@ -128,6 +118,8 @@ export function FlyWorkspace({ lang, content, text, messages, flight }: Props) {
               faults={faults}
               t={flight}
               courseText={courseText}
+              initialMode={startMode(content, flightCourse.id)}
+              par={par}
               onEvent={onEvent}
               onFigure={setFigure}
             />
@@ -164,23 +156,17 @@ export function FlyWorkspace({ lang, content, text, messages, flight }: Props) {
                 {t("fly.courses")}
               </h2>
               <ul className="space-y-2">
-                {content.courses.map((course) => (
+                {content.courses.map((c) => (
                   <CourseRow
-                    key={course.id}
+                    key={c.id}
                     content={content}
-                    courseId={course.id}
+                    courseId={c.id}
                     lang={lang}
                     t={t}
                     ct={ct}
-                    active={flightCourse ? onRange(content, flightCourse.id, course.id) : false}
-                    onFly={
-                      range
-                        ? () => {
-                            const i = range.courses.findIndex((fc) => onRange(content, fc.id, course.id));
-                            if (i >= 0) setCourseIndex(i);
-                          }
-                        : undefined
-                    }
+                    medals={flight.medals}
+                    active={c.id === state.course}
+                    onFly={range ? () => store.dispatch({ type: "course", id: c.id }) : undefined}
                   />
                 ))}
               </ul>
@@ -191,12 +177,6 @@ export function FlyWorkspace({ lang, content, text, messages, flight }: Props) {
       </div>
     </div>
   );
-}
-
-/** Whether a content course is flown on this flight course (by its id, or as the range's gates/checkpoints/mission). */
-function onRange(content: DroneContent, flightCourseId: string, courseId: string): boolean {
-  if (contentCourseId(content, flightCourseId) === courseId) return true;
-  return (["lap", "run", "missionDone"] as const).some((e) => courseForEvent(content, flightCourseId, e) === courseId);
 }
 
 function DesignSummary({
@@ -268,6 +248,7 @@ function CourseRow({
   lang,
   t,
   ct,
+  medals,
   active,
   onFly,
 }: {
@@ -276,11 +257,15 @@ function CourseRow({
   lang: Locale;
   t: DroneLabT;
   ct: ContentT;
+  medals: Messages["flight"]["medals"];
   active: boolean;
   onFly?: () => void;
 }) {
   const course = content.courses.find((c) => c.id === courseId)!;
   const best = useBest(progressKey.droneCourse(content.id, course.id));
+  const par = parOf(course);
+  const medal = best !== undefined ? medalFor(best, par) : null;
+  const s = (v: number) => formatNumber(lang, v, v % 1 ? 1 : 0);
   return (
     <li className={`rounded-ink border-2 bg-surface p-3 ${active ? "border-ink" : "border-line"}`}>
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -293,12 +278,18 @@ function CourseRow({
         >
           {ct(course.title)}
         </button>
-        <span className="font-ui text-xs font-bold">
-          {best !== undefined ? t("fly.best", { s: formatNumber(lang, best, 2) }) : t("fly.noBest")}
-          {course.parS ? ` · ${t("fly.par", { s: formatNumber(lang, course.parS, 0) })}` : ""}
+        <span className="font-ui text-xs font-bold" data-testid={`best-${course.id}`}>
+          {best === undefined
+            ? t("fly.noBest")
+            : medal
+              ? t("fly.bestMedal", { s: formatNumber(lang, best, 2), medal: medals[medal] })
+              : t("fly.best", { s: formatNumber(lang, best, 2) })}
         </span>
       </div>
       <p className="mt-1 text-sm text-muted">{ct(course.brief)}</p>
+      {par ? (
+        <p className="mt-1 font-ui text-xs text-muted">{t("fly.medalTimes", { gold: s(par.gold), silver: s(par.silver), bronze: s(par.bronze) })}</p>
+      ) : null}
     </li>
   );
 }

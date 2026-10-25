@@ -26,7 +26,8 @@
     "swarm": "集群（四架）",
     "figure8": "8 字航线",
     "yaw": "尾舵机偏航演示",
-    "motorfail": "电机故障测试"
+    "motorfail": "电机故障测试",
+    "demo": "Demo: the autopilot flies it"
   },
   "buttons": {
     "arm": "解锁",
@@ -58,7 +59,9 @@
     "splits": "分段用时",
     "gate": "第 {n}/{total} 门",
     "checkpoint": "{label}（{n}/{total}）",
-    "home": "起点"
+    "home": "起点",
+    "par": "Medal times",
+    "parValue": "{gold} / {silver} / {bronze}"
   },
   "osd": {
     "disarmed": "已上锁",
@@ -110,7 +113,13 @@
     "windOff": "已关闭风",
     "fpvOn": "已戴上 FPV 眼镜",
     "fpvOff": "追踪视角",
-    "armBlockedAcc": "无法解锁：加速度计未校准。请在工作台上运行“校准加速度计”"
+    "armBlockedAcc": "无法解锁：加速度计未校准。请在工作台上运行“校准加速度计”",
+    "hintDemo": "The autopilot is flying the course: switch mode to take over",
+    "demoTime": "Demo done in {time} s: the autopilot's time does not count",
+    "missionTime": "Mission complete: {time} s",
+    "missionBest": "Mission complete: {time} s (best!)",
+    "medal": "{line}. {medal} medal!",
+    "noMedal": "{line}. Bronze is {s} s"
   },
   "dirs": [
     "东方",
@@ -193,5 +202,11 @@
     "flipFc": "起飞时翻倒：飞控装反了",
     "flipProps": "起飞时翻倒：螺旋桨装错了电机",
     "flipMotor": "起飞时翻倒：从未检查电机转向（工作台：检查电机转向）"
+  },
+  "demoHint": "The autopilot flies this course's line with the same physics you fly. Watch it, then beat it: its times never count.",
+  "medals": {
+    "gold": "Gold",
+    "silver": "Silver",
+    "bronze": "Bronze"
   }
 }

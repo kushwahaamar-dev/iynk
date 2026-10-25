@@ -16,6 +16,7 @@ export interface BoxSolid {
   kind: HitKind;
   col: string;
   gate?: number; // index of the race gate this belongs to
+  pass?: boolean; // drawn, never hit
 }
 
 export interface CylSolid {
@@ -32,6 +33,7 @@ export interface CylSolid {
   s: number;
   kind: HitKind;
   col: string;
+  pass?: boolean;
 }
 
 export type Solid = BoxSolid | CylSolid;
@@ -101,6 +103,7 @@ export function gateSolids(g: Gate, index = 0): BoxSolid[] {
 export function buildSolids(course: Course): Solid[] {
   const out: Solid[] = [];
   for (const p of course.prims) {
+    const from = out.length;
     switch (p.type) {
       case "box":
         out.push(box(p.x, p.y, p.z ?? 0, p.w, p.d, p.h, p.yaw ?? 0, p.kind ?? "obstacle", p.col));
@@ -126,6 +129,7 @@ export function buildSolids(course: Course): Solid[] {
       default:
         break; // decals are flat
     }
+    if (p.solid === false) for (let i = from; i < out.length; i++) out[i].pass = true;
   }
   course.gates.forEach((g, i) => out.push(...gateSolids(g, i)));
   return out;
@@ -134,7 +138,7 @@ export function buildSolids(course: Course): Solid[] {
 /** The first solid the sphere (x, y, z, radius m) touches, or null. */
 export function collide(solids: Solid[], x: number, y: number, z: number, m: number): Solid | null {
   for (const o of solids) {
-    if (z < o.z0 - m || z > o.z1 + m) continue;
+    if (o.pass || z < o.z0 - m || z > o.z1 + m) continue;
     const dx = x - o.x, dy = y - o.y;
     const lx = dx * o.c + dy * o.s, ly = -dx * o.s + dy * o.c;
     if (o.k === "box") {

@@ -1,32 +1,33 @@
 // Fig. 01, the 5-inch freestyle quad on Betaflight: the craft the demo builds and flies.
 // Facts: docs/facts/quad5.md (Betaflight 2026.6.2 source + docs). Calculator data: src/lib/drone/__fixtures__
-// (the original's catalogue and constants, unchanged). Range geometry mirrors src/lib/flight/courses/quad5.ts and
-// the flight numbers mirror src/lib/flight/crafts/quad5.ts; quad5.test.ts keeps all three in step.
+// (the original's catalogue and constants, unchanged). The flying range reads its numbers and fields from here
+// (src/lib/flight/registry.ts), so the CLI snippets, the prose and the range share one copy.
 
 import type { Course, DroneContent } from '@/content/schema';
 
-// The "Freestyle bando" field, the same geometry as src/lib/flight/courses/quad5.ts (x east, y north, metres).
-// Both courses fly it: the gate race through the five gates, the range run past the five checkpoints with the
-// gates standing as solid obstacles.
-const bando: Pick<Course, 'field' | 'pad' | 'prims' | 'gates' | 'gateSize'> = {
+// The "Freestyle bando" field (x east, y north, metres). Both courses fly it: the gate race through the five gates,
+// the range run past the five checkpoints with the gates standing as solid obstacles. The height limit is 16 m, so
+// altitude hold tops out near 14 m, well above the tower slab (10.3 m).
+const bando: Pick<Course, 'field' | 'pad' | 'prims' | 'gates' | 'gateSize' | 'ceiling'> = {
   field: { w: 40, d: 40 },
   pad: [20, 6],
+  ceiling: 16,
   prims: [
     { type: 'flat', x: 20, y: 21, w: 3, d: 32, col: '#d4cfc4' },
     { type: 'flat', x: 30, y: 22, w: 10, d: 14, col: '#cfc8b8' },
-    { type: 'box', x: 26.3, y: 16.3, w: 0.6, d: 0.6, h: 6.3, col: '#bdb6a6' },
-    { type: 'box', x: 26.3, y: 27.7, w: 0.6, d: 0.6, h: 6.3, col: '#bdb6a6' },
-    { type: 'box', x: 30, y: 16.3, w: 0.6, d: 0.6, h: 6.3, col: '#bdb6a6' },
-    { type: 'box', x: 30, y: 27.7, w: 0.6, d: 0.6, h: 6.3, col: '#bdb6a6' },
-    { type: 'box', x: 33.7, y: 16.3, w: 0.6, d: 0.6, h: 6.3, col: '#bdb6a6' },
-    { type: 'box', x: 33.7, y: 27.7, w: 0.6, d: 0.6, h: 6.3, col: '#bdb6a6' },
-    { type: 'box', x: 30, y: 22, z: 3, w: 8, d: 12, h: 0.3, col: '#c9c2b2' },
-    { type: 'box', x: 30, y: 22, z: 6, w: 8, d: 12, h: 0.3, col: '#c9c2b2' },
-    { type: 'box', x: 33.7, y: 22, w: 0.3, d: 11, h: 3, col: '#b3ab9a' },
-    { type: 'box', x: 15, y: 20, w: 0.4, d: 6, h: 4, col: '#e0a26a' },
-    { type: 'box', x: 16.6, y: 20, w: 0.4, d: 6, h: 4, col: '#e0a26a' },
-    { type: 'box', x: 8, y: 30, w: 3, d: 3, h: 10, col: '#c6bfae' },
-    { type: 'box', x: 8, y: 30, z: 10, w: 3.6, d: 3.6, h: 0.3, col: '#b3ab9a' },
+    { type: 'box', x: 26.3, y: 16.3, w: 0.6, d: 0.6, h: 6.3, col: '#bdb6a6', kind: 'pillar' },
+    { type: 'box', x: 26.3, y: 27.7, w: 0.6, d: 0.6, h: 6.3, col: '#bdb6a6', kind: 'pillar' },
+    { type: 'box', x: 30, y: 16.3, w: 0.6, d: 0.6, h: 6.3, col: '#bdb6a6', kind: 'pillar' },
+    { type: 'box', x: 30, y: 27.7, w: 0.6, d: 0.6, h: 6.3, col: '#bdb6a6', kind: 'pillar' },
+    { type: 'box', x: 33.7, y: 16.3, w: 0.6, d: 0.6, h: 6.3, col: '#bdb6a6', kind: 'pillar' },
+    { type: 'box', x: 33.7, y: 27.7, w: 0.6, d: 0.6, h: 6.3, col: '#bdb6a6', kind: 'pillar' },
+    { type: 'box', x: 30, y: 22, z: 3, w: 8, d: 12, h: 0.3, col: '#c9c2b2', kind: 'building' },
+    { type: 'box', x: 30, y: 22, z: 6, w: 8, d: 12, h: 0.3, col: '#c9c2b2', kind: 'building' },
+    { type: 'box', x: 33.7, y: 22, w: 0.3, d: 11, h: 3, col: '#b3ab9a', kind: 'wall' },
+    { type: 'box', x: 15, y: 20, w: 0.4, d: 6, h: 4, col: '#e0a26a', kind: 'wall' },
+    { type: 'box', x: 16.6, y: 20, w: 0.4, d: 6, h: 4, col: '#e0a26a', kind: 'wall' },
+    { type: 'box', x: 8, y: 30, w: 3, d: 3, h: 10, col: '#c6bfae', kind: 'tower' },
+    { type: 'box', x: 8, y: 30, z: 10, w: 3.6, d: 3.6, h: 0.3, col: '#b3ab9a', kind: 'tower' },
     { type: 'pole', x: 5, y: 37, h: 8 },
     { type: 'pole', x: 12, y: 37, h: 8 },
     { type: 'pole', x: 19, y: 37, h: 8 },
@@ -37,8 +38,8 @@ const bando: Pick<Course, 'field' | 'pad' | 'prims' | 'gates' | 'gateSize'> = {
     { type: 'tree', x: 24, y: 33, h: 2.8 },
     { type: 'tree', x: 11, y: 14, h: 2.6 },
     { type: 'tree', x: 36, y: 33, h: 3 },
-    { type: 'cyl', x: 23, y: 12, r: 0.5, h: 0.9, col: '#f4b829' },
-    { type: 'cyl', x: 24.2, y: 12.4, r: 0.5, h: 0.9, col: '#5a82c6' },
+    { type: 'cyl', x: 23, y: 12, r: 0.5, h: 0.9, col: '#f4b829', kind: 'barrel' },
+    { type: 'cyl', x: 24.2, y: 12.4, r: 0.5, h: 0.9, col: '#5a82c6', kind: 'barrel' },
   ],
   gates: [
     [20, 11, 90],
@@ -496,7 +497,7 @@ const quad5: DroneContent = {
     ],
   },
 
-  // Numbers the range flies (src/lib/flight/crafts/quad5.ts); the CLI snippets set the same ones.
+  // Numbers the range flies (src/lib/flight/registry.ts reads them); the CLI snippets set the same ones.
   flight: {
     physics: 'multirotor',
     params: {
@@ -512,12 +513,13 @@ const quad5: DroneContent = {
       camTilt: 30,
       fov: 105,
     },
+    look: { body: [0.112, 0.046, 0.04] },
     modes: [
       { id: 'alt', kind: 'alt-hold', title: 'flight.modes.alt.title', hint: 'flight.modes.alt.hint' },
       { id: 'angle', kind: 'angle', title: 'flight.modes.angle.title', hint: 'flight.modes.angle.hint' },
       { id: 'acro', kind: 'acro', title: 'flight.modes.acro.title', hint: 'flight.modes.acro.hint' },
       { id: 'race', kind: 'race', title: 'flight.modes.race.title', hint: 'flight.modes.race.hint' },
-      { id: 'raceAcro', kind: 'race', title: 'flight.modes.raceAcro.title', hint: 'flight.modes.raceAcro.hint' },
+      { id: 'raceAcro', kind: 'race', attitude: 'acro', title: 'flight.modes.raceAcro.title', hint: 'flight.modes.raceAcro.hint' },
       { id: 'range', kind: 'range', title: 'flight.modes.range.title', hint: 'flight.modes.range.hint' },
     ],
     defaultMode: 'alt',
@@ -532,19 +534,22 @@ const quad5: DroneContent = {
   },
 
   courses: [
-    { id: 'race', kind: 'gates', title: 'courses.race.title', brief: 'courses.race.brief', ...bando, goals: [] },
+    // Medal times: the gate loop is 51 m, the bando run about 80 m with an 11.6 m climb and a landing.
+    // The autopilot demo flies them in about 24 s and 39 s; gold takes a pilot.
+    { id: 'race', kind: 'gates', title: 'courses.race.title', brief: 'courses.race.brief', ...bando, goals: [], par: { gold: 10, silver: 14, bronze: 20 } },
     {
       id: 'bando',
       kind: 'checkpoints',
       title: 'courses.bando.title',
       brief: 'courses.bando.brief',
       ...bando,
+      par: { gold: 25, silver: 32, bronze: 45 },
       goals: [
         { x: 15.8, y: 20, z: 2, r: 0.8, heading: 90, label: 'courses.bando.goals.1' },
         { x: 28.15, y: 22, z: 1.5, r: 1.1, heading: 90, label: 'courses.bando.goals.2' },
         { x: 8, y: 30, z: 11.6, r: 1.6, label: 'courses.bando.goals.3' },
         { x: 8, y: 26.8, z: 1.8, r: 1.3, heading: -90, label: 'courses.bando.goals.4' },
-        { x: 20, y: 6, z: 0, r: 1.5, label: 'courses.bando.goals.5' },
+        { x: 20, y: 6, z: 0, r: 1.5, land: true, label: 'courses.bando.goals.5' },
       ],
     },
   ],

@@ -684,12 +684,35 @@ export interface FlightMode {
   mission?: string;
   title: TextKey;
   hint: TextKey;
+  /** Overrides what `kind` implies (src/lib/flight/registry.ts): an acro gate race is `kind: 'race', attitude: 'acro'`. */
+  attitude?: 'angle' | 'acro';
+  /** Stick expo 0..1 on roll and pitch (acro defaults to 0.7). */
+  expo?: number;
+  /** Angle limit in degrees for this mode only (cine soft limits). */
+  angleLimit?: number;
+  /** Scales the craft's acro and yaw rates in this mode (cine soft rates). */
+  rateScale?: number;
+}
+
+/** How the flying range draws the craft. Every field is optional: the registry derives the rest from `frame`. */
+export interface FlightLook {
+  /** Flight stack box, metres: length, width, height. */
+  body?: [number, number, number];
+  /** Prop radius, metres. */
+  propR?: number;
+  ducted?: boolean;
+  /** Wings: span and chord, metres. */
+  span?: number;
+  chord?: number;
+  /** Drawing scale in the chase view (1 = life size; small crafts draw bigger). */
+  isoScale?: number;
 }
 
 export interface FlightConfig {
   physics: PhysicsClass;
   /** Per physics class, documented in src/lib/flight (drag, ceiling, hitR, rates, gains, sag ...). */
   params: Record<string, number>;
+  look?: FlightLook;
   modes: FlightMode[];
   defaultMode: string;
   fpv: { fovDeg: number; camTiltDeg: number; gimbal: boolean };
@@ -699,13 +722,17 @@ export interface FlightConfig {
   controls: TextKey;
 }
 
-/** Range primitives in metres, yaw in degrees (drone-lab-a §7.6). */
+/** What a crash into a range solid is called (the flight namespace's `hit.<kind>` line). */
+export type RangeHitKind =
+  | 'tree' | 'roof' | 'wall' | 'pole' | 'gate' | 'building' | 'pillar' | 'tower' | 'barrel' | 'obstacle';
+
+/** Range primitives in metres, yaw in degrees (drone-lab-a §7.6). `solid: false` is drawn but flown through. */
 export type RangePrim =
-  | { type: 'box'; x: number; y: number; z?: number; w: number; d: number; h: number; yaw?: number; col: string; solid?: boolean; name?: TextKey }
-  | { type: 'house'; x: number; y: number; w: number; d: number; h: number; yaw?: number; col: string; roof?: number; roofCol?: string }
-  | { type: 'cyl'; x: number; y: number; z?: number; r: number; h: number; r1?: number; n?: number; col: string; solid?: boolean; name?: TextKey }
+  | { type: 'box'; x: number; y: number; z?: number; w: number; d: number; h: number; yaw?: number; col: string; solid?: boolean; name?: TextKey; kind?: RangeHitKind }
+  | { type: 'house'; x: number; y: number; w: number; d: number; h: number; yaw?: number; col: string; roof?: number; roofCol?: string; kind?: RangeHitKind }
+  | { type: 'cyl'; x: number; y: number; z?: number; r: number; h: number; r1?: number; n?: number; col: string; solid?: boolean; name?: TextKey; kind?: RangeHitKind }
   | { type: 'tree'; x: number; y: number; h?: number }
-  | { type: 'pole'; x: number; y: number; h: number; r?: number; col?: string }
+  | { type: 'pole'; x: number; y: number; h: number; r?: number; col?: string; kind?: RangeHitKind }
   | { type: 'flat'; x: number; y: number; w: number; d: number; yaw?: number; col: string; label?: string }
   | { type: 'disc'; x: number; y: number; r: number; col: string; label?: string };
 
@@ -717,6 +744,20 @@ export interface Goal {
   r: number;
   heading?: number;
   label: TextKey;
+  /** Counts only when the craft touches down inside it, slowly (a landing pad). */
+  land?: boolean;
+  /** Autopilot missions: seconds to wait there, and what the craft does there. */
+  hold?: number;
+  action?: 'photo' | 'drop' | 'spray-on' | 'spray-off' | 'land';
+  /** Autopilot missions: m/s on the leg to this goal. */
+  speed?: number;
+}
+
+/** Medal times in seconds (lower is better): gold <= silver <= bronze. */
+export interface ParTimes {
+  gold: number;
+  silver: number;
+  bronze: number;
 }
 
 export interface Course {
@@ -731,8 +772,15 @@ export interface Course {
   goals: Goal[];
   /** Mission flight-mode id that flies it (autopilot crafts). */
   mission?: string;
-  /** Target time in seconds for a "par" badge. */
+  /** Target time in seconds for a "par" badge; with no `par`, the medals are derived from it. */
   parS?: number;
+  /** Bronze, silver and gold times for this course (src/lib/flight/registry.ts `parOf`). */
+  par?: ParTimes;
+  /** Height limit of this field in metres (overrides the craft's `ceiling` param). */
+  ceiling?: number;
+  /** Ground colour of the field, and its wind when the Wind button is on (m/s, from = degrees, 0 = from the east). */
+  ground?: string;
+  wind?: { speed: number; from: number; gust: number };
   title: TextKey;
   brief: TextKey;
 }

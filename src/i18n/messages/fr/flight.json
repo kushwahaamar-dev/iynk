@@ -26,7 +26,8 @@
     "swarm": "Essaim (quatre drones)",
     "figure8": "Trajectoire en huit",
     "yaw": "Démo du lacet par servo de queue",
-    "motorfail": "Test de panne moteur"
+    "motorfail": "Test de panne moteur",
+    "demo": "Demo: the autopilot flies it"
   },
   "buttons": {
     "arm": "Armer",
@@ -58,7 +59,9 @@
     "splits": "Temps intermédiaires",
     "gate": "Porte {n}/{total}",
     "checkpoint": "{label} ({n}/{total})",
-    "home": "Maison"
+    "home": "Maison",
+    "par": "Medal times",
+    "parValue": "{gold} / {silver} / {bronze}"
   },
   "osd": {
     "disarmed": "DÉSARMÉ",
@@ -110,7 +113,13 @@
     "windOff": "Vent coupé",
     "fpvOn": "Lunettes FPV en place",
     "fpvOff": "Vue de poursuite",
-    "armBlockedAcc": "Armement bloqué : accéléromètre non calibré. Lance Calibrer l'accéléromètre sur l'établi"
+    "armBlockedAcc": "Armement bloqué : accéléromètre non calibré. Lance Calibrer l'accéléromètre sur l'établi",
+    "hintDemo": "The autopilot is flying the course: switch mode to take over",
+    "demoTime": "Demo done in {time} s: the autopilot's time does not count",
+    "missionTime": "Mission complete: {time} s",
+    "missionBest": "Mission complete: {time} s (best!)",
+    "medal": "{line}. {medal} medal!",
+    "noMedal": "{line}. Bronze is {s} s"
   },
   "dirs": [
     "est",
@@ -193,5 +202,11 @@
     "flipFc": "Retourné au décollage : le contrôleur de vol est monté à l'envers",
     "flipProps": "Retourné au décollage : les hélices sont sur les mauvais moteurs",
     "flipMotor": "Retourné au décollage : le sens des moteurs n'a jamais été vérifié (établi : Vérifier le sens des moteurs)"
+  },
+  "demoHint": "The autopilot flies this course's line with the same physics you fly. Watch it, then beat it: its times never count.",
+  "medals": {
+    "gold": "Gold",
+    "silver": "Silver",
+    "bronze": "Bronze"
   }
 }

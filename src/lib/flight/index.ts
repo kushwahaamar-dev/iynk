@@ -6,5 +6,4 @@ export { LIMITS, ocv, cellResistance, NOMINAL_CELL } from "./battery";
 export { buildSolids, collide, throughGate, passCheckpoint } from "./world";
 export { fromCalc } from "./from-calc";
 export { sfxFor, type SfxName } from "./sfx";
-export { quad5Craft } from "./crafts/quad5";
-export { quad5Course } from "./courses/quad5";
+export { flightOf, flightCraft, flightCourse, modesFor, startMode, parOf, medalFor, DEMO_MODE, type CraftFlight, type Medal } from "./registry";

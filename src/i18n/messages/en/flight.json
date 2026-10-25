@@ -26,7 +26,8 @@
     "swarm": "Swarm (four craft)",
     "figure8": "Figure-8 trajectory",
     "yaw": "Tail-servo yaw demo",
-    "motorfail": "Motor failure test"
+    "motorfail": "Motor failure test",
+    "demo": "Demo: the autopilot flies it"
   },
   "buttons": {
     "arm": "Arm",
@@ -58,7 +59,9 @@
     "splits": "Splits",
     "gate": "Gate {n}/{total}",
     "checkpoint": "{label} ({n}/{total})",
-    "home": "Home"
+    "home": "Home",
+    "par": "Medal times",
+    "parValue": "{gold} / {silver} / {bronze}"
   },
   "osd": {
     "disarmed": "DISARMED",
@@ -110,7 +113,13 @@
     "windOff": "Wind off",
     "fpvOn": "FPV goggles on",
     "fpvOff": "Chase view",
-    "armBlockedAcc": "Arming blocked: ACC not calibrated. Run Calibrate accelerometer on the bench"
+    "armBlockedAcc": "Arming blocked: ACC not calibrated. Run Calibrate accelerometer on the bench",
+    "hintDemo": "The autopilot is flying the course: switch mode to take over",
+    "demoTime": "Demo done in {time} s: the autopilot's time does not count",
+    "missionTime": "Mission complete: {time} s",
+    "missionBest": "Mission complete: {time} s (best!)",
+    "medal": "{line}. {medal} medal!",
+    "noMedal": "{line}. Bronze is {s} s"
   },
   "dirs": [
     "east",
@@ -193,5 +202,11 @@
     "flipFc": "Flipped on take-off: the flight controller is mounted the wrong way round",
     "flipProps": "Flipped on take-off: the props are on the wrong motors",
     "flipMotor": "Flipped on take-off: motor direction was never checked (bench: Check motor direction)"
+  },
+  "demoHint": "The autopilot flies this course's line with the same physics you fly. Watch it, then beat it: its times never count.",
+  "medals": {
+    "gold": "Gold",
+    "silver": "Silver",
+    "bronze": "Bronze"
   }
 }
