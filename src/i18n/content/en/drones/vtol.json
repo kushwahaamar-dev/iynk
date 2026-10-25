@@ -1,0 +1,373 @@
+{
+  "title": "VTOL tiltrotor",
+  "tagline": "A tiltrotor QuadPlane on ArduPilot: it takes off like a drone, tilts its front rotors forward and flies on its wing, then hovers down to land.",
+  "sub": "ArduPlane QuadPlane, tilt tri",
+  "hint": "Build it, test the tilt servos, then fly the coast and hand over to the wing",
+  "noun": "VTOL",
+  "overview": "A VTOL (vertical take-off and landing) plane takes off and lands like a multicopter and flies like an aeroplane. This one is a tilt-tricopter QuadPlane: two front motors sit on nacelles that tilt from straight up, for hover, to straight forward, for cruise, and a third motor on the tail boom only lifts. Once the wing carries the weight the motors only push against drag, so it cruises on about 5 A where hover takes 15: over an hour in the air instead of 20 minutes. The hard part is the transition, the few seconds when the wing is still too slow to lift and the rotors already point partly forward. ArduPlane 4.7.2 handles it: it tilts the rotors to 45°, holds the height on them until the airspeed sensor reads 12 m/s, then hands over to the wing. This is a 1.2 m foam airframe on a Matek H743-WING with GPS, an airspeed sensor and analog FPV, about 1.6 kg with an 8000 mAh Li-ion pack. Craft like it map fields and inspect coasts and power lines from places with no runway. Pick the parts and watch the numbers, build it, run the bench checks, then fly the coast.",
+  "practice": "Start in QHOVER and QLOITER: take off, hover, land on the pad. Then, high and well clear of everything, switch to FBWA with the throttle up and watch the airspeed climb past 12 m/s as the rotors tilt and the wing takes over; switch back to QHOVER to slow down and hover again. Fly the coast run that way, and let AUTO fly the survey. On a real build: a smoke stopper on the first plug, the tilt servo test and the motor direction check with the props off, accelerometer and compass calibration, the airspeed check, and every pre-arm message read. Make the first transition at 30 m or more, into wind, with a thumb on the switch back to QHOVER.",
+  "design": {
+    "fixed": {
+      "FRAME": "Foam fuselage, carbon tail boom and landing skids",
+      "WING": "Foam wing on a carbon spar",
+      "TAIL": "V-tail and two ruddervator servos",
+      "TILT": "Two metal-gear tilt servos and the nacelles",
+      "ESC": "Three 40 A ESCs (AM32)",
+      "FC": "Matek H743-WING flight controller and ELRS receiver",
+      "GPS": "M10 GPS and compass on a mast",
+      "ARSPD": "ASPD-4525 airspeed sensor and pitot tube",
+      "CAM": "Analog FPV camera and 800 mW VTX",
+      "XT60": "XT60 lead and 1000 µF 35 V capacitor"
+    },
+    "verdict": {
+      "ok": "Parts match: {tw}:1 thrust to weight for take-off and landing, about 15 A in hover and about 5 A in cruise, once the wing carries the weight. The hover time assumes it never leaves hover; the cruise time is what the wing gives. A real mission hovers only a minute or two at each end.",
+      "weak": "Thrust to weight {tw}:1 is too low to hover safely: a VTOL wants about 2:1, 1.6:1 is the bare minimum, and wind asks for more. A motor matched to the pack or bigger props fix it.",
+      "over": "{kv} KV on {cells}S spins props this size far too fast: the motor and its 40 A ESC overload and burn within seconds. VTOL lift motors are big and slow, about 1000 KV on 4S or 700 KV on 6S."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Foam fuselage, boom and skids",
+      "what": "A 370 x 90 x 80 mm foam pod with a hatch over the nose bay, a carbon boom out to the tail and wire skids to land on. The rear lift motor's mount clamps to the boom 475 mm behind the front tilt pivots, far enough back to balance the front pair round the CG."
+    },
+    "TAIL": {
+      "name": "V-tail",
+      "what": "Two fins 35° above level, each with a ruddervator on its own servo (S7, S8). Moving together they pitch the plane, moving apart they yaw it; ArduPilot mixes the two. They only steer in forward flight: in hover the rotors do."
+    },
+    "FC": {
+      "name": "Matek H743-WING flight controller",
+      "what": "A 54 x 36 mm H743 board on a tray in the nose bay, arrow to the nose, running ArduPlane 4.7.2. It has 13 outputs, a current sensor, an analog OSD and an 8 A BEC for the six servos. The ELRS receiver sits beside it on USART1, its antenna out through the side of the pod."
+    },
+    "XT60": {
+      "name": "XT60 lead and capacitor",
+      "what": "The battery lead goes to the board's battery pads, red to plus, with a 1000 µF 35 V low-ESR capacitor across them, stripe to minus. Matek asks for one: the board's current sensor is sensitive to the ESCs' switching noise."
+    },
+    "GPS": {
+      "name": "GPS and compass on a mast",
+      "what": "An M10 GPS with a compass, on a 50 mm mast on the boom behind the wing, away from the battery and ESC currents that would bend the compass. QLOITER, QRTL and AUTO all need it."
+    },
+    "CAM": {
+      "name": "FPV camera and VTX",
+      "what": "An analog camera in the nose at 8° up, its picture through the board's OSD to an 800 mW VTX on the rear deck with a lollipop antenna. A plane cruises nose-level, so it needs far less uptilt than a racing quad."
+    },
+    "WING": {
+      "name": "Wing",
+      "what": "1200 mm span and 195 mm chord: 0.234 m² of foam on a carbon spar, with an aileron on each outer panel (S9, S10). It needs that much: a 840 x 150 mm wing carrying 1.6 kg would stall at 13 to 14 m/s. The CG marks are under it, a quarter of the way back along the chord."
+    },
+    "ARSPD": {
+      "name": "Airspeed sensor and pitot",
+      "what": "A pitot tube under the right wing, its tip ahead of the leading edge and out past the right rotor's wash, piped by two silicone tubes to an MS4525DO board on I2C. The wing flies on airspeed, not ground speed: ArduPilot uses it to know when the wing can carry the weight."
+    },
+    "TILT": {
+      "name": "Tilt servos and nacelles",
+      "what": "A metal-gear servo on each front nacelle swings its motor from straight up (hover) to straight forward (cruise), on S1 and S2. With Q_TILT_TYPE 2 they also tilt up to 10° in opposite directions to yaw in hover, so this tri needs no tail servo. The two face each other, so one of them is reversed in the parameters."
+    },
+    "MOTORS": {
+      "name": "Three 2810 motors",
+      "what": "1000 KV on 4S. ArduPilot's tri calls them M1 front right, M2 front left and M4 rear; there is no M3. Seen from above M1 spins clockwise and M2 counter-clockwise: the front pair must turn opposite ways, or every roll and pitch correction would also yaw it. M4 points up, never tilts, and stops in cruise."
+    },
+    "ESC": {
+      "name": "Three 40 A ESCs",
+      "what": "One per motor: two on the nacelles, one on the boom by the rear motor, on DShot600 from S3, S4 and S5. New 32-bit ESCs run AM32 (BLHeli_32 ended in June 2024). At full throttle the calculator has each motor drawing about 39 A, just under the rating."
+    },
+    "WIRES": {
+      "name": "Motor wires",
+      "what": "Each motor's three phase wires run to its ESC. On the nacelles they cross the tilt pivot in a loose loop, so they bend over a length and not at one point: a tight loop breaks after a few hundred transitions and the motor stops in the air."
+    },
+    "BATT": {
+      "name": "4S2P Li-ion pack",
+      "what": "Eight 21700 cells, 8000 mAh and 560 g, on a grip pad under a strap, centred on the CG marks. Li-ion holds more energy per gram than LiPo but gives less current and sags more: right for a plane that cruises for an hour, wrong for a racer."
+    },
+    "HATCH": {
+      "name": "Nose hatch",
+      "what": "A foam lid with a latch over the nose bay, where the flight controller, the airspeed board and the battery live. Shut it before the props go on."
+    },
+    "PROPS": {
+      "name": "Propellers",
+      "what": "9x5 two-blade props: the front pair turn opposite ways (M1 clockwise, M2 counter-clockwise from above) and the rear one matches M4. They go on last, after the smoke stopper, the motor direction check and the tilt test."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Lay out the fuselage",
+      "body": "Glue the boom into the pod, fit the skids, the tail stand, and the rear motor's mount on the boom."
+    },
+    "tail": {
+      "title": "Fit the V-tail",
+      "body": "Slide the two fins onto the end of the boom and link each ruddervator to its servo.",
+      "refusal": "The V-tail goes on the end of the boom: lay out the fuselage first."
+    },
+    "fc": {
+      "title": "Mount the flight controller",
+      "body": "On the tray in the nose bay, arrow to the nose. The ELRS receiver goes beside it, its antenna out through the side of the pod.",
+      "refusal": "The flight controller goes in the fuselage: lay that out first."
+    },
+    "xt60": {
+      "title": "Solder the XT60 and the capacitor",
+      "body": "The battery lead to the board's battery pads, red to plus, and the capacitor across the same pads with its stripe to minus. The plug ends up behind the battery bay.",
+      "refusal": "The battery lead solders to the flight controller's pads: mount that first."
+    },
+    "gps": {
+      "title": "Fit the GPS mast",
+      "body": "On the boom behind the wing, arrow forward. Its lead runs in through the back of the pod to the board's GPS port and I2C pads.",
+      "refusal": "The GPS wires to the flight controller: mount that first."
+    },
+    "cam": {
+      "title": "Fit the camera and the VTX",
+      "body": "The camera in the nose at 8° up, the VTX on the rear deck with its antenna up. Video in to the board, and out again with the OSD to the VTX.",
+      "refusal": "The camera and the VTX wire to the flight controller: mount that first."
+    },
+    "wing": {
+      "title": "Bolt the wing on",
+      "body": "On top of the pod, square to the boom. Its aileron servos plug into S9 and S10.",
+      "refusal": "The wing bolts to the fuselage: lay that out first."
+    },
+    "arspd": {
+      "title": "Fit the airspeed sensor",
+      "body": "The pitot under the right wing with its tip ahead of the leading edge, outside the right rotor's wash. Its two tubes run into the pod to the 4525 board, and the board goes on the I2C bus.",
+      "refusal": "The pitot hangs under the wing and its board wires to the flight controller: fit both first."
+    },
+    "tilt": {
+      "title": "Fit the tilt servos",
+      "body": "One on each nacelle under the wing, its horn linked to the motor mount. Plug them into S1 and S2.",
+      "refusal": "The nacelles hang under the wing: bolt the wing on first."
+    },
+    "motors": {
+      "title": "Mount the three motors",
+      "body": "M1 front right and M2 front left on the tilting mounts, M4 on the boom. The front pair turn opposite ways: M1 clockwise, M2 counter-clockwise from above.",
+      "refusal": "The front motors bolt to the tilt mounts: fit the tilt servos first."
+    },
+    "esc": {
+      "title": "Fit the three ESCs",
+      "body": "One on the outside of each nacelle and one on the boom by the rear motor. Power from the board's battery pads, signals from S3, S4 and S5.",
+      "refusal": "Two of the ESCs ride on the nacelles: fit the tilt servos first."
+    },
+    "wires": {
+      "title": "Solder the motor wires",
+      "body": "Each motor to its ESC. On the nacelles leave a slack loop across the pivot, so the wires bend over a length and not at one point.",
+      "refusal": "Fit the motors and the ESCs before the wires that join them."
+    },
+    "batt": {
+      "title": "Strap the battery in",
+      "body": "On a grip pad in the bay under the wing, under a strap, centred on the CG marks. Once it is complete, it should balance level on your fingertips at the marks.",
+      "refusal": "The pack plugs into the XT60: solder that first."
+    },
+    "hatch": {
+      "title": "Close the hatch",
+      "body": "The foam hatch over the nose bay, latched, with the battery and the airspeed board inside.",
+      "refusal": "The hatch shuts over the battery and the airspeed board: fit both first."
+    },
+    "props": {
+      "title": "Props on, last",
+      "body": "The front pair turn opposite ways, M1 clockwise and M2 counter-clockwise, and the rear prop matches M4's clockwise spin. Only after the smoke stopper, the motor direction check and the tilt test.",
+      "refusal": "Props go on the motors, after the tilt servos and with the hatch shut: fit those first."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "The pack's XT60 mates with the craft's. It is keyed, so it only goes in one way, and the pack carries the female plug, so a loose pack can't short.",
+    "XT60-ESC": "The flight controller's battery pads feed the three ESC leads: two out under the wing to the nacelles, one back along the boom. The capacitor sits across the same pads.",
+    "ESC-MOTORS": "Three phase wires per motor, in a slack loop across each tilt pivot. Their order is not a safety matter: swapping any two reverses the motor.",
+    "FC-ESC": "DShot600 on S3, S4 and S5, an output group that runs nothing but DShot: Motor1 front right, Motor2 front left, Motor4 on the boom.",
+    "FC-TILT": "The tilt servos on S1 and S2, powered from the board's 8 A servo BEC. They have an output group of their own, so they can run at a servo rate while S3 to S6 run DShot.",
+    "FC-TAIL": "The two ruddervator servos on S7 and S8; ArduPilot mixes pitch and yaw into them.",
+    "FC-WING": "The two aileron servos on S9 and S10, both set to Aileron (function 4). Reverse one if it moves the wrong way.",
+    "GPS-FC": "The GPS on USART2, the board's GPS port, and its compass on the I2C bus.",
+    "ARSPD-FC": "The 4525 airspeed board on I2C (ARSPD_TYPE 1). The pitot's two tubes go to its two ports: swapped, it reads 0 or less.",
+    "CAM-FC": "Camera video into the board, which lays the OSD over it, and out to the VTX on the rear deck, powered from the 9/12 V BEC. SmartAudio on UART4 TX lets the OSD change channel and power."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke stopper test",
+      "pass": "The lamp only blinked: no short between plus and minus. Safe to plug the pack in directly.",
+      "fail": "The lamp stayed lit: something is shorted. Here the capacitor is in backwards; turn it round, stripe to minus, before a pack goes in."
+    },
+    "motors": {
+      "title": "Motor direction check (props off)",
+      "pass": "ArduPilot spun each motor in turn at a low throttle: M1 front right clockwise, M2 front left counter-clockwise, M4 on the boom clockwise. The order and the directions are right.",
+      "fail": "A motor spun the wrong way. Swap any two of its three wires, or reverse it in the ESC (SERVO_BLH_RVMASK). The front pair must turn opposite ways."
+    },
+    "calibrate": {
+      "title": "Accelerometer calibration",
+      "pass": "Six positions, then level with the wing level and the fuselage at its flying attitude. QHOVER now knows which way is up.",
+      "fail": "Fit the flight controller first. If its arrow points backwards, turn it round or set AHRS_ORIENTATION 4."
+    },
+    "tilt": {
+      "title": "Tilt servo test (props off)",
+      "pass": "MANUAL swung both rotors forward, QSTABILIZE brought them back up at 25°/s, and yaw right sent the left rotor forward and the right one back. The servos are the right way round.",
+      "fail": "Fit the tilt servos and the flight controller, take the props off and plug in first. If MANUAL tilts a rotor back, that servo is reversed: flip its SERVOn_REVERSED, or the first transition pitches the nose up and flips it over its tail."
+    },
+    "airspeed": {
+      "title": "Airspeed check",
+      "pass": "Blowing gently into the pitot made the airspeed rise, and it fell back to about 0: the sensor reads and the tubes are on the right ports. Cover the pitot while the board boots: it zeroes the sensor then.",
+      "fail": "Fit the airspeed sensor and the flight controller and plug in first. With the tubes swapped it reads 0 or less; a blocked tube reads nothing at all."
+    },
+    "prearm": {
+      "title": "Pre-arm checks (props off)",
+      "pass": "Every check passed and it armed on the bench, the motors idling at Q_M_SPIN_ARM. Never skip a check with ARMING_SKIPCHK.",
+      "fail": "Fit the flight controller, the GPS and the airspeed sensor, props off, pack in. Then read each PreArm message: \"3D Accel calibration needed\" means calibrate first, \"Q_ASSIST_SPEED is not set\" means it is 0."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "QuadPlane and tilt-rotor",
+      "explain": "Q_ENABLE makes ArduPlane a QuadPlane, Q_FRAME_CLASS 7 makes its lift motors a tri and Q_TILT_ENABLE adds the tilt-rotor code. Reboot after those three, or pre-arm says \"tiltrotor setup not complete, reboot\". Q_TILT_TYPE 2, vectored yaw, is what lets this tri yaw without a tail servo. Mind the rate names, they are easy to swap: RATE_DN is hover to forward, RATE_UP forward back to hover."
+    },
+    "outputs": {
+      "title": "Outputs",
+      "explain": "The H743-WING groups its outputs, and every output in a group runs at the same rate: the tilt servos on S1 and S2, the three lift motors on S3 to S5 with DShot600, the ruddervators and ailerons on S7 to S10. ArduPilot's tri uses motors 1, 2 and 4. Set the reversal on the bench, so MANUAL points the rotors forward and QSTABILIZE straight up."
+    },
+    "sensors": {
+      "title": "Board, radio, GPS and airspeed",
+      "explain": "Arrow to the nose; ELRS on a full UART with CRSF at 420 kbaud; the GPS on USART2; the 4525 airspeed board on I2C, flown on; and the board's own current sensor, with the scale Matek gives for the WING V3."
+    },
+    "speeds": {
+      "title": "Airspeeds and the transition",
+      "explain": "All in m/s since 4.5. AIRSPEED_MIN sits about 20 % above the stall, and Q_ASSIST_SPEED 3 m/s below that, so the rotors catch a slow turn before it stalls; at 0 it refuses to arm. If a transition hasn't reached AIRSPEED_MIN after 15 s, it is called off and the craft comes home in QRTL."
+    },
+    "failsafe": {
+      "title": "Failsafes",
+      "explain": "A link lost for 5 s in a plane mode means RTL, which turns into a vertical landing near home; in the Q modes a lost link means QLAND at once. Two battery steps: RTL at 3.3 V per cell and QLAND at 3.1 V. Li-ion runs lower than LiPo, so these sit lower than on a LiPo craft."
+    },
+    "osd": {
+      "title": "OSD and VTX",
+      "explain": "The built-in OSD lays the battery, the airspeed and the mode over the camera's picture. The VTX starts at 25 mW on the bench; raise VTX_POWER only where the law allows it."
+    },
+    "qhover": {
+      "title": "QHOVER",
+      "explain": "Hover with height hold: centre the throttle and it keeps its height, the right stick tilts it up to 30°. It drifts with the wind. Every flight starts and ends here."
+    },
+    "qloiter": {
+      "title": "QLOITER",
+      "explain": "QHOVER plus GPS position hold: let go of the sticks and it stops where it is. Use it for the first hovers and to line up a landing."
+    },
+    "fbwa": {
+      "title": "The transition: FBWA",
+      "explain": "Switch from a Q mode to FBWA and the transition starts: the rotors tilt to 45° and it speeds up on them; past AIRSPEED_MIN the wing takes the weight, the rotors finish tilting and the rear motor stops. Then the sticks bank and pitch the plane, up to 45° and 20°, and the throttle sets the speed. Switch to a Q mode to hover again."
+    },
+    "qrtl": {
+      "title": "QRTL",
+      "explain": "QRTL flies home at Q_RTL_ALT and lands vertically. With Q_RTL_MODE 1 a plain RTL flies home as a plane and turns into QRTL near home. RTL_AUTOLAND must stay 0 with that, or the board refuses to arm."
+    },
+    "auto": {
+      "title": "AUTO: the coast survey",
+      "explain": "AUTO flies the uploaded mission: a vertical take-off, the three photo points and a vertical landing on the village pad. Arm in a Q mode, then switch to AUTO."
+    }
+  },
+  "flight": {
+    "modes": {
+      "qhover": {
+        "title": "QHOVER",
+        "hint": "Hover with height hold, tilting up to 30°. Start here."
+      },
+      "qloiter": {
+        "title": "QLOITER",
+        "hint": "Hover with GPS position hold: let go and it stops."
+      },
+      "fbwa": {
+        "title": "FBWA (transition)",
+        "hint": "From a hover the rotors tilt forward and it speeds up; past 12 m/s the wing takes over. Keep the throttle up: in FBWA it sets the speed. Switch to a Q mode to hover again."
+      },
+      "qrtl": {
+        "title": "QRTL",
+        "hint": "Comes home at 15 m and lands vertically on the pad."
+      },
+      "auto": {
+        "title": "AUTO (coast survey)",
+        "hint": "Flies the survey on its own: take-off, three photo points, a landing on the village pad."
+      }
+    },
+    "failsafes": {
+      "rx-loss-q": "Link lost in a Q mode: it lands where it is (QLAND).",
+      "rx-loss": "Link lost for 5 s in a plane mode: RTL, home as a plane, then down as a multicopter (QRTL).",
+      "transition": "No AIRSPEED_MIN 15 s after a transition started: it gives up and comes home in QRTL.",
+      "low-battery": "Below 13.2 V (3.3 V per cell): RTL.",
+      "battery-critical": "Below 12.4 V (3.1 V per cell): QLAND where it is."
+    },
+    "controls": "Keyboard: Space arms and disarms, W and S climb and descend in the Q modes and set the throttle in FBWA, the arrows tilt it (in FBWA they bank and pitch the plane), A and D yaw, V switches to FPV, R puts it back on the pad. On a phone the left stick is throttle and yaw and the right stick is pitch and roll. A gamepad works in Mode 2."
+  },
+  "courses": {
+    "coast": {
+      "title": "Coast run",
+      "brief": "Take off from the field pad, round the lighthouse on its seaward side, cross over the buoy, pass north of the radio mast on the hill, then land on the village green pad. QHOVER gets you round; the fast way is a transition to FBWA for the long legs and back to QHOVER before the pad.",
+      "goals": {
+        "1": "Lighthouse, seaward side",
+        "2": "Over the buoy",
+        "3": "Radio mast, north side",
+        "4": "Land on the village pad"
+      }
+    },
+    "survey": {
+      "title": "Coast survey (AUTO)",
+      "brief": "The same coast as a mission: a vertical take-off to 12 m, a 2 s photo stop at the lighthouse, the buoy and the radio mast, then a vertical landing on the village pad. Switch to AUTO and watch, or fly it yourself and beat the autopilot.",
+      "goals": {
+        "1": "Take off to 12 m",
+        "2": "Photo: the lighthouse",
+        "3": "Photo: the buoy",
+        "4": "Photo: the radio mast",
+        "5": "Land on the village pad"
+      }
+    }
+  },
+  "quizzes": {
+    "tilt": {
+      "manual": {
+        "q": "On the bench, which way should MANUAL and QSTABILIZE point the rotors?",
+        "options": {
+          "1": "Both straight up: the rotors only move in flight",
+          "2": "MANUAL forward, QSTABILIZE straight up",
+          "3": "MANUAL straight up, QSTABILIZE forward"
+        },
+        "why": "MANUAL is a plane mode, so the rotors swing forward; QSTABILIZE is a hover mode, so they point up. If MANUAL tilts a rotor back, that servo is reversed, and the first transition would flip the craft over its tail."
+      },
+      "yaw": {
+        "q": "This tri has no tail servo. How does it turn its nose in a hover?",
+        "options": {
+          "1": "The rear motor's torque turns it",
+          "2": "The ruddervators steer it in the prop wash",
+          "3": "The front rotors tilt a little in opposite directions"
+        },
+        "why": "Q_TILT_TYPE 2, vectored yaw: one front rotor tilts forward and the other back, up to Q_TILT_YAW_ANGLE, and the pair twist the nose round. The rear motor only lifts, and the tail surfaces only steer once it flies fast enough."
+      }
+    },
+    "airspeed": {
+      "why": {
+        "q": "Why does a QuadPlane need an airspeed sensor when it has GPS?",
+        "options": {
+          "1": "The wing lifts on the air flowing past it, which GPS can't see in wind",
+          "2": "GPS can't measure speed",
+          "3": "Only to show the speed on the OSD"
+        },
+        "why": "GPS gives the speed over the ground. Into a 6 m/s headwind, 6 m/s over the ground is 12 m/s of air over the wing; downwind it is none. ArduPilot ends a transition on the airspeed, so a wrong reading hands over to a wing that stalls, or never hands over at all."
+      }
+    },
+    "fly": {
+      "transition": {
+        "q": "You switch from QHOVER to FBWA. When do the rotors finish tilting forward?",
+        "options": {
+          "1": "At once, in one go",
+          "2": "Once the airspeed passes AIRSPEED_MIN",
+          "3": "After a fixed 5 seconds"
+        },
+        "why": "They tilt to Q_TILT_MAX (45°) and hold there, still lifting, while it speeds up. Only when the airspeed reaches AIRSPEED_MIN does their lift fade out over Q_TRANSITION_MS while they finish tilting. MANUAL is the exception: it swings them forward at once, which stalls a slow craft."
+      },
+      "assist": {
+        "q": "What does Q_ASSIST_SPEED 9 do?",
+        "options": {
+          "1": "Below 9 m/s of airspeed in a plane mode, the lift motors help the wing",
+          "2": "It caps the hover speed at 9 m/s",
+          "3": "It sets how fast the transition goes"
+        },
+        "why": "It is the safety net for a slow turn or a gust: below 9 m/s the VTOL motors spin up and hold the craft up. Set it 3 m/s under AIRSPEED_MIN; at 0 pre-arm refuses with \"Q_ASSIST_SPEED is not set\"."
+      },
+      "motorout": {
+        "q": "A front motor stops while it hovers. What happens?",
+        "options": {
+          "1": "The other two keep it level and it lands",
+          "2": "It switches to plane mode and glides",
+          "3": "It goes down: a tri has no spare motor in hover"
+        },
+        "why": "With three motors every one is needed to balance roll, pitch and yaw. In cruise the wing carries it, so it can glide or fly on the other front motor, but in hover there is no way round it. Hover as little as you can, and check the wires at the pivots."
+      }
+    }
+  }
+}
