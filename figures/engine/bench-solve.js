@@ -20,9 +20,9 @@ function linsolve(A, b){
     if (Math.abs(A[p][c]) < 1e-18) continue;
     if (p !== c){ const t = A[p]; A[p] = A[c]; A[c] = t; const u = b[p]; b[p] = b[c]; b[c] = u; }
     for (let r = c + 1; r < n; r++){
-      const f = A[r][c] / A[c][c]; if (!f) continue;
-      for (let k = c; k < n; k++) A[r][k] -= f * A[c][k];
-      b[r] -= f * b[c];
+      const fr = A[r][c] / A[c][c]; if (!fr) continue;
+      for (let k = c; k < n; k++) A[r][k] -= fr * A[c][k];
+      b[r] -= fr * b[c];
     }
   }
   const x = new Float64Array(n);
@@ -160,8 +160,8 @@ function solveSlice(nl, high, S, logic){
         if (!s.on && vd > el.vf + 1e-6){ s.on = true; changed = true; }
         else if (s.on && vd < el.vf - 1e-6){ s.on = false; changed = true; }
       } else if (el.k === 'TS'){
-        const vs = V(el.sp) - V(el.sn), on = vs >= (+el.e.vmin || 2.7) && vs <= (+el.e.vabs || 7);
-        if (on !== !!s.on){ s.on = on; changed = true; }
+        const vs = V(el.sp) - V(el.sn), supplied = vs >= (+el.e.vmin || 2.7) && vs <= (+el.e.vabs || 7);
+        if (supplied !== !!s.on){ s.on = supplied; changed = true; }
       } else if (el.k === 'Q'){
         if (!s.on){
           // which end acts as the emitter is read with the junction off: the lower of collector and emitter
@@ -243,9 +243,9 @@ B.solveCircuit = (st, pl, dt = 0) => {
     if (!moved) break;
   }
   for (const el of els) if (el.k === 'M') M[el.id] = Object.assign(M[el.id] || {}, { gm: el.gm });
-  const avg = f => res.reduce((a, r) => a + r.w * f(r), 0), peak = f => Math.max(...res.map(f));
-  const Vavg = root => avg(r => r.V.get(root) || 0);
-  const out = { meas: {}, volts: {}, load: avg(r => r.load) };
+  const timeAvg = f => res.reduce((a, r) => a + r.w * f(r), 0), peak = f => Math.max(...res.map(f));
+  const Vavg = root => timeAvg(r => r.V.get(root) || 0);
+  const out = { meas: {}, volts: {}, load: timeAvg(r => r.load) };
   // which roots reach a source through the circuit (skip: an element left out, to tell an open LED)
   const srcRoots = new Set(nets.filter(s => s.kind !== 'input').map(s => s.root));
   const ends = el => ['a', 'b', 'w', 'nb', 'nc', 'ne', 'gnd', 'vp', 'sp', 'sn', 'out'].map(f => el[f]).filter(v => v != null);
@@ -276,7 +276,7 @@ B.solveCircuit = (st, pl, dt = 0) => {
   for (const el of els){
     const q = el.q, m = M[el.key] || (M[el.key] = {}), e = el.e, ri = r => r.el[el.n];
     if (el.k === 'D' && el.led){
-      const i = avg(r => ri(r).i), ip = peak(r => ri(r).i), rev = avg(r => -ri(r).vd);
+      const i = timeAvg(r => ri(r).i), ip = peak(r => ri(r).i), rev = timeAvg(r => -ri(r).vd);
       if (!el.dead && ip > el.imax * 2.5) burn(el.key, '{name} burned out: {n} mA is far above its 20 mA', { name: q.id, n: Math.round(ip * 1000) });
       const dead = !!(st.burnt && st.burnt[el.key]);
       const state = dead ? 'burnt' : i > 1e-5 ? 'ok' : !reaches(el.a, el) || !reaches(el.b, el) ? 'open' : rev > Math.max(1, el.vf * .5) ? 'reverse' : 'off';
@@ -287,26 +287,26 @@ B.solveCircuit = (st, pl, dt = 0) => {
       (leds[q.id] = leds[q.id] || {})[el.ch] = one;
     } else if (el.k === 'D'){
       if (!live(el)) continue;
-      const i = avg(r => ri(r).i), ip = peak(r => ri(r).i), rev = avg(r => -ri(r).vd);
+      const i = timeAvg(r => ri(r).i), ip = peak(r => ri(r).i), rev = timeAvg(r => -ri(r).vd);
       if (!el.dead && (i > el.imax || ip > el.isurge)) burn(el.key, '{name} burned out: {n} mA is more than it can carry', { name: q.id, n: Math.round(Math.max(i, ip) * 1000) });
       const across = motors.find(mm => mm.e.inductive && mm.a === el.b && mm.b === el.a);
-      const clamp = across && !across.dead && switched(across) && avg(r => Math.abs(r.el[across.n].i)) > 1e-3 && duties.length > 0;
+      const clamp = across && !across.dead && switched(across) && timeAvg(r => Math.abs(r.el[across.n].i)) > 1e-3 && duties.length > 0;
       const vfx = el.def.model && typeof el.def.model.vf === 'function' ? el.def.model.vf : null;
       const state = el.dead ? 'burnt' : clamp ? 'clamp' : i > 1e-5 ? 'ok' : rev > .5 ? 'block' : 'off';
-      out.meas[q.id] = { kind: 'diode', state, i_mA: rnd((clamp ? avg(r => Math.abs(r.el[across.n].i)) : Math.max(0, i)) * 1000),
+      out.meas[q.id] = { kind: 'diode', state, i_mA: rnd((clamp ? timeAvg(r => Math.abs(r.el[across.n].i)) : Math.max(0, i)) * 1000),
         v: rnd(i > 1e-5 ? (vfx ? vfx(i) : el.vf) : -rev, 100) };
     } else if (el.k === 'Q'){
       if (!live(el)) continue;
-      const ib = avg(r => ri(r).ib), ic = avg(r => ri(r).ic), icp = peak(r => ri(r).ic);
-      const on = res.reduce((a, r) => ri(r).ic > icp * .5 ? r : a, res[0]), vce = ri(on).vce;
-      const pW = avg(r => ri(r).ic * Math.abs(ri(r).vce) + ri(r).ib * el.vbe), tj = el.def.model && typeof el.def.model.tj === 'function' ? el.def.model.tj(pW) : 25 + (+e.theta || 200) * pW;
+      const ib = timeAvg(r => ri(r).ib), ic = timeAvg(r => ri(r).ic), icp = peak(r => ri(r).ic);
+      const conducting = res.reduce((a, r) => ri(r).ic > icp * .5 ? r : a, res[0]), vce = ri(conducting).vce;
+      const pW = timeAvg(r => ri(r).ic * Math.abs(ri(r).vce) + ri(r).ib * el.vbe), tj = el.def.model && typeof el.def.model.tj === 'function' ? el.def.model.tj(pW) : 25 + (+e.theta || 200) * pW;
       if (!el.dead && (tj > (+e.tjmax || 150) || icp > (+e.icmax || 1) * 1.5)) burn(el.key, '{name} overheated and failed', { name: q.id });
       const hotW = +e.photW || (+e.pmax || .6) * .75, anyInv = res.some(r => ri(r).inv && ri(r).ic > 1e-4);
       const state = el.dead ? 'burnt' : q.reversed || anyInv ? 'reverse' : pW > hotW ? 'hot' : res.some(r => ri(r).sat && ri(r).ic > 1e-4) ? 'on' : ic > 1e-5 ? 'linear' : 'off';
       out.meas[q.id] = { kind: 'npn', state, ib_mA: rnd(ib * 1000, 100), ic_mA: rnd(ic * 1000), vce: rnd(vce, 100), p_W: rnd(pW, 100), tj_C: Math.round(tj) };
     } else if (el.k === 'M'){
       if (!live(el)) continue;
-      const v = avg(r => ri(r).v), mdl = el.def.model || {}, load = q.load || 'prop';
+      const v = timeAvg(r => ri(r).v), mdl = el.def.model || {}, load = q.load || 'prop';
       const ss = typeof mdl.steady === 'function' ? mdl.steady(v, load) : { rpm: 0, i: v / Math.max(+e.ohms || 10, .1) };
       const vmax = +e.vmax || 12, polarRev = el.e.brushless && el.e.polar && v < -.3;
       const iA = load === 'stalled' ? Math.abs(v) / Math.max(+e.ohms || 1, .1) : polarRev ? 0 : Math.abs(ss.i || 0);
@@ -315,7 +315,7 @@ B.solveCircuit = (st, pl, dt = 0) => {
       out.meas[q.id] = { kind: 'motor', state, v: rnd(v, 100), i_mA: Math.round(iA * 1000), rpm: Math.round(polarRev ? 0 : ss.rpm || 0) };
     } else if (el.k === 'SV'){
       if (!live(el)) continue;
-      const vs = avg(r => ri(r).vs), duty = avg(r => ri(r).sig ? 1 : 0), mdl = el.def.model || {};
+      const vs = timeAvg(r => ri(r).vs), duty = timeAvg(r => ri(r).sig ? 1 : 0), mdl = el.def.model || {};
       const us = duty * (+e.period || .02) * 1e6, a = typeof mdl.angleOf === 'function' ? mdl.angleOf(us) : (us - 500) / 1900 * 180;
       const pulses = duty > 0 && duty <= .2, drv = st.drv && st.drv[q.id];
       const state = el.dead ? 'burnt' : vs < (+e.vmin || 4) ? (vs > .5 ? 'jitter' : 'off') : !pulses ? 'off' : vs > (+e.vmax || 6) + .5 ? 'over' : a < -3 || a > 183 ? 'stop' : 'ok';
@@ -324,7 +324,7 @@ B.solveCircuit = (st, pl, dt = 0) => {
       out.meas[q.id] = { kind: 'servo', state, ...(pulses ? { us: Math.round(us), angle: Math.round(angle) } : {}), i_mA: vs > .5 ? Math.round(m.i * 1000) : 0 };
     } else if (el.k === 'TS'){
       if (!live(el)) continue;
-      const vs = avg(r => ri(r).vs), vo = avg(r => ri(r).on ? ri(r).vo : 0);
+      const vs = timeAvg(r => ri(r).vs), vo = timeAvg(r => ri(r).on ? ri(r).vo : 0);
       if (vs < -.5) m.revT = (m.revT || 0) + dt; else m.revT = 0;
       if (!el.dead && (vs > (+e.vabs || 7) || m.revT > 3)) burn(el.key, '{name} overheated and failed', { name: q.id });
       const state = el.dead ? 'dead' : vs < -.5 ? 'hot' : vs <= .5 ? 'off' : vs < (+e.vmin || 2.7) ? 'low' : 'ok';
@@ -334,13 +334,13 @@ B.solveCircuit = (st, pl, dt = 0) => {
       const pp = peak(r => ri(r).p), hot = pp > el.pmax;
       m.hotT = hot ? (m.hotT || 0) + dt : 0;
       if (!el.dead && m.hotT > 2) burn(el.key, '{name} burned out: {w} W is too much for its track', { name: q.id, w: pp.toFixed(2) });
-      out.meas[q.id] = { kind: 'pot', state: el.dead ? 'burnt' : hot ? 'hot' : 'ok', v: rnd(avg(r => ri(r).vw), 100) };
+      out.meas[q.id] = { kind: 'pot', state: el.dead ? 'burnt' : hot ? 'hot' : 'ok', v: rnd(timeAvg(r => ri(r).vw), 100) };
     } else if (el.k === 'BZ'){
       const a = el.a, s = nets.find(x2 => x2.root === a && x2.kind === 'pin');
       if (!live(el) && !s) continue;
-      const v = avg(r => ri(r).vd), one = { kind: 'buzzer', state: el.active && v < -1 ? 'reverse' : Math.abs(v) > .5 || (s && s.hz) ? 'ok' : 'off', v: rnd(v, 100) };
+      const v = timeAvg(r => ri(r).vd), one = { kind: 'buzzer', state: el.active && v < -1 ? 'reverse' : Math.abs(v) > .5 || (s && s.hz) ? 'ok' : 'off', v: rnd(v, 100) };
       if (s) one.f = s.hz ? Math.round(s.hz) : 0;
-      if (el.active) one.i_mA = rnd(Math.max(0, avg(r => ri(r).i)) * 1000);
+      if (el.active) one.i_mA = rnd(Math.max(0, timeAvg(r => ri(r).i)) * 1000);
       out.meas[q.id] = one;
     }
   }

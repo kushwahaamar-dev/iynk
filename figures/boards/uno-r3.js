@@ -278,7 +278,7 @@ B.board({
         { id: 'RES1', part: 'resistor', ohms: 1000, holes: ['b9', 'b13'] },
         { id: 'Q1', part: 'tip120', holes: ['c13', 'c14', 'c15'] },
         { id: 'DIO1', part: 'diode-1n4007', holes: ['d14', 'd20'] },
-        { id: 'MOT1', part: 'dc-motor', at: [150, 12], drive: 'D6', holes: ['a20', 'a14'] },
+        { id: 'MOT1', part: 'dc-motor', at: [200, 14], holes: ['a20', 'a14'] },
       ],
       wires: [
         { from: 'D6', to: 'a9', color: 'orange' },
@@ -293,7 +293,7 @@ B.board({
         { id: 'Q1', part: 'tip120', holes: ['c13', 'c14', 'c15'] },
         { id: 'TMP1', part: 'tmp36', holes: ['c19', 'c20', 'c21'] },
         { id: 'DIO1', part: 'diode-1n4007', holes: ['d14', 'd19'] },
-        { id: 'FAN1', part: 'fan', at: [150, 12], drive: 'D6', holes: ['e19', 'e14'] },
+        { id: 'FAN1', part: 'fan', at: [192, 14], holes: ['e19', 'e14'] },
       ],
       wires: [
         { from: 'D6', to: 'a9', color: 'orange' },
@@ -306,7 +306,7 @@ B.board({
     servo: {
       title: 'Sweep a servo', breadboard: 'half',
       parts: [
-        { id: 'SRV1', part: 'servo-sg90', at: [140, 14], holes: ['e10', 'e11', 'e12'] },
+        { id: 'SRV1', part: 'servo-sg90', at: [188, 26], holes: ['e10', 'e11', 'e12'] },
       ],
       wires: [
         { from: 'POWER.7', to: 'a10', color: 'brown' },
@@ -349,7 +349,7 @@ B.board({
         { id: 'FSR1', part: 'fsr402', holes: ['a13', 'a14'] },
         { id: 'RES1', part: 'resistor', ohms: 10000, holes: ['c10', 'c14'] },
         { id: 'BUZ1', part: 'piezo-buzzer', holes: ['e1', 'e4'] },
-        { id: 'SRV1', part: 'servo-sg90', at: [150, 10], holes: ['h20', 'h21', 'h22'] },
+        { id: 'SRV1', part: 'servo-sg90', at: [188, 30], holes: ['h20', 'h21', 'h22'] },
       ],
       wires: [
         { from: 'POWER.5', to: 'd13', color: 'red' },

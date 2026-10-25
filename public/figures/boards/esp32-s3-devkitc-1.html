@@ -604,14 +604,22 @@ function xrCallouts(items, B){
   const roomL = xmin - vb.x >= wMax, roomR = vb.x + vb.width - xmax >= wMax;
   for (const it of items){ const [X, Y] = P(...it.at); ((X < cx && roomL) || !roomR ? L : R).push({ ...it, X, Y }); }
   let s = '';
-  let top = { [-1]: fs, [1]: fs + 30*k };
-  if (btn && svgEl.getScreenCTM()){ const r = btn.getBoundingClientRect(), q = new DOMPoint(r.right, r.bottom + 50).matrixTransform(svgEl.getScreenCTM().inverse());
-    if (q.y > 0) top[-1] = q.y + hgt; }
-  for (const [col, side] of [[L, -1], [R, 1]]){
+  let top = { [-1]: fs, [1]: fs + 30*k }, tight = null;
+  if (btn && svgEl.getScreenCTM()){ const r = btn.getBoundingClientRect(), inv = svgEl.getScreenCTM().inverse(), q = new DOMPoint(r.right, r.bottom + 50).matrixTransform(inv);
+    if (q.y > 0){ top[-1] = q.y + hgt; tight = new DOMPoint(r.right, r.bottom + 6).matrixTransform(inv).y + hgt/2; } }
+  const stack = (col, side) => {
     col.sort((a, b) => a.Y - b.Y);
     let y = -1e9; for (const c of col){ c.py = Math.max(c.Y, y + gap, top[side]); y = c.py; }
     const shift = col.length ? Math.max(0, col.reduce((a, c) => a + c.py - c.Y, 0) / col.length) : 0;
     const room = col.length ? col[0].py - top[side] : 0; for (const c of col) c.py -= Math.min(shift, room);
+  };
+  stack(L, -1); stack(R, 1);
+  // a tall button column pushes the left labels down: first they close up under the buttons, then the ones that would
+  // still leave the frame move to the right column (clamped inside the frame even when the drawing leaves no room there)
+  const bottom = vb.y + vb.height - hgt/2 - 2*k;
+  if (tight != null && L.some(c => c.py > bottom)){ top[-1] = Math.min(top[-1], tight); stack(L, -1); }
+  if (L.some(c => c.py > bottom)){ while (L.length && L[L.length - 1].py > bottom) R.push(L.pop()); stack(L, -1); stack(R, 1); }
+  for (const [col, side] of [[L, -1], [R, 1]]){
     for (const c of col){
       c.n = ((window.__ln || (window.__ln = {}))[c.text] || (__ln[c.text] = Object.keys(__ln).length + 1)); const ct = CF_T(c.text), w = u ? hgt*(c.n > 9 ? 1.3 : 1) : CF_TW(ct, fs) + fs*1.5;
       let px = side < 0 ? xmin - 10*k - w/2 : xmax + 10*k + w/2; px = Math.max(vb.x + w/2 + 2*k, Math.min(vb.x + vb.width - w/2 - 2*k, px));
@@ -1146,8 +1154,9 @@ function evaluate(){
   if (gone){ ev.status = 'no-power'; ev.why = T('No power: {name} is missing', { name: nameOf(gone) }); return ev; }
   const rails = Object.assign(Object.fromEntries(Object.keys(feeds).map(r => [r, { from: [] }])), pw.rails || {});
   let burned = null;
+  const fedBy = {};     // the feed each rail takes its voltage from (null: straight from the source)
   for (const [rid, rail] of Object.entries(rails)){
-    let best = 0;
+    let best = 0, bestFd = null;
     if (own(feeds, rid)){
       if (rev) burned = burned || { part: rail.burns || (pw.mcu && pw.mcu.part), kind: 'reverse' };
       else best = +feeds[rid] * scale;
@@ -1160,21 +1169,37 @@ function evaluate(){
       if (!via.every(ok)){ continue; }
       if (vin < 0){
         if (fd.protect && via.includes(fd.protect)){ ev.why = T('Reverse polarity: {name} blocks it, nothing powers up', { name: nameOf(fd.protect) }); continue; }
-        burned = burned || { part: via[via.length - 1] || (pw.mcu && pw.mcu.part), kind: 'reverse' }; continue;
+        burned = burned || { part: fd.burns || via[via.length - 1] || (pw.mcu && pw.mcu.part), kind: 'reverse' }; continue;
       }
       if (fd.offIf){ const [r2, op, lim] = fd.offIf, v2 = ev.rails[r2] || 0; if (op === '>' ? v2 > lim : v2 < lim) continue; }
       if (fd.max != null && vin > fd.max){ burned = burned || { part: via[via.length - 1], kind: 'over', v: vin }; continue; }
       let v = vin;
       if (fd.reg != null) v = Math.min(fd.reg, vin - (fd.dropout || 0));
       else v = vin - (fd.drop || 0);
-      best = Math.max(best, v);
+      if (v > best){ best = v; bestFd = fd; }
     }
     if (rail.max != null && best > rail.max){ burned = burned || { part: (pw.mcu && pw.mcu.part), kind: 'over', v: best, rail: rid }; }
-    ev.rails[rid] = Math.max(0, best);
+    ev.rails[rid] = Math.max(0, best); fedBy[rid] = bestFd;
   }
   // overloads and shorts sag a rail
+  // (the circuit on the breadboard can do it too: more current than the source gives, st.sag from bench-bb.js)
+  const sag = !!(st.sag && st.sag.until > st.t);
   if (st.faults.includes('brownout') && pw.mcu){ const r = pw.mcu.rail; if (ev.rails[r]) ev.rails[r] = coldHit(5, st.t * 1.4) ? ev.rails[r] * .42 : ev.rails[r] * .9; }
-  for (const fid of st.faults) if (fid.startsWith('short:')){ const [, a, b2] = fid.split(':'); for (const r of [a, b2]) if (own(ev.rails, r)) { for (const k of Object.keys(ev.rails)) ev.rails[k] = 0; ev.why = T('Short between {a} and {b}: the supply trips', { a, b: b2 }); } }
+  else if (sag && pw.mcu){ const r = pw.mcu.rail; if (ev.rails[r]) ev.rails[r] *= .42; }
+  // a short on a rail fed through a current-limited regulator (feed ilim, amps) folds that regulator back: the rail and
+  // the rails it feeds fall to 0 V and the rest keeps running; any other short trips the supply
+  for (const fid of st.faults) if (fid.startsWith('short:')){
+    const [, a, b2] = fid.split(':');
+    for (const r of [a, b2]) if (own(ev.rails, r)){
+      const fd = fedBy[r];
+      if (fd && fd.ilim && ev.rails[r] > 0){
+        const dead = new Set([r]);
+        for (const k of Object.keys(ev.rails)) if (dead.has(k) || (fedBy[k] && fedBy[k].rail && dead.has(fedBy[k].rail))){ dead.add(k); ev.rails[k] = 0; }
+        const reg = (fd.via || [])[(fd.via || []).length - 1];
+        ev.why = T('Short between {a} and {b}: {name} limits its current, so {rail} falls to 0 V and the rest runs', { a, b: b2, name: reg ? nameOf(reg) : r, rail: r });
+      } else { for (const k of Object.keys(ev.rails)) ev.rails[k] = 0; ev.why = T('Short between {a} and {b}: the supply trips', { a, b: b2 }); }
+    }
+  }
   if (burned){
     const pid = burned.part || '';
     ev.status = 'fault';
@@ -1183,8 +1208,9 @@ function evaluate(){
       : { id: 'wrong-voltage:' + st.power, kind: 'hot', part: pid, msg: T('{v} V on {src}: {name} is damaged', { v: (+burned.v).toFixed(1), src: T(src.label || st.power), name: nameOf(pid) }), fix: T('Use {range} V', { range: (src.range || [src.v, src.v]).join('–') }) };
     return ev;
   }
-  // reversed polar parts on a live board
+  // reversed polar parts on a live board (polar.rail: only while that rail is live, so a cap on VIN is safe on USB)
   for (const p of MD.parts) if (p.polar && isIn(p.id) && isRev(p.id) && isSet(p.id)){
+    if (p.polar.rail && !((ev.rails[p.polar.rail] || 0) > .5)) continue;
     const kind = p.polar.fault || (p.kind === 'ecap' || p.kind === 'ecap-smd' ? 'pop' : /led/.test(p.kind) ? 'dark' : 'hot');
     if (kind === 'dark') continue;
     ev.status = 'fault';
@@ -1197,15 +1223,27 @@ function evaluate(){
   const mcu = pw.mcu;
   if (mcu){
     const v = ev.rails[mcu.rail] || 0;
-    if (v < (mcu.min || 0)){ ev.status = 'brownout'; ev.why = T('Brown-out: {rail} is at {v} V, the chip keeps resetting', { rail: mcu.rail, v: v.toFixed(1) }); return ev; }
+    if (v < .5){ ev.status = 'no-power'; ev.why = T('No power on {rail}: nothing reaches the chip', { rail: mcu.rail }); return ev; }
+    if (v < (mcu.min || 0)){ ev.status = 'brownout';
+      ev.why = sag ? T('Brown-out: the circuit draws {n} mA, more than {src} gives ({max} mA), so the chip keeps resetting', { n: st.sag.mA, src: T(src.label || st.power), max: st.sag.max })
+        : T('Brown-out: {rail} is at {v} V, the chip keeps resetting', { rail: mcu.rail, v: v.toFixed(1) }); return ev; }
     const miss = (mcu.needs || []).find(id => !isSet(id) || coldOff(id));
     if (miss){ ev.why = T('Powered, but nothing runs: {name} is missing', { name: nameOf(miss) }); return ev; }
     if (st.ctl && Object.entries(st.ctl).some(([id, v]) => v && MD.byId[id] && MD.byId[id].control && MD.byId[id].control.action === 'reset')){ ev.status = 'reset'; return ev; }
     ev.status = 'running';
+    // a strap latched at the last restart that keeps the sketch from starting (ROM boot mode)
+    if (st.strap && st.strap.halts){ ev.status = 'fault'; ev.fault = { id: st.strap.fault, kind: 'boot', part: st.strap.part || mcu.part, msg: T(st.strap.msg || 'Boot strap'), fix: T(st.strap.fix || 'Free the pin and press RESET') }; }
   }
   return ev;
 }
 B.evaluate = () => evaluate();
+
+/* boot straps (def.straps: [{ fault, boot, halts?, part?, blocks?: ['upload', 'serial'], msg, fix }]): the chip reads its
+   mode pins when the program (re)starts (power on, RESET released, an upload done), so a strap fault in force then is
+   latched until the next restart. halts: the sketch never starts (status fault, kind boot); blocks: it runs, but
+   uploads are refused with msg and its Serial lines stop. state.boot reports the latched strap's boot. */
+const sampleStraps = () => { st.strap = (MD.def.straps || []).find(x => x && typeof x.fault === 'string' && st.faults.includes(x.fault)) || null; };
+const strapBlocks = what => !!(st.strap && (st.strap.blocks || []).includes(what));
 
 /* ---------- outputs: pin levels and LEDs ---------- */
 function outputs(){
@@ -1244,8 +1282,10 @@ A.pnp = () => {
   if (!guard()) return;
   const todo = partsIn('smd').filter(p => !isIn(p.id) && !st.left[p.id] && !p.fixed);
   if (!todo.length){ say(partsIn('smd').length ? 'Every SMD part is on already' : 'This board has no SMD parts'); return; }
-  todo.forEach((p, i) => { st.drop[p.id] = -.22 * i; st.placed[p.id] = { orient: 0, sold: false }; });
-  st.reflowT = -.22 * todo.length - .3;
+  // 0.22 s a part, faster on a crowded board so the whole run stays under about 3 s
+  const gap = Math.min(.22, 2.6 / todo.length);
+  todo.forEach((p, i) => { st.drop[p.id] = -gap * i; st.placed[p.id] = { orient: 0, sold: false }; });
+  st.reflowT = -gap * todo.length - .3;
   say('Pick and place: {n} parts, then into the reflow oven', { n: todo.length });
   kick();
 };
@@ -1302,10 +1342,11 @@ A.build = what => {
 };
 A.flip = id => { const p = MD.byId[id]; if (!p || !p.polar || !isIn(id)) return; if (!guard()) return; st.placed[id].orient ^= 1; say(st.placed[id].orient ? '{name} turned the wrong way round' : '{name} turned the right way round', { name: nameOf(id) }); refresh(); };
 A.power = key => {
-  if (key == null || key === 'off'){ if (!st.power) return; st.power = null; st.up = null; st.ext = st.ext && false; sfx('unplug'); refresh(); return; }
+  if (key == null || key === 'off'){ if (!st.power) return; st.power = null; st.up = null; st.strap = null; st.sag = null; st.ext = st.ext && false; sfx('unplug'); refresh(); return; }
   const src = (MD.power.sources || {})[key]; if (!src) return say('No supply {name} on this board', { name: key });
   if (st.exploded) return say(MSG.exploded);
-  st.power = key; st.t = 0; st.serialN = -1; sfx('plug');
+  // plugging in the cable that is already in changes nothing (the sketch keeps its clock)
+  if (st.power !== key){ st.power = key; st.t = 0; st.serialN = -1; st.sag = null; sfx('plug'); sampleStraps(); }
   refresh(true);
 };
 A.upload = key => {
@@ -1314,8 +1355,10 @@ A.upload = key => {
   const ups = MD.power.upload || {};
   if (md.instant){ st.mode = key; st.ext = false; st.t = 0; st.serialN = -1; say('{name} running', { name: T(md.title) }); refresh(); return; }
   if (!st.power || (ups.source && st.power !== ups.source)) return say(MSG.plugFirst);
+  if (strapBlocks('upload')) return say(st.strap.msg || 'Upload failed');
   if (st.ev.status === 'fault') return say(MSG.faulted);
-  const miss = (ups.needs || []).find(id => !isSet(id) || coldOff(id));
+  // the bootloader runs on the MCU: with its clock or socket out, avrdude never gets in sync
+  const miss = [...(ups.needs || []), ...((MD.power.mcu && MD.power.mcu.needs) || [])].find(id => !isSet(id) || coldOff(id));
   if (miss) return say('Upload failed: {name} is missing', { name: nameOf(miss) });
   if (st.ev.status !== 'running' && st.ev.status !== 'powered') return say(st.ev.why || MSG.plugFirst);
   st.up = key; st.upT = 0; st.upDur = md.uploadS || ups.seconds || 2.2; st.ext = false;
@@ -1328,7 +1371,7 @@ A.press = (id, down) => {
   const c = p.control, was = st.ctl[id] || 0;
   if (c.type === 'slide'){ if (down) st.ctl[id] = (was + 1) % ((c.positions || [0, 1]).length); }
   else st.ctl[id] = down ? 1 : 0;
-  if (c.action === 'reset' && was && !down){ st.t = MD.def.bootloader ? -(MD.def.bootloader.wait || 1) : 0; st.serialN = -1;
+  if (c.action === 'reset' && was && !down){ st.t = MD.def.bootloader ? -(MD.def.bootloader.wait || 1) : 0; st.serialN = -1; sampleStraps();
     if (st.ctlBoot) st.boot = 'download'; else if (st.boot === 'download') st.boot = null; }
   if (c.action === 'boot') st.ctlBoot = !!down;
   if (c.action === 'bootsel' && down && !st.power) st.boot = 'uf2';
@@ -1337,9 +1380,13 @@ A.press = (id, down) => {
 };
 // a part left out by a fault stays in st.faults as missing:<id> until it is back on the board
 const backOn = id => { st.faults = st.faults.filter(f => f !== 'missing:' + id); };
+// polar parts sitting backwards: reported as reversed:<id> in state.faults for as long as they are
+const reversedIds = () => MD.parts.filter(p => p.polar && isIn(p.id) && isRev(p.id)).map(p => p.id);
+const faultsNow = () => [...st.faults, ...reversedIds().map(id => 'reversed:' + id)];
 A.fault = id => {
   if (id == null){
     for (const f of st.faults) if (f.startsWith('missing:')){ const pid = f.slice(8); if (MD.byId[pid] && !isIn(pid)){ st.placed[pid] = { orient: 0, sold: true }; delete st.left[pid]; } }
+    for (const pid of reversedIds()) st.placed[pid].orient = 0;
     st.faults = []; st.supply = {}; refresh(true); return;
   }
   if (typeof id !== 'string') return;
@@ -1355,7 +1402,10 @@ A.fault = id => {
   if (kind === 'wrong-voltage'){ const v = +b; if (!(MD.power.sources || {})[a] || !Number.isFinite(v)) return say('Unknown supply {name}', { name: a }); st.supply[a] = v; }
   if (kind === 'reverse-polarity' && !(MD.power.sources || {})[a]) return say('Unknown supply {name}', { name: a });
   if (!st.faults.includes(id)) st.faults.push(id);
+  if (st.power && (MD.def.straps || []).some(x => x && x.fault === id)){ st.t = 0; st.serialN = -1; sampleStraps(); }
   refresh(true);
+  // a fault the sketch survives (a 3V3 short) still says what it did
+  if (st.power && st.ev.status === 'running' && st.ev.why) say(st.ev.why, null, 3200);
 };
 A.view = v => {
   if (v === 'iso') v = 'board';
@@ -1376,6 +1426,9 @@ A.matStep = sid => {
   st.matStep = i; sfx(i >= 0 ? 'place' : 'pop'); if (i >= 0) say(MAT.steps[i].label);
   refresh(); return true;
 };
+// tone() square waves from the host's sketch, by net in Hz (0 or missing: silent); the breadboard solver hands them to
+// the buzzer on that net
+A.setTones = tones => { st.tones = {}; for (const [k, v] of Object.entries(tones)){ const x = +v; if (typeof k === 'string' && k.length < 24 && Number.isFinite(x) && x > 0) st.tones[k] = clamp(x, 1, 20000); } refresh(); };
 A.setPins = pins => { st.ext = true; for (const [k, v] of Object.entries(pins)){ const x = +v; if (typeof k === 'string' && k.length < 24 && Number.isFinite(x)) st.pins[k] = clamp(x, 0, 1); } refresh(); };
 
 /* ---------- sound: figures emit sfx events; the host plays them (S10) ---------- */
@@ -1396,15 +1449,15 @@ function step(dt){
   // the program clock
   if (st.power){
     st.t += dt;
-    if (st.up){ st.upT += dt; if (st.upT >= st.upDur){ const key = st.up; st.up = null; st.mode = key; st.t = 0; st.serialN = -1;
+    if (st.up){ st.upT += dt; if (st.upT >= st.upDur){ const key = st.up; st.up = null; st.mode = key; st.t = 0; st.serialN = -1; sampleStraps();
         say('Done uploading: {name} is running', { name: T(MD.modes[key].title) }); sfx('ding'); } }
     st.ev = evaluate();
     if (st.ev.status === 'brownout' && Math.floor(st.t / .6) !== st.boN){ st.boN = Math.floor(st.t / .6); st.serialN = -1; }
     const md = MD.modes[st.mode];
-    if (st.ev.status === 'running' && !st.up && !st.ext && md){
+    if (st.ev.status === 'running' && !st.up && !st.ext && md && !strapBlocks('serial')){
       const k = Math.floor(st.t);
       if (st.t >= 0 && k !== st.serialN){
-        if (st.serialN < 0 && md.banner){ emit(T(md.banner)); }
+        if (st.serialN < 0 && md.banner){ emit(String(md.banner)); }
         st.serialN = k;
         if (md.serial){ let line = null; try { line = md.serial(k, st); } catch (e) { note('serial: ' + e.message); } if (line != null) emit(String(line)); }
       }
@@ -1422,18 +1475,31 @@ function step(dt){
 B.advance = (seconds, dt = 1 / 30) => { for (let t = 0; t < seconds - 1e-9; t += dt) step(Math.min(dt, seconds - t)); ui && ui.render(); };
 const emit = line => { st.serial = { n: (st.serial ? st.serial.n : 0) + 1, line }; st.txT = .09; };
 
-/* a bench's electrical behaviour in its own words: def.model(st, dt) -> { readings: {…}, status: 'text' } runs after the
-   outputs every frame (dt 0 on a state change); st.o.pins, st.ev.rails, st.t, st.mode and st.matStep are its inputs.
-   readings go out as state.readings (numbers rounded), status as state.benchStatus and on the stats panel */
+/* a bench's electrical behaviour in its own words: def.model(st, dt) runs after the outputs every frame (dt 0 on a state
+   change); st.o.pins, st.ev.rails, st.meas, st.t, st.mode and st.matStep are its inputs. It returns
+     { readings: {…}, status: 'text', stats: [[label, value]], meas: {partId: {…}}, report: {key: value},
+       flow: {net: bool}, accent: [partId] }   (every field optional)
+   readings go out as state.readings (numbers rounded) and to mat parts as their m; status as state.benchStatus and on
+   the stats panel; stats on the stats panel while powered; meas merges over the breadboard solver's state.meas;
+   report adds top-level state keys (state.levels…) the engine does not use itself; flow lights xr.flow paths and
+   mat wires on those nets; accent rings those parts */
 const modelErrs = new Set();
+const modelNote = m => { if (!modelErrs.has(m)){ modelErrs.add(m); note('model: ' + m); } };
+const obj = v => v && typeof v === 'object' && !Array.isArray(v) ? v : null;
 function runModel(dt){
   const fn = MD.def.model;
   if (typeof fn !== 'function') return;
   let r = null;
-  try { r = fn(st, dt); } catch (e) { if (!modelErrs.has(e.message)){ modelErrs.add(e.message); note('model: ' + e.message); } }
-  st.readings = r && r.readings && typeof r.readings === 'object' ? r.readings : {};
+  try { r = fn(st, dt); } catch (e) { modelNote(e.message); }
+  st.readings = (r && obj(r.readings)) || {};
   st.benchStatus = r && typeof r.status === 'string' ? r.status : null;
+  st.modelStats = r && Array.isArray(r.stats) ? r.stats.filter(x => Array.isArray(x) && x.length === 2) : [];
+  st.modelReport = (r && obj(r.report)) || {};
+  st.flow = (r && obj(r.flow)) || {};
+  st.accent = r && Array.isArray(r.accent) ? r.accent.filter(id => typeof id === 'string') : [];
+  if (r && obj(r.meas)) st.meas = Object.assign({}, st.meas || {}, r.meas);
 }
+const flowOn = net => !!(st.flow && st.flow[net]);
 const roundDeep = v => typeof v === 'number' ? (Number.isFinite(v) ? Math.round(v * 1000) / 1000 : null)
   : Array.isArray(v) ? v.map(roundDeep) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, roundDeep(x)])) : v;
 function refresh(newPower){
@@ -1444,7 +1510,7 @@ function refresh(newPower){
   runModel(0);
   if (newPower && st.power){
     const ev = st.ev;
-    if (ev.status === 'fault' && prev !== 'fault'){ const fk = ev.fault.kind; sfx(fk === 'pop' ? 'pop' : 'sizzle'); say(ev.fault.msg, null, 3200); }
+    if (ev.status === 'fault' && prev !== 'fault'){ const fk = ev.fault.kind; if (fk !== 'boot') sfx(fk === 'pop' ? 'pop' : 'sizzle'); say(ev.fault.msg, null, 3200); }
     else if (ev.status === 'running' && prev !== 'running'){ const md = MD.modes[st.mode]; say(md && md.powerMsg ? md.powerMsg : 'Powered: {name} starts', { name: md ? T(md.title) : '' }); }
     else if (ev.why && ev.status !== prev) say(ev.why, null, 3000);
   }
@@ -1528,7 +1594,7 @@ function drawParts(o, k){
     const drop = st.drop[p.id] != null ? clamp(st.drop[p.id], 0, 1) : 1;
     const lift = (LIFT[p.group] || 0) * ex + (1 - ease(drop)) * 14;
     const fault = st.ev.fault && st.ev.fault.part === p.id ? st.ev.fault.kind : null;
-    const opt = { lift, k, lit: o.leds[p.id] || 0, rev: isRev(p.id), sel: st.sel === p.id, hot: fault === 'hot', pop: fault === 'pop',
+    const opt = { lift, k, lit: o.leds[p.id] || 0, rev: isRev(p.id), sel: st.sel === p.id || (st.accent || []).includes(p.id), hot: fault === 'hot', pop: fault === 'pop',
       on: !!(st.ctl[p.id]), sold: isSet(p.id), o };
     const { ctx, items: its } = partCtx(p, st, opt);
     try { kd.draw(ctx); } catch (e) { note(`${p.id} (${p.kind}): ${e.message}`); }
@@ -1542,7 +1608,7 @@ function drawParts(o, k){
     }
     // the soldering iron visits the part being soldered
     if (st.solderQ && st.solderQ[0] === p.id){ const tp = ctx.W(0, 0, p.h + 2); items.push({ box: [[tp[0] - 1, tp[1] - 1, tp[2]], [tp[0] + 1, tp[1] + 1, tp[2] + 30]], svg: ironSvg(tp) }); }
-    if (fault && st.power) items.push({ box: [ctx.W(0, 0, p.h + 1), ctx.W(0, 0, p.h + 1)].map((q, i) => i ? q.map(v => v + 1) : q), svg: smokeSvg(ctx, p) });
+    if ((fault === 'hot' || fault === 'pop') && st.power) items.push({ box: [ctx.W(0, 0, p.h + 1), ctx.W(0, 0, p.h + 1)].map((q, i) => i ? q.map(v => v + 1) : q), svg: smokeSvg(ctx, p) });
   }
   return items;
 }
@@ -1585,7 +1651,7 @@ function xrLayer(k){
   let s = '';
   const t = st.t || 0;
   for (const [net, path] of (MD.def.xr && MD.def.xr.flow) || []){
-    const live = (st.ev.rails[net] || 0) > .5 || (st.o.pins[net] || 0) > .5;
+    const live = (st.ev.rails[net] || 0) > .5 || (st.o.pins[net] || 0) > .5 || flowOn(net);
     const pts = path.map(([x, y]) => BP(x, y, .3));
     s += `<path d="${pd(pts, false)}" fill="none" stroke="#f7a531" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="${f(.55 * k)}"/>`;
     if (!live) continue;
@@ -1627,7 +1693,7 @@ const matNote = m => { if (!matErrs.has(m)){ matErrs.add(m); note(m); } };
 const periphData = it => `data-id="${CF_ESC(it.id)}" data-label="${CF_ESC(it.name)}"`;
 function periphBoard(it, k, live){
   return inFrame(it, () => {
-    const pc = it.md.pcb, items = [], data = periphData(it), sel = st.sel === it.id;
+    const pc = it.md.pcb, items = [], data = periphData(it), sel = st.sel === it.id || (st.accent || []).includes(it.id);
     const wrap = svg => act('periph', sel ? `<g class="bsel">${svg}</g>` : svg, data);
     items.push({ box: aabb([BP(0, 0, -pc.thick), BP(pc.w, pc.h, 0)]), svg: wrap(slabW(BP, 0, 0, pc.w, pc.h, -pc.thick, 0, matOf(pc.color))) });
     for (const [x, y] of [[1.5, 1.5], [pc.w - 1.5, 1.5], [1.5, pc.h - 1.5], [pc.w - 1.5, pc.h - 1.5]]){
@@ -1649,7 +1715,7 @@ const legsOf = it => {
   return pts.map(([x, y]) => BP(x, y, z));
 };
 function periphPart(it, k, live){
-  const z = G.matH - G.top, items = [], sel = st.sel === it.id, legs = legsOf(it);
+  const z = G.matH - G.top, items = [], sel = st.sel === it.id || (st.accent || []).includes(it.id), legs = legsOf(it);
   const p = Object.assign({ id: it.id, part: it.q.part }, it.def.example || {}, it.q.params || {});
   const pl = { at: (x, y, zz = z) => BP(it.at[0] + x, it.at[1] + y, zz), zTop: z, geo: null };
   const put = (bx, svg) => { if (svg) items.push({ box: bx, svg: act('periph', sel ? `<g class="bsel">${svg}</g>` : svg, periphData(it)) }); };
@@ -1681,7 +1747,7 @@ function matItems(k){
     if (!stepOn(w.step)) continue;
     const a = matEnd(w.from), b = matEnd(w.to);
     if (!a || !b){ matNote(`wire ${w.from}-${w.to}: unknown end`); continue; }
-    const net = a.net || b.net, on = !!net && ((st.o.pins[net] || 0) > .5 || (st.ev.rails[net] || 0) > .5);
+    const net = a.net || b.net, on = !!net && ((st.o.pins[net] || 0) > .5 || (st.ev.rails[net] || 0) > .5 || flowOn(net));
     const pin = a.pin || b.pin;
     wire.draw({ a: a.pt, b: b.pt, color: w.color || 'green', live: on, k, put: (bx, svg) => items.push({ box: bx, svg: act('pin', svg,
       `data-id="${CF_ESC(pin ? pin.id : w.from)}" data-part="${CF_ESC(pin ? pin.part : '')}" data-label="${CF_ESC(T('Wire from {a} to {b}', { a: w.from, b: w.to }))}"`) }) });
@@ -1741,7 +1807,8 @@ function scene(stt){
   const vd = VIEWS[v];
   if (vd.flat) return vd.scene(k);
   const bnd = vd.bounds(), corners = B.boxCorners(bnd);
-  const sc = v === (B.mountView || 'board') ? 1 : viewFit(v, corners);
+  // the breadboard view is fitted per circuit: a motor on the mat needs a wider frame than a blinking LED
+  const sc = v === (B.mountView || 'board') ? 1 : viewFit(v === 'breadboard' ? v + ':' + stt.circuit : v, corners);
   let svg = vd.scene(k);
   if (sc !== 1){
     const c3 = [(bnd[0] + bnd[3]) / 2, (bnd[1] + bnd[4]) / 2, (bnd[2] + bnd[5]) / 2], pc = P(...c3), rc = P(RC[0], RC[1], RCZ);
@@ -1771,7 +1838,7 @@ function partButtons(){
   // a choice changes the selected part, or the first one when nothing is selected
   const target = () => (c.parts || []).find(q => q.id === st.sel) || (c.parts || [])[0];
   for (const [k, spec] of Object.entries(def.params || {})){
-    const vals = B.paramRange(spec) ? rangeSteps(k, spec) : spec;
+    const vals = def.steps && Array.isArray(def.steps[k]) ? def.steps[k] : B.paramRange(spec) ? rangeSteps(k, spec) : spec;
     const onoff = typeof spec[0] === 'boolean' || /^(pressed|on|closed|down)$/.test(k);
     const show = v => onoff ? T(v ? 'yes' : 'no') : k === 'ohms' ? B.ohmsText(v) : k === 'lux' ? v + ' lx' : k === 'pos' ? Math.round(v * 100) + ' %' : T(String(v));
     bt.push({ id: k, label: (def.paramNames && def.paramNames[k]) || PARAM_NAMES[k] || k[0].toUpperCase() + k.slice(1), choices: () => vals.map(v => ({ id: CF_SLUG(String(v)), label: show(v),
@@ -1813,7 +1880,7 @@ function buttons(){
   } });
   bt.push({ id: 'solder', label: 'Solder joints', onClick: () => A.solder() });
   bt.push({ id: 'remove', label: 'Remove a part', choices: () => MD.parts.filter(p => isIn(p.id) && !p.fixed).map(p => ({ id: p.id.toLowerCase(), label: p.id + ' · ' + T(p.name), onClick: () => A.remove(p.id) })) });
-  bt.push({ id: 'break', label: 'Break it', choices: () => faultChoices().map(([id, label]) => ({ id: id ? CF_SLUG(id) : 'repair', label, current: st.faults.includes(id), onClick: () => A.fault(id) })) });
+  bt.push({ id: 'break', label: 'Break it', choices: () => faultChoices().map(([id, label]) => ({ id: id ? CF_SLUG(id) : 'repair', label, current: faultsNow().includes(id), onClick: () => A.fault(id) })) });
   bt.push({ id: 'view', label: 'View', choices: () => [
     { id: 'board', label: 'Board', current: st.view === 'board' && !st.exploded, onClick: () => { A.explode(false); A.view('board'); } },
     ...(Object.keys(MD.circuits).length && VIEWS.breadboard ? [{ id: 'breadboard', label: 'Breadboard', current: st.view === 'breadboard', onClick: () => A.view('breadboard') }] : []),
@@ -1832,13 +1899,27 @@ function faultChoices(){
   }
   if (MD.power.mcu) out.push(['brownout', T('Motor on the 5 V pin (brown-out)')]);
   for (const p of MD.parts) if (p.polar && !p.fixed) out.push(['reversed:' + p.id, T('{name} in backwards', { name: p.id })]);
-  for (const id of MD.def.faults || []) if (!out.some(o => o[0] === id)) out.push([id, T(id)]);
+  for (const fd of MD.def.faults || []){
+    const [id, label] = Array.isArray(fd) ? fd : [fd, null];
+    if (typeof id === 'string' && !out.some(o => o[0] === id)) out.push([id, label ? T(label) : faultLabel(id)]);
+  }
   const cold = MD.parts.filter(p => p.led || p.control || (MD.power.mcu && (MD.power.mcu.needs || []).includes(p.id))).slice(0, 6);
   for (const p of cold) out.push(['cold:' + p.id, T('Cold joint on {name}', { name: p.id })]);
   out.push(['', T('Repair everything')]);
   return out.map(([id, label]) => [id || null, label]);
 }
 B.faultChoices = () => faultChoices();
+// a Break it label for a listed fault that brings none: 'short:5V:GND' reads "Short from 5V to GND"
+function faultLabel(id){
+  const [kind, a, b] = id.split(':');
+  if (kind === 'short' && a && b) return T('Short from {a} to {b}', { a, b });
+  if (kind === 'missing' && a) return T('Leave out {name}', { name: a });
+  if (kind === 'reversed' && a) return T('{name} in backwards', { name: a });
+  if (kind === 'cold' && a) return T('Cold joint on {name}', { name: a });
+  if (kind === 'wrong-voltage' && a && b){ const s = (MD.power.sources || {})[a]; return T('{v} V on {src}', { v: b, src: T((s && s.label) || a) }); }
+  if (kind === 'reverse-polarity' && a){ const s = (MD.power.sources || {})[a]; return T('Reverse polarity on {src}', { src: T((s && s.label) || a) }); }
+  return T(id);
+}
 function stats(){
   if (MD.def.noBoard) return [];
   const out = [{ label: 'Status', value: statusText() }];
@@ -1846,6 +1927,7 @@ function stats(){
   if (mcu && st.power) out.push({ label: mcu.rail, value: (st.ev.rails[mcu.rail] || 0).toFixed(1) + ' V', small: true });
   if (st.ev.status === 'running' && MD.modes[st.mode]) out.push({ label: 'Program', value: st.ext ? T('your sketch') : T(MD.modes[st.mode].title), small: true });
   if (st.benchStatus) out.push({ label: 'Bench', value: T(st.benchStatus), small: true });
+  if (st.power) for (const [label, value] of st.modelStats || []) out.push({ label: T(String(label)), value: typeof value === 'number' ? String(+value.toFixed(2)) : T(String(value)), small: true });
   return out;
 }
 
@@ -1859,34 +1941,47 @@ const report = () => {
     : MD.parts.filter(p => p.group !== 'last').every(p => isSet(p.id) || st.left[p.id]) ? 'soldered'
     : partsIn('smd').every(p => isSet(p.id) || st.left[p.id]) ? (MD.parts.some(p => p.group !== 'smd' && isIn(p.id)) ? 'tht' : 'reflowed') : 'smd';
   const ev = st.ev;
-  return { id: MD.id, view: st.view, exploded: st.exploded, build, power: st.power, status: st.up ? 'uploading' : ev.status,
-    mode: st.mode, ext: st.ext, rails: r, fault: ev.fault, faults: st.faults.slice(), missing: MD.parts.filter(p => !isIn(p.id)).map(p => p.id),
-    selected: st.sel, controls: Object.assign({}, st.ctl), boot: st.boot, leds, circuit: st.circuit, meas: st.meas || {}, serial: st.serial, sfx: st.sfx,
-    why: ev.why || null, tasks: taskState(),
+  const r0 = { id: MD.id, view: st.view, exploded: st.exploded, build, power: st.power, status: st.up ? 'uploading' : ev.status,
+    mode: st.mode, ext: st.ext, rails: r, fault: ev.fault, faults: faultsNow(), missing: MD.parts.filter(p => !isIn(p.id)).map(p => p.id),
+    selected: st.sel, controls: Object.assign({}, st.ctl), boot: st.strap ? (st.strap.boot || null) : st.boot, leds, circuit: st.circuit, meas: st.meas || {}, serial: st.serial, sfx: st.sfx,
+    why: ev.why || null, tasks: taskState(), ...(st.circuit ? { volts: st.volts || {}, sound: st.sound || null } : {}),
     ...(MAT.steps.length ? { matStep: st.matStep >= 0 ? MAT.steps[st.matStep].id : null } : {}),
     ...(typeof MD.def.model === 'function' ? { readings: roundDeep(st.readings || {}), benchStatus: st.benchStatus || null } : {}) };
+  for (const [k, v] of Object.entries(st.modelReport || {})){ if (own(r0, k)) modelNote(`report key "${k}" is the engine's own`); else r0[k] = roundDeep(v); }
+  return r0;
 };
 B.report = () => report();
 B.accept = p => accept(st, p);
+// One patch is one moment on the bench: unplug first, then change the board (build, parts, fault, mat, controls), then
+// plug in, so { power: 'usb', fault: 'missing:Y2' } shows the powered board without Y2 and { power: null, build: 'bare' }
+// unplugs before it strips. A host fault replaces the one before it (the host shows one failure at a time).
 const accept = (s, p) => {
   let ok = true;
   const bad = m => { ok = m; };
+  const powerOk = own(p, 'power') && (p.power === null || own(MD.power.sources, p.power));
+  if (own(p, 'power') && !powerOk) bad('unknown power source');
   if (own(p, 'pins')){ if (p.pins && typeof p.pins === 'object') A.setPins(p.pins); else bad('pins must be an object'); }
   if (own(p, 'mode')){ if (!A.mode(p.mode)) bad('unknown mode'); }
-  if (own(p, 'power')){ if (p.power === null || own(MD.power.sources, p.power)) A.power(p.power); else bad('unknown power source'); }
-  if (own(p, 'fault')){ if (p.fault === null || typeof p.fault === 'string') A.fault(p.fault); else bad('fault must be a string or null'); }
-  if (own(p, 'view')){ if (!A.view(p.view)) bad('unknown view'); }
+  if (powerOk && p.power === null) A.power(null);
   if (own(p, 'exploded')) A.explode(!!p.exploded);
-  if (own(p, 'circuit')){ if (p.circuit === null || own(MD.circuits, p.circuit)){ st.circuit = p.circuit; refresh(); } else bad('unknown circuit'); }
-  if (own(p, 'params') && p.params && typeof p.params === 'object' && B.bbParams) B.bbParams(st, p.params);
-  if (own(p, 'select')) A.select(typeof p.select === 'string' ? p.select : null);
   if (own(p, 'build')){ if (p.build === 'bare' || p.build === 'assembled') A.build(p.build); else bad('build must be bare or assembled'); }
   if (own(p, 'remove') && typeof p.remove === 'string') A.remove(p.remove);
   if (own(p, 'restore') && typeof p.restore === 'string') A.restore(p.restore);
-  if (own(p, 'press') && p.press && typeof p.press.id === 'string') A.press(p.press.id, !!p.press.down);
-  if (own(p, 'serial') && typeof p.serial === 'string'){ st.txT = .09; kick(); }
+  if (own(p, 'fault')){
+    if (p.fault === null) A.fault(null);
+    else if (typeof p.fault === 'string'){ if (st.faults.length || reversedIds().length) A.fault(null); A.fault(p.fault); }
+    else bad('fault must be a string or null');
+  }
   if (own(p, 'matStep')){ if (p.matStep === null || MAT.steps.some(s => s.id === p.matStep)){ if (A.matStep(p.matStep) !== true) bad('mat step refused'); } else bad('unknown mat step'); }
+  if (own(p, 'circuit')){ if (p.circuit === null || own(MD.circuits, p.circuit)){ st.circuit = p.circuit; refresh(); } else bad('unknown circuit'); }
+  if (own(p, 'params') && p.params && typeof p.params === 'object' && B.bbParams) B.bbParams(st, p.params);
+  if (own(p, 'tones')){ if (p.tones && typeof p.tones === 'object') A.setTones(p.tones); else bad('tones must be an object'); }
   if (own(p, 'inputs') && p.inputs && typeof p.inputs === 'object') for (const [k, v] of Object.entries(p.inputs)) if (MD.byId[k] && MD.byId[k].control) st.ctl[k] = +v || 0;
+  if (own(p, 'press') && p.press && typeof p.press.id === 'string') A.press(p.press.id, !!p.press.down);
+  if (powerOk && p.power !== null) A.power(p.power);
+  if (own(p, 'view')){ if (!A.view(p.view)) bad('unknown view'); }
+  if (own(p, 'select')) A.select(typeof p.select === 'string' ? p.select : null);
+  if (own(p, 'serial') && typeof p.serial === 'string'){ st.txT = .09; kick(); }
   return ok;
 };
 
@@ -1954,8 +2049,8 @@ function start(pick){
   st = B.st = {
     view: 'board', exploded: false, exK: 0, placed: {}, left: {}, drop: {}, reflowT: null, solderQ: null, solderT: 0,
     power: null, supply: {}, faults: [], mode: def.mode || Object.keys(MD.modes)[0] || null, ext: false, pins: {}, t: 0, serialN: -1,
-    up: null, upT: 0, upDur: 2.2, ctl: {}, boot: null, sel: null, serial: null, txT: 0, circuit: def.circuit || null, meas: {}, sfx: null,
-    matStep: MAT.steps.length - 1, readings: {}, benchStatus: null,
+    up: null, upT: 0, upDur: 2.2, ctl: {}, boot: null, sel: null, serial: null, txT: 0, circuit: def.circuit || null, meas: {}, sfx: null, tones: {}, strap: null,
+    matStep: MAT.steps.length - 1, readings: {}, benchStatus: null, volts: {}, sound: null, sag: null,
   };
   for (const p of MD.parts) st.placed[p.id] = { orient: 0, sold: true };
   for (const p of MD.parts) if (p.control && p.control.type === 'slide') st.ctl[p.id] = 0;
@@ -1975,6 +2070,7 @@ function start(pick){
   if (q.get('power') && own(MD.power.sources, q.get('power'))) { st.power = q.get('power'); }
   else if (q.get('power') !== '0' && q.get('build') !== 'bare' && MD.power.default && !q.get('fault')) st.power = MD.power.default;
   else if (q.get('fault') && q.get('power') !== '0' && MD.power.default) st.power = MD.power.default;
+  if (st.power) sampleStraps();
   checkChoices();
   // the core frames the box [0,W] x [0,D] x [0,H]: shift the world so the mount view's bounds start at 0
   let vb = VIEWS[B.mountView].bounds(); G.ox -= vb[0]; G.oy -= vb[1]; vb = VIEWS[B.mountView].bounds();
@@ -1986,15 +2082,16 @@ function start(pick){
       ctl: (s, el) => { const id = el.dataset.id; A.press(id, true); held = id; },
       pin: (s, el) => { A.select(el.dataset.part || null); },
       hole: () => {},
-      bb: (s, el) => { A.select(st.sel === el.dataset.id ? null : el.dataset.id); },
+      bb: (s, el) => { const id = el.dataset.id; A.select(st.sel === id ? null : id); if (B.bbPress && B.bbPress(id, true)) heldBb = id; },
       periph: (s, el) => { A.select(st.sel === el.dataset.id ? null : el.dataset.id); },
     },
     readout: () => st.msg || '',
     embed: { report: () => report(), accept: (s, p) => accept(s, p) },
     credit: true,
   });
-  addEventListener('pointerup', () => { if (held){ const id = held; held = null; const p = MD.byId[id]; if (p && p.control && p.control.type !== 'slide') A.press(id, false); } });
-  addEventListener('keyup', e => { if (held && (e.key === 'Enter' || e.key === ' ')){ const id = held; held = null; A.press(id, false); } });
+  addEventListener('pointerup', () => { if (heldBb){ const id = heldBb; heldBb = null; B.bbPress(id, false); } if (held){ const id = held; held = null; const p = MD.byId[id]; if (p && p.control && p.control.type !== 'slide') A.press(id, false); } });
+  addEventListener('keyup', e => { if (e.key !== 'Enter' && e.key !== ' ') return;
+    if (held){ const id = held; held = null; A.press(id, false); } if (heldBb){ const id = heldBb; heldBb = null; B.bbPress(id, false); } });
   if (typeof xrMount === 'function') xrMount(() => ui, s => s.xr > .5 ? T('See-through: the chips show their silicon, copper shows where current flows') : '');
   // a hot part gets a red tint filter
   const defs = document.getElementById('fdefs') || document.querySelector('#fig defs');
@@ -2005,7 +2102,7 @@ function start(pick){
   if (!CF_EMBED) keyList();
   if (st.power) refresh(true); else kick();
 }
-let held = null;
+let held = null, heldBb = null;
 
 // standalone page: the SVG re-renders all the time, so keyboard and screen-reader access to the parts drawn in it is a
 // group of real buttons kept off-screen (the focused one shows as a chip). Focus selects the part, Enter or Space
@@ -2019,21 +2116,25 @@ function keyList(){
   document.head.appendChild(css);
   keysBox.addEventListener('focusin', e => { const b = e.target.closest('button'); if (b && st.sel !== b.dataset.id) A.select(b.dataset.id); });
   keysBox.addEventListener('keydown', e => { const b = e.target.closest('button'); if (!b || (e.key !== 'Enter' && e.key !== ' ')) return;
-    e.preventDefault(); if (b.dataset.ctl && !e.repeat && !held){ A.press(b.dataset.id, true); held = b.dataset.id; } });
+    e.preventDefault(); if (e.repeat) return;
+    if (b.dataset.ctl && !held){ A.press(b.dataset.id, true); held = b.dataset.id; }
+    else if (b.dataset.press && !heldBb && B.bbPress(b.dataset.id, true)) heldBb = b.dataset.id; });
   // a screen reader's virtual click comes without key events
-  keysBox.addEventListener('click', e => { const b = e.target.closest('button'); if (!b || !b.dataset.ctl || held) return;
-    const id = b.dataset.id; A.press(id, true); setTimeout(() => A.press(id, false), 200); });
+  keysBox.addEventListener('click', e => { const b = e.target.closest('button'); if (!b || held || heldBb) return;
+    const id = b.dataset.id;
+    if (b.dataset.ctl){ A.press(id, true); setTimeout(() => A.press(id, false), 200); }
+    else if (b.dataset.press && B.bbPress(id, true)) setTimeout(() => B.bbPress(id, false), 200); });
   syncKeys();
 }
 function syncKeys(){
   if (!keysBox) return;
   const c = st.circuit && MD.circuits[st.circuit];
   const items = MD.parts.filter(p => isIn(p.id)).map(p => [p.id, T(p.name), !!p.control]);
-  if (c && st.view !== 'board') for (const q of c.parts || []) items.push([q.id, q.id + ' · ' + T((B.parts[q.part] || {}).name || q.part), false]);
+  if (c && st.view !== 'board') for (const q of c.parts || []) items.push([q.id, q.id + ' · ' + T((B.parts[q.part] || {}).name || q.part), false, typeof (B.parts[q.part] || {}).press === 'function']);
   const key = items.map(i => i[0]).join(' ');
   if (key === keysKey) return;
   keysKey = key; keysBox.textContent = '';
-  for (const [id, label, ctl] of items){ const b = document.createElement('button'); b.type = 'button'; b.dataset.id = id; if (ctl) b.dataset.ctl = '1'; b.textContent = label; keysBox.append(b); }
+  for (const [id, label, ctl, press] of items){ const b = document.createElement('button'); b.type = 'button'; b.dataset.id = id; if (ctl) b.dataset.ctl = '1'; if (press) b.dataset.press = '1'; b.textContent = label; keysBox.append(b); }
 }
 B.start = pick => start(pick);
 B.ui = () => ui;
@@ -2460,54 +2561,6 @@ const place = () => {
 };
 B.bbPlace = place;
 
-/* ---------- solver ---------- */
-const PIN_R = 25;     // ohms: an AVR output pin's driver, so a missing resistor still has a (fatal) limit
-function solve(st){
-  const md = B.md, pl = place(); if (!pl) return {};
-  const { c, geo } = pl, par = {}, find = a => { while (par[a] && par[a] !== a) a = par[a] = par[par[a]] || par[a]; return a; };
-  const uni = (a, b) => { const x = find(a), y = find(b); if (x !== y) par[x] = y; };
-  const node = ref => { const h = B.hole(geo, ref) || legHole(c, geo, ref); if (h) return h.node; const pin = pinOf(ref); return pin ? 'N:' + pin.net : null; };
-  for (const w of c.wires || []){ const a = node(w.from), b = node(w.to); if (a && b){ par[a] = par[a] || a; par[b] = par[b] || b; uni(a, b); } }
-  const parts = (c.parts || []).map(p => Object.assign({}, p, (st.cparams || {})[p.id] || {}));
-  const res = [], leds = [];
-  for (const p of parts){
-    const def = B.parts[p.part];
-    if (!def){ unknownPart(p); continue; }
-    if (!def.elec) continue;
-    const e = def.elec(p), ns = (p.holes || []).map(h => { const n = node(h); if (n) par[n] = par[n] || n; return n; });
-    if (e.type === 'res' && ns[0] && ns[1]) res.push({ id: p.id, a: ns[0], b: ns[1], r: e.ohms });
-    if (e.type === 'wire' && ns[0] && ns[1]) uni(ns[0], ns[1]);
-    if (e.type === 'led' && ns[0] && ns[1]) leds.push({ id: p.id, a: ns[0], k: ns[1], vf: e.vf, imax: e.imax || .02 });
-  }
-  // voltage sources: board nets (pins driven by the program, rails, GND)
-  const logic = md.def.logic || 5, run = st.ev.status === 'running' && !st.up && st.t >= 0;
-  const srcOf = root => { for (const key of Object.keys(par)) if (key.startsWith('N:') && find(key) === root){ const net = key.slice(2);
-      if (net === 'GND') return { v: 0, r: 0, net };
-      if (own(st.ev.rails, net)) return { v: st.ev.rails[net] || 0, r: .5, net };
-      const lv = run ? st.o.pins[net] : undefined;
-      if (lv != null) return { v: logic, duty: +lv || 0, r: PIN_R, net }; } return null; };
-  const own = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
-  // walk resistors from a node to a source; returns {src, r} of the first found (series chains only)
-  const walk = (start, seen = new Set()) => {
-    const root = find(start); if (seen.has(root)) return null; seen.add(root);
-    const s = srcOf(root); if (s) return { src: s, r: 0 };
-    for (const e of res){ const ra = find(e.a), rb = find(e.b), nxt = ra === root ? e.b : rb === root ? e.a : null;
-      if (nxt == null) continue; const w = walk(nxt, seen); if (w) return { src: w.src, r: w.r + e.r, via: [e.id, ...(w.via || [])] }; }
-    return null; };
-  const meas = {};
-  for (const L of leds){
-    const up = walk(L.a), dn = walk(L.k);
-    let i = 0, state = 'off';
-    if (up && dn){
-      const va = up.src.v, vk = dn.src.v, duty = up.src.duty != null ? up.src.duty : 1, r = up.r + dn.r + (up.src.r || 0) + (dn.src.r || 0);
-      if (va - vk > L.vf){ i = (va - vk - L.vf) / Math.max(r, 1); state = i > L.imax * 2.5 ? 'burnt' : duty > 0 ? 'ok' : 'off'; i *= duty; }
-      else if (vk - va > L.vf) state = 'reverse';
-      meas[L.id] = { i_mA: Math.round(i * 1000 * 10) / 10, state, r: Math.round(up.r + dn.r), net: up.src.net };
-    } else meas[L.id] = { i_mA: 0, state: 'open' };
-  }
-  return meas;
-}
-B.bbSolve = st => solve(st);
 // 'M1.VCC': the hole under leg VCC of circuit part M1 (a module on the breadboard)
 const legHole = (c, geo, ref) => {
   const m = /^([A-Za-z_][\w-]*)\.([\w+~-]+)$/.exec(ref); if (!m) return null;
@@ -2526,13 +2579,32 @@ const pinOf = ref => {
   return best;
 };
 B.pinOf = pinOf;
-// burnt LEDs stay burnt until the circuit is changed
-B.bbStep = (st) => {
+/* ---------- the circuit solver runs every frame (bench-solve.js); parts that burn stay burnt until the circuit
+   changes; a part's own motion hook def.step({ p, st, m }, dt) runs on the virtual clock ---------- */
+B.bbStep = (st, dt) => {
   if (!st.circuit) return;
-  const m = solve(st);
-  st.burnt = st.burnt || {};
-  for (const [id, v] of Object.entries(m)){ if (v.state === 'burnt' && !st.burnt[id]){ st.burnt[id] = true; B.sfx('pop'); B.say('{name} burned out: {n} mA is far above its 20 mA', { name: id, n: Math.round(v.i_mA) }, 3000); } if (st.burnt[id]) v.state = 'burnt'; }
-  st.meas = m;
+  const pl = place();
+  if (!pl){ st.meas = {}; st.volts = {}; st.circuitLoad = 0; return; }
+  const r = B.solveCircuit(st, pl, dt || 0);
+  st.meas = r.meas; st.volts = r.volts; st.circuitLoad = r.load;
+  // more current than the supply gives (a stalled motor, servos on USB): the board browns out for a while
+  const src = st.power && (B.md.power.sources || {})[st.power];
+  if (dt > 0 && src && src.ilim && r.load > src.ilim) st.sag = { until: st.t + .6, mA: Math.round(r.load * 1000), max: Math.round(src.ilim * 1000) };
+  const parts = (pl.c.parts || []).map(q => Object.assign({}, q, (st.cparams || {})[q.id] || {}));
+  if (dt > 0) for (const q of parts){ const def = B.parts[q.part];
+    if (def && typeof def.step === 'function') try { def.step({ p: q, st, m: st.meas[q.id] || {} }, dt); } catch (e) { B.note(`${q.id} step: ${e.message}`); } }
+  B.solveSound(st, parts);
+};
+// a press on a part in the scene (pointer or keyboard): def.press(p, down) returns a param patch, or null
+B.bbPress = (id, down) => {
+  const st = B.st, q = B.bbPart(id), def = q && B.parts[q.part];
+  if (!def || typeof def.press !== 'function') return false;
+  const p = Object.assign({}, def.defaults || {}, def.example || {}, q, (st.cparams || {})[id] || {});
+  let patch = null;
+  try { patch = def.press(p, !!down); } catch (e) { B.note(`${id} press: ${e.message}`); }
+  if (down) B.sfx('click');
+  if (patch && typeof patch === 'object') B.bbParams(st, { [id]: patch });
+  return true;
 };
 B.bbParams = (st, params) => {
   const c = B.md.circuits[st.circuit]; if (!c) return;
@@ -2556,17 +2628,38 @@ B.paramRange = spec => Array.isArray(spec) && spec.length === 2 && spec.every(v 
 B.bbPart = id => { const c = B.md.circuits[B.st.circuit]; return c && (c.parts || []).find(p => p.id === id); };
 
 /* ---------- scene ---------- */
+// the breadboard view's mat in board mm: the board, the breadboard and every circuit part lying on the mat (its `at`
+// plus half its foot's diagonal, so any rotation fits), and headroom for the tallest part (foot[2] or def.height)
+const extent = () => {
+  const md = B.md, pl = place(), m = md.mat;
+  const area = pl ? [-m.left, Math.min(-m.front, pl.oy - 8), Math.max(md.pcb.w, pl.ox + pl.geo.w) + 8, Math.max(md.pcb.h + m.back, pl.oy + pl.geo.h + 8)]
+    : [-m.left, -m.front, md.pcb.w + m.right, md.pcb.h + m.back];
+  let h = md.height + 10;
+  for (const q of (pl && pl.c.parts) || []){
+    const def = B.parts[q.part], ft = def && Array.isArray(def.foot) ? def.foot : null, tall = ft ? ft[2] : def && +def.height;
+    if (tall > 0) h = Math.max(h, tall + 4);
+    if (!Array.isArray(q.at)) continue;
+    const r = (ft ? Math.hypot(ft[0], ft[1]) / 2 : 10) + 4;
+    area[0] = Math.min(area[0], q.at[0] - r); area[1] = Math.min(area[1], q.at[1] - r); area[2] = Math.max(area[2], q.at[0] + r); area[3] = Math.max(area[3], q.at[1] + r);
+  }
+  return { box: area, h };
+};
+// a wire end on the leg of a part that lies on the mat (no hole under it): the part's own def.legAt(p, origin, i)
+const matLeg = (c, ref) => {
+  const m = /^([A-Za-z_][\w-]*)\.([\w+~-]+)$/.exec(ref), q = m && (c.parts || []).find(x => x.id === m[1]), def = q && B.parts[q.part];
+  const i = def && def.legs ? def.legs.indexOf(m[2]) : -1;
+  if (i < 0 || (q.holes && q.holes[i]) || typeof def.legAt !== 'function' || !Array.isArray(q.at)) return null;
+  const p = Object.assign({}, q, (B.st.cparams || {})[q.id] || {});
+  try { return def.legAt(p, B.BP(q.at[0], q.at[1], B.G.matH - B.G.top), i); } catch (e) { B.note(`${q.id} legAt: ${e.message}`); return null; }
+};
 B.viewDef('breadboard', {
   bounds: () => {
-    const md = B.md, pl = place(), m = md.mat;
-    const x1 = pl ? Math.max(md.pcb.w, pl.ox + pl.geo.w) + 8 : md.pcb.w + m.right, y0 = pl ? Math.min(-m.front, pl.oy - 8) : -m.front, y1 = pl ? Math.max(md.pcb.h + m.back, pl.oy + pl.geo.h + 8) : md.pcb.h + m.back;
-    const a = B.BP(-m.left, y0, -B.G.top), b = B.BP(x1, y1, md.height + 10);
-    return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), 0, Math.max(a[0], b[0]), Math.max(a[1], b[1]), B.G.top + md.height + 10];
+    const { box: [x0, y0, x1, y1], h } = extent(), a = B.BP(x0, y0, -B.G.top), b = B.BP(x1, y1, h);
+    return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), 0, Math.max(a[0], b[0]), Math.max(a[1], b[1]), B.G.top + h];
   },
   scene: k => {
-    const md = B.md, st = B.st, pl = place(), m = md.mat, bnd = VIEWB();
-    const x1 = pl ? Math.max(md.pcb.w, pl.ox + pl.geo.w) + 8 : md.pcb.w + m.right, y0 = pl ? Math.min(-m.front, pl.oy - 8) : -m.front, y1 = pl ? Math.max(md.pcb.h + m.back, pl.oy + pl.geo.h + 8) : md.pcb.h + m.back;
-    const mat = B.drawMat(-m.left, y0, x1, y1);
+    const md = B.md, st = B.st, pl = place();
+    const mat = B.drawMat(...extent().box);
     let s = mat.svg;
     const items = [];
     if (!md.def.noBoard){
@@ -2589,13 +2682,14 @@ B.viewDef('breadboard', {
         const origin = Array.isArray(p.at) ? B.BP(p.at[0], p.at[1], B.G.matH - B.G.top) : legs[0] || pl.at(0, 0);
         const mm = meas[p.id] || {}, sel = st.sel === p.id;
         const subItems = [];
-        try { def.draw({ p, st, legs, holes, origin, pl, m: mm, lit: mm.state === 'ok' ? Math.min(1, Math.pow(Math.max(0, mm.i_mA) / 13.6, .55)) : 0, sel,
-          put: (bx, svg) => { if (svg) subItems.push({ box: bx, svg }); } }); } catch (e) { B.note(`${p.id}: ${e.message}`); }
+        try { def.draw({ p, st, legs, holes, origin, pl, m: mm, lit: mm.state === 'ok' ? Math.min(1, Math.pow(Math.max(0, mm.i_mA) / 13.6, .55)) : 0, sel, k,
+          solo: !!md.def.partPage, put: (bx, svg) => { if (svg) subItems.push({ box: bx, svg }); } }); } catch (e) { B.note(`${p.id}: ${e.message}`); }
         for (const it of subItems) items.push({ box: it.box, svg: act('bb', sel ? `<g class="bsel">${it.svg}</g>` : it.svg, `data-id="${CF_ESC(p.id)}" data-label="${CF_ESC(T(def.name || p.part) + ' ' + p.id)}"`) });
       }
       const wire = B.parts.wire;
       if (wire) for (const w of pl.c.wires || []){
         const end = ref => { const h = B.hole(pl.geo, ref) || legHole(pl.c, pl.geo, ref); if (h) return { pt: pl.at(h.x, h.y, pl.zTop + (h.z || 0)), down: 0 };
+          const lg = matLeg(pl.c, ref); if (lg) return { pt: lg, down: 0 };
           const pin = pinOf(ref); if (!pin) return null; const part = md.byId[pin.part];
           return { pt: B.BP(pin.at[0], pin.at[1], (part ? part.h + (part.z || 0) : 8.5) - 2), down: 0, pin }; };
         const a = end(w.from), b = end(w.to);
@@ -2617,7 +2711,6 @@ B.viewDef('breadboard', {
     return s;
   },
 });
-const VIEWB = () => null;
 // a circuit part whose drawing is not on the page is reported once (the figure probe fails on it), not skipped silently
 const noted = new Set();
 const unknownPart = p => { const key = p.id + ':' + p.part; if (noted.has(key)) return; noted.add(key);
@@ -2641,6 +2734,384 @@ B.mountPart = name => {
   B.board({ id: '__part_' + name, fig: def.fig || '', name: T(def.name || name), sub: '', noBoard: true, pcb: { w: 1, h: 1 }, mat: { left: 8, right: 8, front: 8, back: 8 },
     parts: [], power: {}, modes: {}, circuits: { show }, circuit: 'show', view: 'breadboard', pal: 'mustard', partPage: { name } });
   B.start(['board', '__part_' + name]);
+};
+})();
+
+</script>
+<script>/* figures/engine/bench-solve.js */
+// Board Bench circuit solver (FIGURES-BENCH §9). The lesson circuit becomes a DC network: nodes are breadboard
+// strips, power rails, board nets and the legs of parts that sit on the mat. Resistors are conductances, sources are
+// Norton equivalents (a rail behind 0.5 Ω, an output pin behind its driver's 25 Ω), and every nonlinear part is
+// piecewise linear: an LED or diode junction is off, or its drop plus a small resistance; a transistor is off, active
+// (collector current β·IB) or saturated (VCE(sat)). One solve repeats nodal analysis until every junction agrees with
+// its own voltages. PWM pins are solved per time slice (an AVR timer starts every period high, so the slices are the
+// gaps between the sorted duties) and the results are averaged over the period.
+(() => {
+const B = SL.bench;
+const PIN_R = 25, RAIL_R = .5, GMIN = 1e-9, RBE = 2, RSAT = .01, ROUNDS = 40;
+const own = (o, k) => o != null && Object.prototype.hasOwnProperty.call(o, k);
+const rnd = (v, k = 10) => Math.round(v * k) / k;
+
+// Gaussian elimination with partial pivoting; a row with no pivot (a node nothing reaches) solves to 0 V
+function linsolve(A, b){
+  const n = b.length;
+  for (let c = 0; c < n; c++){
+    let p = c;
+    for (let r = c + 1; r < n; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r;
+    if (Math.abs(A[p][c]) < 1e-18) continue;
+    if (p !== c){ const t = A[p]; A[p] = A[c]; A[c] = t; const u = b[p]; b[p] = b[c]; b[c] = u; }
+    for (let r = c + 1; r < n; r++){
+      const fr = A[r][c] / A[c][c]; if (!fr) continue;
+      for (let k = c; k < n; k++) A[r][k] -= fr * A[c][k];
+      b[r] -= fr * b[c];
+    }
+  }
+  const x = new Float64Array(n);
+  for (let r = n - 1; r >= 0; r--){
+    let s = b[r];
+    for (let k = r + 1; k < n; k++) s -= A[r][k] * x[k];
+    x[r] = Math.abs(A[r][r]) < 1e-18 ? 0 : s / A[r][r];
+  }
+  return x;
+}
+
+/* ---------- netlist: nodes, elements and sources of the circuit on the breadboard ---------- */
+function netlist(st, pl){
+  const { c, geo } = pl, par = {};
+  const add = a => { if (!own(par, a)) par[a] = a; return a; };
+  const find = a => { add(a); let r = a; while (par[r] !== r) r = par[r]; while (par[a] !== r){ const n = par[a]; par[a] = r; a = n; } return r; };
+  const uni = (a, b) => { if (a == null || b == null) return; const x = find(a), y = find(b); if (x !== y) par[x] = y; };
+  const parts = (c.parts || []).map(q => Object.assign({}, q, (st.cparams || {})[q.id] || {}));
+  const byId = {}; for (const q of parts) byId[q.id] = q;
+  // the node under leg i: its hole's strip, or the leg itself for a part lying on the mat (a wire may end on it)
+  const legNode = (q, i) => { const h = q.holes && q.holes[i] ? B.hole(geo, q.holes[i]) : null; return add(h ? h.node : 'L:' + q.id + '.' + i); };
+  const end = ref => {
+    const h = B.hole(geo, ref); if (h) return add(h.node);
+    const m = /^([A-Za-z_][\w-]*)\.([\w+~-]+)$/.exec(ref), q = m && byId[m[1]];
+    if (q){ const d = B.parts[q.part], i = d && d.legs ? d.legs.indexOf(m[2]) : -1; return i >= 0 ? legNode(q, i) : null; }
+    const pin = B.pinOf(ref); return pin ? add('N:' + pin.net) : null;
+  };
+  for (const w of c.wires || []) uni(end(w.from), end(w.to));
+  const els = [], buttons = [], burnt = st.burnt || {};
+  for (const q of parts){
+    const def = B.parts[q.part];
+    if (!def || typeof def.elec !== 'function') continue;
+    let es = null;
+    try { es = def.elec(q); } catch (e) { B.note(`${q.id} elec: ${e.message}`); continue; }
+    const legs = def.legs || [], N = i => legNode(q, i), named = (nm, i) => N(legs.includes(nm) ? legs.indexOf(nm) : i);
+    for (const e of [].concat(es || [])){
+      if (!e || typeof e !== 'object') continue;
+      const base = { id: q.id, key: q.id, q, def, e, dead: !!burnt[q.id] };
+      if (e.type === 'wire') uni(N(0), N(1));
+      else if (e.type === 'res'){ if (!e.open) els.push({ ...base, k: 'R', a: N(0), b: N(1), g: 1 / Math.max(+e.ohms || 0, 1e-3) }); }
+      else if (e.type === 'pot'){
+        const R = Math.max(+e.ohms || 1e4, 1), x = Math.max(0, Math.min(1, +e.pos || 0));
+        els.push({ ...base, k: 'POT', a: N(0), w: N(1), b: N(2), g1: 1 / Math.max(R * x, .5), g2: 1 / Math.max(R * (1 - x), .5), pmax: +e.pmax || .05 });
+      }
+      else if (e.type === 'button') buttons.push({ ...base, n: legs.map((_, i) => N(i)) });
+      else if (e.type === 'led'){
+        const lg = e.legs || [0, 1], key = e.ch ? q.id + ':' + e.ch : q.id;
+        els.push({ ...base, k: 'D', led: true, key, ch: e.ch || null, dead: !!burnt[key], a: N(lg[0]), b: N(lg[1]), vf: +e.vf || 2, rd: .5, imax: +e.imax || .02 });
+      }
+      else if (e.type === 'diode') els.push({ ...base, k: 'D', a: N(0), b: N(1), vf: .7, rd: .2, imax: +e.imax || 1, isurge: +e.isurge || 30 });
+      else if (e.type === 'npn'){
+        const pn = e.pins || { B: 0, C: 1, E: 2 };
+        els.push({ ...base, k: 'Q', nb: N(pn.B), nc: N(pn.C), ne: N(pn.E), hfe: +e.hfe || 100, hfr: +e.hfr || 5, vbe: +e.vbe || .7, vcesat: +e.vcesat || .2 });
+      }
+      else if (e.type === 'motor') els.push({ ...base, k: 'M', a: N(0), b: N(1) });
+      else if (e.type === 'servo') els.push({ ...base, k: 'SV', gnd: named('GND', 0), vp: named('V+', 1), sig: named('SIG', 2) });
+      else if (e.type === 'sensor' && Array.isArray(e.supply)) els.push({ ...base, k: 'TS', sp: N(e.supply[0]), sn: N(e.supply[1]), out: N(e.out != null ? e.out : 1) });
+      else if (e.type === 'buzzer') els.push({ ...base, k: 'BZ', a: N(0), b: N(1), active: e.kind === 'active', vf: .05, rd: (+e.vmin || 3) / (+e.imax || .03) });
+    }
+  }
+  // a push button's pairs are always joined; pressing joins the two pairs. A switched pair already joined (both
+  // sides in one strip) shorts the switch
+  for (const bt of buttons) for (const pr of bt.e.pairs || []) uni(bt.n[pr[0]], bt.n[pr[1]]);
+  for (const bt of buttons){ const pr = bt.e.pairs || []; bt.shorted = pr.length > 1 && find(bt.n[pr[0][0]]) === find(bt.n[pr[1][0]]); }
+  for (const bt of buttons){ const pr = bt.e.pairs || []; if (bt.e.pressed && pr.length > 1) uni(bt.n[pr[0][0]], bt.n[pr[1][0]]); }
+  // board nets: GND, rails (with their voltage now), output pins (level or PWM duty; a tone is a 50 % square wave), inputs
+  const run = st.ev.status === 'running' && !st.up && st.t >= 0, rails = st.ev.rails || {}, pins = (st.o && st.o.pins) || {}, tones = st.tones || {};
+  const nets = [];
+  for (const key of Object.keys(par)) if (key.startsWith('N:')){
+    const net = key.slice(2);
+    if (net === 'GND') nets.push({ net, key, kind: 'gnd' });
+    else if (own(rails, net)) nets.push({ net, key, kind: 'rail', v: rails[net] || 0 });
+    else if (run && tones[net] > 0) nets.push({ net, key, kind: 'pin', level: .5, hz: tones[net] });
+    else if (run && pins[net] != null) nets.push({ net, key, kind: 'pin', level: Math.max(0, Math.min(1, +pins[net] || 0)) });
+    else nets.push({ net, key, kind: 'input' });
+  }
+  // resolve every node to its root now that the unions are done
+  const R = k => find(k);
+  for (const n of nets) n.root = R(n.key);
+  for (const el of els) for (const f of ['a', 'b', 'w', 'nb', 'nc', 'ne', 'gnd', 'vp', 'sig', 'sp', 'sn', 'out']) if (el[f] != null) el[f] = R(el[f]);
+  const g = nets.find(n => n.kind === 'gnd');
+  const gnd = g ? g.root : null, roots = [...new Set(Object.keys(par).map(R))].filter(r => r !== gnd);
+  return { parts, byId, els, buttons, nets, gnd, roots };
+}
+
+/* ---------- one slice: nodal analysis repeated until every junction state is consistent ---------- */
+function solveSlice(nl, high, S, logic){
+  const { els, nets, gnd, roots } = nl, n = roots.length, idx = new Map(roots.map((r, i) => [r, i]));
+  const ix = r => { const i = idx.get(r); return i == null ? -1 : i; };
+  let x = new Float64Array(n);
+  const V = r => { const i = ix(r); return i < 0 ? 0 : x[i]; };
+  for (let round = 0; round < ROUNDS; round++){
+    const A = Array.from({ length: n }, () => new Float64Array(n)), b = new Float64Array(n);
+    for (let i = 0; i < n; i++) A[i][i] += GMIN;
+    // conductance g between nodes p and q
+    const G = (p, q, gg) => { const i = ix(p), j = ix(q); if (i >= 0){ A[i][i] += gg; if (j >= 0) A[i][j] -= gg; } if (j >= 0){ A[j][j] += gg; if (i >= 0) A[j][i] -= gg; } };
+    // a branch from p to q carrying gg·(Vp − Vq − v0): a conductance with a built-in drop (junctions, sources)
+    const GV = (p, q, gg, v0) => { G(p, q, gg); const i = ix(p), j = ix(q); if (i >= 0) b[i] += gg * v0; if (j >= 0) b[j] -= gg * v0; };
+    // a current gm·(Vc − Vx) − off from y to x (a transistor's collector following its base drive)
+    const VC = (y, xn, cn, gm, off) => { const iy = ix(y), ixx = ix(xn), ic = ix(cn);
+      if (iy >= 0){ if (ic >= 0) A[iy][ic] += gm; if (ixx >= 0) A[iy][ixx] -= gm; b[iy] += off; }
+      if (ixx >= 0){ if (ic >= 0) A[ixx][ic] -= gm; A[ixx][ixx] += gm; b[ixx] -= off; } };
+    for (const s of nets){
+      if (s.kind === 'rail') GV(s.root, gnd, 1 / RAIL_R, s.v);
+      else if (s.kind === 'pin') GV(s.root, gnd, 1 / PIN_R, high(s) ? logic : 0);
+    }
+    for (const el of els){
+      const s = S[el.n];
+      if (el.k === 'R') G(el.a, el.b, el.g);
+      else if (el.k === 'POT'){ if (!el.dead){ G(el.a, el.w, el.g1); G(el.w, el.b, el.g2); } }
+      else if (el.k === 'D' || (el.k === 'BZ' && el.active)){ if (!el.dead && s.on) GV(el.a, el.b, 1 / el.rd, el.vf); }
+      else if (el.k === 'M'){ if (!el.dead) G(el.a, el.b, el.gm); }
+      else if (el.k === 'SV'){ if (!el.dead) G(el.vp, el.gnd, el.gs); }
+      else if (el.k === 'TS'){
+        if (!el.dead) G(el.sp, el.sn, (+el.e.iq || 5e-5) / 5);
+        if (!el.dead && s.on) GV(el.out, el.sn, 1 / 20, el.vout);
+      }
+      else if (el.k === 'Q'){
+        // a burnt Darlington fails short from collector to emitter, a small transistor open
+        if (el.dead){ if (el.e.darlington) G(el.nc, el.ne, 10); continue; }
+        if (!s.on) continue;
+        const y = s.inv ? el.ne : el.nc, xn = s.inv ? el.nc : el.ne, beta = s.inv ? el.hfr : el.hfe;
+        GV(el.nb, xn, 1 / RBE, el.vbe);
+        if (s.sat) GV(y, xn, 1 / RSAT, el.vcesat);
+        else VC(y, xn, el.nb, beta / RBE, beta / RBE * el.vbe);
+      }
+    }
+    x = linsolve(A, b);
+    let changed = false;
+    for (const el of els){
+      const s = S[el.n];
+      if (el.dead) continue;
+      if (el.k === 'D' || (el.k === 'BZ' && el.active)){
+        const vd = V(el.a) - V(el.b);
+        if (!s.on && vd > el.vf + 1e-6){ s.on = true; changed = true; }
+        else if (s.on && vd < el.vf - 1e-6){ s.on = false; changed = true; }
+      } else if (el.k === 'TS'){
+        const vs = V(el.sp) - V(el.sn), supplied = vs >= (+el.e.vmin || 2.7) && vs <= (+el.e.vabs || 7);
+        if (supplied !== !!s.on){ s.on = supplied; changed = true; }
+      } else if (el.k === 'Q'){
+        if (!s.on){
+          // which end acts as the emitter is read with the junction off: the lower of collector and emitter
+          const inv = V(el.ne) > V(el.nc) + 1e-3;
+          if (inv !== !!s.inv){ s.inv = inv; changed = true; }
+          const xn = s.inv ? el.nc : el.ne;
+          if (V(el.nb) - V(xn) > el.vbe + 1e-6){ s.on = true; s.sat = false; changed = true; }
+          continue;
+        }
+        const y = s.inv ? el.ne : el.nc, xn = s.inv ? el.nc : el.ne, beta = s.inv ? el.hfr : el.hfe;
+        const ib = (V(el.nb) - V(xn) - el.vbe) / RBE;
+        if (ib < -1e-9){ s.on = false; s.sat = false; changed = true; }
+        else if (!s.sat){ if (V(y) - V(xn) < el.vcesat - 1e-6){ s.sat = true; changed = true; } }
+        else if ((V(y) - V(xn) - el.vcesat) / RSAT > beta * ib + 1e-7){ s.sat = false; changed = true; }
+      }
+    }
+    if (!changed) break;
+  }
+  // what every element and source carries in this slice
+  const out = { V: new Map(roots.map((r, i) => [r, x[i]])), el: [], load: 0 };
+  out.V.set(gnd, 0);
+  for (const s of nets){
+    if (s.kind === 'rail'){ const i = (s.v - V(s.root)) / RAIL_R; if (i > 0) out.load += i; }
+    else if (s.kind === 'pin'){ const i = ((high(s) ? logic : 0) - V(s.root)) / PIN_R; if (i > 0) out.load += i; }
+  }
+  for (const el of els){
+    const s = S[el.n], r = {};
+    if (el.k === 'D' || el.k === 'BZ'){ r.vd = V(el.a) - V(el.b); r.i = !el.dead && s.on ? (r.vd - el.vf) / el.rd : 0; }
+    else if (el.k === 'M'){ r.v = V(el.a) - V(el.b); r.i = el.dead ? 0 : r.v * el.gm; }
+    else if (el.k === 'SV'){ r.vs = V(el.vp) - V(el.gnd); r.sig = V(el.sig) > logic / 2; }
+    else if (el.k === 'TS'){ r.vs = V(el.sp) - V(el.sn); r.vo = V(el.out) - V(el.sn); r.on = !!s.on; }
+    else if (el.k === 'POT'){ r.vw = V(el.w); r.p = el.dead ? 0 : Math.max(el.g1 * (V(el.a) - V(el.w)) ** 2, el.g2 * (V(el.w) - V(el.b)) ** 2); }
+    else if (el.k === 'Q'){
+      const y = s.inv ? el.ne : el.nc, xn = s.inv ? el.nc : el.ne, beta = s.inv ? el.hfr : el.hfe;
+      r.vce = V(el.nc) - V(el.ne); r.inv = !!s.inv; r.sat = !!(s.on && s.sat);
+      if (el.dead){ r.ib = 0; r.ic = el.e.darlington ? Math.abs(r.vce) * 10 : 0; }
+      else if (!s.on){ r.ib = 0; r.ic = 0; }
+      else { r.ib = Math.max(0, (V(el.nb) - V(xn) - el.vbe) / RBE); r.ic = s.sat ? Math.max(0, (V(y) - V(xn) - el.vcesat) / RSAT) : beta * r.ib; }
+    }
+    out.el.push(r);
+  }
+  return out;
+}
+
+/* ---------- the whole circuit: slices, motors, averages, then what each part reports ---------- */
+const mem = st => st.solverMem || (st.solverMem = {});
+const motorI = (el, v) => {
+  const md = el.def.model || {}, load = el.q.load || 'prop';
+  if (el.e.brushless && el.e.polar && v < 0) return 0;
+  if (typeof md.steady === 'function') return Math.abs(md.steady(Math.abs(v), load).i || 0);
+  return Math.abs(v) / Math.max(+el.e.ohms || 10, .1);
+};
+B.solveCircuit = (st, pl, dt = 0) => {
+  const md = B.md, logic = md.def.logic || 5, nl = netlist(st, pl), { els, nets } = nl, M = mem(st);
+  els.forEach((el, i) => { el.n = i; });
+  // PWM slices: the pins at level > the slice's start are high
+  const level = s => s.level;
+  const duties = [...new Set(nets.filter(s => s.kind === 'pin' && s.level > 0 && s.level < 1).map(level))].sort((a, b) => a - b);
+  const slices = []; let from = 0;
+  for (const d of [...duties, 1]){ if (d - from > 1e-9){ const f0 = from; slices.push({ w: d - from, high: s => s.level > f0 }); } from = d; }
+  // motors: a conductance from the current the motor takes at the voltage it sees while switched on
+  for (const el of els) if (el.k === 'M'){
+    const m0 = M[el.id] || {};
+    el.gm = el.q.load === 'stalled' && el.e.ohms ? 1 / el.e.ohms : m0.gm || motorI(el, 4) / 4 || 1e-3;
+  }
+  // servos: the current they took last frame (holding, moving or stalled)
+  for (const el of els) if (el.k === 'SV') el.gs = ((M[el.id] && M[el.id].i) || +el.e.iidle || .008) / 5;
+  for (const el of els) if (el.k === 'TS') el.vout = +el.e.vout || .75;
+  let res = null;
+  for (let pass = 0; pass < 6; pass++){
+    const S = els.map(() => ({ on: false, sat: false, inv: false }));
+    res = slices.map(sl => Object.assign(solveSlice(nl, sl.high, S, logic), { w: sl.w }));
+    let moved = false;
+    for (const el of els) if (el.k === 'M' && !(el.q.load === 'stalled' && el.e.ohms)){
+      const von = Math.max(...res.map(r => Math.abs(r.el[el.n].v)));
+      const gm = Math.max(1e-3, motorI(el, von) / Math.max(von, .3));
+      if (Math.abs(gm - el.gm) > el.gm * .01){ el.gm = gm; moved = true; }
+    }
+    if (!moved) break;
+  }
+  for (const el of els) if (el.k === 'M') M[el.id] = Object.assign(M[el.id] || {}, { gm: el.gm });
+  const timeAvg = f => res.reduce((a, r) => a + r.w * f(r), 0), peak = f => Math.max(...res.map(f));
+  const Vavg = root => timeAvg(r => r.V.get(root) || 0);
+  const out = { meas: {}, volts: {}, load: timeAvg(r => r.load) };
+  // which roots reach a source through the circuit (skip: an element left out, to tell an open LED)
+  const srcRoots = new Set(nets.filter(s => s.kind !== 'input').map(s => s.root));
+  const ends = el => ['a', 'b', 'w', 'nb', 'nc', 'ne', 'gnd', 'vp', 'sp', 'sn', 'out'].map(f => el[f]).filter(v => v != null);
+  const reaches = (start, skip) => {
+    const seen = new Set([start]), todo = [start];
+    while (todo.length){
+      const r = todo.pop(); if (srcRoots.has(r)) return true;
+      for (const el of els){ if (el === skip || (el.dead && el.k !== 'Q')) continue; const e2 = ends(el); if (!e2.includes(r)) continue;
+        for (const q of e2) if (!seen.has(q)){ seen.add(q); todo.push(q); } }
+    }
+    return false;
+  };
+  const live = el => ends(el).some(r => reaches(r, null));
+  // an LED's series resistance and source, walking resistors from a node to the first source (as v1 reported)
+  const walk = (start, seen = new Set()) => {
+    if (seen.has(start)) return null; seen.add(start);
+    const s = nets.find(q => q.root === start && q.kind !== 'input'); if (s) return { net: s.net, r: 0 };
+    for (const el of els){ if (el.k !== 'R') continue; const nx = el.a === start ? el.b : el.b === start ? el.a : null;
+      if (nx == null) continue; const w = walk(nx, seen); if (w) return { net: w.net, r: w.r + 1 / el.g }; }
+    return null;
+  };
+  const motors = els.filter(el => el.k === 'M');
+  const switched = el => peak(r => Math.abs(r.el[el.n].i)) - Math.min(...res.map(r => Math.abs(r.el[el.n].i))) > 1e-3
+    || els.some(q => q.k === 'Q' && (q.nc === el.b || q.nc === el.a));
+  const flyback = m => els.some(d => d.k === 'D' && !d.led && !d.dead && d.a === m.b && d.b === m.a);
+  const burn = (key, msg, vars) => { const b2 = st.burnt || (st.burnt = {}); if (b2[key]) return; b2[key] = true; B.sfx('pop'); B.say(msg, vars, 3000); };
+  const leds = {};
+  for (const el of els){
+    const q = el.q, m = M[el.key] || (M[el.key] = {}), e = el.e, ri = r => r.el[el.n];
+    if (el.k === 'D' && el.led){
+      const i = timeAvg(r => ri(r).i), ip = peak(r => ri(r).i), rev = timeAvg(r => -ri(r).vd);
+      if (!el.dead && ip > el.imax * 2.5) burn(el.key, '{name} burned out: {n} mA is far above its 20 mA', { name: q.id, n: Math.round(ip * 1000) });
+      const dead = !!(st.burnt && st.burnt[el.key]);
+      const state = dead ? 'burnt' : i > 1e-5 ? 'ok' : !reaches(el.a, el) || !reaches(el.b, el) ? 'open' : rev > Math.max(1, el.vf * .5) ? 'reverse' : 'off';
+      const up = walk(el.a), dn = walk(el.b);
+      const one = { kind: 'led', i_mA: dead ? 0 : rnd(Math.max(0, i) * 1000), state };
+      if (state !== 'open' && up) Object.assign(one, { r: Math.round(up.r + (dn ? dn.r : 0)), net: up.net });
+      if (!el.ch){ out.meas[q.id] = one; continue; }
+      (leds[q.id] = leds[q.id] || {})[el.ch] = one;
+    } else if (el.k === 'D'){
+      if (!live(el)) continue;
+      const i = timeAvg(r => ri(r).i), ip = peak(r => ri(r).i), rev = timeAvg(r => -ri(r).vd);
+      if (!el.dead && (i > el.imax || ip > el.isurge)) burn(el.key, '{name} burned out: {n} mA is more than it can carry', { name: q.id, n: Math.round(Math.max(i, ip) * 1000) });
+      const across = motors.find(mm => mm.e.inductive && mm.a === el.b && mm.b === el.a);
+      const clamp = across && !across.dead && switched(across) && timeAvg(r => Math.abs(r.el[across.n].i)) > 1e-3 && duties.length > 0;
+      const vfx = el.def.model && typeof el.def.model.vf === 'function' ? el.def.model.vf : null;
+      const state = el.dead ? 'burnt' : clamp ? 'clamp' : i > 1e-5 ? 'ok' : rev > .5 ? 'block' : 'off';
+      out.meas[q.id] = { kind: 'diode', state, i_mA: rnd((clamp ? timeAvg(r => Math.abs(r.el[across.n].i)) : Math.max(0, i)) * 1000),
+        v: rnd(i > 1e-5 ? (vfx ? vfx(i) : el.vf) : -rev, 100) };
+    } else if (el.k === 'Q'){
+      if (!live(el)) continue;
+      const ib = timeAvg(r => ri(r).ib), ic = timeAvg(r => ri(r).ic), icp = peak(r => ri(r).ic);
+      const conducting = res.reduce((a, r) => ri(r).ic > icp * .5 ? r : a, res[0]), vce = ri(conducting).vce;
+      const pW = timeAvg(r => ri(r).ic * Math.abs(ri(r).vce) + ri(r).ib * el.vbe), tj = el.def.model && typeof el.def.model.tj === 'function' ? el.def.model.tj(pW) : 25 + (+e.theta || 200) * pW;
+      if (!el.dead && (tj > (+e.tjmax || 150) || icp > (+e.icmax || 1) * 1.5)) burn(el.key, '{name} overheated and failed', { name: q.id });
+      const hotW = +e.photW || (+e.pmax || .6) * .75, anyInv = res.some(r => ri(r).inv && ri(r).ic > 1e-4);
+      const state = el.dead ? 'burnt' : q.reversed || anyInv ? 'reverse' : pW > hotW ? 'hot' : res.some(r => ri(r).sat && ri(r).ic > 1e-4) ? 'on' : ic > 1e-5 ? 'linear' : 'off';
+      out.meas[q.id] = { kind: 'npn', state, ib_mA: rnd(ib * 1000, 100), ic_mA: rnd(ic * 1000), vce: rnd(vce, 100), p_W: rnd(pW, 100), tj_C: Math.round(tj) };
+    } else if (el.k === 'M'){
+      if (!live(el)) continue;
+      const v = timeAvg(r => ri(r).v), mdl = el.def.model || {}, load = q.load || 'prop';
+      const ss = typeof mdl.steady === 'function' ? mdl.steady(v, load) : { rpm: 0, i: v / Math.max(+e.ohms || 10, .1) };
+      const vmax = +e.vmax || 12, polarRev = el.e.brushless && el.e.polar && v < -.3;
+      const iA = load === 'stalled' ? Math.abs(v) / Math.max(+e.ohms || 1, .1) : polarRev ? 0 : Math.abs(ss.i || 0);
+      const spike = e.inductive && Math.abs(v) > .3 && switched(el) && !flyback(el);
+      const state = el.dead ? 'burnt' : polarRev ? 'reverse' : load === 'stalled' && Math.abs(v) > .3 ? 'stall' : Math.abs(v) > vmax ? 'over' : spike ? 'spike' : Math.abs(v) > .05 ? 'ok' : 'off';
+      out.meas[q.id] = { kind: 'motor', state, v: rnd(v, 100), i_mA: Math.round(iA * 1000), rpm: Math.round(polarRev ? 0 : ss.rpm || 0) };
+    } else if (el.k === 'SV'){
+      if (!live(el)) continue;
+      const vs = timeAvg(r => ri(r).vs), duty = timeAvg(r => ri(r).sig ? 1 : 0), mdl = el.def.model || {};
+      const us = duty * (+e.period || .02) * 1e6, a = typeof mdl.angleOf === 'function' ? mdl.angleOf(us) : (us - 500) / 1900 * 180;
+      const pulses = duty > 0 && duty <= .2, drv = st.drv && st.drv[q.id];
+      const state = el.dead ? 'burnt' : vs < (+e.vmin || 4) ? (vs > .5 ? 'jitter' : 'off') : !pulses ? 'off' : vs > (+e.vmax || 6) + .5 ? 'over' : a < -3 || a > 183 ? 'stop' : 'ok';
+      const angle = Math.max(0, Math.min(180, a)), moving = pulses && drv && Math.abs((drv.a || 0) - angle) > 2;
+      m.i = state === 'stop' ? +e.istall || .7 : moving ? +e.imove || .2 : +e.iidle || .008;
+      out.meas[q.id] = { kind: 'servo', state, ...(pulses ? { us: Math.round(us), angle: Math.round(angle) } : {}), i_mA: vs > .5 ? Math.round(m.i * 1000) : 0 };
+    } else if (el.k === 'TS'){
+      if (!live(el)) continue;
+      const vs = timeAvg(r => ri(r).vs), vo = timeAvg(r => ri(r).on ? ri(r).vo : 0);
+      if (vs < -.5) m.revT = (m.revT || 0) + dt; else m.revT = 0;
+      if (!el.dead && (vs > (+e.vabs || 7) || m.revT > 3)) burn(el.key, '{name} overheated and failed', { name: q.id });
+      const state = el.dead ? 'dead' : vs < -.5 ? 'hot' : vs <= .5 ? 'off' : vs < (+e.vmin || 2.7) ? 'low' : 'ok';
+      out.meas[q.id] = { kind: 'sensor', state, v: rnd(vo, 1000), vs: rnd(vs, 100) };
+    } else if (el.k === 'POT'){
+      if (!live(el)) continue;
+      const pp = peak(r => ri(r).p), hot = pp > el.pmax;
+      m.hotT = hot ? (m.hotT || 0) + dt : 0;
+      if (!el.dead && m.hotT > 2) burn(el.key, '{name} burned out: {w} W is too much for its track', { name: q.id, w: pp.toFixed(2) });
+      out.meas[q.id] = { kind: 'pot', state: el.dead ? 'burnt' : hot ? 'hot' : 'ok', v: rnd(timeAvg(r => ri(r).vw), 100) };
+    } else if (el.k === 'BZ'){
+      const a = el.a, s = nets.find(x2 => x2.root === a && x2.kind === 'pin');
+      if (!live(el) && !s) continue;
+      const v = timeAvg(r => ri(r).vd), one = { kind: 'buzzer', state: el.active && v < -1 ? 'reverse' : Math.abs(v) > .5 || (s && s.hz) ? 'ok' : 'off', v: rnd(v, 100) };
+      if (s) one.f = s.hz ? Math.round(s.hz) : 0;
+      if (el.active) one.i_mA = rnd(Math.max(0, timeAvg(r => ri(r).i)) * 1000);
+      out.meas[q.id] = one;
+    }
+  }
+  for (const [id, ch] of Object.entries(leds)){
+    const all = Object.values(ch), has = s => all.some(x2 => x2.state === s);
+    out.meas[id] = { kind: 'led', i_mA: rnd(all.reduce((a, x2) => a + x2.i_mA, 0)), ch,
+      state: has('ok') ? 'ok' : has('burnt') ? 'burnt' : has('reverse') ? 'reverse' : all.every(x2 => x2.state === 'open') ? 'open' : 'off' };
+  }
+  for (const bt of nl.buttons) out.meas[bt.id] = { kind: 'button', state: bt.shorted ? 'shorted' : 'ok', closed: !!(bt.shorted || bt.e.pressed) };
+  // what a pin reads: the average volts on every board net the circuit uses (analogRead, digitalRead)
+  for (const s of nets) if (s.kind === 'pin' || s.kind === 'input') out.volts[s.net] = rnd(Vavg(s.root), 100);
+  return out;
+};
+
+/* ---------- sound: the loudest part that makes one (def.sound(p, m) → { hz, loud, how }) goes to the host ---------- */
+B.solveSound = (st, parts) => {
+  let best = null;
+  for (const q of parts || []){
+    const def = B.parts[q.part];
+    if (!def || typeof def.sound !== 'function') continue;
+    let snd = null;
+    try { snd = def.sound(Object.assign({}, def.defaults || {}, q), (st.meas || {})[q.id]); } catch (e) { B.note(`${q.id} sound: ${e.message}`); }
+    if (snd && snd.hz > 0 && (!best || snd.loud > best.loud)) best = { part: q.id, hz: Math.round(snd.hz), loud: rnd(snd.loud || 1, 100), how: snd.how || 'tone' };
+  }
+  const key = best ? best.part + ':' + best.hz + ':' + best.how : '';
+  if (key !== (st.soundKey || '')){
+    st.soundKey = key;
+    try { if (window.CF_BRIDGE) CF_BRIDGE.send('tone', best || { part: null, hz: 0, loud: 0, how: 'off' }); } catch (e) {}
+  }
+  st.sound = best;
 };
 })();
 

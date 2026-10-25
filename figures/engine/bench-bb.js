@@ -113,7 +113,7 @@ B.bbPart = id => { const c = B.md.circuits[B.st.circuit]; return c && (c.parts |
 // plus half its foot's diagonal, so any rotation fits), and headroom for the tallest part (foot[2] or def.height)
 const extent = () => {
   const md = B.md, pl = place(), m = md.mat;
-  const box = pl ? [-m.left, Math.min(-m.front, pl.oy - 8), Math.max(md.pcb.w, pl.ox + pl.geo.w) + 8, Math.max(md.pcb.h + m.back, pl.oy + pl.geo.h + 8)]
+  const area = pl ? [-m.left, Math.min(-m.front, pl.oy - 8), Math.max(md.pcb.w, pl.ox + pl.geo.w) + 8, Math.max(md.pcb.h + m.back, pl.oy + pl.geo.h + 8)]
     : [-m.left, -m.front, md.pcb.w + m.right, md.pcb.h + m.back];
   let h = md.height + 10;
   for (const q of (pl && pl.c.parts) || []){
@@ -121,9 +121,9 @@ const extent = () => {
     if (tall > 0) h = Math.max(h, tall + 4);
     if (!Array.isArray(q.at)) continue;
     const r = (ft ? Math.hypot(ft[0], ft[1]) / 2 : 10) + 4;
-    box[0] = Math.min(box[0], q.at[0] - r); box[1] = Math.min(box[1], q.at[1] - r); box[2] = Math.max(box[2], q.at[0] + r); box[3] = Math.max(box[3], q.at[1] + r);
+    area[0] = Math.min(area[0], q.at[0] - r); area[1] = Math.min(area[1], q.at[1] - r); area[2] = Math.max(area[2], q.at[0] + r); area[3] = Math.max(area[3], q.at[1] + r);
   }
-  return { box, h };
+  return { box: area, h };
 };
 // a wire end on the leg of a part that lies on the mat (no hole under it): the part's own def.legAt(p, origin, i)
 const matLeg = (c, ref) => {

@@ -596,9 +596,9 @@ function xrCallouts(items, B){
   const roomL = xmin - vb.x >= wMax, roomR = vb.x + vb.width - xmax >= wMax;
   for (const it of items){ const [X, Y] = P(...it.at); ((X < cx && roomL) || !roomR ? L : R).push({ ...it, X, Y }); }
   let s = '';
-  let top = { [-1]: fs, [1]: fs + 30*k };
-  if (btn && svgEl.getScreenCTM()){ const r = btn.getBoundingClientRect(), q = new DOMPoint(r.right, r.bottom + 50).matrixTransform(svgEl.getScreenCTM().inverse());
-    if (q.y > 0) top[-1] = q.y + hgt; }
+  let top = { [-1]: fs, [1]: fs + 30*k }, tight = null;
+  if (btn && svgEl.getScreenCTM()){ const r = btn.getBoundingClientRect(), inv = svgEl.getScreenCTM().inverse(), q = new DOMPoint(r.right, r.bottom + 50).matrixTransform(inv);
+    if (q.y > 0){ top[-1] = q.y + hgt; tight = new DOMPoint(r.right, r.bottom + 6).matrixTransform(inv).y + hgt/2; } }
   const stack = (col, side) => {
     col.sort((a, b) => a.Y - b.Y);
     let y = -1e9; for (const c of col){ c.py = Math.max(c.Y, y + gap, top[side]); y = c.py; }
@@ -606,9 +606,11 @@ function xrCallouts(items, B){
     const room = col.length ? col[0].py - top[side] : 0; for (const c of col) c.py -= Math.min(shift, room);
   };
   stack(L, -1); stack(R, 1);
-  // a tall button column pushes the left labels down: the ones that would leave the frame move to the right column
+  // a tall button column pushes the left labels down: first they close up under the buttons, then the ones that would
+  // still leave the frame move to the right column (clamped inside the frame even when the drawing leaves no room there)
   const bottom = vb.y + vb.height - hgt/2 - 2*k;
-  if (roomR && L.some(c => c.py > bottom)){ while (L.length && L[L.length - 1].py > bottom) R.push(L.pop()); stack(L, -1); stack(R, 1); }
+  if (tight != null && L.some(c => c.py > bottom)){ top[-1] = Math.min(top[-1], tight); stack(L, -1); }
+  if (L.some(c => c.py > bottom)){ while (L.length && L[L.length - 1].py > bottom) R.push(L.pop()); stack(L, -1); stack(R, 1); }
   for (const [col, side] of [[L, -1], [R, 1]]){
     for (const c of col){
       c.n = ((window.__ln || (window.__ln = {}))[c.text] || (__ln[c.text] = Object.keys(__ln).length + 1)); const ct = CF_T(c.text), w = u ? hgt*(c.n > 9 ? 1.3 : 1) : CF_TW(ct, fs) + fs*1.5;
