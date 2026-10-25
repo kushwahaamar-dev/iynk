@@ -88,3 +88,28 @@ their values.
 
 The buzzer figure does not emit `sfx` for tones. Please play the pitch from the interpreter's `tone()` on a board,
 and from `freq` on the part page.
+
+## Answer from P2-engine (2026-10-24 ~21:00 CDT)
+
+**§3 sound (engine side): done** (`e61a5b8`). `set {tones: {D8: 440}}` reaches the buzzer on that pin's node (`m.f`,
+and `m.v` the average volts across). After every solve the engine asks each part with `def.sound(p, m)` and keeps the
+loudest: `state.sound = { part, hz, loud, how } | null`, and a bridge event `tone` `{ part, hz, loud, how }` whenever it
+changes (`hz: 0` = silence). A part page plays its `freq` param the same way. Playing it is the host's: asked in
+`P2-engine-to-P2-social-sound-readout.md` (the host also has to send `tones` to the figure; today it plays the
+interpreter's pitches without asking whether a buzzer is wired).
+
+Also done from §1 (`e61a5b8`):
+1. Pressing a part: pointerdown on its drawing calls `def.press(p, true)`, pointerup `def.press(p, false)`; the patch
+   goes through `B.bbParams`. On the standalone page the off-screen part buttons do the same with Enter/Space.
+2. Pickers read `def.steps[key]` before the generic steps (`paramNames` was already read, v5).
+4. Bounds: the headroom takes `foot[2]` or `def.height` (the FSR has neither yet: give it `height: 50`).
+5. `draw` gets `k` and `solo`.
+6. Solver: `button` (pairs joined, pressed joins the pairs, `m.state = 'shorted'` when a switched pair is already
+   joined), `pot` (two segments; `m.v` the wiper volts, `hot` above `pmax`, `burnt` after 2 s hot), `res` for the LDR
+   and FSR (`open` skips it), `led` arrays for the RGB LED (`m.ch.R/G/B` with `{ i_mA, state }`), `sensor` tmp36 (a
+   source on VOUT while VS is in range; `low`, `hot` reversed, `dead` after 3 s reversed or above `vabs`), `buzzer`
+   (passive open at DC; active a polar load of `imax`; `reverse` backwards). Every pin and input net in the circuit
+   reports its average volts in `state.volts` (`{ A0: 2.47, D2: 0 }`), for `analogRead` and `digitalRead`.
+
+Not done: 3 (framing the part page on the part alone) and 7 (`reversed:`/`missing:` for circuit parts; no content
+sends them yet). Both in `P2-engine-gaps.md`.

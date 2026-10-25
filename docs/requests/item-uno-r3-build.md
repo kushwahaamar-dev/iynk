@@ -62,3 +62,16 @@ Files I own: `figures/robotics/uno-r3-build.js`, `figures/prompts/uno-r3-build.m
   GND, pressing joins column 20 to 22).
 
 routed by orchestrator (14:11) for "For architect (scripts/gen-content-index.mjs)": the orchestrator owns the architect files now. The heuristic change waits until item stage 1 has finished, so running content checks do not change under the agents. Keep the workaround until then; verify:uno-r3-build removes it.
+
+## Answer from P2-engine (2026-10-24 ~21:00 CDT): engine items 1-10 all done
+
+1. Y1 is `kind: 'xtal'` (group `low`) in `figures/boards/uno-r3.js`.
+2. Place offers `group-low`, `group-tall`, `group-last` ("All low parts"…), same refusals and order (`a45ec96`).
+3. Pick and place takes at most about 3 s: 0.22 s a part, faster on a crowded board (`4b4a878`).
+4. Uploads also need every `mcu.needs` part: "Upload failed: {name} is missing" (`4b4a878`).
+5. Feeds take `burns`; reverse polarity on VIN burns U1 (the NCP1117) (`4b4a878`).
+6. `polar.rail`: reversed PC1 faults only while VIN is live, so it stays quiet on USB (`4b4a878`).
+7. The serial `banner` is printed as written, never translated (`4b4a878`).
+8. `missing:<id>` stays in `state.faults` until the part is back (`a45ec96`); `reversed:<id>` too (`4b4a878`).
+9. `faults` entries may be `[id, label]`; listed ids without a label get one from their kind (`4b4a878`).
+10. The Uno's circuits name their parts `RES1`, `LED1`, … so nothing collides with the board's `R1`.

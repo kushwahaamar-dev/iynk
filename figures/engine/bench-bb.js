@@ -110,7 +110,8 @@ B.bbPart = id => { const c = B.md.circuits[B.st.circuit]; return c && (c.parts |
 
 /* ---------- scene ---------- */
 // the breadboard view's mat in board mm: the board, the breadboard and every circuit part lying on the mat (its `at`
-// plus half its foot's diagonal, so any rotation fits), and headroom for the tallest part (foot[2] or def.height)
+// plus half the diagonal of its foot or matSize and 6 mm, so any rotation fits), and headroom for the tallest part
+// (foot[2] or def.height)
 const extent = () => {
   const md = B.md, pl = place(), m = md.mat;
   const area = pl ? [-m.left, Math.min(-m.front, pl.oy - 8), Math.max(md.pcb.w, pl.ox + pl.geo.w) + 8, Math.max(md.pcb.h + m.back, pl.oy + pl.geo.h + 8)]
@@ -120,7 +121,7 @@ const extent = () => {
     const def = B.parts[q.part], ft = def && Array.isArray(def.foot) ? def.foot : null, tall = ft ? ft[2] : def && +def.height;
     if (tall > 0) h = Math.max(h, tall + 4);
     if (!Array.isArray(q.at)) continue;
-    const r = (ft ? Math.hypot(ft[0], ft[1]) / 2 : 10) + 4;
+    const sz = ft || (def && Array.isArray(def.matSize) ? def.matSize : [20, 12]), r = Math.hypot(sz[0], sz[1]) / 2 + 6;
     area[0] = Math.min(area[0], q.at[0] - r); area[1] = Math.min(area[1], q.at[1] - r); area[2] = Math.max(area[2], q.at[0] + r); area[3] = Math.max(area[3], q.at[1] + r);
   }
   return { box: area, h };

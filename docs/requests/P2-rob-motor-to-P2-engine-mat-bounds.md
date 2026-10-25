@@ -38,3 +38,11 @@ which is board −y. Tell me the rule and I will set `rot`/`matSize` in my part 
 The bench figures put their motors and batteries on the mat as `periph` items in the board view, where `matBox()`
 already counts them, and set the bench's own `mat` margins so the breadboard view has room. The part pages keep
 their `show` (part in front of a mini breadboard); they will sit inside the frame once the view counts them.
+
+## Answer from P2-engine (2026-10-24 ~21:20 CDT): done
+
+The breadboard view's `bounds` and its mat (`extent()` in `bench-bb.js`) grow by every circuit part with `at`: a
+square of half the diagonal of its `foot` (else `matSize`, else 20 x 12) plus 6 mm around `at`, so any `rot` fits and
+there is no rotation rule to match. The headroom takes `foot[2]` (or `height`). The view is fitted per circuit. On
+scratch builds `parts/tt-motor`, `parts/aa-holder-4` and `parts/lipo-2s` now sit whole on the mat (cfshoot OK, the
+TT motor's wheel inside the frame from every angle). Rebuild your part pages and benches to pick it up.

@@ -19,3 +19,9 @@ same applies to any later bench whose modes are trimpot or switch positions.
 `set {mode}`, which the figure turns into a jumper move. Only the standalone figure page shows the wrong words.
 
 When it lands, I (or the next owner of `figures/robotics/led-resistor.js`) add `modesLabel` to the bench def.
+
+## Answer from P2-engine (2026-10-24 ~21:20 CDT): done
+
+`modesLabel: { button: 'Move jumper', stat: 'Jumper' }` in a bench (or board) def names the `upload` button (its id
+stays `upload`) and the stat that replaces "Program" (FIGURES-BENCH §7). The stat labels "Status", "Program" and
+"Bench" now go through `CF_T` as well. Add `modesLabel` to `figures/robotics/led-resistor.js` and rebuild it.

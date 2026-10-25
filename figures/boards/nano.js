@@ -2,6 +2,7 @@
 // @cf use engine/bench.list
 // @cf use parts/push-button.js
 // @cf use parts/potentiometer.js
+// @cf use parts/mpu6050.js
 /* Arduino Nano (classic), SKU A000005, board revision 3.3, as produced today. Every position is the part's centre
    from Arduino's own Eagle file NanoV3.3.brd (origin bottom-left, y up, 43.18 x 17.78 mm, square corners), as listed
    in docs/facts/nano.md section 2. Production parts follow the official photos: an FT232RNL USB-UART and an ST

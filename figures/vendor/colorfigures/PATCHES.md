@@ -34,7 +34,7 @@ Section numbers refer to `docs/research/colorfigures-guide.md`.
 
 | Id | What | Why |
 |---|---|---|
-| P6 | `xrCallouts()` stacks both label columns first. Left labels that a tall button column pushes below the frame close up under the buttons, and any that still don't fit move to the right column, which is clamped inside the frame. | Callouts left the frame on boards and crafts with many buttons (ESP32 DevKitC, racer, gpscam, delivery) |
+| P6 | `xrCallouts()` stacks both label columns first. Left labels that a tall button column pushes below the frame close up under the buttons, and any that still don't fit move to the right column, which is clamped inside the frame. The right column starts under `#stats` where that panel sits over the drawing, unless the column would then run off the bottom. | Callouts left the frame on boards and crafts with many buttons (ESP32 DevKitC, racer, gpscam, delivery) and covered the counters (cinewhoop) |
 | B1 | build.py's first `TAIL` rule removed the hand-drawn filter on narrow or touch screens at all times. Now it is removed only while `html.cf-moving` is set, so phones keep the inked look at rest. | Appendix E row 3: the docstring promised "a lighter filter while the figure moves"; S4 asks for the Colorfigures look everywhere |
 | B2 | Focus rings for the zoom chip's buttons, the only build.py control left in embedded mode. | keyboard access |
 

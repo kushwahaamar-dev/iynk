@@ -88,3 +88,41 @@ Add these figure strings (keyed by the English text; keep `{id}`, `{n}`, `{v}`, 
   params (set {params}) when the interpreter runs faster than the 30 Hz bridge.
 - Leave mat room (`mat.front`, `mat.left`…) for the motor (46 x 40 mm with its propeller), the fan, the servo and
   the stepper until §2 is done.
+
+## Answer from P2-engine (2026-10-24 ~21:00 CDT)
+
+**§1 solver types: done except the stepper** (`e61a5b8`, `figures/engine/bench-solve.js`, FIGURES-BENCH §9 v7). The
+breadboard solver is now nodal analysis per PWM time slice, averaged over the period, with piecewise-linear junctions.
+Checked on the Uno lessons (`figures/engine/bench-solve.test.mjs`):
+
+- `npn` (tip120, npn-2n2222): `elec.pins`, `hfe`, `vbe`, `vcesat` drive it; off / active / saturated, and inverse
+  (C and E swapped, gain `hfr`, default 5). `m = { kind: 'npn', state, ib_mA, ic_mA, vce, p_W, tj_C }`; states `off`,
+  `on`, `linear`, `reverse` (also whenever `p.reversed`), `hot` (`p_W` above `elec.photW`, else 0.75 x `pmax`),
+  `burnt` (`model.tj(p_W)` past `tjmax`, or IC above 1.5 x `icmax`; sticky; a burnt `darlington` fails short C-E).
+  Lesson 10 at D6 = 1: Q1 `on`, IB 3.6 mA, VCE 0.9 V, motor 3.95 V / 194 mA. Not reported: `overdrive`.
+- `diode`: 0.7 V + 0.2 Ω when on; `m = { kind: 'diode', state, i_mA, v }` with `v` from `model.vf(i)`; `ok`, `off`,
+  `block` (reverse biased by more than 0.5 V), `clamp` (across an inductive motor switched by PWM; `i_mA` = the motor's
+  average current), `burnt` (average above `imax` or a slice above `isurge`).
+- `motor` (dc-motor, fan): a conductance from `model.steady` at the voltage the motor sees while switched on;
+  `m = { kind: 'motor', state, v (average, signed), i_mA, rpm }`; `ok`, `off`, `stall` (`load: 'stalled'`: V / R),
+  `over` (above `vmax`), `spike` (inductive, switched, no diode anti-parallel across it), `reverse` (a polar brushless
+  fan backwards), `burnt`. A stalled motor on USB draws ~2 A: the board browns out ("the circuit draws 2091 mA, more
+  than USB cable gives (500 mA)") until the load goes.
+- `servo`: SIG duty x 20 ms → `us`, `model.angleOf(us)` → `angle`; `m = { kind: 'servo', state, us, angle, i_mA }`;
+  `jitter` below `vmin` on V+, `stop` past the ends, `off` without pulses (duty 0 or above 0.2); it draws `iidle`,
+  `imove` while its drawn arm (`st.drv[id].a`) is more than 2° from the target, `istall` at a stop. Its current counts
+  toward the supply's limit (several moving servos on USB brown out).
+- **Not done: `stepper`.** Coils need the ULN2003 between the pins and the motor, and there is no breadboard ULN2003
+  part (`figures/modules/uln2003.js` is a module board). The stepper keeps its own `in` pins fallback. In
+  `P2-engine-gaps.md`.
+
+**§2: done** (`e61a5b8`, `705c127`).
+- The breadboard view's mat and bounds grow to every circuit part's `at` ± half its `foot` diagonal (any rotation),
+  and the headroom to the tallest `foot[2]` (or `def.height`). Part pages use the same view, so a `show` circuit with
+  a part `at` on the mat frames it. The breadboard view is fitted per circuit.
+- Wire ends on a mat part's leg with no hole fall back to `def.legAt(p, origin, i)` (drawing) and to the leg's own node
+  (solver), so `SRV1.SIG → D9` works with no holes.
+- `draw(ctx)` gets `k` (the see-through ease) and `solo` (true on part pages).
+- `def.step({ p, st, m }, dt)` runs each frame on the virtual clock (dt > 0), after the solver.
+- The Uno's MOT1, FAN1 and both SRV1 now sit on the mat right of the breadboard (`figures/boards/uno-r3.js`), and
+  their `drive: 'D6'` fallbacks are gone (the solver drives them).

@@ -26,3 +26,9 @@ lights when the VCC strip is wired to a live rail and the GND strip to GND.
 `python3 -I figures/tools/cfbuild.py boards/nano`, then
 `python3 -I figures/tools/cfshoot.py boards/nano --query "view=breadboard&circuit=i2c"`: no `unknown part` note,
 `M1` drawn with its LED lit while powered.
+
+## Answer from P2-engine (2026-10-24 ~21:20 CDT): done
+
+`// @cf use parts/mpu6050.js` is in `figures/boards/nano.js`; `public/figures/boards/nano.html` is rebuilt. `cfshoot.py
+boards/nano --query "view=breadboard&circuit=i2c"` is OK with no notes, and with `--set '{"power":"usb","view":
+"breadboard","circuit":"i2c"}'` M1 sits on the breadboard with its power LED lit.

@@ -929,7 +929,8 @@ function buttons(){
     ...srcs.map(([key, s]) => ({ id: key, label: s.label || key, current: st.power === key, onClick: () => A.power(key) })),
     { id: 'off', label: 'Unplug', current: !st.power, onClick: () => A.power(null) }] });
   const modes = Object.entries(MD.modes);
-  if (modes.length) bt.push({ id: 'upload', label: 'Upload sketch', choices: () => modes.map(([key, md]) => ({ id: key, label: md.title || key, current: st.mode === key && !st.ext, onClick: () => A.upload(key) })) });
+  // a bench whose modes are positions, not sketches, names the picker: modesLabel { button: 'Move jumper', stat: 'Jumper' }
+  if (modes.length) bt.push({ id: 'upload', label: (MD.def.modesLabel && MD.def.modesLabel.button) || 'Upload sketch', choices: () => modes.map(([key, md]) => ({ id: key, label: md.title || key, current: st.mode === key && !st.ext, onClick: () => A.upload(key) })) });
   const ctls = MD.parts.filter(p => p.control);
   for (const p of ctls) bt.push({ id: 'ctl-' + p.id.toLowerCase(), label: p.control.type === 'slide' ? T('Flip {name}', { name: p.short || p.id }) : T('Press {name}', { name: p.short || p.id }),
     onClick: () => { A.press(p.id, true); if (p.control.type !== 'slide') setTimeout(() => A.press(p.id, false), 260); } });
@@ -997,11 +998,11 @@ function faultLabel(id){
 }
 function stats(){
   if (MD.def.noBoard) return [];
-  const out = [{ label: 'Status', value: statusText() }];
+  const out = [{ label: T('Status'), value: statusText() }];
   const mcu = MD.power.mcu;
   if (mcu && st.power) out.push({ label: mcu.rail, value: (st.ev.rails[mcu.rail] || 0).toFixed(1) + ' V', small: true });
-  if (st.ev.status === 'running' && MD.modes[st.mode]) out.push({ label: 'Program', value: st.ext ? T('your sketch') : T(MD.modes[st.mode].title), small: true });
-  if (st.benchStatus) out.push({ label: 'Bench', value: T(st.benchStatus), small: true });
+  if (st.ev.status === 'running' && MD.modes[st.mode]) out.push({ label: T((MD.def.modesLabel && MD.def.modesLabel.stat) || 'Program'), value: st.ext ? T('your sketch') : T(MD.modes[st.mode].title), small: true });
+  if (st.benchStatus) out.push({ label: T('Bench'), value: T(st.benchStatus), small: true });
   if (st.power) for (const [label, value] of st.modelStats || []) out.push({ label: T(String(label)), value: typeof value === 'number' ? String(+value.toFixed(2)) : T(String(value)), small: true });
   return out;
 }

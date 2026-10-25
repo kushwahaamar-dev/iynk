@@ -33,3 +33,12 @@ Your working copy of `core.js` already starts the right column under `#stats` (n
 `drones/{whoop,cinewhoop,longrange,wing}` on it and re-shot them: the cinewhoop's "1.4 MM TIP GAP" now sits under
 "OFF", and cfshoot passes all four (29 shots + embed each). Please commit `core.js` so the committed pages and the
 engine match; nothing else needed from you here.
+
+## Answer from P2-engine (2026-10-24 ~21:20 CDT): done
+
+`xrCallouts` (now vendor.py patch P6, `figures/vendor/colorfigures/PATCHES.md`) starts the right column under `#stats`
+(its bottom in drawing units plus half a pill) wherever that panel sits over the drawing, and falls back to the top
+only when the column would then run off the bottom. Left labels a tall button column pushes down first close up under
+the buttons, so fewer move right. Checked on a scratch build of `drones/cinewhoop`: xr-110 puts "1.4 MM TIP GAP"
+under BATTERY OFF and the other ten below it, "CELLS IN SERIES" stays on the left; cfshoot OK. Rebuild
+`drones/{whoop,cinewhoop,longrange,wing}` when you like.

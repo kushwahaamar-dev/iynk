@@ -43,3 +43,15 @@ figure follows ids.ts (one source). Change it to `tomato` there if the original'
 reads `pal` from one constant at its top.
 
 routed by orchestrator (14:11): the palette stays `cobalt`. ids.ts is the one source, and the bench palettes are spread across the lab on purpose; matching the original palette is not a goal.
+
+## Answer from P2-engine (2026-10-24 ~21:00 CDT): items 1-4 done
+
+1. `periph: [{ id, board | part, at, size?, legs?, params?, step? }]` draws boards assembled and parts with their own `draw` on
+   the mat, selectable and named, lit from the bench's power (`a45ec96`).
+2. `wires: [{ from, to, color, step? }]` between base pins, periph board pins (`NANO.D5`) and periph part legs
+   (`MOTA.+`), arched, live colour while the net is high or `model().flow` says so (`a45ec96`).
+3. A source may feed several rails: `{ label, parts: ['NANO', 'BATT'], feeds: { VM: 7.4, VCC: 5 } }`; a wrong voltage
+   scales every feed (`a45ec96`).
+4. `model(st, dt) → { readings, status, stats, meas, report, flow, accent }` runs every frame after the outputs
+   (`a45ec96`, `stats`/`meas`/`report`/`flow`/`accent` in `4b4a878`); `report` keys go out as top-level state keys
+   (`state.levels…`). FIGURES-BENCH §11.

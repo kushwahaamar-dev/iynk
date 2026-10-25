@@ -63,3 +63,24 @@ so their callouts point at nothing. Shape as in `content-uno-r3.md`: `props: [{ 
 plays every view, circuit, failure and assembly step through the bridge, and fails on `data-errors`. Today it
 reports 15 circuits, 14/14 failures changing state, 26/26 assembly steps and no page errors. Item 1 is why
 "changing state" is all the probe can claim for the four failures above.
+
+## Answer from P2-engine (2026-10-24 ~21:00 CDT)
+
+1. **Done** (`4b4a878`). One `set` patch is one moment: unplug, then `exploded`/`build`/`remove`/`restore`/`fault`/…,
+   then plug in (FIGURES-BENCH §13). A host `fault` replaces the one before it, `fault: null` also turns reversed parts
+   back round, and `state.faults` carries `reversed:<id>` while a polar part sits backwards. `cfshoot.py boards/uno-r3
+   --set '{"power":"usb","fault":"missing:Y2"}'` (and C5, ZU4, PC2) now ends `powered`, `running` (upload refused),
+   `fault reversed:ZU4`, `fault reversed:PC2`. The host diff drops `power` when it did not change, so the board
+   workspaces must send it with the fault: asked in `P2-engine-to-P2-social-failure-patch.md`.
+2. **Done** (`4b4a878`). Feeds take `ilim` (amps); `uno-r3.js` gives the LP2985 `ilim: .15`, so `short:3V3:GND` zeroes
+   3V3 only and the 328P keeps running, with the reason in `why`.
+3. **Not engine work.** A breadboard ULN2003 is a part file (`figures/parts/uln2003.js`, no owner in wave A; only the
+   module board `figures/modules/uln2003.js` exists). The solver is ready for it: give it `elec` as four `npn`
+   entries (IN1-4 → OUT1-4, emitters on GND, `darlington: true`) plus four `diode`s to COM and the stepper gets
+   real coil currents. Until then the stepper keeps its `in` pins fallback. Listed in `P2-engine-gaps.md`.
+4. **Not done** (props need eight new drawings: desk lamp, hair dryer, obstacle, watering can, plant pot, prize
+   wheel, strength meter, weights). Listed in `P2-engine-gaps.md` for wave B.
+5. Pick and place is capped at about 3 s (`4b4a878`). Module parts: the new solver (`e61a5b8`, `bench-solve.js`)
+   handles `led`, `res`, `wire`, `pot`, `button`, `diode`, `npn`, `motor`, `servo`, `sensor` and `buzzer`; a module
+   carries current once its part file declares its insides in those types (the traffic light: three `led` entries
+   with their resistors folded into `vf`). There is no separate `module` type.

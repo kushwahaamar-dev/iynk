@@ -8,6 +8,17 @@ nothing else. The engine (`figures/engine/bench*.js`, `figures/engine/sheets*.js
 
 Changes after the first publication are additive only. Every change is logged here, newest first.
 
+- v7 (21:00, P2-engine): the breadboard solver is a DC circuit solver (`figures/engine/bench-solve.js`, §9): node
+  voltages per PWM time slice, averaged over the period, for every `elec` type in the §8 table (not yet the
+  stepper). Every `meas` entry carries `kind` (§9 table); host readouts that only know LEDs should filter on
+  `kind: 'led'`. New in the `state` event: `volts` (average volts on every pin and input net the circuit uses) and
+  `sound` (the loudest part sounding), plus a bridge event `tone` when it changes (§13). A circuit that draws more than
+  the source's `ilim` browns the board out with the reason (§6.1). Part files may add `press(p, down)`, `steps`,
+  `step({ p, st, m }, dt)`, `sound(p, m)`, `legAt(p, origin, i)`, `foot: [w, d, h]` or `height`; `draw` gets `k` and
+  `solo` (§8). The breadboard view's mat grows to fit circuit parts that sit on it (`at`) and is fitted per circuit.
+  `tones` is in the §13 table. A bench may name its modes picker with `modesLabel` (§7). The see-through labels' right
+  column starts under the stats panel. There is no `module` elec type (v1 listed one; it was never built): a module's part
+  file declares its insides in the types above.
 - v6 (19:40, P2-engine): one `set` patch is applied as one moment: unplug (`power: null`) first, then `exploded`,
   `build`, `remove`, `restore`, `fault`, `matStep`, `circuit`, `params`, `tones`, `inputs`, `press`, then plug in
   (`power: <source>`), then `view`, `select`, `serial`, so `{ power: 'usb', fault: 'missing:Y2' }` shows the powered
@@ -420,6 +431,10 @@ mode: 'blink',
 is printed at every (re)start. When the host drives pins (`set {pins}`) built-in modes pause until it sends
 `set {mode}`.
 
+A bench whose modes are positions rather than sketches (jumper or switch settings) names its picker:
+`modesLabel: { button: 'Move jumper', stat: 'Jumper' }` replaces "Upload sketch" and the "Program" stat. The
+button's id stays `upload`, so content and the host send the same `set {mode}`.
+
 ## 8. Breadboard parts (`SL.bench.part(name, def)`)
 
 ```js
@@ -434,16 +449,44 @@ SL.bench.part('led', {
 });
 ```
 
-`elec` types the solver understands: `led {vf, imax}`, `res {ohms}`, `wire {}`, `button {pressed}`,
-`pot {ohms, pos}`, `cap {farads}` (open in DC), `diode {vf}`, `buzzer {}` (a load), `module` (see section 11).
+`elec` types the solver understands (§9 has what each reports); `elec` may also be an array of them (an RGB LED is
+three `led` entries with `ch` and `legs`):
 
-Built so far (v3): the series-path solver handles `led`, `res` and `wire`; any other `elec` type is drawn and
-clickable but carries no current yet (an open circuit), so a lesson that needs it says so in its own figure.
+| Type | Fields (defaults) |
+|---|---|
+| `led` | `vf` (2), `imax` (.02); in an array `ch: 'R'`, `legs: [anode, cathode]` (leg indices) |
+| `res` | `ohms`; `open: true` leaves it out |
+| `wire` | none |
+| `button` | `pressed`, `pairs: [[0, 1], [2, 3]]` (leg indices; each pair is always joined, `pressed` joins the pairs) |
+| `pot` | `ohms`, `pos` 0..1 (legs end 1, wiper, end 3), `pmax` (.05 W) |
+| `diode` | `imax` (1 A), `isurge` (30 A); 0.7 V + 0.2 Ω when on |
+| `npn` | `pins: { B, C, E }` (leg indices), `hfe` (100), `hfr` (5, inverse gain), `vbe` (.7), `vcesat` (.2), `pmax`, `photW`, `tjmax` (150), `icmax` (1), `theta` (200 °C/W) or `model.tj(W)`, `darlington` (a burnt one fails short C-E) |
+| `motor` | `ohms`, `vmax` (12), `inductive`, `brushless` + `polar` (a fan that only runs one way); current from `model.steady(v, load)` → `{ rpm, i }`; param `load: 'stalled'` draws V / `ohms` |
+| `servo` | legs named `GND`, `V+`, `SIG` (else legs 0, 1, 2), `vmin` (4), `vmax` (6), `period` (.02 s), `iidle`, `imove`, `istall`; angle from `model.angleOf(us)` |
+| `sensor` | `model: 'tmp36'`, `supply: [vs, gnd]`, `out`, `vout` (volts it drives), `vmin` (2.7), `vabs` (7), `polar` |
+| `buzzer` | `kind: 'passive'` (open at DC) or `'active'` (`imax` .03, `vmin` 3, a polar load) |
+| `cap` | open at DC |
+
+Built so far (v7): all of these carry current. A part whose type the solver doesn't know (and the stepper, until a
+breadboard ULN2003 exists) is drawn and clickable, carries no current, and falls back to its params.
+
+Optional hooks on a part file:
+
+- `press(p, down)` returns a param patch (or `null`): a pointer press on the part's drawing, or Enter/Space on its
+  off-screen button, calls it with `true` and again with `false` on release. The patch goes through `B.bbParams`.
+- `steps: { key: [values] }`: the part page's picker values for a range, used before the generic steps.
+- `step({ p, st, m }, dt)` runs each frame on the virtual clock after the solver (a servo arm easing to its angle in
+  `st.drv[id]`).
+- `sound(p, m)` returns `{ hz, loud, how }` (`hz: 0` = silent): see `sound` in §13.
+- `legAt(p, origin, i)`: the world point of leg `i` for a part that lies on the mat, so a wire can end on `SRV1.SIG`
+  without a hole.
+- `foot: [w, d, h]` (mm) or `height`: the mat and headroom grow to fit the part.
 
 `draw(ctx)` gets `{ p, st, legs, holes, origin, pl, m, lit, i, … }`: `p` the circuit entry (its params), `legs` the
 world points of its holes (top of the breadboard), `holes` the parsed holes, `origin` the world point of `p.at`
 (mat mm in board coordinates, for things that sit on the mat, not in holes) or the first leg, `pl` the placement
-(`pl.at(x, y, z)` breadboard mm → world, `pl.zTop`), `m` the solver result for this part (`{i_mA, state}`).
+(`pl.at(x, y, z)` breadboard mm → world, `pl.zTop`), `m` the solver result for this part (§9), `k` the see-through
+ease (0..1) and `solo` (true on the part's own page).
 
 Part pages (`public/figures/parts/<id>.html`, built from `figures/parts/<id>.js`): `fig: 'P2'` is the figure number
 in the title; `show: { breadboard, parts, wires }` is the circuit the page shows, or `show: { breadboard, holes,
@@ -480,8 +523,28 @@ circuit: 'blink',
 - Wire ends: a board pin (`D13`, `H3.6`), a hole, or a module pin (`M1.VCC`). Colours: `red`, `black`, `orange`,
   `yellow`, `green`, `blue`, `white`, `purple`, `brown`, `grey`.
 - Part params can be changed by the host: `set {params: {R1: {ohms: 1000}, LED1: {color: 'green'}}}`.
-- The engine solves each LED's series path (pin → resistors → LED → GND) from the strips, so a missing resistor, a
-  reversed LED or a wire in the wrong strip shows the real result (`dark`, `burnt`, `no current`) and is reported.
+- The engine solves the whole circuit (`bench-solve.js`): nodes are strips, rails, board nets and the legs of parts on
+  the mat; a pin is a 5 V or 3.3 V source behind 25 Ω, a rail one behind 0.5 Ω. PWM is solved per time slice (all
+  PWM pins start their period together) and averaged; a `tones` pin is a 50 % square wave. So a missing resistor, a
+  reversed LED, a transistor wired the wrong way or a wire in the wrong strip shows the real result, and every pin and
+  input net reports its average volts in `state.volts` (for the host's `analogRead` and `digitalRead`).
+- What each part reports in `state.meas[id]` (every entry has `kind`; parts no source reaches report nothing, LEDs
+  always report). Burnt is sticky until the page reloads, with a toast saying why:
+
+  | `kind` | Fields | `state` |
+  |---|---|---|
+  | `led` | `i_mA`, `r` (series ohms), `net`; RGB adds `ch: { R: { i_mA, state }, … }` | `ok`, `off`, `burnt` (peak above 2.5 x `imax`), `reverse`, `open` |
+  | `diode` | `i_mA`, `v` | `ok`, `off`, `block` (reverse biased), `clamp` (catching a switched motor's current), `burnt` |
+  | `npn` | `ib_mA`, `ic_mA`, `vce`, `p_W`, `tj_C` | `on` (saturated), `linear`, `off`, `reverse` (C and E swapped, or `p.reversed`), `hot`, `burnt` |
+  | `motor` | `v` (signed average), `i_mA`, `rpm` | `ok`, `off`, `stall`, `over`, `spike` (inductive, switched, no flyback diode), `reverse`, `burnt` |
+  | `servo` | `us`, `angle` (while pulses arrive), `i_mA` | `ok`, `off`, `jitter` (supply below `vmin`), `over`, `stop` (pulse past the ends) |
+  | `sensor` | `v` (out), `vs` (supply) | `ok`, `off`, `low`, `hot` (reversed), `dead` |
+  | `pot` | `v` (wiper) | `ok`, `hot`, `burnt` (2 s hot) |
+  | `buzzer` | `v`, `f` (Hz on its pin), `i_mA` (active) | `ok`, `off`, `reverse` |
+  | `button` | `closed` | `ok`, `shorted` (a switched pair already joined by the strips) |
+
+- The circuit's total current counts against the source: above the source's `ilim` (USB 0.5 A) the board browns out
+  for 0.6 s after the overload stops, `why` "Brown-out: the circuit draws {n} mA, more than {src} gives ({max} mA)".
 - The board sits left of the breadboard (`board: 'left'`, default) or behind it (`board: 'back'`).
 - A part without holes (a motor, a battery box) gives `at: [x, y]` in board mm (negative x is left of the board,
   above `pcb.w` is right of it) and draws from `ctx.origin`.
@@ -571,6 +634,7 @@ unplugs before it strips. Send `power` with every `fault` whose consequence need
 | `press` | `{id, down}` | press or release an on-board control |
 | `serial` | string | the host printed a line: TX LED blips |
 | `inputs` | `{net: 0\|1}` | host-side inputs mirrored on the drawing (switch positions) |
+| `tones` | `{net: Hz}` | pins the sketch drives with `tone()`; a net left out or 0 is silent; send `{}` when the last stops |
 
 Figure → host `state` (discrete values only):
 
@@ -579,9 +643,14 @@ Figure → host `state` (discrete values only):
   status: 'off'|'no-power'|'powered'|'running'|'uploading'|'brownout'|'fault', mode, ext: bool,
   rails: {name: volts (0.1 V)}, fault: null|{id, kind, part, msg, fix}, faults: [...ids], missing: [...ids],
   selected, controls: {partId: 0|1|position}, boot, leds: {partId: 0|1}, circuit,
-  meas: {partId: {i_mA, state:'ok'|'off'|'burnt'|'reverse'|'open', r, net}}, serial: {n, line},
-  why: null|string, sfx: null|name, tasks: {taskId: bool} }
+  meas: {partId: {kind, state, …}} (§9 table), serial: {n, line},
+  why: null|string, sfx: null|name, tasks: {taskId: bool},
+  volts: {net: volts}, sound: null|{part, hz, loud, how} }      // volts and sound only while a circuit is shown
 ```
+
+`sound` is the loudest part whose `sound(p, m)` gives a pitch (`how`: `tone`, `rough` for an active buzzer driven by
+`tone()`); a buzzer on the wrong pin, backwards or missing gives none. Whenever it changes the figure also sends a
+bridge event `tone` `{ part, hz, loud, how }` (`hz: 0`, `part: null` = silence), so the host can play it.
 
 Part presses arrive as bridge `part` events: `act: 'part'` with `id` = part id, or `act: 'ctl'` for controls,
 `act: 'hole'` with `id` = hole on the breadboard, `act: 'pin'` with `id` = pin id.
