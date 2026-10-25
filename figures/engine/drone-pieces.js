@@ -12,12 +12,16 @@
   SD.motorZ = frameTop;
   const motorH = d => 3 + d.motor.bell[1];
   // a motor's own frame: offsets (a, b) across the shaft and h along it, from the mount face. tilt (deg) turns the
-  // shaft from straight up towards the nose: 90 is a tractor motor, -90 a pusher, in between a tilt-rotor.
+  // shaft from straight up towards the nose: 90 is a tractor motor, -90 a pusher, in between a tilt-rotor. bank (deg)
+  // then rocks it about the craft's x axis through the mount, + tipping the top of the shaft to the left (+y), as a
+  // tricopter's tail servo does. Both come from this frame's pose (SD.poseOf), so a craft can move them while it runs.
   const motorFrame = (mo, z0) => {
-    const t = (mo.tilt || 0) * Math.PI / 180, c = Math.cos(t), s = Math.sin(t), zm = mo.z != null ? mo.z : z0;
-    return (a, b, h) => [mo.x + a * c + h * s, mo.y + b, zm - a * s + h * c];
+    const q = SD.poseOf(mo), t = q.tilt * Math.PI / 180, c = Math.cos(t), s = Math.sin(t), zm = mo.z != null ? mo.z : z0;
+    const r = q.bank * Math.PI / 180, cb = Math.cos(r), sb = Math.sin(r);
+    return (a, b, h) => { const lz = -a * s + h * c; return [mo.x + a * c + h * s, mo.y + b * cb + lz * sb, zm - b * sb + lz * cb]; };
   };
   SD.motorFrame = motorFrame;
+  const upright = mo => { const q = SD.poseOf(mo); return !q.tilt && !q.bank; };
 
   function tiltedMotor(mo, i, ctx, z0, bell, base, propsOn){
     const d = ctx.design, R = d.motor.bell[0] / 2, hb = d.motor.bell[1], Mf = motorFrame(mo, z0), k = ctx.k, out = [];
@@ -42,7 +46,7 @@
     const k = ctx.k, bell = SD.mat(pc.color || 'pal'), base = SD.mat(pc.base || 'dark');
     const propsOn = SD.isOn(ctx.st, 'PROPS') || (ctx.st.placed.PROPS && !ctx.st.placed.PROPS.leave);
     ctx.craft.motors.forEach((mo, i) => {
-      if (mo.tilt) { items.push(...tiltedMotor(mo, i, ctx, z0, bell, base, propsOn)); return; }
+      if (!upright(mo)) { items.push(...tiltedMotor(mo, i, ctx, z0, bell, base, propsOn)); return; }
       if (mo.z != null) z0 = mo.z; else z0 = zMount;
       let s = g.cyl(mo.x, mo.y, z0, z0 + 3, R - .8, base, 18).svg;
       if (k > 0){
@@ -88,7 +92,7 @@
         }
       }
       const hubCol = d.prop.color && /^#/.test(d.prop.color) ? d.prop.color : 'cobalt';
-      if (mo.tilt) items.push(...g.rod(Mf(0, 0, hp), Mf(0, 0, hp + 5.5), 6, hubCol, 99, 14), ...g.rod(Mf(0, 0, hp + 5.5), Mf(0, 0, hp + 10), 4.2, 'metal', 99, 6));
+      if (!upright(mo)) items.push(...g.rod(Mf(0, 0, hp), Mf(0, 0, hp + 5.5), 6, hubCol, 99, 14), ...g.rod(Mf(0, 0, hp + 5.5), Mf(0, 0, hp + 10), 4.2, 'metal', 99, 6));
       else {
         const zp = Mf(0, 0, hp)[2], hub = g.cyl(mo.x, mo.y, zp, zp + 5.5, 6, hubCol, 14);
         hub.svg += g.cyl(mo.x, mo.y, zp + 5.5, zp + 10, 4.2, 'metal', 6, .8).svg;

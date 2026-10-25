@@ -41,3 +41,20 @@ defined:
 - `vtol.js`: `motorPose` returns the nacelle tilt for M1 and M2 during the transition test.
 
 Until this lands both figures keep working as they are; nothing in them depends on it.
+
+## Answer from P2-engine-b (2026-10-24 23:25 CDT)
+
+All three are in `figures/engine/drone.js` and `figures/engine/drone-pieces.js`, documented in
+`docs/FIGURES-DRONE.md` v3 (§3, §4, §7.1, §10.4), with tests in `figures/engine/drone.test.mjs` (`motor pose`).
+
+1. `motorFrame(mo, z0)` turns the shaft by `tilt` about y, then by `bank` about the craft x axis through the mount
+   point; + bank tips the top of the shaft to +y. Motors, bells, the see-through stator, props, the prop disc and the
+   motor-test arrow all follow. Checked on the tricopter: `bank: 35` on M1 leans the tail motor and its prop.
+2. `craft.motorPose(st, i, mo)` returning `{ tilt?, bank? }` (or null) is called once per motor per frame in
+   `scene()`. The result is `ctx.pose[i]`, and `SL.drone.motorFrame(mo, z0)` (the same frame the engine draws with)
+   returns it too, so your tail plate or nacelle can be drawn in it. A field that is missing or not a number keeps the
+   motor's own `tilt` and no bank; a throwing `motorPose` is noted once and the motor keeps its listed pose.
+3. `craft.animating(st)` keeps the loop running while it returns true, and `SL.drone.settle()` resolves once the
+   figure stops animating.
+
+Your built pages pick this up when you rebuild them; I didn't rebuild or commit any drone page.

@@ -75,3 +75,48 @@ describe('drone craft hooks', () => {
     expect(page.notes().filter((n) => n.includes('no gps'))).toHaveLength(1);
   });
 });
+
+describe('motor pose', () => {
+  const near = (a, b) => a.forEach((v, i) => expect(v).toBeCloseTo(b[i], 6));
+
+  it('a craft banks and tilts a motor per frame through motorPose, and every motorFrame follows', async () => {
+    page = await quad();
+    const SD = page.drone, craft = SD.craft(), mo = craft.motors[0];
+    expect(SD.poseOf(mo)).toEqual({ tilt: 0, bank: 0 });
+    craft.motorPose = (st, i) => (i === 0 ? { bank: 30 } : null);
+    SD.api.render();
+    expect(SD.poseOf(mo)).toEqual({ tilt: 0, bank: 30 });
+    expect(SD.poseOf(craft.motors[1])).toEqual({ tilt: 0, bank: 0 });
+    // + bank tips the top of the shaft to the left (+y)
+    near(SD.motorFrame(mo, 0)(0, 0, 10), [mo.x, mo.y + 5, 10 * Math.cos(Math.PI / 6)]);
+    // tilt first (90: a tractor, shaft to the nose), then bank about x leaves that shaft where it is
+    craft.motorPose = (st, i) => (i === 0 ? { tilt: 90, bank: 30 } : null);
+    SD.api.render();
+    near(SD.motorFrame(mo, 0)(0, 0, 10), [mo.x + 10, mo.y, 0]);
+    // a field that is not a number keeps the motor's own pose
+    craft.motorPose = () => ({ tilt: '45', bank: null });
+    SD.api.render();
+    expect(SD.poseOf(mo)).toEqual({ tilt: 0, bank: 0 });
+    expect(page.notes()).toEqual([]);
+  });
+
+  it('notes a throwing motorPose once and draws the listed pose', async () => {
+    page = await quad();
+    const SD = page.drone, craft = SD.craft();
+    craft.motorPose = () => { throw new Error('boom'); };
+    SD.api.render();
+    SD.api.render();
+    expect(SD.poseOf(craft.motors[0])).toEqual({ tilt: 0, bank: 0 });
+    expect(page.notes().filter((n) => n.includes('motorPose'))).toHaveLength(1);
+  });
+
+  it('craft.animating keeps the figure running, and settle waits for it', async () => {
+    page = await quad();
+    const SD = page.drone, craft = SD.craft(), st = SD.api.st, until = st.t + 0.25;
+    craft.animating = (s) => s.t < until;
+    SD.kick();
+    await SD.settle();
+    expect(st.t).toBeGreaterThanOrEqual(until);
+    await expect(SD.settle()).resolves.toBeUndefined();
+  });
+});

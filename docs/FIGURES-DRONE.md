@@ -9,6 +9,10 @@ format cannot say, write it to `docs/requests/<your-label>.md` and use a `custom
 
 Additive changes only after v1. Newest first.
 
+- v3 (23:20 CDT, Oct 24): motors can move while the figure runs.
+  - motor `bank` (deg about the craft's x axis, after `tilt`) and a per-frame pose from `craft.motorPose(st, i, mo)`
+    (§3, §4); `ctx.pose[i]` and `SL.drone.motorFrame(mo, z0)` for a craft's own pieces (§7.1);
+  - `craft.animating(st)` keeps the figure animating, and `SL.drone.settle()` resolves when it stops (§3, §10.4).
 - v2 (14:25 CDT, Oct 24): the engine and quad5 landed; every section now matches the code.
   Corrections, each marked (v2) in place:
   - §7 `antenna`: the style field is `type`, not `kind`, because `kind` is the piece kind;
@@ -126,6 +130,8 @@ python3 -I figures/tools/cfshoot.py drones/<id> --press "Smoke stopper test@300"
 | `bounds` | `[x0, x1, y0, y1, z0, z1]` mm | no, 80 % of the mat, `0.7 × height` tall | (v2) craft-local box the see-through callout columns are laid out around. Keep it to the body without the props (quad5: `[-75, 75, -50, 50, 0, 76]`), or the callouts are pushed off the frame (cfshoot `offFrame`) |
 | `xrCaption` | string | no, `'See-through: the covers fade so the insides, the power path and the signals show.'` | (v2) the see-through caption; say what fades on your craft |
 | `messages` | `{ powered? }` | no | (v2) replaces the plugged-in notice (default `Beep beep beep: ESCs armed-ready, FC and VTX on`) for crafts without an FC or VTX |
+| `motorPose` | `(st, i, mo) => { tilt?, bank? } \| null` | no | (v3) motor `i`'s pose this frame, in degrees (§4); a missing or non-number field keeps the motor's own `tilt` and no bank. Called once per motor per frame |
+| `animating` | `st => bool` | no | (v3) true while the craft's own motion runs (a servo sweep, a transition), so the figure keeps animating without `st.later` |
 
 ## 4. Frame layouts
 
@@ -185,7 +191,11 @@ fact sheet and override with `frame.motors` when your craft differs.
 - `tilt` (deg) turns the shaft from straight up towards the nose, about the craft's y axis. 0 is a lift motor, 90 a
   tractor, -90 a pusher, and anything in between is a tilt-rotor.
 - The motor, its prop, the see-through stator and the motor-test arrow are all drawn in that tilted frame.
-- Servo-driven tilt during flight is not animated. Draw the craft in the pose its fact sheet shows.
+- (v3) `bank` (deg) then rocks the shaft about the craft's x axis through the mount point; + tips the top of the shaft
+  to the left (+y), as a tricopter's tail servo does.
+- (v3) Both can change while the figure runs: `craft.motorPose(st, i, mo)` returns `{ tilt?, bank? }` for that frame
+  (tricopter: `i === 0 ? { bank: tailTilt(st) } : null`; a tilt-rotor: the nacelle angle during its transition). Make
+  `craft.animating(st)` true for as long as the pose is moving.
 
 (v2) More layouts:
 - `vtol` is a QuadPlane: the wing plus the lift and pusher motors, all listed in `frame.motors`.
@@ -329,6 +339,9 @@ blinking), `k` see-through amount 0..1, `design` the resolved picks `{ batt, mot
   ESC harness and video coax show how.
 - `shadows`: push polygons of bench points.
 - `testing`: the running test or null.
+- (v3) `pose[i]`: motor `i`'s `{ tilt, bank }` this frame. `SL.drone.motorFrame(mo, z0)` returns `(a, b, h) => [x, y, z]`,
+  the motor's own frame in that pose (offsets `a`, `b` across the shaft, `h` up it from the mount face at `z0`), so a
+  hinge, pushrod or nacelle drawn with it turns with the motor.
 - Positions earlier pieces leave behind: `fcAt` and `capAt` are bench points; `xt60At` and `wireAt` are craft-local.
 
 Keep pieces small and boxed: one item per physical piece, long things cut into pieces (the engine's
@@ -459,6 +472,9 @@ pickers and buttons are core buttons. A craft needs no code for any of this.
 
 `api.say(text, ms?, sfx?)` notice + log; `api.log(line)`; `api.sfx(name)`; `api.isOn(id)`; `api.orient(id)`;
 `api.st` (the state, read-only by convention); `api.render()`.
+
+(v3) `SL.drone.settle()` returns a promise that resolves once the figure stops animating (placements, tests and
+`craft.animating` all done), so a test can wait for a sweep without polling.
 
 ### 10.5 URL parameters (v2)
 

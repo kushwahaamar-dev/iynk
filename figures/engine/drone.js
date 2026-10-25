@@ -137,12 +137,19 @@ window.SL = window.SL || {};
 
   /* ---------- actions (the only way the build state changes) ---------- */
   function busy(st){ return !!st.test || st.queue.length > 0; }
+  let settled = [];
   function kick(){
     if (looping || !ui) return;
     looping = true;
-    ui.animate(dt => { const more = step(ui.st, dt); if (!more) looping = false; return more; });
+    ui.animate(dt => {
+      const more = step(ui.st, dt);
+      if (!more){ looping = false; const done = settled; settled = []; done.forEach(f => f()); }
+      return more;
+    });
   }
   SD.kick = kick;
+  // resolves once the figure stops animating: placements, tests, a craft's own motion (craft.animating) all done
+  SD.settle = () => looping ? new Promise(r => settled.push(r)) : Promise.resolve();
 
   function wrongIndex(st){ const n = motorsList().length; return n ? (2 + 3 * st.wireJobs) % n : null; }
 
@@ -398,8 +405,13 @@ window.SL = window.SL || {};
     if (st.smoke.length){ more = true; for (const s of st.smoke) s.age += dt; st.smoke = st.smoke.filter(s => s.age < 1.1); }
     if ((st.xr || 0) > 0.05 && (powered(st) || (st.test && st.test.kind === 'motors'))) more = true;
     if (st.test && st.test.kind === 'smoke') more = true;
+    // a craft's own motion (a servo sweep, a tilt-rotor transition) keeps the figure animating while it runs
+    if (typeof craft.animating === 'function'){
+      try { if (craft.animating(st)) more = true; } catch (e) { if (!animErr){ animErr = true; note('animating: ' + e.message); } }
+    }
     return more;
   }
+  let animErr = false;
 
   /* ---------- report and accept (the bridge contract, docs/FIGURES-DRONE.md §10) ---------- */
   function report(st){
@@ -526,7 +538,8 @@ window.SL = window.SL || {};
     if (st.sheet && SD.sheet) return SD.sheet(st);
     const M = craft.mat, MT = 4, G = SD.G, k = ease(st.xr || 0);
     G.ox = M / 2; G.oy = M / 2; G.oz = MT; G.dz = 0;
-    const ctx = { st, craft, design: resolved(st), t: st.t, k, powered: powered(st), spin: st.spin, rpm: st.rpm, mat: M,
+    const pose = posesNow(st);
+    const ctx = { st, craft, design: resolved(st), t: st.t, k, powered: powered(st), spin: st.spin, rpm: st.rpm, mat: M, pose,
       flows: [], shadows: [], tags: [], callouts: [], testing: st.test ? st.test.kind : null };
     const items = [];
     for (const part of craft.parts){
@@ -569,6 +582,23 @@ window.SL = window.SL || {};
     return out;
   }
   const topOf = b => [(b[0][0] + b[1][0]) / 2, (b[0][1] + b[1][1]) / 2, b[1][2]];
+
+  // each motor's pose this frame: its listed tilt and no bank, unless craft.motorPose(st, i, mo) moves it. Kept by
+  // motor so every motorFrame call in the frame (the engine's pieces and a craft's own) draws the same pose.
+  let POSE = new Map(), poseErr = false;
+  const finite = (v, d) => typeof v === 'number' && Number.isFinite(v) ? v : d;
+  function posesNow(st){
+    const out = craft.motors.map((mo, i) => {
+      const base = { tilt: mo.tilt || 0, bank: 0 };
+      if (typeof craft.motorPose !== 'function') return base;
+      let r = null;
+      try { r = craft.motorPose(st, i, mo); } catch (e) { if (!poseErr){ poseErr = true; note('motorPose: ' + e.message); } }
+      return r && typeof r === 'object' ? { tilt: finite(r.tilt, base.tilt), bank: finite(r.bank, 0) } : base;
+    });
+    POSE = new Map(craft.motors.map((mo, i) => [mo, out[i]]));
+    return out;
+  }
+  SD.poseOf = mo => POSE.get(mo) || { tilt: mo.tilt || 0, bank: 0 };
   function selTag(tg, on){
     const s = tag(tg.at, tg.dx, tg.dy, tg.text, on);
     return on ? s.replace('class="tag on"', 'class="tag on dsel"') : s;
