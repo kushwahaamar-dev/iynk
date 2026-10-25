@@ -23,7 +23,7 @@ starter still fails.
 
 ## Answer
 
-2026-10-25 00:35 CDT, P2-req-interp (wave B tail). Trace in `f71771e`, knob checks in `9215470`.
+2026-10-25 00:34 CDT, P2-req-interp (wave B tail). Trace in `f71771e`, knob checks in `9215470`.
 
 - **Trace** (`src/lib/interp/headless.ts`): every channel of each PCA9685 on the bus is a trace pin
   `PCA<address in hex>.<ch>` (`PCA40.0` ... `PCA40.15`, `PCA41.3` for a board at 0x41), written when it changes.
