@@ -90,7 +90,7 @@
   "status": {
     "loading": "Dein Laborpartner wird geweckt …",
     "unavailable": "Der Laborpartner ist in dieser Installation nicht eingerichtet",
-    "unavailableBody": "Alles andere im Labor funktioniert auch ohne ihn. Der Partner braucht auf dem Server einen Schlüssel für die Meta-Modell-API.",
+    "unavailableBody": "Alles andere im Labor funktioniert auch ohne ihn. Der Partner braucht auf dem Server einen Schlüssel für die Meta-Modell-API oder die Gemini-API.",
     "unreachable": "Der Server ist nicht erreichbar, um den Partner zu prüfen.",
     "check": "Erneut prüfen"
   },

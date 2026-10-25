@@ -90,7 +90,7 @@
   "status": {
     "loading": "Waking up your lab partner…",
     "unavailable": "The lab partner isn’t set up on this deployment",
-    "unavailableBody": "Everything else in the lab works without it. The partner needs a Meta Model API key on the server.",
+    "unavailableBody": "Everything else in the lab works without it. The partner needs a Meta Model API key or a Gemini API key on the server.",
     "unreachable": "Couldn’t reach the server to check the partner.",
     "check": "Check again"
   },
