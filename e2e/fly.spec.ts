@@ -78,3 +78,31 @@ test("the cockpit passes axe", async ({ page }) => {
   expect(results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`)).toEqual([]);
   expect(errors).toEqual([]);
 });
+
+// The telemetry over the range keeps one row from lg in every language: a long label (German) or a long checkpoint
+// name (swarm) drops the least-needed numbers and shortens Next, never a second row and never a sideways scroll.
+for (const { lang, craft } of [
+  { lang: "de", craft: "quad5" },
+  { lang: "en", craft: "swarm" },
+  { lang: "de", craft: "swarm" },
+  { lang: "es", craft: "delivery" },
+]) {
+  for (const width of [1024, 1440]) {
+    test(`the telemetry is one row at ${width} px (${lang}, ${craft})`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(`/${lang}/drones/${craft}/fly`);
+      const strip = page.locator(`main#main-${lang}`).getByTestId("flight-telemetry");
+      await expect(strip).toBeVisible({ timeout: 20_000 });
+      await expect
+        .poll(() =>
+          strip.evaluate((el) => {
+            const tops = new Set([...el.children].map((c) => Math.round(c.getBoundingClientRect().top)));
+            return { rows: tops.size, fits: el.scrollWidth <= el.clientWidth, stats: el.children.length };
+          }),
+        )
+        .toEqual(expect.objectContaining({ rows: 1, fits: true }));
+      // State, Battery, Altitude, Speed and Next always stay
+      expect(await strip.evaluate((el) => el.children.length)).toBeGreaterThanOrEqual(5);
+    });
+  }
+}

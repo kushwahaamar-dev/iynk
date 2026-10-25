@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
 import { FigureFrame, type FigureEvent, type FigureHandle } from "@/components/figure";
 import { Button, cx, Kbd, Select, Stat, Toggle } from "@/components/ui";
 import type { ParTimes } from "@/content/schema";
@@ -96,6 +96,32 @@ function loadPad(): PadMapping {
   }
 }
 
+/**
+ * How many steps of making room an element needs to stop overflowing sideways (0 to max): each render that still
+ * overflows takes one more step, and a change of width starts again from 0.
+ */
+function useFitSteps(max: number, on: boolean) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [steps, setSteps] = useState(0);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (on && el && el.scrollWidth > el.clientWidth && steps < max) setSteps(steps + 1);
+  });
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !on || typeof ResizeObserver === "undefined") return;
+    let width = el.clientWidth;
+    const observer = new ResizeObserver(() => {
+      if (el.clientWidth === width) return;
+      width = el.clientWidth;
+      setSteps(0);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [on]);
+  return [ref, steps] as const;
+}
+
 const DIRS = 8;
 const COARSE = "(pointer: coarse)";
 function subscribeCoarse(cb: () => void) {
@@ -106,6 +132,11 @@ function subscribeCoarse(cb: () => void) {
 const isCoarse = () => window.matchMedia(COARSE).matches;
 
 const AUTOPILOT = new Set(["rtl", "mission", "figure8", "qrtl", "rth", "swarm", "transition"]);
+
+/** The telemetry row drops these first where it runs out of room; State, Battery, Altitude, Speed and Next stay. */
+const DROP_ORDER = ["used", "current", "throttle", "crashes", "best"];
+/** On a phone the telemetry is one line above the range: the numbers you fly by. */
+const PHONE_STATS = new Set(["battery", "alt", "speed", "next"]);
 
 /** The crash replay plays at a third of real speed. */
 const SLOW_MO = 1 / 3;
@@ -156,6 +187,11 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
   // one panel over the range at a time: the gamepad mapping or the controls legend
   const [panel, setPanel] = useState<"pad" | "legend" | null>(null);
   const coarse = useSyncExternalStore(subscribeCoarse, isCoarse, () => false);
+  // on a laptop the cockpit row and the telemetry each stay one row: the row turns Reset, FPV and Wind into icons,
+  // the telemetry leaves out DROP_ORDER's numbers one by one (a phone has its own layout for both)
+  const [rowRef, rowSteps] = useFitSteps(1, !coarse);
+  const [stripRef, drop] = useFitSteps(DROP_ORDER.length, !coarse);
+  const icons = coarse || rowSteps > 0;
   // the panel that shows the mapping starts closed, so the server's default never meets the saved one on screen
   const [pad, setPadState] = useState<PadMapping>(() => (typeof window === "undefined" ? DEFAULT_PAD : loadPad()));
   const padRef = useRef(pad);
@@ -187,6 +223,8 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
     [t, dict, courseTitle, courseText],
   );
   const modeHint = mode.task === "demo" ? dict.demoHint : courseText?.hints?.[mode.id];
+  // on a phone the hint sits over the top of the range, so it goes once you fly
+  const hintShown = coarse && snap.armed ? undefined : modeHint;
 
   // the line for a finished lap, run or mission: the demo's never counts, the learner's earns a medal
   const finished = useCallback(
@@ -553,13 +591,15 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
     { id: "battery", label: dict.stats.battery, value: t("stats.perCell", { v: snap.perCell.toFixed(2) }), tone: snap.low ? ("bad" as const) : undefined },
     { id: "alt", label: dict.stats.altitude, value: snap.alt.toFixed(1), unit: "m" },
     { id: "speed", label: dict.stats.speed, value: String(snap.speed), unit: "km/h" },
-    { id: "throttle", label: dict.stats.throttle, value: String(Math.round(snap.throttle * 100)), unit: "%", wide: true },
-    { id: "current", label: dict.stats.current, value: snap.amps.toFixed(1), unit: "A", wide: true },
-    { id: "used", label: dict.stats.used, value: String(snap.mah), unit: "mAh", wide: true },
+    { id: "throttle", label: dict.stats.throttle, value: String(Math.round(snap.throttle * 100)), unit: "%" },
+    { id: "current", label: dict.stats.current, value: snap.amps.toFixed(1), unit: "A" },
+    { id: "used", label: dict.stats.used, value: String(snap.mah), unit: "mAh" },
     { id: "next", label: dict.stats.next, value: nextText },
-    { id: "best", label: dict.stats.best, value: bestText, unit: best === null ? undefined : "s", wide: true },
-    { id: "crashes", label: dict.stats.crashes, value: String(snap.crashes), wide: true },
+    { id: "best", label: dict.stats.best, value: bestText, unit: best === null ? undefined : "s" },
+    { id: "crashes", label: dict.stats.crashes, value: String(snap.crashes) },
   ];
+  const dropped = new Set(DROP_ORDER.slice(0, drop));
+  const shown = telemetry.filter((s) => (coarse ? PHONE_STATS.has(s.id) : !dropped.has(s.id)));
   const toggle = (which: "pad" | "legend") => setPanel((p) => (p === which ? null : which));
   const crashCard = crash && crashFix && (
     <section
@@ -583,25 +623,25 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
       </div>
     </section>
   );
+  // One row, never two: a long label or checkpoint name first shortens Next, then the row drops the numbers you fly
+  // without (DROP_ORDER). On a phone it is one line of values above the range, their labels for screen readers.
   const strip = (
     <div
+      ref={stripRef}
       className={cx(
-        "pointer-events-auto w-full rounded-ink-sm border-[1.5px] border-rule bg-paper/90 px-3 py-1.5 shadow-ink-sm",
-        coarse ? "grid grid-cols-[repeat(3,auto)] justify-between gap-x-3 gap-y-1 [&_.tabular]:text-base" : "flex flex-wrap gap-x-3 gap-y-1",
+        "flex w-full shrink-0 flex-nowrap gap-x-3 overflow-hidden rounded-ink-sm border-[1.5px] border-rule px-3",
+        coarse ? "items-baseline bg-paper py-1 [&_.ink-kicker]:sr-only [&_.tabular]:text-base" : "pointer-events-auto bg-paper/90 py-1.5 shadow-ink-sm",
       )}
       data-testid="flight-telemetry"
     >
-      {telemetry
-        .filter((s) => !coarse || !s.wide)
-        .map(({ id, wide: _wide, ...stat }) => (
-          <Stat
-            key={id}
-            size="sm"
-            // a long checkpoint name truncates instead of taking a row of its own
-            className={id !== "next" ? "shrink-0" : cx("min-w-0 [&_.tabular]:truncate", coarse ? "col-span-2" : "max-w-72")}
-            {...stat}
-          />
-        ))}
+      {shown.map(({ id, ...stat }) => (
+        <Stat
+          key={id}
+          size="sm"
+          className={id === "next" ? cx("max-w-48 [&_.ink-kicker]:truncate [&_.tabular]:truncate", coarse ? "min-w-0 flex-1" : "min-w-24") : "shrink-0"}
+          {...stat}
+        />
+      ))}
     </div>
   );
 
@@ -614,32 +654,35 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
       onKeyUp={onKeyUp}
       onBlur={(e) => !e.currentTarget.contains(e.relatedTarget) && input.current.keys.clear()}
     >
-      <div className="flex shrink-0 items-center gap-1.5 overflow-x-auto [scrollbar-width:none] sm:gap-2">
-        <Select
-          label={dict.mode}
-          hideLabel
-          value={snap.mode}
-          onChange={(e) => act({ type: "mode", mode: e.target.value })}
-          className="w-auto min-w-[9rem] max-w-[16rem] max-sm:max-w-[11rem]"
-        >
-          {modes.map((m) => (
-            <option key={m.id} value={m.id}>
-              {modeTitle(m.id)}
-            </option>
-          ))}
-        </Select>
+      <div ref={rowRef} className="flex shrink-0 items-center gap-1.5 overflow-x-auto [scrollbar-width:none] sm:gap-2">
+        {/* the select takes the room the buttons leave (on a laptop at least 9 rem) and a long mode ends in an ellipsis */}
+        <div className={coarse ? "min-w-0 flex-1" : "min-w-36 max-w-64"}>
+          <Select label={dict.mode} hideLabel value={snap.mode} onChange={(e) => act({ type: "mode", mode: e.target.value })} className="truncate">
+            {modes.map((m) => (
+              <option key={m.id} value={m.id}>
+                {modeTitle(m.id)}
+              </option>
+            ))}
+          </Select>
+        </div>
         <Button
           variant={snap.armed ? "danger" : "primary"}
           aria-keyshortcuts="Space"
           onClick={() => act({ type: "toggleArm" })}
           className="shrink-0 whitespace-nowrap"
         >
-          {snap.armed ? dict.buttons.disarm : dict.buttons.arm}
+          {/* as wide as the longer word, so arming doesn't move the row */}
+          <span className="grid">
+            <span className="col-start-1 row-start-1">{snap.armed ? dict.buttons.disarm : dict.buttons.arm}</span>
+            <span aria-hidden="true" className="invisible col-start-1 row-start-1">
+              {snap.armed ? dict.buttons.arm : dict.buttons.disarm}
+            </span>
+          </span>
         </Button>
-        {coarse ? (
+        {icons ? (
           <>
-            <CockpitIcon glyph="reset" label={dict.buttons.reset} onClick={() => act({ type: "reset" })} />
-            <CockpitIcon glyph="fpv" label={dict.buttons.fpv} pressed={fpv} onClick={toggleFpv} />
+            <CockpitIcon glyph="reset" label={dict.buttons.reset} keys="R" onClick={() => act({ type: "reset" })} />
+            <CockpitIcon glyph="fpv" label={dict.buttons.fpv} keys="V" pressed={fpv} onClick={toggleFpv} />
             <CockpitIcon glyph="wind" label={dict.buttons.wind} pressed={snap.windOn} onClick={toggleWind} />
           </>
         ) : (
@@ -653,6 +696,10 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
             <Button aria-pressed={snap.windOn} onClick={toggleWind} className="shrink-0 whitespace-nowrap">
               {dict.buttons.wind}
             </Button>
+          </>
+        )}
+        {coarse ? null : (
+          <>
             <span className="ms-auto" />
             <Button variant="ghost" size="sm" aria-expanded={panel === "pad"} onClick={() => toggle("pad")} className="shrink-0 whitespace-nowrap">
               {dict.buttons.gamepad}
@@ -663,6 +710,7 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
           </>
         )}
       </div>
+      {coarse ? strip : null}
       <div className="relative min-h-0 flex-1">
         <FigureFrame
           ref={setFrame}
@@ -685,10 +733,9 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
           />
         )}
         <div className={cx("pointer-events-none absolute inset-x-2 flex flex-col items-start gap-2", coarse ? "top-2" : "bottom-2 justify-end")}>
-          {coarse ? strip : null}
-          {modeHint || snap.pendingDesign ? (
+          {hintShown || snap.pendingDesign ? (
             <div className="max-w-[min(32rem,100%)] rounded-ink-sm bg-paper/85 px-2.5 py-1 text-xs text-ink shadow-ink-sm">
-              {modeHint ? <p className="max-sm:line-clamp-3">{modeHint}</p> : null}
+              {hintShown ? <p className="max-sm:line-clamp-3">{hintShown}</p> : null}
               {snap.pendingDesign ? <p className="font-semibold">{dict.pendingDesign}</p> : null}
             </div>
           ) : null}
@@ -779,12 +826,14 @@ const GLYPHS = {
   wind: "M3 8.5h10.5a2.5 2.5 0 1 0-2.5-2.5M3 12.5h15a2.5 2.5 0 1 1-2.5 2.5M3 16.5h7",
 };
 
-/** A 44 px cockpit button with a glyph, for the phone's one row (its name stays the full label). */
-function CockpitIcon({ glyph, label, pressed, onClick }: { glyph: keyof typeof GLYPHS; label: string; pressed?: boolean; onClick: () => void }) {
+/** A 44 px cockpit button with a glyph, for a row with no room for words (its name stays the full label). */
+function CockpitIcon({ glyph, label, keys, pressed, onClick }: { glyph: keyof typeof GLYPHS; label: string; keys?: string; pressed?: boolean; onClick: () => void }) {
   return (
     <button
       type="button"
       aria-label={label}
+      title={label}
+      aria-keyshortcuts={keys}
       aria-pressed={pressed}
       onClick={onClick}
       className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border-2 border-line bg-surface text-ink aria-pressed:bg-ink aria-pressed:text-paper"
