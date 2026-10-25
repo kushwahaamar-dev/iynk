@@ -74,6 +74,8 @@ export type FlightRangeProps = {
   onFigure?: (handle: FigureHandle | null) => void;
   /** Friends' crafts in the room, read every frame (keep them in a ref, not in state). */
   peers?: () => PeerGhost[];
+  /** Start with the course's wind on (the daily challenge sets it). */
+  wind?: boolean;
   /** This craft's pose every frame while it moves, for the room to send on. */
   onPose?: (pose: RangePose) => void;
   /** A crash's fix that changes the build (a fault the bench or Break it put in): the page takes it out. */
@@ -114,7 +116,7 @@ const GHOST_PACE = "#1c2948";
 const scoresGates = (course: Course, mode: { task: string }) => course.kind === "gates" || (!course.kind && mode.task === "race");
 const scoresCheckpoints = (course: Course, mode: { task: string }) => (course.kind ? course.kind !== "gates" : mode.task === "range");
 
-export function FlightRange({ craft, course, calc, faults, t: dict, courseText, initialMode, par, onEvent, onSession, onFigure, peers, onPose, onFix, className }: FlightRangeProps) {
+export function FlightRange({ craft, course, calc, faults, t: dict, courseText, initialMode, par, onEvent, onSession, onFigure, peers, wind, onPose, onFix, className }: FlightRangeProps) {
   const locale = useLocale();
   const t = useMemo(() => createTranslator(locale, dict, "flight"), [locale, dict]);
   const label = useCallback((en: string) => courseText?.labels?.[en] ?? en, [courseText]);
@@ -122,8 +124,8 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
 
   // one session per craft and course; design changes go in as actions
   const session = useMemo(
-    () => createSession(craft, course, calc, { mode: initialMode, faults }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- calc and faults are dispatched below, never a new flight
+    () => createSession(craft, course, calc, { mode: initialMode, faults, windOn: wind }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- calc and faults are dispatched below, never a new flight; the page keys a new wind
     [craft, course],
   );
   const snap = useSyncExternalStore(session.subscribe, session.getState, session.getState);

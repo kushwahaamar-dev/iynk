@@ -260,5 +260,67 @@
       "reset": "Fresh pack, back on the pad"
     },
     "fixed": "Fixed: {fix}. Arm and fly again"
+  },
+  "breakIt": {
+    "title": "Break it",
+    "lede": "Put a real build mistake in, even mid-flight, and watch what it does. A crash replays in slow motion and says why.",
+    "reset": "Undo my changes",
+    "noBoard": "Laps flown with something broken don't go on the leaderboards.",
+    "items": {
+      "fcReversed": {
+        "label": "Mount the flight controller backwards",
+        "what": "Its arrow points at the tail, so it reads every tilt the wrong way round."
+      },
+      "propsSwapped": {
+        "label": "Swap the props round",
+        "what": "Each prop sits on a motor that spins it the wrong way: that corner pushes down."
+      },
+      "motorDirUnchecked": {
+        "label": "Skip the motor direction check",
+        "what": "One motor spins the wrong way, and nobody looked with the props off."
+      },
+      "accUncalibrated": {
+        "label": "Skip the accelerometer calibration",
+        "what": "The flight controller doesn't know which way is level, so it won't arm."
+      },
+      "overKv": {
+        "label": "Run the motors over their rating",
+        "what": "Too many volts for these motors' KV: the ESCs lose sync at full throttle."
+      },
+      "servosReversed": {
+        "label": "Reverse the servos",
+        "what": "The control surfaces move the wrong way: up is down."
+      },
+      "tailHeavy": {
+        "label": "Put the pack too far back",
+        "what": "The centre of gravity sits behind the mark, so the nose keeps pitching up."
+      },
+      "propBackwards": {
+        "label": "Fit the prop backwards",
+        "what": "The pusher prop gives less than half its thrust."
+      }
+    }
+  },
+  "challenge": {
+    "title": "Daily challenge",
+    "day": "{date}, the same for everyone (UTC)",
+    "what": "{craft} on {course}, with the {pack} pack",
+    "windOn": "Wind on",
+    "windOff": "No wind",
+    "fly": "Fly the challenge",
+    "flyThere": "Fly it with the {craft}",
+    "flying": "You're flying the challenge: the factory build, this pack and this wind, like everyone else today.",
+    "stop": "Back to free flight",
+    "best": "Your best: {time} s",
+    "none": "No time yet: a finished lap or run counts.",
+    "beat": "{by} flew it in {time} s. Beat that.",
+    "beatAnon": "A friend flew it in {time} s. Beat that.",
+    "share": "Share the challenge",
+    "copied": "Link copied",
+    "copyFailed": "Couldn't copy: here is the link",
+    "link": "Challenge link",
+    "shareText": "SimLab daily drone challenge: {craft} on {course}.",
+    "shareBeat": "SimLab daily drone challenge: {craft} on {course}. Can you beat {time} s?",
+    "board": "{course}, challenge of {date}"
   }
 }

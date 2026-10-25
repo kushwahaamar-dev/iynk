@@ -124,3 +124,30 @@ test("a finished lap names its medal, and the demo's lap never counts", () => {
   fireEvent.click(screen.getByRole("button", { name: flight.buttons.reset }));
   expect(screen.getByText("Demo done in 9.0 s: the autopilot's time does not count")).toBeTruthy();
 });
+
+test("a crash replays in slow motion, says why and fixes the build in one click", async () => {
+  const onFix = vi.fn();
+  const { session } = setup(bando, { initialMode: "angle", faults: { fcReversed: true }, onFix });
+  fireEvent.click(screen.getByRole("button", { name: flight.buttons.arm }));
+  // after the loop's first frame, which sends the (idle) keyboard's sticks
+  await act(() => new Promise((r) => setTimeout(r, 50)));
+  act(() => session().dispatch({ type: "sticks", sticks: { throttle: 0.7, yaw: 0, pitch: 0, roll: 0 } }));
+  const why = await screen.findByTestId("crash-why", undefined, { timeout: 4000 });
+  expect(why.dataset.cause).toBe("flipFc");
+  expect(screen.getByText(/mounted backwards/)).toBeTruthy();
+  expect(screen.getByTestId("crash-replay").dataset.playing).toBe("true");
+  fireEvent.click(screen.getByRole("button", { name: flight.why.fix.fcReversed }));
+  expect(onFix).toHaveBeenCalledWith("fcReversed");
+  expect(screen.queryByTestId("crash-why")).toBeNull();
+  expect(screen.getByText(`Fixed: ${flight.why.fix.fcReversed}. Arm and fly again`)).toBeTruthy();
+});
+
+test("the ghosts: the autopilot's line is on, your best waits for a lap", async () => {
+  setup(race, { initialMode: "race" });
+  const pace = (await screen.findByTestId("ghost-pace", undefined, { timeout: 3000 })) as HTMLInputElement;
+  expect(pace.checked).toBe(true);
+  expect((screen.getByTestId("ghost-best") as HTMLInputElement).disabled).toBe(true);
+  expect(screen.getByText(flight.ghosts.bestNone)).toBeTruthy();
+  fireEvent.click(pace);
+  expect(pace.checked).toBe(false);
+});
