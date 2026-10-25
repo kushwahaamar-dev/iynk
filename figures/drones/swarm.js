@@ -376,7 +376,6 @@
     messages: {
       live: 'Unplug the battery first: never work on a powered Crazyflie',
       propsLast: 'Props go on LAST: run the motor direction check first',
-      buildDone: 'Built: every part on, motor check and sensor calibration done',
       plugNeeds: 'Fit the battery first',
       powered: 'Self-test: each motor ticks in turn and the rear blue LEDs light. Keep it still and level while LED1 blinks slowly',
       motorNeeds: 'Plug the motors into the board first',
@@ -388,7 +387,6 @@
       motors: '$ motorPowerSet.enable = 1, then {list} one at a time, props off',
       reversed: '{m}: leads crimped the wrong way round',
       calOk: 'gyro bias found: sensors calibrated',
-      auto: '$ build it for me: motor check and sensor calibration done',
     },
     frame: {
       layout: 'cf2', wheelbase: 92, numbering: 'crazyflie',
