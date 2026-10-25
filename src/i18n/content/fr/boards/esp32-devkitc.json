@@ -1,0 +1,708 @@
+{
+  "title": "ESP32-DevKitC V4",
+  "tagline": "La carte ESP32 d'Espressif elle-même : deux cœurs, Wi-Fi et Bluetooth, logique 3,3 V.",
+  "overview": "Une carte d'Espressif faite pour la platine d'essai. Le module ESP32-WROOM-32E, en haut, contient une puce Xtensa LX6 double cœur jusqu'à 240 MHz, 4 MB de flash et un quartz de 40 MHz sous un blindage métallique, avec une antenne imprimée qui dépasse du bord de 6 mm pour qu'aucun cuivre ne se trouve dessous. En dessous se trouvent une prise micro-USB, un pont USB-série CP2102N, un régulateur 3,3 V AMS1117, une LED d'alimentation rouge et deux boutons : EN réinitialise la puce, Boot maintient GPIO0 à l'état bas. Il n'y a pas de LED utilisateur : les leçons en câblent donc une sur GPIO23. Toutes les broches d'E/S sont en 3,3 V et aucune ne tolère le 5 V.",
+  "mcu": {
+    "cp2102n": "Pont USB-série. Il transforme le port micro-USB en port série jusqu'à 3 Mbit/s, et ses lignes DTR et RTS pilotent le circuit d'auto-programmation à deux transistors : esptool peut ainsi réinitialiser l'ESP32 en mode téléchargement sans que personne n'appuie sur Boot. Les cartes plus récentes portent souvent un CH9102F à la place, qui demande un autre pilote mais se comporte de la même façon."
+  },
+  "power": {
+    "usb": {
+      "protection": "VBUS passe par la diode Schottky BAT760 (D3) jusqu'au rail 5V : une alimentation sur la broche 5V ne peut donc pas renvoyer de courant dans l'ordinateur. Une diode ESD (D5) protège VBUS. Il n'y a pas de fusible : la limite du port USB de l'ordinateur (500 mA) et la limitation de courant propre au régulateur sont les seules protections. La diode fait chuter environ 0,35 V : le rail 5V est donc vers 4,65 V sur l'USB."
+    },
+    "pin5": {
+      "protection": "Aucune. La broche 5V est câblée directement au rail 5V après D3, sans diode ni fusible. Une alimentation inversée ici trouve un chemin à travers D3 et la diode ESD, et tire le 3V3 sous la masse à travers le régulateur. Le régulateur lui-même supporte jusqu'à 15 V, mais le condensateur d'entrée de 22 µF est prévu pour 10 V, et au-delà d'environ 6 V le régulateur brûle la différence en chaleur. Une seule alimentation à la fois : Espressif prévient que deux en même temps peuvent abîmer la carte ou l'alimentation."
+    },
+    "pin3v3": {
+      "protection": "Aucune. Une alimentation sur la broche 3V3 alimente directement le module et contourne le régulateur : elle doit rester entre 3,0 V et 3,6 V. 5 V ici tuent l'ESP32 et sa flash. Ne la branchez jamais quand l'USB est branché : elle alimente la sortie du régulateur à l'envers."
+    },
+    "rails": {
+      "5v": "EXT_5V : l'USB à travers la diode Schottky (environ 4,65 V) ou la broche 5V. Il alimente le régulateur et la LED d'alimentation rouge.",
+      "3v3": "VDD33 issu de l'AMS1117-3.3 (donné pour 1 A, limitation de courant de 0,9 à 1,5 A, chute d'environ 1,1 V). Il alimente le module et le CP2102N. Le module a besoin d'au moins 500 mA disponibles, car les rafales d'émission Wi-Fi atteignent environ 240 à 380 mA."
+    },
+    "io": "Chaque GPIO fournit environ 20 mA avec la force de sortie par défaut et jusqu'à 40 mA au réglage le plus fort, et absorbe jusqu'à 28 mA. En pratique, gardez une broche sous 12 mA et utilisez 220 à 330 Ω pour une LED. Toutes les broches ensemble peuvent porter 1200 mA au plus, mais le régulateur et le port USB s'épuisent bien avant. Une entrée HIGH demande au moins 2,5 V (0,75 × 3,3 V) ; rien au-dessus de 3,6 V ne doit toucher une broche."
+  },
+  "pins": {
+    "j2": {
+      "12": "Broche de strapping MTDI : elle doit être à LOW au reset. Tirée à l'état haut, elle règle l'alimentation de la flash sur 1,8 V et la carte redémarre en boucle avec « flash read err, 1000 ». Gardez les pull-ups et les capteurs qui reposent à l'état haut loin de cette broche.",
+      "14": "TMS du JTAG. Elle sort un bref signal au démarrage (selon des sources secondaires) : évitez-la pour ce qui doit rester éteint à la mise sous tension.",
+      "25": "L'une des deux sorties CNA 8 bits (dacWrite donne de 0 à environ 3,3 V). Aussi ADC2, qui cesse de fonctionner quand le Wi-Fi est actif.",
+      "32": "ADC1 et un canal tactile ; elle peut aussi recevoir un quartz horloger de 32 kHz. Une bonne broche à tout faire.",
+      "34": "Entrée seulement, sans pulls internes : ajoutez votre propre résistance pour un bouton. ADC1, le choix sûr pour un potentiomètre ou un capteur quand le Wi-Fi est actif.",
+      "3v3": "Sortie du régulateur. Tirez-y un peu de courant pour des capteurs, ou injectez 3,0 à 3,6 V quand rien d'autre n'alimente la carte.",
+      "en": "CHIP_PU. Tirée à l'état haut par 10 kΩ avec un condensateur de retard de 100 nF ; la mettre à l'état bas (ou appuyer sur EN) maintient la puce en reset.",
+      "vp": "GPIO36, entrée seulement : pas d'étage de sortie ni de pull-up ou pull-down interne. ADC1 : elle lit des valeurs analogiques même quand le Wi-Fi tourne.",
+      "vn": "GPIO39, entrée seulement, sans pulls internes. Canal 3 de l'ADC1.",
+      "adc2": "ADC2 et un canal tactile. analogRead() échoue ici dès que le Wi-Fi tourne ; utilisez alors une broche ADC1 (32 à 39) pour les entrées analogiques.",
+      "flash": "Sur l'ancien WROOM-32, c'étaient les lignes de la flash SPI (GPIO6 à GPIO11). Le WROOM-32E les laisse non connectées dans le module. Ne les utilisez jamais ; dans le code, toucher GPIO6 à GPIO11 fait planter la puce.",
+      "5v": "Le rail 5V : le 5 V de l'USB après la diode Schottky, ou une entrée 5 V. Pas de protection contre l'inversion de polarité ni de fusible sur cette broche."
+    },
+    "j3": {
+      "0": "Broche de strapping câblée au bouton Boot : à LOW au reset, elle lance le chargeur série au lieu de votre sketch. Après le démarrage, elle fonctionne comme entrée avec INPUT_PULLUP (appuyé = LOW).",
+      "2": "Broche de strapping avec un pull-down interne : elle doit être à l'état bas ou flottante pour entrer en mode téléchargement. Une LED avec sa résistance vers GND est sans danger, un pull-up ne l'est pas.",
+      "4": "Canal tactile T0, utilisé par la leçon sur le tactile. Aussi ADC2.",
+      "5": "Broche de strapping (timing SDIO), tirée à l'état haut en interne ; elle sort un bref signal au démarrage. Convient comme chip-select SPI.",
+      "15": "Broche de strapping MTDO, tirée à l'état haut : maintenue à LOW au reset, elle fait taire le journal de démarrage de la ROM sur TX. Aussi TDO du JTAG.",
+      "17": "TX de l'UART2 (GPIO16 est RX). Ces deux pastilles sont sur le domaine d'alimentation de la flash et fournissent environ 20 mA, pas 40. Sur les cartes WROVER, elles appartiennent à la PSRAM.",
+      "22": "SCL I²C par défaut d'Arduino (et GPIO21 est SDA). Ajoutez des pull-ups de 4,7 kΩ vers le 3V3 si le module n'en a pas.",
+      "23": "MOSI du VSPI et une simple sortie qui n'est pas une broche de strapping : c'est la broche sûre pour la LED des leçons.",
+      "tx": "UART0, câblé au pont USB par une liaison de 0 Ω. Le journal de démarrage et Serial s'affichent ici à 115200 bauds ; laissez TX et RX libres si vous voulez les téléversements et le moniteur série."
+    }
+  },
+  "leds": {
+    "d1": "LED rouge sur le rail 5V à travers une résistance de 2 kΩ (environ 1,5 mA). Elle s'allume dès que le 5 V est présent, par l'USB ou par la broche 5V, et le code ne peut pas la commander. Une carte alimentée uniquement par la broche 3V3 la laisse éteinte."
+  },
+  "controls": {
+    "sw2": "EN : met CHIP_PU à l'état bas. La puce s'arrête tant qu'on appuie et redémarre depuis la ROM au relâchement, en affichant à nouveau le journal de démarrage.",
+    "sw1": "Boot : maintient GPIO0 à l'état bas. Maintenez-le pendant que vous appuyez sur EN (ou que vous branchez) et la ROM attend un téléversement au lieu de lancer votre sketch. Après le démarrage, c'est une entrée normale sur GPIO0."
+  },
+  "parts": {
+    "U3": {
+      "name": "Module ESP32-WROOM-32E",
+      "what": "L'ordinateur entier : une puce ESP32-D0WD-V3 (deux cœurs Xtensa LX6, 520 KB de SRAM), 4 MB de flash SPI et un quartz de 40 MHz sous le blindage embouti, plus une antenne en méandre sur circuit imprimé à l'extrémité supérieure. Il dépasse de la carte pour que l'antenne n'ait pas de cuivre dessous."
+    },
+    "U1": {
+      "name": "Pont USB-UART CP2102N",
+      "what": "Transforme l'USB en port série avec lequel l'IDE dialogue. Il a son propre oscillateur, n'a donc pas besoin de quartz, et fonctionne sur le 3V3."
+    },
+    "U2": {
+      "name": "Régulateur AMS1117-3.3",
+      "what": "Un régulateur linéaire qui produit 3,3 V à partir du rail 5V. Il a besoin d'environ 1,1 V de marge et transforme la différence en chaleur : sur l'USB à 300 mA, il dissipe environ 0,4 W par sa languette."
+    },
+    "J1": {
+      "name": "Prise micro-USB",
+      "what": "L'alimentation et le port série dans un seul câble. Un câble de charge seule allume la LED rouge, mais aucun port série n'apparaît."
+    },
+    "SW2": {
+      "name": "Bouton EN (reset)",
+      "what": "Met la ligne d'activation de la puce à l'état bas : maintenez pour arrêter, relâchez pour redémarrer."
+    },
+    "SW1": {
+      "name": "Bouton Boot sur GPIO0",
+      "what": "Maintient GPIO0 à l'état bas. Maintenu pendant le reset, il choisit le chargeur série ; ensuite, c'est un bouton utilisateur."
+    },
+    "D1": {
+      "name": "LED d'alimentation rouge",
+      "what": "S'allume depuis le rail 5V à travers R2. La carte n'a pas de LED utilisateur."
+    },
+    "R2": {
+      "name": "Résistance de la LED d'alimentation (2 kΩ)",
+      "what": "Limite la LED d'alimentation à environ 1,5 mA. Retirez-la et la LED reste éteinte, alors que la carte fonctionne toujours."
+    },
+    "D3": {
+      "name": "Diode Schottky BAT760",
+      "what": "Laisse passer l'alimentation USB vers le rail 5V et bloque le courant qui remonterait de la broche 5V vers l'ordinateur. Elle coûte environ 0,35 V."
+    },
+    "D6": {
+      "name": "Diode ESD sur une ligne de données USB",
+      "what": "Des diodes LESD5D5.0 écrêtent les décharges électrostatiques sur les lignes USB avant qu'elles n'atteignent la puce du pont."
+    },
+    "D4": {
+      "name": "Diode ESD sur une ligne de données USB"
+    },
+    "D5": {
+      "name": "Diode ESD sur VBUS de l'USB",
+      "what": "Écrête les pics sur la ligne d'alimentation USB. Une alimentation inversée sur la broche 5V la polarise en direct, ce qui explique en partie pourquoi cette erreur est si destructrice."
+    },
+    "Q1": {
+      "name": "Transistor d'auto-programmation (EN)",
+      "what": "Deux transistors SS8050 croisés sur DTR et RTS : l'un met EN à l'état bas, l'autre GPIO0, pour qu'esptool puisse entrer tout seul en mode téléchargement."
+    },
+    "Q2": {
+      "name": "Transistor d'auto-programmation (GPIO0)"
+    },
+    "R21": {
+      "name": "Résistance de base d'auto-programmation (DTR)",
+      "what": "Résistances de base de 10 kΩ pour les transistors d'auto-programmation."
+    },
+    "R22": {
+      "name": "Résistance de base d'auto-programmation (RTS)"
+    },
+    "R17": {
+      "name": "Liaison 0 Ω sur TXD0 (GPIO1)",
+      "what": "Des liaisons de zéro ohm qui relient le pont à l'UART0. Sans l'une d'elles, la carte tourne mais les téléversements et le moniteur série échouent."
+    },
+    "R18": {
+      "name": "Liaison 0 Ω sur RXD0 (GPIO3)"
+    },
+    "C15": {
+      "name": "Condensateur 100 nF sur GPIO0",
+      "what": "Ralentit GPIO0 pour qu'il soit encore à l'état bas quand EN remonte pendant l'auto-programmation. Espressif conseille de le retirer si une carte démarre sans cesse en mode téléchargement."
+    },
+    "C14": {
+      "name": "Condensateur 100 nF",
+      "what": "Condensateur de découplage près de la prise USB."
+    },
+    "C1": {
+      "name": "Condensateur d'entrée du régulateur (22 µF)",
+      "what": "Stabilise l'entrée du régulateur. Il est prévu pour 10 V, ce qui plafonne ce que la broche 5V peut recevoir sans risque."
+    },
+    "C3": {
+      "name": "Condensateur de sortie du régulateur (22 µF)",
+      "what": "L'AMS1117 en a besoin pour rester stable, et il couvre les rafales de courant du Wi-Fi."
+    },
+    "C21": {
+      "name": "Condensateur de découplage 3V3 (module)",
+      "what": "Des condensateurs de découplage qui tiennent l'alimentation du module stable pendant les rafales radio."
+    },
+    "C22": {
+      "name": "Condensateur de découplage 100 nF (module)"
+    },
+    "R11": {
+      "name": "Résistance de pull-up 10 kΩ sur EN",
+      "what": "Maintient EN à l'état haut pour que la puce tourne. Avec C9, elle retarde le démarrage de quelques millisecondes après la mise sous tension."
+    },
+    "C9": {
+      "name": "Condensateur de retard 100 nF sur EN",
+      "what": "Avec R11, fait sortir la puce du reset seulement une fois l'alimentation stabilisée."
+    },
+    "C19": {
+      "name": "Condensateur 100 nF (alimentation du CP2102N)",
+      "what": "Découplage des broches d'alimentation de la puce du pont."
+    },
+    "C20": {
+      "name": "Condensateur 10 µF (alimentation du CP2102N)"
+    },
+    "R24": {
+      "name": "Résistance 2 kΩ (côté CP2102N)",
+      "what": "Une résistance du côté du pont sur la carte (2 kΩ d'après le schéma)."
+    },
+    "R25": {
+      "name": "Résistance de détection VBUS 22,1 kΩ",
+      "what": "Un pont diviseur qui permet au CP2102N de voir quand l'USB est branché."
+    },
+    "R26": {
+      "name": "Résistance de détection VBUS 47,5 kΩ"
+    },
+    "J2": {
+      "name": "Connecteur J2 (côté gauche, 19 broches)",
+      "what": "Broches au pas de 2,54 mm pointant vers le bas : 3V3, EN, les broches en entrée seule, les broches ADC et tactiles, GND, les broches de flash inutilisées et 5V."
+    },
+    "J3": {
+      "name": "Connecteur J3 (côté droit, 19 broches)",
+      "what": "GND, les broches SPI et I²C, l'UART0 (TX/RX), les broches de strapping 0, 2, 5 et 15, et les broches de flash inutilisées. Les rangées sont à 25,4 mm l'une de l'autre."
+    }
+  },
+  "variants": {},
+  "wireables": {
+    "led": {
+      "note": "L'anode à travers 220 à 330 Ω vers GPIO23, la cathode vers GND : environ 4 à 6 mA sous 3,3 V. N'importe quelle broche de sortie qui n'est pas de strapping convient."
+    },
+    "push-button": {
+      "note": "Un côté sur GPIO4, l'autre sur GND, avec pinMode(4, INPUT_PULLUP) ; un appui se lit LOW. Sur GPIO34 à 39, il n'y a pas de pull-up interne : ajoutez une résistance de 10 kΩ vers le 3V3."
+    },
+    "potentiometer": {
+      "note": "Les extrémités sur GND et 3V3, le curseur sur GPIO34. analogRead(34) donne de 0 à 4095 et analogReadMilliVolts(34) donne des millivolts ; la lecture se courbe près des deux extrémités.",
+      "caution": "Alimentez le potentiomètre par le 3V3, jamais par le 5V. Utilisez une broche ADC1 (32 à 39) : les broches ADC2 cessent de lire dès que le Wi-Fi démarre."
+    },
+    "tmp36": {
+      "note": "+Vs sur 3V3 (il fonctionne dès 2,7 V), Vout sur GPIO35, GND sur GND. La température vaut (mV − 500) ÷ 10 °C."
+    },
+    "hc-sr04": {
+      "note": "VCC sur 5V, Trig sur GPIO18 ; le déclenchement en 3,3 V de la carte suffit au capteur. La distance en cm vaut la durée de l'écho en µs ÷ 58.",
+      "caution": "Echo est une sortie 5 V. Faites-la passer par un pont diviseur (1 kΩ depuis Echo, 2 kΩ vers GND, le milieu sur GPIO19) pour que la broche voie environ 3,3 V. Branchée directement sur un GPIO, elle fait passer du courant dans les diodes de protection et peut tuer la broche."
+    },
+    "servo-sg90": {
+      "note": "Marron sur GND, rouge sur 5V, orange (signal) sur GPIO13, piloté par une bibliothèque servo à 50 Hz, de 500 à 2400 µs.",
+      "caution": "Un SG90 en mouvement tire 100 à 250 mA, et jusqu'à environ 700 mA bloqué. Sur l'USB, ça provoque un brown-out de la carte ; donnez aux servos leur propre alimentation 5 V et reliez les masses."
+    },
+    "mpu6050": {
+      "note": "VCC sur 3V3, GND sur GND, SCL sur GPIO22, SDA sur GPIO21. Wire.begin() utilise ces broches par défaut ; l'adresse est 0x68."
+    },
+    "ssd1306": {
+      "note": "GND, VCC (3V3), SCL sur GPIO22, SDA sur GPIO21. L'écran répond en 0x3C.",
+      "caution": "L'ordre des broches change d'un fabricant à l'autre (certains mettent VCC en premier) : lisez les marquages de votre module avant de le brancher."
+    }
+  },
+  "failures": {
+    "reverse-5v": {
+      "title": "Polarité inversée sur la broche 5V",
+      "symptom": "Rien ne s'allume, l'alimentation de labo passe en limitation de courant, et la diode et le régulateur chauffent en quelques secondes.",
+      "explanation": "La broche 5V n'a pas de diode de protection. Inversé, le courant passe de GND à travers la diode ESD de VBUS et la diode Schottky, qui à elles deux court-circuitent presque l'alimentation, et le régulateur tire le 3V3 sous la masse à travers les diodes de protection de chaque puce. D3, D5 et l'AMS1117 meurent en général, et souvent le module avec eux.",
+      "fix": "Débranchez immédiatement. Vérifiez les fils au multimètre avant d'alimenter une broche nue, et utilisez l'USB chaque fois que possible : sa fiche n'entre que dans un sens."
+    },
+    "reverse-3v3": {
+      "title": "Polarité inversée sur la broche 3V3",
+      "symptom": "Le module chauffe, la LED rouge reste éteinte et l'ordinateur ne trouve aucun port série.",
+      "explanation": "Inversée sur le 3V3, l'alimentation va droit dans les diodes de protection de l'ESP32 et du CP2102N, sans rien entre les deux. Les deux puces lâchent.",
+      "fix": "Débranchez, inversez les fils, et attendez-vous à remplacer la carte. Alimentez par l'USB quand vous le pouvez."
+    },
+    "brownout-wifi": {
+      "title": "Brown-out au démarrage du Wi-Fi",
+      "symptom": "Le moniteur série affiche « Brownout detector was triggered » et la carte redémarre encore et encore, à chaque fois juste après WiFi.begin().",
+      "explanation": "La radio tire des rafales d'environ 240 à 380 mA. À travers un câble USB fin, un hub ou de longs fils de platine d'essai, le 3V3 descend sous le seuil du détecteur de brown-out (2,43 V par défaut) et la puce redémarre pour se protéger. La même chose arrive quand un moteur ou un servo partage l'alimentation.",
+      "fix": "Utilisez un câble USB court et épais branché directement sur l'ordinateur, ajoutez un condensateur de 100 à 470 µF entre 3V3 et GND, et donnez aux moteurs leur propre alimentation."
+    },
+    "low-5v": {
+      "title": "Tension trop basse sur la broche 5V",
+      "symptom": "La LED rouge brille mais la puce redémarre sans cesse.",
+      "explanation": "L'AMS1117 a besoin d'environ 1,1 V de marge. Avec 3,3 V sur la broche 5V, il ne peut produire qu'environ 2,2 V, sous le minimum de 3,0 V de l'ESP32 et sous le seuil de brown-out.",
+      "fix": "Donnez 4,75 à 5,25 V à la broche 5V, ou injectez plutôt un 3,3 V régulé sur la broche 3V3 (jamais les deux)."
+    },
+    "over-5v": {
+      "title": "12 V sur la broche 5V",
+      "symptom": "Le régulateur devient trop chaud pour être touché et la carte redémarre par cycles ; le condensateur d'entrée peut lâcher.",
+      "explanation": "L'AMS1117 survit à 15 V en entrée, mais il transforme toute la chute en chaleur : (12 − 3,3) V × 200 mA, c'est environ 1,7 W, bien plus que ce que le petit SOT-223 peut évacuer : il passe donc en protection thermique. Le condensateur d'entrée de 22 µF n'est prévu que pour 10 V.",
+      "fix": "Mettez 5 V sur la broche 5V. Pour une batterie de 12 V, ajoutez d'abord un convertisseur abaisseur réglé sur 5 V."
+    },
+    "five-on-3v3": {
+      "title": "5 V sur une broche 3,3 V",
+      "symptom": "Le module chauffe et la carte ne répond plus ; un seul GPIO alimenté en 5 V peut continuer à marcher un moment, puis mourir.",
+      "explanation": "L'alimentation de l'ESP32 ne doit pas dépasser 3,6 V, et aucune broche d'E/S ne doit monter de plus de 0,3 V au-dessus de son alimentation. 5 V sur la broche 3V3 détruisent la puce et sa flash. 5 V sur un GPIO (l'écho d'un HC-SR04, la sortie d'un Arduino 5 V) poussent du courant à travers la diode de protection de la broche vers le 3V3, jusqu'à ce que la broche, ou la puce, lâche.",
+      "fix": "N'alimentez le 3V3 qu'avec une alimentation 3,3 V. Abaissez les signaux 5 V avec un pont diviseur ou un convertisseur de niveau."
+    },
+    "cold-gpio23": {
+      "title": "Soudure froide sur la broche GPIO23",
+      "symptom": "La LED sur GPIO23 vacille ou s'éteint alors que le code dit qu'elle devrait être allumée, et appuyer sur le connecteur change les choses.",
+      "explanation": "Une soudure terne et fissurée autour de la broche du connecteur ne touche la pastille qu'une partie du temps : le signal va et vient.",
+      "fix": "Réchauffez la soudure avec une panne propre et un peu d'étain neuf jusqu'à ce qu'il coule en un cône brillant autour de la broche."
+    },
+    "missing-r2": {
+      "title": "Résistance de la LED d'alimentation oubliée",
+      "symptom": "La carte tourne et accepte les téléversements, mais la LED d'alimentation rouge ne s'allume jamais.",
+      "explanation": "R2, une seule minuscule résistance de 2 kΩ, est le seul chemin de la LED vers la masse. Sans elle, la LED ne reçoit aucun courant, et tout le reste de la carte n'est pas touché.",
+      "fix": "Posez une résistance 0402 de 2 kΩ à la place de R2."
+    },
+    "missing-r17": {
+      "title": "Liaison 0 Ω absente sur TXD0",
+      "symptom": "La carte s'allume et fait tourner son ancien sketch, mais les téléversements s'arrêtent à « Connecting... » et échouent avec « Failed to connect to ESP32: No serial data received. » ; le moniteur série reste muet.",
+      "explanation": "R17 relie la ligne TX de la puce (GPIO1) au pont USB. Sans elle, rien de ce qu'envoie l'ESP32 n'atteint l'ordinateur : esptool n'entend donc jamais la réponse du bootloader.",
+      "fix": "Posez une liaison de 0 Ω (ou un pont de soudure) à la place de R17."
+    },
+    "reversed-d3": {
+      "title": "Diode Schottky montée à l'envers",
+      "symptom": "Branchée sur l'USB, rien ne s'allume du tout.",
+      "explanation": "D3 est le seul chemin de l'USB vers le rail 5V. Retournée, elle bloque complètement l'alimentation USB.",
+      "fix": "Débranchez, retirez D3 et reposez-la avec la bande de la cathode vers le rail 5V."
+    },
+    "strap-gpio12": {
+      "title": "GPIO12 tiré à l'état haut au démarrage",
+      "symptom": "Le sketch ne démarre jamais ; le moniteur série répète « flash read err, 1000 ».",
+      "explanation": "GPIO12 (MTDI) est lu au reset pour choisir la tension d'alimentation de la flash. À l'état haut, c'est 1,8 V, trop peu pour la flash 3,3 V du module : la ROM ne peut pas lire votre programme et redémarre.",
+      "fix": "Déplacez le pull-up ou le capteur sur une autre broche, ou gardez GPIO12 à l'état bas pendant le reset. Solution avancée : gravez l'eFuse VDD_SDIO pour que la broche soit ignorée."
+    },
+    "boot-held": {
+      "title": "GPIO0 maintenu à l'état bas au reset",
+      "symptom": "Après un reset, le sketch ne tourne pas ; le moniteur série affiche « boot:0x3 (DOWNLOAD_BOOT…) » et « waiting for download ».",
+      "explanation": "GPIO0 à l'état bas au moment où la puce sort du reset dit à la ROM d'attendre un téléversement. Le bouton Boot le fait exprès ; un capteur ou un fil qui maintient GPIO0 à l'état bas (ou un C15 trop lent) le fait par accident.",
+      "fix": "Relâchez Boot et appuyez sur EN. Éloignez de GPIO0 tout ce qui tire vers le bas pendant le reset."
+    },
+    "short-5v": {
+      "title": "5V en court-circuit avec GND",
+      "symptom": "La LED rouge s'éteint et l'ordinateur prévient qu'un périphérique USB consomme trop, puis lâche la carte.",
+      "explanation": "Un pont de soudure ou un fil égaré entre 5V et GND court-circuite l'alimentation. La carte n'a pas de fusible : c'est la protection du port USB de l'ordinateur qui se déclenche ; une alimentation non protégée ferait plutôt chauffer D3 et les pistes.",
+      "fix": "Débranchez, trouvez le pont au multimètre en mode continuité et supprimez-le."
+    }
+  },
+  "assembly": {
+    "strip": {
+      "title": "Partez de la carte nue",
+      "body": "Démontez la carte jusqu'au circuit imprimé. Tous les composants de la DevKitC sont des CMS, sauf les deux connecteurs de 19 broches.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension."
+    },
+    "smd": {
+      "title": "Placement automatique, puis refusion",
+      "body": "Posez tous les composants CMS en une seule passe (le module se pose comme une grosse puce sur ses pastilles crénelées) et faites passer la carte au four de refusion.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension."
+    },
+    "headers": {
+      "title": "Posez les deux connecteurs",
+      "body": "Placez J2 et J3 depuis le menu « Placer un composant ». Les broches pointent vers le bas, dans la platine d'essai ; les rangées sont à 25,4 mm l'une de l'autre, pour que la carte enjambe la tranchée centrale.",
+      "refusal": "Les composants CMS d'abord : lancez le placement puis la refusion. Le four ferait fondre le plastique des connecteurs."
+    },
+    "solder": {
+      "title": "Soudez les broches des connecteurs",
+      "body": "Soudez les 38 broches. Chaque soudure doit former un cône brillant autour de la broche ; une boule terne est une soudure froide.",
+      "refusal": "Rien à souder pour l'instant : posez d'abord les connecteurs."
+    },
+    "plug-usb": {
+      "title": "Branchez l'USB",
+      "body": "La LED rouge s'allume aussitôt depuis le rail 5V, le régulateur établit le 3V3, l'ordinateur trouve le CP2102N, et la ROM affiche sa ligne de démarrage à 115200 bauds.",
+      "refusal": "Fermez d'abord la vue éclatée."
+    },
+    "rails": {
+      "title": "Mesurez les rails",
+      "body": "L'arbre d'alimentation montre environ 4,65 V sur le 5V (l'USB moins la chute de la diode Schottky) et 3,3 V sur le 3V3. Sous 3,0 V sur le 3V3, cherchez un régulateur absent ou un mauvais câble."
+    },
+    "upload": {
+      "title": "Téléversez un sketch",
+      "body": "Téléversez le Bonjour en série. esptool réinitialise la puce en mode téléchargement par DTR et RTS, écrit la flash et la réinitialise à nouveau ; le sketch affiche alors une ligne chaque seconde.",
+      "refusal": "Branchez d'abord l'USB : les téléversements passent par le câble."
+    },
+    "download-mode": {
+      "title": "Entrez à la main en mode téléchargement",
+      "body": "Maintenez Boot, appuyez brièvement sur EN, puis relâchez Boot. La ROM affiche boot:0x3 et « waiting for download » : c'est ainsi qu'on sauve une carte dont l'auto-programmation échoue."
+    },
+    "run-again": {
+      "title": "Retour à votre sketch",
+      "body": "Appuyez brièvement sur EN seul. Cette fois, GPIO0 est à l'état haut : la ROM démarre depuis la flash et votre sketch tourne à nouveau."
+    }
+  },
+  "lessons": {
+    "blink": {
+      "title": "Faire clignoter une LED sur GPIO23",
+      "lede": "La DevKitC n'a pas de LED programmable : la première tâche est donc d'en câbler une. GPIO23, une résistance de 220 Ω, une LED rouge et retour à GND.",
+      "steps": {
+        "1": "Reliez GPIO23 à la résistance, la résistance à la patte longue de la LED (anode), et la patte courte (cathode) à GND.",
+        "2": "Réglez les durées d'allumage et d'extinction avec les pastilles du code.",
+        "3": "Lancez le sketch et regardez la LED et le moniteur série à 115200 bauds.",
+        "4": "Appuyez sur EN sur la carte : le sketch repart du début."
+      },
+      "hints": {
+        "1": "LED_BUILTIN n'existe pas sur cette carte. Nommez la broche vous-même : const int LED_PIN = 23;",
+        "2": "Si la LED reste éteinte, retournez-la : le courant ne passe que de la patte longue vers la courte."
+      },
+      "specs": {
+        "1": {
+          "label": "Courant de la LED",
+          "value": "(3,3 V − 2,0 V) ÷ 220 Ω ≈ 5,9 mA"
+        },
+        "2": {
+          "label": "Courant d'une broche",
+          "value": "environ 20 mA par défaut, 40 mA au plus"
+        },
+        "3": {
+          "label": "Niveau logique",
+          "value": "3,3 V ; une entrée lit HIGH à partir d'environ 2,5 V"
+        }
+      },
+      "pins": {
+        "GPIO23": {
+          "to": "Résistance de 220 Ω, puis anode de la LED",
+          "role": "Sortie qui commute la LED"
+        },
+        "GND": {
+          "to": "Cathode de la LED",
+          "role": "Chemin de retour"
+        }
+      },
+      "callouts": {
+        "LED1": "Patte longue (anode) vers la résistance, patte courte vers GND.",
+        "R1": "220 Ω maintiennent le courant vers 6 mA."
+      },
+      "features": {
+        "1": "Une vraie broche d'ESP32 avec son niveau logique 3,3 V",
+        "2": "Pas de LED_BUILTIN : la broche est nommée dans votre code",
+        "3": "EN relance le sketch, comme sur la vraie carte"
+      },
+      "params": {
+        "on": {
+          "label": "Durée allumée"
+        },
+        "off": {
+          "label": "Durée éteinte"
+        }
+      },
+      "checks": {
+        "1": "GPIO23 clignote régulièrement",
+        "2": "Le sketch affiche son message d'accueil",
+        "3": "La broche est configurée en sortie, sans LED_BUILTIN"
+      },
+      "code": {
+        "pin": "La DevKitC n'a pas de LED utilisateur : câblez-en une sur GPIO23"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Pourquoi cette leçon utilise-t-elle GPIO23 et pas GPIO2, la broche de la LED sur beaucoup de cartes clones ?",
+          "options": {
+            "1": "GPIO2 ne peut pas piloter une sortie",
+            "2": "GPIO2 est une broche de strapping qui doit être à l'état bas ou flottante pour entrer en mode téléchargement",
+            "3": "GPIO23 est la seule broche avec du PWM"
+          },
+          "why": "GPIO2 est lue au reset. Une LED vers GND y est sans danger, mais un pull-up ou un bouton peut bloquer les téléversements : une simple sortie comme GPIO23 est donc la bonne habitude."
+        },
+        "q2": {
+          "q": "Environ combien de courant la LED tire-t-elle avec 220 Ω sur une broche 3,3 V ?",
+          "options": {
+            "1": "Environ 6 mA",
+            "2": "Environ 14 mA",
+            "3": "Environ 40 mA"
+          },
+          "why": "(3,3 − 2,0) ÷ 220 font environ 5,9 mA. Le chiffre de 14 mA est celui d'un Arduino 5 V."
+        }
+      }
+    },
+    "boot-button": {
+      "title": "Lire le bouton Boot",
+      "lede": "Boot est câblé sur GPIO0. Une fois le sketch lancé, c'est un bouton ordinaire : lisez-le avec INPUT_PULLUP, filtrez ses rebonds avec millis() et basculez la LED.",
+      "steps": {
+        "1": "Gardez la LED sur GPIO23 de la première leçon.",
+        "2": "Lancez le sketch, puis appuyez sur Boot sur la carte (ou dans l'inspecteur).",
+        "3": "Chaque appui bascule la LED et affiche le compte."
+      },
+      "hints": {
+        "1": "Un appui se lit LOW : le bouton relie GPIO0 à GND, et le pull-up le maintient à HIGH le reste du temps.",
+        "2": "Maintenir Boot pendant que vous appuyez sur EN fait autre chose : la puce attend un téléversement au lieu de lancer votre sketch."
+      },
+      "specs": {
+        "1": {
+          "label": "Bouton Boot",
+          "value": "GPIO0 vers GND ; appuyé = LOW"
+        },
+        "2": {
+          "label": "Anti-rebond",
+          "value": "30 ms après le dernier changement"
+        }
+      },
+      "pins": {
+        "GPIO0": {
+          "to": "Bouton Boot (sur la carte)",
+          "role": "Entrée avec le pull-up interne"
+        },
+        "GPIO23": {
+          "to": "Résistance de 220 Ω, puis anode de la LED",
+          "role": "Sortie qui commute la LED"
+        },
+        "GND": {
+          "to": "Cathode de la LED",
+          "role": "Chemin de retour"
+        }
+      },
+      "callouts": {
+        "SW1": "Bouton Boot : appuyez dessus pendant que le sketch tourne.",
+        "LED1": "Bascule à chaque appui."
+      },
+      "features": {
+        "1": "Utilise le bouton déjà présent sur la carte",
+        "2": "Anti-rebond avec millis(), sans delay()",
+        "3": "GPIO0 est aussi une broche de strapping"
+      },
+      "params": {
+        "debounce": {
+          "label": "Durée d'anti-rebond"
+        }
+      },
+      "world": {
+        "boot": "Bouton Boot"
+      },
+      "checks": {
+        "1": "Le premier appui allume la LED",
+        "2": "Le deuxième appui l'éteint à nouveau",
+        "3": "Chaque appui est compté une seule fois",
+        "4": "Utilise INPUT_PULLUP et millis() pour l'anti-rebond"
+      },
+      "code": {
+        "intro": "Boot est GPIO0 : il lit LOW tant qu'on appuie",
+        "bounce": "Les contacts rebondissent : attendez que la lecture cesse de changer"
+      }
+    },
+    "touch": {
+      "title": "Capteur tactile sur T0",
+      "lede": "L'ESP32 peut sentir un doigt sur un fil nu. touchRead() mesure la capacité de la broche : le nombre baisse quand vous touchez le fil sur GPIO4.",
+      "steps": {
+        "1": "Ajoutez un fil de liaison de GPIO4 vers une rangée vide : son extrémité libre est votre zone tactile.",
+        "2": "Lancez le sketch et touchez le fil ; regardez les nombres baisser dans le moniteur série.",
+        "3": "Placez la pastille du seuil entre les valeurs touchée et non touchée."
+      },
+      "hints": {
+        "1": "Plus bas veut dire touché. Affichez d'abord les valeurs, puis choisissez un seuil à mi-chemin.",
+        "2": "T0, c'est GPIO4. L'ESP32 a dix canaux tactiles, de T0 à T9."
+      },
+      "specs": {
+        "1": {
+          "label": "Broche tactile",
+          "value": "T0 = GPIO4 (aussi ADC2)"
+        },
+        "2": {
+          "label": "Lectures ici",
+          "value": "environ 72 sans contact, 12 au toucher ; les vraies valeurs dépendent du fil"
+        }
+      },
+      "pins": {
+        "GPIO4": {
+          "to": "Fil de liaison nu (la zone tactile)",
+          "role": "Entrée tactile capacitive"
+        },
+        "GPIO23": {
+          "to": "Résistance de 220 Ω, puis anode de la LED",
+          "role": "Sortie qui commute la LED"
+        },
+        "GND": {
+          "to": "Cathode de la LED",
+          "role": "Chemin de retour"
+        }
+      },
+      "callouts": {
+        "LED1": "S'allume tant que le fil est touché."
+      },
+      "features": {
+        "1": "Aucun composant en plus : un fil fait office de capteur",
+        "2": "Les valeurs s'affichent dix fois par seconde",
+        "3": "Les lectures tactiles dérivent avec la pièce : réglez votre propre seuil"
+      },
+      "params": {
+        "threshold": {
+          "label": "Seuil"
+        }
+      },
+      "world": {
+        "finger": "Doigt sur le fil"
+      },
+      "checks": {
+        "1": "Toucher le fil allume la LED",
+        "2": "Le lâcher l'éteint",
+        "3": "Les lectures défilent dans le moniteur série"
+      },
+      "code": {
+        "intro": "T0 est GPIO4 : touchRead() baisse quand un doigt approche",
+        "lower": "Une lecture plus basse signifie un toucher"
+      }
+    },
+    "fade": {
+      "title": "Un fondu avec le PWM LEDC",
+      "lede": "L'ESP32 n'a pas les timers analogWrite d'un Uno ; il a le périphérique LEDC. Attachez-le à GPIO23, puis faites monter et descendre le rapport cyclique pour un fondu en douceur.",
+      "steps": {
+        "1": "Gardez la LED sur GPIO23.",
+        "2": "Choisissez une fréquence et une résolution PWM avec les pastilles.",
+        "3": "Lancez-le : la LED s'allume en fondu en une seconde et s'éteint pendant la suivante."
+      },
+      "hints": {
+        "1": "Le core Arduino 3.x attache par broche : ledcAttach(pin, freq, bits) et ledcWrite(pin, duty). Les anciens ledcSetup() et ledcAttachPin() ont disparu.",
+        "2": "Fréquence × 2^bits doit rester sous 80 MHz : 5 kHz en 8 bits, c'est facile, 20 kHz en 12 bits, non."
+      },
+      "specs": {
+        "1": {
+          "label": "LEDC",
+          "value": "16 canaux, jusqu'à 20 bits de résolution, sur n'importe quelle broche de sortie"
+        },
+        "2": {
+          "label": "Limite",
+          "value": "fréquence × 2^bits ≤ 80 MHz"
+        },
+        "3": {
+          "label": "Rampe",
+          "value": "51 pas de 20 ms dans chaque sens"
+        }
+      },
+      "pins": {
+        "GPIO23": {
+          "to": "Résistance de 220 Ω, puis anode de la LED",
+          "role": "Sortie PWM du périphérique LEDC"
+        },
+        "GND": {
+          "to": "Cathode de la LED",
+          "role": "Chemin de retour"
+        }
+      },
+      "callouts": {
+        "LED1": "La luminosité suit le rapport cyclique."
+      },
+      "features": {
+        "1": "L'API LEDC actuelle d'arduino-esp32 3.x",
+        "2": "La fréquence et la résolution sont à vous de changer",
+        "3": "Attention à la limite de 80 MHz pour fréquence × résolution"
+      },
+      "params": {
+        "freq": {
+          "1000": "1 kHz",
+          "5000": "5 kHz",
+          "10000": "10 kHz",
+          "label": "Fréquence PWM"
+        },
+        "bits": {
+          "8": "8 bits (0 à 255)",
+          "10": "10 bits (0 à 1023)",
+          "12": "12 bits (0 à 4095)",
+          "label": "Résolution"
+        }
+      },
+      "checks": {
+        "1": "Le rapport cyclique est proche de 20 % au début de la rampe",
+        "2": "Le rapport cyclique est proche de 80 % avant le sommet",
+        "3": "Utilise ledcAttach() et ledcWrite(), pas les appels 2.x supprimés",
+        "4": "Le sketch affiche son message d'accueil"
+      },
+      "code": {
+        "intro": "LEDC produit le PWM : attachez-le à la broche, puis écrivez un rapport cyclique"
+      }
+    },
+    "web-switch": {
+      "title": "Interrupteur web Wi-Fi",
+      "lede": "Rejoignez le réseau Wi-Fi du banc, démarrez un petit serveur web et commandez la LED depuis un navigateur : /on et /off.",
+      "steps": {
+        "1": "Gardez la LED sur GPIO23.",
+        "2": "Lancez le sketch : il rejoint bench-lab et affiche son adresse IP.",
+        "3": "Envoyez GET /on et GET /off depuis le navigateur de l'inspecteur.",
+        "4": "Essayez la pastille du mauvais mot de passe et regardez les points défiler sans fin."
+      },
+      "hints": {
+        "1": "Le moniteur série affiche l'adresse à ouvrir, par exemple http://192.168.4.x/on.",
+        "2": "loop() doit appeler server.handleClient() souvent ; un long delay() rend la page lente.",
+        "3": "Quand le Wi-Fi est actif, ne lisez les capteurs analogiques que sur les broches ADC1 (32 à 39)."
+      },
+      "specs": {
+        "1": {
+          "label": "Wi-Fi",
+          "value": "802.11 b/g/n, 2,4 GHz seulement"
+        },
+        "2": {
+          "label": "Courant de la radio",
+          "value": "rafales d'environ 240 à 380 mA ; l'alimentation doit fournir 500 mA"
+        },
+        "3": {
+          "label": "Analogique avec Wi-Fi actif",
+          "value": "ADC1 seulement ; les lectures ADC2 échouent"
+        }
+      },
+      "pins": {
+        "GPIO23": {
+          "to": "Résistance de 220 Ω, puis anode de la LED",
+          "role": "Sortie commutée par le serveur web"
+        },
+        "GND": {
+          "to": "Cathode de la LED",
+          "role": "Chemin de retour"
+        }
+      },
+      "callouts": {
+        "U3": "L'antenne imprimée du module dépasse de la carte : gardez le métal et les mains loin d'elle.",
+        "LED1": "Suit /on et /off."
+      },
+      "features": {
+        "1": "Un vrai WebServer avec deux routes",
+        "2": "Les rafales Wi-Fi peuvent provoquer un brown-out sur une alimentation faible",
+        "3": "La connexion prend environ une seconde, comme sur le banc"
+      },
+      "params": {
+        "password": {
+          "label": "Mot de passe Wi-Fi",
+          "robotics": "robotics (correct)",
+          "robot1cs": "robot1cs (faux)",
+          "note": "Un mauvais mot de passe ne se connecte jamais : le sketch attend dans sa boucle et affiche des points."
+        }
+      },
+      "world": {
+        "browser": "Requête du navigateur"
+      },
+      "checks": {
+        "1": "Rejoint bench-lab et affiche son adresse IP",
+        "2": "GET /on allume la LED",
+        "3": "GET /off l'éteint",
+        "4": "Démarre le Wi-Fi et sert les clients depuis loop()"
+      },
+      "code": {
+        "network": "Le réseau du banc : SSID et mot de passe",
+        "routes": "Chaque chemin lance son propre gestionnaire"
+      },
+      "quiz": {
+        "q1": {
+          "q": "Votre sketch lit un potentiomètre sur GPIO27 et fonctionne, jusqu'à ce que vous ajoutiez le Wi-Fi. Que s'est-il passé ?",
+          "options": {
+            "1": "Le Wi-Fi a besoin de GPIO27 pour son antenne",
+            "2": "Le potentiomètre tire trop de courant",
+            "3": "GPIO27 est une broche ADC2, et l'ADC2 ne peut pas être lu quand le Wi-Fi est actif"
+          },
+          "why": "Le pilote Wi-Fi utilise l'ADC2. Déplacez les entrées analogiques sur les broches ADC1 : GPIO32 à 39."
+        },
+        "q2": {
+          "q": "La carte redémarre à chaque appel de WiFi.begin() et affiche « Brownout detector was triggered ». Quelle est la meilleure première correction ?",
+          "options": {
+            "1": "Raccourcir le mot de passe Wi-Fi",
+            "2": "Utiliser un bon câble USB court branché directement sur l'ordinateur et ajouter un condensateur sur le 3V3",
+            "3": "Déplacer la LED sur GPIO2"
+          },
+          "why": "Des rafales radio de quelques centaines de milliampères font descendre une alimentation faible sous le seuil de brown-out de 2,43 V."
+        }
+      }
+    }
+  }
+}
