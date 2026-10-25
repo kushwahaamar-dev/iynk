@@ -1,0 +1,404 @@
+{
+  "title": "900-mm-FPV-Nurflügel",
+  "tagline": "Ein Nurflügel aus Schaum mit INAV: Elevons statt Leitwerk, ein Druckpropeller und GPS für den Heimflug.",
+  "sub": "INAV-Nurflügel mit Elevons und GPS-Rückkehr nach Hause",
+  "hint": "Bau ihn, prüf die Elevons und den Schwerpunkt, dann wirf ihn und flieg die Pylonen",
+  "noun": "Nurflügel",
+  "overview": "Ein Nurflügel hat kein Leitwerk. Sein gepfeilter Grundriss und leicht hochgestellte Elevons halten ihn um die Querachse stabil, und die beiden Elevons übernehmen die Arbeit des Höhenruders (gleichsinnig) und der Querruder (gegensinnig). Ein Druckpropeller hinter dem Flügel hält die Blätter beim Wurf von deiner Hand und bei einer Bauchlandung vom Boden fern. Dieser hier ist ein 900-mm-Flügel aus EPP-Schaum auf einem F405-Flügelboard mit INAV 9.1, mit GPS, einem ExpressLRS-Empfänger und analogem FPV. INAV kann ihn aufrichten, starten, einen Kurs halten und per GPS nach Hause fliegen, und im Reiseflug braucht er nur ein paar Ampere, also sind halbstündige Flüge normal. Wähl Akku, Motor und Propeller und sieh zu, wie sich Schwerpunkt und Flugzeit ändern, bau ihn, prüf die Elevons und den Schwerpunkt und flieg dann den Flugplatz.",
+  "practice": "Flieg das Pylonrennen im Angle-Modus, dann den Flug mit Rückkehr nach Hause. Bei einem echten Flügel: Prüf vor jedem ersten Flug die Elevons (die Knüppel und den Stabilisator), balancier ihn mit eingesetztem Akku auf den Schwerpunktmarken aus, warte vor dem Armen auf einen GPS-Fix und wirf ihn waagerecht gegen den Wind, mit halbem Gas oder mit NAV LAUNCH. Stell den Failsafe auf RTH und teste ihn ohne Propeller. Die meisten Länder verlangen, dass der Flügel in Sichtweite bleibt: Flieg FPV mit einem Spotter neben dir.",
+  "design": {
+    "fixed": {
+      "FRAME": "900-mm-EPP-Flügel, Rumpfgondel und Holm",
+      "ESC": "40-A-ESC",
+      "FC": "F405-Flügel-FC und Power Board",
+      "GPS": "M10-GPS + Kompass",
+      "CAM": "Analoge FPV-Kamera",
+      "VTX": "5,8-GHz-VTX und Antenne",
+      "RX": "ELRS-Empfänger 2,4 GHz",
+      "SERVOS": "Zwei 9-g-Servos mit Metallgetriebe",
+      "XT60": "XT60-Kabel und 470-µF-Kondensator",
+      "TOP": "Klappe, Gestänge und Ruderhörner",
+      "WIRES": "Motorkabel und Goldstecker"
+    },
+    "verdict": {
+      "ok": "Die Teile passen zusammen: das {tw}-Fache seines Gewichts an Schub für Wurf und Steigflug, und ein Reiseflug mit ein paar Ampere.",
+      "over": "{kv} KV ist ein Motor für einen 5-Zoll-Quad. Mit einem Flügelpropeller zieht er weit mehr, als der 40-A-ESC verträgt, und brennt in Sekunden durch. Flügelmotoren an {cells}S haben etwa 1000 bis 1400 KV.",
+      "weak": "Nur das {tw}-Fache seines Gewichts an Schub: Nach einem Wurf sinkt er, bevor er steigt. Ziel auf mindestens die Hälfte seines Gewichts.",
+      "tail": "Dieser leichte Akku macht den Flügel schwanzlastig: Nach dem Wurf bäumt er sich auf und hat einen Strömungsabriss. Schieb den Akku nach vorn oder ergänz Gewicht in der Nase, dann mach die Schwerpunktprüfung."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "900-mm-Nurflügel aus EPP-Schaum",
+      "what": "Ein schwanzloser Pfeilflügel aus EPP-Schaum, 900 mm von Spitze zu Spitze, mit einem Carbonholm im Inneren, Winglets an den Spitzen und einer 305 x 84 x 54 mm großen Rumpfgondel in der Mitte für die Elektronik. Die Nasenkante ist um 28 Grad nach hinten gepfeilt, von einer Wurzeltiefe von 300 mm auf 155 mm an der Spitze. EPP biegt sich, statt zu brechen, also sind Bauchlandungen kein Problem. Die Schwerpunktmarken oben liegen bei 15 bis 20 % der mittleren Profiltiefe, etwa 130 mm hinter der Nasenkante an der Wurzel."
+    },
+    "SERVOS": {
+      "name": "Elevon-Servos, Ruderhörner und Gestänge",
+      "what": "Zwei 9-g-Servos mit Metallgetriebe im Flügel, auf jeder Seite 175 mm außen, mit Gestängen zu Ruderhörnern an den Elevons (55 mm breit, von 120 mm außen bis zu den Spitzen). Sie stecken an den Pads S3 und S4 und laufen am 4,9-V-Servo-BEC des FC. Ein Servo, das sich falsch herum bewegt, lässt den Flügel direkt nach dem Wurf abstürzen: Prüf sie auf der Werkbank."
+    },
+    "MOTORS": {
+      "name": "Druckmotor an der Endleiste",
+      "what": "Ein Außenläufer auf einem Motorträger hinten am Mittelstück, die Welle nach hinten, sodass der Propeller hinter dem Flügel sitzt. Der Standardmotor 2212 mit 1400 KV wiegt etwa 55 g und läuft an 4S mit einem 8x6 heiß: Echte 4S-Flügel nutzen mit diesem Propeller 1000 bis 1200 KV. Der 2810 mit 1100 KV ist die stärkere, ruhigere Wahl; der 2306 mit 2400 KV ist ein Motor für einen 5-Zoll-Quad."
+    },
+    "ESC": {
+      "name": "40-A-ESC",
+      "what": "Ein 40-A-ESC in der Rumpfgondel, gespeist von den ESC-Pads des Power Boards. INAV steuert ihn mit OneShot125 von Pad S1 an. Sein eigener 5-V-BEC wird nicht gebraucht, weil der Servo-BEC des FC die Servos versorgt, also lass sein rotes Kabel unverbunden. INAV kann einen Motor nicht umkehren: Das passiert im eigenen Werkzeug des ESC oder durch Tauschen zweier Motorkabel."
+    },
+    "WIRES": {
+      "name": "Motorkabel und Goldstecker",
+      "what": "Die drei Phasenkabel des Motors zum ESC über 3,5-mm-Goldstecker. Jede Reihenfolge dreht den Motor; das Tauschen zweier beliebiger Kabel lässt ihn andersherum drehen."
+    },
+    "FC": {
+      "name": "F405-Flügel-Flugcontroller (INAV)",
+      "what": "Ein F405-Board für Flügel (wie das SpeedyBee F405 WING) auf seinem eigenen Power Board: Akkueingang für 2 bis 6S, ein 90-A-Stromsensor und drei BECs, 5 V für den FC, 9 V für den VTX und 4,9 V für die Servos. Es läuft mit INAV 9.1, mit einem Gyro, einem Barometer und einem analogen OSD-Chip. Es liegt flach in der Rumpfgondel, mit seinem Pfeil zur Nase."
+    },
+    "XT60": {
+      "name": "XT60-Kabel und 470-µF-Kondensator",
+      "what": "Das Akkukabel, an die BAT-Pads des Power Boards gelötet, mit einem Low-ESR-Kondensator 470 µF 35 V darüber, Streifen am Minus-Pad. Er schluckt die Spannungsspitzen des ESC, bevor sie den FC zurücksetzen oder Streifen ins Video bringen."
+    },
+    "GPS": {
+      "name": "M10-GPS + Kompass",
+      "what": "Ein u-blox-M10-GPS mit einem Kompass QMC5883, oben auf dem Flügel hinter der Rumpfgondel und mindestens 5 cm von ESC und Stromkabeln entfernt. Das GPS hängt an UART3, der Kompass an I2C1. INAV braucht das GPS für RTH, Start und Reiseflug. Bei einem Flügel ist der Kompass optional: Sobald er fliegt, kann INAV nach dem GPS-Kurs steuern."
+    },
+    "RX": {
+      "name": "ELRS-Empfänger 2,4 GHz",
+      "what": "Ein winziger ExpressLRS-Empfänger in der Rumpfgondel an UART1 (CRSF), mit seiner T-Antenne aus der Gondel herausstehend. Eine Antenne, die im Schaum vergraben ist oder entlang des Carbonholms liegt, verliert Reichweite und bringt einen frühen Failsafe."
+    },
+    "CAM": {
+      "name": "FPV-Kamera in der Nase",
+      "what": "Eine analoge Kamera in der Nase, etwa 8 Grad nach oben geneigt: Ein Flügel fliegt fast waagerecht, braucht also wenig Uptilt. Ihr Video geht an das CAM-Pad des FC, wo das OSD von INAV Höhe, Geschwindigkeit, Heimatpfeil und Akku ergänzt."
+    },
+    "VTX": {
+      "name": "5,8-GHz-VTX und Antenne",
+      "what": "Ein analoger Videosender am 9-V-BEC des FC, seine Lollipop-Antenne steht aus der Rumpfgondel heraus. INAV stellt Band, Kanal und Leistung über SmartAudio ein; die Leistungsstufen kommen vom VTX selbst (INAV hat keine vtxtable). Schalte ihn nie ohne Antenne ein."
+    },
+    "BATT": {
+      "name": "Akku (das Ausgleichsgewicht)",
+      "what": "Der Akku wird in den Schacht der Rumpfgondel geschoben und ist der Ballast für den Schwerpunkt des Flügels. Der 4S-2200-LiPo bringt ihn genau auf die Marken. Der 4S-Li-Ionen-3000 macht ihn leicht kopflastig, was die sichere Seite ist und lange Flüge ergibt. Der leichte 3S 1300 macht ihn schwanzlastig, und ein schwanzlastiger Flügel ist nicht sicher zu fliegen."
+    },
+    "TOP": {
+      "name": "Klappe",
+      "what": "Die Schaumklappe über der Rumpfgondel, von einem Verschluss gehalten. Prüf, ob sie schließt: Eine Klappe, die sich im Flug öffnet, verliert den Akku."
+    },
+    "PROPS": {
+      "name": "Druckpropeller",
+      "what": "Ein zweiblättriger Druckpropeller (P), standardmäßig 8x6, mit der bedruckten Seite nach vorn montiert. Er dreht sich von hinten gesehen gegen den Uhrzeigersinn und bläst die Luft nach hinten. Falsch herum montiert liefert er schwachen Schub und lahme Steigflüge. Ein 9-Zoll-Propeller hat nur ein paar Millimeter Abstand zu den Elevons."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Mit dem Flügel anfangen",
+      "body": "Kleb die beiden Flügelhälften mit dem Carbonholm in seiner Nut an das Mittelstück, setz die Winglets ein und prüf, ob die Elevons frei in ihren Scharnieren schwingen."
+    },
+    "servos": {
+      "title": "Die Elevon-Servos einsetzen",
+      "body": "Drück die Servos in ihre Taschen, zentrier sie und stell die Gestänge so ein, dass beide Elevons in der Mitte leicht nach oben stehen (Reflex): Das hält einen Nurflügel um die Querachse stabil.",
+      "refusal": "Die Servos sitzen in den Taschen des Flügels: Setz zuerst den Flügel ein."
+    },
+    "motors": {
+      "title": "Den Druckmotor montieren",
+      "body": "Auf den Motorträger hinten am Mittelstück, die Welle nach hinten. Prüf, ob die Schrauben die Wicklungen nicht berühren.",
+      "refusal": "Der Motor wird an den Motorträger des Flügels geschraubt: Setz zuerst den Flügel ein."
+    },
+    "esc": {
+      "title": "Den ESC in die Rumpfgondel setzen",
+      "body": "In die Rumpfgondel, die Motorkabel nach hinten. Verstau sein BEC-Kabel: Der Flugcontroller versorgt die Servos.",
+      "refusal": "Der ESC kommt in die Rumpfgondel des Flügels: Setz zuerst den Flügel ein."
+    },
+    "wires": {
+      "title": "Die Motorkabel anschließen",
+      "body": "Steck die drei Goldstecker des Motors in die des ESC. Dreht der Motor später falsch herum, tausch zwei beliebige.",
+      "refusal": "Die Goldstecker verbinden den Motor mit dem ESC: Setz zuerst beide ein."
+    },
+    "fc": {
+      "title": "Den Flugcontroller einsetzen, Pfeil zur Nase",
+      "body": "Flach in die Rumpfgondel auf sein Power Board, den aufgedruckten Pfeil zur Nase. Das ESC-Signal geht an S1, die Servos an S3 und S4.",
+      "refusal": "Das Power Board des Flugcontrollers speist den ESC: Setz zuerst den ESC ein."
+    },
+    "xt60": {
+      "title": "XT60 und Kondensator anlöten",
+      "body": "Das Akkukabel an die BAT-Pads des Power Boards, Rot an + und Schwarz an -, und den 470-µF-Kondensator über dieselben Pads mit dem Streifen zu Minus. Prüf + und - mit einem Messgerät auf Kurzschluss.",
+      "refusal": "Der XT60 wird an das Power Board des Flugcontrollers gelötet: Setz zuerst den Flugcontroller ein."
+    },
+    "gps": {
+      "title": "Das GPS oben einsetzen",
+      "body": "Oben auf den Flügel hinter der Rumpfgondel, Pfeil zur Nase, mindestens 5 cm von ESC und Stromkabeln entfernt. Sein Kabel geht an UART3 und I2C1.",
+      "refusal": "Das GPS hängt am Flugcontroller: Setz zuerst den Flugcontroller ein."
+    },
+    "rx": {
+      "title": "Den Empfänger einsetzen",
+      "body": "In die Rumpfgondel an UART1: TX des Empfängers an RX1 und RX an TX1. Lass seine T-Antenne aus der Gondel herausstehen, weg vom Carbonholm.",
+      "refusal": "Der Empfänger hängt am UART1 des Flugcontrollers: Setz zuerst den Flugcontroller ein."
+    },
+    "cam": {
+      "title": "Die Kamera in die Nase setzen",
+      "body": "In die Nase, etwa 8 Grad nach oben geneigt, ihr Kabel an die CAM-Pads des Flugcontrollers.",
+      "refusal": "Die Kamera sitzt in der Nase des Flügels: Setz zuerst den Flügel ein."
+    },
+    "vtx": {
+      "title": "Den VTX einsetzen",
+      "body": "In die Rumpfgondel am 9-V-BEC, mit der Antenne angeschraubt, bevor er jemals Strom bekommt, und aus der Gondel nach oben herausstehend.",
+      "refusal": "Der VTX hängt am Flugcontroller: Setz zuerst den Flugcontroller ein."
+    },
+    "batt": {
+      "title": "Den Akku hineinschieben",
+      "body": "In den Schacht und dort festgeschnallt, wo die Schwerpunktmarken es sagen. Mit dem 4S 2200 ist das die Stelle, an der er ausbalanciert ist. Steck ihn noch nicht ein.",
+      "refusal": "Der Akku wird in den XT60 am Power Board des Flugcontrollers gesteckt: Setz zuerst beide ein."
+    },
+    "top": {
+      "title": "Die Klappe schließen",
+      "body": "Über die Rumpfgondel, eingerastet. Nichts darf darunter eingeklemmt werden.",
+      "refusal": "Die Klappe schließt über Akku, Empfänger und VTX: Setz sie zuerst ein."
+    },
+    "props": {
+      "title": "Den Druckpropeller montieren, zuletzt",
+      "body": "Erst nach dem Smoke-Stopper-Test und der Prüfung der Motordrehrichtung, mit abgestecktem Akku. Bedruckte Seite nach vorn, Mutter fest angezogen.",
+      "refusal": "Der Propeller kommt zuletzt drauf: Mach zuerst den Smoke-Stopper-Test und die Prüfung der Motordrehrichtung."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "Der Akku wird in den XT60 gesteckt. 4S hat nominal 14,8 V und voll 16,8 V; die Li-Ionen-Option ist ebenfalls 4S.",
+    "XT60-FC": "Das XT60-Kabel ist an die BAT-Pads des Power Boards gelötet (2 bis 6S), mit dem Low-ESR-Kondensator 470 µF 35 V darüber, Streifen zu Minus.",
+    "XT60-ESC": "Der ESC bekommt seinen Strom von den ESC-Pads des Power Boards, hinter dem 90-A-Stromsensor, sodass das OSD Ampere und verbrauchte mAh zeigt.",
+    "FC-ESC": "Das ESC-Signal von Pad S1: Motor 1, OneShot125 (der Standard von INAV). Das eigene BEC-Kabel des ESC bleibt unverbunden.",
+    "ESC-MOTORS": "Drei Phasenkabel an 3,5-mm-Goldsteckern. Tausch zwei beliebige, um den Motor umzukehren.",
+    "FC-SERVOS": "Servo 1 an S3 und Servo 2 an S4, versorgt vom Servo-BEC mit 4,9 V (per Jumper 6 oder 7,2 V, nur wenn die Servos dafür ausgelegt sind). Braun oder Schwarz ist Masse, Rot ist Plus, Orange oder Weiß ist das Signal.",
+    "RX-FC": "ELRS an UART1 mit CRSF: TX des Empfängers an RX1 und RX an TX1, dazu 5 V und Masse.",
+    "GPS-FC": "Ein Kabel: das GPS an UART3 (u-blox-Protokoll), der Kompass an I2C1 (SCL und SDA), 5 V und Masse.",
+    "CAM-FC": "Das Video der Kamera ins CAM-Pad, mit 5 V und Masse. Der OSD-Chip von INAV schreibt darüber.",
+    "FC-VTX": "Video mit OSD aus dem VTX-Pad, 9 V vom VTX-BEC und SmartAudio an einem freien UART, damit INAV Band, Kanal und Leistung einstellt."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Smoke-Stopper-Test",
+      "pass": "Die Lampe hat nur kurz geblinkt: Nichts ist kurzgeschlossen, und der Kondensator sitzt richtig herum. Du kannst den Akku jetzt direkt einstecken.",
+      "fail": "Die Lampe leuchtet dauerhaft: Etwas ist kurzgeschlossen, hier ein Kondensator mit dem Streifen zu Plus. Setz ihn mit dem Streifen zu Minus neu ein und wiederhol den Test, bevor du richtig einsteckst."
+    },
+    "motors": {
+      "title": "Prüfung der Motordrehrichtung (ohne Propeller)",
+      "pass": "Der Motor dreht sich von hinten gesehen gegen den Uhrzeigersinn, so wie es ein Druckpropeller braucht, also wird die Luft nach hinten geblasen. Jetzt kann der Propeller drauf.",
+      "fail": "Er hat falsch herum gedreht. INAV kann einen Motor nicht umkehren: Tausch zwei beliebige Motorkabel oder kehr ihn im eigenen Werkzeug des ESC um, so wie es die Prüfung hier tut. Mit Propeller würde er die Luft nach vorn blasen und kaum fliegen."
+    },
+    "calibrate": {
+      "title": "Kalibrierung des Beschleunigungssensors (Flügel waagerecht)",
+      "pass": "Mit dem Flügel waagerecht in seiner Fluglage kalibriert: Der ANGLE-Modus und der OSD-Horizont wissen jetzt, wo waagerecht ist.",
+      "fail": "Setz den Flugcontroller ein und stell den Flügel waagerecht, so wie er fliegt. Wenn der Pfeil nach hinten zeigt, hilft Kalibrieren nicht: Dreh die Platine um oder setz align_board_yaw = 1800."
+    },
+    "elevons": {
+      "title": "Elevon-Prüfung (Knüppel und Stabilisator)",
+      "pass": "Knüppel nach hinten: beide Elevons hoch. Knüppel nach rechts: rechtes Elevon hoch, linkes runter. Rechte Fläche in ANGLE nach unten geneigt: Das rechte Elevon geht nach unten, um sie wieder anzuheben. Knüppel und Stabilisator drücken beide in die richtige Richtung.",
+      "fail": "Setz Servos, Flugcontroller und Empfänger ein und steck ein. Bewegt Knüppel nach hinten die Elevons nach unten, ist ein Servo umgekehrt: Gib ihm eine negative Rate (servo 1 1000 2000 1500 -100) oder kreuz Reverse im Tab Outputs an. Stimmen die Knüppel, aber der Stabilisator drückt falsch herum, zeigt der Pfeil des FC nach hinten."
+    },
+    "cg": {
+      "title": "Schwerpunktprüfung",
+      "pass": "Er hängt auf zwei Fingerspitzen an den Schwerpunktmarken (15 bis 20 % der mittleren Profiltiefe) waagerecht oder leicht mit der Nase nach unten. Sicher zum Werfen.",
+      "fail": "Setz zuerst den Akku ein: Bei einem Flügel ist der Akku das Gegengewicht. Sinkt das Heck, ist der Flügel schwanzlastig und bäumt sich nach dem Wurf auf, bis die Strömung abreißt. Schieb den Akku nach vorn oder ergänz Gewicht in der Nase und prüf dann erneut."
+    },
+    "compass": {
+      "title": "Kompasskalibrierung",
+      "pass": "Kalibriert: 30 s lang durch jede Achse gedreht, weg von ESC und Akkukabeln. Vergleich die Richtung mit einem echten Kompass, bevor du ihm vertraust.",
+      "fail": "Setz das GPS-Modul (der Kompass sitzt darin) und den Flugcontroller ein und steck ein. Bei einem Flügel ist der Kompass optional: INAV kann nach dem GPS-Kurs steuern, sobald er fliegt."
+    },
+    "airspeed": {
+      "title": "Prüfung der virtuellen Fluggeschwindigkeit",
+      "pass": "pitot_hardware = VIRTUAL: INAV schätzt die Fluggeschwindigkeit aus der GPS-Geschwindigkeit und seiner Windschätzung, genug für das OSD und für koordinierte Kurven. Ein echtes Staurohr müsste mit abgedecktem Rohr genullt werden.",
+      "fail": "Setz GPS und Flugcontroller ein und steck ein: Die virtuelle Fluggeschwindigkeit kommt vom GPS."
+    },
+    "failsafe": {
+      "title": "Failsafe-Test (ohne Propeller)",
+      "pass": "Fernsteuerung aus: FAILSAFE im OSD nach 0,5 s, dann RTH, das im Flug auf 30 m steigt und nach Hause fliegt. Fernsteuerung wieder an und ein Knüppel bewegt: Die Kontrolle liegt wieder bei dir.",
+      "fail": "Nimm den Propeller ab, setz Empfänger und Flugcontroller ein und steck ein: Wenn der Failsafe RTH startet, dreht der Motor hoch."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Erste Einrichtung: das Preset Flying Wing",
+      "explain": "Das Preset Flying Wing des Configurators, in der CLI eingetippt. Seit INAV 7 steckt der Mixer in Mixer-Profilen, und ein einfacher Flügel nutzt nur Profil 1. motorstop_on_low hält den Propeller bei wenig Gas still (alte Anleitungen sagen feature MOTOR_STOP, das es nicht mehr gibt). mmix 0 gibt Motor 1 an Pad S1 nur Gas. Jede smix-Zeile ist Regel, Servo, Eingang, Gewicht: Beide Servos bekommen +50 % vom Nicken (Eingang 1), und das Rollen (Eingang 0) mit +50 % auf dem einen und -50 % auf dem anderen, also bewegt Nicken sie gleichsinnig und Rollen gegensinnig. Das ist ein Elevon. Danach CRSF für den Empfänger an UART1 und das GPS an UART3."
+    },
+    "servos": {
+      "title": "Servoweg, Richtung und Trimmung für waagerecht",
+      "explain": "servo nimmt den Weg in Mikrosekunden (min, max, Mitte) und eine Rate: Eine negative Rate kehrt dieses Servo um, also gib ihm -100, wenn die Elevon-Prüfung zeigt, dass es sich falsch herum bewegt. fw_level_pitch_trim ist der Anstellwinkel mit der Nase nach oben, den der ANGLE-Modus als waagerecht hält; die meisten Flügel wollen 1 bis 4 Grad, und der Modus AUTO LEVEL TRIM lernt ihn im Flug. align_board_yaw ist in Zehntelgrad angegeben: 1800, wenn der Flugcontroller mit dem Pfeil nach hinten montiert ist."
+    },
+    "switches": {
+      "title": "Schalter: Arming, Flugmodi, Start, RTH",
+      "explain": "Das aux von INAV nimmt den Slot, die Nummer des Modus, den Kanal (0 = AUX1) und den Bereich in Mikrosekunden. Modusnummern: 0 ARM, 12 MANUAL, 1 ANGLE, 53 NAV CRUISE, 36 NAV LAUNCH, 10 NAV RTH. Ein Dreistufenschalter an AUX2 wählt MANUAL, ANGLE oder CRUISE; CRUISE hält Kurs und Höhe, und die Knüppel ändern sie."
+    },
+    "launch": {
+      "title": "NAV LAUNCH",
+      "explain": "Armen, NAV LAUNCH einschalten (AUX3), Gas geben (der Motor bleibt im Leerlauf) und werfen. INAV erkennt den Wurf, wartet nav_fw_launch_motor_delay ab (0,5 s, damit der Propeller frei von deiner Hand ist), lässt den Motor mit 1700 µs laufen und steigt mit 18 Grad Nase hoch bis zum Timeout nach 5 s, dann gibt es ab. Das sind die Standardwerte von INAV, ausgeschrieben, damit du sie sehen und ändern kannst."
+    },
+    "failsafe": {
+      "title": "Failsafe: nach Hause fliegen",
+      "explain": "Der Standard-Failsafe von INAV ist LAND, was bei einem Flügel kreisend an Ort und Stelle herunterkommt. RTH fliegt ihn stattdessen nach Hause. failsafe_delay und failsafe_recovery_delay sind in Zehntelsekunden angegeben: 0,5 s verlorene Verbindung, bevor der Failsafe startet, 0,5 s gute Verbindung, bevor er enden kann. failsafe_stick_threshold ist, wie weit du einen Knüppel bewegen musst, um die Kontrolle zurückzuholen."
+    },
+    "airspeed": {
+      "title": "Fluggeschwindigkeit ohne Staurohr",
+      "explain": "VIRTUAL schätzt die Fluggeschwindigkeit aus der GPS-Geschwindigkeit und dem Wind. fw_reference_airspeed ist die Fluggeschwindigkeit, bei der die PIDs abgestimmt wurden, 1500 cm/s (15 m/s), genutzt für koordinierte Kurven. nav_fw_cruise_speed speist nur die verbleibende Flugzeit im OSD; es legt nicht fest, wie schnell INAV fliegt."
+    },
+    "angle": {
+      "title": "Angle-Modus",
+      "explain": "INAV richtet den Flügel auf, wenn du loslässt, und legt ihn nie über max_angle_inclination_rll hinaus in die Kurve: 450 Zehntelgrad, also 45 Grad. fw_level_pitch_trim bleibt hier 0; steigt oder sinkt der Flügel freihändig langsam, trimm ihn."
+    },
+    "manual": {
+      "title": "Manual",
+      "explain": "MANUAL gibt die Knüppel direkt an die Elevons weiter: Nichts richtet den Flügel auf oder stabilisiert ihn. manual_roll_rate und manual_pitch_rate sind der Prozentsatz des Servowegs bei vollem Knüppel, nicht Grad pro Sekunde; 100 ist der ganze Weg."
+    },
+    "rth": {
+      "title": "NAV RTH",
+      "explain": "NAV RTH (AUX4 oder der Failsafe) steigt zuerst auf mindestens nav_rth_altitude, 3000 cm (30 m, über den Bäumen), fliegt per GPS nach Hause und kreist dort. nav_fw_loiter_radius ist 5000 cm, also 50 m: Bei 15 m/s und der Querneigung von 35 Grad von INAV ist der engste Kreis etwa 33 m, also lassen 50 m Platz. NEVER heißt, dass er kreist, bis du übernimmst und ihn selbst landest."
+    },
+    "stats": {
+      "title": "Flugstatistik",
+      "explain": "INAV zeigt nach dem Disarmen von selbst eine Statistikseite (es gibt keine Einstellung osd_stats_page). osd_stats_energy_unit zeigt die verbrauchte Energie in mAh, jede Seite bleibt 3 s stehen, und stats = ON führt eine Gesamtzählung von Flügen, Flugzeit und Strecke."
+    }
+  },
+  "flight": {
+    "modes": {
+      "angle": {
+        "title": "Angle-Modus",
+        "hint": "INAV richtet den Flügel auf, wenn du loslässt, und legt ihn bis 45 Grad in die Kurve. Armen, dann das Gas über ein Viertel heben, um ihn zu werfen. Die Pfeiltasten neigen ihn seitlich und nach vorn oder hinten; er kurvt, indem er sich in die Kurve legt."
+      },
+      "manual": {
+        "title": "Manual",
+        "hint": "Die Knüppel bewegen die Elevons direkt, und nichts richtet den Flügel auf. Lässt du in einer Kurve los, legt er sich weiter hinein."
+      },
+      "rth": {
+        "title": "NAV RTH",
+        "hint": "Sieh zu, wie er nach Hause kommt: Er steigt auf 30 m, fliegt per GPS zurück und kreist 50 m entfernt um den Platz. Schalte zurück auf Angle, um ihn selbst zu landen."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Verbindung 0,5 s lang verloren: FAILSAFE, dann steigt RTH auf 30 m, fliegt nach Hause und kreist. Ist die Verbindung wieder da, beweg einen Knüppel, um zu übernehmen.",
+      "stall": "Unter der Abrissgeschwindigkeit kippt die Nase ab, und eine Flügelspitze fällt: Nimm die Nase runter und gib Gas, zieh nie nach hinten.",
+      "low-battery": "Unter 3,5 V pro Zelle warnt das OSD: Kehr um und lande.",
+      "fence": "Mehr als 180 m von zu Hause warnt dich die Reichweitenanzeige: Kehr um, solange du den Flügel noch sehen kannst."
+    },
+    "controls": "Tastatur: Leertaste armt und disarmt, W und S geben Gas (ab einem Viertel Gas wird der Flügel geworfen), die Pfeiltasten nicken und rollen, V schaltet auf FPV, R setzt ihn zurück auf die Piste. Ein Flügel kurvt, indem er sich in die Kurve legt: Er hat kein Seitenruder, also tun A und D nichts. Auf dem Handy ist der linke Knüppel Gas und der rechte Nicken und Rollen. Ein Gamepad funktioniert in Mode 2."
+  },
+  "courses": {
+    "pylons": {
+      "title": "Pylonrennen am Flugplatz",
+      "brief": "Vier orangefarbene Pylonen stehen in einem 80 x 50 m großen Rechteck um die Piste. Wirf den Flügel, flieg der Reihe nach außen um jeden Pylon herum, gegen den Uhrzeigersinn, und mach dann eine Bauchlandung auf der Piste: langsam, Flächen waagerecht, sanft hinunter.",
+      "prims": {
+        "pilots": "Pilotenbereich",
+        "hangar": "Hangar"
+      },
+      "goals": {
+        "1": "PYLON 1",
+        "2": "PYLON 2",
+        "3": "PYLON 3",
+        "4": "PYLON 4",
+        "5": "BAUCHLANDUNG"
+      }
+    },
+    "home": {
+      "title": "Rückkehr nach Hause",
+      "brief": "Flieg hinaus zur roten Stange in der hinteren Ecke, etwa 100 m von zu Hause, und schalte dann auf NAV RTH: INAV steigt auf 30 m, fliegt nach Hause und kreist 50 m entfernt um den Platz. Dann übernimm im Angle-Modus und mach eine Bauchlandung auf der Piste.",
+      "goals": {
+        "1": "ROTE STANGE",
+        "2": "RTH-KREIS, 30 M HOCH",
+        "3": "BAUCHLANDUNG"
+      }
+    }
+  },
+  "quizzes": {
+    "controls": {
+      "elevons": {
+        "q": "Was macht ein Elevon?",
+        "options": {
+          "1": "Es steuert nur nach links und rechts",
+          "2": "Es ist Höhen- und Querruder in einem: Beide bewegen sich zum Nicken gleichsinnig und zum Rollen gegensinnig",
+          "3": "Es ändert die Steigung des Propellers"
+        },
+        "why": "Ein Nurflügel hat kein Leitwerk, also übernehmen die beiden Ruder an seiner Endleiste beide Aufgaben. Der Mixer addiert für jedes die Befehle für Nicken und Rollen: Knüppel nach hinten hebt beide an, Knüppel nach rechts hebt das rechte an und senkt das linke."
+      },
+      "bench": {
+        "q": "Auf der Werkbank im ANGLE-Modus neigst du die rechte Fläche nach unten. In welche Richtung sollte sich das rechte Elevon bewegen?",
+        "options": {
+          "1": "Nach oben, der Neigung folgend",
+          "2": "Nach unten, um diese Fläche wieder anzuheben",
+          "3": "Gar nicht: Nur die Knüppel bewegen es"
+        },
+        "why": "In ANGLE arbeitet der Stabilisator gegen die Neigung: Das rechte Elevon geht nach unten und erzeugt mehr Auftrieb an der rechten Fläche, um sie wieder waagerecht zu rollen. Geht es stattdessen nach oben, ist der Flugcontroller verkehrt herum montiert oder seine Ausrichtung falsch, und der Flügel rollt in dem Moment ab, in dem er deine Hand verlässt. Die Knüppelprüfung allein kann das nicht erkennen."
+      }
+    },
+    "power": {
+      "pads": {
+        "q": "Welches Pad steuert auf diesem F405-Flügelboard den Druckmotor an?",
+        "options": {
+          "1": "S1: INAV gibt den ersten Ausgang an Motor 1, und die Servos nehmen den nächsten freien Timer, S3 und S4",
+          "2": "S3, nach den beiden Servos",
+          "3": "Jedes Pad: INAV findet den Motor von selbst"
+        },
+        "why": "INAV verteilt die Ausgänge nach Timern. Motor 1 bekommt S1, und S2 teilt sich dessen Timer, kann also auch nur einen Motor ansteuern. Die Servos nehmen den nächsten Timer, S3 und S4. Welches Elevon Servo 1 ist, legen die smix-Zeilen fest, und das wird auf der Werkbank geprüft."
+      },
+      "cap": {
+        "q": "Wozu der Low-ESR-Kondensator an den Akku-Pads des Power Boards?",
+        "options": {
+          "1": "Um die Servos versorgt zu halten, wenn der Akku abgesteckt ist",
+          "2": "Um die Akkuspannung zu erhöhen",
+          "3": "Um die Spannungsspitzen des ESC zu schlucken, die sonst den FC zurücksetzen oder Streifen ins Video bringen würden"
+        },
+        "why": "Jedes Mal, wenn der ESC schaltet, schwingen die Akkukabel mit Spannungsspitzen. Ein Low-ESR-Kondensator mit 470 µF direkt an den Pads fängt sie ab. 25 V reichen für 4S (voll 16,8 V); 35 V erlauben bis 6S. Streifen zum Minus-Pad."
+      }
+    },
+    "balance": {
+      "tail": {
+        "q": "Du tauschst den 4S 2200 an derselben Stelle gegen einen leichten 3S 1300. Was passiert?",
+        "options": {
+          "1": "Nichts: Der Schwerpunkt hängt nicht vom Akku ab",
+          "2": "Der Flügel wird schwanzlastig: Nach dem Wurf bäumt er sich auf und hat einen Strömungsabriss. Schieb den Akku nach vorn oder ergänz Gewicht in der Nase",
+          "3": "Er wird kopflastig und stürzt nach vorn ab"
+        },
+        "why": "Bei einem Flügel ist der Akku der Ballast, der den Schwerpunkt auf die Marken bringt. Ein leichterer Akku im selben Schacht lässt den Schwerpunkt nach hinten wandern, und ein schwanzlastiger Flügel bäumt sich auf, schaukelt auf und ab und reißt ab, oft direkt nach dem Wurf. Kopflastig ist die sichere Seite: Er braucht etwas mehr Tempo, aber er fliegt."
+      },
+      "mac": {
+        "q": "Wo liegt der Schwerpunkt bei einem Pfeilflügel wie diesem?",
+        "options": {
+          "1": "Bei 15 bis 20 % der mittleren aerodynamischen Profiltiefe: hier etwa 125 bis 135 mm hinter der Nasenkante an der Wurzel",
+          "2": "Bei 25 % der Wurzeltiefe, 75 mm hinter der Nasenkante",
+          "3": "Auf halbem Weg zwischen Nase und Endleiste"
+        },
+        "why": "Bei einem gepfeilten, zugespitzten Flügel wird der Schwerpunkt an der mittleren aerodynamischen Profiltiefe gemessen, die weiter draußen in der Spannweite und weiter hinten als die Wurzel liegt. 25 % der Wurzeltiefe wäre viel zu weit vorn, und 25 % der mittleren Profiltiefe ist etwa der Neutralpunkt, zu weit hinten zum Fliegen. Balancier ihn auf zwei Fingerspitzen an den Marken aus: waagerecht oder leicht mit der Nase nach unten."
+      }
+    },
+    "flight": {
+      "stall": {
+        "q": "Direkt nach dem Wurf wird der Flügel langsamer, eine Spitze fällt, und die Nase kippt ab. Was ist passiert, und was tust du?",
+        "options": {
+          "1": "Der Motor ist stehen geblieben: Schalte auf Manual",
+          "2": "Er hatte einen Strömungsabriss, zu langsam oder mit hoher Nase geworfen: Nimm die Nase runter, bring die Flächen waagerecht und gib Gas",
+          "3": "Das GPS hat seinen Fix verloren: Warte darauf"
+        },
+        "why": "Unter seiner Abrissgeschwindigkeit (etwa 9 bis 10 m/s bei diesem Flügel) erzeugt der Flügel keinen Auftrieb mehr, und eine Spitze fällt. Ziehen macht es schlimmer. Lass die Nase sinken, um Fahrt aufzunehmen, bring die Flächen waagerecht und gib Gas. Wirf ihn waagerecht oder ein paar Grad mit der Nase nach oben, gegen den Wind, mit halbem Gas oder mehr."
+      },
+      "loiter": {
+        "q": "Warum ist nav_fw_loiter_radius 50 m und nicht 22 m?",
+        "options": {
+          "1": "Um Akku zu sparen",
+          "2": "Weil INAV in Fuß zählt",
+          "3": "Ein Flügel kann nicht schweben: Bei 15 m/s und 35 Grad Querneigung ist sein engster Kreis etwa 33 m, also lässt sich ein 22-m-Kreis nicht fliegen"
+        },
+        "why": "Der Kurvenradius ist die Geschwindigkeit zum Quadrat geteilt durch g mal den Tangens der Querneigung: 15² / (9.81 x tan 35°) ergibt etwa 33 m. Verlangst du einen kleineren Kreis, fliegt der Flügel einen wackligen größeren. Der Standard von INAV ist 75 m, und 30 bis 75 m ist der sinnvolle Bereich."
+      },
+      "failsafe": {
+        "q": "Weit draußen bricht die Verbindung für eine Sekunde ab. Was macht dieser Flügel?",
+        "options": {
+          "1": "Nach 0,5 s geht er in den Failsafe und RTH: Er steigt auf 30 m, fliegt nach Hause und kreist, bis du übernimmst",
+          "2": "Er schaltet den Motor ab und gleitet an Ort und Stelle hinunter",
+          "3": "Er fliegt geradeaus weiter, bis der Akku leer ist"
+        },
+        "why": "failsafe_procedure = RTH ersetzt das standardmäßige LAND von INAV, das an Ort und Stelle kreisend herunterkommt. failsafe_delay = 5 sind 0,5 s. Ist die Verbindung wieder da, gibt dir ein Knüppelausschlag über failsafe_stick_threshold hinaus die Kontrolle zurück."
+      },
+      "motor": {
+        "q": "Warum ist der Quad-Motor 2306 mit 2400 KV eine schlechte Wahl für diesen Flügel?",
+        "options": {
+          "1": "Er ist zu schwer",
+          "2": "Mit einem 8-Zoll-Propeller an 4S würde er rund 100 A ziehen, weit über dem 40-A-ESC: Motor oder ESC brennen in Sekunden durch",
+          "3": "Er dreht sich falsch herum"
+        },
+        "why": "Ein Motor für einen 5-Zoll-Quad ist so gewickelt, dass er einen kleinen Propeller sehr schnell dreht. Gib ihm einen 8x6, und der Strom steigt mit der Last: laut Rechner etwa 97 A. Flügelmotoren an 4S haben mit 8-Zoll-Propellern etwa 1000 bis 1400 KV."
+      }
+    }
+  }
+}
