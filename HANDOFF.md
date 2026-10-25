@@ -83,7 +83,7 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 
 ## Current status
 
-- **Updated:** 2026-10-25 07:17 CDT (machine clock).
+- **Updated:** 2026-10-25 07:19 CDT (machine clock).
 - **Driver:** Amar Kushwaha, Mac Amars-MacBook-Pro.local, since 2026-10-24 18:22 CDT (new session). Amar is asleep
   since 22:20 and gave full autonomy for every remaining build phase except Solana and hardware, then at 02:02 a final
   pass on every page (CONTEXT.md §5). The Mac is kept awake by `caffeinate -dimsu -t 54000` (pid 28721, from 23:08,
@@ -114,7 +114,10 @@ Anything the next driver needs must end up in the repo. Machine-local state is o
 - **Decided:** D1 (tracks). Amar: "Everything else looks fine." Jagrati (16:13): D2 confirmed; D4 keys stay
   placeholders until the morning; Vultr, the Vercel env upload and Tiger not approved yet; D3 (devnet SOL) only with
   phase 4, now skipped.
-- **Runs, all done** (scripts in `scripts/workflows/`, `git log` shows what each label pushed): phase 1 (gate 1
+- **Running:** interaction audit `wf_e0b543cb-6eb` (`scripts/workflows/interaction-audit.js`, from 07:19): labels
+  find:boards, find:robotics, find:drones, find:fly, find:shell, each with a verify step; read-only against the build
+  served at http://127.0.0.1:3000 (`.next-tags`). Its confirmed findings come back to the driver to fix.
+- **Runs before it, all done** (scripts in `scripts/workflows/`, `git log` shows what each label pushed): phase 1 (gate 1
   green at 19:21), wave A `wf_bde0e200-6a3` (9 labels, 20:17-21:27), wave B `wf_7b610548-7fb` (10 labels, from
   22:30), its tail `wf_759ed985-c9a`, prose T1 `wf_0e06f30a-c43`, figure dictionaries T2a `wf_07ad23ac-e47`, prose T2
   `wf_788dd7a3-f68` and UI strings `wf_c44031b5-93f` (every item in six languages), docs D `wf_d61de94b-466`, quizzes
