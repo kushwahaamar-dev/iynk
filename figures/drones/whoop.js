@@ -216,7 +216,7 @@
   SL.drone.define({
     id: 'whoop', fig: '02', title: 'Tiny Whoop 65 mm', palette: 'mint',
     mat: 108, height: 70, explode: 5.8, log: 'betaflight', arrowZ: 8,
-    bounds: [-44, 44, -44, 44, 0, 42],
+    bounds: [-30, 30, -30, 30, 0, 34],
     frame: {
       layout: 'whoop', wheelbase: 65, numbering: 'betaflight',
       arm: { w: 3.2, t: FT, pad: 5.4 }, plate: { l: 30, w: 16, z: FZ, r: 4 }, motorZ: MZ,
