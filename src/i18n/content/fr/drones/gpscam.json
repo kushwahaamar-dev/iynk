@@ -1,0 +1,381 @@
+{
+  "title": "Drone caméra GPS",
+  "tagline": "Un quad de classe F450 sous ArduPilot qui sait où il est : il tient sa position dans le vent, rentre tout seul au départ et garde la caméra à l'horizontale.",
+  "sub": "ArduCopter + Pixhawk 6C",
+  "hint": "Montez un quad GPS, calibrez sa boussole, puis volez une mission photo autour d'un mât",
+  "noun": "drone caméra GPS",
+  "overview": "C'est le drone que la plupart des gens imaginent : un quad de taille moyenne qui sait où il est. Son Pixhawk fait tourner ArduPilot, dont l'estimateur (EKF3) fusionne le gyroscope, l'accéléromètre, le baromètre, la boussole et le GPS en une seule position et une seule vitesse. C'est ce qui lui permet de tenir un point dans le vent en Loiter, de ne tenir que sa hauteur en AltHold, de rentrer au départ et de se poser tout seul en RTL, et de voler une route planifiée en AUTO pendant qu'une nacelle garde la caméra à l'horizontale. Il est fait pour des vols longs et fluides plutôt que pour le punch : des moteurs à faible KV, de grandes hélices lentes de 10 pouces et une grosse batterie 4S. Les drones comme lui font de la photo aérienne, des inspections de toits et de mâts et de la cartographie, et la même architecture est la plateforme d'apprentissage standard d'ArduPilot et de PX4 (le kit X500 de Holybro en est une). Choisissez les pièces et regardez les chiffres, montez-le, passez les vérifications au banc, puis volez l'inspection du mât à la main ou laissez AUTO la voler.",
+  "practice": "Volez d'abord l'inspection du mât en Loiter : le drone s'arrête quand vous lâchez les manches, vous pouvez donc aligner chaque point photo à votre rythme. Essayez ensuite AltHold et voyez-le dériver avec le vent, puis Stabilize pour sentir ce que le GPS faisait pour vous. Enfin, passez en AUTO et regardez-le voler la même route, en marquant une pause à chaque point photo, puis RTL et atterrissage. Sur un vrai montage : smoke stopper au premier branchement, test moteur sans hélices (A à l'avant droit, puis dans le sens horaire), calibrage de l'accéléromètre et de la boussole loin du métal, accroche GPS en extérieur, test de failsafe sans hélices, et lisez chaque message PreArm avant le premier vol.",
+  "design": {
+    "fixed": {
+      "FRAME": "Châssis F450 : plaque-carte d'alimentation et 4 bras",
+      "GEAR": "Train d'atterrissage et support de batterie",
+      "ESC": "4 ESC de 30 A",
+      "XT60": "Module d'alimentation PM02, XT60 et condensateur",
+      "FC": "Contrôleur de vol Pixhawk 6C",
+      "GPS": "GPS M10 + boussole sur un mât",
+      "TELEM": "Radio de télémétrie SiK 915 MHz",
+      "RX": "Récepteur ExpressLRS 2,4 GHz",
+      "GIMBAL": "Nacelle brushless 2 axes + caméra",
+      "TOP": "Plaque supérieure et vis",
+      "STRAP": "Sangles de batterie"
+    },
+    "verdict": {
+      "over": "{kv} KV en {cells}S avec ces hélices demandent bien plus de courant que ce que les moteurs et les ESC peuvent encaisser : ils surchauffent et un ESC se désynchronise. Un faible KV et de grandes hélices conviennent à un drone caméra.",
+      "weak": "Un rapport poussée/poids de {tw}:1 est trop faible : il montera à peine et ne pourra pas tenir sa position dans le vent. Un drone caméra demande environ 2:1 ou plus.",
+      "ok": "Les pièces vont ensemble : {tw}:1, c'est largement assez pour un drone caméra, et le faible courant en stationnaire donne de longs vols. Les gaz de stationnaire du calculateur sont pessimistes pour cette classe : les vrais F450 tiennent le stationnaire entre 35 et 50 %, et ArduPilot apprend la vraie valeur en vol."
+    }
+  },
+  "parts": {
+    "GEAR": {
+      "name": "Train d'atterrissage, patins et support de batterie",
+      "what": "Deux tubes de patins sur quatre jambes soulèvent le châssis à 120 mm du sol, pour que la nacelle sous le nez ne touche pas le sol à l'atterrissage. Un support entre les jambes porte la batterie en bas, sous le centre du châssis."
+    },
+    "FRAME": {
+      "name": "Châssis F450 : plaque-carte d'alimentation et 4 bras",
+      "what": "Le classique châssis de 450 mm façon DJI : quatre bras moulés boulonnés entre deux plaques, les moteurs à 450 mm l'un de l'autre en diagonale. La plaque inférieure est un circuit imprimé qui sert aussi de carte de distribution d'alimentation, avec les pastilles de batterie à l'arrière et une pastille plus et une pastille moins à la base de chaque bras pour son ESC. Les deux bras avant sont colorés pour qu'on distingue le nez depuis le sol."
+    },
+    "MOTORS": {
+      "name": "4 moteurs brushless (2212, 920 KV)",
+      "what": "Des moteurs à cage tournante avec un stator de 22 mm de large et 12 mm de haut. 920 KV sur une batterie 4S font tourner une hélice de 10 pouces à environ 13 600 rpm à vide : lentement et efficacement, ce qui donne à un drone caméra 15 à 20 minutes en l'air. ArduPilot les numérote M1 avant droit, M2 arrière gauche, M3 avant gauche, M4 arrière droit."
+    },
+    "ESC": {
+      "name": "4 ESC séparés de 30 A sur les bras",
+      "what": "Un variateur par bras, chacun alimenté par ses pastilles sur la carte d'alimentation et envoyant la commande triphasée à son moteur. Ils reçoivent le DShot600 des sorties MAIN du Pixhawk. Un moteur de classe 2216 avec une hélice de 10 pouces tire environ 3 A en stationnaire et 16 A à fond : 30 A laissent donc beaucoup de marge."
+    },
+    "WIRES": {
+      "name": "Fils de phase des moteurs et fils d'alimentation des ESC",
+      "what": "Trois fils de phase de chaque ESC vers son moteur, et un fil rouge et un fil noir de chaque ESC vers ses pastilles sur la carte d'alimentation. Inverser deux fils de phase inverse un moteur ; en DShot, vous pouvez aussi l'inverser dans les réglages de l'ESC."
+    },
+    "XT60": {
+      "name": "Module d'alimentation PM02, XT60 et condensateur à faible ESR",
+      "what": "La batterie se branche sur le XT60 du module d'alimentation. Il fait passer le courant vers la carte d'alimentation, mesure la tension et le courant pour le moniteur de batterie d'ArduPilot, et donne au Pixhawk son propre 5,2 V propre par le câble POWER1 à 6 broches. Un condensateur à faible ESR entre les pastilles de batterie absorbe les pics ; sa bande va côté moins."
+    },
+    "TOP": {
+      "name": "Plaque supérieure, boulonnée sur les bras",
+      "what": "La plaque supérieure ferme le châssis au-dessus de la base des bras et du câblage. Tout ce qui a besoin d'une vue dégagée sur le ciel ou d'un endroit calme se pose dessus : le Pixhawk, le mât GPS et les deux radios."
+    },
+    "FC": {
+      "name": "Contrôleur de vol Pixhawk 6C (ArduCopter)",
+      "what": "Un STM32H743 à 480 MHz avec deux IMU régulées en température et isolées des vibrations, et un baromètre, qui fait tourner ArduCopter 4.7.2. Il se monte sur mousse au milieu de la plaque supérieure, flèche vers le nez. Il a huit sorties MAIN (IO) et huit sorties AUX (FMU), trois ports TELEM, deux ports GPS et deux bus CAN, et il s'alimente par le module d'alimentation, pas par le rail des servos."
+    },
+    "GPS": {
+      "name": "GPS M10 + boussole sur un mât",
+      "what": "Un récepteur u-blox M10 et une boussole IST8310 dans un seul palet, avec la LED d'état d'ArduPilot (bleu clignotant : pas de fix, vert : fix 3D). Il est monté sur un mât repliable parce que le courant de la batterie et des ESC crée un champ magnétique qui fausse une boussole ; quelques centimètres de hauteur le réduisent beaucoup. Sa flèche doit pointer vers le nez, comme celle du Pixhawk."
+    },
+    "TELEM": {
+      "name": "Radio de télémétrie SiK 915 MHz",
+      "what": "Une liaison radio MAVLink vers la station sol (915 MHz aux Amériques, 433 MHz en Europe) sur TELEM1. C'est par elle que Mission Planner ou QGroundControl affiche le drone sur une carte, téléverse les missions et change les paramètres en vol."
+    },
+    "RX": {
+      "name": "Récepteur ExpressLRS 2,4 GHz (CRSF)",
+      "what": "La liaison radio du pilote, câblée sur TELEM2 comme récepteur série. ELRS parle CRSF, qui demande un UART complet avec TX et RX : la broche RCIN du Pixhawk 6C accepte le SBUS et le PPM, mais pas le CRSF. Il renvoie aussi la qualité de liaison pour que la station sol puisse l'afficher."
+    },
+    "GIMBAL": {
+      "name": "Nacelle brushless 2 axes et caméra",
+      "what": "Une caméra sur deux petits moteurs brushless, roulis et tangage, sous le nez sur des amortisseurs en caoutchouc. La nacelle a son propre contrôleur et sa propre IMU et garde la caméra à l'horizontale toute seule ; ArduPilot lui indique seulement l'angle à viser, par deux fils PWM depuis AUX 1 et 2. Le tangage va de la verticale vers le bas (-90°) à 25° vers le haut. Une nacelle 2 axes ne peut pas tourner la caméra sur le côté : c'est donc le drone qui pivote en lacet pour la viser."
+    },
+    "BATT": {
+      "name": "Batterie LiPo et sangles",
+      "what": "Une batterie 4S de 5000 mAh (environ 500 g, 74 Wh) sanglée sur le support sous le châssis. Un drone caméra porte une grosse batterie parce qu'il passe le plus clair de son temps en stationnaire : ici, elle donne 15 à 20 minutes."
+    },
+    "PROPS": {
+      "name": "Hélices bipales 10 pouces, 2 CW + 2 CCW",
+      "what": "De grandes hélices lentes, c'est ce qui rend le drone efficace. M1 et M2 tournent en sens antihoraire et prennent des hélices CCW, M3 et M4 tournent en sens horaire et prennent des hélices CW (ArduPilot les appelle pushers). Le bord le plus épais et arrondi de chaque pale passe en premier dans le sens où elle tourne."
+    }
+  },
+  "build": {
+    "gear": {
+      "title": "Assemblez le train d'atterrissage et le support de batterie",
+      "body": "Boulonnez les quatre jambes dans les tubes de patins, posez les embouts en caoutchouc et vissez le support de batterie entre les jambes."
+    },
+    "frame": {
+      "title": "Montez le châssis F450 sur le train",
+      "body": "Vissez les quatre bras sur la plaque-carte d'alimentation, bras colorés à l'avant, et boulonnez le châssis sur la fixation du train. Vérifiez que les bras sont d'équerre : un bras tordu incline son moteur, qui lutte contre les autres.",
+      "refusal": "Le châssis se boulonne sur le train d'atterrissage : assemblez d'abord le train."
+    },
+    "motors": {
+      "title": "Montez les quatre moteurs",
+      "body": "Quatre vis M3 chacun dans le bout des bras, fils vers l'intérieur. Des vis trop longues atteignent les bobinages et les mettent en court-circuit.",
+      "refusal": "Les moteurs se montent au bout des bras : montez d'abord le châssis."
+    },
+    "esc": {
+      "title": "Posez un ESC sur chaque bras",
+      "body": "Fixez chaque ESC de 30 A au collier sur le dessus de son bras, entre le moteur et le châssis, fils d'alimentation vers le milieu.",
+      "refusal": "Les ESC se posent sur les bras : montez d'abord le châssis."
+    },
+    "wires": {
+      "title": "Câblez les moteurs et les fils d'alimentation des ESC",
+      "body": "Reliez les trois fils de phase de chaque moteur à son ESC, puis soudez les fils rouge et noir de chaque ESC sur les pastilles à la base de son bras sur la carte d'alimentation : rouge sur plus, noir sur moins.",
+      "refusal": "Ces fils relient les moteurs et les ESC : posez d'abord les deux."
+    },
+    "power": {
+      "title": "Posez le module d'alimentation et le condensateur",
+      "body": "Le PM02 se place à l'arrière de la carte d'alimentation, son XT60 pendant à l'arrière. Soudez sa sortie sur les pastilles de batterie, et le condensateur sur ces mêmes pastilles, bande côté moins. Le câble à 6 broches ira sur le POWER1 du Pixhawk.",
+      "refusal": "Le module d'alimentation alimente les pastilles des ESC sur la carte d'alimentation : posez d'abord les ESC."
+    },
+    "top": {
+      "title": "Fermez le châssis avec la plaque supérieure",
+      "body": "Boulonnez la plaque supérieure sur les bras. Vérifiez qu'aucun fil n'est pincé entre un bras et une plaque avant de serrer.",
+      "refusal": "La plaque supérieure couvre le câblage et le module d'alimentation : posez d'abord les deux."
+    },
+    "fc": {
+      "title": "Montez le Pixhawk, flèche vers l'avant",
+      "body": "Sur son patin en mousse au milieu de la plaque supérieure, flèche vers le nez. Branchez le module d'alimentation sur POWER1 et les quatre fils de signal des ESC sur MAIN OUT 1 à 4, dans l'ordre des moteurs.",
+      "refusal": "Le Pixhawk se monte sur la plaque supérieure : posez d'abord la plaque supérieure."
+    },
+    "gps": {
+      "title": "Dressez le mât GPS à l'arrière",
+      "body": "Dépliez le mât à l'arrière de la plaque supérieure, flèche du palet vers le nez, et branchez son câble à 10 broches sur GPS1. Plus il est haut au-dessus des fils de puissance, plus la boussole lit proprement.",
+      "refusal": "Le mât GPS se monte sur la plaque supérieure : posez d'abord la plaque supérieure."
+    },
+    "telem": {
+      "title": "Posez la radio de télémétrie sur TELEM1",
+      "body": "Sur la plaque supérieure à l'arrière gauche, antenne droite, câble sur TELEM1. La radio de la station sol sur votre ordinateur portable est son autre moitié.",
+      "refusal": "La radio de télémétrie se branche sur le Pixhawk : montez d'abord le Pixhawk."
+    },
+    "rx": {
+      "title": "Posez le récepteur ELRS sur TELEM2",
+      "body": "À l'arrière droit, son antenne en T loin du carbone et des hélices. TX sur RX et RX sur TX sur TELEM2, jamais sur RCIN : le CRSF demande un port série complet.",
+      "refusal": "Le récepteur se branche sur le Pixhawk : montez d'abord le Pixhawk."
+    },
+    "gimbal": {
+      "title": "Suspendez la nacelle sous le nez",
+      "body": "Boulonnez le support sous l'avant du châssis, suspendez la plaque amortie sur ses quatre billes en caoutchouc et posez la caméra. Faites passer les fils de signal du roulis et du tangage vers AUX 1 et 2, et alimentez la nacelle par un BEC : le Pixhawk n'alimente pas son rail de servos.",
+      "refusal": "Le support de la nacelle se boulonne sous le châssis : montez d'abord le châssis."
+    },
+    "batt": {
+      "title": "Sanglez la batterie sur le support",
+      "body": "Patin antidérapant, batterie, deux sangles, câble vers l'arrière et le XT60 du module d'alimentation. Soulevez le drone par la plaque supérieure et faites glisser la batterie jusqu'à ce qu'il pende à plat.",
+      "refusal": "La batterie se pose sur le support du train et se branche sur le module d'alimentation : posez d'abord les deux."
+    },
+    "props": {
+      "title": "Les hélices en dernier",
+      "body": "Seulement après le test au smoke stopper et le test moteur. Les hélices CCW sur M1 (avant droit) et M2 (arrière gauche), les hélices CW sur M3 (avant gauche) et M4 (arrière droit), bord arrondi en tête.",
+      "refusal": "Les hélices se montent en dernier : posez les moteurs et la plaque supérieure, puis passez le test au smoke stopper et le test moteur."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "Le XT60 de la batterie se branche sur le module d'alimentation. Une batterie 4S fait 16,8 V pleine et 14,8 V en nominal.",
+    "XT60-ESC": "La sortie du module d'alimentation va sur les pastilles de batterie de la carte d'alimentation ; le cuivre de la carte la porte jusqu'à une pastille plus et une pastille moins à la base de chaque bras, où sont soudés les fils de chaque ESC.",
+    "ESC-MOTORS": "Trois fils de phase de chaque ESC vers son moteur. N'importe quel ordre le fait tourner ; en inverser deux l'inverse.",
+    "XT60-FC": "Le câble à 6 broches vers POWER1 porte l'alimentation 5,2 V du Pixhawk plus les lignes de mesure de tension et de courant pour le moniteur de batterie (BATT_MONITOR 4).",
+    "FC-ESC": "MAIN OUT 1 à 4 portent le DShot600 vers les moteurs 1 à 4. Sur un Pixhawk 6C, les sorties MAIN viennent de la puce IO, qui a besoin de BRD_IO_DSHOT 1 pour parler DShot.",
+    "GPS-FC": "Un seul câble à 10 broches vers GPS1 : les données série du GPS (SERIAL3) et la boussole en I²C, plus la LED et le 5 V.",
+    "TELEM-FC": "La radio SiK sur TELEM1 (SERIAL1) à 57600 bauds, MAVLink2 dans les deux sens.",
+    "RX-FC": "Le récepteur ELRS sur TELEM2 (SERIAL2, protocole 23 RCIN) à 420 kbauds, réglé par le bit 13 de RC_OPTIONS.",
+    "FC-GIMBAL": "Deux fils de signal PWM depuis AUX 1 et AUX 2 (SERVO9 roulis, SERVO10 tangage). La nacelle prend son alimentation sur un BEC, pas sur le Pixhawk."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Test au smoke stopper",
+      "pass": "La lampe n'a fait que clignoter : pas de court-circuit entre plus et moins. Vous pouvez brancher la batterie directement.",
+      "fail": "La lampe est restée allumée : quelque chose est en court-circuit. Ici, le condensateur est à l'envers ; retournez-le (bande côté moins) et refaites le test."
+    },
+    "motors": {
+      "title": "Test moteur (sans hélices)",
+      "pass": "Le test moteur de Mission Planner les a fait tourner de A à D, en commençant à l'avant droit et en tournant dans le sens horaire : M1 et M2 en antihoraire, M3 et M4 en horaire. Les hélices peuvent être montées.",
+      "fail": "Un moteur a tourné dans le mauvais sens. Inversez deux de ses fils de phase, ou inversez-le dans l'ESC ; avec les hélices montées, il se retournerait au décollage."
+    },
+    "calibrate": {
+      "title": "Calibrage de l'accéléromètre",
+      "pass": "Calibré dans les six positions (à plat, sur les deux côtés, nez en bas, nez en haut, sur le dos), puis « Calibrate Level » dans l'attitude de vol. Le blocage pré-armement « 3D Accel calibration needed » a disparu.",
+      "fail": "Posez d'abord le Pixhawk. Si sa flèche pointe vers l'arrière, tournez-le ou réglez AHRS_ORIENTATION sur 4 (Yaw180), redémarrez et recalibrez."
+    },
+    "compass": {
+      "title": "Calibrage de la boussole",
+      "pass": "Le calibrage embarqué a échantillonné chaque côté, enregistré les offsets et demandé un redémarrage. Avec la flèche du palet vers l'avant, boussole et GPS concordent : Loiter reste donc immobile au lieu de tourner en rond.",
+      "fail": "Posez le Pixhawk et le GPS, et retirez les hélices : vous retournez le drone dans vos mains. Si le palet est tourné vers l'arrière, la boussole lit 180° d'écart avec la route GPS et le pré-armement affiche « Compasses inconsistent »."
+    },
+    "gps": {
+      "title": "Accroche du GPS",
+      "pass": "Fix 3D avec 14 satellites et un HDOP de 0,8 : l'EKF3 utilise le GPS, la LED clignote en vert et Loiter, RTL et AUTO sont autorisés.",
+      "fail": "Posez le Pixhawk et le GPS, et branchez la batterie : le GPS a besoin d'alimentation et d'une vue dégagée sur le ciel. Sans fix 3D, le pré-armement affiche « GPS 1: Bad fix »."
+    },
+    "failsafe": {
+      "title": "Failsafe radio (sans hélices)",
+      "pass": "Armé au banc, émetteur coupé : au sol, il désarme aussitôt. En l'air, FS_THR_ENABLE 1 le ferait passer en RTL et le ramènerait au départ.",
+      "fail": "Retirez les hélices, posez le Pixhawk et le récepteur, et branchez la batterie. Un drone sans failsafe radio garde ses derniers ordres de manches et s'envole au loin."
+    },
+    "gimbal": {
+      "title": "Test de la nacelle",
+      "pass": "Le bouton d'inclinaison a fait passer la caméra de la verticale vers le bas (-90°) à 25° vers le haut et retour, et le roulis est resté à plat : la nacelle suit MNT1 et tient l'horizon toute seule.",
+      "fail": "Posez la nacelle et le Pixhawk et branchez la batterie : la nacelle est alimentée par son propre BEC sur la batterie."
+    },
+    "prearm": {
+      "title": "Vérifications pré-armement",
+      "pass": "Aucun message PreArm : accéléromètre et boussole calibrés et concordants, récepteur détecté, fix GPS 3D. Prêt à armer en Loiter.",
+      "fail": "ArduPilot nomme la première chose qui ne va pas, par exemple « PreArm: GPS 1: Bad fix » ou « PreArm: Compasses inconsistent ». Corrigez celle-là et relancez les vérifications ; ne les sautez jamais avec ARMING_SKIPCHK."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Châssis, sorties et alimentation",
+      "explain": "Dans ArduCopter 4.7.2, on règle des paramètres, pas des commandes : dans MAVProxy, chaque param set est enregistré aussitôt ; dans Mission Planner, c'est « Write Params ». Châssis Quad X, DShot600 sur les sorties MAIN (la puce IO du 6C a besoin pour ça de BRD_IO_DSHOT 1), le PM02 comme moniteur de batterie analogique, et les tensions pleine et vide de la batterie pour que la poussée ne faiblisse pas à mesure que la batterie se vide."
+    },
+    "radio": {
+      "title": "Ports de la télémétrie, du récepteur et du GPS",
+      "explain": "Chaque port série reçoit un protocole : MAVLink2 pour la radio SiK sur TELEM1, RCIN pour le récepteur ELRS sur TELEM2 à 420 kbauds, GPS sur GPS1. COMPASS_ORIENT indique dans quel sens est tournée la boussole du palet."
+    },
+    "modes": {
+      "title": "L'interrupteur de modes",
+      "explain": "Le canal 5 choisit l'un des six modes de vol selon sa plage PWM. Les nombres sont les numéros de mode d'ArduCopter : 5 Loiter, 2 AltHold, 3 Auto, 0 Stabilize, 9 Land, 6 RTL. Loiter est en position 1 : un coup d'interrupteur paniqué jusqu'au bout vous donne donc un drone qui s'arrête et tient sa position."
+    },
+    "gimbal": {
+      "title": "Nacelle sur AUX 1 et 2",
+      "explain": "Le type 7 (BrushlessPWM) est fait pour une nacelle qui se stabilise elle-même : ArduPilot envoie seulement l'angle voulu sur deux sorties. Le type 1 est fait pour de simples servos qu'ArduPilot doit stabiliser ; sur une nacelle brushless, les deux essaieraient de compenser l'inclinaison. Le bouton d'inclinaison sur le canal 6 fait varier le tangage entre -90° et 25°."
+    },
+    "failsafe": {
+      "title": "Failsafes et barrière",
+      "explain": "Radio perdue : RTL. Batterie faible (3,5 V par cellule, ou 1000 mAh restants) : RTL. Batterie critique (3,3 V par cellule) : atterrissage sur place. Les valeurs par défaut sont faites pour la 3S : un drone 4S doit donc régler ses propres tensions. La barrière le renvoie au départ s'il monte au-dessus de 100 m ou s'éloigne à plus de 300 m du départ."
+    },
+    "stabilize": {
+      "title": "Stabilize",
+      "explain": "Le drone se remet à plat tout seul et le manche des gaz pilote directement les moteurs : c'est donc vous qui tenez la hauteur. ATC_ANGLE_MAX plafonne l'inclinaison dans tous les modes ; dans la 4.7, il est en degrés (c'était ANGLE_MAX, en centièmes de degré)."
+    },
+    "althold": {
+      "title": "AltHold",
+      "explain": "Le baromètre tient la hauteur. Des gaz au milieu la tiennent ; vers le haut ou le bas, ils demandent une montée ou une descente, jusqu'à PILOT_SPD_UP (2,5 m/s). Il n'y a pas de maintien de position : le vent le pousse donc."
+    },
+    "loiter": {
+      "title": "Loiter",
+      "explain": "Le GPS et la boussole tiennent la position en plus de la hauteur : lâchez et il freine et s'arrête. Les manches demandent une vitesse, jusqu'à LOIT_SPEED_MS. La 4.7 a renommé les paramètres de Loiter en unités SI : LOIT_SPEED 500 (cm/s) est devenu LOIT_SPEED_MS 5."
+    },
+    "rtl": {
+      "title": "Retour au point de décollage",
+      "explain": "Il monte à RTL_ALT_M (ou reste plus haut s'il l'est déjà), rentre au départ à WP_SPD, reste en stationnaire au-dessus du départ pendant RTL_LOIT_TIME et se pose à LAND_SPD_MS. Réglez RTL_ALT_M au-dessus de tout ce qui se trouve entre le drone et le départ : ici, le mât fait 18 m, donc 20 m."
+    },
+    "auto": {
+      "title": "AUTO : l'inspection du mât",
+      "explain": "AUTO vole la mission chargée : décollage à 8 m, quatre points photo autour du mât à 12 m, puis RTL. ArduCopter refuse d'armer en AUTO sauf si AUTO_OPTIONS l'autorise : armez donc en Loiter, puis basculez. La console du labo n'a pas de chargeur de mission ; la ligne wp montre ce que vous taperiez dans MAVProxy."
+    }
+  },
+  "flight": {
+    "modes": {
+      "loiter": {
+        "title": "Loiter",
+        "hint": "Maintien de position par GPS : les manches règlent une vitesse jusqu'à 5 m/s, et le drone s'arrête quand vous lâchez."
+      },
+      "althold": {
+        "title": "AltHold",
+        "hint": "Le baromètre tient la hauteur, mais rien ne tient la position : le vent le fait dériver."
+      },
+      "stabilize": {
+        "title": "Stabilize",
+        "hint": "Auto-stabilisé avec une inclinaison limitée à 30° ; les gaz sont à vous : c'est donc vous qui tenez la hauteur."
+      },
+      "rtl": {
+        "title": "RTL",
+        "hint": "Monte à 20 m, rentre au départ et se pose tout seul sur la plateforme."
+      },
+      "auto": {
+        "title": "Mission AUTO",
+        "hint": "Vole l'inspection tout seul : quatre arrêts photo autour du mât, puis retour au départ pour se poser."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Radio perdue : le drone passe en RTL, monte à 20 m et rentre au départ.",
+      "low-battery": "Sous 14,0 V ou à 1000 mAh restants : RTL, avec de la marge.",
+      "battery-critical": "Sous 13,2 V : il se pose sur place plutôt que de risquer le vol du retour.",
+      "ekf": "L'estimateur ne se fie plus à sa position (une mauvaise boussole et un mauvais GPS à la fois) : il se pose.",
+      "fence": "Au-dessus de 100 m ou à plus de 300 m du départ : RTL."
+    },
+    "controls": "Clavier : Espace arme et désarme, W et S pour monter et descendre, les flèches pour voler en avant, en arrière et sur les côtés, A et D pour le lacet, V passe à la caméra de la nacelle, R replace le drone sur la plateforme. En Loiter, il s'arrête quand vous lâchez. Sur téléphone, le manche gauche gère les gaz et le lacet, le manche droit le tangage et le roulis. Une manette fonctionne en Mode 2."
+  },
+  "courses": {
+    "inspection": {
+      "title": "Inspection du mât",
+      "brief": "Décollez de la plateforme, photographiez le mât télécom sur ses quatre faces à 12 m de haut et 8 m de distance, puis rentrez et posez-vous sur la plateforme. Volez-la vous-même en Loiter contre les temps de référence, ou passez en AUTO et regardez-le voler la mission.",
+      "goals": {
+        "1": "DÉCOLLAGE : montée à 8 m",
+        "2": "PHOTO 1 : face sud",
+        "3": "PHOTO 2 : face est",
+        "4": "PHOTO 3 : face nord",
+        "5": "PHOTO 4 : face ouest",
+        "6": "RETOUR : atterrissage sur la plateforme"
+      }
+    }
+  },
+  "quizzes": {
+    "power": {
+      "module": {
+        "q": "Que fait le module d'alimentation en plus de laisser passer le courant de la batterie ?",
+        "options": {
+          "1": "Il recharge la batterie en vol",
+          "2": "Il pilote les moteurs",
+          "3": "Il mesure la tension et le courant et donne au Pixhawk son propre 5,2 V"
+        },
+        "why": "Le PM02 indique à ArduPilot la charge restante (pour le failsafe batterie) et alimente le Pixhawk par une alimentation propre sur POWER1, séparée du côté bruyant des ESC."
+      },
+      "hover": {
+        "q": "Pourquoi un drone caméra utilise-t-il des moteurs de 920 KV et des hélices de 10 pouces plutôt que les 2500 KV et les hélices de 5 pouces d'un racer ?",
+        "options": {
+          "1": "De grandes hélices lentes déplacent plus d'air pour moins de puissance : il tient donc le stationnaire plus longtemps",
+          "2": "De grandes hélices le rendent plus rapide",
+          "3": "Les moteurs à faible KV sont moins chers"
+        },
+        "why": "La poussée vient de l'air déplacé. Une grande hélice qui déplace beaucoup d'air lentement demande moins de puissance qu'une petite qui déplace peu d'air vite : c'est ce qui donne des stationnaires de 15 à 20 minutes."
+      }
+    },
+    "gps": {
+      "mast": {
+        "q": "Pourquoi le palet GPS + boussole est-il sur un mât ?",
+        "options": {
+          "1": "Pour que le GPS voie plus de satellites",
+          "2": "Pour éloigner la boussole du champ magnétique du courant de la batterie et des ESC",
+          "3": "Pour le protéger en cas de crash"
+        },
+        "why": "Des dizaines d'ampères dans les fils de puissance créent un champ magnétique assez fort pour fausser une boussole. La distance l'affaiblit vite : quelques centimètres de mât donnent donc un cap bien plus propre."
+      },
+      "arrow": {
+        "q": "Le palet GPS est monté flèche vers l'arrière. Que se passe-t-il ?",
+        "options": {
+          "1": "La boussole lit 180° d'écart avec la route GPS, le pré-armement refuse, et si on force, il tourne en rond et s'envole au loin",
+          "2": "Rien : le GPS se moque du sens dans lequel il est tourné",
+          "3": "Il vole en marche arrière"
+        },
+        "why": "La boussole dans le palet donne le cap. Retournée, elle est en désaccord avec la direction dans laquelle le GPS voit le drone avancer, ArduPilot signale « Compasses inconsistent », et un drone qui vole quand même fait du « toilet bowl » : des cercles de plus en plus grands."
+      }
+    },
+    "gimbal": {
+      "type": {
+        "q": "La nacelle a son propre contrôleur et sa propre IMU. Quel MNT1_TYPE doit-elle utiliser ?",
+        "options": {
+          "1": "1, Servo, pour qu'ArduPilot puisse la stabiliser",
+          "2": "0, None : elle fonctionne toute seule",
+          "3": "7, BrushlessPWM : ArduPilot envoie seulement l'angle voulu"
+        },
+        "why": "Une nacelle auto-stabilisée compense déjà l'inclinaison du drone. Avec le type 1, ArduPilot la compenserait aussi et les deux corrections s'additionneraient. Avec le type 0, le bouton d'inclinaison et les commandes caméra d'AUTO n'auraient personne à qui parler."
+      }
+    },
+    "fly": {
+      "loiter": {
+        "q": "Vous lâchez les manches dans une brise. Que fait chaque mode ?",
+        "options": {
+          "1": "Les trois s'arrêtent et tiennent leur position",
+          "2": "Loiter tient sa place, AltHold ne tient que sa hauteur et dérive, Stabilize se remet à plat mais vous devez aussi tenir la hauteur",
+          "3": "Les trois se posent"
+        },
+        "why": "Chaque mode ajoute une couche : Stabilize remet le drone à plat, AltHold ajoute le baromètre pour la hauteur, Loiter ajoute le GPS et la boussole pour la position."
+      },
+      "rtl": {
+        "q": "Pourquoi régler RTL_ALT_M sur 20 m sur ce terrain ?",
+        "options": {
+          "1": "Pour que le trajet du retour passe au-dessus du mât de 18 m",
+          "2": "Parce que le RTL ne peut pas voler plus bas",
+          "3": "Pour économiser la batterie"
+        },
+        "why": "Le RTL monte à RTL_ALT_M puis rentre en ligne droite. Tout ce qui est plus haut sur le chemin est percuté : la hauteur de retour doit donc passer au-dessus de l'obstacle le plus haut (si le drone est déjà plus haut, il garde sa hauteur)."
+      },
+      "auto": {
+        "q": "Vous armez en AUTO et il refuse. Pourquoi ?",
+        "options": {
+          "1": "La mission est trop longue",
+          "2": "AUTO demande d'abord un calibrage de la boussole",
+          "3": "ArduCopter refuse d'armer en AUTO sauf si AUTO_OPTIONS l'autorise : armez en Loiter, puis basculez"
+        },
+        "why": "Armer directement dans un mode qui déplace le drone tout seul est un risque pour la sécurité : c'est donc désactivé sauf si vous réglez le bit 0 d'AUTO_OPTIONS. La façon habituelle est d'armer en Loiter ou en Stabilize, puis de basculer en AUTO."
+      }
+    }
+  }
+}
