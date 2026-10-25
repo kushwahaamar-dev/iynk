@@ -1,0 +1,539 @@
+{
+  "title": "Raspberry Pi 5",
+  "sub": "ROS-2-Gehirn",
+  "hint": "Bau ihn auf, Karte und Kühler zuletzt, dann versorg ihn mit einem echten 5-A-Netzteil",
+  "overview": "Der Raspberry Pi 5 ist das Gehirn des Roboters, nicht sein Rückenmark: ein Linux-Computer mit vier Kernen und 2,4 GHz, auf dem ROS 2, SLAM Toolbox, Nav2 und die Kamera-Pipeline laufen. Linux ist nicht echtzeitfähig, also leben die Motor- und Balance-Regelkreise auf einem ESP32 oder Nano, der über USB-Seriell mit dem Pi spricht, dieselbe Aufteilung wie beim UGV Rover von Waveshare. Bau ihn von der nackten Platine an auf, gib ihm seine microSD-Karte und den Active Cooler, versorg ihn mit einem echten 5-V-Netzteil mit 5 A und beobachte das Terminal. Wärme breitet sich hier etwa zehnmal schneller aus als auf einem echten Board, also siehst du in Sekunden, was auf dem Prüfstand Minuten dauert.",
+  "power": {
+    "label": "Das 27-W-USB-C-Netzteil einstecken / abziehen",
+    "ok": "Versorgt: Die LED wechselt von Rot zu Grün, während Linux bootet"
+  },
+  "parts": {
+    "U1": {
+      "name": "SoC BCM2712",
+      "what": "Vier Cortex-A76-Kerne mit 2,4 GHz und eine VideoCore-VII-GPU auf einem Flip-Chip-Die unter einem metallenen Heatspreader. Er führt Linux, ROS 2, SLAM und Bildverarbeitung aus, schnell, aber nicht in Echtzeit."
+    },
+    "U2": {
+      "name": "LPDDR4X-RAM",
+      "what": "1 bis 16 GB LPDDR4X-4267 direkt neben dem SoC: Bei diesen Geschwindigkeiten müssen die Speicherleitungen kurz sein."
+    },
+    "U3": {
+      "name": "I/O-Controller RP1",
+      "what": "Der eigene Chip von Raspberry Pi für USB, Ethernet, die Kameras und die GPIO-Stiftleiste, über vier Lanes PCIe 2.0 mit dem SoC verbunden. Jeder Anschluss auf dem Board kommt von ihm."
+    },
+    "U4": {
+      "name": "Power-Management-IC (Renesas DA9091)",
+      "what": "Erzeugt jede Schiene (Kern, Speicher, 1,8 V, 3,3 V) aus dem 5-V-Eingang, hält die Echtzeituhr am Laufen, kümmert sich um den Einschaltknopf und meldet Unterspannung unter 4,63 V."
+    },
+    "U5": {
+      "name": "WLAN- und Bluetooth-Modul",
+      "what": "Dualband-WLAN 802.11ac und Bluetooth 5.0 unter einer Metallabschirmung. Gut für SSH und Foxglove; Steuerdaten für den Roboter laufen über ein Kabel sicherer."
+    },
+    "U6": {
+      "name": "Gigabit-Ethernet-PHY",
+      "what": "Setzt die Ethernet-Signale des RP1 in die Spannungen auf dem Kabel um; er sitzt um 45 Grad gedreht neben der Buchse."
+    },
+    "L1": {
+      "name": "Leistungsspulen des PMIC",
+      "what": "Die vier grauen Blöcke neben dem PMIC speichern Energie für seine Schaltregler."
+    },
+    "RC": {
+      "name": "Abblockkondensatoren und Widerstände",
+      "what": "Hunderte winziger Bauteile: Jeder schnelle Chip braucht eine lokale Energiereserve direkt an seinen Versorgungspins."
+    },
+    "LED1": {
+      "name": "Power- und Status-LED (rot/grün)",
+      "what": "Rot, wenn Strom ankommt, grün, sobald die Firmware startet, und sie blinkt aus, wenn von der SD-Karte gelesen wird. Bootfehler erscheinen als Codes aus langen und kurzen grünen Blinkzeichen."
+    },
+    "SW1": {
+      "name": "Einschaltknopf",
+      "what": "Neu beim Pi 5. Beim ersten Einschalten bootet er von selbst; ein Druck fährt ihn dann sauber herunter, ein Druck im angehaltenen Zustand bootet ihn wieder, langes Halten trennt den Strom."
+    },
+    "J1": {
+      "name": "USB-C-Stromeingang",
+      "what": "5 V Eingang. Das offizielle 27-W-Netzteil teilt dem Pi über USB PD mit, dass es 5 A liefern kann; ein 5-V-Netzteil mit 3 A bootet ihn, begrenzt die USB-Ports aber auf 600 mA."
+    },
+    "J20": {
+      "name": "PCIe-Anschluss",
+      "what": "16-poliger Flachbandanschluss mit 0,5 mm Raster und einer Lane PCIe 2.0, für ein NVMe-Laufwerk oder einen KI-Beschleuniger-HAT."
+    },
+    "J3": {
+      "name": "Kamera-/Display-Anschluss 0",
+      "what": "22-poliges Flachband mit 0,5 mm Raster, vier MIPI-Lanes, für eine Kamera oder ein DSI-Display. Zwei Kameras ergeben ein Stereopaar: Kalibrier zuerst jede mit einem Schachbrett."
+    },
+    "J4": {
+      "name": "Kamera-/Display-Anschluss 1",
+      "what": "Der zweite MIPI-Anschluss mit 4 Lanes. Kamerakabel des Pi 4 sind 15-polig mit 1 mm Raster und brauchen ein Adapterkabel."
+    },
+    "J5": {
+      "name": "Anschluss für die RTC-Batterie",
+      "what": "2-poliger JST-SH für eine kleine Zelle, die die Uhr weiterlaufen lässt, wenn der Strom abgezogen ist, damit die Zeitstempel von Logs und Bags stimmen."
+    },
+    "UART": {
+      "name": "UART-Debug-Anschluss",
+      "what": "3-polige serielle Konsole JST-SH (Pin 1 RX, 2 GND, 3 TX) mit 115200 Baud, unter Linux /dev/ttyAMA10."
+    },
+    "FAN": {
+      "name": "Lüfteranschluss",
+      "what": "4-poliger PWM-Lüfteranschluss JST-SH: Die Firmware lässt den Lüfter schneller drehen, wenn der SoC wärmer wird."
+    },
+    "MICROSD": {
+      "name": "microSD-Kartensteckplatz",
+      "what": "Ein Push-Push-Steckplatz auf der Unterseite. Der Pi hat keinen eigenen Flash für Programme: Raspberry Pi OS, dein ROS-2-Workspace und jedes Log liegen auf der Karte darin."
+    },
+    "J6": {
+      "name": "Micro-HDMI 0",
+      "what": "Bis zu 4K mit 60 Hz. Auf einem Roboter vor allem für den ersten Boot."
+    },
+    "J13": {
+      "name": "Micro-HDMI 1",
+      "what": "Ein zweites Display mit 4K60: RViz auf dem einen Bildschirm, Terminals auf dem anderen."
+    },
+    "J8": {
+      "name": "40-polige GPIO-Stiftleiste",
+      "what": "3,3-V-Logik mit I2C, SPI, UART und PWM. Nie 5 V an einen Pin, und Motoren gehören an einen Mikrocontroller, nicht hierher. Pins 2 und 4 sind direkt mit dem 5-V-Eingang verbunden."
+    },
+    "J14": {
+      "name": "PoE+-Stiftleiste",
+      "what": "Vier Pins, die über den PoE+-HAT Strom aus dem Ethernet-Kabel nehmen."
+    },
+    "J10": {
+      "name": "Gigabit-Ethernet-Buchse",
+      "what": "Der zuverlässige Weg, Topics und Kamerabilder zu streamen. Grüne LED = Verbindung, gelbe = Datenverkehr."
+    },
+    "J12": {
+      "name": "USB-3.0-Ports (blau)",
+      "what": "Zwei Ports mit 5 Gbit/s, die gemeinsam mit voller Geschwindigkeit arbeiten: Tiefenkameras, Lidar, SSDs."
+    },
+    "J11": {
+      "name": "USB-2.0-Ports (schwarz)",
+      "what": "Tastatur, Gamepad für die Fernsteuerung und die USB-Seriell-Verbindung zum Nano oder ESP32."
+    },
+    "CARD": {
+      "name": "microSD-Karte",
+      "what": "Das Betriebssystem. Schreib Raspberry Pi OS oder Ubuntu mit dem Raspberry Pi Imager darauf; eine Karte der Klasse A2 mit 32 GB oder mehr hält ROS-2-Builds und Bag-Dateien flott. Wird der Strom abgezogen, während sie schreibt, kann sie beschädigt werden."
+    },
+    "COOLER": {
+      "name": "Active Cooler",
+      "what": "Aluminium-Kühlkörper mit Radiallüfter auf zwei Federstiften, mit Wärmeleitpads auf dem SoC und einem Kabel zum Lüfteranschluss. Ohne ihn treibt die Last von ROS 2 den SoC über 80 °C, und die Firmware senkt den Takt."
+    }
+  },
+  "modes": {
+    "boot": {
+      "title": "Booten und prüfen",
+      "code": {
+        "what": "boot_check.py: nach dem ersten Boot ausführen, um zu sehen, ob der Pi gesund ist",
+        "first": "auf einer frischen SD-Karte zuerst aktualisieren:",
+        "throttled": "throttled=0x0: Die Versorgung ist nie eingebrochen",
+        "temp": "CPU-Temperatur",
+        "clock": "Arm-Takt: 2400000000 Hz bei voller Geschwindigkeit"
+      }
+    },
+    "teleop": {
+      "title": "ROS-2-Fahrknoten",
+      "code": {
+        "what": "drive.py: ein ROS-2-Knoten, der den Roboter fährt (ROS 2 Lyrical auf Ubuntu 26.04)",
+        "rate": "10 Hz",
+        "heat": "alle 5 s die SoC-Temperatur prüfen",
+        "linear": "m/s vorwärts",
+        "angular": "rad/s drehen",
+        "publish": "der ESP32 macht daraus Motor-PWM"
+      }
+    },
+    "health": {
+      "title": "Versorgung und Wärme prüfen",
+      "code": {
+        "what": "health.py: vcgencmd get_throttled Bit für Bit entschlüsseln",
+        "charger": "ein Handy-Ladegerät bricht unter Last ein: zufällige Neustarts, beschädigte SD-Karten, USB-Geräte, die wegfallen",
+        "fix": "Lösung: das offizielle USB-C-Netzteil mit 5 V und 5 A (27 W)"
+      }
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Bis auf die nackte Platine zerlegen",
+      "body": "Zieh das Netzteil ab und nimm dann jedes Bauteil ab. Der Pi 5 ist gebaut wie jedes moderne Board: zuerst die SMD-Bauteile, dann die bedrahteten Anschlüsse von niedrig nach hoch, und die microSD-Karte und der Active Cooler zuletzt.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einem Board unter Spannung"
+    },
+    "smd": {
+      "title": "Die SMD-Bauteile bestücken, dann reflowlöten",
+      "body": "Die Maschine setzt den BCM2712, den RAM, den RP1, den PMIC mit seinen Spulen, die WLAN-Abschirmung, den Ethernet-PHY und jeden kleinen Kondensator und Widerstand auf Lotpaste, und mit ihnen die SMD-Anschlüsse: USB-C, die Flachbandbuchsen für PCIe und Kameras, die Anschlüsse für RTC, UART und Lüfter, den microSD-Steckplatz, die LED und den Einschaltknopf. Der Reflow-Ofen schmilzt die Paste unter jedem Pad bei etwa 245 °C.",
+      "refusal": "Die SMD-Bauteile sind schon auf dem Board"
+    },
+    "low": {
+      "title": "Die niedrigen bedrahteten Bauteile einsetzen",
+      "body": "Die beiden Micro-HDMI-Buchsen. Niedrige Bauteile kommen zuerst hinein, damit das Board flach auf ihnen liegt, wenn du es zum Löten umdrehst.",
+      "refusal": "Zuerst die SMD-Bauteile: Bestücken + Reflow-Löten ausführen. Der Ofen würde Kunststoffteile schmelzen"
+    },
+    "tall": {
+      "title": "Die hohen Anschlüsse einsetzen",
+      "body": "Die 40-polige GPIO-Stiftleiste, die PoE+-Stiftleiste, die Ethernet-Buchse und die beiden USB-Doppelbuchsen.",
+      "refusal": "Zuerst die niedrigen Bauteile: Mit den hohen Bauteilen kippelt das Board, und lose Bauteile fallen heraus, wenn du es zum Löten umdrehst"
+    },
+    "solder": {
+      "title": "Die bedrahteten Lötstellen löten",
+      "body": "Jede Lötstelle sollte glänzend und nach innen gewölbt sein, ohne Brücken zwischen den GPIO-Pins.",
+      "refusal": "Noch nichts zu löten: Setz zuerst ein Bauteil ein"
+    },
+    "card": {
+      "title": "Die microSD-Karte einschieben",
+      "body": "Die Karte enthält das Betriebssystem, also kommt sie erst hinein, wenn jede Lötstelle gelötet ist. Sie rastet im Steckplatz unter dem Board ein, mit den Kontakten nach oben zum Board.",
+      "refusal": "Löte zuerst alles: Die Karte kommt zuletzt hinein"
+    },
+    "cooler": {
+      "title": "Den Active Cooler montieren",
+      "body": "Drück seine beiden Federstifte in die Löcher neben dem SoC, sodass das Wärmeleitpad auf dem SoC sitzt, und steck dann sein Kabel in den 4-poligen Lüfteranschluss.",
+      "refusal": "Löte zuerst alles: Dieses Teil kommt zuletzt drauf"
+    },
+    "plug": {
+      "title": "Das 27-W-USB-C-Netzteil einstecken",
+      "body": "Das offizielle Netzteil bietet über USB PD 5 V mit 5 A an. Die LED leuchtet rot, wird grün, sobald die Firmware startet, und blinkt beim Lesen der SD-Karte aus, während Linux bootet; dann gibt boot_check.py die Versorgungsflags, die Temperatur und den Takt aus.",
+      "refusal": "Es gibt nichts zum Einstecken: Setz zuerst J1 wieder ein"
+    },
+    "teleop": {
+      "title": "Den ROS-2-Fahrknoten ausführen",
+      "body": "Der Knoten veröffentlicht zehnmal pro Sekunde einen Twist auf /cmd_vel. Auf einem echten Roboter liest ein ESP32 oder Nano ihn über USB-Seriell und macht daraus Motor-PWM."
+    },
+    "health": {
+      "title": "Versorgung und Wärme prüfen",
+      "body": "vcgencmd get_throttled packt die Versorgungs- und Wärmegeschichte in eine einzige Zahl. 0x0 heißt, dass die Versorgung seit diesem Boot nie eingebrochen ist und der Takt nie gesenkt wurde."
+    },
+    "charger": {
+      "title": "Kaputt machen: über ein Handy-Ladegerät mit 5 V und 2 A versorgen",
+      "body": "Unter Last brechen das Ladegerät und sein dünnes Kabel auf 4,6 V ein, unter die Grenze von 4,63 V. Beobachte die Versorgung, den Takt und die throttled-Flags und geh dann zurück zum 27-W-Netzteil."
+    },
+    "no-cooler": {
+      "title": "Kaputt machen: ohne Active Cooler betreiben",
+      "body": "Der Kühler kommt ab, und der Fahrknoten läuft auf einem nackten SoC. Die Temperatur steigt um ein paar Grad pro Sekunde, der Takt sinkt über 80 °C, und der Knoten warnt. Dann reparier es: Der Kühler kommt wieder drauf, und das Board kühlt ab."
+    },
+    "cold-fan": {
+      "title": "Kaputt machen: eine kalte Lötstelle am Lüfteranschluss",
+      "body": "Ein Pin des Lüfteranschlusses berührt sein Pad kaum, also stottert der Lüfter, und der SoC läuft heißer. Löte die Lötstelle nach („Alles reparieren“), um es zu beheben."
+    },
+    "motors": {
+      "title": "Kaputt machen: Antriebsmotoren an den 5 V des Pi",
+      "body": "Versorg den Pi aus dem 3-A-Abwärtswandler des Roboters über die GPIO-Pins 2 und 4, mit zwei TT-Antriebsmotoren an derselben Schiene. Ihr Anlaufstrom zieht die Schiene herunter, und der Pi setzt sich zurück. Reparier es und gib dem Pi dann sein eigenes 27-W-Netzteil."
+    },
+    "reverse": {
+      "title": "Kaputt machen: die 5 V des Roboters verpolt angeschlossen",
+      "body": "Tausch die Kabel an den GPIO-Pins 2 und 6. Nichts an der 5-V-Schiene der Stiftleiste sperrt eine verpolte Versorgung. Reparier es und versorg ihn dann wieder über USB-C."
+    },
+    "overvolt": {
+      "title": "Kaputt machen: 12 V an die 5-V-Pins",
+      "body": "Schließ einen 3S-Akku direkt an Pin 2 an statt über einen 5-V-Abwärtswandler. Reparier es und versorg ihn dann wieder über USB-C."
+    },
+    "exploded": {
+      "title": "Explosionsansicht",
+      "body": "Zieh den Strom ab und heb die Bauteile nach Baugruppen ab, um zu sehen, was unter dem Kühler sitzt.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einem Board unter Spannung"
+    }
+  },
+  "faults": {
+    "undervoltage": {
+      "title": "Unterspannung durch ein Handy-Ladegerät",
+      "symptom": "Die Versorgung zeigt 4,6 V, der Takt sinkt auf 1,5 GHz, get_throttled zeigt 0x50005, und der Kernel meldet 'Undervoltage detected!'.",
+      "explanation": "Der Pi 5 meldet Unterspannung unter 4,63 V (±5 %). Ein Handy-Ladegerät mit 5 V und 2 A und ein dünnes Kabel brechen unter der Last des Pi ein, also begrenzt die Firmware den Takt. Schwache Netzteile verursachen außerdem zufällige Neustarts, beschädigte SD-Karten und USB-Geräte, die wegfallen.",
+      "fix": "Nimm das offizielle USB-C-Netzteil mit 5 V und 5 A (27 W)."
+    },
+    "no-cooler": {
+      "title": "Kein Active Cooler",
+      "symptom": "Die CPU-Temperatur steigt über 80 °C, der Takt fällt von 2,4 GHz in Richtung 1,5 GHz, get_throttled zeigt 0x40004, und der Fahrknoten warnt vor der Wärme.",
+      "explanation": "Die Firmware drosselt die Arm-Kerne ab 80 °C Schritt für Schritt und bei 85 °C auch die GPU. Unter der Last von ROS 2 kommt ein nackter BCM2712 schnell dorthin, und 1,5 GHz sind nur 62,5 % der vollen Geschwindigkeit.",
+      "fix": "Zieh den Strom ab, montier den Active Cooler wieder und steck sein Kabel in den Lüfteranschluss."
+    },
+    "cold-fan": {
+      "title": "Kalte Lötstelle am Lüfteranschluss",
+      "symptom": "Der Lüfter stoppt und läuft wieder an, sein Tastverhältnis springt zwischen 0 und dem Wert der Kennlinie, und die CPU läuft heißer.",
+      "explanation": "Eine kalte Lötstelle ist ein matter, körniger Klecks, der das Pad nie benetzt hat, also hat sie nur manchmal Kontakt. Der Versorgungs- oder PWM-Pin des Lüfters fällt bei jeder Erschütterung aus.",
+      "fix": "Löte die Lötstelle nach: Erhitz Pad und Pin zusammen, gib etwas frisches Lot dazu und lass es zu einer glänzenden, nach innen gewölbten Hohlkehle erstarren."
+    },
+    "motor-brownout": {
+      "title": "Brown-out: Motoren an der 5-V-Schiene des Pi",
+      "symptom": "Die Versorgung bricht ein, die LED geht aus und wieder an, und das Terminal wiederholt das Bootlog: Der Pi setzt sich jedes Mal zurück, wenn die Motoren anlaufen.",
+      "explanation": "Ein TT-Getriebemotor zieht 1,2-1,5 A, wenn er anläuft oder blockiert. Zwei davon plus die 0,8 A des Pi sind mehr, als der 3-A-Abwärtswandler des Roboters liefern kann, also brechen die 5 V zusammen, und das Board setzt sich zurück.",
+      "fix": "Treib die Motoren aus dem Akku über einen Motortreiber, den der ESP32 steuert, und gib dem Pi sein eigenes 5-V-Netzteil mit 5 A."
+    },
+    "reverse-gpio": {
+      "title": "Verpolung an den 5-V-GPIO-Pins",
+      "symptom": "Nichts bootet, die Versorgung geht in die Strombegrenzung, und der PMIC wird heiß.",
+      "explanation": "USB-C ist codiert und lässt sich nicht verkehrt herum einstecken, aber die 5-V-Pins der Stiftleiste gehen ohne Schutz direkt an die 5-V-Eingangsschiene. Verpolt fließt der Strom falsch herum durch den PMIC und brennt ihn durch.",
+      "fix": "Tausch die Kabel: 5 V an Pin 2 oder 4, Masse an Pin 6. Noch besser: Versorg den Pi über USB-C."
+    },
+    "gpio-12v": {
+      "title": "12 V an den 5-V-Pins",
+      "symptom": "Der PMIC brennt sofort durch, und das Board bleibt tot.",
+      "explanation": "Die 5-V-Pins umgehen jeden Regler: Was du dort einspeist, erreicht direkt den Eingang des PMIC. Ein 3S-Akku (11,1-12,6 V) ist mehr als doppelt so viel, wie der PMIC verträgt.",
+      "fix": "Speis die 5-V-Pins nur aus einer geregelten 5-V-Quelle, etwa einem auf 5,1 V eingestellten Abwärtswandler, oder nimm USB-C."
+    },
+    "no-card": {
+      "title": "Keine microSD-Karte",
+      "symptom": "Die LED bleibt rot: Das Board hat Strom, aber es erscheint kein Bootlog.",
+      "explanation": "Der Pi 5 hat kein eigenes Betriebssystem. Der Bootloader in seinem SPI-Flash sucht eines auf der Karte (dann auf USB und im Netzwerk, wenn du die Bootreihenfolge so einstellst) und findet nichts zum Laden.",
+      "fix": "Zieh den Strom ab, schieb eine mit dem Raspberry Pi Imager beschriebene Karte ein und schalte wieder ein."
+    },
+    "no-pmic": {
+      "title": "PMIC weggelassen",
+      "symptom": "Überhaupt kein Licht: Nichts auf dem Board bekommt Strom.",
+      "explanation": "Der DA9091 erzeugt jede Schiene aus dem 5-V-Eingang. Ohne ihn bekommt kein Chip Strom.",
+      "fix": "Setz U4 wieder ein und löte ihn im Reflow-Verfahren."
+    },
+    "no-soc": {
+      "title": "BCM2712 weggelassen",
+      "symptom": "Die LED bleibt rot: Die Schienen kommen hoch, aber kein Bootlog und kein grünes Licht.",
+      "explanation": "Der BCM2712 ist der Computer: die vier Arm-Kerne, die GPU und der Speichercontroller. Die Schienen kommen hoch, aber nichts führt den Bootloader aus.",
+      "fix": "Setz U1 wieder ein und löte ihn im Reflow-Verfahren."
+    },
+    "no-ram": {
+      "title": "RAM weggelassen",
+      "symptom": "Die LED blinkt immer wieder achtmal kurz grün, und der Bootvorgang hält an.",
+      "explanation": "Der Bootloader findet kein SDRAM und zeigt den dokumentierten Blinkcode 0L8S: null lange und acht kurze Blinkzeichen, 'SDRAM failure'.",
+      "fix": "Setz U2 wieder ein und löte ihn im Reflow-Verfahren."
+    },
+    "no-rp1": {
+      "title": "RP1 weggelassen",
+      "symptom": "Die LED blinkt viermal lang und dreimal kurz, und es gibt kein USB, kein Ethernet und kein GPIO.",
+      "explanation": "Jeder Anschluss des Pi 5 kommt vom RP1. Die Firmware findet ihn nicht und zeigt den dokumentierten Blinkcode 4L3S, 'RP1 not found'.",
+      "fix": "Setz U3 wieder ein und löte ihn im Reflow-Verfahren."
+    }
+  },
+  "status": {
+    "run": "Linux",
+    "powered": "Versorgt",
+    "supply": "Versorgung (5-V-Schiene)",
+    "cpu": "CPU-Temperatur (°C)",
+    "clock": "Arm-Takt (GHz)",
+    "throttled": "get_throttled",
+    "fan": "Tastverhältnis des Kühlerlüfters",
+    "current": "Stromaufnahme"
+  },
+  "current": {
+    "pin5": "3-A-Abwärtswandler des Roboters an den GPIO-Pins 2/4",
+    "usb": "27-W-USB-C-Netzteil (5 V 5 A)",
+    "charger": "Handy-Ladegerät (5 V 2 A)",
+    "pi": "Pi 5 mit laufendem Linux",
+    "ros": "ROS-2-Last auf allen vier Kernen",
+    "camera": "USB-3-Tiefenkamera",
+    "fan": "Lüfter des Active Cooler"
+  },
+  "tasks": {
+    "cmd-vel-10hz": {
+      "title": "/cmd_vel mit einem Timer mit 10 Hz veröffentlichen",
+      "brief": "Der Startcode fährt den Roboter aus einer while-Schleife mit time.sleep(0.1). Das blockiert den Knoten, also kann rclpy nie seine Callbacks ausführen, und die Periode driftet um die Zeit, die jedes Veröffentlichen braucht. Schreib es auf die ROS-2-Art um: ein 0,1-s-Timer, der den Twist (0,2 m/s vorwärts, 0,5 rad/s Drehung) veröffentlicht und protokolliert, was er gesendet hat, dann rclpy.spin().",
+      "hints": {
+        "1": "self.create_timer(0.1, self.tick) ruft tick alle 0,1 s auf, sobald der Knoten spinnt.",
+        "2": "Protokollier jede Nachricht mit self.get_logger().info(f'linear.x={msg.linear.x:.2f} angular.z={msg.angular.z:.2f}').",
+        "3": "Ersetz Drive().run() durch node = Drive() und rclpy.spin(node)."
+      },
+      "checks": {
+        "1": "Benutzt einen 0,1-s-Timer und rclpy.spin, ohne sleep-Schleife",
+        "2": "Veröffentlicht zehnmal pro Sekunde 0.20 m/s und 0.50 rad/s",
+        "3": "Läuft 2 Sekunden ohne Fehler"
+      },
+      "code": {
+        "goal": "Aufgabe: denselben Twist mit 10 Hz veröffentlichen, auf die ROS-2-Art",
+        "loop": "eine blockierende Schleife: rclpy führt nie einen Callback aus, und die Periode driftet",
+        "timer": "alle 0,1 s: 10 Hz"
+      }
+    },
+    "diff-drive": {
+      "title": "/cmd_vel in Radgeschwindigkeiten umrechnen",
+      "brief": "Der ESP32 treibt zwei Räder, also teilt der Pi jeden Twist in eine Geschwindigkeit für das linke und das rechte Rad auf: links = v − ω·b/2 und rechts = v + ω·b/2, wobei b der Abstand zwischen den Rädern ist. Stell den Basisknoten fertig: Deklarier einen Parameter wheel_base (0,16 m), abonnier cmd_vel und protokollier beide Geschwindigkeiten.",
+      "hints": {
+        "1": "self.declare_parameter('wheel_base', 0.16), dann lies ihn mit self.get_parameter('wheel_base').value.",
+        "2": "self.create_subscription(Twist, 'cmd_vel', self.on_cmd, 10) ruft on_cmd für jede Nachricht auf.",
+        "3": "Mit v = 0,2 m/s, ω = 0,5 rad/s und b = 0,16 m bekommst du links = 0,16 m/s und rechts = 0,24 m/s. Protokollier f'left={left:.2f} right={right:.2f} m/s'."
+      },
+      "checks": {
+        "1": "Deklariert wheel_base und abonniert cmd_vel",
+        "2": "Protokolliert left=0.16 right=0.24 m/s für jede Nachricht"
+      },
+      "code": {
+        "goal": "Aufgabe: Der Basisknoten macht aus jedem Twist eine linke und eine rechte Radgeschwindigkeit",
+        "param": "hier den Parameter wheel_base deklarieren (Meter)",
+        "sub": "cmd_vel mit on_cmd als Callback abonnieren",
+        "math": "left = v - w*b/2, right = v + w*b/2, dann beide protokollieren",
+        "metres": "Meter zwischen den Radmitten"
+      }
+    },
+    "range-pipeline": {
+      "title": "Drei Knoten: Sensor, Filter, Sicherheitsstopp",
+      "brief": "Ein System aus mehreren Knoten, ganz ohne Roboter. Der Sensorknoten veröffentlicht eine Entfernung, die sich einer Wand nähert (2,0 m, 1,9 m, 1,8 m … mit 10 Hz). Schreib einen Filterknoten, der die letzten window Messwerte mittelt (ein Parameter, 4) und range_avg veröffentlicht, und einen Sicherheitsknoten, der einen Null-Twist auf cmd_vel veröffentlicht und einmal warnt, wenn der Mittelwert unter stop_m fällt (ein Parameter, 0,5 m). Auf einem echten Pi geh weiter: eigene .msg- und .srv-Typen, eine Python-Launch-Datei mit Argumenten, dann ros2 bag record und Wiedergabe.",
+      "hints": {
+        "1": "Filter: Führ eine Liste, häng jeden Messwert an, mach pop(0), wenn sie länger als das Fenster wird, und veröffentliche sum / len.",
+        "2": "Sicherheit: Merk dir, dass du angehalten hast, damit die Warnung nur einmal erscheint.",
+        "3": "Mit einem Fenster von 4 fällt der Mittelwert bei 0,45 m zum ersten Mal unter 0,5 m: Protokollier f'obstacle at {msg.data:.2f} m: stop'.",
+        "4": "Auf einem Pi: ros2 pkg create --build-type ament_python my_robot, eine Launch-Datei mit DeclareLaunchArgument, dann ros2 bag record -a und ros2 bag play."
+      },
+      "checks": {
+        "1": "Deklariert window und stop_m und abonniert range",
+        "2": "Der Filter protokolliert für jeden Messwert einen Mittelwert",
+        "3": "Der Sicherheitsknoten stoppt innerhalb von 2 Sekunden bei 0,45 m"
+      },
+      "code": {
+        "goal": "Aufgabe: die Entfernung in einem Filterknoten mitteln und den Roboter in einem Sicherheitsknoten anhalten",
+        "approach": "der Roboter rollt mit 1 m/s auf eine Wand zu: alle 0,1 s 0,1 m näher",
+        "filter": "'window' deklarieren, den gleitenden Mittelwert auf range_avg veröffentlichen und protokollieren",
+        "safety": "'stop_m' deklarieren, range_avg abonnieren und Twist() veröffentlichen, sobald der Wert darunter liegt"
+      }
+    }
+  },
+  "quizzes": {
+    "smd": {
+      "reflow": {
+        "q": "Warum kommen die SMD-Bauteile vor jedem Anschluss drauf?",
+        "options": {
+          "1": "Der Reflow-Ofen heizt das ganze Board auf etwa 245 °C, was Anschlüsse aus Kunststoff schmelzen würde",
+          "2": "SMD-Bauteile ziehen den meisten Strom, also müssen sie zuerst angeschlossen werden",
+          "3": "Auf einem maschinell gebauten Board ist die Reihenfolge egal"
+        },
+        "why": "Beim Reflow-Löten schmilzt die Lotpaste unter jedem Pad auf einmal, weil das ganze Board erhitzt wird. Anschlüsse haben Kunststoffgehäuse, also kommen sie danach drauf und werden getrennt gelötet."
+      },
+      "pmic": {
+        "q": "Was macht der PMIC neben der USB-C-Buchse?",
+        "options": {
+          "1": "Wandelt USB-Daten in serielle Daten für den SoC um",
+          "2": "Erzeugt jede Schiene aus dem 5-V-Eingang, handelt über USB PD 5 A aus und meldet Unterspannung",
+          "3": "Speichert den Bootloader"
+        },
+        "why": "Der Pi 5 hat keinen USB-Seriell-Chip. Der PMIC DA9091 macht aus 5 V die Schienen für Kern, Speicher, 1,8 V und 3,3 V, hält die Echtzeituhr am Laufen, kümmert sich um den Einschaltknopf und meldet Unterspannung. Der Bootloader liegt in einem separaten SPI-Flash."
+      }
+    },
+    "solder": {
+      "order": {
+        "q": "Warum kommen die niedrigen Bauteile vor den hohen hinein?",
+        "options": {
+          "1": "Niedrige Bauteile brauchen einen heißeren Lötkolben",
+          "2": "Hohe Bauteile würden den Bestückungsdruck verdecken",
+          "3": "Mit den hohen Bauteilen kippelt das Board auf ihnen, wenn du es umdrehst, und die niedrigen fallen heraus"
+        },
+        "why": "Du drehst das Board um, um von unten zu löten. Mit nur niedrigen Bauteilen liegt es flach auf ihnen; die hohen kommen danach."
+      },
+      "last": {
+        "q": "Warum kommt der Active Cooler zuletzt drauf?",
+        "options": {
+          "1": "Er deckt den SoC ab und wird in den Lüfteranschluss gesteckt, also muss alles darunter vorher gelötet sein",
+          "2": "Er passt nur auf ein Board unter Spannung",
+          "3": "Seine Wärmeleitpads müssen mit dem Lötkolben erhitzt werden"
+        },
+        "why": "Der Kühler rastet in die beiden Löcher neben dem SoC ein und sitzt über ihm. Ist er einmal drauf, kommt man an nichts darunter mehr heran, und sein Kabel braucht den Lüfteranschluss."
+      }
+    },
+    "plug": {
+      "five-amps": {
+        "q": "Warum will der Pi 5 das 27-W-Netzteil statt eines mit 5 V und 3 A?",
+        "options": {
+          "1": "Die CPU erreicht 2,4 GHz nur mit 27 W",
+          "2": "Bei 5 A dürfen die USB-Ports zusammen 1,6 A ziehen; an einem 3-A-Netzteil sind sie auf 600 mA begrenzt",
+          "3": "Ein 3-A-Netzteil kann ihn gar nicht booten"
+        },
+        "why": "Ein Netzteil mit 5 V und 3 A bootet den Pi 5, aber die Firmware begrenzt die USB-Ports dann auf insgesamt 600 mA. Das 27-W-Netzteil teilt dem Pi über USB PD mit, dass es 5 A liefern kann, was die Grenze auf 1,6 A anhebt: genug für eine Tiefenkamera oder ein Lidar."
+      },
+      "led": {
+        "q": "Du steckst das Netzteil ein. Was macht die LED des Pi 5?",
+        "options": {
+          "1": "Zuerst rot, grün, sobald die Firmware startet, und sie blinkt beim Lesen der SD-Karte aus",
+          "2": "Zuerst grün, dann rot, sobald Linux läuft",
+          "3": "Sie bleibt aus, bis du den Einschaltknopf drückst"
+        },
+        "why": "Der Pi 5 hat eine rot-grüne LED neben dem Einschaltknopf. Rot heißt Strom, aber noch keine Firmware, grün heißt, er läuft, und beim Lesen der SD-Karte blinkt sie aus. Beim ersten Einschalten bootet er ohne Knopfdruck, und nach einem sauberen Herunterfahren wird die LED wieder rot."
+      }
+    },
+    "teleop": {
+      "realtime": {
+        "q": "Warum läuft ROS 2 auf dem Pi, während ein ESP32 den Motorregelkreis ausführt?",
+        "options": {
+          "1": "Linux ist nicht echtzeitfähig: Der Scheduler kann deine Schleife anhalten",
+          "2": "Der Pi hat keine PWM-Pins",
+          "3": "ROS 2 läuft nur auf Arm"
+        },
+        "why": "Ein Linux-Thread kann von anderen Prozessen, Interrupts oder der SD-Karte für Millisekunden aufgehalten werden: zu viel Jitter für einen Balance- oder Geschwindigkeitsregelkreis. Der Pi hat sehr wohl PWM (GPIO 12, 13, 18 und 19), und ROS 2 läuft auch auf x86; bei der Aufteilung geht es um das Timing."
+      },
+      "rate": {
+        "q": "Der Knoten ruft create_timer(0.1, self.tick) auf. Wie oft veröffentlicht er auf /cmd_vel?",
+        "options": {
+          "1": "Einmal alle 0,1 ms",
+          "2": "Einmal, dann wartet er auf eine Antwort",
+          "3": "Zehnmal pro Sekunde"
+        },
+        "why": "Die Periode ist in Sekunden angegeben, also sind 0,1 s 10 Hz, und ros2 topic hz /cmd_vel meldet die mittlere Rate „10.000“. Topics gehen nur in eine Richtung: Ein Publisher wartet nie auf seine Subscriber."
+      }
+    },
+    "charger": {
+      "fix": {
+        "q": "'Undervoltage detected!' mit einem Handy-Ladegerät. Die Lösung?",
+        "options": {
+          "1": "Den CPU-Takt in Software senken",
+          "2": "Ein USB-C-Netzteil mit 5 V und 5 A (27 W)",
+          "3": "Ein größerer Kühlkörper"
+        },
+        "why": "Die Versorgung bricht unter Last unter 4,63 V ein. Eine langsamere CPU verdeckt das Symptom, aber die SD-Karte und die USB-Geräte sehen die Einbrüche weiterhin, und ein Kühlkörper bringt keine Volt."
+      },
+      "bits": {
+        "q": "vcgencmd get_throttled gibt throttled=0x50005 aus. Welche Flags sind gesetzt?",
+        "options": {
+          "1": "Unterspannung jetzt, gedrosselt jetzt, Unterspannung ist aufgetreten und Drosselung ist aufgetreten",
+          "2": "Nur Unterspannung jetzt",
+          "3": "Übertemperatur und die weiche Temperaturgrenze"
+        },
+        "why": "0x50005 sind die Bits 0, 2, 16 und 18: 0x1 Unterspannung jetzt, 0x4 gedrosselt jetzt, 0x10000 Unterspannung seit dem Boot und 0x40000 Drosselung seit dem Boot."
+      }
+    },
+    "heat": {
+      "throttle": {
+        "q": "Ohne Active Cooler überschreitet der SoC unter ROS-2-Last 80 °C. Was passiert?",
+        "options": {
+          "1": "Der Pi fährt sofort herunter, um die SD-Karte zu schützen",
+          "2": "Die Firmware senkt ab 80 °C den Arm-Takt und bei 85 °C auch den der GPU",
+          "3": "Nichts: Der BCM2712 hält 2,4 GHz bis 105 °C"
+        },
+        "why": "Die Drosselung greift zwischen 80 und 85 °C schrittweise. Hier landet der Takt ganz unten bei 1,5 GHz, 62,5 % von 2,4 GHz, und die ROS-2-Knoten kommen nicht mehr hinterher: Auf einem funktionierenden Roboter ist der Kühler nicht optional."
+      },
+      "fan": {
+        "q": "Wie steuert die Firmware den Lüfter des Active Cooler?",
+        "options": {
+          "1": "Über den 4-poligen Lüfteranschluss, schneller, je wärmer der SoC wird: aus unter 50 °C, volle Drehzahl ab 75 °C",
+          "2": "Mit voller Drehzahl, solange der Pi an ist",
+          "3": "Über einen GPIO-Pin, den dein Programm umschalten muss"
+        },
+        "why": "Die Standard-Lüfterkurve ist 30 % bei 50 °C, 50 % bei 60 °C, 70 % bei 67,5 °C und 100 % bei 75 °C, mit 5 °C Hysterese auf dem Weg nach unten. Du kannst sie mit fan_temp-Parametern in config.txt anpassen."
+      }
+    },
+    "end": {
+      "distro": {
+        "q": "Ein neuer Roboter mit Pi 5 Ende 2026: Mit welchem ROS-2-Release sollte er anfangen?",
+        "options": {
+          "1": "Noetic Ninjemys (ROS 1)",
+          "2": "Lyrical Luth, das LTS von 2026",
+          "3": "Kilted Kaiju"
+        },
+        "why": "Lyrical Luth erschien im Mai 2026 und wird bis Mai 2031 unterstützt, mit Ubuntu 26.04 als Tier-1-Plattform, also installier Ubuntu auf dem Pi oder nimm Docker. Jazzy Jalisco, das LTS von 2024, wird bis 2029 unterstützt, falls deine Pakete noch nicht portiert sind. Noetic ist ROS 1 und hat 2025 sein Lebensende erreicht; Kilted Kaiju ist ein Release von 2025 mit kurzer Unterstützung."
+      },
+      "gpio": {
+        "q": "Der Echo-Pin eines HC-SR04 liefert 5 V. Darf er direkt an einen GPIO-Pin des Pi?",
+        "options": {
+          "1": "Ja, die Pins sind 5-V-tolerant",
+          "2": "Ja, mit einem 1-kΩ-Widerstand in Reihe",
+          "3": "Nein: Die GPIOs vertragen nur 3,3 V, also nimm einen Spannungsteiler (1 kΩ über 2 kΩ) oder einen Pegelwandler"
+        },
+        "why": "Die GPIO-Pins des Pi sind nicht 5-V-tolerant: Über etwa 3,6 V leitet die Schutzdiode des Pads in die 3,3-V-Schiene und kann den Pin oder den RP1 zerstören. Ein Teiler aus 1 kΩ und 2 kΩ macht aus 5 V 3,3 V."
+      },
+      "battery": {
+        "q": "Wie betreibt man den Pi sicher am Akku des Roboters?",
+        "options": {
+          "1": "Ein 5-V-Abwärtswandler, der 5 A liefern kann, an USB-C oder an die 5-V-Pins",
+          "2": "Der Akku direkt an die 5-V-Pins: Der PMIC regelt das",
+          "3": "Derselbe 5-V-Regler wie für die Motoren"
+        },
+        "why": "Die 5-V-Pins umgehen jeden Schutz, also brauchen sie saubere, geregelte 5 V. Leg den Abwärtswandler für 5 A aus, halt die Motoren an ihrer eigenen Versorgung, und wenn du über die Stiftleiste einspeist, sag es dem Bootloader mit PSU_MAX_CURRENT=5000."
+      },
+      "motors": {
+        "q": "Woher sollte die PWM der Antriebsmotoren kommen?",
+        "options": {
+          "1": "Direkt von den GPIO-Pins des Pi",
+          "2": "Von einem Motortreiber, den der ESP32 oder Nano steuert, der /cmd_vel vom Pi über USB-Seriell liest",
+          "3": "Von den 5-V-Pins des Pi über einen Transistor"
+        },
+        "why": "Ein GPIO-Pin liefert ein paar Milliampere, und das Timing von Linux schwankt. Ein Mikrocontroller führt den Geschwindigkeitsregelkreis pünktlich aus und treibt eine H-Brücke wie den TB6612FNG; der Pi schickt nur Sollgeschwindigkeiten."
+      }
+    }
+  }
+}
