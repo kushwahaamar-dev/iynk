@@ -34,6 +34,7 @@ type Report = Record<string, unknown> & {
   leds: Record<string, number>;
   rails: Record<string, number>;
   controls: Record<string, number>;
+  meas?: Record<string, { state?: string }>;
   serial: { n: number; line: string } | null;
 };
 
@@ -81,12 +82,14 @@ async function open() {
     return out;
   };
   /** LD2 against the factory demo's slow rate (0.5 s on, 0.5 s off): samples where it should be lit but is dark. */
-  const missedBlinks = (seconds: number) => {
+  /** LD2, or the breadboard LED on D13, over `seconds` against the Blink program (0.5 s on, 0.5 s off). */
+  const missedBlinks = (seconds: number, on: 'LD2' | 'LED1' = 'LD2') => {
     let missed = 0;
     for (let t = 0; t < seconds; t += 0.05) {
       B.advance(0.05);
       const phase = B.st.t % 1;
-      if (phase > 0.05 && phase < 0.45 && report().leds.LD2 === 0) missed++;
+      const lit = on === 'LD2' ? report().leds.LD2 !== 0 : report().meas?.LED1?.state === 'ok';
+      if (phase > 0.05 && phase < 0.45 && !lit) missed++;
     }
     return missed;
   };
@@ -224,13 +227,14 @@ describe('nucleo-f401re failures in the figure', () => {
     page.close();
   });
 
-  it('a cold D13 joint drops blinks while the sketch runs on', async () => {
+  it('a cold D13 joint drops the breadboard LED\'s blinks while the sketch and LD2 run on', async () => {
     const page = await open();
-    page.plugIn();
-    expect(page.missedBlinks(6)).toBe(0);
+    page.plugIn({ circuit: 'blink' });
+    expect(page.missedBlinks(6, 'LED1')).toBe(0);
     const r = page.fail('cold-d13');
     expect(r.status).toBe('running');
-    expect(page.missedBlinks(6)).toBeGreaterThan(0);
+    expect(page.missedBlinks(6, 'LED1')).toBeGreaterThan(0);
+    expect(page.missedBlinks(6)).toBe(0);
     page.close();
   });
 });

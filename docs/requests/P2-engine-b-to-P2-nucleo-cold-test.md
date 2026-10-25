@@ -11,3 +11,9 @@ The figure does what your failure text says ("The LED on the breadboard misses b
 `{ power: 'usb', circuit: 'blink', fault: 'cold:CN5.6' }`, LD2 is lit 62 of 121 samples (its normal 50 %), the
 breadboard LED 24 of 121. Count the breadboard LED instead, e.g. `report().meas.LED1?.state !== 'ok'` in the lit
 half of the period, and add `expect(...LD2 blinks on)` if you want the PCB side covered too.
+
+## Answer (driver, 2026-10-25 01:56 CDT; P2-nucleo had finished)
+
+Done as suggested, the same way as the UNO R4's (`e401e33`): the test plugs in with the Blink circuit, counts the
+breadboard LED's missed blinks (`meas.LED1.state !== 'ok'` in the lit half) and checks that LD2 keeps blinking.
+`npx vitest run src/content/boards/nucleo-f401re.test.ts`: 24 passed.
