@@ -174,7 +174,11 @@ const extent = () => {
     if (!Array.isArray(q.at)) continue;
     const r = Math.hypot(ft[0], ft[1]) / 2 + 6;
     h = Math.max(h, ft[2] + 4);
-    area[0] = Math.min(area[0], q.at[0] - r); area[1] = Math.min(area[1], q.at[1] - r); area[2] = Math.max(area[2], q.at[0] + r); area[3] = Math.max(area[3], q.at[1] + r);
+    // a prop that moves along its aim (def.travel: out to that many times its distance from the aim) keeps the mat
+    // under it at its farthest
+    const a = def && def.travel > 1 && q.aim ? aimXY(pl, q.aim) : null;
+    const spots = a ? [q.at, [a[0] + (q.at[0] - a[0]) * def.travel, a[1] + (q.at[1] - a[1]) * def.travel]] : [q.at];
+    for (const [x, y] of spots){ area[0] = Math.min(area[0], x - r); area[1] = Math.min(area[1], y - r); area[2] = Math.max(area[2], x + r); area[3] = Math.max(area[3], y + r); }
   }
   return { box: area, h };
 };
@@ -214,6 +218,17 @@ const drawCircuitPart = (pl, q, k) => {
 B.props = {};
 B.prop = (name, def) => { if (!def || typeof def.draw !== 'function') return B.note(`prop "${name}" has no draw`); B.props[name] = def; };
 const matZ = () => B.G.matH - B.G.top;
+// a prop's aim in board mm, on the mat
+const aimXY = (pl, id) => {
+  const q = (pl.c.parts || []).find(x => x.id === id);
+  if (q){
+    if (Array.isArray(q.at)) return q.at;
+    const holes = (q.holes || []).map(h => B.hole(pl.geo, h)).filter(Boolean);
+    return holes.length ? [pl.ox + holes.reduce((t, h) => t + h.x, 0) / holes.length, pl.oy + holes.reduce((t, h) => t + h.y, 0) / holes.length] : null;
+  }
+  const pr = (pl.c.props || []).find(x => x.id === id);
+  return pr && Array.isArray(pr.at) ? pr.at : null;
+};
 // where a prop aims: the middle of a circuit part (its legs' strips, or its spot on the mat) or another prop's foot
 const aimPoint = (pl, id) => {
   const q = (pl.c.parts || []).find(x => x.id === id);
@@ -235,7 +250,10 @@ const drawProp = (pl, q, k) => {
   const aim = q.aim ? aimPoint(pl, q.aim) : null;
   if (q.aim && !aim){ unknownAim(q); }
   const items = [], lb = B.labeller(), sel = st.sel === q.id;
-  try { def.draw({ p, st, k, sel, origin: B.BP(q.at[0], q.at[1], matZ()), aim, at: (x, y) => B.BP(x, y, matZ()),
+  // the breadboard's footprint on the mat, world x/y, for a prop that has to stay off it
+  const bb0 = pl.at(0, 0, matZ()), bb1 = pl.at(pl.geo.w, pl.geo.h, matZ());
+  const breadboard = [Math.min(bb0[0], bb1[0]), Math.min(bb0[1], bb1[1]), Math.max(bb0[0], bb1[0]), Math.max(bb0[1], bb1[1])];
+  try { def.draw({ p, st, k, sel, origin: B.BP(q.at[0], q.at[1], matZ()), aim, breadboard, at: (x, y) => B.BP(x, y, matZ()),
     aimPart: target ? Object.assign({}, target, (st.cparams || {})[target.id] || {}) : null, m: target ? (st.meas || {})[target.id] || {} : {},
     label: lb.label, put: (bx, svg) => { if (svg) items.push({ box: bx, svg }); } }); } catch (e) { B.note(`${q.id}: ${e.message}`); }
   return { p, def, sel, items, lb };

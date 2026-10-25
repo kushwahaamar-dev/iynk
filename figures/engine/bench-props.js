@@ -103,8 +103,23 @@ B.prop('hairdryer', {
   },
 });
 
-// the HC-SR04 sees 2-450 cm; on the mat that is squeezed to 0.3-2.2 times the prop's own distance (its at is 30 cm)
-const obstacleShift = (p, dist) => { if (typeof p.value !== 'number') return 0; const d = clamp(dist * Math.pow(Math.max(2, p.value) / 30, .45), 12, dist * 2.2); return dist - d; };
+// the HC-SR04 sees 2-450 cm. On the mat the prop's own spot is 30 cm; nearer, it slides toward the sensor until it
+// meets the breadboard's edge (ctx.breadboard, the sensor stands on it), and farther it goes out to TRAVEL times its
+// distance, a mat the engine sizes for it (def.travel)
+const TRAVEL = 1.8;
+const obstacleShift = (ctx, F, half) => {
+  const v = ctx.p.value; if (typeof v !== 'number' || !Number.isFinite(v) || !ctx.aim) return 0;
+  // how far from the aim, back along the prop's axis, the breadboard ends
+  let exit = 0;
+  const bb = ctx.breadboard, a = ctx.aim, ux = -F.ax[0], uy = -F.ax[1];
+  if (bb && a[0] >= bb[0] && a[0] <= bb[2] && a[1] >= bb[1] && a[1] <= bb[3]){
+    exit = Infinity;
+    for (const [u, lo, hi, p0] of [[ux, bb[0], bb[2], a[0]], [uy, bb[1], bb[3], a[1]]]) if (Math.abs(u) > 1e-6) exit = Math.min(exit, ((u > 0 ? hi : lo) - p0) / u);
+    if (!Number.isFinite(exit)) exit = 0;
+  }
+  const near = Math.min(F.dist, exit + half + 3), d = clamp(F.dist * Math.pow(Math.max(2, v) / 30, .35), near, Math.max(near, F.dist * TRAVEL));
+  return F.dist - d;
+};
 // each kind returns its items, the first one its shadow (o is the mat point under it)
 const slabShadow = (W, o, x0, y0, x1, y1, h) => shadow([[x0, y0], [x1, y0], [x1, y1], [x0, y1]].flatMap(([x, y]) => [W(x, y, 0), W(x, y, h)]), o);
 const OBSTACLES = {
@@ -133,11 +148,14 @@ const OBSTACLES = {
     return [slabShadow(W, o, -4, -32, 4, 32, 36), { box: B.aabb([W(-4, -32, 0), W(4, 32, 36)]), svg: s }];
   },
 };
+// each kind's half depth along the axis toward the sensor
+const OBSTACLE_HALF = { box: 13, car: 10.5, ball: 14, wall: 4 };
 B.prop('obstacle', {
-  name: 'Obstacle', foot: [30, 64, 36], params: { kind: Object.keys(OBSTACLES), value: [2, 450] }, defaults: { kind: 'box' },
+  name: 'Obstacle', foot: [30, 64, 36], params: { kind: Object.keys(OBSTACLES), value: [2, 450] }, defaults: { kind: 'box' }, travel: TRAVEL,
   draw(ctx){
-    const F = frame(ctx), sh = obstacleShift(ctx.p, F.dist), W = (x, y, z) => F.W(x + sh, y, z);
-    out(ctx, (OBSTACLES[ctx.p.kind] || OBSTACLES.box)(W, F.o));
+    const kind = OBSTACLES[ctx.p.kind] ? ctx.p.kind : 'box';
+    const F = frame(ctx), sh = obstacleShift(ctx, F, OBSTACLE_HALF[kind]), W = (x, y, z) => F.W(x + sh, y, z);
+    out(ctx, OBSTACLES[kind](W, F.o));
   },
 });
 

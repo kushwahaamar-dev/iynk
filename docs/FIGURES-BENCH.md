@@ -8,6 +8,8 @@ nothing else. The engine (`figures/engine/bench*.js`, `figures/engine/sheets*.js
 
 Changes after the first publication are additive only. Every change is logged here, newest first.
 
+- v12 (02:10 Oct 25, P2-engine-b): the obstacle prop stays on the mat and off the breadboard over 2-450 cm (prop
+  `travel`, `ctx.breadboard`, §9.1).
 - v11 (01:30 Oct 25, P2-engine-b, for the FPGA boards): a feed takes `onlyIf: ['ctl:SW16', '==', 1]` (a condition on
   a rail's volts or a control's position; `offIf` reads the same way, §6.1); a rail's `victim` may be
   `{ part, fails: 'short' }`, which pulls that rail and the rails fed from it to 0 V; a slide control's `start` sets
@@ -658,7 +660,7 @@ light: {
   |---|---|---|
   | `desk-lamp` | `value` lux 0..100000 | an anglepoise lamp, shade on the aim; lit with a light cone above 0 lux |
   | `hairdryer` | `value` °C -40..125 | a dryer on its handle, nozzle at the aim; warm air streaks above 30 °C |
-  | `obstacle` | `kind` box, car, ball, wall; `value` cm 2..450 | the thing in front of the aim, `value` cm away |
+  | `obstacle` | `kind` box, car, ball, wall; `value` cm 2..450 | the thing in front of the aim: at its `at` for 30 cm, nearer down to the breadboard's edge at 2 cm, out to 1.8 times its distance at 450 cm (`travel`) |
   | `watering-can` | none | a can tipped toward the aim (the soil sensor's pot) |
   | `strength-meter` | none | a card dial on the aim servo's case (its part def's `shaft`), the horn is the needle, a bell rings at 180° |
   | `weights` | none | 50, 100, 200 and 500 g brass weights on cork coasters |
@@ -668,8 +670,10 @@ light: {
   breadboard view frames it.
 - A new prop: `SL.bench.prop(name, { name, foot: [w, d, h], params, defaults, draw(ctx) })`. `ctx` has `p` (the
   circuit entry with params applied), `origin` (the mat point under `at`), `aim` (the aim's world point or null),
-  `at(x, y)` (board mm to the mat), `aimPart` (the aim's circuit entry with its params) and `m` (its `meas`), `k`,
-  `sel`, `st`, `label`, and `put(box, svg)` for each drawn piece. An unknown prop is noted once and skipped; an
+  `at(x, y)` (board mm to the mat), `breadboard` (its footprint on the mat, world `[x0, y0, x1, y1]`, for a prop that
+  must stay off it), `aimPart` (the aim's circuit entry with its params) and `m` (its `meas`), `k`,
+  `sel`, `st`, `label`, and `put(box, svg)` for each drawn piece. A def's `travel: k` says the prop moves along its
+  aim out to k times its distance from it; the mat grows to hold it there. An unknown prop is noted once and skipped; an
   unknown aim is noted once and the prop faces `rot`.
 - The stepper's prize wheel is the stepper part's own `wheel: 'wheel'` param, and a soil sensor with `at` brings its
   own pot: neither is a prop.
