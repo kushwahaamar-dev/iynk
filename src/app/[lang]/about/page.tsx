@@ -76,7 +76,7 @@ async function About({ params }: Pick<Props, "params">) {
                   {String(i + 1).padStart(2, "0")}
                 </p>
                 <article>
-                  <h3 className="text-[clamp(22px,2.2vw,30px)] font-semibold tracking-[-0.02em]">{name}</h3>
+                  <h3 className="text-[clamp(22px,2.2vw,30px)] font-medium tracking-[-0.02em]">{name}</h3>
                   <p className="mt-2 max-w-[60ch] text-muted">{t(`about.originals.${site.id}.text`)}</p>
                   <a href={site.url} rel="noopener noreferrer" className="mt-2 inline-flex min-h-11 items-center gap-1.5 font-body text-sm font-semibold">
                     {t("about.visit", { name })}

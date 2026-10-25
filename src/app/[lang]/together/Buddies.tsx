@@ -5,8 +5,8 @@ import { useId, useMemo, useState, type FormEvent } from "react";
 import type { LabKind } from "@/components/dock/types";
 import { InviteDialog } from "@/components/realtime/InviteDialog";
 import type { TogetherT } from "@/components/realtime/messages";
-import { Note, Section, eyebrow } from "@/components/editorial/Editorial";
-import { Button, Callout } from "@/components/ui";
+import { Action, Note, Section, eyebrow, area, field } from "@/components/editorial/Editorial";
+import { Callout } from "@/components/ui";
 import { cx } from "@/components/ui/cx";
 import { useLocale } from "@/i18n/client";
 import type { Locale } from "@/i18n/config";
@@ -21,8 +21,6 @@ type Match = { id: string; score: number; why: string; sharedInterest: string; s
 
 const KEY = "iynk:buddies:v1";
 const label = cx(eyebrow, "flex flex-col gap-2");
-const field = "ink-field w-full font-normal normal-case tracking-normal";
-const area = "min-h-24 rounded-[22px] border-[1.5px] border-line bg-surface px-4 py-3 font-body text-base font-normal normal-case tracking-normal text-ink";
 
 /** This browser's buddy-pool id and the token that proves it owns it. */
 function credentials(): { id: string; token: string } {
@@ -142,9 +140,9 @@ export function Buddies({ t, titles, index }: { t: TogetherT; titles: Map<string
             {built.length > 0 ? ` ${t("lobby.buddies.builtNote", { count: built.length })}` : ""}
           </p>
           <div className="sm:col-span-2">
-            <Button type="submit" variant="primary" size="lg" disabled={state.kind === "busy"}>
+            <Action type="submit" kind="primary" size="lg" disabled={state.kind === "busy"}>
               {state.kind === "busy" ? t("lobby.buddies.finding") : t("lobby.buddies.submit")}
-            </Button>
+            </Action>
           </div>
         </form>
         <div aria-live="polite" className="flex flex-col gap-4 empty:hidden">
@@ -163,7 +161,7 @@ export function Buddies({ t, titles, index }: { t: TogetherT; titles: Map<string
                   return (
                     <li key={match.id} className="flex flex-col gap-2 border-b border-rule py-6">
                       <p className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                        <span className="text-2xl font-semibold tracking-[-0.02em]">{buddy.name}</span>
+                        <span className="text-2xl font-medium tracking-[-0.02em]">{buddy.name}</span>
                         <span className="font-ui text-sm tabular text-muted">{t("lobby.buddies.score", { score: match.score })}</span>
                       </p>
                       <p className="max-w-[56ch]">{match.why}</p>
@@ -171,7 +169,7 @@ export function Buddies({ t, titles, index }: { t: TogetherT; titles: Map<string
                       {project ? (
                         <>
                           <p className="mt-2 text-sm font-semibold">{t("lobby.buddies.project", { item: project })}</p>
-                          <Button
+                          <Action
                             size="sm"
                             className="mt-1 self-start"
                             onClick={() =>
@@ -179,7 +177,7 @@ export function Buddies({ t, titles, index }: { t: TogetherT; titles: Map<string
                             }
                           >
                             {t("lobby.buddies.invite")}
-                          </Button>
+                          </Action>
                         </>
                       ) : null}
                     </li>

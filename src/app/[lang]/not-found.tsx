@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { lang } from "next/root-params";
-import { eyebrow, page } from "@/components/editorial/Editorial";
-import { buttonClass } from "@/components/ui/Button";
+import { actionClass, eyebrow, page } from "@/components/editorial/Editorial";
+import { typeClass } from "@/components/marketing";
 import { cx } from "@/components/ui/cx";
 import { Icon } from "@/components/ui/icons";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/i18n/config";
@@ -25,14 +25,14 @@ export default async function NotFound() {
 
   // not-found.tsx cannot export metadata; React 19 hoists this <title> into <head>.
   return (
-    <section className={cx(page, "grid grid-cols-1 gap-x-6 gap-y-12 pt-[clamp(40px,7vw,112px)] pb-[clamp(72px,10vw,160px)] lg:grid-cols-12")}>
+    <section className={cx(page, "grid grid-cols-1 gap-x-6 gap-y-12 pt-[clamp(40px,6vw,96px)] pb-[clamp(72px,10vw,160px)] lg:grid-cols-12")}>
       <title>{`${t("notFound.metaTitle")} · ${t("site.name")}`}</title>
       <div className="min-w-0 lg:col-span-7">
         <p className={cx(eyebrow, "tabular")}>404</p>
-        <h1 className="mt-5 font-body text-[clamp(44px,7vw,104px)] leading-[0.95] font-semibold tracking-[-0.035em] text-balance">{t("notFound.title")}</h1>
+        <h1 className={cx(typeClass.display, "mt-5")}>{t("notFound.title")}</h1>
         <p className="mt-7 max-w-[52ch] text-[17px] leading-[1.55] text-muted">{t("notFound.body")}</p>
         <div className="mt-10">
-          <Link href={`/${locale}`} className={buttonClass("primary", "lg")}>
+          <Link href={`/${locale}`} className={actionClass("primary")}>
             {t("notFound.home")}
           </Link>
         </div>
@@ -40,7 +40,7 @@ export default async function NotFound() {
       <ul className="self-end border-t border-rule lg:col-span-4 lg:col-start-9">
         {labs.map((lab, i) => (
           <li key={lab.href} className="border-b border-rule">
-            <Link href={lab.href} className="group flex min-h-16 items-center gap-4 font-body text-lg font-semibold no-underline">
+            <Link href={lab.href} className="group flex min-h-16 items-center gap-4 font-body text-lg font-medium no-underline">
               <span className={cx(eyebrow, "tabular")} aria-hidden="true">
                 {String(i + 1).padStart(2, "0")}
               </span>

@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { useId, useState, type FormEvent } from "react";
 import type { LabKind } from "@/components/dock/types";
 import type { TogetherT } from "@/components/realtime/messages";
-import { Section, eyebrow, sectionTitle } from "@/components/editorial/Editorial";
-import { Button, Callout, IconButton } from "@/components/ui";
+import { Action, Section, eyebrow, sectionTitle, area, field } from "@/components/editorial/Editorial";
+import { Callout, IconButton } from "@/components/ui";
 import { cx } from "@/components/ui/cx";
 import { useLocale } from "@/i18n/client";
 import { LOCALES, type Locale } from "@/i18n/config";
@@ -21,8 +21,6 @@ type Plan = { title: string; item: { lab: LabKind; id: string }; why: string; ro
 const LEVELS: Level[] = ["new", "some", "lots"];
 const MAX_PEOPLE = 8;
 const label = cx(eyebrow, "flex min-w-0 flex-col gap-2");
-const field = "ink-field w-full font-normal normal-case tracking-normal";
-const area = "min-h-20 rounded-[22px] border-[1.5px] border-line bg-surface px-4 py-3 font-body text-base font-normal normal-case tracking-normal text-ink";
 
 type State = { kind: "idle" } | { kind: "missing" } | { kind: "busy" } | { kind: "error" } | { kind: "unknown" } | { kind: "done"; plan: Plan };
 
@@ -127,7 +125,7 @@ export function Planner({ t, titles, index }: { t: TogetherT; titles: Map<string
               })}
             </fieldset>
             <div className="flex flex-wrap gap-3">
-              <Button
+              <Action
                 size="lg"
                 disabled={people.length >= MAX_PEOPLE}
                 onClick={() => {
@@ -136,10 +134,10 @@ export function Planner({ t, titles, index }: { t: TogetherT; titles: Map<string
                 }}
               >
                 {t("lobby.plan.add")}
-              </Button>
-              <Button type="submit" variant="primary" size="lg" disabled={state.kind === "busy"}>
+              </Action>
+              <Action type="submit" kind="primary" size="lg" disabled={state.kind === "busy"}>
                 {state.kind === "busy" ? t("lobby.plan.planning") : t("lobby.plan.submit")}
-              </Button>
+              </Action>
             </div>
             <div aria-live="polite" className="empty:hidden">
               {state.kind === "missing" ? <Callout tone="warn">{t("lobby.plan.missing")}</Callout> : null}
@@ -212,12 +210,12 @@ function PlanCard({ plan, item, t, onStart, onAgain }: { plan: Plan; item: strin
         </section>
       ) : null}
       <div className="flex flex-wrap gap-3">
-        <Button variant="primary" size="lg" onClick={onStart}>
+        <Action kind="primary" size="lg" onClick={onStart}>
           {t("lobby.plan.start")}
-        </Button>
-        <Button size="lg" onClick={onAgain}>
+        </Action>
+        <Action size="lg" onClick={onAgain}>
           {t("lobby.plan.again")}
-        </Button>
+        </Action>
       </div>
     </article>
   );

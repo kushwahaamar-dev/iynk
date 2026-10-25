@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { useId, useMemo, useState, type FormEvent } from "react";
 import type { LabKind } from "@/components/dock/types";
 import { useTogetherT, type TogetherT } from "@/components/realtime/messages";
-import { Note, eyebrow, sectionTitle } from "@/components/editorial/Editorial";
-import { Button, Callout, SegmentedControl, Select, TextInput } from "@/components/ui";
+import { Action, Note, eyebrow, quietField, sectionTitle } from "@/components/editorial/Editorial";
+import { Callout, SegmentedControl, Select, TextInput } from "@/components/ui";
 import { cx } from "@/components/ui/cx";
 import { useLocale } from "@/i18n/client";
 import { useFeatures } from "@/lib/features";
@@ -41,6 +41,7 @@ function StartRoom({ items, t }: { items: LobbyItem[]; t: TogetherT }) {
         <SegmentedControl
           label={t("lobby.create.lab")}
           stretch
+          className="border! border-muted/60!"
           options={labs.map((value) => ({ value, label: t(`labs.${value}`) }))}
           value={lab}
           onChange={(value) => {
@@ -49,16 +50,16 @@ function StartRoom({ items, t }: { items: LobbyItem[]; t: TogetherT }) {
           }}
         />
       ) : null}
-      <Select id={`${id}-item`} label={t("lobby.create.item")} value={chosen?.id ?? ""} onChange={(event) => setItemId(event.target.value)}>
+      <Select id={`${id}-item`} className={quietField} label={t("lobby.create.item")} value={chosen?.id ?? ""} onChange={(event) => setItemId(event.target.value)}>
         {inLab.map((item) => (
           <option key={item.id} value={item.id}>
             {item.title}
           </option>
         ))}
       </Select>
-      <Button type="submit" variant="primary" size="lg" className="mt-auto self-start" disabled={!chosen}>
+      <Action type="submit" kind="primary" size="lg" className="mt-auto self-start" disabled={!chosen}>
         {t("lobby.create.go")}
-      </Button>
+      </Action>
     </form>
   );
 }
@@ -115,14 +116,14 @@ function JoinRoom({ t }: { t: TogetherT }) {
         autoCapitalize="none"
         spellCheck={false}
         aria-invalid={state.kind === "bad"}
-        className="font-ui aria-invalid:border-bad"
+        className={cx(quietField, "font-ui aria-invalid:border-bad")}
       />
       <div aria-live="polite" className="empty:hidden">
         {message ? <Callout tone={message.tone}>{message.text}</Callout> : null}
       </div>
-      <Button type="submit" size="lg" className="mt-auto self-start" disabled={state.kind === "looking"}>
+      <Action type="submit" size="lg" className="mt-auto self-start" disabled={state.kind === "looking"}>
         {t("lobby.join.go")}
-      </Button>
+      </Action>
     </form>
   );
 }

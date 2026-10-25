@@ -2,7 +2,8 @@
 
 import type { ReactNode } from "react";
 import type { TogetherT } from "@/components/realtime/messages";
-import { Button, Callout } from "@/components/ui";
+import { Action } from "@/components/editorial/Editorial";
+import { Callout } from "@/components/ui";
 import type { FeatureState, Features } from "@/lib/features";
 
 /** A same-origin room link as a path the router can push. */
@@ -47,9 +48,9 @@ export function FeatureGate({
       <Callout tone="warn" live>
         <span className="flex flex-wrap items-center gap-2">
           {t("lobby.buddies.failed")}
-          <Button size="sm" onClick={onRetry}>
+          <Action size="sm" onClick={onRetry}>
             {t("lobby.retry")}
-          </Button>
+          </Action>
         </span>
       </Callout>
     );

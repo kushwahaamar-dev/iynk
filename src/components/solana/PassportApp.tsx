@@ -3,8 +3,8 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
-import { Note, Section } from "@/components/editorial/Editorial";
-import { Button, ButtonLink, Callout, Icon } from "@/components/ui";
+import { Action, ActionLink, Note, Section } from "@/components/editorial/Editorial";
+import { Callout, Icon } from "@/components/ui";
 import { useLocale } from "@/i18n/client";
 import { reloadFeatures, useFeatures } from "@/lib/features";
 import { PROGRAM_ID } from "@/lib/solana/config";
@@ -31,9 +31,9 @@ function Credentials() {
     body = (
       <Callout tone="warn">
         <p>{t("passport.readError")}</p>
-        <Button size="sm" variant="secondary" className="mt-2" onClick={() => setRetry((n) => n + 1)}>
+        <Action size="sm" kind="secondary" className="mt-2" onClick={() => setRetry((n) => n + 1)}>
           {t("retry")}
-        </Button>
+        </Action>
       </Callout>
     );
   else if (read.data.length === 0)
@@ -91,9 +91,9 @@ function Passport() {
       <div className="mt-[clamp(48px,6vw,96px)]">
         <Callout tone="warn">
           <p>{t("statusError")}</p>
-          <Button size="sm" variant="secondary" className="mt-2" onClick={reloadFeatures}>
+          <Action size="sm" kind="secondary" className="mt-2" onClick={reloadFeatures}>
             {t("retry")}
-          </Button>
+          </Action>
         </Callout>
       </div>
     );
@@ -129,9 +129,9 @@ function NotSetUp() {
       <Note
         title={t("notSetUp.title")}
         action={
-          <ButtonLink href={`/${lang}`} variant="secondary" size="lg">
+          <ActionLink href={`/${lang}`} kind="secondary" size="lg">
             {t("notSetUp.back")}
-          </ButtonLink>
+          </ActionLink>
         }
       >
         {t("notSetUp.body")}

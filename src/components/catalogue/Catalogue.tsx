@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { FigureStill } from "@/components/figure";
+import { typeClass } from "@/components/marketing";
 import { cx } from "@/components/ui/cx";
 
 /*
@@ -60,7 +61,7 @@ export function CatalogueHead({
         </p>
         <h1
           id={titleId}
-          className="mt-6 max-w-[16ch] font-body text-[clamp(44px,7vw,104px)] font-semibold leading-[0.95] tracking-[-0.035em] sm:mt-8"
+          className={cx(typeClass.display, "mt-6 max-w-[16ch] sm:mt-8")}
         >
           {title}
         </h1>
@@ -85,7 +86,7 @@ export function CatalogueGroup({ id, kicker, title, aside, children }: { id: str
     <section aria-labelledby={id} className="grid grid-cols-1 lg:grid-cols-12 [&+&]:mt-[clamp(48px,6vw,96px)]">
       <div className="border-t border-rule pb-6 pt-(--cat-pad) lg:col-span-3 lg:pe-8">
         <div className="flex flex-col gap-4 lg:sticky lg:top-[calc(var(--header-h)+1.5rem)]">
-          <h2 id={id} className="font-body text-[clamp(24px,2.2vw,32px)] font-semibold leading-[1.05] tracking-[-0.02em]">
+          <h2 id={id} className="font-body text-[clamp(24px,2.2vw,32px)] font-medium leading-[1.05] tracking-[-0.02em]">
             {kicker ? <span className={cx(eyebrow, "mb-3 block")}>{kicker}</span> : null}
             {title}
           </h2>
@@ -161,7 +162,7 @@ export function CatalogueCard({ data, item, fig, meta, heading: Heading, titleId
         </div>
 
         <div className={slot}>
-          <Heading id={titleId} className="flex items-start justify-between gap-3 font-body text-[19px] font-semibold leading-[1.2] tracking-[-0.015em]">
+          <Heading id={titleId} className="flex items-start justify-between gap-3 font-body text-[19px] font-medium leading-[1.2] tracking-[-0.015em]">
             {href ? (
               <Link
                 href={href}

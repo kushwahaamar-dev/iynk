@@ -48,7 +48,7 @@ export function CredentialCard({ credential, issuer }: { credential: Credential;
         <header className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
           <div className="min-w-0 flex-1 basis-56">
             <p className={eyebrow}>{t("credential.issued", { date })}</p>
-            <h3 id={titleId} className="mt-3 text-[clamp(22px,2.2vw,28px)] leading-tight font-semibold tracking-[-0.02em]">
+            <h3 id={titleId} className="mt-3 text-[clamp(22px,2.2vw,28px)] leading-tight font-medium tracking-[-0.02em]">
               {skillTitle(t, credential.skillId)}
             </h3>
           </div>
