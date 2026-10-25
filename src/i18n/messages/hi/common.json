@@ -36,25 +36,25 @@
     "dock": {
       "label": "लैब के औज़ार",
       "hint": "इस लैब के लिए साथी, दोस्त और असली पुर्ज़े",
-      "open": "लैब के औज़ार खोलो",
-      "close": "लैब के औज़ार बंद करो",
+      "open": "लैब के औज़ार खोलें",
+      "close": "लैब के औज़ार बंद करें",
       "tabs": {
         "partner": "साथी",
         "together": "साथ मिलकर",
-        "real": "असली में बनाओ",
+        "real": "असली में बनाएँ",
         "passport": "पासपोर्ट",
         "hardware": "हार्डवेयर"
       }
     },
     "sound": {
-      "label": "Sound",
-      "turnOn": "Turn sound on",
-      "turnOff": "Turn sound off"
+      "label": "आवाज़",
+      "turnOn": "आवाज़ चालू करें",
+      "turnOff": "आवाज़ बंद करें"
     },
     "usage": {
-      "label": "Anonymous usage counts",
-      "body": "SimLab counts what happens in the labs (a lesson passed, a step built, a fault tried) for the live counters and leaderboards. Each event carries a random id for this browser, never your name or your code.",
-      "toggle": "Share anonymous usage counts"
+      "label": "गुमनाम उपयोग-गिनती",
+      "body": "SimLab लाइव काउंटर और लीडरबोर्ड के लिए गिनता है कि लैब में क्या होता है (एक पास हुआ पाठ, एक बना हुआ चरण, आज़माई गई एक खराबी)। हर घटना के साथ इस ब्राउज़र की एक रैंडम आईडी जाती है, कभी आपका नाम या आपका कोड नहीं।",
+      "toggle": "गुमनाम उपयोग-गिनती साझा करें"
     }
   }
 }
