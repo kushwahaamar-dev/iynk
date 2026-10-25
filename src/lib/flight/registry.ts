@@ -13,6 +13,7 @@ import type { CraftClass, CraftLook, FlightCraft, FlightMode, Course, Mission, M
 //   quadplane     the wing's, plus transitionS hoverMotors
 //   tricopter     tailMaxDeg tailRateDegS
 //   swarm         swarmCount swarmSpacing
+//   delivery      payloadG (what a `drop` goal releases; else the design's fixed PARCEL part)
 // Content courses map one to one onto range courses with the same id.
 
 export interface CraftFlight {
@@ -187,6 +188,9 @@ export function flightCraft(content: DroneContent): FlightCraft {
   if (typeof p.loiterSpeed === "number") craft.loiterSpeed = p.loiterSpeed;
   if (typeof p.rtlAlt === "number") craft.rtlAlt = p.rtlAlt;
   if (typeof p.loiterRadius === "number") craft.loiterRadius = p.loiterRadius;
+  const drops = content.courses.some((c) => c.goals.some((g) => g.action === "drop"));
+  const payload = num("payloadG", content.design.fixed.find((part) => part.id === "PARCEL")?.g ?? 0);
+  if (drops && payload > 0) craft.payloadG = payload;
   if (cls === "wing" || cls === "vtol") {
     const wing: WingParams = {
       vstall: num("vstall", 8),
@@ -221,7 +225,7 @@ export function flightCourse(content: DroneContent, c: ContentCourse, craft: Fli
     prims: c.prims satisfies Prim[],
     gates: c.gates.map(([x, y, heading], i) => ({ x, y, heading, w: gw, h: gh, col: GATE_COLS[i % GATE_COLS.length] })),
     // the goals are the course: on a gate course they are only drawn when it has none of its own
-    checkpoints: c.kind === "gates" ? [] : c.goals.map((g) => ({ label: g.label, x: g.x, y: g.y, z: g.z, r: g.r, ...(g.heading !== undefined ? { heading: g.heading } : {}), ...(g.land ? { land: true } : {}) })),
+    checkpoints: c.kind === "gates" ? [] : c.goals.map((g) => ({ label: g.label, x: g.x, y: g.y, z: g.z, r: g.r, ...(g.heading !== undefined ? { heading: g.heading } : {}), ...(g.land ? { land: true } : {}), ...(g.action === "drop" ? { action: "drop" as const } : {}) })),
   };
   if (c.ceiling !== undefined) course.ceiling = c.ceiling;
   const missions: Mission[] = [];

@@ -24,6 +24,8 @@ export function sfxFor(e: FlightEvent): SfxName[] | null {
     case "checkpoint":
     case "missionStep":
       return ["tick"];
+    case "drop":
+      return ["unplug"];
     case "battery":
       return [e.level === "empty" ? "unplug" : "buzz"];
     case "blocked":

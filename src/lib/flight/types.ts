@@ -93,6 +93,7 @@ export interface FlightCraft {
   loiterSpeed?: number; // m/s, GPS modes at full stick
   rtlAlt?: number; // m
   loiterRadius?: number; // m, the circle a wing flies round home
+  payloadG?: number; // g a mission's drop releases (a delivery parcel): the craft flies lighter after it
   look: CraftLook;
   modes: FlightMode[];
 }
@@ -175,6 +176,7 @@ export interface Checkpoint {
   r: number;
   heading?: number; // deg; present = ring
   land?: boolean; // must be touched on the ground (z below 0.3 m, slow)
+  action?: Waypoint["action"]; // what happens there: a `drop` releases the craft's payload
 }
 
 export interface Waypoint {
@@ -270,6 +272,7 @@ export type FlightEvent = { t: number } & (
   | { type: "battery"; level: "low" | "empty"; chemistry: Chemistry; perCell: number }
   | { type: "missionStep"; index: number; total: number; label: string; action?: Waypoint["action"] }
   | { type: "missionDone"; time?: number; best?: boolean; demo?: boolean }
+  | { type: "drop"; g: number }
   | { type: "outOfField" }
   | { type: "farOut" }
   | { type: "ceiling"; m: number }
@@ -313,4 +316,6 @@ export interface FlightFrame {
   motorsOut: number[];
   followers: Array<[number, number, number, number]>; // swarm: x, y, z, yaw
   spray: boolean;
+  cargo: boolean; // the payload hangs under the craft (until the drop)
+  parcel: [number, number] | null; // where the dropped payload lies
 }

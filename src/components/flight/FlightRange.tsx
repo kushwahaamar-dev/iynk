@@ -212,6 +212,8 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
           return finished(e, t(e.best ? "msg.runBest" : "msg.runDone", { title: courseTitle, time: e.time.toFixed(1) }));
         case "missionStep":
           return t("msg.missionStep", { n: e.index, total: e.total, label: label(e.label) });
+        case "drop":
+          return t("msg.drop", { kg: (e.g / 1000).toFixed(1) });
         case "missionDone":
           if (e.time === undefined) return t("msg.missionDone");
           return finished({ time: e.time, demo: e.demo }, t(e.best ? "msg.missionBest" : "msg.missionTime", { time: e.time.toFixed(1) }));

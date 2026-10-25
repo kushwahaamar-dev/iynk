@@ -500,6 +500,94 @@ describe("the autopilot demo", () => {
   });
 });
 
+describe("missions that carry something", () => {
+  const delivery = crafts.find((c) => c.id === "delivery");
+
+  it("drops the parcel at the drop zone and flies home lighter", () => {
+    expect(delivery, "the delivery craft's content").toBeDefined();
+    const { craft, courses } = flightOf(delivery!)!;
+    const parcel = delivery!.design.fixed.find((p) => p.id === "PARCEL")!.g;
+    expect(craft.payloadG).toBe(parcel);
+    const course = courses.find((c) => c.kind === "mission")!;
+    const auto = craft.modes.find((m) => m.task === "mission")!;
+    const s = createSim(craft, course, flightCalc(delivery!, delivery!.design.default), { mode: auto.id });
+    expect(frameOf(s).cargo).toBe(true);
+    dispatch(s, { type: "arm" });
+    // the motor command while cruising at 12 m, before and after the drop
+    const out: number[] = [], home: number[] = [];
+    const events: FlightEvent[] = [];
+    for (let i = 0; i < 240 * 100 && !s.crashed && !events.some((e) => e.type === "missionDone"); i++) {
+      stepSim(s);
+      events.push(...drainEvents(s));
+      const cruising = Math.abs(s.p[2] - 12) < 0.3 && Math.abs(s.v[2]) < 0.1 && Math.hypot(s.v[0], s.v[1]) > 3;
+      if (cruising) (s.dropped ? home : out).push(s.u);
+    }
+    expect(events.find((e) => e.type === "crash")).toBeUndefined();
+    expect(events.find((e) => e.type === "drop")).toMatchObject({ g: parcel });
+    expect(s.dropped).toBe(parcel);
+    expect(frameOf(s).cargo).toBe(false);
+    expect(frameOf(s).parcel).not.toBeNull();
+    const mean = (v: number[]) => v.reduce((a, b) => a + b, 0) / v.length;
+    expect(out.length).toBeGreaterThan(50);
+    expect(home.length).toBeGreaterThan(50);
+    // the calculator's hover throttle falls from about 0.72 to 0.64 without the parcel
+    expect(mean(home) / mean(out)).toBeLessThan(0.95);
+    // a fresh pad puts the parcel back on
+    dispatch(s, { type: "reset" });
+    expect(s.dropped).toBe(0);
+    expect(frameOf(s).cargo).toBe(true);
+  });
+
+  it("drops it when the learner flies through the drop goal by hand too", () => {
+    const { craft, courses } = flightOf(delivery!)!;
+    const course = courses.find((c) => c.kind === "mission")!;
+    const i = course.checkpoints.findIndex((c) => c.action === "drop");
+    expect(i).toBeGreaterThan(0);
+    const s = createSim(craft, course, flightCalc(delivery!, delivery!.design.default), { mode: "loiter" });
+    dispatch(s, { type: "arm" });
+    sticks(s, { throttle: 1 });
+    run(s, 1);
+    const cp = course.checkpoints[i];
+    s.checkpoint = i;
+    s.p = [cp.x, cp.y, cp.z];
+    s.v = [0, 0, 0];
+    const events = run(s, 0.05);
+    expect(events.map((e) => e.type)).toEqual(expect.arrayContaining(["checkpoint", "drop"]));
+  });
+
+  it("flies to a landing goal at its height and then comes straight down", () => {
+    const [px, py] = quad5Course.pad;
+    const course: Course = {
+      ...quad5Course,
+      kind: undefined,
+      prims: [],
+      gates: [],
+      checkpoints: [],
+      missions: [{ id: "far-land", waypoints: [{ x: px, y: py, z: 8, label: "up" }, { x: px + 15, y: py, z: 0, label: "pad", action: "land" }] }],
+    };
+    const craft: FlightCraft = { ...quad5Craft, modes: [{ id: "auto", attitude: "angle", throttle: "climb", task: "mission", missionId: "far-land" }] };
+    const s = createSim(craft, course, quad5Calc(), { mode: "auto" });
+    dispatch(s, { type: "arm" });
+    let lowest = Infinity;
+    let reachedTop = false;
+    const events: FlightEvent[] = [];
+    for (let i = 0; i < 40 * 100 && !events.some((e) => e.type === "landed"); i++) {
+      stepSim(s);
+      events.push(...drainEvents(s));
+      if (s.p[2] > 6.5) reachedTop = true;
+      const d = Math.hypot(px + 15 - s.p[0], py - s.p[1]);
+      if (reachedTop && d > 3) lowest = Math.min(lowest, s.p[2]);
+    }
+    expect(events.find((e) => e.type === "crash")).toBeUndefined();
+    expect(reachedTop).toBe(true);
+    // the old autopilot glided down the whole leg; ArduCopter holds its height until it is over the pad
+    expect(lowest).toBeGreaterThan(6);
+    expect(events.some((e) => e.type === "missionDone")).toBe(true);
+    expect(s.p[2]).toBeLessThan(0.05);
+    expect(Math.hypot(px + 15 - s.p[0], py - s.p[1])).toBeLessThan(1.5);
+  });
+});
+
 describe("a wing's return to home", () => {
   it("climbs to the content's RTH altitude and circles home at its loiter radius", () => {
     const wing = crafts.find((c) => c.flight.physics === "fixed-wing" && typeof c.flight.params.loiterRadius === "number");

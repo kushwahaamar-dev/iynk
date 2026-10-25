@@ -119,7 +119,8 @@
     "missionTime": "Mission complete: {time} s",
     "missionBest": "Mission complete: {time} s (best!)",
     "medal": "{line}. {medal} medal!",
-    "noMedal": "{line}. Bronze is {s} s"
+    "noMedal": "{line}. Bronze is {s} s",
+    "drop": "Parcel released: {kg} kg off, so it flies home on less throttle"
   },
   "dirs": [
     "est",

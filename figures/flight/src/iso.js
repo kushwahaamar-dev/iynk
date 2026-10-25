@@ -3,6 +3,7 @@
 // throttle), with only the craft, its shadow and the labels redrawn each frame.
 const SVGNS = 'http://www.w3.org/2000/svg';
 const SHADOW_LEN = 0.45;
+const PARCEL_COL = '#c9a26b';
 
 function hull2(pts) {
   const p = pts.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
@@ -41,7 +42,7 @@ function createIso(svg, overlay) {
     svg.appendChild(g);
     return g;
   };
-  const gGround = layer('ground'), gShadow = layer('shadows'), gSolids = layer('solids'), gRings = layer('rings'), gXray = layer('xray');
+  const gGround = layer('ground'), gShadow = layer('shadows'), gParcel = layer('parcel'), gSolids = layer('solids'), gRings = layer('rings'), gXray = layer('xray');
   const craftG = document.createElementNS(SVGNS, 'g');
   craftG.setAttribute('id', 'craft');
   const craftShadow = document.createElementNS(SVGNS, 'g');
@@ -76,6 +77,12 @@ function createIso(svg, overlay) {
       s += '<path d="' + wobblePath(pts, AMP) + '" fill="' + tone(f.n, o.col) + '"/>';
     }
     return s;
+  }
+
+  /** A small box drawn on its own (the delivery parcel), shaded like the field's solids. */
+  function boxSvg(x, y, z0, side, col) {
+    const yawRad = 30 * DEG;
+    return solidSvg({ k: 'box', x, y, z0, z1: z0 + side * 0.75, hw: side / 2, hd: side / 2, c: Math.cos(yawRad), s: Math.sin(yawRad), col });
   }
 
   function shadowOf(o) {
@@ -256,7 +263,14 @@ function createIso(svg, overlay) {
       const pa = proj(a), pb = proj(b);
       html = '<path class="spray" d="M' + pa.join(' ') + 'L' + pb.join(' ') + 'L' + (gb[0] + 0.6) + ' ' + gb[1] + 'L' + (ga[0] - 0.6) + ' ' + ga[1] + 'Z"/>' + html;
     }
+    if (f.cargo) {
+      // the parcel hangs on the winch line under the frame until the drop
+      const side = 0.3 * scale, top = f.z + 0.04 - 0.18 * scale, z0 = Math.max(0, top - side * 0.75);
+      const from = proj([f.x, f.y, f.z + 0.04]), knot = proj([f.x, f.y, z0 + side * 0.75]);
+      html = '<path class="cable" d="M' + from[0].toFixed(3) + ' ' + from[1].toFixed(3) + 'L' + knot[0].toFixed(3) + ' ' + knot[1].toFixed(3) + '"/>' + boxSvg(f.x, f.y, z0, side, PARCEL_COL) + html;
+    }
     craftG.innerHTML = html;
+    gParcel.innerHTML = f.parcel ? boxSvg(f.parcel[0], f.parcel[1], 0, 0.3 * scale, PARCEL_COL) : '';
     const ground = proj([f.x, f.y, 0]);
     const cast = proj([f.x + f.z * SH[0], f.y + f.z * SH[1], 0]);
     const span = (look.span ? look.span / 2 : look.armLen + look.propR) * scale;

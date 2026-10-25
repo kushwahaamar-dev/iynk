@@ -79,6 +79,8 @@ export interface SimState {
   wpHold: number;
   legFrom: Vec3 | null; // the demo flies the line from here to the next waypoint (null: straight at it)
   spray: boolean;
+  dropped: number; // g of payload released since the pad (the craft flies this much lighter)
+  parcel: Vec3 | null; // where it was released
   assisted: boolean; // the autopilot demo flew part of this lap or run: it never sets a best time
   followers: Array<{ p: Vec3; v: Vec3; yaw: number }>;
   outside: boolean;
@@ -165,6 +167,8 @@ export function resetFlight(s: SimState) {
   s.wpHold = 0;
   s.legFrom = null;
   s.spray = false;
+  s.dropped = 0;
+  s.parcel = null;
   s.assisted = false;
   s.outside = false;
   s.farOut = false;
@@ -422,7 +426,10 @@ function missionVelocity(s: SimState, cmd: Command, speed: number): [number, num
   const d = Math.hypot(dx, dy);
   const landing = isLanding(w);
   const line = demo ? lineVelocity(s, w, speed) : null;
-  cmd.climb = line ? clamp(line[2] / rate, -1, 1) : clamp((dz * 0.8) / rate, -1, 1);
+  // a landing goal is flown to at the height the craft has and then landed straight down (ArduCopter's NAV_LAND),
+  // instead of gliding down across the field toward it
+  const overhead = landing && d > 1.5;
+  cmd.climb = line ? clamp(line[2] / rate, -1, 1) : overhead ? 0 : clamp((dz * 0.8) / rate, -1, 1);
   // over the pad it keeps coming down at a steady 0.35 m/s instead of easing off just above the ground
   if (landing && d < 1.5) cmd.climb = Math.min(cmd.climb, -0.35 / rate);
   if (d > 1.5) headTo(s, cmd, w.x, w.y);
@@ -431,6 +438,7 @@ function missionVelocity(s: SimState, cmd: Command, speed: number): [number, num
     if (s.wpHold >= (w.hold ?? 0)) {
       if (w.action === "spray-on") s.spray = true;
       if (w.action === "spray-off") s.spray = false;
+      if (w.action === "drop") release(s);
       const scored = demo || s.course.kind === "mission";
       if (!scored) emit(s, { type: "missionStep", index: s.wp + 1, total: mission.waypoints.length, label: w.label, action: w.action });
       s.wp++;
@@ -479,9 +487,18 @@ function lineVelocity(s: SimState, w: Waypoint, speed: number): Vec3 {
 
 const isLanding = (w: Waypoint) => w.action === "land" || w.z <= 0.01;
 
+/** The drop: the payload leaves the craft where it is, so it flies lighter from here to the pad. */
+function release(s: SimState) {
+  const g = s.craft.payloadG;
+  if (!g || s.dropped > 0) return;
+  s.dropped = Math.min(g, s.calc.auw * 0.8);
+  s.parcel = [s.p[0], s.p[1], 0];
+  emit(s, { type: "drop", g: Math.round(s.dropped) });
+}
+
 function multirotorStep(s: SimState, dt: number) {
   const c = s.craft, calc = s.calc, m = s.mode, st = s.sticks;
-  const mass = calc.auw / 1000;
+  const mass = (calc.auw - s.dropped) / 1000;
   const n = calc.motors;
   const lost = s.motorsOut.length + (s.desyncT > 0 ? 1 : 0);
   const tmax = ((n * calc.thrustPerMotor) / 1000) * G * Math.max(0, (n - lost) / n);
@@ -621,7 +638,7 @@ function vtolTransition(s: SimState, a: Vec3, dt: number) {
 
 function wingStep(s: SimState, dt: number) {
   const c = s.craft, calc = s.calc, st = s.sticks, w = (c.vtol ?? c.wing)!;
-  const mass = calc.auw / 1000;
+  const mass = (calc.auw - s.dropped) / 1000;
   const live = s.armed && !s.crashed;
   const isVtol = !!c.vtol;
   if (isVtol && (s.mode.task === "qrtl" || s.mode.task === "free")) {
@@ -846,6 +863,7 @@ function worldChecks(s: SimState) {
     if (passCheckpoint(cp, prev, s.p, speed)) {
       const n = course.checkpoints.length;
       emit(s, { type: "checkpoint", index: s.checkpoint + 1, total: n, label: cp.label });
+      if (cp.action === "drop") release(s);
       s.checkpoint++;
       if (s.checkpoint >= n) {
         const start = s.runStart ?? 0;
@@ -961,6 +979,8 @@ export function frameOf(s: SimState): FlightFrame {
     motorsOut: s.motorsOut.slice(),
     followers: s.followers.map((f) => [r2(f.p[0]), r2(f.p[1]), r2(f.p[2]), r2(f.yaw)] as [number, number, number, number]),
     spray: s.spray,
+    cargo: !!s.craft.payloadG && s.dropped === 0,
+    parcel: s.parcel ? [r2(s.parcel[0]), r2(s.parcel[1])] : null,
   };
 }
 

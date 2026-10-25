@@ -28,3 +28,12 @@ Written 2026-10-24 21:15 CDT at the end of wave A.
    delivery course works round it with a "HOME at 12 m" goal before the landing goal; gpscam's last leg is clear of
    everything, so it doesn't need one.
 5. **Non-English prose** for the three crafts: phase 3 (translation).
+
+P2-fun (wave B, 2026-10-24 ~22:50): 3 and 4 done. (3) A `drop` goal releases the craft's payload (`payloadG` in
+`content.flight.params`, else the design's fixed `PARCEL` part; the registry sets it only on a craft whose course has a
+drop): the sim flies `auw - dropped` from there (the battery's current curve keeps the full-weight reference, so the
+current falls with the thrust), says "Parcel released: 1.0 kg off", and the range draws the parcel hanging on its
+winch line and then lying at the drop zone; a reset puts it back on. Test: the delivery AUTO mission's cruise throttle
+home is below 0.95 of the way out. (4) AUTO flies to a landing goal at its current height and comes down only within
+1.5 m of it (ArduCopter's NAV_LAND); tested on a pad 15 m from the last waypoint. The delivery course's "HOME at 12 m"
+goal can stay; it is no longer needed.
