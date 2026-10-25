@@ -62,11 +62,12 @@ function statuses(page: Awaited<ReturnType<typeof open>>, n: number): string[] {
 }
 
 describe('de10-lite content against its figure', () => {
-  it('matches its ids.ts entry and the figure title', async () => {
+  it('matches its ids.ts entry: languages, title and palette', async () => {
     expect(BOARDS['de10-lite'].languages).toEqual(['verilog']);
     expect(board.lessons.every((l) => l.language === 'verilog')).toBe(true);
     const page = await open();
     expect(page.md.def.name).toBe(text('title'));
+    expect(page.md.def.pal).toBe(BOARDS['de10-lite'].palette);
     expect(board.power.brownoutVolts).toBe(page.md.def.power.mcu.min);
     page.close();
   });

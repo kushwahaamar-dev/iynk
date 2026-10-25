@@ -61,11 +61,12 @@ function statuses(page: Awaited<ReturnType<typeof open>>, n: number): string[] {
 }
 
 describe('basys3 content against its figure', () => {
-  it('matches its ids.ts entry and the figure title', async () => {
+  it('matches its ids.ts entry: languages, title and palette', async () => {
     expect(BOARDS.basys3.languages).toEqual(['verilog']);
     expect(board.lessons.every((l) => l.language === 'verilog')).toBe(true);
     const page = await open();
     expect(page.md.def.name).toBe(text('title'));
+    expect(page.md.def.pal).toBe(BOARDS.basys3.palette);
     expect(board.power.brownoutVolts).toBe(page.md.def.power.mcu.min);
     page.close();
   });

@@ -295,6 +295,8 @@ B.board({
     mcu: { part: 'IC7', rail: '3V3', min: 2.9, needs: ['IC7', 'IC8'] },
     upload: { source: 'usb', needs: ['IC1', 'IC7'], tool: 'vivado' },
   },
+  // an FPGA takes a design (a bitstream), not a sketch
+  modesLabel: { button: 'Program the FPGA', stat: 'Design' },
   mode: 'gpio',
   modes: {
     gpio: { title: 'Factory GPIO demo', bytes: 2192012, banner: 'BASYS3 GPIO/UART DEMO!', out: gpioDemo,

@@ -154,7 +154,7 @@ B.board({
   id: 'de10-lite', fig: '12', name: 'Terasic DE10-Lite', sub: 'Intel MAX 10 10M50 FPGA, 50 MHz clocks, 3.3 V I/O, USB-Blaster built in',
   pcb: { w: 97.5, h: 80, thick: 1.6, r: 1, color: '#1f4fa8', silk: '#f4f6ef', standoff: 4 },
   mat: { front: 10, back: 12, left: 16, right: 16 },
-  height: 14, pal: 'cobalt', logic: 3.3,
+  height: 14, pal: 'tomato', logic: 3.3,
   holes: [[2.8, 77.8, 3.2], [94.3, 77.8, 3.2], [13.4, 18.6, 3.2], [82.2, 19.7, 3.2]],
   silk: [
     ...N10.map(n => [colX(n), 17.7, 'LEDR' + n, .75]), ...N10.map(n => [colX(n), 12.4, 'SW' + n, .75]),
@@ -254,6 +254,8 @@ B.board({
     mcu: { part: 'U5', rail: '3V3', min: 3.0, needs: ['U5', 'U3', 'Y1'] },
     upload: { source: 'usb', needs: ['U2', 'U10', 'U5'], tool: 'quartus' },
   },
+  // an FPGA takes a design (a .sof over the USB-Blaster), not a sketch
+  modesLabel: { button: 'Program the FPGA', stat: 'Design' },
   mode: 'demo',
   modes: {
     demo: { title: 'Factory demo', bytes: 1048576, out: demo },
