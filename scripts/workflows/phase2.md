@@ -186,8 +186,10 @@ approved); sound off by default and audible when on; e2e for both; no console er
 ### P2-engine-b
 
 Same ownership as P2-engine. Answers wave B's engine requests (sensor benches, motor drivers, new boards' assembly) and
-rebuilds the figures no other wave-B agent owns. Done when: every wave-B request is answered and the engine tests and
-existing probes pass.
+rebuilds the figures no other wave-B agent owns. Also takes wave A's leftovers: `docs/requests/P2-engine-gaps.md` and
+`docs/requests/driver-to-P2-engine-b-figure-layout.md` (part-page label overlaps, bench stats over the art).
+Done when: every wave-B request is answered, the six part pages in the layout request pass `cfshoot.py`, and the engine
+tests and existing probes pass.
 
 ### P2-microbit, P2-nucleo
 
