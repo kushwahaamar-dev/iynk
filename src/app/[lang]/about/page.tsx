@@ -42,12 +42,11 @@ export default function AboutPage({ params }: Props) {
 async function About({ params }: Pick<Props, "params">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
-  const [t, common] = await Promise.all([getT(lang, "shell"), getT(lang, "common")]);
+  const t = await getT(lang, "shell");
 
   return (
     <div className={cx(page, "pb-[clamp(72px,10vw,160px)]")}>
       <PageHead
-        label={common("site.name")}
         title={t("about.title")}
         lede={<p>{t("about.lede")}</p>}
         aside={<FigureStill item="boards/uno-r3" className="aspect-[4/3] sm:aspect-[4/3]" />}
