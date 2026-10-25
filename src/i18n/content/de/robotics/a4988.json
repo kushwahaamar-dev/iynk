@@ -1,0 +1,465 @@
+{
+  "title": "Schrittmotortreiber A4988",
+  "sub": "erst die Strombegrenzung einstellen, dann steppen",
+  "hint": "Bau ihn auf, miss am Poti, steppe einen NEMA 17",
+  "overview": "Ein Schrittmotor dreht sich in festen Schritten, 200 pro Umdrehung bei einem NEMA 17, und hält mit beiden eingeschalteten Spulen seine Position. Der A4988 übernimmt den schwierigen Teil: Er schaltet die beiden Spulen über zwei H-Brücken in der richtigen Reihenfolge, einen Schritt für jeden Impuls an STEP, in der Richtung, die DIR vorgibt, und er begrenzt den Strom in jeder Spule mit einem Chopper, der die Spannung an einem 0,068-Ω-Messwiderstand überwacht. Diese Grenze stellst du ein, bevor sich irgendetwas dreht: Die Spannung am metallenen Schleifer des Trimmpotis, VREF, ergibt I_MAX = VREF / (8 x 0,068 Ω), also bedeuten 0,544 V auf dem Messgerät 1,0 A, etwa so viel, wie die nackte Trägerplatine ohne Kühlkörper verträgt. Bau die Pololu-Trägerplatine auf, verdrahte einen Nano, den Motor und einen 2S-LiPo, miss am Poti, während ein Halte-Sketch die Spulen eingeschaltet lässt, und steppe dann den Motor in Voll-, Halb- und 1/16-Schritten. Die Fehler sind die Klassiker: ein verpolter Akku, der Reset-Pin offen gelassen, ein erschöpfter Akku unter 8 V, vertauschte Spulenpaare, die Grenze bis auf die 1,68 A des Motors aufgedreht und der Motor, der im Lauf abgesteckt wird.",
+  "power": {
+    "label": "Den Prüfstand mit Strom versorgen",
+    "ok": "Nano an USB, LiPo an VMOT: Die Spulen sind an, und die Welle hält"
+  },
+  "parts": {
+    "U1": {
+      "name": "Microstepping-Treiber Allegro A4988",
+      "what": "Ein 5 x 5 mm großes QFN-28 mit freiliegendem Pad auf der Unterseite. Darin: ein Übersetzer, der STEP- und DIR-Impulse in Spulenströme umsetzt (Voll-, 1/2-, 1/4-, 1/8- und 1/16-Schritt), zwei DMOS-H-Brücken und pro Spule ein Chopper mit fester Auszeit, der den Strom über die Messwiderstände regelt. Motorversorgung 8 bis 35 V, Logik 3 bis 5,5 V, Übertemperaturabschaltung bei 165 °C, kein Verpolungsschutz."
+    },
+    "RV1": {
+      "name": "Trimmpoti für die Strombegrenzung",
+      "what": "Ein kleiner Trimmer zwischen VDD und GND über einen Widerstand. Sein metallener Schleifer ist der VREF-Knoten, also kommt die rote Messspitze direkt darauf. Im Uhrzeigersinn gedreht steigt VREF und damit die Strombegrenzung: I_MAX = VREF / (8 x 0,068 Ω)."
+    },
+    "RS1": {
+      "name": "Messwiderstand, Spule 1",
+      "what": "0,068 Ω, mit R068 auf einem weißen Körper markiert. Der Strom von Spule 1 fließt durch ihn nach Masse; der Chopper schaltet die Brücke ab, wenn die Spannung darüber VREF / 8 erreicht."
+    },
+    "RS2": {
+      "name": "Messwiderstand, Spule 2",
+      "what": "Dasselbe 0,068-Ω-Bauteil für Spule 2. Ältere Trägerplatinen hatten 0,050-Ω-Widerstände mit grünem Körper, was die Formel ändert: Prüf die Markierung, bevor du einer VREF-Tabelle vertraust."
+    },
+    "C1": {
+      "name": "4,7-µF-Keramikkondensator an VMOT",
+      "what": "Ein 1206-Keramikkondensator direkt an den Motorversorgungspins des Chips: Er bedient die schnellen Flanken des Choppers. Er ist zu klein, um die Spitze zu schlucken, die lange Versorgungskabel beim Einstecken aufschwingen lassen, und dafür ist der 100-µF-Kondensator da."
+    },
+    "CAPS": {
+      "name": "Sechs 0603-Kondensatoren",
+      "what": "Abblockung an VDD und VMOT, die Ladungspumpenkondensatoren, mit denen der Chip seine High-Side-Schalter treiben kann, und der Kondensator des internen Reglers."
+    },
+    "RES": {
+      "name": "Vier 0603-Widerstände",
+      "what": "Der Pull-up von SLP, der Pull-down von EN (damit die Ausgänge standardmäßig an sind), der Auszeit-Widerstand und der obere Teil des VREF-Teilers."
+    },
+    "H1": {
+      "name": "Steuer-Stiftleiste",
+      "what": "Vom Ende mit dem Trimmpoti aus: DIR, STEP, SLP, RST, MS3, MS2, MS1, EN. MS1 bis MS3 haben Pull-downs im Chip, also bedeuten sie offen gelassen Vollschritt. EN ist auf LOW gezogen, also sind die Ausgänge an, solange du ihn nicht auf HIGH legst."
+    },
+    "H2": {
+      "name": "Stiftleiste für Strom und Motor",
+      "what": "Vom Ende mit dem Trimmpoti aus: GND, VDD, 1B, 1A, 2A, 2B, GND, VMOT. Eine Spule kommt an 1A und 1B, die andere an 2A und 2B. Die Pinnamen stehen nur auf der Unterseite."
+    },
+    "LINK": {
+      "name": "Jumper-Kappe von RST nach SLP",
+      "what": "Die Trägerplatine zieht SLP auf HIGH, lässt RST aber offen. Diese Kappe verbindet RST mit SLP, also wird RST auf HIGH gehalten, und der Treiber kommt aus dem Reset."
+    },
+    "CB": {
+      "name": "100-µF-Elko an VMOT",
+      "what": "Pololus Schaltplan setzt 100 µF über VMOT und GND, nah am Board, Streifen zu GND. Ohne ihn schwingen die Induktivität der Versorgungskabel und der kleine Keramikkondensator beim Anschließen auf, und die Spitze kann selbst an einem 12-V-Netzteil über 35 V gehen."
+    },
+    "NANO": {
+      "name": "Arduino Nano",
+      "what": "Erzeugt die Impulse: STEP an D3, DIR an D4, MS1 bis MS3 an D5 bis D7. Sein 5-V-Pin speist VDD des Treibers, und sein GND ist mit dem des Treibers und des Akkus verbunden."
+    },
+    "MOT": {
+      "name": "Schrittmotor NEMA 17",
+      "what": "SY42STH38-1684A: 42,3 mm im Quadrat, 38 mm lang, 200 Schritte pro Umdrehung, 1,68 A und 1,65 Ω pro Phase, 36 N·cm Haltemoment. Schwarz und Grün sind eine Spule (2B und 2A), Rot und Blau die andere (1A und 1B)."
+    },
+    "BATT": {
+      "name": "2S-LiPo",
+      "what": "Nominal 7,4 V, voll 8,4 V. Der A4988 braucht mindestens 8 V an VMOT, also funktioniert ein 2S-Akku nur gerade so, wenn er frisch ist. Ein 3S-Akku oder ein 12-V-Netzteil ist die bessere Wahl."
+    },
+    "MM": {
+      "name": "Taschen-Multimeter",
+      "what": "Im 2-V-Gleichspannungsbereich, rote Messspitze auf dem Schleifer des Trimmpotis, schwarze auf einem GND-Pin. Es zeigt VREF direkt an, und so stellst du die Strombegrenzung ein, ohne den Motorstrom zu messen."
+    }
+  },
+  "modes": {
+    "vref": {
+      "title": "Halten, Vref einstellen"
+    },
+    "full": {
+      "title": "Vollschritt, 1 Umdrehung pro Sekunde"
+    },
+    "half": {
+      "title": "Halbschritt"
+    },
+    "micro": {
+      "title": "1/16-Schritt, eine Vierteldrehung pro Sekunde"
+    },
+    "code": {
+      "title": "A4988: Ein Impuls an STEP ist ein Schritt, DIR wählt die Richtung",
+      "pins": "STEP und DIR",
+      "ms": "MS1, MS2 und MS3 wählen die Schrittweite",
+      "pulses": "n Impulse, jeder für halfUs Mikrosekunden HIGH, dann LOW",
+      "full": "alle LOW: Vollschritt, 200 Schritte pro Umdrehung",
+      "half": "MS1 HIGH: Halbschritt, 400 Schritte pro Umdrehung",
+      "micro": "alle HIGH: 1/16-Schritt, 3200 Schritte pro Umdrehung",
+      "wake": "der Chip braucht nach dem Aufwachen 1 ms vor dem ersten Schritt",
+      "hold": "keine Impulse: Beide Spulen bleiben an, und die Welle hält"
+    }
+  },
+  "steps": {
+    "strip": {
+      "title": "Bis auf die nackte Platine zerlegen",
+      "body": "Fang mit der nackten grünen Trägerplatine an: 15,24 x 20,32 mm, eckige Ecken, keine Befestigungslöcher, sechzehn durchkontaktierte Löcher entlang der beiden Längsseiten. Alles kommt in der Reihenfolge der Fabrik wieder drauf.",
+      "refusal": "Zieh zuerst den Strom ab: Arbeite nie an einer Platine unter Spannung"
+    },
+    "smd": {
+      "title": "Die SMD-Bauteile bestücken und reflowlöten",
+      "body": "Paste, bestücken, reflowlöten: der A4988 in der Mitte, das Trimmpoti an einem Ende, die beiden R068-Messwiderstände an der Motorseite, der 4,7-µF-Keramikkondensator bei VMOT und die sechs 0603-Kondensatoren und vier 0603-Widerstände rund um den Chip. Das freiliegende Pad unter dem A4988 wird ebenfalls aufgelötet: Es ist der Hauptweg, über den der Chip Wärme an die Platine abgibt.",
+      "refusal": "Zerleg zuerst die Platine"
+    },
+    "headers": {
+      "title": "Die beiden Stiftleisten einsetzen",
+      "body": "Zwei 1 x 8-Stiftleisten, die langen Stifte nach oben, damit Buchsen-Steckbrücken oben draufpassen. Steuerung an der einen Kante (DIR, STEP, SLP, RST, MS3, MS2, MS1, EN), Strom und Motor an der anderen (GND, VDD, 1B, 1A, 2A, 2B, GND, VMOT).",
+      "refusal": "Löte zuerst die SMD-Bauteile im Reflow-Ofen"
+    },
+    "solder": {
+      "title": "Die 16 Stiftleistenpins löten",
+      "body": "Eine Lötstelle pro Pin, jede ein sauberer Kegel. Eine kalte Lötstelle an einem Motorpin ist schlimmer, als sie aussieht: Jedes Mal, wenn sie aufgeht, ist das dasselbe, wie den Motor unter Spannung abzuziehen.",
+      "refusal": "Setz zuerst beide Stiftleisten ein"
+    },
+    "link-cap": {
+      "title": "Die Kappe RST-SLP und den 100-µF-Kondensator einsetzen",
+      "body": "Eine Jumper-Kappe über RST und SLP: RST ist auf dieser Trägerplatine offen, und der Pull-up von SLP hält ihn über die Kappe auf HIGH. Dann der 100-µF-Elko über VMOT und GND, Streifen zu GND, auf der Matte liegend mit seinen Beinen an den beiden Pins.",
+      "refusal": "Löte zuerst die Stiftleisten"
+    },
+    "wire-nano": {
+      "title": "Den Nano verdrahten",
+      "body": "D3 an STEP, D4 an DIR, D5, D6 und D7 an MS1, MS2 und MS3, 5V des Nano an VDD und GND an GND.",
+      "refusal": "Stell zuerst die Platine fertig: beide Stiftleisten gelötet, die Kappe und der 100-µF-Kondensator drauf"
+    },
+    "wire-motor": {
+      "title": "Den Motor einstecken",
+      "body": "Die vier Kabel der Reihe nach auf 2B, 2A, 1A, 1B: Schwarz und Grün sind eine Spule, Rot und Blau die andere. Mach das immer bei ausgeschaltetem Strom.",
+      "refusal": "Verdrahte zuerst den Nano"
+    },
+    "wire-battery": {
+      "title": "Den LiPo anschließen",
+      "body": "Rot an VMOT, Schwarz an das GND daneben. Ein voller 2S-Akku liefert 8,4 V, knapp über dem Minimum des A4988 von 8 V.",
+      "refusal": "Steck zuerst den Motor ein"
+    },
+    "wire-meter": {
+      "title": "Das Messgerät ans Poti legen",
+      "body": "Drehschalter auf 2 V DC. Rote Messspitze auf den metallenen Schleifer des Trimmpotis, schwarze auf einen GND-Pin. Es zeigt VREF, sobald VDD an ist.",
+      "refusal": "Schließ zuerst den LiPo an"
+    },
+    "plug": {
+      "title": "Den Prüfstand mit Strom versorgen",
+      "body": "USB in den Nano, der Akku eingeschaltet. Der Halte-Sketch startet: Beide Spulen sind an, und die Welle hält. Das Messgerät zeigt etwa 0,30 V, eine Grenze von 0,55 A, so wie das Poti ab Werk steht.",
+      "refusal": "Schließ zuerst den Aufbau ab: Jedes Bauteil drauf, jede Lötstelle gelötet und alles auf der Matte verdrahtet"
+    },
+    "vref": {
+      "title": "Die Strombegrenzung einstellen",
+      "body": "Dreh bei laufendem Halte-Sketch das Poti im Uhrzeigersinn und sieh zu, wie das Messgerät steigt. Hör bei 0,544 V auf: 0,544 / (8 x 0,068) = 1,0 A. Jede Spule hält dann mit 0,71 A, und die nackte Trägerplatine bleibt weit unter ihrer Übertemperaturabschaltung.",
+      "refusal": "Versorg zuerst den Prüfstand mit Strom"
+    },
+    "full": {
+      "title": "Vollschritt",
+      "body": "MS1 bis MS3 auf LOW. Der Sketch schickt 200 Impulse im Abstand von 5 ms, eine Umdrehung in einer Sekunde, und wartet dann eine Sekunde mit eingeschalteten Spulen. Jeder Impuls dreht die Welle um 1,8°: Du hörst jeden einzelnen.",
+      "refusal": "Stell zuerst die Strombegrenzung ein"
+    },
+    "half": {
+      "title": "Halbschritt",
+      "body": "MS1 auf HIGH. Dieselben 5-ms-Impulse bewegen jetzt je 0,9°, also ergeben 400 eine Umdrehung, und die Welle dreht halb so schnell. Bei jedem zweiten Schritt ist eine Spule aus und die andere auf der vollen Grenze.",
+      "refusal": "Führ zuerst den Vollschritt-Sketch aus"
+    },
+    "micro": {
+      "title": "1/16-Schritt",
+      "body": "MS1, MS2 und MS3 auf HIGH: 3200 Impulse pro Umdrehung, je 0,1125°. Der Sketch pulst alle 1,25 ms (625 µs HIGH, 625 µs LOW), 800 pro Sekunde, eine Vierteldrehung pro Sekunde. Die Spulenströme folgen einem Sinus und einem Kosinus, und die Welle gleitet, statt zu ticken.",
+      "refusal": "Führ zuerst den Halbschritt-Sketch aus"
+    },
+    "lipo-backwards": {
+      "title": "Den LiPo verkehrt herum anschließen",
+      "body": "Schwarz an VMOT, Rot an GND. Nichts auf dieser Trägerplatine verhindert es: Strom fließt rückwärts durch die Body-Dioden der Brückenschalter, direkt über den Akku. Reparier es und schalte wieder ein."
+    },
+    "cap-backwards": {
+      "title": "Den 100-µF-Kondensator verkehrt herum einsetzen",
+      "body": "Streifen zu VMOT. Ein verpolter Elko leitet, wird heiß und bläst ab. Reparier es und schalte wieder ein."
+    },
+    "no-link": {
+      "title": "Die Kappe RST-SLP weglassen",
+      "body": "Ohne die Kappe ist RST offen. Der Treiber bleibt im Reset: kein Strom in den Spulen, die Welle dreht sich frei mit der Hand, und die Impulse gehen ins Leere. Steck die Kappe wieder auf und schalte wieder ein."
+    },
+    "tired-pack": {
+      "title": "Mit einem erschöpften Akku betreiben",
+      "body": "Der Akku ist auf 7,4 V entladen, seine Nennspannung, unter dem Minimum des A4988 von 8 V. Führ den Vollschritt-Sketch aus und sieh zu, wie die Welle zurückbleibt. Reparier es und schalte wieder ein."
+    },
+    "coils-mixed": {
+      "title": "Die Spulenpaare vertauschen",
+      "body": "Grün und Rot vertauscht: Jedes Ausgangspaar treibt jetzt die Hälfte der einen Spule und die Hälfte der anderen. Der Motor brummt auf der Stelle und dreht sich nicht. Steck die Kabel wieder in die richtige Reihenfolge und schalte wieder ein."
+    },
+    "limit-too-high": {
+      "title": "Die Grenze auf 1,68 A aufdrehen",
+      "body": "Der Motor ist für 1,68 A ausgelegt, warum also nicht? Das Messgerät zeigt 0,914 V. Führ den Vollschritt-Sketch aus und sieh zu, wie die Temperatur des Chips über 150 °C steigt, bis bei 165 °C die Übertemperaturabschaltung greift. Reparier es und schalte wieder ein."
+    },
+    "unplug-live": {
+      "title": "Den Motor im Lauf abziehen",
+      "body": "Zieh den Stecker des Motors ab, während die Spulen Strom führen. Reparier es und schalte wieder ein."
+    },
+    "exploded": {
+      "title": "Explosionsansicht",
+      "body": "Nimm alles in der Luft auseinander: die Platine, den Chip und seine passiven Bauteile, die Stiftleisten, den Kondensator und den Jumper und alles auf der Matte.",
+      "refusal": "Mach zuerst alles kaputt und reparier es wieder"
+    }
+  },
+  "faults": {
+    "reverse-polarity": {
+      "title": "LiPo verkehrt herum angeschlossen",
+      "symptom": "Ein Knall vom Chip, die Akkukabel werden heiß, und der Treiber ist danach tot.",
+      "explanation": "Pololu nennt keinen Verpolungsschutz. Jeder Brückenschalter hat eine Body-Diode, die von GND nach VMOT zeigt; verpolt leiten diese Dioden und schließen den Akku über den Chip kurz. Ein LiPo kann Dutzende Ampere liefern, weit mehr, als die Dioden überleben.",
+      "fix": "Prüf vor dem Anschließen, dass Rot an VMOT geht, nimm einen codierten Stecker oder ergänz eine Diode in Reihe oder einen Verpolungsschutz-MOSFET in der Versorgung."
+    },
+    "cap-reversed": {
+      "title": "100-µF-Elko verkehrt herum",
+      "symptom": "Der Kondensator wird heiß, bläht sich auf und bläst zischend ab.",
+      "explanation": "Ein Elko hält Spannung nur in einer Richtung. Verkehrt herum bricht die Oxidschicht durch, er leitet, wird heiß, und das Überdruckventil in seiner Oberseite öffnet sich.",
+      "fix": "Streifen (Minus) zu GND, das lange Bein zu VMOT. Ersetz einen Kondensator, der verkehrt herum drin war, auch wenn er gut aussieht."
+    },
+    "no-link": {
+      "title": "RST offen",
+      "symptom": "Der Strom ist an, und der Nano schickt Impulse, aber die Spulen sind aus: Die Welle dreht sich frei mit der Hand.",
+      "explanation": "Auf dieser Trägerplatine hat RST keinen eigenen Pull-up. Offen liegt er auf LOW oder wandert, und solange RST LOW ist, wird der Übersetzer auf Home gehalten, und die Ausgänge sind aus.",
+      "fix": "Steck die Jumper-Kappe wieder über RST und SLP oder leg RST von einem Pin aus auf HIGH."
+    },
+    "tired-pack": {
+      "title": "VMOT unter 8 V",
+      "symptom": "Der Motor stottert und bleibt hinter den Impulsen zurück: Er verliert Schritte und landet woanders, als der Sketch glaubt.",
+      "explanation": "Der A4988 ist ab 8 V an VMOT spezifiziert. Ein 2S-Akku hat voll 8,4 V, fällt aber lange vor dem Leerwerden unter 8 V. Darunter arbeitet der Chip außerhalb seiner Spezifikation: Die Ausgänge fallen aus, und Schritte gehen verloren. Ein Schrittmotor hat keinen Sensor, also merkt es niemand.",
+      "fix": "Nimm einen 3S-Akku oder ein 12-V-Netzteil und hör auf, bevor der Akku einbricht."
+    },
+    "coils-mixed": {
+      "title": "Spulenpaare vertauscht",
+      "symptom": "Der Motor brummt und zittert auf der Stelle, dreht sich aber nicht.",
+      "explanation": "Jede H-Brücke muss beide Enden einer Spule treiben. Mit vertauschtem Grün und Rot treibt jede Brücke ein Ende jeder Spule, die beiden Felder kämpfen gegeneinander, und der Rotor schaukelt zwischen zwei Positionen.",
+      "fix": "Find die Paare mit einem Messgerät: ein paar Ohm zwischen den beiden Kabeln einer Spule, offen zwischen den Spulen. Dann ein Paar an 1A und 1B, das andere an 2A und 2B."
+    },
+    "limit-too-high": {
+      "title": "Strombegrenzung zu hoch",
+      "symptom": "Die Platine wird zu heiß zum Anfassen, dann bleibt der Motor stehen, läuft ein paar Sekunden später wieder an und bleibt wieder stehen.",
+      "explanation": "Bei 1,68 A verbrennen die beiden Spulenpfade im Chip etwa 1,8 W, I² mal etwa 0,64 Ω, und mehr, wenn er warm wird. Die nackte Trägerplatine kann das nicht abgeben: Der Chip erreicht 165 °C, die Übertemperaturabschaltung schaltet die Ausgänge ab, er kühlt um 15 °C ab und startet wieder. Pololu setzt die Grenze ohne Kühlkörper bei etwa 1 A pro Spule an.",
+      "fix": "Dreh VREF zurück auf 0,544 V (1,0 A). Für mehr Strom ergänz einen Kühlkörper und einen Luftstrom."
+    },
+    "unplug-live": {
+      "title": "Motor unter Spannung abgezogen",
+      "symptom": "Ein winziger Funke am Stecker, der Motor wird schlaff, und der Treiber bewegt ihn nie wieder.",
+      "explanation": "Der Strom einer Spule kann nicht sofort aufhören. Das Öffnen des Stromkreises zwingt ihn dazu, und die Spule antwortet mit einer Spannungsspitze, L x di/dt, weit über den 35 V, die die Ausgänge des A4988 vertragen. Pololu warnt, dass das den Treiber zerstören kann, oft ohne sichtbare Spur.",
+      "fix": "Steck den Motor nur bei ausgeschaltetem Strom ein oder ab. Prüf Motorstecker und Lötstellen der Stiftleisten: Eine lockere macht dasselbe."
+    }
+  },
+  "status": {
+    "status": "Status",
+    "powered": "Strom am Prüfstand",
+    "mode": "Sketch",
+    "step": "STEP",
+    "dir": "DIR",
+    "ms1": "MS1",
+    "vref": "VREF (Messgerät)",
+    "limit": "Strombegrenzung",
+    "coil": "Jede Spule",
+    "chip": "Chip (°C)",
+    "vmot": "VMOT (Motorversorgung)",
+    "rpm": "Wellendrehzahl",
+    "shaft": "Wellenwinkel",
+    "battery": "Akkustrom",
+    "usb": "USB-Strom"
+  },
+  "current": {
+    "usb": "USB des Nano (500-mA-Polyfuse)",
+    "lipo": "2S-LiPo an VMOT",
+    "nano": "Nano in Betrieb",
+    "logic": "Logik des A4988 an VDD",
+    "quiescent": "Versorgungsstrom des A4988 auf der Motorseite",
+    "coils": "Spulen bei einer Grenze von 1,0 A, über den Chopper",
+    "coilsHigh": "Spulen bei einer Grenze von 1,68 A",
+    "capShort": "100 µF, rückwärts leitend",
+    "reverse": "Verpolter Akku über die Body-Dioden der Brücke"
+  },
+  "tasks": {
+    "turn-and-back": {
+      "title": "Eine Umdrehung hin und zurück",
+      "brief": "Vollschritt, MS-Pins offen. Dreh die Welle genau eine Umdrehung vorwärts (DIR an D4 auf HIGH, 200 Impulse an D3, jeder 2500 µs HIGH und 2500 µs LOW), gib „one turn“ aus, warte 500 ms, setz dann DIR auf LOW, steppe 200 Impulse zurück zum Ausgangspunkt und gib „home“ aus.",
+      "hints": {
+        "1": "200 Vollschritte zu 1,8° ergeben 360°. Jeder Impuls: digitalWrite(STEP, HIGH); delayMicroseconds(2500); digitalWrite(STEP, LOW); delayMicroseconds(2500);",
+        "2": "Pack die Impulsschleife in eine Funktion, steps(int n), und ruf sie zweimal auf.",
+        "3": "Ändere DIR zwischen den beiden Bewegungen, vor dem ersten Impuls des Rückwegs."
+      },
+      "checks": {
+        "1": "Läuft 3 s",
+        "2": "DIR (D4) ist auf dem Hinweg HIGH",
+        "3": "STEP (D3) pulst alle 5 ms, etwa 400-mal",
+        "4": "Gibt nach der ersten Sekunde „one turn“ aus",
+        "5": "DIR ist auf dem Rückweg LOW",
+        "6": "Gibt „home“ aus"
+      },
+      "code": {
+        "goal": "Eine Umdrehung vorwärts, „one turn“ ausgeben, 500 ms warten, eine Umdrehung zurück, „home“ ausgeben",
+        "start": "bisher nur eine halbe Umdrehung, und kein Rückweg"
+      }
+    },
+    "quarter-turn": {
+      "title": "Eine Vierteldrehung pro Sekunde in 1/16-Schritten",
+      "brief": "Setz MS1, MS2 und MS3 (D5, D6, D7) für den 1/16-Schritt auf HIGH. Dann pulse STEP mit 800 Impulsen pro Sekunde, 625 µs HIGH und 625 µs LOW, sodass sich die Welle jede Sekunde um eine Vierteldrehung dreht, und gib nach je 3200 Impulsen „1 turn“ aus.",
+      "hints": {
+        "1": "Der 1/16-Schritt braucht alle drei MS-Pins auf HIGH, einmal in setup() gesetzt.",
+        "2": "Eine Vierteldrehung sind 800 Mikroschritte; 800 pro Sekunde sind einer alle 1250 µs, also 625 µs HIGH und 625 µs LOW.",
+        "3": "Zähl in einer for-Schleife 3200 Impulse und gib dann aus. 3200 x 1,25 ms = 4 s pro Umdrehung."
+      },
+      "checks": {
+        "1": "Läuft 4,3 s",
+        "2": "MS1 (D5) ist HIGH",
+        "3": "MS2 (D6) ist HIGH",
+        "4": "MS3 (D7) ist HIGH",
+        "5": "STEP (D3) pulst alle 1,25 ms, mindestens 3000-mal",
+        "6": "Gibt nach 4 s „1 turn“ aus"
+      },
+      "code": {
+        "goal": "1/16-Schritt mit einer Vierteldrehung pro Sekunde: 3200 Impulse im Abstand von 1250 µs, dann „1 turn“ ausgeben",
+        "fast": "150 µs in jede Richtung im Vollschritt: etwas mehr als vier Umdrehungen pro Sekunde, und die MS-Pins werden nie gesetzt"
+      }
+    }
+  },
+  "quizzes": {
+    "build": {
+      "rst": {
+        "q": "Was macht die Jumper-Kappe über RST und SLP?",
+        "options": {
+          "1": "Sie wählt den Vollschrittmodus",
+          "2": "Sie hält RST über den Pull-up von SLP auf HIGH, damit der Treiber aus dem Reset kommt",
+          "3": "Sie verbindet die beiden GND-Pins"
+        },
+        "why": "RST ist auf dieser Trägerplatine offen. Mit RST auf LOW wird der Übersetzer auf Home gehalten, und die Ausgänge bleiben aus; die Kappe leiht sich den Pull-up von SLP, um ihn auf HIGH zu halten."
+      },
+      "bulk": {
+        "q": "Warum kommt ein 100-µF-Kondensator über VMOT und GND?",
+        "options": {
+          "1": "Um die Spitze abzufangen, die die Versorgungskabel beim Einstecken aufschwingen lassen und die selbst aus 12 V über 35 V gehen kann",
+          "2": "Um die Strombegrenzung einzustellen",
+          "3": "Damit die Platine mit 5 V laufen kann"
+        },
+        "why": "Die Induktivität der Kabel und der 4,7-µF-Keramikkondensator bilden einen Schwingkreis. Der Elko dämpft ihn und hält VMOT stabil, während der Chopper schaltet."
+      },
+      "labels": {
+        "q": "Wo stehen auf dieser Trägerplatine die Pinnamen?",
+        "options": {
+          "1": "Oben neben jedem Pin",
+          "2": "Auf dem Chip",
+          "3": "Nur auf der Unterseite"
+        },
+        "why": "Oben sind nur Bauteile; die Namen stehen im Bestückungsdruck auf der Unterseite. Prüf die Pinreihenfolge, bevor die Platine kopfüber oder verdreht eingesetzt wird."
+      }
+    },
+    "limit": {
+      "formula": {
+        "q": "Das Messgerät zeigt am Poti 0,544 V. Welche Strombegrenzung ist das?",
+        "options": {
+          "1": "1,0 A: 0,544 / (8 x 0,068)",
+          "2": "0,544 A: ein Ampere pro Volt",
+          "3": "8 A: das Achtfache von VREF"
+        },
+        "why": "I_MAX = VREF / (8 x R_sense), und die Messwiderstände haben 0,068 Ω, also sind 0,544 V 1,0 A."
+      },
+      "coil": {
+        "q": "Mit einer Grenze von 1,0 A im Vollschritt: Was führt jede Spule, während die Welle hält?",
+        "options": {
+          "1": "Je 1,0 A",
+          "2": "Je 0,5 A: Die Grenze wird geteilt",
+          "3": "Je etwa 0,71 A: Der Vollschritt legt 70,7 % der Grenze in beide Spulen"
+        },
+        "why": "Im Vollschritt sind beide Spulen mit 70,71 % von I_MAX an, dem 45°-Punkt der Sinustabelle. Deshalb misst man an einer Spule weniger als die Grenze."
+      },
+      "vdd": {
+        "q": "Du stellst 0,544 V mit der Logik an 5 V ein und betreibst die Logik dann mit 3,3 V. Was passiert mit der Grenze?",
+        "options": {
+          "1": "Nichts: VREF ist fest, sobald es eingestellt ist",
+          "2": "Sie sinkt um etwa ein Drittel: Das Poti teilt VDD, also fällt VREF mit",
+          "3": "Sie verdoppelt sich"
+        },
+        "why": "VREF kommt aus einem Teiler über VDD. Stell es noch einmal bei dem VDD ein, mit dem du wirklich arbeitest."
+      }
+    },
+    "steps": {
+      "pulses": {
+        "q": "MS1, MS2 und MS3 sind alle HIGH. Wie viele STEP-Impulse drehen einen 200-Schritt-Motor einmal herum?",
+        "options": {
+          "1": "200",
+          "2": "3200",
+          "3": "16"
+        },
+        "why": "Alle drei HIGH ist der 1/16-Schritt: 200 x 16 = 3200 Impulse, je 0,1125°."
+      },
+      "timing": {
+        "q": "Der 1/16-Sketch hält STEP 625 µs auf HIGH und 625 µs auf LOW. Wie schnell dreht sich die Welle?",
+        "options": {
+          "1": "Eine Vierteldrehung pro Sekunde: 800 Impulse pro Sekunde, 3200 pro Umdrehung",
+          "2": "Eine Umdrehung pro Sekunde",
+          "3": "Sechzehn Umdrehungen pro Sekunde"
+        },
+        "why": "Ein Impuls alle 1250 µs sind 800 pro Sekunde. Bei 3200 pro Umdrehung sind das 0,25 Umdrehungen pro Sekunde, 15 U/min."
+      },
+      "ms": {
+        "q": "Warum ist der 1/16-Schritt bei gleicher Geschwindigkeit ruhiger als der Vollschritt?",
+        "options": {
+          "1": "Der Motor bekommt mehr Spannung",
+          "2": "Der Chip schaltet eine Spule ab",
+          "3": "Die Spulenströme folgen in kleinen Schritten einem Sinus, also wird der Rotor mitgezogen, statt jeweils um 1,8° zu springen"
+        },
+        "why": "Jeder Mikroschritt verschiebt das Verhältnis der beiden Spulenströme ein wenig, also dreht sich das Magnetfeld in kleinen Stufen."
+      }
+    },
+    "faults": {
+      "unplug": {
+        "q": "Warum tötet das Abziehen des laufenden Motors den A4988?",
+        "options": {
+          "1": "Der Strom der Spule kann nicht sofort aufhören; ihn zu unterbrechen erzwingt eine Spannungsspitze, L x di/dt, weit über dem, was die Ausgänge überleben",
+          "2": "Der Motor schließt VMOT mit GND kurz",
+          "3": "Der Nano schickt zu viele Impulse"
+        },
+        "why": "Eine Induktivität wehrt sich gegen jede Änderung ihres Stroms. Unterbrich den Weg, und die Spannung steigt, bis irgendetwas leitet, und dieses Etwas ist die Ausgangsstufe des Chips."
+      },
+      "hot": {
+        "q": "Die Grenze steht auf den 1,68 A des Motors, und die Trägerplatine hat keinen Kühlkörper. Was macht der Motor?",
+        "options": {
+          "1": "Er dreht mit mehr Drehmoment, so lange du willst",
+          "2": "Er bleibt sofort stehen und läuft nie wieder",
+          "3": "Er läuft, bleibt stehen, wenn der Chip 165 °C erreicht, und läuft wieder an, wenn er um 15 °C abgekühlt ist: Er stottert"
+        },
+        "why": "Die Übertemperaturabschaltung schützt den Chip, aber nicht deine Position: Jede Pause verliert Schritte."
+      },
+      "tired": {
+        "q": "Der 2S-Akku ist auf 7,4 V entladen. Was geht schief?",
+        "options": {
+          "1": "Nichts: Die Nennspannung des Motors beträgt nur 2,8 V",
+          "2": "VMOT liegt unter dem Minimum des A4988 von 8 V: Die Ausgänge fallen aus, und Schritte gehen verloren",
+          "3": "Der Nano setzt sich zurück"
+        },
+        "why": "Der Chopper braucht eine Versorgungsspannung weit über dem Spannungsabfall der Spule selbst, um Strom schnell hineinzudrücken. Unter 8 V arbeitet der Chip außerhalb seiner Spezifikation."
+      }
+    },
+    "end": {
+      "vs-l298n": {
+        "q": "Warum einen Schrittmotor mit einem A4988 statt mit einem L298N treiben?",
+        "options": {
+          "1": "Er ist größer und leichter zu löten",
+          "2": "Er begrenzt den Spulenstrom selbst und erledigt die Schrittfolge: zwei Pins, STEP und DIR, statt vier, und Microstepping gibt es gratis dazu",
+          "3": "Er braucht keine Motorversorgung"
+        },
+        "why": "Der L298N hat keine Stromregelung, also überhitzt ein niederohmiger Motor an einer hohen Versorgung. Der A4988 choppt den Strom auf die Grenze, die du einstellst."
+      },
+      "lost": {
+        "q": "Ein Schrittmotor hat keinen Sensor. Woher weiß der Nano, wo die Welle steht?",
+        "options": {
+          "1": "Er zählt die Impulse, die er geschickt hat; ein verlorener Schritt bleibt verloren, bis die Maschine wieder eine Referenzfahrt macht",
+          "2": "Der A4988 meldet den Winkel",
+          "3": "Der Motor schickt Impulse zurück"
+        },
+        "why": "Deshalb machen 3D-Drucker und CNC-Maschinen beim Start eine Referenzfahrt gegen einen Schalter, und deshalb zeigen sich verlorene Schritte als verschobene Schichten."
+      },
+      "supply": {
+        "q": "Welche Versorgung passt am besten zu diesem Motor und Treiber?",
+        "options": {
+          "1": "Ein 1S-LiPo, 3,7 V",
+          "2": "Ein 2S-LiPo, 7,4 V",
+          "3": "Ein 3S-LiPo oder 12 V: gut innerhalb von 8 bis 35 V, mit Reserve für Geschwindigkeit"
+        },
+        "why": "Eine höhere Versorgung drückt den Strom schneller in die Spulen, also hält das Drehmoment bei hoher Geschwindigkeit, und der Chopper hält den Strom trotzdem auf der Grenze."
+      }
+    }
+  }
+}
