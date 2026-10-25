@@ -41,7 +41,9 @@ for (const id of CRAFTS) {
     }).toPass({ timeout: 30_000 });
     await main(page).getByRole("button", { name: flight.buttons.arm, exact: true }).click();
     const message = main(page).getByTestId("flight-message");
-    await expect(message).toContainText(flight.msg.hintDemo);
+    // the autopilot throws a wing straight away, so its launch call can replace the demo line within a frame
+    const started = [flight.msg.hintDemo, flight.msg.launch].map((m) => m.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+    await expect(message).toHaveText(new RegExp(started.join("|")));
     // a gate ("Gate 1 of 5") or a checkpoint ("THE GAP done"): the craft is off the ground and on the course
     await expect(message).toHaveText(/Gate \d+ of \d+|done/, { timeout: 90_000 });
     await expect(main(page).getByRole("button", { name: flight.buttons.disarm, exact: true })).toBeVisible();

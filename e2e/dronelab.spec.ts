@@ -65,13 +65,16 @@ test.describe("quad5 workshop", () => {
     test.setTimeout(90_000);
     await openWorkshop(page);
     await tab(page, dronelab.workspace.tabs.build).click();
-    await main(page).getByRole("button", { name: dronelab.build.buildForMe }).click();
+    // the empty mat offers the same button over the figure; this is the Build tab's
+    await main(page).getByRole("tabpanel").getByRole("button", { name: dronelab.build.buildForMe }).click();
     await expect(main(page).getByTestId("build-count")).toHaveText(/^Parts (\d+)\/\1$/, { timeout: 20_000 });
+    await expect(main(page).getByTestId("empty-build")).toBeHidden();
     // Props come off before the motors spin on the bench.
     await main(page)
-      .getByRole("button", { name: fill(dronelab.build.remove, { short: "PROPS" }) })
+      .getByRole("button", { name: fill(dronelab.build.remove, { short: "PROPS" }), exact: true })
       .click();
-    await expect(main(page).getByRole("button", { name: fill(dronelab.build.fit, { short: "PROPS" }) })).toBeVisible();
+    // exact: "Fit PROPS the wrong way" is offered too once the props are off
+    await expect(main(page).getByRole("button", { name: fill(dronelab.build.fit, { short: "PROPS" }), exact: true })).toBeVisible();
 
     await tab(page, dronelab.workspace.tabs.tests).click();
     // quad5's three: smoke stopper, motor direction (props off), accelerometer calibration.
