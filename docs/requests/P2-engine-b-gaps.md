@@ -4,8 +4,6 @@ Written 2026-10-25 ~03:45 CDT by P2-engine-b, for the driver and phase 3.
 
 ## Engine features not built
 
-- **Drone wiring sheet beside a long button column.** The sheet leaves 24 % of the width for the buttons; the
-  delivery quad's widest buttons reach further. Shorter labels, or a sheet that opens over the buttons.
 - **Boards in the breadboard** (`item-nano.md` 2): `circuit.board: 'in'` with `at: { 'J2.15': 'd5' }`, each pin's
   strip node joined to its board net in `netlist` (`bench-solve.js`).
 - **Bottom-side parts** (`item-nano.md` 4-6, 8; `item-esp32-devkitc.md` 4): footprints of removed bottom parts,

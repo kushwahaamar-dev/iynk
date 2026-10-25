@@ -45,7 +45,9 @@ Written 2026-10-24 ~21:00 CDT by P2-engine, for P2-engine-b (wave B) and the dri
 - **Whoop-scale motors and props: done** (`1649a0e`): opt-in `motor.shaft`, `motor.base`, `prop.hub`, defaults
   unchanged (same SVG for the 5-inch quads). The whoop still draws its own pieces; moving it over is in
   `P2-engine-b-gaps.md`.
-- **Drone wiring sheet beside a long button column, boards in the breadboard, bottom-side parts, download mode as a
-  status: not done**, carried to `P2-engine-b-gaps.md`.
+- **Drone wiring sheet beside a long button column: done.** The sheet starts right of the widest button when the
+  column reaches past a quarter of the frame (FIGURES-DRONE v5).
+- **Boards in the breadboard, bottom-side parts, download mode as a status: not done**, carried to
+  `P2-engine-b-gaps.md`.
 - **Figure string dictionaries:** phase 3's (`src/i18n/figures/<lang>.json` exist now); new strings are in
   `P2-engine-b-to-phase3-strings.md`.

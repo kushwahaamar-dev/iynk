@@ -33,11 +33,14 @@
   SD.sheet = st => {
     const c = SD.craft(), Wr = c.wiring, svgEl = document.getElementById('fig'), vb = svgEl && svgEl.viewBox && svgEl.viewBox.baseVal;
     const vw = vb && vb.width ? vb.width : 585, vh = vb && vb.height ? vb.height : 440;
-    // leave the figure's own button column free when it is shown (standalone or embedded without bare=1)
-    const btns = document.getElementById('btns'), html = document.documentElement;
-    const left = btns && !html.classList.contains('cf-bare') && getComputedStyle(btns).display !== 'none' && innerWidth > 560 ? vw * .24 : 0;
+    // leave the figure's own button column free when it is shown (standalone or embedded without bare=1): a quarter of
+    // the frame, or up to its widest button when that reaches further ("Calibrate accelerometer" on the delivery quad)
+    const btns = document.getElementById('btns'), html = document.documentElement, frameBox = svgEl && svgEl.getBoundingClientRect();
+    const btnsShown = btns && !html.classList.contains('cf-bare') && getComputedStyle(btns).display !== 'none' && innerWidth > 560;
+    const btnRight = btnsShown && frameBox && frameBox.width ? Math.max(0, ...[...btns.children].map(el => el.getBoundingClientRect().right)) : 0;
+    const left = btnsShown ? Math.max(vw * .24, btnRight ? (btnRight - frameBox.left) * vw / frameBox.width + 6 : 0) : 0;
     // and the stats panel (parts, checks, battery) on the right
-    const stE = document.getElementById('stats'), frameBox = svgEl && svgEl.getBoundingClientRect();
+    const stE = document.getElementById('stats');
     const right = stE && frameBox && frameBox.width && getComputedStyle(stE).display !== 'none' && innerWidth > 560
       ? Math.max(0, frameBox.right - stE.getBoundingClientRect().left) * vw / frameBox.width : 0;
     const room = vw - left - right, sc = Math.min(room * .95 / 780, vh * .9 / 380), ox = left + (room - 760 * sc) / 2, oy = (vh - 360 * sc) / 2;

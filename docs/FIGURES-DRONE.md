@@ -9,6 +9,8 @@ format cannot say, write it to `docs/requests/<your-label>.md` and use a `custom
 
 Additive changes only after v1. Newest first.
 
+- v5 (04:10 CDT, Oct 25, P2-engine-b): the wiring sheet starts right of the widest button when the column reaches past
+  a quarter of the frame ("Calibrate accelerometer", "Failsafe test (props off)"), so no block sits under a button.
 - v4 (01:50 CDT, Oct 25, P2-engine-b): a catalogue motor may give `shaft: [d, l]` and `base: h`, a prop
   `hub: [d, h, nutD]` (§5); the `motors` and `props` pieces then draw the shaft, base flange, spokes, cap, hub and nut
   to those sizes, for whoop-scale crafts. Without them every craft draws as before (5 x 7 mm shaft, 3 mm base, a
