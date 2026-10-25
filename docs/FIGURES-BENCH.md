@@ -666,7 +666,7 @@ unplugs before it strips. Send `power` with every `fault` whose consequence need
 | `remove`, `restore` | part id | take a part off / put it back |
 | `press` | `{id, down}` | press or release an on-board control |
 | `serial` | string | the host printed a line: TX LED blips |
-| `inputs` | `{net: 0\|1}` | host-side inputs mirrored on the drawing (switch positions) |
+| `inputs` | `{net: 0\|1}` or `{partId: 0\|1\|position}` | host-side inputs mirrored on the drawing: keyed by an input control's `net`, the level that net reads (the part shows pressed when it is the control's `active` level); keyed by part id, the control's state as `controls` reports it |
 | `tones` | `{net: Hz}` | pins the sketch drives with `tone()`; a net left out or 0 is silent; send `{}` when the last stops |
 
 Figure → host `state` (discrete values only):
@@ -678,8 +678,13 @@ Figure → host `state` (discrete values only):
   selected, controls: {partId: 0|1|position}, boot, leds: {partId: 0|1}, circuit,
   meas: {partId: {kind, state, …}} (§9 table), serial: {n, line},
   why: null|string, sfx: null|name, tasks: {taskId: bool},
-  volts: {net: volts}, sound: null|{part, hz, loud, how} }      // volts and sound only while a circuit is shown
+  volts: {net: volts}, sound: null|{part, hz, loud, how},     // volts and sound only while a circuit is shown
+  inputs: {net: 0|1} }                                         // only on a board with `input` controls
 ```
+
+`inputs` gives each `input` control's net the level it reads now: `control.active` (default 1) while the button is
+held or the slide is off its first position, the other level otherwise. A micro:bit shows `{ P5: 1, P11: 1, P201: 1 }`
+at rest and `P5: 0` while button A is held; the host drives those nets in the running program.
 
 `sound` is the loudest part whose `sound(p, m)` gives a pitch (`how`: `tone`, `rough` for an active buzzer driven by
 `tone()`); a buzzer on the wrong pin, backwards or missing gives none. Whenever it changes the figure also sends a

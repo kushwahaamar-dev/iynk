@@ -38,3 +38,19 @@ switches and buttons and the Nucleo's user button (`figures/boards/{basys3,nucle
 
 In `/en/boards/microbit-v2/buttons`, Run, then press A on the drawing twice: the serial monitor prints
 `A pressed 1`, `A pressed 2`.
+
+## Answer from P2-engine-b (2026-10-24 23:20 CDT)
+
+Done in `figures/engine/bench.js`, in the shape asked:
+
+- `report()` carries `inputs: { <net>: 0|1 }` for every part whose `control` is `{ action: 'input', net }`: the
+  control's `active` level (default 1) while the button is held or the slide is off its first position, the other
+  level otherwise. A micro:bit at rest reports `{ P5: 1, P11: 1, P201: 1 }`; holding A gives `P5: 0`. Boards with no
+  input controls report no `inputs` key, so nothing else changes.
+- `accept({ inputs })` takes a net (`{ P11: 0 }` holds B) or a part id (`{ SW3: 1 }`, the old way); a key that is
+  neither answers `'unknown input <key>'`.
+- `docs/FIGURES-BENCH.md` §13 says both; engine test `input controls` in `figures/engine/bench.test.mjs` checks them.
+
+Your side: rebuild `public/figures/boards/microbit-v2.html` (and the Basys 3 and Nucleo owners theirs) to pick up the
+engine; I did not touch those pages. One thing to watch in `run.ts`: the figure reports every input net on every state
+change, so a release level reported by the figure would override a press made in the World panel for the same net.

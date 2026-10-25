@@ -487,3 +487,29 @@ describe('circuit faults', () => {
     expect(page.notes()).toEqual([]);
   });
 });
+
+describe('input controls', () => {
+  const mbPage = () => loadFigure(buildFigure('boards/microbit-v2'), { path: '/figures/boards/microbit-v2.html' });
+
+  it('report the level each input net reads, and press from the host by net or by part id', async () => {
+    page = await mbPage();
+    const B = page.bench;
+    expect(B.report().inputs).toEqual({ P5: 1, P11: 1, P201: 1 });
+    B.actions.press('SW2', true);
+    expect(B.report().inputs.P5).toBe(0);
+    expect(B.report().controls.SW2).toBe(1);
+    B.actions.press('SW2', false);
+    expect(B.report().inputs.P5).toBe(1);
+    expect(B.accept({ inputs: { P11: 0 } })).toBe(true);
+    expect(B.report().controls.SW3).toBe(1);
+    expect(B.accept({ inputs: { SW3: 0 } })).toBe(true);
+    expect(B.report().inputs.P11).toBe(1);
+    expect(B.accept({ inputs: { P99: 1 } })).toBe('unknown input P99');
+    expect(page.notes()).toEqual([]);
+  });
+
+  it('leave the report alone on a board without them', async () => {
+    page = await espPage();
+    expect(page.bench.report()).not.toHaveProperty('inputs');
+  });
+});

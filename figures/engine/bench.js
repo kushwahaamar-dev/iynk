@@ -1054,6 +1054,14 @@ function stats(){
 }
 
 /* ---------- bridge ---------- */
+// input controls (buttons A/B, switches) with a net: the level each net reads now, for the host's running program.
+// `active` is the level while pressed or switched on: 0 for a button with a pull-up.
+const inputParts = () => MD.parts.filter(p => p.control && p.control.action === 'input' && p.control.net);
+const inputLevels = () => {
+  const out = {};
+  for (const p of inputParts()){ const active = p.control.active === 0 ? 0 : 1; out[p.control.net] = st.ctl[p.id] ? active : 1 - active; }
+  return out;
+};
 const report = () => {
   const r = {};
   for (const [k, v] of Object.entries(st.ev.rails)) r[k] = Math.round(v * 10) / 10;
@@ -1067,6 +1075,7 @@ const report = () => {
     mode: st.mode, ext: st.ext, rails: r, fault: ev.fault, faults: faultsNow(), missing: MD.parts.filter(p => !isIn(p.id)).map(p => p.id),
     selected: st.sel, controls: Object.assign({}, st.ctl), boot: st.strap ? (st.strap.boot || null) : st.boot, leds, circuit: st.circuit, meas: st.meas || {}, serial: st.serial, sfx: st.sfx,
     why: ev.why || null, tasks: taskState(), ...(st.circuit ? { volts: st.volts || {}, sound: st.sound || null } : {}),
+    ...(inputParts().length ? { inputs: inputLevels() } : {}),
     ...(MAT.steps.length ? { matStep: st.matStep >= 0 ? MAT.steps[st.matStep].id : null } : {}),
     ...(typeof MD.def.model === 'function' ? { readings: roundDeep(st.readings || {}), benchStatus: st.benchStatus || null } : {}) };
   for (const [k, v] of Object.entries(st.modelReport || {})){ if (own(r0, k)) modelNote(`report key "${k}" is the engine's own`); else r0[k] = roundDeep(v); }
@@ -1098,7 +1107,13 @@ const accept = (s, p) => {
   if (own(p, 'circuit')){ if (p.circuit === null || own(MD.circuits, p.circuit)){ st.circuit = p.circuit; refresh(); } else bad('unknown circuit'); }
   if (own(p, 'params') && p.params && typeof p.params === 'object' && B.bbParams) B.bbParams(st, p.params);
   if (own(p, 'tones')){ if (p.tones && typeof p.tones === 'object') A.setTones(p.tones); else bad('tones must be an object'); }
-  if (own(p, 'inputs') && p.inputs && typeof p.inputs === 'object') for (const [k, v] of Object.entries(p.inputs)) if (MD.byId[k] && MD.byId[k].control) st.ctl[k] = +v || 0;
+  // keyed by net, a value is the level the net reads (as report() gives it); keyed by part id, it is the control's state
+  if (own(p, 'inputs') && p.inputs && typeof p.inputs === 'object') for (const [k, v] of Object.entries(p.inputs)){
+    if (MD.byId[k] && MD.byId[k].control){ st.ctl[k] = +v || 0; continue; }
+    const part = inputParts().find(q => q.control.net === k);
+    if (part) st.ctl[part.id] = +v === (part.control.active === 0 ? 0 : 1) ? 1 : 0;
+    else bad(`unknown input ${k}`);
+  }
   if (own(p, 'press') && p.press && typeof p.press.id === 'string') A.press(p.press.id, !!p.press.down);
   if (powerOk && p.power !== null) A.power(p.power);
   if (own(p, 'view')){ if (!A.view(p.view)) bad('unknown view'); }
