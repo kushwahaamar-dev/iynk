@@ -1,6 +1,7 @@
 // Browser-side calls to /api/search/*. Every failure becomes one of a few
 // codes the panels have words for; nothing upstream is shown raw.
 
+import { track } from "@/lib/telemetry";
 import type { EventsInput, NearbyInput, OffersInput, VideosInput } from "./schema";
 import type { EventsResponse, NearbyResponse, OffersResponse, VideosResponse } from "./types";
 
@@ -9,6 +10,8 @@ export type FailCode = "not_configured" | "rate_limited" | "failed";
 export type Result<T> = { ok: true; data: T } | { ok: false; code: FailCode };
 
 async function post<T>(path: string, body: unknown, signal?: AbortSignal): Promise<Result<T>> {
+  // which engine was asked, never what was searched for
+  track("search.call", { engine: path.slice(path.lastIndexOf("/") + 1) });
   let res: Response;
   try {
     res = await fetch(path, {

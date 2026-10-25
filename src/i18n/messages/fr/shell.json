@@ -26,7 +26,7 @@
   },
   "footer": {
     "summary": "Un labo pratique pour les cartes, les robots et les drones. Tout tourne dans votre navigateur.",
-    "privacy": "Ni compte ni pistage : votre progression est enregistrée uniquement dans ce navigateur.",
+    "privacy": "Aucun compte. Votre progression reste dans ce navigateur ; les labos envoient des statistiques d’usage anonymes, que vous pouvez désactiver en bas de chaque page de labo.",
     "figures": "Figures dessinées avec Colorfigures, d’April Zhu (licence MIT).",
     "about": "Crédits et licences",
     "pages": "Pages du site"
@@ -117,7 +117,7 @@
     "how": {
       "figures": "Chaque figure est une page autonome dessinée avec le moteur Colorfigures : de vrais volumes 3D en aplats clairs, moyens et sombres, cernés à l’encre. La page dialogue avec la figure par un petit pont de messages : appuyer sur un bouton dans la leçon fait bouger la pièce dans la figure, et inversement.",
       "code": "Les programmes tournent dans un simulateur, dans votre navigateur, sur une horloge virtuelle : un sous-ensemble du C++ Arduino avec la bonne taille d’entier pour chaque puce, un sous-ensemble de MicroPython et un sous-ensemble de Verilog pour les deux cartes FPGA.",
-      "privacy": "La progression et les réglages sont enregistrés dans le stockage local de ce navigateur, et nulle part ailleurs. Pas de compte, pas de statistiques, pas de pistage."
+      "privacy": "La progression et les réglages sont enregistrés dans le stockage local de ce navigateur. Il n’y a pas de compte. Quand ce déploiement a une base de données, les labos envoient des statistiques d’usage anonymes (une leçon réussie, une étape montée, une panne essayée, un temps au tour) pour les compteurs en direct et les classements, avec un identifiant aléatoire pour ce navigateur, jamais votre nom ni votre code. Décochez la case des statistiques d’usage anonymes en bas de n’importe quelle page de labo pour les arrêter."
     },
     "originalsTitle": "Les trois originaux",
     "originalsLede": "SimLab est né de la refonte de trois sites pédagogiques et veut faire tout ce qu’ils font, et davantage. Il reprend leurs faits, formules, durées et leçons, écrit tout son propre code et corrige les erreurs qu’il y a trouvées.",

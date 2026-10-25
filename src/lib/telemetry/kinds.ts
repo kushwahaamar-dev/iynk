@@ -15,6 +15,8 @@ export const TELEMETRY_KINDS = [
   "ai.call",
   "hw.connect",
   "credential.issued",
+  "step.done", // { key }: a build step with a progress key (a robotics bench step, a drone's finished build)
+  "search.call", // { engine }: offers | nearby | events | videos
 ] as const;
 
 export type TelemetryKind = (typeof TELEMETRY_KINDS)[number];

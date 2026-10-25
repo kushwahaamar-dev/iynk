@@ -2,9 +2,11 @@
 // 10 s, at 50 events, right away for the few events people wait to see (a lap on
 // the leaderboard), and through sendBeacon when the page is hidden. It does
 // nothing on the server, and stops for the page once it learns that this
-// deployment has no database. No personal data: a random session id, the event
-// kind, and what the caller puts in data.
+// deployment has no database. It sends nothing while the learner has unticked
+// "Share anonymous usage counts" (settings.telemetry). No personal data: a random
+// session id, the event kind, and what the caller puts in data.
 
+import { getSettings } from "@/lib/settings/settings";
 import {
   MAX_BODY_BYTES,
   MAX_EVENTS_PER_BATCH,
@@ -44,6 +46,8 @@ let wired = false;
 const flushedListeners = new Set<(kinds: ReadonlySet<TelemetryKind>) => void>();
 
 const inBrowser = () => typeof window !== "undefined" && typeof document !== "undefined";
+/** The learner unticked usage sharing (the checkbox at the bottom of every lab page). */
+const optedOut = () => !getSettings().telemetry;
 const encoder = new TextEncoder();
 
 function randomId(): string {
@@ -85,7 +89,7 @@ export function setTelemetryContext(next: Context): void {
 
 /** Records one event. Cheap and synchronous; safe to call anywhere, any time. */
 export function track<K extends TelemetryKind>(kind: K, data?: DataFor<K>): void {
-  if (!inBrowser() || mode === "off") return;
+  if (!inBrowser() || mode === "off" || optedOut()) return;
   const now = Date.now();
   if (kind === "flight.sample") {
     if (now - lastSample < SAMPLE_GAP_MS) return;
@@ -100,7 +104,7 @@ export function track<K extends TelemetryKind>(kind: K, data?: DataFor<K>): void
 
 /** Counts something that happens too often for one event each (LED blinks); sent as one event per flush. */
 export function tally(kind: TallyKind, n = 1): void {
-  if (!inBrowser() || mode === "off" || !(n > 0)) return;
+  if (!inBrowser() || mode === "off" || optedOut() || !(n > 0)) return;
   wire();
   const { room, item } = stamp();
   const key = `${kind}|${room ?? ""}|${item ?? ""}`;
@@ -187,17 +191,26 @@ async function featureOn(): Promise<Mode> {
   return mode;
 }
 
-function stop() {
-  mode = "off";
+/** Unticking the box with events still queued: they are dropped, never sent later. */
+function dropQueued() {
   queue = [];
   tallies.clear();
   if (timer) clearTimeout(timer);
   timer = null;
 }
 
+function stop() {
+  mode = "off";
+  dropQueued();
+}
+
 /** Sends everything queued now. Resolves when the batches are stored, retried later, or dropped. */
 export function flush(): Promise<void> {
   if (!inBrowser()) return Promise.resolve();
+  if (optedOut()) {
+    dropQueued();
+    return sending ?? Promise.resolve();
+  }
   if (timer) clearTimeout(timer);
   timer = null;
   if (sending) {
@@ -212,6 +225,7 @@ export function flush(): Promise<void> {
         return;
       }
       for (const batch of takeBatches()) {
+        if (optedOut()) return dropQueued();
         const outcome = await post(batch);
         if (outcome === "retry") {
           queue = [...batch, ...queue].slice(-MAX_QUEUE);
@@ -256,6 +270,7 @@ function notify(batch: TelemetryEvent[]) {
 
 /** The page is going away: hand whatever is queued to sendBeacon, which outlives the page. */
 function beacon() {
+  if (optedOut()) return dropQueued();
   if (mode === "off" || typeof navigator.sendBeacon !== "function") return;
   for (const batch of takeBatches()) {
     const payload: TelemetryBatch = { events: batch, sentAt: Date.now() };

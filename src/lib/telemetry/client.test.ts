@@ -116,6 +116,28 @@ describe("telemetry client", () => {
     expect(batch.events.filter((e) => e.kind === "led.blink").map((e) => e.data.count)).toEqual([7]);
   });
 
+  it("sends nothing once usage sharing is unticked, and drops what was queued", async () => {
+    const t = await fresh(true);
+    const { setSetting } = await import("@/lib/settings/settings");
+    t.track("lesson.attempt", { key: "board:uno-r3:lesson:blink" });
+    t.tally("led.blink", 2);
+    setSetting("telemetry", false);
+    t.track("lesson.pass", { key: "board:uno-r3:lesson:blink" });
+    t.track("flight.lap", { course: "quad5-gates", timeMs: 12_000 });
+    t.tally("led.blink", 5);
+    await t.flush();
+    Object.defineProperty(document, "visibilityState", { configurable: true, value: "hidden" });
+    document.dispatchEvent(new Event("visibilitychange"));
+    Object.defineProperty(document, "visibilityState", { configurable: true, value: "visible" });
+    expect(posts()).toHaveLength(0);
+    expect(beacons).toHaveLength(0);
+    // ticked again: new events go out, the dropped ones never do
+    setSetting("telemetry", true);
+    t.track("fault", { code: "short-5v" });
+    await t.flush();
+    expect(posts().flatMap((b) => b.events.map((e) => e.kind))).toEqual(["fault"]);
+  });
+
   it("hands the queue to sendBeacon when the page is hidden", async () => {
     const t = await fresh(true);
     t.track("room.join", { peers: 2 });

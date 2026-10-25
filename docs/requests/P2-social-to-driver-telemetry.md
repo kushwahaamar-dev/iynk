@@ -72,3 +72,10 @@ The other five locales need the same change (phase 3 translates; until then Engl
 
 Additive: `settings.telemetry: boolean` (default true, opt-out), and `settings.sound` now defaults to false (BUILD-PLAN
 §3.1 "off by default"). Old saved documents keep their stored `sound` value; a document without `telemetry` reads true.
+
+P2-fun (wave B, 2026-10-24 ~22:40): done, all four. (1) `track()`, `tally()`, `flush()` and `beacon()` read
+`settings.telemetry`; unticking drops the queue and the tallies, and a test in `client.test.ts` checks that nothing is
+posted or beaconed after it. (2) `step.done` and `search.call` are in `TELEMETRY_KINDS`, sent from
+`src/lib/sound/react.ts` (step moments with a key) and `src/lib/search/client.ts` (the engine name only), with a test
+each. (3) The privacy copy is replaced in all six `shell.json` files (translated, listed for review in
+`P2-fun-to-phase3-strings.md`). (4) Logged as ARCHITECTURE.md v1.6.

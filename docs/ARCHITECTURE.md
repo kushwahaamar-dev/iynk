@@ -7,6 +7,14 @@ docs/DECISIONS.md.
 
 ## 0. Change log (newest first; after 14:00 CDT Oct 24 schema and id changes are additive only)
 
+- v1.6 Oct 24 (P2-fun): additive, no schema.ts change. D7 settings: `settings.telemetry: boolean` (default true,
+  opt-out: the "Share anonymous usage counts" checkbox at the bottom of each lab page), and `settings.sound` now
+  defaults to false (BUILD-PLAN §3.1 "off by default"). Old saved documents keep their stored `sound`; a document
+  without `telemetry` reads true. `src/lib/telemetry` sends and queues nothing while `telemetry` is false, and drops
+  what was queued when it is unticked. Two telemetry kinds: `step.done` `{ key }` (a bench step or a drone's finished
+  build) and `search.call` `{ engine }`. The privacy copy (`shell.json` `footer.privacy`, `about.how.privacy`) now says
+  "anonymous, opt-out" instead of "no tracking".
+
 - v1.5 Oct 24 (P2-flight): additive schema.ts change for the flight registry (`src/lib/flight/registry.ts`), which
   flies every craft from its content module; `src/lib/flight/crafts/` and `courses/` are gone. `FlightMode` gets
   optional `attitude`, `expo`, `angleLimit`, `rateScale` (an acro gate race is `kind: 'race', attitude: 'acro'`).

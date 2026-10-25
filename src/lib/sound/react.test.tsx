@@ -76,6 +76,18 @@ describe("useLabMoments", () => {
     expect(calls.context).toEqual([{ item: "uno-r3" }, { item: undefined }]);
   });
 
+  test("a build step with a progress key is counted; a board assembly step (no key) is not", () => {
+    const store = boardStore();
+    const steps = () => [
+      { kind: "step" as const, key: "robotics:tb6612fng:step:wire-stby" },
+      { kind: "step" as const, key: null },
+    ];
+    renderHook(() => useLabMoments(store, steps, "tb6612fng"));
+    act(() => store.dispatch({ type: "fault/trigger", id: "short-5v" }));
+    expect(calls.tracked).toEqual([["step.done", { key: "robotics:tb6612fng:step:wire-stby" }]]);
+    expect(calls.played).toEqual(["step", "step"]);
+  });
+
   test("a room joiner taking the host's snapshot is not a new fault or step", () => {
     const store = boardStore();
     let target: { hydrate(snapshot: unknown): void } | null = null;

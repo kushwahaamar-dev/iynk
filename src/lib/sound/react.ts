@@ -53,6 +53,8 @@ function report(moment: Moment) {
   if (moment.kind === "attempt") track("lesson.attempt", { key: moment.key });
   else if (moment.kind === "pass") track("lesson.pass", { key: moment.key });
   else if (moment.kind === "fault") track("fault", { code: moment.code });
+  // board assembly steps carry no key and stay uncounted
+  else if (moment.kind === "step" && moment.key) track("step.done", { key: moment.key });
 }
 
 /**

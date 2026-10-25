@@ -26,7 +26,7 @@
   },
   "footer": {
     "summary": "A hands-on lab for boards, robots and drones. Everything runs in your browser.",
-    "privacy": "No accounts and no tracking: your progress is saved only in this browser.",
+    "privacy": "No accounts. Your progress stays in this browser; the labs send anonymous usage counts, which you can turn off at the bottom of any lab page.",
     "figures": "Figures drawn with Colorfigures by April Zhu (MIT licence).",
     "about": "Credits and licences",
     "pages": "Site pages"
@@ -117,7 +117,7 @@
     "how": {
       "figures": "Each figure is a self-contained page drawn with the Colorfigures engine: real 3D bodies in flat light, mid and dark bands with ink outlines. The page talks to the figure through a small message bridge, so pressing a button in the lesson moves the part in the figure and the other way round.",
       "code": "Sketches run in a simulator in your browser on a virtual clock: an Arduino C++ subset with the right integer widths for each chip, a MicroPython subset, and a Verilog subset for the two FPGA boards.",
-      "privacy": "Progress and settings are saved in this browser's local storage and nowhere else. There are no accounts, no analytics and no tracking."
+      "privacy": "Progress and settings are saved in this browser's local storage. There are no accounts. When this deployment has a database, the labs send anonymous usage counts (a lesson passed, a step built, a fault tried, a lap time) for the live counters and leaderboards, with a random id for this browser and never your name or your code. Untick “Share anonymous usage counts” at the bottom of any lab page to stop them."
     },
     "originalsTitle": "The three originals",
     "originalsLede": "SimLab started as a rebuild of three teaching sites and aims to do everything they do, and more. It reuses their facts, formulas, timings and lessons, writes all of its own code, and fixes the mistakes it found in them.",
