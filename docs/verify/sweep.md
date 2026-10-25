@@ -37,9 +37,9 @@ where, what a user sees, and the cause where known. Struck through when fixed, w
 
 ## Figure strings
 
-10. Wave B's figures and the strings the old collector missed (1291 at `a516233`, e.g. the drone message tables, bench
-    status words, "Off", craft logs) are not in the figure dictionaries yet: regenerate `figure-keys.json` after
-    `cfbuild.py --all` and have T2's P3-ui agents add them.
+10. ~~Wave B's figures and the strings the old collector missed are not in the figure dictionaries.~~ The key list was
+    regenerated (`a786238`, then `874d761` with the bench models' status and stats) and the five P3-figs-delta agents
+    translated it (`wf_7bcff872-581`); the last 96 keys go out with the figure sweep's delta.
 11. Silkscreen text and on-screen labels share keys (fr: "MOTOR" on the TB6612FNG silkscreen also reads "MOTEUR";
     "POWER", "ON", "OFF" stay English everywhere because of it). A separate silkscreen path that never translates
     would fix it.
@@ -81,3 +81,19 @@ where, what a user sees, and the cause where known. Struck through when fixed, w
     failure, that is `led-backwards` on `/robotics/led-resistor`; "Short 5V" leaves the board dark with a warm
     polyfuse instead of smoke; quad5 can't be under $150, the catalogue range is $330-370). PITCH.md and VIDEO.md
     follow the build; BUILD-PLAN §1 is left as the plan of record.
+
+## From the final pass (03:00) and the driver
+
+30. ~~NodeMCU: the emulator, the D0 pin note and the dimmer hint say D0 has no PWM; `docs/facts/nodemcu.md` says core
+    3.x runs PWM on GPIO16.~~ Fixed in `c3a79ef`.
+31. ~~BUILD-PLAN §1 step 1 "Reverse the LED" had no fault on the Uno.~~ `led-backwards` on the Blink circuit, `144053e`.
+32. ~~`/boards`, `/drones/quad5`, `/about` without a language are Next's bare 404 (SH B3).~~ Redirected like `/`,
+    `1fa6979`, with `e2e/redirects.spec.ts`.
+33. Blink passes on the first Run without an edit (FE nit 1). Left: board lessons are worked examples whose param chips
+    are the edit (BUILD-PLAN asks a failing starter only of bench tasks).
+34. quad5, the demo drone, has only the three safety tests and no craft test (BUILD-PLAN: at least one per drone).
+    Needs a figure button in `figures/drones/quad5.js`; after the figure sweep, which owns that file until then.
+35. es: the bench status "OFF" stays English because the key is shared with the drone battery readout and the slide
+    switch positions (P3-figs-delta-es). Left: OFF reads fine in Spanish next to the switch that says OFF.
+36. Figure sweep (`scripts/workflows/sweep.md`, run `wf_7513ba0c-9cb`) has items 1-9, 11 and 16 above, plus
+    POLISH-SPEC §5's engine requests.
