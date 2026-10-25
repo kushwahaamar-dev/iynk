@@ -1,0 +1,432 @@
+{
+  "title": "LED + résistance",
+  "sub": "La loi d'Ohm au multimètre",
+  "hint": "Montez la carte d'exercice, déplacez le cavalier, prévoyez le courant et lisez le multimètre, puis cassez-la exprès",
+  "overview": "Le premier circuit du cours n'a aucune puce : 5 V, un interrupteur, une résistance et une LED rouge, avec un multimètre dans la boucle pour lire le courant. Un cavalier choisit la résistance : 220 Ω, 1 kΩ, 10 kΩ ou un simple strap. Calculez d'abord chaque courant sur papier, I = (V − V_F) / R avec environ 2 V aux bornes de la LED, puis déplacez le cavalier et vérifiez au multimètre : 13,6, 3,0 et 0,30 mA. Ensuite, cassez-la exprès : pas de résistance, la LED ou le condensateur à l'envers, un pull-down USB-C manquant, une soudure froide, des fils d'alimentation inversés, 12 V au lieu de 5 V, une alimentation à court de courant. Chaque LED, chaque pull-up et chaque pont diviseur de capteur d'un robot repose sur cette seule formule.",
+  "power": {
+    "label": "Branchez le chargeur USB-C",
+    "ok": "Sous tension : la LED est allumée et le multimètre lit son courant"
+  },
+  "parts": {
+    "J1": {
+      "name": "Prise d'alimentation USB-C",
+      "what": "Une embase USB-C d'alimentation seule : VBUS, GND et les deux broches CC, pas de données. Le 5 V du chargeur arrive ici."
+    },
+    "J2": {
+      "name": "Bornier à vis pour une alimentation de labo",
+      "what": "Bornier à vis à deux voies au pas de 5,08 mm : fil rouge sur +, noir sur −. Rien sur la carte n'empêche d'inverser la paire, exprès."
+    },
+    "R4": {
+      "name": "Pull-down CC1 de 5,1 kΩ",
+      "what": "Un chargeur USB-C garde son 5 V coupé tant qu'il ne voit pas 5,1 kΩ entre une broche CC et la masse : c'est ainsi qu'il sait qu'un appareil est branché, et pas un bout de câble qui pend. R4 est sur CC1."
+    },
+    "R5": {
+      "name": "Pull-down CC2 de 5,1 kΩ",
+      "what": "Les mêmes 5,1 kΩ sur CC2. Une prise USB-C se branche dans les deux sens et une seule broche CC est connectée à la fois : chacune a donc besoin de la sienne."
+    },
+    "SW1": {
+      "name": "Interrupteur à glissière",
+      "what": "Coupe la ligne 5 V juste après l'alimentation, là où se place l'interrupteur d'alimentation d'un robot. Faites-le glisser sur ON."
+    },
+    "C1": {
+      "name": "Condensateur électrolytique 100 µF 16 V",
+      "what": "Adoucit l'instant du branchement. Il est polarisé : la bande sur la gaine marque la patte −, qui va vers GND. Polarisé en inverse, un électrolytique fuit, chauffe et dégaze."
+    },
+    "R1": {
+      "name": "Résistance de 220 Ω",
+      "what": "Rouge, rouge, marron, or : 22 × 10 = 220 Ω, ±5 %. (5 V − 2 V) / 220 Ω = 13,6 mA : lumineux, et bien en dessous des 30 mA de la LED."
+    },
+    "R2": {
+      "name": "Résistance de 1 kΩ",
+      "what": "Marron, noir, rouge, or : 10 × 100 = 1 kΩ. 3 V / 1000 Ω = 3,0 mA : bien allumée, un courant de voyant habituel."
+    },
+    "R3": {
+      "name": "Résistance de 10 kΩ",
+      "what": "Marron, noir, orange, or : 10 × 1000 = 10 kΩ. 0,30 mA : faible mais visible. 10 kΩ, c'est aussi la valeur classique d'un pull-up."
+    },
+    "JL1": {
+      "name": "Strap (pas de résistance)",
+      "what": "Un simple fil, 0 Ω : la rangée NONE. Ici, seuls la LED elle-même et l'alimentation limitent le courant. Essayez-le une fois, exprès."
+    },
+    "JP1": {
+      "name": "Barrette de cavaliers 2 × 4",
+      "what": "Chaque rangée relie une résistance à l'anode de la LED tant que le cavalier est posé dessus. Deux cavaliers à la fois mettent deux résistances en parallèle."
+    },
+    "SHUNT": {
+      "name": "Cavalier",
+      "what": "Relie les deux broches d'une rangée de JP1. C'est en le déplaçant que vous changez de résistance."
+    },
+    "D1": {
+      "name": "LED rouge de 5 mm",
+      "what": "Une LED rouge de 5 mm (classe WP7113ID) : environ 2 V à ses bornes quand elle est allumée (1,9 V typique à 10 mA), 30 mA en continu au maximum. Le courant ne passe que dans un sens, de la patte longue (anode) vers la patte côté méplat du rebord (cathode)."
+    },
+    "TP1": {
+      "name": "Point de test (+)",
+      "what": "La pointe rouge du multimètre se fixe ici. Le courant va de l'alimentation à TP1, traverse le multimètre et revient par TP2."
+    },
+    "TP2": {
+      "name": "Point de test (COM)",
+      "what": "La pointe noire du multimètre (COM). De là, le courant continue à travers la résistance choisie par le cavalier et la LED, jusqu'à la masse."
+    },
+    "MM1": {
+      "name": "Multimètre de poche, calibre 200 mA",
+      "what": "Sur son calibre 200 mA DC, la pointe rouge dans la douille mA. Il est en série : tout le courant de la LED le traverse, il lit donc le courant de la boucle. Au-delà de 200 mA, il affiche OL."
+    }
+  },
+  "math": {
+    "supply": "volts du chargeur USB-C",
+    "vf": "une LED rouge allumée fait chuter environ 2 V",
+    "watts": "chaleur dans la résistance (un composant de 1/4 W)",
+    "led": "chaleur dans la LED (75 mW au maximum)"
+  },
+  "modes": {
+    "r220": {
+      "title": "220 Ω",
+      "code": {
+        "what": "Cavalier sur 220 Ω : la loi d'Ohm pour la LED, I = (V - V_F) / R",
+        "bands": "rouge rouge marron or",
+        "verdict": "13.6 mA : lumineuse et sans risque. Faites tourner une LED rouge de 5 mm entre 5 et 20 mA, jamais au-delà de 30 mA"
+      }
+    },
+    "r1k": {
+      "title": "1 kΩ",
+      "code": {
+        "what": "Cavalier sur 1 kΩ",
+        "bands": "marron noir rouge or",
+        "verdict": "3.0 mA : bien allumée, le courant d'un voyant"
+      }
+    },
+    "r10k": {
+      "title": "10 kΩ",
+      "code": {
+        "what": "Cavalier sur 10 kΩ",
+        "bands": "marron noir orange or",
+        "verdict": "0.30 mA : faible mais visible"
+      }
+    },
+    "bypass": {
+      "title": "Pas de résistance",
+      "code": {
+        "what": "Cavalier sur NONE : le simple strap",
+        "bands": "le strap : aucune résistance",
+        "nothing": "pas de réponse, rien dans la formule ne limite le courant",
+        "real": "la vraie limite, ce sont les quelques ohms de la LED elle-même et le chargeur : des centaines de mA",
+        "verdict": "dix fois les 30 mA maximum de la LED : elle grille"
+      }
+    }
+  },
+  "steps": {
+    "unplug": {
+      "title": "Débranchez-la",
+      "body": "La carte d'exercice arrive branchée, sa LED allumée sur 220 Ω. Débranchez le câble USB-C avant de toucher un composant : ne travaillez jamais sur une carte sous tension."
+    },
+    "strip": {
+      "title": "Démontez jusqu'au circuit nu",
+      "body": "Retirez tous les composants, le cavalier et le multimètre aussi. Il reste la carte : le cuivre, le vernis épargne et la sérigraphie qui indique où va chaque composant.",
+      "refusal": "Coupez d'abord l'alimentation : ne travaillez jamais sur une carte sous tension"
+    },
+    "low": {
+      "title": "Posez les composants bas",
+      "body": "Les composants traversants se posent du plus bas au plus haut, pour que chacun reste à plat pendant que vous le soudez : les trois résistances et le strap, les deux pull-downs CC, l'interrupteur à glissière, les deux points de test et la barrette de cavaliers.",
+      "refusal": "Démontez d'abord la carte, alimentation coupée"
+    },
+    "tall": {
+      "title": "Posez les composants hauts",
+      "body": "Maintenant la prise USB-C, le bornier à vis, C1 et la LED. Deux d'entre eux ne se posent que dans un sens : la patte longue de D1 (anode) va dans le trou +, et la patte à bande de C1 (−) va vers GND, comme l'indique la sérigraphie.",
+      "refusal": "Les composants bas d'abord : un composant haut dans le passage empêche les bas de rester à plat"
+    },
+    "solder": {
+      "title": "Soudez chaque point",
+      "body": "Chauffez la pastille et la patte ensemble, puis apportez l'étain : une bonne soudure est un petit cône brillant. Une boule terne et granuleuse est une soudure froide, et elle ne fait contact qu'une partie du temps.",
+      "refusal": "Posez d'abord les composants"
+    },
+    "jumper-meter": {
+      "title": "Cavalier et multimètre",
+      "body": "Posez le cavalier sur la rangée 220, puis fixez la pointe rouge du multimètre sur TP1 et sa pointe noire sur TP2. Le multimètre ferme la boucle : sans lui, aucun courant ne passe.",
+      "refusal": "Soudez d'abord tout : le cavalier et le multimètre se posent en dernier"
+    },
+    "plug": {
+      "title": "Prévoyez, puis branchez",
+      "body": "Calculez-le avant de brancher : la LED prend environ 2 V, la résistance reçoit donc 3 V, et 3 V / 220 Ω = 13,6 mA. Branchez le chargeur : la LED s'allume et le multimètre affiche 13,6."
+    },
+    "row-1k": {
+      "title": "Passez le cavalier sur 1 kΩ",
+      "body": "Environ cinq fois la résistance, environ un cinquième du courant : 3 V / 1000 Ω = 3,0 mA, et la LED est nettement moins lumineuse. À ce courant, une vraie LED rouge fait chuter plutôt 1,8 V : un vrai multimètre affiche donc 3,0 à 3,2 mA."
+    },
+    "row-10k": {
+      "title": "Passez-le sur 10 kΩ",
+      "body": "Encore dix fois plus : 0,30 mA. La LED est faible mais encore visible, et la résistance chauffe de moins d'un milliwatt."
+    },
+    "row-220": {
+      "title": "Retour sur 220 Ω",
+      "body": "De nouveau 13,6 mA. Chaque lecture correspondait au calcul : c'est la loi d'Ohm, I = V / R, où V correspond aux 3 V que reçoit la résistance une fois que la LED a pris ses 2 V."
+    },
+    "no-resistor": {
+      "title": "Cassez-la : pas de résistance",
+      "body": "Passez le cavalier sur NONE : seul le simple strap reste entre l'alimentation et la LED. Regardez la LED et le multimètre. Puis réparez-la : débranchez, remettez le cavalier sur 220 Ω et posez une LED neuve."
+    },
+    "led-backwards": {
+      "title": "Cassez-la : la LED à l'envers",
+      "body": "Posez D1 dans le mauvais sens et mettez sous tension. Puis retournez-la et remettez sous tension."
+    },
+    "cap-backwards": {
+      "title": "Cassez-la : C1 à l'envers",
+      "body": "Posez C1 avec sa bande vers + et mettez sous tension. Puis posez-en un neuf dans le bon sens."
+    },
+    "cc-missing": {
+      "title": "Cassez-la : sans R4",
+      "body": "Montez la carte sans l'un des deux pull-downs CC de 5,1 kΩ et branchez le chargeur. Puis posez R4 et rebranchez."
+    },
+    "cold-led": {
+      "title": "Cassez-la : une soudure froide sur la LED",
+      "body": "L'une des soudures de D1 est terne et granuleuse. Regardez la LED et le multimètre, puis refaites la soudure."
+    },
+    "reverse-supply": {
+      "title": "Cassez-la : inversez les fils de l'alimentation de labo",
+      "body": "Alimentez la carte par l'alimentation de labo sur J2, rouge et noir inversés. Puis remettez-les dans le bon sens et posez un C1 neuf."
+    },
+    "over-voltage": {
+      "title": "Cassez-la : 12 V sur l'entrée 5 V",
+      "body": "Montez l'alimentation de labo à 12 V. Lisez le multimètre, puis attendez quelques secondes. Réparez-la avec l'alimentation revenue à 5 V et une LED neuve."
+    },
+    "current-limit": {
+      "title": "Cassez-la : une limite de courant de 10 mA",
+      "body": "Réglez la limite de courant de l'alimentation de labo sur 10 mA, moins que ce que veut la LED. Lisez le multimètre et la tension de l'alimentation, puis remontez la limite."
+    },
+    "usb-again": {
+      "title": "Retour sur l'USB",
+      "body": "Rebranchez le chargeur. Le multimètre affiche 13,6 mA : la carte d'exercice est de nouveau entière."
+    }
+  },
+  "faults": {
+    "no-resistor": {
+      "title": "Pas de résistance (cavalier sur NONE)",
+      "symptom": "Un éclair vif et OL sur le multimètre, puis la LED reste éteinte pour de bon et le multimètre affiche 0.",
+      "explanation": "Avec 0 Ω dans la rangée, rien dans I = (V − V_F) / R ne limite le courant. Seuls les quelques ohms de la LED elle-même et la limite du chargeur le freinent : des centaines de milliampères contre les 30 mA maximum de la LED. La puce et son fil de liaison surchauffent en un instant et la LED se coupe.",
+      "fix": "Débranchez, remettez le cavalier sur 220 Ω et posez une LED neuve : une LED grillée ne revient jamais."
+    },
+    "led-backwards": {
+      "title": "LED à l'envers",
+      "symptom": "La LED reste éteinte et le multimètre affiche 0.00.",
+      "explanation": "Une LED ne conduit que de l'anode vers la cathode. Retournée, elle est polarisée en inverse, et à 5 V (sa tension inverse nominale) seuls quelques microampères de fuite passent. Elle survit ; elle reste simplement éteinte.",
+      "fix": "Débranchez et retournez D1 : la patte longue (anode) dans le trou +, le méplat vers −."
+    },
+    "cap-backwards": {
+      "title": "C1 à l'envers",
+      "symptom": "C1 siffle et son évent s'ouvre. La LED continue de fonctionner.",
+      "explanation": "Un électrolytique aluminium ne bloque le courant que dans un sens. Polarisé en inverse, il fuit de plus en plus, chauffe, produit du gaz et l'évent gravé sur le dessus s'ouvre. La LED n'a pas besoin de C1 : elle reste donc allumée, mais le condensateur est fichu.",
+      "fix": "Débranchez et posez un C1 neuf avec sa bande (−) vers GND."
+    },
+    "cc-missing": {
+      "title": "R4 oubliée (un pull-down USB-C)",
+      "symptom": "Rien du tout : la LED est éteinte et le multimètre affiche 0, comme si le chargeur était mort.",
+      "explanation": "Un chargeur USB-C garde son 5 V coupé tant qu'il ne voit pas un pull-down de 5,1 kΩ sur la broche CC : un bout de câble qui pend n'est donc jamais sous tension. R4 et R5 sont ces pull-downs, un pour chaque sens de la prise, et sans R4 ce sens-là ne reçoit pas d'alimentation. Un câble USB-A vers C donne toujours 5 V, ce qui cache l'erreur jusqu'à ce que quelqu'un utilise un câble C vers C.",
+      "fix": "Débranchez, posez R4 (5,1 kΩ) et soudez-la."
+    },
+    "cold-led": {
+      "title": "Soudure froide sur D1",
+      "symptom": "La LED clignote et le multimètre saute entre 13,6 et 0.",
+      "explanation": "Une soudure froide, c'est de l'étain qui n'a jamais bien mouillé la pastille : terne, granuleux, parfois fissuré. Il touche, puis ne touche plus : la boucle s'ouvre et se ferme. Sur un robot, c'est la panne qui va et vient quand il bouge.",
+      "fix": "Débranchez et refaites la soudure avec un peu d'étain neuf jusqu'à ce qu'il coule en un cône brillant."
+    },
+    "reverse-supply": {
+      "title": "Fils de l'alimentation de labo inversés",
+      "symptom": "La LED reste éteinte, puis C1 dégaze.",
+      "explanation": "J2 n'a pas de diode contre l'inversion de polarité, exprès : elle mangerait 0,7 V des 3 V dont parle cette leçon. Fils inversés, la ligne 5 V est à −5 V. La LED est polarisée en inverse et bloque simplement, mais C1, branché directement sur l'alimentation, est lui aussi polarisé en inverse, et dégaze.",
+      "fix": "Débranchez, remettez les fils dans le bon sens (rouge sur +), puis posez un C1 neuf."
+    },
+    "over-voltage": {
+      "title": "12 V sur l'entrée 5 V",
+      "symptom": "La LED éblouit et le multimètre affiche 45,5 mA. Quelques secondes plus tard, elle fait un éclair et s'éteint.",
+      "explanation": "(12 V − 2 V) / 220 Ω = 45 mA, une fois et demie les 30 mA maximum de la LED, et 0,45 W dans une résistance de 1/4 W. Le simulateur grille la LED après environ 3 s ; une vraie peut durer plus longtemps, en faiblissant à mesure qu'elle meurt. Dans tous les cas, la résistance était dimensionnée pour 5 V, pas pour 12.",
+      "fix": "Débranchez, remettez l'alimentation à 5 V (ou calculez une résistance plus grande pour 12 V) et posez une LED neuve."
+    },
+    "current-limit": {
+      "title": "Limite de courant de l'alimentation à 10 mA",
+      "symptom": "La LED est un peu moins lumineuse, le multimètre affiche 10,0 et l'alimentation chute à 4,2 V.",
+      "explanation": "Une alimentation de labo ne tient sa tension que tant que la charge ne veut pas plus que sa limite de courant. Ensuite, elle baisse la tension pour tenir le courant à la limite : 10 mA ici, ce qui laisse 2 V + 10 mA × 220 Ω = 4,2 V. C'est un brown-out : rien ne casse, mais le circuit ne reçoit plus ce que vous avez réglé.",
+      "fix": "Montez la limite de courant au-dessus de ce dont le circuit a besoin (20 mA suffisent largement ici), ou utilisez une résistance plus grande."
+    }
+  },
+  "status": {
+    "status": "État",
+    "meter": "Le multimètre affiche (mA)",
+    "resistor": "Résistance (Ω)",
+    "heat": "Chaleur dans la résistance (mW)",
+    "rail": "Alimentation après SW1",
+    "current": "Courant consommé"
+  },
+  "current": {
+    "usb": "Chargeur USB-C, 5 V : 500 mA",
+    "bench": "Alimentation de labo, 5 V : 1 A",
+    "led": "La boucle de la LED, telle que la lit le multimètre"
+  },
+  "tasks": {
+    "ohms-law": {
+      "title": "La loi d'Ohm dans un sketch",
+      "brief": "Faites faire à un Uno le calcul sur papier et afficher le courant de chaque rangée du cavalier (220, 1000 et 10000 ohm) avec une alimentation de 5 V et une LED de 2 V, sous la forme « 220 ohm: 13.64 mA ». Le code de départ affiche 0 mA pour les trois rangées : trouvez pourquoi. Ajoutez ensuite une ligne avec la plus petite résistance qui garde la LED à 20 mA : « 20 mA needs 150 ohm ».",
+      "hints": {
+        "1": "En C++, un int divisé par un int donne un int : 3 / 220 vaut 0, et 0 × 1000 vaut toujours 0.",
+        "2": "Passez les nombres en float (5.0, 2.0, 1000.0) et la division garde ses décimales.",
+        "3": "R = (V − V_F) / I, avec I en ampères : 3.0 / 0.020 = 150. Serial.print(x, 0) affiche un float sans décimales."
+      },
+      "checks": {
+        "1": "220 ohm: 13.6 mA",
+        "2": "1000 ohm: 3.0 mA",
+        "3": "10000 ohm: 0.30 mA",
+        "4": "Affiche « 20 mA needs 150 ohm »"
+      },
+      "code": {
+        "starter": "La loi d'Ohm sur un Uno : le courant de chaque rangée du cavalier",
+        "volts": "volts",
+        "law": "I = (V - V_F) / R, fois 1000 pour avoir des mA",
+        "floats": "float garde les décimales : 3.0 / 220 = 0.0136",
+        "smallest": "la plus petite résistance pour 20 mA : R = (V - V_F) / I"
+      }
+    },
+    "pwm-current": {
+      "title": "Réglez le courant moyen en PWM",
+      "brief": "Câblez la résistance de 220 Ω et la LED de la carte d'exercice sur la broche 9 d'un Uno : la broche 9, puis la résistance, puis la LED, puis GND. Complètement à l'état haut, la broche 9 est à environ 5 V : la LED tire donc 13,6 mA. La PWM fait passer la broche de complètement allumée à complètement éteinte environ 490 fois par seconde : le courant moyen vaut donc le rapport cyclique multiplié par 13,6 mA, et c'est cette moyenne qu'affiche le multimètre. Faites passer la LED par 13,6, 6,8 et 3,4 mA en moyenne, une seconde chacun, et affichez chaque étape.",
+      "hints": {
+        "1": "digitalWrite() ne connaît que HIGH et LOW : les 13,6 mA complets ou rien.",
+        "2": "analogWrite(9, duty), avec duty de 0 à 255, règle la part de chaque cycle pendant laquelle la broche est à l'état haut : 128 correspond à peu près à la moitié.",
+        "3": "duty = cible / 13.6 × 255, arrondi : 255, 128 et 64."
+      },
+      "checks": {
+        "1": "Utilise analogWrite()",
+        "2": "Les 13,6 mA complets pendant la première seconde",
+        "3": "Environ la moitié, 6,8 mA, pendant la deuxième",
+        "4": "Environ un quart, 3,4 mA, pendant la troisième",
+        "5": "Affiche l'étape « 6.8 mA »"
+      },
+      "code": {
+        "starter": "Trois courants avec digitalWrite() : il ne fait que tout ou rien",
+        "pin": "broche 9 -> 220 ohm -> LED -> GND",
+        "full": "13.6 mA : (5 - 2) / 220",
+        "half": "la moitié du courant ? digitalWrite n'a que HIGH et LOW",
+        "peak": "le courant pendant que la broche est à l'état haut : (5 - 2) / 220 A",
+        "duty": "la part de chaque cycle pendant laquelle la broche est à l'état haut, 0-255"
+      }
+    }
+  },
+  "quizzes": {
+    "solder": {
+      "led-legs": {
+        "q": "Dans quel sens se pose D1 ?",
+        "options": {
+          "1": "Le méplat du rebord dans le trou +",
+          "2": "La patte longue (anode) dans le trou +",
+          "3": "Dans n'importe quel sens : une LED fonctionne comme une résistance"
+        },
+        "why": "Le courant ne passe que de l'anode vers la cathode. L'anode est la patte la plus longue ; la cathode est celle côté méplat du rebord. À l'envers, la LED reste simplement éteinte."
+      },
+      "cap-stripe": {
+        "q": "Que marque la bande sur la gaine de C1 ?",
+        "options": {
+          "1": "La patte −, qui va vers GND",
+          "2": "La patte +",
+          "3": "Sa tension nominale"
+        },
+        "why": "Les électrolytiques sont marqués du côté négatif. Polarisés en inverse, ils fuient, chauffent et dégazent : la bande va donc vers GND."
+      }
+    },
+    "plug": {
+      "predict": {
+        "q": "Une alimentation de 5 V, une LED rouge qui fait chuter environ 2 V, et 220 Ω. Qu'affichera le multimètre ?",
+        "options": {
+          "1": "22,7 mA",
+          "2": "13,6 mA",
+          "3": "2,3 mA"
+        },
+        "why": "La résistance ne reçoit que ce que la LED laisse : 5 V − 2 V = 3 V, et 3 V / 220 Ω = 13,6 mA. 5 V / 220 Ω = 22,7 mA oublie la chute de tension de la LED."
+      },
+      "series": {
+        "q": "Pourquoi le multimètre est-il entre TP1 et TP2, dans la boucle ?",
+        "options": {
+          "1": "Pour pouvoir mesurer la tension d'alimentation",
+          "2": "Sur son calibre mA, un multimètre peut aller n'importe où",
+          "3": "Un ampèremètre doit être traversé par le courant qu'il mesure : il se place donc en série"
+        },
+        "why": "Sur son calibre mA, un multimètre est presque un court-circuit : un shunt d'un ohm environ. En série, il lit le courant de la boucle ; branché directement sur l'alimentation, il la court-circuiterait et grillerait son fusible."
+      }
+    },
+    "row-10k": {
+      "heat": {
+        "q": "Sur 10 kΩ, le multimètre affiche 0,30 mA. Quelle chaleur y a-t-il dans la résistance ?",
+        "options": {
+          "1": "0,9 mW",
+          "2": "3 mW",
+          "3": "30 mW"
+        },
+        "why": "P = I² × R = 0,0003² × 10000 = 0,0009 W, moins d'un milliwatt. Même la rangée 220 Ω ne produit que 40,9 mW, un sixième de ses 1/4 W nominaux."
+      },
+      "pull-up": {
+        "q": "Où d'autre rencontrerez-vous une résistance de 10 kΩ ?",
+        "options": {
+          "1": "Pour régler le courant d'une LED lumineuse",
+          "2": "Comme fusible sur une ligne d'alimentation",
+          "3": "Comme pull-up ou pull-down sur l'entrée d'un bouton"
+        },
+        "why": "10 kΩ laisse passer si peu (0,5 mA à 5 V) qu'elle peut tenir une entrée à un niveau sans gaspiller d'énergie. C'est ce qui en fait le pull-up classique."
+      }
+    },
+    "no-resistor": {
+      "why": {
+        "q": "Pourquoi la LED est-elle morte sur la rangée NONE ?",
+        "options": {
+          "1": "Le cavalier a court-circuité le 5 V directement sur GND",
+          "2": "Rien ne limitait le courant : des centaines de mA contre un maximum de 30 mA",
+          "3": "5 V, c'est une tension trop élevée pour n'importe quelle LED"
+        },
+        "why": "La LED était toujours dans la boucle : ce n'était donc pas un court-circuit franc, mais avec 0 Ω, seuls ses quelques ohms et le chargeur freinaient le courant. 5 V conviennent très bien à une LED avec une résistance : c'est la résistance qui fixe le courant."
+      },
+      "ol": {
+        "q": "Le multimètre a affiché OL. Qu'est-ce que ça voulait dire ?",
+        "options": {
+          "1": "Le courant dépassait son calibre de 200 mA",
+          "2": "La pile du multimètre est vide",
+          "3": "Les pointes sont inversées"
+        },
+        "why": "OL veut dire over limit : plus que ce que le calibre peut afficher. Des pointes inversées affichent plutôt un signe moins. Sur un multimètre bon marché, une surintensité comme celle-ci peut aussi griller le fusible mA."
+      }
+    },
+    "end": {
+      "r330": {
+        "q": "Vous posez à la place une résistance de 330 Ω (orange, orange, marron). Quel courant passe ?",
+        "options": {
+          "1": "15,2 mA",
+          "2": "3,3 mA",
+          "3": "9,1 mA"
+        },
+        "why": "(5 − 2) V / 330 Ω = 9,1 mA : un peu moins lumineuse qu'avec 220 Ω, mais encore bien allumée."
+      },
+      "smallest": {
+        "q": "Quelle est la plus petite résistance sans risque pour cette LED sur USB ? Comptez l'USB à 5,25 V, une V_F aussi basse que 1,8 V et le maximum de 30 mA.",
+        "options": {
+          "1": "120 Ω",
+          "2": "100 Ω",
+          "3": "220 Ω"
+        },
+        "why": "(5,25 − 1,8) V / 0,030 A = 115 Ω, et la valeur normalisée (E12) suivante est 120 Ω. 100 Ω laisserait passer 34,5 mA. 220 Ω est sans risque, mais ce n'est pas la plus petite."
+      },
+      "cc": {
+        "q": "Pourquoi R4 et R5 (5,1 kΩ) sont-elles sur les broches CC de la prise USB-C ?",
+        "options": {
+          "1": "Elles fixent le courant de la LED",
+          "2": "Un chargeur USB-C n'active son 5 V que lorsqu'il les voit",
+          "3": "Elles protègent contre l'inversion de polarité"
+        },
+        "why": "Les pull-downs indiquent au chargeur qu'un appareil est branché. Sans elles, un câble C vers C ne donne aucune alimentation."
+      },
+      "two-caps": {
+        "q": "Deux cavaliers à la fois, sur les rangées 220 Ω et 1 kΩ. Qu'affiche le multimètre ?",
+        "options": {
+          "1": "2,5 mA : 220 + 1000 = 1220 Ω",
+          "2": "16,6 mA : les deux en parallèle font 180 Ω",
+          "3": "13,6 mA : seul le premier cavalier compte"
+        },
+        "why": "Les deux rangées relient les deux mêmes points : les résistances sont donc en parallèle. 220 × 1000 / 1220 = 180 Ω, et 3 V / 180 Ω = 16,6 mA."
+      }
+    }
+  }
+}
