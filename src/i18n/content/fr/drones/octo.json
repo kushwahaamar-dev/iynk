@@ -1,0 +1,374 @@
+{
+  "title": "Octocoptère de levage lourd",
+  "tagline": "Un octocoptère cinéma de 15 kg sous ArduPilot : huit moteurs portent une nacelle et une caméra de cinéma, et il continue de voler quand l'un d'eux s'arrête.",
+  "sub": "ArduCopter + Pixhawk 6X + 12S",
+  "hint": "Montez un octocoptère caméra, testez son train rentrant et ses deux GPS, puis volez sur le plateau de tournage et arrêtez un moteur en vol",
+  "noun": "octocoptère",
+  "overview": "Un octocoptère a huit moteurs là où un quad en a quatre. Cela apporte deux choses : de la portance pour une charge lourde, et de la redondance. Celui-ci porte une nacelle 3 axes et une caméra de cinéma, 3,7 kg sur les 15,5 kg qu'il pèse avec deux batteries 6S en série. Avec huit moteurs, en perdre un coûte un huitième de la poussée et rien d'autre : le mixeur pousse un peu plus les sept autres et la prise continue, là où un quad avec un moteur mort tombe. Le châssis fait 1360 mm de moteur à moteur sur des bras repliables en carbone de 32 mm, piloté par un Pixhawk 6X sous ArduCopter 4.7.2 avec deux GPS, une radio de télémétrie 900 MHz et un récepteur ELRS. Son train se replie après le décollage pour que la caméra puisse faire un panoramique complet. Les équipes de tournage pilotent ce genre d'appareil à deux : un pilote, et un cadreur sur une seconde radio qui ne fait qu'orienter la nacelle. Choisissez les pièces et regardez les chiffres, montez-le, passez les vérifications au banc, puis volez sur le plateau de tournage.",
+  "practice": "Commencez en Loiter : décollez, tenez un stationnaire, descendez la rue et posez-vous sur la plateforme. Puis volez la poursuite à la main, et laissez AUTO voler l'orbite autour du château d'eau. Quand vous lui faites confiance, montez à 15 m au-dessus d'un terrain dégagé et choisissez Moteur coupé : un moteur s'arrête, et il continue de voler sur sept, en tournant lentement parce que c'est le lacet qui manque. Sur un vrai montage : un premier branchement avec limitation de courant prévue pour le 12S, le test moteur de A à H sans hélices, le calibrage de l'accéléromètre et de la boussole, le train d'atterrissage au banc, les deux GPS accrochés, chaque message pre-arm lu, et chaque bras tiré pour vérifier son collier avant chaque vol.",
+  "design": {
+    "fixed": {
+      "FRAME": "Châssis octo carbone repliable, 1360 mm",
+      "ESC": "Huit ESC 80 A 12S (PWM)",
+      "FC": "Contrôleur de vol Pixhawk 6X",
+      "GPS": "Deux modules GPS + boussole sur mâts",
+      "XT60": "Carte d'alimentation 12S, XT90-S, condensateur 63 V, PM02D HV",
+      "RX": "Récepteur ELRS et radio de télémétrie 900 MHz",
+      "GEAR": "Train d'atterrissage rentrant et ses servos",
+      "GIMBAL": "Nacelle brushless 3 axes",
+      "CAM": "Caméra de cinéma et objectif (la charge utile, non chiffrée)",
+      "TOP": "Plateau de batterie, entretoises et sangles"
+    },
+    "verdict": {
+      "ok": "Les pièces s'accordent : rapport poussée/poids de {tw}:1. Un moteur coupé coûte un huitième de la poussée : les sept autres peuvent encore tenir le stationnaire et se poser. Le levage lourd demande environ 2:1 : beaucoup moins ne laisse rien pour le vent ou un moteur coupé, beaucoup plus, c'est du poids qui ne fait que raccourcir le vol.",
+      "weak": "Rapport poussée/poids de {tw}:1 : il ne peut pas soulever ce poids avec la moindre marge, et il ne pourrait jamais perdre un moteur. Le levage lourd demande environ 2:1, ce que donnent les moteurs de 170 KV en 12S avec des hélices de 20 pouces.",
+      "over": "{kv} KV en {cells}S fait tourner des hélices de cette taille bien trop vite : les moteurs et leurs ESC surchauffent et l'un d'eux se désynchronise en vol. Les moteurs 6010 pour hélices de 20 pouces font 130-170 KV en 12S."
+    }
+  },
+  "parts": {
+    "FRAME": {
+      "name": "Châssis octo",
+      "what": "Deux plaques octogonales en carbone espacées de 60 mm, avec huit tubes carbone de 32 mm serrés entre elles, chacun se repliant à une charnière à environ 250 mm du centre pour le transport. De moteur à moteur à travers le châssis, il y a 1360 mm : deux moteurs voisins sont donc à 520 mm l'un de l'autre, et la plus grande hélice qui passe fait un peu moins de 20,5 pouces."
+    },
+    "GEAR": {
+      "name": "Train d'atterrissage rentrant",
+      "what": "Deux jambes de chaque côté sur des charnières sous la plaque inférieure, reliées par des tubes de patin, chaque côté sur un servo de rétraction. Baissées, elles gardent la caméra loin du sol ; relevées, elles sortent du champ pour que la nacelle puisse faire un panoramique complet. Les servos sont sur AUX OUT 1 (SERVO9, LandingGear), commandés par un interrupteur sur la voie 7."
+    },
+    "MOTORS": {
+      "name": "Huit moteurs 6010 de 170 KV",
+      "what": "Des stators de 60 mm, 170 KV en 12S. L'octa X d'ArduPilot les numérote dans le désordre : M1 avant droit, puis dans le sens horaire M3, M8, M4, M2, M6, M7, M5, en alternant sens horaire et antihoraire. Les moteurs opposés tournent dans le même sens."
+    },
+    "ESC": {
+      "name": "Huit ESC de 80 A",
+      "what": "Un sur chaque bras, sous son hélice, où le souffle le refroidit, près du moteur pour que les fils de phase restent courts. Ils reçoivent du simple PWM de MAIN OUT 1-8 et doivent être prévus pour le 12S. Le moteur culmine vers 30 A : 80 A, c'est large."
+    },
+    "WIRES": {
+      "name": "Câblage des bras",
+      "what": "Par bras, une paire rouge et noire en 12 AWG depuis la carte d'alimentation et le câble de signal de l'ESC le long du tube, avec une boucle de mou au-dessus de l'articulation pour que le bras puisse se replier sans tirer sur un fil. Trois fils de phase de chaque ESC vers son moteur ; inversez-en deux pour inverser le moteur."
+    },
+    "XT60": {
+      "name": "Carte d'alimentation",
+      "what": "Une carte d'alimentation de 160 mm entre les plaques : les batteries arrivent par une prise anti-étincelle XT90-S à l'arrière, et un condensateur low-ESR de 1000 µF 63 V est placé aux bornes du bus, bande côté moins. Le 12S fait 50,4 V à pleine charge : le condensateur de 35 V d'un quad 6S lâcherait. Un module PM02D HV amène 5,2 V et la tension de la batterie au POWER1 du Pixhawk."
+    },
+    "FC": {
+      "name": "Pixhawk 6X",
+      "what": "Un contrôleur de vol STM32H753 avec trois IMU et deux baromètres, sur des amortisseurs de vibrations sur la plaque supérieure, flèche vers le nez. MAIN OUT 1-8 pilotent les huit ESC (SERVO1-8), AUX OUT 1 le train d'atterrissage (SERVO9). Il tourne sous ArduCopter 4.7.2."
+    },
+    "RX": {
+      "name": "Récepteur et radio de télémétrie",
+      "what": "Un récepteur ELRS sur UART4 (SERIAL6, CRSF) pour les manches du pilote, et une radio 900 MHz sur TELEM1 pour la liaison MAVLink de la station sol. Les deux pendent sous la plaque inférieure, antennes vers le bas, à l'écart du carbone."
+    },
+    "GPS": {
+      "name": "Deux GPS sur mâts",
+      "what": "Deux modules GPS + boussole sur GPS1 et GPS2, chacun sur un mât derrière le plateau de batterie, flèches vers l'avant, aussi loin du câblage 12S que le châssis le permet. ArduPilot vole sur le meilleur des deux et prévient quand ils ne sont pas d'accord."
+    },
+    "TOP": {
+      "name": "Plateau de batterie",
+      "what": "Un plateau en carbone sur quatre entretoises au-dessus du Pixhawk, avec des sangles pour les deux batteries. Il place le poids des batteries au-dessus du centre du châssis, là où doit être le centre de gravité."
+    },
+    "GIMBAL": {
+      "name": "Nacelle 3 axes",
+      "what": "Une nacelle brushless suspendue sous l'avant du châssis sur des amortisseurs en caoutchouc : les moteurs de lacet, de roulis et d'inclinaison et sa propre IMU gardent la caméra stable pendant que l'octocoptère s'incline. Elle parle MAVLink sur TELEM2, mais le cadreur l'oriente en général depuis une seconde radio."
+    },
+    "CAM": {
+      "name": "Caméra de cinéma",
+      "what": "La charge utile : une caméra de cinéma avec un objectif, environ 2,3 kg. Elle enregistre sur son propre support et envoie un retour vidéo au cadreur. Équilibrez-la sur les trois axes, nacelle éteinte, avant la première mise sous tension."
+    },
+    "BATT": {
+      "name": "Deux batteries 6S en série",
+      "what": "Deux batteries 6S de 16000 mAh côte à côte sur le plateau, câblées en série : 44,4 V nominal, 50,4 V à pleine charge, toujours 16000 mAh. En série, les volts s'additionnent et la capacité reste la même ; en parallèle, ce serait l'inverse."
+    },
+    "PROPS": {
+      "name": "Hélices repliables",
+      "what": "Huit hélices repliables en carbone de 20 x 5,5 pouces, en sens horaire et antihoraire selon chaque moteur. Elles laissent 12 mm entre bouts de pales voisins, ce qui est serré ; des hélices de 22 pouces se chevaucheraient et se heurteraient à la montée en régime."
+    }
+  },
+  "build": {
+    "frame": {
+      "title": "Assemblez le châssis",
+      "body": "Serrez les huit bras entre les deux plaques, dépliez-les et verrouillez chaque articulation. Tirez sur chaque bras : un collier non verrouillé se replie en vol. Sans ses jambes, le châssis repose sur un support rembourré."
+    },
+    "gear": {
+      "title": "Posez le train d'atterrissage",
+      "body": "Les jambes s'articulent sous la plaque inférieure, deux de chaque côté, avec les tubes de patin en bas. Branchez les servos de rétraction sur AUX OUT 1 plus tard, une fois le Pixhawk en place.",
+      "refusal": "Les jambes s'articulent sous la plaque inférieure : assemblez d'abord le châssis."
+    },
+    "motors": {
+      "title": "Montez les huit moteurs",
+      "body": "Sur les colliers au bout des bras, selon la numérotation d'ArduPilot : M1 avant droit, puis dans le sens horaire M3, M8, M4, M2, M6, M7, M5. Les moteurs opposés tournent dans le même sens.",
+      "refusal": "Les moteurs se boulonnent au bout des bras : assemblez d'abord le châssis."
+    },
+    "esc": {
+      "title": "Posez les huit ESC",
+      "body": "Un sur chaque bras, sous l'hélice, avec son câble de signal vers l'intérieur.",
+      "refusal": "Les ESC se posent sur les bras : assemblez d'abord le châssis."
+    },
+    "wires": {
+      "title": "Câblez les bras",
+      "body": "La paire d'alimentation et le câble de signal le long de chaque tube, avec une boucle de mou au-dessus de l'articulation ; trois fils de phase de chaque ESC vers son moteur.",
+      "refusal": "Posez les moteurs et les ESC avant les fils qui les relient."
+    },
+    "power": {
+      "title": "Posez la carte d'alimentation",
+      "body": "Entre les plaques, le câble XT90-S sortant à l'arrière, le condensateur 63 V aux bornes du bus avec sa bande côté moins, et le module PM02D HV pour le Pixhawk.",
+      "refusal": "La carte d'alimentation alimente les câbles des ESC : posez d'abord les ESC."
+    },
+    "fc": {
+      "title": "Montez le Pixhawk 6X",
+      "body": "Sur ses amortisseurs au milieu de la plaque supérieure, flèche vers le nez. Les câbles de signal des ESC sur MAIN OUT 1-8 dans l'ordre des moteurs, les servos du train sur AUX OUT 1, le PM02D sur POWER1.",
+      "refusal": "Le Pixhawk est alimenté par la carte d'alimentation : posez-la d'abord."
+    },
+    "rx": {
+      "title": "Posez le récepteur et la radio de télémétrie",
+      "body": "Sous la plaque inférieure, antennes vers le bas : le récepteur ELRS sur UART4, la radio 900 MHz sur TELEM1.",
+      "refusal": "Les radios se branchent sur le Pixhawk : montez-le d'abord."
+    },
+    "gps": {
+      "title": "Dressez les mâts GPS",
+      "body": "Deux mâts derrière l'emplacement du plateau, les modules flèche vers l'avant, câbles vers GPS1 et GPS2.",
+      "refusal": "Les modules GPS se branchent sur le Pixhawk : montez-le d'abord."
+    },
+    "tray": {
+      "title": "Posez le plateau de batterie",
+      "body": "Sur quatre entretoises au-dessus du Pixhawk, centré sur le châssis.",
+      "refusal": "Le plateau va au-dessus du Pixhawk : montez-le d'abord."
+    },
+    "gimbal": {
+      "title": "Suspendez la nacelle",
+      "body": "Sur sa plaque amortie sous l'avant du châssis, son câble vers TELEM2.",
+      "refusal": "La nacelle est suspendue sous le châssis, et les jambes doivent être en place pour la tenir au-dessus de l'établi : posez d'abord le train d'atterrissage."
+    },
+    "cam": {
+      "title": "Montez et équilibrez la caméra",
+      "body": "Glissez la caméra dans la nacelle et équilibrez-la sur les trois axes, nacelle éteinte, pour que ses moteurs ne fassent que la tenir et ne luttent jamais contre son poids.",
+      "refusal": "La caméra va dans la nacelle : suspendez-la d'abord."
+    },
+    "batt": {
+      "title": "Sanglez les batteries",
+      "body": "Les deux batteries sur le plateau, côte à côte sous les sangles, reliées par le pont série, le câble vers la XT90-S. Branchez en dernier, hélices toujours retirées.",
+      "refusal": "Les batteries reposent sur le plateau et se branchent sur la carte d'alimentation : posez d'abord les deux."
+    },
+    "props": {
+      "title": "Les hélices, en dernier",
+      "body": "Chaque hélice selon son moteur : hélices en sens horaire sur M1, M2, M7 et M8, en sens antihoraire sur M3, M4, M5 et M6.",
+      "refusal": "Les hélices se posent après les moteurs et les batteries, une fois toutes les vérifications au banc réussies : posez-les d'abord."
+    }
+  },
+  "wiring": {
+    "BATT-XT60": "Les deux batteries en série aboutissent à une seule prise XT90-S. Son contact anti-étincelle se connecte d'abord à travers une résistance et charge doucement le condensateur : les 50 V ne font donc pas d'arc entre les broches.",
+    "XT60-ESC": "Les pastilles de la carte d'alimentation alimentent une paire rouge et noire en 12 AWG le long de chaque bras, huit en tout.",
+    "ESC-MOTORS": "Trois fils de phase par moteur, courts parce que l'ESC est sur le bras, juste sous lui. Leur ordre fixe le sens de rotation : inversez-en deux pour inverser un moteur.",
+    "XT60-FC": "Le PM02D HV amène 5,2 V au POWER1 du Pixhawk et rapporte la tension de la batterie en I2C (BATT_MONITOR 21). Ses propres câbles ne portent que le courant du Pixhawk, pas les 190 A des moteurs.",
+    "FC-ESC": "MAIN OUT 1-8 (SERVO1-8, fonctions 33-40) vers les ESC dans l'ordre des numéros de moteur, en simple PWM. Le câble de signal de chaque ESC doit aller à la sortie de son propre moteur : le test moteur de A à H révèle une paire inversée.",
+    "FC-GEAR": "AUX OUT 1 (SERVO9 = 29, LandingGear) vers les servos de rétraction ; ils prennent leur alimentation sur un BEC à eux, pas sur le Pixhawk.",
+    "GPS-FC": "Un GPS sur GPS1 (SERIAL3) et un sur GPS2 (SERIAL4), chacun avec sa boussole sur le même câble.",
+    "RX-FC": "Le récepteur ELRS sur UART4 (SERIAL6 = 23, CRSF) et la radio 900 MHz sur TELEM1 (SERIAL1, MAVLink2 à 57600).",
+    "FC-GIMBAL": "TELEM2 (SERIAL2, MAVLink2 à 115200) vers la nacelle, configurée en MNT1_TYPE 6. Le contrôleur de vol peut la pointer vers la zone d'intérêt d'une mission ; sinon, c'est le cadreur qui l'oriente."
+  },
+  "tests": {
+    "smoke": {
+      "title": "Test au smoke stopper",
+      "pass": "La lampe n'a fait que clignoter : pas de court-circuit entre le plus et le moins sur le bus 12S. Les smoke stoppers vendus pour les quads 6S ne sont pas prévus pour 50 V : un appareil comme celui-ci fait donc son premier branchement sur une alimentation limitée en courant ou un limiteur prévu pour le 12S.",
+      "fail": "La lampe est restée allumée : quelque chose est en court-circuit. Ici, le condensateur est monté à l'envers ; retournez-le, bande côté moins, et refaites le test."
+    },
+    "motors": {
+      "title": "Test moteur (sans hélices)",
+      "pass": "Le test moteur de Mission Planner les a fait tourner de A à H, dans le sens horaire depuis l'avant droit : M1, M3, M8, M4, M2, M6, M7, M5, en alternant sens horaire et antihoraire. Les hélices peuvent être montées.",
+      "fail": "Un moteur a tourné dans le mauvais sens, ou c'est le mauvais bras qui a bougé. Inversez deux des fils de phase de ce moteur et vérifiez l'ordre des câbles de signal sur MAIN OUT 1-8 : avec les hélices montées, il partirait violemment en lacet ou se retournerait au décollage."
+    },
+    "calibrate": {
+      "title": "Calibrage de l'accéléromètre",
+      "pass": "Calibré dans six positions (à plat, sur chaque côté, nez en bas, nez en haut, sur le dos), puis Calibrate Level sur ses jambes. Un appareil de cette taille se retourne sur l'établi avant de déplier les bras, ou avec un aide.",
+      "fail": "Posez d'abord le Pixhawk. Si sa flèche pointe vers l'arrière, tournez-le ou réglez AHRS_ORIENTATION sur 4 (Yaw180), redémarrez et recalibrez."
+    },
+    "gear": {
+      "title": "Test du train d'atterrissage",
+      "pass": "Sur le support, désarmé : l'interrupteur du train en haut a replié les jambes hors du champ de la caméra, en bas les a fait redescendre. En vol, elles se replient d'elles-mêmes en passant 4 m à la montée et redescendent en passant 3 m à la descente.",
+      "fail": "Posez d'abord le train d'atterrissage, le Pixhawk et le récepteur, et branchez. Si les jambes bougent à l'inverse de l'interrupteur, réglez SERVO9_REVERSED 1."
+    },
+    "gps": {
+      "title": "Vérification GPS (les deux récepteurs)",
+      "pass": "Les deux GPS ont un fix 3D avec beaucoup de satellites, leurs positions concordent à un mètre près et les boussoles sont d'accord. Loiter peut maintenant tenir une position.",
+      "fail": "Posez les deux mâts GPS et le Pixhawk et branchez, dehors sous un ciel dégagé, puis attendez que les deux accrochent. En intérieur ou contre un bâtiment, ils n'obtiennent jamais de fix."
+    },
+    "prearm": {
+      "title": "Vérifications pre-arm (sans hélices)",
+      "pass": "Toutes les vérifications sont passées et il s'est armé sur l'établi, les moteurs au ralenti à MOT_SPIN_ARM, puis s'est désarmé. Avec ARMING_SKIPCHK 0, rien n'est sauté.",
+      "fail": "Posez le Pixhawk, les mâts GPS et le récepteur, sans hélices, batteries en place. Puis lisez le message PreArm : « 3D Accel calibration needed » veut dire qu'il faut calibrer, « GPS 1: Bad fix » qu'il faut faire la vérification GPS et attendre l'accroche."
+    }
+  },
+  "firmware": {
+    "setup": {
+      "title": "Châssis, sorties et alimentation",
+      "explain": "FRAME_CLASS 3 et FRAME_TYPE 1 en font un octa X, et les huit SERVOn_FUNCTION placent Motor1 à Motor8 sur MAIN OUT 1-8. Le simple PWM est le choix facile ici, puisque les sorties MAIN du 6X ne font du DShot qu'avec un réglage de carte supplémentaire. MOT_BAT_VOLT_MAX et _MIN permettent à ArduPilot de garder la même poussée quand les batteries baissent. Le filtre notch harmonique suit les gaz pour retirer des gyroscopes les vibrations des moteurs. Le 6X lit son module d'alimentation en numérique (BATT_MONITOR 21). Plusieurs de ces réglages demandent un redémarrage."
+    },
+    "links": {
+      "title": "Télémétrie, GPS, récepteur et nacelle",
+      "explain": "Chaque port reçoit son protocole : MAVLink2 vers la radio de télémétrie et vers la nacelle, GPS sur les deux ports GPS, le CRSF du récepteur sur UART4. MNT1_TYPE 6 est une nacelle MAVLink ; après un redémarrage, les lignes MNT1 en dessous apparaissent, et les limites de lacet de ±180° lui permettent de faire un tour complet."
+    },
+    "gear": {
+      "title": "Train d'atterrissage",
+      "explain": "SERVO9_FUNCTION 29 place le train sur AUX OUT 1 et RC7_OPTION 29 le met sur un interrupteur. Les hauteurs sont en mètres : la fiche d'origine indiquait LGR_DEPLOY_ALT 300 comme si c'étaient des centimètres, ce qu'ArduCopter lit comme 300 m, et il ne rentre le train selon la hauteur que si LGR_RETRACT_ALT vaut au moins LGR_DEPLOY_ALT. Avec 4 et 3, les jambes se replient après le décollage et redescendent pour chaque atterrissage."
+    },
+    "failsafe": {
+      "title": "Failsafes et pre-arm",
+      "explain": "Une liaison radio perdue, c'est RTL. Une batterie faible (42 V, 3,5 V par cellule), c'est aussi RTL ; une batterie critique (40,8 V), il se pose là où il est. Une mauvaise estimation de position le fait se poser plutôt que de voler à l'aveugle, et un crash le désarme. ARMING_SKIPCHK 0 lance toutes les vérifications pre-arm."
+    },
+    "loiter": {
+      "title": "Loiter",
+      "explain": "Maintien de position GPS : les manches demandent une vitesse jusqu'à LOIT_SPEED_MS, et il freine et tient le point quand vous lâchez. Des accélérations et des freinages doux donnent des mouvements de caméra fluides. C'est le mode pour filmer."
+    },
+    "althold": {
+      "title": "AltHold",
+      "explain": "Le baromètre tient la hauteur, mais rien ne tient la position : il dérive donc avec le vent. Le mode de secours du pilote quand le GPS a disparu, et un bon entraînement pour le piloter à la main."
+    },
+    "stabilize": {
+      "title": "Stabilize",
+      "explain": "Remise à plat automatique avec une inclinaison limitée à 30° ; les gaz sont à vous. ATC_ANGLE_MAX limite l'inclinaison dans tous les modes. Un appareil de 15 kg répond lentement : faites des commandes petites et anticipées."
+    },
+    "rtl": {
+      "title": "RTL",
+      "explain": "Retour au point de départ : il monte à RTL_ALT_M (25 m passent au-dessus du château d'eau), rentre, attend 5 s et se pose ; les jambes descendent à 3 m. Réglez RTL_ALT_M au-dessus de tout ce qui se trouve sur le chemin du retour, sinon il vole dedans."
+    },
+    "auto": {
+      "title": "AUTO : l'orbite",
+      "explain": "AUTO vole la mission chargée : décollage, un plan fixe de chaque côté du château d'eau avec la nacelle braquée dessus par DO_SET_ROI, puis retour pour se poser. On l'arme en Loiter, puisque AUTO ne peut pas armer tout seul."
+    },
+    "motorout": {
+      "title": "Moteur coupé",
+      "explain": "Il n'y a pas de mode pour une panne moteur : le mixeur pousse simplement plus les sept autres. Les deux voisins du moteur mort accélèrent et le moteur opposé, qui tourne dans le même sens, ralentit : l'appareil reste à plat, mais le lacet manque et il tourne lentement. ArduCopter ne dit rien, sauf si quelque chose sature : « Yaw Imbalance » ou « Potential Thrust Loss » apparaît alors. Le mode Moteur coupé du terrain arrête un moteur pour que vous le sentiez."
+    }
+  },
+  "flight": {
+    "modes": {
+      "loiter": {
+        "title": "Loiter",
+        "hint": "Maintien de position GPS : les manches règlent une vitesse jusqu'à 8 m/s et il s'arrête quand vous lâchez. Le mode pour filmer."
+      },
+      "althold": {
+        "title": "AltHold",
+        "hint": "Tient la hauteur, pas la position : il dérive avec le vent."
+      },
+      "stabilize": {
+        "title": "Stabilize",
+        "hint": "Remise à plat automatique avec une inclinaison limitée à 30° ; les gaz sont à vous. Lourd et lent à répondre : petites commandes."
+      },
+      "rtl": {
+        "title": "RTL",
+        "hint": "Monte à 25 m, au-dessus du château d'eau, rentre et se pose sur la plateforme."
+      },
+      "auto": {
+        "title": "AUTO orbite",
+        "hint": "Vole l'orbite tout seul : un plan fixe de chaque côté du château d'eau, puis retour pour se poser."
+      },
+      "motorout": {
+        "title": "Moteur coupé",
+        "hint": "Loiter avec un moteur arrêté dès que vous le choisissez en vol. Il continue de voler sur sept et tourne lentement. Choisissez-le en hauteur, au-dessus d'un terrain dégagé."
+      }
+    },
+    "failsafes": {
+      "rx-loss": "Radio du pilote perdue : RTL, montée à 25 m et retour.",
+      "low-battery": "Sous 42 V (3,5 V par cellule) : RTL.",
+      "battery-critical": "Sous 40,8 V : il se pose là où il est plutôt que de risquer le vol du retour.",
+      "ekf": "L'estimateur ne fait plus confiance à sa position : il se pose, parce qu'il ne sait plus où il est.",
+      "crash": "Un crash détecté (forte inclinaison sans contrôle) : les moteurs s'arrêtent."
+    },
+    "controls": "Clavier : Espace arme et désarme, W et S pour monter et descendre, les flèches pour voler en avant, en arrière et sur les côtés, A et D pour le lacet, V passe à la caméra de la nacelle, R replace le drone sur la plateforme. En Loiter, il s'arrête quand vous lâchez. Sur téléphone, le manche gauche gère les gaz et le lacet, le manche droit le tangage et le roulis. Une manette fonctionne en Mode 2."
+  },
+  "courses": {
+    "chase": {
+      "title": "Poursuite",
+      "brief": "La poursuite en voiture dans le décor : de la plateforme jusqu'au bout ouest de la grand-rue, le long de la rue entre les fausses façades à 4 m, au-dessus de la voiture de tournage au bout est, puis montez au-dessus du toit du château d'eau et rentrez vous poser sur la plateforme.",
+      "goals": {
+        "1": "Grand-rue, bout ouest",
+        "2": "Devant le saloon, à 4 m",
+        "3": "Au-dessus de la voiture de tournage",
+        "4": "Au-dessus du château d'eau",
+        "5": "Posez-vous sur la plateforme"
+      }
+    },
+    "orbit": {
+      "title": "Orbite (AUTO)",
+      "brief": "Le plan pour lequel cet appareil est fait, sous forme de mission : décollage à 10 m, puis un plan fixe de 2 s depuis l'ouest, le nord, l'est et le sud du château d'eau, à 12 m de distance et 18 m de haut, et retour pour se poser sur la plateforme.",
+      "goals": {
+        "1": "Décollage à 10 m",
+        "2": "Plan fixe : depuis l'ouest",
+        "3": "Plan fixe : depuis le nord",
+        "4": "Plan fixe : depuis l'est",
+        "5": "Plan fixe : depuis le sud",
+        "6": "Posez-vous sur la plateforme"
+      }
+    }
+  },
+  "quizzes": {
+    "power": {
+      "series": {
+        "q": "Deux batteries 6S de 16000 mAh (22,2 V chacune) sont câblées en série. Que reçoit l'octocoptère ?",
+        "options": {
+          "1": "44,4 V et 16000 mAh",
+          "2": "22,2 V et 32000 mAh",
+          "3": "44,4 V et 32000 mAh"
+        },
+        "why": "En série, les tensions s'additionnent et le même courant traverse les deux batteries : la capacité reste donc de 16000 mAh. En parallèle, ce serait 22,2 V et 32000 mAh. Dans les deux cas, l'énergie double."
+      },
+      "cap": {
+        "q": "Pourquoi cette carte d'alimentation a-t-elle besoin d'un condensateur de 63 V, et pas du 35 V d'un quad 6S ?",
+        "options": {
+          "1": "Un plus gros condensateur stocke plus de charge pour la nacelle",
+          "2": "Deux batteries 6S font 50,4 V à pleine charge, et les pics montent plus haut : un condensateur de 35 V lâcherait",
+          "3": "Les condensateurs de 63 V ont une résistance plus faible"
+        },
+        "why": "La tension nominale d'un condensateur doit être bien au-dessus de la tension la plus haute qu'il voit. Le 12S fait 50,4 V à pleine charge, plus les pics que renvoient les ESC ; un condensateur de 35 V ou de 50 V surchauffe et peut dégazer. Sa bande va toujours côté moins."
+      }
+    },
+    "gear": {
+      "why": {
+        "q": "Pourquoi replier les jambes en vol ?",
+        "options": {
+          "1": "Pour réduire la traînée",
+          "2": "Pour que la nacelle puisse faire un panoramique complet sans les jambes dans l'image",
+          "3": "Pour abaisser le centre de gravité"
+        },
+        "why": "Jambes baissées, tout panoramique au-delà des côtés les fait entrer dans l'image. Repliées, la caméra voit tout autour. Elles redescendent selon la hauteur (LGR_DEPLOY_ALT) ou par l'interrupteur avant l'atterrissage."
+      },
+      "metres": {
+        "q": "Une ancienne fiche de réglage indique LGR_DEPLOY_ALT 300, pour dire 3 m. Qu'en fait ArduCopter 4.7.2 ?",
+        "options": {
+          "1": "Il sort les jambes à 3 m",
+          "2": "Il lit 300 m : les jambes ne redescendent jamais selon la hauteur, et la rétraction selon la hauteur s'arrête aussi",
+          "3": "Il refuse la valeur"
+        },
+        "why": "Les hauteurs LGR sont en mètres. 300 est une valeur autorisée : rien ne vous prévient. Et comme le train ne rentre selon la hauteur que si LGR_RETRACT_ALT vaut au moins LGR_DEPLOY_ALT, les jambes restent dans l'image ou, relevées par l'interrupteur, ne redescendent jamais pour l'atterrissage."
+      }
+    },
+    "fly": {
+      "motorout": {
+        "q": "L'un des huit moteurs s'arrête en stationnaire. Que fait ArduCopter ?",
+        "options": {
+          "1": "Rien de spécial : le mixeur pousse plus les sept autres et il continue de voler",
+          "2": "Il passe aussitôt en LAND",
+          "3": "Il arrête aussi le moteur opposé, pour rester équilibré"
+        },
+        "why": "Avec un rapport poussée/poids de 2:1, sept moteurs portent 15,5 kg à environ la moitié de leur pleine poussée chacun. Il n'y a pas de mode de panne moteur : le contrôleur d'attitude le tient à plat, et c'est vous qui le ramenez. Il ne prévient que si un moteur sature : « Yaw Imbalance » ou « Potential Thrust Loss »."
+      },
+      "which": {
+        "q": "M1, à l'avant droit et en sens horaire, s'arrête. Quels moteurs changent le plus ?",
+        "options": {
+          "1": "Les sept accélèrent autant",
+          "2": "Ses deux voisins (en sens antihoraire) accélèrent, et M2 en face (en sens horaire) ralentit",
+          "3": "Seulement M2, en face"
+        },
+        "why": "Les voisins reprennent la portance perdue de ce côté, et M2 ralentit pour le garder à plat. Les moteurs en sens antihoraire travaillent alors plus que ceux en sens horaire, et le couple en plus fait tourner l'appareil : c'est pour ça qu'il part lentement en lacet avec un moteur coupé."
+      },
+      "props": {
+        "q": "Les hélices de 22 pouces donnent plus de poussée. Pourquoi ne pas les monter ?",
+        "options": {
+          "1": "Elles sont trop lourdes pour les moteurs",
+          "2": "Les ESC ne peuvent pas les entraîner",
+          "3": "Les moteurs sont à 520 mm l'un de l'autre et les hélices font 558 mm : les voisines se heurteraient"
+        },
+        "why": "Sur un octo, c'est l'espace entre moteurs voisins, et non la taille du châssis, qui limite l'hélice. 2 × 680 mm × sin 22,5° font 520 mm : les hélices de 20 pouces (508 mm) passent avec 12 mm de marge, et celles de 22 pouces se chevauchent et volent en éclats à la montée en régime."
+      }
+    }
+  }
+}
