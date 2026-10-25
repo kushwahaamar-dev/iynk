@@ -12,7 +12,9 @@ Changes after the first publication are additive only. Every change is logged he
   (a 3.3 V pin)"). When the supply drops out under a running chip (brown-out, a cold joint on the connector, a
   short) and comes back, the program starts again from t = 0 with its banner, after the board's `brownoutLine` for
   a brown-out. Cold-joint and brown-out patterns run on `st.on` (time since the supply went in), not the program
-  clock. A mode's banner goes out on its own frame, so `state.serial` no longer drops it behind line 0.
+  clock. A mode's banner goes out on its own frame, so `state.serial` no longer drops it behind line 0. A finished
+  upload leaves the Pico's UF2 boot (it reboots into the program), and so does unplugging. Scenario sources get no
+  Break it voltage choices.
 - v12 (02:10 Oct 25, P2-engine-b): the obstacle prop stays on the mat and off the breadboard over 2-450 cm (prop
   `travel`, `ctx.breadboard`, §9.1).
 - v11 (01:30 Oct 25, P2-engine-b, for the FPGA boards): a feed takes `onlyIf: ['ctl:SW16', '==', 1]` (a condition on
@@ -366,7 +368,9 @@ power: {
 }
 ```
 
-`upload.source` is the supply whose cable carries uploads; `upload.also: ['usb']` lists more (the ESP32-S3 DevKitC
+A source with `scenario: true` (the Pico's "USB, with a 5 V sensor output on GP17") is a lesson's setup, not a
+supply: Break it offers no wrong-voltage or reverse-polarity choice for it. `upload.source` is the supply whose cable
+carries uploads; `upload.also: ['usb']` lists more (the ESP32-S3 DevKitC
 uploads over its UART port or its native USB port). On any other supply Upload answers "Plug in USB first".
 
 Feed options beyond the example: `burns: 'U1'` names the part a reversed supply on that feed destroys (default the
@@ -434,7 +438,7 @@ list) and reports its state:
 |---|---|
 | `reset` | while held the MCU is in reset (outputs low, LEDs off); on release the mode restarts at t = 0 and the serial banner repeats |
 | `boot` | ESP32 BOOT: held while `reset` is released → "download mode" (`st.boot = 'download'`) |
-| `bootsel` | Pico BOOTSEL: held while USB is plugged in → mass-storage mode (`st.boot = 'uf2'`) |
+| `bootsel` | Pico BOOTSEL: held while USB is plugged in → mass-storage mode (`st.boot = 'uf2'`); a finished upload reboots into the program and unplugging forgets it |
 | `input` | a user input (buttons A/B, Basys 3 switches): its `net` level goes to the host as `inputs.<net>` |
 
 Each control is a toolbar button `ctl-<id>` ("Flip SW0", "Press KEY0"). More than four of one type (slides, or

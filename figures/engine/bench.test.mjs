@@ -765,3 +765,28 @@ describe('a supply that drops out restarts the program (sweep)', () => {
     expect(B.st.o.pins.GPIO38).toBeUndefined();
   });
 });
+
+describe('the Pico (sweep)', () => {
+  it('a UF2 copied in mass-storage mode reboots into the program; unplugging forgets BOOTSEL', async () => {
+    page = await loadFigure(buildFigure('boards/pico'), { path: '/figures/boards/pico.html', query: 'power=0' });
+    const B = page.bench;
+    B.actions.press('SW1', true); B.actions.press('SW1', false);
+    B.accept({ power: 'usb' }); B.advance(.5);
+    expect(B.report().boot).toBe('uf2');
+    B.actions.upload('blink'); B.advance(B.st.upDur + .5);
+    expect(B.report().boot).toBeNull();
+    // the program runs: in mass-storage mode it drives nothing
+    expect(Object.keys(B.st.o.pins).some((k) => k === 'GP25' || k === 'WL_GPIO0')).toBe(true);
+    B.accept({ power: null });
+    B.actions.press('SW1', true); B.actions.press('SW1', false);
+    B.accept({ power: 'usb' }); B.advance(.3);
+    expect(B.report().boot).toBe('uf2');
+    B.accept({ power: null }); B.accept({ power: 'usb' }); B.advance(.3);
+    expect(B.report().boot).toBeNull();
+  });
+
+  it('offers no voltage breaks for a scenario source', async () => {
+    page = await loadFigure(buildFigure('boards/pico'), { path: '/figures/boards/pico.html' });
+    expect(page.bench.faultChoices().map(([id]) => id).filter((id) => id && id.includes('echo5'))).toEqual([]);
+  });
+});

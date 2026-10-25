@@ -433,7 +433,9 @@ A.build = what => {
 };
 A.flip = id => { const p = MD.byId[id]; if (!p || !p.polar || !isIn(id)) return; if (!guard()) return; st.placed[id].orient ^= 1; say(st.placed[id].orient ? '{name} turned the wrong way round' : '{name} turned the right way round', { name: nameOf(id) }); refresh(); };
 A.power = key => {
-  if (key == null || key === 'off'){ if (!st.power) return; st.power = null; st.up = null; st.strap = null; st.sag = null; st.ext = st.ext && false; st.loaded = false; sfx('unplug'); refresh(); return; }
+  // unplugged, a Pico forgets the BOOTSEL boot: it boots into mass storage again only with BOOTSEL held at plug-in
+  if (key == null || key === 'off'){ if (!st.power) return; st.power = null; st.up = null; st.strap = null; st.sag = null; st.ext = st.ext && false; st.loaded = false;
+    if (st.boot === 'uf2') st.boot = null; sfx('unplug'); refresh(); return; }
   const src = (MD.power.sources || {})[key]; if (!src) return say('No supply {name} on this board', { name: key });
   if (st.exploded) return say(MSG.exploded);
   // plugging in the cable that is already in changes nothing (the sketch keeps its clock)
@@ -545,7 +547,8 @@ function step(dt){
   // the program clock
   if (st.power){
     st.t += dt; st.on += dt;
-    if (st.up){ st.upT += dt; if (st.upT >= st.upDur){ const key = st.up; st.up = null; st.mode = key; st.t = 0; st.serialN = -1; st.loaded = true; sampleStraps();
+    // a UF2 copied to the mass-storage drive reboots the chip into it
+    if (st.up){ st.upT += dt; if (st.upT >= st.upDur){ const key = st.up; st.up = null; st.mode = key; st.t = 0; st.serialN = -1; st.loaded = true; if (st.boot === 'uf2') st.boot = null; sampleStraps();
         say('Done uploading: {name} is running', { name: T(MD.modes[key].title) }); sfx('ding'); } }
     st.ev = evaluate();
     // the supply dropping out under the chip (a brown-out, a cold joint on the connector, a short cleared) resets it:
@@ -1063,6 +1066,8 @@ function faultChoices(){
   const out = [['', '']]; out.length = 0;
   const srcs = MD.power.sources || {};
   for (const [key, s] of Object.entries(srcs)){
+    // a scenario source (a sensor's 5 V output on a pin, set up by a lesson) is not a supply to get wrong
+    if (s.scenario) continue;
     if (s.plug === 'barrel' || s.pin) out.push(['reverse-polarity:' + key, T('Reverse polarity on {src}', { src: T(s.label || key) })]);
     if (s.range){ out.push([`wrong-voltage:${key}:${s.max != null ? s.max + 4 : s.range[1] * 2}`, T('Too high a voltage on {src}', { src: T(s.label || key) })]);
       out.push([`wrong-voltage:${key}:${Math.max(1, +(s.range[0] * .7).toFixed(1))}`, T('Too low a voltage on {src}', { src: T(s.label || key) })]); }
