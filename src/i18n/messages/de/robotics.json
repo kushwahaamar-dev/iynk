@@ -141,7 +141,7 @@
     "tabs": {
       "label": "Bereiche der Werkbank",
       "steps": "Schritte",
-      "faults": "Kaputt machen",
+      "faults": "Fehler",
       "status": "Status",
       "quiz": "Quiz"
     }
