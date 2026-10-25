@@ -15,9 +15,12 @@ export const boardLoaders: Partial<Record<BoardId, Loader<BoardContent>>> = {
 };
 
 export const roboticsLoaders: Partial<Record<RoboticsId, Loader<RoboticsContent>>> = {
+  'uno-r3-build': () => import('./robotics/uno-r3-build'),
+  'led-resistor': () => import('./robotics/led-resistor'),
   'transistor-switch': () => import('./robotics/transistor-switch'),
   'esp32-s3-build': () => import('./robotics/esp32-s3-build'),
   'tb6612fng': () => import('./robotics/tb6612fng'),
+  'l298n': () => import('./robotics/l298n'),
   'pi5-ros2': () => import('./robotics/pi5-ros2'),
 };
 
@@ -26,14 +29,17 @@ export const droneLoaders: Partial<Record<DroneId, Loader<DroneContent>>> = {
   'whoop': () => import('./drones/whoop'),
   'cinewhoop': () => import('./drones/cinewhoop'),
   'longrange': () => import('./drones/longrange'),
+  'racer': () => import('./drones/racer'),
+  'gpscam': () => import('./drones/gpscam'),
+  'delivery': () => import('./drones/delivery'),
   'wing': () => import('./drones/wing'),
 };
 
 /** Item ids that have a data module today, in figure order. */
 export const AVAILABLE: { board: readonly BoardId[]; robotics: readonly RoboticsId[]; drone: readonly DroneId[] } = {
   board: ['uno-r3', 'nano', 'uno-r4', 'esp32-devkitc', 'esp32-s3-devkitc-1', 'nodemcu', 'pico'],
-  robotics: ['transistor-switch', 'esp32-s3-build', 'tb6612fng', 'pi5-ros2'],
-  drone: ['quad5', 'whoop', 'cinewhoop', 'longrange', 'wing'],
+  robotics: ['uno-r3-build', 'led-resistor', 'transistor-switch', 'esp32-s3-build', 'tb6612fng', 'l298n', 'pi5-ros2'],
+  drone: ['quad5', 'whoop', 'cinewhoop', 'longrange', 'racer', 'gpscam', 'delivery', 'wing'],
 };
 
 export async function loadBoard(id: BoardId): Promise<BoardContent | null> {
