@@ -55,3 +55,29 @@ where, what a user sees, and the cause where known. Struck through when fixed, w
 ## Docs
 
 12. ~~`figures/prompts/uno-r3-build.md` has a stray line break ("the\n  iron solders").~~ Fixed in the commit that struck this.
+
+## From wave D (P3-docs-repo, P3-docs-pitch, 02:20)
+
+19. ~~The octo opens on hover-high (its hoverLimit 0.7 was never applied).~~ Fixed in `7510152`.
+20. ~~MAVProxy `status` says STABILIZE on the VTOL, which boots in MANUAL.~~ Fixed in `7510152`.
+21. ~~"Fly it" on a drone's bench and "Back to the bench" on its fly page drop `?room=`, so they leave the room.~~
+    Fixed in `265f60a`.
+22. ~~The MCP server instructions tell Muse it can check Proof of Build credentials with `get_passport` while Solana
+    is off.~~ Fixed in `a5c70e8`.
+23. ~~`docs/hacktx/DEPLOY.md` still reads 7 boards and `/es/boards/uno-r3` 404; no `scripts/smoke-search.mjs`.~~
+    Fixed in `a5c70e8`.
+24. ~~14 board lessons have no quiz (pico 6, esp32-devkitc 3, esp32-s3-devkitc-1 3, nodemcu 2).~~ F-quiz-pico and
+    F-quiz-esp, run `wf_78186578-fbd`.
+25. `LiveCounter` (`/api/live`) isn't mounted on any page. Left: nothing in the demo path needs it.
+26. The fly page has no "Share anonymous usage counts" toggle, though the setting applies everywhere; it is on the
+    board, lesson, bench and drone pages. Left for the final pass (F-build-drones) if the spec wants it.
+27. Two tabs of one browser profile share one name and one progress (localStorage), so the no-relay fallback needs
+    two Chrome profiles to show two people; a phone on a LAN `http://` address can't record voice (getUserMedia needs
+    HTTPS). Both are written into VIDEO.md and JUDGE-QA; the deploy (https, relay) removes them.
+28. `/api/status` says `solana: true` on this machine (`.env.local` has the issuer key and program id); the client
+    still hides Passport and Verify unless the devnet Config account exists. For the deploy, leave the Solana vars
+    out of Vercel unless phase 4 runs.
+29. BUILD-PLAN §1's demo path doesn't match the build in three places (the Uno Blink lesson has no reversed-LED
+    failure, that is `led-backwards` on `/robotics/led-resistor`; "Short 5V" leaves the board dark with a warm
+    polyfuse instead of smoke; quad5 can't be under $150, the catalogue range is $330-370). PITCH.md and VIDEO.md
+    follow the build; BUILD-PLAN §1 is left as the plan of record.
