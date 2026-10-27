@@ -1,0 +1,716 @@
+[
+ {
+  "id": "C001",
+  "claim": "A free hardware lab in your browser.",
+  "source": "README.md:3; docs/hacktx/DEVPOST-WRITEUP.md:15",
+  "kind": "feature"
+ },
+ {
+  "id": "C002",
+  "claim": "no account, nothing to install",
+  "source": "README.md:6; src/i18n/messages/en/shell.json:126",
+  "kind": "quality"
+ },
+ {
+  "id": "C003",
+  "claim": "Three labs, 38 real items",
+  "source": "README.md:19; docs/hacktx/JUDGE-QA.md:22",
+  "kind": "count"
+ },
+ {
+  "id": "C004",
+  "claim": "Every item is a hand-inked 3D figure you can turn all the way round, see through and take apart.",
+  "source": "README.md:27; docs/hacktx/DEVPOST-WRITEUP.md:38",
+  "kind": "feature"
+ },
+ {
+  "id": "C005",
+  "claim": "Write Arduino C++, MicroPython, Python (with gpiozero and rclpy on the Pi) or Verilog on",
+  "source": "README.md:31; docs/hacktx/JUDGE-QA.md:39",
+  "kind": "feature"
+ },
+ {
+  "id": "C006",
+  "claim": "Interpreters inside the page drive the pins, the serial monitor and the figure on a",
+  "source": "README.md:32",
+  "kind": "feature"
+ },
+ {
+  "id": "C007",
+  "claim": "71 board lessons and 31 bench tasks pass only when your run meets their checks.",
+  "source": "README.md:33; docs/hacktx/DEVPOST-WRITEUP.md:40",
+  "kind": "count"
+ },
+ {
+  "id": "C008",
+  "claim": "pass only when your run meets their checks",
+  "source": "README.md:33; docs/hacktx/JUDGE-QA.md:79",
+  "kind": "quality"
+ },
+ {
+  "id": "C009",
+  "claim": "144 board failures and 106 bench faults, decided by a circuit solver",
+  "source": "README.md:34; docs/hacktx/DEVPOST-WRITEUP.md:40; docs/hacktx/DEVPOST-STORY.md:23",
+  "kind": "count"
+ },
+ {
+  "id": "C010",
+  "claim": "(113 mA through a part rated for 20)",
+  "source": "README.md:35; docs/hacktx/PITCH.md:77; docs/hacktx/DEVPOST-STORY.md:19",
+  "kind": "count"
+ },
+ {
+  "id": "C011",
+  "claim": "put a motor on the 5 V pin and the board browns out",
+  "source": "README.md:36; docs/hacktx/DEVPOST-WRITEUP.md:40",
+  "kind": "feature"
+ },
+ {
+  "id": "C012",
+  "claim": "Benches go together step by step (272 steps) with live status and current draw.",
+  "source": "README.md:37; docs/hacktx/DEVPOST-STORY.md:16",
+  "kind": "count"
+ },
+ {
+  "id": "C013",
+  "claim": "sized with a drone calculator (thrust to weight, hover throttle, flight time, current)",
+  "source": "README.md:38; docs/hacktx/DEVPOST-WRITEUP.md:40",
+  "kind": "feature"
+ },
+ {
+  "id": "C014",
+  "claim": "checked with safety tests before the first flight",
+  "source": "README.md:39; docs/hacktx/DEVPOST-WRITEUP.md:40",
+  "kind": "feature"
+ },
+ {
+  "id": "C015",
+  "claim": "A flight sim with gate races and freestyle courses in angle or acro mode, third person or FPV, against",
+  "source": "README.md:40; docs/hacktx/DEVPOST-WRITEUP.md:40",
+  "kind": "feature"
+ },
+ {
+  "id": "C016",
+  "claim": "your best lap, the autopilot and your friends' ghosts.",
+  "source": "README.md:41; docs/hacktx/DEVPOST-WRITEUP.md:50; docs/hacktx/PITCH.md:131",
+  "kind": "feature"
+ },
+ {
+  "id": "C017",
+  "claim": "a slow-motion replay shows why it flipped",
+  "source": "README.md:42; docs/hacktx/PITCH.md:134; docs/hacktx/DEVPOST-WRITEUP.md:187",
+  "kind": "feature"
+ },
+ {
+  "id": "C018",
+  "claim": "Share a link and up to eight people build on the same bench in real time, on any device.",
+  "source": "README.md:48; src/i18n/messages/en/shell.json:113; docs/hacktx/DEVPOST-WRITEUP.md:46",
+  "kind": "feature"
+ },
+ {
+  "id": "C019",
+  "claim": "action is put in one order for everyone.",
+  "source": "README.md:49; docs/hacktx/DEVPOST-WRITEUP.md:46",
+  "kind": "feature"
+ },
+ {
+  "id": "C020",
+  "claim": "The AI partner (Meta Muse Spark with tool calling) reads your bench",
+  "source": "README.md:50; docs/hacktx/DEVPOST-WRITEUP.md:48",
+  "kind": "integration"
+ },
+ {
+  "id": "C021",
+  "claim": "points at the broken part in the figure and gives hints before answers.",
+  "source": "README.md:51; docs/hacktx/JUDGE-QA.md:111",
+  "kind": "feature"
+ },
+ {
+  "id": "C022",
+  "claim": "that lesson, it asks them first, with a question that makes them explain it.",
+  "source": "README.md:52; docs/hacktx/DEVPOST-WRITEUP.md:48; docs/hacktx/DEVPOST-STORY.md:61",
+  "kind": "feature"
+ },
+ {
+  "id": "C023",
+  "claim": "The whole app is in English, Spanish, French, German, Chinese and Hindi, down to the labels inside",
+  "source": "README.md:53; docs/hacktx/DEVPOST-WRITEUP.md:42; src/i18n/messages/en/shell.json:121",
+  "kind": "count"
+ },
+ {
+  "id": "C024",
+  "claim": "Room chat and voice messages (Muse Voice Transcribe) are translated into each reader's language.",
+  "source": "README.md:54; docs/hacktx/JUDGE-QA.md:170",
+  "kind": "integration"
+ },
+ {
+  "id": "C025",
+  "claim": "Plan one project for a group with a role for each person",
+  "source": "README.md:55; docs/hacktx/DEVPOST-WRITEUP.md:50; src/i18n/messages/en/together.json:210",
+  "kind": "feature"
+ },
+ {
+  "id": "C026",
+  "claim": "whose skills complement yours, and turn a session into a short story with an illustrated cover (Muse Image).",
+  "source": "README.md:56; docs/hacktx/DEVPOST-WRITEUP.md:50; src/i18n/messages/en/shell.json:117",
+  "kind": "feature"
+ },
+ {
+  "id": "C027",
+  "claim": "Every parts list is priced live across Google Shopping, Amazon and eBay (SerpApi).",
+  "source": "README.md:60; docs/hacktx/DEVPOST-WRITEUP.md:54; docs/hacktx/JUDGE-QA.md:140",
+  "kind": "integration"
+ },
+ {
+  "id": "C028",
+  "claim": "a budget optimiser re-runs the drone maths on every battery, motor and prop combination at today's prices and picks",
+  "source": "README.md:61; docs/hacktx/DEVPOST-WRITEUP.md:54; docs/hacktx/JUDGE-QA.md:147",
+  "kind": "feature"
+ },
+ {
+  "id": "C029",
+  "claim": "It also finds makerspaces, electronics shops and flying fields near",
+  "source": "README.md:62; docs/hacktx/DEVPOST-WRITEUP.md:54; docs/hacktx/PITCH.md:123",
+  "kind": "integration"
+ },
+ {
+  "id": "C030",
+  "claim": "Pass a drone's bench safety checks and the server re-runs your exact run before an Anchor program",
+  "source": "README.md:64; docs/hacktx/DEVPOST-WRITEUP.md:195; src/i18n/messages/en/solana.json:177",
+  "kind": "integration"
+ },
+ {
+  "id": "C031",
+  "claim": "Anyone can verify it straight from the chain",
+  "source": "README.md:65; src/i18n/messages/en/solana.json:190",
+  "kind": "integration"
+ },
+ {
+  "id": "C032",
+  "claim": "lock bounties that pay out in the same transaction.",
+  "source": "README.md:66; docs/hacktx/DEVPOST-WRITEUP.md:195",
+  "kind": "feature"
+ },
+ {
+  "id": "C033",
+  "claim": "Laps and lesson passes land in Postgres with TimescaleDB (Tiger Data), where real-time continuous",
+  "source": "README.md:67; docs/hacktx/DEVPOST-WRITEUP.md:199",
+  "kind": "integration"
+ },
+ {
+  "id": "C034",
+  "claim": "AI assistants can search the catalogue, run the drone calculator, price parts, plan a build night",
+  "source": "README.md:69; docs/hacktx/JUDGE-QA.md:130; docs/hacktx/DEVPOST-WRITEUP.md:50",
+  "kind": "integration"
+ },
+ {
+  "id": "C035",
+  "claim": "API keys stay on the server, every call is",
+  "source": "README.md:90; docs/hacktx/DEVPOST-WRITEUP.md:74",
+  "kind": "quality"
+ },
+ {
+  "id": "C036",
+  "claim": "rate-limited, and Gemini takes over when Meta is busy.",
+  "source": "README.md:91; docs/hacktx/DEVPOST-WRITEUP.md:143",
+  "kind": "quality"
+ },
+ {
+  "id": "C037",
+  "claim": "The labs, the figures, the interpreters and the flight sim work with no keys at all.",
+  "source": "README.md:107; docs/hacktx/DEVPOST-WRITEUP.md:56; docs/hacktx/JUDGE-QA.md:29",
+  "kind": "feature"
+ },
+ {
+  "id": "C038",
+  "claim": "every key is optional; a feature without its key says it isn't set up",
+  "source": "README.md:103",
+  "kind": "quality"
+ },
+ {
+  "id": "C039",
+  "claim": "about 2,800 unit tests, including every lesson",
+  "source": "README.md:131; docs/hacktx/DEVPOST-STORY.md:46",
+  "kind": "count"
+ },
+ {
+  "id": "C040",
+  "claim": "Playwright end-to-end tests with axe accessibility checks",
+  "source": "README.md:132; docs/hacktx/DEVPOST-STORY.md:46",
+  "kind": "quality"
+ },
+ {
+  "id": "C041",
+  "claim": "tested on a local validator",
+  "source": "README.md:95; docs/hacktx/DEVPOST-WRITEUP.md:195",
+  "kind": "quality"
+ },
+ {
+  "id": "C042",
+  "claim": "We reused facts (pinouts, formulas, constants), not their code.",
+  "source": "README.md:157; src/i18n/messages/en/shell.json:141",
+  "kind": "quality"
+ },
+ {
+  "id": "C043",
+  "claim": "each a hand-inked 3D figure you can turn, wire, code and break on purpose.",
+  "source": "src/i18n/messages/en/shell.json:51",
+  "kind": "feature"
+ },
+ {
+  "id": "C044",
+  "claim": "From the Arduino Uno R3 to two FPGA boards: lessons, a live code editor, schematic and breadboard views, a serial monitor and failures that really trigger.",
+  "source": "src/i18n/messages/en/shell.json:58",
+  "kind": "feature"
+ },
+ {
+  "id": "C045",
+  "claim": "Motor drivers, sensors and power stages, built part by part on the bench, with practice tasks, quizzes after each step, live status and current draw.",
+  "source": "src/i18n/messages/en/shell.json:63",
+  "kind": "feature"
+ },
+ {
+  "id": "C046",
+  "claim": "From a Tiny Whoop to an octocopter: a part-by-part build, live weight and thrust maths, safety tests, real Betaflight and ArduPilot settings, and a flying range.",
+  "source": "src/i18n/messages/en/shell.json:68",
+  "kind": "feature"
+ },
+ {
+  "id": "C047",
+  "claim": "Drag to turn any figure all the way round, switch on See-through and watch the parts inside work, with labels that light up.",
+  "source": "src/i18n/messages/en/shell.json:95",
+  "kind": "feature"
+ },
+ {
+  "id": "C048",
+  "claim": "Edit Arduino C++, MicroPython or Verilog and press Run: the simulator drives the figure, the pins and the serial monitor.",
+  "source": "src/i18n/messages/en/shell.json:99",
+  "kind": "feature"
+ },
+ {
+  "id": "C049",
+  "claim": "Reverse the polarity, brown out the supply, leave out a part or make a cold joint, and see what really goes wrong.",
+  "source": "src/i18n/messages/en/shell.json:103",
+  "kind": "feature"
+ },
+ {
+  "id": "C050",
+  "claim": "Build a drone, check its numbers, run the smoke stopper and motor tests, then fly gates in angle or acro mode.",
+  "source": "src/i18n/messages/en/shell.json:107",
+  "kind": "feature"
+ },
+ {
+  "id": "C051",
+  "claim": "The Uno R3 is the best place to begin: sixteen short lessons, from the parts of the board to a parking sensor.",
+  "source": "src/i18n/messages/en/shell.json:74",
+  "kind": "count"
+ },
+ {
+  "id": "C052",
+  "claim": "iynk started as a rebuild of three teaching sites and aims to do everything they do, and more.",
+  "source": "src/i18n/messages/en/shell.json:141",
+  "kind": "quality"
+ },
+ {
+  "id": "C053",
+  "claim": "Progress and settings are saved in this browser's local storage. There are no accounts.",
+  "source": "src/i18n/messages/en/shell.json:138; docs/hacktx/JUDGE-QA.md:185",
+  "kind": "quality"
+ },
+ {
+  "id": "C054",
+  "claim": "never your name or your code",
+  "source": "src/i18n/messages/en/shell.json:138; docs/hacktx/JUDGE-QA.md:186",
+  "kind": "quality"
+ },
+ {
+  "id": "C055",
+  "claim": "A hands-on hardware lab in the browser: build, wire, code, break and fly boards, robots and drones.",
+  "source": "src/i18n/messages/en/common.json:5",
+  "kind": "quality"
+ },
+ {
+  "id": "C056",
+  "claim": "Everyone sees the same bench, one person types at a time, and the chat shows each message in your own language.",
+  "source": "src/i18n/messages/en/together.json:156",
+  "kind": "feature"
+ },
+ {
+  "id": "C057",
+  "claim": "Rooms close 30 minutes after the last person leaves.",
+  "source": "src/i18n/messages/en/together.json:174; docs/hacktx/DEVPOST-WRITEUP.md:191",
+  "kind": "count"
+ },
+ {
+  "id": "C058",
+  "claim": "Your profile holds no contact details and is deleted after 24 hours.",
+  "source": "src/i18n/messages/en/together.json:184; docs/hacktx/DEVPOST-WRITEUP.md:78",
+  "kind": "quality"
+ },
+ {
+  "id": "C059",
+  "claim": "Credentials you earned in the lab, written to Solana devnet after the server re-ran your run.",
+  "source": "src/i18n/messages/en/solana.json:177",
+  "kind": "feature"
+ },
+ {
+  "id": "C060",
+  "claim": "There are 12 boards:",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:38; docs/hacktx/PITCH.md:154",
+  "kind": "count"
+ },
+ {
+  "id": "C061",
+  "claim": "There are 71 board lessons (16 on the Uno R3, at least 4 on every board)",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:40",
+  "kind": "count"
+ },
+ {
+  "id": "C062",
+  "claim": "(272 steps and 106 faults across the 13), with 31 practice tasks",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:40",
+  "kind": "count"
+ },
+ {
+  "id": "C063",
+  "claim": "78 bench tests such as the smoke stopper and the motor direction check",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:40",
+  "kind": "count"
+ },
+ {
+  "id": "C064",
+  "claim": "a flight sim with 22 courses, medal times",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:40; docs/hacktx/JUDGE-QA.md:24",
+  "kind": "count"
+ },
+ {
+  "id": "C065",
+  "claim": "Betaflight, INAV and ArduPilot CLI snippets",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:40",
+  "kind": "feature"
+ },
+ {
+  "id": "C066",
+  "claim": "80 figure pages in all",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:66; docs/hacktx/JUDGE-QA.md:96",
+  "kind": "count"
+ },
+ {
+  "id": "C067",
+  "claim": "Underneath are 80 hand-inked 3D figures for 12 boards, 13 robotics benches and 13 drones",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:183",
+  "kind": "count"
+ },
+ {
+  "id": "C068",
+  "claim": "pass a keyboard baton",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:46",
+  "kind": "feature"
+ },
+ {
+  "id": "C069",
+  "claim": "proposes a fix as a diff you accept or reject, and answers datasheet questions with citations",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:48; docs/hacktx/JUDGE-QA.md:109",
+  "kind": "feature"
+ },
+ {
+  "id": "C070",
+  "claim": "push-to-talk and voice messages go through Muse Voice Transcribe",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:48",
+  "kind": "integration"
+ },
+ {
+  "id": "C071",
+  "claim": "Build Stories turn a session into a short story (what broke, who helped) with a Muse Image cover you can download or share.",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:50",
+  "kind": "feature"
+ },
+ {
+  "id": "C072",
+  "claim": "Share on Facebook opens Facebook's share dialog with a link to the lesson",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:175",
+  "kind": "feature"
+ },
+ {
+  "id": "C073",
+  "claim": "Without a relay, rooms fall back to BroadcastChannel between tabs of one browser.",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:76",
+  "kind": "feature"
+ },
+ {
+  "id": "C074",
+  "claim": "server tools (datasheet search, parts prices) run in a loop of up to four rounds",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:72",
+  "kind": "quality"
+ },
+ {
+  "id": "C075",
+  "claim": "Checks run in a Web Worker with a time budget.",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:70; docs/hacktx/JUDGE-QA.md:78",
+  "kind": "quality"
+ },
+ {
+  "id": "C076",
+  "claim": "a budget guard refuses uncached searches past a set number",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:74; docs/hacktx/JUDGE-QA.md:155",
+  "kind": "quality"
+ },
+ {
+  "id": "C077",
+  "claim": "results go through SerpApi's cache and a 6-hour cache of our own",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:74",
+  "kind": "quality"
+ },
+ {
+  "id": "C078",
+  "claim": "Buddy profiles live in a regular table and expire after 24 hours; events are kept for 30 days.",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:78",
+  "kind": "quality"
+ },
+ {
+  "id": "C079",
+  "claim": "102 of 102 both ways at our last gate",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:86; docs/hacktx/JUDGE-QA.md:79",
+  "kind": "quality"
+ },
+ {
+  "id": "C080",
+  "claim": "A drone calculator that reproduces [342] reference builds from the Drone Engineer tables",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:99; docs/hacktx/JUDGE-QA.md:84",
+  "kind": "count"
+ },
+ {
+  "id": "C081",
+  "claim": "which ran more than 250 agents in parallel waves",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:80; docs/hacktx/DEVPOST-STORY.md:36; docs/hacktx/DEVPOST-WRITEUP.md:101",
+  "kind": "count"
+ },
+ {
+  "id": "C082",
+  "claim": "All of it was written during the event by AI coding agents",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:80; docs/hacktx/DEVPOST-STORY.md:48; docs/hacktx/PITCH.md:166; docs/hacktx/PITCH.md:206",
+  "kind": "quality"
+ },
+ {
+  "id": "C083",
+  "claim": "All of iynk's code, figures, content and tests were written during the hacking period",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:209; docs/hacktx/JUDGE-QA.md:196",
+  "kind": "quality"
+ },
+ {
+  "id": "C084",
+  "claim": "The repository's history starts at 15:30 on October 24",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:209; docs/hacktx/JUDGE-QA.md:196",
+  "kind": "quality"
+ },
+ {
+  "id": "C085",
+  "claim": "The prototype is not in this repository",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:209",
+  "kind": "quality"
+ },
+ {
+  "id": "C086",
+  "claim": "Voice transcription came back in 1 to 2 seconds",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:151",
+  "kind": "quality"
+ },
+ {
+  "id": "C087",
+  "claim": "muse-spark-1.3 fixed it and was 2 to 4 times faster",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:151",
+  "kind": "quality"
+ },
+ {
+  "id": "C088",
+  "claim": "a 286 KB deploy over RPC crawled for 40 minutes",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:155",
+  "kind": "quality"
+ },
+ {
+  "id": "C089",
+  "claim": "Entering: Meta, SerpApi, Best Overall, Most Entertaining, Best Pitch, MLH Vultr, MLH Tiger Data and MLH Solana.",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:171",
+  "kind": "integration"
+ },
+ {
+  "id": "C090",
+  "claim": "The program has 34 tests on a local validator and is live at `BYFLDTLNi946Z8jT4JnxgE8Cpzkr9ud7tSrnThFTv31w`.",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:195",
+  "kind": "count"
+ },
+ {
+  "id": "C091",
+  "claim": "one per learner and skill, with the score and a hash of the replay, signed by iynk's issuer",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:195",
+  "kind": "feature"
+ },
+ {
+  "id": "C092",
+  "claim": "A learner without a wallet gets a one-click devnet wallet kept in the browser.",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:195",
+  "kind": "feature"
+ },
+ {
+  "id": "C093",
+  "claim": "so iynk's realtime relay runs on a Vultr VM in Dallas",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:191; docs/hacktx/DEVPOST-WRITEUP.md:227",
+  "kind": "integration"
+ },
+ {
+  "id": "C094",
+  "claim": "One events hypertable in one-day chunks, compressed to the columnstore after a day and kept 30 days",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:199",
+  "kind": "quality"
+ },
+ {
+  "id": "C095",
+  "claim": "Every course has gold, silver and bronze times",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:187; docs/hacktx/JUDGE-QA.md:24",
+  "kind": "feature"
+ },
+ {
+  "id": "C096",
+  "claim": "The model can only pick from our real catalogue, so it can't invent a board or drone.",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:137; src/i18n/messages/en/together.json:235",
+  "kind": "quality"
+ },
+ {
+  "id": "C097",
+  "claim": "Numbers and units like \"220 Ω\" are protected, and if the model changes one, we show the original instead.",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:135; docs/hacktx/JUDGE-QA.md:171",
+  "kind": "quality"
+ },
+ {
+  "id": "C098",
+  "claim": "Solana credentials never trust the AI: the server re-runs your lab run before anything is issued.",
+  "source": "docs/hacktx/DEVPOST-WRITEUP.md:143",
+  "kind": "quality"
+ },
+ {
+  "id": "C099",
+  "claim": "Today the whole build is $291.50.",
+  "source": "docs/hacktx/PITCH.md:114; docs/hacktx/VIDEO.md:117",
+  "kind": "count"
+ },
+ {
+  "id": "C100",
+  "claim": "and swaps the 6S 1100 mAh battery for a 4S 1500",
+  "source": "docs/hacktx/PITCH.md:119; docs/hacktx/VIDEO.md:117",
+  "kind": "count"
+ },
+ {
+  "id": "C101",
+  "claim": "Thrust to weight stays above five, so it still flies.",
+  "source": "docs/hacktx/PITCH.md:119",
+  "kind": "quality"
+ },
+ {
+  "id": "C102",
+  "claim": "Maya is a stand-in.",
+  "source": "docs/hacktx/PITCH.md:36",
+  "kind": "quality"
+ },
+ {
+  "id": "C103",
+  "claim": "\"Muse can search our catalogue, size a drone, price a build and plan a build night.\"",
+  "source": "docs/hacktx/PITCH.md:215",
+  "kind": "integration"
+ },
+ {
+  "id": "C104",
+  "claim": "Free in any browser.",
+  "source": "docs/hacktx/PITCH.md:155",
+  "kind": "quality"
+ },
+ {
+  "id": "C105",
+  "claim": "131 CLI snippets and 22 flying courses (21 with medal times)",
+  "source": "docs/hacktx/JUDGE-QA.md:24",
+  "kind": "count"
+ },
+ {
+  "id": "C106",
+  "claim": "342 reference builds",
+  "source": "docs/hacktx/JUDGE-QA.md:84",
+  "kind": "count"
+ },
+ {
+  "id": "C107",
+  "claim": "445 of 445 tests",
+  "source": "docs/hacktx/JUDGE-QA.md:86",
+  "kind": "count"
+ },
+ {
+  "id": "C108",
+  "claim": "On catalogue prices, quad5 costs $346, and a $340 budget swaps",
+  "source": "docs/hacktx/JUDGE-QA.md:149",
+  "kind": "count"
+ },
+ {
+  "id": "C109",
+  "claim": "228 files in `src/i18n/content/`",
+  "source": "docs/hacktx/JUDGE-QA.md:177",
+  "kind": "count"
+ },
+ {
+  "id": "C110",
+  "claim": "all 4087 strings are translated in each",
+  "source": "docs/hacktx/JUDGE-QA.md:178; docs/hacktx/DEVPOST-STORY.md:32",
+  "kind": "count"
+ },
+ {
+  "id": "C111",
+  "claim": "It follows the Drone Engineer site formula for formula",
+  "source": "docs/hacktx/JUDGE-QA.md:84",
+  "kind": "quality"
+ },
+ {
+  "id": "C112",
+  "claim": "Breadboard circuits go through a DC nodal solver",
+  "source": "docs/hacktx/JUDGE-QA.md:60",
+  "kind": "feature"
+ },
+ {
+  "id": "C113",
+  "claim": "the partner's `ask_peer` tool posts a teach-back question to them in the room chat",
+  "source": "docs/hacktx/JUDGE-QA.md:116",
+  "kind": "feature"
+ },
+ {
+  "id": "C114",
+  "claim": "Every board and drone has a fact sheet with its sources",
+  "source": "docs/hacktx/JUDGE-QA.md:68",
+  "kind": "quality"
+ },
+ {
+  "id": "C115",
+  "claim": "In our live tests, the partner asked the classmate who had already passed the lesson three times out of three.",
+  "source": "docs/hacktx/DEVPOST-STORY.md:61",
+  "kind": "quality"
+ },
+ {
+  "id": "C116",
+  "claim": "reproduced it 6 times out of 18",
+  "source": "docs/hacktx/DEVPOST-STORY.md:54",
+  "kind": "quality"
+ },
+ {
+  "id": "C117",
+  "claim": "At 2:19 p.m. on day one, a usage limit stopped 56 agents mid-task.",
+  "source": "docs/hacktx/DEVPOST-STORY.md:52",
+  "kind": "count"
+ },
+ {
+  "id": "C118",
+  "claim": "We had 24 hours and two people",
+  "source": "docs/hacktx/DEVPOST-STORY.md:36",
+  "kind": "quality"
+ },
+ {
+  "id": "C119",
+  "claim": "Every sponsor feature does a real job in the same story, and all of them are live: Meta, SerpApi, Vultr, Tiger Data and Solana.",
+  "source": "docs/hacktx/DEVPOST-STORY.md:62",
+  "kind": "quality"
+ }
+]
