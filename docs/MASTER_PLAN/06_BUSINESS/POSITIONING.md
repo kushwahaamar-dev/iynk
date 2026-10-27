@@ -1,5 +1,7 @@
 # Positioning
 
+**Shelved 2026-10-27.** Amar decided to build iynk first as a full open-source app for himself and his friends and to return to the startup question afterwards (DECISION_REGISTER D-013). This file is kept as reference for that later decision and does not steer the build.
+
 Written 2026-10-27 by the orchestrating agent. Answers brief section 5.4 (genuine differentiation, three positioning
 strategies, one selected) and section 6.3 (beachhead). The decisions themselves live in
 `00_EXECUTIVE/DECISION_REGISTER.md` (D-001, D-002); this file explains the positioning that follows from them.

@@ -12,7 +12,41 @@ Evidence labels follow the brief: VERIFIED, DOCUMENTED, EXTERNAL, ESTIMATED, HYP
 interviewed yet, so every statement about demand is a HYPOTHESIS until the user research plan runs
 (`02_RESEARCH/USER_RESEARCH_PLAN.md`).
 
-## Summary
+## Current decisions: the build reframe (Amar, 2026-10-27)
+
+**Read this section first. It overrides the strategy decisions below wherever they disagree.**
+
+Amar reframed the work after the strategy step: build iynk as a full open-source application that he uses himself with his
+friends. Do not plan around customers, markets, pricing or paid tiers. He will return to the startup question after
+everything is built. The strategy documents (`06_BUSINESS/`, `00_EXECUTIVE/council/`) stay as reference for that later
+decision; they no longer steer the build.
+
+| ID | Decision | Status |
+|---|---|---|
+| D-013 | Purpose: a complete open-source hardware lab for Amar and his friends. Engineering quality, completeness and the founders' full workflow (imagine, design, assemble, wire, program, simulate, debug, learn, collaborate, build for real) decide priorities, not market evidence. | Decided by Amar |
+| D-014 | Build order, core first: B0 foundation; project core; Studio editor; collaboration with buddies; simulation fidelity; faults on any circuit; components; existing labs moved into Studio; AI partner; robotics creation; drone creation; export and physical build. Each build phase stops for Amar's OK; he may reorder or cut phases at any stop. | Decided by Amar |
+| D-015 | Local-first and self-hostable. The app runs in the browser with projects kept locally (browser storage plus project files on disk). An optional self-hostable server provides rooms, share links and buddies, and anyone can run it (one documented setup). AI and search use keys the user brings; nothing depends on Amar's paid keys. | Decided by Amar |
+| D-016 | Hackathon extras: remove Build Stories, Build Night and the Solana Proof of Build (wallet UI, mint and faucet routes, passport panel, the `solana/` program; git history keeps them). Keep Build Buddies and rebuild it as the friends feature: find your buddies and work on the same project together. Keep the leaderboard only among your buddies; no public board of strangers. | Decided by Amar (leaderboard scope by the orchestrator) |
+| D-017 | Licence: decided later by Amar. The build leaves a clearly marked placeholder. Before the repo is published as open source, the content copied from the three third-party sites (lessons, timings, formulas, drone constants) must be checked and rewritten where needed. | Decided by Amar |
+
+How the earlier decisions stand now:
+
+| ID | Status after the reframe |
+|---|---|
+| D-001 beachhead | Shelved until the startup question |
+| D-002 Fault Lab first | Replaced by D-014 (core first). Diagnose-first faults and save, share and export are still built, on the new core |
+| D-003 funding | Shelved |
+| D-004 audience | Shelved for the build. Security and privacy fixes still apply because the code is public and runs for friends |
+| D-005 Step 0 | Kept as build phase B0, reframed: security fixes, CI, open-source basics (README, CONTRIBUTING, self-hosting guide, licence placeholder), bring-your-own keys, telemetry removed or opt-in, honest copy, bundle cleanup |
+| D-006 freeze | Replaced. Robotics and drone labs are no longer frozen (they become real creation in later phases). Extras per D-016. The social layer comes back as buddies and invite-only rooms once the room takeover and flooding holes are fixed |
+| D-007 honest fidelity labels | Kept: tier labels, "What it models", "not modelled yet" |
+| D-008 free core and paid tiers | Shelved; nothing is paid |
+| D-009 north star | Shelved |
+| D-010 architecture | Kept and now leads: the project document, netlist, solver and runtime are built first |
+| D-011 low-end devices | Kept as an engineering target: performance budgets on throttled CPUs and slow connections |
+| D-012 the plan ends in a build | Kept; the business and handoff documents stay dropped |
+
+## Strategy decisions (2026-10-27, before the reframe)
 
 | ID | Decision | Status |
 |---|---|---|
@@ -278,3 +312,6 @@ These are not the agent's to make. The plan proceeds on the defaults shown.
   gap fixer was superseded and moved out of the plan tree.
 - 2026-10-27: Amar confirmed D-002 with one change (Studio is built straight after Fault Lab; the human evidence becomes
   validation after the build) and added D-012 (the plan ends in a phased build; business and handoff documents dropped).
+- 2026-10-27 14:10 CDT: Amar reframed the build (D-013 to D-017): an open-source app for himself and his friends, core
+  first, local-first and self-hostable, hackathon extras removed except Build Buddies (now collaboration) and a
+  buddies-only leaderboard, licence later. D-001, D-003, D-004, D-008 and D-009 are shelved; D-002 and D-006 replaced.

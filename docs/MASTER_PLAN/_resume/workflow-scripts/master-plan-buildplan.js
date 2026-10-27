@@ -1,9 +1,9 @@
 export const meta = {
   name: 'master-plan-buildplan',
-  description: 'Master plan step 6 as a build plan: fold spike results into the design, then the build roadmap, atomic task packages per build phase, test strategy and release checks, each reviewed for implementability',
+  description: 'Master plan step 6 as a build plan: fold spike results into the design, then the core-first build roadmap, atomic task packages per build phase, test strategy and release checks, each reviewed for implementability',
   phases: [
     { title: 'Fold-in', detail: 'replace PENDING spike markers and old gate wording in the design with the measured results', model: 'sonnet' },
-    { title: 'Roadmap', detail: 'build phases B0 (trust), Fault Lab, Studio, each one approval unit', model: 'sonnet' },
+    { title: 'Roadmap', detail: 'core-first build phases from B0 foundation to drones and export, each one approval unit', model: 'sonnet' },
     { title: 'Tasks', detail: 'one planner per build phase writes atomic task packages; test strategy and release checks in parallel', model: 'sonnet' },
     { title: 'Review', detail: 'an implementability reviewer and a fixer per phase, then a cross-document critic and fixers, then the task index', model: 'sonnet' },
   ],
@@ -22,9 +22,12 @@ const RULES = `You are planning the build of iynk (repo ${repo}). This step writ
 db/, e2e/, package.json or lockfiles, and do not commit. Scratch goes under ${scratch}/buildplan/<your label>/.
 
 Binding inputs (read what your task names; cite by path):
-- Decisions: ${mp}/00_EXECUTIVE/DECISION_REGISTER.md. D-002 and D-012 decide the build: Step 0 trust work first, then Fault Lab (release 1) on the
-  existing Uno R3 catalogue, then Studio (release 2, the original-project builder) straight after, without waiting for interviews or a pilot. The spikes
-  pick Studio's technology. Agents will build each phase and the orchestrator stops after each phase for Amar's OK. D-006 lists what is frozen.
+- Decisions: ${mp}/00_EXECUTIVE/DECISION_REGISTER.md, starting with "Current decisions: the build reframe" (D-013 to D-017), which overrides the older
+  strategy decisions. iynk is built as a complete open-source app for Amar and his friends (no customers, markets, pricing or classrooms). Build order,
+  core first (D-014): B0 foundation; project core; Studio editor; collaboration with buddies; simulation fidelity; faults on any circuit; components; the
+  existing labs moved into Studio; AI partner; robotics creation; drone creation; export and physical build. Local-first and self-hostable with
+  bring-your-own keys (D-015). Build Stories, Build Night and the Solana Proof of Build are removed; Build Buddies becomes collaboration; the leaderboard is
+  buddies-only (D-016). Licence later (D-017). Agents build each phase and the orchestrator stops after each phase for Amar's OK.
 - Product: ${mp}/03_PRODUCT/ (FEATURE_CATALOGUE F-ids, FEATURE_PRIORITIZATION, PRODUCT_REQUIREMENTS R-ids, USER_JOURNEYS, STUDIO_EDITOR, EDUCATION, ...).
 - Architecture: ${mp}/04_ARCHITECTURE/ (PROJECT_DATA_MODEL and schemas/project.schema.json, COMPONENT_SCHEMA and schemas/component.schema.json,
   SIMULATION_ARCHITECTURE, SYSTEM/FRONTEND/BACKEND/API/REALTIME/AI architecture, ADR/). Field and module names there are binding.
@@ -40,8 +43,8 @@ Build constraints the plan must respect:
   3000 and 43117 are off limits; verification runs keyless on a local build (see runs/COMMANDS.md for the exact keyless env).
 - Each atomic task changes at most 5 source files, not counting its own test files, so one agent can finish and verify it in one sitting.
 - Every task names the exact commands that prove it: npm run typecheck, npm run lint, the vitest files, the playwright specs.
-- Human validation (the E0 hand test, lecturer interviews, the 10-fault real-board check, the pilot, counsel) is not an agent task. List it as
-  validation for Amar, never as a build task.
+- Work only a person can do (choosing the licence, checking simulated faults on a real board with a multimeter, reviewing third-party content for
+  rewrite) is not an agent task. List it as "For Amar", never as a build task.
 
 Write plainly: short sentences, tables, no em dashes, no marketing. Label claims VERIFIED / DOCUMENTED / EXTERNAL / ESTIMATED / HYPOTHESIS / UNKNOWN.
 Your final text is returned as data; the file you write must stand alone.`
@@ -78,8 +81,8 @@ const scout = await sonnet(`${RULES}
 You are the fold-in scout. Read every ${mp}/08_RESEARCH_SPIKES/*/REPORT.md, including its "Independent check" section, and record each spike's
 verdict, whether the check upheld it, and which design decision it informs. Then grep ${mp}/03_PRODUCT and ${mp}/04_ARCHITECTURE (including ADR/) for
 "PENDING RS-", "RS-0", "RS-1", "Studio gate" and "go / no-go". List every place where (a) a choice waits on a spike that now has a result, or (b) text
-says Studio is built only after interviews, a pilot or a real-board check (Amar's decision: Studio is built straight after Fault Lab; only the technical
-spikes still steer it, D-002). Group by file. Change nothing.`, { label: 'foldin:scout', phase: 'Fold-in', schema: SCOUT_SCHEMA })
+says Studio waits for interviews, a pilot, a market gate or Fault Lab, or plans around customers, classrooms or pricing (Amar's reframe: core first,
+D-013 and D-014; only the technical spikes steer the technology). Group by file. Change nothing.`, { label: 'foldin:scout', phase: 'Fold-in', schema: SCOUT_SCHEMA })
 
 const spikeDigest = (scout?.spikes ?? []).map(s => `${s.id}: ${s.verdict}${s.checkHolds ? ` (check: ${s.checkHolds})` : ''}; informs ${s.decisionItInforms}`).join('\n')
 log(`Fold-in: ${scout?.targets?.length ?? 0} design files to update`)
@@ -92,7 +95,7 @@ Places to update:
 ${t.items.map((x, i) => `${i + 1}. ${x}`).join('\n')}
 For each place, read the spike report, then replace the PENDING text with the decision the exit condition implies, citing the report path and its
 numbers; if the spike was INCONCLUSIVE or its check disagreed, choose the reversible option and say what would change it. Replace any wording that makes
-Studio wait for interviews or a pilot with the D-002 wording. Keep names consistent with the contract documents. Append "## Spike fold-in (${today})"
+Studio wait for interviews, a pilot or Fault Lab with the D-014 order. Keep names consistent with the contract documents. Append "## Spike fold-in (${today})"
 listing each change.`, { label: `foldin:${t.file.split('/').pop()}`, phase: 'Fold-in', schema: DOC_SCHEMA })))
 
 // ---------------------------------------------------------------- Roadmap: the build phases
@@ -118,25 +121,29 @@ const ROADMAP_SCHEMA = {
 }
 const roadmap = await sonnet(`${RULES}
 
-Write ${E}/IMPLEMENTATION_ROADMAP.md: the build roadmap from today's code to Fault Lab (release 1) and Studio (release 2), as build phases B0, B1, ...
-Each build phase is one approval unit: a coherent result Amar can look at and test, built by one workflow run, usually 8 to 25 atomic tasks.
-- B0 is Step 0 (D-005): the security release blockers and quick wins that apply to a relaunch (SECURITY_BASELINE sections 8 and 10), closing or capping
-  paid routes with a durable spend ledger and kill switch, telemetry off by default or opt-in with idempotent event ids, CI (a GitHub Actions workflow
-  file in the repo; it will not run until Amar pushes), honest copy for the contradicted claims (FEATURE_VERIFICATION section 7), the social layer off at
-  relaunch behind a flag (D-006), the cheap bundle wins in PERFORMANCE_BASELINE (wallet chunk off non-wallet pages, prefetch), and the LICENSE file as
-  a task that writes the file only after Amar picks the licence (leave a clearly marked placeholder decision, do not choose for him).
-- Then Fault Lab phases: shared diagnosis record (D-010), save, fork, share link and export for catalogue items, meaningful pass, diagnose-first Break
-  it with the hint ladder, tier label and What it models panel, the thin class code and CSV, the feedback fixes (template error reason, unknown include,
-  pin name in "not connected").
-- Then Studio phases, in the order the architecture needs them: headless core first (project document, netlist, solver or orchestrator as the spikes
-  decided), then the editor (rendering as RS-01 decided), then code and run, then save, share and export, then netlist fault rules emitting the same
-  diagnosis record and "not modelled yet".
+Write ${E}/IMPLEMENTATION_ROADMAP.md: the build roadmap from today's code to the full app, as build phases B0, B1, ... in the D-014 order. Each build
+phase is one approval unit: a coherent result Amar can look at and test, built by one workflow run, usually 8 to 25 atomic tasks. Split a D-014 phase
+into several build phases where it is too big for one run (the project core and the Studio editor almost certainly are).
+- B0 foundation: the security fixes that matter for public code and a friends' install (SECURITY_BASELINE sections 8 and 10); removing Build Stories,
+  Build Night and the Solana Proof of Build with every route, component, dependency and test they own (D-016); bring-your-own AI and search keys in place
+  of server keys, with a per-user spend cap (D-015); telemetry removed or opt-in; CI (a GitHub Actions workflow file; it runs only once Amar pushes);
+  open-source basics (README for contributors, CONTRIBUTING, a self-hosting guide stub, a LICENSE placeholder that Amar fills, D-017); honest copy for the
+  contradicted claims (FEATURE_VERIFICATION section 7); the bundle wins in PERFORMANCE_BASELINE (wallet code goes with Solana; prefetch); the figure
+  redraw cost if cheap.
+- Then the project core: the canonical project document and schema, the netlist independent of the drawing, the solver and code runtime in Workers as the
+  spikes decided, deterministic run and replay, local save and load (IndexedDB plus project files), the shared diagnosis record (D-010).
+- Then the Studio editor (rendering as RS-01 decided): Milestone 1 in 03_PRODUCT/FEATURE_PRIORITIZATION.md first (start from scratch, place an Uno and
+  parts, wire, write code, run with serial, save, reopen), then the other boards.
+- Then collaboration: the self-hosted server, buddy identity and invites, buddy lists visible only to buddies, shared projects, live co-editing on the op
+  log (RS-09), invite-only rooms with the host takeover and flooding fixes, the buddies-only leaderboard.
+- Then the later D-014 phases in order, each planned in enough detail to build: fidelity, faults on any circuit, components, labs moved in, AI partner,
+  robotics, drones, export and physical build.
 For every build phase give all BRIEF section 26 phase fields (business objective, user-visible outcomes, exact technical scope, non-goals,
 dependencies, architecture changes, database changes, APIs, frontend components, simulation work, security, accessibility, testing, documentation,
 effort best / expected / adverse in engineer-weeks with assumptions, operational cost, risks, mitigations, acceptance criteria, rollout, rollback, exit
-gate). Rollout here means merging the branch and is always Amar's call. Then: a dependency diagram (Mermaid) of the phases; "Validation for Amar" (the
-human evidence D-002 moved after the build, with when each becomes useful); and "Not in this build" mapping BRIEF section 26 phases 5 to 10 to the
-D-006 freeze and the trigger that would start each. Return the phase list.`, { label: 'roadmap', phase: 'Roadmap', schema: ROADMAP_SCHEMA })
+gate). Rollout here means merging the branch and is always Amar's call; operational cost means a self-hoster's running cost. Then: a dependency diagram
+(Mermaid) of the phases; "For Amar" (the licence choice, real-board checks of simulated faults, the third-party content review, when each matters); and
+"Not in this build" (BRIEF section 26 phases 8 to 10 parts that are out of scope under D-013, such as classrooms and billing). Return the phase list.`, { label: 'roadmap', phase: 'Roadmap', schema: ROADMAP_SCHEMA })
 
 const phases = roadmap?.phases ?? []
 log(`Roadmap: ${phases.length} build phases: ${phases.map(p => p.id).join(', ')}`)
@@ -216,7 +223,7 @@ const [phaseTasks, support] = await parallel([
     () => sonnet(`${RULES}
 
 Write ${E}/TEST_STRATEGY.md for the build. Cover: the test layers this repo already has (Vitest unit files beside sources, the Playwright e2e suite,
-the relay's tests, the content check, the Anchor tests) and how each build phase adds to them; conventions (file naming, fixtures, deterministic seeds,
+the relay's tests, the content check; the Anchor tests go away with Solana in B0) and how each build phase adds to them; conventions (file naming, fixtures, deterministic seeds,
 no network, keyless env from runs/COMMANDS.md, ports to use and avoid); the slow tests that time out under load and how the build runs them (see
 TEST_COVERAGE.md and E2E.md); differential tests (Node versus Chromium for checks; iynk interpreter versus avr8js where RS-03 makes that possible; solver
 versus ngspice fixtures from RS-08); golden fixtures for the project document and schema validation (ajv) of every example; determinism and replay
@@ -228,9 +235,9 @@ task and at the end of every phase.`, { label: 'test-strategy', phase: 'Tasks', 
 Write ${E}/RELEASE_GATES.md: for each build phase in ${E}/IMPLEMENTATION_ROADMAP.md, the automated exit checks an agent runs and their pass thresholds
 (typecheck, lint with zero errors, unit and e2e pass counts with no new failures against the baseline in runs/COMMANDS.md and runs/E2E.md, bundle budgets,
 accessibility checks, the security regression tests, schema validation), which thresholds come from measurements (cite) and which are proposals
-(HYPOTHESIS). Then the release 1 and release 2 gates from BRIEF section 32 (product completeness, scientific correctness, reliability, security,
-performance, accessibility, user value, operational and business readiness): mark each item "checked by agents", "needs Amar" or "needs real users",
-because merging and deploying are Amar's call and user evidence comes after the build (D-002).`, { label: 'release-gates', phase: 'Tasks', schema: DOC_SCHEMA }),
+(HYPOTHESIS). Then the milestone checks from BRIEF section 32 for each D-014 phase (product completeness, scientific correctness, reliability,
+security, performance, accessibility, operational readiness for a self-hosted install; no business readiness, D-013): mark each item "checked by
+agents" or "needs Amar", because merging and deploying are always his call.`, { label: 'release-gates', phase: 'Tasks', schema: DOC_SCHEMA }),
   ]),
 ])
 
@@ -250,8 +257,8 @@ const critic = await sonnet(`${RULES}
 
 You are the cross-document critic for ${E}: IMPLEMENTATION_ROADMAP.md, TEST_STRATEGY.md, RELEASE_GATES.md and tasks/*.md. Find: a roadmap scope item no
 task implements; a task that implements nothing in scope; two phases' tasks that edit the same file without a dependency between them; an id used
-twice; a task whose verify command contradicts TEST_STRATEGY; an exit check in RELEASE_GATES that no task makes pass; any requirement R-id of release 1
-or release 2 in 03_PRODUCT/PRODUCT_REQUIREMENTS.md with no task; any frozen item (D-006) that a task builds. Do not edit. Return each issue with the ONE
+twice; a task whose verify command contradicts TEST_STRATEGY; an exit check in RELEASE_GATES that no task makes pass; any must requirement R-id in
+03_PRODUCT/PRODUCT_REQUIREMENTS.md for a planned phase with no task; any task that builds something removed (D-016) or out of scope (D-013). Do not edit. Return each issue with the ONE
 file that must change and the exact fix.`, { label: 'critic', phase: 'Review', schema: CROSS_SCHEMA })
 
 const crossIssues = (critic?.issues ?? []).filter(i => i.severity !== 'low')

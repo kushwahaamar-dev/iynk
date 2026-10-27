@@ -1,5 +1,7 @@
 # Startup strategy
 
+**Shelved 2026-10-27.** Amar decided to build iynk first as a full open-source app for himself and his friends and to return to the startup question afterwards (DECISION_REGISTER D-013). This file is kept as reference for that later decision and does not steer the build.
+
 Written 2026-10-27 by the orchestrating agent. It turns the decisions in `00_EXECUTIVE/DECISION_REGISTER.md` into a
 sequence with gates, costs and stop rules. Positioning is in `POSITIONING.md`. Pricing, unit economics, growth,
 partnerships and financial scenarios get their own files in step 7; this file sets the frame they work inside.
