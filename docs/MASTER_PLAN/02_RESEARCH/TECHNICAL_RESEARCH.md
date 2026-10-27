@@ -14,7 +14,7 @@ This file summarises three dossiers and does not repeat their detail. Go to them
 
 Labels used throughout: TESTED (done hands-on by a dossier author on one Apple M4 Pro laptop, Node 24.8 or headless Chromium 156; no phone, no Chromebook), EXTERNAL (a cited source states it), ESTIMATED (calculation or judgement, assumptions shown), HYPOTHESIS, UNKNOWN. Prices are "as of 2026-10-26", in USD unless stated. Source refs like [S12] point to the "## Sources" list at the end; each entry names the dossier and the dossier's own source id, so you can trace it.
 
-Two limits to keep in mind. First, every TESTED number is from a fast laptop, so phone and school Chromebook performance is UNKNOWN for all of them. Second, effort numbers marked ESTIMATED come either from a dossier author's judgement or from mine; none is a quote or a measurement, and the compliance cost ranges assume a lawyer rate of USD 300 to 500 per hour that no source supports (comp §1.1).
+Copies of the benchmark and cost scripts the TESTED figures came from are kept at `/Users/amar/iynk-master-plan-scratch/research/tech-review/` (bench.mjs and bench.html for the editor test, cost.py for the AI cost model, bench_avr.mjs, bench_rp.mjs and bench_spice.mjs for the simulator tests); the originals sit in a session scratch folder that may be cleared. Two limits to keep in mind. First, every TESTED number is from a fast laptop, so phone and school Chromebook performance is UNKNOWN for all of them. Second, effort numbers marked ESTIMATED come either from a dossier author's judgement or from mine; none is a quote or a measurement, and the compliance cost ranges assume a lawyer rate of USD 300 to 500 per hour that no source supports (comp §1.1).
 
 The repo rule from the HackTX 2026 entry (all project code written inside the hacking window) means no third-party code should be pasted into the current tree without a recorded licence decision [S26]. Using a library as a dependency is a different matter; copying its source is not.
 
@@ -41,17 +41,17 @@ These are the facts in the dossiers most likely to change the architecture phase
 
 | # | Finding | Why it matters | Source |
 |---|---|---|---|
-| F1 | Hosted PartyKit stopped accepting deploys on 16 Oct 2026 and shut down on 23 Oct 2026. Replicache was archived on 2026-06-10. | Two obvious real-time shortcuts are gone. | [S33] [S34] |
-| F2 | Google's Gemini API terms say you must be 18 or older and prohibit use in an API client "directed towards or likely to be accessed by anyone under 18". The EEA requires paid services only. Meta's Muse Spark terms were not retrieved. | iynk's Gemini fallback inside a product that children will use appears to conflict with the terms (conclusion is HYPOTHESIS until a lawyer or Google confirms). | [S86] (comp §2) |
-| F3 | Vercel Functions now serve WebSockets (GA 2026-10-20) but connections close at the function max duration: 300 s Hobby, 800 s Pro, 1800 s beta. Vercel's pricing FAQ describes Hobby as personal, non-commercial use. | A startup needs Pro, and room clients must reconnect. | [S28] [S29] [S30] [S31] |
+| F1 | Hosted PartyKit stopped accepting deploys on 16 Oct 2026 and shut down on 23 Oct 2026. Replicache was archived on 2026-06-10. | Hosted PartyKit is gone. Replicache's repo is archived, but plat §0 notes that its maker's current product, Zero, is live; Zero was not evaluated here (UNKNOWN). Re-checked 2026-10-27: the PartyKit page still states the 16 and 23 Oct dates. | [S33] [S34] |
+| F2 | Google's Gemini API terms say you must be 18 or older and prohibit use in an API client "directed towards or likely to be accessed by anyone under 18". The EEA requires paid services only. Meta's Muse Spark terms were not retrieved. | iynk's Gemini fallback inside a product that children will use appears to conflict with the terms (conclusion is HYPOTHESIS until a lawyer or Google confirms). Terms text re-fetched 2026-10-27 and matches. | [S86] (comp §2) |
+| F3 | Vercel Functions now serve WebSockets (GA 2026-10-20) but connections close at the function max duration: 300 s Hobby, 800 s Pro, 1800 s beta. Vercel's pricing FAQ describes Hobby as personal, non-commercial use. | A startup needs Pro, and room clients must reconnect. Re-checked 2026-10-27 against Vercel's limits and pricing pages: 300 s Hobby, 800 s Pro (GA), 1800 s Pro (beta), Pro $20 with a $20 credit. Vercel's own KB pages still call WebSockets "public beta" while the changelog says GA, so treat the status as inconsistent on Vercel's side. | [S28] [S29] [S30] [S31] |
 | F4 | The Gemini price list changed: Gemini 4 Argon ($2.00 in / $10.00 out) doubles on 2026-12-01; 3.8 Flash and 3.6 Flash double on 2027-01-01. "Gemini 3.5 Flash" is not on Google's pricing or models pages. | Cost models that use today's Gemini price age fast. | [S67] |
-| F5 | The COPPA amended rule has a compliance date of 22 Apr 2026, already past. Default-on telemetry with a persistent id and no consent step is a likely problem if users are under 13. | Not a future risk: it applies now to the live site if the site is child-directed (HYPOTHESIS on that point). | [S74] [S96] |
+| F5 | The COPPA amended rule has a compliance date of 22 Apr 2026, already past. Default-on telemetry with a persistent id and no consent step is a likely problem if users are under 13. | Not a future risk: it applies now to the live site if the site is child-directed (HYPOTHESIS on that point). The telemetry facts come from iynk's own security baseline (S96), which the compliance fact-checker did not re-test; the COPPA date was confirmed. | [S74] [S96] |
 | F6 | The only open, browser-ready engines found for a real MCU are avr8js (MIT, 852 stars) and rp2040js (MIT, 533 stars), both with one dominant maintainer. | Bus factor of one on the core of the "real firmware" path. MIT permits a fork. | [S1] [S2] |
 | F7 | Two reusable projects are copyleft in ways that block a closed build: Falstad CircuitJS1 (GPL-2.0-or-later) and Velxio (AGPLv3 with a paid commercial licence). | Learn from them; do not copy or link. | [S16] [S99] |
 | F8 | WebGPU is at 87.82% global support but Firefox desktop has it disabled by default through version 161. | A WebGPU-only editor loses Firefox users. | [S43] |
-| F9 | On a fast desktop, SVG and a naive Canvas 2D both held 60 Hz at 50 to 500 parts (up to 21,000 elements). SVG beat full-redraw Canvas at 3,000 parts and above. | The simple option is probably enough; phones are untested. | [S44] (TESTED) |
+| F9 | On a fast desktop, SVG and a naive Canvas 2D both held 60 Hz at 50 to 500 parts (up to 21,000 elements; Canvas p95 already 21.0 ms at 500 parts with 40 primitives each). SVG pulled clearly ahead from 1,500 parts and 63,000 elements (16.7 vs 38.9 ms median), and at 3,000 parts it was 39.7 vs 94.4 ms. (Review 2026-10-27: the first draft said "3,000 parts and above", which understated the gap.) Limits: the test moves one part per frame, uses plain rects and circles, and 16.7 ms is the vsync cap, so it shows that 60 Hz was held, not how much headroom remained. | The simple option is probably enough; phones are untested. | [S44] (TESTED) |
 | F10 | Espressif's QEMU fork lacks Wi-Fi, I2C, general-purpose SPI and the GPIO matrix; Espressif gives no support for it. | ESP32 has no good open emulator path. | [S7] |
-| F11 | The workflow benchmark found that Wokwi and Falstad showed no message for an LED with no resistor or a 5 V to GND short, while iynk names 16 faults and explains them. Wokwi and Falstad store circuits as plain text. iynk has no project file. | Fault explanation is an asset to keep through any solver change; a plain-text project format is a precondition for export, share, MCP and AI proposals. | [S100] (TESTED, scripted, one run) |
+| F11 | The workflow benchmark found that Wokwi and Falstad showed no message for an LED with no resistor or a 5 V to GND short, while iynk names 16 faults and explains them. Wokwi and Falstad store circuits as plain text. iynk has no project file. Caveats from the benchmark: circuits were entered as text, not by dragging wires, and in Falstad the current readout on hover was not checked, so "no message" means no warning text, not no information. | Fault explanation is an asset to keep through any solver change; a plain-text project format is a precondition for export, share, MCP and AI proposals. | [S100] (TESTED, scripted, one run) |
 
 ## 3. What iynk has today (baseline)
 
@@ -59,7 +59,7 @@ From sim §1 [S26], TESTED by reading the repo.
 
 | Piece | Today |
 |---|---|
-| Arduino C++ subset | TypeScript interpreter, about 3,700 lines (parser, interpreter, libraries) |
+| Arduino C++ subset | TypeScript interpreter, 3,880 lines in `src/lib/interp/arduino/` excluding tests (3,714 without `types.ts`); the dossier said about 3,700 (line count re-run 2026-10-27) |
 | Python and MicroPython subset | TypeScript runtime, about 3,900 lines including micro:bit |
 | Verilog subset | One TypeScript simulator, 1,214 lines |
 | Circuit solver | `bench-solve.js`, 431 lines, DC only, nodes are breadboard strips and rails, nonlinear parts are piecewise linear, dense Gaussian elimination, PWM averaged per time slice |
@@ -77,10 +77,10 @@ Detail: sim §2, §5, §7.
 
 | Board family | Options found | Evidence summary | Licence | Label |
 |---|---|---|---|---|
-| Arduino Uno, Nano (ATmega328P) | A: avr8js running a compiled hex. B: keep the TS Arduino interpreter. C: simavr server-side | avr8js v0.21.1 (2026-08-31), CPU plus ADC, timers, USART, TWI, SPI, ports, EEPROM, watchdog; no external parts (iynk writes the glue). TESTED 52 to 104 MHz-equivalent on the dossier laptop against a 16 MHz AVR (3.3x to 6.5x real time). Wokwi's simulator is built on it | avr8js MIT; simavr GPL-3.0 (do not embed) | EXTERNAL + TESTED [S1] [S25] |
+| Arduino Uno, Nano (ATmega328P) | A: avr8js running a compiled hex. B: keep the TS Arduino interpreter. C: simavr server-side | avr8js v0.21.1 (2026-08-31), CPU plus ADC, timers, USART, TWI, SPI, ports, EEPROM, watchdog; no external parts (iynk writes the glue). TESTED 52 MHz-equivalent (peripherals and a timer interrupt on, 3.3x real time) to 104 MHz-equivalent (CPU only, 6.5x), on a synthetic loop of 5 ALU instructions, one laptop, against a 16 MHz AVR; no real sketch was run, and the dossier fact-checker did not reproduce it. Wokwi's simulator is built on it | avr8js MIT; simavr GPL-3.0 (do not embed) | EXTERNAL + TESTED [S1] [S25] |
 | Arduino Uno R4 (Renesas) | Keep TS interpreter; Renode server-side (repo lists an Uno R4 Minima platform) | No browser engine found. Renode is .NET plus native cores, no browser build found | Renode MIT with bundled libs under own licences (tlib LGPL unless stated) | EXTERNAL [S8] |
 | ESP32, ESP8266 | A: TS or MicroPython-WASM shim with honest labels. B: Espressif QEMU server-side | Espressif QEMU lacks Wi-Fi, I2C, GP SPI, GPIO matrix; no support offered. Wokwi simulates the ESP32 family but its engine is closed and its Bluetooth is not implemented. `esp8266js` (MIT) last pushed 2023-06-18 | QEMU GPL-2.0 (server process only) | EXTERNAL [S5] [S6] [S7] |
-| Raspberry Pi Pico (RP2040) | A: rp2040js with stock MicroPython UF2. B: TS MicroPython subset | rp2040js v1.4.1 (2026-10-18). TESTED 131 MIPS on a bare loop (about real time for 125 MHz). README still says only UART0 documented and flash writes unimplemented (older than the code; behaviour needs a spike). No RP2350 (Pico 2) | MIT | EXTERNAL + TESTED [S2] |
+| Raspberry Pi Pico (RP2040) | A: rp2040js with stock MicroPython UF2. B: TS MicroPython subset | rp2040js v1.4.1 (2026-10-18). TESTED 131 MIPS on a bare 50-million-instruction SRAM loop with no peripherals (about real time for 125 MHz; expect less with PIO or DMA). README still says only UART0 documented and flash writes unimplemented (older than the code; behaviour needs a spike). No RP2350 (Pico 2) | MIT | EXTERNAL + TESTED [S2] |
 | STM32 Nucleo | A: keep TS "HAL level" interpretation. B: Renode server-side. C: QEMU-WASM | QEMU STM32 lacks DMA, I2C, GPIO, DAC, CAN, RTC; Pebble port is a custom board with an unclear licence; Wokwi supports only C031, L031, F103C8 | Renode MIT; QEMU GPL-2.0 | EXTERNAL [S8] [S9] [S10] |
 | micro:bit | A: Micro:bit Foundation V2 simulator (MicroPython codal_port in Emscripten, iframe, postMessage). B: TS runtime | Release v0.1.14 is dated 2024-11-25 (stale), README says the embedding API is "not yet stable". Measured `firmware.wasm` 1.25 MB (544 KB gzip). It runs the real MicroPython runtime, not nRF52833 CPU emulation | MIT | EXTERNAL + TESTED [S11] |
 | Raspberry Pi (Python) | A: Pyodide with a fake `RPi.GPIO` / `gpiozero` module bound to the board model. B: MicroPython WASM. C: QEMU guest | Pyodide 314.0.7 `pyodide.asm.wasm` 9.6 MB (3.5 MB gzip) plus 2.5 MB stdlib. MicroPython WASM 450 KB (197 KB gzip) but no `machine` module in the port config. QEMU-WASM aarch64 is experimental | Pyodide MPL-2.0; MicroPython MIT | EXTERNAL + TESTED [S12] [S13] |
@@ -111,7 +111,7 @@ Detail: sim §3, §5.
 | Option | Evidence | Licence | Fit |
 |---|---|---|---|
 | A. Grow the in-house MNA engine (trapezoidal companion models, fixed step, dense LU below about 150 unknowns, Newton for diodes and BJTs), designed from textbook algorithms | Falstad's engine has exactly that shape: dense LU below 150 unknowns (`SPARSE_THRESHOLD = 150`), sparse above, trapezoidal by default, capped step reduced when convergence fails (source read) [S16] | Own code. Do not copy Falstad: GPL-2.0-or-later | Real-time pane |
-| B. ngspice WASM via `eecircuit-engine` 1.9.0 | TESTED: 20.3 MB JS (5.7 MB gzip, WASM inlined), 349 ms start, RC step 34 ms, rectifier 23 ms, buck stage 28,208 points in 159 ms. Build disables XSPICE and OpenMP; batch only, no halt and resume | Wrapper MIT; ngspice has no single licence (each piece keeps its own, COPYING text is old); exclude CIDER (no-charge clause) and KLU (LGPL-2.1+) | "Run accurate analysis", waveforms, checker for A |
+| B. ngspice WASM via `eecircuit-engine` 1.9.0 | TESTED: 20.3 MB JS (5.7 MB gzip, WASM inlined), 349 ms start, RC step 34 ms, rectifier 23 ms, buck stage 28,208 points in 159 ms. Build disables XSPICE and OpenMP (EXTERNAL, build script). "Batch only, no halt and resume" is HYPOTHESIS inferred from the build flags by the dossier author, not tested | Wrapper MIT; ngspice has no single licence (each piece keeps its own, COPYING text is old); exclude CIDER (no-charge clause) and KLU (LGPL-2.1+) | "Run accurate analysis", waveforms, checker for A |
 | C. Own stepping libngspice WASM build | ngspice manual says the shared library supports halting and resuming. No browser build with that found | As B | Co-simulation with the MCU |
 | D. Xyce, Qucs-S, SPICE OPUS | GPL-3.0 / GPL-2.0 / licence unread | | Skip |
 
@@ -146,7 +146,7 @@ Detail: plat §1.
 
 | Option | Evidence | Licence | Notes |
 |---|---|---|---|
-| SVG in React, custom core | TESTED: 16.6 to 16.7 ms median (60 Hz cap) from 600 up to 63,000 elements; 39.7 ms at 126,000. Part art as SVG web components is a proven pattern (`@wokwi/elements`) | MIT (wokwi-elements) | Free accessibility and per-element events. Test covered one fast desktop, no text, no filters, no pan and zoom |
+| SVG in React, custom core | TESTED: 16.6 to 16.7 ms median (60 Hz cap) from 600 up to 63,000 elements; 39.7 ms at 126,000. Part art as SVG web components is a proven pattern (`@wokwi/elements`) | MIT (wokwi-elements) | Free accessibility and per-element events. Test covered one fast desktop, no text, no filters, no pan and zoom, one part moved per frame; 16.7 ms is the vsync cap, so it shows 60 Hz was held, not the headroom. Konva comparison is a naive full redraw, so it understates what a tuned Canvas can do |
 | Canvas 2D (Konva `react-konva`) | TESTED naive full redraw: 38.9 ms at 63,000 elements. Konva warns above 5 layers; iOS Safari canvas memory limit reported at 256 or 384 MB | MIT | You build hit testing, text and accessibility |
 | xyflow `@xyflow/react` 12.12.0 | DOM nodes plus SVG edges; no node-count thresholds in docs | MIT | Good for graphs; pin-accurate parts need custom nodes and handles |
 | PixiJS 8 (WebGL/WebGPU) | Best raw scale | MIT | Overkill for 500 parts; WebGPU-only loses Firefox (F8) |
@@ -249,7 +249,7 @@ Detail: plat §5.2; sim §2.3.
 
 | Option | Evidence | Licence |
 |---|---|---|
-| Managed microVM: E2B ($0.000014 per vCPU-s, $0.0000045 per GiB-s) or Vercel Sandbox (Pro $0.128 per CPU-hour, $0.0212 per GB-hour; Hobby 5 h CPU, 10 concurrent, 45 min session) | Vercel Sandbox is Firecracker-based per Vercel's listing | Proprietary services |
+| Managed microVM: E2B ($0.000014 per vCPU-s, $0.0000045 per GiB-s) or Vercel Sandbox (Pro $0.128 per CPU-hour, $0.0212 per GB-hour; Hobby 5 h CPU, 10 concurrent, 45 min session) | Vercel Sandbox being Firecracker-based is inferred from a related page title, not from a statement (HYPOTHESIS) | Proprietary services |
 | Self-run Firecracker | Boot to guest init at most 125 ms, VMM overhead at most 5 MiB (bare metal, stated setup) | Apache-2.0 |
 | gVisor | Syscall-heavy and file-heavy work pays most overhead; no numbers in text | Apache-2.0 |
 | nsjail | Namespaces, cgroups, rlimits, seccomp-bpf; "not an official Google product" | Apache-2.0 |
@@ -312,9 +312,9 @@ Detail: plat §7; comp §2 (provider terms).
 
 **ESTIMATED routing mix** (my calculation from the table above): 80 percent of sessions on Haiku 5.5 and 20 percent on Sonnet 5.5 gives 0.8 x $7.60 + 0.2 x $134 = $32.88 per 1,000 sessions, about $3,290 per 100,000. This assumes Haiku quality is acceptable for 80 percent of sessions, which nobody has tested.
 
-**Evidence from the competitor dossiers.** Flux's Copilot is grounded in the live design and shipped a public MCP server; Arduino's Cloud Editor assistant reads code and board, not a circuit; Wokwi mentions no built-in AI; Velxio sells an agent and a tutor mode on paid tiers; a 2025 r/arduino thread (community, one thread) says chatbots need every pin checked against the datasheet [S99] [S101]. This supports a partner grounded in the project and the simulation state, which a plain-text project file (D4) makes cheap to supply.
+**Evidence from the competitor dossiers.** Flux's Copilot is grounded in the live design and shipped a public MCP server; Arduino's Cloud Editor assistant reads code and board, not a circuit; Wokwi mentions no built-in AI (its CLI has an experimental MCP server that third-party agents can use, ai-hardware.md [S38] [S40]); Velxio sells an agent and a tutor mode on paid tiers; a 2025 r/arduino thread (community, one thread) says chatbots need every pin checked against the datasheet [S99] [S101]. This supports a partner grounded in the project and the simulation state, which a plain-text project file (D4) makes cheap to supply.
 
-**Provider terms for children (comp §2).** Gemini API: 18 or older; EEA paid only; unpaid services let Google use prompts to improve products (F2). Meta Muse Spark terms: not retrieved (UNKNOWN). Terms of other providers for under-18 products: not researched (UNKNOWN). EU AI Act Art. 50(1) requires telling people when they are talking to an AI, applying from 2 Aug 2026 [S84].
+**Provider terms for children (comp §2).** Gemini API: 18 or older; EEA paid only; unpaid services let Google use prompts to improve products (F2). Meta Muse Spark terms: not retrieved (UNKNOWN). Terms of other providers for under-18 products: not researched (UNKNOWN). EU AI Act Art. 50(1) requires telling people when they are talking to an AI, applying from 2 Aug 2026 [S84]; the Commission's timeline [S85] marks dates as amended by the Digital Omnibus and its adoption status is UNKNOWN, so confirm this date too.
 
 **ESTIMATED effort.** Provider abstraction with routing and caching: not estimated in the dossiers (UNKNOWN, set after RS-11). A written terms review is a legal task (RS-17).
 
@@ -334,13 +334,13 @@ Detail: comp §1 to §9. Not legal advice; lawyer review required before marketi
 | G2 Telemetry | Off by default; no room code stamped on events | in G1 | [S96] |
 | G3 Policies | Public privacy policy, terms, subprocessor list (Meta, Google, SerpApi, Vercel, Tiger Data, Solana RPC) | 2 weeks with the DPA | [S96] |
 | G4 COPPA paperwork | Written retention policy and written security program | in G1 | [S74] |
-| G5 Age screen and consent | Neutral age screen before data collection; parental consent and parent review/delete if under-13 allowed; India treats under 18 as children (DPDP, rules phase in about May 2027), Brazil LGPD parental consent | in G1 | [S74] [S77] [S79] [S80] |
+| G5 Age screen and consent | Neutral age screen before data collection; parental consent and parent review/delete if under-13 allowed; India treats under 18 as children (DPDP, rules phase in about May 2027; secondary sources only, [S79]), Brazil LGPD parental consent | in G1 | [S74] [S77] [S79] [S80] |
 | G6 Chat, voice, Build Buddies | Off for under-13 or moderated with report and block; microphone consent before audio leaves the device | not estimated | [S96] |
 | G7 AI provider terms | Cleared for minors (F2) | legal | [S86] |
 | G8 AI Act | AI labels on replies; no emotion inference (Art. 5(1)(f)); no grading, placement or proctoring without a high-risk plan (Annex III point 3) | 2 to 3 days engineering, 1 to 2 days memo, 5 lawyer hours | [S81] [S83] [S84] |
 | G9 Route auth and cost controls | AI, search and Solana routes authenticated and rate limited | not estimated | [S96] |
 | G10 DPA | NDPA v2.2 with school-official terms | 1 week plus 5 to 10 lawyer hours | [S76] [S98] |
-| G11 Accessibility | WCAG 2.2 AA pass on main flows, non-drag alternative, VPAT 2.5 INT ACR. ADA Title II compliance dates 26 Apr 2027 (50,000+ people) and 26 Apr 2028, at WCAG 2.1 AA | 3 to 6 eng weeks; audit USD 5,000 to 25,000 (no source) | [S87] [S88] [S89] |
+| G11 Accessibility | WCAG 2.2 AA pass on main flows, non-drag alternative, VPAT 2.5 INT ACR. ADA Title II compliance dates 26 Apr 2027 (50,000+ people) and 26 Apr 2028, at WCAG 2.1 AA. Title II binds public entities such as districts, not iynk directly; it reaches iynk through procurement requests for an ACR (comp §3). The IFR itself was not read | 3 to 6 eng weeks; audit USD 5,000 to 25,000 (no source) | [S87] [S88] [S89] |
 | G12 Credentials | On-chain minting off for minors; no wallet for under-18s; no personal data on chain | 1 week | [S96] |
 | G13 Physical safety copy | LiPo, propellers, flying legally; no mains-powered builds; second-source citation for LiPo guidance (only Wikipedia and an NFPA outline loaded) | 2 to 3 days plus 2 to 4 days for a "before you fly" panel | [S92] [S93] [S95] [S97] |
 | G14 Lawyer review | Whole set, including SOPIPA text and other state laws (not read) | 10 to 40 hours | |
@@ -403,7 +403,7 @@ Spikes not listed because they are not research tasks: building the age-band fla
 | AI at 100,000 sessions per month | $760 (Haiku only) to $13,400 (Sonnet only); about $3,290 for an 80/20 Haiku/Sonnet mix | plat §7.2 plus my mix |
 | Compile at 100,000 builds | about $46 to $95 before caching | plat §5.2 (10 s assumption) |
 | Server SITL, 10,000 sessions of 30 min | $47 to $1,700 | plat §4 (CPU load UNKNOWN) |
-| Spike effort, all 20 | roughly 15 to 18 person-weeks | sum of the ranges above; entries marked "by me" are my guesses |
+| Spike effort, all 20 | roughly 16 to 21 weeks if summed (5-day weeks); about 14 to 18 if RS-02 and RS-17, which are elapsed time waiting on counsel and founders, are left out | sum of the ranges in section 6, recomputed in review 2026-10-27 (the first draft said 15 to 18); entries marked "by me" are my guesses |
 | Compliance engineering, Route A | about 10 to 17 person-weeks, lawyer fees additional | Section D12 |
 
 The spike total is a rough sum and is not a plan. No figure in this section is a quote.
@@ -453,7 +453,7 @@ All accessed 2026-10-26 by the dossier authors. "Origin" gives the dossier and i
 | S22 | https://github.com/steveicarus/iverilog | Icarus Verilog | steveicarus | v13_0 (2026-03-02), GPL-2.0 | sim S34 |
 | S23 | https://www.labcenter.com/simulation/ | Proteus VSM | Labcenter Electronics | current, vendor claim | sim S42 |
 | S24 | https://renode.readthedocs.io/en/latest/advanced/time_framework.html | Time framework | Renode | current | sim S13 |
-| S25 | local: `/private/tmp/claude-501/-Users-amar-Codes-ak-simlab/6a603069-dc65-486f-8236-8cec4f2cda15/scratchpad/research/sim/run/` | avr8js, rp2040js, ngspice benchmark scripts | sim dossier author | run 2026-10-26, M4 Pro, Node 24.8 | sim S43 |
+| S25 | local: `/private/tmp/claude-501/-Users-amar-Codes-ak-simlab/6a603069-dc65-486f-8236-8cec4f2cda15/scratchpad/research/sim/run/` (scripts copied to `/Users/amar/iynk-master-plan-scratch/research/tech-review/`) | avr8js, rp2040js, ngspice benchmark scripts | sim dossier author | run 2026-10-26, M4 Pro, Node 24.8 | sim S43 |
 | S26 | local: `/Users/amar/Codes/ak/simlab/figures/engine/bench-solve.js`, `src/lib/interp/**`, `HANDOFF.md` | iynk repository files | iynk | read 2026-10-26 | sim S44 |
 | S27 | https://registry.npmjs.org/@yowasp/clang | `@yowasp/clang` | npm | 22.0.0-git20542-10 (2026-03-12) | sim S46 |
 | S28 | https://vercel.com/docs/functions/websockets | WebSockets | Vercel | last updated 2026-08-10 | plat S17 |
@@ -472,7 +472,7 @@ All accessed 2026-10-26 by the dossier authors. "Origin" gives the dossier and i
 | S41 | https://liveblocks.io/pricing | Pricing | Liveblocks | current | plat S31 |
 | S42 | https://tldraw.dev/community/license | tldraw SDK license | tldraw | current | plat S32 |
 | S43 | https://caniuse.com/webgpu | WebGPU | Can I use | 87.82% global, 2026-10-26 | plat S70 |
-| S44 | local: `/private/tmp/claude-501/-Users-amar-Codes-ak-simlab/6a603069-dc65-486f-8236-8cec4f2cda15/scratchpad/research/tech/bench.mjs` | SVG versus Canvas 2D micro-benchmark | plat dossier author | run 2026-10-26, Chromium 156 headless, M4 Pro | plat S78 |
+| S44 | local: `/private/tmp/claude-501/-Users-amar-Codes-ak-simlab/6a603069-dc65-486f-8236-8cec4f2cda15/scratchpad/research/tech/bench.mjs` (copy with bench.html in `/Users/amar/iynk-master-plan-scratch/research/tech-review/`) | SVG versus Canvas 2D micro-benchmark | plat dossier author | run 2026-10-26, Chromium 156 headless, M4 Pro | plat S78 |
 | S45 | https://reactflow.dev/learn/advanced-use/performance | Performance | xyflow | current | plat S39 |
 | S46 | https://konvajs.org/docs/performance/All_Performance_Tips.html | All Performance Tips | Konva | current | plat S41 |
 | S47 | https://github.com/wokwi/wokwi-elements | wokwi-elements | Wokwi | MIT, pushed 2026-10-25 | plat S43 |
@@ -499,7 +499,7 @@ All accessed 2026-10-26 by the dossier authors. "Origin" gives the dossier and i
 | S68 | https://developers.openai.com/api/docs/pricing | API pricing | OpenAI | current | plat S6 |
 | S69 | https://aiweekly.co/alerts/meta-prices-muse-spark-11-api-at-125425-per-m-tokens | Meta prices Muse Spark 1.1 API (citing CNBC); Meta blog https://ai.meta.com/blog/introducing-muse-spark-meta-model-api/ had no price | AI Weekly; Meta | 2026-07-09/10 | plat S8, S9 |
 | S70 | https://docs.fireworks.ai/serverless/pricing | Serverless pricing | Fireworks AI | current | plat S11 |
-| S71 | local: `/private/tmp/claude-501/-Users-amar-Codes-ak-simlab/6a603069-dc65-486f-8236-8cec4f2cda15/scratchpad/research/tech/cost.py` | Tutoring session cost model | plat dossier author | run 2026-10-26 | plat S79 |
+| S71 | local: `/private/tmp/claude-501/-Users-amar-Codes-ak-simlab/6a603069-dc65-486f-8236-8cec4f2cda15/scratchpad/research/tech/cost.py` (copy in `/Users/amar/iynk-master-plan-scratch/research/tech-review/`) | Tutoring session cost model | plat dossier author | run 2026-10-26 | plat S79 |
 | S72 | https://github.com/RobotWebTools/rosbridge_suite | rosbridge_suite (also roslib, foxglove-sdk, urdf-loaders per plat S53, S68) | Robot Web Tools | ROS 2 Humble, Jazzy, Rolling | plat S69 |
 | S73 | https://github.com/gkjohnson/urdf-loaders | urdf-loaders README | gkjohnson | 0.13.1 (2026-07-08) | plat S53 |
 | S74 | https://www.govinfo.gov/content/pkg/FR-2025-04-22/html/2025-05904.htm | Children's Online Privacy Protection Rule, Federal Register vol. 90 no. 76 | FTC | final rule 22 Apr 2025; effective 23 Jun 2025; compliance 22 Apr 2026 | comp S1 |
@@ -530,3 +530,32 @@ All accessed 2026-10-26 by the dossier authors. "Origin" gives the dossier and i
 | S99 | https://github.com/davidmonterocrespo24/velxio and https://velxio.dev (pricing) | Velxio | David Montero Crespo | AGPLv3 plus paid commercial licence; pricing as of 2026-10-26 | competitors/embedded-sim.md (S4 to S7) |
 | S100 | `/Users/amar/Codes/ak/simlab/docs/MASTER_PLAN/02_RESEARCH/WORKFLOW_BENCHMARK.md` | Workflow benchmark: Wokwi, Falstad, MakeCode micro:bit, iynk | bench:hands-on dossier | scripted single runs 2026-10-26 | bench:hands-on |
 | S101 | `/Users/amar/Codes/ak/simlab/docs/MASTER_PLAN/02_RESEARCH/competitors/ai-hardware.md` | AI-native hardware design and engineering-assistant competitors | comp:ai-hardware dossier | 2026-10-26 (Flux, Arduino AI Assistant, Wokwi, r/arduino thread) | comp:ai-hardware |
+
+## Review log (2026-10-27)
+
+Adversarial review by a second agent. Method: read the whole file; traced 24 decision-relevant statements to the dossiers and their fact-check logs; recomputed every derived number; re-opened 10 source pages (list below); ran line counts on the repo.
+
+**Re-fetched 2026-10-27 and confirmed:** Anthropic pricing page (Haiku 5.5 0.10/0.01/0.50 up to 100k tokens, Sonnet 5.5 2/0.10/10, Opus 5.5 4/0.20/20) https://platform.claude.com/docs/en/about-claude/pricing ; Gemini API terms (18+, no client likely accessed by under-18s, EEA paid only) https://ai.google.dev/gemini-api/terms ; E2B rates https://e2b.dev/pricing ; Vercel limits (300/800/1800 s, 2 GB and 4 GB) https://vercel.com/docs/functions/limitations ; Vercel pricing (Pro $20 with $20 credit, Hobby non-commercial) https://vercel.com/pricing ; PartyKit shutdown dates https://docs.partykit.io/ ; arduino-cli licence text https://github.com/arduino/arduino-cli ; Espressif QEMU unsupported peripherals https://github.com/espressif/esp-toolchain-docs/blob/main/qemu/README.md . Not re-fetched: Fireworks, Cloudflare, Neon, Supabase, Liveblocks, Meta, GitHub star counts (the dossiers' own fact-check logs say Fireworks, R2, Containers, E2B and the physics and sandbox library claims were not re-checked by them).
+
+**Recomputed and correct:** platform baseline ($46 and $27 per month), compile costs ($0.00046 E2B, $0.00095 Vercel, $0.000026 Fly), SITL per-session costs ($0.0047, $0.083, $0.17), the AI cost table (re-ran cost.py: all rows match), the 80/20 routing mix ($32.88 per 1,000), avr8js MHz-equivalents (52/16 = 3.3x, 104/16 = 6.5x), the compliance engineering sum (10.2 to 17 weeks, stated as 10 to 17).
+
+**Wrong or overclaimed, now corrected:**
+1. F9 said SVG beat Canvas "at 3,000 parts and above". The dossier table shows the gap from 1,500 parts (63,000 elements: 16.7 vs 38.9 ms) and a Canvas p95 miss already at 500 parts with 40 primitives. Corrected, and the test limits (one part moved per frame, vsync cap hides headroom) added to F9 and D4.
+2. Section 7 spike total "15 to 18 person-weeks" did not match the table. Sum of section 6 is about 16 to 21 weeks, or 14 to 18 without the two elapsed-time legal and founder items. Corrected.
+3. D2 option B stated "batch only, no halt and resume" as a fact. The dossier derives it from build flags (HYPOTHESIS). Downgraded.
+4. D1 avr8js and rp2040js TESTED speeds omitted that they came from synthetic loops, one run, not reproduced by the fact-checker. Qualified.
+5. D9 "Vercel Sandbox is Firecracker-based" rests on a related page title. Downgraded to HYPOTHESIS.
+6. F1 implied Replicache's closure left nothing; its maker's Zero product is live and unevaluated. Noted.
+7. Baseline line count for the Arduino interpreter was 3,700; the repo has 3,880 (3,714 without types.ts). Corrected.
+8. D11 evidence said Wokwi has no AI; the dossier also records an experimental Wokwi CLI MCP server. Added.
+9. G11 listed ADA Title II dates without saying it binds public entities, not iynk. Added.
+10. EU AI Act Art. 50 date was given without the Digital Omnibus caveat that section 8 applies to the high-risk dates. Caveat added; adoption status still UNKNOWN.
+11. F5 and G3 rest on iynk's security baseline, which the compliance fact-checker did not re-test. Stated. India DPDP timing labelled secondary-source only.
+12. F11 "no message" caveat added (text-entered circuits, Falstad hover readout not checked).
+13. Scratch scripts behind TESTED figures lived only in a session scratch folder; copies saved and linked in section 0 and the sources.
+
+**Left as written (checked, not refuted):** F2, F3 (now with re-check note), F4 (Gemini price changes, per platform dossier fact-check item 6, not re-fetched by me), F6, F7, F8 (WebGPU figures from caniuse via the dossier, not re-fetched), F10, route cost ranges in G1 (they rest on an unsourced USD 300 to 500 lawyer rate, which section 0 already says), the Meta Muse Spark price (secondary report, already labelled).
+
+**Not checked:** phone and Chromebook performance (UNKNOWN throughout), every TESTED benchmark figure beyond recomputing ratios (I could not rerun the simulator benchmarks' node_modules here), legal conclusions.
+
+**Counts:** 24 statements traced; 13 changes (items above); 0 findings deleted.

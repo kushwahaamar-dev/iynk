@@ -14,7 +14,6 @@ const sonnet = (prompt, opts = {}) => agent(prompt, { ...opts, model: 'sonnet' }
 const repo = '/Users/amar/Codes/ak/simlab'
 const mp = `${repo}/docs/MASTER_PLAN`
 const scratch = args?.scratch
-const today = '2026-10-26'
 
 const RULES = `You sit on an independent startup and engineering council planning the future of iynk (https://iynk.tech, repo ${repo}), a free browser
 hardware lab built in 24 hours at HackTX 2026. The hackathon is over; the founders want a durable startup whose mission is to make hardware
@@ -27,8 +26,9 @@ feasibility.
 Evidence base (read what your task names, in full; cite by path):
 - ${mp}/01_AUDIT/: REPOSITORY_INVENTORY.md, FEATURE_VERIFICATION.md, TECHNICAL_DEBT.md, SECURITY_BASELINE.md, PERFORMANCE_BASELINE.md, TEST_COVERAGE.md,
   inventory/*.md (one per subsystem), runs/*.md (commands, e2e, browser walk), REVIEW_GAPS.md.
-- ${mp}/02_RESEARCH/: COMPETITOR_LANDSCAPE.md, competitors/*.md, WORKFLOW_BENCHMARK.md, USER_SEGMENTS.md, USER_RESEARCH_PLAN.md, MARKET_ANALYSIS.md,
-  TECHNICAL_RESEARCH.md, tech/*.md, SOURCE_REGISTER.md.
+- ${mp}/02_RESEARCH/: COMPETITOR_LANDSCAPE.md, COMPETITOR_MATRIX.md, competitors/*.md, WORKFLOW_BENCHMARK.md, USER_SEGMENTS.md,
+  USER_RESEARCH_PLAN.md, MARKET_ANALYSIS.md, TECHNICAL_RESEARCH.md, tech/*.md, SOURCE_REGISTER.md.
+- No strategy has been chosen yet. Form your own view from the evidence; do not look for or rely on an earlier positioning draft.
 - The founders' own words: ${repo}/docs/handoff/CONTEXT.md (requests and decisions during the hackathon).
 
 Rules:

@@ -45,7 +45,7 @@ Exit codes and durations come from `<name>.meta` and `/usr/bin/time -p` in the s
 | 2 | `npm ls --depth=0` | 0 | 1.77 | n/a | 40 declared deps (22 + 18 dev) plus 6 extraneous (see note) | VERIFIED |
 | 3 | `npm run content:check` | 0 | 1.05 | n/a | "content index: 12 boards, 13 robotics, 13 drones (unchanged)" | VERIFIED |
 | 4 | `npm run typecheck` (`next typegen && tsc --noEmit`) | 0 | 6.20 | n/a | no type errors | VERIFIED |
-| 5 | `npm run lint` (`eslint . --quiet`) | 0 | 42.68 | n/a | no errors. `--quiet` hides warnings, so the warning count is UNKNOWN | VERIFIED |
+| 5 | `npm run lint` (`eslint . --quiet`) | 0 | 42.68 | n/a | no errors. `--quiet` hides warnings; the full count is 114 warnings, 0 errors (see Gap fixes, gap 1) | VERIFIED |
 | 6 | `npm test` (`vitest run`, whole repo) | **1** | 357.39 | 2784 / **13** / 5 of 2802 tests; files 163 passed, **9 failed**, 1 skipped of 173 | all 13 failures are timing: 8 vitest timeouts, 4 `still busy after 50000 ms` errors from `settle`, 1 test poll that ran out of time (list below) | VERIFIED |
 | 7a | `npx vitest run src/content/drones/octo.test.ts` | **1** | 248.57 | 30 / **1** / 0 of 31 | landing-gear test: "octo: still busy after 50000 ms" | VERIFIED |
 | 7b | `npx vitest run src/content/drones/wing.test.ts` | **0** | 69.42 | 27 / 0 / 0 of 27 | passes alone; elevon test took 38.4 s of its 40 s limit | VERIFIED |
@@ -53,11 +53,11 @@ Exit codes and durations come from `<name>.meta` and `/usr/bin/time -p` in the s
 | 7d | extra: basys3 display sweep only (`-t "lesson display passes at every value"`) | 1 | 163.24 | 0 / 1 / 23 filtered out | same timeout, body took 159 s; used to get CPU time | VERIFIED |
 | 8 | keyless `NEXT_DIST_DIR=.next-audit npm run build` | 0 | 72.77 | n/a | Next.js 16.4.3 (Turbopack), 827 static pages. Details in `BUILD_OUTPUT.md` | VERIFIED |
 | 9 | `cd server/realtime && npm test` | 0 | 7.12 | 39 / 0 / 0 of 39 | node:test relay suite, 7 suites, `node_modules` was present, no `npm ci` | VERIFIED |
-| 10 | `cargo --version; anchor --version` in `solana/` | 0 / 0 | <1 | n/a | cargo 1.91.1, anchor-cli 0.31.1 present. `anchor test` not run (reason below) | VERIFIED |
+| 10 | `cargo --version; anchor --version` in `solana/` | 0 / 0 | <1 | n/a | cargo 1.91.1, anchor-cli 0.31.1 present. Suite later run in a scratch copy: 34 of 34 pass (see Gap fixes, gap 3) | VERIFIED |
 
 Notes on rows:
 
-- Row 2. `npm ci` was **not run** at the repo root because `node_modules` exists and the task said not to. The 6 extraneous entries are `@emnapi/core`, `@emnapi/runtime`, `@emnapi/wasi-threads`, `@img/sharp-wasm32`, `@napi-rs/wasm-runtime`, `@tybys/wasm-util` (log lines 13 to 28). They are wasm fallbacks that npm installed but `package.json` does not list. `npm ls` still exits 0. Severity low. Count: `rg -c "──" 02_npm_ls.log` = 46; `node -e` on `package.json` gives 22 dependencies + 18 devDependencies = 40.
+- Row 2. (Superseded by Gap fixes, gap 2: a clean `npm ci` in a scratch clone succeeds and has no extraneous packages, so these 6 come from the old `node_modules`, not from the lockfile.) `npm ci` was **not run** at the repo root because `node_modules` exists and the task said not to. The 6 extraneous entries are `@emnapi/core`, `@emnapi/runtime`, `@emnapi/wasi-threads`, `@img/sharp-wasm32`, `@napi-rs/wasm-runtime`, `@tybys/wasm-util` (log lines 13 to 28). They are wasm fallbacks that npm installed but `package.json` does not list. `npm ls` still exits 0. Severity low. Count: `rg -c "──" 02_npm_ls.log` = 46; `node -e` on `package.json` gives 22 dependencies + 18 devDependencies = 40.
 - Row 6. Totals are vitest's own summary (`Test Files 9 failed | 163 passed | 1 skipped (173)`, `Tests 13 failed | 2784 passed | 5 skipped (2802)`). Vitest reported 355.74 s; `time -p` says 357.39 s; `user` CPU was 1189.90 s.
 - Rows 7a, 7b, 7c ran one after another, each alone.
 - Row 7d is not in the task list. I added it to measure CPU time of the basys3 sweep without the other 23 tests.
@@ -168,17 +168,17 @@ Static check before the suite: tests that name iynk.tech, devnet or RPC (`solana
 
 | Not run | Why |
 |---|---|
-| `npm ci` at the repo root | Forbidden by the task; `node_modules` exists. `npm ls` exits 0. |
-| `anchor test` | Toolchain is present (below), but `solana/Anchor.toml:16-17` sets `[provider] cluster = "devnet"`, and its own comment says a bare `anchor test` would deploy to devnet. The npm script wraps `--provider.cluster localnet`. The task said to prefer reporting over starting a validator, the machine load was 60 to 100, and a run writes `solana/target/` and `.anchor/`. |
+| `npm ci` at the repo root | Forbidden by the task; `node_modules` exists. `npm ls` exits 0. **Closed later** in a scratch clone, see Gap fixes, gap 2. |
+| `anchor test` | **Closed later** in a scratch copy: 34 of 34 pass, see Gap fixes, gap 3. Original reason: toolchain is present (below), but `solana/Anchor.toml:16-17` sets `[provider] cluster = "devnet"`, and its own comment says a bare `anchor test` would deploy to devnet. The npm script wraps `--provider.cluster localnet`. The task said to prefer reporting over starting a validator, the machine load was 60 to 100, and a run writes `solana/target/` and `.anchor/`. |
 | `npm run e2e` (Playwright) | Not in the command list. |
 | `npm run check` | It chains e2e and the commands above; the commands were run one by one. |
 | `/api/status` curl | No server was started. The status check belongs to the later serve step. |
-| ESLint warning count | `npm run lint` uses `--quiet`, so warnings are hidden. UNKNOWN. |
+| ESLint warning count | `npm run lint` uses `--quiet`, so warnings are hidden. **Closed later**: 114 warnings, 0 errors, see Gap fixes, gap 1. |
 | An idle-machine run of any suite | The machine never dropped below load 38. |
 
 ### Solana toolchain (step 10)
 
-`cd solana && (cargo --version; anchor --version)`: `cargo 1.91.1 (ea2d97820 2025-10-10)` exit 0; `anchor-cli 0.31.1` exit 0. Also present: `solana-cli 4.2.2`, `solana-test-validator 4.2.2`, `rustc 1.91.1`, `cargo-build-sbf 4.1.0` (platform-tools v1.54, rustc 1.89.0). `Anchor.toml:2` pins `anchor_version = "0.31.1"`, `solana_version = "4.2.2"`. All match. VERIFIED (versions), UNKNOWN (whether the Anchor test suite passes).
+`cd solana && (cargo --version; anchor --version)`: `cargo 1.91.1 (ea2d97820 2025-10-10)` exit 0; `anchor-cli 0.31.1` exit 0. Also present: `solana-cli 4.2.2`, `solana-test-validator 4.2.2`, `rustc 1.91.1`, `cargo-build-sbf 4.1.0` (platform-tools v1.54, rustc 1.89.0). `Anchor.toml:2` pins `anchor_version = "0.31.1"`, `solana_version = "4.2.2"`. All match. VERIFIED (versions). The suite result is in Gap fixes, gap 3.
 
 ## Repository left clean
 
@@ -200,3 +200,60 @@ The tests assume the machine is about as fast as the author's. The engine lets s
 - Make the per-describe timeouts consistent. 30000 and 40000 on `describe` blocks sit below the 50000 default of `settle`, and 300000 on octo and vtol hides slow runs. `vitest.config.mts:11-14` already says these tests "slow down while every other suite, or a build, shares the CPU", so the authors knew.
 
 Two views, as asked. A perfectionist would say a test suite that turns red under load is not a gate and the fix is deterministic frame stepping. A pragmatist would say passing alone on a normal laptop is enough for a hackathon codebase, and a single `testTimeout` bump to 180000 plus running those files serially is a one-line change. Both are consistent with the numbers above. The choice is the founder's and the engineers'.
+
+## Gap fixes (2026-10-27)
+
+Three gaps from the completeness critic. Scratch work is under `/Users/amar/iynk-master-plan-scratch/audit/` (`validate/`, `npmci/`, `solana-run/`). The real repo was not touched: `git status --short` outside `docs/MASTER_PLAN` printed nothing afterwards. Machine load was high but not recorded for these runs, so times are indicative.
+
+### Gap 1: ESLint warning count (closed)
+
+Command, from the repo root: `npx eslint . --format json -o .../validate/eslint-all.json` (exit 0, 10.7 s wall). Then `node -e` summed `warningCount` and `errorCount` over the JSON.
+
+| Measure | Value |
+|---|---|
+| Files linted | 817 |
+| Errors | 0 |
+| Warnings | 114, in 57 files |
+
+Warnings by rule (count by `ruleId` over all messages):
+
+| Rule | Count |
+|---|---|
+| `@typescript-eslint/no-unused-vars` | 103 |
+| `@typescript-eslint/no-unused-expressions` | 4 |
+| no rule id: "Unused eslint-disable directive" (`server/realtime/src/protocol.js:25`, `:28`; `src/components/flight/FlightRange.tsx:559`) | 3 |
+| `@next/next/no-img-element` | 2 |
+| `react-hooks/exhaustive-deps` | 2 |
+
+So `npm run lint` is green because of `--quiet`, and 114 warnings sit behind it; 90% are unused variables or imports (dead code, low severity). Only 5 distinct rules fire. VERIFIED. A cheap guardrail (HYPOTHESIS): fix the 103 and drop `--quiet`, or set `--max-warnings` to a ratchet.
+
+### Gap 2: clean install (closed)
+
+`git clone /Users/amar/Codes/ak/simlab .../npmci/repo`, then `npm ci`, then `npm run typecheck`. The clone's HEAD is `a79239c` (the audited commit is `bb546d6`); `git diff --stat bb546d6 HEAD -- . ':!docs'` printed nothing, so no source file differs. The clone has no `.env.local` and no old `node_modules`.
+
+| Step | Exit | Time | Result |
+|---|---|---|---|
+| `npm ci` | 0 | 5.6 s wall (npm cache was warm, so a cold network install will be slower; ESTIMATED) | `added 1052 packages, and audited 1053 packages in 6s`; 15 vulnerabilities (13 moderate, 2 high); deprecations: `uuid@8.3.2`, `eslint@9.39.5` |
+| `npm ls` in the clone | 0 | n/a | `npm ls \| grep -ciE "extraneous\|invalid\|missing"` = 0 |
+| `npm run typecheck` | 0 | 20.9 s wall | `next typegen && tsc --noEmit`, no errors |
+
+Findings:
+- A clean install works and typechecks. The failure the critic feared is ruled out. VERIFIED.
+- The 6 extraneous wasm packages in row 2 do not appear after `npm ci`. They are leftovers in the old `node_modules`, not a lockfile defect. VERIFIED.
+- `npm ci` printed EBADENGINE warnings (20 lines, 4 packages: `@asamuzakjp/css-color@7.1.8`, `@asamuzakjp/dom-selector@9.2.4`, `jsdom@30.1.2`, `w3c-xmlserializer@6.0.0`). They need node `^22.22.2 || ^24.15.0 || >=26.0.0`; this machine has v24.8.0, and `package.json:5-7` says `"node": "24.x"`. Install still succeeds, but a node 24.8 CI image may hit the same warnings, and jsdom (test environment) runs on an engine below its stated minimum. Severity low. VERIFIED (command: `grep -A1 "package:" npmci/ci.log | grep package | sort -u`).
+- Not covered: Windows or Linux installs, and a cold npm cache. UNKNOWN.
+
+### Gap 3: the 34 Anchor tests (closed, claim C041 confirmed)
+
+`solana/` was copied to `.../solana-run/solana` (the copy skipped one socket file, `.anchor/test-ledger/admin.rpc`). Port check before the run: `lsof -nP -i :8899 -i :8900` empty. The copy's `Anchor.toml:[test.validator]` sets `rpc_port = 43711`, `faucet_port = 43714`, `gossip_port = 43716`, so the run did not use 8899, 3000 or 43117. It uses `npm test`, which is `anchor test --provider.cluster localnet` (`solana/package.json:9`). `cluster = "devnet"` in `[provider]` is overridden by that flag, and the run started a local `solana-test-validator`; nothing was deployed or sent to devnet. A rebuild of the program happened in the copy (full `Compiling` log, because the copied `target/` did not match the new path).
+
+| Measure | Value |
+|---|---|
+| Exit code | 0 |
+| Wall time | 1:47.83 (about 108 s; includes the Rust rebuild) |
+| node:test duration | 22.5 s |
+| Tests / suites | 34 / 5 |
+| Pass / fail / cancelled / skipped / todo | 34 / 0 / 0 / 0 / 0 |
+| Compute units | 21,024 (credential, no bounties); 53,451 (ten bounties in one transaction) |
+
+Confirmed: `grep -c "ℹ pass 34" .../solana-run/test.log` = 1. Claim C041 ("tested on a local validator", README.md:95; docs/hacktx/DEVPOST-WRITEUP.md:195) changes from VERIFIED-PARTIAL to VERIFIED for the suite passing on this machine. Limits: one run, no repeat for flakiness; the suite ran against a fresh local validator, not the deployed devnet program, so it says nothing about the live deployment's state. The earlier reason for skipping (the devnet default) was a misreading of the npm script. After the run no validator process remained (`ps aux | grep -c "[s]olana-test-validator"` = 0, port 43711 free).

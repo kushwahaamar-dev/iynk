@@ -48,7 +48,22 @@ What the code does, VERIFIED by reading it:
 - The handler pushes `/${lang}/boards/${board.id}/${target.id}` when a next lesson exists (`src/components/boardlab/LessonWorkspace.tsx:274`).
 - The same handler returns without acting when focus is in the code editor (`shortcuts.ts:50`, `LessonWorkspace.tsx:241`).
 
-HYPOTHESIS, not re-run: after Escape, focus was back in the editor, so `]` was typed into the sketch instead of navigating. The test blurs focus before Space and before `?`, and does not blur again before `]`. A lost keypress under load is also possible. The URL was still Blink after 5 s and 9 polls, so this was not a slow navigation that arrived late.
+Retest, VERIFIED (2026-10-27 12:34-12:36 CDT, same keyless build `.next-audit`, port 47401, same eleven names exported empty; logs in `/Users/amar/iynk-master-plan-scratch/audit/e2e-gap/`):
+
+| Run | Command (after the keyless exports) | Load average (1 min) | Result | Playwright exit code |
+|---|---|---|---|---|
+| Low load | `E2E_PORT=47401 E2E_SKIP_BUILD=1 NEXT_DIST_DIR=.next-audit npx playwright test e2e/boardlab.spec.ts:144 --repeat-each=5` | 9 to 12 (about 5 just before) | 5 passed, 7.3 s, each 3.7 to 4.8 s | 0 (`low.log`, captured with `$?` straight after, no pipe) |
+| Higher load, run 1 | same | 67 to 75 | 5 passed, 13.7 s, each 4.3 to 5.7 s | 0 (`high1.log`) |
+| Higher load, run 2 | same | 73 to 75 | 5 passed, 6.6 s, each 3.8 to 5.3 s | 0 (`high2.log`) |
+
+15 of 15 passes, including the `]` assertion at line 171. The failure did not reproduce. The load in the two higher runs was other work on the machine, not load I generated (my own busy-loop helper never started: `timeout` does not exist on this macOS shell). It was below the original run's load of about 110, so it is not an exact replay. The exit codes above are Playwright's own, not `tee`'s.
+
+What this settles:
+
+- The focus hypothesis is withdrawn. BROWSER_WALK step 2 measured `activeElement` = `BODY` after Escape and 5 of 5 hand passes; the retest agrees. Nothing here shows focus returning to the editor.
+- The failure is not deterministic. On the evidence, the best remaining explanation is a lost or late keypress under the original load of about 110, but that is a HYPOTHESIS. It was not reproduced and I did not read a trace, so the cause is UNKNOWN.
+- Fragility that the code does show (VERIFIED by reading the spec): after `Escape` closes the dialog, the test presses `]` at once, with no wait for focus to settle and no blur, while the earlier steps blur first (`e2e/boardlab.spec.ts:149`, `:165`). A short settle or an explicit blur before line 170 would remove that class of race. This is a suggestion, not a change made.
+- Severity: low. One flake in 117 attempted tests at load about 110; 15 of 15 pass at load up to 75.
 
 ## The skips
 
@@ -65,4 +80,10 @@ Both skips are chromium, and both are the describe "a board whose prose is not t
 
 ## Not run
 
-A keyed server. A retry of the one failure alone. A phone run of the keyboard test (it is not in the phone project).
+A keyed server. A retest at load about 110 (the original failure's load). A phone run of the keyboard test (it is not in the phone project).
+
+## Gap fixes (2026-10-27)
+
+| # | Gap | What I did | Status |
+|---|---|---|---|
+| 1 | The failing test (`boardlab.spec.ts:144`) was never retried; the focus hypothesis contradicted BROWSER_WALK; the exit code 0 came from `tee`. | Ran the test alone with `--repeat-each=5` at low load (5/5) and twice at load 67 to 75 (5/5 each), keyless, port 47401, no rebuild. Recorded Playwright's own exit code (0 each time, no pipe). Replaced the focus hypothesis with the result. The original exit code of the full suite stays unknown: the reporter said 1 failed, so the real code was nonzero, but it was not captured. | Closed for the retest. Known limit: the original failure was not reproduced and its cause is UNKNOWN; load about 110 was not recreated. |

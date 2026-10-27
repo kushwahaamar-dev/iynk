@@ -67,16 +67,17 @@ is not, and exactly what to do next, in order.
 | §10, §19 research | `02_RESEARCH/tech/simulation-options.md`, `platform-options.md`, `compliance-safety.md`, and the summary `02_RESEARCH/TECHNICAL_RESEARCH.md` | Fact-checked; TECHNICAL_RESEARCH lists the spikes to run. |
 | §4.2 commands and build | `01_AUDIT/runs/COMMANDS.md`, `01_AUDIT/runs/BUILD_OUTPUT.md` | Run 2026-10-27 00:22–01:00 CDT by the validate:commands agent. Keyless `NEXT_DIST_DIR=.next-audit npm run build` exit 0 (72.8 s, Next 16.4.3, 827 static pages). `.next-audit` kept. `tsconfig.json` was reverted after the build added include lines. `content:check`, `typecheck` and `lint` exit 0. `server/realtime` tests 39/39. `npm ci` and `anchor test` were not run (`Anchor.toml` cluster is devnet). Machine was never quiet (1-minute load 38–117 on 14 cores). |
 | §4.2 e2e | `01_AUDIT/runs/E2E.md` | Keyless Playwright, 2026-10-27 01:08–01:11 CDT, port 47401, load about 110. 116 passed, 1 failed, 2 skipped, of 119, in 143 s. The failure is the `]` next-lesson shortcut on Blink (`e2e/boardlab.spec.ts:171`), not a missing key. The two skips are the untranslated-board tests, skipped because nothing is untranslated. `/api/status` had ai, image, voice, search, solana, db, realtime and gemini false. |
+| §4.2 walk, perf, coverage | `01_AUDIT/runs/BROWSER_WALK.md`, `PERFORMANCE_BASELINE.md`, `TEST_COVERAGE.md` | Run 2026-10-27 by `master-plan-continue.js` (`wf_47249693-b61`). Walk: 16 steps keyless plus one keyed-safe AI check, then a gap fix added Verilog, MicroPython, WebKit and a drone bench. Coverage: 2797 passed, 0 failed, about 81.5% lines of loaded files. The `]` e2e failure did not reproduce in 15 reruns. |
+| §4.4 refresh and review | `FEATURE_VERIFICATION.md`, `TECHNICAL_DEBT.md`, `REPOSITORY_INVENTORY.md` refreshed with the run reports; nine adversarial reviews corrected 6 to 13 claims per file; `01_AUDIT/REVIEW_GAPS.md` lists 30 gaps and a resolution per fixed file | Gap 14 (positioning) is reopened; it closes in step 3. The `SECURITY_BASELINE.md` gap fix ran on Sonnet 5, not 5.5 (see the log), and Amar has not yet said whether to redo it. |
+| §5.1, §5.3, §6, sources | `02_RESEARCH/COMPETITOR_LANDSCAPE.md`, `COMPETITOR_MATRIX.md` (27 rows, iynk plus 22 products), `USER_RESEARCH_PLAN.md`, `SOURCE_REGISTER.md` (R001 to R670) | Same run. |
 
 ### Not done
 
 | Step | What is missing | Why |
 |---|---|---|
-| 1b rest | `01_AUDIT/runs/BROWSER_WALK.md`, `01_AUDIT/PERFORMANCE_BASELINE.md`, `01_AUDIT/TEST_COVERAGE.md` | E2E is done. The browser walk, performance baseline and coverage report are not. Sonnet agents for those three stopped on the usage limit and were not switched to another model. Partial scratch (a few screenshots, a mid-run coverage log, one keyless status on port 47322) is not a finished run. |
-| 1c | FEATURE_VERIFICATION, TECHNICAL_DEBT and REPOSITORY_INVENTORY still say "not run" in places | They were written without the run reports. |
-| 1d | Six adversarial reviews and `01_AUDIT/REVIEW_GAPS.md` | Stopped about 20 seconds in; they had changed nothing. |
-| 2 | `02_RESEARCH/COMPETITOR_LANDSCAPE.md`, `USER_RESEARCH_PLAN.md`, `SOURCE_REGISTER.md`, `COMPETITOR_MATRIX.md` | Stopped mid-synthesis; nothing was written. The matrix was planned for step 3. |
-| 3-10 | Everything in `00_EXECUTIVE/`, `03_PRODUCT/` to `08_RESEARCH_SPIKES/`, `MASTER_INDEX.md`, both JSON files | Not started. Step 3's script is written but was never run. |
+| 3 | `00_EXECUTIVE/council/*.md`, `06_BUSINESS/strategy-options/*.md`, then the orchestrator's `DECISION_REGISTER.md`, `POSITIONING.md`, `STARTUP_STRATEGY.md` | Running from 2026-10-27 13:30 CDT. |
+| 5b | `08_RESEARCH_SPIKES/` (RS-01, RS-03, RS-06, RS-08, RS-09, RS-12, RS-13) | `scripts/workflows/master-plan-spikes.js`, running alongside step 3. |
+| 4-10 | `03_PRODUCT/`, `04_ARCHITECTURE/`, `05_ENGINEERING/`, rest of `06_BUSINESS/`, `07_HANDOFF/`, `MASTER_INDEX.md`, both JSON files | Steps 4-5 are scripted in `master-plan-design.js` and wait on step 3's decision. Steps 6-10 are not scripted. |
 
 ### What we already know (so step 3 starts with context)
 
@@ -215,3 +216,9 @@ next agent knows where you stopped, and add a line to the log below.
   stopped. Load was about 152. Step 1b still has to be run.
 - 2026-10-27 01:11 CDT: keyless Playwright finished in this session. `runs/E2E.md`. 116 passed, 1 failed, 2 skipped.
   The failure is `]` not leaving Blink. Browser walk, performance and coverage are still open.
+- 2026-10-27 13:20 CDT: `master-plan-continue.js` (`wf_47249693-b61`, 11:18 to 13:27 CDT) finished steps 1b to 2 and
+  the matrix: 31 agents, 0 errors. One exception to the Sonnet 5.5 rule: the `fix:security_baseline` agent was stopped
+  by a safety classifier 30 seconds in and the harness ran the rest of it on Sonnet 5. Its nine edits to
+  `SECURITY_BASELINE.md` came from Sonnet 5, and it returned a placeholder instead of its summary. No assistant turn
+  ran on Opus. The `fix:positioning` agent picked a strategy before step 3; that draft was moved to
+  `/Users/amar/iynk-master-plan-scratch/strategy/POSITIONING.gapfix-draft.md` and gap 14 was reopened.
