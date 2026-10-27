@@ -66,12 +66,13 @@ is not, and exactly what to do next, in order.
 | §23.3 | `02_RESEARCH/MARKET_ANALYSIS.md` | Bottom-up TAM/SAM/SOM; fact-checked. |
 | §10, §19 research | `02_RESEARCH/tech/simulation-options.md`, `platform-options.md`, `compliance-safety.md`, and the summary `02_RESEARCH/TECHNICAL_RESEARCH.md` | Fact-checked; TECHNICAL_RESEARCH lists the spikes to run. |
 | §4.2 commands and build | `01_AUDIT/runs/COMMANDS.md`, `01_AUDIT/runs/BUILD_OUTPUT.md` | Run 2026-10-27 00:22–01:00 CDT by the validate:commands agent. Keyless `NEXT_DIST_DIR=.next-audit npm run build` exit 0 (72.8 s, Next 16.4.3, 827 static pages). `.next-audit` kept. `tsconfig.json` was reverted after the build added include lines. `content:check`, `typecheck` and `lint` exit 0. `server/realtime` tests 39/39. `npm ci` and `anchor test` were not run (`Anchor.toml` cluster is devnet). Machine was never quiet (1-minute load 38–117 on 14 cores). |
+| §4.2 e2e | `01_AUDIT/runs/E2E.md` | Keyless Playwright, 2026-10-27 01:08–01:11 CDT, port 47401, load about 110. 116 passed, 1 failed, 2 skipped, of 119, in 143 s. The failure is the `]` next-lesson shortcut on Blink (`e2e/boardlab.spec.ts:171`), not a missing key. The two skips are the untranslated-board tests, skipped because nothing is untranslated. `/api/status` had ai, image, voice, search, solana, db, realtime and gemini false. |
 
 ### Not done
 
 | Step | What is missing | Why |
 |---|---|---|
-| 1b | `01_AUDIT/runs/E2E.md`, `runs/BROWSER_WALK.md`, `01_AUDIT/PERFORMANCE_BASELINE.md`, `01_AUDIT/TEST_COVERAGE.md` | Started 2026-10-27 01:02 CDT. All four Sonnet agents, plus one e2e retry, stopped when the Sonnet usage limit was hit. They were not switched to another model. None of the four reports was written. Scratch holds an unfinished Playwright log (119 tests started, no summary), keyless `/api/status` with every feature false on ports 47401 and 47322, a few browser screenshots, and a coverage log that died mid-run. Those are not finished runs. At 01:07 the three ports were free and `package.json`, the lockfile and `tsconfig.json` were clean. |
+| 1b rest | `01_AUDIT/runs/BROWSER_WALK.md`, `01_AUDIT/PERFORMANCE_BASELINE.md`, `01_AUDIT/TEST_COVERAGE.md` | E2E is done. The browser walk, performance baseline and coverage report are not. Sonnet agents for those three stopped on the usage limit and were not switched to another model. Partial scratch (a few screenshots, a mid-run coverage log, one keyless status on port 47322) is not a finished run. |
 | 1c | FEATURE_VERIFICATION, TECHNICAL_DEBT and REPOSITORY_INVENTORY still say "not run" in places | They were written without the run reports. |
 | 1d | Six adversarial reviews and `01_AUDIT/REVIEW_GAPS.md` | Stopped about 20 seconds in; they had changed nothing. |
 | 2 | `02_RESEARCH/COMPETITOR_LANDSCAPE.md`, `USER_RESEARCH_PLAN.md`, `SOURCE_REGISTER.md`, `COMPETITOR_MATRIX.md` | Stopped mid-synthesis; nothing was written. The matrix was planned for step 3. |
@@ -212,3 +213,5 @@ next agent knows where you stopped, and add a line to the log below.
 - 2026-10-27 01:07 CDT: step 1b did not finish. The four Sonnet agents and the e2e retry all stopped with "Other
   Models usage limit reached" and were not switched to Grok. No run report was written. Orphaned servers were
   stopped. Load was about 152. Step 1b still has to be run.
+- 2026-10-27 01:11 CDT: keyless Playwright finished in this session. `runs/E2E.md`. 116 passed, 1 failed, 2 skipped.
+  The failure is `]` not leaving Blink. Browser walk, performance and coverage are still open.
