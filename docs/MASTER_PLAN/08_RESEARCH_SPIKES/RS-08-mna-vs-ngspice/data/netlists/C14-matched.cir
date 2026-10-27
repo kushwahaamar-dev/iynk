@@ -1,0 +1,11 @@
+* C14 1N4007 in series with 1k from 5V (matched)
+Vsrc_5V s_5v 0 4.95000000000000
+Rsrc_5V s_5v n_5v 0.5
+R_r1 n_5v n_a 1000
+Vs_dio1 n_a x_dio1 0
+B_dio1 x_dio1 0 I=max(V(x_dio1,0)-0.7,0)/0.2
+Rg_5v n_5v 0 999999999.9999999
+Rg_a n_a 0 999999999.9999999
+.options reltol=1e-9 abstol=1e-14 vntol=1e-9 itl1=500 gmin=1e-12
+.op
+.end

@@ -1,0 +1,11 @@
+* C04 Potentiometer 10k at 30 percent, 2.2k load on the wiper (matched)
+Vsrc_5V s_5v 0 4.95000000000000
+Rsrc_5V s_5v n_5v 0.5
+R_pot1_top n_5v n_w 3000.00000000000
+R_pot1_bot n_w 0 7000.00000000000
+R_r1 n_w 0 2200
+Rg_5v n_5v 0 999999999.9999999
+Rg_w n_w 0 999999999.9999999
+.options reltol=1e-9 abstol=1e-14 vntol=1e-9 itl1=500 gmin=1e-12
+.op
+.end

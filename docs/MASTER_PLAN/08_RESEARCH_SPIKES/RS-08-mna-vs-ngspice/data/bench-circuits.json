@@ -1,0 +1,936 @@
+{
+ "C01": {
+  "title": "Divider 10k/10k from 5V",
+  "power": "usb",
+  "pins": {},
+  "circuit": {
+   "breadboard": "half",
+   "parts": [
+    {
+     "id": "R1",
+     "part": "resistor",
+     "holes": [
+      "b3",
+      "a5"
+     ],
+     "ohms": 10000
+    },
+    {
+     "id": "R2",
+     "part": "resistor",
+     "holes": [
+      "b5",
+      "b7"
+     ],
+     "ohms": 10000
+    }
+   ],
+   "wires": [
+    {
+     "from": "5V",
+     "to": "a3",
+     "color": "red"
+    },
+    {
+     "from": "GND",
+     "to": "a7",
+     "color": "red"
+    }
+   ]
+  }
+ },
+ "C02": {
+  "title": "Three-resistor divider 1k/2.2k/4.7k, two taps",
+  "power": "usb",
+  "pins": {},
+  "circuit": {
+   "breadboard": "half",
+   "parts": [
+    {
+     "id": "R1",
+     "part": "resistor",
+     "holes": [
+      "b3",
+      "a5"
+     ],
+     "ohms": 1000
+    },
+    {
+     "id": "R2",
+     "part": "resistor",
+     "holes": [
+      "b5",
+      "a7"
+     ],
+     "ohms": 2200
+    },
+    {
+     "id": "R3",
+     "part": "resistor",
+     "holes": [
+      "b7",
+      "b9"
+     ],
+     "ohms": 4700
+    }
+   ],
+   "wires": [
+    {
+     "from": "5V",
+     "to": "a3",
+     "color": "red"
+    },
+    {
+     "from": "GND",
+     "to": "a9",
+     "color": "red"
+    }
+   ]
+  }
+ },
+ "C03": {
+  "title": "Divider 1k/1k from a pin (25 ohm source), 1k load on the tap",
+  "power": "usb",
+  "pins": {
+   "D12": 1
+  },
+  "circuit": {
+   "breadboard": "half",
+   "parts": [
+    {
+     "id": "R1",
+     "part": "resistor",
+     "holes": [
+      "b3",
+      "a5"
+     ],
+     "ohms": 1000
+    },
+    {
+     "id": "R2",
+     "part": "resistor",
+     "holes": [
+      "b5",
+      "b7"
+     ],
+     "ohms": 1000
+    },
+    {
+     "id": "R3",
+     "part": "resistor",
+     "holes": [
+      "c5",
+      "c7"
+     ],
+     "ohms": 1000
+    }
+   ],
+   "wires": [
+    {
+     "from": "D12",
+     "to": "a3",
+     "color": "red"
+    },
+    {
+     "from": "GND",
+     "to": "a7",
+     "color": "red"
+    }
+   ]
+  }
+ },
+ "C04": {
+  "title": "Potentiometer 10k at 30 percent, 2.2k load on the wiper",
+  "power": "usb",
+  "pins": {},
+  "circuit": {
+   "breadboard": "half",
+   "parts": [
+    {
+     "id": "POT1",
+     "part": "potentiometer",
+     "holes": [
+      "b3",
+      "a5",
+      "b7"
+     ],
+     "ohms": 10000,
+     "pos": 0.3
+    },
+    {
+     "id": "R1",
+     "part": "resistor",
+     "holes": [
+      "b5",
+      "c7"
+     ],
+     "ohms": 2200
+    }
+   ],
+   "wires": [
+    {
+     "from": "5V",
+     "to": "a3",
+     "color": "red"
+    },
+    {
+     "from": "GND",
+     "to": "a7",
+     "color": "red"
+    }
+   ]
+  }
+ },
+ "C05": {
+  "title": "Wheatstone bridge 1k/2k/2k/3.3k with 10k bridge resistor",
+  "power": "usb",
+  "pins": {},
+  "circuit": {
+   "breadboard": "half",
+   "parts": [
+    {
+     "id": "R1",
+     "part": "resistor",
+     "holes": [
+      "b3",
+      "a5"
+     ],
+     "ohms": 1000
+    },
+    {
+     "id": "R2",
+     "part": "resistor",
+     "holes": [
+      "b5",
+      "b7"
+     ],
+     "ohms": 2000
+    },
+    {
+     "id": "R3",
+     "part": "resistor",
+     "holes": [
+      "c3",
+      "a9"
+     ],
+     "ohms": 2000
+    },
+    {
+     "id": "R4",
+     "part": "resistor",
+     "holes": [
+      "b9",
+      "c7"
+     ],
+     "ohms": 3300
+    },
+    {
+     "id": "R5",
+     "part": "resistor",
+     "holes": [
+      "c5",
+      "c9"
+     ],
+     "ohms": 10000
+    }
+   ],
+   "wires": [
+    {
+     "from": "5V",
+     "to": "a3",
+     "color": "red"
+    },
+    {
+     "from": "GND",
+     "to": "a7",
+     "color": "red"
+    }
+   ]
+  }
+ },
+ "C06": {
+  "title": "Red LED, 220 ohm, from D13",
+  "power": "usb",
+  "pins": {
+   "D13": 1
+  },
+  "circuit": {
+   "breadboard": "half",
+   "parts": [
+    {
+     "id": "R1",
+     "part": "resistor",
+     "holes": [
+      "b3",
+      "a5"
+     ],
+     "ohms": 220
+    },
+    {
+     "id": "LED1",
+     "part": "led",
+     "holes": [
+      "b5",
+      "b7"
+     ],
+     "color": "red"
+    }
+   ],
+   "wires": [
+    {
+     "from": "D13",
+     "to": "a3",
+     "color": "red"
+    },
+    {
+     "from": "GND",
+     "to": "a7",
+     "color": "red"
+    }
+   ]
+  }
+ },
+ "C07": {
+  "title": "Red LED, 100 ohm, from D13",
+  "power": "usb",
+  "pins": {
+   "D13": 1
+  },
+  "circuit": {
+   "breadboard": "half",
+   "parts": [
+    {
+     "id": "R1",
+     "part": "resistor",
+     "holes": [
+      "b3",
+      "a5"
+     ],
+     "ohms": 100
+    },
+    {
+     "id": "LED1",
+     "part": "led",
+     "holes": [
+      "b5",
+      "b7"
+     ],
+     "color": "red"
+    }
+   ],
+   "wires": [
+    {
+     "from": "D13",
+     "to": "a3",
+     "color": "red"
+    },
+    {
+     "from": "GND",
+     "to": "a7",
+     "color": "red"
+    }
+   ]
+  }
+ },
+ "C08": {
+  "title": "Red LED, 10k, from D13 (dim)",
+  "power": "usb",
+  "pins": {
+   "D13": 1
+  },
+  "circuit": {
+   "breadboard": "half",
+   "parts": [
+    {
+     "id": "R1",
+     "part": "resistor",
+     "holes": [
+      "b3",
+      "a5"
+     ],
+     "ohms": 10000
+    },
+    {
+     "id": "LED1",
+     "part": "led",
+     "holes": [
+      "b5",
+      "b7"
+     ],
+     "color": "red"
+    }
+   ],
+   "wires": [
+    {
+     "from": "D13",
+     "to": "a3",
+     "color": "red"
+    },
+    {
+     "from": "GND",
+     "to": "a7",
+     "color": "red"
+    }
+   ]
+  }
+ },
+ "C09": {
+  "title": "Blue LED, 220 ohm, from 5V rail",
+  "power": "usb",
+  "pins": {},
+  "circuit": {
+   "breadboard": "half",
+   "parts": [
+    {
+     "id": "R1",
+     "part": "resistor",
+     "holes": [
+      "b3",
+      "a5"
+     ],
+     "ohms": 220
+    },
+    {
+     "id": "LED1",
+     "part": "led",
+     "holes": [
+      "b5",
+      "b7"
+     ],
+     "color": "blue"
+    }
+   ],
+   "wires": [
+    {
+     "from": "5V",
+     "to": "a3",
+     "color": "red"
+    },
+    {
+     "from": "GND",
+     "to": "a7",
+     "color": "red"
+    }
+   ]
+  }
+ },
+ "C10": {
+  "title": "Red LED straight on D13, no resistor (first solve, before it burns)",
+  "power": "usb",
+  "pins": {
+   "D13": 1
+  },
+  "circuit": {
+   "breadboard": "half",
+   "parts": [
+    {
+     "id": "LED1",
+     "part": "led",
+     "holes": [
+      "b3",
+      "b5"
+     ],
+     "color": "red"
+    }
+   ],
+   "wires": [
+    {
+     "from": "D13",
+     "to": "a3",
+     "color": "red"
+    },
+    {
+     "from": "GND",
+     "to": "a5",
+     "color": "red"
+    }
+   ]
+  }
+ },
+ "C11": {
+  "title": "Two red LEDs in parallel, one shared 150 ohm",
+  "power": "usb",
+  "pins": {
+   "D13": 1
+  },
+  "circuit": {
+   "breadboard": "half",
+   "parts": [
+    {
+     "id": "R1",
+     "part": "resistor",
+     "holes": [
+      "b3",
+      "a5"
+     ],
+     "ohms": 150
+    },
+    {
+     "id": "LED1",
+     "part": "led",
+     "holes": [
+      "b5",
+      "b7"
+     ],
+     "color": "red"
+    },
+    {
+     "id": "LED2",
+     "part": "led",
+     "holes": [
+      "c5",
+      "c7"
+     ],
+     "color": "red"
+    }
+   ],
+   "wires": [
+    {
+     "from": "D13",
+     "to": "a3",
+     "color": "red"
+    },
+    {
+     "from": "GND",
+     "to": "a7",
+     "color": "red"
+    }
+   ]
+  }
+ },
+ "C12": {
+  "title": "Red and blue LEDs in parallel, one shared 150 ohm",
+  "power": "usb",
+  "pins": {
+   "D13": 1
+  },
+  "circuit": {
+   "breadboard": "half",
+   "parts": [
+    {
+     "id": "R1",
+     "part": "resistor",
+     "holes": [
+      "b3",
+      "a5"
+     ],
+     "ohms": 150
+    },
+    {
+     "id": "LED1",
+     "part": "led",
+     "holes": [
+      "b5",
+      "b7"
+     ],
+     "color": "red"
+    },
+    {
+     "id": "LED2",
+     "part": "led",
+     "holes": [
+      "c5",
+      "c7"
+     ],
+     "color": "blue"
+    }
+   ],
+   "wires": [
+    {
+     "from": "D13",
+     "to": "a3",
+     "color": "red"
+    },
+    {
+     "from": "GND",
+     "to": "a7",
+     "color": "red"
+    }
+   ]
+  }
+ },
+ "C13": {
+  "title": "Diode clamp: D13 high through 1k, 1N4007 to the 3V3 rail",
+  "power": "usb",
+  "pins": {
+   "D13": 1
+  },
+  "circuit": {
+   "breadboard": "half",
+   "parts": [
+    {
+     "id": "R1",
+     "part": "resistor",
+     "holes": [
+      "b3",
+      "a5"
+     ],
+     "ohms": 1000
+    },
+    {
+     "id": "DIO1",
+     "part": "diode-1n4007",
+     "holes": [
+      "b5",
+      "b7"
+     ]
+    }
+   ],
+   "wires": [
+    {
+     "from": "D13",
+     "to": "a3",
+     "color": "red"
+    },
+    {
+     "from": "3V3",
+     "to": "a7",
+     "color": "red"
+    }
+   ]
+  }
+ },
+ "C14": {
+  "title": "1N4007 in series with 1k from 5V",
+  "power": "usb",
+  "pins": {},
+  "circuit": {
+   "breadboard": "half",
+   "parts": [
+    {
+     "id": "R1",
+     "part": "resistor",
+     "holes": [
+      "b3",
+      "a5"
+     ],
+     "ohms": 1000
+    },
+    {
+     "id": "DIO1",
+     "part": "diode-1n4007",
+     "holes": [
+      "b5",
+      "b7"
+     ]
+    }
+   ],
+   "wires": [
+    {
+     "from": "5V",
+     "to": "a3",
+     "color": "red"
+    },
+    {
+     "from": "GND",
+     "to": "a7",
+     "color": "red"
+    }
+   ]
+  }
+ },
+ "C15": {
+  "title": "TIP120 low-side motor switch, 1k base from D6, motor on 5V, flyback diode",
+  "power": "usb",
+  "pins": {
+   "D6": 1
+  },
+  "circuit": {
+   "breadboard": "half",
+   "parts": [
+    {
+     "id": "R1",
+     "part": "resistor",
+     "holes": [
+      "b3",
+      "a5"
+     ],
+     "ohms": 1000
+    },
+    {
+     "id": "Q1",
+     "part": "tip120",
+     "holes": [
+      "b5",
+      "a7",
+      "b9"
+     ]
+    },
+    {
+     "id": "MOT1",
+     "part": "dc-motor",
+     "holes": [
+      "b11",
+      "b7"
+     ],
+     "at": [
+      150,
+      12
+     ],
+     "load": "prop"
+    },
+    {
+     "id": "DIO1",
+     "part": "diode-1n4007",
+     "holes": [
+      "c7",
+      "c11"
+     ]
+    }
+   ],
+   "wires": [
+    {
+     "from": "D6",
+     "to": "a3",
+     "color": "red"
+    },
+    {
+     "from": "GND",
+     "to": "a9",
+     "color": "red"
+    },
+    {
+     "from": "5V",
+     "to": "a11",
+     "color": "red"
+    }
+   ]
+  }
+ },
+ "C16": {
+  "title": "2N2222 saturated, 1k base from D6, 100 ohm load on 5V",
+  "power": "usb",
+  "pins": {
+   "D6": 1
+  },
+  "circuit": {
+   "breadboard": "half",
+   "parts": [
+    {
+     "id": "R1",
+     "part": "resistor",
+     "holes": [
+      "b3",
+      "a5"
+     ],
+     "ohms": 1000
+    },
+    {
+     "id": "Q1",
+     "part": "npn-2n2222",
+     "holes": [
+      "b9",
+      "b5",
+      "a7"
+     ]
+    },
+    {
+     "id": "R2",
+     "part": "resistor",
+     "holes": [
+      "b11",
+      "b7"
+     ],
+     "ohms": 100
+    }
+   ],
+   "wires": [
+    {
+     "from": "D6",
+     "to": "a3",
+     "color": "red"
+    },
+    {
+     "from": "GND",
+     "to": "a9",
+     "color": "red"
+    },
+    {
+     "from": "5V",
+     "to": "a11",
+     "color": "red"
+    }
+   ]
+  }
+ },
+ "C17": {
+  "title": "2N2222 in the active region, 220k base from 5V, 1k load",
+  "power": "usb",
+  "pins": {},
+  "circuit": {
+   "breadboard": "half",
+   "parts": [
+    {
+     "id": "R1",
+     "part": "resistor",
+     "holes": [
+      "b3",
+      "a5"
+     ],
+     "ohms": 220000
+    },
+    {
+     "id": "Q1",
+     "part": "npn-2n2222",
+     "holes": [
+      "b9",
+      "b5",
+      "a7"
+     ]
+    },
+    {
+     "id": "R2",
+     "part": "resistor",
+     "holes": [
+      "c3",
+      "b7"
+     ],
+     "ohms": 1000
+    }
+   ],
+   "wires": [
+    {
+     "from": "5V",
+     "to": "a3",
+     "color": "red"
+    },
+    {
+     "from": "GND",
+     "to": "a9",
+     "color": "red"
+    }
+   ]
+  }
+ },
+ "C18": {
+  "title": "Battery with 2 ohm internal resistance (VIN rail, 9 V jack) into a 47 ohm load",
+  "power": "jack",
+  "pins": {},
+  "circuit": {
+   "breadboard": "half",
+   "parts": [
+    {
+     "id": "RINT",
+     "part": "resistor",
+     "holes": [
+      "b3",
+      "a5"
+     ],
+     "ohms": 2
+    },
+    {
+     "id": "R1",
+     "part": "resistor",
+     "holes": [
+      "b5",
+      "b7"
+     ],
+     "ohms": 47
+    }
+   ],
+   "wires": [
+    {
+     "from": "VIN",
+     "to": "a3",
+     "color": "red"
+    },
+    {
+     "from": "GND",
+     "to": "a7",
+     "color": "red"
+    }
+   ]
+  }
+ },
+ "C19": {
+  "title": "Rail under load: 3V3 rail (0.5 ohm source) into 22 ohm",
+  "power": "usb",
+  "pins": {},
+  "circuit": {
+   "breadboard": "half",
+   "parts": [
+    {
+     "id": "R1",
+     "part": "resistor",
+     "holes": [
+      "b3",
+      "b5"
+     ],
+     "ohms": 22
+    }
+   ],
+   "wires": [
+    {
+     "from": "3V3",
+     "to": "a3",
+     "color": "red"
+    },
+    {
+     "from": "GND",
+     "to": "a5",
+     "color": "red"
+    }
+   ]
+  }
+ },
+ "C20": {
+  "title": "Brownout: stalled motor on the 5V rail through a TIP120 (driven by 1k from D6)",
+  "power": "usb",
+  "pins": {
+   "D6": 1
+  },
+  "circuit": {
+   "breadboard": "half",
+   "parts": [
+    {
+     "id": "R1",
+     "part": "resistor",
+     "holes": [
+      "b3",
+      "a5"
+     ],
+     "ohms": 1000
+    },
+    {
+     "id": "Q1",
+     "part": "tip120",
+     "holes": [
+      "b5",
+      "a7",
+      "b9"
+     ]
+    },
+    {
+     "id": "MOT1",
+     "part": "dc-motor",
+     "holes": [
+      "b11",
+      "b7"
+     ],
+     "at": [
+      150,
+      12
+     ],
+     "load": "stalled"
+    }
+   ],
+   "wires": [
+    {
+     "from": "D6",
+     "to": "a3",
+     "color": "red"
+    },
+    {
+     "from": "GND",
+     "to": "a9",
+     "color": "red"
+    },
+    {
+     "from": "5V",
+     "to": "a11",
+     "color": "red"
+    }
+   ]
+  }
+ }
+}

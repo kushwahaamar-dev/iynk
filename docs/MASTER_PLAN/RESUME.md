@@ -235,3 +235,11 @@ next agent knows where you stopped, and add a line to the log below.
   later. Decisions D-013 to D-017 (core first, local-first and self-hostable, extras removed except Build Buddies as
   collaboration and a buddies-only leaderboard, licence later). The design run was stopped and relaunched with the
   reframe; the build-plan script was rewritten to match. The business files are marked shelved.
+- 2026-10-27 14:27 CDT: spikes (`wf_45df4458-c67`) finished, 14 agents, all Sonnet 5.5. Verdicts: RS-01 INCONCLUSIVE
+  (full-art SVG misses 20 ms p95 in fit and zoom; level of detail plus culling about 10 ms; no real devices), RS-03
+  INCONCLUSIVE (avr8js matches the interpreter on three Uno lessons, 6 to 7x real time on desktop, about 1.1x at 6x
+  throttle), RS-06 FAIL (rp2040js MicroPython works but runs below real time at 100 percent of a core), RS-08 linear
+  solve PASS but device models FAIL against realistic SPICE (10 of 20) and transient unmeasured, RS-09 PASS (op log),
+  RS-12 PASS (Yosys WASM, about 800 MB and 79 MB of assets), RS-13 PASS (Rapier and Jolt deterministic across
+  browsers). A tool guard refused three agents' REPORT.md writes (RS-06, RS-08, RS-12); the orchestrator restored
+  their text unchanged from the transcripts and added the checkers' findings.

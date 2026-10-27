@@ -1,0 +1,11 @@
+{"name":"basys3-blink","ok":true,"coldMs":225,"warmMs":18,"importMs":5,"rssMB":843,"cells":11,"warn":[],"err":"","load":"4.85","maxRssMB":855,"peakFootprintMB":819}
+{"name":"basys3-counter","ok":true,"coldMs":231,"warmMs":25,"importMs":5,"rssMB":830,"cells":17,"warn":[],"err":"","load":"4.85","maxRssMB":832,"peakFootprintMB":798}
+{"name":"basys3-display","ok":true,"coldMs":234,"warmMs":29,"importMs":4,"rssMB":827,"cells":18,"warn":[],"err":"","load":"4.85","maxRssMB":829,"peakFootprintMB":795}
+{"name":"basys3-gates","ok":true,"coldMs":209,"warmMs":18,"importMs":5,"rssMB":851,"cells":4,"warn":[],"err":"","load":"4.85","maxRssMB":870,"peakFootprintMB":835}
+{"name":"basys3-pwm","ok":true,"coldMs":229,"warmMs":19,"importMs":5,"rssMB":821,"cells":10,"warn":[],"err":"","load":"4.85","maxRssMB":831,"peakFootprintMB":795}
+{"name":"de10-lite-blink","ok":true,"coldMs":229,"warmMs":18,"importMs":5,"rssMB":821,"cells":11,"warn":[],"err":"","load":"4.62","maxRssMB":831,"peakFootprintMB":795}
+{"name":"de10-lite-counter","ok":true,"coldMs":230,"warmMs":24,"importMs":4,"rssMB":875,"cells":14,"warn":[],"err":"","load":"4.62","maxRssMB":880,"peakFootprintMB":846}
+{"name":"de10-lite-hex","ok":true,"coldMs":238,"warmMs":25,"importMs":5,"rssMB":844,"cells":3,"warn":[],"err":"","load":"4.62","maxRssMB":856,"peakFootprintMB":822}
+{"name":"de10-lite-pwm","ok":true,"coldMs":242,"warmMs":28,"importMs":6,"rssMB":873,"cells":22,"warn":[],"err":"","load":"4.62","maxRssMB":876,"peakFootprintMB":842}
+{"name":"de10-lite-switches","ok":true,"coldMs":217,"warmMs":19,"importMs":5,"rssMB":824,"cells":2,"warn":[],"err":"","load":"4.62","maxRssMB":843,"peakFootprintMB":807}
+{"name":"starter-empty","ok":true,"coldMs":157,"warmMs":13,"importMs":5,"rssMB":463,"cells":0,"warn":[],"err":"","load":"4.62","maxRssMB":469,"peakFootprintMB":435}

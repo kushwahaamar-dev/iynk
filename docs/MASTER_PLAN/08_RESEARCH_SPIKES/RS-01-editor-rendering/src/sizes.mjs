@@ -1,0 +1,14 @@
+import * as esbuild from 'esbuild'; import fs from 'fs'; import zlib from 'zlib';
+const common = { bundle: true, minify: true, format: 'esm', jsx: 'automatic', loader: { '.js': 'jsx' }, define: { 'process.env.NODE_ENV': '"production"' }, write: false, outdir: 'out', metafile: true, logLevel: 'error' };
+const size = r => { const f = r.outputFiles.filter(o => !o.path.endsWith('.map')); const js = f.find(o => o.path.endsWith('.js')), css = f.find(o => o.path.endsWith('.css'));
+  const gz = o => o ? zlib.gzipSync(o.contents, { level: 9 }).length : 0, br = o => o ? zlib.brotliCompressSync(o.contents).length : 0;
+  return { jsMin: js.contents.length, jsGzip: gz(js), jsBrotli: br(js), cssMin: css ? css.contents.length : 0, cssGzip: gz(css), cssBrotli: br(css) }; };
+const rows = {};
+rows['scene data only (shared)'] = size(await esbuild.build({ ...common, stdin: { contents: "import {nodes,edges} from './src/uno/scene.js'; console.log(nodes,edges)", resolveDir: '.' } }));
+rows['vanilla core + scene'] = size(await esbuild.build({ ...common, entryPoints: ['src/uno/vanilla.js'] }));
+rows['xyflow app (react, react-dom, xyflow, css) + scene'] = size(await esbuild.build({ ...common, entryPoints: ['src/uno/xy.jsx'], outdir: 'out' }));
+rows['xyflow only (react, react-dom external)'] = size(await esbuild.build({ ...common, entryPoints: ['src/uno/xy.jsx'], outdir: 'out', external: ['react', 'react-dom', 'react/jsx-runtime', 'react-dom/client'] }));
+rows['react + react-dom only'] = size(await esbuild.build({ ...common, stdin: { contents: "import {createRoot} from 'react-dom/client'; import {createElement} from 'react'; createRoot(document.body).render(createElement('div'))", resolveDir: '.' } }));
+console.table(rows); fs.writeFileSync('results/sizes.json', JSON.stringify(rows, null, 1));
+const lines = f => fs.readFileSync(f, 'utf8').split('\n').length;
+console.log('vanilla core lines', lines('src/uno/vanilla.js'), 'xyflow entry lines', lines('src/uno/xy.jsx'), 'scene lines', lines('src/uno/scene.js'));

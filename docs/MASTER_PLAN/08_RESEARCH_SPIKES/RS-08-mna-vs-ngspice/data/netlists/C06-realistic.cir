@@ -1,0 +1,10 @@
+* C06 Red LED, 220 ohm, from D13 (realistic)
+Vsrc_D13 s_d13 0 5.00000000000000
+Rsrc_D13 s_d13 n_d13 25
+R_r1 n_d13 n_a 220
+Vs_led1 n_a x_led1 0
+D_led1 x_led1 0 DLED_led1
+.model DLED_led1 D(IS=3.852706e-19 N=2 RS=0.5)
+.options reltol=1e-9 abstol=1e-14 vntol=1e-9 itl1=500 gmin=1e-12
+.op
+.end

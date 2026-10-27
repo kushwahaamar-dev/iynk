@@ -1,0 +1,2 @@
+with dedup   : {"snapshotMode":true,"resentOpId":"a:1","secondResult":"apply(dup)","seq":9}
+without dedup: {"snapshotMode":true,"resentOpId":"a:1","secondResult":"reject:duplicate_id","seq":9}

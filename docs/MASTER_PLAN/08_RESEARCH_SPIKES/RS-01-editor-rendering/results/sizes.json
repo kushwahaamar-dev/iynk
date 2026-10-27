@@ -1,0 +1,42 @@
+{
+ "scene data only (shared)": {
+  "jsMin": 767,
+  "jsGzip": 392,
+  "jsBrotli": 355,
+  "cssMin": 0,
+  "cssGzip": 0,
+  "cssBrotli": 0
+ },
+ "vanilla core + scene": {
+  "jsMin": 3417,
+  "jsGzip": 1609,
+  "jsBrotli": 1442,
+  "cssMin": 0,
+  "cssGzip": 0,
+  "cssBrotli": 0
+ },
+ "xyflow app (react, react-dom, xyflow, css) + scene": {
+  "jsMin": 410367,
+  "jsGzip": 130940,
+  "jsBrotli": 112405,
+  "cssMin": 15869,
+  "cssGzip": 2656,
+  "cssBrotli": 2300
+ },
+ "xyflow only (react, react-dom external)": {
+  "jsMin": 184804,
+  "jsGzip": 61581,
+  "jsBrotli": 53713,
+  "cssMin": 15869,
+  "cssGzip": 2656,
+  "cssBrotli": 2300
+ },
+ "react + react-dom only": {
+  "jsMin": 222718,
+  "jsGzip": 68848,
+  "jsBrotli": 59322,
+  "cssMin": 0,
+  "cssGzip": 0,
+  "cssBrotli": 0
+ }
+}

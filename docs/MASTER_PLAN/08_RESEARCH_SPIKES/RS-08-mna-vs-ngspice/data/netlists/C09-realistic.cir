@@ -1,0 +1,10 @@
+* C09 Blue LED, 220 ohm, from 5V rail (realistic)
+Vsrc_5V s_5v 0 4.95000000000000
+Rsrc_5V s_5v n_5v 0.5
+R_r1 n_5v n_a 220
+Vs_led1 n_a x_led1 0
+D_led1 x_led1 0 DLED_led1
+.model DLED_led1 D(IS=1.535096e-27 N=2 RS=0.5)
+.options reltol=1e-9 abstol=1e-14 vntol=1e-9 itl1=500 gmin=1e-12
+.op
+.end

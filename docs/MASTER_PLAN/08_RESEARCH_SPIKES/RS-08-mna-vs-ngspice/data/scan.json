@@ -1,0 +1,634 @@
+[
+ {
+  "item": "boards/uno-r3",
+  "key": "stepper",
+  "parts": 4,
+  "nodes": 14,
+  "els": 17,
+  "ms": 0.087850625
+ },
+ {
+  "item": "boards/uno-r3",
+  "key": "piano",
+  "parts": 9,
+  "nodes": 9,
+  "els": 1,
+  "ms": 0.043073335000000004
+ },
+ {
+  "item": "robotics/uno-r3-build",
+  "key": "piano",
+  "parts": 9,
+  "nodes": 9,
+  "els": 0,
+  "ms": 0.058269375
+ },
+ {
+  "item": "robotics/transistor-switch",
+  "key": "speed-knob",
+  "parts": 8,
+  "nodes": 7,
+  "els": 5,
+  "ms": 0.03148479
+ },
+ {
+  "item": "boards/uno-r3",
+  "key": "rgb",
+  "parts": 4,
+  "nodes": 6,
+  "els": 6,
+  "ms": 0.03074208
+ },
+ {
+  "item": "robotics/transistor-switch",
+  "key": "stage-motor",
+  "parts": 6,
+  "nodes": 6,
+  "els": 5,
+  "ms": 0.03759292
+ },
+ {
+  "item": "robotics/transistor-switch",
+  "key": "toggle-button",
+  "parts": 8,
+  "nodes": 6,
+  "els": 5,
+  "ms": 0.01946646
+ },
+ {
+  "item": "boards/pi4-pi5",
+  "key": "distance",
+  "parts": 5,
+  "nodes": 6,
+  "els": 4,
+  "ms": 0.01979521
+ },
+ {
+  "item": "robotics/uno-r3-build",
+  "key": "rgb",
+  "parts": 4,
+  "nodes": 6,
+  "els": 3,
+  "ms": 0.03506354
+ },
+ {
+  "item": "robotics/uno-r3-build",
+  "key": "stepper",
+  "parts": 4,
+  "nodes": 6,
+  "els": 1,
+  "ms": 0.016960835
+ },
+ {
+  "item": "boards/uno-r3",
+  "key": "parking",
+  "parts": 2,
+  "nodes": 6,
+  "els": 0,
+  "ms": 0.010650205
+ },
+ {
+  "item": "robotics/uno-r3-build",
+  "key": "parking",
+  "parts": 2,
+  "nodes": 6,
+  "els": 0,
+  "ms": 0.0097675
+ },
+ {
+  "item": "boards/uno-r3",
+  "key": "heat",
+  "parts": 5,
+  "nodes": 5,
+  "els": 5,
+  "ms": 0.027001875
+ },
+ {
+  "item": "robotics/transistor-switch",
+  "key": "bench",
+  "parts": 7,
+  "nodes": 5,
+  "els": 5,
+  "ms": 0.026961875000000003
+ },
+ {
+  "item": "robotics/transistor-switch",
+  "key": "stage-drive",
+  "parts": 4,
+  "nodes": 5,
+  "els": 4,
+  "ms": 0.024739585
+ },
+ {
+  "item": "boards/pico",
+  "key": "fade",
+  "parts": 3,
+  "nodes": 5,
+  "els": 3,
+  "ms": 0.039234375
+ },
+ {
+  "item": "boards/uno-r3",
+  "key": "plant",
+  "parts": 2,
+  "nodes": 5,
+  "els": 0,
+  "ms": 0.01002167
+ },
+ {
+  "item": "robotics/uno-r3-build",
+  "key": "plant",
+  "parts": 2,
+  "nodes": 5,
+  "els": 0,
+  "ms": 0.00718604
+ },
+ {
+  "item": "boards/uno-r3",
+  "key": "light",
+  "parts": 4,
+  "nodes": 4,
+  "els": 4,
+  "ms": 0.018683125000000002
+ },
+ {
+  "item": "boards/uno-r3",
+  "key": "motor",
+  "parts": 4,
+  "nodes": 4,
+  "els": 4,
+  "ms": 0.021739585
+ },
+ {
+  "item": "boards/uno-r3",
+  "key": "button",
+  "parts": 4,
+  "nodes": 4,
+  "els": 3,
+  "ms": 0.019701665
+ },
+ {
+  "item": "boards/uno-r3",
+  "key": "knob",
+  "parts": 3,
+  "nodes": 4,
+  "els": 3,
+  "ms": 0.01807375
+ },
+ {
+  "item": "boards/uno-r3",
+  "key": "force",
+  "parts": 4,
+  "nodes": 4,
+  "els": 3,
+  "ms": 0.01813917
+ },
+ {
+  "item": "boards/uno-r4",
+  "key": "pot-pwm",
+  "parts": 3,
+  "nodes": 4,
+  "els": 3,
+  "ms": 0.022524790000000003
+ },
+ {
+  "item": "boards/nano",
+  "key": "fade",
+  "parts": 3,
+  "nodes": 4,
+  "els": 3,
+  "ms": 0.020218124999999997
+ },
+ {
+  "item": "boards/esp32-s3-devkitc-1",
+  "key": "dimmer",
+  "parts": 3,
+  "nodes": 4,
+  "els": 3,
+  "ms": 0.023167705
+ },
+ {
+  "item": "boards/nodemcu",
+  "key": "dimmer",
+  "parts": 3,
+  "nodes": 4,
+  "els": 3,
+  "ms": 0.040666455
+ },
+ {
+  "item": "boards/microbit-v2",
+  "key": "dimmer",
+  "parts": 3,
+  "nodes": 4,
+  "els": 3,
+  "ms": 0.03291396
+ },
+ {
+  "item": "boards/nucleo-f401re",
+  "key": "pwm-dimmer",
+  "parts": 3,
+  "nodes": 4,
+  "els": 3,
+  "ms": 0.018893545
+ },
+ {
+  "item": "robotics/uno-r3-build",
+  "key": "button",
+  "parts": 4,
+  "nodes": 4,
+  "els": 3,
+  "ms": 0.03887375
+ },
+ {
+  "item": "robotics/uno-r3-build",
+  "key": "light",
+  "parts": 4,
+  "nodes": 4,
+  "els": 3,
+  "ms": 0.033783545
+ },
+ {
+  "item": "robotics/uno-r3-build",
+  "key": "knob",
+  "parts": 3,
+  "nodes": 4,
+  "els": 2,
+  "ms": 0.028527084999999997
+ },
+ {
+  "item": "robotics/uno-r3-build",
+  "key": "heat",
+  "parts": 5,
+  "nodes": 4,
+  "els": 1,
+  "ms": 0.009219375
+ },
+ {
+  "item": "robotics/uno-r3-build",
+  "key": "force",
+  "parts": 4,
+  "nodes": 4,
+  "els": 1,
+  "ms": 0.00901229
+ },
+ {
+  "item": "boards/uno-r4",
+  "key": "button",
+  "parts": 3,
+  "nodes": 3,
+  "els": 2,
+  "ms": 0.050513335
+ },
+ {
+  "item": "boards/pico",
+  "key": "button",
+  "parts": 3,
+  "nodes": 3,
+  "els": 2,
+  "ms": 0.042508955
+ },
+ {
+  "item": "boards/esp32-devkitc",
+  "key": "touch",
+  "parts": 2,
+  "nodes": 3,
+  "els": 2,
+  "ms": 0.01190604
+ },
+ {
+  "item": "boards/pi4-pi5",
+  "key": "button",
+  "parts": 3,
+  "nodes": 3,
+  "els": 2,
+  "ms": 0.015041249999999999
+ },
+ {
+  "item": "boards/pi4-pi5",
+  "key": "estop",
+  "parts": 3,
+  "nodes": 3,
+  "els": 2,
+  "ms": 0.010987499999999999
+ },
+ {
+  "item": "robotics/uno-r3-build",
+  "key": "reaction-timer",
+  "parts": 3,
+  "nodes": 3,
+  "els": 2,
+  "ms": 0.010818959999999999
+ },
+ {
+  "item": "boards/nano",
+  "key": "button-sensor",
+  "parts": 2,
+  "nodes": 3,
+  "els": 1,
+  "ms": 0.01392854
+ },
+ {
+  "item": "robotics/uno-r3-build",
+  "key": "motor",
+  "parts": 4,
+  "nodes": 3,
+  "els": 1,
+  "ms": 0.006883749999999999
+ },
+ {
+  "item": "boards/uno-r3",
+  "key": "distance",
+  "parts": 1,
+  "nodes": 3,
+  "els": 0,
+  "ms": 0.008925414999999999
+ },
+ {
+  "item": "boards/uno-r4",
+  "key": "i2c-scan",
+  "parts": 1,
+  "nodes": 3,
+  "els": 0,
+  "ms": 0.007975625
+ },
+ {
+  "item": "boards/nano",
+  "key": "i2c",
+  "parts": 1,
+  "nodes": 3,
+  "els": 0,
+  "ms": 0.007810625
+ },
+ {
+  "item": "boards/pico",
+  "key": "i2c-mpu6050",
+  "parts": 1,
+  "nodes": 3,
+  "els": 0,
+  "ms": 0.008286875
+ },
+ {
+  "item": "boards/nucleo-f401re",
+  "key": "i2c-scan",
+  "parts": 1,
+  "nodes": 3,
+  "els": 0,
+  "ms": 0.00675875
+ },
+ {
+  "item": "boards/nucleo-f401re",
+  "key": "sonar",
+  "parts": 1,
+  "nodes": 3,
+  "els": 0,
+  "ms": 0.0254275
+ },
+ {
+  "item": "robotics/uno-r3-build",
+  "key": "distance",
+  "parts": 1,
+  "nodes": 3,
+  "els": 0,
+  "ms": 0.0058562499999999995
+ },
+ {
+  "item": "boards/uno-r3",
+  "key": "blink",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.01189521
+ },
+ {
+  "item": "boards/uno-r4",
+  "key": "blink",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.012705
+ },
+ {
+  "item": "boards/nano",
+  "key": "blink",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.01113958
+ },
+ {
+  "item": "boards/pico",
+  "key": "blink",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.013759585000000001
+ },
+ {
+  "item": "boards/pico",
+  "key": "blink-cpp",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.008838125
+ },
+ {
+  "item": "boards/esp32-devkitc",
+  "key": "blink",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.0131275
+ },
+ {
+  "item": "boards/esp32-devkitc",
+  "key": "boot-button",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.01116646
+ },
+ {
+  "item": "boards/esp32-devkitc",
+  "key": "fade",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.008343335
+ },
+ {
+  "item": "boards/esp32-devkitc",
+  "key": "web-switch",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.007029375
+ },
+ {
+  "item": "boards/esp32-s3-devkitc-1",
+  "key": "blink",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.013349375000000002
+ },
+ {
+  "item": "boards/esp32-s3-devkitc-1",
+  "key": "boot-button",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.011312709999999998
+ },
+ {
+  "item": "boards/esp32-s3-devkitc-1",
+  "key": "web-server",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.007318125
+ },
+ {
+  "item": "boards/nodemcu",
+  "key": "blink",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.01256146
+ },
+ {
+  "item": "boards/nodemcu",
+  "key": "button",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.01317833
+ },
+ {
+  "item": "boards/nodemcu",
+  "key": "webserver",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.008336665
+ },
+ {
+  "item": "boards/microbit-v2",
+  "key": "blink",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.027545625
+ },
+ {
+  "item": "boards/microbit-v2",
+  "key": "buttons",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.03035771
+ },
+ {
+  "item": "boards/nucleo-f401re",
+  "key": "blink",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.031793955
+ },
+ {
+  "item": "boards/pi4-pi5",
+  "key": "blink",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.02679521
+ },
+ {
+  "item": "boards/pi4-pi5",
+  "key": "fade",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.0099775
+ },
+ {
+  "item": "boards/basys3",
+  "key": "pmod-led",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.010505415
+ },
+ {
+  "item": "boards/de10-lite",
+  "key": "arduino-led",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.03034083
+ },
+ {
+  "item": "robotics/uno-r3-build",
+  "key": "blink",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.01109729
+ },
+ {
+  "item": "robotics/uno-r3-build",
+  "key": "fade-pwm",
+  "parts": 2,
+  "nodes": 2,
+  "els": 2,
+  "ms": 0.0069914600000000006
+ },
+ {
+  "item": "boards/uno-r3",
+  "key": "servo",
+  "parts": 1,
+  "nodes": 2,
+  "els": 1,
+  "ms": 0.008503125
+ },
+ {
+  "item": "boards/nucleo-f401re",
+  "key": "user-button",
+  "parts": 1,
+  "nodes": 2,
+  "els": 1,
+  "ms": 0.010408545
+ },
+ {
+  "item": "robotics/uno-r3-build",
+  "key": "servo",
+  "parts": 1,
+  "nodes": 2,
+  "els": 0,
+  "ms": 0.0038150000000000002
+ },
+ {
+  "item": "boards/uno-r3",
+  "key": "sound",
+  "parts": 1,
+  "nodes": 1,
+  "els": 1,
+  "ms": 0.007184585
+ },
+ {
+  "item": "boards/uno-r4",
+  "key": "dac-wave",
+  "parts": 0,
+  "nodes": 1,
+  "els": 0,
+  "ms": 0.0046641650000000005
+ },
+ {
+  "item": "robotics/uno-r3-build",
+  "key": "sound",
+  "parts": 1,
+  "nodes": 1,
+  "els": 0,
+  "ms": 0.00373979
+ }
+]

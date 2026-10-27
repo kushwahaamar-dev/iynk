@@ -1,0 +1,6 @@
+139c139
+<   return { parts, byId, els, buttons, nets, gnd, roots };
+---
+>   return { parts, byId, els, buttons, nets, gnd, roots, R };
+410a411
+>   out.raw = { res, nl, els, slices };

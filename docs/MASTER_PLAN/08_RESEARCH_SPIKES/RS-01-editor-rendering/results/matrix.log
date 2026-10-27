@@ -1,0 +1,113 @@
+== chromium 1
+13:40  up 21 days, 10:55, 1 user, load averages: 12.40 5.42 3.97
+chromium 1x svg-plain pan-1x: p50 16.7 p95 16.7 max 16.8 jsP95 0.10 frames 301 nodes 48601 load 12.4
+chromium 1x svg-plain pan-fit: p50 16.7 p95 33.4 max 33.4 jsP95 0.10 frames 241 nodes 48601 load 11.72
+chromium 1x svg-plain zoom: p50 16.7 p95 16.8 max 33.4 jsP95 0.10 frames 293 nodes 48601 load 11.43
+chromium 1x svg-plain drag: p50 16.7 p95 16.8 max 16.8 jsP95 0.10 frames 301 nodes 48601 load 10.75
+chromium 1x svg-plain hover: p50 16.7 p95 16.7 max 33.3 jsP95 0.10 frames 300 nodes 48601 load 10.21
+chromium 1x svg-cull pan-1x: p50 16.7 p95 16.8 max 16.8 jsP95 0.10 frames 301 nodes 48601 load 9.71
+chromium 1x svg-cull pan-fit: p50 16.7 p95 33.4 max 33.5 jsP95 0.10 frames 236 nodes 48601 load 8.46
+chromium 1x svg-cull zoom: p50 16.7 p95 16.8 max 33.4 jsP95 0.10 frames 290 nodes 48601 load 8.02
+chromium 1x svg-cull drag: p50 16.7 p95 16.7 max 16.8 jsP95 0.10 frames 301 nodes 48601 load 7.62
+chromium 1x svg-cull hover: p50 16.7 p95 16.7 max 33.3 jsP95 0.10 frames 300 nodes 48601 load 7.33
+chromium 1x svg-use pan-1x: p50 16.7 p95 16.7 max 16.8 jsP95 0.10 frames 301 nodes 4465 load 7.06
+chromium 1x svg-use pan-fit: p50 16.7 p95 33.4 max 33.4 jsP95 0.10 frames 256 nodes 4465 load 6.66
+chromium 1x svg-use zoom: p50 16.7 p95 16.8 max 33.4 jsP95 0.10 frames 292 nodes 4465 load 6.76
+chromium 1x svg-use drag: p50 16.7 p95 16.8 max 16.8 jsP95 0.10 frames 301 nodes 4465 load 6.38
+chromium 1x svg-use hover: p50 16.7 p95 16.7 max 16.8 jsP95 0.10 frames 301 nodes 4465 load 6.19
+chromium 1x react pan-1x: p50 16.7 p95 16.8 max 16.8 jsP95 0.10 frames 301 nodes 48601 load 5.39
+chromium 1x react pan-fit: p50 16.7 p95 33.4 max 33.4 jsP95 0.10 frames 251 nodes 48601 load 5.43
+chromium 1x react zoom: p50 16.7 p95 16.8 max 33.4 jsP95 0.10 frames 295 nodes 48601 load 5.32
+chromium 1x react drag: p50 16.7 p95 16.7 max 16.8 jsP95 0.40 frames 301 nodes 48601 load 5.29
+chromium 1x react hover: p50 16.7 p95 16.8 max 16.8 jsP95 1.30 frames 301 nodes 48601 load 5.35
+chromium 1x canvas pan-1x: p50 16.7 p95 16.8 max 16.8 jsP95 13.00 frames 301 nodes 1 load 4.92
+chromium 1x canvas pan-fit: p50 33.3 p95 50.0 max 50.1 jsP95 34.40 frames 139 nodes 1 load 4.61
+chromium 1x canvas zoom: p50 16.7 p95 33.4 max 50.1 jsP95 34.60 frames 245 nodes 1 load 4.4
+chromium 1x canvas drag: p50 16.7 p95 16.8 max 16.8 jsP95 13.60 frames 301 nodes 1 load 4.37
+chromium 1x canvas hover: p50 16.7 p95 16.8 max 33.4 jsP95 20.30 frames 298 nodes 1 load 4.23
+wrote results/chromium-1x-500p-dpr1-1793126544240.json
+== chromium 4
+13:42  up 21 days, 10:58, 1 user, load averages: 3.97 4.62 3.86
+chromium 4x svg-plain pan-1x: p50 16.7 p95 33.3 max 33.4 jsP95 0.20 frames 275 nodes 48601 load 3.97
+chromium 4x svg-plain pan-fit: p50 16.7 p95 33.4 max 50.1 jsP95 0.30 frames 215 nodes 48601 load 4.37
+chromium 4x svg-plain zoom: p50 33.3 p95 50.0 max 50.1 jsP95 0.50 frames 141 nodes 48601 load 4.26
+chromium 4x svg-plain drag: p50 16.7 p95 33.3 max 33.4 jsP95 0.50 frames 269 nodes 48601 load 4.32
+chromium 4x svg-plain hover: p50 16.7 p95 16.7 max 16.8 jsP95 0.10 frames 301 nodes 48601 load 4.05
+chromium 4x svg-cull pan-1x: p50 16.7 p95 16.7 max 16.8 jsP95 0.30 frames 302 nodes 48601 load 3.89
+chromium 4x svg-cull pan-fit: p50 33.3 p95 33.4 max 50.0 jsP95 0.20 frames 181 nodes 48601 load 3.74
+chromium 4x svg-cull zoom: p50 33.3 p95 50.1 max 66.7 jsP95 0.70 frames 175 nodes 48601 load 4.14
+chromium 4x svg-cull drag: p50 16.7 p95 16.7 max 16.8 jsP95 0.20 frames 301 nodes 48601 load 4.29
+chromium 4x svg-cull hover: p50 16.7 p95 16.7 max 16.8 jsP95 0.00 frames 301 nodes 48601 load 4.03
+chromium 4x svg-use pan-1x: p50 16.7 p95 33.3 max 33.4 jsP95 0.10 frames 257 nodes 4465 load 4.02
+chromium 4x svg-use pan-fit: p50 16.7 p95 33.5 max 50.1 jsP95 0.10 frames 206 nodes 4465 load 3.86
+chromium 4x svg-use zoom: p50 49.9 p95 50.1 max 50.1 jsP95 0.60 frames 120 nodes 4465 load 4.11
+chromium 4x svg-use drag: p50 16.7 p95 33.4 max 33.4 jsP95 0.40 frames 260 nodes 4465 load 4.34
+chromium 4x svg-use hover: p50 16.7 p95 16.8 max 16.8 jsP95 0.00 frames 301 nodes 4465 load 4.07
+chromium 4x react pan-1x: p50 16.7 p95 33.3 max 33.4 jsP95 0.70 frames 266 nodes 48601 load 4.07
+chromium 4x react pan-fit: p50 16.7 p95 33.4 max 50.1 jsP95 0.70 frames 211 nodes 48601 load 4.22
+chromium 4x react zoom: p50 33.4 p95 50.0 max 50.1 jsP95 0.70 frames 138 nodes 48601 load 4.52
+chromium 4x react drag: p50 16.7 p95 33.4 max 33.4 jsP95 1.90 frames 243 nodes 48601 load 4.48
+chromium 4x react hover: p50 16.7 p95 16.7 max 16.8 jsP95 1.20 frames 301 nodes 48601 load 4.2
+chromium 4x canvas pan-1x: p50 50.0 p95 66.7 max 66.8 jsP95 53.40 frames 96 nodes 1 load 3.86
+chromium 4x canvas pan-fit: p50 150.0 p95 166.7 max 166.7 jsP95 138.20 frames 34 nodes 1 load 4.03
+chromium 4x canvas zoom: p50 33.3 p95 150.0 max 166.6 jsP95 118.70 frames 125 nodes 1 load 3.95
+chromium 4x canvas drag: p50 66.6 p95 66.7 max 66.8 jsP95 56.10 frames 83 nodes 1 load 3.95
+chromium 4x canvas hover: p50 16.7 p95 50.0 max 66.7 jsP95 54.20 frames 225 nodes 1 load 3.96
+wrote results/chromium-4x-500p-dpr1-1793126684097.json
+== chromium 6
+13:44  up 21 days, 11 hrs, 1 user, load averages: 4.05 4.43 3.90
+chromium 6x svg-plain pan-1x: p50 33.3 p95 33.4 max 33.5 jsP95 0.30 frames 178 nodes 48601 load 4.05
+chromium 6x svg-plain pan-fit: p50 33.3 p95 50.0 max 50.1 jsP95 0.50 frames 154 nodes 48601 load 3.97
+chromium 6x svg-plain zoom: p50 50.0 p95 66.7 max 66.8 jsP95 0.20 frames 90 nodes 48601 load 3.81
+chromium 6x svg-plain drag: p50 33.3 p95 33.4 max 50.1 jsP95 1.20 frames 170 nodes 48601 load 3.74
+chromium 6x svg-plain hover: p50 16.7 p95 16.7 max 33.3 jsP95 0.10 frames 299 nodes 48601 load 3.76
+chromium 6x svg-cull pan-1x: p50 16.7 p95 33.3 max 33.5 jsP95 0.80 frames 284 nodes 48601 load 3.62
+chromium 6x svg-cull pan-fit: p50 33.4 p95 50.0 max 50.1 jsP95 0.70 frames 133 nodes 48601 load 3.49
+chromium 6x svg-cull zoom: p50 33.4 p95 83.3 max 83.4 jsP95 1.20 frames 108 nodes 48601 load 3.29
+chromium 6x svg-cull drag: p50 16.7 p95 16.8 max 33.3 jsP95 0.70 frames 299 nodes 48601 load 3.63
+chromium 6x svg-cull hover: p50 16.7 p95 16.7 max 16.8 jsP95 0.00 frames 301 nodes 48601 load 3.58
+chromium 6x svg-use pan-1x: p50 33.3 p95 33.4 max 50.0 jsP95 0.50 frames 168 nodes 4465 load 3.46
+chromium 6x svg-use pan-fit: p50 33.3 p95 50.0 max 50.1 jsP95 0.20 frames 151 nodes 4465 load 3.5
+chromium 6x svg-use zoom: p50 66.7 p95 66.8 max 83.3 jsP95 0.50 frames 77 nodes 4465 load 3.38
+chromium 6x svg-use drag: p50 33.3 p95 33.4 max 50.1 jsP95 1.10 frames 159 nodes 4465 load 3.35
+chromium 6x svg-use hover: p50 16.7 p95 33.3 max 33.4 jsP95 0.10 frames 279 nodes 4465 load 3.24
+chromium 6x react pan-1x: p50 33.3 p95 33.4 max 50.1 jsP95 1.20 frames 176 nodes 48601 load 3.14
+chromium 6x react pan-fit: p50 33.3 p95 50.0 max 50.1 jsP95 1.00 frames 153 nodes 48601 load 2.81
+chromium 6x react zoom: p50 50.0 p95 66.7 max 66.8 jsP95 1.10 frames 90 nodes 48601 load 2.75
+chromium 6x react drag: p50 33.3 p95 33.4 max 50.0 jsP95 3.10 frames 158 nodes 48601 load 2.69
+chromium 6x react hover: p50 16.7 p95 16.8 max 33.4 jsP95 1.90 frames 292 nodes 48601 load 2.79
+chromium 6x canvas pan-1x: p50 83.3 p95 100.0 max 100.1 jsP95 80.40 frames 62 nodes 1 load 2.89
+chromium 6x canvas pan-fit: p50 233.3 p95 250.1 max 266.6 jsP95 236.70 frames 22 nodes 1 load 2.9
+chromium 6x canvas zoom: p50 33.4 p95 233.2 max 250.0 jsP95 174.50 frames 84 nodes 1 load 2.98
+chromium 6x canvas drag: p50 83.4 p95 100.0 max 100.1 jsP95 83.90 frames 57 nodes 1 load 2.91
+chromium 6x canvas hover: p50 16.7 p95 83.4 max 83.4 jsP95 80.10 frames 182 nodes 1 load 2.75
+wrote results/chromium-6x-500p-dpr1-1793126824103.json
+== webkit 1
+13:47  up 21 days, 11:02, 1 user, load averages: 2.85 3.79 3.72
+webkit 1x svg-plain pan-1x: p50 13.0 p95 20.0 max 25.0 jsP95 0.00 frames 359 nodes 48601 load 2.85
+webkit 1x svg-plain pan-fit: p50 61.0 p95 63.0 max 64.0 jsP95 0.00 frames 82 nodes 48601 load 3.1
+webkit 1x svg-plain zoom: p50 10.0 p95 51.0 max 63.0 jsP95 0.00 frames 330 nodes 48601 load 3.09
+webkit 1x svg-plain drag: p50 10.0 p95 11.0 max 11.0 jsP95 0.00 frames 501 nodes 48601 load 2.85
+webkit 1x svg-plain hover: p50 10.0 p95 11.0 max 11.0 jsP95 0.00 frames 501 nodes 48601 load 2.86
+webkit 1x svg-cull pan-1x: p50 16.0 p95 20.0 max 23.0 jsP95 1.00 frames 312 nodes 48601 load 2.79
+webkit 1x svg-cull pan-fit: p50 60.0 p95 62.0 max 63.0 jsP95 0.00 frames 84 nodes 48601 load 2.89
+webkit 1x svg-cull zoom: p50 14.0 p95 55.0 max 61.0 jsP95 0.00 frames 267 nodes 48601 load 3.44
+webkit 1x svg-cull drag: p50 10.0 p95 11.0 max 11.0 jsP95 0.00 frames 501 nodes 48601 load 4.12
+webkit 1x svg-cull hover: p50 10.0 p95 11.0 max 12.0 jsP95 0.00 frames 501 nodes 48601 load 4.11
+webkit 1x svg-use pan-1x: p50 13.0 p95 20.0 max 22.0 jsP95 0.00 frames 361 nodes 4465 load 4.02
+webkit 1x svg-use pan-fit: p50 61.0 p95 65.0 max 68.0 jsP95 0.00 frames 82 nodes 4465 load 3.86
+webkit 1x svg-use zoom: p50 10.0 p95 53.0 max 62.0 jsP95 0.00 frames 330 nodes 4465 load 4.03
+webkit 1x svg-use drag: p50 10.0 p95 11.0 max 11.0 jsP95 0.00 frames 500 nodes 4465 load 4.11
+webkit 1x svg-use hover: p50 10.0 p95 11.0 max 12.0 jsP95 0.00 frames 501 nodes 4465 load 3.86
+webkit 1x react pan-1x: p50 13.0 p95 20.0 max 28.0 jsP95 1.00 frames 357 nodes 48601 load 3.65
+webkit 1x react pan-fit: p50 60.0 p95 64.0 max 66.0 jsP95 1.00 frames 84 nodes 48601 load 3.44
+webkit 1x react zoom: p50 10.0 p95 53.0 max 70.0 jsP95 1.00 frames 324 nodes 48601 load 3.48
+webkit 1x react drag: p50 10.0 p95 11.0 max 11.0 jsP95 1.00 frames 500 nodes 48601 load 4.24
+webkit 1x react hover: p50 10.0 p95 11.0 max 12.0 jsP95 1.00 frames 500 nodes 48601 load 3.98
+webkit 1x canvas pan-1x: p50 13.0 p95 20.0 max 26.0 jsP95 17.00 frames 348 nodes 1 load 3.74
+webkit 1x canvas pan-fit: p50 47.0 p95 49.0 max 51.0 jsP95 48.00 frames 106 nodes 1 load 4.08
+webkit 1x canvas zoom: p50 10.0 p95 47.0 max 48.0 jsP95 47.00 frames 328 nodes 1 load 4.32
+webkit 1x canvas drag: p50 20.0 p95 20.0 max 21.0 jsP95 19.00 frames 271 nodes 1 load 4.45
+webkit 1x canvas hover: p50 10.0 p95 11.0 max 21.0 jsP95 9.00 frames 500 nodes 1 load 4.68
+wrote results/webkit-1x-500p-dpr1-1793126964631.json
+ALLDONE

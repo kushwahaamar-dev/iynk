@@ -1,0 +1,51 @@
+{
+  "deleteVsOfflineWire": {
+    "aDangling": [
+      "w1"
+    ],
+    "bDangling": [
+      "w1"
+    ],
+    "partsA": [
+      "p1"
+    ],
+    "wiresA": [
+      "w1"
+    ],
+    "converged": true
+  },
+  "afterSweepOnBoth": {
+    "aDangling": [],
+    "bDangling": [],
+    "converged": true
+  },
+  "sameIdAddedOffline": {
+    "survivor": {
+      "type": "led",
+      "x": 99,
+      "y": 99
+    },
+    "same": true,
+    "note": "one add silently overwritten, no rejection"
+  },
+  "deleteVsMove": {
+    "partExists": false
+  },
+  "concurrentCodeEdits": {
+    "text": "AAhelloBB",
+    "same": true
+  },
+  "undoAfterRemoteMove": {
+    "x": 8,
+    "note": "UndoManager only undoes tracked origins; result after remote overwrite"
+  },
+  "costOfSameWorkload": {
+    "opsReplayed": 15492,
+    "replayMs": 67,
+    "yjsFullUpdateBytes": 233351,
+    "yjsLoadMs": 12.6,
+    "opLogJsonBytes": 929294,
+    "opLogSnapshotJsonBytes": 14058,
+    "codeCharsEqualToOpLog": true
+  }
+}

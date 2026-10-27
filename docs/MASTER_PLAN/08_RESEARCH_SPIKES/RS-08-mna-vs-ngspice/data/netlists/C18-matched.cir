@@ -1,0 +1,10 @@
+* C18 Battery with 2 ohm internal resistance (VIN rail, 9 V jack) into a 47 ohm load (matched)
+Vsrc_VIN s_vin 0 8.30000000000000
+Rsrc_VIN s_vin n_vin 0.5
+R_rint n_vin n_a 2
+R_r1 n_a 0 47
+Rg_vin n_vin 0 999999999.9999999
+Rg_a n_a 0 999999999.9999999
+.options reltol=1e-9 abstol=1e-14 vntol=1e-9 itl1=500 gmin=1e-12
+.op
+.end

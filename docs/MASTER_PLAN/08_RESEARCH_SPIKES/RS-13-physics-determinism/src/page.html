@@ -1,0 +1,19 @@
+<!doctype html><meta charset="utf-8"><title>RS-13</title>
+<script type="module">
+import RAPIER from '/node_modules/@dimforge/rapier3d-deterministic-compat/dist/rapier.mjs';
+import initJolt from '/node_modules/jolt-physics/dist/jolt-physics.wasm.js';
+import { runRapier, initRapier } from '/src/rapier-run.mjs';
+import { runJolt } from '/src/jolt-run.mjs';
+window.runAll = async (reps) => {
+  const t0 = performance.now();
+  await initRapier(RAPIER);
+  const tr = performance.now() - t0;
+  const t1 = performance.now();
+  const Jolt = await initJolt();
+  const tj = performance.now() - t1;
+  const runs = [];
+  for (let i = 0; i < reps; i++) { runs.push(runRapier(RAPIER)); runs.push(runJolt(Jolt)); }
+  return { ua: navigator.userAgent, initMs: { rapier: tr, jolt: tj }, runs };
+};
+window.ready = true;
+</script>

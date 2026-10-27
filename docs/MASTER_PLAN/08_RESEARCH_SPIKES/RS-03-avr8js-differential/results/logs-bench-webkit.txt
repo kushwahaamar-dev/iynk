@@ -1,0 +1,12 @@
+webkit 27.2
+┌─────────┬──────────┬──────────┬─────────┬──────────┬────────────┬────────┬─────────┐
+│ (index) │ browser  │ throttle │ sketch  │ where    │ simPerWall │ wallMs │ load1m  │
+├─────────┼──────────┼──────────┼─────────┼──────────┼────────────┼────────┼─────────┤
+│ 0       │ 'webkit' │ 1        │ 'blink' │ 'worker' │ 7.28       │ 1373   │ '7.80'  │
+│ 1       │ 'webkit' │ 1        │ 'blink' │ 'main'   │ 7.05       │ 1418   │ '12.78' │
+│ 2       │ 'webkit' │ 1        │ 'motor' │ 'worker' │ 7.25       │ 1379   │ '12.78' │
+│ 3       │ 'webkit' │ 1        │ 'motor' │ 'main'   │ 6.84       │ 1463   │ '12.78' │
+│ 4       │ 'webkit' │ 1        │ 'knob'  │ 'worker' │ 7          │ 1428   │ '12.40' │
+│ 5       │ 'webkit' │ 1        │ 'knob'  │ 'main'   │ 6.5        │ 1538   │ '12.40' │
+└─────────┴──────────┴──────────┴─────────┴──────────┴────────────┴────────┴─────────┘
+JSON [{"browser":"webkit","throttle":1,"sketch":"blink","where":"worker","simPerWall":7.28,"wallMs":1373,"load1m":"7.80"},{"browser":"webkit","throttle":1,"sketch":"blink","where":"main","simPerWall":7.05,"wallMs":1418,"load1m":"12.78"},{"browser":"webkit","throttle":1,"sketch":"motor","where":"worker","simPerWall":7.25,"wallMs":1379,"load1m":"12.78"},{"browser":"webkit","throttle":1,"sketch":"motor","where":"main","simPerWall":6.84,"wallMs":1463,"load1m":"12.78"},{"browser":"webkit","throttle":1,"sketch":"knob","where":"worker","simPerWall":7,"wallMs":1428,"load1m":"12.40"},{"browser":"webkit","throttle":1,"sketch":"knob","where":"main","simPerWall":6.5,"wallMs":1538,"load1m":"12.40"}]

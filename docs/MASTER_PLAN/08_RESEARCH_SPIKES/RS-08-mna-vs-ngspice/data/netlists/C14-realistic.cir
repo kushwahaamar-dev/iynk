@@ -1,0 +1,10 @@
+* C14 1N4007 in series with 1k from 5V (realistic)
+Vsrc_5V s_5v 0 4.95000000000000
+Rsrc_5V s_5v n_5v 0.5
+R_r1 n_5v n_a 1000
+Vs_dio1 n_a x_dio1 0
+D_dio1 x_dio1 0 D1N4007
+.model D1N4007 D(IS=7.03e-9 N=1.808 RS=0.0342)
+.options reltol=1e-9 abstol=1e-14 vntol=1e-9 itl1=500 gmin=1e-12
+.op
+.end

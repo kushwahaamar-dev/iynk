@@ -1,0 +1,70 @@
+[
+ {
+  "board": "basys3",
+  "id": "gates",
+  "defs": {},
+  "top": "top"
+ },
+ {
+  "board": "basys3",
+  "id": "blink",
+  "defs": {
+   "hz": "2"
+  },
+  "top": "top"
+ },
+ {
+  "board": "basys3",
+  "id": "counter",
+  "defs": {
+   "settle": "10"
+  },
+  "top": "top"
+ },
+ {
+  "board": "basys3",
+  "id": "pwm",
+  "defs": {},
+  "top": "top"
+ },
+ {
+  "board": "basys3",
+  "id": "display",
+  "defs": {
+   "refresh": "250"
+  },
+  "top": "top"
+ },
+ {
+  "board": "de10-lite",
+  "id": "switches",
+  "defs": {},
+  "top": "top"
+ },
+ {
+  "board": "de10-lite",
+  "id": "blink",
+  "defs": {
+   "hz": "2"
+  },
+  "top": "top"
+ },
+ {
+  "board": "de10-lite",
+  "id": "counter",
+  "defs": {},
+  "top": "top"
+ },
+ {
+  "board": "de10-lite",
+  "id": "pwm",
+  "defs": {},
+  "top": "top"
+ },
+ {
+  "board": "de10-lite",
+  "id": "hex",
+  "defs": {},
+  "top": "top"
+ }
+]
