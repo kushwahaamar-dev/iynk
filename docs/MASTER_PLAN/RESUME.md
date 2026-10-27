@@ -68,16 +68,17 @@ is not, and exactly what to do next, in order.
 | §4.2 commands and build | `01_AUDIT/runs/COMMANDS.md`, `01_AUDIT/runs/BUILD_OUTPUT.md` | Run 2026-10-27 00:22–01:00 CDT by the validate:commands agent. Keyless `NEXT_DIST_DIR=.next-audit npm run build` exit 0 (72.8 s, Next 16.4.3, 827 static pages). `.next-audit` kept. `tsconfig.json` was reverted after the build added include lines. `content:check`, `typecheck` and `lint` exit 0. `server/realtime` tests 39/39. `npm ci` and `anchor test` were not run (`Anchor.toml` cluster is devnet). Machine was never quiet (1-minute load 38–117 on 14 cores). |
 | §4.2 e2e | `01_AUDIT/runs/E2E.md` | Keyless Playwright, 2026-10-27 01:08–01:11 CDT, port 47401, load about 110. 116 passed, 1 failed, 2 skipped, of 119, in 143 s. The failure is the `]` next-lesson shortcut on Blink (`e2e/boardlab.spec.ts:171`), not a missing key. The two skips are the untranslated-board tests, skipped because nothing is untranslated. `/api/status` had ai, image, voice, search, solana, db, realtime and gemini false. |
 | §4.2 walk, perf, coverage | `01_AUDIT/runs/BROWSER_WALK.md`, `PERFORMANCE_BASELINE.md`, `TEST_COVERAGE.md` | Run 2026-10-27 by `master-plan-continue.js` (`wf_47249693-b61`). Walk: 16 steps keyless plus one keyed-safe AI check, then a gap fix added Verilog, MicroPython, WebKit and a drone bench. Coverage: 2797 passed, 0 failed, about 81.5% lines of loaded files. The `]` e2e failure did not reproduce in 15 reruns. |
-| §4.4 refresh and review | `FEATURE_VERIFICATION.md`, `TECHNICAL_DEBT.md`, `REPOSITORY_INVENTORY.md` refreshed with the run reports; nine adversarial reviews corrected 6 to 13 claims per file; `01_AUDIT/REVIEW_GAPS.md` lists 30 gaps and a resolution per fixed file | Gap 14 (positioning) is reopened; it closes in step 3. The `SECURITY_BASELINE.md` gap fix ran on Sonnet 5, not 5.5 (see the log), and Amar has not yet said whether to redo it. |
+| §4.4 refresh and review | `FEATURE_VERIFICATION.md`, `TECHNICAL_DEBT.md`, `REPOSITORY_INVENTORY.md` refreshed with the run reports; nine adversarial reviews corrected 6 to 13 claims per file; `01_AUDIT/REVIEW_GAPS.md` lists 30 gaps and a resolution per fixed file | Gap 14 (positioning) closed by step 3. The `SECURITY_BASELINE.md` gap fix ran on Sonnet 5, not 5.5 (see the log); Amar decided on 2026-10-27 not to redo it. |
 | §5.1, §5.3, §6, sources | `02_RESEARCH/COMPETITOR_LANDSCAPE.md`, `COMPETITOR_MATRIX.md` (27 rows, iynk plus 22 products), `USER_RESEARCH_PLAN.md`, `SOURCE_REGISTER.md` (R001 to R670) | Same run. |
+| 3 strategy | `00_EXECUTIVE/council/*.md` (8 memos), `06_BUSINESS/strategy-options/*.md` (3 strategies, 4 judges), and the orchestrator's `00_EXECUTIVE/DECISION_REGISTER.md` (D-001 to D-011), `06_BUSINESS/POSITIONING.md`, `06_BUSINESS/STARTUP_STRATEGY.md` | `wf_1b6e2ee6-315`, 13:30 to 13:43 CDT, 15 agents, all Sonnet 5.5. Judges: C fault lab 106, B 88, A 85 (of 160). Decision: Fault Lab first, Studio behind a gate, classroom thin. D-002 needs Amar's sign-off because it puts original projects second. |
 
 ### Not done
 
 | Step | What is missing | Why |
 |---|---|---|
-| 3 | `00_EXECUTIVE/council/*.md`, `06_BUSINESS/strategy-options/*.md`, then the orchestrator's `DECISION_REGISTER.md`, `POSITIONING.md`, `STARTUP_STRATEGY.md` | Running from 2026-10-27 13:30 CDT. |
-| 5b | `08_RESEARCH_SPIKES/` (RS-01, RS-03, RS-06, RS-08, RS-09, RS-12, RS-13) | `scripts/workflows/master-plan-spikes.js`, running alongside step 3. |
-| 4-10 | `03_PRODUCT/`, `04_ARCHITECTURE/`, `05_ENGINEERING/`, rest of `06_BUSINESS/`, `07_HANDOFF/`, `MASTER_INDEX.md`, both JSON files | Steps 4-5 are scripted in `master-plan-design.js` and wait on step 3's decision. Steps 6-10 are not scripted. |
+| 4-5 | `03_PRODUCT/`, `04_ARCHITECTURE/` (ADRs, JSON Schemas) | `scripts/workflows/master-plan-design.js`, launched after step 3. Spike-dependent choices are marked "PENDING RS-xx" and need a fold-in pass when the spikes finish. If Amar overrules D-002, re-run the product core (catalogue, prioritization, requirements) and EDUCATION with `resumeFromRunId`. |
+| 5b | `08_RESEARCH_SPIKES/` (RS-01, RS-03, RS-06, RS-08, RS-09, RS-12, RS-13) | `scripts/workflows/master-plan-spikes.js`, running as `wf_45df4458-c67` since 13:30 CDT. |
+| 6-10 | `05_ENGINEERING/`, rest of `06_BUSINESS/`, `07_HANDOFF/`, `MASTER_INDEX.md`, both JSON files, final review, executive summary | Not scripted yet. |
 
 ### What we already know (so step 3 starts with context)
 
@@ -222,3 +223,7 @@ next agent knows where you stopped, and add a line to the log below.
   `SECURITY_BASELINE.md` came from Sonnet 5, and it returned a placeholder instead of its summary. No assistant turn
   ran on Opus. The `fix:positioning` agent picked a strategy before step 3; that draft was moved to
   `/Users/amar/iynk-master-plan-scratch/strategy/POSITIONING.gapfix-draft.md` and gap 14 was reopened.
+- 2026-10-27 13:30 CDT: strategy (`wf_1b6e2ee6-315`) and spikes (`wf_45df4458-c67`) launched together.
+- 2026-10-27 13:43 CDT: strategy finished, 15 agents, all Sonnet 5.5, no safety stops. Amar said not to redo the security
+  gap fix. The orchestrator wrote DECISION_REGISTER, POSITIONING and STARTUP_STRATEGY from the judges and memos, and gave
+  the design script a decision summary, a rule for spikes still running, and a release 1 / release 2 split.

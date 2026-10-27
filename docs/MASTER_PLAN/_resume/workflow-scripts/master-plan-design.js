@@ -22,7 +22,16 @@ const today = '2026-10-27'
 const RULES = `You are on the council writing the iynk master plan (repo ${repo}). The assignment is ${mp}/BRIEF.md; read the sections your task names.
 The DECISIONS are binding: ${mp}/00_EXECUTIVE/DECISION_REGISTER.md (beachhead segment, primary market-entry strategy, what is rejected or deferred). Every
 product and architecture choice must serve them; if you believe a decision is wrong, say so in an "Objections" section with evidence, but still write the
-spec for the decided strategy.
+spec for the decided strategy. In short (read the register for the detail and the reasons):
+- D-001 beachhead: lecturers of first and second year electronics and embedded courses (US colleges, then Indian colleges with sponsored seats); adults first.
+- D-002 sequence: release 1 is Fault Lab v0 on the existing Uno R3 catalogue (diagnose-first Break it, hint ladder, meaningful pass, autosave, fork,
+  share link, export, tier label, thin class code and CSV; no accounts, no AI, no networked features; English first for new content). Release 2 is iynk
+  Studio, the original-project builder, built only after the Studio gate (RS-01, RS-08, 50-sketch interpreter coverage, interviews). Design Studio in
+  full now so it is ready the day the gate passes. The classroom layer (accounts, dashboards, LMS, DPA) waits until a buyer pays.
+- D-004 13+ terms, no under-13 product; D-005 trust work before features; D-006 frozen: drones, robotics, Solana, marketplace/SDK, new languages, new AI
+  features, social layer off at relaunch; D-007 teaching-model honesty ("not modelled yet", no "validated"); D-008 running, editing, saving, sharing and
+  exporting are never paid; D-009 north star; D-010 one shared diagnosis record {cause_id, symptom_id, evidence, hint_level} used by catalogue faults now
+  and Studio's netlist fault rules later.
 
 Evidence you build on (cite by path; do not re-derive what they establish):
 - Audit: ${mp}/01_AUDIT/ (FEATURE_VERIFICATION, TECHNICAL_DEBT with A1-A13 and the five structural changes D1-D5, SECURITY_BASELINE,
@@ -30,7 +39,10 @@ Evidence you build on (cite by path; do not re-derive what they establish):
 - Research: ${mp}/02_RESEARCH/ (COMPETITOR_LANDSCAPE, COMPETITOR_MATRIX, USER_SEGMENTS, USER_RESEARCH_PLAN, MARKET_ANALYSIS, TECHNICAL_RESEARCH,
   tech/*.md, competitors/*.md).
 - Strategy: ${mp}/00_EXECUTIVE/council/*.md, ${mp}/06_BUSINESS/strategy-options/*.md, ${mp}/06_BUSINESS/POSITIONING.md, STARTUP_STRATEGY.md.
-- Spikes with measured results: ${mp}/08_RESEARCH_SPIKES/*/REPORT.md (if a spike was INCONCLUSIVE, design so the decision stays reversible).
+- Spikes with measured results: ${mp}/08_RESEARCH_SPIKES/*/REPORT.md (if a spike was INCONCLUSIVE, design so the decision stays reversible). The spikes
+  are still running while you work. If a spike's REPORT.md is missing or has no "Verdict" yet, do not wait and do not guess its result: write the options,
+  the decision rule taken from the spike's exit condition in 02_RESEARCH/TECHNICAL_RESEARCH.md section 6, and mark the choice "PENDING RS-xx". A later pass
+  folds the results in.
 - The code itself (${repo}/src, figures, server): read it when you specify a migration or reuse; quote path:line.
 
 Rules:
@@ -83,11 +95,13 @@ weights move by 20 percent?).`, { label: 'product:prioritization', phase: 'Produ
 
 const requirements = await sonnet(`${RULES}
 
-Write ${P}/PRODUCT_REQUIREMENTS.md: the product requirements for the first release ("the smallest coherent product" in ${P}/FEATURE_PRIORITIZATION.md)
-and the near-term differentiators. Sections: problem and target user (from DECISION_REGISTER); goals and non-goals; success metrics (north star and
+Write ${P}/PRODUCT_REQUIREMENTS.md: the product requirements for release 1 (Fault Lab v0, "the smallest coherent product" in
+${P}/FEATURE_PRIORITIZATION.md) and, in its own part, release 2 (the Studio beta behind the Studio gate, D-002), plus the near-term differentiators.
+Sections: problem and target user (from DECISION_REGISTER); goals and non-goals; success metrics (north star and
 activation/retention definitions, measurable, gaming-resistant; take them from the council and strategy files and sharpen them); requirements R-001...
 each with the F-id it implements, a user story, acceptance criteria (Given/When/Then), priority (must/should/could), and constraints (performance,
-accessibility WCAG 2.2 AA, i18n six languages, privacy by age band, offline/low-bandwidth, devices); the fidelity and honesty requirements (what the
+accessibility WCAG 2.2 AA, i18n (the six-language interface stays; new Fault Lab content is English first per D-002, with the path to the other five),
+privacy by age band, offline/low-bandwidth, devices); the fidelity and honesty requirements (what the
 product may claim, BRIEF §10.2 and §17.1); the release gates for this release (BRIEF §32: product completeness, scientific correctness, reliability,
 security, performance, accessibility, user value, operational and business readiness), stating which numeric thresholds are set now from measurements
 (cite) and which are deferred until baselines exist; out of scope; open questions.`, { label: 'product:requirements', phase: 'Product core', schema: DOC_SCHEMA })
