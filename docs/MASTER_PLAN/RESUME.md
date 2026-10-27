@@ -71,7 +71,7 @@ is not, and exactly what to do next, in order.
 
 | Step | What is missing | Why |
 |---|---|---|
-| 1b | `01_AUDIT/runs/E2E.md`, `runs/BROWSER_WALK.md`, `01_AUDIT/PERFORMANCE_BASELINE.md`, `01_AUDIT/TEST_COVERAGE.md` | 1a's keyless build exists in `.next-audit`. These four were not started in the 1a commit. |
+| 1b | `01_AUDIT/runs/E2E.md`, `runs/BROWSER_WALK.md`, `01_AUDIT/PERFORMANCE_BASELINE.md`, `01_AUDIT/TEST_COVERAGE.md` | Started 2026-10-27 01:02 CDT. All four Sonnet agents, plus one e2e retry, stopped when the Sonnet usage limit was hit. They were not switched to another model. None of the four reports was written. Scratch holds an unfinished Playwright log (119 tests started, no summary), keyless `/api/status` with every feature false on ports 47401 and 47322, a few browser screenshots, and a coverage log that died mid-run. Those are not finished runs. At 01:07 the three ports were free and `package.json`, the lockfile and `tsconfig.json` were clean. |
 | 1c | FEATURE_VERIFICATION, TECHNICAL_DEBT and REPOSITORY_INVENTORY still say "not run" in places | They were written without the run reports. |
 | 1d | Six adversarial reviews and `01_AUDIT/REVIEW_GAPS.md` | Stopped about 20 seconds in; they had changed nothing. |
 | 2 | `02_RESEARCH/COMPETITOR_LANDSCAPE.md`, `USER_RESEARCH_PLAN.md`, `SOURCE_REGISTER.md`, `COMPETITOR_MATRIX.md` | Stopped mid-synthesis; nothing was written. The matrix was planned for step 3. |
@@ -209,3 +209,6 @@ next agent knows where you stopped, and add a line to the log below.
   Full `npm test` exit 1 (2784 passed, 13 failed, 5 skipped). Alone: octo fails on the landing-gear settle, wing
   passes, basys3 display sweep times out. Load stayed 38–117, so every duration is under contention. `anchor test`
   not run. `.next-audit` kept for step 1b.
+- 2026-10-27 01:07 CDT: step 1b did not finish. The four Sonnet agents and the e2e retry all stopped with "Other
+  Models usage limit reached" and were not switched to Grok. No run report was written. Orphaned servers were
+  stopped. Load was about 152. Step 1b still has to be run.
