@@ -97,7 +97,7 @@ Measured first load in the browser (cold profile every run, no cache, page load 
 | WebKit 27.2 | 1x | none | 368 | 440 | 18 | not measurable (WebContent processes are not children of the launcher) | - | 4.3 |
 
 - Download time dominates. Compile plus elaboration is 0.2 to 1 s even at 6x CPU throttle. The load is network bound: 12.5 MB at 20 Mbps is about 5 s, at 10 Mbps about 10 s, at 5 Mbps about 21 s.
-- Estimate for "broadband": at 50 Mbps or more, first load is about 2.3 s; at 20 Mbps about 5.3 s. Both are far under 15 s. Over 15 s only below roughly 7 Mbps (my interpolation from the 10 Mbps and 5 Mbps points, not a measurement).
+- Estimate for "broadband": at 50 Mbps or more, first load is about 2.3 s; at 20 Mbps about 5.3 s. Both are far under 15 s. Over 15 s only below roughly 7 to 8 Mbps (my interpolation from the 10 Mbps and 5 Mbps points, not a measurement).
 - This only holds if the host serves Brotli or gzip. Uncompressed, 79.7 MB at 50 Mbps is about 12.7 s by simple arithmetic (not measured), and at 20 Mbps about 32 s. Vercel and Cloudflare serve Brotli for these types by default, but that was not checked here.
 - Browser memory: the renderer used 662 to 725 MB with no throttle; the whole browser tree used 853 to 917 MB. Under 1 GB, with less room than the exit condition suggests. Playwright's headless Chromium is not an exact stand-in for a user's browser with tabs and extensions. WebKit memory was not measured.
 - JS heap is small (14 to 33 MB). The memory is WASM linear memory.
@@ -138,13 +138,19 @@ The two lessons I simulated are the two kinds a learner meets first (a button-dr
 
 ## Verdict
 
-**PASS** against the exit condition as written.
+**PASS on the stated exit condition: 10 of 10 shipped lessons, desktop only, memory margin 10 to 15 percent, load under 15 s at about 8 Mbps and above, fails at 5 Mbps.**
 
 - Elaboration: 10 of 10 references (100 percent, threshold 90 percent) and the starter. Zero need unsupported constructs (threshold for fail is 25 percent).
-- First load: about 2.3 s at 50 Mbps and 5.3 s at 20 Mbps with Brotli, measured with CDP throttling; 10.3 s at 10 Mbps. Under 15 s down to roughly 7 Mbps. This depends on compression being served.
+- First load: about 2.3 s at 50 Mbps and 5.3 s at 20 Mbps with Brotli, measured with CDP throttling; 10.3 s at 10 Mbps, and 20.7 s at 5 Mbps with 6x CPU throttle (fails 15 s). Under 15 s at about 8 Mbps and above (interpolated, per the independent check; my first estimate was 7 Mbps). This depends on compression being served.
 - Memory: 795 to 846 MB peak footprint in Node, 662 to 725 MB renderer and 853 to 917 MB whole-browser in Chromium. Under 1 GB, but close.
 
-The pass is narrow on memory, and on DigitalJS the result is mixed (see below).
+The pass is narrow on memory (headroom 10 to 15 percent of 1 GB), and it is desktop only: phones and Chromebooks are untested, and CPU throttling only approximates them.
+
+DigitalJS limits (from the independent check below):
+
+- It needs hand-patched initial values (`PATCH_INIT=1`, because Yosys output leaves Dff initial values undefined) and a parameter override (`CLK_HZ=100000`) to match iynk's interpreter on basys3-blink.
+- It is 65x to 250x slower than iynk's TS interpreter on the same run (1,354 ms vs 21 ms for 12,000 cycles; 9,440 ms vs 37 ms for 110,000 cycles).
+- So it supports the inspect-the-circuit mode (D3), not live simulation. Rendering in a DigitalJS view was not tested; only HeadlessCircuit was built.
 
 ## Caveats
 
@@ -184,8 +190,6 @@ The rest (DigitalJS conversion, the iynk comparison, the browser runs) is in `sr
 
 ## Independent check (2026-10-27)
 
-Note: REPORT.md did not exist on disk when this check ran (the original write was refused), so this section stands alone. The original report text was not available to me; I compared against src/logs/ in this folder and the task text.
-
 What I ran: the reproduce command from the scratch folder `~/iynk-master-plan-scratch/spikes/RS-12/` (extract.mjs, then run-yosys.mjs under `/usr/bin/time -l` for all 11 fixtures), plus `src/compare.mjs` for basys3-counter and basys3-blink. Load average was 4.2 to 4.6 at the start and end of the Yosys runs, 6.4 after the compare runs (below the 10 limit). I did not re-run the browser timings (src/browser.mjs); I only read src/logs/browser.jsonl.
 
 Tolerance: 25 percent on timings, 10 percent on memory, exact on cell counts and ok flags.
@@ -214,3 +218,9 @@ Judgement on the verdict:
 - Comparison fairness: compare.mjs uses the same Verilog and the same stimulus on both engines, so that part is fair. But basys3-blink needed two manual workarounds to match: a `CLK_HZ=100000` parameter override and `PATCH_INIT=1` (Dff initial values set by hand because Yosys output left them undefined). Without them the DigitalJS model would not match iynk's interpreter. Speed: DigitalJS took 1,354 ms for 12,000 cycles and 9,440 ms for 110,000 cycles; iynk's interpreter took 21 ms and 37 ms. DigitalJS is about 65x to 250x slower for the same run, which matters if it were used for live simulation rather than inspection.
 
 Correction to the verdict: PASS stands for the stated exit condition on this machine, but the report should say "PASS on 10 of 10 shipped lessons, desktop only, memory margin about 10 to 15 percent, load time passes at 10 Mbps and above and fails at 5 Mbps". It should also state that DigitalJS needs init-value patching and parameter overrides, and is far slower than the TS interpreter, so it supports the "inspect the circuit" mode in D3, not simulation. Devices (phones, Chromebooks) remain untested; the 4x and 6x CPU throttle only approximates them.
+
+## Review fixes (2026-10-27)
+
+| # | Issue | What I did |
+|---|---|---|
+| 1 | Verdict not updated with the independent check; stale first paragraph in the check | Verdict now reads "PASS on the stated exit condition: 10 of 10 shipped lessons, desktop only, memory margin 10 to 15 percent, load under 15 s at about 8 Mbps and above, fails at 5 Mbps". First-load bullet now includes the 5 Mbps failure (20.7 s, 6x CPU) and the 8 Mbps point; the Results estimate says 7 to 8 Mbps. Added the DigitalJS limits (init patching, parameter override, 65x to 250x slower, inspect mode only) and the desktop-only note. Removed the stale "REPORT.md did not exist" paragraph from the Independent check. Evidence: the check's table and logged browser runs in this file; no figures were changed. The 8 Mbps point remains an interpolation, not a measurement. |

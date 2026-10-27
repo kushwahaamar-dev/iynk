@@ -7,7 +7,7 @@ Does a server-ordered operation log handle collaborative editing of a project do
 It decides D5 (collaboration model): op log on the relay with Postgres for log and snapshots, or Yjs. It also gives input to RS-20 (what happens to a wire when its part is deleted concurrently).
 
 ## Exit condition (from TECHNICAL_RESEARCH.md, row 7)
-Pass: no divergence after 10,000 randomised ops, reconnect under 2 s.
+Pass: no divergence after 10,000 randomised ops, reconnect under 2 s. Note: "ops" here counts generated steps (about 10,900 per run); about 6,000 per run are accepted. Across all runs the accepted total is far above 10,000.
 
 ## Environment
 - Apple M4 Pro, 14 cores, macOS (Darwin 27.0.0, arm64). Node v24.8.0. No browser used (all Node, in-process plus localhost WebSocket).
@@ -28,7 +28,7 @@ Server: assigns a global seq, validates each op against current state, appends t
 
 Client: keeps `confirmed` (server order only) plus a pending queue replayed on top as the visible view. One op in flight at a time. A rejection drops the op and the view is rebuilt (the rebase). Undo is an inverse op: the server computes the inverse against the pre-state and returns it in the ack to the author; the client keeps a stack. Text inverses carry the original seq as base, so the server transforms them over all later edits. A restore after delete re-adds the part and only those wires whose ends still exist. Reconnect: client sends its last seq; server answers with the tail if still retained, else the latest checkpoint snapshot plus the tail after it. An unacknowledged op is resent with the same opId.
 
-Property test: fast-check generates 11,000 steps (client 0..4, op kind, random numbers, time step, connection event). About 10,900 become ops (some are skipped when there is nothing to pick). Mix: add part 14, move 18, delete part 10, add wire 12, delete wire 6, code edit 25, undo 15 (weights). 1 in 30 part adds reuses an existing id. 1 in 8 wires aims at a part id the client may not have. Virtual network: per-connection FIFO queues with random delays 1 to 90 ms. Roughly 3 to 4 percent of steps drop a client's connection (queued messages in both directions are lost), clients keep editing offline, and reconnect later. Retention was unlimited, 400 and 150 (checkpoint every half retention), and in a second set 25 with long offline spells to force the snapshot path.
+Property test: fast-check generates 11,000 steps (client 0..4, op kind, random numbers, time step, connection event). About 10,900 become generated ops (some are skipped when there is nothing to pick); only about 6,000 per run are accepted by the server (10,900 generated). Mix: add part 14, move 18, delete part 10, add wire 12, delete wire 6, code edit 25, undo 15 (weights). 1 in 30 part adds reuses an existing id. 1 in 8 wires aims at a part id the client may not have. Virtual network: per-connection FIFO queues with random delays 1 to 90 ms. Roughly 3 to 4 percent of steps drop a client's connection (queued messages in both directions are lost), clients keep editing offline, and reconnect later. Retention was unlimited, 400 and 150 (checkpoint every half retention), and in a second set 25 with long offline spells to force the snapshot path.
 
 Checked after quiescence (all clients reconnected, queues drained):
 1. Every replica's confirmed state is byte-identical (canonical JSON, compared as strings, SHA-256 shown) to the server's.
@@ -93,11 +93,11 @@ Same document in Yjs 13.6.33: Y.Map for parts and wires, Y.Text per file.
 | One deletes a part, another moves it concurrently | Part is gone; the move is lost without notice. |
 | Concurrent code inserts | Both preserved ("AAhelloBB"). This is where Yjs is better than my range transform. |
 | Undo (Y.UndoManager) of own move after a remote overwrite | x stayed at the remote value (8); the undo had no visible effect. |
-| Same 15,492-op workload replayed into Yjs | 233 KB full update, 12.6 ms to load, versus 14 KB for the op-log snapshot and 929 KB for the op log as JSON. |
+| Same 15,492-op workload replayed into Yjs | 233 KB full update (holds the whole history), 12.6 ms to load. Like-for-like: 233 KB (Yjs, full history) versus 929 KB (op log as JSON, full history). The 14 KB op-log state snapshot would be compared with a garbage-collected Yjs state, which was not measured (UNKNOWN). |
 
-## Verdict: PASS (with the caveats below)
-- No divergence in 40 randomised runs of about 10,900 ops each (about 436,000 generated ops in total), including connection drops, offline editing, resends and the snapshot path.
-- Reconnect is far under 2 s for a 1,000-op tail (2.8 ms) and a 10,000-op tail (22 ms) on localhost; the byte size (1.4 MB raw) is the thing to manage on slow links, and gzip or snapshot-plus-tail solves it.
+## Verdict: PASS for convergence; PASS-by-CPU for reconnect (under 2 s on real links only with gzip or snapshot-plus-tail)
+- No divergence in 40 randomised runs. Each run generated about 10,900 ops (about 436,000 generated in total), of which about 6,000 per run were accepted by the server (range 5,500 to 6,700 in the independent check); the rest were rejected or locally invalid. Runs included connection drops, offline editing, resends and the snapshot path.
+- Reconnect is far under 2 s for a 1,000-op tail (2.8 ms) and a 10,000-op tail (22 ms) on localhost, which measures CPU and serialisation only. On a 5 Mbit/s link a raw 10,000-op tail (1.4 MB) takes about 2.3 s (arithmetic, not measured), over the 2 s budget. The budget holds only with gzip (268 KB, about 0.4 s) or snapshot-plus-tail (84 KB, about 0.13 s). Real networks are not tested.
 - The checker detects a missing cascade and a skipped op.
 
 ## Caveats
@@ -156,3 +156,11 @@ Judgement:
 - Fairness of the Yjs comparison: the scenarios are the same document and the same intents, and the outcomes are real. Two points are less fair. (1) The size row compares a 233 KB Yjs full update (it holds the whole 15,492-op history) with a 14 KB op-log state snapshot; the matching figures are 233 KB versus 929 KB for the full op log, or 14 KB versus a garbage-collected Yjs state, which was not measured. (2) Yjs was run with no application rules, while the op log has server validation; "Yjs cannot enforce invariants" is true of the bare library, and the report itself shows a post-merge sweep fixes the dangling wire, so the real difference is where the rule lives, not whether it can be enforced. The undo scenario in Yjs is a single case and its result is ambiguous (the code comment says only tracked origins are undone).
 
 Correction to the report: none to the PASS for convergence. Amend the reconnect line to "PASS by CPU on loopback; under 2 s on real links only with gzip or snapshot-plus-tail", and the size comparison to the like-for-like pair above. Device and real-network questions remain open, as the report states.
+
+## Review fixes (2026-10-27)
+
+Issue 1 [medium]: verdict stronger than the check supports. Applied after checking the numbers against the report's own tables and the independent check above (all three points were supported by evidence, so none was rejected).
+- Verdict line changed to "PASS for convergence; PASS-by-CPU for reconnect (under 2 s on real links only with gzip or snapshot-plus-tail)". The reconnect bullet now states that a raw 10,000-op tail (1.4 MB) is about 2.3 s at 5 Mbit/s (arithmetic, not measured), and that gzip (268 KB, about 0.4 s) or snapshot-plus-tail (84 KB, about 0.13 s) is what keeps it under budget.
+- Op counts: the verdict, the Method paragraph and the Exit condition now say "about 6,000 accepted per run (10,900 generated)", with the independent check's range of 5,500 to 6,700.
+- Yjs size row replaced with the like-for-like pair: 233 KB (Yjs, full history) versus 929 KB (op log as JSON, full history). The 14 KB snapshot versus a garbage-collected Yjs state is marked not measured (UNKNOWN).
+- Not changed: measured numbers, the Yjs scenario outcomes, and the earlier independent-check section (kept as the reviewer's record).

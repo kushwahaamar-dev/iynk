@@ -1,0 +1,19 @@
+{
+  "replaced": "oC.toByteArray(\"AGFz...",
+  "files": {
+    "rapier.split.mjs": {
+      "raw": 230888,
+      "brotli11": 32984,
+      "sha256": "103fa5899fe4eebe7dc738d34b661fda034c26f130c46f3c4fb92303277abe86"
+    },
+    "rapier_wasm3d_bg.wasm": {
+      "raw": 3105893,
+      "brotli11": 855167,
+      "sha256": "4e9890fd2df60072f9db06a33e4030221249c1b3687b722b2388c21f09e97551"
+    }
+  },
+  "total": {
+    "raw": 3336781,
+    "brotli11_sum": 888151
+  }
+}

@@ -2,7 +2,7 @@
 
 > Recovery note (orchestrator, 2026-10-27): the spike agent wrote this report, but a tool guard refused the file write ("Subagents should return findings as text"). The text below is restored unchanged from the agent's transcript.
 
-Status: PASS on the exit condition as written (matched device models). Device-model fidelity against realistic SPICE models is a separate, weaker result and is reported next to it.
+Status: mixed, not a clean PASS. Linear solve PASS (20 of 20 against matched models). Device-model fidelity against realistic SPICE models FAIL (10 of 20 within 2 percent). Transient part (b) INCONCLUSIVE: not measured. No phone was tested. See Verdict.
 Part (b) of RS-08 (trapezoidal RC, RLC and buck waveforms at a 1 us step) was not in this assignment and was not run.
 
 ## Question
@@ -150,12 +150,21 @@ Scaling of the elimination alone (copied from the source, dense, random sparse m
 
 ## Verdict
 
-PASS against exit condition (a). Matched models: 20 of 20 within 2 percent, worst 0.26 percent, zero disagree (the fail line is more than 5). Plus 0 of 320 mismatches on 60 random resistor networks.
+Three parts. The spike is not a clean PASS.
 
-Reasons it is a narrower pass than it sounds:
+| Part | Result | Evidence |
+|---|---|---|
+| Linear solve and junction iteration (matched models) | PASS | 20 of 20 within 2 percent, worst 0.26 percent (C15), zero disagree. 0 of 320 mismatches on 60 random resistor networks. |
+| Device-model fidelity against realistic SPICE models | FAIL | 10 of 20 within 2 percent, 14 of 20 within 5 percent, 6 off by more than 10 percent (C16 229.6, C20 41.1, C15 20.8, C08 12.5, C14 12.4, C13 12.3). Under the fail line (more than 5 disagree) this is a FAIL. The failures are not explained away: they come from fixed-Vf LEDs, a single-slope diode, a saturating-switch BJT and the motor stall model, and the BJT cards are my own generic choices. |
+| Transient accuracy, part (b) | INCONCLUSIVE | Not measured. No transient script exists in `src/`. Trapezoidal RC, RLC and buck waveforms at a 1 us step are untested. |
+| Phone timing | NOT TESTED | Only Chromium 4x and 6x CPU throttle and unthrottled WebKit. Largest repo circuit is 0.45 ms at 6x against a 16 ms frame. |
 
-- "Matched" means ngspice was given the solver's own piecewise-linear models. The result proves the linear algebra, the junction-state iteration and the source models are implemented correctly. It does not prove the circuits look like real circuits. Against realistic exponential LED and diode cards, and generic transistor cards, 10 of 20 circuits are outside 2 percent and 6 are outside 5 percent. If the exit condition were applied to realistic models, 10 disagreeing is more than 5, and it would FAIL. I report PASS because the brief for this spike says to separate solver error from model choice, and by that definition the solver is accurate.
+How to read it:
+
+- "Matched" means ngspice was given the solver's own piecewise-linear models, with a gmin shunt on every node (`src/spice.mjs`). The same equations are solved twice, so 20 of 20 at around 1e-10 percent proves the linear algebra, the junction-state iteration and the source models are implemented correctly. It does not show the device models are accurate.
+- Applying the exit condition (within 2 percent on 18 of 20, fail if more than 5 disagree) to realistic models gives FAIL, because 10 disagree.
 - The 2N2222 is not reachable in any shipped figure (see above), so C16 and C17 test a part that no lesson uses today.
+- Consequence for the architecture: keep the in-house engine for real-time DC on lesson-size circuits, but do not claim SPICE-level device accuracy. Keep part (b) and the device-model decision open (see "What this means for the architecture").
 
 ## Caveats
 
@@ -167,7 +176,9 @@ Reasons it is a narrower pass than it sounds:
 - Timing is for one solve with the netlist rebuilt each call, the way the app runs it. It does not include rendering, the bench report, or the power model.
 - Another spike lane was running; load was 6.1 to 6.3 for the browser timings, 2.6 to 3.7 for the earlier runs.
 - The first stage of this spike used the Uno R3 breadboard layout only. The `half` breadboard strips limit a node to five part legs, which constrained the random-network generator to at most three resistor ends per node.
-- RS-08 part (b), transient accuracy of trapezoidal RC, RLC and buck waveforms, was not run.
+- RS-08 part (b), transient accuracy of trapezoidal RC, RLC and buck waveforms, was not run. The independent check confirmed no transient script exists in `src/`; the only hits for "tran" are in `spice.mjs` and `scan.mjs`, and the scan times DC solves only.
+- Convergence: ngspice printed "gmin stepping failed" on some realistic circuits and finished with source stepping. Realistic results needed convergence help.
+- The independent check did not re-run `timebrowser.mjs`, so the browser timings are unchecked by a second party. The accuracy counts were reproduced exactly (`matched pass 20 realistic pass 10`, and the committed `data/results.json` recomputes to the same counts, at load average 3.66).
 
 ## What this means for the architecture
 
@@ -193,27 +204,13 @@ Files in this folder: `src/` (scripts, `bench-solve.patch`), `data/netlists/` (4
 
 ## Independent check (2026-10-27)
 
-The checker re-ran the headline measurement but could not append this section because REPORT.md did not exist at the time. The orchestrator wrote it from the checker's returned findings.
+- Reproduced: yes. `node src/compare.mjs` printed `matched pass 20 realistic pass 10`. Tolerance: 2 percent relative with floors of 5 mV and 5 uA.
+- The checker did not accept the original PASS verdict; the Verdict section above is the corrected form. The checker's findings are folded into the Verdict and Caveats.
+- Realistic worst errors as re-run: C16 229.60%, C20 41.12%, C15 20.84%, C08 12.53%, C14 12.41%, C13 12.31%, C10 3.72%, C11 2.66%, C09 2.48%, C17 2.45%.
+- Method is otherwise sound for the DC question: one case description feeds both the solver (the repo's own `bench-solve.js`, patched read-only to expose raw voltages) and the netlist generator, and cold and warm solves agree.
 
-- Reproduced: yes
-- Verdict holds: no
+## Review fixes (2026-10-27)
 
-**Corrected verdict after the check:** the linear solve PASSES (20 of 20 within 2 percent when SPICE uses the solver's own piecewise-linear device models). Device-model fidelity FAILS against realistic SPICE models (10 of 20 within 2 percent; 6 off by more than 10 percent). Part (b), transient waveforms, was not measured, so it is INCONCLUSIVE. Overall this is not a clean PASS.
-
-Numbers from the re-run:
-
-- matched pass 20 (worst error per circuit between 0 and 2.6e-1 percent in the console, most under 1e-9 percent)
-- realistic pass 10 of 20
-- realistic worst error: C08 12.53%, C13 12.31%, C14 12.41%, C15 20.84%, C16 229.60%, C20 41.12%, C09 2.48%, C10 3.72%, C11 2.66%, C17 2.45%
-- load average 3.66 at run time
-- committed data/results.json recomputed: matched 20, realistic 10 (identical)
-
-Problems found:
-
-- REPORT.md does not exist in /Users/amar/Codes/ak/simlab/docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-08-mna-vs-ngspice/ (folder holds only data/ and src/). I could not append the 'Independent check (2026-10-27)' section, and I did not create a report file because subagents must return findings as text. I could not read the report's stated verdict, so 'PASS' is taken from the task text. The section text must be written by the parent.
-- Numbers reproduce exactly: node src/compare.mjs printed 'matched pass 20 realistic pass 10', and the committed data/results.json gives the same counts. Tolerance used: the script's own 2 percent relative error, with floors of 5 mV and 5 uA.
-- Verdict is generous if it rests on the 'matched' result. In 'matched' mode (src/spice.mjs line 1, 45, 51) the SPICE netlist replaces every diode, LED, BJT and motor with the solver's own piecewise-linear model, and adds a gmin shunt on every node. So 20 of 20 at around 1e-10 percent only shows the linear solve is correct (the same equations solved twice). It does not test whether the solver's device models are accurate against ngspice. The exit condition asks for 'within 2 percent on 18 of 20' against ngspice. The realistic model (ngspice device models) passes only 10 of 20, with 10 failing, and 6 of those off by more than 10 percent (C16 at 230 percent, C20 at 41 percent, C15 at 21 percent). Under the stated fail rule ('more than 5 disagree') the realistic result is a FAIL for part (a). The correct reading is: linear solver PASS (matched), device-model fidelity FAIL. Unless the report explains each of the 10 failures as a deliberate modelling choice (fixed LED Vf, saturating-switch BJT, motor stall), 'failures explained' is not met by the numbers alone. Verdict for (a) should be PASS on the linear solve, FAIL on realistic fidelity, and overall not a clean PASS.
-- Part (b) of the exit condition (trapezoidal RC, RLC and buck waveforms within 1 percent at a 1 us step, under 16 ms per frame on a phone) has no source: no transient script exists in src/ (the only grep hits for 'tran' are in spice.mjs and scan.mjs, which are not a transient comparison). If the report claims PASS for the whole spike, part (b) is unmeasured and the verdict should be INCONCLUSIVE for (b). The scan only times DC solves.
-- Phone question: timing used Playwright throttling only (4x, 6x CPU, WebKit). That approximates a phone and leaves the device question open, which must stay in the caveats. I did not re-run timebrowser.mjs, so those timings are unchecked by me.
-- Unrelated warnings seen during the run (ngspice 'gmin stepping failed', then source stepping completed): some realistic circuits needed source stepping to converge. The report should mention convergence help was needed.
-- Method is otherwise sound for the DC question: same case description feeds both the solver (via the repo's own bench-solve.js, patched read-only to expose raw voltages) and the netlist generator, and warm and cold solves both agree.
+| Issue | What I did |
+|---|---|
+| 1 [high]: Verdict said PASS while the Independent check said it does not hold; stale text about REPORT.md not existing | Applied. Rewrote the Verdict into the three-part form (linear solve PASS; device fidelity FAIL, 10 of 20 within 2 percent; transient (b) INCONCLUSIVE, not measured; no phone tested). Updated the Status line at the top to match. Deleted the two stale sentences about REPORT.md not existing and not being created, and the Problems list that repeated them. Folded the remaining findings (part (b) has no script, convergence help needed, timings not re-run, phone question open) into Caveats. Checked against `02_RESEARCH/TECHNICAL_RESEARCH.md` spike 6 exit condition quoted in this report. |

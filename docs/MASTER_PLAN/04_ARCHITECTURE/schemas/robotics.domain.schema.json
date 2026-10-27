@@ -1,0 +1,755 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:iynk:schema:robotics-domain:1.0",
+  "title": "iynk robotics domain data",
+  "description": "The value of domains.robotics.data when domains.robotics.schemaVersion is 1.x. Source of truth: ROBOTICS_ARCHITECTURE.md section 4.3; the rules in 4.5 that need cross-references (RB-E-*, RB-W-*) are semantic and run in tools/validate-project.mjs. Lengths in mm, angles in degrees, mass in grams, coefficients unitless; the physics engine receives SI. Limits are the v1 defaults of ROBOTICS 4.5 (HYPOTHESIS until RA-07 measures them); raising one is a minor schema bump.",
+  "type": "object",
+  "properties": {
+    "physics": {
+      "type": "object",
+      "properties": {
+        "length_scale": {
+          "enum": [
+            1,
+            10
+          ],
+          "description": "Engine units per metre. 1 unless RA-03 says otherwise."
+        },
+        "gravity_mps2": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": -100,
+            "maximum": 100
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "sleeping": {
+          "const": false,
+          "description": "Fixed in v1 (ROBOTICS Objection 6)."
+        },
+        "ccd": {
+          "enum": [
+            "off",
+            "auto"
+          ],
+          "description": "'auto' turns continuous collision detection on for bodies flagged fast."
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "solver_iterations": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 256
+            }
+          },
+          "required": [
+            "solver_iterations"
+          ],
+          "additionalProperties": false,
+          "description": "Copied from the engine at project creation, then pinned (written to the replay record)."
+        }
+      },
+      "required": [
+        "length_scale",
+        "gravity_mps2",
+        "sleeping",
+        "ccd",
+        "params"
+      ],
+      "additionalProperties": false
+    },
+    "surfaces": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Surface"
+      },
+      "maxItems": 32
+    },
+    "bodies": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^bdy_[a-z0-9][a-z0-9_-]{0,63}$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/BodyPhysics"
+      },
+      "maxProperties": 64
+    },
+    "joints": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^jnt_[a-z0-9][a-z0-9_-]{0,63}$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/JointPhysics"
+      },
+      "maxProperties": 32
+    },
+    "wheels": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^jnt_[a-z0-9][a-z0-9_-]{0,63}$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/WheelSpec"
+      },
+      "maxProperties": 32
+    },
+    "sensors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/SensorBinding"
+      },
+      "maxItems": 64
+    },
+    "arena": {
+      "$ref": "#/$defs/Arena"
+    },
+    "ros": {
+      "$ref": "#/$defs/RosConfig"
+    },
+    "ext": {
+      "$ref": "#/$defs/Ext"
+    }
+  },
+  "required": [
+    "physics",
+    "surfaces",
+    "bodies",
+    "joints",
+    "wheels",
+    "sensors",
+    "arena"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "Pose": {
+      "type": "object",
+      "properties": {
+        "position_mm": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": -10000000,
+            "maximum": 10000000
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "rpy_deg": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": -360,
+            "maximum": 360
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "description": "Roll, pitch, yaw about the fixed X, Y, Z axes of the parent frame, in degrees (URDF convention)."
+        }
+      },
+      "required": [
+        "position_mm",
+        "rpy_deg"
+      ],
+      "additionalProperties": false
+    },
+    "LocalId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,47}$",
+      "description": "Unique inside its parent collection only. Never used across collections."
+    },
+    "ParamId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{0,47}$",
+      "description": "Parameter key declared by a component definition (component.schema.json key), e.g. \"ohms\", \"color\"."
+    },
+    "Ext": {
+      "type": "object",
+      "description": "Namespaced extension data. Keys are \"x-name\" or reverse-DNS names. Preserved verbatim by readers that do not know them. Never used for fields the core needs.",
+      "propertyNames": {
+        "pattern": "^(x-[a-z0-9-]{1,40}|[a-z0-9]+(\\.[a-z0-9-]+)+)$"
+      },
+      "maxProperties": 16
+    },
+    "Surface": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "mu": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "crr": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.2
+        },
+        "reflectance": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "mu",
+        "crr",
+        "reflectance"
+      ],
+      "additionalProperties": false,
+      "description": "mu: friction coefficient. crr: rolling resistance coefficient. reflectance: fraction of light returned, for line and reflectance sensors."
+    },
+    "Collider": {
+      "oneOf": [
+        {
+          "const": "from-shape"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "box"
+            },
+            "size_mm": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": 5,
+                "maximum": 100000
+              },
+              "minItems": 3,
+              "maxItems": 3
+            }
+          },
+          "required": [
+            "kind",
+            "size_mm"
+          ],
+          "additionalProperties": false,
+          "description": "size_mm is [x, y, z] full extents."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "cylinder"
+            },
+            "size_mm": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": 2.5,
+                "maximum": 100000
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          },
+          "required": [
+            "kind",
+            "size_mm"
+          ],
+          "additionalProperties": false,
+          "description": "size_mm is [radius, height]. Axis along the body z axis."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "sphere"
+            },
+            "size_mm": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": 2.5,
+                "maximum": 100000
+              },
+              "minItems": 1,
+              "maxItems": 1
+            }
+          },
+          "required": [
+            "kind",
+            "size_mm"
+          ],
+          "additionalProperties": false,
+          "description": "size_mm is [radius]."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "convex"
+            },
+            "points_mm": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": -10000000,
+                  "maximum": 10000000
+                },
+                "minItems": 3,
+                "maxItems": 3
+              },
+              "maxItems": 256,
+              "minItems": 4
+            }
+          },
+          "required": [
+            "kind",
+            "points_mm"
+          ],
+          "additionalProperties": false,
+          "description": "Convex hull of 4 to 256 points in the body frame."
+        }
+      ],
+      "description": "Smallest collider dimension is 5 mm (RB-E-THIN): box sides and cylinder height are at least 5, radii at least 2.5."
+    },
+    "BodyPhysics": {
+      "type": "object",
+      "properties": {
+        "collider": {
+          "$ref": "#/$defs/Collider"
+        },
+        "friction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "restitution": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "damping_lin": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "damping_ang": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "fast": {
+          "type": "boolean",
+          "description": "Asks for CCD when physics.ccd is 'auto'."
+        },
+        "noCollideWith": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^bdy_[a-z0-9][a-z0-9_-]{0,63}$",
+            "maxLength": 72
+          },
+          "uniqueItems": true,
+          "maxItems": 64,
+          "description": "Parts that overlap by design, for example a wheel and its fender."
+        }
+      },
+      "required": [
+        "collider",
+        "friction",
+        "restitution",
+        "damping_lin",
+        "damping_ang",
+        "fast"
+      ],
+      "additionalProperties": false,
+      "description": "Keys of the bodies record are mechanical.bodies[].id. damping is in 1/s."
+    },
+    "JointPhysics": {
+      "type": "object",
+      "properties": {
+        "damping": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "friction_nm": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000
+        }
+      },
+      "required": [
+        "damping",
+        "friction_nm"
+      ],
+      "additionalProperties": false,
+      "description": "damping: viscous, N m s/rad. friction_nm: Coulomb, N m."
+    },
+    "WheelSpec": {
+      "type": "object",
+      "properties": {
+        "radius_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 10000
+        },
+        "width_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 10000
+        },
+        "surface_mu": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "crr": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.2
+        }
+      },
+      "required": [
+        "radius_mm",
+        "width_mm",
+        "surface_mu",
+        "crr"
+      ],
+      "additionalProperties": false,
+      "description": "Only for joints of kind wheel."
+    },
+    "Track": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "points_mm": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": -10000000,
+              "maximum": 10000000
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "maxItems": 512,
+          "minItems": 2
+        },
+        "width_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 10000
+        },
+        "reflectance": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "closed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "points_mm",
+        "width_mm",
+        "reflectance",
+        "closed"
+      ],
+      "additionalProperties": false,
+      "description": "A line painted on the floor, in arena floor coordinates."
+    },
+    "StaticBox": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "pose": {
+          "$ref": "#/$defs/Pose"
+        },
+        "size_mm": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 100000
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "surface": {
+          "$ref": "#/$defs/LocalId"
+        }
+      },
+      "required": [
+        "id",
+        "pose",
+        "size_mm",
+        "surface"
+      ],
+      "additionalProperties": false,
+      "description": "Wall or ramp (a box with a tilt in pose)."
+    },
+    "Arena": {
+      "type": "object",
+      "properties": {
+        "floor": {
+          "type": "object",
+          "properties": {
+            "surface": {
+              "$ref": "#/$defs/LocalId"
+            },
+            "size_mm": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 1000000
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          },
+          "required": [
+            "surface",
+            "size_mm"
+          ],
+          "additionalProperties": false
+        },
+        "tracks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Track"
+          },
+          "maxItems": 64
+        },
+        "statics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/StaticBox"
+          },
+          "maxItems": 256
+        },
+        "start": {
+          "type": "object",
+          "properties": {
+            "x_mm": {
+              "type": "number",
+              "minimum": -10000000,
+              "maximum": 10000000
+            },
+            "y_mm": {
+              "type": "number",
+              "minimum": -10000000,
+              "maximum": 10000000
+            },
+            "yaw_deg": {
+              "type": "number",
+              "minimum": -360,
+              "maximum": 360
+            }
+          },
+          "required": [
+            "x_mm",
+            "y_mm",
+            "yaw_deg"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "floor",
+        "tracks",
+        "statics",
+        "start"
+      ],
+      "additionalProperties": false,
+      "description": "Static world. Floor is centred on the world origin."
+    },
+    "SensorBinding": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "component": {
+          "type": "string",
+          "pattern": "^cmp_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "mount": {
+          "type": "string",
+          "pattern": "^mnt_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "query": {
+          "enum": [
+            "ray-fan",
+            "surface-sample",
+            "contact",
+            "joint",
+            "body-rates"
+          ]
+        },
+        "params": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/ParamId"
+          },
+          "additionalProperties": {
+            "type": "number",
+            "minimum": -1000000000000,
+            "maximum": 1000000000000
+          },
+          "maxProperties": 16,
+          "description": "Overrides of descriptor values; each is shown with a \"changed\" mark."
+        }
+      },
+      "required": [
+        "id",
+        "component",
+        "mount",
+        "query"
+      ],
+      "additionalProperties": false
+    },
+    "RosConfig": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string",
+          "pattern": "^/[a-z][a-z0-9_]{0,31}(/[a-z][a-z0-9_]{0,31}){0,3}$",
+          "maxLength": 128
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/LocalId"
+                  },
+                  "kind": {
+                    "const": "robot_state_publisher"
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/LocalId"
+                  },
+                  "kind": {
+                    "const": "diff_drive_controller"
+                  },
+                  "left_joint": {
+                    "type": "string",
+                    "pattern": "^jnt_[a-z0-9][a-z0-9_-]{0,63}$",
+                    "maxLength": 72
+                  },
+                  "right_joint": {
+                    "type": "string",
+                    "pattern": "^jnt_[a-z0-9][a-z0-9_-]{0,63}$",
+                    "maxLength": 72
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "left_joint",
+                  "right_joint"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/LocalId"
+                  },
+                  "kind": {
+                    "const": "user"
+                  },
+                  "source": {
+                    "type": "string",
+                    "pattern": "^src_[a-z0-9][a-z0-9_-]{0,63}$",
+                    "maxLength": 72
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "source"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "maxItems": 32
+        },
+        "sensor_topics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "sensor": {
+                "$ref": "#/$defs/LocalId"
+              },
+              "topic": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]{0,31}(/[a-z][a-z0-9_]{0,31}){0,3}$",
+                "maxLength": 128
+              },
+              "message": {
+                "enum": [
+                  "sensor_msgs/Range",
+                  "sensor_msgs/LaserScan",
+                  "sensor_msgs/Imu",
+                  "sensor_msgs/JointState",
+                  "sensor_msgs/BatteryState"
+                ]
+              }
+            },
+            "required": [
+              "sensor",
+              "topic",
+              "message"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 64
+        }
+      },
+      "required": [
+        "namespace",
+        "nodes",
+        "sensor_topics"
+      ],
+      "additionalProperties": false,
+      "description": "Native ROS-like graph (ROBOTICS 11.2). ROBOTICS 4.3 names this type without defining it; this is its definition. The bridge address and token (ROBOTICS 11.3) never appear here."
+    }
+  }
+}

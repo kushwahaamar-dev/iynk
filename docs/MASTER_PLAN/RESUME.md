@@ -243,3 +243,5 @@ next agent knows where you stopped, and add a line to the log below.
   RS-12 PASS (Yosys WASM, about 800 MB and 79 MB of assets), RS-13 PASS (Rapier and Jolt deterministic across
   browsers). A tool guard refused three agents' REPORT.md writes (RS-06, RS-08, RS-12); the orchestrator restored
   their text unchanged from the transcripts and added the checkers' findings.
+- 2026-10-27 14:35 CDT: Amar's rule: do not start any build phase until he says "okay, pass to go and build". Finish
+  design and the build plan, review and commit them, then stop and wait.

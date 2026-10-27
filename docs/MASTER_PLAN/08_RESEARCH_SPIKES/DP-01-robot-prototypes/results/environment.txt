@@ -1,0 +1,11 @@
+v24.8.0
+Darwin arm64
+52387bf10f1d7748ea506769362f7e6a7c28072629f66b59a0f59a46806f2570  /Users/amar/Codes/ak/simlab/docs/MASTER_PLAN/08_RESEARCH_SPIKES/DP-01-robot-prototypes/src/dbg.mjs
+10b64591c29c7a3b15006cb3a747f4bff10f2202b52678c5e0ce353dd1aec11a  /Users/amar/Codes/ak/simlab/docs/MASTER_PLAN/08_RESEARCH_SPIKES/DP-01-robot-prototypes/src/motor.mjs
+10129645296aa8b852ae0f6c8516b678174585e34c4c330793122ae93a02ece8  /Users/amar/Codes/ak/simlab/docs/MASTER_PLAN/08_RESEARCH_SPIKES/DP-01-robot-prototypes/src/motor2.mjs
+f518ffbc191fe777da0690569aba5e5582eac6404d642458062c03c1d44bb0bd  /Users/amar/Codes/ak/simlab/docs/MASTER_PLAN/08_RESEARCH_SPIKES/DP-01-robot-prototypes/src/order.mjs
+f2a3d56162d8bdf1f141ac74b22a2fbff25cfbcc459ebad86c9b383c385981a6  /Users/amar/Codes/ak/simlab/docs/MASTER_PLAN/08_RESEARCH_SPIKES/DP-01-robot-prototypes/src/prop.mjs
+c5595ac006981f806135864d3fed01b0d6cebe8504e3d536befccb9a0e813d48  /Users/amar/Codes/ak/simlab/docs/MASTER_PLAN/08_RESEARCH_SPIKES/DP-01-robot-prototypes/src/quad.mjs
+f1b65dc8ab73542a0c73cfff970a263e130a9db025b02bd0579c9579fa609465  /Users/amar/Codes/ak/simlab/docs/MASTER_PLAN/08_RESEARCH_SPIKES/DP-01-robot-prototypes/src/run-split-hash.mjs
+43197510e69646a2374a120f0b7bcc80766288974abd66a3f4fbb795c579d3aa  /Users/amar/Codes/ak/simlab/docs/MASTER_PLAN/08_RESEARCH_SPIKES/DP-01-robot-prototypes/src/sa16.mjs
+0a943f0266fe786e6fe8704431adfee999dde014a947baf41e68ddf52510dd02  /Users/amar/Codes/ak/simlab/docs/MASTER_PLAN/08_RESEARCH_SPIKES/DP-01-robot-prototypes/src/split-build.mjs

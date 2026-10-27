@@ -1,0 +1,841 @@
+{
+  "access": {
+    "authority": "advisory",
+    "grants": [],
+    "owners": [
+      "usr_amar"
+    ],
+    "visibility": "private"
+  },
+  "actors": [
+    {
+      "id": "usr_amar",
+      "name": "Amar"
+    }
+  ],
+  "assets": [],
+  "boards": [
+    {
+      "definition": {
+        "ref": "core.uno-r3",
+        "version": "1.0.0"
+      },
+      "firmware": {
+        "entry": "src_blink",
+        "language": "arduino-cpp",
+        "libraries": [],
+        "sources": [
+          "src_blink"
+        ]
+      },
+      "id": "brd_uno",
+      "refdes": "U1"
+    }
+  ],
+  "components": [
+    {
+      "definition": {
+        "ref": "core.breadboard-half",
+        "version": "1.0.0"
+      },
+      "id": "cmp_bb1",
+      "refdes": "BB1"
+    },
+    {
+      "definition": {
+        "ref": "core.led-5mm",
+        "version": "1.0.0"
+      },
+      "id": "cmp_led1",
+      "params": {
+        "color": "red"
+      },
+      "refdes": "LED1"
+    },
+    {
+      "definition": {
+        "ref": "core.resistor",
+        "version": "1.0.0"
+      },
+      "id": "cmp_res1",
+      "params": {
+        "ohms": 220
+      },
+      "refdes": "R1"
+    }
+  ],
+  "dependencies": {
+    "components": [
+      {
+        "interface": {
+          "params": [],
+          "pins": [],
+          "role": "surface"
+        },
+        "origin": "builtin",
+        "ref": "core.breadboard-half",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "params": [
+            {
+              "default": "red",
+              "id": "color",
+              "type": "enum",
+              "values": [
+                "red",
+                "yellow",
+                "green",
+                "blue",
+                "white"
+              ]
+            }
+          ],
+          "pins": [
+            {
+              "designator": "A",
+              "id": "A",
+              "type": "passive"
+            },
+            {
+              "designator": "K",
+              "id": "K",
+              "type": "passive"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.led-5mm",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "params": [
+            {
+              "default": 220,
+              "id": "ohms",
+              "max": 1000000000,
+              "min": 0.001,
+              "type": "number",
+              "unit": "ohm"
+            }
+          ],
+          "pins": [
+            {
+              "designator": "1",
+              "id": "P1",
+              "type": "passive"
+            },
+            {
+              "designator": "2",
+              "id": "P2",
+              "type": "passive"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.resistor",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "groups": [
+            {
+              "id": "g_D11",
+              "kind": "internal-short",
+              "pins": [
+                "D11",
+                "ICSP_4"
+              ]
+            },
+            {
+              "id": "g_D12",
+              "kind": "internal-short",
+              "pins": [
+                "D12",
+                "ICSP_1"
+              ]
+            },
+            {
+              "id": "g_D13",
+              "kind": "internal-short",
+              "pins": [
+                "D13",
+                "ICSP_3"
+              ]
+            },
+            {
+              "id": "g_GND",
+              "kind": "internal-short",
+              "pins": [
+                "GND",
+                "POWER_6",
+                "POWER_7",
+                "ICSP_6",
+                "ICSP1_6"
+              ]
+            },
+            {
+              "id": "g_RESET",
+              "kind": "internal-short",
+              "pins": [
+                "RESET",
+                "ICSP_5"
+              ]
+            },
+            {
+              "id": "g_P5V",
+              "kind": "internal-short",
+              "pins": [
+                "P5V",
+                "ICSP_2",
+                "ICSP1_2"
+              ]
+            }
+          ],
+          "params": [],
+          "pins": [
+            {
+              "designator": "D0",
+              "header": "IOL",
+              "id": "D0",
+              "net": "D0",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D1",
+              "header": "IOL",
+              "id": "D1",
+              "net": "D1",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D2",
+              "header": "IOL",
+              "id": "D2",
+              "net": "D2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D3",
+              "header": "IOL",
+              "id": "D3",
+              "net": "D3",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D4",
+              "header": "IOL",
+              "id": "D4",
+              "net": "D4",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D5",
+              "header": "IOL",
+              "id": "D5",
+              "net": "D5",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D6",
+              "header": "IOL",
+              "id": "D6",
+              "net": "D6",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D7",
+              "header": "IOL",
+              "id": "D7",
+              "net": "D7",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D8",
+              "header": "IOH",
+              "id": "D8",
+              "net": "D8",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D9",
+              "header": "IOH",
+              "id": "D9",
+              "net": "D9",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D10",
+              "header": "IOH",
+              "id": "D10",
+              "net": "D10",
+              "type": "digital_io"
+            },
+            {
+              "designator": "~D11",
+              "header": "IOH",
+              "id": "D11",
+              "net": "D11",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D12",
+              "header": "IOH",
+              "id": "D12",
+              "net": "D12",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D13",
+              "header": "IOH",
+              "id": "D13",
+              "net": "D13",
+              "type": "digital_io"
+            },
+            {
+              "designator": "GND",
+              "header": "IOH",
+              "id": "GND",
+              "net": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "AREF",
+              "header": "IOH",
+              "id": "AREF",
+              "net": "AREF",
+              "type": "analog_in"
+            },
+            {
+              "designator": "SDA",
+              "header": "IOH",
+              "id": "SDA",
+              "net": "SDA",
+              "type": "digital_io"
+            },
+            {
+              "designator": "SCL",
+              "header": "IOH",
+              "id": "SCL",
+              "net": "SCL",
+              "type": "digital_io"
+            },
+            {
+              "designator": "NC",
+              "header": "POWER",
+              "id": "NC",
+              "net": "NC",
+              "type": "nc"
+            },
+            {
+              "designator": "IOREF",
+              "header": "POWER",
+              "id": "IOREF",
+              "net": "IOREF",
+              "type": "passive"
+            },
+            {
+              "designator": "RESET",
+              "header": "POWER",
+              "id": "RESET",
+              "net": "RESET",
+              "type": "digital_io"
+            },
+            {
+              "designator": "3V3",
+              "header": "POWER",
+              "id": "P3V3",
+              "net": "3V3",
+              "type": "power_io"
+            },
+            {
+              "designator": "5V",
+              "header": "POWER",
+              "id": "P5V",
+              "net": "5V",
+              "type": "power_io"
+            },
+            {
+              "designator": "GND",
+              "header": "POWER",
+              "id": "POWER_6",
+              "net": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "GND",
+              "header": "POWER",
+              "id": "POWER_7",
+              "net": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "VIN",
+              "header": "POWER",
+              "id": "VIN",
+              "net": "VIN",
+              "type": "power_io"
+            },
+            {
+              "designator": "A0",
+              "header": "AD",
+              "id": "A0",
+              "net": "A0",
+              "type": "digital_io"
+            },
+            {
+              "designator": "A1",
+              "header": "AD",
+              "id": "A1",
+              "net": "A1",
+              "type": "digital_io"
+            },
+            {
+              "designator": "A2",
+              "header": "AD",
+              "id": "A2",
+              "net": "A2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "A3",
+              "header": "AD",
+              "id": "A3",
+              "net": "A3",
+              "type": "digital_io"
+            },
+            {
+              "designator": "A4",
+              "header": "AD",
+              "id": "A4",
+              "net": "A4",
+              "type": "digital_io"
+            },
+            {
+              "designator": "A5",
+              "header": "AD",
+              "id": "A5",
+              "net": "A5",
+              "type": "digital_io"
+            },
+            {
+              "designator": "MISO",
+              "header": "ICSP",
+              "id": "ICSP_1",
+              "net": "D12",
+              "type": "digital_io"
+            },
+            {
+              "designator": "5V",
+              "header": "ICSP",
+              "id": "ICSP_2",
+              "net": "5V",
+              "type": "power_io"
+            },
+            {
+              "designator": "SCK",
+              "header": "ICSP",
+              "id": "ICSP_3",
+              "net": "D13",
+              "type": "digital_io"
+            },
+            {
+              "designator": "MOSI",
+              "header": "ICSP",
+              "id": "ICSP_4",
+              "net": "D11",
+              "type": "digital_io"
+            },
+            {
+              "designator": "RESET",
+              "header": "ICSP",
+              "id": "ICSP_5",
+              "net": "RESET",
+              "type": "digital_io"
+            },
+            {
+              "designator": "GND",
+              "header": "ICSP",
+              "id": "ICSP_6",
+              "net": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "MISO2",
+              "header": "ICSP1",
+              "id": "MISO2",
+              "net": "MISO2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "5V",
+              "header": "ICSP1",
+              "id": "ICSP1_2",
+              "net": "5V",
+              "type": "power_io"
+            },
+            {
+              "designator": "SCK2",
+              "header": "ICSP1",
+              "id": "SCK2",
+              "net": "SCK2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "MOSI2",
+              "header": "ICSP1",
+              "id": "MOSI2",
+              "net": "MOSI2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "RESET2",
+              "header": "ICSP1",
+              "id": "RESET2",
+              "net": "RESET2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "GND",
+              "header": "ICSP1",
+              "id": "ICSP1_6",
+              "net": "GND",
+              "type": "ground"
+            }
+          ],
+          "role": "board"
+        },
+        "origin": "builtin",
+        "ref": "core.uno-r3",
+        "version": "1.0.0"
+      }
+    ],
+    "libraries": []
+  },
+  "format": "iynk.project",
+  "history": {
+    "baseChain": "6c5eb0562dda4f52ce5bef2a0414f315af74875d94ee6c807161cca868b4dbc8",
+    "baseRevision": 0,
+    "checkpoints": [],
+    "ops": []
+  },
+  "id": "prj_uno-blink-d12",
+  "license": {
+    "spdx": "LicenseRef-iynk-pending"
+  },
+  "meta": {
+    "createdAt": "2026-10-27T12:00:00.000Z",
+    "description": "Uno R3, a 220 ohm resistor and a red LED on a half breadboard, blinking from pin 12. Starter template.",
+    "kind": "template",
+    "locale": "en",
+    "tags": [
+      "uno",
+      "blink",
+      "starter"
+    ],
+    "title": "Blink an LED on D12",
+    "updatedAt": "2026-10-27T12:00:00.000Z"
+  },
+  "nets": [
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "D12"
+        },
+        {
+          "c": "cmp_res1",
+          "p": "P1"
+        }
+      ],
+      "id": "net_d12",
+      "name": "D12"
+    },
+    {
+      "class": "ground",
+      "connections": [
+        {
+          "c": "brd_uno",
+          "p": "GND"
+        },
+        {
+          "c": "cmp_led1",
+          "p": "K"
+        }
+      ],
+      "id": "net_gnd",
+      "name": "GND"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "cmp_led1",
+          "p": "A"
+        },
+        {
+          "c": "cmp_res1",
+          "p": "P2"
+        }
+      ],
+      "id": "net_led"
+    }
+  ],
+  "parameters": [],
+  "provenance": {
+    "createdBy": "usr_amar",
+    "createdWith": {
+      "app": "iynk",
+      "version": "0.1.0-spec"
+    },
+    "origin": {
+      "kind": "template",
+      "template": "iynk/templates/uno-blink-d12"
+    }
+  },
+  "revision": 0,
+  "schemaVersion": "1.1",
+  "simulation": {
+    "duration_ms": 4000,
+    "faults": [
+      {
+        "cause_id": "led.reversed",
+        "enabled": false,
+        "id": "flt_led_rev",
+        "injectable": {
+          "component": "cmp_led1",
+          "id": "reversed"
+        },
+        "kind": "reversed-part",
+        "note": "Turn on to flip the LED and see why it stays dark.",
+        "symptom_ids": [
+          "led.dark"
+        ],
+        "target": {
+          "component": "cmp_led1"
+        }
+      }
+    ],
+    "runtimes": [
+      {
+        "board": "brd_uno",
+        "engine": "iynk-interp",
+        "id": "rtm_main"
+      }
+    ],
+    "seed": 1,
+    "solver": {
+      "engine": "iynk-mna"
+    },
+    "world": {
+      "inputs": [],
+      "script": []
+    }
+  },
+  "sources": [
+    {
+      "board": "brd_uno",
+      "content": "const int LED_PIN = 12;\n\nvoid setup() {\n  pinMode(LED_PIN, OUTPUT);\n}\n\nvoid loop() {\n  digitalWrite(LED_PIN, HIGH);\n  delay(500);\n  digitalWrite(LED_PIN, LOW);\n  delay(500);\n}\n",
+      "id": "src_blink",
+      "language": "arduino-cpp",
+      "path": "blink.ino",
+      "role": "firmware"
+    }
+  ],
+  "tests": [
+    {
+      "checks": [
+        {
+          "id": "c1",
+          "kind": "pin-toggles",
+          "label": "D12 toggles with a period of about 1 s",
+          "minCycles": 3,
+          "periodMs": [
+            900,
+            1100
+          ],
+          "pin": "D12",
+          "visibility": "visible"
+        },
+        {
+          "atMs": 250,
+          "id": "c2",
+          "kind": "node-voltage",
+          "label": "The LED node sits below 3 V while the LED is lit",
+          "net": "net_led",
+          "visibility": "visible",
+          "volts": [
+            1.5,
+            3
+          ]
+        }
+      ],
+      "id": "main",
+      "name": "LED blinks about once a second",
+      "runMs": 4000
+    }
+  ],
+  "views": [
+    {
+      "id": "vw_bb",
+      "kind": "breadboard",
+      "name": "Breadboard",
+      "placements": [
+        {
+          "c": "brd_uno",
+          "x_mm": -90,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_bb1",
+          "x_mm": 0,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_led1",
+          "legs": {
+            "A": "c14",
+            "K": "c15"
+          },
+          "x_mm": 0,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_res1",
+          "legs": {
+            "P1": "b10",
+            "P2": "b14"
+          },
+          "x_mm": 0,
+          "y_mm": 0
+        }
+      ],
+      "surface": "cmp_bb1",
+      "wires": [
+        {
+          "color": "orange",
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D12"
+          },
+          "id": "wir_b1",
+          "net": "net_d12",
+          "to": {
+            "hole": "a10",
+            "kind": "hole",
+            "surface": "cmp_bb1"
+          }
+        },
+        {
+          "color": "black",
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "GND"
+          },
+          "id": "wir_b2",
+          "net": "net_gnd",
+          "to": {
+            "hole": "a15",
+            "kind": "hole",
+            "surface": "cmp_bb1"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vw_sch",
+      "kind": "schematic",
+      "name": "Schematic",
+      "placements": [
+        {
+          "c": "brd_uno",
+          "x_mm": 0,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_led1",
+          "rotation_deg": 90,
+          "x_mm": 90,
+          "y_mm": 20
+        },
+        {
+          "c": "cmp_res1",
+          "rotation_deg": 90,
+          "x_mm": 60,
+          "y_mm": 0
+        }
+      ],
+      "wires": [
+        {
+          "from": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "D12"
+          },
+          "id": "wir_s1",
+          "net": "net_d12",
+          "route_mm": [
+            [
+              30,
+              0
+            ],
+            [
+              60,
+              -10
+            ]
+          ],
+          "to": {
+            "c": "cmp_res1",
+            "kind": "pin",
+            "p": "P1"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_res1",
+            "kind": "pin",
+            "p": "P2"
+          },
+          "id": "wir_s2",
+          "net": "net_led",
+          "to": {
+            "c": "cmp_led1",
+            "kind": "pin",
+            "p": "A"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_led1",
+            "kind": "pin",
+            "p": "K"
+          },
+          "id": "wir_s3",
+          "net": "net_gnd",
+          "route_mm": [
+            [
+              90,
+              60
+            ],
+            [
+              30,
+              60
+            ]
+          ],
+          "to": {
+            "c": "brd_uno",
+            "kind": "pin",
+            "p": "GND"
+          }
+        }
+      ]
+    }
+  ]
+}

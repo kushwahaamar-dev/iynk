@@ -65,3 +65,6 @@ __pycache__/
 /docs/SPEC.md
 /scripts/workflows/
 /scripts/handoff-status.sh
+
+# Tool installs inside the master plan docs (schema checks, spikes)
+docs/MASTER_PLAN/**/node_modules/

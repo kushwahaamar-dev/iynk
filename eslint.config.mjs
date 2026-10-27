@@ -22,6 +22,8 @@ const eslintConfig = defineConfig([
     "playwright-report/**",
     "blob-report/**",
     "coverage/**",
+    // Spike and schema-check scripts in the master plan are throwaway, not app source.
+    "docs/MASTER_PLAN/**",
   ]),
 ]);
 

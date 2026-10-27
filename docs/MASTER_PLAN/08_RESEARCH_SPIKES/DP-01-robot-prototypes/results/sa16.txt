@@ -1,0 +1,5 @@
+A {"scale":1,"mass_kg":0.15707963267948968,"omega":50.929473876953125,"expect":50.92958178940649,"errPct":-0.00021188560670353044}
+A {"scale":10,"mass_kg":0.15707963267948966,"omega":50.93018341064453,"expect":50.92958178940651,"errPct":0.0011812805385023166}
+B {"scale":1,"final_m":[0.0005,0.0498,-3.9855],"yawDeg":-0.03,"travelled_m":3.985546624804437,"lateralPctOfTravel":0.013}
+B {"scale":10,"final_m":[-0.0079,0.0498,-3.9862],"yawDeg":0.071,"travelled_m":3.9862238348867627,"lateralPctOfTravel":0.199}
+node $f.mjs  0.96s user 0.04s system 177% cpu 0.560 total

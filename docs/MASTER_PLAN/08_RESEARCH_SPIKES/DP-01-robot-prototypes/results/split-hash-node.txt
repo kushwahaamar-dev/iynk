@@ -1,0 +1,1 @@
+{"artifact":"rapier.split.mjs + rapier_wasm3d_bg.wasm","finalHash":"c6a8e92d6174bd66","hashes":["b2fb22d2de06d066","1a8b698425c46f1e","0f3886f9a3a66e4a","84a49f84d1dc1435","e84b3d49d130dce0","956d8c7d0f9b34a2","09eef503933f9020","dac58cac7101881d","c5158ea621f61bec","c6a8e92d6174bd66"],"nanWords":0,"expected":"c6a8e92d6174bd66","match":true}

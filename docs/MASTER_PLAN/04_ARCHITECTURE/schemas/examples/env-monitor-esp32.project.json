@@ -1,0 +1,1179 @@
+{
+  "access": {
+    "authority": "advisory",
+    "grants": [
+      {
+        "actor": "usr_friend1",
+        "role": "editor"
+      }
+    ],
+    "owners": [
+      "usr_amar"
+    ],
+    "visibility": "buddies"
+  },
+  "actors": [
+    {
+      "id": "usr_amar",
+      "name": "Amar"
+    },
+    {
+      "id": "usr_friend1",
+      "name": "Friend 1"
+    }
+  ],
+  "assets": [],
+  "boards": [
+    {
+      "definition": {
+        "ref": "core.esp32-devkitc",
+        "version": "1.0.0"
+      },
+      "firmware": {
+        "entry": "src_main",
+        "language": "arduino-cpp",
+        "libraries": [
+          "Wire",
+          "Adafruit_BME280",
+          "Adafruit_SSD1306"
+        ],
+        "sources": [
+          "src_main",
+          "src_display"
+        ]
+      },
+      "id": "brd_esp",
+      "powerInput": "pin5",
+      "refdes": "U1"
+    }
+  ],
+  "components": [
+    {
+      "definition": {
+        "ref": "core.bme280-module",
+        "version": "1.0.0"
+      },
+      "id": "cmp_bme",
+      "label": "Temperature, humidity",
+      "params": {
+        "address": 118
+      },
+      "refdes": "U2"
+    },
+    {
+      "definition": {
+        "ref": "core.ssd1306",
+        "version": "1.0.0"
+      },
+      "id": "cmp_oled",
+      "label": "Display",
+      "params": {
+        "address": 60
+      },
+      "refdes": "U3"
+    },
+    {
+      "definition": {
+        "ref": "core.supply-bench-dc",
+        "version": "1.0.0"
+      },
+      "id": "cmp_ps1",
+      "params": {
+        "limit_a": 0.5,
+        "volts": 5
+      },
+      "refdes": "PS1"
+    },
+    {
+      "definition": {
+        "ref": "core.resistor",
+        "version": "1.0.0"
+      },
+      "id": "cmp_r1",
+      "label": "SDA pull-up",
+      "params": {
+        "ohms": 4700
+      },
+      "refdes": "R1"
+    },
+    {
+      "definition": {
+        "ref": "core.resistor",
+        "version": "1.0.0"
+      },
+      "id": "cmp_r2",
+      "label": "SCL pull-up",
+      "params": {
+        "ohms": 4700
+      },
+      "refdes": "R2"
+    }
+  ],
+  "dependencies": {
+    "components": [
+      {
+        "interface": {
+          "params": [
+            {
+              "default": 118,
+              "id": "address",
+              "max": 127,
+              "min": 0,
+              "type": "number",
+              "unit": "1"
+            }
+          ],
+          "pins": [
+            {
+              "designator": "VCC",
+              "id": "VCC",
+              "type": "power_in"
+            },
+            {
+              "designator": "GND",
+              "id": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "SCL",
+              "id": "SCL",
+              "type": "digital_in"
+            },
+            {
+              "designator": "SDA",
+              "id": "SDA",
+              "type": "open_drain"
+            },
+            {
+              "designator": "CSB",
+              "id": "CSB",
+              "type": "digital_in"
+            },
+            {
+              "designator": "SDO",
+              "id": "SDO",
+              "type": "digital_in"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.bme280-module",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "groups": [
+            {
+              "id": "g_GND",
+              "kind": "internal-short",
+              "pins": [
+                "GND",
+                "J3_1",
+                "J3_7"
+              ]
+            }
+          ],
+          "params": [],
+          "pins": [
+            {
+              "designator": "3V3",
+              "header": "J2",
+              "id": "P3V3",
+              "type": "power_io"
+            },
+            {
+              "designator": "EN",
+              "header": "J2",
+              "id": "EN",
+              "type": "digital_io"
+            },
+            {
+              "designator": "VP",
+              "header": "J2",
+              "id": "GPIO36",
+              "type": "digital_io"
+            },
+            {
+              "designator": "VN",
+              "header": "J2",
+              "id": "GPIO39",
+              "type": "digital_io"
+            },
+            {
+              "designator": "34",
+              "header": "J2",
+              "id": "GPIO34",
+              "type": "digital_io"
+            },
+            {
+              "designator": "35",
+              "header": "J2",
+              "id": "GPIO35",
+              "type": "digital_io"
+            },
+            {
+              "designator": "32",
+              "header": "J2",
+              "id": "GPIO32",
+              "type": "digital_io"
+            },
+            {
+              "designator": "33",
+              "header": "J2",
+              "id": "GPIO33",
+              "type": "digital_io"
+            },
+            {
+              "designator": "25",
+              "header": "J2",
+              "id": "GPIO25",
+              "type": "digital_io"
+            },
+            {
+              "designator": "26",
+              "header": "J2",
+              "id": "GPIO26",
+              "type": "digital_io"
+            },
+            {
+              "designator": "27",
+              "header": "J2",
+              "id": "GPIO27",
+              "type": "digital_io"
+            },
+            {
+              "designator": "14",
+              "header": "J2",
+              "id": "GPIO14",
+              "type": "digital_io"
+            },
+            {
+              "designator": "12",
+              "header": "J2",
+              "id": "GPIO12",
+              "type": "digital_io"
+            },
+            {
+              "designator": "GND",
+              "header": "J2",
+              "id": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "13",
+              "header": "J2",
+              "id": "GPIO13",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D2",
+              "header": "J2",
+              "id": "J2_16",
+              "type": "nc"
+            },
+            {
+              "designator": "D3",
+              "header": "J2",
+              "id": "J2_17",
+              "type": "nc"
+            },
+            {
+              "designator": "CMD",
+              "header": "J2",
+              "id": "J2_18",
+              "type": "nc"
+            },
+            {
+              "designator": "5V",
+              "header": "J2",
+              "id": "P5V",
+              "type": "power_io"
+            },
+            {
+              "designator": "GND",
+              "header": "J3",
+              "id": "J3_1",
+              "type": "ground"
+            },
+            {
+              "designator": "23",
+              "header": "J3",
+              "id": "GPIO23",
+              "type": "digital_io"
+            },
+            {
+              "designator": "22",
+              "header": "J3",
+              "id": "GPIO22",
+              "type": "digital_io"
+            },
+            {
+              "designator": "TX",
+              "header": "J3",
+              "id": "GPIO1",
+              "type": "digital_io"
+            },
+            {
+              "designator": "RX",
+              "header": "J3",
+              "id": "GPIO3",
+              "type": "digital_io"
+            },
+            {
+              "designator": "21",
+              "header": "J3",
+              "id": "GPIO21",
+              "type": "digital_io"
+            },
+            {
+              "designator": "GND",
+              "header": "J3",
+              "id": "J3_7",
+              "type": "ground"
+            },
+            {
+              "designator": "19",
+              "header": "J3",
+              "id": "GPIO19",
+              "type": "digital_io"
+            },
+            {
+              "designator": "18",
+              "header": "J3",
+              "id": "GPIO18",
+              "type": "digital_io"
+            },
+            {
+              "designator": "5",
+              "header": "J3",
+              "id": "GPIO5",
+              "type": "digital_io"
+            },
+            {
+              "designator": "17",
+              "header": "J3",
+              "id": "GPIO17",
+              "type": "digital_io"
+            },
+            {
+              "designator": "16",
+              "header": "J3",
+              "id": "GPIO16",
+              "type": "digital_io"
+            },
+            {
+              "designator": "4",
+              "header": "J3",
+              "id": "GPIO4",
+              "type": "digital_io"
+            },
+            {
+              "designator": "0",
+              "header": "J3",
+              "id": "GPIO0",
+              "type": "digital_io"
+            },
+            {
+              "designator": "2",
+              "header": "J3",
+              "id": "GPIO2",
+              "type": "digital_io"
+            },
+            {
+              "designator": "15",
+              "header": "J3",
+              "id": "GPIO15",
+              "type": "digital_io"
+            },
+            {
+              "designator": "D1",
+              "header": "J3",
+              "id": "J3_17",
+              "type": "nc"
+            },
+            {
+              "designator": "D0",
+              "header": "J3",
+              "id": "J3_18",
+              "type": "nc"
+            },
+            {
+              "designator": "CLK",
+              "header": "J3",
+              "id": "J3_19",
+              "type": "nc"
+            }
+          ],
+          "role": "board"
+        },
+        "origin": "builtin",
+        "ref": "core.esp32-devkitc",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "params": [
+            {
+              "default": 220,
+              "id": "ohms",
+              "max": 1000000000,
+              "min": 0.001,
+              "type": "number",
+              "unit": "ohm"
+            }
+          ],
+          "pins": [
+            {
+              "designator": "1",
+              "id": "P1",
+              "type": "passive"
+            },
+            {
+              "designator": "2",
+              "id": "P2",
+              "type": "passive"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.resistor",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "params": [
+            {
+              "default": 60,
+              "id": "address",
+              "max": 127,
+              "min": 0,
+              "type": "number",
+              "unit": "1"
+            }
+          ],
+          "pins": [
+            {
+              "designator": "GND",
+              "id": "GND",
+              "type": "ground"
+            },
+            {
+              "designator": "VCC",
+              "id": "VCC",
+              "type": "power_in"
+            },
+            {
+              "designator": "SCL",
+              "id": "SCL",
+              "type": "digital_in"
+            },
+            {
+              "designator": "SDA",
+              "id": "SDA",
+              "type": "open_drain"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.ssd1306",
+        "version": "1.0.0"
+      },
+      {
+        "interface": {
+          "params": [
+            {
+              "default": 5,
+              "id": "volts",
+              "max": 30,
+              "min": 0,
+              "type": "number",
+              "unit": "V"
+            },
+            {
+              "default": 1,
+              "id": "limit_a",
+              "max": 10,
+              "min": 0,
+              "type": "number",
+              "unit": "A"
+            }
+          ],
+          "pins": [
+            {
+              "designator": "+",
+              "id": "POS",
+              "type": "power_out"
+            },
+            {
+              "designator": "-",
+              "id": "NEG",
+              "type": "ground"
+            }
+          ],
+          "role": "part"
+        },
+        "origin": "builtin",
+        "ref": "core.supply-bench-dc",
+        "version": "1.0.0"
+      }
+    ],
+    "libraries": [
+      {
+        "ecosystem": "builtin-shim",
+        "name": "Wire"
+      },
+      {
+        "ecosystem": "arduino",
+        "name": "Adafruit BME280 Library",
+        "version": "2.2.4"
+      },
+      {
+        "ecosystem": "arduino",
+        "name": "Adafruit SSD1306",
+        "version": "2.5.9"
+      }
+    ],
+    "requires": {
+      "features": [
+        "peripheral-i2c"
+      ],
+      "minApp": "0.1.0"
+    }
+  },
+  "exports": [
+    {
+      "appVersion": "0.1.0-spec",
+      "at": "2026-10-26T18:10:00.000Z",
+      "format": "arduino-sketch-zip",
+      "loss": [
+        "library-versions-unpinned"
+      ],
+      "revision": 142,
+      "sha256": "14813e8de0095b94c280ff8652ca03e9f2eab97d46577bf3919591bdb51ec020"
+    }
+  ],
+  "format": "iynk.project",
+  "history": {
+    "baseChain": "b0c80a732d63732e783d15eb101c674a2eab61a504a87de4d515e1a3fce6859f",
+    "baseRevision": 140,
+    "checkpoints": [
+      {
+        "at": "2026-10-26T18:00:00.000Z",
+        "author": "usr_amar",
+        "kind": "named",
+        "label": "Sensor reads, display works",
+        "revision": 140,
+        "stateHash": "097630efe2ac0c752bc7ad7a4650ebe1e9f1a820cf67cf4d461af110aa6d127c",
+        "store": "container"
+      }
+    ],
+    "ops": [
+      {
+        "at": "2026-10-26T18:02:11.000Z",
+        "author": {
+          "actor": "usr_friend1",
+          "kind": "user"
+        },
+        "base": 140,
+        "op": {
+          "baseSeq": 140,
+          "del": 0,
+          "id": "src_main",
+          "ins": "  Serial.println(\"boot\");\n",
+          "k": "source.edit",
+          "pos": 130
+        },
+        "opId": "op_a1b2c3d4",
+        "seq": 141
+      },
+      {
+        "at": "2026-10-26T18:03:40.000Z",
+        "author": {
+          "actor": "usr_amar",
+          "kind": "user"
+        },
+        "base": 141,
+        "op": {
+          "fault": {
+            "cause_id": "i2c.sda-scl-swapped",
+            "enabled": false,
+            "id": "flt_swap",
+            "kind": "wrong-connection",
+            "note": "Swap SDA and SCL on the board to see the I2C scan fail.",
+            "symptom_ids": [
+              "i2c.no-ack"
+            ],
+            "target": {
+              "nets": [
+                "net_scl",
+                "net_sda"
+              ]
+            }
+          },
+          "k": "fault.set"
+        },
+        "opId": "op_e5f6a7b8",
+        "seq": 142
+      }
+    ]
+  },
+  "id": "prj_env-monitor",
+  "license": {
+    "spdx": "LicenseRef-iynk-pending"
+  },
+  "mechanical": {
+    "bodies": [
+      {
+        "frame": "frm_case",
+        "id": "bdy_case",
+        "mass_g": 50,
+        "name": "Case",
+        "shape": {
+          "kind": "box",
+          "size_mm": [
+            90,
+            55,
+            25
+          ]
+        }
+      }
+    ],
+    "frames": [
+      {
+        "id": "frm_case",
+        "name": "Case",
+        "parent": "world",
+        "pose": {
+          "position_mm": [
+            0,
+            0,
+            0
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    ],
+    "joints": [],
+    "mounts": [
+      {
+        "component": "brd_esp",
+        "frame": "frm_case",
+        "id": "mnt_esp",
+        "pose": {
+          "position_mm": [
+            10,
+            8,
+            3
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "component": "cmp_oled",
+        "frame": "frm_case",
+        "id": "mnt_oled",
+        "pose": {
+          "position_mm": [
+            62,
+            12,
+            22
+          ],
+          "rpy_deg": [
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "meta": {
+    "createdAt": "2026-10-20T09:00:00.000Z",
+    "description": "ESP32 DevKitC reading a BME280 over I2C and showing temperature and humidity on an SSD1306 OLED. Powered from a 5 V bench supply.",
+    "kind": "project",
+    "locale": "en",
+    "tags": [
+      "esp32",
+      "i2c",
+      "sensor",
+      "display"
+    ],
+    "title": "Environmental monitor",
+    "updatedAt": "2026-10-26T18:03:40.000Z"
+  },
+  "nets": [
+    {
+      "class": "power",
+      "connections": [
+        {
+          "c": "brd_esp",
+          "p": "P3V3"
+        },
+        {
+          "c": "cmp_bme",
+          "p": "CSB"
+        },
+        {
+          "c": "cmp_bme",
+          "p": "VCC"
+        },
+        {
+          "c": "cmp_oled",
+          "p": "VCC"
+        },
+        {
+          "c": "cmp_r1",
+          "p": "P1"
+        },
+        {
+          "c": "cmp_r2",
+          "p": "P1"
+        }
+      ],
+      "id": "net_3v3",
+      "name": "3V3"
+    },
+    {
+      "class": "power",
+      "connections": [
+        {
+          "c": "brd_esp",
+          "p": "P5V"
+        },
+        {
+          "c": "cmp_ps1",
+          "p": "POS"
+        }
+      ],
+      "id": "net_5v",
+      "name": "5V"
+    },
+    {
+      "class": "ground",
+      "connections": [
+        {
+          "c": "brd_esp",
+          "p": "GND"
+        },
+        {
+          "c": "cmp_bme",
+          "p": "GND"
+        },
+        {
+          "c": "cmp_bme",
+          "p": "SDO"
+        },
+        {
+          "c": "cmp_oled",
+          "p": "GND"
+        },
+        {
+          "c": "cmp_ps1",
+          "p": "NEG"
+        }
+      ],
+      "id": "net_gnd",
+      "name": "GND"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_esp",
+          "p": "GPIO22"
+        },
+        {
+          "c": "cmp_bme",
+          "p": "SCL"
+        },
+        {
+          "c": "cmp_oled",
+          "p": "SCL"
+        },
+        {
+          "c": "cmp_r2",
+          "p": "P2"
+        }
+      ],
+      "id": "net_scl",
+      "name": "SCL"
+    },
+    {
+      "class": "signal",
+      "connections": [
+        {
+          "c": "brd_esp",
+          "p": "GPIO21"
+        },
+        {
+          "c": "cmp_bme",
+          "p": "SDA"
+        },
+        {
+          "c": "cmp_oled",
+          "p": "SDA"
+        },
+        {
+          "c": "cmp_r1",
+          "p": "P2"
+        }
+      ],
+      "id": "net_sda",
+      "name": "SDA"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "par_room",
+      "kind": "number",
+      "label": "Room temperature",
+      "max": 60,
+      "min": -20,
+      "name": "room_temp",
+      "step": 0.5,
+      "unit": "degC",
+      "value": 22
+    }
+  ],
+  "provenance": {
+    "contributors": [
+      {
+        "actor": "usr_amar",
+        "role": "author"
+      },
+      {
+        "actor": "usr_friend1",
+        "role": "editor"
+      }
+    ],
+    "createdBy": "usr_amar",
+    "createdWith": {
+      "app": "iynk",
+      "version": "0.1.0-spec"
+    },
+    "origin": {
+      "kind": "blank"
+    }
+  },
+  "revision": 142,
+  "schemaVersion": "1.1",
+  "simulation": {
+    "duration_ms": 5000,
+    "environment": {
+      "ambient_degC": 22,
+      "supply_V": 5
+    },
+    "faults": [
+      {
+        "cause_id": "i2c.sda-scl-swapped",
+        "enabled": false,
+        "id": "flt_swap",
+        "kind": "wrong-connection",
+        "note": "Swap SDA and SCL on the board to see the I2C scan fail.",
+        "symptom_ids": [
+          "i2c.no-ack"
+        ],
+        "target": {
+          "nets": [
+            "net_scl",
+            "net_sda"
+          ]
+        }
+      }
+    ],
+    "instruments": [
+      {
+        "id": "ins_serial",
+        "kind": "serial-monitor",
+        "settings": {
+          "baud": 115200
+        },
+        "target": {
+          "component": "brd_esp"
+        }
+      }
+    ],
+    "runtimes": [
+      {
+        "board": "brd_esp",
+        "engine": "iynk-interp",
+        "id": "rtm_esp"
+      }
+    ],
+    "seed": 7,
+    "solver": {
+      "engine": "iynk-mna"
+    },
+    "world": {
+      "inputs": [
+        {
+          "component": "cmp_bme",
+          "default": 22,
+          "device": {
+            "address": 118,
+            "device": "bme280",
+            "kind": "registry"
+          },
+          "gesture": "slide",
+          "id": "temp",
+          "label": "Room temperature",
+          "max": 60,
+          "min": -20,
+          "pins": [
+            {
+              "c": "brd_esp",
+              "p": "GPIO21"
+            },
+            {
+              "c": "brd_esp",
+              "p": "GPIO22"
+            }
+          ],
+          "quantity": "temperature-c",
+          "step": 0.5,
+          "unit": "degC"
+        }
+      ],
+      "script": [
+        {
+          "input": "temp",
+          "t": 2000,
+          "value": 30
+        },
+        {
+          "input": "temp",
+          "t": 4000,
+          "value": 18
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "board": "brd_esp",
+      "content": "#pragma once\n#include <Adafruit_SSD1306.h>\n\nstatic Adafruit_SSD1306 oled(128, 64, &Wire, -1);\n\ninline void displayBegin() {\n  oled.begin(SSD1306_SWITCHCAPVCC, 0x3C);\n  oled.clearDisplay();\n}\n\ninline void displayShow(float t, float h) {\n  oled.clearDisplay();\n  oled.setTextSize(2);\n  oled.setTextColor(SSD1306_WHITE);\n  oled.setCursor(0, 0);\n  oled.print(t, 1);\n  oled.println(\" C\");\n  oled.print(h, 0);\n  oled.println(\" %\");\n  oled.display();\n}\n",
+      "id": "src_display",
+      "language": "cpp",
+      "path": "display.h",
+      "role": "firmware"
+    },
+    {
+      "board": "brd_esp",
+      "content": "#include <Wire.h>\n#include <Adafruit_BME280.h>\n#include \"display.h\"\n\nAdafruit_BME280 bme;\n\nvoid setup() {\n  Serial.begin(115200);\n  Serial.println(\"boot\");\n  Wire.begin(21, 22);\n  if (!bme.begin(0x76)) {\n    Serial.println(\"BME280 not found\");\n    while (true) delay(1000);\n  }\n  displayBegin();\n}\n\nvoid loop() {\n  float t = bme.readTemperature();\n  float h = bme.readHumidity();\n  Serial.print(\"T=\");\n  Serial.print(t, 1);\n  Serial.print(\" H=\");\n  Serial.println(h, 0);\n  displayShow(t, h);\n  delay(1000);\n}\n",
+      "id": "src_main",
+      "language": "arduino-cpp",
+      "path": "monitor.ino",
+      "role": "firmware"
+    },
+    {
+      "content": "# Environmental monitor\n\nI2C addresses: BME280 0x76 (SDO to GND), SSD1306 0x3C.\n",
+      "id": "src_notes",
+      "language": "markdown",
+      "path": "NOTES.md",
+      "role": "doc"
+    }
+  ],
+  "tests": [
+    {
+      "checks": [
+        {
+          "atMs": 200,
+          "id": "c1",
+          "kind": "node-voltage",
+          "label": "The 3.3 V rail is up",
+          "net": "net_3v3",
+          "visibility": "visible",
+          "volts": [
+            3.2,
+            3.4
+          ]
+        },
+        {
+          "byMs": 4000,
+          "id": "c2",
+          "kind": "serial",
+          "label": "At least 3 readings are printed by 4 s",
+          "match": "^T=-?[0-9]+\\.[0-9] H=[0-9]+$",
+          "minCount": 3,
+          "regex": true,
+          "visibility": "visible"
+        },
+        {
+          "byMs": 4500,
+          "id": "c3",
+          "kind": "serial",
+          "label": "The reading follows the warm-up to 30 C",
+          "match": "^T=30\\.",
+          "minCount": 1,
+          "regex": true,
+          "visibility": "hidden"
+        }
+      ],
+      "id": "boots",
+      "name": "Reads the sensor and prints it",
+      "runMs": 5000
+    }
+  ],
+  "views": [
+    {
+      "id": "vw_sch",
+      "kind": "schematic",
+      "name": "Schematic",
+      "placements": [
+        {
+          "c": "brd_esp",
+          "x_mm": 0,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_bme",
+          "x_mm": 120,
+          "y_mm": -20
+        },
+        {
+          "c": "cmp_oled",
+          "x_mm": 120,
+          "y_mm": 40
+        },
+        {
+          "c": "cmp_ps1",
+          "x_mm": -80,
+          "y_mm": 0
+        },
+        {
+          "c": "cmp_r1",
+          "rotation_deg": 90,
+          "x_mm": 80,
+          "y_mm": -50
+        },
+        {
+          "c": "cmp_r2",
+          "rotation_deg": 90,
+          "x_mm": 90,
+          "y_mm": -50
+        }
+      ],
+      "wires": [
+        {
+          "from": {
+            "c": "cmp_ps1",
+            "kind": "pin",
+            "p": "POS"
+          },
+          "id": "wir_1",
+          "net": "net_5v",
+          "to": {
+            "c": "brd_esp",
+            "kind": "pin",
+            "p": "P5V"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_ps1",
+            "kind": "pin",
+            "p": "NEG"
+          },
+          "id": "wir_2",
+          "net": "net_gnd",
+          "route_mm": [
+            [
+              -80,
+              40
+            ],
+            [
+              0,
+              40
+            ]
+          ],
+          "to": {
+            "c": "brd_esp",
+            "kind": "pin",
+            "p": "GND"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_esp",
+            "kind": "pin",
+            "p": "P3V3"
+          },
+          "id": "wir_3",
+          "net": "net_3v3",
+          "to": {
+            "c": "cmp_bme",
+            "kind": "pin",
+            "p": "VCC"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_esp",
+            "kind": "pin",
+            "p": "GPIO21"
+          },
+          "id": "wir_4",
+          "net": "net_sda",
+          "to": {
+            "c": "cmp_bme",
+            "kind": "pin",
+            "p": "SDA"
+          }
+        },
+        {
+          "from": {
+            "c": "brd_esp",
+            "kind": "pin",
+            "p": "GPIO22"
+          },
+          "id": "wir_5",
+          "net": "net_scl",
+          "to": {
+            "c": "cmp_bme",
+            "kind": "pin",
+            "p": "SCL"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_bme",
+            "kind": "pin",
+            "p": "SDA"
+          },
+          "id": "wir_6",
+          "net": "net_sda",
+          "to": {
+            "c": "cmp_oled",
+            "kind": "pin",
+            "p": "SDA"
+          }
+        },
+        {
+          "from": {
+            "c": "cmp_bme",
+            "kind": "pin",
+            "p": "SCL"
+          },
+          "id": "wir_7",
+          "net": "net_scl",
+          "to": {
+            "c": "cmp_oled",
+            "kind": "pin",
+            "p": "SCL"
+          }
+        }
+      ]
+    }
+  ]
+}

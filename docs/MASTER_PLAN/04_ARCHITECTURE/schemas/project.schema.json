@@ -1,0 +1,6064 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:iynk:schema:project:1.1",
+  "title": "iynk project document",
+  "description": "Canonical project document, schemaVersion 1.x, opSchema 1.1. Written as RFC 8785 canonical JSON. Semantic rules that JSON Schema cannot express are in PROJECT_DATA_MODEL.md section 10 (validation passes V1 to V4). 1.1 adds the ops domain.patch, wire.set, view.set, group.set, group.remove, access.set, actor.set, actor.remove, provenance.set, dep.remove by {ref, version}; views[].groups[]; Joint.limits.effort; Body.inertia_g_mm2 and Body.com_mm; Fault.cause_id, symptom_ids and injectable; Proposal.steps and nine statuses.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "iynk.project"
+    },
+    "schemaVersion": {
+      "$ref": "#/$defs/SchemaVersion"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^prj_[a-z0-9][a-z0-9_-]{0,63}$",
+      "maxLength": 72
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of ops applied since genesis. The only revision counter. Not part of the state hash (PROJECT_DATA_MODEL.md 6.4), so undo and restore can return to an earlier hash."
+    },
+    "meta": {
+      "$ref": "#/$defs/Meta"
+    },
+    "actors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Actor"
+      },
+      "minItems": 1,
+      "maxItems": 64
+    },
+    "access": {
+      "$ref": "#/$defs/Access"
+    },
+    "boards": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Board"
+      },
+      "maxItems": 16
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Component"
+      },
+      "maxItems": 2000
+    },
+    "nets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Net"
+      },
+      "maxItems": 5000
+    },
+    "views": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/View"
+      },
+      "maxItems": 16
+    },
+    "mechanical": {
+      "$ref": "#/$defs/Mechanical"
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Source"
+      },
+      "maxItems": 20
+    },
+    "simulation": {
+      "$ref": "#/$defs/Simulation"
+    },
+    "parameters": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Parameter"
+      },
+      "maxItems": 256
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Asset"
+      },
+      "maxItems": 256
+    },
+    "dependencies": {
+      "$ref": "#/$defs/Dependencies"
+    },
+    "tests": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/TestCase"
+      },
+      "maxItems": 64
+    },
+    "guide": {
+      "$ref": "#/$defs/Guide"
+    },
+    "domains": {
+      "$ref": "#/$defs/Domains"
+    },
+    "history": {
+      "$ref": "#/$defs/History"
+    },
+    "exports": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ExportRecord"
+      },
+      "maxItems": 32
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "license": {
+      "$ref": "#/$defs/License"
+    },
+    "ext": {
+      "$ref": "#/$defs/Ext"
+    }
+  },
+  "required": [
+    "format",
+    "schemaVersion",
+    "id",
+    "revision",
+    "meta",
+    "actors",
+    "access",
+    "boards",
+    "components",
+    "nets",
+    "views",
+    "sources",
+    "simulation",
+    "parameters",
+    "assets",
+    "dependencies",
+    "tests",
+    "history",
+    "provenance",
+    "license"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "SchemaVersion": {
+      "type": "string",
+      "pattern": "^1\\.(0|[1-9][0-9]{0,3})$",
+      "description": "MAJOR.MINOR. This schema file is major 1, minor 1. A minor bump only adds optional fields."
+    },
+    "SemVer": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+      "maxLength": 40,
+      "description": "Pinned exactly. A newer part version never changes an old project silently (R-029)."
+    },
+    "Sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "Digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "Timestamp": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$",
+      "description": "UTC, millisecond precision, always with Z."
+    },
+    "LocalId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,47}$",
+      "description": "Unique inside its parent collection only. Never used across collections."
+    },
+    "PinId": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_]{0,31}$",
+      "description": "A pin id exactly as declared by the component definition (component.schema.json localId)."
+    },
+    "Refdes": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_]{0,15}$"
+    },
+    "DefRefName": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*\\.[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+      "maxLength": 80,
+      "description": "Component id from component.schema.json, \"namespace.name\", e.g. \"core.led-5mm\"."
+    },
+    "LocaleTag": {
+      "type": "string",
+      "pattern": "^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$",
+      "maxLength": 20
+    },
+    "LocalizedText": {
+      "type": "object",
+      "description": "Inline per-locale text. Replaces the catalogue TextKey indirection. \"en\" is required.",
+      "propertyNames": {
+        "$ref": "#/$defs/LocaleTag"
+      },
+      "properties": {
+        "en": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      },
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 4000
+      },
+      "required": [
+        "en"
+      ],
+      "maxProperties": 12
+    },
+    "Text": {
+      "oneOf": [
+        {
+          "type": "string",
+          "maxLength": 240,
+          "minLength": 1
+        },
+        {
+          "$ref": "#/$defs/LocalizedText"
+        }
+      ],
+      "description": "Plain string (one language, author-written) or LocalizedText."
+    },
+    "Ext": {
+      "type": "object",
+      "description": "Namespaced extension data. Keys are \"x-name\" or reverse-DNS names. Preserved verbatim by readers that do not know them. Never used for fields the core needs.",
+      "propertyNames": {
+        "pattern": "^(x-[a-z0-9-]{1,40}|[a-z0-9]+(\\.[a-z0-9-]+)+)$"
+      },
+      "maxProperties": 16
+    },
+    "ParamValue": {
+      "oneOf": [
+        {
+          "type": "number",
+          "minimum": -1000000000000000,
+          "maximum": 1000000000000000
+        },
+        {
+          "type": "string",
+          "maxLength": 240
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "param": {
+              "type": "string",
+              "pattern": "^par_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "param"
+          ],
+          "additionalProperties": false
+        }
+      ],
+      "description": "A literal, or { param: \"par_x\" } bound to a project parameter."
+    },
+    "Unit": {
+      "enum": [
+        "V",
+        "A",
+        "ohm",
+        "F",
+        "H",
+        "W",
+        "Hz",
+        "s",
+        "degC",
+        "C_per_W",
+        "mm",
+        "g",
+        "N_m",
+        "rad_per_s",
+        "deg",
+        "deg_per_s",
+        "g0",
+        "lux",
+        "ratio",
+        "percent",
+        "1",
+        "bit",
+        "byte",
+        "ppm"
+      ],
+      "description": "Same list as component.schema.json. Base units only, no prefixes."
+    },
+    "Pose": {
+      "type": "object",
+      "properties": {
+        "position_mm": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": -10000000,
+            "maximum": 10000000
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "rpy_deg": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": -360,
+            "maximum": 360
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "description": "Roll, pitch, yaw about the fixed X, Y, Z axes of the parent frame, in degrees (URDF convention)."
+        }
+      },
+      "required": [
+        "position_mm",
+        "rpy_deg"
+      ],
+      "additionalProperties": false
+    },
+    "PinRef": {
+      "type": "object",
+      "properties": {
+        "c": {
+          "type": "string",
+          "pattern": "^(brd|cmp)_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "p": {
+          "$ref": "#/$defs/PinId"
+        }
+      },
+      "required": [
+        "c",
+        "p"
+      ],
+      "additionalProperties": false
+    },
+    "DefRef": {
+      "type": "object",
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/DefRefName"
+        },
+        "version": {
+          "$ref": "#/$defs/SemVer"
+        }
+      },
+      "required": [
+        "ref",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "WireColor": {
+      "enum": [
+        "red",
+        "black",
+        "orange",
+        "yellow",
+        "green",
+        "blue",
+        "white",
+        "purple",
+        "brown",
+        "grey"
+      ]
+    },
+    "ParamId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{0,47}$",
+      "description": "Parameter key declared by a component definition (component.schema.json key), e.g. \"ohms\", \"color\"."
+    },
+    "Actor": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^usr_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 60,
+          "minLength": 1
+        },
+        "keyThumbprint": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{43}$",
+          "description": "Base64url SHA-256 of the actor public key (F-206). Absent for a purely local actor."
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "Role": {
+      "enum": [
+        "owner",
+        "editor",
+        "commenter",
+        "viewer"
+      ]
+    },
+    "Access": {
+      "type": "object",
+      "properties": {
+        "owners": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^usr_[a-z0-9][a-z0-9_-]{0,63}$",
+            "maxLength": 72
+          },
+          "minItems": 1,
+          "maxItems": 8
+        },
+        "visibility": {
+          "enum": [
+            "private",
+            "buddies",
+            "link"
+          ]
+        },
+        "grants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "actor": {
+                "type": "string",
+                "pattern": "^usr_[a-z0-9][a-z0-9_-]{0,63}$",
+                "maxLength": 72
+              },
+              "role": {
+                "$ref": "#/$defs/Role"
+              }
+            },
+            "required": [
+              "actor",
+              "role"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 64
+        },
+        "authority": {
+          "const": "advisory",
+          "description": "The file copy is a mirror. Only a server that hosts a room enforces it."
+        }
+      },
+      "required": [
+        "owners",
+        "visibility",
+        "grants",
+        "authority"
+      ],
+      "additionalProperties": false
+    },
+    "Meta": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 120,
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "kind": {
+          "enum": [
+            "project",
+            "template",
+            "lesson",
+            "challenge",
+            "bench",
+            "craft"
+          ]
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "maxItems": 16
+        },
+        "locale": {
+          "$ref": "#/$defs/LocaleTag"
+        },
+        "createdAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "updatedAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "thumbnail": {
+          "type": "string",
+          "pattern": "^ast_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        }
+      },
+      "required": [
+        "title",
+        "kind",
+        "locale",
+        "createdAt",
+        "updatedAt"
+      ],
+      "additionalProperties": false
+    },
+    "PinType": {
+      "enum": [
+        "power_in",
+        "power_out",
+        "power_io",
+        "ground",
+        "digital_in",
+        "digital_out",
+        "digital_io",
+        "open_drain",
+        "analog_in",
+        "analog_out",
+        "passive",
+        "mechanical",
+        "nc"
+      ]
+    },
+    "InterfacePin": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/PinId"
+        },
+        "designator": {
+          "type": "string",
+          "maxLength": 20,
+          "minLength": 1,
+          "description": "The label printed on the real part, e.g. \"D13\", \"+5V\"."
+        },
+        "type": {
+          "$ref": "#/$defs/PinType"
+        },
+        "net": {
+          "type": "string",
+          "maxLength": 32,
+          "minLength": 1,
+          "description": "Net name the interpreters and checks use for this pin (catalogue PinRow.net). Kept for the legacy interpreter path."
+        },
+        "header": {
+          "type": "string",
+          "maxLength": 16
+        }
+      },
+      "required": [
+        "id",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "InterfaceParam": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/ParamId"
+        },
+        "type": {
+          "enum": [
+            "enum",
+            "number",
+            "boolean"
+          ]
+        },
+        "unit": {
+          "$ref": "#/$defs/Unit"
+        },
+        "default": {
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "maxLength": 240
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string",
+                "maxLength": 64,
+                "minLength": 1
+              }
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 64
+        },
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "default"
+      ],
+      "additionalProperties": false
+    },
+    "InterfaceGroup": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/PinId"
+        },
+        "kind": {
+          "enum": [
+            "internal-short",
+            "strip",
+            "plane"
+          ]
+        },
+        "pins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PinId"
+          },
+          "minItems": 2,
+          "maxItems": 256
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "pins"
+      ],
+      "additionalProperties": false
+    },
+    "ComponentDependency": {
+      "type": "object",
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/DefRefName"
+        },
+        "version": {
+          "$ref": "#/$defs/SemVer"
+        },
+        "origin": {
+          "enum": [
+            "builtin",
+            "library",
+            "embedded"
+          ]
+        },
+        "digest": {
+          "$ref": "#/$defs/Digest"
+        },
+        "interface": {
+          "type": "object",
+          "properties": {
+            "role": {
+              "enum": [
+                "board",
+                "part",
+                "surface"
+              ]
+            },
+            "pins": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/InterfacePin"
+              },
+              "maxItems": 1024
+            },
+            "groups": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/InterfaceGroup"
+              },
+              "maxItems": 256
+            },
+            "params": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/InterfaceParam"
+              },
+              "maxItems": 64
+            }
+          },
+          "required": [
+            "role",
+            "pins",
+            "params"
+          ],
+          "additionalProperties": false,
+          "description": "Derived from the definition when the dependency is added. A CI test compares it with the shipped definition for builtin parts; the digest does it for library and embedded parts."
+        },
+        "definition": {
+          "type": "object",
+          "description": "Full part descriptor (component.schema.json). Present only when origin is \"embedded\" in the bare JSON form; the .iynkz container keeps it in definitions/."
+        }
+      },
+      "required": [
+        "ref",
+        "version",
+        "origin",
+        "interface"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "origin": {
+                "enum": [
+                  "library",
+                  "embedded"
+                ]
+              }
+            },
+            "required": [
+              "origin"
+            ]
+          },
+          "then": {
+            "properties": {
+              "digest": true
+            },
+            "required": [
+              "digest"
+            ]
+          }
+        }
+      ]
+    },
+    "LibraryDependency": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 80,
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "ecosystem": {
+          "enum": [
+            "arduino",
+            "micropython",
+            "python",
+            "npm",
+            "builtin-shim"
+          ]
+        },
+        "digest": {
+          "$ref": "#/$defs/Digest"
+        }
+      },
+      "required": [
+        "name",
+        "ecosystem"
+      ],
+      "additionalProperties": false
+    },
+    "Dependencies": {
+      "type": "object",
+      "properties": {
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ComponentDependency"
+          },
+          "maxItems": 512
+        },
+        "libraries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LibraryDependency"
+          },
+          "maxItems": 128
+        },
+        "requires": {
+          "type": "object",
+          "properties": {
+            "minApp": {
+              "$ref": "#/$defs/SemVer"
+            },
+            "features": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 48,
+                "minLength": 1
+              },
+              "maxItems": 32
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "components",
+        "libraries"
+      ],
+      "additionalProperties": false
+    },
+    "Parameter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^par_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "name": {
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]{0,31}$"
+        },
+        "kind": {
+          "enum": [
+            "number",
+            "choice",
+            "toggle"
+          ]
+        },
+        "unit": {
+          "$ref": "#/$defs/Unit"
+        },
+        "value": {
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": -1000000000000000,
+              "maximum": 1000000000000000
+            },
+            {
+              "type": "string",
+              "maxLength": 240
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "step": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "oneOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "string",
+                    "maxLength": 64
+                  }
+                ]
+              },
+              "label": {
+                "$ref": "#/$defs/Text"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 64
+        },
+        "label": {
+          "$ref": "#/$defs/Text"
+        },
+        "keepApart": {
+          "type": "object",
+          "properties": {
+            "param": {
+              "type": "string",
+              "pattern": "^par_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "op": {
+              "enum": [
+                "<",
+                ">"
+              ]
+            },
+            "gap": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "param",
+            "op",
+            "gap"
+          ],
+          "additionalProperties": false,
+          "description": "Catalogue ParamChip.keepApart: this number must stay below or above another parameter by at least gap."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "kind",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "Language": {
+      "enum": [
+        "arduino-cpp",
+        "micropython",
+        "python",
+        "verilog"
+      ]
+    },
+    "Firmware": {
+      "type": "object",
+      "properties": {
+        "language": {
+          "$ref": "#/$defs/Language"
+        },
+        "entry": {
+          "type": "string",
+          "pattern": "^src_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^src_[a-z0-9][a-z0-9_-]{0,63}$",
+            "maxLength": 72
+          },
+          "minItems": 1,
+          "maxItems": 20
+        },
+        "libraries": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1
+          },
+          "maxItems": 64
+        },
+        "defines": {
+          "type": "object",
+          "maxProperties": 64,
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          }
+        },
+        "top": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "ports": {
+          "type": "object",
+          "maxProperties": 64,
+          "description": "Verilog: top-level port to board pin ids, bit 0 first.",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/PinId"
+            },
+            "minItems": 1,
+            "maxItems": 64
+          }
+        }
+      },
+      "required": [
+        "language",
+        "entry",
+        "sources"
+      ],
+      "additionalProperties": false
+    },
+    "Board": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^brd_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "definition": {
+          "$ref": "#/$defs/DefRef"
+        },
+        "refdes": {
+          "$ref": "#/$defs/Refdes"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "variant": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "params": {
+          "type": "object",
+          "maxProperties": 64,
+          "propertyNames": {
+            "$ref": "#/$defs/ParamId"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/ParamValue"
+          }
+        },
+        "powerInput": {
+          "type": "string",
+          "maxLength": 32,
+          "minLength": 1
+        },
+        "firmware": {
+          "$ref": "#/$defs/Firmware"
+        },
+        "ext": {
+          "$ref": "#/$defs/Ext"
+        }
+      },
+      "required": [
+        "id",
+        "definition",
+        "refdes"
+      ],
+      "additionalProperties": false
+    },
+    "Component": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^cmp_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "definition": {
+          "$ref": "#/$defs/DefRef"
+        },
+        "refdes": {
+          "$ref": "#/$defs/Refdes"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "params": {
+          "type": "object",
+          "maxProperties": 64,
+          "propertyNames": {
+            "$ref": "#/$defs/ParamId"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/ParamValue"
+          }
+        },
+        "locked": {
+          "type": "boolean"
+        },
+        "ext": {
+          "$ref": "#/$defs/Ext"
+        }
+      },
+      "required": [
+        "id",
+        "definition",
+        "refdes"
+      ],
+      "additionalProperties": false
+    },
+    "Net": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^net_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 64,
+          "minLength": 1
+        },
+        "class": {
+          "enum": [
+            "signal",
+            "power",
+            "ground",
+            "analog"
+          ]
+        },
+        "connections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PinRef"
+          },
+          "minItems": 1,
+          "maxItems": 2000
+        },
+        "ext": {
+          "$ref": "#/$defs/Ext"
+        }
+      },
+      "required": [
+        "id",
+        "connections"
+      ],
+      "additionalProperties": false
+    },
+    "Placement": {
+      "type": "object",
+      "properties": {
+        "c": {
+          "type": "string",
+          "pattern": "^(brd|cmp)_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "x_mm": {
+          "type": "number",
+          "minimum": -1000000,
+          "maximum": 1000000
+        },
+        "y_mm": {
+          "type": "number",
+          "minimum": -1000000,
+          "maximum": 1000000
+        },
+        "rotation_deg": {
+          "type": "number",
+          "minimum": -360,
+          "maximum": 360
+        },
+        "mirrored": {
+          "type": "boolean"
+        },
+        "layer": {
+          "type": "integer",
+          "minimum": -8,
+          "maximum": 8
+        },
+        "legs": {
+          "type": "object",
+          "maxProperties": 64,
+          "propertyNames": {
+            "$ref": "#/$defs/PinId"
+          },
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 16,
+            "minLength": 1
+          },
+          "description": "Breadboard views: leg (pin id) to hole name on the surface component, e.g. { \"A\": \"c19\" }. Layout only; it never creates a connection."
+        },
+        "hidden": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "c",
+        "x_mm",
+        "y_mm"
+      ],
+      "additionalProperties": false
+    },
+    "WireEnd": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "pin"
+            },
+            "c": {
+              "type": "string",
+              "pattern": "^(brd|cmp)_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "p": {
+              "$ref": "#/$defs/PinId"
+            }
+          },
+          "required": [
+            "kind",
+            "c",
+            "p"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "junction"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^jct_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "kind",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "hole"
+            },
+            "surface": {
+              "type": "string",
+              "pattern": "^cmp_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "hole": {
+              "type": "string",
+              "maxLength": 16,
+              "minLength": 1
+            }
+          },
+          "required": [
+            "kind",
+            "surface",
+            "hole"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "Wire": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^wir_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "net": {
+          "type": "string",
+          "pattern": "^net_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "from": {
+          "$ref": "#/$defs/WireEnd"
+        },
+        "to": {
+          "$ref": "#/$defs/WireEnd"
+        },
+        "route_mm": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "maxItems": 256,
+          "minItems": 1,
+          "description": "Absent means the renderer routes. The document never stores an empty array (wire.route with [] clears it)."
+        },
+        "color": {
+          "$ref": "#/$defs/WireColor"
+        }
+      },
+      "required": [
+        "id",
+        "net",
+        "from",
+        "to"
+      ],
+      "additionalProperties": false
+    },
+    "Junction": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^jct_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "net": {
+          "type": "string",
+          "pattern": "^net_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "x_mm": {
+          "type": "number",
+          "minimum": -1000000,
+          "maximum": 1000000
+        },
+        "y_mm": {
+          "type": "number",
+          "minimum": -1000000,
+          "maximum": 1000000
+        }
+      },
+      "required": [
+        "id",
+        "net",
+        "x_mm",
+        "y_mm"
+      ],
+      "additionalProperties": false
+    },
+    "Label": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^lbl_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 120,
+          "minLength": 1
+        },
+        "x_mm": {
+          "type": "number",
+          "minimum": -1000000,
+          "maximum": 1000000
+        },
+        "y_mm": {
+          "type": "number",
+          "minimum": -1000000,
+          "maximum": 1000000
+        },
+        "net": {
+          "type": "string",
+          "pattern": "^net_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        }
+      },
+      "required": [
+        "id",
+        "text",
+        "x_mm",
+        "y_mm"
+      ],
+      "additionalProperties": false
+    },
+    "View": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^vw_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "kind": {
+          "enum": [
+            "schematic",
+            "breadboard",
+            "board",
+            "mat"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 60,
+          "minLength": 1
+        },
+        "surface": {
+          "type": "string",
+          "pattern": "^cmp_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72,
+          "description": "Breadboard views: the breadboard component whose holes and strips this view uses."
+        },
+        "placements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Placement"
+          },
+          "maxItems": 2000
+        },
+        "junctions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Junction"
+          },
+          "maxItems": 5000
+        },
+        "wires": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Wire"
+          },
+          "maxItems": 5000
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Label"
+          },
+          "maxItems": 1000
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Group"
+          },
+          "maxItems": 256
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "name",
+        "placements",
+        "wires"
+      ],
+      "additionalProperties": false
+    },
+    "Frame": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^frm_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 60,
+          "minLength": 1
+        },
+        "parent": {
+          "oneOf": [
+            {
+              "const": "world"
+            },
+            {
+              "type": "string",
+              "pattern": "^frm_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          ]
+        },
+        "pose": {
+          "$ref": "#/$defs/Pose"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "parent",
+        "pose"
+      ],
+      "additionalProperties": false
+    },
+    "Shape": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "box"
+            },
+            "size_mm": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": -10000000,
+                "maximum": 10000000
+              },
+              "minItems": 3,
+              "maxItems": 3
+            }
+          },
+          "required": [
+            "kind",
+            "size_mm"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "cylinder"
+            },
+            "radius_mm": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "height_mm": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "required": [
+            "kind",
+            "radius_mm",
+            "height_mm"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "sphere"
+            },
+            "radius_mm": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "required": [
+            "kind",
+            "radius_mm"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "mesh"
+            },
+            "asset": {
+              "type": "string",
+              "pattern": "^ast_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "kind",
+            "asset"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "Body": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^bdy_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 60,
+          "minLength": 1
+        },
+        "frame": {
+          "type": "string",
+          "pattern": "^frm_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "mass_g": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "shape": {
+          "$ref": "#/$defs/Shape"
+        },
+        "component": {
+          "type": "string",
+          "pattern": "^(brd|cmp)_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "inertia_g_mm2": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1e+18
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "description": "Principal moments of inertia [Ixx, Iyy, Izz] in g*mm^2 about the centre of mass. Absent: derived from shape and mass_g. Must satisfy the triangle inequality (RB-E-INERTIA)."
+        },
+        "com_mm": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": -10000000.0,
+            "maximum": 10000000.0
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "description": "Centre of mass offset from the body frame origin, in mm. Absent: the shape centre."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "frame"
+      ],
+      "additionalProperties": false
+    },
+    "Joint": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^jnt_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "kind": {
+          "enum": [
+            "fixed",
+            "revolute",
+            "continuous",
+            "prismatic",
+            "wheel"
+          ]
+        },
+        "parent": {
+          "type": "string",
+          "pattern": "^bdy_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "child": {
+          "type": "string",
+          "pattern": "^bdy_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "origin": {
+          "$ref": "#/$defs/Pose"
+        },
+        "axis": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": -10000000,
+            "maximum": 10000000
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "limits": {
+          "type": "object",
+          "properties": {
+            "min": {
+              "type": "number",
+              "description": "Lower bound. Units follow Joint.kind: revolute, continuous and wheel use degrees; prismatic uses millimetres. fixed has no limits."
+            },
+            "max": {
+              "type": "number",
+              "description": "Upper bound. Same units as min."
+            },
+            "effort": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Peak actuator effort. revolute, continuous and wheel: N*m. prismatic: N."
+            },
+            "velocity": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Peak speed. revolute, continuous and wheel: degrees per second. prismatic: millimetres per second."
+            },
+            "effort_n": {
+              "type": "number",
+              "minimum": 0,
+              "deprecated": true,
+              "description": "Deprecated alias of effort, accepted for one release (A-8). A writer emits effort; a limits object with both is invalid (V3-LIMITS)."
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "drive": {
+          "type": "object",
+          "properties": {
+            "component": {
+              "type": "string",
+              "pattern": "^(brd|cmp)_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "pin": {
+              "$ref": "#/$defs/PinId"
+            }
+          },
+          "required": [
+            "component"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "parent",
+        "child",
+        "origin"
+      ],
+      "additionalProperties": false,
+      "description": "Limits units follow kind (see Joint.limits). A fixed joint carries no limits.",
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "fixed"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "not": {
+          "required": [
+            "limits"
+          ]
+        }
+      }
+    },
+    "Mount": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^mnt_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "component": {
+          "type": "string",
+          "pattern": "^(brd|cmp)_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "frame": {
+          "type": "string",
+          "pattern": "^frm_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "pose": {
+          "$ref": "#/$defs/Pose"
+        }
+      },
+      "required": [
+        "id",
+        "component",
+        "frame",
+        "pose"
+      ],
+      "additionalProperties": false
+    },
+    "Mechanical": {
+      "type": "object",
+      "properties": {
+        "frames": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Frame"
+          },
+          "maxItems": 512
+        },
+        "bodies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Body"
+          },
+          "maxItems": 512
+        },
+        "joints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Joint"
+          },
+          "maxItems": 512
+        },
+        "mounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Mount"
+          },
+          "maxItems": 2000
+        }
+      },
+      "required": [
+        "frames",
+        "bodies",
+        "joints",
+        "mounts"
+      ],
+      "additionalProperties": false,
+      "description": "Frame \"world\" is implicit: right-handed, +x forward, +y left, +z up, millimetres, degrees. Mass in grams, as in component.schema.json."
+    },
+    "SourceLanguage": {
+      "enum": [
+        "arduino-cpp",
+        "micropython",
+        "python",
+        "verilog",
+        "c",
+        "cpp",
+        "xdc",
+        "qsf",
+        "json",
+        "markdown",
+        "text"
+      ]
+    },
+    "Source": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^src_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "path": {
+          "type": "string",
+          "maxLength": 255,
+          "pattern": "^(?!/)(?!.*(^|/)\\.\\.?(/|$))[^\\\\:*?\"<>|\\u0000-\\u001f]+$",
+          "description": "Relative POSIX path, NFC, no \".\" or \"..\" segment, unique ignoring case."
+        },
+        "language": {
+          "$ref": "#/$defs/SourceLanguage"
+        },
+        "role": {
+          "enum": [
+            "firmware",
+            "testbench",
+            "constraint",
+            "config",
+            "doc"
+          ]
+        },
+        "board": {
+          "type": "string",
+          "pattern": "^brd_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "content": {
+          "type": "string",
+          "maxLength": 262144
+        },
+        "ext": {
+          "$ref": "#/$defs/Ext"
+        }
+      },
+      "required": [
+        "id",
+        "path",
+        "language",
+        "role",
+        "content"
+      ],
+      "additionalProperties": false
+    },
+    "License": {
+      "type": "object",
+      "properties": {
+        "spdx": {
+          "type": "string",
+          "maxLength": 80,
+          "minLength": 1,
+          "description": "SPDX identifier or \"LicenseRef-...\". D-017: until Amar decides, new projects carry \"LicenseRef-iynk-pending\" (one placeholder, the same string as component.schema.json and openapi.yaml). \"LicenseRef-local-private\" is only for parts in the local library, never a project licence."
+        },
+        "holder": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "url": {
+          "type": "string",
+          "maxLength": 300
+        }
+      },
+      "required": [
+        "spdx"
+      ],
+      "additionalProperties": false
+    },
+    "Asset": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^ast_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "path": {
+          "type": "string",
+          "maxLength": 255,
+          "pattern": "^(?!/)(?!.*(^|/)\\.\\.?(/|$))[^\\\\:*?\"<>|\\u0000-\\u001f]+$",
+          "description": "Relative POSIX path, NFC, no \".\" or \"..\" segment, unique ignoring case."
+        },
+        "mediaType": {
+          "type": "string",
+          "pattern": "^[a-z]+/[a-z0-9.+-]+$",
+          "maxLength": 80
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16777216
+        },
+        "sha256": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "role": {
+          "enum": [
+            "image",
+            "model",
+            "binary",
+            "datasheet",
+            "replay",
+            "other"
+          ]
+        },
+        "license": {
+          "$ref": "#/$defs/License"
+        },
+        "origin": {
+          "type": "string",
+          "maxLength": 300
+        }
+      },
+      "required": [
+        "id",
+        "path",
+        "mediaType",
+        "bytes",
+        "sha256",
+        "role"
+      ],
+      "additionalProperties": false
+    },
+    "RegistryId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9.-]{0,47}(@[0-9A-Za-z.-]{1,16})?$",
+      "description": "Open registry id, e.g. \"iynk-interp\", \"avr8js\", \"iynk-mna\", \"rapier\". Not an enum, so a spike result never forces a schema change."
+    },
+    "Runtime": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^rtm_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "board": {
+          "type": "string",
+          "pattern": "^brd_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "engine": {
+          "$ref": "#/$defs/RegistryId"
+        },
+        "options": {
+          "type": "object",
+          "maxProperties": 32
+        }
+      },
+      "required": [
+        "id",
+        "board",
+        "engine"
+      ],
+      "additionalProperties": false
+    },
+    "PinMode": {
+      "enum": [
+        "out",
+        "in",
+        "pullup",
+        "pwm",
+        "analog",
+        "tone",
+        "servo",
+        "pulse"
+      ]
+    },
+    "DeviceModel": {
+      "description": "Catalogue DeviceModel, unchanged.",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "button"
+            },
+            "pull": {
+              "enum": [
+                "external-down",
+                "external-up",
+                "internal-up",
+                "internal-down"
+              ]
+            },
+            "bounceMs": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "kind",
+            "pull",
+            "bounceMs"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "switch"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "pot"
+            },
+            "ohms": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
+          "required": [
+            "kind",
+            "ohms"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "divider"
+            },
+            "sensor": {
+              "enum": [
+                "ldr",
+                "fsr",
+                "thermistor"
+              ]
+            },
+            "fixedOhms": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "sensorTo": {
+              "enum": [
+                "vcc",
+                "gnd"
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "sensor",
+            "fixedOhms",
+            "sensorTo"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "linear"
+            },
+            "voltsAtMin": {
+              "type": "number"
+            },
+            "voltsAtMax": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "kind",
+            "voltsAtMin",
+            "voltsAtMax"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "tmp36"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "hc-sr04"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "mpu6050"
+            },
+            "address": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 127
+            }
+          },
+          "required": [
+            "kind",
+            "address"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "qtr-rc"
+            },
+            "sensors": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 16
+            }
+          },
+          "required": [
+            "kind",
+            "sensors"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "onboard"
+            },
+            "sensor": {
+              "enum": [
+                "accelerometer",
+                "compass",
+                "temperature",
+                "light",
+                "microphone",
+                "touch"
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "sensor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "network"
+            },
+            "ssid": {
+              "type": "string",
+              "maxLength": 32
+            },
+            "ip": {
+              "type": "string",
+              "maxLength": 45
+            },
+            "requests": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "maxItems": 64
+            },
+            "password": {
+              "type": "string",
+              "maxLength": 64
+            }
+          },
+          "required": [
+            "kind",
+            "ssid",
+            "ip",
+            "requests"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "registry"
+            },
+            "device": {
+              "$ref": "#/$defs/RegistryId"
+            },
+            "address": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 127
+            },
+            "options": {
+              "type": "object",
+              "maxProperties": 16
+            }
+          },
+          "required": [
+            "kind",
+            "device"
+          ],
+          "additionalProperties": false,
+          "description": "New in 1.0: behaviour by device-registry reference (F-097, F-208), e.g. \"bme280\"."
+        }
+      ]
+    },
+    "WorldQuantity": {
+      "enum": [
+        "button",
+        "switch",
+        "level",
+        "distance-cm",
+        "light-lux",
+        "temperature-c",
+        "force-n",
+        "angle-deg",
+        "moisture-pct",
+        "voltage",
+        "tilt-deg",
+        "accel-g",
+        "line-position",
+        "touch",
+        "sound-db",
+        "heading-deg",
+        "request"
+      ]
+    },
+    "WorldInput": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "quantity": {
+          "$ref": "#/$defs/WorldQuantity"
+        },
+        "device": {
+          "$ref": "#/$defs/DeviceModel"
+        },
+        "component": {
+          "type": "string",
+          "pattern": "^(brd|cmp)_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "pins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PinRef"
+          },
+          "maxItems": 16,
+          "description": "Board pins the device drives, in the device order. Optional once the orchestrator derives them from the netlist (F-047)."
+        },
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "step": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "default": {
+          "type": "number"
+        },
+        "unit": {
+          "$ref": "#/$defs/Unit"
+        },
+        "gesture": {
+          "enum": [
+            "press",
+            "slide",
+            "knob",
+            "squeeze",
+            "tap",
+            "drag",
+            "tilt"
+          ]
+        },
+        "label": {
+          "$ref": "#/$defs/Text"
+        }
+      },
+      "required": [
+        "id",
+        "quantity",
+        "device",
+        "component",
+        "min",
+        "max",
+        "step",
+        "default",
+        "gesture",
+        "label"
+      ],
+      "additionalProperties": false
+    },
+    "WorldEvent": {
+      "type": "object",
+      "properties": {
+        "t": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 36000000,
+          "description": "Milliseconds of virtual time (catalogue name kept so checks stay reusable)."
+        },
+        "input": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "value": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "t",
+        "input",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "FaultTarget": {
+      "type": "object",
+      "properties": {
+        "component": {
+          "type": "string",
+          "pattern": "^(brd|cmp)_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "pin": {
+          "$ref": "#/$defs/PinId"
+        },
+        "net": {
+          "type": "string",
+          "pattern": "^net_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "nets": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^net_[a-z0-9][a-z0-9_-]{0,63}$",
+            "maxLength": 72
+          },
+          "minItems": 2,
+          "maxItems": 2
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "Fault": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^flt_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "cause_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*(\\.[a-z0-9-]+)*$",
+          "maxLength": 80,
+          "description": "D-010 cause_id; same pattern as component.schema.json."
+        },
+        "symptom_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*(\\.[a-z0-9-]+)*$",
+            "maxLength": 80
+          },
+          "maxItems": 16,
+          "uniqueItems": true,
+          "description": "D-010 symptom_id list. May be empty for a fault the person made up."
+        },
+        "kind": {
+          "enum": [
+            "reverse-polarity",
+            "brownout",
+            "wrong-voltage",
+            "cold-solder",
+            "short",
+            "missing-part",
+            "reversed-part",
+            "overcurrent",
+            "level-mismatch",
+            "boot-strap",
+            "floating-input",
+            "thermal",
+            "config",
+            "open-wire",
+            "wrong-connection",
+            "stuck-level",
+            "wrong-value"
+          ],
+          "description": "Project fault kind. Mapping from a part's injectable_faults[].kind is in PROJECT_DATA_MODEL.md 5.11."
+        },
+        "target": {
+          "$ref": "#/$defs/FaultTarget"
+        },
+        "params": {
+          "type": "object",
+          "maxProperties": 16
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "note": {
+          "$ref": "#/$defs/Text"
+        },
+        "injectable": {
+          "type": "object",
+          "properties": {
+            "component": {
+              "type": "string",
+              "pattern": "^(brd|cmp)_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,47}$",
+              "description": "The id of the entry in that part's injectable_faults."
+            }
+          },
+          "required": [
+            "component",
+            "id"
+          ],
+          "additionalProperties": false,
+          "description": "Set when the fault was made from a part's declared injectable fault. With the library present, V6-FAULT-DRIFT warns when it does not resolve or the copied fields differ."
+        }
+      },
+      "required": [
+        "id",
+        "cause_id",
+        "symptom_ids",
+        "kind",
+        "target",
+        "enabled"
+      ],
+      "additionalProperties": false
+    },
+    "Instrument": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^ins_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "kind": {
+          "enum": [
+            "voltmeter",
+            "ammeter",
+            "oscilloscope",
+            "logic-analyzer",
+            "serial-monitor",
+            "serial-plotter",
+            "multimeter"
+          ]
+        },
+        "target": {
+          "type": "object",
+          "properties": {
+            "net": {
+              "type": "string",
+              "pattern": "^net_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "pin": {
+              "$ref": "#/$defs/PinRef"
+            },
+            "component": {
+              "type": "string",
+              "pattern": "^(brd|cmp)_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "settings": {
+          "type": "object",
+          "maxProperties": 16
+        }
+      },
+      "required": [
+        "id",
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "Simulation": {
+      "type": "object",
+      "properties": {
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "duration_ms": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 36000000
+        },
+        "runtimes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Runtime"
+          },
+          "maxItems": 16
+        },
+        "solver": {
+          "type": "object",
+          "properties": {
+            "engine": {
+              "$ref": "#/$defs/RegistryId"
+            },
+            "options": {
+              "type": "object",
+              "maxProperties": 32
+            }
+          },
+          "required": [
+            "engine"
+          ],
+          "additionalProperties": false
+        },
+        "physics": {
+          "type": "object",
+          "properties": {
+            "engine": {
+              "$ref": "#/$defs/RegistryId"
+            },
+            "step_hz": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000
+            },
+            "options": {
+              "type": "object",
+              "maxProperties": 32
+            }
+          },
+          "required": [
+            "engine",
+            "step_hz"
+          ],
+          "additionalProperties": false
+        },
+        "environment": {
+          "type": "object",
+          "properties": {
+            "ambient_degC": {
+              "type": "number",
+              "minimum": -80,
+              "maximum": 200
+            },
+            "light_lux": {
+              "type": "number",
+              "minimum": 0
+            },
+            "supply_V": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "world": {
+          "type": "object",
+          "properties": {
+            "inputs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/WorldInput"
+              },
+              "maxItems": 128
+            },
+            "script": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/WorldEvent"
+              },
+              "maxItems": 10000
+            }
+          },
+          "required": [
+            "inputs",
+            "script"
+          ],
+          "additionalProperties": false
+        },
+        "faults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Fault"
+          },
+          "maxItems": 200
+        },
+        "instruments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Instrument"
+          },
+          "maxItems": 64
+        }
+      },
+      "required": [
+        "seed",
+        "duration_ms",
+        "runtimes",
+        "solver",
+        "world",
+        "faults"
+      ],
+      "additionalProperties": false
+    },
+    "StateCond": {
+      "type": "object",
+      "maxProperties": 32,
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "string",
+            "maxLength": 120
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "description": "Catalogue StateCond, unchanged (legacy figure state; used by migrated labs only)."
+    },
+    "Check": {
+      "description": "Catalogue Check kinds unchanged (label becomes Text; id and visibility added), plus node-voltage and supply-current.",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "runs"
+            },
+            "id": {
+              "$ref": "#/$defs/LocalId"
+            },
+            "label": {
+              "$ref": "#/$defs/Text"
+            },
+            "visibility": {
+              "enum": [
+                "visible",
+                "hidden"
+              ]
+            },
+            "minMs": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "label",
+            "minMs"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "serial"
+            },
+            "id": {
+              "$ref": "#/$defs/LocalId"
+            },
+            "label": {
+              "$ref": "#/$defs/Text"
+            },
+            "visibility": {
+              "enum": [
+                "visible",
+                "hidden"
+              ]
+            },
+            "match": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "regex": {
+              "type": "boolean"
+            },
+            "minCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "byMs": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "label",
+            "match",
+            "regex",
+            "minCount"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "pin-level"
+            },
+            "id": {
+              "$ref": "#/$defs/LocalId"
+            },
+            "label": {
+              "$ref": "#/$defs/Text"
+            },
+            "visibility": {
+              "enum": [
+                "visible",
+                "hidden"
+              ]
+            },
+            "pin": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 1
+            },
+            "board": {
+              "type": "string",
+              "pattern": "^brd_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "level": {
+              "enum": [
+                0,
+                1
+              ]
+            },
+            "atMs": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "label",
+            "pin",
+            "level",
+            "atMs"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "pin-toggles"
+            },
+            "id": {
+              "$ref": "#/$defs/LocalId"
+            },
+            "label": {
+              "$ref": "#/$defs/Text"
+            },
+            "visibility": {
+              "enum": [
+                "visible",
+                "hidden"
+              ]
+            },
+            "pin": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 1
+            },
+            "board": {
+              "type": "string",
+              "pattern": "^brd_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "periodMs": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "minCycles": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "label",
+            "pin",
+            "periodMs",
+            "minCycles"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "pwm"
+            },
+            "id": {
+              "$ref": "#/$defs/LocalId"
+            },
+            "label": {
+              "$ref": "#/$defs/Text"
+            },
+            "visibility": {
+              "enum": [
+                "visible",
+                "hidden"
+              ]
+            },
+            "pin": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 1
+            },
+            "board": {
+              "type": "string",
+              "pattern": "^brd_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "duty": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "atMs": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "label",
+            "pin",
+            "duty",
+            "atMs"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "tone"
+            },
+            "id": {
+              "$ref": "#/$defs/LocalId"
+            },
+            "label": {
+              "$ref": "#/$defs/Text"
+            },
+            "visibility": {
+              "enum": [
+                "visible",
+                "hidden"
+              ]
+            },
+            "pin": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 1
+            },
+            "board": {
+              "type": "string",
+              "pattern": "^brd_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "hz": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "atMs": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "label",
+            "pin",
+            "hz",
+            "atMs"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "servo"
+            },
+            "id": {
+              "$ref": "#/$defs/LocalId"
+            },
+            "label": {
+              "$ref": "#/$defs/Text"
+            },
+            "visibility": {
+              "enum": [
+                "visible",
+                "hidden"
+              ]
+            },
+            "pin": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 1
+            },
+            "board": {
+              "type": "string",
+              "pattern": "^brd_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "deg": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "atMs": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "label",
+            "pin",
+            "deg",
+            "atMs"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "responds"
+            },
+            "id": {
+              "$ref": "#/$defs/LocalId"
+            },
+            "label": {
+              "$ref": "#/$defs/Text"
+            },
+            "visibility": {
+              "enum": [
+                "visible",
+                "hidden"
+              ]
+            },
+            "after": {
+              "$ref": "#/$defs/WorldEvent"
+            },
+            "pin": {
+              "type": "string",
+              "maxLength": 32,
+              "minLength": 1
+            },
+            "board": {
+              "type": "string",
+              "pattern": "^brd_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "withinMs": {
+              "type": "number",
+              "minimum": 0
+            },
+            "mode": {
+              "$ref": "#/$defs/PinMode"
+            },
+            "v": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "label",
+            "after",
+            "pin",
+            "withinMs",
+            "mode",
+            "v"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "code"
+            },
+            "id": {
+              "$ref": "#/$defs/LocalId"
+            },
+            "label": {
+              "$ref": "#/$defs/Text"
+            },
+            "visibility": {
+              "enum": [
+                "visible",
+                "hidden"
+              ]
+            },
+            "must": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "maxItems": 32
+            },
+            "mustNot": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "maxItems": 32
+            },
+            "source": {
+              "type": "string",
+              "pattern": "^src_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "label",
+            "must",
+            "mustNot"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "state"
+            },
+            "id": {
+              "$ref": "#/$defs/LocalId"
+            },
+            "label": {
+              "$ref": "#/$defs/Text"
+            },
+            "visibility": {
+              "enum": [
+                "visible",
+                "hidden"
+              ]
+            },
+            "atMs": {
+              "type": "number",
+              "minimum": 0
+            },
+            "equals": {
+              "$ref": "#/$defs/StateCond"
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "label",
+            "atMs",
+            "equals"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "node-voltage"
+            },
+            "id": {
+              "$ref": "#/$defs/LocalId"
+            },
+            "label": {
+              "$ref": "#/$defs/Text"
+            },
+            "visibility": {
+              "enum": [
+                "visible",
+                "hidden"
+              ]
+            },
+            "net": {
+              "type": "string",
+              "pattern": "^net_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "volts": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "atMs": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "label",
+            "net",
+            "volts",
+            "atMs"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "supply-current"
+            },
+            "id": {
+              "$ref": "#/$defs/LocalId"
+            },
+            "label": {
+              "$ref": "#/$defs/Text"
+            },
+            "visibility": {
+              "enum": [
+                "visible",
+                "hidden"
+              ]
+            },
+            "net": {
+              "type": "string",
+              "pattern": "^net_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "amps": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "atMs": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "label",
+            "net",
+            "amps",
+            "atMs"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "TestCase": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/LocalId"
+        },
+        "name": {
+          "$ref": "#/$defs/Text"
+        },
+        "runMs": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 36000000
+        },
+        "script": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/WorldEvent"
+          },
+          "maxItems": 10000,
+          "description": "Replaces simulation.world.script for this test when present."
+        },
+        "faults": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^flt_[a-z0-9][a-z0-9_-]{0,63}$",
+            "maxLength": 72
+          },
+          "maxItems": 200,
+          "description": "Fault ids enabled for this test. Absent means each fault keeps its own enabled flag."
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Check"
+          },
+          "minItems": 1,
+          "maxItems": 200
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "runMs",
+        "checks"
+      ],
+      "additionalProperties": false
+    },
+    "Guide": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "lesson",
+            "bench",
+            "craft",
+            "challenge",
+            "tour"
+          ]
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "level": {
+          "enum": [
+            "intro",
+            "io",
+            "input",
+            "analog",
+            "protocol",
+            "wireless",
+            "project"
+          ]
+        },
+        "title": {
+          "$ref": "#/$defs/Text"
+        },
+        "lede": {
+          "$ref": "#/$defs/Text"
+        },
+        "sub": {
+          "$ref": "#/$defs/Text"
+        },
+        "hint": {
+          "$ref": "#/$defs/Text"
+        },
+        "overview": {
+          "$ref": "#/$defs/Text"
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1
+          },
+          "maxItems": 16,
+          "description": "Board variants this lesson applies to; boards[0].variant is the first."
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Text"
+          },
+          "maxItems": 64
+        },
+        "hints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Text"
+          },
+          "maxItems": 32
+        },
+        "pins": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "pin": {
+                "type": "string",
+                "maxLength": 32,
+                "minLength": 1
+              },
+              "to": {
+                "$ref": "#/$defs/Text"
+              },
+              "role": {
+                "$ref": "#/$defs/Text"
+              },
+              "color": {
+                "$ref": "#/$defs/WireColor"
+              }
+            },
+            "required": [
+              "pin",
+              "to",
+              "role",
+              "color"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 64
+        },
+        "callouts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "target": {
+                "type": "string",
+                "maxLength": 40,
+                "minLength": 1
+              },
+              "text": {
+                "$ref": "#/$defs/Text"
+              }
+            },
+            "required": [
+              "target",
+              "text"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 64
+        },
+        "specs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "$ref": "#/$defs/Text"
+              },
+              "value": {
+                "$ref": "#/$defs/Text"
+              }
+            },
+            "required": [
+              "label",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 32
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "icon": {
+                "type": "string",
+                "maxLength": 32,
+                "minLength": 1
+              },
+              "text": {
+                "$ref": "#/$defs/Text"
+              }
+            },
+            "required": [
+              "icon",
+              "text"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8
+        },
+        "quizzes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/LocalId"
+              },
+              "afterStep": {
+                "$ref": "#/$defs/LocalId"
+              },
+              "questions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "$ref": "#/$defs/LocalId"
+                    },
+                    "q": {
+                      "$ref": "#/$defs/Text"
+                    },
+                    "options": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/$defs/Text"
+                      },
+                      "minItems": 2,
+                      "maxItems": 8
+                    },
+                    "answer": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "why": {
+                      "$ref": "#/$defs/Text"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "q",
+                    "options",
+                    "answer",
+                    "why"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "maxItems": 32
+              }
+            },
+            "required": [
+              "id",
+              "questions"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 16
+        },
+        "starter": {
+          "type": "object",
+          "properties": {
+            "source": {
+              "type": "string",
+              "pattern": "^src_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "template": {
+              "type": "string",
+              "maxLength": 262144,
+              "description": "Starter code with {{p:<parameter name>}} tokens. The source file holds the rendered default; Reset re-renders this."
+            },
+            "splices": {
+              "type": "object",
+              "maxProperties": 32,
+              "additionalProperties": {
+                "type": "object",
+                "maxProperties": 32,
+                "additionalProperties": {
+                  "type": "string",
+                  "maxLength": 4000
+                }
+              }
+            }
+          },
+          "required": [
+            "source",
+            "template"
+          ],
+          "additionalProperties": false
+        },
+        "serialSample": {
+          "type": "object",
+          "properties": {
+            "baud": {
+              "type": "integer",
+              "minimum": 300,
+              "maximum": 4000000
+            },
+            "lines": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "maxItems": 64
+            }
+          },
+          "required": [
+            "baud",
+            "lines"
+          ],
+          "additionalProperties": false
+        },
+        "assembly": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "maxProperties": 16
+          },
+          "maxItems": 200,
+          "description": "Catalogue BuildStep list, kept as data for the legacy figure until the Studio renderer replaces it."
+        },
+        "references": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              "url": {
+                "type": "string",
+                "maxLength": 500,
+                "minLength": 1
+              }
+            },
+            "required": [
+              "title",
+              "url"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 32
+        },
+        "legacyFigure": {
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "string",
+              "maxLength": 120,
+              "minLength": 1
+            },
+            "circuit": {
+              "type": "string",
+              "maxLength": 40
+            },
+            "variant": {
+              "type": "string",
+              "maxLength": 40
+            },
+            "sheets": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "board",
+                  "breadboard",
+                  "schematic",
+                  "power",
+                  "wiring"
+                ]
+              },
+              "maxItems": 5
+            }
+          },
+          "required": [
+            "page"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "kind",
+        "title"
+      ],
+      "additionalProperties": false
+    },
+    "LossItem": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "maxLength": 64,
+          "minLength": 1
+        },
+        "severity": {
+          "enum": [
+            "info",
+            "warning",
+            "error"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "message": {
+          "type": "string",
+          "maxLength": 500
+        }
+      },
+      "required": [
+        "code",
+        "severity",
+        "message"
+      ],
+      "additionalProperties": false
+    },
+    "Provenance": {
+      "type": "object",
+      "properties": {
+        "createdBy": {
+          "type": "string",
+          "pattern": "^usr_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "createdWith": {
+          "type": "object",
+          "properties": {
+            "app": {
+              "const": "iynk"
+            },
+            "version": {
+              "type": "string",
+              "maxLength": 40,
+              "minLength": 1
+            }
+          },
+          "required": [
+            "app",
+            "version"
+          ],
+          "additionalProperties": false
+        },
+        "origin": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "const": "blank"
+                }
+              },
+              "required": [
+                "kind"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "const": "template"
+                },
+                "template": {
+                  "type": "string",
+                  "maxLength": 120,
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "kind",
+                "template"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "const": "fork"
+                },
+                "project": {
+                  "type": "string",
+                  "pattern": "^prj_[a-z0-9][a-z0-9_-]{0,63}$",
+                  "maxLength": 72
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "stateHash": {
+                  "$ref": "#/$defs/Sha256"
+                }
+              },
+              "required": [
+                "kind",
+                "project",
+                "revision",
+                "stateHash"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "const": "import"
+                },
+                "format": {
+                  "type": "string",
+                  "maxLength": 40,
+                  "minLength": 1
+                },
+                "fileName": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "sha256": {
+                  "$ref": "#/$defs/Sha256"
+                },
+                "loss": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/LossItem"
+                  },
+                  "maxItems": 500
+                }
+              },
+              "required": [
+                "kind",
+                "format",
+                "sha256",
+                "loss"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "const": "migration"
+                },
+                "catalogue": {
+                  "type": "object",
+                  "properties": {
+                    "lab": {
+                      "enum": [
+                        "board",
+                        "robotics",
+                        "drone"
+                      ]
+                    },
+                    "id": {
+                      "type": "string",
+                      "maxLength": 48,
+                      "minLength": 1
+                    },
+                    "child": {
+                      "type": "string",
+                      "maxLength": 48
+                    }
+                  },
+                  "required": [
+                    "lab",
+                    "id"
+                  ],
+                  "additionalProperties": false
+                },
+                "tool": {
+                  "type": "string",
+                  "maxLength": 80,
+                  "minLength": 1
+                },
+                "at": {
+                  "$ref": "#/$defs/Timestamp"
+                }
+              },
+              "required": [
+                "kind",
+                "catalogue",
+                "tool",
+                "at"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "const": "ai-generated"
+                },
+                "model": {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                "proposal": {
+                  "type": "string",
+                  "pattern": "^prp_[a-z0-9][a-z0-9_-]{0,63}$",
+                  "maxLength": 72
+                }
+              },
+              "required": [
+                "kind"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "migrations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "$ref": "#/$defs/SchemaVersion"
+              },
+              "to": {
+                "$ref": "#/$defs/SchemaVersion"
+              },
+              "at": {
+                "$ref": "#/$defs/Timestamp"
+              },
+              "app": {
+                "type": "string",
+                "maxLength": 40,
+                "minLength": 1
+              }
+            },
+            "required": [
+              "from",
+              "to",
+              "at",
+              "app"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 64
+        },
+        "thirdParty": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+                "maxLength": 64
+              },
+              "kind": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 40
+              },
+              "what": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "source": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 240
+                  },
+                  "url": {
+                    "type": "string",
+                    "maxLength": 300
+                  }
+                },
+                "required": [
+                  "title"
+                ],
+                "additionalProperties": false
+              },
+              "license": {
+                "type": "string",
+                "maxLength": 80
+              },
+              "review": {
+                "enum": [
+                  "unchecked",
+                  "cleared",
+                  "rewritten",
+                  "not-needed"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "kind",
+              "what",
+              "source",
+              "review"
+            ],
+            "additionalProperties": false
+          },
+          "description": "Content that came from somewhere else (D-017, F-197). Only provenance.set changes review."
+        },
+        "contributors": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "properties": {
+              "actor": {
+                "type": "string",
+                "pattern": "^usr_[a-z0-9][a-z0-9_-]{0,63}$",
+                "maxLength": 72
+              },
+              "role": {
+                "enum": [
+                  "author",
+                  "editor",
+                  "reviewer",
+                  "ai-assisted"
+                ]
+              }
+            },
+            "required": [
+              "actor",
+              "role"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "createdBy",
+        "createdWith",
+        "origin"
+      ],
+      "additionalProperties": false
+    },
+    "Op": {
+      "description": "One validated, invertible change. The pure function apply(state, op) -> { state, inverse } | { reject: code } is the only way the document changes.",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "meta.set"
+            },
+            "set": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "maxLength": 120,
+                  "minLength": 1
+                },
+                "description": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "kind": {
+                  "enum": [
+                    "project",
+                    "template",
+                    "lesson",
+                    "challenge",
+                    "bench",
+                    "craft"
+                  ]
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 1,
+                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  },
+                  "maxItems": 16
+                }
+              },
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "k",
+            "set"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "access.grant"
+            },
+            "actor": {
+              "type": "string",
+              "pattern": "^usr_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "role": {
+              "$ref": "#/$defs/Role"
+            }
+          },
+          "required": [
+            "k",
+            "actor",
+            "role"
+          ],
+          "additionalProperties": false,
+          "description": "Owner, or author.kind system for a server-validated request."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "access.revoke"
+            },
+            "actor": {
+              "type": "string",
+              "pattern": "^usr_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "k",
+            "actor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "access.set"
+            },
+            "visibility": {
+              "enum": [
+                "private",
+                "buddies",
+                "link"
+              ]
+            },
+            "owners": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^usr_[a-z0-9][a-z0-9_-]{0,63}$",
+                "maxLength": 72
+              },
+              "minItems": 1,
+              "maxItems": 8,
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "k"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "actor.set"
+            },
+            "actor": {
+              "$ref": "#/$defs/Actor"
+            }
+          },
+          "required": [
+            "k",
+            "actor"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "actor.remove"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^usr_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "k",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "board.add"
+            },
+            "board": {
+              "$ref": "#/$defs/Board"
+            }
+          },
+          "required": [
+            "k",
+            "board"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "board.remove"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^brd_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "k",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "board.set"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^brd_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "set": {
+              "type": "object",
+              "maxProperties": 64,
+              "description": "RFC 7396 merge patch for board fields (label, variant, powerInput, refdes): a null value removes the key."
+            },
+            "params": {
+              "type": "object",
+              "maxProperties": 64,
+              "description": "RFC 7396 merge patch for params: a null value removes the key."
+            },
+            "firmware": {
+              "$ref": "#/$defs/Firmware"
+            }
+          },
+          "required": [
+            "k",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "component.add"
+            },
+            "component": {
+              "$ref": "#/$defs/Component"
+            }
+          },
+          "required": [
+            "k",
+            "component"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "component.remove"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^cmp_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "k",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "component.set"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^cmp_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "set": {
+              "type": "object",
+              "maxProperties": 64,
+              "description": "RFC 7396 merge patch for component fields (label, refdes, locked): a null value removes the key."
+            },
+            "params": {
+              "type": "object",
+              "maxProperties": 64,
+              "description": "RFC 7396 merge patch for params: a null value removes the key."
+            }
+          },
+          "required": [
+            "k",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "component.swap"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^cmp_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "definition": {
+              "$ref": "#/$defs/DefRef"
+            },
+            "pinMap": {
+              "type": "object",
+              "maxProperties": 1024,
+              "propertyNames": {
+                "$ref": "#/$defs/PinId"
+              },
+              "additionalProperties": {
+                "$ref": "#/$defs/PinId"
+              }
+            }
+          },
+          "required": [
+            "k",
+            "id",
+            "definition",
+            "pinMap"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "net.create"
+            },
+            "net": {
+              "$ref": "#/$defs/Net"
+            }
+          },
+          "required": [
+            "k",
+            "net"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "net.connect"
+            },
+            "net": {
+              "type": "string",
+              "pattern": "^net_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "pin": {
+              "$ref": "#/$defs/PinRef"
+            },
+            "move": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "k",
+            "net",
+            "pin"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "net.disconnect"
+            },
+            "pin": {
+              "$ref": "#/$defs/PinRef"
+            }
+          },
+          "required": [
+            "k",
+            "pin"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "net.merge"
+            },
+            "into": {
+              "type": "string",
+              "pattern": "^net_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "from": {
+              "type": "string",
+              "pattern": "^net_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "k",
+            "into",
+            "from"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "net.split"
+            },
+            "net": {
+              "type": "string",
+              "pattern": "^net_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "into": {
+              "type": "string",
+              "pattern": "^net_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "pins": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/PinRef"
+              },
+              "minItems": 1,
+              "maxItems": 2000
+            }
+          },
+          "required": [
+            "k",
+            "net",
+            "into",
+            "pins"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "net.rename"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^net_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "name": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "class": {
+              "enum": [
+                "signal",
+                "power",
+                "ground",
+                "analog"
+              ]
+            }
+          },
+          "required": [
+            "k",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "net.delete"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^net_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "k",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "view.add"
+            },
+            "view": {
+              "$ref": "#/$defs/View"
+            }
+          },
+          "required": [
+            "k",
+            "view"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "view.remove"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^vw_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "k",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "view.set"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^vw_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "surface": {
+              "type": "string",
+              "pattern": "^cmp_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "k",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "view.place"
+            },
+            "view": {
+              "type": "string",
+              "pattern": "^vw_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "placement": {
+              "$ref": "#/$defs/Placement"
+            }
+          },
+          "required": [
+            "k",
+            "view",
+            "placement"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "view.unplace"
+            },
+            "view": {
+              "type": "string",
+              "pattern": "^vw_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "c": {
+              "type": "string",
+              "pattern": "^(brd|cmp)_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "k",
+            "view",
+            "c"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "wire.add"
+            },
+            "view": {
+              "type": "string",
+              "pattern": "^vw_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "wire": {
+              "$ref": "#/$defs/Wire"
+            }
+          },
+          "required": [
+            "k",
+            "view",
+            "wire"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "wire.route"
+            },
+            "view": {
+              "type": "string",
+              "pattern": "^vw_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^wir_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "route_mm": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "maxItems": 256,
+              "minItems": 0,
+              "description": "An empty array clears the route (the field becomes absent)."
+            }
+          },
+          "required": [
+            "k",
+            "view",
+            "id",
+            "route_mm"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "wire.remove"
+            },
+            "view": {
+              "type": "string",
+              "pattern": "^vw_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^wir_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "k",
+            "view",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "wire.set"
+            },
+            "view": {
+              "type": "string",
+              "pattern": "^vw_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^wir_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "color": {
+              "$ref": "#/$defs/WireColor"
+            }
+          },
+          "required": [
+            "k",
+            "view",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "group.set"
+            },
+            "view": {
+              "type": "string",
+              "pattern": "^vw_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "group": {
+              "$ref": "#/$defs/Group"
+            }
+          },
+          "required": [
+            "k",
+            "view",
+            "group"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "group.remove"
+            },
+            "view": {
+              "type": "string",
+              "pattern": "^vw_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^grp_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "k",
+            "view",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "junction.add"
+            },
+            "view": {
+              "type": "string",
+              "pattern": "^vw_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "junction": {
+              "$ref": "#/$defs/Junction"
+            }
+          },
+          "required": [
+            "k",
+            "view",
+            "junction"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "junction.remove"
+            },
+            "view": {
+              "type": "string",
+              "pattern": "^vw_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^jct_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "k",
+            "view",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "label.set"
+            },
+            "view": {
+              "type": "string",
+              "pattern": "^vw_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "label": {
+              "$ref": "#/$defs/Label"
+            }
+          },
+          "required": [
+            "k",
+            "view",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "label.remove"
+            },
+            "view": {
+              "type": "string",
+              "pattern": "^vw_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^lbl_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "k",
+            "view",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "mech.set"
+            },
+            "collection": {
+              "enum": [
+                "frames",
+                "bodies",
+                "joints",
+                "mounts"
+              ]
+            },
+            "value": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "k",
+            "collection",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "mech.remove"
+            },
+            "collection": {
+              "enum": [
+                "frames",
+                "bodies",
+                "joints",
+                "mounts"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "maxLength": 72,
+              "minLength": 1
+            }
+          },
+          "required": [
+            "k",
+            "collection",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "source.add"
+            },
+            "source": {
+              "$ref": "#/$defs/Source"
+            }
+          },
+          "required": [
+            "k",
+            "source"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "source.remove"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^src_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "k",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "source.rename"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^src_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 255,
+              "pattern": "^(?!/)(?!.*(^|/)\\.\\.?(/|$))[^\\\\:*?\"<>|\\u0000-\\u001f]+$",
+              "description": "Relative POSIX path, NFC, no \".\" or \"..\" segment, unique ignoring case."
+            }
+          },
+          "required": [
+            "k",
+            "id",
+            "path"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "source.edit"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^src_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "baseSeq": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "pos": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "del": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "ins": {
+              "type": "string",
+              "maxLength": 65536
+            }
+          },
+          "required": [
+            "k",
+            "id",
+            "baseSeq",
+            "pos",
+            "del",
+            "ins"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "sim.set"
+            },
+            "key": {
+              "enum": [
+                "seed",
+                "duration_ms",
+                "solver",
+                "physics",
+                "environment"
+              ]
+            },
+            "value": {}
+          },
+          "required": [
+            "k",
+            "key",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "runtime.set"
+            },
+            "runtime": {
+              "$ref": "#/$defs/Runtime"
+            }
+          },
+          "required": [
+            "k",
+            "runtime"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "runtime.remove"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^rtm_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "k",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "input.set"
+            },
+            "input": {
+              "$ref": "#/$defs/WorldInput"
+            }
+          },
+          "required": [
+            "k",
+            "input"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "input.remove"
+            },
+            "id": {
+              "$ref": "#/$defs/LocalId"
+            }
+          },
+          "required": [
+            "k",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "script.set"
+            },
+            "script": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/WorldEvent"
+              },
+              "maxItems": 10000
+            }
+          },
+          "required": [
+            "k",
+            "script"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "fault.set"
+            },
+            "fault": {
+              "$ref": "#/$defs/Fault"
+            }
+          },
+          "required": [
+            "k",
+            "fault"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "fault.remove"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^flt_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "k",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "instrument.set"
+            },
+            "instrument": {
+              "$ref": "#/$defs/Instrument"
+            }
+          },
+          "required": [
+            "k",
+            "instrument"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "instrument.remove"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^ins_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "k",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "param.set"
+            },
+            "parameter": {
+              "$ref": "#/$defs/Parameter"
+            }
+          },
+          "required": [
+            "k",
+            "parameter"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "param.remove"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^par_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "k",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "test.set"
+            },
+            "test": {
+              "$ref": "#/$defs/TestCase"
+            }
+          },
+          "required": [
+            "k",
+            "test"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "test.remove"
+            },
+            "id": {
+              "$ref": "#/$defs/LocalId"
+            }
+          },
+          "required": [
+            "k",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "asset.add"
+            },
+            "asset": {
+              "$ref": "#/$defs/Asset"
+            }
+          },
+          "required": [
+            "k",
+            "asset"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "asset.remove"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^ast_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            }
+          },
+          "required": [
+            "k",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "dep.set"
+            },
+            "dependency": {
+              "$ref": "#/$defs/ComponentDependency"
+            }
+          },
+          "required": [
+            "k",
+            "dependency"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "dep.remove"
+            },
+            "ref": {
+              "$ref": "#/$defs/DefRefName"
+            },
+            "version": {
+              "$ref": "#/$defs/SemVer"
+            }
+          },
+          "required": [
+            "k",
+            "ref",
+            "version"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "guide.set"
+            },
+            "guide": {
+              "$ref": "#/$defs/Guide"
+            }
+          },
+          "required": [
+            "k",
+            "guide"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "provenance.set"
+            },
+            "thirdParty": {
+              "type": "array",
+              "maxItems": 200,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+                    "maxLength": 64
+                  },
+                  "kind": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 40
+                  },
+                  "what": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 240
+                  },
+                  "source": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240
+                      },
+                      "url": {
+                        "type": "string",
+                        "maxLength": 300
+                      }
+                    },
+                    "required": [
+                      "title"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "license": {
+                    "type": "string",
+                    "maxLength": 80
+                  },
+                  "review": {
+                    "enum": [
+                      "unchecked",
+                      "cleared",
+                      "rewritten",
+                      "not-needed"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "what",
+                  "source",
+                  "review"
+                ],
+                "additionalProperties": false
+              },
+              "description": "Content that came from somewhere else (D-017, F-197). Only provenance.set changes review."
+            },
+            "contributors": {
+              "type": "array",
+              "maxItems": 64,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "actor": {
+                    "type": "string",
+                    "pattern": "^usr_[a-z0-9][a-z0-9_-]{0,63}$",
+                    "maxLength": 72
+                  },
+                  "role": {
+                    "enum": [
+                      "author",
+                      "editor",
+                      "reviewer",
+                      "ai-assisted"
+                    ]
+                  }
+                },
+                "required": [
+                  "actor",
+                  "role"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "remove": {
+              "type": "object",
+              "properties": {
+                "thirdParty": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+                  },
+                  "maxItems": 200
+                },
+                "contributors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^usr_[a-z0-9][a-z0-9_-]{0,63}$",
+                    "maxLength": 72
+                  },
+                  "maxItems": 64
+                }
+              },
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "k"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "license.set"
+            },
+            "license": {
+              "$ref": "#/$defs/License"
+            }
+          },
+          "required": [
+            "k",
+            "license"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "domain.set"
+            },
+            "domain": {
+              "enum": [
+                "drone",
+                "robotics"
+              ]
+            },
+            "value": {
+              "type": "object",
+              "description": "Import and migration only. Editors use domain.patch."
+            }
+          },
+          "required": [
+            "k",
+            "domain",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "k": {
+              "const": "domain.patch"
+            },
+            "domain": {
+              "enum": [
+                "drone",
+                "robotics"
+              ]
+            },
+            "patch": {
+              "type": "object",
+              "description": "RFC 7396 merge patch applied to domains.<domain>.data. A null value removes a key; nulls exist in ops, never in the document."
+            }
+          },
+          "required": [
+            "k",
+            "domain",
+            "patch"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "OpEnvelope": {
+      "type": "object",
+      "properties": {
+        "opId": {
+          "type": "string",
+          "pattern": "^op_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "seq": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Revision after this op. Assigned by the ordering authority (the room server, or the local counter when working alone)."
+        },
+        "base": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Revision the author saw when making the op."
+        },
+        "author": {
+          "type": "object",
+          "properties": {
+            "actor": {
+              "type": "string",
+              "pattern": "^usr_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "kind": {
+              "enum": [
+                "user",
+                "ai",
+                "system",
+                "import"
+              ]
+            },
+            "proposal": {
+              "type": "string",
+              "pattern": "^prp_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "model": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "description": "Model name when kind is ai."
+            }
+          },
+          "required": [
+            "actor",
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        "at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "batch": {
+          "type": "string",
+          "maxLength": 40,
+          "minLength": 1
+        },
+        "op": {
+          "$ref": "#/$defs/Op"
+        }
+      },
+      "required": [
+        "opId",
+        "seq",
+        "base",
+        "author",
+        "at",
+        "op"
+      ],
+      "additionalProperties": false
+    },
+    "Proposal": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^prp_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "base": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "author": {
+          "type": "object",
+          "properties": {
+            "actor": {
+              "type": "string",
+              "pattern": "^usr_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "model": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          "required": [
+            "actor"
+          ],
+          "additionalProperties": false
+        },
+        "rationale": {
+          "$ref": "#/$defs/Text"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "invalid",
+            "open",
+            "accepted",
+            "partial",
+            "rejected",
+            "stale",
+            "superseded",
+            "expired"
+          ],
+          "description": "Lifecycle of AI_ARCHITECTURE 7.3. draft: being built; invalid: failed the dry run; open: waiting for a person; accepted/partial/rejected: decided; stale: the project moved under it; superseded: replaced by a re-proposal; expired: session ended under retention."
+        },
+        "promptVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "contextHash": {
+          "$ref": "#/$defs/Sha256",
+          "description": "sha256 of the context pack the model saw."
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_-]{0,15}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "ops": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Op"
+                },
+                "minItems": 1,
+                "maxItems": 40
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_-]{0,15}$"
+                },
+                "maxItems": 11,
+                "uniqueItems": true
+              }
+            },
+            "required": [
+              "id",
+              "ops"
+            ],
+            "additionalProperties": false
+          },
+          "description": "Ordered steps; each step is applied as one batch and 'accept some' selects whole steps (AI_ARCHITECTURE 7.4). At most 12 steps and 40 ops per step. The 120-op total and 32 KiB limits of the AI host are checked by the host, not by this schema."
+        }
+      },
+      "required": [
+        "id",
+        "base",
+        "author",
+        "steps",
+        "status"
+      ],
+      "additionalProperties": false,
+      "description": "Kept outside the document (room or local store). Never written to the document directly; an accepted proposal becomes ops with author.proposal set."
+    },
+    "ReplayLog": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "const": "iynk.replay"
+        },
+        "version": {
+          "const": 1
+        },
+        "project": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^prj_[a-z0-9][a-z0-9_-]{0,63}$",
+              "maxLength": 72
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "stateHash": {
+              "$ref": "#/$defs/Sha256"
+            }
+          },
+          "required": [
+            "id",
+            "revision",
+            "stateHash"
+          ],
+          "additionalProperties": false
+        },
+        "engines": {
+          "type": "object",
+          "maxProperties": 16,
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1
+          }
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "tNs": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "kind": {
+                "enum": [
+                  "input",
+                  "press",
+                  "fault",
+                  "edit",
+                  "power",
+                  "reset"
+                ]
+              },
+              "data": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "tNs",
+              "kind",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 1000000
+        },
+        "checkpoints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "tNs": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "hash": {
+                "$ref": "#/$defs/Sha256"
+              }
+            },
+            "required": [
+              "tNs",
+              "hash"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 100000
+        }
+      },
+      "required": [
+        "format",
+        "version",
+        "project",
+        "engines",
+        "seed",
+        "events"
+      ],
+      "additionalProperties": false
+    },
+    "Checkpoint": {
+      "type": "object",
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "kind": {
+          "enum": [
+            "auto",
+            "named"
+          ]
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "author": {
+          "type": "string",
+          "pattern": "^usr_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "stateHash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "store": {
+          "enum": [
+            "container",
+            "local-db"
+          ]
+        }
+      },
+      "required": [
+        "revision",
+        "kind",
+        "at",
+        "author",
+        "stateHash",
+        "store"
+      ],
+      "additionalProperties": false
+    },
+    "History": {
+      "type": "object",
+      "properties": {
+        "baseRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "baseChain": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "description": "Hash-chain value at baseRevision. Head chain = fold over ops: sha256(prev + canonical(envelope)). Genesis: sha256(\"iynk.chain.v1:\" + project id)."
+        },
+        "checkpoints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Checkpoint"
+          },
+          "maxItems": 256
+        },
+        "ops": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/OpEnvelope"
+          },
+          "maxItems": 1000
+        }
+      },
+      "required": [
+        "baseRevision",
+        "baseChain",
+        "checkpoints",
+        "ops"
+      ],
+      "additionalProperties": false
+    },
+    "ExportRecord": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "type": "string",
+          "maxLength": 40,
+          "minLength": 1
+        },
+        "at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "appVersion": {
+          "type": "string",
+          "maxLength": 40,
+          "minLength": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "loss": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1
+          },
+          "maxItems": 64
+        }
+      },
+      "required": [
+        "format",
+        "at",
+        "appVersion",
+        "sha256",
+        "revision"
+      ],
+      "additionalProperties": false
+    },
+    "Domains": {
+      "type": "object",
+      "properties": {
+        "robotics": {
+          "type": "object",
+          "properties": {
+            "schemaVersion": {
+              "$ref": "#/$defs/SchemaVersion"
+            },
+            "data": {
+              "$ref": "urn:iynk:schema:robotics-domain:1.0"
+            }
+          },
+          "required": [
+            "schemaVersion",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        "drone": {
+          "type": "object",
+          "properties": {
+            "schemaVersion": {
+              "$ref": "#/$defs/SchemaVersion"
+            },
+            "data": {
+              "$ref": "urn:iynk:schema:drone-domain:1.0"
+            }
+          },
+          "required": [
+            "schemaVersion",
+            "data"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "additionalProperties": false,
+      "description": "Domain data owned by the robotics and drone specs. The envelope is validated here; data is validated by robotics.domain.schema.json and drone.domain.schema.json (one schema per major version, so schemaVersion 1.x selects them; a minor bump only adds optional fields). Both files must be loaded by the validator (tools/validate-project.mjs does this)."
+    },
+    "FileEnvelope": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "const": "iynk.file"
+        },
+        "version": {
+          "const": 1
+        },
+        "hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "description": "State hash of \"project\" (PROJECT_DATA_MODEL.md section 6.4). A mismatch on open is a warning, not a refusal (R-037)."
+        },
+        "project": {
+          "$ref": "#"
+        }
+      },
+      "required": [
+        "format",
+        "version",
+        "hash",
+        "project"
+      ],
+      "additionalProperties": false,
+      "description": "The .iynk single-file form (R-037). The .iynkz container holds this file plus assets."
+    },
+    "Group": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^grp_[a-z0-9][a-z0-9_-]{0,63}$",
+          "maxLength": 72
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(brd|cmp|wir|jct|lbl)_[a-z0-9][a-z0-9_-]{0,63}$",
+            "maxLength": 72,
+            "description": "The c of a placement, or the id of a wire, junction or label of the same view."
+          },
+          "minItems": 2,
+          "maxItems": 2000,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id",
+        "members"
+      ],
+      "additionalProperties": false,
+      "description": "A set of drawn things that moves, locks and copies as one. No electrical meaning, never changes a net (rule G1). A member is in at most one group and groups do not nest (V3-GROUP)."
+    }
+  }
+}

@@ -49,6 +49,8 @@ The Chromebook and phone questions stay open. I have neither. CDP CPU throttling
 | v1.29.0 | 15.1 ms | 46 ms | `MicroPython v1.29.0 on 2026-08-24; Raspberry Pi Pico with RP2040` |
 | v1.20.0 | 11.0 ms | 39 ms | prompt printed, banner printed before USB attached (as in the demo) |
 
+How boot time is counted: the "simulated" figure is not a real Pico boot time. The harness does not run the bootrom's own startup (`src/harness.mjs:24` sets `mcu.core.PC = 0x10000000` and the UF2 blocks are copied straight into `mcu.flash`), so the second-stage boot loader and bootrom flash setup that a real chip runs are skipped. The 11 to 15 ms covers only MicroPython's own start-up to the prompt, with the clock in `Simulator.execute()` at 8 ns per cycle. Do not quote it as chip boot time. The wall figure is Node time on this machine.
+
 Both boot to the REPL. No error was logged except the "unimplemented peripheral" noise from the QSPI/SSI registers, which I silenced.
 
 ### GPIO 25 blink (v1.29.0, `sleep_ms(100)`)
@@ -116,7 +118,7 @@ Browser (same loop, bundled with esbuild, page main thread):
 
 | Browser | CPU throttle | Boot wall (ms) | REPL idle speed | Blink loop speed | Load |
 |---|---|---|---|---|---|
-| Chromium 156 | none | 29 | 0.77x | 0.78x | 4.2 |
+| Chromium 156 | none | 29 | 0.77x | 0.78x (re-run by the checker: 0.79x) | 4.2 |
 | Chromium 156 | 4x | 81 | 0.18x | 0.19x | 4.2 |
 | Chromium 156 | 6x | 119 | 0.13x | 0.13x | 4.2 |
 | WebKit 27.2 | none | 35 | 0.54x | 0.56x | 4.1 |
@@ -137,10 +139,11 @@ The output matches on both lessons: same pin levels in the same order at the sam
 
 ## Verdict
 
-**FAIL against the exit condition, on the CPU clause only.**
+**Pass clause (CPU under 60 percent of a core at 1x) NOT MET; Fail clause (missing features needing over 2 weeks) NOT TRIGGERED; for the stock rp2040js loop; idle-skip untested.**
 
-- Boot, blink, ADC, filesystem write and I2C all work (filesystem and `scan()` need small additions of my own, 30 lines and 60 lines, both done within this spike). So the "Fail: filesystem writes or I2C missing and need over 2 weeks" condition is not met.
-- The pass clause "CPU under 60 percent of a core at 1x" is not met. rp2040js runs MicroPython at 0.54x to 0.78x on an Apple M4 Pro, using 100 percent of a core, and 0.13x to 0.19x under 4x to 6x CPU throttling. Real-time 1x is not reachable on this machine, let alone on a Chromebook.
+- Boot, blink, ADC, filesystem write and I2C all work (filesystem and `scan()` need small additions of my own, 30 lines and 60 lines, both done within this spike). So the "Fail: filesystem writes or I2C missing and need over 2 weeks" clause is not triggered. The outcome sits between the two clauses: the exit condition has no literal result for it, so the decision stays open and this report does not call it a Fail.
+- The pass clause "CPU under 60 percent of a core at 1x" is not met. rp2040js runs MicroPython at 0.54x to 0.79x on an Apple M4 Pro, using 100 percent of a core, and 0.13x to 0.19x under 4x to 6x CPU throttling. Real-time 1x is not reachable on this machine, let alone on a Chromebook.
+- Scope: this verdict is for the stock rp2040js execution loop as published. An idle-skip or WFI fast-forward on MicroPython's poll loop could change it; that was not tested.
 
 ## Caveats
 
@@ -156,7 +159,7 @@ The output matches on both lessons: same pin levels in the same order at the sam
 
 ## What this means for the architecture
 
-HYPOTHESIS. rp2040js can run the real Pico firmware correctly, but at roughly 0.6x to 0.8x on a fast laptop, so it is not a drop-in replacement for the TypeScript interpreter as the default path. Two uses look viable, neither tested here. (1) Virtual time instead of real time: the lessons only need the simulated clock to drive the world model, so running at 0.2x to 0.7x just stretches a 4 s lesson to 6 to 30 s, which is bad for blink-and-see feedback but fine for a "Run on the real firmware" button. (2) Keep the TypeScript interpreter as the default and the live path (it ran the same two lessons identically, about 800x faster), and offer rp2040js as an opt-in "real firmware" mode in a Worker, with the check path left on the interpreter. Cost to reach a polished opt-in mode is not settled by this spike: the filesystem hook and the pull-up and bit-bang I2C model are small, but wiring them to `world.ts` (not checked) and the persistence of the flash image to IndexedDB are extra work, and the speed problem needs either a profiling pass on rp2040js or an idle-skip hook on MicroPython's poll loop (both untested). The 3 to 5 week estimate for D1 on rp2040js should not be shortened on the strength of this spike; the speed risk is now measured and is real.
+HYPOTHESIS. rp2040js can run the real Pico firmware correctly, but at roughly 0.54x to 0.79x on a fast laptop, so it is not a drop-in replacement for the TypeScript interpreter as the default path. Two uses look viable, neither tested here. (1) Virtual time instead of real time: the lessons only need the simulated clock to drive the world model, so running at 0.2x to 0.7x just stretches a 4 s lesson to 6 to 30 s, which is bad for blink-and-see feedback but fine for a "Run on the real firmware" button. (2) Keep the TypeScript interpreter as the default and the live path (it ran the same two lessons identically, about 800x faster), and offer rp2040js as an opt-in "real firmware" mode in a Worker, with the check path left on the interpreter. Cost to reach a polished opt-in mode is not settled by this spike: the filesystem hook and the pull-up and bit-bang I2C model are small, but wiring them to `world.ts` (not checked) and the persistence of the flash image to IndexedDB are extra work, and the speed problem needs either a profiling pass on rp2040js or an idle-skip hook on MicroPython's poll loop (both untested). The 3 to 5 week estimate for D1 on rp2040js should not be shortened on the strength of this spike; the speed risk is now measured and is real.
 
 ## How to reproduce
 
@@ -181,7 +184,7 @@ node browser_run.mjs
 
 ## Independent check (2026-10-27)
 
-The checker re-ran the headline measurement but could not append this section because REPORT.md did not exist at the time. The orchestrator wrote it from the checker's returned findings.
+The checker re-ran the headline measurement. The orchestrator wrote this section from the checker's returned findings. Items already addressed by the review fixes at the end of this file are marked.
 
 - Reproduced: yes
 - Verdict holds: yes
@@ -196,13 +199,21 @@ Numbers from the re-run:
 - Chromium 4x throttle: idle 0.17x, blink 0.19x, 6 toggles, load 6.8.
 - Chromium 6x throttle: idle 0.12x, blink 0.13x, 6 toggles, load 6.8.
 - WebKit 27.2 no throttle: idle 0.54x, blink 0.57x, 17 toggles, load 7.1.
-- Tolerance I would use: within 15 percent for speed ratios at similar load, because another lane shares the machine. The report's own numbers were not available to compare, so no match/mismatch can be stated. Every measured value is below 1x, so the conclusion is not sensitive to this tolerance (the best case, 0.79x, is 21 percent under the 1x bar).
+- Tolerance I would use: within 15 percent for speed ratios at similar load, because another lane shares the machine. The report's numbers (written after the check) agree within this tolerance: idle 0.67 vs 0.66 to 0.67, sleep 0.61 to 0.67 vs 0.68 to 0.69, busy loop 0.56 to 0.61 vs 0.61 to 0.62, Chromium 0.78 and 0.79 vs 0.77 and 0.78, WebKit 0.54 and 0.57 vs 0.54 and 0.56. Every measured value is below 1x, so the conclusion is not sensitive to this tolerance (the best case, 0.79x, is 21 percent under the 1x bar).
 
 Problems found:
 
-- REPORT.md does not exist at docs/MASTER_PLAN/08_RESEARCH_SPIKES/RS-06-rp2040js-micropython/ (only src/ is there), so I could not append the '## Independent check (2026-10-27)' section or compare against the report's own numbers. I did not create the file. The orchestrator must write the report first, then append the section below.
-- Verdict wording: the exit condition (TECHNICAL_RESEARCH.md row 12) is 'Pass: all four work, CPU under 60 percent of a core. Fail: filesystem writes or I2C missing and need over 2 weeks'. All four features work (blink, ADC, LittleFS, I2C), so the literal Fail clause is not met. The Pass clause is missed on speed (0.54 to 0.79x, not 1x) and CPU (about 100 percent of a core, not under 60). The outcome sits between the two clauses. FAIL against Pass is defensible, but the report should say 'Pass not met on speed and CPU; Fail clause not triggered, features all work'.
-- The fast and cheap fix is not tested: speed is bounded by the emulator on one core with no idle skip (REPL idle runs at 0.67x using 100 percent CPU). The report should say the verdict is for the stock rp2040js loop as written, and that an idle-skip or WFI fast-forward could change it. I did not test this.
-- Device question stays open: 4x and 6x throttling is a proxy for a Chromebook or phone, not a measurement of one. Unthrottled Apple-silicon Chromium and WebKit already fail 1x, so more throttling only makes the FAIL stronger.
+- Verdict wording: the exit condition (TECHNICAL_RESEARCH.md row 12) is 'Pass: all four work, CPU under 60 percent of a core. Fail: filesystem writes or I2C missing and need over 2 weeks'. All four features work (blink, ADC, LittleFS, I2C), so the literal Fail clause is not met. The Pass clause is missed on speed (0.54 to 0.79x, not 1x) and CPU (about 100 percent of a core, not under 60). The outcome sits between the two clauses. The report now says: Pass not met on speed and CPU; Fail clause not triggered, features all work.
+- The fast and cheap fix is not tested: speed is bounded by the emulator on one core with no idle skip (REPL idle runs at 0.67x using 100 percent CPU). The report should say the verdict is for the stock rp2040js loop as written, and that an idle-skip or WFI fast-forward could change it. I did not test this. The Verdict now states the scope.
+- Device question stays open: 4x and 6x throttling is a proxy for a Chromebook or phone, not a measurement of one. Unthrottled Apple-silicon Chromium and WebKit already fail 1x, so more throttling only widens the gap to the Pass clause.
 - Load during my runs was 3.7 to 7.5 (another lane active), mostly below 10. Numbers were not retried under lower load.
-- Odd detail: bootSimMs is about 14 to 15 sim ms in every run, which looks short for a MicroPython boot. It reaches the '>>>' prompt, so the boot text is real, but the report should say how sim time is counted (the bootrom shortcut in bootrom.mjs) so readers do not take it as real boot time.
+- Odd detail: bootSimMs is about 14 to 15 sim ms in every run, which looks short for a MicroPython boot. It reaches the '>>>' prompt, so the boot text is real, but the report should say how sim time is counted (the bootrom shortcut in bootrom.mjs) so readers do not take it as real boot time. Addressed in the Boot section.
+
+## Review fixes (2026-10-27)
+
+| # | Issue | What I did |
+|---|---|---|
+| 1 | Verdict said FAIL, but the literal Fail clause (filesystem or I2C missing, over 2 weeks) is not met | Replaced the Verdict heading with: Pass clause NOT MET; Fail clause NOT TRIGGERED; for the stock rp2040js loop; idle-skip untested. Added a line that the result sits between the clauses and a Scope line on idle-skip. Checked against TECHNICAL_RESEARCH.md row 12 as quoted in the checker notes. |
+| 2 | Speed range 0.54 to 0.78 vs checker best case 0.79 | Verdict and architecture text now say 0.54 to 0.79x. The Chromium table row keeps the original 0.78x and notes the checker's 0.79x. The Caveats bullet "0.6x" for the stock code is kept, as it describes the Node figure. |
+| 3 | Independent-check section said REPORT.md did not exist | Removed that problem bullet and the sentence in the section intro. Replaced "numbers not available to compare" with a comparison showing the report and the re-run agree within 15 percent. |
+| 4 | Boot time 15.1 ms unexplained | Added a "How boot time is counted" note in the Boot section. Verified in `src/harness.mjs:24` that the PC is set to 0x10000000 with UF2 blocks copied directly into flash, so the bootrom and second-stage startup are skipped. I describe this as skipped startup, not as a specific "shortcut" inside bootrom.mjs, because bootrom.mjs is only the B1 image. |
