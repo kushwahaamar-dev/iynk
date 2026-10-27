@@ -1,8 +1,9 @@
 export const meta = {
   name: 'master-plan-buildplan',
-  description: 'Master plan step 6 as a build plan: fold spike results into the design, then the core-first build roadmap, atomic task packages per build phase, test strategy and release checks, each reviewed for implementability',
+  description: 'Master plan step 6 as a build plan: reconcile the design documents and fold in spike results, then the core-first build roadmap, atomic task packages per build phase, test strategy and release checks, each reviewed for implementability',
   phases: [
-    { title: 'Fold-in', detail: 'replace PENDING spike markers and old gate wording in the design with the measured results', model: 'sonnet' },
+    { title: 'Reconcile', detail: 'seven consistency sweeps and the spike fold-in scout, then one arbiter decides each disagreement', model: 'sonnet' },
+    { title: 'Fix design', detail: 'one fixer per file applies the decisions and spike results, a verify round, then one more fix round', model: 'sonnet' },
     { title: 'Roadmap', detail: 'core-first build phases from B0 foundation to drones and export, each one approval unit', model: 'sonnet' },
     { title: 'Tasks', detail: 'one planner per build phase writes atomic task packages; test strategy and release checks in parallel', model: 'sonnet' },
     { title: 'Review', detail: 'an implementability reviewer and a fixer per phase, then a cross-document critic and fixers, then the task index', model: 'sonnet' },
@@ -15,8 +16,35 @@ const sonnet = (prompt, opts = {}) => agent(prompt, { ...opts, model: 'sonnet' }
 const repo = '/Users/amar/Codes/ak/simlab'
 const scratch = args?.scratch ?? '/Users/amar/iynk-master-plan-scratch'
 const mp = `${repo}/docs/MASTER_PLAN`
+const A = `${mp}/04_ARCHITECTURE`
 const E = `${mp}/05_ENGINEERING`
 const today = '2026-10-27'
+
+// Agents write the same file as absolute, repo-relative or plan-relative paths, sometimes with a note or line number after it.
+// Grouping on the raw string put two fixers on one file in the design run, and they undid each other.
+const norm = p => {
+  if (!p) return null
+  let f = String(p).trim().replace(/^`+|`+$/g, '').split(/\s+\(/)[0].trim().replace(/:\d+(-\d+)?$/, '')
+  if (f.startsWith(`${repo}/`)) return f
+  if (f.startsWith('docs/MASTER_PLAN/')) return `${repo}/${f}`
+  if (/^\d\d_[A-Z]/.test(f)) return `${mp}/${f}`
+  return f.startsWith('/') ? f : `${repo}/${f}`
+}
+// The schemas, their examples and the check tools are validated together, so one agent owns all of them.
+const SCHEMAS = `${A}/schemas`
+const ownerOf = f => (f.startsWith(`${SCHEMAS}/`) ? SCHEMAS : f)
+const groupByOwner = entries => {
+  const units = {}
+  for (const { file, kind, text } of entries) {
+    const f = norm(file)
+    if (!f) continue
+    const u = ownerOf(f)
+    if (!units[u]) units[u] = { reconcile: [], foldin: [], other: [] }
+    units[u][kind].push(u === f ? text : `${text} (file: ${f})`)
+  }
+  return units
+}
+const isDataFile = f => /\.(json|ya?ml)$/.test(f)
 
 const RULES = `You are planning the build of iynk (repo ${repo}). This step writes plans only: change nothing in src/, figures/, server/, solana/,
 db/, e2e/, package.json or lockfiles, and do not commit. Scratch goes under ${scratch}/buildplan/<your label>/.
@@ -30,7 +58,8 @@ Binding inputs (read what your task names; cite by path):
   buddies-only (D-016). Licence later (D-017). Agents build each phase and the orchestrator stops after each phase for Amar's OK.
 - Product: ${mp}/03_PRODUCT/ (FEATURE_CATALOGUE F-ids, FEATURE_PRIORITIZATION, PRODUCT_REQUIREMENTS R-ids, USER_JOURNEYS, STUDIO_EDITOR, EDUCATION, ...).
 - Architecture: ${mp}/04_ARCHITECTURE/ (PROJECT_DATA_MODEL and schemas/project.schema.json, COMPONENT_SCHEMA and schemas/component.schema.json,
-  SIMULATION_ARCHITECTURE, SYSTEM/FRONTEND/BACKEND/API/REALTIME/AI architecture, ADR/). Field and module names there are binding.
+  SIMULATION_ARCHITECTURE, SYSTEM/FRONTEND/BACKEND/API/REALTIME/AI architecture, ADR/). Field and module names there are binding. Where two
+  design documents still disagree, ${A}/RECONCILIATION.md decides (written in the first step of this run, once it exists).
 - Spikes: ${mp}/08_RESEARCH_SPIKES/*/REPORT.md (verdicts and independent checks).
 - Audit: ${mp}/01_AUDIT/ (TECHNICAL_DEBT Part D, SECURITY_BASELINE sections 8 and 10, FEATURE_VERIFICATION section 7, PERFORMANCE_BASELINE,
   TEST_COVERAGE, runs/COMMANDS.md for the commands that work keyless).
@@ -60,9 +89,9 @@ const DOC_SCHEMA = {
   required: ['files', 'summary'],
 }
 
-// ---------------------------------------------------------------- Fold-in: spike results into the design documents
+// ---------------------------------------------------------------- Reconcile: find where the design documents disagree, decide each once
 
-phase('Fold-in')
+phase('Reconcile')
 const SCOUT_SCHEMA = {
   type: 'object',
   properties: {
@@ -76,27 +105,177 @@ const SCOUT_SCHEMA = {
   },
   required: ['spikes', 'targets'],
 }
-const scout = await sonnet(`${RULES}
+const CONFLICT_SCHEMA = {
+  type: 'object',
+  properties: {
+    conflicts: { type: 'array', items: { type: 'object', properties: {
+      topic: { type: 'string' },
+      variants: { type: 'array', items: { type: 'object', properties: {
+        file: { type: 'string', description: 'absolute path' }, where: { type: 'string', description: 'section or line' }, says: { type: 'string' },
+      }, required: ['file', 'says'] } },
+      evidence: { type: 'string', description: 'decisions, spike numbers or ADRs that bear on which variant is right' },
+      severity: { type: 'string', enum: ['blocker', 'high', 'medium', 'low'] },
+    }, required: ['topic', 'variants', 'severity'] } },
+    checksRun: { type: 'string', description: 'commands run and their result, if any' },
+  },
+  required: ['conflicts'],
+}
+const SWEEPS = [
+  { key: 'storage', focus: `server store and local storage: SQLite settings (the synchronous default, WAL, IYNK_STORE_SYNC), snapshot and compaction
+numbers (ADR-0423 against ADR-0505), retention and backups, any Postgres left as the server store (F-165 is SQLite per ADR-0004), and the IndexedDB
+database and store names and numbers across SYSTEM, FRONTEND, AI, REALTIME and BACKEND architecture and ADR-0004, 0106, 0422 and 0505` },
+  { key: 'identity', focus: `identity, enrolment and access: device keys (P-256) against HMAC tokens across ADR-0007, ADR-0421, ADR-0502 and
+BACKEND sections 5 and 6; the setup or operator token against enrolment codes; the enrolment setting's name and modes (IYNK_ENROL or IYNK_ENROLLMENT;
+invite, closed, code, open); instance roles; buddy and room invites; the share-link expiry default (30 or 7 days)` },
+  { key: 'api', focus: `routes and contracts: schemas/openapi.yaml against API_CONTRACTS, BACKEND, FRONTEND, REALTIME, AI_ARCHITECTURE, COMMUNITY
+and STUDIO_EDITOR: the path prefix (/v1 or /api/v1), routes one document has and another lacks (/projects/*, /me/exports, /usage, /parts, /search/*,
+/ai/relay, getServerInfo software.version), operation ids, the Idempotency-Key count, error codes, and the server CLI command names` },
+  { key: 'document', focus: `the project and component documents: PROJECT_DATA_MODEL against schemas/project.schema.json, the example project files,
+COMPONENT_SCHEMA and schemas/component.schema.json, STUDIO_EDITOR, and the robot and drone domain data: what the stateHash covers, revision,
+cause_id and the diagnosis record fields (D-010), surface pins and PinId rules, licence or license spelling, whether domains.*.data is opaque or
+typed, provenance and fork origin, refdes prefixes, units. Run the checks too: cd ${SCHEMAS}/tools && npm run check (run npm install --no-audit
+--no-fund first if node_modules is missing) and report every failure as a conflict` },
+  { key: 'simulation', focus: `simulation, faults and runtime: the cause-id list (SIMULATION_ARCHITECTURE 13.4 is the canonical list; ROBOTICS 13 and
+DRONE 10 should point to it), fault and lesson counts ("79", "20 deliberately broken circuits", 106 bench faults, 144 board failures), worker and
+compile resource limits ("512 MB, 1 CPU"), and whether each engine choice matches its spike: solver (RS-08), AVR runtime (RS-03), RP2040 (RS-06),
+Verilog (RS-12), physics engine (RS-13), editor rendering (RS-01); operatingRange against validRange` },
+  { key: 'adr', focus: `the ADR set: ADR/README.md ranges and rows against the "ADR number ranges" section of 00_EXECUTIVE/DECISION_REGISTER.md and
+the numbers each document really uses (STUDIO_EDITOR, EDUCATION, COMMUNITY, API_CONTRACTS, UX_DESIGN_SYSTEM, REALTIME); ids used twice; status lines
+that disagree about what supersedes what (ADR-0421, 0422, 0430); ADR files missing sections of the BRIEF section 19.6 template (ADR-0601 to 0613 and
+0700 to 0716 were reported as missing Performance data, Licensing and Migration plan); links to ADR files that do not exist` },
+  { key: 'product', focus: `the product documents against each other and the reframe: FEATURE_CATALOGUE F-ids and phase codes against
+FEATURE_PRIORITIZATION (class, phase, the Milestone 1 list and count), PRODUCT_REQUIREMENTS R-ids, USER_JOURNEYS J-ids (J-13, J-14, J-15), EDUCATION,
+COMMUNITY, COMPONENT_ECOSYSTEM and UX_DESIGN_SYSTEM; any document that still plans something D-016 removed (Build Stories, Build Night, Solana,
+wallet, mint, a public buddy list, the AI matcher) or D-013 put out of scope (classrooms, rosters, LMS, accounts, billing, pricing, marketplace,
+the live counter); the leaderboard must be buddies only` },
+]
+
+const [scout, ...sweeps] = await parallel([
+  () => sonnet(`${RULES}
 
 You are the fold-in scout. Read every ${mp}/08_RESEARCH_SPIKES/*/REPORT.md, including its "Independent check" section, and record each spike's
-verdict, whether the check upheld it, and which design decision it informs. Then grep ${mp}/03_PRODUCT and ${mp}/04_ARCHITECTURE (including ADR/) for
+verdict, whether the check upheld it, and which design decision it informs. Then grep ${mp}/03_PRODUCT and ${A} (including ADR/) for
 "PENDING RS-", "RS-0", "RS-1", "Studio gate" and "go / no-go". List every place where (a) a choice waits on a spike that now has a result, or (b) text
 says Studio waits for interviews, a pilot, a market gate or Fault Lab, or plans around customers, classrooms or pricing (Amar's reframe: core first,
-D-013 and D-014; only the technical spikes steer the technology). Group by file. Change nothing.`, { label: 'foldin:scout', phase: 'Fold-in', schema: SCOUT_SCHEMA })
+D-013 and D-014; only the technical spikes steer the technology). Give absolute paths. Group by file. Change nothing.`,
+    { label: 'scout', phase: 'Reconcile', schema: SCOUT_SCHEMA }),
+  ...SWEEPS.map(s => () => sonnet(`${RULES}
+
+You are the ${s.key} consistency sweep over the design: ${mp}/03_PRODUCT, ${A} (including ADR/ and schemas/) and
+${mp}/00_EXECUTIVE/DECISION_REGISTER.md. Your focus: ${s.focus}.
+Fixer notes from the last review are at ${scratch}/design/review-leftovers.md; use them as leads only, since some are already fixed and two fixers
+edited some files at once. Read the documents themselves and grep for every variant. Report each place where two documents (or two sections of one)
+state different values for the same thing within your focus, with absolute file paths, the section or line, and the exact words each uses, plus any
+decision, spike number or ADR that bears on which is right. Report only disagreements that exist in the files now. Change nothing.`,
+    { label: `sweep:${s.key}`, phase: 'Reconcile', schema: CONFLICT_SCHEMA })),
+])
+
+const conflicts = sweeps.flatMap((r, i) => (r?.conflicts ?? []).map(c => ({ sweep: SWEEPS[i].key, ...c })))
+const deadSweeps = SWEEPS.filter((s, i) => !sweeps[i]).map(s => s.key)
+if (deadSweeps.length) log(`Sweeps that returned nothing: ${deadSweeps.join(', ')}`)
+log(`Reconcile: ${conflicts.length} disagreements from ${SWEEPS.length - deadSweeps.length} sweeps; scout found ${scout?.targets?.length ?? 0} files with spike fold-ins`)
+
+const ARB_SCHEMA = {
+  type: 'object',
+  properties: {
+    file: { type: 'string' },
+    summary: { type: 'string' },
+    decisions: { type: 'number' },
+    edits: { type: 'array', items: { type: 'object', properties: {
+      file: { type: 'string', description: 'absolute path of the one file this edit changes' },
+      rid: { type: 'string', description: 'RC-01, RC-02, ...' },
+      change: { type: 'string', description: 'the section, the wording or value it has now, and the wording or value it must have' },
+    }, required: ['file', 'rid', 'change'] } },
+    forAmar: { type: 'array', items: { type: 'string' } },
+  },
+  required: ['file', 'summary', 'edits'],
+}
+const arbiter = await sonnet(`${RULES}
+
+You are the arbiter for the design documents. Seven sweeps found these disagreements (JSON):
+${JSON.stringify(conflicts)}
+
+Merge duplicates. Open the files and confirm each disagreement still exists; drop any that do not. For each one left, decide ONE canonical value by
+this precedence, and name the rule you used:
+1. DECISION_REGISTER D-013 to D-017 (Amar's decisions) and the kept D-007, D-010, D-011.
+2. A measured spike result (cite the REPORT.md and its number).
+3. The ADR that owns the topic per ADR/README.md, if its status is accepted.
+4. The document that owns the topic: the contract schemas and PROJECT_DATA_MODEL own field names; API_CONTRACTS with schemas/openapi.yaml own routes;
+   SYSTEM_ARCHITECTURE owns module layout and storage; SIMULATION_ARCHITECTURE owns cause ids; FEATURE_CATALOGUE owns F-ids and phase codes.
+5. Otherwise the simpler, safer and more reversible option, labelled PROPOSAL.
+Never decide what only Amar can (the licence, real-board checks, third-party content); list those under forAmar.
+
+Write ${A}/RECONCILIATION.md: one row per decision (RC-01, RC-02, ...) with the topic, each variant with file and place, the decision, the rule used,
+and every file that must change. Keep it plain and short. Then return the edits: one entry per file per decision with the exact change, so a fixer
+who owns only that file can apply it without reading the others. Every file that states a losing variant gets an edit. Do not edit any other file.`,
+  { label: 'arbiter', phase: 'Reconcile', schema: ARB_SCHEMA })
 
 const spikeDigest = (scout?.spikes ?? []).map(s => `${s.id}: ${s.verdict}${s.checkHolds ? ` (check: ${s.checkHolds})` : ''}; informs ${s.decisionItInforms}`).join('\n')
-log(`Fold-in: ${scout?.targets?.length ?? 0} design files to update`)
+log(`Arbiter: ${arbiter?.decisions ?? '?'} decisions, ${arbiter?.edits?.length ?? 0} file edits; for Amar: ${(arbiter?.forAmar ?? []).length}`)
 
-await parallel((scout?.targets ?? []).map(t => () => sonnet(`${RULES}
+// ---------------------------------------------------------------- Fix design: one fixer per file applies the decisions and the spike results
 
-You update ${t.file}; you are the only agent editing it. Spike results:
-${spikeDigest}
-Places to update:
-${t.items.map((x, i) => `${i + 1}. ${x}`).join('\n')}
+phase('Fix design')
+const reconcileFile = norm(`${A}/RECONCILIATION.md`)
+const unitsRound1 = groupByOwner([
+  ...(arbiter?.edits ?? []).map(e => ({ file: e.file, kind: 'reconcile', text: `${e.rid}: ${e.change}` })),
+  ...(scout?.targets ?? []).flatMap(t => t.items.map(x => ({ file: t.file, kind: 'foldin', text: x }))),
+])
+delete unitsRound1[reconcileFile]
+
+const fixUnit = (unit, u, round) => {
+  const scope = unit === SCHEMAS
+    ? `everything under ${SCHEMAS} (the schemas, the example files and the check tools). After editing, run cd ${SCHEMAS}/tools && npm run check
+(npm install --no-audit --no-fund first if node_modules is missing) and fix until it passes; recompute any hashes in the examples with the tools there,
+never by hand.`
+    : `${unit}. Edit no other file.`
+  const record = unit === SCHEMAS || isDataFile(unit)
+    ? 'Data files cannot carry a notes section: list each change in your summary instead.'
+    : `Append "## ${round === 1 ? 'Reconcile and spike fold-in' : 'Reconcile, second pass'} (${today})" listing each change by RC id or spike id.`
+  const register = unit.endsWith('/DECISION_REGISTER.md')
+    ? '\nIn DECISION_REGISTER, never change a decision (D-001 to D-017), its status or its wording; change only cross-reference sections such as ADR number ranges.'
+    : ''
+  return sonnet(`${RULES}
+
+You are the only agent editing ${scope}${register}
+${u.reconcile.length ? `\nDecisions to apply (from ${reconcileFile}; read the row for each RC id first):\n${u.reconcile.map((x, i) => `${i + 1}. ${x}`).join('\n')}\n` : ''}${u.foldin.length ? `\nSpike results:\n${spikeDigest}\nPlaces to update with them:\n${u.foldin.map((x, i) => `${i + 1}. ${x}`).join('\n')}
 For each place, read the spike report, then replace the PENDING text with the decision the exit condition implies, citing the report path and its
-numbers; if the spike was INCONCLUSIVE or its check disagreed, choose the reversible option and say what would change it. Replace any wording that makes
-Studio wait for interviews, a pilot or Fault Lab with the D-014 order. Keep names consistent with the contract documents. Append "## Spike fold-in (${today})"
-listing each change.`, { label: `foldin:${t.file.split('/').pop()}`, phase: 'Fold-in', schema: DOC_SCHEMA })))
+numbers; if the spike was INCONCLUSIVE or its check disagreed, choose the reversible option and say what would change it. Replace any wording that
+makes Studio wait for interviews, a pilot or Fault Lab with the D-014 order.\n` : ''}${u.other.length ? `\nLeftovers a verifier found after the first pass:\n${u.other.map((x, i) => `${i + 1}. ${x}`).join('\n')}\n` : ''}
+Check each item against the file as it is now. If the file already says the decided value, leave it. If an item misreads the file, skip it and say why.
+Keep names consistent with the contract schemas. ${record}`,
+    { label: `fix${round}:${unit.split('/').pop()}`, phase: 'Fix design', schema: DOC_SCHEMA })
+}
+
+log(`Fix design: ${Object.keys(unitsRound1).length} files, one fixer each`)
+await parallel(Object.entries(unitsRound1).map(([unit, u]) => () => fixUnit(unit, u, 1)))
+
+const rids = [...new Set((arbiter?.edits ?? []).map(e => e.rid))]
+const VERIFY_SCHEMA = {
+  type: 'object',
+  properties: {
+    leftovers: { type: 'array', items: { type: 'object', properties: {
+      file: { type: 'string', description: 'absolute path' }, rid: { type: 'string' }, change: { type: 'string' },
+    }, required: ['file', 'change'] } },
+    checksRun: { type: 'string' },
+  },
+  required: ['leftovers'],
+}
+const chunks = [0, 1, 2].map(k => rids.filter((_, i) => i % 3 === k)).filter(c => c.length)
+const verified = await parallel(chunks.map((chunk, k) => () => sonnet(`${RULES}
+
+You verify reconcile decisions ${chunk.join(', ')} in ${reconcileFile}. For each, grep ${mp}/03_PRODUCT, ${A} (including ADR/ and schemas/) and
+${mp}/00_EXECUTIVE/DECISION_REGISTER.md for the decided value and for every losing variant. Report each place that still states a losing variant or
+contradicts the decision, with the exact change needed.${k === 0 ? ` Also run cd ${SCHEMAS}/tools && npm run check and report any failure as a leftover
+on the file that fails.` : ''} Change nothing.`, { label: `verify:${k + 1}`, phase: 'Fix design', schema: VERIFY_SCHEMA })))
+
+const leftovers = verified.filter(Boolean).flatMap(v => v.leftovers ?? [])
+const unitsRound2 = groupByOwner(leftovers.map(l => ({ file: l.file, kind: 'other', text: `${l.rid ? `${l.rid}: ` : ''}${l.change}` })))
+delete unitsRound2[reconcileFile]
+log(`Verify: ${leftovers.length} leftovers in ${Object.keys(unitsRound2).length} files; one more fix round, then the plan proceeds`)
+const round2 = await parallel(Object.entries(unitsRound2).map(([unit, u]) => () => fixUnit(unit, u, 2)))
+const unresolved = round2.filter(Boolean).flatMap(r => r.openQuestions ?? [])
+if (unresolved.length) log(`After the second pass, fixers still list ${unresolved.length} open items (returned in the result)`)
 
 // ---------------------------------------------------------------- Roadmap: the build phases
 
@@ -263,7 +442,10 @@ file that must change and the exact fix.`, { label: 'critic', phase: 'Review', s
 
 const crossIssues = (critic?.issues ?? []).filter(i => i.severity !== 'low')
 const crossByFile = {}
-for (const i of crossIssues) (crossByFile[i.targetFile] = crossByFile[i.targetFile] || []).push(i)
+for (const i of crossIssues) {
+  const f = norm(i.targetFile)
+  if (f) (crossByFile[f] = crossByFile[f] || []).push(i)
+}
 log(`Critic: ${crossIssues.length} blocker/high/medium issues across ${Object.keys(crossByFile).length} files`)
 
 await parallel(Object.entries(crossByFile).map(([file, list]) => () => sonnet(`${RULES}
@@ -281,7 +463,15 @@ phase, and any open questions the task files still carry. Do not change the task
 
 return {
   spikes: scout?.spikes ?? [],
-  foldedFiles: (scout?.targets ?? []).map(t => t.file),
+  reconcile: {
+    conflictsFound: conflicts.length,
+    deadSweeps,
+    decisions: arbiter?.decisions ?? null,
+    forAmar: arbiter?.forAmar ?? [],
+    filesFixed: Object.keys(unitsRound1),
+    leftoversAfterVerify: leftovers.length,
+    unresolved,
+  },
   phases: phases.map((p, i) => ({ id: p.id, name: p.name, file: phaseFile(p), tasks: phaseTasks?.[i]?.taskCount ?? null })),
   support: (support ?? []).filter(Boolean).map(s => s.files),
   crossIssues: crossIssues.length,

@@ -71,14 +71,14 @@ is not, and exactly what to do next, in order.
 | §4.4 refresh and review | `FEATURE_VERIFICATION.md`, `TECHNICAL_DEBT.md`, `REPOSITORY_INVENTORY.md` refreshed with the run reports; nine adversarial reviews corrected 6 to 13 claims per file; `01_AUDIT/REVIEW_GAPS.md` lists 30 gaps and a resolution per fixed file | Gap 14 (positioning) closed by step 3. The `SECURITY_BASELINE.md` gap fix ran on Sonnet 5, not 5.5 (see the log); Amar decided on 2026-10-27 not to redo it. |
 | §5.1, §5.3, §6, sources | `02_RESEARCH/COMPETITOR_LANDSCAPE.md`, `COMPETITOR_MATRIX.md` (27 rows, iynk plus 22 products), `USER_RESEARCH_PLAN.md`, `SOURCE_REGISTER.md` (R001 to R670) | Same run. |
 | 3 strategy | `00_EXECUTIVE/council/*.md` (8 memos), `06_BUSINESS/strategy-options/*.md` (3 strategies, 4 judges), and the orchestrator's `00_EXECUTIVE/DECISION_REGISTER.md` (D-001 to D-011), `06_BUSINESS/POSITIONING.md`, `06_BUSINESS/STARTUP_STRATEGY.md` | `wf_1b6e2ee6-315`, 13:30 to 13:43 CDT, 15 agents, all Sonnet 5.5. Judges: C fault lab 106, B 88, A 85 (of 160). Decision: Fault Lab first, Studio behind a gate, classroom thin. D-002 needs Amar's sign-off because it puts original projects second. |
+| 5b spikes | `08_RESEARCH_SPIKES/` RS-01, RS-03, RS-06, RS-08, RS-09, RS-12, RS-13, each with an independent check | `wf_45df4458-c67`, committed b6255ca. Verdicts are in the log entry for 2026-10-27 and in each REPORT.md. |
+| 4-5 design | `03_PRODUCT/` (catalogue F-001 to F-221, prioritization, requirements, journeys, Studio, components, education, buddies, UX) and `04_ARCHITECTURE/` (system, frontend, backend, API with openapi.yaml, realtime, AI, simulation, robotics, drones, data model and component schema with examples, 130+ ADRs) | `wf_94befac0-493`, committed 17d01e2. Cross-document contradictions remain; step 6 reconciles them first. |
 
 ### Not done
 
 | Step | What is missing | Why |
 |---|---|---|
-| 4-5 | `03_PRODUCT/`, `04_ARCHITECTURE/` (ADRs, JSON Schemas) | `scripts/workflows/master-plan-design.js`, relaunched 2026-10-27 about 14:20 CDT as `wf_94befac0-493` after the reframe (the first run, `wf_756c9964-29c`, was stopped after it wrote `FEATURE_CATALOGUE.md`; the new run revises that file in place). Spike-dependent choices are marked "PENDING RS-xx" for the fold-in pass. |
-| 5b | `08_RESEARCH_SPIKES/` (RS-01, RS-03, RS-06, RS-08, RS-09, RS-12, RS-13) | `scripts/workflows/master-plan-spikes.js`, running as `wf_45df4458-c67` since 13:30 CDT. |
-| 6 | `05_ENGINEERING/` as the build plan: IMPLEMENTATION_ROADMAP (core-first build phases), TASK_SPECIFICATIONS, `tasks/*.md`, TEST_STRATEGY, RELEASE_GATES | `scripts/workflows/master-plan-buildplan.js` (written, reframed, not run). Run it after design and spikes finish; it also folds the spike results into the design. |
+| 6 | Reconcile the design documents, fold in the spike results, then `05_ENGINEERING/` as the build plan: IMPLEMENTATION_ROADMAP (core-first build phases), TASK_SPECIFICATIONS, `tasks/*.md`, TEST_STRATEGY, RELEASE_GATES, and `04_ARCHITECTURE/RECONCILIATION.md` | `scripts/workflows/master-plan-buildplan.js`, running as `wf_46b33d75-c5f` (task w6jipdt6x) since 2026-10-27 about 16:35 CDT. If it stops, relaunch with `resumeFromRunId` (same session) or rerun it whole; it is safe to rerun. |
 | Build | B0 foundation, project core, Studio editor, collaboration with buddies, fidelity, faults, components, labs moved in, AI partner, robotics, drones, export | D-012 and D-014. One workflow per build phase on local branch `build/v1`; stop after each for Amar's OK. Never deploy or push without his OK. |
 | Dropped | Rest of `06_BUSINESS/`, `07_HANDOFF/`, `MASTER_INDEX.md`, both JSON files, executive summary | Amar, 2026-10-27 (D-012): he wants the product built, not a business and handoff pack. |
 
@@ -245,3 +245,10 @@ next agent knows where you stopped, and add a line to the log below.
   their text unchanged from the transcripts and added the checkers' findings.
 - 2026-10-27 14:35 CDT: Amar's rule: do not start any build phase until he says "okay, pass to go and build". Finish
   design and the build plan, review and commit them, then stop and wait.
+- 2026-10-27 16:30 CDT: design step done (`wf_94befac0-493`, 77 agents, all Sonnet 5.5, no errors, no refused writes).
+  Committed locally as 17d01e2 with `docs/MASTER_PLAN` kept out of ESLint and tsc (a spike file broke `npx eslint .`).
+  The review fixers left contradictions between documents: the review wrote the same file's path in up to three forms,
+  so 53 path strings meant 38 files and some files had two fixers at once (the SQLite durability default was flipped
+  back and forth). The build-plan script now normalises paths, gives schemas plus examples to one owner, and starts
+  with a Reconcile phase: seven sweeps, one arbiter writing `04_ARCHITECTURE/RECONCILIATION.md`, one fixer per file,
+  a verify round and a second fix round. Fixer leftovers are in `~/iynk-master-plan-scratch/design/review-leftovers.md`.
