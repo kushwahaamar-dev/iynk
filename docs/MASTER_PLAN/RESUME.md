@@ -5,6 +5,7 @@ is not, and exactly what to do next, in order.
 
 - **Paused:** 2026-10-27 00:12 CDT by Amar's Claude Code session (Opus 5.5 orchestrating, Sonnet 5.5 subagents).
   Both running workflows were stopped cleanly; no agent was mid-edit on any file listed as done below.
+- **Resumed:** 2026-10-27 00:22 CDT in Cursor. Step 1a finished at 01:00 CDT and is recorded below. Next is step 1b.
 - **Assignment:** [BRIEF.md](BRIEF.md), the founder's full brief, verbatim. Every file in this folder answers a
   section of it. Read it before anything else.
 - **Audited commit:** `bb546d6a051f0b268576587c6f9f934dde9e766c` (main, 2026-10-25 11:19 CDT). Source code has not
@@ -64,12 +65,13 @@ is not, and exactly what to do next, in order.
 | §6.1 | `02_RESEARCH/USER_SEGMENTS.md` | Desk research only, no interviews; fact-checked. |
 | §23.3 | `02_RESEARCH/MARKET_ANALYSIS.md` | Bottom-up TAM/SAM/SOM; fact-checked. |
 | §10, §19 research | `02_RESEARCH/tech/simulation-options.md`, `platform-options.md`, `compliance-safety.md`, and the summary `02_RESEARCH/TECHNICAL_RESEARCH.md` | Fact-checked; TECHNICAL_RESEARCH lists the spikes to run. |
+| §4.2 commands and build | `01_AUDIT/runs/COMMANDS.md`, `01_AUDIT/runs/BUILD_OUTPUT.md` | Run 2026-10-27 00:22–01:00 CDT by the validate:commands agent. Keyless `NEXT_DIST_DIR=.next-audit npm run build` exit 0 (72.8 s, Next 16.4.3, 827 static pages). `.next-audit` kept. `tsconfig.json` was reverted after the build added include lines. `content:check`, `typecheck` and `lint` exit 0. `server/realtime` tests 39/39. `npm ci` and `anchor test` were not run (`Anchor.toml` cluster is devnet). Machine was never quiet (1-minute load 38–117 on 14 cores). |
 
 ### Not done
 
 | Step | What is missing | Why |
 |---|---|---|
-| 1a-1b | `01_AUDIT/runs/COMMANDS.md`, `BUILD_OUTPUT.md`, `E2E.md`, `BROWSER_WALK.md`, `01_AUDIT/PERFORMANCE_BASELINE.md`, `01_AUDIT/TEST_COVERAGE.md` | A script bug (`pipeline([null], …)`, now fixed) meant the validation agents never started. |
+| 1b | `01_AUDIT/runs/E2E.md`, `runs/BROWSER_WALK.md`, `01_AUDIT/PERFORMANCE_BASELINE.md`, `01_AUDIT/TEST_COVERAGE.md` | 1a's keyless build exists in `.next-audit`. These four were not started in the 1a commit. |
 | 1c | FEATURE_VERIFICATION, TECHNICAL_DEBT and REPOSITORY_INVENTORY still say "not run" in places | They were written without the run reports. |
 | 1d | Six adversarial reviews and `01_AUDIT/REVIEW_GAPS.md` | Stopped about 20 seconds in; they had changed nothing. |
 | 2 | `02_RESEARCH/COMPETITOR_LANDSCAPE.md`, `USER_RESEARCH_PLAN.md`, `SOURCE_REGISTER.md`, `COMPETITOR_MATRIX.md` | Stopped mid-synthesis; nothing was written. The matrix was planned for step 3. |
@@ -88,10 +90,15 @@ From `01_AUDIT/` (read the files for evidence and labels):
   revision-safe action protocol shared by rooms, AI proposals, persistence and replay. Two gates come first: CI, and
   the licence and provenance decision. Suggested order: gates, D3 client persistence and shared limiter, D1, then D5
   and D4 in parallel, then D2.
-- **Unit tests** (FEATURE_VERIFICATION §0, run on a heavily loaded machine): 2,802 cases, 2,786 passed, 11 failed,
-  5 skipped, 382 s. Rerun alone, three files still fail: `src/content/drones/octo.test.ts`,
-  `src/content/drones/wing.test.ts` and `src/content/boards/basys3.test.ts`. The realtime relay passed 39 of 39.
-  Step 1a must rerun the suite on a quiet machine and explain those three failures.
+- **Unit tests** (`01_AUDIT/runs/COMMANDS.md`, 2026-10-27, load about 43–88, not a quiet machine): 2,802 cases,
+  2,784 passed, 13 failed, 5 skipped, 357 s. All 13 failures are wall-clock timeouts. No assertion mismatch.
+  Run alone after the suite: `octo.test.ts` 30 pass / 1 fail (`octo: still busy after 50000 ms` on the landing-gear
+  press, `_checks.ts` `settle`; the figure advances at most 0.05 simulated seconds per frame, and that press needs
+  7.1 s); `wing.test.ts` **27 of 27 pass** (the elevon test took 38.4 s of its 40 s limit, and it failed only inside
+  the full suite); `basys3.test.ts` 23 pass / 1 fail (the display chip sweep, 95 `runChecks` calls, vitest's 120 s
+  limit; the body finished and the checks passed). Whether a quiet machine would pass octo and basys3 is
+  ESTIMATED, not measured. The realtime relay passed 39 of 39. Five skips: four Timescale tests (no Docker daemon)
+  and one i18n test that does not run when nothing is untranslated.
 
 ## 3. What to do, in order
 
@@ -198,3 +205,7 @@ next agent knows where you stopped, and add a line to the log below.
 - 2026-10-27 00:12 CDT: paused at Amar's request, to resume in Cursor. Done and not done as above. Fixed the audit
   script's `pipeline([null], …)` bug, which had kept the validation agents from starting (now
   `pipeline(['validate'], …)`).
+- 2026-10-27 01:00 CDT: step 1a finished. `runs/COMMANDS.md` and `runs/BUILD_OUTPUT.md` written. Keyless build exit 0.
+  Full `npm test` exit 1 (2784 passed, 13 failed, 5 skipped). Alone: octo fails on the landing-gear settle, wing
+  passes, basys3 display sweep times out. Load stayed 38–117, so every duration is under contention. `anchor test`
+  not run. `.next-audit` kept for step 1b.
