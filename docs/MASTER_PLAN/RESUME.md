@@ -76,9 +76,11 @@ is not, and exactly what to do next, in order.
 
 | Step | What is missing | Why |
 |---|---|---|
-| 4-5 | `03_PRODUCT/`, `04_ARCHITECTURE/` (ADRs, JSON Schemas) | `scripts/workflows/master-plan-design.js`, launched after step 3. Spike-dependent choices are marked "PENDING RS-xx" and need a fold-in pass when the spikes finish. If Amar overrules D-002, re-run the product core (catalogue, prioritization, requirements) and EDUCATION with `resumeFromRunId`. |
+| 4-5 | `03_PRODUCT/`, `04_ARCHITECTURE/` (ADRs, JSON Schemas) | `scripts/workflows/master-plan-design.js`, launched 2026-10-27 13:49 CDT as `wf_756c9964-29c`. Spike-dependent choices are marked "PENDING RS-xx" and need a fold-in pass when the spikes finish. Amar confirmed D-002 (Studio straight after Fault Lab), so the product core stands; the fold-in pass also removes "behind the Studio gate" wording where it implies interviews must come first. |
 | 5b | `08_RESEARCH_SPIKES/` (RS-01, RS-03, RS-06, RS-08, RS-09, RS-12, RS-13) | `scripts/workflows/master-plan-spikes.js`, running as `wf_45df4458-c67` since 13:30 CDT. |
-| 6-10 | `05_ENGINEERING/`, rest of `06_BUSINESS/`, `07_HANDOFF/`, `MASTER_INDEX.md`, both JSON files, final review, executive summary | Not scripted yet. |
+| 6 | `05_ENGINEERING/` as the build plan: IMPLEMENTATION_ROADMAP (build phases), TASK_SPECIFICATIONS (atomic tasks), TEST_STRATEGY, RELEASE_GATES | Not scripted yet. Runs after design and spikes, together with the fold-in pass. |
+| Build | Phase 0 Step 0 trust work, then Fault Lab (release 1), then Studio (release 2) | D-012. One workflow per build phase; stop after each for Amar's OK. Never deploy or push without his OK. |
+| Dropped | Rest of `06_BUSINESS/`, `07_HANDOFF/`, `MASTER_INDEX.md`, both JSON files, executive summary | Amar, 2026-10-27 (D-012): he wants the product built, not a business and handoff pack. |
 
 ### What we already know (so step 3 starts with context)
 
@@ -227,3 +229,5 @@ next agent knows where you stopped, and add a line to the log below.
 - 2026-10-27 13:43 CDT: strategy finished, 15 agents, all Sonnet 5.5, no safety stops. Amar said not to redo the security
   gap fix. The orchestrator wrote DECISION_REGISTER, POSITIONING and STARTUP_STRATEGY from the judges and memos, and gave
   the design script a decision summary, a rule for spikes still running, and a release 1 / release 2 split.
+- 2026-10-27 13:55 CDT: Amar decided the plan ends in a build (D-012): Fault Lab first, then Studio straight after,
+  stopping after each build phase for his OK. The remaining business and handoff documents are dropped.

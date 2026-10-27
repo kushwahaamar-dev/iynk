@@ -17,7 +17,7 @@ interviewed yet, so every statement about demand is a HYPOTHESIS until the user 
 | ID | Decision | Status |
 |---|---|---|
 | D-001 | Beachhead: lecturers of first and second year electronics and embedded courses at US community and four-year colleges, then Indian engineering colleges with sponsored seats. Adults first. | Decided |
-| D-002 | Primary strategy: a staged hybrid. Fault Lab first (strategy C), the original-project Studio as the committed destination behind evidence gates (strategy A), the classroom layer kept thin until a buyer pays (strategy B). | Founder sign-off needed |
+| D-002 | Primary strategy: a staged hybrid. Fault Lab first (strategy C), then the original-project Studio built straight after it (strategy A), the classroom layer kept thin until a buyer pays (strategy B). The spikes still pick Studio's technology; the human evidence gates run after the build as validation. | Decided by Amar, 2026-10-27 |
 | D-003 | Funding: grants, sponsored seats and bootstrap for months 0 to 18. No venture raise until the gates in STARTUP_STRATEGY section 6 are met. | Decided |
 | D-004 | Audience: terms say 13+. First wave is adults and university students. No service aimed at under-13s in the planning horizon. High school only after counsel's answer and a data processing agreement. | Decided |
 | D-005 | Step 0 before any feature: security blockers, closed paid routes, a spend ledger, telemetry off by default, CI, a LICENSE and a counsel answer on content provenance, honest public copy. | Decided |
@@ -27,6 +27,7 @@ interviewed yet, so every statement about demand is a HYPOTHESIS until the user 
 | D-009 | North star for phase 1: weekly learners with a verified diagnosis, reported with reach guardrails. The founders' broader north star becomes the phase 2 target once server replay and projects exist. | Decided |
 | D-010 | Architecture: the codebase is a prototype to mine. A shared diagnosis record ships in phase 1; the Studio core (project document, netlist, orchestrator) is designed now and built only after the gate. Solver and editor choices wait on RS-08 and RS-01. | Pending evidence (RS-01, RS-08, interpreter coverage) |
 | D-011 | Mission test: every gate includes learners on their own low-end devices, on a slow connection, in a non-English interface. | Decided |
+| D-012 | The plan ends in a build. Agents build Step 0, Fault Lab and Studio in phases, stopping after each phase for Amar's OK. The remaining business documents and the handoff pack are dropped. | Decided by Amar, 2026-10-27 |
 
 ## D-001. Beachhead segment
 
@@ -105,6 +106,16 @@ engineer-weeks), unguided building is the wrong condition for novices (`council/
 literature, EXTERNAL), and three untested technical assumptions could each sink it. The plan still designs Studio in
 full (steps 4 and 5) so it is ready to build the day the gate passes. Amar can overrule this; if so, the roadmap swaps
 phases 1 and 2 and the gate spikes become phase 1 blockers.
+
+**Amar's decision (2026-10-27).** Keep Fault Lab first, then build Studio straight after it without waiting for
+interviews, the real-board check or the pilot. What changes from the sequence above:
+- The Studio gate keeps only its technical part: RS-01 picks the editor rendering technology, RS-08 decides whether the
+  solver is kept, wrapped or replaced, and the 50-sketch interpreter coverage test decides whether a compile path is
+  needed. A failed spike changes how Studio is built, not whether.
+- The human evidence (E0 hand test, lecturer interviews, the 10-fault real-board check, the pilot, counsel) moves from
+  "before building" to "validation after building". Amar runs it. Until it has run, the public-claim limits in D-007 and
+  POSITIONING section 6 still apply, and the kill criteria below still apply when the evidence arrives.
+- The classroom layer stays thin, as above.
 
 **Rejected or deferred.**
 
@@ -234,13 +245,28 @@ None of the advocates proposed this; the mission judge added it.
 **Why.** The mission is access regardless of money, place, language and equipment. No real low-end device has been tested
 (PERFORMANCE_BASELINE used CPU throttling only), and the lesson page's first load is 701 KB gzip.
 
+## D-012. The plan ends in a build
+
+**Decision (Amar, 2026-10-27).** The plan's output is a built product, not a business and handoff pack. After design (steps
+4 and 5) and the spikes, step 6 becomes the build plan (`05_ENGINEERING/`: roadmap, atomic tasks, test strategy, release
+checks). Agents then build it in phases: Step 0 (D-005), Fault Lab (release 1), Studio (release 2). Each phase is
+implemented, type-checked, linted, tested (Vitest and Playwright), reviewed adversarially, fixed and committed locally, and
+the orchestrator stops for Amar's OK before the next phase.
+
+**Dropped:** `06_BUSINESS/` PRICING_STRATEGY, UNIT_ECONOMICS, GROWTH_STRATEGY, PARTNERSHIPS, FINANCIAL_SCENARIOS; the
+`07_HANDOFF/` pack, `implementation_manifest.json`, `feature_dependency_graph.json`, DEMO_WALKTHROUGH, RED_TEAM and the
+executive summary. The strategy, positioning and decision documents already written stay.
+
+**Still needs Amar's OK every time:** deploying to iynk.tech or any production service, pushing to GitHub, new paid
+services, and anything that spends money.
+
 ## Open founder decisions
 
 These are not the agent's to make. The plan proceeds on the defaults shown.
 
 | Question | Default the plan uses | Why it matters |
 |---|---|---|
-| Confirm D-002 (original projects second, behind a gate) | Yes | It reorders the roadmap |
+| Confirm D-002 (original projects second) | Confirmed by Amar on 2026-10-27, with Studio built straight after Fault Lab | It orders the build |
 | Engage counsel on provenance and minors (USD 4.5k to 15k for the adult relaunch, ESTIMATED) | Yes, in phase 0 | Blocks any invoice or grant |
 | Keep the Solana layer at all | Frozen on devnet | Time spent on it is time not spent on the pilot |
 | A written 12-month commitment on hours and runway from each founder | Assumed 2 to 3 people at about 70 percent focus | Every estimate depends on it |
@@ -250,3 +276,5 @@ These are not the agent's to make. The plan proceeds on the defaults shown.
 
 - 2026-10-27: D-001 to D-011 written after the strategy step (`wf_1b6e2ee6-315`). The positioning draft written early by a
   gap fixer was superseded and moved out of the plan tree.
+- 2026-10-27: Amar confirmed D-002 with one change (Studio is built straight after Fault Lab; the human evidence becomes
+  validation after the build) and added D-012 (the plan ends in a phased build; business and handoff documents dropped).

@@ -42,6 +42,12 @@ finish the exercises (pilot).
 
 Week 0 is Monday 2 November 2026, the start date in `02_RESEARCH/USER_RESEARCH_PLAN.md`.
 
+**Amended 2026-10-27 (D-002, D-012).** Amar decided to build Studio straight after Fault Lab, with agents doing the build in
+phases. The table below is the evidence-first sequence the council recommended. In the build that follows, the Studio
+go / no-go keeps only its technical part (the spikes pick the technology), and the human evidence (E0, interviews, the
+real-board check, the pilot) runs after the build as validation. The stop and convert rules in section 7 still apply when
+that evidence arrives.
+
 | Stage | Weeks (calendar) | What happens | Exit gate |
 |---|---|---|---|
 | Phase 0: trust and evidence | 0 to 3 (2 to 22 Nov 2026) | Step 0 starts (D-005): security blockers, close or cap paid routes with a spend ledger and kill switch, telemetry off by default, CI, LICENSE, honest copy, counsel brief on provenance and minors. Evidence sprint, no feature code: E0 Tinkercad and Velxio hand test; E1 lecturer and TA conversations (10); read-only telemetry pull; syllabus fit on 10 real syllabi; priced waitlist with no payment taken | **Gate 0 (end of week 3):** E0 does not kill C; at least 4 of the first 10 lecturers name debugging or lost lab time as a top-3 pain; counsel engaged |
@@ -135,7 +141,7 @@ reviewer for the 40 fault items (contract, about 2 hours per item if E3 passes).
 
 ## 9. What this strategy does not do
 
-- It does not build Studio first. That is the founders' call to overrule (D-002).
+- It does not build Studio first. Amar confirmed Fault Lab first, with Studio straight after (D-002).
 - It does not market to schools or children in the first year (D-004).
 - It does not extend drones, robotics, Solana, the marketplace, languages or AI (D-006).
 - It does not claim learning gains or bench accuracy before the evidence exists (POSITIONING section 6).
@@ -143,3 +149,5 @@ reviewer for the 40 fault items (contract, about 2 hours per item if E3 passes).
 ## Change log
 
 - 2026-10-27: first version, after the strategy step (`wf_1b6e2ee6-315`).
+- 2026-10-27: amended for D-002 (Studio straight after Fault Lab) and D-012 (agents build the product; pricing, unit
+  economics, growth, partnerships and financial scenario files dropped).

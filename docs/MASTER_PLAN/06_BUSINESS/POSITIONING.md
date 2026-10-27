@@ -52,8 +52,8 @@ independently, 1 to 5 on eight criteria (40 is the maximum).
 
 ## 3. The selected position
 
-**Selected: C first, A as the committed destination, B thin** (DECISION_REGISTER D-002, founder sign-off needed because
-it puts original projects second).
+**Selected: C first, A as the committed destination, B thin** (DECISION_REGISTER D-002, confirmed by Amar on 2026-10-27
+with Studio built straight after Fault Lab).
 
 Positioning statement (internal, for decisions, not marketing copy):
 
