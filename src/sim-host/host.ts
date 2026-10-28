@@ -114,8 +114,14 @@ export function createSimHost({ makePort, diag = false }: SimHostOptions = {}): 
     try {
       await port.kill(0);
       stats.restarts++;
+    } catch {
+      // The old worker is already gone.
+    }
+    // The limit is reported before the new worker is built: constructing a worker blocks the page for about a second in WebKit.
+    stats.lastState = "limit";
+    deliver({ t: "state", run: runId, state: "limit", at: lastAt, limit: { kind: reason, message: LIMIT_MESSAGE[reason] } });
+    try {
       port = open();
-      // A fresh worker needs about a second to start in WebKit, so the limit is reported without waiting for it.
       // Calls made meanwhile queue behind the load on the new port; the load's own events are not shown.
       if (again) {
         reloading = true;
@@ -124,8 +130,6 @@ export function createSimHost({ makePort, diag = false }: SimHostOptions = {}): 
     } catch {
       // The new worker is unusable; the next call on the port fails with its own error.
     }
-    stats.lastState = "limit";
-    deliver({ t: "state", run: runId, state: "limit", at: lastAt, limit: { kind: reason, message: LIMIT_MESSAGE[reason] } });
     await reloaded;
     recovering = false;
   }
