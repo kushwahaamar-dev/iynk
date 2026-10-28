@@ -5,7 +5,7 @@ export { Chip, type ChipTone } from "./Chip";
 export { CodeBlock } from "./CodeBlock";
 export { cx } from "./cx";
 export { Dialog } from "./Dialog";
-export { Select, TextInput } from "./Field";
+export { FieldMessage, Select, TextArea, TextInput } from "./Field";
 export { tokenize, tokenLines, type CodeLang, type Token, type TokenKind } from "./highlight";
 export { Icon, type IconName } from "./icons";
 export { IconButton } from "./IconButton";
