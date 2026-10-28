@@ -247,17 +247,19 @@ export function DroneWorkspace({ lang, content, text, messages, notice }: Props)
           onChange={(v) => dispatch({ type: "sheet", sheet: v === "wiring" ? "wiring" : null })}
           size="sm"
         />
-        <Button
-          size="sm"
-          variant="secondary"
-          aria-pressed={state.exploded}
-          onClick={() => dispatch({ type: "exploded", on: !state.exploded })}
-          // the wiring sheet covers the craft: exploding it then shows nothing
-          disabled={!ready || state.sheet === "wiring"}
-          className="shrink-0 whitespace-nowrap"
-        >
-          {t("workspace.exploded")}
-        </Button>
+        <span className="flex shrink-0 items-center rounded-lg border border-rule p-0.5">
+          <Button
+            size="sm"
+            variant="ghost"
+            aria-pressed={state.exploded}
+            onClick={() => dispatch({ type: "exploded", on: !state.exploded })}
+            // the wiring sheet covers the craft: exploding it then shows nothing
+            disabled={!ready || state.sheet === "wiring"}
+            className="min-h-8 whitespace-nowrap px-2 py-0"
+          >
+            {t("workspace.exploded")}
+          </Button>
+        </span>
         <div className="flex shrink-0 items-center gap-x-2 max-sm:w-full sm:ms-auto">
           <dl
             aria-label={t("workspace.status.title")}

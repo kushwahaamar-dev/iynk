@@ -412,7 +412,7 @@ function ControlGroup({ label, items }: { label: string; items: ControlItem[] })
       <ul className="mt-2 flex flex-wrap gap-2">
         {items.map((item) => (
           <li key={item.key}>
-            <Button size="sm" variant={item.pressed ? "solid" : "secondary"} aria-pressed={item.pressed} onClick={item.onPress}>
+            <Button size="sm" variant="ghost" outline aria-pressed={item.pressed} onClick={item.onPress}>
               {item.label}
             </Button>
           </li>

@@ -357,8 +357,7 @@ function CourseRow({
   const medal = best !== undefined ? medalFor(best, par) : null;
   const s = (v: number) => formatNumber(lang, v, v % 1 ? 1 : 0);
   return (
-    <li className={`relative -mx-2 rounded-lg px-2 py-2 ${active ? "bg-sunken" : ""}`}>
-      {active ? <span aria-hidden="true" className="absolute inset-y-2 start-0 w-1 rounded-full bg-ink" /> : null}
+    <li className={`-mx-2 rounded-lg px-2 py-2 ${active ? "bg-sunken" : ""}`}>
       <div className="flex flex-wrap items-center justify-between gap-x-3">
         <button
           type="button"
