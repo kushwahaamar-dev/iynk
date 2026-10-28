@@ -97,7 +97,7 @@ describe('uno-r3 content', () => {
     expect(lit(f.figure.state)).toBe('reverse');
     expect(lit({ fault: null })).toBe('ok');
     page.close();
-  }, 60_000);
+  });
 
   it('unplugs before stripping, then places every through-hole part once', () => {
     const steps = uno.assembly ?? [];
@@ -124,6 +124,6 @@ describe('uno-r3 content', () => {
       expect(failed, trace.serial.slice(0, 8).map((l) => l.text).join('\n')).toEqual([]);
       for (const sample of lesson.serial.sample) expect(trace.serial.map((l) => l.text), `${lesson.id} sample`).toContain(sample);
       expect(runChecks(lessonJob(uno, lesson, EMPTY)).results.every((r) => r.ok)).toBe(false);
-    }, 60_000);
+    });
   }
 });

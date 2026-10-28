@@ -275,7 +275,7 @@ describe('uno-r4 assembly', () => {
       expect(page.notes()).toEqual([]);
       expect(page.errors).toEqual([]);
       page.close();
-    }, 30_000);
+    });
   }
 });
 
@@ -305,7 +305,7 @@ describe('uno-r4 lessons through the app check path', () => {
       expect(failed, trace.serial.slice(0, 8).map((s) => s.text).join('\n')).toEqual([]);
       for (const sample of l.serial.sample) expect(trace.serial.map((s) => s.text), `${l.id} sample`).toContain(sample);
       expect(runChecks(lessonJob(board, l, EMPTY)).results.every((r) => r.ok)).toBe(false);
-    }, 60_000);
+    });
   }
 
   it('blink passes at every delay the chip offers: the check follows the code', () => {

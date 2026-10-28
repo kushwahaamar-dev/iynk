@@ -11,6 +11,8 @@ import en from '@/i18n/content/en/boards/basys3.json';
 import { buildFigure, loadFigure } from '../../../figures/engine/testkit.mjs';
 import board from './basys3';
 
+const chunk = <T,>(a: readonly T[], n: number): T[][] => Array.from({ length: Math.ceil(a.length / n) }, (_, i) => a.slice(i * n, (i + 1) * n));
+
 const text = (key: string): string => {
   const v = key.split('.').reduce<unknown>((o, k) => (o && typeof o === 'object' ? (o as Record<string, unknown>)[k] : undefined), en);
   if (typeof v !== 'string') throw new Error(`missing text ${key}`);
@@ -237,17 +239,23 @@ describe('basys3 lessons through the app check path', () => {
     });
   }
 
-  for (const l of board.lessons.filter((x) => x.params.length > 0)) {
-    it(`lesson ${l.id} passes at every value each chip offers: the checks follow the code`, () => {
-      for (const p of l.params) {
-        const values = p.kind === 'number' ? Array.from({ length: Math.round((p.max - p.min) / p.step) + 1 }, (_, i) => p.min + i * p.step)
-          : p.kind === 'choice' ? p.options.map((o) => o.value) : [];
-        for (const v of values) {
-          const { results } = runChecks(lessonJob(board, l, code(l, { [p.id]: v })));
-          expect(l.checks.filter((_, i) => !results[i].ok).map((c) => text(c.label)), `${l.id} ${p.id}=${v}`).toEqual([]);
-        }
-      }
-    }, 120_000);
+  for (const l of board.lessons) {
+    for (const p of l.params) {
+      const values: (string | number)[] = p.kind === 'number' ? Array.from({ length: Math.round((p.max - p.min) / p.step) + 1 }, (_, i) => p.min + i * p.step)
+        : p.kind === 'choice' ? p.options.map((o) => o.value) : [];
+      const parts = chunk(values, 10);
+      it(`lesson ${l.id} ${p.id}: the chunks cover every value once`, () => {
+        expect(parts.flat()).toEqual(values);
+      });
+      parts.forEach((part, i) => {
+        it(`lesson ${l.id} ${p.id} part ${i + 1}: the checks follow the code at every value the chip offers`, () => {
+          for (const v of part) {
+            const { results } = runChecks(lessonJob(board, l, code(l, { [p.id]: v })));
+            expect(l.checks.filter((_, i) => !results[i].ok).map((c) => text(c.label)), `${l.id} ${p.id}=${v}`).toEqual([]);
+          }
+        });
+      });
+    }
   }
 
   it('catches a counter without a debouncer: each bouncing press counts more than once', () => {
