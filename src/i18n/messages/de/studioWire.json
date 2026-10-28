@@ -1,1 +1,19 @@
-{}
+{
+  "wire": {
+    "refuse": {
+      "same-pin": "Wähle einen anderen Pin. Ein Draht braucht zwei Enden.",
+      "no-such-pin": "{end} ist kein Pin an diesem Bauteil. Der Draht wurde nicht gelegt.",
+      "mechanical-pin": "{end} ist ein Befestigungspunkt, kein elektrischer Pin. Der Draht wurde nicht gelegt.",
+      "not-on-view": "{part} liegt noch nicht auf dem Brett. Platziere es zuerst und verbinde es dann.",
+      "hole-not-on-surface": "{hole} ist kein Loch dieses Steckbretts.",
+      "same-strip": "{a} und {b} sind im Steckbrett bereits verbunden.",
+      "duplicate-wire": "Zwischen {a} und {b} liegt schon ein Draht.",
+      "empty-target": "Dort ist kein Pin. Der Draht wurde nicht gelegt.",
+      "quota": "Dieses Projekt hat eine Größengrenze erreicht ({limit}). Entferne etwas, bevor du mehr hinzufügst.",
+      "permission": "Du siehst dieses Projekt nur an. Bitte den Besitzer um Bearbeitungsrechte.",
+      "read-only": "Dieses Projekt ist nur lesbar geöffnet und kann hier nicht geändert werden."
+    },
+    "added": "Draht von {from} zu {to} gelegt.",
+    "cancelled": "Draht abgebrochen."
+  }
+}

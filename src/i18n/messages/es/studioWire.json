@@ -1,1 +1,19 @@
-{}
+{
+  "wire": {
+    "refuse": {
+      "same-pin": "Elige otro pin. Un cable necesita dos extremos.",
+      "no-such-pin": "{end} no es un pin de esta pieza. No se creó el cable.",
+      "mechanical-pin": "{end} es un punto de montaje, no un pin eléctrico. No se creó el cable.",
+      "not-on-view": "{part} todavía no está en la placa. Colócala primero y luego cablea.",
+      "hole-not-on-surface": "{hole} no es un agujero de esta protoboard.",
+      "same-strip": "{a} y {b} ya están conectados dentro de la protoboard.",
+      "duplicate-wire": "{a} y {b} ya tienen un cable entre ellos.",
+      "empty-target": "No hay ningún pin ahí. No se creó el cable.",
+      "quota": "Este proyecto ha llegado a un límite de tamaño ({limit}). Quita algo antes de añadir más.",
+      "permission": "Estás viendo este proyecto. Pide al propietario permiso de edición.",
+      "read-only": "Este proyecto está abierto en solo lectura, así que no se puede cambiar aquí."
+    },
+    "added": "Cable añadido de {from} a {to}.",
+    "cancelled": "Cable cancelado."
+  }
+}

@@ -1,1 +1,19 @@
-{}
+{
+  "wire": {
+    "refuse": {
+      "same-pin": "请选另一个引脚。导线需要两个端点。",
+      "no-such-pin": "{end} 不是这个元件上的引脚，没有连线。",
+      "mechanical-pin": "{end} 是安装点，不是电气引脚，没有连线。",
+      "not-on-view": "{part} 还没有放到板上。请先放置，再连线。",
+      "hole-not-on-surface": "{hole} 不是这块面包板上的孔。",
+      "same-strip": "{a} 和 {b} 在面包板内部已经相连。",
+      "duplicate-wire": "{a} 和 {b} 之间已经有一根导线。",
+      "empty-target": "那里没有引脚，没有连线。",
+      "quota": "这个项目已达到大小上限（{limit}）。请先删除一些内容再添加。",
+      "permission": "你正在查看这个项目。请向所有者申请编辑权限。",
+      "read-only": "这个项目以只读方式打开，无法在这里修改。"
+    },
+    "added": "已连接 {from} 到 {to}。",
+    "cancelled": "已取消连线。"
+  }
+}

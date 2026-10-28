@@ -1,1 +1,19 @@
-{}
+{
+  "wire": {
+    "refuse": {
+      "same-pin": "Pick a different pin. A wire needs two ends.",
+      "no-such-pin": "{end} is not a pin on this part. The wire was not made.",
+      "mechanical-pin": "{end} is a mounting point, not an electrical pin. The wire was not made.",
+      "not-on-view": "{part} is not on the board yet. Place it first, then wire it.",
+      "hole-not-on-surface": "{hole} is not a hole on this breadboard.",
+      "same-strip": "{a} and {b} are already connected inside the breadboard.",
+      "duplicate-wire": "{a} and {b} already have a wire between them.",
+      "empty-target": "No pin there. The wire was not made.",
+      "quota": "This project has reached a size limit ({limit}). Remove something before adding more.",
+      "permission": "You are viewing this project. Ask the owner for edit access.",
+      "read-only": "This project is open read only, so it cannot be changed here."
+    },
+    "added": "Wire added from {from} to {to}.",
+    "cancelled": "Wire cancelled."
+  }
+}

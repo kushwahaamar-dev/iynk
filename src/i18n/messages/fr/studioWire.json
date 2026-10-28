@@ -1,1 +1,19 @@
-{}
+{
+  "wire": {
+    "refuse": {
+      "same-pin": "Choisis une autre broche. Un fil a besoin de deux extrémités.",
+      "no-such-pin": "{end} n'est pas une broche de cette pièce. Le fil n'a pas été posé.",
+      "mechanical-pin": "{end} est un point de fixation, pas une broche électrique. Le fil n'a pas été posé.",
+      "not-on-view": "{part} n'est pas encore sur la carte. Place-la d'abord, puis câble-la.",
+      "hole-not-on-surface": "{hole} n'est pas un trou de cette plaque d'essai.",
+      "same-strip": "{a} et {b} sont déjà reliés à l'intérieur de la plaque d'essai.",
+      "duplicate-wire": "{a} et {b} ont déjà un fil entre eux.",
+      "empty-target": "Il n'y a pas de broche ici. Le fil n'a pas été posé.",
+      "quota": "Ce projet a atteint une limite de taille ({limit}). Retire quelque chose avant d'en ajouter.",
+      "permission": "Tu consultes ce projet. Demande au propriétaire le droit de le modifier.",
+      "read-only": "Ce projet est ouvert en lecture seule, il ne peut pas être modifié ici."
+    },
+    "added": "Fil posé de {from} à {to}.",
+    "cancelled": "Fil annulé."
+  }
+}
