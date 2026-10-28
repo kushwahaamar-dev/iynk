@@ -152,5 +152,27 @@
     "builtWithTitle": "किससे बना है",
     "builtWith": "Next.js, React और Tailwind CSS (सभी MIT लाइसेंस वाले), और हर चित्र के लिए Colorfigures इंजन।",
     "colorfigures": "Colorfigures स्किल पेज"
+  },
+  "command": {
+    "title": "कमांड मेन्यू",
+    "placeholder": "पेज और कार्य खोजें",
+    "empty": "कुछ नहीं मिला। किसी लैब का नाम या कोई सेटिंग आज़माएँ।",
+    "groups": {
+      "pages": "पेज",
+      "actions": "कार्य",
+      "theme": "थीम",
+      "language": "भाषा"
+    },
+    "open": "खोजें",
+    "sound": {
+      "on": "आवाज़ चालू करें",
+      "off": "आवाज़ बंद करें"
+    },
+    "motion": {
+      "on": "गति कम करें",
+      "off": "गति की अनुमति दें"
+    },
+    "keys": "कुंजियाँ और उपयोग",
+    "hint": "{key} से यह मेन्यू खुलता है"
   }
 }

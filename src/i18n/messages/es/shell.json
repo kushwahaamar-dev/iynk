@@ -152,5 +152,27 @@
     "builtWithTitle": "Hecho con",
     "builtWith": "Next.js, React y Tailwind CSS (todos con licencia MIT), más el motor Colorfigures para cada figura.",
     "colorfigures": "Página de la skill Colorfigures"
+  },
+  "command": {
+    "title": "Menú de comandos",
+    "placeholder": "Buscar páginas y acciones",
+    "empty": "Nada coincide. Prueba con el nombre de un laboratorio o un ajuste.",
+    "groups": {
+      "pages": "Páginas",
+      "actions": "Acciones",
+      "theme": "Tema",
+      "language": "Idioma"
+    },
+    "open": "Buscar",
+    "sound": {
+      "on": "Activar el sonido",
+      "off": "Desactivar el sonido"
+    },
+    "motion": {
+      "on": "Reducir el movimiento",
+      "off": "Permitir el movimiento"
+    },
+    "keys": "Claves y uso",
+    "hint": "{key} abre este menú"
   }
 }

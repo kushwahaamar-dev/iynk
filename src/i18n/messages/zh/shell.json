@@ -152,5 +152,27 @@
     "builtWithTitle": "技术栈",
     "builtWith": "Next.js、React 和 Tailwind CSS（均为 MIT 许可证），每个模型都使用 Colorfigures 引擎。",
     "colorfigures": "Colorfigures 技能页面"
+  },
+  "command": {
+    "title": "命令菜单",
+    "placeholder": "搜索页面和操作",
+    "empty": "没有匹配项。试试实验室名称或某项设置。",
+    "groups": {
+      "pages": "页面",
+      "actions": "操作",
+      "theme": "主题",
+      "language": "语言"
+    },
+    "open": "搜索",
+    "sound": {
+      "on": "开启声音",
+      "off": "关闭声音"
+    },
+    "motion": {
+      "on": "减少动效",
+      "off": "允许动效"
+    },
+    "keys": "密钥与用量",
+    "hint": "{key} 打开此菜单"
   }
 }
