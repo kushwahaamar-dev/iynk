@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { cx } from "@/components/ui";
+import { Chip, Icon, IconButton } from "@/components/ui";
 import { isLocale, type Locale } from "@/i18n/config";
 import { transcribe } from "@/lib/ai/client";
 import type { TogetherT } from "./messages";
@@ -106,30 +106,27 @@ export function VoiceButton({
 
   return (
     <div className="flex flex-col items-start gap-1">
-      <button
-        type="button"
+      <IconButton
+        icon={recording ? "stop" : "mic"}
+        label={label}
+        title={enabled ? label : t("chat.voice.off")}
         onClick={recording ? stop : start}
         disabled={!enabled || busy}
         aria-pressed={recording}
-        aria-label={label}
-        title={enabled ? label : t("chat.voice.off")}
-        className={cx(
-          "inline-flex size-11 shrink-0 items-center justify-center rounded-full border-2 border-line shadow-ink-sm transition-transform active:translate-0.5 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50",
-          recording ? "animate-pulse bg-tomato text-on-color" : "bg-surface text-ink",
-        )}
-      >
-        <svg aria-hidden="true" viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-          {recording ? <rect x="7" y="7" width="10" height="10" rx="1.5" fill="currentColor" /> : <path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3" />}
-        </svg>
-      </button>
-      <p role="status" className="text-xs text-muted empty:hidden">
-        {recording
-          ? t("chat.voice.recording", { seconds: state.seconds })
-          : busy
-            ? t("chat.voice.transcribing")
-            : state.kind === "error"
-              ? t(`chat.voice.${state.message}`)
-              : ""}
+      />
+      <p role="status" className="flex items-center gap-2 text-xs text-muted tabular-nums empty:hidden">
+        {recording ? (
+          <Chip tone="bad" dot className="tabular-nums">
+            {t("chat.voice.recording", { seconds: state.seconds })}
+          </Chip>
+        ) : busy ? (
+          t("chat.voice.transcribing")
+        ) : state.kind === "error" ? (
+          <>
+            <Icon name="warn-circle" size={16} className="shrink-0 text-bad" />
+            {t(`chat.voice.${state.message}`)}
+          </>
+        ) : null}
       </p>
     </div>
   );

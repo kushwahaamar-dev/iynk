@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
-import { Button, Chip, cx } from "@/components/ui";
+import { Button, Chip, cx, EmptyState, TextArea } from "@/components/ui";
 import { htmlLang, type Locale } from "@/i18n/config";
 import { useFeatures } from "@/lib/features";
 import { MAX_CHAT_LENGTH, type ChatMsg, type Peer, type RoomApi, type SystemEvent } from "@/lib/realtime";
@@ -44,20 +44,20 @@ function Message({
 
   return (
     <li className={cx("flex gap-2", mine && "flex-row-reverse")}>
-      <PeerAvatar name={name} color={sender?.color ?? "#cfc8b8"} size="sm" className="mt-0.5" />
+      <PeerAvatar name={name} color={sender?.color ?? "var(--rule)"} size="sm" className="mt-0.5" />
       <div className={cx("flex min-w-0 max-w-[85%] flex-col gap-0.5", mine && "items-end")}>
-        <p className="flex flex-wrap items-center gap-1.5 text-xs text-muted">
-          <span className="font-bold text-ink">{name}</span>
+        <p className="flex flex-wrap items-center gap-2 text-xs text-muted">
+          <span className="font-semibold text-ink">{name}</span>
           <time dateTime={new Date(msg.ts).toISOString()}>{time}</time>
           {msg.kind === "voice" || msg.kind === "ai" ? (
-            <Chip tone={msg.kind === "voice" ? "blush" : "cobalt"}>{t(`chat.kind.${msg.kind}`)}</Chip>
+            <Chip tone={msg.kind === "voice" ? "neutral" : "info"}>{t(`chat.kind.${msg.kind}`)}</Chip>
           ) : null}
         </p>
         <p
           lang={htmlLang(translation !== undefined && !original ? locale : msg.lang)}
           className={cx(
-            "rounded-ink-sm border-2 border-line px-3 py-2 text-sm break-words whitespace-pre-wrap",
-            mine ? "bg-mustard text-ink-fixed" : "bg-surface text-ink",
+            "rounded-2xl px-3 py-2 text-sm break-words whitespace-pre-wrap",
+            mine ? "bg-hover" : "bg-sunken",
             msg.pending && "opacity-70",
           )}
         >
@@ -69,9 +69,9 @@ function Message({
             {translation !== undefined ? (
               <>
                 <span>{t("chat.translatedFrom", { lang: t(`languages.${msg.lang}`) })}</span>
-                <button type="button" onClick={() => setOriginal((v) => !v)} className="min-h-6 font-bold text-ink underline underline-offset-2">
+                <Button size="sm" variant="ghost" onClick={() => setOriginal((v) => !v)} className="-my-2 px-2 py-1 text-xs underline underline-offset-2">
                   {original ? t("chat.showTranslation") : t("chat.showOriginal")}
-                </button>
+                </Button>
               </>
             ) : msg.untranslated?.includes(locale) ? (
               <span>{t("chat.translateFailed")}</span>
@@ -91,6 +91,7 @@ export function ChatPanel({ room, t, locale }: { room: RoomApi; t: TogetherT; lo
   const { features, status } = useFeatures();
   const [draft, setDraft] = useState("");
   const list = useRef<HTMLDivElement>(null);
+  const end = useRef<HTMLDivElement>(null);
   const pinned = useRef(true);
   const everyone = useMemo(() => new Map([room.you, ...room.peers].map((peer) => [peer.id, peer])), [room.you, room.peers]);
   const clock = useMemo(() => new Intl.DateTimeFormat(htmlLang(locale), { hour: "numeric", minute: "2-digit" }), [locale]);
@@ -101,6 +102,15 @@ export function ChatPanel({ room, t, locale }: { room: RoomApi; t: TogetherT; lo
     const el = list.current;
     if (el && pinned.current) el.scrollTop = el.scrollHeight;
   }, [count]);
+
+  // The reader is at the bottom while the end marker is in view.
+  useEffect(() => {
+    const marker = end.current;
+    if (!marker) return;
+    const observer = new IntersectionObserver(([entry]) => (pinned.current = entry.isIntersecting), { root: list.current, rootMargin: "0px 0px 48px 0px" });
+    observer.observe(marker);
+    return () => observer.disconnect();
+  }, []);
 
   const send = (event?: FormEvent) => {
     event?.preventDefault();
@@ -137,14 +147,10 @@ export function ChatPanel({ room, t, locale }: { room: RoomApi; t: TogetherT; lo
         aria-live="polite"
         aria-relevant="additions"
         tabIndex={0}
-        onScroll={(event) => {
-          const el = event.currentTarget;
-          pinned.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48;
-        }}
-        className="flex max-h-80 min-h-32 flex-col gap-3 overflow-y-auto rounded-ink-sm bg-sunken p-3"
+        className="flex max-h-80 min-h-32 flex-col gap-3 overflow-y-auto rounded-xl border border-rule p-3"
       >
         {count === 0 ? (
-          <p className="m-auto max-w-56 text-center text-sm text-muted">{t("chat.empty")}</p>
+          <EmptyState icon="chat" title={t("chat.empty")} className="m-auto py-4" />
         ) : (
           <ol className="flex flex-col gap-3">
             {room.messages.map((msg) =>
@@ -167,25 +173,25 @@ export function ChatPanel({ room, t, locale }: { room: RoomApi; t: TogetherT; lo
             )}
           </ol>
         )}
+        <div ref={end} aria-hidden="true" className="-mt-3 h-px shrink-0" />
       </div>
       <form onSubmit={send} className="flex items-end gap-2">
         {voiceReady ? <VoiceButton t={t} lang={locale} enabled onText={(text, lang) => room.chat(text, "voice", { lang })} /> : null}
         <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <label htmlFor={`${id}-draft`} className="sr-only">
-            {t("chat.label")}
-          </label>
-          <textarea
+          <TextArea
             id={`${id}-draft`}
+            label={t("chat.label")}
+            hideLabel
             value={draft}
             onChange={(event) => setDraft(event.target.value.slice(0, MAX_CHAT_LENGTH))}
             onKeyDown={onKeyDown}
             rows={1}
             maxLength={MAX_CHAT_LENGTH}
             placeholder={t("chat.placeholder")}
-            className="max-h-32 min-h-11 resize-y rounded-ink-sm border-2 border-line bg-surface px-3 py-2 font-body text-sm text-ink"
+            className="max-h-32"
           />
           {draft.length > MAX_CHAT_LENGTH - 80 ? (
-            <p className="text-right text-xs text-muted">{t("chat.count", { count: draft.length, max: MAX_CHAT_LENGTH })}</p>
+            <p className="text-right text-xs text-muted tabular-nums">{t("chat.count", { count: draft.length, max: MAX_CHAT_LENGTH })}</p>
           ) : null}
         </div>
         <Button type="submit" variant="primary" disabled={!draft.trim()}>
