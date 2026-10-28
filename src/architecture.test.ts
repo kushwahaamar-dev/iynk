@@ -191,6 +191,29 @@ function checkDocblock(file: string, source: string): string | null {
     : "a test in a portable folder must start with // @vitest-environment node";
 }
 
+const APPLY_FOLDER = "src/project/apply";
+
+// FA-01: only the session may reach `apply`, so every change to a document goes through one place.
+function checkApplyImport(fromFile: string, spec: string): string | null {
+  if (isExempt(fromFile) || inFolder(fromFile, "server") || fromFile === "src/project/session.ts") return null;
+  if (inFolder(fromFile, APPLY_FOLDER)) return null;
+  const resolved = resolveSpec(fromFile, spec);
+  return resolved !== null && inFolder(resolved, APPLY_FOLDER)
+    ? `only src/project/session.ts may import '${spec}' (FA-01)`
+    : null;
+}
+
+const SESSION_IMPORT = /\/session(\.ts)?$/;
+const SESSION_FIELD_WRITE = /\.(state|revision)\s*=[^=]/;
+
+// FA-01: a file that knows the session must not assign to its `state` or `revision`.
+function checkSessionWrite(file: string, source: string, imports: FoundImport[]): string | null {
+  if (file === "src/project/session.ts") return null;
+  if (!imports.some(({ spec }) => SESSION_IMPORT.test(spec))) return null;
+  const hit = SESSION_FIELD_WRITE.exec(maskSource(source));
+  return hit ? `assigns '${hit[0].trim()}' next to a session import; only the session changes state (FA-01)` : null;
+}
+
 function walk(dir: string, into: string[]) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     if (entry.name === "node_modules") continue;
@@ -220,9 +243,11 @@ function scan(): Scan {
     const imports = importsOf(source);
     files.set(file, imports);
     for (const { spec, typeOnly, line } of imports) {
-      const problem = checkImport(file, spec, typeOnly);
+      const problem = checkImport(file, spec, typeOnly) ?? checkApplyImport(file, spec);
       if (problem) violations.push(`${file}:${line} ${problem}`);
     }
+    const write = checkSessionWrite(file, source, imports);
+    if (write) violations.push(`${file}:1 ${write}`);
     const docblock = checkDocblock(file, source);
     if (docblock) violations.push(`${file}:1 ${docblock}`);
   }
@@ -384,6 +409,40 @@ describe("checkDocblock", () => {
     expect(checkDocblock("src/lib/a.test.ts", "export {};\n")).toBeNull();
     expect(checkDocblock("src/parts/browser/a.test.ts", "export {};\n")).toBeNull();
     expect(checkDocblock("src/core/a.testing.ts", "export {};\n")).toBeNull();
+  });
+});
+
+describe("the FA-01 rules", () => {
+  it("lets only the session import apply", () => {
+    expect(checkApplyImport("src/project/session.ts", "./apply/index.ts")).toBeNull();
+    expect(checkApplyImport("src/project/apply/net.ts", "./types.ts")).toBeNull();
+    expect(checkApplyImport("src/project/testing/harness.ts", "../apply/index.ts")).toBeNull();
+    expect(checkApplyImport("src/project/session.test.ts", "./apply/index.ts")).toBeNull();
+    expect(checkApplyImport("server/src/room.ts", "../../src/project/apply/index.ts")).toBeNull();
+  });
+
+  it("rejects an import of apply from anywhere else", () => {
+    expect(checkApplyImport("src/components/studio/a.tsx", "@/project/apply/index")).toMatch(/FA-01/);
+    expect(checkApplyImport("src/project/netlist.ts", "./apply/index.ts")).toMatch(/FA-01/);
+    expect(checkApplyImport("src/sim/a.ts", "#project/apply/net")).toMatch(/FA-01/);
+    expect(checkApplyImport("src/parts/a.ts", "../project/apply/types.ts")).toMatch(/FA-01/);
+  });
+
+  it("leaves other project imports alone", () => {
+    expect(checkApplyImport("src/sim/a.ts", "../project/hash.ts")).toBeNull();
+  });
+
+  it("flags an assignment to state or revision in a file that imports the session", () => {
+    const imports = importsOf(`import { createSession } from "./session.ts";`);
+    expect(checkSessionWrite("src/studio/a.ts", "session.state = next;", imports)).toMatch(/FA-01/);
+    expect(checkSessionWrite("src/studio/a.ts", "s.revision = 4;", imports)).toMatch(/FA-01/);
+    expect(checkSessionWrite("src/studio/a.ts", "if (s.revision == 4) {}", imports)).toBeNull();
+    expect(checkSessionWrite("src/studio/a.ts", "// s.state = 1", imports)).toBeNull();
+    expect(checkSessionWrite("src/project/session.ts", "x.state = 1;", imports)).toBeNull();
+  });
+
+  it("ignores files that do not import the session", () => {
+    expect(checkSessionWrite("src/studio/a.ts", "box.state = 1;", [])).toBeNull();
   });
 });
 
