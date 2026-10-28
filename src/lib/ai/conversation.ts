@@ -7,7 +7,7 @@ import type { LabKind, LabStore } from "@/components/dock/types";
 import type { Locale } from "@/i18n/config";
 import { AiError, streamChat, streamErrorCode, type AiErrorCode } from "./client";
 import type { ChatMessage, ChatPeer, ChatRequest } from "./protocol";
-import { runClientTool, type ToolCard, type ToolContext } from "./run-tools";
+import { runClientTool, type PeerStatus, type ToolCard, type ToolContext } from "./run-tools";
 import { parseToolCall, toolRuns, type ProposedChange } from "./tools";
 
 /** Client-tool rounds per question: the model may act, look, then answer. */
@@ -214,6 +214,22 @@ export class Conversation {
       record.id === toolId && record.card?.kind === "change" ? { ...record, card: { ...record.card, status: decision } } : record;
     const turns = this.state.turns.map((t): Turn => (t.id === turnId && t.role === "assistant" ? { ...t, tools: t.tools.map(decided) } : t));
     this.set({ turns: [...turns, { id: nextId("n"), role: "note", decision, kind: card.change.kind }] });
+  }
+
+  /** Posts a pending ask_peer question in the room only when the learner presses Send. */
+  answerPeer(turnId: string, toolId: string, send: boolean, env: Pick<SendEnv, "tools">) {
+    const turn = this.state.turns.find((t) => t.id === turnId);
+    if (turn?.role !== "assistant") return;
+    const card = turn.tools.find((t) => t.id === toolId)?.card;
+    if (card?.kind !== "peer" || card.status !== "pending") return;
+    const room = env.tools().room;
+    const peer = room?.peers.find((p) => p.name === card.peer);
+    if (send && peer) room?.ask(peer, card.question);
+    const status: PeerStatus = !send ? "declined" : peer ? "sent" : "no_peer";
+    const settled = (record: ToolRecord): ToolRecord =>
+      record.id === toolId && record.card?.kind === "peer" ? { ...record, card: { ...record.card, status } } : record;
+    const turns = this.state.turns.map((t): Turn => (t.id === turnId && t.role === "assistant" ? { ...t, tools: t.tools.map(settled) } : t));
+    this.set({ turns });
   }
 }
 

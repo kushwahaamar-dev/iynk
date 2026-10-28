@@ -163,6 +163,8 @@ function PartnerChat({ lab, itemId, store, figure, t, locale, voice }: ChatProps
 
   const decide = (turnId: string, toolId: string, accept: boolean) => conversation.decide(turnId, toolId, accept, env());
 
+  const answerPeer = (turnId: string, toolId: string, send: boolean) => conversation.answerPeer(turnId, toolId, send, env());
+
   const invite = () => {
     if (together && !together.room) together.start();
     openDockTab("together");
@@ -208,6 +210,7 @@ function PartnerChat({ lab, itemId, store, figure, t, locale, voice }: ChatProps
                 busy={busy}
                 onRetry={() => void conversation.retry(env())}
                 onDecide={(toolId, accept) => decide(turn.id, toolId, accept)}
+                onPeer={(toolId, send) => answerPeer(turn.id, toolId, send)}
                 onFlash={(partId, note) => {
                   const handle = live.current.figure;
                   handle?.send("set", { state: lab === "drone" ? { sel: partId } : { select: partId } });

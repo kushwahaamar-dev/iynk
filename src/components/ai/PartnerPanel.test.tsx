@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { LabStore } from "@/components/dock/types";
 import type { FigureHandle } from "@/components/figure/protocol";
@@ -54,9 +54,16 @@ function boardStore() {
   } satisfies LabStore;
 }
 
-async function renderPanel(store: LabStore, figure: FigureHandle | null) {
+async function renderPanel(store: LabStore, figure: FigureHandle | null, chat?: (text: string, kind?: string) => void) {
   // Fresh modules per test: the feature flags and conversations are module singletons.
   vi.resetModules();
+  if (chat) {
+    const room = { peers: [{ id: "p2", name: "Ana", lang: "en", done: [] }], chat };
+    vi.doMock("@/lib/realtime", async (original) => ({
+      ...(await original<typeof import("@/lib/realtime")>()),
+      useRoom: () => room,
+    }));
+  }
   const { I18nProvider } = await import("@/i18n/client");
   const { PartnerPanel } = await import("./PartnerPanel");
   return render(
@@ -75,6 +82,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.doUnmock("@/lib/realtime");
   removeAllKeys();
   localStorage.clear();
   vi.unstubAllGlobals();
@@ -164,6 +172,42 @@ describe("PartnerPanel", () => {
     await screen.findByText("Nice, it blinks.");
     const last = bodies[2].messages as Array<{ role: string; content: string }>;
     expect(last.at(-1)).toEqual({ role: "user", content: "[The learner accepted your proposed code change.]\n\nIt works!" });
+  });
+
+  describe("ask_peer", () => {
+    const askPeer = () =>
+      mockFetch(FULL, [
+        () => sse([{ type: "tool_call", id: "call-3", name: "ask_peer", args: { peerId: "p2", question: "How does the LED turn on?" } }, done]),
+        () => sse([{ type: "text", delta: "Waiting on you." }, done]),
+      ]);
+
+    async function ask(chat: (text: string, kind?: string) => void) {
+      askPeer();
+      await renderPanel(boardStore(), null, chat);
+      const box = await screen.findByRole("textbox", { name: "Ask your lab partner" });
+      fireEvent.change(box, { target: { value: "Who can explain this?" } });
+      fireEvent.click(screen.getByRole("button", { name: "Send" }));
+      await screen.findByText("Waiting on you.");
+    }
+
+    test("shows the question with Send and posts nothing until it is pressed", async () => {
+      const chat = vi.fn();
+      await ask(chat);
+      expect(screen.getByText("“How does the LED turn on?”")).toBeTruthy();
+      expect(chat).not.toHaveBeenCalled();
+      fireEvent.click(within(screen.getByRole("note")).getByRole("button", { name: "Send" }));
+      expect(chat).toHaveBeenCalledTimes(1);
+      expect(chat).toHaveBeenCalledWith("@Ana How does the LED turn on?", "ai");
+      expect(screen.getByText("Asked Ana to explain")).toBeTruthy();
+    });
+
+    test("Don't send posts nothing", async () => {
+      const chat = vi.fn();
+      await ask(chat);
+      fireEvent.click(screen.getByRole("button", { name: "Don’t send" }));
+      expect(chat).not.toHaveBeenCalled();
+      expect(screen.getByText("Not sent to Ana.")).toBeTruthy();
+    });
   });
 
   test("an upstream error keeps the question and offers a retry", async () => {

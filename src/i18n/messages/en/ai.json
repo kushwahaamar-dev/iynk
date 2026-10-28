@@ -67,6 +67,10 @@
     "diffLabel": "Changes: lines starting with + are added, lines starting with − are removed.",
     "askPeer": "Asked {name} to explain",
     "askPeerNoRoom": "A friend who has done this could explain it. Invite someone to build with you.",
+    "askPeerPending": "Ask {name} to explain?",
+    "askPeerSend": "Send",
+    "askPeerDecline": "Don’t send",
+    "askPeerDeclined": "Not sent to {name}.",
     "invite": "Invite a friend",
     "opened": "Opened {tab}",
     "tabs": {

@@ -67,6 +67,10 @@
     "diffLabel": "修改：以 + 开头的行是新增的，以 − 开头的行是删除的。",
     "askPeer": "已请 {name} 讲解",
     "askPeerNoRoom": "做过这个的朋友可以给你讲讲。邀请一个人和你一起搭建吧。",
+    "askPeerPending": "请 {name} 讲解吗？",
+    "askPeerSend": "发送",
+    "askPeerDecline": "不发送",
+    "askPeerDeclined": "没有发给 {name}。",
     "invite": "邀请朋友",
     "opened": "已打开{tab}",
     "tabs": {

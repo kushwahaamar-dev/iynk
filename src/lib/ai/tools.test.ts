@@ -121,18 +121,18 @@ describe("runClientTool", () => {
     expect(outcome).toEqual({ result: { ok: false, error: "propose_change: find text is not in the current code" }, card: null });
   });
 
-  test("ask_peer posts in the room, or offers an invite outside one", () => {
+  test("ask_peer shows a pending card and posts nothing until the learner decides", () => {
     const ask = vi.fn();
     const room = { peers: [{ id: "p2", name: "Ana", done: ["board:uno-r3:lesson:blink"] }], ask };
-    const sent = runClientTool(call("ask_peer", { peerId: "p2", question: "Explain the LED's legs to Sam?" }), context({ room }));
-    expect(ask).toHaveBeenCalledWith(room.peers[0], "Explain the LED's legs to Sam?");
-    expect(sent).toEqual({
-      result: { ok: true, sent: true, peer: "Ana" },
-      card: { kind: "peer", peer: "Ana", question: "Explain the LED's legs to Sam?", sent: true },
+    const shown = runClientTool(call("ask_peer", { peerId: "p2", question: "Explain the LED's legs to Sam?" }), context({ room }));
+    expect(ask).not.toHaveBeenCalled();
+    expect(shown).toEqual({
+      result: { ok: true, shown: true, note: "The learner decides whether to send it." },
+      card: { kind: "peer", peer: "Ana", question: "Explain the LED's legs to Sam?", status: "pending" },
     });
     const alone = runClientTool(call("ask_peer", { peerId: "p2", question: "Explain the legs?" }), context());
     expect(alone.result).toEqual({ ok: false, error: "the learner is not in a room" });
-    expect(alone.card).toMatchObject({ kind: "peer", sent: false });
+    expect(alone.card).toMatchObject({ kind: "peer", status: "no_peer" });
   });
 
   test("open_panel switches the dock tab", () => {

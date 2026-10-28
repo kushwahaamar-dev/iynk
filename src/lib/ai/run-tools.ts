@@ -31,6 +31,7 @@ export type ToolContext = {
 };
 
 export type ChangeStatus = "pending" | "accepted" | "rejected";
+export type PeerStatus = "pending" | "sent" | "declined" | "no_peer";
 
 export type ToolCard =
   | { kind: "highlight"; partId: string; note: string; shown: boolean }
@@ -42,7 +43,7 @@ export type ToolCard =
       actions: Array<{ type: string }>;
       status: ChangeStatus;
     }
-  | { kind: "peer"; peer: string; question: string; sent: boolean }
+  | { kind: "peer"; peer: string; question: string; status: PeerStatus }
   | { kind: "panel"; tab: DockTab };
 
 export type ToolOutcome = { result: Record<string, unknown>; card: ToolCard | null };
@@ -79,11 +80,13 @@ export function runClientTool(call: ToolCall, ctx: ToolContext): ToolOutcome {
       if (!ctx.room || !peer) {
         return {
           result: { ok: false, error: ctx.room ? `no peer "${peerId}" in the room` : "the learner is not in a room" },
-          card: { kind: "peer", peer: peer?.name ?? "", question, sent: false },
+          card: { kind: "peer", peer: peer?.name ?? "", question, status: "no_peer" },
         };
       }
-      ctx.room.ask(peer, question);
-      return { result: { ok: true, sent: true, peer: peer.name }, card: { kind: "peer", peer: peer.name, question, sent: true } };
+      return {
+        result: { ok: true, shown: true, note: "The learner decides whether to send it." },
+        card: { kind: "peer", peer: peer.name, question, status: "pending" },
+      };
     }
     case "open_panel":
       ctx.openTab(call.args.tab);

@@ -67,6 +67,10 @@
     "diffLabel": "Änderungen: Zeilen mit + werden hinzugefügt, Zeilen mit − werden entfernt.",
     "askPeer": "{name} gebeten, es zu erklären",
     "askPeerNoRoom": "Jemand, der das schon gemacht hat, könnte es dir erklären. Lade jemanden ein, mit dir zu bauen.",
+    "askPeerPending": "{name} bitten, es zu erklären?",
+    "askPeerSend": "Senden",
+    "askPeerDecline": "Nicht senden",
+    "askPeerDeclined": "Nicht an {name} gesendet.",
     "invite": "Freund einladen",
     "opened": "{tab} geöffnet",
     "tabs": {

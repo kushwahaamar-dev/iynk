@@ -15,11 +15,12 @@ type TurnProps = {
   busy: boolean;
   onRetry(): void;
   onDecide(toolId: string, accept: boolean): void;
+  onPeer(toolId: string, send: boolean): void;
   onFlash(partId: string, note: string): void;
   onInvite(): void;
 };
 
-export function TurnView({ turn, first, t, busy, onRetry, onDecide, onFlash, onInvite }: TurnProps) {
+export function TurnView({ turn, first, t, busy, onRetry, onDecide, onPeer, onFlash, onInvite }: TurnProps) {
   if (turn.role === "user") {
     return (
       <div className="flex justify-end ps-8 motion-safe:animate-ink-rise">
@@ -75,7 +76,7 @@ export function TurnView({ turn, first, t, busy, onRetry, onDecide, onFlash, onI
         {turn.citations.length ? <Citations citations={turn.citations} label={t("panel.sources")} /> : null}
 
         {turn.tools.map((tool) => (
-          <ToolView key={tool.id} tool={tool} t={t} onDecide={onDecide} onFlash={onFlash} onInvite={onInvite} />
+          <ToolView key={tool.id} tool={tool} t={t} onDecide={onDecide} onPeer={onPeer} onFlash={onFlash} onInvite={onInvite} />
         ))}
 
         {turn.status === "stopped" ? <p className="font-ui text-xs text-muted">{t("panel.stopped")}</p> : null}
@@ -150,12 +151,14 @@ function ToolView({
   tool,
   t,
   onDecide,
+  onPeer,
   onFlash,
   onInvite,
 }: {
   tool: ToolRecord;
   t: AiT;
   onDecide(toolId: string, accept: boolean): void;
+  onPeer(toolId: string, send: boolean): void;
   onFlash(partId: string, note: string): void;
   onInvite(): void;
 }) {
@@ -178,19 +181,44 @@ function ToolView({
     case "change":
       return <ChangeCard card={card} t={t} onDecide={(accept) => onDecide(tool.id, accept)} />;
     case "peer":
-      return card.sent ? (
-        <Callout tone="note" title={t("tools.askPeer", { name: card.peer })}>
-          <p className="italic">{t("tools.question", { question: card.question })}</p>
-        </Callout>
-      ) : (
-        <Callout tone="note">
-          <p>{t("tools.askPeerNoRoom")}</p>
-          <Button size="sm" variant="primary" className="mt-2" onClick={onInvite}>
-            <PartnerIcon name="people" size={16} />
-            {t("tools.invite")}
-          </Button>
-        </Callout>
-      );
+      switch (card.status) {
+        case "pending":
+          return (
+            <Callout tone="note" title={t("tools.askPeerPending", { name: card.peer })}>
+              <p className="italic">{t("tools.question", { question: card.question })}</p>
+              <div className="mt-2 flex gap-2">
+                <Button size="sm" variant="primary" onClick={() => onPeer(tool.id, true)}>
+                  {t("tools.askPeerSend")}
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => onPeer(tool.id, false)}>
+                  {t("tools.askPeerDecline")}
+                </Button>
+              </div>
+            </Callout>
+          );
+        case "sent":
+          return (
+            <Callout tone="note" title={t("tools.askPeer", { name: card.peer })}>
+              <p className="italic">{t("tools.question", { question: card.question })}</p>
+            </Callout>
+          );
+        case "declined":
+          return (
+            <Callout tone="note">
+              <p className="text-sm text-muted">{t("tools.askPeerDeclined", { name: card.peer })}</p>
+            </Callout>
+          );
+        case "no_peer":
+          return (
+            <Callout tone="note">
+              <p>{t("tools.askPeerNoRoom")}</p>
+              <Button size="sm" variant="primary" className="mt-2" onClick={onInvite}>
+                <PartnerIcon name="people" size={16} />
+                {t("tools.invite")}
+              </Button>
+            </Callout>
+          );
+      }
     case "panel":
       return <Chip tone="cobalt">{t("tools.opened", { tab: t(`tools.tabs.${card.tab}`) })}</Chip>;
   }
