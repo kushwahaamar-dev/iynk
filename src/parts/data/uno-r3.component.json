@@ -1,0 +1,703 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.uno-r3",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "Arduino",
+    "model": "Arduino UNO Rev3",
+    "mpn": "A000066",
+    "generic": false,
+    "refdes_prefix": "U",
+    "kind": "board",
+    "category": "dev-board",
+    "description": {
+      "i18n_key": "parts.uno-r3.description",
+      "en": "A 5 V development board with an ATmega328P, a USB-serial bridge, 14 digital pins, 6 analog inputs and two ICSP headers."
+    },
+    "chip": {
+      "manufacturer": "Microchip",
+      "model": "ATmega328P",
+      "package": "DIP-28"
+    },
+    "primary_source": "datasheet",
+    "legacy_ids": [
+      "uno-r3"
+    ],
+    "tags": [
+      "arduino",
+      "avr",
+      "dev-board",
+      "beginner"
+    ]
+  },
+  "sources": [
+    {
+      "id": "facts",
+      "kind": "fact-sheet",
+      "title": "Arduino UNO Rev3 fact sheet",
+      "publisher": "iynk",
+      "reliability": "secondary",
+      "note": "docs/facts/uno-r3.md. Pad positions and nets were taken from the Eagle files of the official CAD zip."
+    },
+    {
+      "id": "datasheet",
+      "kind": "datasheet",
+      "title": "Arduino UNO R3 datasheet, SKU A000066",
+      "publisher": "Arduino S.r.l.",
+      "url": "https://docs.arduino.cc/resources/datasheets/A000066-datasheet.pdf",
+      "reliability": "secondary",
+      "note": "Cited through docs/facts/uno-r3.md; this descriptor did not read the PDF in full."
+    },
+    {
+      "id": "pinout",
+      "kind": "product-page",
+      "title": "Arduino UNO R3 full pinout",
+      "publisher": "Arduino S.r.l.",
+      "url": "https://docs.arduino.cc/resources/pinouts/A000066-full-pinout.pdf",
+      "reliability": "secondary",
+      "note": "Pin functions, cited through docs/facts/uno-r3.md."
+    },
+    {
+      "id": "mcu",
+      "kind": "datasheet",
+      "title": "ATmega48A/PA/88A/PA/168A/PA/328/P datasheet DS40002061B",
+      "publisher": "Microchip",
+      "url": "https://ww1.microchip.com/downloads/en/DeviceDoc/ATmega48A-PA-88A-PA-168A-PA-328-P-DS-DS40002061B.pdf",
+      "reliability": "secondary",
+      "note": "Pin current limits, cited through docs/facts/uno-r3.md."
+    },
+    {
+      "id": "profile",
+      "kind": "own-estimate",
+      "title": "src/lib/interp/profiles.ts (profile uno-r3) and src/content/boards/uno-r3.ts",
+      "publisher": "iynk",
+      "reliability": "unverified"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "IOL",
+      "kind": "header",
+      "gender": "female",
+      "pitch": 2.54,
+      "pins": [
+        "D0",
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D5",
+        "D6",
+        "D7"
+      ]
+    },
+    {
+      "id": "IOH",
+      "kind": "header",
+      "gender": "female",
+      "pitch": 2.54,
+      "pins": [
+        "D8",
+        "D9",
+        "D10",
+        "D11",
+        "D12",
+        "D13",
+        "GND",
+        "AREF",
+        "SDA",
+        "SCL"
+      ]
+    },
+    {
+      "id": "POWER",
+      "kind": "header",
+      "gender": "female",
+      "pitch": 2.54,
+      "pins": [
+        "NC",
+        "IOREF",
+        "RESET",
+        "P3V3",
+        "P5V",
+        "POWER_6",
+        "POWER_7",
+        "VIN"
+      ]
+    },
+    {
+      "id": "AD",
+      "kind": "header",
+      "gender": "female",
+      "pitch": 2.54,
+      "pins": [
+        "A0",
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5"
+      ]
+    },
+    {
+      "id": "ICSP",
+      "kind": "header",
+      "gender": "female",
+      "pitch": 2.54,
+      "pins": [
+        "ICSP_1",
+        "ICSP_2",
+        "ICSP_3",
+        "ICSP_4",
+        "ICSP_5",
+        "ICSP_6"
+      ]
+    },
+    {
+      "id": "ICSP1",
+      "kind": "header",
+      "gender": "female",
+      "pitch": 2.54,
+      "pins": [
+        "MISO2",
+        "ICSP1_2",
+        "SCK2",
+        "MOSI2",
+        "RESET2",
+        "ICSP1_6"
+      ]
+    }
+  ],
+  "pins": [
+    {
+      "id": "D0",
+      "designator": "D0",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "IOL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D1",
+      "designator": "D1",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "IOL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D2",
+      "designator": "D2",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "IOL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D3",
+      "designator": "~D3",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "IOL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D4",
+      "designator": "D4",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "IOL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D5",
+      "designator": "~D5",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "IOL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D6",
+      "designator": "~D6",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "IOL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D7",
+      "designator": "D7",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "IOL",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D8",
+      "designator": "D8",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "IOH",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D9",
+      "designator": "~D9",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "IOH",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D10",
+      "designator": "~D10",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "IOH",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D11",
+      "designator": "~D11",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "IOH",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D12",
+      "designator": "D12",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "IOH",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "D13",
+      "designator": "D13",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "IOH",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "GND",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "IOH"
+    },
+    {
+      "id": "AREF",
+      "designator": "AREF",
+      "type": "analog_in",
+      "class": "analog",
+      "connector": "IOH"
+    },
+    {
+      "id": "SDA",
+      "designator": "SDA",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "IOH",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "SCL",
+      "designator": "SCL",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "IOH",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "NC",
+      "designator": "NC",
+      "type": "nc",
+      "class": "nc",
+      "connector": "POWER"
+    },
+    {
+      "id": "IOREF",
+      "designator": "IOREF",
+      "type": "passive",
+      "class": "passive",
+      "connector": "POWER"
+    },
+    {
+      "id": "RESET",
+      "designator": "RESET",
+      "type": "digital_io",
+      "class": "digital",
+      "connector": "POWER",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "P3V3",
+      "designator": "3V3",
+      "type": "power_io",
+      "class": "power",
+      "connector": "POWER"
+    },
+    {
+      "id": "P5V",
+      "designator": "5V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "POWER"
+    },
+    {
+      "id": "POWER_6",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "POWER"
+    },
+    {
+      "id": "POWER_7",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "POWER"
+    },
+    {
+      "id": "VIN",
+      "designator": "VIN",
+      "type": "power_io",
+      "class": "power",
+      "connector": "POWER"
+    },
+    {
+      "id": "A0",
+      "designator": "A0",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "AD",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "A1",
+      "designator": "A1",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "AD",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "A2",
+      "designator": "A2",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "AD",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "A3",
+      "designator": "A3",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "AD",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "A4",
+      "designator": "A4",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "AD",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "A5",
+      "designator": "A5",
+      "type": "digital_io",
+      "class": "analog",
+      "connector": "AD",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "ICSP_1",
+      "designator": "MISO",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "ICSP",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "ICSP_2",
+      "designator": "5V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "ICSP"
+    },
+    {
+      "id": "ICSP_3",
+      "designator": "SCK",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "ICSP",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "ICSP_4",
+      "designator": "MOSI",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "ICSP",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "ICSP_5",
+      "designator": "RESET",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "ICSP",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "ICSP_6",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "ICSP"
+    },
+    {
+      "id": "MISO2",
+      "designator": "MISO2",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "ICSP1",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "ICSP1_2",
+      "designator": "5V",
+      "type": "power_io",
+      "class": "power",
+      "connector": "ICSP1"
+    },
+    {
+      "id": "SCK2",
+      "designator": "SCK2",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "ICSP1",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "MOSI2",
+      "designator": "MOSI2",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "ICSP1",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "RESET2",
+      "designator": "RESET2",
+      "type": "digital_io",
+      "class": "bus",
+      "connector": "ICSP1",
+      "logic_family": "cmos-5v"
+    },
+    {
+      "id": "ICSP1_6",
+      "designator": "GND",
+      "type": "ground",
+      "class": "ground",
+      "connector": "ICSP1"
+    }
+  ],
+  "groups": [
+    {
+      "id": "g_D11",
+      "kind": "internal-short",
+      "pins": [
+        "D11",
+        "ICSP_4"
+      ]
+    },
+    {
+      "id": "g_D12",
+      "kind": "internal-short",
+      "pins": [
+        "D12",
+        "ICSP_1"
+      ]
+    },
+    {
+      "id": "g_D13",
+      "kind": "internal-short",
+      "pins": [
+        "D13",
+        "ICSP_3"
+      ]
+    },
+    {
+      "id": "g_GND",
+      "kind": "internal-short",
+      "pins": [
+        "GND",
+        "POWER_6",
+        "POWER_7",
+        "ICSP_6",
+        "ICSP1_6"
+      ]
+    },
+    {
+      "id": "g_RESET",
+      "kind": "internal-short",
+      "pins": [
+        "RESET",
+        "ICSP_5"
+      ]
+    },
+    {
+      "id": "g_P5V",
+      "kind": "internal-short",
+      "pins": [
+        "P5V",
+        "ICSP_2",
+        "ICSP1_2"
+      ]
+    }
+  ],
+  "dimensions": {
+    "package": "UNO Rev3",
+    "body": {
+      "w": 68.58,
+      "h": 53.34,
+      "d": 15
+    },
+    "board": {
+      "w": 68.58,
+      "h": 53.34,
+      "thickness": 1.6
+    },
+    "accuracy": 0.5,
+    "source": {
+      "src": "facts"
+    }
+  },
+  "ratings": {},
+  "behaviour": {
+    "summary": {
+      "en": "The board runs the user's sketch in the iynk interpreter. Pins, PWM, I2C, serial and timing follow the uno-r3 board profile. It is not the ATmega328P chip."
+    },
+    "layers": [
+      {
+        "id": "mcu",
+        "domain": "digital",
+        "summary": {
+          "en": "Firmware runtime."
+        },
+        "model": {
+          "kind": "none",
+          "reason": {
+            "en": "The firmware runtime (iynk-interp, profile uno-r3 in src/lib/interp/profiles.ts:102) is attached to the board by the project's simulation.runtimes, not by a solver layer."
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "en": "Arduino-C++ subset run by the interpreter with the Uno pin map."
+      },
+      {
+        "en": "Digital I/O on D0 to D13 and A0 to A5, PWM on D3, D5, D6, D9, D10 and D11, interrupts on D2 and D3."
+      },
+      {
+        "en": "10-bit analog reads against a 5 V reference, I2C master on SDA and SCL, serial output, and the L LED on D13."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "The AVR core, timers, bootloader and flash behaviour."
+      },
+      {
+        "en": "The 5 V and 3.3 V regulators, the USB power switch and the brown-out level."
+      },
+      {
+        "en": "Pin current limits and the ICSP headers."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "no_ratings",
+        "text": {
+          "en": "No electrical ratings are listed yet, so no pin-overload check exists for this board."
+        }
+      }
+    ],
+    "tests": [
+      {
+        "id": "profile_run",
+        "kind": "conformance",
+        "file": "src/lib/interp/headless.test.ts",
+        "state": "present",
+        "note": "Runs a sketch on the uno-r3 profile."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "arduino-cpp",
+        "libraries": [
+          {
+            "name": "Wire",
+            "install": "built in",
+            "iynk_support": "supported"
+          }
+        ]
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "board",
+        "id": "uno-r3",
+        "path": "public/figures/boards/uno-r3.html",
+        "engine": "colorfigures-bench"
+      }
+    },
+    "fallback": {
+      "renderer": "generic-box",
+      "label": "Arduino UNO R3",
+      "body_colour": "#00878f",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-28",
+    "third_party_content": true,
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-28",
+        "note": "First descriptor. The pin table is the 44 rows of src/content/boards/uno-r3.ts named by rule C-PIN.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}
