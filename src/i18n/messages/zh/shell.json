@@ -11,7 +11,9 @@
     "together": "一起",
     "about": "关于",
     "menu": "菜单",
-    "closeMenu": "关闭菜单"
+    "closeMenu": "关闭菜单",
+    "search": "搜索",
+    "searchHint": "搜索页面和操作"
   },
   "language": {
     "label": "语言"

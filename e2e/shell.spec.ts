@@ -312,3 +312,33 @@ test("without the AI service, the Together lede doesn't promise translated chat"
   await expect(page.getByText(together.lobby.ledePlain)).toBeVisible();
   await expect(page.getByText(together.lobby.lede)).toHaveCount(0);
 });
+
+test.describe("the floating nav bar", () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  test("floats 8 px off the top, is centred and is narrower than the page", async ({ page }) => {
+    await page.goto("/en");
+    const box = await visibleHeader(page).getByRole("link", { name: shell.brand.home }).evaluate((link) => {
+      const rect = (link.parentElement as HTMLElement).getBoundingClientRect();
+      return { top: rect.top, width: rect.width, centre: rect.left + rect.width / 2, viewport: document.documentElement.clientWidth };
+    });
+    expect(box.top).toBe(8);
+    expect(box.width).toBeLessThan(1200);
+    expect(Math.abs(box.centre - box.viewport / 2)).toBeLessThanOrEqual(1);
+    await expect(page.locator("body > header:visible")).toHaveCount(1);
+  });
+});
+
+test.describe("the nav bar in German at 1024 px", () => {
+  test.use({ viewport: { width: 1024, height: 768 } });
+
+  test("keeps the links on one row", async ({ page }) => {
+    await page.goto("/de");
+    const tops = await visibleHeader(page)
+      .getByRole("navigation")
+      .getByRole("link")
+      .evaluateAll((links) => links.map((link) => Math.round(link.getBoundingClientRect().top)));
+    expect(tops.length).toBeGreaterThan(1);
+    expect(new Set(tops).size).toBe(1);
+  });
+});

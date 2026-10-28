@@ -11,7 +11,9 @@
     "together": "साथ मिलकर",
     "about": "परिचय",
     "menu": "मेन्यू",
-    "closeMenu": "मेन्यू बंद करें"
+    "closeMenu": "मेन्यू बंद करें",
+    "search": "खोजें",
+    "searchHint": "पेज और कार्य खोजें"
   },
   "language": {
     "label": "भाषा"

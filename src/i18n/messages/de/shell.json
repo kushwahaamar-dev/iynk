@@ -11,7 +11,9 @@
     "together": "Gemeinsam",
     "about": "Über iynk",
     "menu": "Menü",
-    "closeMenu": "Menü schließen"
+    "closeMenu": "Menü schließen",
+    "search": "Suchen",
+    "searchHint": "Seiten und Aktionen suchen"
   },
   "language": {
     "label": "Sprache"

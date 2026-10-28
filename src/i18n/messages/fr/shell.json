@@ -11,7 +11,9 @@
     "together": "Ensemble",
     "about": "À propos",
     "menu": "Menu",
-    "closeMenu": "Fermer le menu"
+    "closeMenu": "Fermer le menu",
+    "search": "Rechercher",
+    "searchHint": "Rechercher des pages et des actions"
   },
   "language": {
     "label": "Langue"

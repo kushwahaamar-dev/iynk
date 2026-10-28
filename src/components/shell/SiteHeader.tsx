@@ -1,12 +1,10 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 import type { Locale } from "@/i18n/config";
 import { getT } from "@/i18n/server";
-import { Logo } from "./Logo";
-import { MobileNav } from "./MobileNav";
+import type { CommandLabels } from "./CommandMenuHost";
 import { NAV, type NavId } from "./nav";
-import { NavLinks } from "./NavLinks";
-import { SettingsMenu, type SettingsLabels } from "./SettingsMenu";
+import { NavBar } from "./NavBar";
+import type { SettingsLabels } from "./SettingsMenu";
 
 type SiteHeaderProps = {
   lang: Locale;
@@ -23,31 +21,41 @@ export async function SiteHeader({ lang, actions }: SiteHeaderProps) {
     theme: { label: t("theme.label"), system: t("theme.system"), light: t("theme.light"), dark: t("theme.dark") },
   };
 
+  const commandLabels: CommandLabels = {
+    title: t("command.title"),
+    placeholder: t("command.placeholder"),
+    empty: t("command.empty"),
+    groups: {
+      pages: t("command.groups.pages"),
+      actions: t("command.groups.actions"),
+      theme: t("command.groups.theme"),
+      language: t("command.groups.language"),
+    },
+    nav,
+    keys: t("command.keys"),
+    sound: { on: t("command.sound.on"), off: t("command.sound.off") },
+    motion: { on: t("command.motion.on"), off: t("command.motion.off") },
+    theme: { system: t("theme.system"), light: t("theme.light"), dark: t("theme.dark") },
+  };
+
   return (
-    <header className="sticky top-0 z-30 border-b border-rule bg-paper [background-image:var(--grain)]">
-      <div className="shell-frame flex h-[57px] items-center gap-5">
-        <Link href={`/${lang}`} className="-ms-2 flex min-h-11 shrink-0 items-center rounded-md px-2 text-ink no-underline">
-          {/* The wordmark is a drawing: it keeps its face in every language. */}
-          <Logo height={23} />
-          <span className="sr-only">{t("brand.home")}</span>
-        </Link>
-        <span aria-hidden="true" className="hidden h-4 w-px bg-rule lg:block" />
-        <nav aria-label={t("nav.label")} className="hidden min-w-0 lg:block">
-          <NavLinks lang={lang} labels={nav} layout="bar" />
-        </nav>
-        <div className="ms-auto flex items-center gap-1.5">
-          {actions}
-          <div className="hidden lg:block">
-            <SettingsMenu lang={lang} labels={settings} />
-          </div>
-          <div className="lg:hidden">
-            <MobileNav
-              lang={lang}
-              labels={{ nav, menu: t("nav.menu"), closeMenu: t("nav.closeMenu"), navLabel: t("nav.label"), settings }}
-            />
-          </div>
-        </div>
-      </div>
+    <header className="pointer-events-none sticky top-0 z-header h-(--header-h)">
+      <NavBar
+        lang={lang}
+        labels={{
+          home: t("brand.home"),
+          navLabel: t("nav.label"),
+          nav,
+          menu: t("nav.menu"),
+          closeMenu: t("nav.closeMenu"),
+          search: t("nav.search"),
+          searchHint: t("nav.searchHint"),
+        }}
+        settings={settings}
+        commandLabels={commandLabels}
+      >
+        {actions}
+      </NavBar>
     </header>
   );
 }

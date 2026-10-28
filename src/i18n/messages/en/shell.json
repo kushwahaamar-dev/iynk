@@ -11,7 +11,9 @@
     "together": "Together",
     "about": "About",
     "menu": "Menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "search": "Search",
+    "searchHint": "Search pages and actions"
   },
   "language": {
     "label": "Language"
