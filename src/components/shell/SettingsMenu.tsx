@@ -24,11 +24,11 @@ export function SettingsPanel({ lang, labels }: { lang: Locale; labels: Settings
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <div className="ink-label mb-1">{labels.theme.label}</div>
+        <div className="kicker mb-1">{labels.theme.label}</div>
         <ThemeControl labels={labels.theme} />
       </div>
       <LanguagePicker lang={lang} label={labels.language} showLabel />
-      <div className="divide-y divide-rule border-t-[1.5px] border-rule">
+      <div className="divide-y divide-rule border-t border-rule">
         <Toggle
           label={t("sound.label")}
           checked={sound}
@@ -38,10 +38,9 @@ export function SettingsPanel({ lang, labels }: { lang: Locale; labels: Settings
             if (on) startSound();
             else silence();
           }}
-          className="py-1"
         />
-        <Toggle label={t("motion.label")} checked={reduceMotion} onChange={(on) => setSetting("reduceMotion", on)} className="py-1" />
-        <UsageToggle className="pt-2" />
+        <Toggle label={t("motion.label")} checked={reduceMotion} onChange={(on) => setSetting("reduceMotion", on)} />
+        <UsageToggle />
       </div>
       <Button
         variant="secondary"
@@ -52,7 +51,7 @@ export function SettingsPanel({ lang, labels }: { lang: Locale; labels: Settings
           window.dispatchEvent(new CustomEvent(OPEN_KEYS_EVENT));
         }}
       >
-        <Icon name="lock" size={16} aria-hidden="true" />
+        <Icon name="key" size={20} aria-hidden="true" />
         {t("keys.open")}
       </Button>
     </div>
@@ -60,7 +59,7 @@ export function SettingsPanel({ lang, labels }: { lang: Locale; labels: Settings
 }
 
 /**
- * The header's Settings button and its popover. The button is quiet: the page's language code in mono and a gear,
+ * The header's Settings button and its popover. The button is quiet: a gear and the page's language code,
  * since the language picker is the first thing most people come here for.
  */
 export function SettingsMenu({ lang, labels }: { lang: Locale; labels: SettingsLabels }) {
@@ -71,16 +70,13 @@ export function SettingsMenu({ lang, labels }: { lang: Locale; labels: SettingsL
     return () => window.removeEventListener(OPEN_KEYS_EVENT, open);
   }, []);
   const trigger = (
-    <button
-      type="button"
-      className="inline-flex h-9 items-center gap-2 rounded-full border border-rule ps-3 pe-2.5 text-muted transition-colors hover:border-line hover:text-ink aria-expanded:border-line aria-expanded:text-ink [@media(pointer:coarse)]:h-11"
-    >
+    <Button variant="ghost" size="sm">
       <span className="sr-only">{labels.settings}</span>
-      <span aria-hidden="true" className="font-ui text-[11px] font-medium uppercase leading-none tracking-[0.08em]">
+      <Icon name="settings" size={20} aria-hidden="true" />
+      <span aria-hidden="true" className="text-sm font-semibold uppercase">
         {lang}
       </span>
-      <Icon name="settings" size={16} aria-hidden="true" />
-    </button>
+    </Button>
   );
   return (
     <>
