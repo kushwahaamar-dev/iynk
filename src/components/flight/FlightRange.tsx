@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
 import { FigureFrame, type FigureEvent, type FigureHandle } from "@/components/figure";
-import { Button, cx, Kbd, Select, Stat, Toggle } from "@/components/ui";
+import { Button, cx, IconButton, type IconName, Kbd, Select, Stat, Toggle } from "@/components/ui";
 import type { ParTimes } from "@/content/schema";
 import { useLocale } from "@/i18n/client";
 import type { Messages } from "@/i18n/namespaces";
@@ -604,12 +604,12 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
   const crashCard = crash && crashFix && (
     <section
       aria-labelledby="flight-why-title"
-      className="pointer-events-auto w-full max-w-[26rem] rounded-ink-sm border-2 border-line bg-surface p-3 shadow-ink"
+      className="pointer-events-auto w-full max-w-md rounded-xl border border-rule bg-raised/90 p-3 shadow-md backdrop-blur animate-rise-in"
       data-testid="crash-why"
       data-cause={crash.cause}
     >
-      {crash.hit && crash.cause !== "hit" ? <p className="ink-label">{dict.hit[crash.hit]}</p> : null}
-      <h3 id="flight-why-title" className="font-head text-lg leading-tight">
+      {crash.hit && crash.cause !== "hit" ? <p className="field-label">{dict.hit[crash.hit]}</p> : null}
+      <h3 id="flight-why-title" className="text-lg font-semibold">
         {dict.why.title}
       </h3>
       <p className="mt-1 text-sm">{whyText(crash)}</p>
@@ -629,8 +629,8 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
     <div
       ref={stripRef}
       className={cx(
-        "flex w-full shrink-0 flex-nowrap gap-x-3 overflow-hidden rounded-ink-sm border-[1.5px] border-rule px-3",
-        coarse ? "items-baseline bg-paper py-1 [&_.ink-kicker]:sr-only [&_.tabular]:text-base" : "pointer-events-auto bg-paper/90 py-1.5 shadow-ink-sm",
+        "flex w-full shrink-0 flex-nowrap gap-x-3 overflow-hidden rounded-xl border border-rule px-3",
+        coarse ? "items-baseline bg-paper py-1 [&_.kicker]:sr-only [&_.tabular]:text-base" : "pointer-events-auto z-sticky bg-raised/90 py-2 shadow-md backdrop-blur",
       )}
       data-testid="flight-telemetry"
     >
@@ -638,7 +638,7 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
         <Stat
           key={id}
           size="sm"
-          className={id === "next" ? cx("max-w-48 [&_.ink-kicker]:truncate [&_.tabular]:truncate", coarse ? "min-w-0 flex-1" : "min-w-24") : "shrink-0"}
+          className={id === "next" ? cx("max-w-48 [&_.kicker]:truncate [&_.tabular]:truncate", coarse ? "min-w-0 flex-1" : "min-w-24") : "shrink-0"}
           {...stat}
         />
       ))}
@@ -654,7 +654,7 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
       onKeyUp={onKeyUp}
       onBlur={(e) => !e.currentTarget.contains(e.relatedTarget) && input.current.keys.clear()}
     >
-      <div ref={rowRef} className="flex shrink-0 items-center gap-1.5 overflow-x-auto [scrollbar-width:none] sm:gap-2">
+      <div ref={rowRef} className="flex shrink-0 items-center gap-2 overflow-x-auto [scrollbar-width:none]">
         {/* the select takes the room the buttons leave (on a laptop at least 9 rem) and a long mode ends in an ellipsis */}
         <div className={coarse ? "min-w-0 flex-1" : "min-w-36 max-w-64"}>
           <Select label={dict.mode} hideLabel value={snap.mode} onChange={(e) => act({ type: "mode", mode: e.target.value })} className="truncate">
@@ -681,9 +681,9 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
         </Button>
         {icons ? (
           <>
-            <CockpitIcon glyph="reset" label={dict.buttons.reset} keys="R" onClick={() => act({ type: "reset" })} />
-            <CockpitIcon glyph="fpv" label={dict.buttons.fpv} keys="V" pressed={fpv} onClick={toggleFpv} />
-            <CockpitIcon glyph="wind" label={dict.buttons.wind} pressed={snap.windOn} onClick={toggleWind} />
+            <CockpitButton icon="reset" label={dict.buttons.reset} keys="R" onClick={() => act({ type: "reset" })} />
+            <CockpitButton icon="eye" label={dict.buttons.fpv} keys="V" pressed={fpv} onClick={toggleFpv} />
+            <CockpitButton icon="fly" label={dict.buttons.wind} pressed={snap.windOn} onClick={toggleWind} />
           </>
         ) : (
           <>
@@ -734,7 +734,7 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
         )}
         <div className={cx("pointer-events-none absolute inset-x-2 flex flex-col items-start gap-2", coarse ? "top-2" : "bottom-2 justify-end")}>
           {hintShown || snap.pendingDesign ? (
-            <div className="max-w-[min(32rem,100%)] rounded-ink-sm bg-paper/85 px-2.5 py-1 text-xs text-ink shadow-ink-sm">
+            <div className="max-w-md rounded-xl bg-raised/90 px-3 py-1 text-xs text-ink shadow-md backdrop-blur animate-rise-in">
               {hintShown ? <p className="max-sm:line-clamp-3">{hintShown}</p> : null}
               {snap.pendingDesign ? <p className="font-semibold">{dict.pendingDesign}</p> : null}
             </div>
@@ -744,7 +744,7 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
         </div>
         {panel ? (
           <div
-            className="absolute end-2 top-2 z-20 max-h-[calc(100%-1rem)] w-[min(26rem,calc(100%-1rem))] overflow-y-auto rounded-ink-sm border-2 border-line bg-surface p-3 text-sm shadow-ink-lg animate-ink-fade"
+            className="absolute end-2 top-2 z-sticky max-h-[calc(100%-1rem)] w-[calc(100%-1rem)] max-w-md overflow-y-auto rounded-xl border border-rule bg-raised/90 p-3 text-sm shadow-md backdrop-blur animate-fade-in"
             onKeyDown={(e) => {
               if (e.key === "Escape") {
                 e.stopPropagation();
@@ -756,12 +756,12 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
               <GamepadPanel t={dict.gamepad} mapping={pad} onChange={setPad} />
             ) : (
               <section aria-labelledby="flight-legend-title">
-                <h3 id="flight-legend-title" className="mb-2 font-head text-lg">
+                <h3 id="flight-legend-title" className="mb-2 text-lg font-semibold">
                   {dict.legend.title}
                 </h3>
                 <dl className="divide-y divide-rule">
                   {(["throttle", "yaw", "pitch", "roll", "arm", "fpv", "reset"] as const).map((k) => (
-                    <div key={k} className="flex items-center justify-between gap-4 py-1.5">
+                    <div key={k} className="flex items-center justify-between gap-4 py-2">
                       <dt>
                         <Kbd>{dict.legend.keys[k]}</Kbd>
                       </dt>
@@ -789,7 +789,7 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
           aria-labelledby="flight-ghosts-title"
           data-testid="ghosts"
         >
-          <span id="flight-ghosts-title" className="ink-kicker shrink-0">
+          <span id="flight-ghosts-title" className="kicker shrink-0">
             {dict.ghosts.title}
           </span>
           <div data-testid="ghost-best" data-on={ghostOn.best && bestGhost !== null} className="min-w-0 max-sm:basis-full sm:whitespace-nowrap">
@@ -817,30 +817,16 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
   );
 }
 
-const GLYPHS = {
-  // a loop back to the start
-  reset: "M5 9.2A7.6 7.6 0 1 1 6.3 17M5 4.2v5h5",
-  // goggles: two lenses on a strap
-  fpv: "M3 9.5h18v6h-6.5l-2.5-2-2.5 2H3zM3 12H1.5M21 12h1.5",
-  // wind: three gusts
-  wind: "M3 8.5h10.5a2.5 2.5 0 1 0-2.5-2.5M3 12.5h15a2.5 2.5 0 1 1-2.5 2.5M3 16.5h7",
-};
-
-/** A 44 px cockpit button with a glyph, for a row with no room for words (its name stays the full label). */
-function CockpitIcon({ glyph, label, keys, pressed, onClick }: { glyph: keyof typeof GLYPHS; label: string; keys?: string; pressed?: boolean; onClick: () => void }) {
+/** A cockpit button with an icon, for a row with no room for words (its name stays the full label). */
+function CockpitButton({ icon, label, keys, pressed, onClick }: { icon: IconName; label: string; keys?: string; pressed?: boolean; onClick: () => void }) {
   return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
+    <IconButton
+      icon={icon}
+      label={label}
       aria-keyshortcuts={keys}
       aria-pressed={pressed}
       onClick={onClick}
-      className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border-2 border-line bg-surface text-ink aria-pressed:bg-ink aria-pressed:text-paper"
-    >
-      <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d={GLYPHS[glyph]} />
-      </svg>
-    </button>
+      className="border border-rule"
+    />
   );
 }
