@@ -2,8 +2,6 @@
    fluid gutters. The workspace override in tokens.css (:root:has) is more specific and still takes the gutters back. */
 html:root {
   --header-h: 64px;
-  --radius-ink: var(--radius-xl, 0.75rem);
-  --radius-ink-sm: var(--radius-lg, 0.5rem);
   --shell-pad: 16px;
   --frame-pad: 16px;
   --dock-w: 26rem;
@@ -33,12 +31,6 @@ html:root {
 }
 
 @layer components {
-  .ink-card {
-    background: var(--surface);
-    border: 1px solid var(--rule);
-    border-radius: var(--radius-2xl, 1rem);
-  }
-
   /* A paper plate: figures, schematics and inked art sit on it. It keeps light
      paper and dark ink in both themes; in dark mode the paper is dimmed. */
   .ink-plate,
@@ -145,33 +137,29 @@ html:root {
   }
 
   /* Long-form lesson and about text. */
-  .ink-prose,
   .prose {
     max-width: 65ch;
     line-height: 1.65;
   }
-  :is(.ink-prose, .prose) > * + * { margin-top: 0.9em; }
-  :is(.ink-prose, .prose) h2 { margin-top: 1.6em; }
-  :is(.ink-prose, .prose) h3 { margin-top: 1.3em; }
-  :is(.ink-prose, .prose) ul { list-style: disc; padding-inline-start: 1.4em; }
-  :is(.ink-prose, .prose) ol { list-style: decimal; padding-inline-start: 1.4em; }
-  :is(.ink-prose, .prose) li + li { margin-top: 0.3em; }
-  :is(.ink-prose, .prose) li::marker { color: var(--muted); }
-  :is(.ink-prose, .prose) :not(pre) > code {
+  .prose > * + * { margin-top: 0.9em; }
+  .prose h2 { margin-top: 1.6em; }
+  .prose h3 { margin-top: 1.3em; }
+  .prose ul { list-style: disc; padding-inline-start: 1.4em; }
+  .prose ol { list-style: decimal; padding-inline-start: 1.4em; }
+  .prose li + li { margin-top: 0.3em; }
+  .prose li::marker { color: var(--muted); }
+  .prose :not(pre) > code {
     font-size: 0.9em;
     padding: 0.05em 0.35em;
     border: 1px solid var(--rule);
     border-radius: var(--radius-sm, 0.25rem);
     background: var(--sunken);
   }
-  :is(.ink-prose, .prose) blockquote {
+  .prose blockquote {
     border-inline-start: 3px solid var(--rule);
     padding-inline-start: 1em;
     color: var(--muted);
   }
-
-  /* Wobbly ink for inline SVG art: filter: url(#ink-hand) needs <InkFilters/>. */
-  .ink-hand { filter: url(#ink-hand); }
 }
 
 @layer utilities {

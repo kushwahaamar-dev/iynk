@@ -1,7 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import * as editorial from "./Editorial";
-import * as marketing from "@/components/marketing";
 
 const { Note, PageHead, Section } = editorial;
 
@@ -19,12 +18,6 @@ describe("Editorial", () => {
     );
     expect(html).toContain('<section aria-labelledby="s1"');
     expect(html).toContain('<h2 id="s1"');
-  });
-
-  it("keeps the marketing barrel pointing at the editorial helpers", () => {
-    for (const name of ["typeClass", "Wrap", "SectionHead", "riseDelay", "CtaLink", "ArrowLink"] as const) {
-      expect(marketing[name]).toBe(editorial[name]);
-    }
   });
 
   it("draws a note without a one sided border", () => {

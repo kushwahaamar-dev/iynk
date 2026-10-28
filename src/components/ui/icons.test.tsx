@@ -2,7 +2,6 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { PartnerIcon } from "../ai/icons";
 import { Icon, snapIconSize, type IconName } from "./icons";
 
 const SOURCE = join(process.cwd(), "src/components/ui/icons.tsx");
@@ -109,11 +108,6 @@ describe("Icon", () => {
   it("passes extra svg props through", () => {
     const { container } = render(<Icon name="check" className="mark" />);
     expect(container.querySelector("svg")?.getAttribute("class")).toContain("mark");
-  });
-
-  it("keeps the partner icons working through Icon", () => {
-    const { container } = render(<PartnerIcon name="spark" size={14} />);
-    expect(container.querySelector("svg")?.getAttribute("width")).toBe("16");
   });
 
   it("imports Phosphor only from the ssr path", () => {

@@ -36,17 +36,6 @@ describe("motion.css", () => {
     expect(css).not.toContain("!important");
   });
 
-  it("keeps the legacy animation names pointing at the new ones", () => {
-    for (const [old, next] of [
-      ["pop", "scale-in"],
-      ["fade", "fade-in"],
-      ["rise", "rise-in"],
-      ["from-start", "slide-in-start"],
-      ["from-end", "slide-in-end"],
-    ]) {
-      expect(css).toContain(`--animate-ink-${old}: var(--animate-${next});`);
-    }
-  });
 });
 
 describe("motion in src", () => {

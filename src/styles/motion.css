@@ -11,12 +11,6 @@
   --animate-slide-in-bottom: slide-in-bottom 500ms var(--ease-iynk) both;
   --animate-scale-in: scale-in 500ms var(--ease-iynk) both;
 
-  --animate-ink-pop: var(--animate-scale-in);
-  --animate-ink-fade: var(--animate-fade-in);
-  --animate-ink-rise: var(--animate-rise-in);
-  --animate-ink-from-start: var(--animate-slide-in-start);
-  --animate-ink-from-end: var(--animate-slide-in-end);
-
   @keyframes fade-in {
     from { opacity: 0; }
   }

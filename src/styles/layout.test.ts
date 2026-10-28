@@ -43,6 +43,6 @@ describe("layout layer", () => {
 
   it("publishes the new names next to the old ones", () => {
     expect(css).toContain(".ink-plate,\n  .plate {");
-    expect(css).toContain(".ink-prose,\n  .prose {");
+    expect(css).toContain(".prose {");
   });
 });

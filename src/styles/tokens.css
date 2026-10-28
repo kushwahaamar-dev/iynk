@@ -61,9 +61,6 @@
   --color-cast: #41538f;
   --color-ink-fixed: #231e16;
   --color-paper-fixed: #f2efe7;
-
-  --radius-ink: 16px;
-  --radius-ink-sm: 8px;
 }
 
 @theme inline {
@@ -103,9 +100,6 @@
   --shadow-sm: 0 1px 2px rgb(var(--shadow-rgb) / var(--shadow-a1));
   --shadow-md: 0 4px 12px rgb(var(--shadow-rgb) / var(--shadow-a2));
   --shadow-lg: 0 12px 32px rgb(var(--shadow-rgb) / var(--shadow-a3));
-  --shadow-ink-sm: 0 1px 2px rgb(var(--shadow-rgb) / var(--shadow-a1));
-  --shadow-ink: 0 4px 12px rgb(var(--shadow-rgb) / var(--shadow-a2));
-  --shadow-ink-lg: 0 12px 32px rgb(var(--shadow-rgb) / var(--shadow-a3));
 
   --font-body: var(--font-sans, ui-sans-serif), system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-ui: var(--font-mono, ui-monospace), ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
@@ -150,11 +144,7 @@
   --bad-bg: color-mix(in oklab, var(--bad) 12%, var(--surface));
   --warn-bg: color-mix(in oklab, var(--warn) 12%, var(--surface));
   --info-bg: color-mix(in oklab, var(--info) 12%, var(--surface));
-  --halo: rgb(244 184 41 / 0.6);
-  --card-line: var(--rule);
-  --card-shadow: none;
   --shadow-rgb: 35 30 22;
-  --shadow-c: rgb(var(--shadow-rgb));
   --shadow-a1: 0.08;
   --shadow-a2: 0.12;
   --shadow-a3: 0.18;
@@ -251,7 +241,6 @@
     --bad-bg: #272727;
     --warn-bg: #272727;
     --info-bg: #272727;
-    --halo: rgb(236 230 216 / 0.35);
     --shadow-rgb: 19 18 9;
     --shadow-a1: 0.5;
     --shadow-a2: 0.6;
@@ -297,7 +286,6 @@
   --bad-bg: #272727;
   --warn-bg: #272727;
   --info-bg: #272727;
-  --halo: rgb(236 230 216 / 0.35);
   --shadow-rgb: 19 18 9;
   --shadow-a1: 0.5;
   --shadow-a2: 0.6;
