@@ -51,7 +51,7 @@ const nextConfig: NextConfig = {
     ];
     return [
       ...toLanguage("/", ""),
-      ...toLanguage("/:section(boards|robotics|drones|about|together|passport|verify)/:rest*", "/:section/:rest*"),
+      ...toLanguage("/:section(boards|robotics|drones|about|together)/:rest*", "/:section/:rest*"),
     ];
   },
 };

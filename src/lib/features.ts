@@ -14,14 +14,13 @@ export type Features = ServerFeatures & { hw: boolean };
  */
 export type FeatureState = { status: "loading" | "ready" | "error"; features: Features };
 
-const FEATURE_KEYS = ["ai", "image", "voice", "search", "solana", "db", "realtime", "gemini", "hw"] as const satisfies readonly (keyof Features)[];
+const FEATURE_KEYS = ["ai", "image", "voice", "search", "db", "realtime", "gemini", "hw"] as const satisfies readonly (keyof Features)[];
 
 export const NO_FEATURES: Features = Object.freeze({
   ai: false,
   image: false,
   voice: false,
   search: false,
-  solana: false,
   db: false,
   realtime: false,
   gemini: false,
@@ -53,7 +52,6 @@ async function fetchFeatures(): Promise<void> {
     const res = await fetch("/api/status", { headers: { accept: "application/json" } });
     if (!res.ok) throw new Error(`status ${res.status}`);
     const body = (await res.json()) as { features?: unknown };
-    // solana is already confirmed: the server reports it on only once the Config account exists.
     publish({ status: "ready", features: normalize(body.features) });
   } catch {
     publish({ status: "error", features: NO_FEATURES });

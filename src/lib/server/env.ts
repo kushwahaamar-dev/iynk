@@ -13,20 +13,6 @@ const text = z.string().trim().min(1);
 const url = z.url({ protocol: /^https?$/ });
 const wsUrl = z.url({ protocol: /^wss?$/ });
 const pgUrl = z.url({ protocol: /^postgres(ql)?$/ });
-const base58 = z.string().regex(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/);
-
-const keypair = z
-  .string()
-  .transform((raw, ctx) => {
-    try {
-      return JSON.parse(raw) as unknown;
-    } catch {
-      ctx.addIssue({ code: "custom", message: "not JSON" });
-      return z.NEVER;
-    }
-  })
-  .pipe(z.array(z.int().min(0).max(255)).length(64))
-  .transform((bytes) => Uint8Array.from(bytes));
 
 const schema = {
   META_API_KEY: text.optional(),
@@ -38,11 +24,6 @@ const schema = {
   GEMINI_MODEL: text.default("gemini-3.5-flash"),
   SERPAPI_KEY: text.optional(),
   SERPAPI_MONTHLY_BUDGET: z.coerce.number().int().min(0).default(200),
-  SOLANA_RPC_URL: url.default("https://api.devnet.solana.com"),
-  SOLANA_ISSUER_KEYPAIR: keypair.optional(),
-  NEXT_PUBLIC_SOLANA_CLUSTER: z.literal("devnet").default("devnet"),
-  NEXT_PUBLIC_SOLANA_RPC_URL: url.default("https://api.devnet.solana.com"),
-  NEXT_PUBLIC_SOLANA_PROGRAM_ID: base58.optional(),
   DATABASE_URL: pgUrl.optional(),
   NEXT_PUBLIC_REALTIME_URL: wsUrl.optional(),
   NEXT_PUBLIC_SITE_URL: url.default("http://localhost:3000"),
@@ -57,13 +38,12 @@ export type Features = {
   image: boolean;
   voice: boolean;
   search: boolean;
-  solana: boolean;
   db: boolean;
   realtime: boolean;
   gemini: boolean;
 };
 
-const URL_VARS = new Set<EnvName>(["META_API_BASE", "SOLANA_RPC_URL", "NEXT_PUBLIC_SOLANA_RPC_URL", "NEXT_PUBLIC_SITE_URL"]);
+const URL_VARS = new Set<EnvName>(["META_API_BASE", "NEXT_PUBLIC_SITE_URL"]);
 
 export function readEnv(source: Record<string, string | undefined>): { env: Env; issues: EnvName[] } {
   const out: Record<string, unknown> = {};
@@ -94,7 +74,6 @@ export function featuresOf(e: Env): Features {
     image: meta,
     voice: meta,
     search: Boolean(e.SERPAPI_KEY),
-    solana: Boolean(e.SOLANA_ISSUER_KEYPAIR && e.NEXT_PUBLIC_SOLANA_PROGRAM_ID),
     db: Boolean(e.DATABASE_URL),
     realtime: Boolean(e.NEXT_PUBLIC_REALTIME_URL),
     gemini,

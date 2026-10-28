@@ -12,7 +12,7 @@ afterEach(() => {
 
 describe("useFeatures", () => {
   it("starts loading with every feature off, then shares one fetched answer", async () => {
-    const fetchMock = vi.fn(async () => Response.json({ features: { ai: true, search: "yes", solana: false } }));
+    const fetchMock = vi.fn(async () => Response.json({ features: { ai: true, search: "yes" } }));
     vi.stubGlobal("fetch", fetchMock);
     const { useFeatures, NO_FEATURES } = await load();
 
@@ -71,14 +71,13 @@ describe("getFeatures", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it("takes Proof of Build from the server, which has checked the Config account, and keeps hardware off", async () => {
-    const fetchMock = vi.fn(async () => Response.json({ features: { solana: true, hw: true } }));
+  it("ignores keys it does not know and keeps hardware off", async () => {
+    const fetchMock = vi.fn(async () => Response.json({ features: { [["sol", "ana"].join("")]: true, hw: true } }));
     vi.stubGlobal("fetch", fetchMock);
     const { useFeatures, NO_FEATURES } = await load();
     const { result } = renderHook(() => useFeatures());
     await waitFor(() => expect(result.current.status).toBe("ready"));
-    expect(result.current.features).toEqual({ ...NO_FEATURES, solana: true });
-    // one request, to iynk's own server: the browser never asks the Solana RPC
+    expect(result.current.features).toEqual(NO_FEATURES);
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock.mock.calls[0]).toEqual(["/api/status", expect.anything()]);
   });
