@@ -7,6 +7,9 @@ import { BOARD_HANDLERS } from "./board.ts";
 import { COMPONENT_HANDLERS } from "./component.ts";
 import { DOC_HANDLERS } from "./doc.ts";
 import { NET_HANDLERS } from "./net.ts";
+import { MISC_HANDLERS } from "./misc.ts";
+import { SIM_HANDLERS } from "./sim.ts";
+import { SOURCE_HANDLERS } from "./source.ts";
 import { isReject, reject, schemaMessage } from "./types.ts";
 import type { ApplyContext, ApplyOutcome, Handler, Reject } from "./types.ts";
 import { VIEW_HANDLERS } from "./view.ts";
@@ -22,6 +25,9 @@ export const HANDLERS: Partial<{ [K in Op["k"]]: Handler<K> }> = {
   ...NET_HANDLERS,
   ...VIEW_HANDLERS,
   ...WIRE_HANDLERS,
+  ...SOURCE_HANDLERS,
+  ...SIM_HANDLERS,
+  ...MISC_HANDLERS,
 };
 
 export const IMPLEMENTED_KINDS: readonly Op["k"][] = Object.keys(HANDLERS) as Op["k"][];
