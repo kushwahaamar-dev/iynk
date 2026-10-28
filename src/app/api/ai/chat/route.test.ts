@@ -151,7 +151,8 @@ describe("POST /api/ai/chat", () => {
     expect(body.messages[1].content).toContain("Spanish (es)");
     expect(body.messages[1].content).toContain("led1: anode->D13");
     expect(body.messages[2]).toEqual({ role: "user", content: "My LED stays dark." });
-    expect(body.tools.map((t) => t.function.name)).toContain("search_datasheet");
+    expect(body.tools.map((t) => t.function.name)).toContain("highlight_part");
+    expect(body.tools.map((t) => t.function.name)).not.toContain("search_datasheet");
   });
 
   it("leaves the search tools out when SerpApi is not set up", async () => {
