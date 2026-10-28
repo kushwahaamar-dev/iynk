@@ -160,6 +160,25 @@
       "wipeErrors": "No se pudo borrar parte del almacenamiento: {errors}"
     }
   },
+  "canvas": {
+    "label": "Lienzo del circuito",
+    "hint": "Las flechas mueven la vista. Más y menos hacen zoom. Cero muestra todo.",
+    "status": {
+      "label": "Estado del lienzo",
+      "cursor": "Cursor",
+      "cursorValue": "{x}, {y} mm",
+      "zoom": "Zoom",
+      "zoomValue": "{value} px por mm",
+      "grid": "Cuadrícula {step} mm",
+      "gridOff": "Cuadrícula apagada",
+      "selected": {
+        "one": "1 seleccionado",
+        "other": "{count} seleccionados"
+      },
+      "scene": "{items} dibujados, {culled} fuera de pantalla",
+      "detail": "Detalle bajo {low}, medio {mid}, completo {high}"
+    }
+  },
   "shell": {
     "workspace": "Espacio de trabajo"
   },

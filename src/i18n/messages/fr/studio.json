@@ -160,6 +160,25 @@
       "wipeErrors": "Une partie du stockage n'a pas pu être effacée : {errors}"
     }
   },
+  "canvas": {
+    "label": "Plan du circuit",
+    "hint": "Les flèches déplacent la vue. Plus et moins zooment. Zéro affiche tout.",
+    "status": {
+      "label": "État du plan",
+      "cursor": "Curseur",
+      "cursorValue": "{x}, {y} mm",
+      "zoom": "Zoom",
+      "zoomValue": "{value} px par mm",
+      "grid": "Grille {step} mm",
+      "gridOff": "Grille désactivée",
+      "selected": {
+        "one": "1 sélectionné",
+        "other": "{count} sélectionnés"
+      },
+      "scene": "{items} dessinés, {culled} hors écran",
+      "detail": "Détail faible {low}, moyen {mid}, complet {high}"
+    }
+  },
   "shell": {
     "workspace": "Espace de travail"
   },

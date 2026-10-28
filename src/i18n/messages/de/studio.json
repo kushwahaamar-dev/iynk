@@ -160,6 +160,25 @@
       "wipeErrors": "Ein Teil des Speichers ließ sich nicht löschen: {errors}"
     }
   },
+  "canvas": {
+    "label": "Schaltungsfläche",
+    "hint": "Pfeiltasten verschieben die Ansicht. Plus und Minus zoomen. Null zeigt alles.",
+    "status": {
+      "label": "Status der Fläche",
+      "cursor": "Zeiger",
+      "cursorValue": "{x}, {y} mm",
+      "zoom": "Zoom",
+      "zoomValue": "{value} px pro mm",
+      "grid": "Raster {step} mm",
+      "gridOff": "Raster aus",
+      "selected": {
+        "one": "1 ausgewählt",
+        "other": "{count} ausgewählt"
+      },
+      "scene": "{items} gezeichnet, {culled} außerhalb",
+      "detail": "Detail niedrig {low}, mittel {mid}, voll {high}"
+    }
+  },
   "shell": {
     "workspace": "Arbeitsbereich"
   },

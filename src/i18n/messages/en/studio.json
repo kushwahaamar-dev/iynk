@@ -160,6 +160,25 @@
       "wipeErrors": "Some storage could not be wiped: {errors}"
     }
   },
+  "canvas": {
+    "label": "Circuit canvas",
+    "hint": "Arrow keys pan the view. Plus and minus zoom. Zero fits everything in view.",
+    "status": {
+      "label": "Canvas status",
+      "cursor": "Cursor",
+      "cursorValue": "{x}, {y} mm",
+      "zoom": "Zoom",
+      "zoomValue": "{value} px per mm",
+      "grid": "Grid {step} mm",
+      "gridOff": "Grid off",
+      "selected": {
+        "one": "1 selected",
+        "other": "{count} selected"
+      },
+      "scene": "{items} drawn, {culled} off screen",
+      "detail": "Detail low {low}, medium {mid}, full {high}"
+    }
+  },
   "shell": {
     "workspace": "Workspace"
   },

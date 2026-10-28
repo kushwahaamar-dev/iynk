@@ -160,6 +160,25 @@
       "wipeErrors": "部分存储无法清除：{errors}"
     }
   },
+  "canvas": {
+    "label": "电路画布",
+    "hint": "方向键平移视图。加号和减号缩放。数字 0 显示全部内容。",
+    "status": {
+      "label": "画布状态",
+      "cursor": "光标",
+      "cursorValue": "{x}, {y} 毫米",
+      "zoom": "缩放",
+      "zoomValue": "每毫米 {value} 像素",
+      "grid": "网格 {step} 毫米",
+      "gridOff": "网格已关闭",
+      "selected": {
+        "one": "已选 1 项",
+        "other": "已选 {count} 项"
+      },
+      "scene": "已绘制 {items} 项，屏幕外 {culled} 项",
+      "detail": "细节 低 {low}，中 {mid}，完整 {high}"
+    }
+  },
   "shell": {
     "workspace": "工作区"
   },
