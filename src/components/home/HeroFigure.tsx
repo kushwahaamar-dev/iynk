@@ -8,7 +8,7 @@ const HERO_CHROME = ["zoom", "toast"];
 export function HeroFigure({ label }: { label: string }) {
   return (
     <>
-      <div className="h-[min(50svh,460px)] lg:h-auto lg:min-h-[min(72vh,700px)] lg:flex-1">
+      <div className="h-[min(50svh,460px)] lg:h-auto lg:min-h-[min(60vh,560px)] lg:flex-1">
         <FigureFrame
           src="/figures/boards/uno-r3.html?bare=1&view=breadboard&circuit=blink"
           title={label}

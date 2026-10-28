@@ -54,7 +54,7 @@ export function TaglineReveal({ text, locale }: { text: string; locale: string }
       <Wrap>
         <p
           ref={rootRef}
-          className="mx-auto max-w-[680px] text-4xl font-semibold tracking-tight text-balance md:text-5xl lg:text-6xl lang-air"
+          className="max-w-[680px] text-4xl font-semibold tracking-tight text-balance md:text-5xl lg:text-6xl lang-air"
         >
           {pieces.map((piece, position) => {
             if (!piece.word) return piece.text;

@@ -36,7 +36,7 @@ export function LabsShelf({ lang, title, labs, copy, progressMessages }: LabsShe
               >
                 <FigureStill
                   item={LAB_STILL[lab.lab]}
-                  className={cx("aspect-auto! w-full overflow-hidden rounded-md bg-plate", wide ? "h-64 lg:h-96" : "h-48")}
+                  className={cx("aspect-auto! w-full overflow-hidden rounded-md bg-plate", wide ? "h-64 lg:h-auto lg:min-h-96 lg:flex-1" : "h-48")}
                 />
                 <p className="mt-6 flex items-baseline gap-3">
                   <span className="tabular text-5xl font-semibold">{lab.itemCount}</span>
@@ -52,13 +52,15 @@ export function LabsShelf({ lang, title, labs, copy, progressMessages }: LabsShe
                     {text.name}
                   </Link>
                 </h3>
-                <p className="mt-2 max-w-prose flex-1 text-base text-muted">{text.text}</p>
+                <p className="mt-2 max-w-prose text-base text-muted">{text.text}</p>
                 {keys.length > 0 ? (
                   <div className="mt-4">
                     <LabProgress keys={keys} label={text.progress} messages={progressMessages} always={false} />
                   </div>
                 ) : null}
-                <Icon name="arrow-right" size={20} aria-hidden="true" className="mt-4 motion-move group-hover:translate-x-1" />
+                <div className="mt-auto pt-4">
+                  <Icon name="arrow-right" size={20} aria-hidden="true" className="motion-move group-hover:translate-x-1" />
+                </div>
               </article>
             </Reveal>
           );
