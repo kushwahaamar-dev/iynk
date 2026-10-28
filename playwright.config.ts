@@ -67,7 +67,7 @@ export default defineConfig({
   snapshotPathTemplate: "{testDir}/{testFileName}-snapshots/{arg}{ext}",
   use: { baseURL: `http://localhost:${port}`, trace: "on-first-retry" },
   projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] }, testIgnore: [/.*\.phone\.spec\.ts/, /r048-compare\.spec\.ts/, /visual\.spec\.ts/, /save-perf\.spec\.ts/, /buddies\.spec\.ts/] },
+    { name: "chromium", use: { ...devices["Desktop Chrome"] }, testIgnore: [/.*\.phone\.spec\.ts/, /r048-compare\.spec\.ts/, /visual\.spec\.ts/, /save-perf\.spec\.ts/, /studio-perf\.spec\.ts/, /buddies\.spec\.ts/] },
     { name: "webkit", use: { ...devices["Desktop Safari"] }, testMatch: /core\.spec\.ts/ },
     { name: "r048", testMatch: /r048-compare\.spec\.ts/, dependencies: ["chromium", "webkit"] },
     { name: "visual", use: { ...devices["Desktop Chrome"] }, testMatch: /visual\.spec\.ts/ },
@@ -79,11 +79,11 @@ export default defineConfig({
       testMatch: /buddies\.spec\.ts/,
       dependencies: ["chromium", "webkit", "r048", "visual", "phone"],
     },
-    // The save budget is a wall-clock figure, so it runs alone and last, on a quiet machine.
+    // The save and Studio frame budgets are wall-clock figures, so they run alone and last, on a quiet machine.
     {
       name: "perf",
       use: { ...devices["Desktop Chrome"] },
-      testMatch: /save-perf\.spec\.ts/,
+      testMatch: /(save|studio)-perf\.spec\.ts/,
       fullyParallel: false,
       dependencies: ["chromium", "webkit", "r048", "visual", "phone", "server-stop"],
     },
@@ -104,6 +104,8 @@ export default defineConfig({
       url: `http://localhost:${port}/`,
       env: {
         NEXT_DIST_DIR: distDir,
+        // Serves /studio/perf; a build without it answers 404 there.
+        NEXT_PUBLIC_STUDIO_TEST: "1",
         ...Object.fromEntries(BLANK.map((name) => [name, ""])),
         IYNK_SERVER_URL: `http://localhost:${serverPort}`,
         IYNK_CONNECT_ORIGINS: connectOrigins().join(","),

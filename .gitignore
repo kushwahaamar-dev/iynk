@@ -74,3 +74,6 @@ docs/MASTER_PLAN/**/node_modules/
 # Local screenshot baselines and shots of the visual spec
 /e2e/visual.spec.ts-snapshots/
 /test-results/ui-shots/
+
+# Frame-time results of e2e/studio-perf.spec.ts
+.perf/
