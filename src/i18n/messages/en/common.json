@@ -1,8 +1,8 @@
 {
   "site": {
     "name": "iynk",
-    "tagline": "Explore · Understand · Build",
-    "description": "A hands-on hardware lab in the browser: build, wire, code, break and fly boards, robots and drones."
+    "tagline": "Explore, understand, build",
+    "description": "A hardware lab in your browser. Build, wire, code, break and fly boards, robots and drones."
   },
   "a11y": {
     "skipToContent": "Skip to main content"
@@ -13,9 +13,9 @@
     "body": "The address may be mistyped, or the page has moved. Pick a lab to carry on.",
     "home": "Back to the dashboard",
     "search": "Search the site",
-    "boards": "Board Lab",
-    "robotics": "Robotics Lab",
-    "drones": "Drone Lab"
+    "boards": "Board lab",
+    "robotics": "Robotics lab",
+    "drones": "Drone lab"
   },
   "progress": {
     "count": "{done}/{total}",

@@ -1,8 +1,8 @@
 {
   "site": {
     "name": "iynk",
-    "tagline": "Explorer · Comprendre · Construire",
-    "description": "Un labo d’électronique pratique dans le navigateur : assemblez, câblez, programmez, cassez et faites voler cartes, robots et drones."
+    "tagline": "Explorer, comprendre, construire",
+    "description": "Un labo d’électronique dans votre navigateur. Assemblez, câblez, programmez, cassez et faites voler cartes, robots et drones."
   },
   "a11y": {
     "skipToContent": "Aller au contenu principal"
@@ -110,7 +110,7 @@
     "notSetUp": {
       "serverOff": "{what} est désactivé sur ce serveur.",
       "needsKey": "{what} demande votre propre clé.",
-      "openKeys": "Ouvrir Clés et utilisation",
+      "openKeys": "Ouvrir clés et utilisation",
       "fix": {
         "ai": "Collez une clé d'IA dans Clés et utilisation.",
         "search": "Collez une clé de recherche dans Clés et utilisation.",

@@ -9,7 +9,7 @@
   },
   "lab": {
     "unsupportedTitle": "Rien à refléter ici",
-    "unsupported": "Le jumeau reflète les leçons Board Lab pour l'Arduino Uno R3, le Nano et l'Uno R4. Ouvrez l'une de ces leçons pour piloter une vraie carte."
+    "unsupported": "Le jumeau reflète les leçons du labo des cartes pour l'Arduino Uno R3, le Nano et l'Uno R4. Ouvrez l'une de ces leçons pour piloter une vraie carte."
   },
   "setup": {
     "title": "Avant de vous connecter",

@@ -37,49 +37,10 @@
     "licence": "Licence : pas encore choisie. Figures : MIT, par April Zhu."
   },
   "ui": {
-    "close": "Fermer",
-    "copy": "Copier",
-    "copied": "Copié",
-    "copyCode": "Copier le code",
-    "done": "Terminé",
-    "current": "Étape en cours",
-    "stepOf": "Étape {n} sur {total}",
     "progress": "{done}/{total}",
     "progressLabel": "{label} : {done} sur {total} terminés"
   },
   "dashboard": {
-    "metaTitle": "Tableau de bord",
-    "metaDescription": "Un établi libre et open source dans votre navigateur pour apprendre les circuits, les cartes, les robots et les drones. Câblez des composants, exécutez du code dans un simulateur et cassez des choses exprès.",
-    "kicker": "Explorer · Comprendre · Construire",
-    "title": "Apprendre l’électronique en la *construisant*",
-    "lede": "iynk est un établi dans le navigateur pour apprendre les circuits, les cartes, les robots et les drones. Vous câblez les composants, exécutez votre propre code sur une carte simulée et voyez ce qui se passe, y compris quand quelque chose tourne mal.",
-    "start": "Commencer avec l’Arduino Uno R3",
-    "browse": "Parcourir les cartes",
-    "heroFigure": "Arduino Uno R3 qui exécute Blink sur une platine d’essai, en direct : faites-le glisser pour le tourner",
-    "labsTitle": "Les trois labos",
-    "open": "Ouvrir le {lab}",
-    "openSource": {
-      "title": "Open source",
-      "readme": "Lire le README",
-      "selfHost": "L’héberger soi-même",
-      "contribute": "Contribuer",
-      "fidelity": "iynk exécute votre code dans son propre interpréteur, pas sur une vraie puce. Il enseigne le comportement des composants ; il ne remplace ni un établi, ni un compilateur, ni une fiche technique."
-    },
-    "board": {
-      "text": "De l’Arduino Uno R3 à deux cartes FPGA : des leçons, un éditeur de code en direct, des vues schéma et platine d’essai, un moniteur série et des pannes qui se produisent vraiment.",
-      "unit": "cartes",
-      "progress": "Leçons et assemblages"
-    },
-    "robotics": {
-      "text": "Drivers de moteurs, capteurs et étages d’alimentation, montés pièce par pièce sur le banc, avec des exercices pratiques, un quiz après chaque étape, l’état en direct et le courant consommé.",
-      "unit": "bancs",
-      "progress": "Étapes, exercices et quiz"
-    },
-    "drones": {
-      "text": "Du Tiny Whoop à l’octocoptère : un montage pièce par pièce, le poids et la poussée calculés en direct, des tests de sécurité, de vrais réglages Betaflight et ArduPilot, et un terrain de vol.",
-      "unit": "drones",
-      "progress": "Montages, tests et parcours"
-    },
     "continue": {
       "title": "Reprendre là où vous en étiez",
       "empty": "Rien de terminé pour l’instant. L’Uno R3 est le meilleur point de départ : seize leçons courtes, des éléments de la carte jusqu’à un radar de recul.",
@@ -99,29 +60,14 @@
       }
     },
     "overall": "Progression globale",
-    "features": {
-      "title": "Dans chaque labo",
-      "see": {
-        "title": "Voir à travers",
-        "text": "Faites tourner n’importe quelle figure sur elle-même, activez la vue transparente et regardez les pièces internes fonctionner, avec des étiquettes qui s’allument."
-      },
-      "code": {
-        "title": "Lancer du vrai code",
-        "text": "Modifiez du C++ Arduino, du MicroPython ou du Verilog et appuyez sur Exécuter : le simulateur anime la figure, les broches et le moniteur série."
-      },
-      "break": {
-        "title": "Casser exprès",
-        "text": "Inversez la polarité, faites chuter l’alimentation, oubliez une pièce ou ratez une soudure, et voyez ce qui tombe vraiment en panne."
-      },
-      "fly": {
-        "title": "Armer et voler",
-        "text": "Montez un drone, vérifiez ses chiffres, passez le smoke stopper et les tests moteurs, puis franchissez des portes en mode angle ou acro."
-      }
+    "board": {
+      "progress": "Leçons et assemblages"
     },
-    "languages": "Langues",
-    "closing": {
-      "title": "L’établi est *prêt*.",
-      "text": "Sans compte. Rien à installer."
+    "robotics": {
+      "progress": "Étapes, exercices et quiz"
+    },
+    "drones": {
+      "progress": "Montages, tests et parcours"
     }
   },
   "about": {

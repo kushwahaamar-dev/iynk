@@ -37,49 +37,10 @@
     "licence": "Licencia: aún sin elegir. Figuras: MIT, de April Zhu."
   },
   "ui": {
-    "close": "Cerrar",
-    "copy": "Copiar",
-    "copied": "Copiado",
-    "copyCode": "Copiar el código",
-    "done": "Hecho",
-    "current": "Paso actual",
-    "stepOf": "Paso {n} de {total}",
     "progress": "{done}/{total}",
     "progressLabel": "{label}: {done} de {total} completados"
   },
   "dashboard": {
-    "metaTitle": "Panel",
-    "metaDescription": "Un banco de trabajo libre y de código abierto en tu navegador para aprender circuitos, placas, robots y drones. Cablea piezas, ejecuta código en un simulador y rompe cosas a propósito.",
-    "kicker": "Explora · Comprende · Construye",
-    "title": "Aprende hardware *construyéndolo*",
-    "lede": "iynk es un banco de trabajo en el navegador para aprender circuitos, placas, robots y drones. Cableas las piezas, ejecutas tu propio código en una placa simulada y ves qué pasa, también cuando algo sale mal.",
-    "start": "Empieza con el Arduino Uno R3",
-    "browse": "Ver las placas",
-    "heroFigure": "Arduino Uno R3 con Blink en una protoboard, en vivo: arrástralo para girarlo",
-    "labsTitle": "Los tres laboratorios",
-    "open": "Abrir el {lab}",
-    "openSource": {
-      "title": "Código abierto",
-      "readme": "Leer el README",
-      "selfHost": "Alójalo tú mismo",
-      "contribute": "Contribuir",
-      "fidelity": "iynk ejecuta tu código en su propio intérprete, no en un chip real. Enseña cómo se comportan las piezas; no sustituye a un banco, un compilador ni una hoja de datos."
-    },
-    "board": {
-      "text": "Del Arduino Uno R3 a dos placas FPGA: lecciones, un editor de código en vivo, vistas de esquema y de protoboard, un monitor serie y fallos que se producen de verdad.",
-      "unit": "placas",
-      "progress": "Lecciones y montajes"
-    },
-    "robotics": {
-      "text": "Drivers de motores, sensores y etapas de alimentación, montados pieza a pieza en el banco, con tareas prácticas, cuestionarios tras cada paso, estado en vivo y consumo de corriente.",
-      "unit": "bancos",
-      "progress": "Pasos, tareas y cuestionarios"
-    },
-    "drones": {
-      "text": "De un Tiny Whoop a un octocóptero: montaje pieza a pieza, cálculo en vivo de peso y empuje, pruebas de seguridad, ajustes reales de Betaflight y ArduPilot, y un campo de vuelo.",
-      "unit": "drones",
-      "progress": "Montajes, pruebas y circuitos"
-    },
     "continue": {
       "title": "Sigue donde lo dejaste",
       "empty": "Aún no has terminado nada. El Uno R3 es el mejor punto de partida: dieciséis lecciones cortas, desde las partes de la placa hasta un sensor de aparcamiento.",
@@ -99,29 +60,14 @@
       }
     },
     "overall": "Progreso total",
-    "features": {
-      "title": "En cada laboratorio",
-      "see": {
-        "title": "Mira por dentro",
-        "text": "Arrastra para girar cualquier figura por completo, activa la vista transparente y observa cómo funcionan las piezas de dentro, con etiquetas que se iluminan."
-      },
-      "code": {
-        "title": "Ejecuta código real",
-        "text": "Edita Arduino C++, MicroPython o Verilog y pulsa Ejecutar: el simulador mueve la figura, los pines y el monitor serie."
-      },
-      "break": {
-        "title": "Rómpelo a propósito",
-        "text": "Invierte la polaridad, provoca una caída de tensión, quita una pieza o haz una soldadura fría, y mira qué falla de verdad."
-      },
-      "fly": {
-        "title": "Arma y vuela",
-        "text": "Monta un dron, comprueba sus números, pasa el smoke stopper y las pruebas de motores, y luego vuela entre puertas en modo angle o acro."
-      }
+    "board": {
+      "progress": "Lecciones y montajes"
     },
-    "languages": "Idiomas",
-    "closing": {
-      "title": "El banco está *listo*.",
-      "text": "Sin cuenta. Nada que instalar."
+    "robotics": {
+      "progress": "Pasos, tareas y cuestionarios"
+    },
+    "drones": {
+      "progress": "Montajes, pruebas y circuitos"
     }
   },
   "about": {

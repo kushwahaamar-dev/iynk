@@ -1,8 +1,8 @@
 {
   "site": {
     "name": "iynk",
-    "tagline": "Explora · Comprende · Construye",
-    "description": "Un laboratorio de hardware práctico en el navegador: monta, cablea, programa, rompe y haz volar placas, robots y drones."
+    "tagline": "Explora, comprende, construye",
+    "description": "Un laboratorio de hardware en tu navegador. Monta, cablea, programa, rompe y haz volar placas, robots y drones."
   },
   "a11y": {
     "skipToContent": "Saltar al contenido principal"
@@ -110,7 +110,7 @@
     "notSetUp": {
       "serverOff": "{what} está desactivado en este servidor.",
       "needsKey": "{what} necesita tu propia clave.",
-      "openKeys": "Abrir Claves y uso",
+      "openKeys": "Abrir claves y uso",
       "fix": {
         "ai": "Pega una clave de IA en Claves y uso.",
         "search": "Pega una clave de búsqueda en Claves y uso.",
