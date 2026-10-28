@@ -62,20 +62,28 @@
   --color-ink-fixed: #231e16;
   --color-paper-fixed: #f2efe7;
 
-  --radius-ink: 15px 18px 14px 17px / 17px 14px 18px 15px;
-  --radius-ink-sm: 9px 11px 8px 10px / 10px 8px 11px 9px;
+  --radius-ink: 16px;
+  --radius-ink-sm: 8px;
 }
 
 @theme inline {
   --color-paper: var(--paper);
+  --color-alt: var(--alt);
   --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-hover: var(--hover);
   --color-sunken: var(--sunken);
   --color-plate: var(--plate-bg);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-rule: var(--rule);
   --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-ink: var(--accent-ink);
+  --color-on-accent: var(--on-accent);
   --color-on-color: var(--on-color);
+  --color-focus: var(--focus);
   --color-good: var(--good);
   --color-bad: var(--bad);
   --color-warn: var(--warn);
@@ -92,9 +100,12 @@
   --color-console-warn: var(--console-warn);
   --color-console-err: var(--console-err);
 
-  --shadow-ink: 3px 3px 0 var(--shadow-c);
-  --shadow-ink-sm: 2px 2px 0 var(--shadow-c);
-  --shadow-ink-lg: 5px 5px 0 var(--shadow-c);
+  --shadow-sm: 0 1px 2px rgb(var(--shadow-rgb) / var(--shadow-a1));
+  --shadow-md: 0 4px 12px rgb(var(--shadow-rgb) / var(--shadow-a2));
+  --shadow-lg: 0 12px 32px rgb(var(--shadow-rgb) / var(--shadow-a3));
+  --shadow-ink-sm: 0 1px 2px rgb(var(--shadow-rgb) / var(--shadow-a1));
+  --shadow-ink: 0 4px 12px rgb(var(--shadow-rgb) / var(--shadow-a2));
+  --shadow-ink-lg: 0 12px 32px rgb(var(--shadow-rgb) / var(--shadow-a3));
 
   --font-body: var(--font-sans, ui-sans-serif), system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-ui: var(--font-mono, ui-monospace), ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
@@ -103,32 +114,54 @@
   --font-accent: var(--font-display, Georgia), Georgia, "Times New Roman", serif;
 }
 
+@utility z-sticky { z-index: var(--z-sticky); }
+@utility z-header { z-index: var(--z-header); }
+@utility z-dock { z-index: var(--z-dock); }
+@utility z-overlay { z-index: var(--z-overlay); }
+@utility z-popover { z-index: var(--z-popover); }
+@utility z-tooltip { z-index: var(--z-tooltip); }
+@utility z-skip { z-index: var(--z-skip); }
+
 /* Paper plates reuse the light token set, so whatever sits on one (labels,
    steppers, code, buttons) draws as it would on a light page. */
 :root,
 .ink-plate {
   color-scheme: light;
   --paper: #f2efe7;
+  --alt: #ece7da;
   --surface: #faf8f2;
+  --raised: #faf8f2;
+  --hover: #ece7da;
   --sunken: #e9e4d8;
   --ink: #231e16;
   --muted: #625b4f;
   --rule: #d9d1c1;
-  --line: #231e16;
-  --shadow-c: #231e16;
+  --line: var(--rule);
+  --accent: #e4694e;
+  --accent-hover: #dc6248;
+  --accent-ink: #a8402b;
+  --on-accent: #231e16;
   --on-color: #231e16;
+  --focus: #231e16;
   --good: #2e6b52;
   --bad: #a8402b;
   --warn: #7a5a00;
   --info: #2f4f8f;
-  --good-bg: #93d3b0;
-  --bad-bg: #f3a28f;
-  --warn-bg: #f4b829;
-  --info-bg: #a9c3ec;
-  --focus: #231e16;
+  --good-bg: color-mix(in oklab, var(--good) 12%, var(--surface));
+  --bad-bg: color-mix(in oklab, var(--bad) 12%, var(--surface));
+  --warn-bg: color-mix(in oklab, var(--warn) 12%, var(--surface));
+  --info-bg: color-mix(in oklab, var(--info) 12%, var(--surface));
   --halo: rgb(244 184 41 / 0.6);
-  --card-line: var(--line);
-  --card-shadow: 3px 3px 0 var(--shadow-c);
+  --card-line: var(--rule);
+  --card-shadow: none;
+  --shadow-rgb: 35 30 22;
+  --shadow-c: rgb(var(--shadow-rgb));
+  --shadow-a1: 0.08;
+  --shadow-a2: 0.12;
+  --shadow-a3: 0.18;
+  --scrim: rgb(19 18 9 / 0.55);
+  --hero-from: #000000;
+  --hero-to: #666666;
   --code-bg: #faf8f2;
   --code-fg: #231e16;
   --code-kw: #2a4f9a;
@@ -145,24 +178,28 @@
 :root {
   --plate-bg: #f2efe7;
   --plate-frame: #231e16;
-  --console-bg: #1d2a26;
-  --console-well: #14201c;
-  --console-ink: #d8f5e2;
-  --console-muted: #8aa59a;
+  --console-bg: #181818;
+  --console-well: #000000;
+  --console-ink: #e8e8e8;
+  --console-muted: #a3a3a3;
   --console-accent: #8af0ae;
-  --console-warn: #f2c230;
-  --console-err: #ff8f7a;
+  --console-warn: #f4b829;
+  --console-err: #ff8a7a;
 
-  /* The one accent: tomato as a mark (the wordmark's dot, a live indicator) and a darker step for text on paper. */
-  --accent: #ef6a4c;
-  --accent-ink: #a8402b;
+  --z-sticky: 10;
+  --z-header: 30;
+  --z-dock: 40;
+  --z-overlay: 50;
+  --z-popover: 60;
+  --z-tooltip: 70;
+  --z-skip: 80;
 
   /* The site shell (header, footer): up to 1440 px with fluid gutters, as the editorial pages. */
   --shell-max: 1440px;
   --shell-pad: clamp(16px, 4vw, 56px);
 
-  /* Page frames (POLISH-SPEC 1.1). The header is 57 px plus its 1 px hairline. */
-  --header-h: 58px;
+  /* Page frames (POLISH-SPEC 1.1). The header is a 48 px bar with 8 px above and below. */
+  --header-h: 64px;
   --frame-max: 80rem;
   --frame-pad: 1rem;
   --rail-w: clamp(22rem, 30vw, 36rem);
@@ -192,27 +229,37 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --paper: #1b1813;
-    --surface: #26221b;
-    --sunken: #14120e;
+    --paper: #131209;
+    --alt: #181818;
+    --surface: #1F1F1F;
+    --raised: #272727;
+    --hover: #313131;
+    --sunken: #000000;
     --plate-bg: #e4ddcf;
     --plate-frame: #cfc6b4;
-    --card-line: var(--rule);
-    --card-shadow: none;
-    --console-bg: #17211e;
     --ink: #ece6d8;
     --muted: #b3aa98;
-    --rule: #3d372d;
-    --line: #cfc6b4;
-    --shadow-c: #0a0907;
+    --rule: #313131;
+    --accent-hover: #ec7c63;
+    --accent-ink: #f08a70;
+    --on-accent: #131209;
+    --focus: #ece6d8;
     --good: #93d3b0;
     --bad: #f08a70;
     --warn: #f4b829;
     --info: #9dbcef;
-    --focus: #f4b829;
-    --halo: rgb(244 184 41 / 0.35);
-    --accent-ink: #f08a70;
-    --code-bg: #14120e;
+    --good-bg: #272727;
+    --bad-bg: #272727;
+    --warn-bg: #272727;
+    --info-bg: #272727;
+    --halo: rgb(236 230 216 / 0.35);
+    --shadow-rgb: 19 18 9;
+    --shadow-a1: 0.5;
+    --shadow-a2: 0.6;
+    --shadow-a3: 0.7;
+    --hero-from: #FFFFFF;
+    --hero-to: #9B9B9B;
+    --code-bg: #000000;
     --code-fg: #ece6d8;
     --code-kw: #9dbcef;
     --code-str: #93d3b0;
@@ -221,34 +268,44 @@
     --code-pp: #f3a6bb;
     --code-cm: #a39a88;
     --code-num: #c4b5f4;
-    --code-line: #2b261f;
-    --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' seed='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .93  0 0 0 0 .9  0 0 0 0 .84  0 0 0 .06 0'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>");
+    --code-line: #1F1F1F;
+    --grain: none;
   }
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --paper: #1b1813;
-  --surface: #26221b;
-  --sunken: #14120e;
+  --paper: #131209;
+  --alt: #181818;
+  --surface: #1F1F1F;
+  --raised: #272727;
+  --hover: #313131;
+  --sunken: #000000;
   --plate-bg: #e4ddcf;
   --plate-frame: #cfc6b4;
-  --card-line: var(--rule);
-  --card-shadow: none;
-  --console-bg: #17211e;
   --ink: #ece6d8;
   --muted: #b3aa98;
-  --rule: #3d372d;
-  --line: #cfc6b4;
-  --shadow-c: #0a0907;
+  --rule: #313131;
+  --accent-hover: #ec7c63;
+  --accent-ink: #f08a70;
+  --on-accent: #131209;
+  --focus: #ece6d8;
   --good: #93d3b0;
   --bad: #f08a70;
   --warn: #f4b829;
   --info: #9dbcef;
-  --focus: #f4b829;
-  --halo: rgb(244 184 41 / 0.35);
-  --accent-ink: #f08a70;
-  --code-bg: #14120e;
+  --good-bg: #272727;
+  --bad-bg: #272727;
+  --warn-bg: #272727;
+  --info-bg: #272727;
+  --halo: rgb(236 230 216 / 0.35);
+  --shadow-rgb: 19 18 9;
+  --shadow-a1: 0.5;
+  --shadow-a2: 0.6;
+  --shadow-a3: 0.7;
+  --hero-from: #FFFFFF;
+  --hero-to: #9B9B9B;
+  --code-bg: #000000;
   --code-fg: #ece6d8;
   --code-kw: #9dbcef;
   --code-str: #93d3b0;
@@ -257,6 +314,6 @@
   --code-pp: #f3a6bb;
   --code-cm: #a39a88;
   --code-num: #c4b5f4;
-  --code-line: #2b261f;
-  --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' seed='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .93  0 0 0 0 .9  0 0 0 0 .84  0 0 0 .06 0'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>");
+  --code-line: #1F1F1F;
+  --grain: none;
 }
