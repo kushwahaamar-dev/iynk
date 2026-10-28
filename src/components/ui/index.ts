@@ -11,6 +11,7 @@ export { Icon, type IconName } from "./icons";
 export { IconButton } from "./IconButton";
 export { InlineStatus, type InlineStatusTone } from "./InlineStatus";
 export { Kbd } from "./Kbd";
+export { Menu, type MenuItem } from "./Menu";
 export { Meter } from "./Meter";
 export { Panel } from "./Panel";
 export { Popover } from "./Popover";
