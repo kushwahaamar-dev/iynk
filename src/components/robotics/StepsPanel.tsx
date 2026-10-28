@@ -85,7 +85,7 @@ export function StepsPanel({ bench, session, savedDone, t, tx, dispatch, onFocus
                   <span className="ms-auto text-xs font-semibold text-muted">
                     {done ? (
                       <span className="inline-flex items-center gap-1 text-good">
-                        <Icon name="check" size={14} />
+                        <Icon name="check" size={16} />
                         {t("steps.done")}
                       </span>
                     ) : (
@@ -136,7 +136,7 @@ export function StepsPanel({ bench, session, savedDone, t, tx, dispatch, onFocus
       </ol>
       {current === bench.steps.length ? (
         <p className="mt-3 flex items-center gap-2 text-sm font-semibold">
-          <Icon name="check" size={18} className="text-good" />
+          <Icon name="check" size={20} className="text-good" />
           {t("steps.allDone")}
         </p>
       ) : null}

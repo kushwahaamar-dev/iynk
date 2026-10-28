@@ -8,7 +8,7 @@ import { OPEN_COMMAND_EVENT } from "./CommandMenuHost";
 export function OpenSearchButton({ label }: { label: string }) {
   return (
     <Button variant="secondary" onClick={() => window.dispatchEvent(new CustomEvent(OPEN_COMMAND_EVENT))}>
-      <Icon name="search" size={18} />
+      <Icon name="search" size={20} />
       {label}
     </Button>
   );

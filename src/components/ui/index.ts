@@ -2,12 +2,13 @@ export { Button, ButtonLink, buttonClass, type ButtonSize, type ButtonVariant } 
 export { Callout, type CalloutTone } from "./Callout";
 export { Chip, type ChipTone } from "./Chip";
 export { CodeBlock } from "./CodeBlock";
+export { CommandMenu, type CommandGroup } from "./CommandMenu";
 export { cx } from "./cx";
 export { Dialog } from "./Dialog";
 export { EmptyState } from "./EmptyState";
 export { FieldMessage, Select, TextArea, TextInput } from "./Field";
 export { tokenize, tokenLines, type CodeLang, type Token, type TokenKind } from "./highlight";
-export { Icon, type IconName } from "./icons";
+export { Icon, type IconName, type IconSize } from "./icons";
 export { IconButton } from "./IconButton";
 export { InlineStatus, type InlineStatusTone } from "./InlineStatus";
 export { Kbd } from "./Kbd";

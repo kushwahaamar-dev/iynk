@@ -71,7 +71,7 @@ function TaskCard({ task, session, done, t, tx, dispatch }: CardProps) {
         <Chip tone="cobalt">{t(`tasks.language.${task.language}`)}</Chip>
         {done ? (
           <Chip tone="mint">
-            <Icon name="check" size={14} aria-hidden="true" />
+            <Icon name="check" size={16} aria-hidden="true" />
             {t("tasks.done")}
           </Chip>
         ) : null}

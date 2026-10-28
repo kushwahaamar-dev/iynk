@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { Icon, snapIconSize, type IconName } from "./icons";
+import { Icon, type IconName } from "./icons";
 
 const SOURCE = join(process.cwd(), "src/components/ui/icons.tsx");
 
@@ -88,21 +88,14 @@ describe("Icon", () => {
     expect(container.querySelector("svg")?.getAttribute("width")).toBe("20");
   });
 
-  it.each([
-    [12, 16],
-    [14, 16],
-    [16, 16],
-    [18, 20],
-    [20, 20],
-    [22, 24],
-    [24, 24],
-    [28, 32],
-    [32, 32],
-    [40, 32],
-  ])("snaps size %i to %i", (size, step) => {
-    expect(snapIconSize(size)).toBe(step);
+  it.each([16, 20, 24, 32] as const)("draws at size %i", (size) => {
     const { container } = render(<Icon name="check" size={size} />);
-    expect(container.querySelector("svg")?.getAttribute("width")).toBe(String(step));
+    expect(container.querySelector("svg")?.getAttribute("width")).toBe(String(size));
+  });
+
+  it("rejects a size off the scale", () => {
+    // @ts-expect-error 18 is not one of 16, 20, 24, 32
+    render(<Icon name="check" size={18} />);
   });
 
   it("passes extra svg props through", () => {

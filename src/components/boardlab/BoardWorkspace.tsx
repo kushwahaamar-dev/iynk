@@ -71,7 +71,7 @@ function LessonRow({ lang, board, lesson }: { lang: string; board: string; lesso
             done ? "border-good bg-good text-paper" : "border-rule text-muted",
           )}
         >
-          {done ? <Icon name="check" size={12} /> : lesson.n}
+          {done ? <Icon name="check" size={16} /> : lesson.n}
         </span>
         <span className="min-w-0 flex-1 font-semibold leading-snug">{lesson.title}</span>
         <span className="shrink-0 text-xs text-muted">{t(`level.${lesson.level}`)}</span>

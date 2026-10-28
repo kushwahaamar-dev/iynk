@@ -327,7 +327,7 @@ export function BenchWorkspace({ setup, messages, notice: untranslated, walk }: 
               aria-label={t("bench.boardLink", { board })}
               className="inline-flex min-h-9 items-center gap-2 rounded-lg px-3 text-sm font-semibold text-muted no-underline hover:bg-sunken hover:text-ink max-md:hidden [@media(pointer:coarse)]:min-h-11"
             >
-              <Icon name="board" size={18} />
+              <Icon name="board" size={20} />
               <span className="max-w-[12rem] truncate">{board}</span>
             </Link>
           ) : null}
@@ -532,7 +532,7 @@ export function BenchWorkspace({ setup, messages, notice: untranslated, walk }: 
                   <li key={source.url}>
                     <a href={source.url} rel="noopener noreferrer" className="inline-flex min-h-8 items-center gap-2 [@media(pointer:coarse)]:min-h-11">
                       {source.title}
-                      <Icon name="external" size={14} className="shrink-0 text-muted" />
+                      <Icon name="external" size={16} className="shrink-0 text-muted" />
                     </a>
                   </li>
                 ))}

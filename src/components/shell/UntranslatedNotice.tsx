@@ -25,7 +25,7 @@ export async function UntranslatedNotice({ lang, textLang, variant = "block" }: 
         aria-describedby={id}
         className="group relative inline-flex min-h-7 items-center gap-2 whitespace-nowrap rounded-full border border-rule bg-surface px-3 font-body text-xs font-semibold"
       >
-        <Icon name="globe" size={14} />
+        <Icon name="globe" size={16} />
         {t("untranslated.title")}
         <span
           id={id}

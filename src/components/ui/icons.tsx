@@ -170,14 +170,9 @@ const GLYPHS: Record<IconName, typeof X> = {
   sliders: SlidersHorizontal,
 };
 
-const SIZES = [32, 24, 20, 16];
+export type IconSize = 16 | 20 | 24 | 32;
 
-// The nearest step wins and a tie goes up, so 18 reads as 20 and 14 as 16.
-export function snapIconSize(size: number) {
-  return SIZES.reduce((best, step) => (Math.abs(step - size) < Math.abs(best - size) ? step : best));
-}
-
-export function Icon({ name, size = 20, ...rest }: { name: IconName; size?: number } & SVGProps<SVGSVGElement>) {
+export function Icon({ name, size = 20, ...rest }: { name: IconName; size?: IconSize } & SVGProps<SVGSVGElement>) {
   const Glyph = GLYPHS[name];
-  return <Glyph {...rest} size={snapIconSize(size)} weight="regular" aria-hidden="true" focusable="false" />;
+  return <Glyph {...rest} size={size} weight="regular" aria-hidden="true" focusable="false" />;
 }

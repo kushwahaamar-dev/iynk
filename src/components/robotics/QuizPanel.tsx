@@ -45,7 +45,7 @@ export function QuizPanel({ bench, session, unlocked, best, t, tx, dispatch, hea
           const title = quizTitle(quiz, bench, t, tx);
           return (
             <li key={quiz.id} data-quiz={quiz.id} className={cx("-mx-4 flex min-h-14 items-center gap-3 px-4 py-3", !isOpen && "text-muted")}>
-              {isOpen ? null : <Icon name="lock" size={18} className="shrink-0" />}
+              {isOpen ? null : <Icon name="lock" size={20} className="shrink-0" />}
               <div className="min-w-0 flex-1">
                 <h3 className="text-sm font-semibold">{title}</h3>
                 <p className="text-xs text-muted">

@@ -23,7 +23,8 @@
     "provenance:check": "node scripts/provenance-check.mjs",
     "perf:budget": "node scripts/perf-budget.mjs",
     "perf:record": "node scripts/perf-budget.mjs --record",
-    "check": "npm run content:check && npm run typecheck && npm run lint && npm run test && npm run e2e"
+    "ui:check": "node scripts/ui-check.mjs",
+    "check": "npm run content:check && npm run typecheck && npm run lint && npm run ui:check && npm run test && npm run e2e"
   },
   "dependencies": {
     "@codemirror/commands": "6.11.1",

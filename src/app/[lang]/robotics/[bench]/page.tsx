@@ -75,7 +75,7 @@ async function Bench({ params }: Pick<Props, "params">) {
       <nav aria-label={t("bench.walk")} className="flex flex-wrap justify-between gap-4 border-t border-rule pt-6">
         {prev ? (
           <Link href={`/${lang}/robotics/${prev}`} className="inline-flex min-h-11 items-center gap-2 font-body text-sm font-semibold">
-            <Icon name="chevron-left" size={18} />
+            <Icon name="chevron-left" size={20} />
             {t("bench.prevBench", { name: t(`benches.${prev}.name`) })}
           </Link>
         ) : (
@@ -84,7 +84,7 @@ async function Bench({ params }: Pick<Props, "params">) {
         {next ? (
           <Link href={`/${lang}/robotics/${next}`} className="inline-flex min-h-11 items-center gap-2 font-body text-sm font-semibold">
             {t("bench.nextBench", { name: t(`benches.${next}.name`) })}
-            <Icon name="chevron-right" size={18} />
+            <Icon name="chevron-right" size={20} />
           </Link>
         ) : null}
       </nav>

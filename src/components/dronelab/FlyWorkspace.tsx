@@ -306,7 +306,7 @@ function ArmingRules({ rules, t }: { rules: ArmRule[]; t: DroneLabT }) {
         </span>
         <Chip tone={!ok ? "tomato" : clean ? "mint" : "mustard"}>{ok ? `${passed}/${rules.length} ${t("fly.ok")}` : t("fly.blocked")}</Chip>
         {clean ? (
-          <Icon name="chevron-down" size={18} className={`ms-auto transition-transform ${shown ? "rotate-180" : ""}`} />
+          <Icon name="chevron-down" size={20} className={`ms-auto transition-transform ${shown ? "rotate-180" : ""}`} />
         ) : null}
       </button>
       <div id="fly-arming-list" hidden={!shown} className="space-y-2">
