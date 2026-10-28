@@ -2,7 +2,8 @@
 
 The shared project code: the document type, the rules that keep it valid, the one function that changes it, the part
 library, and the converter that turned the old catalogue into projects. It runs in the browser, in Node and in the
-room server from the same files (ADR-0014). Nothing in the app imports it yet; B3 is the first reader.
+room server from the same files (ADR-0014). B3 is its first reader: the studio page stores projects through it and runs
+them in a worker (see Runtime).
 
 ## Module map
 
@@ -15,9 +16,14 @@ room server from the same files (ADR-0014). Nothing in the app imports it yet; B
 | `src/project/testing` | The headless harness and seeded op generators; test support, not shipped |
 | `src/parts` | Part descriptors (`data/*.component.json`), the registry, pinned interfaces, the generic fallback art layout, the library pass V6, the built-in index |
 | `src/parts/browser` | The one browser-only loader. It is not portable code |
+| `src/protocol` | The worker wire: request and acknowledgement envelope, `createWorkerPort`, `serveWorker`, an inline port for tests, the closed error type and the protocol version |
+| `src/sim` | The simulation core: the clock, event queue, orchestrator and engine interface (`engine.ts`), the `SimNetlist` built from a project, digital net resolution and PWM, the analog solver (`analog/`), replay records and hashes (`replay/`) and the closed list of diagnosis cause ids (`faults/`) |
+| `src/sim-host` | The browser side of the simulator: the sim worker, `SimHost`, the watchdog, the handler and its protocol, and the engine adapters that wrap `src/lib/interp` (`engines/`). Not portable: it imports `src/lib` |
+| `src/export` | The `.iynk` and `.iynkz` readers and writers and the zip store and reader. Portable |
+| `src/local` | Browser storage: the IndexedDB and memory repositories, the project worker, its host, autosave, the crash journal, tab sync, the library, files, export all, wipe, storage health and the service worker registration. Not portable |
 
-`src/protocol`, `src/sim` and `src/export` do not exist yet. Their rows are in the import matrix and the config lists
-them so a later phase needs no config change.
+`src/sim-host` and `src/local` have no row in the import matrix; they may import anything they need. `src/components/studio`
+holds the studio list page and the Diagnostics panel, and `public/sw.js` is the service worker.
 
 ## Import matrix
 
@@ -48,13 +54,15 @@ session may not assign to its `state` or `revision`.
 
 ## Portable rules
 
-Files under `src/core`, `src/project` and `src/parts` (not `src/parts/browser`) must run under plain Node type
+Files under `src/core`, `src/protocol`, `src/project`, `src/parts` (not `src/parts/browser`), `src/sim` and `src/export` must run under plain Node type
 stripping and in a worker:
 
 - relative imports end in `.ts`, `.mjs` or `.json`; `import type` for types
 - no `enum`, parameter properties or `namespace` (`erasableSyntaxOnly`)
 - no DOM, no `node:` import, no `react` or `next`, no `@/` alias
-- no `Date.now`, no `Math.random`; time and randomness are injected
+- no `Date.now`, no `Math.random`; time and randomness are injected. `src/sim` also bans `performance.now`,
+  `new Date`, `crypto.getRandomValues`, `eval`, `new Function` and dynamic `import`, so a run's time is the virtual
+  clock and nothing else (SA-11; test files are exempt)
 - a test in a portable folder starts with `// @vitest-environment node`
 
 `npx tsc -p tsconfig.portable.json` checks the folders without DOM types and runs as part of `npm run typecheck`. ESLint
@@ -62,6 +70,65 @@ enforces the same import and global rules.
 
 The converter cannot import `src/content`, so `src/project/convert/types.ts` copies the fields it reads. The drift test
 `input-types.drift.test.ts` assigns the content types to the copies, so a renamed or retyped field fails the type check.
+
+## Runtime
+
+The studio page runs two workers, each behind a typed request and answer port from `src/protocol`. Neither worker has
+`fetch`, and nothing leaves the browser.
+
+| Worker | Entry | Owns | Page side |
+| --- | --- | --- | --- |
+| `project` | `src/local/project.worker.ts` | IndexedDB (through the repository), the shadow copy of the open document, saves, the library, files, export all and wipe | `ProjectHost` in `src/local/project-host.ts` |
+| `sim` | `src/sim-host/sim.worker.ts` | One run at a time: the orchestrator, the engine adapters and the check jobs | `SimHost` in `src/sim-host/host.ts` |
+
+```
+page (React, ProjectSession, autosave)
+  |  commit / save / lib / file / data     frames / state / events
+  |-----------------> project worker -----------> IndexedDB (19 stores)
+  |                     shadow copy, hash, write
+  |  load / control / step / input / check
+  |-----------------> sim worker (watchdog on the page)
+                        orchestrator -> engines (interpreters), analog solver
+```
+
+The page keeps the live `ProjectSession`, because undo, redo and the editor need it on the main thread. Each batch of ops
+also goes to the project worker, which folds it into its own copy so a save hashes and writes off the main thread. The
+stores and the file formats are described in `docs/PROJECT_FILES.md`.
+
+A run starts with `load`: the page builds a `SimNetlist` from the project (`src/sim/netlist.ts`), the engine adapter
+loads the program, and the orchestrator advances every engine in slices of exactly 1,000,000 ns, cut short at the next
+input or queued event. Wall time never changes a slice, so the same project, inputs and seed give the same pin trace.
+Digital nets resolve by drive strength, and the digital-only slice follows rule DP-1: a resistor passes logic level, an
+LED lights when its anode is high and its cathode reaches ground through resistors, and anything the slice cannot model
+is shown as not modelled. Every state it makes is marked as an approximation.
+
+A frame goes to the page with pin levels, part states and serial text. The page repaints from frames; the worker never
+touches the DOM.
+
+The sim worker can fail in two ways, and the page survives each:
+
+- **A limit.** The interpreters cap list and string growth, array sizes, serial output and the heap. A program that hits
+  one ends with state `limit` and a message, and the worker keeps answering (SA-10).
+- **A stall.** A stop or cancel arms a 2 s watchdog on the page. If the worker does not answer in time, the page
+  terminates it, starts a new one and reports it. The project is unchanged, because the sim worker never writes it.
+
+A killed `project` worker is restarted the same way and the Diagnostics panel compares the project hash before and
+after the kill (FA-07).
+
+Replay (`src/sim/replay`) records a run's inputs, serial output and pin edges. `replay` runs them again and reports the
+first difference; `pinTraceHash` and the serial hash make two runs comparable across browsers (R-048).
+
+The analog solver (`src/sim/analog`) builds a modified nodal system from the netlist: a union-find graph for the nodes,
+element stamps, a piecewise-linear iteration with a convergence flag, and Gaussian elimination with partial pivoting. It reproduces the older bench
+solver's node voltages and branch currents on the golden file of 99 circuits (SA-02). The legacy adapter keeps the old
+input shape. A circuit that does not converge returns its flag and a diagnostic; the solve ends and says so.
+
+The service worker (`public/sw.js`, registered by `src/local/sw-register.ts` with the build id) precaches the studio shell
+found by scanning the page HTML at install, and caches same-origin GETs at run time, so one online visit makes the studio
+list and the editor open offline. The worker script itself is served uncached with its own policy, and the Diagnostics
+panel is a developer page that B4 either moves or removes.
+
+Measured numbers for this phase are in `docs/MASTER_PLAN/05_ENGINEERING/results/B3.md`.
 
 ## Commands
 
