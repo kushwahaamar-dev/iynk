@@ -109,9 +109,8 @@
 
   --font-body: var(--font-sans, ui-sans-serif), system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-ui: var(--font-mono, ui-monospace), ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  /* Geist sets headings too; Instrument Serif (--font-display) is only the italic accent word, via font-accent. */
+  /* Geist sets headings too; font-head stays an alias of the sans face until the class is retired. */
   --font-head: var(--font-sans, ui-sans-serif), system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-accent: var(--font-display, Georgia), Georgia, "Times New Roman", serif;
 }
 
 @utility z-sticky { z-index: var(--z-sticky); }

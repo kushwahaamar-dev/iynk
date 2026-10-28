@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Instrument_Serif, Noto_Sans_Devanagari } from "next/font/google";
+import { Geist, Geist_Mono, Noto_Sans_Devanagari } from "next/font/google";
 import { notFound } from "next/navigation";
 import { SiteFooter, SiteHeader } from "@/components/shell";
 import { SkipLink } from "@/components/ui/SkipLink";
@@ -11,13 +11,11 @@ import { SettingsBootScript, SettingsSync } from "@/lib/settings/theme";
 import "../globals.css";
 
 // `subsets` only picks the preloaded files. Devanagari is fetched only by
-// pages with Hindi text; Chinese uses platform fonts (globals.css). Geist sets
-// everything; Instrument Serif is the rare italic accent word in a headline.
-const sans = Geist({ subsets: ["latin"], variable: "--font-sans" });
-const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" });
-const display = Instrument_Serif({ subsets: ["latin"], weight: "400", style: ["normal", "italic"], variable: "--font-display" });
-const devanagari = Noto_Sans_Devanagari({ subsets: ["devanagari"], variable: "--font-devanagari", preload: false });
-const fontVariables = [sans, mono, display, devanagari].map((font) => font.variable).join(" ");
+// pages with Hindi text; Chinese uses platform fonts (styles/type.css).
+const sans = Geist({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
+const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
+const devanagari = Noto_Sans_Devanagari({ subsets: ["devanagari"], variable: "--font-devanagari", preload: false, display: "swap" });
+const fontVariables = [sans, mono, devanagari].map((font) => font.variable).join(" ");
 
 // Every route under this layout is fully static, and an unknown slug is a
 // real 404 from the first request.

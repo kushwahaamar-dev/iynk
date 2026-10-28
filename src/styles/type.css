@@ -16,13 +16,13 @@ html:lang(zh-Hans) body {
 :is(h1, h2, h3, h4, .font-head):lang(zh-Hans) {
   font-family: var(--font-sans, ui-sans-serif), var(--font-cjk), sans-serif;
 }
-/* Small caps and letter-spaced mono read badly in Devanagari and Han: those labels take the body face. */
-:is(.ink-kicker, .ink-label, .font-ui:not(code, pre, kbd, .tabular)):is(:lang(hi), :lang(zh-Hans)) {
+/* Letter-spaced mono reads badly in Devanagari and Han: those labels take the body face. */
+.font-ui:not(code, pre, kbd, .tabular):is(:lang(hi), :lang(zh-Hans)) {
   font-family: var(--font-body);
   letter-spacing: 0;
   text-transform: none;
 }
-:is(.ink-kicker, .ink-label, .font-ui:not(code, pre, kbd, .tabular)):lang(zh-Hans) {
+.font-ui:not(code, pre, kbd, .tabular):lang(zh-Hans) {
   font-family: var(--font-sans, ui-sans-serif), var(--font-cjk), sans-serif;
 }
 
@@ -40,22 +40,20 @@ html:lang(zh-Hans) body {
     background-color: var(--paper);
     background-image: var(--grain);
     font-family: var(--font-body);
-    font-size: 1rem;
+    font-size: var(--text-base);
     line-height: 1.55;
     overflow-x: hidden;
   }
 
   h1, h2, h3, h4 {
     font-family: var(--font-head);
-    line-height: 1.15;
-    font-weight: 700;
-    letter-spacing: -0.01em;
+    font-weight: 600;
     text-wrap: balance;
   }
-  h1 { font-size: clamp(2rem, 1.4rem + 2.6vw, 3.25rem); }
-  h2 { font-size: clamp(1.5rem, 1.2rem + 1vw, 1.875rem); }
-  h3 { font-size: 1.125rem; }
-  h4 { font-size: 1rem; }
+  h1 { @apply text-4xl md:text-5xl tracking-tight; }
+  h2 { @apply text-2xl md:text-3xl; }
+  h3 { @apply text-lg; }
+  h4 { @apply text-base; }
   p { text-wrap: pretty; }
 
   a {
@@ -68,53 +66,18 @@ html:lang(zh-Hans) body {
 
   code, kbd, samp, pre { font-family: var(--font-ui); }
 
-  ::selection { background: var(--color-mustard-l); color: var(--color-ink-fixed); }
+  ::selection { background: color-mix(in srgb, var(--accent) 30%, transparent); color: var(--ink); }
 }
 
 @layer components {
-  .ink-kicker {
-    font-family: var(--font-ui);
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
+  .kicker, .ink-kicker, .shell-meta {
+    @apply text-xs font-semibold text-muted;
   }
 
   /* A field or meter label: may hold a unit ("500 mA"), so never uppercase. */
-  .ink-label {
-    font-family: var(--font-body);
-    font-size: 0.75rem;
-    line-height: 1rem;
-    font-weight: 600;
-    color: var(--muted);
+  .field-label, .ink-label {
+    @apply text-xs font-semibold text-muted;
   }
-  /* Small uppercase mono metadata (11 px, 0.08em). Devanagari and Han keep the body face, uncapped. */
-  .shell-meta {
-    font-family: var(--font-ui);
-    font-size: 0.6875rem;
-    line-height: 1rem;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .shell-meta:is(:lang(hi), :lang(zh-Hans)) {
-    font-family: var(--font-body);
-    font-size: 0.75rem;
-    letter-spacing: 0;
-    text-transform: none;
-  }
-
-  /* The accent word inside a big headline: Instrument Serif italic, a touch larger to sit on Geist's x-height. */
-  .accent-serif {
-    font-family: var(--font-accent);
-    font-style: italic;
-    font-weight: 400;
-    letter-spacing: -0.01em;
-    font-size: 1.06em;
-  }
-
 
   /* Syntax colours shared by CodeBlock and the code editor. */
   .tok-kw { color: var(--code-kw); font-weight: 600; }
@@ -122,11 +85,18 @@ html:lang(zh-Hans) body {
   .tok-fn { color: var(--code-fn); }
   .tok-con { color: var(--code-con); }
   .tok-pp { color: var(--code-pp); }
-  .tok-cm { color: var(--code-cm); font-style: italic; }
+  .tok-cm { color: var(--code-cm); }
   .tok-num { color: var(--code-num); }
   .tok-ty { color: var(--code-kw); }
 }
 
 @layer utilities {
   .tabular { font-variant-numeric: tabular-nums; }
+
+  /* Matras and Han strokes clip at the scale's tight line heights. */
+  .lang-air:is(:lang(hi), :lang(zh-Hans)),
+  :is(h1, h2, h3, h4):is(:lang(hi), :lang(zh-Hans)) {
+    line-height: 1.3;
+    letter-spacing: 0;
+  }
 }
