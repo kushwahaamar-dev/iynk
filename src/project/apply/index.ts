@@ -6,8 +6,11 @@ import { validateOp } from "../generated/validate.mjs";
 import { BOARD_HANDLERS } from "./board.ts";
 import { COMPONENT_HANDLERS } from "./component.ts";
 import { DOC_HANDLERS } from "./doc.ts";
+import { NET_HANDLERS } from "./net.ts";
 import { isReject, reject, schemaMessage } from "./types.ts";
 import type { ApplyContext, ApplyOutcome, Handler, Reject } from "./types.ts";
+import { VIEW_HANDLERS } from "./view.ts";
+import { WIRE_HANDLERS } from "./wire.ts";
 
 /** 12 steps of 40 ops (PDM 7.5). */
 const MAX_BATCH_OPS = 480;
@@ -16,6 +19,9 @@ export const HANDLERS: Partial<{ [K in Op["k"]]: Handler<K> }> = {
   ...DOC_HANDLERS,
   ...BOARD_HANDLERS,
   ...COMPONENT_HANDLERS,
+  ...NET_HANDLERS,
+  ...VIEW_HANDLERS,
+  ...WIRE_HANDLERS,
 };
 
 export const IMPLEMENTED_KINDS: readonly Op["k"][] = Object.keys(HANDLERS) as Op["k"][];
