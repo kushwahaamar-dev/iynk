@@ -1,7 +1,7 @@
 // UI string namespaces (D5). Each lives in src/i18n/messages/<lang>/<ns>.json,
 // and the English file defines the keys every other language must have.
 
-export const NAMESPACES = ["common", "shell", "boardlab", "robotics", "dronelab", "flight", "ai", "search", "together", "hw", "studio", "home"] as const;
+export const NAMESPACES = ["common", "shell", "boardlab", "robotics", "dronelab", "flight", "ai", "search", "together", "hw", "studio", "home", "studioHome", "studioEdit", "studioInspect", "studioWire", "studioCode", "studioRun", "studioModels"] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];
 
@@ -18,7 +18,21 @@ export type Messages = {
   hw: typeof import("./messages/en/hw.json");
   studio: typeof import("./messages/en/studio.json");
   home: typeof import("./messages/en/home.json");
+  studioHome: typeof import("./messages/en/studioHome.json");
+  studioEdit: typeof import("./messages/en/studioEdit.json");
+  studioInspect: typeof import("./messages/en/studioInspect.json");
+  studioWire: typeof import("./messages/en/studioWire.json");
+  studioCode: typeof import("./messages/en/studioCode.json");
+  studioRun: typeof import("./messages/en/studioRun.json");
+  studioModels: typeof import("./messages/en/studioModels.json");
 };
+
+/** The namespaces the Studio owns; its page passes all of them down together. */
+export const STUDIO_NAMESPACES = ["studio", "studioHome", "studioEdit", "studioInspect", "studioWire", "studioCode", "studioRun", "studioModels"] as const;
+
+export type StudioNamespace = (typeof STUDIO_NAMESPACES)[number];
+
+export type StudioMessages = { [K in StudioNamespace]: Messages[K] };
 
 /** The common strings the shell's client components render (FigureFrame and friends). */
 export type CommonClientMessages = Messages["common"]["client"];

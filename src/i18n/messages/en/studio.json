@@ -159,5 +159,8 @@
       "wiped": "Wiped {stores} stores and {keys} browser keys.",
       "wipeErrors": "Some storage could not be wiped: {errors}"
     }
+  },
+  "shell": {
+    "workspace": "Workspace"
   }
 }

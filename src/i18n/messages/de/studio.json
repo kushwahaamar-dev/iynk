@@ -159,5 +159,8 @@
       "wiped": "{stores} Speicher und {keys} Browser-Schlüssel gelöscht.",
       "wipeErrors": "Ein Teil des Speichers ließ sich nicht löschen: {errors}"
     }
+  },
+  "shell": {
+    "workspace": "Arbeitsbereich"
   }
 }

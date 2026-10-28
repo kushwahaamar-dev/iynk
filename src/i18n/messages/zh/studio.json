@@ -159,5 +159,8 @@
       "wiped": "已清除 {stores} 个存储和 {keys} 个浏览器键。",
       "wipeErrors": "部分存储无法清除：{errors}"
     }
+  },
+  "shell": {
+    "workspace": "工作区"
   }
 }

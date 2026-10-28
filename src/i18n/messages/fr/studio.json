@@ -159,5 +159,8 @@
       "wiped": "{stores} stockages et {keys} clés du navigateur effacés.",
       "wipeErrors": "Une partie du stockage n'a pas pu être effacée : {errors}"
     }
+  },
+  "shell": {
+    "workspace": "Espace de travail"
   }
 }

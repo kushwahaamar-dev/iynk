@@ -159,5 +159,8 @@
       "wiped": "Se borraron {stores} almacenes y {keys} claves del navegador.",
       "wipeErrors": "No se pudo borrar parte del almacenamiento: {errors}"
     }
+  },
+  "shell": {
+    "workspace": "Espacio de trabajo"
   }
 }
