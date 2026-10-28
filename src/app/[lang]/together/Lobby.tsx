@@ -12,7 +12,6 @@ import { useFeatures } from "@/lib/features";
 import { createRoom, parseRoomInput, probeRoom, roomLink, type ProbeResult } from "@/lib/realtime";
 import { roomPath } from "./api";
 import { Buddies } from "./Buddies";
-import { Planner } from "./Planner";
 import type { LobbyItem } from "./strings";
 
 const LABS: LabKind[] = ["board", "robotics", "drone"];
@@ -140,7 +139,7 @@ export function LobbyLede({ className }: { className?: string }) {
   return <p className={className}>{t(useAiOff() ? "lobby.ledePlain" : "lobby.lede")}</p>;
 }
 
-/** The /together lobby: start or join a room, Build Buddies and the Build Night planner. */
+/** The /together lobby: start or join a room and Build Buddies. */
 export function Lobby({ items }: { items: LobbyItem[] }) {
   const t = useTogetherT()!;
   const titles = useMemo(() => new Map(items.map((item) => [`${item.lab}:${item.id}`, item.title])), [items]);
@@ -168,10 +167,7 @@ export function Lobby({ items }: { items: LobbyItem[] }) {
           <Note>{t("lobby.aiOff")}</Note>
         </div>
       ) : (
-        <>
-          <Buddies t={t} titles={titles} index="03" />
-          <Planner t={t} titles={titles} index="04" />
-        </>
+        <Buddies t={t} titles={titles} index="03" />
       )}
     </>
   );
