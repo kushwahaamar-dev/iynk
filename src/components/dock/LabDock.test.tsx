@@ -140,7 +140,7 @@ describe("LabDock", () => {
     });
 
     fireEvent.click(screen.getByRole("tab", { name: dock.tabs.real }));
-    expect(await screen.findAllByTestId("not-set-up")).toHaveLength(2);
+    await waitFor(() => expect(screen.getAllByTestId("not-set-up")).toHaveLength(2));
   });
 
   test("opens on the first tab that works: the partner with AI, else Together, or prices on a drone", () => {
