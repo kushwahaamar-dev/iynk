@@ -16,7 +16,6 @@ describe("readEnv", () => {
      
       voice: false,
       search: false,
-      db: false,
       realtime: false,
       gemini: false,
     });
@@ -33,12 +32,10 @@ describe("readEnv", () => {
     const { env, issues } = readEnv({
       META_API_BASE: "ftp://nope",
       SERPAPI_MONTHLY_BUDGET: "lots",
-      DATABASE_URL: "mysql://x",
       NEXT_PUBLIC_REALTIME_URL: "https://not-a-socket.example",
     });
     expect(issues.sort()).toEqual(
       [
-        "DATABASE_URL",
         "META_API_BASE",
         "NEXT_PUBLIC_REALTIME_URL",
         "SERPAPI_MONTHLY_BUDGET",
@@ -54,7 +51,6 @@ describe("readEnv", () => {
       META_API_BASE: "https://proxy.example/v1/",
       SERPAPI_KEY: "s",
       SERPAPI_MONTHLY_BUDGET: "50",
-      DATABASE_URL: "postgres://u:p@host:5432/db",
       NEXT_PUBLIC_REALTIME_URL: "wss://rt.example/ws",
       GEMINI_API_KEY: "g",
     });
@@ -66,7 +62,6 @@ describe("readEnv", () => {
      
       voice: true,
       search: true,
-      db: true,
       realtime: true,
       gemini: true,
     });

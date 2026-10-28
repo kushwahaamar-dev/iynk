@@ -57,17 +57,17 @@ describe("useFeatures", () => {
 
 describe("getFeatures", () => {
   it("shares one request with useFeatures and resolves to the features", async () => {
-    const fetchMock = vi.fn(async () => Response.json({ features: { db: true } }));
+    const fetchMock = vi.fn(async () => Response.json({ features: { search: true } }));
     vi.stubGlobal("fetch", fetchMock);
     const { getFeatures, useFeatures, NO_FEATURES } = await load();
     const both = Promise.all([getFeatures(), getFeatures()]);
     const { result } = renderHook(() => useFeatures());
     expect(await both).toEqual([
-      { ...NO_FEATURES, db: true },
-      { ...NO_FEATURES, db: true },
+      { ...NO_FEATURES, search: true },
+      { ...NO_FEATURES, search: true },
     ]);
     await waitFor(() => expect(result.current.status).toBe("ready"));
-    expect(await getFeatures()).toEqual({ ...NO_FEATURES, db: true });
+    expect(await getFeatures()).toEqual({ ...NO_FEATURES, search: true });
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 

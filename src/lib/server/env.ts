@@ -12,7 +12,6 @@ import { z } from "zod";
 const text = z.string().trim().min(1);
 const url = z.url({ protocol: /^https?$/ });
 const wsUrl = z.url({ protocol: /^wss?$/ });
-const pgUrl = z.url({ protocol: /^postgres(ql)?$/ });
 
 const schema = {
   META_API_KEY: text.optional(),
@@ -23,7 +22,6 @@ const schema = {
   GEMINI_MODEL: text.default("gemini-3.5-flash"),
   SERPAPI_KEY: text.optional(),
   SERPAPI_MONTHLY_BUDGET: z.coerce.number().int().min(0).default(200),
-  DATABASE_URL: pgUrl.optional(),
   NEXT_PUBLIC_REALTIME_URL: wsUrl.optional(),
   NEXT_PUBLIC_SITE_URL: url.default("http://localhost:3000"),
 } as const;
@@ -36,7 +34,6 @@ export type Features = {
   ai: boolean;
   voice: boolean;
   search: boolean;
-  db: boolean;
   realtime: boolean;
   gemini: boolean;
 };
@@ -71,7 +68,6 @@ export function featuresOf(e: Env): Features {
     ai: meta || gemini,
     voice: meta,
     search: Boolean(e.SERPAPI_KEY),
-    db: Boolean(e.DATABASE_URL),
     realtime: Boolean(e.NEXT_PUBLIC_REALTIME_URL),
     gemini,
   };
