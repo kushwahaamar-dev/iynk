@@ -147,13 +147,10 @@ endmodule
     }
   });
 
-  it('runs fast enough to animate', () => {
+  it('the chaser has walked to the right LED after 200,000 cycles', () => {
     const sim = compileVerilog(CHASER, getProfile('basys3'), { DIV: 1000 });
-    const t0 = performance.now();
     sim.run(200_000);
-    const ms = performance.now() - t0;
     expect(sim.outputs().led).toBe(1 << (200 % 16));
-    expect(200_000 / ms).toBeGreaterThan(100); // > 100k cycles per wall second
   });
 });
 
@@ -210,9 +207,7 @@ endmodule
   it('a design without a clock runs a second of board time in one step, and still answers its inputs', () => {
     const run = createRun({ board: 'basys3', source: 'module top(input [15:0] sw, output [15:0] led);\n  assign led = ~sw;\nendmodule\n' });
     run.start();
-    const t0 = performance.now();
     run.step(1000);
-    expect(performance.now() - t0).toBeLessThan(250);
     expect(run.status.cycles).toBe(100_000_000); // the board's 100 MHz, no cycle budget
     run.input('sw[5]', 1);
     run.step(1);

@@ -43,13 +43,6 @@ describe("Library", () => {
     expect(report.ok).toBe(true);
   });
 
-  it("creates in well under 30 ms", async () => {
-    const { library } = setup();
-    const started = performance.now();
-    await library.create({ board: "uno", title: "Fast" });
-    expect(performance.now() - started).toBeLessThan(30);
-  });
-
   it("refuses an empty or over-long title", async () => {
     const { library } = setup();
     expect((await failureOf(library.create({ board: "uno", title: "" }))).code).toBe("invalid");

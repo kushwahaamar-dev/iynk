@@ -150,14 +150,6 @@ describe("validateDescriptor", () => {
     d.simulation.not_modelled[0].en = "Nothing";
     expect(validateDescriptor(d).diagnostics.map((x) => x.code)).toEqual(["P-COPY"]);
   });
-
-  it("reads the 37 KB L298N inside the time budget", () => {
-    const d = load("l298n-module");
-    validateDescriptor(d);
-    const start = performance.now();
-    validateDescriptor(d);
-    expect(performance.now() - start).toBeLessThan(50);
-  });
 });
 
 describe("digestOf", () => {

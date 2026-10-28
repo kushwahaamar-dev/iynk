@@ -2,7 +2,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { canonicalize, utf8Length } from "../core/canonical.ts";
+import { canonicalize } from "../core/canonical.ts";
 import { sha256Hex } from "../core/sha256.ts";
 import type { OpEnvelope, Project } from "./generated/types.ts";
 import { canonicalBytes, chainNext, chainStart, checkpointOf, foldChain, stateHash } from "./hash.ts";
@@ -97,27 +97,6 @@ describe("stateHash", () => {
     const before = JSON.stringify(doc);
     stateHash(doc);
     expect(JSON.stringify(doc)).toBe(before);
-  });
-
-  it("hashes the monitor and 500 parts with 1,000 nets within budget", () => {
-    const doc = clone(load("lesson-uno-r3-button"));
-    for (let i = 0; i < 500; i++) {
-      doc.components.push({ id: `cmp_r${i}`, definition: { ref: "core.resistor", version: "1.0.0" }, refdes: `R${i}`, params: { ohms: 220 } });
-    }
-    for (let i = 0; i < 1000; i++) {
-      doc.nets.push({ id: `net_r${i}`, connections: [{ c: `cmp_r${i % 500}`, p: "1" }, { c: `cmp_r${(i + 1) % 500}`, p: "2" }] });
-    }
-    stateHash(doc);
-    const times: number[] = [];
-    for (let i = 0; i < 20; i++) {
-      const start = performance.now();
-      stateHash(doc);
-      times.push(performance.now() - start);
-    }
-    times.sort((a, b) => a - b);
-    const median = times[10];
-    console.log(`stateHash, 500 parts and 1,000 nets (${utf8Length(toCanonicalText(doc))} bytes): median ${median.toFixed(1)} ms`);
-    expect(median).toBeLessThan(100);
   });
 });
 

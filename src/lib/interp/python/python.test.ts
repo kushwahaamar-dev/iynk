@@ -373,9 +373,7 @@ print(7 // -2, -7 % 3, 2 ** 70, round(2.5), 1 / 3)
   it('an endless loop without sleep cannot freeze the page', () => {
     // A Pi runs ~20 statements per simulated µs, far more than the per-frame budget.
     const { run } = boot('n = 0\nwhile True:\n    n += 1\n', 'pi4-pi5', { budget: 50_000 });
-    const t0 = performance.now();
     run.step(16);
-    expect(performance.now() - t0).toBeLessThan(200);
     expect(run.status.throttled).toBe(true);
     expect(run.status.state).toBe('running');
   });

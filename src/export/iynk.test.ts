@@ -7,7 +7,6 @@ import { stateHash } from "../project/hash.ts";
 import { loadExample } from "../project/apply/fixtures.testing.ts";
 import type { ExampleName } from "../project/apply/fixtures.testing.ts";
 import { generateSession } from "../project/testing/generators.ts";
-import { bigProject } from "../project/testing/generators.ts";
 import { readIynk, secretWarnings, writeIynk } from "./iynk.ts";
 import { utf8Decode } from "./zip.ts";
 
@@ -55,19 +54,6 @@ describe("round trip", () => {
     const text = textOf(first);
     expect(text.endsWith("}\n")).toBe(true);
     expect(text.includes("\r")).toBe(false);
-  });
-
-  it("writes 500 parts in under 15 ms", () => {
-    const doc = bigProject(500, 500, 3);
-    writeIynk(doc);
-    const times = Array.from({ length: 5 }, () => {
-      const start = performance.now();
-      writeIynk(doc);
-      return performance.now() - start;
-    });
-    const ms = Math.min(...times);
-    console.log(`writeIynk, 500 parts: ${ms.toFixed(1)} ms`);
-    expect(ms).toBeLessThan(15);
   });
 });
 

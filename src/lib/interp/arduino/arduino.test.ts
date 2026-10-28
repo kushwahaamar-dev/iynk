@@ -28,20 +28,12 @@ void loop() {
 }`;
 
 describe('Arduino C++ golden programs', () => {
-  it('Blink toggles pin 13 every second and runs fast', () => {
+  it('Blink toggles pin 13 every second', () => {
     const { run } = boot(BLINK);
     advance(run, 4100);
     const edges = run.world.trace.filter((e) => e[1] === 13);
     expect(edges.map((e) => [Math.round(e[0] / 1000), e[2]])).toEqual([[0, 1], [1000, 0], [2000, 1], [3000, 0], [4000, 1]]);
     expect(run.snapshot().leds.L).toBe(1);
-    // One simulated second in well under a millisecond of wall time (warm).
-    const r2 = createRun({ board: 'uno-r3', source: BLINK });
-    r2.start();
-    r2.step(1000);
-    const t0 = performance.now();
-    for (let i = 0; i < 20; i++) r2.step(1000);
-    const perSecond = (performance.now() - t0) / 20;
-    expect(perSecond).toBeLessThan(1);
   });
 
   it('button toggle with debounce', () => {
@@ -311,9 +303,7 @@ void loop() {}`, 'uno-r3', { devices: ['mpu6050'] });
   it('a busy loop hits the per-frame budget instead of freezing the tab', () => {
     const run = createRun({ board: 'esp32-devkitc', source: 'unsigned long n = 0;\nvoid setup() {}\nvoid loop() { n++; }', budget: 10_000 });
     run.start();
-    const t0 = performance.now();
     run.step(16);
-    expect(performance.now() - t0).toBeLessThan(100);
     expect(run.status.throttled).toBe(true);
     expect(run.status.t).toBeLessThan(16);
   });

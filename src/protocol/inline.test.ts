@@ -69,13 +69,4 @@ describe("createInlinePort", () => {
     expect(port.state).toBe("dead");
     await expect(port.call({ t: "stream" })).rejects.toMatchObject({ kind: "worker_killed" });
   });
-
-  it("costs under 0.1 ms per call", async () => {
-    const port = createInlinePort<Req, Ev>(() => 1);
-    const calls = 2000;
-    const start = performance.now();
-    for (let i = 0; i < calls; i++) await port.call({ t: "stream" });
-    const perCall = (performance.now() - start) / calls;
-    expect(perCall).toBeLessThan(0.1);
-  });
 });

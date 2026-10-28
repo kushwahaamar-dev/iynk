@@ -36,9 +36,16 @@ npm run content:check        # every board, robotics and drone item loads and it
 npm run typecheck
 npm run lint
 npm test                     # unit tests (vitest)
+npm run test:perf            # timing budgets, one file at a time
 npm run check                # all of the above plus the Playwright specs
 bash scripts/ci-local.sh     # what CI runs, step by step; --list shows the steps, --only a,b picks some
 ```
+
+A test that asserts a wall-clock budget under one second lives in a `*.perf.test.ts` file next to the code it
+measures. `npm test` skips those files, because a budget measured while every core runs other tests says nothing about
+the code; `npm run test:perf` runs them one file at a time. The Playwright save budget (`e2e/save-perf.spec.ts`) works
+the same way: it has its own `perf` project that waits for all the others. Never raise a budget to make a run pass: a
+timing test that fails on a quiet machine is a real failure.
 
 `scripts/ci-local.sh` blanks the variables that switch a real service on. If you run Playwright or `next build` by
 hand, do the same:
