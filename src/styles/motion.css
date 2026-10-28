@@ -1,42 +1,91 @@
 @theme static {
-  --animate-ink-pop: ink-pop 0.7s cubic-bezier(0.3, 1.4, 0.5, 1);
-  --animate-ink-fade: ink-fade 0.18s ease-out;
-  --animate-ink-rise: ink-rise 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
-  --animate-ink-from-start: ink-from-start 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
-  --animate-ink-from-end: ink-from-end 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
+  --ease-iynk: cubic-bezier(0.22, 1, 0.36, 1);
+  --default-transition-duration: 300ms;
+  --default-transition-timing-function: var(--ease-iynk);
+  --dur-reveal: 700ms;
 
-  @keyframes ink-pop {
-    0% { transform: translateY(0) scale(1); }
-    40% { transform: translateY(-5px) scale(1.02); }
-    100% { transform: translateY(0) scale(1); }
-  }
-  @keyframes ink-fade {
+  --animate-fade-in: fade-in 300ms var(--ease-iynk) both;
+  --animate-rise-in: rise-in 500ms var(--ease-iynk) both;
+  --animate-slide-in-end: slide-in-end 500ms var(--ease-iynk) both;
+  --animate-slide-in-start: slide-in-start 500ms var(--ease-iynk) both;
+  --animate-slide-in-bottom: slide-in-bottom 500ms var(--ease-iynk) both;
+  --animate-scale-in: scale-in 500ms var(--ease-iynk) both;
+
+  --animate-ink-pop: var(--animate-scale-in);
+  --animate-ink-fade: var(--animate-fade-in);
+  --animate-ink-rise: var(--animate-rise-in);
+  --animate-ink-from-start: var(--animate-slide-in-start);
+  --animate-ink-from-end: var(--animate-slide-in-end);
+
+  @keyframes fade-in {
     from { opacity: 0; }
   }
-  @keyframes ink-rise {
-    from { opacity: 0; transform: translateY(24px); }
+  @keyframes rise-in {
+    from { opacity: 0; transform: translateY(var(--travel, 24px)); }
   }
-  @keyframes ink-from-start {
-    from { transform: translateX(-100%); }
+  @keyframes slide-in-end {
+    from { opacity: 0; transform: translateX(var(--slide-travel, 100%)); }
   }
-  @keyframes ink-from-end {
-    from { transform: translateX(100%); }
+  @keyframes slide-in-start {
+    from { opacity: 0; transform: translateX(calc(var(--slide-travel, 100%) * -1)); }
   }
+  @keyframes slide-in-bottom {
+    from { opacity: 0; transform: translateY(var(--slide-travel, 100%)); }
+  }
+  @keyframes scale-in {
+    from { opacity: 0; transform: scale(var(--scale-from, 0.96)); }
+  }
+}
+
+@utility stagger-in {
+  animation: rise-in 500ms var(--ease-iynk) both;
+  animation-delay: min(calc(var(--i, 0) * 60ms), 360ms);
+}
+
+@utility motion-move {
+  transition-property: transform, translate, scale, opacity;
+  transition-duration: 500ms;
+  transition-timing-function: var(--ease-iynk);
+}
+
+@utility motion-fade {
+  transition-property: color, background-color, border-color, text-decoration-color, opacity;
+  transition-duration: 300ms;
+  transition-timing-function: var(--ease-iynk);
+}
+
+@utility motion-press {
+  transition-property: transform;
+  transition-duration: 200ms;
+  transition-timing-function: var(--ease-iynk);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+  :root {
+    --travel: 0px;
+    --slide-travel: 0px;
+    --scale-from: 1;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+  .motion-move {
+    transition-property: opacity;
+  }
+  .motion-press {
+    transition-property: none;
   }
 }
-:root[data-reduce-motion="true"] *,
-:root[data-reduce-motion="true"] *::before,
-:root[data-reduce-motion="true"] *::after {
-  animation-duration: 0.01ms !important;
-  animation-iteration-count: 1 !important;
-  transition-duration: 0.01ms !important;
-  scroll-behavior: auto !important;
+
+:root[data-reduce-motion="true"] {
+  --travel: 0px;
+  --slide-travel: 0px;
+  --scale-from: 1;
+  scroll-behavior: auto;
+}
+:root[data-reduce-motion="true"] .motion-move {
+  transition-property: opacity;
+}
+:root[data-reduce-motion="true"] .motion-press {
+  transition-property: none;
 }
