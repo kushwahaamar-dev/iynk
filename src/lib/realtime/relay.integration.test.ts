@@ -1,13 +1,14 @@
 // @vitest-environment node
 // Three RoomClients against the real relay in server/realtime, started on a
 // random port as docs/hacktx/REALTIME.md describes. Skips (with the reason)
-// when the relay or its dependencies aren't there.
+// when the relay or its dependencies aren't there; under CI that is a failure.
 
 import { spawn, type ChildProcess } from "node:child_process";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import type { LabStore } from "@/components/dock/types";
+import { serviceMissing } from "@/test-support/require-service";
 import { RoomClient } from "./room";
 import { attachStore } from "./store-sync";
 import { createWsTransport } from "./ws-transport";
@@ -20,7 +21,7 @@ const missing = !existsSync(join(RELAY_DIR, "server.js"))
     : typeof WebSocket === "undefined"
       ? "this Node has no global WebSocket"
       : null;
-if (missing) console.warn(`relay integration skipped: ${missing}`);
+const skip = serviceMissing("relay", missing);
 
 type Act = { type: string; [key: string]: unknown };
 type Drone = { log: string[]; sel: string | null };
@@ -69,7 +70,7 @@ let url = "";
 const rooms: RoomClient[] = [];
 
 beforeAll(async () => {
-  if (missing) return;
+  if (skip) return;
   const port = 40000 + Math.floor(Math.random() * 10000);
   relay = spawn(process.execPath, ["server.js", "--port", String(port)], {
     cwd: RELAY_DIR,
@@ -111,7 +112,7 @@ function peer(name: string, roomId: string) {
   return { room, store };
 }
 
-describe.skipIf(missing !== null)("against the real relay", () => {
+describe.skipIf(skip)("against the real relay", () => {
   test("three clients converge on the relay's order, through snapshot and replay", async () => {
     const roomId = "nt2345";
     const a = peer("ana", roomId);
