@@ -64,7 +64,7 @@ export function GamepadPanel({ t, mapping, onChange }: { t: T; mapping: PadMappi
 
   return (
     <section aria-labelledby="flight-gp-title" className="text-sm">
-      <h3 id="flight-gp-title" className="mb-2 font-head text-lg">
+      <h3 id="flight-gp-title" className="mb-2 text-lg font-semibold">
         {t.title}
       </h3>
       <p aria-live="polite" className="mb-2">
@@ -113,7 +113,7 @@ export function GamepadPanel({ t, mapping, onChange }: { t: T; mapping: PadMappi
                 <td>
                   <input
                     type="checkbox"
-                    className="size-5 accent-tomato"
+                    className="size-5"
                     aria-label={`${t.channels[c]}: ${t.invert}`}
                     checked={mapping.axes[c].invert}
                     onChange={(e) => onChange({ ...mapping, axes: { ...mapping.axes, [c]: { ...mapping.axes[c], invert: e.target.checked } } })}
@@ -139,7 +139,7 @@ export function GamepadPanel({ t, mapping, onChange }: { t: T; mapping: PadMappi
           </Button>
         ))}
         <label className="flex min-h-11 items-center gap-2">
-          {t.deadband}
+          <span className="field-label">{t.deadband}</span>
           <input
             type="range"
             min={0}
@@ -147,9 +147,9 @@ export function GamepadPanel({ t, mapping, onChange }: { t: T; mapping: PadMappi
             step={0.01}
             value={mapping.deadband}
             onChange={(e) => onChange({ ...mapping, deadband: Number(e.target.value) })}
-            className="w-28 accent-tomato"
+            className="w-28"
           />
-          <output className="tabular font-ui">{mapping.deadband.toFixed(2)}</output>
+          <output className="tabular font-ui text-sm font-semibold">{mapping.deadband.toFixed(2)}</output>
         </label>
         <Button size="sm" variant="ghost" onClick={() => onChange(DEFAULT_PAD)}>
           {t.resetMap}
