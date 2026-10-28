@@ -1,0 +1,294 @@
+{
+  "$schema": "../../../docs/MASTER_PLAN/04_ARCHITECTURE/schemas/component.schema.json",
+  "schema": "iynk.component/1",
+  "id": "core.buzzer-piezo",
+  "version": "1.0.0",
+  "identity": {
+    "manufacturer": "generic",
+    "model": "12 mm piezo buzzer, passive or active",
+    "generic": true,
+    "refdes_prefix": "BZ",
+    "kind": "discrete",
+    "category": "actuator",
+    "description": {
+      "i18n_key": "parts.buzzer-piezo.description",
+      "en": "A 12 mm round buzzer. The passive kind plays the pitch of tone(); the active kind makes its own tone from a steady HIGH."
+    },
+    "primary_source": "factsheet",
+    "legacy_ids": [
+      "piezo-buzzer"
+    ],
+    "tags": [
+      "buzzer",
+      "piezo",
+      "sound",
+      "output",
+      "breadboard"
+    ]
+  },
+  "sources": [
+    {
+      "id": "factsheet",
+      "kind": "fact-sheet",
+      "title": "Board Lab components fact sheet, section 10: Passive piezo/buzzer vs active buzzer",
+      "publisher": "iynk",
+      "revision": "2026-10-24",
+      "reliability": "secondary",
+      "note": "docs/facts/la-components.md. Its numbers cite the sources it lists; this descriptor did not read those sources itself."
+    },
+    {
+      "id": "partjs",
+      "kind": "own-estimate",
+      "title": "figures/parts/piezo-buzzer.js: kind, elec() and sound()",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "Passive is a 20 nF capacitive load with a resonance near 4 kHz; active is a polar load of about 30 mA with a fixed 2.3 kHz tone."
+    },
+    {
+      "id": "solverjs",
+      "kind": "own-estimate",
+      "title": "figures/engine/bench-solve.js: buzzer element",
+      "publisher": "iynk",
+      "reliability": "unverified",
+      "note": "Stamps a near-short with a 0.05 V drop and a series resistance of vmin over imax."
+    }
+  ],
+  "pins": [
+    {
+      "id": "PLUS",
+      "name": {
+        "en": "Positive"
+      },
+      "designator": "+",
+      "type": "passive",
+      "class": "passive",
+      "polarity": "anode",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "connector": "legs",
+      "note": {
+        "en": "The longer leg, marked + on top. A passive piezo ignores the polarity; an active one stays silent backwards."
+      }
+    },
+    {
+      "id": "MINUS",
+      "name": {
+        "en": "Negative"
+      },
+      "designator": "-",
+      "type": "passive",
+      "class": "passive",
+      "polarity": "cathode",
+      "position": {
+        "x": 7.6,
+        "y": 0
+      },
+      "connector": "legs"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "legs",
+      "kind": "wire-lead",
+      "gender": "none",
+      "pitch": 2.54,
+      "pins": [
+        "PLUS",
+        "MINUS"
+      ]
+    }
+  ],
+  "dimensions": {
+    "package": "12 mm round, 9.5 mm tall",
+    "body": {
+      "w": 12,
+      "h": 12,
+      "d": 9.5
+    },
+    "accuracy": 0.5,
+    "source": {
+      "src": "factsheet",
+      "loc": "section 10"
+    }
+  },
+  "ratings": {},
+  "parameters": [
+    {
+      "id": "kind",
+      "name": {
+        "en": "Type"
+      },
+      "kind": "variant",
+      "type": "enum",
+      "default": "passive",
+      "values": [
+        "passive",
+        "active"
+      ],
+      "affects": [
+        "drive"
+      ]
+    }
+  ],
+  "behaviour": {
+    "summary": {
+      "en": "A buzzer on two pins. The solver treats it as a small load; the sketch's tone() frequency reaches the drawing as sound."
+    },
+    "layers": [
+      {
+        "id": "drive",
+        "domain": "analog",
+        "reads": [
+          "PLUS",
+          "MINUS",
+          "kind"
+        ],
+        "summary": {
+          "en": "The electrical load the pins see. Sound comes from the interpreter's tone() state and is not part of this layer."
+        },
+        "model": {
+          "kind": "element",
+          "element": "buzzer",
+          "terminals": {
+            "a": "PLUS",
+            "b": "MINUS"
+          },
+          "params": {
+            "vmin": {
+              "value": 3,
+              "unit": "V",
+              "source": {
+                "src": "partjs",
+                "loc": "figures/parts/piezo-buzzer.js elec()"
+              },
+              "rationale": {
+                "en": "The lowest voltage at which the active kind sounds, from the figure."
+              }
+            },
+            "imax": {
+              "value": 0.03,
+              "unit": "A",
+              "source": {
+                "src": "partjs",
+                "loc": "figures/parts/piezo-buzzer.js elec()"
+              },
+              "rationale": {
+                "en": "The current the fact sheet gives for an active buzzer at 5 V. It is marked unverified there."
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "simulation": {
+    "tier": "T1",
+    "status": "partly-modelled",
+    "what_it_models": [
+      {
+        "en": "A load across the two pins, and the tone() frequency of the pin it hangs on, reported as sound."
+      },
+      {
+        "en": "A steady HIGH makes a click on the passive kind and the fixed tone on the active kind."
+      }
+    ],
+    "not_modelled": [
+      {
+        "en": "Real sound output, loudness against frequency beyond the resonance curve in the figure, and the buzzer's own current draw over time."
+      },
+      {
+        "en": "The magnetic 16 ohm kind, which needs a transistor on a real board."
+      }
+    ],
+    "known_gaps": [
+      {
+        "id": "active_not_tested",
+        "text": {
+          "en": "The test covers the passive kind only."
+        }
+      }
+    ],
+    "solver_requires": [
+      "buzzer"
+    ],
+    "tests": [
+      {
+        "id": "tone_reaches_buzzer",
+        "kind": "golden-trace",
+        "file": "figures/engine/bench-solve.test.mjs",
+        "note": "tone() on D8 sounds the buzzer at 440 Hz and noTone silences it."
+      }
+    ]
+  },
+  "software": {
+    "environments": [
+      {
+        "language": "arduino-cpp",
+        "libraries": [
+          {
+            "name": "Arduino core",
+            "install": "built in",
+            "iynk_support": "supported",
+            "note": {
+              "en": "tone() and noTone() are in the core."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "visual": {
+    "breadboard": {
+      "figure": {
+        "kind": "part",
+        "id": "piezo-buzzer",
+        "path": "public/figures/parts/piezo-buzzer.html",
+        "engine": "colorfigures-bench"
+      },
+      "legs": [
+        "PLUS",
+        "MINUS"
+      ],
+      "span": [
+        3,
+        3
+      ]
+    },
+    "schematic": {
+      "symbol": "generated"
+    },
+    "fallback": {
+      "renderer": "generic-two-lead",
+      "label": "Buzzer",
+      "body_colour": "#33302d",
+      "show_pin_labels": true
+    }
+  },
+  "provenance": {
+    "license": "LicenseRef-iynk-pending",
+    "attribution": [
+      {
+        "text": "Drawing engine: Colorfigures, MIT license (figures/vendor/colorfigures/LICENSE)."
+      }
+    ],
+    "authors": [
+      "Amar Kushwaha"
+    ],
+    "origin": "core",
+    "created": "2026-10-28",
+    "third_party_content": true,
+    "review": {
+      "status": "unreviewed"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-10-28",
+        "note": "First descriptor, from figures/parts/piezo-buzzer.js, figures/engine/bench-solve.js and docs/facts/la-components.md.",
+        "behaviour_change": false
+      }
+    ]
+  }
+}

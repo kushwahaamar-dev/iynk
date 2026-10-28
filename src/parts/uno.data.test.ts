@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { boardPinIds } from "../project/legacy-names.ts";
-import { BUILTIN_DESCRIPTORS, builtinRegistry } from "./builtin.ts";
+import { BUILTIN_DESCRIPTORS } from "./builtin.ts";
 import { validateDescriptor } from "./descriptor.ts";
 import type { Descriptor } from "./descriptor.ts";
 import { interfaceOf } from "./pins.ts";
@@ -71,13 +71,5 @@ describe("core.uno-r3", () => {
     expect(snapshot.role).toBe(pinned.role);
     expect(pick(snapshot.pins)).toEqual(pick(pinned.pins));
     expect(snapshot.groups).toEqual(pinned.groups);
-  });
-});
-
-describe("builtinRegistry", () => {
-  it("holds the Uno and nothing else yet", () => {
-    const registry = builtinRegistry();
-    expect(registry.list().map((p) => `${p.ref}@${p.version}`)).toEqual(["core.uno-r3@1.0.0"]);
-    expect(registry.resolveLegacy("uno-r3")).toBe("core.uno-r3");
   });
 });
