@@ -56,6 +56,32 @@
       "label": "Anonymous usage counts",
       "body": "iynk counts what happens in the labs (a lesson passed, a step built, a fault tried) for the live counters and leaderboards. Each event carries a random id for this browser, never your name or your code.",
       "toggle": "Share anonymous usage counts"
+    },
+    "keys": {
+      "open": "Keys and usage",
+      "title": "Keys and usage",
+      "close": "Close keys and usage",
+      "notice": "Kept in this browser only. It is sent to your own iynk server for each call and is not stored there.",
+      "ai": {
+        "label": "AI key",
+        "labelOptional": "Name for this key (optional)"
+      },
+      "search": {
+        "label": "Search key"
+      },
+      "server": {
+        "label": "Server token",
+        "hint": "Only needed if your iynk server asks for one."
+      },
+      "save": "Save",
+      "remove": "Remove",
+      "saved": "Saved: …{tail}",
+      "errors": {
+        "empty": "Paste a full key (at least 8 characters).",
+        "tooLong": "That is longer than 512 characters.",
+        "badChars": "Keys use letters, digits and symbols only, with no spaces.",
+        "notPersisted": "Not saved after you close this tab (this browser blocks storage)"
+      }
     }
   }
 }

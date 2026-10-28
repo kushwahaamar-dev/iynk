@@ -56,6 +56,32 @@
       "label": "Recuentos de uso anónimos",
       "body": "iynk cuenta lo que pasa en los laboratorios (una lección superada, un paso montado, un fallo probado) para los contadores en directo y las clasificaciones. Cada evento lleva un identificador aleatorio de este navegador, nunca tu nombre ni tu código.",
       "toggle": "Compartir recuentos de uso anónimos"
+    },
+    "keys": {
+      "open": "Claves y uso",
+      "title": "Claves y uso",
+      "close": "Cerrar claves y uso",
+      "notice": "Se guarda solo en este navegador. Se envía a tu propio servidor de iynk en cada llamada y allí no se almacena.",
+      "ai": {
+        "label": "Clave de IA",
+        "labelOptional": "Nombre de esta clave (opcional)"
+      },
+      "search": {
+        "label": "Clave de búsqueda"
+      },
+      "server": {
+        "label": "Token del servidor",
+        "hint": "Solo hace falta si tu servidor de iynk lo pide."
+      },
+      "save": "Guardar",
+      "remove": "Quitar",
+      "saved": "Guardada: …{tail}",
+      "errors": {
+        "empty": "Pega una clave completa (al menos 8 caracteres).",
+        "tooLong": "Supera los 512 caracteres.",
+        "badChars": "Las claves solo llevan letras, dígitos y símbolos, sin espacios.",
+        "notPersisted": "No se guardará al cerrar esta pestaña (este navegador bloquea el almacenamiento)"
+      }
     }
   }
 }

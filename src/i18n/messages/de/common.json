@@ -56,6 +56,32 @@
       "label": "Anonyme Nutzungszahlen",
       "body": "iynk zählt, was in den Laboren passiert (eine bestandene Lektion, ein gebauter Schritt, ein ausprobierter Fehler), für die Live-Zähler und Bestenlisten. Jedes Ereignis trägt eine zufällige ID für diesen Browser, nie deinen Namen oder deinen Code.",
       "toggle": "Anonyme Nutzungszahlen teilen"
+    },
+    "keys": {
+      "open": "Schlüssel und Nutzung",
+      "title": "Schlüssel und Nutzung",
+      "close": "Schlüssel und Nutzung schließen",
+      "notice": "Bleibt nur in diesem Browser. Er wird bei jedem Aufruf an deinen eigenen iynk-Server gesendet und dort nicht gespeichert.",
+      "ai": {
+        "label": "KI-Schlüssel",
+        "labelOptional": "Name für diesen Schlüssel (optional)"
+      },
+      "search": {
+        "label": "Suchschlüssel"
+      },
+      "server": {
+        "label": "Server-Token",
+        "hint": "Nur nötig, wenn dein iynk-Server eines verlangt."
+      },
+      "save": "Speichern",
+      "remove": "Entfernen",
+      "saved": "Gespeichert: …{tail}",
+      "errors": {
+        "empty": "Füge einen vollständigen Schlüssel ein (mindestens 8 Zeichen).",
+        "tooLong": "Das sind mehr als 512 Zeichen.",
+        "badChars": "Schlüssel bestehen nur aus Buchstaben, Ziffern und Symbolen, ohne Leerzeichen.",
+        "notPersisted": "Wird nach dem Schließen dieses Tabs nicht gespeichert (dieser Browser blockiert den Speicher)"
+      }
     }
   }
 }

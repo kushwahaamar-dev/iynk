@@ -8,6 +8,8 @@ import commonZh from "../src/i18n/messages/zh/common.json";
 import shell from "../src/i18n/messages/en/shell.json";
 import together from "../src/i18n/messages/en/together.json";
 
+const CANARY_KEY = "iynk-canary-KEY-0001-do-not-use";
+
 // Uncaught errors and React hydration problems; other console noise (a figure
 // still being built, say) belongs to the tests of the page that owns it.
 function watchErrors(page: Page) {
@@ -198,6 +200,21 @@ test.describe("on a phone", () => {
     });
   }
 
+  test("the Keys and usage button in the menu drawer opens the dialog over it and Escape closes the dialog", async ({ page }) => {
+    await page.goto("/en");
+    await visibleHeader(page).locator('button[aria-haspopup="dialog"]:visible').first().tap();
+    const drawer = page.getByRole("dialog").first();
+    await drawer.getByRole("button", { name: common.client.keys.open }).tap();
+    const dialog = page.getByRole("dialog", { name: common.client.keys.title });
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator(":focus")).toHaveCount(1);
+    await expectNoAxeViolations(page);
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    await expect(drawer).toBeVisible();
+    await expect(drawer.getByRole("button", { name: common.client.keys.open })).toBeFocused();
+  });
+
   for (const path of ["/en", "/hi", "/de/no-such-page"]) {
     test(`${path} fits the screen without sideways scrolling`, async ({ page }) => {
       await page.goto(path);
@@ -220,6 +237,37 @@ test("Settings opens from the header, closes with Escape and hands focus back", 
   await page.keyboard.press("Escape");
   await expect(panel).toBeHidden();
   await expect(visibleHeader(page).getByRole("button", { name: shell.settings.label })).toBeFocused();
+});
+
+test("the Keys and usage dialog opens from Settings, passes axe, closes with Escape and hands focus back", async ({ page }) => {
+  await page.goto("/en");
+  const settings = visibleHeader(page).getByRole("button", { name: shell.settings.label });
+  const panel = await openSettings(page);
+  await panel.getByRole("button", { name: common.client.keys.open }).click();
+  const dialog = page.getByRole("dialog", { name: common.client.keys.title });
+  await expect(dialog).toBeVisible();
+  await expect(panel).toBeHidden();
+  await expect(dialog.locator(":focus")).toHaveCount(1);
+  await expectNoAxeViolations(page);
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(settings).toBeFocused();
+});
+
+test("a pasted key shows only its tail and goes when removed", async ({ page }) => {
+  await page.goto("/en");
+  const keys = common.client.keys;
+  await (await openSettings(page)).getByRole("button", { name: keys.open }).click();
+  const dialog = page.getByRole("dialog", { name: keys.title });
+  await dialog.getByLabel(keys.ai.label, { exact: true }).fill(CANARY_KEY);
+  await dialog.getByRole("button", { name: `${keys.save}: ${keys.ai.label}` }).click();
+  await expect(dialog.getByText("…-use")).toBeVisible();
+  await expect(dialog.getByRole("button", { name: `${keys.remove}: ${keys.ai.label}` })).toBeFocused();
+  expect(await dialog.innerText()).not.toContain(CANARY_KEY);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("iynk:keys:v1") ?? "{}").ai?.key)).toBe(CANARY_KEY);
+  await dialog.getByRole("button", { name: `${keys.remove}: ${keys.ai.label}` }).click();
+  await expect(dialog.getByLabel(keys.ai.label, { exact: true })).toBeFocused();
+  expect(await page.evaluate(() => localStorage.getItem("iynk:keys:v1"))).toBeNull();
 });
 
 test("the dashboard and the 404 page pass axe", async ({ page }) => {

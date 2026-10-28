@@ -56,6 +56,32 @@
       "label": "Statistiques d’usage anonymes",
       "body": "iynk compte ce qui se passe dans les labos (une leçon réussie, une étape montée, une panne essayée) pour les compteurs en direct et les classements. Chaque événement porte un identifiant aléatoire propre à ce navigateur, jamais votre nom ni votre code.",
       "toggle": "Partager les statistiques d’usage anonymes"
+    },
+    "keys": {
+      "open": "Clés et utilisation",
+      "title": "Clés et utilisation",
+      "close": "Fermer clés et utilisation",
+      "notice": "Conservée uniquement dans ce navigateur. Elle est envoyée à votre propre serveur iynk à chaque appel et n'y est pas stockée.",
+      "ai": {
+        "label": "Clé IA",
+        "labelOptional": "Nom de cette clé (facultatif)"
+      },
+      "search": {
+        "label": "Clé de recherche"
+      },
+      "server": {
+        "label": "Jeton du serveur",
+        "hint": "Nécessaire seulement si votre serveur iynk en demande un."
+      },
+      "save": "Enregistrer",
+      "remove": "Supprimer",
+      "saved": "Enregistrée : …{tail}",
+      "errors": {
+        "empty": "Collez une clé complète (au moins 8 caractères).",
+        "tooLong": "Elle dépasse 512 caractères.",
+        "badChars": "Une clé ne contient que des lettres, des chiffres et des symboles, sans espace.",
+        "notPersisted": "Non conservée après la fermeture de cet onglet (ce navigateur bloque le stockage)"
+      }
     }
   }
 }
