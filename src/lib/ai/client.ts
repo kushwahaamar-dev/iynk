@@ -7,9 +7,6 @@ import type {
   ApiErrorBody,
   ChatEvent,
   ChatRequest,
-  ImageResponse,
-  StoryRequest,
-  StoryResponse,
   TranscribeResponse,
 } from "./protocol";
 import { track } from "@/lib/telemetry";
@@ -220,47 +217,6 @@ export async function* streamChat(request: ChatRequest, options: CallOptions = {
     outer?.removeEventListener("abort", forward);
     controller.abort();
   }
-}
-
-async function postJson<T>(path: string, body: unknown, timeoutMs: number, options: CallOptions): Promise<T> {
-  const doFetch = options.fetch ?? fetch;
-  const signal = options.signal
-    ? AbortSignal.any([options.signal, AbortSignal.timeout(timeoutMs)])
-    : AbortSignal.timeout(timeoutMs);
-  let res: Response;
-  try {
-    res = await doFetch(path, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(body),
-      signal,
-    });
-  } catch (error) {
-    throw toAiError(error, options.signal);
-  }
-  if (!res.ok) throw await failure(res);
-  try {
-    return (await res.json()) as T;
-  } catch {
-    throw new AiError("upstream", res.status);
-  }
-}
-
-export function writeStory(request: StoryRequest, options: CallOptions = {}): Promise<StoryResponse> {
-  track("ai.call", { kind: "story" });
-  return postJson<StoryResponse>("/api/ai/story", request, 60_000, options);
-}
-
-export async function drawCover(prompt: string, options: CallOptions = {}): Promise<ImageResponse> {
-  track("ai.call", { kind: "image" });
-  const result = await postJson<ImageResponse>(
-    "/api/ai/image",
-    { prompt: prompt.slice(0, 600), style: "colorfigures" },
-    90_000,
-    options,
-  );
-  if (typeof result.image !== "string" || !result.image.startsWith("data:image/")) throw new AiError("upstream");
-  return result;
 }
 
 /** The transcribe route takes at most 4 MB of audio. */

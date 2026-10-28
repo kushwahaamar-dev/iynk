@@ -65,7 +65,7 @@ async function renderPanel(store: LabStore, figure: FigureHandle | null) {
   );
 }
 
-const FULL = { ai: true, image: true, voice: true, search: true, solana: false, db: false, realtime: false, gemini: false };
+const FULL = { ai: true, image: true, voice: true, search: true, db: false, realtime: false, gemini: false };
 
 beforeEach(() => {
   Element.prototype.scrollTo ??= () => {};

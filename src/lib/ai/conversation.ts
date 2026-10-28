@@ -8,7 +8,6 @@ import type { Locale } from "@/i18n/config";
 import { AiError, streamChat, streamErrorCode, type AiErrorCode } from "./client";
 import type { ChatMessage, ChatPeer, ChatRequest } from "./protocol";
 import { runClientTool, type ToolCard, type ToolContext } from "./run-tools";
-import type { SessionLog } from "./session-log";
 import { parseToolCall, toolRuns, type ProposedChange } from "./tools";
 
 /** Client-tool rounds per question: the model may act, look, then answer. */
@@ -45,8 +44,6 @@ export type SendEnv = {
   bench(): string;
   peers(): ChatPeer[];
   tools(): ToolContext;
-  log: SessionLog;
-  me: string;
   fetch?: typeof fetch;
 };
 
@@ -116,7 +113,6 @@ export class Conversation {
     const question = text.trim();
     if (!question || this.state.busy) return;
     this.set({ turns: [...this.state.turns, { id: nextId("u"), role: "user", text: question, via }] });
-    env.log.add(env.me, "chat", `asked the partner: ${question}`);
     await this.run(env);
   }
 
@@ -193,8 +189,6 @@ export class Conversation {
       if (code !== "aborted") patch(() => ({ error: code }));
     }
     patch(() => ({ status }));
-    const turn = this.state.turns.find((t) => t.id === id);
-    if (turn?.role === "assistant" && turn.text) env.log.add("partner", "ai", turn.text.slice(0, 280));
     return status === "done" && ranTools;
   }
 
@@ -204,14 +198,11 @@ export class Conversation {
     // Server tools ran inside /api/ai/chat already; only their citations reach the client.
     if (toolRuns(parsed.call.name) === "server") return null;
     const outcome = runClientTool(parsed.call, env.tools());
-    if (outcome.card?.kind === "peer" && outcome.card.sent) {
-      env.log.add(env.me, "help", `the partner asked ${outcome.card.peer} to explain: ${outcome.card.question}`, outcome.card.peer);
-    }
     return { id, name, args: parsed.call.args, result: outcome.result, card: outcome.card };
   }
 
   /** Accept dispatches the change's store actions; either way the model hears the decision next turn. */
-  decide(turnId: string, toolId: string, accept: boolean, env: Pick<SendEnv, "store" | "log" | "me">) {
+  decide(turnId: string, toolId: string, accept: boolean, env: Pick<SendEnv, "store">) {
     const turn = this.state.turns.find((t) => t.id === turnId);
     if (turn?.role !== "assistant") return;
     const tool = turn.tools.find((t) => t.id === toolId);
@@ -223,7 +214,6 @@ export class Conversation {
       record.id === toolId && record.card?.kind === "change" ? { ...record, card: { ...record.card, status: decision } } : record;
     const turns = this.state.turns.map((t): Turn => (t.id === turnId && t.role === "assistant" ? { ...t, tools: t.tools.map(decided) } : t));
     this.set({ turns: [...turns, { id: nextId("n"), role: "note", decision, kind: card.change.kind }] });
-    env.log.add(env.me, "action", `${decision} the partner's ${card.change.kind} change`);
   }
 }
 

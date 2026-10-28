@@ -7,15 +7,5 @@ export type {
   ChatMessage,
   ChatPeer,
   ChatRequest,
-  ImageResponse,
-  StoryRequest,
-  StoryResponse,
   TranscribeResponse,
 } from "@/lib/server/ai/types";
-
-import type { StoryEvent as ServerStoryEvent } from "@/lib/server/ai/types";
-
-/** What a session-log line is about; the story route takes any string here. */
-export type StoryEventKind = "action" | "chat" | "ai" | "fault" | "pass" | "join" | "help";
-
-export type StoryEvent = ServerStoryEvent & { kind: StoryEventKind };

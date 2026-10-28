@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
-import { AiError, drawCover, errorCode, parseChatEvent, readSse, streamChat, transcribe } from "./client";
+import { AiError, errorCode, parseChatEvent, readSse, streamChat, transcribe } from "./client";
 import type { ChatEvent, ChatRequest } from "./protocol";
 
 const encoder = new TextEncoder();
@@ -135,7 +135,7 @@ describe("streamChat", () => {
   });
 });
 
-describe("transcribe and drawCover", () => {
+describe("transcribe", () => {
   test("transcribe sends multipart audio and the language", async () => {
     class FakeAudioContext {
       decodeAudioData() {
@@ -175,12 +175,4 @@ describe("transcribe and drawCover", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  test("drawCover caps the prompt and only accepts image data URLs", async () => {
-    const fetch = vi.fn(async () => Response.json({ image: "data:image/png;base64,AAAA" }));
-    await drawCover("x".repeat(900), { fetch });
-    const init = (fetch.mock.calls[0] as unknown as [string, RequestInit])[1];
-    expect(JSON.parse(init.body as string)).toEqual({ prompt: "x".repeat(600), style: "colorfigures" });
-    const bad = vi.fn(async () => Response.json({ image: "https://evil.example/x.png" }));
-    await expect(drawCover("a cover", { fetch: bad })).rejects.toMatchObject({ code: "upstream" });
-  });
 });
