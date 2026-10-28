@@ -11,6 +11,7 @@ import { useRoomGhosts } from "@/components/flight/room-ghosts";
 import { SoundToggle } from "@/components/settings";
 import { WorkspaceBar, WorkspaceFrame } from "@/components/shell/workspace";
 import { Chip } from "@/components/ui/Chip";
+import { Icon } from "@/components/ui/icons";
 import { Panel } from "@/components/ui/Panel";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { StatStrip } from "@/components/ui/Stat";
@@ -244,7 +245,7 @@ export function FlyWorkspace({ lang, content, text, messages, flight, pool, noti
             className="h-full"
           />
         ) : (
-          <p className="grid h-full place-items-center rounded-ink border-2 border-dashed border-line bg-sunken p-6">{t("fly.missing")}</p>
+          <p className="grid h-full place-items-center rounded-xl border-2 border-dashed border-line bg-sunken p-6">{t("fly.missing")}</p>
         )
       }
       rail={rail}
@@ -267,11 +268,11 @@ function DesignSummary({
   const n = (v: number, d: number) => formatNumber(lang, v, d);
   return (
     <>
-      <p className="font-ui text-xs text-muted">
+      <p className="text-sm text-muted">
         {content.design.batts[pick.batt].label} · {content.design.motors[pick.motor].label} · {content.design.props[pick.prop].label}
       </p>
       <StatStrip
-        className="gap-x-5"
+        className="gap-x-4"
         stats={[
           { id: "auw", label: t("design.tiles.auw"), value: t("design.units.g", { value: n(r.auw, 0) }) },
           { id: "tw", label: t("design.tiles.tw"), value: t("design.units.tw", { value: n(r.tw, 1) }) },
@@ -298,21 +299,19 @@ function ArmingRules({ rules, t }: { rules: ArmRule[]; t: DroneLabT }) {
         aria-controls="fly-arming-list"
         onClick={() => setOpen((v) => !v)}
         disabled={!clean}
-        className="flex min-h-11 w-full items-center gap-3 rounded-ink-sm text-start hover:bg-sunken disabled:cursor-default disabled:hover:bg-transparent"
+        className="flex min-h-11 w-full items-center gap-3 rounded-lg text-start hover:bg-sunken disabled:cursor-default disabled:hover:bg-transparent"
       >
         <span id="fly-arming" className="font-body text-sm font-semibold">
           {t("fly.preflight")}
         </span>
         <Chip tone={!ok ? "tomato" : clean ? "mint" : "mustard"}>{ok ? `${passed}/${rules.length} ${t("fly.ok")}` : t("fly.blocked")}</Chip>
         {clean ? (
-          <svg aria-hidden="true" width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" className={`ms-auto transition-transform ${shown ? "rotate-180" : ""}`}>
-            <path d="M5.5 9.5L12 16l6.5-6.5" />
-          </svg>
+          <Icon name="chevron-down" size={18} className={`ms-auto transition-transform ${shown ? "rotate-180" : ""}`} />
         ) : null}
       </button>
       <div id="fly-arming-list" hidden={!shown} className="space-y-2">
         <p className="text-sm text-muted">{t("fly.preflightLede")}</p>
-        <ul className="space-y-1.5" aria-labelledby="fly-arming" data-testid="arming-rules" data-can-arm={ok}>
+        <ul className="space-y-2" aria-labelledby="fly-arming" data-testid="arming-rules" data-can-arm={ok}>
           {rules.map((rule, i) => (
             <li key={`${rule.id}-${i}`} className="flex items-start gap-2 text-sm" data-rule={rule.id} data-ok={rule.ok}>
               <Chip tone={rule.ok ? "mint" : rule.level === "block" || rule.broken ? "tomato" : "mustard"} className="shrink-0">
@@ -358,7 +357,7 @@ function CourseRow({
   const medal = best !== undefined ? medalFor(best, par) : null;
   const s = (v: number) => formatNumber(lang, v, v % 1 ? 1 : 0);
   return (
-    <li className={`relative -mx-2 rounded-ink-sm px-2 py-2.5 ${active ? "bg-sunken" : ""}`}>
+    <li className={`relative -mx-2 rounded-lg px-2 py-2 ${active ? "bg-sunken" : ""}`}>
       {active ? <span aria-hidden="true" className="absolute inset-y-2 start-0 w-1 rounded-full bg-ink" /> : null}
       <div className="flex flex-wrap items-center justify-between gap-x-3">
         <button
@@ -379,7 +378,7 @@ function CourseRow({
         </span>
       </div>
       <p className="text-sm text-muted">{ct(course.brief)}</p>
-      {par ? <p className="mt-1 font-ui text-xs text-muted">{t("fly.medalTimes", { gold: s(par.gold), silver: s(par.silver), bronze: s(par.bronze) })}</p> : null}
+      {par ? <p className="tabular mt-1 text-xs text-muted">{t("fly.medalTimes", { gold: s(par.gold), silver: s(par.silver), bronze: s(par.bronze) })}</p> : null}
     </li>
   );
 }
