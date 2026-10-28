@@ -1,5 +1,6 @@
 import { InterpError, didYouMean, type SourcePos } from '../errors';
 import { Exec, PREEMPT, type Gen, type Program } from '../exec';
+import { HeapMeter, checkElements, checkString } from '../limits';
 import type { World } from '../world';
 import { parseSketch, type Expr, type FuncDecl, type Stmt, type TypeSpec, type Unit } from './parser';
 import { T, TypeEnv, isNumeric, tyName, wrapper, type CValue, type Ty } from './types';
@@ -61,7 +62,6 @@ interface ObjSym {
 type Sym = VarSym | FnSym | ObjSym;
 
 const MAX_DEPTH = 120;
-const MAX_ARRAY = 1_000_000;
 
 /**
  * Compiled sketch: a typed closure tree plus the runtime state it runs on.
@@ -73,6 +73,7 @@ export class ArduinoRt extends Exec {
   readonly includes: Set<string>;
   /** Library and global objects (Serial, Wire, WiFi, Servo instances...). */
   readonly objects = new Map<string, unknown>();
+  readonly heap = new HeapMeter();
   randState = 1;
   depth = 0;
   /** Microseconds to sleep before rebooting from deep sleep; -1 when none. */
@@ -275,10 +276,17 @@ class Compiler {
       else this.err('this array needs a size', p, 'write the size in the brackets, like int pins[3]');
       if (n <= 0) this.err('array size must be positive', p);
       total *= n;
-      if (total > MAX_ARRAY) throw new InterpError('limit', `array size ${total} is over the limit of 1,000,000 elements`, p, 'use a smaller array');
+      checkElements(total, 'array size', p);
       t = { k: 'array', el: t, n };
     }
+    this.rt.heap.chargeItems(total, 'this array', p);
     return t;
+  }
+
+  private joined(text: string, p: SourcePos): string {
+    checkString(text.length, p);
+    this.rt.heap.chargeText(text.length, 'this String', p);
+    return text;
   }
 
   private constEval(e: Expr): number {
@@ -1049,7 +1057,7 @@ class Compiler {
       if (op !== '+') this.err(`only += works on String`, e.p);
       const rt = rhs.t;
       const ev = rhs.ev;
-      return { t, ev: (f) => { const v = (lv.get(f) as string) + fmtValue(ev(f), rt, undefined, true); lv.set(f, v); return v; } };
+      return { t, ev: (f) => { const v = this.joined((lv.get(f) as string) + fmtValue(ev(f), rt, undefined, true), e.p); lv.set(f, v); return v; } };
     }
     const cur: CE = { t, ev: (f) => lv.get(f) };
     const res = this.coerce(this.binary(op, cur, this.expr(e.b), e.p), t, e.p);
@@ -1103,7 +1111,7 @@ class Compiler {
       }
       const ta = a.t;
       const tb = b.t;
-      return { t: T.string, ev: (f) => fmtValue(ea(f), ta, undefined, true) + fmtValue(eb(f), tb, undefined, true) };
+      return { t: T.string, ev: (f) => this.joined(fmtValue(ea(f), ta, undefined, true) + fmtValue(eb(f), tb, undefined, true), p) };
     }
     if (['==', '!=', '<', '>', '<=', '>='].includes(op)) {
       const ta = a.t;

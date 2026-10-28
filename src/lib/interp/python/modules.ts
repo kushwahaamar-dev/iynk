@@ -29,6 +29,10 @@ function pinNo(rt: PyRt, v: PyValue): number {
 }
 
 export function installBuiltins(rt: PyRt): void {
+  const zeroBytes = (n: number): number[] => {
+    rt.listSize(n, rt.line);
+    return new Array(Math.max(0, n)).fill(0);
+  };
   const b = rt.builtins;
   const p = () => rt.line;
   b.set('print', nat('print', (a, kw) => {
@@ -156,7 +160,7 @@ export function installBuiltins(rt: PyRt): void {
     for (const [k, v] of Object.entries(kw)) d.set(k, v);
     return d;
   }));
-  b.set('bytes', nat('bytes', ([x]) => (x === undefined ? new PyBytes([]) : isInt(x) ? new PyBytes(new Array(Number(toBig(x))).fill(0)) : typeof x === 'string' ? new PyBytes([...x].map((c) => c.charCodeAt(0))) : new PyBytes([...rt.iter(x)].map((v) => Number(toBig(v)) & 255)))));
+  b.set('bytes', nat('bytes', ([x]) => (x === undefined ? new PyBytes([]) : isInt(x) ? new PyBytes(zeroBytes(Number(toBig(x)))) : typeof x === 'string' ? new PyBytes([...x].map((c) => c.charCodeAt(0))) : new PyBytes([...rt.iter(x)].map((v) => Number(toBig(v)) & 255)))));
   b.set('bytearray', b.get('bytes'));
   b.set('isinstance', nat('isinstance', ([v, t]) => {
     const types = t instanceof PyTuple ? t.items : [t];

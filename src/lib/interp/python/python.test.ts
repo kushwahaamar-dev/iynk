@@ -407,12 +407,12 @@ describe('size caps', () => {
     return errors.join('\n');
   };
 
-  it('refuses to repeat a string past a million characters', () => {
-    expect(failure('print("x" * 100000000)')).toMatch(/MemoryError: cannot repeat to 100000000 items \(limit 1,000,000\)/);
+  it('refuses to repeat a string past 1,048,576 characters', () => {
+    expect(failure('print("x" * 100000000)')).toMatch(/stopped: a string of 100000000 characters is over the limit of 1,048,576/);
   });
 
   it('refuses to repeat a list past a million items', () => {
-    expect(failure('a = [0] * 50000000')).toMatch(/MemoryError.*limit 1,000,000/);
+    expect(failure('a = [0] * 50000000')).toMatch(/stopped: list size \d+ is over the limit of 1,000,000 elements/);
   });
 
   it('allows exactly a million items', () => {
@@ -423,7 +423,7 @@ describe('size caps', () => {
   });
 
   it('catches the second multiply of a nested repeat', () => {
-    expect(failure('a = [0] * 1000\nb = a * 1001')).toMatch(/MemoryError.*limit 1,000,000/);
+    expect(failure('a = [0] * 1000\nb = a * 1001')).toMatch(/stopped: list size \d+ is over the limit of 1,000,000 elements/);
   });
 
   it('keeps an empty sequence cheap however large the count', () => {
