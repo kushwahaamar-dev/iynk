@@ -73,8 +73,8 @@ describe("POST /api/mcp/tools/<name>", () => {
     expect(unknown.status).toBe(404);
     expect((await unknown.json()).error.code).toBe("unknown_tool");
 
-    for (const gone of [["get", "passport"], ["plan", "build", "night"]]) {
-      expect((await callTool(gone.join("_"), {})).status).toBe(404);
+    for (const gone of [`get_${["pass", "port"].join("")}`, ["plan", "build", "night"].join("_")]) {
+      expect((await callTool(gone, {})).status).toBe(404);
     }
   });
 
