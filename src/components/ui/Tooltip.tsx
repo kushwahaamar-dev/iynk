@@ -88,7 +88,7 @@ export function TipBubble({ id, open, children, side = "top", shortcut, "aria-hi
       aria-hidden={ariaHidden || undefined}
       hidden={!open}
       className={cx(
-        "pointer-events-none absolute start-1/2 z-40 flex w-max max-w-64 -translate-x-1/2 items-center gap-1.5 rounded-lg border-[1.5px] border-line bg-ink px-2.5 py-1 font-body text-xs font-semibold leading-snug text-paper shadow-ink-sm",
+        "pointer-events-none absolute start-1/2 z-tooltip flex w-max max-w-64 -translate-x-1/2 items-center gap-2 rounded-md bg-ink px-2 py-1 text-xs font-semibold leading-snug text-paper shadow-md",
         side === "top" ? "bottom-full mb-2" : "top-full mt-2",
       )}
     >

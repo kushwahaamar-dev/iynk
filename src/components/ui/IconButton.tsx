@@ -9,8 +9,8 @@ type IconButtonProps = Omit<ComponentProps<"button">, "children" | "aria-label">
   /** Accessible name; also shown as the tooltip. */
   label: string;
   icon: IconName;
-  variant?: "plain" | "raised";
-  /** "sm" is 36 px with a fine pointer and still 44 px on touch screens. */
+  variant?: "plain" | "solid";
+  /** "sm" is 32 px with a fine pointer and still 44 px on touch screens. */
   size?: "sm" | "md";
   /** A key that does the same thing, shown in the tooltip. */
   shortcut?: string;
@@ -69,16 +69,16 @@ export function IconButton({
         tip.onBlur();
       }}
       className={cx(
-        "relative inline-flex shrink-0 items-center justify-center rounded-full border-2 text-ink transition-[transform,box-shadow,background-color] duration-100",
-        "disabled:cursor-not-allowed disabled:text-muted disabled:opacity-60 aria-pressed:border-line aria-pressed:bg-ink aria-pressed:text-paper",
-        size === "sm" ? "size-9 [@media(pointer:coarse)]:size-11" : "size-11",
-        variant === "raised"
-          ? "border-line bg-surface shadow-ink-sm hover:-translate-x-px hover:-translate-y-px hover:shadow-ink active:translate-0.5 active:shadow-none"
-          : "border-transparent bg-transparent hover:bg-sunken",
+        "relative inline-flex shrink-0 items-center justify-center rounded-lg motion-fade",
+        "enabled:active:scale-98 enabled:active:motion-press disabled:cursor-not-allowed disabled:opacity-50",
+        size === "sm" ? "size-8 [@media(pointer:coarse)]:size-11" : "size-10 [@media(pointer:coarse)]:size-11",
+        variant === "solid"
+          ? "bg-ink text-paper enabled:hover:bg-ink/88"
+          : "bg-transparent text-ink enabled:hover:bg-hover aria-pressed:bg-ink aria-pressed:text-paper",
         className,
       )}
     >
-      <Icon name={icon} size={size === "sm" ? 18 : 20} />
+      <Icon name={icon} size={size === "sm" ? 16 : 20} />
       <TipBubble id={tipId} open={tip.open} side={tooltipSide} shortcut={shortcut}>
         {title ?? label}
       </TipBubble>
