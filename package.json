@@ -21,6 +21,8 @@
     "test": "vitest run",
     "e2e": "playwright test",
     "provenance:check": "node scripts/provenance-check.mjs",
+    "perf:budget": "node scripts/perf-budget.mjs",
+    "perf:record": "node scripts/perf-budget.mjs --record",
     "check": "npm run content:check && npm run typecheck && npm run lint && npm run test && npm run e2e"
   },
   "dependencies": {

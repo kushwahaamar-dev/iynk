@@ -26,3 +26,33 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: bash scripts/ci-local.sh
+
+  perf-budget:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_DIST_DIR: .next-perf
+      PERF_BASE_URL: http://127.0.0.1:47500
+      NEXT_PUBLIC_REALTIME_URL: ""
+      IYNK_SERVER_TOKEN: ""
+      IYNK_AI_ENABLE: ""
+      IYNK_SEARCH_ENABLE: ""
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - name: Measure against budgets.json
+        shell: bash
+        run: |
+          set -o pipefail
+          npx next start --port 47500 &
+          server=$!
+          trap 'kill $server' EXIT
+          node -e "const u=process.env.PERF_BASE_URL;(async()=>{for(let i=0;i<60;i++){try{if((await fetch(u)).status<500)return}catch{}await new Promise(r=>setTimeout(r,1000))}process.exit(1)})()"
+          npm run perf:budget | tee perf-budget.txt
+          { echo '```'; cat perf-budget.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
