@@ -98,3 +98,24 @@ describe("Sheet", () => {
     expect(document.activeElement).toBe(opener);
   });
 });
+
+describe("overlay styling", () => {
+  it("dialog scrim fades in, the panel rises and has no border", () => {
+    render(<Harness />);
+    fireEvent.click(screen.getByRole("button", { name: "Open" }));
+    const panel = screen.getByRole("dialog");
+    expect(panel.parentElement?.className).toContain("animate-fade-in");
+    expect(panel.parentElement?.className).toContain("bg-(--scrim)");
+    expect(panel.className).toContain("animate-rise-in");
+    expect(panel.className).not.toMatch(/(^|\s)border/);
+  });
+
+  it("sheet rounds the corners away from its edge", () => {
+    const { rerender } = render(
+      <Sheet open onClose={() => {}} title="Menu" closeLabel="Close menu" side="end" />,
+    );
+    expect(screen.getByRole("dialog").className).toContain("rounded-s-2xl");
+    rerender(<Sheet open onClose={() => {}} title="Menu" closeLabel="Close menu" side="bottom" />);
+    expect(screen.getByRole("dialog").className).toContain("rounded-t-2xl");
+  });
+});

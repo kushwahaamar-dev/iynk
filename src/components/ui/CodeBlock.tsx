@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cx } from "./cx";
 import { tokenLines, type CodeLang } from "./highlight";
-import { Icon } from "./icons";
+import { IconButton } from "./IconButton";
+import { VisuallyHidden } from "./VisuallyHidden";
 
 type CodeBlockProps = {
   code: string;
@@ -41,24 +42,18 @@ export function CodeBlock({ code, lang = "text", title, label, copyLabel, copied
   }
 
   return (
-    <figure className={cx("overflow-hidden rounded-ink border-2 border-line bg-[var(--code-bg)] text-[var(--code-fg)] shadow-ink-sm", className)}>
-      <figcaption className="flex min-h-11 items-center gap-2 border-b-2 border-line bg-sunken py-1 ps-3.5 pe-1">
-        <span className="min-w-0 flex-1 truncate ink-kicker">{title}</span>
-        <button
-          type="button"
-          onClick={copy}
-          className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 font-body text-sm font-semibold text-ink hover:bg-surface"
-        >
-          <Icon name={copied ? "check" : "copy"} size={16} />
-          <span aria-live="polite">{copied ? copiedLabel : copyLabel}</span>
-        </button>
+    <figure className={cx("overflow-hidden rounded-xl border border-rule bg-(--code-bg) text-(--code-fg)", className)}>
+      <figcaption className="flex min-h-10 items-center gap-2 bg-sunken ps-3 pe-1">
+        <span className="min-w-0 flex-1 truncate kicker">{title}</span>
+        <IconButton icon={copied ? "check" : "copy"} size="sm" label={copied ? copiedLabel : copyLabel} onClick={copy} />
+        <VisuallyHidden aria-live="polite">{copied ? copiedLabel : ""}</VisuallyHidden>
       </figcaption>
-      <pre tabIndex={0} aria-label={label} className="overflow-x-auto py-3 font-ui text-sm leading-6">
+      <pre tabIndex={0} aria-label={label} className="overflow-x-auto py-3 font-mono text-sm leading-6">
         <code className="block min-w-max">
           {lines.map((tokens, index) => (
             <span
               key={index}
-              className={cx("block pe-4", lineNumbers ? "ps-0" : "ps-4", marked.has(index + 1) && "bg-[var(--code-line)] shadow-[inset_3px_0_0_var(--color-mustard)]")}
+              className={cx("block pe-4", lineNumbers ? "ps-0" : "ps-4", marked.has(index + 1) && "relative bg-(--code-line) before:absolute before:inset-y-0 before:start-0 before:w-0.5 before:bg-accent")}
             >
               {lineNumbers ? (
                 <span aria-hidden="true" className="inline-block w-10 select-none pe-3 text-end text-[var(--code-cm)]">
