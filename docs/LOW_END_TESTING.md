@@ -44,6 +44,8 @@ Use a stopwatch or the Performance tab. Write each number with its unit.
 
 Repeat each timing three times and write all three.
 
+The machine-run budgets and their recorded baselines are in `budgets.json` at the repository root; `node scripts/perf-budget.mjs` checks them.
+
 ## Where to record
 
 Add a row to `docs/device-results.md`. The first tester creates the file with this header and no rows are written for you.
