@@ -232,7 +232,7 @@ export function Diagnostics({ strings, lang }: { strings: Strings; lang: Locale 
           {row(
             "save",
             <div>
-              <label htmlFor="diag-save-file" className="ink-label mb-1 block">{t("diag.save.label")}</label>
+              <label htmlFor="diag-save-file" className="field-label mb-1 block">{t("diag.save.label")}</label>
               <input
                 id="diag-save-file"
                 data-testid="diag-save-file"
@@ -241,7 +241,7 @@ export function Diagnostics({ strings, lang }: { strings: Strings; lang: Locale 
                 disabled={off}
                 aria-describedby="diag-save-hint"
                 onChange={(e) => void timeSaves(e)}
-                className="block w-full max-w-full text-sm file:me-3 file:rounded-full file:border-2 file:border-line file:bg-surface file:px-3 file:py-1 file:font-semibold disabled:opacity-60"
+                className="block w-full max-w-full text-sm file:me-3 file:rounded-lg file:border file:border-rule file:bg-surface file:px-3 file:py-1 file:font-semibold disabled:opacity-60"
               />
               <p id="diag-save-hint" className="mt-1 text-sm text-muted">{t("diag.save.hint")}</p>
             </div>,

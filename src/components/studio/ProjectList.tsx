@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { Button, Callout, Chip, Meter, Panel, TextInput, VisuallyHidden } from "@/components/ui";
+import { Button, Callout, Chip, EmptyState, Meter, Panel, Skeleton, SkeletonGroup, TextInput } from "@/components/ui";
 import type { Locale } from "@/i18n/config";
 import type { Messages } from "@/i18n/namespaces";
 import { createTranslator, type Translate } from "@/i18n/translate";
@@ -321,21 +321,19 @@ export function ProjectList({ strings, lang, host: injected }: ProjectListProps)
           {t("list.title")}
         </h2>
         {phase === "loading" ? (
-          <div className="mt-4 flex flex-col gap-2" role="status" aria-busy="true">
-            <VisuallyHidden>{t("list.loading")}</VisuallyHidden>
+          <SkeletonGroup label={t("list.loading")} className="mt-4 flex flex-col gap-2">
             {[0, 1, 2].map((i) => (
-              <div key={i} className="h-16 animate-pulse rounded-lg bg-sunken motion-reduce:animate-none" />
+              <Skeleton key={i} className="h-16 rounded-lg" />
             ))}
-          </div>
+          </SkeletonGroup>
         ) : phase === "error" ? (
           <Callout tone="danger" className="mt-4" live>
             {t("list.failed")}
           </Callout>
         ) : rows.length === 0 ? (
-          <div className="mt-4 rounded-lg border border-rule px-6 py-12 text-center">
-            <p className="text-lg font-semibold">{t("list.emptyTitle")}</p>
-            <p className="mx-auto mt-2 max-w-[48ch] text-pretty text-muted">{t("list.emptyBody")}</p>
-          </div>
+          <EmptyState bordered className="mt-4" title={t("list.emptyTitle")}>
+            {t("list.emptyBody")}
+          </EmptyState>
         ) : (
           <table data-testid="project-list" className="mt-4 w-full border-collapse text-start">
             <caption className="sr-only">{t("list.title")}</caption>
@@ -389,7 +387,7 @@ export function ProjectList({ strings, lang, host: injected }: ProjectListProps)
                   <td className="py-3 pe-4 text-muted max-md:hidden">{boardName(row.board)}</td>
                   <td className="tabular py-3 pe-4 text-muted max-md:hidden">{formatBytes(lang, row.size)}</td>
                   <td className="py-3 pe-4 max-md:mt-2 max-md:block max-md:py-0">
-                    <Chip tone={row.hasFileCopy ? "mint" : "plain"}>
+                    <Chip tone={row.hasFileCopy ? "good" : "neutral"}>
                       {row.hasFileCopy ? t("list.savedToFile") : t("list.notSavedToFile")}
                     </Chip>
                   </td>
@@ -443,7 +441,7 @@ export function ProjectList({ strings, lang, host: injected }: ProjectListProps)
             <dt className="text-muted">{t("selected.revision")}</dt>
             <dd className="tabular font-mono">{selected.revision}</dd>
             <dt className="text-muted">{t("selected.hash")}</dt>
-            <dd className="font-mono">{selected.hash.slice(0, HASH_PREFIX)}</dd>
+            <dd className="tabular font-mono">{selected.hash.slice(0, HASH_PREFIX)}</dd>
           </dl>
           <p className="mt-4 text-sm text-muted">{t("selected.noEditor")}</p>
         </Panel>
