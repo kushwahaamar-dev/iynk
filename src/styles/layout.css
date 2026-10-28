@@ -6,6 +6,7 @@ html:root {
   --radius-ink-sm: var(--radius-lg, 0.5rem);
   --shell-pad: 16px;
   --frame-pad: 16px;
+  --dock-w: 26rem;
 }
 @media (width >= 40rem) {
   html:root { --shell-pad: 24px; --frame-pad: 24px; }
@@ -179,4 +180,13 @@ html:root {
 
 @media print {
   body { background-image: none; }
+}
+
+/* Where the screen has room, the open lab dock pushes the page over instead of covering the rail, so in a room you can
+   work the steps or the code and still see the keyboard and the chat. Narrower desks keep the overlay. The figure gives
+   up its room first, down to about 34rem, and then the rail, down to 22rem (its width on a 1024 px screen), so a lesson's
+   code stays readable beside the dock on a wide screen (64rem: the dock, the figure's 34rem, the gap and padding). */
+@media (width >= 80rem) {
+  body:has(> [data-testid="lab-dock"][data-layout="desk"]:not([hidden])) > :is(main, footer) { padding-inline-end: var(--dock-w); }
+  body:has(> [data-testid="lab-dock"][data-layout="desk"]:not([hidden])) .ws { grid-template-columns: minmax(0, 1fr) min(var(--rail-w), max(22rem, 100vw - 64rem)); }
 }

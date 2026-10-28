@@ -23,13 +23,13 @@ export async function UntranslatedNotice({ lang, textLang, variant = "block" }: 
         role="note"
         tabIndex={0}
         aria-describedby={id}
-        className="group relative inline-flex min-h-7 items-center gap-1.5 whitespace-nowrap rounded-full border-[1.5px] border-line bg-surface px-2.5 font-body text-xs font-semibold"
+        className="group relative inline-flex min-h-7 items-center gap-2 whitespace-nowrap rounded-full border border-rule bg-surface px-3 font-body text-xs font-semibold"
       >
         <Icon name="globe" size={14} />
         {t("untranslated.title")}
         <span
           id={id}
-          className="pointer-events-none absolute start-0 top-full z-40 mt-2 hidden w-72 whitespace-normal rounded-lg border-[1.5px] border-line bg-ink px-3 py-2 font-normal leading-snug text-paper shadow-ink-sm group-hover:block group-focus-visible:block"
+          className="pointer-events-none absolute start-0 top-full z-tooltip mt-2 hidden w-72 whitespace-normal rounded-lg bg-raised px-3 py-2 font-normal leading-snug text-ink shadow-md group-hover:block group-focus-visible:block"
         >
           {t("untranslated.body")}
         </span>
