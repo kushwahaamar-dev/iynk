@@ -3,12 +3,10 @@ import { DEFAULT_LOCALE, LOCALES, htmlLang, type Locale } from "./config";
 
 /**
  * The absolute base for canonical and hreflang links: SITE_URL when set,
- * else Vercel's production domain, else the local server.
+ * else the local server.
  */
 export function siteUrl(): URL {
   if (process.env.SITE_URL) return new URL(process.env.SITE_URL);
-  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL;
-  if (vercel) return new URL(`https://${vercel}`);
   return new URL("http://localhost:3000");
 }
 

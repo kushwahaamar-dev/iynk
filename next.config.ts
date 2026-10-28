@@ -8,8 +8,8 @@ const nextConfig: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR || ".next",
   // While ~40 agents share one tree, IYNK_BUILD_SKIP_TYPECHECK=1 lets one of
   // them build its routes past another's half-written file; they type-check
-  // with `npm run typecheck` instead. Deploy builds always type-check.
-  typescript: { ignoreBuildErrors: process.env.IYNK_BUILD_SKIP_TYPECHECK === "1" && !process.env.VERCEL },
+  // with `npm run typecheck` instead. Unset it for a release build.
+  typescript: { ignoreBuildErrors: process.env.IYNK_BUILD_SKIP_TYPECHECK === "1" },
   turbopack: {
     rules: {
       "*.css": {

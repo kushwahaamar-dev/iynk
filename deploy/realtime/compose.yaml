@@ -1,5 +1,5 @@
-# iynk realtime relay behind Caddy (automatic HTTPS). scripts/realtime-deploy.sh copies this folder and
-# server/realtime to the VM, writes .env next to this file and runs `docker compose up -d --build`.
+# iynk realtime relay behind Caddy (automatic HTTPS). copy this folder and server/realtime to the VM,
+# write .env next to this file and run `docker compose up -d --build`.
 name: iynk-realtime
 
 services:

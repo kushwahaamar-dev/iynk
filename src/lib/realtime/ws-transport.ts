@@ -21,7 +21,7 @@ type WsOptions = {
   random?: () => number;
 };
 
-/** The relay on Vultr (H7): JSON text frames, a ping every 15 s, reconnect with backoff. */
+/** The relay (H7): JSON text frames, a ping every 15 s, reconnect with backoff. */
 export function createWsTransport(url: string, options: WsOptions = {}): Transport {
   const Impl = options.WebSocketImpl ?? WebSocket;
   const baseDelay = options.baseDelayMs ?? 500;
