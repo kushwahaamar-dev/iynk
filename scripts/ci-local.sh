@@ -76,9 +76,9 @@ run_step() {
     no-only) ! git grep -nE --untracked -e "[.]only[(]" -- src figures scripts e2e server ;;
     copy) node scripts/copy-check.mjs ;;
     provenance) npm run provenance:check ;;
-    relay-deps) npm ci --prefix server/realtime ;;
+    relay-deps) npm ci --prefix server/legacy ;;
     unit) CI=true npx vitest run ;;
-    relay) npm test --prefix server/realtime ;;
+    relay) npm test --prefix server/legacy ;;
     build) npm run build ;;
     e2e) E2E_SKIP_BUILD=1 npx playwright test ;;
     secrets) node scripts/secret-scan.mjs --history ;;

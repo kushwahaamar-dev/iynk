@@ -1,5 +1,5 @@
 // @vitest-environment node
-// Three RoomClients against the real relay in server/realtime, started on a
+// Three RoomClients against the real relay in server/legacy, started on a
 // random port as docs/hacktx/REALTIME.md describes. Skips (with the reason)
 // when the relay or its dependencies aren't there; under CI that is a failure.
 
@@ -14,11 +14,11 @@ import { RoomClient } from "./room";
 import { attachStore } from "./store-sync";
 import { createWsTransport } from "./ws-transport";
 
-const RELAY_DIR = join(process.cwd(), "server/realtime");
+const RELAY_DIR = join(process.cwd(), "server/legacy");
 const missing = !existsSync(join(RELAY_DIR, "server.js"))
-  ? "server/realtime/server.js is not written yet"
+  ? "server/legacy/server.js is not written yet"
   : !existsSync(join(RELAY_DIR, "node_modules/ws"))
-    ? "server/realtime has no node_modules (run npm ci there)"
+    ? "server/legacy has no node_modules (run npm ci there)"
     : typeof WebSocket === "undefined"
       ? "this Node has no global WebSocket"
       : null;
