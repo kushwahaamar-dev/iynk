@@ -27,8 +27,8 @@ export function ProgressBadge({ done, total, label, countText, valueText, size =
   const complete = total > 0 && done >= total;
   const fill = (
     <span
-      className={cx("absolute inset-y-0 start-0 transition-[width] duration-700", complete ? "bg-mint" : "bg-mustard")}
-      style={{ width: `${pct}%` }}
+      className={cx("absolute inset-0 motion-move", complete ? "bg-good" : "bg-accent")}
+      style={{ transform: `scaleX(${pct / 100})`, transformOrigin: "left" }}
     />
   );
   const aria = {
@@ -44,14 +44,14 @@ export function ProgressBadge({ done, total, label, countText, valueText, size =
 
   return (
     <div {...aria} className={cx("flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1", className)}>
-      <span className="ink-kicker min-w-0">{label}</span>
+      <span className="kicker min-w-0">{label}</span>
       <span
         aria-hidden="true"
-        className={cx("relative min-w-16 flex-1 overflow-hidden rounded-full border-[1.5px] border-line bg-sunken", size === "sm" ? "h-2.5" : "h-3")}
+        className={cx("relative min-w-16 flex-1 overflow-hidden rounded-full border border-muted bg-sunken", size === "sm" ? "h-2" : "h-3")}
       >
         {fill}
       </span>
-      <span aria-hidden="true" className={cx("tabular shrink-0 font-ui font-bold", size === "sm" ? "text-sm" : "text-base")}>
+      <span aria-hidden="true" className={cx("tabular shrink-0 font-ui font-semibold", size === "sm" ? "text-sm" : "text-base")}>
         {countText}
       </span>
     </div>
@@ -76,10 +76,10 @@ function CompactProgress({
   const tip = useTip();
   return (
     <div {...aria} onPointerEnter={tip.onPointerEnter} onPointerLeave={tip.onPointerLeave} className={cx("relative inline-flex items-center gap-2", className)}>
-      <span aria-hidden="true" className="relative h-1 w-24 overflow-hidden rounded-full bg-sunken">
+      <span aria-hidden="true" className="relative h-2 w-24 overflow-hidden rounded-full border border-muted bg-sunken">
         {fill}
       </span>
-      <span aria-hidden="true" className="tabular whitespace-nowrap font-ui text-xs font-bold">
+      <span aria-hidden="true" className="tabular whitespace-nowrap font-ui text-xs font-semibold">
         {countText}
       </span>
       <TipBubble open={tip.open} side="bottom" aria-hidden>

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Button } from "./Button";
 import { cx } from "./cx";
 import { Icon } from "./icons";
 
@@ -29,18 +30,18 @@ export function Stepper({ label, steps, statusText, onSelect, orientation = "ver
           <span
             aria-hidden="true"
             className={cx(
-              "flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-line font-ui text-sm font-bold",
-              step.status === "done" && "bg-mint text-on-color",
-              step.status === "current" && "bg-mustard text-on-color shadow-ink-sm",
+              "flex size-8 shrink-0 items-center justify-center rounded-full border border-muted font-ui text-sm font-semibold tabular",
+              step.status === "done" && "bg-good text-paper",
+              step.status === "current" && "bg-accent text-on-accent",
               step.status === "todo" && "bg-surface text-muted",
             )}
           >
-            {step.status === "done" ? <Icon name="check" size={16} strokeWidth={3} /> : index + 1}
+            {step.status === "done" ? <Icon name="check" size={16} /> : index + 1}
           </span>
         );
         const text = (
           <span className="min-w-0 text-start">
-            <span className={cx("block font-body text-sm", step.status === "current" ? "font-bold" : "font-semibold")}>
+            <span className={cx("block font-body text-sm", step.status === "current" ? "font-semibold" : "font-medium")}>
               {step.label}
               {step.status !== "todo" ? <span className="sr-only">, {statusText[step.status]}</span> : null}
             </span>
@@ -60,19 +61,15 @@ export function Stepper({ label, steps, statusText, onSelect, orientation = "ver
             className={cx(
               "relative",
               orientation === "vertical" &&
-                "pb-4 last:pb-0 [&:not(:last-child)]:before:absolute [&:not(:last-child)]:before:start-[15px] [&:not(:last-child)]:before:top-9 [&:not(:last-child)]:before:bottom-1 [&:not(:last-child)]:before:w-0.5 [&:not(:last-child)]:before:bg-line",
+                "pb-4 last:pb-0 [&:not(:last-child)]:before:absolute [&:not(:last-child)]:before:start-7 [&:not(:last-child)]:before:top-10 [&:not(:last-child)]:before:bottom-1 [&:not(:last-child)]:before:w-px [&:not(:last-child)]:before:bg-rule",
             )}
           >
             {onSelect ? (
-              <button
-                type="button"
-                onClick={() => onSelect(step.id)}
-                className="flex min-h-11 w-full items-start gap-3 rounded-lg text-start hover:bg-sunken"
-              >
+              <Button variant="ghost" size="sm" onClick={() => onSelect(step.id)} className="h-auto w-full items-start justify-start gap-3 py-2 text-start">
                 {body}
-              </button>
+              </Button>
             ) : (
-              <div className="flex min-h-11 items-start gap-3">{body}</div>
+              <div className="flex items-start gap-3 px-3 py-2">{body}</div>
             )}
           </li>
         );
