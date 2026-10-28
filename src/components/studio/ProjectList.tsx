@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Button, Callout, Chip, EmptyState, Meter, Panel, Skeleton, SkeletonGroup, TextInput } from "@/components/ui";
 import type { Locale } from "@/i18n/config";
 import type { Messages } from "@/i18n/namespaces";
@@ -22,6 +22,14 @@ export interface ProjectListProps {
   lang: Locale;
   /** Tests pass a host over a memory repository; the page starts the real one. */
   host?: ProjectHost;
+  /** Makes the project New project adds and returns its id. Without it the library makes a blank one. */
+  onNew?: () => Promise<string>;
+  /** Called with the id of a project to show in the editor: after New project, and by a row's Open. Without it Open shows the details panel. */
+  onOpen?: (id: string) => void;
+  /** Shown in the empty state under its text: the way to start when there is nothing yet. */
+  emptyAction?: ReactNode;
+  /** Read the stored AI and search keys on mount. Defaults to on when the list starts its own host. */
+  hydrate?: boolean;
 }
 
 type Phase = "loading" | "ready" | "error";
@@ -92,7 +100,7 @@ async function hydrateStoredKeys(): Promise<void> {
   }
 }
 
-export function ProjectList({ strings, lang, host: injected }: ProjectListProps) {
+export function ProjectList({ strings, lang, host: injected, onNew, onOpen, emptyAction, hydrate = !injected }: ProjectListProps) {
   const t = useMemo(() => createTranslator(lang, strings, `${lang}/studio`), [lang, strings]);
   const [host] = useState(() => injected ?? startHost());
   const [phase, setPhase] = useState<Phase>("loading");
@@ -141,7 +149,7 @@ export function ProjectList({ strings, lang, host: injected }: ProjectListProps)
     });
     let live = true;
     (async () => {
-      if (!injected) await hydrateStoredKeys();
+      if (hydrate) await hydrateStoredKeys();
       await host.library.purgeExpired();
       await refresh();
       if (live) setPhase("ready");
@@ -154,7 +162,7 @@ export function ProjectList({ strings, lang, host: injected }: ProjectListProps)
       channel?.close();
       clearInterval(tick);
     };
-  }, [host, injected, addBanner, refresh]);
+  }, [host, hydrate, addBanner, refresh]);
 
   useEffect(() => {
     if (phase === "ready" && rows.length === 0 && !focusedEmpty.current) {
@@ -194,7 +202,12 @@ export function ProjectList({ strings, lang, host: injected }: ProjectListProps)
   };
 
   const createProject = () =>
-    run("new", async () => created(await host.library.create({ board: "uno", title: t("newName") }), "created"));
+    run("new", async () => {
+      const id = await (onNew ? onNew() : host.library.create({ board: "uno", title: t("newName") }));
+      const message = await created(id, "created");
+      onOpen?.(id);
+      return message;
+    });
 
   const duplicate = (row: LibraryRow) => run(row.id, async () => created(await host.library.fork(row.id), "duplicated"));
 
@@ -224,7 +237,7 @@ export function ProjectList({ strings, lang, host: injected }: ProjectListProps)
       return t("status.savedToFile", { name: row.name });
     });
 
-  const openRow = (row: LibraryRow) =>
+  const showDetails = (row: LibraryRow) =>
     run(row.id, async () => {
       const loaded = await host.load(row.id);
       if (!loaded.state || loaded.revision === undefined || !loaded.hash) throw new Error("unreadable");
@@ -236,6 +249,8 @@ export function ProjectList({ strings, lang, host: injected }: ProjectListProps)
       });
       return null;
     });
+
+  const openRow = (row: LibraryRow) => (onOpen ? onOpen(row.id) : showDetails(row));
 
   const importFile = () =>
     run("file", async () => {
@@ -288,7 +303,7 @@ export function ProjectList({ strings, lang, host: injected }: ProjectListProps)
 
       <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
         <div className="flex flex-wrap gap-3">
-          <Button ref={newButton} variant="primary" onClick={createProject} disabled={anyBusy} aria-busy={busy === "new"}>
+          <Button ref={newButton} variant={emptyAction && phase === "ready" && rows.length === 0 ? "secondary" : "primary"} onClick={createProject} disabled={anyBusy} aria-busy={busy === "new"}>
             {t("newProject")}
           </Button>
           <Button onClick={importFile} disabled={anyBusy} aria-busy={busy === "file"}>
@@ -331,7 +346,7 @@ export function ProjectList({ strings, lang, host: injected }: ProjectListProps)
             {t("list.failed")}
           </Callout>
         ) : rows.length === 0 ? (
-          <EmptyState bordered className="mt-4" title={t("list.emptyTitle")}>
+          <EmptyState bordered className="mt-4" title={t("list.emptyTitle")} action={emptyAction}>
             {t("list.emptyBody")}
           </EmptyState>
         ) : (

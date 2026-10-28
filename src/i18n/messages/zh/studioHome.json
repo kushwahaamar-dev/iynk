@@ -18,5 +18,57 @@
       "label": "单键快捷键",
       "hint": "画布获得焦点时，字母键用来切换工具。"
     }
+  },
+  "starters": {
+    "title": "从示例开始",
+    "lede": "每个示例都会在编辑器中打开为你自己的副本，原示例保持不变。",
+    "listLabel": "示例",
+    "first": {
+      "title": "从 Blink 开始",
+      "body": "一块 Uno、一个 LED 和让它闪烁的程序。打开后即可运行。",
+      "action": "从 Blink 开始"
+    },
+    "opening": "正在打开 {name}",
+    "failed": "无法打开 {name}。请再试一次。",
+    "blink": {
+      "title": "Blink",
+      "description": "13 号引脚上的一个 LED 和一个电阻。"
+    },
+    "button": {
+      "title": "按钮",
+      "description": "按住按钮，LED 就会亮。"
+    },
+    "knob": {
+      "title": "电位器",
+      "description": "旋转旋钮来调节 LED 的亮度。"
+    },
+    "rgb": {
+      "title": "PWM 混色",
+      "description": "用三个 PWM 引脚在 RGB LED 上混出任意颜色。"
+    },
+    "sound": {
+      "title": "蜂鸣器曲调",
+      "description": "压电蜂鸣器播放一串音符。"
+    },
+    "plant": {
+      "title": "I2C 显示屏",
+      "description": "在 OLED 屏幕上显示土壤湿度读数。"
+    },
+    "serial-echo": {
+      "title": "串口回显",
+      "description": "通过串口监视器发送文本并读回。"
+    },
+    "board": {
+      "title": "认识 Uno",
+      "description": "只有开发板，不接任何线。"
+    },
+    "light": {
+      "title": "光线传感器",
+      "description": "天黑时自动亮起的小夜灯。"
+    },
+    "distance": {
+      "title": "距离传感器",
+      "description": "以厘米为单位测距的超声波传感器。"
+    }
   }
 }

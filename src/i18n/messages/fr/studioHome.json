@@ -18,5 +18,57 @@
       "label": "Raccourcis à une touche",
       "hint": "Les touches de lettre changent d’outil quand le canevas a le focus."
     }
+  },
+  "starters": {
+    "title": "Commencer par un exemple",
+    "lede": "Chaque exemple s’ouvre comme votre propre copie dans l’éditeur. L’original reste intact.",
+    "listLabel": "Exemples",
+    "first": {
+      "title": "Commencer par Blink",
+      "body": "Un Uno, une LED et un sketch qui la fait clignoter. Il s’ouvre prêt à être lancé.",
+      "action": "Commencer par Blink"
+    },
+    "opening": "Ouverture de {name}",
+    "failed": "Impossible d’ouvrir {name}. Réessayez.",
+    "blink": {
+      "title": "Blink",
+      "description": "Une LED et une résistance sur la broche 13."
+    },
+    "button": {
+      "title": "Bouton poussoir",
+      "description": "Maintenez un bouton pour allumer une LED."
+    },
+    "knob": {
+      "title": "Potentiomètre",
+      "description": "Tournez un bouton pour régler la luminosité d’une LED."
+    },
+    "rgb": {
+      "title": "Mélange de couleurs en PWM",
+      "description": "Mélangez n’importe quelle couleur sur une LED RVB avec trois broches PWM."
+    },
+    "sound": {
+      "title": "Mélodie au buzzer",
+      "description": "Un buzzer piézo joue une liste de notes."
+    },
+    "plant": {
+      "title": "Écran I2C",
+      "description": "Une mesure d’humidité du sol affichée sur un écran OLED."
+    },
+    "serial-echo": {
+      "title": "Écho série",
+      "description": "Envoyez du texte par le moniteur série et relisez-le."
+    },
+    "board": {
+      "title": "Découvrir l’Uno",
+      "description": "La carte seule, sans câblage."
+    },
+    "light": {
+      "title": "Capteur de lumière",
+      "description": "Une veilleuse qui s’allume quand la pièce s’assombrit."
+    },
+    "distance": {
+      "title": "Capteur de distance",
+      "description": "Un capteur à ultrasons qui mesure en centimètres."
+    }
   }
 }

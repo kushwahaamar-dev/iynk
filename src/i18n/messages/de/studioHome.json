@@ -18,5 +18,57 @@
       "label": "Einzeltasten-Kürzel",
       "hint": "Buchstabentasten wechseln das Werkzeug, solange die Zeichenfläche den Fokus hat."
     }
+  },
+  "starters": {
+    "title": "Mit einem Beispiel starten",
+    "lede": "Jedes Beispiel öffnet sich als deine eigene Kopie im Editor. Das Original bleibt unverändert.",
+    "listLabel": "Beispiele",
+    "first": {
+      "title": "Mit Blink starten",
+      "body": "Ein Uno, eine LED und ein Sketch, der sie blinken lässt. Es öffnet sich startbereit.",
+      "action": "Mit Blink starten"
+    },
+    "opening": "{name} wird geöffnet",
+    "failed": "{name} konnte nicht geöffnet werden. Versuche es noch einmal.",
+    "blink": {
+      "title": "Blink",
+      "description": "Eine LED und ein Widerstand an Pin 13."
+    },
+    "button": {
+      "title": "Taster",
+      "description": "Halte einen Taster gedrückt, damit eine LED leuchtet."
+    },
+    "knob": {
+      "title": "Potentiometer",
+      "description": "Mit einem Drehknopf die Helligkeit einer LED einstellen."
+    },
+    "rgb": {
+      "title": "PWM-Farbmischung",
+      "description": "Mische mit drei PWM-Pins jede Farbe auf einer RGB-LED."
+    },
+    "sound": {
+      "title": "Summer-Melodie",
+      "description": "Ein Piezo-Summer spielt eine Liste von Noten."
+    },
+    "plant": {
+      "title": "I2C-Display",
+      "description": "Ein Bodenfeuchtewert auf einem OLED-Display."
+    },
+    "serial-echo": {
+      "title": "Serielles Echo",
+      "description": "Text über den seriellen Monitor senden und zurücklesen."
+    },
+    "board": {
+      "title": "Der Uno im Überblick",
+      "description": "Das Board allein, ohne Verdrahtung."
+    },
+    "light": {
+      "title": "Lichtsensor",
+      "description": "Ein Nachtlicht, das angeht, wenn es dunkel wird."
+    },
+    "distance": {
+      "title": "Abstandssensor",
+      "description": "Ein Ultraschallsensor, der in Zentimetern misst."
+    }
   }
 }

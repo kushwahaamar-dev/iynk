@@ -173,4 +173,15 @@ test.describe("the first milestone, headless to the page", () => {
     await page.reload();
     await expect(page.getByText(studio.list.emptyTitle)).toBeVisible({ timeout: 15_000 });
   });
+
+  test("shows New project with the diagnostics section and asks nothing outside the app origin (M1 step 1)", async ({ page }) => {
+    const origins = new Set<string>();
+    page.on("request", (request) => {
+      if (/^https?:/.test(request.url())) origins.add(new URL(request.url()).origin);
+    });
+    await openStudio(page);
+    await expect(page.getByTestId("diagnostics")).toBeVisible();
+    await page.waitForLoadState("networkidle");
+    expect([...origins]).toEqual([new URL(page.url()).origin]);
+  });
 });
