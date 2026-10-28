@@ -2,19 +2,18 @@
 
 import { useSyncExternalStore } from "react";
 import type { Features as ServerFeatures } from "@/lib/server/env";
+import { fetchConfig, type ConfigDoc } from "@/server-client/probe";
 
 export type Features = ServerFeatures & { hw: boolean };
 
 /**
- * Which hackathon features this deployment has (GET /api/status, HX-CONTRACT H2).
+ * Which hackathon features this deployment has (GET /config.json).
  * The server render and the first client render see "loading" with every
  * feature off; the answer is fetched once per page load and shared by every
- * caller. "error" means the server could not be reached, which is a different
- * state from a feature that is not set up.
+ * caller. "error" means the config could not be fetched, which is a different
+ * state from a feature that is not set up (a static host has no config at all).
  */
 export type FeatureState = { status: "loading" | "ready" | "error"; features: Features };
-
-const FEATURE_KEYS = ["ai", "voice", "search", "realtime", "gemini", "hw"] as const satisfies readonly (keyof Features)[];
 
 export const NO_FEATURES: Features = Object.freeze({
   ai: false,
@@ -36,24 +35,14 @@ function publish(next: FeatureState) {
   for (const listener of listeners) listener();
 }
 
-function normalize(raw: unknown): Features {
-  const source = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
-  const out = { ...NO_FEATURES };
-  for (const key of FEATURE_KEYS) out[key] = source[key] === true;
-  // Hardware stays off until phase 4, even if a status payload says otherwise.
-  out.hw = false;
-  return out;
+function featuresOf(config: ConfigDoc | null): Features {
+  // Realtime and hardware stay off until later phases; gemini has no reader.
+  return { ...NO_FEATURES, ...config?.modules };
 }
 
 async function fetchFeatures(): Promise<void> {
-  try {
-    const res = await fetch("/api/status", { headers: { accept: "application/json" } });
-    if (!res.ok) throw new Error(`status ${res.status}`);
-    const body = (await res.json()) as { features?: unknown };
-    publish({ status: "ready", features: normalize(body.features) });
-  } catch {
-    publish({ status: "error", features: NO_FEATURES });
-  }
+  const result = await fetchConfig();
+  publish(result.ok ? { status: "ready", features: featuresOf(result.config) } : { status: "error", features: NO_FEATURES });
 }
 
 /** One request at a time, and none once the answer is in. */

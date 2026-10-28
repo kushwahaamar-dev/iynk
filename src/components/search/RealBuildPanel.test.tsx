@@ -46,11 +46,11 @@ const offer = (title: string, price: number, extra: Partial<Offer> = {}): Offer 
   ...extra,
 });
 
-/** The fake server: /api/status says search is on; offers answer per key from `prices`. */
+/** The fake server: /config.json says search is on; offers answer per key from `prices`. */
 function server(prices: Record<string, PartOffers["offers"]>) {
   return vi.fn(async (input: string | URL | Request, init?: RequestInit) => {
     const path = String(input);
-    if (path === "/api/status") return Response.json({ features: { search: true } });
+    if (path === "/config.json") return Response.json({ server: null, protocol: 1, modules: { ai: false, search: true, voice: false } });
     if (path === "/api/search/offers") {
       const body = JSON.parse(String(init?.body)) as { parts: { key: string }[] };
       return Response.json({
@@ -163,7 +163,7 @@ describe("RealBuildPanel", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(async (input: string | URL | Request) =>
-        String(input) === "/api/status" ? Response.json({ features: { search: false } }) : new Response("not found", { status: 404 }),
+        String(input) === "/config.json" ? Response.json({ server: null, protocol: 1, modules: { ai: false, search: false, voice: false } }) : new Response("not found", { status: 404 }),
       ),
     );
     const { RealBuildPanel: Panel } = await import("./RealBuildPanel");

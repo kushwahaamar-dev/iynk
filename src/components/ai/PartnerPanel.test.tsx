@@ -27,7 +27,7 @@ type Handler = (body: Record<string, unknown>) => Response;
 function mockFetch(features: Record<string, boolean>, chat: Handler[]) {
   const bodies: Array<Record<string, unknown>> = [];
   const fetch = vi.fn(async (url: string, init?: RequestInit) => {
-    if (url === "/api/status") return Response.json({ features });
+    if (url === "/config.json") return Response.json({ server: null, protocol: 1, modules: features });
     if (url === "/api/ai/chat") {
       const body = JSON.parse(init!.body as string) as Record<string, unknown>;
       bodies.push(body);

@@ -1,7 +1,7 @@
 import { expect, test } from "./support/no-egress";
 
 const PAGES = ["/en", "/en/about", "/en/boards/uno-r3/blink", "/en/does-not-exist"];
-const OTHERS = ["/api/status", "/api/openapi.json", "/figures/boards/uno-r3.html"];
+const OTHERS = ["/config.json", "/api/openapi.json", "/figures/boards/uno-r3.html"];
 
 const EXPECTED = {
   "x-content-type-options": "nosniff",

@@ -10,7 +10,6 @@ import { unauthorized } from "./http";
 export type RouteClass = "local-only" | "needs-server-token" | "needs-user-key";
 
 export const ROUTE_CLASSES: Readonly<Record<string, RouteClass>> = {
-  "status/route.ts": "local-only",
   "openapi.json/route.ts": "local-only",
   "ai/chat/route.ts": "needs-server-token",
   "ai/transcribe/route.ts": "needs-server-token",
