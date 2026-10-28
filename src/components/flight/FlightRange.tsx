@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type ComponentProps, type KeyboardEvent } from "react";
 import { FigureFrame, type FigureEvent, type FigureHandle } from "@/components/figure";
 import { Button, cx, IconButton, type IconName, Kbd, Select, Stat, Toggle } from "@/components/ui";
 import type { ParTimes } from "@/content/schema";
@@ -687,26 +687,26 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
           </>
         ) : (
           <>
-            <Button aria-keyshortcuts="R" onClick={() => act({ type: "reset" })} className="shrink-0 whitespace-nowrap">
+            <RowButton aria-keyshortcuts="R" onClick={() => act({ type: "reset" })}>
               {dict.buttons.reset}
-            </Button>
-            <Button aria-pressed={fpv} aria-keyshortcuts="V" onClick={toggleFpv} className="shrink-0 whitespace-nowrap">
+            </RowButton>
+            <RowButton aria-pressed={fpv} aria-keyshortcuts="V" onClick={toggleFpv}>
               {dict.buttons.fpv}
-            </Button>
-            <Button aria-pressed={snap.windOn} onClick={toggleWind} className="shrink-0 whitespace-nowrap">
+            </RowButton>
+            <RowButton aria-pressed={snap.windOn} onClick={toggleWind}>
               {dict.buttons.wind}
-            </Button>
+            </RowButton>
           </>
         )}
         {coarse ? null : (
           <>
             <span className="ms-auto" />
-            <Button variant="ghost" size="sm" aria-expanded={panel === "pad"} onClick={() => toggle("pad")} className="shrink-0 whitespace-nowrap">
+            <RowButton aria-expanded={panel === "pad"} onClick={() => toggle("pad")}>
               {dict.buttons.gamepad}
-            </Button>
-            <Button variant="ghost" size="sm" aria-expanded={panel === "legend"} onClick={() => toggle("legend")} className="shrink-0 whitespace-nowrap">
+            </RowButton>
+            <RowButton aria-expanded={panel === "legend"} onClick={() => toggle("legend")}>
               {dict.buttons.legend}
-            </Button>
+            </RowButton>
           </>
         )}
       </div>
@@ -814,6 +814,18 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
         </div>
       </div>
     </div>
+  );
+}
+
+/** A quiet outlined button for the toolbar row: on or open shows as a tinted fill, not a black one. */
+function RowButton({ className, ...rest }: ComponentProps<typeof Button>) {
+  return (
+    <Button
+      variant="ghost"
+      outline
+      className={cx("shrink-0 whitespace-nowrap aria-expanded:!bg-sunken aria-pressed:!bg-sunken aria-pressed:!text-ink aria-pressed:border-ink aria-expanded:border-ink", className)}
+      {...rest}
+    />
   );
 }
 
