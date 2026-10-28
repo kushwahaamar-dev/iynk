@@ -1,1 +1,21 @@
-{}
+{
+  "title": "Code",
+  "files": "Code files",
+  "editor": "Code of {path}",
+  "noFiles": "This project has no code files",
+  "noFilesHint": "Parts that run code, such as a board, bring a firmware file with them.",
+  "errors": "Errors: {count}",
+  "position": "Line {line}, column {col}",
+  "plain": "Plain text",
+  "readOnly": "Read only",
+  "copy": "Copy code",
+  "copied": "Copied",
+  "run": "Run",
+  "escape": "Press Esc, then Tab, to leave the editor.",
+  "tooBig": "That edit would make the file larger than 256 KB, so it was not applied.",
+  "failed": "The edit could not be saved. The editor shows the saved text again.",
+  "marker": {
+    "error": "Error, line {line}, column {col}:",
+    "warning": "Warning, line {line}, column {col}:"
+  }
+}

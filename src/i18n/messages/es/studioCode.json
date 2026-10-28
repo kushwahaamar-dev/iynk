@@ -1,1 +1,21 @@
-{}
+{
+  "title": "Código",
+  "files": "Archivos de código",
+  "editor": "Código de {path}",
+  "noFiles": "Este proyecto no tiene archivos de código",
+  "noFilesHint": "Las piezas que ejecutan código, como una placa, traen su archivo de firmware.",
+  "errors": "Errores: {count}",
+  "position": "Línea {line}, columna {col}",
+  "plain": "Texto sin formato",
+  "readOnly": "Solo lectura",
+  "copy": "Copiar código",
+  "copied": "Copiado",
+  "run": "Ejecutar",
+  "escape": "Pulsa Esc y después Tab para salir del editor.",
+  "tooBig": "Ese cambio haría el archivo mayor de 256 KB, así que no se aplicó.",
+  "failed": "No se pudo guardar el cambio. El editor vuelve a mostrar el texto guardado.",
+  "marker": {
+    "error": "Error, línea {line}, columna {col}:",
+    "warning": "Aviso, línea {line}, columna {col}:"
+  }
+}

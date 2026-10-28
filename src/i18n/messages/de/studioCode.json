@@ -1,1 +1,21 @@
-{}
+{
+  "title": "Code",
+  "files": "Codedateien",
+  "editor": "Code von {path}",
+  "noFiles": "Dieses Projekt hat keine Codedateien",
+  "noFilesHint": "Bauteile, die Code ausführen, etwa ein Board, bringen eine Firmware-Datei mit.",
+  "errors": "Fehler: {count}",
+  "position": "Zeile {line}, Spalte {col}",
+  "plain": "Nur Text",
+  "readOnly": "Schreibgeschützt",
+  "copy": "Code kopieren",
+  "copied": "Kopiert",
+  "run": "Starten",
+  "escape": "Mit Esc und dann Tab verlässt du den Editor.",
+  "tooBig": "Diese Änderung würde die Datei über 256 KB groß machen, deshalb wurde sie nicht übernommen.",
+  "failed": "Die Änderung konnte nicht gespeichert werden. Der Editor zeigt wieder den gespeicherten Text.",
+  "marker": {
+    "error": "Fehler, Zeile {line}, Spalte {col}:",
+    "warning": "Warnung, Zeile {line}, Spalte {col}:"
+  }
+}
