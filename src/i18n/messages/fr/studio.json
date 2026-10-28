@@ -1,0 +1,103 @@
+{
+  "meta": {
+    "title": "Projets",
+    "description": "Vos projets iynk, conservés dans ce navigateur. Créez, renommez, dupliquez, enregistrez dans un fichier et restaurez."
+  },
+  "title": "Projets",
+  "lede": "Tout ce qui est ici reste dans ce navigateur. Rien n’est envoyé nulle part.",
+  "newProject": "Nouveau projet",
+  "newName": "Blink",
+  "openFromFile": "Ouvrir depuis un fichier",
+  "storage": {
+    "label": "Espace utilisé",
+    "value": "{used} sur {quota}",
+    "unknown": "Ce navigateur n’indique pas l’espace restant."
+  },
+  "list": {
+    "title": "Vos projets",
+    "loading": "Chargement des projets",
+    "failed": "Les projets n’ont pas pu être lus. Rechargez la page pour réessayer.",
+    "emptyTitle": "Aucun projet pour l’instant",
+    "emptyBody": "Commencez par un projet Blink pour l’Uno. Il est enregistré dans ce navigateur au fur et à mesure.",
+    "columns": {
+      "name": "Nom",
+      "board": "Carte",
+      "size": "Taille",
+      "file": "Copie en fichier",
+      "actions": "Actions"
+    },
+    "savedToFile": "Enregistré dans un fichier",
+    "notSavedToFile": "Non enregistré"
+  },
+  "board": {
+    "unoR3": "Arduino Uno R3"
+  },
+  "row": {
+    "open": "Ouvrir {name}",
+    "saveToFile": "Enregistrer {name} dans un fichier",
+    "rename": "Renommer {name}",
+    "duplicate": "Dupliquer {name}",
+    "delete": "Supprimer {name}",
+    "openText": "Ouvrir",
+    "saveToFileText": "Enregistrer dans un fichier",
+    "renameText": "Renommer",
+    "duplicateText": "Dupliquer",
+    "deleteText": "Supprimer",
+    "couldNotOpen": "Ce projet n’a pas pu être ouvert. Enregistrer dans un fichier garde une copie de ce qui est stocké.",
+    "failed": "Cela n’a pas fonctionné. Réessayez."
+  },
+  "rename": {
+    "label": "Nouveau nom pour {name}",
+    "save": "Enregistrer le nom",
+    "cancel": "Annuler",
+    "invalid": "Utilisez de 1 à 120 caractères."
+  },
+  "selected": {
+    "title": "Projet ouvert",
+    "name": "Nom",
+    "board": "Carte",
+    "revision": "Révision",
+    "hash": "Empreinte",
+    "noEditor": "L’éditeur arrive à une étape ultérieure. Cette page liste et conserve vos projets.",
+    "close": "Fermer les détails"
+  },
+  "trash": {
+    "title": "Corbeille",
+    "lede": "Les projets supprimés restent ici 30 jours.",
+    "empty": "La corbeille est vide.",
+    "restore": "Restaurer {name}",
+    "restoreText": "Restaurer",
+    "emptyTrash": "Vider la corbeille"
+  },
+  "banner": {
+    "degradedTitle": "Les projets ne seront pas conservés",
+    "degraded": "Ce navigateur ne laisse pas iynk stocker de données, donc les projets durent seulement jusqu’à la fermeture de l’onglet. Enregistrer dans un fichier garde une copie.",
+    "recoveredTitle": "Une sauvegarde endommagée a été remplacée",
+    "recovered": "La dernière sauvegarde de {name} était endommagée, donc la copie précédente a été ouverte.",
+    "lostTitle": "Un projet n’a pas pu être lu",
+    "lost": "Les deux copies enregistrées de {name} sont endommagées. Rien n’a été supprimé.",
+    "quotaTitle": "Plus d’espace",
+    "quota": "Le navigateur n’a plus de place pour ce projet. Enregistrez-le dans un fichier, puis supprimez ce dont vous n’avez plus besoin.",
+    "otherTabTitle": "Modifié dans un autre onglet",
+    "otherTab": "Un projet a été enregistré dans un autre onglet. La liste est à jour.",
+    "fileTitle": "Pas enregistré dans un fichier",
+    "file": "Certains projets n’ont pas de copie dans un fichier depuis plus de 10 minutes. Enregistrer dans un fichier garde une copie que vous maîtrisez.",
+    "newerTitle": "Ce fichier vient d’un iynk plus récent",
+    "newer": "{name} a été enregistré par une version plus récente et ne peut pas être ouvert ici. Le téléchargement rend le fichier tel quel.",
+    "newerDownload": "Télécharger {name}",
+    "importTitle": "Ce fichier n’a pas pu être ouvert",
+    "importTooLarge": "{name} dépasse la taille maximale.",
+    "importDamaged": "{name} n’est pas un projet iynk valide.",
+    "dismiss": "Fermer"
+  },
+  "status": {
+    "created": "{name} créé",
+    "renamed": "Renommé en {name}",
+    "duplicated": "Dupliqué sous le nom {name}",
+    "trashed": "{name} déplacé dans la corbeille",
+    "restored": "{name} restauré",
+    "savedToFile": "{name} enregistré dans un fichier",
+    "imported": "{name} ouvert depuis un fichier",
+    "importedForked": "{name} ouvert depuis un fichier comme nouveau projet"
+  }
+}

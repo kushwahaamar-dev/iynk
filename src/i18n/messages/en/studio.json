@@ -1,0 +1,103 @@
+{
+  "meta": {
+    "title": "Projects",
+    "description": "Your iynk projects, kept in this browser. Create, rename, duplicate, save to a file and restore."
+  },
+  "title": "Projects",
+  "lede": "Everything here is stored in this browser. Nothing is sent anywhere.",
+  "newProject": "New project",
+  "newName": "Blink",
+  "openFromFile": "Open from file",
+  "storage": {
+    "label": "Space used",
+    "value": "{used} of {quota}",
+    "unknown": "This browser does not say how much space is left."
+  },
+  "list": {
+    "title": "Your projects",
+    "loading": "Loading projects",
+    "failed": "The projects could not be read. Reload the page to try again.",
+    "emptyTitle": "No projects yet",
+    "emptyBody": "Start with a Blink project for the Uno. It is saved in this browser as you go.",
+    "columns": {
+      "name": "Name",
+      "board": "Board",
+      "size": "Size",
+      "file": "File copy",
+      "actions": "Actions"
+    },
+    "savedToFile": "Saved to file",
+    "notSavedToFile": "Not saved"
+  },
+  "board": {
+    "unoR3": "Arduino Uno R3"
+  },
+  "row": {
+    "open": "Open {name}",
+    "saveToFile": "Save {name} to file",
+    "rename": "Rename {name}",
+    "duplicate": "Duplicate {name}",
+    "delete": "Delete {name}",
+    "openText": "Open",
+    "saveToFileText": "Save to file",
+    "renameText": "Rename",
+    "duplicateText": "Duplicate",
+    "deleteText": "Delete",
+    "couldNotOpen": "Could not open this project. Save to file keeps a copy of what is stored.",
+    "failed": "That did not work. Try again."
+  },
+  "rename": {
+    "label": "New name for {name}",
+    "save": "Save name",
+    "cancel": "Cancel",
+    "invalid": "Use 1 to 120 characters."
+  },
+  "selected": {
+    "title": "Open project",
+    "name": "Name",
+    "board": "Board",
+    "revision": "Revision",
+    "hash": "Hash",
+    "noEditor": "The editor arrives in a later step. This page lists and keeps your projects.",
+    "close": "Close details"
+  },
+  "trash": {
+    "title": "Trash",
+    "lede": "Deleted projects stay here for 30 days.",
+    "empty": "The trash is empty.",
+    "restore": "Restore {name}",
+    "restoreText": "Restore",
+    "emptyTrash": "Empty trash"
+  },
+  "banner": {
+    "degradedTitle": "Projects will not be kept",
+    "degraded": "This browser is not letting iynk store data, so projects last only until you close the tab. Save to file keeps a copy.",
+    "recoveredTitle": "A damaged save was replaced",
+    "recovered": "The last save of {name} was damaged, so the previous copy was opened.",
+    "lostTitle": "A project could not be read",
+    "lost": "Both saved copies of {name} are damaged. Nothing was deleted.",
+    "quotaTitle": "Out of space",
+    "quota": "The browser has no room left for this project. Save to file, then delete something you no longer need.",
+    "otherTabTitle": "Changed in another tab",
+    "otherTab": "A project was saved in another tab. The list is up to date.",
+    "fileTitle": "Not saved to a file",
+    "file": "Some projects have been here for over 10 minutes without a copy in a file. Save to file keeps a copy you control.",
+    "newerTitle": "This file is from a newer iynk",
+    "newer": "{name} was saved by a newer version, so it cannot be opened here. Download gives the file back unchanged.",
+    "newerDownload": "Download {name}",
+    "importTitle": "That file could not be opened",
+    "importTooLarge": "{name} is over the size limit.",
+    "importDamaged": "{name} is not a valid iynk project.",
+    "dismiss": "Dismiss"
+  },
+  "status": {
+    "created": "Created {name}",
+    "renamed": "Renamed to {name}",
+    "duplicated": "Duplicated as {name}",
+    "trashed": "{name} moved to the trash",
+    "restored": "Restored {name}",
+    "savedToFile": "Saved {name} to file",
+    "imported": "Opened {name} from file",
+    "importedForked": "Opened {name} from file as a new project"
+  }
+}

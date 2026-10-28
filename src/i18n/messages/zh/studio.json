@@ -1,0 +1,103 @@
+{
+  "meta": {
+    "title": "项目",
+    "description": "你的 iynk 项目，保存在这个浏览器里。可以新建、重命名、复制、存到文件和恢复。"
+  },
+  "title": "项目",
+  "lede": "这里的一切都存在这个浏览器里，不会发送到任何地方。",
+  "newProject": "新建项目",
+  "newName": "Blink",
+  "openFromFile": "从文件打开",
+  "storage": {
+    "label": "已用空间",
+    "value": "已用 {used}，共 {quota}",
+    "unknown": "这个浏览器没有说明还剩多少空间。"
+  },
+  "list": {
+    "title": "你的项目",
+    "loading": "正在加载项目",
+    "failed": "无法读取项目。请刷新页面后重试。",
+    "emptyTitle": "还没有项目",
+    "emptyBody": "从 Uno 的 Blink 项目开始。你操作时它会自动保存在这个浏览器里。",
+    "columns": {
+      "name": "名称",
+      "board": "开发板",
+      "size": "大小",
+      "file": "文件副本",
+      "actions": "操作"
+    },
+    "savedToFile": "已存到文件",
+    "notSavedToFile": "未保存"
+  },
+  "board": {
+    "unoR3": "Arduino Uno R3"
+  },
+  "row": {
+    "open": "打开 {name}",
+    "saveToFile": "将 {name} 存到文件",
+    "rename": "重命名 {name}",
+    "duplicate": "复制 {name}",
+    "delete": "删除 {name}",
+    "openText": "打开",
+    "saveToFileText": "存到文件",
+    "renameText": "重命名",
+    "duplicateText": "复制",
+    "deleteText": "删除",
+    "couldNotOpen": "无法打开这个项目。存到文件可以保留已存内容的一份副本。",
+    "failed": "没有成功，请重试。"
+  },
+  "rename": {
+    "label": "{name} 的新名称",
+    "save": "保存名称",
+    "cancel": "取消",
+    "invalid": "请使用 1 到 120 个字符。"
+  },
+  "selected": {
+    "title": "已打开的项目",
+    "name": "名称",
+    "board": "开发板",
+    "revision": "修订",
+    "hash": "哈希",
+    "noEditor": "编辑器会在后面的步骤加入。这个页面负责列出和保管你的项目。",
+    "close": "关闭详情"
+  },
+  "trash": {
+    "title": "回收站",
+    "lede": "删除的项目在这里保留 30 天。",
+    "empty": "回收站是空的。",
+    "restore": "恢复 {name}",
+    "restoreText": "恢复",
+    "emptyTrash": "清空回收站"
+  },
+  "banner": {
+    "degradedTitle": "项目不会被保留",
+    "degraded": "这个浏览器不允许 iynk 存储数据，项目只会保留到你关闭标签页为止。存到文件可以留下一份副本。",
+    "recoveredTitle": "已替换损坏的存档",
+    "recovered": "{name} 的最近一次存档已损坏，所以打开了上一份副本。",
+    "lostTitle": "有一个项目无法读取",
+    "lost": "{name} 的两份存档都已损坏。没有删除任何内容。",
+    "quotaTitle": "空间已满",
+    "quota": "浏览器里没有空间容纳这个项目了。请先存到文件，再删除不需要的内容。",
+    "otherTabTitle": "在另一个标签页中有改动",
+    "otherTab": "另一个标签页保存了一个项目。列表已是最新。",
+    "fileTitle": "未存到文件",
+    "file": "有些项目已超过 10 分钟没有文件副本。存到文件可以留下一份由你掌控的副本。",
+    "newerTitle": "这个文件来自更新版本的 iynk",
+    "newer": "{name} 由更新的版本保存，所以无法在这里打开。下载会原样返还这个文件。",
+    "newerDownload": "下载 {name}",
+    "importTitle": "无法打开该文件",
+    "importTooLarge": "{name} 超出了大小限制。",
+    "importDamaged": "{name} 不是有效的 iynk 项目。",
+    "dismiss": "关闭"
+  },
+  "status": {
+    "created": "已创建 {name}",
+    "renamed": "已重命名为 {name}",
+    "duplicated": "已复制为 {name}",
+    "trashed": "{name} 已移到回收站",
+    "restored": "已恢复 {name}",
+    "savedToFile": "已将 {name} 存到文件",
+    "imported": "已从文件打开 {name}",
+    "importedForked": "已从文件将 {name} 作为新项目打开"
+  }
+}

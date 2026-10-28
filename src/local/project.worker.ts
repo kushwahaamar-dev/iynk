@@ -1,6 +1,7 @@
 import { serveWorker, type WorkerScopeLike } from "@/protocol";
 import { DbError, openDb } from "./db";
 import { createProjectHandler } from "./project-handler";
+import type { ProjectEv, ProjectReq } from "./project-protocol";
 import { createIdbRepository } from "./idb-repository";
 import { createMemoryRepository } from "./memory-repository";
 import { createShadow } from "./shadow";
@@ -29,9 +30,9 @@ async function openRepository() {
   }
 }
 
-void openRepository().then(({ repo, progress, degraded }) => {
-  serveWorker(
-    self as unknown as WorkerScopeLike,
-    createProjectHandler({ repo, shadowFactory: createShadow, clock: Date.now, degraded, progress }),
-  );
-});
+// The listener goes up at once: a request posted while the database is still opening would otherwise be lost.
+const handler = openRepository().then(({ repo, progress, degraded }) =>
+  createProjectHandler({ repo, shadowFactory: createShadow, clock: Date.now, degraded, progress }),
+);
+
+serveWorker<ProjectReq, ProjectEv>(self as unknown as WorkerScopeLike, async (msg, emit) => (await handler)(msg, emit));

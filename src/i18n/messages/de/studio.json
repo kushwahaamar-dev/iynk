@@ -1,0 +1,103 @@
+{
+  "meta": {
+    "title": "Projekte",
+    "description": "Deine iynk-Projekte, gespeichert in diesem Browser. Erstellen, umbenennen, duplizieren, in eine Datei sichern und wiederherstellen."
+  },
+  "title": "Projekte",
+  "lede": "Alles hier liegt in diesem Browser. Nichts wird irgendwohin gesendet.",
+  "newProject": "Neues Projekt",
+  "newName": "Blink",
+  "openFromFile": "Aus Datei öffnen",
+  "storage": {
+    "label": "Belegter Speicher",
+    "value": "{used} von {quota}",
+    "unknown": "Dieser Browser sagt nicht, wie viel Platz noch frei ist."
+  },
+  "list": {
+    "title": "Deine Projekte",
+    "loading": "Projekte werden geladen",
+    "failed": "Die Projekte konnten nicht gelesen werden. Lade die Seite neu und versuche es noch einmal.",
+    "emptyTitle": "Noch keine Projekte",
+    "emptyBody": "Starte mit einem Blink-Projekt für den Uno. Es wird beim Arbeiten in diesem Browser gespeichert.",
+    "columns": {
+      "name": "Name",
+      "board": "Board",
+      "size": "Größe",
+      "file": "Dateikopie",
+      "actions": "Aktionen"
+    },
+    "savedToFile": "In Datei gesichert",
+    "notSavedToFile": "Nicht gesichert"
+  },
+  "board": {
+    "unoR3": "Arduino Uno R3"
+  },
+  "row": {
+    "open": "{name} öffnen",
+    "saveToFile": "{name} in Datei sichern",
+    "rename": "{name} umbenennen",
+    "duplicate": "{name} duplizieren",
+    "delete": "{name} löschen",
+    "openText": "Öffnen",
+    "saveToFileText": "In Datei sichern",
+    "renameText": "Umbenennen",
+    "duplicateText": "Duplizieren",
+    "deleteText": "Löschen",
+    "couldNotOpen": "Dieses Projekt konnte nicht geöffnet werden. Mit „In Datei sichern“ bleibt eine Kopie des Gespeicherten erhalten.",
+    "failed": "Das hat nicht geklappt. Versuche es noch einmal."
+  },
+  "rename": {
+    "label": "Neuer Name für {name}",
+    "save": "Namen speichern",
+    "cancel": "Abbrechen",
+    "invalid": "Nimm 1 bis 120 Zeichen."
+  },
+  "selected": {
+    "title": "Geöffnetes Projekt",
+    "name": "Name",
+    "board": "Board",
+    "revision": "Revision",
+    "hash": "Hash",
+    "noEditor": "Der Editor folgt in einem späteren Schritt. Diese Seite listet deine Projekte auf und bewahrt sie.",
+    "close": "Details schließen"
+  },
+  "trash": {
+    "title": "Papierkorb",
+    "lede": "Gelöschte Projekte bleiben hier 30 Tage.",
+    "empty": "Der Papierkorb ist leer.",
+    "restore": "{name} wiederherstellen",
+    "restoreText": "Wiederherstellen",
+    "emptyTrash": "Papierkorb leeren"
+  },
+  "banner": {
+    "degradedTitle": "Projekte werden nicht behalten",
+    "degraded": "Dieser Browser lässt iynk keine Daten speichern. Projekte halten nur, bis du den Tab schließt. Mit „In Datei sichern“ bleibt eine Kopie erhalten.",
+    "recoveredTitle": "Ein beschädigter Stand wurde ersetzt",
+    "recovered": "Der letzte Stand von {name} war beschädigt, darum wurde die vorherige Kopie geöffnet.",
+    "lostTitle": "Ein Projekt konnte nicht gelesen werden",
+    "lost": "Beide gespeicherten Kopien von {name} sind beschädigt. Es wurde nichts gelöscht.",
+    "quotaTitle": "Kein Speicherplatz mehr",
+    "quota": "Im Browser ist kein Platz mehr für dieses Projekt. Sichere es in eine Datei und lösche dann etwas, das du nicht mehr brauchst.",
+    "otherTabTitle": "In einem anderen Tab geändert",
+    "otherTab": "In einem anderen Tab wurde ein Projekt gespeichert. Die Liste ist aktuell.",
+    "fileTitle": "Nicht in eine Datei gesichert",
+    "file": "Einige Projekte sind seit über 10 Minuten ohne Kopie in einer Datei. Mit „In Datei sichern“ behältst du eine Kopie unter deiner Kontrolle.",
+    "newerTitle": "Diese Datei stammt von einem neueren iynk",
+    "newer": "{name} wurde von einer neueren Version gespeichert und lässt sich hier nicht öffnen. Mit dem Download bekommst du die Datei unverändert zurück.",
+    "newerDownload": "{name} herunterladen",
+    "importTitle": "Diese Datei konnte nicht geöffnet werden",
+    "importTooLarge": "{name} ist größer als erlaubt.",
+    "importDamaged": "{name} ist kein gültiges iynk-Projekt.",
+    "dismiss": "Ausblenden"
+  },
+  "status": {
+    "created": "{name} erstellt",
+    "renamed": "Umbenannt in {name}",
+    "duplicated": "Dupliziert als {name}",
+    "trashed": "{name} in den Papierkorb verschoben",
+    "restored": "{name} wiederhergestellt",
+    "savedToFile": "{name} in Datei gesichert",
+    "imported": "{name} aus Datei geöffnet",
+    "importedForked": "{name} aus Datei als neues Projekt geöffnet"
+  }
+}

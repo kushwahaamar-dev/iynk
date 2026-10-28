@@ -1,0 +1,103 @@
+{
+  "meta": {
+    "title": "Proyectos",
+    "description": "Tus proyectos de iynk, guardados en este navegador. Crea, renombra, duplica, guarda en un archivo y restaura."
+  },
+  "title": "Proyectos",
+  "lede": "Todo lo de aquí se guarda en este navegador. No se envía nada a ningún sitio.",
+  "newProject": "Proyecto nuevo",
+  "newName": "Blink",
+  "openFromFile": "Abrir desde archivo",
+  "storage": {
+    "label": "Espacio usado",
+    "value": "{used} de {quota}",
+    "unknown": "Este navegador no indica cuánto espacio queda."
+  },
+  "list": {
+    "title": "Tus proyectos",
+    "loading": "Cargando proyectos",
+    "failed": "No se pudieron leer los proyectos. Recarga la página para intentarlo de nuevo.",
+    "emptyTitle": "Aún no hay proyectos",
+    "emptyBody": "Empieza con un proyecto Blink para el Uno. Se guarda en este navegador mientras trabajas.",
+    "columns": {
+      "name": "Nombre",
+      "board": "Placa",
+      "size": "Tamaño",
+      "file": "Copia en archivo",
+      "actions": "Acciones"
+    },
+    "savedToFile": "Guardado en archivo",
+    "notSavedToFile": "Sin guardar"
+  },
+  "board": {
+    "unoR3": "Arduino Uno R3"
+  },
+  "row": {
+    "open": "Abrir {name}",
+    "saveToFile": "Guardar {name} en un archivo",
+    "rename": "Renombrar {name}",
+    "duplicate": "Duplicar {name}",
+    "delete": "Eliminar {name}",
+    "openText": "Abrir",
+    "saveToFileText": "Guardar en archivo",
+    "renameText": "Renombrar",
+    "duplicateText": "Duplicar",
+    "deleteText": "Eliminar",
+    "couldNotOpen": "No se pudo abrir este proyecto. Guardar en archivo conserva una copia de lo almacenado.",
+    "failed": "Eso no funcionó. Inténtalo de nuevo."
+  },
+  "rename": {
+    "label": "Nombre nuevo para {name}",
+    "save": "Guardar nombre",
+    "cancel": "Cancelar",
+    "invalid": "Usa de 1 a 120 caracteres."
+  },
+  "selected": {
+    "title": "Proyecto abierto",
+    "name": "Nombre",
+    "board": "Placa",
+    "revision": "Revisión",
+    "hash": "Hash",
+    "noEditor": "El editor llega en un paso posterior. Esta página lista y conserva tus proyectos.",
+    "close": "Cerrar detalles"
+  },
+  "trash": {
+    "title": "Papelera",
+    "lede": "Los proyectos eliminados se quedan aquí 30 días.",
+    "empty": "La papelera está vacía.",
+    "restore": "Restaurar {name}",
+    "restoreText": "Restaurar",
+    "emptyTrash": "Vaciar papelera"
+  },
+  "banner": {
+    "degradedTitle": "Los proyectos no se conservarán",
+    "degraded": "Este navegador no deja que iynk guarde datos, así que los proyectos duran solo hasta que cierres la pestaña. Guardar en archivo conserva una copia.",
+    "recoveredTitle": "Se reemplazó un guardado dañado",
+    "recovered": "El último guardado de {name} estaba dañado, así que se abrió la copia anterior.",
+    "lostTitle": "No se pudo leer un proyecto",
+    "lost": "Las dos copias guardadas de {name} están dañadas. No se borró nada.",
+    "quotaTitle": "Sin espacio",
+    "quota": "El navegador no tiene espacio para este proyecto. Guárdalo en un archivo y elimina algo que ya no necesites.",
+    "otherTabTitle": "Cambiado en otra pestaña",
+    "otherTab": "Se guardó un proyecto en otra pestaña. La lista está al día.",
+    "fileTitle": "Sin guardar en un archivo",
+    "file": "Algunos proyectos llevan más de 10 minutos sin una copia en un archivo. Guardar en archivo te da una copia que controlas tú.",
+    "newerTitle": "Este archivo es de un iynk más nuevo",
+    "newer": "{name} lo guardó una versión más nueva, así que no se puede abrir aquí. Descargar te devuelve el archivo sin cambios.",
+    "newerDownload": "Descargar {name}",
+    "importTitle": "No se pudo abrir ese archivo",
+    "importTooLarge": "{name} supera el límite de tamaño.",
+    "importDamaged": "{name} no es un proyecto de iynk válido.",
+    "dismiss": "Descartar"
+  },
+  "status": {
+    "created": "Se creó {name}",
+    "renamed": "Renombrado a {name}",
+    "duplicated": "Duplicado como {name}",
+    "trashed": "{name} pasó a la papelera",
+    "restored": "Se restauró {name}",
+    "savedToFile": "Se guardó {name} en un archivo",
+    "imported": "Se abrió {name} desde un archivo",
+    "importedForked": "Se abrió {name} desde un archivo como proyecto nuevo"
+  }
+}

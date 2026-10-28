@@ -1,7 +1,7 @@
 // UI string namespaces (D5). Each lives in src/i18n/messages/<lang>/<ns>.json,
 // and the English file defines the keys every other language must have.
 
-export const NAMESPACES = ["common", "shell", "boardlab", "robotics", "dronelab", "flight", "ai", "search", "together", "hw"] as const;
+export const NAMESPACES = ["common", "shell", "boardlab", "robotics", "dronelab", "flight", "ai", "search", "together", "hw", "studio"] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];
 
@@ -16,6 +16,7 @@ export type Messages = {
   search: typeof import("./messages/en/search.json");
   together: typeof import("./messages/en/together.json");
   hw: typeof import("./messages/en/hw.json");
+  studio: typeof import("./messages/en/studio.json");
 };
 
 /** The common strings the shell's client components render (FigureFrame and friends). */
