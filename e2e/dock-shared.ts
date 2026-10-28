@@ -2,7 +2,6 @@ import { expect, type Locator, type Page } from "@playwright/test";
 import ai from "../src/i18n/messages/en/ai.json";
 import common from "../src/i18n/messages/en/common.json";
 import search from "../src/i18n/messages/en/search.json";
-import shell from "../src/i18n/messages/en/shell.json";
 import together from "../src/i18n/messages/en/together.json";
 
 export const dockCopy = common.client.dock;
@@ -50,7 +49,6 @@ export async function expectTabs(dock: Locator) {
     await dock.getByRole("tab", { name }).click();
     await expect(dock.getByRole("tab", { name })).toHaveAttribute("aria-selected", "true");
   }
-  await expect(dock.getByRole("tab", { name: dockCopy.tabs.passport })).toHaveCount(0);
   await expect(dock.getByRole("tab", { name: dockCopy.tabs.hardware })).toHaveCount(0);
 
   await dock.getByRole("tab", { name: dockCopy.tabs.partner }).click();
@@ -61,10 +59,4 @@ export async function expectTabs(dock: Locator) {
 
   await dock.getByRole("tab", { name: dockCopy.tabs.real }).click();
   await expect(dock.getByText(search.real.notSetUp).first().or(dock.getByRole("button", { name: search.real.refresh }))).toBeVisible();
-}
-
-export async function expectSolanaNavHidden(page: Page) {
-  await expect(page.locator("header:visible").getByRole("link", { name: shell.nav.together })).toBeVisible();
-  await expect(page.getByRole("link", { name: shell.nav.passport })).toHaveCount(0);
-  await expect(page.getByRole("link", { name: shell.nav.verify })).toHaveCount(0);
 }

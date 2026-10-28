@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cx } from "@/components/ui/cx";
-import { useFeatures } from "@/lib/features";
 import { NAV, isActive, showNavEntry, type NavId } from "./nav";
 
 type NavLinksProps = {
@@ -21,8 +20,7 @@ function Led({ on, className }: { on: boolean; className?: string }) {
 
 export function NavLinks({ lang, labels, layout, onNavigate }: NavLinksProps) {
   const pathname = usePathname() ?? "";
-  const { features } = useFeatures();
-  const entries = NAV.filter((entry) => showNavEntry(entry, features, layout));
+  const entries = NAV.filter((entry) => showNavEntry(entry, layout));
 
   if (layout === "sheet") {
     return (

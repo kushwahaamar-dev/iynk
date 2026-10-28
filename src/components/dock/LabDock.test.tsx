@@ -13,7 +13,6 @@ const flags = vi.hoisted(() => ({
     image: false,
     voice: false,
     search: false,
-    solana: false,
     db: false,
     realtime: false,
     gemini: false,
@@ -77,7 +76,6 @@ beforeEach(() => {
   flags.status = "ready";
   flags.features.ai = false;
   flags.features.search = false;
-  flags.features.solana = false;
   flags.features.hw = false;
   window.history.replaceState(null, "", "/en/boards/nano");
 });
@@ -100,7 +98,6 @@ describe("LabDock", () => {
     expect(trigger.getAttribute("aria-expanded")).toBe("true");
     expect(drawer().getAttribute("data-layout")).toBe("desk");
     expect(screen.getByRole("tab", { name: dock.tabs.partner })).toBeTruthy();
-    expect(screen.queryByRole("tab", { name: dock.tabs.passport })).toBeNull();
     expect(screen.queryByRole("tab", { name: dock.tabs.hardware })).toBeNull();
 
     fireEvent.click(screen.getByRole("tab", { name: dock.tabs.partner }));
@@ -135,14 +132,12 @@ describe("LabDock", () => {
     expect(screen.getByRole("tab", { name: dock.tabs.partner }).getAttribute("aria-selected")).toBe("true");
   });
 
-  test("shows Passport and Hardware only when their flags are on", async () => {
-    flags.features.solana = true;
+  test("shows Hardware only when its flag is on", async () => {
     flags.features.hw = true;
     renderDock();
     fireEvent.click(screen.getByRole("button", { name: dock.open }));
     expect(await screen.findByRole("complementary", { name: dock.label })).toBeTruthy();
-    expect(await screen.findByRole("tab", { name: dock.tabs.passport })).toBeTruthy();
-    expect(screen.getByRole("tab", { name: dock.tabs.hardware })).toBeTruthy();
+    expect(await screen.findByRole("tab", { name: dock.tabs.hardware })).toBeTruthy();
   });
 
   test("a dock-tab event opens the drawer on that tab and ignores a hidden one", () => {
@@ -153,9 +148,9 @@ describe("LabDock", () => {
     expect(drawer()).toBeTruthy();
     expect(screen.getByRole("tab", { name: dock.tabs.real }).getAttribute("aria-selected")).toBe("true");
     act(() => {
-      window.dispatchEvent(new CustomEvent("iynk:dock-tab", { detail: { tab: "passport" } }));
+      window.dispatchEvent(new CustomEvent("iynk:dock-tab", { detail: { tab: "hardware" } }));
     });
-    expect(screen.queryByRole("tab", { name: dock.tabs.passport })).toBeNull();
+    expect(screen.queryByRole("tab", { name: dock.tabs.hardware })).toBeNull();
     expect(screen.getByRole("tab", { name: dock.tabs.real }).getAttribute("aria-selected")).toBe("true");
   });
 

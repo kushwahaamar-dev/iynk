@@ -2,13 +2,12 @@
 
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { createPortal } from "react-dom";
-import { PartnerPanel, useBuildLog } from "@/components/ai";
+import { PartnerPanel } from "@/components/ai";
 import type { LabDockProps, LabKind } from "@/components/dock/types";
 import { HardwareTwinPanel } from "@/components/hw/HardwareTwinPanel";
 import { TogetherPanel, setPointing, usePointing } from "@/components/realtime";
 import { NearbyPanel, RealBuildPanel, VideoHelp } from "@/components/search";
 import { useSearchAvailability } from "@/components/search/shared";
-import { PassportPanel } from "@/components/solana/PassportPanel";
 import { Button, Icon, IconButton, Sheet, Tabs, useIsClient } from "@/components/ui";
 import { useCommonT } from "@/i18n/client";
 import { DOCK_TAB_EVENT } from "@/lib/ai/run-tools";
@@ -22,11 +21,10 @@ import { useRegisterLabStore } from "./LabRoom";
 // Phones, including 390×844. Matches the header's md breakpoint.
 const PHONE_QUERY = "(max-width: 767px)";
 
-const TAB_FLAG: Record<DockTab, "solana" | "hw" | null> = {
+const TAB_FLAG: Record<DockTab, "hw" | null> = {
   partner: null,
   together: null,
   real: null,
-  passport: "solana",
   hardware: "hw",
 };
 
@@ -34,7 +32,6 @@ const TAB_LABEL = {
   partner: "dock.tabs.partner",
   together: "dock.tabs.together",
   real: "dock.tabs.real",
-  passport: "dock.tabs.passport",
   hardware: "dock.tabs.hardware",
 } as const;
 
@@ -82,14 +79,13 @@ function RealTab(lab: LabDockProps) {
 function TabBody({ tab, ...lab }: LabDockProps & { tab: DockTab }) {
   if (tab === "partner") return <PartnerPanel {...lab} />;
   if (tab === "together") return <TogetherPanel {...lab} />;
-  if (tab === "passport") return <PassportPanel {...lab} />;
   if (tab === "hardware") return <HardwareTwinPanel {...lab} />;
   return <RealTab {...lab} />;
 }
 
 /**
- * Partner, Together and Build it for real on every lab page (Passport and
- * Hardware when their flags are on). Rendered where the page puts it (the
+ * Partner, Together and Build it for real on every lab page (Hardware
+ * when its flag is on). Rendered where the page puts it (the
  * workspace bar) as a "Lab tools" button: on a desk it opens a drawer along
  * the right edge that leaves the figure in view, on a phone a bottom sheet.
  */
@@ -115,8 +111,7 @@ export function LabDock<S, A extends { type: string }>(props: LabDockProps<S, A>
   const [phone, setPhone] = useState(false);
   const [addressRoom, setAddressRoom] = useState(false);
   const register = useRegisterLabStore();
-  const { lab, itemId, store } = props;
-  useBuildLog({ lab, itemId, store });
+  const { lab, store } = props;
 
   const [tab, setTab] = useState<DockTab | null>(null);
   const [open, setOpen] = useState(false);

@@ -17,11 +17,9 @@ for (const lab of LAB_PAGES) {
   });
 }
 
-test("the phone menu lists Together and hides Passport and Verify", async ({ page }) => {
+test("the phone menu lists Together", async ({ page }) => {
   await page.goto("/en/boards/nano");
   await page.getByRole("button", { name: shell.nav.menu }).click();
   const menu = page.getByRole("dialog", { name: shell.nav.menu });
   await expect(menu.getByRole("link", { name: shell.nav.together })).toBeVisible();
-  await expect(menu.getByRole("link", { name: shell.nav.passport })).toHaveCount(0);
-  await expect(menu.getByRole("link", { name: shell.nav.verify })).toHaveCount(0);
 });

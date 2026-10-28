@@ -7,7 +7,7 @@
 import { z } from "zod";
 
 /** The LabDock tabs (H3), in the order hx:dock shows them. */
-export const DOCK_TABS = ["partner", "together", "real", "passport", "hardware"] as const;
+export const DOCK_TABS = ["partner", "together", "real", "hardware"] as const;
 export type DockTab = (typeof DOCK_TABS)[number];
 
 const terminal = z
@@ -80,7 +80,7 @@ const askPeerArgs = z.object({
 });
 
 const openPanelArgs = z.object({
-  tab: z.enum(DOCK_TABS).describe("partner, together (the room), real (parts and prices), passport or hardware."),
+  tab: z.enum(DOCK_TABS).describe("partner, together (the room), real (parts and prices) or hardware."),
 });
 
 const argSchemas = {
