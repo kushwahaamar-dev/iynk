@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
 import { LOCALES, type Locale } from "@/i18n/config";
-import { aiFailure, aiUser, guardAi } from "@/lib/server/ai/guard";
+import { aiFailure, aiUser, callerKey, guardAi } from "@/lib/server/ai/guard";
 import { quoted } from "@/lib/server/ai/prompts/language";
 import { mask, translatePrompt, unmask } from "@/lib/server/ai/prompts/translate";
 import { AiError, chatJson } from "@/lib/server/ai/provider";
@@ -40,6 +40,8 @@ function remember(key: string, value: { text: string; from: Source }) {
 export async function POST(req: Request) {
   const refused = guardAi(req, "translate", 60);
   if (refused) return refused;
+  const key = callerKey(req);
+  if (!key.ok) return key.response;
   const parsed = await parseBody(req, Body);
   if (!parsed.ok) return parsed.response;
   const { texts, to, from } = parsed.data;
@@ -72,6 +74,7 @@ export async function POST(req: Request) {
         maxTokens: 16_000,
         signal: req.signal,
         user: aiUser(req),
+        key: key.key,
       });
       if (data.texts.length !== todo.length) return aiFailure(new AiError("bad_output", "translation count mismatch"));
       todo.forEach((index, j) => {

@@ -1,5 +1,5 @@
 import { isLocale, type Locale } from "@/i18n/config";
-import { aiFailure, aiUser, guardAi } from "@/lib/server/ai/guard";
+import { aiFailure, aiUser, callerKey, guardAi } from "@/lib/server/ai/guard";
 import { TRANSCRIBE_LANGUAGES } from "@/lib/server/ai/prompts/language";
 import { chat, transcribeWav } from "@/lib/server/ai/provider";
 import type { TranscribeResponse } from "@/lib/server/ai/types";
@@ -24,7 +24,7 @@ function languageOf(text: string, hint: Locale | undefined): Locale {
   return latin ? "en" : (hint ?? "en");
 }
 
-async function transcribeMp3(bytes: Uint8Array, lang: Locale | undefined, req: Request): Promise<string> {
+async function transcribeMp3(bytes: Uint8Array, key: string, lang: Locale | undefined, req: Request): Promise<string> {
   const language = lang ? ` The speaker most likely speaks ${TRANSCRIBE_LANGUAGES[lang]}.` : "";
   const result = await chat({
     messages: [
@@ -41,6 +41,7 @@ async function transcribeMp3(bytes: Uint8Array, lang: Locale | undefined, req: R
     maxTokens: 2000,
     signal: req.signal,
     user: aiUser(req),
+    key,
   });
   return result.text.trim();
 }
@@ -48,6 +49,8 @@ async function transcribeMp3(bytes: Uint8Array, lang: Locale | undefined, req: R
 export async function POST(req: Request) {
   const refused = guardAi(req, "transcribe", 20, "voice");
   if (refused) return refused;
+  const key = callerKey(req);
+  if (!key.ok) return key.response;
   const form = await parseForm(req, { maxBytes: MAX_AUDIO + 64 * 1024 });
   if (!form.ok) return form.response;
 
@@ -73,9 +76,9 @@ export async function POST(req: Request) {
       if (prepared.seconds > MAX_SECONDS) return fail(400, "too_long", `audio: at most ${MAX_SECONDS} seconds.`);
       // Nothing to hear in a tap of the button; skip the upstream call.
       if (prepared.seconds < 0.25) return json({ text: "", lang: lang ?? "en" } satisfies TranscribeResponse);
-      text = (await transcribeWav({ wav: prepared.wav, languages: lang ? [TRANSCRIBE_LANGUAGES[lang]] : undefined, signal: req.signal })).text;
+      text = (await transcribeWav({ wav: prepared.wav, languages: lang ? [TRANSCRIBE_LANGUAGES[lang]] : undefined, signal: req.signal, key: key.key })).text;
     } else if (kind === "mp3") {
-      text = await transcribeMp3(bytes, lang, req);
+      text = await transcribeMp3(bytes, key.key, lang, req);
     } else {
       return fail(415, "unsupported_audio", "audio: send 16-bit PCM WAV (16 kHz mono is best) or MP3.");
     }

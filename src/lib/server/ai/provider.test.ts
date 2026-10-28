@@ -3,7 +3,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 import { apiError, completion, delta, fakeFetch, sse, sseOf, usageChunk } from "./__test__/upstream";
 
-async function load(vars: Record<string, string> = { META_API_KEY: "meta-key" }) {
+const KEY = "meta-key-0123";
+
+async function load(vars: Record<string, string> = {}) {
   vi.resetModules();
   for (const [k, v] of Object.entries(vars)) vi.stubEnv(k, v);
   return import("./provider");
@@ -27,14 +29,14 @@ describe("chat streaming", () => {
   it("streams text deltas and reports usage from the final chunk", async () => {
     const { calls } = fakeFetch(sseOf([delta({ role: "assistant", content: "Check " }), delta({ content: "the polarity." }, "stop"), usageChunk(42, 7)]));
     const { chat } = await load();
-    const events = await drain(chat({ messages, stream: true, maxTokens: 500, cacheKey: "k", user: "u" }));
+    const events = await drain(chat({ key: KEY, messages, stream: true, maxTokens: 500, cacheKey: "k", user: "u" }));
     expect(events).toEqual([
       { type: "text", delta: "Check " },
       { type: "text", delta: "the polarity." },
       { type: "done", finishReason: "stop", usage: { provider: "meta", inTokens: 42, outTokens: 7, cachedTokens: 0 } },
     ]);
     expect(calls[0].url).toBe("https://api.meta.ai/v1/chat/completions");
-    expect((calls[0].init.headers as Record<string, string>).authorization).toBe("Bearer meta-key");
+    expect((calls[0].init.headers as Record<string, string>).authorization).toBe(`Bearer ${KEY}`);
     expect(calls[0].body).toMatchObject({
       model: "muse-spark-1.3",
       stream: true,
@@ -57,7 +59,7 @@ describe("chat streaming", () => {
       ]),
     );
     const { chat } = await load();
-    const events = await drain(chat({ messages, stream: true }));
+    const events = await drain(chat({ key: KEY, messages, stream: true }));
     expect(events.filter((e) => e.type === "tool_call")).toEqual([
       { type: "tool_call", call: { id: "call_a", name: "highlight_part", arguments: '{"partId":"led1"}' } },
       { type: "tool_call", call: { id: "call_b", name: "search_datasheet", arguments: '{"query":"LED forward voltage"}' } },
@@ -73,7 +75,7 @@ describe("chat streaming", () => {
       ]),
     );
     const { chat } = await load();
-    const calls = (await drain(chat({ messages, stream: true }))).filter((e) => e.type === "tool_call");
+    const calls = (await drain(chat({ key: KEY, messages, stream: true }))).filter((e) => e.type === "tool_call");
     expect(calls.map((e) => e.type === "tool_call" && e.call)).toEqual([
       { id: "x1", name: "open_panel", arguments: '{"tab":"real"}' },
       { id: "x2", name: "open_panel", arguments: '{"tab":"together"}' },
@@ -86,7 +88,7 @@ describe("chat streaming", () => {
     const seen: unknown[] = [];
     await expect(
       (async () => {
-        for await (const e of chat({ messages, stream: true })) seen.push(e);
+        for await (const e of chat({ key: KEY, messages, stream: true })) seen.push(e);
       })(),
     ).rejects.toBeInstanceOf(AiError);
     expect(seen).toEqual([{ type: "text", delta: "Hi" }]);
@@ -95,7 +97,7 @@ describe("chat streaming", () => {
   it("retries once on a 5xx, then succeeds", async () => {
     const { calls } = fakeFetch(apiError(503), sseOf([delta({ content: "ok" }, "stop")]));
     const { chat } = await load();
-    const events = await drain(chat({ messages, stream: true }));
+    const events = await drain(chat({ key: KEY, messages, stream: true }));
     expect(calls).toHaveLength(2);
     expect(events[0]).toEqual({ type: "text", delta: "ok" });
   });
@@ -104,7 +106,7 @@ describe("chat streaming", () => {
     vi.spyOn(console, "warn").mockImplementation(() => {});
     const { calls } = fakeFetch(apiError(400, "invalid_request_error"));
     const { chat, AiError } = await load();
-    const error = await drain(chat({ messages, stream: true })).catch((e: unknown) => e);
+    const error = await drain(chat({ key: KEY, messages, stream: true })).catch((e: unknown) => e);
     expect(calls).toHaveLength(1);
     expect(error).toBeInstanceOf(AiError);
     expect((error as InstanceType<typeof AiError>).code).toBe("upstream_failed");
@@ -115,37 +117,48 @@ describe("chat streaming", () => {
     vi.spyOn(console, "warn").mockImplementation(() => {});
     fakeFetch(apiError(429, "rate_limit_error"), apiError(429, "rate_limit_error"));
     const { chat } = await load();
-    const error = await drain(chat({ messages, stream: true })).catch((e: { code: string }) => e);
+    const error = await drain(chat({ key: KEY, messages, stream: true })).catch((e: { code: string }) => e);
     expect(error).toMatchObject({ code: "upstream_busy", status: 502 });
   });
 
-  it("falls back to Gemini's OpenAI-compatible endpoint when Meta keeps failing", async () => {
-    vi.spyOn(console, "warn").mockImplementation(() => {});
-    const { calls } = fakeFetch(apiError(500), apiError(500), sseOf([delta({ content: "hola" }, "stop"), usageChunk(3, 1)]));
-    const { chat } = await load({ META_API_KEY: "m", GEMINI_API_KEY: "g" });
-    const events = await drain(chat({ messages, stream: true, maxTokens: 100, user: "u", cacheKey: "k" }));
-    expect(calls[2].url).toBe("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions");
-    expect((calls[2].init.headers as Record<string, string>).authorization).toBe("Bearer g");
-    expect(calls[2].body).toMatchObject({ model: "gemini-3.5-flash", max_tokens: 100 });
-    expect(calls[2].body).not.toHaveProperty("safety_identifier");
-    expect(calls[2].body).not.toHaveProperty("prompt_cache_key");
+  it("sends Gemini's OpenAI-compatible request when the operator chose Gemini", async () => {
+    const { calls } = fakeFetch(sseOf([delta({ content: "hola" }, "stop"), usageChunk(3, 1)]));
+    const { chat } = await load({ IYNK_AI_PROVIDER: "gemini" });
+    const events = await drain(chat({ key: "gem-key-0123", messages, stream: true, maxTokens: 100, user: "u", cacheKey: "k" }));
+    expect(calls).toHaveLength(1);
+    expect(calls[0].url).toBe("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions");
+    expect((calls[0].init.headers as Record<string, string>).authorization).toBe("Bearer gem-key-0123");
+    expect(calls[0].body).toMatchObject({ model: "gemini-3.5-flash", max_tokens: 100 });
+    expect(calls[0].body).not.toHaveProperty("safety_identifier");
+    expect(calls[0].body).not.toHaveProperty("prompt_cache_key");
     expect(events.at(-1)).toMatchObject({ type: "done", usage: { provider: "gemini", inTokens: 3, outTokens: 1 } });
   });
 
-  it("uses Gemini alone when only its key is set", async () => {
-    const { calls } = fakeFetch(completion("ok"));
-    const { chat } = await load({ GEMINI_API_KEY: "g" });
-    const result = await chat({ messages });
-    expect(calls[0].url).toContain("generativelanguage.googleapis.com");
-    expect(result.usage.provider).toBe("gemini");
+  it("does not fall back to another provider when the upstream keeps failing", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const { calls } = fakeFetch(apiError(500), apiError(500));
+    const { chat } = await load();
+    await expect(drain(chat({ key: KEY, messages, stream: true }))).rejects.toMatchObject({ code: "upstream_failed" });
+    expect(calls.map((c) => c.url)).toEqual(Array(2).fill("https://api.meta.ai/v1/chat/completions"));
   });
 
-  it("refuses with not_configured when no key is set", async () => {
-    const { mock } = fakeFetch();
-    const { chat } = await load({});
-    await expect(chat({ messages })).rejects.toMatchObject({ code: "not_configured", status: 503 });
-    await expect(drain(chat({ messages, stream: true }))).rejects.toMatchObject({ code: "not_configured" });
-    expect(mock).not.toHaveBeenCalled();
+  it("ignores a base URL or model the caller tries to pass along", async () => {
+    const { calls } = fakeFetch(completion("ok"));
+    const { chat } = await load();
+    await chat({ key: KEY, messages, baseUrl: "https://evil.example", model: "x" } as Parameters<typeof chat>[0]);
+    expect(calls[0].url).toBe("https://api.meta.ai/v1/chat/completions");
+    expect(calls[0].body).toMatchObject({ model: "muse-spark-1.3" });
+  });
+
+  it("keeps the key out of the logs and the error when the upstream echoes it", async () => {
+    const canary = "iynk-canary-key-9f3a";
+    const spies = (["log", "info", "warn", "error"] as const).map((name) => vi.spyOn(console, name).mockImplementation(() => {}));
+    fakeFetch(Response.json({ error: { type: `bad key ${canary}`, code: null, param: canary } }, { status: 400 }));
+    const { chat } = await load();
+    const error = (await chat({ key: canary, messages }).catch((e: unknown) => e)) as Error;
+    expect(error).toMatchObject({ code: "upstream_failed" });
+    expect(JSON.stringify([error.message, (error as { detail?: string }).detail, spies.flatMap((spy) => spy.mock.calls)])).not.toContain(canary);
+    expect(spies[2]).toHaveBeenCalledOnce();
   });
 
   it("times out a call that never answers", async () => {
@@ -157,7 +170,7 @@ describe("chat streaming", () => {
       ),
     );
     const { chat } = await load();
-    await expect(chat({ messages, timeoutMs: 20 })).rejects.toMatchObject({ code: "upstream_timeout", status: 504 });
+    await expect(chat({ key: KEY, messages, timeoutMs: 20 })).rejects.toMatchObject({ code: "upstream_timeout", status: 504 });
   });
 
   it("stops when the caller goes away, without retrying", async () => {
@@ -168,7 +181,7 @@ describe("chat streaming", () => {
     );
     vi.stubGlobal("fetch", mock);
     const { chat } = await load();
-    const pending = chat({ messages, signal: controller.signal });
+    const pending = chat({ key: KEY, messages, signal: controller.signal });
     controller.abort();
     await expect(pending).rejects.toMatchObject({ code: "aborted" });
     expect(mock).toHaveBeenCalledTimes(1);
@@ -189,7 +202,7 @@ describe("chat (non-streaming) and chatJson", () => {
       }),
     );
     const { chat } = await load();
-    expect(await chat({ messages })).toEqual({
+    expect(await chat({ key: KEY, messages })).toEqual({
       text: "",
       toolCalls: [{ id: "c1", name: "find_parts", arguments: '{"parts":["SG90"]}' }],
       finishReason: "tool_calls",
@@ -200,7 +213,7 @@ describe("chat (non-streaming) and chatJson", () => {
   it("asks for a JSON schema and validates the reply", async () => {
     const { calls } = fakeFetch(completion('{"answer":"42"}'));
     const { chatJson } = await load();
-    const { data } = await chatJson(z.object({ answer: z.string() }), "probe", { messages, reasoning: "low" });
+    const { data } = await chatJson(z.object({ answer: z.string() }), "probe", { key: KEY, messages, reasoning: "low" });
     expect(data).toEqual({ answer: "42" });
     expect(calls[0].body).toMatchObject({
       reasoning_effort: "low",
@@ -213,8 +226,17 @@ describe("chat (non-streaming) and chatJson", () => {
     fakeFetch(completion("Sure! Here you go."), completion('{"answer":3}'));
     const { chatJson } = await load();
     const schema = z.object({ answer: z.string() });
-    await expect(chatJson(schema, "probe", { messages })).rejects.toMatchObject({ code: "bad_output" });
-    await expect(chatJson(schema, "probe", { messages })).rejects.toMatchObject({ code: "bad_output" });
+    await expect(chatJson(schema, "probe", { key: KEY, messages })).rejects.toMatchObject({ code: "bad_output" });
+    await expect(chatJson(schema, "probe", { key: KEY, messages })).rejects.toMatchObject({ code: "bad_output" });
+  });
+});
+
+describe("redactKey", () => {
+  it("replaces every copy of the key and leaves other text alone", async () => {
+    const { redactKey } = await load();
+    expect(redactKey("a abc-12345 b abc-12345", "abc-12345")).toBe("a [redacted] b [redacted]");
+    expect(redactKey("nothing here", "abc-12345")).toBe("nothing here");
+    expect(redactKey("nothing here", "")).toBe("nothing here");
   });
 });
 
@@ -222,7 +244,7 @@ describe("transcribeWav", () => {
   it("sends the documented multipart body: a JSON request part and a WAV audio part", async () => {
     const { calls } = fakeFetch(Response.json({ sessionId: "s", transcript: " hola ", audioDurationMs: 900, turns: [] }));
     const { transcribeWav } = await load();
-    const result = await transcribeWav({ wav: new Uint8Array([82, 73, 70, 70]), languages: ["Spanish"] });
+    const result = await transcribeWav({ key: KEY, wav: new Uint8Array([82, 73, 70, 70]), languages: ["Spanish"] });
     expect(result).toEqual({ text: "hola", durationMs: 900 });
     expect(calls[0].url).toBe("https://api.meta.ai/v1/asr/transcribe");
     const headers = calls[0].init.headers as Record<string, string>;
@@ -231,5 +253,12 @@ describe("transcribeWav", () => {
     expect(body).toContain('Content-Disposition: form-data; name="request"\r\nContent-Type: application/json');
     expect(body).toContain('"model":"muse-voice-transcribe-1.0","audioEncoding":"WAV","mode":"PUSH_TO_TALK","languageBias":["Spanish"]');
     expect(body).toContain('name="audio"; filename="audio.wav"\r\nContent-Type: audio/wav\r\n\r\nRIFF');
+  });
+
+  it("refuses with not_configured when the operator chose Gemini, which has no transcriber", async () => {
+    const { mock } = fakeFetch();
+    const { transcribeWav } = await load({ IYNK_AI_PROVIDER: "gemini" });
+    await expect(transcribeWav({ key: KEY, wav: new Uint8Array([82, 73, 70, 70]) })).rejects.toMatchObject({ code: "not_configured" });
+    expect(mock).not.toHaveBeenCalled();
   });
 });

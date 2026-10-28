@@ -2,7 +2,7 @@ import { z } from "zod";
 import { parseToolCall } from "@/lib/ai/tools";
 import { LOCALES } from "@/i18n/config";
 import { LABS } from "@/lib/server/ai/catalog";
-import { aiUser, guardAi } from "@/lib/server/ai/guard";
+import { aiUser, callerKey, guardAi } from "@/lib/server/ai/guard";
 import { PARTNER_RULES, partnerContext } from "@/lib/server/ai/prompts/partner";
 import { AiError, chat, type ProviderMessage, type ToolCallOut, type WireToolCall } from "@/lib/server/ai/provider";
 import { sseResponse } from "@/lib/server/ai/sse";
@@ -84,7 +84,7 @@ function errorCode(error: unknown): ChatErrorCode {
   return error.code;
 }
 
-async function* converse(body: Body, req: Request): AsyncGenerator<ChatEvent> {
+async function* converse(body: Body, key: string, req: Request): AsyncGenerator<ChatEvent> {
   const messages: ProviderMessage[] = [
     { role: "system", content: PARTNER_RULES },
     { role: "system", content: partnerContext(body) },
@@ -109,6 +109,7 @@ async function* converse(body: Body, req: Request): AsyncGenerator<ChatEvent> {
         maxTokens: 6000,
         cacheKey: "iynk-partner",
         user: aiUser(req),
+        key,
       })) {
         if (event.type === "text") {
           // Rounds are one reply to the learner: keep a paragraph break between them.
@@ -170,7 +171,9 @@ async function* safely(events: AsyncGenerator<ChatEvent>): AsyncGenerator<ChatEv
 export async function POST(req: Request) {
   const refused = guardAi(req, "chat", 20);
   if (refused) return refused;
+  const key = callerKey(req);
+  if (!key.ok) return key.response;
   const parsed = await parseBody(req, Body);
   if (!parsed.ok) return parsed.response;
-  return sseResponse(safely(converse(parsed.data, req)));
+  return sseResponse(safely(converse(parsed.data, key.key, req)));
 }

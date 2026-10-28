@@ -3,6 +3,7 @@ import { features, type Features } from "@/lib/server/env";
 import { requireServerToken } from "@/lib/server/access";
 import { checkOrigin, clientIp, fail, featureDisabled } from "@/lib/server/http";
 import { checkRateLimit, rateLimit, tooManyRequests } from "@/lib/server/ratelimit";
+import { parseSecret } from "@/lib/keys/format";
 import { AiError, safetyId } from "./provider";
 
 /** Upstream calls this instance makes per hour across all callers: a quota guard for the demo's credits. */
@@ -10,7 +11,7 @@ const AI_BUDGET = { limit: 900, windowMs: 60 * 60 * 1000 };
 
 /**
  * The checks every /api/ai/* route runs before it reads the body: our origin
- * only (H11), the server token, the feature is on and has its key, the caller's per-minute limit, and the
+ * only (H11), the server token, the feature is on, the caller's per-minute limit, and the
  * instance-wide hourly budget.
  */
 export function guardAi(req: Request, route: string, perMinute: number, feature: keyof Features = "ai"): Response | null {
@@ -21,6 +22,17 @@ export function guardAi(req: Request, route: string, perMinute: number, feature:
   if (limited) return limited;
   const budget = rateLimit("ai:budget", AI_BUDGET);
   return budget.ok ? null : tooManyRequests(budget);
+}
+
+export type CallerKey = { ok: true; key: string } | { ok: false; response: Response };
+
+/** The provider key the caller sent for this call; it is used once and never stored. */
+export function callerKey(req: Request): CallerKey {
+  const header = req.headers.get("x-iynk-provider-key");
+  if (!header?.trim()) return { ok: false, response: fail(422, "key_required", "Add your AI key to use this.") };
+  const parsed = parseSecret(header);
+  if (!parsed.ok) return { ok: false, response: fail(400, "bad_key", "That AI key does not look right.") };
+  return { ok: true, key: parsed.value };
 }
 
 /** The hashed caller id sent as Meta's safety_identifier. */

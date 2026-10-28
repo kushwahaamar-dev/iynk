@@ -1,11 +1,12 @@
 // @vitest-environment node
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { completion, fakeFetch } from "@/lib/server/ai/__test__/upstream";
+import { apiError, completion, fakeFetch } from "@/lib/server/ai/__test__/upstream";
 
 const TOKEN = "t".repeat(40);
+const KEY = "iynk-canary-key-7c1d";
 let ip = 0;
 
-async function load(vars: Record<string, string> = { META_API_KEY: "k" }) {
+async function load(vars: Record<string, string> = {}) {
   vi.resetModules();
   vi.stubEnv("IYNK_AI_ENABLE", "1");
   vi.stubEnv("IYNK_SEARCH_ENABLE", "1");
@@ -18,7 +19,7 @@ async function load(vars: Record<string, string> = { META_API_KEY: "k" }) {
 const post = (body: unknown, headers: Record<string, string> = {}) =>
   new Request("http://localhost/api/ai/translate", {
     method: "POST",
-    headers: { "content-type": "application/json", "x-iynk-server-token": TOKEN, "x-real-ip": `10.1.0.${++ip}`, ...headers },
+    headers: { "content-type": "application/json", "x-iynk-server-token": TOKEN, "x-iynk-provider-key": KEY, "x-real-ip": `10.1.0.${++ip}`, ...headers },
     body: JSON.stringify(body),
   });
 
@@ -93,16 +94,36 @@ describe("POST /api/ai/translate", () => {
   });
 
   it("answers 501 feature_disabled when the switch is off", async () => {
-    const POST = await load({ META_API_KEY: "k", IYNK_AI_ENABLE: "0" });
+    const POST = await load({ IYNK_AI_ENABLE: "0" });
     const res = await POST(post({ texts: ["hi"], to: "es" }));
     expect(res.status).toBe(501);
     expect((await res.json()).error.code).toBe("feature_disabled");
   });
 
-  it("answers 501 feature_disabled when the switch is on and the key is missing", async () => {
-    const POST = await load({});
-    const res = await POST(post({ texts: ["hi"], to: "es" }));
-    expect(res.status).toBe(501);
-    expect((await res.json()).error).toMatchObject({ code: "feature_disabled", message: expect.stringMatching(/turned off/) });
+  it("answers 422 key_required without the caller's key and 400 bad_key for a malformed one", async () => {
+    const { mock } = fakeFetch();
+    const POST = await load();
+    const missing = await POST(post({ texts: ["hi"], to: "es" }, { "x-iynk-provider-key": "" }));
+    expect(missing.status).toBe(422);
+    expect((await missing.json()).error.code).toBe("key_required");
+    const bad = await POST(post({ texts: ["hi"], to: "es" }, { "x-iynk-provider-key": "has a space" }));
+    expect(bad.status).toBe(400);
+    expect((await bad.json()).error.code).toBe("bad_key");
+    expect(mock).not.toHaveBeenCalled();
+  });
+
+  it("sends the caller's key upstream and keeps it out of the response and the console", async () => {
+    const spies = (["log", "info", "warn", "error"] as const).map((name) => vi.spyOn(console, name).mockImplementation(() => {}));
+    const { calls } = fakeFetch(
+      completion(JSON.stringify({ from: "en", texts: ["hola"] })),
+      apiError(400, KEY),
+    );
+    const POST = await load();
+    const ok = await POST(post({ texts: ["hello"], to: "es" }));
+    expect((calls[0].init.headers as Record<string, string>).authorization).toBe(`Bearer ${KEY}`);
+    const failed = await POST(post({ texts: ["goodbye"], to: "es" }));
+    expect(failed.status).toBe(502);
+    const seen = JSON.stringify([await ok.text(), await failed.text(), spies.flatMap((spy) => spy.mock.calls)]);
+    expect(seen).not.toContain(KEY);
   });
 });

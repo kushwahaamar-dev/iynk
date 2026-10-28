@@ -1,12 +1,13 @@
 // @vitest-environment node
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { completion, fakeFetch } from "@/lib/server/ai/__test__/upstream";
+import { apiError, completion, fakeFetch } from "@/lib/server/ai/__test__/upstream";
 import { encodeWav } from "@/lib/server/ai/wav";
 
 const TOKEN = "t".repeat(40);
+const KEY = "iynk-canary-key-7c1d";
 let ip = 0;
 
-async function load(vars: Record<string, string> = { META_API_KEY: "k" }) {
+async function load(vars: Record<string, string> = {}) {
   vi.resetModules();
   vi.stubEnv("IYNK_AI_ENABLE", "1");
   vi.stubEnv("IYNK_SEARCH_ENABLE", "1");
@@ -20,7 +21,7 @@ function post(audio: Uint8Array | null, lang?: string, type = "audio/wav", heade
   const form = new FormData();
   if (audio) form.set("audio", new Blob([audio as BlobPart], { type }), "clip");
   if (lang) form.set("lang", lang);
-  return new Request("http://localhost/api/ai/transcribe", { method: "POST", body: form, headers: { "x-iynk-server-token": TOKEN, "x-real-ip": `10.2.0.${++ip}`, ...headers } });
+  return new Request("http://localhost/api/ai/transcribe", { method: "POST", body: form, headers: { "x-iynk-server-token": TOKEN, "x-iynk-provider-key": KEY, "x-real-ip": `10.2.0.${++ip}`, ...headers } });
 }
 
 const speech = (seconds: number, sampleRate = 44100) =>
@@ -97,18 +98,47 @@ describe("POST /api/ai/transcribe", () => {
   });
 
   it("answers 501 feature_disabled when the switch is off", async () => {
-    const POST = await load({ META_API_KEY: "k", IYNK_AI_ENABLE: "0" });
+    const POST = await load({ IYNK_AI_ENABLE: "0" });
     const res = await POST(post(speech(1), "en"));
     expect(res.status).toBe(501);
     expect((await res.json()).error.code).toBe("feature_disabled");
   });
 
-  it("answers 501 feature_disabled when voice has no Meta key", async () => {
-    const POST = await load({ META_API_KEY: "", GEMINI_API_KEY: "g" });
+  it("answers 501 feature_disabled when the operator chose Gemini, which cannot transcribe", async () => {
+    const { mock } = fakeFetch();
+    const POST = await load({ IYNK_AI_PROVIDER: "gemini" });
     const res = await POST(post(speech(1), "en"));
     expect(res.status).toBe(501);
     const body = (await res.json()) as { error: { code: string; message: string } };
     expect(body.error.code).toBe("feature_disabled");
     expect(body.error.message).toMatch(/turned off/);
+    expect(mock).not.toHaveBeenCalled();
+  });
+
+  it("answers 422 key_required without the caller's key and 400 bad_key for a malformed one", async () => {
+    const { mock } = fakeFetch();
+    const POST = await load();
+    const missing = await POST(post(speech(1), "en", "audio/wav", { "x-iynk-provider-key": "" }));
+    expect(missing.status).toBe(422);
+    expect((await missing.json()).error.code).toBe("key_required");
+    const bad = await POST(post(speech(1), "en", "audio/wav", { "x-iynk-provider-key": "has a space" }));
+    expect(bad.status).toBe(400);
+    expect((await bad.json()).error.code).toBe("bad_key");
+    expect(mock).not.toHaveBeenCalled();
+  });
+
+  it("sends the caller's key upstream and keeps it out of the response and the console", async () => {
+    const spies = (["log", "info", "warn", "error"] as const).map((name) => vi.spyOn(console, name).mockImplementation(() => {}));
+    const { calls } = fakeFetch(
+      Response.json({ sessionId: "s", transcript: "hola", audioDurationMs: 900, turns: [] }),
+      apiError(400, KEY),
+    );
+    const POST = await load();
+    const ok = await POST(post(speech(1), "es"));
+    expect((calls[0].init.headers as Record<string, string>).authorization).toBe(`Bearer ${KEY}`);
+    const failed = await POST(post(speech(1), "es"));
+    expect(failed.status).toBe(502);
+    const seen = JSON.stringify([await ok.text(), await failed.text(), spies.flatMap((spy) => spy.mock.calls)]);
+    expect(seen).not.toContain(KEY);
   });
 });

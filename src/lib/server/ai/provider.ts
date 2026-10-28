@@ -8,11 +8,11 @@ import type { AiProvider } from "./types";
 
 /**
  * The Meta Model API gateway (HX-CONTRACT H4; endpoints and fields in docs/hacktx/AI.md).
- * Chat goes to the OpenAI-compatible /chat/completions of Muse Spark, and to
- * Gemini's OpenAI-compatible endpoint only when GEMINI_API_KEY is set and Meta
- * failed (or has no key). Every call has a timeout and retries once on
+ * Chat goes to the OpenAI-compatible /chat/completions of the provider the
+ * operator chose (IYNK_AI_PROVIDER), with the key the caller sent for that one
+ * call: the server keeps no key. Every call has a timeout and retries once on
  * 429/5xx/network errors. Errors are AiError codes; upstream detail stays in
- * the server log and never reaches the client.
+ * the server log, redacted of the key, and never reaches the client.
  */
 
 export const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/openai";
@@ -80,6 +80,8 @@ export type ChatOptions = {
   cacheKey?: string;
   /** A hashed, stable end-user id (safety_identifier); see safetyId(). */
   user?: string;
+  /** The caller's provider key, used for this call only. */
+  key: string;
 };
 
 export type Usage = { provider: AiProvider; inTokens: number; outTokens: number; cachedTokens: number };
@@ -100,13 +102,14 @@ export type StreamEvent =
 
 type Target = { provider: AiProvider; base: string; key: string; model: string };
 
-function chatTargets(): Target[] {
-  const out: Target[] = [];
-  if (env.META_API_KEY) out.push({ provider: "meta", base: env.META_API_BASE, key: env.META_API_KEY, model: env.META_MODEL });
-  if (env.GEMINI_API_KEY) {
-    out.push({ provider: "gemini", base: GEMINI_BASE, key: env.GEMINI_API_KEY, model: env.GEMINI_MODEL });
-  }
-  return out;
+function chatTarget(key: string): Target {
+  if (env.IYNK_AI_PROVIDER === "gemini") return { provider: "gemini", base: GEMINI_BASE, key, model: env.GEMINI_MODEL };
+  return { provider: "meta", base: env.META_API_BASE, key, model: env.META_MODEL };
+}
+
+/** Replaces every copy of the caller's key in text that is about to be logged or kept. */
+export function redactKey(text: string, key: string): string {
+  return key ? text.replaceAll(key, "[redacted]") : text;
 }
 
 /** A privacy-preserving end-user id for Meta's safety_identifier: a salted hash, never the raw value. */
@@ -114,8 +117,8 @@ export function safetyId(value: string): string {
   return createHash("sha256").update(`iynk:${value}`).digest("hex").slice(0, 32);
 }
 
-function log(provider: string, what: string) {
-  console.warn(`[ai] ${provider}: ${what}`);
+function log(provider: string, what: string, key: string) {
+  console.warn(`[ai] ${provider}: ${redactKey(what, key)}`);
 }
 
 function sleep(ms: number, signal?: AbortSignal): Promise<void> {
@@ -140,11 +143,11 @@ function retryDelay(res?: Response): number {
 }
 
 /** Reads a short, safe description of an upstream error body for the server log. */
-async function upstreamDetail(res: Response): Promise<string> {
+async function upstreamDetail(res: Response, key: string): Promise<string> {
   try {
     const body = (await res.json()) as { error?: { type?: unknown; code?: unknown; param?: unknown } };
     const e = body.error ?? {};
-    return [res.status, e.type, e.code, e.param && `param=${String(e.param)}`].filter(Boolean).join(" ");
+    return redactKey([res.status, e.type, e.code, e.param && `param=${String(e.param)}`].filter(Boolean).join(" "), key);
   } catch {
     return String(res.status);
   }
@@ -184,20 +187,20 @@ export async function upstream(
     } catch (error) {
       const e = toAiError(error, init.signal);
       if (e.code === "upstream_failed" && attempt === 0) {
-        log(provider, `network error (${e.detail}), retrying`);
+        log(provider, `network error (${e.detail}), retrying`, init.key);
         await sleep(retryDelay(), init.signal);
         continue;
       }
       throw e;
     }
     if (res.ok) return res;
-    const detail = await upstreamDetail(res);
+    const detail = await upstreamDetail(res, init.key);
     if ((res.status === 429 || res.status >= 500) && attempt === 0) {
-      log(provider, `${detail}, retrying`);
+      log(provider, `${detail}, retrying`, init.key);
       await sleep(retryDelay(res), init.signal);
       continue;
     }
-    log(provider, detail);
+    log(provider, detail, init.key);
     throw new AiError(res.status === 429 ? "upstream_busy" : "upstream_failed", detail);
   }
 }
@@ -306,11 +309,11 @@ async function* streamOnce(target: Target, opts: ChatOptions): AsyncGenerator<St
       try {
         chunk = JSON.parse(data) as WireChunk;
       } catch {
-        log(target.provider, "skipped a malformed stream chunk");
+        log(target.provider, "skipped a malformed stream chunk", opts.key);
         continue;
       }
       if (chunk.error) {
-        throw new AiError("upstream_failed", `stream error ${chunk.error.type ?? ""} ${chunk.error.code ?? ""}`.trim());
+        throw new AiError("upstream_failed", redactKey(`stream error ${chunk.error.type ?? ""} ${chunk.error.code ?? ""}`.trim(), opts.key));
       }
       if (chunk.usage) usage = chunk.usage;
       const choice = chunk.choices?.[0];
@@ -353,45 +356,11 @@ async function completeOnce(target: Target, opts: ChatOptions): Promise<ChatResu
   };
 }
 
-/** Streams a chat completion; falls back to Gemini only before anything was sent on. */
-async function* streamChat(opts: ChatOptions): AsyncGenerator<StreamEvent> {
-  const targets = chatTargets();
-  if (!targets.length) throw new AiError("not_configured");
-  for (const [i, target] of targets.entries()) {
-    let started = false;
-    try {
-      for await (const event of streamOnce(target, opts)) {
-        started = true;
-        yield event;
-      }
-      return;
-    } catch (error) {
-      const e = toAiError(error, opts.signal);
-      if (started || e.code === "aborted" || i === targets.length - 1) throw e;
-      log(target.provider, `failed (${e.code}), falling back to ${targets[i + 1].provider}`);
-    }
-  }
-}
-
-async function completeChat(opts: ChatOptions): Promise<ChatResult> {
-  const targets = chatTargets();
-  if (!targets.length) throw new AiError("not_configured");
-  for (const [i, target] of targets.entries()) {
-    try {
-      return await completeOnce(target, opts);
-    } catch (error) {
-      const e = toAiError(error, opts.signal);
-      if (e.code === "aborted" || i === targets.length - 1) throw e;
-      log(target.provider, `failed (${e.code}), falling back to ${targets[i + 1].provider}`);
-    }
-  }
-  throw new AiError("not_configured");
-}
-
 export function chat(opts: ChatOptions & { stream: true }): AsyncGenerator<StreamEvent>;
 export function chat(opts: ChatOptions & { stream?: false }): Promise<ChatResult>;
 export function chat(opts: ChatOptions & { stream?: boolean }): AsyncGenerator<StreamEvent> | Promise<ChatResult> {
-  return opts.stream ? streamChat(opts) : completeChat(opts);
+  const target = chatTarget(opts.key);
+  return opts.stream ? streamOnce(target, opts) : completeOnce(target, opts);
 }
 
 /** JSON Schema for response_format, from a zod schema. */
@@ -410,7 +379,7 @@ export async function chatJson<S extends z.ZodType>(
   name: string,
   opts: Omit<ChatOptions, "json" | "tools">,
 ): Promise<{ data: z.output<S>; usage: Usage }> {
-  const result = await completeChat({ ...opts, json: { name, schema: jsonSchemaOf(schema) } });
+  const result = await completeOnce(chatTarget(opts.key), { ...opts, json: { name, schema: jsonSchemaOf(schema) } });
   let value: unknown;
   try {
     value = JSON.parse(result.text.trim().replace(/^```(?:json)?\s*|\s*```$/g, ""));
@@ -446,8 +415,9 @@ export async function transcribeWav(opts: {
   languages?: string[];
   keywords?: string[];
   signal?: AbortSignal;
+  key: string;
 }): Promise<{ text: string; durationMs: number }> {
-  if (!env.META_API_KEY) throw new AiError("not_configured");
+  if (env.IYNK_AI_PROVIDER !== "meta") throw new AiError("not_configured");
   const request = {
     model: env.META_TRANSCRIBE_MODEL,
     audioEncoding: "WAV",
@@ -460,7 +430,7 @@ export async function transcribeWav(opts: {
     { name: "audio", type: "audio/wav", filename: "audio.wav", data: opts.wav },
   ]);
   const res = await upstream("meta", `${env.META_API_BASE}/asr/transcribe`, {
-    key: env.META_API_KEY,
+    key: opts.key,
     body,
     contentType,
     signal: opts.signal,

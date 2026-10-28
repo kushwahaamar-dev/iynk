@@ -21,9 +21,10 @@ vi.mock("@/lib/server/search/serpapi", () => ({
 }));
 
 const TOKEN = "t".repeat(40);
+const KEY = "iynk-canary-key-7c1d";
 let ip = 0;
 
-async function load(vars: Record<string, string> = { META_API_KEY: "k", SERPAPI_KEY: "s" }) {
+async function load(vars: Record<string, string> = { SERPAPI_KEY: "s" }) {
   vi.resetModules();
   vi.stubEnv("IYNK_AI_ENABLE", "1");
   vi.stubEnv("IYNK_SEARCH_ENABLE", "1");
@@ -37,7 +38,7 @@ function post(body: unknown, headers: Record<string, string> = {}) {
   ip += 1;
   return new Request("http://localhost/api/ai/chat", {
     method: "POST",
-    headers: { "content-type": "application/json", "x-iynk-server-token": TOKEN, "x-real-ip": `10.0.0.${ip}`, ...headers },
+    headers: { "content-type": "application/json", "x-iynk-server-token": TOKEN, "x-iynk-provider-key": KEY, "x-real-ip": `10.0.0.${ip}`, ...headers },
     body: JSON.stringify(body),
   });
 }
@@ -71,17 +72,44 @@ describe("POST /api/ai/chat", () => {
   });
 
   it("answers 501 feature_disabled when the switch is off", async () => {
-    const POST = await load({ META_API_KEY: "k", IYNK_AI_ENABLE: "0" });
+    const POST = await load({ IYNK_AI_ENABLE: "0" });
     const res = await POST(post(ask));
     expect(res.status).toBe(501);
     expect((await res.json()).error.code).toBe("feature_disabled");
   });
 
-  it("answers 501 feature_disabled when the switch is on and the key is missing", async () => {
-    const POST = await load({});
+  it("answers 422 key_required without the caller's key and 400 bad_key for a malformed one", async () => {
+    const { mock } = fakeFetch();
+    const POST = await load();
+    const missing = await POST(post(ask, { "x-iynk-provider-key": "" }));
+    expect(missing.status).toBe(422);
+    expect((await missing.json()).error.code).toBe("key_required");
+    for (const bad of ["short", "has a space inside", "x".repeat(513)]) {
+      const res = await POST(post(ask, { "x-iynk-provider-key": bad }));
+      expect(res.status).toBe(400);
+      expect((await res.json()).error.code).toBe("bad_key");
+    }
+    expect(mock).not.toHaveBeenCalled();
+  });
+
+  it("uses the caller's key for the upstream call and ignores a base URL it sends", async () => {
+    const { calls } = fakeFetch(sseOf([delta({ content: "ok" }, "stop")]));
+    const POST = await load();
+    const res = await POST(post({ ...ask, baseUrl: "https://evil.example" }, { "x-iynk-provider-key": `${KEY}\n`, "x-iynk-base-url": "https://evil.example" }));
+    expect(res.status).toBe(200);
+    expect(await readEvents(res)).toEqual([{ type: "text", delta: "ok" }, { type: "done", usage: { provider: "meta", inTokens: 0, outTokens: 0 } }]);
+    expect(calls[0].url).toBe("https://api.meta.ai/v1/chat/completions");
+    expect((calls[0].init.headers as Record<string, string>).authorization).toBe(`Bearer ${KEY}`);
+  });
+
+  it("never lets the key reach the response or the console, even when the upstream echoes it", async () => {
+    const spies = (["log", "info", "warn", "error"] as const).map((name) => vi.spyOn(console, name).mockImplementation(() => {}));
+    fakeFetch(Response.json({ error: { type: KEY, code: KEY, param: KEY } }, { status: 400 }));
+    const POST = await load();
     const res = await POST(post(ask));
-    expect(res.status).toBe(501);
-    expect((await res.json()).error).toMatchObject({ code: "feature_disabled", message: expect.stringMatching(/turned off/) });
+    const text = await res.text();
+    expect(text).toContain("upstream_failed");
+    expect(JSON.stringify([text, spies.flatMap((spy) => spy.mock.calls)])).not.toContain(KEY);
   });
 
   it("validates the body and the tool-call history", async () => {
@@ -98,7 +126,7 @@ describe("POST /api/ai/chat", () => {
       ],
     };
     expect((await POST(post(unanswered))).status).toBe(400);
-    const req = new Request("http://localhost/api/ai/chat", { method: "POST", headers: { "x-iynk-server-token": TOKEN }, body: JSON.stringify(ask) });
+    const req = new Request("http://localhost/api/ai/chat", { method: "POST", headers: { "x-iynk-server-token": TOKEN, "x-iynk-provider-key": KEY }, body: JSON.stringify(ask) });
     expect((await POST(req)).status).toBe(415);
   });
 
@@ -128,7 +156,7 @@ describe("POST /api/ai/chat", () => {
 
   it("leaves the search tools out when SerpApi is not set up", async () => {
     const { calls } = fakeFetch(sseOf([delta({ content: "ok" }, "stop")]));
-    const POST = await load({ META_API_KEY: "k" });
+    const POST = await load({});
     await readEvents(await POST(post(ask)));
     const names = (calls[0].body as { tools: Array<{ function: { name: string } }> }).tools.map((t) => t.function.name);
     expect(names).not.toContain("search_datasheet");
@@ -238,19 +266,16 @@ describe("POST /api/ai/chat", () => {
   });
 
   it("rate-limits each caller", async () => {
-    const POST = await load({});
+    const POST = await load();
     const req = () =>
       new Request("http://localhost/api/ai/chat", {
         method: "POST",
-        headers: { "content-type": "application/json", "x-iynk-server-token": TOKEN, "x-real-ip": "10.9.9.9" },
+        headers: { "content-type": "application/json", "x-iynk-server-token": TOKEN, "x-iynk-provider-key": KEY, "x-real-ip": "10.9.9.9" },
         body: JSON.stringify(ask),
       });
-    // Without a key every call is refused before the limiter, so set one up and fail upstream instead.
-    expect((await POST(req())).status).toBe(501);
-    const keyed = await load({ META_API_KEY: "k" });
     fakeFetch(...Array.from({ length: 40 }, () => apiError(400)));
     const statuses: number[] = [];
-    for (let i = 0; i < 21; i++) statuses.push((await keyed(req())).status);
+    for (let i = 0; i < 21; i++) statuses.push((await POST(req())).status);
     expect(statuses.slice(0, 20).every((s) => s === 200)).toBe(true);
     expect(statuses[20]).toBe(429);
   });
