@@ -1,5 +1,6 @@
 import { isLocale, type Locale } from "@/i18n/config";
-import { aiFailure, aiUser, callerKey, guardAi } from "@/lib/server/ai/guard";
+import { aiCap, aiFailure, aiUser, callerKey, guardAi } from "@/lib/server/ai/guard";
+import { ledger } from "@/lib/server/ai/ledger";
 import { TRANSCRIBE_LANGUAGES } from "@/lib/server/ai/prompts/language";
 import { chat, transcribeWav } from "@/lib/server/ai/provider";
 import type { TranscribeResponse } from "@/lib/server/ai/types";
@@ -24,7 +25,7 @@ function languageOf(text: string, hint: Locale | undefined): Locale {
   return latin ? "en" : (hint ?? "en");
 }
 
-async function transcribeMp3(bytes: Uint8Array, key: string, lang: Locale | undefined, req: Request): Promise<string> {
+async function transcribeMp3(bytes: Uint8Array, key: string, lang: Locale | undefined, req: Request): Promise<{ text: string; tokens: number }> {
   const language = lang ? ` The speaker most likely speaks ${TRANSCRIBE_LANGUAGES[lang]}.` : "";
   const result = await chat({
     messages: [
@@ -43,7 +44,7 @@ async function transcribeMp3(bytes: Uint8Array, key: string, lang: Locale | unde
     user: aiUser(req),
     key,
   });
-  return result.text.trim();
+  return { text: result.text.trim(), tokens: result.usage.inTokens + result.usage.outTokens };
 }
 
 export async function POST(req: Request) {
@@ -51,6 +52,9 @@ export async function POST(req: Request) {
   if (refused) return refused;
   const key = callerKey(req);
   if (!key.ok) return key.response;
+  const keyId = ledger.keyId(key.key);
+  const capped = aiCap(keyId);
+  if (capped) return capped;
   const form = await parseForm(req, { maxBytes: MAX_AUDIO + 64 * 1024 });
   if (!form.ok) return form.response;
 
@@ -65,6 +69,7 @@ export async function POST(req: Request) {
   const kind = sniffAudio(bytes);
   try {
     let text: string;
+    let tokens = 0;
     if (kind === "wav") {
       let prepared: ReturnType<typeof toTranscriberWav>;
       try {
@@ -78,10 +83,11 @@ export async function POST(req: Request) {
       if (prepared.seconds < 0.25) return json({ text: "", lang: lang ?? "en" } satisfies TranscribeResponse);
       text = (await transcribeWav({ wav: prepared.wav, languages: lang ? [TRANSCRIBE_LANGUAGES[lang]] : undefined, signal: req.signal, key: key.key })).text;
     } else if (kind === "mp3") {
-      text = await transcribeMp3(bytes, key.key, lang, req);
+      ({ text, tokens } = await transcribeMp3(bytes, key.key, lang, req));
     } else {
       return fail(415, "unsupported_audio", "audio: send 16-bit PCM WAV (16 kHz mono is best) or MP3.");
     }
+    await ledger.recordAi(keyId, { tokens });
     return json({ text, lang: languageOf(text, lang) } satisfies TranscribeResponse);
   } catch (error) {
     return aiFailure(error);

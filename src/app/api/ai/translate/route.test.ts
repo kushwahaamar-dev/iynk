@@ -1,10 +1,14 @@
 // @vitest-environment node
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { apiError, completion, fakeFetch } from "@/lib/server/ai/__test__/upstream";
 
 const TOKEN = "t".repeat(40);
 const KEY = "iynk-canary-key-7c1d";
 let ip = 0;
+const dirs: string[] = [];
 
 async function load(vars: Record<string, string> = {}) {
   vi.resetModules();
@@ -12,6 +16,8 @@ async function load(vars: Record<string, string> = {}) {
   vi.stubEnv("IYNK_SEARCH_ENABLE", "1");
   vi.stubEnv("IYNK_TRUST_PROXY", "1");
   vi.stubEnv("IYNK_SERVER_TOKEN", TOKEN);
+  dirs.push(mkdtempSync(path.join(tmpdir(), "iynk-ledger-")));
+  vi.stubEnv("IYNK_DATA_DIR", dirs.at(-1)!);
   for (const [k, v] of Object.entries(vars)) vi.stubEnv(k, v);
   return (await import("./route")).POST;
 }
@@ -30,11 +36,49 @@ function sentTexts(body: unknown): string[] {
 }
 
 afterEach(() => {
+  for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });
   vi.unstubAllEnvs();
   vi.unstubAllGlobals();
 });
 
+async function spend(tokens: number) {
+  const { ledger } = await import("@/lib/server/ai/ledger");
+  await ledger.recordAi(ledger.keyId(KEY), { tokens });
+  return ledger;
+}
+
 describe("POST /api/ai/translate", () => {
+  it("answers 429 quota_exhausted before any upstream call once the key has spent its day", async () => {
+    const { mock } = fakeFetch();
+    const POST = await load({ IYNK_AI_DAILY_TOKENS: "1000" });
+    await spend(1000);
+    const res = await POST(post({ texts: ["hello"], to: "es" }));
+    expect(res.status).toBe(429);
+    expect((await res.json()).error.code).toBe("quota_exhausted");
+    expect(Number(res.headers.get("retry-after"))).toBeGreaterThan(0);
+    expect(mock).not.toHaveBeenCalled();
+  });
+
+  it("records the reported tokens, and nothing for a request served from cache or with from equal to to", async () => {
+    fakeFetch(completion(JSON.stringify({ from: "en", texts: ["hola"] }), { prompt_tokens: 40, completion_tokens: 8 }));
+    const POST = await load({ IYNK_AI_DAILY_TOKENS: "1000" });
+    const { ledger } = await import("@/lib/server/ai/ledger");
+    const today = () => ledger.summary(ledger.keyId(KEY)).ai.today;
+    await POST(post({ texts: ["hello"], to: "es" }));
+    expect(today()).toEqual({ tokens: 48, requests: 1 });
+    await POST(post({ texts: ["hello"], to: "es" }));
+    await POST(post({ texts: ["hello"], to: "es", from: "es" }));
+    expect(today()).toEqual({ tokens: 48, requests: 1 });
+  });
+
+  it("serves a cached line even when the key is over its cap", async () => {
+    fakeFetch(completion(JSON.stringify({ from: "en", texts: ["hola"] })));
+    const POST = await load({ IYNK_AI_DAILY_TOKENS: "1000" });
+    await POST(post({ texts: ["hello"], to: "es" }));
+    await spend(1000);
+    expect((await POST(post({ texts: ["hello"], to: "es" }))).status).toBe(200);
+  });
+
   it("protects code, pins and units, restores them, and caches by text", async () => {
     const text = "Connect `pinMode(13, OUTPUT)` to D13 with a 220 Ω resistor";
     const { calls, mock } = fakeFetch(() => {

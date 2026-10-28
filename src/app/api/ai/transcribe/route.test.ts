@@ -1,4 +1,7 @@
 // @vitest-environment node
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { apiError, completion, fakeFetch } from "@/lib/server/ai/__test__/upstream";
 import { encodeWav } from "@/lib/server/ai/wav";
@@ -6,6 +9,7 @@ import { encodeWav } from "@/lib/server/ai/wav";
 const TOKEN = "t".repeat(40);
 const KEY = "iynk-canary-key-7c1d";
 let ip = 0;
+const dirs: string[] = [];
 
 async function load(vars: Record<string, string> = {}) {
   vi.resetModules();
@@ -13,6 +17,8 @@ async function load(vars: Record<string, string> = {}) {
   vi.stubEnv("IYNK_SEARCH_ENABLE", "1");
   vi.stubEnv("IYNK_TRUST_PROXY", "1");
   vi.stubEnv("IYNK_SERVER_TOKEN", TOKEN);
+  dirs.push(mkdtempSync(path.join(tmpdir(), "iynk-ledger-")));
+  vi.stubEnv("IYNK_DATA_DIR", dirs.at(-1)!);
   for (const [k, v] of Object.entries(vars)) vi.stubEnv(k, v);
   return (await import("./route")).POST;
 }
@@ -28,11 +34,43 @@ const speech = (seconds: number, sampleRate = 44100) =>
   encodeWav({ samples: Float32Array.from({ length: Math.round(seconds * sampleRate) }, (_, i) => Math.sin(i / 10) * 0.3), sampleRate });
 
 afterEach(() => {
+  for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });
   vi.unstubAllEnvs();
   vi.unstubAllGlobals();
 });
 
+async function spend(tokens: number) {
+  const { ledger } = await import("@/lib/server/ai/ledger");
+  await ledger.recordAi(ledger.keyId(KEY), { tokens });
+  return ledger;
+}
+
 describe("POST /api/ai/transcribe", () => {
+  it("answers 429 quota_exhausted before any upstream call once the key has spent its day", async () => {
+    const { mock } = fakeFetch();
+    const POST = await load({ IYNK_AI_DAILY_TOKENS: "1000" });
+    await spend(1000);
+    const res = await POST(post(speech(1), "en"));
+    expect(res.status).toBe(429);
+    expect((await res.json()).error.code).toBe("quota_exhausted");
+    expect(Number(res.headers.get("retry-after"))).toBeGreaterThan(0);
+    expect(mock).not.toHaveBeenCalled();
+  });
+
+  it("records 0 tokens and 1 request for a WAV clip, and the reported tokens for MP3", async () => {
+    fakeFetch(
+      Response.json({ sessionId: "s", transcript: "hola", audioDurationMs: 900, turns: [] }),
+      completion("hello", { prompt_tokens: 30, completion_tokens: 4 }),
+    );
+    const POST = await load({ IYNK_AI_DAILY_TOKENS: "1000" });
+    const { ledger } = await import("@/lib/server/ai/ledger");
+    const today = () => ledger.summary(ledger.keyId(KEY)).ai.today;
+    await POST(post(speech(1), "es"));
+    expect(today()).toEqual({ tokens: 0, requests: 1 });
+    await POST(post(new Uint8Array([0x49, 0x44, 0x33, 4, 0, 0, 0, 0, 0, 0]), "en", "audio/mpeg"));
+    expect(today()).toEqual({ tokens: 34, requests: 2 });
+  });
+
   it("converts WAV to 16 kHz mono and sends it to Muse Voice Transcribe with a language hint", async () => {
     const { calls } = fakeFetch(Response.json({ sessionId: "s", transcript: "el LED está al revés", audioDurationMs: 1200, turns: [] }));
     const POST = await load();

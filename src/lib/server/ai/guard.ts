@@ -2,26 +2,21 @@ import "server-only";
 import { features, type Features } from "@/lib/server/env";
 import { requireServerToken } from "@/lib/server/access";
 import { checkOrigin, clientIp, fail, featureDisabled } from "@/lib/server/http";
-import { checkRateLimit, rateLimit, tooManyRequests } from "@/lib/server/ratelimit";
+import { checkRateLimit } from "@/lib/server/ratelimit";
 import { parseSecret } from "@/lib/keys/format";
+import { ledger } from "./ledger";
 import { AiError, safetyId } from "./provider";
-
-/** Upstream calls this instance makes per hour across all callers: a quota guard for the demo's credits. */
-const AI_BUDGET = { limit: 900, windowMs: 60 * 60 * 1000 };
 
 /**
  * The checks every /api/ai/* route runs before it reads the body: our origin
- * only (H11), the server token, the feature is on, the caller's per-minute limit, and the
- * instance-wide hourly budget.
+ * only (H11), the server token, the feature is on, and the caller's per-minute limit.
+ * The daily token cap is per key, so the routes check it with `aiCap` once they have the key.
  */
 export function guardAi(req: Request, route: string, perMinute: number, feature: keyof Features = "ai"): Response | null {
   const refused = checkOrigin(req) ?? requireServerToken(req);
   if (refused) return refused;
   if (!features[feature]) return featureDisabled(feature === "ai" ? "The AI partner" : `AI ${feature}`);
-  const limited = checkRateLimit(req, `ai:${route}`, { limit: perMinute, windowMs: 60_000 });
-  if (limited) return limited;
-  const budget = rateLimit("ai:budget", AI_BUDGET);
-  return budget.ok ? null : tooManyRequests(budget);
+  return checkRateLimit(req, `ai:${route}`, { limit: perMinute, windowMs: 60_000 });
 }
 
 export type CallerKey = { ok: true; key: string } | { ok: false; response: Response };
@@ -33,6 +28,15 @@ export function callerKey(req: Request): CallerKey {
   const parsed = parseSecret(header);
   if (!parsed.ok) return { ok: false, response: fail(400, "bad_key", "That AI key does not look right.") };
   return { ok: true, key: parsed.value };
+}
+
+/** 429 with the time to the next UTC midnight when this key has used up today's tokens; null when it may go on. */
+export function aiCap(keyId: string): Response | null {
+  const check = ledger.checkAi(keyId);
+  if (check.ok) return null;
+  return fail(429, "quota_exhausted", "This key has reached its daily limit. Try again after midnight UTC.", {
+    "Retry-After": String(check.retryAfterSec),
+  });
 }
 
 /** The hashed caller id sent as Meta's safety_identifier. */

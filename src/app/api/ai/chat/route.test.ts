@@ -1,4 +1,7 @@
 // @vitest-environment node
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { apiError, delta, fakeFetch, readEvents, sseOf, usageChunk } from "@/lib/server/ai/__test__/upstream";
 
@@ -23,6 +26,7 @@ vi.mock("@/lib/server/search/serpapi", () => ({
 const TOKEN = "t".repeat(40);
 const KEY = "iynk-canary-key-7c1d";
 let ip = 0;
+const dirs: string[] = [];
 
 async function load(vars: Record<string, string> = { SERPAPI_KEY: "s" }) {
   vi.resetModules();
@@ -30,6 +34,8 @@ async function load(vars: Record<string, string> = { SERPAPI_KEY: "s" }) {
   vi.stubEnv("IYNK_SEARCH_ENABLE", "1");
   vi.stubEnv("IYNK_TRUST_PROXY", "1");
   vi.stubEnv("IYNK_SERVER_TOKEN", TOKEN);
+  dirs.push(mkdtempSync(path.join(tmpdir(), "iynk-ledger-")));
+  vi.stubEnv("IYNK_DATA_DIR", dirs.at(-1)!);
   for (const [k, v] of Object.entries(vars)) vi.stubEnv(k, v);
   return (await import("./route")).POST;
 }
@@ -55,12 +61,52 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });
   vi.unstubAllEnvs();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
 });
 
+async function spend(tokens: number) {
+  const { ledger } = await import("@/lib/server/ai/ledger");
+  await ledger.recordAi(ledger.keyId(KEY), { tokens });
+  return ledger;
+}
+
 describe("POST /api/ai/chat", () => {
+  it("answers 429 quota_exhausted before any upstream call once the key has spent its day", async () => {
+    const { mock } = fakeFetch();
+    const POST = await load({ IYNK_AI_DAILY_TOKENS: "1000" });
+    await spend(1000);
+    const res = await POST(post(ask));
+    expect(res.status).toBe(429);
+    expect((await res.json()).error.code).toBe("quota_exhausted");
+    expect(Number(res.headers.get("retry-after"))).toBeGreaterThan(0);
+    expect(mock).not.toHaveBeenCalled();
+  });
+
+  it("adds the tokens of the done event and one request to the key's day", async () => {
+    fakeFetch(sseOf([delta({ content: "ok" }, "stop"), usageChunk(100, 9)]));
+    const POST = await load({ SERPAPI_KEY: "s", IYNK_AI_DAILY_TOKENS: "1000" });
+    await readEvents(await POST(post(ask)));
+    const { ledger } = await import("@/lib/server/ai/ledger");
+    expect(ledger.summary(ledger.keyId(KEY)).ai.today).toEqual({ tokens: 109, requests: 1 });
+  });
+
+  it("does not rate-limit by instance: 900 calls from one address, kept under the per-minute limit, all pass the guard", async () => {
+    vi.useFakeTimers();
+    vi.resetModules();
+    vi.stubEnv("IYNK_AI_ENABLE", "1");
+    vi.stubEnv("IYNK_TRUST_PROXY", "1");
+    vi.stubEnv("IYNK_SERVER_TOKEN", TOKEN);
+    const { guardAi } = await import("@/lib/server/ai/guard");
+    for (let i = 0; i < 900; i++) {
+      if (i % 15 === 0) vi.advanceTimersByTime(61_000);
+      expect(guardAi(post(ask, { "x-real-ip": "10.9.9.9" }), "chat", 20)).toBeNull();
+    }
+    vi.useRealTimers();
+  });
+
   it("answers 401 with an empty message when the token is missing or wrong", async () => {
     const POST = await load();
     const missing = await POST(post(ask, { "x-iynk-server-token": "" }));

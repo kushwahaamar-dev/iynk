@@ -2,7 +2,8 @@ import { z } from "zod";
 import { parseToolCall } from "@/lib/ai/tools";
 import { LOCALES } from "@/i18n/config";
 import { LABS } from "@/lib/server/ai/catalog";
-import { aiUser, callerKey, guardAi } from "@/lib/server/ai/guard";
+import { aiCap, aiUser, callerKey, guardAi } from "@/lib/server/ai/guard";
+import { ledger } from "@/lib/server/ai/ledger";
 import { PARTNER_RULES, partnerContext } from "@/lib/server/ai/prompts/partner";
 import { AiError, chat, type ProviderMessage, type ToolCallOut, type WireToolCall } from "@/lib/server/ai/provider";
 import { sseResponse } from "@/lib/server/ai/sse";
@@ -84,7 +85,7 @@ function errorCode(error: unknown): ChatErrorCode {
   return error.code;
 }
 
-async function* converse(body: Body, key: string, req: Request): AsyncGenerator<ChatEvent> {
+async function* converse(body: Body, key: string, keyId: string, req: Request): AsyncGenerator<ChatEvent> {
   const messages: ProviderMessage[] = [
     { role: "system", content: PARTNER_RULES },
     { role: "system", content: partnerContext(body) },
@@ -94,68 +95,73 @@ async function* converse(body: Body, key: string, req: Request): AsyncGenerator<
   const usage: ChatUsage = { provider: "meta", inTokens: 0, outTokens: 0 };
   let wrote = false;
 
-  for (let round = 1; round <= MAX_ROUNDS; round++) {
-    const last = round === MAX_ROUNDS;
-    const calls: ToolCallOut[] = [];
-    let text = "";
-    try {
-      for await (const event of chat({
-        messages,
-        tools: last ? undefined : tools,
-        stream: true,
-        signal: req.signal,
-        // Hints should start streaming fast; reasoning tokens count against maxTokens.
-        reasoning: "low",
-        maxTokens: 6000,
-        cacheKey: "iynk-partner",
-        user: aiUser(req),
-        key,
-      })) {
-        if (event.type === "text") {
-          // Rounds are one reply to the learner: keep a paragraph break between them.
-          if (!text && wrote) yield { type: "text", delta: "\n\n" };
-          text += event.delta;
-          wrote = true;
-          yield { type: "text", delta: event.delta };
-        } else if (event.type === "tool_call") {
-          calls.push(event.call);
-        } else {
-          usage.provider = event.usage.provider;
-          usage.inTokens += event.usage.inTokens;
-          usage.outTokens += event.usage.outTokens;
+  try {
+    for (let round = 1; round <= MAX_ROUNDS; round++) {
+      const last = round === MAX_ROUNDS;
+      const calls: ToolCallOut[] = [];
+      let text = "";
+      try {
+        for await (const event of chat({
+          messages,
+          tools: last ? undefined : tools,
+          stream: true,
+          signal: req.signal,
+          // Hints should start streaming fast; reasoning tokens count against maxTokens.
+          reasoning: "low",
+          maxTokens: 6000,
+          cacheKey: "iynk-partner",
+          user: aiUser(req),
+          key,
+        })) {
+          if (event.type === "text") {
+            // Rounds are one reply to the learner: keep a paragraph break between them.
+            if (!text && wrote) yield { type: "text", delta: "\n\n" };
+            text += event.delta;
+            wrote = true;
+            yield { type: "text", delta: event.delta };
+          } else if (event.type === "tool_call") {
+            calls.push(event.call);
+          } else {
+            usage.provider = event.usage.provider;
+            usage.inTokens += event.usage.inTokens;
+            usage.outTokens += event.usage.outTokens;
+          }
         }
+      } catch (error) {
+        if (req.signal.aborted) return;
+        yield { type: "error", code: errorCode(error) };
+        return;
       }
-    } catch (error) {
+      if (!calls.length || last) break;
+
+      const checked = calls.map((raw) => ({ raw, parsed: parseToolCall(raw.id, raw.name, raw.arguments) }));
+      const forClient = checked.flatMap(({ raw, parsed }) => (parsed.ok && !runsOnServer(raw.name) ? [parsed.call] : []));
+      if (forClient.length) {
+        // The browser runs these and continues the chat with their results. Server
+        // calls from the same turn are dropped, so the history it replays stays paired.
+        for (const call of forClient) yield { type: "tool_call", id: call.id, name: call.name, args: call.args };
+        break;
+      }
+
+      messages.push({ role: "assistant", content: text || null, tool_calls: calls.map(wire) });
+      const outcomes = await Promise.all(
+        checked.map(({ parsed }): Promise<ToolOutcome> =>
+          parsed.ok
+            ? runServerTool(parsed.call, req.signal)
+            : Promise.resolve({ content: JSON.stringify({ error: parsed.error }), citations: [] }),
+        ),
+      );
       if (req.signal.aborted) return;
-      yield { type: "error", code: errorCode(error) };
-      return;
+      for (const [i, outcome] of outcomes.entries()) {
+        for (const citation of outcome.citations) yield { type: "citation", ...citation };
+        messages.push({ role: "tool", tool_call_id: calls[i].id, content: outcome.content });
+      }
     }
-    if (!calls.length || last) break;
-
-    const checked = calls.map((raw) => ({ raw, parsed: parseToolCall(raw.id, raw.name, raw.arguments) }));
-    const forClient = checked.flatMap(({ raw, parsed }) => (parsed.ok && !runsOnServer(raw.name) ? [parsed.call] : []));
-    if (forClient.length) {
-      // The browser runs these and continues the chat with their results. Server
-      // calls from the same turn are dropped, so the history it replays stays paired.
-      for (const call of forClient) yield { type: "tool_call", id: call.id, name: call.name, args: call.args };
-      break;
-    }
-
-    messages.push({ role: "assistant", content: text || null, tool_calls: calls.map(wire) });
-    const outcomes = await Promise.all(
-      checked.map(({ parsed }): Promise<ToolOutcome> =>
-        parsed.ok
-          ? runServerTool(parsed.call, req.signal)
-          : Promise.resolve({ content: JSON.stringify({ error: parsed.error }), citations: [] }),
-      ),
-    );
-    if (req.signal.aborted) return;
-    for (const [i, outcome] of outcomes.entries()) {
-      for (const citation of outcome.citations) yield { type: "citation", ...citation };
-      messages.push({ role: "tool", tool_call_id: calls[i].id, content: outcome.content });
-    }
+    yield { type: "done", usage };
+  } finally {
+    // Rounds that finished are spent even when the reader goes away mid-stream.
+    await ledger.recordAi(keyId, { tokens: usage.inTokens + usage.outTokens });
   }
-  yield { type: "done", usage };
 }
 
 /** Anything unexpected still ends the stream with an error event instead of a broken connection. */
@@ -173,7 +179,10 @@ export async function POST(req: Request) {
   if (refused) return refused;
   const key = callerKey(req);
   if (!key.ok) return key.response;
+  const keyId = ledger.keyId(key.key);
+  const capped = aiCap(keyId);
+  if (capped) return capped;
   const parsed = await parseBody(req, Body);
   if (!parsed.ok) return parsed.response;
-  return sseResponse(safely(converse(parsed.data, key.key, req)));
+  return sseResponse(safely(converse(parsed.data, key.key, keyId, req)));
 }

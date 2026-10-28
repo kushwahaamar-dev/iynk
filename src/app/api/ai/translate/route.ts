@@ -1,7 +1,8 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
 import { LOCALES, type Locale } from "@/i18n/config";
-import { aiFailure, aiUser, callerKey, guardAi } from "@/lib/server/ai/guard";
+import { aiCap, aiFailure, aiUser, callerKey, guardAi } from "@/lib/server/ai/guard";
+import { ledger } from "@/lib/server/ai/ledger";
 import { quoted } from "@/lib/server/ai/prompts/language";
 import { mask, translatePrompt, unmask } from "@/lib/server/ai/prompts/translate";
 import { AiError, chatJson } from "@/lib/server/ai/provider";
@@ -63,9 +64,12 @@ export async function POST(req: Request) {
   });
 
   if (todo.length) {
+    const keyId = ledger.keyId(key.key);
+    const capped = aiCap(keyId);
+    if (capped) return capped;
     const masked = todo.map((i) => mask(texts[i]));
     try {
-      const { data } = await chatJson(Reply, "translation", {
+      const { data, usage } = await chatJson(Reply, "translation", {
         messages: [
           { role: "system", content: translatePrompt(to, from) },
           { role: "user", content: quoted("Texts (JSON)", JSON.stringify({ texts: masked.map((m) => m.text) })) },
@@ -76,6 +80,7 @@ export async function POST(req: Request) {
         user: aiUser(req),
         key: key.key,
       });
+      await ledger.recordAi(keyId, { tokens: usage.inTokens + usage.outTokens });
       if (data.texts.length !== todo.length) return aiFailure(new AiError("bad_output", "translation count mismatch"));
       todo.forEach((index, j) => {
         // A translation that lost a protected token falls back to the original text.
