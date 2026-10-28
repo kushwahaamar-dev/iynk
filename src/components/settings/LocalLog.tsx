@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { TextArea } from "@/components/ui/Field";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { useCommonT, useLocale } from "@/i18n/client";
 import { bugReportText, clearLog, useLog } from "@/lib/telemetry";
 
@@ -32,15 +34,15 @@ export function LocalLog() {
   }
 
   return (
-    <section aria-labelledby="local-log-title" className="flex flex-col gap-3 border-t-[1.5px] border-rule pt-4">
+    <section aria-labelledby="local-log-title" className="flex flex-col gap-3 border-t border-rule pt-4">
       <div>
-        <h3 id="local-log-title" className="ink-label">
+        <h3 id="local-log-title" className="field-label">
           {t("log.title")}
         </h3>
         <p className="mt-1 text-sm text-muted">{t("log.notice")}</p>
       </div>
       {entries.length === 0 ? (
-        <p className="text-sm text-muted">{t("log.empty")}</p>
+        <EmptyState icon="empty" title={t("log.empty")} className="rounded-lg bg-sunken py-4!" />
       ) : (
         <ol className="max-h-48 overflow-y-auto rounded-lg bg-sunken p-3 font-mono text-xs" data-testid="local-log">
           {entries.map((entry, index) => (
@@ -74,19 +76,15 @@ export function LocalLog() {
         </p>
       </div>
       {copy === "manual" ? (
-        <div className="flex flex-col gap-1">
-          <label htmlFor="local-log-report" className="text-sm text-muted">
-            {t("log.manual")}
-          </label>
-          <textarea
-            id="local-log-report"
-            ref={manual}
-            readOnly
-            rows={6}
-            value={report}
-            className="w-full rounded-lg border border-rule bg-surface p-2 font-mono text-xs"
-          />
-        </div>
+        <TextArea
+          id="local-log-report"
+          ref={manual}
+          label={t("log.manual")}
+          readOnly
+          rows={6}
+          value={report}
+          className="font-mono text-xs"
+        />
       ) : null}
     </section>
   );

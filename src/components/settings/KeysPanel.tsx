@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { TextInput } from "@/components/ui/Field";
 import { Icon } from "@/components/ui/icons";
@@ -22,7 +22,6 @@ const LABELS = { ai: "keys.ai.label", search: "keys.search.label", server: "keys
 function KeyField({ kind }: { kind: KeyKind }) {
   const t = useCommonT();
   const masked = useKeys()[kind];
-  const id = useId();
   const [draft, setDraft] = useState("");
   const [name, setName] = useState("");
   const [problem, setProblem] = useState<Problem | null>(null);
@@ -57,7 +56,7 @@ function KeyField({ kind }: { kind: KeyKind }) {
     return (
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <div className="ink-label">{label}</div>
+          <div className="field-label">{label}</div>
           <p className="flex items-center gap-2 text-sm font-semibold">
             <Icon name="check" size={16} className="shrink-0 text-good" aria-hidden="true" />
             <span className="min-w-0 break-words tabular-nums">
@@ -70,7 +69,7 @@ function KeyField({ kind }: { kind: KeyKind }) {
         <Button
           ref={removeButton}
           size="sm"
-          variant="secondary"
+          variant="ghost"
           aria-label={`${t("keys.remove")}: ${label}`}
           onClick={() => {
             moveFocus.current = true;
@@ -85,7 +84,7 @@ function KeyField({ kind }: { kind: KeyKind }) {
 
   return (
     <form onSubmit={save} className="flex flex-col gap-2" noValidate>
-      <div className="flex items-end gap-2">
+      <div className="flex items-start gap-2">
         <div className="min-w-0 flex-1">
           <TextInput
             ref={input}
@@ -95,22 +94,13 @@ function KeyField({ kind }: { kind: KeyKind }) {
             spellCheck={false}
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
-            aria-invalid={problem !== null}
-            aria-describedby={`${id}-note`}
+            error={problem ? t(PROBLEM_MESSAGE[problem]) : undefined}
+            hint={hint}
           />
         </div>
-        <Button type="submit" size="md" variant="primary" aria-label={`${t("keys.save")}: ${label}`}>
+        <Button type="submit" size="md" variant="primary" className="mt-6" aria-label={`${t("keys.save")}: ${label}`}>
           {t("keys.save")}
         </Button>
-      </div>
-      <div id={`${id}-note`} className="empty:hidden">
-        {problem ? (
-          <p role="alert" className="text-sm text-bad">
-            {t(PROBLEM_MESSAGE[problem])}
-          </p>
-        ) : hint ? (
-          <p className="text-sm text-muted">{hint}</p>
-        ) : null}
       </div>
       {kind === "ai" ? (
         <TextInput label={t("keys.ai.labelOptional")} autoComplete="off" maxLength={40} value={name} onChange={(event) => setName(event.target.value)} />
