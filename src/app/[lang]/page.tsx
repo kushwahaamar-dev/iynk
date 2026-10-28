@@ -148,6 +148,7 @@ async function Dashboard({ params }: Pick<Props, "params">) {
                       {/* One link per lab; its ::after makes the whole column the target. */}
                       <Link
                         href={`/${lang}/${lab.path}`}
+                        prefetch={false}
                         className="no-underline after:absolute after:inset-0 focus-visible:shadow-none focus-visible:outline-none"
                       >
                         {labNames[lab.lab]}
@@ -234,7 +235,7 @@ async function Dashboard({ params }: Pick<Props, "params">) {
             <div className="col-span-12 flex flex-col justify-end gap-8 lg:col-span-4">
               <p className="max-w-[34ch] text-[17px] leading-[1.55] text-muted">{t("dashboard.closing.text")}</p>
               <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
-                <CtaLink href={start.href}>{start.label}</CtaLink>
+                <CtaLink href={start.href} prefetch={false}>{start.label}</CtaLink>
               </div>
             </div>
           </div>

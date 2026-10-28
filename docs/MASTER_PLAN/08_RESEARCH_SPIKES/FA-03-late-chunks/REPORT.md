@@ -47,3 +47,9 @@ Exit condition "act" is met: E cuts JS transferred on `/en` by 64 percent and th
 For T-B1-23: the option is `prefetch={false}` on the `Link`s in `src/app/[lang]/page.tsx` and `src/components/marketing/index.tsx`, not on `NavLinks.tsx` and `SiteHeader.tsx` as the card assumed. Leave `partialPrefetching: true` as it is. The task should check whether `ArrowLink` and `CtaLink` (both in `marketing/index.tsx`) are used on other pages where prefetch is wanted; D shows that disabling everything gives 71 percent, so the remaining 7 points are in other components (`Button.tsx`, `Catalogue.tsx`, `Editorial.tsx`) and are not needed to pass the 20 percent bar.
 
 Caveats: the landing page's remaining 205.7 KB was not split by cause; the click test used one lesson link; headless Chromium on a loaded laptop is not a phone.
+
+## Applied (T-B1-23)
+
+Decision: act. `prefetch={false}` is on the lab-card `Link`, the `ArrowLink` to Together and the `CtaLink` start button in `src/app/[lang]/page.tsx`. `marketing/index.tsx` is unchanged, because `ArrowLink` and `CtaLink` also serve the dashboard, where prefetch is wanted. `partialPrefetching: true` stays.
+
+After, same tool and settings (5 runs, median): `/en` 22 scripts, 384.2 KB transferred against 570.9 KB before (-33 percent); click to a lesson at 4x CPU 475 to 531 ms. The 64 percent of variant E was not reached: the remaining links (locale switcher, nav, footer) were tried and the locale links changed nothing.
