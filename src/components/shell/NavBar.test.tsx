@@ -9,6 +9,7 @@ import type { SettingsLabels } from "./SettingsMenu";
 vi.mock("next/navigation", () => ({ usePathname: () => "/en/boards/uno-r3", useRouter: () => ({ push: vi.fn() }) }));
 vi.mock("./LanguagePicker", () => ({ LanguagePicker: () => null }));
 vi.mock("./MobileNav", () => ({ MobileNav: () => null }));
+vi.mock("@/lib/telemetry", () => ({ installErrorCapture: () => () => undefined }));
 
 const labels: NavBarLabels = {
   home: "iynk, go to the dashboard",
