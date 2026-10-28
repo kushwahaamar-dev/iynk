@@ -45,7 +45,6 @@ export const unauthorized = () => fail(401, "unauthorized", "");
 
 export const featureDisabled = (what: string) => fail(501, "feature_disabled", `${what} is turned off on this server.`);
 
-export const notConfigured = (what: string) => fail(503, "not_configured", `${what} is not set up on this deployment.`);
 
 /** Reads at most `maxBytes` of the body; null when it is larger. */
 async function readCapped(req: Request, maxBytes: number): Promise<Uint8Array | null> {
