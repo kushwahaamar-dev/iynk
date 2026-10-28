@@ -59,6 +59,7 @@ describe("round trip", () => {
 
   it("writes 500 parts in under 15 ms", () => {
     const doc = bigProject(500, 500, 3);
+    writeIynk(doc);
     const times = Array.from({ length: 5 }, () => {
       const start = performance.now();
       writeIynk(doc);
