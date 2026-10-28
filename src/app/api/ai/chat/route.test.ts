@@ -28,7 +28,7 @@ const KEY = "iynk-canary-key-7c1d";
 let ip = 0;
 const dirs: string[] = [];
 
-async function load(vars: Record<string, string> = { SERPAPI_KEY: "s" }) {
+async function load(vars: Record<string, string> = {}) {
   vi.resetModules();
   vi.stubEnv("IYNK_AI_ENABLE", "1");
   vi.stubEnv("IYNK_SEARCH_ENABLE", "1");
@@ -87,7 +87,7 @@ describe("POST /api/ai/chat", () => {
 
   it("adds the tokens of the done event and one request to the key's day", async () => {
     fakeFetch(sseOf([delta({ content: "ok" }, "stop"), usageChunk(100, 9)]));
-    const POST = await load({ SERPAPI_KEY: "s", IYNK_AI_DAILY_TOKENS: "1000" });
+    const POST = await load({ IYNK_AI_DAILY_TOKENS: "1000" });
     await readEvents(await POST(post(ask)));
     const { ledger } = await import("@/lib/server/ai/ledger");
     expect(ledger.summary(ledger.keyId(KEY)).ai.today).toEqual({ tokens: 109, requests: 1 });

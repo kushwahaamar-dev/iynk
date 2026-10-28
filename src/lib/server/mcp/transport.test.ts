@@ -5,7 +5,7 @@ import { DELETE, GET, POST } from "@/app/api/mcp/route";
 const TOKEN = vi.hoisted(() => "t".repeat(40));
 
 vi.mock("@/lib/server/env", () => ({
-  env: { NEXT_PUBLIC_SITE_URL: "https://iynk.test", IYNK_SERVER_TOKEN: TOKEN, IYNK_TRUST_PROXY: true },
+  env: { NEXT_PUBLIC_SITE_URL: "https://iynk.test", IYNK_SERVER_TOKEN: TOKEN, IYNK_TRUST_PROXY: true, IYNK_DATA_DIR: ".iynk-data" },
   features: { ai: false, voice: false, search: false, realtime: false, gemini: false },
 }));
 vi.mock("next/server", () => ({ connection: async () => undefined }));

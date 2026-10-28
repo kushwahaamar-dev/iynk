@@ -18,14 +18,10 @@ const switchOf = z
   .transform((v) => v === "1");
 
 const schema = {
-  META_API_KEY: text.optional(),
   META_API_BASE: url.default("https://api.meta.ai/v1"),
   META_MODEL: text.default("muse-spark-1.3"),
   META_TRANSCRIBE_MODEL: text.default("muse-voice-transcribe-1.0"),
-  GEMINI_API_KEY: text.optional(),
   GEMINI_MODEL: text.default("gemini-3.5-flash"),
-  SERPAPI_KEY: text.optional(),
-  SERPAPI_MONTHLY_BUDGET: z.coerce.number().int().min(0).default(200),
   NEXT_PUBLIC_REALTIME_URL: wsUrl.optional(),
   NEXT_PUBLIC_SITE_URL: url.default("http://localhost:3000"),
   IYNK_SERVER_TOKEN: text.min(32).optional(),
@@ -80,7 +76,7 @@ export function featuresOf(e: Env): Features {
     ai,
     // Gemini only stands in for Muse Spark's text work; voice needs Meta.
     voice: ai && e.IYNK_AI_PROVIDER === "meta",
-    search: e.IYNK_SEARCH_ENABLE && Boolean(e.SERPAPI_KEY),
+    search: e.IYNK_SEARCH_ENABLE,
     realtime: Boolean(e.NEXT_PUBLIC_REALTIME_URL),
     gemini: ai && e.IYNK_AI_PROVIDER === "gemini",
   };

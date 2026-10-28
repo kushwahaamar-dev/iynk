@@ -1,6 +1,6 @@
 import "server-only";
 import type { Locale } from "@/i18n/config";
-import { env } from "@/lib/server/env";
+import { ledger as spendLedger, type Ledger } from "@/lib/server/ai/ledger";
 import { withTimeout } from "@/lib/server/http";
 import type { EventsInput, NearbyInput, OfferPartInput, VideosInput, WebInput } from "@/lib/search/schema";
 import { LL_PATTERN } from "@/lib/search/schema";
@@ -17,14 +17,16 @@ import type {
   Video,
   WebResponse,
 } from "@/lib/search/types";
+import { currentSearchKey } from "./key-context";
 import { TtlLru } from "./lru";
 import * as normalize from "./normalize";
 import { rankOffers } from "./rank";
 
 // The SerpApi client (HX-CONTRACT H5; parameters and fields in docs/hacktx/SEARCH.md).
 // Every call goes through search(): engine whitelist, our 6 h LRU in front of
-// SerpApi's own 1 h cache (we never send no_cache), a per-process search
-// budget, a timeout, and one retry with jitter on 429 and 5xx.
+// SerpApi's own 1 h cache (we never send no_cache), the caller's own key and
+// monthly search cap (from the spend ledger), a timeout, and one retry with
+// jitter on 429 and 5xx.
 
 export const ENGINES = [
   "google",
@@ -60,16 +62,13 @@ export class SearchError extends Error {
 type Params = Record<string, string>;
 
 export type SerpApiOptions = {
-  key: string | undefined;
-  /** Searches this process may send before it refuses anything not cached. */
-  budget: number;
+  /** Counts each caller's searches; the server-wide ledger unless a test passes its own. */
+  ledger?: Ledger;
   fetch?: typeof fetch;
   now?: () => number;
   sleep?: (ms: number) => Promise<void>;
   random?: () => number;
 };
-
-export type SearchUsage = { used: number; budget: number; cached: number };
 
 const NO_RESULTS = /hasn't returned any results|no results found|returned no results/i;
 
@@ -128,20 +127,19 @@ const googleHl = (locale: Locale): string => (locale === "zh" ? "zh-cn" : locale
 const RESULT_LIMIT = 8;
 const EXTRACT_PAGES = 2;
 
-export function createSerpApi(options: SerpApiOptions) {
+export function createSerpApi(options: SerpApiOptions = {}) {
   const now = options.now ?? Date.now;
   const sleep = options.sleep ?? ((ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms)));
   const random = options.random ?? Math.random;
   const cache = new TtlLru<unknown>(CACHE_ENTRIES, CACHE_TTL_MS, now);
   const inflight = new Map<string, Promise<unknown>>();
   const limit = semaphore(MAX_CONCURRENT);
-  let used = 0;
 
-  async function send(engine: Engine, params: Params, signal?: AbortSignal): Promise<unknown> {
+  async function send(engine: Engine, params: Params, apiKey: string, signal?: AbortSignal): Promise<unknown> {
     const url = new URL(ENDPOINT);
     url.searchParams.set("engine", engine);
     for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
-    url.searchParams.set("api_key", options.key as string);
+    url.searchParams.set("api_key", apiKey);
     const doFetch = options.fetch ?? fetch;
     const timeout = engine === "extract" ? EXTRACT_TIMEOUT_MS : TIMEOUT_MS;
 
@@ -186,20 +184,27 @@ export function createSerpApi(options: SerpApiOptions) {
     }
   }
 
-  /** One SerpApi search, through the cache and the budget. */
+  /** One SerpApi search with the caller's key, through the cache and that key's monthly cap. */
   async function search(engine: Engine, params: Params, signal?: AbortSignal): Promise<unknown> {
     if (!ENGINES.includes(engine)) throw new Error(`SerpApi engine "${engine}" is not on the whitelist.`);
-    if (!options.key) throw new SearchError("not_configured", "SerpApi is not set up on this deployment.");
+    const caller = currentSearchKey();
+    if (!caller) throw new SearchError("not_configured", "Search needs a key from the caller.");
     const key = cacheKey(engine, params);
     const hit = cache.get(key);
     if (hit !== undefined) return hit;
     const pending = inflight.get(key);
     if (pending) return pending;
-    if (used >= options.budget) {
-      throw new SearchError("quota_exhausted", "This deployment's search budget is used up; cached results still work.");
+    const spend = options.ledger ?? spendLedger;
+    if (!spend.checkSearch(caller.keyId).ok) {
+      throw new SearchError("quota_exhausted", "This key's monthly search limit is used up; cached results still work.");
     }
-    used++;
-    const task = limit(() => send(engine, params, signal))
+    // Counted before the call goes out, so two searches racing past the check cannot both slip under the cap.
+    const task = spend
+      .recordSearch(caller.keyId)
+      .then(() => {
+        console.warn(`[usage] search key=${caller.keyId} total=${spend.summary(caller.keyId).search.month}`);
+        return limit(() => send(engine, params, caller.key, signal));
+      })
       .then((body) => {
         cache.set(key, body);
         return body;
@@ -283,14 +288,12 @@ export function createSerpApi(options: SerpApiOptions) {
     return { results, extracts: pages.filter((p): p is PageExtract => p !== undefined) };
   }
 
-  const usage = (): SearchUsage => ({ used, budget: options.budget, cached: cache.size });
-
-  return { search, offers, nearby, events, videos, web, extract, usage };
+  return { search, offers, nearby, events, videos, web, extract };
 }
 
 export type SerpApi = ReturnType<typeof createSerpApi>;
 
-const serp = createSerpApi({ key: env.SERPAPI_KEY, budget: env.SERPAPI_MONTHLY_BUDGET });
+const serp = createSerpApi();
 
 /** Offers for up to 25 parts from Google Shopping, Amazon, eBay and Walmart (find_parts). */
 export const offers = serp.offers;
@@ -304,4 +307,3 @@ export const videos = serp.videos;
 export const web = serp.web;
 /** One page's text through the Extract API. */
 export const extract = serp.extract;
-export const searchUsage = serp.usage;

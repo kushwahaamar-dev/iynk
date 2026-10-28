@@ -34,7 +34,7 @@ describe(".env.example against the env schema", () => {
   });
 
   it("names the variable that is missing or extra", () => {
-    expect(drift("META_API_KEY=\nGHOST=\n", ["META_API_KEY", "META_MODEL"])).toEqual({
+    expect(drift("META_API_BASE=\nGHOST=\n", ["META_API_BASE", "META_MODEL"])).toEqual({
       missing: ["META_MODEL"],
       extra: ["GHOST"],
     });

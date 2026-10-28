@@ -2,13 +2,16 @@ import "server-only";
 import type { z } from "zod";
 import { features } from "@/lib/server/env";
 import { requireServerToken } from "@/lib/server/access";
+import { callerKey } from "@/lib/server/ai/guard";
+import { ledger } from "@/lib/server/ai/ledger";
 import { checkOrigin, fail, featureDisabled, json, parseBody } from "@/lib/server/http";
 import { checkRateLimit } from "@/lib/server/ratelimit";
+import { withSearchKey } from "./key-context";
 import { SearchError } from "./serpapi";
 
 // What every /api/search/* route does around its one search: our origin only,
-// the server token, the "turned off" answer when search is off or has no key,
-// a rate limit per IP, the input
+// the server token, the "turned off" answer when search is off, a rate limit
+// per IP, the caller's own search key, the input
 // from the query string (GET) or a JSON body (POST), and SearchError codes
 // mapped to statuses. Raw upstream errors never reach the client.
 
@@ -37,6 +40,8 @@ export async function handleSearch<S extends z.ZodType>(req: Request, route: Sea
   if (!features.search) return featureDisabled("Search");
   const limited = checkRateLimit(req, `search:${route.bucket}`, { limit: route.perMinute, windowMs: 60_000 });
   if (limited) return limited;
+  const key = callerKey(req);
+  if (!key.ok) return key.response;
 
   let input: z.output<S>;
   if (req.method === "GET") {
@@ -50,7 +55,7 @@ export async function handleSearch<S extends z.ZodType>(req: Request, route: Sea
   }
 
   try {
-    return json(await route.run(input, req.signal));
+    return json(await withSearchKey({ key: key.key, keyId: ledger.keyId(key.key) }, () => route.run(input, req.signal)));
   } catch (error) {
     if (error instanceof SearchError && error.code === "not_configured") return featureDisabled("Search");
     if (error instanceof SearchError) return fail(STATUS[error.code], error.code, error.message);

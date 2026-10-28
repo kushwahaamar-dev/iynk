@@ -1,5 +1,11 @@
-import { describe, expect, it, vi } from "vitest";
+// @vitest-environment node
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { createLedger, type Ledger } from "@/lib/server/ai/ledger";
 import shopping from "./__fixtures__/google_shopping.docs.json";
+import { withSearchKey } from "./key-context";
 import { createSerpApi, SearchError, type SerpApiOptions } from "./serpapi";
 
 type Call = { url: URL; init?: RequestInit };
@@ -18,8 +24,35 @@ function fakeFetch(...replies: (Response | (() => Response) | Error | DOMExcepti
 
 const ok = (body: unknown) => Response.json(body);
 
-function client(fetch: typeof globalThis.fetch, extra: Partial<SerpApiOptions> = {}) {
-  return createSerpApi({ key: "test-key", budget: 50, fetch, sleep: async () => {}, random: () => 0, ...extra });
+const KEY = "test-key";
+const dirs: string[] = [];
+
+function newLedger(searchMonthly = 50, dir = mkdtempSync(path.join(tmpdir(), "iynk-search-"))): Ledger {
+  dirs.push(dir);
+  return createLedger({ dir, aiDailyTokens: 1000, searchMonthly });
+}
+
+afterEach(() => {
+  for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });
+});
+
+/** A client whose searches run as the caller holding KEY, counted in a throwaway ledger. */
+function client(fetch: typeof globalThis.fetch, extra: Partial<SerpApiOptions> & { searchMonthly?: number } = {}) {
+  const { searchMonthly, ...options } = extra;
+  const ledger = options.ledger ?? newLedger(searchMonthly);
+  const serp = createSerpApi({ ledger, fetch, sleep: async () => {}, random: () => 0, ...options });
+  const as = <T>(fn: () => Promise<T>, key = KEY) => withSearchKey({ key, keyId: ledger.keyId(key) }, fn);
+  return {
+    ledger,
+    as,
+    search: (...args: Parameters<typeof serp.search>) => as(() => serp.search(...args)),
+    offers: (...args: Parameters<typeof serp.offers>) => as(() => serp.offers(...args)),
+    nearby: (...args: Parameters<typeof serp.nearby>) => as(() => serp.nearby(...args)),
+    events: (...args: Parameters<typeof serp.events>) => as(() => serp.events(...args)),
+    videos: (...args: Parameters<typeof serp.videos>) => as(() => serp.videos(...args)),
+    web: (...args: Parameters<typeof serp.web>) => as(() => serp.web(...args)),
+    raw: serp,
+  };
 }
 
 describe("search()", () => {
@@ -40,11 +73,30 @@ describe("search()", () => {
     await expect(client(fn).search("bing" as never, { q: "x" })).rejects.toThrow(/whitelist/);
   });
 
-  it("answers not_configured without a key and sends nothing", async () => {
+  it("answers not_configured outside a search context and sends nothing", async () => {
     const { fn, calls } = fakeFetch(ok({}));
-    const serp = client(fn, { key: undefined });
-    await expect(serp.search("google", { q: "x" })).rejects.toMatchObject({ code: "not_configured" });
+    const serp = client(fn);
+    await expect(serp.raw.search("google", { q: "x" })).rejects.toMatchObject({ code: "not_configured" });
     expect(calls).toHaveLength(0);
+    expect(serp.ledger.summary(serp.ledger.keyId(KEY)).search.month).toBe(0);
+  });
+
+  it("sends the key of the caller whose search it is", async () => {
+    const { fn, calls } = fakeFetch(ok({ organic_results: [] }));
+    const serp = client(fn);
+    await serp.as(() => serp.raw.search("google", { q: "a" }), "first-key-0001");
+    await serp.as(() => serp.raw.search("google", { q: "b" }), "second-key-0002");
+    expect(calls.map((c) => c.url.searchParams.get("api_key"))).toEqual(["first-key-0001", "second-key-0002"]);
+  });
+
+  it("shares the cache between callers and counts only the caller who paid", async () => {
+    const { fn, calls } = fakeFetch(ok({ organic_results: [] }));
+    const serp = client(fn);
+    await serp.as(() => serp.raw.search("google", { q: "a" }), "first-key-0001");
+    await serp.as(() => serp.raw.search("google", { q: "a" }), "second-key-0002");
+    expect(calls).toHaveLength(1);
+    expect(serp.ledger.summary(serp.ledger.keyId("first-key-0001")).search.month).toBe(1);
+    expect(serp.ledger.summary(serp.ledger.keyId("second-key-0002")).search.month).toBe(0);
   });
 
   it("serves repeats from its cache for 6 hours, with params in any order", async () => {
@@ -60,7 +112,7 @@ describe("search()", () => {
     now = 6 * 60 * 60 * 1000 + 1;
     await serp.search("google", { q: "a", gl: "us" });
     expect(calls).toHaveLength(2);
-    expect(serp.usage()).toEqual({ used: 2, budget: 50, cached: 1 });
+    expect(serp.ledger.summary(serp.ledger.keyId(KEY)).search.month).toBe(2);
   });
 
   it("shares one request between identical concurrent searches", async () => {
@@ -68,16 +120,46 @@ describe("search()", () => {
     const serp = client(fn);
     await Promise.all([serp.search("google", { q: "a" }), serp.search("google", { q: "a" })]);
     expect(calls).toHaveLength(1);
+    expect(serp.ledger.summary(serp.ledger.keyId(KEY)).search.month).toBe(1);
   });
 
-  it("stops at the budget but keeps serving cached searches", async () => {
+  it("stops at the key's monthly cap but keeps serving cached searches", async () => {
     const { fn, calls } = fakeFetch(ok({ organic_results: [] }));
-    const serp = client(fn, { budget: 2 });
+    const serp = client(fn, { searchMonthly: 2 });
     await serp.search("google", { q: "a" });
     await serp.search("google", { q: "b" });
     await expect(serp.search("google", { q: "c" })).rejects.toMatchObject({ code: "quota_exhausted" });
     await expect(serp.search("google", { q: "a" })).resolves.toEqual({ organic_results: [] });
     expect(calls).toHaveLength(2);
+  });
+
+  it("still refuses after a restart", async () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "iynk-search-"));
+    const { fn, calls } = fakeFetch(ok({ organic_results: [] }));
+    const before = client(fn, { ledger: newLedger(1, dir) });
+    await before.search("google", { q: "a" });
+    const after = client(fn, { ledger: newLedger(1, dir) });
+    await expect(after.search("google", { q: "b" })).rejects.toMatchObject({ code: "quota_exhausted" });
+    expect(calls).toHaveLength(1);
+  });
+
+  it("counts a key's searches apart from another key's", async () => {
+    const { fn } = fakeFetch(ok({ organic_results: [] }));
+    const serp = client(fn, { searchMonthly: 1 });
+    await serp.as(() => serp.raw.search("google", { q: "a" }), "first-key-0001");
+    await expect(serp.as(() => serp.raw.search("google", { q: "b" }), "first-key-0001")).rejects.toMatchObject({ code: "quota_exhausted" });
+    await expect(serp.as(() => serp.raw.search("google", { q: "b" }), "second-key-0002")).resolves.toEqual({ organic_results: [] });
+  });
+
+  it("logs the key id and the count, never the key", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const { fn } = fakeFetch(ok({ organic_results: [] }));
+    const serp = client(fn);
+    await serp.search("google", { q: "a" });
+    const lines = warn.mock.calls.flat().join(" ");
+    expect(lines).toContain(`[usage] search key=${serp.ledger.keyId(KEY)} total=1`);
+    expect(lines).not.toContain(KEY);
+    warn.mockRestore();
   });
 
   it("retries once on 5xx and 429, then gives up", async () => {
@@ -179,7 +261,7 @@ describe("typed searches", () => {
 
   it("offers() says the budget ran out when that is why prices are missing", async () => {
     const { fn } = fakeFetch(() => ok({ shopping_results: [listing("SG90 servo", 3, "https://s.example/1")] }));
-    const result = await client(fn, { budget: 1 }).offers([{ key: "servo", query: "SG90 servo", qty: 1 }]);
+    const result = await client(fn, { searchMonthly: 1 }).offers([{ key: "servo", query: "SG90 servo", qty: 1 }]);
     expect(result.partial).toBe("quota");
     expect(result.parts[0].offers).toHaveLength(1);
   });

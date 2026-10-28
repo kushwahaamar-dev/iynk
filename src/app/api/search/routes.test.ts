@@ -1,14 +1,32 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+// @vitest-environment node
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const flags = vi.hoisted(() => ({ search: true }));
+const dataDir = vi.hoisted(() => ({ path: "" }));
 
-vi.mock("@/lib/server/env", () => ({
-  env: { SERPAPI_KEY: "route-test-key", SERPAPI_MONTHLY_BUDGET: 500, IYNK_SERVER_TOKEN: "t".repeat(40), IYNK_TRUST_PROXY: true },
-  features: flags,
-}));
+vi.mock("@/lib/server/env", async () => {
+  const { mkdtempSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  dataDir.path = mkdtempSync(join(tmpdir(), "iynk-search-routes-"));
+  return {
+    env: {
+      IYNK_DATA_DIR: dataDir.path,
+      IYNK_AI_DAILY_TOKENS: 1000,
+      IYNK_SEARCH_MONTHLY: 500,
+      IYNK_SERVER_TOKEN: "t".repeat(40),
+      IYNK_TRUST_PROXY: true,
+    },
+    features: flags,
+  };
+});
 // connection() needs a request scope that a unit test doesn't have.
 vi.mock("next/server", () => ({ connection: async () => {} }));
 
+import { ledger } from "@/lib/server/ai/ledger";
 import * as eventsRoute from "./events/route";
 import * as nearbyRoute from "./nearby/route";
 import * as offersRoute from "./offers/route";
@@ -16,14 +34,15 @@ import * as videosRoute from "./videos/route";
 import * as webRoute from "./web/route";
 
 const TOKEN = "t".repeat(40);
+const KEY = "iynk-canary-KEY-0001-do-not-use";
 let counter = 0;
 // A fresh IP per request keeps the per-IP rate limiter out of the way, except where a test wants it.
 const get = (path: string, ip = `10.0.0.${++counter % 250}`, headers: Record<string, string> = {}) =>
-  new Request(`http://localhost${path}`, { headers: { "x-iynk-server-token": TOKEN, "x-real-ip": ip, ...headers } });
+  new Request(`http://localhost${path}`, { headers: { "x-iynk-server-token": TOKEN, "x-iynk-provider-key": KEY, "x-real-ip": ip, ...headers } });
 const post = (path: string, body: unknown, headers: Record<string, string> = {}) =>
   new Request(`http://localhost${path}`, {
     method: "POST",
-    headers: { "content-type": "application/json", "x-iynk-server-token": TOKEN, "x-real-ip": `10.1.0.${++counter % 250}`, ...headers },
+    headers: { "content-type": "application/json", "x-iynk-server-token": TOKEN, "x-iynk-provider-key": KEY, "x-real-ip": `10.1.0.${++counter % 250}`, ...headers },
     body: JSON.stringify(body),
   });
 
@@ -35,6 +54,7 @@ beforeEach(() => {
   vi.stubGlobal("fetch", fetchMock);
 });
 afterEach(() => vi.unstubAllGlobals());
+afterAll(() => rmSync(dataDir.path, { recursive: true, force: true }));
 
 const engineOf = (input: string | URL | Request) => new URL(String(input)).searchParams;
 
@@ -93,7 +113,7 @@ describe("/api/search/offers", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it("answers 501 feature_disabled when search is off or has no key", async () => {
+  it("answers 501 feature_disabled when search is off", async () => {
     flags.search = false;
     const res = await offersRoute.POST(post("/api/search/offers", { parts: [{ key: "a", query: "servo", qty: 1 }] }));
     expect(res.status).toBe(501);
@@ -107,12 +127,51 @@ describe("/api/search/offers", () => {
 
   it("maps upstream failure to 502 without leaking SerpApi's answer", async () => {
     vi.spyOn(console, "warn").mockImplementation(() => {});
-    fetchMock.mockImplementation(async () => Response.json({ error: "Invalid API key route-test-key" }, { status: 401 }));
+    fetchMock.mockImplementation(async () => Response.json({ error: `Invalid API key ${KEY}` }, { status: 401 }));
     const res = await offersRoute.POST(post("/api/search/offers", { parts: [{ key: "a", query: "unique 502 part", qty: 1 }] }));
     expect(res.status).toBe(502);
     const text = await res.text();
     expect(text).toContain("upstream_failed");
-    expect(text).not.toContain("route-test-key");
+    expect(text).not.toContain(KEY);
+  });
+});
+
+describe("the caller's key", () => {
+  const body = (query: string) => ({ parts: [{ key: "a", query, qty: 1, sources: ["google_shopping"] }] });
+
+  it("answers 422 key_required without the header and never reaches SerpApi", async () => {
+    const res = await offersRoute.POST(post("/api/search/offers", body("no key part"), { "x-iynk-provider-key": "" }));
+    expect(res.status).toBe(422);
+    expect((await res.json()).error.code).toBe("key_required");
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("answers 400 bad_key for a key that does not look right", async () => {
+    const res = await offersRoute.POST(post("/api/search/offers", body("bad key part"), { "x-iynk-provider-key": "short" }));
+    expect(res.status).toBe(400);
+    expect((await res.json()).error.code).toBe("bad_key");
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("sends the caller's key to SerpApi and keeps it out of the answer and the logs", async () => {
+    const logs = [vi.spyOn(console, "warn"), vi.spyOn(console, "error"), vi.spyOn(console, "log")].map((spy) => spy.mockImplementation(() => {}));
+    fetchMock.mockResolvedValue(Response.json({ shopping_results: [] }));
+    const res = await offersRoute.POST(post("/api/search/offers", body("canary key part")));
+    expect(res.status).toBe(200);
+    expect(engineOf(fetchMock.mock.calls[0][0]).get("api_key")).toBe(KEY);
+    expect(JSON.stringify(await res.json())).not.toContain(KEY);
+    expect(logs.flatMap((spy) => spy.mock.calls).flat().join(" ")).not.toContain(KEY);
+    vi.restoreAllMocks();
+  });
+
+  it("answers 429 quota_exhausted once the key has used its month", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const capped = "iynk-canary-KEY-0002-do-not-use";
+    await ledger.recordSearch(ledger.keyId(capped), 500);
+    const res = await offersRoute.POST(post("/api/search/offers", body("capped part"), { "x-iynk-provider-key": capped }));
+    expect(res.status).toBe(429);
+    expect((await res.json()).error.code).toBe("quota_exhausted");
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });
 

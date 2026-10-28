@@ -196,7 +196,17 @@ describe("price_parts", () => {
     expect(out).toMatchObject({ ok: false, code: "rate_limited" });
   });
 
-  it("is not set up without a SerpApi key", async () => {
+  it("reports not set up when the call carries no search key, as an MCP client's does", async () => {
+    const { SearchError } = await import("@/lib/server/search/serpapi");
+    const fetchSpy = vi.spyOn(globalThis, "fetch");
+    offers.mockRejectedValue(new SearchError("not_configured", "Search needs a key from the caller."));
+    const out = await runTool(priceParts, { lab: "drone", id: "quad5", parts: [{ name: "XT60 plug", qty: 2 }] }, ctx);
+    expect(out).toMatchObject({ ok: false, code: "not_configured" });
+    expect(fetchSpy).not.toHaveBeenCalled();
+    fetchSpy.mockRestore();
+  });
+
+  it("is not set up while search is off", async () => {
     flags.search = false;
     const out = await runTool(priceParts, { lab: "drone", id: "quad5", parts: [{ name: "XT60 plug", qty: 2 }] }, ctx);
     expect(out).toMatchObject({ ok: false, code: "not_configured" });
