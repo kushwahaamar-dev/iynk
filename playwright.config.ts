@@ -18,22 +18,16 @@ if (RESERVED_PORTS.includes(port)) throw new Error(`Refusing to run Playwright o
 // Blanked for the web server so a developer's .env.local cannot reach a real
 // service: an empty value overrides the file.
 const BLANK = [
-  "META_API_KEY",
-  "GEMINI_API_KEY",
-  "SERPAPI_KEY",
   "NEXT_PUBLIC_REALTIME_URL",
   "IYNK_SERVER_TOKEN",
   "IYNK_AI_ENABLE",
   "IYNK_SEARCH_ENABLE",
-  "NEXT_PUBLIC_SOLANA_PROGRAM_ID",
-  "SOLANA_ISSUER_KEYPAIR",
-  "SOLANA_RPC_URL",
-  "VULTR_API_KEY",
-  "VULTR_HOST",
-  "TIMESCALE_SERVICE_URL",
-  "DATABASE_URL",
-  "PGPASSWORD",
-  "PGHOST",
+  "IYNK_AI_PROVIDER",
+  "IYNK_AI_DAILY_TOKENS",
+  "IYNK_SEARCH_MONTHLY",
+  "IYNK_DATA_DIR",
+  "IYNK_CONNECT_ORIGINS",
+  "IYNK_SERVER_URL",
 ];
 
 // Its own build folder, so a test run never clobbers someone else's .next.

@@ -126,7 +126,7 @@ function JoinRoom({ t }: { t: TogetherT }) {
   );
 }
 
-// Known only once /api/status answers; until then the page reads as if the AI service is there.
+// Known only once /config.json answers; until then the page reads as if the AI service is there.
 function useAiOff() {
   const { status, features } = useFeatures();
   return status === "ready" && !features.ai;

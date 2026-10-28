@@ -92,8 +92,7 @@
   },
   "status": {
     "loading": "Réveil de ton partenaire de labo…",
-    "unavailable": "Le partenaire de labo n’est pas configuré sur ce déploiement",
-    "unavailableBody": "Tout le reste du labo fonctionne sans lui. Le partenaire a besoin sur le serveur d’une clé de l’API de modèles de Meta ou d’une clé de l’API Gemini.",
+    "what": "Le partenaire IA",
     "unreachable": "Impossible de joindre le serveur pour vérifier le partenaire.",
     "check": "Vérifier à nouveau"
   },

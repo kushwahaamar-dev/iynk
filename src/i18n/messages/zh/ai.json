@@ -92,8 +92,7 @@
   },
   "status": {
     "loading": "正在唤醒你的实验搭档…",
-    "unavailable": "此部署尚未设置实验搭档",
-    "unavailableBody": "实验室的其他功能无需它也能正常使用。搭档需要服务器上配置 Meta 模型 API 密钥或 Gemini API 密钥。",
+    "what": "AI 搭档",
     "unreachable": "无法连接服务器来检查搭档状态。",
     "check": "重新检查"
   },

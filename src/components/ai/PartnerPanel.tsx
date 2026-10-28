@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import type { LabDockProps } from "@/components/dock/types";
+import { NotSetUp } from "@/components/settings/NotSetUp";
 import { Button, Callout, cx } from "@/components/ui";
 import { useLocale } from "@/i18n/client";
 import type { Locale } from "@/i18n/config";
@@ -20,6 +21,7 @@ import { useAiT, type AiT } from "@/lib/ai/messages";
 import { openDockTab, type ToolContext } from "@/lib/ai/run-tools";
 import { suggestions } from "@/lib/ai/suggest";
 import { reloadFeatures, useFeatures } from "@/lib/features";
+import { useKeys } from "@/lib/keys";
 import { useRoom, useTogether } from "@/lib/realtime";
 import { PartnerIcon } from "./icons";
 import { MicButton, VoiceLine } from "./MicButton";
@@ -31,9 +33,10 @@ export function PartnerPanel(props: LabDockProps) {
   const locale = useLocale();
   const t = useAiT(locale);
   const { status, features } = useFeatures();
+  const keys = useKeys();
 
   if (!t) return <section aria-busy="true" className="h-28 animate-pulse rounded-ink bg-sunken" />;
-  if (status === "ready" && features.ai) {
+  if (status === "ready" && features.ai && keys.ai.set) {
     return <PartnerChat {...props} t={t} locale={locale} voice={features.voice} />;
   }
   return (
@@ -51,9 +54,7 @@ export function PartnerPanel(props: LabDockProps) {
             </Button>
           </Callout>
         ) : (
-          <Callout variant="quiet" title={t("status.unavailable")}>
-            <span className="mt-0.5 block">{t("status.unavailableBody")}</span>
-          </Callout>
+          <NotSetUp what={t("status.what")} reason={features.ai ? "needs_key" : "server_off"} fix="ai" />
         )}
       </div>
     </Frame>

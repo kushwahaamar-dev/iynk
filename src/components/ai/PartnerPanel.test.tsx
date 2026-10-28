@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, waitFor, within } from "@testing-librar
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { LabStore } from "@/components/dock/types";
 import type { FigureHandle } from "@/components/figure/protocol";
+import { OPEN_KEYS_EVENT } from "@/components/settings/KeysDialog";
 import common from "@/i18n/messages/en/common.json";
 import { initialState } from "@/lib/boardlab/store";
 import { removeAllKeys, setKey } from "@/lib/keys/store";
@@ -89,11 +90,43 @@ afterEach(() => {
 });
 
 describe("PartnerPanel", () => {
-  test("shows a real not-set-up state when the deployment has no AI key", async () => {
+  test("says the partner is switched off when the server has no AI", async () => {
     mockFetch({ ...FULL, ai: false }, []);
     await renderPanel(boardStore(), null);
-    expect(await screen.findByText("The lab partner isn’t set up on this deployment")).toBeTruthy();
+    const box = await screen.findByTestId("not-set-up");
+    expect(box.getAttribute("data-reason")).toBe("server_off");
+    expect(box.textContent).toContain("The AI partner is switched off on this server.");
     expect(screen.queryByRole("textbox")).toBeNull();
+    expect(screen.queryByRole("button", { name: common.client.notSetUp.openKeys })).toBeNull();
+  });
+
+  test("asks for the learner's own key when the server has AI but the browser has none", async () => {
+    removeAllKeys();
+    mockFetch(FULL, []);
+    await renderPanel(boardStore(), null);
+    const box = await screen.findByTestId("not-set-up");
+    expect(box.getAttribute("data-reason")).toBe("needs_key");
+    expect(screen.queryByRole("textbox")).toBeNull();
+    const opened = vi.fn();
+    window.addEventListener(OPEN_KEYS_EVENT, opened);
+    fireEvent.click(screen.getByRole("button", { name: common.client.notSetUp.openKeys }));
+    window.removeEventListener(OPEN_KEYS_EVENT, opened);
+    expect(opened).toHaveBeenCalledTimes(1);
+  });
+
+  test("waits for the capability probe before choosing a state", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => new Promise<Response>(() => {})));
+    await renderPanel(boardStore(), null);
+    expect(await screen.findByText("Waking up your lab partner…")).toBeTruthy();
+    expect(screen.queryByTestId("not-set-up")).toBeNull();
+  });
+
+  test("offers another check when the server can't be reached", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("", { status: 500 })));
+    await renderPanel(boardStore(), null);
+    expect(await screen.findByText("Couldn’t reach the server to check the partner.")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Check again" })).toBeTruthy();
+    expect(screen.queryByTestId("not-set-up")).toBeNull();
   });
 
   test("streams a reply, runs highlight_part on the figure and continues with the tool result", async () => {

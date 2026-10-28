@@ -92,8 +92,7 @@
   },
   "status": {
     "loading": "Despertando a tu compañero de laboratorio…",
-    "unavailable": "El compañero de laboratorio no está configurado en este despliegue",
-    "unavailableBody": "Todo lo demás del laboratorio funciona sin él. El compañero necesita en el servidor una clave de la API de modelos de Meta o una clave de la API de Gemini.",
+    "what": "El compañero de IA",
     "unreachable": "No se pudo contactar con el servidor para comprobar el compañero.",
     "check": "Volver a comprobar"
   },

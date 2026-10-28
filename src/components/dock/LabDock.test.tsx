@@ -2,7 +2,6 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-libra
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { LabStore } from "@/components/dock/types";
 import common from "@/i18n/messages/en/common.json";
-import ai from "@/i18n/messages/en/ai.json";
 import together from "@/i18n/messages/en/together.json";
 
 const flags = vi.hoisted(() => ({
@@ -130,7 +129,7 @@ describe("LabDock", () => {
     expect(screen.queryByRole("tab", { name: dock.tabs.hardware })).toBeNull();
 
     fireEvent.click(screen.getByRole("tab", { name: dock.tabs.partner }));
-    expect(await screen.findByText(ai.status.unavailable)).toBeTruthy();
+    expect(await screen.findByTestId("not-set-up")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("tab", { name: dock.tabs.together }));
     expect(screen.getByRole("tab", { name: dock.tabs.together }).getAttribute("aria-selected")).toBe("true");
@@ -141,7 +140,7 @@ describe("LabDock", () => {
     });
 
     fireEvent.click(screen.getByRole("tab", { name: dock.tabs.real }));
-    expect((await screen.findAllByTestId("not-set-up")).length).toBe(1);
+    expect(await screen.findAllByTestId("not-set-up")).toHaveLength(2);
   });
 
   test("opens on the first tab that works: the partner with AI, else Together, or prices on a drone", () => {

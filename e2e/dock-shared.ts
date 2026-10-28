@@ -52,11 +52,11 @@ export async function expectTabs(dock: Locator) {
   await expect(dock.getByRole("tab", { name: dockCopy.tabs.hardware })).toHaveCount(0);
 
   await dock.getByRole("tab", { name: dockCopy.tabs.partner }).click();
-  await expect(dock.getByText(ai.status.unavailable).or(dock.getByLabel(ai.panel.inputLabel))).toBeVisible();
+  await expect(dock.getByRole("region", { name: ai.panel.title }).getByTestId("not-set-up").or(dock.getByLabel(ai.panel.inputLabel))).toBeVisible();
 
   await dock.getByRole("tab", { name: dockCopy.tabs.together }).click();
   await expect(dock.getByRole("button", { name: together.panel.start }).or(dock.getByText(together.panel.unavailable))).toBeVisible();
 
   await dock.getByRole("tab", { name: dockCopy.tabs.real }).click();
-  await expect(dock.getByTestId("not-set-up").first().or(dock.getByRole("button", { name: search.real.check }))).toBeVisible();
+  await expect(dock.getByTestId("not-set-up").last().or(dock.getByRole("button", { name: search.real.check }))).toBeVisible();
 }
