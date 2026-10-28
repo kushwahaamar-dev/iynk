@@ -2,7 +2,11 @@ import type { Page } from "@playwright/test";
 import { DEFAULT_SETTINGS, STORAGE_KEY } from "../../src/lib/progress/storage";
 import common from "../../src/i18n/messages/en/common.json";
 import shell from "../../src/i18n/messages/en/shell.json";
-import { openDock } from "../dock-shared";
+import ai from "../../src/i18n/messages/en/ai.json";
+import search from "../../src/i18n/messages/en/search.json";
+import together from "../../src/i18n/messages/en/together.json";
+import { dockCopy, openDock } from "../dock-shared";
+import { waitForAnimations } from "./settled";
 
 export type Theme = (typeof THEMES)[number];
 export type ViewportName = keyof typeof VIEWPORTS;
@@ -25,6 +29,14 @@ export type Screen = {
 
 const settingsButton = (page: Page) => page.locator("header:visible").first().getByRole("button", { name: shell.settings.label });
 
+const LESSON = "/en/boards/uno-r3/blink";
+
+const dockTab = (tab: keyof typeof dockCopy.tabs) => async (page: Page, viewport: ViewportName) => {
+  const dock = await openDock(page, viewport === "phone");
+  await dock.getByRole("tab", { name: dockCopy.tabs[tab] }).click();
+  return dock;
+};
+
 export const SCREENS: Screen[] = [
   { name: "home-en", path: "/en" },
   { name: "home-de", path: "/de" },
@@ -41,6 +53,7 @@ export const SCREENS: Screen[] = [
   { name: "about", path: "/en/about" },
   { name: "privacy", path: "/en/privacy" },
   { name: "not-found", path: "/en/does-not-exist" },
+  { name: "not-found-global", path: "/zzz" },
   {
     name: "settings",
     path: "/en",
@@ -48,6 +61,7 @@ export const SCREENS: Screen[] = [
     before: async (page) => {
       await settingsButton(page).click();
       await page.locator("header:visible").first().getByRole("dialog", { name: shell.settings.label }).waitFor();
+      await waitForAnimations(page);
     },
   },
   {
@@ -72,6 +86,44 @@ export const SCREENS: Screen[] = [
     only: "desktop",
     before: async (page) => {
       await openDock(page, false);
+    },
+  },
+  {
+    name: "dock-partner",
+    path: LESSON,
+    before: async (page, viewport) => {
+      const dock = await dockTab("partner")(page, viewport);
+      await dock.getByRole("region", { name: ai.panel.title }).waitFor();
+    },
+  },
+  {
+    name: "dock-together",
+    path: LESSON,
+    before: async (page, viewport) => {
+      const dock = await dockTab("together")(page, viewport);
+      await dock.getByRole("button", { name: together.panel.start }).waitFor();
+    },
+  },
+  {
+    name: "dock-real",
+    path: LESSON,
+    before: async (page, viewport) => {
+      const dock = await dockTab("real")(page, viewport);
+      await dock.getByTestId("not-set-up").last().or(dock.getByRole("button", { name: search.real.check })).waitFor();
+    },
+  },
+  {
+    name: "room",
+    path: LESSON,
+    before: async (page, viewport) => {
+      const dock = await dockTab("together")(page, viewport);
+      await dock.getByRole("button", { name: together.panel.start }).click();
+      await dock.getByLabel(together.identity.name).fill("Ana");
+      await dock.getByRole("button", { name: together.identity.save }).click();
+      await dock.getByLabel(together.chat.label).fill("Is the LED the right way round?");
+      await dock.getByRole("button", { name: together.chat.send }).click();
+      await dock.getByText(together.bar.keyboardYou).waitFor();
+      await dock.getByText("Is the LED the right way round?").waitFor();
     },
   },
   {
