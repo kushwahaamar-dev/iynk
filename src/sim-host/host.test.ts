@@ -126,12 +126,15 @@ describe("sim host watchdog", () => {
     const loads: Extract<SimReq, { t: "load" }>[] = [];
     let ports = 0;
     let hang = false;
+    let slowReload: Promise<void> | null = null;
     const host = createSimHost({
       makePort: () => {
         ports++;
-        return createInlinePort<SimReq, SimEv>((msg, emit) => {
-          if (hang && ports === 1) return new Promise(() => undefined);
+        const number = ports;
+        return createInlinePort<SimReq, SimEv>(async (msg, emit) => {
+          if (hang && number === 1) return new Promise(() => undefined);
           if (msg.t === "load") {
+            if (number === 2) await slowReload;
             loads.push(msg);
             emit({ t: "state", run: msg.run, state: "idle", at: 0 });
             return { diagnostics: [] };
@@ -144,7 +147,12 @@ describe("sim host watchdog", () => {
     });
     const events: SimEv[] = [];
     host.onEvent((e) => events.push(e));
-    return { host, events, loads, stick: () => void (hang = true), ports: () => ports };
+    const slowStart = () => {
+      let open = () => undefined as void;
+      slowReload = new Promise<void>((resolve) => (open = resolve));
+      return open;
+    };
+    return { host, events, loads, stick: () => void (hang = true), ports: () => ports, slowStart };
   }
 
   it("leaves a healthy run alone, even when it posts nothing", async () => {
@@ -175,6 +183,20 @@ describe("sim host watchdog", () => {
     expect(host.stats.lastState).toBe("limit");
     await vi.advanceTimersByTimeAsync(10_000);
     expect(host.stats.restarts).toBe(1);
+  });
+
+  it("reports the stall as soon as the worker is gone, without waiting for the new worker to load the project", async () => {
+    const { host, events, loads, stick, slowStart } = stuckRig();
+    await host.load(NET, OPTS, PROGRAM);
+    await host.control("run");
+    const started = slowStart();
+    stick();
+    await vi.advanceTimersByTimeAsync(2_100);
+    expect(events.at(-1)).toMatchObject({ state: "limit", limit: { kind: "wall-stall" } });
+    expect(loads).toHaveLength(1);
+    started();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(loads).toHaveLength(2);
   });
 
   it("kills a worker that does not answer stop and settles the stop call", async () => {

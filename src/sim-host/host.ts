@@ -72,6 +72,7 @@ export function createSimHost({ makePort, diag = false }: SimHostOptions = {}): 
   let probe: unknown;
   let recoveries = 0;
   let recovering = false;
+  let reloading = false;
   const watchdog = createWatchdog({ timers, kill: recover });
 
   function deliver(ev: SimEv) {
@@ -109,24 +110,30 @@ export function createSimHost({ makePort, diag = false }: SimHostOptions = {}): 
     recoveries++;
     setRunning(false);
     const again = lastLoad;
+    let reloaded: Promise<unknown> = Promise.resolve();
     try {
       await port.kill(0);
       stats.restarts++;
       port = open();
-      if (again) await port.call({ t: "load", run: runId, ...again });
+      // A fresh worker needs about a second to start in WebKit, so the limit is reported without waiting for it.
+      // Calls made meanwhile queue behind the load on the new port; the load's own events are not shown.
+      if (again) {
+        reloading = true;
+        reloaded = port.call({ t: "load", run: runId, ...again }).catch(() => undefined).finally(() => void (reloading = false));
+      }
     } catch {
       // The new worker is unusable; the next call on the port fails with its own error.
-    } finally {
-      recovering = false;
     }
     stats.lastState = "limit";
     deliver({ t: "state", run: runId, state: "limit", at: lastAt, limit: { kind: reason, message: LIMIT_MESSAGE[reason] } });
+    await reloaded;
+    recovering = false;
   }
 
   function open(): SimPort {
     const fresh = build();
     fresh.on((ev) => {
-      if (ev.run !== runId) return;
+      if (ev.run !== runId || reloading) return;
       if (ev.t === "state") {
         stats.lastState = ev.state;
         lastAt = ev.at;
