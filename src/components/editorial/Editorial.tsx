@@ -3,6 +3,7 @@ import type { ComponentProps, CSSProperties, ReactNode } from "react";
 import { ButtonLink, buttonClass } from "@/components/ui/Button";
 import { cx } from "@/components/ui/cx";
 import { Icon } from "@/components/ui/icons";
+import { Reveal } from "@/components/ui/Reveal";
 
 // Shared page grammar for the pages outside the labs: a head, then numbered sections split by hairlines.
 
@@ -35,29 +36,11 @@ const display = cx(typeClass.display, "[overflow-wrap:anywhere]");
 export const sectionTitle = typeClass.title;
 
 /** Form fields on these pages: the lab's ink-field with a hover edge. */
-export const quietField = "motion-fade hover:border-muted";
-export const field = cx("ink-field w-full", quietField);
+export const field = "ink-field w-full motion-fade hover:border-muted";
 export const area = cx(field, "min-h-20 py-3 pe-4 text-base leading-normal");
 
-type ActionKind = "primary" | "secondary";
-/** `lg` is the old name of `md`, kept until Lobby moves to the one button. */
-type ActionSize = "lg" | "md" | "sm";
-
-export function actionClass(kind: ActionKind = "secondary", size?: ActionSize, className?: string) {
-  return buttonClass(kind, size === "sm" ? "sm" : "md", className);
-}
-
-export function Action({ kind, size, className, type = "button", ...rest }: ComponentProps<"button"> & { kind?: ActionKind; size?: ActionSize }) {
-  return <button type={type} className={actionClass(kind, size, className)} {...rest} />;
-}
-
-export function ActionLink({ kind, size, className, ...rest }: ComponentProps<typeof Link> & { kind?: ActionKind; size?: ActionSize }) {
-  return <Link className={actionClass(kind, size, className)} {...rest} />;
-}
-
-/** The message with its `*` markers removed; the home page still carries them until it is rewritten. */
-export function Accent({ text }: { text: string }) {
-  return text.replaceAll("*", "");
+export function actionClass(kind: "primary" | "secondary" = "secondary", size?: "md" | "sm", className?: string) {
+  return buttonClass(kind, size ?? "md", className);
 }
 
 /** A section's number, title and an optional aside, over a hairline. */
@@ -149,7 +132,7 @@ export function Section({
 }) {
   return (
     <section aria-labelledby={id} className={cx("mt-16 md:mt-24 border-t border-rule pt-6 sm:pt-8", className)}>
-      <div className="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-12">
+      <Reveal className="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-12">
         <div className={cx("min-w-0", wide ? "lg:col-span-12" : "lg:col-span-4")}>
           {index ? (
             <p className={cx(eyebrow, "tabular")} aria-hidden="true">
@@ -162,7 +145,7 @@ export function Section({
           {lede ? <div className="mt-4 max-w-prose text-base text-muted">{lede}</div> : null}
         </div>
         <div className={cx("min-w-0", wide ? "lg:col-span-12" : "lg:col-span-8")}>{children}</div>
-      </div>
+      </Reveal>
     </section>
   );
 }

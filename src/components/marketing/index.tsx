@@ -1,1 +1,1 @@
-export { typeClass, Wrap, SectionHead, riseDelay, CtaLink, ArrowLink, Accent } from "@/components/editorial/Editorial";
+export { typeClass, Wrap, SectionHead, riseDelay, CtaLink, ArrowLink } from "@/components/editorial/Editorial";

@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -46,5 +46,22 @@ describe("motion.css", () => {
     ]) {
       expect(css).toContain(`--animate-ink-${old}: var(--animate-${next});`);
     }
+  });
+});
+
+describe("motion in src", () => {
+  const banned = /(?<![\w-])(transition-all|ease-in|ease-out|ease-linear)(?![\w-])|\b(?:transition|animation)(?:-timing-function)?\s*:[^;{}]*\b(?:linear|ease-in|ease-out)\b/;
+
+  function sources(dir: string): string[] {
+    return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+      const path = join(dir, entry.name);
+      if (entry.isDirectory()) return sources(path);
+      return /\.(tsx?|css)$/.test(entry.name) && !/\.test\./.test(entry.name) ? [path] : [];
+    });
+  }
+
+  it("has no transition-all and no ease-in, ease-out or linear timing", () => {
+    const hits = sources(join(process.cwd(), "src")).filter((file) => banned.test(readFileSync(file, "utf8")));
+    expect(hits).toEqual([]);
   });
 });

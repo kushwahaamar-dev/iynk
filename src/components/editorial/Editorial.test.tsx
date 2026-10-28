@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import * as editorial from "./Editorial";
 import * as marketing from "@/components/marketing";
 
-const { Accent, Note, PageHead, Section } = editorial;
+const { Note, PageHead, Section } = editorial;
 
 describe("Editorial", () => {
   it("caps the page head title at 680px", () => {
@@ -21,14 +21,8 @@ describe("Editorial", () => {
     expect(html).toContain('<h2 id="s1"');
   });
 
-  it("drops the star markers without an em", () => {
-    const html = renderToStaticMarkup(<Accent text="a *b* c" />);
-    expect(html).toBe("a b c");
-    expect(html).not.toContain("<em");
-  });
-
   it("keeps the marketing barrel pointing at the editorial helpers", () => {
-    for (const name of ["typeClass", "Wrap", "SectionHead", "riseDelay", "CtaLink", "ArrowLink", "Accent"] as const) {
+    for (const name of ["typeClass", "Wrap", "SectionHead", "riseDelay", "CtaLink", "ArrowLink"] as const) {
       expect(marketing[name]).toBe(editorial[name]);
     }
   });
