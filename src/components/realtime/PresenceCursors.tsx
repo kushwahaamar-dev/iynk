@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
-import { cx } from "@/components/ui";
+import { Button, cx, Icon } from "@/components/ui";
 import { useRoom, type CursorPoint } from "@/lib/realtime";
 import { useTogetherT } from "./messages";
 import { setPointing, usePointing } from "./pointing";
@@ -86,7 +86,7 @@ export function PresenceCursors({ className }: { className?: string }) {
   const people = new Map(room.peers.map((peer) => [peer.id, peer]));
 
   return (
-    <div className={cx("pointer-events-none absolute inset-0 z-10", className)}>
+    <div className={cx("pointer-events-none absolute inset-0 z-sticky", className)}>
       {pointing ? (
         <div
           ref={surface}
@@ -96,23 +96,23 @@ export function PresenceCursors({ className }: { className?: string }) {
           onPointerMove={onMove}
           onPointerLeave={() => room.sendCursor(null)}
           onKeyDown={onKey}
-          className="pointer-events-auto absolute inset-0 cursor-crosshair rounded-ink bg-[rgb(118_160_226/0.08)] outline-2 outline-offset-[-4px] outline-cobalt outline-dashed"
+          className="pointer-events-auto absolute inset-0 cursor-crosshair rounded-xl bg-info-bg outline-2 -outline-offset-4 outline-info outline-dashed"
         />
       ) : null}
-      <ul aria-label={t("cursors.label")} className="absolute inset-0">
+      <ul aria-label={t("cursors.label")} className="absolute inset-0" style={{ containerType: "size" }}>
         {Object.entries(seen).map(([id, point]) => {
           const peer = people.get(id);
           if (!peer) return null;
           return (
             <li
               key={id}
-              className="absolute -translate-x-0.5 -translate-y-0.5 transition-[left,top] duration-75 ease-linear motion-reduce:transition-none"
-              style={{ left: `${point.x * 100}%`, top: `${point.y * 100}%` }}
+              className="absolute top-0 left-0 -translate-x-0.5 -translate-y-0.5 motion-press motion-reduce:transition-none"
+              style={{ transform: `translate(${point.x * 100}cqw, ${point.y * 100}cqh)` }}
             >
-              <svg aria-hidden="true" viewBox="0 0 16 16" className="size-5 drop-shadow-[1px_1px_0_var(--shadow-c)]">
+              <svg aria-hidden="true" viewBox="0 0 16 16" className="size-5 drop-shadow-sm">
                 <path d="M2 1.5l11 6.2-4.7 1.2-2 4.6z" fill={peer.color} stroke="var(--color-ink-fixed)" strokeWidth="1.4" strokeLinejoin="round" />
               </svg>
-              <span className="ml-3 inline-block -translate-y-1 rounded-full border-2 border-line px-1.5 text-xs leading-4 font-bold text-ink-fixed" style={{ backgroundColor: peer.color }}>
+              <span className="ml-3 inline-block -translate-y-1 rounded-md px-2 py-0.5 text-xs font-semibold text-ink-fixed" style={{ backgroundColor: peer.color }}>
                 {peer.name}
               </span>
             </li>
@@ -120,16 +120,15 @@ export function PresenceCursors({ className }: { className?: string }) {
         })}
       </ul>
       {pointing ? (
-        <button
-          type="button"
+        <Button
+          variant="solid"
+          size="sm"
           onClick={() => setPointing(false)}
-          className="pointer-events-auto absolute top-3 left-1/2 inline-flex min-h-9 -translate-x-1/2 items-center gap-1.5 rounded-full bg-ink px-3 text-sm font-semibold text-paper [@media(pointer:coarse)]:min-h-11"
+          className="pointer-events-auto absolute top-4 left-1/2 -translate-x-1/2"
         >
-          <svg aria-hidden="true" viewBox="0 0 16 16" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round">
-            <path d="M3 2l9 5-4 1-1.6 4z" />
-          </svg>
+          <Icon name="target" size={16} />
           {t("cursors.stop")}
-        </button>
+        </Button>
       ) : null}
     </div>
   );

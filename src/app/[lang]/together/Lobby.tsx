@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { useId, useState, type FormEvent } from "react";
 import type { LabKind } from "@/components/dock/types";
 import { useTogetherT, type TogetherT } from "@/components/realtime/messages";
-import { Action, eyebrow, quietField, sectionTitle } from "@/components/editorial/Editorial";
-import { Callout, SegmentedControl, Select, TextInput } from "@/components/ui";
+import { eyebrow, sectionTitle } from "@/components/editorial/Editorial";
+import { Button, Callout, SegmentedControl, Select, TextInput } from "@/components/ui";
 import { cx } from "@/components/ui/cx";
 import { useLocale } from "@/i18n/client";
 import { useFeatures } from "@/lib/features";
@@ -48,16 +48,16 @@ function StartRoom({ items, t }: { items: LobbyItem[]; t: TogetherT }) {
           }}
         />
       ) : null}
-      <Select id={`${id}-item`} className={quietField} label={t("lobby.create.item")} value={chosen?.id ?? ""} onChange={(event) => setItemId(event.target.value)}>
+      <Select id={`${id}-item`} label={t("lobby.create.item")} value={chosen?.id ?? ""} onChange={(event) => setItemId(event.target.value)}>
         {inLab.map((item) => (
           <option key={item.id} value={item.id}>
             {item.title}
           </option>
         ))}
       </Select>
-      <Action type="submit" kind="primary" size="lg" className="mt-auto self-start" disabled={!chosen}>
+      <Button type="submit" variant="primary" className="mt-auto self-start" disabled={!chosen}>
         {t("lobby.create.go")}
-      </Action>
+      </Button>
     </form>
   );
 }
@@ -82,7 +82,6 @@ function JoinRoom({ t }: { t: TogetherT }) {
   };
 
   const message = (() => {
-    if (state.kind === "bad") return { tone: "warn" as const, text: t("panel.badCode") };
     if (state.kind === "looking") return { tone: "note" as const, text: t("lobby.join.looking", { code: state.code }) };
     if (state.kind !== "result") return null;
     const { code, result } = state;
@@ -113,15 +112,14 @@ function JoinRoom({ t }: { t: TogetherT }) {
         autoComplete="off"
         autoCapitalize="none"
         spellCheck={false}
-        aria-invalid={state.kind === "bad"}
-        className={cx(quietField, "font-ui aria-invalid:border-bad")}
+        error={state.kind === "bad" ? t("panel.badCode") : undefined}
       />
       <div aria-live="polite" className="empty:hidden">
         {message ? <Callout tone={message.tone}>{message.text}</Callout> : null}
       </div>
-      <Action type="submit" size="lg" className="mt-auto self-start" disabled={state.kind === "looking"}>
+      <Button type="submit" variant="secondary" className="mt-auto self-start" disabled={state.kind === "looking"}>
         {t("lobby.join.go")}
-      </Action>
+      </Button>
     </form>
   );
 }
@@ -144,14 +142,14 @@ export function Lobby({ items }: { items: LobbyItem[] }) {
 
   return (
     // grid-cols-1 keeps the one phone column at the page width; an implicit column grows to the widest select option.
-    <div className="mt-[clamp(72px,10vw,160px)] grid grid-cols-1 border-t border-rule md:grid-cols-2">
-      <section aria-labelledby="together-start" className="flex flex-col gap-6 pt-6 pb-10 sm:pt-8 md:pe-[clamp(24px,4vw,64px)]">
+    <div className="mt-16 md:mt-24 grid grid-cols-1 border-t border-rule md:grid-cols-2">
+      <section aria-labelledby="together-start" className="flex flex-col gap-6 pt-6 pb-10 sm:pt-8 md:pe-6 lg:pe-16">
         <RoomHead id="together-start" index="01" title={t("lobby.create.title")} hint={t("lobby.create.hint")} />
         <StartRoom items={items} t={t} />
       </section>
       <section
         aria-labelledby="together-join"
-        className="flex flex-col gap-6 border-t border-rule pt-6 pb-10 sm:pt-8 md:border-t-0 md:border-s md:ps-[clamp(24px,4vw,64px)]"
+        className="flex flex-col gap-6 border-t border-rule pt-6 pb-10 sm:pt-8 md:border-t-0 md:border-s md:ps-6 lg:ps-16"
       >
         <RoomHead id="together-join" index="02" title={t("lobby.join.title")} hint={t("lobby.join.hint")} />
         <JoinRoom t={t} />
@@ -169,7 +167,7 @@ function RoomHead({ id, index, title, hint }: { id: string; index: string; title
       <h2 id={id} className={cx(sectionTitle, "mt-4")}>
         {title}
       </h2>
-      <p className="mt-3 max-w-[46ch] text-muted">{hint}</p>
+      <p className="mt-3 max-w-prose text-muted">{hint}</p>
     </div>
   );
 }

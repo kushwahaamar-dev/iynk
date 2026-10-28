@@ -76,5 +76,11 @@
     "code": "R14",
     "pattern": "^(?:wi-fi|usb-\\w+|micro-usb|mini-usb)$",
     "reason": "Standard product and standard names written with a hyphen."
+  },
+  {
+    "file": "src/components/realtime/InviteDialog.tsx",
+    "code": "R9",
+    "pattern": "^<svg$",
+    "reason": "The QR code is drawn data, not an icon."
   }
 ]
