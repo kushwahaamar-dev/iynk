@@ -15,5 +15,129 @@
     },
     "added": "Wire added from {from} to {to}.",
     "cancelled": "Wire cancelled."
+  },
+  "announce": {
+    "wireMade": "Wire made between {from} and {to}.",
+    "rejected": "The change was not made. {message}",
+    "moved": "{what} moved to {x} mm, {y} mm.",
+    "movedMany": {
+      "one": "{count} part moved.",
+      "other": "{count} parts moved."
+    },
+    "selected": "{what} selected.",
+    "removedWire": "Wire removed.",
+    "removedWireNet": "Wire removed. Net {net} still connects {a} and {b}.",
+    "removedPart": "{what} removed.",
+    "removedMany": {
+      "one": "{count} item removed.",
+      "other": "{count} items removed."
+    },
+    "rotated": {
+      "one": "{count} part rotated.",
+      "other": "{count} parts rotated."
+    },
+    "rotateBlocked": "Parts seated in the breadboard stay on the grid and cannot be rotated.",
+    "readOnly": "This project is read only.",
+    "nothingToWire": "Select a part first, then press W to wire it.",
+    "noFreePin": "{part} has no free pin to start a wire from.",
+    "gridOn": "Grid on.",
+    "gridOff": "Grid off.",
+    "netHighlighted": "Net {net} highlighted.",
+    "netCleared": "Net highlight cleared.",
+    "noNet": "The selection is not on a net."
+  },
+  "pin": {
+    "polarity": {
+      "anode": "anode",
+      "cathode": "cathode",
+      "positive": "positive",
+      "negative": "negative"
+    },
+    "connected": "connected to {others}",
+    "connectedMore": "connected to {others} and {more} more",
+    "unconnected": "not connected"
+  },
+  "pinPicker": {
+    "fromTitle": "Wire from which pin?",
+    "toTitle": "Wire from {from} to which pin?",
+    "search": "Search pins",
+    "searchHint": "Type a part and a pin, like led1 anode or d13. Enter picks the highlighted pin.",
+    "nearby": "Nearby",
+    "all": "All pins",
+    "none": "No pin matches {query}.",
+    "results": {
+      "one": "{count} pin",
+      "other": "{count} pins"
+    },
+    "net": "net {name}",
+    "close": "Close"
+  },
+  "outline": {
+    "title": "Outline",
+    "empty": "Nothing on this view yet",
+    "emptyHint": "Add a part from the palette and it shows up here.",
+    "group": {
+      "boards": "Boards",
+      "parts": "Parts",
+      "wires": "Wires"
+    },
+    "wire": "Wire from {from} to {to}",
+    "junction": "junction"
+  },
+  "keys": {
+    "undo": "Undo",
+    "redo": "Redo",
+    "edit": {
+      "copy": "Copy",
+      "cut": "Cut",
+      "paste": "Paste",
+      "duplicate": "Duplicate",
+      "selectAll": "Select all",
+      "delete": "Delete the selection",
+      "deleteDrawing": "Delete the drawing only and keep the connection",
+      "cancel": "Cancel, then clear the selection",
+      "enter": "Drop a part, or open the inspector"
+    },
+    "place": {
+      "quickAdd": "Add a part",
+      "rotate": "Rotate left",
+      "rotateBack": "Rotate right"
+    },
+    "wire": {
+      "fromSelection": "Wire from the selected part"
+    },
+    "move": {
+      "left": "Move left, or focus the previous part (Shift ten steps, Alt fine)",
+      "right": "Move right, or focus the next part (Shift ten steps, Alt fine)",
+      "up": "Move up, or focus the previous part (Shift ten steps, Alt fine)",
+      "down": "Move down, or focus the next part (Shift ten steps, Alt fine)"
+    },
+    "view": {
+      "breadboard": "Breadboard view",
+      "fit": "Fit everything",
+      "fitSelection": "Fit the selection",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "pan": "Pan with the mouse while held",
+      "grid": "Show or hide the grid",
+      "netHighlight": "Highlight the net",
+      "outline": "Show or hide the outline"
+    },
+    "sim": {
+      "run": "Run",
+      "stop": "Stop",
+      "reset": "Reset"
+    },
+    "problems": {
+      "next": "Next problem",
+      "prev": "Previous problem"
+    },
+    "region": {
+      "next": "Next region",
+      "prev": "Previous region"
+    },
+    "help": {
+      "keys": "Show the keyboard shortcuts"
+    }
   }
 }

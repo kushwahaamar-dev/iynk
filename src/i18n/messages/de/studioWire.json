@@ -15,5 +15,129 @@
     },
     "added": "Draht von {from} zu {to} gelegt.",
     "cancelled": "Draht abgebrochen."
+  },
+  "announce": {
+    "wireMade": "Draht zwischen {from} und {to} gelegt.",
+    "rejected": "Die Änderung wurde nicht übernommen. {message}",
+    "moved": "{what} nach {x} mm, {y} mm verschoben.",
+    "movedMany": {
+      "one": "{count} Bauteil verschoben.",
+      "other": "{count} Bauteile verschoben."
+    },
+    "selected": "{what} ausgewählt.",
+    "removedWire": "Draht entfernt.",
+    "removedWireNet": "Draht entfernt. Netz {net} verbindet weiterhin {a} und {b}.",
+    "removedPart": "{what} entfernt.",
+    "removedMany": {
+      "one": "{count} Element entfernt.",
+      "other": "{count} Elemente entfernt."
+    },
+    "rotated": {
+      "one": "{count} Bauteil gedreht.",
+      "other": "{count} Bauteile gedreht."
+    },
+    "rotateBlocked": "Bauteile im Steckbrett bleiben im Raster und lassen sich nicht drehen.",
+    "readOnly": "Dieses Projekt ist schreibgeschützt.",
+    "nothingToWire": "Wähle zuerst ein Bauteil und drücke dann W, um es zu verdrahten.",
+    "noFreePin": "{part} hat keinen freien Pin, an dem ein Draht beginnen kann.",
+    "gridOn": "Raster an.",
+    "gridOff": "Raster aus.",
+    "netHighlighted": "Netz {net} hervorgehoben.",
+    "netCleared": "Netzhervorhebung aufgehoben.",
+    "noNet": "Die Auswahl liegt an keinem Netz."
+  },
+  "pin": {
+    "polarity": {
+      "anode": "Anode",
+      "cathode": "Kathode",
+      "positive": "Plus",
+      "negative": "Minus"
+    },
+    "connected": "verbunden mit {others}",
+    "connectedMore": "verbunden mit {others} und {more} weiteren",
+    "unconnected": "nicht verbunden"
+  },
+  "pinPicker": {
+    "fromTitle": "Draht von welchem Pin?",
+    "toTitle": "Draht von {from} zu welchem Pin?",
+    "search": "Pins suchen",
+    "searchHint": "Tippe ein Bauteil und einen Pin, zum Beispiel led1 anode oder d13. Enter wählt den markierten Pin.",
+    "nearby": "In der Nähe",
+    "all": "Alle Pins",
+    "none": "Kein Pin passt zu {query}.",
+    "results": {
+      "one": "{count} Pin",
+      "other": "{count} Pins"
+    },
+    "net": "Netz {name}",
+    "close": "Schließen"
+  },
+  "outline": {
+    "title": "Gliederung",
+    "empty": "Auf dieser Ansicht ist noch nichts",
+    "emptyHint": "Füge ein Bauteil aus der Palette hinzu, dann erscheint es hier.",
+    "group": {
+      "boards": "Boards",
+      "parts": "Bauteile",
+      "wires": "Drähte"
+    },
+    "wire": "Draht von {from} zu {to}",
+    "junction": "Knoten"
+  },
+  "keys": {
+    "undo": "Rückgängig",
+    "redo": "Wiederholen",
+    "edit": {
+      "copy": "Kopieren",
+      "cut": "Ausschneiden",
+      "paste": "Einfügen",
+      "duplicate": "Duplizieren",
+      "selectAll": "Alles auswählen",
+      "delete": "Auswahl löschen",
+      "deleteDrawing": "Nur die Zeichnung löschen und die Verbindung behalten",
+      "cancel": "Abbrechen, dann die Auswahl aufheben",
+      "enter": "Bauteil ablegen oder den Inspektor öffnen"
+    },
+    "place": {
+      "quickAdd": "Bauteil hinzufügen",
+      "rotate": "Nach links drehen",
+      "rotateBack": "Nach rechts drehen"
+    },
+    "wire": {
+      "fromSelection": "Draht vom gewählten Bauteil aus legen"
+    },
+    "move": {
+      "left": "Nach links bewegen oder das vorige Bauteil fokussieren (Umschalt zehn Schritte, Alt fein)",
+      "right": "Nach rechts bewegen oder das nächste Bauteil fokussieren (Umschalt zehn Schritte, Alt fein)",
+      "up": "Nach oben bewegen oder das vorige Bauteil fokussieren (Umschalt zehn Schritte, Alt fein)",
+      "down": "Nach unten bewegen oder das nächste Bauteil fokussieren (Umschalt zehn Schritte, Alt fein)"
+    },
+    "view": {
+      "breadboard": "Steckbrett-Ansicht",
+      "fit": "Alles einpassen",
+      "fitSelection": "Auswahl einpassen",
+      "zoomIn": "Vergrößern",
+      "zoomOut": "Verkleinern",
+      "pan": "Mit der Maus verschieben, solange gehalten",
+      "grid": "Raster ein- oder ausblenden",
+      "netHighlight": "Netz hervorheben",
+      "outline": "Gliederung ein- oder ausblenden"
+    },
+    "sim": {
+      "run": "Starten",
+      "stop": "Stopp",
+      "reset": "Zurücksetzen"
+    },
+    "problems": {
+      "next": "Nächstes Problem",
+      "prev": "Voriges Problem"
+    },
+    "region": {
+      "next": "Nächster Bereich",
+      "prev": "Voriger Bereich"
+    },
+    "help": {
+      "keys": "Tastenkürzel anzeigen"
+    }
   }
 }

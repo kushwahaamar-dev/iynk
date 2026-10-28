@@ -100,5 +100,11 @@
     "code": "R9",
     "pattern": ".",
     "reason": "The thumbnail is the part's drawing, not an icon."
+  },
+  {
+    "file": "src/components/studio/Outline.tsx",
+    "code": "R17",
+    "pattern": "onScroll",
+    "reason": "The virtualised outline reads scrollTop once per animation frame, so the handler is throttled."
   }
 ]

@@ -15,5 +15,129 @@
     },
     "added": "Fil posé de {from} à {to}.",
     "cancelled": "Fil annulé."
+  },
+  "announce": {
+    "wireMade": "Fil posé entre {from} et {to}.",
+    "rejected": "Le changement n'a pas été fait. {message}",
+    "moved": "{what} déplacé en {x} mm, {y} mm.",
+    "movedMany": {
+      "one": "{count} pièce déplacée.",
+      "other": "{count} pièces déplacées."
+    },
+    "selected": "{what} sélectionné.",
+    "removedWire": "Fil retiré.",
+    "removedWireNet": "Fil retiré. Le réseau {net} relie toujours {a} et {b}.",
+    "removedPart": "{what} retiré.",
+    "removedMany": {
+      "one": "{count} élément retiré.",
+      "other": "{count} éléments retirés."
+    },
+    "rotated": {
+      "one": "{count} pièce tournée.",
+      "other": "{count} pièces tournées."
+    },
+    "rotateBlocked": "Les pièces enfichées dans la plaque d'essai restent sur la grille et ne se tournent pas.",
+    "readOnly": "Ce projet est en lecture seule.",
+    "nothingToWire": "Sélectionne d'abord une pièce, puis appuie sur W pour la câbler.",
+    "noFreePin": "{part} n'a aucune broche libre pour démarrer un fil.",
+    "gridOn": "Grille affichée.",
+    "gridOff": "Grille masquée.",
+    "netHighlighted": "Réseau {net} mis en évidence.",
+    "netCleared": "Mise en évidence du réseau retirée.",
+    "noNet": "La sélection n'est sur aucun réseau."
+  },
+  "pin": {
+    "polarity": {
+      "anode": "anode",
+      "cathode": "cathode",
+      "positive": "positif",
+      "negative": "négatif"
+    },
+    "connected": "relié à {others}",
+    "connectedMore": "relié à {others} et {more} autres",
+    "unconnected": "non relié"
+  },
+  "pinPicker": {
+    "fromTitle": "Fil depuis quelle broche ?",
+    "toTitle": "Fil de {from} vers quelle broche ?",
+    "search": "Chercher des broches",
+    "searchHint": "Tape une pièce et une broche, comme led1 anode ou d13. Entrée choisit la broche en surbrillance.",
+    "nearby": "À proximité",
+    "all": "Toutes les broches",
+    "none": "Aucune broche ne correspond à {query}.",
+    "results": {
+      "one": "{count} broche",
+      "other": "{count} broches"
+    },
+    "net": "réseau {name}",
+    "close": "Fermer"
+  },
+  "outline": {
+    "title": "Plan",
+    "empty": "Rien sur cette vue pour l'instant",
+    "emptyHint": "Ajoute une pièce depuis la palette et elle apparaît ici.",
+    "group": {
+      "boards": "Cartes",
+      "parts": "Pièces",
+      "wires": "Fils"
+    },
+    "wire": "Fil de {from} à {to}",
+    "junction": "jonction"
+  },
+  "keys": {
+    "undo": "Annuler",
+    "redo": "Rétablir",
+    "edit": {
+      "copy": "Copier",
+      "cut": "Couper",
+      "paste": "Coller",
+      "duplicate": "Dupliquer",
+      "selectAll": "Tout sélectionner",
+      "delete": "Supprimer la sélection",
+      "deleteDrawing": "Supprimer seulement le dessin et garder la connexion",
+      "cancel": "Annuler, puis vider la sélection",
+      "enter": "Poser une pièce ou ouvrir l'inspecteur"
+    },
+    "place": {
+      "quickAdd": "Ajouter une pièce",
+      "rotate": "Tourner à gauche",
+      "rotateBack": "Tourner à droite"
+    },
+    "wire": {
+      "fromSelection": "Poser un fil depuis la pièce sélectionnée"
+    },
+    "move": {
+      "left": "Déplacer à gauche ou cibler la pièce précédente (Maj dix pas, Alt fin)",
+      "right": "Déplacer à droite ou cibler la pièce suivante (Maj dix pas, Alt fin)",
+      "up": "Déplacer vers le haut ou cibler la pièce précédente (Maj dix pas, Alt fin)",
+      "down": "Déplacer vers le bas ou cibler la pièce suivante (Maj dix pas, Alt fin)"
+    },
+    "view": {
+      "breadboard": "Vue plaque d'essai",
+      "fit": "Tout ajuster",
+      "fitSelection": "Ajuster la sélection",
+      "zoomIn": "Zoom avant",
+      "zoomOut": "Zoom arrière",
+      "pan": "Faire glisser avec la souris tant que la touche est tenue",
+      "grid": "Afficher ou masquer la grille",
+      "netHighlight": "Mettre le réseau en évidence",
+      "outline": "Afficher ou masquer le plan"
+    },
+    "sim": {
+      "run": "Lancer",
+      "stop": "Arrêter",
+      "reset": "Réinitialiser"
+    },
+    "problems": {
+      "next": "Problème suivant",
+      "prev": "Problème précédent"
+    },
+    "region": {
+      "next": "Zone suivante",
+      "prev": "Zone précédente"
+    },
+    "help": {
+      "keys": "Afficher les raccourcis clavier"
+    }
   }
 }
