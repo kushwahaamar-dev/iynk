@@ -31,6 +31,12 @@ const schema = {
   IYNK_SERVER_TOKEN: text.min(32).optional(),
   IYNK_AI_ENABLE: switchOf,
   IYNK_SEARCH_ENABLE: switchOf,
+  IYNK_AI_PROVIDER: z.enum(["meta", "gemini"]).default("meta"),
+  IYNK_AI_DAILY_TOKENS: z.coerce.number().int().min(0).default(200000),
+  IYNK_SEARCH_MONTHLY: z.coerce.number().int().min(0).default(200),
+  IYNK_DATA_DIR: text.default(".iynk-data"),
+  IYNK_CONNECT_ORIGINS: z.string().default(""),
+  IYNK_SERVER_URL: url.optional(),
   IYNK_TRUST_PROXY: switchOf,
 } as const;
 
@@ -46,7 +52,7 @@ export type Features = {
   gemini: boolean;
 };
 
-const URL_VARS = new Set<EnvName>(["META_API_BASE", "NEXT_PUBLIC_SITE_URL"]);
+const URL_VARS = new Set<EnvName>(["META_API_BASE", "NEXT_PUBLIC_SITE_URL", "IYNK_SERVER_URL"]);
 
 export function readEnv(source: Record<string, string | undefined>): { env: Env; issues: EnvName[] } {
   const out: Record<string, unknown> = {};
@@ -69,15 +75,14 @@ export function readEnv(source: Record<string, string | undefined>): { env: Env;
 }
 
 export function featuresOf(e: Env): Features {
-  const meta = Boolean(e.META_API_KEY);
-  const gemini = Boolean(e.GEMINI_API_KEY);
+  const ai = e.IYNK_AI_ENABLE;
   return {
+    ai,
     // Gemini only stands in for Muse Spark's text work; voice needs Meta.
-    ai: e.IYNK_AI_ENABLE && (meta || gemini),
-    voice: e.IYNK_AI_ENABLE && meta,
+    voice: ai && e.IYNK_AI_PROVIDER === "meta",
     search: e.IYNK_SEARCH_ENABLE && Boolean(e.SERPAPI_KEY),
     realtime: Boolean(e.NEXT_PUBLIC_REALTIME_URL),
-    gemini: e.IYNK_AI_ENABLE && gemini,
+    gemini: ai && e.IYNK_AI_PROVIDER === "gemini",
   };
 }
 
