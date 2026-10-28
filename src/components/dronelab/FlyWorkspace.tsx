@@ -128,7 +128,7 @@ export function FlyWorkspace({ lang, content, text, messages, flight, pool, noti
     <Panel className="h-full" bodyClassName="overflow-y-auto divide-y divide-rule px-4 [&>*]:py-4">
       {content.courses.length > 0 ? (
         <section aria-labelledby={`fly-courses-${id}`}>
-          <h2 id={`fly-courses-${id}`} className="font-head text-lg">
+          <h2 id={`fly-courses-${id}`} className="text-lg">
             {t("fly.courses")}
           </h2>
           <ul className="mt-2 divide-y divide-rule">
@@ -160,7 +160,7 @@ export function FlyWorkspace({ lang, content, text, messages, flight, pool, noti
         />
       ) : null}
       <section aria-labelledby={`fly-source-${id}`} className="space-y-3">
-        <h2 id={`fly-source-${id}`} className="font-head text-lg">
+        <h2 id={`fly-source-${id}`} className="text-lg">
           {t("fly.designTitle")}
         </h2>
         {sourceOptions.length > 1 ? (

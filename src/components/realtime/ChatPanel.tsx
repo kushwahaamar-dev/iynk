@@ -136,7 +136,7 @@ export function ChatPanel({ room, t, locale }: { room: RoomApi; t: TogetherT; lo
 
   return (
     <section aria-labelledby={`${id}-title`} className="flex min-h-0 flex-col gap-2">
-      <h3 id={`${id}-title`} className="font-head text-base font-bold">
+      <h3 id={`${id}-title`} className="text-base font-bold">
         {t("chat.title")}
       </h3>
       {offNote ? <p className="text-xs text-muted">{offNote}</p> : null}

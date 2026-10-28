@@ -40,7 +40,7 @@ export function RoomBar({ room, t, onLeave, onRename }: { room: RoomApi; t: Toge
   return (
     <section aria-labelledby={`${id}-title`} className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2">
-        <h3 id={`${id}-title`} className="font-head text-base font-bold">
+        <h3 id={`${id}-title`} className="text-base font-bold">
           {t("bar.label", { code: room.id })}
         </h3>
         <Chip tone={room.status === "live" ? (room.transport === "ws" ? "good" : "info") : "warn"} dot>

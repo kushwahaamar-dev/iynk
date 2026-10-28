@@ -4,7 +4,7 @@
 html:lang(hi) {
   --font-sans: var(--font-devanagari, "Noto Sans Devanagari"), "Kohinoor Devanagari", "Nirmala UI", sans-serif;
 }
-:is(h1, h2, h3, h4, .font-head):lang(hi) {
+:is(h1, h2, h3, h4):lang(hi) {
   font-family: var(--font-devanagari, "Noto Sans Devanagari"), "Kohinoor Devanagari", "Nirmala UI", sans-serif;
 }
 html:lang(zh-Hans) {
@@ -13,7 +13,7 @@ html:lang(zh-Hans) {
 html:lang(zh-Hans) body {
   font-family: var(--font-sans, ui-sans-serif), var(--font-cjk), sans-serif;
 }
-:is(h1, h2, h3, h4, .font-head):lang(zh-Hans) {
+:is(h1, h2, h3, h4):lang(zh-Hans) {
   font-family: var(--font-sans, ui-sans-serif), var(--font-cjk), sans-serif;
 }
 /* Letter-spaced mono reads badly in Devanagari and Han: those labels take the body face. */
@@ -46,7 +46,7 @@ html:lang(zh-Hans) body {
   }
 
   h1, h2, h3, h4 {
-    font-family: var(--font-head);
+    font-family: var(--font-body);
     font-weight: 600;
     text-wrap: balance;
   }
