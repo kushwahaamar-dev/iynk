@@ -2,15 +2,19 @@
 
 import { useEffect, useId, useState, type FormEvent } from "react";
 import type { LabDockProps } from "@/components/dock/types";
-import { Button, Callout, Icon } from "@/components/ui";
+import { Button, Icon } from "@/components/ui";
+import type { Locale } from "@/i18n/config";
 import { useLocale } from "@/i18n/client";
 import { fetchVideos, type FailCode } from "@/lib/search/client";
 import { useSearchT } from "@/lib/search/messages";
 import { videoQuery } from "@/lib/search/topics";
 import type { Video } from "@/lib/search/types";
-import { PanelHead, PanelSkeleton, StatusError, external, useSearchAvailability } from "./shared";
+import { PanelHead, PanelSkeleton, SearchFailure, SearchNotSetUp, StatusError, external, useSearchAvailability } from "./shared";
 
 type Outcome = { ok: true; videos: Video[] } | { ok: false; code: FailCode };
+
+/** What the user asked for: nothing is sent until they press the button. */
+type Asked = { q: string; locale: Locale };
 
 /** YouTube tutorials for the item on the bench, with a box to ask for something else. */
 export function VideoHelp({ lab, itemId }: LabDockProps) {
@@ -20,29 +24,27 @@ export function VideoHelp({ lab, itemId }: LabDockProps) {
   const fieldId = useId();
   const suggested = videoQuery(lab, itemId) ?? "";
   const [draft, setDraft] = useState(suggested);
-  const [query, setQuery] = useState(suggested);
-  const [result, setResult] = useState<{ key: string; outcome: Outcome } | null>(null);
-  const q = query.trim();
-  const key = `${locale}|${q}`;
-  const active = availability === "ready" && q.length >= 2;
+  const [asked, setAsked] = useState<Asked | null>(null);
+  const [result, setResult] = useState<{ asked: Asked; outcome: Outcome } | null>(null);
+  const active = availability === "ready" && asked !== null && asked.locale === locale;
 
   useEffect(() => {
-    if (!active) return;
+    if (!active || !asked) return;
     const controller = new AbortController();
-    fetchVideos({ q, hl: locale }, controller.signal)
-      .then((r) => setResult({ key, outcome: r.ok ? { ok: true, videos: r.data.videos } : r }))
+    fetchVideos({ q: asked.q, hl: asked.locale }, controller.signal)
+      .then((r) => setResult({ asked, outcome: r.ok ? { ok: true, videos: r.data.videos } : r }))
       .catch(() => undefined);
     return () => controller.abort();
-  }, [active, key, q, locale]);
+  }, [active, asked]);
 
-  const outcome = result?.key === key ? result.outcome : null;
+  const outcome = active && result?.asked === asked ? result.outcome : null;
   const loading = active && !outcome;
 
   if (!t) return <PanelSkeleton />;
 
   function submit(event: FormEvent) {
     event.preventDefault();
-    setQuery(draft);
+    setAsked({ q: draft.trim(), locale });
   }
 
   return (
@@ -50,6 +52,7 @@ export function VideoHelp({ lab, itemId }: LabDockProps) {
       <PanelHead id={`${fieldId}-title`} title={t("videos.title")} lede={t("videos.lede")} />
       {availability === "loading" ? <PanelSkeleton /> : null}
       {availability === "error" ? <StatusError t={t} /> : null}
+      {availability === "off" || availability === "needs_key" ? <SearchNotSetUp availability={availability} what={t("videos.needsKey")} /> : null}
       {availability === "ready" ? (
         <>
           <form onSubmit={submit} className="flex gap-2" role="search">
@@ -65,14 +68,12 @@ export function VideoHelp({ lab, itemId }: LabDockProps) {
               className="ink-field min-w-0 flex-1"
             />
             <Button type="submit" size="sm" disabled={draft.trim().length < 2}>
-              {t("videos.search")}
+              {t("videos.find")}
             </Button>
           </form>
           <div aria-live="polite" aria-busy={loading}>
             {loading ? <p className="text-sm text-muted">{t("videos.loading")}</p> : null}
-            {outcome && !outcome.ok ? (
-              <Callout tone="warn">{outcome.code === "rate_limited" ? t("real.rateLimited") : t("videos.failed")}</Callout>
-            ) : null}
+            {outcome && !outcome.ok ? <SearchFailure code={outcome.code} t={t} what={t("videos.needsKey")} generic={t("videos.failed")} /> : null}
             {outcome?.ok && outcome.videos.length === 0 ? <p className="text-sm text-muted">{t("videos.empty")}</p> : null}
             {outcome?.ok && outcome.videos.length > 0 ? (
               <ul className="grid gap-2">

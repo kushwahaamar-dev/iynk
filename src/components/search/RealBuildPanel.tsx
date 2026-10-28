@@ -17,7 +17,7 @@ import { useSearchT, type SearchT } from "@/lib/search/messages";
 import { costRange, optimize, priceLines, type Candidate, type OptimizeResult } from "@/lib/search/optimize";
 import type { Offer, OffersGap, PartOffers } from "@/lib/search/types";
 import { SourcesList } from "./SourcesList";
-import { PanelSkeleton, StatusError, external, useFormat, useSearchAvailability, type Format } from "./shared";
+import { PanelSkeleton, SearchFailure, SearchNotSetUp, StatusError, external, useFormat, useSearchAvailability, type Format } from "./shared";
 
 /* ---------- the parts list ---------- */
 
@@ -91,14 +91,15 @@ type Prices = {
 const BATCH = 5;
 const PARALLEL = 2;
 
-/** Prices the lines in small batches, so the list fills in as stores answer; again on "check again". */
+/** Prices the lines in small batches, so the list fills in as stores answer. Nothing is asked until `start`, and again on each later `start`. */
 function useOffers(lines: BomLine[] | null, enabled: boolean, itemKey: string) {
-  const [round, setRound] = useState(0);
+  const [requested, setRequested] = useState<{ itemKey: string; round: number } | null>(null);
   const [prices, setPrices] = useState<Prices | null>(null);
-  const key = `${itemKey}#${round}`;
+  const started = requested?.itemKey === itemKey;
+  const key = `${itemKey}#${requested?.round}`;
 
   useEffect(() => {
-    if (!enabled || !lines) return;
+    if (!enabled || !started || !lines) return;
     const parts = offerParts(lines);
     const batches: (typeof parts)[] = [];
     for (let i = 0; i < parts.length; i += BATCH) batches.push(parts.slice(i, i + BATCH));
@@ -122,13 +123,14 @@ function useOffers(lines: BomLine[] | null, enabled: boolean, itemKey: string) {
     };
     void Promise.all(Array.from({ length: Math.min(PARALLEL, batches.length) }, worker));
     return () => controller.abort();
-  }, [enabled, lines, key]);
+  }, [enabled, started, lines, key]);
 
   const current = prices?.key === key ? prices : null;
   return {
     prices: current,
-    loading: enabled && Boolean(lines) && (!current || current.done < current.total),
-    refresh: () => setRound((r) => r + 1),
+    started,
+    loading: enabled && started && Boolean(lines) && (!current || current.done < current.total),
+    start: () => setRequested((r) => ({ itemKey, round: r?.itemKey === itemKey ? r.round + 1 : 0 })),
   };
 }
 
@@ -425,7 +427,7 @@ export function RealBuildPanel({ lab, itemId, store }: LabDockProps) {
   const id = useId();
   const { bom, request } = useBom({ lab, itemId, store });
   const lines = bom.status === "ready" ? bom.lines : null;
-  const { prices, loading, refresh } = useOffers(request, availability === "ready", `${lab}:${itemId}`);
+  const { prices, started, loading, start } = useOffers(request, availability === "ready", `${lab}:${itemId}`);
   const offers = useMemo(() => prices?.offers ?? new Map<string, PartOffers>(), [prices]);
 
   if (!t) return <PanelSkeleton />;
@@ -440,9 +442,10 @@ export function RealBuildPanel({ lab, itemId, store }: LabDockProps) {
   const live = costs.filter((c) => c?.live).length;
   const estimated = costs.filter((c) => c && !c.live).length;
   const unpriced = costs.filter((c) => c === null).length;
-  // Nothing priced (search off on a board or bench): a checklist, not a column of dashes and a $0.00 total.
-  const priced = live + estimated > 0 || availability === "ready";
-  const catalogueOnly = live === 0 && availability !== "ready";
+  // Nothing priced (no check yet on a board or bench): a checklist, not a column of dashes and a $0.00 total.
+  const checking = availability === "ready" && started;
+  const priced = live + estimated > 0 || checking;
+  const catalogueOnly = live === 0 && !checking;
   const sources = build
     .map((line) => ({ line, best: bestOf(offers.get(line.key)) }))
     .filter((x): x is { line: BomLine; best: Offer } => x.best !== undefined)
@@ -451,16 +454,17 @@ export function RealBuildPanel({ lab, itemId, store }: LabDockProps) {
 
   return (
     <section aria-label={t("real.title")} className="space-y-4">
-      {availability === "off" ? (
-        <Callout variant="quiet" title={t("real.notSetUp")}>
-          {lab === "drone" ? t("real.notSetUpDrone") : null}
-        </Callout>
+      {availability === "off" || availability === "needs_key" ? (
+        <div className="space-y-2">
+          <SearchNotSetUp availability={availability} what={t("real.needsKey")} />
+          {lab === "drone" ? <p className="text-sm text-muted">{t("real.notSetUpDrone")}</p> : null}
+        </div>
       ) : (
         <div className="flex flex-wrap items-start justify-between gap-2">
           <p className="min-w-0 flex-1 text-sm text-muted">{t("real.lede")}</p>
           {availability === "ready" && lines ? (
-            <Button size="sm" variant="ghost" onClick={refresh} disabled={loading} className="shrink-0">
-              {t("real.refresh")}
+            <Button size="sm" variant={started ? "ghost" : "primary"} onClick={start} disabled={loading} className="shrink-0">
+              {t(started ? "real.refresh" : "real.check")}
             </Button>
           ) : null}
         </div>
@@ -468,11 +472,11 @@ export function RealBuildPanel({ lab, itemId, store }: LabDockProps) {
 
       {availability === "error" ? <StatusError t={t} /> : null}
       {prices?.failure ? (
-        <Callout tone="warn" title={prices.failure === "rate_limited" ? t("real.rateLimited") : t("real.failed")}>
-          <Button size="sm" onClick={refresh}>
+        <SearchFailure code={prices.failure} t={t} what={t("real.needsKey")} generic={t("real.failed")}>
+          <Button size="sm" onClick={start}>
             {t("real.retry")}
           </Button>
-        </Callout>
+        </SearchFailure>
       ) : null}
       {prices?.partial ? <Callout tone="note">{t(`real.partial.${prices.partial}`)}</Callout> : null}
 
@@ -497,7 +501,7 @@ export function RealBuildPanel({ lab, itemId, store }: LabDockProps) {
                 <span className="tabular font-ui text-2xl font-extrabold">{f.money(total)}</span>
               </div>
               <div className="mt-1 space-y-0.5 text-end text-xs text-muted">
-                {estimated === 0 && unpriced === 0 && availability === "ready" && !loading ? <p>{t("real.allLive")}</p> : null}
+                {estimated === 0 && unpriced === 0 && checking && !loading ? <p>{t("real.allLive")}</p> : null}
                 {estimated > 0 && !catalogueOnly ? <p>{t("real.estimated", { count: estimated })}</p> : null}
                 {unpriced > 0 ? <p>{t("real.unpriced", { count: unpriced })}</p> : null}
               </div>

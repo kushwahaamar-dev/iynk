@@ -58,5 +58,5 @@ export async function expectTabs(dock: Locator) {
   await expect(dock.getByRole("button", { name: together.panel.start }).or(dock.getByText(together.panel.unavailable))).toBeVisible();
 
   await dock.getByRole("tab", { name: dockCopy.tabs.real }).click();
-  await expect(dock.getByText(search.real.notSetUp).first().or(dock.getByRole("button", { name: search.real.refresh }))).toBeVisible();
+  await expect(dock.getByTestId("not-set-up").first().or(dock.getByRole("button", { name: search.real.check }))).toBeVisible();
 }

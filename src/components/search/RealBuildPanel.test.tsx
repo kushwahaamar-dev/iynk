@@ -107,6 +107,7 @@ describe("RealBuildPanel", () => {
     renderPanel({ lab: "robotics", itemId: "l298n", store, figure: null });
 
     expect(await screen.findByRole("region", { name: "Build it for real" })).toBeTruthy();
+    fireEvent.click(await screen.findByRole("button", { name: "Check prices" }));
     await screen.findAllByText("Arduino Nano");
     await waitFor(() => expect(screen.getByText(/Prices checked at/)).toBeTruthy());
     // Nano 24.90 + L298N 7.00 + TT motor 3.00; the other parts have no listing and no price.
@@ -139,6 +140,7 @@ describe("RealBuildPanel", () => {
     renderPanel({ lab: "drone", itemId: "quad5", store, figure: null });
 
     expect(await screen.findByRole("heading", { name: "Budget optimiser" })).toBeTruthy();
+    fireEvent.click(await screen.findByRole("button", { name: "Check prices" }));
     await waitFor(() => expect(screen.getByText(/Prices checked at/)).toBeTruthy());
     // 40 + 40 + 90 + one set of 4 props at 5.
     expect(screen.getAllByText("$175.00").length).toBeGreaterThan(0);
@@ -176,7 +178,8 @@ describe("RealBuildPanel", () => {
       );
 
     const bench = show({ lab: "robotics", itemId: "l298n", store: storeOf(null).store, figure: null });
-    expect(await screen.findByText("Shop prices aren't set up. Add a search key in Settings.")).toBeTruthy();
+    expect((await screen.findByTestId("not-set-up")).getAttribute("data-reason")).toBe("server_off");
+    expect(screen.queryByRole("button", { name: "Check prices" })).toBeNull();
     expect((await screen.findAllByText("Arduino Nano")).length).toBeGreaterThan(0);
     expect(screen.queryByText("$0.00")).toBeNull();
     expect(screen.queryByText("No listing found")).toBeNull();
@@ -188,6 +191,39 @@ describe("RealBuildPanel", () => {
     expect(screen.queryByText("Cheapest total")).toBeNull();
     expect(screen.queryByText("Catalogue price")).toBeNull();
     expect(screen.queryByText(/from US stores/)).toBeNull();
+  });
+
+  it("asks for no prices until Check prices is pressed, then again on each later press", async () => {
+    const fetchMock = server({ "board:nano": [offer("Arduino Nano", 24.9)] });
+    vi.stubGlobal("fetch", fetchMock);
+    const offerCalls = () => fetchMock.mock.calls.filter(([path]) => String(path) === "/api/search/offers").length;
+    renderPanel({ lab: "robotics", itemId: "l298n", store: storeOf(null).store, figure: null });
+
+    const check = await screen.findByRole("button", { name: "Check prices" });
+    await screen.findAllByText("Arduino Nano");
+    expect(offerCalls()).toBe(0);
+    expect(screen.queryByText("$0.00")).toBeNull();
+
+    fireEvent.click(check);
+    await waitFor(() => expect(offerCalls()).toBeGreaterThan(0));
+    await waitFor(() => expect(screen.getByText(/Prices checked at/)).toBeTruthy());
+    const afterFirst = offerCalls();
+
+    fireEvent.click(screen.getByRole("button", { name: "Check prices again" }));
+    await waitFor(() => expect(offerCalls()).toBeGreaterThan(afterFirst));
+  });
+
+  it("with no search key shows the needs-key box and makes no search request", async () => {
+    removeAllKeys();
+    const fetchMock = server({});
+    vi.stubGlobal("fetch", fetchMock);
+    renderPanel({ lab: "robotics", itemId: "l298n", store: storeOf(null).store, figure: null });
+
+    const box = await screen.findByTestId("not-set-up");
+    expect(box.getAttribute("data-reason")).toBe("needs_key");
+    expect(screen.queryByRole("button", { name: "Check prices" })).toBeNull();
+    expect((await screen.findAllByText("Arduino Nano")).length).toBeGreaterThan(0);
+    expect(fetchMock.mock.calls.some(([path]) => String(path).startsWith("/api/search"))).toBe(false);
   });
 
   it("says when an item's parts list isn't published", async () => {

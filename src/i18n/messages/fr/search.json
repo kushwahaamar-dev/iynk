@@ -2,6 +2,7 @@
   "real": {
     "title": "Construire pour de vrai",
     "lede": "Prix catalogue de chaque pièce, et prix en boutique quand vous ajoutez une clé de recherche et appuyez sur Vérifier les prix.",
+    "check": "Vérifier les prix",
     "loading": "Recherche des prix…",
     "refresh": "Vérifier à nouveau les prix",
     "checked": "Prix vérifiés à {time}",
@@ -36,8 +37,8 @@
     "rateLimited": "Trop de vérifications d’affilée. Attendez une minute, puis réessayez.",
     "quotaExhausted": "Votre limite mensuelle de recherches est épuisée et se réinitialise le 1er. Les résultats en cache fonctionnent toujours.",
     "noKey": "Ajoutez une clé de recherche dans les Réglages pour vérifier les prix.",
+    "needsKey": "La vérification des prix",
     "retry": "Réessayer",
-    "notSetUp": "Les prix en boutique ne sont pas configurés. Ajoutez une clé de recherche dans les réglages.",
     "notSetUpDrone": "L’optimiseur ci-dessous utilise les prix du catalogue.",
     "statusError": "Impossible de joindre le serveur.",
     "noContent": "La liste des pièces de cet élément n’est pas encore publiée.",
@@ -92,6 +93,8 @@
     "place": "Ville ou adresse",
     "placeHint": "Austin, TX",
     "search": "Rechercher",
+    "findEvents": "Trouver des événements",
+    "needsKey": "La recherche à proximité",
     "locate": "Utiliser ma position",
     "locating": "Localisation…",
     "privacy": "Votre position sert uniquement à cette recherche et n’est jamais enregistrée.",
@@ -118,12 +121,13 @@
     "title": "Aide en vidéo",
     "lede": "Tutoriels YouTube pour cet élément.",
     "query": "Rechercher des vidéos",
-    "search": "Rechercher",
     "loading": "Recherche de vidéos…",
     "empty": "Aucune vidéo trouvée. Essayez d’autres mots.",
     "failed": "Impossible de charger les vidéos.",
+    "needsKey": "L'aide en vidéo",
     "watch": "Regarder « {title} » de {channel} sur YouTube",
-    "duration": "Durée {duration}"
+    "duration": "Durée {duration}",
+    "find": "Trouver des vidéos"
   },
   "sources": {
     "heading": "Sources",

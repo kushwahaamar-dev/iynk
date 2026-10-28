@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { LabStore } from "@/components/dock/types";
 import common from "@/i18n/messages/en/common.json";
 import ai from "@/i18n/messages/en/ai.json";
-import search from "@/i18n/messages/en/search.json";
 import together from "@/i18n/messages/en/together.json";
 
 const flags = vi.hoisted(() => ({
@@ -142,7 +141,7 @@ describe("LabDock", () => {
     });
 
     fireEvent.click(screen.getByRole("tab", { name: dock.tabs.real }));
-    expect((await screen.findAllByText(search.real.notSetUp)).length).toBe(1);
+    expect((await screen.findAllByTestId("not-set-up")).length).toBe(1);
   });
 
   test("opens on the first tab that works: the partner with AI, else Together, or prices on a drone", () => {
@@ -217,7 +216,7 @@ describe("LabDock", () => {
     const dialog = screen.getByRole("dialog", { name: dock.label });
     expect(dialog.querySelector('[data-testid="lab-dock"]')?.getAttribute("data-layout")).toBe("phone");
     fireEvent.click(screen.getByRole("tab", { name: dock.tabs.real }));
-    expect((await screen.findAllByText(search.real.notSetUp)).length).toBeGreaterThan(0);
+    expect((await screen.findAllByTestId("not-set-up")).length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole("button", { name: dock.close }));
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
   });

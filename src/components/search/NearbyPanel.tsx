@@ -8,7 +8,7 @@ import { fetchEvents, fetchNearby, type FailCode } from "@/lib/search/client";
 import { useSearchT, type SearchT } from "@/lib/search/messages";
 import { EVENT_TOPICS, cityOf } from "@/lib/search/topics";
 import { NEARBY_KINDS, type MakerEvent, type NearbyKind, type Place } from "@/lib/search/types";
-import { PanelHead, PanelSkeleton, StatusError, external, useFormat, useSearchAvailability, type Format } from "./shared";
+import { PanelHead, PanelSkeleton, SearchFailure, SearchNotSetUp, StatusError, external, useFormat, useSearchAvailability, type Format } from "./shared";
 
 /** Where the search is centred: a typed place, or the browser's position (asked for only on a click). */
 type Where = { near: string } | { ll: string };
@@ -88,6 +88,7 @@ export function NearbyPanel({ lab }: LabDockProps) {
   const [locating, setLocating] = useState<"idle" | "busy" | "denied" | "failed">("idle");
   const [places, setPlaces] = useState<{ key: string; outcome: Outcome<Place> } | null>(null);
   const [events, setEvents] = useState<{ key: string; outcome: Outcome<MakerEvent> } | null>(null);
+  const [eventsRequested, setEventsRequested] = useState<string | null>(null);
 
   const ready = availability === "ready" && where !== null;
   const placesKey = where ? `${kind}|${"near" in where ? where.near : where.ll}|${locale}` : "";
@@ -108,13 +109,13 @@ export function NearbyPanel({ lab }: LabDockProps) {
   const eventsKey = eventPlace ? `${lab}|${eventPlace}` : "";
 
   useEffect(() => {
-    if (availability !== "ready" || !eventPlace) return;
+    if (availability !== "ready" || !eventPlace || eventsRequested !== eventsKey) return;
     const controller = new AbortController();
     fetchEvents({ q: EVENT_TOPICS[lab], near: eventPlace }, controller.signal)
       .then((r) => setEvents({ key: eventsKey, outcome: r.ok ? { ok: true, items: r.data.events } : r }))
       .catch(() => undefined);
     return () => controller.abort();
-  }, [availability, eventPlace, eventsKey, lab]);
+  }, [availability, eventPlace, eventsKey, eventsRequested, lab]);
 
   const eventOutcome = events?.key === eventsKey ? events.outcome : null;
 
@@ -146,13 +147,15 @@ export function NearbyPanel({ lab }: LabDockProps) {
   }
 
   const loadingPlaces = ready && !placeOutcome;
-  const loadingEvents = availability === "ready" && Boolean(eventPlace) && !eventOutcome;
+  const eventsAsked = eventsRequested === eventsKey;
+  const loadingEvents = availability === "ready" && eventsAsked && !eventOutcome;
 
   return (
     <section className="space-y-3" aria-labelledby={`${id}-title`}>
       <PanelHead id={`${id}-title`} title={t("nearby.title")} lede={t("nearby.lede")} />
       {availability === "loading" ? <PanelSkeleton /> : null}
       {availability === "error" ? <StatusError t={t} /> : null}
+      {availability === "off" || availability === "needs_key" ? <SearchNotSetUp availability={availability} what={t("nearby.needsKey")} /> : null}
       {availability === "ready" ? (
         <>
           <SegmentedControl
@@ -198,9 +201,7 @@ export function NearbyPanel({ lab }: LabDockProps) {
           <div aria-live="polite" aria-busy={loadingPlaces}>
             {!where ? <p className="text-sm text-muted">{t("nearby.start")}</p> : null}
             {loadingPlaces ? <p className="text-sm text-muted">{t("nearby.loading")}</p> : null}
-            {placeOutcome && !placeOutcome.ok ? (
-              <Callout tone="warn">{placeOutcome.code === "rate_limited" ? t("real.rateLimited") : t("nearby.failed")}</Callout>
-            ) : null}
+            {placeOutcome && !placeOutcome.ok ? <SearchFailure code={placeOutcome.code} t={t} what={t("nearby.needsKey")} generic={t("nearby.failed")} /> : null}
             {placeOutcome?.ok && placeOutcome.items.length === 0 ? <p className="text-sm text-muted">{t("nearby.empty")}</p> : null}
             {placeOutcome?.ok && placeOutcome.items.length > 0 ? (
               <ul className="divide-y divide-rule">
@@ -216,8 +217,13 @@ export function NearbyPanel({ lab }: LabDockProps) {
               <h3 id={`${id}-events`} className="ink-kicker">
                 {t("nearby.events")}
               </h3>
+              {!eventsAsked ? (
+                <Button type="button" size="sm" onClick={() => setEventsRequested(eventsKey)}>
+                  {t("nearby.findEvents")}
+                </Button>
+              ) : null}
               {loadingEvents ? <p className="text-sm text-muted">{t("nearby.loading")}</p> : null}
-              {eventOutcome && !eventOutcome.ok ? <Callout tone="warn">{t("nearby.failed")}</Callout> : null}
+              {eventOutcome && !eventOutcome.ok ? <SearchFailure code={eventOutcome.code} t={t} what={t("nearby.needsKey")} generic={t("nearby.failed")} /> : null}
               {eventOutcome?.ok && eventOutcome.items.length === 0 ? (
                 <p className="text-sm text-muted">{t("nearby.eventsEmpty", { place: eventPlace })}</p>
               ) : null}

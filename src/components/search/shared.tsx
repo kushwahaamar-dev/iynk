@@ -1,9 +1,12 @@
 "use client";
 
 import { useMemo, type ReactNode } from "react";
+import { NotSetUp } from "@/components/settings/NotSetUp";
 import { Button, Callout, cx } from "@/components/ui";
 import { htmlLang, type Locale } from "@/i18n/config";
 import { reloadFeatures, useFeatures } from "@/lib/features";
+import { useKeys } from "@/lib/keys";
+import type { FailCode } from "@/lib/search/client";
 import type { SearchT } from "@/lib/search/messages";
 
 /** Number and money formatting in the page's language. Prices are US store prices, so USD. */
@@ -54,14 +57,32 @@ export function PanelSkeleton({ className }: { className?: string }) {
   );
 }
 
-export type SearchAvailability = "loading" | "ready" | "off" | "error";
+export type SearchAvailability = "loading" | "ready" | "needs_key" | "off" | "error";
 
-/** Whether live search works on this deployment (GET /api/status). */
+/** Whether live search can run here: the server has it on (/config.json) and this browser holds a search key. */
 export function useSearchAvailability(): SearchAvailability {
   const { status, features } = useFeatures();
+  const keys = useKeys();
   if (status === "loading") return "loading";
   if (status === "error") return "error";
-  return features.search ? "ready" : "off";
+  if (!features.search) return "off";
+  return keys.search.set ? "ready" : "needs_key";
+}
+
+/** The "not set up" box for a panel that can't search: the server has it off, or this browser has no key. */
+export function SearchNotSetUp({ availability, what }: { availability: "off" | "needs_key"; what: string }) {
+  return <NotSetUp what={what} reason={availability === "off" ? "server_off" : "needs_key"} fix="search" />;
+}
+
+/** A failed search: the server's switch-off becomes the "not set up" box, everything else a warning in words that fit the cause. */
+export function SearchFailure({ code, t, what, generic, children }: { code: FailCode; t: SearchT; what: string; generic: string; children?: ReactNode }) {
+  if (code === "not_configured") return <NotSetUp what={what} reason="server_off" fix="search" />;
+  const text = code === "rate_limited" ? t("real.rateLimited") : code === "quota_exhausted" ? t("real.quotaExhausted") : code === "no_key" ? t("real.noKey") : generic;
+  return (
+    <Callout tone="warn" title={children ? text : undefined}>
+      {children ?? text}
+    </Callout>
+  );
 }
 
 /** The "server unreachable" note with a retry. */

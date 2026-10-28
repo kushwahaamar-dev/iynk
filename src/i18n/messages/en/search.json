@@ -2,6 +2,7 @@
   "real": {
     "title": "Build it for real",
     "lede": "Catalogue prices for every part, and shop prices when you add a search key and press Check prices.",
+    "check": "Check prices",
     "loading": "Finding prices…",
     "refresh": "Check prices again",
     "checked": "Prices checked at {time}",
@@ -36,8 +37,8 @@
     "rateLimited": "Too many price checks in a row. Wait a minute, then try again.",
     "quotaExhausted": "Your monthly search limit is used up and resets on the 1st. Cached results still work.",
     "noKey": "Add a search key in Settings to check prices.",
+    "needsKey": "Price check",
     "retry": "Try again",
-    "notSetUp": "Shop prices aren't set up. Add a search key in Settings.",
     "notSetUpDrone": "The optimiser below works with the catalogue's prices instead.",
     "statusError": "The server couldn't be reached.",
     "noContent": "This item's parts list isn't published yet.",
@@ -92,6 +93,8 @@
     "place": "City or address",
     "placeHint": "Austin, TX",
     "search": "Search",
+    "findEvents": "Find events",
+    "needsKey": "Nearby search",
     "locate": "Use my location",
     "locating": "Finding you…",
     "privacy": "Your location is used for this search only and is never stored.",
@@ -118,12 +121,13 @@
     "title": "Video help",
     "lede": "Tutorials for this item from YouTube.",
     "query": "Search videos",
-    "search": "Search",
     "loading": "Finding videos…",
     "empty": "No videos found. Try other words.",
     "failed": "Videos couldn't be loaded.",
+    "needsKey": "Video help",
     "watch": "Watch “{title}” by {channel} on YouTube",
-    "duration": "Length {duration}"
+    "duration": "Length {duration}",
+    "find": "Find videos"
   },
   "sources": {
     "heading": "Sources",

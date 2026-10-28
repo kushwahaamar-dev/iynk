@@ -2,6 +2,7 @@
   "real": {
     "title": "Wirklich bauen",
     "lede": "Katalogpreise für jedes Teil und Shop-Preise, wenn du einen Suchschlüssel hinzufügst und auf Preise prüfen drückst.",
+    "check": "Preise prüfen",
     "loading": "Preise werden gesucht …",
     "refresh": "Preise erneut prüfen",
     "checked": "Preise geprüft um {time}",
@@ -36,8 +37,8 @@
     "rateLimited": "Zu viele Preisabfragen hintereinander. Warte eine Minute und versuche es dann erneut.",
     "quotaExhausted": "Dein monatliches Suchlimit ist aufgebraucht und wird am 1. zurückgesetzt. Zwischengespeicherte Ergebnisse funktionieren weiterhin.",
     "noKey": "Füge in den Einstellungen einen Suchschlüssel hinzu, um Preise zu prüfen.",
+    "needsKey": "Die Preisabfrage",
     "retry": "Erneut versuchen",
-    "notSetUp": "Shop-Preise sind nicht eingerichtet. Füge in den Einstellungen einen Suchschlüssel hinzu.",
     "notSetUpDrone": "Der Optimierer unten rechnet stattdessen mit den Katalogpreisen.",
     "statusError": "Der Server ist nicht erreichbar.",
     "noContent": "Die Teileliste dieses Elements ist noch nicht veröffentlicht.",
@@ -92,6 +93,8 @@
     "place": "Stadt oder Adresse",
     "placeHint": "Austin, TX",
     "search": "Suchen",
+    "findEvents": "Veranstaltungen finden",
+    "needsKey": "Suche in der Nähe",
     "locate": "Meinen Standort verwenden",
     "locating": "Standort wird gesucht …",
     "privacy": "Dein Standort wird nur für diese Suche verwendet und nie gespeichert.",
@@ -118,12 +121,13 @@
     "title": "Videohilfe",
     "lede": "Tutorials zu diesem Element von YouTube.",
     "query": "Videos suchen",
-    "search": "Suchen",
     "loading": "Videos werden gesucht …",
     "empty": "Keine Videos gefunden. Versuche andere Wörter.",
     "failed": "Die Videos konnten nicht geladen werden.",
+    "needsKey": "Videohilfe",
     "watch": "„{title}“ von {channel} auf YouTube ansehen",
-    "duration": "Länge {duration}"
+    "duration": "Länge {duration}",
+    "find": "Videos finden"
   },
   "sources": {
     "heading": "Quellen",
