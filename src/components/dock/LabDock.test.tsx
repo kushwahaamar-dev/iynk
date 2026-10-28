@@ -10,7 +10,7 @@ const flags = vi.hoisted(() => ({
   status: "ready" as "loading" | "ready" | "error",
   features: {
     ai: false,
-    image: false,
+   
     voice: false,
     search: false,
     db: false,

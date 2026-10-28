@@ -46,22 +46,6 @@ export type TranslateResponse = { texts: string[]; from: Locale | "und" };
 
 export type TranscribeResponse = { text: string; lang: Locale };
 
-export type StoryEvent = { t: number; who: string; kind: string; text: string };
-
-export type StoryRequest = {
-  lab: LabKind;
-  itemId: string;
-  locale: Locale;
-  peers: Array<{ name: string; lang: Locale }>;
-  events: StoryEvent[];
-};
-
-export type StoryResponse = { title: string; story: string; highlights: string[]; imagePrompt: string };
-
-export type ImageRequest = { prompt: string; style: "colorfigures" };
-/** A `data:image/...;base64,` URL. */
-export type ImageResponse = { image: string };
-
 export type Level = "new" | "some" | "lots";
 
 export type PlanRequest = {

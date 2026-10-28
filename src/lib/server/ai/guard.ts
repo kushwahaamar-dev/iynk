@@ -6,7 +6,6 @@ import { AiError, safetyId } from "./provider";
 
 /** Upstream calls this instance makes per hour across all callers: a quota guard for the demo's credits. */
 const AI_BUDGET = { limit: 900, windowMs: 60 * 60 * 1000 };
-const IMAGE_BUDGET = { limit: 60, windowMs: 60 * 60 * 1000 };
 
 /**
  * The checks every /api/ai/* route runs before it reads the body: our origin
@@ -19,7 +18,7 @@ export function guardAi(req: Request, route: string, perMinute: number, feature:
   if (!features[feature]) return notConfigured(feature === "ai" ? "The AI partner" : `AI ${feature}`);
   const limited = checkRateLimit(req, `ai:${route}`, { limit: perMinute, windowMs: 60_000 });
   if (limited) return limited;
-  const budget = rateLimit(feature === "image" ? "ai:budget:image" : "ai:budget", feature === "image" ? IMAGE_BUDGET : AI_BUDGET);
+  const budget = rateLimit("ai:budget", AI_BUDGET);
   return budget.ok ? null : tooManyRequests(budget);
 }
 

@@ -13,7 +13,7 @@ describe("readEnv", () => {
     expect(env.NEXT_PUBLIC_SITE_URL).toBe("http://localhost:3000");
     expect(featuresOf(env)).toEqual({
       ai: false,
-      image: false,
+     
       voice: false,
       search: false,
       db: false,
@@ -63,7 +63,7 @@ describe("readEnv", () => {
     expect(env.SERPAPI_MONTHLY_BUDGET).toBe(50);
     expect(featuresOf(env)).toEqual({
       ai: true,
-      image: true,
+     
       voice: true,
       search: true,
       db: true,
@@ -72,8 +72,8 @@ describe("readEnv", () => {
     });
   });
 
-  it("lets Gemini alone carry text AI but not image or voice", () => {
+  it("lets Gemini alone carry text AI but not voice", () => {
     const f = featuresOf(readEnv({ GEMINI_API_KEY: "g" }).env);
-    expect(f).toMatchObject({ ai: true, gemini: true, image: false, voice: false });
+    expect(f).toMatchObject({ ai: true, gemini: true, voice: false });
   });
 });

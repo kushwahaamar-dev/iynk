@@ -7,7 +7,7 @@ import { droneCalc } from "./tools/drone";
 import { priceParts } from "./tools/market";
 import { createRoom } from "./tools/together";
 
-const flags = vi.hoisted(() => ({ ai: true, image: true, voice: true, search: true, db: false, realtime: true, gemini: false }));
+const flags = vi.hoisted(() => ({ ai: true, voice: true, search: true, db: false, realtime: true, gemini: false }));
 const offers = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/server/env", () => ({ env: { NEXT_PUBLIC_SITE_URL: "https://iynk.test" }, features: flags }));

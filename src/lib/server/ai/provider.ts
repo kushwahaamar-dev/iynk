@@ -422,56 +422,6 @@ export async function chatJson<S extends z.ZodType>(
   return { data: parsed.data, usage: result.usage };
 }
 
-/** Muse Image: one image as a data URL (POST /images/generations). */
-export async function generateImage(opts: {
-  prompt: string;
-  size?: string;
-  signal?: AbortSignal;
-  user?: string;
-}): Promise<{ dataUrl: string }> {
-  if (!env.META_API_KEY) throw new AiError("not_configured");
-  const timeoutMs = 110_000;
-  const res = await upstream("meta", `${env.META_API_BASE}/images/generations`, {
-    key: env.META_API_KEY,
-    contentType: "application/json",
-    body: JSON.stringify({
-      model: env.META_IMAGE_MODEL,
-      prompt: opts.prompt,
-      n: 1,
-      size: opts.size ?? "1536x1024",
-      response_format: "b64_json",
-      output_format: "webp",
-      // The prompt carries the whole style; references from the web would only dilute it.
-      tool_enablement: { enable_web_search: false, enable_image_search: false, enable_shell: false },
-      ...(opts.user ? { user: opts.user } : {}),
-    }),
-    signal: opts.signal,
-    timeoutMs,
-  });
-  let body: { data?: Array<{ b64_json?: string; url?: string }>; output_format?: string };
-  try {
-    body = await res.json();
-  } catch (error) {
-    throw toAiError(error, opts.signal);
-  }
-  const image = body.data?.[0];
-  const format = body.output_format ?? "webp";
-  if (image?.b64_json) return { dataUrl: `data:image/${format};base64,${image.b64_json}` };
-  if (image?.url) {
-    let file: Response;
-    try {
-      file = await fetch(image.url, { signal: withTimeout(30_000, opts.signal) });
-    } catch (error) {
-      throw toAiError(error, opts.signal);
-    }
-    if (!file.ok) throw new AiError("upstream_failed", `image download ${file.status}`);
-    const type = file.headers.get("content-type")?.split(";")[0] || `image/${format}`;
-    const bytes = Buffer.from(await file.arrayBuffer());
-    return { dataUrl: `data:${type};base64,${bytes.toString("base64")}` };
-  }
-  throw new AiError("upstream_failed", "no image in the response");
-}
-
 function multipart(parts: Array<{ name: string; type: string; filename?: string; data: Uint8Array | string }>) {
   const boundary = `----iynk${createHash("sha256").update(String(Math.random())).digest("hex").slice(0, 24)}`;
   const chunks: Uint8Array[] = [];

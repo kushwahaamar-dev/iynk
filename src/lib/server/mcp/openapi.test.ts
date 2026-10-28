@@ -5,7 +5,7 @@ import { OPTIONS as TOOL_OPTIONS, POST as TOOL_POST } from "@/app/api/mcp/tools/
 
 vi.mock("@/lib/server/env", () => ({
   env: { NEXT_PUBLIC_SITE_URL: "https://iynk.test" },
-  features: { ai: false, image: false, voice: false, search: false, db: false, realtime: false, gemini: false },
+  features: { ai: false, voice: false, search: false, db: false, realtime: false, gemini: false },
 }));
 vi.mock("next/server", () => ({ connection: async () => undefined }));
 

@@ -218,25 +218,6 @@ describe("chat (non-streaming) and chatJson", () => {
   });
 });
 
-describe("generateImage", () => {
-  it("posts to /images/generations and returns a data URL", async () => {
-    const { calls } = fakeFetch(Response.json({ created: 1, data: [{ b64_json: "AAAA" }], output_format: "webp" }));
-    const { generateImage } = await load();
-    expect(await generateImage({ prompt: "a red LED" })).toEqual({ dataUrl: "data:image/webp;base64,AAAA" });
-    expect(calls[0].url).toBe("https://api.meta.ai/v1/images/generations");
-    expect(calls[0].body).toMatchObject({ model: "muse-image-1.0", prompt: "a red LED", n: 1, response_format: "b64_json" });
-  });
-
-  it("downloads the image when the API answers with a URL", async () => {
-    fakeFetch(
-      Response.json({ created: 1, data: [{ url: "https://cdn.example/x.png" }] }),
-      new Response(new Uint8Array([1, 2, 3]), { headers: { "content-type": "image/png" } }),
-    );
-    const { generateImage } = await load();
-    expect(await generateImage({ prompt: "x" })).toEqual({ dataUrl: "data:image/png;base64,AQID" });
-  });
-});
-
 describe("transcribeWav", () => {
   it("sends the documented multipart body: a JSON request part and a WAV audio part", async () => {
     const { calls } = fakeFetch(Response.json({ sessionId: "s", transcript: " hola ", audioDurationMs: 900, turns: [] }));

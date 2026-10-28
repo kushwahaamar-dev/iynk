@@ -18,7 +18,6 @@ const schema = {
   META_API_KEY: text.optional(),
   META_API_BASE: url.default("https://api.meta.ai/v1"),
   META_MODEL: text.default("muse-spark-1.3"),
-  META_IMAGE_MODEL: text.default("muse-image-1.0"),
   META_TRANSCRIBE_MODEL: text.default("muse-voice-transcribe-1.0"),
   GEMINI_API_KEY: text.optional(),
   GEMINI_MODEL: text.default("gemini-3.5-flash"),
@@ -35,7 +34,6 @@ export type EnvName = keyof Schema;
 
 export type Features = {
   ai: boolean;
-  image: boolean;
   voice: boolean;
   search: boolean;
   db: boolean;
@@ -69,9 +67,8 @@ export function featuresOf(e: Env): Features {
   const meta = Boolean(e.META_API_KEY);
   const gemini = Boolean(e.GEMINI_API_KEY);
   return {
-    // Gemini only stands in for Muse Spark's text work; Muse Image and voice need Meta.
+    // Gemini only stands in for Muse Spark's text work; voice needs Meta.
     ai: meta || gemini,
-    image: meta,
     voice: meta,
     search: Boolean(e.SERPAPI_KEY),
     db: Boolean(e.DATABASE_URL),
