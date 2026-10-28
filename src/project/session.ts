@@ -35,16 +35,21 @@ export interface ProjectSession {
   /** Head of the hash chain over the retained ops. */
   readonly chain: string;
   apply(op: Op | readonly Op[], author: Author): ApplyResult;
-  /** `actor` defaults to the actor of the latest `apply`. Null when there is nothing to undo. */
-  undo(actor?: string): ApplyResult | null;
-  redo(actor?: string): ApplyResult | null;
-  canUndo(actor?: string): boolean;
-  canRedo(actor?: string): boolean;
+  /**
+   * `actor` defaults to the actor of the latest `apply`. With a `filter`, entries holding an op it rejects are
+   * skipped whole and stay on their stack. Null when there is nothing to undo.
+   */
+  undo(actor?: string, filter?: OpFilter): ApplyResult | null;
+  redo(actor?: string, filter?: OpFilter): ApplyResult | null;
+  canUndo(actor?: string, filter?: OpFilter): boolean;
+  canRedo(actor?: string, filter?: OpFilter): boolean;
   subscribe(fn: (change: DocChange) => void): () => void;
   /** Swaps in a snapshot (open, resync) and forgets every undo and redo entry. */
   replace(state: Project): void;
   compact(): void;
 }
+
+export type OpFilter = (op: Op) => boolean;
 
 interface Entry {
   ops: Op[];
@@ -124,18 +129,22 @@ export function createSession(opts: SessionOptions): ProjectSession {
     return { ok: true, revision: state.revision, inverse: outcome.inverse };
   }
 
-  function step(from: Stacks, to: Stacks, actor: string | undefined, origin: "undo" | "redo"): ApplyResult | null {
+  const allowed = (entry: Entry, filter: OpFilter | undefined) => !filter || entry.ops.every(filter);
+
+  function step(from: Stacks, to: Stacks, actor: string | undefined, origin: "undo" | "redo", filter?: OpFilter): ApplyResult | null {
     const key = actor ?? lastActor;
-    const entry = key === undefined ? undefined : from.get(key)?.pop();
+    const stack = key === undefined ? undefined : from.get(key);
+    const at = stack?.findLastIndex((e) => allowed(e, filter)) ?? -1;
+    const entry = at < 0 ? undefined : stack?.splice(at, 1)[0];
     if (!key || !entry) return null;
     const result = commit(entry.ops, entry.author, origin);
     if (result.ok) push(to, key, { ops: result.inverse, author: entry.author });
     return result;
   }
 
-  const depth = (stacks: Stacks, actor: string | undefined) => {
+  const has = (stacks: Stacks, actor: string | undefined, filter: OpFilter | undefined) => {
     const key = actor ?? lastActor;
-    return key === undefined ? 0 : (stacks.get(key)?.length ?? 0);
+    return key !== undefined && (stacks.get(key)?.some((e) => allowed(e, filter)) ?? false);
   };
 
   return {
@@ -157,10 +166,10 @@ export function createSession(opts: SessionOptions): ProjectSession {
       }
       return result;
     },
-    undo: (actor) => step(undoStacks, redoStacks, actor, "undo"),
-    redo: (actor) => step(redoStacks, undoStacks, actor, "redo"),
-    canUndo: (actor) => depth(undoStacks, actor) > 0,
-    canRedo: (actor) => depth(redoStacks, actor) > 0,
+    undo: (actor, filter) => step(undoStacks, redoStacks, actor, "undo", filter),
+    redo: (actor, filter) => step(redoStacks, undoStacks, actor, "redo", filter),
+    canUndo: (actor, filter) => has(undoStacks, actor, filter),
+    canRedo: (actor, filter) => has(redoStacks, actor, filter),
     subscribe(fn) {
       listeners.add(fn);
       return () => listeners.delete(fn);

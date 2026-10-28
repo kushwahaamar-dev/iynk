@@ -28,6 +28,7 @@ export type CommitResult = { ok: true; revision: number } | { ok: false; reject:
 export interface DocStore extends Store<DocView> {
   readonly session: ProjectSession;
   commit(batch: Op[], opts: { label: string; author?: Author }): CommitResult;
+  /** Canvas scope: entries holding a `source.edit` stay on the stack. */
   undo(): CommitResult | null;
   redo(): CommitResult | null;
   /** Swaps in a session (open another project). Listeners get one `load` change. */
@@ -35,6 +36,9 @@ export interface DocStore extends Store<DocView> {
   onChange(fn: (change: DocChange) => void): () => void;
   setSaveChip(chip: SaveChip): void;
 }
+
+/** Canvas undo leaves text edits to the code editor's own history (STUDIO 11.2). */
+const canvasOp = (op: Op) => op.k !== "source.edit";
 
 const READ_ONLY_REFUSAL = { ok: false, reject: "permission", message: "This project is read only." } as const;
 
@@ -45,8 +49,8 @@ export function createDocStore(initial: ProjectSession): DocStore {
   const view = () => ({
     revision: session.revision,
     state: session.state,
-    canUndo: session.canUndo(),
-    canRedo: session.canRedo(),
+    canUndo: session.canUndo(undefined, canvasOp),
+    canRedo: session.canRedo(undefined, canvasOp),
     saveChip: chip,
     readOnly: chip === "read-only",
   });
@@ -93,13 +97,13 @@ export function createDocStore(initial: ProjectSession): DocStore {
     undo() {
       const refusal = refused();
       if (refusal) return refusal;
-      const result = session.undo();
+      const result = session.undo(undefined, canvasOp);
       return result && settle(result);
     },
     redo() {
       const refusal = refused();
       if (refusal) return refusal;
-      const result = session.redo();
+      const result = session.redo(undefined, canvasOp);
       return result && settle(result);
     },
     replaceSession(next) {
