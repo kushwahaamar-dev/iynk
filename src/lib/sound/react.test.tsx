@@ -6,7 +6,7 @@ import type { RoomClient } from "@/lib/realtime/room";
 import { attachStore } from "@/lib/realtime/store-sync";
 import { boardMoments } from "./moments";
 
-const calls = vi.hoisted(() => ({ played: [] as string[], tracked: [] as [string, unknown][], context: [] as unknown[] }));
+const calls = vi.hoisted(() => ({ played: [] as string[], tracked: [] as [string, unknown][] }));
 
 vi.mock("./index", () => ({
   playSound: (name: string) => calls.played.push(name),
@@ -16,7 +16,6 @@ vi.mock("./index", () => ({
 
 vi.mock("@/lib/telemetry", () => ({
   track: (kind: string, data: unknown) => calls.tracked.push([kind, data]),
-  setTelemetryContext: (next: unknown) => calls.context.push(next),
 }));
 
 import { useFigureSound, useLabMoments } from "./react";
@@ -24,7 +23,6 @@ import { useFigureSound, useLabMoments } from "./react";
 beforeEach(() => {
   calls.played = [];
   calls.tracked = [];
-  calls.context = [];
 });
 
 const state = (n: number, name: string): FigureEvent => ({ type: "state", state: { sfx: { n, name } }, changed: ["sfx"] });
@@ -57,7 +55,7 @@ function boardStore() {
 }
 
 describe("useLabMoments", () => {
-  test("a check run sounds and counts; the page's item is stamped on telemetry", () => {
+  test("a check run sounds and counts", () => {
     const store = boardStore();
     const { unmount } = renderHook(() => useLabMoments(store, boardMoments, "uno-r3"));
     act(() => {
@@ -73,7 +71,6 @@ describe("useLabMoments", () => {
     ]);
     expect(calls.played).toEqual(["pass"]);
     unmount();
-    expect(calls.context).toEqual([{ item: "uno-r3" }, { item: undefined }]);
   });
 
   test("a build step with a progress key is counted; a board assembly step (no key) is not", () => {

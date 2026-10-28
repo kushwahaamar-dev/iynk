@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { flush, onFlushed, setTelemetryContext, tally, telemetrySession, track } from "./client";
+import { tally, track } from "./client";
 
 const fetchMock = vi.fn<typeof fetch>();
 const sendBeacon = vi.fn<(url: string, body?: BodyInit | null) => boolean>(() => true);
@@ -18,32 +18,19 @@ afterEach(() => {
   localStorage.clear();
 });
 
-it("track makes no fetch and no sendBeacon call even with telemetry saved as true", async () => {
-  setTelemetryContext({ room: "ABCD", item: "nano" });
+it("track makes no fetch and no sendBeacon call even with telemetry saved as true", () => {
   track("lesson.pass", { lesson: "a" });
   track("flight.lap");
-  await flush();
   window.dispatchEvent(new Event("pagehide"));
   expect(fetchMock).not.toHaveBeenCalled();
   expect(sendBeacon).not.toHaveBeenCalled();
 });
 
-it("tally and flush make no network call", async () => {
+it("tally makes no network call", () => {
   tally("led.blink", 5);
-  await flush();
   window.dispatchEvent(new Event("pagehide"));
   expect(fetchMock).not.toHaveBeenCalled();
   expect(sendBeacon).not.toHaveBeenCalled();
-});
-
-it("telemetrySession is empty and onFlushed never calls its listener", async () => {
-  const listener = vi.fn();
-  const off = onFlushed(listener);
-  track("flight.lap");
-  await flush();
-  off();
-  expect(telemetrySession()).toBe("");
-  expect(listener).not.toHaveBeenCalled();
 });
 
 it("registers no visibilitychange listener", () => {

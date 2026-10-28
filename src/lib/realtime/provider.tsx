@@ -5,7 +5,7 @@ import type { LabKind, LabStore } from "@/components/dock/types";
 import { useLocale } from "@/i18n/client";
 import { useFeatures } from "@/lib/features";
 import { progressPrefix, useSaved } from "@/lib/progress";
-import { setTelemetryContext, track } from "@/lib/telemetry";
+import { track } from "@/lib/telemetry";
 import { createTransport, pageLink, pageScope, ROOM_PARAM, transportKind } from "./config";
 import { getIdentity, getServerIdentity, subscribeIdentity, type Identity } from "./identity";
 import { isRoomId, newId, newRoomId, normalizeRoomId } from "./protocol";
@@ -168,7 +168,6 @@ export function RoomProvider<S, A extends { type: string }>({
       const { ended, status, peers } = next.getState();
       if (status === "live" && !joined) {
         joined = true;
-        setTelemetryContext({ room: roomId });
         track("room.join", { peers: peers.length + 1 });
       }
       // The room ended without us leaving (removed, full, wrong item): drop ?room= so a reload doesn't rejoin.
@@ -182,7 +181,6 @@ export function RoomProvider<S, A extends { type: string }>({
       offStatus();
       detach();
       next.leave();
-      setTelemetryContext({ room: undefined });
       setClient((current) => (current === next ? null : current));
     };
   }, [roomId, named, lab, itemId, store, locale]);

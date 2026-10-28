@@ -6,7 +6,7 @@ import type { FigureEvent } from "@/components/figure/protocol";
 import type { BoardLabState } from "@/lib/boardlab/store";
 import { isHydrating } from "@/lib/realtime";
 import { useSettings } from "@/lib/settings/hooks";
-import { setTelemetryContext, track } from "@/lib/telemetry";
+import { track } from "@/lib/telemetry";
 import { playSound, setTone, silence } from "./index";
 import { heldTones, type HeldTone, type Moment } from "./moments";
 import type { CueSound } from "./sounds";
@@ -59,15 +59,9 @@ function report(moment: Moment) {
 
 /**
  * Plays a cue and records a telemetry event for each moment `derive` reads from the store's
- * changes, and stamps `item` on this page's telemetry. A room joiner taking the host's
- * snapshot is skipped, so catching up doesn't replay every step.
+ * changes. A room joiner taking the host's snapshot is skipped, so catching up doesn't replay every step.
  */
 export function useLabMoments<S>(store: LabStore<S>, derive: (prev: S, next: S) => Moment[], item: string): void {
-  useEffect(() => {
-    setTelemetryContext({ item });
-    return () => setTelemetryContext({ item: undefined });
-  }, [item]);
-
   useEffect(() => {
     let prev = store.getState();
     return store.subscribe(() => {
