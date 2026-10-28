@@ -54,6 +54,8 @@ const eslintConfig = defineConfig([
     "coverage/**",
     // Spike and schema-check scripts in the master plan are throwaway, not app source.
     "docs/MASTER_PLAN/**",
+    // Written by scripts/schema-gen.mjs.
+    "src/**/generated/**",
   ]),
 ]);
 

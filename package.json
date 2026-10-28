@@ -13,6 +13,8 @@
   "scripts": {
     "content": "node -e \"const f='scripts/gen-content-index.mjs';if(require('fs').existsSync(f))require('child_process').execFileSync(process.execPath,[f],{stdio:'inherit'});else console.log('skipped: '+f+' is not written yet')\"",
     "content:check": "node scripts/gen-content-index.mjs --check",
+    "schema:gen": "node scripts/schema-gen.mjs",
+    "schema:check": "node scripts/schema-gen.mjs --check",
     "predev": "npm run content",
     "dev": "next dev",
     "prebuild": "npm run content",
@@ -29,7 +31,7 @@
     "provenance:check": "node scripts/provenance-check.mjs",
     "perf:budget": "node scripts/perf-budget.mjs",
     "perf:record": "node scripts/perf-budget.mjs --record",
-    "check": "npm run content:check && npm run typecheck && npm run lint && npm run test && npm run e2e"
+    "check": "npm run content:check && npm run schema:check && npm run typecheck && npm run lint && npm run test && npm run e2e"
   },
   "dependencies": {
     "@codemirror/commands": "6.11.1",
@@ -59,9 +61,11 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "6.1.2",
+    "ajv": "8.17.1",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
     "jsdom": "30.1.2",
+    "json-schema-to-typescript": "16.0.0",
     "playwright-core": "1.64.0",
     "tailwindcss": "^4",
     "typescript": "^5",
