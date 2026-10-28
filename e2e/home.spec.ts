@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "./support/no-egress";
+import { waitForAnimations } from "./support/settled";
 import shell from "../src/i18n/messages/en/shell.json";
 
 const REPO = "https://github.com/kushwahaamar-dev/iynk";
@@ -28,6 +29,7 @@ test("the home page passes axe and fits a 360 px screen", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 740 });
   await page.goto("/en");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await waitForAnimations(page);
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations.filter((v) => v.impact === "serious" || v.impact === "critical")).toEqual([]);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);

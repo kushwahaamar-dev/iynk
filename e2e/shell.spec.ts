@@ -1,6 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import type { Page } from "@playwright/test";
 import { expect, test } from "./support/no-egress";
+import { waitForAnimations } from "./support/settled";
 import { LANG_COOKIE, LOCALES, htmlLang } from "../src/i18n/config";
 import common from "../src/i18n/messages/en/common.json";
 import commonFr from "../src/i18n/messages/fr/common.json";
@@ -53,7 +54,7 @@ function cutThemeOptions(page: Page) {
 
 async function expectNoAxeViolations(page: Page) {
   // Axe reads the blended colour of a block that is still fading in, so let the entrance animations finish first.
-  await page.evaluate(() => Promise.all(document.getAnimations().filter((animation) => animation.effect?.getComputedTiming().endTime !== Infinity).map((animation) => animation.finished)));
+  await waitForAnimations(page);
   const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
   const summary = results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`);
   expect(summary).toEqual([]);
