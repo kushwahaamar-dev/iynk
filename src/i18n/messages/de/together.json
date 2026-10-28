@@ -201,7 +201,9 @@
       "remove": "Freund entfernen",
       "block": "Blockieren",
       "removeConfirm": "{name} aus deinen Freunden entfernen? Ihr könnt später erneut koppeln.",
-      "blockConfirm": "{name} blockieren? Die Person wird entfernt und kann sich nicht erneut mit dir koppeln."
+      "blockConfirm": "{name} blockieren? Die Person wird entfernt und kann sich nicht erneut mit dir koppeln.",
+      "save": "Speichern",
+      "cancel": "Abbrechen"
     },
     "enrol": {
       "title": "Diesem Server beitreten",
@@ -228,7 +230,10 @@
       "wrong": "Der Code hat nicht funktioniert. Prüfe ihn und versuche es erneut.",
       "tooMany": "Zu viele Versuche. Warte eine Minute und versuche es erneut.",
       "already": "Ihr seid schon befreundet.",
-      "full": "Einer von euch hat die Freundesgrenze erreicht."
+      "full": "Einer von euch hat die Freundesgrenze erreicht.",
+      "show": "Code anzeigen",
+      "joined": "{name} ist beigetreten.",
+      "fingerprint": "Schlüssel {fingerprint}"
     },
     "joined": "Du bist dem Server als {name} beigetreten.",
     "unknown": {

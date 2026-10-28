@@ -201,7 +201,9 @@
       "remove": "移除好友",
       "block": "屏蔽",
       "removeConfirm": "要把 {name} 从好友中移除吗?之后可以重新配对。",
-      "blockConfirm": "要屏蔽 {name} 吗?对方会被移除,且无法再与你配对。"
+      "blockConfirm": "要屏蔽 {name} 吗?对方会被移除,且无法再与你配对。",
+      "save": "保存",
+      "cancel": "取消"
     },
     "enrol": {
       "title": "加入此服务器",
@@ -228,7 +230,10 @@
       "wrong": "这个码无效。请检查后重试。",
       "tooMany": "尝试次数过多。请等一分钟后重试。",
       "already": "你们已经是好友了。",
-      "full": "你们其中一人已达到好友数量上限。"
+      "full": "你们其中一人已达到好友数量上限。",
+      "show": "显示配对码",
+      "joined": "{name} 已加入。",
+      "fingerprint": "密钥 {fingerprint}"
     },
     "joined": "你已以 {name} 的身份加入服务器。",
     "unknown": {

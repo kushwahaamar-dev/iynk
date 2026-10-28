@@ -201,7 +201,9 @@
       "remove": "Remove buddy",
       "block": "Block",
       "removeConfirm": "Remove {name} from your buddies? You can pair again later.",
-      "blockConfirm": "Block {name}? They are removed and cannot pair with you again."
+      "blockConfirm": "Block {name}? They are removed and cannot pair with you again.",
+      "save": "Save",
+      "cancel": "Cancel"
     },
     "enrol": {
       "title": "Join this server",
@@ -228,7 +230,10 @@
       "wrong": "That code didn't work. Check it and try again.",
       "tooMany": "Too many tries. Wait a minute and try again.",
       "already": "You are already buddies.",
-      "full": "One of you has reached the buddy limit."
+      "full": "One of you has reached the buddy limit.",
+      "show": "Show a code",
+      "joined": "{name} joined.",
+      "fingerprint": "Key {fingerprint}"
     },
     "joined": "You joined the server as {name}.",
     "unknown": {

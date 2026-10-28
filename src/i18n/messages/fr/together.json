@@ -201,7 +201,9 @@
       "remove": "Retirer l'ami",
       "block": "Bloquer",
       "removeConfirm": "Retirer {name} de vos amis ? Vous pourrez vous jumeler de nouveau plus tard.",
-      "blockConfirm": "Bloquer {name} ? Cette personne sera retirée et ne pourra plus se jumeler avec vous."
+      "blockConfirm": "Bloquer {name} ? Cette personne sera retirée et ne pourra plus se jumeler avec vous.",
+      "save": "Enregistrer",
+      "cancel": "Annuler"
     },
     "enrol": {
       "title": "Rejoindre ce serveur",
@@ -228,7 +230,10 @@
       "wrong": "Ce code n'a pas fonctionné. Vérifiez-le et réessayez.",
       "tooMany": "Trop d'essais. Attendez une minute et réessayez.",
       "already": "Vous êtes déjà amis.",
-      "full": "L'un de vous a atteint la limite d'amis."
+      "full": "L'un de vous a atteint la limite d'amis.",
+      "show": "Afficher un code",
+      "joined": "{name} vous a rejoint.",
+      "fingerprint": "Clé {fingerprint}"
     },
     "joined": "Vous avez rejoint le serveur sous le nom {name}.",
     "unknown": {
