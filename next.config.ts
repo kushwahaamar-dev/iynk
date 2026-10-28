@@ -1,7 +1,17 @@
 import type { NextConfig } from "next";
 import { DEFAULT_LOCALE, LANG_COOKIE, LOCALES, acceptLanguagePattern } from "./src/i18n/config";
 
+// No camera or USB use anywhere: microphone, location and Web Serial are the hardware the app asks for.
+// B1 replaces the frame-ancestors-only policy with the full CSP.
+const SECURITY_HEADERS = [
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  { key: "Permissions-Policy", value: "camera=(), microphone=(self), geolocation=(self), serial=(self), usb=(), payment=()" },
+  { key: "Content-Security-Policy", value: "frame-ancestors 'self'" },
+];
+
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   cacheComponents: true,
   partialPrefetching: true,
   // Agents build side by side with NEXT_DIST_DIR=.next-<label> (D12).
@@ -20,6 +30,7 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      { source: "/:path*", headers: SECURITY_HEADERS },
       {
         // Figures are same-origin iframes: short cache, no framing by other sites.
         source: "/figures/:path*",
