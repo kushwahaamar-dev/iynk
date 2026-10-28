@@ -195,7 +195,7 @@ export function BenchWorkspace({ setup, messages, notice: untranslated, walk }: 
 
   useEffects(store, figure, setup);
   const moments = useCallback((prev: BenchState, next: BenchState) => benchMoments(bench, prev, next), [bench]);
-  useLabMoments(store, moments, bench.id);
+  useLabMoments(store, moments);
   const figureSound = useFigureSound();
 
   const figureState = state.figure.state;

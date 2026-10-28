@@ -82,7 +82,7 @@ export function DroneWorkspace({ lang, content, text, messages, notice }: Props)
 
   useEffect(() => (figure ? store.connect((command) => sendTo(figure, command)) : undefined), [figure, store]);
   const moments = useCallback((prev: DroneLabState, next: DroneLabState) => droneMoments(content, prev, next), [content]);
-  useLabMoments(store, moments, id);
+  useLabMoments(store, moments);
   const figureSound = useFigureSound();
 
   // The design picked earlier in this tab, restored after hydration so server and client render the same.

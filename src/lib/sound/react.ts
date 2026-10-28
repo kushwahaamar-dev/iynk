@@ -61,7 +61,7 @@ function report(moment: Moment) {
  * Plays a cue and records a telemetry event for each moment `derive` reads from the store's
  * changes. A room joiner taking the host's snapshot is skipped, so catching up doesn't replay every step.
  */
-export function useLabMoments<S>(store: LabStore<S>, derive: (prev: S, next: S) => Moment[], item: string): void {
+export function useLabMoments<S>(store: LabStore<S>, derive: (prev: S, next: S) => Moment[]): void {
   useEffect(() => {
     let prev = store.getState();
     return store.subscribe(() => {

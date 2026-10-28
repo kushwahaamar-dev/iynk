@@ -170,7 +170,7 @@ function Workspace({ lang, model, notice }: { lang: Locale; model: LessonModel; 
     });
   }, [store, figureOpts]);
 
-  useLabMoments(store, boardMoments, board.id);
+  useLabMoments(store, boardMoments);
   useSketchTones(store);
   const figureSound = useFigureSound();
 
