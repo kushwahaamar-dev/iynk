@@ -51,6 +51,17 @@
       "other": "{count} नई पंक्तियाँ"
     }
   },
+  "overlay": {
+    "on": "चालू",
+    "off": "बंद",
+    "duty": "ड्यूटी {percent}%",
+    "pressed": "दबा हुआ",
+    "released": "छूटा हुआ",
+    "tone": "{hz} Hz",
+    "silent": "शांत",
+    "position": "{percent}%",
+    "notModelled": "अभी मॉडल नहीं"
+  },
   "commands": {
     "run": "प्रोजेक्ट चलाएँ",
     "stop": "रन रोकें",

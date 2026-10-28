@@ -51,6 +51,17 @@
       "other": "{count} 行新内容"
     }
   },
+  "overlay": {
+    "on": "亮",
+    "off": "灭",
+    "duty": "占空比 {percent}%",
+    "pressed": "按下",
+    "released": "松开",
+    "tone": "{hz} Hz",
+    "silent": "静音",
+    "position": "{percent}%",
+    "notModelled": "尚未建模"
+  },
   "commands": {
     "run": "运行项目",
     "stop": "停止运行",

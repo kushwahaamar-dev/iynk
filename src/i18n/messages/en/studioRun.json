@@ -51,6 +51,17 @@
       "other": "{count} new lines"
     }
   },
+  "overlay": {
+    "on": "on",
+    "off": "off",
+    "duty": "duty {percent}%",
+    "pressed": "pressed",
+    "released": "released",
+    "tone": "{hz} Hz",
+    "silent": "silent",
+    "position": "{percent}%",
+    "notModelled": "not modelled yet"
+  },
   "commands": {
     "run": "Run the project",
     "stop": "Stop the run",
