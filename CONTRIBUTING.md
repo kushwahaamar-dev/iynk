@@ -8,6 +8,7 @@ part.
 - [docs/FIGURES.md](docs/FIGURES.md): how the 3D figures are written, built and shot
 - [docs/FIGURES-BENCH.md](docs/FIGURES-BENCH.md): the data format for boards, parts, modules and robotics benches
 - [docs/FIGURES-DRONE.md](docs/FIGURES-DRONE.md): the data format for drones
+- [docs/PROJECT_CORE.md](docs/PROJECT_CORE.md): the shared project code, its import rules and commands
 - [docs/SELF_HOSTING.md](docs/SELF_HOSTING.md): running your own copy
 - [docs/DATA_HANDLING.md](docs/DATA_HANDLING.md): what is stored, where, and what leaves your machine
 - [docs/SERVER_AND_KEYS.md](docs/SERVER_AND_KEYS.md): `/config.json`, where keys live, the caps and the usage route
