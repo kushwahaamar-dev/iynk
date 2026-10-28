@@ -199,10 +199,10 @@ describe("checkLibrary", () => {
 
 describe("the examples against the builtin parts", () => {
   const EXPECTED: Record<ExampleName, string[]> = {
-    "uno-blink-d12": ["V6-SURFACE-EMPTY /dependencies/components/0/interface/pins", "V6-UNKNOWN-PART /dependencies/components/0"],
+    "uno-blink-d12": ["V6-SURFACE-EMPTY /dependencies/components/0/interface/pins", "V6-INTERFACE-DRIFT /dependencies/components/0/interface"],
     "lesson-uno-r3-button": [
       "V6-SURFACE-EMPTY /dependencies/components/0/interface/pins",
-      "V6-UNKNOWN-PART /dependencies/components/0",
+      "V6-INTERFACE-DRIFT /dependencies/components/0/interface",
     ],
     "env-monitor-esp32": [
       "V6-UNKNOWN-PART /dependencies/components/0",
@@ -218,9 +218,10 @@ describe("the examples against the builtin parts", () => {
     expect(found).toEqual(EXPECTED[name]);
   });
 
-  it("finds no drift in any of them", () => {
+  it("finds drift only where an example pins a breadboard with no holes", () => {
     for (const name of Object.keys(EXPECTED) as ExampleName[]) {
-      expect(codes(checkLibrary(loadExample(name), registry)).filter((c) => c === "V6-INTERFACE-DRIFT")).toEqual([]);
+      const drift = codes(checkLibrary(loadExample(name), registry)).filter((c) => c === "V6-INTERFACE-DRIFT");
+      expect(drift).toHaveLength(name === "uno-blink-d12" || name === "lesson-uno-r3-button" ? 1 : 0);
     }
   });
 });

@@ -276,10 +276,7 @@ describe("the report", () => {
   });
 
   it("names the parts and the board that have no descriptor", () => {
-    const [item] = lessons.get("uno-r3/blink")!.report.filter((x) => x.code === "no-descriptor");
-    expect(item!.refs).toContain("core.breadboard-half");
-    expect(item!.refs).not.toContain("core.uno-r3");
-    expect(item!.refs).not.toContain("core.led-5mm");
+    expect(lessons.get("uno-r3/blink")!.report.filter((x) => x.code === "no-descriptor")).toEqual([]);
     expect(tours.get("nano")!.report.find((x) => x.code === "no-descriptor")!.refs).toEqual(["core.nano"]);
   });
 

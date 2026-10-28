@@ -15,7 +15,7 @@ const pinnedInterface = (ref: string) => lesson.dependencies.components.find((c:
 describe("builtinRegistry", () => {
   const registry = builtinRegistry();
 
-  it("holds the seven shipped parts", () => {
+  it("holds the eight shipped parts", () => {
     expect(registry.list().map((p) => p.ref)).toEqual([
       "core.uno-r3",
       "core.led-5mm",
@@ -24,6 +24,7 @@ describe("builtinRegistry", () => {
       "core.buzzer-piezo",
       "core.potentiometer-10k",
       "core.ssd1306",
+      "core.breadboard-half",
     ]);
   });
 
@@ -35,8 +36,13 @@ describe("builtinRegistry", () => {
     ["piezo-buzzer", "core.buzzer-piezo"],
     ["potentiometer", "core.potentiometer-10k"],
     ["ssd1306", "core.ssd1306"],
+    ["breadboard", "core.breadboard-half"],
   ])("resolves the figure part %s", (legacy, ref) => {
     expect(registry.resolveLegacy(legacy)).toBe(ref);
+  });
+
+  it("gives the breadboard the surface role", () => {
+    expect(interfaceOf(registry.get("core.breadboard-half", "1.0.0")!).role).toBe("surface");
   });
 
   it.each(["core.led-5mm", "core.resistor", "core.push-button-6mm"])("%s has the interface the lesson example pins", (ref) => {
