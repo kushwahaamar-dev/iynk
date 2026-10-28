@@ -477,7 +477,8 @@ function mountFigure(cfg){
 
   const art = document.getElementById('art'), readout = document.getElementById('readout');
   const ui = { st };
-  ui.render = () => { _clipN = 0; document.documentElement.style.setProperty('--accent', PALS[st.pal].l); art.innerHTML = inkScale(cfg.scene(st, PALS[st.pal])); if (!ui._flash) readout.textContent = cfg.readout ? cfg.readout(st) : ''; if (ui.drawStats) ui.drawStats(); };
+  ui._still = 0; ui._lastDraw = 0;
+  ui.render = () => { _clipN = 0; document.documentElement.style.setProperty('--accent', PALS[st.pal].l); const drawn = inkScale(cfg.scene(st, PALS[st.pal])); if (drawn !== art._drawn){ art._drawn = drawn; art.innerHTML = drawn; ui._still = 0; } else ui._still++; if (!ui._flash) readout.textContent = cfg.readout ? cfg.readout(st) : ''; if (ui.drawStats) ui.drawStats(); };
   // big numbers in the top-right corner (credit, change, score…); a value that changes gets a little bump
   const statsEl = document.getElementById('stats'), prevStats = {};
   ui.drawStats = () => { if (!statsEl) return;
@@ -496,10 +497,10 @@ function mountFigure(cfg){
   const frame = () => { if (!driving) return; driving = false; clearTimeout(fbT); CF_MOVED();
     const now = performance.now(), dt = Math.max(0, Math.min(.05, (now - lastT) / 1000)); lastT = now;
     for (const s of [...steps]) if (s(dt) === false) steps.delete(s);
-    ui.render(); if (steps.size) drive(); };
+    if (!(ui._still > 3 && now - ui._lastDraw < 500)){ ui._lastDraw = now; ui.render(); } if (steps.size) drive(); };
   const drive = () => { if (driving) return; driving = true; requestAnimationFrame(frame); fbT = setTimeout(frame, 60); };
   ui.animate = step => { if (!steps.size && !driving) lastT = performance.now(); steps.add(step); drive(); };
-  ui.invalidate = () => drive();
+  ui.invalidate = () => { ui._still = 0; drive(); };
 
   // clickable parts react on press, not on click: while something animates, the scene is redrawn every frame, so the
   // element under the pointer is replaced between press and release and a 'click' would never fire
