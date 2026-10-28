@@ -8,6 +8,7 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import type { LabStore } from "@/components/dock/types";
+import { randomTestPort } from "@/test-support/ports";
 import { serviceMissing } from "@/test-support/require-service";
 import { RoomClient } from "./room";
 import { attachStore } from "./store-sync";
@@ -69,27 +70,43 @@ let relay: ChildProcess | null = null;
 let url = "";
 const rooms: RoomClient[] = [];
 
-beforeAll(async () => {
-  if (skip) return;
-  const port = 40000 + Math.floor(Math.random() * 10000);
-  relay = spawn(process.execPath, ["server.js", "--port", String(port)], {
+/** Starts the relay on a fresh port. Null when it exited first (the port was taken), so the caller can draw again. */
+async function startRelay(): Promise<ChildProcess | null> {
+  const port = randomTestPort();
+  let exited = false;
+  const child = spawn(process.execPath, ["server.js", "--port", String(port)], {
     cwd: RELAY_DIR,
     env: { ...process.env, LOG_LEVEL: "silent", PORT: String(port) },
     stdio: "ignore",
   });
-  url = `ws://127.0.0.1:${port}/ws`;
-  const health = `http://127.0.0.1:${port}/healthz`;
+  child.once("exit", () => {
+    exited = true;
+  });
   const end = Date.now() + 8000;
-  for (;;) {
+  while (!exited) {
     try {
-      if ((await fetch(health)).ok) break;
+      // Another process on this port can answer too, so only trust it while our child is alive.
+      if ((await fetch(`http://127.0.0.1:${port}/healthz`)).ok && !exited) {
+        url = `ws://127.0.0.1:${port}/ws`;
+        return child;
+      }
     } catch {
       // Not listening yet.
     }
-    if (Date.now() > end) throw new Error("the relay did not start");
+    if (Date.now() > end) {
+      child.kill("SIGTERM");
+      throw new Error("the relay did not start");
+    }
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
-}, 15_000);
+  return null;
+}
+
+beforeAll(async () => {
+  if (skip) return;
+  for (let attempt = 0; attempt < 3 && !relay; attempt += 1) relay = await startRelay();
+  if (!relay) throw new Error("the relay exited before it answered, 3 times");
+}, 30_000);
 
 afterAll(() => {
   for (const room of rooms.splice(0)) room.leave();

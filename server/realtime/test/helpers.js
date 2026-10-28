@@ -14,6 +14,20 @@ export function peer(id, extra = {}) {
   return { id, name: `Peer ${id}`, color: "tomato", lang: "en", ...extra };
 }
 
+/** Ports a test never listens on. src/test-support/ports.ts keeps the same list; its test compares them. */
+export const RESERVED_PORTS = new Set([43_117]);
+
+/**
+ * A random port in 40000–49999, redrawn while it is reserved. It does not check that the port is free.
+ * @param {() => number} [random]
+ */
+export function randomTestPort(random = Math.random) {
+  for (;;) {
+    const port = 40_000 + Math.floor(random() * 10_000);
+    if (!RESERVED_PORTS.has(port)) return port;
+  }
+}
+
 /**
  * Starts a relay on a random port in 40000–49999, the range agents on this machine may listen on.
  * @param {Parameters<typeof createRelay>[0]} [options]
@@ -21,7 +35,7 @@ export function peer(id, extra = {}) {
 export async function startRelay(options = {}) {
   const relay = createRelay({ logLevel: "silent", ...options });
   for (let attempt = 0; attempt < 30; attempt += 1) {
-    const port = 40_000 + Math.floor(Math.random() * 10_000);
+    const port = randomTestPort();
     try {
       await relay.listen(port, "127.0.0.1");
       return { relay, port, url: `ws://127.0.0.1:${port}/ws`, base: `http://127.0.0.1:${port}` };

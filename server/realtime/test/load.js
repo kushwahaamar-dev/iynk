@@ -6,7 +6,7 @@ import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { WebSocket } from "ws";
-import { peer, roomId, sleep } from "./helpers.js";
+import { peer, randomTestPort, roomId, sleep } from "./helpers.js";
 
 const { values } = parseArgs({
   options: {
@@ -19,7 +19,7 @@ const PEERS = Number(values.peers);
 const RATE = Number(values.rate);
 const SECONDS = Number(values.seconds);
 
-const port = 40_000 + Math.floor(Math.random() * 10_000);
+const port = randomTestPort();
 const serverPath = fileURLToPath(new URL("../server.js", import.meta.url));
 const relay = spawn(process.execPath, [serverPath, "--port", String(port), "--host", "127.0.0.1"], {
   env: { ...process.env, LOG_LEVEL: "warn" },
