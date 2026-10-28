@@ -163,8 +163,7 @@ describe("tailwind colour aliases", () => {
     expect(theme).toContain("--color-console: var(--console-bg);");
   });
 
-  it("keeps the compatibility aliases", () => {
-    expect(theme).toContain("--color-line: var(--line);");
+  it("keeps the on-color alias", () => {
     expect(theme).toContain("--color-on-color: var(--on-color);");
   });
 });

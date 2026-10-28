@@ -7,9 +7,7 @@ export type ButtonVariant =
   | "secondary"
   | "ghost"
   | "danger"
-  | "solid"
-  /** @deprecated The old name of `solid`. */
-  | "ink";
+  | "solid";
 export type ButtonSize = "sm" | "md";
 
 // max-w-full: a label longer than its row (a long translation on a phone) wraps instead of pushing the page sideways.
@@ -29,7 +27,6 @@ const variants: Record<ButtonVariant, string> = {
   ghost: `bg-transparent text-ink ${live}bg-hover aria-pressed:bg-ink aria-pressed:text-paper`,
   danger: `bg-bad-bg text-bad ${live}bg-bad/20`,
   solid: `bg-ink text-paper ${live}bg-ink/88`,
-  ink: `bg-ink text-paper ${live}bg-ink/88`,
 };
 
 const sizes: Record<ButtonSize, string> = {

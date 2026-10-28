@@ -48,7 +48,7 @@ export function WiringPanel({ content, sheet, sel, ready, t, ct, dispatch }: Pro
       <h2 className="sr-only">{t("wiring.title")}</h2>
       <p className="text-sm text-muted">{t("wiring.lede")}</p>
       <Button
-        variant={sheet === "wiring" ? "ink" : "primary"}
+        variant={sheet === "wiring" ? "solid" : "primary"}
         aria-pressed={sheet === "wiring"}
         disabled={!ready}
         onClick={() => dispatch({ type: "sheet", sheet: sheet === "wiring" ? null : "wiring" })}

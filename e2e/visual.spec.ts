@@ -40,7 +40,7 @@ for (const [viewportName, { viewport, hasTouch }] of Object.entries(VIEWPORTS) a
           expect(serious.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`)).toEqual([]);
 
           const file = `${theme}-${viewportName}-${screen.name}.png`;
-          const mask = [page.locator("iframe")];
+          const mask = COMPARE ? [page.locator("iframe")] : [];
           await page.screenshot({ path: `test-results/ui-shots/${file}`, fullPage: true, mask });
           if (COMPARE) {
             await expect(page).toHaveScreenshot(file, { fullPage: true, mask, maxDiffPixelRatio: 0.01, animations: "disabled", caret: "hide" });

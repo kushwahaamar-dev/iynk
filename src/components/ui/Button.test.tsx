@@ -52,10 +52,6 @@ describe("Button", () => {
     expect(screen.getByRole("link", { name: "Home" }).className).toBe(buttonClass("primary"));
   });
 
-  it("still renders the ink alias like solid", () => {
-    expect(buttonClass("ink")).toBe(buttonClass("solid"));
-  });
-
   it("has only the sm and md sizes", () => {
     const sizes: ButtonSize[] = ["sm", "md"];
     // @ts-expect-error lg was dropped
