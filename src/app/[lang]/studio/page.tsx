@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { page } from "@/components/editorial/Editorial";
-import { StudioEntry } from "@/components/studio/StudioEntry";
+import { StudioLoader } from "@/components/studio/StudioLoader";
 import { SwRegister } from "@/components/studio/SwRegister";
 import { cx } from "@/components/ui/cx";
 import { isLocale } from "@/i18n/config";
+import { STUDIO_NAMESPACES, type StudioMessages } from "@/i18n/namespaces";
 import { alternatesFor } from "@/i18n/seo";
 import { getMessages, getT } from "@/i18n/server";
 
@@ -29,7 +30,9 @@ export default function StudioPage({ params }: Props) {
 async function Studio({ params }: Pick<Props, "params">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
-  const strings = await getMessages(lang, "studio");
+  const loaded = await Promise.all(STUDIO_NAMESPACES.map((ns) => getMessages(lang, ns)));
+  const messages = Object.fromEntries(STUDIO_NAMESPACES.map((ns, i) => [ns, loaded[i]])) as StudioMessages;
+  const strings = messages.studio;
 
   return (
     <div className={cx(page, "pb-24 pt-8 sm:pt-12")}>
@@ -37,7 +40,7 @@ async function Studio({ params }: Pick<Props, "params">) {
         <h1 className="text-balance text-4xl font-semibold tracking-tight sm:text-5xl">{strings.title}</h1>
         <p className="mt-4 text-pretty text-base text-muted">{strings.lede}</p>
       </header>
-      <StudioEntry strings={strings} lang={lang} />
+      <StudioLoader messages={messages} lang={lang} />
       <SwRegister />
     </div>
   );

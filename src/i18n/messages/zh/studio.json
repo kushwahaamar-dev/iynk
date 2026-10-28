@@ -162,5 +162,9 @@
   },
   "shell": {
     "workspace": "工作区"
+  },
+  "route": {
+    "loading": "正在加载 Studio",
+    "noscript": "Studio 需要 JavaScript。请开启后重新加载页面。"
   }
 }

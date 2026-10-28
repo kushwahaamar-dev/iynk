@@ -162,5 +162,9 @@
   },
   "shell": {
     "workspace": "Arbeitsbereich"
+  },
+  "route": {
+    "loading": "Studio wird geladen",
+    "noscript": "Das Studio braucht JavaScript. Schalte es ein und lade die Seite neu."
   }
 }

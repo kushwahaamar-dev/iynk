@@ -162,5 +162,9 @@
   },
   "shell": {
     "workspace": "कार्यक्षेत्र"
+  },
+  "route": {
+    "loading": "Studio लोड हो रहा है",
+    "noscript": "Studio को JavaScript चाहिए। उसे चालू करें और पेज दोबारा लोड करें।"
   }
 }
