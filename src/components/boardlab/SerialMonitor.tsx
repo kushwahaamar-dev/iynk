@@ -127,9 +127,9 @@ export function SerialMonitor({ store, onStop }: { store: BoardLabStore; onStop:
       <h3 id={`${id}-title`} className="sr-only">
         {t("serial.title")}
       </h3>
-      <div className="flex shrink-0 items-center gap-2">
-        <span aria-hidden="true" className={cx("inline-block size-2 shrink-0 rounded-full", dot)} />
-        <p className="min-w-0 flex-1 text-sm leading-snug">
+      <div className="flex shrink-0 items-start gap-2">
+        <span aria-hidden="true" className={cx("mt-2 inline-block size-2 shrink-0 rounded-full", dot)} />
+        <p className="min-w-0 flex-1 py-1 text-sm leading-snug">
           <span role="status" className="font-semibold" data-testid="serial-status">
             {statusText}
           </span>
