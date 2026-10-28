@@ -138,10 +138,17 @@ async function answerPage(event) {
 async function answerStatic(request) {
   const cache = await caches.open(STATIC);
   const hit = await cache.match(request);
-  if (hit) return hit;
+  if (hit) return request.destination === "worker" ? withoutUrl(hit) : hit;
   const response = await fetch(request);
   await keep(STATIC, request, response.clone());
   return response;
+}
+
+// Every Turbopack worker starts from one script and takes its chunk list from the URL fragment. The cache
+// stores the first fragment with the response, and a worker takes its location from the response it is given,
+// so a copy with no URL is what makes the next worker keep its own fragment.
+async function withoutUrl(response) {
+  return new Response(await response.blob(), { status: response.status, headers: response.headers });
 }
 
 async function trimFigures() {

@@ -46,7 +46,9 @@ export default defineConfig({
   reporter: process.env.CI ? "github" : "list",
   use: { baseURL: `http://localhost:${port}`, trace: "on-first-retry" },
   projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] }, testIgnore: /.*\.phone\.spec\.ts/ },
+    { name: "chromium", use: { ...devices["Desktop Chrome"] }, testIgnore: [/.*\.phone\.spec\.ts/, /r048-compare\.spec\.ts/] },
+    { name: "webkit", use: { ...devices["Desktop Safari"] }, testMatch: /core\.spec\.ts/ },
+    { name: "r048", testMatch: /r048-compare\.spec\.ts/, dependencies: ["chromium", "webkit"] },
     { name: "phone", use: { ...devices["Pixel 7"] }, testMatch: /.*\.phone\.spec\.ts/ },
   ],
   // Test the production build: dev mode compiles on demand and behaves differently.
