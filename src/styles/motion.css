@@ -1,0 +1,42 @@
+@theme static {
+  --animate-ink-pop: ink-pop 0.7s cubic-bezier(0.3, 1.4, 0.5, 1);
+  --animate-ink-fade: ink-fade 0.18s ease-out;
+  --animate-ink-rise: ink-rise 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
+  --animate-ink-from-start: ink-from-start 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
+  --animate-ink-from-end: ink-from-end 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
+
+  @keyframes ink-pop {
+    0% { transform: translateY(0) scale(1); }
+    40% { transform: translateY(-5px) scale(1.02); }
+    100% { transform: translateY(0) scale(1); }
+  }
+  @keyframes ink-fade {
+    from { opacity: 0; }
+  }
+  @keyframes ink-rise {
+    from { opacity: 0; transform: translateY(24px); }
+  }
+  @keyframes ink-from-start {
+    from { transform: translateX(-100%); }
+  }
+  @keyframes ink-from-end {
+    from { transform: translateX(100%); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+:root[data-reduce-motion="true"] *,
+:root[data-reduce-motion="true"] *::before,
+:root[data-reduce-motion="true"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}

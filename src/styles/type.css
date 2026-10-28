@@ -1,0 +1,132 @@
+/* Hindi needs a Devanagari face first (next/font's Latin fallbacks would win
+   otherwise); Chinese appends platform CJK faces after the Latin one. The wordmark
+   is drawn (Logo.tsx), so it keeps its shape in every language. */
+html:lang(hi) {
+  --font-sans: var(--font-devanagari, "Noto Sans Devanagari"), "Kohinoor Devanagari", "Nirmala UI", sans-serif;
+}
+:is(h1, h2, h3, h4, .font-head):lang(hi) {
+  font-family: var(--font-devanagari, "Noto Sans Devanagari"), "Kohinoor Devanagari", "Nirmala UI", sans-serif;
+}
+html:lang(zh-Hans) {
+  --font-cjk: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC";
+}
+html:lang(zh-Hans) body {
+  font-family: var(--font-sans, ui-sans-serif), var(--font-cjk), sans-serif;
+}
+:is(h1, h2, h3, h4, .font-head):lang(zh-Hans) {
+  font-family: var(--font-sans, ui-sans-serif), var(--font-cjk), sans-serif;
+}
+/* Small caps and letter-spaced mono read badly in Devanagari and Han: those labels take the body face. */
+:is(.ink-kicker, .ink-label, .font-ui:not(code, pre, kbd, .tabular)):is(:lang(hi), :lang(zh-Hans)) {
+  font-family: var(--font-body);
+  letter-spacing: 0;
+  text-transform: none;
+}
+:is(.ink-kicker, .ink-label, .font-ui:not(code, pre, kbd, .tabular)):lang(zh-Hans) {
+  font-family: var(--font-sans, ui-sans-serif), var(--font-cjk), sans-serif;
+}
+
+@layer base {
+  html {
+    background-color: var(--paper);
+    color: var(--ink);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    min-height: 100dvh;
+    background-color: var(--paper);
+    background-image: var(--grain);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.55;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-head);
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  h1 { font-size: clamp(2rem, 1.4rem + 2.6vw, 3.25rem); }
+  h2 { font-size: clamp(1.5rem, 1.2rem + 1vw, 1.875rem); }
+  h3 { font-size: 1.125rem; }
+  h4 { font-size: 1rem; }
+  p { text-wrap: pretty; }
+
+  a {
+    color: inherit;
+    text-decoration-line: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 3px;
+  }
+  a:hover { text-decoration-thickness: 2.5px; }
+
+  code, kbd, samp, pre { font-family: var(--font-ui); }
+
+  ::selection { background: var(--color-mustard-l); color: var(--color-ink-fixed); }
+}
+
+@layer components {
+  .ink-kicker {
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* A field or meter label: may hold a unit ("500 mA"), so never uppercase. */
+  .ink-label {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  /* Small uppercase mono metadata (11 px, 0.08em). Devanagari and Han keep the body face, uncapped. */
+  .shell-meta {
+    font-family: var(--font-ui);
+    font-size: 0.6875rem;
+    line-height: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .shell-meta:is(:lang(hi), :lang(zh-Hans)) {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  /* The accent word inside a big headline: Instrument Serif italic, a touch larger to sit on Geist's x-height. */
+  .accent-serif {
+    font-family: var(--font-accent);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    font-size: 1.06em;
+  }
+
+
+  /* Syntax colours shared by CodeBlock and the code editor. */
+  .tok-kw { color: var(--code-kw); font-weight: 600; }
+  .tok-str { color: var(--code-str); }
+  .tok-fn { color: var(--code-fn); }
+  .tok-con { color: var(--code-con); }
+  .tok-pp { color: var(--code-pp); }
+  .tok-cm { color: var(--code-cm); font-style: italic; }
+  .tok-num { color: var(--code-num); }
+  .tok-ty { color: var(--code-kw); }
+}
+
+@layer utilities {
+  .tabular { font-variant-numeric: tabular-nums; }
+}
