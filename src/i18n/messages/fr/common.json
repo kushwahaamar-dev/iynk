@@ -54,8 +54,17 @@
     },
     "usage": {
       "label": "Statistiques d’usage anonymes",
-      "body": "iynk compte ce qui se passe dans les labos (une leçon réussie, une étape montée, une panne essayée) pour les compteurs en direct et les classements. Chaque événement porte un identifiant aléatoire propre à ce navigateur, jamais votre nom ni votre code.",
-      "toggle": "Partager les statistiques d’usage anonymes"
+      "body": "iynk écrit ce qui se passe dans les labos dans un journal de ce navigateur. Rien n’est envoyé ailleurs. Les erreurs sont toujours consignées, et vous pouvez lire, copier ou effacer le journal dans Clés et utilisation.",
+      "toggle": "Garder un journal local de ce qui se passe dans les labos (reste dans ce navigateur)"
+    },
+    "log": {
+      "title": "Journal local",
+      "notice": "Reste dans ce navigateur. Rien n’est envoyé.",
+      "empty": "Rien n’est encore consigné.",
+      "clear": "Effacer",
+      "copy": "Copier pour un rapport de bug",
+      "copied": "Copié",
+      "manual": "La copie a été bloquée. Sélectionnez ce texte et copiez-le vous-même."
     },
     "keys": {
       "open": "Clés et utilisation",

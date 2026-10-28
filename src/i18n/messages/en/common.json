@@ -54,8 +54,17 @@
     },
     "usage": {
       "label": "Anonymous usage counts",
-      "body": "iynk counts what happens in the labs (a lesson passed, a step built, a fault tried) for the live counters and leaderboards. Each event carries a random id for this browser, never your name or your code.",
-      "toggle": "Share anonymous usage counts"
+      "body": "iynk writes what happens in the labs to a log in this browser. Nothing is sent anywhere. Errors are always logged, and you can read, copy or clear the log under Keys and usage.",
+      "toggle": "Keep a local log of what happens in the labs (stays in this browser)"
+    },
+    "log": {
+      "title": "Local log",
+      "notice": "Stays in this browser. Nothing is sent.",
+      "empty": "Nothing logged yet.",
+      "clear": "Clear",
+      "copy": "Copy for a bug report",
+      "copied": "Copied",
+      "manual": "Copying was blocked. Select this text and copy it yourself."
     },
     "keys": {
       "open": "Keys and usage",

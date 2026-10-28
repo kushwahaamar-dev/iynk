@@ -54,8 +54,17 @@
     },
     "usage": {
       "label": "Anonyme Nutzungszahlen",
-      "body": "iynk zählt, was in den Laboren passiert (eine bestandene Lektion, ein gebauter Schritt, ein ausprobierter Fehler), für die Live-Zähler und Bestenlisten. Jedes Ereignis trägt eine zufällige ID für diesen Browser, nie deinen Namen oder deinen Code.",
-      "toggle": "Anonyme Nutzungszahlen teilen"
+      "body": "iynk schreibt, was in den Laboren passiert, in ein Protokoll in diesem Browser. Nichts wird irgendwohin gesendet. Fehler werden immer protokolliert, und du kannst das Protokoll unter Schlüssel und Nutzung lesen, kopieren oder löschen.",
+      "toggle": "Ein lokales Protokoll dessen führen, was in den Laboren passiert (bleibt in diesem Browser)"
+    },
+    "log": {
+      "title": "Lokales Protokoll",
+      "notice": "Bleibt in diesem Browser. Nichts wird gesendet.",
+      "empty": "Noch nichts protokolliert.",
+      "clear": "Leeren",
+      "copy": "Für einen Fehlerbericht kopieren",
+      "copied": "Kopiert",
+      "manual": "Das Kopieren wurde blockiert. Markiere diesen Text und kopiere ihn selbst."
     },
     "keys": {
       "open": "Schlüssel und Nutzung",
