@@ -88,7 +88,7 @@
     },
     "lm2596": {
       "name": "Module abaisseur LM2596",
-      "teaches": "Alimentation et brown-out : tournez le trimmer pour régler la sortie depuis une LiPo, puis regardez un moteur calé faire chuter un rail partagé."
+      "teaches": "Alimentation et brownout : tournez le trimmer pour régler la sortie depuis une LiPo, puis regardez un moteur calé faire chuter un rail partagé."
     },
     "pi5-ros2": {
       "name": "Raspberry Pi 5",
@@ -120,7 +120,7 @@
     "rc-timing": "temps de décharge RC",
     "power": "alimentation",
     "buck": "convertisseur abaisseur",
-    "brownout": "brown-out",
+    "brownout": "brownout",
     "linux": "Linux",
     "ros2": "ROS 2"
   },
@@ -181,7 +181,7 @@
     "fix": "Solution",
     "kinds": {
       "reverse-polarity": "polarité inversée",
-      "brownout": "brown-out",
+      "brownout": "brownout",
       "wrong-voltage": "mauvaise tension",
       "cold-solder": "soudure froide",
       "short": "court-circuit",
@@ -204,7 +204,7 @@
       "powered": "Sous tension",
       "running": "En marche",
       "uploading": "Téléversement",
-      "brownout": "Brown-out",
+      "brownout": "Brownout",
       "fault": "Panne",
       "reset": "En reset"
     },
@@ -234,7 +234,7 @@
     "supply": "{label} · {volts} V",
     "headroom": "{ma} mA de marge",
     "limit": "Limite {limit}",
-    "over": "{ma} mA au-dessus de la limite : l'alimentation chute et la carte fait un brown-out",
+    "over": "{ma} mA au-dessus de la limite : l'alimentation chute et la carte fait un brownout",
     "loads": "Qui consomme",
     "idle": "Rien ne consomme sur cette alimentation pour l'instant",
     "load": "{ma} mA"
