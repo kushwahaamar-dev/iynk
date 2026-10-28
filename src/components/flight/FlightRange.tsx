@@ -659,7 +659,7 @@ export function FlightRange({ craft, course, calc, faults, t: dict, courseText, 
     >
       <div ref={rowRef} className="flex shrink-0 items-center gap-2 overflow-x-auto [scrollbar-width:none]">
         {/* the select takes the room the buttons leave (on a laptop at least 9 rem) and a long mode ends in an ellipsis */}
-        <div className={coarse || rowSteps > 1 ? "min-w-0 flex-1" : "min-w-36 max-w-64"}>
+        <div className={coarse ? "min-w-0 flex-1" : rowSteps > 1 ? "min-w-24 flex-1" : "min-w-36 max-w-64"}>
           <Select label={dict.mode} hideLabel value={snap.mode} onChange={(e) => act({ type: "mode", mode: e.target.value })} className="truncate">
             {modes.map((m) => (
               <option key={m.id} value={m.id}>
