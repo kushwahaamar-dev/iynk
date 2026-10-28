@@ -43,15 +43,22 @@
   },
   "dashboard": {
     "metaTitle": "Tableau de bord",
-    "metaDescription": "Assembler, câbler, programmer, casser et voler : {boards} cartes, {benches} bancs de robotique et {drones} drones, dessinés à l’encre et entièrement interactifs.",
+    "metaDescription": "Un établi libre et open source dans votre navigateur pour apprendre les circuits, les cartes, les robots et les drones. Câblez des composants, exécutez du code dans un simulateur et cassez des choses exprès.",
     "kicker": "Explorer · Comprendre · Construire",
     "title": "Apprendre l’électronique en la *construisant*",
-    "lede": "{boards} cartes, {benches} bancs de robotique et {drones} drones, chacun une figure 3D encrée à la main que vous pouvez tourner, câbler, programmer et casser exprès.",
+    "lede": "iynk est un établi dans le navigateur pour apprendre les circuits, les cartes, les robots et les drones. Vous câblez les composants, exécutez votre propre code sur une carte simulée et voyez ce qui se passe, y compris quand quelque chose tourne mal.",
     "start": "Commencer avec l’Arduino Uno R3",
     "browse": "Parcourir les cartes",
     "heroFigure": "Arduino Uno R3 qui exécute Blink sur une platine d’essai, en direct : faites-le glisser pour le tourner",
     "labsTitle": "Les trois labos",
     "open": "Ouvrir le {lab}",
+    "openSource": {
+      "title": "Open source",
+      "readme": "Lire le README",
+      "selfHost": "L’héberger soi-même",
+      "contribute": "Contribuer",
+      "fidelity": "iynk exécute votre code dans son propre interpréteur, pas sur une vraie puce. Il enseigne le comportement des composants ; il ne remplace ni un établi, ni un compilateur, ni une fiche technique."
+    },
     "board": {
       "text": "De l’Arduino Uno R3 à deux cartes FPGA : des leçons, un éditeur de code en direct, des vues schéma et platine d’essai, un moniteur série et des pannes qui se produisent vraiment.",
       "unit": "cartes",
@@ -105,23 +112,10 @@
         "text": "Montez un drone, vérifiez ses chiffres, passez le smoke stopper et les tests moteurs, puis franchissez des portes en mode angle ou acro."
       }
     },
-    "together": {
-      "rooms": {
-        "title": "Salons partagés",
-        "text": "Ouvrez un salon sur n’importe quelle carte, robot ou drone et envoyez le lien. Jusqu’à huit personnes partagent un même banc, une seule au clavier."
-      },
-      "partner": {
-        "title": "Un partenaire de labo",
-        "text": "Muse Spark lit votre code et votre montage avec vous, explique ce qu'il voit et propose des changements que vous pouvez accepter ou refuser."
-      },
-      "languages": {
-        "title": "Six langues",
-        "text": "Chaque page, leçon et étiquette de figure, dans votre langue. Choisissez-en une ci-dessous."
-      }
-    },
+    "languages": "Langues",
     "closing": {
       "title": "L’établi est *prêt*.",
-      "text": "Gratuit, sans compte, rien à installer."
+      "text": "Sans compte. Rien à installer."
     }
   },
   "about": {

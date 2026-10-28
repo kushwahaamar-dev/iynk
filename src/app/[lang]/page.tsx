@@ -16,6 +16,7 @@ import { getMessages, getT } from "@/i18n/server";
 
 type Props = PageProps<"/[lang]">;
 
+const REPO_URL = "https://github.com/kushwahaamar-dev/iynk";
 const counts = { boards: BOARD_IDS.length, benches: ROBOTICS_IDS.length, drones: DRONE_IDS.length };
 // the hero figure is only to look at and turn: no zoom chip, and no notes popping up over it
 const HERO_CHROME = ["zoom", "toast"];
@@ -28,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     // The landing's tab reads as the product, not "Dashboard".
     title: { absolute: `${common("site.name")} · ${common("site.tagline")}` },
-    description: t("dashboard.metaDescription", counts),
+    description: t("dashboard.metaDescription"),
     alternates: alternatesFor(lang, ""),
   };
 }
@@ -44,9 +45,8 @@ export default function DashboardPage({ params }: Props) {
 async function Dashboard({ params }: Pick<Props, "params">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
-  const [t, together, messages, labs] = await Promise.all([
+  const [t, messages, labs] = await Promise.all([
     getT(lang, "shell"),
-    getT(lang, "together"),
     getMessages(lang, "shell"),
     loadLabs(lang),
   ]);
@@ -68,12 +68,12 @@ async function Dashboard({ params }: Pick<Props, "params">) {
     title: t(`dashboard.features.${id}.title`),
     text: t(`dashboard.features.${id}.text`),
   }));
-  const social = (["rooms", "partner", "languages"] as const).map((id) => ({
-    id,
-    title: t(`dashboard.together.${id}.title`),
-    text: t(`dashboard.together.${id}.text`),
-  }));
-  const ids = { hero: `dash-title-${lang}`, labs: `labs-title-${lang}`, features: `features-title-${lang}`, together: `together-title-${lang}`, end: `end-title-${lang}` };
+  const sourceLinks = [
+    { id: "readme", href: `${REPO_URL}#readme`, label: t("dashboard.openSource.readme") },
+    { id: "selfHost", href: `${REPO_URL}/blob/main/docs/SELF_HOSTING.md`, label: t("dashboard.openSource.selfHost") },
+    { id: "contribute", href: `${REPO_URL}/blob/main/CONTRIBUTING.md`, label: t("dashboard.openSource.contribute") },
+  ];
+  const ids = { hero: `dash-title-${lang}`, labs: `labs-title-${lang}`, features: `features-title-${lang}`, open: `open-title-${lang}`, end: `end-title-${lang}` };
 
   return (
     <div className="pb-[clamp(48px,6vw,96px)]">
@@ -87,7 +87,7 @@ async function Dashboard({ params }: Pick<Props, "params">) {
               <Accent text={t("dashboard.title")} />
             </h1>
             <div style={riseDelay(140)} className={cx("mt-[clamp(28px,4vw,56px)] max-w-[30rem]", typeClass.rise)}>
-              <p className="text-[17px] leading-[1.55] text-muted">{t("dashboard.lede", counts)}</p>
+              <p className="text-[17px] leading-[1.55] text-muted">{t("dashboard.lede")}</p>
               <div className="mt-8">
                 <HeroActions
                   items={items}
@@ -192,26 +192,22 @@ async function Dashboard({ params }: Pick<Props, "params">) {
         </Wrap>
       </section>
 
-      <section aria-labelledby={ids.together} className={SECTION}>
+      <section aria-labelledby={ids.open} className={SECTION}>
         <Wrap>
-          <SectionHead
-            n="03"
-            id={ids.together}
-            title={together("lobby.title")}
-            aside={<ArrowLink href={`/${lang}/together`}>{together("lobby.create.title")}</ArrowLink>}
-          />
-          <ul className="mt-[clamp(32px,4vw,56px)] grid gap-y-10 md:grid-cols-3">
-            {social.map((point, i) => (
-              <li key={point.id} className="md:border-l md:border-rule md:px-[clamp(20px,2.4vw,40px)] md:first:border-l-0 md:first:pl-0">
-                <p aria-hidden="true" className={cx(typeClass.eyebrow, "tabular")}>
-                  {String(i + 1).padStart(2, "0")}
-                </p>
-                <h3 className="mt-4 font-body text-[clamp(22px,1.9vw,28px)] font-medium tracking-[-0.015em]">{point.title}</h3>
-                <p className="mt-3 max-w-[42ch] text-base leading-[1.55] text-muted">{point.text}</p>
-              </li>
-            ))}
-          </ul>
-          <ul className="mt-[clamp(40px,5vw,80px)] flex flex-wrap items-baseline gap-x-[clamp(20px,3vw,48px)] gap-y-2 border-t border-rule pt-[clamp(24px,3vw,40px)]">
+          <SectionHead n="03" id={ids.open} title={t("dashboard.openSource.title")} />
+          <div className="mt-[clamp(32px,4vw,56px)] grid grid-cols-12 gap-x-6 gap-y-8">
+            <p className="col-span-12 max-w-[46ch] text-[17px] leading-[1.55] text-pretty md:col-span-7">{t("dashboard.openSource.fidelity")}</p>
+            <ul className="col-span-12 flex flex-col md:col-span-4 md:col-start-9">
+              {sourceLinks.map((link) => (
+                <li key={link.id}>
+                  <ArrowLink href={link.href} target="_blank" rel="noopener noreferrer">
+                    {link.label}
+                  </ArrowLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <ul aria-label={t("dashboard.languages")} className="mt-[clamp(40px,5vw,80px)] flex flex-wrap items-baseline gap-x-[clamp(20px,3vw,48px)] gap-y-2 border-t border-rule pt-[clamp(24px,3vw,40px)]">
             {LOCALES.map((locale) => (
               <li key={locale}>
                 <Link

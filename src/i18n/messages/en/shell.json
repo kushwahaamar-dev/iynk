@@ -43,15 +43,22 @@
   },
   "dashboard": {
     "metaTitle": "Dashboard",
-    "metaDescription": "Build, wire, code, break and fly: {boards} boards, {benches} robotics benches and {drones} drones, drawn in ink and fully interactive.",
+    "metaDescription": "A free, open source workbench in your browser for learning circuits, boards, robots and drones. Wire parts, run code in a simulator and break things on purpose.",
     "kicker": "Explore · Understand · Build",
     "title": "Learn hardware by *building* it",
-    "lede": "{boards} boards, {benches} robotics benches and {drones} drones, each a hand-inked 3D figure you can turn, wire, code and break on purpose.",
+    "lede": "iynk is a browser workbench for learning circuits, boards, robots and drones. You wire the parts, run your own code on a simulated board and see what happens, including when something goes wrong.",
     "start": "Start with the Arduino Uno R3",
     "browse": "Browse the boards",
     "heroFigure": "Arduino Uno R3 running Blink on a breadboard, live: drag to turn it",
     "labsTitle": "The three labs",
     "open": "Open the {lab}",
+    "openSource": {
+      "title": "Open source",
+      "readme": "Read the README",
+      "selfHost": "Host it yourself",
+      "contribute": "Contribute",
+      "fidelity": "iynk runs your code in its own interpreter, not on a real chip. It teaches how parts behave; it does not replace a bench, a compiler or a datasheet."
+    },
     "board": {
       "text": "From the Arduino Uno R3 to two FPGA boards: lessons, a live code editor, schematic and breadboard views, a serial monitor and failures that really trigger.",
       "unit": "boards",
@@ -105,23 +112,10 @@
         "text": "Build a drone, check its numbers, run the smoke stopper and motor tests, then fly gates in angle or acro mode."
       }
     },
-    "together": {
-      "rooms": {
-        "title": "Shared rooms",
-        "text": "Open a room on any board, robot or drone and send the link. Up to eight people share one bench, one at the keyboard."
-      },
-      "partner": {
-        "title": "A lab partner",
-        "text": "Muse Spark reads your code and your build with you, explains what it sees and suggests changes you can accept or reject."
-      },
-      "languages": {
-        "title": "Six languages",
-        "text": "Every page, lesson and figure label, in your language. Pick one below."
-      }
-    },
+    "languages": "Languages",
     "closing": {
       "title": "The bench is *ready*.",
-      "text": "Free, no account, nothing to install."
+      "text": "No account. Nothing to install."
     }
   },
   "about": {

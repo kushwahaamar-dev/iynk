@@ -43,15 +43,22 @@
   },
   "dashboard": {
     "metaTitle": "Panel",
-    "metaDescription": "Monta, cablea, programa, rompe y vuela: {boards} placas, {benches} bancos de robótica y {drones} drones, dibujados a tinta y totalmente interactivos.",
+    "metaDescription": "Un banco de trabajo libre y de código abierto en tu navegador para aprender circuitos, placas, robots y drones. Cablea piezas, ejecuta código en un simulador y rompe cosas a propósito.",
     "kicker": "Explora · Comprende · Construye",
     "title": "Aprende hardware *construyéndolo*",
-    "lede": "{boards} placas, {benches} bancos de robótica y {drones} drones, cada uno una figura 3D entintada a mano que puedes girar, cablear, programar y romper a propósito.",
+    "lede": "iynk es un banco de trabajo en el navegador para aprender circuitos, placas, robots y drones. Cableas las piezas, ejecutas tu propio código en una placa simulada y ves qué pasa, también cuando algo sale mal.",
     "start": "Empieza con el Arduino Uno R3",
     "browse": "Ver las placas",
     "heroFigure": "Arduino Uno R3 con Blink en una protoboard, en vivo: arrástralo para girarlo",
     "labsTitle": "Los tres laboratorios",
     "open": "Abrir el {lab}",
+    "openSource": {
+      "title": "Código abierto",
+      "readme": "Leer el README",
+      "selfHost": "Alójalo tú mismo",
+      "contribute": "Contribuir",
+      "fidelity": "iynk ejecuta tu código en su propio intérprete, no en un chip real. Enseña cómo se comportan las piezas; no sustituye a un banco, un compilador ni una hoja de datos."
+    },
     "board": {
       "text": "Del Arduino Uno R3 a dos placas FPGA: lecciones, un editor de código en vivo, vistas de esquema y de protoboard, un monitor serie y fallos que se producen de verdad.",
       "unit": "placas",
@@ -105,23 +112,10 @@
         "text": "Monta un dron, comprueba sus números, pasa el smoke stopper y las pruebas de motores, y luego vuela entre puertas en modo angle o acro."
       }
     },
-    "together": {
-      "rooms": {
-        "title": "Salas compartidas",
-        "text": "Abre una sala en cualquier placa, robot o dron y envía el enlace. Hasta ocho personas comparten un banco, una al teclado."
-      },
-      "partner": {
-        "title": "Un compañero de laboratorio",
-        "text": "Muse Spark lee contigo tu código y tu montaje, explica lo que ve y propone cambios que puedes aceptar o rechazar."
-      },
-      "languages": {
-        "title": "Seis idiomas",
-        "text": "Cada página, lección y etiqueta de figura, en tu idioma. Elige uno abajo."
-      }
-    },
+    "languages": "Idiomas",
     "closing": {
       "title": "El banco está *listo*.",
-      "text": "Gratis, sin cuenta y sin nada que instalar."
+      "text": "Sin cuenta. Nada que instalar."
     }
   },
   "about": {
