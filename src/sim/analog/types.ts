@@ -13,7 +13,7 @@ export interface ElementD extends ElementBase { kind: 'D'; a: number; b: number;
 export interface ElementQ extends ElementBase { kind: 'Q'; c: number; b: number; e: number; polarity: 'npn' | 'pnp'; modelId: string; hfe: number; hfr: number; vbe: number; vcesat: number }
 export interface ElementM extends ElementBase { kind: 'M'; a: number; b: number; ohms: number }
 export interface ElementSv extends ElementBase { kind: 'SV'; gnd: number; vplus: number; sig: number }
-export interface ElementTs extends ElementBase { kind: 'TS'; supplyPos: number; supplyNeg: number; out: number }
+export interface ElementTs extends ElementBase { kind: 'TS'; supplyPos: number; supplyNeg: number; out: number; outVolts?: number }
 export interface ElementBz extends ElementBase { kind: 'BZ'; a: number; b: number; active: boolean; vf: number; rdOhms: number }
 
 export type Element = ElementR | ElementPot | ElementV | ElementPin | ElementPwm | ElementD | ElementQ | ElementM | ElementSv | ElementTs | ElementBz;

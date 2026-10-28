@@ -89,6 +89,7 @@ describe('stampElement', () => {
     expectStamp(stampOf(ts), [[q, -q, 0], [-q, q, 0], [0, 0, 0]], [0, 0, 0]);
     const go = 1 / PWL_COMPAT.sensorOutOhms, v0 = PWL_COMPAT.sensorOutVolts;
     expectStamp(stampOf(ts, on()), [[q, -q, 0], [-q, q + go, -go], [0, -go, go]], [0, -go * v0, go * v0]);
+    expectStamp(stampOf({ ...ts, outVolts: 0.5 }, on()), [[q, -q, 0], [-q, q + go, -go], [0, -go, go]], [0, -go * 0.5, go * 0.5]);
   });
 
   it('stamps an active transistor as a base diode plus a base-controlled collector current', () => {

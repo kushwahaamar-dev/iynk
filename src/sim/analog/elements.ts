@@ -108,7 +108,7 @@ export function stampElement(el: Element, A: Float64Array[], b: Float64Array, ix
       break;
     case 'TS':
       conduct(A, ix(el.supplyPos), ix(el.supplyNeg), PWL_COMPAT.sensorQuiescentSiemens);
-      if (st.on) branchSource(A, b, ix(el.out), ix(el.supplyNeg), 1 / PWL_COMPAT.sensorOutOhms, PWL_COMPAT.sensorOutVolts);
+      if (st.on) branchSource(A, b, ix(el.out), ix(el.supplyNeg), 1 / PWL_COMPAT.sensorOutOhms, el.outVolts ?? PWL_COMPAT.sensorOutVolts);
       break;
     case 'Q': {
       if (!st.on) break;
