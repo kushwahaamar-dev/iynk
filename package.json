@@ -25,6 +25,8 @@
     "pretypecheck": "npm run content",
     "typecheck": "next typegen && tsc --noEmit && tsc -p tsconfig.portable.json",
     "typecheck:portable": "tsc -p tsconfig.portable.json",
+    "server:typecheck": "tsc -p server/tsconfig.json",
+    "server:test": "npm --prefix server test && npm --prefix server/legacy test",
     "pretest": "npm run content",
     "test": "vitest run",
     "e2e": "playwright test",
@@ -33,7 +35,7 @@
     "perf:record": "node scripts/perf-budget.mjs --record",
     "corpus": "node scripts/convert-catalogue.mjs",
     "measure:apply": "node scripts/measure-apply.mjs",
-    "check": "npm run content:check && npm run schema:check && npm run typecheck && npm run lint && npm run test && npm run e2e"
+    "check": "npm run content:check && npm run schema:check && npm run typecheck && npm run lint && npm run server:typecheck && npm run server:test && npm run test && npm run e2e"
   },
   "dependencies": {
     "@codemirror/commands": "6.11.1",
