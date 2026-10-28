@@ -94,16 +94,32 @@ export function CatalogueGroup({ id, kicker, title, aside, children }: { id: str
   );
 }
 
-/** The hairline grid. The wrapper reaches a card's padding into the gutter so card text lines up with the head. */
-export function CatalogueGrid({ wide = true, labelledBy, testId, children }: { wide?: boolean; labelledBy?: string; testId?: string; children: ReactNode }) {
+/** The hairline grid. Its top rule starts at the page gutter, like the head above it. */
+export function CatalogueGrid({
+  wide = true,
+  count,
+  labelledBy,
+  testId,
+  children,
+}: {
+  wide?: boolean;
+  /** How many cards the grid holds. A grid with fewer cards than columns uses only as many columns as it has cards. */
+  count?: number;
+  labelledBy?: string;
+  testId?: string;
+  children: ReactNode;
+}) {
+  const alone = count === 1;
   return (
-    <div className="-mx-(--cat-pad) overflow-hidden">
+    <div className="overflow-hidden">
       <ul
         aria-labelledby={labelledBy}
         data-testid={testId}
         className={cx(
-          "-me-px grid grid-cols-1 border-t border-rule sm:grid-cols-2",
-          wide ? "lg:grid-cols-3 xl:grid-cols-4" : "xl:grid-cols-3",
+          "-me-px grid grid-cols-1 border-t border-rule",
+          alone ? "[&_.cat-figure]:lg:aspect-[3/1]" : "sm:grid-cols-2",
+          !alone && wide && "lg:grid-cols-3 xl:grid-cols-4",
+          !alone && !wide && count !== 2 && "xl:grid-cols-3",
         )}
       >
         {children}
@@ -153,7 +169,7 @@ export function CatalogueCard({ data, item, fig, meta, heading: Heading, titleId
           {meta ? <span className="truncate text-end">{meta}</span> : null}
         </div>
 
-        <div className="relative my-4 aspect-[2/1] min-h-0 sm:my-6 sm:aspect-[5/4]">
+        <div className="cat-figure relative my-4 aspect-[2/1] min-h-0 sm:my-6 sm:aspect-[5/4]">
           <FigureStill item={item} className="absolute inset-0 aspect-auto! h-full w-full" />
         </div>
 

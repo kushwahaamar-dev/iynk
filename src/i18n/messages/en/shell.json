@@ -76,6 +76,11 @@
     "title": "About iynk",
     "lede": "iynk is a hardware lab you open in a browser. Every board, module and drone is a hand drawn 3D figure you can turn, open up and operate, wired to lessons, code that really runs, and failures you can trigger on purpose.",
     "howTitle": "How it works",
+    "howHeads": {
+      "figures": "Figures you operate",
+      "code": "Code that runs",
+      "privacy": "Stays in your browser"
+    },
     "how": {
       "figures": "Each figure is a page of its own, drawn with the Colorfigures engine: real 3D bodies in flat light, mid and dark bands with ink outlines. The page talks to the figure through a small message bridge, so pressing a button in the lesson moves the part in the figure and the other way round.",
       "code": "Sketches run in a simulator in your browser on a virtual clock: an Arduino C++ subset with the right integer widths for each chip, a MicroPython subset, and a Verilog subset for the two FPGA boards.",

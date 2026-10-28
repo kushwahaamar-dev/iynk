@@ -1,11 +1,11 @@
 {
   "meta": {
-    "indexTitle": "Board Lab",
+    "indexTitle": "Board lab",
     "indexDescription": "Twelve real development boards to assemble, power up, program and break on purpose, from the Arduino Uno to two FPGAs.",
     "lessonTitle": "{lesson} · {board}"
   },
   "index": {
-    "title": "Board Lab",
+    "title": "Board lab",
     "kicker": "Microcontrollers and FPGAs",
     "lede": "Twelve real boards. Assemble each one, power it up, write code that really runs, wire in sensors and break it on purpose to see what fails and why.",
     "count": "{count} boards",

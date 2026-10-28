@@ -83,7 +83,7 @@ async function RoboticsIndex({ params }: Pick<Props, "params">) {
               title={title}
               aside={monthKeys.length > 0 ? <BenchProgress keys={monthKeys} {...progress} idle={null} className="max-w-56" /> : null}
             >
-              <CatalogueGrid wide={false}>
+              <CatalogueGrid wide={false} count={ids.length}>
                 {ids.map((id) => {
                   const meta = ROBOTICS[id];
                   const name = t(`benches.${id}.name`);

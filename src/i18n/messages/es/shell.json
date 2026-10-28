@@ -76,6 +76,11 @@
     "title": "Acerca de iynk",
     "lede": "iynk es un laboratorio de hardware que se abre en el navegador. Cada placa, módulo y dron es una figura 3D entintada a mano que puedes girar, abrir y manejar, conectada a lecciones, a código que se ejecuta de verdad y a fallos que puedes provocar a propósito.",
     "howTitle": "Cómo funciona",
+    "howHeads": {
+      "figures": "Figuras que manejas",
+      "code": "Código que se ejecuta",
+      "privacy": "Se queda en tu navegador"
+    },
     "how": {
       "figures": "Cada figura es una página autónoma dibujada con el motor Colorfigures: cuerpos 3D reales en franjas planas de luz, medio tono y sombra, con contornos a tinta. La página habla con la figura a través de un pequeño puente de mensajes, así que pulsar un botón en la lección mueve la pieza en la figura, y al revés.",
       "code": "Los programas se ejecutan en un simulador dentro de tu navegador, con un reloj virtual: un subconjunto de Arduino C++ con el ancho de enteros correcto para cada chip, un subconjunto de MicroPython y un subconjunto de Verilog para las dos placas FPGA.",

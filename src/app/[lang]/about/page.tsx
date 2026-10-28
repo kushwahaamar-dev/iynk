@@ -58,9 +58,10 @@ async function About({ params }: Pick<Props, "params">) {
           {HOW.map((key, i) => (
             <li key={key} className="border-b border-rule py-6 md:border-s md:border-b-0 md:ps-6 md:first:border-s-0 md:first:ps-0">
               <p className={cx(eyebrow, "tabular")} aria-hidden="true">
-                {String.fromCharCode(97 + i)}
+                {String(i + 1).padStart(2, "0")}
               </p>
-              <p className="mt-4 max-w-prose leading-relaxed">{t(`about.how.${key}`)}</p>
+              <h3 className="mt-4 text-xl font-semibold tracking-tight text-balance">{t(`about.howHeads.${key}`)}</h3>
+              <p className="mt-2 max-w-prose leading-relaxed">{t(`about.how.${key}`)}</p>
             </li>
           ))}
         </ol>

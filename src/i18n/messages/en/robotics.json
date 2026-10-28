@@ -1,11 +1,11 @@
 {
   "meta": {
-    "indexTitle": "Robotics Lab",
+    "indexTitle": "Robotics lab",
     "indexDescription": "Thirteen benches on a six month robotics roadmap: build each board part by part, power it up, break it on purpose and fix it, from Ohm's law to a ROS 2 robot brain.",
     "benchDescription": "{name}: {teaches}"
   },
   "index": {
-    "kicker": "Robotics Lab",
+    "kicker": "Robotics lab",
     "title": "Build it, power it, break it, fix it",
     "count": {
       "one": "{count} bench",
@@ -125,7 +125,7 @@
     "ros2": "ROS 2"
   },
   "bench": {
-    "kicker": "Fig. {n} · Robotics Lab",
+    "kicker": "Fig. {n} · Robotics lab",
     "back": "All benches",
     "progress": "{done}/{total}",
     "progressLabel": "{done} of {total} steps, tasks and quizzes done on this bench",
