@@ -10,6 +10,7 @@ part.
 - [docs/FIGURES-DRONE.md](docs/FIGURES-DRONE.md): the data format for drones
 - [docs/SELF_HOSTING.md](docs/SELF_HOSTING.md): running your own copy
 - [docs/DATA_HANDLING.md](docs/DATA_HANDLING.md): what is stored, where, and what leaves your machine
+- [docs/SERVER_AND_KEYS.md](docs/SERVER_AND_KEYS.md): `/config.json`, where keys live, the caps and the usage route
 - [docs/LOW_END_TESTING.md](docs/LOW_END_TESTING.md): testing on slow devices
 - [docs/PROVENANCE.md](docs/PROVENANCE.md): where the content came from
 

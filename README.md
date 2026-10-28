@@ -1,123 +1,104 @@
 # iynk
 
-**A free hardware lab in your browser.** Wire, code, break and fly real boards, robots and drones, without buying a
-single part, in your own language, and never alone.
-
-**Live:** [iynk.tech](https://iynk.tech) · no account, nothing to install
+**A free hardware lab in your browser.** Wire, code, break and fly boards, robots and drones that are modelled on real
+ones, without buying a single part, in six languages.
 
 ![The iynk landing page](docs/media/landing.jpg)
 
-## Why
+## What it is, and what it is not
 
-Learning hardware is mostly experimenting, and experimenting means breaking things. Every mistake costs a part: a
-board, a sensor, a motor driver, a battery. Far from a lab, a makerspace or a well-stocked shop, that cost is where a
-lot of people stop. iynk moves the experimenting into a lab that behaves like the real hardware, so the only thing you
-ever have to buy is the final prototype.
+iynk teaches how parts behave. It runs your code in its own interpreter, not on a real chip. It does not replace a
+bench, a compiler or a datasheet.
 
-## What it does
-
-### Three labs, 38 real items
-
-| Lab | Items |
-|---|---|
-| **Board Lab** | Arduino Uno R3, Arduino Nano, Arduino UNO R4 (Minima, WiFi), ESP32-DevKitC V4, ESP32-S3-DevKitC-1, NodeMCU (ESP8266), Raspberry Pi Pico (W, 2), STM32 Nucleo-F401RE, BBC micro:bit V2, Raspberry Pi 5 / Pi 4, Digilent Basys 3, Terasic DE10-Lite |
-| **Robotics Lab** | Build an Arduino Uno R3, LED + resistor, transistor motor switch, build an ESP32-S3-DevKitC-1, TB6612FNG driver, L298N driver, A4988 stepper driver, PCA9685 servo arm, MPU-6050 tilt alarm, HC-SR04 parking sensor, QTR-8RC line follower, LM2596 buck converter, Raspberry Pi 5 ROS 2 brain |
-| **Drone Lab** | 5-inch freestyle quad, Tiny Whoop 65 mm, 3-inch cinewhoop, 7-inch long-range quad, 5-inch racing quad, GPS camera drone, autonomous delivery quad, agricultural spray hexacopter, 900 mm FPV flying wing, VTOL tiltrotor, Crazyflie swarm drone, tricopter, heavy-lift octocopter |
-
-Every item is a hand-inked 3D figure you can turn all the way round, see through and take apart.
+- Three labs hold <!--count:items-->38<!--/count--> catalogue items modelled on real boards, kits and drones:
+  <!--count:boards-->12<!--/count--> boards, <!--count:robotics-->13<!--/count--> robotics benches and
+  <!--count:drones-->13<!--/count--> drones. Each is a hand-inked 3D figure you can turn round, see through and take apart.
+- You write code in a teaching subset of Arduino C++, MicroPython and Python, or Verilog on the FPGA boards. A built-in
+  interpreter runs it on a virtual clock. It is not an emulator, and a program written for a real toolchain may not run.
+- Lessons and bench tasks are marked done when your run meets their checks. The checks run in your browser.
+- Breadboard faults are decided by a small DC circuit solver. Bench faults follow per-bench rules. Numbers such as the
+  current through a burnt LED come from a simple pin model and are there to show the idea.
+- The flight sim re-runs your flight in slow motion. A wiring mistake on the drone causes a scripted flip.
 
 ![A Board Lab lesson: Blink on the Arduino Uno R3](docs/media/lab.jpg)
 
-- **Real code, really run.** Write Arduino C++, MicroPython, Python (with gpiozero and rclpy on the Pi) or Verilog on
-  the FPGA boards and press Run. Interpreters inside the page drive the pins, the serial monitor and the figure on a
-  deterministic clock. 71 board lessons and 31 bench tasks pass only when your run meets their checks.
-- **Break it on purpose.** 144 board failures and 106 bench faults, decided by a circuit solver: leave the resistor off
-  an LED and it flashes once and burns out (113 mA through a part rated for 20), fit a capacitor backwards and it
-  smokes, put a motor on the 5 V pin and the board browns out. Each one explains what happened and how to fix it.
-- **Build part by part.** Benches go together step by step (272 steps) with live status and current draw. Drones are
-  assembled on a bench, sized with a drone calculator (thrust to weight, hover throttle, flight time, current) and
-  checked with safety tests before the first flight.
-- **Fly it.** A flight sim with gate races and freestyle courses in angle or acro mode, third person or FPV, against
-  your best lap, the autopilot and your friends' ghosts. Break the drone on purpose (flight controller mounted
-  backwards, props swapped round) and a slow-motion replay shows why it flipped.
+## Run it
 
-![The flight sim: a gate race on the 5-inch freestyle quad](docs/media/fly.jpg)
+You need Node 24 (the version in `.nvmrc`), npm and Python 3.
 
-### Never alone
+```bash
+git clone https://github.com/kushwahaamar-dev/iynk.git
+cd iynk && npm ci
+npm run dev
+```
 
-- **Rooms.** Share a link and up to eight people build on the same bench in real time, on any device. Every shared
-  action is put in one order for everyone.
-- **A lab partner that finds you a friend.** The AI partner (Meta Muse Spark with tool calling) reads your bench,
-  points at the broken part in the figure and gives hints before answers. If someone in your room has already passed
-  that lesson, it asks them first, with a question that makes them explain it.
-- **Any language.** The whole app is in English, Spanish, French, German, Chinese and Hindi, down to the labels inside
-  the figures. Room chat and voice messages (Muse Voice Transcribe) are translated into each reader's language.
-- **Build Buddies.** Find people whose skills complement yours.
+Open the address `next dev` prints (http://localhost:3000 by default). The labs, the figures, the interpreters and the
+flight sim work with no key and no setup, in a current Chromium browser (Firefox and Safari are not tested yet).
 
-### For real
+## AI and search
 
-- **Build it for real.** Every parts list is priced live across Google Shopping, Amazon and eBay (SerpApi). On a drone,
-  a budget optimiser re-runs the drone maths on every battery, motor and prop combination at today's prices and picks
-  the build that still flies within your budget. It also finds makerspaces, electronics shops and flying fields near
-  you, and tutorials on YouTube.
-- **An MCP server.** AI assistants can search the catalogue, run the drone calculator, price parts
-  and open a room through `/api/mcp`.
+The AI lab partner and search (parts prices, nearby places, events, videos) are off until the person running the server
+turns them on, and each person brings their own key. You do not put these keys in an environment file.
+
+1. The operator sets `IYNK_AI_ENABLE=1` and `IYNK_SEARCH_ENABLE=1` and a server token. See
+   [docs/SELF_HOSTING.md](docs/SELF_HOSTING.md).
+2. In the app, open Settings, Keys and usage, and paste your provider key and the server token. They stay in your
+   browser and travel only in the request headers.
+3. The app shows what your key has used against the daily and monthly caps.
+
+With no key, a feature says it is not set up and nothing is sent anywhere. What is stored and what leaves your device is
+in [docs/DATA_HANDLING.md](docs/DATA_HANDLING.md). How the keys, the caps and `/config.json` work is in
+[docs/SERVER_AND_KEYS.md](docs/SERVER_AND_KEYS.md).
+
+Server settings, all optional, names only (values and defaults are in `.env.example` and the self-hosting page):
+
+| Name | Turns on |
+|---|---|
+| `IYNK_AI_ENABLE` | the AI partner, translation and voice |
+| `IYNK_SEARCH_ENABLE` | search, parts prices, nearby places |
+| `IYNK_SERVER_TOKEN` | the routes that spend the provider's quota |
+| `NEXT_PUBLIC_REALTIME_URL` | rooms across devices (without it, rooms work between tabs of one browser) |
 
 ## How it works
 
 ```mermaid
 flowchart LR
-  B["Browser<br/>Next.js app, figures,<br/>interpreters, flight sim"] -->|"/api/ai, /api/search,<br/>/api/mcp"| V["Vercel functions"]
-  B <-->|WebSocket| R["Room relay<br/>Node + ws, Docker, Caddy"]
-  V --> M["Meta Model API<br/>Muse Spark, Image, Voice"]
-  V --> G["Gemini<br/>fallback"]
-  V --> S["SerpApi"]
+  B["Browser<br/>Next.js app, figures,<br/>interpreters, flight sim"] -->|"/api/ai, /api/search,<br/>/api/mcp, /config.json"| N["Next.js server<br/>(yours)"]
+  B <-->|WebSocket| R["Room relay<br/>Node + ws"]
+  N --> P["AI provider<br/>(Meta or Gemini)"]
+  N --> S["Search provider<br/>(SerpApi)"]
 ```
 
 - **Frontend:** Next.js 16 (App Router), React, TypeScript, Tailwind CSS, CodeMirror. Figures are SVG drawn with
   [Colorfigures](figures/vendor/colorfigures/LICENSE), with our own engines for boards, benches and drones
   ([figures](docs/FIGURES.md), [bench engine](docs/FIGURES-BENCH.md), [drone engine](docs/FIGURES-DRONE.md)).
-- **Simulation:** interpreters for an Arduino C++ subset, MicroPython, Python and a Verilog subset; a circuit solver;
-  a drone calculator; a flight model. All in the browser.
-- **Server:** Vercel functions for AI and search. API keys stay on the server, every call is
-  rate-limited, and Gemini takes over when Meta is busy.
-- **Realtime:** a small Node WebSocket relay (`server/realtime`), run in Docker behind Caddy.
+- **Simulation:** interpreters for a subset of Arduino C++, MicroPython, Python and Verilog, a circuit solver, a drone
+  calculator and a flight model. All of it runs in the browser.
+- **Server:** the same Next.js app serves the AI and search routes. They take the caller's own key, rate-limit calls per
+  server instance and count spend per key.
+- **Realtime:** a small Node WebSocket relay in `server/realtime`.
+- **MCP:** AI assistants can search the catalogue and run the drone calculator through `/api/mcp`. Its parts price tool
+  answers "not set up", because an MCP call carries no search key.
 
-## Run it locally
+## Status
 
-Needs Node 24 and npm.
+Rooms share a bench by link, for up to eight people. Anyone with the link can join, so share it with people you trust.
+Rooms between devices need the relay to be running. A Studio for building your own projects is not built yet, and the
+server that will carry rooms and shares in one container is planned for a later phase.
 
-```bash
-npm ci
-cp .env.example .env.local   # every key is optional; a feature without its key says it isn't set up
-npm run dev                  # http://localhost:3000
-```
-
-The labs, the figures, the interpreters and the flight sim work with no keys at all. The optional keys in
-`.env.example` turn on the rest:
-
-| Variable | Turns on |
-|---|---|
-| `META_API_KEY` | the lab partner, translation, voice and Build Buddies matching |
-| `GEMINI_API_KEY` | the fallback model when Meta is busy |
-| `SERPAPI_KEY` | live prices, places, events, videos and datasheet answers |
-| `NEXT_PUBLIC_REALTIME_URL` | rooms across devices (without it, rooms work between tabs of one browser) |
-
-Rooms across devices need the relay:
-
-```bash
-cd server/realtime && npm ci && node server.js --port 43117
-# then NEXT_PUBLIC_REALTIME_URL=ws://127.0.0.1:43117/ws in .env.local
-```
+The lab partner sees your code, check results, pin states and part readouts as text, not the wiring.
 
 ## Tests
 
 ```bash
 npm run typecheck   # TypeScript
 npm run lint        # ESLint
-npm test            # Vitest: about 2,800 unit tests, including every lesson's reference and starter code
-npm run e2e         # Playwright end-to-end tests with axe accessibility checks
+npm test            # Vitest
+npm run e2e         # Playwright end-to-end tests with axe checks on the app pages
 ```
+
+`bash scripts/ci-local.sh` runs the same steps CI runs. [CONTRIBUTING.md](CONTRIBUTING.md) explains how to add a string
+in six languages, a lesson or a part.
 
 ## Project layout
 
@@ -133,9 +114,17 @@ e2e                Playwright tests
 docs/facts         sourced fact sheets for every board and drone
 ```
 
+## More
+
+- [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+- [LICENSE-PENDING.md](LICENSE-PENDING.md): no licence has been chosen yet
+- [docs/SELF_HOSTING.md](docs/SELF_HOSTING.md), [docs/DATA_HANDLING.md](docs/DATA_HANDLING.md),
+  [docs/SERVER_AND_KEYS.md](docs/SERVER_AND_KEYS.md), [docs/PROVENANCE.md](docs/PROVENANCE.md)
+
 ## Credits
 
 - [Colorfigures](figures/vendor/colorfigures/LICENSE) by April Zhu (MIT), built on iso-glow by April Zhu and
   iso-figure by Tolga Cohce. Our changes are in `figures/vendor/colorfigures/PATCHES.md`.
-- Learn Arduino by Dilum Sanjaya, Robotics Engineer and Drone Engineer showed how good an interactive hardware lesson
-  can be and shaped our lesson structure. We reused facts (pinouts, formulas, constants), not their code.
+- Three teaching sites inspired iynk: Learn Arduino by Dilum Sanjaya, Robotics Engineer and Drone Engineer. Some
+  constants, reference tables and the lesson structure follow them. [docs/PROVENANCE.md](docs/PROVENANCE.md) records
+  where, and which rows are still open.
