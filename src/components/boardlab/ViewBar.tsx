@@ -58,6 +58,9 @@ type Props = {
   onYaw: (yaw: number) => void;
 };
 
+// Views, modes and turns are one family: the same height, the same 8 px radius, one border per group.
+const groupClass = "flex shrink-0 items-center rounded-lg border border-rule p-0.5";
+const toggleClass = "min-h-8 whitespace-nowrap px-2 py-0";
 const selectClass = "min-h-9 py-0 text-sm [@media(pointer:coarse)]:min-h-11";
 
 /**
@@ -94,30 +97,32 @@ export function ViewBar({ store, board, figure, views, variants, xr, onXr, yaw, 
         onChange={(v) => store.dispatch({ type: "view/set", view: v })}
         options={views.map((v) => ({ value: v, label: t(`view.${v}`) }))}
       />
-      <Button
-        size="sm"
-        variant="secondary"
-        className="shrink-0 whitespace-nowrap"
-        aria-pressed={exploded}
-        aria-keyshortcuts="X"
-        onClick={() => store.dispatch({ type: "exploded/set", on: !exploded })}
-      >
-        {t("view.exploded")}
-      </Button>
-      <Button
-        size="sm"
-        variant="secondary"
-        className="shrink-0 whitespace-nowrap"
-        aria-pressed={xr}
-        aria-keyshortcuts="T"
-        onClick={() => {
-          onXr(!xr);
-          figure()?.send("xr", { on: !xr });
-        }}
-      >
-        {t("view.seeThrough")}
-      </Button>
-      <span className="flex shrink-0 items-center rounded-lg border border-rule">
+      <span className={`${groupClass} gap-0.5`}>
+        <Button
+          size="sm"
+          variant="ghost"
+          className={toggleClass}
+          aria-pressed={exploded}
+          aria-keyshortcuts="X"
+          onClick={() => store.dispatch({ type: "exploded/set", on: !exploded })}
+        >
+          {t("view.exploded")}
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          className={toggleClass}
+          aria-pressed={xr}
+          aria-keyshortcuts="T"
+          onClick={() => {
+            onXr(!xr);
+            figure()?.send("xr", { on: !xr });
+          }}
+        >
+          {t("view.seeThrough")}
+        </Button>
+      </span>
+      <span className={groupClass}>
         <IconButton icon="rotate-left" size="sm" label={t("view.turnLeft")} onClick={() => turn(-90)} />
         <IconButton icon="reset" size="sm" label={t("view.resetView")} onClick={resetView} />
         <IconButton icon="rotate-right" size="sm" label={t("view.turnRight")} onClick={() => turn(90)} />
