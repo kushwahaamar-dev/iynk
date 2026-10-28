@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useMemo, useState, useSyncExternalStore } from "react";
 import type { LabDockProps, LabStore } from "@/components/dock/types";
-import { Button, Callout, Chip, Icon, Stat, cx } from "@/components/ui";
+import { Button, Callout, Chip, EmptyState, Icon, Stat, TextInput, cx } from "@/components/ui";
 import { isBoardId, isDroneId, isRoboticsId } from "@/content/ids";
 import { loadDrone } from "@/content/index.generated";
 import type { DesignPick, DroneDesign } from "@/content/schema";
@@ -145,7 +145,7 @@ function lineName(line: BomLine, t: SearchT): string {
 function OfferRow({ offer, line, t, f }: { offer: Offer; line: BomLine; t: SearchT; f: Format }) {
   const store = t(`store.${offer.source}`);
   return (
-    <li className="flex items-start justify-between gap-2 border-t border-rule py-1.5 first:border-t-0">
+    <li className="flex items-start justify-between gap-2 border-t border-rule py-2 first:border-t-0">
       <div className="min-w-0">
         <a href={offer.url} {...external} className="line-clamp-2 text-sm underline underline-offset-2">
           {offer.title}
@@ -169,17 +169,17 @@ function LineItem({ line, found, priced, catalogueOnly, t, f }: { line: BomLine;
   const name = lineName(line, t);
   const others = found?.offers ?? [];
   const needed = best ? listingsNeeded(best, line.qty, line.pack) : 0;
-  const qty = line.qty > 1 ? <span className="tabular ms-1.5 font-ui text-sm font-normal text-muted">{t("real.qty", { count: line.qty })}</span> : null;
+  const qty = line.qty > 1 ? <span className="tabular ms-2 font-ui text-sm font-normal text-muted">{t("real.qty", { count: line.qty })}</span> : null;
   if (!priced) {
     return (
-      <li className="py-2.5 text-sm font-semibold">
+      <li className="py-3 text-sm font-semibold">
         {name}
         {qty}
       </li>
     );
   }
   return (
-    <li className="py-2.5">
+    <li className="py-3">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="text-sm font-semibold">
@@ -190,11 +190,11 @@ function LineItem({ line, found, priced, catalogueOnly, t, f }: { line: BomLine;
             <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
               <a href={best.url} {...external} className="inline-flex items-center gap-1 underline underline-offset-2">
                 {t("real.view", { store: best.seller ?? t(`store.${best.source}`) })}
-                <Icon name="external" size={14} aria-hidden="true" />
+                <Icon name="external" size={16} aria-hidden="true" />
               </a>
               {best.inStock === true ? (
-                <Chip tone="mint">
-                  <Icon name="check" size={12} aria-hidden="true" />
+                <Chip tone="good">
+                  <Icon name="check" size={16} aria-hidden="true" />
                   {t("real.inStock")}
                 </Chip>
               ) : null}
@@ -210,17 +210,11 @@ function LineItem({ line, found, priced, catalogueOnly, t, f }: { line: BomLine;
       </div>
       {others.length > 0 ? (
         <div className="mt-1">
-          <button
-            type="button"
-            aria-expanded={open}
-            aria-controls={id}
-            onClick={() => setOpen((o) => !o)}
-            className="inline-flex min-h-9 items-center gap-1 text-xs font-semibold text-muted hover:text-ink [@media(pointer:coarse)]:min-h-11"
-          >
-            <Icon name="chevron-down" size={14} aria-hidden="true" className={cx("transition-transform motion-reduce:transition-none", open && "rotate-180")} />
+          <Button variant="ghost" size="sm" aria-expanded={open} aria-controls={id} onClick={() => setOpen((o) => !o)} className="-ms-3 text-muted">
+            <Icon name="chevron-down" size={16} aria-hidden="true" className={cx("motion-move", open && "rotate-180")} />
             {open ? t("real.offersHide") : t("real.offersShow", { count: others.length })}
-          </button>
-          <ul id={id} hidden={!open} aria-label={t("real.offersLabel", { part: name })} className="mt-1 rounded-ink-sm bg-sunken px-3">
+          </Button>
+          <ul id={id} hidden={!open} aria-label={t("real.offersLabel", { part: name })} className="mt-1 rounded-lg bg-sunken px-3">
             {others.map((offer) => (
               <OfferRow key={offer.url} offer={offer} line={line} t={t} f={f} />
             ))}
@@ -242,25 +236,21 @@ const samePick = (a: DesignPick, b: DesignPick) => a.batt === b.batt && a.motor 
 
 function NumberField({ id, label, value, onChange, step, max }: { id: string; label: string; value: number; onChange: (v: number) => void; step: number; max: number }) {
   return (
-    <div className="min-w-0">
-      <label htmlFor={id} className="ink-kicker block">
-        {label}
-      </label>
-      <input
-        id={id}
-        type="number"
-        inputMode="decimal"
-        min={0}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(e) => {
-          const v = Number(e.target.value);
-          if (Number.isFinite(v) && v >= 0 && v <= max) onChange(v);
-        }}
-        className="ink-field tabular mt-1 w-full pe-3"
-      />
-    </div>
+    <TextInput
+      id={id}
+      label={label}
+      type="number"
+      inputMode="decimal"
+      min={0}
+      max={max}
+      step={step}
+      value={value}
+      onChange={(e) => {
+        const v = Number(e.target.value);
+        if (Number.isFinite(v) && v >= 0 && v <= max) onChange(v);
+      }}
+      className="tabular"
+    />
   );
 }
 
@@ -318,9 +308,9 @@ function Optimiser({
   const best = result.best;
   const now = result.current;
   return (
-    <section aria-labelledby={`${id}-title`} className="ink-card space-y-4 p-4">
+    <section aria-labelledby={`${id}-title`} className="space-y-4 rounded-2xl border border-rule bg-surface p-4">
       <div>
-        <h3 id={`${id}-title`} className="font-head text-lg leading-tight">
+        <h3 id={`${id}-title`} className="text-lg font-semibold text-balance">
           {t("opt.heading")}
         </h3>
         <p className="mt-1 text-sm text-muted">{t("opt.lede")}</p>
@@ -328,7 +318,7 @@ function Optimiser({
 
       <div>
         <div className="flex items-baseline justify-between gap-2">
-          <label htmlFor={`${id}-budget`} className="ink-kicker">
+          <label htmlFor={`${id}-budget`} className="field-label">
             {t("opt.budget")}
           </label>
           <output htmlFor={`${id}-budget`} className="tabular font-ui text-base font-bold">
@@ -369,7 +359,7 @@ function Optimiser({
               <ul className="space-y-1 text-sm">
                 {result.swaps.map((swap) => (
                   <li key={swap.slot} className="flex gap-2">
-                    <Icon name="chevron-right" size={16} aria-hidden="true" className="mt-0.5 shrink-0 text-tomato" />
+                    <Icon name="chevron-right" size={16} aria-hidden="true" className="mt-0.5 shrink-0 text-accent-ink" />
                     <span>
                       {t("opt.swap", {
                         slot: t(`opt.slot.${swap.slot}`),
@@ -481,13 +471,13 @@ export function RealBuildPanel({ lab, itemId, store }: LabDockProps) {
       {prices?.partial ? <Callout tone="note">{t(`real.partial.${prices.partial}`)}</Callout> : null}
 
       {bom.status === "loading" || availability === "loading" ? <PanelSkeleton /> : null}
-      {bom.status === "missing" ? <Callout tone="note">{t("real.noContent")}</Callout> : null}
+      {bom.status === "missing" ? <EmptyState icon="empty" title={t("real.noContent")} bordered /> : null}
 
       {lines && availability !== "loading" ? (
         <>
           <div aria-live="polite" aria-busy={loading}>
             <div className="flex items-baseline justify-between gap-2">
-              <h3 className="ink-kicker">{t("real.parts")}</h3>
+              <h3 className="kicker">{t("real.parts")}</h3>
               {loading ? <span className="text-xs text-muted">{t("real.loading")}</span> : null}
               {!loading && prices?.fetchedAt ? <span className="text-xs text-muted">{t("real.checked", { time: f.time(prices.fetchedAt) })}</span> : null}
             </div>
@@ -495,10 +485,10 @@ export function RealBuildPanel({ lab, itemId, store }: LabDockProps) {
           </div>
 
           {priced ? (
-            <div className="border-t-2 border-line pt-3">
+            <div className="border-t border-rule pt-3">
               <div className="flex items-baseline justify-between gap-3">
                 <span className="text-sm font-semibold">{catalogueOnly ? t("real.totalCatalogue") : t("real.total")}</span>
-                <span className="tabular font-ui text-2xl font-extrabold">{f.money(total)}</span>
+                <span className="tabular font-ui text-2xl font-bold">{f.money(total)}</span>
               </div>
               <div className="mt-1 space-y-0.5 text-end text-xs text-muted">
                 {estimated === 0 && unpriced === 0 && checking && !loading ? <p>{t("real.allLive")}</p> : null}
@@ -513,9 +503,9 @@ export function RealBuildPanel({ lab, itemId, store }: LabDockProps) {
           ) : null}
 
           {alternatives.length > 0 ? (
-            <details className="group border-t-[1.5px] border-rule pt-2">
-              <summary className="flex min-h-11 cursor-pointer list-none items-center gap-1.5 text-sm font-semibold [&::-webkit-details-marker]:hidden">
-                <Icon name="chevron-right" size={16} aria-hidden="true" className="shrink-0 transition-transform group-open:rotate-90 motion-reduce:transition-none" />
+            <details className="group border-t border-rule pt-2">
+              <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+                <Icon name="chevron-right" size={16} aria-hidden="true" className="motion-move shrink-0 group-open:rotate-90" />
                 {t("real.alternatives")}
               </summary>
               <ul className="divide-y divide-rule">{alternatives.map(item)}</ul>
