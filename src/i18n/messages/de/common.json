@@ -92,6 +92,20 @@
         "notPersisted": "Wird nach dem Schließen dieses Tabs nicht gespeichert (dieser Browser blockiert den Speicher)"
       }
     },
+    "meter": {
+      "tokensToday": "Tokens heute",
+      "searchesMonth": "Suchen in diesem Monat",
+      "ofCap": "{used} von {cap}",
+      "aiLine": "Diesen Monat: {month} Tokens.",
+      "searchLine": "Heute: {today}.",
+      "unavailable": "Nicht verfügbar",
+      "noKey": "Füge oben einen Schlüssel ein, um die Nutzung zu sehen.",
+      "off": "Das ist auf diesem Server ausgeschaltet.",
+      "aiOff": "KI ist auf diesem Server ausgeschaltet.",
+      "searchOff": "Die Suche ist auf diesem Server ausgeschaltet.",
+      "failed": "Nutzung konnte nicht gelesen werden",
+      "retry": "Erneut versuchen"
+    },
     "notSetUp": {
       "serverOff": "{what} ist auf diesem Server abgeschaltet.",
       "needsKey": "{what} braucht deinen eigenen Schlüssel.",

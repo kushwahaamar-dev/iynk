@@ -92,6 +92,20 @@
         "notPersisted": "Not saved after you close this tab (this browser blocks storage)"
       }
     },
+    "meter": {
+      "tokensToday": "Tokens today",
+      "searchesMonth": "Searches this month",
+      "ofCap": "{used} of {cap}",
+      "aiLine": "This month: {month} tokens.",
+      "searchLine": "Today: {today}.",
+      "unavailable": "Not available",
+      "noKey": "Paste a key above to see usage.",
+      "off": "This is switched off on this server.",
+      "aiOff": "AI is switched off for this server.",
+      "searchOff": "Search is switched off for this server.",
+      "failed": "Could not read usage",
+      "retry": "Retry"
+    },
     "notSetUp": {
       "serverOff": "{what} is switched off on this server.",
       "needsKey": "{what} needs your own key.",

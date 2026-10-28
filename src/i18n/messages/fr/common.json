@@ -92,6 +92,20 @@
         "notPersisted": "Non conservée après la fermeture de cet onglet (ce navigateur bloque le stockage)"
       }
     },
+    "meter": {
+      "tokensToday": "Jetons aujourd'hui",
+      "searchesMonth": "Recherches ce mois-ci",
+      "ofCap": "{used} sur {cap}",
+      "aiLine": "Ce mois-ci : {month} jetons.",
+      "searchLine": "Aujourd'hui : {today}.",
+      "unavailable": "Indisponible",
+      "noKey": "Collez une clé ci-dessus pour voir l'usage.",
+      "off": "C'est désactivé sur ce serveur.",
+      "aiOff": "L'IA est désactivée sur ce serveur.",
+      "searchOff": "La recherche est désactivée sur ce serveur.",
+      "failed": "Impossible de lire l'usage",
+      "retry": "Réessayer"
+    },
     "notSetUp": {
       "serverOff": "{what} est désactivé sur ce serveur.",
       "needsKey": "{what} demande votre propre clé.",

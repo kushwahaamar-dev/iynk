@@ -92,6 +92,20 @@
         "notPersisted": "No se guardará al cerrar esta pestaña (este navegador bloquea el almacenamiento)"
       }
     },
+    "meter": {
+      "tokensToday": "Tokens hoy",
+      "searchesMonth": "Búsquedas este mes",
+      "ofCap": "{used} de {cap}",
+      "aiLine": "Este mes: {month} tokens.",
+      "searchLine": "Hoy: {today}.",
+      "unavailable": "No disponible",
+      "noKey": "Pega una clave arriba para ver el uso.",
+      "off": "Esto está desactivado en este servidor.",
+      "aiOff": "La IA está desactivada en este servidor.",
+      "searchOff": "La búsqueda está desactivada en este servidor.",
+      "failed": "No se pudo leer el uso",
+      "retry": "Reintentar"
+    },
     "notSetUp": {
       "serverOff": "{what} está desactivado en este servidor.",
       "needsKey": "{what} necesita tu propia clave.",

@@ -92,6 +92,20 @@
         "notPersisted": "关闭此标签页后不会保留（此浏览器阻止了存储）"
       }
     },
+    "meter": {
+      "tokensToday": "今日令牌",
+      "searchesMonth": "本月搜索",
+      "ofCap": "{used} / {cap}",
+      "aiLine": "本月：{month} 个令牌。",
+      "searchLine": "今日：{today}。",
+      "unavailable": "不可用",
+      "noKey": "在上方粘贴密钥即可查看用量。",
+      "off": "此服务器已关闭该功能。",
+      "aiOff": "此服务器已关闭 AI。",
+      "searchOff": "此服务器已关闭搜索。",
+      "failed": "无法读取用量",
+      "retry": "重试"
+    },
     "notSetUp": {
       "serverOff": "此服务器上已关闭{what}。",
       "needsKey": "{what}需要你自己的密钥。",

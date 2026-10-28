@@ -270,6 +270,27 @@ test("a pasted key shows only its tail and goes when removed", async ({ page }) 
   expect(await page.evaluate(() => localStorage.getItem("iynk:keys:v1"))).toBeNull();
 });
 
+test("the Keys and usage dialog shows what the server counted for a saved key", async ({ page }) => {
+  const keys = common.client.keys;
+  let requests = 0;
+  await page.route("**/api/usage?kind=*", async (route) => {
+    requests += 1;
+    await route.fulfill({
+      json: { kind: "ai", today: { tokens: 12400, requests: 3 }, monthTotal: { tokens: 80000, requests: 9 }, cap: 200000 },
+    });
+  });
+  await page.goto("/en");
+  await (await openSettings(page)).getByRole("button", { name: keys.open }).click();
+  const dialog = page.getByRole("dialog", { name: keys.title });
+  await expect(dialog.getByText(common.client.meter.noKey).first()).toBeVisible();
+  expect(requests).toBe(0);
+  await dialog.getByLabel(keys.ai.label, { exact: true }).fill(CANARY_KEY);
+  await dialog.getByRole("button", { name: `${keys.save}: ${keys.ai.label}` }).click();
+  await expect(dialog.getByText("12,400 of 200,000")).toBeVisible();
+  await expect(dialog.getByText("This month: 80,000 tokens.")).toBeVisible();
+  await expectNoAxeViolations(page);
+});
+
 test("the dashboard and the 404 page pass axe", async ({ page }) => {
   await page.goto("/en");
   await expectNoAxeViolations(page);

@@ -6,6 +6,7 @@ import { TextInput } from "@/components/ui/Field";
 import { Icon } from "@/components/ui/icons";
 import { useCommonT } from "@/i18n/client";
 import { removeKey, setKey, useKeys, type KeyKind, type SetKeyResult } from "@/lib/keys";
+import { UsageMeter } from "./UsageMeter";
 
 type Problem = Extract<SetKeyResult, { ok: false }>["reason"];
 
@@ -125,7 +126,9 @@ export function KeysPanel() {
     <div className="flex flex-col gap-4">
       <p className="text-sm text-muted">{t("keys.notice")}</p>
       <KeyField kind="ai" />
+      <UsageMeter kind="ai" />
       <KeyField kind="search" />
+      <UsageMeter kind="search" />
       <KeyField kind="server" />
     </div>
   );
