@@ -115,6 +115,12 @@
         "search": "Paste a search key in Keys and usage.",
         "server": "Ask whoever runs this server to switch it on."
       }
+    },
+    "state": {
+      "loading": "Loading",
+      "empty": "Nothing here yet",
+      "error": "Something went wrong. Try again.",
+      "retry": "Try again"
     }
   }
 }

@@ -115,6 +115,12 @@
         "search": "Füge unter Schlüssel und Nutzung einen Suchschlüssel ein.",
         "server": "Bitte die Person, die diesen Server betreibt, es einzuschalten."
       }
+    },
+    "state": {
+      "loading": "Wird geladen",
+      "empty": "Noch nichts hier",
+      "error": "Etwas ist schiefgelaufen. Versuche es erneut.",
+      "retry": "Erneut versuchen"
     }
   }
 }

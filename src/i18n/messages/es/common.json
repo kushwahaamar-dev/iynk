@@ -115,6 +115,12 @@
         "search": "Pega una clave de búsqueda en Claves y uso.",
         "server": "Pide a quien gestiona este servidor que lo active."
       }
+    },
+    "state": {
+      "loading": "Cargando",
+      "empty": "Todavía no hay nada",
+      "error": "Algo salió mal. Inténtalo de nuevo.",
+      "retry": "Reintentar"
     }
   }
 }

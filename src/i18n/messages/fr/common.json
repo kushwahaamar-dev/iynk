@@ -115,6 +115,12 @@
         "search": "Collez une clé de recherche dans Clés et utilisation.",
         "server": "Demandez à la personne qui gère ce serveur de l'activer."
       }
+    },
+    "state": {
+      "loading": "Chargement",
+      "empty": "Rien ici pour l'instant",
+      "error": "Un problème est survenu. Réessayez.",
+      "retry": "Réessayer"
     }
   }
 }
